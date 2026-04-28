@@ -207,8 +207,8 @@ int main(int argc, char* const argv[]) {
     }
 
     // For Cocoa to find the locale at runtime, it needs to use '_' instead of
-    // '-' (http://crbug.com/20441).  Also, 'en-US' should be represented
-    // simply as 'en' (http://crbug.com/19165, http://crbug.com/25578).
+    // '-' (http://crbug.com/40986722).  Also, 'en-US' should be represented
+    // simply as 'en' (http://crbug.com/40974786, http://crbug.com/40077718).
     if (cur_lang == "en-US")
       cur_lang = "en";
     base::ReplaceChars(cur_lang, "-", "_", &cur_lang);

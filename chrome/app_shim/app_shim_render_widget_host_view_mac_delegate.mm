@@ -118,7 +118,7 @@
 - (void)backwardsSwipeNavigationLikely {
   // TODO(mcnee): It's unclear whether preloading predictions would be useful in
   // this context. For now we don't do any prediction. See
-  // https://crbug.com/1422266 for context.
+  // https://crbug.com/40259555 for context.
 }
 
 @end

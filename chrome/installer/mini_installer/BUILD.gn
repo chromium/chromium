@@ -131,7 +131,7 @@ packed_files_rc_file = "$target_gen_dir/mini_installer/packed_files.rc"
 # mini_installer, and therefore must be compressed.
 # The `enable_uncompressed_archive` arg is only intended for uncompressed
 # targets, so we assert that this flag is only set when not building for debug:
-# https://crbug.com/1408213.
+# https://crbug.com/40253437.
 assert(!is_debug || !enable_uncompressed_archive)
 
 if (enable_uncompressed_archive) {
@@ -332,7 +332,7 @@ if (enable_uncompressed_archive) {
 
 # previous_version_mini_installer.exe can't be generated in an x86 Debug
 # component build because it requires too much memory.
-# TODO(thakis): Enable this in cross builds, https://crbug.com/799827
+# TODO(thakis): Enable this in cross builds, https://crbug.com/40557129
 if (!(is_component_build && is_debug && target_cpu == "x86") &&
     host_os == "win") {
   action("previous_version_mini_installer") {

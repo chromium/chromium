@@ -126,7 +126,7 @@ std::wstring GetEmailDomains() {
     return device_policies.GetAllowedDomainsStr();
   }
 
-  // TODO (crbug.com/1135458): Clean up directly reading from registry after
+  // TODO (crbug.com/40151888): Clean up directly reading from registry after
   // cloud policies is launched.
   std::wstring email_domains_reg = GetEmailDomains(kEmailDomainsKey);
   std::wstring email_domains_reg_new = GetEmailDomains(kEmailDomainsKeyNew);

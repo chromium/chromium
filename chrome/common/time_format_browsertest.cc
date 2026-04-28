@@ -33,7 +33,7 @@ IN_PROC_BROWSER_TEST_F(TimeFormatBrowserTest, DecimalPointNotDot) {
   // decimal digits. The icu library wasn't handling this, leading to "1"
   // being internally converted to "+1,0e00" and ultimately leading to "NaN".
   // This showed up on the browser on estimated download time, for example.
-  // http://crbug.com/60476
+  // http://crbug.com/40465768
 
   std::u16string one_min =
       ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_DURATION,

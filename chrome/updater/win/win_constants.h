@@ -158,7 +158,7 @@ inline constexpr wchar_t kShutdownEvent[] =
 inline constexpr wchar_t kLegacyExeName[] =
     COMPANY_SHORTNAME_STRING L"Update.exe";
 
-// crbug.com/1259178: there is a race condition on activating the COM service
+// crbug.com/40201332: there is a race condition on activating the COM service
 // and the service shutdown. The race condition is likely to occur when a new
 // instance of an updater coclass is created right after the last reference to
 // an object hosted by the COM service is released. Therefore, introducing a

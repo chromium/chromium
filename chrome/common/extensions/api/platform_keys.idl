@@ -133,7 +133,7 @@ namespace platformKeys {
     // <p>Currently, this method only supports the "RSASSA-PKCS1-v1_5" and
     // "ECDSA" algorithms.</p>
     [nocompile, doesNotSupportPromises=
-        "Multi-parameter callback crbug.com/1313625"]
+        "Multi-parameter callback crbug.com/40221043"]
     static void getKeyPair(ArrayBuffer certificate,
                            object parameters,
                            GetKeyPairCallback callback);
@@ -158,7 +158,7 @@ namespace platformKeys {
     // hashing algorithms "none", "SHA-1", "SHA-256", "SHA-384", and
     // "SHA-512".</p>
     [nocompile, doesNotSupportPromises=
-        "Multi-parameter callback crbug.com/1313625"]
+        "Multi-parameter callback crbug.com/40221043"]
     static void getKeyPairBySpki(ArrayBuffer publicKeySpkiDer,
                                  object parameters,
                                  GetKeyPairCallback callback);

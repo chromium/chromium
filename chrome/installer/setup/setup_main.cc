@@ -443,7 +443,7 @@ installer::InstallStatus RepeatDeleteOldVersions(
 
     // SetPriorityClass with PROCESS_MODE_BACKGROUND_BEGIN will cap the process
     // working set to 32 MiB. This was experimentally determined after being
-    // reported in https://crbug.com/1475179. This can lead to extreme
+    // reported in https://crbug.com/40927803. This can lead to extreme
     // inefficiency as most CPU time is spent faulting in pages and then
     // immediately trimming the working set. In one trace 99% of CPU time was
     // spent handling page faults, so avoid SetPriorityClass with
@@ -1713,7 +1713,7 @@ int WINAPI wWinMain(HINSTANCE instance,
   // inactionable, so terminate the process forthwith. Do not use
   // base::Process::TerminateCurrentProcessImmediately because it will crash the
   // process with int 3 in cases where ::TerminateProcess returns; see
-  // https://crbug.com/1489598. It is better for the installer to try to return
+  // https://crbug.com/40074164. It is better for the installer to try to return
   // the actual exit code (risking the original crash).
 #if BUILDFLAG(CLANG_PROFILING)
   base::WriteClangProfilingProfile();

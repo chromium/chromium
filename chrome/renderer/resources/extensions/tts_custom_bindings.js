@@ -32,7 +32,7 @@ apiBridge.registerCustomHook(function(api) {
   // This file will get run if an extension needs the ttsEngine permission, but
   // it doesn't necessarily have the tts permission. If it doesn't, trying to
   // add a listener to chrome.tts.onEvent will fail.
-  // See http://crbug.com/122474.
+  // See http://crbug.com/40188097.
   try {
     tts.onEvent.addListener(ttsEventListener);
   } catch (e) {

@@ -44,7 +44,7 @@ bool ZipAnalyzer::ResumeExtraction() {
     // Since this code is expected to run within a utility process, this call
     // will fail on some platforms. We handle this by passing the length
     // into `UpdateResultsForEntry`, which will only consider
-    // the appropriate bytes. See crbug.com/1309879 and crbug.com/41349785.
+    // the appropriate bytes. See crbug.com/40830053 and crbug.com/41349785.
     if (!temp_file_.SetLength(0)) {
       PLOG(WARNING) << "Failed truncate";
     }

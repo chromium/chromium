@@ -47,8 +47,8 @@ typedef int (*ChromeMainPtr)(int, char**);
 
 #if !defined(HELPER_EXECUTABLE) && defined(OFFICIAL_BUILD) && \
     BUILDFLAG(GOOGLE_CHROME_BRANDING) && defined(ARCH_CPU_X86_64)
-// This is for https://crbug.com/1300598, and more generally,
-// https://crbug.com/1297588 (and all of the associated bugs). It's horrible!
+// This is for https://crbug.com/40216333, and more generally,
+// https://crbug.com/40215211 (and all of the associated bugs). It's horrible!
 //
 // When the main executable is updated on disk while the application is running,
 // and the offset of the Mach-O image at the main executable's path changes from

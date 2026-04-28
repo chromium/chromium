@@ -259,7 +259,7 @@ std::vector<std::unique_ptr<RegistryEntry>> GetChromeDelegateExecuteEntries(
 
     // <root hkey>\Software\Classes\<app_id>\.exe\shell\<verb>
     if (verb_and_id.name_id != -1) {
-      // TODO(grt): http://crbug.com/75152 Write a reference to a localized
+      // TODO(grt): http://crbug.com/41337274 Write a reference to a localized
       // resource.
       const std::wstring verb_name(
           installer::GetLocalizedString(verb_and_id.name_id));
@@ -365,7 +365,7 @@ void GetChromeProgIdEntries(
   app_info.app_id =
       ShellUtil::GetBrowserModelId(InstallUtil::IsPerUserInstall());
 
-  // TODO(grt): http://crbug.com/75152 Write a reference to a localized
+  // TODO(grt): http://crbug.com/41337274 Write a reference to a localized
   // resource for name, description, and company.
   app_info.application_name = InstallUtil::GetDisplayName();
   app_info.application_icon_path = chrome_exe;
@@ -425,7 +425,7 @@ void GetShellIntegrationEntries(
   // Register for the Start Menu "Internet" link (pre-Win7).
   const std::wstring start_menu_entry(GetBrowserClientKey(suffix));
   // Register Chrome's display name.
-  // TODO(grt): http://crbug.com/75152 Also set LocalizedString; see
+  // TODO(grt): http://crbug.com/41337274 Also set LocalizedString; see
   // http://msdn.microsoft.com/en-us/library/windows/desktop/cc144109(v=VS.85).aspx#registering_the_display_name
   entries->push_back(std::make_unique<RegistryEntry>(
       start_menu_entry, InstallUtil::GetDisplayName()));
@@ -461,7 +461,7 @@ void GetShellIntegrationEntries(
   entries->push_back(std::make_unique<RegistryEntry>(
       ShellUtil::kRegRegisteredApplications, reg_app_name, capabilities));
   // Write out Chrome's Default Programs info.
-  // TODO(grt): http://crbug.com/75152 Write a reference to a localized
+  // TODO(grt): http://crbug.com/41337274 Write a reference to a localized
   // resource rather than this.
   entries->push_back(std::make_unique<RegistryEntry>(
       capabilities, ShellUtil::kRegApplicationDescription,
@@ -1588,7 +1588,7 @@ bool DeleteFileExtensionsForProgId(const std::wstring& prog_id) {
       // still appear in the Open With menu for extensions that it previously
       // handled due to cached entries in the most-recently-used list. These
       // entries can't be cleaned up by apps, so this is an unavoidable quirk
-      // of Windows. See crbug.com/1177401 for details.
+      // of Windows. See crbug.com/40168777 for details.
     }
   }
   // Delete the key HKEY_CURRENT_USER\Software\Classes\|prog_id|.

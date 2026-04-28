@@ -109,7 +109,7 @@
           "optional": true,
           "description": "Called when the item has been created in the browser. If there were any problems creating the item, details will be available in $(ref:runtime.lastError).",
           "parameters": [],
-          "does_not_support_promises": "Synchronous return and callback crbug.com/1143032"
+          "does_not_support_promises": "Synchronous return and callback crbug.com/40154924"
         }
       },
       {

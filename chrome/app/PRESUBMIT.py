@@ -145,7 +145,7 @@ def _CheckFlagsMessageNotTranslated(input_api, output_api):
     return [output_api.PresubmitError(
         "If you define a flag name, description or value, mark it as not "
         "requiring translation by adding the 'translateable' attribute with "
-        "value \"false\". See https://crbug.com/587272 for more context.",
+        "value \"false\". See https://crbug.com/40457200 for more context.",
         items=problems)]
   return []
 

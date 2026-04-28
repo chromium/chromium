@@ -758,7 +758,7 @@ ProcessExitResult WMain(HMODULE module) {
   if (exit_code.IsSuccess()) {
     // Send up a signal in ExtraCode1 upon successful install indicating the
     // maximum number of retries needed to delete a file or directory by
-    // DeleteWithRetry; see https://crbug.com/1138157.
+    // DeleteWithRetry; see https://crbug.com/40725204.
     MetricSample max_retries =
         (max_delete_attempts > 1 ? max_delete_attempts - 1 : 0);
     WriteExtraCode1(configuration,

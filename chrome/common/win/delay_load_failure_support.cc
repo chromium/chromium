@@ -27,6 +27,6 @@ FARPROC WINAPI HandleDelayLoadFailureCommon(unsigned reason,
 
   // Deterministically crash here. Returning 0 from the hook would likely result
   // in the process crashing anyway, but in a form that might trigger undefined
-  // behavior or be hard to diagnose. See https://crbug.com/1320845.
+  // behavior or be hard to diagnose. See https://crbug.com/40223662.
   NOTREACHED();
 }

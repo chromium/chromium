@@ -24,7 +24,7 @@
 
 // This class implements the Chromium interface to a deprecated API. It is in
 // the process of being replaced, and warnings about its deprecation are not
-// helpful. https://crbug.com/1127306
+// helpful. https://crbug.com/40148499
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
 

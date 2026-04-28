@@ -191,7 +191,7 @@ int main(int argc, char** argv) {
 
   // The test suite runner expects the swarming task to run with normal priority
   // but for some reason, on the updater bots with UAC on, the swarming task
-  // runs with a priority below normal (see crbug.com/1245429).
+  // runs with a priority below normal (see crbug.com/40196119).
   FixExecutionPriorities();
 
   auto scoped_com_initializer =

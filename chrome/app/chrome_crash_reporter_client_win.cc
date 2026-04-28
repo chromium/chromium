@@ -59,7 +59,7 @@ void ChromeCrashReporterClient::InitializeCrashReportingForProcess() {
       install_static::GetUserDataDirectory(&user_data_dir, nullptr);
     }
 
-    // TODO(wfh): Add a DCHECK for success. See https://crbug.com/1329269.
+    // TODO(wfh): Add a DCHECK for success. See https://crbug.com/40226723.
     std::ignore = crash_reporter::InitializeCrashpadWithEmbeddedHandler(
         /*initial_client=*/process_type.empty(),
         install_static::WideToUTF8(process_type),

@@ -17,11 +17,11 @@ mkdir -p "$xdg_app_dir"
 
 export CHROME_VERSION_EXTRA="@@channel"
 
-# We don't want bug-buddy intercepting our crashes. http://crbug.com/24120
+# We don't want bug-buddy intercepting our crashes. http://crbug.com/41012584
 export GNOME_DISABLE_CRASH_DIALOG=SET_BY_GOOGLE_CHROME
 
 # Sanitize std{in,out,err} because they'll be shared with untrusted child
-# processes (http://crbug.com/376567).
+# processes (http://crbug.com/40079595).
 exec < /dev/null
 exec > >(exec cat)
 exec 2> >(exec cat >&2)

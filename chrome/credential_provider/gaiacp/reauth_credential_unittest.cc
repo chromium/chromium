@@ -187,7 +187,7 @@ class GcpReauthCredentialEnforceAuthReasonGetStringValueTest
 };
 
 // Disabled due to consistent failure due to mismatching messages.
-// See also https://crbug.com/1030602.
+// See also https://crbug.com/40661948.
 TEST_P(GcpReauthCredentialEnforceAuthReasonGetStringValueTest,
        DISABLED_FidDescription) {
   USES_CONVERSION;

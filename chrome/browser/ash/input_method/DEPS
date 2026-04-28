@@ -59,7 +59,7 @@ specific_include_rules = {
   ],
 
   # TODO: This should not be an allowed dep; see
-  # http://crbug.com/1148093 and
+  # http://crbug.com/40731089 and
   # http://b/173144152.
   "tts_handler\.h": [
     "!content/public/browser/tts_controller.h",

@@ -107,7 +107,7 @@
         <!-- Double-size profile avatar images used for generating .ico
              files for Windows profile shortcuts. Included here because
              they do not depend on the UI scale factor.
-             See: http://crbug.com/167277. -->
+             See: http://crbug.com/40297405. -->
         <include name="IDR_PROFILE_AVATAR_2X_0" file="default_200_percent/common/profile_avatar_generic.png" type="BINDATA" />
         <include name="IDR_PROFILE_AVATAR_2X_1" file="default_200_percent/common/profile_avatar_generic_aqua.png" type="BINDATA" />
         <include name="IDR_PROFILE_AVATAR_2X_2" file="default_200_percent/common/profile_avatar_generic_blue.png" type="BINDATA" />

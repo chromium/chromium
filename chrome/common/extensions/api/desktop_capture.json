@@ -100,7 +100,7 @@
               }
             }
           ],
-          "does_not_support_promises": "Synchronous return and callback crbug.com/1143032, Multi-parameter callback crbug.com/1313625"
+          "does_not_support_promises": "Synchronous return and callback crbug.com/40154924, Multi-parameter callback crbug.com/40221043"
         },
         "returns": {
           "type": "integer",

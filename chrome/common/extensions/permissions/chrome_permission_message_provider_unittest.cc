@@ -248,7 +248,7 @@ TEST_F(ChromePermissionMessageProviderUnittest, PowerfulPermissions) {
 
 // Checks that granted hosts that may cause API permission messages are
 // processed as part of IsPrivilegeIncrease. Regression test for
-// crbug.com/1014505.
+// crbug.com/40103313.
 TEST_F(ChromePermissionMessageProviderUnittest, PrivilegeIncreaseAllUrls) {
   APIPermissionSet granted_permissions;
   granted_permissions.insert(APIPermissionID::kWebRequest);

@@ -125,7 +125,7 @@ std::wstring GetLocalizedString(int base_message_id) {
     }
   }
 
-  // Debugging aid for https://crbug.com/1478933.
+  // Debugging aid for https://crbug.com/40929723.
   auto last_error = ::GetLastError();
   base::debug::Alias(&last_error);
   base::debug::Alias(&base_message_id);

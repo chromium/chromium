@@ -105,7 +105,7 @@ if (is_win) {
   }
 }
 
-# This does not currently work. See crbug.com/1311822.
+# This does not currently work. See crbug.com/40220356.
 # This target exists above chrome and it's main components in the dependency
 # tree as a central place to put assert_no_deps annotations. Since this depends
 # on Chrome and the main DLLs it uses, it will transitively assert that those
@@ -141,7 +141,7 @@ if (!is_android && !is_mac) {
     # Targets added here can only be built by explicitly using //chrome:chrome.
     # Windows-only deps are OK because chrome_initial uses initialexe/chrome as
     # the output name for that platform.
-    # See crbug.com/1146571.
+    # See crbug.com/40156324.
     if (is_win) {
       public_deps += [ ":reorder_imports" ]
       data_deps += [ ":reorder_imports" ]
@@ -335,7 +335,7 @@ if (!is_android && !is_mac) {
       }
 
       # Chrome OS debug builds for arm need to pass --long-plt to the linker.
-      # See https://bugs.chromium.org/p/chromium/issues/detail?id=583532
+      # See https://crbug.com/41237849
       if (is_chromeos && is_debug && target_cpu == "arm") {
         ldflags += [ "-Wl,--long-plt" ]
       }
@@ -557,7 +557,7 @@ if (is_win) {
     if (is_component_build) {
       # In a component build, the framework is directly linked to the
       # executable because dlopen() and loading all the dependent dylibs
-      # is time-consuming, see https://crbug.com/1197495.
+      # is time-consuming, see https://crbug.com/40176946.
       deps += [ ":chrome_framework+link" ]
       ldflags = [ "-Wl,-rpath,@executable_path/../Frameworks" ]
 
@@ -566,7 +566,7 @@ if (is_win) {
       # not packaged within the framework. This data_deps line makes all of
       # those dependent libraries runtime dependencies of the .app bundle.
       # This is a bit of a hack, since GN deliberately terminates its search
-      # for runtime_deps at create_bundle nodes (https://crbug.com/1010347).
+      # for runtime_deps at create_bundle nodes (https://crbug.com/40101435).
       data_deps = [ ":chrome_framework" ]
     }
   }
@@ -786,7 +786,7 @@ if (is_win) {
       if (is_component_build) {
         # In a component build, the framework is directly linked to the
         # executable because dlopen() and loading all the dependent dylibs
-        # is time-consuming, see https://crbug.com/1197495.
+        # is time-consuming, see https://crbug.com/40176946.
         deps += [ ":chrome_framework+link_nested" ]
 
         ldflags += [
@@ -1256,7 +1256,7 @@ if (is_win) {
   assert(_framework_binary_path != "",
          "Ignore configuration-dependent unused variable warning")
 
-  # TOOD(crbug/1163903#c8) - thakis@ look into why profile and coverage
+  # TOOD(crbug.com/40740432#c8) - thakis@ look into why profile and coverage
   # instrumentation adds these symbols in different orders
   if (!is_component_build && chrome_pgo_phase != 1 && !using_sanitizer) {
     action("verify_chrome_framework_order") {
@@ -1282,7 +1282,7 @@ if (is_win) {
       if (is_component_build) {
         # In a component build, the framework is directly linked to the
         # executable because dlopen() and loading all the dependent dylibs
-        # is time-consuming, see https://crbug.com/1197495.
+        # is time-consuming, see https://crbug.com/40176946.
         public_deps = [ ":chrome_framework+link" ]
       } else {
         public_deps = [ ":chrome_framework" ]

@@ -77,7 +77,7 @@ DefaultPlatformConfiguration::GetEnableRates(
 
   switch (*release_channel) {
     case version_info::Channel::BETA: {
-      // TODO(crbug.com/1497983): Ramp up enable rate on Non-Android platforms.
+      // TODO(crbug.com/40287243): Ramp up enable rate on Non-Android platforms.
       return RelativePopulations{90.0, 0.0, 10.0};
     }
     case version_info::Channel::STABLE: {

@@ -51,7 +51,7 @@ NSString* const kUserMasterPrefsPath =
 // Condensed from chromium's base/mac/mac_util.mm.
 bool IsMacOSVersionSupported() {
   // base::OperatingSystemVersionNumbers() at one time called Gestalt(), which
-  // was observed to be able to spawn threads (see https://crbug.com/53200).
+  // was observed to be able to spawn threads (see https://crbug.com/41201866).
   // Nowadays that function calls -[NSProcessInfo operatingSystemVersion], whose
   // current implementation does things like hit the file system, which is
   // possibly a blocking operation. Either way, it's overkill for what needs to

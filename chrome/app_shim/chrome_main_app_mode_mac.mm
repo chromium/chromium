@@ -27,7 +27,7 @@ extern "C" {
 // to force shim upgrades if they are launched before an updated version of
 // Chromium can upgrade them; the old shim will not be able to dyload the
 // new ChromeAppModeStart, so it will fall back to the upgrade path. See
-// https://crbug.com/561205.
+// https://crbug.com/40446322.
 __attribute__((visibility("default"))) int APP_SHIM_ENTRY_POINT_NAME(
     const app_mode::ChromeAppModeInfo* info);
 
@@ -37,7 +37,7 @@ int APP_SHIM_ENTRY_POINT_NAME(const app_mode::ChromeAppModeInfo* info) {
   // The static constructor in //base will have registered PartitionAlloc as
   // the default zone. Allow the //base instance in the main library to
   // register it as well. Otherwise we end up passing memory to free() which
-  // was allocated by an unknown zone. See crbug.com/1274236 for details.
+  // was allocated by an unknown zone. See crbug.com/40206692 for details.
   partition_alloc::AllowDoublePartitionAllocZoneRegistration();
 
   // Set bundle paths. This loads the bundles.

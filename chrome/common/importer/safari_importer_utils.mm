@@ -20,8 +20,8 @@ bool SafariImporterCanImport(const base::FilePath& library_dir,
   // existence of the "History.plist" file. Long before macOS 10.10, Safari
   // switched to a database for the history file, and no one noticed that the
   // history importing broke. Given the file access restrictions in macOS 10.14
-  // (https://crbug.com/850225) it's probably not worth fixing it, and so it was
-  // removed.
+  // (https://crbug.com/40579636) it's probably not worth fixing it, and so it
+  // was removed.
 
   base::FilePath safari_dir = library_dir.Append("Safari");
   base::FilePath bookmarks_path = safari_dir.Append("Bookmarks.plist");

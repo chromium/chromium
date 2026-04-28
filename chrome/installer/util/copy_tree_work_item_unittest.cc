@@ -230,7 +230,7 @@ TEST_F(CopyTreeWorkItemTest, CopyFileInUse) {
 }
 
 // Copy a tree from source to destination.
-// Flaky, http://crbug.com/59784.
+// Flaky, http://crbug.com/41245908.
 TEST_F(CopyTreeWorkItemTest, DISABLED_CopyTree) {
   // Create source tree
   base::FilePath dir_name_from(test_dir_.GetPath());

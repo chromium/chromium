@@ -73,7 +73,7 @@ readonly ME
 
 readonly KS_CHANNEL_KEY="KSChannelID"
 
-# Workaround for https://crbug.com/83180#c3: in bash 4.0, "declare VAR" no
+# Workaround for https://crbug.com/40571281#c3: in bash 4.0, "declare VAR" no
 # longer initializes VAR if not already set. (Apple has never shipped a bash
 # newer than 3.2, but a small number of people seem to have replaced their
 # system /bin/sh with a newer bash, probably all before SIP became a thing.)

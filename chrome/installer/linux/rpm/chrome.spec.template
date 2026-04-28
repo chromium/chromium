@@ -84,7 +84,7 @@ rm -rf "$RPM_BUILD_ROOT"
 @@INSTALLDIR
 
 # Be explicit about the files we scatter throughout the system we don't
-# accidentally "own" stuff that's not ours (crbug.com/123990).
+# accidentally "own" stuff that's not ours (crbug.com/40194046).
 /etc/cron.daily/@@PACKAGE
 %ghost %attr(755,root,root) /usr/bin/@@package_orig
 /usr/bin/@@usr_bin_symlink_name

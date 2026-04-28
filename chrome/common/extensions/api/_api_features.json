@@ -182,10 +182,10 @@
     "allowlist": [
       // The extensions below here only use openPopup on a user action,
       // so are safe, and can be removed when the allowlist on that
-      // capability is lifted. See crbug.com/436489 for context.
-      "A4577D8C2AF4CF26F40CBCA83FFA4251D6F6C8F8",  // http://crbug.com/497301
-      "A8208CCC87F8261AFAEB6B85D5E8D47372DDEA6B",  // http://crbug.com/497301
-      "EFCF5358672FEE04789FD2EC3638A67ADEDB6C8C"   // http://crbug.com/514696
+      // capability is lifted. See crbug.com/40395524 for context.
+      "A4577D8C2AF4CF26F40CBCA83FFA4251D6F6C8F8",  // http://crbug.com/40421443
+      "A8208CCC87F8261AFAEB6B85D5E8D47372DDEA6B",  // http://crbug.com/40421443
+      "EFCF5358672FEE04789FD2EC3638A67ADEDB6C8C"   // http://crbug.com/41191144
     ],
     "contexts": ["privileged_extension"]
   }],
@@ -548,7 +548,7 @@
     "matches": ["chrome://extensions/*"]
   },
   // This is not a real API, only here for documentation purposes.
-  // See http://crbug.com/275944 for background.
+  // See http://crbug.com/41038651 for background.
   "extensionsManifestTypes": {
     "internal": true,
     "channel": "stable",
@@ -746,7 +746,7 @@
     "contexts": ["privileged_extension"]
   },
   // This is not a real API, only here for documentation purposes.
-  // See http://crbug.com/275944 for background.
+  // See http://crbug.com/41038651 for background.
   "manifestTypes": {
     "internal": true,
     "channel": "stable",
@@ -1077,10 +1077,10 @@
     "allowlist": [
       // Extension used for API test.
       "ADFA45434ABA2F1A4647E673F53FF37F8F6047A3",
-      "4F25792AF1AA7483936DE29C07806F203C7170A0",  // http://crbug.com/775961
-      "BD8781D757D830FC2E85470A1B6E8A718B7EE0D9",  // http://crbug.com/775961
-      "4AC2B6C63C6480D150DFDA13E4A5956EB1D0DDBB",  // http://crbug.com/775961
-      "81986D4F846CEDDDB962643FA501D1780DD441BB"   // http://crbug.com/775961
+      "4F25792AF1AA7483936DE29C07806F203C7170A0",  // http://crbug.com/40545416
+      "BD8781D757D830FC2E85470A1B6E8A718B7EE0D9",  // http://crbug.com/40545416
+      "4AC2B6C63C6480D150DFDA13E4A5956EB1D0DDBB",  // http://crbug.com/40545416
+      "81986D4F846CEDDDB962643FA501D1780DD441BB"   // http://crbug.com/40545416
     ]
   },
   "webstorePrivate": [{

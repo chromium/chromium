@@ -1,5 +1,5 @@
 'FILES.cfg' for each platform is now obsolete with respect to archiving
-(crbug/1260176). New config files for archiving build artifacts are located in
+(crbug.com/40201757). New config files for archiving build artifacts are located in
 src/infra/archive_config for dev builders and in
 src-internal/testing/buildbot/archive for official builders.
 For more information on how these files are used, refer to the proto file within

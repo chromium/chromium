@@ -21,7 +21,7 @@ class Version;
 
 // The data structures defined in this file are similar to those defined
 // defined in Omaha. Keep them as they are for now for documentation purposes
-// until https://crbug.com/1014630 has been fixed.
+// until https://crbug.com/40103377 has been fixed.
 namespace updater {
 
 enum class CompletionCodes {

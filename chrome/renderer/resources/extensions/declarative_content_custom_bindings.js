@@ -23,7 +23,7 @@ apiBridge.registerCustomHook(function(api) {
     // (e.g.,
     //   chrome.declarativeContent.onPageChange.addRules(
     //       [{conditions: ..., actions: [ new SetIcon(...) ]}]);
-    // ). Some of this is tracked in http://crbug.com/415315.
+    // ). Some of this is tracked in http://crbug.com/40385054.
     setIcon(parameters, $Function.bind(function(data) {
       // Fake calling the original function as a constructor.
       $Object.setPrototypeOf(this, nativeSetIcon.prototype);

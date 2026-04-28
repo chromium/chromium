@@ -73,7 +73,7 @@ void NavigateToUrlWithIExplore(const std::wstring& url) {
 
 // Returns true if the prefs dictionary located at |local_data_path| contains
 // an enabled metrics pref.
-// Note: Due to crbug.com/1052816, it is possible a subset of users may return
+// Note: Due to crbug.com/40674549, it is possible a subset of users may return
 // false here even though they send UMA, as UMA can also check the registry.
 bool IsMetricsEnabled(const base::FilePath& file_path) {
   JSONFileValueDeserializer json_deserializer(file_path);

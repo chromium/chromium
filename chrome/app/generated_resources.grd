@@ -5057,7 +5057,7 @@ are declared in tools/grit/grit_args.gni.
       <message name="IDS_TASK_MANAGER_PRELOADED_RENDERER_FOR_UI" desc="Task Manager row for the render process that is preloaded with Top Chrome WebUI resources.">
         Preloaded UI Renderer
       </message>
-      <!-- TODO(liuwilliam): crbug/1325318 renaming the rest of existing Prerender to NoStatePrefetch -->
+      <!-- TODO(liuwilliam): crbug.com/40225436 renaming the rest of existing Prerender to NoStatePrefetch -->
       <message name="IDS_TASK_MANAGER_NO_STATE_PREFETCH_PREFIX" desc="The prefix for a Task Manager No State Prefetch row">
         Prerender: <ph name="PRERENDER_CONTENTS_NAME">$1<ex>http://www.google.com</ex></ph>
       </message>

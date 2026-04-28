@@ -866,7 +866,7 @@ TEST_P(FormAutocompleteSubmissionTest, AutoCompleteOffInputSubmit) {
 
 // Tests that submitting a form that has been dynamically set as autocomplete
 // off generates WillSubmitForm and FormSubmitted messages.
-// Note: We previously did the opposite, for bug http://crbug.com/36520
+// Note: We previously did the opposite, for bug http://crbug.com/40361743
 TEST_P(FormAutocompleteSubmissionTest, DynamicAutoCompleteOffFormSubmit) {
   LoadHTML(
       "<html><form id='myForm' action='about:blank'>"

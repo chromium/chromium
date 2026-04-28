@@ -3491,7 +3491,7 @@ TEST_F(PasswordAutofillAgentTest, PasswordGenerationSupersedesAutofill) {
 // Tests the following scenario: 1) user triggers manual generation, 2) user
 // erases the generated password from the field, 3) password suggestions should
 // be displayed when available after the field is focused again.
-// Regression test for crbug/1495325.
+// Regression test for crbug.com/40286484.
 TEST_F(PasswordAutofillAgentTest, CanShowSuggestionsAfterManualGeneration) {
   // Simulate receiving credentials for filling from the browser.
   SimulateOnFillPasswordForm(fill_data_);
@@ -4299,7 +4299,7 @@ TEST_F(PasswordAutofillAgentTest, ShowAutofillSignaturesFlag) {
       EnableShowAutofillSignatures();
 
     // An empty DOMSubtreeModified event listener is added for
-    // https://crbug.com/1219852.
+    // https://crbug.com/40186225.
     std::string dom_with_dom_subtree_modified_listener =
         base::StrCat({"<SCRIPT>"
                       "window.addEventListener('DOMSubtreeModified', () => {});"

@@ -37,7 +37,7 @@ namespace platformKeysInternal {
     //     If instead the algorithm name "none" is provided, no hashing will be
     //     applied, the data is PKCS#1 v1.5 padded but not hashed.
     //     TODO(pneubeck): use an enum once supported:
-    //         http://www.crbug.com/385539 .
+    //         http://www.crbug.com/41115161 .
     // |data| The data to sign.
     // |callback| Called back with the signature of |data|.
     // TODO: Instead of ArrayBuffer should be (ArrayBuffer or ArrayBufferView),
@@ -55,7 +55,7 @@ namespace platformKeysInternal {
     // <code>KeyAlgorithm</code> dictionary describing the key's algorithm. The
     // <code>name</code> property will equal <code>algorithmName</code>.
     // Otherwise, calls back with an error.
-    [doesNotSupportPromises="Multi-parameter callback crbug.com/1313625"]
+    [doesNotSupportPromises="Multi-parameter callback crbug.com/40221043"]
     static void getPublicKey(ArrayBuffer certificate,
                              DOMString algorithmName,
                              GetPublicKeyCallback callback);
@@ -67,7 +67,7 @@ namespace platformKeysInternal {
     // <code>KeyAlgorithm</code> dictionary describing the key's algorithm. The
     // <code>name</code> property will equal <code>algorithmName</code>.
     // Otherwise, calls back with an error.
-    [doesNotSupportPromises="Multi-parameter callback crbug.com/1313625"]
+    [doesNotSupportPromises="Multi-parameter callback crbug.com/40221043"]
     static void getPublicKeyBySpki(ArrayBuffer publicKeySpkiDer,
                                    DOMString algorithmName,
                                    GetPublicKeyCallback callback);

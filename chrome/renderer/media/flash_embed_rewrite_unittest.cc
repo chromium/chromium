@@ -102,7 +102,7 @@ TEST(FlashEmbedRewriteTest, YouTubeRewriteEmbed) {
       // has multiple parameters
       {"http://www.youtube.com/v/deadbeef&start=4&enablejsapi=1",
        "http://www.youtube.com/embed/deadbeef?start=4&enablejsapi=1"},
-      // URL with a strange domain. crbug.com/1492427
+      // URL with a strange domain. crbug.com/40936143
       {"http://wrel=0&amp;coww.youtube.com/v/vxt_QAYSKLA", ""}};
 
   for (const auto& data : test_data) {

@@ -371,8 +371,8 @@ void ReadAnythingAppModel::ComputeDisplayNodeIdsForDistilledTree() {
     // active ax tree, GetAXNode will return nullptr. Fix GetAXNode to harvest
     // nodes from child trees, and then replace the `if (!content_node)` check
     // with `DCHECK(content_node)`.
-    // TODO(abigailbklein) This prevents the crash in crbug.com/1402788, but may
-    // not be the correct approach. Do we need a version of
+    // TODO(abigailbklein) This prevents the crash in crbug.com/40884999, but
+    // may not be the correct approach. Do we need a version of
     // GetDeepestLastUnignoredDescendant() that works on ignored nodes?
     if (!content_node) {
       RecordHeuristicMetric(ReadAnythingHeuristics::kNodeNotFound);

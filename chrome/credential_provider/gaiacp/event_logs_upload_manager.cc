@@ -65,7 +65,7 @@ constexpr int kMaxAllowedNumberOfUploadRequests = 5;
 constexpr unsigned int kMaxNumHttpRetries = 3;
 
 // Maximum size of the log entries payload in bytes per HTTP request.
-// TODO (crbug.com/1043195): Change this to use an experiment flag once an
+// TODO (crbug.com/40115156): Change this to use an experiment flag once an
 // experiment framework for GCPW is available.
 constexpr size_t kMaxPayloadSizeOfLogEntries = 512 * 1024;  // 512 KB.
 

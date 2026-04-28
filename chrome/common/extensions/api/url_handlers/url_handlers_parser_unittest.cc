@@ -12,7 +12,7 @@ using UrlHandlersParserUnitTest = ChromeManifestTest;
 
 // Tests an error is properly thrown for a "url_handlers" entry with no
 // "matches" specified.
-// Regression test for crbug.com/1470739.
+// Regression test for crbug.com/40925884.
 TEST_F(UrlHandlersParserUnitTest, EmptyMatches) {
   static constexpr char kMissingMatchesManifest[] =
       R"({

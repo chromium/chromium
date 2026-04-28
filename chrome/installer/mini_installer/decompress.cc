@@ -284,7 +284,7 @@ bool Expand(const wchar_t* source, const wchar_t* destination) {
             &context);
   g_FDIDestroy(fdi);
   if (context.succeeded) {
-    // https://crbug.com/1443320: We see crashes on Windows 10 when running
+    // https://crbug.com/40911092: We see crashes on Windows 10 when running
     // setup.exe in which it appears that an entire hunk of the file is zeros or
     // random memory. There is nothing out of the ordinary in the way that this
     // file is written (0x8000 byte chunks via normal WriteFile calls). As an

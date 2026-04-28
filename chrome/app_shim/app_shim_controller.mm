@@ -375,7 +375,7 @@ bool AppShimController::FindOrLaunchChrome() {
       // Sometimes runningApplicationWithProcessIdentifier fails to return the
       // application, even though it exists. If that happens, try to find the
       // running application in the full list of running applications manually.
-      // See https://crbug.com/1426897.
+      // See https://crbug.com/40261534.
       NSArray<NSRunningApplication*>* apps =
           NSWorkspace.sharedWorkspace.runningApplications;
       for (unsigned i = 0; i < apps.count; ++i) {
@@ -863,7 +863,8 @@ void AppShimController::BindNotificationService(
     notification_service_un()->RequestPermission(base::DoNothing());
   } else {
     // NSUserNotificationCenter is in the process of being replaced, and
-    // warnings about its deprecation are not helpful. https://crbug.com/1127306
+    // warnings about its deprecation are not helpful.
+    // https://crbug.com/40148499
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
     notification_service_ =

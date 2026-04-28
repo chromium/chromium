@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO: crbug.com/1082836
+// TODO: crbug.com/40692142
 // This file is currently manually tweaked for Chromium use. Find a
 // way to automatically sync from source and make the following necessary
 // changes:

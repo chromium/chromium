@@ -107,7 +107,7 @@ Exception OutputStreamImpl::Flush() {
 }
 
 Exception OutputStreamImpl::Close() {
-  // NOTE(http://crbug.com/1247876): Close() might be called from multiple
+  // NOTE(http://crbug.com/40197037): Close() might be called from multiple
   // threads at the same time; sequence calls and check if stream is already
   // closed inside task. Also, must cancel |send_stream_watcher_| on the same
   // sequence it was initialized on.

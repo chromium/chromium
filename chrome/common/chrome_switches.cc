@@ -848,7 +848,7 @@ const char kEnableProfileShortcutManager[] = "enable-profile-shortcut-manager";
 // Indicates that this launch of the browser originated from the installer
 // (i.e., following a successful new install or over-install). This triggers
 // browser behaviors for this specific launch, such as a welcome announcement
-// for accessibility software (see https://crbug.com/1072735).
+// for accessibility software (see https://crbug.com/40685905).
 extern const char kFromInstaller[] = "from-installer";
 
 // Indicates that this launch of the browser originated from the Legacy Browser
@@ -868,7 +868,7 @@ const char kNoNetworkProfileWarning[] = "no-network-profile-warning";
 // Whether this process should PrefetchVirtualMemory on the contents of
 // Chrome.dll. This warms up the pages in memory to speed up startup but might
 // not be required in later renderers and/or GPU. For experiment info see
-// crbug.com/1350257.
+// crbug.com/40234091.
 const char kNoPreReadMainDll[] = "no-pre-read-main-dll";
 
 // Used in combination with kNotificationLaunchId to specify the inline reply

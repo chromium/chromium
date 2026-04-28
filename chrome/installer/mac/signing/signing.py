@@ -63,7 +63,7 @@ def _binary_architectures_offsets(binary_path):
     output = commands.run_command_output(command)
 
     # Log the detailed macho info. This includes the slice sizes, which will
-    # be helpful when recalculating padding for https://crbug.com/1300598.
+    # be helpful when recalculating padding for https://crbug.com/40216333.
     logger.info('%s', output.decode('utf-8'))
 
     # Find the architecture for a non-universal binary.

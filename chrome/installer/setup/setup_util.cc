@@ -221,7 +221,7 @@ bool AdjustThreadPriority() {
       priority_class == IDLE_PRIORITY_CLASS) {
     // Don't use SetPriorityClass with PROCESS_MODE_BACKGROUND_BEGIN because it
     // will cap the process working set to 32 MiB. See
-    // https://crbug.com/1475179.
+    // https://crbug.com/40927803.
     const BOOL result =
         ::SetThreadPriority(::GetCurrentThread(), THREAD_MODE_BACKGROUND_BEGIN);
     PLOG_IF(WARNING, !result) << "Failed to enter background mode.";

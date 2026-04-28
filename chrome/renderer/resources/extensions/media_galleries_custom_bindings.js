@@ -89,7 +89,7 @@ apiBridge.registerCustomHook(function(bindingsAPI, extensionId) {
         const blobUuid = blobNatives.GetBlobUuid(mediaFile);
         // Store the blob in a global object to keep its refcount nonzero --
         // this prevents the object from being garbage collected before any
-        // metadata parsing gets to occur (see crbug.com/415792).
+        // metadata parsing gets to occur (see crbug.com/40385307).
         blobsAwaitingMetadata[blobUuid] = mediaFile;
 
         const optArgs = {

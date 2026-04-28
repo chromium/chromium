@@ -147,7 +147,7 @@ void SafariImporter::StartImport(
 
   // In keeping with import on other platforms (and for other browsers), we
   // don't import the home page (since it may lead to a useless homepage); see
-  // crbug.com/25603.
+  // crbug.com/41022807.
   if ((items & user_data_importer::FAVORITES) && !cancelled()) {
     bridge_->NotifyItemStarted(user_data_importer::FAVORITES);
     ImportBookmarks();

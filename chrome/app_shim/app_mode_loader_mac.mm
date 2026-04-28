@@ -265,7 +265,7 @@ int main(int argc, char** argv) {
   // The static constructor in //base will have registered PartitionAlloc as the
   // default zone. Allow the //base instance in the main library to register it
   // as well. Otherwise we end up passing memory to free() which was allocated
-  // by an unknown zone. See crbug.com/1274236 for details.
+  // by an unknown zone. See crbug.com/40206692 for details.
   partition_alloc::AllowDoublePartitionAllocZoneRegistration();
 
   base::CommandLine::Init(argc, argv);

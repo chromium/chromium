@@ -88,7 +88,7 @@ TEST_F(DeleteRegKeyWorkItemTest, TestNonEmptyKey) {
 // Test that deleting a key with subkeys we can't delete fails, and that
 // everything is there after rollback.
 // Showing as flaky on windows.
-// http://crbug.com/74654
+// http://crbug.com/41334287
 TEST_F(DeleteRegKeyWorkItemTest, DISABLED_TestUndeletableKey) {
   RegKey key;
   std::wstring key_name(test_data_.base_path() + L"\\UndeletableKey");

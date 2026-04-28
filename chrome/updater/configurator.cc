@@ -270,7 +270,7 @@ std::optional<bool> Configurator::IsMachineExternallyManaged() const {
 
 scoped_refptr<PolicyService> Configurator::GetPolicyService() const {
   // The policy service is accessed by RPC on a different sequence and this
-  // function can't enforce the sequence check for now: crbug.com/1517079.
+  // function can't enforce the sequence check for now: crbug.com/41490062.
   return policy_service_;
 }
 

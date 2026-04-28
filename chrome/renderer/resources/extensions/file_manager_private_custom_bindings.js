@@ -193,7 +193,7 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
                   function(blob, mimeType) {
                 return mimeType;
               }.bind(this,
-                     blob);  // Bind a blob reference: crbug.com/415792#c12
+                     blob);  // Bind a blob reference: crbug.com/40385307#c12
 
               fileManagerPrivateInternal.getContentMimeType(
                   blobUUID,
@@ -223,7 +223,7 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
                   function(blob, metadata) {
                 return metadata;
               }.bind(this,
-                     blob);  // Bind a blob reference: crbug.com/415792#c12
+                     blob);  // Bind a blob reference: crbug.com/40385307#c12
 
               fileManagerPrivateInternal.getContentMetadata(
                   blobUUID, mimeType, !!includeImages,

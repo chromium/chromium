@@ -59,7 +59,7 @@ namespace scripting {
 
     // We used to call the injected function `function`, but this is
     // incompatible with JavaScript's object declaration shorthand (see
-    // https://crbug.com/1166438). We leave this silently in for backwards
+    // https://crbug.com/40742098). We leave this silently in for backwards
     // compatibility.
     // TODO(devlin): Remove this in M95.
     [nodoc, serializableFunction]InjectedFunction? function;

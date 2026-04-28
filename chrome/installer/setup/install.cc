@@ -375,7 +375,7 @@ void RegisterChromeOnMachine(const InstallerState& installer_state,
 // Run a child process that will create/update a shortcut for an
 // install. This is done in a child process to avoid crashing the main
 // install process if we crash in Windows shell functions. For more info,
-// see crbug.com/1276348.
+// see crbug.com/40058114.
 void RunShortcutCreationInChildProc(
     const InstallerState& installer_state,
     const base::FilePath& setup_path,

@@ -192,7 +192,7 @@ void AppShimMainDelegate::InitializeLocale() {
   for (NSString* __strong language in preferred_languages) {
     // We must convert the "-" separator to "_" to be compatible with
     // NSBundle::localizations() e.g. "en-GB" becomes "en_GB".
-    // See https://crbug.com/913345.
+    // See https://crbug.com/40605754.
     language = [language stringByReplacingOccurrencesOfString:@"-"
                                                    withString:@"_"];
     if ([supported_languages containsObject:language]) {

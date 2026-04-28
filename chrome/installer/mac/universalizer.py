@@ -234,7 +234,7 @@ def _universalize(input_paths, output_path, root):
                     # desired alignment of each slice, with the sometimes
                     # comical result being a slice over-aligned for its
                     # architecture. Over-alignment is normally benign, but
-                    # https://crbug.com/1281111 documents a bug caused by “slice
+                    # https://crbug.com/40209175 documents a bug caused by “slice
                     # mobility” in the the main executable across updates, when
                     # the x86_64 slice moved from its traditional offset of 4kB
                     # to 16kB as a result of over-aligning. Until a code change
@@ -247,7 +247,7 @@ def _universalize(input_paths, output_path, root):
                     # although this is the correct value for that architecture.
                     #
                     # TODO(mark): Implement “Change 3” from
-                    # https://crbug.com/1281111#c33 by reducing the x86_64
+                    # https://crbug.com/40209175#c33 by reducing the x86_64
                     # alignment requirement to 4kB and truncating this comment,
                     # or if appropriate, implement “Change 3A” instead, updating
                     # this comment with a revised rationale.

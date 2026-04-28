@@ -967,7 +967,7 @@ interface AutotestPrivate {
   [requiredCallback]
   static Promise<undefined> clearAllowedPref(DOMString prefName);
 
-  // DEPRECATED: use SetAllowedPref instead, see crbug/1262034
+  // DEPRECATED: use SetAllowedPref instead, see crbug.com/40799232
   // Set value for the specified user pref in the pref tree.
   [requiredCallback]
   static Promise<undefined> setWhitelistedPref(DOMString prefName, any value);

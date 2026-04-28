@@ -164,7 +164,7 @@ static_library("utility") {
       "//mojo/public/cpp/bindings",
     ]
 
-    # Prevent wininet from loading in the renderer. http://crbug.com/460679
+    # Prevent wininet from loading in the renderer. http://crbug.com/40406692
     if (is_win) {
       ldflags = [ "/DELAYLOAD:wininet.dll" ]
 

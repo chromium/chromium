@@ -451,7 +451,7 @@ std::optional<int> HandlePackExtensionSwitches(
   // This happens before the default flow for FeatureList initialization, but
   // packing an extension can depend on different base::Features. Thus, we
   // should have always created a stub FeatureList by this point.
-  // See https://crbug.com/1506254.
+  // See https://crbug.com/40946904.
   CHECK(WillExitBeforeBrowserFeatureListInitialization());
   CHECK(base::FeatureList::GetInstance());
 
@@ -685,7 +685,7 @@ void OnResourceExhausted() {
   // RegisterClassEx will fail if the session's pool of ATOMs is exhausted. This
   // appears to happen most often when the browser is being driven by automation
   // tools, though the underlying reason for this remains a mystery
-  // (https://crbug.com/1470483). There is nothing that Chrome can do to
+  // (https://crbug.com/40925772). There is nothing that Chrome can do to
   // meaningfully run until the user restarts their session by signing out of
   // Windows or restarting their computer.
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -791,7 +791,7 @@ std::optional<int> ChromeMainDelegate::PostEarlyInitialization(
 
 #if BUILDFLAG(IS_WIN)
   // Initialize the cleaner of left-behind tmp files now that the main thread
-  // has its SequencedTaskRunner; see https://crbug.com/1075917.
+  // has its SequencedTaskRunner; see https://crbug.com/40687964.
   base::ImportantFileWriterCleaner::GetInstance().Initialize();
 
   // Make sure the 'uxtheme.dll' is pinned.
@@ -1085,7 +1085,7 @@ std::optional<int> ChromeMainDelegate::BasicStartupComplete() {
   }
 
   // The DevTools remote debugging pipe file descriptors need to be checked
-  // before any other files are opened, see https://crbug.com/1423048.
+  // before any other files are opened, see https://crbug.com/40259890.
   const bool is_browser = !command_line.HasSwitch(switches::kProcessType);
 #if BUILDFLAG(IS_WIN)
   const bool pipes_are_specified_explicitly =
@@ -1368,7 +1368,7 @@ void ChromeMainDelegate::PreSandboxStartup() {
   // TODO(zturner): Throbber icons and cursors are still stored in chrome.dll,
   // this can be killed once those are merged into resources.pak. See
   // BrowserFrameViewWin::InitThrobberIcons(), https://crbug.com/41104393 and
-  // https://crbug.com/1178117.
+  // https://crbug.com/40748911.
   ui::SetResourcesDataDLL(CURRENT_MODULE());
 #endif
 

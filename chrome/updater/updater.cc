@@ -131,7 +131,7 @@ int HandleUpdaterCommands(UpdaterScope updater_scope,
     // in the pool can still run after shutdown to handle CONTINUE_ON_SHUTDOWN
     // tasks, for example. In Chrome, the thread pool is leaked for this reason
     // and there is no way to join its threads in production code. The updater
-    // has no such requirements (crbug.com/1484776).
+    // has no such requirements (crbug.com/40282367).
     base::ThreadPoolInstance* thread_pool = base::ThreadPoolInstance::Get();
     thread_pool->Shutdown();
     thread_pool->JoinForTesting();  // IN-TEST
