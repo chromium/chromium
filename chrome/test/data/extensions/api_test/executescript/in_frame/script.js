@@ -19,7 +19,8 @@ function getStyle(elem, name) {
 
 // NOTE: Need to use `var` here since multiple scripts can be injected and
 // otherwise it may throw a "variable already declared" error.
-var bElement = document.getElementById('test2');
+var bElement = document.getElementById('test2');  // eslint-disable-line no-var
+// eslint-disable-next-line no-var
 var display = getStyle(bElement, 'display').toLowerCase();
-var extensionPort = chrome.runtime.connect();
+var extensionPort = chrome.runtime.connect();  // eslint-disable-line no-var
 extensionPort.postMessage({message: display});
