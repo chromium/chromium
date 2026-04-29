@@ -2154,7 +2154,7 @@ class ProtocJavaSanitizer(BaseActionSanitizer):
         # build protoc from source from //third_party/protobuf:protoc. We don't
         # need to add that as an input because it's already a tool dependency in
         # the generated module.
-        self.target.inputs.remove(
+        self.target.inputs.discard(
             "//third_party/android_build_tools/protoc/cipd/protoc")
 
     def get_tools(self):
@@ -2373,7 +2373,7 @@ def create_java_module(bp_module_name, target, blueprint):
 
     def add_java_library_properties(module):
         module.min_sdk_version = cronet_utils.MIN_SDK_VERSION_FOR_AOSP
-        module.apex_available = [tethering_apex]
+        module.apex_available.add(tethering_apex)
         module.defaults.add(java_framework_defaults_module)
         module.build_file_path = target.build_file_path
 
@@ -2551,7 +2551,7 @@ def _create_extract_rust_files_target(bindgen_module, blueprint):
     module.host_supported = bindgen_module.host_supported
     module.host_cross_supported = bindgen_module.host_cross_supported
     module.target['host'].compile_multilib = '64'
-    module.apex_available = [tethering_apex]
+    module.apex_available.add(tethering_apex)
     blueprint.add_module(module)
     return module
 
@@ -2594,7 +2594,7 @@ def create_bindgen_module(blueprint: Blueprint, target,
         f"{MODULE_PREFIX}repository_root_include_dirs_anchor"
     }
     module.min_sdk_version = cronet_utils.MIN_SDK_VERSION_FOR_AOSP
-    module.apex_available = [tethering_apex]
+    module.apex_available.add(tethering_apex)
     blueprint.add_module(module)
     return module
 
@@ -2614,7 +2614,7 @@ def create_generated_headers_export_module(
         cc_genrule_module_name
     ]
     module.build_file_path = cc_genrule_module.build_file_path
-    module.defaults = [cc_defaults_module]
+    module.defaults.add(cc_defaults_module)
     module.host_supported = cc_genrule_module.host_supported
     module.host_cross_supported = cc_genrule_module.host_cross_supported
     module.device_supported = cc_genrule_module.device_supported
@@ -3184,7 +3184,7 @@ def create_modules_from_target(blueprint, gn, gn_target_name, parent_gn_type,
                 module.cargo_env_compat = True
                 module.cargo_pkg_version = target.rust_package_version
             module.min_sdk_version = cronet_utils.MIN_SDK_VERSION_FOR_AOSP
-            module.apex_available = [tethering_apex]
+            module.apex_available.add(tethering_apex)
             for arch_name, arch in target.get_archs().items():
                 _set_rust_flags(module.target[arch_name], arch.rust_flags,
                                 arch_name)
@@ -3213,7 +3213,7 @@ def create_modules_from_target(blueprint, gn, gn_target_name, parent_gn_type,
                 and not module.type.startswith("rust")):
             # Don't try to inject library/source dependencies into genrules or
             # filegroups because they are not compiled in the traditional sense.
-            module.defaults = [cc_defaults_module]
+            module.defaults.add(cc_defaults_module)
 
         if module.type == 'cc_library_static':
             module.export_generated_headers = module.generated_headers
@@ -3712,8 +3712,8 @@ def make_cc_defaults_from_boringssl(boringssl_module: Module) -> Module:
 
     cc_default_flags_module.build_file_path = ""
     libcrypto_cc_defaults_flags_module.build_file_path = ""
-    cc_default_flags_module.defaults = [cc_defaults_module]
-    libcrypto_cc_defaults_flags_module.defaults = [cc_defaults_module]
+    cc_default_flags_module.defaults.add(cc_defaults_module)
+    libcrypto_cc_defaults_flags_module.defaults.add(cc_defaults_module)
     return (cc_default_flags_module, libcrypto_cc_defaults_flags_module)
 
 
