@@ -115,7 +115,7 @@ void VrpFlagsImpl::EnsureAllocated() {
     auto allocation =
         base::HeapArray<uint64_t>::WithSize(size / sizeof(uint64_t));
     // Pick a random offset that is not at the start.
-    size_t offset = base::RandInt(1, (size / sizeof(uint64_t)) - 1);
+    size_t offset = base::RandIntInclusive(1, (size / sizeof(uint64_t)) - 1);
     // SAFETY - Keep the pointer for later, the allocation outlives uses
     // of the pointer, and this is only reachable in --vrp-flags mode.
     UNSAFE_BUFFERS(uint64_t* address = &allocation.data()[offset]);
