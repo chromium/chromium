@@ -259,8 +259,6 @@ TEST_F(HashPrefixMapTest, GetMatchingHashPrefix) {
   EXPECT_EQ(map.GetMatchingHashPrefix(s + "foobar"), s);
   EXPECT_EQ(map.GetMatchingHashPrefix("blah"), "");
 
-  EXPECT_EQ(map.MigrateFileFormat(GetBasePath(), &file_format),
-            HashPrefixMap::MigrateResult::kNotNeeded);
 }
 
 // Tests that the data in a map is still valid after writing it.

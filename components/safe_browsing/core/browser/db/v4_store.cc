@@ -955,16 +955,6 @@ ApplyUpdateResult V4Store::MergeUpdate(
   return APPLY_UPDATE_SUCCESS;
 }
 
-HashPrefixMap::MigrateResult V4Store::MigrateFileFormatIfNeeded(
-    V4StoreFileFormat* file_format) {
-  HashPrefixMap::MigrateResult result =
-      hash_prefix_map_->MigrateFileFormat(store_path_, file_format);
-  if (result != HashPrefixMap::MigrateResult::kSuccess)
-    return result;
-  if (WriteToDisk(file_format) == WRITE_SUCCESS)
-    return HashPrefixMap::MigrateResult::kSuccess;
-  return HashPrefixMap::MigrateResult::kFailure;
-}
 
 StoreReadResult V4Store::ReadFromDisk() {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
@@ -1001,9 +991,8 @@ StoreReadResult V4Store::ReadFromDisk() {
     return HASH_PREFIX_INFO_MISSING_FAILURE;
   }
 
-  migrate_result_ = MigrateFileFormatIfNeeded(&file_format);
-  if (migrate_result_ == HashPrefixMap::MigrateResult::kFailure) {
-    return MIGRATION_FAILURE;
+  if (!file_format.list_update_response().additions().empty()) {
+    return PRE_MMAP_MIGRATION_FILE_FORMAT_FAILURE;
   }
 
   ApplyUpdateResult apply_update_result =
@@ -1022,12 +1011,10 @@ StoreReadResult V4Store::ReadFromDisk() {
     return HASH_PREFIX_MAP_GENERATION_FAILURE;
   }
 
-  // If a migration happened, we already updated file size.
-  if (migrate_result_ != HashPrefixMap::MigrateResult::kSuccess) {
-    // Update |file_size_| now because we parsed the file correctly.
-    file_size_ = file_size;
-    for (const auto& hash_file : file_format.hash_files())
-      file_size_ += hash_file.file_size();
+  // Update |file_size_| now because we parsed the file correctly.
+  file_size_ = file_size;
+  for (const auto& hash_file : file_format.hash_files()) {
+    file_size_ += hash_file.file_size();
   }
 
   return READ_SUCCESS;

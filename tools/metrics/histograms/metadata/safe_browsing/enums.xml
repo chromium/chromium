@@ -592,6 +592,7 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="HASH_PREFIX_INFO_MISSING_FAILURE"/>
   <int value="8" label="HASH_PREFIX_MAP_GENERATION_FAILURE"/>
   <int value="9" label="MIGRATION_FAILURE"/>
+  <int value="10" label="PRE_MMAP_MIGRATION_FILE_FORMAT_FAILURE"/>
 </enum>
 
 <enum name="SafeBrowsingV4StoreWriteResult">

@@ -274,20 +274,6 @@ HashPrefixStr HashPrefixMap::GetMatchingHashPrefix(std::string_view full_hash) {
   return HashPrefixStr();
 }
 
-HashPrefixMap::MigrateResult HashPrefixMap::MigrateFileFormat(
-    const base::FilePath& store_path,
-    V4StoreFileFormat* file_format) {
-  ListUpdateResponse* lur = file_format->mutable_list_update_response();
-  if (lur->additions().empty())
-    return MigrateResult::kNotNeeded;
-
-  for (auto& addition : *lur->mutable_additions()) {
-    Append(addition.raw_hashes().prefix_size(),
-           addition.raw_hashes().raw_hashes());
-  }
-  lur->clear_additions();
-  return MigrateResult::kSuccess;
-}
 
 void HashPrefixMap::GetPrefixInfo(
     google::protobuf::RepeatedPtrField<

@@ -76,6 +76,9 @@ enum StoreReadResult {
   // There was a failure migrating between in-memory and mmap file formats.
   MIGRATION_FAILURE = 9,
 
+  // The file is in a pre-mmap migration format, which is no longer supported.
+  PRE_MMAP_MIGRATION_FILE_FORMAT_FAILURE = 10,
+
   // Memory space for histograms is determined by the max.  ALWAYS
   // ADD NEW VALUES BEFORE THIS ONE.
   STORE_READ_RESULT_MAX
@@ -175,10 +178,6 @@ class V4Store {
       DatabaseManagerInfo::DatabaseInfo::StoreInfo* store_info,
       const std::string& base_metric);
 
-  HashPrefixMap::MigrateResult migrate_result() const {
-    return migrate_result_;
-  }
-
  protected:
   std::unique_ptr<HashPrefixMap> hash_prefix_map_;
 
@@ -277,6 +276,7 @@ class V4Store {
   FRIEND_TEST_ALL_PREFIXES(V4StorePerftest, StressTest);
   FRIEND_TEST_ALL_PREFIXES(V4StorePerftest, VerifyChecksumFast);
   FRIEND_TEST_ALL_PREFIXES(V4StorePerftest, MergeUpdateFast);
+  FRIEND_TEST_ALL_PREFIXES(V4StoreTest, PreMmapMigrationFileFormatFails);
 
   friend class V4StoreTest;
   friend class V4StoreFuzzer;
@@ -410,10 +410,6 @@ class V4Store {
   // Same as above but uses a pre-populated |file_format|.
   StoreWriteResult WriteToDisk(V4StoreFileFormat* file_format);
 
-  // Migrates between in-memory and on-disk file formats.
-  HashPrefixMap::MigrateResult MigrateFileFormatIfNeeded(
-      V4StoreFileFormat* file_format);
-
   // Records the status of the update being applied to the database.
   ApplyUpdateResult last_apply_update_result_ = APPLY_UPDATE_RESULT_MAX;
 
@@ -443,8 +439,6 @@ class V4Store {
   std::string state_;
   const base::FilePath store_path_;
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  HashPrefixMap::MigrateResult migrate_result_ =
-      HashPrefixMap::MigrateResult::kUnknown;
 };
 
 std::ostream& operator<<(std::ostream& os, const V4Store& store);

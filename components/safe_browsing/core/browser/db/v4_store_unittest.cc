@@ -1032,25 +1032,7 @@ TEST_F(V4StoreTest, TestMergeUpdatesFailsChecksum) {
 }
 
 TEST_F(V4StoreTest, TestChecksumErrorOnStartup) {
-  // First the case of checksum not matching after reading from disk.
-  ListUpdateResponse list_update_response;
-  list_update_response.set_new_client_state("test_client_state");
-  list_update_response.set_platform_type(LINUX_PLATFORM);
-  list_update_response.set_response_type(ListUpdateResponse::FULL_UPDATE);
-  list_update_response.mutable_checksum()->set_sha256(
-      std::string(crypto::kSHA256Length, 0));
-  WriteFileFormatProtoToFile(0x600D71FE, 9, &list_update_response);
-  V4Store store(task_runner(), store_path_);
-  EXPECT_TRUE(store.expected_checksum_.empty());
-  EXPECT_EQ(READ_SUCCESS, store.ReadFromDisk());
-  EXPECT_TRUE(!store.expected_checksum_.empty());
-  EXPECT_EQ(69, store.file_size_);
-  EXPECT_EQ("test_client_state", store.state());
-
-  EXPECT_FALSE(store.VerifyChecksum());
-
-  // Now the case of checksum matching after reading from disk.
-  // Proof of checksum mismatch using python:
+  // Proof of checksum match using python:
   // >>> import hashlib
   // >>> m = hashlib.sha256()
   // >>> m.update("abcde")
@@ -1061,21 +1043,50 @@ TEST_F(V4StoreTest, TestChecksumErrorOnStartup) {
   std::string expected_checksum;
   base::Base64Decode("NrvlDtloQdEEQ7y2cNZVTwo0t2G+Z+ycSorSwMRMpCw=",
                      &expected_checksum);
-  ThreatEntrySet* additions = list_update_response.add_additions();
-  additions->set_compression_type(RAW);
-  additions->mutable_raw_hashes()->set_prefix_size(5);
-  additions->mutable_raw_hashes()->set_raw_hashes("abcde");
+
+  ListUpdateResponse list_update_response;
+  list_update_response.set_new_client_state("test_client_state");
+  list_update_response.set_platform_type(LINUX_PLATFORM);
+  list_update_response.set_response_type(ListUpdateResponse::FULL_UPDATE);
   list_update_response.mutable_checksum()->set_sha256(expected_checksum);
-  WriteFileFormatProtoToFile(0x600D71FE, 9, &list_update_response);
-  V4Store another_store(task_runner(), store_path_);
-  EXPECT_TRUE(another_store.expected_checksum_.empty());
 
-  EXPECT_EQ(READ_SUCCESS, another_store.ReadFromDisk());
-  EXPECT_TRUE(!another_store.expected_checksum_.empty());
-  EXPECT_EQ("test_client_state", another_store.state());
-  EXPECT_EQ(69, store.file_size_);
+  V4StoreFileFormat file_format;
+  auto* hash_file = file_format.add_hash_files();
+  hash_file->set_prefix_size(5);
+  hash_file->set_extension("foo");
+  hash_file->set_file_size(5);
 
-  EXPECT_TRUE(another_store.VerifyChecksum());
+  // First the case of checksum not matching after reading from disk.
+  {
+    // "abcdf" does not match the expected checksum.
+    base::WriteFile(store_path_.AddExtensionASCII("foo"), "abcdf");
+    WriteFileFormatProtoToFile(&file_format, 0x600D71FE, 9,
+                               &list_update_response);
+    V4Store store(task_runner(), store_path_);
+    EXPECT_TRUE(store.expected_checksum_.empty());
+    EXPECT_EQ(READ_SUCCESS, store.ReadFromDisk());
+    EXPECT_TRUE(!store.expected_checksum_.empty());
+    EXPECT_EQ("test_client_state", store.state());
+    EXPECT_EQ(85, store.file_size_);
+
+    EXPECT_FALSE(store.VerifyChecksum());
+  }
+
+  // Now the case of checksum matching after reading from disk.
+  {
+    // "abcde" does match the expected checksum.
+    base::WriteFile(store_path_.AddExtensionASCII("foo"), "abcde");
+    WriteFileFormatProtoToFile(&file_format, 0x600D71FE, 9,
+                               &list_update_response);
+    V4Store store(task_runner(), store_path_);
+    EXPECT_TRUE(store.expected_checksum_.empty());
+    EXPECT_EQ(READ_SUCCESS, store.ReadFromDisk());
+    EXPECT_TRUE(!store.expected_checksum_.empty());
+    EXPECT_EQ("test_client_state", store.state());
+    EXPECT_EQ(85, store.file_size_);
+
+    EXPECT_TRUE(store.VerifyChecksum());
+  }
 }
 
 TEST_F(V4StoreTest, WriteToDiskFails) {
@@ -1356,6 +1367,24 @@ TEST_F(V4StoreTest, MergeUpdatesWithHashPrefixMap) {
   EXPECT_TRUE(file_format.ParseFromString(proto_contents));
 
   EXPECT_EQ(file_format.hash_files().size(), 2);
+}
+
+TEST_F(V4StoreTest, PreMmapMigrationFileFormatFails) {
+  ListUpdateResponse list_update_response;
+  list_update_response.set_new_client_state("test_client_state");
+  list_update_response.set_platform_type(LINUX_PLATFORM);
+  list_update_response.set_response_type(ListUpdateResponse::FULL_UPDATE);
+  ThreatEntrySet* additions = list_update_response.add_additions();
+  additions->set_compression_type(RAW);
+  additions->mutable_raw_hashes()->set_prefix_size(5);
+  additions->mutable_raw_hashes()->set_raw_hashes("abcde");
+
+  WriteFileFormatProtoToFile(0x600D71FE, 9, &list_update_response);
+
+  V4Store read_store(task_runner(), store_path_);
+  EXPECT_EQ(PRE_MMAP_MIGRATION_FILE_FORMAT_FAILURE, read_store.ReadFromDisk());
+  EXPECT_TRUE(read_store.state().empty());
+  EXPECT_TRUE(read_store.hash_prefix_map_->view().empty());
 }
 
 }  // namespace safe_browsing

@@ -128,10 +128,6 @@ class HashPrefixMap {
   // Returns a hash prefix if it matches the prefixes stored in this map.
   HashPrefixStr GetMatchingHashPrefix(std::string_view full_hash);
 
-  // Migrates the file format between the different types of HashPrefixMap.
-  enum class MigrateResult { kUnknown, kSuccess, kFailure, kNotNeeded };
-  MigrateResult MigrateFileFormat(const base::FilePath& store_path,
-                                  V4StoreFileFormat* file_format);
 
   // Collects debug information about the prefixes in the map.
   void GetPrefixInfo(google::protobuf::RepeatedPtrField<
