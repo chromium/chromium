@@ -10,6 +10,7 @@ source_set("coordinator") {
   deps = [
     "//base",
     "//ios/chrome/browser/first_run/animated_lens/ui",
+    "//ios/chrome/browser/first_run/model",
     "//ios/chrome/browser/first_run/public:screen_delegate",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/common/ui/promo_style",

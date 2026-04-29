@@ -4170,6 +4170,9 @@ Called by update_net_error_codes.py.-->
   <int value="30"
       label="Close Interactive Lens screen without interaction (added in
              M141)"/>
+  <int value="31" label="Show Lens animated promo screen (added in M149)"/>
+  <int value="32"
+      label="Close Lens animated promo screen with action (added in M149)"/>
 </enum>
 
 <enum name="FirstUserActionType">

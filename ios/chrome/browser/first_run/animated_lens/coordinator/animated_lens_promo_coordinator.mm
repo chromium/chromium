@@ -4,7 +4,9 @@
 
 #import "ios/chrome/browser/first_run/animated_lens/coordinator/animated_lens_promo_coordinator.h"
 
+#import "base/metrics/histogram_functions.h"
 #import "ios/chrome/browser/first_run/animated_lens/ui/animated_lens_promo_view_controller.h"
+#import "ios/chrome/browser/first_run/model/first_run_metrics.h"
 #import "ios/chrome/browser/first_run/public/first_run_screen_delegate.h"
 
 @implementation AnimatedLensPromoCoordinator {
@@ -28,6 +30,10 @@
 
 - (void)start {
   [super start];
+
+  base::UmaHistogramEnumeration(first_run::kFirstRunStageHistogram,
+                                first_run::kAnimatedLensPromoStart);
+
   _viewController = [[AnimatedLensPromoViewController alloc] init];
   _viewController.delegate = self;
   _viewController.shouldHideBanner = YES;
@@ -46,6 +52,9 @@
 #pragma mark - PromoStyleViewControllerDelegate
 
 - (void)didTapPrimaryActionButton {
+  base::UmaHistogramEnumeration(
+      first_run::kFirstRunStageHistogram,
+      first_run::kAnimatedLensPromoCompletionWithAction);
   [self.firstRunDelegate screenWillFinishPresenting];
 }
 

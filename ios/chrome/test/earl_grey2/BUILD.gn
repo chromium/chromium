@@ -214,6 +214,7 @@ chrome_ios_eg2_test("ios_chrome_ui_eg2tests_module") {
     "//ios/chrome/browser/drive_file_picker/test:eg2_tests",
     "//ios/chrome/browser/enterprise/data_controls/test:eg2_tests",
     "//ios/chrome/browser/file_upload_panel/test:eg2_tests",
+    "//ios/chrome/browser/first_run/animated_lens/test:eg2_tests",
     "//ios/chrome/browser/first_run/best_features/test:eg2_tests",
     "//ios/chrome/browser/first_run/default_browser/test:eg2_tests",
     "//ios/chrome/browser/first_run/omnibox_position/test:eg2_tests",

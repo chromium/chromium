@@ -40,9 +40,9 @@ NSString* const kLensTutorialAnimationDarkViewId =
   self.view.accessibilityIdentifier =
       first_run::kAnimatedLensPromoAccessibilityIdentifier;
 
-  self.preferToCompressContent = YES;
+  self.preferToCompressContent = NO;
   self.titleTopMarginWhenNoHeaderImage = 30;
-  self.subtitleBottomMargin = 40;
+  self.subtitleBottomMargin = 60;
 
   self.titleText = l10n_util::GetNSString(IDS_IOS_BEST_FEATURES_LENS_TITLE);
   self.subtitleText =

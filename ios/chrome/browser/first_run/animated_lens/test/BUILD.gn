@@ -1,0 +1,19 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [ "animated_lens_promo_egtest.mm" ]
+  deps = [
+    "//ios/chrome/browser/first_run/model",
+    "//ios/chrome/browser/first_run/public:constants",
+    "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
+    "//ios/chrome/common/ui/promo_style:constants",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:launch_configuration",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

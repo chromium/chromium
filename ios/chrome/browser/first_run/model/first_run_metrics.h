@@ -147,9 +147,13 @@ enum FirstRunStage {
   kInteractiveLensCompletionWithInteraction = 29,
   // Interactive Lens screen completed without interaction with Lens.
   kInteractiveLensCompletionWithoutInteraction = 30,
+  // Lens animated promo screen shown.
+  kAnimatedLensPromoStart = 31,
+  // Lens animated promo screen completed by tapping primary action.
+  kAnimatedLensPromoCompletionWithAction = 32,
   // Max value of the first run experience stages.
   // kMaxValue should share the value of the highest enumerator.
-  kMaxValue = kInteractiveLensCompletionWithoutInteraction,
+  kMaxValue = kAnimatedLensPromoCompletionWithAction,
 };
 
 }  // namespace first_run
