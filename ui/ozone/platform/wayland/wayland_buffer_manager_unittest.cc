@@ -229,7 +229,7 @@ class WaylandBufferManagerTest : public WaylandTest {
       const std::vector<uint32_t>& strides = {1},
       const std::vector<uint32_t>& offsets = {2},
       const std::vector<uint64_t>& modifiers = {3},
-      uint32_t format = DRM_FORMAT_R8,
+      uint32_t format = DRM_FORMAT_ABGR8888,
       uint32_t planes_count = 1) {
     if (!fd.is_valid())
       fd = MakeFD();
@@ -515,7 +515,7 @@ TEST_P(WaylandBufferManagerTest, CreateDmabufBasedBuffers) {
 
 TEST_P(WaylandBufferManagerTest, VerifyModifiers) {
   constexpr uint32_t kDmabufBufferId = 1;
-  constexpr uint32_t kFourccFormatR8 = DRM_FORMAT_R8;
+  constexpr uint32_t kFourccFormatRGBA8888 = DRM_FORMAT_ABGR8888;
   constexpr uint64_t kFormatModiferLinear = DRM_FORMAT_MOD_LINEAR;
 
   const std::vector<uint64_t> kFormatModifiers{DRM_FORMAT_MOD_INVALID,
@@ -527,7 +527,7 @@ TEST_P(WaylandBufferManagerTest, VerifyModifiers) {
       uint32_t modifier_hi = modifier >> 32;
       uint32_t modifier_lo = modifier & UINT32_MAX;
       zwp_linux_dmabuf_v1_send_modifier(
-          server->zwp_linux_dmabuf_v1()->resource(), kFourccFormatR8,
+          server->zwp_linux_dmabuf_v1()->resource(), kFourccFormatRGBA8888,
           modifier_hi, modifier_lo);
     });
   }
@@ -536,7 +536,7 @@ TEST_P(WaylandBufferManagerTest, VerifyModifiers) {
       connection_->buffer_factory()->GetSupportedSharedImageFormats();
   ASSERT_EQ(shared_image_formats.size(), 1u);
   ASSERT_EQ(shared_image_formats.begin()->first,
-            GetSharedImageFormatFromFourCCFormat(kFourccFormatR8));
+            GetSharedImageFormatFromFourCCFormat(kFourccFormatRGBA8888));
   auto modifiers = shared_image_formats.begin()->second;
   ASSERT_EQ(modifiers.size(), 2u);
   for (size_t i = 0; i < kFormatModifiers.size(); ++i) {
@@ -549,7 +549,7 @@ TEST_P(WaylandBufferManagerTest, VerifyModifiers) {
 
   CreateDmabufBasedBufferAndSetTerminateExpectation(
       false /*fail*/, kDmabufBufferId, base::ScopedFD(), kDefaultSize, {1}, {2},
-      {kFormatModiferLinear}, kFourccFormatR8, 1);
+      {kFormatModiferLinear}, kFourccFormatRGBA8888, 1);
 
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     auto params_vector = server->zwp_linux_dmabuf_v1()->buffer_params();
@@ -589,7 +589,7 @@ TEST_P(WaylandBufferManagerTest, ValidateDataFromGpu) {
       // Vectors are valid but buffer format is not.
       {true, kDefaultSize, 1, {1}, {2}, {6}},
       // Everything is correct but the buffer ID is zero.
-      {true, kDefaultSize, 1, {1}, {2}, {6}, DRM_FORMAT_R8},
+      {true, kDefaultSize, 1, {1}, {2}, {6}, DRM_FORMAT_ABGR8888},
   };
 
   for (const auto& bad : kBadInputs) {

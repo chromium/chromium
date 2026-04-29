@@ -105,7 +105,7 @@ class WaylandSurfaceExplicitSyncTest : public WaylandTestSimple {
                                const std::vector<uint32_t>& strides = {1},
                                const std::vector<uint32_t>& offsets = {2},
                                const std::vector<uint64_t>& modifiers = {3},
-                               uint32_t format = DRM_FORMAT_R8,
+                               uint32_t format = DRM_FORMAT_ABGR8888,
                                uint32_t planes_count = 1) {
     buffer_manager_gpu_->CreateDmabufBasedBuffer(
         GetFdFactory()->CreateFd(), kDefaultSize, strides, offsets, modifiers,

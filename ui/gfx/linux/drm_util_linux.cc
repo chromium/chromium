@@ -6,9 +6,17 @@
 
 #include <drm_fourcc.h>
 
+#include "base/feature_list.h"
 #include "base/notreached.h"
 
 namespace ui {
+
+namespace {
+// These are not used by Exo and most likely not used by Wayland either as
+// identified by `Graphics.Exo.Buffer.SharedImageFormat` and
+// `GPU.SharedImage.SharedImageFormat` respectively.
+BASE_FEATURE(kInvalidateSinglePlaneDrmFormat, base::FEATURE_ENABLED_BY_DEFAULT);
+}  // namespace
 
 int GetFourCCFormatFromSharedImageFormat(const viz::SharedImageFormat& format) {
   if (format == viz::SinglePlaneFormat::kR_8) {
@@ -100,6 +108,7 @@ bool IsValidDrmFormat(uint32_t current_format) {
   switch (current_format) {
     case DRM_FORMAT_R8:
     case DRM_FORMAT_GR88:
+      return !base::FeatureList::IsEnabled(kInvalidateSinglePlaneDrmFormat);
     case DRM_FORMAT_ABGR8888:
     case DRM_FORMAT_XBGR8888:
     case DRM_FORMAT_ARGB8888:
