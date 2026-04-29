@@ -5,6 +5,7 @@
 #include "ui/accessibility/ax_table_info.h"
 
 #include <iostream>
+#include <optional>
 #include <string>
 
 #include "base/check.h"
@@ -107,6 +108,10 @@ void FindCells(std::vector<raw_ptr<AXNode, VectorExperimental>>* row_node_list,
   }
 }
 
+size_t GetSizeTAttribute(const AXNode& node, IntAttribute attribute) {
+  return base::saturated_cast<size_t>(node.GetIntAttribute(attribute));
+}
+
 // Find all the cells in a container that does not contain rows as part of the
 // encoding.
 //
@@ -134,8 +139,7 @@ void FindCells(std::vector<raw_ptr<AXNode, VectorExperimental>>* row_node_list,
 void FindCellsForRowlessTable(
     AXNode* grid_node,
     std::vector<std::vector<AXNode*>>* cell_nodes_per_row) {
-  int current_row = -1;
-  int current_index = -1;
+  std::optional<size_t> current_row;
   base::queue<AXNode*> child_queue;
   for (auto iter = grid_node->UnignoredChildrenBegin(),
             end = grid_node->UnignoredChildrenEnd();
@@ -154,24 +158,16 @@ void FindCellsForRowlessTable(
         }
         continue;
       } else if (IsCellOrTableHeader(child->GetRole())) {
-        const int rowIndex =
-            child->GetIntAttribute(ax::mojom::IntAttribute::kTableCellRowIndex);
-        CHECK_GE(rowIndex,0);
-        if (current_row < rowIndex) {
+        const size_t row_index =
+            GetSizeTAttribute(*child, IntAttribute::kTableCellRowIndex);
+        if (!current_row || *current_row < row_index) {
           cell_nodes_per_row->emplace_back();
-          current_row = rowIndex;
-          current_index++;
+          current_row = row_index;
         }
-        CHECK_GE(current_index,0);
-        auto& cell_nodes = cell_nodes_per_row->at(current_index);
-        cell_nodes.push_back(child);
+        cell_nodes_per_row->back().push_back(child);
       }
     }
   }
-}
-
-size_t GetSizeTAttribute(const AXNode& node, IntAttribute attribute) {
-  return base::saturated_cast<size_t>(node.GetIntAttribute(attribute));
 }
 
 }  // namespace

@@ -800,6 +800,33 @@ TEST_F(AXTableInfoTest, TableWithNoRows) {
   EXPECT_EQ(1, cell_1_1->GetTableCellColIndex());
 }
 
+TEST_F(AXTableInfoTest, TableWithNoRowsAndNegativeRowIndex) {
+  AXTreeUpdate initial_state;
+  initial_state.root_id = 1;
+  initial_state.nodes.resize(3);
+  initial_state.nodes[0].id = 1;
+  initial_state.nodes[0].role = ax::mojom::Role::kGrid;
+  initial_state.nodes[0].child_ids = {11, 12};
+  MakeCell(&initial_state.nodes[1], 11, -2, 0);
+  MakeCell(&initial_state.nodes[2], 12, 0, 1);
+
+  AXTree tree(initial_state);
+  AXNode* table = tree.root();
+
+  EXPECT_TRUE(table->IsTable());
+  EXPECT_EQ(2, table->GetTableColCount());
+  EXPECT_EQ(1, table->GetTableRowCount());
+  EXPECT_EQ(11, table->GetTableCellFromCoords(0, 0)->id());
+  EXPECT_EQ(12, table->GetTableCellFromCoords(0, 1)->id());
+
+  AXNode* cell_0_0 = tree.GetFromId(11);
+  EXPECT_EQ(0, cell_0_0->GetTableCellRowIndex());
+  EXPECT_EQ(0, cell_0_0->GetTableCellColIndex());
+  AXNode* cell_0_1 = tree.GetFromId(12);
+  EXPECT_EQ(0, cell_0_1->GetTableCellRowIndex());
+  EXPECT_EQ(1, cell_0_1->GetTableCellColIndex());
+}
+
 TEST_F(AXTableInfoTest, TableWithNoIndices) {
   AXTreeUpdate initial_state;
   initial_state.root_id = 1;
