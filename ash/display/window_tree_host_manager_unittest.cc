@@ -23,9 +23,9 @@
 #include "ash/wm/wm_event.h"
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
-#include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "ui/aura/client/cursor_shape_client.h"
 #include "ui/aura/client/focus_change_observer.h"
 #include "ui/aura/client/focus_client.h"
@@ -1223,7 +1223,9 @@ TEST_F(WindowTreeHostManagerTest, SwapPrimaryById) {
 
   // Deleting 2nd display should move the primary to original primary display.
   UpdateDisplay("300x200");
-  base::RunLoop().RunUntilIdle();  // RootWindow is deleted in a posted task.
+  // The secondary root window is deleted in a posted task.
+  ASSERT_TRUE(
+      base::test::RunUntil([&] { return !tracker.Contains(secondary_root); }));
   EXPECT_EQ(1, display::Screen::Get()->GetNumDisplays());
   EXPECT_EQ(primary_display.id(),
             display::Screen::Get()->GetPrimaryDisplay().id());
