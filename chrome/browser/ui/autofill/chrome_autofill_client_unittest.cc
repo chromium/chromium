@@ -17,7 +17,6 @@
 #include "chrome/browser/autofill/mock_autofill_agent.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/autofill/ui/ui_util.h"
-#include "chrome/browser/plus_addresses/plus_address_service_factory.h"
 #include "chrome/browser/ssl/chrome_security_state_tab_helper.h"
 #include "chrome/browser/ui/autofill/edit_address_profile_dialog_controller_impl.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -53,9 +52,6 @@
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/feature_engagement/public/feature_constants.h"
-#include "components/plus_addresses/core/browser/fake_plus_address_service.h"
-#include "components/plus_addresses/core/browser/plus_address_hats_utils.h"
-#include "components/plus_addresses/core/common/features.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/unified_consent/pref_names.h"
@@ -245,11 +241,8 @@ class ChromeAutofillClientTest : public ChromeRenderViewHostTestHarness {
  private:
   TestingProfile::TestingFactories GetTestingFactories() const override {
     return {TestingProfile::TestingFactory{
-                autofill::PersonalDataManagerFactory::GetInstance(),
-                base::BindRepeating(&CreateTestPersonalDataManager)},
-            TestingProfile::TestingFactory{
-                PlusAddressServiceFactory::GetInstance(),
-                base::BindRepeating(&BuildFakePlusAddressService)}};
+        autofill::PersonalDataManagerFactory::GetInstance(),
+        base::BindRepeating(&CreateTestPersonalDataManager)}};
   }
 
   static std::unique_ptr<KeyedService> CreateTestPersonalDataManager(
@@ -261,15 +254,8 @@ class ChromeAutofillClientTest : public ChromeRenderViewHostTestHarness {
     return pdm;
   }
 
-  static std::unique_ptr<KeyedService> BuildFakePlusAddressService(
-      content::BrowserContext* context) {
-    return std::make_unique<plus_addresses::FakePlusAddressService>();
-  }
-
   autofill::test::AutofillUnitTestEnvironment autofill_environment_{
       {.disable_server_communication = true}};
-  base::test::ScopedFeatureList scoped_feature_list_{
-      plus_addresses::features::kPlusAddressesEnabled};
 #if !BUILDFLAG(IS_ANDROID)
   raw_ptr<MockAutofillFieldPromoController> autofill_field_promo_controller_;
 #endif  // !BUILDFLAG(IS_ANDROID)
