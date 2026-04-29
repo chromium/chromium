@@ -72,115 +72,6 @@ constexpr char kUseDate[] = "use_date";
 constexpr char kDateModified[] = "date_modified";
 }  // namespace entities_metadata
 
-// If "--autofill-wipe-entities" is present, drops the tables and creates
-// new ones.
-//
-// If "--autofill-add-test-entities" is present, adds two example entities.
-//
-// TODO(crbug.com/388590912): Remove when test data is no longer needed.
-void HandleTestSwitchesIfNeeded(sql::Database* db, EntityTable& table) {
-  const bool wipe = base::CommandLine::ForCurrentProcess()->HasSwitch(
-      "autofill-wipe-entities");
-  const bool add = base::CommandLine::ForCurrentProcess()->HasSwitch(
-      "autofill-add-test-entities");
-  if (!wipe && !add) {
-    return;
-  }
-
-  // Handle the switches only once.
-  static bool has_been_called = false;
-  if (has_been_called) {
-    return;
-  }
-  has_been_called = true;
-
-  if (wipe) {
-    DropTableIfExists(db, autofill::attributes::kTableName);
-    DropTableIfExists(db, autofill::entities::kTableName);
-    DropTableIfExists(db, autofill::entities_metadata::kTableName);
-    table.CreateTablesIfNecessary();
-  }
-
-  if (add) {
-    auto create_attribute = [](AttributeTypeName type_name,
-                               std::u16string value) -> AttributeInstance {
-      auto type = AttributeType(type_name);
-      auto instance = AttributeInstance(type);
-      instance.SetInfo(
-          type.field_type(), value, /*app_locale=*/"",
-          /*format_string=*/
-          type.field_type() && IsDateFieldType(*type.field_type())
-              ? AutofillFormatString(u"YYYY-MM-DD", FormatString_Type_DATE)
-              : base::optional_ref<const AutofillFormatString>(),
-          VerificationStatus::kNoStatus);
-      return instance;
-    };
-
-    using enum AttributeTypeName;
-
-    table.AddOrUpdateEntityInstance(EntityInstance(
-        EntityType(EntityTypeName::kPassport),
-        {create_attribute(kPassportNumber, u"123"),
-         create_attribute(kPassportName, u"Pippi Långstrump"),
-         create_attribute(kPassportCountry, u"Sweden"),
-         create_attribute(kPassportExpirationDate, u"2035-03-31"),
-         create_attribute(kPassportIssueDate, u"1998-10-11")},
-        EntityInstance::EntityId(
-            base::Uuid::ParseLowercase("00000000-0000-4000-8000-123000000000")),
-        "My passport", /*date_modified=*/base::Time::Now(), /*use_count=*/0,
-        /*use_date=*/base::Time::FromTimeT(0),
-        EntityInstance::RecordType::kLocal,
-        EntityInstance::AreAttributesReadOnly(false),
-        /*frecency_override=*/""));
-
-    table.AddOrUpdateEntityInstance(EntityInstance(
-        EntityType(EntityTypeName::kDriversLicense),
-        {create_attribute(kDriversLicenseNumber, u"456"),
-         create_attribute(kDriversLicenseName, u"Jim Hacker"),
-         create_attribute(kDriversLicenseState, u"California"),
-         create_attribute(kDriversLicenseExpirationDate, u"2069-12-31"),
-         create_attribute(kDriversLicenseIssueDate, u"1969-12-24")},
-        EntityInstance::EntityId(
-            base::Uuid::ParseLowercase("00000000-0000-4000-8000-456000000000")),
-        "My license", /*date_modified=*/base::Time::Now(), /*use_count=*/0,
-        /*use_date=*/base::Time::FromTimeT(0),
-        EntityInstance::RecordType::kLocal,
-        EntityInstance::AreAttributesReadOnly(false),
-        /*frecency_override=*/""));
-
-    table.AddOrUpdateEntityInstance(EntityInstance(
-        EntityType(EntityTypeName::kVehicle),
-        {create_attribute(kVehicleMake, u"BMW"),
-         create_attribute(kVehicleModel, u"3 series"),
-         create_attribute(kVehicleYear, u"2024"),
-         create_attribute(kVehicleOwner, u"Humphrey Appleby"),
-         create_attribute(kVehiclePlateNumber, u"SUNNY1133"),
-         create_attribute(kVehiclePlateState, u"California"),
-         create_attribute(kVehicleVin, u"3D73Y4CL2AG194665")},
-        EntityInstance::EntityId(
-            base::Uuid::ParseLowercase("00000000-0000-4000-8000-789000000000")),
-        "My wroom wroom car", /*date_modified=*/base::Time::Now(),
-        /*use_count=*/0, /*use_date=*/base::Time::FromTimeT(0),
-        EntityInstance::RecordType::kLocal,
-        EntityInstance::AreAttributesReadOnly(false),
-        /*frecency_override=*/""));
-
-    table.AddOrUpdateEntityInstance(EntityInstance(
-        EntityType(EntityTypeName::kShipment),
-        {create_attribute(kShipmentCarrierName, u"DHL"),
-         create_attribute(kShipmentCarrierDomain, u"www.dhl.com"),
-         create_attribute(kShipmentTrackingNumber, u"1234567"),
-         create_attribute(kShipmentDeliveryZipCode, u"80639")},
-        EntityInstance::EntityId(
-            base::Uuid::ParseLowercase("00000000-0000-4000-8000-999000000000")),
-        "My license", /*date_modified=*/base::Time::Now(), /*use_count=*/0,
-        /*use_date=*/base::Time::FromTimeT(0),
-        EntityInstance::RecordType::kLocal,
-        EntityInstance::AreAttributesReadOnly(false),
-        /*frecency_override=*/""));
-  }
-}
-
 std::optional<EntityInstance::RecordType> ToSafeRecordType(
     std::underlying_type_t<EntityInstance::RecordType> underlying_record_type) {
   switch (EntityInstance::RecordType record_type =
@@ -409,8 +300,6 @@ bool EntityTable::AddEntityInstance(const EntityInstance& entity) {
   // Unmasked server entities must never be persisted on disk.
   CHECK(!entity.IsUnmaskedServerEntity());
 
-  HandleTestSwitchesIfNeeded(db(), *this);
-
   sql::Transaction transaction(db());
   if (!transaction.Begin()) {
     return false;
@@ -448,8 +337,6 @@ bool EntityTable::AddEntityInstance(const EntityInstance& entity) {
 }
 
 bool EntityTable::AddOrUpdateEntityInstance(const EntityInstance& entity) {
-  HandleTestSwitchesIfNeeded(db(), *this);
-
   sql::Transaction transaction(db());
   return transaction.Begin() && RemoveEntityInstance(entity.guid()) &&
          AddEntityInstance(entity) && transaction.Commit();
@@ -465,8 +352,6 @@ bool EntityTable::DeleteEntityInstances(
 }
 
 bool EntityTable::RemoveEntityInstance(const EntityInstance::EntityId& guid) {
-  HandleTestSwitchesIfNeeded(db(), *this);
-
   sql::Transaction transaction(db());
   return transaction.Begin() &&
          DeleteWhereColumnEq(db(), attributes::kTableName,
@@ -480,8 +365,6 @@ bool EntityTable::RemoveEntityInstance(const EntityInstance::EntityId& guid) {
 
 bool EntityTable::RemoveEntityInstancesModifiedBetween(base::Time delete_begin,
                                                        base::Time delete_end) {
-  HandleTestSwitchesIfNeeded(db(), *this);
-
   if (delete_begin.is_null()) {
     delete_begin = base::Time::Min();
   }
@@ -662,8 +545,6 @@ EntityTable::LoadAttributes() const {
 
 std::vector<EntityInstance> EntityTable::GetEntityInstances(
     std::optional<EntityInstance::RecordType> record_type) const {
-  HandleTestSwitchesIfNeeded(db(), const_cast<EntityTable&>(*this));
-
   // Collects all attributes, keyed by the owning entity's GUID and the
   // `AttributeTypeName` of the attribute.
   std::map<EntityInstance::EntityId,
