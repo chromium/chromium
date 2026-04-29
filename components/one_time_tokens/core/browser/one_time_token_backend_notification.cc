@@ -4,13 +4,16 @@
 
 #include "components/one_time_tokens/core/browser/one_time_token_backend_notification.h"
 
+#include "base/time/time.h"
+
 namespace one_time_tokens {
 
 OneTimeTokenBackendNotification::OneTimeTokenBackendNotification() = default;
 
 OneTimeTokenBackendNotification::OneTimeTokenBackendNotification(
     EncryptedMessageReference encrypted_message_reference)
-    : encrypted_message_reference(encrypted_message_reference) {}
+    : encrypted_message_reference(encrypted_message_reference),
+      notification_received_timestamp(base::Time::Now()) {}
 
 OneTimeTokenBackendNotification::OneTimeTokenBackendNotification(
     EncryptedMessageReference encrypted_message_reference,
@@ -27,6 +30,9 @@ OneTimeTokenBackendNotification::OneTimeTokenBackendNotification(
 
 OneTimeTokenBackendNotification::OneTimeTokenBackendNotification(
     OneTimeTokenBackendNotification&&) = default;
+
+OneTimeTokenBackendNotification& OneTimeTokenBackendNotification::operator=(
+    const OneTimeTokenBackendNotification&) = default;
 
 OneTimeTokenBackendNotification& OneTimeTokenBackendNotification::operator=(
     OneTimeTokenBackendNotification&&) = default;

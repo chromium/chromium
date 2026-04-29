@@ -9,6 +9,7 @@
 #include <concepts>
 #include <functional>
 #include <list>
+#include <utility>
 
 #include "base/time/time.h"
 
@@ -20,14 +21,26 @@ concept HasCreationTimestampFn =
       { std::invoke(getter, item) } -> std::convertible_to<base::Time>;
     };
 
+template <typename T, typename ProjectionFn = std::identity>
+concept ProjectionFnIsEqualsComparable =
+    requires(ProjectionFn projection, const T& item) {
+      { std::invoke(projection, item) } -> std::equality_comparable;
+    };
+
 // A cache for arbitrary items with a fixed expiration time.
-template <typename T, typename GetTimestampFn = std::identity>
-  requires HasCreationTimestampFn<T, GetTimestampFn>
+template <typename T,
+          typename GetTimestampFn = std::identity,
+          typename ProjectionFn = std::identity>
+  requires HasCreationTimestampFn<T, GetTimestampFn> &&
+           ProjectionFnIsEqualsComparable<T, ProjectionFn>
 class ExpiringCache {
  public:
   explicit ExpiringCache(base::TimeDelta max_age,
-                         GetTimestampFn get_timestamp_fn = GetTimestampFn())
-      : max_age_(max_age), get_timestamp_fn_(std::move(get_timestamp_fn)) {}
+                         GetTimestampFn get_timestamp_fn = GetTimestampFn(),
+                         ProjectionFn projection_fn = ProjectionFn())
+      : max_age_(max_age),
+        get_timestamp_fn_(std::move(get_timestamp_fn)),
+        projection_fn_(std::move(projection_fn)) {}
   ExpiringCache(const ExpiringCache&) = delete;
   ExpiringCache& operator=(const ExpiringCache&) = delete;
   ~ExpiringCache() = default;
@@ -38,7 +51,8 @@ class ExpiringCache {
   bool PurgeExpiredAndAdd(T item) {
     PurgeExpired();
 
-    if (std::ranges::contains(items_, item)) {
+    if (std::ranges::find(items_, std::invoke(projection_fn_, item),
+                          projection_fn_) != items_.end()) {
       return false;
     }
 
@@ -58,6 +72,13 @@ class ExpiringCache {
   // Returns all the items without filtering for expiration.
   const std::list<T>& GetItems() const { return items_; }
 
+  // Purges expired items and returns the remaining items while clearing the
+  // cache.
+  std::list<T> TakeItems() {
+    PurgeExpired();
+    return std::exchange(items_, {});
+  }
+
  private:
   // Removes expired items from the cache.
   void PurgeExpired() {
@@ -71,6 +92,7 @@ class ExpiringCache {
   std::list<T> items_;
   base::TimeDelta max_age_;
   GetTimestampFn get_timestamp_fn_;
+  ProjectionFn projection_fn_;
 };
 
 }  // namespace one_time_tokens

@@ -4,6 +4,7 @@
 
 #include "components/one_time_tokens/core/browser/gmail_otp_backend.h"
 
+#include <memory>
 #include <optional>
 
 #include "base/base64url.h"
@@ -285,6 +286,59 @@ TEST_F(GmailOtpBackendImplTest, DeDuplicatesIncomingTickles) {
                         .spec();
   test_url_loader_factory_.AddResponse(url, "");
   auto unused = future.Get();
+}
+
+// Tests that tickles received just before a subscription are processed when
+// the subscription is created.
+TEST_F(GmailOtpBackendImplTest, RecentTicklesProcessedUponSubscription) {
+  // Tickle arrives before anyone is subscribed.
+  backend_.OnIncomingOneTimeTokenBackendNotification(
+      OneTimeTokenBackendNotification(EncryptedMessageReference("ref1")));
+  EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
+
+  // Subscription arrives.
+  base::test::TestFuture<
+      base::expected<OneTimeToken, OneTimeTokenRetrievalError>>
+      future;
+  ExpiringSubscription subscription = backend_.Subscribe(
+      base::Time::Now() + base::Minutes(1), future.GetRepeatingCallback());
+
+  // The cached tickle should now trigger a request.
+  identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      "access_token", base::Time::Now() + base::Hours(1));
+  EXPECT_EQ(test_url_loader_factory_.NumPending(), 1);
+
+  // Complete to avoid dangling pointers.
+  std::string encoded_reference;
+  base::Base64UrlEncode("ref1", base::Base64UrlEncodePolicy::INCLUDE_PADDING,
+                        &encoded_reference);
+  std::string url = net::AppendQueryParameter(
+                        GURL("https://onetimetoken.pa.googleapis.com/v1/"
+                             "onetimetokens:fetchEmail"),
+                        "encryptedMessageReference", encoded_reference)
+                        .spec();
+  test_url_loader_factory_.AddResponse(url, "");
+}
+
+// Tests that expired tickles are not processed upon subscription.
+TEST_F(GmailOtpBackendImplTest, ExpiredTicklesNotProcessedUponSubscription) {
+  // Tickle arrives.
+  backend_.OnIncomingOneTimeTokenBackendNotification(
+      OneTimeTokenBackendNotification(EncryptedMessageReference("ref1")));
+
+  // Time passes, tickle expires.
+  task_environment_.FastForwardBy(kNotificationExpirationDuration +
+                                  base::Seconds(1));
+
+  // Subscription arrives.
+  base::test::TestFuture<
+      base::expected<OneTimeToken, OneTimeTokenRetrievalError>>
+      future;
+  ExpiringSubscription subscription = backend_.Subscribe(
+      base::Time::Now() + base::Minutes(1), future.GetRepeatingCallback());
+
+  // No request should be triggered for the expired tickle.
+  EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
 }
 
 }  // namespace one_time_tokens

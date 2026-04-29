@@ -6,6 +6,7 @@
 #define COMPONENTS_ONE_TIME_TOKENS_CORE_BROWSER_GMAIL_OTP_BACKEND_H_
 
 #include <memory>
+#include <set>
 
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
@@ -17,6 +18,7 @@
 #include "components/one_time_tokens/core/browser/one_time_token.h"
 #include "components/one_time_tokens/core/browser/one_time_token_backend_notification.h"
 #include "components/one_time_tokens/core/browser/one_time_token_retrieval_error.h"
+#include "components/one_time_tokens/core/browser/util/expiring_cache.h"
 #include "components/one_time_tokens/core/browser/util/expiring_subscription.h"
 #include "components/one_time_tokens/core/browser/util/expiring_subscription_manager.h"
 
@@ -29,6 +31,10 @@ class IdentityManager;
 }  // namespace signin
 
 namespace one_time_tokens {
+
+// Duration after which notifications expire and won't be processed.
+inline constexpr base::TimeDelta kNotificationExpirationDuration =
+    base::Minutes(3);
 
 class EmailOneTimeTokenFetcher;
 
@@ -76,6 +82,8 @@ class GmailOtpBackendImpl : public GmailOtpBackend,
       const OneTimeTokenBackendNotification& notification) override;
 
  private:
+  void ProcessCachedNotifications();
+
   void RetrieveGmailOtp(const OneTimeTokenBackendNotification& notification);
 
   void OnResponseFromGmailOtpBackend(
@@ -91,6 +99,13 @@ class GmailOtpBackendImpl : public GmailOtpBackend,
 
   // Policy for coordinating network requests.
   std::unique_ptr<EmailOneTimeTokenFetchCoordinator> coordinator_;
+
+  ExpiringCache<
+      OneTimeTokenBackendNotification,
+      decltype(&OneTimeTokenBackendNotification::
+                   notification_received_timestamp),
+      OneTimeTokenBackendNotification::EncryptedMessageReferenceProjection>
+      notification_cache_;
 
   // Active fetchers for Gmail OTPs, keyed by their unique
   // encrypted_message_reference.

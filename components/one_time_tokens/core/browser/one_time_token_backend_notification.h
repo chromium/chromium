@@ -22,6 +22,13 @@ struct OneTimeTokenBackendNotification {
   base::Time email_received_timestamp;
   base::Time notification_received_timestamp;
 
+  struct EncryptedMessageReferenceProjection {
+    const EncryptedMessageReference& operator()(
+        const OneTimeTokenBackendNotification& notification) const {
+      return notification.encrypted_message_reference;
+    }
+  };
+
   OneTimeTokenBackendNotification();
   explicit OneTimeTokenBackendNotification(
       EncryptedMessageReference encrypted_message_reference);
@@ -33,7 +40,7 @@ struct OneTimeTokenBackendNotification {
   OneTimeTokenBackendNotification(const OneTimeTokenBackendNotification&);
   OneTimeTokenBackendNotification(OneTimeTokenBackendNotification&&);
   OneTimeTokenBackendNotification& operator=(
-      const OneTimeTokenBackendNotification&) = default;
+      const OneTimeTokenBackendNotification&);
   OneTimeTokenBackendNotification& operator=(OneTimeTokenBackendNotification&&);
   ~OneTimeTokenBackendNotification();
 };

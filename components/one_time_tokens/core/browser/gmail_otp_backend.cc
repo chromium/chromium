@@ -9,6 +9,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "components/one_time_tokens/core/browser/email_one_time_token_fetcher.h"
+#include "components/one_time_tokens/core/browser/util/expiring_cache.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -29,23 +30,34 @@ GmailOtpBackendImpl::GmailOtpBackendImpl(
     signin::IdentityManager& identity_manager)
     : url_loader_factory_(std::move(url_loader_factory)),
       identity_manager_(identity_manager),
-      coordinator_(std::make_unique<EmailOneTimeTokenFetchCoordinator>(*this)) {
-}
+      coordinator_(std::make_unique<EmailOneTimeTokenFetchCoordinator>(*this)),
+      notification_cache_(
+          kNotificationExpirationDuration,
+          &OneTimeTokenBackendNotification::notification_received_timestamp) {}
 
 GmailOtpBackendImpl::~GmailOtpBackendImpl() = default;
 
 ExpiringSubscription GmailOtpBackendImpl::Subscribe(base::Time expiration,
                                                     Callback callback) {
-  // TODO(crbug.com/478840436): To preserve the general contract, adding a new
-  // subscriber should check a cache if any recent tickles arrived and request
-  // OTPs them immediately - as if those tickles arrived just after the
-  // subscription.
-  return subscription_manager_.Subscribe(expiration, std::move(callback));
+  ExpiringSubscription subscription =
+      subscription_manager_.Subscribe(expiration, std::move(callback));
+  ProcessCachedNotifications();
+  return subscription;
 }
 
 void GmailOtpBackendImpl::OnIncomingOneTimeTokenBackendNotification(
     const OneTimeTokenBackendNotification& notification) {
-  coordinator_->SignalNetworkRequestNeeded(notification);
+  notification_cache_.PurgeExpiredAndAdd(notification);
+  ProcessCachedNotifications();
+}
+
+void GmailOtpBackendImpl::ProcessCachedNotifications() {
+  if (subscription_manager_.GetNumberSubscribers() == 0) {
+    return;
+  }
+  for (const auto& notification : notification_cache_.TakeItems()) {
+    coordinator_->SignalNetworkRequestNeeded(notification);
+  }
 }
 
 void GmailOtpBackendImpl::OnCanSendNetworkRequest(

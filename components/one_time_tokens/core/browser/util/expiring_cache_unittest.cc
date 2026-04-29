@@ -152,4 +152,32 @@ TEST_F(ExpiringCacheTest, Items_DoesNotPurgeExpiredItems) {
   EXPECT_THAT(purged_items, testing::ElementsAre(item2));
 }
 
+// Ensure that TakeItems() returns only non-expired items and clears the
+// cache.
+TEST_F(ExpiringCacheTest, TakeItems) {
+  OneTimeToken item1(OneTimeTokenType::kSmsOtp, "token1", base::Time::Now());
+  cache_.PurgeExpiredAndAdd(item1);
+
+  task_environment_.FastForwardBy(base::Seconds(2));
+  OneTimeToken item2(OneTimeTokenType::kSmsOtp, "token2", base::Time::Now());
+  cache_.PurgeExpiredAndAdd(item2);
+
+  // Fast forward so item1 is expired, but item2 is not expired.
+  task_environment_.FastForwardBy(kMaxAge - base::Seconds(1));
+
+  // TakeItems should return only item2, as item1 is expired.
+  std::list<OneTimeToken> consumed_items = cache_.TakeItems();
+  EXPECT_THAT(consumed_items, testing::ElementsAre(item2));
+
+  // The cache should be empty now.
+  EXPECT_TRUE(cache_.GetItems().empty());
+}
+
+// Ensure that TakeItems() works on an empty cache.
+TEST_F(ExpiringCacheTest, TakeItems_Empty) {
+  std::list<OneTimeToken> consumed_items = cache_.TakeItems();
+  EXPECT_TRUE(consumed_items.empty());
+  EXPECT_TRUE(cache_.GetItems().empty());
+}
+
 }  // namespace one_time_tokens
