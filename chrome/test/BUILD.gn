@@ -4815,6 +4815,9 @@ if (!is_android) {
         "../browser/extensions/fetch_apitest.cc",
         "../browser/extensions/file_iframe_apitest.cc",
         "../browser/extensions/google_docs_offline_ukm_browsertest.cc",
+        "../browser/extensions/guest_view/web_view/web_view_apitest.cc",
+        "../browser/extensions/guest_view/web_view/web_view_apitest.h",
+        "../browser/extensions/guest_view/web_view/web_view_media_access_apitest.cc",
         "../browser/extensions/initial_external_extension_loader_browsertest.cc",
         "../browser/extensions/isolated_world_csp_browsertest.cc",
         "../browser/extensions/lazy_background_page_apitest.cc",
@@ -5044,6 +5047,7 @@ if (!is_android) {
 
       deps += [
         "../browser/enterprise/connectors/test:test_support",
+        "//chrome/browser/client_hints",
         "//chrome/browser/controlled_frame:test_support",
         "//chrome/browser/devtools:test_support",
         "//chrome/browser/extensions:test_support",

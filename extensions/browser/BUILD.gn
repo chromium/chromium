@@ -1293,12 +1293,7 @@ if (enable_extensions) {
   # system and relevant APIs.
   source_set("browser_tests") {
     testonly = true
-    sources = [
-      "browsertest_util_browsertest.cc",
-      "guest_view/web_view/web_view_apitest.cc",
-      "guest_view/web_view/web_view_apitest.h",
-      "guest_view/web_view/web_view_media_access_apitest.cc",
-    ]
+    sources = [ "browsertest_util_browsertest.cc" ]
 
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
