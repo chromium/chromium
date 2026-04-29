@@ -19,7 +19,6 @@ import androidx.fragment.app.FragmentFactory;
 import androidx.fragment.app.testing.FragmentScenario;
 import androidx.preference.Preference;
 
-import org.jspecify.annotations.NonNull;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -113,10 +112,8 @@ public class AutofillPaymentMethodsFragmentBuyNowPayLaterTest {
                         Bundle.EMPTY,
                         R.style.Theme_Chromium_Settings,
                         new FragmentFactory() {
-                            @NonNull
                             @Override
-                            public Fragment instantiate(
-                                    @NonNull ClassLoader classLoader, @NonNull String className) {
+                            public Fragment instantiate(ClassLoader classLoader, String className) {
                                 Fragment fragment = super.instantiate(classLoader, className);
                                 if (fragment instanceof AutofillPaymentMethodsFragment) {
                                     ((AutofillPaymentMethodsFragment) fragment)
