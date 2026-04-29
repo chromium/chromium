@@ -59,6 +59,11 @@ th {
   word-wrap: break-word;
 }
 
+.proto {
+  width: 150px;
+  word-wrap: break-word;
+}
+
 @media (prefers-color-scheme: dark) {
   :host {
     color: var(--google-grey-200);

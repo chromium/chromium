@@ -1,4 +1,6 @@
 include_rules = [
     "+components/url_formatter",
+    "+third_party/lens_server_proto",
     "+third_party/omnibox_proto",
+    "+third_party/protobuf/src/google/protobuf/message_lite.h",
 ]

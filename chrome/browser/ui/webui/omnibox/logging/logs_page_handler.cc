@@ -17,12 +17,16 @@ LogsPageHandler::LogsPageHandler(
 
 LogsPageHandler::~LogsPageHandler() = default;
 
-void LogsPageHandler::OnLogMessageAdded(base::Time event_time,
-                                        const std::string& tag,
-                                        const std::string& source_file,
-                                        uint32_t source_line,
-                                        const std::string& message) {
-  page_->OnLogMessageAdded(event_time, tag, source_file, source_line, message);
+void LogsPageHandler::OnLogMessageAdded(
+    base::Time event_time,
+    const std::string& tag,
+    const std::string& source_file,
+    uint32_t source_line,
+    const std::string& message,
+    const std::optional<std::string>& proto_type,
+    const std::optional<std::string>& proto_base64) {
+  page_->OnLogMessageAdded(event_time, tag, source_file, source_line, message,
+                           proto_type, proto_base64);
 }
 
 }  // namespace omnibox::logging

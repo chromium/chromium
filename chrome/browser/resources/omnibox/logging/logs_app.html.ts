@@ -19,6 +19,7 @@ export function getHtml(this: LogsAppElement) {
         <th class="tag">Tag</th>
         <th class="source-location">Source Location</th>
         <th class="message">Log Message</th>
+        <th class="proto">Proto</th>
       </tr>
     </thead>
     <tbody>
@@ -32,6 +33,13 @@ export function getHtml(this: LogsAppElement) {
             </a>
           </td>
           <td class="message">${item.message}</td>
+          <td class="proto">
+            ${item.protoType ? html`
+              <a target="_blank" href="${`http://protoshop/embed?tabs=viewer,editor,textproto&type=${item.protoType}&protobytes=${encodeURIComponent(item.protoBase64 || '')}`}">
+                View ${item.protoType.split('.').pop()}
+              </a>
+            ` : ''}
+          </td>
         </tr>
       `)}
     </tbody>

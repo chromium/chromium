@@ -49,6 +49,8 @@ interface EventLogMessage {
   sourceLinkText: string;
   sourceLinkUrl: string;
   message: string;
+  protoType: string|null;
+  protoBase64: string|null;
 }
 
 export class LogsAppElement extends CrLitElement {
@@ -91,13 +93,15 @@ export class LogsAppElement extends CrLitElement {
 
   private onLogMessageAdded_(
       eventTime: Time, tag: string, sourceFile: string, sourceLine: number,
-      message: string) {
+      message: string, protoType: string|null, protoBase64: string|null) {
     this.eventLogMessages_.push({
       eventTime: convertMojoTimeToJs(eventTime),
       tag,
       sourceLinkText: getSourceLinkText(sourceFile, sourceLine),
       sourceLinkUrl: getSourceLinkUrl(sourceFile, sourceLine),
       message,
+      protoType,
+      protoBase64,
     });
     this.requestUpdate();
   }

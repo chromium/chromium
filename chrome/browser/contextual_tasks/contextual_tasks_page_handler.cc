@@ -36,6 +36,7 @@
 #include "components/contextual_tasks/public/features.h"
 #include "components/contextual_tasks/public/prefs.h"
 #include "components/lens/lens_url_utils.h"
+#include "components/omnibox/common/logger.h"
 #include "components/prefs/pref_service.h"
 #include "components/sessions/core/session_id.h"
 #include "components/tabs/public/tab_interface.h"
@@ -378,6 +379,9 @@ void ContextualTasksPageHandler::OnWebviewMessage(
     return;
   }
 
+  OMNIBOX_LOG_WITH_PROTO("OnWebviewMessage", aim_to_client_message,
+                         std::string("lens.chrome.AimToClientMessage"));
+
   if (aim_to_client_message.has_handshake_response()) {
     web_ui_controller_->GetPageRemote()->OnHandshakeComplete();
     web_ui_controller_->OnSidePanelStateChanged();
@@ -477,6 +481,9 @@ void ContextualTasksPageHandler::PostMessageToWebview(
     LOG(ERROR) << "Failed to serialize ClientToAimMessage.";
     return;
   }
+
+  OMNIBOX_LOG_WITH_PROTO("PostMessageToWebview", message,
+                         std::string("lens.chrome.ClientToAimMessage"));
 
   web_ui_controller_->GetPageRemote()->PostMessageToWebview(serialized_message);
 }

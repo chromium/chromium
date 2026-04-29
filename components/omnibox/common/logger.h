@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_OMNIBOX_COMMON_LOGGER_H_
 #define COMPONENTS_OMNIBOX_COMMON_LOGGER_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -14,7 +15,12 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
+#include "base/types/optional_ref.h"
 #include "url/gurl.h"
+
+namespace google::protobuf {
+class MessageLite;
+}  // namespace google::protobuf
 
 namespace omnibox {
 
@@ -22,16 +28,24 @@ namespace omnibox {
   omnibox::Logger::LogMessageBuilder(tag, __FILE__, __LINE__, \
                                      omnibox::Logger::GetInstance())
 
+#define OMNIBOX_LOG_WITH_PROTO(tag, proto, ...)                      \
+  omnibox::Logger::LogMessageBuilder(tag, __FILE__, __LINE__,        \
+                                     omnibox::Logger::GetInstance()) \
+      .WithProto(proto, ##__VA_ARGS__)
+
 // Interface to record the debug logs and show them on an internals page.
 class Logger {
  public:
   class Observer : public base::CheckedObserver {
    public:
-    virtual void OnLogMessageAdded(base::Time event_time,
-                                   const std::string& tag,
-                                   const std::string& source_file,
-                                   uint32_t source_line,
-                                   const std::string& message) = 0;
+    virtual void OnLogMessageAdded(
+        base::Time event_time,
+        const std::string& tag,
+        const std::string& source_file,
+        uint32_t source_line,
+        const std::string& message,
+        const std::optional<std::string>& proto_type,
+        const std::optional<std::string>& proto_base64) = 0;
   };
   static Logger* GetInstance();
   Logger();
@@ -43,10 +57,12 @@ class Logger {
   void AddObserver(Logger::Observer* observer);
   void RemoveObserver(Logger::Observer* observer);
   void OnLogMessageAdded(base::Time event_time,
-                         const std::string& tag,
-                         const std::string& source_file,
+                         std::string tag,
+                         std::string source_file,
                          uint32_t source_line,
-                         const std::string& message);
+                         std::string message,
+                         std::optional<std::string> proto_type,
+                         std::optional<std::string> proto_base64);
 
   // Whether debug logs should allowed to be recorded.
   bool ShouldEnableDebugLogs() const;
@@ -60,7 +76,7 @@ class Logger {
     LogMessageBuilder(const std::string& tag,
                       const std::string& source_file,
                       uint32_t source_line,
-                      Logger* Logger);
+                      Logger* logger);
     ~LogMessageBuilder();
 
     LogMessageBuilder& operator<<(const char* message);
@@ -69,29 +85,42 @@ class Logger {
     LogMessageBuilder& operator<<(size_t message);
     LogMessageBuilder& operator<<(const GURL& message);
 
+    // Some protos have a different package name internally than what we roll
+    // into the Chromium repository. The optional `type_name` allows overriding
+    // the default type name obtained from the proto message itself.
+    LogMessageBuilder& WithProto(
+        const ::google::protobuf::MessageLite& proto,
+        base::optional_ref<const std::string> type_name = std::nullopt);
+
    private:
-    const std::string tag_;
-    const std::string source_file_;
+    std::string tag_;
+    std::string source_file_;
     const uint32_t source_line_;
     std::vector<std::string> messages_;
+    std::optional<std::string> proto_type_;
+    std::optional<std::string> proto_base64_;
     const raw_ptr<Logger> logger_;
   };
 
  private:
   struct LogMessage {
     LogMessage(base::Time event_time,
-               const std::string& tag,
-               const std::string& source_file,
+               std::string tag,
+               std::string source_file,
                uint32_t source_line,
-               const std::string& message);
+               std::string message,
+               std::optional<std::string> proto_type,
+               std::optional<std::string> proto_base64);
     LogMessage(const LogMessage&);
     LogMessage& operator=(const LogMessage&) = delete;
     ~LogMessage();
     const base::Time event_time;
-    const std::string tag;
-    const std::string source_file;
+    std::string tag;
+    std::string source_file;
     const uint32_t source_line;
-    const std::string message;
+    std::string message;
+    std::optional<std::string> proto_type;
+    std::optional<std::string> proto_base64;
   };
 
   // Contains the most recent log messages. Messages are queued up only when

@@ -26,11 +26,14 @@ class LogsPageHandler : public omnibox::logging::mojom::PageHandler,
   LogsPageHandler& operator=(const LogsPageHandler&) = delete;
 
   // Logger::Observer impl:
-  void OnLogMessageAdded(base::Time event_time,
-                         const std::string& tag,
-                         const std::string& source_file,
-                         uint32_t source_line,
-                         const std::string& message) override;
+  void OnLogMessageAdded(
+      base::Time event_time,
+      const std::string& tag,
+      const std::string& source_file,
+      uint32_t source_line,
+      const std::string& message,
+      const std::optional<std::string>& proto_type,
+      const std::optional<std::string>& proto_base64) override;
 
  private:
   mojo::Receiver<omnibox::logging::mojom::PageHandler> receiver_;

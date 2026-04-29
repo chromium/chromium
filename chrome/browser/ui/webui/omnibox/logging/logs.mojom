@@ -27,5 +27,7 @@ interface Page {
                     string tag,
                     string source_file,
                     uint32 source_line,
-                    string message);
+                    string message,
+                    string? proto_type,
+                    string? proto_base64);
 };
