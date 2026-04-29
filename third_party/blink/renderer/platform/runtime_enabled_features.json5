@@ -854,6 +854,12 @@
       },
     },
     {
+      // Removes special layout code from customizable select which was
+      // preventing it from growing in the inline direction.
+      name: "BaseAppearanceInlineSizing",
+      status: "stable",
+    },
+    {
       name: "BidiCaretAffinity",
     },
     {

@@ -86,10 +86,18 @@ bool ShouldBlockContainerChildStretchAutoInlineSize(const BlockNode& child) {
   if (child.IsTable()) {
     return false;
   }
-  if (const auto* node = child.GetDOMNode()) {
-    if (IsA<HTMLButtonElement>(node) || IsA<HTMLInputElement>(node) ||
-        IsA<HTMLSelectElement>(node) || IsA<HTMLTextAreaElement>(node)) {
-      return false;
+  if (const auto* element = DynamicTo<HTMLElement>(child.GetDOMNode())) {
+    if (IsA<HTMLButtonElement>(element) || IsA<HTMLInputElement>(element) ||
+        IsA<HTMLSelectElement>(element) || IsA<HTMLTextAreaElement>(element)) {
+      if (!RuntimeEnabledFeatures::BaseAppearanceInlineSizingEnabled()) {
+        return false;
+      }
+      // Base appearance elements shouldn't have any special layout behavior
+      // applied to them.
+      if (!element->SupportsBaseAppearance(
+              child.Style().EffectiveAppearance())) {
+        return false;
+      }
     }
   }
   return true;

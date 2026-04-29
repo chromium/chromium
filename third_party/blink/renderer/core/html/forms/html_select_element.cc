@@ -470,13 +470,14 @@ LayoutObject* HTMLSelectElement::CreateLayoutObject(
     UseCounter::Count(GetDocument(), WebFeature::kVerticalFormControls);
   }
 
+  if (SupportsBaseAppearance(style.EffectiveAppearance())) {
+    // Don't hard code the layout object type for customizable select. The UA
+    // stylesheet has flex or block in it and authors should be able to change
+    // it if they want.
+    return HTMLFormControlElementWithState::CreateLayoutObject(style);
+  }
+
   if (UsesMenuList()) {
-    if (SupportsBaseAppearance(style.EffectiveAppearance())) {
-      // Don't hard code the layout object type for customizable select. The UA
-      // stylesheet has flex in it and authors should be able to change it if
-      // they want.
-      return HTMLFormControlElementWithState::CreateLayoutObject(style);
-    }
     return MakeGarbageCollected<LayoutFlexibleBox>(this);
   }
   return MakeGarbageCollected<LayoutBlockFlow>(this);
