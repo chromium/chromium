@@ -305,6 +305,7 @@ TEST_F(CastSessionTrackerTest, CopySavedMediaFieldsToMediaList) {
                                     kSourceId, kDestinationId, kMediaNamespace,
                                     ParseJsonDict(R"({
     "status": [{
+        "customData": "custom",
         "media": "theMedia",
         "mediaSessionId": 345,
         "playerState": "anything but IDLE",
@@ -316,6 +317,7 @@ TEST_F(CastSessionTrackerTest, CopySavedMediaFieldsToMediaList) {
 
   // Check that the stored media value is what we expected.
   ASSERT_THAT(*session_->value().Find("media"), IsJson(R"([{
+    "customData": "custom",
     "mediaSessionId": 345,
     "media": "theMedia",
     "playerState": "anything but IDLE",
@@ -327,11 +329,12 @@ TEST_F(CastSessionTrackerTest, CopySavedMediaFieldsToMediaList) {
   // Not strictly needed, but makes this test easier to debug.
   testing::Mock::VerifyAndClear(&observer_);
 
-  // Expect the outgoing status message to have a 'media' field filled in from
+  // Expect the outgoing status message to have missing fields filled in from
   // the previously stored value.
   EXPECT_CALL(observer_, OnMediaStatusUpdated(sink_, IsJson(R"({
     "sessionId": "theSessionId",
     "status": [{
+        "customData": "custom",
         "media": "theMedia",
         "mediaSessionId": 345,
         "playerState": "anything but IDLE",
@@ -343,8 +346,8 @@ TEST_F(CastSessionTrackerTest, CopySavedMediaFieldsToMediaList) {
   })"),
                                               _));
 
-  // Receive a message referring to the previously stored mediaSessionId with a
-  // missing 'media' field.  This tests the logic in the
+  // Receive a message referring to the previously stored mediaSessionId with
+  // missing 'media' and 'customData' fields. This tests the logic in the
   // CopySavedMediaFieldsToMediaList() method.
   session_tracker_.OnInternalMessage(
       sink_.cast_data().cast_channel_id,
@@ -363,6 +366,7 @@ TEST_F(CastSessionTrackerTest, CopySavedMediaFieldsToMediaList) {
   // Check that the stored media value is the same as the 'status' field in the
   // outgoing message.
   EXPECT_THAT(*session_->value().Find("media"), IsJson(R"([{
+    "customData": "custom",
     "media": "theMedia",
     "mediaSessionId": 345,
     "playerState": "anything but IDLE",

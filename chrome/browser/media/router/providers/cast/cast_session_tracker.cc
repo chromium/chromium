@@ -175,7 +175,7 @@ void CastSessionTracker::CopySavedMediaFieldsToMediaList(
     CastSession* session,
     base::ListValue& media_list) {
   // When |session| has saved media objects with a mediaSessionId corresponding
-  // to a value in |media_list|, copy the 'media' field from the saved objects
+  // to a value in |media_list|, copy any missing fields from the saved objects
   // to the corresponding objects in |media_list|.
   const base::ListValue* session_media_value_list =
       session->value().FindList("media");
@@ -186,7 +186,7 @@ void CastSessionTracker::CopySavedMediaFieldsToMediaList(
   for (auto& media : media_list) {
     base::DictValue& media_dict = media.GetDict();
     std::optional<int> media_session_id = media_dict.FindInt("mediaSessionId");
-    if (!media_session_id.has_value() || media_dict.Find("media")) {
+    if (!media_session_id.has_value()) {
       continue;
     }
 
@@ -198,10 +198,13 @@ void CastSessionTracker::CopySavedMediaFieldsToMediaList(
     if (session_media_it == session_media_value_list->end()) {
       continue;
     }
-    const base::Value* session_media =
-        session_media_it->GetDict().Find("media");
-    if (session_media) {
-      media_dict.Set("media", session_media->Clone());
+
+    // Merge missing fields from the saved session media into the current
+    // media_dict.
+    for (auto [key, value] : session_media_it->GetDict()) {
+      if (!media_dict.Find(key)) {
+        media_dict.Set(key, value.Clone());
+      }
     }
   }
 }
