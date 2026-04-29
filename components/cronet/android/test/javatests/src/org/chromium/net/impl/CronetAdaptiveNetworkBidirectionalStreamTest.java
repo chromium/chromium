@@ -893,6 +893,68 @@ public class CronetAdaptiveNetworkBidirectionalStreamTest {
 
     @Test
     @SmallTest
+    // OnWriteCompleted gives ownership of a ByteBuffer back to the caller. This allows the caller
+    // to modify the ByteBuffer. When isFastIdempotentRequest is true, CANS can send #write calls
+    // to both underlying streams. This test ensures that changes to the original ByteBuffer after
+    // onWriteCompleted is called do not affect the data being sent by the other stream.
+    // This is a regression test for
+    // https://crrev.com/c/7771809/15/components/cronet/android/java/src/org/chromium/net/impl/CronetAdaptiveNetworkBidirectionalStream.java#90
+    public void testFastIdempotent_byteBufferCannotBeCorrupted() {
+        // We need java.util.stream.Stream to be available for these tests.
+        assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
+        mAdaptiveStream =
+                new CronetAdaptiveNetworkBidirectionalStream(
+                        mMockCallback,
+                        mMockScheduledExecutorService,
+                        mMockAdaptiveRequestContext,
+                        URI.create(TEST_URL),
+                        mTestLogger,
+                        /* isFastIdempotentRequest= */ true);
+        mAdaptiveStream.setPrimaryStream(mPrimaryStream);
+        mAdaptiveStream.setFallbackStream(mFallbackStream);
+
+        // Make primary stream ready initially
+        mAdaptiveStream.getCallback().onStreamReady(mPrimaryStream);
+
+        ByteBuffer buffer = ByteBuffer.allocateDirect(100);
+        buffer.put((byte) 1);
+        buffer.flip();
+
+        mAdaptiveStream.write(buffer, false);
+
+        // Verify primary received a write
+        ArgumentCaptor<ByteBuffer> primaryBufferCaptor = ArgumentCaptor.forClass(ByteBuffer.class);
+        verify(mPrimaryStream).write(primaryBufferCaptor.capture(), eq(false));
+        ByteBuffer primaryReplayedBuffer = primaryBufferCaptor.getValue();
+
+        // Complete write on primary
+        UrlResponseInfo info = mock(UrlResponseInfo.class);
+        mAdaptiveStream
+                .getCallback()
+                .onWriteCompleted(mPrimaryStream, info, primaryReplayedBuffer, false);
+
+        // Verify backend callback received onWriteCompleted with original buffer
+        verify(mMockCallback).onWriteCompleted(mAdaptiveStream, info, buffer, false);
+
+        // Modify original buffer (simulate user reusing/modifying it)
+        buffer.clear();
+        buffer.put((byte) 99);
+        buffer.flip();
+
+        // Now fallback becomes ready
+        mAdaptiveStream.getCallback().onStreamReady(mFallbackStream);
+
+        // Verify fallback received a write
+        ArgumentCaptor<ByteBuffer> fallbackBufferCaptor = ArgumentCaptor.forClass(ByteBuffer.class);
+        verify(mFallbackStream).write(fallbackBufferCaptor.capture(), eq(false));
+        ByteBuffer fallbackReplayedBuffer = fallbackBufferCaptor.getValue();
+
+        // Verify fallback received the OLD data (1), not the modified data (99)
+        assertEquals(1, fallbackReplayedBuffer.get(0));
+    }
+
+    @Test
+    @SmallTest
     public void onSucceeded_onFallback_forwardsToCallback() {
         // We need java.util.stream.Stream to be available for these tests.
         assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);

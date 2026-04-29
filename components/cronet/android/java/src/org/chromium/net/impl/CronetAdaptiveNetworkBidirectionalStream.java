@@ -88,12 +88,12 @@ final class CronetAdaptiveNetworkBidirectionalStream extends ExperimentalBidirec
 
     private static class PendingWrite {
         final ByteBuffer mOriginalBuffer;
-        final ByteBuffer mBufferSnapshot;
+        final ByteBuffer mDeepCopy;
         final boolean mEndOfStream;
 
-        PendingWrite(ByteBuffer buffer, boolean endOfStream) {
-            this.mOriginalBuffer = buffer;
-            this.mBufferSnapshot = buffer.duplicate();
+        PendingWrite(ByteBuffer originalBuffer, ByteBuffer deepCopy, boolean endOfStream) {
+            this.mOriginalBuffer = originalBuffer;
+            this.mDeepCopy = deepCopy;
             this.mEndOfStream = endOfStream;
         }
     }
@@ -268,7 +268,7 @@ final class CronetAdaptiveNetworkBidirectionalStream extends ExperimentalBidirec
             synchronized (mLock) {
                 mReadyStreams.add(stream);
                 for (PendingWrite pendingWrite : mPendingWrites) {
-                    ByteBuffer duplicate = pendingWrite.mBufferSnapshot.duplicate();
+                    ByteBuffer duplicate = pendingWrite.mDeepCopy.duplicate();
                     mDuplicateToOriginal.put(duplicate, pendingWrite.mOriginalBuffer);
                     stream.write(duplicate, pendingWrite.mEndOfStream);
                 }
@@ -302,6 +302,10 @@ final class CronetAdaptiveNetworkBidirectionalStream extends ExperimentalBidirec
             checkValidStream(stream);
             ByteBuffer original;
             synchronized (mLock) {
+                // TODO(b/474048542) while this is removing the ByteBuffer from the map,
+                // ByteBuffers can be reused by the caller after onWriteCompleted is called. This
+                // breaks our way of tracking duplicate writes. See
+                // https://chromium-review.git.corp.google.com/c/chromium/src/+/7795941/comment/4ca82ae6_ac01a4f8
                 original = mDuplicateToOriginal.remove(buffer);
                 if (original == null) {
                     // This was either not a replayed buffer or we already handled it.
@@ -414,11 +418,24 @@ final class CronetAdaptiveNetworkBidirectionalStream extends ExperimentalBidirec
             Objects.requireNonNull(mActiveStream.get()).write(buffer, endOfStream);
             return;
         }
-        // Continue with mIsFastIdempotentRequest logic.
+
+        // TODO(b/474048542): Stop deep copying once mActiveStream is set. See
+        // https://chromium-review.git.corp.google.com/c/chromium/src/+/7795941/comment/571d1592_bd96b192
         synchronized (mLock) {
-            mPendingWrites.add(new PendingWrite(buffer, endOfStream));
+            // A deep copy is necessary to prevent modification to {@code buffer} after
+            // {@link #onWriteCompleted} has been called, to affect the ByteBuffers passed to the
+            // underlying streams. Without this, onWriteCompleted being triggered for one stream
+            // could allow the data to be corrupted for the other stream.
+            ByteBuffer deepCopy = ByteBuffer.allocateDirect(buffer.remaining());
+            // Note: ByteBuffer#put updates the position of both {@code deepCopy} and
+            // {@code buffer}. Use ByteBuffer#duplicate() to avoid advancing {@code buffer}'s
+            // position, this will be done within onWriteCompleted.
+            deepCopy.put(buffer.duplicate());
+            deepCopy.flip();
+
+            mPendingWrites.add(new PendingWrite(buffer, deepCopy, endOfStream));
             for (BidirectionalStream stream : mReadyStreams) {
-                ByteBuffer duplicate = buffer.duplicate();
+                ByteBuffer duplicate = deepCopy.duplicate();
                 mDuplicateToOriginal.put(duplicate, buffer);
                 stream.write(duplicate, endOfStream);
             }
