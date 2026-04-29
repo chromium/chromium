@@ -236,7 +236,7 @@ ResultExpr RestrictIoctl() {
       CrashSIGSYSIoctl());
 }
 
-ResultExpr RestrictMmapFlags(uint64_t extra_allowed_mask) {
+ResultExpr RestrictMmapFlags() {
 #if BUILDFLAG(IS_ANDROID) && defined(__x86_64__)
   const uint64_t kArchSpecificAllowedMask = MAP_32BIT;
 #else
@@ -251,7 +251,7 @@ ResultExpr RestrictMmapFlags(uint64_t extra_allowed_mask) {
   const uint64_t kAllowedMask = MAP_SHARED | MAP_PRIVATE | MAP_ANONYMOUS |
                                 MAP_STACK | MAP_NORESERVE | MAP_FIXED |
                                 MAP_DENYWRITE | MAP_LOCKED | MAP_DROPPABLE |
-                                kArchSpecificAllowedMask | extra_allowed_mask;
+                                kArchSpecificAllowedMask;
   const Arg<int> flags(3);
   return If((flags & ~kAllowedMask) == 0, Allow()).Else(CrashSIGSYS());
 }

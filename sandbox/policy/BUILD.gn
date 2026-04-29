@@ -227,15 +227,6 @@ source_set("tests") {
     "//testing/gtest",
   ]
 
-  if (is_linux || is_chromeos) {
-    sources += [ "linux/bpf_speech_recognition_policy_linux_unittest.cc" ]
-    deps += [
-      "//sandbox/linux:sandbox_linux_test_utils",
-      "//sandbox/linux:sandbox_services_headers",
-      "//sandbox/linux:seccomp_bpf",
-    ]
-  }
-
   if (is_win) {
     sources += [
       "win/mf_cdm_sandbox_type_unittest.cc",
