@@ -10,14 +10,27 @@ Security Critical: no
 Shipped: yes
 
 Description:
-Lottie is a library for Android, iOS, Web, and Windows that parses Adobe After Effects animations exported as json with Bodymovin and renders them natively on mobile and on the web.
+Lottie is a library for Android, iOS, Web, and Windows that parses
+Adobe After Effects animations exported as json with Bodymovin and renders them
+natively on mobile and on the web.
 
-The library imported here is the lottie-web library which is a javascript file that can run animations on the web.
+The library imported here is the lottie-web library which is a javascript file
+that can run animations on the web.
 
 Local Modifications:
-The library has been modified to be able to run on javascript worker thread which provides performance benefits and some level of security sandboxing. The library has its document and window references removed. All XMLHttpRequest have also been removed. This means the animation will not load external assests like images and fonts. A wrapper function has been added to handle messages sent to the worker thread from the main thread.
+The library has been modified to be able to run on javascript worker thread
+which provides performance benefits and some level of security sandboxing.
+The library has its document and window references removed.
+All XMLHttpRequest have also been removed.
+This means the animation will not load external assests like images and fonts.
+A wrapper function has been added to handle messages sent to the worker thread
+from the main thread.
 
 The code style has been updated to match chromium js style.
+
+Added playSegments functionality to be able to play a subset of frames in the
+animation (if the animation was paused before calling playSegments,
+it would be resumed).
 
 Generating Minified Version:
 Minified version automatically generated at build time via the

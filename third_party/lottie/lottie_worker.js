@@ -13387,6 +13387,12 @@ const lottiejs = (function(window) {
 let currentAnimation = null;
 
 /**
+ * The segments currently being played.
+ * @type {Array<number>|null}
+ */
+let currentSegments = null;
+
+/**
  * Events sent back to the parent thread.
  */
 const events = {
@@ -13426,7 +13432,7 @@ function sendResizeEvent() {
  * Informs the parent thread that the animation is playing.
  */
 function sendPlayEvent() {
-  postMessage({name: events.PLAYING});
+  postMessage({name: events.PLAYING, segments: currentSegments});
 }
 
 /**
@@ -13526,6 +13532,18 @@ function updateCanvasSize(canvas, size) {
  */
 function updateAnimationState(control, canvas) {
   if (!control || !currentAnimation) {
+    return;
+  }
+
+  if (control.playSegments) {
+    currentSegments = control.playSegments;
+    const wasPaused = currentAnimation.isPaused;
+    currentAnimation.playSegments(control.playSegments, /* forceFlag= */ true);
+
+    // Send event only when playSegments unpauses the animation.
+    if (wasPaused) {
+      sendPlayEvent();
+    }
     return;
   }
 
