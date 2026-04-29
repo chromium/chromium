@@ -122,6 +122,7 @@ class CORE_EXPORT HTMLOptionElement final : public HTMLElement {
   bool IsMultiSelectFocused() const;
 
   Node::InsertionNotificationRequest InsertedInto(ContainerNode&) override;
+  void DidNotifySubtreeInsertionsToDocument() override;
   void RemovedFrom(ContainerNode&) override;
 
   void FinishParsingChildren() override;

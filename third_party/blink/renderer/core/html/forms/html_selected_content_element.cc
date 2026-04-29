@@ -4,9 +4,11 @@
 
 #include "third_party/blink/renderer/core/html/forms/html_selected_content_element.h"
 
+#include "third_party/blink/renderer/core/dom/events/event_dispatch_forbidden_scope.h"
 #include "third_party/blink/renderer/core/html/forms/html_option_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/html_collection.h"
+#include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 
 namespace blink {
 
@@ -17,6 +19,13 @@ void HTMLSelectedContentElement::CloneContentsFromOptionElement(
     const HTMLOptionElement* option) {
   if (disabled_) {
     return;
+  }
+
+  if (RuntimeEnabledFeatures::SelectedcontentSpecEnabled()) {
+    DCHECK(!ScriptForbiddenScope::IsScriptForbidden());
+#if DCHECK_IS_ON()
+    DCHECK(!EventDispatchForbiddenScope::IsEventDispatchForbidden());
+#endif
   }
 
   VectorOf<Node> nodes;

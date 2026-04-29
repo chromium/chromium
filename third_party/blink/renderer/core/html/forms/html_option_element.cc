@@ -577,7 +577,22 @@ Node::InsertionNotificationRequest HTMLOptionElement::InsertedInto(
   // TODO(crbug.com/453705243): Call OptionInserted on the ancestor datalist if
   // it changed.
 
+  if (RuntimeEnabledFeatures::SelectedcontentSpecEnabled() && Selected()) {
+    return InsertionNotificationRequest::
+        kInsertionShouldCallDidNotifySubtreeInsertions;
+  }
   return return_value;
+}
+
+void HTMLOptionElement::DidNotifySubtreeInsertionsToDocument() {
+  if (RuntimeEnabledFeatures::SelectedcontentSpecEnabled() && Selected() &&
+      nearest_ancestor_select_) {
+    if (nearest_ancestor_select_->IsMultiple()) {
+      nearest_ancestor_select_->UpdateAllSelectedcontentsMultiple();
+    } else {
+      nearest_ancestor_select_->UpdateAllSelectedcontentsSingle(this);
+    }
+  }
 }
 
 void HTMLOptionElement::RemovedFrom(ContainerNode& insertion_point) {
