@@ -371,7 +371,7 @@ testCases.push({
                   chrome.test.assertEq(5, result['activities'].length);
                   for (let i = 0; i < result['activities'].length; i++) {
                     chrome.test.assertFalse(
-                        activityIds[0] ==
+                        activityIds[0] ===
                         result['activities'][i]['activityId']);
                   }
                   chrome.activityLogPrivate.deleteActivities(activityIds);
@@ -438,7 +438,7 @@ function checkIncognito(url, incognitoExpected) {
     incognitoExpected = Boolean(incognitoExpected);
     const kIncognitoMarker = '<incognito>';
     const isIncognito =
-        (url.substr(0, kIncognitoMarker.length) == kIncognitoMarker);
+        url.substr(0, kIncognitoMarker.length) === kIncognitoMarker;
     chrome.test.assertEq(
         incognitoExpected, isIncognito, 'Bad incognito state for URL ' + url);
   }
@@ -459,7 +459,7 @@ chrome.activityLogPrivate.onExtensionActivity.addListener(
 
       // Check the api call is the one we expected next.
       let apiCall = activity['apiCall'];
-      if (apiCall.indexOf('blink') == 0) {
+      if (apiCall.indexOf('blink') === 0) {
         let args = JSON.parse(activity['args']);
         if (blinkArgs[apiCall]) {
           args = args.splice(0, blinkArgs[apiCall] - 1);
@@ -480,7 +480,7 @@ chrome.activityLogPrivate.onExtensionActivity.addListener(
 
       // Check that no real URLs are logged in incognito-mode tests.  Ignore
       // the initial call to windows.create opening the tab.
-      if (apiCall != 'windows.create') {
+      if (apiCall !== 'windows.create') {
         checkIncognito(activity['pageUrl'], testCase.is_incognito);
         checkIncognito(activity['argUrl'], testCase.is_incognito);
       }
@@ -488,7 +488,7 @@ chrome.activityLogPrivate.onExtensionActivity.addListener(
       // If all the expected calls have been logged for this test case then
       // mark as succeeded and move to the next. Otherwise look for the next
       // expected api call.
-      if (callIndx == testCase.expected_activity.length - 1) {
+      if (callIndx === testCase.expected_activity.length - 1) {
         chrome.test.succeed();
         callIndx = -1;
         testCaseIndx++;

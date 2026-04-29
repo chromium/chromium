@@ -11,7 +11,7 @@ const allTests = [
       chrome.automation.getDesktop(function(rootNode) {
         // Succeed when the button inside the iframe gets focus.
         rootNode.addEventListener('focus', function(event) {
-          if (event.target.name == 'Inner') {
+          if (event.target.name === 'Inner') {
             chrome.test.succeed();
           }
         });

@@ -26,8 +26,8 @@ function testGetServices() {
   chrome.test.succeed();
 }
 
-var deviceAddress = '11:22:33:44:55:66';
-var services = null;
+const deviceAddress = '11:22:33:44:55:66';
+let services = null;
 
 function earlyError(message) {
   error = message;
@@ -53,7 +53,7 @@ chrome.bluetoothLowEnergy.getServices(deviceAddress, function(result) {
       return;
     }
 
-    if (!result || result.length != 0) {
+    if (!result || result.length !== 0) {
       earlyError('Services should be empty.');
       return;
     }

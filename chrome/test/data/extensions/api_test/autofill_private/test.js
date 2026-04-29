@@ -551,9 +551,9 @@ const availableTests = [
         // Credit cards are considered the same if they have a
         // matching card number, expiration month, and expiration
         // year.
-        return card['cardNumber'] == MASKED_NUMBER &&
-            card['expirationMonth'] == EXP_MONTH &&
-            card['expirationYear'] == EXP_YEAR;
+        return card['cardNumber'] === MASKED_NUMBER &&
+            card['expirationMonth'] === EXP_MONTH &&
+            card['expirationYear'] === EXP_YEAR;
       });
     }
 
@@ -813,14 +813,14 @@ const availableTests = [
     const personalDataChangedHandler = function(addressList, creditCardList) {
       numCalls++;
 
-      if (numCalls == 2) {
+      if (numCalls === 2) {
         chrome.test.assertEq(creditCardList.length, 1);
         const creditCard = creditCardList[0];
         chrome.test.assertEq(creditCard.name, NAME);
 
         guid = creditCard.guid;
         chrome.autofillPrivate.removePaymentsEntity(guid);
-      } else if (numCalls == 3) {
+      } else if (numCalls === 3) {
         chrome.test.assertEq(creditCardList.length, 0);
         chrome.test.succeed();
       } else {
@@ -842,7 +842,7 @@ const availableTests = [
       chrome.autofillPrivate.isValidIban(INVALID_IBAN_VALUE, handler2);
     };
 
-    var handler2 = function(isValidIban) {
+    const handler2 = function(isValidIban) {
       // INVALID_IBAN_VALUE is not valid.
       chrome.test.assertFalse(isValidIban);
       chrome.test.succeed();
@@ -1205,12 +1205,12 @@ const availableTests = [
       },
     ];
 
-    var done = chrome.test.listenForever(
+    const done = chrome.test.listenForever(
         chrome.autofillPrivate.onEntityInstancesChanged,
         function(entityInstancesWithLabelsList) {
           // The test callback should only run when all expected entities were
           // added.
-          if (entityInstancesWithLabelsList.length ==
+          if (entityInstancesWithLabelsList.length ===
               entityInstancesWithExpectedLabels.length) {
             chrome.test.callbackPass(function(entityInstancesWithLabelsList) {
               assertExpectedLabelsAreCorrect(
@@ -1296,12 +1296,12 @@ const availableTests = [
       },
     ];
 
-    var done = chrome.test.listenForever(
+    const done = chrome.test.listenForever(
         chrome.autofillPrivate.onEntityInstancesChanged,
         function(entityInstancesWithLabelsList) {
           // The test callback should only run when all expected entities were
           // added.
-          if (entityInstancesWithLabelsList.length ==
+          if (entityInstancesWithLabelsList.length ===
               entityInstancesWithExpectedLabels.length) {
             chrome.test.callbackPass(function(entityInstancesWithLabelsList) {
               assertExpectedLabelsAreCorrect(

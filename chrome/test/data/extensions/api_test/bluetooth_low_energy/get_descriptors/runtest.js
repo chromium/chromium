@@ -34,10 +34,10 @@ function testGetDescriptors() {
 }
 
 const getDescriptors = chrome.bluetoothLowEnergy.getDescriptors;
-var charId = 'char_id0';
+const charId = 'char_id0';
 const badCharId = 'char_id1';
 
-var descrs = null;
+let descrs = null;
 
 function earlyError(message) {
   error = message;
@@ -72,7 +72,7 @@ getDescriptors(badCharId, function(result) {
         return;
       }
 
-      if (!result || result.length != 0) {
+      if (!result || result.length !== 0) {
         earlyError('Descriptors should be empty');
         return;
       }

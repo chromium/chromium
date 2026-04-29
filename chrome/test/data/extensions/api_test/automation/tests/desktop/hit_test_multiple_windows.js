@@ -54,8 +54,8 @@ const allTests = [
 
     // Note that the hit test might return either a static text or the button.
     chrome.test.assertTrue(
-        hitButton2.role == chrome.automation.RoleType.BUTTON ||
-        hitButton2.role == chrome.automation.RoleType.STATIC_TEXT);
+        hitButton2.role === chrome.automation.RoleType.BUTTON ||
+        hitButton2.role === chrome.automation.RoleType.STATIC_TEXT);
     chrome.test.succeed();
   },
 ];

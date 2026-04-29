@@ -17,8 +17,8 @@ function testGetIncludedServices() {
 }
 
 const serviceId = 'service_id0';
-var includedId = 'service_id1';
-var services = null;
+const includedId = 'service_id1';
+let services = null;
 
 function earlyError(message) {
   error = message;
@@ -46,7 +46,7 @@ chrome.bluetoothLowEnergy.getIncludedServices(serviceId, function(result) {
         return;
       }
 
-      if (!result || result.length != 0) {
+      if (!result || result.length !== 0) {
         earlyError('Included services should be empty.');
         return;
       }

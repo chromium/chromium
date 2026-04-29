@@ -8,7 +8,7 @@ const availableTests = [
     let tabCount = 0;
     chrome.tabs.onCreated.addListener((tab) => {
       tabCount++;
-      if (tabCount == 2) {
+      if (tabCount === 2) {
         chrome.test.succeed();
       }
     });
@@ -358,6 +358,6 @@ const availableTests = [
 
 chrome.test.getConfig((config) => {
   chrome.test.runTests(availableTests.filter((testFunc) => {
-    return testFunc.name == config.customArg;
+    return testFunc.name === config.customArg;
   }));
 });

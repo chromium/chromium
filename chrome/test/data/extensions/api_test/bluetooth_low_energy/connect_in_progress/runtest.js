@@ -10,7 +10,7 @@ const errorNotConnected = 'Not connected';
 
 function expectError(message) {
   if (!chrome.runtime.lastError ||
-      chrome.runtime.lastError.message != message) {
+      chrome.runtime.lastError.message !== message) {
     chrome.test.sendMessage(
         'Expected error: <' + message + '> got <' +
         chrome.runtime.lastError.message + '>');

@@ -21,7 +21,7 @@ function sendReady(callback) {
   chrome.test.sendMessage('ready', callback);
 }
 
-var discoveredDevices = [];
+const discoveredDevices = [];
 function recordDevice(device) {
   discoveredDevices.push(device);
 }

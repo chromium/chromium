@@ -29,7 +29,7 @@ function assertFailure(message) {
     chrome.test.fail('Expected failure but got success.');
   }
 
-  if (chrome.runtime.lastError.message == message) {
+  if (chrome.runtime.lastError.message === message) {
     return;
   }
 

@@ -20,7 +20,7 @@ function testGetServices() {
   chrome.test.succeed();
 }
 
-var deviceAddress = '11:22:33:44:55:66';
+const deviceAddress = '11:22:33:44:55:66';
 const serviceId = 'service_id0';
 const charId = 'char_id0';
 const descId = 'char_id0';

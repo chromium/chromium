@@ -9,7 +9,7 @@ const errorAlreadyConnected = 'Already connected';
 
 function expectError(message) {
   if (!chrome.runtime.lastError ||
-      chrome.runtime.lastError.message != message) {
+      chrome.runtime.lastError.message !== message) {
     chrome.test.fail('Expected error: ' + message);
   }
 }

@@ -25,14 +25,14 @@ function testWriteCharacteristicValue() {
 const writeCharacteristicValue =
     chrome.bluetoothLowEnergy.writeCharacteristicValue;
 
-var charId = 'char_id0';
+const charId = 'char_id0';
 const badCharId = 'char_id1';
 
-var characteristic = null;
+let characteristic = null;
 
 const bytes = [0x43, 0x68, 0x72, 0x6F, 0x6D, 0x65];
-var writeValue = new ArrayBuffer(bytes.length);
-var valueBytes = new Uint8Array(writeValue);
+const writeValue = new ArrayBuffer(bytes.length);
+const valueBytes = new Uint8Array(writeValue);
 valueBytes.set(bytes);
 
 function earlyError(message) {

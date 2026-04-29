@@ -26,11 +26,11 @@ function testGetDescriptor() {
 
 const getDescriptor = chrome.bluetoothLowEnergy.getDescriptor;
 
-var charId = 'char_id0';
+const charId = 'char_id0';
 const descId = 'desc_id0';
 const badDescId = 'desc_id1';
 
-var descriptor = null;
+let descriptor = null;
 
 function earlyError(message) {
   error = message;

@@ -9,13 +9,13 @@ function checkNodes(rootNode) {
   // Grab the first button and hold on to it.
   if (!firstButton) {
     firstButton = findAutomationNode(rootNode, function(n) {
-      return n.name == 'First Button';
+      return n.name === 'First Button';
     });
   }
 
   // Search for second button.
   const secondButton = findAutomationNode(rootNode, function(n) {
-    return n.name == 'Second Button';
+    return n.name === 'Second Button';
   });
 
   // If we have the first but not the second, click the

@@ -19,9 +19,9 @@ function testCharacteristicProperties() {
 }
 
 const charId = 'char_id0';
-var requestCount = 12;
-var characteristics = [];
-var expectedProperties = [
+const requestCount = 12;
+const characteristics = [];
+const expectedProperties = [
   [],
   ['broadcast'],
   ['read'],
@@ -77,7 +77,7 @@ for (let i = 0; i < requestCount; i++) {
 
     characteristics.push(result);
 
-    if (characteristics.length == requestCount) {
+    if (characteristics.length === requestCount) {
       chrome.test.sendMessage('ready', function(message) {
         chrome.test.runTests([testCharacteristicProperties]);
       });

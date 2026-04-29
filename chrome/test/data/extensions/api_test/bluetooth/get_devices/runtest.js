@@ -10,7 +10,7 @@ function testGetDevices() {
   chrome.test.succeed();
 }
 
-var devices = null;
+let devices = null;
 
 function failOnError() {
   if (chrome.runtime.lastError) {

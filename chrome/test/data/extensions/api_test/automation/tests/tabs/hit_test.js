@@ -12,7 +12,7 @@ const allTests = [
     const button2 = buttons[1];
     assertEq(button2.name, 'Hit Test 2');
     let webArea = button1.parent;
-    while (webArea.role != RoleType.ROOT_WEB_AREA) {
+    while (webArea.role !== RoleType.ROOT_WEB_AREA) {
       webArea = webArea.parent;
     }
     button1.addEventListener(EventType.HOVER, function() {

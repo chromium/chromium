@@ -15,7 +15,7 @@ function getMessageCountAfterReceivingRealSenderMessage() {
 
 chrome.runtime.onMessageExternal.addListener(function(msg, sender, respond) {
   messagesReceived.push({msg: msg, sender: sender});
-  if (msg == 'from_sender') {
+  if (msg === 'from_sender') {
     resolve(messagesReceived.length);
   }
 });

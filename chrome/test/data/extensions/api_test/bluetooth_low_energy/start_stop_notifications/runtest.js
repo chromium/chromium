@@ -20,11 +20,11 @@ const errorNotNotifying = 'Not notifying';
 const errorOperationFailed = 'Operation failed';
 const errorPermissionDenied = 'Permission denied';
 
-var charId0 = 'char_id0';
+const charId0 = 'char_id0';
 const charId1 = 'char_id1';
 const charId2 = 'char_id2';
 
-var changedChrcs = {};
+const changedChrcs = {};
 const ble = chrome.bluetoothLowEnergy;
 const start = ble.startCharacteristicNotifications;
 const stop = ble.stopCharacteristicNotifications;
@@ -38,7 +38,7 @@ function earlyError(message) {
 function expectError(expectedMessage) {
   if (!chrome.runtime.lastError) {
     earlyError('Expected error: ' + expectedMessage);
-  } else if (chrome.runtime.lastError.message != expectedMessage) {
+  } else if (chrome.runtime.lastError.message !== expectedMessage) {
     earlyError(
         'Expected error: ' + expectedMessage +
         ', got error: ' + expectedMessage);

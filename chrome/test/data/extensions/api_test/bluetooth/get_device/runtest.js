@@ -9,7 +9,7 @@ function testGetDevice() {
   chrome.test.succeed();
 }
 
-var devices = [];
+const devices = [];
 
 function failOnError() {
   if (chrome.runtime.lastError) {

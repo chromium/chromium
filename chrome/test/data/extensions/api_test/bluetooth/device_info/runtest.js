@@ -31,7 +31,7 @@ function testDeviceInfo() {
   chrome.test.succeed();
 }
 
-var devices = [];
+let devices = [];
 
 function failOnError() {
   if (chrome.runtime.lastError) {

@@ -19,13 +19,13 @@ let testServerPort = undefined;
 chrome.test.getConfig(function(config) {
   // config is undefined in manual mode, this check required to stop crashes in
   // manual mode.
-  if (config != undefined) {
+  if (config !== undefined) {
     testServerPort = config.testServer.port;
   }
 });
 
 function getURLWithPort(url) {
-  if (testServerPort == undefined || url.substring(0, 4) != 'http') {
+  if (testServerPort === undefined || url.substring(0, 4) !== 'http') {
     return url;
   }
   return url + ':' + testServerPort;
@@ -33,7 +33,7 @@ function getURLWithPort(url) {
 
 function openTab(url, incognito) {
   const testUrl = getURLWithPort(url);
-  if (incognito == undefined ? useIncognito : incognito) {
+  if (incognito === undefined ? useIncognito : incognito) {
     chrome.windows.create({url: testUrl, incognito: true});
   } else {
     window.open(testUrl);
@@ -113,7 +113,7 @@ function doWebRequestModifications() {
       headers = [];
     }
     headers = headers.filter(function(x) {
-      return x['name'] != 'Cache-Control';
+      return x['name'] !== 'Cache-Control';
     });
     headers.push({name: 'X-Test-Response-Header', value: 'Inserted'});
     headers.push({name: 'Set-Cookie', value: 'ActivityLog=InsertedCookie'});
@@ -406,15 +406,15 @@ if (window.location.pathname !== '/options.html') {
           if (fnMap.hasOwnProperty(message)) {
             fnMap[message]();
           } else {
-            console.log('UNKNOWN METHOD: ' + message);
+            console.info('UNKNOWN METHOD: ' + message);
           }
         },
     );
   } catch (err) {
-    console.log('Error while adding listeners: ' + err);
+    console.info('Error while adding listeners: ' + err);
   }
 } else {
-  console.log('Not installing extension message listener on options.html');
+  console.info('Not installing extension message listener on options.html');
 }
 
 // Convenience functions for the manual run mode.
@@ -453,7 +453,7 @@ function appendError(str) {
 // automatically.
 function setupEvents() {
   for (const key in fnMap) {
-    if (fnMap.hasOwnProperty(key) && key != '' && $(key) != null) {
+    if (fnMap.hasOwnProperty(key) && key !== '' && $(key) != null) {
       $(key).addEventListener('click', fnMap[key]);
     }
   }

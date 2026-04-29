@@ -24,7 +24,7 @@ const allTests = [
     assertEq('butter', butter.description);
 
     chrome.automation.addTreeChangeObserver('allTreeChanges', function(change) {
-      if (change.type == 'textChanged') {
+      if (change.type === 'textChanged') {
         // TODO(aleventhal) Why is timeout necessary to avoid uncaught exception
         // "Error in event handler for automationInternal.onTreeChange:
         // ReferenceError: treeChange is not defined" ?

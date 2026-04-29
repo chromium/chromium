@@ -17,10 +17,10 @@ function testReadCharacteristicValue() {
 
 const readCharacteristicValue =
     chrome.bluetoothLowEnergy.readCharacteristicValue;
-var charId = 'char_id0';
+const charId = 'char_id0';
 const badCharId = 'char_id1';
 
-var characteristic = null;
+let characteristic = null;
 
 function earlyError(message) {
   error = message;

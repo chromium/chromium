@@ -54,7 +54,7 @@ function onBackgroundPageLoaded() {
   // #2: page C just opened and opened its background page, so we close pageC
   //     and reopen pageA.
   // #3: page A opened again and opened its background page, so we're done.
-  if (step == 0) {
+  if (step === 0) {
     // Close A, open C.
     chrome.tabs.remove(pageA.id, function() {
       chrome.test.getConfig(function(config) {
@@ -65,7 +65,7 @@ function onBackgroundPageLoaded() {
         });
       });
     });
-  } else if (step == 1) {
+  } else if (step === 1) {
     // Close C, re-open A
     chrome.tabs.remove(pageC.id, function() {
       chrome.test.getConfig(function(config) {
@@ -76,7 +76,7 @@ function onBackgroundPageLoaded() {
         });
       });
     });
-  } else if (step == 2) {
+  } else if (step === 2) {
     chrome.test.notifyPass();
   } else {
     chrome.test.notifyFail('onBackgroundPageLoaded() called too many times');

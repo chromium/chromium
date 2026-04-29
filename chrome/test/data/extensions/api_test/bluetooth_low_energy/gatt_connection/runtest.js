@@ -26,7 +26,7 @@ function expectError(message) {
   if (!chrome.runtime.lastError) {
     chrome.test.fail('Expected error: <' + message + '> but there was none.');
   }
-  if (chrome.runtime.lastError.message != message) {
+  if (chrome.runtime.lastError.message !== message) {
     chrome.test.fail(
         'Expected error: <' + message + '> but it was: <' +
         chrome.runtime.lastError.message + '>');
@@ -42,7 +42,7 @@ function expectSuccess() {
 let queue = [];
 
 function runNext() {
-  if (queue.length == 0) {
+  if (queue.length === 0) {
     chrome.test.fail('No more tests!');
   }
   (queue.shift())();

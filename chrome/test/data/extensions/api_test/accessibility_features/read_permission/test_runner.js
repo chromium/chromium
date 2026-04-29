@@ -150,7 +150,7 @@ function startObserverTest(initiallyEnabled, initiallyDisabled) {
    */
   function findFeatureIndex(list, featureName) {
     for (let i = 0; i < list.length; ++i) {
-      if (list[i].name == featureName) {
+      if (list[i].name === featureName) {
         return i;
       }
     }
@@ -170,7 +170,7 @@ function startObserverTest(initiallyEnabled, initiallyDisabled) {
     const listener = function(ev) {
       // Fail the test in case the new feature value is not as expected, but
       // before that, do some cleanup.
-      if (initiallyEnabled == ev.value) {
+      if (initiallyEnabled === ev.value) {
         clearRemainingListeners();
       }
       chrome.test.assertEq(!initiallyEnabled, ev.value);
@@ -185,8 +185,8 @@ function startObserverTest(initiallyEnabled, initiallyDisabled) {
           list[index].listener);
       list.splice(index, 1);
 
-      if (observerTestState.toBeEnabled.length == 0 &&
-          observerTestState.toBeDisabled.length == 0) {
+      if (observerTestState.toBeEnabled.length === 0 &&
+          observerTestState.toBeDisabled.length === 0) {
         chrome.test.succeed();
       }
     };

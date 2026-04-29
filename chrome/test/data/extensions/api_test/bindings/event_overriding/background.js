@@ -14,7 +14,7 @@ function test() {
   chrome.system.storage.onAttached.addListener(function() {});
 
   chrome.windows.onRemoved.addListener(function listener(windowId) {
-    if (windowId != testWindowId) {
+    if (windowId !== testWindowId) {
       return;
     }  // I guess some other window might have closed?
 

@@ -27,10 +27,10 @@ const allTests = [
     let input2;
     chrome.automation.getDesktop(function(rootNode) {
       rootNode.addEventListener('loadComplete', function(event) {
-        if (event.target.url == url1) {
+        if (event.target.url === url1) {
           input1 = event.target.find({role: 'textField'});
         }
-        if (event.target.url == url2) {
+        if (event.target.url === url2) {
           // Focus the WebView that's the parent of the second document.
           event.target.parent.focus();
           input2 = event.target.find({role: 'textField'});

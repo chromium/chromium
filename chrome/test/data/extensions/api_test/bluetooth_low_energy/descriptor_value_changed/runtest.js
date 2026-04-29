@@ -11,10 +11,10 @@ function testDescriptorValueChanged() {
   chrome.test.succeed();
 }
 
-var descId0 = 'desc_id0';
-var descId1 = 'desc_id1';
+const descId0 = 'desc_id0';
+const descId1 = 'desc_id1';
 
-var changedDescs = {};
+const changedDescs = {};
 
 chrome.bluetoothLowEnergy.onDescriptorValueChanged.addListener(function(desc) {
   changedDescs[desc.instanceId] = desc;

@@ -16,10 +16,10 @@ function testReadDescriptorValue() {
 }
 
 const readDescriptorValue = chrome.bluetoothLowEnergy.readDescriptorValue;
-var descId = 'desc_id0';
+const descId = 'desc_id0';
 const badDescId = 'desc_id1';
 
-var descriptor = null;
+let descriptor = null;
 
 function earlyError(message) {
   error = message;
@@ -29,7 +29,7 @@ function earlyError(message) {
 let queue = [];
 
 function runNext(result) {
-  if (queue.length == 0) {
+  if (queue.length === 0) {
     chrome.test.fail('No more tests!');
   }
 
@@ -57,9 +57,9 @@ const errorPlatformNotSupported =
 
 function makeExpectedErrorCallback(expectedError) {
   return function(result) {
-    console.log('Expecting error ' + expectedError);
+    console.info('Expecting error ' + expectedError);
     if (result || !chrome.runtime.lastError ||
-        chrome.runtime.lastError.message != expectedError) {
+        chrome.runtime.lastError.message !== expectedError) {
       errorMsg = 'readDescriptorValue expected error \'' + expectedError + '\'';
       if (chrome.runtime.lastError) {
         errorMsg =

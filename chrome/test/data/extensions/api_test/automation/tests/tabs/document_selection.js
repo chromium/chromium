@@ -41,7 +41,7 @@ const allTests = [
     assertTrue(!!textField);
     // Focusing the textfield will cause a text selection changed event in it.
     listenOnce(textField, EventType.TEXT_SELECTION_CHANGED, function(evt2) {
-      assertTrue(evt2.target == textField);
+      assertTrue(evt2.target === textField);
       assertEq(textField, rootNode.anchorObject);
       assertEq(0, rootNode.anchorOffset);
       assertEq(textField, rootNode.focusObject);

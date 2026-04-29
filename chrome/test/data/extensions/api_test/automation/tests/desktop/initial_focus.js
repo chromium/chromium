@@ -8,7 +8,7 @@ const allTests = [
         encodeURI('<input autofocus title=abc>')}`;
     chrome.automation.getDesktop(function(rootNode) {
       rootNode.addEventListener('focus', function(event) {
-        if (event.target.root.url == url) {
+        if (event.target.root.url === url) {
           chrome.automation.getFocus(function(focus) {
             if (focus.role !== 'textField') {
               // If the page is particularly slow in loading, the root may have

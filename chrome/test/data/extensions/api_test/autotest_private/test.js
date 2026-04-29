@@ -505,8 +505,8 @@ const defaultTests = [
     chrome.autotestPrivate.getAllInstalledApps(
         chrome.test.callbackPass(apps => {
           // Limit apps to chromium to filter out default apps.
-          const chromium =
-              apps.find(app => app.appId == 'mgndgikekgjfcpckkfioiadnlibdjbkf');
+          const chromium = apps.find(
+              app => app.appId === 'mgndgikekgjfcpckkfioiadnlibdjbkf');
           chrome.test.assertTrue(!!chromium);
           // Only check that name and shortName are set for Chromium because
           // their values change if chrome_branded is true.
@@ -544,8 +544,8 @@ const defaultTests = [
     // Using shelf from primary display.
     let displayId = '-1';
     chrome.system.display.getInfo(function(info) {
-      var l = info.length;
-      for (var i = 0; i < l; i++) {
+      const l = info.length;
+      for (let i = 0; i < l; i++) {
         if (info[i].isPrimary === true) {
           displayId = info[i].id;
           break;
@@ -555,9 +555,9 @@ const defaultTests = [
       // SHELF_AUTO_HIDE_ALWAYS_HIDDEN not supported by shelf_prefs.
       // TODO(ricardoq): Use enums in IDL instead of hardcoded strings.
       const behaviors = ['always', 'never'];
-      var l = behaviors.length;
-      for (var i = 0; i < l; i++) {
-        var behavior = behaviors[i];
+      const behaviorsLength = behaviors.length;
+      for (let i = 0; i < behaviorsLength; i++) {
+        const behavior = behaviors[i];
         chrome.autotestPrivate.setShelfAutoHideBehavior(
             displayId, behavior, function() {
               chrome.test.assertNoLastError();
@@ -576,8 +576,8 @@ const defaultTests = [
     // Using shelf from primary display.
     let displayId = '-1';
     chrome.system.display.getInfo(function(info) {
-      var l = info.length;
-      for (var i = 0; i < l; i++) {
+      const l = info.length;
+      for (let i = 0; i < l; i++) {
         if (info[i].isPrimary === true) {
           displayId = info[i].id;
           break;
@@ -591,9 +591,9 @@ const defaultTests = [
         chrome.autotestPrivate.ShelfAlignmentType.RIGHT,
         chrome.autotestPrivate.ShelfAlignmentType.BOTTOM,
       ];
-      var l = alignments.length;
-      for (var i = 0; i < l; i++) {
-        var alignment = alignments[i];
+      const alignmentsLength = alignments.length;
+      for (let i = 0; i < alignmentsLength; i++) {
+        const alignment = alignments[i];
         chrome.autotestPrivate.setShelfAlignment(
             displayId, alignment, function() {
               chrome.test.assertNoLastError();
@@ -689,7 +689,7 @@ const defaultTests = [
       chrome.test.assertEq(1, list.length);
       for (let i = 0; i < list.length; i++) {
         const window = list[i];
-        if (window.windowType != 'Browser') {
+        if (window.windowType !== 'Browser') {
           continue;
         }
         browserFrameIndex = i;
@@ -831,7 +831,7 @@ const defaultTests = [
                               list) {
                             chrome.test.assertNoLastError();
 
-                            if (list.length == 1) {
+                            if (list.length === 1) {
                               resolve();
                               return;
                             }
@@ -1341,8 +1341,7 @@ const policyTests = [
         chrome.test.callbackPass(function(policydata) {
           chrome.test.assertNoLastError();
           // See AutotestPrivateWithPolicyApiTest for constants.
-          let expectedPolicy;
-          expectedPolicy = {
+          const expectedPolicy = {
             'chromePolicies': {
               'AllowDinosaurEasterEgg': {
                 'level': 'mandatory',
@@ -1469,7 +1468,7 @@ const splitviewPrimarySnappedTests = [
         chrome.test.callbackPass(function(list) {
           let found = false;
           list.forEach(window => {
-            if (window.stateType == 'PrimarySnapped') {
+            if (window.stateType === 'PrimarySnapped') {
               found = true;
             }
           });

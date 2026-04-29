@@ -11,7 +11,7 @@ function testListen() {
   let clientSocket = sockets[1];
 
   // In case the sockets don't come back to us in order.
-  if (sockets[0].socketId != serverSocketId) {
+  if (sockets[0].socketId !== serverSocketId) {
     serverSocket = sockets[1];
     clientSocket = sockets[0];
   }
@@ -115,7 +115,7 @@ chrome.bluetoothSocket.create(
     serverSocketId = socket.socketId;
 
     chrome.bluetoothSocket.onAccept.addListener(function(info) {
-      if (info.socketId != socket.socketId) {
+      if (info.socketId !== socket.socketId) {
         return;
       }
 

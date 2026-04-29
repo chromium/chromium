@@ -4,7 +4,7 @@
 
 function verifyException(expectedMessage, tabId) {
   function onDebuggerEvent(debuggee, method, params) {
-    if (debuggee.tabId == tabId && method == 'Runtime.exceptionThrown') {
+    if (debuggee.tabId === tabId && method === 'Runtime.exceptionThrown') {
       const exception = params.exceptionDetails.exception;
       if (exception.value.indexOf(expectedMessage) > -1) {
         chrome.debugger.onEvent.removeListener(onDebuggerEvent);

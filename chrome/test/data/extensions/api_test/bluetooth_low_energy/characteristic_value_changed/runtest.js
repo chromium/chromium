@@ -16,11 +16,11 @@ function testCharacteristicValueChanged() {
   chrome.test.succeed();
 }
 
-var charId0 = 'char_id0';
-var charId2 = 'char_id2';
+const charId0 = 'char_id0';
+const charId2 = 'char_id2';
 let error;
 
-var changedChrcs = {};
+const changedChrcs = {};
 
 function sendReady() {
   chrome.test.sendMessage('ready', function(message) {

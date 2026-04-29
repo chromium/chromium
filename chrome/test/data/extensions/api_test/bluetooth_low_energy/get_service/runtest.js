@@ -19,11 +19,11 @@ function testGetService() {
   chrome.test.succeed();
 }
 
-var deviceAddress = '11:22:33:44:55:66';
-var serviceId = 'service_id0';
+const deviceAddress = '11:22:33:44:55:66';
+const serviceId = 'service_id0';
 const badServiceId = 'service_id1';
 
-var service = null;
+let service = null;
 
 function earlyError(message) {
   error = message;

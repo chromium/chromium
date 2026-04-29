@@ -60,8 +60,8 @@ function testGetCharacteristics() {
   chrome.test.succeed();
 }
 
-var serviceId = 'service_id0';
-var chrcs = null;
+const serviceId = 'service_id0';
+let chrcs = null;
 
 function earlyError(message) {
   error = message;
@@ -86,7 +86,7 @@ chrome.bluetoothLowEnergy.getCharacteristics(serviceId, function(result) {
       return;
     }
 
-    if (!result || result.length != 0) {
+    if (!result || result.length !== 0) {
       earlyError('Characteristics should be empty.');
       return;
     }

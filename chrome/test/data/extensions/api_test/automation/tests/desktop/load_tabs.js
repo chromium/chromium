@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-const html = '<button>alpha</button><input type=' text '>hello</input>';
+const html = '<button>alpha</button><input type="text">hello</input>';
 
 function getAllWebViews() {
   function findAllWebViews(node, nodes) {
-    if (node.role == chrome.automation.RoleType.WEB_VIEW)
+    if (node.role === chrome.automation.RoleType.WEB_VIEW) {
       nodes.push(node);
+    }
 
     const children = node.children;
     for (let i = 0; i < children.length; i++) {
@@ -15,7 +16,7 @@ function getAllWebViews() {
     }
   }
 
-  let webViews = [];
+  const webViews = [];
   findAllWebViews(rootNode, webViews);
   return webViews;
 }
@@ -23,12 +24,12 @@ function getAllWebViews() {
 const allTests = [
   function testLoadTabs() {
     runWithDocument(html, function() {
-      let webViews = getAllWebViews();
+      const webViews = getAllWebViews();
       assertEq(1, webViews.length);
       const subroot = webViews[0].firstChild;
       assertEq(webViews[0], subroot.parent);
       assertEq(subroot, subroot.parent.children[0]);
-      let button = subroot.firstChild.firstChild;
+      const button = subroot.firstChild.firstChild;
       assertEq(chrome.automation.RoleType.BUTTON, button.role);
       const input = subroot.firstChild.lastChild.previousSibling;
       assertEq(chrome.automation.RoleType.TEXT_FIELD, input.role);
@@ -42,7 +43,7 @@ const allTests = [
 
       rootNode.addEventListener(
           chrome.automation.EventType.FOCUS, function(evt) {
-            if (button == evt.target) {
+            if (button === evt.target) {
               chrome.test.succeed();
             }
           }, false);
@@ -50,7 +51,7 @@ const allTests = [
       button = subroot.firstChild.firstChild;
       button.focus();
     });
-  }
+  },
 ];
 
 setUpAndRunDesktopTests(allTests);

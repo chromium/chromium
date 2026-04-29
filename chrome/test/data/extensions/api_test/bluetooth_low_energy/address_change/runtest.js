@@ -20,10 +20,10 @@ function testAddressChanged() {
   chrome.test.succeed();
 }
 
-var newDeviceAddress = '11:22:33:44:55:77';
-var serviceId = 'service_id0';
+const newDeviceAddress = '11:22:33:44:55:77';
+const serviceId = 'service_id0';
 
-var service = null;
+let service = null;
 
 function earlyError(message) {
   error = message;

@@ -27,7 +27,7 @@ const allTests = [
         /* type */ chrome.automation.PositionType.TREE, /* offset */ 0);
     const pos2 = rootNode.createPosition(
         /* type */ chrome.automation.PositionType.TREE, /* offset */ 0);
-    assertFalse(pos1.node == pos2.node, 'Nodes expected to differ');
+    assertFalse(pos1.node === pos2.node, 'Nodes expected to differ');
     chrome.test.succeed();
   },
 

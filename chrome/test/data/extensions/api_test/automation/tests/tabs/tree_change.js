@@ -9,7 +9,7 @@ const allTests = [
     let observerTwoCallCount = 0;
 
     function observerOne(change) {
-      if (change.type == 'subtreeCreated' && change.target.name == 'New') {
+      if (change.type === 'subtreeCreated' && change.target.name === 'New') {
         observerOneCallCount++;
         // The first observer should only ever be called once and then it is
         // removed.
@@ -31,12 +31,12 @@ const allTests = [
       }
     }
     function observerTwo(change) {
-      if (change.type == 'subtreeCreated' && change.target.name == 'New') {
+      if (change.type === 'subtreeCreated' && change.target.name === 'New') {
         observerTwoCallCount++;
         // The second observer should get called twice and on the second time we
         // remove it and pass the test.
         chrome.test.assertTrue(observerTwoCallCount <= 2);
-        if (observerTwoCallCount == 2) {
+        if (observerTwoCallCount === 2) {
           // TODO(tjudkins): As mentioned above we remove the observer on a
           // timeout to ensure we are not modifying the list of observers while
           // it is still being iterated over. We should fix this and support
@@ -60,7 +60,7 @@ const allTests = [
 
   function testTreeChangedObserverForRemovingNode() {
     chrome.automation.addTreeChangeObserver('allTreeChanges', function(change) {
-      if (change.type == 'nodeRemoved' && change.target.role == 'listItem') {
+      if (change.type === 'nodeRemoved' && change.target.role === 'listItem') {
         chrome.test.succeed();
       }
     });
@@ -73,13 +73,13 @@ const allTests = [
     // This test would fail if we set the filter to allTreeChanges.
     chrome.automation.addTreeChangeObserver(
         'liveRegionTreeChanges', function(change) {
-          if (change.target.name == 'Dead') {
+          if (change.target.name === 'Dead') {
             // The internal bindings will notify us of a subtreeUpdateEnd if
             // there was a live region within the updates sent during
             // unserialization. The target in this case is picked by simply
             // choosing the first target in all tree changes, which could have
             // been anything.
-            if (change.type != 'subtreeUpdateEnd') {
+            if (change.type !== 'subtreeUpdateEnd') {
               chrome.test.fail();
             }
           }
@@ -88,7 +88,7 @@ const allTests = [
           // events that fit the condition it sets. We should probably also make
           // it conditional on the change.type and limit it to one of
           // nodeChanged, nodeCreated or textChanged.
-          if (change.target.name == 'Live') {
+          if (change.target.name === 'Live') {
             chrome.test.succeed();
           }
         });

@@ -4,7 +4,8 @@
 
 chrome.app.runtime.onLaunched.addListener(function(launchData) {
   let isNewNote = false;
-  if (launchData.actionData && launchData.actionData.actionType == 'new_note') {
+  if (launchData.actionData &&
+      launchData.actionData.actionType === 'new_note') {
     isNewNote = true;
   }
 

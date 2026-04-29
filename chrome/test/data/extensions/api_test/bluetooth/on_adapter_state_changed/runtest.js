@@ -14,8 +14,8 @@ function testEvents() {
   chrome.test.succeed();
 }
 
-var states = [];
-var kExpectedValues = [false, true, true];
+const states = [];
+const kExpectedValues = [false, true, true];
 chrome.bluetooth.onAdapterStateChanged.addListener(function(state) {
   states.push(state);
 });

@@ -24,7 +24,7 @@ function startTests() {
   chrome.test.runTests([testDeviceEvents]);
 }
 
-var devices = {};
+const devices = {};
 function recordDevice(device) {
   devices[device.address] = device;
 }
