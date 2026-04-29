@@ -2244,13 +2244,19 @@ void NetworkHandler::AddDeviceBoundSessionDisplays(
       protocol::Array<protocol::Network::DeviceBoundSession>>();
   protocol_sessions->reserve(sessions.size());
   for (const auto& session : sessions) {
-    protocol_sessions->emplace_back(BuildProtocolDeviceBoundSession(session));
+    if (client_->MayAttachToURL(session.key.site.GetURL(),
+                                host_ && host_->web_ui())) {
+      protocol_sessions->emplace_back(BuildProtocolDeviceBoundSession(session));
+    }
   }
   frontend_->DeviceBoundSessionsAdded(std::move(protocol_sessions));
 }
 
 void NetworkHandler::OnDeviceBoundSessionEventReceived(
     const net::device_bound_sessions::SessionEvent& event) {
+  if (!client_->MayAttachToURL(event.site.GetURL(), host_ && host_->web_ui())) {
+    return;
+  }
   std::unique_ptr<protocol::Network::CreationEventDetails> creationEventDetails;
   std::unique_ptr<protocol::Network::RefreshEventDetails> refreshEventDetails;
   std::unique_ptr<protocol::Network::TerminationEventDetails>
