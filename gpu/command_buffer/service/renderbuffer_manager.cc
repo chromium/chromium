@@ -113,6 +113,18 @@ void Renderbuffer::SetInfoAndInvalidate(GLsizei samples,
   }
 }
 
+void Renderbuffer::SetAllocationFailed() {
+  samples_ = 1;
+  internal_format_ = 0x0;
+  width_ = 0;
+  height_ = 0;
+  cleared_ = false;
+  allocated_ = false;
+  for (auto& point : framebuffer_attachment_points_) {
+    point.first->UnmarkAsComplete();
+  }
+}
+
 void Renderbuffer::AddToSignature(std::string* signature) const {
   DCHECK(signature);
   RenderbufferSignature signature_data(internal_format_,
@@ -233,6 +245,19 @@ void RenderbufferManager::SetInfoAndInvalidate(Renderbuffer* renderbuffer,
   }
   memory_type_tracker_->TrackMemFree(renderbuffer->EstimatedSize());
   renderbuffer->SetInfoAndInvalidate(samples, internalformat, width, height);
+  memory_type_tracker_->TrackMemAlloc(renderbuffer->EstimatedSize());
+  if (!renderbuffer->cleared()) {
+    ++num_uncleared_renderbuffers_;
+  }
+}
+
+void RenderbufferManager::SetAllocationFailed(Renderbuffer* renderbuffer) {
+  DCHECK(renderbuffer);
+  if (!renderbuffer->cleared()) {
+    --num_uncleared_renderbuffers_;
+  }
+  memory_type_tracker_->TrackMemFree(renderbuffer->EstimatedSize());
+  renderbuffer->SetAllocationFailed();
   memory_type_tracker_->TrackMemAlloc(renderbuffer->EstimatedSize());
   if (!renderbuffer->cleared()) {
     ++num_uncleared_renderbuffers_;
