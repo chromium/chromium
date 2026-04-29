@@ -475,6 +475,7 @@ ci.builder(
         short_name = "dbg",
     ),
     contact_team_email = "chrome-linux-engprod@google.com",
+    execution_timeout = 6 * time.hour,
 )
 
 ci.builder(
