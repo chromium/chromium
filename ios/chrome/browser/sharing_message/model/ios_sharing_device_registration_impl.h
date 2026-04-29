@@ -61,6 +61,7 @@ class IOSSharingDeviceRegistrationImpl : public SharingDeviceRegistration {
   bool IsRemoteCopySupported() const override;
   bool IsOptimizationGuidePushNotificationSupported() const override;
   bool IsOneTimeTokenBackendNotificationSupported() const override;
+  bool IsGlicExperimentalTriggeringSupported() const override;
   void SetEnabledFeaturesForTesting(
       std::set<syncer::DeviceInfo::SharingFeature> enabled_features) override;
 

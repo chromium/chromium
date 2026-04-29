@@ -14,6 +14,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "chrome/common/chrome_features.h"
 #include "components/gcm_driver/crypto/p256_key_util.h"
 #include "components/gcm_driver/instance_id/instance_id_driver.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -220,6 +221,9 @@ std::set<SharingFeature> SharingDeviceRegistrationImpl::GetEnabledFeatures()
   if (IsOneTimeTokenBackendNotificationSupported()) {
     enabled_features.insert(SharingFeature::kOneTimeTokenBackendNotification);
   }
+  if (IsGlicExperimentalTriggeringSupported()) {
+    enabled_features.insert(SharingFeature::kGlicExperimentalTriggering);
+  }
 
   return enabled_features;
 }
@@ -268,6 +272,11 @@ bool SharingDeviceRegistrationImpl::
 bool SharingDeviceRegistrationImpl::IsOneTimeTokenBackendNotificationSupported()
     const {
   return base::FeatureList::IsEnabled(kOneTimeTokenBackendNotification);
+}
+
+bool SharingDeviceRegistrationImpl::IsGlicExperimentalTriggeringSupported()
+    const {
+  return base::FeatureList::IsEnabled(features::kGlicExperimentalTriggering);
 }
 
 void SharingDeviceRegistrationImpl::SetEnabledFeaturesForTesting(

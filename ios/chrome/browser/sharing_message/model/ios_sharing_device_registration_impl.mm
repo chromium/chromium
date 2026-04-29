@@ -233,6 +233,11 @@ bool IOSSharingDeviceRegistrationImpl::
          optimization_guide::features::IsPushNotificationsEnabled();
 }
 
+bool IOSSharingDeviceRegistrationImpl::IsGlicExperimentalTriggeringSupported()
+    const {
+  return false;
+}
+
 void IOSSharingDeviceRegistrationImpl::SetEnabledFeaturesForTesting(
     std::set<syncer::DeviceInfo::SharingFeature> enabled_features) {
   enabled_features_testing_value_ = std::move(enabled_features);

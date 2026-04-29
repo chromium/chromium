@@ -17,6 +17,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "chrome/common/chrome_features.h"
 #include "components/gcm_driver/instance_id/instance_id_driver.h"
 #include "components/prefs/pref_registry.h"
 #include "components/prefs/pref_service_factory.h"
@@ -261,6 +262,24 @@ TEST_F(SharingDeviceRegistrationImplTest,
 
   EXPECT_FALSE(sharing_device_registration_
                    .IsOneTimeTokenBackendNotificationSupported());
+}
+
+TEST_F(SharingDeviceRegistrationImplTest,
+       IsGlicExperimentalTriggeringSupported_True) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kGlicExperimentalTriggering);
+
+  EXPECT_TRUE(
+      sharing_device_registration_.IsGlicExperimentalTriggeringSupported());
+}
+
+TEST_F(SharingDeviceRegistrationImplTest,
+       IsGlicExperimentalTriggeringSupported_False) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kGlicExperimentalTriggering);
+
+  EXPECT_FALSE(
+      sharing_device_registration_.IsGlicExperimentalTriggeringSupported());
 }
 
 TEST_F(SharingDeviceRegistrationImplTest, RegisterDeviceTest_Success) {

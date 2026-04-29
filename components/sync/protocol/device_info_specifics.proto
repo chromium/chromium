@@ -163,6 +163,8 @@ message SharingSpecificFields {
     OPTIMIZATION_GUIDE_PUSH_NOTIFICATION = 9;
     // Supports receiving notifications about new OneTimeTokens in the backend.
     ONE_TIME_TOKEN_BACKEND_NOTIFICATION = 10;
+    // Supports experimental triggering.
+    GLIC_EXPERIMENTAL_TRIGGERING = 11;
   }
   // LINT.ThenChange(/components/sync_device_info/device_info.h:SharingFeature)
 

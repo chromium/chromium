@@ -230,6 +230,8 @@ DeviceInfo::SharingFeature ToDeviceInfoSharingFeature(
       return DeviceInfo::SharingFeature::kOptimizationGuidePushNotification;
     case sync_pb::SharingSpecificFields::ONE_TIME_TOKEN_BACKEND_NOTIFICATION:
       return DeviceInfo::SharingFeature::kOneTimeTokenBackendNotification;
+    case sync_pb::SharingSpecificFields::GLIC_EXPERIMENTAL_TRIGGERING:
+      return DeviceInfo::SharingFeature::kGlicExperimentalTriggering;
   }
   NOTREACHED();
 }
@@ -253,6 +255,8 @@ sync_pb::SharingSpecificFields_EnabledFeatures ToSharingFeatureProto(
     case DeviceInfo::SharingFeature::kOneTimeTokenBackendNotification:
       return sync_pb::SharingSpecificFields::
           ONE_TIME_TOKEN_BACKEND_NOTIFICATION;
+    case DeviceInfo::SharingFeature::kGlicExperimentalTriggering:
+      return sync_pb::SharingSpecificFields::GLIC_EXPERIMENTAL_TRIGGERING;
   }
   NOTREACHED();
 }

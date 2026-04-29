@@ -79,6 +79,9 @@ class SharingDeviceRegistrationImpl : public SharingDeviceRegistration {
   // notification.
   bool IsOptimizationGuidePushNotificationSupported() const override;
 
+  // Returns if device can handle receiving of glic experimental triggering.
+  bool IsGlicExperimentalTriggeringSupported() const override;
+
   // For testing
   void SetEnabledFeaturesForTesting(
       std::set<syncer::DeviceInfo::SharingFeature> enabled_features) override;

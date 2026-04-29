@@ -64,6 +64,7 @@ class DeviceInfo {
     kSharedClipboardV2 = 8,
     kOptimizationGuidePushNotification = 9,
     kOneTimeTokenBackendNotification = 10,
+    kGlicExperimentalTriggering = 11,
   };
   // LINT.ThenChange(/components/sync/protocol/device_info_specifics.proto:EnabledFeatures)
 

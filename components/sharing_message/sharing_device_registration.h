@@ -51,6 +51,9 @@ class SharingDeviceRegistration {
   // tokens.
   virtual bool IsOneTimeTokenBackendNotificationSupported() const = 0;
 
+  // Returns if device can handle receiving of glic experimental triggering.
+  virtual bool IsGlicExperimentalTriggeringSupported() const = 0;
+
   // For testing
   virtual void SetEnabledFeaturesForTesting(
       std::set<syncer::DeviceInfo::SharingFeature> enabled_features) = 0;
