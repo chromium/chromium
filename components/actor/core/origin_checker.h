@@ -5,6 +5,9 @@
 #ifndef COMPONENTS_ACTOR_CORE_ORIGIN_CHECKER_H_
 #define COMPONENTS_ACTOR_CORE_ORIGIN_CHECKER_H_
 
+#include <variant>
+
+#include "net/base/schemeful_site.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "url/origin.h"
@@ -44,18 +47,21 @@ class OriginChecker {
   void RecordSizeMetrics() const;
 
  private:
-  struct OriginState {
-    // Whether the user has explicitly confirmed navigation to this origin.
+  struct State {
+    // Whether the user has explicitly confirmed navigation to this origin/site.
     bool is_user_confirmed = false;
   };
 
-  // The set of origins which the browser is allowed to navigate to under actor
-  // control. Note that presence in this map does *not* imply that the actor may
-  // navigate without confirming with the user first. This set can have origins
-  // added to it by the server actions or by confirming the new origin with the
-  // model or user. Sensitive origins that are on the optimization guide
-  // blocklist are not exempt by this set.
-  absl::flat_hash_map<url::Origin, OriginState> allowed_navigation_origins_;
+  using OriginMap = absl::flat_hash_map<url::Origin, State>;
+  using SiteMap = absl::flat_hash_map<net::SchemefulSite, State>;
+  using StateMap = std::variant<OriginMap, SiteMap>;
+  // The set of origins/sites which the browser is allowed to navigate to under
+  // actor control. Note that presence in this map does *not* imply that the
+  // actor may navigate without confirming with the user first. This set can
+  // have origins/sites added to it by the server actions or by confirming the
+  // new origin with the model or user. Sensitive origins/sites that are on the
+  // optimization guide blocklist are not exempt by this set.
+  StateMap allowed_navigation_origins_;
 };
 
 }  // namespace actor

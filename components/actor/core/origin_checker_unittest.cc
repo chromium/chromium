@@ -15,9 +15,27 @@ namespace actor {
 namespace {
 
 constexpr std::string_view kExample = "https://example.com";
+constexpr std::string_view kExampleSub = "https://sub.example.com";
 constexpr std::string_view kAnother = "https://another.com";
 
-TEST(OriginCheckerTest, InitialState) {
+class OriginCheckerTest : public ::testing::TestWithParam<bool> {
+ public:
+  OriginCheckerTest() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{kGlicCrossOriginNavigationGating,
+          {{kGlicNavigationGatingUseSiteNotOrigin.name,
+            is_site_scoped() ? "true" : "false"}}}},
+        {});
+  }
+  ~OriginCheckerTest() override = default;
+
+  bool is_site_scoped() const { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_P(OriginCheckerTest, InitialState) {
   const url::Origin example = url::Origin::Create(GURL(kExample));
   OriginChecker origin_checker;
   EXPECT_FALSE(origin_checker.IsNavigationAllowed(
@@ -25,7 +43,7 @@ TEST(OriginCheckerTest, InitialState) {
   EXPECT_FALSE(origin_checker.IsNavigationConfirmedByUser(example));
 }
 
-TEST(OriginCheckerTest, AllowNavigationToSingleOrigin) {
+TEST_P(OriginCheckerTest, AllowNavigationToSingleOrigin) {
   const url::Origin example = url::Origin::Create(GURL(kExample));
   OriginChecker origin_checker;
   origin_checker.AllowNavigationTo(example,
@@ -33,13 +51,16 @@ TEST(OriginCheckerTest, AllowNavigationToSingleOrigin) {
 
   const url::Origin another_origin = url::Origin::Create(GURL(kAnother));
   EXPECT_TRUE(origin_checker.IsNavigationAllowed(another_origin, example));
+  EXPECT_EQ(origin_checker.IsNavigationAllowed(
+                another_origin, url::Origin::Create(GURL(kExampleSub))),
+            is_site_scoped());
   EXPECT_FALSE(origin_checker.IsNavigationAllowed(
       another_origin, url::Origin::Create(GURL("http://example.com"))));
   EXPECT_FALSE(origin_checker.IsNavigationAllowed(
       another_origin, url::Origin::Create(GURL("https://other.com"))));
 }
 
-TEST(OriginCheckerTest, AllowNavigationTo_Opaque) {
+TEST_P(OriginCheckerTest, AllowNavigationTo_Opaque) {
   const url::Origin example = url::Origin::Create(GURL(kExample));
   const url::Origin opaque;
   OriginChecker origin_checker;
@@ -48,90 +69,76 @@ TEST(OriginCheckerTest, AllowNavigationTo_Opaque) {
 
   EXPECT_TRUE(origin_checker.IsNavigationAllowed(example, opaque));
   EXPECT_FALSE(origin_checker.IsNavigationAllowed(example, url::Origin()));
-  EXPECT_FALSE(origin_checker.IsNavigationAllowed(
-      opaque, url::Origin::Create(GURL(kExample))));
+  EXPECT_FALSE(origin_checker.IsNavigationAllowed(opaque, example));
 }
 
-TEST(OriginCheckerTest, AllowNavigationToMultipleOrigins) {
+TEST_P(OriginCheckerTest, AllowNavigationToMultipleOrigins) {
   const url::Origin example = url::Origin::Create(GURL(kExample));
+  const url::Origin example_sub = url::Origin::Create(GURL(kExampleSub));
   const url::Origin foo = url::Origin::Create(GURL("https://foo.com"));
   const url::Origin another_origin = url::Origin::Create(GURL(kAnother));
   OriginChecker origin_checker;
   origin_checker.AllowNavigationTo({example, foo});
 
   EXPECT_TRUE(origin_checker.IsNavigationAllowed(another_origin, example));
+  EXPECT_EQ(origin_checker.IsNavigationAllowed(another_origin, example_sub),
+            is_site_scoped());
   EXPECT_TRUE(origin_checker.IsNavigationAllowed(another_origin, foo));
   EXPECT_FALSE(origin_checker.IsNavigationAllowed(
       another_origin, url::Origin::Create(GURL("https://other.com"))));
 }
 
-TEST(OriginCheckerTest, IsNavigationAllowed_SameOrigin) {
+TEST_P(OriginCheckerTest, IsNavigationAllowed_SameOrigin) {
   const url::Origin example = url::Origin::Create(GURL(kExample));
   OriginChecker origin_checker;
 
   EXPECT_TRUE(origin_checker.IsNavigationAllowed(example, example));
 }
 
-TEST(OriginCheckerTest, IsNavigationAllowed_SameSite_Disallowed) {
-  base::test::ScopedFeatureList features;
-  features.InitWithFeaturesAndParameters(
-      {{kGlicCrossOriginNavigationGating,
-        {{kGlicNavigationGatingUseSiteNotOrigin.name, "false"}}}},
-      {});
-
+TEST_P(OriginCheckerTest, IsNavigationAllowed_SameSite) {
   OriginChecker origin_checker;
-  origin_checker.AllowNavigationTo(
-      url::Origin::Create(GURL("https://subdomain.example.com")),
-      /*is_user_confirmed=*/false);
+  origin_checker.AllowNavigationTo(url::Origin::Create(GURL(kExampleSub)),
+                                   /*is_user_confirmed=*/false);
 
-  EXPECT_FALSE(
+  EXPECT_EQ(
       origin_checker.IsNavigationAllowed(url::Origin::Create(GURL(kAnother)),
-                                         url::Origin::Create(GURL(kExample))));
+                                         url::Origin::Create(GURL(kExample))),
+      is_site_scoped());
 }
 
-TEST(OriginCheckerTest, IsNavigationAllowed_SameSite_AllowedByFeature) {
-  base::test::ScopedFeatureList features;
-  features.InitWithFeaturesAndParameters(
-      {{kGlicCrossOriginNavigationGating,
-        {{kGlicNavigationGatingUseSiteNotOrigin.name, "true"}}}},
-      {});
-
-  OriginChecker origin_checker;
-  origin_checker.AllowNavigationTo(
-      url::Origin::Create(GURL("https://subdomain.example.com")),
-      /*is_user_confirmed=*/false);
-
-  EXPECT_TRUE(
-      origin_checker.IsNavigationAllowed(url::Origin::Create(GURL(kAnother)),
-                                         url::Origin::Create(GURL(kExample))));
-}
-
-TEST(OriginCheckerTest, IsNavigationAllowed_OpaqueInitiator) {
+TEST_P(OriginCheckerTest, IsNavigationAllowed_OpaqueInitiator) {
   const url::Origin example = url::Origin::Create(GURL(kExample));
+  const url::Origin example_sub = url::Origin::Create(GURL(kExampleSub));
   OriginChecker origin_checker;
   origin_checker.AllowNavigationTo(example,
                                    /*is_user_confirmed=*/false);
 
   url::Origin opaque;
   EXPECT_TRUE(origin_checker.IsNavigationAllowed(opaque, example));
+  EXPECT_EQ(origin_checker.IsNavigationAllowed(opaque, example_sub),
+            is_site_scoped());
   EXPECT_FALSE(origin_checker.IsNavigationAllowed(
       opaque, url::Origin::Create(GURL(kAnother))));
 }
 
-TEST(OriginCheckerTest, ConfirmOrigin_Query) {
-  const url::Origin origin = url::Origin::Create(GURL("https://example.com"));
+TEST_P(OriginCheckerTest, ConfirmOrigin_Query) {
+  const url::Origin example = url::Origin::Create(GURL(kExample));
+  const url::Origin example_sub = url::Origin::Create(GURL(kExampleSub));
 
   OriginChecker origin_checker;
-  origin_checker.AllowNavigationTo(origin,
+  origin_checker.AllowNavigationTo(example,
                                    /*is_user_confirmed=*/true);
 
-  EXPECT_TRUE(origin_checker.IsNavigationConfirmedByUser(origin));
+  EXPECT_TRUE(origin_checker.IsNavigationConfirmedByUser(example));
+  EXPECT_EQ(origin_checker.IsNavigationConfirmedByUser(example_sub),
+            is_site_scoped());
   EXPECT_FALSE(origin_checker.IsNavigationConfirmedByUser(
       url::Origin::Create(GURL(kAnother))));
 }
 
-TEST(OriginCheckerTest, ConfirmOrigin_AllowsNavigation) {
+TEST_P(OriginCheckerTest, ConfirmOrigin_AllowsNavigation) {
   const url::Origin example = url::Origin::Create(GURL(kExample));
+  const url::Origin example_sub = url::Origin::Create(GURL(kExampleSub));
   const url::Origin another_origin = url::Origin::Create(GURL(kAnother));
 
   OriginChecker origin_checker;
@@ -139,10 +146,13 @@ TEST(OriginCheckerTest, ConfirmOrigin_AllowsNavigation) {
                                    /*is_user_confirmed=*/true);
 
   EXPECT_TRUE(origin_checker.IsNavigationAllowed(another_origin, example));
+  EXPECT_EQ(origin_checker.IsNavigationAllowed(another_origin, example_sub),
+            is_site_scoped());
+  EXPECT_FALSE(origin_checker.IsNavigationAllowed(
+      another_origin, url::Origin::Create(GURL("http://other.com"))));
 }
 
-TEST(OriginCheckerTest, ConfirmOrigin_Opaque) {
-  const url::Origin example = url::Origin::Create(GURL(kExample));
+TEST_P(OriginCheckerTest, ConfirmOrigin_Opaque) {
   const url::Origin opaque;
 
   OriginChecker origin_checker;
@@ -153,8 +163,10 @@ TEST(OriginCheckerTest, ConfirmOrigin_Opaque) {
   EXPECT_FALSE(origin_checker.IsNavigationConfirmedByUser(url::Origin()));
 }
 
-TEST(OriginCheckerTest, ConfirmOrigin_AllowsNavigation_RemembersConfirmation) {
-  const url::Origin example = url::Origin::Create(GURL("https://example.com"));
+TEST_P(OriginCheckerTest,
+       ConfirmOrigin_AllowsNavigation_RemembersConfirmation) {
+  const url::Origin example = url::Origin::Create(GURL(kExample));
+  const url::Origin example_sub = url::Origin::Create(GURL(kExampleSub));
 
   OriginChecker origin_checker;
   origin_checker.AllowNavigationTo(example,
@@ -165,23 +177,31 @@ TEST(OriginCheckerTest, ConfirmOrigin_AllowsNavigation_RemembersConfirmation) {
                                    /*is_user_confirmed=*/false);
 
   EXPECT_TRUE(origin_checker.IsNavigationConfirmedByUser(example));
+  EXPECT_EQ(origin_checker.IsNavigationConfirmedByUser(example_sub),
+            is_site_scoped());
 }
 
-TEST(OriginCheckerTest, RecordsHistograms) {
+TEST_P(OriginCheckerTest, RecordsHistograms) {
   base::HistogramTester histograms;
 
   const url::Origin example = url::Origin::Create(GURL(kExample));
+  const url::Origin example_sub = url::Origin::Create(GURL(kExampleSub));
   const url::Origin another = url::Origin::Create(GURL(kAnother));
   OriginChecker origin_checker;
   origin_checker.AllowNavigationTo(example, /*is_user_confirmed=*/true);
+  origin_checker.AllowNavigationTo(example_sub, /*is_user_confirmed=*/true);
   origin_checker.AllowNavigationTo(another, /*is_user_confirmed=*/false);
   origin_checker.RecordSizeMetrics();
 
   histograms.ExpectUniqueSample("Actor.NavigationGating.AllowListSize",
-                                /*sample=*/2, /*expected_bucket_count=*/1);
+                                /*sample=*/is_site_scoped() ? 2 : 3,
+                                /*expected_bucket_count=*/1);
   histograms.ExpectUniqueSample("Actor.NavigationGating.ConfirmedListSize2",
-                                /*sample=*/1, /*expected_bucket_count=*/1);
+                                /*sample=*/is_site_scoped() ? 1 : 2,
+                                /*expected_bucket_count=*/1);
 }
+
+INSTANTIATE_TEST_SUITE_P(, OriginCheckerTest, ::testing::Bool());
 
 }  // namespace
 }  // namespace actor
