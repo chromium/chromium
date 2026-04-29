@@ -25186,6 +25186,21 @@
             ]
         }
     ],
+    "WebRTC-Pacer-KeyframeFlushing": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled"
+                }
+            ]
+        }
+    ],
     "WebRTC-RFC8888CongestionControlFeedback": [
         {
             "platforms": [
