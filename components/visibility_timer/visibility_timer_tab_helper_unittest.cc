@@ -9,6 +9,10 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_renderer_host.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/mac_util.h"
+#endif
+
 namespace visibility_timer {
 
 class VisibilityTimerTabHelperTest : public content::RenderViewHostTestHarness {
@@ -19,6 +23,13 @@ class VisibilityTimerTabHelperTest : public content::RenderViewHostTestHarness {
 };
 
 TEST_F(VisibilityTimerTabHelperTest, Delay) {
+#if BUILDFLAG(IS_MAC)
+  // TODO(crbug.com/434660312): Re-enable on macOS 26 once issues with
+  // unexpected test timeout failures are resolved.
+  if (base::mac::MacOSMajorVersion() == 26) {
+    GTEST_SKIP() << "Disabled on macOS Tahoe.";
+  }
+#endif
   bool task_executed = false;
   VisibilityTimerTabHelper::CreateForWebContents(web_contents());
   VisibilityTimerTabHelper::FromWebContents(web_contents())
