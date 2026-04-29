@@ -909,12 +909,7 @@ IN_PROC_BROWSER_TEST_F(WebViewAPITest, TestWebViewInsideFrame) {
 
 // TODO(crbug.com/507558560): Fails with message: "Failed to capture webview:
 // image readback failed.""
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_TestCaptureVisibleRegion DISABLED_TestCaptureVisibleRegion
-#else
-#define MAYBE_TestCaptureVisibleRegion TestCaptureVisibleRegion
-#endif
-IN_PROC_BROWSER_TEST_F(WebViewAPITest, MAYBE_TestCaptureVisibleRegion) {
+IN_PROC_BROWSER_TEST_F(WebViewAPITest, DISABLED_TestCaptureVisibleRegion) {
   RunTest("testCaptureVisibleRegion", "web_view/apitest");
 }
 
