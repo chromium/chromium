@@ -410,7 +410,6 @@ component("platform") {
     "audio/fft_convolver.h",
     "audio/fft_frame.cc",
     "audio/fft_frame.h",
-    "audio/fft_frame_stub.cc",
     "audio/hrtf_database.cc",
     "audio/hrtf_database.h",
     "audio/hrtf_database_loader.cc",
@@ -1975,7 +1974,7 @@ component("platform") {
     sources += [ "audio/cpu/arm/delay_neon.cc" ]
   }
 
-  if (use_webaudio_pffft) {
+  if (!is_mac) {
     include_dirs += [ "//third_party/pffft/src" ]
     deps += [ "//third_party/pffft" ]
   }

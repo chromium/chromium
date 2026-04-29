@@ -40,11 +40,11 @@
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/threading.h"
 
-#if defined(WTF_USE_WEBAUDIO_PFFFT)
+#if BUILDFLAG(IS_MAC)
+#include <Accelerate/Accelerate.h>
+#else
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/pffft/src/pffft.h"
-#elif BUILDFLAG(IS_MAC)
-#include <Accelerate/Accelerate.h>
 #endif
 
 namespace blink {
@@ -150,12 +150,12 @@ class PLATFORM_EXPORT FFTFrame final {
   AudioFloatArray real_data_;
   AudioFloatArray imag_data_;
 
-#if BUILDFLAG(IS_MAC) && !defined(WTF_USE_WEBAUDIO_PFFFT)
+#if BUILDFLAG(IS_MAC)
   DSPSplitComplex& DspSplitComplex() { return frame_; }
   DSPSplitComplex DspSplitComplex() const { return frame_; }
   FFTSetup fft_setup_;
   DSPSplitComplex frame_;
-#elif defined(WTF_USE_WEBAUDIO_PFFFT)
+#else
   // Work array for converting PFFFT results to and from the format expected in
   // `real_data_` and `imag_data_`.
   AudioFloatArray complex_data_;

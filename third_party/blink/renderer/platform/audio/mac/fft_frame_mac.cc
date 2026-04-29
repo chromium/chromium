@@ -30,7 +30,7 @@
 
 #include "build/build_config.h"
 
-#if BUILDFLAG(IS_MAC) && !defined(WTF_USE_WEBAUDIO_PFFFT)
+#if BUILDFLAG(IS_MAC)
 
 #include "base/compiler_specific.h"
 #include "third_party/blink/renderer/platform/audio/fft_frame.h"
@@ -219,4 +219,4 @@ void FFTFrame::Cleanup() {
 
 }  // namespace blink
 
-#endif  // BUILDFLAG(IS_MAC) && !defined(WTF_USE_WEBAUDIO_PFFFT)
+#endif  // BUILDFLAG(IS_MAC)

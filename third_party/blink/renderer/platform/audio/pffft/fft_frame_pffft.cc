@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#if defined(WTF_USE_WEBAUDIO_PFFFT)
+#include "build/build_config.h"
+
+#if !BUILDFLAG(IS_MAC)
 
 #include "base/compiler_specific.h"
 #include "base/synchronization/lock.h"
@@ -250,4 +252,4 @@ void FFTFrame::DoInverseFFT(float* data) {
 
 }  // namespace blink
 
-#endif  // #if defined(WTF_USE_WEBAUDIO_PFFFT)
+#endif  // !BUILDFLAG(IS_MAC)
