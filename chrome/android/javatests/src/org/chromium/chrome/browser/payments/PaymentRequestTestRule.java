@@ -1302,9 +1302,16 @@ import java.util.concurrent.atomic.AtomicReference;
     @Override
     protected void before() throws Throwable {
         super.before();
+        PaymentAppService.getInstance().resetForTest();
         if (!mDelayStartActivity) {
             startMainActivityWithURL(mTestFilePath);
             setObserversAndWaitForInitialPageLoad();
         }
+    }
+
+    @Override
+    protected void after() {
+        PaymentAppService.getInstance().resetForTest();
+        super.after();
     }
 }

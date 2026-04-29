@@ -59,15 +59,14 @@ public class PaymentAppService {
     }
 
     /**
-     * Adds a factory with an id if this id is not added already; otherwise, do nothing.
+     * Adds a factory with an id. Asserts that the id has not been added already.
      * @param factory The factory to be added, can be null;
      * @param factoryId The id that the caller uses to identify the given factory.
      */
     public void addUniqueFactory(@Nullable PaymentAppFactoryInterface factory, String factoryId) {
         if (factory == null) return;
-        // TODO(crbug.com/474398434): We should be able to assert that the factory does not already
-        // exist here, but too many tests (especially under batching) reuse the same factoryId.
-        if (mFactories.containsKey(factoryId)) return;
+        assert !mFactories.containsKey(factoryId)
+                : "Factory with id " + factoryId + " already exists";
         mFactories.put(factoryId, factory);
     }
 
