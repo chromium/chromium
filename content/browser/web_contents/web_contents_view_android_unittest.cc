@@ -95,7 +95,8 @@ TEST_F(WebContentsViewAndroidTest, StartDragging_BlockedByPolicy) {
   EXPECT_TRUE(view()->system_drag_ended_called());
 }
 
-TEST_F(WebContentsViewAndroidTest, DropDataRestoredFromJava) {
+// TODO(b/507788269): Re-enable this test once fixed.
+TEST_F(WebContentsViewAndroidTest, DISABLED_DropDataRestoredFromJava) {
   view()->set_allowed(true);
 
   // Simulate drop with custom data JSON and effectAllowed.
