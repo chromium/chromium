@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <div id="target" style="width: 100px; height: 100px; background: blue;"></div>
+  <script>
+    const target = document.getElementById('target');
+    target.addEventListener('mousedown', () => {
+      parent.parent.document.getElementById('mid').remove();
+    });
+  </script>
+</body>
+</html>

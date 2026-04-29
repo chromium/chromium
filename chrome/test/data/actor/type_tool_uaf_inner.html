@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <input id="target" type="text">
+  <script>
+    const target = document.getElementById('target');
+    target.addEventListener('keydown', () => {
+      parent.parent.document.getElementById('mid').remove();
+    });
+  </script>
+</body>
+</html>

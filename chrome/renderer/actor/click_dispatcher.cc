@@ -55,8 +55,13 @@ ClickDispatcher::ClickDispatcher(
     mouse_move.SetPositionInWidget(target.widget_point);
 
     // Mouse move is considered optional, so we don't check this result.
+    base::WeakPtr<ClickDispatcher> weak_this = weak_ptr_factory_.GetWeakPtr();
     widget->HandleInputEvent(
         blink::WebCoalescedInputEvent(mouse_move, ui::LatencyInfo()));
+
+    if (!weak_this) {
+      return;
+    }
 
     base::TimeDelta delay = features::kGlicActorMoveBeforeClickDelay.Get();
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
@@ -103,8 +108,13 @@ void ClickDispatcher::DoMouseDown(WebMouseEvent::Button button,
   //   mouse_event_.SetPositionInScreen(point.x() + offset.x(),
   //                                    point.y() + offset.y());
 
+  base::WeakPtr<ClickDispatcher> weak_this = weak_ptr_factory_.GetWeakPtr();
   blink::WebInputEventResult result = widget->HandleInputEvent(
       blink::WebCoalescedInputEvent(mouse_down, ui::LatencyInfo()));
+
+  if (!weak_this) {
+    return;
+  }
 
   if (result == blink::WebInputEventResult::kHandledSuppressed) {
     Finish(MakeResult(mojom::ActionResultCode::kClickSuppressed,
@@ -140,9 +150,15 @@ void ClickDispatcher::DoMouseUpImpl() {
   }
 
   mouse_up_event_->SetTimeStamp(ui::EventTimeForNow());
+  base::WeakPtr<ClickDispatcher> weak_this = weak_ptr_factory_.GetWeakPtr();
   blink::WebInputEventResult result =
       widget->HandleInputEvent(blink::WebCoalescedInputEvent(
           std::move(*mouse_up_event_), ui::LatencyInfo()));
+
+  if (!weak_this) {
+    return;
+  }
+
   mouse_up_event_.reset();
   if (result == blink::WebInputEventResult::kHandledSuppressed) {
     Finish(MakeResult(mojom::ActionResultCode::kClickSuppressed,
