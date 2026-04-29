@@ -14,6 +14,7 @@
 #include "media/base/callback_registry.h"
 #include "media/base/cdm_context.h"
 #include "media/base/decryptor.h"
+#include "media/base/hdr_metadata_reordering_map.h"
 #include "media/base/video_decoder.h"
 #include "media/base/video_decoder_config.h"
 
@@ -111,6 +112,8 @@ class MEDIA_EXPORT DecryptingVideoDecoder : public VideoDecoder {
 
   // The buffer that needs decrypting/decoding.
   scoped_refptr<media::DecoderBuffer> pending_buffer_to_decode_;
+
+  HdrMetadataReorderingMap hdr_metadata_reordering_map_;
 
   // Indicates the situation where new key is added during pending decode
   // (in other words, this variable can only be set in state kPendingDecode).

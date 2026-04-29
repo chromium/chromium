@@ -23,6 +23,7 @@
 #include "media/base/test_helpers.h"
 #include "media/base/video_frame.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/gfx/hdr_metadata.h"
 
 using ::base::test::RunOnceCallback;
 using ::base::test::RunOnceCallbackRepeatedly;
@@ -584,6 +585,32 @@ TEST_F(DecryptingVideoDecoderTest, HDRMetadata) {
   EXPECT_TRUE(decoded_video_frame_->ColorSpace().IsHDR());
   EXPECT_FALSE(decoded_video_frame_->hdr_metadata().IsEmpty());
   EXPECT_TRUE(decoded_video_frame_->hdr_metadata().IsValid());
+}
+
+// Test the case where HDRMetadata is set on the DecoderBuffer.
+TEST_F(DecryptingVideoDecoderTest, PerFrameHDRMetadata) {
+  Initialize(TestVideoConfig::NormalHdrEncrypted());
+
+  gfx::HDRMetadata per_frame_metadata;
+  per_frame_metadata.SetCLLI(
+      skhdr::ContentLightLevelInformation{100.0f, 200.0f});
+
+  scoped_refptr<DecoderBuffer> buffer_with_metadata =
+      CreateFakeEncryptedBuffer();
+  buffer_with_metadata->WritableSideData().hdr_metadata = per_frame_metadata;
+
+  EXPECT_CALL(*decryptor_, DecryptAndDecodeVideo(_, _))
+      .WillRepeatedly(RunOnceCallbackRepeatedly<1>(Decryptor::kSuccess,
+                                                   decoded_video_frame_));
+
+  EXPECT_CALL(*this, FrameReady(_))
+      .WillOnce([&](scoped_refptr<VideoFrame> frame) {
+        EXPECT_TRUE(frame->hdr_metadata().HasCLLI());
+        EXPECT_EQ(frame->hdr_metadata().GetCLLI().fMaxCLL, 100.0f);
+        EXPECT_EQ(frame->hdr_metadata().GetCLLI().fMaxFALL, 200.0f);
+      });
+
+  DecodeAndExpect(buffer_with_metadata, DecoderStatus::Codes::kOk);
 }
 
 }  // namespace media

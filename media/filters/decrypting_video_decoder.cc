@@ -138,6 +138,7 @@ void DecryptingVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
     switched_clear_to_encrypted_ = true;
   }
 
+  hdr_metadata_reordering_map_.Insert(*buffer);
   pending_buffer_to_decode_ = std::move(buffer);
   state_ = kPendingDecode;
   DecodePendingBuffer();
@@ -337,10 +338,12 @@ void DecryptingVideoDecoder::DeliverFrame(Decryptor::Status status,
       frame->set_color_space(config_.color_space_info().ToGfxColorSpace());
   }
 
-  // Attach the HDR metadata from the `config_` if it's not set on the `frame`.
-  if (frame->hdr_metadata().IsEmpty() && !config_.hdr_metadata().IsEmpty()) {
-    frame->set_hdr_metadata(config_.hdr_metadata());
-  }
+  // Attach the HDR metadata from the `config_` and any per-frame metadata
+  // that was sent with the decoder buffer.
+  gfx::HDRMetadata hdr_metadata = config_.hdr_metadata();
+  hdr_metadata_reordering_map_.MergeAndEraseMetadataForTimestamp(
+      frame->timestamp(), hdr_metadata);
+  frame->set_hdr_metadata(hdr_metadata);
 
   output_cb_.Run(std::move(frame));
 
@@ -380,6 +383,7 @@ void DecryptingVideoDecoder::OnCdmContextEvent(CdmContext::Event event) {
 void DecryptingVideoDecoder::DoReset() {
   DCHECK(!init_cb_);
   DCHECK(!decode_cb_);
+  hdr_metadata_reordering_map_.Clear();
   state_ = kIdle;
   std::move(reset_cb_).Run();
 }
