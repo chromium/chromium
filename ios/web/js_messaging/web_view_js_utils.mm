@@ -210,6 +210,32 @@ void ExecuteJavaScript(WKWebView* web_view,
              completionHandler:completion_handler];
 }
 
+void ExecuteAsyncJavaScript(WKWebView* web_view,
+                            WKContentWorld* content_world,
+                            WKFrameInfo* frame_info,
+                            NSString* script,
+                            NSDictionary<NSString*, id>* arguments,
+                            void (^completion_handler)(id, NSError*)) {
+  DCHECK(content_world);
+  // `frame_info` is required to ensure `script` is executed on the correct
+  // webpage. This works because a `frame_info` instance is associated with a
+  // particular loaded webpage/navigation and the script execution will only
+  // happen in the web view if the current frame_info matches.
+  DCHECK(frame_info);
+
+  DCHECK([script length] > 0);
+  if (!web_view && completion_handler) {
+    NotifyCompletionHandlerNullWebView(completion_handler);
+    return;
+  }
+
+  [web_view callAsyncJavaScript:script
+                      arguments:arguments
+                        inFrame:frame_info
+                 inContentWorld:content_world
+              completionHandler:completion_handler];
+}
+
 void RegisterExistingFrames(WKWebView* web_view,
                             WKContentWorld* content_world) {
   DCHECK(content_world);

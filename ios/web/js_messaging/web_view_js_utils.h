@@ -56,6 +56,17 @@ void ExecuteJavaScript(WKWebView* web_view,
                        NSString* script,
                        void (^completion_handler)(id, NSError*));
 
+// Executes JavaScript asynchronously for a `web_view` in `frame_info` within
+// `content_world` and calls `completion_handler` with the result.
+// `content_world` and `frame_info` are required. If the web view cannot execute
+// JS at the moment, `completion_handler` is called with an NSError.
+void ExecuteAsyncJavaScript(WKWebView* web_view,
+                            WKContentWorld* content_world,
+                            WKFrameInfo* frame_info,
+                            NSString* script,
+                            NSDictionary<NSString*, id>* arguments,
+                            void (^completion_handler)(id, NSError*));
+
 // Calls into the JavaScript in `content_world` to trigger the registration of
 // all web frames.
 // NOTE: This call is sent to the WKWebView directly, because the result of this
