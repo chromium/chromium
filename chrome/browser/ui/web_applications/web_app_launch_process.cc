@@ -12,10 +12,12 @@
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/share_target_utils.h"
@@ -44,6 +46,32 @@
 namespace web_app {
 
 namespace {
+
+// Returns the most recently activated tabbed (TYPE_NORMAL) browser for
+// `profile`, filtered by `display_id` when it is not kInvalidDisplayId.
+// Browsers scheduled for deletion are excluded.
+BrowserWindowInterface* FindTabbedBrowser(Profile* profile,
+                                          int64_t display_id) {
+  BrowserWindowInterface* match = nullptr;
+  ProfileBrowserCollection::GetForProfile(profile)->ForEach(
+      [&match, display_id](BrowserWindowInterface* browser) {
+        if (browser->GetType() != BrowserWindowInterface::TYPE_NORMAL ||
+            browser->IsDeleteScheduled()) {
+          return true;
+        }
+        if (display_id != display::kInvalidDisplayId &&
+            display::Screen::Get()
+                    ->GetDisplayNearestWindow(
+                        browser->GetWindow()->GetNativeWindow())
+                    .id() != display_id) {
+          return true;
+        }
+        match = browser;
+        return false;  // stop iterating
+      },
+      BrowserCollection::Order::kActivation);
+  return match;
+}
 
 std::optional<GURL> GetProtocolHandlingTranslatedUrl(
     OsIntegrationManager& os_integration_manager,
@@ -333,7 +361,7 @@ BrowserWindowInterface* WebAppLaunchProcess::MaybeFindBrowserForLaunch() const {
       display_id = display::Screen::Get()->GetDisplayForNewWindows().id();
     }
 #endif
-    return chrome::FindTabbedBrowser(&profile_.get(), false, display_id);
+    return FindTabbedBrowser(&profile_.get(), display_id);
   }
 
   if (params_->disposition == WindowOpenDisposition::NEW_WINDOW) {

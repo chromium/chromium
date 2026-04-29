@@ -32,9 +32,11 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/extensions/extension_enable_flow.h"
 #include "chrome/browser/ui/extensions/extension_enable_flow_delegate.h"
 #include "chrome/browser/ui/extensions/web_file_handlers/multiclient_util.h"
@@ -69,6 +71,32 @@ using extensions::ExtensionRegistrar;
 using extensions::ExtensionRegistry;
 
 namespace {
+
+// Returns the most recently activated tabbed (TYPE_NORMAL) browser for
+// `profile`, filtered by `display_id` when it is not kInvalidDisplayId.
+// Browsers scheduled for deletion are excluded.
+BrowserWindowInterface* FindTabbedBrowser(Profile* profile,
+                                          int64_t display_id) {
+  BrowserWindowInterface* match = nullptr;
+  ProfileBrowserCollection::GetForProfile(profile)->ForEach(
+      [&match, display_id](BrowserWindowInterface* browser) {
+        if (browser->GetType() != BrowserWindowInterface::TYPE_NORMAL ||
+            browser->IsDeleteScheduled()) {
+          return true;
+        }
+        if (display_id != display::kInvalidDisplayId &&
+            display::Screen::Get()
+                    ->GetDisplayNearestWindow(
+                        browser->GetWindow()->GetNativeWindow())
+                    .id() != display_id) {
+          return true;
+        }
+        match = browser;
+        return false;  // stop iterating
+      },
+      BrowserCollection::Order::kActivation);
+  return match;
+}
 
 // Attempts to launch an app, prompting the user to enable it if necessary.
 // This class manages its own lifetime.
@@ -209,7 +237,7 @@ WebContents* OpenApplicationTab(Profile* profile,
   WindowOpenDisposition disposition = launch_params.disposition;
 
   BrowserWindowInterface* browser =
-      chrome::FindTabbedBrowser(profile, false, launch_params.display_id);
+      FindTabbedBrowser(profile, launch_params.display_id);
   WebContents* contents = nullptr;
   if (browser) {
     // For existing browser, ensure its window is shown and activated.

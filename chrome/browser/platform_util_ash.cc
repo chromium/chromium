@@ -11,9 +11,9 @@
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/platform_util_internal.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/simple_message_box.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
@@ -59,7 +59,8 @@ void ShowWarningOnOpenOperationResult(Profile* profile,
       break;
   }
 
-  BrowserWindowInterface* browser = chrome::FindTabbedBrowser(profile, false);
+  BrowserWindowInterface* browser =
+      ProfileBrowserCollection::GetForProfile(profile)->FindTabbedBrowser();
   chrome::ShowWarningMessageBoxAsync(
       browser ? browser->GetWindow()->GetNativeWindow() : nullptr,
       path.BaseName().AsUTF16Unsafe(), l10n_util::GetStringUTF16(message_id));

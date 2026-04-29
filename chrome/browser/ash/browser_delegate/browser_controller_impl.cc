@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/simple_web_view_dialog.h"
@@ -51,6 +52,29 @@ bool BrowserMatches(BrowserWindowInterface* browser,
          web_app::GetAppIdFromApplicationName(
              browser->GetBrowserForMigrationOnly()->app_name()) == app_id &&
          (url.is_empty() || BrowserMatchesURL(browser, url));
+}
+
+// Returns the most recently activated tabbed browser for |profile| that is on
+// the current workspace (virtual desk), or nullptr if none exists.
+BrowserWindowInterface* FindTabbedBrowserOnCurrentWorkspace(Profile* profile) {
+  BrowserWindowInterface* match = nullptr;
+  ProfileBrowserCollection::GetForProfile(profile)->ForEach(
+      [&match](BrowserWindowInterface* browser) {
+        if (browser->GetType() != BrowserWindowInterface::TYPE_NORMAL ||
+            browser->IsDeleteScheduled()) {
+          return true;
+        }
+        if (!browser->GetBrowserForMigrationOnly()->window() ||
+            !browser->GetBrowserForMigrationOnly()
+                 ->window()
+                 ->IsOnCurrentWorkspace()) {
+          return true;
+        }
+        match = browser;
+        return false;  // stop iterating
+      },
+      BrowserCollection::Order::kActivation);
+  return match;
 }
 
 }  // namespace
@@ -207,7 +231,7 @@ BrowserDelegate* BrowserControllerImpl::NewTabWithPostData(
       network::ResourceRequestBody::CreateFromCopyOfBytes(post_data);
   navigate_params.extra_headers = std::string(extra_headers);
 
-  navigate_params.browser = chrome::FindTabbedBrowser(profile, false);
+  navigate_params.browser = FindTabbedBrowserOnCurrentWorkspace(profile);
   if (!navigate_params.browser &&
       Browser::GetCreationStatusForProfile(profile) ==
           Browser::CreationStatus::kOk) {
