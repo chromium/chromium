@@ -23,6 +23,7 @@ def main():
     '--winscope-extensions-descriptor', type=str, required=True)
   parser.add_argument(
     '--gpu-extensions-descriptor', type=str, required=True)
+  parser.add_argument('--gpu-interned-data-extensions', type=str, default=None)
   parser.add_argument(
       '--summary-descriptor', type=str, required=True)
   parser.add_argument(
@@ -45,6 +46,7 @@ def main():
     "--chrome-track-event-descriptor", args.chrome_track_event_descriptor,
     "--winscope-extensions", args.winscope_extensions_descriptor,
     "--gpu-extensions", args.gpu_extensions_descriptor,
+    "--gpu-interned-data-extensions", args.gpu_interned_data_extensions,
     "--summary-descriptor", args.summary_descriptor,
     "--override-sql-package", os.path.abspath(args.chrome_stdlib),
     "--test-dir", args.test_dir,

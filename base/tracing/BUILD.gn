@@ -37,6 +37,10 @@ generate_wrapper("perfetto_diff_tests") {
       "$_protos_path/perfetto/trace/gpu/gpu_track_event.descriptor"
   _rebased_gpu_extensions_descriptor =
       rebase_path(_gpu_extensions_descriptor, root_build_dir)
+  _gpu_interned_data_extensions_descriptor =
+      "$_protos_path/perfetto/trace/gpu/gpu_interned_data.descriptor"
+  _rebased_gpu_interned_data_extensions_descriptor =
+      rebase_path(_gpu_interned_data_extensions_descriptor, root_build_dir)
   _trace_summary_descriptor =
       "$_protos_path/perfetto/trace_summary/trace_summary.descriptor"
   _rebased_trace_summary_descriptor =
@@ -72,6 +76,8 @@ generate_wrapper("perfetto_diff_tests") {
     "@WrappedPath($_rebased_winscope_extensions_descriptor)",
     "--gpu-extensions-descriptor",
     "@WrappedPath($_rebased_gpu_extensions_descriptor)",
+    "--gpu-interned-data-extensions",
+    "@WrappedPath($_rebased_gpu_interned_data_extensions_descriptor)",
     "--summary-descriptor",
     "@WrappedPath($_rebased_trace_summary_descriptor)",
     "--script",
