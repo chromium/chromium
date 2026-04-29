@@ -9,6 +9,7 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.scrollTo;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.intent.Intents.intended;
+import static androidx.test.espresso.intent.Intents.intending;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasData;
 import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
@@ -34,6 +35,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.app.Activity;
+import android.app.Instrumentation;
 import android.content.pm.ActivityInfo;
 import android.content.pm.ResolveInfo;
 
@@ -1709,10 +1712,15 @@ public class AutofillPaymentMethodsFragmentTest {
         Preference loyaltyCardsPref =
                 getPreferenceScreen(activity)
                         .findPreference(AutofillPaymentMethodsFragment.PREF_LOYALTY_CARDS);
+
+        var intentMatcher = hasData(GoogleWalletLauncher.GOOGLE_WALLET_PASSES_URL);
+        intending(intentMatcher)
+                .respondWith(new Instrumentation.ActivityResult(Activity.RESULT_OK, null));
+
         // Simulate click on the loyalty card row.
         ThreadUtils.runOnUiThreadBlocking(loyaltyCardsPref::performClick);
 
-        intended(hasData(GoogleWalletLauncher.GOOGLE_WALLET_PASSES_URL));
+        intended(intentMatcher);
     }
 
     @Test
