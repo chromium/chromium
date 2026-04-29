@@ -115,7 +115,6 @@ class FrameCaptionButtonContainerViewTest : public AshTestBase {
     generator->MoveMouseTo(
         testApi->size_button()->GetBoundsInScreen().CenterPoint());
     generator->ClickLeftButton();
-    base::RunLoop().RunUntilIdle();
   }
 };
 
