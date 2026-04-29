@@ -13,6 +13,7 @@ android_resources("java_resources") {
 # Public Java interfaces
 android_library("java") {
   sources = [
+    "android/java/src/org/chromium/chrome/browser/ui/side_ui/MarginContainerSideUiObserver.java",
     "android/java/src/org/chromium/chrome/browser/ui/side_ui/SideUiContainer.java",
     "android/java/src/org/chromium/chrome/browser/ui/side_ui/SideUiCoordinator.java",
     "android/java/src/org/chromium/chrome/browser/ui/side_ui/SideUiObserver.java",
@@ -31,4 +32,16 @@ android_library_factory("factory_java") {
     "//base:supplier_java",
   ]
   sources = [ "//chrome/browser/ui/side_ui/internal/android/java/src/org/chromium/chrome/browser/ui/side_ui/SideUiCoordinatorFactory.java" ]
+}
+
+robolectric_library("junit") {
+  sources = [ "android/java/src/org/chromium/chrome/browser/ui/side_ui/MarginContainerSideUiObserverTest.java" ]
+  deps = [
+    ":java",
+    "//base:base_junit_test_support",
+    "//build/android:build_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+  ]
 }

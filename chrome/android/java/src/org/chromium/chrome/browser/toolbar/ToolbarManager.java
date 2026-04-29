@@ -206,6 +206,7 @@ import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.TopInsetProvider;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
+import org.chromium.chrome.browser.ui.side_ui.MarginContainerSideUiObserver;
 import org.chromium.chrome.browser.ui.side_ui.SideUiObserver;
 import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
@@ -422,6 +423,7 @@ public class ToolbarManager
 
     private @Nullable SideUiStateProvider mSideUiStateProvider;
     private @Nullable SideUiObserver mSideUiObserver;
+    private @Nullable SideUiObserver mControlContainerSideUiObserver;
 
     private final MonotonicObservableSupplier<TabBookmarker> mTabBookmarkerSupplier;
     private final SettableNonNullObservableSupplier<Boolean> mBackPressStateSupplier =
@@ -1870,7 +1872,6 @@ public class ToolbarManager
 
         mSideUiObserver =
                 (sideUiSpecs) -> {
-                    mControlContainer.onSideUiSpecsChanged(sideUiSpecs);
                     // Can be null after destroy(), empty specs are passed when the observer
                     // is removed.
                     if (mFindToolbarManager != null) {
@@ -1878,6 +1879,8 @@ public class ToolbarManager
                     }
                 };
         mSideUiStateProvider.addObserver(mSideUiObserver);
+        mControlContainerSideUiObserver = new MarginContainerSideUiObserver(mControlContainer);
+        mSideUiStateProvider.addObserver(mControlContainerSideUiObserver);
     }
 
     private boolean shouldSuppressToolbarLongPress() {
@@ -2911,8 +2914,13 @@ public class ToolbarManager
             mOverridableTabCount = null;
         }
 
-        if (mSideUiStateProvider != null && mSideUiObserver != null) {
-            mSideUiStateProvider.removeObserver(mSideUiObserver);
+        if (mSideUiStateProvider != null) {
+            if (mSideUiObserver != null) {
+                mSideUiStateProvider.removeObserver(mSideUiObserver);
+            }
+            if (mControlContainerSideUiObserver != null) {
+                mSideUiStateProvider.removeObserver(mControlContainerSideUiObserver);
+            }
         }
 
         mTabObscuringHandler.removeObserver(this);

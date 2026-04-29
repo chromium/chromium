@@ -88,7 +88,6 @@ import org.chromium.chrome.browser.toolbar.top.CaptureReadinessResult.TopToolbar
 import org.chromium.chrome.browser.toolbar.top.ToolbarControlContainer.ToolbarViewResourceAdapter;
 import org.chromium.chrome.browser.toolbar.top.ToolbarControlContainer.ToolbarViewResourceAdapter.ToolbarInMotionStage;
 import org.chromium.chrome.browser.toolbar.top.ToolbarControlContainer.ToolbarViewResourceCoordinatorLayout;
-import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.widget.TouchEventObserver;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -927,26 +926,6 @@ public class ToolbarControlContainerTest {
                 "Transition not finished, so minHeight stays the same.",
                 0,
                 mControlContainer.getMinimumHeight());
-    }
-
-    @Test
-    public void testOnSideUiSpecsChanged() {
-        initControlContainer(R.layout.toolbar_phone);
-        ToolbarViewResourceCoordinatorLayout toolbarContainer =
-                mControlContainer.findViewById(R.id.toolbar_container);
-
-        MarginLayoutParams params = (MarginLayoutParams) toolbarContainer.getLayoutParams();
-        int baseMarginStart = params.getMarginStart();
-        int baseMarginEnd = params.getMarginEnd();
-
-        int startWidth = 10;
-        int endWidth = 20;
-        mControlContainer.onSideUiSpecsChanged(new SideUiSpecs(startWidth, endWidth));
-
-        params = (MarginLayoutParams) toolbarContainer.getLayoutParams();
-        assertEquals(
-                "Margin start is wrong.", baseMarginStart + startWidth, params.getMarginStart());
-        assertEquals("Margin end is wrong.", baseMarginEnd + endWidth, params.getMarginEnd());
     }
 
     @Test
