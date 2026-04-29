@@ -12,9 +12,10 @@ found in the LICENSE file.
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:orientation="vertical"
-        android:layout_gravity="top">
+        android:layout_gravity="top"
+        android:gravity="start|center_vertical">
 
         <!-- IPH text bubble -->
         <LinearLayout
@@ -23,7 +24,6 @@ found in the LICENSE file.
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical"
-            android:layout_marginTop="@dimen/iph_bubble_margin_top"
             android:layout_marginStart="@dimen/iph_bubble_margin_start"
             tools:ignore="UseCompoundDrawables">
 
@@ -51,11 +51,11 @@ found in the LICENSE file.
     </LinearLayout>
 
     <TextView
+        style="@style/GestureUserEducationIphDismissText"
         android:id="@+id/tap_to_dismiss_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|center_horizontal"
-        android:layout_marginBottom="@dimen/tap_to_dismiss_text_margin_bottom"
+        android:layout_margin="@dimen/tap_to_dismiss_text_margin"
         android:text="@string/iph_gesture_user_education_tap_to_dismiss"
         android:textAppearance="@style/TextAppearance.GestureUserEducationIphText" />
 </FrameLayout>

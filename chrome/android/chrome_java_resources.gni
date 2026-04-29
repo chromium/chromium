@@ -614,6 +614,7 @@ chrome_java_resources = [
   "java/res/transition/move_image.xml",
   "java/res/values-h600dp/dimens.xml",
   "java/res/values-hdpi/dimens.xml",
+  "java/res/values-land/styles.xml",
   "java/res/values-large/drawables.xml",
   "java/res/values-ldrtl/drawables.xml",
   "java/res/values-night/colors.xml",
