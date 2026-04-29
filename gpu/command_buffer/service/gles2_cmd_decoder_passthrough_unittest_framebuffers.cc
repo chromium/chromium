@@ -71,6 +71,12 @@ TEST_F(GLES2DecoderPassthroughTest, DiscardFramebufferEXTUnsupported) {
 }
 
 TEST_F(GLES2DecoderPassthroughTest, ReadPixelsOutOfRange) {
+#if 1
+  // TODO(anglebug.com/507782759): re-enable with modifications after
+  // ANGLE rolls in.
+  GTEST_SKIP() << "Temporarily skipped while ANGLE changes are rolling in in "
+                  "anglebug.com/507782759";
+#else
   const GLint kWidth = 5;
   const GLint kHeight = 3;
   const GLenum kFormat = GL_RGBA;
@@ -161,6 +167,7 @@ TEST_F(GLES2DecoderPassthroughTest, ReadPixelsOutOfRange) {
       }
     }
   }
+#endif
 }
 
 TEST_F(GLES3DecoderPassthroughTest, ReadPixelsAsync) {
