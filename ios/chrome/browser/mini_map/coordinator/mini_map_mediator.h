@@ -15,6 +15,14 @@ namespace web {
 class WebState;
 }
 
+// The type of query used to trigger the Mini Map.
+enum class MiniMapQueryType {
+  // The query is a text string (e.g. an address).
+  kText,
+  // The query is a URL (e.g. a maps link).
+  kURL,
+};
+
 // Mediator for the Minimap feature
 @interface MiniMapMediator : NSObject
 
@@ -23,7 +31,7 @@ class WebState;
 
 - (instancetype)initWithPrefs:(PrefService*)prefs
                      webState:(web::WebState*)webState
-    NS_DESIGNATED_INITIALIZER;
+                         type:(MiniMapQueryType)type NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
 // Disconnects the mediator. No methods should be called after that.

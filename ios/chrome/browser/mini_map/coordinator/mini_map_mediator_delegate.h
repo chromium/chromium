@@ -9,7 +9,9 @@
 
 @protocol MiniMapMediatorDelegate
 
-// Show the map. If `showIPH` is YES, add the IPH bubble info to the screen.
+// TODO(crbug.com/505882801): Revise the protocol to follow Objective-C delegate
+// conventions. Show the map. If `showIPH` is YES, add the IPH bubble info to
+// the screen.
 - (void)showMapWithIPH:(BOOL)showIPH;
 
 @end

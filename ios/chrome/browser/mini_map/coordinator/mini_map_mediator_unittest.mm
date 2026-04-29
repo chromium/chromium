@@ -30,7 +30,8 @@ class MiniMapMediatorTest : public PlatformTest {
     delegate_ = OCMStrictProtocolMock(@protocol(MiniMapMediatorDelegate));
 
     mediator_ = [[MiniMapMediator alloc] initWithPrefs:profile_->GetPrefs()
-                                              webState:nullptr];
+                                              webState:nullptr
+                                                  type:MiniMapQueryType::kText];
     mediator_.delegate = delegate_;
   }
 

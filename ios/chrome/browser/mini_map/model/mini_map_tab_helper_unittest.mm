@@ -190,6 +190,10 @@ TEST_F(MiniMapTabHelperTest, TestNavigations) {
         (scenario & transition_type_index)
             ? ui::PageTransition::PAGE_TRANSITION_LINK
             : ui::PageTransition::PAGE_TRANSITION_AUTO_BOOKMARK;
+    if (scenario == total - 1) {
+      OCMExpect([mini_map_commands_handler_
+          presentMiniMapNativePreviewForURL:[NSURL URLWithString:url]]);
+    }
     bool res =
         TestShouldAllowRequest(web_state_url, url, feature_enabled,
                                !google_maps_not_installed, transition_type);
@@ -205,6 +209,8 @@ TEST_F(MiniMapTabHelperTest, TestGoogleMapsURL) {
   NSString* const kGoogleMapsLink =
       @"https://www.google.com/maps/foo?valid=true";
 
+  OCMExpect([mini_map_commands_handler_
+      presentMiniMapNativePreviewForURL:[NSURL URLWithString:kGoogleMapsLink]]);
   bool res = TestShouldAllowRequest(kGoogleSRPPage, kGoogleMapsLink,
                                     /*feature_enabled=*/true,
                                     /*google_maps_installed=*/false,
@@ -212,4 +218,5 @@ TEST_F(MiniMapTabHelperTest, TestGoogleMapsURL) {
 
   // Navigation should be blocked (returns false).
   EXPECT_FALSE(res);
+  EXPECT_OCMOCK_VERIFY(mini_map_commands_handler_);
 }

@@ -50,6 +50,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/test:test_support",
     "//ios/chrome/test/providers/mini_map",
     "//ios/web/common:features",

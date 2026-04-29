@@ -102,6 +102,6 @@ bool MiniMapTabHelper::ShouldInterceptRequest(
     return false;
   }
 
-  // TODO(crbug.com/505402932): Add call to Mini Map once method is added.
+  [mini_map_handler_ presentMiniMapNativePreviewForURL:url];
   return true;
 }
