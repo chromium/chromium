@@ -5,7 +5,6 @@
 #ifndef SERVICES_METRICS_PUBLIC_CPP_UKM_SOURCE_H_
 #define SERVICES_METRICS_PUBLIC_CPP_UKM_SOURCE_H_
 
-#include <map>
 #include <optional>
 #include <vector>
 
@@ -34,22 +33,17 @@ class METRICS_EXPORT UkmSource {
     NavigationData(const NavigationData& other);
 
     // Creates a copy of this struct, replacing the URL members with sanitized
-    // versions. Currently, |sanitized_urls| expects a one or two element
-    // vector. The last element in the vector will always be the final URL in
-    // the redirect chain. For two-element vectors, the first URL is assumed to
-    // be the first URL in the redirect chain. The URLs in |sanitized_urls| are
-    // expected to be non-empty.
+    // versions.
     NavigationData CopyWithSanitizedUrls(
         std::vector<GURL> sanitized_urls) const;
 
-    // The URLs associated with this sources navigation. Some notes:
-    // - This will always contain at least one element.
-    // - For non navigation sources, this will contain exactly one element.
-    // - For navigation sources, this will only contain at most two elements,
-    //   one for the first URL in the redirect chain and one for the final URL
-    //   that committed.
-    // TODO(crbug.com/40587196): This may end up containing all the URLs in the
-    // redirect chain for navigation sources.
+    // The URLs associated with this source's navigation. Some notes:
+    // This will always contain at least one element.
+    // - For non-navigation sources, this will contain exactly one element.
+    // - For navigation sources, this contains one element if there's no
+    //   redirects. If there's a redirect, this represents the whole redirect
+    //   chain (up to net::URLRequest::kMaxRedirects) in order. The last element
+    //   of the vector is the final landing page.
     std::vector<GURL> urls;
 
     // This field is populated if and only if this Source represents a blink

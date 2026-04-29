@@ -27,6 +27,7 @@ interface UkmSource {
   events: UkmEvent[];
   url?: string;
   webdx_features?: string[];
+  redirects?: string[];
 }
 
 /**
@@ -167,7 +168,11 @@ function populateSourceHtmlRow(
     isExpanded: boolean): void {
   const urlElement = document.createElement('td');
   urlElement.classList.add('url');
-  urlElement.innerText = sourceData.url || URL_EMPTY;
+  let urlText = sourceData.url || URL_EMPTY;
+  if (sourceData.redirects && sourceData.redirects.length > 1) {
+    urlText += ' (from redirect)';
+  }
+  urlElement.innerText = urlText;
   const idElement = document.createElement('td');
   idElement.classList.add('sourceid');
   idElement.innerText = as64Bit(sourceData.id);
@@ -228,6 +233,26 @@ function createEventMetricTablesForSource(
     featuresDiv.appendChild(
         document.createTextNode(sourceData.webdx_features.sort().join(', ')));
     eventMetricsElement.appendChild(featuresDiv);
+  }
+
+  const redirects = sourceData.redirects;
+  if (redirects) {
+    const redirectsInfoDiv = document.createElement('div');
+    redirectsInfoDiv.style.paddingLeft = '10px';
+
+    const redirectsInfoLabel = document.createElement('b');
+    redirectsInfoLabel.textContent = 'Full redirect chain:';
+    redirectsInfoDiv.appendChild(redirectsInfoLabel);
+
+    redirects.forEach((url, index) => {
+      const redirectUrlDiv = document.createElement('div');
+      const isFinalUrl = index === redirects.length - 1;
+      redirectUrlDiv.textContent = url + (isFinalUrl ? '' : '  ==>');
+      redirectUrlDiv.style.paddingLeft = '10px';
+      redirectUrlDiv.style.paddingBottom = isFinalUrl ? '10px' : '0px';
+      redirectsInfoDiv.appendChild(redirectUrlDiv);
+    });
+    eventMetricsElement.appendChild(redirectsInfoDiv);
   }
 
   if (sourceData.events.length === 0) {
@@ -417,15 +442,18 @@ function updateUkmCache(data: UkmSession) {
         type: source.type,
         events: source.events,
         webdx_features: source.webdx_features || [],
+        url: source.url,
+        redirects: source.redirects,
       };
-      if (source.url) {
-        mergedSource.url = source.url;
-      }
       cachedSources.set(key, mergedSource);
     } else {
+      const cached = cachedSources.get(key)!;
+      if (source.redirects && !cached.redirects) {
+        cached.redirects = source.redirects;
+      }
       // Merge distinct events from the source.
-      const existingEvents = new Set(cachedSources.get(key)!.events.map(
-          event => normalizeToString(event)));
+      const existingEvents =
+          new Set(cached.events.map(event => normalizeToString(event)));
       for (const event of source.events) {
         if (!existingEvents.has(normalizeToString(event))) {
           cachedSources.get(key)!.events.push(event);

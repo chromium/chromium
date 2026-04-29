@@ -3,4 +3,5 @@ include_rules = [
   "+content/public/common",
   "+content/public/test",
   "+content/shell",
+  "+net/url_request",
 ]

@@ -748,7 +748,7 @@ void UkmRecorderImpl::UpdateSourceURL(SourceId source_id,
 
   const GURL sanitized_url = SanitizeURL(unsanitized_url);
 
-  // If UKM recording is disabled due to |recording_enabled|,
+  // Even if UKM recording is disabled due to |recording_enabled|,
   // still notify observers as they might be interested in it.
   NotifyAllObservers(&UkmRecorderObserver::OnUpdateSourceURL, source_id,
                      std::vector<GURL>{sanitized_url});
@@ -768,7 +768,7 @@ void UkmRecorderImpl::UpdateAppURL(SourceId source_id,
   if (app_type != AppType::kPWA && !recording_enabled(ukm::EXTENSIONS)) {
     RecordDroppedSource(DroppedDataReason::EXTENSION_URLS_DISABLED);
 
-    // If UKM recording is disabled due to |recording_enabled|,
+    // Even if UKM recording is disabled due to |recording_enabled|,
     // still notify observers as they might be interested in it.
     NotifyAllObservers(&UkmRecorderObserver::OnUpdateSourceURL, source_id,
                        std::vector<GURL>{SanitizeURL(url)});

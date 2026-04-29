@@ -4,7 +4,9 @@
 
 #include "services/metrics/public/cpp/ukm_source.h"
 
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "base/atomicops.h"
 #include "base/check_op.h"
@@ -109,7 +111,6 @@ UkmSource::NavigationData::NavigationData(const NavigationData& other) =
 
 UkmSource::NavigationData UkmSource::NavigationData::CopyWithSanitizedUrls(
     std::vector<GURL> sanitized_urls) const {
-  DCHECK_LE(sanitized_urls.size(), 2u);
   DCHECK(!sanitized_urls.empty());
   DCHECK(!sanitized_urls.back().is_empty());
   DCHECK(!sanitized_urls.front().is_empty());

@@ -7,6 +7,7 @@
 #include <inttypes.h>
 
 #include <map>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -131,8 +132,16 @@ base::Value UkmDebugDataExtractor::GetStructuredData(
     if (src) {
       source_dict.Set("id",
                       UkmDebugDataExtractor::UInt64AsPairOfInt(src->id()));
-      source_dict.Set("url", base::Value(src->url().spec()));
       source_dict.Set("type", GetSourceIdTypeDebugString(src->id()));
+      source_dict.Set("url", base::Value(src->url().spec()));
+      if (src->urls().size() > 1) {
+        auto redirects_list =
+            base::ListValue::with_capacity(src->urls().size());
+        for (const auto& url : src->urls()) {
+          redirects_list.Append(url.spec());
+        }
+        source_dict.Set("redirects", std::move(redirects_list));
+      }
     } else {
       source_dict.Set("id", UkmDebugDataExtractor::UInt64AsPairOfInt(kv.first));
       source_dict.Set("type", GetSourceIdTypeDebugString(kv.first));

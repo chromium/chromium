@@ -4,6 +4,7 @@
 
 #include "components/ukm/content/source_url_recorder.h"
 
+#include <cstdint>
 #include <utility>
 
 #include "base/containers/flat_map.h"
@@ -13,6 +14,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "net/url_request/url_request.h"
 #include "services/metrics/public/cpp/delegating_ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
@@ -20,6 +22,13 @@
 #include "url/gurl.h"
 
 namespace ukm {
+
+// Enforce an upper bound on the max number of URLs we record per navigation
+// to prevent a report from growing unbounded in size in extreme cases. For
+// convenience, the upper bound is the same as the max number of redirects
+// supported by URLRequest which hits ERR_TOO_MANY_REDIRECTS before aborting the
+// navigation.
+constexpr size_t kMaxRedirects = net::URLRequest::kMaxRedirects;
 
 namespace internal {
 
@@ -29,9 +38,10 @@ int64_t CreateUniqueTabId() {
 }
 
 // SourceUrlRecorderWebContentsObserver is responsible for recording UKM source
-// URLs, for all (any only) main frame navigations in a given WebContents.
-// SourceUrlRecorderWebContentsObserver records both the final URL for a
-// navigation, and, if the navigation was redirected, the initial URL as well.
+// URLs, for all (and only) main frame navigations in a given WebContents.
+// For a navigation, SourceUrlRecorderWebContentsObserver records the final URL
+// for a navigation, and, in case of redirection, the whole redirect chain up to
+// a length limit.
 class SourceUrlRecorderWebContentsObserver
     : public content::WebContentsObserver,
       public content::WebContentsUserData<
@@ -69,11 +79,9 @@ class SourceUrlRecorderWebContentsObserver
   void HandleSameDocumentNavigation(
       content::NavigationHandle* navigation_handle);
   void HandleDifferentDocumentNavigation(
-      content::NavigationHandle* navigation_handle,
-      const GURL& initial_url);
+      content::NavigationHandle* navigation_handle);
 
-  void MaybeRecordUrl(content::NavigationHandle* navigation_handle,
-                      const GURL& initial_url);
+  void MaybeRecordUrl(content::NavigationHandle* navigation_handle);
 
   // Whether URLs should be recorded in UKM Sources.
   bool ShouldRecordURLs() const;
@@ -159,9 +167,8 @@ void SourceUrlRecorderWebContentsObserver::DidFinishNavigation(
   }
 
   if (it != pending_navigations_.end()) {
-    GURL initial_url = std::move(it->second);
     pending_navigations_.erase(it);
-    HandleDifferentDocumentNavigation(navigation_handle, initial_url);
+    HandleDifferentDocumentNavigation(navigation_handle);
   }
 }
 
@@ -190,7 +197,7 @@ void SourceUrlRecorderWebContentsObserver::HandleSameDocumentNavigation(
         GetLastCommittedFullNavigationOrSameDocumentSourceId());
   }
 
-  MaybeRecordUrl(navigation_handle, GURL());
+  MaybeRecordUrl(navigation_handle);
 
   last_committed_full_navigation_or_same_document_source_id_ =
       ukm::ConvertToSourceId(navigation_handle->GetNavigationId(),
@@ -199,8 +206,7 @@ void SourceUrlRecorderWebContentsObserver::HandleSameDocumentNavigation(
 }
 
 void SourceUrlRecorderWebContentsObserver::HandleDifferentDocumentNavigation(
-    content::NavigationHandle* navigation_handle,
-    const GURL& initial_url) {
+    content::NavigationHandle* navigation_handle) {
   // UKM doesn't want to record URLs for navigations that result in downloads.
   if (navigation_handle->IsDownload())
     return;
@@ -217,7 +223,7 @@ void SourceUrlRecorderWebContentsObserver::HandleDifferentDocumentNavigation(
         GetLastCommittedFullNavigationOrSameDocumentSourceId());
   }
 
-  MaybeRecordUrl(navigation_handle, initial_url);
+  MaybeRecordUrl(navigation_handle);
 
   if (navigation_handle->HasCommitted()) {
     last_committed_full_navigation_source_id_ = ukm::ConvertToSourceId(
@@ -273,8 +279,7 @@ ukm::SourceId SourceUrlRecorderWebContentsObserver::
 }
 
 void SourceUrlRecorderWebContentsObserver::MaybeRecordUrl(
-    content::NavigationHandle* navigation_handle,
-    const GURL& initial_url) {
+    content::NavigationHandle* navigation_handle) {
   DCHECK(navigation_handle->IsInPrimaryMainFrame());
 
   // TODO(crbug.com/40689295): If ShouldRecordURLs is false, we should still
@@ -287,14 +292,13 @@ void SourceUrlRecorderWebContentsObserver::MaybeRecordUrl(
     return;
 
   UkmSource::NavigationData navigation_data;
-  const GURL& final_url = navigation_handle->GetURL();
-  // TODO(crbug.com/40587196): This check isn't quite correct, as self
-  // redirecting is possible. This may also be changed to include the entire
-  // redirect chain. Additionally, since same-document navigations don't have
-  // initial URLs, ignore empty initial URLs.
-  if (!initial_url.is_empty() && final_url != initial_url)
-    navigation_data.urls = {initial_url};
-  navigation_data.urls.push_back(final_url);
+  const std::vector<GURL>& url_chain = navigation_handle->GetRedirectChain();
+  // Copy over the list of the URL redirects that occurred on the way to the
+  // landing page. The landing page is the last one in the list. When there's no
+  // redirect, there is only one URL in the list.
+  navigation_data.urls.assign(
+      url_chain.begin(),
+      url_chain.begin() + std::min(url_chain.size(), kMaxRedirects));
 
   navigation_data.is_same_document_navigation =
       navigation_handle->IsSameDocument();
