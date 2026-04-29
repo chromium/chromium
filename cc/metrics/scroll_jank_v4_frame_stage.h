@@ -24,58 +24,6 @@ namespace cc {
 // and/or a scroll end in the frame (`ScrollJankV4FrameStage::ScrollEnd`) in
 // either order.
 struct CC_EXPORT ScrollJankV4FrameStage {
-  // The result or issues encountered by the `CalculateStages()` method when
-  // processing scroll events in a single frame.
-  // LINT.IfChange(FrameStageCalculationResult)
-  enum class FrameStageCalculationResult {
-    // The frame only contained one or more scroll updates.
-    kScrollUpdatesOnly = 0,
-
-    // The frame only contained one scroll end (and nothing else).
-    kScrollEndOnly = 1,
-
-    // The frame contained one or more scroll updates followed by one scroll
-    // end.
-    kScrollUpdatesThenEnd = 2,
-
-    // The frame contained one scroll end, one scroll start and then zero or
-    // more scroll updates (in this order).
-    kScrollEndThenStartThenUpdates = 3,
-
-    // The frame contained multiple scroll ends (unexpected issue).
-    kMultipleScrollEnds = 4,
-
-    // The frame contained multiple scroll starts (unexpected issue).
-    kMultipleScrollStarts = 5,
-
-    // The frame contained a scroll update followed by a scroll start
-    // (unexpected issue).
-    kScrollStartAfterUpdate = 6,
-
-    // The frame contained a scroll end between two scroll updates (unexpected
-    // issue).
-    kScrollEndBetweenUpdates = 7,
-
-    // The frame contained a scroll end and then one or more scroll updates
-    // without a scroll start in between (unexpected issue).
-    kScrollEndThenUpdatesWithoutStart = 8,
-
-    // The frame suffered from more than one unexpected issue.
-    kMultipleIssues = 9,
-
-    // The frame contained one scroll start followed by one or more scroll
-    // updates.
-    kScrollStartThenUpdates = 10,
-
-    // The frame contained one scroll start, one or more scroll updates and then
-    // one scroll end (in this order). It's strange to have a scroll that starts
-    // and ends within the same frame, but it's technically not an issue.
-    kScrollStartThenUpdatesThenEnd = 11,
-
-    kMaxValue = kScrollStartThenUpdatesThenEnd,
-  };
-  // LINT.ThenChange(//tools/metrics/histograms/metadata/event/enums.xml:ScrollJankFrameStageCalculationResult)
-
   // A stage that corresponds to the beginning of a scroll (triggered by
   // `kFirstGestureScrollUpdate`).
   struct CC_EXPORT ScrollStart {

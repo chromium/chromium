@@ -749,19 +749,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Event.ScrollJank.FrameStageCalculationResult"
-    enum="ScrollJankFrameStageCalculationResult" expires_after="2026-10-04">
-  <owner>petrcermak@chromium.org</owner>
-  <owner>kartarsingh@google.com</owner>
-  <owner>jonross@chromium.org</owner>
-  <owner>woa-performance-team@google.com</owner>
-  <summary>
-    Results and issues encountered by the
-    `cc::ScrollJankV4FrameStage::CalculateStages()` method when processing
-    scroll events in a single frame.
-  </summary>
-</histogram>
-
 <histogram name="Event.ScrollJank.MissedVsyncs.PerFrame" units="counts"
     expires_after="2026-09-06">
   <owner>kartarsingh@google.com</owner>

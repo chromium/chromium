@@ -11,15 +11,11 @@
 #include <variant>
 #include <vector>
 
-#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
-#include "base/rand_util.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/base/features.h"
 #include "cc/metrics/event_metrics.h"
-#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
-#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace cc {
 
@@ -75,65 +71,6 @@ ScrollJankV4FrameStage::List CalculateStagesImpl(
   std::optional<base::TimeTicks> scroll_end_arrived_in_compositor_ts =
       std::nullopt;
 
-  using FrameStageCalculationResult =
-      ScrollJankV4FrameStage::FrameStageCalculationResult;
-  std::optional<FrameStageCalculationResult> issue;
-  auto add_issue = [&](FrameStageCalculationResult new_issue) {
-    if (!issue.has_value() || *issue == new_issue) {
-      // If this is a new or a recurring issue, use it.
-      issue = new_issue;
-    } else {
-      // Otherwise, combine different issues into `kMultipleIssues`.
-      issue = FrameStageCalculationResult::kMultipleIssues;
-    }
-  };
-  absl::Cleanup maybe_report_result = [&] {
-    // Only report for 1% of frames that contain at least one scroll update or
-    // scroll end.
-    if (stages.empty() || !base::ShouldRecordSubsampledMetric(0.01)) {
-      return;
-    }
-    FrameStageCalculationResult result = [&] {
-      if (issue.has_value()) {
-        // If there was an issue, report it.
-        return *issue;
-      }
-      // If there were no issues, report the ordering of scroll start, scroll
-      // updates and/or scroll end.
-      using enum FrameStageCalculationResult;
-      return std::visit(
-          // Note: We know, by construction, that `stages` contains each stage
-          // type (start/updates/end) at most once.
-          absl::Overload{
-              [&stages](const ScrollJankV4FrameStage::ScrollStart& start) {
-                // It's not possible to have a start without updates because
-                // both originate from
-                // `EventMetrics::EventType::kFirstGestureScrollUpdate`.
-                return stages.size() == 2 ? kScrollStartThenUpdates
-                                          : kScrollStartThenUpdatesThenEnd;
-              },
-              [&stages](const ScrollJankV4FrameStage::ScrollUpdates& updates) {
-                // We know that `stages` doesn't contain any start. Otherwise,
-                // we'd have reported the `kScrollStartAfterUpdate` issue.
-                return stages.size() == 1 ? kScrollUpdatesOnly
-                                          : kScrollUpdatesThenEnd;
-              },
-              [&stages](const ScrollJankV4FrameStage::ScrollEnd& end) {
-                if (stages.size() == 1) {
-                  return kScrollEndOnly;
-                }
-                // We know that `stages` contains [end, start, updates] in that
-                // order. Otherwise, we'd have reported one of the
-                // `kScrollEndThenUpdatesWithoutStart` or
-                // `kScrollStartAfterUpdate` issues.
-                return kScrollEndThenStartThenUpdates;
-              }},
-          stages[0].stage);
-    }();
-    UMA_HISTOGRAM_ENUMERATION("Event.ScrollJank.FrameStageCalculationResult",
-                              result);
-  };
-
   // We expect that `events_metrics` contains:
   //   E. Zero or one scroll ends (`kGestureScrollEnd` or
   //      `kInertialGestureScrollEnd`).
@@ -161,7 +98,6 @@ ScrollJankV4FrameStage::List CalculateStagesImpl(
     if (event_type == EventMetrics::EventType::kGestureScrollEnd ||
         event_type == EventMetrics::EventType::kInertialGestureScrollEnd) {
       if (scroll_end_arrived_in_compositor_ts) {
-        add_issue(FrameStageCalculationResult::kMultipleScrollEnds);
         TRACE_EVENT("input",
                     "CalculateStages: Multiple scroll ends in a frame");
       }
@@ -201,7 +137,6 @@ ScrollJankV4FrameStage::List CalculateStagesImpl(
     switch (event_type) {
       case EventMetrics::EventType::kFirstGestureScrollUpdate:
         if (scroll_start_arrived_in_compositor_ts) {
-          add_issue(FrameStageCalculationResult::kMultipleScrollStarts);
           TRACE_EVENT("input",
                       "CalculateStages: Multiple scroll starts in a "
                       "single frame (unexpected)");
@@ -252,7 +187,6 @@ ScrollJankV4FrameStage::List CalculateStagesImpl(
       *scroll_end_arrived_in_compositor_ts <=
           first_input_arrived_in_compositor_ts) {
     if (had_gesture_scroll && !is_scroll_start) {
-      add_issue(FrameStageCalculationResult::kScrollEndThenUpdatesWithoutStart);
       TRACE_EVENT("input",
                   "CalculateStages: Scroll end followed by scroll updates "
                   "without a scroll start (unexpected)");
@@ -263,7 +197,6 @@ ScrollJankV4FrameStage::List CalculateStagesImpl(
   if (is_scroll_start) {
     if (*scroll_start_arrived_in_compositor_ts >
         first_input_arrived_in_compositor_ts) {
-      add_issue(FrameStageCalculationResult::kScrollStartAfterUpdate);
       TRACE_EVENT("input",
                   "CalculateStages: First scroll starts after another "
                   "scroll update in a single frame (unexpected)");
@@ -320,7 +253,6 @@ ScrollJankV4FrameStage::List CalculateStagesImpl(
       // scroll updates from the previous scroll being delayed, so we want to
       // evaluate the current frame against the previous scroll (so that the
       // frame would potentially be marked as janky).
-      add_issue(FrameStageCalculationResult::kScrollEndBetweenUpdates);
       TRACE_EVENT("input",
                   "CalculateStages: Scroll end between two scroll "
                   "updates in a single frame (unexpected)");
