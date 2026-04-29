@@ -1104,7 +1104,8 @@ static_library("ui") {
       "//chrome/browser/feed",
       "//chrome/browser/flags:flags_android",
       "//chrome/browser/image_decoder",
-      "//chrome/browser/keyboard_accessory/android:public",
+      "//chrome/browser/keyboard_accessory/android",
+      "//chrome/browser/keyboard_accessory/android:impl",
       "//chrome/browser/notifications/scheduler/public",
       "//chrome/browser/password_manager/android:utils",
       "//chrome/browser/resources/feed_internals:resources",
@@ -1179,6 +1180,10 @@ static_library("ui") {
     # This can be removed when browser_navigator.h is modularized (see below TODOs).
     allow_circular_includes_from +=
         [ "//chrome/browser/ui/browser_window/internal" ]
+
+    # TODO(crbug.com/504985497): Remove this circular dependency.
+    allow_circular_includes_from +=
+        [ "//chrome/browser/keyboard_accessory/android:impl" ]
 
     if (enable_extensions_core) {
       sources += [

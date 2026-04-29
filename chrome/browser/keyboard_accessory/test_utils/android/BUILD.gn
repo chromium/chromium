@@ -12,7 +12,7 @@ source_set("android") {
     "mock_payment_method_accessory_controller.cc",
     "mock_payment_method_accessory_controller.h",
   ]
-  public_deps = [ "../../android:public" ]
+  public_deps = [ "../../android" ]
   deps = [
     "//base",
     "//components/autofill/core/browser",

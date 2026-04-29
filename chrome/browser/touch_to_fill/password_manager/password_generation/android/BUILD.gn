@@ -9,7 +9,7 @@ source_set("public") {
     ":android",
     "//base",
     "//chrome/browser/autofill",
-    "//chrome/browser/keyboard_accessory/android:public",
+    "//chrome/browser/keyboard_accessory/android",
     "//chrome/browser/password_manager/android:utils",
     "//components/password_manager/content/browser",
     "//components/password_manager/core/browser",

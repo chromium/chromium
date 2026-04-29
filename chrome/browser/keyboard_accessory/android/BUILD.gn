@@ -4,10 +4,9 @@
 
 import("//build/config/android/rules.gni")
 
-static_library("public") {
-  sources = [
+source_set("android") {
+  public = [
     "accessory_controller.h",
-    "accessory_sheet_data.cc",
     "accessory_sheet_data.h",
     "accessory_sheet_enums.h",
     "address_accessory_controller.h",
@@ -17,26 +16,61 @@ static_library("public") {
     "payment_method_accessory_controller.h",
   ]
 
-  deps = [
+  public_deps = [
     "//base",
     "//components/autofill/core/browser",
     "//components/password_manager/core/browser",
     "//components/plus_addresses/core/browser:types",
+    "//components/resources:android_resources",
+    "//components/webauthn/android",
     "//content/public/browser",
     "//url",
   ]
 }
 
-source_set("android") {
+source_set("impl") {
   sources = [
+    "accessory_sheet_data.cc",
+    "address_accessory_controller_impl.cc",
+    "address_accessory_controller_impl.h",
+    "affiliated_plus_profiles_cache.cc",
+    "affiliated_plus_profiles_cache.h",
+    "manual_filling_controller_impl.cc",
+    "manual_filling_controller_impl.h",
     "manual_filling_utils.cc",
     "manual_filling_utils.h",
+    "password_accessory_controller_impl.cc",
+    "password_accessory_controller_impl.h",
+    "payment_method_accessory_controller_impl.cc",
+    "payment_method_accessory_controller_impl.h",
   ]
-  public_deps = [ ":public" ]
-  deps = [ "//base" ]
+  public_deps = [
+    ":android",
+    "//chrome/browser:browser_public_dependencies",
+  ]
+  deps = [
+    "//base",
+    "//chrome/browser/android:resource_mapper",
+    "//chrome/browser/autofill",
+    "//chrome/browser/password_manager",
+    "//chrome/browser/password_manager/android/grouped_affiliations:public",
+    "//chrome/browser/plus_addresses",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ssl",
+    "//chrome/browser/ui/passwords",
+    "//chrome/browser/ui/plus_addresses",
+    "//chrome/browser/vr",
+    "//chrome/browser/webauthn:webauthn_request_delegate_android",
+    "//components/autofill/core/browser",
+    "//components/password_manager/core/browser",
+    "//components/plus_addresses/core/browser",
+    "//components/plus_addresses/core/browser/resources/strings",
+    "//components/resources:android_resources",
+    "//components/webauthn/android",
+  ]
 }
 
-source_set("unit_test") {
+source_set("unit_tests") {
   testonly = true
   sources = [
     "address_accessory_controller_impl_unittest.cc",
@@ -46,11 +80,10 @@ source_set("unit_test") {
     "payment_method_accessory_controller_impl_unittest.cc",
   ]
   deps = [
-    ":android",
+    ":impl",
     "../test_utils/android",
     "//base",
     "//chrome/app:generated_resources_grit",
-    "//chrome/browser",
     "//chrome/browser/autofill",
     "//chrome/browser/password_manager",
     "//chrome/browser/password_manager/android:unit_tests",

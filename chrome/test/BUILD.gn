@@ -2064,7 +2064,7 @@ if (is_android) {
       "//chrome/browser/flags:flags_android",
       "//chrome/browser/glic:browser_tests",
       "//chrome/browser/history",
-      "//chrome/browser/keyboard_accessory/android:public",
+      "//chrome/browser/keyboard_accessory/android",
       "//chrome/browser/lifetime",
       "//chrome/browser/metrics:test_support",
       "//chrome/browser/optimization_guide",
@@ -2237,6 +2237,9 @@ if (is_android) {
     # likely we want to replace it with something new that uses ChromeWindow
     # and CompositorViewHolder instead.
     deps += [ "//content/shell:content_shell_lib" ]
+
+    # TODO(crbug.com/504739401): Remove this dependency.
+    deps += [ "//chrome/browser/keyboard_accessory/android:impl" ]
 
     data_deps = [ "//testing/buildbot/filters:android_browsertests_filters" ]
 
@@ -8109,8 +8112,7 @@ test("unit_tests") {
       "//chrome/browser/facilitated_payments/ui/android:unit_tests",
       "//chrome/browser/feed",
       "//chrome/browser/flags:flags_android",
-      "//chrome/browser/keyboard_accessory/android",
-      "//chrome/browser/keyboard_accessory/android:unit_test",
+      "//chrome/browser/keyboard_accessory/android:unit_tests",
       "//chrome/browser/keyboard_accessory/test_utils/android",
       "//chrome/browser/long_screenshots:unit_tests",
       "//chrome/browser/lookalikes:unit_tests",
@@ -8209,6 +8211,9 @@ test("unit_tests") {
       "//ui/android",
       "//ui/events/devices:test_support",
     ]
+
+    # TODO(crbug.com/504739401): Remove this dependency.
+    deps += [ "//chrome/browser/keyboard_accessory/android:impl" ]
 
     if (enable_extensions_core) {
       sources += [
