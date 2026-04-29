@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/intelligence/actor/tools/model/click_tool_java_script_feature.h"
 
+#import "base/strings/stringprintf.h"
 #import "base/test/test_future.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
@@ -83,7 +84,9 @@ TEST_F(ClickToolJavaScriptFeatureTest, JsReturnsNonDict) {
 
 TEST_F(ClickToolJavaScriptFeatureTest, JsReturnsError) {
   MockClickJsFunctions(
-      /*mock_return_value=*/"{success: false, message: 'Custom JS Error'}");
+      /*mock_return_value=*/base::StringPrintf(
+          "{resultCode: %d, message: 'Custom JS Error'}",
+          static_cast<int>(ClickToolResultCode::kClickSuppressed)));
   ClickAction click_by_coordinate = CreateClickActionWithCoordinates();
   ClickAction click_by_node_id = CreateClickActionWithNodeId();
   base::test::TestFuture<ToolExecutionResult> coordinate_future;
@@ -96,17 +99,15 @@ TEST_F(ClickToolJavaScriptFeatureTest, JsReturnsError) {
 
   auto coordinate_result = coordinate_future.Get();
   EXPECT_FALSE(coordinate_result.IsOk());
-  EXPECT_EQ(
-      coordinate_result.internal_code().value(),
-      InternalToolErrorCode::kJavascriptFeatureFailedInJavaScriptExecution);
-  EXPECT_EQ(coordinate_result.message().value(), "Custom JS Error");
+  EXPECT_EQ(coordinate_result.code(),
+            mojom::ActionResultCode::kClickSuppressed);
+  EXPECT_EQ(GetToolExecutionResultMessage(coordinate_result),
+            "Custom JS Error");
 
   auto node_id_result = node_id_future.Get();
   EXPECT_FALSE(node_id_result.IsOk());
-  EXPECT_EQ(
-      node_id_result.internal_code().value(),
-      InternalToolErrorCode::kJavascriptFeatureFailedInJavaScriptExecution);
-  EXPECT_EQ(node_id_result.message().value(), "Custom JS Error");
+  EXPECT_EQ(node_id_result.code(), mojom::ActionResultCode::kClickSuppressed);
+  EXPECT_EQ(GetToolExecutionResultMessage(node_id_result), "Custom JS Error");
 }
 
 TEST_F(ClickToolJavaScriptFeatureTest, InvalidatedWebFrame) {
@@ -122,16 +123,17 @@ TEST_F(ClickToolJavaScriptFeatureTest, InvalidatedWebFrame) {
 
   auto coordinate_result = coordinate_future.Get();
   EXPECT_FALSE(coordinate_result.IsOk());
-  EXPECT_EQ(coordinate_result.internal_code().value(),
-            InternalToolErrorCode::kActorTargetWebFrameInvalidated);
+  EXPECT_EQ(coordinate_result.code(), mojom::ActionResultCode::kFrameWentAway);
   auto node_id_result = node_id_future.Get();
   EXPECT_FALSE(node_id_result.IsOk());
-  EXPECT_EQ(node_id_result.internal_code().value(),
-            InternalToolErrorCode::kActorTargetWebFrameInvalidated);
+  EXPECT_EQ(node_id_result.code(), mojom::ActionResultCode::kFrameWentAway);
 }
 
 TEST_F(ClickToolJavaScriptFeatureTest, JsReturnsErrorWithoutMessage) {
-  MockClickJsFunctions(/*mock_return_value=*/"{success: false}");
+  MockClickJsFunctions(
+      /*mock_return_value=*/base::StringPrintf(
+          "{resultCode: %d}",
+          static_cast<int>(ClickToolResultCode::kClickSuppressed)));
   ClickAction click_by_coordinate = CreateClickActionWithCoordinates();
   ClickAction click_by_node_id = CreateClickActionWithNodeId();
   base::test::TestFuture<ToolExecutionResult> coordinate_future;
@@ -144,22 +146,19 @@ TEST_F(ClickToolJavaScriptFeatureTest, JsReturnsErrorWithoutMessage) {
 
   auto coordinate_result = coordinate_future.Get();
   EXPECT_FALSE(coordinate_result.IsOk());
-  EXPECT_EQ(
-      coordinate_result.internal_code().value(),
-      InternalToolErrorCode::kJavascriptFeatureFailedInJavaScriptExecution);
-  EXPECT_EQ(coordinate_result.message().value(), "Unknown error in JS.");
+  EXPECT_EQ(coordinate_result.code(),
+            mojom::ActionResultCode::kClickSuppressed);
+  EXPECT_FALSE(coordinate_result.message().has_value());
 
   auto node_id_result = node_id_future.Get();
   EXPECT_FALSE(node_id_result.IsOk());
-  EXPECT_EQ(
-      node_id_result.internal_code().value(),
-      InternalToolErrorCode::kJavascriptFeatureFailedInJavaScriptExecution);
-  EXPECT_EQ(node_id_result.message().value(), "Unknown error in JS.");
+  EXPECT_EQ(node_id_result.code(), mojom::ActionResultCode::kClickSuppressed);
+  EXPECT_FALSE(node_id_result.message().has_value());
 }
 
 TEST_F(ClickToolJavaScriptFeatureTest, ClickByCoordinate_Success) {
   MockClickJsFunctions(
-      /*mock_return_value=*/"{success: true, message: 'fake success!'}");
+      /*mock_return_value=*/"{resultCode: 0, message: 'fake success!'}");
   ClickAction action = CreateClickActionWithCoordinates();
   base::test::TestFuture<ToolExecutionResult> future;
 
@@ -171,7 +170,7 @@ TEST_F(ClickToolJavaScriptFeatureTest, ClickByCoordinate_Success) {
 
 TEST_F(ClickToolJavaScriptFeatureTest, ClickByNodeId_Success) {
   MockClickJsFunctions(
-      /*mock_return_value=*/"{success: true, message: 'fake success!'}");
+      /*mock_return_value=*/"{resultCode: 0, message: 'fake success!'}");
   ClickAction action = CreateClickActionWithNodeId();
   base::test::TestFuture<ToolExecutionResult> future;
 

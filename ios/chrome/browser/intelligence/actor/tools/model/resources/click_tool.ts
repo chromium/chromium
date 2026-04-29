@@ -10,6 +10,21 @@ import {getElementFromPoint} from '//ios/chrome/browser/intelligence/actor/tools
 import {getNodeById} from '//ios/chrome/browser/intelligence/proto_wrappers/resources/dom_node_ids.js';
 import {CrWebApi, gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 
+// LINT.IfChange(ClickToolResultCode)
+export enum ClickToolResultCode {
+  // The function call was successful.
+  OK = 0,
+  // The coordinates provided to the function were not in the viewport.
+  COORDINATES_OUT_OF_BOUNDS = 1,
+  // The DOM node ID is invalid or did not resolve to a clickable element.
+  INVALID_DOM_NODE_ID = 2,
+  // The targeted element is disabled.
+  ELEMENT_DISABLED = 3,
+  // The click event was not able to be dispatched.
+  CLICK_SUPPRESSED = 4,
+}
+// LINT.ThenChange(//ios/chrome/browser/intelligence/actor/tools/model/click_tool_java_script_feature.h:ClickToolResultCode)
+
 /**
  * Dispatches touch and mouse events to simulate a click on an element.
  * @param element The target element.
@@ -21,7 +36,16 @@ import {CrWebApi, gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.j
  */
 function dispatchClickEvents(
     element: Element, clientX: number, clientY: number, clickType: number,
-    clickCount: number): {success: boolean, message: string} {
+    clickCount: number): {resultCode: number, message: string} {
+  // Check if the element is disabled, following Desktop's example. See:
+  // https://source.chromium.org/chromium/chromium/src/+/main:chrome/renderer/actor/click_tool.cc;l=128-137;drc=b8b4703f515083fc684d0ee0d959ac51467877bb
+  if ((element as any).disabled) {
+    return {
+      resultCode: ClickToolResultCode.ELEMENT_DISABLED,
+      message: 'Target element is disabled.',
+    };
+  }
+
   // clickType: 1=LEFT, 2=RIGHT maps to 0, 2 in MouseEvent.button.
   let button = 0;
   if (clickType === 1) {
@@ -68,7 +92,7 @@ function dispatchClickEvents(
 
   if (!dispatchEvents(/*detail=*/ 1)) {
     return {
-      success: false,
+      resultCode: ClickToolResultCode.CLICK_SUPPRESSED,
       message: 'Failed to dispatch click event sequence.',
     };
   }
@@ -79,7 +103,7 @@ function dispatchClickEvents(
     // This event sequence has detail=2 since we've already clicked once.
     if (!dispatchEvents(/*detail=*/ 2)) {
       return {
-        success: false,
+        resultCode: ClickToolResultCode.CLICK_SUPPRESSED,
         message: 'Failed to dispatch click event sequence again.',
       };
     }
@@ -93,11 +117,17 @@ function dispatchClickEvents(
       button: button,
     };
     if (!element.dispatchEvent(new MouseEvent('dblclick', dblClickInit))) {
-      return {success: false, message: 'Failed to dispatch dblclick event.'};
+      return {
+        resultCode: ClickToolResultCode.CLICK_SUPPRESSED,
+        message: 'Failed to dispatch dblclick event.',
+      };
     }
   }
 
-  return {success: true, message: 'Dispatched touch, mouse, and click events.'};
+  return {
+    resultCode: ClickToolResultCode.OK,
+    message: 'Dispatched touch, mouse, and click events.',
+  };
 }
 
 /**
@@ -112,15 +142,15 @@ function dispatchClickEvents(
 function clickByCoordinate(
     x: number, y: number, clickType: number, clickCount: number,
     pixelType: number): {
-  success: boolean,
-  message?: string,
+  resultCode: number,
+  message: string,
 } {
   const {element, clientX, clientY} = getElementFromPoint(x, y, pixelType);
 
   if (!element) {
     return {
-      success: false,
-      message: 'No element found at the target coordinates.',
+      resultCode: ClickToolResultCode.COORDINATES_OUT_OF_BOUNDS,
+      message: 'Point is outside of the viewport.',
     };
   }
   return dispatchClickEvents(element, clientX, clientY, clickType, clickCount);
@@ -134,13 +164,13 @@ function clickByCoordinate(
  * @return an object containing the result of the click attempt.
  */
 function clickByNodeId(nodeId: number, clickType: number, clickCount: number): {
-  success: boolean,
-  message?: string,
+  resultCode: number,
+  message: string,
 } {
   const node = getNodeById(nodeId, window);
   if (!node) {
     return {
-      success: false,
+      resultCode: ClickToolResultCode.INVALID_DOM_NODE_ID,
       message: `No element found with id ${nodeId}.`,
     };
   }
@@ -152,7 +182,7 @@ function clickByNodeId(nodeId: number, clickType: number, clickCount: number): {
     element = node.parentElement;
   } else {
     return {
-      success: false,
+      resultCode: ClickToolResultCode.INVALID_DOM_NODE_ID,
       message: `Node with id ${nodeId} is not clickable.`,
     };
   }

@@ -14,6 +14,7 @@
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
+#import "ios/chrome/browser/intelligence/actor/tools/model/click_tool_java_script_feature.h"
 #import "ios/web/common/features.h"
 #import "ios/web/public/test/javascript_test.h"
 #import "ios/web/public/test/js_test_util.h"
@@ -152,7 +153,9 @@ TEST_F(ClickToolJavascriptTest,
        ClickByCoordinate_DensityIndependentPixels_SingleClick_OnButton) {
   NSDictionary* result = ClickByCoordinate(kButtonX, kButtonY, /*clickType=*/1,
                                            /*clickCount=*/1, /*pixelType=*/1);
-  EXPECT_TRUE([result[@"success"] boolValue]);
+  EXPECT_EQ(
+      static_cast<actor::ClickToolResultCode>([result[@"resultCode"] intValue]),
+      actor::ClickToolResultCode::kOk);
 
   std::vector<EventInfo> expected =
       ExpectedEventsOnClick(kButtonX, kButtonY, /*button=*/0, /*detail=*/1);
@@ -165,7 +168,9 @@ TEST_F(ClickToolJavascriptTest,
        ClickByCoordinate_DensityIndependentPixels_DoubleClick_OnButton) {
   NSDictionary* result = ClickByCoordinate(kButtonX, kButtonY, /*clickType=*/1,
                                            /*clickCount=*/2, /*pixelType=*/1);
-  EXPECT_TRUE([result[@"success"] boolValue]);
+  EXPECT_EQ(
+      static_cast<actor::ClickToolResultCode>([result[@"resultCode"] intValue]),
+      actor::ClickToolResultCode::kOk);
 
   std::vector<EventInfo> expected =
       ExpectedEventsOnClick(kButtonX, kButtonY, /*button=*/0, /*detail=*/1);
@@ -184,7 +189,9 @@ TEST_F(ClickToolJavascriptTest,
        ClickByCoordinate_DensityIndependentPixels_RightClick_OnButton) {
   NSDictionary* result = ClickByCoordinate(kButtonX, kButtonY, /*clickType=*/2,
                                            /*clickCount=*/1, /*pixelType=*/1);
-  EXPECT_TRUE([result[@"success"] boolValue]);
+  EXPECT_EQ(
+      static_cast<actor::ClickToolResultCode>([result[@"resultCode"] intValue]),
+      actor::ClickToolResultCode::kOk);
 
   std::vector<EventInfo> expected =
       ExpectedEventsOnClick(kButtonX, kButtonY, /*button=*/2, /*detail=*/1);
@@ -196,7 +203,9 @@ TEST_F(ClickToolJavascriptTest,
        ClickByCoordinate_DensityIndependentPixels_SingleClick_OnEmptySpace) {
   NSDictionary* result = ClickByCoordinate(kEmptyX, kEmptyY, /*clickType=*/1,
                                            /*clickCount=*/1, /*pixelType=*/1);
-  EXPECT_TRUE([result[@"success"] boolValue]);
+  EXPECT_EQ(
+      static_cast<actor::ClickToolResultCode>([result[@"resultCode"] intValue]),
+      actor::ClickToolResultCode::kOk);
 
   std::vector<EventInfo> expected =
       ExpectedEventsOnClick(kEmptyX, kEmptyY, /*button=*/0, /*detail=*/1);
@@ -208,9 +217,11 @@ TEST_F(ClickToolJavascriptTest,
        ClickByCoordinate_DensityIndependentPixels_NegativeCoordinates_Fails) {
   NSDictionary* result = ClickByCoordinate(-50, -50, /*clickType=*/1,
                                            /*clickCount=*/1, /*pixelType=*/1);
-  EXPECT_FALSE([result[@"success"] boolValue]);
-  EXPECT_TRUE([result[@"message"]
-      containsString:@"No element found at the target coordinates."]);
+  EXPECT_EQ(
+      static_cast<actor::ClickToolResultCode>([result[@"resultCode"] intValue]),
+      actor::ClickToolResultCode::kCoordinatesOutOfBounds);
+  EXPECT_TRUE(
+      [result[@"message"] containsString:@"Point is outside of the viewport."]);
 }
 
 TEST_F(
@@ -218,7 +229,9 @@ TEST_F(
     ClickByCoordinate_DensityIndependentPixels_UnknownClickType_DefaultsToLeft) {
   NSDictionary* result = ClickByCoordinate(kButtonX, kButtonY, /*clickType=*/99,
                                            /*clickCount=*/1, /*pixelType=*/1);
-  EXPECT_TRUE([result[@"success"] boolValue]);
+  EXPECT_EQ(
+      static_cast<actor::ClickToolResultCode>([result[@"resultCode"] intValue]),
+      actor::ClickToolResultCode::kOk);
 
   std::vector<EventInfo> expected =
       ExpectedEventsOnClick(kButtonX, kButtonY, /*button=*/0, /*detail=*/1);
@@ -236,7 +249,9 @@ TEST_F(ClickToolJavascriptTest,
   int y = kButtonY * kDevicePixelRatio;
   NSDictionary* result = ClickByCoordinate(x, y, /*clickType=*/1,
                                            /*clickCount=*/1, /*pixelType=*/2);
-  EXPECT_TRUE([result[@"success"] boolValue]);
+  EXPECT_EQ(
+      static_cast<actor::ClickToolResultCode>([result[@"resultCode"] intValue]),
+      actor::ClickToolResultCode::kOk);
 
   std::vector<EventInfo> expected =
       ExpectedEventsOnClick(kButtonX, kButtonY, /*button=*/0, /*detail=*/1);
@@ -245,9 +260,46 @@ TEST_F(ClickToolJavascriptTest,
   EXPECT_EQ(GetButtonText(), "Clicked");
 }
 
+TEST_F(ClickToolJavascriptTest, ClickByCoordinate_DisabledElement_Fails) {
+  // Disable the button
+  (void)web::test::ExecuteJavaScript(
+      web_view(), @"document.getElementById('target_button').disabled = true;");
+
+  NSDictionary* result = ClickByCoordinate(kButtonX, kButtonY, /*clickType=*/1,
+                                           /*clickCount=*/1, /*pixelType=*/1);
+  EXPECT_EQ(
+      static_cast<actor::ClickToolResultCode>([result[@"resultCode"] intValue]),
+      actor::ClickToolResultCode::kElementDisabled);
+  EXPECT_TRUE([result[@"message"] containsString:@"disabled"]);
+}
+
+TEST_F(ClickToolJavascriptTest, ClickByNodeId_DisabledElement_Fails) {
+  // Disable the button
+  (void)web::test::ExecuteJavaScript(
+      web_view(), @"document.getElementById('target_button').disabled = true;");
+
+  id nodeIdResult =
+      web::test::ExecuteJavaScript(web_view(), base::SysUTF8ToNSString(R"(
+        var el = document.getElementById('target_button');
+        __gCrWeb.getRegisteredApi('dom_node_ids_test')
+                .getFunction('getOrCreateNodeId')(el);
+      )"));
+  int nodeId = [nodeIdResult intValue];
+  ASSERT_GT(nodeId, 0);
+
+  NSDictionary* result =
+      ClickByNodeId(nodeId, /*clickType=*/1, /*clickCount=*/1);
+  EXPECT_EQ(
+      static_cast<actor::ClickToolResultCode>([result[@"resultCode"] intValue]),
+      actor::ClickToolResultCode::kElementDisabled);
+  EXPECT_TRUE([result[@"message"] containsString:@"disabled"]);
+}
+
 TEST_F(ClickToolJavascriptTest, ClickByNodeId_NotFound) {
   NSDictionary* result = ClickByNodeId(999, /*clickType=*/1, /*clickCount=*/1);
-  EXPECT_FALSE([result[@"success"] boolValue]);
+  EXPECT_EQ(
+      static_cast<actor::ClickToolResultCode>([result[@"resultCode"] intValue]),
+      actor::ClickToolResultCode::kInvalidDomNodeId);
   EXPECT_TRUE(
       [result[@"message"] containsString:@"No element found with id 999."]);
 }
@@ -264,7 +316,9 @@ TEST_F(ClickToolJavascriptTest, ClickByNodeId_Success) {
 
   NSDictionary* result =
       ClickByNodeId(nodeId, /*clickType=*/1, /*clickCount=*/1);
-  EXPECT_TRUE([result[@"success"] boolValue]);
+  EXPECT_EQ(
+      static_cast<actor::ClickToolResultCode>([result[@"resultCode"] intValue]),
+      actor::ClickToolResultCode::kOk);
 
   std::vector<EventInfo> expected =
       ExpectedEventsOnClick(kButtonX, kButtonY, /*button=*/0, /*detail=*/1);
@@ -285,7 +339,9 @@ TEST_F(ClickToolJavascriptTest, ClickByNodeId_TextNode_Success) {
 
   NSDictionary* result =
       ClickByNodeId(nodeId, /*clickType=*/1, /*clickCount=*/1);
-  EXPECT_TRUE([result[@"success"] boolValue]);
+  EXPECT_EQ(
+      static_cast<actor::ClickToolResultCode>([result[@"resultCode"] intValue]),
+      actor::ClickToolResultCode::kOk);
 
   std::vector<EventInfo> expected =
       ExpectedEventsOnClick(kButtonX, kButtonY, /*button=*/0, /*detail=*/1);
@@ -305,7 +361,9 @@ TEST_F(ClickToolJavascriptTest, ClickByNodeId_UnclickableNode_Fails) {
 
   NSDictionary* result =
       ClickByNodeId(nodeId, /*clickType=*/1, /*clickCount=*/1);
-  EXPECT_FALSE([result[@"success"] boolValue]);
+  EXPECT_EQ(
+      static_cast<actor::ClickToolResultCode>([result[@"resultCode"] intValue]),
+      actor::ClickToolResultCode::kInvalidDomNodeId);
   NSString* expectedMessage =
       [NSString stringWithFormat:@"Node with id %d is not clickable.", nodeId];
   EXPECT_TRUE([result[@"message"] containsString:expectedMessage]);

@@ -22,6 +22,21 @@ class ClickAction;
 
 namespace actor {
 
+// LINT.IfChange(ClickToolResultCode)
+enum class ClickToolResultCode {
+  // The function call was successful.
+  kOk = 0,
+  // The coordinates provided to the function were not in the viewport.
+  kCoordinatesOutOfBounds = 1,
+  // The DOM node ID is invalid or did not resolve to a clickable element.
+  kInvalidDomNodeId = 2,
+  // The targeted element is disabled.
+  kElementDisabled = 3,
+  // The click event was not able to be dispatched.
+  kClickSuppressed = 4,
+};
+// LINT.ThenChange(//ios/chrome/browser/intelligence/actor/tools/model/resources/click_tool.ts:ClickToolResultCode)
+
 // A feature that provides methods to execute a click action in the web page.
 class ClickToolJavaScriptFeature : public web::JavaScriptFeature {
  public:
