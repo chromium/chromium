@@ -65,6 +65,7 @@
 #include "skia/public/mojom/bitmap_skbitmap_mojom_traits.h"
 #include "skia/public/mojom/tile_mode_mojom_traits.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/fuzztest/src/fuzztest/fuzztest.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
@@ -1619,5 +1620,163 @@ TEST_F(StructTraitsTest, TreesInVizBadTimestampOrderTest) {
   EXPECT_FALSE(mojo::test::SerializeAndDeserialize<mojom::TreesInVizTiming>(
       timestamps, out));
 }
+
+namespace {
+
+auto AnyTimeTicks() {
+  return fuzztest::Map(
+      [](int64_t micros) {
+        return base::TimeTicks() + base::Microseconds(micros);
+      },
+      fuzztest::Arbitrary<int64_t>());
+}
+
+auto AnyTimeDelta() {
+  return fuzztest::Map(
+      [](int64_t micros) { return base::Microseconds(micros); },
+      fuzztest::Arbitrary<int64_t>());
+}
+
+auto AnyBeginFrameId() {
+  return fuzztest::ConstructorOf<BeginFrameId>(fuzztest::Arbitrary<uint64_t>(),
+                                               fuzztest::Arbitrary<uint64_t>());
+}
+
+auto AnyBeginFrameArgs() {
+  return fuzztest::Map(
+      [](base::TimeTicks frame_time, base::TimeTicks deadline,
+         base::TimeDelta interval, base::TimeDelta unthrottled_interval,
+         BeginFrameId frame_id, int64_t trace_id, base::TimeTicks dispatch_time,
+         base::TimeTicks client_arrival_time,
+         BeginFrameArgs::BeginFrameArgsType type, bool on_critical_path,
+         bool animate_only, uint64_t frames_throttled_since_last) {
+        BeginFrameArgs args;
+        args.frame_time = frame_time;
+        args.deadline = deadline;
+        args.interval = interval;
+        args.unthrottled_interval = unthrottled_interval;
+        args.frame_id = frame_id;
+        args.trace_id = trace_id;
+        args.dispatch_time = dispatch_time;
+        args.client_arrival_time = client_arrival_time;
+        args.type = type;
+        args.on_critical_path = on_critical_path;
+        args.animate_only = animate_only;
+        args.frames_throttled_since_last = frames_throttled_since_last;
+        return args;
+      },
+      AnyTimeTicks(), AnyTimeTicks(), AnyTimeDelta(), AnyTimeDelta(),
+      AnyBeginFrameId(), fuzztest::Arbitrary<int64_t>(), AnyTimeTicks(),
+      AnyTimeTicks(),
+      fuzztest::ElementOf({BeginFrameArgs::INVALID, BeginFrameArgs::NORMAL,
+                           BeginFrameArgs::MISSED}),
+      fuzztest::Arbitrary<bool>(), fuzztest::Arbitrary<bool>(),
+      fuzztest::Arbitrary<uint64_t>());
+}
+
+void BeginFrameArgsFuzz(const BeginFrameArgs& input) {
+  BeginFrameArgs output;
+  mojo::test::SerializeAndDeserialize<mojom::BeginFrameArgs>(input, output);
+}
+FUZZ_TEST(StructTraitsTest, BeginFrameArgsFuzz)
+    .WithDomains(AnyBeginFrameArgs());
+
+auto AnyFrameSinkId() {
+  return fuzztest::ConstructorOf<FrameSinkId>(fuzztest::Arbitrary<uint32_t>(),
+                                              fuzztest::Arbitrary<uint32_t>());
+}
+
+auto AnyUnguessableToken() {
+  return fuzztest::Map(
+      [](uint64_t high, uint64_t low) {
+        return base::UnguessableToken::Deserialize(high, low).value_or(
+            base::UnguessableToken::Create());
+      },
+      fuzztest::Arbitrary<uint64_t>(), fuzztest::Arbitrary<uint64_t>());
+}
+
+auto AnyLocalSurfaceId() {
+  return fuzztest::ConstructorOf<LocalSurfaceId>(
+      fuzztest::Arbitrary<uint32_t>(), fuzztest::Arbitrary<uint32_t>(),
+      AnyUnguessableToken());
+}
+
+auto AnySurfaceId() {
+  return fuzztest::ConstructorOf<SurfaceId>(AnyFrameSinkId(),
+                                            AnyLocalSurfaceId());
+}
+
+void SurfaceIdFuzz(const SurfaceId& input) {
+  SurfaceId output;
+  mojo::test::SerializeAndDeserialize<mojom::SurfaceId>(input, output);
+}
+FUZZ_TEST(StructTraitsTest, SurfaceIdFuzz).WithDomains(AnySurfaceId());
+
+void FrameSinkIdFuzz(const FrameSinkId& input) {
+  FrameSinkId output;
+  mojo::test::SerializeAndDeserialize<mojom::FrameSinkId>(input, output);
+}
+FUZZ_TEST(StructTraitsTest, FrameSinkIdFuzz).WithDomains(AnyFrameSinkId());
+
+void LocalSurfaceIdFuzz(const LocalSurfaceId& input) {
+  LocalSurfaceId output;
+  mojo::test::SerializeAndDeserialize<mojom::LocalSurfaceId>(input, output);
+}
+FUZZ_TEST(StructTraitsTest, LocalSurfaceIdFuzz)
+    .WithDomains(AnyLocalSurfaceId());
+
+auto AnySurfaceRange() {
+  return fuzztest::ConstructorOf<SurfaceRange>(
+      fuzztest::OptionalOf(AnySurfaceId()), AnySurfaceId());
+}
+
+void SurfaceRangeFuzz(const SurfaceRange& input) {
+  SurfaceRange output;
+  mojo::test::SerializeAndDeserialize<mojom::SurfaceRange>(input, output);
+}
+FUZZ_TEST(StructTraitsTest, SurfaceRangeFuzz)
+    .WithDomains(
+        fuzztest::Filter([](const SurfaceRange& r) { return r.IsValid(); },
+                         AnySurfaceRange()));
+
+auto AnyPointF() {
+  return fuzztest::ConstructorOf<gfx::PointF>(fuzztest::Arbitrary<float>(),
+                                              fuzztest::Arbitrary<float>());
+}
+
+auto AnySelectionBound() {
+  return fuzztest::Map(
+      [](gfx::SelectionBound::Type type, gfx::PointF edge_start,
+         gfx::PointF edge_end, bool visible) {
+        gfx::SelectionBound bound;
+        bound.set_type(type);
+        bound.SetEdge(edge_start, edge_end);
+        bound.set_visible(visible);
+        return bound;
+      },
+      fuzztest::ElementOf(
+          {gfx::SelectionBound::LEFT, gfx::SelectionBound::RIGHT,
+           gfx::SelectionBound::CENTER, gfx::SelectionBound::EMPTY}),
+      AnyPointF(), AnyPointF(), fuzztest::Arbitrary<bool>());
+}
+
+auto AnySelection() {
+  return fuzztest::Map(
+      [](const gfx::SelectionBound& start, const gfx::SelectionBound& end) {
+        Selection<gfx::SelectionBound> selection;
+        selection.start = start;
+        selection.end = end;
+        return selection;
+      },
+      AnySelectionBound(), AnySelectionBound());
+}
+
+void SelectionFuzz(const Selection<gfx::SelectionBound>& input) {
+  Selection<gfx::SelectionBound> output;
+  mojo::test::SerializeAndDeserialize<mojom::Selection>(input, output);
+}
+FUZZ_TEST(StructTraitsTest, SelectionFuzz).WithDomains(AnySelection());
+
+}  // namespace
 
 }  // namespace viz

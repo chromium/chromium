@@ -8,6 +8,7 @@ source_set("tests") {
   sources = [ "mojom_traits_unittest.cc" ]
 
   deps = [
+    "//base/test:fuzztest_support",
     "//base/test:test_support",
     "//components/viz/common",
     "//components/viz/test:test_support",
@@ -19,6 +20,7 @@ source_set("tests") {
     "//services/viz/public/mojom",
     "//skia/public/mojom",
     "//testing/gtest",
+    "//third_party/fuzztest",
     "//ui/gfx:test_support",
     "//ui/gfx/geometry/mojom:mojom_traits",
     "//ui/gfx/mojom",

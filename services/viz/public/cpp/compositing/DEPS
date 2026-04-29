@@ -9,5 +9,6 @@ include_rules = [
   "+ui/gfx",
   "+ui/latency/mojom",
   "+ui/gl",
-  "+gpu/vulkan/vulkan_ycbcr_info.h"
+  "+gpu/vulkan/vulkan_ycbcr_info.h",
+  "+third_party/fuzztest/src/fuzztest/fuzztest.h"
 ]

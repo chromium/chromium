@@ -42,6 +42,12 @@ test("services_unittests") {
     "SerializeAttributionReportingEligibleHeader.IsEligibleValid",
     "TrustTokenKeyCommitmentFuzzer.ParsesOneIssuerCorrectly",
     "TrustTokenKeyCommitmentFuzzer.ParsesMultipleIssuersCorrectly",
+    "StructTraitsTest.BeginFrameArgsFuzz",
+    "StructTraitsTest.SurfaceIdFuzz",
+    "StructTraitsTest.FrameSinkIdFuzz",
+    "StructTraitsTest.LocalSurfaceIdFuzz",
+    "StructTraitsTest.SurfaceRangeFuzz",
+    "StructTraitsTest.SelectionFuzz",
   ]
 
   data_deps = [ "//testing/buildbot/filters:services_unittests_filters" ]
