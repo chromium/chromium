@@ -4530,13 +4530,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Ash.HotseatGesture" enum="HotseatInAppGesture"
-    expires_after="2023-06-04">
-  <owner>andrewxu@chromium.org</owner>
-  <owner>tbarzic@chromium.org</owner>
-  <summary>Gestures supported by the in-app hotseat.</summary>
-</histogram>
-
 <histogram
     name="Ash.HotseatTransition.AnimationSmoothness{HotseatTransitionType}"
     units="%" expires_after="2025-12-31">

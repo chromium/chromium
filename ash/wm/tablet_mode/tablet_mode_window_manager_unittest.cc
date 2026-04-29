@@ -1932,18 +1932,10 @@ TEST_F(TabletModeWindowManagerTest, HomeLauncherVisibilityTest) {
       Shell::Get()->app_list_controller()->GetHomeScreenWindow();
   EXPECT_FALSE(home_screen_window->TargetVisibility());
 
-  base::HistogramTester tester;
-  tester.ExpectBucketCount(
-      kHotseatGestureHistogramName,
-      InAppShelfGestures::kHotseatHiddenDueToInteractionOutsideOfShelf, 0);
-
   // Tap at window to leave the overview mode.
   GetEventGenerator()->GestureTapAt(window->GetBoundsInScreen().CenterPoint());
   ShellTestApi().WaitForOverviewAnimationState(
       OverviewAnimationState::kExitAnimationComplete);
-  tester.ExpectBucketCount(
-      kHotseatGestureHistogramName,
-      InAppShelfGestures::kHotseatHiddenDueToInteractionOutsideOfShelf, 0);
 
   EXPECT_FALSE(overview_controller->InOverviewSession());
   EXPECT_TRUE(home_screen_window->TargetVisibility());

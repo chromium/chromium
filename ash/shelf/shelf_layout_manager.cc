@@ -339,40 +339,6 @@ aura::Window* GetWindowForDragToHomeOrOverview(
   return window && window->IsVisible() ? window : nullptr;
 }
 
-// Calculates the type of hotseat gesture which should be recorded in histogram.
-// Returns the null value if no gesture should be recorded.
-std::optional<InAppShelfGestures> CalculateHotseatGestureToRecord(
-    std::optional<ShelfWindowDragResult> window_drag_result,
-    bool transitioned_from_overview_to_home,
-    HotseatState old_state,
-    HotseatState current_state) {
-  if (window_drag_result.has_value() &&
-      (window_drag_result == ShelfWindowDragResult::kGoToOverviewMode ||
-       window_drag_result == ShelfWindowDragResult::kGoToSplitviewMode) &&
-      old_state == HotseatState::kHidden) {
-    return InAppShelfGestures::kSwipeUpToShow;
-  }
-
-  if (window_drag_result.has_value() &&
-      window_drag_result == ShelfWindowDragResult::kGoToHomeScreen) {
-    return InAppShelfGestures::kFlingUpToShowHomeScreen;
-  }
-
-  if (transitioned_from_overview_to_home)
-    return InAppShelfGestures::kFlingUpToShowHomeScreen;
-
-  if (old_state == current_state)
-    return std::nullopt;
-
-  if (current_state == HotseatState::kHidden)
-    return InAppShelfGestures::kSwipeDownToHide;
-
-  if (current_state == HotseatState::kExtended)
-    return InAppShelfGestures::kSwipeUpToShow;
-
-  return std::nullopt;
-}
-
 bool IsInImmersiveFullscreen() {
   WindowState* active_window = WindowState::ForActiveWindow();
   return active_window && active_window->IsInImmersiveFullscreen();
@@ -925,21 +891,6 @@ void ShelfLayoutManager::ProcessGestureEventOfInAppHotseat(
     return;
 
   base::AutoReset<bool> hide_hotseat(&should_hide_hotseat_, true);
-
-  // In overview mode, only the gesture tap event is able to make the hotseat
-  // exit the extended mode.
-  const bool in_overview =
-      Shell::Get()->overview_controller() &&
-      Shell::Get()->overview_controller()->InOverviewSession();
-  ui::EventType interesting_type =
-      in_overview ? ui::EventType::kGestureTap : ui::EventType::kGestureBegin;
-
-  // Record gesture metrics only for `interesting_type` to avoid over counting.
-  if (event->type() == interesting_type) {
-    UMA_HISTOGRAM_ENUMERATION(
-        kHotseatGestureHistogramName,
-        InAppShelfGestures::kHotseatHiddenDueToInteractionOutsideOfShelf);
-  }
 
   UpdateVisibilityState(/*force_layout=*/false);
 }
@@ -2859,7 +2810,6 @@ void ShelfLayoutManager::CompleteDrag(const ui::LocatedEvent& event_in_screen) {
   // End the possible window drag before checking the shelf visibility.
   std::optional<ShelfWindowDragResult> window_drag_result =
       MaybeEndWindowDrag(event_in_screen);
-  HotseatState old_hotseat_state = hotseat_state();
 
   const bool transitioned_from_overview_to_home =
       MaybeEndDragFromOverviewToHome(event_in_screen);
@@ -2881,18 +2831,6 @@ void ShelfLayoutManager::CompleteDrag(const ui::LocatedEvent& event_in_screen) {
     CompleteDragWithChangedVisibility();
   else
     CancelDrag(window_drag_result);
-
-  // Hotseat gestures are only meaningful in tablet mode.
-  if (display::Screen::Get()->InTabletMode()) {
-    std::optional<InAppShelfGestures> gesture_to_record =
-        CalculateHotseatGestureToRecord(window_drag_result,
-                                        transitioned_from_overview_to_home,
-                                        old_hotseat_state, hotseat_state());
-    if (gesture_to_record.has_value()) {
-      UMA_HISTOGRAM_ENUMERATION(kHotseatGestureHistogramName,
-                                gesture_to_record.value());
-    }
-  }
 }
 
 void ShelfLayoutManager::CompleteShelfFling(

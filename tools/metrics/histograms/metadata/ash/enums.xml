@@ -1545,13 +1545,6 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="5" label="5"/>
 </enum>
 
-<enum name="HotseatInAppGesture">
-  <int value="0" label="Swipe up the hotseat"/>
-  <int value="1" label="Swipe down the hotseat"/>
-  <int value="2" label="Fling up the hotseat to show homescreen"/>
-  <int value="3" label="Interact outside of shelf to hide hotseat"/>
-</enum>
-
 <enum name="KcerPkcs12MigrationEvent">
   <int value="0" label="MigrationStarted"/>
   <int value="1" label="NothingToMigrate"/>

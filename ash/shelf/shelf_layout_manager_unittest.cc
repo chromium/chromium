@@ -3415,7 +3415,6 @@ TEST_F(ShelfLayoutManagerWindowDraggingTest, FlingInOverview) {
 
   EnterOverview();
 
-  base::HistogramTester histogram_tester;
   HotseatStateWatcher watcher(GetShelfLayoutManager());
 
   SwipeUpOnShelf();
@@ -3433,12 +3432,6 @@ TEST_F(ShelfLayoutManagerWindowDraggingTest, FlingInOverview) {
   watcher.WaitUntilStateChanged();
   watcher.CheckEqual(
       {HotseatState::kExtended, HotseatState::kShownHomeLauncher});
-
-  histogram_tester.ExpectBucketCount(
-      kHotseatGestureHistogramName,
-      InAppShelfGestures::kFlingUpToShowHomeScreen, 1);
-  histogram_tester.ExpectBucketCount(kHotseatGestureHistogramName,
-                                     InAppShelfGestures::kSwipeUpToShow, 1);
 }
 
 // Test that upward fling in overview transitions from home shelf overview to
@@ -3454,7 +3447,6 @@ TEST_F(ShelfLayoutManagerWindowDraggingTest, FlingInOverviewHomeShelf) {
   OverviewController* overview_controller = OverviewController::Get();
   EnterOverview();
   EXPECT_TRUE(overview_controller->InOverviewSession());
-  base::HistogramTester histogram_tester;
 
   // Fling up from the center of the shelf's bottom.
   StartScroll(shelf_widget_bounds.bottom_center());
@@ -3465,12 +3457,6 @@ TEST_F(ShelfLayoutManagerWindowDraggingTest, FlingInOverviewHomeShelf) {
 
   // Exit overview session.
   EXPECT_FALSE(overview_controller->InOverviewSession());
-
-  histogram_tester.ExpectBucketCount(
-      kHotseatGestureHistogramName,
-      InAppShelfGestures::kFlingUpToShowHomeScreen, 1);
-  histogram_tester.ExpectBucketCount(kHotseatGestureHistogramName,
-                                     InAppShelfGestures::kSwipeUpToShow, 0);
 }
 
 // Test that upward fling in split mode on overview side shows hotseat and
@@ -3493,7 +3479,6 @@ TEST_F(ShelfLayoutManagerWindowDraggingTest,
   split_view_controller->SnapWindow(window2.get(), SnapPosition::kSecondary);
   OverviewController* overview_controller = OverviewController::Get();
 
-  base::HistogramTester histogram_tester;
   HotseatStateWatcher watcher(GetShelfLayoutManager());
 
   // Short fling (little longer than the drag required to show the extended
@@ -3508,9 +3493,6 @@ TEST_F(ShelfLayoutManagerWindowDraggingTest,
   EXPECT_FALSE(overview_controller->InOverviewSession());
   EXPECT_TRUE(split_view_controller->InSplitViewMode());
   watcher.CheckEqual({HotseatState::kExtended});
-
-  histogram_tester.ExpectBucketCount(kHotseatGestureHistogramName,
-                                     InAppShelfGestures::kSwipeUpToShow, 1);
 
   // The same fling gesture should transition to overview since the hotseat is
   // in extended state.
@@ -3545,12 +3527,6 @@ TEST_F(ShelfLayoutManagerWindowDraggingTest,
   watcher.CheckEqual({HotseatState::kExtended, HotseatState::kHidden,
                       HotseatState::kExtended,
                       HotseatState::kShownHomeLauncher});
-
-  histogram_tester.ExpectBucketCount(
-      kHotseatGestureHistogramName,
-      InAppShelfGestures::kFlingUpToShowHomeScreen, 1);
-  histogram_tester.ExpectBucketCount(kHotseatGestureHistogramName,
-                                     InAppShelfGestures::kSwipeUpToShow, 2);
 }
 
 // Test that upward fling in split view on overview side transitions to home, if
@@ -3575,7 +3551,6 @@ TEST_F(ShelfLayoutManagerWindowDraggingTest, FlingHomeInSplitViewWithOverview) {
   EXPECT_TRUE(overview_controller->InOverviewSession());
   EXPECT_EQ(HotseatState::kHidden, GetShelfLayoutManager()->hotseat_state());
 
-  base::HistogramTester histogram_tester;
   HotseatStateWatcher watcher(GetShelfLayoutManager());
 
   // Longer fling, one that significantly exceeds the distance required to show
@@ -3593,12 +3568,6 @@ TEST_F(ShelfLayoutManagerWindowDraggingTest, FlingHomeInSplitViewWithOverview) {
   watcher.WaitUntilStateChanged();
   EXPECT_EQ(HotseatState::kShownHomeLauncher,
             GetShelfLayoutManager()->hotseat_state());
-
-  histogram_tester.ExpectBucketCount(
-      kHotseatGestureHistogramName,
-      InAppShelfGestures::kFlingUpToShowHomeScreen, 1);
-  histogram_tester.ExpectBucketCount(kHotseatGestureHistogramName,
-                                     InAppShelfGestures::kSwipeUpToShow, 0);
 }
 
 // Tests that the hotseat ends up in manually extended state after swiping up
@@ -3620,7 +3589,6 @@ TEST_F(ShelfLayoutManagerWindowDraggingTest, FlingInSplitView) {
   split_view_controller->SnapWindow(window1.get(), SnapPosition::kPrimary);
   split_view_controller->SnapWindow(window2.get(), SnapPosition::kSecondary);
 
-  base::HistogramTester histogram_tester;
   HotseatStateWatcher watcher(GetShelfLayoutManager());
 
   // Longer fling, one that significantly exceeds the distance required to show
@@ -3639,12 +3607,6 @@ TEST_F(ShelfLayoutManagerWindowDraggingTest, FlingInSplitView) {
   EXPECT_TRUE(split_view_controller->InSplitViewMode());
 
   watcher.CheckEqual({});
-
-  histogram_tester.ExpectBucketCount(
-      kHotseatGestureHistogramName,
-      InAppShelfGestures::kFlingUpToShowHomeScreen, 0);
-  histogram_tester.ExpectBucketCount(kHotseatGestureHistogramName,
-                                     InAppShelfGestures::kSwipeUpToShow, 1);
 }
 
 // Tests that the hotseat ends up in manually extended state after swiping up
@@ -3666,7 +3628,6 @@ TEST_F(ShelfLayoutManagerWindowDraggingTest, ShortFlingInSplitView) {
   split_view_controller->SnapWindow(window1.get(), SnapPosition::kPrimary);
   split_view_controller->SnapWindow(window2.get(), SnapPosition::kSecondary);
 
-  base::HistogramTester histogram_tester;
   HotseatStateWatcher watcher(GetShelfLayoutManager());
 
   StartScroll(shelf_widget_bounds.bottom_left());
@@ -3681,12 +3642,6 @@ TEST_F(ShelfLayoutManagerWindowDraggingTest, ShortFlingInSplitView) {
 
   watcher.CheckEqual({HotseatState::kExtended});
   EXPECT_TRUE(GetPrimaryShelf()->hotseat_widget()->is_manually_extended());
-
-  histogram_tester.ExpectBucketCount(
-      kHotseatGestureHistogramName,
-      InAppShelfGestures::kFlingUpToShowHomeScreen, 0);
-  histogram_tester.ExpectBucketCount(kHotseatGestureHistogramName,
-                                     InAppShelfGestures::kSwipeUpToShow, 1);
 }
 
 // Tests that hotseat transition animation is not delayed (i.e. that it happens

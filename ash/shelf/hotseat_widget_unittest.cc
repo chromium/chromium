@@ -639,19 +639,9 @@ TEST_P(HotseatWidgetTest, SwipeUpInAppShelfShowsHotseat) {
       CreateWindowWithAppType(chromeos::AppType::NON_APP, {400, 400});
   wm::ActivateWindow(window.get());
 
-  base::HistogramTester histogram_tester;
-  histogram_tester.ExpectBucketCount(kHotseatGestureHistogramName,
-                                     InAppShelfGestures::kSwipeDownToHide, 0);
-  histogram_tester.ExpectBucketCount(kHotseatGestureHistogramName,
-                                     InAppShelfGestures::kSwipeUpToShow, 0);
-
   // Swipe up from the center of the shelf.
   SwipeUpOnShelf();
   EXPECT_EQ(HotseatState::kExtended, GetShelfLayoutManager()->hotseat_state());
-  histogram_tester.ExpectBucketCount(kHotseatGestureHistogramName,
-                                     InAppShelfGestures::kSwipeDownToHide, 0);
-  histogram_tester.ExpectBucketCount(kHotseatGestureHistogramName,
-                                     InAppShelfGestures::kSwipeUpToShow, 1);
 
   // Swipe down from the hotseat to hide it.
   gfx::Rect hotseat_bounds =
@@ -665,11 +655,6 @@ TEST_P(HotseatWidgetTest, SwipeUpInAppShelfShowsHotseat) {
                                              kNumScrollSteps);
   ASSERT_EQ(HotseatState::kHidden, GetShelfLayoutManager()->hotseat_state());
 
-  histogram_tester.ExpectBucketCount(kHotseatGestureHistogramName,
-                                     InAppShelfGestures::kSwipeDownToHide, 1);
-  histogram_tester.ExpectBucketCount(kHotseatGestureHistogramName,
-                                     InAppShelfGestures::kSwipeUpToShow, 1);
-
   // Swipe up from the right part of the shelf (the system tray).
   start = GetShelfWidget()
               ->status_area_widget()
@@ -681,11 +666,6 @@ TEST_P(HotseatWidgetTest, SwipeUpInAppShelfShowsHotseat) {
                                              kNumScrollSteps);
   EXPECT_EQ(HotseatState::kExtended, GetShelfLayoutManager()->hotseat_state());
 
-  histogram_tester.ExpectBucketCount(kHotseatGestureHistogramName,
-                                     InAppShelfGestures::kSwipeDownToHide, 1);
-  histogram_tester.ExpectBucketCount(kHotseatGestureHistogramName,
-                                     InAppShelfGestures::kSwipeUpToShow, 2);
-
   // Swipe down from the hotseat to hide it.
   start = hotseat_bounds.top_center();
   end = start + gfx::Vector2d(0, 80);
@@ -693,11 +673,6 @@ TEST_P(HotseatWidgetTest, SwipeUpInAppShelfShowsHotseat) {
   GetEventGenerator()->GestureScrollSequence(start, end, kTimeDelta,
                                              kNumScrollSteps);
   ASSERT_EQ(HotseatState::kHidden, GetShelfLayoutManager()->hotseat_state());
-
-  histogram_tester.ExpectBucketCount(kHotseatGestureHistogramName,
-                                     InAppShelfGestures::kSwipeDownToHide, 2);
-  histogram_tester.ExpectBucketCount(kHotseatGestureHistogramName,
-                                     InAppShelfGestures::kSwipeUpToShow, 2);
 
   // Swipe up from the left part of the shelf (the home/back button).
   start = GetShelfWidget()
@@ -709,11 +684,6 @@ TEST_P(HotseatWidgetTest, SwipeUpInAppShelfShowsHotseat) {
   GetEventGenerator()->GestureScrollSequence(start, end, kTimeDelta,
                                              kNumScrollSteps);
   EXPECT_EQ(HotseatState::kExtended, GetShelfLayoutManager()->hotseat_state());
-
-  histogram_tester.ExpectBucketCount(kHotseatGestureHistogramName,
-                                     InAppShelfGestures::kSwipeDownToHide, 2);
-  histogram_tester.ExpectBucketCount(kHotseatGestureHistogramName,
-                                     InAppShelfGestures::kSwipeUpToShow, 3);
 }
 
 // Tests that swiping up on the hotseat does nothing.
@@ -724,12 +694,6 @@ TEST_P(HotseatWidgetTest, SwipeUpOnHotseatBackgroundDoesNothing) {
       CreateWindowWithAppType(chromeos::AppType::NON_APP, {400, 400});
   wm::ActivateWindow(window.get());
 
-  base::HistogramTester histogram_tester;
-  histogram_tester.ExpectBucketCount(kHotseatGestureHistogramName,
-                                     InAppShelfGestures::kSwipeDownToHide, 0);
-  histogram_tester.ExpectBucketCount(kHotseatGestureHistogramName,
-                                     InAppShelfGestures::kSwipeUpToShow, 0);
-
   // Swipe up on the shelf to show the hotseat.
   EXPECT_FALSE(Shell::Get()->app_list_controller()->IsVisible(
       display::Screen::Get()->GetPrimaryDisplay().id()));
@@ -737,10 +701,6 @@ TEST_P(HotseatWidgetTest, SwipeUpOnHotseatBackgroundDoesNothing) {
   SwipeUpOnShelf();
 
   EXPECT_EQ(HotseatState::kExtended, GetShelfLayoutManager()->hotseat_state());
-  histogram_tester.ExpectBucketCount(kHotseatGestureHistogramName,
-                                     InAppShelfGestures::kSwipeDownToHide, 0);
-  histogram_tester.ExpectBucketCount(kHotseatGestureHistogramName,
-                                     InAppShelfGestures::kSwipeUpToShow, 1);
   if (shelf_auto_hide_behavior() == ShelfAutoHideBehavior::kAlways)
     EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, GetPrimaryShelf()->GetAutoHideState());
 
@@ -761,10 +721,6 @@ TEST_P(HotseatWidgetTest, SwipeUpOnHotseatBackgroundDoesNothing) {
   EXPECT_EQ(HotseatState::kExtended, GetShelfLayoutManager()->hotseat_state());
   if (shelf_auto_hide_behavior() == ShelfAutoHideBehavior::kAlways)
     EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, GetPrimaryShelf()->GetAutoHideState());
-  histogram_tester.ExpectBucketCount(kHotseatGestureHistogramName,
-                                     InAppShelfGestures::kSwipeDownToHide, 0);
-  histogram_tester.ExpectBucketCount(kHotseatGestureHistogramName,
-                                     InAppShelfGestures::kSwipeUpToShow, 1);
 }
 
 // Tests that tapping an active window with an extended hotseat results in a
@@ -776,25 +732,8 @@ TEST_P(HotseatWidgetTest, TappingActiveWindowHidesHotseat) {
       CreateWindowWithAppType(chromeos::AppType::NON_APP, {400, 400});
   wm::ActivateWindow(window.get());
 
-  base::HistogramTester histogram_tester;
-  histogram_tester.ExpectBucketCount(kHotseatGestureHistogramName,
-                                     InAppShelfGestures::kSwipeDownToHide, 0);
-  histogram_tester.ExpectBucketCount(kHotseatGestureHistogramName,
-                                     InAppShelfGestures::kSwipeUpToShow, 0);
-  histogram_tester.ExpectBucketCount(
-      kHotseatGestureHistogramName,
-      InAppShelfGestures::kHotseatHiddenDueToInteractionOutsideOfShelf, 0);
-
   // Swipe up on the shelf to show the hotseat.
   SwipeUpOnShelf();
-
-  histogram_tester.ExpectBucketCount(kHotseatGestureHistogramName,
-                                     InAppShelfGestures::kSwipeDownToHide, 0);
-  histogram_tester.ExpectBucketCount(kHotseatGestureHistogramName,
-                                     InAppShelfGestures::kSwipeUpToShow, 1);
-  histogram_tester.ExpectBucketCount(
-      kHotseatGestureHistogramName,
-      InAppShelfGestures::kHotseatHiddenDueToInteractionOutsideOfShelf, 0);
 
   // Tap the shelf background, nothing should happen.
   gfx::Rect display_bounds =
@@ -813,14 +752,6 @@ TEST_P(HotseatWidgetTest, TappingActiveWindowHidesHotseat) {
   EXPECT_EQ(HotseatState::kHidden, GetShelfLayoutManager()->hotseat_state());
   if (shelf_auto_hide_behavior() == ShelfAutoHideBehavior::kAlways)
     EXPECT_EQ(SHELF_AUTO_HIDE_HIDDEN, GetPrimaryShelf()->GetAutoHideState());
-
-  histogram_tester.ExpectBucketCount(kHotseatGestureHistogramName,
-                                     InAppShelfGestures::kSwipeDownToHide, 0);
-  histogram_tester.ExpectBucketCount(kHotseatGestureHistogramName,
-                                     InAppShelfGestures::kSwipeUpToShow, 1);
-  histogram_tester.ExpectBucketCount(
-      kHotseatGestureHistogramName,
-      InAppShelfGestures::kHotseatHiddenDueToInteractionOutsideOfShelf, 1);
 }
 
 // Tests that gesture dragging an active window hides the hotseat.
@@ -831,19 +762,8 @@ TEST_P(HotseatWidgetTest, GestureDraggingActiveWindowHidesHotseat) {
       CreateWindowWithAppType(chromeos::AppType::NON_APP, {400, 400});
   wm::ActivateWindow(window.get());
 
-  base::HistogramTester histogram_tester;
-  histogram_tester.ExpectBucketCount(kHotseatGestureHistogramName,
-                                     InAppShelfGestures::kSwipeDownToHide, 0);
-  histogram_tester.ExpectBucketCount(kHotseatGestureHistogramName,
-                                     InAppShelfGestures::kSwipeUpToShow, 0);
-
   // Swipe up on the shelf to show the hotseat.
   SwipeUpOnShelf();
-
-  histogram_tester.ExpectBucketCount(kHotseatGestureHistogramName,
-                                     InAppShelfGestures::kSwipeDownToHide, 0);
-  histogram_tester.ExpectBucketCount(kHotseatGestureHistogramName,
-                                     InAppShelfGestures::kSwipeUpToShow, 1);
 
   if (shelf_auto_hide_behavior() == ShelfAutoHideBehavior::kAlways)
     EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, GetPrimaryShelf()->GetAutoHideState());
@@ -861,11 +781,6 @@ TEST_P(HotseatWidgetTest, GestureDraggingActiveWindowHidesHotseat) {
   EXPECT_EQ(HotseatState::kHidden, GetShelfLayoutManager()->hotseat_state());
   if (shelf_auto_hide_behavior() == ShelfAutoHideBehavior::kAlways)
     EXPECT_EQ(SHELF_AUTO_HIDE_HIDDEN, GetPrimaryShelf()->GetAutoHideState());
-
-  histogram_tester.ExpectBucketCount(kHotseatGestureHistogramName,
-                                     InAppShelfGestures::kSwipeDownToHide, 0);
-  histogram_tester.ExpectBucketCount(kHotseatGestureHistogramName,
-                                     InAppShelfGestures::kSwipeUpToShow, 1);
 }
 
 // Tests that a swipe up on the shelf shows the hotseat while in split view.
@@ -876,12 +791,6 @@ TEST_P(HotseatWidgetTest, SwipeUpOnShelfShowsHotseatInSplitView) {
   wm::ActivateWindow(window.get());
   std::unique_ptr<aura::Window> window2 =
       CreateWindowWithAppType(chromeos::AppType::NON_APP, {400, 400});
-
-  base::HistogramTester histogram_tester;
-  histogram_tester.ExpectBucketCount(kHotseatGestureHistogramName,
-                                     InAppShelfGestures::kSwipeDownToHide, 0);
-  histogram_tester.ExpectBucketCount(kHotseatGestureHistogramName,
-                                     InAppShelfGestures::kSwipeUpToShow, 0);
 
   // Go into split view mode by first going into overview, and then snapping
   // the open window on one side.
@@ -896,10 +805,6 @@ TEST_P(HotseatWidgetTest, SwipeUpOnShelfShowsHotseatInSplitView) {
   // We should still be able to drag up the hotseat.
   SwipeUpOnShelf();
   EXPECT_EQ(HotseatState::kExtended, GetShelfLayoutManager()->hotseat_state());
-  histogram_tester.ExpectBucketCount(kHotseatGestureHistogramName,
-                                     InAppShelfGestures::kSwipeDownToHide, 0);
-  histogram_tester.ExpectBucketCount(kHotseatGestureHistogramName,
-                                     InAppShelfGestures::kSwipeUpToShow, 1);
 }
 
 // Tests that HotseatTransitionAimationObserver starting and ending calls have a
@@ -992,12 +897,6 @@ TEST_P(HotseatWidgetTest, ReleasingSlowDragBelowThreshold) {
       CreateWindowWithAppType(chromeos::AppType::NON_APP, {400, 400});
   wm::ActivateWindow(window.get());
 
-  base::HistogramTester histogram_tester;
-  histogram_tester.ExpectBucketCount(kHotseatGestureHistogramName,
-                                     InAppShelfGestures::kSwipeDownToHide, 0);
-  histogram_tester.ExpectBucketCount(kHotseatGestureHistogramName,
-                                     InAppShelfGestures::kSwipeUpToShow, 0);
-
   gfx::Rect display_bounds =
       display::Screen::Get()->GetPrimaryDisplay().bounds();
   const gfx::Point start(display_bounds.bottom_center());
@@ -1013,10 +912,6 @@ TEST_P(HotseatWidgetTest, ReleasingSlowDragBelowThreshold) {
                                              kNumScrollSteps);
 
   EXPECT_EQ(HotseatState::kHidden, GetShelfLayoutManager()->hotseat_state());
-  histogram_tester.ExpectBucketCount(kHotseatGestureHistogramName,
-                                     InAppShelfGestures::kSwipeDownToHide, 0);
-  histogram_tester.ExpectBucketCount(kHotseatGestureHistogramName,
-                                     InAppShelfGestures::kSwipeUpToShow, 0);
 }
 
 // Tests that releasing the hotseat gesture above the threshold results in a
@@ -1027,12 +922,6 @@ TEST_P(HotseatWidgetTest, ReleasingSlowDragAboveThreshold) {
   std::unique_ptr<aura::Window> window =
       CreateWindowWithAppType(chromeos::AppType::NON_APP, {400, 400});
   wm::ActivateWindow(window.get());
-
-  base::HistogramTester histogram_tester;
-  histogram_tester.ExpectBucketCount(kHotseatGestureHistogramName,
-                                     InAppShelfGestures::kSwipeDownToHide, 0);
-  histogram_tester.ExpectBucketCount(kHotseatGestureHistogramName,
-                                     InAppShelfGestures::kSwipeUpToShow, 0);
 
   gfx::Rect display_bounds =
       display::Screen::Get()->GetPrimaryDisplay().bounds();
@@ -1051,10 +940,6 @@ TEST_P(HotseatWidgetTest, ReleasingSlowDragAboveThreshold) {
   EXPECT_EQ(HotseatState::kExtended, GetShelfLayoutManager()->hotseat_state());
   if (shelf_auto_hide_behavior() == ShelfAutoHideBehavior::kAlways)
     EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, GetPrimaryShelf()->GetAutoHideState());
-  histogram_tester.ExpectBucketCount(kHotseatGestureHistogramName,
-                                     InAppShelfGestures::kSwipeDownToHide, 0);
-  histogram_tester.ExpectBucketCount(kHotseatGestureHistogramName,
-                                     InAppShelfGestures::kSwipeUpToShow, 1);
 }
 
 // Tests that releasing the hotseat gesture when a stylus app is active has a
@@ -1076,12 +961,6 @@ TEST_P(HotseatWidgetTest, HotseatDragGestureForStylusApp) {
   wm::ActivateWindow(window.get());
 
   EXPECT_EQ(test_stylus_app_id, model->active_shelf_id());
-
-  base::HistogramTester histogram_tester;
-  histogram_tester.ExpectBucketCount(kHotseatGestureHistogramName,
-                                     InAppShelfGestures::kSwipeDownToHide, 0);
-  histogram_tester.ExpectBucketCount(kHotseatGestureHistogramName,
-                                     InAppShelfGestures::kSwipeUpToShow, 0);
 
   gfx::Rect display_bounds =
       display::Screen::Get()->GetPrimaryDisplay().bounds();
@@ -1107,10 +986,6 @@ TEST_P(HotseatWidgetTest, HotseatDragGestureForStylusApp) {
 
   if (shelf_auto_hide_behavior() == ShelfAutoHideBehavior::kAlways)
     EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, GetPrimaryShelf()->GetAutoHideState());
-  histogram_tester.ExpectBucketCount(kHotseatGestureHistogramName,
-                                     InAppShelfGestures::kSwipeDownToHide, 0);
-  histogram_tester.ExpectBucketCount(kHotseatGestureHistogramName,
-                                     InAppShelfGestures::kSwipeUpToShow, 1);
 }
 
 // Tests that showing overview after showing the hotseat results in only one
@@ -2177,10 +2052,6 @@ TEST_P(HotseatWidgetTest, FlingUpHotseatWithShortFling) {
   wm::ActivateWindow(window.get());
   GetAppListTestHelper()->CheckVisibility(false);
 
-  base::HistogramTester histogram_tester;
-  histogram_tester.ExpectBucketCount(kHotseatGestureHistogramName,
-                                     InAppShelfGestures::kSwipeUpToShow, 0);
-
   // Scrolls the hotseat by a distance not sufficuent to trigger the action of
   // entering home screen from the in-app shelf.
   gfx::Rect display_bounds =
@@ -2200,8 +2071,6 @@ TEST_P(HotseatWidgetTest, FlingUpHotseatWithShortFling) {
 
   EXPECT_EQ(HotseatState::kExtended, GetShelfLayoutManager()->hotseat_state());
   GetAppListTestHelper()->CheckVisibility(false);
-  histogram_tester.ExpectBucketCount(kHotseatGestureHistogramName,
-                                     InAppShelfGestures::kSwipeUpToShow, 1);
 }
 
 // Tests that flinging up the in-app shelf should show the home launcher if the
@@ -2212,11 +2081,6 @@ TEST_P(HotseatWidgetTest, FlingUpHotseatWithLongFling) {
       CreateWindowWithAppType(chromeos::AppType::NON_APP, {400, 400});
   wm::ActivateWindow(window.get());
   GetAppListTestHelper()->CheckVisibility(false);
-
-  base::HistogramTester histogram_tester;
-  histogram_tester.ExpectBucketCount(
-      kHotseatGestureHistogramName,
-      InAppShelfGestures::kFlingUpToShowHomeScreen, 0);
 
   // Scrolls the hotseat by the sufficient distance to trigger the action of
   // entering home screen from the in-app shelf.
@@ -2238,9 +2102,6 @@ TEST_P(HotseatWidgetTest, FlingUpHotseatWithLongFling) {
   EXPECT_EQ(HotseatState::kShownHomeLauncher,
             GetShelfLayoutManager()->hotseat_state());
   GetAppListTestHelper()->CheckVisibility(true);
-  histogram_tester.ExpectBucketCount(
-      kHotseatGestureHistogramName,
-      InAppShelfGestures::kFlingUpToShowHomeScreen, 1);
 }
 
 // Tests that UpdateVisibilityState is ignored during a shelf drag. This
