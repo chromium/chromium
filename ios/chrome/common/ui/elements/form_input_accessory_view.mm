@@ -1071,4 +1071,34 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
   [self layoutIfNeeded];
 }
 
+- (BOOL)pointInside:(CGPoint)point withEvent:(UIEvent*)event {
+  if (!self.passThroughTouchesEnabled) {
+    return [super pointInside:point withEvent:event];
+  }
+
+  // Check if the point is inside the omnibox typing shield.
+  if (_omniboxTypingShield && !_omniboxTypingShield.hidden) {
+    if ([_omniboxTypingShield
+            pointInside:[self convertPoint:point toView:_omniboxTypingShield]
+              withEvent:event]) {
+      return YES;
+    }
+  }
+
+  // Only receive touches for subviews and let the others go through.
+  for (UIView* subview in self.subviews) {
+    if (subview == _omniboxTypingShield) {
+      continue;
+    }
+    if (subview.hidden || subview.alpha < 0.01) {
+      continue;
+    }
+    if ([subview pointInside:[self convertPoint:point toView:subview]
+                   withEvent:event]) {
+      return YES;
+    }
+  }
+  return NO;
+}
+
 @end

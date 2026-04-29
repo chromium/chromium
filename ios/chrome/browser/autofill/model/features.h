@@ -37,4 +37,7 @@ BASE_DECLARE_FEATURE(kFormInputAccessorySkipInputViewReloadInBackground);
 // Keyboard Accessory view.
 BASE_DECLARE_FEATURE(kIOSKeyboardAccessorySuggestionsCutOffLimit);
 
+// Enables the keyboard accessory view to let touches pass through blank areas.
+BASE_DECLARE_FEATURE(kFormInputAccessoryPassThroughTouches);
+
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_MODEL_FEATURES_H_

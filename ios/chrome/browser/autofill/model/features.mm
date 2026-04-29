@@ -28,3 +28,6 @@ BASE_FEATURE(kFormInputAccessorySkipInputViewReloadInBackground,
 
 BASE_FEATURE(kIOSKeyboardAccessorySuggestionsCutOffLimit,
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kFormInputAccessoryPassThroughTouches,
+             base::FEATURE_ENABLED_BY_DEFAULT);

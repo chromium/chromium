@@ -448,6 +448,9 @@ UIImage* GetManualFillSymbol() {
   [formInputAccessoryView
       addGestureRecognizer:self.formInputAccessoryTapRecognizer];
 
+  formInputAccessoryView.passThroughTouchesEnabled =
+      base::FeatureList::IsEnabled(kFormInputAccessoryPassThroughTouches);
+
   self.formInputAccessoryView = formInputAccessoryView;
 }
 
