@@ -4894,6 +4894,7 @@ static_library("ui") {
     deps += [
       "//base",
       "//chrome/browser:main_extra_parts",
+      "//chrome/browser:resources",
       "//chrome/browser/actor/resources:browser_resources",
       "//chrome/browser/actor/ui/task_list_bubble:controller",
       "//chrome/browser/apps:icon_standardizer",

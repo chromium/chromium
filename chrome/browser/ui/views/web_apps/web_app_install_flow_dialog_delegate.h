@@ -39,6 +39,7 @@ enum class InstallDialogStep {
 };
 
 enum class InstallOsType { kMac, kWin, kCros, kOther };
+inline constexpr int kLargeImageSize = 80;
 std::ostream& operator<<(std::ostream& os, InstallOsType type);
 
 class WebAppInstallFlowDialogDelegate : public WebAppInstallDialogDelegate {
