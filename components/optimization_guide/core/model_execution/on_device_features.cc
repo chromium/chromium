@@ -179,7 +179,7 @@ std::string ToUseCaseName(mojom::OnDeviceFeature feature) {
     case mojom::OnDeviceFeature::kOnDeviceSpeechRecognition:
       return "speech_recognition";
     case mojom::OnDeviceFeature::kSpeechRecognitionSmallExpertModel:
-      return "speech_recognition_tinygemma";
+      return "speech_recognition_small_expert_model";
     case mojom::OnDeviceFeature::kClassifier:
       return "classifier_api";
   }
