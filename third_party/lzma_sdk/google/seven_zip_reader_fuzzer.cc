@@ -12,7 +12,7 @@
 #include "third_party/lzma_sdk/google/seven_zip_reader.h"
 
 extern "C" {
-#include "third_party/lzma_sdk/C/7zCrc.h"
+#include "third_party/lzma_sdk/src/C/7zCrc.h"
 }
 
 namespace {
@@ -73,7 +73,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     // headers. The values here were chosen to keep the CRC internal state as
     // 0xffffffff in CrcUpdateT8. Other processors may choose a different CRC
     // update function, and would need different values here. See the
-    // CrcGenerateTable function in //third_party/lzma_sdk/C/7zCrc.c.
+    // CrcGenerateTable function in //third_party/lzma_sdk/src/C/7zCrc.c.
     seven_zip::EnsureLzmaSdkInitialized();
     for (size_t i = 0; i < 256; i++) {
       g_CrcTable[i] = 0xff000000;

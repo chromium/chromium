@@ -52,7 +52,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 extern "C" {
-#include "third_party/lzma_sdk/C/7zCrc.h"
+#include "third_party/lzma_sdk/src/C/7zCrc.h"
 }
 
 namespace seven_zip {
@@ -335,7 +335,7 @@ class SevenZipReaderFakeCrcTableTest : public testing::Test {
     // headers. The values here were chosen to keep the CRC internal state as
     // 0xffffffff in CrcUpdateT8. Other processors may choose a different CRC
     // update function, and would need different values here. See the
-    // CrcGenerateTable function in //third_party/lzma_sdk/C/7zCrc.c.
+    // CrcGenerateTable function in //third_party/lzma_sdk/src/C/7zCrc.c.
     for (size_t i = 0; i < 256; i++) {
       g_CrcTable[i] = 0xff000000;
       g_CrcTable[i + 0x100] = 0xff000000;

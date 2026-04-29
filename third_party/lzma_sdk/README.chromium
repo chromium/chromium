@@ -34,14 +34,20 @@ binaries. Supported platforms are:
 extract files. 7zr is "lightweight" and only handles 7zip extensions. 7za can
 handle a few more.
 
-The purposes of the patch in chromium.patch are:
-1. Extend the search range for 7z archive signature to accomodate increased sfx
-   binary size in debug builds.
-2. Fix undefined behavior in CpuArch.h flagged by UBSan caused by invalid
-   pointer casts.
-3. Shorten segment names in Asm/x86/LzmaDecOpt.asm to make the build
-   deterministic.
-4. Remove files irrelevant to Chromium use.
-5. Remove AVX and SSE41 code in LzFind.
-6. Fix compilation when <asm/hwcap.h> is unavailable (on Fuchsia).
-7. Add the ability to suppress CRC hardware acceleration for fuzzing.
+The purposes of the patches in the patches/ directory are:
+
+* deterministic_build.patch: Shorten segment names in Asm/x86/LzmaDecOpt.asm to
+  make the build deterministic.
+* fix_casts.patch: Fix undefined behavior in CpuArch.h flagged by UBSan caused
+  by invalid pointer casts.
+* hardware_crc.patch: Add the ability to suppress CRC hardware acceleration for
+  fuzzing.
+* hwcap.patch: Fix compilation when <asm/hwcap.h> is unavailable (on Fuchsia).
+* large_archive.patch: Extend the search range for 7z archive signature to
+  accomodate increased sfx binary size in debug builds.
+* no_avx_sse41.patch: Remove AVX and SSE41 code in LzFind.
+
+Apply them by running the following command from within the directory holding
+this README.chromium file:
+
+cat patches/*.patch | patch -d src -p 1

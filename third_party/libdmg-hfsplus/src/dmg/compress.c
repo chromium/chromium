@@ -7,13 +7,13 @@
 #include <pthread.h>
 #include <zlib.h>
 
-#include "third_party/lzma_sdk/C/Alloc.h"
-#include "third_party/lzma_sdk/C/7zCrc.h"
-#include "third_party/lzma_sdk/C/7zTypes.h"
-#include "third_party/lzma_sdk/C/Lzma2Enc.h"
-#include "third_party/lzma_sdk/C/Xz.h"
-#include "third_party/lzma_sdk/C/XzCrc64.h"
-#include "third_party/lzma_sdk/C/XzEnc.h"
+#include "third_party/lzma_sdk/src/C/Alloc.h"
+#include "third_party/lzma_sdk/src/C/7zCrc.h"
+#include "third_party/lzma_sdk/src/C/7zTypes.h"
+#include "third_party/lzma_sdk/src/C/Lzma2Enc.h"
+#include "third_party/lzma_sdk/src/C/Xz.h"
+#include "third_party/lzma_sdk/src/C/XzCrc64.h"
+#include "third_party/lzma_sdk/src/C/XzEnc.h"
 #include "third_party/lzma_sdk/google/seven_zip_c_buf_stream.h"
 
 // Calls once-only initialization functions for `lzma_sdk`. Not threadsafe.

@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_LZMA_SDK_GOOGLE_SEVEN_ZIP_C_BUF_STREAM_H_
 #define THIRD_PARTY_LZMA_SDK_GOOGLE_SEVEN_ZIP_C_BUF_STREAM_H_
 
-#include "third_party/lzma_sdk/C/7zTypes.h"
+#include "third_party/lzma_sdk/src/C/7zTypes.h"
 
 EXTERN_C_BEGIN
 

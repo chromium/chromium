@@ -1,0 +1,37 @@
+--- lzma2501/C/7zCrc.c	2024-03-01 07:00:00.000000000 +0100
++++ src/C/7zCrc.c	2026-04-27 14:52:51.572931984 +0200
+@@ -9,7 +9,7 @@
+ // for debug:
+ // #define __ARM_FEATURE_CRC32 1
+ 
+-#ifdef __ARM_FEATURE_CRC32
++#if defined(__ARM_FEATURE_CRC32) && !defined(Z7_NO_CRC_HW_FORCE)
+ // #pragma message("__ARM_FEATURE_CRC32")
+ #define Z7_CRC_HW_FORCE
+ #endif
+@@ -237,13 +237,14 @@
+ 
+ #ifndef Z7_CRC_HW_FORCE
+ 
++unsigned g_Crc_Algo;
++
+ #if defined(Z7_CRC_HW_USE) || defined(Z7_CRC_UPDATE_T1_FUNC_NAME)
+ /*
+ typedef UInt32 (Z7_FASTCALL *Z7_CRC_UPDATE_WITH_TABLE_FUNC)
+     (UInt32 v, const void *data, size_t size, const UInt32 *table);
+ Z7_CRC_UPDATE_WITH_TABLE_FUNC g_CrcUpdate;
+ */
+-static unsigned g_Crc_Algo;
+ #if (!defined(MY_CPU_LE) && !defined(MY_CPU_BE))
+ static unsigned g_Crc_Be;
+ #endif
+--- lzma2501/C/7zCrc.h	2024-01-22 14:00:00.000000000 +0100
++++ src/C/7zCrc.h	2026-04-27 14:52:51.573334545 +0200
+@@ -9,6 +9,7 @@
+ EXTERN_C_BEGIN
+ 
+ extern UInt32 g_CrcTable[];
++extern unsigned g_Crc_Algo;
+ 
+ /* Call CrcGenerateTable one time before other CRC functions */
+ void Z7_FASTCALL CrcGenerateTable(void);

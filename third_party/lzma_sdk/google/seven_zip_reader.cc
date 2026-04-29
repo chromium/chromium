@@ -26,9 +26,9 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 extern "C" {
-#include "third_party/lzma_sdk/C/7z.h"
-#include "third_party/lzma_sdk/C/7zAlloc.h"
-#include "third_party/lzma_sdk/C/7zCrc.h"
+#include "third_party/lzma_sdk/src/C/7z.h"
+#include "third_party/lzma_sdk/src/C/7zAlloc.h"
+#include "third_party/lzma_sdk/src/C/7zCrc.h"
 }
 
 #if BUILDFLAG(IS_WIN)

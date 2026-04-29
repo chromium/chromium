@@ -6,7 +6,7 @@
 #include <stddef.h>
 #include <string.h>
 
-#include "third_party/lzma_sdk/C/7zTypes.h"
+#include "third_party/lzma_sdk/src/C/7zTypes.h"
 
 static SRes Z7CBufSeqInStream_Read(ISeqInStreamPtr pp,
                                    void* dest,

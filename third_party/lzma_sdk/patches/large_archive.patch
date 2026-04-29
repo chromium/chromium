@@ -1,0 +1,22 @@
+--- lzma2501/C/Util/SfxSetup/SfxSetup.c	2024-01-24 18:00:00.000000000 +0100
++++ src/C/Util/SfxSetup/SfxSetup.c	2026-04-27 14:52:59.957415907 +0200
+@@ -11,6 +11,10 @@
+ #define _UNICODE
+ #endif
+ 
++// SHELLEXECUTEINFO
++#include <windows.h>
++#include <shellapi.h>
++
+ #ifdef _CONSOLE
+ #include <stdio.h>
+ #endif
+@@ -141,7 +145,7 @@
+ #define kBufferSize (1 << 15)
+ #endif
+ 
+-#define kSignatureSearchLimit (1 << 22)
++#define kSignatureSearchLimit (1 << 26)
+ 
+ static BoolInt FindSignature(CSzFile *stream, UInt64 *resPos)
+ {

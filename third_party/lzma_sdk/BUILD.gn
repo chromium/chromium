@@ -20,12 +20,12 @@ if (enable_lzma_opt) {
 
 config("lzma_sdk_config") {
   include_dirs = [
-    ".",
-    "./C",
+    "./src",
+    "./src/C",
   ]
 
   if (enable_lzma_opt) {
-    include_dirs += [ "./Asm/x86" ]
+    include_dirs += [ "./src/Asm/x86" ]
   }
 }
 
@@ -73,54 +73,54 @@ config("lzma_build_config") {
 
 static_library("lzma_sdk") {
   sources = [
-    "C/7z.h",
-    "C/7zAlloc.c",
-    "C/7zAlloc.h",
-    "C/7zArcIn.c",
-    "C/7zBuf.c",
-    "C/7zBuf.h",
-    "C/7zCrc.c",
-    "C/7zCrc.h",
-    "C/7zCrcOpt.c",
-    "C/7zDec.c",
-    "C/7zFile.c",
-    "C/7zFile.h",
-    "C/7zStream.c",
-    "C/7zTypes.h",
-    "C/7zWindows.h",
-    "C/Alloc.c",
-    "C/Alloc.h",
-    "C/Bcj2.c",
-    "C/Bcj2.h",
-    "C/Bra.c",
-    "C/Bra.h",
-    "C/Bra86.c",
-    "C/Compiler.h",
-    "C/CpuArch.c",
-    "C/CpuArch.h",
-    "C/Delta.c",
-    "C/Delta.h",
-    "C/DllSecur.c",
-    "C/DllSecur.h",
-    "C/LzFind.c",
-    "C/LzFind.h",
-    "C/LzHash.h",
-    "C/Lzma2Dec.c",
-    "C/Lzma2Dec.h",
-    "C/Lzma2Enc.c",
-    "C/Lzma2Enc.h",
-    "C/LzmaDec.c",
-    "C/LzmaDec.h",
-    "C/LzmaEnc.c",
-    "C/LzmaEnc.h",
-    "C/LzmaLib.c",
-    "C/LzmaLib.h",
-    "C/Precomp.h",
-    "C/RotateDefs.h",
+    "src/C/7z.h",
+    "src/C/7zAlloc.c",
+    "src/C/7zAlloc.h",
+    "src/C/7zArcIn.c",
+    "src/C/7zBuf.c",
+    "src/C/7zBuf.h",
+    "src/C/7zCrc.c",
+    "src/C/7zCrc.h",
+    "src/C/7zCrcOpt.c",
+    "src/C/7zDec.c",
+    "src/C/7zFile.c",
+    "src/C/7zFile.h",
+    "src/C/7zStream.c",
+    "src/C/7zTypes.h",
+    "src/C/7zWindows.h",
+    "src/C/Alloc.c",
+    "src/C/Alloc.h",
+    "src/C/Bcj2.c",
+    "src/C/Bcj2.h",
+    "src/C/Bra.c",
+    "src/C/Bra.h",
+    "src/C/Bra86.c",
+    "src/C/Compiler.h",
+    "src/C/CpuArch.c",
+    "src/C/CpuArch.h",
+    "src/C/Delta.c",
+    "src/C/Delta.h",
+    "src/C/DllSecur.c",
+    "src/C/DllSecur.h",
+    "src/C/LzFind.c",
+    "src/C/LzFind.h",
+    "src/C/LzHash.h",
+    "src/C/Lzma2Dec.c",
+    "src/C/Lzma2Dec.h",
+    "src/C/Lzma2Enc.c",
+    "src/C/Lzma2Enc.h",
+    "src/C/LzmaDec.c",
+    "src/C/LzmaDec.h",
+    "src/C/LzmaEnc.c",
+    "src/C/LzmaEnc.h",
+    "src/C/LzmaLib.c",
+    "src/C/LzmaLib.h",
+    "src/C/Precomp.h",
+    "src/C/RotateDefs.h",
   ]
 
   if (enable_lzma_opt) {
-    sources += [ "Asm/x86/LzmaDecOpt.asm" ]
+    sources += [ "src/Asm/x86/LzmaDecOpt.asm" ]
   }
 
   configs -= [ "//build/config/compiler:chromium_code" ]
@@ -135,29 +135,29 @@ static_library("lzma_sdk") {
 
 static_library("lzma_sdk_xz") {
   sources = [
-    "C/BraIA64.c",
-    "C/Sha256.c",
-    "C/Sha256.h",
-    "C/Sha256Opt.c",
-    "C/Xz.c",
-    "C/Xz.h",
-    "C/XzCrc64.c",
-    "C/XzCrc64.h",
-    "C/XzCrc64Opt.c",
-    "C/XzDec.c",
-    "C/XzEnc.c",
-    "C/XzEnc.h",
-    "C/XzIn.c",
+    "src/C/BraIA64.c",
+    "src/C/Sha256.c",
+    "src/C/Sha256.h",
+    "src/C/Sha256Opt.c",
+    "src/C/Xz.c",
+    "src/C/Xz.h",
+    "src/C/XzCrc64.c",
+    "src/C/XzCrc64.h",
+    "src/C/XzCrc64Opt.c",
+    "src/C/XzDec.c",
+    "src/C/XzEnc.c",
+    "src/C/XzEnc.h",
+    "src/C/XzIn.c",
   ]
 
   if (enable_lzma_opt) {
     sources += [
-      "Asm/x86/Sha256Opt.asm",
-      "Asm/x86/XzCrc64Opt.asm",
+      "src/Asm/x86/Sha256Opt.asm",
+      "src/Asm/x86/XzCrc64Opt.asm",
     ]
     sources -= [
-      "C/Sha256Opt.c",
-      "C/XzCrc64Opt.c",
+      "src/C/Sha256Opt.c",
+      "src/C/XzCrc64Opt.c",
     ]
   }
 
@@ -171,4 +171,16 @@ static_library("lzma_sdk_xz") {
     ":lzma_build_config",
   ]
   public_configs = [ ":lzma_sdk_config" ]
+}
+
+if (is_win) {
+  source_set("7zS2_source") {
+    sources = [ "src/C/Util/SfxSetup/SfxSetup.c" ]
+    defines = [ "_WIN32" ]
+    include_dirs = [
+      "src/C/Util/SfxSetup",
+      "src/C",
+    ]
+    public_deps = [ ":lzma_sdk" ]
+  }
 }
