@@ -6,7 +6,6 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "base/files/file_util.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -176,11 +175,6 @@ void DriveFileSuggestionProvider::EndDriveFilePathValidation(
     SetUseLongDelayInDriveSuggestQuery(
         profile_, suggest_results->size() < kShortDelayQuota);
   }
-
-  // TODO(https://crbug.com/1356344): when the refactoring code is stable,
-  // remove the obsolete histogram originally used by `ZeroStateDriveProvider`.
-  base::UmaHistogramEnumeration(
-      "Ash.Search.DriveFileSuggestDataValidation.Status", validation_status);
 
   // Notify observers of the fetched drive suggest results.
   on_drive_results_ready_callback_list_.Notify(suggest_results);

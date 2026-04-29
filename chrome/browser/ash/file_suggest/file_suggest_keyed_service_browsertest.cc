@@ -299,11 +299,6 @@ IN_PROC_BROWSER_TEST_P(FileSuggestKeyedServiceBrowserTest,
   if (UseDriveRecents()) {
     histogram_tester.ExpectUniqueSample(
         "Ash.Search.FileSuggestions.DriveRecents.ItemCount.Total", 0, 1);
-  } else {
-    histogram_tester.ExpectBucketCount(
-        "Ash.Search.DriveFileSuggestDataValidation.Status",
-        /*sample=*/DriveSuggestValidationStatus::kNoResults,
-        /*expected_count=*/1);
   }
 }
 
@@ -427,13 +422,6 @@ IN_PROC_BROWSER_TEST_P(FileSuggestKeyedServiceBrowserTest,
         "Ash.Search.FileSuggestions.DriveRecents.QueryResult.Shared", 0, 1);
     histogram_tester.ExpectUniqueSample(
         "Ash.Search.FileSuggestions.DriveRecents.ItemCount.Total", 2, 1);
-  } else {
-    // Note that the `observer` calls `GetSuggestFileData()` when the item
-    // cache is updated, so the file suggest data gets processed twice.
-    histogram_tester.ExpectBucketCount(
-        "Ash.Search.DriveFileSuggestDataValidation.Status",
-        /*sample=*/DriveSuggestValidationStatus::kOk,
-        /*expected_count=*/2);
   }
 }
 
@@ -508,13 +496,6 @@ IN_PROC_BROWSER_TEST_P(FileSuggestKeyedServiceBrowserTest,
         "Ash.Search.FileSuggestions.DriveRecents.QueryResult.Shared", 1, 1);
     histogram_tester.ExpectUniqueSample(
         "Ash.Search.FileSuggestions.DriveRecents.ItemCount.Total", 0, 1);
-  } else {
-    // Note that the `observer` calls `GetSuggestFileData()` when the item cache
-    // is updated, so the file suggest data gets processed twice.
-    histogram_tester.ExpectBucketCount(
-        "Ash.Search.DriveFileSuggestDataValidation.Status",
-        /*sample=*/DriveSuggestValidationStatus::kAllFilesErrored,
-        /*expected_count=*/2);
   }
 }
 
@@ -629,13 +610,6 @@ IN_PROC_BROWSER_TEST_P(FileSuggestKeyedServiceBrowserTest,
         "Ash.Search.FileSuggestions.DriveRecents.QueryResult.Shared", 1, 1);
     histogram_tester.ExpectUniqueSample(
         "Ash.Search.FileSuggestions.DriveRecents.ItemCount.Total", 1, 1);
-  } else {
-    // Note that the `observer` calls `GetSuggestFileData()` when the item cache
-    // is updated, so the file suggest data gets processed twice.
-    histogram_tester.ExpectBucketCount(
-        "Ash.Search.DriveFileSuggestDataValidation.Status",
-        /*sample=*/DriveSuggestValidationStatus::kOk,
-        /*expected_count=*/2);
   }
 }
 
