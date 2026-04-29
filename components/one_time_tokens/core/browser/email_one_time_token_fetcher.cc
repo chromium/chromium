@@ -69,7 +69,7 @@ void EmailOneTimeTokenFetcher::OnAccessTokenFetched(
 void EmailOneTimeTokenFetcher::StartOneTimeTokenServiceCall(
     signin::AccessTokenInfo info) {
   auto resource_request = std::make_unique<network::ResourceRequest>();
-  GURL url(features::kOneTimeTokenServiceUrl.Get());
+  GURL url(features::kFetchEmailOneTimeTokenEndpointUrl.Get());
 
   // TODO(crbug.com/486806779): figure out correct encoding.
   std::string encoded_reference;
