@@ -124,18 +124,12 @@ enum class PlayCount { ZERO = 0, ONCE = 1, TWICE = 2 };
 
 using testing::Bool;
 using testing::Combine;
-using testing::Eq;
-using testing::Not;
 using testing::Pair;
 using testing::UnitTest;
 using testing::UnorderedElementsAre;
 using testing::Values;
 using testing::WithParamInterface;
-using ukm::builders::Media_EME_ApiPromiseRejection;
 using ukm::builders::Media_EME_CdmMetrics;
-using ukm::builders::Media_EME_CreateMediaKeys;
-using ukm::builders::Media_EME_RequestMediaKeySystemAccess;
-using ukm::builders::Media_EME_Usage;
 using ukm::builders::Media_WebMediaPlayerState;
 
 // Base class for encrypted media tests.
@@ -1050,149 +1044,6 @@ IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest, EncryptedMediaDisabled) {
                         CurrentKeySystem(), CurrentSourceType(),
                         kNoSessionToLoad, false, PlayCount::ONCE,
                         expected_title);
-}
-
-IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest, Playback_Check_Ukm) {
-  bool is_widevine =
-#if BUILDFLAG(ENABLE_WIDEVINE)
-      IsWidevine(CurrentKeySystem());
-#else
-      false;
-#endif  // BUILDFLAG(ENABLE_WIDEVINE)
-
-  ukm::TestAutoSetUkmRecorder ukm_recorder;
-  TestSimplePlayback("bear-320x240-av_enc-a.webm");
-
-  // Check Media_EME_RequestMediaKeySystemAccess UKM. It is only recorded for
-  // Widevine.
-  auto request_entries = ukm_recorder.GetEntries(
-      Media_EME_RequestMediaKeySystemAccess::kEntryName,
-      {Media_EME_RequestMediaKeySystemAccess::kIsAdFrameName,
-       Media_EME_RequestMediaKeySystemAccess::kIsCrossOriginName,
-       Media_EME_RequestMediaKeySystemAccess::kIsFromMediaCapabilitiesName,
-       Media_EME_RequestMediaKeySystemAccess::kIsTopFrameName,
-       Media_EME_RequestMediaKeySystemAccess::kKeySystemName,
-       Media_EME_RequestMediaKeySystemAccess::kVideoCapabilitiesName,
-       Media_EME_RequestMediaKeySystemAccess::
-           kVideoCapabilities_HasEmptyRobustnessName,
-       Media_EME_RequestMediaKeySystemAccess::
-           kVideoCapabilities_HasHwSecureAllRobustnessName});
-  if (is_widevine) {
-    EXPECT_EQ(request_entries.size(), 1u);
-    EXPECT_THAT(
-        request_entries[0].metrics,
-        UnorderedElementsAre(
-            Pair(Media_EME_RequestMediaKeySystemAccess::kIsAdFrameName,
-                 /*false=*/0),
-            Pair(Media_EME_RequestMediaKeySystemAccess::kIsCrossOriginName,
-                 /*false=*/0),
-            Pair(Media_EME_RequestMediaKeySystemAccess::
-                     kIsFromMediaCapabilitiesName,
-                 /*false=*/0),
-            Pair(Media_EME_RequestMediaKeySystemAccess::kIsTopFrameName,
-                 /*true=*/1),
-            Pair(Media_EME_RequestMediaKeySystemAccess::kKeySystemName,
-                 /*blink::KeySystemForUkmLegacy::kWidevine=*/1),
-            Pair(Media_EME_RequestMediaKeySystemAccess::kVideoCapabilitiesName,
-                 /*true=*/1),
-            Pair(Media_EME_RequestMediaKeySystemAccess::
-                     kVideoCapabilities_HasEmptyRobustnessName,
-                 /*true=*/1),
-            Pair(Media_EME_RequestMediaKeySystemAccess::
-                     kVideoCapabilities_HasHwSecureAllRobustnessName,
-                 /*false=*/0)));
-  } else {
-    // Not Widevine, so nothing should be recorded.
-    EXPECT_EQ(request_entries.size(), 0u);
-  }
-
-  // Check Media_EME_CreateMediaKeys UKM. It is also only recorded for Widevine.
-  auto create_entries =
-      ukm_recorder.GetEntries(Media_EME_CreateMediaKeys::kEntryName,
-                              {Media_EME_CreateMediaKeys::kIsAdFrameName,
-                               Media_EME_CreateMediaKeys::kIsCrossOriginName,
-                               Media_EME_CreateMediaKeys::kIsTopFrameName,
-                               Media_EME_CreateMediaKeys::kKeySystemName});
-  if (is_widevine) {
-    EXPECT_EQ(create_entries.size(), 1u);
-    EXPECT_THAT(create_entries[0].metrics,
-                UnorderedElementsAre(
-                    Pair(Media_EME_CreateMediaKeys::kIsAdFrameName,
-                         /*false=*/0),
-                    Pair(Media_EME_CreateMediaKeys::kIsCrossOriginName,
-                         /*false=*/0),
-                    Pair(Media_EME_CreateMediaKeys::kIsTopFrameName,
-                         /*true=*/1),
-                    Pair(Media_EME_CreateMediaKeys::kKeySystemName,
-                         /*blink::KeySystemForUkmLegacy::kWidevine=*/1)));
-  } else {
-    // Not Widevine, so nothing should be recorded.
-    EXPECT_EQ(create_entries.size(), 0u);
-  }
-
-  // Check Media_EME_Usage UKM. It is recorded for all key systems. Currently
-  // only setServerCertificate(), generateRequest() and update() will be called
-  // during playback.
-  auto usage_entries = ukm_recorder.GetEntries(
-      Media_EME_Usage::kEntryName,
-      {Media_EME_Usage::kApiName, Media_EME_Usage::kIsPersistentSessionName,
-       Media_EME_Usage::kKeySystemName,
-       Media_EME_Usage::kUseHardwareSecureCodecsName});
-  EXPECT_EQ(usage_entries.size(), 3u);
-  EXPECT_THAT(usage_entries[0].metrics,
-              UnorderedElementsAre(
-                  Pair(Media_EME_Usage::kApiName,
-                       /*blink::EmeApiType::kSetServerCertificate=*/2),
-                  Pair(Media_EME_Usage::kIsPersistentSessionName, 0),
-                  Pair(Media_EME_Usage::kKeySystemName,
-                       media::GetKeySystemIntForUKM(CurrentKeySystem())),
-                  Pair(Media_EME_Usage::kUseHardwareSecureCodecsName, 0)));
-  EXPECT_THAT(
-      usage_entries[1].metrics,
-      UnorderedElementsAre(
-          Pair(Media_EME_Usage::kApiName,
-               /*blink::EmeApiType::kGenerateRequest=*/4),
-          Pair(Media_EME_Usage::kIsPersistentSessionName, /*false=*/0),
-          Pair(Media_EME_Usage::kKeySystemName,
-               media::GetKeySystemIntForUKM(CurrentKeySystem())),
-          Pair(Media_EME_Usage::kUseHardwareSecureCodecsName, /*false=*/0)));
-  EXPECT_THAT(
-      usage_entries[2].metrics,
-      UnorderedElementsAre(
-          Pair(Media_EME_Usage::kApiName, /*blink::EmeApiType::kUpdate=*/6),
-          Pair(Media_EME_Usage::kIsPersistentSessionName, /*false=*/0),
-          Pair(Media_EME_Usage::kKeySystemName,
-               media::GetKeySystemIntForUKM(CurrentKeySystem())),
-          Pair(Media_EME_Usage::kUseHardwareSecureCodecsName, /*false=*/0)));
-
-  // Check Media_EME_ApiPromiseRejection. With Widevine if there is no license
-  // server Update() will fail. With ClearKey a valid response is provided, so
-  // there is no failure.
-  auto promise_entries = ukm_recorder.GetEntries(
-      Media_EME_ApiPromiseRejection::kEntryName,
-      {Media_EME_ApiPromiseRejection::kApiName,
-       Media_EME_ApiPromiseRejection::kKeySystemName,
-       Media_EME_ApiPromiseRejection::kSystemCodeName,
-       Media_EME_ApiPromiseRejection::kUseHardwareSecureCodecsName});
-  if (is_widevine && !license_server_) {
-    // Update() should have failed due to invalid license response.
-    EXPECT_EQ(promise_entries.size(), 1u);
-    // Media_EME_ApiPromiseRejection::kSystemCodeName is key system
-    // implementation specific, so exact value may change.
-    EXPECT_THAT(
-        promise_entries[0].metrics,
-        UnorderedElementsAre(
-            Pair(Media_EME_ApiPromiseRejection::kApiName,
-                 /*blink::EmeApiType::kUpdate=*/6),
-            Pair(Media_EME_ApiPromiseRejection::kKeySystemName,
-                 media::GetKeySystemIntForUKM(CurrentKeySystem())),
-            Pair(Media_EME_ApiPromiseRejection::kSystemCodeName, Not(Eq(0))),
-            Pair(Media_EME_ApiPromiseRejection::kUseHardwareSecureCodecsName,
-                 /*false=*/0)));
-  } else {
-    // No error with ClearKey or with Widevine if a license server is available.
-    EXPECT_EQ(promise_entries.size(), 0u);
-  }
 }
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)

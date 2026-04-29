@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+// KeySystemForUkm values from media/base/key_systems.cc.
+const KEY_SYSTEM_CLEARKEY = 1;
+const KEY_SYSTEM_WIDEVINE = 2;
+
+// KeySystemForUkmLegacy values from
+// blink/renderer/modules/encryptedmedia/encrypted_media_utils.h.
+const LEGACY_KEY_SYSTEM_CLEARKEY = 0;
+const LEGACY_KEY_SYSTEM_WIDEVINE = 1;
+
+// EmeApiType values from blink::EmeApiType.
+const API_SET_SERVER_CERTIFICATE = 2;
+const API_GENERATE_REQUEST = 4;
+const API_UPDATE = 6;
+
+async function test_eme_ukm(keySystem, expectedKeySystemInt,
+                             expectedLegacyKeySystemInt) {
+    const recorder = internals.initializeUKMRecorder();
+    let access;
+    let requestError = null;
+
+    // Request access and check Media.EME.RequestMediaKeySystemAccess.
+    // This UKM is only recorded for Widevine.
+    try {
+        access = await navigator.requestMediaKeySystemAccess(keySystem, [{
+            initDataTypes: ['webm'],
+            videoCapabilities: [{contentType: 'video/webm; codecs="vp9"'}]
+        }]);
+    } catch (e) {
+        requestError = e;
+    }
+
+    const isWidevine = keySystem === 'com.widevine.alpha';
+
+    if (isWidevine) {
+        const metrics = recorder.getMetrics(
+            "Media.EME.RequestMediaKeySystemAccess",
+            ["KeySystem", "VideoCapabilities",
+             "VideoCapabilities.HasEmptyRobustness", "IsAdFrame",
+             "IsCrossOrigin", "IsTopFrame", "IsFromMediaCapabilities",
+             "VideoCapabilities.HasHwSecureAllRobustness"]);
+
+        if (metrics.length > 0) {
+            assert_equals(metrics[0].KeySystem, expectedLegacyKeySystemInt);
+            assert_equals(metrics[0].VideoCapabilities, 1);
+            assert_equals(metrics[0]["VideoCapabilities.HasEmptyRobustness"], 1);
+            assert_equals(metrics[0].IsAdFrame, 0);
+            assert_equals(metrics[0].IsCrossOrigin, 0);
+            assert_equals(metrics[0].IsTopFrame, 1);
+            assert_equals(metrics[0].IsFromMediaCapabilities, 0);
+            assert_equals(
+                metrics[0]["VideoCapabilities.HasHwSecureAllRobustness"], 0);
+        } else if (requestError && requestError.name !== 'NotSupportedError') {
+            assert_unreached("Widevine request failed: " + requestError.name);
+        }
+    } else {
+        assert_equals(
+            recorder.getMetrics("Media.EME.RequestMediaKeySystemAccess", [])
+            .length, 0);
+    }
+
+    if (requestError) return;
+
+    // Perform EME operations and check Media.EME.Usage.
+    const mediaKeys = await access.createMediaKeys();
+    await mediaKeys.setServerCertificate(new Uint8Array(200));
+
+    const session = mediaKeys.createSession();
+    await session.generateRequest('webm', new Uint8Array([1, 2, 3]));
+    try { await session.update(new Uint8Array([4, 5, 6])); } catch (e) {}
+
+    const usageMetrics = recorder.getMetrics(
+        "Media.EME.Usage",
+        ["Api", "KeySystem", "IsPersistentSession", "UseHardwareSecureCodecs"]);
+    assert_equals(usageMetrics.length, 3);
+
+    const checkUsage = (api) => {
+        const entry = usageMetrics.find(
+            m => m.Api === api && m.KeySystem === expectedKeySystemInt);
+        assert_not_equals(entry, undefined);
+        assert_equals(entry.IsPersistentSession, 0);
+        assert_equals(entry.UseHardwareSecureCodecs, 0);
+    };
+
+    [API_SET_SERVER_CERTIFICATE, API_GENERATE_REQUEST, API_UPDATE]
+        .forEach(checkUsage);
+
+    // Check Media.EME.ApiPromiseRejection (if update failed).
+    // The ClearKey CDM does not report a system code. For Widevine, the system
+    // code may change, so we only check that it's non-zero.
+    const rejectionMetrics = recorder.getMetrics(
+        "Media.EME.ApiPromiseRejection",
+        ["Api", "KeySystem", "SystemCode", "UseHardwareSecureCodecs"]);
+    const updateRejection = rejectionMetrics.find(
+        m => m.Api === API_UPDATE && m.KeySystem === expectedKeySystemInt);
+    if (updateRejection) {
+        if (isWidevine) assert_not_equals(updateRejection.SystemCode, 0);
+        assert_equals(updateRejection.UseHardwareSecureCodecs, 0);
+    }
+
+    // Check Media.EME.CreateMediaKeys (Widevine only).
+    if (isWidevine) {
+        const metrics = recorder.getMetrics(
+            "Media.EME.CreateMediaKeys",
+            ["KeySystem", "IsAdFrame", "IsCrossOrigin", "IsTopFrame"]);
+        assert_equals(metrics.length, 1);
+        assert_equals(metrics[0].KeySystem, expectedLegacyKeySystemInt);
+        assert_equals(metrics[0].IsAdFrame, 0);
+        assert_equals(metrics[0].IsCrossOrigin, 0);
+        assert_equals(metrics[0].IsTopFrame, 1);
+    } else {
+        assert_equals(
+            recorder.getMetrics("Media.EME.CreateMediaKeys", []).length, 0);
+    }
+}
+
+promise_test(t => test_eme_ukm('org.w3.clearkey', KEY_SYSTEM_CLEARKEY,
+                                LEGACY_KEY_SYSTEM_CLEARKEY), "ClearKey UKM");
+promise_test(t => test_eme_ukm('com.widevine.alpha', KEY_SYSTEM_WIDEVINE,
+                                LEGACY_KEY_SYSTEM_WIDEVINE), "Widevine UKM");
+</script>

@@ -280,9 +280,7 @@ PlayerUtils.registerEMEEventListeners = function(player) {
         return access.createMediaKeys();
       })
       .then(function(mediaKeys) {
-        var cert = new Uint8Array(200);
-        var result = mediaKeys.setServerCertificate(cert);
-        return player.video.setMediaKeys(mediaKeys) && result;
+        return player.video.setMediaKeys(mediaKeys);
       })
       .then(function(result) {
         return player;
