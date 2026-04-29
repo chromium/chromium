@@ -22,7 +22,9 @@ BASE_FEATURE(kActorLoginSyncsPasswordPermissions,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kActorLoginPermissionsUi, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kActorLoginNoPermanentPermissionsAndroid,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kActorLoginPermissionsUi, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 #if !BUILDFLAG(IS_IOS)
