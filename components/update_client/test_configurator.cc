@@ -223,6 +223,13 @@ scoped_refptr<CrxCache> TestConfigurator::GetCrxCache() const {
   return crx_cache_;
 }
 
+#if BUILDFLAG(CHROME_FOR_TESTING)
+std::vector<std::string> TestConfigurator::GetRequiredComponents() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return {};
+}
+#endif
+
 bool TestConfigurator::IsConnectionMetered() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return is_network_connection_metered_;

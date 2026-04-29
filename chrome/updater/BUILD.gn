@@ -219,6 +219,7 @@ if (is_win || is_mac || is_linux) {
       ":version_header",
       "//base",
       "//base:i18n",
+      "//build:branding_buildflags",
       "//build:chromeos_buildflags",
       "//chrome/enterprise_companion:client",
       "//chrome/enterprise_companion:constants_prod",

@@ -26,11 +26,11 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "build/branding_buildflags.h"
 #include "components/component_updater/component_installer.h"
 #include "components/component_updater/component_updater_service_internal.h"
 #include "components/component_updater/component_updater_utils.h"
 #include "components/component_updater/pref_names.h"
+#include "components/component_updater/required_components_controller.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/update_client/configurator.h"
@@ -121,6 +121,14 @@ CrxUpdateService::CrxUpdateService(scoped_refptr<Configurator> config,
   update_client->CleanupStaleDownloads(
       base::Time::Now(),
       base::BindOnce([] { VLOG(2) << "CleanupStaleDownloads done"; }));
+
+#if BUILDFLAG(CHROME_FOR_TESTING)
+  if (auto components = config_->GetRequiredComponents(); !components.empty()) {
+    required_components_controller_ =
+        std::make_unique<RequiredComponentsController>(std::move(components));
+  }
+#endif
+
   AddObserver(this);
 }
 
@@ -217,6 +225,15 @@ bool CrxUpdateService::RegisterComponent(
       component_states_.insert(std::make_pair(component.app_id, item));
   CHECK(inserted);
 
+#if BUILDFLAG(CHROME_FOR_TESTING)
+  if (required_components_controller_ &&
+      required_components_controller_->RequestComponentUpdate(component)) {
+    OnDemandUpdateInternal(component.app_id,
+                           OnDemandUpdater::Priority::FOREGROUND,
+                           base::DoNothing());
+  }
+#endif
+
   // Start the timer if this is the first component registered. The first timer
   // event occurs after an interval defined by the component update
   // configurator. The subsequent timer events are repeated with a period
@@ -286,6 +303,14 @@ OnDemandUpdater& CrxUpdateService::GetOnDemandUpdater() {
   return *this;
 }
 
+#if BUILDFLAG(CHROME_FOR_TESTING)
+void CrxUpdateService::EnsureRequiredComponentsReady(base::TimeDelta timeout) {
+  if (required_components_controller_) {
+    required_components_controller_->EnsureRequiredComponentsReady(timeout);
+  }
+}
+#endif
+
 update_client::CrxComponent CrxUpdateService::ToCrxComponent(
     const ComponentRegistration& component) const {
   update_client::CrxComponent crx;
@@ -316,6 +341,11 @@ update_client::CrxComponent CrxUpdateService::ToCrxComponent(
       override_component_updates_enabled || component_updates_enabled;
   crx.updates_enabled = component.allow_updates && should_update;
 
+#if BUILDFLAG(CHROME_FOR_TESTING)
+  if (required_components_controller_) {
+    required_components_controller_->ToCrxComponent(component, crx);
+  }
+#endif
   return crx;
 }
 
@@ -528,6 +558,12 @@ void CrxUpdateService::OnEvent(const CrxUpdateItem& update_item) {
       component_it->second.fingerprint = update_item.next_fp;
     }
   }
+
+#if BUILDFLAG(CHROME_FOR_TESTING)
+  if (required_components_controller_) {
+    required_components_controller_->OnEvent(update_item);
+  }
+#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////

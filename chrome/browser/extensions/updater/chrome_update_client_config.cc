@@ -408,6 +408,13 @@ scoped_refptr<update_client::CrxCache> ChromeUpdateClientConfig::GetCrxCache()
   return crx_cache_;
 }
 
+#if BUILDFLAG(CHROME_FOR_TESTING)
+std::vector<std::string> ChromeUpdateClientConfig::GetRequiredComponents()
+    const {
+  return {};
+}
+#endif
+
 bool ChromeUpdateClientConfig::IsConnectionMetered() const {
   return impl_.IsConnectionMetered();
 }

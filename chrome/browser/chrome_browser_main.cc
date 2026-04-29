@@ -348,6 +348,8 @@
 
 #if BUILDFLAG(CHROME_FOR_TESTING)
 #include "chrome/browser/chrome_for_testing/chrome_browser_main_extra_parts_cft.h"
+#include "chrome/browser/chrome_for_testing/config.h"
+#include "components/component_updater/component_updater_service.h"
 #endif
 
 namespace {
@@ -2035,6 +2037,16 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
         g_browser_process->profile_manager()->GetLastOpenedProfiles();
   }
 #endif
+
+#if BUILDFLAG(CHROME_FOR_TESTING)
+  // Delay browser startup until all components required by the Chrome for
+  // Testing configuration are installed and up to date.
+  if (g_browser_process->component_updater()) {
+    g_browser_process->component_updater()->EnsureRequiredComponentsReady(
+        chrome_for_testing::GetRequiredComponentsUpdateTimeout());
+  }
+#endif
+
   // This step is costly.
   if (browser_creator_->Start(*base::CommandLine::ForCurrentProcess(),
                               base::FilePath(), profile_info,

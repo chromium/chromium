@@ -19,6 +19,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
+#include "build/branding_buildflags.h"
 #include "components/update_client/configurator.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "url/gurl.h"
@@ -110,6 +111,9 @@ class TestConfigurator : public Configurator {
   std::optional<bool> IsMachineExternallyManaged() const override;
   UpdaterStateProvider GetUpdaterStateProvider() const override;
   scoped_refptr<CrxCache> GetCrxCache() const override;
+#if BUILDFLAG(CHROME_FOR_TESTING)
+  std::vector<std::string> GetRequiredComponents() const override;
+#endif
   bool IsConnectionMetered() const override;
 
   void SetOnDemandTime(base::TimeDelta seconds);

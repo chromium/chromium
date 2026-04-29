@@ -15,6 +15,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "build/branding_buildflags.h"
 #include "components/component_updater/update_scheduler.h"
 #include "components/update_client/persisted_data.h"
 
@@ -29,6 +30,7 @@ enum class Error;
 namespace component_updater {
 
 class OnDemandUpdater;
+class RequiredComponentsController;
 
 class CrxUpdateService : public ComponentUpdateService,
                          public ComponentUpdateService::Observer,
@@ -61,6 +63,9 @@ class CrxUpdateService : public ComponentUpdateService,
   base::Version GetRegisteredVersion(const std::string& app_id) override;
   base::Version GetMaxPreviousProductVersion(
       const std::string& app_id) override;
+#if BUILDFLAG(CHROME_FOR_TESTING)
+  void EnsureRequiredComponentsReady(base::TimeDelta timeout) override;
+#endif
 
   // Overrides for Observer.
   void OnEvent(const CrxUpdateItem& item) override;
@@ -118,7 +123,7 @@ class CrxUpdateService : public ComponentUpdateService,
 
   // Contains the components pending unregistration. If a component is not
   // busy installing or updating, it can be unregistered right away. Otherwise,
-  // the component will be lazily unregistered after the its operations have
+  // the component will be lazily unregistered after its operations have
   // completed.
   std::vector<std::string> components_pending_unregistration_;
 
@@ -135,6 +140,10 @@ class CrxUpdateService : public ComponentUpdateService,
   // for that media type. Only the most recently-registered component is
   // tracked. May include the IDs of un-registered components.
   std::map<std::string, std::string> component_ids_by_mime_type_;
+
+#if BUILDFLAG(CHROME_FOR_TESTING)
+  std::unique_ptr<RequiredComponentsController> required_components_controller_;
+#endif
 
   base::WeakPtrFactory<CrxUpdateService> weak_ptr_factory_{this};
 };

@@ -6,8 +6,8 @@
 #define CHROME_BROWSER_CHROME_FOR_TESTING_CONFIG_H_
 
 #include <string>
+#include <vector>
 
-#include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/time/time.h"
 
@@ -33,8 +33,8 @@ const base::ListValue& GetRequiredComponentsList();
 base::FilePath GetRequiredComponentsDir();
 base::TimeDelta GetRequiredComponentsUpdateTimeout();
 
-// Returns required component names and, optionally, their versions.
-base::flat_map<std::string, std::string> GetRequiredComponentsMap();
+// Returns required component names.
+std::vector<std::string> GetRequiredComponents();
 
 }  // namespace chrome_for_testing
 

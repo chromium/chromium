@@ -9,6 +9,7 @@
 #include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/to_vector.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
@@ -17,7 +18,6 @@
 #include "base/time/time.h"
 #include "base/time/time_delta_from_string.h"
 #include "base/values.h"
-#include "base/version.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_for_testing/prefs.h"
 #include "chrome/browser/chrome_for_testing/switches.h"
@@ -42,10 +42,6 @@ constexpr char kRequiredComponentsUpdateTimeout[] =
     "requiredComponentsUpdateTimeout";
 }  // namespace keys
 
-// Required component attributes.
-constexpr char kName[] = "name";
-constexpr char kVersion[] = "version";
-
 // Required components update timeout constrains.
 constexpr base::TimeDelta kMinRequiredComponentsUpdateTimeout =
     base::Seconds(1);
@@ -54,32 +50,11 @@ constexpr base::TimeDelta kMaxRequiredComponentsUpdateTimeout =
 
 bool VerifyRequiredComponents(base::ListValue* required_components) {
   for (const auto& required_component : *required_components) {
-    const base::DictValue* dict = required_component.GetIfDict();
-    if (!dict) {
-      LOG(ERROR) << "Required component entry is not an object: "
-                 << required_component.DebugString();
-      return false;
-    }
-
-    const std::string* name = dict->FindString(kName);
+    const std::string* name = required_component.GetIfString();
     if (!name || name->empty()) {
-      LOG(ERROR) << "Missing required component name: "
+      LOG(ERROR) << "Missing or invalid required component name: "
                  << required_component.DebugString();
       return false;
-    }
-
-    if (dict->Find(kVersion)) {
-      if (const std::string* version = dict->FindString(kVersion)) {
-        if (!version->empty() && !base::Version(*version).IsValid()) {
-          LOG(ERROR) << "Invalid required component version format: "
-                     << required_component.DebugString();
-          return false;
-        }
-      } else {
-        LOG(ERROR) << "Invalid required component version type: "
-                   << required_component.DebugString();
-        return false;
-      }
     }
   }
   return true;
@@ -286,16 +261,11 @@ base::TimeDelta GetRequiredComponentsUpdateTimeout() {
   return pref_service->GetTimeDelta(prefs::kRequiredComponentsUpdateTimeout);
 }
 
-base::flat_map<std::string, std::string> GetRequiredComponentsMap() {
-  base::flat_map<std::string, std::string> required_components;
-  for (const auto& required_component : GetRequiredComponentsList()) {
-    const base::DictValue& dict = CHECK_DEREF(required_component.GetIfDict());
-    const std::string& name = CHECK_DEREF(dict.FindString(kName));
-    const std::string* version = dict.FindString(kVersion);
-    required_components[name] = version ? *version : "";
-  }
-
-  return required_components;
+std::vector<std::string> GetRequiredComponents() {
+  return base::ToVector(GetRequiredComponentsList(),
+                        [](const base::Value& required_component) {
+                          return CHECK_DEREF(required_component.GetIfString());
+                        });
 }
 
 }  // namespace chrome_for_testing

@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 #include <string_view>
+#include <vector>
 
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
@@ -23,6 +24,7 @@
 #include "chrome/browser/chrome_for_testing/switches.h"
 #include "components/component_updater/component_updater_paths.h"
 #include "components/prefs/pref_service.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chrome_for_testing {
@@ -135,9 +137,9 @@ TEST_F(ChromeForTestingConfigTest, RequiredComponentsList) {
   static constexpr char kJson[] = R"(
     {
       "requiredComponents": [
-        {"name": "Hyphenation"},
-        {"name": "FooBar", "version": "1.2.3.4"},
-        {"name": "Zulu One", "version": ""},
+        "Hyphenation",
+        "FooBar",
+        "Zulu One",
       ],
     }
   )";
@@ -146,10 +148,8 @@ TEST_F(ChromeForTestingConfigTest, RequiredComponentsList) {
 
   ASSERT_TRUE(LoadConfig(pref_service_));
 
-  base::flat_map<std::string, std::string> kExpected(
-      {{"FooBar", "1.2.3.4"}, {"Hyphenation", ""}, {"Zulu One", ""}});
-
-  EXPECT_EQ(GetRequiredComponentsMap(), kExpected);
+  EXPECT_THAT(GetRequiredComponents(),
+              testing::ElementsAre("Hyphenation", "FooBar", "Zulu One"));
 }
 
 TEST_F(ChromeForTestingConfigTest, InvalidRequiredComponentsListType) {
@@ -169,7 +169,7 @@ TEST_F(ChromeForTestingConfigTest, InvalidRequiredComponentsListComponentName) {
     static constexpr char kJson[] = R"(
       {
         "requiredComponents": [
-          {"name": ""},
+          "",
         ],
       }
     )";
@@ -183,52 +183,7 @@ TEST_F(ChromeForTestingConfigTest, InvalidRequiredComponentsListComponentName) {
     static constexpr char kJson[] = R"(
       {
         "requiredComponents": [
-          {"name": 42},
-        ],
-      }
-    )";
-
-    CreateConfig(kJson);
-
-    EXPECT_FALSE(LoadConfig(pref_service_));
-  }
-
-  {
-    static constexpr char kJson[] = R"(
-      {
-        "requiredComponents": [
-          {"noName": "foobar"},
-        ],
-      }
-    )";
-
-    CreateConfig(kJson);
-
-    EXPECT_FALSE(LoadConfig(pref_service_));
-  }
-}
-
-TEST_F(ChromeForTestingConfigTest,
-       InvalidRequiredComponentsListComponentVersion) {
-  {
-    static constexpr char kJson[] = R"(
-      {
-        "requiredComponents": [
-          {"name": "FooBar", "version": "1-2-3-4"},
-        ],
-      }
-    )";
-
-    CreateConfig(kJson);
-
-    EXPECT_FALSE(LoadConfig(pref_service_));
-  }
-
-  {
-    static constexpr char kJson[] = R"(
-      {
-        "requiredComponents": [
-          {"name": "FooBar", "version": 123},
+          42,
         ],
       }
     )";

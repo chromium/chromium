@@ -18,6 +18,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
+#include "build/branding_buildflags.h"
 #include "components/component_updater/configurator_impl.h"
 #include "components/update_client/configurator.h"
 #include "extensions/buildflags/buildflags.h"
@@ -84,6 +85,9 @@ class ChromeUpdateClientConfig : public update_client::Configurator {
   std::optional<bool> IsMachineExternallyManaged() const override;
   update_client::UpdaterStateProvider GetUpdaterStateProvider() const override;
   scoped_refptr<update_client::CrxCache> GetCrxCache() const override;
+#if BUILDFLAG(CHROME_FOR_TESTING)
+  std::vector<std::string> GetRequiredComponents() const override;
+#endif
   bool IsConnectionMetered() const override;
 
   // Disables CUP signing for all instances of ChromeUpdateClientConfig

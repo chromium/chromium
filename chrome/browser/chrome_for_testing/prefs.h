@@ -23,8 +23,8 @@ inline constexpr char kEnableSearchEngineChoiceDialog[] =
 inline constexpr char kEnableVirtualClipboard[] =
     "chrome_for_testing.enable_virtual_clipboard";
 
-// List of required components names and, optionally, their versions. Default is
-// empty. Component names can be specified as patterns with * and ? wildcards.
+// List of required components names or name patterns with * and ? wildcards.
+// Default is empty.
 inline constexpr char kRequiredComponents[] =
     "chrome_for_testing.required_components";
 

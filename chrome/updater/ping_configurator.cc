@@ -15,6 +15,7 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/version.h"
+#include "build/branding_buildflags.h"
 #include "chrome/updater/branded_constants.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/external_constants.h"
@@ -72,6 +73,9 @@ class PingConfigurator : public update_client::Configurator {
   std::optional<bool> IsMachineExternallyManaged() const override;
   update_client::UpdaterStateProvider GetUpdaterStateProvider() const override;
   scoped_refptr<update_client::CrxCache> GetCrxCache() const override;
+#if BUILDFLAG(CHROME_FOR_TESTING)
+  std::vector<std::string> GetRequiredComponents() const override;
+#endif
   bool IsConnectionMetered() const override;
 
  private:
@@ -232,6 +236,13 @@ scoped_refptr<update_client::CrxCache> PingConfigurator::GetCrxCache() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   NOTREACHED();
 }
+
+#if BUILDFLAG(CHROME_FOR_TESTING)
+std::vector<std::string> PingConfigurator::GetRequiredComponents() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  NOTREACHED();
+}
+#endif
 
 bool PingConfigurator::IsConnectionMetered() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

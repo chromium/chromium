@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chrome_build.gni")
+
 component("component_updater_paths") {
   defines = [ "IS_COMPONENT_UPDATER_PATHS_IMPL" ]
 
@@ -39,6 +41,13 @@ static_library("component_updater") {
     "update_scheduler.h",
   ]
 
+  if (is_chrome_for_testing) {
+    sources += [
+      "required_components_controller.cc",
+      "required_components_controller.h",
+    ]
+  }
+
   public_deps = [ ":component_updater_paths" ]
 
   deps = [
@@ -65,6 +74,7 @@ static_library("test_support") {
   public_deps = [
     ":component_updater",
     "//base",
+    "//build:branding_buildflags",
     "//testing/gmock",
   ]
 }
@@ -77,6 +87,10 @@ source_set("unit_tests") {
     "configurator_impl_unittest.cc",
     "timer_unittest.cc",
   ]
+
+  if (is_chrome_for_testing) {
+    sources += [ "required_components_controller_unittest.cc" ]
+  }
 
   deps = [
     ":component_updater",

@@ -281,4 +281,8 @@ source_set("impl") {
   if (safe_browsing_mode != 0) {
     sources += [ "file_type_policies_component_installer.cc" ]
   }
+
+  if (is_chrome_for_testing) {
+    deps += [ "//chrome/browser/chrome_for_testing:browser" ]
+  }
 }

@@ -13,6 +13,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/numerics/safe_conversions.h"
+#include "build/branding_buildflags.h"
 #include "components/update_client/net/network_chromium.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_response_headers.h"
@@ -23,6 +24,10 @@
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(CHROME_FOR_TESTING)
+#include "net/base/request_priority.h"
+#endif
 
 namespace {
 
@@ -168,6 +173,17 @@ base::OnceClosure NetworkFetcherImpl::DownloadToFile(
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = url;
   resource_request->method = "GET";
+#if BUILDFLAG(CHROME_FOR_TESTING)
+  // Chrome for Testing disables component updates by default, but it can
+  // optionally install required components prior to browser startup. In such
+  // cases, we must bump the request priority to avoid a deadlock in
+  // ComponentUpdateService::EnsureRequiredComponentsReady().
+  // If left at the default net::IDLE priority, download requests are not
+  // serviced when Chrome creates a new user data directory from scratch (a
+  // common scenario in test automation) and update progress gets stuck after
+  // the first OnEvent() call with ComponentState::kDownloading state.
+  resource_request->priority = net::LOW;
+#endif
   resource_request->load_flags = net::LOAD_DISABLE_CACHE;
   if (!cookie_predicate_.Run(url) ||
       !network::IsUrlPotentiallyTrustworthy(url)) {

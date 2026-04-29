@@ -16,6 +16,7 @@ source_set("network_impl") {
   deps = [
     ":update_client",
     "//base",
+    "//build:branding_buildflags",
     "//net",
     "//services/network/public/cpp",
     "//url",
@@ -243,6 +244,7 @@ source_set("test_support") {
     ":patch_impl",
     ":unzip_impl",
     "//base",
+    "//build:branding_buildflags",
     "//components/prefs",
     "//components/services/patch:in_process",
     "//components/services/unzip:in_process",

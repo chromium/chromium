@@ -16,6 +16,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
+#include "build/branding_buildflags.h"
 
 class GURL;
 class PrefService;
@@ -145,6 +146,11 @@ class Configurator : public base::RefCountedThreadSafe<Configurator> {
 
   // Returns the CrxCache.
   virtual scoped_refptr<CrxCache> GetCrxCache() const = 0;
+
+#if BUILDFLAG(CHROME_FOR_TESTING)
+  // Returns required component names.
+  virtual std::vector<std::string> GetRequiredComponents() const = 0;
+#endif
 
   virtual bool IsConnectionMetered() const = 0;
 
