@@ -43,6 +43,7 @@ export function getHtml(this: ComposeboxElement) {
             .showDropdown="${this.showDropdown}"
             .inputPlaceholder="${this.inputPlaceholder}"
             .input="${this.input}"
+            .smartComposeEnabled="${this.smartComposeEnabled}"
             .smartComposeInlineHint="${this.smartComposeInlineHint}"
             .isCollapsible="${this.isCollapsible}"
             .submitEnabled="${this.submitEnabled}"

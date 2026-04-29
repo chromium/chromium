@@ -41,6 +41,7 @@ export class ComposeboxInputElement extends I18nMixinLit
       showDropdown: {type: Boolean},
       inputPlaceholder: {type: String},
       input: {type: String},
+      smartComposeEnabled: {type: Boolean, reflect: true},
       smartComposeInlineHint: {type: String},
       isCollapsible: {type: Boolean, reflect: true},
       submitEnabled: {type: Boolean, reflect: true},
@@ -53,6 +54,7 @@ export class ComposeboxInputElement extends I18nMixinLit
   accessor showDropdown: boolean = false;
   accessor inputPlaceholder: string = '';
   accessor input: string = '';
+  accessor smartComposeEnabled: boolean = false;
   accessor smartComposeInlineHint: string = '';
   accessor isCollapsible: boolean = false;
   accessor submitEnabled: boolean = false;

@@ -6,7 +6,7 @@ import 'chrome://resources/cr_components/composebox/composebox_input.js';
 
 import type {ComposeboxInputElement} from 'chrome://resources/cr_components/composebox/composebox_input.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 suite('ComposeboxInputTest', () => {
@@ -94,6 +94,62 @@ suite('ComposeboxInputTest', () => {
     });
     textArea.dispatchEvent(new MouseEvent('click'));
     assertTrue(clickFired);
+  });
+
+  test('smartComposeEnabled reflects to host attribute', async () => {
+    inputElement.smartComposeEnabled = false;
+    await inputElement.updateComplete;
+    assertFalse(inputElement.hasAttribute('smart-compose-enabled'));
+
+    inputElement.smartComposeEnabled = true;
+    await inputElement.updateComplete;
+    assertTrue(inputElement.hasAttribute('smart-compose-enabled'));
+  });
+
+  test('#smartCompose is hidden when smartComposeEnabled is false',
+    async () => {
+      inputElement.smartComposeInlineHint = 'foo';
+      inputElement.smartComposeEnabled = false;
+      await inputElement.updateComplete;
+
+      const smartCompose =
+          inputElement.shadowRoot.querySelector<HTMLElement>('#smartCompose');
+      assertTrue(!!smartCompose);
+      assertEquals('none', getComputedStyle(smartCompose).display);
+  });
+
+  test('#smartCompose is visible when smartComposeEnabled is true',
+    async () => {
+      inputElement.smartComposeInlineHint = 'foo';
+      inputElement.smartComposeEnabled = true;
+      await inputElement.updateComplete;
+
+      const smartCompose =
+          inputElement.shadowRoot.querySelector<HTMLElement>('#smartCompose');
+      assertTrue(!!smartCompose);
+      assertTrue(getComputedStyle(smartCompose).display !== 'none');
+  });
+
+  test('#tabChip has fixed 38*24 box model', async () => {
+    inputElement.smartComposeInlineHint = 'foo';
+    inputElement.smartComposeEnabled = true;
+    await inputElement.updateComplete;
+
+    const chip =
+        inputElement.shadowRoot.querySelector<HTMLElement>('#tabChip');
+    assertTrue(!!chip);
+
+    const rect = chip.getBoundingClientRect();
+    assertEquals(38, rect.width);
+    assertEquals(24, rect.height);
+
+    const computed = getComputedStyle(chip);
+    assertEquals('0px', computed.paddingTop);
+    assertEquals('0px', computed.paddingBottom);
+    assertEquals('0px', computed.paddingLeft);
+    assertEquals('0px', computed.paddingRight);
+    assertEquals('inline-flex', computed.display);
+    assertEquals('18px', computed.lineHeight);
   });
 });
 

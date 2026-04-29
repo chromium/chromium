@@ -207,9 +207,7 @@
   left: 0;
 }
 
-/* Fallback for when smartComposeInlineHint is empty or not set. Note that the
-   html checks this, but we keep this css logic just in case. */
-:host(:not([smart-compose-inline-hint])) #smartCompose {
+:host(:not([smart-compose-enabled])) #smartCompose {
   display: none;
 }
 
@@ -229,11 +227,15 @@
   border-radius: 8px;
   box-sizing: border-box;
   color: var(--color-composebox-type-ahead-chip);
+  display: inline-flex;
   font-size: 12px;
   font-weight: 700;
-  line-height: 24px;
-  margin-left: 4px;
-  padding: 6px 8px;
+  height: 24px;
+  justify-content: center;
+  line-height: 18px;
+  margin-inline-start: 4px;
+  padding: 0;
+  width: 38px;
 }
 
 :host-context([expanding_]) #input,
