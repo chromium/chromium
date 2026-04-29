@@ -56,8 +56,7 @@ void LayoutTableSection::AddChild(LayoutObject* child,
     LayoutObject* last = before_child;
     if (!last)
       last = LastChild();
-    if (last && last->IsAnonymous() && last->IsTablePart() &&
-        !last->IsBeforeOrAfterContent()) {
+    if (last && last->IsAnonymous() && last->IsTablePart()) {
       if (before_child == last)
         before_child = last->SlowFirstChild();
       last->AddChild(child, before_child);
@@ -79,8 +78,7 @@ void LayoutTableSection::AddChild(LayoutObject* child,
     while (last_box && last_box->Parent()->IsAnonymous() &&
            !last_box->IsTableRow())
       last_box = last_box->Parent();
-    if (last_box && last_box->IsAnonymous() &&
-        !last_box->IsBeforeOrAfterContent()) {
+    if (last_box && last_box->IsAnonymous()) {
       last_box->AddChild(child, before_child);
       return;
     }

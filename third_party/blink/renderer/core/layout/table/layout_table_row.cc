@@ -70,8 +70,7 @@ void LayoutTableRow::AddChild(LayoutObject* child, LayoutObject* before_child) {
     LayoutObject* last = before_child;
     if (!last)
       last = LastCell();
-    if (last && last->IsAnonymous() && last->IsTableCell() &&
-        !last->IsBeforeOrAfterContent()) {
+    if (last && last->IsAnonymous() && last->IsTableCell()) {
       LayoutBlockFlow* last_cell = To<LayoutBlockFlow>(last);
       if (before_child == last_cell)
         before_child = last_cell->FirstChild();
@@ -90,8 +89,7 @@ void LayoutTableRow::AddChild(LayoutObject* child, LayoutObject* before_child) {
 
     // If before_child is inside an anonymous cell, insert into the cell.
     if (last && !last->IsTableCell() && last->Parent() &&
-        last->Parent()->IsAnonymous() &&
-        !last->Parent()->IsBeforeOrAfterContent()) {
+        last->Parent()->IsAnonymous()) {
       last->Parent()->AddChild(child, before_child);
       return;
     }
