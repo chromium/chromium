@@ -94,6 +94,9 @@ constexpr char kSelectTextExpectedText[] =
 constexpr gfx::PointF kHelloWorldStartPosition{35.0f, 110.0f};
 constexpr gfx::PointF kHelloWorldEndPosition{100.0f, 110.0f};
 
+const base::FilePath kBlankPngFilePath(FILE_PATH_LITERAL("blank.png"));
+constexpr gfx::Size kBlankPageSizeInPoints(200, 200);
+
 MATCHER_P2(LayoutWithSize, width, height, "") {
   return arg.size() == gfx::Size(width, height);
 }
@@ -118,6 +121,18 @@ std::string GetPlatformTextExpectation(std::string expectation) {
                                      "\r\n");
 #endif
   return expectation;
+}
+
+void CheckPdfRenderingIsBlank200x200(FPDF_PAGE page) {
+  CheckPdfRendering(page, kBlankPageSizeInPoints, kBlankPngFilePath);
+}
+
+void CheckSavedPdfRenderingIsBlank200x200(PDFiumEngine* engine) {
+  constexpr int kPageIndex = 0;
+  std::vector<uint8_t> saved_pdf_data = engine->GetSaveData();
+  ASSERT_FALSE(saved_pdf_data.empty());
+  CheckPdfRendering(saved_pdf_data, kPageIndex, kBlankPageSizeInPoints,
+                    kBlankPngFilePath);
 }
 
 class MockTestClient : public TestClient {
@@ -2635,13 +2650,7 @@ TEST_P(PDFiumEngineInkDrawTest, StrokeData) {
                                          kInkAnnotationIdentifierKeyV2),
             0);
 
-  std::vector<uint8_t> saved_pdf_data = engine->GetSaveData();
-  ASSERT_FALSE(saved_pdf_data.empty());
-  constexpr int kPageIndex = 0;
-  constexpr gfx::Size kPageSizeInPoints(200, 200);
-  const base::FilePath kBlankPngFilePath(FILE_PATH_LITERAL("blank.png"));
-  CheckPdfRendering(saved_pdf_data, kPageIndex, kPageSizeInPoints,
-                    kBlankPngFilePath);
+  ASSERT_NO_FATAL_FAILURE(CheckSavedPdfRenderingIsBlank200x200(engine.get()));
 
   // Draw 2 strokes.
   auto pen_brush = std::make_unique<PdfInkBrush>(PdfInkBrush::Type::kPen,
@@ -2667,12 +2676,14 @@ TEST_P(PDFiumEngineInkDrawTest, StrokeData) {
                                  highlighter_inputs.value());
   constexpr InkStrokeId kPenStrokeId(1);
   constexpr InkStrokeId kHighlighterStrokeId(2);
+  constexpr int kPageIndex = 0;
   engine->ApplyStroke(kPageIndex, kPenStrokeId, pen_stroke);
   engine->ApplyStroke(kPageIndex, kHighlighterStrokeId, highlighter_stroke);
 
   PDFiumPage& page = GetPDFiumPage(*engine, kPageIndex);
 
   // Verify the visibility of strokes for in-memory PDF.
+  const gfx::Size& kPageSizeInPoints = kBlankPageSizeInPoints;
   const base::FilePath kAppliedStroke2FilePath(
       GetInkTestDataFilePath(FILE_PATH_LITERAL("applied_stroke2.png")));
   CheckPdfRendering(page.GetPage(), kPageSizeInPoints, kAppliedStroke2FilePath);
@@ -2682,7 +2693,7 @@ TEST_P(PDFiumEngineInkDrawTest, StrokeData) {
   // Getting the save data should now have the new strokes.
   // Verify visibility of strokes in that copy.  Must call GetSaveData()
   // before checking mark objects count, so that the PDF gets regenerated.
-  saved_pdf_data = engine->GetSaveData();
+  std::vector<uint8_t> saved_pdf_data = engine->GetSaveData();
   ASSERT_FALSE(saved_pdf_data.empty());
   CheckPdfRendering(saved_pdf_data, kPageIndex, kPageSizeInPoints,
                     kAppliedStroke2FilePath);
@@ -2737,13 +2748,7 @@ TEST_P(PDFiumEngineInkDrawTest, StrokeDiscardStroke) {
                                          kInkAnnotationIdentifierKeyV2),
             0);
 
-  std::vector<uint8_t> saved_pdf_data = engine->GetSaveData();
-  ASSERT_FALSE(saved_pdf_data.empty());
-  constexpr int kPageIndex = 0;
-  constexpr gfx::Size kPageSizeInPoints(200, 200);
-  const base::FilePath kBlankPngFilePath(FILE_PATH_LITERAL("blank.png"));
-  CheckPdfRendering(saved_pdf_data, kPageIndex, kPageSizeInPoints,
-                    kBlankPngFilePath);
+  ASSERT_NO_FATAL_FAILURE(CheckSavedPdfRenderingIsBlank200x200(engine.get()));
 
   // Draw a stroke.
   auto brush = std::make_unique<PdfInkBrush>(PdfInkBrush::Type::kPen,
@@ -2756,11 +2761,13 @@ TEST_P(PDFiumEngineInkDrawTest, StrokeDiscardStroke) {
   ASSERT_TRUE(batch.has_value());
   ink::Stroke stroke0(brush->ink_brush(), batch.value());
   constexpr InkStrokeId kStrokeId(0);
+  constexpr int kPageIndex = 0;
   engine->ApplyStroke(kPageIndex, kStrokeId, stroke0);
 
   PDFiumPage& page = GetPDFiumPage(*engine, kPageIndex);
 
   // Verify the visibility of strokes for in-memory PDF.
+  const gfx::Size& kPageSizeInPoints = kBlankPageSizeInPoints;
   const base::FilePath kAppliedStroke1FilePath(
       GetInkTestDataFilePath(FILE_PATH_LITERAL("applied_stroke1.png")));
   CheckPdfRendering(page.GetPage(), kPageSizeInPoints, kAppliedStroke1FilePath);
@@ -2771,10 +2778,7 @@ TEST_P(PDFiumEngineInkDrawTest, StrokeDiscardStroke) {
   engine->UpdateStrokeActive(kPageIndex, kStrokeId, /*active=*/false);
 
   // The document should not have any stroke data.
-  saved_pdf_data = engine->GetSaveData();
-  ASSERT_FALSE(saved_pdf_data.empty());
-  CheckPdfRendering(saved_pdf_data, kPageIndex, kPageSizeInPoints,
-                    kBlankPngFilePath);
+  ASSERT_NO_FATAL_FAILURE(CheckSavedPdfRenderingIsBlank200x200(engine.get()));
   EXPECT_EQ(GetPdfMarkObjCountForTesting(engine->doc(),
                                          kInkAnnotationIdentifierKeyV2),
             0);
@@ -2846,12 +2850,8 @@ TEST_P(PDFiumEngineInkDrawTest, LoadedV2InkPathsAndUpdateShapeActive) {
   const auto ink_shapes_it = ink_shapes.begin();
   const InkModeledShapeId& shape_id = ink_shapes_it->first;
   engine->UpdateShapeActive(kPageIndex, shape_id, /*active=*/false);
-  const base::FilePath kBlankPngPath(FILE_PATH_LITERAL("blank.png"));
-  CheckPdfRendering(page.GetPage(), kPageSizeInPoints, kBlankPngPath);
-  std::vector<uint8_t> saved_pdf_data = engine->GetSaveData();
-  ASSERT_FALSE(saved_pdf_data.empty());
-  CheckPdfRendering(saved_pdf_data, kPageIndex, kPageSizeInPoints,
-                    kBlankPngPath);
+  CheckPdfRenderingIsBlank200x200(page.GetPage());
+  ASSERT_NO_FATAL_FAILURE(CheckSavedPdfRenderingIsBlank200x200(engine.get()));
   EXPECT_EQ(GetPdfMarkObjCountForTesting(engine->doc(),
                                          kInkAnnotationIdentifierKeyV2),
             0);
@@ -2865,7 +2865,7 @@ TEST_P(PDFiumEngineInkDrawTest, LoadedV2InkPathsAndUpdateShapeActive) {
   // Undo the erasure and check the rendering.
   engine->UpdateShapeActive(kPageIndex, shape_id, /*active=*/true);
   CheckPdfRendering(page.GetPage(), kPageSizeInPoints, kInkV2PngPath);
-  saved_pdf_data = engine->GetSaveData();
+  std::vector<uint8_t> saved_pdf_data = engine->GetSaveData();
   ASSERT_FALSE(saved_pdf_data.empty());
   CheckPdfRendering(saved_pdf_data, kPageIndex, kPageSizeInPoints,
                     kInkV2PngPath);
@@ -3037,11 +3037,8 @@ TEST_P(PDFiumEngineInkDrawTest, DrawText) {
   ASSERT_EQ(page_count, 1);
 
   constexpr int kPageIndex = 0;
-  constexpr gfx::Size kPageSizeInPoints(200, 200);
-
   PDFiumPage& page = GetPDFiumPage(*engine, kPageIndex);
-  const base::FilePath kBlankPngFilePath(FILE_PATH_LITERAL("blank.png"));
-  CheckPdfRendering(page.GetPage(), kPageSizeInPoints, kBlankPngFilePath);
+  CheckPdfRenderingIsBlank200x200(page.GetPage());
 
   // Add the default font.
   sk_sp<SkTypeface> default_font = skia::DefaultTypeface();
@@ -3072,6 +3069,7 @@ TEST_P(PDFiumEngineInkDrawTest, DrawText) {
                            .css_font_size = 10.0f});
 
   // Verify the rendering of text for in-memory PDF.
+  const gfx::Size& kPageSizeInPoints = kBlankPageSizeInPoints;
   const base::FilePath kAppliedTextFilePath(GetInkTestDataFilePath(
       GetTestDataPathWithPlatformSuffix("applied_text_hello.png")));
   CheckPdfRendering(page.GetPage(), kPageSizeInPoints, kAppliedTextFilePath);
@@ -3086,11 +3084,8 @@ TEST_P(PDFiumEngineInkDrawTest, DrawOrangeText) {
   ASSERT_EQ(page_count, 1);
 
   constexpr int kPageIndex = 0;
-  constexpr gfx::Size kPageSizeInPoints(200, 200);
-
   PDFiumPage& page = GetPDFiumPage(*engine, kPageIndex);
-  const base::FilePath kBlankPngFilePath(FILE_PATH_LITERAL("blank.png"));
-  CheckPdfRendering(page.GetPage(), kPageSizeInPoints, kBlankPngFilePath);
+  CheckPdfRenderingIsBlank200x200(page.GetPage());
 
   // Add the default font.
   sk_sp<SkTypeface> default_font = skia::DefaultTypeface();
@@ -3120,6 +3115,7 @@ TEST_P(PDFiumEngineInkDrawTest, DrawOrangeText) {
                            .css_font_size = 10.0f});
 
   // Verify the rendering of orange text for in-memory PDF.
+  const gfx::Size& kPageSizeInPoints = kBlankPageSizeInPoints;
   const base::FilePath kAppliedTextFilePath(GetInkTestDataFilePath(
       GetTestDataPathWithPlatformSuffix("applied_text_orange.png")));
   CheckPdfRendering(page.GetPage(), kPageSizeInPoints, kAppliedTextFilePath);
