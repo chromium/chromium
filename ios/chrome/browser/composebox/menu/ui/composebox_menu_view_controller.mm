@@ -22,9 +22,6 @@ const CGFloat kAttachmentGroupHeight = 80.0f;
 // Insets for the safe area (top, left, bottom, right).
 const UIEdgeInsets kSafeAreaInsets = {20.0, 15.0, 20.0, 15.0};
 
-// Fractional width of the attachment item.
-const CGFloat kAttachmentItemFractionalWidth = 0.25f;
-
 // Trailing inset for the attachment item.
 const CGFloat kAttachmentItemTrailingInset = 6.0f;
 
@@ -179,11 +176,12 @@ enum class ComposeboxMenuSectionIdentifier {
         layoutEnvironment:(id<NSCollectionLayoutEnvironment>)layoutEnvironment {
   if (sectionIndex ==
       static_cast<NSInteger>(ComposeboxMenuSectionIdentifier::kAttachments)) {
-    // Attachments section (Horizontal)
+    CGFloat itemsCount = MAX(1.0, (CGFloat)_sections[sectionIndex].items.count);
+    CGFloat fractionalWidth = 1.0 / itemsCount;
+
     NSCollectionLayoutSize* itemSize = [NSCollectionLayoutSize
-        sizeWithWidthDimension:
-            [NSCollectionLayoutDimension
-                fractionalWidthDimension:kAttachmentItemFractionalWidth]
+        sizeWithWidthDimension:[NSCollectionLayoutDimension
+                                   fractionalWidthDimension:fractionalWidth]
                heightDimension:[NSCollectionLayoutDimension
                                    fractionalHeightDimension:1.0]];
     NSCollectionLayoutItem* item =
