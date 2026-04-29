@@ -49,6 +49,8 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.ui.insets.InsetObserver;
 
+import java.util.Set;
+
 @RunWith(BaseRobolectricTestRunner.class)
 @DisableFeatures(ChromeFeatureList.NAV_BAR_COLOR_ANIMATION)
 public class BottomAttachedUiObserverTest {
@@ -386,6 +388,25 @@ public class BottomAttachedUiObserverTest {
     }
 
     @Test
+    public void testAdaptsColorToBottomSheet_anchorToBrowserControls_onlyChinAndSheet() {
+        when(mBottomSheetController.isFullWidth()).thenReturn(true);
+        when(mBottomControlsStacker.isLayerVisible(eq(LayerType.BOTTOM_CHIN))).thenReturn(true);
+        when(mBottomControlsStacker.hasVisibleLayersOtherThan(
+                        eq(Set.of(LayerType.BOTTOM_CHIN, LayerType.BOTTOM_SHEET))))
+                .thenReturn(false);
+        when(mBottomSheetController.isAnchoredToBottomControls()).thenReturn(true);
+
+        doReturn(BOTTOM_SHEET_YELLOW).when(mBottomSheetController).getSheetBackgroundColor();
+        mBottomAttachedUiObserver.onSheetContentChanged(mSheetContent);
+        mColorChangeObserver.assertColor(null).assertForceShowDivider(false);
+
+        peekBottomSheet();
+        mColorChangeObserver.assertColor(BOTTOM_SHEET_YELLOW).assertForceShowDivider(false);
+        dismissBottomSheet();
+        mColorChangeObserver.assertColor(null).assertForceShowDivider(false);
+    }
+
+    @Test
     public void testAdaptsColorToBottomSheet_doesNotCoverFullWidth() {
         when(mBottomSheetController.isFullWidth()).thenReturn(false, false);
         when(mBottomControlsStacker.isLayerVisible(eq(LayerType.BOTTOM_CHIN))).thenReturn(false);
@@ -468,7 +489,8 @@ public class BottomAttachedUiObserverTest {
     public void testAdaptsColorToBottomSheet_anchorToBrowserControls_fullWidthOnOtherControls() {
         when(mBottomSheetController.isFullWidth()).thenReturn(true);
         when(mBottomControlsStacker.isLayerVisible(eq(LayerType.BOTTOM_CHIN))).thenReturn(true);
-        when(mBottomControlsStacker.hasVisibleLayersOtherThan(eq(LayerType.BOTTOM_CHIN)))
+        when(mBottomControlsStacker.hasVisibleLayersOtherThan(
+                        eq(Set.of(LayerType.BOTTOM_CHIN, LayerType.BOTTOM_SHEET))))
                 .thenReturn(true);
 
         doReturn(BOTTOM_SHEET_YELLOW).when(mBottomSheetController).getSheetBackgroundColor();
@@ -519,7 +541,8 @@ public class BottomAttachedUiObserverTest {
     public void testAdaptsColorToBottomSheet_anchorToBrowserControls_notFullWidthOtherControls() {
         when(mBottomSheetController.isFullWidth()).thenReturn(false);
         when(mBottomControlsStacker.isLayerVisible(eq(LayerType.BOTTOM_CHIN))).thenReturn(true);
-        when(mBottomControlsStacker.hasVisibleLayersOtherThan(eq(LayerType.BOTTOM_CHIN)))
+        when(mBottomControlsStacker.hasVisibleLayersOtherThan(
+                        eq(Set.of(LayerType.BOTTOM_CHIN, LayerType.BOTTOM_SHEET))))
                 .thenReturn(true);
 
         doReturn(BOTTOM_SHEET_YELLOW).when(mBottomSheetController).getSheetBackgroundColor();
@@ -869,7 +892,7 @@ public class BottomAttachedUiObserverTest {
         doReturn(SheetState.FULL).when(mBottomSheetController).getSheetState();
         when(mBottomSheetController.isAnchoredToBottomControls()).thenReturn(false);
 
-        mBottomAttachedUiObserver.onSheetStateChanged(SheetState.PEEK, 0);
+        mBottomAttachedUiObserver.onSheetStateChanged(SheetState.FULL, 0);
     }
 
     private void peekBottomSheet() {

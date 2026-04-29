@@ -9,6 +9,8 @@ import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.graphics.Color;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -258,5 +260,13 @@ public class BottomSheetManagerUnitTest {
         clearInvocations(mBottomControlsStacker);
         mObserver.onContainerSizeChanged(200, 400);
         verify(mBottomControlsStacker).requestLayerUpdate(false);
+    }
+
+    @Test
+    public void testGetBackgroundColor() {
+        when(mSheetController.getCurrentSheetContent()).thenReturn(mSheetContent);
+        when(mSheetContent.actsAsBrowserControls()).thenReturn(true);
+        when(mSheetController.getSheetBackgroundColor()).thenReturn(Color.RED);
+        assertEquals(Color.RED, (int) mLayer.getBackgroundColor());
     }
 }
