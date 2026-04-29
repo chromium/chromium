@@ -439,6 +439,7 @@ public class SettingsSearchCoordinator
                             public void onPanelOpened(View panel) {
                                 if (mUseMultiColumn) return;
 
+                                mMultiColumnSettings.getMainSettings().saveListState();
                                 showUiInSingleColumn(searchBox, /* show= */ false);
                                 disableBackgroundTalkbackNavigation();
                             }
@@ -446,6 +447,8 @@ public class SettingsSearchCoordinator
                             @Override
                             public void onPanelClosed(View panel) {
                                 if (mUseMultiColumn) return;
+
+                                mMultiColumnSettings.getMainSettings().restoreListState();
 
                                 // The detail panel can be force-closed immediately after we enter
                                 // the search state + open the detail pane. Because

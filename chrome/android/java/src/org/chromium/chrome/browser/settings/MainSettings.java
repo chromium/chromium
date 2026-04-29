@@ -14,6 +14,7 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Parcelable;
 import android.provider.Settings;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
@@ -176,6 +177,9 @@ public class MainSettings extends ChromeBaseSettingsFragment
 
     private final List<Observer> mObserverList = new ArrayList<>();
 
+    // Saved state of the ListView to restore the scroll offset.
+    private @Nullable Parcelable mSavedListState;
+
     public MainSettings() {
         setHasOptionsMenu(true);
     }
@@ -214,6 +218,19 @@ public class MainSettings extends ChromeBaseSettingsFragment
     @Override
     public MonotonicObservableSupplier<String> getPageTitle() {
         return mPageTitle;
+    }
+
+    /** Saves the preference list view state. */
+    public void saveListState() {
+        mSavedListState = assumeNonNull(getListView().getLayoutManager()).onSaveInstanceState();
+    }
+
+    /** Restores the preference list view state. */
+    public void restoreListState() {
+        if (mSavedListState != null) {
+            assumeNonNull(getListView().getLayoutManager()).onRestoreInstanceState(mSavedListState);
+            mSavedListState = null;
+        }
     }
 
     @Override

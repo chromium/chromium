@@ -80,6 +80,8 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
     /** Caches the view of the header panel. */
     private View mHeaderView;
 
+    private @Nullable MainSettings mMainSettings;
+
     /**
      * Caches whether currently it is running in single pane mode or two pane mode to detect the
      * mode changes
@@ -106,7 +108,13 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
     public PreferenceFragmentCompat onCreatePreferenceHeader() {
         // Main menu, which is the first page in one column mode (i.e. window is
         // small enough), or shown at left side pane in two column mode.
-        return new MainSettings();
+        mMainSettings = new MainSettings();
+        return mMainSettings;
+    }
+
+    public MainSettings getMainSettings() {
+        assertNonNull(mMainSettings);
+        return mMainSettings;
     }
 
     // Fragment data passed as extras of Intent via SettingsNavigation.
