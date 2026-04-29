@@ -35,6 +35,13 @@ content::WebContents* TabInterfaceAndroid::GetContents() const {
   return weak_tab_android_->GetContents();
 }
 
+Profile* TabInterfaceAndroid::GetProfile() const {
+  if (!weak_tab_android_) {
+    return nullptr;
+  }
+  return weak_tab_android_->GetProfile();
+}
+
 void TabInterfaceAndroid::Close() {
   if (!weak_tab_android_) {
     return;

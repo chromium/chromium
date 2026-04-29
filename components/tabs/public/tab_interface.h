@@ -27,6 +27,7 @@ class WebContents;
 }  // namespace content
 
 class BrowserWindowInterface;
+class Profile;
 
 namespace split_tabs {
 class SplitTabId;
@@ -134,6 +135,9 @@ class TabInterface : public SupportsTabHandles {
   //   Windows/Mac/Linux, the recommendation is to hold a pointer to the
   //   TabInterface and call GetContents() when needed as described above.
   virtual content::WebContents* GetContents() const = 0;
+
+  // Returns the Profile associated with this tab.
+  virtual Profile* GetProfile() const = 0;
 
   // Closes the tab.
   virtual void Close() = 0;

@@ -730,6 +730,10 @@ content::WebContents* TabAndroid::GetContents() const {
   return web_contents_.get();
 }
 
+Profile* TabAndroid::GetProfile() const {
+  return profile();
+}
+
 void TabAndroid::Close() {
   JNIEnv* env = AttachCurrentThread();
   Java_TabImpl_closeTabFromNative(env, GetJavaObject(env));

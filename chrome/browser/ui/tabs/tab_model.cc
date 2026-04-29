@@ -201,6 +201,10 @@ content::WebContents* TabModel::GetContents() const {
   return contents_;
 }
 
+Profile* TabModel::GetProfile() const {
+  return Profile::FromBrowserContext(contents_->GetBrowserContext());
+}
+
 base::CallbackListSubscription TabModel::RegisterWillDiscardContents(
     TabInterface::WillDiscardContentsCallback callback) {
   return will_discard_contents_callback_list_.Add(std::move(callback));
@@ -435,6 +439,7 @@ void TabModel::WriteIntoTrace(perfetto::TracedValue context) const {
 
 std::unique_ptr<content::WebContents> TabModel::DiscardContents(
     std::unique_ptr<content::WebContents> contents) {
+  CHECK_EQ(contents_->GetBrowserContext(), contents->GetBrowserContext());
   will_discard_contents_callback_list_.Notify(this, contents_, contents.get());
   contents_->RemoveUserData(tabs::TabLookupFromWebContents::UserDataKey());
   std::unique_ptr<content::WebContents> old_contents =

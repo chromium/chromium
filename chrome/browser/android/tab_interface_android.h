@@ -9,6 +9,7 @@
 #include "components/tabs/public/tab_interface.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
 
+class Profile;
 class TabAndroid;
 
 // Wraps a WeakPtr to a `TabAndroid` in a class compatible with being in a
@@ -27,6 +28,7 @@ class TabInterfaceAndroid : public tabs::TabInterface {
   // TabInterface overrides:
   base::WeakPtr<tabs::TabInterface> GetWeakPtr() override;
   content::WebContents* GetContents() const override;
+  Profile* GetProfile() const override;
   void Close() override;
   base::CallbackListSubscription RegisterWillDiscardContents(
       WillDiscardContentsCallback callback) override;
