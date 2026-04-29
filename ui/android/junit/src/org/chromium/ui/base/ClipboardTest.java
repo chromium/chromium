@@ -18,10 +18,12 @@ import android.content.ClipData;
 import android.content.ClipDescription;
 import android.content.ClipboardManager;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.PersistableBundle;
+import android.provider.OpenableColumns;
 import android.text.SpannableString;
 import android.text.style.RelativeSizeSpan;
 import android.widget.TextView;
@@ -34,7 +36,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
+import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowContentResolver;
 import org.robolectric.shadows.ShadowToast;
 
 import org.chromium.base.ContextUtils;
@@ -45,6 +49,9 @@ import org.chromium.ui.widget.ToastManager;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -168,6 +175,8 @@ public class ClipboardTest {
         ContentResolver cr = ContextUtils.getApplicationContext().getContentResolver();
         String file1 = "content://tmp/test/file1.jpg";
         String file2 = "content://tmp/test/file2.txt";
+        registerMockFileUri(file1);
+        registerMockFileUri(file2);
         clipData = ClipData.newUri(cr, "label", Uri.parse(file1));
         when(clipboardManager.getPrimaryClip()).thenReturn(clipData);
         assertTrue(clipboard.hasFilenames());
@@ -313,6 +322,62 @@ public class ClipboardTest {
         RobolectricUtil.runAllBackgroundAndUi();
         assertNotNull(ShadowToast.getLatestToast());
         assertTextFromLatestToast(R.string.copy_to_clipboard_failure_message);
+    }
+
+    @Test
+    public void testGetHtmlTextOversized() throws Exception {
+        Context mockContext = Mockito.mock(Context.class);
+        ContentResolver cr = Mockito.mock(ContentResolver.class);
+        when(mockContext.getContentResolver()).thenReturn(cr);
+        ContextUtils.initApplicationContextForTests(mockContext);
+
+        ClipboardManager clipboardManager = Mockito.mock(ClipboardManager.class);
+        ClipboardImpl clipboard = new ClipboardImpl(clipboardManager);
+        Clipboard.setInstanceForTesting(clipboard);
+
+        Uri uri = Uri.parse("content://tmp/test/oversized.html");
+        ClipDescription desc =
+                new ClipDescription("label", new String[] {"text/html", "text/plain"});
+        ClipData clipData = Mockito.mock(ClipData.class);
+        when(clipData.getDescription()).thenReturn(desc);
+        when(clipData.getItemCount()).thenReturn(1);
+
+        ClipData.Item item = Mockito.mock(ClipData.Item.class);
+        when(item.getHtmlText()).thenReturn(null);
+        when(item.getText()).thenReturn("Huge Content");
+        when(item.getUri()).thenReturn(uri);
+        when(clipData.getItemAt(0)).thenReturn(item);
+
+        when(clipboardManager.getPrimaryClip()).thenReturn(clipData);
+
+        when(cr.getStreamTypes(uri, "text/html")).thenReturn(new String[] {"text/html"});
+        android.content.res.AssetFileDescriptor assetFileDescriptor =
+                Mockito.mock(android.content.res.AssetFileDescriptor.class);
+        when(cr.openTypedAssetFileDescriptor(uri, "text/html", null))
+                .thenReturn(assetFileDescriptor);
+
+        final String oversizedHtml = "<html><body>Huge Content</body></html>";
+        File file = File.createTempFile("oversized", "html");
+        file.deleteOnExit();
+        try (FileWriter writer = new FileWriter(file)) {
+            writer.write(oversizedHtml);
+        }
+        when(assetFileDescriptor.createInputStream()).thenReturn(new FileInputStream(file));
+
+        assertEquals(oversizedHtml, clipboard.getHTMLText());
+    }
+
+    private void registerMockFileUri(String uriString) {
+        ContentResolver cr = ContextUtils.getApplicationContext().getContentResolver();
+        ShadowContentResolver shadowContentResolver = Shadows.shadowOf(cr);
+
+        org.robolectric.fakes.BaseCursor mockCursor =
+                Mockito.mock(org.robolectric.fakes.BaseCursor.class);
+        when(mockCursor.moveToFirst()).thenReturn(true);
+        when(mockCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)).thenReturn(0);
+        when(mockCursor.getColumnIndex(OpenableColumns.SIZE)).thenReturn(1);
+
+        shadowContentResolver.setCursor(Uri.parse(uriString), mockCursor);
     }
 
     private void assertTextFromLatestToast(@StringRes int strRes) {

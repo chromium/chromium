@@ -15,6 +15,7 @@ import android.os.Build;
 import android.os.ParcelFileDescriptor;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
+import android.provider.OpenableColumns;
 import android.text.TextUtils;
 import android.webkit.MimeTypeMap;
 
@@ -29,6 +30,9 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 /** This class provides methods to access content URI schemes. */
@@ -36,6 +40,7 @@ import java.util.List;
 @NullMarked
 public abstract class ContentUriUtils {
     private static final String TAG = "ContentUriUtils";
+    private static final int INVALID_COLUMN_INDEX = -1;
     private static final String PATH_TREE = "tree";
     private static final String PATH_DOCUMENT = "document";
     private static final String PATH_CREATE_CHILD_DOCUMENT = "create-child-document";
@@ -641,6 +646,69 @@ public abstract class ContentUriUtils {
             }
         }
         return null;
+    }
+
+    /**
+     * Checks if the URI is an Openable file with display name and size. This distinguishes files
+     * from oversized content streams passed via URI.
+     */
+    public static boolean isOpenableFile(@Nullable Uri uri) {
+        if (uri == null) return false;
+        ContentResolver cr = ContextUtils.getApplicationContext().getContentResolver();
+        try (Cursor cursor =
+                cr.query(
+                        uri,
+                        /* projection= */ null,
+                        /* selection= */ null,
+                        /* selectionArgs= */ null,
+                        /* sortOrder= */ null)) {
+            if (cursor != null && cursor.moveToFirst()) {
+                int nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+                int sizeIndex = cursor.getColumnIndex(OpenableColumns.SIZE);
+                return nameIndex != INVALID_COLUMN_INDEX && sizeIndex != INVALID_COLUMN_INDEX;
+            }
+        } catch (Exception e) {
+            // Catch all exceptions if the external ContentProvider fails or behaves unexpectedly.
+            Log.w(TAG, "Failed to query Openable columns for URI: %s", uri, e);
+        }
+        return false;
+    }
+
+    /**
+     * Reads text content from a URI stream for the specified MIME type.
+     *
+     * @param uri The URI to read from.
+     * @param mimeType The exact MIME type to read (e.g., "text/html").
+     * @return The read text, or null if reading fails or type not supported.
+     */
+    public static @Nullable String readTextFromUri(@Nullable Uri uri, String mimeType) {
+        if (uri == null) return null;
+        ContentResolver cr = ContextUtils.getApplicationContext().getContentResolver();
+
+        String[] supportedTypes = cr.getStreamTypes(uri, mimeType);
+        if (supportedTypes == null
+                || supportedTypes.length == 0
+                || !mimeType.equals(supportedTypes[0])) {
+            return null;
+        }
+
+        try (AssetFileDescriptor assetFileDescriptor =
+                cr.openTypedAssetFileDescriptor(uri, supportedTypes[0], /* opts= */ null)) {
+            if (assetFileDescriptor == null) return null;
+            try (InputStream inputStream = assetFileDescriptor.createInputStream();
+                    InputStreamReader reader =
+                            new InputStreamReader(inputStream, StandardCharsets.UTF_8)) {
+                StringBuilder builder = new StringBuilder();
+                char[] buffer = new char[8192];
+                int len;
+                while ((len = reader.read(buffer)) > 0) {
+                    builder.append(buffer, 0, len);
+                }
+                return builder.toString();
+            }
+        } catch (IOException e) {
+            return null;
+        }
     }
 
     @NativeMethods

@@ -16,6 +16,7 @@ import android.os.Build;
 import android.os.PersistableBundle;
 import android.text.Html;
 import android.text.Spanned;
+import android.text.TextUtils;
 import android.text.style.CharacterStyle;
 import android.text.style.ParagraphStyle;
 import android.text.style.UpdateAppearance;
@@ -137,7 +138,14 @@ public class ClipboardImpl extends Clipboard
     public @Nullable String clipDataToHtmlText(@Nullable ClipData clipData) {
         ClipDescription description = clipData.getDescription();
         if (description.hasMimeType(ClipDescription.MIMETYPE_TEXT_HTML)) {
-            return clipData.getItemAt(0).getHtmlText();
+            String html = clipData.getItemAt(0).getHtmlText();
+            if (!TextUtils.isEmpty(html)) {
+                return html;
+            }
+            Uri uri = clipData.getItemAt(0).getUri();
+            if (uri != null && !ContentUriUtils.isOpenableFile(uri)) {
+                return ContentUriUtils.readTextFromUri(uri, ClipDescription.MIMETYPE_TEXT_HTML);
+            }
         }
 
         if (description.hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)) {
@@ -367,7 +375,7 @@ public class ClipboardImpl extends Clipboard
             ClipData clipData = mClipboardManager.getPrimaryClip();
             for (int i = 0; i < clipData.getItemCount(); i++) {
                 Uri uri = clipData.getItemAt(i).getUri();
-                if (uri != null) {
+                if (uri != null && ContentUriUtils.isOpenableFile(uri)) {
                     String uriString = uri.toString();
                     String displayName = ContentUriUtils.maybeGetDisplayName(uriString);
                     if (displayName == null) {
@@ -390,7 +398,7 @@ public class ClipboardImpl extends Clipboard
             ClipData clipData = mClipboardManager.getPrimaryClip();
             for (int i = 0; i < clipData.getItemCount(); i++) {
                 Uri uri = clipData.getItemAt(i).getUri();
-                if (uri != null) {
+                if (uri != null && ContentUriUtils.isOpenableFile(uri)) {
                     return true;
                 }
             }
