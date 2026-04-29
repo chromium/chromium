@@ -10,6 +10,8 @@
 #include "base/callback_list.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/content_settings/cookie_settings_factory.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -78,14 +80,18 @@ class FakeBubbleDelegate
   MOCK_METHOD(void,
               ShowBubble,
               (ToolbarButtonProvider * toolbar_button_provider,
-               content::WebContents* web_contents,
-               content_settings::CookieControlsController* controller),
+               content::WebContents* web_contents),
               (override));
 
   base::CallbackListSubscription RegisterBubbleClosingCallback(
       base::RepeatingClosure callback) override {
     return closing_callbacks_.Add(std::move(callback));
   }
+
+  MOCK_METHOD(content_settings::CookieControlsController*,
+              GetController,
+              (),
+              (override));
 
   void TriggerBubbleClosed() { closing_callbacks_.Notify(); }
 
@@ -130,6 +136,14 @@ class CookieControlsPageActionControllerTestBase : public testing::Test {
         });
 
     ON_CALL(*fake_bubble_delegate_, HasBubble()).WillByDefault(Return(false));
+
+    cookie_controls_controller_ =
+        std::make_unique<content_settings::CookieControlsController>(
+            CookieSettingsFactory::GetForProfile(&profile_), nullptr,
+            HostContentSettingsMapFactory::GetForProfile(&profile_),
+            profile_.IsIncognitoProfile());
+    ON_CALL(*fake_bubble_delegate_, GetController())
+        .WillByDefault(Return(cookie_controls_controller_.get()));
 
     cookie_controls_page_action_controller_ =
         std::make_unique<CookieControlsPageActionController>(
@@ -178,6 +192,8 @@ class CookieControlsPageActionControllerTestBase : public testing::Test {
 
   std::optional<MockBrowserUserEducationInterface> user_education_;
   FakePageActionController page_action_controller_;
+  std::unique_ptr<content_settings::CookieControlsController>
+      cookie_controls_controller_;
   std::unique_ptr<CookieControlsPageActionController>
       cookie_controls_page_action_controller_;
   raw_ptr<FakeBubbleDelegate> fake_bubble_delegate_;

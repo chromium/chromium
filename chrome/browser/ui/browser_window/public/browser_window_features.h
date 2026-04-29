@@ -12,6 +12,10 @@
 #include "extensions/buildflags/buildflags.h"
 #include "ui/base/unowned_user_data/user_data_factory.h"
 
+namespace content_settings {
+class CookieControlsController;
+}  // namespace content_settings
+
 namespace glic {
 class GlicButtonController;
 class GlicIphController;
@@ -489,6 +493,10 @@ class BrowserWindowFeatures {
     return contextual_cueing_controller_.get();
   }
 
+  content_settings::CookieControlsController* cookie_controls_controller() {
+    return cookie_controls_controller_.get();
+  }
+
   static ui::UserDataFactoryWithOwner<BrowserWindowInterface>&
   GetUserDataFactoryForTesting();
 
@@ -671,6 +679,9 @@ class BrowserWindowFeatures {
 
   std::unique_ptr<TabSearchToolbarButtonController>
       tab_search_toolbar_button_controller_;
+
+  std::unique_ptr<content_settings::CookieControlsController>
+      cookie_controls_controller_;
 
   std::unique_ptr<CookieControlsBubbleCoordinator>
       cookie_controls_bubble_coordinator_;
