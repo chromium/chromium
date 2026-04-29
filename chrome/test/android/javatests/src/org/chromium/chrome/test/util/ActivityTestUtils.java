@@ -177,16 +177,21 @@ public class ActivityTestUtils {
         ActivityMonitor monitor =
                 instrumentation.addMonitor(activityType.getCanonicalName(), null, false);
 
-        activityTrigger.call();
-        instrumentation.waitForIdleSync();
-        Activity activity = monitor.getLastActivity();
-        while (activity == null && !timer.isTimedOut()) {
-            activity = monitor.waitForActivityWithTimeout(timer.getRemainingMs());
-        }
-        if (activity == null) logRunningChromeActivities();
-        Assert.assertNotNull(activityType.getName() + " did not start in: " + timeOut, activity);
+        try {
+            activityTrigger.call();
+            instrumentation.waitForIdleSync();
+            Activity activity = monitor.getLastActivity();
+            while (activity == null && !timer.isTimedOut()) {
+                activity = monitor.waitForActivityWithTimeout(timer.getRemainingMs());
+            }
+            if (activity == null) logRunningChromeActivities();
+            Assert.assertNotNull(
+                    activityType.getName() + " did not start in: " + timeOut, activity);
 
-        return activityType.cast(activity);
+            return activityType.cast(activity);
+        } finally {
+            instrumentation.removeMonitor(monitor);
+        }
     }
 
     private static void logRunningChromeActivities() {
