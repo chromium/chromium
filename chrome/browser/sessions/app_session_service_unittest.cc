@@ -12,12 +12,13 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/sessions/app_session_service_test_helper.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/sessions/content/content_serialized_navigation_builder.h"
 #include "components/sessions/content/content_test_helper.h"
 #include "components/sessions/core/serialized_navigation_entry_test_helper.h"
 #include "content/public/browser/navigation_entry.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 
@@ -36,7 +37,7 @@ using sessions::SerializedNavigationEntryTestHelper;
 
 // Actual app restoration testing will be in
 // app_session_service_browsertests.cc
-class AppSessionServiceTest : public BrowserWithTestWindowTest {
+class AppSessionServiceTest : public testing::Test {
  public:
   AppSessionServiceTest() : window_bounds_(0, 1, 2, 3) {}
 
@@ -44,10 +45,7 @@ class AppSessionServiceTest : public BrowserWithTestWindowTest {
   // SetUp() opens 1 normal window and 1 app window to each of the respective
   // [app]SessionService classes.
   void SetUp() override {
-    BrowserWithTestWindowTest::SetUp();
-
-    app_session_service_ =
-        std::make_unique<AppSessionService>(browser()->profile());
+    app_session_service_ = std::make_unique<AppSessionService>(&profile_);
     app_helper_.SetService(app_session_service_.get());
 
     app_service()->SetWindowType(app_window_id, Browser::TYPE_APP);
@@ -63,8 +61,6 @@ class AppSessionServiceTest : public BrowserWithTestWindowTest {
 
   void TearDown() override {
     DestroyAppSessionService();
-
-    BrowserWithTestWindowTest::TearDown();
   }
 
   void DestroyAppSessionService() {
@@ -91,8 +87,7 @@ class AppSessionServiceTest : public BrowserWithTestWindowTest {
       SessionID* active_window_id) {
     DestroyAppSessionService();
 
-    app_session_service_ =
-        std::make_unique<AppSessionService>(browser()->profile());
+    app_session_service_ = std::make_unique<AppSessionService>(&profile_);
     app_helper_.SetService(app_session_service_.get());
 
     SessionID* non_null_active_window_id = active_window_id;
@@ -146,6 +141,9 @@ class AppSessionServiceTest : public BrowserWithTestWindowTest {
   const SessionID app_window_id = SessionID::NewUnique();
   const SessionID app_tab_id = SessionID::NewUnique();
   SerializedNavigationEntry app_nav;
+
+  content::BrowserTaskEnvironment task_environment_;
+  TestingProfile profile_;
 
   std::unique_ptr<AppSessionService> app_session_service_;
 
