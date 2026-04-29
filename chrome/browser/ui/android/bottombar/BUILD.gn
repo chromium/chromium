@@ -17,11 +17,19 @@ android_resources("java_resources") {
   ]
 }
 
+android_library("config_java") {
+  sources = [ "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarConfigUtils.java" ]
+  deps = [
+    "//build/android:build_java",
+    "//chrome/browser/flags:java",
+    "//ui/android:ui_no_recycler_view_java",
+  ]
+}
+
 android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBar.java",
     "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarButtonContainer.java",
-    "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarConfigUtils.java",
     "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarCoordinator.java",
     "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarHostManager.java",
     "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarMediator.java",
@@ -42,6 +50,7 @@ android_library("java") {
     "//ui/android:ui_no_recycler_view_java",
     "//url:url_java",
   ]
+  public_deps = [ ":config_java" ]
 
   resources_package = "org.chromium.chrome.browser.ui.bottombar"
 }
