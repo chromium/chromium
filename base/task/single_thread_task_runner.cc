@@ -71,22 +71,6 @@ bool SingleThreadTaskRunner::HasCurrentDefault() {
 }
 
 // static
-scoped_refptr<SingleThreadTaskRunner>
-SingleThreadTaskRunner::GetCurrentBestEffort() {
-  if (auto task_runner = SequenceManagerImpl::GetCurrentBestEffortTaskRunner(
-          PassKey<SingleThreadTaskRunner>())) {
-    return task_runner;
-  }
-  return GetCurrentDefault();
-}
-
-// static
-bool SingleThreadTaskRunner::HasCurrentBestEffort() {
-  return !!SequenceManagerImpl::GetCurrentBestEffortTaskRunner(
-      PassKey<SingleThreadTaskRunner>());
-}
-
-// static
 const scoped_refptr<SingleThreadTaskRunner>&
 SingleThreadTaskRunner::GetMainThreadDefault() {
   const auto* const handle = main_thread_default_handle;
@@ -102,21 +86,6 @@ SingleThreadTaskRunner::GetMainThreadDefault() {
 bool SingleThreadTaskRunner::HasMainThreadDefault() {
   return !!main_thread_default_handle &&
          !!main_thread_default_handle->task_runner_;
-}
-
-// static
-scoped_refptr<SingleThreadTaskRunner>
-SingleThreadTaskRunner::GetMainThreadBestEffort() {
-  if (HasMainThreadBestEffort()) {
-    return main_thread_default_handle->best_effort_task_runner_;
-  }
-  return GetMainThreadDefault();
-}
-
-// static
-bool SingleThreadTaskRunner::HasMainThreadBestEffort() {
-  return !!main_thread_default_handle &&
-         !!main_thread_default_handle->best_effort_task_runner_;
 }
 
 SingleThreadTaskRunner::CurrentDefaultHandle::CurrentDefaultHandle(
@@ -165,11 +134,6 @@ SingleThreadTaskRunner::MainThreadDefaultHandle::MainThreadDefaultHandle(
     scoped_refptr<SingleThreadTaskRunner> task_runner,
     MayAlreadyExist)
     : task_runner_(std::move(task_runner)),
-      // `task_runner` belongs to this thread, so if there's a BEST_EFFORT task
-      // runner for the thread GetCurrentBestEffortTaskRunner will return it.
-      best_effort_task_runner_(
-          SequenceManagerImpl::GetCurrentBestEffortTaskRunner(
-              PassKey<SingleThreadTaskRunner>())),
       previous_handle_(main_thread_default_handle) {
   main_thread_default_handle = this;
 }

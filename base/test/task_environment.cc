@@ -1122,14 +1122,26 @@ TaskEnvironmentWithMainThreadPriorities::GetMainThreadTaskRunnerWithPriority(
 // static
 sequence_manager::SequenceManager::PrioritySettings
 TaskEnvironmentWithMainThreadPriorities::CreateBaseTaskPrioritySettings() {
-  return sequence_manager::SequenceManager::PrioritySettings(
+  auto settings = sequence_manager::SequenceManager::PrioritySettings(
       kMaxPriority + 1, GetDefaultQueuePriority());
+  settings.SetThreadTypeMapping(&TaskPriorityToThreadType);
+  return settings;
 }
 
 // static
 constexpr sequence_manager::TaskQueue::QueuePriority
 TaskEnvironmentWithMainThreadPriorities::GetDefaultQueuePriority() {
   return BaseTaskPriorityToQueuePriority(TaskPriority::USER_BLOCKING);
+}
+
+// static
+constexpr ThreadType
+TaskEnvironmentWithMainThreadPriorities::TaskPriorityToThreadType(
+    QueuePriority priority) {
+  if (priority == BaseTaskPriorityToQueuePriority(TaskPriority::BEST_EFFORT)) {
+    return ThreadType::kBackground;
+  }
+  return ThreadType::kDefault;
 }
 
 // static

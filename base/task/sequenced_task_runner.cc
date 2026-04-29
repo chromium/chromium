@@ -99,23 +99,6 @@ bool SequencedTaskRunner::HasCurrentDefault() {
   return !!current_default_handle && !!current_default_handle->task_runner_;
 }
 
-// static
-scoped_refptr<SequencedTaskRunner> SequencedTaskRunner::GetCurrentBestEffort() {
-  // Currently only threads that multiplex several task queues have current
-  // best-effort task runners.
-  if (SingleThreadTaskRunner::HasCurrentBestEffort()) {
-    return SingleThreadTaskRunner::GetCurrentBestEffort();
-  }
-  return GetCurrentDefault();
-}
-
-// static
-bool SequencedTaskRunner::HasCurrentBestEffort() {
-  // Currently only threads that multiplex several task queues have current
-  // best-effort task runners.
-  return SingleThreadTaskRunner::HasCurrentBestEffort();
-}
-
 SequencedTaskRunner::CurrentDefaultHandle::CurrentDefaultHandle(
     scoped_refptr<SequencedTaskRunner> task_runner)
     : CurrentDefaultHandle(std::move(task_runner), MayAlreadyExist{}) {

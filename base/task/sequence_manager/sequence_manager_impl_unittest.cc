@@ -5800,57 +5800,37 @@ TEST(SequenceManagerTest, BindOnDifferentThreadWithActiveVoters) {
   EXPECT_THAT(results, ElementsAre(false, true));
 }
 
-TEST(SequenceManagerTest, BestEffortPriority_SinglePriority) {
-  enum class SinglePriority : TaskQueue::QueuePriority {
-    kOnlyPriority = 0,
-    kPriorityCount = 1,
-  };
-  FixtureWithMockMessagePump fixture(
-      WakeUpType::kDefault,
-      SequenceManager::PrioritySettings(SinglePriority::kPriorityCount,
-                                        SinglePriority::kOnlyPriority));
-  EXPECT_EQ(
-      fixture.sequence_manager()->GetPriorityCount(),
-      static_cast<TaskQueue::QueuePriority>(SinglePriority::kPriorityCount));
-  // Only one priority defined.
-  EXPECT_EQ(fixture.sequence_manager()->GetBestEffortPriority(), std::nullopt);
-}
-
-TEST(SequenceManagerTest, BestEffortPriority_ManyHighPriorities) {
-  enum class ManyHighPriorities : TaskQueue::QueuePriority {
-    kHighestPriority = 0,
-    kHigherPriority = 1,
-    kDefaultPriority = 2,
-    kPriorityCount = 3,
-  };
-  FixtureWithMockMessagePump fixture(
-      WakeUpType::kDefault,
-      SequenceManager::PrioritySettings(ManyHighPriorities::kPriorityCount,
-                                        ManyHighPriorities::kDefaultPriority));
-  EXPECT_EQ(fixture.sequence_manager()->GetPriorityCount(),
-            static_cast<TaskQueue::QueuePriority>(
-                ManyHighPriorities::kPriorityCount));
-  // Default is the lowest priority.
-  EXPECT_EQ(fixture.sequence_manager()->GetBestEffortPriority(), std::nullopt);
-}
-
-TEST(SequenceManagerTest, BestEffortPriority_ManyLowPriorities) {
+TEST(SequenceManagerTest, GetBestEffortTaskQueues) {
   enum class ManyLowPriorities : TaskQueue::QueuePriority {
     kDefaultPriority = 0,
     kLowerPriority = 1,
     kLowestPriority = 2,
     kPriorityCount = 3,
   };
-  FixtureWithMockMessagePump fixture(
-      WakeUpType::kDefault,
-      SequenceManager::PrioritySettings(ManyLowPriorities::kPriorityCount,
-                                        ManyLowPriorities::kDefaultPriority));
+  auto settings = SequenceManager::PrioritySettings(
+      ManyLowPriorities::kPriorityCount, ManyLowPriorities::kDefaultPriority);
+  settings.SetThreadTypeMapping([](TaskQueue::QueuePriority priority) {
+    if (static_cast<ManyLowPriorities>(priority) ==
+        ManyLowPriorities::kLowestPriority) {
+      return ThreadType::kBackground;
+    }
+    return ThreadType::kDefault;
+  });
+
+  FixtureWithMockMessagePump fixture(WakeUpType::kDefault, std::move(settings));
   EXPECT_EQ(
       fixture.sequence_manager()->GetPriorityCount(),
       static_cast<TaskQueue::QueuePriority>(ManyLowPriorities::kPriorityCount));
-  EXPECT_THAT(fixture.sequence_manager()->GetBestEffortPriority(),
-              ::testing::Optional(static_cast<TaskQueue::QueuePriority>(
-                  ManyLowPriorities::kLowestPriority)));
+
+  auto background_queue = fixture.sequence_manager()->CreateTaskQueue(
+      TaskQueue::Spec(QueueName::TEST_TQ));
+  background_queue->SetQueuePriority(ManyLowPriorities::kLowestPriority);
+
+  auto default_queue = fixture.sequence_manager()->CreateTaskQueue(
+      TaskQueue::Spec(QueueName::TEST_TQ));
+
+  EXPECT_EQ(fixture.sequence_manager()->GetBestEffortTaskQueues(),
+            std::vector<TaskQueue*>({background_queue.get()}));
 }
 
 }  // namespace base::sequence_manager::internal
