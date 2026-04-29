@@ -86,20 +86,24 @@ function identifyEmptySVGs(element) {
  * @param {HTMLElement} element The element to search for placeholders in.
  */
 function fillYouTubePlaceholders(element) {
-  const placeholders = element.getElementsByClassName('embed-placeholder');
-  for (let i = 0; i < placeholders.length; i++) {
-    if (!placeholders[i].hasAttribute('data-type') ||
-        placeholders[i].getAttribute('data-type') !== 'youtube' ||
-        !placeholders[i].hasAttribute('data-id')) {
-      continue;
-    }
+  const placeholders = element.querySelectorAll(
+      '.embed-placeholder[data-type="youtube"][data-id]');
+  for (const placeholder of placeholders.values()) {
     const embed = document.createElement('iframe');
-    const url = 'http://www.youtube.com/embed/' +
-        placeholders[i].getAttribute('data-id');
+    const url =
+        'http://www.youtube.com/embed/' + placeholder.getAttribute('data-id');
     embed.setAttribute('src', url);
     embed.setAttribute('type', 'text/html');
     embed.setAttribute('frameborder', '0');
-    embedYoutubeIFrame(embed);
+
+    // The placeholder must be replaced with the new element before it is
+    // passed to embedYoutubeIFrame, which expects the element to have a
+    // parent.
+    const parent = placeholder.parentElement;
+    if (parent) {
+      parent.replaceChild(embed, placeholder);
+      embedYoutubeIFrame(embed);
+    }
   }
 }
 

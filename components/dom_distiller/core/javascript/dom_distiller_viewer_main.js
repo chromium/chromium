@@ -31,23 +31,33 @@ function $(id) {
  * @param {HTMLElement} element The container element of the article.
  */
 function postProcessElement(element) {
+  const tryStep = (fn) => {
+    try {
+      fn(element);
+    } catch (e) {
+      // Use a generic error message to avoid leaking potentially sensitive
+      // information from the DOM.
+      console.error('Post-processing step failed.');
+    }
+  };
+
   // Remove surviving extraneous elements first so they don't interfere with
   // downstream classifiers and processing.
-  removeExtraneousElementsFrom(element);
+  tryStep(removeExtraneousElementsFrom);
 
   // Wrap tables to make them scrollable.
-  wrapTables(element);
+  tryStep(wrapTables);
 
   // Readability will leave iframes around, but they need the proper structure
   // and classes to be styled correctly.
-  addClassesToYoutubeIFrames(element);
+  tryStep(addClassesToYoutubeIFrames);
   // DomDistiller will leave placeholders, which need to be replaced with
   // actual iframes.
-  fillYouTubePlaceholders(element);
-  sanitizeLinks(element);
-  identifyEmptySVGs(element);
-  ImageClassifier.processImagesIn(element);
-  ListClassifier.processListsIn(element);
+  tryStep(fillYouTubePlaceholders);
+  tryStep(sanitizeLinks);
+  tryStep(identifyEmptySVGs);
+  tryStep((el) => ImageClassifier.processImagesIn(el));
+  tryStep((el) => ListClassifier.processListsIn(el));
 }
 
 function addToPage(html) {
