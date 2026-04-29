@@ -445,7 +445,8 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
   if (gpu_sandbox_start_early) {
     // The sandbox will be started earlier than usual (i.e. before GL) so
     // execute the pre-sandbox steps now.
-    sandbox_helper_->PreSandboxStartup(gpu_preferences, workarounds);
+    sandbox_helper_->PreSandboxStartup(gpu_preferences, workarounds,
+                                       &gpu_info_);
   }
 
   // watchdog_init will call watchdog OnInitComplete() at the end of this
@@ -570,7 +571,8 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
   // restarting the GPU process will not help.
   if (!attempted_startsandbox) {
     // The sandbox is not started yet.
-    sandbox_helper_->PreSandboxStartup(gpu_preferences, workarounds);
+    sandbox_helper_->PreSandboxStartup(gpu_preferences, workarounds,
+                                       &gpu_info_);
   }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 

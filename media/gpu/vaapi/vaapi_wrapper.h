@@ -42,6 +42,10 @@ namespace gfx {
 class NativePixmap;
 class NativePixmapDmaBuf;
 class Rect;
+}  // namespace gfx
+
+namespace gpu {
+struct GPUInfo;
 }
 
 namespace viz {
@@ -598,7 +602,8 @@ class MEDIA_GPU_EXPORT VaapiWrapper
   // Initialize static data before sandbox is enabled.
   static void PreSandboxInitialization(
       bool allow_disabling_global_lock = false,
-      const gpu::GpuDriverBugWorkarounds* workarounds = nullptr);
+      const gpu::GpuDriverBugWorkarounds* workarounds = nullptr,
+      const gpu::GPUInfo* gpu_info = nullptr);
 
   // vaDestroySurfaces() a vector or a single VASurfaceID.
   virtual void DestroySurfaces(std::vector<VASurfaceID> va_surfaces);

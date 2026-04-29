@@ -156,9 +156,9 @@ class ContentSandboxHelper : public gpu::GpuSandboxHelper {
 
  private:
   // SandboxHelper:
-  void PreSandboxStartup(
-      const gpu::GpuPreferences& gpu_prefs,
-      const gpu::GpuDriverBugWorkarounds& workarounds) override {
+  void PreSandboxStartup(const gpu::GpuPreferences& gpu_prefs,
+                         const gpu::GpuDriverBugWorkarounds& workarounds,
+                         const gpu::GPUInfo* gpu_info) override {
     TRACE_EVENT("gpu,startup", "gpu_main::PreSandboxStartup");
     // Warm up resources that don't need access to GPUInfo.
     {
@@ -175,11 +175,11 @@ class ContentSandboxHelper : public gpu::GpuSandboxHelper {
 #if BUILDFLAG(USE_VAAPI)
 #if BUILDFLAG(IS_CHROMEOS)
     media::VaapiWrapper::PreSandboxInitialization(
-        /*allow_disabling_global_lock=*/false, &workarounds);
+        /*allow_disabling_global_lock=*/false, &workarounds, gpu_info);
 #else  // For Linux with VA-API support.
     if (!gpu_prefs.disable_accelerated_video_decode) {
       media::VaapiWrapper::PreSandboxInitialization(
-          /*allow_disabling_global_lock=*/false, &workarounds);
+          /*allow_disabling_global_lock=*/false, &workarounds, gpu_info);
     }
 #endif
 #endif  // BUILDFLAG(USE_VAAPI)
