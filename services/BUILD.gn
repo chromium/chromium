@@ -199,6 +199,7 @@ if (is_android) {
       "//services/device/serial:java",
       "//services/shape_detection:shape_detection_java",
       "//skia/public/mojom:mojom_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/google-truth:google_truth_java",
     ]
 

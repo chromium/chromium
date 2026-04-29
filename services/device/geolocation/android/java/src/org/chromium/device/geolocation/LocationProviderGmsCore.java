@@ -43,7 +43,6 @@ public class LocationProviderGmsCore implements LocationProvider {
     private final Context mContext;
     private final FusedLocationProviderClient mClient;
     private boolean mEffectiveHighAccuracy;
-    private boolean mRequestedHighAccuracy;
 
     private long mStartTime;
     private boolean mFirstPositionReceived;
@@ -70,8 +69,7 @@ public class LocationProviderGmsCore implements LocationProvider {
     @Override
     public void start(boolean enableHighAccuracy) {
         ThreadUtils.assertOnUiThread();
-        mRequestedHighAccuracy = enableHighAccuracy;
-        mEffectiveHighAccuracy = mRequestedHighAccuracy;
+        mEffectiveHighAccuracy = enableHighAccuracy;
         mStartTime = SystemClock.elapsedRealtime();
         mFirstPositionReceived = false;
         if (mContext.checkCallingOrSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
@@ -119,12 +117,13 @@ public class LocationProviderGmsCore implements LocationProvider {
                             .build();
         }
 
+        final boolean requestedHighAccuracy = enableHighAccuracy;
         stop();
         mLocationCallback =
                 new LocationCallback() {
                     @Override
                     public void onLocationResult(LocationResult locationResult) {
-                        if (locationResult == null) {
+                        if (mLocationCallback != this || locationResult == null) {
                             return;
                         }
                         Location location = locationResult.getLastLocation();
@@ -153,11 +152,11 @@ public class LocationProviderGmsCore implements LocationProvider {
                                 RecordHistogram.recordCount100000Histogram(
                                         histogramName, (int) location.getAccuracy());
                             }
-                            // Using `mRequestedHighAccuracy` for location update cause
+                            // Using `requestedHighAccuracy` for location update cause
                             // `mEffectiveHighAccuracy` can be override by app-level permission
                             // check.
                             LocationProviderAdapter.onNewLocationAvailable(
-                                    location, mRequestedHighAccuracy);
+                                    location, requestedHighAccuracy);
                         }
                     }
                 };

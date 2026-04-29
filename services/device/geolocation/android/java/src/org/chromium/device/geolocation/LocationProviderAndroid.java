@@ -29,20 +29,20 @@ import org.chromium.components.permissions.PermissionsAndroidFeatureMap;
 import java.util.List;
 
 /**
- * This is a LocationProvider using Android APIs [1]. It is a separate class for clarity
- * so that it can manage all processing completely on the UI thread. The container class
- * ensures that the start/stop calls into this class are done on the UI thread.
+ * This is a LocationProvider using Android APIs [1]. It is a separate class for clarity so that it
+ * can manage all processing completely on the UI thread. The container class ensures that the
+ * start/stop calls into this class are done on the UI thread.
  *
- * [1] https://developer.android.com/reference/android/location/package-summary.html
+ * <p>[1] https://developer.android.com/reference/android/location/package-summary.html
  */
 @NullMarked
-public class LocationProviderAndroid implements LocationListener, LocationProvider {
+public class LocationProviderAndroid implements LocationProvider {
     private static final String TAG = "LocationProvider";
 
     private @Nullable LocationManager mLocationManager;
+    private @Nullable LocationListener mLocationListener;
     private boolean mIsRunning;
     private boolean mEffectiveHighAccuracy;
-    private boolean mRequestedHighAccuracy;
 
     private final Context mContext;
 
@@ -57,8 +57,8 @@ public class LocationProviderAndroid implements LocationListener, LocationProvid
     @Override
     public void start(boolean enableHighAccuracy) {
         ThreadUtils.assertOnUiThread();
-        mRequestedHighAccuracy = enableHighAccuracy;
-        mEffectiveHighAccuracy = mRequestedHighAccuracy;
+        final boolean requestedHighAccuracy = enableHighAccuracy;
+        mEffectiveHighAccuracy = requestedHighAccuracy;
 
         // Checking app-level permission here and override the `mEffectiveHighAccuracy`
         // so we can make sure `Geolocation.AndroidLocationProvider.` is logged with
@@ -69,7 +69,7 @@ public class LocationProviderAndroid implements LocationListener, LocationProvid
         }
 
         unregisterFromLocationUpdates();
-        registerForLocationUpdates();
+        registerForLocationUpdates(requestedHighAccuracy);
     }
 
     @Override
@@ -83,37 +83,6 @@ public class LocationProviderAndroid implements LocationListener, LocationProvid
         ThreadUtils.assertOnUiThread();
         return mIsRunning;
     }
-
-    @Override
-    public void onLocationChanged(Location location) {
-        // Callbacks from the system location service are queued to this thread, so it's
-        // possible that we receive callbacks after unregistering. At this point, the
-        // native object will no longer exist. Using `mRequestedHighAccuracy` for
-        // location update because `mEffectiveHighAccuracy` can be overridden by app-level
-        // permission check.
-        if (mIsRunning) {
-            if (location.hasAccuracy()) {
-                final String histogramName =
-                        "Geolocation.AndroidLocationProvider"
-                                + (mEffectiveHighAccuracy
-                                        ? ".HighAccuracyHint"
-                                        : ".LowAccuracyHint")
-                                + ".Accuracy";
-                RecordHistogram.recordCount100000Histogram(
-                        histogramName, (int) location.getAccuracy());
-            }
-            LocationProviderAdapter.onNewLocationAvailable(location, mRequestedHighAccuracy);
-        }
-    }
-
-    @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {}
-
-    @Override
-    public void onProviderEnabled(String provider) {}
-
-    @Override
-    public void onProviderDisabled(String provider) {}
 
     public void setLocationManagerForTesting(LocationManager manager) {
         var oldValue = mLocationManager;
@@ -130,7 +99,7 @@ public class LocationProviderAndroid implements LocationListener, LocationProvid
     }
 
     /** Registers this object with the location service. */
-    private void registerForLocationUpdates() {
+    private void registerForLocationUpdates(boolean requestedHighAccuracy) {
         createLocationManagerIfNeeded();
         if (mLocationManager == null) {
             Log.e(TAG, "Could not get location manager.");
@@ -140,6 +109,41 @@ public class LocationProviderAndroid implements LocationListener, LocationProvid
 
         assert !mIsRunning;
         mIsRunning = true;
+
+        mLocationListener =
+                new LocationListener() {
+                    @Override
+                    public void onLocationChanged(Location location) {
+                        // Callbacks from the system location service are queued to this thread, so
+                        // it's possible that we receive callbacks after unregistering. At this
+                        // point, the native object will no longer exist. Using
+                        // `requestedHighAccuracy` for location update because
+                        // `mEffectiveHighAccuracy` can be overridden by app-level permission check.
+                        if (mIsRunning && mLocationListener == this) {
+                            if (location.hasAccuracy()) {
+                                final String histogramName =
+                                        "Geolocation.AndroidLocationProvider"
+                                                + (mEffectiveHighAccuracy
+                                                        ? ".HighAccuracyHint"
+                                                        : ".LowAccuracyHint")
+                                                + ".Accuracy";
+                                RecordHistogram.recordCount100000Histogram(
+                                        histogramName, (int) location.getAccuracy());
+                            }
+                            LocationProviderAdapter.onNewLocationAvailable(
+                                    location, requestedHighAccuracy);
+                        }
+                    }
+
+                    @Override
+                    public void onStatusChanged(String provider, int status, Bundle extras) {}
+
+                    @Override
+                    public void onProviderEnabled(String provider) {}
+
+                    @Override
+                    public void onProviderDisabled(String provider) {}
+                };
 
         // We're running on the main thread. The C++ side is responsible to
         // bounce notifications to the Geolocation thread as they arrive in the mainLooper.
@@ -162,7 +166,7 @@ public class LocationProviderAndroid implements LocationListener, LocationProvid
                 }
             }
             mLocationManager.requestLocationUpdates(
-                    0, 0, criteria, this, ThreadUtils.getUiThreadLooper());
+                    0, 0, criteria, mLocationListener, ThreadUtils.getUiThreadLooper());
         } catch (SecurityException e) {
             Log.e(
                     TAG,
@@ -186,7 +190,10 @@ public class LocationProviderAndroid implements LocationListener, LocationProvid
         if (!mIsRunning) return;
         mIsRunning = false;
         assumeNonNull(mLocationManager);
-        mLocationManager.removeUpdates(this);
+        if (mLocationListener != null) {
+            mLocationManager.removeUpdates(mLocationListener);
+            mLocationListener = null;
+        }
     }
 
     @RequiresNonNull("mLocationManager")

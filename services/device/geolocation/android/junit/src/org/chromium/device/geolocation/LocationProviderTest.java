@@ -9,8 +9,12 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyDouble;
 import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -19,9 +23,12 @@ import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Criteria;
+import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Looper;
+
+import androidx.annotation.IntDef;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.Granularity;
@@ -29,10 +36,12 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.tasks.Tasks;
 
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -45,6 +54,8 @@ import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -52,10 +63,16 @@ import java.util.Collection;
 @RunWith(ParameterizedRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class LocationProviderTest {
-    public enum LocationProviderType {
-        MOCK,
-        ANDROID,
-        GMS_CORE
+    @IntDef({
+        LocationProviderType.MOCK,
+        LocationProviderType.ANDROID,
+        LocationProviderType.GMS_CORE
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface LocationProviderType {
+        int MOCK = 0;
+        int ANDROID = 1;
+        int GMS_CORE = 2;
     }
 
     @Parameters
@@ -71,19 +88,26 @@ public class LocationProviderTest {
     @Rule(order = -2)
     public BaseRobolectricTestRule mBaseRule = new BaseRobolectricTestRule();
 
+    @Mock private LocationProviderAdapter.Natives mMockLocationProviderAdapterJni;
+
     private LocationManager mLocationManager;
 
     private LocationProviderAdapter mLocationProviderAdapter;
 
     private FusedLocationProviderClient mFusedLocationProviderClient;
 
-    private final LocationProviderType mApi;
+    private final @LocationProviderType int mApi;
 
-    public LocationProviderTest(LocationProviderType api) {
+    public LocationProviderTest(@LocationProviderType int api) {
         mApi = api;
     }
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Before
+    public void setUp() {
+        LocationProviderAdapterJni.setInstanceForTesting(mMockLocationProviderAdapterJni);
+    }
 
     /** Verify a normal start/stop call pair with the given LocationProvider. */
     @Test
@@ -216,6 +240,154 @@ public class LocationProviderTest {
             verify(mFusedLocationProviderClient, times(2))
                     .requestLocationUpdates(captor.capture(), any(LocationCallback.class), any());
             assertEquals(Granularity.GRANULARITY_FINE, captor.getValue().getGranularity());
+        }
+        stopLocationProviderAdapter();
+    }
+
+    /**
+     * Verify that an in-flight callback from a precise request is ignored if a new approximate
+     * request has been initiated, and that the new request correctly reports its location as not
+     * precise.
+     */
+    @Test
+    @Feature({"Location"})
+    @EnableFeatures("ApproximateGeolocationPermission")
+    public void testHighAccuracyThenLowAccuracyRace() {
+        if (mApi == LocationProviderType.MOCK) return;
+
+        setLocationProvider();
+        createLocationProviderAdapter();
+
+        // 1. Start precise request.
+        startLocationProviderAdapter(true);
+
+        Location location = new Location("test");
+        location.setLatitude(1.23);
+        location.setLongitude(4.56);
+        location.setTime(System.currentTimeMillis());
+        location.setAccuracy(1.0f);
+
+        if (mApi == LocationProviderType.ANDROID) {
+            ArgumentCaptor<LocationListener> captor =
+                    ArgumentCaptor.forClass(LocationListener.class);
+            verify(mLocationManager)
+                    .requestLocationUpdates(
+                            anyLong(),
+                            anyFloat(),
+                            any(Criteria.class),
+                            captor.capture(),
+                            any(Looper.class));
+            LocationListener firstListener = captor.getValue();
+
+            // 2. Start a new approximate request.
+            startLocationProviderAdapter(false);
+
+            // 3. Trigger the location callback for the first (precise) request.
+            firstListener.onLocationChanged(location);
+
+            // 4. Verify that this callback was ignored because a newer request is active.
+            verify(mMockLocationProviderAdapterJni, never())
+                    .newLocationAvailable(
+                            anyDouble(),
+                            anyDouble(),
+                            anyDouble(),
+                            anyBoolean(),
+                            anyDouble(),
+                            anyBoolean(),
+                            anyFloat(),
+                            anyBoolean(),
+                            anyFloat(),
+                            anyBoolean(),
+                            anyFloat(),
+                            anyBoolean());
+
+            // 5. Trigger the location callback for the second (approximate) request.
+            ArgumentCaptor<LocationListener> captor2 =
+                    ArgumentCaptor.forClass(LocationListener.class);
+            verify(mLocationManager, times(2))
+                    .requestLocationUpdates(
+                            anyLong(),
+                            anyFloat(),
+                            any(Criteria.class),
+                            captor2.capture(),
+                            any(Looper.class));
+            LocationListener secondListener = captor2.getValue();
+            secondListener.onLocationChanged(location);
+
+            // 6. Verify that this callback is processed and correctly identifies the location
+            // as not precise.
+            verify(mMockLocationProviderAdapterJni)
+                    .newLocationAvailable(
+                            anyDouble(),
+                            anyDouble(),
+                            anyDouble(),
+                            anyBoolean(),
+                            anyDouble(),
+                            anyBoolean(),
+                            anyDouble(),
+                            anyBoolean(),
+                            anyDouble(),
+                            anyBoolean(),
+                            anyDouble(),
+                            eq(/* isPrecise= */ false));
+
+        } else if (mApi == LocationProviderType.GMS_CORE) {
+            ArgumentCaptor<LocationCallback> captor =
+                    ArgumentCaptor.forClass(LocationCallback.class);
+            verify(mFusedLocationProviderClient)
+                    .requestLocationUpdates(
+                            any(LocationRequest.class), captor.capture(), any(Looper.class));
+            LocationCallback firstCallback = captor.getValue();
+
+            // 2. Start a new approximate request.
+            startLocationProviderAdapter(false);
+
+            // 3. Trigger the location callback for the first (precise) request.
+            com.google.android.gms.location.LocationResult result =
+                    com.google.android.gms.location.LocationResult.create(Arrays.asList(location));
+            firstCallback.onLocationResult(result);
+
+            // 4. Verify that this callback was ignored because a newer request is active.
+            verify(mMockLocationProviderAdapterJni, never())
+                    .newLocationAvailable(
+                            anyDouble(),
+                            anyDouble(),
+                            anyDouble(),
+                            anyBoolean(),
+                            anyDouble(),
+                            anyBoolean(),
+                            anyFloat(),
+                            anyBoolean(),
+                            anyFloat(),
+                            anyBoolean(),
+                            anyFloat(),
+                            anyBoolean());
+
+            // 5. Trigger the location callback for the second (approximate) request.
+            ArgumentCaptor<LocationCallback> captor2 =
+                    ArgumentCaptor.forClass(LocationCallback.class);
+            verify(mFusedLocationProviderClient, times(2))
+                    .requestLocationUpdates(
+                            any(LocationRequest.class), captor2.capture(), any(Looper.class));
+            LocationCallback secondCallback = captor2.getValue();
+            secondCallback.onLocationResult(result);
+
+            // 6. Verify that this callback is processed and correctly identifies the location
+            // as not precise.
+            verify(mMockLocationProviderAdapterJni)
+                    .newLocationAvailable(
+                            anyDouble(),
+                            anyDouble(),
+                            anyDouble(),
+                            anyBoolean(),
+                            anyDouble(),
+                            anyBoolean(),
+                            anyDouble(),
+                            anyBoolean(),
+                            anyDouble(),
+                            anyBoolean(),
+                            anyDouble(),
+                            eq(/* isPrecise= */ false));
         }
         stopLocationProviderAdapter();
     }
