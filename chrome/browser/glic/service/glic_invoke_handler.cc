@@ -274,6 +274,7 @@ mojom::InvokeOptionsPtr GlicInvokeHandler::CreateMojoOptions() {
   mojo_options->auto_submit = auto_submit_passkey_.has_value();
   mojo_options->feature_mode =
       options_.feature_mode.value_or(mojom::FeatureMode::kUnspecified);
+  mojo_options->actuation_target = options_.target.actuation_target;
   mojo_options->disable_zero_state_suggestions = options_.disable_zss;
 
   if (options_.skill_id) {

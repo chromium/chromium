@@ -2997,6 +2997,20 @@ export enum FeatureMode {
 
 ///////////////////////////////////////////////
 // WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+// Target for actuation.
+export enum ActuationTarget {
+  // Will default to the agent if the target is unknown.
+  UNKNOWN = 0,
+  // Agent infers the best location based on the prompt.
+  AGENT_DECIDES = 1,
+  // Forces actuation on the initiating tab.
+  CURRENT_TAB = 2,
+  // Forces actuation in a new tab.
+  NEW_TAB = 3,
+}
+
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
 // Web client's operation modes.
 export enum WebClientMode {
   // Text operation mode.

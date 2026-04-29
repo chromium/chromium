@@ -83,6 +83,10 @@ struct Target {
   // - ConversationId: Reconnects to a specific existing conversation.
   std::variant<DefaultConversation, NewConversation, ConversationId>
       conversation = DefaultConversation();
+
+  // Specifies the target for actuation.
+  mojom::ActuationTarget actuation_target =
+      mojom::ActuationTarget::kAgentDecides;
 };
 
 // Configuration to override the default ZSS behavior for the invocation,

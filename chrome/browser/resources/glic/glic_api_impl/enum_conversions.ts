@@ -36,6 +36,12 @@ export function enumToClient(
   val: mojomGlic.ActorTaskStopReason | null):
     glicApi.ActorTaskStopReason | undefined;
 export function enumToClient(
+  val: mojomGlic.ActuationTarget):
+    glicApi.ActuationTarget;
+export function enumToClient(
+  val: mojomGlic.ActuationTarget | null):
+    glicApi.ActuationTarget | undefined;
+export function enumToClient(
   val: mojomGlic.AdditionalContextSource):
     glicApi.AdditionalContextSource;
 export function enumToClient(
@@ -273,6 +279,12 @@ export function enumFromClient(
 export function enumFromClient(
   val: glicApi.ActorTaskStopReason | undefined):
     mojomGlic.ActorTaskStopReason | null;
+export function enumFromClient(
+  val: glicApi.ActuationTarget):
+    mojomGlic.ActuationTarget;
+export function enumFromClient(
+  val: glicApi.ActuationTarget | undefined):
+    mojomGlic.ActuationTarget | null;
 export function enumFromClient(
   val: glicApi.AdditionalContextSource):
     mojomGlic.AdditionalContextSource;

@@ -1624,6 +1624,20 @@ enum FeatureMode {
 };
 
 // @generate glic_api
+// Target for actuation.
+[Stable, Extensible]
+enum ActuationTarget {
+  // Will default to the agent if the target is unknown.
+  [Default] kUnknown = 0,
+  // Agent infers the best location based on the prompt.
+  kAgentDecides = 1,
+  // Forces actuation on the initiating tab.
+  kCurrentTab = 2,
+  // Forces actuation in a new tab.
+  kNewTab = 3,
+};
+
+// @generate glic_api
 // Options for the Invoke method.
 struct InvokeOptions {
   // Source that triggered this invocation.
@@ -1642,6 +1656,9 @@ struct InvokeOptions {
 
   // Feature mode to use.
   FeatureMode feature_mode;
+
+  // Target for actuation.
+  ActuationTarget actuation_target;
 
   // Whether to suppress Zero State Suggestions.
   bool disable_zero_state_suggestions;
