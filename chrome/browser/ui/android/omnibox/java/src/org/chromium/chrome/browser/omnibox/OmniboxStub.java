@@ -4,9 +4,12 @@
 
 package org.chromium.chrome.browser.omnibox;
 
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.url.GURL;
@@ -29,6 +32,11 @@ public interface OmniboxStub {
      * Ends the current Omnibox input session. This will typically clear the focus from the Omnibox.
      */
     void endInput();
+
+    /** Returns the supplier of the fusebox state. */
+    default NonNullObservableSupplier<@FuseboxState Integer> getFuseboxStateSupplier() {
+        return ObservableSuppliers.createNonNull(FuseboxState.DISABLED);
+    }
 
     /**
      * @return Whether the URL bar is currently focused.

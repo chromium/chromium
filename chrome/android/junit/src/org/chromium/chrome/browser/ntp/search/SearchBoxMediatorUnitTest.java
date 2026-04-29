@@ -41,11 +41,14 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.composeplate.ComposeplateUtils;
 import org.chromium.chrome.browser.feed.FeedSurfaceScrollDelegate;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
+import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.function.Supplier;
@@ -143,6 +146,42 @@ public class SearchBoxMediatorUnitTest {
         assertEquals(
                 R.drawable.ic_search_24dp,
                 mPropertyModel.get(SearchBoxProperties.DSE_ICON_RESOURCE_ID));
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
+    public void testUpdateStartIcon_AllConditionsMet() {
+        mMediator.setIsFuseboxEligible(true);
+        mMediator.setIsSearchProviderGoogle(true);
+
+        assertTrue(mPropertyModel.get(SearchBoxProperties.PLUS_BUTTON_VISIBILITY));
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
+    public void testUpdateStartIcon_NotEligible() {
+        mMediator.setIsFuseboxEligible(false);
+        mMediator.setIsSearchProviderGoogle(true);
+
+        assertFalse(mPropertyModel.get(SearchBoxProperties.PLUS_BUTTON_VISIBILITY));
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
+    public void testUpdateStartIcon_NotGoogle() {
+        mMediator.setIsFuseboxEligible(true);
+        mMediator.setIsSearchProviderGoogle(false);
+
+        assertFalse(mPropertyModel.get(SearchBoxProperties.PLUS_BUTTON_VISIBILITY));
+    }
+
+    @Test
+    @DisableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
+    public void testUpdateStartIcon_FeatureDisabled() {
+        mMediator.setIsFuseboxEligible(true);
+        mMediator.setIsSearchProviderGoogle(true);
+
+        assertFalse(mPropertyModel.get(SearchBoxProperties.PLUS_BUTTON_VISIBILITY));
     }
 
     @Test

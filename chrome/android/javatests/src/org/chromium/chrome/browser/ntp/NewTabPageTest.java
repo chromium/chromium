@@ -13,6 +13,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -49,6 +50,8 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.MemoryPressureListener;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.memory.MemoryPressureCallback;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
@@ -72,6 +75,7 @@ import org.chromium.chrome.browser.logo.LogoBridgeJni;
 import org.chromium.chrome.browser.logo.LogoCoordinator;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
@@ -179,10 +183,12 @@ public class NewTabPageTest {
     private EmbeddedTestServer mTestServer;
     private List<SiteSuggestion> mSiteSuggestions;
     private OmniboxTestUtils mOmnibox;
+    private NonNullObservableSupplier<Integer> mFuseboxStateSupplier;
 
     @Before
     public void setUp() throws Exception {
         ComposeplateUtils.setIsEnabledForTesting(true);
+        OmniboxFeatures.sCompactFusebox.setForTesting(true);
         mActivityTestRule.startOnBlankPage();
         TemplateUrlService originalService =
                 ThreadUtils.runOnUiThreadBlocking(
@@ -191,6 +197,12 @@ public class NewTabPageTest {
                                         ProfileManager.getLastUsedRegularProfile()));
         mTemplateUrlService = Mockito.spy(originalService);
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        mFuseboxStateSupplier =
+                                ObservableSuppliers.createNonNull(FuseboxState.DISABLED));
+        doReturn(mFuseboxStateSupplier).when(mOmniboxStub).getFuseboxStateSupplier();
 
         mOmnibox = new OmniboxTestUtils(mActivityTestRule.getActivity());
 
@@ -220,6 +232,11 @@ public class NewTabPageTest {
     // Disable sign-in to suppress sync promo, as it's unrelated to this render test.
     @Policies.Add(@Policies.Item(key = "BrowserSignin", string = "0"))
     public void testRender_FocusFakeBox() throws Exception {
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        mNtp.getNewTabPageCoordinator()
+                                .getSearchBoxCoordinatorForTesting()
+                                .setIsFuseboxEligible(false));
         ScrimManager scrimManager =
                 mActivityTestRule.getActivity().getRootUiCoordinatorForTesting().getScrimManager();
         scrimManager.disableAnimationForTesting(true);
@@ -227,6 +244,27 @@ public class NewTabPageTest {
         View view = mNtp.getView().findViewById(R.id.search_box);
         ChromeRenderTestRule.sanitize(view);
         mRenderTestRule.render(view, "focus_fake_box_v3");
+        scrimManager.disableAnimationForTesting(false);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"NewTabPage", "FeedNewTabPage", "RenderTest"})
+    // Disable sign-in to suppress sync promo, as it's unrelated to this render test.
+    @Policies.Add(@Policies.Item(key = "BrowserSignin", string = "0"))
+    public void testRender_FocusFakeBox_withPlusButton() throws Exception {
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        mNtp.getNewTabPageCoordinator()
+                                .getSearchBoxCoordinatorForTesting()
+                                .setIsFuseboxEligible(true));
+        ScrimManager scrimManager =
+                mActivityTestRule.getActivity().getRootUiCoordinatorForTesting().getScrimManager();
+        scrimManager.disableAnimationForTesting(true);
+        onView(withId(R.id.search_box)).perform(click());
+        View view = mNtp.getView().findViewById(R.id.search_box);
+        ChromeRenderTestRule.sanitize(view);
+        mRenderTestRule.render(view, "focus_fake_box_with_plus_button");
         scrimManager.disableAnimationForTesting(false);
     }
 
@@ -297,6 +335,18 @@ public class NewTabPageTest {
         mOmnibox.typeText(UrlConstants.VERSION_URL, false);
         mOmnibox.checkSuggestionsShown();
         mOmnibox.sendKey(KeyEvent.KEYCODE_ENTER);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"NewTabPage"})
+    public void testClickPlusButtonOnFakebox() {
+        View plusButton = mNtp.getView().findViewById(R.id.search_box_plus_button);
+        Assert.assertNotNull(plusButton);
+
+        TouchCommon.singleClickView(plusButton);
+
+        mOmnibox.checkFocus(true);
     }
 
     /** Tests clicking on a most visited item. */
@@ -555,6 +605,7 @@ public class NewTabPageTest {
                             .focusSearchBox(
                                     /* beginVoiceSearch= */ false,
                                     AutocompleteRequestType.SEARCH,
+                                    /* showFuseboxPopup= */ false,
                                     /* pastedText= */ "");
                 });
     }
@@ -571,6 +622,7 @@ public class NewTabPageTest {
                             .focusSearchBox(
                                     /* beginVoiceSearch= */ true,
                                     AutocompleteRequestType.SEARCH,
+                                    /* showFuseboxPopup= */ false,
                                     /* pastedText= */ "");
                 });
     }

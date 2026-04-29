@@ -295,9 +295,10 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
     /* package */ void beginInput(FuseboxSessionState session) {
         mMetrics = session.getMetrics();
         mProfile = assertNonNull(session.getProfile());
-        setAutocompleteInput(session.getAutocompleteInput());
         setController(session.getComposeboxQueryControllerBridge());
         setModelList(session.getFuseboxAttachmentModelList());
+        setAutocompleteInput(session.getAutocompleteInput());
+        onAttachmentsChanged();
         updateFuseboxState();
         updateSnackbarStyling();
     }
@@ -325,6 +326,8 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
             if (mInput.getRequestType() == AutocompleteRequestType.AI_MODE
                     && mInput.getFocusReason() == OmniboxFocusReason.NTP_AI_MODE) {
                 activateAiMode(AiModeActivationSource.NTP_BUTTON);
+            } else if (mInput.getFocusReason() == OmniboxFocusReason.FAKE_BOX_PLUS_BUTTON_TAP) {
+                showPopup();
             }
 
             mInput.getRequestTypeSupplier()

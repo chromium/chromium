@@ -30,6 +30,9 @@ interface SearchBoxProperties {
     WritableBooleanPropertyKey LENS_VISIBILITY = new WritableBooleanPropertyKey();
     WritableObjectPropertyKey<OnClickListener> LENS_CLICK_CALLBACK =
             new WritableObjectPropertyKey<>();
+    WritableBooleanPropertyKey PLUS_BUTTON_VISIBILITY = new WritableBooleanPropertyKey();
+    WritableObjectPropertyKey<OnClickListener> PLUS_BUTTON_CLICK_CALLBACK =
+            new WritableObjectPropertyKey<>();
     WritableObjectPropertyKey<String> SEARCH_TEXT = new WritableObjectPropertyKey<>();
     WritableBooleanPropertyKey SEARCH_HINT_VISIBILITY = new WritableBooleanPropertyKey();
     WritableObjectPropertyKey<OnClickListener> SEARCH_BOX_CLICK_CALLBACK =
@@ -57,6 +60,8 @@ interface SearchBoxProperties {
                 VOICE_SEARCH_CLICK_CALLBACK,
                 LENS_VISIBILITY,
                 LENS_CLICK_CALLBACK,
+                PLUS_BUTTON_VISIBILITY,
+                PLUS_BUTTON_CLICK_CALLBACK,
                 SEARCH_TEXT,
                 SEARCH_HINT_VISIBILITY,
                 SEARCH_BOX_CLICK_CALLBACK,

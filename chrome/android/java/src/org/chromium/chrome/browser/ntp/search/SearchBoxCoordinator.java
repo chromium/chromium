@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import androidx.annotation.Px;
 import androidx.annotation.StyleRes;
 
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -69,6 +70,11 @@ public class SearchBoxCoordinator implements NtpSearchBox {
     }
 
     @Override
+    public void setFuseboxStateSupplier(NonNullObservableSupplier<Integer> fuseboxStateSupplier) {
+        mMediator.setFuseboxStateSupplier(fuseboxStateSupplier);
+    }
+
+    @Override
     public void setAlpha(float alpha) {
         mModel.set(SearchBoxProperties.ALPHA, alpha);
     }
@@ -101,6 +107,21 @@ public class SearchBoxCoordinator implements NtpSearchBox {
     @Override
     public void addVoiceSearchButtonClickListener(OnClickListener listener) {
         mMediator.addVoiceSearchButtonClickListener(listener);
+    }
+
+    @Override
+    public void setPlusButtonClickListener(OnClickListener listener) {
+        mMediator.setPlusButtonClickListener(listener);
+    }
+
+    @Override
+    public void setIsFuseboxEligible(boolean isEligible) {
+        mMediator.setIsFuseboxEligible(isEligible);
+    }
+
+    @Override
+    public void setIsSearchProviderGoogle(boolean isGoogle) {
+        mMediator.setIsSearchProviderGoogle(isGoogle);
     }
 
     @Override

@@ -66,7 +66,11 @@ public class NewTabPageCreationState implements UserData {
         if (mIsNewlyCreated && mNtpLoaded) {
             mIsNewlyCreated = false;
             assumeNonNull(mNewTabPageManager)
-                    .focusSearchBox(false, AutocompleteRequestType.SEARCH, null);
+                    .focusSearchBox(
+                            /* beginVoiceSearch= */ false,
+                            /* requestType= */ AutocompleteRequestType.SEARCH,
+                            /* showFuseboxPopup= */ true,
+                            /* pastedText= */ null);
         }
     }
 

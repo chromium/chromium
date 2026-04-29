@@ -23,11 +23,13 @@ public interface NewTabPageManager extends SuggestionsUiDelegate {
      *
      * @param beginVoiceSearch Whether to begin a voice search.
      * @param requestType Type of request the focused omnibox should begin serving.
+     * @param showFuseboxPopup Whether the fusebox popup should be shown.
      * @param pastedText Text to paste in the omnibox after it's been focused. May be null.
      */
     void focusSearchBox(
             boolean beginVoiceSearch,
             @AutocompleteRequestType int requestType,
+            boolean showFuseboxPopup,
             @Nullable String pastedText);
 
     /**

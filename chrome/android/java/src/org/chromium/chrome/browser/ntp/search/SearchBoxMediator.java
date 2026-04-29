@@ -15,7 +15,10 @@ import android.view.ViewGroup;
 
 import androidx.annotation.StyleRes;
 
+import org.chromium.base.Callback;
 import org.chromium.base.MathUtils;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.composeplate.ComposeplateUtils;
@@ -27,7 +30,9 @@ import org.chromium.chrome.browser.lens.LensQueryParams;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties;
+import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -43,6 +48,12 @@ class SearchBoxMediator implements DestroyObserver {
     private final ViewGroup mView;
     private final List<OnClickListener> mVoiceSearchClickListeners = new ArrayList<>();
     private final List<OnClickListener> mLensClickListeners = new ArrayList<>();
+    private NonNullObservableSupplier<@FuseboxState Integer> mFuseboxStateSupplier =
+            ObservableSuppliers.createNonNull(FuseboxState.DISABLED);
+    private final Callback<@FuseboxState Integer> mOnFuseboxStateChanged =
+            this::onFuseboxStateChanged;
+    private boolean mIsFuseboxEligible;
+    private boolean mIsSearchProviderGoogle;
     private final float mTransitionEndOffset;
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
 
@@ -73,6 +84,7 @@ class SearchBoxMediator implements DestroyObserver {
 
         mModel.set(SearchBoxProperties.LENS_CLICK_CALLBACK, null);
         mModel.set(SearchBoxProperties.VOICE_SEARCH_CLICK_CALLBACK, null);
+        mModel.set(SearchBoxProperties.PLUS_BUTTON_CLICK_CALLBACK, null);
         mModel.set(SearchBoxProperties.SEARCH_BOX_CLICK_CALLBACK, null);
         mModel.set(SearchBoxProperties.SEARCH_BOX_DRAG_CALLBACK, null);
         mModel.set(SearchBoxProperties.SEARCH_BOX_TEXT_WATCHER, null);
@@ -80,6 +92,8 @@ class SearchBoxMediator implements DestroyObserver {
 
         mLensClickListeners.clear();
         mVoiceSearchClickListeners.clear();
+
+        mFuseboxStateSupplier.removeObserver(mOnFuseboxStateChanged);
     }
 
     /** Called to set a click listener for the search box. */
@@ -104,6 +118,27 @@ class SearchBoxMediator implements DestroyObserver {
         mModel.set(
                 SearchBoxProperties.DSE_ICON_DRAWABLE,
                 newIcon.getDrawable(mContext, mContext.getResources()));
+    }
+
+    private void updateStartIcon() {
+        boolean isMultimodalInputEnabled = OmniboxFeatures.isMultimodalInputEnabled(mContext);
+        boolean isFuseboxSupportedDeviceType = OmniboxFeatures.isFuseboxSupportedDeviceType();
+
+        mModel.set(
+                SearchBoxProperties.PLUS_BUTTON_VISIBILITY,
+                isMultimodalInputEnabled
+                        && mIsFuseboxEligible
+                        && isFuseboxSupportedDeviceType
+                        && mIsSearchProviderGoogle);
+    }
+
+    void setIsSearchProviderGoogle(boolean isGoogle) {
+        mIsSearchProviderGoogle = isGoogle;
+        updateStartIcon();
+    }
+
+    private void onFuseboxStateChanged(@FuseboxState Integer state) {
+        updateStartIcon();
     }
 
     /** Called to set a drag listener for the search box. */
@@ -137,6 +172,21 @@ class SearchBoxMediator implements DestroyObserver {
                         clickListener.onClick(v);
                     }
                 });
+    }
+
+    void setPlusButtonClickListener(OnClickListener listener) {
+        mModel.set(SearchBoxProperties.PLUS_BUTTON_CLICK_CALLBACK, listener);
+    }
+
+    void setIsFuseboxEligible(boolean isEligible) {
+        mIsFuseboxEligible = isEligible;
+        updateStartIcon();
+    }
+
+    void setFuseboxStateSupplier(NonNullObservableSupplier<Integer> fuseboxStateSupplier) {
+        mFuseboxStateSupplier.removeObserver(mOnFuseboxStateChanged);
+        mFuseboxStateSupplier = fuseboxStateSupplier;
+        mFuseboxStateSupplier.addSyncObserverAndPostIfNonNull(mOnFuseboxStateChanged);
     }
 
     /**

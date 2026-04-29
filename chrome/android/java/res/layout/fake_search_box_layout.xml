@@ -41,6 +41,19 @@ found in the LICENSE file.
             android:importantForAccessibility="no"
             android:src="@drawable/ic_logo_googleg_24dp"/>
 
+        <org.chromium.ui.widget.ChromeImageView
+            style="@style/LocationBarActionButtonForFakeSearchBox"
+            android:id="@+id/search_box_plus_button"
+            android:layout_width="@dimen/omnibox_search_engine_logo_composed_size"
+            android:layout_height="@dimen/omnibox_search_engine_logo_composed_size"
+            android:layout_marginEnd="@dimen/fake_search_box_start_padding"
+            android:scaleType="fitCenter"
+            android:focusable="true"
+            android:clickable="true"
+            android:visibility="gone"
+            android:contentDescription="@string/accessibility_omnibox_open_context_popup"
+            android:src="@drawable/ic_add_24dp"/>
+
         <!-- TODO(crbug.com/40600572): Fix and remove lint ignore -->
         <RelativeLayout
             android:layout_width="0dp"

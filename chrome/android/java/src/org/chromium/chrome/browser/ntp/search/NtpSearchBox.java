@@ -14,6 +14,7 @@ import android.view.View.OnDragListener;
 import androidx.annotation.Px;
 import androidx.annotation.StyleRes;
 
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feed.FeedSurfaceScrollDelegate;
@@ -66,6 +67,18 @@ public interface NtpSearchBox {
     void setSearchEngineIcon(@Nullable StatusIconResource icon);
 
     void applyWhiteBackground(boolean apply);
+
+    /* Provides state updates for the fusebox. */
+    void setFuseboxStateSupplier(NonNullObservableSupplier<Integer> fuseboxStateSupplier);
+
+    /* Sets the plus button click listener. */
+    void setPlusButtonClickListener(OnClickListener listener);
+
+    /* Sets whether the fusebox is eligible. */
+    void setIsFuseboxEligible(boolean isEligible);
+
+    /* Sets if the DSE is Google. */
+    void setIsSearchProviderGoogle(boolean isGoogle);
 
     /**
      * Calculates the percentage (between 0 and 1) of the transition from the search box to the

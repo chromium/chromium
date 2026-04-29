@@ -122,4 +122,29 @@ public class SearchBoxViewBinderUnitTest {
         verify(mSearchBoxTextView).removeTextChangedListener(eq(textWatcher));
         verify(mSearchBoxTextView, never()).addTextChangedListener(any(TextWatcher.class));
     }
+
+    @Test
+    public void testSetPlusButtonVisibility() {
+        View plusButton = mock(View.class);
+        View engineIcon = mock(View.class);
+        when(mSearchBoxLayout.findViewById(org.chromium.chrome.R.id.search_box_plus_button))
+                .thenReturn(plusButton);
+        when(mSearchBoxLayout.findViewById(org.chromium.chrome.R.id.search_box_engine_icon))
+                .thenReturn(engineIcon);
+
+        mPropertyModel.set(SearchBoxProperties.PLUS_BUTTON_VISIBILITY, true);
+        verify(plusButton).setVisibility(eq(View.VISIBLE));
+        verify(engineIcon).setVisibility(eq(View.GONE));
+
+        mPropertyModel.set(SearchBoxProperties.PLUS_BUTTON_VISIBILITY, false);
+        verify(plusButton).setVisibility(eq(View.GONE));
+        verify(engineIcon).setVisibility(eq(View.VISIBLE));
+    }
+
+    @Test
+    public void testSetPlusButtonClickListener() {
+        View.OnClickListener listener = mock(View.OnClickListener.class);
+        mPropertyModel.set(SearchBoxProperties.PLUS_BUTTON_CLICK_CALLBACK, listener);
+        verify(mSearchBoxLayout).setPlusButtonClickListener(eq(listener));
+    }
 }

@@ -79,6 +79,11 @@ public class SearchBoxContainerView extends LinearLayout {
         mDseIconView.setImageDrawable(drawable);
     }
 
+    void setPlusButtonClickListener(@Nullable OnClickListener listener) {
+        ImageView plusButton = findViewById(R.id.search_box_plus_button);
+        plusButton.setOnClickListener(listener);
+    }
+
     /**
      * Applies or cleans up the white background for the search box.
      *

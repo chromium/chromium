@@ -264,6 +264,7 @@ public class NewTabPage
         public void focusSearchBox(
                 boolean beginVoiceSearch,
                 @AutocompleteRequestType int requestType,
+                boolean showFuseboxPopup,
                 @Nullable String pastedText) {
             if (mIsDestroyed) return;
             FeedReliabilityLogger feedReliabilityLogger =
@@ -288,6 +289,8 @@ public class NewTabPage
                                 : OmniboxFocusReason.FAKE_BOX_LONG_PRESS;
                 if (requestType == AutocompleteRequestType.AI_MODE) {
                     focusReason = OmniboxFocusReason.NTP_AI_MODE;
+                } else if (showFuseboxPopup) {
+                    focusReason = OmniboxFocusReason.FAKE_BOX_PLUS_BUTTON_TAP;
                 }
 
                 mOmniboxStub.beginInput(
@@ -913,6 +916,7 @@ public class NewTabPage
             // state from the location bar when we get a reference to it as a workaround.
             mNewTabPageCoordinator.setUrlFocusChangeAnimationPercent(
                     omniboxStub.isUrlBarFocused() ? 1f : 0f);
+            mNewTabPageCoordinator.setFuseboxStateSupplier(omniboxStub.getFuseboxStateSupplier());
 
             FeedReliabilityLogger feedReliabilityLogger =
                     mFeedSurfaceProvider.getReliabilityLogger();

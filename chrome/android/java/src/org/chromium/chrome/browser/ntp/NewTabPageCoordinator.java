@@ -25,6 +25,7 @@ import org.chromium.base.CallbackController;
 import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
@@ -357,6 +358,7 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
         initializeLensButton();
 
         initializeComposeplateFlags(mProfile);
+        mSearchBoxCoordinator.setIsFuseboxEligible(Boolean.TRUE.equals(mIsComposeplateEnabled));
         if (assumeNonNull(mIsComposeplateEnabled)) {
             initializeComposeplate();
         }
@@ -427,7 +429,19 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
 
         assumeNonNull(mSearchBoxCoordinator);
         mSearchBoxCoordinator.setSearchBoxClickListener(
-                v -> mManager.focusSearchBox(false, AutocompleteRequestType.SEARCH, null));
+                v ->
+                        mManager.focusSearchBox(
+                                /* beginVoiceSearch= */ false,
+                                AutocompleteRequestType.SEARCH,
+                                /* showFuseboxPopup= */ false,
+                                /* pastedText= */ null));
+        mSearchBoxCoordinator.setPlusButtonClickListener(
+                v ->
+                        mManager.focusSearchBox(
+                                /* beginVoiceSearch= */ false,
+                                AutocompleteRequestType.SEARCH,
+                                /* showFuseboxPopup= */ true,
+                                /* pastedText= */ null));
 
         // @TODO(crbug.com/41492572): Add test case for search box OnDragListener.
         mSearchBoxCoordinator.setSearchBoxDragListener(
@@ -456,7 +470,7 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
                     public void afterTextChanged(Editable s) {
                         if (s.length() == 0 || mSearchBoxCoordinator == null) return;
                         mManager.focusSearchBox(
-                                false, AutocompleteRequestType.SEARCH, s.toString());
+                                false, AutocompleteRequestType.SEARCH, false, s.toString());
                         mSearchBoxCoordinator.setSearchText("");
                     }
                 });
@@ -489,7 +503,7 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
     private void initializeVoiceSearchButton() {
         TraceEvent.begin(TAG + ".initializeVoiceSearchButton()");
         View.OnClickListener voiceSearchButtonClickListener =
-                v -> mManager.focusSearchBox(true, AutocompleteRequestType.SEARCH, null);
+                v -> mManager.focusSearchBox(true, AutocompleteRequestType.SEARCH, false, null);
         assumeNonNull(mSearchBoxCoordinator)
                 .addVoiceSearchButtonClickListener(voiceSearchButtonClickListener);
         TraceEvent.end(TAG + ".initializeVoiceSearchButton()");
@@ -543,7 +557,7 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
                 && OmniboxFeatures.sRedirectComposeplateButton.getValue()
                 && !mIsTablet
                 && mIsComposeplatePolicyEnabled) {
-            mManager.focusSearchBox(false, AutocompleteRequestType.AI_MODE, null);
+            mManager.focusSearchBox(false, AutocompleteRequestType.AI_MODE, false, null);
             return;
         }
 
@@ -754,6 +768,9 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
         boolean isSearchProviderIsGoogleChanged = mSearchProviderIsGoogle != isGoogle;
         mSearchProviderHasLogo = hasLogo;
         mSearchProviderIsGoogle = isGoogle;
+        if (mSearchBoxCoordinator != null) {
+            mSearchBoxCoordinator.setIsSearchProviderGoogle(isGoogle);
+        }
 
         if (!mSearchProviderIsGoogle) {
             mShowingNonStandardGoogleLogo = false;
@@ -821,6 +838,13 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
      */
     boolean urlFocusAnimationsDisabled() {
         return mDisableUrlFocusChangeAnimations;
+    }
+
+    /** Sets the supplier for the fusebox state. */
+    public void setFuseboxStateSupplier(NonNullObservableSupplier<Integer> fuseboxStateSupplier) {
+        if (mSearchBoxCoordinator != null) {
+            mSearchBoxCoordinator.setFuseboxStateSupplier(fuseboxStateSupplier);
+        }
     }
 
     /**
@@ -1484,6 +1508,10 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
 
     public @Nullable HomeModulesCoordinator getHomeModulesCoordinatorForTesting() {
         return mHomeModulesCoordinator;
+    }
+
+    public @Nullable NtpSearchBox getSearchBoxCoordinatorForTesting() {
+        return mSearchBoxCoordinator;
     }
 
     public PropertyModel getModelForTesting() {

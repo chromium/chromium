@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ntp.search;
 
+import android.content.res.ColorStateList;
 import android.os.Build;
 import android.text.TextWatcher;
 import android.view.View;
@@ -35,11 +36,10 @@ class SearchBoxViewBinder
         if (SearchBoxProperties.ALPHA == propertyKey) {
             searchBoxlayout.setAlpha(model.get(SearchBoxProperties.ALPHA));
         } else if (SearchBoxProperties.VOICE_SEARCH_COLOR_STATE_LIST == propertyKey) {
-            ImageViewCompat.setImageTintList(
-                    voiceSearchButton,
-                    model.get(SearchBoxProperties.VOICE_SEARCH_COLOR_STATE_LIST));
-            ImageViewCompat.setImageTintList(
-                    lensButton, model.get(SearchBoxProperties.VOICE_SEARCH_COLOR_STATE_LIST));
+            ColorStateList tint = model.get(SearchBoxProperties.VOICE_SEARCH_COLOR_STATE_LIST);
+            ImageViewCompat.setImageTintList(voiceSearchButton, tint);
+            ImageViewCompat.setImageTintList(lensButton, tint);
+            ImageViewCompat.setImageTintList(view.findViewById(R.id.search_box_plus_button), tint);
         } else if (SearchBoxProperties.VOICE_SEARCH_VISIBILITY == propertyKey) {
             voiceSearchButton.setVisibility(
                     model.get(SearchBoxProperties.VOICE_SEARCH_VISIBILITY)
@@ -120,6 +120,16 @@ class SearchBoxViewBinder
         } else if (SearchBoxProperties.DSE_ICON_DRAWABLE == propertyKey) {
             ((SearchBoxContainerView) searchBoxlayout)
                     .setDseIconDrawable(model.get(SearchBoxProperties.DSE_ICON_DRAWABLE));
+        } else if (SearchBoxProperties.PLUS_BUTTON_CLICK_CALLBACK == propertyKey) {
+            ((SearchBoxContainerView) searchBoxlayout)
+                    .setPlusButtonClickListener(
+                            model.get(SearchBoxProperties.PLUS_BUTTON_CLICK_CALLBACK));
+        } else if (SearchBoxProperties.PLUS_BUTTON_VISIBILITY == propertyKey) {
+            boolean visible = model.get(SearchBoxProperties.PLUS_BUTTON_VISIBILITY);
+            view.findViewById(R.id.search_box_plus_button)
+                    .setVisibility(visible ? View.VISIBLE : View.GONE);
+            view.findViewById(R.id.search_box_engine_icon)
+                    .setVisibility(visible ? View.GONE : View.VISIBLE);
         } else {
             assert false : "Unhandled property detected in SearchBoxViewBinder!";
         }

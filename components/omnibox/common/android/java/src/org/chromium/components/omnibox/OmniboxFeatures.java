@@ -422,6 +422,11 @@ public class OmniboxFeatures {
         ResettersForTesting.register(() -> sHasDesktopExperienceForTesting = null);
     }
 
+    /** Returns whether the device type is supported for Fusebox. */
+    public static boolean isFuseboxSupportedDeviceType() {
+        return !DeviceInfo.isAutomotive() && !DeviceInfo.isXr() && !DeviceInfo.isTV();
+    }
+
     /**
      * Return whether the device is in a desktop-like configuration (interacted with using physical
      * keyboard and precision pointer).
