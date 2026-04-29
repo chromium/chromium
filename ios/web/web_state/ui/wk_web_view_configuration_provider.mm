@@ -19,6 +19,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/bind_post_task.h"
 #import "base/task/sequenced_task_runner.h"
+#import "base/trace_event/trace_event.h"
 #import "base/uuid.h"
 #import "components/safe_browsing/core/common/features.h"
 #import "ios/public/provider/web/cobalt_api.h"
@@ -140,6 +141,8 @@ void WKWebViewConfigurationProvider::Initialize() {
 
 void WKWebViewConfigurationProvider::ResetWithWebViewConfiguration(
     WKWebViewConfiguration* configuration) {
+  TRACE_EVENT("ui",
+              "WKWebViewConfigurationProvider::ResetWithWebViewConfiguration");
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequence_checker_);
   if (configuration_) {
     Purge();
@@ -241,6 +244,7 @@ WKWebViewConfigurationProvider::GetWebViewConfiguration() {
 WKWebsiteDataStore* WKWebViewConfigurationProvider::GetWebsiteDataStore() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequence_checker_);
   if (!website_data_store_) {
+    TRACE_EVENT("ui", "WKWebViewConfigurationProvider::GetWebsiteDataStore");
     if (browser_state_->IsOffTheRecord()) {
       // The data is stored in memory. A new non-persistent data store is
       // created for each incognito browser state.
@@ -279,6 +283,7 @@ WKWebsiteDataStore* WKWebViewConfigurationProvider::GetWebsiteDataStore() {
 }
 
 void WKWebViewConfigurationProvider::UpdateScripts() {
+  TRACE_EVENT("ui", "WKWebViewConfigurationProvider::UpdateScripts");
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequence_checker_);
   [configuration_.userContentController removeAllUserScripts];
 

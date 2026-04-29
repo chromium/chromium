@@ -7,6 +7,7 @@
 #import <QuartzCore/QuartzCore.h>
 
 #import "base/check.h"
+#import "base/trace_event/trace_event.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_constants.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_utils.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_layout_utils.h"
@@ -152,6 +153,7 @@
 }
 
 - (void)viewSafeAreaInsetsDidChange {
+  TRACE_EVENT("ui", "-[SceneViewController viewSafeAreaInsetsDidChange]");
   [super viewSafeAreaInsetsDidChange];
   [self updateAssistantTopConstraints:self.layoutState.containedLayoutActive];
   [self.view layoutIfNeeded];

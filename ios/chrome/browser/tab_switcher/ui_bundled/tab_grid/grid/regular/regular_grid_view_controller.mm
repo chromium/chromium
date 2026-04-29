@@ -8,6 +8,7 @@
 #import "base/functional/bind.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/task/sequenced_task_runner.h"
+#import "base/trace_event/trace_event.h"
 #import "components/tab_groups/tab_group_id.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -173,6 +174,9 @@ NSArray<UIView*>* GetTabGroupViewsToAnimateClosure(
 - (UICollectionViewCell*)cellForItemAtIndexPath:(NSIndexPath*)indexPath
                                  itemIdentifier:
                                      (GridItemIdentifier*)itemIdentifier {
+  TRACE_EVENT(
+      "ui",
+      "-[RegularGridViewController cellForItemAtIndexPath:itemIdentifier:]");
   if (itemIdentifier.type == GridItemType::kInactiveTabsButton) {
     UICollectionViewCellRegistration* registration =
         _inactiveTabsButtonCellRegistration;

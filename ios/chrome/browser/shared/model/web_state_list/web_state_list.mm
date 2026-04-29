@@ -13,6 +13,7 @@
 #import "base/containers/adapters.h"
 #import "base/functional/bind.h"
 #import "base/memory/raw_ptr.h"
+#import "base/trace_event/trace_event.h"
 #import "components/tab_groups/tab_group_id.h"
 #import "ios/chrome/browser/shared/model/web_state_list/order_controller.h"
 #import "ios/chrome/browser/shared/model/web_state_list/order_controller_source_from_web_state_list.h"
@@ -453,6 +454,7 @@ base::AutoReset<bool> WebStateList::LockForMutation() {
 
 int WebStateList::InsertWebStateImpl(std::unique_ptr<web::WebState> web_state,
                                      InsertionParams params) {
+  TRACE_EVENT("ui", "WebStateList::InsertWebStateImpl");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(locked_);
   CHECK(web_state);
@@ -1301,6 +1303,7 @@ void WebStateList::DeleteGroupIfEmpty(const TabGroup* group) {
 }
 
 void WebStateList::SetActiveIndex(int active_index) {
+  TRACE_EVENT("ui", "WebStateList::SetActiveIndex");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (active_index_ == active_index) {
     return;

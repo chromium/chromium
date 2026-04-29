@@ -9,6 +9,7 @@
 #import "base/ios/ios_util.h"
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/trace_event/trace_event.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/browser/browser_view/ui_bundled/browser_coordinator.h"
 #import "ios/chrome/browser/browser_view/ui_bundled/browser_view_controller.h"
@@ -55,6 +56,9 @@
                      sceneState:(SceneState*)sceneState
                   sceneEndpoint:(id<SceneCommands>)sceneEndpoint
                settingsEndpoint:(id<SettingsCommands>)settingsEndpoint {
+  TRACE_EVENT("ui",
+              "-[BrowserLifecycleManager "
+              "initWithProfile:sceneState:sceneEndpoint:settingsEndpoint:]");
   if ((self = [super init])) {
     _profile = profile;
     _sceneState = sceneState;
@@ -79,6 +83,8 @@
 }
 
 - (void)createMainCoordinatorAndInterface {
+  TRACE_EVENT("ui",
+              "-[BrowserLifecycleManager createMainCoordinatorAndInterface]");
   DCHECK(!_mainInterface)
       << "-createMainCoordinatorAndInterface must not be called once";
 
@@ -95,6 +101,7 @@
 }
 
 - (void)loadSession {
+  TRACE_EVENT("ui", "-[BrowserLifecycleManager loadSession]");
   DCHECK(_mainBrowser);
   DCHECK(_mainInterface)
       << "-loadSession must be called after -createMainCoordinatorAndInterface";
@@ -102,9 +109,19 @@
   Browser* inactiveBrowser = _mainBrowser->GetInactiveBrowser();
 
   // Restore the session after creating the coordinator.
-  [self loadSessionForBrowser:_mainBrowser.get()];
-  [self loadSessionForBrowser:inactiveBrowser];
-  [self loadSessionForBrowser:_otrBrowser.get()];
+  {
+    TRACE_EVENT("ui", "-[BrowserLifecycleManager loadSessionForBrowser:] main");
+    [self loadSessionForBrowser:_mainBrowser.get()];
+  }
+  {
+    TRACE_EVENT("ui",
+                "-[BrowserLifecycleManager loadSessionForBrowser:] inactive");
+    [self loadSessionForBrowser:inactiveBrowser];
+  }
+  {
+    TRACE_EVENT("ui", "-[BrowserLifecycleManager loadSessionForBrowser:] otr");
+    [self loadSessionForBrowser:_otrBrowser.get()];
+  }
 
   if (!IsInactiveTabsExplicitlyDisabledByUser(
           _mainBrowser->GetProfile()->GetPrefs())) {
@@ -299,6 +316,7 @@
 
 // Create the OTR interface object.
 - (WrangledBrowser*)createOTRInterface {
+  TRACE_EVENT("ui", "-[BrowserLifecycleManager createOTRInterface]");
   DCHECK(!_incognitoInterface);
 
   // The backing coordinator should not have been created yet.

@@ -19,6 +19,7 @@
 #import "base/not_fatal_until.h"
 #import "base/scoped_observation.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/trace_event/trace_event.h"
 #import "build/config/ios/swift_buildflags.h"
 #import "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #import "components/collaboration/public/collaboration_flow_type.h"
@@ -887,6 +888,7 @@ const char kChromeAppStoreUrl[] =
   if (self.started) {
     return;
   }
+  TRACE_EVENT("ui", "-[BrowserCoordinator start]");
 
   DCHECK(!self.viewController);
 
@@ -1472,6 +1474,7 @@ const char kChromeAppStoreUrl[] =
 }
 
 - (void)updateViewControllerDependencies {
+  TRACE_EVENT("ui", "-[BrowserCoordinator updateViewControllerDependencies]");
   BrowserViewController* viewController = self.viewController;
   _bookmarksCoordinator.baseViewController = viewController;
 

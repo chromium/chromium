@@ -15,6 +15,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/time/time.h"
+#import "base/trace_event/trace_event.h"
 #import "components/breadcrumbs/core/breadcrumbs_status.h"
 #import "components/data_sharing/public/data_sharing_utils.h"
 #import "components/feature_engagement/public/event_constants.h"
@@ -995,6 +996,7 @@ bool IsProfileUnmanaged(ProfileIOS* profile) {
 
 // Starts up a single chrome window and its UI.
 - (void)startUpChromeUI {
+  TRACE_EVENT("ui", "-[SceneController startUpChromeUI]");
   DCHECK(!self.browserLifecycleManager);
   DCHECK(_sceneURLLoadingService.get());
   DCHECK(self.profile);
@@ -1073,6 +1075,7 @@ bool IsProfileUnmanaged(ProfileIOS* profile) {
 // Creates and displays the initial UI in `launchMode`, performing other
 // setup and configuration as needed.
 - (void)createInitialUI:(ApplicationMode)launchMode {
+  TRACE_EVENT("ui", "-[SceneController createInitialUI:]");
   // Set the Scene application URL loader on the URL loading browser interface
   // for the regular and incognito interfaces. This will lazily instantiate the
   // incognito interface if it isn't already created.
@@ -1409,6 +1412,8 @@ bool IsProfileUnmanaged(ProfileIOS* profile) {
 
 // Add scene agents that are not dependent on profileState.
 - (void)addAgents {
+  TRACE_EVENT("ui", "-[SceneController addAgents]");
+
   SceneState* sceneState = self.sceneState;
   ProfileIOS* profile = self.profile;
   Browser* mainBrowser = self.browserLifecycleManager.mainInterface.browser;
@@ -2627,6 +2632,7 @@ bool IsProfileUnmanaged(ProfileIOS* profile) {
 }
 
 - (void)activateBVCAndMakeCurrentBVCPrimary {
+  TRACE_EVENT("ui", "-[SceneController activateBVCAndMakeCurrentBVCPrimary]");
   // If there are pending removal operations, the activation will be deferred
   // until the callback is received.
   BrowsingDataRemover* browsingDataRemover =
