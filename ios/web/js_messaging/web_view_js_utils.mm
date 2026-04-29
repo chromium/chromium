@@ -160,6 +160,20 @@ id NSObjectFromValueResult(const base::Value* value_result) {
   return ::NSObjectFromValueResult(value_result, kMaximumParsingRecursionDepth);
 }
 
+id NSDictionaryFromValue(const base::DictValue& dict) {
+  NSMutableDictionary* dictionary = [[NSMutableDictionary alloc] init];
+
+  for (const auto pair : dict) {
+    NSString* key = base::SysUTF8ToNSString(pair.first);
+    id wk_result =
+        ::NSObjectFromValueResult(&pair.second, kMaximumParsingRecursionDepth);
+    if (wk_result) {
+      [dictionary setValue:wk_result forKey:key];
+    }
+  }
+  return dictionary;
+}
+
 void ExecuteJavaScript(WKWebView* web_view,
                        NSString* script,
                        void (^completion_handler)(id, NSError*)) {

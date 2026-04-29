@@ -322,6 +322,38 @@ TEST_F(WebViewJsUtilsTest, NSObjectFromDictValueResult) {
   EXPECT_NSEQ(@(42), inner_dictionary[@"Key3"]);
 }
 
+// Tests that NSDictionaryFromValue converts base::DictValue to NSDictionary.
+TEST_F(WebViewJsUtilsTest, NSDictionaryFromValue) {
+  base::DictValue test_dict;
+  test_dict.Set("Key1", "Value1");
+
+  base::DictValue inner_test_dict;
+  inner_test_dict.Set("Key3", 42);
+  test_dict.Set("Key2", std::move(inner_test_dict));
+
+  id wk_result = web::NSDictionaryFromValue(test_dict);
+  EXPECT_TRUE(wk_result);
+  EXPECT_TRUE([wk_result isKindOfClass:[NSDictionary class]]);
+
+  NSDictionary* wk_result_dictionary =
+      base::apple::ObjCCastStrict<NSDictionary>(wk_result);
+  EXPECT_NSEQ(@"Value1", wk_result_dictionary[@"Key1"]);
+
+  NSDictionary* inner_dictionary = wk_result_dictionary[@"Key2"];
+  EXPECT_TRUE(inner_dictionary);
+  EXPECT_NSEQ(@(42), inner_dictionary[@"Key3"]);
+}
+
+// Tests that NSDictionaryFromValue converts empty base::DictValue to empty
+// NSDictionary.
+TEST_F(WebViewJsUtilsTest, NSDictionaryFromEmptyValue) {
+  base::DictValue empty_dict;
+  id wk_result = web::NSDictionaryFromValue(empty_dict);
+  EXPECT_TRUE(wk_result);
+  EXPECT_TRUE([wk_result isKindOfClass:[NSDictionary class]]);
+  EXPECT_NSEQ(@{}, wk_result);
+}
+
 // Tests that NSObjectFromValueResult converts Value::Type::LIST to NSArray.
 TEST_F(WebViewJsUtilsTest, NSObjectFromListValueResult) {
   base::ListValue test_list;

@@ -13,6 +13,7 @@
 
 namespace base {
 class Value;
+class DictValue;
 }  // namespace base
 
 #import "ios/web/public/js_messaging/web_view_js_utils.h"
@@ -35,6 +36,9 @@ enum JSEvaluationErrorCode {
 
 // Converts base::Value to an equivalent Foundation object.
 id NSObjectFromValueResult(const base::Value* value_result);
+
+// Converts base::DictValue to an equivalent NSDictionary.
+id NSDictionaryFromValue(const base::DictValue& dict);
 
 // Executes JavaScript on WKWebView. If the web view cannot execute JS at the
 // moment, `completion_handler` is called with an NSError.
