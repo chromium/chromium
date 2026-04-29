@@ -1318,6 +1318,13 @@ ci.builder(
             # if/when the full resources are delivered.
             "very_limited_capacity_bot",
         ],
+        per_test_modifications = {
+            "interactive_ui_tests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 5,
+                ),
+            ),
+        },
     ),
     targets_settings = targets.settings(
         browser_config = targets.browser_config.RELEASE,
