@@ -87,12 +87,10 @@ void EmailOneTimeTokenFetcher::StartOneTimeTokenServiceCall(
       kOneTimeTokenServiceCriticalityHeaderName,
       kOneTimeTokenServiceCriticalityHeaderValue);
 
-  // TODO(crbug.com/486136247): Update the traffic annotation to include the
-  // enterprise policy.
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("fetch_email_one_time_token", R"(
         semantics {
-          sender: "Gmail OTP filling in Autofill."
+          sender: "Gmail OTP filling by Gemini Live in Chrome."
           description:
             "Sends a request to OneTimeTokenService to fetch an OTP that sits "
             "in user's email. At this point the OTP is already parsed on the "
@@ -117,11 +115,14 @@ void EmailOneTimeTokenFetcher::StartOneTimeTokenServiceCall(
         policy {
           cookies_allowed: NO
           setting:
-            "The feature can be controlled by a dedicated setting in Password "
-            "Manager. Navigate to chrome://password-manager/settings, and "
-            "toggle the 'Autofill Verification Codes from Gmail' setting."
-          policy_exception_justification:
-            "The feature is in progress."
+            "These requests are sent only by Glic trying to fetch email OTP "
+            "from user's Gmail. IT Admins can turn the feature off by "
+            "disabling Glic using GeminiActOnWebSettings."
+          chrome_policy {
+            GeminiActOnWebSettings {
+              GeminiActOnWebSettings: 1
+            }
+          }
         })");
 
   simple_url_loader_ = network::SimpleURLLoader::Create(
