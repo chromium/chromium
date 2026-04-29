@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {FocusedTabData, GlicBrowserHost, GlicWebClient, InvokeOptions, Observable, OpenPanelInfo, PanelOpeningData, PanelState, WebClientInitializeError} from '/glic/glic_api/glic_api.js';
+import type {AdditionalContext, FocusedTabData, GlicBrowserHost, GlicWebClient, InvokeOptions, Observable, OpenPanelInfo, PanelOpeningData, PanelState, WebClientInitializeError} from '/glic/glic_api/glic_api.js';
 import {InvocationSource, WebClientInitializeErrorReason, WebClientMode} from '/glic/glic_api/glic_api.js';
+import {Subject} from '/glic/observable.js';
 
 import {$} from './page_element_types.js';
 
@@ -283,6 +284,10 @@ class WebClient implements GlicWebClient {
     if (options.invocationSource === InvocationSource.CAPTURE_REGION_HOTKEY) {
       $.captureRegionBtn.click();
     }
+
+    if (options.context) {
+      additionalContextSubject.next(options.context);
+    }
   }
 
   getInitialized(): Promise<void> {
@@ -311,6 +316,7 @@ class WebClient implements GlicWebClient {
   }
 }
 
+export const additionalContextSubject = new Subject<AdditionalContext>();
 export const client = new WebClient();
 
 // This allows browser tests using this test client to be able to access and
