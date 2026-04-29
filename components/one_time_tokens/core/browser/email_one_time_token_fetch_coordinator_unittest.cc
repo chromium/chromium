@@ -4,6 +4,7 @@
 
 #include "components/one_time_tokens/core/browser/email_one_time_token_fetch_coordinator.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -26,6 +27,7 @@ class EmailOneTimeTokenFetchCoordinatorTest : public testing::Test {
  protected:
   MockDelegate mock_delegate_;
   EmailOneTimeTokenFetchCoordinator coordinator_;
+  base::HistogramTester histogram_tester_;
 };
 
 MATCHER_P(OneTimeTokenNotificationMatches, expected_reference, "") {
@@ -40,6 +42,9 @@ TEST_F(EmailOneTimeTokenFetchCoordinatorTest, SignalNetworkRequestNeeded) {
 
   coordinator_.SignalNetworkRequestNeeded(OneTimeTokenBackendNotification(
       EncryptedMessageReference("test_reference")));
+
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.OneTimeTokens.Backend.Gmail.QueueSize", 1, 1);
 }
 
 // Tests that the coordinator enforces the concurrency limit.
@@ -75,6 +80,17 @@ TEST_F(EmailOneTimeTokenFetchCoordinatorTest, EnforcesConcurrencyLimit) {
   coordinator_.SignalNetworkRequestNeeded(notification3);
   coordinator_.SignalNetworkRequestNeeded(notification4);
   coordinator_.SignalNetworkRequestNeeded(notification5);
+
+  // QueueSize is recorded after push_back and before ProcessQueue.
+  // - Notifications 1-3: Added to an empty queue (size 1) and immediately
+  //   moved to active requests.
+  // - Notification 4: Added to an empty queue (size 1) but active requests
+  //   are full (limit 3), so it remains pending.
+  // - Notification 5: Added to a queue containing notification 4 (size 2).
+  histogram_tester_.ExpectBucketCount(
+      "Autofill.OneTimeTokens.Backend.Gmail.QueueSize", 1, 4);
+  histogram_tester_.ExpectBucketCount(
+      "Autofill.OneTimeTokens.Backend.Gmail.QueueSize", 2, 1);
 }
 
 // Tests that the coordinator ignores duplicate tickles for the same
@@ -92,6 +108,10 @@ TEST_F(EmailOneTimeTokenFetchCoordinatorTest, DeDuplicatesIncomingTickles) {
   coordinator_.SignalNetworkRequestNeeded(notification);
   coordinator_.SignalNetworkRequestNeeded(notification);
   coordinator_.SignalNetworkRequestNeeded(notification);
+
+  // Histogram should only be recorded once for the non-duplicate request.
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.OneTimeTokens.Backend.Gmail.QueueSize", 1, 1);
 }
 
 // Tests that the coordinator ignores duplicate tickles for the same reference

@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 
 namespace one_time_tokens {
 
@@ -39,6 +40,8 @@ void EmailOneTimeTokenFetchCoordinator::SignalNetworkRequestNeeded(
   }
 
   pending_queue_.push_back(notification);
+  base::UmaHistogramCounts100("Autofill.OneTimeTokens.Backend.Gmail.QueueSize",
+                              pending_queue_.size());
   ProcessQueue();
 }
 
