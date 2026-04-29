@@ -916,8 +916,10 @@ bool BrowserAccessibilityManager::NativeViewHasFocus() {
 }
 
 BrowserAccessibility* BrowserAccessibilityManager::GetFocus() const {
-  // TODO(crbug.com/40672441): Adjust to make it work with views-sourced
-  // managers as well.
+  if (delegate_ && !delegate_->AccessibilityIsWebContentSource()) {
+    return GetFocusFromThisOrDescendantFrame();
+  }
+
   BrowserAccessibilityManager* root_manager = GetManagerForRootFrame();
   if (!root_manager) {
     // We can't retrieved the globally focused object since we don't have access
@@ -949,9 +951,13 @@ BrowserAccessibility*
 BrowserAccessibilityManager::GetFocusFromThisOrDescendantFrame() const {
   AXNodeID focus_id = GetTreeData().focus_id;
   BrowserAccessibility* obj = GetFromID(focus_id);
-  // If nothing is focused, then the top document has the focus.
-  if (!obj)
+  // In web content, if nothing is focused, then the top document has the focus.
+  if (!obj) {
+    if (delegate_ && !delegate_->AccessibilityIsWebContentSource()) {
+      return nullptr;
+    }
     return GetBrowserAccessibilityRoot();
+  }
 
   if (obj->HasStringAttribute(ax::mojom::StringAttribute::kChildTreeId)) {
     AXTreeID child_tree_id = AXTreeID::FromString(
