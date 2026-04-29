@@ -68,7 +68,11 @@ BASE_FEATURE(kAndroidDesktopUAPlatform, base::FEATURE_DISABLED_BY_DEFAULT);
 // Avoids copying ResourceRequest::TrustedParams when possible.
 BASE_FEATURE(kAvoidTrustedParamsCopies, base::FEATURE_ENABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kUnthrottleAsyncTouchMoves, base::FEATURE_ENABLED_BY_DEFAULT);
+#else
 BASE_FEATURE(kUnthrottleAsyncTouchMoves, base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
 
 const base::FeatureParam<AsyncTouchMoveThrottlingPolicy>::Option
     async_touch_move_throttling_policies[] = {
@@ -76,13 +80,12 @@ const base::FeatureParam<AsyncTouchMoveThrottlingPolicy>::Option
          "unthrottled_when_gsu_unconsumed"},
         {AsyncTouchMoveThrottlingPolicy::kUnthrottledAlways,
          "unthrottled_always"}};
-BASE_FEATURE_ENUM_PARAM(
-    AsyncTouchMoveThrottlingPolicy,
-    kAsyncTouchMoveThrottlingPolicyParam,
-    &kUnthrottleAsyncTouchMoves,
-    "policy",
-    AsyncTouchMoveThrottlingPolicy::kUnthrottledWhenGsuUnconsumed,
-    &async_touch_move_throttling_policies);
+BASE_FEATURE_ENUM_PARAM(AsyncTouchMoveThrottlingPolicy,
+                        kAsyncTouchMoveThrottlingPolicyParam,
+                        &kUnthrottleAsyncTouchMoves,
+                        "policy",
+                        AsyncTouchMoveThrottlingPolicy::kUnthrottledAlways,
+                        &async_touch_move_throttling_policies);
 
 // Block all MIDI access with the MIDI_SYSEX permission
 BASE_FEATURE(kBlockMidiByDefault, base::FEATURE_ENABLED_BY_DEFAULT);

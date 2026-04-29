@@ -23621,7 +23621,6 @@
     "UnthrottleAsyncTouchMoves": [
         {
             "platforms": [
-                "android",
                 "android_webview",
                 "chromeos",
                 "linux",
@@ -23630,18 +23629,18 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_UnthrottledWhenGsuUnconsumed",
+                    "name": "Enabled_UnthrottledAlways",
                     "params": {
-                        "policy": "unthrottled_when_gsu_unconsumed"
+                        "policy": "unthrottled_always"
                     },
                     "enable_features": [
                         "UnthrottleAsyncTouchMoves"
                     ]
                 },
                 {
-                    "name": "Enabled_UnthrottledAlways",
+                    "name": "Enabled_UnthrottledWhenGsuUnconsumed",
                     "params": {
-                        "policy": "unthrottled_always"
+                        "policy": "unthrottled_when_gsu_unconsumed"
                     },
                     "enable_features": [
                         "UnthrottleAsyncTouchMoves"

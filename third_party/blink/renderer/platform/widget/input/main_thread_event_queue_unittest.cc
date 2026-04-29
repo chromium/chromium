@@ -1003,6 +1003,10 @@ TEST_F(MainThreadEventQueueTest, RafAlignedTouchInputCoalescedMoves) {
 }
 
 TEST_F(MainThreadEventQueueTest, RafAlignedTouchInputThrottlingMoves) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      blink::features::kUnthrottleAsyncTouchMoves);
+
   EXPECT_CALL(*widget_scheduler_, DidHandleInputEventOnMainThread(
                                       testing::_, testing::_, testing::_))
       .Times(3);
@@ -1046,6 +1050,48 @@ TEST_F(MainThreadEventQueueTest, RafAlignedTouchInputThrottlingMoves) {
               testing::Each(ReceivedCallback(
                   CallbackReceivedState::kCalledWhileHandlingEvent, false, 1)));
   EXPECT_EQ(0u, event_queue().size());
+}
+
+TEST_F(MainThreadEventQueueTest, RafAlignedTouchInputUnthrottledMoves) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      blink::features::kUnthrottleAsyncTouchMoves,
+      {{"policy", "unthrottled_always"}});
+
+  EXPECT_CALL(*widget_scheduler_, DidHandleInputEventOnMainThread(
+                                      testing::_, testing::_, testing::_))
+      .Times(3);
+
+  SyntheticWebTouchEvent kEvents[2];
+  kEvents[0].PressPoint(10, 10);
+  kEvents[0].MovePoint(0, 50, 50);
+  kEvents[0].dispatch_type = WebInputEvent::DispatchType::kEventNonBlocking;
+  kEvents[1].PressPoint(10, 10);
+  kEvents[1].MovePoint(0, 20, 20);
+  kEvents[1].dispatch_type = WebInputEvent::DispatchType::kEventNonBlocking;
+
+  EXPECT_FALSE(main_task_runner_->HasPendingTask());
+  EXPECT_EQ(0u, event_queue().size());
+
+  HandleEvent(kEvents[0], blink::mojom::InputEventResultState::kNotConsumed);
+  EXPECT_EQ(1u, event_queue().size());
+  EXPECT_FALSE(main_task_runner_->HasPendingTask());
+  EXPECT_TRUE(needs_main_frame_);
+  RunPendingTasksWithSimulatedRaf();
+  EXPECT_THAT(GetAndResetCallbackResults(),
+              testing::Each(ReceivedCallback(
+                  CallbackReceivedState::kCalledWhileHandlingEvent, false, 0)));
+  HandleEvent(kEvents[0], blink::mojom::InputEventResultState::kNotConsumed);
+  HandleEvent(kEvents[1], blink::mojom::InputEventResultState::kNotConsumed);
+  EXPECT_EQ(1u, event_queue().size());
+  EXPECT_FALSE(main_task_runner_->HasPendingTask());
+  EXPECT_TRUE(needs_main_frame_);
+
+  // Event should be dispatched immediately after handling a single rAF call.
+  RunSimulatedRafOnce();
+  EXPECT_EQ(0u, event_queue().size());
+  EXPECT_FALSE(main_task_runner_->HasPendingTask());
+  EXPECT_FALSE(needs_main_frame_);
 }
 
 TEST_F(MainThreadEventQueueTest, LowLatency) {
