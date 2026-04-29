@@ -79,6 +79,7 @@
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/home_waiting_view.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_url_item.h"
@@ -2297,7 +2298,9 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
   if (!self.emptyViewBackground) {
     self.emptyViewBackground = [[TableViewIllustratedEmptyView alloc]
         initWithFrame:self.tableView.bounds
-                image:[UIImage imageNamed:@"bookmark_empty"]
+                image:[UIImage imageNamed:IsChromeNextIaEnabled()
+                                              ? @"bookmark_empty"
+                                              : @"bookmark_empty_legacy"]
                 title:GetNSString(IDS_IOS_BOOKMARK_EMPTY_TITLE)
              subtitle:GetNSString(IDS_IOS_BOOKMARK_EMPTY_MESSAGE)];
   }

@@ -1310,7 +1310,9 @@ BOOL IsAllSelected(NSUInteger selected_unread_count,
   // elements may be outdated and the layout triggered by this function will
   // generate access non-existing items.
   [self.tableView reloadData];
-  UIImage* emptyImage = [UIImage imageNamed:@"reading_list_empty"];
+  UIImage* emptyImage = [UIImage imageNamed:IsChromeNextIaEnabled()
+                                                ? @"reading_list_empty"
+                                                : @"reading_list_empty_legacy"];
   NSString* title =
       l10n_util::GetNSString(IDS_IOS_READING_LIST_NO_ENTRIES_TITLE);
   NSString* subtitle =

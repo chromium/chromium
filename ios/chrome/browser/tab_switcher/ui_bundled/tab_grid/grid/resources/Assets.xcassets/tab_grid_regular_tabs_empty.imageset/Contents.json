@@ -1,15 +1,22 @@
 {
-    "images": [
-        {
-            "idiom": "universal",
-            "filename": "tab_grid_regular_tabs_empty.pdf"
-        }
-    ],
-    "info": {
-        "version": 1,
-        "author": "xcode"
+  "images" : [
+    {
+      "idiom" : "universal",
+      "scale" : "1x"
     },
-    "properties" : {
-      "preserves-vector-representation" : true
+    {
+      "filename" : "tabs@2x.png",
+      "idiom" : "universal",
+      "scale" : "2x"
+    },
+    {
+      "filename" : "tabs@3x.png",
+      "idiom" : "universal",
+      "scale" : "3x"
     }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
 }
