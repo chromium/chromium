@@ -199,9 +199,27 @@ Node* LayoutTreeBuilderTraversal::NextSibling(const Node& node) {
       }
       [[fallthrough]];
     case kPseudoIdNone:
+      if (Node* next = parent_element->GetPseudoElement(kPseudoIdPickerIcon)) {
+        return next;
+      }
+      [[fallthrough]];
+    case kPseudoIdPickerIcon:
+      if (Node* next = parent_element->GetPseudoElement(kPseudoIdExpandIcon)) {
+        return next;
+      }
+      [[fallthrough]];
+    case kPseudoIdExpandIcon:
       if (Node* next = parent_element->GetPseudoElement(kPseudoIdAfter)) {
         return next;
       }
+      [[fallthrough]];
+    case kPseudoIdAfter:
+      if (Node* next =
+              parent_element->GetPseudoElement(kPseudoIdInterestButton)) {
+        return next;
+      }
+      [[fallthrough]];
+    case kPseudoIdInterestButton:
       if (Node* next =
               parent_element->GetPseudoElement(kPseudoIdViewTransition)) {
         // If parent is a non-root view transition scope, place this child
@@ -212,24 +230,6 @@ Node* LayoutTreeBuilderTraversal::NextSibling(const Node& node) {
           return next;
         }
       }
-      [[fallthrough]];
-    case kPseudoIdAfter:
-      if (Node* next = parent_element->GetPseudoElement(kPseudoIdExpandIcon)) {
-        return next;
-      }
-      [[fallthrough]];
-    case kPseudoIdExpandIcon:
-      if (Node* next = parent_element->GetPseudoElement(kPseudoIdPickerIcon)) {
-        return next;
-      }
-      [[fallthrough]];
-    case kPseudoIdPickerIcon:
-      if (Node* next =
-              parent_element->GetPseudoElement(kPseudoIdInterestButton)) {
-        return next;
-      }
-      [[fallthrough]];
-    case kPseudoIdInterestButton:
       if (Node* next = parent_element->GetPseudoElement(
               kPseudoIdScrollMarkerGroupAfter)) {
         return next;
@@ -327,23 +327,23 @@ Node* LayoutTreeBuilderTraversal::PreviousSibling(const Node& node) {
       }
       [[fallthrough]];
     case kPseudoIdInterestButton:
-      if (Node* previous =
-              parent_element->GetPseudoElement(kPseudoIdPickerIcon)) {
+      if (Node* previous = parent_element->GetPseudoElement(kPseudoIdAfter)) {
         return previous;
       }
       [[fallthrough]];
-    case kPseudoIdPickerIcon:
+    case kPseudoIdAfter:
       if (Node* previous =
               parent_element->GetPseudoElement(kPseudoIdExpandIcon)) {
         return previous;
       }
       [[fallthrough]];
     case kPseudoIdExpandIcon:
-      if (Node* previous = parent_element->GetPseudoElement(kPseudoIdAfter)) {
+      if (Node* previous =
+              parent_element->GetPseudoElement(kPseudoIdPickerIcon)) {
         return previous;
       }
       [[fallthrough]];
-    case kPseudoIdAfter:
+    case kPseudoIdPickerIcon:
       if (Node* previous = FlatTreeTraversal::LastChild(*parent_element)) {
         return previous;
       }
@@ -440,13 +440,13 @@ Node* LayoutTreeBuilderTraversal::LastChild(const Node& node) {
   if (Node* last = current_element->GetPseudoElement(kPseudoIdInterestButton)) {
     return last;
   }
-  if (Node* last = current_element->GetPseudoElement(kPseudoIdPickerIcon)) {
+  if (Node* last = current_element->GetPseudoElement(kPseudoIdAfter)) {
     return last;
   }
   if (Node* last = current_element->GetPseudoElement(kPseudoIdExpandIcon)) {
     return last;
   }
-  if (Node* last = current_element->GetPseudoElement(kPseudoIdAfter)) {
+  if (Node* last = current_element->GetPseudoElement(kPseudoIdPickerIcon)) {
     return last;
   }
   if (Node* last = FlatTreeTraversal::LastChild(*current_element)) {
@@ -557,13 +557,13 @@ Node* LayoutTreeBuilderTraversal::FirstChild(const Node& node) {
   if (Node* first = FlatTreeTraversal::FirstChild(node)) {
     return first;
   }
-  if (Node* first = current_element->GetPseudoElement(kPseudoIdAfter)) {
+  if (Node* first = current_element->GetPseudoElement(kPseudoIdPickerIcon)) {
     return first;
   }
   if (Node* first = current_element->GetPseudoElement(kPseudoIdExpandIcon)) {
     return first;
   }
-  if (Node* first = current_element->GetPseudoElement(kPseudoIdPickerIcon)) {
+  if (Node* first = current_element->GetPseudoElement(kPseudoIdAfter)) {
     return first;
   }
   if (Node* first =

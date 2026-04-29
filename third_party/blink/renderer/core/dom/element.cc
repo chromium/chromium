@@ -5915,10 +5915,10 @@ void Element::RebuildLayoutTree(WhitespaceAttacher& whitespace_attacher) {
     RebuildTransitionLayoutTree(*child_attacher);
     RebuildOverscrollAreaLayoutTree(*child_attacher);
     if (has_pseudo_elements) {
+      RebuildPseudoElementLayoutTree(kPseudoIdInterestButton, *child_attacher);
       RebuildPseudoElementLayoutTree(kPseudoIdAfter, *child_attacher);
       RebuildPseudoElementLayoutTree(kPseudoIdExpandIcon, *child_attacher);
       RebuildPseudoElementLayoutTree(kPseudoIdPickerIcon, *child_attacher);
-      RebuildPseudoElementLayoutTree(kPseudoIdInterestButton, *child_attacher);
     }
     if (GetShadowRoot()) {
       RebuildShadowRootLayoutTree(*child_attacher);

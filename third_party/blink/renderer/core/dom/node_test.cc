@@ -631,4 +631,82 @@ TEST_F(NodeTest, ToStringDisallowedAssignmentRecalc) {
 }
 #endif
 
+// Note: This test does not include view transition pseudos due to missing setup
+// in NodeTest. For view transition pseudo traversal, see
+// ViewTransitionTest.IncludingPseudoTraversal in view_transition_test.cc.
+TEST_F(NodeTest, PseudoAwareSiblingTraversalAllPseudos) {
+  // Overall tree order: marker, before, child, after, interest_button
+  // But we can only observe ::marker on a list item, not a button, so
+  // we do this in two phases:
+  // host 1: before, child, after, interest_button
+  // host 2: marker, before, child, after
+
+  SetBodyContent(R"HTML(
+    <style>
+      .host::before { content: 'before'; }
+      .host::after { content: 'after'; }
+      .host::interest-button { content: 'interest'; }
+      .host::marker { content: 'marker'; }
+    </style>
+    <button id=host1 class=host interestfor=target><span id="child">child</span></button>
+    <div popover id="target">Target</div>
+    <li id=host2 class=host><span id="child2">child2</span></li>
+  )HTML");
+
+  Element* host1 = GetDocument().getElementById(AtomicString("host1"));
+  ASSERT_TRUE(host1);
+  Element* host2 = GetDocument().getElementById(AtomicString("host2"));
+  ASSERT_TRUE(host2);
+  UpdateAllLifecyclePhasesForTest();
+
+  PseudoElement* before = host1->GetPseudoElement(kPseudoIdBefore);
+  Element* child = host1->QuerySelector(AtomicString("#child"));
+  PseudoElement* after = host1->GetPseudoElement(kPseudoIdAfter);
+  PseudoElement* interest_button =
+      host1->GetPseudoElement(kPseudoIdInterestButton);
+
+  ASSERT_TRUE(before);
+  ASSERT_TRUE(child);
+  ASSERT_TRUE(after);
+  ASSERT_TRUE(interest_button);
+
+  // Phase 1: host 1 (before, child, after, interest_button)
+  EXPECT_EQ(host1->PseudoAwareFirstChild(), before);
+  EXPECT_EQ(host1->PseudoAwareLastChild(), interest_button);
+
+  EXPECT_EQ(before->PseudoAwareNextSibling(), child);
+  EXPECT_EQ(child->PseudoAwareNextSibling(), after);
+  EXPECT_EQ(after->PseudoAwareNextSibling(), interest_button);
+  EXPECT_FALSE(interest_button->PseudoAwareNextSibling());
+
+  EXPECT_FALSE(before->PseudoAwarePreviousSibling());
+  EXPECT_EQ(child->PseudoAwarePreviousSibling(), before);
+  EXPECT_EQ(after->PseudoAwarePreviousSibling(), child);
+  EXPECT_EQ(interest_button->PseudoAwarePreviousSibling(), after);
+
+  // Phase 2: host 2 (marker, before, child, after)
+  PseudoElement* marker = host2->GetPseudoElement(kPseudoIdMarker);
+  PseudoElement* before2 = host2->GetPseudoElement(kPseudoIdBefore);
+  Element* child2 = host2->QuerySelector(AtomicString("#child2"));
+  PseudoElement* after2 = host2->GetPseudoElement(kPseudoIdAfter);
+
+  ASSERT_TRUE(marker);
+  ASSERT_TRUE(before2);
+  ASSERT_TRUE(child2);
+  ASSERT_TRUE(after2);
+
+  EXPECT_EQ(host2->PseudoAwareFirstChild(), marker);
+  EXPECT_EQ(host2->PseudoAwareLastChild(), after2);
+
+  EXPECT_EQ(marker->PseudoAwareNextSibling(), before2);
+  EXPECT_EQ(before2->PseudoAwareNextSibling(), child2);
+  EXPECT_EQ(child2->PseudoAwareNextSibling(), after2);
+  EXPECT_FALSE(after2->PseudoAwareNextSibling());
+
+  EXPECT_FALSE(marker->PseudoAwarePreviousSibling());
+  EXPECT_EQ(before2->PseudoAwarePreviousSibling(), marker);
+  EXPECT_EQ(child2->PseudoAwarePreviousSibling(), before2);
+  EXPECT_EQ(after2->PseudoAwarePreviousSibling(), child2);
+}
+
 }  // namespace blink

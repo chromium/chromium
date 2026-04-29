@@ -2370,10 +2370,10 @@ class CORE_EXPORT Element : public ContainerNode {
   }
 
   void AttachSucceedingPseudoElements(AttachContext& context) {
-    AttachPseudoElement(kPseudoIdInterestButton, context);
     AttachPseudoElement(kPseudoIdPickerIcon, context);
     AttachPseudoElement(kPseudoIdExpandIcon, context);
     AttachPseudoElement(kPseudoIdAfter, context);
+    AttachPseudoElement(kPseudoIdInterestButton, context);
     AttachDocumentElementSucceedingPseudoElements(context);
     AttachPseudoElement(kPseudoIdBackdrop, context);
     UpdateFirstLetterPseudoElement(StyleUpdatePhase::kAttachLayoutTree);
@@ -2408,10 +2408,10 @@ class CORE_EXPORT Element : public ContainerNode {
   }
 
   void DetachSucceedingPseudoElements(bool performing_reattach) {
-    DetachPseudoElement(kPseudoIdInterestButton, performing_reattach);
     DetachPseudoElement(kPseudoIdPickerIcon, performing_reattach);
     DetachPseudoElement(kPseudoIdExpandIcon, performing_reattach);
     DetachPseudoElement(kPseudoIdAfter, performing_reattach);
+    DetachPseudoElement(kPseudoIdInterestButton, performing_reattach);
     DetachPseudoElement(kPseudoIdScrollButtonBlockStart, performing_reattach);
     DetachPseudoElement(kPseudoIdScrollButtonInlineStart, performing_reattach);
     DetachPseudoElement(kPseudoIdScrollButtonInlineEnd, performing_reattach);

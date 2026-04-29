@@ -416,26 +416,26 @@ Node* Node::PseudoAwarePreviousSibling() const {
       }
       [[fallthrough]];
     case kPseudoIdScrollMarkerGroupAfter:
-      if (Node* next = parent->GetPseudoElement(kPseudoIdInterestButton)) {
-        return next;
+      if (Node* previous = parent->GetPseudoElement(kPseudoIdInterestButton)) {
+        return previous;
       }
       [[fallthrough]];
     case kPseudoIdInterestButton:
-      if (Node* next = parent->GetPseudoElement(kPseudoIdPickerIcon)) {
-        return next;
-      }
-      [[fallthrough]];
-    case kPseudoIdPickerIcon:
-      if (Node* next = parent->GetPseudoElement(kPseudoIdExpandIcon)) {
-        return next;
-      }
-      [[fallthrough]];
-    case kPseudoIdExpandIcon:
-      if (Node* next = parent->GetPseudoElement(kPseudoIdAfter)) {
-        return next;
+      if (Node* previous = parent->GetPseudoElement(kPseudoIdAfter)) {
+        return previous;
       }
       [[fallthrough]];
     case kPseudoIdAfter:
+      if (Node* previous = parent->GetPseudoElement(kPseudoIdExpandIcon)) {
+        return previous;
+      }
+      [[fallthrough]];
+    case kPseudoIdExpandIcon:
+      if (Node* previous = parent->GetPseudoElement(kPseudoIdPickerIcon)) {
+        return previous;
+      }
+      [[fallthrough]];
+    case kPseudoIdPickerIcon:
       if (Node* previous = parent->lastChild())
         return previous;
       [[fallthrough]];
@@ -497,9 +497,9 @@ Node* Node::PseudoAwarePreviousSibling() const {
       }
       [[fallthrough]];
     case kPseudoIdMarker:
-      if (Node* next =
+      if (Node* previous =
               parent->GetPseudoElement(kPseudoIdScrollMarkerGroupBefore)) {
-        return next;
+        return previous;
       }
       [[fallthrough]];
     case kPseudoIdScrollMarkerGroupBefore:
@@ -609,20 +609,21 @@ Node* Node::PseudoAwareNextSibling() const {
         return parent->firstChild();
       [[fallthrough]];
     case kPseudoIdNone:
-      if (Node* next = parent->GetPseudoElement(kPseudoIdAfter))
-        return next;
-      [[fallthrough]];
-    case kPseudoIdAfter:
-      if (Node* next = parent->GetPseudoElement(kPseudoIdExpandIcon)) {
-        return next;
-      }
-      [[fallthrough]];
-    case kPseudoIdExpandIcon:
       if (Node* next = parent->GetPseudoElement(kPseudoIdPickerIcon)) {
         return next;
       }
       [[fallthrough]];
     case kPseudoIdPickerIcon:
+      if (Node* next = parent->GetPseudoElement(kPseudoIdExpandIcon)) {
+        return next;
+      }
+      [[fallthrough]];
+    case kPseudoIdExpandIcon:
+      if (Node* next = parent->GetPseudoElement(kPseudoIdAfter)) {
+        return next;
+      }
+      [[fallthrough]];
+    case kPseudoIdAfter:
       if (Node* next = parent->GetPseudoElement(kPseudoIdInterestButton)) {
         return next;
       }
@@ -748,13 +749,13 @@ Node* Node::PseudoAwareFirstChild() const {
       return first;
     if (Node* first = current_element->firstChild())
       return first;
-    if (Node* first = current_element->GetPseudoElement(kPseudoIdAfter)) {
+    if (Node* first = current_element->GetPseudoElement(kPseudoIdPickerIcon)) {
       return first;
     }
     if (Node* first = current_element->GetPseudoElement(kPseudoIdExpandIcon)) {
       return first;
     }
-    if (Node* first = current_element->GetPseudoElement(kPseudoIdPickerIcon)) {
+    if (Node* first = current_element->GetPseudoElement(kPseudoIdAfter)) {
       return first;
     }
     if (Node* first =
@@ -821,14 +822,15 @@ Node* Node::PseudoAwareLastChild() const {
             current_element->GetPseudoElement(kPseudoIdInterestButton)) {
       return last;
     }
-    if (Node* last = current_element->GetPseudoElement(kPseudoIdPickerIcon)) {
+    if (Node* last = current_element->GetPseudoElement(kPseudoIdAfter)) {
       return last;
     }
     if (Node* last = current_element->GetPseudoElement(kPseudoIdExpandIcon)) {
       return last;
     }
-    if (Node* last = current_element->GetPseudoElement(kPseudoIdAfter))
+    if (Node* last = current_element->GetPseudoElement(kPseudoIdPickerIcon)) {
       return last;
+    }
     if (Node* last = current_element->lastChild())
       return last;
     if (Node* last = current_element->GetPseudoElement(kPseudoIdBefore))

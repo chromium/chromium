@@ -754,4 +754,69 @@ TEST_F(LayoutInlineTest, VisualOverflowRecalcLegacyLayoutPositionRelative) {
   EXPECT_EQ(PhysicalRect(-50, -50, 180, 120), span->VisualOverflowRect());
 }
 
+// This test exercises a corner case in LayoutObject insertion in LayoutInline
+// by adding pseudo-elements (::after, ::interest-button, ::before) dynamically
+// in a specific sequence with forced layouts in between. This simulates the
+// conditions that can lead to incorrect layout tree ordering (e.g., pseudos
+// appearing before regular children or in the wrong order among themselves)
+// when AddChild is called with a null before_child.
+TEST_F(LayoutInlineTest, AddChildBeforeSucceedingPseudo) {
+  SetHtmlInnerHTML(R"HTML(
+    <a id="host" href="#" interestfor="target"><span>Link</span></a>
+    <div id="target"></div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* host = GetElementById("host");
+  ASSERT_TRUE(host);
+
+  // Step 1: Add ::after
+  Element* style1 =
+      GetDocument().CreateElementForBinding(AtomicString("style"));
+  style1->setTextContent(
+      "[interestfor]::after { content: '::after'; border: 1px solid lime; }");
+  GetDocument().documentElement()->appendChild(style1);
+  UpdateAllLifecyclePhasesForTest();
+
+  // Step 2: Add ::interest-button
+  Element* style2 =
+      GetDocument().CreateElementForBinding(AtomicString("style"));
+  style2->setTextContent(
+      "[interestfor]::interest-button { content: '::interest-button'; }");
+  GetDocument().documentElement()->appendChild(style2);
+  UpdateAllLifecyclePhasesForTest();
+
+  // Step 3: Add ::before
+  Element* style3 =
+      GetDocument().CreateElementForBinding(AtomicString("style"));
+  style3->setTextContent(
+      "[interestfor]::before { content: '::before'; border: 1px solid lime; }");
+  GetDocument().documentElement()->appendChild(style3);
+  UpdateAllLifecyclePhasesForTest();
+
+  // Check order.
+  LayoutObject* host_layout = host->GetLayoutObject();
+  ASSERT_TRUE(host_layout);
+
+  LayoutObject* before_layout =
+      host->GetPseudoElement(kPseudoIdBefore)->GetLayoutObject();
+  ASSERT_TRUE(before_layout);
+  LayoutObject* after_layout =
+      host->GetPseudoElement(kPseudoIdAfter)->GetLayoutObject();
+  ASSERT_TRUE(after_layout);
+  LayoutObject* interest_layout =
+      host->GetPseudoElement(kPseudoIdInterestButton)->GetLayoutObject();
+  ASSERT_TRUE(interest_layout);
+
+  EXPECT_EQ(host_layout->SlowFirstChild(), before_layout);
+
+  LayoutObject* child_layout = host->firstElementChild()->GetLayoutObject();
+  ASSERT_TRUE(child_layout);
+
+  EXPECT_EQ(before_layout->NextSibling(), child_layout);
+  EXPECT_EQ(child_layout->NextSibling(), after_layout);
+  EXPECT_EQ(after_layout->NextSibling(), interest_layout);
+}
+
 }  // namespace blink

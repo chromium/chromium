@@ -1183,6 +1183,9 @@ TEST_P(ViewTransitionTest, PseudoAwareChildTraversal) {
   EXPECT_EQ(root_image_pair_pseudo->PseudoAwareLastChild(), root_new_pseudo);
 }
 
+// Note: This test includes view transition pseudos due to setup available in
+// ViewTransitionTest. For full traversal of non-VT pseudos, see
+// NodeTest.PseudoAwareSiblingTraversalAllPseudos in node_test.cc.
 TEST_P(ViewTransitionTest, PseudoAwareSiblingTraversal) {
   SetHtmlInnerHTML(R"HTML(
     <style>
@@ -1192,6 +1195,7 @@ TEST_P(ViewTransitionTest, PseudoAwareSiblingTraversal) {
       #bar {
         view-transition-name: bar;
       }
+      html::after { content: ''; }
     </style>
     <div id="foo"></div>
     <div id="bar"></div>
@@ -1222,10 +1226,13 @@ TEST_P(ViewTransitionTest, PseudoAwareSiblingTraversal) {
   auto* transition_pseudo = GetDocument().documentElement()->GetPseudoElement(
       kPseudoIdViewTransition);
   ASSERT_TRUE(transition_pseudo);
+  PseudoElement* after =
+      GetDocument().documentElement()->GetPseudoElement(kPseudoIdAfter);
+  ASSERT_TRUE(after);
 
+  // Order: ::after then ::view-transition
   EXPECT_FALSE(transition_pseudo->PseudoAwareNextSibling());
-  EXPECT_EQ(transition_pseudo->PseudoAwarePreviousSibling(),
-            GetDocument().QuerySelector(AtomicString("body")));
+  EXPECT_EQ(transition_pseudo->PseudoAwarePreviousSibling(), after);
 
   auto* foo_group_pseudo = transition_pseudo->GetPseudoElement(
       kPseudoIdViewTransitionGroup, AtomicString("foo"));
@@ -1264,6 +1271,9 @@ TEST_P(ViewTransitionTest, PseudoAwareSiblingTraversal) {
   EXPECT_EQ(foo_new_pseudo->PseudoAwarePreviousSibling(), foo_old_pseudo);
 }
 
+// Note: This test includes view transition pseudos due to setup available in
+// ViewTransitionTest. For full traversal of non-VT pseudos, see
+// NodeTest.PseudoAwareSiblingTraversalAllPseudos in node_test.cc.
 TEST_P(ViewTransitionTest, IncludingPseudoTraversal) {
   SetHtmlInnerHTML(R"HTML(
   <style>

@@ -52,11 +52,7 @@ void InterestButtonPseudoElement::DefaultEventHandler(Event& event) {
 
 FocusableState InterestButtonPseudoElement::SupportsFocus(
     UpdateBehavior update_behavior) const {
-  if (PseudoElement::SupportsFocus(update_behavior) ==
-      FocusableState::kNotFocusable) {
-    return FocusableState::kNotFocusable;
-  }
-  return FocusableState::kFocusable;
+  return FocusableState::kNotFocusable;
 }
 
 }  // namespace blink
