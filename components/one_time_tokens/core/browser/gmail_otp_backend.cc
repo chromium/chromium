@@ -47,6 +47,9 @@ ExpiringSubscription GmailOtpBackendImpl::Subscribe(base::Time expiration,
 
 void GmailOtpBackendImpl::OnIncomingOneTimeTokenBackendNotification(
     const OneTimeTokenBackendNotification& notification) {
+  base::UmaHistogramBoolean(
+      "Autofill.OneTimeTokens.Backend.Gmail.HasActiveSubscription",
+      subscription_manager_.GetNumberSubscribers() > 0);
   notification_cache_.PurgeExpiredAndAdd(notification);
   ProcessCachedNotifications();
 }

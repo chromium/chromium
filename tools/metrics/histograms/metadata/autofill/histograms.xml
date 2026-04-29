@@ -5631,6 +5631,18 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.OneTimeTokens.Backend.Gmail.HasActiveSubscription"
+    enum="Boolean" expires_after="2027-05-01">
+  <owner>koerber@google.com</owner>
+  <owner>src/components/one_time_tokens/OWNERS</owner>
+  <summary>
+    Records whether a subscription was already active when a Gmail OTP
+    notification arrived. Recorded when an incoming Gmail OTP backend
+    notification is received. True if a subscription was active (immediate hit),
+    false if the notification had to wait for a subscription.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.OneTimeTokens.Backend.Gmail.NetworkLatency"
     units="ms" expires_after="2027-05-01">
   <owner>koerber@google.com</owner>

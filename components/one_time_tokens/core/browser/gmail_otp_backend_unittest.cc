@@ -85,6 +85,8 @@ TEST_F(GmailOtpBackendImplTest, SubscribeAndGetToken) {
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.OneTimeTokens.Backend.Gmail.Success", true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.OneTimeTokens.Backend.Gmail.HasActiveSubscription", true, 1);
 }
 
 // Tests a failed retrieval of an OTP from Gmail.
@@ -291,10 +293,14 @@ TEST_F(GmailOtpBackendImplTest, DeDuplicatesIncomingTickles) {
 // Tests that tickles received just before a subscription are processed when
 // the subscription is created.
 TEST_F(GmailOtpBackendImplTest, RecentTicklesProcessedUponSubscription) {
+  base::HistogramTester histogram_tester;
   // Tickle arrives before anyone is subscribed.
   backend_.OnIncomingOneTimeTokenBackendNotification(
       OneTimeTokenBackendNotification(EncryptedMessageReference("ref1")));
   EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.OneTimeTokens.Backend.Gmail.HasActiveSubscription", false, 1);
 
   // Subscription arrives.
   base::test::TestFuture<
