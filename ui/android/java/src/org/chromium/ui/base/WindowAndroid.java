@@ -1172,7 +1172,16 @@ public class WindowAndroid
 
         Context context = mContextRef.get();
         if (context != null && mComponentCallbacks != null) {
-            context.unregisterComponentCallbacks(mComponentCallbacks);
+            try {
+                context.unregisterComponentCallbacks(mComponentCallbacks);
+            } catch (IllegalStateException e) {
+                // If unregistering gets skipped, it's probably a real leak, but it's an app
+                // embedding
+                // WebView doing something sketchy with the context (e.g. detaching the base
+                // context),
+                // so it's not like there's anything better we can do here.
+                Log.w(TAG, "Failed to unregister ComponentCallbacks", e);
+            }
             mComponentCallbacks = null;
         }
 
