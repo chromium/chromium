@@ -620,7 +620,7 @@ class RawPtrRewriter {
     //
     // See also testcases in tests/affected-expr-original.cc
     auto affected_expr_that_needs_fixing_matcher = expr(allOf(
-        affected_expr_matcher,
+        affected_expr_matcher, unless(hasParent(cxxStaticCastExpr())),
         hasParent(expr(anyOf(callExpr(callee(functionDecl(isVariadic()))),
                              cxxConstCastExpr(), cxxReinterpretCastExpr())))));
 
