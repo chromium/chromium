@@ -68,9 +68,6 @@ struct ThreadTurn {
 
   // User query for this turn.
   std::string query;
-
-  // Titles of shared (attached as context) tabs for this turn.
-  std::vector<std::string> shared_tab_titles;
 };
 
 // Represents a conversation thread, including current and previous turns.
@@ -86,6 +83,10 @@ struct ConversationThread {
   // Previous turns in the thread, in chronological order (oldest first).
   // The first element in this vector is the first turn in the thread.
   std::vector<ThreadTurn> previous_turns;
+
+  // Titles of shared (attached as context) tabs, coming from context library.
+  // These are union of tabs shared across all previous turns.
+  std::vector<std::string> shared_tab_titles;
 };
 
 enum class ContextDeterminationStatus {

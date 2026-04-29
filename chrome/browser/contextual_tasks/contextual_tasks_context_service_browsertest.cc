@@ -513,10 +513,11 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
   ConversationThread conversation_thread;
   ThreadTurn turn1;
   turn1.query = "history query";
-  turn1.shared_tab_titles = {"tab1"};
   conversation_thread.previous_turns.push_back(turn1);
 
   conversation_thread.query = "some text";
+  conversation_thread.shared_tab_titles.push_back("shared tab 1");
+  conversation_thread.shared_tab_titles.push_back("shared tab 2");
 
   service()->GetRelevantTabsForConversationThread(options, conversation_thread,
                                             /*explicit_urls=*/{valid_url()},
