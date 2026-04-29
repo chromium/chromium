@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/enterprise/data_protection/model/data_protection_tab_helper.h"
 
 #import "base/functional/bind.h"
+#import "base/metrics/histogram_functions.h"
 #import "components/content_settings/core/browser/content_settings_utils.h"
 #import "components/enterprise/data_protection/data_protection_url_lookup_service.h"
 #import "components/enterprise/data_protection/utils.h"
@@ -30,6 +31,7 @@ using ProtectionState = DataProtectionTabHelper::ProtectionState;
 using Enabled = DataProtectionTabHelper::Enabled;
 using Disabled = DataProtectionTabHelper::Disabled;
 using LookupPending = DataProtectionTabHelper::LookupPending;
+using ScreenshotBlockSource = DataProtectionTabHelper::ScreenshotBlockSource;
 
 // Returns the navigation ID associated with the given `context`, or 0 if the
 // context is null.
@@ -180,6 +182,8 @@ void DataProtectionTabHelper::PerformChecks(const GURL& url,
   }
 
   if (GetRulesService()->BlockScreenshots(url)) {
+    base::UmaHistogramEnumeration(kScreenshotBlockSourceHistogram,
+                                  ScreenshotBlockSource::kDataControls);
     SetProtectionState(navigation, ProtectionState(Enabled{}));
     return;
   }
@@ -223,11 +227,18 @@ void DataProtectionTabHelper::OnRealTimeLookupResult(
     std::unique_ptr<safe_browsing::RTLookupResponse> response) {
   // If the lookup failed, we default to the enabled state (fail-closed).
   bool protection_enabled = true;
+  base::UmaHistogramBoolean(kScreenshotBlockLookupSuccessHistogram,
+                            response != nullptr);
   if (response) {
     enterprise_data_protection::UrlSettings settings =
         enterprise_data_protection::GetUrlSettings(std::string(),
                                                    response.get());
     protection_enabled = !settings.allow_screenshots;
+
+    if (protection_enabled) {
+      base::UmaHistogramEnumeration(kScreenshotBlockSourceHistogram,
+                                    ScreenshotBlockSource::kRealtimeLookup);
+    }
   }
 
   if (navigation_id == pending_navigation_.navigation_id) {

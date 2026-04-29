@@ -412,6 +412,15 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/desktop_to_mobile_promos/promos_types.h:PromoType) -->
 
+<!-- LINT.IfChange(IOSDataProtectionScreenshotBlockSource) -->
+
+<enum name="IOSDataProtectionScreenshotBlockSource">
+  <int value="0" label="Data Controls"/>
+  <int value="1" label="Real-time Lookup"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/enterprise/data_protection/model/data_protection_tab_helper.h:ScreenshotBlockSource) -->
+
 <!-- LINT.IfChange(IOSDefaultBrowserBannerPromoPromoSessionEndedReason) -->
 
 <enum name="IOSDefaultBrowserBannerPromoPromoSessionEndedReason">

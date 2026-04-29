@@ -61,6 +61,22 @@ class DataProtectionTabHelper
   };
   using ProtectionState = std::variant<Disabled, Enabled, LookupPending>;
 
+  // LINT.IfChange(ScreenshotBlockSource)
+  // Source of the screenshot block recorded in histograms.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class ScreenshotBlockSource {
+    kDataControls = 0,
+    kRealtimeLookup = 1,
+    kMaxValue = kRealtimeLookup,
+  };
+  // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:IOSDataProtectionScreenshotBlockSource)
+
+  static constexpr char kScreenshotBlockSourceHistogram[] =
+      "IOS.Enterprise.DataProtection.ScreenshotBlock.Source";
+  static constexpr char kScreenshotBlockLookupSuccessHistogram[] =
+      "IOS.Enterprise.DataProtection.ScreenshotBlock.Lookup.Success";
+
   // Adds/removes observers to listen for data protection state changes.
   void AddObserver(DataProtectionTabHelperObserver* observer);
   void RemoveObserver(DataProtectionTabHelperObserver* observer);
