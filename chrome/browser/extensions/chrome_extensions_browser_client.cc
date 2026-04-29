@@ -74,6 +74,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/task_manager/web_contents_tags.h"
 #include "chrome/browser/ui/simple_message_box.h"
 #include "chrome/browser/ui/webui/chrome_web_ui_controller_factory.h"
@@ -89,6 +90,7 @@
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/proxy_config/proxy_config_pref_names.h"
+#include "components/search_engines/template_url_service.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/update_client/configurator.h"
 #include "components/update_client/update_client.h"
@@ -747,6 +749,22 @@ bool ChromeExtensionsBrowserClient::ShouldSchemeBypassNavigationChecks(
   }
 
   return ExtensionsBrowserClient::ShouldSchemeBypassNavigationChecks(scheme);
+}
+
+bool ChromeExtensionsBrowserClient::IsDefaultSearchEngineRedirect(
+    content::BrowserContext* context,
+    const GURL& request_url,
+    const GURL& redirect_url) const {
+  Profile* profile = Profile::FromBrowserContext(context);
+  CHECK(profile);
+
+  TemplateURLService* service =
+      TemplateURLServiceFactory::GetForProfile(profile);
+  if (!service) {
+    return false;
+  }
+  return service->IsSearchResultsPageFromDefaultSearchProvider(request_url) &&
+         !service->IsSearchResultsPageFromDefaultSearchProvider(redirect_url);
 }
 
 base::FilePath ChromeExtensionsBrowserClient::GetSaveFilePath(

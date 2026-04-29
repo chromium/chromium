@@ -90,6 +90,12 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="kRequestContentScript"/>
 </enum>
 
+<enum name="DeclarativeNetRequestRedirectType">
+  <int value="0" label="Non-MainFrame Redirects"/>
+  <int value="1" label="MainFrame DSE Redirects"/>
+  <int value="2" label="Other MainFrame Redirects"/>
+</enum>
+
 <enum name="ExtensionActionInvocationSource">
   <int value="0" label="Keyboard Shortcut"/>
   <int value="1" label="Toolbar Button"/>

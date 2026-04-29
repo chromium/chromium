@@ -1264,6 +1264,17 @@ This is emitted for two scenarios when a worker may be unregistered:
   </summary>
 </histogram>
 
+<histogram name="Extensions.DeclarativeNetRequest.RedirectAction"
+    enum="DeclarativeNetRequestRedirectType" expires_after="2026-12-31">
+  <owner>marwant@chromium.org</owner>
+  <owner>src/extensions/OWNERS</owner>
+  <summary>
+    Logs the type of redirect action when a request is redirected by the
+    Declarative Net Request API. Logged whenever a navigation or resource
+    request is redirected.
+  </summary>
+</histogram>
+
 <histogram
     name="Extensions.DeclarativeNetRequest.RedundantSetReadyToExecuteApiCalls"
     enum="BooleanSuccess" expires_after="2026-09-15">

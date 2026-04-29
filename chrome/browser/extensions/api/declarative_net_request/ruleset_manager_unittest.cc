@@ -15,6 +15,8 @@
 #include "chrome/browser/extensions/api/declarative_net_request/dnr_test_base.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_util.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "components/search_engines/template_url_service.h"
 #include "components/version_info/channel.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/web_contents_tester.h"
@@ -394,6 +396,7 @@ TEST_P(RulesetManagerTest, Redirect) {
       CreateMatcherForRules({rule}, "test_extension", &matcher,
                             {"*://example.com/*", "*://abc.com/*"}));
   manager()->AddRuleset(last_loaded_extension()->id(), std::move(matcher));
+  base::HistogramTester tester;
 
   // Create a request to "example.com" with an empty initiator. It should be
   // redirected to "google.com".
@@ -428,6 +431,91 @@ TEST_P(RulesetManagerTest, Redirect) {
       GetRequestParamsForURL("ws://example.com", std::nullopt));
   manager()->EvaluateBeforeRequest(request_4, is_incognito_context);
   EXPECT_TRUE(request_4.dnr_actions->empty());
+
+  tester.ExpectBucketCount("Extensions.DeclarativeNetRequest.RedirectAction",
+                           0 /* kNonMainFrameRedirects */, 2);
+  tester.ExpectBucketCount("Extensions.DeclarativeNetRequest.RedirectAction",
+                           2 /* kOtherMainFrameRedirects */, 0);
+  tester.ExpectBucketCount("Extensions.DeclarativeNetRequest.RedirectAction",
+                           1 /* kMainFrameDSERedirects */, 0);
+}
+
+// Test redirect rules for the default search engine (DSE).
+TEST_P(RulesetManagerTest, RedirectDSE) {
+  // Add an extension ruleset which redirects DSE to another host.
+  TestRule rule = CreateGenericRule();
+  rule.condition->url_filter = std::string("google.com");
+  rule.condition->resource_types = std::vector<std::string>({"main_frame"});
+  rule.priority = kMinValidPriority;
+  rule.action->type = std::string("redirect");
+  rule.action->redirect.emplace();
+  rule.action->redirect->url = std::string("http://abc.com");
+
+  // Set up DSE.
+  auto* template_url_service = static_cast<TemplateURLService*>(
+      TemplateURLServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+          profile(),
+          base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor)));
+  TemplateURLData data;
+  data.SetShortName(u"google");
+  data.SetKeyword(u"google");
+  data.SetURL("http://google.com/search?q={searchTerms}");
+  TemplateURL* template_url =
+      template_url_service->Add(std::make_unique<TemplateURL>(data));
+  template_url_service->SetUserSelectedDefaultSearchProvider(template_url);
+
+  std::unique_ptr<CompositeMatcher> matcher;
+  ASSERT_NO_FATAL_FAILURE(
+      CreateMatcherForRules({rule}, "test_extension", &matcher,
+                            {"*://google.com/*", "*://abc.com/*"}));
+  manager()->AddRuleset(last_loaded_extension()->id(), std::move(matcher));
+  base::HistogramTester tester;
+
+  // Redirect from DSE page to abc.com.
+  const bool is_incognito_context = false;
+  const char* kGoogleURL = "http://google.com/search?q=foo";
+  RequestAction expected_redirect_action = CreateRequestActionForTesting(
+      RequestActionType::REDIRECT, *rule.id, *rule.priority,
+      kMinValidStaticRulesetID, last_loaded_extension()->id());
+  expected_redirect_action.redirect_url = GURL("http://abc.com");
+  WebRequestInfo request(GetRequestParamsForURL(
+      kGoogleURL, url::Origin::Create(GURL("http://abc.com")),
+      WebRequestResourceType::MAIN_FRAME));
+  manager()->EvaluateBeforeRequest(request, is_incognito_context);
+  ASSERT_EQ(1u, request.dnr_actions->size());
+  EXPECT_EQ(expected_redirect_action, (*request.dnr_actions)[0]);
+  tester.ExpectBucketCount("Extensions.DeclarativeNetRequest.RedirectAction",
+                           2 /* kOtherMainFrameRedirects */, 0);
+  tester.ExpectBucketCount("Extensions.DeclarativeNetRequest.RedirectAction",
+                           1 /* kMainFrameDSERedirects */, 1);
+
+  // Redirect to google HTTPS
+  manager()->RemoveRuleset(last_loaded_extension()->id());
+  rule.action->redirect->url = std::string("https://google.com/search?q=foo");
+  std::unique_ptr<CompositeMatcher> matcher_2;
+  ASSERT_NO_FATAL_FAILURE(
+      CreateMatcherForRules({rule}, "test_extension_2", &matcher_2,
+                            {"*://google.com/*", "*://*.google.com/*"}));
+  manager()->AddRuleset(last_loaded_extension()->id(), std::move(matcher_2));
+
+  expected_redirect_action = CreateRequestActionForTesting(
+      RequestActionType::REDIRECT, *rule.id, *rule.priority,
+      kMinValidStaticRulesetID, last_loaded_extension()->id());
+  expected_redirect_action.redirect_url =
+      GURL("https://google.com/search?q=foo");
+  WebRequestInfo request_2(GetRequestParamsForURL(
+      kGoogleURL, url::Origin::Create(GURL("https://google.com")),
+      WebRequestResourceType::MAIN_FRAME));
+  manager()->EvaluateBeforeRequest(request_2, is_incognito_context);
+  ASSERT_EQ(1u, request_2.dnr_actions->size());
+  EXPECT_EQ(expected_redirect_action, (*request_2.dnr_actions)[0]);
+
+  // DSE redirect histogram should not be incremented since the domain is the
+  // same.
+  tester.ExpectBucketCount("Extensions.DeclarativeNetRequest.RedirectAction",
+                           2 /* kOtherMainFrameRedirects */, 1);
+  tester.ExpectBucketCount("Extensions.DeclarativeNetRequest.RedirectAction",
+                           1 /* kMainFrameDSERedirects */, 1);
 }
 
 // Tests that an extension can't block or redirect resources on the chrome-

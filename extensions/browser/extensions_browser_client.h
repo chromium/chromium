@@ -488,6 +488,12 @@ class ExtensionsBrowserClient {
   virtual bool ShouldSchemeBypassNavigationChecks(
       const std::string& scheme) const;
 
+  // Checks whether the given `request_url` and `redirect_url` correspond to a
+  // Default Search Engine redirect.
+  virtual bool IsDefaultSearchEngineRedirect(content::BrowserContext* context,
+                                             const GURL& request_url,
+                                             const GURL& redirect_url) const;
+
   // Gets and sets the last save (download) path for a given context.
   virtual base::FilePath GetSaveFilePath(content::BrowserContext* context);
   virtual void SetLastSaveFilePath(content::BrowserContext* context,
