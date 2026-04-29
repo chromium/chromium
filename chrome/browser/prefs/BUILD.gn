@@ -156,7 +156,6 @@ source_set("impl") {
     "//components/password_manager/core/browser",
     "//components/performance_manager",
     "//components/permissions",
-    "//components/plus_addresses/core/common:prefs",
     "//components/policy/resources/webui/mojom:mojo_bindings",
     "//components/pref_registry",
     "//components/privacy_sandbox:privacy_sandbox_prefs",

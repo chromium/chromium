@@ -154,7 +154,6 @@
 #include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/permissions/permission_hats_trigger_helper.h"
 #include "components/permissions/pref_names.h"
-#include "components/plus_addresses/core/common/plus_address_prefs.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/browser/url_list/url_blocklist_manager.h"
 #include "components/policy/core/common/local_test_policy_provider.h"
@@ -987,6 +986,18 @@ constexpr char kHasSeenWebFeed[] = "webfeed.has_seen_feed";
 constexpr char kLastBadgeAnimationTime[] = "webfeed.last_badge_animation_time";
 #endif  // BUILDFLAG(IS_ANDROID)
 
+// Deprecated 04/2026.
+inline constexpr char kPreallocatedAddressesVersion[] =
+    "plus_addresses.preallocation.version";
+inline constexpr char kPreallocatedAddresses[] =
+    "plus_addresses.preallocation.addresses";
+inline constexpr char kPreallocatedAddressesNext[] =
+    "plus_addresses.preallocation.next";
+inline constexpr char kFirstPlusAddressCreationTime[] =
+    "plus_addresses.creation.first.time";
+inline constexpr char kLastPlusAddressFillingTime[] =
+    "plus_addresses.last.filling.time";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1358,6 +1369,13 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterIntegerPref(kSafeBrowsingModuleShownCount, 0);
   registry->RegisterInt64Pref(kSafeBrowsingModuleLastCooldownStartAt, 0);
   registry->RegisterBooleanPref(kSafeBrowsingModuleOpened, false);
+
+  // Deprecated 04/2026.
+  registry->RegisterIntegerPref(kPreallocatedAddressesVersion, 1);
+  registry->RegisterListPref(kPreallocatedAddresses);
+  registry->RegisterIntegerPref(kPreallocatedAddressesNext, 0);
+  registry->RegisterTimePref(kFirstPlusAddressCreationTime, base::Time());
+  registry->RegisterTimePref(kLastPlusAddressFillingTime, base::Time());
 }
 
 }  // namespace
@@ -1760,7 +1778,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   permissions::RegisterProfilePrefs(registry);
   PermissionBubbleMediaAccessHandler::RegisterProfilePrefs(registry);
   PlatformNotificationServiceImpl::RegisterProfilePrefs(registry);
-  plus_addresses::prefs::RegisterProfilePrefs(registry);
   policy::URLBlocklistManager::RegisterProfilePrefs(registry);
   PolicyUI::RegisterProfilePrefs(registry);
   PrefProxyConfigTrackerImpl::RegisterProfilePrefs(registry);
@@ -2668,6 +2685,13 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
 
   // Added 03/2026.
   profile_prefs->ClearPref(kNtpPromoPrefLastSnoozed);
+
+  // Added 04/2026.
+  profile_prefs->ClearPref(kPreallocatedAddressesVersion);
+  profile_prefs->ClearPref(kPreallocatedAddresses);
+  profile_prefs->ClearPref(kPreallocatedAddressesNext);
+  profile_prefs->ClearPref(kFirstPlusAddressCreationTime);
+  profile_prefs->ClearPref(kLastPlusAddressFillingTime);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

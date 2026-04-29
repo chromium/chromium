@@ -57,7 +57,6 @@
 #import "components/password_manager/core/browser/password_manager.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/payments/core/payment_prefs.h"
-#import "components/plus_addresses/core/common/plus_address_prefs.h"
 #import "components/policy/core/browser/browser_policy_connector.h"
 #import "components/policy/core/browser/url_list/url_blocklist_manager.h"
 #import "components/policy/core/common/local_test_policy_provider.h"
@@ -224,6 +223,18 @@ inline constexpr char kBottomOmniboxByDefault[] =
 // Deprecated 02/2026.
 inline constexpr char kIosParcelTrackingPolicyEnabled[] =
     "ios.parcel_tracking.policy_enabled";
+
+// Deprecated 04/2026.
+inline constexpr char kPreallocatedAddressesVersion[] =
+    "plus_addresses.preallocation.version";
+inline constexpr char kPreallocatedAddresses[] =
+    "plus_addresses.preallocation.addresses";
+inline constexpr char kPreallocatedAddressesNext[] =
+    "plus_addresses.preallocation.next";
+inline constexpr char kFirstPlusAddressCreationTime[] =
+    "plus_addresses.creation.first.time";
+inline constexpr char kLastPlusAddressFillingTime[] =
+    "plus_addresses.last.filling.time";
 
 // Migrates a Dict pref from source to target PrefService.
 void MigrateDictPref(std::string_view pref_name,
@@ -579,7 +590,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   optimization_guide::model_execution::prefs::RegisterProfilePrefs(registry);
   password_manager::PasswordManager::RegisterProfilePrefs(registry);
   payments::RegisterProfilePrefs(registry);
-  plus_addresses::prefs::RegisterProfilePrefs(registry);
   policy::URLBlocklistManager::RegisterProfilePrefs(registry);
   PrefProxyConfigTrackerImpl::RegisterProfilePrefs(registry);
   PushNotificationService::RegisterProfilePrefs(registry);
@@ -1005,6 +1015,13 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   // Deprecated 12/2025.
   registry->RegisterStringPref(kAutofillStatesDataDir, std::string());
   registry->RegisterBooleanPref(prefs::kIosMiniMapShowNativeMap, true);
+
+  // Deprecated 04/2026.
+  registry->RegisterIntegerPref(kPreallocatedAddressesVersion, 1);
+  registry->RegisterListPref(kPreallocatedAddresses);
+  registry->RegisterIntegerPref(kPreallocatedAddressesNext, 0);
+  registry->RegisterTimePref(kFirstPlusAddressCreationTime, base::Time());
+  registry->RegisterTimePref(kLastPlusAddressFillingTime, base::Time());
 }
 
 // This method should be periodically pruned of year+ old migrations.
@@ -1111,6 +1128,13 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
   // Added 12/2025.
   prefs->ClearPref(kAutofillStatesDataDir);
   prefs->ClearPref(prefs::kIosMiniMapShowNativeMap);
+
+  // Added 04/2026.
+  prefs->ClearPref(kPreallocatedAddressesVersion);
+  prefs->ClearPref(kPreallocatedAddresses);
+  prefs->ClearPref(kPreallocatedAddressesNext);
+  prefs->ClearPref(kFirstPlusAddressCreationTime);
+  prefs->ClearPref(kLastPlusAddressFillingTime);
 }
 
 void MigrateObsoleteUserDefault() {
