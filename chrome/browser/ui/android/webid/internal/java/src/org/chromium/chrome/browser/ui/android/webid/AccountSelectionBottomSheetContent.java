@@ -8,7 +8,6 @@ import android.content.Context;
 import android.view.View;
 import android.widget.FrameLayout;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.annotation.StringRes;
@@ -224,6 +223,12 @@ public class AccountSelectionBottomSheetContent implements BottomSheetContent {
     }
 
     @Override
+    public boolean canBeSuppressed(BottomSheetContent nextContent) {
+        // Allow higher priority content to suppress the FedCM bottom sheet.
+        return nextContent.getPriority() < getPriority();
+    }
+
+    @Override
     public boolean hasCustomScrimLifecycle() {
         // For passive mode, return true to ensure no scrim is created behind the view.
         if (mRpMode == RpMode.PASSIVE) return true;
@@ -294,7 +299,7 @@ public class AccountSelectionBottomSheetContent implements BottomSheetContent {
     }
 
     @Override
-    public @NonNull String getSheetContentDescription(Context context) {
+    public String getSheetContentDescription(Context context) {
         return context.getString(R.string.account_selection_content_description);
     }
 

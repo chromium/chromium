@@ -99,6 +99,7 @@ android_resources("java_resources") {
 robolectric_library("junit") {
   resources_package = "org.chromium.chrome.browser.ui.android.webid"
   sources = [
+    "java/src/org/chromium/chrome/browser/ui/android/webid/AccountSelectionBottomSheetContentTest.java",
     "java/src/org/chromium/chrome/browser/ui/android/webid/AccountSelectionButtonModeControllerTest.java",
     "java/src/org/chromium/chrome/browser/ui/android/webid/AccountSelectionButtonModeViewTest.java",
     "java/src/org/chromium/chrome/browser/ui/android/webid/AccountSelectionControllerTest.java",
