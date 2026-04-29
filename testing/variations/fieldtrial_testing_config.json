@@ -10084,6 +10084,23 @@
             ]
         }
     ],
+    "EnableSearchAIModeSigninPromo": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableSearchAIModeSigninPromo"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnableShoppingListIOSM119": [
         {
             "platforms": [
