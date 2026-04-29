@@ -1,0 +1,18 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module tabs_api.mojom;
+
+import "components/browser_apis/tab_strip/tab_strip_api_types.mojom";
+import "mojo/public/mojom/base/empty.mojom";
+import "mojo/public/mojom/base/error.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+
+// A Presentation UI controller supporting the TabStrip.
+[GenerateDirectReturnStub]
+interface TabStripUIController {
+  // Launch tab context menu actions.
+  ShowTabContextMenu(NodeId id, gfx.mojom.Point location)
+      => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
+};
