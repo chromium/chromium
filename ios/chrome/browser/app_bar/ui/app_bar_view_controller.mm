@@ -314,6 +314,7 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
   _isTabGridVisible = tabGridVisible;
   _backgroundView.hideColorBackground = tabGridVisible;
   [self updateTabGridButtonForTabGridVisibility];
+  [self updateNewTabButtonForTabGroupsVisibility];
   [self updateNewTabButtonAccessibilityLabel];
 }
 
@@ -343,6 +344,7 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
       return;
     case AppBarButtonTypeNewTab:
       _openNewTabButtonMenu = menu;
+      _openNewTabButton.menu = menu;
       return;
     case AppBarButtonTypeTabGrid:
       _tabGridButtonMenu = menu;
@@ -866,8 +868,8 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
 // Updates the new tab button for whether the tab groups page in the tab grid or
 // a tab group is visible.
 - (void)updateNewTabButtonForTabGroupsVisibility {
+  _openNewTabButton.menu = _openNewTabButtonMenu;
   if (_isTabGroupsPageVisible || (_isTabGridVisible && _isTabGroupVisible)) {
-    _openNewTabButton.menu = _openNewTabButtonMenu;
     _openNewTabButton.showsMenuAsPrimaryAction = YES;
     return;
   }
