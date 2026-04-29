@@ -304,7 +304,7 @@ IN_PROC_BROWSER_TEST_P(MultiContentsViewTabDragEntrypointsUiParamTest,
 }
 
 // TODO(crbug.com/500937645): Re-enable the test
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_LINUX) && defined(ARCH_CPU_ARM64))
 #define MAYBE_ShowAndHideDropTarget DISABLED_ShowAndHideDropTarget
 #else
 #define MAYBE_ShowAndHideDropTarget ShowAndHideDropTarget
@@ -341,7 +341,7 @@ IN_PROC_BROWSER_TEST_P(MultiContentsViewTabDragEntrypointsUiParamTest,
 }
 
 // TODO(crbug.com/500937645): Re-enable the test
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_LINUX) && defined(ARCH_CPU_ARM64))
 #define MAYBE_DragAndDropDisabledForChromePage \
   DISABLED_DragAndDropDisabledForChromePage
 #else
