@@ -6,9 +6,11 @@
 #include "base/command_line.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/thread_annotations.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/omnibox/geolocation_header_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -17,9 +19,11 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/omnibox/browser/geolocation_header_service.h"
 #include "components/omnibox/common/omnibox_features.h"
@@ -40,6 +44,11 @@
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
+
+#if defined(TOOLKIT_VIEWS)
+#include "chrome/browser/ui/views/location_bar/content_setting_image_view.h"
+#include "chrome/browser/ui/views/location_bar/location_bar_view.h"
+#endif
 
 namespace {
 const char kXGeoHeaderName[] = "X-Geo";
@@ -94,6 +103,15 @@ class GeolocationHeaderBrowserTest : public InProcessBrowserTest {
       return response;
     }
 
+    if (request.relative_url.starts_with("/search?q=redirect-cross-origin")) {
+      auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+      response->set_code(net::HTTP_MOVED_PERMANENTLY);
+      GURL cross_origin_url =
+          test_server_.GetURL("untrusted.com", "/not-search");
+      response->AddCustomHeader("Location", cross_origin_url.spec());
+      return response;
+    }
+
     if (request.relative_url.starts_with("/search?q=redirect-same-origin")) {
       auto response = std::make_unique<net::test_server::BasicHttpResponse>();
       response->set_code(net::HTTP_MOVED_PERMANENTLY);
@@ -103,20 +121,26 @@ class GeolocationHeaderBrowserTest : public InProcessBrowserTest {
 
     if (request.relative_url.starts_with("/search") ||
         request.relative_url.starts_with("/not-search")) {
-      xgeo_header_.clear();
-      auto it = request.headers.find(kXGeoHeaderName);
+      {
+        base::AutoLock lock(header_lock_);
+        xgeo_header_.clear();
+        auto it = request.headers.find(kXGeoHeaderName);
 
-      if (it != request.headers.end()) {
-        xgeo_header_ = it->second;
+        if (it != request.headers.end()) {
+          xgeo_header_ = it->second;
+        }
       }
-      if (quit_closure_) {
-        std::move(quit_closure_).Run();
-      }
+
       auto response = std::make_unique<net::test_server::BasicHttpResponse>();
       response->set_code(net::HTTP_OK);
       return response;
     }
     return nullptr;
+  }
+
+  std::string GetXGeoHeader() {
+    base::AutoLock lock(header_lock_);
+    return xgeo_header_;
   }
 
  protected:
@@ -138,6 +162,7 @@ class GeolocationHeaderFencedFrameBrowserTest
         {});
   }
 };
+
 
 // Test that the X-Geo header is correctly appended for allowed searches.
 IN_PROC_BROWSER_TEST_F(GeolocationHeaderBrowserTest, AppendsXGeoHeader) {
@@ -169,17 +194,38 @@ IN_PROC_BROWSER_TEST_F(GeolocationHeaderBrowserTest, AppendsXGeoHeader) {
                                 ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
       false);
 
-  base::RunLoop run_loop;
-  quit_closure_ = run_loop.QuitClosure();
+  content::TestNavigationObserver navigation_observer(
+      browser()->tab_strip_model()->GetActiveWebContents());
 
   browser()->OpenURL(params, /*navigation_handle_callback=*/{});
 
-  run_loop.Run();
+  navigation_observer.Wait();
 
-  EXPECT_FALSE(xgeo_header_.empty())
+  EXPECT_FALSE(GetXGeoHeader().empty())
       << "X-Geo header should be present in the request.";
-  EXPECT_TRUE(xgeo_header_.starts_with("w "))
+  EXPECT_TRUE(GetXGeoHeader().starts_with("w "))
       << "X-Geo header should start with 'w '.";
+
+  // The Geolocation usage indicator (Omnibox icon) is a desktop UI feature
+  // implemented using the Views toolkit. We wrap the UI verification in
+  // TOOLKIT_VIEWS to ensure the test compiles and runs correctly on platforms
+  // that use Views (Linux, Windows, ChromeOS) while safely skipping it on
+  // Mac (if not using Views).
+#if defined(TOOLKIT_VIEWS)
+  LocationBarView* location_bar_view =
+      static_cast<LocationBarView*>(browser()->window()->GetLocationBar());
+  const auto& image_views = location_bar_view->GetContentSettingViewsForTest();
+  bool geo_icon_visible = false;
+  for (const auto& view : image_views) {
+    if (view->GetType() ==
+        toolbar_ui_api::mojom::ContentSettingImageType::kGeolocation) {
+      geo_icon_visible = view->GetVisible();
+      break;
+    }
+  }
+  EXPECT_TRUE(geo_icon_visible)
+      << "Geolocation usage indicator icon should be visible in the Omnibox.";
+#endif
 }
 
 // Test that the X-Geo header is NOT appended in Incognito mode.
@@ -198,14 +244,14 @@ IN_PROC_BROWSER_TEST_F(GeolocationHeaderBrowserTest, NoHeaderInIncognito) {
                                 ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
       false);
 
-  base::RunLoop run_loop;
-  quit_closure_ = run_loop.QuitClosure();
+  content::TestNavigationObserver navigation_observer(
+      incognito_browser->tab_strip_model()->GetActiveWebContents());
 
   incognito_browser->OpenURL(params, /*navigation_handle_callback=*/{});
 
-  run_loop.Run();
+  navigation_observer.Wait();
 
-  EXPECT_TRUE(xgeo_header_.empty())
+  EXPECT_TRUE(GetXGeoHeader().empty())
       << "X-Geo header should not be present in Incognito.";
 }
 
@@ -244,14 +290,14 @@ IN_PROC_BROWSER_TEST_F(GeolocationHeaderBrowserTest,
                                 ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
       false);
 
-  base::RunLoop run_loop;
-  quit_closure_ = run_loop.QuitClosure();
+  content::TestNavigationObserver navigation_observer(
+      browser()->tab_strip_model()->GetActiveWebContents());
 
   browser()->OpenURL(params, /*navigation_handle_callback=*/{});
 
-  run_loop.Run();
+  navigation_observer.Wait();
 
-  EXPECT_TRUE(xgeo_header_.empty())
+  EXPECT_TRUE(GetXGeoHeader().empty())
       << "X-Geo header should not be present when permission is denied.";
 }
 
@@ -286,14 +332,14 @@ IN_PROC_BROWSER_TEST_F(GeolocationHeaderBrowserTest, NoHeaderForNonDse) {
                                 ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
       false);
 
-  base::RunLoop run_loop;
-  quit_closure_ = run_loop.QuitClosure();
+  content::TestNavigationObserver navigation_observer(
+      browser()->tab_strip_model()->GetActiveWebContents());
 
   browser()->OpenURL(params, /*navigation_handle_callback=*/{});
 
-  run_loop.Run();
+  navigation_observer.Wait();
 
-  EXPECT_TRUE(xgeo_header_.empty())
+  EXPECT_TRUE(GetXGeoHeader().empty())
       << "X-Geo header should not be present for non-search navigations.";
 }
 
@@ -328,14 +374,14 @@ IN_PROC_BROWSER_TEST_F(GeolocationHeaderBrowserTest, RedirectToNonDse) {
                                 ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
       false);
 
-  base::RunLoop run_loop;
-  quit_closure_ = run_loop.QuitClosure();
+  content::TestNavigationObserver navigation_observer(
+      browser()->tab_strip_model()->GetActiveWebContents());
 
   browser()->OpenURL(params, /*navigation_handle_callback=*/{});
 
-  run_loop.Run();
+  navigation_observer.Wait();
 
-  EXPECT_TRUE(xgeo_header_.empty())
+  EXPECT_TRUE(GetXGeoHeader().empty())
       << "X-Geo header should be removed when redirecting to a non-search URL.";
 }
 
@@ -371,16 +417,16 @@ IN_PROC_BROWSER_TEST_F(GeolocationHeaderBrowserTest, RedirectToSameOrigin) {
                                 ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
       false);
 
-  base::RunLoop run_loop;
-  quit_closure_ = run_loop.QuitClosure();
+  content::TestNavigationObserver navigation_observer(
+      browser()->tab_strip_model()->GetActiveWebContents());
 
   browser()->OpenURL(params, /*navigation_handle_callback=*/{});
 
-  run_loop.Run();
+  navigation_observer.Wait();
 
-  EXPECT_FALSE(xgeo_header_.empty())
+  EXPECT_FALSE(GetXGeoHeader().empty())
       << "X-Geo header should be kept when redirecting to a DSE URL.";
-  EXPECT_TRUE(xgeo_header_.starts_with("w "));
+  EXPECT_TRUE(GetXGeoHeader().starts_with("w "));
 }
 
 IN_PROC_BROWSER_TEST_F(GeolocationHeaderFencedFrameBrowserTest,
@@ -445,4 +491,144 @@ IN_PROC_BROWSER_TEST_F(GeolocationHeaderFencedFrameBrowserTest,
   }
   EXPECT_TRUE(captured_header.empty())
       << "X-Geo header should not be sent for Fenced Frame navigations.";
+}
+
+IN_PROC_BROWSER_TEST_F(GeolocationHeaderBrowserTest,
+                       RedirectToCrossOriginNonDse) {
+  device::ScopedGeolocationOverrider overrider(
+      /*latitude=*/12.34, /*longitude=*/56.78);
+
+  Profile* profile = browser()->profile();
+  GeolocationHeaderService* geo_service =
+      GeolocationHeaderServiceFactory::GetForProfile(profile);
+  ASSERT_TRUE(geo_service);
+
+  // Trigger priming by typing in the Omnibox.
+  OmniboxView* omnibox_view =
+      browser()->window()->GetLocationBar()->GetOmniboxView();
+  omnibox_view->OnBeforePossibleChange();
+  omnibox_view->SetUserText(u"test");
+  omnibox_view->OnAfterPossibleChange(true);
+
+  // Wait until the geolocation service completes the query and caches it.
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return geo_service->HasCachedLocation(); }));
+
+  // Perform navigation to a URL that redirects to a cross-origin non-DSE URL.
+  GURL redirect_url = test_server_.GetURL("/search?q=redirect-cross-origin");
+
+  content::OpenURLParams params(
+      redirect_url, content::Referrer(), WindowOpenDisposition::CURRENT_TAB,
+      ui::PageTransitionFromInt(ui::PAGE_TRANSITION_GENERATED |
+                                ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
+      false);
+
+  content::TestNavigationObserver navigation_observer(
+      browser()->tab_strip_model()->GetActiveWebContents());
+
+  browser()->OpenURL(params, /*navigation_handle_callback=*/{});
+
+  navigation_observer.Wait();
+
+  std::string captured_header;
+  {
+    base::AutoLock lock(header_lock_);
+    captured_header = xgeo_header_;
+  }
+  EXPECT_TRUE(captured_header.empty()) << "X-Geo header should be removed when "
+                                          "redirecting to a cross-origin URL.";
+
+  content_settings::PageSpecificContentSettings* pscs =
+      content_settings::PageSpecificContentSettings::GetForFrame(
+          browser()
+              ->tab_strip_model()
+              ->GetActiveWebContents()
+              ->GetPrimaryMainFrame());
+  ASSERT_TRUE(pscs);
+  EXPECT_FALSE(pscs->IsContentAllowed(ContentSettingsType::GEOLOCATION));
+}
+
+class GeolocationHeaderDisabledBrowserTest : public InProcessBrowserTest {
+ public:
+  GeolocationHeaderDisabledBrowserTest()
+      : test_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
+    feature_list_.InitAndDisableFeature(omnibox::kPlatformAgnosticXGeo);
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch("ignore-certificate-errors");
+  }
+
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    test_server_.RegisterRequestHandler(base::BindRepeating(
+        &GeolocationHeaderDisabledBrowserTest::HandleRequest,
+        base::Unretained(this)));
+    ASSERT_TRUE(test_server_.Start());
+  }
+
+  std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
+      const net::test_server::HttpRequest& request) {
+    if (request.relative_url.starts_with("/search")) {
+      base::AutoLock lock(header_lock_);
+      xgeo_header_.clear();
+      auto it = request.headers.find("X-Geo");
+      if (it != request.headers.end()) {
+        xgeo_header_ = it->second;
+      }
+      auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+      response->set_code(net::HTTP_OK);
+      return response;
+    }
+    return nullptr;
+  }
+
+ protected:
+  net::EmbeddedTestServer test_server_;
+  base::Lock header_lock_;
+  std::string xgeo_header_ GUARDED_BY(header_lock_);
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(GeolocationHeaderDisabledBrowserTest,
+                       NoHeaderWhenFeatureDisabled) {
+  device::ScopedGeolocationOverrider overrider(
+      /*latitude=*/12.34, /*longitude=*/56.78);
+
+  Profile* profile = browser()->profile();
+  GeolocationHeaderService* geo_service =
+      GeolocationHeaderServiceFactory::GetForProfile(profile);
+  EXPECT_FALSE(geo_service);
+
+  GURL search_url = test_server_.GetURL("/search?q=test");
+
+  content::OpenURLParams params(
+      search_url, content::Referrer(), WindowOpenDisposition::CURRENT_TAB,
+      ui::PageTransitionFromInt(ui::PAGE_TRANSITION_GENERATED |
+                                ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
+      false);
+
+  content::TestNavigationObserver navigation_observer(
+      browser()->tab_strip_model()->GetActiveWebContents());
+
+  browser()->OpenURL(params, /*navigation_handle_callback=*/{});
+
+  navigation_observer.Wait();
+
+  std::string captured_header;
+  {
+    base::AutoLock lock(header_lock_);
+    captured_header = xgeo_header_;
+  }
+  EXPECT_TRUE(captured_header.empty())
+      << "X-Geo header should not be present when feature is disabled.";
+
+  content_settings::PageSpecificContentSettings* pscs =
+      content_settings::PageSpecificContentSettings::GetForFrame(
+          browser()
+              ->tab_strip_model()
+              ->GetActiveWebContents()
+              ->GetPrimaryMainFrame());
+  ASSERT_TRUE(pscs);
+  EXPECT_FALSE(pscs->IsContentAllowed(ContentSettingsType::GEOLOCATION));
 }

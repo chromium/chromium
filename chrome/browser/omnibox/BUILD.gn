@@ -28,6 +28,7 @@ source_set("omnibox") {
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/search_engines",
+    "//components/content_settings/browser",
     "//components/keyed_service/content",
     "//components/omnibox/browser",
     "//components/omnibox/common",

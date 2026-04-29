@@ -96,14 +96,13 @@ bool WillNavigationCreateNewPageSpecificContentSettingsOnCommit(
          !navigation_handle->IsPrerenderedPageActivation();
 }
 
-// Keeps track of cookie and service worker access during a navigation.
-// These types of access can happen for the current page or for a new
-// navigation (think cookies sent in the HTTP request or service worker
-// being run to serve a fetch request). A navigation might fail to
-// commit in which case we have to handle it as if it had never
-// occurred. So we cache all cookies and service worker accesses that
-// happen during a navigation and only apply the changes if the
-// navigation commits.
+// Keeps track of cookie, service worker, and geolocation usage indicator access
+// during a navigation. These types of access can happen for the current page or
+// for a new navigation (think cookies sent in the HTTP request or service
+// worker being run to serve a fetch request). A navigation might fail to commit
+// in which case we have to handle it as if it had never occurred. So we cache
+// all cookies and service worker accesses that happen during a navigation and
+// only apply the changes if the navigation commits.
 class InflightNavigationContentSettings
     : public content::NavigationHandleUserData<
           InflightNavigationContentSettings> {
@@ -117,6 +116,7 @@ class InflightNavigationContentSettings
       shared_dictionary_accesses;
   std::vector<net::device_bound_sessions::SessionAccess>
       device_bound_session_accesses;
+  bool geolocation_header_attached = false;
 
  private:
   explicit InflightNavigationContentSettings(
@@ -298,6 +298,13 @@ void WebContentsHandler::TransferNavigationContentSettingsToCommittedDocument(
   for (const auto& device_bound_session_access :
        navigation_settings.device_bound_session_accesses) {
     OnDeviceBoundSessionAccessed(rfh, device_bound_session_access);
+  }
+
+  if (navigation_settings.geolocation_header_attached) {
+    auto* pscs = PageSpecificContentSettings::GetForFrame(rfh);
+    if (pscs) {
+      pscs->OnContentAllowed(ContentSettingsType::GEOLOCATION);
+    }
   }
 }
 
@@ -701,6 +708,31 @@ PageSpecificContentSettings::GetDelegateForWebContents(
     content::WebContents* web_contents) {
   auto* handler = WebContentsHandler::FromWebContents(web_contents);
   return handler ? handler->delegate() : nullptr;
+}
+// static
+void PageSpecificContentSettings::GeolocationHeaderAttachedToNavigation(
+    content::NavigationHandle* navigation) {
+  // This indicator is only supported for cross-document main-frame navigations
+  // that create a new PageSpecificContentSettings on commit. Same-document
+  // navigations (e.g. SPA history pushes) do not re-attach the header and thus
+  // do not re-trigger the indicator.
+  if (WillNavigationCreateNewPageSpecificContentSettingsOnCommit(navigation)) {
+    auto* inflight_navigation_settings =
+        content::NavigationHandleUserData<InflightNavigationContentSettings>::
+            GetOrCreateForNavigationHandle(*navigation);
+
+    inflight_navigation_settings->geolocation_header_attached = true;
+  }
+}
+
+// static
+void PageSpecificContentSettings::GeolocationHeaderRemovedFromNavigation(
+    content::NavigationHandle* navigation) {
+  auto* inflight_navigation_settings = content::NavigationHandleUserData<
+      InflightNavigationContentSettings>::GetForNavigationHandle(*navigation);
+  if (inflight_navigation_settings) {
+    inflight_navigation_settings->geolocation_header_attached = false;
+  }
 }
 
 // static

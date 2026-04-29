@@ -259,6 +259,17 @@ class PageSpecificContentSettings
   static PageSpecificContentSettings::Delegate* GetDelegateForWebContents(
       content::WebContents* web_contents);
 
+  // Called by GeolocationNavigationThrottle when the X-Geo header is attached
+  // to a search navigation. This ensures the geolocation usage indicator is
+  // displayed in the Omnibox upon commit.
+  static void GeolocationHeaderAttachedToNavigation(
+      content::NavigationHandle* navigation);
+
+  // Called by GeolocationNavigationThrottle when the X-Geo header is removed
+  // from a navigation (e.g. due to a redirect to a non-search URL).
+  static void GeolocationHeaderRemovedFromNavigation(
+      content::NavigationHandle* navigation);
+
   static void StorageAccessed(
       mojom::ContentSettingsManager::StorageType storage_type,
       std::variant<content::GlobalRenderFrameHostToken,

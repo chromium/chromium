@@ -800,6 +800,49 @@ TEST_F(PageSpecificContentSettingsTest,
 }
 #endif
 
+TEST_F(PageSpecificContentSettingsTest, GeolocationHeaderAttachedToNavigation) {
+  std::unique_ptr<content::NavigationSimulator> simulator =
+      content::NavigationSimulator::CreateBrowserInitiated(
+          GURL("https://google.com"), web_contents());
+  simulator->SetTransition(ui::PAGE_TRANSITION_GENERATED);
+  simulator->Start();
+
+  PageSpecificContentSettings* pscs = PageSpecificContentSettings::GetForFrame(
+      web_contents()->GetPrimaryMainFrame());
+  EXPECT_FALSE(pscs->IsContentAllowed(ContentSettingsType::GEOLOCATION));
+
+  PageSpecificContentSettings::GeolocationHeaderAttachedToNavigation(
+      simulator->GetNavigationHandle());
+
+  simulator->Commit();
+
+  pscs = PageSpecificContentSettings::GetForFrame(
+      simulator->GetFinalRenderFrameHost());
+  ASSERT_TRUE(pscs);
+  EXPECT_TRUE(pscs->IsContentAllowed(ContentSettingsType::GEOLOCATION));
+}
+
+TEST_F(PageSpecificContentSettingsTest,
+       GeolocationHeaderRemovedFromNavigation) {
+  std::unique_ptr<content::NavigationSimulator> simulator =
+      content::NavigationSimulator::CreateBrowserInitiated(
+          GURL("https://google.com"), web_contents());
+  simulator->SetTransition(ui::PAGE_TRANSITION_GENERATED);
+  simulator->Start();
+
+  PageSpecificContentSettings::GeolocationHeaderAttachedToNavigation(
+      simulator->GetNavigationHandle());
+  PageSpecificContentSettings::GeolocationHeaderRemovedFromNavigation(
+      simulator->GetNavigationHandle());
+
+  simulator->Commit();
+
+  PageSpecificContentSettings* pscs = PageSpecificContentSettings::GetForFrame(
+      simulator->GetFinalRenderFrameHost());
+  ASSERT_TRUE(pscs);
+  EXPECT_FALSE(pscs->IsContentAllowed(ContentSettingsType::GEOLOCATION));
+}
+
 TEST_F(PageSpecificContentSettingsTest, AllowedSitesCountedFromBothModels) {
   // Populate containers with hosts.
   bool blocked_by_policy = false;

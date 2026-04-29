@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "chrome/browser/omnibox/geolocation_header_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/omnibox/browser/geolocation_header_service.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "content/public/browser/browser_context.h"
@@ -81,8 +82,12 @@ GeolocationNavigationThrottle::ProcessNavigation() {
       service->GetLocationHeader(navigation_handle()->GetURL());
   if (geo_header) {
     navigation_handle()->SetRequestHeader(kXGeoHeaderName, *geo_header);
+    content_settings::PageSpecificContentSettings::
+        GeolocationHeaderAttachedToNavigation(navigation_handle());
   } else if (navigation_handle()->WasServerRedirect()) {
     navigation_handle()->RemoveRequestHeader(kXGeoHeaderName);
+    content_settings::PageSpecificContentSettings::
+        GeolocationHeaderRemovedFromNavigation(navigation_handle());
   }
 
   return PROCEED;
