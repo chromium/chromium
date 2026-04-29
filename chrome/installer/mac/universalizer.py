@@ -247,7 +247,7 @@ def _universalize(input_paths, output_path, root):
                     # although this is the correct value for that architecture.
                     #
                     # TODO(mark): Implement “Change 3” from
-                    # https://crbug.com/40209175#c33 by reducing the x86_64
+                    # https://crbug.com/40209175#comment34 by reducing the x86_64
                     # alignment requirement to 4kB and truncating this comment,
                     # or if appropriate, implement “Change 3A” instead, updating
                     # this comment with a revised rationale.

@@ -273,8 +273,8 @@ public class SplashController extends CustomTabTabObserver
         // Removing translucency is important for performance, otherwise the windows under Chrome
         // will continue being drawn (e.g. launcher with wallpaper). Without removing translucency,
         // we also see visual glitches in the following cases:
-        // - closing activity (example: https://crbug.com/40582399#c41)
-        // - send activity to the background (example: https://crbug.com/40582399#c30)
+        // - closing activity (example: https://crbug.com/40582399#comment42)
+        // - send activity to the background (example: https://crbug.com/40582399#comment31)
 
         mRemovedTranslucency = true;
 

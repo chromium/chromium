@@ -123,7 +123,7 @@ public class OfflinePageArchivePublisherBridgeTest {
 
     /**
      * Tests that Chrome will gracefully handle Android not being able to generate unique filenames
-     * with a large enough unique number. See https://crbug.com/40651389#c2 for context.
+     * with a large enough unique number. See https://crbug.com/40651389#comment3 for context.
      *
      * <p>TODO(crbug.com/40683443): This test fails on Android Q/10 (SDK 29). Leaving it enabled for
      * now as there's currently no bot running tests with that OS version.

@@ -37,7 +37,10 @@ found in the LICENSE file.
                 android:contentDescription="@null"
                 android:background="@drawable/tab_group_dialog_color_icon" />
         </FrameLayout>
-        <!-- This generic option should not have autofillHints (crbug.com/40127800#c3). -->
+        <!--
+          This generic option should not have autofillHints
+          (crbug.com/40127800#comment4).
+        -->
         <EditText
             tools:ignore="Autofill,LabelFor"
             android:id="@+id/title"

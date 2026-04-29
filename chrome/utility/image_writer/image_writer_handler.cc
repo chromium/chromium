@@ -136,7 +136,7 @@ bool ImageWriterHandler::ShouldResetImageWriter(const base::FilePath& image,
 
   // When writing and verifying the same file on the same device, keep
   // the file handles open; do not reset them since that can cause the
-  // operation to fail in unexpected ways: crbug.com/40355836#c7
+  // operation to fail in unexpected ways: crbug.com/40355836#comment8
   return false;
 }
 

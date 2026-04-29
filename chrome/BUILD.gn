@@ -1248,7 +1248,7 @@ if (is_win) {
   assert(_framework_binary_path != "",
          "Ignore configuration-dependent unused variable warning")
 
-  # TOOD(crbug.com/40740432#c8) - thakis@ look into why profile and coverage
+  # TOOD(crbug.com/40740432#comment9) - thakis@ look into why profile and coverage
   # instrumentation adds these symbols in different orders
   if (!is_component_build && chrome_pgo_phase != 1 && !using_sanitizer) {
     action("verify_chrome_framework_order") {

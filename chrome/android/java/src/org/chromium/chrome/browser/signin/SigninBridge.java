@@ -124,7 +124,7 @@ final class SigninBridge {
         WindowAndroid windowAndroid = tab.getWindowAndroid();
         if (windowAndroid == null || !tab.isUserInteractable()) {
             // The page is opened in the background, ignore the header. See
-            // https://crbug.com/40729225#c5 and https://crbug.com/323424409 for details.
+            // https://crbug.com/40729225#comment6 and https://crbug.com/323424409 for details.
             return;
         }
         GURL initialTabURL = tab.getUrl();
@@ -262,7 +262,7 @@ final class SigninBridge {
         WindowAndroid windowAndroid = tab.getWindowAndroid();
         if (windowAndroid == null || !tab.isUserInteractable()) {
             // The page is opened in the background, ignore the header. See
-            // https://crbug.com/40729225#c5 and https://crbug.com/323424409 for details.
+            // https://crbug.com/40729225#comment6 and https://crbug.com/323424409 for details.
             return;
         }
         Profile profile = tab.getProfile().getOriginalProfile();
@@ -372,7 +372,7 @@ final class SigninBridge {
         WindowAndroid windowAndroid = tab.getWindowAndroid();
         if (windowAndroid == null || !tab.isUserInteractable()) {
             // The page is opened in the background, ignore the header. See
-            // https://crbug.com/40729225#c5 and https://crbug.com/323424409 for details.
+            // https://crbug.com/40729225#comment6 and https://crbug.com/323424409 for details.
             return;
         }
         GURL initialTabURL = tab.getUrl();

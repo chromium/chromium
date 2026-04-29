@@ -1465,8 +1465,8 @@ bool RegisterChromeBrowserImpl(const base::FilePath& chrome_exe,
   // The installer is responsible for registration for system-level installs, so
   // never try to do it here. Getting to this point for a system-level install
   // likely means that IsChromeRegistered thinks registration is broken due to
-  // localization issues (see https://crbug.com/41316723#c18). It likely is not,
-  // so return success to allow Chrome to be made default.
+  // localization issues (see https://crbug.com/41316723#comment19). It likely
+  // is not, so return success to allow Chrome to be made default.
   if (!user_level) {
     std::move(notify_on_exit).Cancel();
     return true;

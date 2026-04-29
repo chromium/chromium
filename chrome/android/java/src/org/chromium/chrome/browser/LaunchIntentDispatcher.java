@@ -335,7 +335,7 @@ public class LaunchIntentDispatcher {
     /** Handles launching a {@link ChromeTabbedActivity}. */
     @SuppressLint("InlinedApi")
     @SuppressWarnings(
-            "checkstyle:SystemExitCheck") // Allowed due to https://crbug.com/40578549#c17.
+            "checkstyle:SystemExitCheck") // Allowed due to https://crbug.com/40578549#comment18.
     private @Action int dispatchToTabbedActivity() {
         maybePrefetchDnsInBackground();
 

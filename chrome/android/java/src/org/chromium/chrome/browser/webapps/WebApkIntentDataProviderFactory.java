@@ -350,7 +350,8 @@ public class WebApkIntentDataProviderFactory {
                 IntentUtils.safeGetInt(bundle, WebApkMetaDataKeys.MASKABLE_ICON_ID, 0);
 
         // There are a few WebAPKs with bad shells (between v105 and v114) that would previously
-        // cause chrome to crash. The check below fixes it. See crbug.com/40655886#c8 for details.
+        // cause chrome to crash. The check below fixes it. See crbug.com/40655886#comment9 for
+        // details.
         if (shellApkVersion >= 105 && shellApkVersion <= 114) {
             try {
                 ApiCompatibilityUtils.getDrawable(res, primaryMaskableIconId);

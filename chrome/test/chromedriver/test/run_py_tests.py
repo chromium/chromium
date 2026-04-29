@@ -3066,7 +3066,7 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
     """Checks that chromedriver can call Click on an element in a shadow DOM."""
     self._driver.Load(self.GetHttpUrlForFile(
         '/chromedriver/shadow_dom_test.html'))
-    # Wait for page to stabilize. See https://crbug.com/41453869#c7
+    # Wait for page to stabilize. See https://crbug.com/41453869#comment8
     time.sleep(1)
     elem = self._FindElementInShadowDom(
         ["#innerDiv", "#parentDiv", "#button"])
@@ -3081,7 +3081,7 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
     shadow DOM.'''
     self._driver.Load(self.GetHttpUrlForFile(
         '/chromedriver/shadow_dom_test.html'))
-    # Wait for page to stabilize. See https://crbug.com/41453869#c7
+    # Wait for page to stabilize. See https://crbug.com/41453869#comment8
     time.sleep(1)
     elem = self._FindElementInShadowDom(
         ['#innerDiv', '#parentDiv', '#button'])

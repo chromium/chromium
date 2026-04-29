@@ -101,7 +101,7 @@ public class ChromeStrictMode {
         vmPolicy.detectCredentialProtectedWhileLocked().detectImplicitDirectBoot();
 
         // File URI leak detection, has false positives when file URI intents are passed between
-        // Chrome activities in separate processes. See http://crbug.com/40425941#c11.
+        // Chrome activities in separate processes. See http://crbug.com/40425941#comment12.
         vmPolicy.detectFileUriExposure();
     }
 

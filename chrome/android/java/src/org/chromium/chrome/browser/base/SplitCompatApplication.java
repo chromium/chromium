@@ -182,7 +182,7 @@ public class SplitCompatApplication extends Application {
                             throw new RuntimeException(
                                     "Starting in 64-bit mode requires the 64-bit native library. If"
                                             + " the device is 64-bit only, see alternatives here: "
-                                            + "https://crbug.com/40217494#c7.",
+                                            + "https://crbug.com/40217494#comment8.",
                                     unsatisfiedLinkError);
                         } else if (cannotLoadIn32Bit()) {
                             throw new RuntimeException(
