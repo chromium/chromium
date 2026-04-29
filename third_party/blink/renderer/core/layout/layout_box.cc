@@ -3699,7 +3699,7 @@ bool LayoutBox::IsMonolithic() const {
   // IsFlexibleBox(). The breakability should be handled at the item
   // level. (Likely same for Table and Grid).
   if (IsInline() || IsSemiReplaced() || HasUnsplittableScrollingOverflow() ||
-      (Parent() && IsWritingModeRoot()) ||
+      IsOverscrollContainer() || (Parent() && IsWritingModeRoot()) ||
       (IsFixedPositioned() && GetDocument().Printing() &&
        IsA<LayoutView>(Container())) ||
       ShouldApplySizeContainment() || IsFrameSet() ||
