@@ -29,12 +29,13 @@ enum class SocketPoolAdditionalCapacityError {
 // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:SocketPoolAdditionalCapacityError)
 
 // static
-SocketPoolAdditionalCapacity SocketPoolAdditionalCapacity::Create() {
+SocketPoolAdditionalCapacity SocketPoolAdditionalCapacity::Create(
+    size_t additional_capacity) {
   if (base::FeatureList::IsEnabled(
           features::kTcpSocketPoolLimitRandomization)) {
     return SocketPoolAdditionalCapacity(
         features::kTcpSocketPoolLimitRandomizationBase.Get(),
-        features::kTcpSocketPoolLimitRandomizationCapacity.Get(),
+        additional_capacity,
         features::kTcpSocketPoolLimitRandomizationMinimum.Get(),
         features::kTcpSocketPoolLimitRandomizationNoise.Get());
   }

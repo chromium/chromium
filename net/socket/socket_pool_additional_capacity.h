@@ -23,12 +23,16 @@ enum class SocketPoolState {
 };
 
 // This class encapsulates the logic for the additional TCP Socket Pool capacity
-// allocated (and randomized) to prevent cross-site state tracking.
+// allocated (and randomized) to prevent cross-site state tracking. Stored on
+// `ClientSocketPool` subclasses and used in capacity calculations.
 // See crbug.com/415691664 for more details.
 class NET_EXPORT_PRIVATE SocketPoolAdditionalCapacity {
  public:
   // This initializes using values from kTcpSocketPoolLimitRandomization.
-  static SocketPoolAdditionalCapacity Create();
+  // `additional_capacity` is the maximum amount of sockets (on top of the
+  // `socket_soft_cap`) allowed to be allocated. Usually `additional_capacity`
+  // equals `socket_soft_cap`, but this is not enforced.
+  static SocketPoolAdditionalCapacity Create(size_t additional_capacity);
 
   // This initializes an empty pool that contains no capacity.
   static SocketPoolAdditionalCapacity CreateEmpty();

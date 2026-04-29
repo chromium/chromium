@@ -699,9 +699,6 @@ NET_EXPORT BASE_DECLARE_FEATURE(kTcpSocketPoolLimitRandomization);
 // The base of an exponent when calculating the probability.
 NET_EXPORT BASE_DECLARE_FEATURE_PARAM(double,
                                       kTcpSocketPoolLimitRandomizationBase);
-// The maximum amount of additional sockets to allow use of.
-NET_EXPORT BASE_DECLARE_FEATURE_PARAM(int,
-                                      kTcpSocketPoolLimitRandomizationCapacity);
 // The minimum probability allowed to be returned.
 NET_EXPORT BASE_DECLARE_FEATURE_PARAM(double,
                                       kTcpSocketPoolLimitRandomizationMinimum);

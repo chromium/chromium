@@ -1439,7 +1439,7 @@ TEST_P(WebSocketTransportClientSocketPoolTest, LoadState) {
 TEST_P(WebSocketTransportClientSocketPoolTest,
        ValidateAdditionalCapacityForWebSocketTransportClientSocketPool) {
   WebSocketTransportClientSocketPool pool(
-      /*socket_soft_cap=*/256, SocketPoolAdditionalCapacity::Create(),
+      /*socket_soft_cap=*/256, SocketPoolAdditionalCapacity::Create(256),
       ProxyChain::Direct(), &common_connect_job_params_);
   ValidateAdditionalCapacityForSocketPool(
       base::BindLambdaForTesting([&]() {

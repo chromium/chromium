@@ -616,12 +616,6 @@ BASE_FEATURE_PARAM(double,
                    "TcpSocketPoolLimitRandomizationBase",
                    0.000001);
 
-BASE_FEATURE_PARAM(int,
-                   kTcpSocketPoolLimitRandomizationCapacity,
-                   &kTcpSocketPoolLimitRandomization,
-                   "TcpSocketPoolLimitRandomizationCapacity",
-                   256);
-
 BASE_FEATURE_PARAM(double,
                    kTcpSocketPoolLimitRandomizationMinimum,
                    &kTcpSocketPoolLimitRandomization,

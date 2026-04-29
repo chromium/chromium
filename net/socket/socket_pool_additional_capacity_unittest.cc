@@ -24,7 +24,7 @@ TEST(SocketPoolAdditionalCapacityTest, CreateWithDisabledFeature) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(
       features::kTcpSocketPoolLimitRandomization);
-  EXPECT_EQ(SocketPoolAdditionalCapacity::Create(),
+  EXPECT_EQ(SocketPoolAdditionalCapacity::Create(0),
             SocketPoolAdditionalCapacity::CreateEmpty());
 }
 
@@ -38,10 +38,6 @@ TEST(SocketPoolAdditionalCapacityTest, CreateWithEnabledFeature) {
               "0.1",
           },
           {
-              "TcpSocketPoolLimitRandomizationCapacity",
-              "2",
-          },
-          {
               "TcpSocketPoolLimitRandomizationMinimum",
               "0.3",
           },
@@ -50,7 +46,7 @@ TEST(SocketPoolAdditionalCapacityTest, CreateWithEnabledFeature) {
               "0.4",
           },
       });
-  EXPECT_EQ(SocketPoolAdditionalCapacity::Create(),
+  EXPECT_EQ(SocketPoolAdditionalCapacity::Create(2),
             SocketPoolAdditionalCapacity::CreateForTest(0.1, 2, 0.3, 0.4));
 }
 
@@ -62,7 +58,7 @@ TEST(SocketPoolAdditionalCapacityTest, CreateForTest) {
 }
 
 TEST(SocketPoolAdditionalCapacityTest, CreateDefault) {
-  EXPECT_EQ(std::string(SocketPoolAdditionalCapacity::Create()),
+  EXPECT_EQ(std::string(SocketPoolAdditionalCapacity::Create(256)),
             "SocketPoolAdditionalCapacity(base:1.000000e-06,capacity:256,"
             "minimum:1.000000e-02,noise:2.000000e-01)");
 }
@@ -252,7 +248,7 @@ TEST(SocketPoolAdditionalCapacityTest, EmptyPool) {
 
 TEST(SocketPoolAdditionalCapacityTest,
      TestDefaultDistributionForFieldTrialConfig) {
-  SocketPoolAdditionalCapacity pool = SocketPoolAdditionalCapacity::Create();
+  SocketPoolAdditionalCapacity pool = SocketPoolAdditionalCapacity::Create(256);
 
   // In order to do that we need an easy way to measure distributions.
   // Since we are applying noise, we run a ten thousand variants.
@@ -353,7 +349,7 @@ class MockClientSocketPool : public ClientSocketPool {
  public:
   MockClientSocketPool()
       : ClientSocketPool(/*socket_soft_cap=*/256,
-                         SocketPoolAdditionalCapacity::Create(),
+                         SocketPoolAdditionalCapacity::Create(256),
                          ProxyChain::Direct(),
                          /*is_for_websockets=*/false,
                          /*common_connect_job_params*/ nullptr,
