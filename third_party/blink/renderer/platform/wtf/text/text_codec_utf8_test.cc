@@ -44,7 +44,7 @@ namespace blink {
 
 namespace {
 
-TEST(TextCodecUTF8, DecodeAscii) {
+TEST(TextCodecUtf8Test, DecodeAscii) {
   TextEncoding encoding("UTF-8");
   std::unique_ptr<TextCodec> codec(NewTextCodec(encoding));
 
@@ -59,7 +59,7 @@ TEST(TextCodecUTF8, DecodeAscii) {
   }
 }
 
-TEST(TextCodecUTF8, DecodeChineseCharacters) {
+TEST(TextCodecUtf8Test, DecodeChineseCharacters) {
   TextEncoding encoding("UTF-8");
   std::unique_ptr<TextCodec> codec(NewTextCodec(encoding));
 
@@ -76,7 +76,7 @@ TEST(TextCodecUTF8, DecodeChineseCharacters) {
   EXPECT_EQ(0x5b57U, result[1]);
 }
 
-TEST(TextCodecUTF8, Decode0xFF) {
+TEST(TextCodecUtf8Test, Decode0xFF) {
   TextEncoding encoding("UTF-8");
   std::unique_ptr<TextCodec> codec(NewTextCodec(encoding));
 
@@ -89,7 +89,7 @@ TEST(TextCodecUTF8, Decode0xFF) {
   EXPECT_EQ(0xFFFDU, result[0]);
 }
 
-TEST(TextCodecUTF8, DecodeOverflow) {
+TEST(TextCodecUtf8Test, DecodeOverflow) {
   TextEncoding encoding("UTF-8");
   std::unique_ptr<TextCodec> codec(NewTextCodec(encoding));
 
@@ -107,7 +107,7 @@ TEST(TextCodecUTF8, DecodeOverflow) {
       "");
 }
 
-TEST(TextCodecUTF8, DecodeMultiplePartialsAfterError) {
+TEST(TextCodecUtf8Test, DecodeMultiplePartialsAfterError) {
   TextEncoding encoding("UTF-8");
   std::unique_ptr<TextCodec> codec(NewTextCodec(encoding));
 
