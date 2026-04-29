@@ -1072,7 +1072,7 @@ void GpuChannelManager::ScheduleGrContextCleanup() {
 }
 
 scoped_refptr<GpuPersistentCache> GpuChannelManager::persistent_cache() {
-  return use_persistent_cache_for_ganesh_
+  return use_persistent_cache_for_ganesh_ && persistent_caches_
              ? persistent_caches_->GetCache(kGrShaderGpuDiskCacheHandle)
              : nullptr;
 }

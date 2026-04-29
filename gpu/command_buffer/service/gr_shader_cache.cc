@@ -273,15 +273,19 @@ int32_t GrShaderCache::current_client_id() const {
 GrShaderCache::ScopedCacheUse::ScopedCacheUse(GrShaderCache* cache,
                                               int32_t client_id)
     : cache_(cache) {
-  base::AutoLock auto_lock(cache_->lock_);
-  DCHECK_EQ(cache_->current_client_id(), kInvalidClientId);
-  DCHECK_NE(client_id, kInvalidClientId);
-  cache_->current_client_id_[base::PlatformThread::CurrentId()] = client_id;
+  if (cache_) {
+    base::AutoLock auto_lock(cache_->lock_);
+    DCHECK_EQ(cache_->current_client_id(), kInvalidClientId);
+    DCHECK_NE(client_id, kInvalidClientId);
+    cache_->current_client_id_[base::PlatformThread::CurrentId()] = client_id;
+  }
 }
 
 GrShaderCache::ScopedCacheUse::~ScopedCacheUse() {
-  base::AutoLock auto_lock(cache_->lock_);
-  cache_->current_client_id_.erase(base::PlatformThread::CurrentId());
+  if (cache_) {
+    base::AutoLock auto_lock(cache_->lock_);
+    cache_->current_client_id_.erase(base::PlatformThread::CurrentId());
+  }
 }
 
 GrShaderCache::CacheKey::CacheKey(sk_sp<SkData> data) : data(std::move(data)) {

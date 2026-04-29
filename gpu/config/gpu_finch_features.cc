@@ -428,7 +428,12 @@ BASE_FEATURE(kSkiaGraphiteDawnUseD3D12, base::FEATURE_DISABLED_BY_DEFAULT);
 // Whether to use the GpuPersistentCache for caching GPU process shader blobs.
 // Usage for Graphite is controlled independently with
 // kSkiaGraphiteDawnUsePersistentCache.
-BASE_FEATURE(kGpuPersistentCache, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kGpuPersistentCache,
+#if BUILDFLAG(IS_WIN)
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
 
 // Use a 100-command limit before forcing context switch per command buffer
 // instead of 20.
