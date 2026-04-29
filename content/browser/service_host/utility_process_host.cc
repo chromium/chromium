@@ -77,6 +77,7 @@
 #include "media/capture/capture_switches.h"
 #include "services/audio/public/mojom/audio_service.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
+#include "services/webnn/webnn_switches.h"
 #endif
 
 #if BUILDFLAG(ENABLE_GPU_CHANNEL_MEDIA_CAPTURE)
@@ -469,6 +470,14 @@ bool UtilityProcessHost::StartProcess() {
 #endif
   };
   cmd_line->CopySwitchesFrom(browser_command_line, kSwitchNames);
+#if BUILDFLAG(IS_WIN)
+  if (options_.sandbox_type_ ==
+      sandbox::mojom::Sandbox::kWebNNModelCompilation) {
+    cmd_line->CopySwitchesFrom(
+        browser_command_line,
+        switches::GetWebNNSwitchesCopiedFromGpuProcessHost());
+  }
+#endif
 
   network_session_configurator::CopyNetworkSwitches(browser_command_line,
                                                     cmd_line.get());

@@ -44,6 +44,12 @@ enum Sandbox {
   // trustworthy models that may process untrustworthy inputs.
   kOnDeviceModelExecution,
 
+  // The WebNN Compiler process sandbox. Similar to the GPU process's sandbox,
+  // used for ORT graph compilation which may require access to GPU/NPU
+  // drivers. Unlike kOnDeviceModelExecution, this does not enable AppContainer
+  // since hardware accelerator drivers are incompatible with LPAC.
+  [EnableIf=is_win] kWebNNModelCompilation,
+
   // Runs with the same rights as the browser. Usually needed to improve
   // stability by hosting code that interacts with third party code in another
   // process.

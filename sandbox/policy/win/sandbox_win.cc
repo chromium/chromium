@@ -1063,6 +1063,8 @@ std::string SandboxWin::GetSandboxTypeInEnglish(
       return "Network";
     case Sandbox::kOnDeviceModelExecution:
       return "On-Device Model Execution";
+    case Sandbox::kWebNNModelCompilation:
+      return "WebNN Model Compilation";
     case Sandbox::kCdm:
       return "CDM";
     case Sandbox::kPrintCompositor:
@@ -1132,6 +1134,12 @@ std::optional<size_t> SandboxWin::GetJobMemoryLimit(Sandbox sandbox_type) {
       // Otherwise, scale based on physical memory, up to 64 GB.
       return get_scaled_physical_memory_based_limit();
     case Sandbox::kOnDeviceModelExecution:
+      // Scale based on available physical memory, up to 64 GB.
+      return get_scaled_physical_memory_based_limit();
+    case Sandbox::kWebNNModelCompilation:
+      // TODO(crbug.com/502616233): Consider adding a dedicated feature flag to
+      // allow higher memory limits (e.g. 1 TB) for the WebNN compilation
+      // process, similar to kWinSboxHighGPUJobMemoryLimits for the GPU process.
       // Scale based on available physical memory, up to 64 GB.
       return get_scaled_physical_memory_based_limit();
     case Sandbox::kRenderer:

@@ -169,6 +169,46 @@ bool OnDeviceModelExecutionInitializeConfig(
   return true;
 }
 
+bool WebNNModelCompilationInitializeConfig(sandbox::TargetConfig* config) {
+  DCHECK(!config->IsConfigured());
+  // Match the GPU process sandbox configuration so that the WebNN Compiler
+  // process has the same privileges. USER_LIMITED is the same token level
+  // used by the GPU process; stricter levels (USER_RESTRICTED, USER_LOCKDOWN)
+  // are known to break GPU/DirectX access and are also observed to break
+  // ORT and EP DLL loading from external paths.
+  // Note: AppContainer (LPAC) must NOT be enabled for this sandbox type
+  // because it breaks GPU/NPU driver access.
+  // TODO(crbug.com/500769395): Investigate tightening the sandbox, e.g. by
+  // preloading DLLs before lockdown or enabling AppContainer.
+  sandbox::ResultCode result = config->SetTokenLevel(
+      sandbox::USER_RESTRICTED_SAME_ACCESS, sandbox::USER_LIMITED);
+  if (result != sandbox::SBOX_ALL_OK) {
+    return false;
+  }
+
+  result = sandbox::policy::SandboxWin::SetJobLevel(
+      sandbox::mojom::Sandbox::kWebNNModelCompilation,
+      sandbox::JobLevel::kLimitedUser,
+      JOB_OBJECT_UILIMIT_SYSTEMPARAMETERS | JOB_OBJECT_UILIMIT_DESKTOP |
+          JOB_OBJECT_UILIMIT_EXITWINDOWS | JOB_OBJECT_UILIMIT_DISPLAYSETTINGS,
+      config);
+  if (result != sandbox::SBOX_ALL_OK) {
+    return false;
+  }
+
+  result = config->SetIntegrityLevel(sandbox::INTEGRITY_LEVEL_LOW);
+  if (result != sandbox::SBOX_ALL_OK) {
+    return false;
+  }
+
+  // Match the GPU process: lock down the DACL and add a restricting random SID
+  // for additional token hardening.
+  config->SetLockdownDefaultDacl();
+  config->AddRestrictingRandomSid();
+
+  return true;
+}
+
 bool XrCompositingInitializeConfig(sandbox::TargetConfig* config,
                                    base::CommandLine& cmd_line,
                                    sandbox::mojom::Sandbox sandbox_type) {
@@ -273,6 +313,12 @@ bool UtilitySandboxedProcessLauncherDelegate::DisableDefaultPolicy() {
       // Default policy is disabled for audio process to allow audio drivers
       // to read device properties (https://crbug.com/883326).
       return true;
+    case sandbox::mojom::Sandbox::kWebNNModelCompilation:
+      // Default policy is disabled to match the GPU process sandbox: avoids
+      // AddKernelObjectToClose(kDeviceApi) which breaks GPU/NPU driver access,
+      // and INTEGRITY_LEVEL_UNTRUSTED delayed integrity which is stricter than
+      // needed for model compilation.
+      return true;
     default:
       return false;
   }
@@ -305,6 +351,12 @@ bool UtilitySandboxedProcessLauncherDelegate::InitializeConfig(
   if (sandbox_type_ == sandbox::mojom::Sandbox::kOnDeviceModelExecution) {
     if (!OnDeviceModelExecutionInitializeConfig(config, cmd_line_,
                                                 sandbox_type_)) {
+      return false;
+    }
+  }
+
+  if (sandbox_type_ == sandbox::mojom::Sandbox::kWebNNModelCompilation) {
+    if (!WebNNModelCompilationInitializeConfig(config)) {
       return false;
     }
   }

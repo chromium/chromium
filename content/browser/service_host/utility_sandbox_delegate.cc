@@ -61,6 +61,7 @@ UtilitySandboxedProcessLauncherDelegate::
       sandbox_type_ == sandbox::mojom::Sandbox::kIconReader ||
       sandbox_type_ == sandbox::mojom::Sandbox::kMediaFoundationCdm ||
       sandbox_type_ == sandbox::mojom::Sandbox::kProxyResolver ||
+      sandbox_type_ == sandbox::mojom::Sandbox::kWebNNModelCompilation ||
 #endif
 #if BUILDFLAG(IS_MAC)
       sandbox_type_ == sandbox::mojom::Sandbox::kMirroring ||
