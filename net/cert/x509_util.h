@@ -170,12 +170,10 @@ NET_EXPORT bool CreateCertBuffersFromPKCS7Bytes(
 // Returns the default ParseCertificateOptions for the net stack.
 NET_EXPORT bssl::ParseCertificateOptions DefaultParseCertificateOptions();
 
-// On success, returns true and updates |hash| to be the SHA-256 hash of the
-// subjectPublicKeyInfo of the certificate in |buffer|. If |buffer| is not a
-// valid certificate, returns false and |hash| is in an undefined state.
-[[nodiscard]] NET_EXPORT bool CalculateSha256SpkiHash(
-    const CRYPTO_BUFFER* buffer,
-    SHA256HashValue* hash);
+// Returns the SHA-256 hash of the SubjectPublicKeyInfo of the certificate in
+// |buffer|. CHECK-fails if |buffer| is not a valid certificate, so don't use
+// this to parse certificates in production code.
+NET_EXPORT SHA256HashValue CalculateSha256SpkiHash(const CRYPTO_BUFFER* buffer);
 
 // Calls |verifier->VerifyInit|, using the public key from |certificate|,
 // checking if the digitalSignature key usage bit is present, and returns true

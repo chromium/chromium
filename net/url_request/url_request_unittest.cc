@@ -11339,9 +11339,8 @@ TEST_F(HTTPSCRLSetTest, CRLSetRevokedBySubject) {
     EXPECT_FALSE(cert_status & CERT_STATUS_REV_CHECKING_ENABLED);
   }
 
-  SHA256HashValue spki_hash_value;
-  ASSERT_TRUE(x509_util::CalculateSha256SpkiHash(
-      test_server.GetCertificate()->cert_buffer(), &spki_hash_value));
+  SHA256HashValue spki_hash_value = x509_util::CalculateSha256SpkiHash(
+      test_server.GetCertificate()->cert_buffer());
   std::string spki_hash(base::as_string_view(spki_hash_value));
   {
     auto crl_set = CRLSet::ForTesting(
