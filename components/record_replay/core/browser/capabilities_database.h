@@ -18,10 +18,11 @@
 
 namespace record_replay {
 
-// Manages the SQLite database for record/replay capabilities.
+// Manages the relational SQLite database for record/replay recordings,
+// activity annotations, and activity data.
 //
-// SQLite allows structured queries here, e.g. to eventually query recordings
-// for a given category without holding all data in memory.
+// SQLite allows structured queries, such as retrieving all annotations for a
+// given site or managing data overrides independently of shareable intent.
 class CapabilitiesDatabase {
  public:
   CapabilitiesDatabase();

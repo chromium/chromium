@@ -15,7 +15,8 @@
 
 namespace record_replay {
 
-// Manages persistent storage for recording protos and inferred capabilities.
+// Manages persistent storage for recording protos, activity annotations, and
+// sensitive activity data.
 //
 // Tied to the lifecycle of a `Profile`.
 class RecordingDataManager : public KeyedService {

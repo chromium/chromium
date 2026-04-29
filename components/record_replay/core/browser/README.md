@@ -24,8 +24,10 @@ It interfaces with these layers through the `RecordReplayClient` and
   renderer to perform specific actions at the recorded times.
 - **`RecordingDataManager`**: An interface for persistent storage of recorded
   sessions.
-- **`CapabilitiesDatabase`**: A low-level SQLite database for storing metadata
-  about recordings.
+- **`CapabilitiesDatabase`**: A relational SQLite database that stores metadata
+  about recordings, standalone `ActivityAnnotation` intent analysis, and
+  sensitive `ActivityData` values. It supports efficient lookup by site and
+  handles database migrations and seeding from Finch parameters.
 - **Abstractions (`record_replay_client.h`, `record_replay_driver.h`, `record_replay_driver_factory.h`)**:
   Abstract interfaces that allow the core logic to communicate with the content
   and chrome layers without being directly dependent on them.
