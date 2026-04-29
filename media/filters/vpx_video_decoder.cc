@@ -327,9 +327,9 @@ bool VpxVideoDecoder::VpxDecode(const DecoderBuffer* buffer,
     return true;
   }
 
+  gfx::HDRMetadata hdr_metadata = config_.hdr_metadata();
   if (buffer->side_data()) {
-    config_.writable_hdr_metadata().MergeMetadataFrom(
-        buffer->side_data()->hdr_metadata);
+    hdr_metadata.MergeMetadataFrom(buffer->side_data()->hdr_metadata);
   }
 
   const vpx_image_t* vpx_image_alpha = nullptr;
@@ -356,7 +356,7 @@ bool VpxVideoDecoder::VpxDecode(const DecoderBuffer* buffer,
   }
 
   (*video_frame)->set_timestamp(buffer->timestamp());
-  (*video_frame)->set_hdr_metadata(config_.hdr_metadata());
+  (*video_frame)->set_hdr_metadata(hdr_metadata);
 
   // Prefer the color space from the config if available. It generally comes
   // from the color tag which is more expressive than the vp8 and vp9 bitstream.

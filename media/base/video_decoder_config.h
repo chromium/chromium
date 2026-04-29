@@ -152,7 +152,6 @@ class MEDIA_EXPORT VideoDecoderConfig {
   void set_hdr_metadata(const gfx::HDRMetadata& hdr_metadata) {
     hdr_metadata_ = hdr_metadata;
   }
-  gfx::HDRMetadata& writable_hdr_metadata() { return hdr_metadata_; }
   const gfx::HDRMetadata& hdr_metadata() const { return hdr_metadata_; }
 
   // Codec level.
