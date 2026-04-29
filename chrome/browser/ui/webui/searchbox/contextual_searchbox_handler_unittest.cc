@@ -191,6 +191,10 @@ class ContextualSearchboxHandlerTest
 
   void SetUp() override {
     ContextualSearchboxHandlerTestHarness::SetUp();
+    // TODO(crbug.com/503732217): Fix tests to support lazy fetching of cluster
+    // info and enable this feature by default in tests.
+    scoped_feature_list_.InitAndDisableFeature(
+        contextual_tasks::kContextualTasksLazyFetchClusterInfo);
 
     auto query_controller_config_params = std::make_unique<
         contextual_search::ContextualSearchContextController::ConfigParams>();
@@ -292,6 +296,7 @@ class ContextualSearchboxHandlerTest
   raw_ptr<MockQueryController> query_controller_;
   raw_ptr<contextual_search::ContextualSearchService> service_;
   raw_ptr<MockContextualSearchMetricsRecorder> metrics_recorder_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(ContextualSearchboxHandlerTest, SessionStarted) {

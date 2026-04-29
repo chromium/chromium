@@ -58,6 +58,7 @@ class MockQueryController
   ~MockQueryController() override;
 
   MOCK_METHOD(void, InitializeIfNeeded, (), (override));
+  MOCK_METHOD(void, TriggerFetchClusterInfo, (), (override));
   MOCK_METHOD(void,
               StartFileUploadFlow,
               (const base::UnguessableToken& file_token,

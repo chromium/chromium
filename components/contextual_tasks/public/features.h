@@ -88,9 +88,14 @@ BASE_DECLARE_FEATURE(kContextualTasksPdfCitations);
 // When enabled, the back button can expand the side panel.
 BASE_DECLARE_FEATURE(kContextualTasksBackButtonExpandsSidePanel);
 
+// Enables lazy fetching of cluster info for multimodal queries.
+BASE_DECLARE_FEATURE(kContextualTasksLazyFetchClusterInfo);
+
 bool GetIsContextualTasksUpdateModeOnNavigationEnabled();
 
 bool GetIsContextualTasksPdfCitationsEnabled();
+
+bool GetIsContextualTasksLazyFetchClusterInfoEnabled();
 
 // Enum denoting which entry point can show when enabled.
 enum class EntryPointOption {

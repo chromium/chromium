@@ -297,3 +297,12 @@ TEST_F(ComposeboxHandlerTest, SetSmartTabSharingActive) {
   handler().SetSmartTabSharingActive(false);
   EXPECT_FALSE(handler().IsSmartTabSharingActive());
 }
+
+TEST_F(ComposeboxHandlerTest, OnContextMenuOpenedTriggersFetch) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      contextual_tasks::kContextualTasksLazyFetchClusterInfo);
+
+  EXPECT_CALL(query_controller(), TriggerFetchClusterInfo());
+  handler().OnContextMenuOpened();
+}

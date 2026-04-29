@@ -44,6 +44,9 @@ interface PageHandler {
 
   // Called to retrieve the current Smart Tab Sharing state.
   GetSmartTabSharingActive() => (bool active);
+
+  // Called when the context menu is opened in the composebox.
+  OnContextMenuOpened();
 };
 
 // NewTabPage WebUI-side handler for requests from the browser.

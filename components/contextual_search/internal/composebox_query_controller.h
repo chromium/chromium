@@ -91,6 +91,7 @@ class ComposeboxQueryController
 
   // ContextualSearchContextController:
   void InitializeIfNeeded() override;
+  void TriggerFetchClusterInfo() override;
   void SetIsBackgrounded(bool backgrounded) override;
   void CreateSearchUrl(
       std::unique_ptr<CreateSearchUrlRequestInfo> search_url_request_info,

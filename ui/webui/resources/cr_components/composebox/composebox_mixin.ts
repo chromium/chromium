@@ -654,6 +654,7 @@ export const ComposeboxEmbedderMixin =
           this.browserTabContextAdded = false;
           this.contextMenuOpened = true;
           this.refreshTabSuggestions();
+          this.getPageHandler().onContextMenuOpened();
 
           if (this.inputState) {
             const {allowedInputTypes, disabledInputTypes} = this.inputState;
