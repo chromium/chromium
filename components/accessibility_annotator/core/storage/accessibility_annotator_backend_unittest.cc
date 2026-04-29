@@ -1223,5 +1223,59 @@ TEST_F(AccessibilityAnnotatorBackendTest, ContentAnnotationOperationsQueued) {
               testing::Optional(EqualsAnnotations(std::ref(data2))));
 }
 
+TEST_F(AccessibilityAnnotatorBackendTest, OnHistoryDeletions_AllHistory) {
+  history::VisitID visit_id(123);
+
+  // Add data to db.
+  base::test::TestFuture<bool> success_future;
+  backend_->AddContentAnnotation(
+      visit_id, CreateContentAnnotationsData("Test Page Title"),
+      success_future.GetCallback());
+  EXPECT_TRUE(success_future.Take());
+
+  // Trigger history deletion.
+  backend_->OnHistoryDeletions(nullptr, history::DeletionInfo::ForAllHistory());
+
+  // Verify db is empty.
+  base::test::TestFuture<std::vector<std::pair<
+      history::VisitID, AccessibilityAnnotatorBackend::ContentAnnotationsData>>>
+      list_future;
+  backend_->GetAllContentAnnotations(list_future.GetCallback());
+  EXPECT_TRUE(list_future.Take().empty());
+}
+
+TEST_F(AccessibilityAnnotatorBackendTest, OnHistoryDeletions_SpecificVisits) {
+  history::VisitID visit_id_1(1);
+  history::VisitID visit_id_2(2);
+
+  // Add data to db.
+  base::test::TestFuture<bool> success_future;
+  backend_->AddContentAnnotation(visit_id_1,
+                                 CreateContentAnnotationsData("Title 1"),
+                                 success_future.GetCallback());
+  EXPECT_TRUE(success_future.Take());
+  backend_->AddContentAnnotation(visit_id_2,
+                                 CreateContentAnnotationsData("Title 2"),
+                                 success_future.GetCallback());
+  EXPECT_TRUE(success_future.Take());
+
+  // Trigger history deletion for visit_id_1.
+  history::DeletionInfo deletion_info(
+      history::DeletionTimeRange::Invalid(), /*is_from_expiration=*/false,
+      history::DeletionInfo::Reason::kOther, history::URLRows(),
+      /*deleted_visit_ids=*/{visit_id_1}, /*favicon_urls=*/{},
+      /*restrict_urls=*/std::nullopt);
+  backend_->OnHistoryDeletions(nullptr, deletion_info);
+
+  // Verify db is updated.
+  base::test::TestFuture<std::vector<std::pair<
+      history::VisitID, AccessibilityAnnotatorBackend::ContentAnnotationsData>>>
+      data_future;
+  backend_->GetAllContentAnnotations(data_future.GetCallback());
+  auto all_annotations = data_future.Take();
+  ASSERT_EQ(all_annotations.size(), 1u);
+  EXPECT_EQ(all_annotations[0].first, visit_id_2);
+}
+
 }  // namespace
 }  // namespace accessibility_annotator

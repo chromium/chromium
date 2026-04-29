@@ -9,6 +9,7 @@
 
 #include "base/containers/lru_cache.h"
 #include "base/containers/map_util.h"
+#include "base/containers/to_vector.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -270,6 +271,17 @@ void AccessibilityAnnotatorBackendImpl::OnURLVisited(
 void AccessibilityAnnotatorBackendImpl::OnHistoryDeletions(
     history::HistoryService* history_service,
     const history::DeletionInfo& deletion_info) {
+  // TODO(crbug.com/502666530): Handle in-flight deletions and multipage
+  // annotations deletions.
+  if (deletion_info.IsAllHistory()) {
+    ClearAllContentAnnotations(base::DoNothing());
+    return;
+  }
+  if (deletion_info.deleted_visit_ids().empty()) {
+    return;
+  }
+  DeleteContentAnnotations(base::ToVector(deletion_info.deleted_visit_ids()),
+                           base::DoNothing());
   // TODO(crbug.com/489690454): Purge associated intents/clusters from the
   // persistent SQLite database.
 }
