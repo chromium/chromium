@@ -742,17 +742,6 @@ def main():
     PackageInArchive(dsymdir, dsymdir)
     MaybeUpload(args.upload, args.bucket, dsymdir + '.tar.xz', gcs_platform)
 
-  # Zip up the translation_unit tool.
-  translation_unit_dir = 'translation_unit-' + stamp
-  shutil.rmtree(translation_unit_dir, ignore_errors=True)
-  os.makedirs(os.path.join(translation_unit_dir, 'bin'))
-  shutil.copy(os.path.join(LLVM_RELEASE_DIR, 'bin', 'translation_unit' +
-                           exe_ext),
-              os.path.join(translation_unit_dir, 'bin'))
-  PackageInArchive(translation_unit_dir, translation_unit_dir)
-  MaybeUpload(args.upload, args.bucket, translation_unit_dir + '.tar.xz',
-              gcs_platform)
-
   # Zip up the libclang binaries.
   libclang_dir = 'libclang-' + stamp
   shutil.rmtree(libclang_dir, ignore_errors=True)

@@ -40,7 +40,7 @@ import zlib
 # should not be changed manually.
 # They are also read by build/config/compiler/BUILD.gn.
 CLANG_REVISION = 'llvmorg-23-init-10931-g20b6ec66'
-CLANG_SUB_REVISION = 2
+CLANG_SUB_REVISION = 3
 
 PACKAGE_VERSION = '%s-%s' % (CLANG_REVISION, CLANG_SUB_REVISION)
 RELEASE_VERSION = '23'
@@ -276,7 +276,7 @@ def UpdatePackage(package_name,
     package_file = 'llvm-code-coverage'
   elif package_name == 'objdump':
     package_file = 'llvmobjdump'
-  elif package_name in ['clang-tidy', 'clangd', 'libclang', 'translation_unit']:
+  elif package_name in ['clang-tidy', 'clangd', 'libclang']:
     package_file = package_name
   else:
     print('Unknown package: "%s".' % package_name)
