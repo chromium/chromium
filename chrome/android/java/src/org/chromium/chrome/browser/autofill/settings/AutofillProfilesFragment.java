@@ -5,7 +5,7 @@
 package org.chromium.chrome.browser.autofill.settings;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
-import static org.chromium.chrome.browser.autofill.settings.FormsAiDelegate.disabledSettingsInThirdPartyMode;
+import static org.chromium.chrome.browser.autofill.settings.AutofillAiDelegate.disabledSettingsInThirdPartyMode;
 
 import android.content.Context;
 import android.content.res.Configuration;
@@ -127,7 +127,7 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
                 }
             };
 
-    private final FormsAiDelegate mFormsAiDelegate = new FormsAiDelegate(this);
+    private final AutofillAiDelegate mAutofillAiDelegate = new AutofillAiDelegate(this);
 
     private static @Nullable EditorObserverForTest sObserverForTest;
     static final String PREF_NEW_PROFILE = "new_profile";
@@ -176,7 +176,7 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
         if (mAddressEditor != null) {
             mAddressEditor.onConfigurationChanged();
         }
-        mFormsAiDelegate.onConfigurationChanged();
+        mAutofillAiDelegate.onConfigurationChanged();
     }
 
     @Override
@@ -212,7 +212,7 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
             addAddAddressButton(screen);
         }
         // LINT.ThenChange(:DynamicPreferences)
-        mFormsAiDelegate.addAutofillAiEntities(screen, /* typeFilter= */ null);
+        mAutofillAiDelegate.addAutofillAiEntities(screen, /* typeFilter= */ null);
         updateDynamicPreferences(getProfile());
     }
 
@@ -401,7 +401,7 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
         if (entityDataManager != null) {
             entityDataManager.unregisterDataObserver(this);
         }
-        mFormsAiDelegate.onDestroyView();
+        mAutofillAiDelegate.onDestroyView();
         super.onDestroyView();
     }
 
@@ -413,7 +413,7 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
     }
 
     void onOpenGoogleWalletForTesting(boolean isPrivateEntity) {
-        mFormsAiDelegate.getEntityEditorDelegate().onOpenGoogleWallet(isPrivateEntity);
+        mAutofillAiDelegate.getEntityEditorDelegate().onOpenGoogleWallet(isPrivateEntity);
     }
 
     @Override

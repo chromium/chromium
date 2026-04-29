@@ -48,7 +48,7 @@ import java.util.Set;
 
 /** A delegate class to handle shared logic for Forms AI settings fragments. */
 @NullMarked
-public class FormsAiDelegate {
+public class AutofillAiDelegate {
     private static final int DEFAULT_SNACKBAR_DURATION = 10000;
 
     private final ChromeBaseSettingsFragment mFragment;
@@ -101,7 +101,7 @@ public class FormsAiDelegate {
     /**
      * @param fragment The fragment hosting the settings.
      */
-    FormsAiDelegate(ChromeBaseSettingsFragment fragment) {
+    AutofillAiDelegate(ChromeBaseSettingsFragment fragment) {
         mFragment = fragment;
     }
 
