@@ -47,6 +47,9 @@ UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kDeprecatedExternalPickerFunction);
 // Whether photo picker should be disabled for video capture.
 UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kDisablePhotoPickerForVideoCapture);
 
+// Guard changes to use maximum window metrics for gesture navigation detection.
+UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kMaximumWindowForGestureNavDetection);
+
 // Whether to enable the refactor of the smallestScreenWidthDp override.
 UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kRefactorMinWidthContextOverride);
 

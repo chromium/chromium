@@ -170,6 +170,7 @@ android_library("java") {
     "//third_party/androidx:androidx_vectordrawable_vectordrawable_animated_java",
     "//third_party/androidx:androidx_vectordrawable_vectordrawable_java",
     "//ui/accessibility:ax_base_java",
+    "//ui/android:ui_android_features_java",
     "//ui/android:ui_java",
     "//ui/edge_to_edge:java",
     "//url:gurl_java",

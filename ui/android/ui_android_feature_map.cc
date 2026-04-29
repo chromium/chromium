@@ -9,7 +9,7 @@
 #include "ui/base/ui_base_features.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "ui/android/ui_android_jni_headers/UiAndroidFeatureMap_jni.h"
+#include "ui/android/ui_android_feature_map_jni/UiAndroidFeatureMap_jni.h"
 
 namespace ui {
 
@@ -25,6 +25,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &ui::kCheckIntentCallerPermission,
     &ui::kDeprecatedExternalPickerFunction,
     &ui::kDisablePhotoPickerForVideoCapture,
+    &ui::kMaximumWindowForGestureNavDetection,
     &ui::kRefactorMinWidthContextOverride,
     &ui::kReportBottomOverscrolls,
     &ui::kRequireLeadingInTextViewWithLeading,

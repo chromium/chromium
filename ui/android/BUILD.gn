@@ -123,7 +123,10 @@ component("android") {
     deps += [ ":texture_compressor" ]
   }
 
-  public_deps = [ ":ui_android_jni_headers" ]
+  public_deps = [
+    ":ui_android_feature_map_jni",
+    ":ui_android_jni_headers",
+  ]
 }
 
 java_cpp_features("java_features_srcjar") {
@@ -135,7 +138,19 @@ java_cpp_features("java_features_srcjar") {
 
 # A minimal library used to expose ui features to webview
 android_library("ui_android_features_java") {
-  srcjar_deps = [ ":java_features_srcjar" ]
+  sources = [
+    "java/src/org/chromium/ui/base/UiAndroidFeatureList.java",
+    "java/src/org/chromium/ui/base/UiAndroidFeatureMap.java",
+  ]
+  srcjar_deps = [
+    ":java_features_srcjar",
+    ":ui_android_feature_map_jni",
+  ]
+  deps = [
+    "//base:base_java",
+    "//components/cached_flags:java",
+    "//third_party/jni_zero:jni_zero_java",
+  ]
 }
 
 static_library("test_support") {
@@ -156,6 +171,10 @@ static_library("test_support") {
   ]
 }
 
+generate_jni("ui_android_feature_map_jni") {
+  sources = [ "java/src/org/chromium/ui/base/UiAndroidFeatureMap.java" ]
+}
+
 generate_jni("ui_android_jni_headers") {
   sources = [
     "java/src/org/chromium/ui/BrowserControlsOffsetTagConstraints.java",
@@ -167,7 +186,6 @@ generate_jni("ui_android_jni_headers") {
     "java/src/org/chromium/ui/base/BytesFormatting.java",
     "java/src/org/chromium/ui/base/EventForwarder.java",
     "java/src/org/chromium/ui/base/LocalizationUtils.java",
-    "java/src/org/chromium/ui/base/UiAndroidFeatureMap.java",
     "java/src/org/chromium/ui/base/ViewAndroidDelegate.java",
     "java/src/org/chromium/ui/base/WindowAndroid.java",
     "java/src/org/chromium/ui/display/DisplayAndroidManager.java",
@@ -357,6 +375,7 @@ android_library("ui_utils_java") {
   ]
   public_deps = [ "//base:ui_java" ]
   deps = [
+    ":ui_android_features_java",
     "//base:base_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
@@ -428,8 +447,6 @@ android_library("ui_no_recycler_view_java") {
     "java/src/org/chromium/ui/base/SPenSupport.java",
     "java/src/org/chromium/ui/base/SelectFileDialog.java",
     "java/src/org/chromium/ui/base/TouchDevice.java",
-    "java/src/org/chromium/ui/base/UiAndroidFeatureList.java",
-    "java/src/org/chromium/ui/base/UiAndroidFeatureMap.java",
     "java/src/org/chromium/ui/base/ViewAndroidDelegate.java",
     "java/src/org/chromium/ui/base/ViewUtils.java",
     "java/src/org/chromium/ui/base/ViewportInsets.java",

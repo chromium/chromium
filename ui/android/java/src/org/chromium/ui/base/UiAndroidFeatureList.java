@@ -86,6 +86,12 @@ public class UiAndroidFeatureList {
                     /* defaultValue= */ true,
                     /* defaultValueInTests= */ true);
 
+    public static final CachedFlag sMaximumWindowForGestureNavDetection =
+            newCachedFlag(
+                    UiAndroidFeatures.MAXIMUM_WINDOW_FOR_GESTURE_NAV_DETECTION,
+                    /* defaultValue= */ true,
+                    /* defaultValueInTests= */ true);
+
     public static final CachedFlag sRefactorMinWidthContextOverride =
             newCachedFlag(
                     UiAndroidFeatures.REFACTOR_MIN_WIDTH_CONTEXT_OVERRIDE,
@@ -113,7 +119,8 @@ public class UiAndroidFeatureList {
             List.of(
                     sAndroidUseDisplayTopology,
                     sAndroidWindowOcclusion,
-                    sRefactorMinWidthContextOverride);
+                    sRefactorMinWidthContextOverride,
+                    sMaximumWindowForGestureNavDetection);
 
     public static final List<CachedFeatureParam<?>> sParamsCached =
             List.of(

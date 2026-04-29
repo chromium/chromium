@@ -83,6 +83,7 @@ android_library("lib_java") {
     "//third_party/androidx:androidx_preference_preference_java",
     "//third_party/jni_zero:jni_zero_java",
     "//ui/accessibility:ax_base_java",
+    "//ui/android:ui_android_features_java",
     "//ui/android:ui_no_recycler_view_java",
   ]
   resources_package = "org.chromium.components.browser_ui.accessibility"

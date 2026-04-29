@@ -43,11 +43,13 @@ import org.chromium.chrome.browser.tab.TabBrowserControlsConstraintsHelper;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.UiAndroidFeatures;
 
 /** Unit tests for {@link FullscreenHtmlApiHandlerLegacy}. */
 @Features.EnableFeatures({
     ChromeFeatureList.DISPLAY_EDGE_TO_EDGE_FULLSCREEN,
-    ChromeFeatureList.ENABLE_FULLSCREEN_TO_ANY_SCREEN_ANDROID
+    ChromeFeatureList.ENABLE_FULLSCREEN_TO_ANY_SCREEN_ANDROID,
+    UiAndroidFeatures.MAXIMUM_WINDOW_FOR_GESTURE_NAV_DETECTION
 })
 @Features.DisableFeatures({ChromeFeatureList.ENABLE_EXCLUSIVE_ACCESS_MANAGER})
 @RunWith(BaseRobolectricTestRunner.class)

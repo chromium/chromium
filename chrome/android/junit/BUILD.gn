@@ -826,7 +826,10 @@ if (is_android) {
       "src/org/chromium/chrome/browser/fullscreen/FullscreenHtmlApiHandlerLegacyUnitTest.java",
     ]
 
-    deps = [ ":chrome_junit_tests_helper" ]
+    deps = [
+      ":chrome_junit_tests_helper",
+      "//ui/android:ui_android_features_java",
+    ]
   }
 
   robolectric_library(
@@ -1543,6 +1546,7 @@ if (is_android) {
       "//components/dom_distiller/content/browser/android:dom_distiller_content_java",
       "//components/dom_distiller/core/android:dom_distiller_core_java",
       "//components/dom_distiller/core/mojom:mojom_java",
+      "//ui/android:ui_android_features_java",
     ]
   }
 
