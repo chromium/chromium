@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
+#include "base/debug/crash_logging.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -198,6 +199,11 @@ gfx::GpuMemoryBufferType MappableBufferSharedMemory::GetType() const {
 }
 
 gfx::GpuMemoryBufferHandle MappableBufferSharedMemory::CloneHandle() const {
+  SCOPED_CRASH_KEY_BOOL("MappableBufferShmem", "region_valid",
+                        shared_memory_region_.IsValid());
+  SCOPED_CRASH_KEY_NUMBER("MappableBufferShmem", "width", size_.width());
+  SCOPED_CRASH_KEY_NUMBER("MappableBufferShmem", "height", size_.height());
+
   gfx::GpuMemoryBufferHandle handle(shared_memory_region_.Duplicate());
   handle.offset = offset_;
   handle.stride = stride_;
