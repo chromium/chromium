@@ -1371,6 +1371,7 @@ public class LocationBarCoordinator
                             context, R.color.default_icon_color_tint_list));
             mOptionalButtonCoordinator.setCollapsedStateWidth(
                     context.getResources().getDimensionPixelSize(R.dimen.min_touch_target_size));
+            mOptionalButtonCoordinator.setSuppressBackground(true);
 
             // The optional button should hide when the URL bar gains focus and reappear when it
             // loses focus.

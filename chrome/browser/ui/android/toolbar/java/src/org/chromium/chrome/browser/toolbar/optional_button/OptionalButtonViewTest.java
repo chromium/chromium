@@ -1131,4 +1131,20 @@ public class OptionalButtonViewTest {
         mOptionalButtonView.onTransitionStart(null);
         verify(transitionStartedCallback).onResult(TransitionType.COLLAPSING_ACTION_CHIP);
     }
+
+    @Test
+    public void testSetSuppressBackground() {
+        mOptionalButtonView.setSuppressBackground(true);
+
+        ButtonDataImpl buttonData = getDataForStaticNewTabIconButton();
+        mOptionalButtonView.updateButtonWithAnimation(buttonData);
+        mOptionalButtonView.onTransitionStart(null);
+        mOptionalButtonView.onTransitionEnd(null);
+
+        assertNull(mButton.getBackground());
+        assertEquals(View.GONE, mButtonBackground.getVisibility());
+
+        mOptionalButtonView.setSuppressBackground(false);
+        Assert.assertNotNull(mButton.getBackground());
+    }
 }

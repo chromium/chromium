@@ -108,6 +108,14 @@ public class OptionalButtonCoordinator {
         mFeatureEngagementTrackerSupplier = featureEngagementTrackerSupplier;
     }
 
+    /**
+     * Suppresses the background of the optional button. This is useful for cases where the optional
+     * button is placed on a background that is not the toolbar.
+     */
+    public void setSuppressBackground(boolean suppressBackground) {
+        mView.setSuppressBackground(suppressBackground);
+    }
+
     public void setPaddingStart(int paddingStart) {
         mMediator.setPaddingStart(paddingStart);
     }
