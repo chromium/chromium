@@ -7,9 +7,11 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/shared/ui/util/ui_view_controller_with_display_tracing.h"
+
 @protocol NewTabPageURLLoaderDelegate;
 
-@interface IncognitoViewController : UIViewController
+@interface IncognitoViewController : UIViewControllerWithDisplayTracing
 
 // Delegate to load URLs in the current tab.
 @property(nonatomic, weak) id<NewTabPageURLLoaderDelegate> URLLoaderDelegate;

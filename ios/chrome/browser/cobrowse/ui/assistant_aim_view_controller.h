@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/cobrowse/ui/assistant_aim_consumer.h"
+#import "ios/chrome/browser/shared/ui/util/ui_view_controller_with_display_tracing.h"
 
 @protocol AssistantAIMMutator;
 @class AssistantAIMViewController;
@@ -35,7 +36,8 @@
 
 @end
 
-@interface AssistantAIMViewController : UIViewController <AssistantAIMConsumer>
+@interface AssistantAIMViewController
+    : UIViewControllerWithDisplayTracing <AssistantAIMConsumer>
 
 // The delegate for this view controller.
 @property(nonatomic, weak) id<AssistantAIMViewControllerDelegate> delegate;

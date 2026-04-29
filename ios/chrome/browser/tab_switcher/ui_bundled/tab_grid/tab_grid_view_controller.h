@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/keyboard/ui_bundled/key_command_actions.h"
+#import "ios/chrome/browser/shared/ui/util/ui_view_controller_with_display_tracing.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/disabled_grid_view_controller.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_consumer.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_consumer.h"
@@ -93,13 +94,13 @@ enum class TabGridPageConfiguration {
 // View controller representing a tab switcher. The tab switcher has an
 // incognito tab grid, regular tab grid, and tab groups grid.
 @interface TabGridViewController
-    : UIViewController <DisabledGridViewControllerDelegate,
-                        GridConsumer,
-                        KeyCommandActions,
-                        TabGridConsumer,
-                        TabGridIdleStatusHandler,
-                        TabGridToolbarsMainTabGridDelegate,
-                        UISearchBarDelegate>
+    : UIViewControllerWithDisplayTracing <DisabledGridViewControllerDelegate,
+                                          GridConsumer,
+                                          KeyCommandActions,
+                                          TabGridConsumer,
+                                          TabGridIdleStatusHandler,
+                                          TabGridToolbarsMainTabGridDelegate,
+                                          UISearchBarDelegate>
 
 // Returns whether the child views have been set up.
 // Used by EarlGrey tests to poll for deferred setup completion.
