@@ -177,52 +177,42 @@ class ContextManagerGL : public ContextManager {
            (UNSAFE_TODO(bytes[1]) & 0xff) << 8 | (UNSAFE_TODO(bytes[2]) & 0xff);
   }
 
-  EGLConfig GetConfig(bool* out_use_es3) {
+  EGLConfig GetConfig() {
     static EGLConfig config = nullptr;
-    static bool use_es3 = false;
     if (config) {
-      *out_use_es3 = use_es3;
       return config;
     }
 
-    for (bool try_es3 : std::vector<bool>{true, false}) {
-      EGLint config_attribs[] = {
-          EGL_BUFFER_SIZE,
-          32,
-          EGL_ALPHA_SIZE,
-          8,
-          EGL_BLUE_SIZE,
-          8,
-          EGL_GREEN_SIZE,
-          8,
-          EGL_RED_SIZE,
-          8,
-          EGL_SAMPLES,
-          -1,
-          EGL_DEPTH_SIZE,
-          -1,
-          EGL_STENCIL_SIZE,
-          -1,
-          EGL_RENDERABLE_TYPE,
-          try_es3 ? EGL_OPENGL_ES3_BIT : EGL_OPENGL_ES2_BIT,
-          EGL_SURFACE_TYPE,
-          EGL_WINDOW_BIT | EGL_PBUFFER_BIT,
-          EGL_NONE};
-      EGLint num_configs = 0;
-      if (!eglChooseConfigFn(GetDisplay(), config_attribs, nullptr, 0,
-                             &num_configs) ||
-          num_configs == 0) {
-        continue;
-      }
+    EGLint config_attribs[] = {EGL_BUFFER_SIZE,
+                               32,
+                               EGL_ALPHA_SIZE,
+                               8,
+                               EGL_BLUE_SIZE,
+                               8,
+                               EGL_GREEN_SIZE,
+                               8,
+                               EGL_RED_SIZE,
+                               8,
+                               EGL_SAMPLES,
+                               -1,
+                               EGL_DEPTH_SIZE,
+                               -1,
+                               EGL_STENCIL_SIZE,
+                               -1,
+                               EGL_RENDERABLE_TYPE,
+                               EGL_OPENGL_ES3_BIT,
+                               EGL_SURFACE_TYPE,
+                               EGL_WINDOW_BIT | EGL_PBUFFER_BIT,
+                               EGL_NONE};
+    EGLint num_configs = 0;
+    CHECK(eglChooseConfigFn(GetDisplay(), config_attribs, nullptr, 0,
+                            &num_configs));
+    CHECK_GT(num_configs, 0);
 
-      CHECK(eglChooseConfigFn(GetDisplay(), config_attribs, &config, 1,
-                              &num_configs));
-      use_es3 = try_es3;
-      break;
-    }
+    CHECK(eglChooseConfigFn(GetDisplay(), config_attribs, &config, 1,
+                            &num_configs));
 
     CHECK(config);
-    *out_use_es3 = use_es3;
     return config;
   }
 
@@ -330,25 +320,22 @@ base::android::ScopedJavaLocalRef<jintArray> ContextManagerGL::Draw(
 }
 
 void ContextManagerGL::DoCreateContext(JNIEnv* env, int width, int height) {
-  bool use_es3 = false;
   {
     std::vector<EGLint> egl_window_attributes;
     egl_window_attributes.push_back(EGL_NONE);
-    gl_surface_ = eglCreateWindowSurfaceFn(GetDisplay(), GetConfig(&use_es3),
+    gl_surface_ = eglCreateWindowSurfaceFn(GetDisplay(), GetConfig(),
                                            native_window_.a_native_window(),
                                            &egl_window_attributes[0]);
     CHECK(gl_surface_);
   }
 
   {
-    std::vector<EGLint> context_attributes;
-    context_attributes.push_back(EGL_CONTEXT_CLIENT_VERSION);
-    context_attributes.push_back(use_es3 ? 3 : 2);
-    context_attributes.push_back(EGL_NONE);
+    std::vector<EGLint> context_attributes = {EGL_CONTEXT_CLIENT_VERSION, 3,
+                                              EGL_NONE};
 
     CHECK(eglBindAPIFn(EGL_OPENGL_ES_API));
 
-    gl_context_ = eglCreateContextFn(GetDisplay(), GetConfig(&use_es3), nullptr,
+    gl_context_ = eglCreateContextFn(GetDisplay(), GetConfig(), nullptr,
                                      context_attributes.data());
     CHECK(gl_context_);
   }
