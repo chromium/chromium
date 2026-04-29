@@ -166,7 +166,7 @@ class CONTENT_EXPORT RenderWidgetHostViewIOS
       blink::mojom::InputEventResultState ack_result) override;
 
   // ui::CALayerFrameSink overrides:
-  void UpdateCALayerTree(const gfx::CALayerParams& ca_layer_params) override;
+  void UpdateCALayerTree(gfx::CALayerParams ca_layer_params) override;
 
   // ui::GestureProviderClient implementation.
   void OnGestureEvent(const ui::GestureEventData& gesture) override;

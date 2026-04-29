@@ -470,7 +470,7 @@ void RenderWidgetHostViewIOS::OnSynchronizedDisplayPropertiesChanged(
 }
 
 void RenderWidgetHostViewIOS::UpdateCALayerTree(
-    const gfx::CALayerParams& ca_layer_params) {}
+    gfx::CALayerParams ca_layer_params) {}
 
 void RenderWidgetHostViewIOS::OnOldViewDidNavigatePreCommit() {
   CHECK(browser_compositor_) << "Shouldn't be called during destruction!";

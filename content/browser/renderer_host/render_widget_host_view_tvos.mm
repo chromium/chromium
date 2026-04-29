@@ -19,9 +19,9 @@ RenderWidgetHostViewTVOS::RenderWidgetHostViewTVOS(RenderWidgetHost* widget)
 RenderWidgetHostViewTVOS::~RenderWidgetHostViewTVOS() = default;
 
 void RenderWidgetHostViewTVOS::UpdateCALayerTree(
-    const gfx::CALayerParams& ca_layer_params) {
+    gfx::CALayerParams ca_layer_params) {
   DCHECK(display_tree_);
-  display_tree_->UpdateCALayerTree(ca_layer_params);
+  display_tree_->UpdateCALayerTree(std::move(ca_layer_params));
 }
 
 }  // namespace content

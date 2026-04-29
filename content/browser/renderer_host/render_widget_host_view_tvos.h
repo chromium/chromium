@@ -26,7 +26,7 @@ class CONTENT_EXPORT RenderWidgetHostViewTVOS : public RenderWidgetHostViewIOS {
   RenderWidgetHostViewTVOS& operator=(const RenderWidgetHostViewTVOS&) = delete;
 
   // ui::CALayerFrameSink overrides:
-  void UpdateCALayerTree(const gfx::CALayerParams& ca_layer_params) override;
+  void UpdateCALayerTree(gfx::CALayerParams ca_layer_params) override;
 
  private:
   std::unique_ptr<ui::DisplayCALayerTree> display_tree_;
