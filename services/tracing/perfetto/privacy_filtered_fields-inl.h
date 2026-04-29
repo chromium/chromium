@@ -378,11 +378,12 @@ constexpr MessageInfo kScrollJankV4Result = {
     kScrollJankV4ResultIndices, kScrollJankV4ResultComplexMessages};
 
 // Proto Message: EventLatency
-constexpr int kEventLatencyIndices[] = {1, 2, 4, 5, 6, 7, 8, 9, 10, -1};
+constexpr int kEventLatencyIndices[] = {1, 2, 4, 5, 6, 7, 8, 9, 10, 11, -1};
 constexpr MessageInfo const* kEventLatencyComplexMessages[] = {
     nullptr, nullptr, nullptr,
     nullptr, nullptr, nullptr,
-    nullptr, nullptr, &kScrollJankV4Result};
+    nullptr, nullptr, &kScrollJankV4Result,
+    nullptr};
 constexpr MessageInfo kEventLatency = {kEventLatencyIndices,
                                        kEventLatencyComplexMessages};
 
