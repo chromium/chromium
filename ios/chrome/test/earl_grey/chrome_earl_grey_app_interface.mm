@@ -203,6 +203,10 @@ UIViewController* FindBrowserViewController(UIViewController* root) {
 
 @implementation ChromeEarlGreyAppInterface
 
++ (BOOL)isTabGridSetUp {
+  return chrome_test_util::IsTabGridSetUp();
+}
+
 + (BOOL)isRTL {
   return UseRTLLayout();
 }

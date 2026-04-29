@@ -101,6 +101,10 @@ enum class TabGridPageConfiguration {
                         TabGridToolbarsMainTabGridDelegate,
                         UISearchBarDelegate>
 
+// Returns whether the child views have been set up.
+// Used by EarlGrey tests to poll for deferred setup completion.
+@property(nonatomic, readonly) BOOL childViewsAreSetUp;
+
 // Handler for Scene commands.
 @property(nonatomic, weak) id<SceneCommands> handler;
 
@@ -195,6 +199,9 @@ enum class TabGridPageConfiguration {
 
 // Updates the active page to be the current page.
 - (void)updateActivePageToCurrent;
+
+// Signal that child view controllers were setup externally. For testing only.
+- (void)didSetupChildViewsForTesting;
 
 @end
 

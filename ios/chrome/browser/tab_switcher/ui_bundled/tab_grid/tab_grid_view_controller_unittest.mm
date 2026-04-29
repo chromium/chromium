@@ -76,6 +76,7 @@ class TabGridViewControllerTest : public PlatformTest,
         [[PinnedTabsViewController alloc] init];
 
     view_controller_.mutator = mock_mutator_;
+    [view_controller_ didSetupChildViewsForTesting];
   }
 
   // Checks that `view_controller_` can perform the `action`. The sender is set

@@ -33,6 +33,22 @@ BASE_FEATURE(kSafetyCheckAutorunByManagerKillswitch,
 BASE_FEATURE(kSafetyCheckModuleHiddenIfNoIssuesKillswitch,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kTabGridSetupMode, base::FEATURE_DISABLED_BY_DEFAULT);
+
+const char kTabGridSetupModeParamName[] = "mode";
+
+const base::FeatureParam<int> kTabGridSetupModeParam(
+    &kTabGridSetupMode,
+    kTabGridSetupModeParamName,
+    static_cast<int>(TabGridSetupMode::kImmediate));
+
+TabGridSetupMode GetTabGridSetupMode() {
+  if (!base::FeatureList::IsEnabled(kTabGridSetupMode)) {
+    return TabGridSetupMode::kImmediate;
+  }
+  return static_cast<TabGridSetupMode>(kTabGridSetupModeParam.Get());
+}
+
 BASE_FEATURE(kOmahaServiceRefactor, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kHideToolbarsInOverflowMenu, base::FEATURE_DISABLED_BY_DEFAULT);

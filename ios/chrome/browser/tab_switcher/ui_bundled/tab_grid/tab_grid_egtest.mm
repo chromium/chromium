@@ -381,6 +381,159 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
       performAction:grey_tap()];
 }
 
+// Tests that when the app starts up showing a web page with
+// kTabGridSetup=Deferred, the child views of the tab grid are not
+// visible on screen after the deferred setup has run.
+- (void)testTabGridLifecycleWaitingForDeferredSetup {
+  // Load a web page so that it restores on next startup, and
+  // there is something to show in the initial tab grid.
+  [ChromeEarlGrey loadURL:_URL1];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse1];
+
+  AppLaunchConfiguration config = [self appConfigurationForTestCase];
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  config.features_enabled_and_params.push_back(
+      {kTabGridSetupMode,
+       {{kTabGridSetupModeParamName, base::NumberToString(static_cast<int>(
+                                         TabGridSetupMode::kDeferred))}}});
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+
+  // The web page should be visible.
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse1];
+
+  // Wait until the deferred BestEffort task has executed and set up the child
+  // views.
+  ConditionBlock condition = ^{
+    return [ChromeEarlGrey isTabGridSetUp];
+  };
+  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
+                 kWaitForUIElementTimeout, condition),
+             @"Tab grid child views were not set up.");
+
+  // The tab grid child views should NOT yet be visible.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridDoneButton()]
+      assertWithMatcher:grey_nil()];
+
+  [[EarlGrey selectElementWithMatcher:
+                 grey_allOf(chrome_test_util::TabGridNormalModePageControl(),
+                            grey_sufficientlyVisible(), nil)]
+      assertWithMatcher:grey_nil()];
+
+  // Now make the tab grid visible.
+  [ChromeEarlGreyUI openTabGrid];
+
+  [self verifyVisibleTabsCount:1];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridDoneButton()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests that when the app starts up in incognito mode showing a web page with
+// kTabGridSetup=Deferred, the child views of the tab grid are not
+// visible on screen after the deferred setup has run.
+- (void)testTabGridLifecycleWaitingForDeferredSetupIncognito {
+  // Open an incognito tab and load a web page so that it restores on next
+  // startup, and there is something to show in the initial tab grid.
+  [ChromeEarlGrey openNewIncognitoTab];
+  [ChromeEarlGrey loadURL:_URL1];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse1];
+
+  AppLaunchConfiguration config = [self appConfigurationForTestCase];
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  config.features_enabled_and_params.push_back(
+      {kTabGridSetupMode,
+       {{kTabGridSetupModeParamName, base::NumberToString(static_cast<int>(
+                                         TabGridSetupMode::kDeferred))}}});
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+
+  // Wait until the deferred BestEffort task has executed and set up the child
+  // views.
+  ConditionBlock condition = ^{
+    return [ChromeEarlGrey isTabGridSetUp];
+  };
+  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
+                 kWaitForUIElementTimeout, condition),
+             @"Tab grid child views were not set up.");
+
+  // The tab grid child views should NOT yet be visible.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridDoneButton()]
+      assertWithMatcher:grey_nil()];
+
+  // In incognito, there's no NormalModePageControl, so we check for the
+  // Incognito one if it existed, but instead we can just ensure the done button
+  // or background is the only thing we check, or we can check for
+  // TabGridIncognitoTabsPanelButton which is visible when the grid is shown.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_allOf(chrome_test_util::TabGridIncognitoTabsPanelButton(),
+                            grey_sufficientlyVisible(), nil)]
+      assertWithMatcher:grey_nil()];
+
+  // Now make the tab grid visible.
+  [ChromeEarlGreyUI openTabGrid];
+
+  [self verifyVisibleTabsCount:1];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridDoneButton()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+- (void)testTabGridShownBeforeDeferredSetup {
+  // Load a web page so that it restores on next startup, and
+  // there is something to show in the initial tab grid.
+  [ChromeEarlGrey loadURL:_URL1];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse1];
+
+  AppLaunchConfiguration config = [self appConfigurationForTestCase];
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  config.features_enabled_and_params.push_back(
+      {kTabGridSetupMode,
+       {{kTabGridSetupModeParamName,
+         base::NumberToString(
+             static_cast<int>(TabGridSetupMode::kLazy_ForTesting))}}});
+
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+
+  // Ensure that we're testing the case that we think we're testing: Idle tasks
+  // should not have run yet, so the tab grid should not be set up.
+  GREYAssert(![ChromeEarlGrey isTabGridSetUp],
+             @"Tab Grid was unexpectedly set up during app startup.");
+
+  [ChromeEarlGreyUI openTabGrid];
+
+  [self verifyVisibleTabsCount:1];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridDoneButton()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests that when the app starts up in incognito mode, the tab grid can be
+// shown immediately before deferred setup has run.
+- (void)testTabGridShownBeforeDeferredSetupIncognito {
+  // Open an incognito tab and load a web page so that it restores on next
+  // startup, and there is something to show in the initial tab grid.
+  [ChromeEarlGrey openNewIncognitoTab];
+  [ChromeEarlGrey loadURL:_URL1];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse1];
+
+  AppLaunchConfiguration config = [self appConfigurationForTestCase];
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  config.features_enabled_and_params.push_back(
+      {kTabGridSetupMode,
+       {{kTabGridSetupModeParamName,
+         base::NumberToString(
+             static_cast<int>(TabGridSetupMode::kLazy_ForTesting))}}});
+
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+
+  // Ensure that we're testing the case that we think we're testing: Idle tasks
+  // should not have run yet, so the tab grid should not be set up.
+  GREYAssert(![ChromeEarlGrey isTabGridSetUp],
+             @"Tab Grid was unexpectedly set up during app startup.");
+
+  [ChromeEarlGreyUI openTabGrid];
+
+  [self verifyVisibleTabsCount:1];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridDoneButton()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
 // Tests that tapping on the first cell shows that tab.
 - (void)testTappingOnFirstCell {
   [ChromeEarlGreyUI openTabGrid];
