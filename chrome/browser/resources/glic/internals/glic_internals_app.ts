@@ -41,6 +41,8 @@ export class GlicInternalsAppElement extends CrLitElement {
       invokeSurfaceType_: {type: String},
       invokeZssOverride_: {type: Boolean},
       invokeZssAdditionalContent_: {type: String},
+      invokeOpenInForeground_: {type: Boolean},
+
       selectedTabIndex_: {type: Number},
       tabNames_: {type: Array},
       featureModeEnumValues_: {type: Array},
@@ -59,6 +61,8 @@ export class GlicInternalsAppElement extends CrLitElement {
   protected accessor invokeSurfaceType_: string = 'default';
   protected accessor invokeZssOverride_: boolean = false;
   protected accessor invokeZssAdditionalContent_: string = '';
+  protected accessor invokeOpenInForeground_: boolean = true;
+
   protected accessor selectedTabIndex_: number = 0;
   protected accessor tabNames_: string[] = ['General', 'Debug Controls'];
   protected accessor featureModeEnumValues_:
@@ -267,16 +271,18 @@ export class GlicInternalsAppElement extends CrLitElement {
     this.invokeZssAdditionalContent_ = (e.target as HTMLInputElement).value;
   }
 
+  protected onInvokeOpenInForegroundChange(e: Event) {
+    this.invokeOpenInForeground_ = (e.target as HTMLInputElement).checked;
+  }
+
   protected onTriggerInvokeClick_() {
     this.invokeLogs_ =
         [`[${new Date().toLocaleTimeString()}] TRIGGERING INVOKE...`];
     console.info(this.invokeLogs_[0]);
 
-    let surface: {defaultSurface: object}|
-        {newTab: object} = {defaultSurface: {}};
-    if (this.invokeSurfaceType_ === 'newTab') {
-      surface = {newTab: {}};
-    }
+    const surface = this.invokeSurfaceType_ === 'newTab' ?
+        {newTab: {openInForeground: this.invokeOpenInForeground_}} :
+        {defaultSurface: {}};
 
     const options = {
       invocationSource: this.invokeInvocationSource_,

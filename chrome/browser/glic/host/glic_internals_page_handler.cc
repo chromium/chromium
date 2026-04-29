@@ -264,7 +264,10 @@ void GlicInternalsPageHandler::TriggerInvokeFromInternalsAction(
   if (mojo_options->surface->is_default_surface()) {
     options.target.surface = DefaultSurface{current_browser};
   } else if (mojo_options->surface->is_new_tab()) {
-    options.target.surface = NewTab{current_browser};
+    NewTab new_tab{current_browser};
+    new_tab.open_in_foreground =
+        mojo_options->surface->get_new_tab()->open_in_foreground;
+    options.target.surface = new_tab;
   }
 
   if (mojo_options->auto_submit) {

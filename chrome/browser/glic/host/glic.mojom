@@ -253,7 +253,9 @@ union InvokeConversationSelection {
 struct DefaultSurfaceMojo {};
 
 // Targets a new tab for the invocation.
-struct NewTabMojo {};
+struct NewTabMojo {
+  bool open_in_foreground;
+};
 
 // Defines the surface an invocation targets.
 union InvokeTargetSurface {

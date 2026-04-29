@@ -193,6 +193,14 @@ export function getHtml(this: GlicInternalsAppElement) {
             ${this.invokeSurfaceType_ === 'default' ? html`
               <span style="color: gray;">(Uses this window)</span>
             ` : html``}
+            ${this.invokeSurfaceType_ === 'newTab' ? html`
+              <label style="display: flex; align-items: center; gap: 4px;">
+                <input type="checkbox"
+                    .checked="${this.invokeOpenInForeground_}"
+                    @change="${this.onInvokeOpenInForegroundChange}">
+                Open in Foreground
+              </label>
+            ` : html``}
           </div>
 
           <cr-button @click="${this.onTriggerInvokeClick_}">
