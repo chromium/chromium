@@ -194,7 +194,7 @@ public class PaymentRequestFreeShippingTest {
         mPaymentRequestTestRule.clickInShippingAddressAndWait(
                 R.id.payments_add_option_button, mPaymentRequestTestRule.getReadyToEdit());
         mPaymentRequestTestRule.setSpinnerSelectionInEditorAndWait(
-                0 /* Afghanistan */, mPaymentRequestTestRule.getEditorTextUpdate());
+                0, mPaymentRequestTestRule.getEditorTextUpdate());
         mPaymentRequestTestRule.setTextInEditorAndWait(
                 new String[] {
                     "Alice", "Supreme Court", "Airport Road", "Kabul", "1043", "020-253-0000"
