@@ -459,10 +459,6 @@ GlicInstanceCoordinatorImpl::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-Profile* GlicInstanceCoordinatorImpl::profile() {
-  return profile_;
-}
-
 base::CallbackListSubscription GlicInstanceCoordinatorImpl::
     AddActiveInstanceChangedCallbackAndNotifyImmediately(
         ActiveInstanceChangedCallback callback) {

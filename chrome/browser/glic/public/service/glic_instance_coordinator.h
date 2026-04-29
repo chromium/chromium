@@ -111,8 +111,6 @@ class GlicInstanceCoordinator {
   // which is currently visible).
   virtual void Reload(content::RenderFrameHost* render_frame_host) = 0;
 
-  virtual Profile* profile() = 0;
-
   using ActiveInstanceChangedCallback =
       base::RepeatingCallback<void(GlicInstance* new_instance)>;
   virtual base::CallbackListSubscription

@@ -67,7 +67,6 @@ class MockGlicInstanceCoordinator
               Reload,
               (content::RenderFrameHost * render_frame_host),
               (override));
-  MOCK_METHOD(Profile*, profile, (), (override));
   MOCK_METHOD(base::CallbackListSubscription,
               AddActiveInstanceChangedCallbackAndNotifyImmediately,
               (ActiveInstanceChangedCallback callback),

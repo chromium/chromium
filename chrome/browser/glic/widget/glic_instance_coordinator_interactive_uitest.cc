@@ -78,10 +78,10 @@ class GlicInstanceCoordinatorUiTest : public test::InteractiveGlicTest {
   ~GlicInstanceCoordinatorUiTest() override = default;
 
   void SetPreviousPosition(gfx::Point position) {
-    browser()->profile()->GetPrefs()->SetInteger(prefs::kGlicPreviousPositionX,
-                                                 position.x());
-    browser()->profile()->GetPrefs()->SetInteger(prefs::kGlicPreviousPositionY,
-                                                 position.y());
+    GetProfile()->GetPrefs()->SetInteger(prefs::kGlicPreviousPositionX,
+                                         position.x());
+    GetProfile()->GetPrefs()->SetInteger(prefs::kGlicPreviousPositionY,
+                                         position.y());
   }
 
   auto SimulateGlicHotkey() {
@@ -105,12 +105,11 @@ class GlicInstanceCoordinatorUiTest : public test::InteractiveGlicTest {
   }
 
   auto ForceInvalidateAccount() {
-    return Do(
-        [this]() { InvalidateAccount(instance_coordinator().profile()); });
+    return Do([this]() { InvalidateAccount(GetProfile()); });
   }
 
   auto ForceReauthAccount() {
-    return Do([this]() { ReauthAccount(instance_coordinator().profile()); });
+    return Do([this]() { ReauthAccount(GetProfile()); });
   }
 
   bool IsWorkAreaTooSmallForTest() {
@@ -217,8 +216,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorUiTest,
                        HotkeyDetachedWithNotNormalBrowser) {
   RunTestSequence(
       Do([&]() {
-        Browser* const pwa =
-            CreateBrowserForApp("app name", browser()->profile());
+        Browser* const pwa = CreateBrowserForApp("app name", GetProfile());
         pwa->window()->Activate();
       }),
       SimulateGlicHotkey(),
@@ -593,10 +591,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorUiTest, TestInitialBounds) {
   };
 
   for (auto& t : test_points) {
-    browser()->profile()->GetPrefs()->SetInteger(prefs::kGlicPreviousPositionX,
-                                                 t.test.x());
-    browser()->profile()->GetPrefs()->SetInteger(prefs::kGlicPreviousPositionY,
-                                                 t.test.y());
+    SetPreviousPosition(t.test);
     initial_bounds =
         GlicWidget::GetInitialBounds(nullptr, GlicWidget::GetInitialSize());
     EXPECT_EQ(initial_bounds.origin(), t.expected) << t.msg;
@@ -740,17 +735,11 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorLocationMetricsUiTest,
   open_and_close(PercentOverlap::k0);
 
   test_origin.Offset(-0.5 * glic_expected_size.width(), 0);
-  browser()->profile()->GetPrefs()->SetInteger(prefs::kGlicPreviousPositionX,
-                                               test_origin.x());
-  browser()->profile()->GetPrefs()->SetInteger(prefs::kGlicPreviousPositionY,
-                                               test_origin.y());
+  SetPreviousPosition(test_origin);
   open_and_close(PercentOverlap::k50);
 
   test_origin = browser_bounds.origin();
-  browser()->profile()->GetPrefs()->SetInteger(prefs::kGlicPreviousPositionX,
-                                               test_origin.x());
-  browser()->profile()->GetPrefs()->SetInteger(prefs::kGlicPreviousPositionY,
-                                               test_origin.y());
+  SetPreviousPosition(test_origin);
   open_and_close(PercentOverlap::k100);
 
   RunTestSequence(OpenGlicFloatingWindow());
