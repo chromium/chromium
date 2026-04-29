@@ -23,57 +23,71 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Shadows;
 
-import org.chromium.base.ScreenOffBroadcastReceiver.ScreenOffListener;
+import org.chromium.base.ScreenStateReceiver.ScreenStateObserver;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 
-/** Unit tests for {@link ScreenOffBroadcastReceiver}. */
+/** Unit tests for {@link ScreenStateReceiver}. */
 @RunWith(BaseRobolectricTestRunner.class)
-public class ScreenOffBroadcastReceiverTest {
+public class ScreenStateReceiverTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Before
     public void setUp() {
         // Initialize the receiver to ensure it is registered.
-        ScreenOffBroadcastReceiver.getInstance();
+        ScreenStateReceiver.getInstance();
         RobolectricUtil.runAllBackgroundAndUi();
     }
 
     @After
     public void tearDown() {
-        // Reset to ensure our listeners are removed and statics are reset.
-        ScreenOffBroadcastReceiver.resetForTesting();
+        // Reset to ensure our observers are removed and statics are reset.
+        ScreenStateReceiver.resetForTesting();
         RobolectricUtil.runAllBackgroundAndUi();
     }
 
     @Test
     public void testScreenOffReceiver() {
-        ScreenOffListener listener = mock(ScreenOffListener.class);
-        ScreenOffBroadcastReceiver.addListener(listener);
+        ScreenStateObserver observer = mock(ScreenStateObserver.class);
+        ScreenStateReceiver.addObserver(observer);
 
         // Send screen off broadcast.
         Intent intent = new Intent(Intent.ACTION_SCREEN_OFF);
         sendIntent(intent);
-        verify(listener).onScreenOff(any(Context.class), any(Intent.class));
+        verify(observer).onScreenOff(any(Context.class), eq(intent));
 
-        ScreenOffBroadcastReceiver.removeListener(listener);
+        ScreenStateReceiver.removeObserver(observer);
 
         // Verify not called a second time.
         sendIntent(intent);
-        verify(listener).onScreenOff(any(Context.class), any(Intent.class));
+        verify(observer).onScreenOff(any(Context.class), eq(intent));
+    }
+
+    @Test
+    public void testScreenOnReceiver() {
+        ScreenStateObserver observer = mock(ScreenStateObserver.class);
+        ScreenStateReceiver.addObserver(observer);
+
+        // Send screen on broadcast.
+        Intent intent = new Intent(Intent.ACTION_SCREEN_ON);
+        sendIntent(intent);
+        verify(observer).onScreenOn(any(Context.class), eq(intent));
+
+        ScreenStateReceiver.removeObserver(observer);
     }
 
     @Test
     public void testOtherBroadcastsIgnored() {
-        ScreenOffListener listener = mock(ScreenOffListener.class);
-        ScreenOffBroadcastReceiver.addListener(listener);
+        ScreenStateObserver observer = mock(ScreenStateObserver.class);
+        ScreenStateReceiver.addObserver(observer);
 
         // Send a different broadcast.
-        Intent intent = new Intent(Intent.ACTION_SCREEN_ON);
+        Intent intent = new Intent(Intent.ACTION_USER_PRESENT);
         sendIntent(intent);
 
-        // Verify listener was NOT called.
-        verify(listener, never()).onScreenOff(any(Context.class), eq(intent));
+        // Verify observer was NOT called.
+        verify(observer, never()).onScreenOff(any(Context.class), eq(intent));
+        verify(observer, never()).onScreenOn(any(Context.class), eq(intent));
     }
 
     private void sendIntent(Intent intent) {

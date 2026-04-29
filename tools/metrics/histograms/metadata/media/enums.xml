@@ -1793,6 +1793,7 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Media Notification"/>
   <int value="1" label="MediaSession (Android)"/>
   <int value="2" label="Headset Unplugged"/>
+  <int value="3" label="System Sleep"/>
 </enum>
 
 <enum name="MediaSessionEnterPictureInPictureType">

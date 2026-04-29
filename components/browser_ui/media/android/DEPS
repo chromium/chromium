@@ -1,9 +1,11 @@
 include_rules = [
   "+components/embedder_support/android",
   "+components/favicon/android",
+  "+components/cached_flags",
   "+components/url_formatter/android",
   "+content/public/android",
   "+services/media_session/public/cpp/android",
+  "+media/base",
   "+ui/android",
   "+url:gurl_java",
 ]

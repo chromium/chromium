@@ -20,21 +20,30 @@ public class MediaSessionUma {
     @IntDef({
         MediaSessionActionSource.MEDIA_NOTIFICATION,
         MediaSessionActionSource.MEDIA_SESSION,
-        MediaSessionActionSource.HEADSET_UNPLUG
+        MediaSessionActionSource.HEADSET_UNPLUG,
+        MediaSessionActionSource.SYSTEM_SLEEP
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface MediaSessionActionSource {
         int MEDIA_NOTIFICATION = 0;
         int MEDIA_SESSION = 1;
         int HEADSET_UNPLUG = 2;
+        int SYSTEM_SLEEP = 3;
 
-        int NUM_ENTRIES = 3;
+        int NUM_ENTRIES = 4;
     }
 
     public static void recordPlay(@Nullable @MediaSessionActionSource Integer action) {
         if (action != null) {
             RecordHistogram.recordEnumeratedHistogram(
                     "Media.Session.Play", action, MediaSessionActionSource.NUM_ENTRIES);
+        }
+    }
+
+    public static void recordPause(@Nullable @MediaSessionActionSource Integer action) {
+        if (action != null) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    "Media.Session.Pause", action, MediaSessionActionSource.NUM_ENTRIES);
         }
     }
 }

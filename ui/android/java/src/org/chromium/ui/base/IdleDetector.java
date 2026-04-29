@@ -43,7 +43,7 @@ public class IdleDetector extends BroadcastReceiver {
 
         // The native counterpart is a global singleton that is never destroyed so there is no
         // need to unregister the broadcast receiver. While this could be shared with
-        // ScreenOffBroadcastReceiver, it is simpler to just register separately since it handles
+        // ScreenStateReceiver, it is simpler to just register separately since it handles
         // other actions.
         IntentFilter filter = new IntentFilter();
         filter.addAction(Intent.ACTION_SCREEN_OFF);

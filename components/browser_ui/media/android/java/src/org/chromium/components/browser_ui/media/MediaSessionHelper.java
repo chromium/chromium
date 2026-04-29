@@ -20,8 +20,9 @@ import android.text.TextUtils;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.ScreenOffBroadcastReceiver;
+import org.chromium.base.ScreenStateReceiver;
 import org.chromium.base.SysUtils;
+import org.chromium.base.TimeUtils;
 import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -54,6 +55,8 @@ import java.util.Set;
 public class MediaSessionHelper implements MediaImageCallback {
     private static final String UNICODE_PLAY_CHARACTER = "\u25B6";
     @VisibleForTesting public static final int HIDE_NOTIFICATION_DELAY_MILLIS = 500;
+    private static final long SYSTEM_SLEEP_THRESHOLD_MS = 1000L;
+    private static final long INVALID_DEEP_SLEEP_TIME = -1L;
 
     private final Delegate mDelegate;
     private @Nullable WebContents mWebContents;
@@ -87,16 +90,56 @@ public class MediaSessionHelper implements MediaImageCallback {
     // static getter {@link MediaSession#fromWebContents()}.
     @VisibleForTesting public static @Nullable MediaSession sOverriddenMediaSession;
 
-    // Used to hide the notification immediately when the screen is turned off, if we are currently
-    // waiting to hide it (e.g. because the media became uncontrollable).
-    // This is safe to do because `mHideNotificationDelayedTask` is cleared whenever we show a new
-    // notification or if the media becomes controllable again. Thus, if
-    // `mHideNotificationDelayedTask` is non-null here, we know for sure that we are still in the
-    // "waiting to hide" state for this specific session and it hasn't recovered.
-    private final ScreenOffBroadcastReceiver.ScreenOffListener mHideNotificationOnScreenOff =
-            (context, intent) -> {
-                if (mHideNotificationDelayedTask != null) {
-                    hideNotificationImmediately();
+    // To track deep sleep duration between screen off and screen on.
+    private long mDeepSleepTimeAtScreenOffMs = INVALID_DEEP_SLEEP_TIME;
+    private boolean mIsPaused;
+
+    // Handles actions when the screen turns off/on, such as hiding the notification or pausing
+    // media.
+    private final ScreenStateReceiver.ScreenStateObserver mScreenStateObserver =
+            new ScreenStateReceiver.ScreenStateObserver() {
+                @Override
+                public void onScreenOff(Context context, Intent intent) {
+                    // Hide the notification immediately if we are currently waiting to hide it
+                    // (e.g. because the media became uncontrollable). This is safe because
+                    // `mHideNotificationDelayedTask` is cleared when media becomes controllable
+                    // again.
+                    if (mHideNotificationDelayedTask != null) {
+                        hideNotificationImmediately();
+                    }
+
+                    // Record deep sleep baseline to detect suspension when the screen turns back
+                    // on.
+                    mDeepSleepTimeAtScreenOffMs =
+                            TimeUtils.elapsedRealtimeMillis() - TimeUtils.uptimeMillis();
+                }
+
+                @Override
+                public void onScreenOn(Context context, Intent intent) {
+                    // Only pause if the feature is enabled to avoid regressing background audio
+                    // on standard Android phones.
+                    if (!MediaFeatureList.sPauseMediaOnSystemSleepAndroid.isEnabled()) return;
+
+                    // If the baseline is INVALID_DEEP_SLEEP_TIME, we didn't observe a Screen Off
+                    // event first.
+                    if (mDeepSleepTimeAtScreenOffMs == INVALID_DEEP_SLEEP_TIME) return;
+
+                    final long currentDeepSleepMs =
+                            TimeUtils.elapsedRealtimeMillis() - TimeUtils.uptimeMillis();
+                    final long sleepDeltaMs = currentDeepSleepMs - mDeepSleepTimeAtScreenOffMs;
+
+                    // Reset the baseline now that we've processed the wake event.
+                    mDeepSleepTimeAtScreenOffMs = INVALID_DEEP_SLEEP_TIME;
+
+                    // If the device spent more than the threshold in deep sleep while the screen
+                    // was off, we assume it was a true system suspension (e.g. laptop lid close).
+                    if (sleepDeltaMs >= SYSTEM_SLEEP_THRESHOLD_MS
+                            && !mIsPaused
+                            && mMediaSessionObserver != null
+                            && mMediaSessionObserver.getMediaSession() != null) {
+                        MediaSessionUma.recordPause(MediaSessionActionSource.SYSTEM_SLEEP);
+                        mMediaSessionObserver.getMediaSession().suspend();
+                    }
                 }
             };
 
@@ -117,6 +160,9 @@ public class MediaSessionHelper implements MediaImageCallback {
                 @Override
                 public void onPause(int actionSource) {
                     if (isNotificationHidingOrHidden()) return;
+
+                    MediaSessionUma.recordPause(
+                            MediaSessionHelper.convertMediaActionSourceToUMA(actionSource));
 
                     if (mMediaSessionObserver.getMediaSession() == null) return;
 
@@ -208,6 +254,7 @@ public class MediaSessionHelper implements MediaImageCallback {
 
             @Override
             public void mediaSessionStateChanged(boolean isControllable, boolean isPaused) {
+                mIsPaused = isPaused;
                 if (!isControllable) {
                     if (isDeviceLocked()) {
                         hideNotificationImmediately();
@@ -449,7 +496,7 @@ public class MediaSessionHelper implements MediaImageCallback {
             mPreviousVolumeControlStream = activity.getVolumeControlStream();
         }
 
-        ScreenOffBroadcastReceiver.addListener(mHideNotificationOnScreenOff);
+        ScreenStateReceiver.addObserver(mScreenStateObserver);
     }
 
     /**
@@ -463,7 +510,7 @@ public class MediaSessionHelper implements MediaImageCallback {
         mWebContentsObserver = null;
         if (mLargeIconBridge != null) mLargeIconBridge.destroy();
         mLargeIconBridge = null;
-        ScreenOffBroadcastReceiver.removeListener(mHideNotificationOnScreenOff);
+        ScreenStateReceiver.removeObserver(mScreenStateObserver);
     }
 
     /**

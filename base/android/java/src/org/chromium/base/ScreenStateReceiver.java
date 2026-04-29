@@ -18,62 +18,70 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
 /**
- * A {@link BroadcastReceiver} that listens for the screen off broadcast.
+ * A {@link BroadcastReceiver} that listens for screen state changes (off/on).
  *
  * <p>This class is a singleton that is never destroyed as it is an application level broadcast
  * receiver. Care should be taken to avoid memory leaks by removing listeners when they are no
  * longer needed.
  */
 @NullMarked
-public class ScreenOffBroadcastReceiver extends BroadcastReceiver {
-    /** A listener for the screen off broadcast. */
-    @FunctionalInterface
-    public interface ScreenOffListener {
-        void onScreenOff(Context context, Intent intent);
+public class ScreenStateReceiver extends BroadcastReceiver {
+    /** A listener for screen state broadcasts. */
+    public interface ScreenStateObserver {
+        default void onScreenOff(Context context, Intent intent) {}
+
+        default void onScreenOn(Context context, Intent intent) {}
     }
 
     // Initialize lazily to facilitate testing.
-    private static @Nullable ScreenOffBroadcastReceiver sInstance;
+    private static @Nullable ScreenStateReceiver sInstance;
 
-    private final ObserverList<ScreenOffListener> mListeners = new ObserverList<>();
+    private final ObserverList<ScreenStateObserver> mObservers = new ObserverList<>();
     private final TaskRunner mTaskRunner =
             PostTask.createSequencedTaskRunner(TaskTraits.USER_VISIBLE);
 
-    private ScreenOffBroadcastReceiver() {}
+    private ScreenStateReceiver() {}
 
     /**
-     * Adds a listener for the screen off broadcast.
+     * Adds an observer for screen state broadcasts.
      *
-     * @param listener The listener to add.
+     * @param observer The observer to add.
      */
-    public static void addListener(ScreenOffListener listener) {
-        getInstance().mListeners.addObserver(listener);
+    public static void addObserver(ScreenStateObserver observer) {
+        ThreadUtils.assertOnUiThread();
+        getInstance().mObservers.addObserver(observer);
     }
 
     /**
-     * Removes a listener for the screen off broadcast.
+     * Removes an observer for screen state broadcasts.
      *
-     * @param listener The listener to remove.
+     * @param observer The observer to remove.
      */
-    public static void removeListener(ScreenOffListener listener) {
-        getInstance().mListeners.removeObserver(listener);
+    public static void removeObserver(ScreenStateObserver observer) {
+        ThreadUtils.assertOnUiThread();
+        getInstance().mObservers.removeObserver(observer);
     }
 
     @Override
     public void onReceive(Context context, Intent intent) {
         ThreadUtils.assertOnUiThread();
         if (Intent.ACTION_SCREEN_OFF.equals(intent.getAction())) {
-            for (ScreenOffListener listener : mListeners) {
-                listener.onScreenOff(context, intent);
+            for (ScreenStateObserver observer : mObservers) {
+                observer.onScreenOff(context, intent);
+            }
+        } else if (Intent.ACTION_SCREEN_ON.equals(intent.getAction())) {
+            for (ScreenStateObserver observer : mObservers) {
+                observer.onScreenOn(context, intent);
             }
         }
     }
 
-    /** Returns the singleton instance of the {@link ScreenOffBroadcastReceiver}. */
+    /** Returns the singleton instance of the {@link ScreenStateReceiver}. */
     @VisibleForTesting
-    public static ScreenOffBroadcastReceiver getInstance() {
+    public static ScreenStateReceiver getInstance() {
+        ThreadUtils.assertOnUiThread();
         if (sInstance == null) {
-            sInstance = new ScreenOffBroadcastReceiver();
+            sInstance = new ScreenStateReceiver();
             sInstance.register();
         }
         return sInstance;
@@ -85,10 +93,9 @@ public class ScreenOffBroadcastReceiver extends BroadcastReceiver {
                 () -> {
                     IntentFilter filter = new IntentFilter();
                     filter.addAction(Intent.ACTION_SCREEN_OFF);
+                    filter.addAction(Intent.ACTION_SCREEN_ON);
                     ContextUtils.registerProtectedBroadcastReceiver(
-                            ContextUtils.getApplicationContext(),
-                            ScreenOffBroadcastReceiver.this,
-                            filter);
+                            ContextUtils.getApplicationContext(), ScreenStateReceiver.this, filter);
                 },
                 0);
     }
@@ -98,12 +105,12 @@ public class ScreenOffBroadcastReceiver extends BroadcastReceiver {
         mTaskRunner.postDelayedTask(
                 () -> {
                     ContextUtils.getApplicationContext()
-                            .unregisterReceiver(ScreenOffBroadcastReceiver.this);
+                            .unregisterReceiver(ScreenStateReceiver.this);
                 },
                 0);
     }
 
-    /** Resets the singleton instance of the {@link ScreenOffBroadcastReceiver}. */
+    /** Resets the singleton instance of the {@link ScreenStateReceiver}. */
     public static void resetForTesting() {
         if (sInstance == null) return;
 

@@ -27,7 +27,7 @@ import org.robolectric.shadows.ShadowKeyguardManager;
 import org.robolectric.shadows.ShadowNotification;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.ScreenOffBroadcastReceiver;
+import org.chromium.base.ScreenStateReceiver;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.chrome.R;
@@ -73,7 +73,7 @@ public class MediaNotificationTitleUpdatedTest extends MediaNotificationTestBase
                                 .getSystemService(Context.KEYGUARD_SERVICE);
         mShadowKeyguardManager = Shadows.shadowOf(keyguardManager);
 
-        ScreenOffBroadcastReceiver.getInstance();
+        ScreenStateReceiver.getInstance();
         RobolectricUtil.runAllBackgroundAndUi();
     }
 
@@ -81,7 +81,7 @@ public class MediaNotificationTitleUpdatedTest extends MediaNotificationTestBase
     @Override
     public void tearDown() {
         super.tearDown();
-        ScreenOffBroadcastReceiver.resetForTesting();
+        ScreenStateReceiver.resetForTesting();
         RobolectricUtil.runAllBackgroundAndUi();
     }
 

@@ -30,8 +30,8 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.base.ScreenOffBroadcastReceiver;
-import org.chromium.base.ScreenOffBroadcastReceiver.ScreenOffListener;
+import org.chromium.base.ScreenStateReceiver;
+import org.chromium.base.ScreenStateReceiver.ScreenStateObserver;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.task.PostTask;
@@ -125,16 +125,16 @@ public class CompositorView extends FrameLayout
     // On P and above, toggling the screen off gets us in a state where the Surface is destroyed but
     // it is never recreated when it is turned on again. This is the only workaround that seems to
     // be working, see crbug.com/40613559.
-    class ScreenStateReceiverWorkaround implements ScreenOffListener {
+    class ScreenStateReceiverWorkaround implements ScreenStateObserver {
         // True indicates we should destroy and recreate the surface manager.
         private boolean mNeedsReset;
 
         ScreenStateReceiverWorkaround() {
-            ScreenOffBroadcastReceiver.addListener(this);
+            ScreenStateReceiver.addObserver(this);
         }
 
         void shutDown() {
-            ScreenOffBroadcastReceiver.removeListener(this);
+            ScreenStateReceiver.removeObserver(this);
         }
 
         @Override

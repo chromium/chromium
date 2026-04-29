@@ -18,9 +18,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.FakeTimeTestRule;
+import org.chromium.base.ScreenStateReceiver;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.tab.Tab;
@@ -30,6 +34,7 @@ import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.chrome.test.util.browser.TabLoadObserver;
+import org.chromium.components.browser_ui.media.MediaFeatureList;
 import org.chromium.components.browser_ui.media.MediaNotificationController;
 import org.chromium.components.browser_ui.media.MediaNotificationManager;
 import org.chromium.components.url_formatter.SchemeDisplay;
@@ -50,6 +55,8 @@ public class MediaSessionTest {
     @Rule
     public FreshCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
+
+    @Rule public FakeTimeTestRule mFakeTimeTestRule = new FakeTimeTestRule();
 
     private static final String TEST_PATH = "/content/test/data/media/session/media-session.html";
     private static final String VIDEO_ID = "long-video";
@@ -147,5 +154,64 @@ public class MediaSessionTest {
         i.setAction(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
 
         ApplicationProvider.getApplicationContext().startService(i);
+    }
+
+    private void simulateScreenOff() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Intent i = new Intent(Intent.ACTION_SCREEN_OFF);
+                    ScreenStateReceiver.getInstance()
+                            .onReceive(ApplicationProvider.getApplicationContext(), i);
+                });
+    }
+
+    private void simulateScreenOn() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Intent i = new Intent(Intent.ACTION_SCREEN_ON);
+                    ScreenStateReceiver.getInstance()
+                            .onReceive(ApplicationProvider.getApplicationContext(), i);
+                });
+    }
+
+    @Test
+    @LargeTest
+    @EnableFeatures(MediaFeatureList.PAUSE_MEDIA_ON_SYSTEM_SLEEP_ANDROID)
+    public void testPauseOnScreenOff_FeatureEnabled() throws Exception {
+        mActivityTestRule.startOnTestServerUrl(TEST_PATH);
+        Tab tab = mActivityTestRule.getActivityTab();
+
+        Assert.assertTrue(DOMUtils.isMediaPaused(tab.getWebContents(), VIDEO_ID));
+        DOMUtils.playMedia(tab.getWebContents(), VIDEO_ID);
+        DOMUtils.waitForMediaPlay(tab.getWebContents(), VIDEO_ID);
+        waitForNotificationReady();
+
+        simulateScreenOff();
+        // Simulate deep sleep discontinuity
+        mFakeTimeTestRule.deepSleepMillis(1500);
+        simulateScreenOn();
+        DOMUtils.waitForMediaPauseBeforeEnd(tab.getWebContents(), VIDEO_ID);
+    }
+
+    @Test
+    @LargeTest
+    @DisableFeatures(MediaFeatureList.PAUSE_MEDIA_ON_SYSTEM_SLEEP_ANDROID)
+    public void testPauseOnScreenOff_FeatureDisabled() throws Exception {
+        mActivityTestRule.startOnTestServerUrl(TEST_PATH);
+        Tab tab = mActivityTestRule.getActivityTab();
+
+        Assert.assertTrue(DOMUtils.isMediaPaused(tab.getWebContents(), VIDEO_ID));
+        DOMUtils.playMedia(tab.getWebContents(), VIDEO_ID);
+        DOMUtils.waitForMediaPlay(tab.getWebContents(), VIDEO_ID);
+        waitForNotificationReady();
+
+        simulateScreenOff();
+        // Simulate deep sleep discontinuity
+        mFakeTimeTestRule.deepSleepMillis(1500);
+        simulateScreenOn();
+
+        // Wait a short time to ensure it doesn't pause.
+        Thread.sleep(500);
+        Assert.assertFalse(DOMUtils.isMediaPaused(tab.getWebContents(), VIDEO_ID));
     }
 }

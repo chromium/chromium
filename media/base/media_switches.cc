@@ -1150,6 +1150,10 @@ BASE_FEATURE(kMediaDrmGetStatusForPolicy, base::FEATURE_ENABLED_BY_DEFAULT);
 // that it can be disabled for WebView as separate processes are not allowed.
 BASE_FEATURE(kMediaDrmQueryInSeparateProcess, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Pause media when a system sleep/suspension is detected.
+BASE_FEATURE(kPauseMediaOnSystemSleepAndroid,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, Playing media sessions will request audio focus from the
 // Android system.
 BASE_FEATURE(kRequestSystemAudioFocus, base::FEATURE_ENABLED_BY_DEFAULT);

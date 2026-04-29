@@ -5022,7 +5022,7 @@ if (is_android) {
       ":pii_elider_java",
       ":promise_java",
       ":resetters_java",
-      ":screen_off_broadcast_receiver_java",
+      ":screen_state_receiver_java",
       ":stream_util_java",
       ":supplier_java",
       ":sys_utils_java",
@@ -5332,9 +5332,8 @@ if (is_android) {
     ]
   }
 
-  android_library("screen_off_broadcast_receiver_java") {
-    sources =
-        [ "android/java/src/org/chromium/base/ScreenOffBroadcastReceiver.java" ]
+  android_library("screen_state_receiver_java") {
+    sources = [ "android/java/src/org/chromium/base/ScreenStateReceiver.java" ]
     deps = [
       ":tasks_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
@@ -6040,7 +6039,7 @@ if (is_android) {
       "android/junit/src/org/chromium/base/PostNativeFlagUnitTest.java",
       "android/junit/src/org/chromium/base/PromiseTest.java",
       "android/junit/src/org/chromium/base/ResettersForTestingTest.java",
-      "android/junit/src/org/chromium/base/ScreenOffBroadcastReceiverTest.java",
+      "android/junit/src/org/chromium/base/ScreenStateReceiverTest.java",
       "android/junit/src/org/chromium/base/ThreadUtilsTest.java",
       "android/junit/src/org/chromium/base/TimeUtilsTest.java",
       "android/junit/src/org/chromium/base/TokenUnitTest.java",
