@@ -1382,7 +1382,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.MantisService.ImageGenerationType"
-    enum="MantisServiceImageGenerationType" expires_after="2026-05-31">
+    enum="MantisServiceImageGenerationType" expires_after="2027-05-31">
   <owner>njrafi@google.com</owner>
   <owner>cros-odml-foundations-eng@google.com</owner>
   <summary>
@@ -1393,7 +1393,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.MantisService.Latency.{OperationType}" units="ms"
-    expires_after="2026-05-24">
+    expires_after="2027-05-24">
   <owner>fairuzi@google.com</owner>
   <owner>cros-odml-foundations-eng@google.com</owner>
   <summary>
@@ -1412,7 +1412,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.MantisService.ModelLoaded" enum="BooleanLoaded"
-    expires_after="2026-05-24">
+    expires_after="2027-05-24">
   <owner>fairuzi@google.com</owner>
   <owner>cros-odml-foundations-eng@google.com</owner>
   <summary>
