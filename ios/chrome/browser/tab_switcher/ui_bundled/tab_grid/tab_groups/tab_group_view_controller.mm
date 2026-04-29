@@ -69,7 +69,8 @@ constexpr CGFloat kSpace = 8;
 
 // Container constraints.
 constexpr CGFloat kContainerMargin = 12;
-constexpr CGFloat kContainerMultiplier = 0.8;
+constexpr CGFloat kDefaultContainerMultiplier = 0.8;
+constexpr CGFloat kContainerMultiplier = 0.75;
 constexpr CGFloat kContainerCornerRadius = 24;
 constexpr CGFloat kContainerBackgroundAlpha = 0.8;
 
@@ -335,8 +336,11 @@ UIButton* TopToolbarButton(NSString* symbol_name,
                                             constant:-kContainerMargin],
   ];
   _largeWidthConstraints = @[
-    [_container.widthAnchor constraintEqualToAnchor:self.view.widthAnchor
-                                         multiplier:kContainerMultiplier],
+    [_container.widthAnchor
+        constraintEqualToAnchor:self.view.widthAnchor
+                     multiplier:IsChromeNextIaEnabled()
+                                    ? kContainerMultiplier
+                                    : kDefaultContainerMultiplier],
   ];
 
   [self updateContainerConstraints];
@@ -344,8 +348,11 @@ UIButton* TopToolbarButton(NSString* symbol_name,
   [NSLayoutConstraint activateConstraints:@[
     [self.view.centerXAnchor constraintEqualToAnchor:_container.centerXAnchor],
     [self.view.centerYAnchor constraintEqualToAnchor:_container.centerYAnchor],
-    [_container.heightAnchor constraintEqualToAnchor:self.view.heightAnchor
-                                          multiplier:kContainerMultiplier],
+    [_container.heightAnchor
+        constraintEqualToAnchor:self.view.heightAnchor
+                     multiplier:IsChromeNextIaEnabled()
+                                    ? kContainerMultiplier
+                                    : kDefaultContainerMultiplier],
   ]];
 
   _topToolbar = [self configuredTopToolbar];
