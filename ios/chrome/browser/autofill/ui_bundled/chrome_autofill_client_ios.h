@@ -30,7 +30,6 @@
 #import "components/autofill/ios/browser/autofill_client_ios.h"
 #import "components/autofill/ios/browser/autofill_client_ios_bridge.h"
 #import "components/infobars/core/infobar_manager.h"
-#import "components/plus_addresses/core/browser/plus_address_types.h"
 #import "components/prefs/pref_service.h"
 #import "components/strike_database/strike_database.h"
 #import "components/sync/service/sync_service.h"
