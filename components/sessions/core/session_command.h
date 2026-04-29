@@ -87,18 +87,39 @@ class SESSIONS_EXPORT SessionCommand {
   // contents.
   // If the size of the contents is greater than kMaxContentSize, the contents
   // will be truncated.
-  std::vector<uint8_t> Serialize() const;
+  // If encryptor is nullptr, the contents will be cleartext.
+  // If an encryptor is provided, the contents will be encrypted.
+  // If an error occurs, an empty vector will be returned.
+  std::vector<uint8_t> Serialize(os_crypt_async::Encryptor* encryptor) const;
 
+  // Deserializes the data into a SessionCommand (e.g., for reading from a
+  // file). It is expected that the data was serialized using Serialize().
   // Returns the total serialized size of the command if there is enough data
   // to determine it, or std::nullopt otherwise.
-  static std::optional<size_t> GetSerializedSize(
-      base::span<const uint8_t> data);
+  // encrypted: whether the data was encrypted during serialization.
+  static std::optional<size_t> GetSerializedSize(base::span<const uint8_t> data,
+                                                 bool encrypted);
 
-  // Deserializes the SessionCommand (e.g., for reading from a file).
+  // Deserializes a SessionCommand that was serialized using Serialize()
+  // E.g., for reading from a file.
+  // If encryptor is nullptr, the data is assumed to be cleartext.
+  // If an encryptor is provided, the contents will be decrypted.
+  // If an error occurs, nullptr will be returned.
   static std::unique_ptr<SessionCommand> Deserialize(
-      base::span<const uint8_t> data);
+      base::span<const uint8_t> data,
+      os_crypt_async::Encryptor* encryptor);
 
  private:
+  std::vector<uint8_t> SerializeAsCleartext() const;
+  std::vector<uint8_t> SerializeWithEncryption(
+      const os_crypt_async::Encryptor& encryptor) const;
+
+  static std::unique_ptr<SessionCommand> DeserializeCleartext(
+      base::span<const uint8_t> data);
+  static std::unique_ptr<SessionCommand> DeserializeEncrypted(
+      base::span<const uint8_t> data,
+      const os_crypt_async::Encryptor& encryptor);
+
   const id_type id_;
   std::string contents_;
 };

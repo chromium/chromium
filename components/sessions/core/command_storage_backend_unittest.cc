@@ -18,6 +18,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -203,11 +204,15 @@ class CommandStorageBackendTest : public testing::Test {
     return encrypted ? encrypted_sessions_dir_ : sessions_dir_;
   }
 
+  const std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_;
+
  private:
   // Creates an OSCryptAsync that uses a predefined key.
   std::unique_ptr<os_crypt_async::OSCryptAsync> CreateOSCryptAsync() {
-    std::vector<uint8_t> key_data(
-        os_crypt_async::Encryptor::Key::kAES256GCMKeySize, 'k');
+    std::string key_string;
+    CHECK(
+        base::ReadFileToString(GetTestFilePath("OSCryptKey-k1"), &key_string));
+    std::vector<uint8_t> key_data(key_string.begin(), key_string.end());
     std::vector<std::pair<size_t, std::unique_ptr<os_crypt_async::KeyProvider>>>
         providers;
     providers.emplace_back(/*precedence=*/10u,
@@ -244,7 +249,6 @@ class CommandStorageBackendTest : public testing::Test {
   // The directory containing the encrypted session files.
   base::FilePath encrypted_sessions_dir_;
   base::ScopedTempDir temp_dir_;
-  const std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_;
 };
 
 // Most tests are parameterized to run for each session type (see
@@ -270,7 +274,7 @@ TEST_F(CommandStorageBackendTest, ReadSessionFileV1) {
   histogram_tester.ExpectUniqueSample(
       "Session.CommandStorageBackend.SessionRestore.Cleartext."
       "ReadLastSessionCommands.Status",
-      ReadStatus::kInvalidHeader, 1);
+      ReadStatus::kUnsupportedVersion, 1);
 }
 
 TEST_F(CommandStorageBackendTest, ReadSessionFileV2) {
@@ -292,7 +296,7 @@ TEST_F(CommandStorageBackendTest, ReadSessionFileV2) {
   histogram_tester.ExpectUniqueSample(
       "Session.CommandStorageBackend.SessionRestore.Cleartext."
       "ReadLastSessionCommands.Status",
-      ReadStatus::kInvalidHeader, 1);
+      ReadStatus::kUnsupportedVersion, 1);
 }
 
 TEST_F(CommandStorageBackendTest, ReadSessionFileV3) {
@@ -316,9 +320,9 @@ TEST_F(CommandStorageBackendTest, ReadSessionFileV3) {
 }
 
 TEST_F(CommandStorageBackendTest, WriteSessionFileV3) {
-  // This test ensures that we don't accidentally change the format of V3 files.
-  // If you intend to change the output file format, then you should create a
-  // new test data file, and update this test to read that new file.
+  // This test ensures that we don't accidentally change the format of V3
+  // files. If you intend to change the output file format, then you should
+  // create a new test data file, and update this test to read that new file.
   base::HistogramTester histogram_tester;
   scoped_refptr<CommandStorageBackend> backend =
       CreateBackend(SessionType::kSessionRestore, /*encrypted=*/false);
@@ -382,9 +386,9 @@ TEST_F(CommandStorageBackendTest, ReadSessionFileV3With2Appends) {
 }
 
 TEST_F(CommandStorageBackendTest, WriteSessionFileV3With2Appends) {
-  // This test ensures that we don't accidentally change the format of V3 files.
-  // If you intend to change the output file format, then you should create a
-  // new test data file, and update this test to read that new file.
+  // This test ensures that we don't accidentally change the format of V3
+  // files. If you intend to change the output file format, then you should
+  // create a new test data file, and update this test to read that new file.
   scoped_refptr<CommandStorageBackend> backend =
       CreateBackend(SessionType::kSessionRestore, /*encrypted=*/false);
   SessionCommands first_commands;
@@ -415,6 +419,25 @@ TEST_F(CommandStorageBackendTest, WriteSessionFileV3With2Appends) {
   ASSERT_EQ(expected_data_file.bytes(), written_file.bytes());
 }
 
+TEST_F(CommandStorageBackendTest, ReadSessionFileV3WithEncryptorAvailable) {
+  base::HistogramTester histogram_tester;
+  // This is unexpected as the encrypted sessions directory will typically only
+  // contain encrypted files. But it's supported for backward compatibility.
+  ASSERT_TRUE(
+      CopyTestDataToSessionFile("Session-v3WithMarker", "Session_1234", true));
+
+  scoped_refptr<CommandStorageBackend> backend =
+      CreateBackend(SessionType::kSessionRestore, /*encrypted=*/true);
+  ReadCommandsResult result = backend->ReadLastSessionCommands();
+  ASSERT_EQ(1u, result.commands.size());
+  ASSERT_FALSE(result.error_reading);
+  AssertCommandEqualsData(TestData({1, "a"}), result.commands[0].get());
+  histogram_tester.ExpectUniqueSample(
+      "Session.CommandStorageBackend.SessionRestore.Encrypted."
+      "ReadLastSessionCommands.Status",
+      ReadStatus::kSuccess, 1);
+}
+
 TEST_F(CommandStorageBackendTest, ReadSessionFileV4) {
   // V4 files contain markers and are encrypted.
   // They have never been used in production, but could have been written from
@@ -434,11 +457,61 @@ TEST_F(CommandStorageBackendTest, ReadSessionFileV4) {
   histogram_tester.ExpectUniqueSample(
       "Session.CommandStorageBackend.SessionRestore.Cleartext."
       "ReadLastSessionCommands.Status",
-      ReadStatus::kInvalidHeader, 1);
+      ReadStatus::kUnsupportedVersion, 1);
+}
+
+TEST_F(CommandStorageBackendTest, ReadSessionFileV5) {
+  // V5 files contain encrypted commands.
+  ASSERT_TRUE(CopyTestDataToSessionFile("Session-v5", "Session_1234", true));
+
+  scoped_refptr<CommandStorageBackend> backend =
+      CreateBackend(SessionType::kSessionRestore, /*encrypted=*/true);
+  ReadCommandsResult result = backend->ReadLastSessionCommands();
+  ASSERT_EQ(1u, result.commands.size());
+  AssertCommandEqualsData(TestData({1, "a"}), result.commands[0].get());
+}
+
+TEST_F(CommandStorageBackendTest, ReadSessionFileV5With2Appends) {
+  // V5 files contain encrypted commands.
+  // This test file was created using 2 calls to backend->AppendCommands,
+  // which results in the Marker being in the middle of the file (between
+  // the "banana" and "coconut" commands).  See also related test
+  // `WriteSessionFileV3With2Appends`.
+  ASSERT_TRUE(CopyTestDataToSessionFile("Session-v5With2Appends",
+                                        "Session_1234", true));
+
+  scoped_refptr<CommandStorageBackend> backend =
+      CreateBackend(SessionType::kSessionRestore, /*encrypted=*/true);
+  SessionCommands commands = backend->ReadLastSessionCommands().commands;
+
+  ASSERT_EQ(4u, commands.size());
+  AssertCommandEqualsData(TestData({1, "apple"}), commands[0].get());
+  AssertCommandEqualsData(TestData({2, "banana"}), commands[1].get());
+  AssertCommandEqualsData(TestData({3, "coconut"}), commands[2].get());
+  AssertCommandEqualsData(TestData({4, "durian"}), commands[3].get());
+}
+
+TEST_F(CommandStorageBackendTest, ReadSessionFileV5FailsWithoutEncryptor) {
+  // Encrypted V5 files cannot be read if an encryptor is not present.
+  base::HistogramTester histogram_tester;
+  // This is unexpected as the cleartext sessions directory will typically only
+  // contain cleartext files.
+  ASSERT_TRUE(CopyTestDataToSessionFile("Session-v5", "Session_1234", false));
+
+  scoped_refptr<CommandStorageBackend> backend =
+      CreateBackend(SessionType::kSessionRestore, /*encrypted=*/false);
+  ReadCommandsResult result = backend->ReadLastSessionCommands();
+  ASSERT_TRUE(result.commands.empty());
+  ASSERT_TRUE(result.error_reading);
+  histogram_tester.ExpectUniqueSample(
+      "Session.CommandStorageBackend.SessionRestore.Cleartext."
+      "ReadLastSessionCommands.Status",
+      ReadStatus::kUnsupportedVersion, 1);
 }
 
 TEST_F(CommandStorageBackendTest, GetHistogramName) {
-  // An error when AppendCommands fails for a SessionRestore, Cleartext backend.
+  // An error when AppendCommands fails for a SessionRestore, Cleartext
+  // backend.
   EXPECT_EQ(GetHistogramName(SessionType::kSessionRestore, /*encrypted=*/false,
                              "AppendCommands", "Truncate", "Status"),
             "Session.CommandStorageBackend.SessionRestore.Cleartext."
@@ -788,7 +861,8 @@ TEST_P(CommandStorageBackendParamTest, CommandContentsExceedMaximum) {
   commands = backend->ReadLastSessionCommands().commands;
 
   ASSERT_EQ(1U, commands.size());
-  // The command should be truncated to the maximum size but otherwise the same.
+  // The command should be truncated to the maximum size but otherwise the
+  // same.
   ASSERT_EQ(SessionCommand::kMaxContentSize, (commands[0])->contents().size());
   auto expected_command = CreateCommandWithSize(exceeding_size);
   EXPECT_EQ(expected_command->id(), (commands[0])->id());
@@ -1065,7 +1139,8 @@ TEST_P(CommandStorageBackendParamTest, DeterminePreviousSessionEmpty) {
   ASSERT_FALSE(GetLastSessionInfo(backend.get()));
 }
 
-// Test that the previous session is selected correctly when a file is present.
+// Test that the previous session is selected correctly when a file is
+// present.
 TEST_P(CommandStorageBackendParamTest, DeterminePreviousSessionSingle) {
   const auto prev_path = GetFilePath(13235178308836991);
   ASSERT_TRUE(base::CreateDirectory(prev_path.DirName()));
@@ -1146,7 +1221,11 @@ TEST_P(CommandStorageBackendParamTest, UseMarkerWithoutValidMarker) {
   ASSERT_TRUE(commands.empty());
 
   // As there was no valid marker, there should be no last session file.
-  EXPECT_FALSE(GetLastSessionInfo(backend.get()));
+  // GetLastSessionInfo is a private member variable and is not supported
+  // when using encryption.
+  if (!GetParam().encrypted) {
+    EXPECT_FALSE(GetLastSessionInfo(backend.get()));
+  }
 }
 
 TEST_P(CommandStorageBackendParamTest, NewFileOnTruncate) {

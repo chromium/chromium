@@ -49,7 +49,8 @@ using SessionType = CommandStorageManager::SessionType;
 constexpr int32_t kFileVersionWithMarker = 3;
 // kEncryptedFileVersionWithMarker = 4; Never used in production, but possible
 //   from early 2021 through early 2026.
-// NEXT_VERSION = 5
+constexpr int32_t kFileVersionEncryptedWithOSCrypt = 5;
+// NEXT_VERSION = 6
 
 // The signature at the beginning of the file = SSNS (Sessions).
 constexpr int32_t kFileSignature = 0x53534E53;
@@ -140,7 +141,8 @@ class SessionFileReader {
   // Returns true if the header is valid. If false, the file does not contain
   // a valid sessions file.
   static bool IsHeaderValidForTest(const base::FilePath& path) {
-    SessionFileReader reader(path);
+    // The header of the file is not encrypted.
+    SessionFileReader reader(path, /*encryptor=*/nullptr);
     return reader.IsHeaderValid();
   }
 
@@ -154,8 +156,9 @@ class SessionFileReader {
     bool has_marker = false;
   };
 
-  static MarkerStatus GetMarkerStatus(const base::FilePath& path) {
-    SessionFileReader reader(path);
+  static MarkerStatus GetMarkerStatus(const base::FilePath& path,
+                                      os_crypt_async::Encryptor* encryptor) {
+    SessionFileReader reader(path, encryptor);
     MarkerStatus status;
     status.is_header_valid = reader.IsHeaderValid();
     if (status.is_header_valid) {
@@ -173,14 +176,17 @@ class SessionFileReader {
   };
 
   // Reads the state of commands from the specified file.
-  static ReadResult Read(const base::FilePath& path) {
-    SessionFileReader reader(path);
+  static ReadResult Read(const base::FilePath& path,
+                         os_crypt_async::Encryptor* encryptor) {
+    SessionFileReader reader(path, encryptor);
     return reader.Read();
   }
 
  private:
-  explicit SessionFileReader(const base::FilePath& path)
-      : buffer_(CommandStorageBackend::kFileReadBufferSize, 0) {
+  SessionFileReader(const base::FilePath& path,
+                    os_crypt_async::Encryptor* encryptor)
+      : buffer_(CommandStorageBackend::kFileReadBufferSize, 0),
+        encryptor_(encryptor) {
     file_ = std::make_unique<base::File>(
         path, base::File::FLAG_OPEN | base::File::FLAG_READ);
     read_status_ = ReadHeader();
@@ -190,7 +196,8 @@ class SessionFileReader {
   // Returns true if the file has a valid header and a supported version.
   bool IsHeaderValid() const {
     return read_status_ == ReadStatus::kSuccess &&
-           version_ == kFileVersionWithMarker;
+           (version_ == kFileVersionWithMarker ||
+            version_ == kFileVersionEncryptedWithOSCrypt);
   }
 
   // Reads the contents of the file specified in the constructor.
@@ -247,6 +254,9 @@ class SessionFileReader {
   size_t available_count_ = 0;
 
   bool did_check_header_ = false;
+
+  // This encryptor is owned by the caller (CommandStorageBackend).
+  raw_ptr<os_crypt_async::Encryptor> encryptor_;
 
   // The version the file was written with. Should only be used if
   // IsHeaderValid() returns true.
@@ -311,10 +321,17 @@ CommandStorageBackend::ReadStatus SessionFileReader::ReadHeader() {
   }
   bytes_read_ += *read_count;
   version_ = header.version;
-  // Other versions are no longer supported - see the comments above the
-  // `kFileVersionWithMarker` constant for details.
-  return (version_ == kFileVersionWithMarker) ? ReadStatus::kSuccess
-                                              : ReadStatus::kInvalidHeader;
+  switch (version_) {
+    case kFileVersionWithMarker:
+      return ReadStatus::kSuccess;
+    case kFileVersionEncryptedWithOSCrypt:
+      return encryptor_ ? ReadStatus::kSuccess
+                        : ReadStatus::kUnsupportedVersion;
+    default:
+      // Older versions are no longer supported - see the comments above the
+      // `kFileVersionWithMarker` constant for details.
+      return ReadStatus::kUnsupportedVersion;
+  }
 }
 
 bool SessionFileReader::ReadToMarker() {
@@ -331,9 +348,21 @@ bool SessionFileReader::ReadToMarker() {
 
 SessionFileReader::ReadResult SessionFileReader::ReadCommand() {
   SessionFileReader::ReadResult result;
+  bool encrypted = version_ == kFileVersionEncryptedWithOSCrypt;
+  if (encrypted) {
+    if (!encryptor_) {
+      // This condition is also checked in ReadHeader(), so unlikely to occur.
+      result.status = ReadStatus::kUnsupportedVersion;
+      return result;
+    }
+    if (!encryptor_->IsDecryptionAvailable()) {
+      result.status = ReadStatus::kDecryptionUnavailable;
+      return result;
+    }
+  }
 
   std::optional<size_t> total_size =
-      SessionCommand::GetSerializedSize(GetBufferedData());
+      SessionCommand::GetSerializedSize(GetBufferedData(), encrypted);
 
   // Make sure there is enough in the buffer for the size of the next command.
   if (!total_size) {
@@ -345,7 +374,8 @@ SessionFileReader::ReadResult SessionFileReader::ReadCommand() {
       }
       return result;
     }
-    total_size = SessionCommand::GetSerializedSize(GetBufferedData());
+    total_size =
+        SessionCommand::GetSerializedSize(GetBufferedData(), encrypted);
     if (!total_size) {
       VLOG(1) << "SessionFileReader::ReadCommand, file incomplete";
       // Still couldn't read a valid size for the command, assume write was
@@ -367,10 +397,14 @@ SessionFileReader::ReadResult SessionFileReader::ReadCommand() {
       return result;
     }
   }
-  std::unique_ptr<SessionCommand> command =
-      SessionCommand::Deserialize(ConsumeBufferedData(*total_size));
+  std::unique_ptr<SessionCommand> command = SessionCommand::Deserialize(
+      ConsumeBufferedData(*total_size), encrypted ? encryptor_ : nullptr);
   if (!command) {
-    result.status = ReadStatus::kInvalidCommand;
+    if (encrypted && encryptor_ && !encryptor_->IsDecryptionAvailable()) {
+      result.status = ReadStatus::kDecryptionUnavailable;
+    } else {
+      result.status = ReadStatus::kInvalidCommand;
+    }
     return result;
   }
   result.commands.push_back(std::move(command));
@@ -438,7 +472,6 @@ CommandStorageBackend::CommandStorageBackend(
       clock_(clock ? clock : base::DefaultClock::GetInstance()),
       encryptor_(std::move(encryptor)) {
   // This is invoked on the main thread, don't do file access here.
-  // TODO(crbug.com/479420496): Use encryptor_ to encrypt the session file.
 }
 
 // static
@@ -559,7 +592,8 @@ CommandStorageBackend::ReadLastSessionCommands() {
   if (last_session_info_) {
     VLOG(1) << "CommandStorageBackend::ReadLastSessionCommands, reading from: "
             << last_session_info_->path << " encrypted: " << is_encrypted();
-    read_result = SessionFileReader::Read(last_session_info_->path);
+    read_result =
+        SessionFileReader::Read(last_session_info_->path, encryptor_.get());
   } else {
     // Not an error, but useful for tracking in histograms.
     read_result.status = ReadStatus::kNoFile;
@@ -725,7 +759,8 @@ std::unique_ptr<base::File> CommandStorageBackend::OpenAndWriteHeader(
   }
   FileHeader header;
   header.signature = kFileSignature;
-  header.version = kFileVersionWithMarker;
+  header.version = is_encrypted() ? kFileVersionEncryptedWithOSCrypt
+                                  : kFileVersionWithMarker;
   if (!file->WriteAtCurrentPosAndCheck(base::byte_span_from_ref(header))) {
     return nullptr;
   }
@@ -736,8 +771,11 @@ CommandStorageBackend::WriteStatus CommandStorageBackend::AppendCommandToFile(
     base::File* file,
     const sessions::SessionCommand& command) {
   using WriteStatus = CommandStorageBackend::WriteStatus;
-  const std::vector<uint8_t> serialized = command.Serialize();
+  const std::vector<uint8_t> serialized = command.Serialize(encryptor_.get());
   if (serialized.empty()) {
+    if (encryptor_ && !encryptor_->IsEncryptionAvailable()) {
+      return WriteStatus::kEncryptionUnavailable;
+    }
     return WriteStatus::kSerializationError;
   }
   if (!file->WriteAtCurrentPosAndCheck(serialized)) {
@@ -796,7 +834,7 @@ CommandStorageBackend::GetSessionFilesSortedByReverseTimestamp(
 bool CommandStorageBackend::CanUseFileForLastSession(
     const base::FilePath& path) const {
   const SessionFileReader::MarkerStatus status =
-      SessionFileReader::GetMarkerStatus(path);
+      SessionFileReader::GetMarkerStatus(path, encryptor_.get());
   return !status.is_header_valid || status.has_marker;
 }
 

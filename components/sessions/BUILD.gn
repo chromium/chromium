@@ -250,11 +250,14 @@ bundle_data("unit_tests_bundle_data") {
   visibility = [ ":unit_tests" ]
   testonly = true
   sources = [
+    "//components/test/data/sessions/OSCryptKey-k1",
     "//components/test/data/sessions/Session-v1NoMarker",
     "//components/test/data/sessions/Session-v2NoMarkerEncrypted",
     "//components/test/data/sessions/Session-v3With2Appends",
     "//components/test/data/sessions/Session-v3WithMarker",
     "//components/test/data/sessions/Session-v4WithMarkerEncrypted",
+    "//components/test/data/sessions/Session-v5",
+    "//components/test/data/sessions/Session-v5With2Appends",
   ]
   outputs = [ "{{bundle_resources_dir}}/" +
               "{{source_root_relative_dir}}/{{source_file_part}}" ]

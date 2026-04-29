@@ -166,8 +166,8 @@ class SESSIONS_EXPORT CommandStorageBackend
     kFileNotOpened = 2,
     kFileWriteError = 3,
     kSerializationError = 4,
-    // TODO(crbug.com/479420496): Add encryption errors
-    kMaxValue = kSerializationError,
+    kEncryptionUnavailable = 5,  // OSCrypt lacked permission to encrypt.
+    kMaxValue = kEncryptionUnavailable,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/session/enums.xml:CommandStorageWriteStatus)
 
@@ -187,8 +187,9 @@ class SESSIONS_EXPORT CommandStorageBackend
     kFileEmpty = 4,
     kInvalidHeader = 5,
     kInvalidCommand = 6,
-    // TODO(crbug.com/479420496): Add encryption errors
-    kMaxValue = kInvalidCommand,
+    kUnsupportedVersion = 7,
+    kDecryptionUnavailable = 8,  // OSCrypt lacked permission to decrypt.
+    kMaxValue = kDecryptionUnavailable,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/session/enums.xml:CommandStorageReadStatus)
 

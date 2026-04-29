@@ -46,6 +46,8 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="File Empty"/>
   <int value="5" label="Invalid Header"/>
   <int value="6" label="Invalid Command"/>
+  <int value="7" label="Unsupported Version"/>
+  <int value="8" label="Decryption Unavailable"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/sessions/core/command_storage_backend.h:ReadStatus) -->
@@ -58,6 +60,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="File Not Opened"/>
   <int value="3" label="File Write Error"/>
   <int value="4" label="Serialization Error"/>
+  <int value="5" label="Encryption Unavailable"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/sessions/core/command_storage_backend.h:WriteStatus) -->
