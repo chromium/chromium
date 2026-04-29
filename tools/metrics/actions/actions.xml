@@ -746,7 +746,7 @@ should be able to be added at any place in this file.
       summary="For Resumption Rail feature entrypoint."/>
   <variant name="_RtlGestureNavigation"
       summary="For the gesture navigation in RTL mode."/>
-  <variant name="_SearchExtensionSideloadFeature"
+  <variant name="_SearchPromotionFeature"
       summary="IPH for Search extension promo on Windows"/>
   <variant name="_SharedHighlightingBuilder"
       summary="For SharedHighlightingBuilder feature."/>
@@ -16697,8 +16697,7 @@ should be able to be added at any place in this file.
   <description>The user tapped outside the in-product help bubble.</description>
 </action>
 
-<action
-    name="InProductHelp.ShouldTriggerHelpUI.IPH_SearchExtensionSideloadFeature">
+<action name="InProductHelp.ShouldTriggerHelpUI.IPH_SearchPromotionFeature">
   <owner>qlucyk@chromium.org</owner>
   <owner>iclelland@chromium.org</owner>
   <description>

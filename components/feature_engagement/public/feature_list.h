@@ -586,8 +586,8 @@ DEFINE_VARIATION_PARAM(kIPHResumptionRailFeature, "IPH_ResumptionRail");
 #endif  // !BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_WIN)
-DEFINE_VARIATION_PARAM(kIPHSearchExtensionSideloadFeature,
-                       "IPH_SearchExtensionSideloadFeature");
+DEFINE_VARIATION_PARAM(kIPHSearchPromotionFeature,
+                       "IPH_SearchPromotionFeature");
 #endif  // BUILDFLAG(IS_WIN)
 
 // Defines the array of which features should be listed in the chrome://flags
@@ -886,7 +886,7 @@ inline constexpr flags_ui::FeatureEntry::FeatureVariation
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_WIN)
-        VARIATION_ENTRY(kIPHSearchExtensionSideloadFeature),
+        VARIATION_ENTRY(kIPHSearchPromotionFeature),
 #endif  // BUILDFLAG(IS_WIN)
 
         // clang-format on

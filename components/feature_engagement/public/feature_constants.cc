@@ -1026,18 +1026,18 @@ BASE_FEATURE(kIPHResumptionRailFeature,
 #endif  // !BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_WIN)
-BASE_FEATURE(kIPHSearchExtensionSideloadFeature,
-             "IPH_SearchExtensionSideloadFeature",
+BASE_FEATURE(kIPHSearchPromotionFeature,
+             "IPH_SearchPromotionFeature",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::FeatureParam<std::string> kSideloadExtensionArm{
-    &kIPHSearchExtensionSideloadFeature, "arm", "disabled"};
-const base::FeatureParam<std::string> kSideloadExtensionEdgeStoreUrl{
-    &kIPHSearchExtensionSideloadFeature, "edge_store_url",
+constinit const base::FeatureParam<std::string> kSearchPromotionArm{
+    &kIPHSearchPromotionFeature, "arm", "disabled"};
+constinit const base::FeatureParam<std::string> kSearchPromotionStoreUrl{
+    &kIPHSearchPromotionFeature, "store_url",
     "https://microsoftedge.microsoft.com/addons/detail/google-search-for-edge/"
     "dakcooigljlhlgibgdfadgphfnoooacj"};
-const base::FeatureParam<std::string> kSideloadExtensionInstructionsUrl{
-    &kIPHSearchExtensionSideloadFeature, "instructions_url", ""};
+constinit const base::FeatureParam<std::string> kSearchPromotionInstructionsUrl{
+    &kIPHSearchPromotionFeature, "instructions_url", ""};
 #endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace feature_engagement

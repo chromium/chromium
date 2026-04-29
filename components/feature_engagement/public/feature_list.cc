@@ -361,7 +361,7 @@ const base::Feature* const kAllFeatures[] = {
 
 #if BUILDFLAG(IS_WIN)
     // keep-sorted start case=no
-    &kIPHSearchExtensionSideloadFeature,
+    &kIPHSearchPromotionFeature,
 // keep-sorted end
 #endif  // BUILDFLAG(IS_WIN)
 
