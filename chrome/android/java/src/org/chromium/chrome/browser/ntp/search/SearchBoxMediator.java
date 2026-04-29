@@ -115,9 +115,7 @@ class SearchBoxMediator implements DestroyObserver {
             return;
         }
 
-        mModel.set(
-                SearchBoxProperties.DSE_ICON_DRAWABLE,
-                newIcon.getDrawable(mContext, mContext.getResources()));
+        mModel.set(SearchBoxProperties.DSE_ICON_DRAWABLE, newIcon.getDrawable(mContext));
     }
 
     private void updateStartIcon() {

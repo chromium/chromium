@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.omnibox.status;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -104,12 +103,10 @@ public class StatusProperties {
             return mIconTransitionType;
         }
 
-        /**
-         * @return The {@link Drawable} for this StatusIconResource.
-         */
-        public @Nullable Drawable getDrawable(Context context, Resources resources) {
+        /** Returns a {@link Drawable} for this StatusIconResource. */
+        public @Nullable Drawable getDrawable(Context context) {
             if (mBitmap != null) {
-                Drawable drawable = new BitmapDrawable(resources, mBitmap);
+                Drawable drawable = new BitmapDrawable(context.getResources(), mBitmap);
                 if (mTint != 0) {
                     DrawableCompat.setTintList(
                             drawable, AppCompatResources.getColorStateList(context, mTint));
@@ -210,10 +207,9 @@ public class StatusProperties {
             return mContentDescriptionRes;
         }
 
-        /** Returns a {@link Drawable} for this StatusIconResource. */
         @Override
-        public @Nullable Drawable getDrawable(Context context, Resources resources) {
-            Drawable icon = super.getDrawable(context, resources);
+        public @Nullable Drawable getDrawable(Context context) {
+            Drawable icon = super.getDrawable(context);
             if (icon == null) {
                 return null;
             }
@@ -223,7 +219,7 @@ public class StatusProperties {
             Canvas canvas = new Canvas(bitmap);
             drawCircleBackground(canvas, context);
             drawCenteredIcon(context, canvas, icon);
-            return new BitmapDrawable(resources, bitmap);
+            return new BitmapDrawable(context.getResources(), bitmap);
         }
 
         /** Draws the provided icon at INNER_ICON_DP on the canvas. */

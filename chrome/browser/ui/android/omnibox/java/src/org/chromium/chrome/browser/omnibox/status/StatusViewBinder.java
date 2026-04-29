@@ -59,7 +59,7 @@ class StatusViewBinder implements ViewBinder<PropertyModel, StatusView, Property
                 return;
             }
             view.setStatusIconResources(
-                    res.getDrawable(view.getContext(), view.getResources()),
+                    res.getDrawable(view.getContext()),
                     res.getTransitionType(),
                     res.getAnimationFinishedCallback());
         } else if (StatusProperties.USE_WIDE_STATUS_ICON.equals(propertyKey)) {
