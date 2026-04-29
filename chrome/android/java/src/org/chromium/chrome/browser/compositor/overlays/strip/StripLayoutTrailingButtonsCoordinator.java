@@ -13,6 +13,7 @@ import android.view.View;
 import androidx.annotation.ColorInt;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -34,6 +35,7 @@ import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 import org.chromium.chrome.browser.layouts.components.VirtualView;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskTracker;
 import org.chromium.chrome.browser.ui.side_panel.AndroidSidePanelEnabledFn;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.prefs.PrefChangeRegistrar;
@@ -100,6 +102,7 @@ public class StripLayoutTrailingButtonsCoordinator {
     private final Runnable mGlicClickHandler;
     private final @Nullable GlicKeyedService mGlicKeyedService;
     private final @Nullable GlobalShowHideObserver mGlicUiObserver;
+    private final @Nullable ChromeAndroidTaskTracker mTaskTracker;
 
     // Lifecycle & Caching Objects
     private @Nullable Profile mProfile;
@@ -135,7 +138,8 @@ public class StripLayoutTrailingButtonsCoordinator {
      * @param isAppInDesktopWindow Whether the app is in a desktop window.
      * @param isTopResumedActivity Whether the app is the top resumed activity.
      * @param glicKeyedService The {@link GlicKeyedService} for observing Glic UI state.
-     * @param observer The {@link StripLayoutTrailingButtonsObserver} for layout changes.
+     * @param taskTracker The {@link ChromeAndroidTaskTracker} for tracking tasks.
+     * @param observer The {@link StripLayoutTrailingButtonsObserver} for layout state changes.
      */
     public StripLayoutTrailingButtonsCoordinator(
             Context context,
@@ -150,6 +154,7 @@ public class StripLayoutTrailingButtonsCoordinator {
             boolean isAppInDesktopWindow,
             boolean isTopResumedActivity,
             @Nullable GlicKeyedService glicKeyedService,
+            @Nullable ChromeAndroidTaskTracker taskTracker,
             StripLayoutTrailingButtonsObserver observer) {
         mContext = context;
         mUpdateHost = updateHost;
@@ -158,19 +163,13 @@ public class StripLayoutTrailingButtonsCoordinator {
         mDensity = density;
         mStripEndPadding = stripEndPadding;
         mGlicKeyedService = glicKeyedService;
+        mTaskTracker = taskTracker;
         mObserver = observer;
         mWindowAndroid = windowAndroid;
         mToolbarControlContainer = toolbarControlContainer;
 
         if (mGlicKeyedService != null) {
-            mGlicUiObserver =
-                    isOpened -> {
-                        mIsGlicUiVisible = isOpened;
-                        if (mGlicButton != null) {
-                            mGlicButton.setPressed(isOpened);
-                            mRenderHost.requestRender();
-                        }
-                    };
+            mGlicUiObserver = this::updateIsPanelOpen;
             mGlicKeyedService.addGlobalShowHideObserver(mGlicUiObserver);
         } else {
             mGlicUiObserver = null;
@@ -299,6 +298,23 @@ public class StripLayoutTrailingButtonsCoordinator {
                 GlicPrefNames.GLIC_PINNED_TO_TABSTRIP, this::onGlicPrefChanged);
 
         onGlicPrefChanged();
+        updateIsPanelOpen();
+    }
+
+    private void updateIsPanelOpen() {
+        if (mProfile == null || mGlicKeyedService == null || mTaskTracker == null) return;
+        Activity activity = ContextUtils.activityFromContext(mContext);
+        if (activity == null) return;
+        var task = mTaskTracker.get(activity.getTaskId());
+        if (task == null) return;
+        long browserWindowPtr = task.getOrCreateNativeBrowserWindowPtr(mProfile);
+        boolean isOpened = mGlicKeyedService.isPanelShowingForBrowser(browserWindowPtr);
+
+        mIsGlicUiVisible = isOpened;
+        if (mGlicButton != null) {
+            mGlicButton.setPressed(isOpened);
+            mRenderHost.requestRender();
+        }
     }
 
     private void onGlicPrefChanged() {

@@ -28,7 +28,7 @@ public interface GlicKeyedService {
     /** Observer for global show/hide events. */
     interface GlobalShowHideObserver {
         /** Called when any Glic instance opens or closes. */
-        void onGlobalShowHide(boolean isOpened);
+        void onGlobalShowHide();
     }
 
     /** Adds an observer for global show/hide events. */

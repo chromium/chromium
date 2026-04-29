@@ -361,12 +361,13 @@ public class GlicToolbarButtonControllerTest {
 
         controller.get(mTab); // Initialize observations
 
-        controller.onGlobalShowHide(true);
+        controller.onGlobalShowHide();
 
         ButtonData buttonData = controller.get(mTab);
         Assert.assertTrue(buttonData.getButtonSpec().isChecked());
 
-        controller.onGlobalShowHide(false);
+        when(mGlicKeyedService.isPanelShowingForBrowser(123L)).thenReturn(false);
+        controller.onGlobalShowHide();
         buttonData = controller.get(mTab);
         Assert.assertFalse(buttonData.getButtonSpec().isChecked());
     }

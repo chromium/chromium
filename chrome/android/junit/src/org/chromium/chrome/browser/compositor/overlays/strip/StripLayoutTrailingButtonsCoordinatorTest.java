@@ -10,6 +10,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -45,6 +46,8 @@ import org.chromium.chrome.browser.glic.GlicKeyedService;
 import org.chromium.chrome.browser.glic.GlicKeyedService.GlobalShowHideObserver;
 import org.chromium.chrome.browser.glic.GlicPrefNames;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskTracker;
 import org.chromium.components.prefs.PrefChangeRegistrar;
 import org.chromium.components.prefs.PrefChangeRegistrarJni;
 import org.chromium.components.prefs.PrefService;
@@ -71,12 +74,15 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
     @Mock private UserPrefs.Natives mUserPrefsJniMock;
     @Mock private PrefChangeRegistrar.Natives mPrefChangeRegistrarJniMock;
     @Mock private PrefService mPrefService;
+    @Mock private StripLayoutTrailingButtonsObserver mObserver;
+    @Mock private ChromeAndroidTaskTracker mTaskTracker;
+    @Mock private ChromeAndroidTask mTask;
 
     private Activity mActivity;
     private StripLayoutTrailingButtonsCoordinator mCoordinator;
     private TintedCompositorTextButton mGlicButton;
     private TintedCompositorButton mGlicDismissButton;
-    @Mock private StripLayoutTrailingButtonsObserver mObserver;
+    private final long mBwiPtr = 123L;
 
     @Before
     public void setUp() {
@@ -87,6 +93,15 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
 
         mActivity = Robolectric.buildActivity(TestActivity.class).setup().get();
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
+
+        when(mTaskTracker.get(anyInt())).thenReturn(mTask);
+        when(mTask.getOrCreateNativeBrowserWindowPtr(any())).thenReturn(mBwiPtr);
+
+        UserPrefsJni.setInstanceForTesting(mUserPrefsJniMock);
+        when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefService);
+
+        PrefChangeRegistrarJni.setInstanceForTesting(mPrefChangeRegistrarJniMock);
+        when(mPrefChangeRegistrarJniMock.init(any(), any())).thenReturn(1L);
 
         mCoordinator =
                 new StripLayoutTrailingButtonsCoordinator(
@@ -102,6 +117,7 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
                         /* isAppInDesktopWindow= */ false,
                         /* isTopResumedActivity= */ false,
                         mGlicKeyedService,
+                        mTaskTracker,
                         mObserver);
         mCoordinator.onProfileAvailable(mProfile);
         mCoordinator.setLayerTitleCache(mLayerTitleCache);
@@ -187,7 +203,8 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
         assertFalse("Glic button should not be pressed initially.", mGlicButton.isPressed());
 
         // Simulate Glic UI opening event.
-        observerCaptor.getValue().onGlobalShowHide(true);
+        when(mGlicKeyedService.isPanelShowingForBrowser(mBwiPtr)).thenReturn(true);
+        observerCaptor.getValue().onGlobalShowHide();
 
         // Verify button is in pressed state.
         assertTrue(
@@ -195,7 +212,8 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
                 mGlicButton.isPressed());
 
         // Simulate Glic UI hiding event.
-        observerCaptor.getValue().onGlobalShowHide(false);
+        when(mGlicKeyedService.isPanelShowingForBrowser(mBwiPtr)).thenReturn(false);
+        observerCaptor.getValue().onGlobalShowHide();
 
         // Verify button returns to non-pressed state.
         assertFalse(

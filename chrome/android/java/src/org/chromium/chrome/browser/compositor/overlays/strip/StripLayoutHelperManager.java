@@ -105,6 +105,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetC
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
 import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskTrackerFactory;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.side_panel.AndroidSidePanelEnabledFn;
@@ -606,6 +607,7 @@ public class StripLayoutHelperManager
                         isAppInDesktopWindow(),
                         mIsTopResumedActivity,
                         glicKeyedService,
+                        ChromeAndroidTaskTrackerFactory.getInstance(),
                         this::updateButtonMargins);
 
         if (!IncognitoUtils.shouldOpenIncognitoAsWindow()) {

@@ -83,9 +83,9 @@ public class GlicKeyedServiceImpl implements GlicKeyedService {
     }
 
     @CalledByNative
-    private void onGlobalShowHide(boolean isOpened) {
+    private void onGlobalShowHide() {
         for (GlobalShowHideObserver observer : mObservers) {
-            observer.onGlobalShowHide(isOpened);
+            observer.onGlobalShowHide();
         }
     }
 

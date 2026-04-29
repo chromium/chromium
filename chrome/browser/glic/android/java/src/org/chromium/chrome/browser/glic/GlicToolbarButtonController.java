@@ -580,14 +580,7 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider
     }
 
     @Override
-    public void onGlobalShowHide(boolean isOpened) {
-        if (!isOpened) {
-            if (mIsPanelOpen) {
-                mIsPanelOpen = false;
-                notifyObservers(true);
-            }
-            return;
-        }
+    public void onGlobalShowHide() {
         updateIsPanelOpen();
     }
 }
