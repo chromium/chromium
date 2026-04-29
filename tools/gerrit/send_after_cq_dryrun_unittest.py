@@ -69,7 +69,11 @@ class TestReviewMonitor(unittest.TestCase):
                 'builder': {
                     'builder': 'bot1'
                 },
-                'status': 'FAILURE'
+                'status': 'FAILURE',
+                'tags': [{
+                    'key': 'user_agent',
+                    'value': 'cq'
+                }]
             },
             {
                 'builder': {
@@ -132,7 +136,11 @@ class TestReviewMonitor(unittest.TestCase):
                 'builder': {
                     'builder': 'bot1'
                 },
-                'status': 'FAILURE'
+                'status': 'FAILURE',
+                'tags': [{
+                    'key': 'user_agent',
+                    'value': 'cq'
+                }]
             }],
             [{
                 'builder': {
@@ -154,19 +162,21 @@ class TestReviewMonitor(unittest.TestCase):
         self.monitor.set_ready.assert_called_once()
 
 
+    @patch('json.load')
     @patch('send_after_cq_dryrun.run_command')
-    def test_get_all_try_results(self, mock_run_command):
+    def test_get_all_try_results(self, mock_run_command, mock_json_load):
         import json
         # Mock Gerrit response for ALL_REVISIONS
-        gerrit_resp = json.dumps(
-            {"revisions": {
+        mock_json_load.return_value = {
+            "revisions": {
                 "rev1": {
                     "_number": 1
                 },
                 "rev2": {
                     "_number": 2
                 }
-            }})
+            }
+        }
 
         # Mock git cl try-results responses
         ps1_resp = json.dumps([{
@@ -186,7 +196,7 @@ class TestReviewMonitor(unittest.TestCase):
 
         # side_effect returns values in sequence for consecutive calls
         mock_run_command.side_effect = [
-            (gerrit_resp, 0),  # For Gerrit query
+            ("", 0),  # For Gerrit query
             (ps1_resp, 0),  # For PS 1 results
             (ps2_resp, 0)  # For PS 2 results
         ]
@@ -215,8 +225,11 @@ class TestReviewMonitor(unittest.TestCase):
                 'tags': [{
                     'key':
                     'buildset',
-                    'value':
-                    'patch/gerrit/chromium-review.googlesource.com/7793289/1'
+                    'value': ('patch/gerrit/chromium-review.googlesource.com/'
+                              '7793289/1')
+                }, {
+                    'key': 'user_agent',
+                    'value': 'cq'
                 }]
             },
             # Builder A on PS2 (Success)
@@ -231,8 +244,11 @@ class TestReviewMonitor(unittest.TestCase):
                 'tags': [{
                     'key':
                     'buildset',
-                    'value':
-                    'patch/gerrit/chromium-review.googlesource.com/7793289/2'
+                    'value': ('patch/gerrit/chromium-review.googlesource.com/'
+                              '7793289/2')
+                }, {
+                    'key': 'user_agent',
+                    'value': 'cq'
                 }]
             },
             # Builder B on PS1 (Failed)
@@ -247,8 +263,11 @@ class TestReviewMonitor(unittest.TestCase):
                 'tags': [{
                     'key':
                     'buildset',
-                    'value':
-                    'patch/gerrit/chromium-review.googlesource.com/7793289/1'
+                    'value': ('patch/gerrit/chromium-review.googlesource.com/'
+                              '7793289/1')
+                }, {
+                    'key': 'user_agent',
+                    'value': 'cq'
                 }]
             },
         ]
@@ -267,6 +286,79 @@ class TestReviewMonitor(unittest.TestCase):
         self.assertIn("Success: 1/2",
                       res.stats)  # builder_A success, builder_B failed
         self.assertIn("Failed: 1", res.stats)
+
+    def test_parse_results_ignore_optional_failures(self):
+        results = [
+            # Builder A on PS1 (Failed) - CQ bot
+            {
+                'builder': {
+                    'builder': 'builder_A'
+                },
+                'status':
+                'FAILURE',
+                'createTime':
+                '2026-02-13T10:00:00Z',
+                'tags': [{
+                    'key':
+                    'buildset',
+                    'value':
+                    'patch/gerrit/chromium-review.googlesource.com/7793289/1'
+                }, {
+                    'key': 'user_agent',
+                    'value': 'cq'
+                }]
+            },
+            # Builder A on PS2 (Success) - CQ bot
+            {
+                'builder': {
+                    'builder': 'builder_A'
+                },
+                'status':
+                'SUCCESS',
+                'createTime':
+                '2026-02-13T11:00:00Z',
+                'tags': [{
+                    'key':
+                    'buildset',
+                    'value':
+                    'patch/gerrit/chromium-review.googlesource.com/7793289/2'
+                }, {
+                    'key': 'user_agent',
+                    'value': 'cq'
+                }]
+            },
+            # Builder B on PS1 (Failed) - Optional bot
+            {
+                'builder': {
+                    'builder': 'builder_B'
+                },
+                'status':
+                'FAILURE',
+                'createTime':
+                '2026-02-13T10:30:00Z',
+                'tags': [{
+                    'key':
+                    'buildset',
+                    'value':
+                    'patch/gerrit/chromium-review.googlesource.com/7793289/1'
+                }, {
+                    'key': 'user_agent',
+                    'value': 'gerrit'
+                }]
+            },
+        ]
+
+        self.monitor.patchset = '2'
+
+        res = self.monitor.parse_results(results)
+
+        self.assertTrue(res.finished)
+        self.assertTrue(
+            res.success)  # Because Builder B is optional and ignored
+        self.assertEqual(len(res.failed_builders), 0)
+        self.assertIn("Success: 1/2", res.stats)
+        self.assertIn("Failed: 0", res.stats)
+        self.assertIn("Ignored: 1", res.stats)
 
 
 if __name__ == '__main__':

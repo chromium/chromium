@@ -4,6 +4,7 @@
 # found in the LICENSE file.
 import json
 import subprocess
+import tempfile
 import time
 import sys
 import os
@@ -123,28 +124,33 @@ class ReviewMonitor:
 
     def get_all_try_results(self):
         """Fetches try results for all patchsets and aggregates them."""
-        cmd = [
-            'vpython3', self.gerrit_client, 'rawapi', f'--host={self.host}',
-            '--method', 'GET', '--path',
-            f'/changes/{self.issue_id}/?o=ALL_REVISIONS'
-        ]
-        out, code = run_command(cmd)
-        if code != 0:
-            print(f"❌ Failed to query Gerrit for revisions: {out}")
-            return self.get_try_results()  # Fallback to current patchset
-
-        # Strip anti-XSSI prefix if present
-        if out.startswith(")]}'\n"):
-            out = out[len(")]}'\n"):]
+        with tempfile.NamedTemporaryFile(delete=False) as f:
+            temp_path = f.name
 
         try:
-            data = json.loads(out)
+            cmd = [
+                'vpython3', self.gerrit_client, 'rawapi',
+                f'--host={self.host}', '--method', 'GET', '--path',
+                f'/changes/{self.issue_id}/?o=ALL_REVISIONS', '--json_file',
+                temp_path, '--accept_status', '200'
+            ]
+            out, code = run_command(cmd)
+            if code != 0:
+                print(f"❌ Failed to query Gerrit for revisions: {out}")
+                return self.get_try_results()
+
+            with open(temp_path, 'r') as f:
+                data = json.load(f)
+
             revisions = data.get('revisions', {})
             patchsets = sorted(
                 [int(r.get('_number')) for r in revisions.values()])
         except Exception as e:
             print(f"❌ Failed to parse Gerrit response: {e}")
-            return self.get_try_results()  # Fallback
+            return self.get_try_results()
+        finally:
+            if os.path.exists(temp_path):
+                os.remove(temp_path)
 
         all_results = []
         for ps in patchsets:
@@ -216,20 +222,37 @@ class ReviewMonitor:
         running = []
         failed = []
 
+        ignored = []
         for name, (job, ps) in latest_jobs.items():
             status = job.get('status')
-            # NOTE: Optional builders triggered manually via Gerrit typically have
-            # 'user_agent': 'gerrit' and lack 'cq_' tags. Currently, they are not
-            # distinguished and will block the CL if they fail.
+
+            # Identify if it is a CQ job
+            tags = job.get('tags', [])
+            is_cq = False
+            is_experimental = False
+            for tag in tags:
+                key = tag.get('key', '')
+                val = tag.get('value', '')
+                if key == 'user_agent' and val == 'cq':
+                    is_cq = True
+                elif key.startswith('cq_'):
+                    is_cq = True
+                    if key == 'cq_experimental' and val == 'true':
+                        is_experimental = True
+
             if status == 'SUCCESS':
                 success.append(name)
             elif status in ['STARTED', 'SCHEDULED', 'PENDING']:
                 running.append(name)
             else:
-                failed.append(f"{name} (PS {ps})")
+                if is_cq and not is_experimental:
+                    failed.append(f"{name} (PS {ps})")
+                else:
+                    ignored.append(f"{name} (PS {ps})")
 
         stats = (f"Success: {len(success)}/{total} | "
-                 f"Pending: {len(running)} | Failed: {len(failed)}")
+                 f"Pending: {len(running)} | Failed: {len(failed)} | "
+                 f"Ignored: {len(ignored)}")
 
         if running:
             return ParseResult(finished=False,
@@ -306,7 +329,6 @@ class ReviewMonitor:
                                  ignorable_msgs=["already ready for review"])
 
     def get_cq_label(self):
-        import tempfile
         with tempfile.NamedTemporaryFile(delete=False) as f:
             temp_path = f.name
 
