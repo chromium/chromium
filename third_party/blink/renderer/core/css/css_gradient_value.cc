@@ -49,6 +49,8 @@
 #include "third_party/blink/renderer/core/css/resolver/style_builder_converter.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/dom/text_link_colors.h"
+#include "third_party/blink/renderer/platform/geometry/calculation_expression_node.h"
+#include "third_party/blink/renderer/platform/geometry/evaluation_input.h"
 #include "third_party/blink/renderer/platform/geometry/skia_geometry_utils.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/gradient.h"
@@ -983,6 +985,20 @@ static const CSSPrimitiveValue* ResolveAngle(
       double percentage = value->ComputePercentage(conversion_data);
       return CSSNumericLiteralValue::Create(
           percentage, CSSPrimitiveValue::UnitType::kPercentage);
+    }
+    if (const auto* math_function = DynamicTo<CSSMathFunctionValue>(value);
+        math_function &&
+        math_function->ExpressionNode()->Category() == kCalcPercentAngle) {
+      // Resolve the calc() mixing <angle> and <percentage> by lowering to a
+      // CalculationExpressionNode and evaluating it with 360deg as the 100%
+      // basis, mirroring how <length-percentage> calc() is resolved against a
+      // container length.
+      const CalculationExpressionNode* calc_expr =
+          math_function->ExpressionNode()->ToCalculationExpression(
+              conversion_data);
+      float angle = calc_expr->Evaluate(360.0f, /*input=*/{});
+      return CSSNumericLiteralValue::Create(
+          angle, CSSPrimitiveValue::UnitType::kDegrees);
     }
     double angle = value->ComputeDegrees(conversion_data);
     return CSSNumericLiteralValue::Create(

@@ -92,6 +92,11 @@ enum CalculationResultCategory {
   kCalcFrequency,
   kCalcResolution,
   kCalcIdent,
+  // kCalcPercentAngle is used for calc() expressions that mix <angle> and
+  // <percentage>. It is analogous to kCalcLengthFunction (for length+percent
+  // mixes), but the percentage resolves against a context-supplied angle
+  // (e.g. 360deg for conic-gradient color stops).
+  kCalcPercentAngle,
   kCalcOther,
 };
 using CalculationResultCategorySet =

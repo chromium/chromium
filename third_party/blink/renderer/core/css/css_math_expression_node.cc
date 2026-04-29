@@ -265,6 +265,8 @@ CSSMathType::CSSMathType(CalculationResultCategory category) {
   }
   if (category == kCalcLengthFunction) {
     percentage_hint_ = kLength;
+  } else if (category == kCalcPercentAngle) {
+    percentage_hint_ = kAngle;
   }
 }
 
@@ -321,6 +323,7 @@ CSSMathType::BaseType CSSMathType::CalculationCategoryToBaseType(
     case kCalcPercent:
       return kPercent;
     case kCalcAngle:
+    case kCalcPercentAngle:
       return kAngle;
     case kCalcTime:
       return kTime;
@@ -411,6 +414,8 @@ CalculationResultCategory CSSMathType::Category() const {
   if (percentage_hint_) {
     if (base_type_powers_[kLength]) {
       return kCalcLengthFunction;
+    } else if (base_type_powers_[kAngle]) {
+      return kCalcPercentAngle;
     } else {
       return kCalcOther;
     }
@@ -1380,6 +1385,7 @@ double CSSMathExpressionNumericLiteral::ComputeDouble(
     case kCalcFrequency:
       return value_->ComputeInCanonicalUnit();
     case kCalcLengthFunction:
+    case kCalcPercentAngle:
     case kCalcIntermediate:
     case kCalcOther:
     case kCalcIdent:
@@ -1398,6 +1404,7 @@ double CSSMathExpressionNumericLiteral::ComputeLengthPx(
     case kCalcAngle:
     case kCalcFrequency:
     case kCalcLengthFunction:
+    case kCalcPercentAngle:
     case kCalcIntermediate:
     case kCalcTime:
     case kCalcResolution:
@@ -1455,37 +1462,48 @@ static constexpr std::array<std::array<CalculationResultCategory, kCalcOther>,
     kAddSubtractResult = {
         /* CalcNumber */
         {{kCalcNumber, kCalcOther, kCalcOther, kCalcOther, kCalcOther,
-          kCalcOther, kCalcOther, kCalcOther, kCalcOther, kCalcOther},
+          kCalcOther, kCalcOther, kCalcOther, kCalcOther, kCalcOther,
+          kCalcOther},
          /* CalcLength */
          {kCalcOther, kCalcLength, kCalcLengthFunction, kCalcLengthFunction,
           kCalcOther, kCalcOther, kCalcOther, kCalcOther, kCalcOther,
-          kCalcOther},
+          kCalcOther, kCalcOther},
          /* CalcPercent */
          {kCalcOther, kCalcLengthFunction, kCalcPercent, kCalcLengthFunction,
-          kCalcOther, kCalcOther, kCalcOther, kCalcOther, kCalcOther,
-          kCalcOther},
+          kCalcOther, kCalcPercentAngle, kCalcOther, kCalcOther, kCalcOther,
+          kCalcOther, kCalcPercentAngle},
          /* CalcLengthFunction */
          {kCalcOther, kCalcLengthFunction, kCalcLengthFunction,
           kCalcLengthFunction, kCalcOther, kCalcOther, kCalcOther, kCalcOther,
-          kCalcOther, kCalcOther},
+          kCalcOther, kCalcOther, kCalcOther},
          /* CalcIntermediate */
          {kCalcOther, kCalcOther, kCalcOther, kCalcOther, kCalcOther,
-          kCalcOther, kCalcOther, kCalcOther, kCalcOther, kCalcOther},
+          kCalcOther, kCalcOther, kCalcOther, kCalcOther, kCalcOther,
+          kCalcOther},
          /* CalcAngle */
-         {kCalcOther, kCalcOther, kCalcOther, kCalcOther, kCalcOther,
-          kCalcAngle, kCalcOther, kCalcOther, kCalcOther, kCalcOther},
+         {kCalcOther, kCalcOther, kCalcPercentAngle, kCalcOther, kCalcOther,
+          kCalcAngle, kCalcOther, kCalcOther, kCalcOther, kCalcOther,
+          kCalcPercentAngle},
          /* CalcTime */
          {kCalcOther, kCalcOther, kCalcOther, kCalcOther, kCalcOther,
-          kCalcOther, kCalcTime, kCalcOther, kCalcOther, kCalcOther},
+          kCalcOther, kCalcTime, kCalcOther, kCalcOther, kCalcOther,
+          kCalcOther},
          /* CalcFrequency */
          {kCalcOther, kCalcOther, kCalcOther, kCalcOther, kCalcOther,
-          kCalcOther, kCalcOther, kCalcFrequency, kCalcOther, kCalcOther},
+          kCalcOther, kCalcOther, kCalcFrequency, kCalcOther, kCalcOther,
+          kCalcOther},
          /* CalcResolution */
          {kCalcOther, kCalcOther, kCalcOther, kCalcOther, kCalcOther,
-          kCalcOther, kCalcOther, kCalcOther, kCalcResolution, kCalcOther},
+          kCalcOther, kCalcOther, kCalcOther, kCalcResolution, kCalcOther,
+          kCalcOther},
          /* CalcIdent */
          {kCalcOther, kCalcOther, kCalcOther, kCalcOther, kCalcOther,
-          kCalcOther, kCalcOther, kCalcOther, kCalcOther, kCalcOther}}};
+          kCalcOther, kCalcOther, kCalcOther, kCalcOther, kCalcOther,
+          kCalcOther},
+         /* CalcPercentAngle */
+         {kCalcOther, kCalcOther, kCalcPercentAngle, kCalcOther, kCalcOther,
+          kCalcPercentAngle, kCalcOther, kCalcOther, kCalcOther, kCalcOther,
+          kCalcPercentAngle}}};
 
 static CalculationResultCategory DetermineCategory(
     const CSSMathExpressionNode& left_side,
@@ -3562,6 +3580,7 @@ CSSPrimitiveValue::UnitType CSSMathExpressionOperation::ResolvedUnitType()
           NOTREACHED();
       }
     case kCalcLengthFunction:
+    case kCalcPercentAngle:
     case kCalcIntermediate:
     case kCalcOther:
       return CSSPrimitiveValue::UnitType::kUnknown;

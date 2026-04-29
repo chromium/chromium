@@ -3024,8 +3024,8 @@ static CSSPrimitiveValue* ConsumeGradientAngleOrPercent(
   MathFunctionParser math_parser(stream, context, local_context, value_range);
   if (const CSSMathFunctionValue* calculation = math_parser.Value()) {
     CalculationResultCategory category = calculation->Category();
-    // TODO(fs): Add and support kCalcPercentAngle?
-    if (category == kCalcAngle || category == kCalcPercent) {
+    if (category == kCalcAngle || category == kCalcPercent ||
+        category == kCalcPercentAngle) {
       return math_parser.ConsumeValue();
     }
   }

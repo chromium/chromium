@@ -852,6 +852,45 @@ TEST(CSSMathExpressionNode, CSSMathTypeComplex) {
   EXPECT_EQ(((length + length) * (number + number)).Category(), kCalcLength);
 }
 
+TEST(CSSMathExpressionNode, CSSMathTypePercentAngle) {
+  auto check_type_sum = [](const CSSMathType& type1, const CSSMathType& type2,
+                           bool is_valid, CalculationResultCategory type) {
+    CSSMathType sum_type = type1 + type2;
+    CSSMathType reversed_sum_type = type2 + type1;
+    EXPECT_EQ(sum_type.IsValid(), is_valid);
+    EXPECT_EQ(sum_type.Category(), type);
+    EXPECT_EQ(reversed_sum_type.IsValid(), is_valid);
+    EXPECT_EQ(reversed_sum_type.Category(), type);
+  };
+
+  CSSMathType number(kCalcNumber);
+  CSSMathType length(kCalcLength);
+  CSSMathType percent(kCalcPercent);
+  CSSMathType angle(kCalcAngle);
+  CSSMathType percent_angle(kCalcPercentAngle);
+
+  // Mixing <percentage> with <angle> produces kCalcPercentAngle.
+  check_type_sum(percent, angle, true, kCalcPercentAngle);
+
+  // Combining kCalcPercentAngle with itself or its constituent types stays
+  // in the same category.
+  check_type_sum(percent_angle, percent, true, kCalcPercentAngle);
+  check_type_sum(percent_angle, angle, true, kCalcPercentAngle);
+  check_type_sum(percent_angle, percent_angle, true, kCalcPercentAngle);
+
+  // Adding kCalcPercentAngle to unrelated types is invalid.
+  check_type_sum(percent_angle, length, false, kCalcOther);
+  check_type_sum(percent_angle, number, false, kCalcOther);
+
+  // Scaling by a number preserves the category; dividing out the angle
+  // collapses to a plain number, while multiplying by an angle is
+  // intermediate.
+  EXPECT_EQ((percent_angle * number).Category(), kCalcPercentAngle);
+  EXPECT_EQ((percent_angle / number).Category(), kCalcPercentAngle);
+  EXPECT_EQ((percent_angle / angle).Category(), kCalcNumber);
+  EXPECT_EQ((percent_angle * angle).Category(), kCalcIntermediate);
+}
+
 TEST(CSSMathExpressionNode, InvalidRandomFunction) {
   const std::string test_cases[] = {
       "random(1px)",
