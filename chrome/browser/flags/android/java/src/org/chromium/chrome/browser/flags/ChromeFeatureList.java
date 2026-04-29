@@ -734,7 +734,10 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sAccountForSuppressedKeyboardInsets =
             newCachedFlag(ACCOUNT_FOR_SUPPRESSED_KEYBOARD_INSETS, /* defaultValue= */ true);
     public static final CachedFlag sAndroidAnimatedProgressBarInBrowser =
-            newCachedFlag(ANDROID_ANIMATED_PROGRESS_BAR_IN_BROWSER, true);
+            newCachedFlag(
+                    ANDROID_ANIMATED_PROGRESS_BAR_IN_BROWSER,
+                    /* defaultValue= */ false,
+                    /* defaultValueInTests= */ true);
     public static final CachedFlag sAndroidApb144Patch1 = newCachedFlag(APB144_PATCH1, true);
     public static final CachedFlag sAndroidApb144Patch2 = newCachedFlag(APB144_PATCH2, true);
     public static final CachedFlag sAndroidApb144Patch3 = newCachedFlag(APB144_PATCH3, true);
