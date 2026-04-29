@@ -14,9 +14,9 @@
 #include "ash/wm/window_properties.h"
 #include "ash/wm/window_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/run_until.h"
 #include "ui/aura/client/capture_client.h"
 #include "ui/aura/client/focus_client.h"
 #include "ui/aura/test/test_windows.h"
@@ -794,9 +794,7 @@ TEST_F(ExtendedDesktopTest, OpenSystemTray) {
   // Closes the tray and again makes sure that adding/removing displays doesn't
   // break anything.
   event_generator->ClickLeftButton();
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_FALSE(IsBubbleShown());
+  ASSERT_TRUE(base::test::RunUntil([&] { return !IsBubbleShown(); }));
 
   UpdateDisplay("500x600");
   EXPECT_FALSE(IsBubbleShown());
