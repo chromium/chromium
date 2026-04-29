@@ -63,6 +63,7 @@ import org.chromium.ui.test.util.TestViewAndroidDelegate;
 @Config(shadows = {ShadowToast.class})
 @DisableFeatures({
     ContentFeatures.ANDROID_PK_AUTOCORRECT_UNDERLINE,
+    ContentFeatures.ANDROID_PK_AUTOCORRECT_UNDERLINE_V2,
     ContentFeatureList.ANDROID_BLOCK_GRAMMAR_SUGGESTION_SPAN_IN_COMPOSITION_MODE,
     ContentFeatureList.ANDROID_BLOCK_MISSPELLING_SUGGESTION_SPAN_IN_COMPOSITION_MODE
 })
@@ -386,6 +387,14 @@ public class ImeAdapterImplUnitTest {
     @Test
     @EnableFeatures(ContentFeatures.ANDROID_PK_AUTOCORRECT_UNDERLINE)
     public void testAutocorrectManagerInitialisationWhenFlagEnabled() {
+        ImeAdapterImpl adapter = new ImeAdapterImpl(mWebContentsImpl);
+
+        assertNotNull(adapter.getAutocorrectManagerForTesting());
+    }
+
+    @Test
+    @EnableFeatures(ContentFeatures.ANDROID_PK_AUTOCORRECT_UNDERLINE_V2)
+    public void testAutocorrectManagerInitialisationWhenV2FlagEnabled() {
         ImeAdapterImpl adapter = new ImeAdapterImpl(mWebContentsImpl);
 
         assertNotNull(adapter.getAutocorrectManagerForTesting());

@@ -346,7 +346,9 @@ public class ImeAdapterImpl
         sNativeHelperMap.put(mNativeImeAdapterAndroid, new WeakReference<>(this));
         ImeAdapterImplJni.get().initialize(mNativeImeAdapterAndroid);
         WindowEventObserverManager.from(mWebContents).addObserver(this);
-        if (ContentFeatureMap.isEnabled(ContentFeatures.ANDROID_PK_AUTOCORRECT_UNDERLINE)) {
+        if (ContentFeatureMap.isEnabled(ContentFeatures.ANDROID_PK_AUTOCORRECT_UNDERLINE)
+                || ContentFeatureMap.isEnabled(
+                        ContentFeatures.ANDROID_PK_AUTOCORRECT_UNDERLINE_V2)) {
             mAutocorrectManager = new AutocorrectManager(this);
         }
     }

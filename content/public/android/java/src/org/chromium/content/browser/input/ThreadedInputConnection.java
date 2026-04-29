@@ -820,7 +820,9 @@ class ThreadedInputConnection extends BaseInputConnection implements ChromiumBas
                     "commitCorrection [%s]",
                     ImeUtils.getCorrectionInfoDebugString(correctionInfo));
         }
-        if (ContentFeatureMap.isEnabled(ContentFeatures.ANDROID_PK_AUTOCORRECT_UNDERLINE)) {
+        if (ContentFeatureMap.isEnabled(ContentFeatures.ANDROID_PK_AUTOCORRECT_UNDERLINE)
+                || ContentFeatureMap.isEnabled(
+                        ContentFeatures.ANDROID_PK_AUTOCORRECT_UNDERLINE_V2)) {
             PostTask.postTask(
                     TaskTraits.UI_DEFAULT, () -> mImeAdapter.commitCorrection(correctionInfo));
             return true;

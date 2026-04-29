@@ -7,9 +7,16 @@ package org.chromium.content.browser.input;
 import android.icu.text.BreakIterator;
 import android.view.inputmethod.CorrectionInfo;
 
+import androidx.annotation.IntDef;
+
 import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.content_public.browser.ContentFeatureMap;
+import org.chromium.content_public.common.ContentFeatures;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /**
  * A class that manages the visual presentation and state of autocorrect underline. This involves
@@ -19,9 +26,27 @@ import org.chromium.build.annotations.Nullable;
 public class AutocorrectManager {
     private static final String TAG = "AutocorrectManager";
     private static final boolean DEBUG_LOGS = false;
-    public static final int USER_ACTION_CLEAR_UNDERLINE_THRESHOLD = 5;
+
+    // In V1, the underline is applied after commitText(). That commitText() call also
+    // decrements the counter, so we start at 5 to end up with 4 remaining actions.
+    public static final int USER_ACTION_CLEAR_UNDERLINE_THRESHOLD_V1 = 5;
+
+    // In V2, the underline is applied immediately upon commitCorrection(). There is no
+    // subsequent commitText() to decrement the counter, so we start directly at 4.
+    public static final int USER_ACTION_CLEAR_UNDERLINE_THRESHOLD_V2 = 4;
+
+    @IntDef({
+        UnderlineStrategy.DEFER_UNTIL_COMMIT_TEXT,
+        UnderlineStrategy.APPLY_ON_COMMIT_CORRECTION
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    private @interface UnderlineStrategy {
+        int DEFER_UNTIL_COMMIT_TEXT = 0;
+        int APPLY_ON_COMMIT_CORRECTION = 1;
+    }
 
     private final Delegate mDelegate;
+    private final @UnderlineStrategy int mStrategy;
     private @Nullable CorrectionInfo mCorrectionInfo;
 
     // TODO: crbug.com/480717682 - Moving the cursor back into autocorrected text can trigger an
@@ -39,6 +64,10 @@ public class AutocorrectManager {
 
     public AutocorrectManager(Delegate delegate) {
         mDelegate = delegate;
+        mStrategy =
+                ContentFeatureMap.isEnabled(ContentFeatures.ANDROID_PK_AUTOCORRECT_UNDERLINE_V2)
+                        ? UnderlineStrategy.APPLY_ON_COMMIT_CORRECTION
+                        : UnderlineStrategy.DEFER_UNTIL_COMMIT_TEXT;
     }
 
     /**
@@ -60,26 +89,48 @@ public class AutocorrectManager {
             mDelegate.clearAllAutocorrectUnderlineSpans();
         }
 
-        // Only the latest correction is stored; if multiple are sent, the last one wins.
-        // This is sufficient because IMEs like GBoard trigger autocorrect by sending
-        // a commitCorrection followed immediately by commitText.
-        mCorrectionInfo = correctionInfo;
+        switch (mStrategy) {
+            case UnderlineStrategy.APPLY_ON_COMMIT_CORRECTION:
+                // V2 draws the underline immediately upon handlePendingCorrection().
+                applyUnderline(correctionInfo);
+                break;
+            case UnderlineStrategy.DEFER_UNTIL_COMMIT_TEXT:
+                // Only the latest correction is stored; if multiple are sent, the last one wins.
+                // This is sufficient because IMEs like GBoard trigger autocorrect by sending
+                // a commitCorrection followed immediately by commitText.
+                mCorrectionInfo = correctionInfo;
+                break;
+        }
     }
 
     public void maybeApplyDeferredUnderline() {
         if (DEBUG_LOGS) Log.i(TAG, "maybeApplyDeferredUnderline");
 
-        // We expect a commitText() call to come immediately after commitCorrection()
-        // from the IME (observed in Gboard, SwiftKey and Yandex). We wait for that
-        // commitText to trigger this method so we can apply the underline span to
-        // the text that was just committed.
-        if (mCorrectionInfo == null) return;
+        switch (mStrategy) {
+            case UnderlineStrategy.DEFER_UNTIL_COMMIT_TEXT:
+                // We expect a commitText() call to come immediately after commitCorrection()
+                // from the IME (observed in Gboard, SwiftKey and Yandex). We wait for that
+                // commitText to trigger this method so we can apply the underline span to
+                // the text that was just committed.
+                if (mCorrectionInfo == null) return;
 
-        int start = mCorrectionInfo.getOffset();
-        int end = start + findLengthOfTextToUnderline();
+                applyUnderline(mCorrectionInfo);
+                mCorrectionInfo = null;
+                return;
+            case UnderlineStrategy.APPLY_ON_COMMIT_CORRECTION:
+                // V2 does not defer the underline drawing.
+                return;
+        }
+    }
 
-        mCorrectionInfo = null;
-        mRemainingUserActionsBeforeClear = USER_ACTION_CLEAR_UNDERLINE_THRESHOLD;
+    private void applyUnderline(CorrectionInfo correctionInfo) {
+        int start = correctionInfo.getOffset();
+        int end = start + findLengthOfTextToUnderline(correctionInfo);
+
+        mRemainingUserActionsBeforeClear =
+                mStrategy == UnderlineStrategy.APPLY_ON_COMMIT_CORRECTION
+                        ? USER_ACTION_CLEAR_UNDERLINE_THRESHOLD_V2
+                        : USER_ACTION_CLEAR_UNDERLINE_THRESHOLD_V1;
         mDelegate.appendAutocorrectUnderlineSpan(start, end);
     }
 
@@ -97,9 +148,8 @@ public class AutocorrectManager {
      *   <li>"Hello " -> Underlines 5 chars ("Hello"), excluding the trailing space.
      * </ul>
      */
-    private int findLengthOfTextToUnderline() {
-        if (mCorrectionInfo == null) return 0;
-        CharSequence text = mCorrectionInfo.getNewText();
+    private int findLengthOfTextToUnderline(CorrectionInfo correctionInfo) {
+        CharSequence text = correctionInfo.getNewText();
         BreakIterator boundary = BreakIterator.getWordInstance();
         boundary.setText(text);
 
