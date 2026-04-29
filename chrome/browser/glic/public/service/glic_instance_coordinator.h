@@ -50,7 +50,6 @@ class GlicWidget;
 class GlicInstanceCoordinator {
  public:
   using StateObserver = PanelStateObserver;
-  using PanelStateContext = ::glic::PanelStateContext;
   GlicInstanceCoordinator(const GlicInstanceCoordinator&) = delete;
   GlicInstanceCoordinator& operator=(const GlicInstanceCoordinator&) = delete;
   GlicInstanceCoordinator() = default;

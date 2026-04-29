@@ -170,8 +170,7 @@ void GlicShareImageHandler::DidFinishNavigation(
 }
 
 void GlicShareImageHandler::PanelStateChanged(
-    const mojom::PanelState& panel_state,
-    const PanelStateContext& context) {}
+    const mojom::PanelState& panel_state) {}
 
 void GlicShareImageHandler::OnInstanceDestroyed() {
   if (!instance_change_permitted_) {

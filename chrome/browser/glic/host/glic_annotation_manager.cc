@@ -533,8 +533,7 @@ void GlicAnnotationManager::AnnotationTask::PrimaryPageChanged(
 // the `GlicAnnotationManager` is destroyed, removing all the annotation tasks
 // as well.
 void GlicAnnotationManager::AnnotationTask::PanelStateChanged(
-    const mojom::PanelState& panel_state,
-    const PanelStateContext& context) {
+    const mojom::PanelState& panel_state) {
   if (panel_state.kind != mojom::PanelStateKind::kHidden) {
     return;
   }

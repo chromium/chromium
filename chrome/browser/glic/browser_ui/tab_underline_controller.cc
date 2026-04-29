@@ -184,8 +184,7 @@ void TabUnderlineController::OnContextTabsChanged(
 }
 
 void TabUnderlineController::PanelStateChanged(
-    const glic::mojom::PanelState& panel_state,
-    const GlicInstanceCoordinator::PanelStateContext& context) {
+    const glic::mojom::PanelState& panel_state) {
   UpdateUnderlineView(
       panel_state.kind == mojom::PanelStateKind::kHidden
           ? UpdateUnderlineReason::kPanelStateChanged_PanelHidden

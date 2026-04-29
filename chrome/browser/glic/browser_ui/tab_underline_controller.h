@@ -69,9 +69,7 @@ class TabUnderlineController
       const std::vector<content::WebContents*>& pinned_contents);
 
   // GlicInstanceCoordinator::StateObserver:
-  void PanelStateChanged(
-      const glic::mojom::PanelState& panel_state,
-      const GlicInstanceCoordinator::PanelStateContext& context) override;
+  void PanelStateChanged(const glic::mojom::PanelState& panel_state) override;
 
   void OnUserInputSubmitted();
 

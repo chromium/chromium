@@ -92,8 +92,7 @@ class GlicPageHandler : public glic::mojom::PageHandler,
   void WebUiStateChanged(glic::mojom::WebUiState new_state) override;
 
   // PanelStateObserver implementation.
-  void PanelStateChanged(const glic::mojom::PanelState& panel_state,
-                         const PanelStateContext& context) override;
+  void PanelStateChanged(const glic::mojom::PanelState& panel_state) override;
 
   void UpdatePageState(mojom::PanelStateKind panelStateKind);
 

@@ -1323,9 +1323,8 @@ void GlicInstanceImpl::OnEmbedderWindowActivationChanged(bool has_focus) {
 }
 
 void GlicInstanceImpl::NotifyPanelStateChanged() {
-  state_observers_.Notify(
-      &PanelStateObserver::PanelStateChanged, GetPanelState(),
-      PanelStateContext{.attached_browser = nullptr, .glic_widget = nullptr});
+  state_observers_.Notify(&PanelStateObserver::PanelStateChanged,
+                          GetPanelState());
 }
 
 mojom::PanelState GlicInstanceImpl::GetPanelState() {

@@ -261,8 +261,7 @@ class ActiveStateCalculator : public PanelStateObserver {
 
   explicit ActiveStateCalculator(Host* host) : host_(host) {
     host_->AddPanelStateObserver(this);
-    PanelStateChanged(host_->GetPanelState(nullptr),
-                      {.attached_browser = nullptr, .glic_widget = nullptr});
+    PanelStateChanged(host_->GetPanelState(nullptr));
     // Calculate state immediately to avoid having an outdated state before
     // calc_timer_ triggers recalculation and any observers are attached.
     RecalculateAndNotify();
@@ -276,10 +275,8 @@ class ActiveStateCalculator : public PanelStateObserver {
   }
 
   // GlicInstanceCoordinator::StateObserver implementation.
-  void PanelStateChanged(const glic::mojom::PanelState& panel_state,
-                         const PanelStateContext& context) override {
+  void PanelStateChanged(const glic::mojom::PanelState& panel_state) override {
     panel_state_kind_ = panel_state.kind;
-    SetAttachedBrowser(context.attached_browser);
     PostRecalcAndNotify();
   }
 
@@ -300,56 +297,17 @@ class ActiveStateCalculator : public PanelStateObserver {
     }
   }
 
-  void AttachedBrowserActiveChanged(BrowserWindowInterface* browser) {
-    PostRecalcAndNotify();
-  }
-
-  void AttachedBrowserDidClose(BrowserWindowInterface* browser) {
-    SetAttachedBrowser(nullptr);
-    PostRecalcAndNotify();
-  }
-
-  bool SetAttachedBrowser(BrowserWindowInterface* attached_browser) {
-    if (attached_browser_ == attached_browser) {
-      return false;
-    }
-    attached_browser_subscriptions_.clear();
-    attached_browser_ = attached_browser;
-
-    // attached_browser is always null in Multi-instance, and ANDROID implies
-    // Multi-instance.
-#if !BUILDFLAG(IS_ANDROID)
-    if (attached_browser_ && !attached_browser_->IsDeleteScheduled()) {
-      attached_browser_subscriptions_.push_back(
-          attached_browser_->RegisterDidBecomeActive(base::BindRepeating(
-              &ActiveStateCalculator::AttachedBrowserActiveChanged,
-              base::Unretained(this))));
-      attached_browser_subscriptions_.push_back(
-          attached_browser_->RegisterDidBecomeInactive(base::BindRepeating(
-              &ActiveStateCalculator::AttachedBrowserActiveChanged,
-              base::Unretained(this))));
-      attached_browser_subscriptions_.push_back(
-          attached_browser_->RegisterBrowserDidClose(base::BindRepeating(
-              &ActiveStateCalculator::AttachedBrowserDidClose,
-              base::Unretained(this))));
-    }
-#endif
-    return true;
-  }
-
   bool Calculate() {
     // TODO(b:444463509): Implement better calculation.
     return panel_state_kind_ != glic::mojom::PanelStateKind::kHidden;
   }
 
   base::OneShotTimer calc_timer_;
-  std::vector<base::CallbackListSubscription> attached_browser_subscriptions_;
 
   raw_ptr<Host> host_;
   base::ObserverList<Observer> observers_;
   glic::mojom::PanelStateKind panel_state_kind_;
   bool is_active_ = false;
-  raw_ptr<BrowserWindowInterface> attached_browser_ = nullptr;
 };
 
 class BrowserIsOpenCalculator : public BrowserCollectionObserver {
@@ -1803,9 +1761,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   }
 
   // GlicInstanceCoordinator::StateObserver implementation.
-  void PanelStateChanged(
-      const glic::mojom::PanelState& panel_state,
-      const GlicInstanceCoordinator::PanelStateContext& context) override {
+  void PanelStateChanged(const glic::mojom::PanelState& panel_state) override {
     web_client_->NotifyPanelStateChange(panel_state.Clone());
   }
 
@@ -1842,10 +1798,6 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
 
   void StopMicrophone(base::OnceClosure done) override {
     web_client_->StopMicrophone(std::move(done));
-  }
-
-  void PanelStateChanged(const glic::mojom::PanelState& panel_state) override {
-    web_client_->NotifyPanelStateChange(panel_state.Clone());
   }
 
   void ManualResizeChanged(bool resizing) override {
@@ -2662,8 +2614,7 @@ void GlicPageHandler::WebUiStateChanged(glic::mojom::WebUiState new_state) {
 }
 
 void GlicPageHandler::PanelStateChanged(
-    const glic::mojom::PanelState& panel_state,
-    const PanelStateContext& context) {
+    const glic::mojom::PanelState& panel_state) {
   UpdatePageState(panel_state.kind);
 }
 

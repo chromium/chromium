@@ -56,8 +56,7 @@ class GlicShareImageHandler : public content::WebContentsObserver,
                          const GURL& src_url);
 
   // PanelStateObserver implementation:
-  void PanelStateChanged(const mojom::PanelState& panel_state,
-                         const PanelStateContext& context) override;
+  void PanelStateChanged(const mojom::PanelState& panel_state) override;
   void OnInstanceDestroyed() override;
 
  private:

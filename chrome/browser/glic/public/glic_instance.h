@@ -52,18 +52,10 @@ struct ConversationInfo {
   std::string title;
 };
 
-struct PanelStateContext {
-  // Provided only when kGlicMultiInstance is off.
-  raw_ptr<BrowserWindowInterface> attached_browser = nullptr;
-  // Provided only when kGlicMultiInstance is off.
-  raw_ptr<views::Widget> glic_widget = nullptr;
-};
-
 // Observes the state of the glic panel.
 class PanelStateObserver : public base::CheckedObserver {
  public:
-  virtual void PanelStateChanged(const mojom::PanelState& panel_state,
-                                 const PanelStateContext& context) = 0;
+  virtual void PanelStateChanged(const mojom::PanelState& panel_state) = 0;
   virtual void OnInstanceDestroyed() {}
 };
 

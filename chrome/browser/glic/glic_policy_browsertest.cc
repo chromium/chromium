@@ -87,9 +87,7 @@ class PanelStateObserver : public GlicInstanceCoordinator::StateObserver {
   PanelStateObserver(mojom::PanelStateKind kind, base::OnceClosure callback)
       : kind_(kind), callback_(std::move(callback)) {}
 
-  void PanelStateChanged(
-      const mojom::PanelState& panel_state,
-      const GlicInstanceCoordinator::PanelStateContext& context) override {
+  void PanelStateChanged(const mojom::PanelState& panel_state) override {
     if (panel_state.kind == kind_) {
       std::move(callback_).Run();
     }
@@ -302,8 +300,6 @@ class GlicPolicyTest : public PolicyTest {
   policy_for_profile_2() {
     return policy_for_profile_2_;
   }
-
-
 
  protected:
   // Get the active tab's glic host. Must be called only after instantiating

@@ -123,8 +123,7 @@ class GlicAnnotationManager {
     void PrimaryPageChanged(content::Page& page) override;
 
     // `PanelStateObserver`:
-    void PanelStateChanged(const mojom::PanelState& panel_state,
-                           const PanelStateContext& context) override;
+    void PanelStateChanged(const mojom::PanelState& panel_state) override;
 
     // GlicFocusedTabManager::FocusedTabChangedCallback
     void OnFocusedTabChanged(const FocusedTabData& focused_tab_data);

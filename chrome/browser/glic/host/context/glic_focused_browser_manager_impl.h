@@ -79,9 +79,7 @@ class GlicFocusedBrowserManagerImpl
   void OnWidgetDestroyed(views::Widget* widget) override;
 
   // GlicInstanceCoordinator::StateObserver:
-  void PanelStateChanged(
-      const mojom::PanelState&,
-      const GlicInstanceCoordinator::PanelStateContext& context) override;
+  void PanelStateChanged(const mojom::PanelState& panel_state) override;
 
   // Sets whether the manager is in testing mode. When in testing mode, logic
   // for determining the active browser is modified to be more deterministic.
