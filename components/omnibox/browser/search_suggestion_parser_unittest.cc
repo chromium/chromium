@@ -277,6 +277,37 @@ TEST(SearchSuggestionParserTest, ParseSuggestResults) {
   ASSERT_EQ(expected, results.gws_event_id_hashes[0]);
 }
 
+TEST(SearchSuggestionParserTest, ParseSuggestResultsRejectsInvalidSchemes) {
+  std::string json_data =
+      R"json([
+      "query",
+      ["javascript:alert(1)", "https://example.com"],
+      ["Sign in to continue", "Valid description"],
+      [],
+      {
+        "google:suggesttype": ["NAVIGATION", "NAVIGATION"]
+      }])json";
+  std::optional<base::ListValue> root_val = base::JSONReader::ReadList(
+      json_data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  ASSERT_TRUE(root_val);
+
+  TestSchemeClassifier scheme_classifier;
+  AutocompleteInput input(u"query", metrics::OmniboxEventProto::NTP,
+                          scheme_classifier);
+  SearchSuggestionParser::Results results;
+  ASSERT_TRUE(SearchSuggestionParser::ParseSuggestResults(
+      *root_val, input, scheme_classifier,
+      /*default_result_relevance=*/400,
+      /*is_keyword_result=*/false, &results));
+
+  // The javascript URL should be rejected, and only the valid HTTPS URL
+  // accepted.
+  EXPECT_THAT(results.navigation_results,
+              testing::ElementsAre(testing::Property(
+                  &SearchSuggestionParser::NavigationResult::url,
+                  testing::Eq(GURL("https://example.com/")))));
+}
+
 // Tests that prerender hints can be parsed correctly.
 TEST(SearchSuggestionParserTest, ParsePrerenderSuggestion) {
   std::string json_data = R"([

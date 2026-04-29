@@ -897,7 +897,7 @@ bool SearchSuggestionParser::ParseSuggestResults(
         (match_type == AutocompleteMatchType::NAVSUGGEST_PERSONALIZED)) {
       // Do not blindly trust the URL coming from the server to be valid.
       GURL url(url_formatter::FixupURL(base::UTF16ToUTF8(suggestion)));
-      if (url.is_valid()) {
+      if (url.is_valid() && url.SchemeIsHTTPOrHTTPS()) {
         std::u16string title;
         // 3rd element: optional descriptions list
         if (root_list.size() > 2u && root_list[2].is_list()) {
