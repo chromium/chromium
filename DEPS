@@ -3705,7 +3705,7 @@ deps = {
 
   'src/components/autofill/core/browser/geo/chrome_alternative_state_name_maps': {
       'url': Var('chrome_git') + '/chrome/components/autofill_alternative_state_name_maps.git' + '@' +
-        '474fa23d405f49279673ef101c41d61613bd05cb',
+        'a2c20aaa74def75d6485ba287340ffb05bbabc09',
       'condition': 'checkout_src_internal',
   },
 
