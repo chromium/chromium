@@ -25,18 +25,18 @@ config("config") {
       # in its implementation.
       "-Wno-macro-redefined",
     ]
-  }
-
-  if (is_win) {
-    cflags_cc = [
-      # We want to use a uniform C++ version across all of chromium, but
-      # upstream libc++ requires C++23 so we have to make an exception here.
-      # No other target should override the default -std= flag.
-      "-std:c++23preview",
-    ]
   } else {
     cflags += [ "-fPIC" ]
-    cflags_cc = [ "-std=c++23" ]
+  }
+
+  # We want to use a uniform C++ version across all of chromium, but
+  # upstream libc++ requires C++26 so we have to make an exception here.
+  # No other target should override the default -std= flag.
+  if (is_win) {
+    # cl.exe does not yet have a C++26 flag. clang-cl maps c++latest to C++26.
+    cflags_cc = [ "-std:c++latest" ]
+  } else {
+    cflags_cc = [ "-std=c++26" ]
   }
 
   defines = [ "_LIBCPP_BUILDING_LIBRARY" ]
