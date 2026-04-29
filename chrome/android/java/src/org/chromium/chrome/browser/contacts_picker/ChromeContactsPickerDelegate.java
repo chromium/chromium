@@ -59,9 +59,4 @@ public class ChromeContactsPickerDelegate implements ContactsPickerDelegate {
         dialog.show();
         return dialog;
     }
-
-    @Override
-    public void cancelContactsPicker(Object picker) {
-        ((ContactsPickerDialog) picker).cancel();
-    }
 }
