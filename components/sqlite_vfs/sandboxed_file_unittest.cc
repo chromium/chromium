@@ -24,11 +24,11 @@ class SandboxedFileTest : public testing::Test {
  public:
   void SetUp() override {
     ASSERT_TRUE(temporary_directory_.CreateUniqueTempDir());
-    shared_region_ = SharedLocks::CreateRegion();
+    shared_region_ = SharedLocks::CreateRegion(/*wal_mode=*/false);
   }
 
   std::unique_ptr<SandboxedFile> CreateEmptyFile(std::string_view file_name) {
-    auto shared_locks = SharedLocks::Create(shared_region_);
+    auto shared_locks = SharedLocks::Create(shared_region_, /*wal_mode=*/false);
     if (!shared_locks) {
       return nullptr;
     }

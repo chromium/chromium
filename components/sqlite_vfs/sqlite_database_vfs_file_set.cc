@@ -48,7 +48,8 @@ std::optional<SqliteVfsFileSet> SqliteVfsFileSet::Bind(
 
   std::optional<SharedLocks> shared_locks;
   if (pending_file_set.shared_lock.IsValid()) {
-    shared_locks = SharedLocks::Create(pending_file_set.shared_lock);
+    shared_locks =
+        SharedLocks::Create(pending_file_set.shared_lock, /*wal_mode=*/false);
     if (!shared_locks) {
       return std::nullopt;  // Failed to map the shared lock.
     }
@@ -94,6 +95,8 @@ SqliteVfsFileSet::SqliteVfsFileSet(
     CHECK_EQ(db_file_->access_rights(), wal_journal_file_->access_rights());
   }
   // Write-ahead logging requires single connection.
+  // TODO(crbug.com/486665177): Support multiple connections for databases that
+  // use a write-ahead log.
   CHECK(!wal_journal_file_ || !shared_lock_.IsValid());
   // Write-ahead logging requires read-write access.
   CHECK(!wal_journal_file_ ||

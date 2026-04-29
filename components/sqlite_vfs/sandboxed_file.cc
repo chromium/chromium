@@ -291,27 +291,46 @@ int SandboxedFile::ShmMap(int page_index,
                           int page_size,
                           int extend_file_if_needed,
                           void volatile** result) {
-  // Write-ahead logging is only supported in combination with exclusive mode
-  // (is_single_connection() == true); see https://sqlite.org/wal.html#noshm
-  NOTREACHED();
+  // Single-connection databases (which are in exclusive mode) do not use a
+  // mapped WAL-index; see https://sqlite.org/wal.html#noshm
+  CHECK(!is_single_connection());
+  // TODO(crbug.com/486665177): Support multiple connections for databases that
+  // use a write-ahead log.
+  return SQLITE_IOERR_SHMMAP;
 }
 
 int SandboxedFile::ShmLock(int offset, int size, int flags) {
-  // Write-ahead logging is only supported in combination with exclusive mode
-  // (is_single_connection() == true); see https://sqlite.org/wal.html#noshm
-  NOTREACHED();
+  // Single-connection databases (which are in exclusive mode) do not use the
+  // WAL locks to synchronize access to the WAL-index across connections; see
+  // https://sqlite.org/wal.html#noshm
+  CHECK(!is_single_connection());
+  CHECK(flags == (SQLITE_SHM_LOCK | SQLITE_SHM_SHARED) ||
+        flags == (SQLITE_SHM_LOCK | SQLITE_SHM_EXCLUSIVE) ||
+        flags == (SQLITE_SHM_UNLOCK | SQLITE_SHM_SHARED) ||
+        flags == (SQLITE_SHM_UNLOCK | SQLITE_SHM_EXCLUSIVE));
+  return shared_locks_->ShmLock(
+      offset, size,
+      ((flags & SQLITE_SHM_LOCK) != 0 ? SharedLocks::LockOperation::kAcquire
+                                      : SharedLocks::LockOperation::kRelease),
+      ((flags & SQLITE_SHM_EXCLUSIVE) != 0 ? SharedLocks::LockType::kExclusive
+                                           : SharedLocks::LockType::kShared));
 }
 
 void SandboxedFile::ShmBarrier() {
-  // Write-ahead logging is only supported in combination with exclusive mode
-  // (is_single_connection() == true); see https://sqlite.org/wal.html#noshm
-  NOTREACHED();
+  // Single-connection databases (which are in exclusive mode) do not use a
+  // memory barrier to synchronize access to the WAL-index across connections;
+  // see https://sqlite.org/wal.html#noshm
+  CHECK(!is_single_connection());
+  shared_locks_->ShmBarrier();
 }
 
 int SandboxedFile::ShmUnmap(int also_delete_file) {
-  // Write-ahead logging is only supported in combination with exclusive mode
-  // (is_single_connection() == true); see https://sqlite.org/wal.html#noshm
-  NOTREACHED();
+  // Single-connection databases (which are in exclusive mode) do not use a
+  // mapped WAL-index; see https://sqlite.org/wal.html#noshm
+  CHECK(!is_single_connection());
+  // TODO(crbug.com/486665177): Support multiple connections for databases that
+  // use a write-ahead log.
+  return SQLITE_OK;
 }
 
 int SandboxedFile::Fetch(sqlite3_int64 offset, int size, void** result) {

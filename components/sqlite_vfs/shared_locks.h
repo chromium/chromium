@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <array>
 #include <optional>
 
 #include "base/component_export.h"
@@ -24,19 +25,20 @@ namespace sqlite_vfs {
 // connection use the same set of shared locks to coordinate access. A database
 // using a rollback journal requires only the primary database lock. This is
 // the only supported scenario at present.
-//
-// TODO(crbug.com/486665177): Add the eight WAL locks to support multiple
-// connections for databases that use a write-ahead log.
 class COMPONENT_EXPORT(SQLITE_VFS) SharedLocks {
  public:
   // Returns a new unmapped shared memory region sized appropriately to hold
-  // the shared locks.
-  static base::UnsafeSharedMemoryRegion CreateRegion();
+  // the shared locks. If `wal_mode` is true, the region is sized to hold the
+  // locks for a wal-mode database.
+  static base::UnsafeSharedMemoryRegion CreateRegion(bool wal_mode);
 
   // Maps `region` and returns a SharedLocks object backed by it. Returns no
   // value in case of failure to map `region` into the process's address space.
+  // If `wal_mode` is true, the region must have been created to hold the locks
+  // for a wal-mode database.
   static std::optional<SharedLocks> Create(
-      const base::UnsafeSharedMemoryRegion& region);
+      const base::UnsafeSharedMemoryRegion& region,
+      bool wal_mode);
 
   SharedLocks(const SharedLocks&) = delete;
   SharedLocks& operator=(const SharedLocks&) = delete;
@@ -76,16 +78,59 @@ class COMPONENT_EXPORT(SQLITE_VFS) SharedLocks {
   // requesting such will properly detect that the lock has been abandoned.
   LockState Abandon();
 
+  // Acquires or releases `num_locks` WAL locks beginning at index `lock_index`.
+  // Shared locks are acquired and released individually (`num_locks` ==
+  // 1). Exclusive locks are acquired in a range (`num_locks` >= 1).
+  enum class LockOperation { kAcquire, kRelease };
+  enum class LockType { kShared, kExclusive };
+  int ShmLock(int lock_index,
+              int num_locks,
+              LockOperation operation,
+              LockType type);
+
+  // Enforces a memory barrier.
+  void ShmBarrier();
+
  private:
-  // Creates a new SharedLocks object backed by the given mapping, which must
-  // have been created via `CreateRegion()`.
-  explicit SharedLocks(base::WritableSharedMemoryMapping mapping);
+  // The primary database lock.
+  using DatabaseLock = base::subtle::SharedAtomic<uint32_t>;
+
+  // A WAL lock.
+  using WalLock = base::subtle::SharedAtomic<uint32_t>;
+
+  // The number of WAL locks.
+  static constexpr int kNumWalLocks = 8;
+
+  // The primary database lock and the WAL-index locks.
+  struct DatabaseAndWalLocks {
+    DatabaseLock primary_lock;
+
+    // The eight WAL locks:
+    // 0: WAL_WRITE_LOCK. Held exclusively while a read/write connection is
+    //    appending to the WAL or is recovering the WAL-index.
+    // 1: WAL_CKPT_LOCK. Held exclusively while a read/write connection is
+    //    performing a checkpoint or is recovering the WAL-index.
+    // 2: WAL_RECOVER_LOCK. Held exclusively while a read/write connection is
+    //    recovering the WAL-index.
+    // 3-7: WAL_READ_LOCK(I). Read locks corresponding to the read-marks in the
+    //      WAL-index. One of the read locks is held shared by any connection
+    //      that is within a transaction. One read lock is held exclusively
+    //      while updating the corresponding read-mark in the WAL-index. All but
+    //      the first read locks are held exclusively when resetting the WAL
+    //      after a complete checkpoint or while recovering the WAL-index.
+    std::array<WalLock, kNumWalLocks> wal_locks;
+  };
+
+  SharedLocks(base::WritableSharedMemoryMapping mapping, bool wal_mode);
 
   // Returns the atomic for the primary database lock.
-  using DatabaseLock = base::subtle::SharedAtomic<uint32_t>;
   DatabaseLock& GetDatabaseLock();
 
+  // Returns the specified WAL lock.
+  WalLock& GetWalLock(int index);
+
   base::WritableSharedMemoryMapping mapping_;
+  bool wal_mode_;
 };
 
 }  // namespace sqlite_vfs

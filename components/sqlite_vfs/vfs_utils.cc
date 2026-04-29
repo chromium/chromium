@@ -128,7 +128,9 @@ std::optional<PendingFileSet> MakePendingFileSet(
 
   if (!single_connection) {
     // The shared lock is only needed if multiple connections are permitted.
-    pending_file_set.shared_lock = SharedLocks::CreateRegion();
+    CHECK(!journal_mode_wal);
+    pending_file_set.shared_lock =
+        SharedLocks::CreateRegion(/*wal_mode=*/false);
     if (!pending_file_set.shared_lock.IsValid()) {
       return std::nullopt;
     }
