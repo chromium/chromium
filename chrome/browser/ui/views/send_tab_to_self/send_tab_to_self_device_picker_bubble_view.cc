@@ -6,7 +6,6 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
@@ -52,47 +51,8 @@ constexpr int kDeviceButtonGroup = 0;
 SendTabToSelfDevicePickerBubbleView::SendTabToSelfDevicePickerBubbleView(
     views::BubbleAnchor anchor,
     content::WebContents* web_contents)
-    : SendTabToSelfBubbleView(anchor, web_contents),
-      controller_(SendTabToSelfBubbleController::CreateOrGetFromWebContents(
-                      web_contents)
-                      ->AsWeakPtr()) {
-  DCHECK(controller_);
+    : SendTabToSelfBubbleView(anchor, web_contents) {
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
-  set_fixed_width(ChromeLayoutProvider::Get()->GetDistanceMetric(
-      views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
-}
-
-SendTabToSelfDevicePickerBubbleView::~SendTabToSelfDevicePickerBubbleView() =
-    default;
-
-void SendTabToSelfDevicePickerBubbleView::Hide() {
-  if (controller_) {
-    controller_->OnBubbleClosed();
-    controller_ = nullptr;
-  }
-  CloseBubble();
-}
-
-bool SendTabToSelfDevicePickerBubbleView::ShouldShowCloseButton() const {
-  return true;
-}
-
-std::u16string SendTabToSelfDevicePickerBubbleView::GetWindowTitle() const {
-  return l10n_util::GetStringUTF16(IDS_SEND_TAB_TO_SELF);
-}
-
-void SendTabToSelfDevicePickerBubbleView::WindowClosing() {
-  if (controller_) {
-    controller_->OnBubbleClosed();
-    controller_ = nullptr;
-  }
-}
-
-void SendTabToSelfDevicePickerBubbleView::BackButtonPressed() {
-  if (controller_) {
-    controller_->OnBackButtonPressed();
-    Hide();
-  }
 }
 
 void SendTabToSelfDevicePickerBubbleView::DeviceButtonPressed(
@@ -134,19 +94,6 @@ void SendTabToSelfDevicePickerBubbleView::Init() {
       views::CreateSolidBackground(ui::kColorMenuItemBackgroundHighlighted));
 }
 
-void SendTabToSelfDevicePickerBubbleView::AddedToWidget() {
-  if (!controller_->show_back_button()) {
-    return;
-  }
-
-  // Adding a title view will replace the default title.
-  GetBubbleFrameView()->SetTitleView(
-      std::make_unique<sharing_hub::TitleWithBackButtonView>(
-          base::BindRepeating(
-              &SendTabToSelfDevicePickerBubbleView::BackButtonPressed,
-              base::Unretained(this)),
-          GetWindowTitle()));
-}
 
 void SendTabToSelfDevicePickerBubbleView::CreateHintTextLabel() {
   auto* provider = ChromeLayoutProvider::Get();

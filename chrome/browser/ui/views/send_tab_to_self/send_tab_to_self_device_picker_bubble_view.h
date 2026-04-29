@@ -38,18 +38,6 @@ class SendTabToSelfDevicePickerBubbleView : public SendTabToSelfBubbleView {
   SendTabToSelfDevicePickerBubbleView& operator=(
       const SendTabToSelfDevicePickerBubbleView&) = delete;
 
-  ~SendTabToSelfDevicePickerBubbleView() override;
-
-  // SendTabToSelfBubbleView:
-  void Hide() override;
-
-  // views::WidgetDelegateView:
-  bool ShouldShowCloseButton() const override;
-  std::u16string GetWindowTitle() const override;
-  void WindowClosing() override;
-
-  void BackButtonPressed();
-
   void DeviceButtonPressed(SendTabToSelfBubbleDeviceButton* device_button);
 
   const views::View* GetButtonContainerForTesting() const;
@@ -57,7 +45,6 @@ class SendTabToSelfDevicePickerBubbleView : public SendTabToSelfBubbleView {
  private:
   // views::BubbleDialogDelegateView:
   void Init() override;
-  void AddedToWidget() override;
 
   // Creates the subtitle / hint text used in V2.
   void CreateHintTextLabel();
@@ -68,8 +55,6 @@ class SendTabToSelfDevicePickerBubbleView : public SendTabToSelfBubbleView {
   // Creates the link leading to a page where the user can manage their known
   // target devices.
   void CreateManageDevicesLink();
-
-  base::WeakPtr<SendTabToSelfBubbleController> controller_;
 
   // ScrollView containing the list of device buttons.
   // Only kept for GetButtonContainerForTesting().

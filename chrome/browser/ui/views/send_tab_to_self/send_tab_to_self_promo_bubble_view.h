@@ -36,24 +36,12 @@ class SendTabToSelfPromoBubbleView : public SendTabToSelfBubbleView {
                                content::WebContents* web_contents,
                                bool show_signin_button);
 
-  ~SendTabToSelfPromoBubbleView() override;
-
   SendTabToSelfPromoBubbleView(const SendTabToSelfPromoBubbleView&) = delete;
   SendTabToSelfPromoBubbleView& operator=(const SendTabToSelfPromoBubbleView&) =
       delete;
 
-  // SendTabToSelfBubbleView:
-  void Hide() override;
-
-  // views::BubbleDialogDelegateView:
-  void AddedToWidget() override;
-
  private:
   void OnSignInButtonClicked();
-
-  void OnBackButtonClicked();
-
-  const base::WeakPtr<SendTabToSelfBubbleController> controller_;
 };
 
 }  // namespace send_tab_to_self
