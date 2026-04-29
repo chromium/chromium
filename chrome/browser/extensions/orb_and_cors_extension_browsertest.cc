@@ -3071,25 +3071,16 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
   // 4. Monitor resource loads in the extension page.
   ObserveResourceLoads(extension_web_contents);
 
-  // 5. In the extension page do a no-cors fetch (via `img` tag) of a resource
-  // for which the extension has gained access via ActiveTab permission.
+  // 5. In the extension page do a no-cors fetch of a resource for which the
+  // extension has gained access via ActiveTab permission.
   //
   // TODO(https://crbug.com/502415811): Remove `console.log` after debugging
   // and fixing the issue.
   const char kScript[] = R"(
-      var img = document.createElement('img');
-      img.src = $1;
-      console.log("Adding img.src = " + img.src);
-      new Promise(resolve => {
-        img.onload = () => {
-          console.log('Test img.onload');
-          resolve('LOADED');
-        }
-        img.onerror = e => {
-          console.log('Test img.onerror');
-          resolve('ERROR: ' + e);
-        }
-      });
+      fetch($1, {mode: 'no-cors'})
+        .then(r => r.text())
+        .then(() => 'LOADED')
+        .catch(e => 'ERROR: ' + e);
   )";
   GURL active_tab_origin_url =
       embedded_test_server()->GetURL("bar.com", "/nosniff.xml");
@@ -3101,9 +3092,7 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
   VerifyFetchWasAllowedByOrb(active_tab_origin_url);
 
   // 6. Same as step 5, but for an origin that hasn't been granted ActiveTab
-  // permission.  Using `<img>` element is even more important than in step 5,
-  // because CORS blocks `fetch`-based requests (in step 5 we could have passed
-  // `"mode" = "no-cors"` option to `fetch`, but it wouldn't work here).
+  // permission.
   GURL other_url = embedded_test_server()->GetURL("other.com", "/nosniff.xml");
   std::ignore = content::EvalJs(extension_web_contents,
                                 content::JsReplace(kScript, other_url));
