@@ -86,7 +86,14 @@ IN_PROC_BROWSER_TEST_F(ComposeSessionBrowserTest, LifetimeOfBubbleWrapper) {
                                                    TabCloseTypes::CLOSE_NONE);
 }
 
-IN_PROC_BROWSER_TEST_F(ComposeSessionBrowserTest, ContextMenuPasteEnabled) {
+// TODO(crbug.com/507917198): Re-enable this test
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_ContextMenuPasteEnabled DISABLED_ContextMenuPasteEnabled
+#else
+#define MAYBE_ContextMenuPasteEnabled ContextMenuPasteEnabled
+#endif
+IN_PROC_BROWSER_TEST_F(ComposeSessionBrowserTest,
+                       MAYBE_ContextMenuPasteEnabled) {
   content::BrowserTestClipboardScope test_clipboard_scope;
   ASSERT_TRUE(embedded_test_server()->Start());
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
