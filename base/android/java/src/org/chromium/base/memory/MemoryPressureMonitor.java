@@ -270,10 +270,13 @@ public class MemoryPressureMonitor {
         ResettersForTesting.register(() -> mReportingCallbackForTesting = null);
     }
 
-    /**
-     * Queries current memory pressure.
-     * Returns null if the pressure couldn't be determined.
-     */
+    /** Sets the last reported pressure level for testing purposes. */
+    public void setLastReportedPressureForTesting(@MemoryPressureLevel int pressure) {
+        mLastReportedPressure = pressure;
+        ResettersForTesting.register(() -> mLastReportedPressure = MemoryPressureLevel.NONE);
+    }
+
+    /** Queries current memory pressure. Returns null if the pressure couldn't be determined. */
     private static @MemoryPressureLevel @Nullable Integer getCurrentMemoryPressure() {
         // We used to have a histogram here to measure the duration of each successful
         // ActivityManager.getMyMemoryState() call called

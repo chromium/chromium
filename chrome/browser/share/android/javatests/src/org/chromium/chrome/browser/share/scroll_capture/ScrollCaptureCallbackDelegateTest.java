@@ -9,10 +9,11 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Point;
@@ -30,16 +31,21 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
+import org.robolectric.Robolectric;
 
 import org.chromium.base.Callback;
+import org.chromium.base.MemoryPressureLevel;
+import org.chromium.base.memory.MemoryPressureMonitor;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.paint_preview.PaintPreviewCompositorUtils;
 import org.chromium.chrome.browser.paint_preview.PaintPreviewCompositorUtilsJni;
 import org.chromium.chrome.browser.share.long_screenshots.bitmap_generation.EntryManager;
@@ -64,6 +70,15 @@ public class ScrollCaptureCallbackDelegateTest {
     @Mock private LongScreenshotsEntry mEntry;
     @Mock private Callback<Rect> mRectConsumer;
     @Mock private PaintPreviewCompositorUtils.Natives mCompositorUtils;
+    @Mock private View mView;
+    @Mock private Runnable mOnReady;
+    @Mock private Surface mSurface;
+    @Mock private Canvas mCanvas;
+
+    private Activity mActivity;
+
+    @Captor private ArgumentCaptor<BitmapGeneratorObserver> mObserverCaptor;
+    @Captor private ArgumentCaptor<Rect> mRectCaptor;
 
     // We should use the Object type here to avoid RuntimeError in classloader on the bots running
     // API versions before S.
@@ -73,9 +88,21 @@ public class ScrollCaptureCallbackDelegateTest {
 
     @Before
     public void setUp() {
+        MemoryPressureMonitor.INSTANCE.setLastReportedPressureForTesting(MemoryPressureLevel.NONE);
         PaintPreviewCompositorUtilsJni.setInstanceForTesting(mCompositorUtils);
         doReturn(false).when(mCompositorUtils).stopWarmCompositor();
         doNothing().when(mCompositorUtils).warmupCompositor();
+        mActivity = Robolectric.setupActivity(Activity.class);
+        when(mTab.getContext()).thenReturn(mActivity);
+
+        when(mTab.getView()).thenReturn(mView);
+        when(mTab.getWebContents()).thenReturn(mWebContents);
+        when(mWebContents.getRenderCoordinates()).thenReturn(mRenderCoordinates);
+        when(mEntryManagerWrapper.create(any())).thenReturn(mEntryManager);
+        when(mRenderCoordinates.getMinPageScaleFactor()).thenReturn(1f);
+        when(mRenderCoordinates.getLastFrameViewportWidthPixInt()).thenReturn(200);
+        when(mRenderCoordinates.getLastFrameViewportHeightPixInt()).thenReturn(500);
+
         mScrollCaptureCallbackObj = new ScrollCaptureCallbackDelegate(mEntryManagerWrapper);
         ((ScrollCaptureCallbackDelegate) mScrollCaptureCallbackObj).setCurrentTab(mTab);
     }
@@ -86,20 +113,21 @@ public class ScrollCaptureCallbackDelegateTest {
         ScrollCaptureCallbackDelegate scrollCaptureCallback =
                 (ScrollCaptureCallbackDelegate) mScrollCaptureCallbackObj;
         CancellationSignal signal = new CancellationSignal();
-        InOrder inOrder = Mockito.inOrder(mRectConsumer);
 
-        // WebContents is not set. Should return empty Rect.
+        // View is null. Should return empty Rect.
+        when(mTab.getView()).thenReturn(null);
+        Assert.assertTrue(scrollCaptureCallback.onScrollCaptureSearch(signal).isEmpty());
+
+        // WebContents is null. Should return empty Rect.
+        when(mTab.getView()).thenReturn(mView);
+        when(mTab.getWebContents()).thenReturn(null);
         Assert.assertTrue(scrollCaptureCallback.onScrollCaptureSearch(signal).isEmpty());
 
         final int viewportWidth = 500;
         final int viewportHeight = 2000;
-        View view = mock(View.class);
-        when(mTab.getView()).thenReturn(view);
         when(mTab.getWebContents()).thenReturn(mWebContents);
-        when(mWebContents.getRenderCoordinates()).thenReturn(mRenderCoordinates);
         when(mRenderCoordinates.getLastFrameViewportWidthPixInt()).thenReturn(viewportWidth);
         when(mRenderCoordinates.getLastFrameViewportHeightPixInt()).thenReturn(viewportHeight);
-        when(mRenderCoordinates.getMinPageScaleFactor()).thenReturn(1f);
         Assert.assertEquals(
                 new Rect(0, 0, viewportWidth, viewportHeight),
                 scrollCaptureCallback.onScrollCaptureSearch(signal));
@@ -107,62 +135,173 @@ public class ScrollCaptureCallbackDelegateTest {
 
     @Test
     @SmallTest
-    public void testScrollCaptureStart() {
+    public void testScrollCaptureStart_CaptureInProgress() {
         ScrollCaptureCallbackDelegate scrollCaptureCallback =
                 (ScrollCaptureCallbackDelegate) mScrollCaptureCallbackObj;
-        CancellationSignal signal = new CancellationSignal();
-        Runnable onReady = mock(Runnable.class);
-        InOrder inOrder = Mockito.inOrder(onReady, mEntryManagerWrapper, mEntryManager);
+        scrollCaptureCallback.onScrollCaptureSearch(new CancellationSignal());
 
-        View view = mock(View.class);
-        when(mTab.getView()).thenReturn(view);
-        when(mTab.getWebContents()).thenReturn(mWebContents);
-        when(mWebContents.getRenderCoordinates()).thenReturn(mRenderCoordinates);
-        when(mEntryManagerWrapper.create(any())).thenReturn(mEntryManager);
+        scrollCaptureCallback.onScrollCaptureStart(new CancellationSignal(), mOnReady);
+        verify(mEntryManagerWrapper).create(any());
+        verify(mEntryManager).addBitmapGeneratorObserver(mObserverCaptor.capture());
+        BitmapGeneratorObserver observer = mObserverCaptor.getValue();
 
-        int viewportWidth = 200;
-        int viewportHeight = 500;
-        when(mRenderCoordinates.getLastFrameViewportWidthPixInt()).thenReturn(viewportWidth);
-        when(mRenderCoordinates.getLastFrameViewportHeightPixInt()).thenReturn(viewportHeight);
-        when(mRenderCoordinates.getMinPageScaleFactor()).thenReturn(1f);
-        Assert.assertEquals(
-                new Rect(0, 0, viewportWidth, viewportHeight),
-                scrollCaptureCallback.onScrollCaptureSearch(signal));
-
-        // Test EntryManager initialization
-        scrollCaptureCallback.onScrollCaptureStart(signal, onReady);
-        inOrder.verify(mEntryManagerWrapper).create(any());
-        ArgumentCaptor<BitmapGeneratorObserver> observerArgumentCaptor =
-                ArgumentCaptor.forClass(BitmapGeneratorObserver.class);
-        inOrder.verify(mEntryManager).addBitmapGeneratorObserver(observerArgumentCaptor.capture());
-        BitmapGeneratorObserver observer = observerArgumentCaptor.getValue();
         observer.onStatusChange(EntryStatus.CAPTURE_IN_PROGRESS);
-        inOrder.verify(onReady, times(0)).run();
+        verify(mOnReady, times(0)).run();
+    }
+
+    @Test
+    @SmallTest
+    public void testScrollCaptureStart_GenerationErrorOrder() {
+        ScrollCaptureCallbackDelegate scrollCaptureCallback =
+                (ScrollCaptureCallbackDelegate) mScrollCaptureCallbackObj;
+        scrollCaptureCallback.onScrollCaptureSearch(new CancellationSignal());
+
+        InOrder inOrder = Mockito.inOrder(mOnReady, mEntryManager);
+        scrollCaptureCallback.onScrollCaptureStart(new CancellationSignal(), mOnReady);
+        verify(mEntryManager).addBitmapGeneratorObserver(mObserverCaptor.capture());
+        BitmapGeneratorObserver observer = mObserverCaptor.getValue();
+
         observer.onStatusChange(EntryStatus.GENERATION_ERROR);
-        Assert.assertTrue(signal.isCanceled());
-        inOrder.verify(onReady, times(0)).run();
-        observer.onStatusChange(EntryStatus.CAPTURE_COMPLETE);
-        inOrder.verify(onReady, times(0)).run();
+        inOrder.verify(mEntryManager).destroy();
+        inOrder.verify(mOnReady).run();
+    }
+
+    @Test
+    @SmallTest
+    public void testScrollCaptureStart_CompositorReady_EmptySize() {
+        ScrollCaptureCallbackDelegate scrollCaptureCallback =
+                (ScrollCaptureCallbackDelegate) mScrollCaptureCallbackObj;
+        scrollCaptureCallback.onScrollCaptureSearch(new CancellationSignal());
+
+        InOrder inOrder = Mockito.inOrder(mOnReady, mEntryManager);
+        scrollCaptureCallback.onScrollCaptureStart(new CancellationSignal(), mOnReady);
+        verify(mEntryManager).addBitmapGeneratorObserver(mObserverCaptor.capture());
+        BitmapGeneratorObserver observer = mObserverCaptor.getValue();
 
         observer.onCompositorReady(new Size(0, 0), new Point(0, 0));
-        inOrder.verify(onReady, times(0)).run();
-        observer.onCompositorReady(new Size(100, 100), new Point(0, 0));
-        inOrder.verify(onReady).run();
+        inOrder.verify(mEntryManager).destroy();
+        inOrder.verify(mOnReady).run();
+    }
 
-        // Test contentArea and initialRect assignment
+    @Test
+    @SmallTest
+    public void testScrollCaptureStart_Success() {
+        ScrollCaptureCallbackDelegate scrollCaptureCallback =
+                (ScrollCaptureCallbackDelegate) mScrollCaptureCallbackObj;
+        scrollCaptureCallback.onScrollCaptureSearch(new CancellationSignal());
+
+        scrollCaptureCallback.onScrollCaptureStart(new CancellationSignal(), mOnReady);
+        verify(mEntryManager).addBitmapGeneratorObserver(mObserverCaptor.capture());
+        BitmapGeneratorObserver observer = mObserverCaptor.getValue();
+
         int contentWidth = 200;
         int contentHeight = 2000;
-        observer.onCompositorReady(new Size(contentWidth, contentHeight), new Point(0, 0));
+        int scrollY = 0;
+        observer.onCompositorReady(new Size(contentWidth, contentHeight), new Point(0, scrollY));
+        verify(mOnReady).run();
         Assert.assertEquals(
                 new Rect(0, 0, contentWidth, contentHeight),
                 scrollCaptureCallback.getContentAreaForTesting());
-        Assert.assertEquals(0, scrollCaptureCallback.getInitialYOffsetForTesting());
+        Assert.assertEquals(scrollY, scrollCaptureCallback.getInitialYOffsetForTesting());
+    }
 
-        // Test non-zero Y offset
+    @Test
+    @SmallTest
+    public void testScrollCaptureStart_NonZeroYOffset() {
+        ScrollCaptureCallbackDelegate scrollCaptureCallback =
+                (ScrollCaptureCallbackDelegate) mScrollCaptureCallbackObj;
+        scrollCaptureCallback.onScrollCaptureSearch(new CancellationSignal());
+
+        scrollCaptureCallback.onScrollCaptureStart(new CancellationSignal(), mOnReady);
+        verify(mEntryManager).addBitmapGeneratorObserver(mObserverCaptor.capture());
+        BitmapGeneratorObserver observer = mObserverCaptor.getValue();
+
+        int contentWidth = 200;
+        int contentHeight = 2000;
         int scrollY = 300;
         observer.onCompositorReady(new Size(contentWidth, contentHeight), new Point(0, scrollY));
-        scrollCaptureCallback.onScrollCaptureStart(signal, onReady);
         Assert.assertEquals(scrollY, scrollCaptureCallback.getInitialYOffsetForTesting());
+    }
+
+    @Test
+    @SmallTest
+    public void testScrollCaptureStart_GenerationError() {
+        ScrollCaptureCallbackDelegate scrollCaptureCallback =
+                (ScrollCaptureCallbackDelegate) mScrollCaptureCallbackObj;
+        CancellationSignal signal = new CancellationSignal();
+
+        scrollCaptureCallback.onScrollCaptureSearch(signal);
+        scrollCaptureCallback.onScrollCaptureStart(signal, mOnReady);
+
+        verify(mEntryManager).addBitmapGeneratorObserver(mObserverCaptor.capture());
+        BitmapGeneratorObserver observer = mObserverCaptor.getValue();
+
+        HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Sharing.ScrollCapture.BitmapGeneratorStatus", 2);
+        observer.onStatusChange(EntryStatus.GENERATION_ERROR);
+
+        Assert.assertFalse(signal.isCanceled());
+        verify(mOnReady).run();
+        verify(mCompositorUtils).stopWarmCompositor();
+        watcher.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    public void testScrollCaptureStart_InsufficientMemory() {
+        ScrollCaptureCallbackDelegate scrollCaptureCallback =
+                (ScrollCaptureCallbackDelegate) mScrollCaptureCallbackObj;
+        CancellationSignal signal = new CancellationSignal();
+
+        scrollCaptureCallback.onScrollCaptureSearch(signal);
+        scrollCaptureCallback.onScrollCaptureStart(signal, mOnReady);
+
+        verify(mEntryManager).addBitmapGeneratorObserver(mObserverCaptor.capture());
+        BitmapGeneratorObserver observer = mObserverCaptor.getValue();
+
+        HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Sharing.ScrollCapture.BitmapGeneratorStatus", 1);
+        observer.onStatusChange(EntryStatus.INSUFFICIENT_MEMORY);
+
+        Assert.assertFalse(signal.isCanceled());
+        verify(mOnReady).run();
+        verify(mCompositorUtils).stopWarmCompositor();
+        watcher.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    public void testScrollCaptureSearch_MemoryPressure() {
+        ScrollCaptureCallbackDelegate scrollCaptureCallback =
+                (ScrollCaptureCallbackDelegate) mScrollCaptureCallbackObj;
+        CancellationSignal signal = new CancellationSignal();
+
+        MemoryPressureMonitor.INSTANCE.setLastReportedPressureForTesting(
+                MemoryPressureLevel.MODERATE);
+        Assert.assertTrue(scrollCaptureCallback.onScrollCaptureSearch(signal).isEmpty());
+
+        MemoryPressureMonitor.INSTANCE.setLastReportedPressureForTesting(MemoryPressureLevel.NONE);
+        when(mRenderCoordinates.getLastFrameViewportWidthPixInt()).thenReturn(500);
+        when(mRenderCoordinates.getLastFrameViewportHeightPixInt()).thenReturn(2000);
+
+        Assert.assertEquals(
+                new Rect(0, 0, 500, 2000), scrollCaptureCallback.onScrollCaptureSearch(signal));
+    }
+
+    @Test
+    @SmallTest
+    public void testScrollCaptureRequest_NullContentArea() {
+        ScrollCaptureCallbackDelegate scrollCaptureCallback =
+                (ScrollCaptureCallbackDelegate) mScrollCaptureCallbackObj;
+        CancellationSignal signal = new CancellationSignal();
+
+        // mContentArea is null because onScrollCaptureStart hasn't finished or failed.
+        Rect captureArea = new Rect(0, 0, 500, 1000);
+        scrollCaptureCallback.onScrollCaptureImageRequest(
+                mSurface, signal, captureArea, mRectConsumer);
+        verify(mRectConsumer).onResult(eq(new Rect()));
     }
 
     @Test
@@ -170,20 +309,12 @@ public class ScrollCaptureCallbackDelegateTest {
     public void testScrollCaptureRequest() {
         ScrollCaptureCallbackDelegate scrollCaptureCallback =
                 (ScrollCaptureCallbackDelegate) mScrollCaptureCallbackObj;
-        Surface surface = mock(Surface.class);
-        Canvas canvas = mock(Canvas.class);
         CancellationSignal signal = new CancellationSignal();
         Bitmap testBitmap = Bitmap.createBitmap(512, 1024, Bitmap.Config.ARGB_8888);
-        Runnable onReady = mock(Runnable.class);
         InOrder inOrder =
-                Mockito.inOrder(surface, canvas, mRectConsumer, mEntryManager, onReady, mEntry);
+                Mockito.inOrder(mSurface, mCanvas, mRectConsumer, mEntryManager, mOnReady, mEntry);
 
-        View view = mock(View.class);
-        when(mTab.getView()).thenReturn(view);
-        when(mTab.getWebContents()).thenReturn(mWebContents);
-        when(mWebContents.getRenderCoordinates()).thenReturn(mRenderCoordinates);
-        when(mEntryManagerWrapper.create(any())).thenReturn(mEntryManager);
-        when(surface.lockCanvas(any())).thenReturn(canvas);
+        when(mSurface.lockCanvas(any())).thenReturn(mCanvas);
 
         int viewportWidth = 500;
         int viewportHeight = 1000;
@@ -192,29 +323,27 @@ public class ScrollCaptureCallbackDelegateTest {
         int scrollY = 1000;
         when(mRenderCoordinates.getLastFrameViewportWidthPixInt()).thenReturn(viewportWidth);
         when(mRenderCoordinates.getLastFrameViewportHeightPixInt()).thenReturn(viewportHeight);
-        when(mRenderCoordinates.getMinPageScaleFactor()).thenReturn(1f);
+
         // Set up viewportRect
         Assert.assertEquals(
                 new Rect(0, 0, viewportWidth, viewportHeight),
                 scrollCaptureCallback.onScrollCaptureSearch(signal));
-        scrollCaptureCallback.onScrollCaptureStart(signal, () -> {});
+        scrollCaptureCallback.onScrollCaptureStart(signal, mOnReady);
         // Set up contentArea and initialRect
-        ArgumentCaptor<BitmapGeneratorObserver> observerArgumentCaptor =
-                ArgumentCaptor.forClass(BitmapGeneratorObserver.class);
-        inOrder.verify(mEntryManager).addBitmapGeneratorObserver(observerArgumentCaptor.capture());
-        BitmapGeneratorObserver observer = observerArgumentCaptor.getValue();
+        inOrder.verify(mEntryManager).addBitmapGeneratorObserver(mObserverCaptor.capture());
+        BitmapGeneratorObserver observer = mObserverCaptor.getValue();
         observer.onCompositorReady(new Size(contentWidth, contentHeight), new Point(0, scrollY));
 
         // Test capture area outside the content area.
         Rect captureArea = new Rect(0, -2000, 500, -1000);
         scrollCaptureCallback.onScrollCaptureImageRequest(
-                surface, signal, captureArea, mRectConsumer);
+                mSurface, signal, captureArea, mRectConsumer);
         inOrder.verify(mRectConsumer).onResult(eq(new Rect()));
 
         // Test resulting capture area with width smaller than threshold.
         captureArea.set(0, -1010, 500, -1000);
         scrollCaptureCallback.onScrollCaptureImageRequest(
-                surface, signal, captureArea, mRectConsumer);
+                mSurface, signal, captureArea, mRectConsumer);
         inOrder.verify(mRectConsumer).onResult(eq(new Rect()));
 
         doAnswer(
@@ -229,7 +358,7 @@ public class ScrollCaptureCallbackDelegateTest {
         // Test empty bitmap.
         captureArea.set(0, -1500, 500, -500);
         scrollCaptureCallback.onScrollCaptureImageRequest(
-                surface, signal, captureArea, mRectConsumer);
+                mSurface, signal, captureArea, mRectConsumer);
         inOrder.verify(mEntryManager).generateEntry(any());
         inOrder.verify(mEntry).setListener(any());
         inOrder.verify(mEntry).getBitmap();
@@ -239,23 +368,22 @@ public class ScrollCaptureCallbackDelegateTest {
         when(mEntry.getBitmap()).thenReturn(testBitmap);
         captureArea.set(0, -1500, 500, -500);
         scrollCaptureCallback.onScrollCaptureImageRequest(
-                surface, signal, captureArea, mRectConsumer);
+                mSurface, signal, captureArea, mRectConsumer);
         inOrder.verify(mEntryManager).generateEntry(any());
         inOrder.verify(mEntry).setListener(any());
         inOrder.verify(mEntry).getBitmap();
-        inOrder.verify(surface).lockCanvas(any());
-        inOrder.verify(canvas).drawBitmap(eq(testBitmap), eq(null), any(Rect.class), eq(null));
-        inOrder.verify(surface).unlockCanvasAndPost(canvas);
-        ArgumentCaptor<Rect> rectArgumentCaptor = ArgumentCaptor.forClass(Rect.class);
-        inOrder.verify(mRectConsumer).onResult(rectArgumentCaptor.capture());
+        inOrder.verify(mSurface).lockCanvas(any());
+        inOrder.verify(mCanvas).drawBitmap(eq(testBitmap), eq(null), any(Rect.class), eq(null));
+        inOrder.verify(mSurface).unlockCanvasAndPost(mCanvas);
+        inOrder.verify(mRectConsumer).onResult(mRectCaptor.capture());
         // The resulting capture Rect should be cropped to 500 height because the upper half of it
         // was out of the content area.
-        Assert.assertEquals(new Rect(0, -1000, 500, -500), rectArgumentCaptor.getValue());
+        Assert.assertEquals(new Rect(0, -1000, 500, -500), mRectCaptor.getValue());
 
         // Test end capture
-        scrollCaptureCallback.onScrollCaptureEnd(onReady);
+        scrollCaptureCallback.onScrollCaptureEnd(mOnReady);
         inOrder.verify(mEntryManager).destroy();
         Assert.assertNull(scrollCaptureCallback.getContentAreaForTesting());
-        inOrder.verify(onReady).run();
+        inOrder.verify(mOnReady).run();
     }
 }
