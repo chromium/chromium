@@ -149,7 +149,7 @@ base::win::ScopedHandle FakeOSDeviceManager::OpenDevice(
   if (open_device_result_.is_valid()) {
     // Return a duplicate so the fake still owns a valid handle.
     HANDLE duplicated_handle;
-    if (!::DuplicateHandle(GetCurrentProcess(), open_device_result_.Get(),
+    if (!::DuplicateHandle(GetCurrentProcess(), open_device_result_.get(),
                            GetCurrentProcess(), &duplicated_handle, 0, FALSE,
                            DUPLICATE_SAME_ACCESS)) {
       return base::win::ScopedHandle();

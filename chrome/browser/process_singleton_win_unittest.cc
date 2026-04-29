@@ -136,11 +136,13 @@ MULTIPROCESS_TEST_MAIN(ProcessSingletonTestProcessMain) {
     return kErrorResultCode;
 
   // Signal ready and block for the continue event.
-  if (!::SetEvent(ready_event.Get()))
+  if (!::SetEvent(ready_event.get())) {
     return kErrorResultCode;
+  }
 
-  if (::WaitForSingleObject(continue_event.Get(), INFINITE) != WAIT_OBJECT_0)
+  if (::WaitForSingleObject(continue_event.get(), INFINITE) != WAIT_OBJECT_0) {
     return kErrorResultCode;
+  }
 
   return 0;
 }
@@ -171,7 +173,7 @@ class ProcessSingletonTest : public base::MultiProcessTest {
     SetNotificationTimeoutForTesting(old_notification_timeout_);
 
     if (browser_victim_.IsValid()) {
-      EXPECT_TRUE(::SetEvent(continue_event_.Get()));
+      EXPECT_TRUE(::SetEvent(continue_event_.get()));
       EXPECT_TRUE(browser_victim_.WaitForExit(nullptr));
     }
 
@@ -204,7 +206,7 @@ class ProcessSingletonTest : public base::MultiProcessTest {
         SpawnChildWithOptions("ProcessSingletonTestProcessMain", options);
 
     // Wait for the ready event (or process exit).
-    HANDLE handles[] = {ready_event.Get(), browser_victim_.Handle()};
+    HANDLE handles[] = {ready_event.get(), browser_victim_.Handle()};
     // The wait should always return because either |ready_event| is signaled or
     // |browser_victim_| died unexpectedly or exited on error.
     DWORD result =

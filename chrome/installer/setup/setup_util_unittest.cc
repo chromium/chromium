@@ -251,12 +251,12 @@ TEST(SetupUtilTest, GetInstallAge) {
   ASSERT_TRUE(dir.is_valid());
 
   FILE_BASIC_INFO info = {};
-  ASSERT_NE(0, ::GetFileInformationByHandleEx(dir.Get(), FileBasicInfo, &info,
+  ASSERT_NE(0, ::GetFileInformationByHandleEx(dir.get(), FileBasicInfo, &info,
                                               sizeof(info)));
   FILETIME creation_time = (now - base::Days(kAgeDays)).ToFileTime();
   info.CreationTime.u.LowPart = creation_time.dwLowDateTime;
   info.CreationTime.u.HighPart = creation_time.dwHighDateTime;
-  ASSERT_NE(0, ::SetFileInformationByHandle(dir.Get(), FileBasicInfo, &info,
+  ASSERT_NE(0, ::SetFileInformationByHandle(dir.get(), FileBasicInfo, &info,
                                             sizeof(info)));
 
   EXPECT_EQ(kAgeDays, installer::GetInstallAge(installer_state));

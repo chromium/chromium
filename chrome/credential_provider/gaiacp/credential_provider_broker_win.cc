@@ -137,7 +137,7 @@ void CredentialProviderBrokerWin::OpenDevice(
         break;
       }
 
-      std::optional<uint16_t> usage_page = GetUsagePage(device_handle.Get());
+      std::optional<uint16_t> usage_page = GetUsagePage(device_handle.get());
 
       // Only if the input device path is corresponding to a FIDO
       // device, we will return appropriate device handle. Otherwise,

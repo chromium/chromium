@@ -121,8 +121,8 @@ base::Process LaunchNativeExeDirectly(const std::wstring& command,
     return base::Process();
   }
 
-  options.stdin_handle = stdin_file.Get();
-  options.stdout_handle = stdout_file.Get();
+  options.stdin_handle = stdin_file.get();
+  options.stdout_handle = stdout_file.get();
   options.stderr_handle = ::GetStdHandle(STD_ERROR_HANDLE);
   options.handles_to_inherit.push_back(options.stdin_handle);
   options.handles_to_inherit.push_back(options.stdout_handle);

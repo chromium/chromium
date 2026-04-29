@@ -43,7 +43,7 @@ DWORD OSServiceManager::InstallService(
   command_line.SetProgram(service_binary_path);
 
   *sc_handle = ScopedScHandle(::CreateService(
-      scm_handle.Get(),                             // SCM database
+      scm_handle.get(),                             // SCM database
       kGCPWExtensionServiceName,                    // name of service
       kGCPWExtensionServiceDisplayName,             // service name to display
       SERVICE_ALL_ACCESS,                           // desired access
@@ -74,12 +74,12 @@ DWORD OSServiceManager::GetServiceStatus(SERVICE_STATUS* service_status) {
   }
 
   ScopedScHandle sc_handle(::OpenService(
-      scm_handle.Get(), kGCPWExtensionServiceName, SERVICE_QUERY_STATUS));
+      scm_handle.get(), kGCPWExtensionServiceName, SERVICE_QUERY_STATUS));
   if (!sc_handle.is_valid()) {
     return ::GetLastError();
   }
 
-  if (!::QueryServiceStatus(sc_handle.Get(), service_status)) {
+  if (!::QueryServiceStatus(sc_handle.get(), service_status)) {
     return ::GetLastError();
   }
 
@@ -94,7 +94,7 @@ DWORD OSServiceManager::DeleteService() {
   }
 
   ScopedScHandle sc_handle(
-      ::OpenService(scm_handle.Get(), kGCPWExtensionServiceName, DELETE));
+      ::OpenService(scm_handle.get(), kGCPWExtensionServiceName, DELETE));
   if (!sc_handle.is_valid()) {
     return ::GetLastError();
   }
@@ -103,8 +103,9 @@ DWORD OSServiceManager::DeleteService() {
   // control manager database. The database entry is not removed until all open
   // handles to the service have been closed by calls to the CloseServiceHandle
   // function, and the service is not running.
-  if (!::DeleteService(sc_handle.Get()))
+  if (!::DeleteService(sc_handle.get())) {
     return ::GetLastError();
+  }
 
   return ERROR_SUCCESS;
 }
@@ -117,13 +118,14 @@ DWORD OSServiceManager::StartGCPWService() {
   }
 
   ScopedScHandle sc_handle(::OpenService(
-      scm_handle.Get(), kGCPWExtensionServiceName, SERVICE_START));
+      scm_handle.get(), kGCPWExtensionServiceName, SERVICE_START));
   if (!sc_handle.is_valid()) {
     return ::GetLastError();
   }
 
-  if (!::StartService(sc_handle.Get(), 0, nullptr))
+  if (!::StartService(sc_handle.get(), 0, nullptr)) {
     return ::GetLastError();
+  }
 
   LOGFN(INFO) << "GCPW extension started successfully.";
 
@@ -135,19 +137,21 @@ DWORD OSServiceManager::WaitForServiceStopped() {
 
   ScopedScHandle scm_handle(
       ::OpenSCManager(nullptr, nullptr, SC_MANAGER_ALL_ACCESS));
-  if (scm_handle.Get() == nullptr)
+  if (scm_handle.get() == nullptr) {
     return ::GetLastError();
+  }
 
   ScopedScHandle s_handle(::OpenService(
-      scm_handle.Get(), kGCPWExtensionServiceName, SERVICE_QUERY_STATUS));
-  if (s_handle.Get() == nullptr)
+      scm_handle.get(), kGCPWExtensionServiceName, SERVICE_QUERY_STATUS));
+  if (s_handle.get() == nullptr) {
     return ::GetLastError();
+  }
 
   // Wait until the service is completely stopped.
   for (unsigned int iteration = 0; iteration < kMaxServiceQueryIterations;
        ++iteration) {
     SERVICE_STATUS service_status;
-    if (!QueryServiceStatus(s_handle.Get(), &service_status)) {
+    if (!QueryServiceStatus(s_handle.get(), &service_status)) {
       DWORD error = ::GetLastError();
       LOGFN(ERROR) << "QueryServiceStatus failed error=" << error;
       return error;
@@ -182,13 +186,13 @@ DWORD OSServiceManager::ControlService(DWORD control) {
   // TODO(crbug.com/40141510): More granular access rights corresponding to the
   // controls can be specified.
   ScopedScHandle s_handle(::OpenService(
-      scm_handle.Get(), kGCPWExtensionServiceName, SERVICE_ALL_ACCESS));
+      scm_handle.get(), kGCPWExtensionServiceName, SERVICE_ALL_ACCESS));
   if (!s_handle.is_valid()) {
     return ::GetLastError();
   }
 
   SERVICE_STATUS service_status;
-  if (!::ControlService(s_handle.Get(), control, &service_status)) {
+  if (!::ControlService(s_handle.get(), control, &service_status)) {
     DWORD error = ::GetLastError();
     LOGFN(ERROR) << "ControlService failed with error=" << error;
     return error;
@@ -209,14 +213,14 @@ DWORD OSServiceManager::ChangeServiceConfig(DWORD dwServiceType,
   }
 
   ScopedScHandle s_handle(::OpenService(
-      scm_handle.Get(), kGCPWExtensionServiceName, SERVICE_CHANGE_CONFIG));
+      scm_handle.get(), kGCPWExtensionServiceName, SERVICE_CHANGE_CONFIG));
   if (!s_handle.is_valid()) {
     return ::GetLastError();
   }
 
-  if (!::ChangeServiceConfig(s_handle.Get(), dwServiceType, dwStartType,
-                             dwErrorControl, nullptr, nullptr, nullptr,
-                             nullptr, nullptr, nullptr, nullptr)) {
+  if (!::ChangeServiceConfig(s_handle.get(), dwServiceType, dwStartType,
+                             dwErrorControl, nullptr, nullptr, nullptr, nullptr,
+                             nullptr, nullptr, nullptr)) {
     return ::GetLastError();
   }
 

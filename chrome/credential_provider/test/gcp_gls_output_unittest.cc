@@ -161,9 +161,9 @@ std::string GcpUsingChromeTest::RunProcessAndExtractOutput(
 
     base::LaunchOptions options;
     options.stdin_handle = INVALID_HANDLE_VALUE;
-    options.stdout_handle = write_handle.Get();
+    options.stdout_handle = write_handle.get();
     options.stderr_handle = INVALID_HANDLE_VALUE;
-    options.handles_to_inherit.push_back(write_handle.Get());
+    options.handles_to_inherit.push_back(write_handle.get());
 
     process = base::Process(
         base::LaunchProcess(command_line.GetCommandLineString(), options));
@@ -176,9 +176,9 @@ std::string GcpUsingChromeTest::RunProcessAndExtractOutput(
   for (bool is_done = false; !is_done;) {
     DWORD length = std::size(buffer) - 1;
 
-    DWORD ret = ::WaitForSingleObject(read_handle.Get(), kTimeout);
+    DWORD ret = ::WaitForSingleObject(read_handle.get(), kTimeout);
     if (ret == WAIT_OBJECT_0) {
-      if (!::ReadFile(read_handle.Get(), buffer, length, &length, nullptr)) {
+      if (!::ReadFile(read_handle.get(), buffer, length, &length, nullptr)) {
         break;
       }
 

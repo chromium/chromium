@@ -152,11 +152,11 @@ TEST_F(GcpGaiaCredentialBaseTest, HandleOpenDeviceRequests) {
 
   DWORD request_size = request_buffer.size();
   DWORD bytes_written;
-  ASSERT_TRUE(::WriteFile(client_pipe.Get(), &request_size,
+  ASSERT_TRUE(::WriteFile(client_pipe.get(), &request_size,
                           sizeof(request_size), &bytes_written, nullptr));
   ASSERT_EQ(sizeof(request_size), bytes_written);
   if (request_size > 0) {
-    ASSERT_TRUE(::WriteFile(client_pipe.Get(), request_buffer.data(),
+    ASSERT_TRUE(::WriteFile(client_pipe.get(), request_buffer.data(),
                             request_size, &bytes_written, nullptr));
     ASSERT_EQ(request_size, bytes_written);
   }
@@ -164,13 +164,13 @@ TEST_F(GcpGaiaCredentialBaseTest, HandleOpenDeviceRequests) {
   // 4. Read the response from the server.
   DWORD response_size;
   DWORD bytes_read;
-  ASSERT_TRUE(::ReadFile(client_pipe.Get(), &response_size,
+  ASSERT_TRUE(::ReadFile(client_pipe.get(), &response_size,
                          sizeof(response_size), &bytes_read, nullptr));
   ASSERT_EQ(sizeof(response_size), bytes_read);
 
   std::vector<uint8_t> response_buffer(response_size);
   if (response_size > 0) {
-    ASSERT_TRUE(::ReadFile(client_pipe.Get(), response_buffer.data(),
+    ASSERT_TRUE(::ReadFile(client_pipe.get(), response_buffer.data(),
                            response_size, &bytes_read, nullptr));
     ASSERT_EQ(response_size, bytes_read);
   }
@@ -191,7 +191,7 @@ TEST_F(GcpGaiaCredentialBaseTest, HandleOpenDeviceRequests) {
 
   // Wrap the returned handle so it is safely closed when the test ends!
   // This guarantees no resource leaks regardless of whether the server
-  // used .Get() or .Take() to pack the payload.
+  // used .get() or .release() to pack the payload.
   base::win::ScopedHandle safe_cleanup_handle(returned_handle);
 
   // The CGaiaCredentialBase owns the ipc_thread_ and will join it upon
@@ -243,11 +243,11 @@ TEST_F(GcpGaiaCredentialBaseTest, HandleOpenDeviceRequests_NotFido) {
 
   DWORD request_size = request_buffer.size();
   DWORD bytes_written;
-  ASSERT_TRUE(::WriteFile(client_pipe.Get(), &request_size,
+  ASSERT_TRUE(::WriteFile(client_pipe.get(), &request_size,
                           sizeof(request_size), &bytes_written, nullptr));
   ASSERT_EQ(sizeof(request_size), bytes_written);
   if (request_size > 0) {
-    ASSERT_TRUE(::WriteFile(client_pipe.Get(), request_buffer.data(),
+    ASSERT_TRUE(::WriteFile(client_pipe.get(), request_buffer.data(),
                             request_size, &bytes_written, nullptr));
     ASSERT_EQ(request_size, bytes_written);
   }
@@ -255,13 +255,13 @@ TEST_F(GcpGaiaCredentialBaseTest, HandleOpenDeviceRequests_NotFido) {
   // 4. Read the response from the server.
   DWORD response_size;
   DWORD bytes_read;
-  ASSERT_TRUE(::ReadFile(client_pipe.Get(), &response_size,
+  ASSERT_TRUE(::ReadFile(client_pipe.get(), &response_size,
                          sizeof(response_size), &bytes_read, nullptr));
   ASSERT_EQ(sizeof(response_size), bytes_read);
 
   std::vector<uint8_t> response_buffer(response_size);
   if (response_size > 0) {
-    ASSERT_TRUE(::ReadFile(client_pipe.Get(), response_buffer.data(),
+    ASSERT_TRUE(::ReadFile(client_pipe.get(), response_buffer.data(),
                            response_size, &bytes_read, nullptr));
     ASSERT_EQ(response_size, bytes_read);
   }

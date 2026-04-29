@@ -222,8 +222,8 @@ void ModuleWatcher::EnumerateAlreadyLoadedModules(
 
   // Walk the module list.
   MODULEENTRY32 module = {sizeof(module)};
-  for (BOOL result = ::Module32First(snap.Get(), &module); result != FALSE;
-       result = ::Module32Next(snap.Get(), &module)) {
+  for (BOOL result = ::Module32First(snap.get(), &module); result != FALSE;
+       result = ::Module32Next(snap.get(), &module)) {
     ModuleEvent event(ModuleEventType::kModuleAlreadyLoaded,
                       base::FilePath(module.szExePath), module.modBaseAddr,
                       module.modBaseSize);

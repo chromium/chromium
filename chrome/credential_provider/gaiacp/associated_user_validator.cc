@@ -116,13 +116,13 @@ bool WaitForQueryResult(const base::win::ScopedHandle& thread_handle,
   // See if a response to the token info can be fetched in a reasonable
   // amount of time. If not, assume there is no internet and that the handle
   // is still valid.
-  HRESULT hr = ::WaitForSingleObject(thread_handle.Get(), time_left);
+  HRESULT hr = ::WaitForSingleObject(thread_handle.get(), time_left);
 
   bool token_handle_validity = false;
   if (hr == WAIT_OBJECT_0) {
     DWORD exit_code;
     token_handle_validity =
-        !::GetExitCodeThread(thread_handle.Get(), &exit_code) || exit_code == 1;
+        !::GetExitCodeThread(thread_handle.get(), &exit_code) || exit_code == 1;
   } else if (hr == WAIT_TIMEOUT) {
     token_handle_validity = true;
   }

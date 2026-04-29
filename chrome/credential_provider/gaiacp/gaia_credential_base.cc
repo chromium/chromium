@@ -1961,11 +1961,11 @@ HRESULT CGaiaCredentialBase::ForkPerformPostSigninActionsStub(
 
     DWORD written = 0;
     // First, write the buffer size then write the buffer content.
-    if (!::WriteFile(parent_handles.hstdin_write.Get(), &buffer_size,
+    if (!::WriteFile(parent_handles.hstdin_write.get(), &buffer_size,
                      sizeof(buffer_size), &written, /*lpOverlapped=*/nullptr)) {
       HRESULT hrWrite = HRESULT_FROM_WIN32(::GetLastError());
       LOGFN(ERROR) << "WriteFile hr=" << putHR(hrWrite);
-    } else if (!::WriteFile(parent_handles.hstdin_write.Get(), json.c_str(),
+    } else if (!::WriteFile(parent_handles.hstdin_write.get(), json.c_str(),
                             buffer_size, &written, /*lpOverlapped=*/nullptr)) {
       HRESULT hrWrite = HRESULT_FROM_WIN32(::GetLastError());
       LOGFN(ERROR) << "WriteFile hr=" << putHR(hrWrite);

@@ -183,10 +183,10 @@ TEST(ThirdParty, LogNotifications) {
                    kTestLogs[i].time_date_stamp, std::string());
   }
 
-  EXPECT_EQ(::WaitForSingleObject(thread.Get(), kWaitTimeoutMs * 2),
+  EXPECT_EQ(::WaitForSingleObject(thread.get(), kWaitTimeoutMs * 2),
             WAIT_OBJECT_0);
   DWORD exit_code = 1;
-  EXPECT_TRUE(::GetExitCodeThread(thread.Get(), &exit_code));
+  EXPECT_TRUE(::GetExitCodeThread(thread.get(), &exit_code));
   EXPECT_EQ(exit_code, DWORD{0});
 
   DeinitLogs();

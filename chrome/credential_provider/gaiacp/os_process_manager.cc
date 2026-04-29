@@ -56,7 +56,7 @@ HRESULT GetTokenLogonSID(const base::win::ScopedHandle& token, PSID* sid) {
   // TODO: make more robust by asking for needed length first.
   char buffer[256];
   DWORD returned_length;
-  if (!::GetTokenInformation(token.Get(), TokenLogonSid, &buffer,
+  if (!::GetTokenInformation(token.get(), TokenLogonSid, &buffer,
                              std::size(buffer), &returned_length)) {
     HRESULT hr = HRESULT_FROM_WIN32(::GetLastError());
     LOGFN(ERROR) << "GetTokenInformation hr=" << putHR(hr);
@@ -223,7 +223,7 @@ HRESULT AllowLogonSIDOnLocalBasedNamedObjects(PSID sid) {
 
   PSECURITY_DESCRIPTOR sd;
   ACL* dacl;  // Not owned.
-  DWORD err = ::GetSecurityInfo(dir_handle.Get(), SE_WINDOW_OBJECT,
+  DWORD err = ::GetSecurityInfo(dir_handle.get(), SE_WINDOW_OBJECT,
                                 DACL_SECURITY_INFORMATION, nullptr, nullptr,
                                 &dacl, nullptr, &sd);
   if (err != ERROR_SUCCESS) {
@@ -244,7 +244,7 @@ HRESULT AllowLogonSIDOnLocalBasedNamedObjects(PSID sid) {
     return hr;
   }
 
-  err = ::SetSecurityInfo(dir_handle.Get(), SE_WINDOW_OBJECT,
+  err = ::SetSecurityInfo(dir_handle.get(), SE_WINDOW_OBJECT,
                           DACL_SECURITY_INFORMATION, nullptr, nullptr, new_dacl,
                           nullptr);
   ::LocalFree(new_dacl);
@@ -270,7 +270,7 @@ HRESULT AllowLogonSIDOnWinSta0(PSID sid) {
 
   PSECURITY_DESCRIPTOR sd;
   ACL* dacl;  // Not owned.
-  DWORD err = ::GetSecurityInfo(winsta0.Get(), SE_WINDOW_OBJECT,
+  DWORD err = ::GetSecurityInfo(winsta0.get(), SE_WINDOW_OBJECT,
                                 DACL_SECURITY_INFORMATION, nullptr, nullptr,
                                 &dacl, nullptr, &sd);
   if (err != ERROR_SUCCESS) {
@@ -298,7 +298,7 @@ HRESULT AllowLogonSIDOnWinSta0(PSID sid) {
     return hr;
   }
 
-  err = ::SetSecurityInfo(winsta0.Get(), SE_WINDOW_OBJECT,
+  err = ::SetSecurityInfo(winsta0.get(), SE_WINDOW_OBJECT,
                           DACL_SECURITY_INFORMATION, nullptr, nullptr, new_dacl,
                           nullptr);
   ::LocalFree(new_dacl);
@@ -343,7 +343,7 @@ HDESK GetAndAllowLogonSIDOnDesktop(const wchar_t* desktop_name,
 
   PSECURITY_DESCRIPTOR sd;
   ACL* dacl;  // Not owned.
-  DWORD err = ::GetSecurityInfo(desktop.Get(), SE_WINDOW_OBJECT,
+  DWORD err = ::GetSecurityInfo(desktop.get(), SE_WINDOW_OBJECT,
                                 DACL_SECURITY_INFORMATION, nullptr, nullptr,
                                 &dacl, nullptr, &sd);
   if (err != ERROR_SUCCESS) {
@@ -369,7 +369,7 @@ HDESK GetAndAllowLogonSIDOnDesktop(const wchar_t* desktop_name,
     return nullptr;
   }
 
-  err = ::SetSecurityInfo(desktop.Get(), SE_WINDOW_OBJECT,
+  err = ::SetSecurityInfo(desktop.get(), SE_WINDOW_OBJECT,
                           DACL_SECURITY_INFORMATION, nullptr, nullptr, new_dacl,
                           nullptr);
   ::LocalFree(new_dacl);
@@ -454,11 +454,9 @@ HRESULT OSProcessManager::CreateProcessWithToken(
       UNSAFE_TODO(wcsdup(command_line.GetCommandLineString().c_str())),
       std::free);
   PROCESS_INFORMATION temp_procinfo = {};
-  if (!::CreateProcessWithTokenW(logon_token.Get(),
-                                 LOGON_WITH_PROFILE,
+  if (!::CreateProcessWithTokenW(logon_token.get(), LOGON_WITH_PROFILE,
                                  command_line.GetProgram().value().c_str(),
-                                 cmdline.get(),
-                                 CREATE_SUSPENDED,
+                                 cmdline.get(), CREATE_SUSPENDED,
                                  nullptr,  // environment
                                  nullptr,  // current directory
                                  startupinfo, &temp_procinfo)) {

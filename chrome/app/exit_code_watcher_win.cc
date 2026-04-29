@@ -89,7 +89,7 @@ bool ExitCodeWatcher::StartWatching() {
 
 void ExitCodeWatcher::StopWatching() {
   if (stop_watching_handle_.is_valid()) {
-    ::SetEvent(stop_watching_handle_.Get());
+    ::SetEvent(stop_watching_handle_.get());
   }
 }
 

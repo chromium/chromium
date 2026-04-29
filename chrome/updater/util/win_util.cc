@@ -150,20 +150,20 @@ HRESULT GetProcessIntegrityLevel(DWORD process_id, MANDATORY_LEVEL* level) {
   }
   base::win::ScopedHandle process_holder(process);
   HANDLE token = NULL;
-  if (!::OpenProcessToken(process_holder.Get(),
+  if (!::OpenProcessToken(process_holder.get(),
                           TOKEN_QUERY | TOKEN_QUERY_SOURCE, &token)) {
     return HRESULTFromLastError();
   }
   base::win::ScopedHandle token_holder(token);
   DWORD label_size = 0;
-  if (::GetTokenInformation(token_holder.Get(), TokenIntegrityLevel, nullptr, 0,
+  if (::GetTokenInformation(token_holder.get(), TokenIntegrityLevel, nullptr, 0,
                             &label_size) ||
       ::GetLastError() != ERROR_INSUFFICIENT_BUFFER) {
     return E_FAIL;
   }
   std::unique_ptr<TOKEN_MANDATORY_LABEL, base::FreeDeleter> label(
       static_cast<TOKEN_MANDATORY_LABEL*>(std::malloc(label_size)));
-  if (!::GetTokenInformation(token_holder.Get(), TokenIntegrityLevel,
+  if (!::GetTokenInformation(token_holder.get(), TokenIntegrityLevel,
                              label.get(), label_size, &label_size)) {
     return HRESULTFromLastError();
   }
@@ -274,7 +274,7 @@ std::optional<std::vector<std::wstring>> CommandLineToArgv(
   }
 
   ScopedScHandle service(
-      ::OpenService(scm.Get(), service_name.c_str(), SERVICE_QUERY_CONFIG));
+      ::OpenService(scm.get(), service_name.c_str(), SERVICE_QUERY_CONFIG));
   return service.is_valid() || (::GetLastError() == ERROR_ACCESS_DENIED);
 }
 
@@ -286,7 +286,7 @@ std::optional<std::vector<std::wstring>> CommandLineToArgv(
   }
 
   ScopedScHandle service(
-      ::OpenService(scm.Get(), service_name.c_str(),
+      ::OpenService(scm.get(), service_name.c_str(),
                     SERVICE_QUERY_CONFIG | SERVICE_CHANGE_CONFIG));
   if (!service.is_valid()) {
     return ::GetLastError() == ERROR_ACCESS_DENIED;
@@ -294,7 +294,7 @@ std::optional<std::vector<std::wstring>> CommandLineToArgv(
 
   // Detects the specific case where a service shows as present, but is marked
   // for deletion.
-  return ::ChangeServiceConfig(service.Get(), SERVICE_NO_CHANGE,
+  return ::ChangeServiceConfig(service.get(), SERVICE_NO_CHANGE,
                                SERVICE_NO_CHANGE, SERVICE_NO_CHANGE, nullptr,
                                nullptr, nullptr, nullptr, nullptr, nullptr,
                                nullptr) ||
@@ -811,7 +811,7 @@ bool IsServiceRunning(const std::wstring& service_name) {
   }
 
   ScopedScHandle service(
-      ::OpenService(scm.Get(), service_name.c_str(), SERVICE_QUERY_STATUS));
+      ::OpenService(scm.get(), service_name.c_str(), SERVICE_QUERY_STATUS));
   if (!service.is_valid()) {
     LOG(ERROR) << "::OpenService failed. service_name: " << service_name
                << ", error: " << std::hex << HRESULTFromLastError();
@@ -819,7 +819,7 @@ bool IsServiceRunning(const std::wstring& service_name) {
   }
 
   SERVICE_STATUS status = {0};
-  if (!::QueryServiceStatus(service.Get(), &status)) {
+  if (!::QueryServiceStatus(service.get(), &status)) {
     LOG(ERROR) << "::QueryServiceStatus failed. service_name: " << service_name
                << ", error: " << std::hex << HRESULTFromLastError();
     return false;
@@ -1123,11 +1123,11 @@ void ForEachServiceWithPrefix(
   }
 
   ScopedScHandle service(
-      ::OpenService(scm.Get(), service_name.c_str(), DELETE));
+      ::OpenService(scm.get(), service_name.c_str(), DELETE));
   bool is_service_deleted = !service.is_valid();
   if (!is_service_deleted) {
     is_service_deleted =
-        ::DeleteService(service.Get())
+        ::DeleteService(service.get())
             ? true
             : ::GetLastError() == ERROR_SERVICE_MARKED_FOR_DELETE;
   }
@@ -1526,7 +1526,7 @@ std::optional<base::FilePath> GetBundledEnterpriseCompanionExecutablePath(
   }
 
   ScopedScHandle service(
-      ::OpenService(scm.Get(), service_name.c_str(), SERVICE_QUERY_CONFIG));
+      ::OpenService(scm.get(), service_name.c_str(), SERVICE_QUERY_CONFIG));
   if (!service.is_valid()) {
     return false;
   }
@@ -1536,7 +1536,7 @@ std::optional<base::FilePath> GetBundledEnterpriseCompanionExecutablePath(
   DWORD bytes_needed_ignored = 0;
   QUERY_SERVICE_CONFIG* service_config =
       reinterpret_cast<QUERY_SERVICE_CONFIG*>(buffer.get());
-  return ::QueryServiceConfig(service.Get(), service_config,
+  return ::QueryServiceConfig(service.get(), service_config,
                               kMaxQueryConfigBufferBytes,
                               &bytes_needed_ignored) &&
          (service_config->dwStartType != SERVICE_DISABLED);
@@ -1554,7 +1554,7 @@ HResultOr<std::wstring> GetCommandLineForPid(DWORD process_id) {
   // Get the PEB address.
   // https://learn.microsoft.com/en-us/windows/win32/api/winternl/ns-winternl-peb
   PROCESS_BASIC_INFORMATION info = {};
-  if (!NT_SUCCESS(::NtQueryInformationProcess(process_handle.Get(),
+  if (!NT_SUCCESS(::NtQueryInformationProcess(process_handle.get(),
                                               ProcessBasicInformation, &info,
                                               sizeof(info), nullptr))) {
     return base::unexpected(E_FAIL);
@@ -1569,7 +1569,7 @@ HResultOr<std::wstring> GetCommandLineForPid(DWORD process_id) {
   // Get the address of the process parameters.
   // SAFETY: the `ProcessParameters` offset into the PEB is always valid.
   if (!::ReadProcessMemory(
-          process_handle.Get(),
+          process_handle.get(),
           UNSAFE_BUFFERS(peb + offsetof(PEB, ProcessParameters)), &dw,
           sizeof(dw), &bytes_read)) {
     return base::unexpected(HRESULTFromLastError());
@@ -1577,7 +1577,7 @@ HResultOr<std::wstring> GetCommandLineForPid(DWORD process_id) {
 
   // Read all the parameters.
   RTL_USER_PROCESS_PARAMETERS params = {};
-  if (!::ReadProcessMemory(process_handle.Get(), reinterpret_cast<PVOID>(dw),
+  if (!::ReadProcessMemory(process_handle.get(), reinterpret_cast<PVOID>(dw),
                            &params, sizeof(params), &bytes_read)) {
     return base::unexpected(HRESULTFromLastError());
   }
@@ -1586,7 +1586,7 @@ HResultOr<std::wstring> GetCommandLineForPid(DWORD process_id) {
   const int max_cmd_line_len =
       std::min(static_cast<int>(params.CommandLine.MaximumLength), 4096);
   std::wstring cmd_line(max_cmd_line_len, L'\0');
-  if (!::ReadProcessMemory(process_handle.Get(), params.CommandLine.Buffer,
+  if (!::ReadProcessMemory(process_handle.get(), params.CommandLine.Buffer,
                            cmd_line.data(), max_cmd_line_len, &bytes_read)) {
     return base::unexpected(HRESULTFromLastError());
   }

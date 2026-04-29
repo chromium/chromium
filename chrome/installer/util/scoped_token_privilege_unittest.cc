@@ -35,13 +35,13 @@ bool CurrentProcessHasPrivilege(const wchar_t* privilege_name) {
   // First get the size of the buffer needed for |privileges| below.
   DWORD size;
   EXPECT_FALSE(
-      ::GetTokenInformation(token.Get(), TokenPrivileges, nullptr, 0, &size));
+      ::GetTokenInformation(token.get(), TokenPrivileges, nullptr, 0, &size));
 
   auto privileges_bytes = base::HeapArray<BYTE>::WithSize(size);
   TOKEN_PRIVILEGES* privileges =
       reinterpret_cast<TOKEN_PRIVILEGES*>(privileges_bytes.data());
 
-  if (!::GetTokenInformation(token.Get(), TokenPrivileges, privileges, size,
+  if (!::GetTokenInformation(token.get(), TokenPrivileges, privileges, size,
                              &size)) {
     ADD_FAILURE();
     return false;

@@ -461,7 +461,7 @@ HRESULT WaitForProcess(base::win::ScopedHandle::Handle process_handle,
 
   output_buffer[0] = 0;
 
-  HANDLE output_handle = parent_handles.hstdout_read.Get();
+  HANDLE output_handle = parent_handles.hstdout_read.get();
 
   for (bool is_done = false; !is_done;) {
     char buffer[80];
@@ -557,7 +557,7 @@ HRESULT CreateLogonToken(const wchar_t* domain,
   }
   base::win::ScopedHandle primary_token(handle);
 
-  if (!::CreateRestrictedToken(primary_token.Get(), DISABLE_MAX_PRIVILEGE, 0,
+  if (!::CreateRestrictedToken(primary_token.get(), DISABLE_MAX_PRIVILEGE, 0,
                                nullptr, 0, nullptr, 0, nullptr, &handle)) {
     HRESULT hr = HRESULT_FROM_WIN32(::GetLastError());
     LOGFN(ERROR) << "CreateRestrictedToken hr=" << putHR(hr);
@@ -584,7 +584,7 @@ HRESULT CreateJobForSignin(base::win::ScopedHandle* job) {
       JOB_OBJECT_UILIMIT_HANDLES |           // Only access own handles.
       JOB_OBJECT_UILIMIT_SYSTEMPARAMETERS |  // Cannot set sys params.
       JOB_OBJECT_UILIMIT_WRITECLIPBOARD;     // Cannot write to clipboard.
-  if (!::SetInformationJobObject(job->Get(), JobObjectBasicUIRestrictions, &ui,
+  if (!::SetInformationJobObject(job->get(), JobObjectBasicUIRestrictions, &ui,
                                  sizeof(ui))) {
     HRESULT hr = HRESULT_FROM_WIN32(::GetLastError());
     LOGFN(ERROR) << "SetInformationJobObject hr=" << putHR(hr);
@@ -633,7 +633,7 @@ HRESULT CreatePipeForChildProcess(bool child_reads,
     writing->Set(temp_handle2);
 
     // Make sure parent side is not inherited.
-    if (!::SetHandleInformation(child_reads ? writing->Get() : reading->Get(),
+    if (!::SetHandleInformation(child_reads ? writing->get() : reading->get(),
                                 HANDLE_FLAG_INHERIT, 0)) {
       HRESULT hr = HRESULT_FROM_WIN32(::GetLastError());
       LOGFN(ERROR) << "SetHandleInformation(parent) hr=" << putHR(hr);
@@ -1476,7 +1476,7 @@ device::gcpw::HidOpenDeviceGcpwResponse ProcessHidOpenDeviceRequest(
   }
 
   // LINT.IfChange
-  uint16_t usage_page = os_device_manager->GetUsagePage(device_handle.Get());
+  uint16_t usage_page = os_device_manager->GetUsagePage(device_handle.get());
   if (usage_page != device::mojom::kPageFido) {
     LOGFN(VERBOSE) << "Device is not a FIDO device. " << usage_page;
     return response;
@@ -1484,7 +1484,7 @@ device::gcpw::HidOpenDeviceGcpwResponse ProcessHidOpenDeviceRequest(
   // LINT.ThenChange(//services/device/hid/hid_service_win.cc)
 
   HANDLE duplicated_handle;
-  if (!::DuplicateHandle(GetCurrentProcess(), device_handle.Get(),
+  if (!::DuplicateHandle(GetCurrentProcess(), device_handle.get(),
                          logon_ui_process, &duplicated_handle, 0, FALSE,
                          DUPLICATE_SAME_ACCESS)) {
     LOGFN(ERROR) << "Failed to duplicate handle: " << GetLastError();
@@ -1502,7 +1502,7 @@ HRESULT ReadMessageFromPipe(base::win::ScopedHandle& pipe,
                             std::vector<uint8_t>* buffer) {
   DWORD message_size;
   DWORD bytes_read;
-  if (!::ReadFile(pipe.Get(), &message_size, sizeof(message_size), &bytes_read,
+  if (!::ReadFile(pipe.get(), &message_size, sizeof(message_size), &bytes_read,
                   nullptr) ||
       bytes_read != sizeof(message_size)) {
     return HRESULT_FROM_WIN32(::GetLastError());
@@ -1518,7 +1518,7 @@ HRESULT ReadMessageFromPipe(base::win::ScopedHandle& pipe,
 
   buffer->resize(message_size);
   if (message_size > 0) {
-    if (!::ReadFile(pipe.Get(), buffer->data(), buffer->size(), &bytes_read,
+    if (!::ReadFile(pipe.get(), buffer->data(), buffer->size(), &bytes_read,
                     nullptr) ||
         bytes_read != message_size) {
       return HRESULT_FROM_WIN32(::GetLastError());
@@ -1531,14 +1531,14 @@ HRESULT WriteMessageToPipe(base::win::ScopedHandle& pipe,
                            const std::vector<uint8_t>& buffer) {
   DWORD message_size = buffer.size();
   DWORD bytes_written;
-  if (!::WriteFile(pipe.Get(), &message_size, sizeof(message_size),
+  if (!::WriteFile(pipe.get(), &message_size, sizeof(message_size),
                    &bytes_written, nullptr) ||
       bytes_written != sizeof(message_size)) {
     return HRESULT_FROM_WIN32(::GetLastError());
   }
 
   if (message_size > 0) {
-    if (!::WriteFile(pipe.Get(), buffer.data(), message_size, &bytes_written,
+    if (!::WriteFile(pipe.get(), buffer.data(), message_size, &bytes_written,
                      nullptr) ||
         bytes_written != message_size) {
       return HRESULT_FROM_WIN32(::GetLastError());

@@ -165,7 +165,7 @@ BackgroundTokenHandleUpdater::~BackgroundTokenHandleUpdater() {
     // Tell the background thread to quit and then make sure it does.  This
     // prevents it from accessing data members that have been freed.
     token_update_quit_event_.Signal();
-    ::WaitForSingleObject(token_update_thread_.Get(), INFINITE);
+    ::WaitForSingleObject(token_update_thread_.get(), INFINITE);
   }
 }
 

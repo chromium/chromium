@@ -145,7 +145,7 @@ void SetupCmdExe(UpdaterScope scope,
   }
 
   ScopedScHandle service(::CreateService(
-      scm.Get(), service_name.c_str(), display_name.c_str(),
+      scm.get(), service_name.c_str(), display_name.c_str(),
       DELETE | SERVICE_QUERY_CONFIG | SERVICE_CHANGE_CONFIG,
       SERVICE_WIN32_OWN_PROCESS, SERVICE_DEMAND_START, SERVICE_ERROR_NORMAL,
       command_line.c_str(), nullptr, nullptr, nullptr, nullptr, nullptr));
@@ -160,13 +160,13 @@ void SetupCmdExe(UpdaterScope scope,
   }
 
   ScopedScHandle service(
-      ::OpenService(scm.Get(), service_name.c_str(),
+      ::OpenService(scm.get(), service_name.c_str(),
                     SERVICE_QUERY_CONFIG | SERVICE_CHANGE_CONFIG));
   if (!service.is_valid()) {
     return true;
   }
 
-  return ::ChangeServiceConfig(service.Get(), SERVICE_NO_CHANGE,
+  return ::ChangeServiceConfig(service.get(), SERVICE_NO_CHANGE,
                                SERVICE_DISABLED, SERVICE_NO_CHANGE, nullptr,
                                nullptr, nullptr, nullptr, nullptr, nullptr,
                                nullptr) ||

@@ -30,7 +30,7 @@ ScopedTokenPrivilege::ScopedTokenPrivilege(const wchar_t* privilege_name)
   tp.Privileges[0].Luid = privilege_luid;
   tp.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;
   DWORD return_length;
-  if (!::AdjustTokenPrivileges(token_.Get(), FALSE, &tp,
+  if (!::AdjustTokenPrivileges(token_.get(), FALSE, &tp,
                                sizeof(TOKEN_PRIVILEGES), &previous_privileges_,
                                &return_length)) {
     token_.Close();
@@ -42,7 +42,7 @@ ScopedTokenPrivilege::ScopedTokenPrivilege(const wchar_t* privilege_name)
 
 ScopedTokenPrivilege::~ScopedTokenPrivilege() {
   if (is_enabled_ && previous_privileges_.PrivilegeCount != 0) {
-    ::AdjustTokenPrivileges(token_.Get(), FALSE, &previous_privileges_,
+    ::AdjustTokenPrivileges(token_.get(), FALSE, &previous_privileges_,
                             sizeof(TOKEN_PRIVILEGES), nullptr, nullptr);
   }
 }

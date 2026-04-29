@@ -92,7 +92,7 @@ class HttpServiceRequest {
     // completely if needed.
     base::win::ScopedHandle thread_handle(
         reinterpret_cast<HANDLE>(wait_thread));
-    hr = ::WaitForSingleObject(thread_handle.Get(),
+    hr = ::WaitForSingleObject(thread_handle.get(),
                                request_timeout.InMilliseconds());
 
     // The race condition starts here. It is possible that between the expiry of
@@ -307,7 +307,7 @@ HRESULT WinHttpUrlFetcher::Fetch(std::vector<char>* response) {
   {
     std::string host = url_.GetHost();
     ScopedWinHttpHandle::Handle connect_tmp =
-        ::WinHttpConnect(session_.Get(), base::UTF8ToWide(host).c_str(),
+        ::WinHttpConnect(session_.get(), base::UTF8ToWide(host).c_str(),
                          INTERNET_DEFAULT_PORT, 0);
     if (!connect_tmp) {
       HRESULT hr = HRESULT_FROM_WIN32(::GetLastError());
@@ -320,7 +320,7 @@ HRESULT WinHttpUrlFetcher::Fetch(std::vector<char>* response) {
   {
     // Set timeout if specified.
     if (timeout_in_millis_ != 0) {
-      if (!::WinHttpSetTimeouts(session_.Get(), timeout_in_millis_,
+      if (!::WinHttpSetTimeouts(session_.get(), timeout_in_millis_,
                                 timeout_in_millis_, timeout_in_millis_,
                                 timeout_in_millis_)) {
         HRESULT hr = HRESULT_FROM_WIN32(::GetLastError());
@@ -337,7 +337,7 @@ HRESULT WinHttpUrlFetcher::Fetch(std::vector<char>* response) {
     std::wstring object_name =
         base::UTF8ToWide(use_post ? path : path_for_request);
     ScopedWinHttpHandle::Handle request = ::WinHttpOpenRequest(
-        connect.Get(), use_post ? L"POST" : L"GET", object_name.c_str(),
+        connect.get(), use_post ? L"POST" : L"GET", object_name.c_str(),
         nullptr, WINHTTP_NO_REFERER, WINHTTP_DEFAULT_ACCEPT_TYPES,
         WINHTTP_FLAG_REFRESH | WINHTTP_FLAG_SECURE);
     if (!request) {
@@ -354,7 +354,7 @@ HRESULT WinHttpUrlFetcher::Fetch(std::vector<char>* response) {
     std::wstring header = base::StrCat(
         {base::UTF8ToWide(kv.first), L": ", base::UTF8ToWide(kv.second)});
     if (!::WinHttpAddRequestHeaders(
-            request_.Get(), header.c_str(), header.length(),
+            request_.get(), header.c_str(), header.length(),
             WINHTTP_ADDREQ_FLAG_ADD | WINHTTP_ADDREQ_FLAG_REPLACE)) {
       HRESULT hr = HRESULT_FROM_WIN32(::GetLastError());
       LOGFN(ERROR) << "WinHttpAddRequestHeaders name=" << kv.first
@@ -365,7 +365,7 @@ HRESULT WinHttpUrlFetcher::Fetch(std::vector<char>* response) {
 
   // Write request body if needed.
 
-  if (!::WinHttpSendRequest(request_.Get(), WINHTTP_NO_ADDITIONAL_HEADERS, 0,
+  if (!::WinHttpSendRequest(request_.get(), WINHTTP_NO_ADDITIONAL_HEADERS, 0,
                             const_cast<char*>(body_.c_str()), body_.length(),
                             body_.length(),
                             reinterpret_cast<DWORD_PTR>(nullptr))) {
@@ -376,14 +376,14 @@ HRESULT WinHttpUrlFetcher::Fetch(std::vector<char>* response) {
 
   // Wait for the response.
 
-  if (!::WinHttpReceiveResponse(request_.Get(), nullptr)) {
+  if (!::WinHttpReceiveResponse(request_.get(), nullptr)) {
     HRESULT hr = HRESULT_FROM_WIN32(::GetLastError());
     LOGFN(ERROR) << "WinHttpReceiveResponse hr=" << putHR(hr);
     return hr;
   }
 
   DWORD length = 0;
-  if (!::WinHttpQueryDataAvailable(request_.Get(), &length)) {
+  if (!::WinHttpQueryDataAvailable(request_.get(), &length)) {
     HRESULT hr = HRESULT_FROM_WIN32(::GetLastError());
     LOGFN(ERROR) << "WinHttpQueryDataAvailable hr=" << putHR(hr);
     return hr;
@@ -398,7 +398,7 @@ HRESULT WinHttpUrlFetcher::Fetch(std::vector<char>* response) {
   DWORD actual = 0;
   do {
     DWORD available_to_read = 0;
-    if (!::WinHttpQueryDataAvailable(request_.Get(), &available_to_read)) {
+    if (!::WinHttpQueryDataAvailable(request_.get(), &available_to_read)) {
       HRESULT hr = HRESULT_FROM_WIN32(::GetLastError());
       LOGFN(ERROR) << "WinHttpQueryDataAvailable hr=" << putHR(hr);
       return hr;
@@ -421,7 +421,7 @@ HRESULT WinHttpUrlFetcher::Fetch(std::vector<char>* response) {
     // We use UNSAFE_BUFFERS only where we interface with the raw Win32 API.
     auto dest_span = base::span(*response).subspan(current_size);
 
-    if (!::WinHttpReadData(request_.Get(), dest_span.data(),
+    if (!::WinHttpReadData(request_.get(), dest_span.data(),
                            static_cast<DWORD>(dest_span.size()), &actual)) {
       HRESULT hr = HRESULT_FROM_WIN32(::GetLastError());
       LOGFN(ERROR) << "WinHttpReadData hr=" << putHR(hr);

@@ -559,7 +559,7 @@ HRESULT ScopedUserProfile::SaveAccountInfo(const base::DictValue& properties) {
 
     // NOTE: |encrypted_data| is binary data, not null-terminate string.
     std::string encrypted_data =
-        GetEncryptedRefreshToken(token_.Get(), properties);
+        GetEncryptedRefreshToken(token_.get(), properties);
     if (encrypted_data.empty()) {
       LOGFN(ERROR) << "GetEncryptedRefreshToken returned empty string";
       return E_UNEXPECTED;
@@ -622,7 +622,7 @@ bool ScopedUserProfile::WaitForProfileCreation(const std::wstring& sid) {
   for (int i = 0; i < kWaitForProfileCreationRetryCount; ++i) {
     ::Sleep(1000);
     DWORD length = std::size(profile_dir);
-    if (::GetUserProfileDirectoryW(token_.Get(), profile_dir, &length)) {
+    if (::GetUserProfileDirectoryW(token_.get(), profile_dir, &length)) {
       LOGFN(VERBOSE) << "GetUserProfileDirectoryW " << i << " " << profile_dir;
       created = true;
       break;

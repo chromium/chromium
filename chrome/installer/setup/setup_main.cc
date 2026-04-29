@@ -278,7 +278,7 @@ void DelayedOverwriteWindowsInstallerProperties(
   if (start_event.is_valid()) {
     command_line.AppendSwitchNative(
         installer::switches::kStartupEventHandle,
-        base::NumberToWString(base::win::HandleToUint32(start_event.Get())));
+        base::NumberToWString(base::win::HandleToUint32(start_event.get())));
   }
   InstallUtil::AppendModeAndChannelSwitches(&command_line);
   command_line.AppendSwitch(installer::switches::kSystemLevel);
@@ -288,7 +288,7 @@ void DelayedOverwriteWindowsInstallerProperties(
 
   base::LaunchOptions launch_options;
   if (start_event.is_valid()) {
-    launch_options.handles_to_inherit.push_back(start_event.Get());
+    launch_options.handles_to_inherit.push_back(start_event.get());
   }
   launch_options.force_breakaway_from_job_ = true;
   base::Process writer = base::LaunchProcess(command_line, launch_options);
@@ -306,7 +306,7 @@ void DelayedOverwriteWindowsInstallerProperties(
   // Wait up to 30 seconds for either the start event to be signaled or for the
   // child process to terminate (i.e., in case it crashes).
   constexpr DWORD kWaitForStartTimeoutMs = 30 * 1000;
-  const HANDLE handles[] = {start_event.Get(), writer.Handle()};
+  const HANDLE handles[] = {start_event.get(), writer.Handle()};
   auto wait_result =
       ::WaitForMultipleObjects(std::size(handles), &handles[0],
                                /*bWaitAll=*/FALSE, kWaitForStartTimeoutMs);
@@ -328,7 +328,7 @@ void DelayedOverwriteWindowsInstallerProperties(
 
 // Signals `event` if it is valid and then closes it.
 void SignalAndCloseEvent(base::win::ScopedHandle event) {
-  if (event.is_valid() && !::SetEvent(event.Get())) {
+  if (event.is_valid() && !::SetEvent(event.get())) {
     // Failure to signal the event likely means that the handle is invalid.
     // Clear the ScopedHandle to prevent a crash upon close and proceed with the
     // operation. The parent process will wait for 30s in this case (see
@@ -367,7 +367,7 @@ LONG OverwriteWindowsInstallerPropertiesAfterMsiexec(
     // Notify the parent process that this one is ready to go.
     SignalAndCloseEvent(std::move(startup_event));
 
-    const auto wait_result = ::WaitForSingleObject(msi_handle.Get(), INFINITE);
+    const auto wait_result = ::WaitForSingleObject(msi_handle.get(), INFINITE);
     if (wait_result == WAIT_FAILED) {
       // The handle is valid and was opened with SYNCHRONIZE, so the wait should
       // never fail. If it does, wait ten seconds and proceed with the overwrite
@@ -402,7 +402,7 @@ LONG OverwriteWindowsInstallerPropertiesAfterMsiexec(
   }
 
   if (acquired_mutex) {
-    ::ReleaseMutex(msi_handle.Get());
+    ::ReleaseMutex(msi_handle.get());
   }
 
   return result;

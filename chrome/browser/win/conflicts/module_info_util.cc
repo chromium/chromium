@@ -172,14 +172,14 @@ void GetCatalogCertificateInfo(const base::FilePath& filename,
 
   // Get the size we need for our hash.
   DWORD hash_size = 0;
-  CryptCATAdminCalcHashFromFileHandle(file_handle.Get(), &hash_size, nullptr,
+  CryptCATAdminCalcHashFromFileHandle(file_handle.get(), &hash_size, nullptr,
                                       0);
   if (hash_size == 0)
     return;
 
   // Calculate the hash. If this fails then bail.
   std::vector<BYTE> buffer(hash_size);
-  if (!CryptCATAdminCalcHashFromFileHandle(file_handle.Get(), &hash_size,
+  if (!CryptCATAdminCalcHashFromFileHandle(file_handle.get(), &hash_size,
                                            buffer.data(), 0)) {
     return;
   }

@@ -181,13 +181,13 @@ TEST_F(GcpProcHelperTest, CreatePipeForChildProcess_ParentReads) {
   ASSERT_TRUE(writing.is_valid());
 
   DWORD flags;
-  ASSERT_TRUE(::GetHandleInformation(reading.Get(), &flags));
+  ASSERT_TRUE(::GetHandleInformation(reading.get(), &flags));
   ASSERT_EQ(0u, flags & HANDLE_FLAG_INHERIT);
-  ASSERT_TRUE(::GetHandleInformation(writing.Get(), &flags));
+  ASSERT_TRUE(::GetHandleInformation(writing.get(), &flags));
   ASSERT_EQ(static_cast<DWORD>(HANDLE_FLAG_INHERIT),
             flags & HANDLE_FLAG_INHERIT);
 
-  EXPECT_TRUE(TestPipe(reading.Get(), writing.Get()));
+  EXPECT_TRUE(TestPipe(reading.get(), writing.get()));
 }
 
 TEST_F(GcpProcHelperTest, CreatePipeForChildProcess_ChildReads) {
@@ -199,13 +199,13 @@ TEST_F(GcpProcHelperTest, CreatePipeForChildProcess_ChildReads) {
   ASSERT_TRUE(writing.is_valid());
 
   DWORD flags;
-  ASSERT_TRUE(::GetHandleInformation(reading.Get(), &flags));
+  ASSERT_TRUE(::GetHandleInformation(reading.get(), &flags));
   ASSERT_EQ(static_cast<DWORD>(HANDLE_FLAG_INHERIT),
             flags & HANDLE_FLAG_INHERIT);
-  ASSERT_TRUE(::GetHandleInformation(writing.Get(), &flags));
+  ASSERT_TRUE(::GetHandleInformation(writing.get(), &flags));
   ASSERT_EQ(0u, flags & HANDLE_FLAG_INHERIT);
 
-  EXPECT_TRUE(TestPipe(reading.Get(), writing.Get()));
+  EXPECT_TRUE(TestPipe(reading.get(), writing.get()));
 }
 
 TEST_F(GcpProcHelperTest, CreatePipeForChildProcess_ParentReadsNul) {
@@ -217,7 +217,7 @@ TEST_F(GcpProcHelperTest, CreatePipeForChildProcess_ParentReadsNul) {
   ASSERT_TRUE(writing.is_valid());  // Writes to nul:
 
   DWORD flags;
-  ASSERT_TRUE(::GetHandleInformation(writing.Get(), &flags));
+  ASSERT_TRUE(::GetHandleInformation(writing.get(), &flags));
   ASSERT_EQ(static_cast<DWORD>(HANDLE_FLAG_INHERIT),
             flags & HANDLE_FLAG_INHERIT);
 }
@@ -231,7 +231,7 @@ TEST_F(GcpProcHelperTest, CreatePipeForChildProcess_ChildReadsNul) {
   ASSERT_FALSE(writing.is_valid());
 
   DWORD flags;
-  ASSERT_TRUE(::GetHandleInformation(reading.Get(), &flags));
+  ASSERT_TRUE(::GetHandleInformation(reading.get(), &flags));
   ASSERT_EQ(static_cast<DWORD>(HANDLE_FLAG_INHERIT),
             flags & HANDLE_FLAG_INHERIT);
 }
@@ -259,7 +259,7 @@ TEST_F(GcpProcHelperTest, InitializeStdHandles_ParentToChild) {
   ASSERT_NE(INVALID_HANDLE_VALUE, startupinfo.GetInfo()->hStdError);
 
   EXPECT_TRUE(TestPipe(startupinfo.GetInfo()->hStdInput,
-                       parent_handles.hstdin_write.Get()));
+                       parent_handles.hstdin_write.get()));
 }
 
 TEST_F(GcpProcHelperTest, InitializeStdHandles_ChildToParent) {
@@ -284,7 +284,7 @@ TEST_F(GcpProcHelperTest, InitializeStdHandles_ChildToParent) {
   ASSERT_NE(nullptr, startupinfo.GetInfo()->hStdError);
   ASSERT_NE(INVALID_HANDLE_VALUE, startupinfo.GetInfo()->hStdError);
 
-  EXPECT_TRUE(TestPipe(parent_handles.hstdout_read.Get(),
+  EXPECT_TRUE(TestPipe(parent_handles.hstdout_read.get(),
                        startupinfo.GetInfo()->hStdOutput));
 }
 
@@ -311,8 +311,8 @@ TEST_F(GcpProcHelperTest, InitializeStdHandles_ParentChildBirectional) {
   ASSERT_NE(INVALID_HANDLE_VALUE, startupinfo.GetInfo()->hStdError);
 
   EXPECT_TRUE(TestPipe(startupinfo.GetInfo()->hStdInput,
-                       parent_handles.hstdin_write.Get()));
-  EXPECT_TRUE(TestPipe(parent_handles.hstdout_read.Get(),
+                       parent_handles.hstdin_write.get()));
+  EXPECT_TRUE(TestPipe(parent_handles.hstdout_read.get(),
                        startupinfo.GetInfo()->hStdOutput));
 }
 
@@ -337,7 +337,7 @@ TEST_F(GcpProcHelperTest, InitializeStdHandles_SomeHandlesChildToParent) {
   ASSERT_NE(INVALID_HANDLE_VALUE, startupinfo.GetInfo()->hStdOutput);
   ASSERT_EQ(::GetStdHandle(STD_ERROR_HANDLE), startupinfo.GetInfo()->hStdError);
 
-  EXPECT_TRUE(TestPipe(parent_handles.hstdout_read.Get(),
+  EXPECT_TRUE(TestPipe(parent_handles.hstdout_read.get(),
                        startupinfo.GetInfo()->hStdOutput));
 }
 
@@ -363,7 +363,7 @@ TEST_F(GcpProcHelperTest, InitializeStdHandles_SomeHandlesParentToChild) {
   ASSERT_EQ(::GetStdHandle(STD_ERROR_HANDLE), startupinfo.GetInfo()->hStdError);
 
   EXPECT_TRUE(TestPipe(startupinfo.GetInfo()->hStdInput,
-                       parent_handles.hstdin_write.Get()));
+                       parent_handles.hstdin_write.get()));
 }
 
 TEST_F(GcpProcHelperTest, InitializeStdHandles_SomeHandlesBidirectional) {
@@ -388,8 +388,8 @@ TEST_F(GcpProcHelperTest, InitializeStdHandles_SomeHandlesBidirectional) {
   ASSERT_EQ(::GetStdHandle(STD_ERROR_HANDLE), startupinfo.GetInfo()->hStdError);
 
   EXPECT_TRUE(TestPipe(startupinfo.GetInfo()->hStdInput,
-                       parent_handles.hstdin_write.Get()));
-  EXPECT_TRUE(TestPipe(parent_handles.hstdout_read.Get(),
+                       parent_handles.hstdin_write.get()));
+  EXPECT_TRUE(TestPipe(parent_handles.hstdout_read.get(),
                        startupinfo.GetInfo()->hStdOutput));
 }
 
@@ -418,12 +418,12 @@ TEST_F(GcpProcHelperTest, InitializeStdHandles_NamedPipe) {
   // The child's stdin should be a handle to a named pipe. The parent
   // should be able to write to it.
   EXPECT_TRUE(TestPipe(startupinfo.GetInfo()->hStdInput,
-                       parent_handles.hstdin_write.Get()));
-  EXPECT_TRUE(TestPipe(parent_handles.hstdin_write.Get(),
+                       parent_handles.hstdin_write.get()));
+  EXPECT_TRUE(TestPipe(parent_handles.hstdin_write.get(),
                        startupinfo.GetInfo()->hStdInput));
 
   // stdout and stderr are regular pipes.
-  EXPECT_TRUE(TestPipe(parent_handles.hstdout_read.Get(),
+  EXPECT_TRUE(TestPipe(parent_handles.hstdout_read.get(),
                        startupinfo.GetInfo()->hStdOutput));
 }
 
@@ -453,10 +453,10 @@ TEST_F(GcpProcHelperTest, WaitForProcess) {
   UNSAFE_TODO(strcpy_s(input_buffer, std::size(input_buffer), "hello"));
   const DWORD kExpectedDataLength = strlen(input_buffer) + 1;
   DWORD written;
-  ASSERT_TRUE(::WriteFile(parent_handles.hstdin_write.Get(), input_buffer,
+  ASSERT_TRUE(::WriteFile(parent_handles.hstdin_write.get(), input_buffer,
                           kExpectedDataLength, &written, nullptr));
   ASSERT_EQ(kExpectedDataLength, written);
-  ASSERT_TRUE(FlushFileBuffers(parent_handles.hstdin_write.Get()));
+  ASSERT_TRUE(FlushFileBuffers(parent_handles.hstdin_write.get()));
   parent_handles.hstdin_write.Close();
 
   //  Close all child handles that the parent is still holding onto, to ensure

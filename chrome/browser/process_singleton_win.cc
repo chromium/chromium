@@ -385,7 +385,7 @@ bool ProcessSingleton::Create() {
       return false;
     }
 
-    AutoLockMutex auto_lock_only_me(only_me.Get());
+    AutoLockMutex auto_lock_only_me(only_me.get());
 
     // We now own the mutex so we are the only process that can create the
     // window at this time, but we must still check if someone created it

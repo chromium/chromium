@@ -171,9 +171,9 @@ TEST_F(ElevatedRecoveryTest, Do_RunCRX_ValidArgs) {
                       base::FilePath(kRecoveryExeName), ::GetCurrentProcessId(),
                       &proc_handle));
 
-  EXPECT_EQ(WAIT_OBJECT_0, ::WaitForSingleObject(proc_handle.Get(), 500));
+  EXPECT_EQ(WAIT_OBJECT_0, ::WaitForSingleObject(proc_handle.get(), 500));
   DWORD exit_code = 0;
-  EXPECT_TRUE(::GetExitCodeProcess(proc_handle.Get(), &exit_code));
+  EXPECT_TRUE(::GetExitCodeProcess(proc_handle.get(), &exit_code));
   EXPECT_EQ(1877345072UL, exit_code);
 }
 

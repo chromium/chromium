@@ -89,7 +89,7 @@ bool AddDeviceInfo(HANDLE interface_enumerator,
   DISK_GEOMETRY geometry;
   DWORD bytes_returned;
   status = DeviceIoControl(
-      device_handle.Get(),           // Device handle.
+      device_handle.get(),           // Device handle.
       IOCTL_DISK_GET_DRIVE_GEOMETRY, // Flag to request disk size.
       NULL,                          // Optional additional parameters.
       0,                             // Optional parameter size.
@@ -115,7 +115,7 @@ bool AddDeviceInfo(HANDLE interface_enumerator,
 
   auto output_buf = base::HeapArray<char>::Uninit(1024);
   status = DeviceIoControl(
-      device_handle.Get(),             // Device handle.
+      device_handle.get(),             // Device handle.
       IOCTL_STORAGE_QUERY_PROPERTY,    // Flag to request device properties.
       &query,                          // Query parameters.
       sizeof(STORAGE_PROPERTY_QUERY),  // query parameters size.
@@ -143,7 +143,7 @@ bool AddDeviceInfo(HANDLE interface_enumerator,
   // Create a drive identifier from the drive number.
   STORAGE_DEVICE_NUMBER device_number = {0};
   status = DeviceIoControl(
-      device_handle.Get(),            // Device handle.
+      device_handle.get(),            // Device handle.
       IOCTL_STORAGE_GET_DEVICE_NUMBER,// Flag to request device number.
       NULL,                           // Query parameters, should be NULL.
       0,                              // Query parameters size, should be 0.

@@ -55,11 +55,11 @@ void MemoryDetails::CollectProcessData(
   base::win::ScopedHandle snapshot(
       ::CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0));
   PROCESSENTRY32 process_entry = {sizeof(PROCESSENTRY32)};
-  if (!snapshot.Get()) {
+  if (!snapshot.get()) {
     LOG(ERROR) << "CreateToolhelp32Snapshot failed: " << GetLastError();
     return;
   }
-  if (!::Process32First(snapshot.Get(), &process_entry)) {
+  if (!::Process32First(snapshot.get(), &process_entry)) {
     LOG(ERROR) << "Process32First failed: " << GetLastError();
     return;
   }
@@ -96,7 +96,7 @@ void MemoryDetails::CollectProcessData(
 
     // Add the process info to our list.
     process_data_[0].processes.push_back(info);
-  } while (::Process32Next(snapshot.Get(), &process_entry));
+  } while (::Process32Next(snapshot.get(), &process_entry));
 
   // Finally return to the browser thread.
   content::GetUIThreadTaskRunner({})->PostTask(

@@ -428,7 +428,7 @@ bool InstallServiceWorkItemImpl::ChangeServiceConfig(
   // If the service is deleted, ::ChangeServiceConfig will fail with the error
   // ERROR_SERVICE_MARKED_FOR_DELETE.
   if (!::ChangeServiceConfig(
-          service_.Get(), config.type, config.start_type, config.error_control,
+          service_.get(), config.type, config.start_type, config.error_control,
           !config.cmd_line.empty() ? config.cmd_line.c_str() : nullptr,
           /*lpLoadOrderGroup=*/nullptr,
           /*lpdwTagId=*/nullptr,
@@ -453,7 +453,7 @@ bool InstallServiceWorkItemImpl::DeleteCurrentService() {
 
 bool InstallServiceWorkItemImpl::OpenService() {
   DCHECK(scm_.is_valid());
-  service_.Set(::OpenService(scm_.Get(), GetCurrentServiceName().c_str(),
+  service_.Set(::OpenService(scm_.get(), GetCurrentServiceName().c_str(),
                              kServiceAccess));
   if (!service_.is_valid()) {
     auto error = ::GetLastError();
@@ -477,7 +477,7 @@ bool InstallServiceWorkItemImpl::GetServiceConfig(ServiceConfig* config) const {
   DWORD bytes_needed_ignored = 0;
   QUERY_SERVICE_CONFIG* service_config =
       reinterpret_cast<QUERY_SERVICE_CONFIG*>(buffer.get());
-  if (!::QueryServiceConfig(service_.Get(), service_config,
+  if (!::QueryServiceConfig(service_.get(), service_config,
                             kMaxQueryConfigBufferBytes,
                             &bytes_needed_ignored)) {
     auto error = ::GetLastError();
@@ -594,7 +594,7 @@ std::wstring InstallServiceWorkItemImpl::GetCurrentServiceDescription() const {
   DWORD bytes_needed_ignored = 0;
   SERVICE_DESCRIPTION* description =
       reinterpret_cast<SERVICE_DESCRIPTION*>(buffer.get());
-  if (!::QueryServiceConfig2(service_.Get(), SERVICE_CONFIG_DESCRIPTION,
+  if (!::QueryServiceConfig2(service_.get(), SERVICE_CONFIG_DESCRIPTION,
                              buffer.get(), kMaxQueryConfigBufferBytes,
                              &bytes_needed_ignored)) {
     auto error = ::GetLastError();
@@ -617,7 +617,7 @@ void InstallServiceWorkItemImpl::SetDescription() {
 
   std::wstring desc = description_;
   SERVICE_DESCRIPTION description = {desc.data()};
-  if (!::ChangeServiceConfig2(service_.Get(), SERVICE_CONFIG_DESCRIPTION,
+  if (!::ChangeServiceConfig2(service_.get(), SERVICE_CONFIG_DESCRIPTION,
                               &description)) {
     auto error = ::GetLastError();
     PLOG(WARNING) << "Failed to set service description: "
@@ -683,7 +683,7 @@ bool InstallServiceWorkItemImpl::RestoreOriginalServiceConfig() {
 
 bool InstallServiceWorkItemImpl::InstallService(const ServiceConfig& config) {
   ScopedScHandle service(::CreateService(
-      scm_.Get(), GetCurrentServiceName().c_str(), config.display_name.c_str(),
+      scm_.get(), GetCurrentServiceName().c_str(), config.display_name.c_str(),
       kServiceAccess, config.type, config.start_type, config.error_control,
       config.cmd_line.c_str(), nullptr, nullptr,
       !config.dependencies.empty() ? config.dependencies.data() : nullptr,
@@ -706,7 +706,7 @@ bool InstallServiceWorkItemImpl::DeleteService(ScopedScHandle service) const {
     return false;
   }
 
-  if (!::DeleteService(service.Get())) {
+  if (!::DeleteService(service.get())) {
     DWORD error = ::GetLastError();
     PLOG(WARNING) << "DeleteService failed " << GetCurrentServiceName().c_str();
     RecordResult(Operation::kDeleteService, error);

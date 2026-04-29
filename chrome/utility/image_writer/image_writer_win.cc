@@ -43,7 +43,7 @@ bool ImageWriter::IsValidDevice() {
 
   auto output_buf = base::HeapArray<char>::Uninit(kStorageQueryBufferSize);
   BOOL status = ::DeviceIoControl(
-      device_handle.Get(),             // Device handle.
+      device_handle.get(),             // Device handle.
       IOCTL_STORAGE_QUERY_PROPERTY,    // Flag to request device properties.
       &query,                          // Query parameters.
       sizeof(STORAGE_PROPERTY_QUERY),  // query parameters size.

@@ -772,7 +772,7 @@ HRESULT OSUserManager::RemoveUser(const wchar_t* username,
   if (SUCCEEDED(hr)) {
     // Get the gaia user's profile directory so that it can be deleted.
     DWORD length = std::size(profiledir) - 1;
-    if (!::GetUserProfileDirectory(token.Get(), profiledir, &length)) {
+    if (!::GetUserProfileDirectory(token.get(), profiledir, &length)) {
       hr = HRESULT_FROM_WIN32(::GetLastError());
       if (hr != HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND))
         LOGFN(ERROR) << "GetUserProfileDirectory hr=" << putHR(hr);

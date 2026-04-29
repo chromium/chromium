@@ -152,7 +152,7 @@ base::ProcessId GetGenericAppRootProcessId(
     }
 
     main_process_id_candidate = parent_id;
-    parent_id = base::GetParentProcessId(parent_process_handle.Get());
+    parent_id = base::GetParentProcessId(parent_process_handle.get());
     parent_process_handle.Set(OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION,
                                           /*bInheritHandle=*/FALSE, parent_id));
   }

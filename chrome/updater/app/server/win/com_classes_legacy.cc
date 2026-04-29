@@ -1188,7 +1188,7 @@ STDMETHODIMP LegacyProcessLauncherImpl::LaunchCmdElevated(
   ScopedKernelHANDLE duplicate_proc_handle;
   if (!::DuplicateHandle(
           ::GetCurrentProcess(), app_command_web->process().Handle(),
-          caller_proc_handle.Get(),
+          caller_proc_handle.get(),
           ScopedKernelHANDLE::Receiver(duplicate_proc_handle).get(),
           PROCESS_QUERY_LIMITED_INFORMATION | SYNCHRONIZE, FALSE, 0)) {
     HRESULT hr = HRESULTFromLastError();

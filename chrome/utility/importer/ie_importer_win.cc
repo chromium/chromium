@@ -67,8 +67,9 @@ base::Time GetFileCreationTime(const base::FilePath& file) {
   if (!file_handle.is_valid()) {
     return creation_time;
   }
-  if (GetFileTime(file_handle.Get(), &creation_filetime, NULL, NULL))
+  if (GetFileTime(file_handle.get(), &creation_filetime, NULL, NULL)) {
     creation_time = base::Time::FromFileTime(creation_filetime);
+  }
   return creation_time;
 }
 
