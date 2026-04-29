@@ -45,6 +45,7 @@ class PLATFORM_EXPORT XrGpuFrameTransportDelegate
   // XRFrameTransportDelegate overrides
   void WaitOnFence(gfx::GpuFence* fence) override;
   gpu::SyncToken GenerateSyncToken() override;
+  void VerifySyncToken(gpu::SyncToken& sync_token) override;
   std::pair<gfx::GpuMemoryBufferHandle, gpu::SyncToken> CopyImage(
       SharedImageHolder* image,
       bool last_transfer_succeeded) override;

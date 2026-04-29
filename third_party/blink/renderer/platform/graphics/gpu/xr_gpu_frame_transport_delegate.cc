@@ -50,6 +50,32 @@ gpu::SyncToken XrGpuFrameTransportDelegate::GenerateSyncToken() {
   return sync_token;
 }
 
+void XrGpuFrameTransportDelegate::VerifySyncToken(gpu::SyncToken& sync_token) {
+  if (!context_provider_) {
+    return;
+  }
+
+  auto dawn_control_client = context_provider_->GetDawnControlClient();
+  if (!dawn_control_client) {
+    return;
+  }
+
+  auto context_provider_weak_ptr =
+      dawn_control_client->GetContextProviderWeakPtr();
+  if (!context_provider_weak_ptr) {
+    return;
+  }
+
+  WebGraphicsContext3DProvider& context_provider =
+      context_provider_weak_ptr->ContextProvider();
+
+  gpu::webgpu::WebGPUInterface* webgpu = context_provider.WebGPUInterface();
+  TRACE_EVENT0("gpu", "VerifySyncTokenCHROMIUM");
+
+  int8_t* sync_token_data = sync_token.GetData();
+  webgpu->VerifySyncTokensCHROMIUM(&sync_token_data, 1);
+}
+
 std::pair<gfx::GpuMemoryBufferHandle, gpu::SyncToken>
 XrGpuFrameTransportDelegate::CopyImage(SharedImageHolder* image,
                                        bool last_transfer_succeeded) {
