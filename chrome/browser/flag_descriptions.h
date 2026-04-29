@@ -4283,14 +4283,6 @@ inline constexpr char kProfileCreationDeclineSigninCTAExperimentDescription[] =
     "As part of the Sign In Level Up experiment, changes the decline "
     "sign in CTA string in profile creation entry points";
 
-inline constexpr char
-    kProfileCreationFrictionReductionExperimentSkipCustomizeProfileName[] =
-        "Skip customize profile step for friction reduction experiment";
-inline constexpr char
-    kProfileCreationFrictionReductionExperimentSkipCustomizeProfileDescription
-        [] = "As part of the profile creation friction reduction experiment, "
-             "skips the customize profile bubble";
-
 inline constexpr char kProfilePickerTextVariationsName[] =
     "Profile Picker Text Variations";
 inline constexpr char kProfilePickerTextVariationsDescription[] =

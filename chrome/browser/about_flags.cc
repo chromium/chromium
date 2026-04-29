@@ -12178,18 +12178,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(switches::kProfileCreationDeclineSigninCTAExperiment)},
 #endif
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-    {"profile-creation-friction-reduction-experiment-skip-customize-profile",
-     flag_descriptions::
-         kProfileCreationFrictionReductionExperimentSkipCustomizeProfileName,
-     flag_descriptions::
-         kProfileCreationFrictionReductionExperimentSkipCustomizeProfileDescription,
-     kOsMac | kOsWin | kOsLinux,
-     FEATURE_VALUE_TYPE(
-         switches::
-             kProfileCreationFrictionReductionExperimentSkipCustomizeProfile)},
-#endif
-
 #if !BUILDFLAG(IS_ANDROID)
     {"search-settings-update", flag_descriptions::kSearchSettingsUpdateName,
      flag_descriptions::kSearchSettingsUpdateDescription, kOsDesktop,

@@ -511,12 +511,6 @@ BASE_DECLARE_FEATURE(kPasswordUploadUiUpdate);
 // creation.
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kProfileCreationDeclineSigninCTAExperiment);
-
-// Experimenting with removing the profile customization bubble in the profile
-// creation flow.
-COMPONENT_EXPORT(SIGNIN_SWITCHES)
-BASE_DECLARE_FEATURE(
-    kProfileCreationFrictionReductionExperimentSkipCustomizeProfile);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_ANDROID)

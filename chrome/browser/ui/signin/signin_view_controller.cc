@@ -276,24 +276,6 @@ GURL GetSigninUrlForDiceSigninTab(
   return signin::GetAddAccountURLForDice(email_hint, continue_url);
 }
 
-void FinishProfileCreationWhenNoCustomizeProfileIsShown(
-    const raw_ref<Profile> profile,
-    bool is_local_profile_creation) {
-  ProfileAttributesEntry* entry =
-      g_browser_process->profile_manager()
-          ->GetProfileAttributesStorage()
-          .GetProfileAttributesWithPath(profile->GetPath());
-  if (!is_local_profile_creation || !entry->IsOmitted()) {
-    return;
-  }
-
-  entry->SetIsOmitted(false);
-
-  if (!profile->GetPrefs()->GetBoolean(prefs::kForceEphemeralProfiles)) {
-    entry->SetIsEphemeral(false);
-  }
-}
-
 ChromeSignoutConfirmationPromptVariant GetSignoutConfirmationPromptVariant(
     size_t unsynced_data_count,
     bool is_bookmarks_limit_exceeded,
@@ -481,14 +463,6 @@ void SigninViewController::MaybeShowChromeSigninDialogForExtensions(
 void SigninViewController::ShowModalProfileCustomizationDialog(
     bool is_local_profile_creation) {
   CloseModalSignin();
-  if (base::FeatureList::IsEnabled(
-          switches::
-              kProfileCreationFrictionReductionExperimentSkipCustomizeProfile)) {
-    FinishProfileCreationWhenNoCustomizeProfileIsShown(
-        profile_, is_local_profile_creation);
-    return;
-  }
-
   dialog_ = std::make_unique<SigninModalDialogImpl>(
       SigninViewControllerDelegate::CreateProfileCustomizationDelegate(
           browser_->GetBrowserForMigrationOnly(), is_local_profile_creation,
