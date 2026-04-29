@@ -44,6 +44,10 @@ constexpr uint8_t kMaxQP = 117;
 constexpr uint8_t kScreenMinQP = 12;
 constexpr uint8_t kScreenMaxQP = 106;
 
+constexpr uint8_t kMinSupportedVP8TemporalLayers = 2;
+constexpr uint8_t kMaxSupportedVP8TemporalLayers = 3;
+constexpr size_t kTemporalLayerCycle = 4;
+
 // Convert Qindex, whose range is 0-127, to the quantizer parameter used in
 // libvpx vp8 rate control, whose range is 0-63.
 // Cited from //third_party/libvpx/source/libvpx/vp8/vp8_ratectrl_rtc.cc
@@ -88,6 +92,8 @@ libvpx::VP8RateControlRtcConfig CreateRateControlConfig(
     const VP8VaapiVideoEncoderDelegate::EncodeParams& encode_params,
     const VideoBitrateAllocation& bitrate_allocation,
     size_t num_temporal_layers) {
+  // This function can be called with |num_temporal_layers| = 1.
+  CHECK_LE(num_temporal_layers, kMaxSupportedVP8TemporalLayers);
   libvpx::VP8RateControlRtcConfig rc_cfg{};
   rc_cfg.width = encode_size.width();
   rc_cfg.height = encode_size.height();
@@ -151,18 +157,14 @@ Vp8FrameHeader GetDefaultVp8FrameHeader(bool keyframe,
   return hdr;
 }
 
-constexpr uint8_t kMinSupportedVP8TemporalLayers = 2;
-constexpr uint8_t kMaxSupportedVP8TemporalLayers = 3;
-constexpr size_t kTemporalLayerCycle = 4;
-
 bool UpdateFrameHeaderForTemporalLayerEncoding(
     const size_t num_layers,
     const size_t frame_num,
     Vp8FrameHeader& frame_hdr,
     Vp8Metadata& metadata,
     std::array<bool, kNumVp8ReferenceBuffers>& ref_frames_used) {
-  DCHECK_GE(num_layers, kMinSupportedVP8TemporalLayers);
-  DCHECK_LE(num_layers, kMaxSupportedVP8TemporalLayers);
+  CHECK_GE(num_layers, kMinSupportedVP8TemporalLayers);
+  CHECK_LE(num_layers, kMaxSupportedVP8TemporalLayers);
   enum BufferFlags : uint8_t {
     kNone = 0,
     kReference = 1,
@@ -452,15 +454,17 @@ bool VP8VaapiVideoEncoderDelegate::UpdateRates(
       current_params_.framerate == framerate) {
     return true;
   }
-  DVLOGF(2) << "New bitrate: " << bitrate_allocation.ToString()
-            << ", new framerate: " << framerate;
-
-  current_params_.bitrate_allocation = bitrate_allocation;
-  current_params_.framerate = framerate;
 
   if (VP8TLEncodingIsEnabled()) {
     const size_t new_num_temporal_layers =
         GetActiveTemporalLayers(bitrate_allocation);
+    if (new_num_temporal_layers > kMaxSupportedVP8TemporalLayers ||
+        new_num_temporal_layers == 0) {
+      VLOGF(1) << "Unsupported number of temporal layers: "
+               << new_num_temporal_layers
+               << ", bitrate_allocation:" << bitrate_allocation.ToString();
+      return false;
+    }
     if (new_num_temporal_layers != num_temporal_layers_) {
       VLOGF(2) << "The number of temporal layers is changed, from "
                << base::strict_cast<int>(num_temporal_layers_) << " to "
@@ -475,6 +479,12 @@ bool VP8VaapiVideoEncoderDelegate::UpdateRates(
       frame_num_ = base::bits::AlignUp(frame_num_, kTemporalLayerCycle);
     }
   }
+
+  DVLOGF(2) << "New bitrate: " << bitrate_allocation.ToString()
+            << ", new framerate: " << framerate;
+
+  current_params_.bitrate_allocation = bitrate_allocation;
+  current_params_.framerate = framerate;
 
   rate_ctrl_->UpdateRateControl(
       CreateRateControlConfig(visible_size_, current_params_,
