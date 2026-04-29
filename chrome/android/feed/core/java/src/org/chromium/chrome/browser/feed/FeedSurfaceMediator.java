@@ -11,11 +11,13 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.os.Handler;
 import android.view.View;
+import android.view.View.OnLayoutChangeListener;
 import android.view.ViewGroup;
 
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.LayoutManager;
+import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
 
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
@@ -200,13 +202,13 @@ public class FeedSurfaceMediator
     private final SigninManager mSigninManager;
     private final TemplateUrlService mTemplateUrlService;
     private final FeedActionDelegate mActionDelegate;
-    private View.@Nullable OnLayoutChangeListener mOnLayoutChangeListener;
+    private @Nullable OnLayoutChangeListener mOnLayoutChangeListener;
     private @Nullable SnapScrollHelper mSnapScrollHelper;
 
     private final SettableNonNullObservableSupplier<Integer> mGetRestoringStateSupplier =
             ObservableSuppliers.createNonNull(RestoringState.WAITING_TO_RESTORE);
 
-    private RecyclerView.@Nullable OnScrollListener mStreamScrollListener;
+    private @Nullable OnScrollListener mStreamScrollListener;
     private @Nullable RecyclerViewAnimationFinishDetector mStreamScrollAnimationFinishDetector;
     private final ObserverList<ScrollListener> mScrollListeners = new ObserverList<>();
     private @Nullable ContentChangedListener mStreamContentChangedListener;
@@ -469,7 +471,7 @@ public class FeedSurfaceMediator
 
         mStreamScrollAnimationFinishDetector = new RecyclerViewAnimationFinishDetector();
         mStreamScrollListener =
-                new RecyclerView.OnScrollListener() {
+                new OnScrollListener() {
                     @Override
                     public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                         for (ScrollListener listener : mScrollListeners) {

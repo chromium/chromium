@@ -14,6 +14,7 @@ import android.view.Display;
 import android.view.DisplayCutout;
 import android.view.Surface;
 import android.view.View;
+import android.view.View.OnLayoutChangeListener;
 import android.view.WindowInsets;
 import android.view.WindowInsetsAnimation;
 
@@ -189,7 +190,7 @@ abstract class PartialCustomTabVersionCompat {
 
     /** Implementation that supports version below R */
     private static class PartialCustomTabVersionCompatLegacy extends PartialCustomTabVersionCompat {
-        private View.@Nullable OnLayoutChangeListener mLayoutListener;
+        private @Nullable OnLayoutChangeListener mLayoutListener;
 
         private PartialCustomTabVersionCompatLegacy(Activity activity, Runnable positionUpdater) {
             super(activity, positionUpdater);
@@ -206,7 +207,7 @@ abstract class PartialCustomTabVersionCompat {
             if (contentFrame == null) return;
 
             contentFrame.addOnLayoutChangeListener(
-                    new View.OnLayoutChangeListener() {
+                    new OnLayoutChangeListener() {
                         @Override
                         public void onLayoutChange(
                                 View v,

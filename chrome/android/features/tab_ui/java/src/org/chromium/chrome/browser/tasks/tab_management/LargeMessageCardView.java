@@ -19,7 +19,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
+import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData.PriceDrop;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -160,7 +160,7 @@ class LargeMessageCardView extends FrameLayout {
     }
 
     /** Setup the price info box. */
-    void setupPriceInfoBox(ShoppingPersistedTabData.@Nullable PriceDrop priceDrop) {
+    void setupPriceInfoBox(@Nullable PriceDrop priceDrop) {
         if (priceDrop != null) {
             mPriceInfoBox.setPriceStrings(priceDrop.price, priceDrop.previousPrice);
             mPriceInfoBox.setVisibility(View.VISIBLE);

@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
+import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider.TabFaviconFetcher;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.ModelListPropertyChangeFilter;
@@ -71,7 +71,7 @@ public class TabStripSnapshotter {
 
     /** Simple tuple to hold all relevant fields for a single tab item. */
     private static class TabStripItemSnapshot {
-        public final TabListFaviconProvider.@Nullable TabFaviconFetcher mTabFaviconFetcher;
+        public final @Nullable TabFaviconFetcher mTabFaviconFetcher;
         public final boolean mFaviconFetched;
         public final boolean mIsSelected;
 

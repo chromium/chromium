@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
 
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.AutofillImageFetcher;
@@ -40,9 +41,7 @@ public class CreditCardAccessorySheetCoordinator extends AccessorySheetTabCoordi
      * @param scrollListener An optional listener that will be bound to the inflated recycler view.
      */
     public CreditCardAccessorySheetCoordinator(
-            Context context,
-            Profile profile,
-            RecyclerView.@Nullable OnScrollListener scrollListener) {
+            Context context, Profile profile, @Nullable OnScrollListener scrollListener) {
         super(
                 context.getString(R.string.autofill_payment_methods),
                 R.drawable.infobar_autofill_cc,

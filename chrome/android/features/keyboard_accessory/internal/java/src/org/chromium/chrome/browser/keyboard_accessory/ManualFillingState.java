@@ -11,6 +11,7 @@ import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponent.UpdateAccessorySheetDelegate;
 import org.chromium.chrome.browser.keyboard_accessory.data.CachedProviderAdapter;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.AccessorySheetData;
@@ -33,7 +34,7 @@ class ManualFillingState {
     private final SparseArray<MonotonicObservableSupplier<AccessorySheetData>> mSheetDataProviders =
             new SparseArray<>();
     private final SparseArray<KeyboardAccessoryData.Tab> mAvailableTabs = new SparseArray<>();
-    private ManualFillingComponent.@Nullable UpdateAccessorySheetDelegate mUpdater;
+    private @Nullable UpdateAccessorySheetDelegate mUpdater;
     @Nullable private CachedProviderAdapter<KeyboardAccessoryData.Action[]> mActionsProvider;
     private boolean mWebContentsShowing;
 
@@ -76,7 +77,7 @@ class ManualFillingState {
         if (mActionsProvider != null) mActionsProvider.notifyAboutCachedItems();
     }
 
-    void setSheetUpdater(ManualFillingComponent.UpdateAccessorySheetDelegate delegate) {
+    void setSheetUpdater(UpdateAccessorySheetDelegate delegate) {
         mUpdater = delegate;
     }
 

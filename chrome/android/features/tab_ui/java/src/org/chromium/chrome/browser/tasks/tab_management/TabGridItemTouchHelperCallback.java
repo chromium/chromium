@@ -78,7 +78,7 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper2.SimpleCallb
             ObservableSuppliers.createNonNull(Tab.INVALID_TAB_ID);
     private final TabActionListener mTabClosedListener;
     private final String mComponentName;
-    private final TabListMediator.@Nullable TabGridDialogHandler mTabGridDialogHandler;
+    private final @Nullable TabGridDialogHandler mTabGridDialogHandler;
     private final int mLongPressDpThresholdSquared;
     private final TabGroupCreationDialogManager mTabGroupCreationDialogManager;
     private final SettableMonotonicObservableSupplier<RecyclerView> mRecyclerViewSupplier =

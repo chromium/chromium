@@ -80,6 +80,7 @@ import org.chromium.chrome.browser.tasks.tab_management.PriceWelcomeMessageContr
 import org.chromium.chrome.browser.tasks.tab_management.TabGridContextMenuCoordinator.ShowTabListEditor;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridDialogMediator.DialogController;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridItemLongPressOrchestrator.CancelLongPressTabItemEventListener;
+import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.DragObserver;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.TabListEditorController;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.GridCardOnClickListenerProvider;
@@ -252,7 +253,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
     private @Nullable Function<Integer, View> mFetchViewByIndex;
     private @Nullable Supplier<Pair<Integer, Integer>> mGetVisibleIndex;
     private EdgeToEdgePadAdjuster mEdgeToEdgePadAdjuster;
-    private TabListCoordinator.@Nullable DragObserver mDragObserver;
+    private @Nullable DragObserver mDragObserver;
     private @Nullable TabSwitcherGroupSuggestionService mTabSwitcherGroupSuggestionService;
     private int mEdgeToEdgeBottomInsets;
 
@@ -627,7 +628,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
             mTabGroupModelFilterSupplier.addSyncObserverAndPostIfNonNull(mOnFilterChange);
 
             mDragObserver =
-                    new TabListCoordinator.DragObserver() {
+                    new DragObserver() {
                         @Override
                         public void onDragStart() {
                             // Prevent the context menu from interfering with tab dragging.

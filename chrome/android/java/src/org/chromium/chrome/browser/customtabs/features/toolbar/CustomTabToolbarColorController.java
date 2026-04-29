@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.ui.web_app_header.WebAppHeaderUtils;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager.AppHeaderObserver;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.ui.util.ColorUtils;
 
@@ -37,7 +38,7 @@ public class CustomTabToolbarColorController
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
 
-    private DesktopWindowStateManager.@Nullable AppHeaderObserver mHeaderObserver;
+    private @Nullable AppHeaderObserver mHeaderObserver;
     private @Nullable ToolbarManager mToolbarManager;
 
     /** Whether the current activity is in a focused window, the top resumed activity. */
@@ -71,8 +72,8 @@ public class CustomTabToolbarColorController
         mBrowserServicesThemeColorProvider.addTintObserver(this);
     }
 
-    private DesktopWindowStateManager.AppHeaderObserver createAppHeaderObserver() {
-        return new DesktopWindowStateManager.AppHeaderObserver() {
+    private AppHeaderObserver createAppHeaderObserver() {
+        return new AppHeaderObserver() {
             @Override
             public void onDesktopWindowingModeChanged(boolean isInDesktopWindow) {
                 updateBackgroundColor();
@@ -185,7 +186,7 @@ public class CustomTabToolbarColorController
     }
 
     @VisibleForTesting
-    DesktopWindowStateManager.@Nullable AppHeaderObserver getAppHeaderObserver() {
+    @Nullable AppHeaderObserver getAppHeaderObserver() {
         return mHeaderObserver;
     }
 }

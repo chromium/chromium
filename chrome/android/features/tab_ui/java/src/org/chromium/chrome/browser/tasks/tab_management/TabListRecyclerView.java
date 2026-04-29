@@ -22,6 +22,7 @@ import android.view.accessibility.AccessibilityNodeInfo.AccessibilityAction;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView.ItemAnimator;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.NonNullObservableSupplier;
@@ -52,7 +53,7 @@ public class TabListRecyclerView extends RecyclerView
     private boolean mBlockTouchInput;
     private boolean mIsSmoothScrolling;
     // Null unless item animations are disabled.
-    private RecyclerView.@Nullable ItemAnimator mDisabledAnimatorHolder;
+    private @Nullable ItemAnimator mDisabledAnimatorHolder;
 
     private final RunOnNextLayoutDelegate mRunOnNextLayoutDelegate;
     private final SettableNonNullObservableSupplier<Boolean> mIsAnimatorRunningSupplier =

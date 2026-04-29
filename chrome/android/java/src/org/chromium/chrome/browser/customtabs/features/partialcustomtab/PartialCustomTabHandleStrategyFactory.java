@@ -9,7 +9,7 @@ import android.content.Context;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabBaseStrategy.PartialCustomTabType;
-import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
+import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar.HandleStrategy;
 
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
@@ -20,7 +20,7 @@ import java.util.function.Supplier;
  */
 @NullMarked
 public class PartialCustomTabHandleStrategyFactory {
-    public CustomTabToolbar.@Nullable HandleStrategy create(
+    public @Nullable HandleStrategy create(
             @PartialCustomTabType int type,
             Context context,
             BooleanSupplier isFullHeight,

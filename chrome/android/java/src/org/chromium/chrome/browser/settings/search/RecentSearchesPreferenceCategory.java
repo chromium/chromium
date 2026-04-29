@@ -5,7 +5,7 @@
 package org.chromium.chrome.browser.settings.search;
 
 import android.content.Context;
-import android.view.View;
+import android.view.View.OnClickListener;
 
 import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceViewHolder;
@@ -19,7 +19,7 @@ import org.chromium.ui.widget.ButtonCompat;
 @NullMarked
 public class RecentSearchesPreferenceCategory extends PreferenceCategory {
 
-    private View.@Nullable OnClickListener mActionListener;
+    private @Nullable OnClickListener mActionListener;
 
     public RecentSearchesPreferenceCategory(Context context) {
         super(context);
@@ -36,7 +36,7 @@ public class RecentSearchesPreferenceCategory extends PreferenceCategory {
         }
     }
 
-    public void setOnActionClickListener(View.OnClickListener listener) {
+    public void setOnActionClickListener(OnClickListener listener) {
         mActionListener = listener;
         notifyChanged();
     }

@@ -14,6 +14,7 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.LayoutRes;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
 
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.Nullable;
@@ -30,7 +31,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
  */
 public abstract class AccessorySheetTabCoordinator implements KeyboardAccessoryData.Tab.Listener {
     private final KeyboardAccessoryData.Tab mTab;
-    private final RecyclerView.OnScrollListener mScrollListener;
+    private final OnScrollListener mScrollListener;
 
     protected final PropertyModel mModel;
 
@@ -51,7 +52,7 @@ public abstract class AccessorySheetTabCoordinator implements KeyboardAccessoryD
             String contentDescription,
             @LayoutRes int layout,
             @AccessoryTabType int tabType,
-            RecyclerView.@Nullable OnScrollListener scrollListener) {
+            @Nullable OnScrollListener scrollListener) {
         mTab =
                 new KeyboardAccessoryData.Tab(
                         title, iconId, contentDescription, layout, tabType, this);

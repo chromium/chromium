@@ -17,6 +17,7 @@ import android.widget.TextView;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
 
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.keyboard_accessory.R;
@@ -27,8 +28,8 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**
- * This stateless class provides methods to bind a {@link ListModel<AccessorySheetDataPiece>}
- * to the {@link RecyclerView} used as view of a tab for the accessory sheet component.
+ * This stateless class provides methods to bind a {@link ListModel<AccessorySheetDataPiece>} to the
+ * {@link RecyclerView} used as view of a tab for the accessory sheet component.
  */
 class AccessorySheetTabViewBinder {
     /** Holds any View that represents a list entry. */
@@ -128,8 +129,7 @@ class AccessorySheetTabViewBinder {
         }
     }
 
-    static void initializeView(
-            RecyclerView view, RecyclerView.@Nullable OnScrollListener scrollListener) {
+    static void initializeView(RecyclerView view, @Nullable OnScrollListener scrollListener) {
         view.setLayoutManager(
                 new LinearLayoutManager(view.getContext(), LinearLayoutManager.VERTICAL, false));
         view.setItemAnimator(null);

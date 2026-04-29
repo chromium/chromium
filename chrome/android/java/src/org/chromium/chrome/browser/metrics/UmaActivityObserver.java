@@ -10,6 +10,7 @@ import android.content.Context;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
+import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -38,7 +39,7 @@ public class UmaActivityObserver implements DestroyObserver {
     /** Activities that implement this interface manage their own UMA Session starting/ending. */
     public interface UmaSessionAwareActivity {}
 
-    private static ApplicationStatus.@Nullable ActivityStateListener sAppActivityListener;
+    private static @Nullable ActivityStateListener sAppActivityListener;
 
     static {
         doStaticInit();
@@ -48,7 +49,7 @@ public class UmaActivityObserver implements DestroyObserver {
         // Handles the case where we open a non-UMA aware activity like Bookmarks over CTA, and then
         // the user hides the Bookmarks Activity (which should end the session).
         sAppActivityListener =
-                new ApplicationStatus.ActivityStateListener() {
+                new ActivityStateListener() {
                     @Override
                     public void onActivityStateChange(Activity activity, int newState) {
                         if (activity instanceof UmaSessionAwareActivity) return;

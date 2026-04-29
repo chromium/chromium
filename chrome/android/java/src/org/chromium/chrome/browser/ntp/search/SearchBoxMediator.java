@@ -31,7 +31,7 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
-import org.chromium.chrome.browser.omnibox.status.StatusProperties;
+import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -101,7 +101,7 @@ class SearchBoxMediator implements DestroyObserver {
         mModel.set(SearchBoxProperties.SEARCH_BOX_CLICK_CALLBACK, v -> listener.onClick(v));
     }
 
-    void setSearchEngineIcon(StatusProperties.@Nullable StatusIconResource newIcon) {
+    void setSearchEngineIcon(@Nullable StatusIconResource newIcon) {
         if (newIcon == null) {
             mModel.set(
                     SearchBoxProperties.DSE_ICON_DRAWABLE,

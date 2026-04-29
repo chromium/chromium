@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.notifications.NotificationUmaTracker.SystemNo
 import org.chromium.chrome.browser.notifications.NotificationWrapperBuilderFactory;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions.ChannelId;
 import org.chromium.chrome.browser.util.DefaultBrowserInfo;
+import org.chromium.chrome.browser.util.DefaultBrowserInfo.DefaultInfo;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
@@ -85,8 +86,7 @@ public class ReengagementNotificationController {
     }
 
     @VisibleForTesting
-    protected void getDefaultBrowserInfo(
-            Callback<DefaultBrowserInfo.@Nullable DefaultInfo> callback) {
+    protected void getDefaultBrowserInfo(Callback<@Nullable DefaultInfo> callback) {
         DefaultBrowserInfo.getDefaultBrowserInfo(callback);
     }
 
