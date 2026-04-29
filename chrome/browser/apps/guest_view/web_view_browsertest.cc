@@ -2686,7 +2686,7 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, CannotNavigateGuestToChromeURL) {
   GURL original_url = guest_main_frame->GetLastCommittedURL();
 
   // Try to navigate <webview> to a chrome: URL directly.
-  GURL chrome_url(chrome::kChromeUINewTabURL);
+  GURL chrome_url = chrome::ChromeUINewTabURLAsGURL();
   content::TestFrameNavigationObserver observer(guest_main_frame);
   guest->GetController().LoadURL(chrome_url, content::Referrer(),
                                  ui::PAGE_TRANSITION_AUTO_TOPLEVEL,

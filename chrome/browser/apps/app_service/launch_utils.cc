@@ -97,7 +97,7 @@ Browser* CreateBrowserWithNewTabPage(Profile* profile) {
   Browser::CreateParams create_params(profile, /*user_gesture=*/false);
   Browser* browser = Browser::Create(create_params);
 
-  NavigateParams params(browser, GURL(chrome::kChromeUINewTabURL),
+  NavigateParams params(browser, chrome::ChromeUINewTabURLAsGURL(),
                         ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
   params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
   params.tabstrip_add_types = AddTabTypes::ADD_ACTIVE;
