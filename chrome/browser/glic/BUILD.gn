@@ -316,6 +316,10 @@ source_set("impl") {
 
     # Desktop only
     sources += [
+      "experimental_opt_in/glic_experimental_opt_in_controller.cc",
+      "experimental_opt_in/glic_experimental_opt_in_controller.h",
+      "experimental_opt_in/glic_experimental_opt_in_dialog_view.cc",
+      "experimental_opt_in/glic_experimental_opt_in_dialog_view.h",
       "glic_selection_observer.cc",
       "glic_settings_util_desktop.cc",
       "host/context/glic_focused_browser_manager_impl.cc",
@@ -650,6 +654,7 @@ source_set("browser_tests") {
   if (!is_android) {
     sources += [
       "actor/glic_actor_policy_checker_browsertest.cc",
+      "experimental_opt_in/glic_experimental_opt_in_dialog_browsertest.cc",
       "glic_browsertest.cc",
       "glic_context_menu_browsertest.cc",
       "glic_metrics_browsertest.cc",
