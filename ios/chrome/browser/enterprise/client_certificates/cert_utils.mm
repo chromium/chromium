@@ -15,6 +15,7 @@
 #import "base/strings/strcat.h"
 #import "base/strings/string_split.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/threading/scoped_blocking_call.h"
 #import "components/enterprise/client_certificates/core/browser_cloud_management_delegate.h"
 #import "components/enterprise/client_certificates/core/certificate_provisioning_service.h"
 #import "components/enterprise/client_certificates/core/dm_server_client.h"
@@ -25,6 +26,7 @@
 #import "components/enterprise/client_certificates/ios/certificate_provisioning_service_ios.h"
 #import "crypto/unexportable_key.h"
 #import "ios/chrome/browser/enterprise/client_certificates/browser_context_delegate_ios.h"
+#import "ios/chrome/browser/enterprise/client_certificates/lazy_unexportable_private_key_factory.h"
 #import "ios/chrome/common/ios_app_bundle_id_prefix_buildflags.h"
 
 using base::apple::CFToNSPtrCast;
@@ -76,7 +78,11 @@ std::optional<std::string> ComputeAppIdentifierPrefix() {
   return std::string(components[0]);
 }
 
+}  // namespace
+
 std::optional<std::string> GetAccessGroup() {
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::WILL_BLOCK);
   auto appIdentifier = ComputeAppIdentifierPrefix();
   if (!appIdentifier.has_value()) {
     return std::nullopt;
@@ -85,30 +91,9 @@ std::optional<std::string> GetAccessGroup() {
                        ".devicetrust"});
 }
 
-}  // namespace
-
 std::unique_ptr<PrivateKeyFactory> CreatePrivateKeyFactory(
     std::string_view application_tag) {
-  PrivateKeyFactory::PrivateKeyFactoriesMap sub_factories;
-  crypto::UnexportableKeyProvider::Config config;
-  auto access_group = GetAccessGroup();
-  if (access_group.has_value()) {
-    config.keychain_access_group = access_group.value();
-    if (!application_tag.empty()) {
-      config.application_tag = std::string(application_tag);
-    }
-
-    auto unexportable_key_factory =
-        UnexportablePrivateKeyFactory::TryCreate(std::move(config));
-    if (unexportable_key_factory) {
-      sub_factories.insert_or_assign(PrivateKeySource::kUnexportableKey,
-                                     std::move(unexportable_key_factory));
-    } else {
-      LOG(ERROR) << "Failed to create unexportable key factory.";
-    }
-  }
-
-  return PrivateKeyFactory::Create(std::move(sub_factories));
+  return std::make_unique<LazyUnexportablePrivateKeyFactory>(application_tag);
 }
 
 void DeleteClientCertificateKeys(std::string_view profile_name) {

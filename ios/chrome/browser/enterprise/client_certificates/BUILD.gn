@@ -50,6 +50,8 @@ source_set("util") {
     "browser_context_delegate_ios.h",
     "browser_context_delegate_ios.mm",
     "cert_utils.mm",
+    "lazy_unexportable_private_key_factory.h",
+    "lazy_unexportable_private_key_factory.mm",
   ]
 
   public_deps = [ "//components/enterprise/client_certificates/ios" ]
@@ -70,6 +72,7 @@ source_set("unit_tests") {
   sources = [
     "browser_context_delegate_ios_unittest.mm",
     "client_certificates_service_ios_unittest.mm",
+    "lazy_unexportable_private_key_factory_unittest.mm",
     "profile_context_delegate_ios_unittest.mm",
   ]
 
