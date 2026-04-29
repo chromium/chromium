@@ -31,7 +31,9 @@ void GameDashboardTestBase::SetUp() {
 
 void GameDashboardTestBase::AdvanceClock(base::TimeDelta delta) {
   task_environment()->AdvanceClock(delta);
-  task_environment()->RunUntilIdle();
+  // Run timers that became due at the advanced mock time without moving past
+  // the long recording intervals used by callers.
+  task_environment()->FastForwardBy(base::TimeDelta());
 }
 
 bool GameDashboardTestBase::IsControllerObservingWindow(
