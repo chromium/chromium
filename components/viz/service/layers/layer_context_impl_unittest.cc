@@ -38,9 +38,25 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/latency/latency_info.h"
 
 namespace viz {
 namespace {
+
+TEST_F(LayerContextImplTest, RejectsTerminatedLatencyInfo) {
+  auto update = CreateDefaultUpdate();
+
+  ui::LatencyInfo latency;
+  latency.set_trace_id(12345);
+  latency.AddLatencyNumber(ui::INPUT_EVENT_LATENCY_BEGIN_RWH_COMPONENT);
+  latency.Terminate();
+
+  update->latency_info.push_back(latency);
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), "Received already-terminated LatencyInfo");
+}
 
 class LayerContextImplUpdateDisplayTreeUIResourceRequestTest
     : public LayerContextImplTest,

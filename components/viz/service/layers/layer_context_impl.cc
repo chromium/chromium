@@ -2002,6 +2002,9 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
   host_impl_->set_next_frame_token_from_client(update->next_frame_token);
 
   for (const auto& latency : update->latency_info) {
+    if (latency.terminated()) {
+      return base::unexpected("Received already-terminated LatencyInfo");
+    }
     layers.QueuePinnedSwapPromise(
         std::make_unique<cc::LatencyInfoSwapPromise>(latency));
   }
