@@ -98,6 +98,9 @@ class GlicSelectionObserver
   void ShowSelectionAffordance(const std::u16string& selected_text,
                                BrowserWindowInterface* bwi);
 
+  bool ShouldShowSelectionWidget();
+  void OnWidgetDismissed();
+
   void CopyLinkToHighlight(content::WeakDocumentPtr weak_document_ptr);
 
   void WriteLinkToClipboard(content::WeakDocumentPtr weak_document_ptr,

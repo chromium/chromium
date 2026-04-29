@@ -11,8 +11,11 @@
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/features.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/prefs/pref_service.h"
 #include "components/shared_highlighting/core/common/shared_highlighting_features.h"
 #include "components/shared_highlighting/core/common/shared_highlighting_metrics.h"
 #include "components/tabs/public/mock_tab_interface.h"
@@ -102,6 +105,15 @@ class GlicSelectionObserverTest : public ChromeRenderViewHostTestHarness {
   std::unique_ptr<TestGlicSelectionObserver> observer_;
 
   TestGlicSelectionObserver* GetObserver() { return observer_.get(); }
+
+  bool ShouldShowSelectionWidget() {
+    return static_cast<GlicSelectionObserver*>(observer_.get())
+        ->ShouldShowSelectionWidget();
+  }
+
+  void OnWidgetDismissed() {
+    static_cast<GlicSelectionObserver*>(observer_.get())->OnWidgetDismissed();
+  }
 
   void CallOnLinkGenerated(
       const GURL& fallback_url,
@@ -459,6 +471,28 @@ TEST_F(GlicSelectionObserverTest, CopyLinkToHighlight) {
   }));
 
   ui::Clipboard::DestroyClipboardForCurrentThread();
+}
+
+TEST_F(GlicSelectionObserverTest, WidgetFrequencyCapping) {
+  auto* observer = GetObserver();
+  ASSERT_TRUE(observer);
+
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  PrefService* prefs = profile->GetPrefs();
+
+  // Initially we should be able to show the widget.
+  EXPECT_TRUE(ShouldShowSelectionWidget());
+
+  // Test total dismiss capping.
+  prefs->SetInteger(
+      prefs::kGlicSelectionWidgetDismissCount,
+      features::kGlicSelectionPromptWidgetMaxTotalDismisses.Get());
+  EXPECT_FALSE(ShouldShowSelectionWidget());
+
+  // Reset total dismiss capping.
+  prefs->SetInteger(prefs::kGlicSelectionWidgetDismissCount, 0);
+  EXPECT_TRUE(ShouldShowSelectionWidget());
 }
 
 }  // namespace glic

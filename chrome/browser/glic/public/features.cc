@@ -29,6 +29,10 @@ const base::FeatureParam<bool> kGlicSelectionPromptUpdatesOnly{
     &kGlicSelectionPrompt, "updates_only", false};
 const base::FeatureParam<bool> kGlicSelectionPromptUseWidget{
     &kGlicSelectionPrompt, "use_widget", true};
+const base::FeatureParam<std::string> kGlicSelectionTopCueOnlyList{
+    &kGlicSelectionPrompt, "top_cue_only_list", ""};
+const base::FeatureParam<int> kGlicSelectionPromptWidgetMaxTotalDismisses{
+    &kGlicSelectionPrompt, "max_total_dismisses", 10};
 
 BASE_FEATURE(kGlicDaisyChainViaCoordinator, base::FEATURE_ENABLED_BY_DEFAULT);
 

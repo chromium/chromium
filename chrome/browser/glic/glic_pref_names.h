@@ -125,6 +125,11 @@ inline constexpr char kGlicPreviousPositionY[] = "glic.previous_bounds.y";
 inline constexpr char kGlicClosedCaptioningEnabled[] =
     "glic.closed_captioning_enabled";
 
+// Integer pref that tracks the total number of times the user dismissed the
+// selection widget.
+inline constexpr char kGlicSelectionWidgetDismissCount[] =
+    "glic.selection_widget_dismiss_count";
+
 // Bool pref that determines if errors are allowed to be shown.
 inline constexpr char kGlicShowErrorAllowed[] = "glic.show_error_allowed";
 

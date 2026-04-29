@@ -55,6 +55,8 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   // Boolean pref for the closed captioning setting.
   registry->RegisterBooleanPref(prefs::kGlicClosedCaptioningEnabled, false);
 
+  registry->RegisterIntegerPref(prefs::kGlicSelectionWidgetDismissCount, 0);
+
   // Boolean pref that determines if errors are allowed to be shown.
   registry->RegisterBooleanPref(prefs::kGlicShowErrorAllowed, false);
 

@@ -9,6 +9,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
@@ -16,6 +17,7 @@
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/glic/browser_ui/glic_nudge_controller.h"
 #include "chrome/browser/glic/browser_ui/glic_selection_widget.h"
+#include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_zero_state_suggestions_manager.h"
 #include "chrome/browser/glic/host/context/glic_sharing_utils.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
@@ -33,6 +35,7 @@
 #include "chrome/browser/ui/toasts/toast_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/tracker.h"
+#include "components/prefs/pref_service.h"
 #include "components/shared_highlighting/core/common/disabled_sites.h"
 #include "components/shared_highlighting/core/common/fragment_directives_utils.h"
 #include "components/shared_highlighting/core/common/shared_highlighting_features.h"
@@ -56,6 +59,7 @@
 namespace glic {
 
 namespace {
+
 // The minimum amount of time to wait between processing selection changes.
 constexpr base::TimeDelta kSelectionProcessingDelay = base::Milliseconds(200);
 
@@ -576,6 +580,9 @@ void GlicSelectionObserver::ShowSelectionAffordance(
                            std::nullopt, std::move(invoke_glic));
     } else {
       // Show selection widget
+      if (!ShouldShowSelectionWidget()) {
+        return;
+      }
       // Find the RenderFrameHost that has the selection.
       content::RenderFrameHost* selected_frame =
           last_selection_frame_token_.has_value()
@@ -615,7 +622,9 @@ void GlicSelectionObserver::ShowSelectionAffordance(
                                     web_contents()->GetWeakPtr()),
                 base::BindRepeating(&GlicSelectionObserver::CopyLinkToHighlight,
                                     weak_ptr_factory_.GetWeakPtr(),
-                                    selected_frame->GetWeakDocumentPtr()))
+                                    selected_frame->GetWeakDocumentPtr()),
+                base::BindRepeating(&GlicSelectionObserver::OnWidgetDismissed,
+                                    weak_ptr_factory_.GetWeakPtr()))
                 ->GetWeakPtr();
         RequestLinkGeneration(selected_frame);
       } else if (bounds_retry_count_ < 5) {
@@ -629,6 +638,42 @@ void GlicSelectionObserver::ShowSelectionAffordance(
       }
     }
   }
+}
+
+bool GlicSelectionObserver::ShouldShowSelectionWidget() {
+  // Check the top cue only list.
+  std::string top_cue_only_list_str =
+      features::kGlicSelectionTopCueOnlyList.Get();
+  if (!top_cue_only_list_str.empty()) {
+    std::vector<std::string> top_cue_only_hosts =
+        base::SplitString(top_cue_only_list_str, ",", base::TRIM_WHITESPACE,
+                          base::SPLIT_WANT_NONEMPTY);
+    std::string_view current_host =
+        web_contents()->GetLastCommittedURL().host();
+    for (const std::string& host : top_cue_only_hosts) {
+      if (current_host == host || current_host.ends_with("." + host)) {
+        return false;
+      }
+    }
+  }
+
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  PrefService* prefs = profile->GetPrefs();
+  if (prefs->GetInteger(prefs::kGlicSelectionWidgetDismissCount) >=
+      features::kGlicSelectionPromptWidgetMaxTotalDismisses.Get()) {
+    return false;
+  }
+  return true;
+}
+
+void GlicSelectionObserver::OnWidgetDismissed() {
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  PrefService* prefs = profile->GetPrefs();
+  prefs->SetInteger(
+      prefs::kGlicSelectionWidgetDismissCount,
+      prefs->GetInteger(prefs::kGlicSelectionWidgetDismissCount) + 1);
 }
 
 void GlicSelectionObserver::RequestLinkGeneration(

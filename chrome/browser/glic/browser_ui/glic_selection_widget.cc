@@ -21,6 +21,7 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_variant.h"
+#include "ui/compositor/layer.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/gfx/text_utils.h"
@@ -43,6 +44,12 @@ constexpr int kIconSize = 20;
 
 constexpr int kButtonCornerRadius = 14;
 
+// The two pills are visually grouped together by having a smaller border radius
+// on the sides where they meet. The outer radius is roughly 50% of the expected
+// height to create a fully rounded pill shape.
+constexpr int kPillCornerRadiusOuter = 16;
+constexpr int kPillCornerRadiusInner = 8;
+
 class GlicSelectionContentsView : public views::View {
   METADATA_HEADER(GlicSelectionContentsView, views::View)
 
@@ -50,12 +57,39 @@ class GlicSelectionContentsView : public views::View {
   GlicSelectionContentsView(const std::u16string& selected_text,
                             base::RepeatingClosure on_ask_gemini,
                             base::RepeatingClosure on_copy,
-                            base::RepeatingClosure on_copy_link) {
+                            base::RepeatingClosure on_copy_link,
+                            base::RepeatingClosure on_dismiss) {
+    SetNotifyEnterExitOnChild(true);
+
+    auto border1 = std::make_unique<views::BubbleBorder>(
+        views::BubbleBorder::NONE, views::BubbleBorder::STANDARD_SHADOW);
+    border1->SetColor(ui::kColorSysBase);
+    border1->set_rounded_corners(
+        gfx::RoundedCornersF(kPillCornerRadiusOuter, kPillCornerRadiusInner,
+                             kPillCornerRadiusInner, kPillCornerRadiusOuter));
+
+    // BubbleBorders add a shadow inset on all sides. We use a negative
+    // spacing here so the visible backgrounds of the pills are closer together
+    // without their shadow insets pushing them far apart.
+    constexpr int kVisualSpacing = 2;
+    int spacing = kVisualSpacing - border1->GetInsets().right() -
+                  border1->GetInsets().left();
+
     auto layout = std::make_unique<views::BoxLayout>(
-        views::BoxLayout::Orientation::kHorizontal, gfx::Insets::VH(4, 4), 4);
+        views::BoxLayout::Orientation::kHorizontal, gfx::Insets(0), spacing);
     layout->set_cross_axis_alignment(
         views::BoxLayout::CrossAxisAlignment::kCenter);
     SetLayoutManager(std::move(layout));
+
+    auto* ask_pill = AddChildView(std::make_unique<views::BoxLayoutView>());
+    ask_pill->SetOrientation(views::BoxLayout::Orientation::kHorizontal);
+    ask_pill->SetInsideBorderInsets(gfx::Insets::VH(4, 4));
+    ask_pill->SetBetweenChildSpacing(4);
+    ask_pill->SetCrossAxisAlignment(
+        views::BoxLayout::CrossAxisAlignment::kCenter);
+    ask_pill->SetBackground(
+        std::make_unique<views::BubbleBackground>(border1.get()));
+    ask_pill->SetBorder(std::move(border1));
 
     // Ask Gemini Button
     std::u16string truncated_text;
@@ -71,10 +105,11 @@ class GlicSelectionContentsView : public views::View {
     auto ask_gemini_tooltip = l10n_util::GetStringFUTF16(
         IDS_GLIC_SELECTION_ASK_ABOUT,
         base::StrCat({u"\"", truncated_text, u"\""}));
-    auto* ask_gemini_btn = AddChildView(std::make_unique<views::MdTextButton>(
-        std::move(on_ask_gemini),
-        l10n_util::GetStringUTF16(
-            IDS_GLIC_BUTTON_ENTRYPOINT_ASK_GEMINI_LABEL)));
+    auto* ask_gemini_btn =
+        ask_pill->AddChildView(std::make_unique<views::MdTextButton>(
+            std::move(on_ask_gemini),
+            l10n_util::GetStringUTF16(
+                IDS_GLIC_BUTTON_ENTRYPOINT_ASK_GEMINI_LABEL)));
     ask_gemini_btn->SetStyle(ui::ButtonStyle::kText);
     ask_gemini_btn->SetTooltipText(ask_gemini_tooltip);
     ask_gemini_btn->SetImageLabelSpacing(4);
@@ -116,8 +151,9 @@ class GlicSelectionContentsView : public views::View {
     // Copy Button
     auto copy_tooltip = gfx::LocateAndRemoveAcceleratorChar(
         l10n_util::GetStringUTF16(IDS_APP_COPY), nullptr, nullptr);
-    auto* copy_btn = AddChildView(views::ImageButton::CreateIconButton(
-        std::move(on_copy), vector_icons::kContentCopyIcon, copy_tooltip));
+    auto* copy_btn =
+        ask_pill->AddChildView(views::ImageButton::CreateIconButton(
+            std::move(on_copy), vector_icons::kContentCopyIcon, copy_tooltip));
     copy_btn->SetTooltipText(copy_tooltip);
     copy_btn->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
     copy_btn->SetBorder(
@@ -134,8 +170,10 @@ class GlicSelectionContentsView : public views::View {
     // Copy Link Button
     auto copy_link_tooltip =
         l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_COPYLINKTOTEXT);
-    copy_link_btn_ = AddChildView(views::ImageButton::CreateIconButton(
-        std::move(on_copy_link), vector_icons::kLinkIcon, copy_link_tooltip));
+    copy_link_btn_ =
+        ask_pill->AddChildView(views::ImageButton::CreateIconButton(
+            std::move(on_copy_link), vector_icons::kLinkIcon,
+            copy_link_tooltip));
     copy_link_btn_->SetTooltipText(copy_link_tooltip);
     copy_link_btn_->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
     copy_link_btn_->SetBorder(
@@ -149,6 +187,56 @@ class GlicSelectionContentsView : public views::View {
     CreateToolbarInkdropCallbacks(copy_link_btn_, kColorToolbarInkDropHover,
                                   kColorToolbarInkDropRipple);
     copy_link_btn_->SetEnabled(false);
+
+    // Pill 2
+    dismiss_pill_ = AddChildView(std::make_unique<views::BoxLayoutView>());
+    dismiss_pill_->SetOrientation(views::BoxLayout::Orientation::kHorizontal);
+    dismiss_pill_->SetInsideBorderInsets(gfx::Insets::VH(4, 4));
+    dismiss_pill_->SetCrossAxisAlignment(
+        views::BoxLayout::CrossAxisAlignment::kCenter);
+    auto border2 = std::make_unique<views::BubbleBorder>(
+        views::BubbleBorder::NONE, views::BubbleBorder::STANDARD_SHADOW);
+    border2->SetColor(ui::kColorSysBase);
+    border2->set_rounded_corners(
+        gfx::RoundedCornersF(kPillCornerRadiusInner, kPillCornerRadiusOuter,
+                             kPillCornerRadiusOuter, kPillCornerRadiusInner));
+    dismiss_pill_->SetBackground(
+        std::make_unique<views::BubbleBackground>(border2.get()));
+    dismiss_pill_->SetBorder(std::move(border2));
+
+    // Dismiss Button
+    auto dismiss_tooltip = l10n_util::GetStringUTF16(IDS_APP_CLOSE);
+    dismiss_btn_ =
+        dismiss_pill_->AddChildView(views::ImageButton::CreateIconButton(
+            std::move(on_dismiss), vector_icons::kCloseIcon, dismiss_tooltip));
+    dismiss_btn_->SetTooltipText(dismiss_tooltip);
+    dismiss_btn_->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
+    dismiss_btn_->SetBorder(
+        views::CreateEmptyBorder(views::LayoutProvider::Get()->GetInsetsMetric(
+            views::INSETS_VECTOR_IMAGE_BUTTON)));
+    views::SetImageFromVectorIconWithColor(
+        dismiss_btn_, vector_icons::kCloseIcon, kIconSize,
+        views::IconColors(ui::kColorSysOnSurfaceSubtle,
+                          ui::kColorLabelForegroundDisabled,
+                          ui::kColorSysOnSurface));
+    CreateToolbarInkdropCallbacks(dismiss_btn_, kColorToolbarInkDropHover,
+                                  kColorToolbarInkDropRipple);
+
+    dismiss_pill_->SetPaintToLayer();
+    dismiss_pill_->layer()->SetFillsBoundsOpaquely(false);
+    dismiss_pill_->layer()->SetOpacity(0.0f);
+  }
+
+  void OnMouseEntered(const ui::MouseEvent& event) override {
+    if (dismiss_pill_) {
+      dismiss_pill_->layer()->SetOpacity(1.0f);
+    }
+  }
+
+  void OnMouseExited(const ui::MouseEvent& event) override {
+    if (dismiss_pill_) {
+      dismiss_pill_->layer()->SetOpacity(0.0f);
+    }
   }
 
   void SetCopyLinkEnabled(bool enabled) {
@@ -165,12 +253,15 @@ class GlicSelectionContentsView : public views::View {
       auto* bubble_delegate =
           GetWidget()->widget_delegate()->AsBubbleDialogDelegate();
       bubble_delegate->SetBackgroundColor(ui::ColorVariant());
-      bubble_delegate->SetBackgroundColor(ui::ColorVariant(ui::kColorSysBase));
+      bubble_delegate->SetBackgroundColor(
+          ui::ColorVariant(SK_ColorTRANSPARENT));
     }
   }
 
  private:
   raw_ptr<views::ImageButton> copy_link_btn_ = nullptr;
+  raw_ptr<views::ImageButton> dismiss_btn_ = nullptr;
+  raw_ptr<views::BoxLayoutView> dismiss_pill_ = nullptr;
 };
 
 BEGIN_METADATA(GlicSelectionContentsView)
@@ -185,7 +276,8 @@ views::Widget* GlicSelectionWidgetDelegate::Show(
     const std::u16string& selected_text,
     base::RepeatingClosure on_ask_gemini,
     base::RepeatingClosure on_copy,
-    base::RepeatingClosure on_copy_link) {
+    base::RepeatingClosure on_copy_link,
+    base::RepeatingClosure on_dismiss) {
   // Both `GetContainerBounds` and `GetTextSelectionBounds` (from which
   // `anchor_rect` originates) return global screen coordinates in DIPs, so
   // relative positions and scales are compatible.
@@ -193,7 +285,7 @@ views::Widget* GlicSelectionWidgetDelegate::Show(
       web_contents ? web_contents->GetContainerBounds() : gfx::Rect();
   auto delegate = std::make_unique<GlicSelectionWidgetDelegate>(
       anchor_rect, window_bounds, selected_text, std::move(on_ask_gemini),
-      std::move(on_copy), std::move(on_copy_link));
+      std::move(on_copy), std::move(on_copy_link), std::move(on_dismiss));
   if (web_contents) {
     delegate->set_parent_window(platform_util::GetViewForWindow(
         web_contents->GetTopLevelNativeWindow()));
@@ -210,7 +302,8 @@ GlicSelectionWidgetDelegate::GlicSelectionWidgetDelegate(
     const std::u16string& selected_text,
     base::RepeatingClosure on_ask_gemini,
     base::RepeatingClosure on_copy,
-    base::RepeatingClosure on_copy_link)
+    base::RepeatingClosure on_copy_link,
+    base::RepeatingClosure on_dismiss)
     : BubbleDialogDelegate(nullptr,
                            views::BubbleBorder::TOP_LEFT,
                            views::BubbleBorder::STANDARD_SHADOW,
@@ -233,10 +326,17 @@ GlicSelectionWidgetDelegate::GlicSelectionWidgetDelegate(
       base::BindRepeating(button_click, std::move(on_copy),
                           base::Unretained(this)),
       base::BindRepeating(button_click, std::move(on_copy_link),
+                          base::Unretained(this)),
+      base::BindRepeating(button_click, std::move(on_dismiss),
                           base::Unretained(this)));
 
-  int ask_gemini_width =
-      contents_view->children()[0]->GetPreferredSize().width();
+  int ask_gemini_width = 120;  // fallback width if we can't measure
+  if (!contents_view->children().empty()) {
+    auto* ask_pill = contents_view->children()[0].get();
+    if (!ask_pill->children().empty()) {
+      ask_gemini_width = ask_pill->children()[0]->GetPreferredSize().width();
+    }
+  }
   int total_width = contents_view->GetPreferredSize().width();
   SetContentsView(std::move(contents_view));
 
@@ -267,11 +367,28 @@ GlicSelectionWidgetDelegate::GlicSelectionWidgetDelegate(
   // Remove default dialog margins so the custom button fills the entire bubble.
   set_margins(gfx::Insets(0));
   set_corner_radius(16);
-  SetBackgroundColor(ui::ColorVariant(ui::kColorSysBase));
+  SetBackgroundColor(ui::ColorVariant(SK_ColorTRANSPARENT));
+  set_shadow(views::BubbleBorder::NO_SHADOW);
   SetCanActivate(false);
 }
 
 GlicSelectionWidgetDelegate::~GlicSelectionWidgetDelegate() = default;
+
+views::ClientView* GlicSelectionWidgetDelegate::CreateClientView(
+    views::Widget* widget) {
+  views::ClientView* client_view =
+      views::BubbleDialogDelegate::CreateClientView(widget);
+  if (client_view->layer()) {
+    client_view->layer()->SetFillsBoundsOpaquely(false);
+  }
+  return client_view;
+}
+
+void GlicSelectionWidgetDelegate::OnBeforeBubbleWidgetInit(
+    views::Widget::InitParams* params,
+    views::Widget* widget) const {
+  params->shadow_type = views::Widget::InitParams::ShadowType::kNone;
+}
 
 void GlicSelectionWidgetDelegate::UpdateCopyLinkButton(bool enabled) {
   if (auto* contents_view =
