@@ -130,7 +130,8 @@ suite('Movement', () => {
 
     test('scroll into view', () => {
       if (window.innerHeight === 0) {
-        Object.defineProperty(window, 'innerHeight', {value: 600});
+        Object.defineProperty(
+            window, 'innerHeight', {value: 600, configurable: true});
       }
       // Create a scrollable container to act as our "viewport".
       const container = document.createElement('div');
@@ -177,16 +178,19 @@ suite('Movement', () => {
 
     test('scroll into view with large highlight', () => {
       if (window.innerHeight === 0) {
-        Object.defineProperty(window, 'innerHeight', {value: 600});
+        Object.defineProperty(
+            window, 'innerHeight', {value: 600, configurable: true});
       }
       // Create a scrollable container to act as our "viewport".
       const container = document.createElement('div');
       container.style.height = window.innerHeight + 'px';
       container.style.overflow = 'scroll';
       document.body.appendChild(container);
-      // Add enough content to cause scrolling.
+      // Add enough content to cause scrolling. Use a very large height to
+      // ensure the target element starts off-screen even if the innerHeight
+      // is increased later in the test.
       const spacer = document.createElement('div');
-      spacer.style.height = (window.innerHeight * 2) + 'px';
+      spacer.style.height = '10000px';
       container.appendChild(spacer);
       // This is the target element, initially not visible.
       const targetP = document.createElement('p');
@@ -238,7 +242,8 @@ suite('Movement', () => {
 
     test('scrollIntoView scrolls to make the current highlight visible', () => {
       if (window.innerHeight === 0) {
-        Object.defineProperty(window, 'innerHeight', {value: 600});
+        Object.defineProperty(
+            window, 'innerHeight', {value: 600, configurable: true});
       }
       // Create a scrollable container to act as our "viewport".
       const container = document.createElement('div');
