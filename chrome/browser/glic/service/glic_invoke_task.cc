@@ -123,14 +123,20 @@ void WaitForClientConnectedTask::WebClientConnected() {
   }
 }
 
-NotifyIsInvokingTask::NotifyIsInvokingTask(Host* host, bool is_invoking)
-    : host_(host), is_invoking_(is_invoking) {}
+NotifyIsInvokingTask::NotifyIsInvokingTask(Host* host) : host_(host) {}
 
 NotifyIsInvokingTask::~NotifyIsInvokingTask() = default;
 
 void NotifyIsInvokingTask::Start(base::OnceClosure done_callback) {
-  host_->NotifyIsInvoking(is_invoking_);
+  did_start_ = true;
+  host_->NotifyIsInvoking(true);
   std::move(done_callback).Run();
+}
+
+void NotifyIsInvokingTask::OnSequenceCompleted(bool success) {
+  if (did_start_) {
+    host_->NotifyIsInvoking(false);
+  }
 }
 
 PostCallbackTask::PostCallbackTask(base::OnceClosure callback)

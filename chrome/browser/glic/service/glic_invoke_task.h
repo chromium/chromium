@@ -123,13 +123,14 @@ class WaitForClientConnectedTask : public GlicInvokeTask,
 // Task that notifies the host of invoking state.
 class NotifyIsInvokingTask : public GlicInvokeTask {
  public:
-  NotifyIsInvokingTask(Host* host, bool is_invoking);
+  explicit NotifyIsInvokingTask(Host* host);
   ~NotifyIsInvokingTask() override;
   void Start(base::OnceClosure done_callback) override;
+  void OnSequenceCompleted(bool success) override;
 
  private:
   raw_ptr<Host> host_;
-  bool is_invoking_;
+  bool did_start_ = false;
 };
 
 // Task that posts a callback asynchronously.
