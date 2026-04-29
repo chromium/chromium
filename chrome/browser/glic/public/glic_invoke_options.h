@@ -14,10 +14,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
-
-namespace tabs {
-class TabInterface;
-}
+#include "chrome/browser/glic/public/context/glic_sharing_manager.h"
+#include "components/tabs/public/tab_interface.h"
 
 class BrowserWindowInterface;
 
@@ -127,6 +125,24 @@ enum class GlicInvokeError {
   kInvalidConfiguration,
 };
 
+// Details for invoking Glic with tabs shared. See
+// GlicSharingManager::PinTabs().
+struct TabSharingOptions {
+  TabSharingOptions();
+  TabSharingOptions(std::vector<tabs::TabHandle> tabs_to_pin,
+                    GlicPinTrigger pin_trigger);
+  TabSharingOptions(TabSharingOptions&&);
+  TabSharingOptions& operator=(TabSharingOptions&&);
+  ~TabSharingOptions();
+
+  // Tabs to pin.
+  std::vector<tabs::TabHandle> tabs_to_pin;
+
+  // Reason for pinning tabs, required to be set to something besides kUnknown
+  // if `tabs_to_pin` isn't empty.
+  GlicPinTrigger pin_trigger;
+};
+
 // Configuration options for invoking Glic.
 struct GlicInvokeOptions {
   explicit GlicInvokeOptions(glic::mojom::InvocationSource invocation_source);
@@ -149,6 +165,9 @@ struct GlicInvokeOptions {
   // Warning: not fully implemented.
   // TODO(b/504627812): finish implementing.
   glic::mojom::AdditionalContextPtr additional_context;
+
+  // Tabs to pin as part of invocation.
+  TabSharingOptions tab_sharing;
 
   // Defines the target for the invocation (surface and conversation).
   Target target;
