@@ -1112,30 +1112,6 @@ void ChromeExtensionsBrowserClient::
     base::UmaHistogramEnumeration(
         "Extensions.CommandLineManifestSettingsOverride", kNoOverride);
   }
-
-  // Developer mode metrics.
-  bool dev_mode_enabled =
-      GetCurrentDeveloperMode(util::GetBrowserContextId(context));
-
-  if (extension_registry->enabled_extensions().Contains(extension->id())) {
-    if (dev_mode_enabled) {
-      base::UmaHistogramCounts100(
-          "Extensions.CommandLineWithDeveloperModeOn.Enabled", 1);
-    } else {
-      base::UmaHistogramCounts100(
-          "Extensions.CommandLineWithDeveloperModeOff.Enabled", 1);
-    }
-  }
-
-  if (extension_registry->disabled_extensions().Contains(extension->id())) {
-    if (dev_mode_enabled) {
-      base::UmaHistogramCounts100(
-          "Extensions.CommandLineWithDeveloperModeOn.Disabled", 1);
-    } else {
-      base::UmaHistogramCounts100(
-          "Extensions.CommandLineWithDeveloperModeOff.Disabled", 1);
-    }
-  }
 }
 
 // static

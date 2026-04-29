@@ -534,21 +534,6 @@ This is emitted for two scenarios when a worker may be unregistered:
   </summary>
 </histogram>
 
-<histogram
-    name="Extensions.CommandLineWith{DeveloperModeState}{ExtensionState}"
-    units="count" expires_after="2026-05-11">
-  <owner>richche@google.com</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Records when a {ExtensionState} command-line extension is loaded with
-    {DeveloperModeState}. Emitted on every profile open only for &quot;user
-    profiles&quot; (profiles where people can install extensions, specifically
-    profiles that can have non-component extensions installed).
-  </summary>
-  <token key="DeveloperModeState" variants="DeveloperModeState"/>
-  <token key="ExtensionState" variants="ExtensionState"/>
-</histogram>
-
 <histogram name="Extensions.ContentScripts.ContentScriptLength" units="KB"
     expires_after="2024-11-22">
   <owner>kelvinjiang@chromium.org</owner>
