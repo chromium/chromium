@@ -541,15 +541,6 @@ BASE_FEATURE(kNoAccountWebSignin, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kNonDefaultGaiaOriginCheck, base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-BASE_FEATURE(kOpenAllProfilesFromProfilePickerExperiment,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-const base::FeatureParam<int>
-    kMaxProfilesCountToShowOpenAllButtonInProfilePicker{
-        &kOpenAllProfilesFromProfilePickerExperiment,
-        "max_profiles_count_to_show_open_all_button_in_profile_picker", 5};
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 BASE_FEATURE(kPasswordUploadUiUpdate, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kProfileCreationDeclineSigninCTAExperiment,

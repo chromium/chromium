@@ -7290,11 +7290,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "open-all-profiles-from-profile-picker-experiment",
-    "owners": [ "kbajkiewicz@google.com", "chrome-signin-desktop-team@google.com" ],
-    "expiry_milestone": 160
-  },
-  {
     "name": "open-dragged-links-same-tab",
     "owners": [
       "agale@chromium.org",

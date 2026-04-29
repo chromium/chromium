@@ -872,19 +872,6 @@ class ProfilePickerCreationFlowBrowserTest
     profile_picker_handler()->HandleLaunchGuestProfile(args);
   }
 
-  // Simulates a click on "Open all profiles".
-  void OpenAllProfilesFromPicker() {
-    base::ListValue args;
-    for (const base::Value& profile :
-         profile_picker_handler()->GetProfilesList()) {
-      const std::optional<base::FilePath> profile_path =
-          base::ValueToFilePath(profile.GetDict().Find("profilePath"));
-      args.Append(base::FilePathToValue(*profile_path));
-    }
-
-    profile_picker_handler()->HandleLaunchAllProfiles(args);
-  }
-
   // Creates a new profile without opening a browser.
   base::FilePath CreateNewProfileWithoutBrowser() {
     // Create a second profile.
@@ -4313,62 +4300,6 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_EQ(2u, g_browser_process->profile_manager()
                     ->GetProfileAttributesStorage()
                     .GetNumberOfProfiles());
-}
-
-class ProfilePickerOpenAllProfilesButtonExperimentBrowserTest
-    : public ProfilePickerCreationFlowBrowserTest {
- public:
-  ProfilePickerOpenAllProfilesButtonExperimentBrowserTest() {
-    // Since `OpenAllProfilesAfterSimulatingButtonClick` depends on the order
-    // of profiles, need to enable `kProfilesReordering`.
-    feature_list_.InitWithFeatures(
-        {switches::kOpenAllProfilesFromProfilePickerExperiment,
-         switches::kProfilesReordering},
-        {});
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(ProfilePickerOpenAllProfilesButtonExperimentBrowserTest,
-                       OpenAllProfilesAfterSimulatingButtonClick) {
-  base::HistogramTester histogram_tester;
-  base::FilePath profile_path1 = browser()->profile()->GetPath();
-  base::FilePath profile_path2 = CreateNewProfileWithoutBrowser();
-  base::FilePath profile_path3 = CreateNewProfileWithoutBrowser();
-
-  ASSERT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
-  ASSERT_EQ(3u, g_browser_process->profile_manager()
-                    ->GetProfileAttributesStorage()
-                    .GetNumberOfProfiles());
-
-  ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
-      ProfilePicker::EntryPoint::kProfileMenuManageProfiles));
-  WaitForLoadStop(GURL{"chrome://profile-picker"});
-
-  BrowserAddedWaiter waiter2(2u, BrowserAddedWaiter::ReturnMode::kNew);
-  BrowserAddedWaiter waiter3(3u, BrowserAddedWaiter::ReturnMode::kNew);
-
-  OpenAllProfilesFromPicker();
-
-  BrowserWindowInterface* const new_browser2 = waiter2.Wait();
-  ASSERT_TRUE(ProfilePicker::IsOpen());
-  BrowserWindowInterface* const new_browser3 = waiter3.Wait();
-
-  // Profile Picker should be closed only after last profile is opened.
-  WaitForPickerClosed();
-
-  EXPECT_EQ(new_browser2->GetProfile()->GetPath(), profile_path2);
-  EXPECT_EQ(new_browser3->GetProfile()->GetPath(), profile_path3);
-  ASSERT_EQ(3u, GlobalBrowserCollection::GetInstance()->GetSize());
-
-  histogram_tester.ExpectBucketCount(
-      "ProfilePicker.OpenAllProfilesButtonAction",
-      ProfilePickerOpenAllProfilesButtonAction::kShown, 1);
-  histogram_tester.ExpectBucketCount(
-      "ProfilePicker.OpenAllProfilesButtonAction",
-      ProfilePickerOpenAllProfilesButtonAction::kClicked, 1);
 }
 
 class SigninErrorProfilePickerBrowserTest

@@ -311,13 +311,6 @@ void AddFlags(content::WebUIDataSource* html_source,
   html_source->AddBoolean(
       "isProfilePickerTextVariationsEnabled",
       base::FeatureList::IsEnabled(switches::kProfilePickerTextVariations));
-  html_source->AddBoolean(
-      "isOpenAllProfilesButtonExperimentEnabled",
-      base::FeatureList::IsEnabled(
-          switches::kOpenAllProfilesFromProfilePickerExperiment));
-  html_source->AddInteger(
-      "maxProfilesCountToShowOpenAllProfilesButton",
-      switches::kMaxProfilesCountToShowOpenAllButtonInProfilePicker.Get());
   html_source->AddBoolean("useRefreshedUI",
                           is_first_run_desktop_refresh_enabled);
 }

@@ -19349,23 +19349,6 @@
             ]
         }
     ],
-    "ProfileExperimentsM1UsabilityHypothesis": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Control",
-                    "disable_features": [
-                        "OpenAllProfilesFromProfilePickerExperiment"
-                    ]
-                }
-            ]
-        }
-    ],
     "ProfileManagerDeferAsyncLoading": [
         {
             "platforms": [

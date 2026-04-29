@@ -255,15 +255,6 @@ void ProfilePickerHandler::RegisterMessages() {
       base::BindRepeating(&ProfilePickerHandler::HandleLaunchGuestProfile,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
-      "launchAllProfiles",
-      base::BindRepeating(&ProfilePickerHandler::HandleLaunchAllProfiles,
-                          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
-      "recordOpenAllProfilesButtonShown",
-      base::BindRepeating(
-          &ProfilePickerHandler::HandleRecordOpenAllProfilesButtonShown,
-          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
       "askOnStartupChanged",
       base::BindRepeating(&ProfilePickerHandler::HandleAskOnStartupChanged,
                           base::Unretained(this)));
@@ -492,59 +483,6 @@ void ProfilePickerHandler::DisplayForceSigninErrorDialog(
   FireWebUIListener("display-signin-error-dialog", base::Value(title),
                     base::Value(body),
                     base::Value(profile_path.AsUTF16Unsafe()));
-}
-
-void ProfilePickerHandler::HandleLaunchAllProfiles(
-    const base::ListValue& args) {
-  CHECK(base::FeatureList::IsEnabled(
-      switches::kOpenAllProfilesFromProfilePickerExperiment));
-  base::UmaHistogramEnumeration(
-      "ProfilePicker.OpenAllProfilesButtonAction",
-      ProfilePickerOpenAllProfilesButtonAction::kClicked);
-  if (args.size() <= 1u ||
-      args.size() >
-          static_cast<size_t>(
-              switches::kMaxProfilesCountToShowOpenAllButtonInProfilePicker
-                  .Get())) {
-    return;
-  }
-
-  bool should_record_startup_metrics = !creation_time_on_startup_.is_null();
-
-  // Parse the profile paths to take into account only valid paths.
-  std::vector<base::FilePath> profile_paths;
-  for (const base::Value& profile_path_value : args) {
-    std::optional<base::FilePath> profile_path =
-        base::ValueToFilePath(profile_path_value);
-    if (profile_path) {
-      profile_paths.push_back(*profile_path);
-    }
-  }
-
-  for (size_t i = 0; i < profile_paths.size(); ++i) {
-    const base::FilePath& profile_path = profile_paths[i];
-
-    // Picker should be closed and buttons reset only after the last profile
-    // is opened.
-    bool is_last_profile = i == args.size() - 1;
-    ProfilePicker::PickProfile(
-        profile_path,
-        ProfilePicker::ProfilePickingArgs{
-            .open_settings = false,
-            .should_record_startup_metrics = should_record_startup_metrics,
-            .exit_flow_after_profile_picked = is_last_profile},
-        is_last_profile
-            ? base::BindOnce(&ProfilePickerHandler::OnResetPickerButtons,
-                             weak_factory_.GetWeakPtr())
-            : base::OnceCallback<void(bool)>());
-  }
-}
-
-void ProfilePickerHandler::HandleRecordOpenAllProfilesButtonShown(
-    const base::ListValue& args) {
-  base::UmaHistogramEnumeration(
-      "ProfilePicker.OpenAllProfilesButtonAction",
-      ProfilePickerOpenAllProfilesButtonAction::kShown);
 }
 
 void ProfilePickerHandler::HandleLaunchGuestProfile(

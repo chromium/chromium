@@ -885,15 +885,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ProfilePicker.OpenAllProfilesButtonAction"
-    enum="ProfilePickerOpenAllProfilesButtonAction" expires_after="2026-09-20">
-  <owner>kbajkiewicz@google.com</owner>
-  <owner>chrome-signin-team@google.com</owner>
-  <summary>
-    Recorded for actions with Open All Profiles button for Profile Experiments.
-  </summary>
-</histogram>
-
 <histogram name="ProfilePicker.ReauthResult" enum="ProfilePickerReauthResult"
     expires_after="2024-05-17">
   <owner>rsult@google.com</owner>

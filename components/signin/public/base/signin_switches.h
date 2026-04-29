@@ -507,15 +507,6 @@ COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kNonDefaultGaiaOriginCheck);
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-// Experimenting with a button to all profiles from the profile picker.
-COMPONENT_EXPORT(SIGNIN_SWITCHES)
-BASE_DECLARE_FEATURE(kOpenAllProfilesFromProfilePickerExperiment);
-COMPONENT_EXPORT(SIGNIN_SWITCHES)
-extern const base::FeatureParam<int>
-    kMaxProfilesCountToShowOpenAllButtonInProfilePicker;
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 // Add new entry points for uploading passwords to account storage and update
 // existing ones.
 COMPONENT_EXPORT(SIGNIN_SWITCHES)

@@ -89,7 +89,6 @@ suite('ProfilePickerMainViewTest', function() {
       isAskOnStartupAllowed: true,
       profilesReorderingEnabled: true,
       showProfilePickerToAllUsersExperiment: false,
-      isOpenAllProfilesButtonExperimentEnabled: false,
       maxProfilesCountToShowOpenAllProfilesButton: 0,
       useRefreshedUI: false,
     });
@@ -470,42 +469,6 @@ suite('ProfilePickerMainViewTest', function() {
     await simulateProfilesListChanged(profiles);
     await verifyProfileCard(
         profiles, mainViewElement.shadowRoot.querySelectorAll('profile-card'));
-  });
-
-  test('OpenAllProfilesClickedForExperiment', async function() {
-    loadTimeData.overrideValues({
-      isOpenAllProfilesButtonExperimentEnabled: true,
-      maxProfilesCountToShowOpenAllProfilesButton: 5,
-    });
-    resetTest();
-    // Button is not visible because number of profiles is less than 2.
-    assertTrue(mainViewElement.$.openAllProfilesButton.hidden);
-
-    const profiles = generateProfilesList(2);
-    await simulateProfilesListChanged(profiles);
-    await browserProxy.whenCalled('recordOpenAllProfilesButtonShown');
-
-    assertFalse(mainViewElement.$.openAllProfilesButton.hidden);
-    mainViewElement.$.openAllProfilesButton.click();
-    await browserProxy.whenCalled('launchAllProfiles');
-  });
-
-  test('OpenAllProfilesButtonAppearsOnSixthProfileRemoved', async function() {
-    loadTimeData.overrideValues({
-      isOpenAllProfilesButtonExperimentEnabled: true,
-      maxProfilesCountToShowOpenAllProfilesButton: 5,
-    });
-    resetTest();
-    await browserProxy.whenCalled('initializeMainView');
-
-    const profiles = generateProfilesList(6);
-
-    await simulateProfilesListChanged(profiles);
-    assertTrue(mainViewElement.$.openAllProfilesButton.hidden);
-
-    await simulateProfileRemoved(profiles[2]!.profilePath);
-    await browserProxy.whenCalled('recordOpenAllProfilesButtonShown');
-    assertFalse(mainViewElement.$.openAllProfilesButton.hidden);
   });
 
   test('LearnMoreClickedInFooterText', async function() {

@@ -491,15 +491,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/ui/profiles/profile_picker.h:EntryPoint) -->
 
-<!-- LINT.IfChange(ProfilePickerOpenAllProfilesButtonAction) -->
-
-<enum name="ProfilePickerOpenAllProfilesButtonAction">
-  <int value="0" label="Open All Profiles button was shown"/>
-  <int value="1" label="Open All Profiles button was clicked"/>
-</enum>
-
-<!-- LINT.ThenChange(//chrome/browser/ui/webui/signin/profile_picker_handler.h:ProfilePickerOpenAllProfilesButtonAction) -->
-
 <enum name="ProfilePickerPages">
   <int value="0" label="mainView"/>
   <int value="1" label="profileTypeChoice"/>
