@@ -304,8 +304,6 @@ std::vector<lens::MimeType> MimeTypesFromCollection(
   BOOL _omniboxFocused;
   // Used to count the number of images added in the session.
   int _imageUploadCount;
-  // The currrent choice of model.
-  ComposeboxModelOption _modelOption;
 
   // The state reflecting the availbale modes and models.
   ComposeboxInputStateManager* _stateManager;
@@ -703,33 +701,8 @@ std::vector<lens::MimeType> MimeTypesFromCollection(
 
 - (void)setModelOption:(ComposeboxModelOption)modelOption
     explicitUserAction:(BOOL)explicitUserAction {
-  using enum ComposeboxModelOption;
-
-  if (_modelOption == modelOption) {
-    return;
-  }
-
-  _modelOption = modelOption;
-
-  [self commitUIUpdates];
-
   [_stateManager setActiveModel:modelOption
              explicitUserAction:explicitUserAction];
-
-  // When the model option is reset (set to none), reset the mode to regular
-  // search before exiting.
-  BOOL switchToRegular = _modelOption == kNone && !_modeHolder.isRegularSearch;
-  if (switchToRegular) {
-    _modeHolder.mode = ComposeboxMode::kRegularSearch;
-    return;
-  }
-  // Only when the user explicitly picked the advanced model in regular mode
-  // do the switch to AIM.
-  BOOL switchToAIM = explicitUserAction && _modeHolder.isRegularSearch;
-  if (switchToAIM) {
-    _modeHolder.mode = ComposeboxMode::kAIM;
-    return;
-  }
 }
 
 - (void)setSearchboxConfig:(const omnibox::SearchboxConfig*)searchboxConfig {
@@ -1922,7 +1895,7 @@ std::vector<lens::MimeType> MimeTypesFromCollection(
     return;
   }
 
-  BOOL applyDefaultSelection = _modelOption == kNone;
+  BOOL applyDefaultSelection = _stateManager.activeModel == kNone;
   if (applyDefaultSelection) {
     BOOL defaultToAuto = [_stateManager canSelectModel:kAuto];
     ComposeboxModelOption defaultOption = defaultToAuto
@@ -2100,6 +2073,11 @@ std::vector<lens::MimeType> MimeTypesFromCollection(
     [self setModelOption:requiredModel];
   }
 
+  [self commitUIUpdates];
+}
+
+- (void)inputStateManagerDidUpdateUIState:
+    (ComposeboxInputStateManager*)manager {
   [self commitUIUpdates];
 }
 

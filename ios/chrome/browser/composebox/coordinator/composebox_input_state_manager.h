@@ -55,6 +55,10 @@ class WebStateID;
 - (void)inputStateManager:(ComposeboxInputStateManager*)manager
       didUpdateInputState:(const contextual_search::InputState&)inputState;
 
+// Called when the UI input state has changed. Delegate can call
+// `computeUIInputStateWithFavicon` to get the new state.
+- (void)inputStateManagerDidUpdateUIState:(ComposeboxInputStateManager*)manager;
+
 @end
 
 // Manages the state and metrics for the composebox input.

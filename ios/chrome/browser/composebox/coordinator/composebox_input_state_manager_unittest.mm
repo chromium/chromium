@@ -33,6 +33,7 @@
 @interface FakeComposeboxInputStateManagerDelegate
     : NSObject <ComposeboxInputStateManagerDelegate>
 @property(nonatomic, assign) BOOL didUpdateInputStateCalled;
+@property(nonatomic, assign) BOOL didUpdateUIStateCalled;
 @property(nonatomic, assign) contextual_search::InputState lastInputState;
 @end
 
@@ -42,6 +43,11 @@
       didUpdateInputState:(const contextual_search::InputState&)inputState {
   self.didUpdateInputStateCalled = YES;
   self.lastInputState = inputState;
+}
+
+- (void)inputStateManagerDidUpdateUIState:
+    (ComposeboxInputStateManager*)manager {
+  self.didUpdateUIStateCalled = YES;
 }
 
 @end
@@ -709,4 +715,76 @@ TEST_F(ComposeboxInputStateManagerTest,
 
   EXPECT_NE(state, nil);
   EXPECT_TRUE([state isToolHidden:ComposeboxMode::kAIM]);
+}
+
+#pragma mark - Model Selection Tests
+
+// Tests that the manager notifies its delegate when the active model changes.
+TEST_F(ComposeboxInputStateManagerTest, SetActiveModel_NotifiesDelegate) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kComposeboxAdditionalAdvancedTools);
+
+  EXPECT_CALL(*mock_aim_service_, IsFuseboxEligible())
+      .WillRepeatedly(testing::Return(true));
+
+  omnibox::SearchboxConfig config;
+  omnibox::ModelConfig* model_config = config.add_model_configs();
+  model_config->set_model(omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
+  config.mutable_rule_set()->add_allowed_models(
+      omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
+  [manager_ setSearchboxConfig:config];
+
+  FakeComposeboxInputStateManagerDelegate* delegate =
+      [[FakeComposeboxInputStateManagerDelegate alloc] init];
+  manager_.delegate = delegate;
+
+  [manager_ setActiveModel:ComposeboxModelOption::kThinking
+        explicitUserAction:YES];
+
+  EXPECT_TRUE(delegate.didUpdateUIStateCalled);
+}
+
+// Tests that the manager switches to AIM mode when the user explicitly
+// selects an advanced model while in regular search mode.
+TEST_F(ComposeboxInputStateManagerTest, SetActiveModel_SwitchesToAIM) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kComposeboxAdditionalAdvancedTools);
+
+  EXPECT_CALL(*mock_aim_service_, IsFuseboxEligible())
+      .WillRepeatedly(testing::Return(true));
+
+  omnibox::SearchboxConfig config;
+  omnibox::ModelConfig* model_config = config.add_model_configs();
+  model_config->set_model(omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
+  config.mutable_rule_set()->add_allowed_models(
+      omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
+  [manager_ setSearchboxConfig:config];
+
+  mode_holder_.mode = ComposeboxMode::kRegularSearch;
+
+  [manager_ setActiveModel:ComposeboxModelOption::kThinking
+        explicitUserAction:YES];
+
+  EXPECT_EQ(mode_holder_.mode, ComposeboxMode::kAIM);
+}
+
+// Tests that the manager falls back to the default model when attempting
+// to select a model that is not allowed by the configuration.
+TEST_F(ComposeboxInputStateManagerTest, SetActiveModel_FallbackToDefault) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kComposeboxAdditionalAdvancedTools);
+
+  EXPECT_CALL(*mock_aim_service_, IsFuseboxEligible())
+      .WillRepeatedly(testing::Return(true));
+
+  omnibox::SearchboxConfig config;
+  config.set_initial_model_mode(omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR);
+  [manager_ setSearchboxConfig:config];
+
+  mode_holder_.mode = ComposeboxMode::kAIM;
+
+  [manager_ setActiveModel:ComposeboxModelOption::kThinking
+        explicitUserAction:YES];
+
+  EXPECT_EQ(manager_.activeModel, ComposeboxModelOption::kRegular);
 }

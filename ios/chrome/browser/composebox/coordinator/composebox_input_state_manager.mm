@@ -146,6 +146,9 @@ ComposeboxStrings* ServerStringsFromInputState(
   ComposeboxEntrypoint _entrypoint;
   // The mode holder to read the active mode.
   ComposeboxModeHolder* _modeHolder;
+  // The active model. This is different from omnibox::ModelMode that doesn't
+  // support unselected state.
+  ComposeboxModelOption _activeModel;
 
   // The web state list of the browser.
   raw_ptr<WebStateList> _webStateList;
@@ -204,6 +207,7 @@ ComposeboxStrings* ServerStringsFromInputState(
     }
     _entrypoint = entrypoint;
     _isIncognito = isIncognito;
+    _activeModel = ComposeboxModelOption::kNone;
   }
   return self;
 }
@@ -293,19 +297,29 @@ ComposeboxStrings* ServerStringsFromInputState(
     return;
   }
 
-  omnibox::ModelMode requestedModelMode =
-      ModelModeForModelOption(modelOption, _inputState);
-
-  if (_inputState.active_model == requestedModelMode) {
-    return;
+  // If model is not valid, fallback to the default model;
+  if (![self canSelectModel:modelOption]) {
+    modelOption = [self defaultModel];
   }
 
-  _inputStateModel->setActiveModel(requestedModelMode);
+  if (modelOption == _activeModel) {
+    return;
+  }
+  _activeModel = modelOption;
 
-  contextual_search::ContextualSearchMetricsRecorder* recorder =
-      _sessionHandle ? _sessionHandle->GetMetricsRecorder() : nullptr;
-  if (explicitUserAction && recorder) {
-    recorder->RecordModelMode(requestedModelMode);
+  [self setActiveModelInInputState:modelOption
+                explicitUserAction:explicitUserAction];
+
+  [self.delegate inputStateManagerDidUpdateUIState:self];
+
+  // Update mode on model change.
+
+  // Only when the user explicitly picked the advanced model in regular mode
+  // do the switch to AIM.
+  BOOL switchToAIM = explicitUserAction && _modeHolder.isRegularSearch;
+  if (switchToAIM) {
+    _modeHolder.mode = ComposeboxMode::kAIM;
+    return;
   }
 }
 
@@ -398,6 +412,15 @@ ComposeboxStrings* ServerStringsFromInputState(
     return [self isAttachmentDisabledByServer:attachmentOption];
   } else {
     return [self isAttachmentDisabledLocally:attachmentOption];
+  }
+}
+
+/// Returns the default model for the active mode.
+- (ComposeboxModelOption)defaultModel {
+  if ([self activeMode] == ComposeboxMode::kRegularSearch) {
+    return ComposeboxModelOption::kNone;
+  } else {
+    return ModelOptionForModelMode(_inputState.GetDefaultModel());
   }
 }
 
@@ -731,6 +754,26 @@ ComposeboxStrings* ServerStringsFromInputState(
 // Returns the current active mode from the mode holder.
 - (ComposeboxMode)activeMode {
   return _modeHolder.mode;
+}
+
+/// Sets the active model in input state model.
+- (void)setActiveModelInInputState:(ComposeboxModelOption)modelOption
+                explicitUserAction:(BOOL)explicitUserAction {
+  // Set the model in input state.
+  omnibox::ModelMode requestedModelMode =
+      ModelModeForModelOption(modelOption, _inputState);
+
+  if (_inputState.active_model == requestedModelMode) {
+    return;
+  }
+
+  _inputStateModel->setActiveModel(requestedModelMode);
+
+  contextual_search::ContextualSearchMetricsRecorder* recorder =
+      _sessionHandle ? _sessionHandle->GetMetricsRecorder() : nullptr;
+  if (explicitUserAction && recorder) {
+    recorder->RecordModelMode(requestedModelMode);
+  }
 }
 
 #pragma mark - Eligibility & Availability
