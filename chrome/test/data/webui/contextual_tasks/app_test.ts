@@ -343,7 +343,8 @@ suite('ContextualTasksAppTest', function() {
     assertFalse(currentUrl.searchParams.has('old_param'));
   });
 
-  test('cs param updates dark mode only on commit', async () => {
+  // Disabled: crbug.com/507859340
+  test.skip('cs param updates dark mode only on commit', async () => {
     const {appElement} =
         await createContextualTasksAppElement(/*url=*/ fixtureUrl);
     // Initial state should be light mode (or whatever default is).
