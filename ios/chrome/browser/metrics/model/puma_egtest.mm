@@ -96,9 +96,9 @@
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(
                                           index)] performAction:grey_tap()];
-  // Wait for the omnibox to appear after the tab switch.
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
-                      chrome_test_util::DefocusedLocationView()];
+  // Wait for the omnibox or fake omnibox to appear after the tab switch.
+  id<GREYMatcher> omniboxOrFakeOmnibox = chrome_test_util::FakeOmnibox();
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:omniboxOrFakeOmnibox];
 }
 
 // Switches to the incognito tab at `index`.
@@ -109,9 +109,10 @@
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(
                                           index)] performAction:grey_tap()];
-  // Wait for the omnibox to appear after the tab switch.
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
-                      chrome_test_util::DefocusedLocationView()];
+  // Wait for the omnibox or fake omnibox to appear after the tab switch.
+  id<GREYMatcher> omniboxOrFakeOmnibox =
+      chrome_test_util::DefocusedLocationView();
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:omniboxOrFakeOmnibox];
 }
 
 #pragma mark - Tests

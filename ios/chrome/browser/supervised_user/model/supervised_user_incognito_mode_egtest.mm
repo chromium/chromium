@@ -321,7 +321,7 @@ id<GREYMatcher> SupervisedIncognitoMessage() {
                   @"Incognito tab count should be 0");
 
   // The user should stay on the new tab page.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::NewTabPageOmnibox()]
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
       assertWithMatcher:grey_notNil()];
 }
 

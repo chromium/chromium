@@ -563,7 +563,8 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 }
 
 + (id<GREYMatcher>)defocusedLocationView {
-  return grey_kindOfClassName(@"LocationBarSteadyView");
+  return grey_allOf(grey_kindOfClassName(@"LocationBarSteadyView"),
+                    grey_sufficientlyVisible(), nil);
 }
 
 + (id<GREYMatcher>)pageSecurityInfoButton {

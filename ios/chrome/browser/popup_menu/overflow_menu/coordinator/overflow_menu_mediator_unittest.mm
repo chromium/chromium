@@ -624,6 +624,40 @@ TEST_F(OverflowMenuMediatorTest, TestItemsStatusOnNTP) {
   EXPECT_FALSE(HasItem(kToolsMenuSiteInformation, /*enabled=*/YES));
 }
 
+// Tests that the share action is not added to the overflow menu when the share
+// icon is visible in the omnibox.
+TEST_F(OverflowMenuMediatorTest, TestShareActionNotVisibleByDefault) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      {{kChromeNextIa, {{"chrome_next_ia_share_icon_visible", "true"}}},
+       {kComposeboxIpad, {}}},
+      {});
+
+  CreateMediator(/*incognito=*/NO);
+  SetUpActiveWebState();
+  web_state_->SetCurrentURL(GURL("http://chromium.org"));
+  mediator_.webStateList = browser_->GetWebStateList();
+  mediator_.model = model_;
+  EXPECT_FALSE(HasItem(kToolsMenuShareId, /*enabled=*/YES));
+}
+
+// Tests that the share action is added to the overflow menu when ChromeNextIa
+// is enabled without the share icon being visible.
+TEST_F(OverflowMenuMediatorTest, TestShareActionVisibleWithChromeNextIa) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      {{kChromeNextIa, {{"chrome_next_ia_share_icon_visible", "false"}}},
+       {kComposeboxIpad, {}}},
+      {});
+
+  CreateMediator(/*incognito=*/NO);
+  SetUpActiveWebState();
+  web_state_->SetCurrentURL(GURL("http://chromium.org"));
+  mediator_.webStateList = browser_->GetWebStateList();
+  mediator_.model = model_;
+  EXPECT_TRUE(HasItem(kToolsMenuShareId, /*enabled=*/YES));
+}
+
 // Tests that the "Add to Reading List" button is disabled while overlay UI is
 // displayed in OverlayModality::kWebContentArea.
 TEST_F(OverflowMenuMediatorTest, TestReadLaterDisabled) {
