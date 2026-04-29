@@ -10,11 +10,6 @@
 
 namespace switches {
 
-#if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kResolveRegionalCapabilitiesFromDevice,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 #if BUILDFLAG(IS_IOS)
 BASE_FEATURE(kTaiyakiAllSurfaces, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_IOS)

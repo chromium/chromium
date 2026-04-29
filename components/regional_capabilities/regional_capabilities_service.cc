@@ -619,24 +619,20 @@ void RegionalCapabilitiesService::EnsureRegionalScopeCacheInitialized() {
   Program program;
 
 #if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(
-          switches::kResolveRegionalCapabilitiesFromDevice)) {
-    program = client_->GetDeviceProgram();
+  program = client_->GetDeviceProgram();
 
-    if (IsInProgramRegion(program, country_id_cache_.value())) {
-      RecordAndroidProgramResolution(AndroidProgramResolution::kSuccess);
-    } else {
-      // Interim program inconsistencies originate from asynchronous nature of
-      // their resolution. For the time being, use a reasonable default.
-      program = Program::kDefault;
-      RecordAndroidProgramResolution(
-          AndroidProgramResolution::kDefaultForOutOfProgramCountry);
-    }
-  } else
-#endif  // BUILDFLAG(IS_ANDROID)
-  {
-    program = CountryIdToProgram(country_id_cache_.value());
+  if (IsInProgramRegion(program, country_id_cache_.value())) {
+    RecordAndroidProgramResolution(AndroidProgramResolution::kSuccess);
+  } else {
+    // Interim program inconsistencies originate from asynchronous nature of
+    // their resolution. For the time being, use a reasonable default.
+    program = Program::kDefault;
+    RecordAndroidProgramResolution(
+        AndroidProgramResolution::kDefaultForOutOfProgramCountry);
   }
+#else
+  program = CountryIdToProgram(country_id_cache_.value());
+#endif  // BUILDFLAG(IS_ANDROID)
 
   program_settings_cache_ = GetSettingsForProgram(program);
 
@@ -741,6 +737,11 @@ bool RegionalCapabilitiesService::IsInEeaCountry(JNIEnv* env) {
   return IsInEeaCountry();
 }
 #endif
+
+Program CountryIdToProgramForTesting(
+    const country_codes::CountryId& country_id) {
+  return CountryIdToProgram(country_id);
+}
 
 }  // namespace regional_capabilities
 

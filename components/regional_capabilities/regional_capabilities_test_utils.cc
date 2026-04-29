@@ -10,6 +10,7 @@
 
 #include "base/functional/callback.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "components/regional_capabilities/program_settings.h"
 #include "components/regional_capabilities/regional_capabilities_metrics.h"
 #include "components/regional_capabilities/regional_capabilities_service.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
@@ -48,7 +49,11 @@ FakeRegionalCapabilitiesServiceClient::FakeRegionalCapabilitiesServiceClient(
     CountryId fallback_country_id)
     : variations_latest_country_id_(variations_latest_country_id),
       fetched_country_id_(fetched_country_id),
-      fallback_country_id_(fallback_country_id) {}
+#if BUILDFLAG(IS_ANDROID)
+      device_program_(CountryIdToProgramForTesting(fetched_country_id_)),
+#endif
+      fallback_country_id_(fallback_country_id) {
+}
 
 FakeRegionalCapabilitiesServiceClient::
     ~FakeRegionalCapabilitiesServiceClient() = default;
@@ -69,7 +74,13 @@ CountryId FakeRegionalCapabilitiesServiceClient::GetFallbackCountryId() {
 
 #if BUILDFLAG(IS_ANDROID)
 Program FakeRegionalCapabilitiesServiceClient::GetDeviceProgram() {
-  return Program::kDefault;
+  return device_program_;
+}
+
+FakeRegionalCapabilitiesServiceClient&
+FakeRegionalCapabilitiesServiceClient::SetDeviceProgram(Program program) {
+  device_program_ = program;
+  return *this;
 }
 #endif
 
@@ -84,6 +95,9 @@ FakeRegionalCapabilitiesServiceClient&
 FakeRegionalCapabilitiesServiceClient::SetFetchedCountryId(
     CountryId country_id) {
   fetched_country_id_ = country_id;
+#if BUILDFLAG(IS_ANDROID)
+  device_program_ = CountryIdToProgramForTesting(country_id);
+#endif
   return *this;
 }
 

@@ -47,12 +47,6 @@ class RegionalCapabilitiesMetricsProviderTest : public testing::Test {
 
   void SetUp() override {
     ASSERT_TRUE(profile_manager_.SetUp());
-#if BUILDFLAG(IS_ANDROID)
-    // TODO(https://crbug.com/438133907): once it's supported by the test
-    // environment, set the regional capabilities directly for this test.
-    scoped_feature_list_.InitAndDisableFeature(
-        switches::kResolveRegionalCapabilitiesFromDevice);
-#endif  // BUILDFLAG(IS_ANDROID)
   }
 
   void TearDown() override {

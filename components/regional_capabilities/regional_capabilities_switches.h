@@ -39,12 +39,6 @@ inline constexpr char kDefaultListCountryOverride[] = "DEFAULT_EEA";
 // list of all EEA engines.
 inline constexpr char kEeaListCountryOverride[] = "EEA_ALL";
 
-#if BUILDFLAG(IS_ANDROID)
-// Obtains the active regional program directly from the device instead of
-// deriving it from the profile country. Kill switch, enabled by default.
-BASE_DECLARE_FEATURE(kResolveRegionalCapabilitiesFromDevice);
-#endif
-
 #if BUILDFLAG(IS_IOS)
 // Enables the Taiyaki regional program on all surfaces, including post-FRE
 // surfaces. When disabled, Taiyaki is only enabled on the FRE.

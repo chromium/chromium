@@ -254,6 +254,11 @@ class RegionalCapabilitiesService : public KeyedService {
   base::WeakPtrFactory<RegionalCapabilitiesService> weak_ptr_factory_{this};
 };
 
+// Returns the program that should be active for `country_id` if it was to be
+// derived from it.
+Program CountryIdToProgramForTesting(
+    const country_codes::CountryId& country_id);
+
 }  // namespace regional_capabilities
 
 #endif  // COMPONENTS_REGIONAL_CAPABILITIES_REGIONAL_CAPABILITIES_SERVICE_H_
