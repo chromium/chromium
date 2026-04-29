@@ -18,8 +18,8 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
+import org.chromium.components.webapps.R;
 
 /** Unit tests for {@link PwaRestoreBottomSheetContent}. */
 @RunWith(BaseRobolectricTestRunner.class)

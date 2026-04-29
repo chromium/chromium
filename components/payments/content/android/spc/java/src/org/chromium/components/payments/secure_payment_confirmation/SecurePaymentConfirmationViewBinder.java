@@ -11,7 +11,6 @@ import android.widget.TextView;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.payments.PaymentApp.PaymentEntityLogo;
-import org.chromium.components.payments.R;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 

@@ -111,7 +111,7 @@ if (is_android) {
       ":jni_headers",
     ]
 
-    resources_package = "org.chromium.components.browser_ui.strings"
+    resources_package = "org.chromium.components.offline_items_collection"
 
     deps = [
       "//base:base_java",

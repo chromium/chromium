@@ -21,7 +21,6 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
-import org.chromium.components.payments.R;
 
 /** Unit tests for {@link SecurePaymentConfirmationBottomSheetContent} */
 @RunWith(BaseRobolectricTestRunner.class)

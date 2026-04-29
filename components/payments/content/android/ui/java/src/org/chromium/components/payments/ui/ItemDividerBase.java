@@ -16,7 +16,6 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.components.payments.R;
 
 import java.util.Objects;
 

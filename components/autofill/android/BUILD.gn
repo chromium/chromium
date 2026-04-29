@@ -365,7 +365,7 @@ android_library("payments_autofill_java") {
 }
 
 robolectric_library("payments_autofill_junit_tests") {
-  resources_package = "org.chromium.components.autofill"
+  resources_package = "org.chromium.components.autofill.payments"
 
   sources = [
     "junit/src/org/chromium/components/autofill/payments/AutofillSaveCardUiInfoTest.java",

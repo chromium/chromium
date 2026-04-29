@@ -39,7 +39,8 @@ android_library("java") {
     "//third_party/jni_zero:jni_zero_java",
   ]
   srcjar_deps = [ ":jni_headers" ]
-  resources_package = "org.chromium.components.payments"
+
+  resources_package = "org.chromium.components.payments.ui"
 }
 
 android_library("payments_java_test_support") {

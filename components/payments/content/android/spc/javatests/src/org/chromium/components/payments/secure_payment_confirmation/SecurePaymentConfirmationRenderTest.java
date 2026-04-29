@@ -42,7 +42,6 @@ import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
 import org.chromium.components.payments.PaymentApp.PaymentEntityLogo;
-import org.chromium.components.payments.R;
 import org.chromium.components.payments.SPCTransactionMode;
 import org.chromium.payments.mojom.PaymentCurrencyAmount;
 import org.chromium.payments.mojom.PaymentItem;

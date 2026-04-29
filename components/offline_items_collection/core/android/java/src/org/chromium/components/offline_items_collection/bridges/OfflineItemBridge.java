@@ -6,15 +6,12 @@ package org.chromium.components.offline_items_collection.bridges;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
-import org.chromium.ui.widget.Toast;
-
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.components.browser_ui.strings.R;
 import org.chromium.components.download.DownloadDangerType;
 import org.chromium.components.offline_items_collection.FailState;
 import org.chromium.components.offline_items_collection.OfflineItem;
@@ -22,7 +19,9 @@ import org.chromium.components.offline_items_collection.OfflineItemFilter;
 import org.chromium.components.offline_items_collection.OfflineItemProgressUnit;
 import org.chromium.components.offline_items_collection.OfflineItemState;
 import org.chromium.components.offline_items_collection.PendingState;
+import org.chromium.components.offline_items_collection.R;
 import org.chromium.components.offline_items_collection.UpdateDelta;
+import org.chromium.ui.widget.Toast;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;

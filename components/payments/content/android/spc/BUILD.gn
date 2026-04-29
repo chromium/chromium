@@ -36,7 +36,9 @@ android_library("java") {
     "//ui/android:ui_recycler_view_java",
     "//url:url_java",
   ]
-  resources_package = "org.chromium.components.payments"
+
+  resources_package =
+      "org.chromium.components.payments.secure_payment_confirmation"
 }
 
 robolectric_library("junit") {
@@ -62,6 +64,7 @@ robolectric_library("junit") {
     "//components/payments/mojom:mojom_java",
     "//components/url_formatter/android:url_formatter_java",
     "//content/public/android:content_java",
+    "//content/public/android:content_java_resources",
     "//mojo/public/java:system_java",
     "//third_party/android_deps:material_design_java",
     "//third_party/androidx:androidx_collection_collection_java",
@@ -78,7 +81,9 @@ robolectric_library("junit") {
     "//url/mojom:url_mojom_gurl_java",
     "//url/mojom:url_mojom_origin_java",
   ]
-  resources_package = "org.chromium.components.payments"
+
+  resources_package =
+      "org.chromium.components.payments.secure_payment_confirmation"
 }
 
 android_library("unit_device_javatests") {
@@ -89,7 +94,9 @@ android_library("unit_device_javatests") {
     ":java",
     "//base:base_java_test_support",
     "//components/browser_ui/widget/android:test_support_java",
+    "//components/payments/content/android:java_resources",
     "//components/payments/content/android:minimal_java",
+    "//content/public/android:content_java_resources",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//third_party/androidx:androidx_test_runner_java__classes",
     "//third_party/junit",
@@ -97,6 +104,9 @@ android_library("unit_device_javatests") {
     "//ui/android:ui_no_recycler_view_java",
     "//ui/android:ui_recycler_view_java",
   ]
+
+  resources_package =
+      "org.chromium.components.payments.secure_payment_confirmation"
 }
 
 android_library("javatests") {
@@ -112,6 +122,7 @@ android_library("javatests") {
     "//chrome/test/android:chrome_java_test_support_common",
     "//chrome/test/android:chrome_java_transit",
     "//components/browser_ui/bottomsheet/android:java",
+    "//components/browser_ui/bottomsheet/android:java_resources",
     "//components/browser_ui/bottomsheet/android:manager_java",
     "//components/browser_ui/bottomsheet/android/test:java",
     "//components/payments/content/android:minimal_java",
@@ -126,6 +137,9 @@ android_library("javatests") {
     "//ui/android:ui_no_recycler_view_java",
     "//url:url_java",
   ]
+
+  resources_package =
+      "org.chromium.components.payments.secure_payment_confirmation"
 }
 
 generate_jni("browser_binding_jni") {

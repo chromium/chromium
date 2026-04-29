@@ -215,18 +215,14 @@ public class SecurePaymentConfirmationControllerTest {
         assertSame(
                 mPaymentEntityLogos, model.get(SecurePaymentConfirmationProperties.HEADER_LOGOS));
         assertEquals(
-                context.getString(
-                        org.chromium.components.payments.R.string
-                                .secure_payment_confirmation_title),
+                context.getString(R.string.secure_payment_confirmation_title),
                 model.get(SecurePaymentConfirmationProperties.TITLE));
         ModelList itemList =
                 model.get(SecurePaymentConfirmationProperties.ITEM_LIST_ADAPTER).getModelList();
         assertEquals(3, itemList.size());
         ListItem storeItem = itemList.get(0);
         assertEquals(
-                context.getString(
-                        org.chromium.components.payments.R.string
-                                .secure_payment_confirmation_store_label),
+                context.getString(R.string.secure_payment_confirmation_store_label),
                 storeItem.model.get(ItemProperties.ICON_LABEL));
         assertEquals(mPayeeName, storeItem.model.get(ItemProperties.PRIMARY_TEXT));
         assertEquals(
@@ -242,9 +238,7 @@ public class SecurePaymentConfirmationControllerTest {
                 paymentItem.model.get(ItemProperties.SECONDARY_TEXT));
         ListItem totalItem = itemList.get(2);
         assertEquals(
-                context.getString(
-                        org.chromium.components.payments.R.string
-                                .secure_payment_confirmation_total_label),
+                context.getString(R.string.secure_payment_confirmation_total_label),
                 totalItem.model.get(ItemProperties.ICON_LABEL));
         CurrencyFormatter formatter =
                 new CurrencyFormatter(mTotal.amount.currency, Locale.getDefault());
@@ -256,15 +250,11 @@ public class SecurePaymentConfirmationControllerTest {
         assertNull(model.get(SecurePaymentConfirmationProperties.OPT_OUT_TEXT));
         assertSpannableStringsEqual(
                 SpanApplier.applySpans(
-                        context.getString(
-                                org.chromium.components.payments.R.string
-                                        .secure_payment_confirmation_footnote),
+                        context.getString(R.string.secure_payment_confirmation_footnote),
                         new SpanInfo("BEGIN_LINK", "END_LINK")),
                 model.get(SecurePaymentConfirmationProperties.FOOTNOTE));
         assertEquals(
-                context.getString(
-                        org.chromium.components.payments.R.string
-                                .secure_payment_confirmation_verify_button_label),
+                context.getString(R.string.secure_payment_confirmation_verify_button_label),
                 model.get(SecurePaymentConfirmationProperties.CONTINUE_BUTTON_LABEL));
     }
 
@@ -276,16 +266,13 @@ public class SecurePaymentConfirmationControllerTest {
         String deviceString =
                 context.getString(
                         DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
-                                ? org.chromium.components.payments.R.string
-                                        .secure_payment_confirmation_this_tablet_label
-                                : org.chromium.components.payments.R.string
-                                        .secure_payment_confirmation_this_phone_label);
+                                ? R.string.secure_payment_confirmation_this_tablet_label
+                                : R.string.secure_payment_confirmation_this_phone_label);
 
         assertSpannableStringsEqual(
                 SpanApplier.applySpans(
                         context.getString(
-                                org.chromium.components.payments.R.string
-                                        .secure_payment_confirmation_opt_out_label,
+                                R.string.secure_payment_confirmation_opt_out_label,
                                 deviceString,
                                 mRelyingPartyId),
                         new SpanInfo("BEGIN_LINK", "END_LINK")),
@@ -301,14 +288,11 @@ public class SecurePaymentConfirmationControllerTest {
         PropertyModel model = mController.getModelForTesting();
 
         assertEquals(
-                context.getString(
-                        org.chromium.components.payments.R.string
-                                .secure_payment_confirmation_inform_only_title),
+                context.getString(R.string.secure_payment_confirmation_inform_only_title),
                 model.get(SecurePaymentConfirmationProperties.TITLE));
         assertNull(model.get(SecurePaymentConfirmationProperties.FOOTNOTE));
         assertEquals(
-                context.getString(
-                        org.chromium.components.payments.R.string.payments_confirm_button),
+                context.getString(R.string.payments_confirm_button),
                 model.get(SecurePaymentConfirmationProperties.CONTINUE_BUTTON_LABEL));
     }
 

@@ -43,7 +43,6 @@ import org.robolectric.shadows.ShadowListView;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.ui.R;
 import org.chromium.ui.listmenu.BasicListMenu;
 import org.chromium.ui.listmenu.ListMenuSubmenuItemProperties;
 import org.chromium.ui.listmenu.ListMenuUtils;

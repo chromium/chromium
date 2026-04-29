@@ -23,7 +23,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.R;
+import org.chromium.components.browser_ui.widget.R;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.ButtonCompat;

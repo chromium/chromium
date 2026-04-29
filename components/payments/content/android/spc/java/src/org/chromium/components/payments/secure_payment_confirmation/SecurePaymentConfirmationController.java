@@ -21,7 +21,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.components.payments.PaymentApp.PaymentEntityLogo;
-import org.chromium.components.payments.R;
 import org.chromium.components.payments.SPCTransactionMode;
 import org.chromium.components.payments.secure_payment_confirmation.SecurePaymentConfirmationBottomSheetObserver.ControllerDelegate;
 import org.chromium.components.payments.secure_payment_confirmation.SecurePaymentConfirmationProperties.ItemProperties;

@@ -14,7 +14,6 @@ import androidx.annotation.StringRes;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
-import org.chromium.components.payments.R;
 
 /** Implements the bottom sheet content for the secure payment confirmation bottom sheet. */
 @NullMarked

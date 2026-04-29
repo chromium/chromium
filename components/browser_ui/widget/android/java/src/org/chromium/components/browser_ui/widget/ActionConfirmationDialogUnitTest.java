@@ -42,7 +42,6 @@ import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
-import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.widget.ActionConfirmationDialog.ConfirmationDialogHandler;
 import org.chromium.components.browser_ui.widget.ActionConfirmationDialog.ConfirmationDialogParams;
 import org.chromium.components.browser_ui.widget.ActionConfirmationDialog.DialogDismissType;
