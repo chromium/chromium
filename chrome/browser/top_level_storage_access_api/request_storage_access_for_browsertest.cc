@@ -8,6 +8,7 @@
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -801,12 +802,14 @@ IN_PROC_BROWSER_TEST_F(
                   TopLevelStorageAccessRequestOutcome::kGrantedByFirstPartySet),
               Gt(0));
 
-  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-  histogram_tester.ExpectBucketCount(
-      "Blink.UseCounter.Features",
-      blink::mojom::WebFeature::
-          kStorageAccessAPI_requestStorageAccessFor_Method_AsyncSuccess,
-      /*expected_count=*/1);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+    return histogram_tester.GetBucketCount(
+               "Blink.UseCounter.Features",
+               blink::mojom::WebFeature::
+                   kStorageAccessAPI_requestStorageAccessFor_Method_AsyncSuccess) ==
+           1;
+  }));
 
   EXPECT_THAT(
       ukm_recorder.GetMetricsEntryValues(kRequestStorageAccessUkmEntryName,
