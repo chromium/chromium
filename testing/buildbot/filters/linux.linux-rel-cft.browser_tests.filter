@@ -100,7 +100,6 @@ BrowserRootViewBrowserTest.*
 -SyncConfirmationUIDialogPixelTest.InvokeUi_default*
 -TabSharingUIViewsPreferCurrentTabBrowserTest.VerifyUiWhenCapturingAnotherTab
 -TabSharingUIViewsPreferCurrentTabBrowserTest.VerifyUiWhenSelfCapturing
--WebAppFrameToolbarBrowserTest_Borderless.*
 -WebAppFrameToolbarBrowserTest_WindowControlsOverlay.*
 -WebAppGlassBrowserFrameViewWindowControlsOverlayTest.*
 -WebAppIntegration.*
