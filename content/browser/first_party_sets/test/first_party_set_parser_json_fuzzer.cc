@@ -22,8 +22,7 @@ DEFINE_PROTO_FUZZER(const json_proto::JsonValue& json_value) {
     std::cout << native_input << std::endl;
 
   std::istringstream stream(native_input);
-  FirstPartySetParser::ParseSetsFromStream(stream, base::Version("1.0"), false,
-                                           false);
+  FirstPartySetParser::ParseSetsFromStream(stream, base::Version("1.0"), false);
 }
 
 }  // namespace content

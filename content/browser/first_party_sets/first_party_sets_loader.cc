@@ -101,8 +101,7 @@ void FirstPartySetsLoader::OnReadSetsFile(base::Version version,
 
   std::istringstream stream(raw_sets);
   sets_ = FirstPartySetParser::ParseSetsFromStream(stream, std::move(version),
-                                                   /*emit_errors=*/false,
-                                                   /*emit_metrics=*/true);
+                                                   /*emit_errors=*/false);
 
   component_sets_parse_progress_ = Progress::kFinished;
   MaybeFinishLoading();

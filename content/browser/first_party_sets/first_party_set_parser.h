@@ -47,8 +47,7 @@ class CONTENT_EXPORT FirstPartySetParser {
   // any set failed.
   static net::GlobalFirstPartySets ParseSetsFromStream(std::istream& input,
                                                        base::Version version,
-                                                       bool emit_errors,
-                                                       bool emit_metrics);
+                                                       bool emit_errors);
 
   // Canonicalizes the passed in origin to a registered domain. In particular,
   // this ensures that the origin is non-opaque, is HTTPS, and has a registered

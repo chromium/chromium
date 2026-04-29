@@ -16,17 +16,14 @@
 #include "base/check_op.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/containers/map_util.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "base/values.h"
 #include "content/browser/first_party_sets/first_party_sets_overrides_policy.h"
 #include "content/public/browser/first_party_sets_handler.h"
-#include "content/public/common/content_features.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
@@ -643,13 +640,10 @@ class ParseContext {
 };
 
 SetsAndAliases ParseSetsFromStreamInternal(std::istream& input,
-                                           bool emit_errors,
-                                           bool emit_metrics) {
+                                           bool emit_errors) {
   std::vector<SetsMap::value_type> sets;
   std::vector<Aliases::value_type> aliases;
   ParseContext context(emit_errors, /*exempt_from_limits=*/false);
-  int successfully_parsed_sets = 0;
-  int nonfatal_errors = 0;
   for (std::string line; std::getline(input, line);) {
     if (std::ranges::all_of(line, &base::IsWhitespace<char>)) {
       continue;
@@ -657,24 +651,15 @@ SetsAndAliases ParseSetsFromStreamInternal(std::istream& input,
     std::optional<base::Value> maybe_value = base::JSONReader::Read(
         line, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
     if (!maybe_value.has_value()) {
-      if (emit_metrics) {
-        base::UmaHistogramBoolean(
-            "Cookie.FirstPartySets.ProcessedEntireComponent", false);
-      }
       return {};
     }
     base::expected<SetsAndAliases, ParseError> parsed =
         context.ParseSet(*maybe_value);
     if (!parsed.has_value()) {
       if (!IsFatalError(parsed.error().type())) {
-        nonfatal_errors++;
         continue;
       }
       // Abort, something is wrong with the component.
-      if (emit_metrics) {
-        base::UmaHistogramBoolean(
-            "Cookie.FirstPartySets.ProcessedEntireComponent", false);
-      }
       return {};
     }
 
@@ -682,20 +667,9 @@ SetsAndAliases ParseSetsFromStreamInternal(std::istream& input,
 
     std::ranges::move(parsed.value().first, std::back_inserter(sets));
     std::ranges::move(parsed.value().second, std::back_inserter(aliases));
-    successfully_parsed_sets++;
   }
 
   context.PostProcessSets(sets, aliases);
-
-  if (emit_metrics) {
-    base::UmaHistogramBoolean("Cookie.FirstPartySets.ProcessedEntireComponent",
-                              true);
-    base::UmaHistogramCounts1000(
-        "Cookie.FirstPartySets.ComponentSetsParsedSuccessfully",
-        successfully_parsed_sets);
-    base::UmaHistogramCounts1000(
-        "Cookie.FirstPartySets.ComponentSetsNonfatalErrors", nonfatal_errors);
-  }
 
   return std::make_pair(std::move(sets), std::move(aliases));
 }
@@ -718,10 +692,9 @@ FirstPartySetParser::CanonicalizeRegisteredDomain(
 net::GlobalFirstPartySets FirstPartySetParser::ParseSetsFromStream(
     std::istream& input,
     base::Version version,
-    bool emit_errors,
-    bool emit_metrics) {
+    bool emit_errors) {
   SetsAndAliases sets_and_aliases =
-      ParseSetsFromStreamInternal(input, emit_errors, emit_metrics);
+      ParseSetsFromStreamInternal(input, emit_errors);
   std::optional<net::FirstPartySetsContextConfig> public_config =
       net::FirstPartySetsContextConfig::Create(
           std::move(sets_and_aliases.first),
@@ -775,8 +748,7 @@ net::LocalSetDeclaration FirstPartySetParser::ParseFromCommandLine(
   std::istringstream stream(switch_value);
 
   SetsAndAliases parsed =
-      ParseSetsFromStreamInternal(stream, /*emit_errors=*/true,
-                                  /*emit_metrics*/ false);
+      ParseSetsFromStreamInternal(stream, /*emit_errors=*/true);
 
   SetsMap entries = std::move(parsed.first);
   Aliases aliases = std::move(parsed.second);

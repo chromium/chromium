@@ -138,7 +138,7 @@ DEFINE_PROTO_FUZZER(const related_website_sets::proto::AllInputs& input) {
   std::istringstream stream(native_inputs.public_sets);
   net::GlobalFirstPartySets global_sets =
       FirstPartySetParser::ParseSetsFromStream(stream, base::Version("1.0"),
-                                               false, false);
+                                               false);
 
   auto [parsed_policy, warnings] =
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(native_inputs.policy);
