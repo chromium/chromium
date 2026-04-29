@@ -32,10 +32,10 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.R;
 import org.chromium.net.test.EmbeddedTestServer;
 
 /** Integration tests for the Minimized Custom Tabs feature. */

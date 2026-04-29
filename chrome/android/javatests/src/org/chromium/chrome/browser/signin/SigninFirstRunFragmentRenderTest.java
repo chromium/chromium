@@ -46,6 +46,7 @@ import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.firstrun.FirstRunPageDelegate;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -57,7 +58,6 @@ import org.chromium.chrome.browser.signin.SigninFirstRunFragmentTest.CustomSigni
 import org.chromium.chrome.browser.signin.services.SigninChecker;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
-import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;

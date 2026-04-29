@@ -82,6 +82,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.about_settings.AboutChromeSettings;
 import org.chromium.chrome.browser.appearance.settings.AppearanceSettingsFragment;
 import org.chromium.chrome.browser.autofill.settings.AutofillPaymentMethodsFragment;
@@ -124,7 +125,6 @@ import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoor
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.browser_ui.accessibility.AccessibilitySettings;

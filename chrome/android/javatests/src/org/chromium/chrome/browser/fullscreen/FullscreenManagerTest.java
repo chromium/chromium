@@ -33,6 +33,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.UrlUtils;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
@@ -47,7 +48,6 @@ import org.chromium.chrome.browser.tab.TabStateBrowserControlsVisibilityDelegate
 import org.chromium.chrome.browser.tab.TabTestUtils;
 import org.chromium.chrome.browser.tab.TabWebContentsDelegateAndroid;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.page.WebPageStation;

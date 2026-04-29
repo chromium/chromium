@@ -25,8 +25,8 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
+import org.chromium.chrome.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.R;
 import org.chromium.components.browser_ui.util.TextResolver;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 

@@ -29,6 +29,7 @@ import org.chromium.base.test.util.AdvancedMockContext;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.firstrun.FirstRunActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.locale.LocaleManager;
@@ -37,7 +38,6 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.SearchType;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityPreferencesManager.SearchActivityPreferences;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.R;
 
 import java.util.ArrayList;
 import java.util.List;

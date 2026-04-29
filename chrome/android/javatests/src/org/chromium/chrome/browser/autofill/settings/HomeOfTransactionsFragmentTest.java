@@ -46,6 +46,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.PayloadCallbackHelper;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -59,7 +60,6 @@ import org.chromium.chrome.browser.settings.MainSettings;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.R;
 import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 import org.chromium.components.policy.test.annotations.Policies;
 

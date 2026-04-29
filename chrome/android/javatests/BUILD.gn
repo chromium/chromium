@@ -456,7 +456,7 @@ android_library("chrome_test_java_helper") {
 }
 
 android_library("chrome_test_java_org.chromium.chrome.browser.actor") {
-  resources_package = "org.chromium.chrome.test"
+  resources_package = "org.chromium.chrome"
 
   sources = [ "src/org/chromium/chrome/browser/actor/ActorOverlayPTTest.java" ]
 
@@ -469,7 +469,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.actor") {
 
 # Partition tests into one target per-package to keep incremental build times down.
 android_library("chrome_test_java_org.chromium.chrome.browser") {
-  resources_package = "org.chromium.chrome.test"
+  resources_package = "org.chromium.chrome"
 
   sources = [
     "src/org/chromium/chrome/browser/ActivityResultTrackerIntegrationTest.java",
@@ -521,7 +521,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser") {
 }
 
 android_library("chrome_test_java_org.chromium.chrome.browser.app") {
-  resources_package = "org.chromium.chrome.test"
+  resources_package = "org.chromium.chrome"
 
   sources = [
     "//chrome/android/java/src/org/chromium/chrome/browser/app/feed/NavigationRecorderTest.java",
@@ -557,7 +557,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.app") {
 }
 
 android_library("chrome_test_java_org.chromium.chrome.browser.appearance") {
-  resources_package = "org.chromium.chrome.test"
+  resources_package = "org.chromium.chrome"
 
   sources = [ "src/org/chromium/chrome/browser/appearance/settings/AppearanceSettingsFragmentTest.java" ]
 
@@ -568,7 +568,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.appearance") {
 }
 
 android_library("chrome_test_java_org.chromium.chrome.browser.autofill") {
-  resources_package = "org.chromium.chrome.test"
+  resources_package = "org.chromium.chrome"
 
   sources = [
     "src/org/chromium/chrome/browser/autofill/AutofillSnackbarControllerTest.java",
@@ -594,7 +594,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.autofill") {
 }
 
 android_library("chrome_test_java_org.chromium.chrome.browser.bottombar") {
-  resources_package = "org.chromium.chrome.test"
+  resources_package = "org.chromium.chrome"
 
   sources = [ "//chrome/android/java/src/org/chromium/chrome/browser/bottombar/BottomBarPtTest.java" ]
 
@@ -603,7 +603,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.bottombar") {
 
 android_library(
     "chrome_test_java_org.chromium.chrome.browser.browser_controls") {
-  resources_package = "org.chromium.chrome.test"
+  resources_package = "org.chromium.chrome"
 
   sources = [ "src/org/chromium/chrome/browser/browser_controls/BrowserControlsPTTest.java" ]
 
@@ -612,7 +612,7 @@ android_library(
 
 android_library(
     "chrome_test_java_org.chromium.chrome.browser.browserservices") {
-  resources_package = "org.chromium.chrome.test"
+  resources_package = "org.chromium.chrome"
 
   sources = [
     "src/org/chromium/chrome/browser/browserservices/ManageTrustedWebActivityDataActivityTest.java",
@@ -635,7 +635,7 @@ android_library(
 }
 
 android_library("chrome_test_java_org.chromium.chrome.browser.browsing_data") {
-  resources_package = "org.chromium.chrome.test"
+  resources_package = "org.chromium.chrome"
 
   sources = [
     "src/org/chromium/chrome/browser/browsing_data/BrowsingDataBridgeTest.java",
@@ -648,7 +648,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.browsing_data") {
 }
 
 android_library("chrome_test_java_org.chromium.chrome.browser.compositor") {
-  resources_package = "org.chromium.chrome.test"
+  resources_package = "org.chromium.chrome"
 
   sources = [
     "src/org/chromium/chrome/browser/compositor/CompositorVisibilityTest.java",
@@ -672,7 +672,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.compositor") {
 
 android_library(
     "chrome_test_java_org.chromium.chrome.browser.contextualsearch") {
-  resources_package = "org.chromium.chrome.test"
+  resources_package = "org.chromium.chrome"
 
   sources = [
     "src/org/chromium/chrome/browser/contextualsearch/ContextualSearchCalloutTest.java",
@@ -699,7 +699,7 @@ android_library(
 }
 
 android_library("chrome_test_java_org.chromium.chrome.browser.customtabs") {
-  resources_package = "org.chromium.chrome.test"
+  resources_package = "org.chromium.chrome"
 
   sources = [
     "src/org/chromium/chrome/browser/customtabs/AuthTabTest.java",
@@ -741,7 +741,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.customtabs") {
 }
 
 android_library("chrome_test_java_org.chromium.chrome.browser.device_dialog") {
-  resources_package = "org.chromium.chrome.test"
+  resources_package = "org.chromium.chrome"
 
   sources = [
     "src/org/chromium/chrome/browser/device_dialog/BluetoothChooserDialogTest.java",
@@ -755,7 +755,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.device_dialog") {
 }
 
 android_library("chrome_test_java_org.chromium.chrome.browser.display_cutout") {
-  resources_package = "org.chromium.chrome.test"
+  resources_package = "org.chromium.chrome"
 
   sources = [
     "src/org/chromium/chrome/browser/display_cutout/DisplayCutoutTest.java",
@@ -768,7 +768,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.display_cutout") {
 }
 
 android_library("chrome_test_java_org.chromium.chrome.browser.dom_distiller") {
-  resources_package = "org.chromium.chrome.test"
+  resources_package = "org.chromium.chrome"
 
   sources = [
     "src/org/chromium/chrome/browser/dom_distiller/DistillabilityServiceTest.java",
@@ -783,7 +783,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.dom_distiller") {
 
 android_library(
     "chrome_test_java_org.chromium.chrome.browser.chrome_item_picker") {
-  resources_package = "org.chromium.chrome.test"
+  resources_package = "org.chromium.chrome"
 
   sources = [ "src/org/chromium/chrome/browser/chrome_item_picker/ChromeItemPickerActivityTest.java" ]
 
@@ -791,7 +791,7 @@ android_library(
 }
 
 android_library("chrome_test_java_org.chromium.chrome.browser.download") {
-  resources_package = "org.chromium.chrome.test"
+  resources_package = "org.chromium.chrome"
 
   sources = [
     "src/org/chromium/chrome/browser/download/AutoDownloadsTest.java",
@@ -809,7 +809,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.download") {
 }
 
 android_library("chrome_test_java_org.chromium.chrome.browser.feedback") {
-  resources_package = "org.chromium.chrome.test"
+  resources_package = "org.chromium.chrome"
 
   sources = [
     "src/org/chromium/chrome/browser/feedback/ChromeFeedbackCollectorTest.java",
@@ -822,7 +822,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.feedback") {
 }
 
 android_library("chrome_test_java_org.chromium.chrome.browser.firstrun") {
-  resources_package = "org.chromium.chrome.test"
+  resources_package = "org.chromium.chrome"
 
   sources = [
     "src/org/chromium/chrome/browser/firstrun/DefaultBrowserPromoFirstRunFragmentRenderTest.java",
@@ -834,7 +834,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.firstrun") {
 }
 
 android_library("chrome_test_java_org.chromium.chrome.browser.gesturenav") {
-  resources_package = "org.chromium.chrome.test"
+  resources_package = "org.chromium.chrome"
 
   sources = [
     "src/org/chromium/chrome/browser/gesturenav/GestureNavigationTestUtils.java",
@@ -849,7 +849,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.gesturenav") {
 
 android_library(
     "chrome_test_java_org.chromium.chrome.browser.hardware_acceleration") {
-  resources_package = "org.chromium.chrome.test"
+  resources_package = "org.chromium.chrome"
 
   sources = [
     "src/org/chromium/chrome/browser/hardware_acceleration/ChromeTabbedActivityHWATest.java",
@@ -864,7 +864,7 @@ android_library(
 }
 
 android_library("chrome_test_java_org.chromium.chrome.browser.incognito") {
-  resources_package = "org.chromium.chrome.test"
+  resources_package = "org.chromium.chrome"
 
   sources = [
     "src/org/chromium/chrome/browser/incognito/IncognitoCookieLeakageTest.java",
@@ -884,7 +884,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.incognito") {
 }
 
 android_library("chrome_test_java_org.chromium.chrome.browser.media") {
-  resources_package = "org.chromium.chrome.test"
+  resources_package = "org.chromium.chrome"
 
   sources = [
     "src/org/chromium/chrome/browser/media/AutoPipPermissionDialogViewRenderTest.java",
@@ -906,7 +906,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.media") {
 }
 
 android_library("chrome_test_java_org.chromium.chrome.browser.metrics") {
-  resources_package = "org.chromium.chrome.test"
+  resources_package = "org.chromium.chrome"
 
   sources = [
     "src/org/chromium/chrome/browser/metrics/BackgroundMetricsTest.java",
@@ -920,7 +920,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.metrics") {
 }
 
 android_library("chrome_test_java_org.chromium.chrome.browser.notifications") {
-  resources_package = "org.chromium.chrome.test"
+  resources_package = "org.chromium.chrome"
 
   sources = [
     "src/org/chromium/chrome/browser/notifications/NotificationPlatformBridgeIntentTest.java",
@@ -934,7 +934,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.notifications") {
 }
 
 android_library("chrome_test_java_org.chromium.chrome.browser.ntp") {
-  resources_package = "org.chromium.chrome.test"
+  resources_package = "org.chromium.chrome"
 
   sources = [
     "//chrome/android/feed/core/javatests/src/org/chromium/chrome/browser/feed/FeedV2NewTabPageTest.java",
@@ -966,7 +966,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.ntp") {
 }
 
 android_library("chrome_test_java_org.chromium.chrome.browser.offlinepages") {
-  resources_package = "org.chromium.chrome.test"
+  resources_package = "org.chromium.chrome"
 
   sources = [
     "src/org/chromium/chrome/browser/offlinepages/MHTMLPageTest.java",
@@ -987,7 +987,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.offlinepages") {
 }
 
 android_library("chrome_test_java_org.chromium.chrome.browser.omnibox") {
-  resources_package = "org.chromium.chrome.test"
+  resources_package = "org.chromium.chrome"
 
   sources = [
     "src/org/chromium/chrome/browser/omnibox/LocationBarLayoutTest.java",
@@ -1010,7 +1010,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.omnibox") {
 }
 
 android_library("chrome_test_java_org.chromium.chrome.browser.page_info") {
-  resources_package = "org.chromium.chrome.test"
+  resources_package = "org.chromium.chrome"
 
   sources = [
     "src/org/chromium/chrome/browser/page_info/ConnectionInfoViewTest.java",
@@ -1025,7 +1025,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.page_info") {
 
 android_library(
     "chrome_test_java_org.chromium.chrome.browser.partnercustomizations") {
-  resources_package = "org.chromium.chrome.test"
+  resources_package = "org.chromium.chrome"
 
   sources = [
     "src/org/chromium/chrome/browser/partnercustomizations/PartnerDisableIncognitoModeIntegrationTest.java",
@@ -1041,7 +1041,7 @@ android_library(
 
 android_library(
     "chrome_test_java_org.chromium.chrome.browser.password_manager") {
-  resources_package = "org.chromium.chrome.test"
+  resources_package = "org.chromium.chrome"
 
   sources = [
     "src/org/chromium/chrome/browser/password_manager/EnterpriseReportingIntegrationTest.java",
@@ -1057,7 +1057,7 @@ android_library(
 }
 
 android_library("chrome_test_java_org.chromium.chrome.browser.payments") {
-  resources_package = "org.chromium.chrome.test"
+  resources_package = "org.chromium.chrome"
 
   sources = [
     "src/org/chromium/chrome/browser/payments/AndroidPaymentAppFinderCanMakePaymentTest.java",
@@ -1139,7 +1139,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.payments") {
 }
 
 android_library("chrome_test_java_org.chromium.chrome.browser.permissions") {
-  resources_package = "org.chromium.chrome.test"
+  resources_package = "org.chromium.chrome"
 
   sources = [
     "src/org/chromium/chrome/browser/permissions/ApproximateGeolocationTest.java",
@@ -1166,7 +1166,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.permissions") {
 }
 
 android_library("chrome_test_java_org.chromium.chrome.browser.privacy") {
-  resources_package = "org.chromium.chrome.test"
+  resources_package = "org.chromium.chrome"
 
   sources = [
     "src/org/chromium/chrome/browser/privacy/settings/HttpsFirstModeLegacySettingTest.java",
@@ -1183,7 +1183,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.privacy") {
 }
 
 android_library("chrome_test_java_org.chromium.chrome.browser.prefs") {
-  resources_package = "org.chromium.chrome.test"
+  resources_package = "org.chromium.chrome"
 
   sources = [ "src/org/chromium/chrome/browser/prefs/LocalStatePrefsTest.java" ]
 
@@ -1194,7 +1194,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.prefs") {
 }
 
 android_library("chrome_test_java_org.chromium.chrome.browser.profiles") {
-  resources_package = "org.chromium.chrome.test"
+  resources_package = "org.chromium.chrome"
 
   sources = [
     "src/org/chromium/chrome/browser/profiles/OtrProfileIdTest.java",
@@ -1206,7 +1206,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.profiles") {
 }
 
 android_library("chrome_test_java_org.chromium.chrome.browser.provider") {
-  resources_package = "org.chromium.chrome.test"
+  resources_package = "org.chromium.chrome"
 
   sources = [
     "src/org/chromium/chrome/browser/provider/ProviderBookmarksUriTest.java",
@@ -1218,7 +1218,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.provider") {
 }
 
 android_library("chrome_test_java_org.chromium.chrome.browser.search_engines") {
-  resources_package = "org.chromium.chrome.test"
+  resources_package = "org.chromium.chrome"
 
   sources = [
     "src/org/chromium/chrome/browser/search_engines/DefaultSearchEngineDialogHelperTest.java",
@@ -1231,7 +1231,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.search_engines") {
 }
 
 android_library("chrome_test_java_org.chromium.chrome.browser.settings") {
-  resources_package = "org.chromium.chrome.test"
+  resources_package = "org.chromium.chrome"
 
   sources = [
     "src/org/chromium/chrome/browser/settings/MainSettingsFragmentTest.java",
@@ -1249,7 +1249,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.settings") {
 }
 
 android_library("chrome_test_java_org.chromium.chrome.browser.share") {
-  resources_package = "org.chromium.chrome.test"
+  resources_package = "org.chromium.chrome"
 
   sources = [
     "//chrome/browser/share/android/javatests/src/org/chromium/chrome/browser/share/SaveBitmapDelegateTest.java",
@@ -1275,7 +1275,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.share") {
 }
 
 android_library("chrome_test_java_org.chromium.chrome.browser.signin") {
-  resources_package = "org.chromium.chrome.test"
+  resources_package = "org.chromium.chrome"
 
   sources = [
     "src/org/chromium/chrome/browser/signin/AccountManagedStatusFinderIntegrationTest.java",
@@ -1300,7 +1300,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.signin") {
 }
 
 android_library("chrome_test_java_org.chromium.chrome.browser.site_settings") {
-  resources_package = "org.chromium.chrome.test"
+  resources_package = "org.chromium.chrome"
 
   sources = [
     "src/org/chromium/chrome/browser/site_settings/AllSiteSettingsTest.java",
@@ -1322,7 +1322,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.site_settings") {
 }
 
 android_library("chrome_test_java_org.chromium.chrome.browser.suggestions") {
-  resources_package = "org.chromium.chrome.test"
+  resources_package = "org.chromium.chrome"
 
   sources = [
     "src/org/chromium/chrome/browser/suggestions/mostvisited/MostVisitedSitesMetadataUtilsTest.java",
@@ -1339,7 +1339,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.suggestions") {
 }
 
 android_library("chrome_test_java_org.chromium.chrome.browser.swiperefresh") {
-  resources_package = "org.chromium.chrome.test"
+  resources_package = "org.chromium.chrome"
 
   sources = [ "src/org/chromium/chrome/browser/SwipeRefreshHandlerTest.java" ]
 
@@ -1350,7 +1350,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.swiperefresh") {
 }
 
 android_library("chrome_test_java_org.chromium.chrome.browser.sync") {
-  resources_package = "org.chromium.chrome.test"
+  resources_package = "org.chromium.chrome"
 
   sources = [
     "src/org/chromium/chrome/browser/sync/BookmarksTest.java",
@@ -1381,7 +1381,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.sync") {
 }
 
 android_library("chrome_test_java_org.chromium.chrome.browser.tab") {
-  resources_package = "org.chromium.chrome.test"
+  resources_package = "org.chromium.chrome"
 
   sources = [
     "src/org/chromium/chrome/browser/tab/InterceptNavigationDelegateTest.java",
@@ -1421,7 +1421,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.tab") {
 }
 
 android_library("chrome_test_java_org.chromium.chrome.browser.tab_group_sync") {
-  resources_package = "org.chromium.chrome.test"
+  resources_package = "org.chromium.chrome"
 
   sources = [
     "//chrome/browser/tab_group_sync/android/java/src/org/chromium/chrome/browser/tab_group_sync/TabGroupSyncIntegrationTestHelper.java",
@@ -1433,7 +1433,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.tab_group_sync") {
 }
 
 android_library("chrome_test_java_org.chromium.chrome.browser.collaboration") {
-  resources_package = "org.chromium.chrome.test"
+  resources_package = "org.chromium.chrome"
 
   sources = [
     "//chrome/browser/collaboration/android/java/src/org/chromium/chrome/browser/collaboration/CollaborationIntegrationTest.java",
@@ -1453,7 +1453,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.collaboration") {
 }
 
 android_library("chrome_test_java_org.chromium.chrome.browser.tabmodel") {
-  resources_package = "org.chromium.chrome.test"
+  resources_package = "org.chromium.chrome"
 
   sources = [
     "src/org/chromium/chrome/browser/tabmodel/ArchivedTabCreatorTest.java",
@@ -1485,7 +1485,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.tabmodel") {
 }
 
 android_library("chrome_test_java_org.chromium.chrome.browser.tasks") {
-  resources_package = "org.chromium.chrome.test"
+  resources_package = "org.chromium.chrome"
 
   sources = [
     "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/TabCardLabelViewRenderTest.java",
@@ -1534,7 +1534,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.tasks") {
 }
 
 android_library("chrome_test_java_org.chromium.chrome.browser.toolbar") {
-  resources_package = "org.chromium.chrome.test"
+  resources_package = "org.chromium.chrome"
 
   sources = [
     "src/org/chromium/chrome/browser/toolbar/LocationBarModelTest.java",
@@ -1566,7 +1566,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.toolbar") {
 }
 
 android_library("chrome_test_java_org.chromium.chrome.browser.webapps") {
-  resources_package = "org.chromium.chrome.test"
+  resources_package = "org.chromium.chrome"
 
   sources = [
     "src/org/chromium/chrome/browser/webapps/AddToHomescreenAddShortcutTest.java",
@@ -1602,7 +1602,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.webapps") {
 
 # This target contains test files in packages which has <= 2 test files.
 android_library("chrome_test_java_various") {
-  resources_package = "org.chromium.chrome.test"
+  resources_package = "org.chromium.chrome"
 
   sources = [
     "//chrome/android/java/src/org/chromium/chrome/browser/hub/HubLayoutPublicTransitTest.java",

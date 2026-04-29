@@ -27,6 +27,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.util.Batch;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
@@ -37,7 +38,6 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.page.WebPageStation;

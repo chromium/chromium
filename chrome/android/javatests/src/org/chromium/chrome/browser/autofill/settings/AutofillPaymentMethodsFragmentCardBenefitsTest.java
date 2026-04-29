@@ -28,12 +28,12 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
-import org.chromium.chrome.test.R;
 import org.chromium.components.policy.test.annotations.Policies;
 
 import java.util.Arrays;

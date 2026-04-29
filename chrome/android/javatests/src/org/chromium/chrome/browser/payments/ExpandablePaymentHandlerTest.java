@@ -40,6 +40,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.compositor.overlay_panel.OverlayPanel.StateChangeReason;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -47,7 +48,6 @@ import org.chromium.chrome.browser.payments.handler.PaymentHandlerContentFrameLa
 import org.chromium.chrome.browser.payments.handler.PaymentHandlerCoordinator;
 import org.chromium.chrome.browser.payments.handler.PaymentHandlerCoordinator.PaymentHandlerUiObserver;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
-import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.page.WebPageStation;

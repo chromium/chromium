@@ -65,6 +65,7 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -91,7 +92,6 @@ import org.chromium.chrome.browser.toolbar.signin_button.SigninButtonCoordinator
 import org.chromium.chrome.browser.toolbar.top.ToolbarPhone.VisualState;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
-import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.page.WebPageStation;

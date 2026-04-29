@@ -48,7 +48,7 @@ import org.junit.Assert;
 
 import org.chromium.base.test.util.RawFailureHandler;
 import org.chromium.base.test.util.ViewActionOnDescendant;
-import org.chromium.chrome.test.R;
+import org.chromium.chrome.R;
 
 /**
  * This is the testing util class for TabListEditor. It's used to perform action and verify result

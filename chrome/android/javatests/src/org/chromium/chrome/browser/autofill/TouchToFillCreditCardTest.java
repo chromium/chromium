@@ -11,11 +11,11 @@ import static org.chromium.base.test.util.Criteria.checkThat;
 import static org.chromium.base.test.util.CriteriaHelper.pollUiThread;
 import static org.chromium.base.test.util.Matchers.containsString;
 import static org.chromium.base.test.util.Matchers.is;
+import static org.chromium.chrome.R.id.first_line_label;
+import static org.chromium.chrome.R.id.main_text;
+import static org.chromium.chrome.R.id.minor_text;
+import static org.chromium.chrome.R.id.touch_to_fill_payment_method_home_screen;
 import static org.chromium.chrome.browser.autofill.AutofillTestHelper.createCreditCard;
-import static org.chromium.chrome.test.R.id.first_line_label;
-import static org.chromium.chrome.test.R.id.main_text;
-import static org.chromium.chrome.test.R.id.minor_text;
-import static org.chromium.chrome.test.R.id.touch_to_fill_payment_method_home_screen;
 
 import android.view.View;
 import android.widget.TextView;

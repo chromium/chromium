@@ -51,6 +51,7 @@ import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
@@ -74,7 +75,6 @@ import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.I
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.ResolutionType;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.SearchType;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.util.ActivityTestUtils;

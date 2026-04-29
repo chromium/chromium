@@ -41,6 +41,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.RequiresRestart;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChrome;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -56,7 +57,6 @@ import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter.MergeNotificatio
 import org.chromium.chrome.browser.tabmodel.TabModelActionListener.DialogType;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.page.WebPageStation;

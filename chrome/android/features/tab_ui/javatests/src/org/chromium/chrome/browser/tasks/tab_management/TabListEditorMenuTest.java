@@ -52,6 +52,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -61,7 +62,6 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.Butt
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.IconPosition;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ShowMode;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
-import org.chromium.chrome.test.R;
 import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 import org.chromium.components.browser_ui.widget.NumberRollView;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;

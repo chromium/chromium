@@ -24,7 +24,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.chrome.test.R;
+import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.settings.BlankUiTestActivitySettingsTestRule;
 import org.chromium.components.browser_ui.settings.PlaceholderSettingsForTest;
 import org.chromium.components.browser_ui.site_settings.TwoActionSwitchPreference;
