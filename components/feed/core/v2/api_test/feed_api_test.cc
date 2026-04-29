@@ -169,9 +169,8 @@ void TestUnreadContentObserver::HasUnreadContentChanged(
 }
 
 TestSurfaceBase::TestSurfaceBase(const StreamType& stream_type,
-                                 FeedStream* stream,
-                                 SingleWebFeedEntryPoint entry_point)
-    : stream_type_(stream_type), entry_point_(entry_point) {
+                                 FeedStream* stream)
+    : stream_type_(stream_type) {
   if (stream) {
     Attach(stream);
   }
@@ -198,7 +197,7 @@ void TestSurfaceBase::CreateWithoutAttach(FeedStream* stream) {
   CHECK(surface_id_.is_null());
 
   stream_ = stream->GetWeakPtr();
-  surface_id_ = stream->CreateSurface(stream_type_, entry_point_);
+  surface_id_ = stream->CreateSurface(stream_type_);
 }
 
 void TestSurfaceBase::Attach(FeedStream* stream) {
@@ -362,14 +361,6 @@ TestForYouSurface::TestForYouSurface(FeedStream* stream)
     : TestSurfaceBase(StreamType(StreamKind::kForYou), stream) {}
 TestWebFeedSurface::TestWebFeedSurface(FeedStream* stream)
     : TestSurfaceBase(StreamType(StreamKind::kFollowing), stream) {}
-TestSingleWebFeedSurface::TestSingleWebFeedSurface(
-    FeedStream* stream,
-    std::string web_feed_id,
-    SingleWebFeedEntryPoint entry_point)
-    : TestSurfaceBase(
-          StreamType(StreamKind::kSingleWebFeed, web_feed_id, entry_point),
-          stream,
-          entry_point) {}
 
 TestReliabilityLoggingBridge::TestReliabilityLoggingBridge() = default;
 TestReliabilityLoggingBridge::~TestReliabilityLoggingBridge() = default;
@@ -421,13 +412,6 @@ void TestReliabilityLoggingBridge::LogWebFeedRequestStart(
     NetworkRequestId id,
     base::TimeTicks timestamp) {
   events_.push_back(base::StrCat({"LogWebFeedRequestStart id=",
-                                  base::NumberToString(id.GetUnsafeValue())}));
-}
-
-void TestReliabilityLoggingBridge::LogSingleWebFeedRequestStart(
-    NetworkRequestId id,
-    base::TimeTicks timestamp) {
-  events_.push_back(base::StrCat({"LogSingleWebFeedRequestStart id=",
                                   base::NumberToString(id.GetUnsafeValue())}));
 }
 
@@ -609,11 +593,9 @@ void TestFeedNetwork::SendDiscoverApiRequest(
   bool is_feed_query_request =
       request_type == NetworkRequestType::kFeedQuery ||
       request_type == WebFeedListContentsDiscoverApi::kRequestType ||
-      request_type == SingleWebFeedListContentsDiscoverApi::kRequestType ||
       request_type == QueryInteractiveFeedDiscoverApi::kRequestType ||
       request_type == QueryBackgroundFeedDiscoverApi::kRequestType ||
-      request_type == QueryNextPageDiscoverApi::kRequestType ||
-      request_type == QueryWebFeedDiscoverApi::kRequestType;
+      request_type == QueryNextPageDiscoverApi::kRequestType;
 
   if (is_feed_query_request) {
     feedwire::Request request_proto;
@@ -658,11 +640,6 @@ void TestFeedNetwork::SendDiscoverApiRequest(
       case WebFeedListContentsDiscoverApi::kRequestType: {
         feedwire::Response response;
         InjectApiResponse<WebFeedListContentsDiscoverApi>(response);
-        break;
-      }
-      case SingleWebFeedListContentsDiscoverApi::kRequestType: {
-        feedwire::Response response;
-        InjectApiResponse<SingleWebFeedListContentsDiscoverApi>(response);
         break;
       }
       case QueryInteractiveFeedDiscoverApi::kRequestType: {

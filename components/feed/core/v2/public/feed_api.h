@@ -46,8 +46,7 @@ class FeedApi {
   // content and render it. A surface may be attached and detached several times
   // through its lifetime. When a surface is no longer needed, it should be
   // destroyed with DestroySurface.
-  virtual SurfaceId CreateSurface(const StreamType& type,
-                                  SingleWebFeedEntryPoint entry_point) = 0;
+  virtual SurfaceId CreateSurface(const StreamType& type) = 0;
   virtual void DestroySurface(SurfaceId surface) = 0;
 
   // Attach/detach a surface for rendering. Surfaces should be attached when

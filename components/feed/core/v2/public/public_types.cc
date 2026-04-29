@@ -168,19 +168,4 @@ std::ostream& operator<<(std::ostream& out, const WebFeedMetadata& value) {
   return out << " }";
 }
 
-std::ostream& operator<<(std::ostream& out, SingleWebFeedEntryPoint value) {
-  switch (value) {
-    case SingleWebFeedEntryPoint::kMenu:
-      return out << "kMenu";
-    case SingleWebFeedEntryPoint::kAttribution:
-      return out << "kAttribution";
-    case SingleWebFeedEntryPoint::kRecommendation:
-      return out << "kRecommendation";
-    case SingleWebFeedEntryPoint::kGroupHeader:
-      return out << "kGroupHeader";
-    case SingleWebFeedEntryPoint::kOther:
-      return out << "kOther";
-  }
-}
-
 }  // namespace feed

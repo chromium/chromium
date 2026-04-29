@@ -48,9 +48,6 @@ chromium-metrics-reviews@google.com.
   <variant name=".QueryBackgroundFeed" summary="QueryBackgroundFeed"/>
   <variant name=".QueryInteractiveFeed" summary="QueryInteractiveFeed"/>
   <variant name=".QueryNextPage" summary="QueryNextPage"/>
-  <variant name=".QueryWebFeed" summary="QueryWebFeed"/>
-  <variant name=".SingleWebFeedListContents"
-      summary="SingleWebFeedListContents"/>
   <variant name=".SupervisedFeed" summary="SupervisedFeed"/>
   <variant name=".UnfollowWebFeed" summary="UnfollowWebFeed"/>
   <variant name=".UploadActions" summary="UploadActions"/>
@@ -1543,7 +1540,6 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="Surface">
     <variant name="OpenFeed" summary="For-You Feed"/>
-    <variant name="OpenFeed.SingleWebFeed" summary="Single Web Feed"/>
     <variant name="OpenFeed.WebFeed" summary="Web Feed"/>
   </token>
   <token key="Status">
@@ -1705,15 +1701,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="ContentSuggestions.SingleWebFeed.EntryPoint"
-    enum="SingleWebFeedEntryPoint" expires_after="2024-06-30">
-  <owner>jeffreyochen@chromium.org</owner>
-  <owner>creator@chromium.org</owner>
-  <summary>
-    Android: reports the entry point used to launch the single web feed view.
-  </summary>
-</histogram>
-
 <histogram name="ContentSuggestions.{FeedType}.Activity"
     enum="FeedActivityBucket" expires_after="2025-09-28">
   <owner>guiperez@google.com</owner>
@@ -1756,7 +1743,6 @@ chromium-metrics-reviews@google.com.
   <token key="FeedType">
     <variant name="Feed" summary="the For-You Feed"/>
     <variant name="Feed.AllFeeds" summary="all Feeds combined"/>
-    <variant name="Feed.SingleWebFeed" summary="the single web feed"/>
     <variant name="Feed.SupervisedFeed" summary="the supervised Feed"/>
     <variant name="Feed.WebFeed" summary="the Web Feed"/>
   </token>
@@ -1773,7 +1759,6 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="FeedType">
     <variant name="Feed" summary="For-You Feed"/>
-    <variant name="Feed.SingleWebFeed" summary="Single Web Feed"/>
     <variant name="Feed.SupervisedFeed" summary="the supervised Feed"/>
     <variant name="Feed.WebFeed" summary="Web Feed"/>
   </token>
@@ -1798,7 +1783,6 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="FeedType">
     <variant name="Feed" summary="For-You Feed"/>
-    <variant name="Feed.SingleWebFeed" summary="Single Web Feed"/>
     <variant name="Feed.SupervisedFeed" summary="the supervised Feed"/>
     <variant name="Feed.WebFeed" summary="Web Feed"/>
   </token>
@@ -1815,7 +1799,6 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="FeedType">
     <variant name="Feed" summary="For-You Feed"/>
-    <variant name="Feed.SingleWebFeed" summary="Single Web Feed"/>
     <variant name="Feed.SupervisedFeed" summary="Supervised Feed"/>
     <variant name="Feed.WebFeed" summary="Web Feed"/>
   </token>
@@ -1831,7 +1814,6 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="FeedType">
     <variant name="Feed" summary="For-You Feed"/>
-    <variant name="Feed.SingleWebFeed" summary="Single Web Feed"/>
     <variant name="Feed.SupervisedFeed" summary="Supervised Feed"/>
     <variant name="Feed.WebFeed" summary="Web Feed"/>
   </token>
@@ -1844,13 +1826,12 @@ chromium-metrics-reviews@google.com.
   <owner>feed@chromium.org</owner>
   <summary>
     Android: Status of loading new {FeedType} data in the background. Reported
-    any time Chrome attempts to fetch fresh Feed content in the background. This
-    is either due to a background fetch schedule, or when fetching the Web-Feed
-    while the For-You feed is active.
+    any time Chrome attempts to fetch fresh Feed content in the background.
+    Thisf is either due to a background fetch schedule, or when fetching the
+    Web-Feed while the For-You feed is active.
   </summary>
   <token key="FeedType">
     <variant name="Feed" summary="For-You Feed"/>
-    <variant name="Feed.SingleWebFeed" summary="Single Web Feed"/>
     <variant name="Feed.SupervisedFeed" summary="the supervised Feed"/>
     <variant name="Feed.WebFeed" summary="Web Feed"/>
   </token>
@@ -1866,7 +1847,6 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="FeedType">
     <variant name="Feed" summary="For-You Feed"/>
-    <variant name="Feed.SingleWebFeed" summary="Single Web Feed"/>
     <variant name="Feed.SupervisedFeed" summary="the supervised Feed"/>
     <variant name="Feed.WebFeed" summary="Web Feed"/>
   </token>
@@ -1885,7 +1865,6 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="FeedType">
     <variant name="Feed" summary="For-You Feed"/>
-    <variant name="Feed.SingleWebFeed" summary="Single Web Feed"/>
     <variant name="Feed.SupervisedFeed" summary="the supervised Feed"/>
     <variant name="Feed.WebFeed" summary="Web Feed"/>
   </token>
@@ -1901,7 +1880,6 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="FeedType">
     <variant name="Feed" summary="For-You Feed"/>
-    <variant name="Feed.SingleWebFeed" summary="Single Web Feed"/>
     <variant name="Feed.SupervisedFeed" summary="the supervised Feed"/>
     <variant name="Feed.WebFeed" summary="Web Feed"/>
   </token>
@@ -1924,7 +1902,6 @@ chromium-metrics-reviews@google.com.
     inserted in the middle of the feed.
   </summary>
   <token key="FeedType">
-    <variant name="Feed.SingleWebFeed" summary="the single Single Web feed"/>
     <variant name="Feed.SupervisedFeed" summary="the supervised Feed"/>
     <variant name="Feed.WebFeed" summary="the Web Feed"/>
   </token>
@@ -1944,7 +1921,6 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="FeedType">
     <variant name="Feed" summary="For-You Feed"/>
-    <variant name="Feed.SingleWebFeed" summary="Single Web Feed"/>
     <variant name="Feed.SupervisedFeed" summary="the supervised Feed"/>
     <variant name="Feed.WebFeed" summary="Web Feed"/>
   </token>
@@ -1961,7 +1937,6 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="FeedType">
     <variant name="Feed" summary="For-You Feed"/>
-    <variant name="Feed.SingleWebFeed" summary="Single Web Feed"/>
     <variant name="Feed.SupervisedFeed" summary="the supervised Feed"/>
     <variant name="Feed.WebFeed" summary="Web Feed"/>
   </token>
@@ -1985,7 +1960,6 @@ chromium-metrics-reviews@google.com.
     requested more that got inserted in the middle of the feed.
   </summary>
   <token key="FeedType">
-    <variant name="Feed.SingleWebFeed" summary="Single Web Feed"/>
     <variant name="Feed.SupervisedFeed" summary="Supervised Feed"/>
     <variant name="Feed.WebFeed" summary="Web Feed"/>
   </token>
@@ -2003,7 +1977,6 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="FeedType">
     <variant name="Feed" summary="For-You Feed"/>
-    <variant name="Feed.SingleWebFeed" summary="Single Web Feed"/>
     <variant name="Feed.SupervisedFeed" summary="the supervised Feed"/>
     <variant name="Feed.WebFeed" summary="Web Feed"/>
   </token>

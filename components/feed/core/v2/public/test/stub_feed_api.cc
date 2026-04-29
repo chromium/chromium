@@ -11,8 +11,7 @@ namespace feed {
 
 static_assert(!std::is_abstract_v<StubFeedApi>);
 
-SurfaceId StubFeedApi::CreateSurface(const StreamType& type,
-                                     SingleWebFeedEntryPoint entry_point) {
+SurfaceId StubFeedApi::CreateSurface(const StreamType& type) {
   return {};
 }
 bool StubFeedApi::IsArticlesListVisible() {

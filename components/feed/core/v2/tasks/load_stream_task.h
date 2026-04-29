@@ -56,9 +56,6 @@ class LoadStreamTask : public offline_pages::Task {
     // Abort the background refresh if there's already unread content.
     bool abort_if_unread_content = false;
     bool refresh_even_when_not_stale = false;
-    // The Entry point for a singlewebfeed stream
-    SingleWebFeedEntryPoint single_feed_entry_point =
-        SingleWebFeedEntryPoint::kOther;
   };
 
   struct Result {
@@ -98,10 +95,6 @@ class LoadStreamTask : public offline_pages::Task {
     // Reliability logging feed launch result: CARDS_UNSPECIFIED if loading is
     // successful.
     feedwire::DiscoverLaunchResult launch_result;
-
-    // The entry point for a Single Web Feed.
-    SingleWebFeedEntryPoint single_feed_entry_point =
-        SingleWebFeedEntryPoint::kOther;
   };
 
   LoadStreamTask(const Options& options,

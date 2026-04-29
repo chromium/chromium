@@ -36,10 +36,6 @@ std::ostream& operator<<(std::ostream& out, NetworkRequestType value) {
       return out << "kQueryBackgroundFeed";
     case NetworkRequestType::kQueryNextPage:
       return out << "kQueryNextPage";
-    case NetworkRequestType::kSingleWebFeedListContents:
-      return out << "kSingleWebFeedListContents";
-    case NetworkRequestType::kQueryWebFeed:
-      return out << "kQueryWebFeed";
   }
 #endif
   return out << (static_cast<int>(value));

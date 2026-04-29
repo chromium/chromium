@@ -14,9 +14,7 @@ namespace feed {
 // Consumes stream data for a single `StreamType` and displays it to the user.
 class FeedStreamSurface final {
  public:
-  explicit FeedStreamSurface(
-      StreamType type,
-      SingleWebFeedEntryPoint entry_point = SingleWebFeedEntryPoint::kOther);
+  explicit FeedStreamSurface(StreamType type);
   ~FeedStreamSurface();
 
   // Returns a unique ID for the surface. The ID will not be reused until
@@ -26,16 +24,9 @@ class FeedStreamSurface final {
   // Returns the `StreamType` this `FeedStreamSurface` requests.
   const StreamType& GetStreamType() const { return stream_type_; }
 
-  // Returns the `SingleWebFeedEntryPoint` this `FeedStreamSurface` was created
-  // with.
-  SingleWebFeedEntryPoint GetSingleWebFeedEntryPoint() const {
-    return entry_point_;
-  }
-
  private:
   StreamType stream_type_;
   SurfaceId surface_id_;
-  SingleWebFeedEntryPoint entry_point_ = SingleWebFeedEntryPoint::kOther;
 };
 
 }  // namespace feed

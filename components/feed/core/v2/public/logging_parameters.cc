@@ -39,8 +39,6 @@ LoggingParameters MakeLoggingParameters(
   logging_params.client_instance_id = client_instance_id;
   logging_params.root_event_id = stream_data.root_event_id();
   logging_params.logging_enabled =
-      !(feedstore::StreamTypeFromKey(stream_data.stream_key())
-            .IsSingleWebFeedEntryMenu()) &&
       (((signed_in && stream_data.logging_enabled()) ||
         (!signed_in && GetFeedConfig().send_signed_out_session_logs)));
   logging_params.view_actions_enabled = logging_params.logging_enabled;

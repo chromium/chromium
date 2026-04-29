@@ -560,23 +560,6 @@ TEST_F(FeedApiReliabilityLoggingTest, IdChangeOnMetricsIdChange) {
                                                            &profile_prefs_));
 }
 
-TEST_F(FeedApiReliabilityLoggingTest, SingleWebFeedLoad) {
-  response_translator_.InjectResponse(MakeTypicalInitialModelState());
-  TestSingleWebFeedSurface surface(stream_.get());
-  WaitForIdleTaskQueue();
-  EXPECT_EQ(
-      "LogFeedLaunchOtherStart\n"
-      "LogLoadingIndicatorShown\n"
-      "LogCacheReadStart\n"
-      "LogCacheReadEnd result=EMPTY_SESSION\n"
-      "LogSingleWebFeedRequestStart id=1\n"
-      "LogRequestSent id=1\n"
-      "LogResponseReceived id=1 receive_timestamp=0 send_timestamp=0\n"
-      "LogRequestFinished result=200 id=1\n"
-      "LogAboveTheFoldRender result=SUCCESS\n",
-      surface.reliability_logging_bridge.GetEventsString());
-}
-
 TEST_F(FeedApiReliabilityLoggingTest, LoadMoreSucceeds) {
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
   TestForYouSurface surface(stream_.get());

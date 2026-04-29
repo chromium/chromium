@@ -30,9 +30,7 @@ class StubPersistentKeyValueStore : public PersistentKeyValueStore {
 
 class StubFeedApi : public FeedApi {
  public:
-
-  SurfaceId CreateSurface(const StreamType& type,
-                          SingleWebFeedEntryPoint entry_point) override;
+  SurfaceId CreateSurface(const StreamType& type) override;
   void DestroySurface(SurfaceId surface) override {}
   void AttachSurface(SurfaceId surface_id, SurfaceRenderer* renderer) override {
   }

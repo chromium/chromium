@@ -6,9 +6,8 @@
 
 namespace feed {
 
-FeedStreamSurface::FeedStreamSurface(StreamType stream_type,
-                                     SingleWebFeedEntryPoint entry_point)
-    : stream_type_(stream_type), entry_point_(entry_point) {
+FeedStreamSurface::FeedStreamSurface(StreamType stream_type)
+    : stream_type_(stream_type) {
   static SurfaceId::Generator id_generator;
   surface_id_ = id_generator.GenerateNextId();
 }

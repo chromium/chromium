@@ -55,7 +55,6 @@ feedwire::Request CreateFeedQueryRefreshRequest(
     feedwire::FeedQuery::RequestReason request_reason,
     const RequestMetadata& request_metadata,
     const std::string& consistency_token,
-    const SingleWebFeedEntryPoint single_feed_entry_point,
     const std::vector<DocViewCount> doc_view_counts);
 
 feedwire::Request CreateFeedQueryLoadMoreRequest(

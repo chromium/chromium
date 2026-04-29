@@ -253,29 +253,9 @@ enum class StreamKind : int {
   kForYou = 1,
   // Following stream.
   kFollowing = 2,
-  // Single Web Feed (Cormorant) stream.
-  kSingleWebFeed = 3,
 
-  kMaxValue = kSingleWebFeed,
+  kMaxValue = kFollowing,
 };
-
-// Singe Web entry points
-// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.feed
-enum class SingleWebFeedEntryPoint : int {
-  // Three dot menu
-  kMenu = 0,
-  // Feed Atteribution
-  kAttribution = 1,
-  // Feed Recomentation
-  kRecommendation = 2,
-  // Feed Recomentation
-  kGroupHeader = 3,
-  // Other
-  kOther = 4,
-
-  kMaxValue = kOther,
-};
-std::ostream& operator<<(std::ostream& out, SingleWebFeedEntryPoint value);
 
 // Used to tell how to open an URL.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.feed

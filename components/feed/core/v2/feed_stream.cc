@@ -53,7 +53,6 @@
 #include "components/feed/core/v2/stream_model.h"
 #include "components/feed/core/v2/surface_updater.h"
 #include "components/feed/core/v2/tasks/clear_all_task.h"
-#include "components/feed/core/v2/tasks/clear_stream_task.h"
 #include "components/feed/core/v2/tasks/load_stream_task.h"
 #include "components/feed/core/v2/tasks/prefetch_images_task.h"
 #include "components/feed/core/v2/tasks/upload_actions_task.h"
@@ -241,8 +240,7 @@ StreamModel* FeedStream::GetModel(SurfaceId surface_id) {
 }
 
 feedwire::DiscoverLaunchResult FeedStream::TriggerStreamLoad(
-    const StreamType& stream_type,
-    SingleWebFeedEntryPoint entry_point) {
+    const StreamType& stream_type) {
   Stream& stream = GetStream(stream_type);
   if (stream.model || stream.model_loading_in_progress)
     return feedwire::DiscoverLaunchResult::CARDS_UNSPECIFIED;
@@ -263,7 +261,6 @@ feedwire::DiscoverLaunchResult FeedStream::TriggerStreamLoad(
   stream.surface_updater->LoadStreamStarted(/*manual_refreshing=*/false);
   LoadStreamTask::Options options;
   options.stream_type = stream_type;
-  options.single_feed_entry_point = entry_point;
   if (!loaded_after_start_ &&
       base::FeatureList::IsEnabled(kRefreshFeedOnRestart)) {
     options.refresh_even_when_not_stale = true;
@@ -470,13 +467,12 @@ void FeedStream::UpdateExperiments(Experiments experiments) {
   prefs::SetExperiments(experiments, *profile_prefs_);
 }
 
-SurfaceId FeedStream::CreateSurface(const StreamType& type,
-                                    SingleWebFeedEntryPoint entry_point) {
+SurfaceId FeedStream::CreateSurface(const StreamType& type) {
   if (base::TimeTicks::Now() - surface_destroy_time_ > kSurfaceDestroyDelay) {
     CleanupDestroyedSurfaces();
   }
 
-  return all_surfaces_.emplace_back(type, entry_point).GetSurfaceId();
+  return all_surfaces_.emplace_back(type).GetSurfaceId();
 }
 
 void FeedStream::DestroySurface(SurfaceId surface) {
@@ -499,8 +495,7 @@ void FeedStream::AttachSurface(SurfaceId surface_id,
   FeedStreamSurface* surface = FindSurface(surface_id);
   CHECK(surface);
   metrics_reporter_->SurfaceOpened(surface->GetStreamType(),
-                                   surface->GetSurfaceId(),
-                                   surface->GetSingleWebFeedEntryPoint());
+                                   surface->GetSurfaceId());
   Stream& stream = GetStream(surface->GetStreamType());
   // Skip normal processing when overriding stream data from the internals page.
   if (forced_stream_update_for_debugging_.updated_slices_size() > 0) {
@@ -512,10 +507,8 @@ void FeedStream::AttachSurface(SurfaceId surface_id,
     return;
   }
 
-  stream.surfaces.SurfaceAdded(
-      surface_id, renderer,
-      TriggerStreamLoad(surface->GetStreamType(),
-                        surface->GetSingleWebFeedEntryPoint()));
+  stream.surfaces.SurfaceAdded(surface_id, renderer,
+                               TriggerStreamLoad(surface->GetStreamType()));
 
   // Cancel any scheduled model unload task.
   ++stream.unload_on_detach_sequence_number;
@@ -578,15 +571,6 @@ void FeedStream::AddUnloadModelIfNoSurfacesAttachedTask(
       FROM_HERE, std::make_unique<offline_pages::ClosureTask>(base::BindOnce(
                      &FeedStream::UnloadModelIfNoSurfacesAttachedTask,
                      base::Unretained(this), stream_type)));
-  // If this is a SingleWebFeed stream, remove it and delete stream data on a
-  // delay.
-  if (stream_type.IsSingleWebFeed()) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&FeedStream::ClearStream, GetWeakPtr(), stream_type,
-                       sequence_number),
-        GetFeedConfig().single_web_feed_stream_clear_timeout);
-  }
 }
 
 void FeedStream::UnloadModelIfNoSurfacesAttachedTask(
@@ -1125,9 +1109,6 @@ LaunchResult FeedStream::ShouldMakeFeedQueryRequest(
     case StreamKind::kFollowing:
       request_type = NetworkRequestType::kWebFeedListContents;
       break;
-    case StreamKind::kSingleWebFeed:
-      request_type = NetworkRequestType::kSingleWebFeedListContents;
-      break;
   }
 
   if (consume_quota && !request_throttler_.RequestQuota(request_type)) {
@@ -1406,13 +1387,6 @@ void FeedStream::FinishClearAll() {
   }
 }
 
-void FeedStream::FinishClearStream(const StreamType& stream_type) {
-  Stream* stream = FindStream(stream_type);
-  if (stream && stream_type.IsSingleWebFeed()) {
-    streams_.erase(stream_type);
-  }
-}
-
 ImageFetchId FeedStream::FetchImage(
     const GURL& url,
     base::OnceCallback<void(NetworkResponse)> callback) {
@@ -1490,16 +1464,6 @@ void FeedStream::UnloadModel(const StreamType& stream_type) {
     stream->surface_updater->SetModel(nullptr);
     stream->model.reset();
   }
-}
-
-void FeedStream::ClearStream(const StreamType& stream_type,
-                             int sequence_number) {
-  Stream* stream = FindStream(stream_type);
-  if (!stream || stream->unload_on_detach_sequence_number != sequence_number) {
-    return;
-  }
-  task_queue_.AddTask(FROM_HERE,
-                      std::make_unique<ClearStreamTask>(this, stream_type));
 }
 
 void FeedStream::UnloadModels() {

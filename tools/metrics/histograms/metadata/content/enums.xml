@@ -519,14 +519,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//content/browser/worker_host/shared_worker_host.cc:SharedWorkerHostDestructionSource) -->
 
-<enum name="SingleWebFeedEntryPoint">
-  <int value="0" label="Menu"/>
-  <int value="1" label="Attribtuion"/>
-  <int value="2" label="Recommendation"/>
-  <int value="3" label="Group Header"/>
-  <int value="4" label="Other"/>
-</enum>
-
 <enum name="StrongPopupBlockerAction">
   <int value="0" label="Navigation commit"/>
   <int value="1" label="Commit warn site"/>

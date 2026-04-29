@@ -27,20 +27,7 @@ std::string StreamKey(const StreamType& stream_type) {
     return kForYouStreamKey;
   if (stream_type.IsWebFeed())
     return kFollowStreamKey;
-  DCHECK(stream_type.IsSingleWebFeed());
-  std::string encoding;
-  base::Base64UrlEncode(stream_type.GetWebFeedId(),
-                        base::Base64UrlEncodePolicy::INCLUDE_PADDING,
-                        &encoding);
-  if (stream_type.IsSingleWebFeedEntryMenu()) {
-    return base::StrCat({std::string(kSingleWebFeedStreamKeyPrefix), "/",
-                         std::string(kSingleWebFeedMenuStreamKeyPrefix),
-                         encoding});
-  } else {
-    return base::StrCat({std::string(kSingleWebFeedStreamKeyPrefix), "/",
-                         std::string(kSingleWebFeedOtherStreamKeyPrefix),
-                         encoding});
-  }
+  NOTREACHED();
 }
 
 std::string_view StreamPrefix(feed::StreamKind stream_kind) {
@@ -49,28 +36,9 @@ std::string_view StreamPrefix(feed::StreamKind stream_kind) {
       return kForYouStreamKey;
     case feed::StreamKind::kFollowing:
       return kFollowStreamKey;
-    case feed::StreamKind::kSingleWebFeed:
-      return kSingleWebFeedStreamKeyPrefix;
     case feed::StreamKind::kUnknown:
       NOTREACHED();
   }
-}
-
-StreamType DecodeSingleWebFeedKeySuffix(
-    std::string_view suffix,
-    feed::SingleWebFeedEntryPoint entry_point,
-    std::string_view prefix) {
-  if (base::StartsWith(suffix, prefix, base::CompareCase::SENSITIVE)) {
-    suffix.remove_prefix(prefix.size());
-    std::string single_web_feed_key;
-    if (base::Base64UrlDecode(suffix,
-                              base::Base64UrlDecodePolicy::IGNORE_PADDING,
-                              &single_web_feed_key)) {
-      return StreamType(feed::StreamKind::kSingleWebFeed, single_web_feed_key,
-                        entry_point);
-    }
-  }
-  return {};
 }
 
 StreamType StreamTypeFromKey(std::string_view id) {
@@ -78,25 +46,6 @@ StreamType StreamTypeFromKey(std::string_view id) {
     return StreamType(feed::StreamKind::kForYou);
   if (id == kFollowStreamKey)
     return StreamType(feed::StreamKind::kFollowing);
-  if (base::StartsWith(id, kSingleWebFeedStreamKeyPrefix,
-                       base::CompareCase::SENSITIVE)) {
-    if ((id.size() < (kSingleWebFeedStreamKeyPrefix.size() +
-                      kSingleWebFeedMenuStreamKeyPrefix.size() + 1))) {
-      return {};
-    }
-    // add  +1 to account for the '/' separating the c/[mo]/webid
-    std::string_view substr =
-        id.substr(kSingleWebFeedStreamKeyPrefix.size() + 1);
-    StreamType result = DecodeSingleWebFeedKeySuffix(
-        substr, feed::SingleWebFeedEntryPoint::kMenu,
-        kSingleWebFeedMenuStreamKeyPrefix);
-    if (!result.IsValid()) {
-      result = DecodeSingleWebFeedKeySuffix(
-          substr, feed::SingleWebFeedEntryPoint::kOther,
-          kSingleWebFeedOtherStreamKeyPrefix);
-    }
-    return result;
-  }
   return {};
 }
 

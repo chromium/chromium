@@ -125,8 +125,7 @@ feedwire::Request CreateFeedQueryRequest(
     feedwire::FeedQuery::RequestReason request_reason,
     const RequestMetadata& request_metadata,
     const std::string& consistency_token,
-    const std::string& next_page_token,
-    const SingleWebFeedEntryPoint single_feed_entry_point) {
+    const std::string& next_page_token) {
   feedwire::Request request;
   request.set_request_version(feedwire::Request::FEED_QUERY);
 
@@ -212,32 +211,6 @@ feedwire::Request CreateFeedQueryRequest(
   } else if (stream_type.IsWebFeed()) {
     entry_point.set_feed_entry_point_source_value(
         feedwire::FeedEntryPointSource::CHROME_FOLLOWING_FEED);
-  } else if (stream_type.IsSingleWebFeed()) {
-    switch (single_feed_entry_point) {
-      case SingleWebFeedEntryPoint::kMenu:
-        entry_point.set_feed_entry_point_source_value(
-            feedwire::FeedEntryPointSource::CHROME_SINGLE_WEB_FEED_MENU);
-        break;
-      case SingleWebFeedEntryPoint::kAttribution:
-        entry_point.set_feed_entry_point_source_value(
-            feedwire::FeedEntryPointSource::CHROME_SINGLE_WEB_FEED_ATTRIBUTION);
-        break;
-      case SingleWebFeedEntryPoint::kRecommendation:
-        entry_point.set_feed_entry_point_source_value(
-            feedwire::FeedEntryPointSource::
-                CHROME_SINGLE_WEB_FEED_RECOMMENDATION);
-        break;
-      case SingleWebFeedEntryPoint::kGroupHeader:
-        entry_point.set_feed_entry_point_source_value(
-            feedwire::FeedEntryPointSource::
-                CHROME_SINGLE_WEB_FEED_GROUP_HEADER);
-        break;
-      case SingleWebFeedEntryPoint::kOther:
-        entry_point.set_feed_entry_point_source_value(
-            feedwire::FeedEntryPointSource::CHROME_SINGLE_WEB_FEED_OTHER);
-
-        break;
-    }
   }
 
   // |consistency_token|, for action reporting, is only applicable to signed-in
@@ -407,11 +380,10 @@ feedwire::Request CreateFeedQueryRefreshRequest(
     feedwire::FeedQuery::RequestReason request_reason,
     const RequestMetadata& request_metadata,
     const std::string& consistency_token,
-    const SingleWebFeedEntryPoint single_feed_entry_point,
     const std::vector<DocViewCount> doc_view_counts) {
-  feedwire::Request request = CreateFeedQueryRequest(
-      stream_type, request_reason, request_metadata, consistency_token,
-      std::string(), single_feed_entry_point);
+  feedwire::Request request =
+      CreateFeedQueryRequest(stream_type, request_reason, request_metadata,
+                             consistency_token, std::string());
   if (stream_type.IsWebFeed()) {
     // A special token that requests content for followed Web Feeds.
     constexpr char kChromeFollowToken[] = "\"\004\022\002\b5*\tFollowing";
@@ -420,18 +392,6 @@ feedwire::Request CreateFeedQueryRefreshRequest(
         ->mutable_web_feed_token()
         ->mutable_web_feed_token()
         ->set_web_feed_token(kChromeFollowToken);
-  } else if (stream_type.IsSingleWebFeed()) {
-    // A special token that requests content for the Single Web Feed.
-    feedwire::WebFeedIdentifierToken web_feed_id;
-    web_feed_id.mutable_web_feed_id()
-        ->mutable_domain_web_feed_id()
-        ->set_web_feed_name(stream_type.GetWebFeedId().c_str());
-
-    request.mutable_feed_request()
-        ->mutable_feed_query()
-        ->mutable_web_feed_token()
-        ->mutable_web_feed_token()
-        ->set_web_feed_token(web_feed_id.SerializeAsString());
   }
   SetNoticeCardAcknowledged(&request, request_metadata);
   SetInfoCardTrackingStates(&request, request_metadata);
@@ -456,8 +416,7 @@ feedwire::Request CreateFeedQueryLoadMoreRequest(
     const std::string& next_page_token) {
   return CreateFeedQueryRequest(
       StreamType(StreamKind::kForYou), feedwire::FeedQuery::NEXT_PAGE_SCROLL,
-      request_metadata, consistency_token, next_page_token,
-      SingleWebFeedEntryPoint::kOther);
+      request_metadata, consistency_token, next_page_token);
 }
 
 }  // namespace feed
