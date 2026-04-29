@@ -2406,25 +2406,16 @@ ci.thin_tester(
                     ),
                 ),
             ),
-            "webgl2_conformance_metal_passthrough_graphite_tests": targets.remove(
-                reason = "crbug.com/1270755",
+            "webgl2_conformance_metal_passthrough_graphite_tests": targets.mixin(
+                args = [
+                    "--extra-browser-args=--disable-metal-shader-cache",
+                ],
             ),
-            # "webgl2_conformance_metal_passthrough_graphite_tests": targets.mixin(
-            #     args = [
-            #         "--extra-browser-args=--disable-metal-shader-cache",
-            #     ],
-            # ),
-            "webgl_conformance_metal_passthrough_ganesh_tests": targets.remove(
-                reason = "crbug.com/1270755",
+            "webgl_conformance_metal_passthrough_graphite_tests": targets.mixin(
+                args = [
+                    "--extra-browser-args=--disable-metal-shader-cache",
+                ],
             ),
-            "webgl_conformance_metal_passthrough_graphite_tests": targets.remove(
-                reason = "crbug.com/1270755",
-            ),
-            # "webgl_conformance_metal_passthrough_graphite_tests": targets.mixin(
-            #     args = [
-            #         "--extra-browser-args=--disable-metal-shader-cache",
-            #     ],
-            # ),
         },
     ),
     targets_settings = targets.settings(
