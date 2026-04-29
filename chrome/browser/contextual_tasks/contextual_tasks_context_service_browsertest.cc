@@ -51,6 +51,7 @@ namespace contextual_tasks {
 
 using ::testing::_;
 using ::testing::Return;
+using ::testing::UnorderedElementsAre;
 
 constexpr char kValidUrlDomain[] = "a.test";
 
@@ -1570,7 +1571,54 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest, SuccessWithMlModel) {
                                      /*explicit_urls=*/{},
                                      future.GetCallback());
 
-  EXPECT_EQ(2u, future.Get().size());
+  // Expect 1 tab because both tabs have the same URL and are deduped.
+  EXPECT_EQ(1u, future.Get().size());
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest, DeduplicateTabs) {
+  base::HistogramTester histogram_tester;
+
+  NavigateToValidURL();
+
+  // Open a second tab with the same URL.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), valid_url(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  // Open a third tab with a different URL.
+  GURL url2 = embedded_test_server()->GetURL("b.test",
+                                             "/optimization_guide/hello.html");
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), url2, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  NotifyEmbedderMetadata();
+
+  std::vector<page_content_annotations::PassageEmbedding> fake_page_embeddings =
+      {{std::make_pair("page title",
+                       page_content_annotations::EmbeddingPassageType::kTitle),
+        passage_embeddings::Embedding({1.0f, 0.0f, 0.0f})}};
+  EXPECT_CALL(*page_embeddings_service(), GetEmbeddings(_))
+      .WillRepeatedly(Return(fake_page_embeddings));
+
+  base::test::TestFuture<std::vector<base::WeakPtr<content::WebContents>>>
+      future;
+  TabSelectionOptions options;
+  options.tab_selection_mode = mojom::TabSelectionMode::kEmbeddingsMatch;
+  service()->GetRelevantTabsForQuery(options, "some text", /*explicit_urls=*/{},
+                                     future.GetCallback());
+
+  // Expect 2 tabs: one for valid_url() (deduped) and one for url2.
+  auto tabs = future.Get();
+  EXPECT_EQ(2u, tabs.size());
+
+  std::vector<GURL> urls;
+  for (const auto& tab : tabs) {
+    if (tab) {
+      urls.push_back(tab->GetLastCommittedURL());
+    }
+  }
+  EXPECT_THAT(urls, UnorderedElementsAre(valid_url(), url2));
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
