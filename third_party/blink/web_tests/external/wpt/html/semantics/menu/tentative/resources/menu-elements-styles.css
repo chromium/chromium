@@ -68,7 +68,9 @@
 .menubar, .menulist {
   .menuitem {
     align-items: center;
-    padding: 1em;
+    padding-inline: 0.5em;
+    padding-block: 0;
+    gap: 0.5em;
     min-inline-size: 24px;
     min-block-size: max(24px, 1lh);
   }

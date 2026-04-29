@@ -2436,6 +2436,7 @@ select optgroup optgroup {
     menuitem {
       align-items: center;
       user-select: none;
+      gap: 0.5em;
 
       /* The min-*-size rules below were inspired by the same rules for
        * customizable select, and mostly cater to WCAG accessibility guidelines
@@ -2446,7 +2447,7 @@ select optgroup optgroup {
       min-block-size: max(24px, 1lh);
 
       font-weight: inherit;
-      padding: 1em;
+      padding-inline: 0.5em;
     }
 
     menuitem:enabled:hover {
