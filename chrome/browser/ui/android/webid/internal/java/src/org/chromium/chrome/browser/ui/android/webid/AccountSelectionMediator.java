@@ -73,7 +73,7 @@ import java.util.Set;
 class AccountSelectionMediator {
     private boolean mRegisteredObservers;
     private boolean mWasDismissed;
-    private boolean mCanShowWidget = true;
+    private boolean mCanShowUi = true;
     // Keeps track of the last bottom sheet seen by the BottomSheetObserver. Used to know whether a
     // sheet state change affects the BottomSheet owned by this object or not.
     private BottomSheetContent mLastSheetSeen;
@@ -175,7 +175,7 @@ class AccountSelectionMediator {
             @RpMode.EnumType int rpMode,
             Context context,
             ModalDialogManager modalDialogManager,
-            boolean canShowWidget) {
+            boolean canShowUi) {
         assert tab != null;
         mTab = tab;
         assert delegate != null;
@@ -189,7 +189,7 @@ class AccountSelectionMediator {
         mContext = context;
         mModalDialogManager = modalDialogManager;
         mLastSheetSeen = mBottomSheetContent;
-        mCanShowWidget = canShowWidget;
+        mCanShowUi = canShowUi;
         if (mTab != null && mTab.getWebContents() != null) {
             mUkmRecorder = new UkmRecorder(mTab.getWebContents(), "Blink.FedCm");
         }
@@ -771,12 +771,12 @@ class AccountSelectionMediator {
         return true;
     }
 
-    public void setCanShowWidget(boolean canShowWidget) {
-        if (mCanShowWidget == canShowWidget) {
+    public void setCanShowUi(boolean canShowUi) {
+        if (mCanShowUi == canShowUi) {
             return;
         }
-        mCanShowWidget = canShowWidget;
-        if (!mCanShowWidget) {
+        mCanShowUi = canShowUi;
+        if (!mCanShowUi) {
             mBottomSheetController.hideContent(mBottomSheetContent, true);
         } else {
             showContent();
@@ -1093,7 +1093,7 @@ class AccountSelectionMediator {
      * controller queue and notifies the delegate of the dismissal.
      */
     private boolean showContent() {
-        if (mWasDismissed || mIsModalDialogOpen || !mCanShowWidget) {
+        if (mWasDismissed || mIsModalDialogOpen || !mCanShowUi) {
             return true;
         }
         // When active mode is triggered, if there's a pending passive mode request, we should

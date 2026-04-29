@@ -107,7 +107,7 @@ class MockAccountSelectionView : public AccountSelectionView {
                blink::mojom::RpMode),
               (override));
 
-  MOCK_METHOD(void, SetCanShowWidget, (bool can_show_widget), (override));
+  MOCK_METHOD(void, SetCanShowUi, (bool can_show_ui), (override));
 
   MOCK_METHOD(std::string, GetTitle, (), (const, override));
 
@@ -215,7 +215,7 @@ class IdentityDialogControllerBrowserTest : public InProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(IdentityDialogControllerBrowserTest,
-                       ActorTaskStateChangesCanShowWidget) {
+                       ActorTaskStateChangesCanShowUi) {
   std::unique_ptr<IdentityDialogController> controller =
       std::make_unique<IdentityDialogController>(web_contents_);
   auto mock_view = std::make_unique<MockAccountSelectionView>();
@@ -223,14 +223,14 @@ IN_PROC_BROWSER_TEST_F(IdentityDialogControllerBrowserTest,
   controller->SetAccountSelectionViewForTesting(std::move(mock_view));
 
   // Simulate an actor task starting and acting on the page. Since the task is
-  // active SetCanShowWidget is called with `false` each time the task changes
+  // active SetCanShowUi is called with `false` each time the task changes
   // state (kCreated->kActing->kReflecting).
-  EXPECT_CALL(*view_ptr, SetCanShowWidget(false)).Times(2);
+  EXPECT_CALL(*view_ptr, SetCanShowUi(false)).Times(2);
   TaskId task_id = SimulateNewActiveActorTask();
 
   // Simulate the actor task finishing. This should restore visibility. We
-  // expect SetCanShowWidget(true) to be called.
-  EXPECT_CALL(*view_ptr, SetCanShowWidget(true)).Times(1);
+  // expect SetCanShowUi(true) to be called.
+  EXPECT_CALL(*view_ptr, SetCanShowUi(true)).Times(1);
   SimulateActorTaskFinished(controller.get(), task_id);
 
   // The task ID should be cleared.
@@ -245,9 +245,9 @@ IN_PROC_BROWSER_TEST_F(IdentityDialogControllerBrowserTest,
   MockAccountSelectionView* view_ptr = mock_view.get();
   controller->SetAccountSelectionViewForTesting(std::move(mock_view));
 
-  // Expect SetCanShowWidget(false) to be called when we get an active actor
+  // Expect SetCanShowUi(false) to be called when we get an active actor
   // task. It's called each time ActorTask transitions state.
-  EXPECT_CALL(*view_ptr, SetCanShowWidget(false)).Times(2);
+  EXPECT_CALL(*view_ptr, SetCanShowUi(false)).Times(2);
 
   // Simulate an actor task being active.
   SimulateNewActiveActorTask();

@@ -455,11 +455,11 @@ content::WebContents* AccountSelectionViewAndroid::GetRpWebContents() {
       Java_AccountSelectionBridge_getRpWebContents(env, java_object_internal_));
 }
 
-void AccountSelectionViewAndroid::SetCanShowWidget(bool can_show_widget) {
-  if (can_show_widget_ == can_show_widget) {
+void AccountSelectionViewAndroid::SetCanShowUi(bool can_show_ui) {
+  if (can_show_ui_ == can_show_ui) {
     return;
   }
-  can_show_widget_ = can_show_widget;
+  can_show_ui_ = can_show_ui;
   // Only push the state to Java if the object already exists. Do not call
   // MaybeCreateJavaObject() here to avoid premature bridge creation which can
   // cache the wrong RpMode. The state will be synchronized when the object
@@ -468,8 +468,8 @@ void AccountSelectionViewAndroid::SetCanShowWidget(bool can_show_widget) {
     return;
   }
   JNIEnv* env = AttachCurrentThread();
-  Java_AccountSelectionBridge_setCanShowWidget(env, java_object_internal_,
-                                               can_show_widget);
+  Java_AccountSelectionBridge_setCanShowUi(env, java_object_internal_,
+                                           can_show_ui);
 }
 
 void AccountSelectionViewAndroid::OnAccountSelected(
@@ -527,7 +527,7 @@ bool AccountSelectionViewAndroid::MaybeCreateJavaObject(
       delegate_->GetWebContents()->GetJavaWebContents(),
       delegate_->GetNativeView()->GetWindowAndroid()->GetJavaObject(),
       static_cast<int32_t>(rp_mode.value_or(blink::mojom::RpMode::kPassive)),
-      can_show_widget_);
+      can_show_ui_);
 
   if (!!java_object_internal_) {
     RecordJavaObjectCreationOutcome(

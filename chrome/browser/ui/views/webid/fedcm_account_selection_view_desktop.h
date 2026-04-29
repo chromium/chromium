@@ -125,7 +125,7 @@ class FedCmAccountSelectionView : public AccountSelectionView,
                            Account::SignInMode sign_in_mode,
                            blink::mojom::RpMode rp_mode) override;
 
-  void SetCanShowWidget(bool can_show_widget) override;
+  void SetCanShowUi(bool can_show_ui) override;
 
   void ShowUrl(LinkType link_type, const GURL& url) override;
   std::string GetTitle() const override;
@@ -600,8 +600,8 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // inputs).
   bool is_occluded_by_pip_{false};
 
-  // Whether the widget can be shown.
-  bool can_show_widget_{true};
+  // Whether the UI can be shown.
+  bool can_show_ui_{true};
 
   // Observer for widget occlusion.
   std::unique_ptr<ScopedPictureInPictureOcclusionObservation>

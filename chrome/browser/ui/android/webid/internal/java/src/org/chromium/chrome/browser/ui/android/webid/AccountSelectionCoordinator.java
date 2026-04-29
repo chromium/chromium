@@ -83,7 +83,7 @@ public class AccountSelectionCoordinator
             WindowAndroid windowAndroid,
             BottomSheetController sheetController,
             @RpMode.EnumType int rpMode,
-            boolean canShowWidget,
+            boolean canShowUi,
             AccountSelectionComponent.Delegate delegate) {
         mTab = tab;
         mBottomSheetController = sheetController;
@@ -126,7 +126,7 @@ public class AccountSelectionCoordinator
                         rpMode,
                         context,
                         windowAndroid.getModalDialogManager(),
-                        canShowWidget);
+                        canShowUi);
 
         // If this object is corresponding to the custom tab opened by showModalDialog, this
         // is the first chance to associate it with the opener, so do so now.
@@ -249,8 +249,8 @@ public class AccountSelectionCoordinator
     }
 
     @Override
-    public void setCanShowWidget(boolean canShowWidget) {
-        mMediator.setCanShowWidget(canShowWidget);
+    public void setCanShowUi(boolean canShowUi) {
+        mMediator.setCanShowUi(canShowUi);
     }
 
     @Override

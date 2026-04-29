@@ -132,7 +132,7 @@ class MockAccountSelectionView : public AccountSelectionView {
 
   MOCK_METHOD(content::WebContents*, GetRpWebContents, (), (override));
 
-  MOCK_METHOD(void, SetCanShowWidget, (bool), (override));
+  MOCK_METHOD(void, SetCanShowUi, (bool), (override));
 };
 
 class IdentityDialogControllerTest : public ChromeRenderViewHostTestHarness {
@@ -360,8 +360,8 @@ TEST_F(IdentityDialogControllerTest, ActorTaskSuppressesUi) {
   auto mock_view = std::make_unique<MockAccountSelectionView>();
   MockAccountSelectionView* view_ptr = mock_view.get();
 
-  // 1. Simulate an active actor task. This should call SetCanShowWidget(false).
-  EXPECT_CALL(*view_ptr, SetCanShowWidget(false));
+  // 1. Simulate an active actor task. This should call SetCanShowUi(false).
+  EXPECT_CALL(*view_ptr, SetCanShowUi(false));
   controller->SetAccountSelectionViewForTesting(std::move(mock_view));
   controller->SetActingTaskIdForTesting(actor::TaskId::FromUnsafeValue(1));
 
@@ -863,8 +863,8 @@ TEST_F(IdentityDialogControllerTest, EmbedderNotifiedOfContinuation) {
   auto mock_view = std::make_unique<MockAccountSelectionView>();
   MockAccountSelectionView* mock_view_ptr = mock_view.get();
 
-  // 1. Set task ID. Should call SetCanShowWidget(false).
-  EXPECT_CALL(*mock_view_ptr, SetCanShowWidget(false));
+  // 1. Set task ID. Should call SetCanShowUi(false).
+  EXPECT_CALL(*mock_view_ptr, SetCanShowUi(false));
   controller->SetAccountSelectionViewForTesting(std::move(mock_view));
   controller->SetActingTaskIdForTesting(actor::TaskId::FromUnsafeValue(1));
 
@@ -1059,8 +1059,8 @@ TEST_F(IdentityDialogControllerTest, ActiveModeGuardedByActorTask) {
   auto mock_view = std::make_unique<MockAccountSelectionView>();
   MockAccountSelectionView* mock_view_ptr = mock_view.get();
 
-  // 1. Set task ID. Should call SetCanShowWidget(false).
-  EXPECT_CALL(*mock_view_ptr, SetCanShowWidget(false));
+  // 1. Set task ID. Should call SetCanShowUi(false).
+  EXPECT_CALL(*mock_view_ptr, SetCanShowUi(false));
   controller->SetAccountSelectionViewForTesting(std::move(mock_view));
   controller->SetActingTaskIdForTesting(actor::TaskId::FromUnsafeValue(1));
 
@@ -1091,8 +1091,8 @@ TEST_F(IdentityDialogControllerTest, ShowModalDialogNotGuardedByActorTask) {
   auto mock_view = std::make_unique<MockAccountSelectionView>();
   MockAccountSelectionView* mock_view_ptr = mock_view.get();
 
-  // 1. Set task ID. Should call SetCanShowWidget(false).
-  EXPECT_CALL(*mock_view_ptr, SetCanShowWidget(false));
+  // 1. Set task ID. Should call SetCanShowUi(false).
+  EXPECT_CALL(*mock_view_ptr, SetCanShowUi(false));
   controller->SetAccountSelectionViewForTesting(std::move(mock_view));
   controller->SetActingTaskIdForTesting(actor::TaskId::FromUnsafeValue(1));
 
@@ -1111,8 +1111,8 @@ TEST_F(IdentityDialogControllerTest, PassiveModeNotGuardedByActorTask) {
   auto mock_view = std::make_unique<MockAccountSelectionView>();
   MockAccountSelectionView* mock_view_ptr = mock_view.get();
 
-  // 1. Set task ID. Should call SetCanShowWidget(false).
-  EXPECT_CALL(*mock_view_ptr, SetCanShowWidget(false));
+  // 1. Set task ID. Should call SetCanShowUi(false).
+  EXPECT_CALL(*mock_view_ptr, SetCanShowUi(false));
   controller->SetAccountSelectionViewForTesting(std::move(mock_view));
   controller->SetActingTaskIdForTesting(actor::TaskId::FromUnsafeValue(1));
 
@@ -1145,7 +1145,7 @@ TEST_F(IdentityDialogControllerTest, ActiveModeDismissedWhenActorStopsActing) {
   MockAccountSelectionView* mock_view_ptr = mock_view.get();
 
   // 1. Simulate an active actor task.
-  EXPECT_CALL(*mock_view_ptr, SetCanShowWidget(false));
+  EXPECT_CALL(*mock_view_ptr, SetCanShowUi(false));
   controller->SetAccountSelectionViewForTesting(std::move(mock_view));
   controller->SetActingTaskIdForTesting(actor::TaskId::FromUnsafeValue(1));
 
@@ -1164,7 +1164,7 @@ TEST_F(IdentityDialogControllerTest, ActiveModeDismissedWhenActorStopsActing) {
   // 3. Simulate the actor task finishing.
   // This should trigger the dismiss callback because we are in active mode
   // and we previously suppressed the UI.
-  EXPECT_CALL(*mock_view_ptr, SetCanShowWidget(true));
+  EXPECT_CALL(*mock_view_ptr, SetCanShowUi(true));
   EXPECT_CALL(dismiss_callback,
               Run(IdentityDialogController::DismissReason::kOther))
       .Times(1);

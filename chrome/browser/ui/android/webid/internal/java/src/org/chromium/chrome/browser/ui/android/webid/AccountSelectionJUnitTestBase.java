@@ -542,6 +542,6 @@ public class AccountSelectionJUnitTestBase {
                         mRpMode,
                         mContext,
                         mMockModalDialogManager,
-                        /* canShowWidget= */ true);
+                        /* canShowUi= */ true);
     }
 }

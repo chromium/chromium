@@ -534,11 +534,11 @@ bool FedCmAccountSelectionView::ShowLoadingDialog(
   return true;
 }
 
-void FedCmAccountSelectionView::SetCanShowWidget(bool can_show_widget) {
-  if (can_show_widget == can_show_widget_) {
+void FedCmAccountSelectionView::SetCanShowUi(bool can_show_ui) {
+  if (can_show_ui == can_show_ui_) {
     return;
   }
-  can_show_widget_ = can_show_widget;
+  can_show_ui_ = can_show_ui;
   UpdateDialogVisibilityAndPosition();
 }
 
@@ -1436,7 +1436,7 @@ gfx::Rect FedCmAccountSelectionView::GetDialogBounds() {
 }
 
 void FedCmAccountSelectionView::ShouldShowDialog(bool& should_show) {
-  if (!can_show_widget_) {
+  if (!can_show_ui_) {
     should_show = false;
     return;
   }

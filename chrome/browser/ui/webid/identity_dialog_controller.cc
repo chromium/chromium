@@ -117,7 +117,7 @@ void IdentityDialogController::OnActorTaskStateChanged(actor::ActorTask& task) {
 void IdentityDialogController::UpdateTaskId(actor::TaskId task_id) {
   acting_task_id_ = task_id;
   if (account_view_) {
-    account_view_->SetCanShowWidget(acting_task_id_.is_null());
+    account_view_->SetCanShowUi(acting_task_id_.is_null());
     if (acting_task_id_.is_null() && did_invoke_show_ui_) {
       did_show_ui_ = true;
     }
@@ -586,7 +586,7 @@ bool IdentityDialogController::TrySetAccountView() {
   }
   account_view_ = std::make_unique<webid::FedCmAccountSelectionView>(this, tab);
 #endif
-  account_view_->SetCanShowWidget(ShouldShowFedCmUi());
+  account_view_->SetCanShowUi(ShouldShowFedCmUi());
   return true;
 }
 

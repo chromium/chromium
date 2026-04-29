@@ -325,7 +325,7 @@ public class AccountSelectionIntegrationTest extends AccountSelectionIntegration
                                     activity.getWindowAndroid(),
                                     customTabController,
                                     mRpMode,
-                                    /* canShowWidget= */ true,
+                                    /* canShowUi= */ true,
                                     mCustomTabMockBridge);
                     Criteria.checkThat(mAccountSelection.getWebContents(), Matchers.notNullValue());
                     Criteria.checkThat(mAccountSelection.getRpWebContents(), Matchers.nullValue());

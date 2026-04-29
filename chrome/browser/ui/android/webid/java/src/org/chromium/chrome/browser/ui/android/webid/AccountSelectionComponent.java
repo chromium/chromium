@@ -150,7 +150,7 @@ public interface AccountSelectionComponent {
      * Sets whether the widget/bottomsheet can be displayed. If false, hides the bottomsheet.
      * Applies to both active mode (modal) and passive mode (widget/bottom sheet).
      */
-    void setCanShowWidget(boolean canShowWidget);
+    void setCanShowUi(boolean canShowUi);
 
     /** Gets the sheet's title. */
     String getTitle();
