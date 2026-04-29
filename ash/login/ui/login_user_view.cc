@@ -489,10 +489,15 @@ LoginUserView::LoginUserView(LoginDisplayStyle style,
 
   if (ash::Shell::HasInstance()) {
     display_observation_.Observe(ash::Shell::Get()->display_configurator());
+    ash::Shell::Get()->AddShellObserver(this);
   }
 }
 
-LoginUserView::~LoginUserView() {}
+LoginUserView::~LoginUserView() {
+  if (ash::Shell::HasInstance()) {
+    ash::Shell::Get()->RemoveShellObserver(this);
+  }
+}
 
 void LoginUserView::UpdateForUser(const LoginUserInfo& user, bool animate) {
   current_user_ = user;
@@ -559,6 +564,10 @@ void LoginUserView::OnPowerStateChanged(
     chromeos::DisplayPowerState power_state) {
   bool is_display_on = power_state != chromeos::DISPLAY_POWER_ALL_OFF;
   user_image_->SetAnimationEnabled(is_display_on && is_opaque_);
+}
+
+void LoginUserView::OnShellDestroying() {
+  display_observation_.Reset();
 }
 
 base::WeakPtr<views::View> LoginUserView::GetDropdownAnchorView() {
