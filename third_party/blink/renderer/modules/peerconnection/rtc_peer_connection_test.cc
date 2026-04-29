@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/functional/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -26,6 +27,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_peer_connection_error_callback.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_session_description_callback.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_session_description_init.h"
+#include "third_party/blink/renderer/core/frame/policy_container.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
@@ -372,6 +374,37 @@ TEST_F(RTCPeerConnectionTest, MediaStreamTrackStopsThrottling) {
   // Stopping the track disables the opt-out.
   track->stopTrack(scope.GetExecutionContext());
   EXPECT_FALSE(scheduler->OptedOutFromAggressiveThrottlingForTest());
+}
+
+TEST_F(RTCPeerConnectionTest, ConnectionAllowlistBlockIncrementsHistogram) {
+  base::HistogramTester histogram_tester;
+
+  // First, create the Connection Allowlist in the policy container. By default,
+  // WebRTC is blocked.
+  mojom::blink::PolicyContainerPoliciesPtr policies =
+      mojom::blink::PolicyContainerPolicies::New();
+  policies->connection_allowlists.enforced = network::ConnectionAllowlist();
+
+  mojo::PendingAssociatedRemote<mojom::blink::PolicyContainerHost> stub_remote;
+  std::unique_ptr<PolicyContainer> policy_container =
+      std::make_unique<PolicyContainer>(std::move(stub_remote),
+                                        std::move(policies));
+
+  V8TestingScope scope;
+  scope.GetExecutionContext()->SetPolicyContainer(std::move(policy_container));
+
+  // Next, create the RTCPeerConnection. This should fail, and the target
+  // histogram will be incremented accordingly.
+  RTCPeerConnection* pc = CreatePC(scope);
+  EXPECT_EQ(
+      "RTCPeerConnection construction is disallowed by the "
+      "\"Connection-Allowlist\" header.",
+      GetExceptionMessage(scope));
+  ASSERT_FALSE(pc);
+  histogram_tester.ExpectTotalCount(
+      "WebRTC.PeerConnection.BlockedByConnectionAllowlist", 1);
+  histogram_tester.ExpectBucketCount(
+      "WebRTC.PeerConnection.BlockedByConnectionAllowlist", true, 1);
 }
 
 }  // namespace blink

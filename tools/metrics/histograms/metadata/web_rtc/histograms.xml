@@ -1285,6 +1285,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebRTC.PeerConnection.BlockedByConnectionAllowlist"
+    enum="Boolean" expires_after="2027-04-06">
+  <owner>mkwst@chromium.org</owner>
+  <owner>webrtc-dev@chromium.org</owner>
+  <owner>connection-allowlist-dev@google.com</owner>
+  <summary>
+    Determines if construction of an RTCPeerConnection object was blocked by
+    policies returned in the document's Connection-Allowlist header. Logged in
+    the Blink RTCPeerConnection constructor immedately before throwing a JS
+    error.
+  </summary>
+</histogram>
+
 <histogram name="WebRTC.PeerConnection.BundlePolicy"
     enum="PeerConnectionBundlePolicy" expires_after="2026-10-09">
   <owner>hta@chromium.org</owner>

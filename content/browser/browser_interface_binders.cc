@@ -876,11 +876,22 @@ void PopulateBinderMapWithContext(
   // WebRTC p2p connections are disallowed in fenced frames. Creation of
   // RTCPeerConnection is already disabled in the renderer, so in theory this
   // unbound interface should never present an issue.
-  bool should_ban_p2p =
+  bool should_ban_p2p_for_fenced_frames =
       base::FeatureList::IsEnabled(
           blink::features::kFencedFramesLocalUnpartitionedDataAccess) &&
       host->IsNestedWithinFencedFrame();
-  if (!should_ban_p2p) {
+
+  bool should_ban_p2p_for_connection_allowlist =
+      host->HasPolicyContainerHost() &&
+      host->policy_container_host()
+          ->connection_allowlists()
+          .enforced.has_value() &&
+      host->policy_container_host()
+              ->connection_allowlists()
+              .enforced->webrtc_behavior ==
+          network::ConnectionAllowlist::WebRtcBehavior::kBlock;
+  if (!should_ban_p2p_for_fenced_frames &&
+      !should_ban_p2p_for_connection_allowlist) {
     map->Add<network::mojom::P2PSocketManager>(&BindSocketManager);
   }
 #endif  // BUILDFLAG(IS_P2P_ENABLED)

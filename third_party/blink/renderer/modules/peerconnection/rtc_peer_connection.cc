@@ -41,6 +41,7 @@
 #include "base/feature_list.h"
 #include "base/lazy_instance.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
@@ -49,6 +50,7 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/network/public/cpp/connection_allowlist.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -641,6 +643,17 @@ RTCPeerConnection::RTCPeerConnection(
       encoded_insertable_streams_(encoded_insertable_streams) {
   LocalDOMWindow* window = To<LocalDOMWindow>(context);
 
+  InstanceCounters::IncrementCounter(
+      InstanceCounters::kRTCPeerConnectionCounter);
+  // If we fail, set |m_closed| and |m_stopped| to true, to avoid hitting the
+  // assert in the destructor.
+  if (InstanceCounters::CounterValue(
+          InstanceCounters::kRTCPeerConnectionCounter) > kMaxPeerConnections) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kUnknownError,
+                                      "Cannot create so many PeerConnections");
+    return;
+  }
+
   // WebRTC peer connections are not allowed in fenced frames.
   // Given the complex scaffolding for setting up fenced frames testing, this
   // is tested in the following locations:
@@ -655,14 +668,23 @@ RTCPeerConnection::RTCPeerConnection(
     return;
   }
 
-  InstanceCounters::IncrementCounter(
-      InstanceCounters::kRTCPeerConnectionCounter);
-  // If we fail, set |m_closed| and |m_stopped| to true, to avoid hitting the
-  // assert in the destructor.
-  if (InstanceCounters::CounterValue(
-          InstanceCounters::kRTCPeerConnectionCounter) > kMaxPeerConnections) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kUnknownError,
-                                      "Cannot create so many PeerConnections");
+  // WebRTC peer connections are not allowed in documents when blocked by the
+  // Connection-Allowlist header.
+  const auto& policy_container_policies =
+      context->GetPolicyContainer()->GetPolicies();
+  // TODO(crbug.com/492439214): If the Connection-Allowlist-Report-Only header
+  // is in use, send a report for WebRTC violations.
+  if (policy_container_policies.connection_allowlists.enforced.has_value() &&
+      policy_container_policies.connection_allowlists.enforced
+              ->webrtc_behavior ==
+          network::ConnectionAllowlist::WebRtcBehavior::kBlock) {
+    base::UmaHistogramBoolean(
+        "WebRTC.PeerConnection.BlockedByConnectionAllowlist", true);
+
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotAllowedError,
+        "RTCPeerConnection construction is disallowed by the "
+        "\"Connection-Allowlist\" header.");
     return;
   }
 
