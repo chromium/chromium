@@ -1358,7 +1358,18 @@ void DevToolsUIBindings::LoadNetworkResource(DispatchCallback callback,
 }
 
 void DevToolsUIBindings::OpenInNewTab(const std::string& url) {
-  delegate_->OpenInNewTab(url);
+  GURL gurl(url);
+  // Hardening: Verify that the frontend renderer is allowed to request this URL.
+  if (!web_contents_ || !web_contents_->GetPrimaryMainFrame() ||
+      !content::ChildProcessSecurityPolicy::GetInstance()->CanRequestURL(
+          web_contents_->GetPrimaryMainFrame()
+              ->GetProcess()
+              ->GetDeprecatedID(),
+          gurl)) {
+    gurl = GURL(url::kAboutBlankURL);
+  }
+
+  delegate_->OpenInNewTab(gurl.spec());
 }
 
 void DevToolsUIBindings::OpenSearchResultsInNewTab(const std::string& query) {

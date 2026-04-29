@@ -3417,8 +3417,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, MAYBE_TestOpenInNewTabFilter) {
   const std::string self_filesystem_url =
       base::StringPrintf("filesystem:%s", test_url.c_str());
 
-  // Pairs include a URL string and boolean whether it should be allowed.
-  std::vector<std::pair<const std::string, const std::string>> tests = {
+  // Pairs include a URL string and expected URL string after filtering.
+  std::vector<std::pair<std::string, std::string>> tests = {
       {test_url, test_url},
       {"data:,foo", "data:,foo"},
       {"about://inspect", "about:blank"},
@@ -3438,18 +3438,55 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, MAYBE_TestOpenInNewTabFilter) {
 
   TabStripModel* tabs = browser()->tab_strip_model();
   int i = 0;
-  for (const std::pair<const std::string, const std::string>& pair : tests) {
+  for (const auto& pair : tests) {
     bindings_delegate_->OpenInNewTab(pair.first);
     i++;
 
     std::string opened_url = tabs->GetWebContentsAt(i)->GetVisibleURL().spec();
-    SCOPED_TRACE(
-        base::StringPrintf("while testing URL: %s", pair.first.c_str()));
-    EXPECT_EQ(opened_url, pair.second);
+    EXPECT_EQ(opened_url, pair.second) << " while testing URL: " << pair.first;
   }
 
   CloseDevToolsWindow();
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_F(DevToolsTest, TestOpenInNewTabFilterHardening) {
+  OpenDevToolsWindow(kDebuggerTestPage, false);
+
+  content::WebContents* main_web_contents =
+      DevToolsWindowTesting::Get(window_)->main_web_contents();
+  DevToolsUIBindings* bindings =
+      DevToolsUIBindings::ForWebContents(main_web_contents);
+  ASSERT_TRUE(bindings);
+
+  // Cast to the Embedder Message Dispatcher Delegate to access OpenInNewTab
+  auto* embedder_delegate =
+      static_cast<DevToolsEmbedderMessageDispatcher::Delegate*>(bindings);
+
+  std::string test_url =
+      embedded_test_server()->GetURL(kDebuggerTestPage).spec();
+
+  // Pairs include a URL string and expected URL string after filtering.
+  std::vector<std::pair<std::string, std::string>> tests = {
+      {test_url, test_url},
+      {"chrome://settings", "about:blank"},
+      {"chrome://inspect", "about:blank"},
+      {"file:///", "about:blank"},
+  };
+
+  TabStripModel* tabs = browser()->tab_strip_model();
+  int i = 0;
+  for (const auto& pair : tests) {
+    embedder_delegate->OpenInNewTab(pair.first);
+    i++;
+
+    std::string opened_url = tabs->GetWebContentsAt(i)->GetVisibleURL().spec();
+    EXPECT_EQ(opened_url, pair.second) << " while testing URL: " << pair.first;
+  }
+
+  CloseDevToolsWindow();
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_F(DevToolsTest, TestOpenSearchResultsInNewTab) {
   OpenDevToolsWindow(kDebuggerTestPage, false);
