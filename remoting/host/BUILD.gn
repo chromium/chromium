@@ -131,6 +131,7 @@ source_set("common_headers") {
     "pam_utils.h",
     "persistent_display_layout_manager.h",
     "polling_desktop_display_info_monitor.h",
+    "remote_audio_input.h",
     "sas_injector.h",
     "usage_stats_consent.h",
     "worker_process_ipc_delegate.h",

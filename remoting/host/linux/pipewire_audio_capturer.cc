@@ -4,7 +4,7 @@
 
 #include "remoting/host/linux/pipewire_audio_capturer.h"
 
-#include <spa/param/audio/format-utils.h>
+#include <pipewire/pipewire.h>
 
 #include <memory>
 
@@ -49,10 +49,10 @@ class PipewireAudioCapturer::Core {
 
   const raw_ref<RemotingPipewireLoader> pw_{GetPipewireLoader()};
   AudioSilenceDetector silence_detector_;
-  raw_ptr<pw_thread_loop> pw_main_loop_;
-  raw_ptr<pw_context> pw_context_;
-  raw_ptr<pw_core> pw_core_;
-  raw_ptr<pw_stream> pw_stream_;
+  ScopedPipewireMainLoop pw_main_loop_;
+  ScopedPipewireContext pw_context_;
+  ScopedPipewireCore pw_core_;
+  ScopedPipewireStream pw_stream_;
   spa_hook spa_stream_listener_;
   PacketCapturedCallback callback_;
 };
@@ -64,28 +64,17 @@ PipewireAudioCapturer::Core::Core() : silence_detector_(0) {
 
 DISABLE_CFI_DLSYM
 PipewireAudioCapturer::Core::~Core() {
-  if (pw_main_loop_) {
-    pw_->pw_thread_loop_stop(pw_main_loop_);
+  if (!pw_main_loop_) {
+    return;
   }
+  pw_->pw_thread_loop_stop(pw_main_loop_.get());
   {
-    ScopedThreadLoopLock lock(pw_main_loop_);
-    if (pw_stream_) {
-      pw_->pw_stream_destroy(pw_stream_);
-      pw_stream_ = nullptr;
-    }
-    if (pw_core_) {
-      pw_->pw_core_disconnect(pw_core_);
-      pw_core_ = nullptr;
-    }
-    if (pw_context_) {
-      pw_->pw_context_destroy(pw_context_);
-      pw_context_ = nullptr;
-    }
+    ScopedThreadLoopLock lock(pw_main_loop_.get());
+    pw_stream_ = nullptr;
+    pw_core_ = nullptr;
+    pw_context_ = nullptr;
   }
-  if (pw_main_loop_) {
-    pw_->pw_thread_loop_destroy(pw_main_loop_);
-    pw_main_loop_ = nullptr;
-  }
+  pw_main_loop_ = nullptr;
 }
 
 DISABLE_CFI_DLSYM
@@ -94,28 +83,28 @@ bool PipewireAudioCapturer::Core::Start(
   silence_detector_.Reset(AudioPacket::SAMPLING_RATE_48000,
                           AudioPacket::CHANNELS_STEREO);
 
-  pw_main_loop_ =
-      pw_->pw_thread_loop_new("crd-pipewire-audio-capturer", nullptr);
+  pw_main_loop_.reset(
+      pw_->pw_thread_loop_new("crd-pipewire-audio-capturer", nullptr));
   if (!pw_main_loop_) {
     LOG(ERROR) << "Failed to create PipeWire thread loop.";
     return false;
   }
 
-  pw_context_ = pw_->pw_context_new(pw_->pw_thread_loop_get_loop(pw_main_loop_),
-                                    nullptr, 0);
+  pw_context_.reset(pw_->pw_context_new(
+      pw_->pw_thread_loop_get_loop(pw_main_loop_.get()), nullptr, 0));
   if (!pw_context_) {
     LOG(ERROR) << "Failed to create PipeWire context.";
     return false;
   }
 
-  if (pw_->pw_thread_loop_start(pw_main_loop_) < 0) {
+  if (pw_->pw_thread_loop_start(pw_main_loop_.get()) < 0) {
     LOG(ERROR) << "Failed to start PipeWire thread loop.";
     return false;
   }
 
-  ScopedThreadLoopLock lock(pw_main_loop_);
+  ScopedThreadLoopLock lock(pw_main_loop_.get());
 
-  pw_core_ = pw_->pw_context_connect(pw_context_, nullptr, 0);
+  pw_core_.reset(pw_->pw_context_connect(pw_context_.get(), nullptr, 0));
   if (!pw_core_) {
     LOG(ERROR) << "Failed to connect to PipeWire core.";
     return false;
@@ -128,41 +117,18 @@ bool PipewireAudioCapturer::Core::Start(
       PW_KEY_NODE_NAME, "crd_audio_sink", PW_KEY_NODE_DESCRIPTION,
       "Chrome Remote Desktop Audio Sink", PW_KEY_NODE_VIRTUAL, "true", nullptr);
 
-  pw_stream_ = pw_->pw_stream_new(pw_core_, "crd-audio-sink", props);
-
-  if (!pw_stream_) {
-    LOG(ERROR) << "Failed to create PipeWire stream.";
-    return false;
-  }
-
   static const struct pw_stream_events kStreamEvents = {
       .version = PW_VERSION_STREAM_EVENTS,
       .state_changed = &PipewireAudioCapturer::Core::OnStreamStateChanged,
       .process = &PipewireAudioCapturer::Core::OnStreamProcess,
   };
 
-  pw_->pw_stream_add_listener(pw_stream_, &spa_stream_listener_, &kStreamEvents,
-                              this);
-
-  uint8_t buffer[1024];
-  struct spa_pod_builder b = SPA_POD_BUILDER_INIT(buffer, sizeof(buffer));
-  const struct spa_pod* params[1];
-
-  struct spa_audio_info_raw info =
-      SPA_AUDIO_INFO_RAW_INIT(.format = SPA_AUDIO_FORMAT_S16_LE, .rate = 48000,
-                              .channels = 2);
-  info.position[0] = SPA_AUDIO_CHANNEL_FL;
-  info.position[1] = SPA_AUDIO_CHANNEL_FR;
-
-  params[0] = spa_format_audio_raw_build(&b, SPA_PARAM_EnumFormat, &info);
-
   callback_ = callback;
-  if (pw_->pw_stream_connect(
-          pw_stream_, PW_DIRECTION_INPUT, PW_ID_ANY,
-          static_cast<pw_stream_flags>(PW_STREAM_FLAG_MAP_BUFFERS |
-                                       PW_STREAM_FLAG_RT_PROCESS),
-          params, 1) < 0) {
-    LOG(ERROR) << "Failed to connect PipeWire stream.";
+  pw_stream_ = CreatePipewireStream(
+      pw_core_, props, &kStreamEvents, this, &spa_stream_listener_,
+      PW_DIRECTION_INPUT, AudioPacket::SAMPLING_RATE_48000, /*channels=*/2);
+
+  if (!pw_stream_) {
     callback_.Reset();
     return false;
   }
@@ -194,7 +160,7 @@ void PipewireAudioCapturer::Core::HandleStreamProcess() {
   // This is run on the PipeWire thread, so it's safe to call PipeWire functions
   // without locking.
 
-  struct pw_buffer* b = pw_->pw_stream_dequeue_buffer(pw_stream_);
+  struct pw_buffer* b = pw_->pw_stream_dequeue_buffer(pw_stream_.get());
   if (!b) {
     return;
   }
@@ -202,7 +168,7 @@ void PipewireAudioCapturer::Core::HandleStreamProcess() {
   struct spa_buffer* buf = b->buffer;
   if (buf->n_datas == 0 || !buf->datas || !buf->datas[0].data) {
     // The buffer is not ready yet, so we put it back.
-    pw_->pw_stream_queue_buffer(pw_stream_, b);
+    pw_->pw_stream_queue_buffer(pw_stream_.get(), b);
     return;
   }
   // In the PipeWire/SPA framework, interleaved formats (like the
@@ -216,7 +182,7 @@ void PipewireAudioCapturer::Core::HandleStreamProcess() {
   // where the actual audio data is and how large it is.
   struct spa_chunk* chunk = data.chunk;
   if (!chunk) {
-    pw_->pw_stream_queue_buffer(pw_stream_, b);
+    pw_->pw_stream_queue_buffer(pw_stream_.get(), b);
     return;
   }
   uint32_t offset = chunk->offset;
@@ -225,7 +191,7 @@ void PipewireAudioCapturer::Core::HandleStreamProcess() {
   // avoid potential integer overflow.
   if (offset > data.maxsize || size > data.maxsize - offset) {
     LOG(ERROR) << "PipeWire buffer chunk is out of bounds.";
-    pw_->pw_stream_queue_buffer(pw_stream_, b);
+    pw_->pw_stream_queue_buffer(pw_stream_.get(), b);
     return;
   }
 
@@ -250,7 +216,7 @@ void PipewireAudioCapturer::Core::HandleStreamProcess() {
   // We are done with the buffer, so we put it back to PipeWire. Note that
   // `AudioPacket::add_data()` makes a deep copy of the audio data, so it's safe
   // to return the buffer to PipeWire before running the callback.
-  pw_->pw_stream_queue_buffer(pw_stream_, b);
+  pw_->pw_stream_queue_buffer(pw_stream_.get(), b);
 
   if (packet) {
     callback_.Run(std::move(packet));

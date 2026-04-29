@@ -145,6 +145,10 @@ generate_library_loader("pipewire_loader") {
     "pw_stream_state_as_string",
     "pw_stream_dequeue_buffer",
     "pw_stream_queue_buffer",
+    "pw_stream_get_node_id",
+    "pw_core_get_registry",
+    "pw_proxy_add_object_listener",
+    "pw_proxy_destroy",
   ]
 }
 
@@ -281,6 +285,8 @@ source_set("platform_impls") {
     "pipewire_mouse_cursor_capturer.h",
     "pipewire_mouse_cursor_monitor.cc",
     "pipewire_mouse_cursor_monitor.h",
+    "pipewire_remote_audio_input.cc",
+    "pipewire_remote_audio_input.h",
     "pipewire_utils.cc",
     "pipewire_utils.h",
     "portal_capture_stream_manager.cc",
