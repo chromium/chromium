@@ -340,6 +340,7 @@ public class NewTabPageTest {
     @Test
     @SmallTest
     @Feature({"NewTabPage"})
+    @DisabledTest(message = "https://crbug.com/507770942")
     public void testClickPlusButtonOnFakebox() {
         View plusButton = mNtp.getView().findViewById(R.id.search_box_plus_button);
         Assert.assertNotNull(plusButton);
