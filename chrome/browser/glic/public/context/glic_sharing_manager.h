@@ -40,7 +40,8 @@ enum class GlicPinTrigger {
   kAtMention,
   kActuation,
   kWebClientUnknown,
-  kMaxValue = kWebClientUnknown
+  kContextualCue,
+  kMaxValue = kContextualCue
 };
 
 enum class GlicUnpinTrigger {

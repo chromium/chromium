@@ -54,6 +54,7 @@ bool GlicPinnedTabUsage::IsExplicitlyPinnedByUser() const {
     case GlicPinTrigger::kNewTabDaisyChain:
     case GlicPinTrigger::kConversationChange:
     case GlicPinTrigger::kRestore:
+    case GlicPinTrigger::kContextualCue:
       return false;
     case GlicPinTrigger::kContextMenu:
     case GlicPinTrigger::kCandidatesToggle:

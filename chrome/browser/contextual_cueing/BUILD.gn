@@ -11,6 +11,7 @@ source_set("contextual_cueing") {
     "contextual_cueing_web_contents_observer.h",
     "cue_target.h",
     "features.h",
+    "model_execution_log.h",
     "nudge_cap_tracker.h",
   ]
 

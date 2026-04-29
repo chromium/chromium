@@ -21,6 +21,7 @@
 #include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service_factory.h"
 #include "chrome/browser/contextual_cueing/features.h"
+#include "chrome/browser/contextual_cueing/model_execution_log.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/page_content_annotations/page_content_annotations_service_factory.h"
@@ -63,14 +64,6 @@ namespace {
 const char kHomepagePathRegex[] =
     "(?i)(/(en\\/)?((index|default|home|homepage|main|welcome)(\\.[^/"
     "?;]+)?)?)?";
-
-// Convenience macro for emitting OPTIMIZATION_GUIDE_LOGs where
-// optimization_keyed_service_ is defined.
-#define MODEL_EXECUTION_LOG(message)                                   \
-  OPTIMIZATION_GUIDE_LOG(                                              \
-      optimization_guide_common::mojom::LogSource::MODEL_EXECUTION,    \
-      optimization_guide_keyed_service_->GetOptimizationGuideLogger(), \
-      (message))
 
 void RecordContextualCueingDecision(
     ContextualCueingDecision contextual_cueing_decision) {
@@ -300,6 +293,9 @@ void ContextualCueingController::InitiateModelExecutionRequest() {
     *request.add_background_tabs() =
         GetTabProtoFromWebContents(background_tabs[i].contents);
   }
+  MODEL_EXECUTION_LOG(base::StringPrintf("Requesting %d background tabs.",
+                                         request.background_tabs_size()));
+
   auto eligible_cue_surfaces = GetEligibleCueSurfaces();
   *request.mutable_supported_surfaces() = {eligible_cue_surfaces.begin(),
                                            eligible_cue_surfaces.end()};

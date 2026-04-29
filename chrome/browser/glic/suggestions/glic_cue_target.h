@@ -7,8 +7,10 @@
 
 #include "base/memory/raw_ref.h"
 #include "chrome/browser/contextual_cueing/cue_target.h"
+#include "components/tabs/public/tab_interface.h"
 
 class BrowserWindowInterface;
+class OptimizationGuideKeyedService;
 
 namespace glic {
 
@@ -18,8 +20,10 @@ class GlicCueTarget : public contextual_cueing::CueTarget {
  public:
   static void Register(BrowserWindowInterface& browser_window_interface);
 
-  explicit GlicCueTarget(GlicKeyedService& glic_keyed_service,
-                         BrowserWindowInterface& browser_window_interface);
+  explicit GlicCueTarget(
+      GlicKeyedService& glic_keyed_service,
+      OptimizationGuideKeyedService* optimization_guide_keyed_service,
+      BrowserWindowInterface& browser_window_interface);
   ~GlicCueTarget() override;
 
   // contextual_cueing::CueTarget:
@@ -34,8 +38,11 @@ class GlicCueTarget : public contextual_cueing::CueTarget {
       const override;
 
  private:
+  tabs::TabHandle GetActiveTabHandle();
+
   // Unowned and guaranteed to outlive this.
   raw_ref<GlicKeyedService> glic_keyed_service_;
+  raw_ptr<OptimizationGuideKeyedService> optimization_guide_keyed_service_;
   raw_ref<BrowserWindowInterface> browser_window_interface_;
 };
 
