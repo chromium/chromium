@@ -5,6 +5,7 @@
 #ifndef SANDBOX_LINUX_SECCOMP_BPF_HELPERS_SYSCALL_PARAMETERS_RESTRICTIONS_H_
 #define SANDBOX_LINUX_SECCOMP_BPF_HELPERS_SYSCALL_PARAMETERS_RESTRICTIONS_H_
 
+#include <stdint.h>
 #include <unistd.h>
 
 #include "build/build_config.h"
@@ -38,7 +39,8 @@ SANDBOX_EXPORT bpf_dsl::ResultExpr RestrictIoctl();
 // Only allow: MAP_SHARED | MAP_PRIVATE | MAP_ANONYMOUS |
 // MAP_STACK | MAP_NORESERVE | MAP_FIXED | MAP_DENYWRITE.
 // Crash if any other flag is used.
-SANDBOX_EXPORT bpf_dsl::ResultExpr RestrictMmapFlags();
+SANDBOX_EXPORT bpf_dsl::ResultExpr RestrictMmapFlags(
+    uint64_t extra_allowed_mask = 0);
 
 // Restrict the flags argument in mremap(2).
 // Crash if any flags are used.
