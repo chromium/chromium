@@ -5,3 +5,6 @@ rohitrao@chromium.org
 sdefresne@chromium.org
 gambard@chromium.org
 
+# The autorollers will update `README.chromium` files' revision information:
+per-file ...README.chromium=chromium-autoroll@skia-public.iam.gserviceaccount.com
+per-file ...README.chromium=chromium-internal-autoroll@skia-corp.google.com.iam.gserviceaccount.com

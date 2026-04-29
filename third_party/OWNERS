@@ -25,8 +25,9 @@ per-file ...README.chromium=jsca@google.com
 per-file ...README.chromium=renewitt@google.com
 per-file ...README.chromium=qjw@chromium.org
 
-# The autoroller will update `README.chromium` files' revision information:
+# The autorollers will update `README.chromium` files' revision information:
 per-file ...README.chromium=chromium-autoroll@skia-public.iam.gserviceaccount.com
+per-file ...README.chromium=chromium-internal-autoroll@skia-corp.google.com.iam.gserviceaccount.com
 
 # For testing Copybara workflows from GoB
 per-file ...copy.bara.sky=jsca@google.com
