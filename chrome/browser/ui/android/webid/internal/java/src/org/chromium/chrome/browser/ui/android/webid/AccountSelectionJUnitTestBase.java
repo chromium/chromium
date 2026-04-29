@@ -541,6 +541,7 @@ public class AccountSelectionJUnitTestBase {
                         DESIRED_AVATAR_SIZE,
                         mRpMode,
                         mContext,
-                        mMockModalDialogManager);
+                        mMockModalDialogManager,
+                        /* canShowWidget= */ true);
     }
 }

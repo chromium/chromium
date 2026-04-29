@@ -64,6 +64,7 @@ class AccountSelectionViewAndroid : public AccountSelectionView {
           on_shown_async) override;
   void CloseModalDialog() override;
   content::WebContents* GetRpWebContents() override;
+  void SetCanShowWidget(bool can_show_widget) override;
 
   void OnAccountSelected(JNIEnv* env,
                          const GURL& idp_config_url,
@@ -81,6 +82,8 @@ class AccountSelectionViewAndroid : public AccountSelectionView {
   // successfully or false if the creation failed.
   bool MaybeCreateJavaObject(std::optional<blink::mojom::RpMode> rp_mode);
 
+  // Applies to both active mode (modal) and passive mode (widget/bottom sheet).
+  bool can_show_widget_ = true;
   base::android::ScopedJavaGlobalRef<jobject> java_object_internal_;
 };
 

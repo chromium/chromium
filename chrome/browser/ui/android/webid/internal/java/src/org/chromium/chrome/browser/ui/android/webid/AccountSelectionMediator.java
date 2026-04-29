@@ -73,6 +73,7 @@ import java.util.Set;
 class AccountSelectionMediator {
     private boolean mRegisteredObservers;
     private boolean mWasDismissed;
+    private boolean mCanShowWidget = true;
     // Keeps track of the last bottom sheet seen by the BottomSheetObserver. Used to know whether a
     // sheet state change affects the BottomSheet owned by this object or not.
     private BottomSheetContent mLastSheetSeen;
@@ -173,7 +174,8 @@ class AccountSelectionMediator {
             @Px int desiredAvatarSize,
             @RpMode.EnumType int rpMode,
             Context context,
-            ModalDialogManager modalDialogManager) {
+            ModalDialogManager modalDialogManager,
+            boolean canShowWidget) {
         assert tab != null;
         mTab = tab;
         assert delegate != null;
@@ -187,6 +189,7 @@ class AccountSelectionMediator {
         mContext = context;
         mModalDialogManager = modalDialogManager;
         mLastSheetSeen = mBottomSheetContent;
+        mCanShowWidget = canShowWidget;
         if (mTab != null && mTab.getWebContents() != null) {
             mUkmRecorder = new UkmRecorder(mTab.getWebContents(), "Blink.FedCm");
         }
@@ -768,6 +771,18 @@ class AccountSelectionMediator {
         return true;
     }
 
+    public void setCanShowWidget(boolean canShowWidget) {
+        if (mCanShowWidget == canShowWidget) {
+            return;
+        }
+        mCanShowWidget = canShowWidget;
+        if (!mCanShowWidget) {
+            mBottomSheetController.hideContent(mBottomSheetContent, true);
+        } else {
+            showContent();
+        }
+    }
+
     void showUrl(Context context, @IdentityRequestDialogLinkType int linkType, GURL url) {
         switch (linkType) {
             case IdentityRequestDialogLinkType.TERMS_OF_SERVICE:
@@ -1078,7 +1093,7 @@ class AccountSelectionMediator {
      * controller queue and notifies the delegate of the dismissal.
      */
     private boolean showContent() {
-        if (mWasDismissed || mIsModalDialogOpen) {
+        if (mWasDismissed || mIsModalDialogOpen || !mCanShowWidget) {
             return true;
         }
         // When active mode is triggered, if there's a pending passive mode request, we should

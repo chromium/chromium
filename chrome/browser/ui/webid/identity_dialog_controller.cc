@@ -585,8 +585,8 @@ bool IdentityDialogController::TrySetAccountView() {
     return false;
   }
   account_view_ = std::make_unique<webid::FedCmAccountSelectionView>(this, tab);
-  account_view_->SetCanShowWidget(ShouldShowFedCmUi());
 #endif
+  account_view_->SetCanShowWidget(ShouldShowFedCmUi());
   return true;
 }
 

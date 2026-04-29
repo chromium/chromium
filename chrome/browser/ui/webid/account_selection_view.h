@@ -129,6 +129,9 @@ class AccountSelectionView {
                                    blink::mojom::RpMode rp_mode) = 0;
 
   // Shows or hides the account selection view.
+  // Applies to both active mode (modal) and passive mode (widget/bottom sheet).
+  // TODO(crbug.com/507898368): Rename this method to something more general
+  // that applies to both modes.
   virtual void SetCanShowWidget(bool can_show_widget) {}
 
   virtual std::string GetTitle() const = 0;

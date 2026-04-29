@@ -1036,6 +1036,27 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
         }
     }
 
+    @Test
+    public void testSetCanShowWidget() {
+        when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
+        mMediator.showAccounts(
+                new RelyingPartyData(
+                        mTestEtldPlusOne, /* iframeForDisplay= */ "", /* rpIcon= */ null),
+                Arrays.asList(mAnaAccount),
+                Arrays.asList(mIdpData),
+                /* newAccounts= */ Collections.emptyList());
+        verify(mMockBottomSheetController, times(1)).requestShowContent(any(), eq(true));
+
+        // Setting can show widget to false hides content.
+        mMediator.setCanShowWidget(false);
+        verify(mMockBottomSheetController, times(1)).hideContent(mBottomSheetContent, true);
+
+        // Setting can show widget to true shows content again.
+        when(mTab.isUserInteractable()).thenReturn(true);
+        mMediator.setCanShowWidget(true);
+        verify(mMockBottomSheetController, times(2)).requestShowContent(mBottomSheetContent, true);
+    }
+
     private void pressBack() {
         if (mBottomSheetContent.handleBackPress()) return;
 
