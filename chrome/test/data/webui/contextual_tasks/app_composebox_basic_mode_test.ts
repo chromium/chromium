@@ -10,7 +10,7 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_as
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestContextualTasksBrowserProxy} from './test_contextual_tasks_browser_proxy.js';
-import {fixtureUrl} from './test_utils.js';
+import {createContextualTasksAppElement, fixtureUrl} from './test_utils.js';
 
 // Remove the element to prevent background loadabort events from triggering
 // a race condition with our manual event simulation.
@@ -48,12 +48,8 @@ suite('ContextualTasksAppComposeboxBasicModeTest', function() {
   test(
       'composebox z-index changes when visibility toggles with enableBasicModeZOrder',
       async () => {
-        const proxy = new TestContextualTasksBrowserProxy(fixtureUrl);
-        BrowserProxyImpl.setInstance(proxy);
-
-        const appElement = document.createElement('contextual-tasks-app');
-        document.body.appendChild(appElement);
-        await microtasksFinished();
+        const {appElement, proxy} =
+            await createContextualTasksAppElement(/*url=*/ fixtureUrl);
 
         const composebox =
             appElement.shadowRoot.querySelector('contextual-tasks-composebox');
@@ -98,12 +94,8 @@ suite('ContextualTasksAppComposeboxBasicModeTest', function() {
       'composebox visibility toggles with enableBasicModeZOrder set to false',
       async () => {
         loadTimeData.overrideValues({enableBasicModeZOrder: false});
-        const proxy = new TestContextualTasksBrowserProxy(fixtureUrl);
-        BrowserProxyImpl.setInstance(proxy);
-
-        const appElement = document.createElement('contextual-tasks-app');
-        document.body.appendChild(appElement);
-        await microtasksFinished();
+        const {appElement, proxy} =
+            await createContextualTasksAppElement(/*url=*/ fixtureUrl);
 
         const composebox =
             appElement.shadowRoot.querySelector('contextual-tasks-composebox');
@@ -128,14 +120,12 @@ suite('ContextualTasksAppComposeboxBasicModeTest', function() {
             {forceBasicModeIfOpeningThreadHistory: false});
         const fixtureUrlWithHistory = new URL(fixtureUrl);
         fixtureUrlWithHistory.searchParams.set('atvm', '1');
-        const proxy = new TestContextualTasksBrowserProxy(
-            fixtureUrlWithHistory.toString());
-        BrowserProxyImpl.setInstance(proxy);
-        proxy.handler.setIsShownInTab(true);
 
-        const appElement = document.createElement('contextual-tasks-app');
-        document.body.appendChild(appElement);
-        await microtasksFinished();
+        const {appElement} = await createContextualTasksAppElement(
+            /*url=*/ fixtureUrlWithHistory.toString(),
+            /*setupProxy=*/ (p) => {
+              p.handler.setIsShownInTab(true);
+            });
 
         const composebox =
             appElement.shadowRoot.querySelector('contextual-tasks-composebox');
@@ -160,14 +150,10 @@ suite('ContextualTasksAppComposeboxBasicModeTest', function() {
             {forceBasicModeIfOpeningThreadHistory: true});
         const fixtureUrlWithHistory = new URL(fixtureUrl);
         fixtureUrlWithHistory.searchParams.set('atvm', '1');
-        const proxy = new TestContextualTasksBrowserProxy(
-            fixtureUrlWithHistory.toString());
-        BrowserProxyImpl.setInstance(proxy);
-        proxy.handler.setIsShownInTab(true);
-
-        const appElement = document.createElement('contextual-tasks-app');
-        document.body.appendChild(appElement);
-        await microtasksFinished();
+        const {appElement} = await createContextualTasksAppElement(
+            /*url=*/ fixtureUrlWithHistory.toString(), /*setupProxy=*/ (p) => {
+              p.handler.setIsShownInTab(true);
+            });
 
         const composebox =
             appElement.shadowRoot.querySelector('contextual-tasks-composebox');
@@ -192,12 +178,8 @@ suite('ContextualTasksAppComposeboxBasicModeTest', function() {
   test(
       'sets basic mode when navigating from AI page and backend sends notification',
       async () => {
-        const proxy = new TestContextualTasksBrowserProxy(fixtureUrl);
-        BrowserProxyImpl.setInstance(proxy);
-
-        const appElement = document.createElement('contextual-tasks-app');
-        document.body.appendChild(appElement);
-        await microtasksFinished();
+        const {appElement, proxy} =
+            await createContextualTasksAppElement(/*url=*/ fixtureUrl);
 
         await removeThreadFrameToPreventRaceConditions();
 
@@ -279,12 +261,8 @@ suite('ContextualTasksAppComposeboxBasicModeTest', function() {
   test(
       'sets basic mode as true when navigating due to backend sending notification',
       async () => {
-        const proxy = new TestContextualTasksBrowserProxy(fixtureUrl);
-        BrowserProxyImpl.setInstance(proxy);
-
-        const appElement = document.createElement('contextual-tasks-app');
-        document.body.appendChild(appElement);
-        await microtasksFinished();
+        const {appElement, proxy} =
+            await createContextualTasksAppElement(/*url=*/ fixtureUrl);
 
         await removeThreadFrameToPreventRaceConditions();
 
@@ -367,12 +345,8 @@ suite('ContextualTasksAppComposeboxBasicModeTest', function() {
   test(
       'does not set basic mode when navigating from AI page to non-AI page',
       async () => {
-        const proxy = new TestContextualTasksBrowserProxy(fixtureUrl);
-        BrowserProxyImpl.setInstance(proxy);
-
-        const appElement = document.createElement('contextual-tasks-app');
-        document.body.appendChild(appElement);
-        await microtasksFinished();
+        const {appElement, proxy} =
+            await createContextualTasksAppElement(/*url=*/ fixtureUrl);
 
         // Verify initial state.
         assertFalse(appElement.hasAttribute('is-in-basic-mode_'));
@@ -405,12 +379,8 @@ suite('ContextualTasksAppComposeboxBasicModeTest', function() {
       });
 
   test('does not set basic mode when navigating from non-AI page', async () => {
-    const proxy = new TestContextualTasksBrowserProxy(fixtureUrl);
-    BrowserProxyImpl.setInstance(proxy);
-
-    const appElement = document.createElement('contextual-tasks-app');
-    document.body.appendChild(appElement);
-    await microtasksFinished();
+    const {appElement, proxy} =
+        await createContextualTasksAppElement(/*url=*/ fixtureUrl);
 
     // Verify initial state.
     assertFalse(appElement.hasAttribute('is-in-basic-mode_'));
@@ -451,14 +421,11 @@ suite('ContextualTasksAppComposeboxBasicModeTest', function() {
         const fixtureUrlWithHistory = new URL(fixtureUrl);
         fixtureUrlWithHistory.searchParams.set('atvm', '1');
 
-        const proxy = new TestContextualTasksBrowserProxy(
-            fixtureUrlWithHistory.toString());
-        BrowserProxyImpl.setInstance(proxy);
-        proxy.handler.setIsShownInTab(true);
-
-        const appElement = document.createElement('contextual-tasks-app');
-        document.body.appendChild(appElement);
-        await microtasksFinished();
+        const {appElement, proxy} = await createContextualTasksAppElement(
+            /*url=*/ fixtureUrlWithHistory.toString(),
+            /*setupProxy=*/ (p) => {
+              p.handler.setIsShownInTab(true);
+            });
 
         await removeThreadFrameToPreventRaceConditions();
 
@@ -504,12 +471,8 @@ suite('ContextualTasksAppComposeboxBasicModeTest', function() {
       'sets pending basic mode to false when navigating from AI page and initially not in basic mode',
       async () => {
         loadTimeData.overrideValues({enableBasicMode: true});
-        const proxy = new TestContextualTasksBrowserProxy(fixtureUrl);
-        BrowserProxyImpl.setInstance(proxy);
-
-        const appElement = document.createElement('contextual-tasks-app');
-        document.body.appendChild(appElement);
-        await microtasksFinished();
+        const {appElement, proxy} =
+            await createContextualTasksAppElement(/*url=*/ fixtureUrl);
 
         await removeThreadFrameToPreventRaceConditions();
         // Verify initial state.
@@ -556,12 +519,8 @@ suite('ContextualTasksAppComposeboxBasicModeTest', function() {
       'does not set pending basic mode when navigating from AI page and initially in basic mode',
       async () => {
         loadTimeData.overrideValues({enableBasicMode: true});
-        const proxy = new TestContextualTasksBrowserProxy(fixtureUrl);
-        BrowserProxyImpl.setInstance(proxy);
-
-        const appElement = document.createElement('contextual-tasks-app');
-        document.body.appendChild(appElement);
-        await microtasksFinished();
+        const {appElement, proxy} =
+            await createContextualTasksAppElement(/*url=*/ fixtureUrl);
 
         // Force into basic mode initially.
         proxy.callbackRouterRemote.enterBasicMode();
@@ -599,12 +558,8 @@ suite('ContextualTasksAppComposeboxBasicModeTest', function() {
       'updates basic mode on load commit when navigating from AI page and initially not in basic mode',
       async () => {
         loadTimeData.overrideValues({enableBasicMode: true});
-        const proxy = new TestContextualTasksBrowserProxy(fixtureUrl);
-        BrowserProxyImpl.setInstance(proxy);
-
-        const appElement = document.createElement('contextual-tasks-app');
-        document.body.appendChild(appElement);
-        await microtasksFinished();
+        const {appElement, proxy} =
+            await createContextualTasksAppElement(/*url=*/ fixtureUrl);
 
         await removeThreadFrameToPreventRaceConditions();
 
@@ -657,12 +612,8 @@ suite('ContextualTasksAppComposeboxBasicModeTest', function() {
     const nlmFixtureUrl = new URL(fixtureUrl);
     nlmFixtureUrl.searchParams.set('ajid', '1');
 
-    const proxy = new TestContextualTasksBrowserProxy(nlmFixtureUrl.toString());
-    BrowserProxyImpl.setInstance(proxy);
-
-    const appElement = document.createElement('contextual-tasks-app');
-    document.body.appendChild(appElement);
-    await microtasksFinished();
+    const {appElement} = await createContextualTasksAppElement(
+        /*url=*/ nlmFixtureUrl.toString());
 
     // Verify composeboxHeaderWrapper is hidden.
     const headerWrapper =

@@ -3,12 +3,15 @@
 // found in the LICENSE file.
 
 
+import {BrowserProxyImpl} from 'chrome://contextual-tasks/contextual_tasks_browser_proxy.js';
 import {createAutocompleteMatch, createAutocompleteResultForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {type PageHandlerRemote as SearchboxPageHandlerRemote, type PageRemote as SearchboxPageRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {type MockTimer} from 'chrome://webui-test/mock_timer.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
+
+import {TestContextualTasksBrowserProxy} from './test_contextual_tasks_browser_proxy.js';
 
 // Base64 encoding of a UI handshake request message [1, 2, 3].
 // Generated from btoa(String.fromCharCode(...[1, 2, 3]))
@@ -174,4 +177,41 @@ export function getSubmitButton(composebox: any): HTMLButtonElement|null {
   const submitElement =
       composebox.shadowRoot.querySelector('cr-composebox-submit');
   return submitElement?.$.submitIcon || null;
+}
+/**
+ * Creates and appends a 'contextual-tasks-app' element to the document body.
+ * @param url The URL to initialize the test proxy with.
+ * @param setupProxy Optional callback to configure the test proxy before
+ *     element creation.
+ * @param waitForInitialLoadStart If true, waits for the app's initial load
+ *     start to finish.
+ * @returns A promise that resolves to an object containing the created app
+ *     element and the test proxy.
+ */
+export async function createContextualTasksAppElement(
+    url: string = fixtureUrl,
+    setupProxy?: (proxy: TestContextualTasksBrowserProxy) => void,
+    waitForInitialLoadStart: boolean = true) {
+  const proxy = new TestContextualTasksBrowserProxy(url);
+  BrowserProxyImpl.setInstance(proxy);
+  if (setupProxy) {
+    setupProxy(proxy);
+  }
+  const appElement = document.createElement('contextual-tasks-app');
+
+  let promise: Promise<void>|undefined;
+  if (waitForInitialLoadStart) {
+    const {promise: p, resolve} = Promise.withResolvers<void>();
+    promise = p;
+    appElement.setOnLoadStartFinishedCallbackForTesting(resolve);
+  }
+
+  document.body.appendChild(appElement);
+
+  if (promise) {
+    await promise;
+  }
+  await microtasksFinished();
+
+  return {appElement, proxy};
 }

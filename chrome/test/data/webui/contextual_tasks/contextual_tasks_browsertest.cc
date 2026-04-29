@@ -26,14 +26,7 @@ class ContextualTasksBrowserTest : public WebUIMochaBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(crbug.com/487147580): Re-enable the test
-// TODO(crbug.com/507306254): Failing on ChromeOS.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_App DISABLED_App
-#else
-#define MAYBE_App App
-#endif
-IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, MAYBE_App) {
+IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, App) {
   RunTest("contextual_tasks/app_test.js", "mocha.run();");
 }
 
