@@ -9921,6 +9921,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "webui-refresh",
+    "owners": [ "mickeyburks@chromium.org", "top-chrome-desktop-ui@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "webxr-hand-anonymization",
     "owners": [ "//components/webxr/OWNERS", "xr-dev@chromium.org" ],
     "expiry_milestone": 154

@@ -11508,6 +11508,7 @@ from previous Chrome versions.
   <int value="-871450829"
       label="ThreadedScrollPreventRenderingStarvation:disabled"/>
   <int value="-871419968" label="FilesTrashDrive:enabled"/>
+  <int value="-871100145" label="WebUIRefresh:disabled"/>
   <int value="-870994173" label="NtpChromeCartModule:enabled"/>
   <int value="-870120067" label="EnableSearchBoxSelection:enabled"/>
   <int value="-870118210" label="AutofillEnableCardBenefitsSync:enabled"/>
@@ -14004,6 +14005,7 @@ from previous Chrome versions.
   <int value="-42707046" label="TouchDragAndDrop:enabled"/>
   <int value="-42326303" label="MediaCodecLowDelayMode:enabled"/>
   <int value="-42175674" label="ShareUsageRankingFixedMore:disabled"/>
+  <int value="-41617344" label="WebUIRefresh:enabled"/>
   <int value="-41548966" label="AutocorrectUseReplaceSurroundingText:disabled"/>
   <int value="-41460305" label="InfobarScrollOptimization:disabled"/>
   <int value="-41263570" label="OmniboxToolbelt:enabled"/>

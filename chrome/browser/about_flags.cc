@@ -9588,6 +9588,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kMenuSimplificationDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kMenuSimplification)},
 
+    {"webui-refresh", flag_descriptions::kWebUIRefreshName,
+     flag_descriptions::kWebUIRefreshDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kWebUIRefresh)},
+
     {"render-document", flag_descriptions::kRenderDocumentName,
      flag_descriptions::kRenderDocumentDescription, kOsAll,
      FEATURE_WITH_PARAMS_VALUE_TYPE(features::kRenderDocument,
