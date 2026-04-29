@@ -721,6 +721,15 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     @Override
     @SuppressWarnings("NullAway")
     public void onDestroy() {
+        if (mOpenInAppEntryPoint != null) {
+            mOpenInAppEntryPoint.destroy();
+            mOpenInAppEntryPoint = null;
+        }
+
+        if (mOmniboxChipManager != null) {
+            mOmniboxChipManager = null;
+        }
+
         if (mSystemUiCoordinator != null) mSystemUiCoordinator.destroy();
 
         if (mOfflineIndicatorController != null) {

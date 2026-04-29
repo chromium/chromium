@@ -113,6 +113,8 @@ public class ToolbarTablet extends ToolbarLayout {
     private final @Nullable ToolbarWidthConsumer[] mToolbarWidthConsumers =
             new ToolbarWidthConsumer[ToolbarComponentId.COUNT];
 
+    private boolean mIsDestroyed;
+
     /**
      * Constructs a ToolbarTablet object.
      *
@@ -463,6 +465,8 @@ public class ToolbarTablet extends ToolbarLayout {
 
     @Override
     public void destroy() {
+        mIsDestroyed = true;
+
         super.destroy();
         mCallbackController.destroy();
         if (mButtonVisibilityAnimators != null) {
@@ -505,6 +509,8 @@ public class ToolbarTablet extends ToolbarLayout {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        assert !mIsDestroyed;
+
         int width = MeasureSpec.getSize(widthMeasureSpec);
         allocateAvailableToolbarWidth(
                 mToolbarWidthConsumers, width, widthMeasureSpec, heightMeasureSpec);
@@ -514,6 +520,8 @@ public class ToolbarTablet extends ToolbarLayout {
 
     @Override
     public void onWidthConsumerVisibilityChanged() {
+        assert !mIsDestroyed;
+
         if (!ToolbarUtils.isToolbarTabletResizeRefactorEnabled()) return;
 
         // Re-allocate width to account for a change in a width consumer's visibility.

@@ -67,11 +67,13 @@ public class ExtensionsToolbarBridge implements Destroyable {
     }
 
     public long getNativePtr() {
+        assert mNativeExtensionsToolbarAndroid != 0;
         return mNativeExtensionsToolbarAndroid;
     }
 
     @Nullable
     public ExtensionAction getAction(String actionId, @Nullable WebContents webContents) {
+        assert mNativeExtensionsToolbarAndroid != 0;
         if (mProfile.shutdownStarted()) {
             // TODO(crbug.com/459079170): This is to prevent tests from breaking. {@code
             // ExtensionsToolbarCoordinatorImpl} should ideally be destroyed following {@code
@@ -89,6 +91,7 @@ public class ExtensionsToolbarBridge implements Destroyable {
             int canvasWidthDp,
             int canvasHeightDp,
             float scaleFactor) {
+        assert mNativeExtensionsToolbarAndroid != 0;
         if (mProfile.shutdownStarted()) {
             // TODO(crbug.com/459079170): This is to prevent tests from breaking. {@code
             // ExtensionsToolbarCoordinatorImpl} should ideally be destroyed following {@code
@@ -106,6 +109,7 @@ public class ExtensionsToolbarBridge implements Destroyable {
     }
 
     public String[] getAllActionIds() {
+        assert mNativeExtensionsToolbarAndroid != 0;
         if (mProfile.shutdownStarted()) {
             // TODO(crbug.com/459079170): This is to prevent tests from breaking. {@code
             // ExtensionsToolbarCoordinatorImpl} should ideally be destroyed following {@code
@@ -116,6 +120,7 @@ public class ExtensionsToolbarBridge implements Destroyable {
     }
 
     public String[] getPinnedActionIds() {
+        assert mNativeExtensionsToolbarAndroid != 0;
         if (mProfile.shutdownStarted()) {
             // TODO(crbug.com/459079170): This is to prevent tests from breaking. {@code
             // ExtensionsToolbarCoordinatorImpl} should ideally be destroyed following {@code
@@ -126,6 +131,7 @@ public class ExtensionsToolbarBridge implements Destroyable {
     }
 
     public boolean isActionDraggable(String actionId) {
+        assert mNativeExtensionsToolbarAndroid != 0;
         if (mProfile.shutdownStarted()) {
             // TODO(crbug.com/459079170): This is to prevent tests from breaking. {@code
             // ExtensionsToolbarCoordinatorImpl} should ideally be destroyed following {@code
@@ -137,6 +143,7 @@ public class ExtensionsToolbarBridge implements Destroyable {
     }
 
     public void executeUserAction(String actionId, @InvocationSource int source) {
+        assert mNativeExtensionsToolbarAndroid != 0;
         if (mProfile.shutdownStarted()) {
             // TODO(crbug.com/459079170): This is to prevent tests from breaking. {@code
             // ExtensionsToolbarCoordinatorImpl} should ideally be destroyed following {@code
@@ -148,6 +155,7 @@ public class ExtensionsToolbarBridge implements Destroyable {
     }
 
     public void movePinnedAction(String actionId, int targetIndex) {
+        assert mNativeExtensionsToolbarAndroid != 0;
         if (mProfile.shutdownStarted()) {
             // TODO(crbug.com/459079170): This is to prevent tests from breaking. {@code
             // ExtensionsToolbarCoordinatorImpl} should ideally be destroyed following {@code
@@ -159,6 +167,7 @@ public class ExtensionsToolbarBridge implements Destroyable {
     }
 
     public void onRequestAccessButtonClicked(WebContents webContents) {
+        assert mNativeExtensionsToolbarAndroid != 0;
         if (mProfile.shutdownStarted()) {
             return;
         }
@@ -194,6 +203,7 @@ public class ExtensionsToolbarBridge implements Destroyable {
 
     /** Handles the key down event and returns the result. */
     public boolean handleKeyDownEvent(KeyEvent event) {
+        assert mNativeExtensionsToolbarAndroid != 0;
         return ExtensionsToolbarBridgeJni.get()
                 .handleKeyDownEvent(mNativeExtensionsToolbarAndroid, event);
     }
