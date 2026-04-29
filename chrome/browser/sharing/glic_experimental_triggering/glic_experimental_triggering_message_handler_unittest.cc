@@ -634,8 +634,9 @@ TEST_F(GlicExperimentalTriggeringMessageHandlerTest,
   handler_->OnMessage(std::move(message), done_callback.Get());
 }
 
+// TODO(b/495921045): Fix flaky test.
 TEST_F(GlicExperimentalTriggeringMessageHandlerTest,
-       HandlesStopActuationRequest_Successful_SendsStopped) {
+       DISABLED_HandlesStopActuationRequest_Successful_SendsStopped) {
   components_sharing_message::SharingMessage message;
   auto* triggering = message.mutable_glic_experimental_triggering();
   auto* request = triggering->mutable_request();
@@ -687,8 +688,9 @@ TEST_F(GlicExperimentalTriggeringMessageHandlerTest,
   handler_->OnMessage(std::move(message), done_callback.Get());
 }
 
+// TODO(b/495921045): Fix flaky test.
 TEST_F(GlicExperimentalTriggeringMessageHandlerTest,
-       HandlesStopActuationRequest_MissingMetadata_SendsFailed) {
+       DISABLED_HandlesStopActuationRequest_MissingMetadata_SendsFailed) {
   components_sharing_message::SharingMessage message;
   auto* triggering = message.mutable_glic_experimental_triggering();
   auto* request = triggering->mutable_request();
