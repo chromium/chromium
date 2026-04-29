@@ -303,6 +303,13 @@ TEST_F(AutofillDriverIOSTest, ScanForms_Throttling) {
   EXPECT_EQ(1, fetch_calls);
 }
 
+TEST_F(AutofillDriverIOSTest, Unregister_InvalidatesWeakPtrs) {
+  auto weak_ptr = main_frame_driver()->GetWeakPtr();
+  ASSERT_TRUE(weak_ptr);
+  main_frame_driver()->Unregister();
+  EXPECT_FALSE(weak_ptr);
+}
+
 }  // namespace
 
 }  // namespace autofill

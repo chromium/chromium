@@ -670,6 +670,10 @@ void AutofillDriverIOS::SetParent(base::WeakPtr<AutofillDriverIOS> parent) {
 
 void AutofillDriverIOS::SetSelfAsParent(const autofill::FormData& form,
                                         LocalFrameToken token) {
+  if (unregistered_) {
+    return;
+  }
+
   AutofillDriverIOS* child_driver =
       FromWebStateAndLocalFrameToken(web_state_, token);
   if (child_driver) {
@@ -813,6 +817,8 @@ bool AutofillDriverIOS::DetectFormSubmissionAfterFormRemoval(
 void AutofillDriverIOS::Unregister() {
   router_->UnregisterDriver(*this, /*driver_is_dying=*/true);
   unregistered_ = true;
+  parent_ = nullptr;
+  weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
 void AutofillDriverIOS::OnDidTriggerFormFetch() {
