@@ -386,7 +386,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Startup.Android.Cold.WithPersistentState.TimeToFirstContentfulPaint3.{StartActivityType}"
-    units="ms" expires_after="2026-06-07">
+    units="ms" expires_after="2026-12-01">
   <owner>pasko@chromium.org</owner>
   <owner>nafisabedin@google.com</owner>
   <owner>clhager@google.com</owner>
