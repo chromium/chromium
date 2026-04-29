@@ -1394,15 +1394,15 @@ protocol::Response InspectorDOMAgent::performSearch(
 
   StringView tag_name_query = whitespace_trimmed_query;
   bool start_tag_found = false;
-  if (whitespace_trimmed_query.starts_with("</")) {
+  if (tag_name_query.starts_with("</")) {
     tag_name_query.remove_prefix(2);
     start_tag_found = true;
-  } else if (whitespace_trimmed_query.starts_with('<')) {
+  } else if (tag_name_query.starts_with('<')) {
     tag_name_query.remove_prefix(1);
     start_tag_found = true;
   }
   bool end_tag_found = false;
-  if (whitespace_trimmed_query.ends_with('>')) {
+  if (tag_name_query.ends_with('>')) {
     tag_name_query.remove_suffix(1);
     end_tag_found = true;
   }
@@ -1435,12 +1435,12 @@ protocol::Response InspectorDOMAgent::performSearch(
 
   StringView attribute_query = whitespace_trimmed_query;
   bool start_quote_found = false;
-  if (whitespace_trimmed_query.starts_with('"')) {
+  if (attribute_query.starts_with('"')) {
     attribute_query.remove_prefix(1);
     start_quote_found = true;
   }
   bool end_quote_found = false;
-  if (whitespace_trimmed_query.ends_with('"')) {
+  if (attribute_query.ends_with('"')) {
     attribute_query.remove_suffix(1);
     end_quote_found = true;
   }

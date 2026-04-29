@@ -1,0 +1,7 @@
+Tests that elements panel search is not crashing when searching for single quote (").
+
+
+Running: testSetUp
+
+Running: testNoCrash
+
