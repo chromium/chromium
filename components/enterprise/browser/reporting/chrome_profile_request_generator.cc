@@ -394,8 +394,10 @@ void ChromeProfileRequestGenerator::OnAggregatedSignalsReceived(
   std::string report_timestamp =
       base::NumberToString(base::Time::Now().InMillisecondsFSinceUnixEpoch());
   std::string report_nonce = CreateNonce();
-  auto signals_string =
+
+  std::string signals_string =
       GetSecuritySignalsInReport(request->GetChromeProfileReportRequest());
+
   device_attestation_service_->GetAttestationResponse(
       kAttestationFlowName, signals_string, report_timestamp, report_nonce,
       base::BindOnce(&ChromeProfileRequestGenerator::OnAttestationResultReady,
@@ -412,6 +414,10 @@ void ChromeProfileRequestGenerator::OnAttestationResultReady(
   auto attestation_payload = std::make_unique<em::AttestationPayload>();
   attestation_payload->set_timestamp(timestamp);
   attestation_payload->set_nonce(nonce);
+  if (enterprise_signals::features::IsContentBindingVersioningEnabled()) {
+    attestation_payload->set_content_binding_version(
+        GetCurrentContentBindingsVersion());
+  }
 
   attestation_payload->set_attestation_blob(
       attestation_result.attestation_blob);

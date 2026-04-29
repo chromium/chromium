@@ -58,6 +58,25 @@ std::string GetSecuritySignalsInReport(
 
 void RecordReportGenerationErrorMetric(ReportGenerationError error);
 
+// DISCLAIMER: Do not update these content binding methods without matching the
+// changes on the server. Any changes should be done behind a flag and reflected
+// on the server.
+// Returns the current version of the content bindings for the attestation
+// result.
+int GetCurrentContentBindingsVersion();
+
+// DISCLAIMER: Do not update these content binding methods without matching the
+// changes on the server and incrementing the version number. Any changes should
+// be done behind a flag and reflected on the server.
+// LINT.IfChange(GenerateV1ContentBindingString)
+// Utility function to convert report proto to readable, JSON format that
+// contains security signals-related fields only. Includes relevant signals used
+// for payload attestation.
+std::string GenerateV1ContentBindingString(
+    const enterprise_management::ChromeProfileReportRequest& report);
+// LINT.ThenChange(report_util_unittest.cc:GenerateV1ContentBindingString_PopulatedReport,
+// report_util.cc:GetCurrentContentBindingsVersion)
+
 }  // namespace enterprise_reporting
 
 #endif  // COMPONENTS_ENTERPRISE_BROWSER_REPORTING_REPORT_UTIL_H_

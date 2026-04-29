@@ -203,6 +203,7 @@ source_set("unit_tests") {
     "browser/reporting/chrome_profile_request_generator_unittest.cc",
     "browser/reporting/pref_url_list_matcher_unittest.cc",
     "browser/reporting/report_uploader_unittest.cc",
+    "browser/reporting/report_util_unittest.cc",
     "browser/reporting/saas_usage/saas_usage_aggregation_utils_unittest.cc",
     "browser/reporting/saas_usage/saas_usage_report_factory_unittest.cc",
     "browser/reporting/saas_usage/saas_usage_report_scheduler_unittest.cc",
@@ -275,7 +276,10 @@ source_set("unit_tests") {
   }
 
   if (is_android) {
-    sources += [ "device_attestation/android/device_attestation_service_android_unittest.cc" ]
+    sources += [
+      "device_attestation/android/attestation_utils_unittest.cc",
+      "device_attestation/android/device_attestation_service_android_unittest.cc",
+    ]
     deps += [
       "//components/enterprise/device_attestation:test_support",
       "//components/enterprise/device_attestation/android",

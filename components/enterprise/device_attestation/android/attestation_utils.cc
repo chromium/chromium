@@ -38,6 +38,8 @@ BlobGenerationResult GenerateAttestationBlob(std::string_view flow_name,
                                              std::string_view request_payload,
                                              std::string_view timestamp,
                                              std::string_view nonce) {
+  AttestationHashes hashes =
+      CreateAttestationHashes(request_payload, timestamp, nonce);
   {
     base::ScopedBlockingCall scoped_blocking_call(
         FROM_HERE, base::BlockingType::MAY_BLOCK);
@@ -46,9 +48,9 @@ BlobGenerationResult GenerateAttestationBlob(std::string_view flow_name,
         Java_AttestationBlobGenerator_generate(
             env, base::android::ConvertUTF8ToJavaString(env, flow_name),
             base::android::ConvertUTF8ToJavaString(
-                env,
-                GetHashString(base::StringPrintf(
-                    kReportRequestHashKey, request_payload, timestamp, nonce))),
+                env, GetHashString(base::StringPrintf(
+                         kReportRequestHashKey, hashes.request_hash,
+                         hashes.timestamp_hash, hashes.nonce_hash))),
             base::android::ConvertUTF8ToJavaString(env,
                                                    GetHashString(timestamp)),
             base::android::ConvertUTF8ToJavaString(env, GetHashString(nonce)));
@@ -60,6 +62,14 @@ BlobGenerationResult GenerateAttestationBlob(std::string_view flow_name,
                 env, Java_BlobGenerationResult_getErrorMessage(
                          env, generation_result))};
   }
+}
+
+AttestationHashes CreateAttestationHashes(std::string_view request_payload,
+                                          std::string_view timestamp,
+                                          std::string_view nonce) {
+  return {GetHashString(base::StringPrintf(kReportRequestHashKey,
+                                           request_payload, timestamp, nonce)),
+          GetHashString(timestamp), GetHashString(nonce)};
 }
 
 }  // namespace enterprise
