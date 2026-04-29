@@ -23,7 +23,7 @@ class WebState;
 - (web::WebState*)webState;
 
 /// Returns the current input state of the composebox.
-- (contextual_search::InputState)inputState;
+- (std::optional<contextual_search::InputState>)inputState;
 
 /// Returns the current attached suggest input in the composebox.
 - (std::optional<lens::proto::LensOverlaySuggestInputs>)suggestInputs;

@@ -77,7 +77,8 @@ class WebStateID;
 @property(nonatomic, readonly) ComposeboxModelOption activeModel;
 
 // The current input state.
-@property(nonatomic, readonly) const contextual_search::InputState& inputState;
+@property(nonatomic, readonly) std::optional<contextual_search::InputState>
+    inputState;
 
 // The collection of items attached to the composebox.
 @property(nonatomic, weak) ComposeboxInputItemCollection* items;

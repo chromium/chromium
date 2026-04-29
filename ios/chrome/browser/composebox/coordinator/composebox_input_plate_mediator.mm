@@ -963,19 +963,28 @@ std::vector<lens::MimeType> MimeTypesFromCollection(
 
 - (void)recordPlusMenuOpenedWithVisibleInternalButtons:
     (const std::vector<FuseboxAttachmentButtonType>&)visibleInternalButtons {
+  [self.metricsRecorder
+      recordAttachmentsMenuOpenedWithVisibleButtons:visibleInternalButtons];
+
   contextual_search::ContextualSearchMetricsRecorder* recorder =
       _contextualSearchSession ? _contextualSearchSession->GetMetricsRecorder()
                                : nullptr;
-  if (recorder) {
-    for (const auto& tool : _stateManager.inputState.allowed_tools) {
-      recorder->RecordToolModeShown(tool);
-    }
-    for (const auto& model : _stateManager.inputState.allowed_models) {
-      recorder->RecordModelModeShown(model);
-    }
+  if (!recorder) {
+    return;
   }
-  [self.metricsRecorder
-      recordAttachmentsMenuOpenedWithVisibleButtons:visibleInternalButtons];
+
+  std::optional<contextual_search::InputState> inputState =
+      _stateManager.inputState;
+  if (!inputState.has_value()) {
+    return;
+  }
+
+  for (const auto& tool : inputState->allowed_tools) {
+    recorder->RecordToolModeShown(tool);
+  }
+  for (const auto& model : inputState->allowed_models) {
+    recorder->RecordModelModeShown(model);
+  }
 }
 
 - (void)requestUIRefresh {
@@ -1049,6 +1058,12 @@ std::vector<lens::MimeType> MimeTypesFromCollection(
     return;
   }
 
+  std::optional<contextual_search::InputState> inputState =
+      _stateManager.inputState;
+  if (!inputState.has_value()) {
+    return;
+  }
+
   std::unique_ptr<contextual_search::ContextualSearchContextController::
                       CreateClientToAimRequestInfo>
       request_info = std::make_unique<
@@ -1059,8 +1074,8 @@ std::vector<lens::MimeType> MimeTypesFromCollection(
   request_info->file_tokens =
       _contextualSearchSession->GetSubmittedContextTokens();
 
-  request_info->active_tool = _stateManager.inputState.active_tool;
-  request_info->active_model = _stateManager.inputState.active_model;
+  request_info->active_tool = inputState->active_tool;
+  request_info->active_model = inputState->active_model;
 
   lens::ClientToAimMessage message =
       _contextualSearchSession->CreateClientToAimRequest(
@@ -1075,12 +1090,18 @@ std::vector<lens::MimeType> MimeTypesFromCollection(
     return;
   }
 
+  std::optional<contextual_search::InputState> inputState =
+      _stateManager.inputState;
+  if (!inputState.has_value()) {
+    return;
+  }
+
   BOOL imageGenUploadMode = _items.count > 0;
 
   omnibox::ToolMode toolMode =
       imageGenUploadMode ? omnibox::ToolMode::TOOL_MODE_IMAGE_GEN_UPLOAD
                          : omnibox::ToolMode::TOOL_MODE_IMAGE_GEN;
-  if (_stateManager.inputState.active_tool != toolMode) {
+  if (inputState->active_tool != toolMode) {
     [self setActiveTool:toolMode];
   }
 }
@@ -1645,7 +1666,7 @@ std::vector<lens::MimeType> MimeTypesFromCollection(
   return _webStateList->GetActiveWebState();
 }
 
-- (contextual_search::InputState)inputState {
+- (std::optional<contextual_search::InputState>)inputState {
   return _stateManager.inputState;
 }
 

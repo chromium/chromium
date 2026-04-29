@@ -190,7 +190,7 @@ ComposeboxStrings* ServerStringsFromInputState(
   // The underlying C++ model that manages the state.
   std::unique_ptr<contextual_search::InputStateModel> _inputStateModel;
   // The cached current input state.
-  contextual_search::InputState _inputState;
+  std::optional<contextual_search::InputState> _inputState;
   // Subscription for state updates from the model.
   base::CallbackListSubscription _inputStateSubscription;
   // Cached server strings.
@@ -237,6 +237,7 @@ ComposeboxStrings* ServerStringsFromInputState(
   self.items = nil;
   _inputStateSubscription = {};
   _inputStateModel.reset();
+  _inputState.reset();
   _cachedStrings = nil;
   _webStateList = nullptr;
   _prefService = nullptr;
@@ -346,13 +347,14 @@ ComposeboxStrings* ServerStringsFromInputState(
 - (void)recordInputStateOnSubmission {
   contextual_search::ContextualSearchMetricsRecorder* recorder =
       _sessionHandle ? _sessionHandle->GetMetricsRecorder() : nullptr;
-  if (recorder && _inputStateModel) {
-    std::vector<omnibox::InputType> active_input_types =
-        contextual_search::InputStateModel::GetCurrentInputTypes(
-            _sessionHandle.get());
-    recorder->RecordModesOnSubmission(
-        _inputState.active_tool, _inputState.active_model, active_input_types);
+  if (!recorder || !_inputStateModel || !_inputState.has_value()) {
+    return;
   }
+  std::vector<omnibox::InputType> active_input_types =
+      contextual_search::InputStateModel::GetCurrentInputTypes(
+          _sessionHandle.get());
+  recorder->RecordModesOnSubmission(
+      _inputState->active_tool, _inputState->active_model, active_input_types);
 }
 
 - (void)
@@ -362,17 +364,17 @@ ComposeboxStrings* ServerStringsFromInputState(
                                              mimeTypes {
   contextual_search::ContextualSearchMetricsRecorder* recorder =
       _sessionHandle ? _sessionHandle->GetMetricsRecorder() : nullptr;
-  if (recorder) {
-    recorder->RecordFileTypesOnSessionEnd(mimeTypes, inNavigation);
-
-    if (_inputStateModel) {
-      recorder->RecordActiveModesOnSessionEnd(
-          _inputStateModel->GetInputState().active_tool,
-          _inputStateModel->GetInputState().active_model, inNavigation);
-    }
-
-    recorder->RecordNavigationResult(inNavigation);
+  if (!recorder) {
+    return;
   }
+  recorder->RecordFileTypesOnSessionEnd(mimeTypes, inNavigation);
+
+  if (_inputStateModel && _inputState.has_value()) {
+    recorder->RecordActiveModesOnSessionEnd(
+        _inputState->active_tool, _inputState->active_model, inNavigation);
+  }
+
+  recorder->RecordNavigationResult(inNavigation);
 }
 
 - (BOOL)isEligibleToAIM {
@@ -426,9 +428,11 @@ ComposeboxStrings* ServerStringsFromInputState(
 - (ComposeboxModelOption)defaultModel {
   if ([self activeMode] == ComposeboxMode::kRegularSearch) {
     return ComposeboxModelOption::kNone;
-  } else {
-    return ModelOptionForModelMode(_inputState.GetDefaultModel());
   }
+  if (!_inputState.has_value()) {
+    return ComposeboxModelOption::kNone;
+  }
+  return ModelOptionForModelMode(_inputState->GetDefaultModel());
 }
 
 /// Returns the default mode/tool that is implicit in the context. The tool is
@@ -524,9 +528,13 @@ ComposeboxStrings* ServerStringsFromInputState(
     return NO;
   }
 
+  if (!_inputState.has_value()) {
+    return NO;
+  }
+
   omnibox::ModelMode modelMode =
-      ModelModeForModelOption(modelOption, _inputState);
-  return std::ranges::contains(_inputState.allowed_models, modelMode);
+      ModelModeForModelOption(modelOption, _inputState.value());
+  return std::ranges::contains(_inputState->allowed_models, modelMode);
 }
 
 - (BOOL)isModelDisabled:(ComposeboxModelOption)modelOption {
@@ -536,9 +544,13 @@ ComposeboxStrings* ServerStringsFromInputState(
     return NO;
   }
 
+  if (!_inputState.has_value()) {
+    return NO;
+  }
+
   omnibox::ModelMode modelMode =
-      ModelModeForModelOption(modelOption, _inputState);
-  return std::ranges::contains(_inputState.disabled_models, modelMode);
+      ModelModeForModelOption(modelOption, _inputState.value());
+  return std::ranges::contains(_inputState->disabled_models, modelMode);
 }
 
 - (BOOL)canAddMoreAttachments {
@@ -568,15 +580,19 @@ ComposeboxStrings* ServerStringsFromInputState(
 
 - (NSUInteger)remainingNumberOfImagesAllowed {
   NSUInteger remainingAttachmentCapacity = [self remainingAttachmentCapacity];
-  if (EnableComposeboxServerSideState()) {
-    auto limits = _inputState.max_inputs_by_type;
-    auto type = omnibox::InputType::INPUT_TYPE_LENS_IMAGE;
-    if (limits.count(type)) {
-      int serverLimit = limits[type];
-      NSUInteger remainingSlots =
-          std::max(0, serverLimit - static_cast<int>(self.items.imagesCount));
-      return MIN(remainingSlots, remainingAttachmentCapacity);
-    }
+  if (!EnableComposeboxServerSideState()) {
+    return remainingAttachmentCapacity;
+  }
+  if (!_inputState.has_value()) {
+    return remainingAttachmentCapacity;
+  }
+  auto limits = _inputState->max_inputs_by_type;
+  auto type = omnibox::InputType::INPUT_TYPE_LENS_IMAGE;
+  if (limits.count(type)) {
+    int serverLimit = limits[type];
+    NSUInteger remainingSlots =
+        std::max(0, serverLimit - static_cast<int>(self.items.imagesCount));
+    return MIN(remainingSlots, remainingAttachmentCapacity);
   }
   return remainingAttachmentCapacity;
 }
@@ -600,13 +616,17 @@ ComposeboxStrings* ServerStringsFromInputState(
   NSUInteger capacityForTabs =
       remainingAttachmentCapacity + self.items.tabsCount;
 
-  if (EnableComposeboxServerSideState()) {
-    auto limits = _inputState.max_inputs_by_type;
-    auto type = omnibox::InputType::INPUT_TYPE_BROWSER_TAB;
-    if (limits.count(type)) {
-      NSUInteger serverLimit = static_cast<NSUInteger>(limits[type]);
-      return MIN(serverLimit, capacityForTabs);
-    }
+  if (!EnableComposeboxServerSideState()) {
+    return capacityForTabs;
+  }
+  if (!_inputState.has_value()) {
+    return capacityForTabs;
+  }
+  auto limits = _inputState->max_inputs_by_type;
+  auto type = omnibox::InputType::INPUT_TYPE_BROWSER_TAB;
+  if (limits.count(type)) {
+    NSUInteger serverLimit = static_cast<NSUInteger>(limits[type]);
+    return MIN(serverLimit, capacityForTabs);
   }
 
   return capacityForTabs;
@@ -826,9 +846,12 @@ ComposeboxStrings* ServerStringsFromInputState(
 // ensuring the local selection is valid according to the current server
 // configuration.
 - (void)reconcileToolModeWithInputState {
+  if (!_inputState.has_value()) {
+    return;
+  }
   ComposeboxMode currentMode = [self activeMode];
   // Local and inputStateModel matches.
-  if ([self isMode:currentMode matchingTool:_inputState.active_tool]) {
+  if ([self isMode:currentMode matchingTool:_inputState->active_tool]) {
     return;
   }
 
@@ -849,9 +872,12 @@ ComposeboxStrings* ServerStringsFromInputState(
 // ensuring the local selection is valid according to the current server
 // configuration.
 - (void)reconcileModelWithInputState {
+  if (!_inputState.has_value()) {
+    return;
+  }
   // Local and inputStateModel matches.
   if ([self isModelOption:_activeModel
-          matchingModelMode:_inputState.active_model]) {
+          matchingModelMode:_inputState->active_model]) {
     return;
   }
 
@@ -874,11 +900,14 @@ ComposeboxStrings* ServerStringsFromInputState(
 /// Sets the active model in input state model.
 - (void)setActiveModelInInputState:(ComposeboxModelOption)modelOption
                 explicitUserAction:(BOOL)explicitUserAction {
+  if (!_inputState.has_value()) {
+    return;
+  }
   // Set the model in input state.
   omnibox::ModelMode requestedModelMode =
-      ModelModeForModelOption(modelOption, _inputState);
+      ModelModeForModelOption(modelOption, _inputState.value());
 
-  if (_inputState.active_model == requestedModelMode) {
+  if (_inputState->active_model == requestedModelMode) {
     return;
   }
 
@@ -927,10 +956,10 @@ ComposeboxStrings* ServerStringsFromInputState(
 
 // The absolute value for the maximum number of attachments available.
 - (NSUInteger)totalAttachmentLimit {
-  if (EnableComposeboxServerSideState()) {
-    return _inputState.max_total_inputs;
+  if (!EnableComposeboxServerSideState() || !_inputState.has_value()) {
+    return kAttachmentLimit;
   }
-  return kAttachmentLimit;
+  return _inputState->max_total_inputs;
 }
 
 #pragma mark - Helpers
@@ -938,18 +967,21 @@ ComposeboxStrings* ServerStringsFromInputState(
 /// Whether the given attachment option is allowed by the server.
 - (BOOL)isAttachmentAllowedByServer:
     (ComposeboxAttachmentOption)attachmentOption {
+  if (!_inputState.has_value()) {
+    return NO;
+  }
   using enum ComposeboxAttachmentOption;
   switch (attachmentOption) {
     case kCurrentTab:
     case kTab:
-      return std::ranges::contains(_inputState.allowed_input_types,
+      return std::ranges::contains(_inputState->allowed_input_types,
                                    omnibox::INPUT_TYPE_BROWSER_TAB);
     case kFile:
-      return std::ranges::contains(_inputState.allowed_input_types,
+      return std::ranges::contains(_inputState->allowed_input_types,
                                    omnibox::INPUT_TYPE_LENS_FILE);
     case kGallery:
     case kCamera:
-      return std::ranges::contains(_inputState.allowed_input_types,
+      return std::ranges::contains(_inputState->allowed_input_types,
                                    omnibox::INPUT_TYPE_LENS_IMAGE);
   }
 }
@@ -973,18 +1005,21 @@ ComposeboxStrings* ServerStringsFromInputState(
 /// Whether the given attachment option is disabled by the server.
 - (BOOL)isAttachmentDisabledByServer:
     (ComposeboxAttachmentOption)attachmentOption {
+  if (!_inputState.has_value()) {
+    return NO;
+  }
   using enum ComposeboxAttachmentOption;
   switch (attachmentOption) {
     case kCurrentTab:
     case kTab:
-      return std::ranges::contains(_inputState.disabled_input_types,
+      return std::ranges::contains(_inputState->disabled_input_types,
                                    omnibox::INPUT_TYPE_BROWSER_TAB);
     case kFile:
-      return std::ranges::contains(_inputState.disabled_input_types,
+      return std::ranges::contains(_inputState->disabled_input_types,
                                    omnibox::INPUT_TYPE_LENS_FILE);
     case kGallery:
     case kCamera:
-      return std::ranges::contains(_inputState.disabled_input_types,
+      return std::ranges::contains(_inputState->disabled_input_types,
                                    omnibox::INPUT_TYPE_LENS_IMAGE);
   }
 }
@@ -1008,16 +1043,19 @@ ComposeboxStrings* ServerStringsFromInputState(
 
 /// Whether the given tool mode is allowed by the server.
 - (BOOL)isToolAllowedByServer:(ComposeboxMode)mode {
+  if (!_inputState.has_value()) {
+    return NO;
+  }
   using enum ComposeboxMode;
   switch (mode) {
     case kImageGeneration:
-      return std::ranges::contains(_inputState.allowed_tools,
+      return std::ranges::contains(_inputState->allowed_tools,
                                    omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
     case kCanvas:
-      return std::ranges::contains(_inputState.allowed_tools,
+      return std::ranges::contains(_inputState->allowed_tools,
                                    omnibox::ToolMode::TOOL_MODE_CANVAS);
     case kDeepSearch:
-      return std::ranges::contains(_inputState.allowed_tools,
+      return std::ranges::contains(_inputState->allowed_tools,
                                    omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
     case kAIM:
       return [self isEligibleToAIM];
@@ -1050,19 +1088,22 @@ ComposeboxStrings* ServerStringsFromInputState(
 
 /// Whether the given tool mode is disabled by the server.
 - (BOOL)isToolDisabledByServer:(ComposeboxMode)mode {
+  if (!_inputState.has_value()) {
+    return NO;
+  }
   using enum ComposeboxMode;
   switch (mode) {
     case kImageGeneration:
-      return std::ranges::contains(_inputState.disabled_tools,
+      return std::ranges::contains(_inputState->disabled_tools,
                                    omnibox::ToolMode::TOOL_MODE_IMAGE_GEN) ||
              std::ranges::contains(
-                 _inputState.disabled_tools,
+                 _inputState->disabled_tools,
                  omnibox::ToolMode::TOOL_MODE_IMAGE_GEN_UPLOAD);
     case kCanvas:
-      return std::ranges::contains(_inputState.disabled_tools,
+      return std::ranges::contains(_inputState->disabled_tools,
                                    omnibox::ToolMode::TOOL_MODE_CANVAS);
     case kDeepSearch:
-      return std::ranges::contains(_inputState.disabled_tools,
+      return std::ranges::contains(_inputState->disabled_tools,
                                    omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
     case kAIM:
     case kRegularSearch:

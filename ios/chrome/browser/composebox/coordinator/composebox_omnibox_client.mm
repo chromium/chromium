@@ -354,5 +354,6 @@ base::WeakPtr<OmniboxClientIOS> ComposeboxOmniboxClient::AsWeakPtr() {
 }
 
 omnibox::InputState ComposeboxOmniboxClient::GetInputState() const {
-  return [delegate_ inputState];
+  std::optional<contextual_search::InputState> state = [delegate_ inputState];
+  return state.value_or(omnibox::InputState());
 }

@@ -24,7 +24,7 @@
 - (web::WebState*)webState {
   return nullptr;
 }
-- (contextual_search::InputState)inputState {
+- (std::optional<contextual_search::InputState>)inputState {
   return {};
 }
 - (std::optional<lens::proto::LensOverlaySuggestInputs>)suggestInputs {

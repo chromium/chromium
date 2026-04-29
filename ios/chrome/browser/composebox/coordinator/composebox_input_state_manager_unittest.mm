@@ -278,8 +278,9 @@ TEST_F(ComposeboxInputStateManagerTest, ToolAllowed_ServerSideEnabled) {
   // Setting searchbox config should trigger the initial state update.
   [manager_ setSearchboxConfig:config];
 
-  const auto& state = manager_.inputState;
-  EXPECT_THAT(state.allowed_tools,
+  std::optional<contextual_search::InputState> state_opt = manager_.inputState;
+  ASSERT_TRUE(state_opt.has_value());
+  EXPECT_THAT(state_opt->allowed_tools,
               testing::Contains(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN));
 }
 
@@ -303,8 +304,9 @@ TEST_F(ComposeboxInputStateManagerTest, ToolDisabled_ServerSideEnabled) {
 
   [manager_ setSearchboxConfig:config];
 
-  const auto& state = manager_.inputState;
-  EXPECT_THAT(state.disabled_tools,
+  std::optional<contextual_search::InputState> state_opt = manager_.inputState;
+  ASSERT_TRUE(state_opt.has_value());
+  EXPECT_THAT(state_opt->disabled_tools,
               testing::Contains(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN));
 }
 
@@ -849,7 +851,9 @@ TEST_F(ComposeboxInputStateManagerTest, Reconcile_NoOpWhenMatching) {
   manager_.delegate = delegate;
 
   // Get current state and call didUpdateInputState manually.
-  contextual_search::InputState state = manager_.inputState;
+  std::optional<contextual_search::InputState> state_opt = manager_.inputState;
+  ASSERT_TRUE(state_opt.has_value());
+  contextual_search::InputState state = state_opt.value();
   [manager_ didUpdateInputState:state];
 
   // Verify delegate was notified.
@@ -882,7 +886,9 @@ TEST_F(ComposeboxInputStateManagerTest,
   manager_.delegate = delegate;
 
   // Simulate update with mismatched tool (unspecified).
-  contextual_search::InputState state = manager_.inputState;
+  std::optional<contextual_search::InputState> state_opt = manager_.inputState;
+  ASSERT_TRUE(state_opt.has_value());
+  contextual_search::InputState state = state_opt.value();
   state.active_tool = omnibox::ToolMode::TOOL_MODE_UNSPECIFIED;
 
   [manager_ didUpdateInputState:state];
@@ -945,7 +951,9 @@ TEST_F(ComposeboxInputStateManagerTest,
   manager_.delegate = delegate;
 
   // Simulate update with mismatched model (unspecified).
-  contextual_search::InputState state = manager_.inputState;
+  std::optional<contextual_search::InputState> state_opt = manager_.inputState;
+  ASSERT_TRUE(state_opt.has_value());
+  contextual_search::InputState state = state_opt.value();
   state.active_model = omnibox::ModelMode::MODEL_MODE_UNSPECIFIED;
 
   [manager_ didUpdateInputState:state];
@@ -1003,7 +1011,9 @@ TEST_F(ComposeboxInputStateManagerTest,
   manager_.delegate = delegate;
 
   // Simulate update with a specific model.
-  contextual_search::InputState state = manager_.inputState;
+  std::optional<contextual_search::InputState> state_opt = manager_.inputState;
+  ASSERT_TRUE(state_opt.has_value());
+  contextual_search::InputState state = state_opt.value();
   state.active_model = omnibox::ModelMode::MODEL_MODE_GEMINI_PRO;
 
   [manager_ didUpdateInputState:state];
