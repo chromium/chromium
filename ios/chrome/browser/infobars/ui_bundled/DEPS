@@ -7,9 +7,3 @@ include_rules = [
   "+ios/chrome/browser/passwords/model",
   # keep-sorted end
 ]
-
-specific_include_rules = {
-  "translate_infobar_egtest\.mm": [
-    "+ios/web/public/test/http_server",
-  ],
-}
