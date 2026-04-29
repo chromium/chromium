@@ -8,12 +8,14 @@
 #include <utility>
 
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/mojom/rtc_logging/rtc_logging.mojom-blink.h"
+#include "third_party/blink/public/common/webrtc/rtc_logging_utils.h"
+#include "third_party/blink/public/mojom/webrtc/rtc_logging.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_diagnostic_logging_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_finish_diagnostic_logging_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_start_diagnostic_logging_options.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
@@ -74,8 +76,10 @@ class MockRTCLoggingDispatcher : public mojom::blink::RTCLoggingDispatcher {
   }
 
   void FinishDiagnosticLogging(
+      const HashMap<String, String>& metadata,
       FinishDiagnosticLoggingCallback callback) override {
     finish_called_ = true;
+    finish_metadata_ = metadata;
     std::move(callback).Run();
   }
 
@@ -89,6 +93,9 @@ class MockRTCLoggingDispatcher : public mojom::blink::RTCLoggingDispatcher {
   const HashMap<String, String>& metadata() const { return metadata_; }
   bool finish_called() const { return finish_called_; }
   bool cancel_called() const { return cancel_called_; }
+  const HashMap<String, String>& finish_metadata() const {
+    return finish_metadata_;
+  }
   const String& uuid() const { return uuid_; }
   void set_uuid(const String& uuid) { uuid_ = uuid; }
 
@@ -96,6 +103,7 @@ class MockRTCLoggingDispatcher : public mojom::blink::RTCLoggingDispatcher {
   mojo::Receiver<mojom::blink::RTCLoggingDispatcher> receiver_{this};
   bool upload_ = false;
   HashMap<String, String> metadata_;
+  HashMap<String, String> finish_metadata_;
   bool finish_called_ = false;
   bool cancel_called_ = false;
   String uuid_ = "test-uuid";
@@ -142,7 +150,7 @@ class RTCTest : public testing::Test {
 };
 
 TEST_F(RTCTest, StartDiagnosticLogging) {
-  auto* options = RTCDiagnosticLoggingOptions::Create();
+  auto* options = RTCStartDiagnosticLoggingOptions::Create();
   options->setAllowUpload(true);
   Vector<std::pair<String, String>> metadata;
   metadata.push_back(std::make_pair(String("key"), String("value")));
@@ -159,7 +167,7 @@ TEST_F(RTCTest, StartDiagnosticLogging) {
 }
 
 TEST_F(RTCTest, StartDiagnosticLoggingDefaultOptions) {
-  auto* options = RTCDiagnosticLoggingOptions::Create();
+  auto* options = RTCStartDiagnosticLoggingOptions::Create();
 
   auto promise = GetRTC()->startDiagnosticLogging(GetScriptState(), options);
   ScriptPromiseTester tester(GetScriptState(), promise);
@@ -172,9 +180,9 @@ TEST_F(RTCTest, StartDiagnosticLoggingDefaultOptions) {
 }
 
 TEST_F(RTCTest, StartDiagnosticLoggingMetadataTooLarge) {
-  auto* options = RTCDiagnosticLoggingOptions::Create();
+  auto* options = RTCStartDiagnosticLoggingOptions::Create();
   Vector<std::pair<String, String>> metadata;
-  for (size_t i = 0; i < RTC::kMaxMetadataSize + 1; ++i) {
+  for (size_t i = 0; i < RTCMetadataValidator::kMaxMetadataSize + 1; ++i) {
     metadata.push_back(std::make_pair(String::Number(i), String::Number(i)));
   }
   options->setMetadata(metadata);
@@ -189,10 +197,10 @@ TEST_F(RTCTest, StartDiagnosticLoggingMetadataTooLarge) {
 }
 
 TEST_F(RTCTest, StartDiagnosticLoggingMetadataEntryTooLong) {
-  auto* options = RTCDiagnosticLoggingOptions::Create();
+  auto* options = RTCStartDiagnosticLoggingOptions::Create();
   Vector<std::pair<String, String>> metadata;
   StringBuilder builder;
-  for (size_t i = 0; i < RTC::kMaxMetadataLength + 1; ++i) {
+  for (size_t i = 0; i < RTCMetadataValidator::kMaxMetadataLength + 1; ++i) {
     builder.Append('a');
   }
   metadata.push_back(std::make_pair(builder.ToString(), String("value")));
@@ -207,12 +215,86 @@ TEST_F(RTCTest, StartDiagnosticLoggingMetadataEntryTooLong) {
                            "Metadata entry too long."));
 }
 
+TEST_F(RTCTest, StartDiagnosticLoggingMetadataEntryTooLongUtf8) {
+  auto* options = RTCStartDiagnosticLoggingOptions::Create();
+  Vector<std::pair<String, String>> metadata;
+  StringBuilder builder;
+  for (size_t i = 0; i < RTCMetadataValidator::kMaxMetadataLength - 1; ++i) {
+    builder.Append('a');
+  }
+  builder.Append(
+      String::FromUtf8(base::as_bytes(base::span_from_cstring("é"))));
+
+  metadata.push_back(std::make_pair(builder.ToString(), String("value")));
+  options->setMetadata(metadata);
+
+  auto promise = GetRTC()->startDiagnosticLogging(GetScriptState(), options);
+  ScriptPromiseTester tester(GetScriptState(), promise);
+
+  tester.WaitUntilSettled();
+  EXPECT_TRUE(tester.IsRejected());
+  EXPECT_TRUE(IsRangeError(GetScriptState(), tester.Value(),
+                           "Metadata entry too long."));
+}
+
+TEST_F(RTCTest, FinishDiagnosticLoggingMetadataTooLarge) {
+  auto* options = RTCFinishDiagnosticLoggingOptions::Create();
+  Vector<std::pair<String, String>> metadata;
+  for (size_t i = 0; i < RTCMetadataValidator::kMaxMetadataSize + 1; ++i) {
+    metadata.push_back(std::make_pair(String::Number(i), String::Number(i)));
+  }
+  options->setMetadata(metadata);
+
+  auto promise = GetRTC()->finishDiagnosticLogging(GetScriptState(), options);
+  ScriptPromiseTester tester(GetScriptState(), promise);
+
+  tester.WaitUntilSettled();
+  EXPECT_TRUE(tester.IsRejected());
+  EXPECT_TRUE(IsRangeError(GetScriptState(), tester.Value(),
+                           "Too many metadata entries."));
+}
+
+TEST_F(RTCTest, FinishDiagnosticLoggingMetadataEntryTooLong) {
+  auto* options = RTCFinishDiagnosticLoggingOptions::Create();
+  Vector<std::pair<String, String>> metadata;
+  StringBuilder builder;
+  for (size_t i = 0; i < RTCMetadataValidator::kMaxMetadataLength + 1; ++i) {
+    builder.Append('a');
+  }
+  metadata.push_back(std::make_pair(builder.ToString(), String("value")));
+  options->setMetadata(metadata);
+
+  auto promise = GetRTC()->finishDiagnosticLogging(GetScriptState(), options);
+  ScriptPromiseTester tester(GetScriptState(), promise);
+
+  tester.WaitUntilSettled();
+  EXPECT_TRUE(tester.IsRejected());
+  EXPECT_TRUE(IsRangeError(GetScriptState(), tester.Value(),
+                           "Metadata entry too long."));
+}
+
 TEST_F(RTCTest, FinishDiagnosticLogging) {
-  auto promise = GetRTC()->finishDiagnosticLogging(GetScriptState());
+  auto* options = RTCFinishDiagnosticLoggingOptions::Create();
+  auto promise = GetRTC()->finishDiagnosticLogging(GetScriptState(), options);
   ScriptPromiseTester tester(GetScriptState(), promise);
   tester.WaitUntilSettled();
   EXPECT_TRUE(tester.IsFulfilled());
   EXPECT_TRUE(mock_dispatcher().finish_called());
+}
+
+TEST_F(RTCTest, FinishDiagnosticLoggingWithMetadata) {
+  auto* options = RTCFinishDiagnosticLoggingOptions::Create();
+  Vector<std::pair<String, String>> metadata;
+  metadata.push_back(std::make_pair(String("key"), String("value")));
+  options->setMetadata(metadata);
+
+  auto promise = GetRTC()->finishDiagnosticLogging(GetScriptState(), options);
+  ScriptPromiseTester tester(GetScriptState(), promise);
+
+  tester.WaitUntilSettled();
+  EXPECT_TRUE(tester.IsFulfilled());
+  EXPECT_TRUE(mock_dispatcher().finish_called());
+  EXPECT_EQ(mock_dispatcher().finish_metadata().at("key"), "value");
 }
 
 TEST_F(RTCTest, CancelDiagnosticLogging) {

@@ -13,16 +13,13 @@
 #include "content/public/browser/render_frame_host.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "third_party/blink/public/mojom/rtc_logging/rtc_logging.mojom.h"
+#include "third_party/blink/public/mojom/webrtc/rtc_logging.mojom.h"
 
 namespace content {
 
 class CONTENT_EXPORT RTCLoggingDispatcherImpl
     : public DocumentService<blink::mojom::RTCLoggingDispatcher> {
  public:
-  static constexpr size_t kMaxMetadataSize = 5;
-  static constexpr size_t kMaxMetadataLength = 100;
-
   RTCLoggingDispatcherImpl(const RTCLoggingDispatcherImpl&) = delete;
   RTCLoggingDispatcherImpl& operator=(const RTCLoggingDispatcherImpl&) = delete;
 
@@ -38,6 +35,7 @@ class CONTENT_EXPORT RTCLoggingDispatcherImpl
       const base::flat_map<std::string, std::string>& metadata,
       StartDiagnosticLoggingCallback callback) override;
   void FinishDiagnosticLogging(
+      const base::flat_map<std::string, std::string>& metadata,
       FinishDiagnosticLoggingCallback callback) override;
   void CancelDiagnosticLogging(
       CancelDiagnosticLoggingCallback callback) override;

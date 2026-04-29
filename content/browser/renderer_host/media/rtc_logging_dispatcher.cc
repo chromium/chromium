@@ -21,7 +21,7 @@
 #include "content/public/common/content_client.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/features_generated.h"
-#include "third_party/blink/public/mojom/rtc_logging/rtc_logging.mojom.h"
+#include "third_party/blink/public/mojom/webrtc/rtc_logging.mojom.h"
 
 namespace content {
 
@@ -49,32 +49,25 @@ void RTCLoggingDispatcherImpl::StartDiagnosticLogging(
   }
 
   // It is expected that the renderer validates the metadata and sends only
-  // valid input.
-  if (metadata.size() > kMaxMetadataSize) {
-    ReportBadMessageAndDeleteThis("Too many metadata entries");
-    return;
-  }
-  for (const auto& [key, value] : metadata) {
-    if (key.length() > kMaxMetadataLength ||
-        value.length() > kMaxMetadataLength) {
-      ReportBadMessageAndDeleteThis("Metadata key or value too long");
-      return;
-    }
-  }
+  // valid input. Validation is also performed by Mojo traits.
 
   GetContentClient()->browser()->StartRtcDiagnosticLogging(
       render_frame_host(), upload, metadata, std::move(callback));
 }
 
 void RTCLoggingDispatcherImpl::FinishDiagnosticLogging(
+    const base::flat_map<std::string, std::string>& metadata,
     FinishDiagnosticLoggingCallback callback) {
   if (!base::FeatureList::IsEnabled(blink::features::kRTCDiagnosticLogging)) {
     ReportBadMessageAndDeleteThis("RTCDiagnosticLogging feature not enabled");
     return;
   }
 
+  // It is expected that the renderer validates the metadata and sends only
+  // valid input. Validation is also performed by Mojo traits.
+
   GetContentClient()->browser()->FinishRtcDiagnosticLogging(
-      render_frame_host(), {}, std::move(callback));
+      render_frame_host(), metadata, std::move(callback));
 }
 
 void RTCLoggingDispatcherImpl::CancelDiagnosticLogging(

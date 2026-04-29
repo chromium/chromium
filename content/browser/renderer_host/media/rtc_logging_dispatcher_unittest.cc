@@ -22,7 +22,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/mojom/rtc_logging/rtc_logging.mojom.h"
+#include "third_party/blink/public/common/webrtc/rtc_logging_utils.h"
+#include "third_party/blink/public/mojom/webrtc/rtc_logging.mojom.h"
 
 namespace content {
 
@@ -96,13 +97,15 @@ TEST_F(RTCLoggingDispatcherImplTest, StartDiagnosticLoggingForwardsToClient) {
 }
 
 TEST_F(RTCLoggingDispatcherImplTest, FinishDiagnosticLoggingForwardsToClient) {
-  EXPECT_CALL(mock_client_, FinishRtcDiagnosticLogging(Ref(*main_rfh()), _, _))
+  base::flat_map<std::string, std::string> metadata = {{"key", "value"}};
+  EXPECT_CALL(mock_client_,
+              FinishRtcDiagnosticLogging(Ref(*main_rfh()), metadata, _))
       .WillOnce([](RenderFrameHost&,
                    const base::flat_map<std::string, std::string>&,
                    base::OnceClosure cb) { std::move(cb).Run(); });
 
   base::test::TestFuture<void> future;
-  remote_->FinishDiagnosticLogging(future.GetCallback());
+  remote_->FinishDiagnosticLogging(metadata, future.GetCallback());
   EXPECT_TRUE(future.Wait());
 }
 
@@ -131,7 +134,7 @@ TEST_F(RTCLoggingDispatcherImplTest, FeatureDisabledFinish) {
   feature_list.InitAndDisableFeature(blink::features::kRTCDiagnosticLogging);
 
   mojo::test::BadMessageObserver bad_message_observer;
-  remote_->FinishDiagnosticLogging(base::DoNothing());
+  remote_->FinishDiagnosticLogging({}, base::DoNothing());
   EXPECT_EQ("RTCDiagnosticLogging feature not enabled",
             bad_message_observer.WaitForBadMessage());
 }
@@ -148,36 +151,84 @@ TEST_F(RTCLoggingDispatcherImplTest, FeatureDisabledCancel) {
 
 TEST_F(RTCLoggingDispatcherImplTest, TooManyMetadata) {
   base::flat_map<std::string, std::string> metadata;
-  for (size_t i = 0; i < RTCLoggingDispatcherImpl::kMaxMetadataSize + 1; ++i) {
+  for (size_t i = 0; i < blink::RTCMetadataValidator::kMaxMetadataSize + 1;
+       ++i) {
     metadata["key" + base::NumberToString(i)] = "value";
   }
 
   mojo::test::BadMessageObserver bad_message_observer;
   remote_->StartDiagnosticLogging(/*upload=*/true, metadata, base::DoNothing());
-  EXPECT_EQ("Too many metadata entries",
-            bad_message_observer.WaitForBadMessage());
+  EXPECT_THAT(bad_message_observer.WaitForBadMessage(),
+              ::testing::HasSubstr("VALIDATION_ERROR_DESERIALIZATION_FAILED"));
 }
 
 TEST_F(RTCLoggingDispatcherImplTest, TooLongMetadataValue) {
   base::flat_map<std::string, std::string> metadata;
   metadata["key"] =
-      std::string(RTCLoggingDispatcherImpl::kMaxMetadataLength + 1, 'a');
+      std::string(blink::RTCMetadataValidator::kMaxMetadataLength + 1, 'a');
 
   mojo::test::BadMessageObserver bad_message_observer;
   remote_->StartDiagnosticLogging(/*upload=*/true, metadata, base::DoNothing());
-  EXPECT_EQ("Metadata key or value too long",
-            bad_message_observer.WaitForBadMessage());
+  EXPECT_THAT(bad_message_observer.WaitForBadMessage(),
+              ::testing::HasSubstr("VALIDATION_ERROR_DESERIALIZATION_FAILED"));
 }
 
 TEST_F(RTCLoggingDispatcherImplTest, TooLongMetadataKey) {
   base::flat_map<std::string, std::string> metadata;
-  metadata[std::string(RTCLoggingDispatcherImpl::kMaxMetadataLength + 1, 'a')] =
-      "value";
+  metadata[std::string(blink::RTCMetadataValidator::kMaxMetadataLength + 1,
+                       'a')] = "value";
 
   mojo::test::BadMessageObserver bad_message_observer;
   remote_->StartDiagnosticLogging(/*upload=*/true, metadata, base::DoNothing());
-  EXPECT_EQ("Metadata key or value too long",
-            bad_message_observer.WaitForBadMessage());
+  EXPECT_THAT(bad_message_observer.WaitForBadMessage(),
+              ::testing::HasSubstr("VALIDATION_ERROR_DESERIALIZATION_FAILED"));
+}
+
+TEST_F(RTCLoggingDispatcherImplTest, TooLongMetadataValueUtf8) {
+  base::flat_map<std::string, std::string> metadata;
+  std::string value(blink::RTCMetadataValidator::kMaxMetadataLength - 1, 'a');
+  value += "é";
+  metadata["key"] = value;
+
+  mojo::test::BadMessageObserver bad_message_observer;
+  remote_->StartDiagnosticLogging(/*upload=*/true, metadata, base::DoNothing());
+  EXPECT_THAT(bad_message_observer.WaitForBadMessage(),
+              ::testing::HasSubstr("VALIDATION_ERROR_DESERIALIZATION_FAILED"));
+}
+
+TEST_F(RTCLoggingDispatcherImplTest, TooManyMetadataFinish) {
+  base::flat_map<std::string, std::string> metadata;
+  for (size_t i = 0; i < blink::RTCMetadataValidator::kMaxMetadataSize + 1;
+       ++i) {
+    metadata["key" + base::NumberToString(i)] = "value";
+  }
+
+  mojo::test::BadMessageObserver bad_message_observer;
+  remote_->FinishDiagnosticLogging(metadata, base::DoNothing());
+  EXPECT_THAT(bad_message_observer.WaitForBadMessage(),
+              ::testing::HasSubstr("VALIDATION_ERROR_DESERIALIZATION_FAILED"));
+}
+
+TEST_F(RTCLoggingDispatcherImplTest, TooLongMetadataValueFinish) {
+  base::flat_map<std::string, std::string> metadata;
+  metadata["key"] =
+      std::string(blink::RTCMetadataValidator::kMaxMetadataLength + 1, 'a');
+
+  mojo::test::BadMessageObserver bad_message_observer;
+  remote_->FinishDiagnosticLogging(metadata, base::DoNothing());
+  EXPECT_THAT(bad_message_observer.WaitForBadMessage(),
+              ::testing::HasSubstr("VALIDATION_ERROR_DESERIALIZATION_FAILED"));
+}
+
+TEST_F(RTCLoggingDispatcherImplTest, TooLongMetadataKeyFinish) {
+  base::flat_map<std::string, std::string> metadata;
+  metadata[std::string(blink::RTCMetadataValidator::kMaxMetadataLength + 1,
+                       'a')] = "value";
+
+  mojo::test::BadMessageObserver bad_message_observer;
+  remote_->FinishDiagnosticLogging(metadata, base::DoNothing());
+  EXPECT_THAT(bad_message_observer.WaitForBadMessage(),
+              ::testing::HasSubstr("VALIDATION_ERROR_DESERIALIZATION_FAILED"));
 }
 
 class RTCLoggingDispatcherImplDefaultContentClientTest
@@ -209,7 +260,7 @@ TEST_F(RTCLoggingDispatcherImplDefaultContentClientTest,
 TEST_F(RTCLoggingDispatcherImplDefaultContentClientTest,
        FinishDiagnosticLogging) {
   base::test::TestFuture<void> future;
-  remote_->FinishDiagnosticLogging(future.GetCallback());
+  remote_->FinishDiagnosticLogging({}, future.GetCallback());
   EXPECT_TRUE(future.Wait());
 }
 

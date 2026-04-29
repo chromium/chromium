@@ -5,6 +5,12 @@
 // TODO(https://crbug.com/481412281): Add spec link when available.
 
 dictionary RTCDiagnosticLoggingOptions {
-  boolean allowUpload = false;
   record<DOMString, DOMString> metadata = {};
+};
+
+dictionary RTCFinishDiagnosticLoggingOptions : RTCDiagnosticLoggingOptions {
+};
+
+dictionary RTCStartDiagnosticLoggingOptions : RTCDiagnosticLoggingOptions {
+  boolean allowUpload = false;
 };

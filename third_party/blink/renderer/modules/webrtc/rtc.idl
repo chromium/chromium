@@ -7,8 +7,9 @@
 [
     Exposed=Window, SecureContext, RuntimeEnabled=RTCDiagnosticLogging
 ] interface RTC {
-    [CallWith=ScriptState] Promise<DOMString> startDiagnosticLogging(optional RTCDiagnosticLoggingOptions options = {});
-    [CallWith=ScriptState] Promise<undefined> finishDiagnosticLogging();
+    [CallWith=ScriptState] Promise<DOMString> startDiagnosticLogging(optional RTCStartDiagnosticLoggingOptions options = {});
+    [CallWith=ScriptState] Promise<undefined> finishDiagnosticLogging(optional RTCFinishDiagnosticLoggingOptions options = {});
     [CallWith=ScriptState] Promise<undefined> cancelDiagnosticLogging();
 
 };
+

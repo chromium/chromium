@@ -206,7 +206,6 @@ mojom("mojom_platform") {
     "renderer_preference_watcher.mojom",
     "renderer_preferences.mojom",
     "reporting/reporting.mojom",
-    "rtc_logging/rtc_logging.mojom",
     "safe_url_pattern.mojom",
     "scheduler/web_scheduler_tracked_feature.mojom",
     "script_source_location.mojom",
@@ -253,6 +252,7 @@ mojom("mojom_platform") {
     "webid/digital_identity_request.mojom",
     "webid/federated_auth_request.mojom",
     "webpreferences/web_preferences.mojom",
+    "webrtc/rtc_logging.mojom",
     "websockets/websocket_connector.mojom",
     "webtransport/web_transport_connector.mojom",
     "widget/device_emulation_params.mojom",
@@ -1062,6 +1062,17 @@ mojom("mojom_platform") {
       traits_sources =
           [ "//third_party/blink/common/user_agent/user_agent_mojom_traits.cc" ]
     },
+    {
+      types = [
+        {
+          mojom = "blink.mojom.RTCMetadata"
+          cpp = "::base::flat_map<::std::string, ::std::string>"
+        },
+      ]
+      traits_headers = [
+        "//third_party/blink/public/common/webrtc/rtc_logging_mojom_traits.h",
+      ]
+    },
   ]
   if (is_chromeos && use_cups) {
     cpp_typemaps += [
@@ -1112,6 +1123,8 @@ mojom("mojom_platform") {
       traits_headers =
           [ "//third_party/blink/renderer/platform/mojo/drag_mojom_traits.h" ]
     },
+  ]
+  blink_cpp_typemaps += [
     {
       types = [
         {
@@ -1154,6 +1167,15 @@ mojom("mojom_platform") {
         "//third_party/blink/public/common/manifest/manifest_mojom_traits.h",
       ]
       traits_public_deps = [ "//third_party/icu" ]
+    },
+    {
+      types = [
+        {
+          mojom = "blink.mojom.RTCMetadata"
+          cpp = "::blink::HashMap<::blink::String, ::blink::String>"
+        },
+      ]
+      traits_headers = [ "//third_party/blink/renderer/platform/webrtc/rtc_logging_mojom_traits.h" ]
     },
   ]
   cpp_typemaps += shared_cpp_typemaps

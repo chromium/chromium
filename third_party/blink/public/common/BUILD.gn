@@ -316,6 +316,8 @@ source_set("headers") {
     "webid/federated_auth_request_mojom_traits.h",
     "webid/login_status_account.h",
     "webid/login_status_options.h",
+    "webrtc/rtc_logging_mojom_traits.h",
+    "webrtc/rtc_logging_utils.h",
     "widget/constants.h",
     "widget/device_emulation_params.h",
     "widget/visual_properties.h",

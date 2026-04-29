@@ -283,6 +283,7 @@ source_set("common") {
     "web_preferences/web_preferences_mojom_traits.cc",
     "webid/login_status_account.cc",
     "webid/login_status_options.cc",
+    "webrtc/rtc_logging_mojom_traits.cc",
     "widget/constants.cc",
     "widget/device_emulation_params_mojom_traits.cc",
     "widget/visual_properties.cc",

@@ -4,6 +4,10 @@
 
 module blink.mojom;
 
+struct RTCMetadata {
+  map<string, string> values;
+};
+
 // This object lives in the browser and is responsible for processing
 // requests from WebRTC Logging APIs.
 interface RTCLoggingDispatcher {
@@ -18,13 +22,15 @@ interface RTCLoggingDispatcher {
   // return value of this function.
   // Logging may not actually start due to a number of reasons, including
   // lack of authorization.
-  StartDiagnosticLogging(bool upload, map<string, string> metadata) => (string uuid);
+  StartDiagnosticLogging(bool upload, RTCMetadata metadata) => (string uuid);
 
   // Finishes the ongoing logging session, if any. By the time this call
   // returns, no more WebRTC activity will be logged. If the session was
   // marked for upload, the upload may happen at any time after this call (best
   // effort).
-  FinishDiagnosticLogging() => ();
+  // `metadata` is a map of key-value pairs that will be included in the logs
+  // in addition to the metadata provided in StartDiagnosticLogging.
+  FinishDiagnosticLogging(RTCMetadata metadata) => ();
 
   // Cancels the ongoing logging session, if any. By the time this call
   // returns, no more WebRTC activity will be logged and any logs collected so

@@ -506,6 +506,15 @@ _CONFIG = [
     },
     {
         'paths': [
+            'third_party/blink/common/webrtc/',
+            'third_party/blink/public/common/webrtc/',
+        ],
+        'allowed': [
+            'base::flat_map',
+        ],
+    },
+    {
+        'paths': [
             'third_party/blink/common/safe_url_pattern.cc',
             'third_party/blink/common/safe_url_pattern_mojom_traits.cc',
             'third_party/blink/common/service_worker/service_worker_router_rule_mojom_traits_unittest.cc',
@@ -2265,6 +2274,12 @@ _CONFIG = [
             'learning::mojom::LearningTaskControllerInterfaceBase',
             'media::mojom::MediaMetricsProviderInterfaceBase',
         ],
+    },
+    {
+        'paths': [
+            'third_party/blink/renderer/platform/webrtc/rtc_logging_mojom_traits.h'
+        ],
+        'allowed': ['blink::mojom::RTCMetadataDataView'],
     },
     {
         'paths': [

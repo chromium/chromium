@@ -4,10 +4,14 @@
 
 #include "third_party/blink/renderer/modules/webrtc/rtc.h"
 
+#include "base/notreached.h"
+#include "third_party/blink/public/common/webrtc/rtc_logging_utils.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_diagnostic_logging_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_finish_diagnostic_logging_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_start_diagnostic_logging_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
@@ -24,6 +28,22 @@
 namespace blink {
 
 namespace {
+
+template <typename OptionsType, typename T>
+bool ValidateMetadata(OptionsType* options,
+                      ScriptPromiseResolver<T>* resolver) {
+  switch (RTCMetadataValidator::Validate(options->metadata())) {
+    case RTCMetadataValidationError::kNone:
+      return true;
+    case RTCMetadataValidationError::kTooManyEntries:
+      resolver->RejectWithRangeError("Too many metadata entries.");
+      return false;
+    case RTCMetadataValidationError::kEntryTooLong:
+      resolver->RejectWithRangeError("Metadata entry too long.");
+      return false;
+  }
+  NOTREACHED();
+}
 
 void OnDiagnosticLoggingResult(ScriptPromiseResolver<IDLString>* resolver,
                                const String& uuid) {
@@ -60,21 +80,12 @@ RTC::RTC(Navigator& navigator)
 
 ScriptPromise<IDLString> RTC::startDiagnosticLogging(
     ScriptState* script_state,
-    RTCDiagnosticLoggingOptions* options) {
+    RTCStartDiagnosticLoggingOptions* options) {
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<IDLString>>(script_state);
   auto promise = resolver->Promise();
-  if (options->metadata().size() > kMaxMetadataSize) {
-    resolver->RejectWithRangeError("Too many metadata entries.");
+  if (!ValidateMetadata(options, resolver)) {
     return promise;
-  }
-
-  for (const auto& pair : options->metadata()) {
-    if (pair.first.length() > kMaxMetadataLength ||
-        pair.second.length() > kMaxMetadataLength) {
-      resolver->RejectWithRangeError("Metadata entry too long.");
-      return promise;
-    }
   }
 
   HashMap<String, String> metadata;
@@ -90,12 +101,22 @@ ScriptPromise<IDLString> RTC::startDiagnosticLogging(
 }
 
 ScriptPromise<IDLUndefined> RTC::finishDiagnosticLogging(
-    ScriptState* script_state) {
+    ScriptState* script_state,
+    RTCFinishDiagnosticLoggingOptions* options) {
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
   auto promise = resolver->Promise();
+  if (!ValidateMetadata(options, resolver)) {
+    return promise;
+  }
+
+  HashMap<String, String> metadata;
+  for (const auto& pair : options->metadata()) {
+    metadata.Set(pair.first, pair.second);
+  }
 
   GetDiagnosticLoggingDispatcher().FinishDiagnosticLogging(
+      std::move(metadata),
       BindOnce(&OnDiagnosticLoggingVoidResult, WrapPersistent(resolver)));
 
   return promise;

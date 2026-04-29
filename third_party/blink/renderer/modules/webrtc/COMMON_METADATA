@@ -1,0 +1,7 @@
+monorail: {
+  component: "Blink>WebRTC"
+}
+team_email: "webrtc-dev@chromium.org"
+buganizer_public: {
+  component_id: 1456096
+}
