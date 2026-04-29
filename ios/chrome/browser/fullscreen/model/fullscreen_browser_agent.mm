@@ -210,22 +210,30 @@ void FullscreenBrowserAgent::AddObscuredInsetRange(UIRectEdge edge,
                                                    CGFloat min,
                                                    CGFloat max) {
   CHECK(updating_obscured_insets_);
-  CHECK(edge == UIRectEdgeTop || edge == UIRectEdgeBottom);
   if (edge == UIRectEdgeTop) {
     min_insets_.top += min;
     max_insets_.top += max;
   } else if (edge == UIRectEdgeBottom) {
     min_insets_.bottom += min;
     max_insets_.bottom += max;
+  } else if (edge == UIRectEdgeLeft) {
+    min_insets_.left += min;
+    max_insets_.left += max;
+  } else if (edge == UIRectEdgeRight) {
+    min_insets_.right += min;
+    max_insets_.right += max;
   }
 }
 
 void FullscreenBrowserAgent::AddObscuredInset(UIRectEdge edge, CGFloat amount) {
   CHECK(updating_insets_);
-  CHECK(edge == UIRectEdgeTop || edge == UIRectEdgeBottom);
   if (edge == UIRectEdgeTop) {
     insets_.top += amount;
   } else if (edge == UIRectEdgeBottom) {
     insets_.bottom += amount;
+  } else if (edge == UIRectEdgeLeft) {
+    insets_.left += amount;
+  } else if (edge == UIRectEdgeRight) {
+    insets_.right += amount;
   }
 }

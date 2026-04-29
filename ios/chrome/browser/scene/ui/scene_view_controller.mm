@@ -62,11 +62,6 @@
   NSLayoutConstraint* _sideAppContentTrailingConstraint;
   NSLayoutConstraint* _sideAppContentBottomConstraint;
 
-  // App bar constraints.
-  NSArray<NSLayoutConstraint*>* _portraitConstraints;
-  NSArray<NSLayoutConstraint*>* _landscapeLeftConstraints;
-  NSArray<NSLayoutConstraint*>* _landscapeRightConstraints;
-
   // The last fullscreen progress value received.
   CGFloat _fullscreenProgress;
   // Whether the assistant container is visible.
@@ -112,6 +107,9 @@
 
   if (IsFullscreenRefactoringEnabled()) {
     AddSameConstraints(_appContentView, _appContentContainerView);
+    if (IsChromeNextIaEnabled()) {
+      AddSameConstraints(_appContentContainerView, view);
+    }
   }
 
   [self.layoutGuideCenter referenceView:_appContentView
@@ -172,13 +170,6 @@
   _appBar = appBar;
 
   [self setupAppBarView:appBar];
-
-  if (!IsFullscreenRefactoringEnabled()) {
-    [self updateLayoutForViews];
-    return;
-  }
-
-  [self setupAppBarConstraints];
   [self updateLayoutForViews];
 }
 
@@ -401,41 +392,6 @@
   [appBar didMoveToParentViewController:self];
 }
 
-// Sets up the Auto Layout constraints for the App Bar.
-- (void)setupAppBarConstraints {
-  UIView* view = self.view;
-
-  _portraitConstraints = @[
-    [_appContentContainerView.topAnchor constraintEqualToAnchor:view.topAnchor],
-    [_appContentContainerView.leadingAnchor
-        constraintEqualToAnchor:view.leadingAnchor],
-    [_appContentContainerView.trailingAnchor
-        constraintEqualToAnchor:view.trailingAnchor],
-    [_appContentContainerView.bottomAnchor
-        constraintEqualToAnchor:view.bottomAnchor],
-  ];
-  _landscapeLeftConstraints = @[
-    [_appContentContainerView.topAnchor constraintEqualToAnchor:view.topAnchor],
-    [_appContentContainerView.leadingAnchor
-        constraintEqualToAnchor:view.leadingAnchor
-                       constant:kAppBarHeight - kAppBarCornerRadius],
-    [_appContentContainerView.trailingAnchor
-        constraintEqualToAnchor:view.trailingAnchor],
-    [_appContentContainerView.bottomAnchor
-        constraintEqualToAnchor:view.bottomAnchor],
-  ];
-  _landscapeRightConstraints = @[
-    [_appContentContainerView.topAnchor constraintEqualToAnchor:view.topAnchor],
-    [_appContentContainerView.leadingAnchor
-        constraintEqualToAnchor:view.leadingAnchor],
-    [_appContentContainerView.trailingAnchor
-        constraintEqualToAnchor:view.trailingAnchor
-                       constant:-(kAppBarHeight - kAppBarCornerRadius)],
-    [_appContentContainerView.bottomAnchor
-        constraintEqualToAnchor:view.bottomAnchor],
-  ];
-}
-
 // Updates both constraints and visual styling for the Assistant container.
 - (void)updateAssistantLayout {
   [self updateAssistantLayoutConstraints];
@@ -512,11 +468,6 @@
 - (void)applyConstraintsForLayoutWithPosition:(AppBarPosition)position {
   UIView* view = self.view;
 
-  [NSLayoutConstraint deactivateConstraints:_portraitConstraints];
-  [NSLayoutConstraint deactivateConstraints:_landscapeLeftConstraints];
-  [NSLayoutConstraint deactivateConstraints:_landscapeRightConstraints];
-  [NSLayoutConstraint deactivateConstraints:_baseAssistantConstraints];
-
   // Ensure default constraints are active to avoid leaving the view
   // unconstrained if `_appBar` is hidden or missing.
   if (position == AppBarPosition::kNone || !_appBar) {
@@ -525,23 +476,6 @@
       [NSLayoutConstraint activateConstraints:_baseAssistantConstraints];
     }
     return;
-  }
-
-  switch (position) {
-    case AppBarPosition::kLeft:
-      [NSLayoutConstraint activateConstraints:_landscapeLeftConstraints];
-      break;
-
-    case AppBarPosition::kRight:
-      [NSLayoutConstraint activateConstraints:_landscapeRightConstraints];
-      break;
-
-    case AppBarPosition::kBottom:
-      [NSLayoutConstraint activateConstraints:_portraitConstraints];
-      break;
-
-    default:
-      break;
   }
 
   [view layoutIfNeeded];

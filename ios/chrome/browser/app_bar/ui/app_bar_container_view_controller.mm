@@ -91,30 +91,49 @@
 #pragma mark - FullscreenBrowserAgentObserving
 
 - (void)fullscreenWillUpdateObscuredInsetRange:(FullscreenBrowserAgent*)agent {
-  // TODO(crbug.com/501116431): Handle landscape edges to extend webview under
-  // app bar.
   AppBarPosition position = AppBarPositionForView(self.view);
-  if (position == AppBarPosition::kBottom) {
-    agent->AddObscuredInsetRange(UIRectEdgeBottom, kAppBarHeightFullscreen,
-                                 kAppBarHeight);
+  switch (position) {
+    case AppBarPosition::kBottom:
+      agent->AddObscuredInsetRange(UIRectEdgeBottom, kAppBarHeightFullscreen,
+                                   kAppBarHeight);
+      break;
+    case AppBarPosition::kLeft:
+      agent->AddObscuredInsetRange(UIRectEdgeLeft, kAppBarHeight,
+                                   kAppBarHeight);
+      break;
+    case AppBarPosition::kRight:
+      agent->AddObscuredInsetRange(UIRectEdgeRight, kAppBarHeight,
+                                   kAppBarHeight);
+      break;
+    case AppBarPosition::kNone:
+      break;
   }
 }
 
 - (void)fullscreenWillUpdateState:(FullscreenBrowserAgent*)agent {
-  // TODO(crbug.com/501116431): Handle landscape edges to extend webview under
-  // app bar.
   AppBarPosition position = AppBarPositionForView(self.view);
-  if (position == AppBarPosition::kBottom) {
-    _fullscreenProgress = agent->bottom_progress();
-    CGFloat currentHeight =
-        kAppBarHeightFullscreen +
-        (kAppBarHeight - kAppBarHeightFullscreen) * agent->bottom_progress();
-    agent->AddObscuredInset(UIRectEdgeBottom, currentHeight);
-    [self updateLayout];
-    // If this is inside an animation, layout immediately.
-    if (!agent->animation_duration().is_zero()) {
-      [self.view layoutIfNeeded];
+  switch (position) {
+    case AppBarPosition::kBottom: {
+      _fullscreenProgress = agent->bottom_progress();
+      CGFloat currentHeight =
+          kAppBarHeightFullscreen +
+          (kAppBarHeight - kAppBarHeightFullscreen) * agent->bottom_progress();
+      agent->AddObscuredInset(UIRectEdgeBottom, currentHeight);
+      [self updateLayout];
+      // If this is inside an animation, layout immediately.
+      if (!agent->animation_duration().is_zero()) {
+        [self.view layoutIfNeeded];
+      }
+      break;
     }
+    case AppBarPosition::kLeft:
+      agent->AddObscuredInset(UIRectEdgeLeft, kAppBarHeight);
+      break;
+    case AppBarPosition::kRight:
+      agent->AddObscuredInset(UIRectEdgeRight, kAppBarHeight);
+      break;
+    case AppBarPosition::kNone:
+      break;
   }
 }
 
