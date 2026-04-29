@@ -35,21 +35,19 @@ class StatusViewBinder implements ViewBinder<PropertyModel, StatusView, Property
             int visibility =
                     model.get(StatusProperties.SHOW_STATUS_VIEW) ? View.VISIBLE : View.GONE;
             view.setVisibility(visibility);
-        } else if (StatusProperties.STATUS_VIEW_TOOLTIP_TEXT.equals(propertyKey)) {
-            applyStatusIconAndTooltipProperties(model, view);
-        } else if (StatusProperties.STATUS_VIEW_BACKGROUND.equals(propertyKey)) {
-            applyStatusIconAndTooltipProperties(model, view);
-        } else if (StatusProperties.STATUS_CLICK_LISTENER.equals(propertyKey)) {
-            view.setStatusClickListener(model.get(StatusProperties.STATUS_CLICK_LISTENER));
-        } else if (StatusProperties.STATUS_ACCESSIBILITY_TOAST_RES.equals(propertyKey)) {
-            view.setStatusAccessibilityToast(
-                    model.get(StatusProperties.STATUS_ACCESSIBILITY_TOAST_RES));
         } else if (StatusProperties.STATUS_ACCESSIBILITY_DOUBLE_TAP_DESCRIPTION_RES.equals(
                 propertyKey)) {
             view.setStatusAccessibilityDoubleTapDescription(
                     model.get(StatusProperties.STATUS_ACCESSIBILITY_DOUBLE_TAP_DESCRIPTION_RES));
+        } else if (StatusProperties.STATUS_ACCESSIBILITY_TOAST_RES.equals(propertyKey)) {
+            view.setStatusAccessibilityToast(
+                    model.get(StatusProperties.STATUS_ACCESSIBILITY_TOAST_RES));
+        } else if (StatusProperties.STATUS_CLICK_LISTENER.equals(propertyKey)) {
+            view.setStatusClickListener(model.get(StatusProperties.STATUS_CLICK_LISTENER));
         } else if (StatusProperties.STATUS_ICON_ALPHA.equals(propertyKey)) {
             view.setStatusIconAlpha(model.get(StatusProperties.STATUS_ICON_ALPHA));
+        } else if (StatusProperties.STATUS_ICON_CORNER_RADIUS.equals(propertyKey)) {
+            view.setCornerRadiusRes(model.get(StatusProperties.STATUS_ICON_CORNER_RADIUS));
         } else if (StatusProperties.STATUS_ICON_DESCRIPTION_RES.equals(propertyKey)) {
             view.setStatusIconDescription(model.get(StatusProperties.STATUS_ICON_DESCRIPTION_RES));
         } else if (StatusProperties.STATUS_ICON_RESOURCE.equals(propertyKey)) {
@@ -62,6 +60,21 @@ class StatusViewBinder implements ViewBinder<PropertyModel, StatusView, Property
                     res.getDrawable(view.getContext()),
                     res.getTransitionType(),
                     res.getAnimationFinishedCallback());
+        } else if (StatusProperties.STATUS_VIEW_BACKGROUND.equals(propertyKey)) {
+            applyStatusIconAndTooltipProperties(model, view);
+        } else if (StatusProperties.STATUS_VIEW_TOOLTIP_TEXT.equals(propertyKey)) {
+            applyStatusIconAndTooltipProperties(model, view);
+        } else if (StatusProperties.TRANSLATION_X.equals(propertyKey)) {
+            view.setTranslationX(model.get(StatusProperties.TRANSLATION_X));
+        } else if (StatusProperties.USE_SMALL_WIDGET.equals(propertyKey)) {
+            var params = view.getLayoutParams();
+            boolean useSmallWidget = model.get(StatusProperties.USE_SMALL_WIDGET);
+            params.height =
+                    useSmallWidget
+                            ? MarginLayoutParams.MATCH_PARENT
+                            : view.getResources()
+                                    .getDimensionPixelSize(R.dimen.location_bar_height);
+            view.setLayoutParams(params);
         } else if (StatusProperties.USE_WIDE_STATUS_ICON.equals(propertyKey)) {
             view.setMinimumWidth(
                     view.getResources()
@@ -69,10 +82,6 @@ class StatusViewBinder implements ViewBinder<PropertyModel, StatusView, Property
                                     model.get(StatusProperties.USE_WIDE_STATUS_ICON)
                                             ? R.dimen.status_view_width_wide
                                             : R.dimen.status_view_width_narrow));
-        } else if (StatusProperties.STATUS_ICON_CORNER_RADIUS.equals(propertyKey)) {
-            view.setCornerRadiusRes(model.get(StatusProperties.STATUS_ICON_CORNER_RADIUS));
-        } else if (StatusProperties.TRANSLATION_X.equals(propertyKey)) {
-            view.setTranslationX(model.get(StatusProperties.TRANSLATION_X));
         } else if (StatusProperties.VERBOSE_STATUS_TEXT_COLOR.equals(propertyKey)) {
             view.setVerboseStatusTextColor(model.get(StatusProperties.VERBOSE_STATUS_TEXT_COLOR));
         } else if (StatusProperties.VERBOSE_STATUS_TEXT_STRING_RES.equals(propertyKey)) {
@@ -84,15 +93,7 @@ class StatusViewBinder implements ViewBinder<PropertyModel, StatusView, Property
             applyStatusIconAndTooltipProperties(model, view);
         } else if (StatusProperties.VERBOSE_STATUS_TEXT_WIDTH.equals(propertyKey)) {
             view.setVerboseStatusTextWidth(model.get(StatusProperties.VERBOSE_STATUS_TEXT_WIDTH));
-        } else if (StatusProperties.USE_SMALL_WIDGET.equals(propertyKey)) {
-            var params = view.getLayoutParams();
-            boolean useSmallWidget = model.get(StatusProperties.USE_SMALL_WIDGET);
-            params.height =
-                    useSmallWidget
-                            ? MarginLayoutParams.MATCH_PARENT
-                            : view.getResources()
-                                    .getDimensionPixelSize(R.dimen.location_bar_height);
-            view.setLayoutParams(params);
+
         } else {
             assert false : "Unhandled property update";
         }
