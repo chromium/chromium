@@ -185,12 +185,14 @@ class ToolbarViewTest : public ToolbarAccessibilityTest {
     if (GetParam()) {
       feature_list_.InitWithFeatures(
           {features::kInitialWebUI, features::kWebUIReloadButton,
-           features::kWebUIBackForwardButton},
+           features::kWebUIBackForwardButton, features::kWebUISplitTabsButton,
+           features::kWebUIHomeButton},
           {});
     } else {
       feature_list_.InitWithFeatures(
           {}, {features::kInitialWebUI, features::kWebUIReloadButton,
-               features::kWebUIBackForwardButton});
+               features::kWebUIBackForwardButton,
+               features::kWebUISplitTabsButton, features::kWebUIHomeButton});
     }
   }
   ToolbarViewTest(const ToolbarViewTest&) = delete;

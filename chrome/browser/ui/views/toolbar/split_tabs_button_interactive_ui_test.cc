@@ -118,6 +118,16 @@ class SplitTabButtonInteractiveTest
     return features;
   }
 
+  const std::vector<base::test::FeatureRef> GetDisabledFeatures() override {
+    std::vector<base::test::FeatureRef> features;
+    if (!GetParam()) {
+      features.push_back(::features::kInitialWebUI);
+      features.push_back(::features::kWebUIReloadButton);
+      features.push_back(::features::kWebUISplitTabsButton);
+    }
+    return features;
+  }
+
   void SetUpOnMainThread() override {
     SplitViewInteractiveTestMixin::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
