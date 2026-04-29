@@ -826,9 +826,9 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
   // TODO(crbug.com/346148554): Do not create a SidePanelCoordinator for most
   // browser.h types
   // Conceptually, SidePanelCoordinator handles the "model" whereas
-  // BrowserView::contents_height_side_panel_ handles the "ui". When we stop
+  // BrowserView::toolbar_height_side_panel_ handles the "ui". When we stop
   // making this for most browser.h types, we should also stop making the
-  // contents_height_side_panel_.
+  // toolbar_height_side_panel_.
   side_panel_coordinator_ =
       GetUserDataFactory().CreateInstance<SidePanelCoordinator>(*browser_,
                                                                 browser_view);

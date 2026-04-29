@@ -347,8 +347,7 @@ void ReadAnythingSidePanelController::TabWillDetach(
     SidePanelEntry* const entry =
         side_panel_registry_->GetEntryForKey(read_anything_key);
     CHECK(entry);
-    side_panel_ui->Close(entry->type(),
-                         SidePanelEntryHideReason::kSidePanelClosed,
+    side_panel_ui->Close(SidePanelEntryHideReason::kSidePanelClosed,
                          /*suppress_animations=*/true);
   }
 }

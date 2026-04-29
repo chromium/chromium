@@ -378,7 +378,7 @@ void CommerceUiTabHelper::OnPriceInsightsIconClicked() {
 
   if (side_panel_ui->IsSidePanelEntryShowing(
           SidePanelEntryKey(SidePanelEntryId::kShoppingInsights))) {
-    side_panel_ui->Close(entry->type());
+    side_panel_ui->Close();
   } else {
     side_panel_ui->Show(SidePanelEntryId::kShoppingInsights);
     if (price_insights_info_.has_value()) {
@@ -418,7 +418,7 @@ void CommerceUiTabHelper::MakeShoppingInsightsSidePanelUnavailable() {
 
   auto* side_panel_ui = GetSidePanelUI();
   if (side_panel_ui && side_panel_ui->IsSidePanelEntryShowing(entry->key())) {
-    side_panel_ui->Close(entry->type());
+    side_panel_ui->Close();
     base::RecordAction(base::UserMetricsAction(
         "Commerce.PriceInsights.NavigationClosedSidePanel"));
   }

@@ -75,7 +75,6 @@ struct BrowserViewLayoutViews {
   raw_ptr<views::View> contents_container = nullptr;
   raw_ptr<MultiContentsView> multi_contents_view = nullptr;
   raw_ptr<SidePanel> toolbar_height_side_panel = nullptr;
-  raw_ptr<SidePanel> contents_height_side_panel = nullptr;
   raw_ptr<views::View> side_panel_animation_content = nullptr;
 
   // The contents separator used for when the top container is overlaid.

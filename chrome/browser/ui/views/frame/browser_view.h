@@ -269,10 +269,6 @@ class BrowserView : public BrowserWindow,
 
   SidePanel* toolbar_height_side_panel() { return toolbar_height_side_panel_; }
 
-  SidePanel* contents_height_side_panel() {
-    return contents_height_side_panel_;
-  }
-
   MultiContentsView* multi_contents_view() { return multi_contents_view_; }
 
   // Returns either the Horizontal or Vertical TabStrip.
@@ -1156,8 +1152,6 @@ class BrowserView : public BrowserWindow,
   // |  |  MultiContentsView (multi_contents_view_)                        |  |
   // |  --------------------------------------------------------------------  |
   // |------------------------------------------------------------------------|
-  // | ContentHeightSidePanel (contents_height_side_panel_)                   |
-  // |------------------------------------------------------------------------|
   // | ToolbarHeightSidePanel (toolbar_height_side_panel_)                    |
   // |------------------------------------------------------------------------|
 
@@ -1278,14 +1272,11 @@ class BrowserView : public BrowserWindow,
   // The view responsible for housing the contents of the projects panel.
   raw_ptr<ProjectsPanelView> projects_panel_container_ = nullptr;
 
-  // Side panel that extends to the height of the toolbar.
+  // Side panel that extends to the height of the page content or toolbar,
+  // aligned to the left or the right side of the browser window depending on
+  // the kSidePanelHorizontalAlignment pref's value. Conceptually this member
+  // should exist if and only if the side_panel_coordinator is created.
   raw_ptr<SidePanel> toolbar_height_side_panel_ = nullptr;
-
-  // The side panel aligned to the left or the right side of the browser window
-  // depending on the kSidePanelHorizontalAlignment pref's value.
-  // Conceptually this member should exist if and only if the
-  // side_panel_coordinator is created.
-  raw_ptr<SidePanel> contents_height_side_panel_ = nullptr;
 
   // The handler responsible for showing autofill bubbles.
   std::unique_ptr<autofill::AutofillBubbleHandler> autofill_bubble_handler_;

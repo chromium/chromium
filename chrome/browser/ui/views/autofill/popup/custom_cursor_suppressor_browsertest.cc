@@ -36,7 +36,7 @@ class CustomCursorSuppressorBrowsertest
     SidePanelUI* const side_panel_ui = browser()->GetFeatures().side_panel_ui();
     side_panel_ui->Show(extension_key);
     CHECK(default_path_listener.WaitUntilSatisfied());
-    CHECK(side_panel_ui->IsSidePanelShowing(entry->type()));
+    CHECK(side_panel_ui->IsSidePanelShowing());
     return extension;
   }
 };

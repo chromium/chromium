@@ -368,7 +368,7 @@ void SidePanelHeaderController::Close() {
     return;
   }
 
-  browser_->GetFeatures().side_panel_ui()->Close(side_panel_entry_->type());
+  browser_->GetFeatures().side_panel_ui()->Close();
 }
 
 void SidePanelHeaderController::MaybeQueuePinPromo(SidePanelEntryId id) {

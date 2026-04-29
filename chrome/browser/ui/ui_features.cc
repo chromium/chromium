@@ -188,8 +188,6 @@ BASE_FEATURE(kTearOffWebAppTabOpensWebAppWindow,
 BASE_FEATURE(kThreeButtonPasswordSaveDialog, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-BASE_FEATURE(kToolbarHeightSidePanel, base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kSidePanelFlyoverAnimation,
 #if BUILDFLAG(IS_MAC)
              base::FEATURE_DISABLED_BY_DEFAULT

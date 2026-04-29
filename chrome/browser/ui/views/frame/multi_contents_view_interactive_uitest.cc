@@ -732,13 +732,10 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest,
       // Verify expected contents separators are visible. Note, only one side
       // panel separator should be visible and the side panel is right aligned
       // by default.
-      WaitForShow(kContentsSeparatorTopEdgeElementId),
-      WaitForShow(kContentsSeparatorTrailingEdgeElementId),
+      WaitForHide(kContentsSeparatorTopEdgeElementId),
+      WaitForHide(kContentsSeparatorTrailingEdgeElementId),
       WaitForHide(kContentsSeparatorLeadingEdgeElementId),
-      WaitForShow(kContentsSeparatorTopCornerElementId),
-      CheckViewProperty(kContentsSeparatorTopCornerElementId,
-                        &CustomFloatingCorner::orientation_for_testing,
-                        CustomFloatingCorner::CornerOrientation::kTopTrailing),
+      WaitForHide(kContentsSeparatorTopCornerElementId),
       // Open split view.
       CreateTabsAndEnterSplitView(),
       // Verify no contents separators are visible.

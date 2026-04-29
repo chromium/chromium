@@ -444,8 +444,7 @@ void LensSearchController::CloseLensAsync(
     state_ = State::kClosingSidePanel;
     last_dismissal_source_ = dismissal_source;
     if (!side_panel_already_closing) {
-      side_panel_ui->Close(
-          lens_overlay_side_panel_coordinator_->GetPanelType());
+      side_panel_ui->Close();
     }
     // Also trigger the overlay fade out animation, but don't pass a callback
     // to finish the closing process since the side panel will call

@@ -157,7 +157,6 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
   auto entry_key = SidePanelEntryKey(SidePanelEntryId::kAboutThisSite);
   std::unique_ptr<SidePanelEntry> entry =
       CreateSidePanelEntry(entry_key, browser);
-  SidePanelType entry_type = entry->type();
   SidePanelEntry* entry_ptr = entry.get();
 
   auto* registry = SidePanelRegistry::From(active_tab);
@@ -171,8 +170,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
                                      /*suppress_animations=*/true);
 
   // Assert:
-  std::optional<SidePanelEntry*> active_entry =
-      registry->GetActiveEntryFor(entry_type);
+  std::optional<SidePanelEntry*> active_entry = registry->GetActiveEntry();
   EXPECT_TRUE(active_entry.has_value());
   EXPECT_EQ(entry_ptr, active_entry.value());
 }
@@ -185,7 +183,6 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
   auto entry_key = SidePanelEntryKey(SidePanelEntryId::kAboutThisSite);
   std::unique_ptr<SidePanelEntry> entry =
       CreateSidePanelEntry(entry_key, browser);
-  SidePanelType entry_type = entry->type();
   SidePanelEntry* entry_ptr = entry.get();
 
   auto* registry = SidePanelRegistry::From(browser);
@@ -199,8 +196,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
                                      /*suppress_animations=*/true);
 
   // Assert:
-  std::optional<SidePanelEntry*> active_entry =
-      registry->GetActiveEntryFor(entry_type);
+  std::optional<SidePanelEntry*> active_entry = registry->GetActiveEntry();
   EXPECT_TRUE(active_entry.has_value());
   EXPECT_EQ(entry_ptr, active_entry.value());
 }
@@ -405,8 +401,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
   ASSERT_TRUE(coordinator->SidePanelUIBase::IsSidePanelEntryShowing(entry_key));
 
   // Act:
-  coordinator->Close(SidePanelType::kToolbar,
-                     SidePanelEntryHideReason::kSidePanelClosed,
+  coordinator->Close(SidePanelEntryHideReason::kSidePanelClosed,
                      /*suppress_animations=*/true);
 
   // Assert:
@@ -431,7 +426,6 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
   auto entry_key = SidePanelEntryKey(SidePanelEntryId::kAboutThisSite);
   std::unique_ptr<SidePanelEntry> entry =
       CreateSidePanelEntry(entry_key, browser);
-  SidePanelType entry_type = entry->type();
 
   auto* registry = SidePanelRegistry::From(active_tab);
   registry->Register(std::move(entry));
@@ -443,12 +437,11 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
   ASSERT_TRUE(coordinator->SidePanelUIBase::IsSidePanelEntryShowing(entry_key));
 
   // Act:
-  coordinator->Close(entry_type, SidePanelEntryHideReason::kSidePanelClosed,
+  coordinator->Close(SidePanelEntryHideReason::kSidePanelClosed,
                      /*suppress_animations=*/true);
 
   // Assert:
-  std::optional<SidePanelEntry*> active_entry =
-      registry->GetActiveEntryFor(entry_type);
+  std::optional<SidePanelEntry*> active_entry = registry->GetActiveEntry();
   EXPECT_FALSE(active_entry.has_value());
 }
 
@@ -460,7 +453,6 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
   auto entry_key = SidePanelEntryKey(SidePanelEntryId::kAboutThisSite);
   std::unique_ptr<SidePanelEntry> entry =
       CreateSidePanelEntry(entry_key, browser);
-  SidePanelType entry_type = entry->type();
 
   auto* registry = SidePanelRegistry::From(browser);
   registry->Register(std::move(entry));
@@ -472,12 +464,11 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
   ASSERT_TRUE(coordinator->SidePanelUIBase::IsSidePanelEntryShowing(entry_key));
 
   // Act:
-  coordinator->Close(entry_type, SidePanelEntryHideReason::kSidePanelClosed,
+  coordinator->Close(SidePanelEntryHideReason::kSidePanelClosed,
                      /*suppress_animations=*/true);
 
   // Assert:
-  std::optional<SidePanelEntry*> active_entry =
-      registry->GetActiveEntryFor(entry_type);
+  std::optional<SidePanelEntry*> active_entry = registry->GetActiveEntry();
   EXPECT_FALSE(active_entry.has_value());
 }
 
@@ -526,8 +517,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_NE(nullptr, second_entry_ptr->CachedView().get());
 
   // Act: Close the side panel.
-  coordinator->Close(first_entry_ptr->type(),
-                     SidePanelEntryHideReason::kSidePanelClosed,
+  coordinator->Close(SidePanelEntryHideReason::kSidePanelClosed,
                      /*suppress_animations=*/true);
 
   // Assert: Cached Views for the first entry should be cleared.
@@ -557,8 +547,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
   ASSERT_NE(nullptr, entry_ptr->CachedView().get());
 
   // Act: Close the side panel.
-  coordinator->Close(entry_ptr->type(),
-                     SidePanelEntryHideReason::kSidePanelClosed,
+  coordinator->Close(SidePanelEntryHideReason::kSidePanelClosed,
                      /*suppress_animations=*/true);
 
   // Assert: The cached view should be cleared.
@@ -609,8 +598,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
   ASSERT_TRUE(coordinator->SidePanelUIBase::IsSidePanelEntryShowing(entry_key));
 
   // Act:
-  coordinator->Close(SidePanelType::kToolbar,
-                     SidePanelEntryHideReason::kSidePanelClosed,
+  coordinator->Close(SidePanelEntryHideReason::kSidePanelClosed,
                      /*suppress_animations=*/true);
 
   // Assert:
@@ -652,7 +640,7 @@ IN_PROC_BROWSER_TEST_F(
   tab_list->ActivateTab(first_tab->GetHandle());
 
   // Assert: Side panel should be closed because first tab has no active entry.
-  EXPECT_FALSE(coordinator->IsSidePanelShowing(SidePanelType::kToolbar));
+  EXPECT_FALSE(coordinator->IsSidePanelShowing());
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -836,7 +824,7 @@ IN_PROC_BROWSER_TEST_F(
   tab_list->CloseTab(second_tab->GetHandle());
 
   // Assert: Side panel should be closed.
-  EXPECT_FALSE(coordinator->IsSidePanelShowing(SidePanelType::kToolbar));
+  EXPECT_FALSE(coordinator->IsSidePanelShowing());
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -899,8 +887,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
   EXPECT_EQ(entry_key.id(), entry_observer.id_for_last_entry_shown_.value());
 
   // Act: Close
-  coordinator->Close(SidePanelType::kToolbar,
-                     SidePanelEntryHideReason::kSidePanelClosed,
+  coordinator->Close(SidePanelEntryHideReason::kSidePanelClosed,
                      /*suppress_animations=*/true);
 
   // Assert:
@@ -948,12 +935,10 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
   EXPECT_FALSE(
       coordinator->SidePanelUIBase::IsSidePanelEntryShowing(second_entry_key));
   EXPECT_EQ(registry->GetEntryForKey(second_entry_key),
-            coordinator->GetWaiterForTesting(SidePanelType::kToolbar)
-                ->loading_entry());
+            coordinator->GetWaiterForTesting()->loading_entry());
 
   // 5. Act: Close the side panel.
-  coordinator->Close(SidePanelType::kToolbar,
-                     SidePanelEntryHideReason::kSidePanelClosed,
+  coordinator->Close(SidePanelEntryHideReason::kSidePanelClosed,
                      /*suppress_animations=*/true);
 
   // 6. Assert: Everything is closed/cancelled.
@@ -961,8 +946,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
       coordinator->SidePanelUIBase::IsSidePanelEntryShowing(first_entry_key));
   EXPECT_FALSE(
       coordinator->SidePanelUIBase::IsSidePanelEntryShowing(second_entry_key));
-  EXPECT_EQ(nullptr, coordinator->GetWaiterForTesting(SidePanelType::kToolbar)
-                         ->loading_entry());
+  EXPECT_EQ(nullptr, coordinator->GetWaiterForTesting()->loading_entry());
 }
 
 IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
@@ -990,8 +974,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
   ASSERT_FALSE(coordinator->IsClosing());
 
   // Act: Starts closing (finishes synchronously when animations are suppressed)
-  coordinator->Close(SidePanelType::kToolbar,
-                     SidePanelEntryHideReason::kSidePanelClosed,
+  coordinator->Close(SidePanelEntryHideReason::kSidePanelClosed,
                      /*suppress_animations=*/true);
 
   // Assert it's closed (implementation is synchronous for now).
@@ -1021,13 +1004,13 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
   auto* registry = SidePanelRegistry::From(browser);
   registry->Register(CreateSidePanelEntry(entry_key, browser));
 
-  ASSERT_FALSE(coordinator->IsSidePanelShowing(SidePanelType::kToolbar));
+  ASSERT_FALSE(coordinator->IsSidePanelShowing());
 
   // Act:
   coordinator->Toggle(entry_key, SidePanelOpenTrigger::kToolbarButton);
 
   // Assert:
-  EXPECT_TRUE(coordinator->IsSidePanelShowing(SidePanelType::kToolbar));
+  EXPECT_TRUE(coordinator->IsSidePanelShowing());
   EXPECT_TRUE(coordinator->SidePanelUIBase::IsSidePanelEntryShowing(entry_key));
 }
 
@@ -1051,7 +1034,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
   coordinator->Toggle(entry_key, SidePanelOpenTrigger::kToolbarButton);
 
   // Assert:
-  EXPECT_FALSE(coordinator->IsSidePanelShowing(SidePanelType::kToolbar));
+  EXPECT_FALSE(coordinator->IsSidePanelShowing());
 }
 
 IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
@@ -1077,7 +1060,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
   coordinator->Toggle(second_entry_key, SidePanelOpenTrigger::kToolbarButton);
 
   // Assert:
-  EXPECT_TRUE(coordinator->IsSidePanelShowing(SidePanelType::kToolbar));
+  EXPECT_TRUE(coordinator->IsSidePanelShowing());
   EXPECT_FALSE(
       coordinator->SidePanelUIBase::IsSidePanelEntryShowing(first_entry_key));
   EXPECT_TRUE(

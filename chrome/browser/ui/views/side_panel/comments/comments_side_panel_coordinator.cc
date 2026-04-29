@@ -163,11 +163,9 @@ void CommentsSidePanelCoordinator::UpdateCommentsSidePanelVisibility(
   }
 
   if (side_panel_showing) {
-    SidePanelEntry* const side_panel_entry =
-        SidePanelRegistry::From(browser_)->GetEntryForKey(side_panel_entry_key);
     // Close the side panel, setting the flag to recall the state when the
     // comments action is shown again.
-    side_panel_ui->Close(side_panel_entry->type());
+    side_panel_ui->Close();
     side_panel_should_be_resumed_ = true;
     return;
   }

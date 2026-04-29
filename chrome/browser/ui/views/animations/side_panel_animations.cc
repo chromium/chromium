@@ -11,8 +11,6 @@
 
 DEFINE_CLASS_BROWSER_ANIMATION_GROUP(SidePanelAnimations,
                                      kToolbarHeightSidePanel);
-DEFINE_CLASS_BROWSER_ANIMATION_GROUP(SidePanelAnimations,
-                                     kContentHeightSidePanel);
 DEFINE_CLASS_BROWSER_ANIMATION_MOTION(SidePanelAnimations, kOpen);
 DEFINE_CLASS_BROWSER_ANIMATION_MOTION(SidePanelAnimations,
                                       kOpenWithContentTransition);
@@ -29,11 +27,6 @@ SidePanelAnimations::GroupInfos SidePanelAnimations::GenerateAnimations()
     const {
   const int kDefaultAnimationMs = features::kSidePanelFlyoverDurationMs.Get();
   const bool use_flyover = features::UseSidePanelFlyoverAnimation();
-  const int content_height_duration_ms =
-      use_flyover ? kDefaultAnimationMs : 450;
-  const gfx::Tween::Type content_height_tween =
-      use_flyover ? gfx::Tween::Type::ACCEL_30_DECEL_20_85
-                  : gfx::Tween::Type::EASE_IN_OUT_EMPHASIZED;
   const gfx::Tween::Type toolbar_height_tween =
       use_flyover ? gfx::Tween::Type::ACCEL_30_DECEL_20_85
                   : gfx::Tween::Type::ACCEL_45_DECEL_88;
@@ -48,13 +41,6 @@ SidePanelAnimations::GroupInfos SidePanelAnimations::GenerateAnimations()
                Segment(StartMs(0), LengthMs(100), ToValue(0.0)));
 
   return Groups(
-      Group(kContentHeightSidePanel,
-            Motion(kOpen, TotalDurationMs(content_height_duration_ms),
-                   content_height_tween,
-                   Animate(kPanelWidth, FromValue(0.0), ToValue(1.0))),
-            Motion(kClose, TotalDurationMs(content_height_duration_ms),
-                   content_height_tween,
-                   Animate(kPanelWidth, FromValue(1.0), ToValue(0.0)))),
       Group(kToolbarHeightSidePanel,
             Motion(kOpen, TotalDurationMs(kDefaultAnimationMs),
                    toolbar_height_tween,

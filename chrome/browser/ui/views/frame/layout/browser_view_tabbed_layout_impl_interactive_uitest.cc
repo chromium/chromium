@@ -516,7 +516,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTabbedLayoutImplUiTest,
                                  toolbar->GetBoundsInScreen();
                            }),
                   CheckView(kSidePanelElementId, [&](views::View* side_panel) {
-                    return side_panel->GetBoundsInScreen().y() >
+                    return side_panel->GetBoundsInScreen().y() >=
                            toolbar_bounds_in_screen.bottom();
                   }));
 }

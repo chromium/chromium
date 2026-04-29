@@ -205,7 +205,6 @@ IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsContainerBrowserTest,
   SidePanelEntry* const entry =
       SidePanelRegistry::From(browser())->GetEntryForKey(
           SidePanelEntry::Key(SidePanelEntryId::kBookmarks));
-  SidePanelType panel_type = entry->type();
   entry->set_should_show_ephemerally_in_toolbar(false);
 
   // Verify no toolbar button is shown when the bookmarks side panel is opened.
@@ -216,7 +215,7 @@ IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsContainerBrowserTest,
 
   // Set the bookmarks entry back to showing the toolbar button ephemerally if
   // shown.
-  side_panel_ui->Close(panel_type);
+  side_panel_ui->Close();
   entry->set_should_show_ephemerally_in_toolbar(true);
 
   // Verify the toolbar button is now ephemerally shown if the bookmarks side

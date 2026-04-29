@@ -2985,12 +2985,7 @@ IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest, SidePanelToggle) {
 
   auto* side_panel_ui = browser()->GetFeatures().side_panel_ui();
   auto is_any_side_panel_showing = [&]() {
-    for (auto type : SidePanelTypes::All()) {
-      if (side_panel_ui->IsSidePanelShowing(type)) {
-        return true;
-      }
-    }
-    return false;
+    return side_panel_ui->IsSidePanelShowing();
   };
 
   // Show side panel.

@@ -26,8 +26,7 @@ namespace {
 bool IsKeyActiveInRegistry(SidePanelRegistry* registry,
                            const SidePanelEntry::Key& key) {
   if (registry) {
-    auto entry = registry->GetActiveEntryFor(
-        ExtensionSidePanelCoordinator::GetPanelType());
+    auto entry = registry->GetActiveEntry();
     return entry.has_value() && entry.value()->key() == key;
   }
   return false;
@@ -73,18 +72,14 @@ void OpenGlobalExtensionSidePanel(BrowserWindowInterface& browser_window,
     SidePanelRegistry* contextual_registry =
         SidePanelRegistry::GetDeprecated(web_contents);
     CHECK(contextual_registry);
-    if (contextual_registry &&
-        contextual_registry->GetActiveEntryFor(
-            ExtensionSidePanelCoordinator::GetPanelType())) {
-      contextual_registry->ResetActiveEntryFor(
-          ExtensionSidePanelCoordinator::GetPanelType());
+    if (contextual_registry && contextual_registry->GetActiveEntry()) {
+      contextual_registry->ResetActiveEntry();
     }
   }
 
   // If the side panel isn't showing on the active tab, we can show the new
   // entry directly (since it's a global entry).
-  if (!side_panel_ui->IsSidePanelShowing(
-          ExtensionSidePanelCoordinator::GetPanelType())) {
+  if (!side_panel_ui->IsSidePanelShowing()) {
     side_panel_ui->Show(extension_key);
     return;
   }
@@ -98,9 +93,7 @@ void OpenGlobalExtensionSidePanel(BrowserWindowInterface& browser_window,
       SidePanelRegistry::GetDeprecated(active_web_contents);
   CHECK(active_tab_contextual_registry);
   bool has_active_contextual_entry =
-      active_tab_contextual_registry
-          ->GetActiveEntryFor(ExtensionSidePanelCoordinator::GetPanelType())
-          .has_value();
+      active_tab_contextual_registry->GetActiveEntry().has_value();
 
   if (!has_active_contextual_entry) {
     // It must be an active global side panel. Call `Show()` to override it.
@@ -151,9 +144,7 @@ void CloseGlobalExtensionSidePanel(BrowserWindowInterface* browser_window,
 
   // If the global side panel entry for this extension is active, close it.
   if (active_contextual_registry &&
-      active_contextual_registry
-          ->GetActiveEntryFor(ExtensionSidePanelCoordinator::GetPanelType())
-          .has_value()) {
+      active_contextual_registry->GetActiveEntry().has_value()) {
     // If the active web content contains a contextual panel and there is an
     // active global panel for this extension, reset the global side panel so it
     // doesn’t open when switching to any tab that doesn’t contain a contextual
@@ -161,14 +152,13 @@ void CloseGlobalExtensionSidePanel(BrowserWindowInterface* browser_window,
     SidePanelRegistry* const global_registry =
         SidePanelRegistry::From(browser_window);
     if (IsKeyActiveInRegistry(global_registry, extension_key)) {
-      global_registry->ResetActiveEntryFor(
-          ExtensionSidePanelCoordinator::GetPanelType());
+      global_registry->ResetActiveEntry();
     }
   } else {
     // Otherwise, if this extension's global side panel is visible,
     // simply close it.
     if (side_panel_ui->IsSidePanelEntryShowing(extension_key)) {
-      side_panel_ui->Close(ExtensionSidePanelCoordinator::GetPanelType());
+      side_panel_ui->Close();
     }
   }
 }
@@ -200,15 +190,14 @@ void CloseContextualExtensionSidePanel(BrowserWindowInterface* browser_window,
   // side panel.
   if (web_contents == active_web_contents) {
     if (side_panel_ui->IsSidePanelEntryShowing(extension_key)) {
-      side_panel_ui->Close(ExtensionSidePanelCoordinator::GetPanelType());
+      side_panel_ui->Close();
     }
     return;
   }
 
   // If an inactive tab is specified, reset that panel (so it doesn’t reopen
   // when you switch back to the tab).
-  contextual_registry->ResetActiveEntryFor(
-      ExtensionSidePanelCoordinator::GetPanelType());
+  contextual_registry->ResetActiveEntry();
 }
 
 }  // namespace extensions::side_panel_util

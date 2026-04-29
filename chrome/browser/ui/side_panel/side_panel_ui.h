@@ -50,12 +50,9 @@ class SidePanelUI {
                         gfx::Rect starting_bounds_in_browser_coordinates) = 0;
 
   // Close the side panel.
-  virtual void Close(SidePanelType panel_type,
-                     SidePanelEntryHideReason hide_reason,
+  virtual void Close(SidePanelEntryHideReason hide_reason,
                      bool suppress_animations) = 0;
-  void Close(SidePanelType panel_type) {
-    Close(panel_type, SidePanelEntryHideReason::kSidePanelClosed, false);
-  }
+  void Close() { Close(SidePanelEntryHideReason::kSidePanelClosed, false); }
 
   // Open the side panel for a key. If side panel for the key is already opened
   // then close the side panel.
@@ -63,17 +60,16 @@ class SidePanelUI {
                       SidePanelOpenTrigger open_trigger) = 0;
 
   // Get the current entry id if the side panel is open.
-  virtual std::optional<SidePanelEntryId> GetCurrentEntryId(
-      SidePanelType panel_type) const = 0;
+  virtual std::optional<SidePanelEntryId> GetCurrentEntryId() const = 0;
 
   // Returns the current entries default width. Returns nullopt if this value is
   // not set or if the side panel is closed.
-  virtual int GetCurrentEntryDefaultContentWidth(SidePanelType type) const = 0;
+  virtual int GetCurrentEntryDefaultContentWidth() const = 0;
 
   // Return whether any entry is being shown in the side panel.
   // Note: this returns false if `entry` is current loading but not actually
   // shown.
-  virtual bool IsSidePanelShowing(SidePanelType type) const = 0;
+  virtual bool IsSidePanelShowing() const = 0;
 
   // Returns whether `entry_key` is currently being shown in the side panel.
   // Note: this returns false if `entry` is current loading but not actually
@@ -91,7 +87,6 @@ class SidePanelUI {
   // animation.
   using ShownCallback = base::RepeatingCallback<void()>;
   virtual base::CallbackListSubscription RegisterSidePanelShown(
-      SidePanelType type,
       ShownCallback callback) = 0;
 
   // This function is intended to only be called by browser on active tab

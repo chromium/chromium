@@ -16,7 +16,6 @@
 #include "chrome/browser/ui/views/frame/multi_contents_view.h"
 #include "chrome/browser/ui/views/frame/scrim_view.h"
 #include "chrome/browser/ui/views/new_tab_footer/footer_web_view.h"
-#include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "components/search/ntp_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
@@ -41,9 +40,9 @@ void BrowserViewAsh::Layout(PassKey) {
 
   // In ChromeOS ash we round the bottom two corners of the browser frame by
   // rounding the respective corners of visible client contents i.e main web
-  // contents, devtools web contents and side panel. When ever there is change
+  // contents, and devtools web contents. When ever there is change
   // in the layout or visibility of these contents (devtools opened, devtools
-  // docked placement change, side panel open etc), we might need to update
+  // docked placement change, etc), we might need to update
   // which corners are currently rounded. See
   // `BrowserFrameViewChromeOS::UpdateWindowRoundedCorners()` for more
   // details.
@@ -53,28 +52,13 @@ void BrowserViewAsh::Layout(PassKey) {
 
 void BrowserViewAsh::UpdateWindowRoundedCorners(
     const gfx::RoundedCornersF& window_radii) {
-  SidePanel* side_panel = contents_height_side_panel();
-  const bool trailing_side_panel =
-      side_panel->GetVisible() && side_panel->IsRightAligned();
-  const bool leading_side_panel =
-      side_panel->GetVisible() && !side_panel->IsRightAligned();
   const bool vertical_tabstrip = ShouldDrawVerticalTabStrip();
-
-  // If side panel is visible, round one of the bottom two corners of the side
-  // panel based on its alignment w.r.t to web contents.
-  const gfx::RoundedCornersF side_panel_radii(
-      0, 0, trailing_side_panel ? window_radii.lower_right() : 0,
-      leading_side_panel && !vertical_tabstrip ? window_radii.lower_left() : 0);
-
-  if (side_panel_radii != side_panel->background_radii()) {
-    side_panel->SetBackgroundRadii(side_panel_radii);
-  }
 
   window_scrim_view()->SetRoundedCorners(window_radii);
 
   const gfx::RoundedCornersF multi_contents_radii(
-      0, 0, trailing_side_panel ? 0 : window_radii.lower_right(),
-      leading_side_panel || vertical_tabstrip ? 0 : window_radii.lower_left());
+      0, 0, window_radii.lower_right(),
+      vertical_tabstrip ? 0 : window_radii.lower_left());
 
   if (multi_contents_view()->background_radii() != multi_contents_radii) {
     multi_contents_view()->SetBackgroundRadii(multi_contents_radii);
@@ -93,14 +77,12 @@ void BrowserViewAsh::UpdateWindowRoundedCorners(
   CHECK(devtools_webview);
   CHECK(devtools_webview->holder());
 
-  // If devtools are visible, round one of the bottom two corners of the
-  // the devtools context based on the alignment of the side panel. Since
-  // devtools cover the full bounds of the web contents container, if the side
-  // panel is not visible, we have to round the bottom two corners of side panel
-  // irrespective of its docked placement.
+  // If devtools are visible, round one of the bottom two corners of the the
+  // devtools context since devtools cover the full bounds of the web contents
+  // container..
   const gfx::RoundedCornersF devtools_webview_radii(
-      0, 0, trailing_side_panel ? 0 : window_radii.lower_right(),
-      leading_side_panel || vertical_tabstrip ? 0 : window_radii.lower_left());
+      0, 0, window_radii.lower_right(),
+      vertical_tabstrip ? 0 : window_radii.lower_left());
 
   SetRoundedCornersOnHost(devtools_webview->holder(), devtools_webview_radii);
   GetActiveContentsContainerView()->devtools_scrim_view()->SetRoundedCorners(
@@ -138,13 +120,12 @@ void BrowserViewAsh::UpdateWindowRoundedCorners(
   if (is_ntp_footer_showing) {
     const gfx::RoundedCornersF ntp_footer_radii(
         0, 0,
-        trailing_side_panel ||
-                (devtools_showing &&
-                 devtools_placement !=
-                     ContentsContainerView::DevToolsDockedPlacement::kLeft)
+        (devtools_showing &&
+         devtools_placement !=
+             ContentsContainerView::DevToolsDockedPlacement::kLeft)
             ? 0
             : window_radii.lower_right(),
-        leading_side_panel || vertical_tabstrip ||
+        vertical_tabstrip ||
                 (devtools_showing &&
                  devtools_placement !=
                      ContentsContainerView::DevToolsDockedPlacement::kRight)
@@ -156,13 +137,13 @@ void BrowserViewAsh::UpdateWindowRoundedCorners(
   const gfx::RoundedCornersF contents_webview_radii(
       round_content_webview_top_corner ? window_radii.upper_left() : 0,
       round_content_webview_top_corner ? window_radii.upper_right() : 0,
-      is_ntp_footer_showing || trailing_side_panel ||
+      is_ntp_footer_showing ||
               (devtools_showing &&
                devtools_placement !=
                    ContentsContainerView::DevToolsDockedPlacement::kLeft)
           ? 0
           : window_radii.lower_right(),
-      is_ntp_footer_showing || leading_side_panel || vertical_tabstrip ||
+      is_ntp_footer_showing || vertical_tabstrip ||
               (devtools_showing &&
                devtools_placement !=
                    ContentsContainerView::DevToolsDockedPlacement::kRight)
@@ -204,8 +185,8 @@ void BrowserViewAsh::UpdateWindowRoundedCorners(
   const gfx::RoundedCornersF contents_scrim_radii(
       round_content_webview_top_corner ? window_radii.upper_left() : 0,
       round_content_webview_top_corner ? window_radii.upper_right() : 0,
-      trailing_side_panel ? 0 : window_radii.lower_right(),
-      leading_side_panel || vertical_tabstrip ? 0 : window_radii.lower_left());
+      window_radii.lower_right(),
+      vertical_tabstrip ? 0 : window_radii.lower_left());
   GetActiveContentsContainerView()->contents_scrim_view()->SetRoundedCorners(
       contents_scrim_radii);
 }

@@ -18,7 +18,7 @@ bool IsReadAnythingEntryShowing(BrowserWindowInterface* browser) {
   // context menu. To fix this, IsReadAnythingEntryShowing should also return
   // false if the side panel is in the process of closing.
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
-  if (browser_view && browser_view->contents_height_side_panel()->state() ==
+  if (browser_view && browser_view->toolbar_height_side_panel()->state() ==
                           SidePanel::State::kClosing) {
     return false;
   }

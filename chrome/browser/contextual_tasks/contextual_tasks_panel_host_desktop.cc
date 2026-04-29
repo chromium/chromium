@@ -92,7 +92,7 @@ void ContextualTasksPanelHostDesktop::Close(
            ContextualTasksPanelHost::AnimationStyle::kTransitionFromTab);
 
   side_panel_ui_->Close(
-      SidePanelType::kToolbar, SidePanelEntryHideReason::kSidePanelClosed,
+      SidePanelEntryHideReason::kSidePanelClosed,
       /*suppress_animations=*/animation ==
           ContextualTasksPanelHost::AnimationStyle::kNoAnimation);
 }

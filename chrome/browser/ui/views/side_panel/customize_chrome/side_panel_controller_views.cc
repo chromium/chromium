@@ -219,7 +219,7 @@ void SidePanelControllerViews::CloseSidePanel() {
     return;
   }
 
-  GetSidePanelUI()->Close(current_entry->type());
+  GetSidePanelUI()->Close();
 }
 
 std::unique_ptr<views::View>

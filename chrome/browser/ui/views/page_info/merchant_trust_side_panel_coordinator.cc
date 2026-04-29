@@ -236,7 +236,7 @@ void MerchantTrustSidePanelCoordinator::OnMerchantTrustDataFetched(
       SidePanelEntry* const side_panel_entry =
           registry->GetEntryForKey(entry_key);
       CHECK(side_panel_entry);
-      side_panel_ui->Close(side_panel_entry->type());
+      side_panel_ui->Close();
     }
   }
 }

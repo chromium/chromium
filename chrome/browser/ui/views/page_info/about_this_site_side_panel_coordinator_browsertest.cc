@@ -264,9 +264,9 @@ IN_PROC_BROWSER_TEST_F(AboutThisSiteSidePanelCoordinatorBrowserTest,
   EXPECT_TRUE(IsAboutThisSiteSidePanelShowing());
 
   // Close side panel.
-  browser()->GetFeatures().side_panel_ui()->Close(SidePanelType::kContent);
+  browser()->GetFeatures().side_panel_ui()->Close();
   ASSERT_TRUE(base::test::RunUntil([&]() {
-    return browser()->GetBrowserView().contents_height_side_panel()->state() ==
+    return browser()->GetBrowserView().toolbar_height_side_panel()->state() ==
            SidePanel::State::kClosed;
   }));
   EXPECT_FALSE(IsAboutThisSiteSidePanelShowing());

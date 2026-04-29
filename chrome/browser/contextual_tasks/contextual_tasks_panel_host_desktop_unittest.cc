@@ -50,9 +50,7 @@ class MockSidePanelUI : public SidePanelUI {
               (override));
   MOCK_METHOD(void,
               Close,
-              (SidePanelType panel_type,
-               SidePanelEntryHideReason hide_reason,
-               bool suppress_animations),
+              (SidePanelEntryHideReason hide_reason, bool suppress_animations),
               (override));
   MOCK_METHOD(void,
               Toggle,
@@ -60,16 +58,10 @@ class MockSidePanelUI : public SidePanelUI {
               (override));
   MOCK_METHOD(std::optional<SidePanelEntryId>,
               GetCurrentEntryId,
-              (SidePanelType panel_type),
+              (),
               (const, override));
-  MOCK_METHOD(int,
-              GetCurrentEntryDefaultContentWidth,
-              (SidePanelType type),
-              (const, override));
-  MOCK_METHOD(bool,
-              IsSidePanelShowing,
-              (SidePanelType type),
-              (const, override));
+  MOCK_METHOD(int, GetCurrentEntryDefaultContentWidth, (), (const, override));
+  MOCK_METHOD(bool, IsSidePanelShowing, (), (const, override));
   MOCK_METHOD(bool,
               IsSidePanelEntryShowing,
               (const SidePanelEntryKey& entry_key),
@@ -80,7 +72,7 @@ class MockSidePanelUI : public SidePanelUI {
               (const, override));
   MOCK_METHOD(base::CallbackListSubscription,
               RegisterSidePanelShown,
-              (SidePanelType type, ShownCallback callback),
+              (ShownCallback callback),
               (override));
   MOCK_METHOD(void,
               OnActiveTabChanged,
@@ -199,8 +191,7 @@ TEST_F(ContextualTasksPanelHostDesktopTest, CloseCallsSidePanelUI) {
   panel_host_->AddObserver(&observer);
 
   EXPECT_CALL(mock_side_panel_ui_,
-              Close(SidePanelType::kToolbar,
-                    SidePanelEntryHideReason::kSidePanelClosed, false))
+              Close(SidePanelEntryHideReason::kSidePanelClosed, false))
       .Times(1);
 
   panel_host_->Close(ContextualTasksPanelHost::AnimationStyle::kStandard);
@@ -211,8 +202,7 @@ TEST_F(ContextualTasksPanelHostDesktopTest, CloseNoAnimation) {
   panel_host_->AddObserver(&observer);
 
   EXPECT_CALL(mock_side_panel_ui_,
-              Close(SidePanelType::kToolbar,
-                    SidePanelEntryHideReason::kSidePanelClosed, true))
+              Close(SidePanelEntryHideReason::kSidePanelClosed, true))
       .Times(1);
 
   panel_host_->Close(ContextualTasksPanelHost::AnimationStyle::kNoAnimation);

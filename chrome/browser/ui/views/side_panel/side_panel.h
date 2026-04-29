@@ -35,9 +35,7 @@ class SidePanel : public views::AccessiblePaneView,
   // BrowserViewLayout::LayoutSidePanelView. As such, left will always be on the
   // left side of the browser regardless of LTR / RTL mode.
   enum class HorizontalAlignment { kLeft = 0, kRight };
-  explicit SidePanel(BrowserView* browser_view,
-                     SidePanelType type,
-                     bool has_border);
+  explicit SidePanel(BrowserView* browser_view);
   SidePanel(const SidePanel&) = delete;
   SidePanel& operator=(const SidePanel&) = delete;
   ~SidePanel() override;
@@ -78,8 +76,6 @@ class SidePanel : public views::AccessiblePaneView,
   void AddHeaderView(std::unique_ptr<views::View> view);
   void RemoveHeaderView();
 
-  void SetOutlineVisibility(bool visible);
-
   // Gets the upper bound of the content area size if the side panel is shown
   // right now. If the side panel is not showing, returns the minimum width
   // and browser view height minus the padding insets. The actual content
@@ -94,7 +90,8 @@ class SidePanel : public views::AccessiblePaneView,
   // panel has been resized since metrics were last logged.
   void RecordMetricsIfResized();
 
-  SidePanelType type() const { return type_; }
+  void SetCurrentEntryType(SidePanelType type);
+  SidePanelType GetCurrentEntryType() const;
 
   // Reflects the current state of the visibility of the side panel.
   enum class State { kClosed, kOpening, kOpen, kClosing };
@@ -125,7 +122,6 @@ class SidePanel : public views::AccessiblePaneView,
   views::View* resize_area_for_testing() { return resize_area_; }
 
  private:
-  class BorderView;
   class VisibleBoundsViewClipper;
 
   // This method is the shared implementation of Open/Close.
@@ -144,9 +140,8 @@ class SidePanel : public views::AccessiblePaneView,
   void OnAnimationProgressed(const BrowserAnimationController* controller,
                              BrowserAnimationUpdate status);
 
-  raw_ptr<BorderView> border_view_ = nullptr;
   const raw_ptr<BrowserView> browser_view_;
-  const SidePanelType type_;
+  SidePanelType current_entry_type_ = SidePanelType::kToolbar;
   raw_ptr<views::View> resize_area_ = nullptr;
   raw_ptr<views::View> header_view_ = nullptr;
   raw_ptr<views::View> content_parent_view_;
@@ -189,7 +184,6 @@ class SidePanel : public views::AccessiblePaneView,
   State state_ = State::kClosed;
 
   // Subscription for animation updates.
-  BrowserAnimationGroup animation_group_;
   base::CallbackListSubscription animation_subscription_;
 
   // Animation perf reporter.

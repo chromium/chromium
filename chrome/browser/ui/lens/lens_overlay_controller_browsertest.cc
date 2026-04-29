@@ -726,6 +726,10 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
         kActiveContentsWebViewRetrievalId);
   }
 
+  SidePanel* GetSidePanel() {
+    return browser()->GetBrowserView().toolbar_height_side_panel();
+  }
+
   virtual void SetupFeatureList() {
     feature_list_.InitWithFeaturesAndParameters(
         {{lens::features::kLensOverlay,
@@ -774,8 +778,7 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
   }
 
   bool IsSidePanelOpen() {
-    return browser()->GetFeatures().side_panel_ui()->IsSidePanelShowing(
-        GetLensOverlaySidePanelCoordinator()->GetPanelType());
+    return browser()->GetFeatures().side_panel_ui()->IsSidePanelShowing();
   }
 
   bool IsLensResultsSidePanelShowing() {
@@ -819,9 +822,7 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
 
   void SimulateOpenInNewTabButtonClick() {
     views::Button* open_in_new_tab_button =
-        browser()
-            ->GetBrowserView()
-            .contents_height_side_panel()
+        GetSidePanel()
             ->GetHeaderView<SidePanelHeader>()
             ->header_open_in_new_tab_button();
     views::test::ButtonTestApi(open_in_new_tab_button)
@@ -1323,8 +1324,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, SidePanelModalDialog) {
   // Wait for open animation to progress. This is important, otherwise when we
   // close the lens overlay at a later time the side panel will be closed
   // together synchronously.
-  SidePanel* side_panel = BrowserView::GetBrowserViewForBrowser(browser())
-                              ->contents_height_side_panel();
+  SidePanel* side_panel = GetSidePanel();
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return side_panel->GetAnimationValue() > 0; }));
 
@@ -1417,8 +1417,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   ASSERT_FALSE(GetWebView()->GetEnabled());
 
   // Close the side panel.
-  browser()->GetFeatures().side_panel_ui()->Close(
-      GetLensOverlaySidePanelCoordinator()->GetPanelType());
+  browser()->GetFeatures().side_panel_ui()->Close();
 
   // Ensure the overlay closes too.
   ASSERT_TRUE(base::test::RunUntil(
@@ -1450,8 +1449,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_TRUE(IsLensResultsSidePanelShowing());
 
   // Close the side panel.
-  browser()->GetFeatures().side_panel_ui()->Close(
-      GetLensOverlaySidePanelCoordinator()->GetPanelType());
+  browser()->GetFeatures().side_panel_ui()->Close();
 
   // Verify that the side panel close logic was not iteratively re-triggered
   // by the notification loop, which prevents reentrancy on the ObserverList.
@@ -4120,9 +4118,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   // Make the side panel larger.
   const int increment = -50;
-  BrowserView::GetBrowserViewForBrowser(browser())
-      ->contents_height_side_panel()
-      ->OnResize(increment, true);
+  GetSidePanel()->OnResize(increment, true);
   // Popping the query should load the previous query into the results frame.
   content::TestNavigationObserver pop_observer(
       controller->GetSidePanelWebContentsForTesting());
@@ -4575,10 +4571,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, SidePanelOpen) {
   // Wait for side panel to fully open.
   browser()->GetFeatures().side_panel_ui()->Show(
       SidePanelEntry::Id::kBookmarks);
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return browser()->GetBrowserView().contents_height_side_panel()->state() ==
-           SidePanel::State::kOpen;
-  }));
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return GetSidePanel()->state() == SidePanel::State::kOpen; }));
 
   auto* controller = GetLensOverlayController();
   OpenLensOverlay(LensOverlayInvocationSource::kAppMenu);
@@ -4588,8 +4582,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, SidePanelOpen) {
       [&]() { return controller->state() == State::kOverlay; }));
 
   // And the side-panel should be hidden.
-  EXPECT_EQ(browser()->GetBrowserView().contents_height_side_panel()->state(),
-            SidePanel::State::kClosed);
+  EXPECT_EQ(GetSidePanel()->state(), SidePanel::State::kClosed);
 }
 
 // TODO(crbug.com/471036459): Reenable this test on Mac

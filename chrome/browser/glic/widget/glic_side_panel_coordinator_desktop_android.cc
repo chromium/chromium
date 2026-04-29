@@ -99,14 +99,13 @@ void GlicSidePanelCoordinatorDesktopAndroid::Close(
     return;
   }
   if (state_ == State::kShown) {
-    window_side_panel_ui->Close(entry_->type(),
-                                SidePanelEntryHideReason::kSidePanelClosed,
+    window_side_panel_ui->Close(SidePanelEntryHideReason::kSidePanelClosed,
                                 options.suppress_animations);
     return;
   }
   if (state_ == State::kBackgrounded) {
     CHECK(IsGlicSidePanelActive());
-    side_panel_registry_->ResetActiveEntryFor(entry_->type());
+    side_panel_registry_->ResetActiveEntry();
     SetState(State::kClosed);
   }
 }
@@ -187,8 +186,7 @@ bool GlicSidePanelCoordinatorDesktopAndroid::IsGlicSidePanelActive() {
   if (!glic_side_panel_entry) {
     return false;
   }
-  const auto& active_entry =
-      side_panel_registry_->GetActiveEntryFor(glic_side_panel_entry->type());
+  const auto& active_entry = side_panel_registry_->GetActiveEntry();
   if (!active_entry.has_value() ||
       active_entry.value() != glic_side_panel_entry) {
     return false;

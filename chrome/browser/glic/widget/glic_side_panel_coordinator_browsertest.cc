@@ -223,7 +223,7 @@ IN_PROC_BROWSER_TEST_F(GlicSidePanelCoordinatorTest,
       browser()->GetActiveTabInterface()));
 
   // Close the Lens side panel. Glic should still be inactive.
-  SidePanelCoordinator::From(browser())->Close(SidePanelType::kContent);
+  SidePanelCoordinator::From(browser())->Close();
   EXPECT_FALSE(GlicSidePanelCoordinator::IsGlicSidePanelActive(
       browser()->GetActiveTabInterface()));
 

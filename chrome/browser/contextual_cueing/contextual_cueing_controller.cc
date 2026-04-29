@@ -441,9 +441,7 @@ bool ContextualCueingController::IsAllowedToShowCue() {
 
   if (auto* side_panel_ui =
           SidePanelUIProvider::From(browser_window_interface_);
-      side_panel_ui &&
-      (side_panel_ui->IsSidePanelShowing(SidePanelType::kContent) ||
-       side_panel_ui->IsSidePanelShowing(SidePanelType::kToolbar))) {
+      side_panel_ui && side_panel_ui->IsSidePanelShowing()) {
     RecordContextualCueingDecision(ContextualCueingDecision::kSidePanelShowing);
     return false;
   }

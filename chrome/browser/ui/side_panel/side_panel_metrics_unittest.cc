@@ -26,8 +26,7 @@ TEST_F(SidePanelMetricsTest, RecordDuration_ForReadAnythingEntry) {
   const base::TimeDelta duration = base::Hours(1);
   task_environment_->FastForwardBy(duration);
 
-  SidePanelMetrics::RecordEntryHiddenMetrics(SidePanelType::kContent,
-                                             SidePanelEntryId::kReadAnything,
+  SidePanelMetrics::RecordEntryHiddenMetrics(SidePanelEntryId::kReadAnything,
                                              shown_timestamp);
 
   histogram_tester_.ExpectTimeBucketCount(
@@ -41,8 +40,7 @@ TEST_F(SidePanelMetricsTest, RecordsMaxCap_WhenDurationExceedsOneDay) {
   const base::TimeDelta duration = base::Hours(25);
   task_environment_->FastForwardBy(duration);
 
-  SidePanelMetrics::RecordEntryHiddenMetrics(SidePanelType::kContent,
-                                             SidePanelEntryId::kReadAnything,
+  SidePanelMetrics::RecordEntryHiddenMetrics(SidePanelEntryId::kReadAnything,
                                              shown_timestamp);
 
   histogram_tester_.ExpectTimeBucketCount(

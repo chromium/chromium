@@ -57,8 +57,7 @@ class SidePanelCoordinatorAndroid : public SidePanelUIBase {
   // Implements `SidePanelUI`:
   void ShowFrom(SidePanelEntryKey entry_key,
                 gfx::Rect starting_bounds_in_browser_coordinates) override;
-  void Close(SidePanelType panel_type,
-             SidePanelEntryHideReason hide_reason,
+  void Close(SidePanelEntryHideReason hide_reason,
              bool suppress_animations) override;
   void Toggle(SidePanelEntryKey key,
               SidePanelOpenTrigger open_trigger) override;
@@ -66,9 +65,7 @@ class SidePanelCoordinatorAndroid : public SidePanelUIBase {
   void DisableAnimationsForTesting() override;
   void SetNoDelaysForTesting(bool no_delays_for_testing) override;
 
-  SidePanelEntryWaiter* GetWaiterForTesting(SidePanelType type) {
-    return waiter(type);
-  }
+  SidePanelEntryWaiter* GetWaiterForTesting() { return waiter(); }
 
   bool IsClosing() const { return state_ == SidePanelState::kClosing; }
   bool ShouldClose() const {
@@ -95,7 +92,7 @@ class SidePanelCoordinatorAndroid : public SidePanelUIBase {
   // Delegates to `SidePanelRegistry::ClearCachedEntryViews` in all
   // `SidePanelRegistry` instances accessible from this class, including
   // the window-scoped registry and all contextual (tab-scoped) registries.
-  void ClearCachedEntryViews(SidePanelType type);
+  void ClearCachedEntryViews();
 
   base::android::ScopedJavaLocalRef<jobject> java_coordinator() const;
 

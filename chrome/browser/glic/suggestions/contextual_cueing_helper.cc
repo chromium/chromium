@@ -28,7 +28,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
-#include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui_provider.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
@@ -468,9 +467,7 @@ ContextualCueingHelper::AutoOpenGlicSidePanel(
       tab_interface ? tab_interface->GetBrowserWindowInterface() : nullptr;
   auto* side_panel_ui = bwi ? SidePanelUIProvider::From(bwi) : nullptr;
 
-  if (side_panel_ui &&
-      (side_panel_ui->IsSidePanelShowing(SidePanelType::kContent) ||
-       side_panel_ui->IsSidePanelShowing(SidePanelType::kToolbar))) {
+  if (side_panel_ui && side_panel_ui->IsSidePanelShowing()) {
     return RecordAutoOpenResult(
         GlicAutoOpenResult::kPreventedFromExistingSidePanelOpen);
   }

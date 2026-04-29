@@ -246,8 +246,7 @@ void WebUIBrowserPageHandler::LaunchDevToolsForBrowser() {
 }
 
 void WebUIBrowserPageHandler::OnSidePanelClosed() {
-  GetBrowserWindow()->GetWebUIBrowserSidePanelUI()->OnSidePanelClosed(
-      SidePanelType::kContent);
+  GetBrowserWindow()->GetWebUIBrowserSidePanelUI()->OnSidePanelClosed();
 }
 
 void WebUIBrowserPageHandler::Minimize() {

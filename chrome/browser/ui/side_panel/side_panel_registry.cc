@@ -65,15 +65,13 @@ SidePanelEntry* SidePanelRegistry::GetEntryForKey(
   return it == entries_.end() ? nullptr : it->get();
 }
 
-void SidePanelRegistry::ResetActiveEntryFor(SidePanelType type) {
-  active_entries_[type].reset();
+void SidePanelRegistry::ResetActiveEntry() {
+  active_entry_.reset();
 }
 
-void SidePanelRegistry::ClearCachedEntryViews(SidePanelType type) {
+void SidePanelRegistry::ClearCachedEntryViews() {
   for (auto const& entry : entries_) {
-    if (entry->type() == type &&
-        (!active_entries_[type].has_value() ||
-         entry.get() != active_entries_[type].value())) {
+    if (!active_entry_.has_value() || entry.get() != active_entry_.value()) {
       entry.get()->ClearCachedView();
     }
   }
@@ -102,16 +100,14 @@ bool SidePanelRegistry::Deregister(const SidePanelEntry::Key& key) {
                  deregistering_entry_key_.value() == key)) {
     return false;
   }
-  SidePanelType panel_type = entry->type();
 
   base::AutoReset<std::optional<SidePanelEntryKey>> deregistering_entry_key(
       &deregistering_entry_key_, key);
 
   entry->RemoveObserver(this);
   entry->set_scope(nullptr);
-  if (active_entries_[panel_type].has_value() &&
-      entry->key() == active_entries_[panel_type].value()->key()) {
-    active_entries_[panel_type].reset();
+  if (active_entry_.has_value() && entry == active_entry_.value()) {
+    active_entry_.reset();
   }
 
 // TODO(crbug.com/489780669): Temporarily disabled until a coordinator is made.
@@ -125,8 +121,7 @@ bool SidePanelRegistry::Deregister(const SidePanelEntry::Key& key) {
         get_scope_type() == SidePanelEntryScope::ScopeType::kTab;
     // If the entry with the same key and scope is showing, synchronously close.
     if (side_panel_ui->IsSidePanelEntryShowing(key, for_tab)) {
-      side_panel_ui->Close(panel_type,
-                           SidePanelEntryHideReason::kSidePanelClosed,
+      side_panel_ui->Close(SidePanelEntryHideReason::kSidePanelClosed,
                            /*suppress_animations=*/true);
     }
   }
@@ -141,16 +136,15 @@ bool SidePanelRegistry::Deregister(const SidePanelEntry::Key& key) {
 }
 
 void SidePanelRegistry::SetActiveEntry(SidePanelEntry* entry) {
-  active_entries_[entry->type()] = entry;
+  active_entry_ = entry;
 }
 
-std::optional<SidePanelEntry*> SidePanelRegistry::GetActiveEntryFor(
-    SidePanelType type) {
-  return active_entries_[type];
+std::optional<SidePanelEntry*> SidePanelRegistry::GetActiveEntry() {
+  return active_entry_;
 }
 
 void SidePanelRegistry::OnEntryShown(SidePanelEntry* entry) {
-  active_entries_[entry->type()] = entry;
+  active_entry_ = entry;
 }
 
 const tabs::TabInterface& SidePanelRegistry::GetTabInterface() const {

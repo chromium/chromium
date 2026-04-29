@@ -12,7 +12,6 @@
 class SidePanelAnimations : public CachingBrowserAnimationProvider {
  public:
   DECLARE_CLASS_BROWSER_ANIMATION_GROUP(kToolbarHeightSidePanel);
-  DECLARE_CLASS_BROWSER_ANIMATION_GROUP(kContentHeightSidePanel);
   DECLARE_CLASS_BROWSER_ANIMATION_MOTION(kOpen);
   DECLARE_CLASS_BROWSER_ANIMATION_MOTION(kOpenWithContentTransition);
   DECLARE_CLASS_BROWSER_ANIMATION_MOTION(kClose);
