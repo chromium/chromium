@@ -389,7 +389,10 @@ result.links = linksArray;
 
 // Returns the registrar.
 - (autofill::ChildFrameRegistrar*)frameRegistrar {
-  CHECK(_webState);
+  // Returns nullptr if the WebState has been destroyed during async operations.
+  if (!_webState) {
+    return nullptr;
+  }
   return autofill::ChildFrameRegistrar::GetOrCreateForWebState(_webState.get());
 }
 
@@ -828,6 +831,11 @@ result.links = linksArray;
       auto mapping_lookup = base::BindRepeating(
           [](autofill::ChildFrameRegistrar* registrar,
              autofill::RemoteFrameToken remote) {
+            // If the registrar is null, return std::nullopt to trigger the
+            // fallback behavior of placing the node as a direct child.
+            if (!registrar) {
+              return std::optional<autofill::LocalFrameToken>();
+            }
             return registrar->LookupChildFrame(remote);
           },
           [self frameRegistrar]);
