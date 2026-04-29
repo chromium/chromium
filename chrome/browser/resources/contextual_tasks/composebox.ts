@@ -17,8 +17,8 @@ import {assert} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {AutocompleteMatch, AutocompleteResult, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import type {InputState, ToolMode} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
-import {InputType} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
+import type {InputState} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
+import {InputType, ToolMode} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -134,6 +134,10 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
         type: Boolean,
         reflect: true,
       },
+      inToolMode_: {
+        type: Boolean,
+        reflect: true,
+      },
       selectedMatchIndex_: {type: Number},
       enableFileHint_: {type: Boolean},
       lensButtonDisabled_: {type: Boolean},
@@ -145,6 +149,7 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
 
   accessor enableNativeZeroStateSuggestions: boolean = false;
   accessor inNlm: boolean = false;
+  accessor inToolMode_: boolean = false;
   accessor isZeroState: boolean = false;
   accessor isSidePanel: boolean = false;
   accessor isLensOverlayShowing: boolean = false;
@@ -388,6 +393,7 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
   }
 
   protected onInputStateChanged_(e: CustomEvent<{inputState: InputState}>) {
+    this.inToolMode_ = this.inputState?.activeTool !== ToolMode.kUnspecified;
     const disabledTypes = e.detail.inputState?.disabledInputTypes || [];
     if (disabledTypes.includes(InputType.kLensImage)) {
       this.pageHandler_.closeLensOverlayFromWebUI(
