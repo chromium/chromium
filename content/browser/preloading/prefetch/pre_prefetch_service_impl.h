@@ -45,6 +45,21 @@ struct PrePrefetchPreCalculatedHeadersKey {
   }
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(PrePrefetchStartResult)
+enum class PrePrefetchStartResult {
+  // PrePrefetch has been successfully started.
+  kStarted = 0,
+  // PrePrefetch failed because the `URLLoaderFactory` was disconnected.
+  kFailedURLLoaderFactoryDisconnected = 1,
+  // PrePrefetch failed because the requested origin did not match the
+  // pre-calculated headers cache.
+  kFailedPreCalculatedHeadersNotMatched = 2,
+  kMaxValue = kFailedPreCalculatedHeadersNotMatched,
+};
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:PrePrefetchStartResult)
+
 // Responsible for starting PrePrefetches based on an associated
 // `BrowserContext` given via ctor.
 //

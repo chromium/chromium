@@ -23506,6 +23506,23 @@ Called by update_net_error_codes.py.-->
   <int value="1" label="kRestoredFromBFCache"/>
 </enum>
 
+<!-- LINT.IfChange(PrePrefetchStartResult) -->
+
+<enum name="PrePrefetchStartResult">
+  <int value="0" label="kStarted">
+    PrePrefetch has been successfully started.
+  </int>
+  <int value="1" label="kFailedURLLoaderFactoryDisconnected">
+    PrePrefetch failed because the `URLLoaderFactory` was disconnected.
+  </int>
+  <int value="2" label="kFailedPreCalculatedHeadersNotMatched">
+    PrePrefetch failed because the requested origin did not match the
+    pre-calculated headers cache.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/preloading/prefetch/pre_prefetch_service_impl.h:PrePrefetchStartResult) -->
+
 <enum name="PrerenderBackNavigationEligibility">
   <int value="0" label="Eligible"/>
   <int value="1" label="No back entry"/>

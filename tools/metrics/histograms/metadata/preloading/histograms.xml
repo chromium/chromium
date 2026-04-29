@@ -289,6 +289,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Preloading.Prefetch.PrePrefetch.StartResult"
+    enum="PrePrefetchStartResult" expires_after="2026-10-18">
+  <owner>taiyo@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    Records the outcome of starting a PrePrefetch request (i.e. whether
+    `PrePrefetchContainer` is started or failed and the reason why). Recorded
+    during `PrePrefetchServiceCore::StartPrePrefetchRequest()`.
+  </summary>
+</histogram>
+
 <histogram name="Preloading.PrefetchBCGSwap.RelatedActiveContents"
     units="contents" expires_after="2024-06-30">
   <owner>jbroman@chromium.org</owner>

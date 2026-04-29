@@ -12,6 +12,7 @@
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
@@ -60,10 +61,13 @@ class PrePrefetchServiceImplTest : public testing::Test {
 
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
+  base::HistogramTester& histogram_tester() { return histogram_tester_; }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   BrowserTaskEnvironment task_environment_;
   TestBrowserContext browser_context_;
+  base::HistogramTester histogram_tester_;
 
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory>
@@ -122,6 +126,10 @@ TEST_F(PrePrefetchServiceImplTest, StartPrePrefetchRequestFromNonUIThread) {
 
   network::ResourceRequest request = request_future.Take();
   EXPECT_EQ(request.url, prefetch_url);
+
+  histogram_tester().ExpectUniqueSample(
+      "Preloading.Prefetch.PrePrefetch.StartResult",
+      PrePrefetchStartResult::kStarted, 1);
 }
 
 // Test that `PrePrefetchServiceCore::StartPrePrefetchRequest()` currently fails
@@ -166,6 +174,10 @@ TEST_F(PrePrefetchServiceImplTest,
 
   std::unique_ptr<PrePrefetchHandle> handle = handle_future.Take();
   EXPECT_EQ(handle, nullptr);
+
+  histogram_tester().ExpectUniqueSample(
+      "Preloading.Prefetch.PrePrefetch.StartResult",
+      PrePrefetchStartResult::kFailedPreCalculatedHeadersNotMatched, 1);
 }
 
 // Test that `PrePrefetchServiceImpl` fails if we do not have a connected
