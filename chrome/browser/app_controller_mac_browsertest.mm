@@ -802,11 +802,15 @@ IN_PROC_BROWSER_TEST_F(
                                ->GetNativeWindow()
                                .GetNativeNSWindow()];
 
-  // Open a url, waiting for a new browser window to open.
-  ui_test_utils::BrowserCreatedObserver browser_created_observer;
+  // Open a url, waiting for a new browser window to open and navigation to
+  // complete.
   GURL simple(embedded_test_server()->GetURL("/simple.html"));
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
+  content::TestNavigationObserver event_navigation_observer(simple);
+  event_navigation_observer.StartWatchingNewWebContents();
   SendOpenUrlToAppController(simple);
   BrowserWindowInterface* new_browser = browser_created_observer.Wait();
+  event_navigation_observer.Wait();
 
   // Check that a new regular browser is opened and the url is opened in it.
   EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 2u);
