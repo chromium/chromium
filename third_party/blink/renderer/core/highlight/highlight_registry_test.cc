@@ -433,4 +433,436 @@ TEST_F(HighlightsFromPointTest, HighlightsFromPointShadowRoot) {
   EXPECT_EQ(highlight_hit_results_at_point.size(), 0u);
 }
 
+TEST_F(HighlightRegistryTest, LiveIterationBasic) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes("1234");
+  auto* dom_window = GetDocument().domWindow();
+  HighlightRegistry* registry = HighlightRegistry::From(*dom_window);
+  auto* text = To<Text>(GetDocument().body()->firstChild());
+
+  auto* highlight1 = CreateHighlight(text, 0, text, 1);
+  auto* highlight2 = CreateHighlight(text, 1, text, 2);
+  auto* highlight3 = CreateHighlight(text, 2, text, 3);
+
+  registry->SetForTesting(AtomicString("h1"), highlight1);
+  registry->SetForTesting(AtomicString("h2"), highlight2);
+  registry->SetForTesting(AtomicString("h3"), highlight3);
+
+  auto* iter =
+      MakeGarbageCollected<HighlightRegistry::IterationSource>(*registry);
+  String key;
+  Highlight* value;
+  EXPECT_TRUE(iter->FetchNextItem(nullptr, key, value));
+  EXPECT_EQ(key, "h1");
+  EXPECT_EQ(value, highlight1);
+  EXPECT_TRUE(iter->FetchNextItem(nullptr, key, value));
+  EXPECT_EQ(key, "h2");
+  EXPECT_EQ(value, highlight2);
+  EXPECT_TRUE(iter->FetchNextItem(nullptr, key, value));
+  EXPECT_EQ(key, "h3");
+  EXPECT_EQ(value, highlight3);
+  EXPECT_FALSE(iter->FetchNextItem(nullptr, key, value));
+}
+
+TEST_F(HighlightRegistryTest, LiveIterationAddToEmpty) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes("1234");
+  auto* dom_window = GetDocument().domWindow();
+  HighlightRegistry* registry = HighlightRegistry::From(*dom_window);
+  auto* text = To<Text>(GetDocument().body()->firstChild());
+
+  auto* iter =
+      MakeGarbageCollected<HighlightRegistry::IterationSource>(*registry);
+
+  auto* highlight1 = CreateHighlight(text, 0, text, 1);
+  registry->SetForTesting(AtomicString("h1"), highlight1);
+
+  String key;
+  Highlight* value;
+  EXPECT_TRUE(iter->FetchNextItem(nullptr, key, value));
+  EXPECT_EQ(key, "h1");
+  EXPECT_EQ(value, highlight1);
+  EXPECT_FALSE(iter->FetchNextItem(nullptr, key, value));
+}
+
+TEST_F(HighlightRegistryTest, LiveIterationAddDuringIteration) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes("1234");
+  auto* dom_window = GetDocument().domWindow();
+  HighlightRegistry* registry = HighlightRegistry::From(*dom_window);
+  auto* text = To<Text>(GetDocument().body()->firstChild());
+
+  auto* highlight1 = CreateHighlight(text, 0, text, 1);
+  auto* highlight2 = CreateHighlight(text, 1, text, 2);
+  registry->SetForTesting(AtomicString("h1"), highlight1);
+  registry->SetForTesting(AtomicString("h2"), highlight2);
+
+  auto* iter =
+      MakeGarbageCollected<HighlightRegistry::IterationSource>(*registry);
+  String key;
+  Highlight* value;
+  EXPECT_TRUE(iter->FetchNextItem(nullptr, key, value));
+  EXPECT_EQ(key, "h1");
+
+  // Add h3 during iteration.
+  auto* highlight3 = CreateHighlight(text, 2, text, 3);
+  registry->SetForTesting(AtomicString("h3"), highlight3);
+
+  EXPECT_TRUE(iter->FetchNextItem(nullptr, key, value));
+  EXPECT_EQ(key, "h2");
+  EXPECT_TRUE(iter->FetchNextItem(nullptr, key, value));
+  EXPECT_EQ(key, "h3");
+  EXPECT_EQ(value, highlight3);
+  EXPECT_FALSE(iter->FetchNextItem(nullptr, key, value));
+}
+
+TEST_F(HighlightRegistryTest, LiveIterationDeleteOnlyItemBeforeVisit) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes("1234");
+  auto* dom_window = GetDocument().domWindow();
+  HighlightRegistry* registry = HighlightRegistry::From(*dom_window);
+  auto* text = To<Text>(GetDocument().body()->firstChild());
+
+  auto* highlight1 = CreateHighlight(text, 0, text, 1);
+  registry->SetForTesting(AtomicString("h1"), highlight1);
+
+  auto* iter =
+      MakeGarbageCollected<HighlightRegistry::IterationSource>(*registry);
+
+  registry->RemoveForTesting(AtomicString("h1"), highlight1);
+
+  String key;
+  Highlight* value;
+  EXPECT_FALSE(iter->FetchNextItem(nullptr, key, value));
+}
+
+TEST_F(HighlightRegistryTest, LiveIterationDeleteNextBeforeVisit) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes("1234");
+  auto* dom_window = GetDocument().domWindow();
+  HighlightRegistry* registry = HighlightRegistry::From(*dom_window);
+  auto* text = To<Text>(GetDocument().body()->firstChild());
+
+  auto* highlight1 = CreateHighlight(text, 0, text, 1);
+  auto* highlight2 = CreateHighlight(text, 1, text, 2);
+  registry->SetForTesting(AtomicString("h1"), highlight1);
+  registry->SetForTesting(AtomicString("h2"), highlight2);
+
+  auto* iter =
+      MakeGarbageCollected<HighlightRegistry::IterationSource>(*registry);
+
+  // Delete h2 before visiting it.
+  registry->RemoveForTesting(AtomicString("h2"), highlight2);
+
+  String key;
+  Highlight* value;
+  EXPECT_TRUE(iter->FetchNextItem(nullptr, key, value));
+  EXPECT_EQ(key, "h1");
+  EXPECT_FALSE(iter->FetchNextItem(nullptr, key, value));
+}
+
+TEST_F(HighlightRegistryTest, LiveIterationDeleteAlreadyVisited) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes("1234");
+  auto* dom_window = GetDocument().domWindow();
+  HighlightRegistry* registry = HighlightRegistry::From(*dom_window);
+  auto* text = To<Text>(GetDocument().body()->firstChild());
+
+  auto* highlight1 = CreateHighlight(text, 0, text, 1);
+  auto* highlight2 = CreateHighlight(text, 1, text, 2);
+  registry->SetForTesting(AtomicString("h1"), highlight1);
+  registry->SetForTesting(AtomicString("h2"), highlight2);
+
+  auto* iter =
+      MakeGarbageCollected<HighlightRegistry::IterationSource>(*registry);
+  String key;
+  Highlight* value;
+  EXPECT_TRUE(iter->FetchNextItem(nullptr, key, value));
+  EXPECT_EQ(key, "h1");
+
+  // Delete h1 (already visited) - should not affect continued iteration.
+  registry->RemoveForTesting(AtomicString("h1"), highlight1);
+
+  EXPECT_TRUE(iter->FetchNextItem(nullptr, key, value));
+  EXPECT_EQ(key, "h2");
+  EXPECT_EQ(value, highlight2);
+  EXPECT_FALSE(iter->FetchNextItem(nullptr, key, value));
+}
+
+TEST_F(HighlightRegistryTest, LiveIterationClear) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes("1234");
+  auto* dom_window = GetDocument().domWindow();
+  HighlightRegistry* registry = HighlightRegistry::From(*dom_window);
+  auto* text = To<Text>(GetDocument().body()->firstChild());
+
+  auto* highlight1 = CreateHighlight(text, 0, text, 1);
+  registry->SetForTesting(AtomicString("h1"), highlight1);
+
+  auto* iter =
+      MakeGarbageCollected<HighlightRegistry::IterationSource>(*registry);
+
+  DummyExceptionStateForTesting exception_state;
+  registry->clearForBinding(nullptr, exception_state);
+
+  String key;
+  Highlight* value;
+  EXPECT_FALSE(iter->FetchNextItem(nullptr, key, value));
+}
+
+TEST_F(HighlightRegistryTest, LiveIterationAddAfterExhaustion) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes("1234");
+  auto* dom_window = GetDocument().domWindow();
+  HighlightRegistry* registry = HighlightRegistry::From(*dom_window);
+  auto* text = To<Text>(GetDocument().body()->firstChild());
+
+  auto* highlight1 = CreateHighlight(text, 0, text, 1);
+  auto* highlight2 = CreateHighlight(text, 1, text, 2);
+  registry->SetForTesting(AtomicString("h1"), highlight1);
+  registry->SetForTesting(AtomicString("h2"), highlight2);
+
+  auto* iter =
+      MakeGarbageCollected<HighlightRegistry::IterationSource>(*registry);
+  String key;
+  Highlight* value;
+  EXPECT_TRUE(iter->FetchNextItem(nullptr, key, value));
+  EXPECT_TRUE(iter->FetchNextItem(nullptr, key, value));
+  EXPECT_FALSE(iter->FetchNextItem(nullptr, key, value));
+
+  // Add a new entry after the iterator was exhausted. Per Map live iteration
+  // semantics, an exhausted iterator stays done permanently.
+  auto* highlight3 = CreateHighlight(text, 2, text, 3);
+  registry->SetForTesting(AtomicString("h3"), highlight3);
+
+  EXPECT_FALSE(iter->FetchNextItem(nullptr, key, value));
+}
+
+TEST_F(HighlightRegistryTest, LiveIterationDeleteLastReturnedThenAdd) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes("1234");
+  auto* dom_window = GetDocument().domWindow();
+  HighlightRegistry* registry = HighlightRegistry::From(*dom_window);
+  auto* text = To<Text>(GetDocument().body()->firstChild());
+
+  auto* highlight1 = CreateHighlight(text, 0, text, 1);
+  registry->SetForTesting(AtomicString("h1"), highlight1);
+
+  auto* iter =
+      MakeGarbageCollected<HighlightRegistry::IterationSource>(*registry);
+
+  String key;
+  Highlight* value;
+  EXPECT_TRUE(iter->FetchNextItem(nullptr, key, value));
+  EXPECT_EQ(key, "h1");
+  EXPECT_FALSE(iter->FetchNextItem(nullptr, key, value));
+
+  // Delete the last-returned entry, then add a new one. The iterator was
+  // already exhausted, so it stays done permanently.
+  registry->RemoveForTesting(AtomicString("h1"), highlight1);
+  auto* highlight2 = CreateHighlight(text, 1, text, 2);
+  registry->SetForTesting(AtomicString("h2"), highlight2);
+
+  EXPECT_FALSE(iter->FetchNextItem(nullptr, key, value));
+}
+
+TEST_F(HighlightRegistryTest, LiveIterationPausedDeleteLastReturnedThenAdd) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes("1234");
+  auto* dom_window = GetDocument().domWindow();
+  HighlightRegistry* registry = HighlightRegistry::From(*dom_window);
+  auto* text = To<Text>(GetDocument().body()->firstChild());
+
+  auto* highlight1 = CreateHighlight(text, 0, text, 1);
+  registry->SetForTesting(AtomicString("h1"), highlight1);
+
+  auto* iter =
+      MakeGarbageCollected<HighlightRegistry::IterationSource>(*registry);
+
+  // Fetch h1 but do NOT call FetchNextItem again (iterator is paused,
+  // not exhausted).
+  String key;
+  Highlight* value;
+  EXPECT_TRUE(iter->FetchNextItem(nullptr, key, value));
+  EXPECT_EQ(key, "h1");
+
+  // Delete the last-returned entry, then add a new one. Since the iterator
+  // is paused (not exhausted), WillRemoveEntry updates last_returned_ so the
+  // iterator can find the newly added entry.
+  registry->RemoveForTesting(AtomicString("h1"), highlight1);
+  auto* highlight2 = CreateHighlight(text, 1, text, 2);
+  registry->SetForTesting(AtomicString("h2"), highlight2);
+
+  EXPECT_TRUE(iter->FetchNextItem(nullptr, key, value));
+  EXPECT_EQ(key, "h2");
+  EXPECT_EQ(value, highlight2);
+  EXPECT_FALSE(iter->FetchNextItem(nullptr, key, value));
+}
+
+TEST_F(HighlightRegistryTest, LiveIterationMultipleConcurrentIterators) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes("1234");
+  auto* dom_window = GetDocument().domWindow();
+  HighlightRegistry* registry = HighlightRegistry::From(*dom_window);
+  auto* text = To<Text>(GetDocument().body()->firstChild());
+
+  auto* highlight1 = CreateHighlight(text, 0, text, 1);
+  auto* highlight2 = CreateHighlight(text, 1, text, 2);
+  auto* highlight3 = CreateHighlight(text, 2, text, 3);
+  registry->SetForTesting(AtomicString("h1"), highlight1);
+  registry->SetForTesting(AtomicString("h2"), highlight2);
+  registry->SetForTesting(AtomicString("h3"), highlight3);
+
+  auto* iter1 =
+      MakeGarbageCollected<HighlightRegistry::IterationSource>(*registry);
+  auto* iter2 =
+      MakeGarbageCollected<HighlightRegistry::IterationSource>(*registry);
+  String key;
+  Highlight* value;
+
+  // Advance iter1 past h1. iter1.last_returned_ = h1's entry.
+  EXPECT_TRUE(iter1->FetchNextItem(nullptr, key, value));
+  EXPECT_EQ(key, "h1");
+
+  // Delete h2 - iter1 skips it (last_returned_ is h1's entry, so next lookup
+  // advances past h1 to h3). iter2 hasn't started so is unaffected.
+  registry->RemoveForTesting(AtomicString("h2"), highlight2);
+
+  EXPECT_TRUE(iter1->FetchNextItem(nullptr, key, value));
+  EXPECT_EQ(key, "h3");
+  EXPECT_FALSE(iter1->FetchNextItem(nullptr, key, value));
+
+  // iter2 should see h1 and h3 (h2 was deleted).
+  EXPECT_TRUE(iter2->FetchNextItem(nullptr, key, value));
+  EXPECT_EQ(key, "h1");
+  EXPECT_TRUE(iter2->FetchNextItem(nullptr, key, value));
+  EXPECT_EQ(key, "h3");
+  EXPECT_FALSE(iter2->FetchNextItem(nullptr, key, value));
+}
+
+TEST_F(HighlightRegistryTest, LiveIterationClearWithMultipleIterators) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes("1234");
+  auto* dom_window = GetDocument().domWindow();
+  HighlightRegistry* registry = HighlightRegistry::From(*dom_window);
+  auto* text = To<Text>(GetDocument().body()->firstChild());
+
+  auto* highlight1 = CreateHighlight(text, 0, text, 1);
+  auto* highlight2 = CreateHighlight(text, 1, text, 2);
+  registry->SetForTesting(AtomicString("h1"), highlight1);
+  registry->SetForTesting(AtomicString("h2"), highlight2);
+
+  auto* iter1 =
+      MakeGarbageCollected<HighlightRegistry::IterationSource>(*registry);
+  auto* iter2 =
+      MakeGarbageCollected<HighlightRegistry::IterationSource>(*registry);
+
+  // Advance iter1 past h1.
+  String key;
+  Highlight* value;
+  EXPECT_TRUE(iter1->FetchNextItem(nullptr, key, value));
+  EXPECT_EQ(key, "h1");
+
+  DummyExceptionStateForTesting exception_state;
+  registry->clearForBinding(nullptr, exception_state);
+
+  EXPECT_FALSE(iter1->FetchNextItem(nullptr, key, value));
+  EXPECT_FALSE(iter2->FetchNextItem(nullptr, key, value));
+}
+
+TEST_F(HighlightRegistryTest, LiveIterationAddAfterDoneFromEmpty) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes("1234");
+  auto* dom_window = GetDocument().domWindow();
+  HighlightRegistry* registry = HighlightRegistry::From(*dom_window);
+  auto* text = To<Text>(GetDocument().body()->firstChild());
+
+  auto* iter =
+      MakeGarbageCollected<HighlightRegistry::IterationSource>(*registry);
+
+  // Iterator is done on the empty registry - permanently exhausted.
+  String key;
+  Highlight* value;
+  EXPECT_FALSE(iter->FetchNextItem(nullptr, key, value));
+
+  // Add an entry. The iterator was already exhausted, so it stays done.
+  auto* highlight1 = CreateHighlight(text, 0, text, 1);
+  registry->SetForTesting(AtomicString("h1"), highlight1);
+
+  EXPECT_FALSE(iter->FetchNextItem(nullptr, key, value));
+}
+
+TEST_F(HighlightRegistryTest, LiveIterationClearThenAdd) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes("1234");
+  auto* dom_window = GetDocument().domWindow();
+  HighlightRegistry* registry = HighlightRegistry::From(*dom_window);
+  auto* text = To<Text>(GetDocument().body()->firstChild());
+
+  auto* highlight1 = CreateHighlight(text, 0, text, 1);
+  registry->SetForTesting(AtomicString("h1"), highlight1);
+
+  auto* iter =
+      MakeGarbageCollected<HighlightRegistry::IterationSource>(*registry);
+
+  DummyExceptionStateForTesting exception_state;
+  registry->clearForBinding(nullptr, exception_state);
+
+  // Add a new entry after clear. The iterator was not yet exhausted (it never
+  // returned done=true), so it sees the newly added entry - matching JS Map
+  // semantics where clear() marks entries as empty but the iterator continues.
+  auto* highlight2 = CreateHighlight(text, 1, text, 2);
+  registry->SetForTesting(AtomicString("h2"), highlight2);
+
+  String key;
+  Highlight* value;
+  EXPECT_TRUE(iter->FetchNextItem(nullptr, key, value));
+  EXPECT_EQ(key, "h2");
+  EXPECT_EQ(value, highlight2);
+  EXPECT_FALSE(iter->FetchNextItem(nullptr, key, value));
+}
+
+TEST_F(HighlightRegistryTest, LiveIterationClearNoAdd) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes("1234");
+  auto* dom_window = GetDocument().domWindow();
+  HighlightRegistry* registry = HighlightRegistry::From(*dom_window);
+  auto* text = To<Text>(GetDocument().body()->firstChild());
+
+  auto* highlight1 = CreateHighlight(text, 0, text, 1);
+  registry->SetForTesting(AtomicString("h1"), highlight1);
+
+  auto* iter =
+      MakeGarbageCollected<HighlightRegistry::IterationSource>(*registry);
+
+  DummyExceptionStateForTesting exception_state;
+  registry->clearForBinding(nullptr, exception_state);
+
+  // After clear with no subsequent add, the iterator is exhausted. Further
+  // adds should not revive it.
+  String key;
+  Highlight* value;
+  EXPECT_FALSE(iter->FetchNextItem(nullptr, key, value));
+
+  auto* highlight2 = CreateHighlight(text, 1, text, 2);
+  registry->SetForTesting(AtomicString("h2"), highlight2);
+
+  EXPECT_FALSE(iter->FetchNextItem(nullptr, key, value));
+}
+
+TEST_F(HighlightRegistryTest, LiveIterationDeleteAndReaddVisited) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes("1234");
+  auto* dom_window = GetDocument().domWindow();
+  HighlightRegistry* registry = HighlightRegistry::From(*dom_window);
+  auto* text = To<Text>(GetDocument().body()->firstChild());
+
+  auto* highlight1 = CreateHighlight(text, 0, text, 1);
+  auto* highlight2 = CreateHighlight(text, 1, text, 2);
+  registry->SetForTesting(AtomicString("h1"), highlight1);
+  registry->SetForTesting(AtomicString("h2"), highlight2);
+
+  auto* iter =
+      MakeGarbageCollected<HighlightRegistry::IterationSource>(*registry);
+  String key;
+  Highlight* value;
+  EXPECT_TRUE(iter->FetchNextItem(nullptr, key, value));
+  EXPECT_EQ(key, "h1");
+
+  // Delete h1 (already visited) and re-add it. Per JS Map semantics,
+  // re-adding appends to the end and the iterator sees it again.
+  registry->RemoveForTesting(AtomicString("h1"), highlight1);
+  registry->SetForTesting(AtomicString("h1"), highlight1);
+
+  EXPECT_TRUE(iter->FetchNextItem(nullptr, key, value));
+  EXPECT_EQ(key, "h2");
+  EXPECT_TRUE(iter->FetchNextItem(nullptr, key, value));
+  EXPECT_EQ(key, "h1");
+  EXPECT_FALSE(iter->FetchNextItem(nullptr, key, value));
+}
+
 }  // namespace blink

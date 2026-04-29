@@ -110,63 +110,25 @@ Highlight::IterationSource::IterationSource(Highlight& highlight)
 
 bool Highlight::IterationSource::FetchNextItem(ScriptState*,
                                                AbstractRange*& value) {
-  if (finished_) {
+  AbstractRange* entry = AdvanceAndGetNext(highlight_->highlight_ranges_,
+                                           highlight_->active_iterators_);
+  if (!entry) {
     return false;
   }
-
-  auto& ranges = highlight_->highlight_ranges_;
-  HeapLinkedHashSet<Member<AbstractRange>>::const_iterator range_to_return;
-  // We should return the range after the last returned one.
-  // If there is no last returned range, we should return the first one.
-  if (!last_returned_) {
-    range_to_return = ranges.begin();
-  } else {
-    range_to_return = ranges.find(last_returned_);
-    CHECK(range_to_return != ranges.end());
-    ++range_to_return;
-  }
-
-  if (range_to_return == ranges.end()) {
-    finished_ = true;
-    highlight_->active_iterators_.erase(this);
-    return false;
-  }
-
-  value = *range_to_return;
-  last_returned_ = *range_to_return;
+  value = entry;
   return true;
-}
-
-void Highlight::IterationSource::WillRemoveItem(AbstractRange* range) {
-  // If the range being removed is the last one returned, move back the cursor
-  // so that the next range returned will be the one after the removed range.
-  if (last_returned_ == range) {
-    auto& ranges = highlight_->highlight_ranges_;
-    auto it = ranges.find(range);
-    CHECK(it != ranges.end());
-    if (it == ranges.begin()) {
-      last_returned_ = nullptr;
-    } else {
-      --it;
-      last_returned_ = *it;
-    }
-  }
-}
-
-void Highlight::IterationSource::WillClear() {
-  last_returned_ = nullptr;
 }
 
 void Highlight::IterationSource::Trace(blink::Visitor* visitor) const {
   visitor->Trace(highlight_);
-  visitor->Trace(last_returned_);
+  HighlightLiveIterator::Trace(visitor);
   HighlightSetIterable::IterationSource::Trace(visitor);
 }
 
 void Highlight::NotifyIteratorsWillRemoveItem(AbstractRange* range) {
   for (auto& iter : active_iterators_) {
     if (iter) {
-      iter->WillRemoveItem(range);
+      iter->WillRemoveEntry(range, highlight_ranges_);
     }
   }
 }

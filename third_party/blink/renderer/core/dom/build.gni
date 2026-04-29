@@ -179,6 +179,7 @@ blink_core_sources_dom = [
   "layout_tree_builder.h",
   "layout_tree_builder_traversal.cc",
   "layout_tree_builder_traversal.h",
+  "live_collection_iterator.h",
   "live_node_list.cc",
   "live_node_list.h",
   "live_node_list_base.cc",

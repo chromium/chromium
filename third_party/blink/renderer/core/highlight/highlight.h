@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_sync_iterator_highlight.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/abstract_range.h"
+#include "third_party/blink/renderer/core/dom/live_collection_iterator.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
@@ -49,8 +50,11 @@ class CORE_EXPORT Highlight : public ScriptWrappable,
   bool Contains(AbstractRange*) const;
 
   // HighlightSetIterable implements live iteration following Set semantics.
+  using HighlightLiveIterator = LiveCollectionIterator<AbstractRange>;
+
   class CORE_EXPORT IterationSource final
-      : public HighlightSetIterable::IterationSource {
+      : public HighlightSetIterable::IterationSource,
+        public HighlightLiveIterator {
    public:
     explicit IterationSource(Highlight& highlight);
 
@@ -58,16 +62,8 @@ class CORE_EXPORT Highlight : public ScriptWrappable,
 
     void Trace(blink::Visitor*) const override;
 
-    // Called by Highlight before an element is removed from the set.
-    void WillRemoveItem(AbstractRange* range);
-    // Called by Highlight before the set is cleared.
-    void WillClear();
-
    private:
     Member<Highlight> highlight_;
-    // Last successfully returned range, FetchNextItem advances past it.
-    Member<AbstractRange> last_returned_ = nullptr;
-    bool finished_ = false;
   };
 
   const HeapLinkedHashSet<Member<AbstractRange>>& GetRanges() const {
@@ -83,7 +79,7 @@ class CORE_EXPORT Highlight : public ScriptWrappable,
 
   HeapLinkedHashSet<Member<AbstractRange>> highlight_ranges_;
   // Active iteration sources that need to be notified of mutations.
-  HeapHashSet<WeakMember<IterationSource>> active_iterators_;
+  HeapHashSet<WeakMember<HighlightLiveIterator>> active_iterators_;
   void NotifyIteratorsWillRemoveItem(AbstractRange* range);
   void NotifyIteratorsWillClear();
 

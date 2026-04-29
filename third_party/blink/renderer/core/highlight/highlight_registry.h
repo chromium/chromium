@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/maplike.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_sync_iterator_highlight_registry.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/dom/live_collection_iterator.h"
 #include "third_party/blink/renderer/core/highlight/highlight.h"
 #include "third_party/blink/renderer/core/highlight/highlight_registry_map_entry.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -80,10 +81,16 @@ class CORE_EXPORT HighlightRegistry : public ScriptWrappable,
       const AtomicString& highlight_name1,
       const AtomicString& highlight_name2) const;
 
-  class IterationSource final
-      : public HighlightRegistryMapIterable::IterationSource {
+  // HighlightRegistryMapIterable implements live iteration following Map
+  // semantics.
+  using RegistryLiveIterator =
+      LiveCollectionIterator<HighlightRegistryMapEntry>;
+
+  class CORE_EXPORT IterationSource final
+      : public HighlightRegistryMapIterable::IterationSource,
+        public RegistryLiveIterator {
    public:
-    explicit IterationSource(const HighlightRegistry& highlight_registry);
+    explicit IterationSource(HighlightRegistry& highlight_registry);
 
     bool FetchNextItem(ScriptState* script_state,
                        String& key,
@@ -92,8 +99,7 @@ class CORE_EXPORT HighlightRegistry : public ScriptWrappable,
     void Trace(blink::Visitor*) const override;
 
    private:
-    wtf_size_t index_;
-    HeapVector<Member<HighlightRegistryMapEntry>> highlights_snapshot_;
+    Member<HighlightRegistry> registry_;
   };
 
   HeapVector<Member<HighlightHitResult>> highlightsFromPoint(
@@ -106,6 +112,11 @@ class CORE_EXPORT HighlightRegistry : public ScriptWrappable,
 
   HighlightRegistryMap highlights_;
   Member<LocalFrame> frame_;
+  // Active iteration sources that need to be notified of mutations.
+  // WeakMember ensures GC automatically cleans up unreferenced iterators.
+  HeapHashSet<WeakMember<RegistryLiveIterator>> active_iterators_;
+  void NotifyIteratorsWillRemoveEntry(HighlightRegistryMapEntry* entry);
+  void NotifyIteratorsWillClear();
   // Only valid after ValidateHighlightMarkers(), used to optimize painting.
   HeapHashMap<WeakMember<const Text>, HashSet<AtomicString>>
       active_highlights_in_node_;

@@ -45,6 +45,7 @@ const char HighlightRegistry::kSupplementName[] = "HighlightRegistry";
 void HighlightRegistry::Trace(blink::Visitor* visitor) const {
   visitor->Trace(highlights_);
   visitor->Trace(frame_);
+  visitor->Trace(active_iterators_);
   visitor->Trace(active_highlights_in_node_);
   ScriptWrappable::Trace(visitor);
   Supplement<LocalDOMWindow>::Trace(visitor);
@@ -225,6 +226,7 @@ void HighlightRegistry::SetForTesting(AtomicString highlight_name,
     // It's necessary to delete it and insert a new entry to the registry
     // instead of just modifying the existing one so the insertion order is
     // preserved.
+    NotifyIteratorsWillRemoveEntry(highlights_iterator->Get());
     highlights_.erase(highlights_iterator);
   }
   highlights_.insert(MakeGarbageCollected<HighlightRegistryMapEntry>(
@@ -238,6 +240,7 @@ void HighlightRegistry::RemoveForTesting(AtomicString highlight_name,
   auto highlights_iterator = GetMapIterator(highlight_name);
   if (highlights_iterator != highlights_.end()) {
     highlights_iterator->Get()->highlight->DeregisterFrom(this);
+    NotifyIteratorsWillRemoveEntry(highlights_iterator->Get());
     highlights_.erase(highlights_iterator);
     ScheduleRepaint();
   }
@@ -258,6 +261,7 @@ void HighlightRegistry::clearForBinding(ScriptState*, ExceptionState&) {
   for (const auto& highlight_registry_map_entry : highlights_) {
     highlight_registry_map_entry->highlight->DeregisterFrom(this);
   }
+  NotifyIteratorsWillClear();
   highlights_.clear();
   ScheduleRepaint();
 }
@@ -268,6 +272,7 @@ bool HighlightRegistry::deleteForBinding(ScriptState*,
   auto highlights_iterator = GetMapIterator(highlight_name);
   if (highlights_iterator != highlights_.end()) {
     highlights_iterator->Get()->highlight->DeregisterFrom(this);
+    NotifyIteratorsWillRemoveEntry(highlights_iterator->Get());
     highlights_.erase(highlights_iterator);
     ScheduleRepaint();
     return true;
@@ -308,31 +313,45 @@ int8_t HighlightRegistry::CompareOverlayStackingPosition(
 }
 
 HighlightRegistry::IterationSource::IterationSource(
-    const HighlightRegistry& highlight_registry)
-    : index_(0) {
-  highlights_snapshot_.ReserveInitialCapacity(
-      highlight_registry.highlights_.size());
-  for (const auto& highlight_registry_map_entry :
-       highlight_registry.highlights_) {
-    highlights_snapshot_.push_back(
-        MakeGarbageCollected<HighlightRegistryMapEntry>(
-            highlight_registry_map_entry));
-  }
+    HighlightRegistry& highlight_registry)
+    : registry_(&highlight_registry) {
+  highlight_registry.active_iterators_.insert(this);
 }
 
 bool HighlightRegistry::IterationSource::FetchNextItem(ScriptState*,
                                                        String& key,
                                                        Highlight*& value) {
-  if (index_ >= highlights_snapshot_.size())
+  HighlightRegistryMapEntry* entry =
+      AdvanceAndGetNext(registry_->highlights_, registry_->active_iterators_);
+  if (!entry) {
     return false;
-  key = highlights_snapshot_[index_]->highlight_name;
-  value = highlights_snapshot_[index_++]->highlight;
+  }
+  key = entry->highlight_name;
+  value = entry->highlight;
   return true;
 }
 
 void HighlightRegistry::IterationSource::Trace(blink::Visitor* visitor) const {
-  visitor->Trace(highlights_snapshot_);
+  visitor->Trace(registry_);
+  RegistryLiveIterator::Trace(visitor);
   HighlightRegistryMapIterable::IterationSource::Trace(visitor);
+}
+
+void HighlightRegistry::NotifyIteratorsWillRemoveEntry(
+    HighlightRegistryMapEntry* entry) {
+  for (auto& iter : active_iterators_) {
+    if (iter) {
+      iter->WillRemoveEntry(entry, highlights_);
+    }
+  }
+}
+
+void HighlightRegistry::NotifyIteratorsWillClear() {
+  for (auto& iter : active_iterators_) {
+    if (iter) {
+      iter->WillClear();
+    }
+  }
 }
 
 HighlightRegistryMapIterable::IterationSource*
