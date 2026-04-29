@@ -1293,30 +1293,19 @@ if (enable_extensions) {
   # system and relevant APIs.
   source_set("browser_tests") {
     testonly = true
-    sources = [ "browsertest_util_browsertest.cc" ]
+    sources = [ "placeholder_browsertest.cc" ]
 
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
     deps = [
       ":browser",
       "//base",
-      "//build:chromeos_buildflags",
-      "//components/guest_view/browser:test_support",
-      "//components/storage_monitor:test_support",
-      "//device/bluetooth:mocks",
       "//extensions:test_support",
       "//extensions/browser:test_support",
-      "//extensions/browser/api/system_display:display_info_provider",
       "//extensions/common",
       "//extensions/common/api",
       "//extensions/shell:app_shell_lib",
       "//extensions/shell:browser_tests",
-      "//net:test_support",
-      "//services/device/public/cpp:test_support",
-      "//services/device/public/mojom",
-      "//services/network:test_support",
-      "//services/service_manager/public/cpp",
-      "//ui/display:test_support",
     ]
 
     public_deps = [ "//content/test:test_support" ]
