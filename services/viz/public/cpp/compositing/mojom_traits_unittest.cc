@@ -10,6 +10,7 @@
 #include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "base/trace_event/traced_value.h"
 #include "build/build_config.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
@@ -1642,6 +1643,15 @@ auto AnyBeginFrameId() {
                                                fuzztest::Arbitrary<uint64_t>());
 }
 
+auto AnyBeginFrameAck() {
+  return fuzztest::ConstructorOf<BeginFrameAck>(
+      /*source_id=*/fuzztest::Arbitrary<uint64_t>(),
+      /*sequence_number=*/
+      fuzztest::InRange<uint64_t>(1, std::numeric_limits<uint64_t>::max()),
+      /*has_damage=*/fuzztest::Arbitrary<bool>(),
+      /*trace_id=*/fuzztest::Arbitrary<int64_t>());
+}
+
 auto AnyBeginFrameArgs() {
   return fuzztest::Map(
       [](base::TimeTicks frame_time, base::TimeTicks deadline,
@@ -1680,6 +1690,19 @@ void BeginFrameArgsFuzz(const BeginFrameArgs& input) {
 }
 FUZZ_TEST(StructTraitsTest, BeginFrameArgsFuzz)
     .WithDomains(AnyBeginFrameArgs());
+
+void BeginFrameAckFuzz(const BeginFrameAck& input) {
+  BeginFrameAck output;
+  mojo::test::SerializeAndDeserialize<mojom::BeginFrameAck>(input, output);
+}
+FUZZ_TEST(StructTraitsTest, BeginFrameAckFuzz).WithDomains(AnyBeginFrameAck());
+
+void BeginFrameAckAsValueFuzz(const BeginFrameAck& input) {
+  base::trace_event::TracedValue dict;
+  input.AsValueInto(&dict);
+}
+FUZZ_TEST(StructTraitsTest, BeginFrameAckAsValueFuzz)
+    .WithDomains(AnyBeginFrameAck());
 
 auto AnyFrameSinkId() {
   return fuzztest::ConstructorOf<FrameSinkId>(fuzztest::Arbitrary<uint32_t>(),

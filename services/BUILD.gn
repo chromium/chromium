@@ -43,6 +43,8 @@ test("services_unittests") {
     "TrustTokenKeyCommitmentFuzzer.ParsesOneIssuerCorrectly",
     "TrustTokenKeyCommitmentFuzzer.ParsesMultipleIssuersCorrectly",
     "StructTraitsTest.BeginFrameArgsFuzz",
+    "StructTraitsTest.BeginFrameAckFuzz",
+    "StructTraitsTest.BeginFrameAckAsValueFuzz",
     "StructTraitsTest.SurfaceIdFuzz",
     "StructTraitsTest.FrameSinkIdFuzz",
     "StructTraitsTest.LocalSurfaceIdFuzz",
