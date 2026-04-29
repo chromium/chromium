@@ -3059,7 +3059,7 @@ OAuth Multilogin call. -->
 </histogram>
 
 <histogram name="Signin.ShowManageAccountFromGaia.BrowserType"
-    enum="ChromeBrowserType" expires_after="2026-05-01">
+    enum="ChromeBrowserType" expires_after="2027-04-01">
   <owner>jlebel@chromium.org</owner>
   <owner>chrome-signin-mobile-team@google.com</owner>
   <summary>
