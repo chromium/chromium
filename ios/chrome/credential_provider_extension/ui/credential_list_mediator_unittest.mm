@@ -435,4 +435,100 @@ TEST_F(CredentialListMediatorTest, FilterPasskeyAndPasswordCredentials) {
   EXPECT_NSEQ(filtered_credentials[1], passkey_credential);
 }
 
+// Tests that filtering password credentials works properly for subdomains.
+TEST_F(CredentialListMediatorTest, FilterPasswordCredentialsSubdomain) {
+  ArchivableCredential* credential =
+      [[ArchivableCredential alloc] initWithFavicon:nil
+                                               gaia:nil
+                                           password:@"qwerty123"
+                                               rank:1
+                                   recordIdentifier:@"recordIdentifier"
+                                  serviceIdentifier:@"http://example.com"
+                                        serviceName:@"example.com"
+                           registryControlledDomain:@"example.com"
+                                           username:@"username_value"
+                                               note:@"note"
+                                       lastUsedTime:0];
+
+  NSMutableArray<id<Credential>>* credentials = [NSMutableArray array];
+  [credentials addObject:credential];
+  id<CredentialStore> credentialStore =
+      [[MockCredentialStore alloc] initWithCredentials:credentials];
+
+  ASCredentialServiceIdentifier* serviceIdentifier =
+      [[ASCredentialServiceIdentifier alloc]
+          initWithIdentifier:@"login.example.com"
+                        type:ASCredentialServiceIdentifierTypeDomain];
+  NSArray* serviceIdentifiers = [NSArray arrayWithObject:serviceIdentifier];
+
+  CredentialListMediator* credentialListMediator =
+      [[CredentialListMediator alloc] initWithConsumer:nil
+                                             UIHandler:nil
+                                       credentialStore:credentialStore
+                                    serviceIdentifiers:serviceIdentifiers
+                             credentialResponseHandler:nil];
+
+  credentialListMediator.allCredentials =
+      [credentialListMediator fetchAllCredentials];
+
+  NSArray<id<Credential>>* filteredCredentials =
+      [credentialListMediator filterCredentials];
+  ASSERT_EQ(filteredCredentials.count, 1u);
+  EXPECT_NSEQ(filteredCredentials[0], credential);
+}
+
+// Tests that filtering password credentials rejects false matches.
+TEST_F(CredentialListMediatorTest, FilterPasswordCredentialsNoFalseMatch) {
+  ArchivableCredential* credential =
+      [[ArchivableCredential alloc] initWithFavicon:nil
+                                               gaia:nil
+                                           password:@"qwerty123"
+                                               rank:1
+                                   recordIdentifier:@"recordIdentifier"
+                                  serviceIdentifier:@"http://example.com"
+                                        serviceName:@"example.com"
+                           registryControlledDomain:@"example.com"
+                                           username:@"username_value"
+                                               note:@"note"
+                                       lastUsedTime:0];
+
+  NSMutableArray<id<Credential>>* credentials = [NSMutableArray array];
+  [credentials addObject:credential];
+  id<CredentialStore> credentialStore =
+      [[MockCredentialStore alloc] initWithCredentials:credentials];
+
+  ASCredentialServiceIdentifier* serviceIdentifier1 =
+      [[ASCredentialServiceIdentifier alloc]
+          initWithIdentifier:@"evil-example.com"
+                        type:ASCredentialServiceIdentifierTypeDomain];
+
+  ASCredentialServiceIdentifier* serviceIdentifier2 =
+      [[ASCredentialServiceIdentifier alloc]
+          initWithIdentifier:@"example.com.evil"
+                        type:ASCredentialServiceIdentifierTypeDomain];
+
+  ASCredentialServiceIdentifier* serviceIdentifier3 =
+      [[ASCredentialServiceIdentifier alloc]
+          initWithIdentifier:@"evil.com/login?target=example.com"
+                        type:ASCredentialServiceIdentifierTypeDomain];
+
+  NSArray* serviceIdentifiers =
+      [NSArray arrayWithObjects:serviceIdentifier1, serviceIdentifier2,
+                                serviceIdentifier3, nil];
+
+  CredentialListMediator* credentialListMediator =
+      [[CredentialListMediator alloc] initWithConsumer:nil
+                                             UIHandler:nil
+                                       credentialStore:credentialStore
+                                    serviceIdentifiers:serviceIdentifiers
+                             credentialResponseHandler:nil];
+
+  credentialListMediator.allCredentials =
+      [credentialListMediator fetchAllCredentials];
+
+  NSArray<id<Credential>>* filteredCredentials =
+      [credentialListMediator filterCredentials];
+  ASSERT_EQ(filteredCredentials.count, 0u);
+}
+
 }  // namespace credential_provider_extension
