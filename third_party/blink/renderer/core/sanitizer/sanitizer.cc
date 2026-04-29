@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_sanitizerprocessinginstruction_string.h"
 #include "third_party/blink/renderer/core/dom/comment.h"
 #include "third_party/blink/renderer/core/dom/container_node.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
@@ -1409,42 +1410,22 @@ bool Sanitizer::isValid() const {
   return true;
 }
 
-Node* StreamingSanitizer::Sanitize(Node* node) {
-  Sanitizer::Action result = sanitizer_->SanitizeSingleNode(node, mode_);
-
-  if (result == Sanitizer::Action::kKeep ||
-      result == Sanitizer::Action::kKeepElement) {
-    return node;
+void StreamingSanitizer::DidParseDocument(Document* document) {
+  Element* root = document->documentElement();
+  CHECK(root);
+  switch (sanitizer_->ActionForNode(root, root)) {
+    case Sanitizer::Action::kKeepElement:
+      sanitizer_->ProcessElement(root, mode_);
+      break;
+    case Sanitizer::Action::kReplaceWithChildren:
+      ReplaceWithChildren(*root);
+      break;
+    case Sanitizer::Action::kDrop:
+      root->remove();
+      break;
+    case Sanitizer::Action::kKeep:
+      NOTREACHED();
   }
-
-  if (text_node_merge_mode_ == TextNodeMergeMode::kMerge) {
-    return nullptr;
-  }
-
-  // This is a workaround to make the streaming sanitizer behave like the
-  // post-processing sanitize in terms of merging text nodes. We add fake
-  // comment nodes when a node is to be dropped, and remove them at the end.
-  // This prevents from text nodes from merging while we parse.
-  if (result == Sanitizer::Action::kReplaceWithChildren) {
-    temp_replaced_elements_.push_back(node);
-    return node;
-  }
-
-  CHECK_EQ(result, Sanitizer::Action::kDrop);
-  Node* text_node_separator = node->ownerDocument()->createComment("separator");
-  temp_text_node_separators_.push_back(text_node_separator);
-  return text_node_separator;
-}
-
-void StreamingSanitizer::Finalize() {
-  for (auto& node : temp_text_node_separators_) {
-    node->remove();
-  }
-  for (auto& node : temp_replaced_elements_) {
-    ReplaceWithChildren(*node);
-  }
-  temp_text_node_separators_.clear();
-  temp_replaced_elements_.clear();
 }
 
 }  // namespace blink

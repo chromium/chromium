@@ -131,8 +131,8 @@ class CORE_EXPORT Sanitizer final : public ScriptWrappable {
   // insertion target, or null if the element is to be discarded.
   // This is used for streaming.
   Action SanitizeSingleNode(Node* node, Mode safe) const;
-
   bool ShouldReplaceNodeWithChildren(Node* node) const;
+  void ProcessElement(Element* element, Mode safe) const;
 
   // Helper for Create: Convert from IDL representation to internal.
   bool setFrom(const SanitizerConfig*, bool allowCommentsAndDataAttributes);
@@ -143,8 +143,6 @@ class CORE_EXPORT Sanitizer final : public ScriptWrappable {
 
  private:
   enum class SanitizerBoolWithAbsence { kAbsent, kTrue, kFalse };
-
-  void ProcessElement(Element* element, Mode safe) const;
 
   // Helper methods for SanitizeSafe/Unsafe:
   void Sanitize(Node* node, Mode safe) const;
@@ -190,42 +188,23 @@ class CORE_EXPORT Sanitizer final : public ScriptWrappable {
 
 class StreamingSanitizer : public GarbageCollected<StreamingSanitizer> {
  public:
-  // This is a workaround to keep the fragment-based sanitizer behavior of
-  // keeping text nodes separate when the streaming sanitizer would otherwise
-  // merge them. See https://github.com/WICG/sanitizer-api/issues/390.
-  enum class TextNodeMergeMode { kKeepSeparate, kMerge };
+  StreamingSanitizer(Sanitizer* sanitizer, Sanitizer::Mode mode)
+      : sanitizer_(sanitizer), mode_(mode) {}
 
-  StreamingSanitizer(Sanitizer* sanitizer,
-                     Sanitizer::Mode mode,
-                     TextNodeMergeMode text_node_merge_mode)
-      : sanitizer_(sanitizer),
-        mode_(mode),
-        text_node_merge_mode_(text_node_merge_mode) {}
-
-  ~StreamingSanitizer() {
-    CHECK(temp_text_node_separators_.empty());
-    CHECK(temp_replaced_elements_.empty());
+  bool Sanitize(Node* node) {
+    return sanitizer_->SanitizeSingleNode(node, mode_) ==
+           Sanitizer::Action::kKeep;
   }
-  Node* Sanitize(Node* node);
+
   bool ShouldReplaceWithChildren(Node* node) const {
-    return text_node_merge_mode_ == TextNodeMergeMode::kMerge &&
-           sanitizer_->ShouldReplaceNodeWithChildren(node);
+    return sanitizer_->ShouldReplaceNodeWithChildren(node);
   }
-
-  void Trace(Visitor* visitor) const {
-    visitor->Trace(sanitizer_);
-    visitor->Trace(temp_text_node_separators_);
-    visitor->Trace(temp_replaced_elements_);
-  }
-
-  void Finalize();
+  void DidParseDocument(Document* document);
+  void Trace(Visitor* visitor) const { visitor->Trace(sanitizer_); }
 
  private:
   Member<Sanitizer> sanitizer_;
-  HeapVector<Member<Node>> temp_text_node_separators_;
-  HeapVector<Member<Node>> temp_replaced_elements_;
   Sanitizer::Mode mode_;
-  TextNodeMergeMode text_node_merge_mode_;
 };
 
 }  // namespace blink

@@ -71,6 +71,7 @@ class JSONDocumentParser : public HTMLDocumentParser {
       : HTMLDocumentParser(document,
                            sync_policy,
                            /*registry=*/nullptr,
+                           /*sanitizer=*/nullptr,
                            kDisallowPrefetching) {}
 
   void Trace(Visitor* visitor) const override {

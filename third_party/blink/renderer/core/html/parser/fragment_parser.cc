@@ -246,12 +246,7 @@ DocumentFragment* ParseHTMLFragment(const String& markup,
   StreamingSanitizer* streaming_sanitizer = nullptr;
   if (should_sanitize && RuntimeEnabledFeatures::StreamingSanitizerEnabled()) {
     streaming_sanitizer = SanitizerAPI::CreateStreamingSanitizer(
-        config.sanitizer_mode,
-        // By using "keepSeparate" here we mimic the behavior of the
-        // post-processing sanitizer, where elements are added when parsing and
-        // removed at the end.
-        StreamingSanitizer::TextNodeMergeMode::kKeepSeparate, options,
-        exception_state);
+        config.sanitizer_mode, options, exception_state);
   }
 
   if (streaming_sanitizer &&
@@ -266,10 +261,6 @@ DocumentFragment* ParseHTMLFragment(const String& markup,
       should_sanitize ? ForceInertTemplate::kForce
                       : ForceInertTemplate::kDontForce,
       config.registry, exception_state, streaming_sanitizer);
-
-  if (streaming_sanitizer) {
-    streaming_sanitizer->Finalize();
-  }
 
   if (fragment && should_sanitize &&
       (!streaming_sanitizer || !fragment->GetDocument().IsHTMLDocument())) {

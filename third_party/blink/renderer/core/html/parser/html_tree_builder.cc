@@ -368,17 +368,18 @@ HTMLTreeBuilder::HTMLTreeBuilder(HTMLDocumentParser* parser,
                                  ParserContentPolicy parser_content_policy,
                                  const HTMLParserOptions& options,
                                  bool include_shadow_roots,
-                                 CustomElementRegistry* registry)
+                                 CustomElementRegistry* registry,
+                                 StreamingSanitizer* sanitizer)
     : HTMLTreeBuilder(parser,
                       document,
                       parser_content_policy,
                       options,
                       include_shadow_roots,
-                      nullptr,
-                      nullptr,
+                      /*fragment_target=*/nullptr,
+                      /*fragment_context_element=*/nullptr,
                       registry,
-                      nullptr,
-                      nullptr) {}
+                      sanitizer,
+                      /*root_insertion_point=*/nullptr) {}
 HTMLTreeBuilder::HTMLTreeBuilder(HTMLDocumentParser* parser,
                                  DocumentFragment* fragment_target,
                                  Element* context_element,

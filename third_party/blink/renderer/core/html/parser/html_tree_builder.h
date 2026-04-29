@@ -62,7 +62,8 @@ class HTMLTreeBuilder final : public GarbageCollected<HTMLTreeBuilder> {
                   ParserContentPolicy,
                   const HTMLParserOptions&,
                   bool include_shadow_roots,
-                  CustomElementRegistry* registry);
+                  CustomElementRegistry* registry,
+                  StreamingSanitizer* sanitizer = nullptr);
   // This constructor is used for fragment parsing.
   HTMLTreeBuilder(HTMLDocumentParser*,
                   DocumentFragment*,

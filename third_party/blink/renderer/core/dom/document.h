@@ -259,6 +259,7 @@ class SetHTMLOptions;
 class SetHTMLUnsafeOptions;
 class Settings;
 class SlotAssignmentEngine;
+class StreamingSanitizer;
 class StyleEngine;
 class StylePropertyMapReadOnly;
 class StyleResolver;
@@ -542,7 +543,7 @@ class CORE_EXPORT Document : public ContainerNode,
 
   AtomicString EncodingName() const;
 
-  void SetContent(const String&);
+  void SetContent(const String&, StreamingSanitizer* sanitizer = nullptr);
 
   // DOMParser::parseFromString() calls to this. Does the same thing as
   // `setContent()`, but may use the fast path parser.
@@ -2150,6 +2151,7 @@ class CORE_EXPORT Document : public ContainerNode,
   };
   DeclarativeShadowRootAllowState GetDeclarativeShadowRootAllowState() const;
   void setAllowDeclarativeShadowRoots(bool val);
+  void setSanitizer(StreamingSanitizer*);
 
   void SetFindInPageActiveMatchNode(Node*);
   const Node* GetFindInPageActiveMatchNode() const;
@@ -2648,6 +2650,7 @@ class CORE_EXPORT Document : public ContainerNode,
   // Common implementation for parseHTML and parseHTMLUnsafe.
   static Document* parseHTMLInternal(ExecutionContext* context,
                                      const String& html,
+                                     StreamingSanitizer* sanitizer,
                                      ExceptionState& exception_state);
 
   bool CanThrottleFrameRate();
@@ -2717,6 +2720,7 @@ class CORE_EXPORT Document : public ContainerNode,
 
   Member<ResourceFetcher> fetcher_;
   Member<DocumentParser> parser_;
+  Member<StreamingSanitizer> sanitizer_;
   Member<HttpRefreshScheduler> http_refresh_scheduler_;
 
   bool well_formed_ = false;

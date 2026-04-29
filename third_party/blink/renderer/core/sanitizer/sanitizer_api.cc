@@ -96,7 +96,6 @@ void SanitizerAPI::SanitizeInternal(Sanitizer::Mode mode,
 
 StreamingSanitizer* SanitizerAPI::CreateStreamingSanitizer(
     Sanitizer::Mode mode,
-    StreamingSanitizer::TextNodeMergeMode text_node_merge_mode,
     FragmentParserOptions options,
     ExceptionState& exception_state) {
   const Sanitizer* sanitizer =
@@ -110,8 +109,7 @@ StreamingSanitizer* SanitizerAPI::CreateStreamingSanitizer(
   if (mode == Sanitizer::Mode::kSafe) {
     clone->removeUnsafe();
   }
-  return MakeGarbageCollected<StreamingSanitizer>(clone, mode,
-                                                  text_node_merge_mode);
+  return MakeGarbageCollected<StreamingSanitizer>(clone, mode);
 }
 
 }  // namespace blink

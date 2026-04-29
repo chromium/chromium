@@ -35,11 +35,9 @@ class HTMLSink : public UnderlyingSinkBase {
                     ExceptionState& exception_state)
       : root_insertion_point(
             MakeGarbageCollected<ParserRootInsertionPoint>(target, ref_node)),
-        sanitizer(SanitizerAPI::CreateStreamingSanitizer(
-            sanitizer_mode,
-            StreamingSanitizer::TextNodeMergeMode::kMerge,
-            new_options,
-            exception_state)),
+        sanitizer(SanitizerAPI::CreateStreamingSanitizer(sanitizer_mode,
+                                                         new_options,
+                                                         exception_state)),
         parser_content_policy(
             new_options.run_scripts() ==
                     FragmentParserOptions::RunScripts::kRunScripts

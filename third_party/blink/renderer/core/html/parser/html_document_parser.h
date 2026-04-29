@@ -107,6 +107,7 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
   HTMLDocumentParser(HTMLDocument&,
                      ParserSynchronizationPolicy,
                      CustomElementRegistry* registry,
+                     StreamingSanitizer* sanitizer = nullptr,
                      ParserPrefetchPolicy prefetch_policy = kAllowPrefetching);
   HTMLDocumentParser(DocumentFragment* fragment_target,
                      Element* context_element,
@@ -216,11 +217,13 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
   // execute script.
   ALWAYS_INLINE NextTokenStatus
   CanTakeNextToken(base::TimeDelta& time_executing_script) {
-    if (IsStopped())
+    if (IsStopped()) {
       return kNoTokens;
+    }
 
-    if (!tree_builder_->HasParserBlockingScript())
+    if (!tree_builder_->HasParserBlockingScript()) {
       return IsPaused() ? kNoTokens : kHaveTokens;
+    }
 
     // If we're paused waiting for a script, we try to execute scripts before
     // continuing.

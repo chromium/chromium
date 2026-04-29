@@ -346,6 +346,7 @@ class HTMLDocumentParser::PendingPreloads
 HTMLDocumentParser::HTMLDocumentParser(HTMLDocument& document,
                                        ParserSynchronizationPolicy sync_policy,
                                        CustomElementRegistry* registry,
+                                       StreamingSanitizer* sanitizer,
                                        ParserPrefetchPolicy prefetch_policy)
     : HTMLDocumentParser(document,
                          kAllowScriptingContent,
@@ -360,7 +361,7 @@ HTMLDocumentParser::HTMLDocumentParser(HTMLDocument& document,
                               Document::DeclarativeShadowRootAllowState::kDeny;
   tree_builder_ = MakeGarbageCollected<HTMLTreeBuilder>(
       this, document, kAllowScriptingContent, options_, include_shadow_roots,
-      registry);
+      registry, sanitizer);
 }
 
 HTMLDocumentParser::HTMLDocumentParser(
@@ -1424,7 +1425,7 @@ void HTMLDocumentParser::DocumentElementAvailable() {
               perfetto::Flow::FromPointer(this));
   Document* document = GetDocument();
   DCHECK(document);
-  DCHECK(document->documentElement());
+  DCHECK(document->documentElement() || tree_builder_);
   Element* documentElement = GetDocument()->documentElement();
   if (documentElement->hasAttribute(AtomicString(u"\u26A1")) ||
       documentElement->hasAttribute(AtomicString("amp")) ||

@@ -36,6 +36,7 @@ TextDocumentParser::TextDocumentParser(HTMLDocument& document,
     : HTMLDocumentParser(document,
                          sync_policy,
                          /*registry=*/nullptr,
+                         /*sanitizer=*/nullptr,
                          kDisallowPrefetching),
       have_inserted_fake_pre_element_(false) {}
 

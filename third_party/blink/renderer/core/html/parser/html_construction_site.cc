@@ -417,17 +417,17 @@ void HTMLConstructionSite::QueueTask(HTMLConstructionSiteTask& task,
   if (flush_pending_text)
     FlushPendingText();
 
-  if (sanitizer_ && task.child &&
+  if (sanitizer_ && task.child && task.parent &&
+      !task.parent->IsDocumentNode() &&
       task.operation !=
           HTMLConstructionSiteTask::Operation::kInsertAlreadyParsedChild &&
       task.operation != HTMLConstructionSiteTask::Operation::kTakeAllChildren) {
     CHECK(RuntimeEnabledFeatures::StreamingSanitizerEnabled());
-    task.child = sanitizer_->Sanitize(task.child);
+    if (!sanitizer_->Sanitize(task.child)) {
+      return;
+    }
   }
 
-  if (!task.child) {
-    return;
-  }
   AdjustInsertionLocation(task);
   task_queue_.push_back(task);
 }
@@ -960,7 +960,7 @@ void HTMLConstructionSite::InsertHTMLTemplateElement(
   if (sanitizer_ &&
       (!declarative_shadow_root_mode.IsNull() || !patch_target.IsNull())) {
     CHECK(RuntimeEnabledFeatures::StreamingSanitizerEnabled());
-    bool ok = sanitizer_->Sanitize(template_element) == template_element;
+    bool ok = sanitizer_->Sanitize(template_element);
     if (!ok ||
         !template_element->FastHasAttribute(html_names::kShadowrootmodeAttr)) {
       declarative_shadow_root_mode = String();
@@ -1535,7 +1535,7 @@ void HTMLConstructionSite::FindFosterSite(HTMLConstructionSiteTask& task) {
   }
 
   // 2.6, 2.7
-  task.parent = last_table->NextItemInStack()->GetElement();
+  task.parent = last_table->NextItemInStack()->GetNode();
 }
 
 bool HTMLConstructionSite::ShouldFosterParent() const {

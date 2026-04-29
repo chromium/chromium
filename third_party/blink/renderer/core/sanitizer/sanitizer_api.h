@@ -27,7 +27,6 @@ class CORE_EXPORT SanitizerAPI final {
                                        const ContainerNode* context_element);
   static StreamingSanitizer* CreateStreamingSanitizer(
       Sanitizer::Mode mode,
-      StreamingSanitizer::TextNodeMergeMode text_node_merge_mode,
       FragmentParserOptions options,
       ExceptionState& exception_state);
 };
