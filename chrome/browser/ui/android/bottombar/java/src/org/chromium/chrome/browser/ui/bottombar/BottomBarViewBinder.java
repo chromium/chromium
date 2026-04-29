@@ -19,7 +19,8 @@ public class BottomBarViewBinder {
             view.setVisibility(
                     model.get(BottomBarProperties.IS_VISIBLE) ? View.VISIBLE : View.GONE);
         } else if (BottomBarProperties.COLOR_SCHEME == propertyKey) {
-            // TODO(crbug.com/504612877): Apply color scheme to buttons.
+            // This property is also used to also applies updates to the action buttons via another
+            // binder in BottomBarCoordinator.
             view.setBackgroundColor(
                     BottomBarUtils.getBottomBarBackgroundColor(
                             view.getContext(), model.get(BottomBarProperties.COLOR_SCHEME)));

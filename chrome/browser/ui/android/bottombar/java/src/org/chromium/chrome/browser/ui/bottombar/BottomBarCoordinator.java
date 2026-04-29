@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ui.bottombar;
 
+import android.content.res.ColorStateList;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.ui.actions.ActionId;
+import org.chromium.chrome.browser.ui.actions.ActionProperties;
 import org.chromium.chrome.browser.ui.actions.ActionRegistry;
 import org.chromium.chrome.browser.ui.actions.ActionViewBinding;
 import org.chromium.chrome.browser.ui.actions.HomeActionButtonBinder;
@@ -23,6 +25,7 @@ import org.chromium.chrome.browser.ui.bottombar.BottomBarHostManager.Host;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+import org.chromium.ui.modelutil.PropertyObservable.PropertyObserver;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +38,9 @@ public class BottomBarCoordinator implements BottomBar {
     private final View mView;
     private final PropertyModelChangeProcessor<PropertyModel, View, PropertyKey> mMcp;
     private final List<ActionViewBinding> mBindings = new ArrayList<>();
+    private final List<Integer> mRegisteredActionIds = new ArrayList<>();
+    private final ActionRegistry mActionRegistry;
+    private final PropertyObserver<PropertyKey> mModelObserver;
 
     /**
      * @param parent The parent view to inflate the bottom bar into.
@@ -49,6 +55,7 @@ public class BottomBarCoordinator implements BottomBar {
             NullableObservableSupplier<Tab> tabSupplier,
             NonNullObservableSupplier<Boolean> homepageEnabledSupplier,
             BottomBarMediator.VisibilityDelegate visibilityDelegate) {
+        mActionRegistry = actionRegistry;
         mView =
                 LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.bottom_bar_layout, parent, false);
@@ -67,14 +74,14 @@ public class BottomBarCoordinator implements BottomBar {
 
         mMcp = PropertyModelChangeProcessor.create(mModel, mView, BottomBarViewBinder::bind);
 
-        mBindings.add(
-                new ActionViewBinding(
-                        actionRegistry.get(ActionId.NEW_TAB),
-                        mView.findViewById(R.id.new_tab_button)));
+        View newTabButton = mView.findViewById(R.id.new_tab_button);
+        mRegisteredActionIds.add(ActionId.NEW_TAB);
+        mBindings.add(new ActionViewBinding(actionRegistry.get(ActionId.NEW_TAB), newTabButton));
 
         if (shouldIncludeHomeButton) {
             BottomBarButtonContainer homeContainer = mView.findViewById(R.id.home_button_container);
             homeContainer.inflateStub();
+            mRegisteredActionIds.add(ActionId.HOME_BUTTON);
             mBindings.add(
                     new ActionViewBinding(
                             actionRegistry.get(ActionId.HOME_BUTTON),
@@ -87,9 +94,19 @@ public class BottomBarCoordinator implements BottomBar {
                     mView.findViewById(R.id.app_menu_button_container);
             menuContainer.inflateStub();
             menuContainer.setVisibility(View.VISIBLE);
+            mRegisteredActionIds.add(ActionId.APP_MENU);
             mBindings.add(
                     new ActionViewBinding(actionRegistry.get(ActionId.APP_MENU), menuContainer));
         }
+
+        mModelObserver =
+                (source, propertyKey) -> {
+                    if (BottomBarProperties.COLOR_SCHEME == propertyKey) {
+                        updateIconColors();
+                    }
+                };
+        mModel.addObserver(mModelObserver);
+        updateIconColors();
     }
 
     @Override
@@ -110,9 +127,22 @@ public class BottomBarCoordinator implements BottomBar {
     public void destroy() {
         mMediator.destroy();
         mMcp.destroy();
+        mModel.removeObserver(mModelObserver);
         for (ActionViewBinding binding : mBindings) {
             binding.destroy();
         }
         mBindings.clear();
+    }
+
+    private void updateIconColors() {
+        int brandedColorScheme = mModel.get(BottomBarProperties.COLOR_SCHEME);
+        ColorStateList tint =
+                BottomBarUtils.getIconColorStateList(mView.getContext(), brandedColorScheme);
+        for (int actionId : mRegisteredActionIds) {
+            PropertyModel model = mActionRegistry.get(actionId).get();
+            if (model != null) {
+                model.set(ActionProperties.ICON_TINT, tint);
+            }
+        }
     }
 }

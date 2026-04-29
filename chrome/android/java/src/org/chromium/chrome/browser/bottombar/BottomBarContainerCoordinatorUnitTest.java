@@ -99,7 +99,7 @@ public class BottomBarContainerCoordinatorUnitTest {
         mCoordinator.initializeWithNative(mVisibilityController, mOnModelTokenChange);
         verify(mVisibilityController).setBottomControlsVisible(true);
         verify(mOnModelTokenChange).onResult(any());
-        verify(mActionRegistry).get(ActionId.NEW_TAB);
+        verify(mActionRegistry, times(2)).get(ActionId.NEW_TAB);
     }
 
     @Test
