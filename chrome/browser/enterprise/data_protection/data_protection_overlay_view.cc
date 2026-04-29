@@ -15,7 +15,6 @@
 #include "cc/paint/paint_recorder.h"
 #include "chrome/browser/enterprise/watermark/settings.h"
 #include "components/enterprise/watermarking/watermark.h"
-#include "components/prefs/pref_service.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"

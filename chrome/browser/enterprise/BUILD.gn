@@ -208,8 +208,9 @@ source_set("enterprise") {
   }
 
   if (enterprise_watermark) {
-    public_deps +=
-        [ "//chrome/browser/enterprise/watermark:watermark_view_lib" ]
+    public_deps += [
+      "//chrome/browser/enterprise/data_protection:data_protection_view_lib",
+    ]
   }
 
   if (enterprise_data_controls) {
