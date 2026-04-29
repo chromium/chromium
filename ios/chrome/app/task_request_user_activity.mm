@@ -14,6 +14,7 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/task/bind_post_task.h"
 #import "components/handoff/handoff_utility.h"
 #import "components/password_manager/core/browser/ui/password_check_referrer.h"
 #import "components/prefs/pref_service.h"
@@ -606,6 +607,33 @@ std::vector<GURL> GetURLsFromOpenInChromeIntent(INIntent* intent) {
   return GURLVectorWithNSURLArray(typed_intent.url);
 }
 
+// Open an URL coming from spotlight.
+void OpenSpotlightURL(NSURL* webpage_url,
+                      spotlight::Domain domain,
+                      ApplicationModeForTabOpening target_mode,
+                      SceneState* scene_state) {
+  if (!scene_state || !webpage_url) {
+    return;
+  }
+  GURL webpage_gurl(net::GURLWithNSURL(webpage_url));
+
+  UrlLoadParams params;
+  if (domain == spotlight::DOMAIN_OPEN_TABS) {
+    web::NavigationManager::WebLoadParams web_load_params =
+        web::NavigationManager::WebLoadParams(webpage_gurl);
+    params = UrlLoadParams::SwitchToTab(web_load_params);
+  } else {
+    params = UrlLoadParams::InNewTab(webpage_gurl);
+  }
+  params.from_external = YES;
+
+  id<TabOpening> tab_opener = scene_state.controller;
+  [tab_opener dismissModalsAndMaybeOpenSelectedTabInMode:target_mode
+                                       withUrlLoadParams:params
+                                          dismissOmnibox:YES
+                                              completion:{}];
+}
+
 }  // namespace
 
 @implementation TaskRequestForUserActivity {
@@ -895,53 +923,81 @@ std::vector<GURL> GetURLsFromOpenInChromeIntent(INIntent* intent) {
   }
 
   if (domain == spotlight::DOMAIN_ACTIONS) {
-    switch (_spotlightActionType) {
-      case SpotlightActionType::kNewIncognitoTab:
-        [self openURLs:{GURL(kChromeUINewTabURL)}
-            sceneState:sceneState
-            targetMode:ApplicationModeForTabOpening::INCOGNITO
-            completion:{}];
-        break;
-      case SpotlightActionType::kVoiceSearch:
-        [self openURLs:{GURL(kChromeUINewTabURL)}
-            sceneState:sceneState
-            targetMode:_targetMode
-            completion:base::BindOnce(&OpenVoiceSearchWithBrowser)];
-        break;
-      case SpotlightActionType::kQRScanner:
-        [self openURLs:{GURL(kChromeUINewTabURL)}
-            sceneState:sceneState
-            targetMode:_targetMode
-            completion:base::BindOnce(&OpenQRCodeScannerWithBrowser)];
-        break;
-      case SpotlightActionType::kNewTab:
-        [self openURLs:{GURL(kChromeUINewTabURL)}
-            sceneState:sceneState
-            targetMode:_targetMode
-            completion:{}];
-        break;
-      case SpotlightActionType::kSetDefaultBrowser:
-        [[UIApplication sharedApplication]
-                      openURL:[NSURL URLWithString:
-                                         UIApplicationOpenSettingsURLString]
-                      options:{}
-            completionHandler:nil];
-        break;
-      case SpotlightActionType::kLens:
-        [self openURLs:{GURL(kChromeUINewTabURL)}
-            sceneState:sceneState
-            targetMode:_targetMode
-            completion:base::BindOnce(&OpenLensFromIntentsWithBrowser,
-                                      LensEntrypoint::Spotlight)];
-        break;
-      case SpotlightActionType::kUnknown:
-        break;
-    }
+    [self handleSpotlightActionWithItemId:itemId sceneState:sceneState];
   } else {
-    // Handle the case where the Spotlight search result has been indexed with a
-    // URL.
-    // TODO(crbug.com/492115056): Add implementation.
+    [self handleSpotlightURLWithItemId:itemId
+                                domain:domain
+                            sceneState:sceneState];
   }
+}
+
+// Handles Spotlight user activity for predefined actions (e.g., New Tab, Voice
+// Search).
+- (void)handleSpotlightActionWithItemId:(NSString*)itemId
+                             sceneState:(SceneState*)sceneState {
+  switch (_spotlightActionType) {
+    case SpotlightActionType::kNewIncognitoTab:
+      [self openURLs:{GURL(kChromeUINewTabURL)}
+          sceneState:sceneState
+          targetMode:ApplicationModeForTabOpening::INCOGNITO
+          completion:{}];
+      break;
+    case SpotlightActionType::kVoiceSearch:
+      [self openURLs:{GURL(kChromeUINewTabURL)}
+          sceneState:sceneState
+          targetMode:_targetMode
+          completion:base::BindOnce(&OpenVoiceSearchWithBrowser)];
+      break;
+    case SpotlightActionType::kQRScanner:
+      [self openURLs:{GURL(kChromeUINewTabURL)}
+          sceneState:sceneState
+          targetMode:_targetMode
+          completion:base::BindOnce(&OpenQRCodeScannerWithBrowser)];
+      break;
+    case SpotlightActionType::kNewTab:
+      [self openURLs:{GURL(kChromeUINewTabURL)}
+          sceneState:sceneState
+          targetMode:_targetMode
+          completion:{}];
+      break;
+    case SpotlightActionType::kSetDefaultBrowser:
+      [[UIApplication sharedApplication]
+                    openURL:
+                        [NSURL URLWithString:UIApplicationOpenSettingsURLString]
+                    options:{}
+          completionHandler:nil];
+      break;
+    case SpotlightActionType::kLens:
+      [self openURLs:{GURL(kChromeUINewTabURL)}
+          sceneState:sceneState
+          targetMode:_targetMode
+          completion:base::BindOnce(&OpenLensFromIntentsWithBrowser,
+                                    LensEntrypoint::Spotlight)];
+      break;
+    case SpotlightActionType::kUnknown:
+      break;
+  }
+}
+
+// Handles Spotlight user activity containing URLs.
+- (void)handleSpotlightURLWithItemId:(NSString*)itemId
+                              domain:(spotlight::Domain)domain
+                          sceneState:(SceneState*)sceneState {
+  // If the URL is already in the activity, use it directly.
+  if (NSURL* webpageURL = _userActivity.webpageURL) {
+    OpenSpotlightURL(webpageURL, domain, _targetMode, sceneState);
+    return;
+  }
+  // Fetch the URL asynchronously.
+  ApplicationModeForTabOpening targetMode = _targetMode;
+  __weak SceneState* weakSceneState = sceneState;
+  spotlight::GetURLForSpotlightItemID(
+      itemId, base::CallbackToBlock(base::BindPostTask(
+                  base::SequencedTaskRunner::GetCurrentDefault(),
+                  base::BindOnce(^(NSURL* webpage_url) {
+                    OpenSpotlightURL(webpage_url, domain, targetMode,
+                                     weakSceneState);
+                  }))));
 }
 
 @end
