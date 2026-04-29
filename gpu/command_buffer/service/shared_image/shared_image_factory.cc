@@ -106,6 +106,11 @@
 
 namespace gpu {
 
+SharedImageFactoryRef::SharedImageFactoryRef(SharedImageFactory* factory)
+    : factory_(factory) {}
+
+SharedImageFactoryRef::~SharedImageFactoryRef() = default;
+
 namespace {
 
 const char* GmbTypeToString(gfx::GpuMemoryBufferType type) {
@@ -170,6 +175,7 @@ SharedImageFactory::SharedImageFactory(
       texture_target_for_io_surfaces_(GetTextureTargetForIOSurfaces()),
 #endif
       workarounds_(workarounds) {
+  factory_ref_ = base::MakeRefCounted<SharedImageFactoryRef>(this);
   copy_manager_ = base::MakeRefCounted<SharedImageCopyManager>();
   copy_manager_->AddStrategy(std::make_unique<SharedMemoryCopyStrategy>());
   copy_manager_->AddStrategy(std::make_unique<CPUReadbackUploadCopyStrategy>());
@@ -363,6 +369,7 @@ SharedImageFactory::SharedImageFactory(
 
 SharedImageFactory::~SharedImageFactory() {
   DCHECK(shared_images_.empty());
+  factory_ref_->Invalidate();
 }
 
 bool SharedImageFactory::CreateSharedImage(
@@ -927,6 +934,10 @@ bool SharedImageFactory::HasSharedImage(const Mailbox& mailbox) const {
 
 base::WeakPtr<SharedImageFactory> SharedImageFactory::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
+}
+
+scoped_refptr<SharedImageFactoryRef> SharedImageFactory::GetFactoryRef() {
+  return factory_ref_;
 }
 
 void SharedImageFactory::SetGpuExtraInfo(
