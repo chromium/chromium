@@ -188,6 +188,9 @@ class POLICY_EXPORT PolicyLogger {
   // test.
   void ResetLoggerForTesting();
 
+  // Deletes old logs for testing purposes.
+  void ScheduleOldLogsDeletionForTesting();
+
  private:
   // Adds a new log to the logs_ list and calls `ScheduleOldLogsDeletion` if
   // there is no deletion task scheduled.

@@ -672,6 +672,18 @@ source_set("unit_tests") {
     deps += [ "//components/policy/android:test_jni_headers" ]
   }
 
+  if (!is_ios) {
+    deps += [
+      "//content/public/browser",
+      "//content/test:test_support",
+    ]
+  } else {
+    deps += [
+      "//ios/web/public/test",
+      "//ios/web/public/thread",
+    ]
+  }
+
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
   # enable the diagnostic by removing this line.
   configs += [ "//build/config/compiler:no_exit_time_destructors" ]

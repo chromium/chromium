@@ -262,7 +262,8 @@ void PolicyLogger::DeleteOldLogs() {
 }
 
 void PolicyLogger::ScheduleOldLogsDeletion() {
-  if (!base::SequencedTaskRunner::HasCurrentDefault()) {
+  if (!base::SequencedTaskRunner::HasCurrentDefault() ||
+      !is_log_deletion_enabled_) {
     return;
   }
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
@@ -314,6 +315,11 @@ void PolicyLogger::ResetLoggerForTesting() {
   logs_.erase(logs_.begin(), logs_.end());
   is_log_deletion_scheduled_ = false;
   is_log_deletion_enabled_ = false;
+}
+
+void PolicyLogger::ScheduleOldLogsDeletionForTesting() {
+  CHECK_IS_TEST();
+  ScheduleOldLogsDeletion();
 }
 
 }  // namespace policy
