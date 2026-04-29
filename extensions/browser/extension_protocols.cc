@@ -54,6 +54,7 @@
 #include "content/public/browser/navigation_ui_data.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/common/child_process_id.h"
 #include "content/public/common/content_features.h"
 #include "extensions/browser/content_verifier/content_verifier.h"
 #include "extensions/browser/content_verifier/content_verify_job.h"
@@ -222,7 +223,10 @@ bool AllowExtensionResourceLoad(const network::ResourceRequest& request,
   // process to request each other's resources. We can't do a more precise
   // check, since the renderer can lie about which extension has made the
   // request.
-  if (process_map.Contains(request.url.GetHost(), child_id)) {
+  // TODO(crbug.com/379869738) Remove FromUnsafeValue.
+  if (process_map.Contains(
+          request.url.GetHost(),
+          content::ChildProcessId::FromUnsafeValue(child_id))) {
     return true;
   }
 

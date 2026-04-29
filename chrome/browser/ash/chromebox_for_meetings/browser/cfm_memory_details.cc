@@ -11,6 +11,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/common/child_process_id.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/process_map.h"
 #include "extensions/buildflags/buildflags.h"
@@ -137,7 +138,7 @@ void CfmMemoryDetails::CollectExtensionsInformation() {
     // needed
     if (const extensions::Extension* extension =
             extensions::ProcessMap::Get(host->GetBrowserContext())
-                ->GetEnabledExtensionByProcessID(host->GetDeprecatedID())) {
+                ->GetEnabledExtensionByProcessID(host->GetID())) {
       proc_mem_info->extension_info.push_back(mojom::ExtensionData::New(
           extension->name(), extension->GetVersionForDisplay(), extension->id(),
           extension->hashed_id().value(), extension->description()));

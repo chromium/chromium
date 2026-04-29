@@ -75,6 +75,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/common/child_process_id.h"
 #include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/browser/blocklist_state.h"
 #include "extensions/browser/cws_info_service.h"
@@ -842,7 +843,7 @@ void ExtensionService::RenderProcessHostDestroyed(
   // An extension process was terminated, this might have resulted in an
   // app or extension becoming idle.
   if (std::optional<std::string> extension_id =
-          process_map->GetExtensionIdForProcess(host->GetDeprecatedID())) {
+          process_map->GetExtensionIdForProcess(host->GetID())) {
     // The extension running in this process might also be referencing a shared
     // module which is waiting for idle to update. Check all imports of this
     // extension too.
@@ -870,7 +871,7 @@ void ExtensionService::RenderProcessHostDestroyed(
       }
     }
   }
-  process_map->Remove(host->GetDeprecatedID());
+  process_map->Remove(host->GetID());
 }
 
 void ExtensionService::OnBlocklistUpdated() {

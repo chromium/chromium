@@ -10,6 +10,7 @@
 #include "base/strings/string_util.h"
 #include "build/chromeos_buildflags.h"
 #include "content/public/browser/child_process_security_policy.h"
+#include "content/public/common/child_process_id.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/api/web_request/permission_helper.h"
@@ -291,9 +292,11 @@ bool WebRequestPermissions::HideRequest(
   }
 
   // Hide requests from the Chrome WebStore App.
+  // TODO(crbug.com/379869738) Remove FromUnsafeValue.
   if (!is_request_from_browser &&
-      permission_helper->process_map()->Contains(extensions::kWebStoreAppId,
-                                                 request.render_process_id)) {
+      permission_helper->process_map()->Contains(
+          extensions::kWebStoreAppId, content::ChildProcessId::FromUnsafeValue(
+                                          request.render_process_id))) {
     return true;
   }
 

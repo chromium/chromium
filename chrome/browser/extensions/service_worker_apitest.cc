@@ -60,6 +60,7 @@
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/service_worker_context_observer.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/child_process_id.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/page_type.h"
 #include "content/public/common/result_codes.h"
@@ -229,8 +230,7 @@ bool ServiceWorkerBasedBackgroundTest::ExtensionHasRenderProcessHost(
   content::RenderProcessHost::iterator it =
       content::RenderProcessHost::AllHostsIterator();
   while (!it.IsAtEnd()) {
-    if (process_map->Contains(extension_id,
-                              it.GetCurrentValue()->GetDeprecatedID())) {
+    if (process_map->Contains(extension_id, it.GetCurrentValue()->GetID())) {
       return true;
     }
     it.Advance();

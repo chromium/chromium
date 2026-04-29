@@ -30,6 +30,7 @@
 #include "content/public/browser/render_widget_host_iterator.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/bindings_policy.h"
+#include "content/public/common/child_process_id.h"
 #include "content/public/common/content_constants.h"
 #include "content/public/common/zygote/zygote_buildflags.h"
 #include "extensions/buildflags/buildflags.h"
@@ -304,7 +305,7 @@ void MemoryDetails::CollectChildInfoOnUIThread() {
       extensions::ProcessMap* process_map =
           extensions::ProcessMap::Get(context);
       DCHECK(process_map);
-      int rph_id = render_process_host->GetDeprecatedID();
+      content::ChildProcessId rph_id = render_process_host->GetID();
       process_is_for_extensions = process_map->Contains(rph_id);
 
       // For our purposes, don't count processes running hosted apps as
