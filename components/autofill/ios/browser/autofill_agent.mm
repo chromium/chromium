@@ -1025,8 +1025,7 @@ bool HasGuid(const Suggestion::Payload& payload) {
                    fieldToFormLookupMap:fieldToFormLookupMap];
   }
 
-  if (base::FeatureList::IsEnabled(kAutofillRefillForFormsIos) &&
-      base::FeatureList::IsEnabled(
+  if (base::FeatureList::IsEnabled(
           autofill::features::kAutofillAcrossIframesIos)) {
     auto* driver =
         autofill::AutofillDriverIOS::FromWebStateAndWebFrame(_webState, frame);

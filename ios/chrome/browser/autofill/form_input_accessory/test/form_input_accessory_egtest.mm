@@ -363,7 +363,6 @@ void SlowlyTypeText(NSString* text) {
   }
 
   if ([self isRunningTest:@selector(testReFillAddressFieldsOnForm)]) {
-    config.features_enabled.push_back(kAutofillRefillForFormsIos);
     config.features_enabled.push_back(
         autofill::features::kAutofillAcrossIframesIos);
   }
