@@ -157,10 +157,10 @@ bool IsEmptyNTP(const web::WebState* web_state) {
       self.sceneState.browserProviderInterface.mainBrowserProvider.browser;
 
   ProfileIOS* profile = browser->GetProfile();
+
   if (!base::FeatureList::IsEnabled(switches::kBuildExternalPrivacyContext)) {
-    // Capabilities prefetching must happen after
-    // `SystemIdentityManager::BuildExternalPrivacyContext()`. This is handled
-    // by `SigninAccountCapabilitiesSceneAgent` instead.
+    // Capabilities prefetching is no longer necessary; all capabilities fetches
+    // are deferred until External Privacy Contexts are built.
     RunSystemCapabilitiesPrefetch(signin::GetIdentitiesOnDevice(profile));
   }
 
