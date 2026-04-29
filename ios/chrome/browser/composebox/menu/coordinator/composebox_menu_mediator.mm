@@ -39,6 +39,13 @@
   return YES;
 }
 
+- (void)processFileURLs:(NSArray<NSURL*>*)urls {
+  ComposeboxFocusParams* focusParams =
+      [[ComposeboxFocusParams alloc] initWithEntrypoint:_entrypoint];
+  focusParams.initialFiles = [urls copy];
+  [self.delegate composeboxMenuMediatorDidProduceFocusParams:focusParams];
+}
+
 - (NSUInteger)remainingNumberOfImagesAllowed {
   // TODO(crbug.com/506956765): Implement.
   return 5;
@@ -82,7 +89,8 @@
       [self.delegate composeboxMenuMediatorDidRequestGallerySelection:self];
       return;
     case ComposeboxMenuItemType::kAttachmentFiles:
-      break;
+      [self.delegate composeboxMenuMediatorDidRequestFileSelection:self];
+      return;
     case ComposeboxMenuItemType::kUnknown:
       break;
   }

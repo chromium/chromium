@@ -126,6 +126,17 @@ NSString* const kCustomFittingDetentIdentifier = @"kFittingDetentIdentifier";
       presentGalleryPickerWithLimit:[_mediator remainingNumberOfImagesAllowed]];
 }
 
+- (void)composeboxMenuMediatorDidRequestFileSelection:
+    (ComposeboxMenuMediator*)mediator {
+  // TODO(crbug.com/506955766): Unify metrics recording and record this action.
+
+  if (![_mediator canAddMoreAttachments]) {
+    [self showMaxAttachmentSnackbarError];
+    return;
+  }
+  [_pickerPresenter presentFilePicker];
+}
+
 #pragma mark - ComposeboxPickerPresenterDelegate
 
 - (void)composeboxPickerPresenter:(ComposeboxPickerPresenter*)presenter
@@ -137,6 +148,11 @@ NSString* const kCustomFittingDetentIdentifier = @"kFittingDetentIdentifier";
 - (void)composeboxPickerPresenterDidDissmissCamera:
     (ComposeboxPickerPresenter*)presenter {
   // NO-OP.
+}
+
+- (void)composeboxPickerPresenter:(ComposeboxPickerPresenter*)presenter
+             didPickFilesWithURLs:(NSArray<NSURL*>*)urls {
+  [_mediator processFileURLs:urls];
 }
 
 #pragma mark - Private

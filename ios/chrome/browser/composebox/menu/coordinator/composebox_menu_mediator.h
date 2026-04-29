@@ -30,6 +30,10 @@
 - (void)composeboxMenuMediatorDidRequestGallerySelection:
     (ComposeboxMenuMediator*)mediator;
 
+// Called when the file selection is requested.
+- (void)composeboxMenuMediatorDidRequestFileSelection:
+    (ComposeboxMenuMediator*)mediator;
+
 @end
 
 // Mediator for the composebox menu.
@@ -43,6 +47,9 @@
 
 /// Processes the given `imageItems`.
 - (void)processImageItems:(NSArray<ComposeboxPickerImageResult*>*)imageItems;
+
+/// Processes the given `urls`.
+- (void)processFileURLs:(NSArray<NSURL*>*)urls;
 
 /// Returns whether more attachments can be added.
 - (BOOL)canAddMoreAttachments;

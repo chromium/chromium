@@ -6,11 +6,13 @@
 
 #import <PhotosUI/PhotosUI.h>
 
+#import "components/lens/lens_features.h"
 #import "ios/chrome/browser/composebox/shared/coordinator/composebox_picker_image_result.h"
 
 @interface ComposeboxPickerPresenter () <PHPickerViewControllerDelegate,
                                          UINavigationControllerDelegate,
-                                         UIImagePickerControllerDelegate>
+                                         UIImagePickerControllerDelegate,
+                                         UIDocumentPickerDelegate>
 @end
 
 @implementation ComposeboxPickerPresenter {
@@ -57,6 +59,24 @@
                                   completion:nil];
 }
 
+- (void)presentFilePicker {
+  UIDocumentPickerViewController* picker;
+  if (lens::features::IsLensSendRawFileMediaTypesEnabled()) {
+    picker = [[UIDocumentPickerViewController alloc]
+        initForOpeningContentTypes:@[ UTTypeData ]];
+  } else {
+    picker = [[UIDocumentPickerViewController alloc]
+        initForOpeningContentTypes:@[ UTTypePDF ]];
+  }
+
+  picker.allowsMultipleSelection = NO;
+  picker.delegate = self;
+
+  [_baseViewController presentViewController:picker
+                                    animated:YES
+                                  completion:nil];
+}
+
 #pragma mark - UIImagePickerControllerDelegate
 
 - (void)imagePickerController:(UIImagePickerController*)picker
@@ -73,6 +93,13 @@
   if (!image) {
     return;
   }
+
+  [picker dismissViewControllerAnimated:YES
+                             completion:^{
+                               [weakSelf.delegate
+                                   composeboxPickerPresenterDidDissmissCamera:
+                                       weakSelf];
+                             }];
 
   NSItemProvider* provider = [[NSItemProvider alloc] initWithObject:image];
   [self.delegate
@@ -112,6 +139,13 @@
   }
 
   [self.delegate composeboxPickerPresenter:self didPickImages:imageItems];
+}
+
+#pragma mark - UIDocumentPickerDelegate
+
+- (void)documentPicker:(UIDocumentPickerViewController*)controller
+    didPickDocumentsAtURLs:(NSArray<NSURL*>*)urls {
+  [self.delegate composeboxPickerPresenter:self didPickFilesWithURLs:urls];
 }
 
 @end

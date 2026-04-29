@@ -112,7 +112,6 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
     LocationBarModelDelegateWebStateProvider,
     LocationBarURLLoader,
     OmniboxFocusDelegate,
-    UIDocumentPickerDelegate,
     UINavigationControllerDelegate,
     UIViewControllerTransitioningDelegate,
     WebLocationBarDelegate>
@@ -501,18 +500,8 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
     [self showMaxAttachmentSnackbarError];
     return;
   }
-  UIDocumentPickerViewController* picker;
-  if (lens::features::IsLensSendRawFileMediaTypesEnabled()) {
-    picker = [[UIDocumentPickerViewController alloc]
-        initForOpeningContentTypes:@[ UTTypeData ]];
-  } else {
-    picker = [[UIDocumentPickerViewController alloc]
-        initForOpeningContentTypes:@[ UTTypePDF ]];
-  }
 
-  picker.allowsMultipleSelection = NO;
-  picker.delegate = self;
-  [_viewController presentViewController:picker animated:YES completion:nil];
+  [_pickerPresenter presentFilePicker];
 }
 
 - (void)composeboxViewControllerDidTapAttachTabsButton:
@@ -620,61 +609,6 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
 
   return GetWebStateForTabWithCriteria(browserList, tabSearchCriteria,
                                        _theme.incognito);
-}
-
-#pragma mark - UIDocumentPickerDelegate
-
-- (void)documentPicker:(UIDocumentPickerViewController*)controller
-    didPickDocumentsAtURLs:(NSArray<NSURL*>*)urls {
-  if (urls.count == 0) {
-    return;
-  }
-
-  [_metricsRecorder recordFilesAttached:urls.count];
-
-  NSURL* selectedURL = urls.firstObject;
-  if (!lens::features::IsLensSendRawFileMediaTypesEnabled()) {
-    [_mediator processFileURL:net::GURLWithNSURL(selectedURL) isPDF:YES];
-    return;
-  }
-
-  NSError* error = nil;
-  UTType* contentType = nil;
-
-  // Accessing the resource should be requested before using and relinquished
-  // when no longer needed.
-  // Revoking the access should be done once the resource is no longer needed,
-  // as requesting access again on a relinquished resource might fail.
-  BOOL accessing = [selectedURL startAccessingSecurityScopedResource];
-  [selectedURL getResourceValue:&contentType
-                         forKey:NSURLContentTypeKey
-                          error:&error];
-
-  auto stopAccessScopedResourcesIfNeeded = ^{
-    if (accessing) {
-      [selectedURL stopAccessingSecurityScopedResource];
-    }
-  };
-
-  if (contentType && !error) {
-    if ([contentType conformsToType:UTTypeImage]) {
-      NSItemProvider* provider =
-          [[NSItemProvider alloc] initWithContentsOfURL:selectedURL];
-      [_mediator processImageItemProvider:provider
-                                  assetID:selectedURL.absoluteString
-                               completion:stopAccessScopedResourcesIfNeeded];
-      return;
-    } else if ([contentType conformsToType:UTTypePDF]) {
-      [_mediator processFileURL:net::GURLWithNSURL(selectedURL)
-                          isPDF:YES
-                     completion:stopAccessScopedResourcesIfNeeded];
-      return;
-    }
-  }
-
-  [_mediator processFileURL:net::GURLWithNSURL(selectedURL)
-                      isPDF:NO
-                 completion:stopAccessScopedResourcesIfNeeded];
 }
 
 #pragma mark - ComposeboxInputPlateMediatorDelegate
@@ -886,6 +820,59 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
     [_mediator processImageItemProvider:result.imageProvider
                                 assetID:result.assetID];
   }
+}
+
+- (void)composeboxPickerPresenter:(ComposeboxPickerPresenter*)presenter
+             didPickFilesWithURLs:(NSArray<NSURL*>*)urls {
+  if (urls.count == 0) {
+    return;
+  }
+
+  [_metricsRecorder recordFilesAttached:urls.count];
+
+  NSURL* selectedURL = urls.firstObject;
+  if (!lens::features::IsLensSendRawFileMediaTypesEnabled()) {
+    [_mediator processFileURL:net::GURLWithNSURL(selectedURL) isPDF:YES];
+    return;
+  }
+
+  NSError* error = nil;
+  UTType* contentType = nil;
+
+  // Accessing the resource should be requested before using and relinquished
+  // when no longer needed.
+  // Revoking the access should be done once the resource is no longer needed,
+  // as requesting access again on a relinquished resource might fail.
+  BOOL accessing = [selectedURL startAccessingSecurityScopedResource];
+  [selectedURL getResourceValue:&contentType
+                         forKey:NSURLContentTypeKey
+                          error:&error];
+
+  auto stopAccessScopedResourcesIfNeeded = ^{
+    if (accessing) {
+      [selectedURL stopAccessingSecurityScopedResource];
+    }
+  };
+
+  if (contentType && !error) {
+    if ([contentType conformsToType:UTTypeImage]) {
+      NSItemProvider* provider =
+          [[NSItemProvider alloc] initWithContentsOfURL:selectedURL];
+      [_mediator processImageItemProvider:provider
+                                  assetID:selectedURL.absoluteString
+                               completion:stopAccessScopedResourcesIfNeeded];
+      return;
+    } else if ([contentType conformsToType:UTTypePDF]) {
+      [_mediator processFileURL:net::GURLWithNSURL(selectedURL)
+                          isPDF:YES
+                     completion:stopAccessScopedResourcesIfNeeded];
+      return;
+    }
+  }
+
+  [_mediator processFileURL:net::GURLWithNSURL(selectedURL)
+                      isPDF:NO
+                 completion:stopAccessScopedResourcesIfNeeded];
 }
 
 - (void)composeboxPickerPresenterDidDissmissCamera:

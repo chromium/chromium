@@ -19,6 +19,10 @@
                     didPickImages:
                         (NSArray<ComposeboxPickerImageResult*>*)results;
 
+// Called when the document picker finishes picking an image.
+- (void)composeboxPickerPresenter:(ComposeboxPickerPresenter*)presenter
+             didPickFilesWithURLs:(NSArray<NSURL*>*)urls;
+
 /// Called when the camera picker presentation dismisses.
 - (void)composeboxPickerPresenterDidDissmissCamera:
     (ComposeboxPickerPresenter*)presenter;
@@ -40,6 +44,9 @@
 
 // Presents the gallery picker.
 - (void)presentGalleryPickerWithLimit:(NSUInteger)limit;
+
+// Presents the file picker.
+- (void)presentFilePicker;
 
 @end
 
