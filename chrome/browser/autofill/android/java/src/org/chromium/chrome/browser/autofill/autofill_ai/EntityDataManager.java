@@ -232,12 +232,11 @@ public class EntityDataManager implements Destroyable {
                 .getIsAutofillAiDisabledByEnterprisePolicy(mNativeEntityDataManagerAndroid);
     }
 
-    /** Returns whether Autofill AI is enabled by enterprise policy but without logging. */
-    public boolean getIsAutofillAiEnabledByEnterprisePolicyWithoutLogging() {
+    /** Returns whether Autofill AI is enabled by enterprise policy including logging. */
+    public boolean getIsAutofillAiAllowedByEnterprisePolicy() {
         ThreadUtils.assertOnUiThread();
         return EntityDataManagerJni.get()
-                .getIsAutofillAiEnabledByEnterprisePolicyWithoutLogging(
-                        mNativeEntityDataManagerAndroid);
+                .getIsAutofillAiAllowedByEnterprisePolicy(mNativeEntityDataManagerAndroid);
     }
 
     public boolean isWalletPublicPassStorageEnabled() {
@@ -277,8 +276,7 @@ public class EntityDataManager implements Destroyable {
 
         boolean getIsAutofillAiDisabledByEnterprisePolicy(long nativeEntityDataManagerAndroid);
 
-        boolean getIsAutofillAiEnabledByEnterprisePolicyWithoutLogging(
-                long nativeEntityDataManagerAndroid);
+        boolean getIsAutofillAiAllowedByEnterprisePolicy(long nativeEntityDataManagerAndroid);
 
         boolean isWalletPublicPassStorageEnabled(long nativeEntityDataManagerAndroid);
 

@@ -222,11 +222,10 @@ public class EntityDataManagerTest {
     }
 
     @Test
-    public void testIsAutofillAIEnabledByEnterprisePolicyWithoutLogging() {
-        when(mEntityDataManagerJniMock.getIsAutofillAiEnabledByEnterprisePolicyWithoutLogging(
-                        NATIVE_PTR))
+    public void testIsAutofillAiAllowedByEnterprisePolicy() {
+        when(mEntityDataManagerJniMock.getIsAutofillAiAllowedByEnterprisePolicy(NATIVE_PTR))
                 .thenReturn(true);
-        assertTrue(mEntityDataManager.getIsAutofillAiEnabledByEnterprisePolicyWithoutLogging());
+        assertTrue(mEntityDataManager.getIsAutofillAiAllowedByEnterprisePolicy());
     }
 
     @Test

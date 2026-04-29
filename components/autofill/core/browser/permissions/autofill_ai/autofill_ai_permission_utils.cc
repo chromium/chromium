@@ -789,23 +789,18 @@ bool SetAutofillAiOptInStatus(
   return policy_pref_state == kAutofillPredictionSettingsDisabled;
 }
 
-[[nodiscard]] bool IsAutofillAiEnabledByEnterprisePolicyWithoutLogging(
+[[nodiscard]] bool IsAutofillAiAllowedByEnterprisePolicy(
     const PrefService* prefs) {
   // State of the AutofillAI-specific enterprise policy pref.
-  constexpr int kAutofillPredictionSettingsAllowWithoutLogging =
-      std::to_underlying(
-          optimization_guide::model_execution::prefs::
-              ModelExecutionEnterprisePolicyValue::kAllowWithoutLogging);
-  constexpr int kAutofillPredictionSettingsDisabled =
+  constexpr int kAutofillPredictionSettingsAllow =
       std::to_underlying(optimization_guide::model_execution::prefs::
-                             ModelExecutionEnterprisePolicyValue::kDisable);
-  static_assert(kAutofillPredictionSettingsAllowWithoutLogging == 1);
-  static_assert(kAutofillPredictionSettingsDisabled == 2);
+                             ModelExecutionEnterprisePolicyValue::kAllow);
+  static_assert(kAutofillPredictionSettingsAllow == 0);
 
-  const int policy_pref_state = prefs->GetInteger(
-      optimization_guide::prefs::
-          kAutofillPredictionImprovementsEnterprisePolicyAllowed);
-  return policy_pref_state == kAutofillPredictionSettingsAllowWithoutLogging;
+  return prefs->GetInteger(
+             optimization_guide::prefs::
+                 kAutofillPredictionImprovementsEnterprisePolicyAllowed) ==
+         kAutofillPredictionSettingsAllow;
 }
 
 }  // namespace autofill

@@ -66,8 +66,7 @@ public class AutofillAiPreference extends ChromeSwitchPreference
         EntityDataManager manager =
                 mProfile != null ? EntityDataManagerFactory.getForProfile(mProfile) : null;
         boolean showLoggingInfo =
-                (manager != null)
-                        && manager.getIsAutofillAiEnabledByEnterprisePolicyWithoutLogging();
+                (manager != null) && !manager.getIsAutofillAiAllowedByEnterprisePolicy();
         if (showLoggingInfo) {
             TextView summaryView =
                     (TextView) thingsToConsider.findViewById(R.id.info_item_summary_2);

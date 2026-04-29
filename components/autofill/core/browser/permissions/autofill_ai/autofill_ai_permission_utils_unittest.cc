@@ -684,8 +684,7 @@ TEST_F(AutofillAiPermissionUtilsTest, IsAutofillAiDisabledByEnterprisePolicy) {
   EXPECT_TRUE(IsAutofillAiDisabledByEnterprisePolicy(client().GetPrefs()));
 }
 
-TEST_F(AutofillAiPermissionUtilsTest,
-       IsAutofillAiEnabledByEnterprisePolicyWithoutLogging) {
+TEST_F(AutofillAiPermissionUtilsTest, IsAutofillAiAllowedByEnterprisePolicy) {
   using optimization_guide::model_execution::prefs::
       ModelExecutionEnterprisePolicyValue;
 
@@ -694,8 +693,7 @@ TEST_F(AutofillAiPermissionUtilsTest,
       optimization_guide::prefs::
           kAutofillPredictionImprovementsEnterprisePolicyAllowed,
       static_cast<int>(ModelExecutionEnterprisePolicyValue::kAllow));
-  EXPECT_FALSE(
-      IsAutofillAiEnabledByEnterprisePolicyWithoutLogging(client().GetPrefs()));
+  EXPECT_TRUE(IsAutofillAiAllowedByEnterprisePolicy(client().GetPrefs()));
 
   // Enabled without logging (kAllowWithoutLogging = 1).
   client().GetPrefs()->SetInteger(
@@ -703,16 +701,14 @@ TEST_F(AutofillAiPermissionUtilsTest,
           kAutofillPredictionImprovementsEnterprisePolicyAllowed,
       static_cast<int>(
           ModelExecutionEnterprisePolicyValue::kAllowWithoutLogging));
-  EXPECT_TRUE(
-      IsAutofillAiEnabledByEnterprisePolicyWithoutLogging(client().GetPrefs()));
+  EXPECT_FALSE(IsAutofillAiAllowedByEnterprisePolicy(client().GetPrefs()));
 
   // Disabled (kDisable = 2).
   client().GetPrefs()->SetInteger(
       optimization_guide::prefs::
           kAutofillPredictionImprovementsEnterprisePolicyAllowed,
       static_cast<int>(ModelExecutionEnterprisePolicyValue::kDisable));
-  EXPECT_FALSE(
-      IsAutofillAiEnabledByEnterprisePolicyWithoutLogging(client().GetPrefs()));
+  EXPECT_FALSE(IsAutofillAiAllowedByEnterprisePolicy(client().GetPrefs()));
 }
 
 // Tests that the prefs affect MayPerformAutofillAiAction() for kFilling and

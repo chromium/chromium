@@ -355,9 +355,9 @@ bool EntityDataManagerAndroid::GetIsAutofillAiDisabledByEnterprisePolicy(
   return IsAutofillAiDisabledByEnterprisePolicy(prefs_);
 }
 
-bool EntityDataManagerAndroid::
-    GetIsAutofillAiEnabledByEnterprisePolicyWithoutLogging(JNIEnv* env) {
-  return IsAutofillAiEnabledByEnterprisePolicyWithoutLogging(prefs_);
+bool EntityDataManagerAndroid::GetIsAutofillAiAllowedByEnterprisePolicy(
+    JNIEnv* env) {
+  return IsAutofillAiAllowedByEnterprisePolicy(prefs_);
 }
 
 bool EntityDataManagerAndroid::CanEnableOrDisableAutofillAi(JNIEnv* env) {

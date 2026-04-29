@@ -184,9 +184,8 @@ bool SetAutofillAiOptInStatus(
 [[nodiscard]] bool IsAutofillAiDisabledByEnterprisePolicy(
     const PrefService* prefs);
 
-// Checks whether Autofill AI is enabled by enterprise policy but without
-// logging.
-[[nodiscard]] bool IsAutofillAiEnabledByEnterprisePolicyWithoutLogging(
+// Checks whether Autofill AI is enabled by enterprise policy including logging.
+[[nodiscard]] bool IsAutofillAiAllowedByEnterprisePolicy(
     const PrefService* prefs);
 
 }  // namespace autofill

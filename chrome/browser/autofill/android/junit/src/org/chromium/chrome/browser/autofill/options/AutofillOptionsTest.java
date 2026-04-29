@@ -825,9 +825,6 @@ public class AutofillOptionsTest {
     @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
     public void testAutofillAiManagedByPolicy_Disabled() {
         doReturn(true).when(mMockEntityDataManager).getIsAutofillAiDisabledByEnterprisePolicy();
-        doReturn(false)
-                .when(mMockEntityDataManager)
-                .getIsAutofillAiEnabledByEnterprisePolicyWithoutLogging();
 
         new AutofillOptionsCoordinator(mFragment, this::assertModalNotUsed, Assert::fail)
                 .initializeNow();
@@ -875,29 +872,8 @@ public class AutofillOptionsTest {
     @Test
     @SmallTest
     @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
-    public void testAutofillAiManagedByPolicy_EnabledWithoutLogging() {
-        doReturn(false).when(mMockEntityDataManager).getIsAutofillAiDisabledByEnterprisePolicy();
-        doReturn(true)
-                .when(mMockEntityDataManager)
-                .getIsAutofillAiEnabledByEnterprisePolicyWithoutLogging();
-
-        new AutofillOptionsCoordinator(mFragment, this::assertModalNotUsed, Assert::fail)
-                .initializeNow();
-
-        var delegate = mFragment.getAutofillAiSwitch().getManagedPreferenceDelegate();
-        assertNotNull(delegate);
-        assertFalse(delegate.isPreferenceControlledByPolicy(mFragment.getAutofillAiSwitch()));
-        assertFalse(delegate.isPreferenceClickDisabled(mFragment.getAutofillAiSwitch()));
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
     public void testAutofillAiNotManagedByPolicy() {
         doReturn(false).when(mMockEntityDataManager).getIsAutofillAiDisabledByEnterprisePolicy();
-        doReturn(false)
-                .when(mMockEntityDataManager)
-                .getIsAutofillAiEnabledByEnterprisePolicyWithoutLogging();
 
         new AutofillOptionsCoordinator(mFragment, this::assertModalNotUsed, Assert::fail)
                 .initializeNow();
@@ -912,9 +888,7 @@ public class AutofillOptionsTest {
     @SmallTest
     @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
     public void testAutofillAiEnterpriseDisclaimerVisible() {
-        doReturn(true)
-                .when(mMockEntityDataManager)
-                .getIsAutofillAiEnabledByEnterprisePolicyWithoutLogging();
+        doReturn(false).when(mMockEntityDataManager).getIsAutofillAiAllowedByEnterprisePolicy();
 
         new AutofillOptionsCoordinator(mFragment, this::assertModalNotUsed, Assert::fail)
                 .initializeNow();
@@ -937,9 +911,7 @@ public class AutofillOptionsTest {
     @SmallTest
     @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
     public void testAutofillAiEnterpriseDisclaimerHidden() {
-        doReturn(false)
-                .when(mMockEntityDataManager)
-                .getIsAutofillAiEnabledByEnterprisePolicyWithoutLogging();
+        doReturn(true).when(mMockEntityDataManager).getIsAutofillAiAllowedByEnterprisePolicy();
 
         new AutofillOptionsCoordinator(mFragment, this::assertModalNotUsed, Assert::fail)
                 .initializeNow();
