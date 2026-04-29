@@ -9693,9 +9693,6 @@ crbug.com/395482243 external/wpt/webdriver/tests/interop/shared_id_window.py [ F
 # Gardener 2026-03-23
 crbug.com/494567940 [ Linux ] external/wpt/webdriver/tests/bidi/browsing_context/context_destroyed/original_opener.py [ Failure Pass ]
 
-# Fails on Linux Tests, e.g. https://ci.chromium.org/ui/p/chromium/builders/ci/Linux%20Tests/177614/overview
-crbug.com/495568057 [ Linux ] wpt_internal/svg/use-count-svg-filter-nested-iframe.sub.https.html [ Failure Pass ]
-
 # Gardener 2026-03-24
 crbug.com/495770240 [ Linux ] external/wpt/css/css-ruby/ruby-text-combine-upright-002b.html [ Failure Pass ]
 crbug.com/495770240 [ Linux ] external/wpt/css/css-writing-modes/text-combine-upright-decorations-001.html [ Failure Pass ]

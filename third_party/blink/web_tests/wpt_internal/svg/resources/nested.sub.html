@@ -28,11 +28,13 @@
     }
     await waitForRender();
 
-    window.parent.postMessage(getCounters(), '*');
-    resetCounters();
     window.addEventListener('message', (e) => {
-      window.parent.postMessage(getCounters(), '*');
+      let result = getCounters();
       resetCounters();
+      window.parent.postMessage(result, '*');
     });
+    let result = getCounters();
+    resetCounters();
+    window.parent.postMessage(result, '*');
   })();
 </script>`
