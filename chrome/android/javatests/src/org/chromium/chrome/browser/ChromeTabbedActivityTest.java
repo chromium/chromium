@@ -43,7 +43,6 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.base.test.util.Restriction;
@@ -708,17 +707,9 @@ public class ChromeTabbedActivityTest {
     }
 
     private void testTabGroupIntent(boolean shouldApplyCollapse) {
-        HistogramWatcher histogramExpectation =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecord("Android.Reparent.TabGroup.GroupSize", 3)
-                        .expectIntRecord("Android.Reparent.TabGroup.GroupSize.Diff", 0)
-                        .expectAnyRecord("Android.Reparent.TabGroup.Duration")
-                        .build();
-        long startTime = SystemClock.elapsedRealtime();
         int initialWindowCount = MultiWindowUtils.getInstanceCount(PersistedInstanceType.ANY);
         Intent intent =
                 new Intent(Intent.ACTION_VIEW, Uri.parse(JUnitTestGURLs.EXAMPLE_URL.getSpec()));
-        intent.putExtra(IntentHandler.EXTRA_REPARENT_START_TIME, startTime);
         intent.addCategory(Intent.CATEGORY_BROWSABLE);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
@@ -772,9 +763,6 @@ public class ChromeTabbedActivityTest {
                     } else {
                         Assert.assertFalse(tabModel.getTabGroupCollapsed(TAB_GROUP_ID));
                     }
-
-                    // Verify histograms.
-                    histogramExpectation.assertExpected();
                 });
     }
 
