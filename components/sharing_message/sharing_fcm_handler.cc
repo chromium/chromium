@@ -191,8 +191,8 @@ void SharingFCMHandler::SendAckMessage(
         server_channel,
     SharingDevicePlatform sender_device_type,
     std::unique_ptr<components_sharing_message::ResponseMessage> response) {
+  // Some SharingMessage types do not require ack messages. Skip in that case.
   if (!fcm_channel && !server_channel) {
-    LOG(ERROR) << "Unable to find ack channel configuration";
     return;
   }
 
