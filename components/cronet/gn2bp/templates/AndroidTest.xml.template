@@ -96,6 +96,8 @@
         <option name="exclude-filter" value="org.chromium.net.impl.AdaptiveBidirectionalStreamTest#tlsConnectionFailsNoFallback_throwsConnectionTimeoutError" />
         <!-- Rename of the above, see https://crrev.com/c/7700792 -->
         <option name="exclude-filter" value="org.chromium.net.impl.AdaptiveBidirectionalStreamTest#tlsConnectionFailsAllNetworks_throwsConnectionTimeoutError" />
+        <!-- b/507725379 Mockito "java.lang.ClassNotFoundException: org.chromium.net.impl.CronetAdaptiveRequestContext_1_Proxy" -->
+        <option name="exclude-filter" value="org.chromium.net.impl.CronetAdaptiveRequestContextTest#maybeShowInitialDevToast_toasts" />
         <option name="hidden-api-checks" value="false"/>
         <option name="isolated-storage" value="false"/>
         <option name="orchestrator" value="true"/>
