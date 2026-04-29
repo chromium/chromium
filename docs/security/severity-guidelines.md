@@ -46,9 +46,9 @@ Example bugs:
   ([319125](https://crbug.com/319125#c10)) which is directly or indirectly
   reachable from web content.
 * Memory corruption in an unsandboxed GPU process when it is reachable directly
-  from web content without compromising the renderer.
+  from web content without compromising the renderer
   ([1420130](https://crbug.com/1420130), [1427865](https://crbug.com/1427865)).
-  ([on some platforms we consider the GPU process 'sandboxed'](../../docs/security/process-sandboxes-by-platform.md)).
+  ([On some platforms we consider the GPU process 'sandboxed'](../../docs/security/process-sandboxes-by-platform.md).)
 * Exploit chains made up of multiple bugs that can lead to code execution
   outside of the sandbox ([416449](https://crbug.com/416449)).
 * A bug that enables web content to read arbitrary local files
@@ -77,7 +77,7 @@ severity of high and could potentially be reduced by other mitigating factors.
 ### Memory Safety
 
 * A bug that allows arbitrary code execution within the confines of the sandbox.
-  * memory corruption in the renderer process ([570427](https://crbug.com/570427).
+  * memory corruption in the renderer process ([570427](https://crbug.com/570427)).
   * memory corruption in v8.
   * DCHECK correctness failures in v8.
   * memory corruption in the gpu process where it is sandboxed ([468936](https://crbug.com/468936)).
