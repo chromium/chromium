@@ -19,10 +19,13 @@
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_controller.h"
+#include "components/omnibox/browser/autocomplete_match.h"
+#include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/omnibox_pref_names.h"
 #include "components/omnibox/browser/omnibox_triggered_feature_service.h"
 #include "components/omnibox/browser/page_classification_functions.h"
 #include "components/omnibox/browser/vector_icons.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/tabs/public/tab_interface.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "ui/base/models/image_model.h"
@@ -129,6 +132,18 @@ bool AiModePageActionController::ShouldShowPageAction(
     return false;
   }
 
+  // If the feature is enabled to hide the AIM entrypoint for URL suggestions,
+  // don't show the AIM entrypoint if the default match is a URL suggestion.
+  if (base::FeatureList::IsEnabled(
+          omnibox::kHideAimEntrypointForUrlSuggestions)) {
+    const AutocompleteResult& result =
+        omnibox_controller->autocomplete_controller()->result();
+    if (result.default_match() &&
+        !AutocompleteMatch::IsSearchType(result.default_match()->type)) {
+      return false;
+    }
+  }
+
   // Otherwise, we should show the AIM view if the focus is within any view in
   // the location bar, including the omnibox, this view or any other page action
   // icon views.
@@ -164,9 +179,16 @@ AiModePageActionController::AiModePageActionController(
       scoped_data_(bwi.GetUnownedUserDataHost(), *this) {
   CHECK(IsPageActionMigrated(PageActionIconType::kAiMode));
 
+  if (auto* omnibox_controller = location_bar_view.GetOmniboxController()) {
+    observation_.Observe(omnibox_controller->edit_model());
+  }
 }
 
 AiModePageActionController::~AiModePageActionController() = default;
+
+void AiModePageActionController::OnContentsChanged() {
+  UpdatePageAction();
+}
 
 void AiModePageActionController::UpdatePageAction() {
   page_actions::PageActionController* page_action_controller =

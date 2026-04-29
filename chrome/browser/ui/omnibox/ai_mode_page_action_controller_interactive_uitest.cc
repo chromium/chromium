@@ -92,7 +92,8 @@ class AiModePageActionControllerInteractiveUiTest
                               },
                               {omnibox::internal::kWebUIOmniboxPopup, {}},
                               {omnibox::internal::kWebUIOmniboxAimPopup, {}}},
-        /*disabled_features*/ {kHideAimEntrypointOnUserInput});
+        /*disabled_features*/ {kHideAimEntrypointOnUserInput,
+                               kHideAimEntrypointForUrlSuggestions});
   }
 
   InteractiveTestApi::MultiStep OpenTabWithPageUrlAndFocusOmnibox(
@@ -235,6 +236,38 @@ IN_PROC_BROWSER_TEST_F(
                   OpenOmniboxPopupByTypingASingleZero(),
                   SendKeyPress(kOmniboxElementId, ui::VKEY_BACK),
                   CheckChipVisible(/*visible=*/true));
+}
+
+class AiModePageActionControllerHideEntryPointForUrlInteractiveUiTest
+    : public AiModePageActionControllerInteractiveUiTest {
+ protected:
+  void InitializeFeatures() override {
+    features_.InitWithFeaturesAndParameters(
+        /*enabled_features*/ {{kHideAimEntrypointForUrlSuggestions, {}},
+                              {
+                                  features::kPageActionsMigration,
+                                  {
+                                      {
+                                          features::kPageActionsMigrationAiMode
+                                              .name,
+                                          "true",
+                                      },
+                                  },
+                              },
+                              {omnibox::internal::kWebUIOmniboxPopup, {}},
+                              {omnibox::internal::kWebUIOmniboxAimPopup, {}}},
+        /*disabled_features*/ {});
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(
+    AiModePageActionControllerHideEntryPointForUrlInteractiveUiTest,
+    HidesOnUrlSuggestion) {
+  RunTestSequence(OpenTabWithPageUrlAndFocusOmnibox(/*is_ntp=*/true),
+                  CheckChipVisible(true),
+                  // Type a URL.
+                  EnterText(kOmniboxElementId, u"https://google.com"),
+                  CheckChipVisible(false));
 }
 
 }  // namespace omnibox

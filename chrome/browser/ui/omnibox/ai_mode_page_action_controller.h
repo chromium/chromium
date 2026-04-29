@@ -6,6 +6,8 @@
 #define CHROME_BROWSER_UI_OMNIBOX_AI_MODE_PAGE_ACTION_CONTROLLER_H_
 
 #include "base/memory/raw_ref.h"
+#include "base/scoped_observation.h"
+#include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 class BrowserWindowInterface;
@@ -17,17 +19,25 @@ namespace omnibox {
 
 // Controller for the AI mode page action icon. This class is responsible for
 // deciding whether the AI mode icon should be shown in the omnibox.
-class AiModePageActionController {
+class AiModePageActionController : public OmniboxEditModel::Observer {
  public:
   DECLARE_USER_DATA(AiModePageActionController);
   AiModePageActionController(BrowserWindowInterface& bwi,
                              Profile& profile,
                              LocationBarView& location_bar_view);
 
-  ~AiModePageActionController();
+  ~AiModePageActionController() override;
   AiModePageActionController(const AiModePageActionController&) = delete;
   AiModePageActionController& operator=(const AiModePageActionController&) =
       delete;
+
+  // OmniboxEditModel::Observer:
+  void OnSelectionChanged(OmniboxPopupSelection old_selection,
+                          OmniboxPopupSelection new_selection) override {}
+  void OnMatchIconUpdated(size_t index) override {}
+  void OnContentsChanged() override;
+  void OnKeywordStateChanged(bool is_keyword_selected) override {}
+  void OnCharTyped(base::TimeTicks timestamp) override {}
 
   // Determines whether the AI mode page action should be shown and updates
   // its visibility.
@@ -55,6 +65,9 @@ class AiModePageActionController {
   const raw_ref<LocationBarView> location_bar_view_;
 
   ui::ScopedUnownedUserData<AiModePageActionController> scoped_data_;
+
+  base::ScopedObservation<OmniboxEditModel, OmniboxEditModel::Observer>
+      observation_{this};
 };
 
 }  // namespace omnibox

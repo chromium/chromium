@@ -178,6 +178,10 @@ BASE_FEATURE(kHideAimEntrypointOnUserInput,
              "OmniboxHideAimEntrypointOnUserInput",
              DISABLED);
 
+// Hides the AIM entrypoint in the Omnibox when the default suggestion is a URL.
+// Only used on desktop platforms.
+BASE_FEATURE(kHideAimEntrypointForUrlSuggestions, DISABLED);
+
 // When enabled, AI mode will remove verbatim suggestions from the suggestions
 // list.
 BASE_FEATURE(kAIMSuppressVerbatimMatch, ENABLED);
