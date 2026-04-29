@@ -86,6 +86,10 @@ export class SelectableLazyListElement<T = any> extends CrLitElement {
   accessor template: (item: T, index: number) => TemplateResult = () => html``;
   accessor selected: number = NO_SELECTION;
   accessor isSelectable: (item: T) => boolean = (_item) => true;
+
+  // Extracted to a member so that it can be overridden in tests.
+  scrollBehavior: ScrollBehavior = 'smooth';
+
   private accessor selectedItem_: Element|null = null;
   private firstSelectableIndex_: number = NO_SELECTION;
   private lastSelectableIndex_: number = NO_SELECTION;
@@ -196,7 +200,7 @@ export class SelectableLazyListElement<T = any> extends CrLitElement {
             index <= this.lastSelectableIndex_,
         'Index is out of range.');
     const newItem = await this.lazyList_().ensureItemRendered(index);
-    newItem.scrollIntoView({behavior: 'smooth', block: 'nearest'});
+    newItem.scrollIntoView({behavior: this.scrollBehavior, block: 'nearest'});
   }
 
   /**
@@ -278,12 +282,12 @@ export class SelectableLazyListElement<T = any> extends CrLitElement {
 
     const selectedIndex = this.selected;
     if (selectedIndex === this.firstSelectableIndex_) {
-      this.scrollTo({top: 0, behavior: 'smooth'});
+      this.scrollTo({top: 0, behavior: this.scrollBehavior});
       return;
     }
 
     if (selectedIndex === this.lastSelectableIndex_) {
-      this.selectedItem_!.scrollIntoView({behavior: 'smooth'});
+      this.selectedItem_!.scrollIntoView({behavior: this.scrollBehavior});
       return;
     }
 
@@ -291,7 +295,8 @@ export class SelectableLazyListElement<T = any> extends CrLitElement {
     const previousItem =
         previousIndex === NO_SELECTION ? null : this.getDomItem_(previousIndex);
     if (!!previousItem && (previousItem.offsetTop < this.scrollTop)) {
-      previousItem.scrollIntoView({behavior: 'smooth', block: 'nearest'});
+      previousItem.scrollIntoView(
+          {behavior: this.scrollBehavior, block: 'nearest'});
       return;
     }
 
@@ -300,7 +305,8 @@ export class SelectableLazyListElement<T = any> extends CrLitElement {
       const nextItem = await this.lazyList_().ensureItemRendered(nextItemIndex);
       if (nextItem.offsetTop + nextItem.offsetHeight >
           this.scrollTop + this.offsetHeight) {
-        nextItem.scrollIntoView({behavior: 'smooth', block: 'nearest'});
+        nextItem.scrollIntoView(
+            {behavior: this.scrollBehavior, block: 'nearest'});
       }
     }
   }

@@ -4,21 +4,18 @@
 
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import type {ProfileData, TabSearchPageElement} from 'chrome://tab-search.top-chrome/tab_search.js';
-import {SelectableLazyListElement, TabSearchApiProxyImpl, TabSearchItemElement} from 'chrome://tab-search.top-chrome/tab_search.js';
+import {TabSearchApiProxyImpl} from 'chrome://tab-search.top-chrome/tab_search.js';
 import {assertEquals, assertGT, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {createProfileData, generateSampleDataFromSiteNames, generateSampleRecentlyClosedTabs, generateSampleTabsFromSiteNames, sampleSiteNames, sampleToken} from './tab_search_test_data.js';
-import {assertTabItemAndNeighborsInViewBounds, assertTabItemInViewBounds, disableAnimationBehavior, getStylePropertyPixelValue, initLoadTimeDataWithDefaults} from './tab_search_test_helper.js';
+import {assertTabItemAndNeighborsInViewBounds, assertTabItemInViewBounds, getStylePropertyPixelValue, initLoadTimeDataWithDefaults} from './tab_search_test_helper.js';
 import {TestTabSearchApiProxy} from './test_tab_search_api_proxy.js';
 
 suite('TabSearchAppFocusTest', () => {
   let tabSearchPage: TabSearchPageElement;
   let testProxy: TestTabSearchApiProxy;
-
-  disableAnimationBehavior(SelectableLazyListElement, 'scrollTo');
-  disableAnimationBehavior(TabSearchItemElement, 'scrollIntoView');
 
   async function setupTest(
       sampleData: ProfileData,
@@ -33,6 +30,8 @@ suite('TabSearchAppFocusTest', () => {
     tabSearchPage = document.createElement('tab-search-page');
     tabSearchPage.availableHeight = 500;
     document.body.appendChild(tabSearchPage);
+    // Avoid scroll animations that delay the scrollTop property updates.
+    tabSearchPage.$.tabsList.scrollBehavior = 'instant';
     await eventToPromise('viewport-filled', tabSearchPage.$.tabsList);
     await microtasksFinished();
   }
