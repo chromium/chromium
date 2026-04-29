@@ -689,7 +689,9 @@ void ImeAdapterAndroid::PerformSpellCheck(JNIEnv* env) {
 void ImeAdapterAndroid::AppendAutocorrectUnderlineSpan(JNIEnv* env,
                                                        int32_t start,
                                                        int32_t end) {
-  if (!base::FeatureList::IsEnabled(features::kAndroidPkAutocorrectUnderline)) {
+  if (!base::FeatureList::IsEnabled(features::kAndroidPkAutocorrectUnderline) &&
+      !base::FeatureList::IsEnabled(
+          features::kAndroidPkAutocorrectUnderlineV2)) {
     return;
   }
   blink::mojom::FrameWidgetInputHandler* input_handler =
@@ -710,7 +712,9 @@ void ImeAdapterAndroid::AppendAutocorrectUnderlineSpan(JNIEnv* env,
 }
 
 void ImeAdapterAndroid::ClearAllAutocorrectUnderlineSpans(JNIEnv* env) {
-  if (!base::FeatureList::IsEnabled(features::kAndroidPkAutocorrectUnderline)) {
+  if (!base::FeatureList::IsEnabled(features::kAndroidPkAutocorrectUnderline) &&
+      !base::FeatureList::IsEnabled(
+          features::kAndroidPkAutocorrectUnderlineV2)) {
     return;
   }
   blink::mojom::FrameWidgetInputHandler* input_handler =
