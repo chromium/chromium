@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_TRANSLATE_TRANSLATE_LANGUAGE_LIST_MODEL_H_
 #define CHROME_BROWSER_UI_TRANSLATE_TRANSLATE_LANGUAGE_LIST_MODEL_H_
 
+#include <optional>
 #include <string>
 
 // The model for the language lists used in the Full and Partial Translate
@@ -24,6 +25,11 @@ class TranslateLanguageListModel {
 
   // Returns the displayable name for the target language at |index|.
   virtual std::u16string GetTargetLanguageNameAt(int index) const = 0;
+
+  // Returns the index of the target language matching |language_code|, or
+  // std::nullopt if not found.
+  virtual std::optional<size_t> GetTargetLanguageIndexForCode(
+      const std::string& language_code) const = 0;
 
   // Returns the source language index.
   virtual int GetSourceLanguageIndex() const = 0;

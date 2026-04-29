@@ -56,6 +56,11 @@ class FakeTranslateBubbleModel : public TranslateBubbleModel {
     return u"English";
   }
 
+  std::optional<size_t> GetTargetLanguageIndexForCode(
+      const std::string& language_code) const override {
+    return 1;
+  }
+
   std::string GetSourceLanguageCode() const override { return "eng-US"; }
 
   int GetSourceLanguageIndex() const override { return 1; }
@@ -153,6 +158,11 @@ class FakePartialTranslateBubbleModel : public PartialTranslateBubbleModel {
 
   std::u16string GetTargetLanguageNameAt(int index) const override {
     return u"English";
+  }
+
+  std::optional<size_t> GetTargetLanguageIndexForCode(
+      const std::string& language_code) const override {
+    return 1;
   }
 
   int GetSourceLanguageIndex() const override { return 1; }

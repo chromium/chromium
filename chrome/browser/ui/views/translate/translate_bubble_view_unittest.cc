@@ -65,6 +65,11 @@ class MockTranslateBubbleModel : public TranslateBubbleModel {
     return u"English";
   }
 
+  std::optional<size_t> GetTargetLanguageIndexForCode(
+      const std::string& language_code) const override {
+    return 1;
+  }
+
   std::string GetSourceLanguageCode() const override {
     if (source_language_index_ == 0) {
       return "und";

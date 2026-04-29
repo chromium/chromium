@@ -138,6 +138,17 @@ std::u16string PartialTranslateBubbleModelImpl::GetTargetLanguageNameAt(
   return ui_languages_manager_->GetLanguageNameAt(index + 1);
 }
 
+std::optional<size_t>
+PartialTranslateBubbleModelImpl::GetTargetLanguageIndexForCode(
+    const std::string& language_code) const {
+  for (size_t i = 0; i < ui_languages_manager_->GetNumberOfLanguages(); ++i) {
+    if (ui_languages_manager_->GetLanguageCodeAt(i) == language_code) {
+      return i == 0 ? std::nullopt : std::make_optional<size_t>(i - 1);
+    }
+  }
+  return std::nullopt;
+}
+
 int PartialTranslateBubbleModelImpl::GetSourceLanguageIndex() const {
   return ui_languages_manager_->GetSourceLanguageIndex();
 }
