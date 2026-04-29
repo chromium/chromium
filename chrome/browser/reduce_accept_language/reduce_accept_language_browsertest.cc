@@ -3186,10 +3186,11 @@ IN_PROC_BROWSER_TEST_P(ReduceAcceptLanguageCountBrowserTest, RegularRequest) {
   }
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-  // Expect a total count of 3. The histogram is recorded once during initial
-  // profile setup, and then twice more when SetPrefsAcceptLanguage is called
-  // to sync the preference to the renderer and network services.
-  histograms.ExpectTotalCount("LanguageUsage.AcceptLanguage.Count2", 3);
+  // The histogram is recorded '2 + 1 per web contents' when
+  // `SetPrefsAcceptLanguage()` is called to sync the preference to the renderer
+  // and network services.
+  histograms.ExpectTotalCount("LanguageUsage.AcceptLanguage.Count2",
+                              2 + content::GetAllWebContents().size());
 }
 
 IN_PROC_BROWSER_TEST_P(ReduceAcceptLanguageCountBrowserTest, Iframe) {
@@ -3220,8 +3221,9 @@ IN_PROC_BROWSER_TEST_P(ReduceAcceptLanguageCountBrowserTest, Iframe) {
   EXPECT_EQ(LastRequestUrl().GetPath(), "/subframe_simple.html");
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-  // Expect a total count of 3. The histogram is recorded once during initial
-  // profile setup, and then twice more when SetPrefsAcceptLanguage is called
-  // to sync the preference to the renderer and network services.
-  histograms.ExpectTotalCount("LanguageUsage.AcceptLanguage.Count2", 3);
+  // The histogram is recorded '2 + 1 per web contents' when
+  // `SetPrefsAcceptLanguage()` is called to sync the preference to the renderer
+  // and network services.
+  histograms.ExpectTotalCount("LanguageUsage.AcceptLanguage.Count2",
+                              2 + content::GetAllWebContents().size());
 }
