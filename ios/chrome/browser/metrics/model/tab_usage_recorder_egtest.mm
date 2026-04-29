@@ -5,6 +5,7 @@
 #import <memory>
 
 #import "base/functional/bind.h"
+#import "base/path_service.h"
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
@@ -17,14 +18,12 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
-#import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
+#import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/web/public/test/element_selector.h"
-#import "ios/web/public/test/http_server/delayed_response_provider.h"
-#import "ios/web/public/test/http_server/html_response_provider.h"
-#import "ios/web/public/test/http_server/http_server.h"
-#import "ios/web/public/test/http_server/http_server_util.h"
+#import "net/test/embedded_test_server/embedded_test_server.h"
+#import "net/test/embedded_test_server/http_response.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 using chrome_test_util::OpenLinkInNewTabButton;
@@ -81,10 +80,12 @@ void NewMainTabWithURL(const GURL& url, const std::string& word) {
 }
 
 // Opens 2 new tabs with different URLs.
-void OpenTwoTabs() {
+void OpenTwoTabs(net::test_server::EmbeddedTestServer* testServer) {
   [ChromeEarlGrey closeAllTabsInCurrentMode];
-  const GURL url1 = web::test::HttpServer::MakeUrl(kTestUrl1);
-  const GURL url2 = web::test::HttpServer::MakeUrl(kTestUrl2);
+
+  const GURL url1 = testServer->GetURL(GURL(kTestUrl1).path());
+  const GURL url2 = testServer->GetURL(GURL(kTestUrl2).path());
+
   NewMainTabWithURL(url1, kURL1FirstWord);
   NewMainTabWithURL(url2, kURL2FirstWord);
 }
@@ -136,16 +137,63 @@ void SwitchToNormalMode() {
 }  // namespace
 
 // Test for the TabUsageRecorder class.
-@interface TabUsageRecorderTestCase : WebHttpServerChromeTestCase
+@interface TabUsageRecorderTestCase : ChromeTestCase
+@end
+
+@interface TabUsageRecorderTestCase () {
+  std::map<std::string, std::string> _responses;
+  base::TimeDelta _slowResponseDelay;
+}
 @end
 
 @implementation TabUsageRecorderTestCase
 
 - (void)setUp {
   [super setUp];
+
+  self.testServer->ServeFilesFromDirectory(
+      base::PathService::CheckedGet(base::DIR_ASSETS).AppendASCII("ios"));
+
   chrome_test_util::GREYAssertErrorNil(
       [MetricsAppInterface setupHistogramTester]);
   [ChromeEarlGrey removeBrowsingCache];
+
+  _slowResponseDelay = base::TimeDelta();
+
+  auto* responses = &_responses;
+  auto* slowResponseDelay = &_slowResponseDelay;
+  self.testServer->RegisterRequestHandler(base::BindRepeating(
+      [](std::map<std::string, std::string>* responses,
+         base::TimeDelta* slowResponseDelay,
+         const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        if (request.relative_url == "/slow") {
+          std::unique_ptr<net::test_server::BasicHttpResponse> response;
+          if (slowResponseDelay->is_zero()) {
+            response = std::make_unique<net::test_server::BasicHttpResponse>();
+          } else {
+            response = std::make_unique<net::test_server::DelayedHttpResponse>(
+                *slowResponseDelay);
+          }
+          response->set_code(net::HTTP_OK);
+          response->set_content_type("text/html");
+          response->set_content("Slow Page");
+          return response;
+        }
+        auto it = responses->find(request.relative_url);
+        if (it != responses->end()) {
+          auto response =
+              std::make_unique<net::test_server::BasicHttpResponse>();
+          response->set_code(net::HTTP_OK);
+          response->set_content_type("text/html");
+          response->set_content(it->second);
+          return response;
+        }
+        return nullptr;
+      },
+      responses, slowResponseDelay));
+
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
 }
 
 - (void)tearDownHelper {
@@ -160,7 +208,7 @@ void SwitchToNormalMode() {
   [ChromeEarlGrey resetTabUsageRecorder];
 
   // Open two tabs with urls.
-  OpenTwoTabs();
+  OpenTwoTabs(self.testServer);
   [ChromeEarlGrey waitForMainTabCount:2];
   // Switch between the two tabs.  Both are currently in memory.
   [ChromeEarlGrey selectTabAtIndex:0];
@@ -214,7 +262,7 @@ void SwitchToNormalMode() {
 // some tabs, forcing a tab eviction, then checking the histogram.
 - (void)testPageLoadCountBeforeEvictedTab {
   [ChromeEarlGrey resetTabUsageRecorder];
-  const GURL url1 = web::test::HttpServer::MakeUrl(kTestUrl1);
+  const GURL url1 = self.testServer->GetURL("/memory_usage.html");
   // This test opens three tabs.
   const int numberOfTabs = 3;
   [ChromeEarlGrey closeAllTabsInCurrentMode];
@@ -289,7 +337,7 @@ void SwitchToNormalMode() {
   [ChromeEarlGrey resetTabUsageRecorder];
 
   // Open two tabs with urls.
-  OpenTwoTabs();
+  OpenTwoTabs(self.testServer);
   [ChromeEarlGrey waitForMainTabCount:2];
 
   // Set the normal tabs as 'cold start' tabs.
@@ -359,7 +407,7 @@ void SwitchToNormalMode() {
   [ChromeEarlGrey resetTabUsageRecorder];
 
   // Open two tabs with urls.
-  OpenTwoTabs();
+  OpenTwoTabs(self.testServer);
   [ChromeEarlGrey waitForMainTabCount:2];
 
   // Simulate going into the background.
@@ -382,12 +430,12 @@ void SwitchToNormalMode() {
       });
   (void)unused;
 
-  const GURL url2 = web::test::HttpServer::MakeUrl(kTestUrl2);
+  const GURL url2 = self.testServer->GetURL("/fullscreen.html");
   [ChromeEarlGrey waitForWebStateContainingText:kURL2FirstWord];
   [ChromeEarlGrey waitForWebStateVisibleURL:url2];
 
   [ChromeEarlGrey selectTabAtIndex:0];
-  const GURL url1 = web::test::HttpServer::MakeUrl(kTestUrl1);
+  const GURL url1 = self.testServer->GetURL("/memory_usage.html");
   [ChromeEarlGrey waitForWebStateContainingText:kURL1FirstWord];
   [ChromeEarlGrey waitForWebStateVisibleURL:url1];
 }
@@ -396,10 +444,9 @@ void SwitchToNormalMode() {
 // reload to be complete after eviction.
 - (void)testEvictedTabSlowReload {
   std::map<GURL, std::string> responses;
-  const GURL slowURL = web::test::HttpServer::MakeUrl("http://slow");
+  const GURL slowURL = self.testServer->GetURL("/slow");
   responses[slowURL] = "Slow Page";
-  web::test::SetUpHttpServer(std::make_unique<web::DelayedResponseProvider>(
-      std::make_unique<HtmlResponseProvider>(responses), kSlowURLDelay));
+  _slowResponseDelay = kSlowURLDelay;
 
   // A blank tab needed to switch to it after reloading.
   [ChromeEarlGrey openNewTab];
@@ -441,11 +488,9 @@ void SwitchToNormalMode() {
 // while the evicted tab is still reloading.
 - (void)testEvictedTabReloadSwitchToNTP {
   std::map<GURL, std::string> responses;
-  const GURL slowURL = web::test::HttpServer::MakeUrl("http://slow");
+  const GURL slowURL = self.testServer->GetURL("/slow");
   responses[slowURL] = "Slow Page";
-
-  web::test::SetUpHttpServer(std::make_unique<web::DelayedResponseProvider>(
-      std::make_unique<HtmlResponseProvider>(responses), kSlowURLDelay));
+  _slowResponseDelay = kSlowURLDelay;
 
   NewMainTabWithURL(slowURL, "Slow");
   // Wait for the page starting to load. It is possible that the page finish
@@ -485,11 +530,9 @@ void SwitchToNormalMode() {
 // and closes the settings UI while the evicted tab is still reloading.
 - (void)testEvictedTabReloadSettingsAndBack {
   std::map<GURL, std::string> responses;
-  const GURL slowURL = web::test::HttpServer::MakeUrl("http://slow");
+  const GURL slowURL = self.testServer->GetURL("/slow");
   responses[slowURL] = "Slow Page";
-
-  web::test::SetUpHttpServer(std::make_unique<web::DelayedResponseProvider>(
-      std::make_unique<HtmlResponseProvider>(responses), kSlowURLDelay));
+  _slowResponseDelay = kSlowURLDelay;
   NewMainTabWithURL(slowURL, responses[slowURL]);
   // Wait for the page starting to load. It is possible that the page finish
   // loading before this test. In that case the wait will timeout. Ignore the
@@ -518,17 +561,16 @@ void SwitchToNormalMode() {
   [ChromeEarlGreyUI tapSettingsMenuButton:SettingsMenuPrivacyButton()];
   [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
       performAction:grey_tap()];
-  [ChromeEarlGrey waitForWebStateContainingText:responses[slowURL]];
+  [ChromeEarlGrey waitForWebStateContainingText:"Slow Page"];
 }
 
 // Tests that leaving Chrome while an evicted tab is reloading triggers the
 // recording of the USER_LEFT_CHROME metric.
 - (void)testEvictedTabReloadBackgrounded {
   std::map<GURL, std::string> responses;
-  const GURL slowURL = web::test::HttpServer::MakeUrl("http://slow");
+  const GURL slowURL = self.testServer->GetURL("/slow");
   responses[slowURL] = "Slow Page";
-
-  web::test::SetUpHttpServer(std::make_unique<HtmlResponseProvider>(responses));
+  _responses["/slow"] = "Slow Page";
 
   [ChromeEarlGrey openNewTab];
   [ChromeEarlGrey loadURL:slowURL waitForCompletion:YES];
@@ -553,8 +595,7 @@ void SwitchToNormalMode() {
                  }),
              @"Fail to switch to incognito mode.");
 
-  web::test::SetUpHttpServer(std::make_unique<web::DelayedResponseProvider>(
-      std::make_unique<HtmlResponseProvider>(responses), kVerySlowURLDelay));
+  _slowResponseDelay = kVerySlowURLDelay;
 
   [ChromeEarlGrey removeBrowsingCache];
 
@@ -578,10 +619,8 @@ void SwitchToNormalMode() {
 
 // Tests that redirecting pages are not reloaded after eviction.
 - (void)testPageRedirect {
-  GURL redirectURL = web::test::HttpServer::MakeUrl(
-      "http://ios/testing/data/http_server_files/redirect_refresh.html");
-  GURL destinationURL = web::test::HttpServer::MakeUrl(
-      "http://ios/testing/data/http_server_files/destination.html");
+  GURL redirectURL = self.testServer->GetURL("/redirect_refresh.html");
+  GURL destinationURL = self.testServer->GetURL("/destination.html");
   [ChromeEarlGrey resetTabUsageRecorder];
 
   NewMainTabWithURL(redirectURL, "arrived");
@@ -622,14 +661,16 @@ void SwitchToNormalMode() {
   // Create map of canned responses and set up the test HTML server.
   std::map<GURL, std::string> responses;
   const GURL initialURL =
-      web::test::HttpServer::MakeUrl("http://scenarioTestLinkClickNavigation");
-  const GURL destinationURL =
-      web::test::HttpServer::MakeUrl("http://destination");
+      self.testServer->GetURL("/scenarioTestLinkClickNavigation");
+  const GURL destinationURL = self.testServer->GetURL("/destination");
   responses[initialURL] = base::StringPrintf(
       "<body><a style='margin-left:50px' href='%s' id='link'>link</a></body>",
       destinationURL.spec().c_str());
   responses[destinationURL] = "Whee!";
-  web::test::SetUpHttpServer(std::make_unique<HtmlResponseProvider>(responses));
+
+  _responses["/scenarioTestLinkClickNavigation"] = responses[initialURL];
+  _responses["/destination"] = responses[destinationURL];
+
   [ChromeEarlGrey resetTabUsageRecorder];
 
   // Open a tab with a link to click.
@@ -681,9 +722,8 @@ void SwitchToNormalMode() {
   // Create map of canned responses and set up the test HTML server.
   std::map<GURL, std::string> responses;
   const GURL initialURL =
-      web::test::HttpServer::MakeUrl("http://scenarioTestOpenLinkInNewTab");
-  const GURL destinationURL =
-      web::test::HttpServer::MakeUrl("http://destination");
+      self.testServer->GetURL("/scenarioTestOpenLinkInNewTab");
+  const GURL destinationURL = self.testServer->GetURL("/destination");
   // Make the link that cover the whole page so that long pressing the web view
   // will trigger the link context menu.
   responses[initialURL] =
@@ -692,7 +732,10 @@ void SwitchToNormalMode() {
                          "height:100%%;'>link</div></a></body>",
                          destinationURL.spec().c_str());
   responses[destinationURL] = "Whee!";
-  web::test::SetUpHttpServer(std::make_unique<HtmlResponseProvider>(responses));
+
+  _responses["/scenarioTestOpenLinkInNewTab"] = responses[initialURL];
+  _responses["/destination"] = responses[destinationURL];
+
   [ChromeEarlGrey resetTabUsageRecorder];
 
   // Open a tab with a link to click.
@@ -733,7 +776,7 @@ void SwitchToNormalMode() {
   [ChromeEarlGrey resetTabUsageRecorder];
 
   [ChromeEarlGrey openNewTab];
-  GURL url(kTestUrl1);
+  GURL url = self.testServer->GetURL(GURL(kTestUrl1).path());
 
   [ChromeEarlGrey simulateExternalAppURLOpeningAndWaitUntilOpenedWithGURL:url];
 
@@ -762,11 +805,11 @@ void SwitchToNormalMode() {
   // test.
   @autoreleasepool {
     // Open two tabs with urls.
-    OpenTwoTabs();
+    OpenTwoTabs(self.testServer);
     // Set the normal tabs as 'cold start' tabs.
     [ChromeEarlGrey setCurrentTabsToBeColdStartTabs];
     // One more tab.
-    const GURL url1 = web::test::HttpServer::MakeUrl(kTestUrl1);
+    const GURL url1 = self.testServer->GetURL(GURL(kTestUrl1).path());
     NewMainTabWithURL(url1, kURL1FirstWord);
 
     GREYAssertEqual([ChromeEarlGrey mainTabCount], 3UL,
