@@ -39,7 +39,6 @@
 #include "components/component_updater/installer_policies/history_search_strings_component_installer.h"
 #include "components/component_updater/installer_policies/on_device_head_suggest_component_installer.h"
 #include "components/component_updater/installer_policies/optimization_hints_component_installer.h"
-#include "components/component_updater/installer_policies/plus_address_blocklist_component_installer.h"
 #include "components/component_updater/installer_policies/safety_tips_component_installer.h"
 #include "components/on_device_translation/buildflags/buildflags.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -109,15 +108,16 @@ namespace {
 // Runs in the thread pool, may block.
 void DeleteOldComponents(const base::FilePath& user_data_dir) {
   for (const base::FilePath::StringType& dir : {
-           FILE_PATH_LITERAL("DesktopSharingHub"),          // Remove in M146+
-           FILE_PATH_LITERAL("CookieReadinessList"),        // Remove in M146+
-           FILE_PATH_LITERAL("OpenCookieDatabase"),         // Remove in M146+
-           FILE_PATH_LITERAL("TpcdMetadata"),               // Remove in M147+
+           FILE_PATH_LITERAL("DesktopSharingHub"),    // Remove in M146+
+           FILE_PATH_LITERAL("CookieReadinessList"),  // Remove in M146+
+           FILE_PATH_LITERAL("OpenCookieDatabase"),   // Remove in M146+
+           FILE_PATH_LITERAL("TpcdMetadata"),         // Remove in M147+
            FILE_PATH_LITERAL(
                "ProbabilisticRevealTokenRegistry"),  // Remove in M148+
            FILE_PATH_LITERAL("AutofillStates"),      // Remove in M153+
            FILE_PATH_LITERAL(
-               "Fingerprinting Protection Filter"),  // Remove in M156+
+               "Fingerprinting Protection Filter"),    // Remove in M156+
+           FILE_PATH_LITERAL("PlusAddressBlocklist"),  // Remove in M158+
 #if BUILDFLAG(IS_CHROMEOS)
            // TODO(crbug.com/380780352): Remove these after the stepping stone.
            FILE_PATH_LITERAL("lacros-dogfood-canary"),
@@ -205,8 +205,6 @@ void RegisterComponentsForUpdate() {
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 
   RegisterCommerceHeuristicsComponent(cus);
-
-  RegisterPlusAddressBlocklistComponent(cus);
 
 #if BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
   // TODO(crbug.com/364795294): Support other platforms.

@@ -4215,7 +4215,6 @@ if (!is_android) {
       "//components/contextual_tasks/public:feature_list",
       "//components/live_caption:live_translate",
       "//components/metrics/mapping",
-      "//components/plus_addresses/core/browser:blocklist_data",
       "//components/policy/core/common:common_constants",
       "//components/push_messaging",
       "//components/push_messaging:test_support",

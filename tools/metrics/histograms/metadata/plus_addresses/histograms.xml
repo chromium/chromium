@@ -62,17 +62,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PlusAddresses.Blocklist.ParsingResult"
-    enum="PlusAddressBlocklistDataParsingResult" expires_after="2026-04-30">
-  <owner>jkeitel@google.com</owner>
-  <owner>vizcay@google.com</owner>
-  <owner>mreichhoff@chromium.org</owner>
-  <summary>
-    Parsing result of the response body of the blocklist data received by the
-    Component Updater.
-  </summary>
-</histogram>
-
 <histogram name="PlusAddresses.Submission{Segment}" enum="PlusAddressOrGaia"
     expires_after="2026-07-12">
   <owner>jkeitel@google.com</owner>

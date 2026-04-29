@@ -32,7 +32,6 @@
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/plus_addresses/core/browser/grit/plus_addresses_strings.h"
 #include "components/plus_addresses/core/browser/plus_address_allocator.h"
-#include "components/plus_addresses/core/browser/plus_address_blocklist_data.h"
 #include "components/plus_addresses/core/browser/plus_address_hats_utils.h"
 #include "components/plus_addresses/core/browser/plus_address_http_client.h"
 #include "components/plus_addresses/core/browser/plus_address_http_client_impl.h"
@@ -90,24 +89,6 @@ std::unique_ptr<PlusAddressAllocator> CreateAllocator(
         std::move(is_enabled_check));
   }
   return std::make_unique<PlusAddressJitAllocator>(http_client);
-}
-
-// Returns `true` if the origin is part of the set of blocklisted domains and
-// `false` otherwise. This means that the domain's origin matches the
-// `exclusion_pattern` regex and does not match the `exception_pattern` regex.
-bool IsSiteExcluded(const url::Origin& origin) {
-  const PlusAddressBlocklistData& blocklist_data =
-      PlusAddressBlocklistData::GetInstance();
-
-  const re2::RE2* exception_pattern = blocklist_data.GetExceptionPattern();
-  if (exception_pattern &&
-      RE2::PartialMatch(origin.host(), *exception_pattern)) {
-    return false;
-  }
-
-  const re2::RE2* exclusion_pattern = blocklist_data.GetExclusionPattern();
-  return exclusion_pattern &&
-         RE2::PartialMatch(origin.host(), *exclusion_pattern);
 }
 
 std::string GetPlusAddressFromPlusProfile(
@@ -491,7 +472,7 @@ void PlusAddressServiceImpl::HandleSignout() {
 
 bool PlusAddressServiceImpl::IsSupportedOrigin(
     const url::Origin& origin) const {
-  if (origin.opaque() || IsSiteExcluded(origin)) {
+  if (origin.opaque()) {
     return false;
   }
 

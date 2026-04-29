@@ -43,9 +43,7 @@
 #include "components/autofill/core/common/html_field_types.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/os_crypt/async/browser/test_utils.h"
-#include "components/plus_addresses/core/browser/blocked_facets.pb.h"
 #include "components/plus_addresses/core/browser/grit/plus_addresses_strings.h"
-#include "components/plus_addresses/core/browser/plus_address_blocklist_data.h"
 #include "components/plus_addresses/core/browser/plus_address_hats_utils.h"
 #include "components/plus_addresses/core/browser/plus_address_http_client_impl.h"
 #include "components/plus_addresses/core/browser/plus_address_preallocator.h"
@@ -828,38 +826,6 @@ TEST_F(PlusAddressServiceEnabledTest, FillingEnabledOnHttpAndHttps) {
       url::Origin::Create(GURL("https://test.example"))));
   EXPECT_TRUE(service().IsPlusAddressFillingEnabled(
       url::Origin::Create(GURL("http://test.example"))));
-}
-
-// Tests that the blocklist data is available and used to check for domain
-// support in the plus address service.
-TEST_F(PlusAddressServiceEnabledTest, BlocklistMechanism) {
-  identity_env().MakeAccountAvailable("plus@plus.plus",
-                                      {signin::ConsentLevel::kSignin});
-  InitService();
-  CompactPlusAddressBlockedFacets blocked_facets;
-  blocked_facets.set_exclusion_pattern(
-      "\\.forbidden\\.com$|\\.disallowed\\.com$");
-  blocked_facets.set_exception_pattern("exclude\\.forbidden\\.com$");
-  plus_addresses::PlusAddressBlocklistData::GetInstance()
-      .PopulateDataFromComponent(blocked_facets.SerializeAsString());
-
-  // Verify that a url that is not on the excluded site continues to work.
-  EXPECT_TRUE(service().ShouldShowManualFallback(
-      url::Origin::Create(GURL("https://www.allowed.com")),
-      /*is_off_the_record=*/false));
-
-  // Sites matching the excluded pattern are not supported.
-  EXPECT_FALSE(service().ShouldShowManualFallback(
-      url::Origin::Create(GURL("https://www.forbidden.com")),
-      /*is_off_the_record=*/false));
-  EXPECT_FALSE(service().ShouldShowManualFallback(
-      url::Origin::Create(GURL("https://www.example.disallowed.com")),
-      /*is_off_the_record=*/false));
-
-  // Sites matching the exception pattern are supported.
-  EXPECT_TRUE(service().ShouldShowManualFallback(
-      url::Origin::Create(GURL("https://exclude.forbidden.com")),
-      /*is_off_the_record=*/false));
 }
 
 // `ShouldShowManualFallback` returns false when `origin` scheme is not http or

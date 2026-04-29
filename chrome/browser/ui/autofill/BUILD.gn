@@ -595,7 +595,6 @@ if (!is_android) {
       "//components/password_manager/core/browser/password_store:password_store_interface",
       "//components/password_manager/core/browser/password_store:test_support",
       "//components/password_manager/core/common",
-      "//components/plus_addresses/core/browser:blocklist_data",
       "//components/plus_addresses/core/browser:test_support",
       "//components/plus_addresses/core/browser/resources/strings",
       "//components/signin/public/base",

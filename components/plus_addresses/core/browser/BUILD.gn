@@ -33,22 +33,6 @@ source_set("hats_utils") {
   sources = [ "plus_address_hats_utils.h" ]
 }
 
-proto_library("plus_address_blocklist_proto") {
-  sources = [ "blocked_facets.proto" ]
-}
-
-source_set("blocklist_data") {
-  sources = [
-    "plus_address_blocklist_data.cc",
-    "plus_address_blocklist_data.h",
-  ]
-  deps = [ "//base" ]
-  public_deps = [
-    ":plus_address_blocklist_proto",
-    "//third_party/re2",
-  ]
-}
-
 source_set("parsing") {
   sources = [
     "plus_address_parsing_utils.cc",
@@ -86,7 +70,6 @@ source_set("browser") {
     "plus_address_ui_utils.h",
   ]
   deps = [
-    ":blocklist_data",
     ":hats_utils",
     ":parsing",
     "//components/affiliations/core/browser:affiliations",
@@ -129,7 +112,6 @@ source_set("unit_tests") {
   sources = [
     "affiliations/plus_address_affiliation_match_helper_unittest.cc",
     "affiliations/plus_address_affiliation_source_adapter_unittest.cc",
-    "plus_address_blocklist_data_unittest.cc",
     "plus_address_http_client_impl_unittest.cc",
     "plus_address_jit_allocator_unittest.cc",
     "plus_address_parsing_utils_unittest.cc",
@@ -138,7 +120,6 @@ source_set("unit_tests") {
   ]
 
   deps = [
-    ":blocklist_data",
     ":browser",
     ":hats_utils",
     ":parsing",
