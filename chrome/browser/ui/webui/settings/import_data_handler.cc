@@ -24,9 +24,9 @@
 #include "chrome/browser/importer/importer_list.h"
 #include "chrome/browser/importer/importer_uma.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/select_file_policy/chrome_select_file_policy.h"
 #include "chrome/common/pref_names.h"
 #include "content/public/browser/browser_thread.h"
@@ -197,7 +197,8 @@ void ImportDataHandler::HandleImportFromBookmarksFile(
   file_type_info.extensions[0].push_back(FILE_PATH_LITERAL("html"));
 
   BrowserWindowInterface* browser =
-      chrome::FindBrowserWithTab(web_ui()->GetWebContents());
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+          web_ui()->GetWebContents());
 
   select_file_dialog_->SelectFile(
       ui::SelectFileDialog::SELECT_OPEN_FILE, std::u16string(),

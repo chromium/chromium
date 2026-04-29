@@ -29,8 +29,8 @@
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
@@ -514,7 +514,8 @@ void AboutHandler::PromoteUpdater(const base::ListValue& args) {
 void AboutHandler::HandleOpenFeedbackDialog(const base::ListValue& args) {
   DCHECK(args.empty());
   BrowserWindowInterface* browser =
-      chrome::FindBrowserWithTab(web_ui()->GetWebContents());
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+          web_ui()->GetWebContents());
   chrome::OpenFeedbackDialog(browser,
                              feedback::kFeedbackSourceMdSettingsAboutPage);
 }
@@ -522,7 +523,8 @@ void AboutHandler::HandleOpenFeedbackDialog(const base::ListValue& args) {
 void AboutHandler::HandleOpenHelpPage(const base::ListValue& args) {
   DCHECK(args.empty());
   BrowserWindowInterface* browser =
-      chrome::FindBrowserWithTab(web_ui()->GetWebContents());
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+          web_ui()->GetWebContents());
   chrome::ShowHelp(browser, chrome::HelpSource::kWebUI);
 }
 
@@ -559,7 +561,8 @@ void AboutHandler::HandleLaunchReleaseNotes(const base::ListValue& args) {
 void AboutHandler::HandleOpenOsHelpPage(const base::ListValue& args) {
   DCHECK(args.empty());
   BrowserWindowInterface* browser =
-      chrome::FindBrowserWithTab(web_ui()->GetWebContents());
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+          web_ui()->GetWebContents());
   chrome::ShowHelp(browser, chrome::HelpSource::kWebUIChromeOS);
 }
 

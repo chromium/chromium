@@ -19,10 +19,10 @@
 #include "chrome/browser/image_editor/image_editor_component_info.h"
 #include "chrome/browser/image_editor/screenshot_flow.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/common/webui_url_constants.h"
@@ -187,7 +187,8 @@ void ScreenshotCapturedBubble::DownloadButtonPressed() {
   }
 
   BrowserWindowInterface* browser =
-      chrome::FindBrowserWithTab(web_contents_.get());
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+          web_contents_.get());
   content::DownloadManager* download_manager =
       browser->GetProfile()->GetDownloadManager();
   // TODO(crbug.com/40753957): Update the annotation's |setting| and

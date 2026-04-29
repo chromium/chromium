@@ -23,9 +23,11 @@
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #else
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
+#include "chrome/browser/ui/tabs/tab_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #endif
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
@@ -109,7 +111,8 @@ ExtensionFunction::ResponseAction SearchQueryFunction::Run() {
 #if !BUILDFLAG(IS_ANDROID)
     BrowserWindowInterface* browser = nullptr;
     if (web_contents) {
-      browser = chrome::FindBrowserWithTab(web_contents);
+      browser = GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+          web_contents);
     }
     // Otherwise (e.g. when the extension calls the API from the background
     // page or service worker), fall back to the last active browser.

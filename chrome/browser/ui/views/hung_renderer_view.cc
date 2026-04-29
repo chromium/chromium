@@ -17,7 +17,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/hang_monitor/hang_crash_dump.h"
 #include "chrome/browser/platform_util.h"
-#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/chrome_web_modal_dialog_manager_delegate.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/hung_renderer/hung_renderer_core.h"
@@ -264,7 +264,7 @@ void HungRendererDialogView::Show(
   }
 
   // Only show for WebContents in a browser window.
-  if (!chrome::FindBrowserWithTab(contents)) {
+  if (!GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(contents)) {
     return;
   }
 

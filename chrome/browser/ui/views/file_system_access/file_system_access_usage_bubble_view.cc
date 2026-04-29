@@ -17,9 +17,9 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/file_system_access/file_system_access_ui_helpers.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -301,7 +301,8 @@ FileSystemAccessUsageBubbleView* FileSystemAccessUsageBubbleView::bubble_ =
 void FileSystemAccessUsageBubbleView::UpdateBubbleVisibilityState(
     bool is_bubble_visible) {
   BrowserWindowInterface* browser =
-      chrome::FindBrowserWithTab(bubble_->web_contents());
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+          bubble_->web_contents());
   if (!browser) {
     return;
   }
@@ -319,7 +320,8 @@ void FileSystemAccessUsageBubbleView::ShowBubble(
   base::RecordAction(
       base::UserMetricsAction("NativeFileSystemAPI.OpenedBubble"));
 
-  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents);
+  BrowserWindowInterface* browser =
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(web_contents);
   if (!browser) {
     return;
   }
@@ -407,7 +409,9 @@ FileSystemAccessUsageBubbleView::~FileSystemAccessUsageBubbleView() {
 
 std::u16string FileSystemAccessUsageBubbleView::GetAccessibleWindowTitle()
     const {
-  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents());
+  BrowserWindowInterface* browser =
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+          web_contents());
   // Don't crash if the web_contents is destroyed/unloaded.
   if (!browser) {
     return {};

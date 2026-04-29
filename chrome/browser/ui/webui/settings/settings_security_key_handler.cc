@@ -18,7 +18,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "chrome/browser/webauthn/local_credential_management.h"
@@ -1044,7 +1044,8 @@ void PasskeysHandler::HandleManagePasskeys(const base::ListValue& args) {
 
   // If no system management exists, fall back to Chrome's own settings UI.
   chrome::ShowSettingsSubPage(
-      chrome::FindBrowserWithTab(web_ui()->GetWebContents()),
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+          web_ui()->GetWebContents()),
       chrome::kPasskeysSubPage);
 }
 

@@ -7,7 +7,7 @@
 #include "base/functional/callback.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_dialog_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -28,7 +28,8 @@ std::unique_ptr<compose::ComposeDialogController> ShowComposeDialog(
   // BrowserView so that it still knows about the Browser window, which is
   // needed to access the correct ColorProvider for theming.
   views::View* anchor_view = BrowserView::GetBrowserViewForBrowser(
-      chrome::FindBrowserWithTab(&web_contents));
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+          &web_contents));
   auto controller =
       std::make_unique<ChromeComposeDialogController>(&web_contents, field_ids);
   controller->ShowComposeDialog(anchor_view, element_bounds_in_screen);

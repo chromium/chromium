@@ -13,9 +13,9 @@
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker_manager.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker_utils.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/extensions/extensions_container.h"
 #include "chrome/browser/ui/layout_constants.h"
@@ -190,7 +190,8 @@ ShareThisTabDialogView::ShareThisTabDialogView(
   // as a web model dialog.
   if (MediaPickerCanShowAsWebModal(params.web_contents)) {
     BrowserWindowInterface* browser =
-        chrome::FindBrowserWithTab(params.web_contents);
+        GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+            params.web_contents);
     // Close the extension popup to prevent spoofing.
     if (browser) {
       ExtensionsContainer* container = ExtensionsContainer::From(*browser);

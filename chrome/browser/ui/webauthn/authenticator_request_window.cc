@@ -22,9 +22,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/trusted_vault/trusted_vault_encryption_keys_tab_helper.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/webauthn/user_actions.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
@@ -199,7 +199,8 @@ class AuthenticatorRequestWindow
     // The pop-up window will be centered on top of the Browser doing the
     // WebAuthn operation.
     BrowserWindowInterface* const caller_browser =
-        chrome::FindBrowserWithTab(caller_web_contents);
+        GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+            caller_web_contents);
     const gfx::Rect caller_bounds = caller_browser->GetWindow()->GetBounds();
     const gfx::Point caller_center = caller_bounds.CenterPoint();
 

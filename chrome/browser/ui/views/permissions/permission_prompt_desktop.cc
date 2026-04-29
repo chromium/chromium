@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ui/views/permissions/permission_prompt_desktop.h"
 
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 
@@ -21,7 +21,7 @@ PermissionPromptDesktop::~PermissionPromptDesktop() = default;
 
 bool PermissionPromptDesktop::UpdateBrowser() {
   BrowserWindowInterface* current_browser =
-      chrome::FindBrowserWithTab(web_contents_);
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(web_contents_);
   // Browser for |web_contents_| might change when for example the tab was
   // dragged to another window.
   bool was_browser_changed = false;

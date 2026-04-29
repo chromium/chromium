@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_account_storage_move_dialog.h"
 #include "chrome/grit/generated_resources.h"
@@ -419,7 +420,8 @@ void BookmarksMessageHandler::HandleOnBatchUploadPromoClicked(
       BatchUploadServiceFactory::GetForProfile(profile);
   CHECK(service);
   BrowserWindowInterface* browser =
-      chrome::FindBrowserWithTab(web_ui()->GetWebContents());
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+          web_ui()->GetWebContents());
   service->OpenBatchUpload(
       browser->GetBrowserForMigrationOnly(),
       BatchUploadService::EntryPoint::kBookmarksManagerPromoCard);

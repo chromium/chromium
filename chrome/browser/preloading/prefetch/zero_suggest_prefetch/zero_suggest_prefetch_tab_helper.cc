@@ -4,8 +4,8 @@
 
 #include "chrome/browser/preloading/prefetch/zero_suggest_prefetch/zero_suggest_prefetch_tab_helper.h"
 
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/search/omnibox_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -40,9 +40,10 @@ void ZeroSuggestPrefetchTabHelper::DidFinishLoad(
   // prefetching that early since the AutocompleteController machinery gets
   // started and stopped multiple times since a new tab is opened and until the
   // New Tab Page is navigated to; invalidating prefetch requests prematurely.
-  auto* browser = chrome::FindBrowserWithTab(web_contents());
+  auto* browser = GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+      web_contents());
   if (browser && !TabStripModelObserver::IsObservingAny(this)) {
-    browser->tab_strip_model()->AddObserver(this);
+    browser->GetTabStripModel()->AddObserver(this);
   }
 
   StartPrefetch();

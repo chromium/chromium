@@ -392,7 +392,9 @@ bool MaybeLaunchAppShortcutWindow(const base::CommandLine& command_line,
       if (web_contents) {
         web_app::startup::FinalizeWebAppLaunch(
             web_app::startup::OpenMode::kInWindowByUrl, command_line,
-            is_first_run, chrome::FindBrowserWithTab(web_contents),
+            is_first_run,
+            GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+                web_contents),
             apps::LaunchContainer::kLaunchContainerWindow);
         return true;
       }

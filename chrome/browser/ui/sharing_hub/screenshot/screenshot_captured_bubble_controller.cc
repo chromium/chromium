@@ -7,10 +7,10 @@
 #include "base/feature_list.h"
 #include "base/notimplemented.h"
 #include "chrome/browser/image_editor/screenshot_flow.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/sharing_hub/sharing_hub_window_controller.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/accessibility/platform/ax_platform.h"
@@ -38,7 +38,8 @@ void ScreenshotCapturedBubbleController::ShowBubble(
       .WriteImage(*captured_image.ToSkBitmap());
 
   BrowserWindowInterface* browser =
-      chrome::FindBrowserWithTab(&GetWebContents());
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+          &GetWebContents());
   sharing_hub::SharingHubWindowController::From(browser)
       ->ShowScreenshotCapturedBubble(&GetWebContents(), captured_image);
 }

@@ -4,10 +4,9 @@
 
 #include "chrome/browser/ui/views/side_panel/history_clusters/history_clusters_side_panel_controller.h"
 
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/views/side_panel/history_clusters/history_clusters_side_panel_coordinator.h"
 
 HistoryClustersSidePanelController::HistoryClustersSidePanelController(
@@ -20,7 +19,8 @@ HistoryClustersSidePanelController::~HistoryClustersSidePanelController() =
 void HistoryClustersSidePanelController::ShowJourneysSidePanel(
     const std::string& query) {
   if (BrowserWindowInterface* browser =
-          chrome::FindBrowserWithTab(web_contents_)) {
+          GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+              web_contents_)) {
     auto* coordinator =
         browser->GetFeatures().history_clusters_side_panel_coordinator();
     coordinator->Show(query);

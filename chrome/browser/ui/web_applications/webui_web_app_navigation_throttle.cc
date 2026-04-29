@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ui/web_applications/webui_web_app_navigation_throttle.h"
 
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "content/public/browser/navigation_handle.h"
@@ -41,7 +41,8 @@ void WebUIWebAppNavigationThrottle::MaybeCreateAndAdd(
 
   content::WebContents* web_contents = handle.GetWebContents();
 
-  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents);
+  BrowserWindowInterface* browser =
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(web_contents);
   auto* app_controller =
       browser ? web_app::AppBrowserController::From(browser) : nullptr;
   if (!browser || !app_controller) {
@@ -70,7 +71,8 @@ WebUIWebAppNavigationThrottle::WillStartRequest() {
   GURL navigation_url = navigation_handle()->GetURL();
 
   content::WebContents* web_contents = navigation_handle()->GetWebContents();
-  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents);
+  BrowserWindowInterface* browser =
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(web_contents);
   DCHECK(browser);
   web_app::AppBrowserController* app_controller =
       web_app::AppBrowserController::From(browser);

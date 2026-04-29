@@ -8,7 +8,8 @@
 
 #include "base/types/pass_key.h"
 #include "chrome/app/chrome_command_ids.h"
-#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -112,7 +113,8 @@ TabWebUIHelpBubbleFactoryBrowser::CreateBubble(
     if (const auto* const contents =
             result->AsA<user_education::HelpBubbleWebUI>()->GetWebContents()) {
       if (const BrowserWindowInterface* browser =
-              chrome::FindBrowserWithTab(contents)) {
+              GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+                  contents)) {
         if (browser->GetTabStripModel()->GetActiveWebContents() == contents) {
           BrowserView::GetBrowserViewForBrowser(browser)
               ->FocusWebContentsPane();
@@ -144,7 +146,7 @@ bool FloatingWebUIHelpBubbleFactoryBrowser::CanBuildBubbleForTrackedElement(
           ->handler()
           ->GetWebContents();
   // Note: this checks all tabs for their WebContents.
-  if (chrome::FindBrowserWithTab(contents)) {
+  if (GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(contents)) {
     return false;
   }
 

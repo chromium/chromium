@@ -7,9 +7,9 @@
 #include <memory>
 
 #include "build/build_config.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/passwords/password_dialog_prompts.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
@@ -58,7 +58,8 @@ PasswordAutoSignInView::PasswordAutoSignInView(
 
   // Setup the observer and maybe start the timer.
   BrowserWindowInterface* browser =
-      chrome::FindBrowserWithTab(GetWebContents());
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+          GetWebContents());
   DCHECK(browser);
 
   // Sign-in dialogs opened for inactive browser windows do not auto-close on

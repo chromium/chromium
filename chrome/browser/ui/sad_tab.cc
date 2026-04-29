@@ -15,8 +15,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/feedback/show_feedback_page.h"
 #include "chrome/browser/net/referrer.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tab_contents/tab_contents_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/url_constants.h"
@@ -212,7 +211,8 @@ void SadTab::PerformAction(SadTab::Action action) {
                   ui_metrics::SadTabEvent::BUTTON_CLICKED);
       if (show_feedback_button_) {
         chrome::ShowFeedbackPage(
-            chrome::FindBrowserWithTab(web_contents_),
+            GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+                web_contents_),
             feedback::kFeedbackSourceSadTabPage,
             std::string() /* description_template */,
             l10n_util::GetStringUTF8(kind_ == SAD_TAB_KIND_CRASHED

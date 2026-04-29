@@ -4,7 +4,8 @@
 
 #include "chrome/browser/ui/wallet/walletable_pass_bubble_view_factory.h"
 
-#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/wallet/walletable_pass_consent_bubble_controller.h"
@@ -19,7 +20,8 @@ namespace wallet {
 namespace {
 
 static views::View* FindAnchorView(content::WebContents* web_contents) {
-  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents);
+  BrowserWindowInterface* browser =
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(web_contents);
   if (!browser) {
     return nullptr;
   }

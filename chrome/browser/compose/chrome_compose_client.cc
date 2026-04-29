@@ -30,8 +30,8 @@
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
@@ -376,7 +376,8 @@ void ChromeComposeClient::CompleteFirstRun() {
 
 void ChromeComposeClient::OpenComposeSettings() {
   BrowserWindowInterface* browser =
-      chrome::FindBrowserWithTab(&GetWebContents());
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+          &GetWebContents());
   // `browser` should never be null here. This can only be triggered when there
   // is an active ComposeSession, which  is indirectly owned by the same
   // WebContents that holds the field that the Compose dialog is triggered from.
@@ -795,7 +796,8 @@ void ChromeComposeClient::DisableProactiveNudge() {
 
 void ChromeComposeClient::OpenProactiveNudgeSettings() {
   BrowserWindowInterface* browser =
-      chrome::FindBrowserWithTab(&GetWebContents());
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+          &GetWebContents());
   // `browser` should never be null here. This can only be triggered when there
   // is an active ComposeSession, which  is indirectly owned by the same
   // WebContents that holds the field that the Compose dialog is triggered from.

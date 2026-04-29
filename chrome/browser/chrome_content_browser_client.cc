@@ -550,8 +550,8 @@
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -4808,7 +4808,8 @@ void ChromeContentBrowserClient::OverrideWebPreferences(
       // want to use the scope of the app associated with the window, not the
       // WebContents.
       BrowserWindowInterface* browser =
-          chrome::FindBrowserWithTab(web_contents);
+          GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+              web_contents);
       web_app::AppBrowserController* app_controller =
           browser ? web_app::AppBrowserController::From(browser) : nullptr;
       if (app_controller) {

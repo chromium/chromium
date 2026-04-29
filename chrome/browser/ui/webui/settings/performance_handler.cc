@@ -9,9 +9,9 @@
 #include "base/values.h"
 #include "chrome/browser/feedback/show_feedback_page.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "components/performance_manager/public/features.h"
@@ -122,7 +122,8 @@ void PerformanceHandler::HandleOpenFeedbackDialog(const base::ListValue& args) {
   const std::string category_tag = args[0].GetString();
 
   BrowserWindowInterface* browser =
-      chrome::FindBrowserWithTab(web_ui()->GetWebContents());
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+          web_ui()->GetWebContents());
   DCHECK(browser);
   std::string unused;
   chrome::ShowFeedbackPage(browser,

@@ -16,7 +16,8 @@
 #include "chrome/browser/safe_browsing/android/safe_browsing_settings_navigation_android.h"
 #include "components/safe_browsing/core/common/safe_browsing_settings_metrics.h"
 #else
-#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "components/safe_browsing/core/common/safebrowsing_referral_methods.h"
 #endif
@@ -40,11 +41,12 @@ void ChromeSettingsPageHelper::OpenEnhancedProtectionSettings(
   // than crash.
   // TODO(crbug.com/40772284): Remove and find a better way, e.g. not showing
   // the enhanced protection promo at all.
-  if (!chrome::FindBrowserWithTab(web_contents)) {
+  BrowserWindowInterface* browser =
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(web_contents);
+  if (!browser) {
     return;
   }
-  chrome::ShowSafeBrowsingEnhancedProtection(
-      chrome::FindBrowserWithTab(web_contents));
+  chrome::ShowSafeBrowsingEnhancedProtection(browser);
 #endif
 }
 
@@ -56,11 +58,12 @@ void ChromeSettingsPageHelper::OpenEnhancedProtectionSettingsWithIph(
   // than crash.
   // TODO(crbug.com/40772284): Remove and find a better way, e.g. not showing
   // the enhanced protection promo at all.
-  if (!chrome::FindBrowserWithTab(web_contents)) {
+  BrowserWindowInterface* browser =
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(web_contents);
+  if (!browser) {
     return;
   }
-  chrome::ShowSafeBrowsingEnhancedProtectionWithIph(
-      chrome::FindBrowserWithTab(web_contents), referral_method);
+  chrome::ShowSafeBrowsingEnhancedProtectionWithIph(browser, referral_method);
 #endif
 }
 

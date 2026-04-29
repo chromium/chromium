@@ -21,8 +21,8 @@
 #include "chrome/browser/media/webrtc/desktop_media_picker_controller.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker_manager.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker_utils.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/extensions/extensions_container.h"
 #include "chrome/browser/ui/layout_constants.h"
@@ -682,7 +682,9 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
 
   bool modal_dialog = MediaPickerCanShowAsWebModal(params.web_contents);
   views::Widget* widget = CreateMediaPickerDialogWidget(
-      modal_dialog ? chrome::FindBrowserWithTab(params.web_contents) : nullptr,
+      modal_dialog ? GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+                         params.web_contents)
+                   : nullptr,
       params.web_contents,
       /*delegate=*/this, params.context, /*parent=*/gfx::NativeView());
 

@@ -17,9 +17,9 @@
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/webui/signin/history_sync_optin_helper.h"
@@ -67,9 +67,11 @@ DiceTabHelper::GetEnableSyncCallbackForBrowser() {
                                 const CoreAccountInfo& account_info) {
     DCHECK(profile);
     BrowserWindowInterface* browser =
-        web_contents ? chrome::FindBrowserWithTab(web_contents)
-                     : ProfileBrowserCollection::GetForProfile(profile)
-                           ->GetLastActiveBrowser();
+        web_contents
+            ? GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+                  web_contents)
+            : ProfileBrowserCollection::GetForProfile(profile)
+                  ->GetLastActiveBrowser();
     if (!browser) {
       return;
     }
@@ -102,9 +104,11 @@ DiceTabHelper::GetHistorySyncOptinCallbackForBrowser() {
     CHECK(profile);
 
     BrowserWindowInterface* browser =
-        web_contents ? chrome::FindBrowserWithTab(web_contents)
-                     : ProfileBrowserCollection::GetForProfile(profile)
-                           ->GetLastActiveBrowser();
+        web_contents
+            ? GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+                  web_contents)
+            : ProfileBrowserCollection::GetForProfile(profile)
+                  ->GetLastActiveBrowser();
     if (!browser) {
       return;
     }
@@ -141,9 +145,11 @@ DiceTabHelper::GetShowSigninErrorCallbackForBrowser() {
       return;
     }
     BrowserWindowInterface* browser =
-        web_contents ? chrome::FindBrowserWithTab(web_contents)
-                     : ProfileBrowserCollection::GetForProfile(profile)
-                           ->GetLastActiveBrowser();
+        web_contents
+            ? GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+                  web_contents)
+            : ProfileBrowserCollection::GetForProfile(profile)
+                  ->GetLastActiveBrowser();
     if (!browser) {
       return;
     }

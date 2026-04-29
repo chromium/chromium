@@ -11,9 +11,8 @@
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #include "chrome/browser/bad_message.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "content/public/browser/browser_thread.h"
@@ -41,7 +40,7 @@ MediaStreamFocusDelegate::MediaStreamFocusDelegate(
   }
 
   BrowserWindowInterface* const browser =
-      chrome::FindBrowserWithTab(web_contents);
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(web_contents);
   if (!browser) {
     return;
   }
@@ -141,7 +140,7 @@ void MediaStreamFocusDelegate::FocusTab(
 
   delegate->ActivateContents(web_contents);
   BrowserWindowInterface* const browser =
-      chrome::FindBrowserWithTab(web_contents);
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(web_contents);
   if (browser && browser->GetWindow()) {
     browser->GetWindow()->Activate();
   }

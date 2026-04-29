@@ -14,7 +14,6 @@
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_actions.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
@@ -444,7 +443,8 @@ void QRCodeGeneratorBubble::DownloadButtonPressed() {
   CHECK(web_contents_);
 
   BrowserWindowInterface* browser =
-      chrome::FindBrowserWithTab(web_contents_.get());
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+          web_contents_.get());
   content::DownloadManager* download_manager =
       browser->GetProfile()->GetDownloadManager();
   net::NetworkTrafficAnnotationTag traffic_annotation =
