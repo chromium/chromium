@@ -4272,7 +4272,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Finds.Result" enum="FindsResult" expires_after="2026-06-01">
+<histogram name="Finds.Result" enum="FindsResult" expires_after="2027-06-01">
   <owner>wylieb@chromium.org</owner>
   <owner>bjfong@google.com</owner>
   <summary>
