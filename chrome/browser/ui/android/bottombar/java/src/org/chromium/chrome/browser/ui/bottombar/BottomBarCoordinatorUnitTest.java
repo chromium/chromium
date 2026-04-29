@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ui.bottombar;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -38,6 +39,7 @@ import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.ui.actions.ActionId;
 import org.chromium.chrome.browser.ui.actions.ActionProperties;
 import org.chromium.chrome.browser.ui.actions.ActionRegistry;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -165,5 +167,13 @@ public class BottomBarCoordinatorUnitTest {
 
         View menuButton = mCoordinator.getView().findViewById(R.id.app_menu_button);
         assertNull(menuButton);
+    }
+
+    @Test
+    public void testGetBackgroundColor() {
+        int expectedColor =
+                BottomBarUtils.getBottomBarBackgroundColor(
+                        mActivity, BrandedColorScheme.APP_DEFAULT);
+        assertEquals(expectedColor, mCoordinator.getBackgroundColor());
     }
 }

@@ -8,6 +8,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.ColorInt;
+
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
@@ -93,6 +95,12 @@ public class BottomBarCoordinator implements BottomBar {
     @Override
     public View getView() {
         return mView;
+    }
+
+    @Override
+    public @ColorInt int getBackgroundColor() {
+        return BottomBarUtils.getBottomBarBackgroundColor(
+                mView.getContext(), mModel.get(BottomBarProperties.COLOR_SCHEME));
     }
 
     @Override

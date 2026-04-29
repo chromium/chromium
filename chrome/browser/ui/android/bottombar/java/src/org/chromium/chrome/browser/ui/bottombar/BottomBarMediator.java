@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ui.bottombar;
 
+import android.content.res.ColorStateList;
+
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
@@ -13,12 +15,13 @@ import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Mediator for the bottom bar */
 @NullMarked
-public class BottomBarMediator {
+public class BottomBarMediator implements ThemeColorProvider.TintObserver {
     /** Delegate for compositor-level visibility changes. */
     public interface VisibilityDelegate {
         /**
@@ -70,6 +73,7 @@ public class BottomBarMediator {
                     }
                 };
 
+        mThemeColorProvider.addTintObserver(this);
         mModel.set(BottomBarProperties.COLOR_SCHEME, mThemeColorProvider.getBrandedColorScheme());
         onTabChanged(mTabSupplier.addSyncObserver(mTabSupplierObserver));
         if (mShouldIncludeHomeButton) {
@@ -108,6 +112,7 @@ public class BottomBarMediator {
 
     /** Remove observers. */
     public void destroy() {
+        mThemeColorProvider.removeTintObserver(this);
         if (mCurrentTab != null) {
             mCurrentTab.removeObserver(mTabObserver);
             mCurrentTab = null;
@@ -116,5 +121,13 @@ public class BottomBarMediator {
         if (mShouldIncludeHomeButton) {
             mHomepageEnabledSupplier.removeObserver(mHomepageEnabledObserver);
         }
+    }
+
+    @Override
+    public void onTintChanged(
+            @Nullable ColorStateList tint,
+            @Nullable ColorStateList activityFocusTint,
+            @BrandedColorScheme int brandedColorScheme) {
+        mModel.set(BottomBarProperties.COLOR_SCHEME, brandedColorScheme);
     }
 }

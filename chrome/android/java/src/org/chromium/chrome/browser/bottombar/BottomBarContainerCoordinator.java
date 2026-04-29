@@ -97,7 +97,7 @@ public class BottomBarContainerCoordinator
 
     @Override
     public @Nullable @ColorInt Integer getBackgroundColor() {
-        return null;
+        return mBottomBarCoordinator.getBackgroundColor();
     }
 
     /** Returns the bottom bar. */

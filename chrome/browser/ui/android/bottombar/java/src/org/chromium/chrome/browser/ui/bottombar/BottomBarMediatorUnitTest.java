@@ -369,4 +369,20 @@ public class BottomBarMediatorUnitTest {
         mHomepageEnabledSupplier.set(true);
         assertTrue(mModel.get(BottomBarProperties.IS_HOME_BUTTON_VISIBLE));
     }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.ANDROID_BOTTOM_BAR})
+    public void testTintChanged() {
+        mMediator =
+                new BottomBarMediator(
+                        mModel,
+                        mThemeColorProvider,
+                        mTabSupplier,
+                        mHomepageEnabledSupplier,
+                        mVisibilityDelegate,
+                        true);
+
+        mMediator.onTintChanged(null, null, BrandedColorScheme.INCOGNITO);
+        assertTrue(mModel.get(BottomBarProperties.COLOR_SCHEME) == BrandedColorScheme.INCOGNITO);
+    }
 }

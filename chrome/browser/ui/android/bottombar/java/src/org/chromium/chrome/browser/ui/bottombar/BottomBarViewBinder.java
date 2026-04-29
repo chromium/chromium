@@ -20,6 +20,9 @@ public class BottomBarViewBinder {
                     model.get(BottomBarProperties.IS_VISIBLE) ? View.VISIBLE : View.GONE);
         } else if (BottomBarProperties.COLOR_SCHEME == propertyKey) {
             // TODO(crbug.com/504612877): Apply color scheme to buttons.
+            view.setBackgroundColor(
+                    BottomBarUtils.getBottomBarBackgroundColor(
+                            view.getContext(), model.get(BottomBarProperties.COLOR_SCHEME)));
         } else if (BottomBarProperties.IS_HOME_BUTTON_VISIBLE == propertyKey) {
             View homeContainer = view.findViewById(R.id.home_button_container);
             if (homeContainer != null) {

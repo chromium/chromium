@@ -34,6 +34,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarHostManager.java",
     "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarMediator.java",
     "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarProperties.java",
+    "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarUtils.java",
     "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarViewBinder.java",
   ]
   deps = [
@@ -45,6 +46,7 @@ android_library("java") {
     "//chrome/browser/tab:java",
     "//chrome/browser/ui/android/actions:java",
     "//chrome/browser/ui/android/theme:java",
+    "//components/browser_ui/styles/android:java",
     "//components/embedder_support/android:util_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//ui/android:ui_no_recycler_view_java",

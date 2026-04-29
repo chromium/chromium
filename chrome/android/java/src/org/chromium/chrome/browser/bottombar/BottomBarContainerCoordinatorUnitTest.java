@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.bottombar;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.never;
@@ -42,6 +41,8 @@ import org.chromium.chrome.browser.ui.actions.ActionId;
 import org.chromium.chrome.browser.ui.actions.ActionRegistry;
 import org.chromium.chrome.browser.ui.bottombar.BottomBar;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarHostManager.Host;
+import org.chromium.chrome.browser.ui.bottombar.BottomBarUtils;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -108,7 +109,13 @@ public class BottomBarContainerCoordinatorUnitTest {
 
     @Test
     public void testGetBackgroundColor() {
-        assertNull(mCoordinator.getBackgroundColor());
+        when(mThemeColorProvider.getBrandedColorScheme())
+                .thenReturn(BrandedColorScheme.APP_DEFAULT);
+        assertEquals(
+                (Integer)
+                        BottomBarUtils.getBottomBarBackgroundColor(
+                                mActivity, BrandedColorScheme.APP_DEFAULT),
+                mCoordinator.getBackgroundColor());
     }
 
     @Test

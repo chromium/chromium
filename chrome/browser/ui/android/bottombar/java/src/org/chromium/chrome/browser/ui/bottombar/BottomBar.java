@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.ui.bottombar;
 
 import android.view.View;
 
+import androidx.annotation.ColorInt;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarHostManager.Host;
 
@@ -14,6 +16,10 @@ import org.chromium.chrome.browser.ui.bottombar.BottomBarHostManager.Host;
 public interface BottomBar {
     /** Returns the view representing the bottom bar. */
     View getView();
+
+    /** Returns the background color of the bottom bar. */
+    @ColorInt
+    int getBackgroundColor();
 
     /**
      * Informs the bottom bar that its parent has changed.
