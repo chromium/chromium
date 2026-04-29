@@ -7,6 +7,7 @@
   <meta name="assert" value="When the image filter is not the last effect, check it is still removed.">
   <script src='/resources/testharness.js'></script>
   <script src='/resources/testharnessreport.js'></script>
+  <script src='../support/getPixel.js'></script>
   <style>
     div {
       width: 100px;
@@ -43,20 +44,19 @@
       promise_test(async function(t) {
         await new Promise(requestAnimationFrame);
         await new Promise(setTimeout);
-        var context = canvas.getContext("2d", { willReadFrequently: true });
+        const context = canvas.getContext("2d");
         context.drawElementImage(document.getElementById("child-same"), 0, 0);
         context.drawElementImage(document.getElementById("child-cross"), 0, 100);
 
-        pixel = context.getImageData(50, 50, 1, 1).data;
-        assert_equals(pixel[0], 255, "Same origin should draw");
-        assert_equals(pixel[1], 0, "Same origin should draw");
-        assert_equals(pixel[2], 0, "Same origin should draw");
+        // Fetch all pixel data once to avoid multiple slow readbacks.
+        const imgData = context.getImageData(0, 0, canvas.width, canvas.height);
+
+        let pixel = getPixel(imgData, 50, 50);
+        assert_array_equals(pixel, [255, 0, 0, 255], "Same origin should draw");
 
         // Ignored filter is not applied at all
-        pixel = context.getImageData(50, 150, 1, 1).data;
-        assert_equals(pixel[0], 0, "Cross origin should not draw");
-        assert_equals(pixel[1], 128, "Cross origin should not draw");
-        assert_equals(pixel[2], 0, "Cross origin should not draw");
+        pixel = getPixel(imgData, 50, 150);
+        assert_array_equals(pixel, [0, 128, 0, 255], "Cross origin should not draw");
       });
     }
   </script>

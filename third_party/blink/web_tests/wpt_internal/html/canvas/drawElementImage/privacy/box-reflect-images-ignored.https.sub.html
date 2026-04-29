@@ -5,6 +5,7 @@
   <link rel="help" href="https://github.com/WICG/html-in-canvas">
   <script src='/resources/testharness.js'></script>
   <script src='/resources/testharnessreport.js'></script>
+  <script src='../support/getPixel.js'></script>
   <style>
   #child {
     width: 200px;
@@ -49,35 +50,24 @@
       promise_test(async function(t) {
         await new Promise(requestAnimationFrame);
         await new Promise(setTimeout);
-        var context = canvas.getContext("2d");
+        const context = canvas.getContext("2d");
         context.drawElementImage(child, 0, 0);
 
         // Fetch all pixel data once to avoid multiple slow readbacks.
-        const imgData = context.getImageData(0, 0, canvas.width, canvas.height).data;
+        const imgData = context.getImageData(0, 0, canvas.width, canvas.height);
 
-        // Helper function to extract a pixel's RGBA array at (x, y).
-        const getPixel = (x, y) => {
-          const index = (y * canvas.width + x) * 4;
-          return [
-            imgData[index],
-            imgData[index + 1],
-            imgData[index + 2],
-            imgData[index + 3]
-          ];
-        };
-
-        let pixel = getPixel(50, 50);
+        let pixel = getPixel(imgData, 50, 50);
         assert_array_equals(pixel, [0, 128, 0, 255], "Same origin div should draw");
-        pixel = getPixel(25, 150);
+        pixel = getPixel(imgData, 25, 150);
         assert_array_equals(pixel, [0, 128, 0, 255], "Same origin box-reflect mask should not mask out left side of reflection");
-        pixel = getPixel(75, 150);
+        pixel = getPixel(imgData, 75, 150);
         assert_array_equals(pixel, [0, 0, 255, 255], "Same origin box-reflect mask should mask out right side of reflection");
 
-        pixel = getPixel(150, 50);
+        pixel = getPixel(imgData, 150, 50);
         assert_array_equals(pixel, [0, 128, 0, 255], "Cross origin div should draw");
-        pixel = getPixel(125, 150);
+        pixel = getPixel(imgData, 125, 150);
         assert_array_equals(pixel, [0, 128, 0, 255], "Cross origin box-reflect mask should not mask out left side of reflection");
-        pixel = getPixel(175, 150);
+        pixel = getPixel(imgData, 175, 150);
         assert_array_equals(pixel, [0, 128, 0, 255], "Cross origin box-reflect mask should not mask out right side of reflection");
       });
     };

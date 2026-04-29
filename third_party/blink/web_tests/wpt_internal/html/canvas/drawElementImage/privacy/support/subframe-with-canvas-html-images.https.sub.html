@@ -4,6 +4,7 @@
   <title>subframe that draws HTML images</title>
   <script src='/resources/testharness.js'></script>
   <script src='/resources/testharnessreport.js'></script>
+  <script src='../../support/getPixel.js'></script>
   <style>
   #child {
     width: 10px;
@@ -34,18 +35,17 @@
       promise_test(async function(t) {
         await new Promise(requestAnimationFrame);
         await new Promise(setTimeout);
-        var context = canvas.getContext("2d");
+        const context = canvas.getContext("2d");
         context.drawElementImage(child, 0, 0);
 
-        pixel = context.getImageData(5, 5, 1, 1).data;
-        assert_equals(pixel[0], 255, "Same origin should draw");
-        assert_equals(pixel[1], 0, "Same origin should draw");
-        assert_equals(pixel[2], 0, "Same origin should draw");
+        // Fetch all pixel data once to avoid multiple slow readbacks.
+        const imgData = context.getImageData(0, 0, canvas.width, canvas.height);
 
-        pixel = context.getImageData(5, 15, 1, 1).data;
-        assert_equals(pixel[0], 0, "Cross origin should not draw");
-        assert_equals(pixel[1], 128, "Cross origin should not draw");
-        assert_equals(pixel[2], 0, "Cross origin should not draw");
+        let pixel = getPixel(imgData, 5, 5);
+        assert_array_equals(pixel, [255, 0, 0, 255], "Same origin should draw");
+
+        pixel = getPixel(imgData, 5, 15);
+        assert_array_equals(pixel, [0, 128, 0, 255], "Cross origin should not draw");
 
         t.done();
       });

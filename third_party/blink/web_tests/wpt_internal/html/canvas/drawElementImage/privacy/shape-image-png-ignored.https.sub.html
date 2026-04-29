@@ -7,6 +7,7 @@
   <link rel="stylesheet" type="text/css" href="/fonts/ahem.css" />
   <script src='/resources/testharness.js'></script>
   <script src='/resources/testharnessreport.js'></script>
+  <script src='../support/getPixel.js'></script>
   <style>
     #child {
       width: 100px;
@@ -53,8 +54,11 @@
       promise_test(async function(t) {
         await new Promise(requestAnimationFrame);
         await new Promise(setTimeout);
-        var context = canvas.getContext("2d", { willReadFrequently: true });
+        const context = canvas.getContext("2d");
         context.drawElementImage(document.getElementById("child"), 0, 0);
+
+        // Fetch all pixel data once to avoid multiple slow readbacks.
+        const imgData = context.getImageData(0, 0, canvas.width, canvas.height);
 
         // The expected result has the top left 50x100 rect green due to the
         // img in the shape region. The top right 50x100 should be black due
@@ -63,45 +67,29 @@
         // cross-origin shape which is ignored. And the bottom right 50x100
         // should be red because nothing is drawn over the background.
 
-        pixel = context.getImageData(25, 25, 1, 1).data;
-        assert_equals(pixel[0], 0, "Same origin should draw, red channel");
-        assert_equals(pixel[1], 100, "Same origin should draw, green channel");
-        assert_equals(pixel[2], 0, "Same origin should draw, blue channel");
+        let pixel = getPixel(imgData, 25, 25);
+        assert_array_equals(pixel, [0, 100, 0, 255], "Same origin should draw");
 
-        pixel = context.getImageData(75, 25, 1, 1).data;
-        assert_equals(pixel[0], 0, "Same origin should draw text, red channel");
-        assert_equals(pixel[1], 0, "Same origin should draw text, green channel");
-        assert_equals(pixel[2], 0, "Same origin should draw text, blue channel");
+        pixel = getPixel(imgData, 75, 25);
+        assert_array_equals(pixel, [0, 0, 0, 255], "Same origin should draw text");
 
-        pixel = context.getImageData(25, 75, 1, 1).data;
-        assert_equals(pixel[0], 0, "Same origin should draw, red channel");
-        assert_equals(pixel[1], 100, "Same origin should draw, green channel");
-        assert_equals(pixel[2], 0, "Same origin should draw, blue channel");
+        pixel = getPixel(imgData, 25, 75);
+        assert_array_equals(pixel, [0, 100, 0, 255], "Same origin should draw");
 
-        pixel = context.getImageData(75, 75, 1, 1).data;
-        assert_equals(pixel[0], 0, "Same origin should draw text, red channel");
-        assert_equals(pixel[1], 0, "Same origin should draw text, green channel");
-        assert_equals(pixel[2], 0, "Same origin should draw text, blue channel");
+        pixel = getPixel(imgData, 75, 75);
+        assert_array_equals(pixel, [0, 0, 0, 255], "Same origin should draw text");
 
-        pixel = context.getImageData(25, 125, 1, 1).data;
-        assert_equals(pixel[0], 0, "Cross origin should draw text, red channel");
-        assert_equals(pixel[1], 0, "Cross origin should draw text, green channel");
-        assert_equals(pixel[2], 0, "Cross origin should draw text, blue channel");
+        pixel = getPixel(imgData, 25, 125);
+        assert_array_equals(pixel, [0, 0, 0, 255], "Cross origin should draw text");
 
-        pixel = context.getImageData(75, 125, 1, 1).data;
-        assert_equals(pixel[0], 255, "Cross origin should draw text, red channel");
-        assert_equals(pixel[1], 0, "Cross origin should draw text, green channel");
-        assert_equals(pixel[2], 0, "Cross origin should draw text, blue channel");
+        pixel = getPixel(imgData, 75, 125);
+        assert_array_equals(pixel, [255, 0, 0, 255], "Cross origin should draw text");
 
-        pixel = context.getImageData(25, 175, 1, 1).data;
-        assert_equals(pixel[0], 0, "Cross origin should not draw, red channel");
-        assert_equals(pixel[1], 0, "Cross origin should not draw, green channel");
-        assert_equals(pixel[2], 0, "Cross origin should not draw, blue channel");
+        pixel = getPixel(imgData, 25, 175);
+        assert_array_equals(pixel, [0, 0, 0, 255], "Cross origin should not draw");
 
-        pixel = context.getImageData(75, 175, 1, 1).data;
-        assert_equals(pixel[0], 255, "Cross origin should not draw, red channel");
-        assert_equals(pixel[1], 0, "Cross origin should not draw, green channel");
-        assert_equals(pixel[2], 0, "Cross origin should not draw, blue channel");
+        pixel = getPixel(imgData, 75, 175);
+        assert_array_equals(pixel, [255, 0, 0, 255], "Cross origin should not draw");
       });
     }
   </script>

@@ -6,6 +6,7 @@
   <link rel="author" href="mailto:schenney@chromium.org">
   <script src='/resources/testharness.js'></script>
   <script src='/resources/testharnessreport.js'></script>
+  <script src='../support/getPixel.js'></script>
 </head>
 <body>
   <canvas id=canvas width="100" height="200" layoutsubtree>
@@ -26,20 +27,17 @@
       promise_test(async function(t) {
         await new Promise(requestAnimationFrame);
         await new Promise(setTimeout);
-        var context = canvas.getContext("2d", { willReadFrequently: true });
+        const context = canvas.getContext("2d");
         context.drawElementImage(document.getElementById("child"), 0, 0);
 
-        pixel = context.getImageData(50, 50, 1, 1).data;
-        assert_equals(pixel[0], 255, "Same origin should draw, red channel");
-        assert_equals(pixel[1], 0, "Same origin should draw, green channel");
-        assert_equals(pixel[2], 0, "Same origin should draw, blue channel");
+        // Fetch all pixel data once to avoid multiple slow readbacks.
+        const imgData = context.getImageData(0, 0, canvas.width, canvas.height);
 
-        pixel = context.getImageData(50, 150, 1, 1).data;
-        assert_equals(pixel[0], 0, "Cross origin should not draw, red channel");
-        assert_equals(pixel[1], 128, "Cross origin should not draw, green channel");
-        assert_equals(pixel[2], 0, "Cross origin should not draw, blue channel");
+        let pixel = getPixel(imgData, 50, 50);
+        assert_array_equals(pixel, [255, 0, 0, 255], "Same origin should draw");
 
-
+        pixel = getPixel(imgData, 50, 150);
+        assert_array_equals(pixel, [0, 128, 0, 255], "Cross origin should not draw");
       });
     }
   </script>

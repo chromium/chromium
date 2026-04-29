@@ -5,6 +5,7 @@
   <link rel="help" href="https://github.com/WICG/html-in-canvas">
   <script src='/resources/testharness.js'></script>
   <script src='/resources/testharnessreport.js'></script>
+  <script src='../support/getPixel.js'></script>
   <style>
     #wrapper {
       width: 10px;
@@ -60,22 +61,11 @@
         ctx.drawElementImage(document.getElementById('wrapper'), 0, 0);
 
         // Fetch all pixel data once to avoid multiple slow readbacks.
-        const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+        const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
 
-        // Helper function to extract a pixel's RGBA array at (x, y).
-        const getPixel = (x, y) => {
-          const index = (y * canvas.width + x) * 4;
-          return [
-            imgData[index],
-            imgData[index + 1],
-            imgData[index + 2],
-            imgData[index + 3]
-          ];
-        };
-
-        let pixel = getPixel(5, 5);
+        let pixel = getPixel(imgData, 5, 5);
         assert_array_equals(pixel, [0, 255, 0, 255], "Same origin feImage backdrop-filter should draw");
-        pixel = getPixel(5, 15);
+        pixel = getPixel(imgData, 5, 15);
         assert_array_equals(pixel, [0, 0, 255, 255], "Cross origin feImage backdrop-filter should not draw");
       });
     }

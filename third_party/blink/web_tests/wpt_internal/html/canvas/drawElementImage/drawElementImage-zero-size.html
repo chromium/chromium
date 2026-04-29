@@ -23,7 +23,7 @@ async function waitForOneFrame() {
 
 promise_test(async t => {
   const child = document.getElementById('child');
-  const context = canvas.getContext('2d');
+  const context = canvas.getContext('2d', { willReadFrequently: true });
   context.fillStyle = 'red';
   context.fillRect(0, 0, 200, 200);
 
