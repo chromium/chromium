@@ -49,6 +49,7 @@ class AffiliationFetcherInterface {
     bool branding_info = false;
     bool change_password_info = false;
     bool psl_extension_list = false;
+    bool fetch_patterns = false;
 
     friend bool operator==(const RequestInfo&, const RequestInfo&);
   };

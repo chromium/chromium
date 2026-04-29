@@ -64,6 +64,7 @@ source_set("affiliations") {
     "//net",
     "//services/network/public/cpp",
     "//sql",
+    "//third_party/re2",
   ]
   public_deps = [ "//url" ]
   configs += [ "//build/config/compiler:wexit_time_destructors" ]

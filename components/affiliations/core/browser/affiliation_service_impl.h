@@ -39,6 +39,9 @@ namespace affiliations {
 // later used to fetch change password urls properly.
 BASE_DECLARE_FEATURE(kCachePSLExtensions);
 
+// Enables fetching patterns for change password URLs.
+BASE_DECLARE_FEATURE(kFetchChangePasswordPatterns);
+
 extern const char kGetChangePasswordURLMetricName[];
 
 // Change password info request requires branding_info enabled.
@@ -69,8 +72,16 @@ enum class GetChangePasswordUrlMetric {
 class AffiliationServiceImpl : public AffiliationService {
  public:
   struct ChangePasswordUrlMatch {
+    ChangePasswordUrlMatch();
+    ChangePasswordUrlMatch(const ChangePasswordUrlMatch& other);
+    ChangePasswordUrlMatch(ChangePasswordUrlMatch&& other);
+    ChangePasswordUrlMatch& operator=(const ChangePasswordUrlMatch& other);
+    ChangePasswordUrlMatch& operator=(ChangePasswordUrlMatch&& other);
+    ~ChangePasswordUrlMatch();
+
     GURL change_password_url;
-    bool main_domain_override;
+    bool main_domain_override = false;
+    std::vector<ChangePasswordPattern> patterns;
   };
 
   explicit AffiliationServiceImpl(
