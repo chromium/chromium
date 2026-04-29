@@ -48,12 +48,12 @@ const tests = [
 
   function getBuffer() {
     chrome.idltest.getArrayBuffer(callbackPass(function(buffer) {
-      assertTrue(buffer.__proto__ == (new ArrayBuffer()).__proto__);
+      assertTrue(buffer.__proto__ === (new ArrayBuffer()).__proto__);
       const view = new Uint8Array(buffer);
       const expected = 'hello world';
       assertEq(view.byteLength, expected.length);
       for (let i = 0; i < view.byteLength; i++) {
-        assertTrue(expected[i] == String.fromCharCode(view[i]));
+        assertTrue(expected[i] === String.fromCharCode(view[i]));
       }
     }));
   },

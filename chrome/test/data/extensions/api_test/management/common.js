@@ -17,7 +17,7 @@ const callback = chrome.test.callback;
 
 function getItemNamed(list, name) {
   for (let i = 0; i < list.length; i++) {
-    if (list[i].name == name) {
+    if (list[i].name === name) {
       return list[i];
     }
   }

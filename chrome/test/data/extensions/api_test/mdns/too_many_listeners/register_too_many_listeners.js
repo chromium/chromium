@@ -26,7 +26,7 @@ chrome.test.runTests([function registerListeners() {
     });
   } catch (e) {
     chrome.test.assertTrue(
-        e.message.indexOf('Too many listeners') != -1, e.message);
+        e.message.indexOf('Too many listeners') !== -1, e.message);
     failedToAddLast = true;
   }
   chrome.test.assertTrue(

@@ -116,15 +116,15 @@ const tests = [
     const expectedMessages = ['hey', 100, 25.0];
     let messagesReceived = 0;
     function handleMessage(event) {
-      if (event.data == 'succeed' &&
-          messagesReceived == expectedMessages.length) {
+      if (event.data === 'succeed' &&
+          messagesReceived === expectedMessages.length) {
         chrome.test.succeed();
-      } else if (event.data == 'fail') {
+      } else if (event.data === 'fail') {
         chrome.test.fail();
-      } else if (event.data == expectedMessages[messagesReceived]) {
+      } else if (event.data === expectedMessages[messagesReceived]) {
         event.source.postMessage(event.data, '*');
         messagesReceived++;
-      } else if (event.data != 'initBeforeUnload') {
+      } else if (event.data !== 'initBeforeUnload') {
         chrome.test.fail(`unexpected message ${event.data}`);
       }
     }
@@ -158,7 +158,7 @@ const tests = [
     function waitForFullscreenAnimation() {
       return new Promise(resolve => {
         chrome.runtime.getPlatformInfo(info => {
-          if (info.os != 'mac') {
+          if (info.os !== 'mac') {
             resolve();
             return;
           }
@@ -193,7 +193,7 @@ const tests = [
           await waitForFullscreenAnimation();
           chrome.windows.get(windowId, currentWindow => {
             chrome.test.assertFalse(
-                'fullscreen' == currentWindow.state, currentWindow.state);
+                'fullscreen' === currentWindow.state, currentWindow.state);
             chrome.test.runWithUserGesture(
                 () => document.body.webkitRequestFullscreen());
           });

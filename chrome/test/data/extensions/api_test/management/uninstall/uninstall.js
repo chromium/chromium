@@ -20,7 +20,7 @@ function uninstall(name) {
             chrome.management.getAll(callback(function(items2) {
               assertEq(oldCount - 1, items2.length);
               for (let i = 0; i < items2.length; i++) {
-                assertFalse(items2[i].name == name);
+                assertFalse(items2[i].name === name);
               }
             }));
           }));

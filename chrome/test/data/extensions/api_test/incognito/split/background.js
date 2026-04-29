@@ -16,19 +16,19 @@ function compareNode(left, right) {
   // chrome.test.log(JSON.stringify(left, null, 2));
   // chrome.test.log(JSON.stringify(right, null, 2));
   // TODO(erikkay): do some comparison of dateAdded
-  if (left.id != right.id) {
+  if (left.id !== right.id) {
     return `id mismatch: ${left.id} != ${right.id}`;
   }
-  if (left.title != right.title) {
+  if (left.title !== right.title) {
     // TODO(erikkay): This resource dependency still isn't working reliably.
     // See bug 19866.
     // return `title mismatch: ${left.title} != ${right.title}`;
     chrome.test.log(`title mismatch: ${left.title} != ${right.title}`);
   }
-  if (left.url != right.url) {
+  if (left.url !== right.url) {
     return `url mismatch: ${left.url} != ${right.url}`;
   }
-  if (left.index != right.index) {
+  if (left.index !== right.index) {
     return `index mismatch: ${left.index} != ${right.index}`;
   }
   return true;
@@ -38,7 +38,7 @@ function compareNode(left, right) {
 // profile.
 
 chrome.tabs.onUpdated.addListener(function(id, info, tab) {
-  if (inIncognitoContext != tab.incognito) {
+  if (inIncognitoContext !== tab.incognito) {
     chrome.test.notifyFail(
         '[FAIL] Split-mode incognito test received an event for ' +
         (tab.incognito ? 'an incognito' : 'a normal') +
@@ -47,7 +47,7 @@ chrome.tabs.onUpdated.addListener(function(id, info, tab) {
 });
 
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-  if (inIncognitoContext != sender.tab.incognito) {
+  if (inIncognitoContext !== sender.tab.incognito) {
     chrome.test.notifyFail(
         '[FAIL] Split-mode incognito test received a message from ' +
         (sender.tab.incognito ? 'an incognito' : 'a normal') +
@@ -80,7 +80,7 @@ chrome.test.getConfig(function(config) {
             assertEq(tab.id, id);
             assertEq(inIncognitoContext, tab.incognito);
             assertEq(newUrl, tab.url);
-            if (info.status == 'complete') {
+            if (info.status === 'complete') {
               done();
             }
           });
@@ -147,12 +147,12 @@ chrome.test.getConfig(function(config) {
       let count = 0;
       const done = chrome.test.listenForever(
           chrome.bookmarks.onCreated, function(id, created) {
-            node = (created.title == nodeNormal.title) ? nodeNormal : nodeIncog;
+            node = created.title === nodeNormal.title ? nodeNormal : nodeIncog;
             node.id = created.id;
             node.index = created.index;
             chrome.test.assertEq(id, node.id);
             chrome.test.assertTrue(compareNode(node, created));
-            if (++count == 2) {
+            if (++count === 2) {
               chrome.test.log(
                   `Bookmarks created. Incognito=${inIncognitoContext}`);
               done();

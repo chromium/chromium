@@ -10,7 +10,7 @@ let foundGalleryWithEntry = false;
 let expectedFileSystems;
 
 function checkFinished() {
-  if (testResults.length != galleries.length) {
+  if (testResults.length !== galleries.length) {
     return;
   }
   let success = true;
@@ -41,9 +41,9 @@ const deleteFileFailedCallback = function(err) {
 };
 
 const mediaFileSystemsDirectoryEntryCallback = function(entries) {
-  if (entries.length == 0) {
+  if (entries.length === 0) {
     testResults.push('');
-  } else if (entries.length == 1) {
+  } else if (entries.length === 1) {
     if (foundGalleryWithEntry) {
       testResults.push('Found multiple galleries with 1 FileEntry');
     } else {
@@ -76,7 +76,7 @@ chrome.test.getConfig(function(config) {
     },
     function readFileSystemsAndDeleteFile() {
       chrome.test.assertEq(expectedFileSystems, galleries.length);
-      if (expectedFileSystems == 0) {
+      if (expectedFileSystems === 0) {
         chrome.test.succeed();
         return;
       }

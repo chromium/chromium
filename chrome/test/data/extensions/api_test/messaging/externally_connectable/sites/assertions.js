@@ -40,12 +40,12 @@ function clobber(obj, name, qualifiedName) {
   // Clobbering Object.valueOf breaks v8.
   // Clobbering %FunctionPrototype%.caller and .arguments will break because
   // these properties are poisoned accessors in ES6.
-  if (name == 'constructor' || name == 'toString' || name == '__proto__' ||
-      name == 'name' && typeof obj === 'function' ||
-      qualifiedName == 'Function.call' ||
-      (obj !== Function && qualifiedName == 'Function.caller') ||
-      (obj !== Function && qualifiedName == 'Function.arguments') ||
-      qualifiedName == 'Object.valueOf') {
+  if (name === 'constructor' || name === 'toString' || name === '__proto__' ||
+      name === 'name' && typeof obj === 'function' ||
+      qualifiedName === 'Function.call' ||
+      (obj !== Function && qualifiedName === 'Function.caller') ||
+      (obj !== Function && qualifiedName === 'Function.arguments') ||
+      qualifiedName === 'Object.valueOf') {
     return;
   }
   const desc = getOwnPropertyDescriptor(obj, name);
@@ -120,7 +120,7 @@ const kCouldNotEstablishConnection =
 // expect to be told.
 let tabLocationHref = null;
 
-if (parent == window) {
+if (parent === window) {
   tabLocationHref = document.location.href;
 } else {
   window.addEventListener('message', function listener(event) {
@@ -130,7 +130,7 @@ if (parent == window) {
 }
 
 function throwResultError(errorMessage) {
-  if (errorMessage == kCouldNotEstablishConnection) {
+  if (errorMessage === kCouldNotEstablishConnection) {
     throw new ResultError(results.COULD_NOT_ESTABLISH_CONNECTION_ERROR);
   }
   throw new ResultError(results.OTHER_ERROR);
@@ -148,7 +148,7 @@ function checkResponse(response, expectedMessage, isApp) {
       console.warn('Expected a tab, got none');
       incorrectSender = true;
     }
-    if (response.sender.tab.url != tabLocationHref) {
+    if (response.sender.tab.url !== tabLocationHref) {
       console.warn(
           `Expected tab url ${tabLocationHref} got ${response.sender.tab.url}`);
       incorrectSender = true;
@@ -158,7 +158,7 @@ function checkResponse(response, expectedMessage, isApp) {
     console.warn(`Expected no id, got "${response.sender.id}"`);
     incorrectSender = true;
   }
-  if (response.sender.url != document.location.href) {
+  if (response.sender.url !== document.location.href) {
     console.warn(
         `Expected url ${document.location.href} got ${response.sender.url}`);
     incorrectSender = true;
@@ -170,7 +170,7 @@ function checkResponse(response, expectedMessage, isApp) {
   // Check the correct content was echoed.
   const expectedJson = stringify(expectedMessage);
   const actualJson = stringify(response.message);
-  if (actualJson == expectedJson) {
+  if (actualJson === expectedJson) {
     return;
   }
   console.warn(`Expected message ${expectedJson} got ${actualJson}`);
@@ -197,7 +197,7 @@ function checkRuntime() {
 
 function checkTlsChannelIdResponse(response) {
   if (chrome.runtime.lastError) {
-    if (chrome.runtime.lastError.message == kCouldNotEstablishConnection) {
+    if (chrome.runtime.lastError.message === kCouldNotEstablishConnection) {
       return sendToBrowserForTlsChannelId(
           results.COULD_NOT_ESTABLISH_CONNECTION_ERROR);
     }
@@ -257,7 +257,7 @@ window.assertions = {
           port.onMessage.addListener(function(response) {
             pendingResponses--;
             checkResponse(response, message, isApp);
-            if (pendingResponses == 0) {
+            if (pendingResponses === 0) {
               return resolve(results.OK);
             }
           });
@@ -335,7 +335,7 @@ window.assertions = {
     if (chrome.runtime) {
       forEach.call(names, function(name) {
         if (chrome.runtime[name]) {
-          console.log(`runtime.${name} is defined`);
+          console.info(`runtime.${name} is defined`);
           result = true;
         }
       });

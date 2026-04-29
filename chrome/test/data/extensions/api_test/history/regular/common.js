@@ -91,7 +91,7 @@ function populateHistory(urls, callback) {
   let numUrlsAdded = 0;
   urls.forEach(function(url) {
     chrome.history.addUrl({url: url}, function() {
-      if (++numUrlsAdded == urls.length) {
+      if (++numUrlsAdded === urls.length) {
         callback();
       }
     });

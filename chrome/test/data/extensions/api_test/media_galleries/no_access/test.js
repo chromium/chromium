@@ -9,7 +9,7 @@ const testResults = [];
 let expectedFileSystems;
 
 function checkFinished() {
-  if (testResults.length != galleries.length) {
+  if (testResults.length !== galleries.length) {
     return;
   }
   let success = true;

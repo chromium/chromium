@@ -37,12 +37,12 @@ function enterPictureInPicture() {
         chrome.test.sendMessage('entered_pip');
       })
       .catch(error => {
-        console.log(error.message);
+        console.info(error.message);
       });
 }
 
 function exitPictureInPicture() {
   document.exitPictureInPicture().catch(error => {
-    console.log(error.message);
+    console.info(error.message);
   });
 }

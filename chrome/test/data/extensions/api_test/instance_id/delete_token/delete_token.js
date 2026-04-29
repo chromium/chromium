@@ -16,7 +16,7 @@ function deleteTokenWithoutParameters() {
 }
 
 async function deleteTokenWithoutCallback() {
-  const isAndroid = (await chrome.runtime.getPlatformInfo()).os == 'android';
+  const isAndroid = (await chrome.runtime.getPlatformInfo()).os === 'android';
   if (isAndroid) {
     // Skip this test on Android because the underlying call to
     // com.google.android.gms.iid.InstanceID.deleteToken() always succeeds,
@@ -94,7 +94,7 @@ function deleteTokenWithInvalidScope() {
 
 function deleteTokenBeforeGetToken() {
   const getPlatformInfo = new Promise((resolve) => {
-    chrome.runtime.getPlatformInfo(info => resolve(info.os == 'android'));
+    chrome.runtime.getPlatformInfo(info => resolve(info.os === 'android'));
   });
   getPlatformInfo.then(isAndroid => {
     if (isAndroid) {
@@ -168,7 +168,7 @@ function getTokenDeleteTokeAndGetToken() {
               chrome.instanceID.getToken(
                   {authorizedEntity: '1', scope: 'GCM'},
                   function(token) {
-                    if (!token || token == oldToken) {
+                    if (!token || token === oldToken) {
                       chrome.test.fail(
                           'Different token should be returned after deleteToken.');
                       return;

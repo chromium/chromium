@@ -34,15 +34,15 @@ let loadedImageCount = 0;
 TEST_CASES.forEach(function(testCase) {
   const img = document.createElement('img');
   img.onload = function() {
-    if (img.naturalWidth != testCase.expectedSize ||
-        img.naturalHeight != testCase.expectedSize) {
+    if (img.naturalWidth !== testCase.expectedSize ||
+        img.naturalHeight !== testCase.expectedSize) {
       document.title = `Incorrect size on ${testCase.url} ` +
           `Expected: ${testCase.expectedSize}x${testCase.expectedSize} ` +
           `Actual: ${img.naturalWidth}x${img.naturalHeight}`;
       return;
     }
 
-    if (++loadedImageCount == TEST_CASES.length) {
+    if (++loadedImageCount === TEST_CASES.length) {
       document.title = 'Loaded';
     }
   };

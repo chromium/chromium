@@ -105,7 +105,7 @@ chrome.test.getConfig(function(config) {
                 0,  // Main frame
                 testTab.url, chrome.runtime.id);
             compareSenders(expectedSender, sender);
-            if (request.step == 1) {
+            if (request.step === 1) {
               // Step 1: Page should send another request for step 2.
               chrome.test.log('sendMessageFromTab: got step 1');
               sendResponse({nextStep: true});
@@ -341,7 +341,7 @@ chrome.test.getConfig(function(config) {
     function reloadTabForTest() {
       const doneListening =
           listenForever(chrome.tabs.onUpdated, function(tabId, info) {
-            if (tabId === testTab.id && info.status == 'complete') {
+            if (tabId === testTab.id && info.status === 'complete') {
               doneListening();
             }
           });
@@ -455,16 +455,15 @@ function connectToTabWithOptions(options, expectedMessages) {
     }
 
     messages.push(message);
-    isDone = messages.length == expectedMessages.length;
+    isDone = messages.length === expectedMessages.length;
     if (isDone) {
       chrome.test.assertEq(expectedMessages.sort(), messages.sort());
       chrome.test.succeed();
     }
   });
   port.onDisconnect.addListener(function() {
-    if (!isDone)  // The event should never be triggered when we expect
-                  // messages.
-    {
+    if (!isDone) {
+      // The event should never be triggered when we expect messages.
       chrome.test.fail(
           'Unexpected disconnect from port to frame ' +
           JSON.stringify(options));

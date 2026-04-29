@@ -4,9 +4,9 @@
 
 // For complex connect tests.
 chrome.runtime.onConnect.addListener(function onConnect(port) {
-  console.log('connected');
+  console.info('connected');
   port.onMessage.addListener(function(msg) {
-    console.log(`got ${JSON.stringify(msg)}`);
+    console.info(`got ${JSON.stringify(msg)}`);
     if (msg.testPostMessage) {
       port.postMessage({success: true});
     } else if (msg.testPostMessageFromTab) {
@@ -73,8 +73,8 @@ function testPostMessageFromTab(origPort) {
   port.postMessage({testPostMessageFromTab: true});
   port.onMessage.addListener(function(msg) {
     origPort.postMessage(
-        {success: (msg.success && (msg.portName == portName))});
-    console.log(`testPostMessageFromTab sent ${msg.success}`);
+        {success: (msg.success && (msg.portName === portName))});
+    console.info(`testPostMessageFromTab sent ${msg.success}`);
     port.disconnect();
   });
 }
@@ -83,7 +83,7 @@ function testPostMessageFromTab(origPort) {
 function testSendMessageFromTab() {
   chrome.runtime.sendMessage({step: 1}, function(response) {
     if (response.nextStep) {
-      console.log('testSendMessageFromTab sent');
+      console.info('testSendMessageFromTab sent');
       chrome.runtime.sendMessage({step: 2});
     }
   });
@@ -156,5 +156,5 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
         origin: extensionOrigin,
       },
       sender);
-  sendResponse({success: (request.step2 == 1)});
+  sendResponse({success: (request.step2 === 1)});
 });

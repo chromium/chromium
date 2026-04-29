@@ -6,7 +6,7 @@ chrome.test.runTests([
   function testIncognito() {
     chrome.gcm.register(['Sender'], function(registrationId) {
       chrome.test.assertEq(
-          chrome.runtime.lastError != undefined,
+          chrome.runtime.lastError !== undefined,
           chrome.extension.inIncognitoContext);
       chrome.test.succeed();
     });

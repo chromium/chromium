@@ -6,7 +6,7 @@ function checkIcon(item, size, path) {
   const icons = item.icons;
   for (let i = 0; i < icons.length; i++) {
     const icon = icons[i];
-    if (icon.size == size) {
+    if (icon.size === size) {
       const expectedUrl = `chrome://extension-icon/${item.id}/${size}/0`;
       assertEq(expectedUrl, icon.url);
       return;
@@ -17,11 +17,11 @@ function checkIcon(item, size, path) {
 
 function checkPermission(item, perm) {
   const permissions = item.permissions;
-  console.log(`permissions for ${item.name}`);
+  console.info(`permissions for ${item.name}`);
   for (let i = 0; i < permissions.length; i++) {
     const permission = permissions[i];
-    console.log(` ${permission}`);
-    if (permission == perm) {
+    console.info(` ${permission}`);
+    if (permission === perm) {
       assertEq(perm, permission);
       return;
     }
@@ -33,7 +33,7 @@ function checkHostPermission(item, perm) {
   const permissions = item.hostPermissions;
   for (let i = 0; i < permissions.length; i++) {
     const permission = permissions[i];
-    if (permission == perm) {
+    if (permission === perm) {
       assertEq(perm, permission);
       return;
     }
@@ -128,15 +128,15 @@ const tests = [
           chrome.test.assertTrue(
               warnings.indexOf(
                   'Read and change your data on all flickr.com sites ' +
-                  'and api.flickr.com') != -1);
+                  'and api.flickr.com') !== -1);
           chrome.test.assertTrue(
-              warnings.indexOf('Read and change your bookmarks') != -1);
+              warnings.indexOf('Read and change your bookmarks') !== -1);
           chrome.test.assertTrue(
-              warnings.indexOf('Detect your physical location') != -1);
+              warnings.indexOf('Detect your physical location') !== -1);
           chrome.test.assertTrue(
               warnings.indexOf(
                   'Read and change your browsing history on all your ' +
-                  'signed-in devices') != -1);
+                  'signed-in devices') !== -1);
         }));
 
     chrome.management.getAll(callback(function(items) {

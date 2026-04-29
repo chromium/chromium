@@ -7,7 +7,7 @@
 let expectedListener = 'webPage';
 
 function gotCommand(command) {
-  if (expectedListener == 'backgroundPage') {
+  if (expectedListener === 'backgroundPage') {
     expectedListener = 'webPage';
     chrome.commands.onCommand.removeListener(gotCommand);
     chrome.test.notifyPass();
@@ -18,7 +18,7 @@ function gotCommand(command) {
 
 chrome.extension.onConnect.addListener(function(port) {
   port.onMessage.addListener(function(message) {
-    if (expectedListener == 'webPage') {
+    if (expectedListener === 'webPage') {
       expectedListener = 'backgroundPage';
       chrome.commands.onCommand.addListener(gotCommand);
       chrome.test.notifyPass();

@@ -20,8 +20,8 @@ chrome.test.runTests([
   },
   function testUnregisterWithServerError() {
     chrome.gcm.unregister(function() {
-      if (chrome.runtime.lastError != undefined &&
-          chrome.runtime.lastError.message == 'Server error occurred.') {
+      if (chrome.runtime.lastError !== undefined &&
+          chrome.runtime.lastError.message === 'Server error occurred.') {
         chrome.test.succeed();
       } else {
         chrome.test.fail();

@@ -29,7 +29,7 @@ chrome.test.getConfig(function(config) {
       for (let i = 0; i < galleries.length; i++) {
         const metadata =
             mediaGalleries.getMediaFileSystemMetadata(galleries[i]);
-        if (metadata.name == testGalleryName) {
+        if (metadata.name === testGalleryName) {
           chrome.test.succeed();
           return;
         } else {

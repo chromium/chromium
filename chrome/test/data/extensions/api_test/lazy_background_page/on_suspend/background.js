@@ -5,6 +5,6 @@
 chrome.runtime.onSuspend.addListener(function() {
   const now = new Date();
   chrome.storage.local.set({last_save: now.toLocaleString()}, function() {
-    console.log(`Finished writing last_save: ${now.toLocaleString()}`);
+    console.info(`Finished writing last_save: ${now.toLocaleString()}`);
   });
 });

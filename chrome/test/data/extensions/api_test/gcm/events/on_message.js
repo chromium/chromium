@@ -43,7 +43,7 @@ onload = function() {
         chrome.test.assertEq('value2', message.data.property2);
 
         --expectedCalls;
-        if (expectedCalls == 0) {
+        if (expectedCalls === 0) {
           chrome.gcm.onMessage.removeListener(eventHandler);
           if (fromAndCollapseKeyTested && fromTested && collapseKeyTested &&
               regularMessageTested) {

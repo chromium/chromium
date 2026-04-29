@@ -46,7 +46,7 @@ function wrapAsync(apiFunction) {
     return new Promise((resolve, reject) => {
       apiFunction(...args, (...result) => {
         if (chrome.runtime.lastError) {
-          console.log(chrome.runtime.lastError.message);
+          console.info(chrome.runtime.lastError.message);
           reject(Error(chrome.runtime.lastError));
         } else {
           resolve(...result);

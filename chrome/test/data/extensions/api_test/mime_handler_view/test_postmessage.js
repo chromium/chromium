@@ -7,11 +7,10 @@ let messagesSent = 0;
 let messagesReceived = 0;
 
 window.addEventListener('message', function(event) {
-  if (event.data == messages[messagesReceived]) {
+  if (event.data === messages[messagesReceived]) {
     messagesReceived++;
-    if (messagesReceived == messages.length)
-    // Instruct the extension to call chrome.test.succeed().
-    {
+    if (messagesReceived === messages.length) {
+      // Instruct the extension to call chrome.test.succeed().
       plugin.postMessage('succeed');
     }
   } else {

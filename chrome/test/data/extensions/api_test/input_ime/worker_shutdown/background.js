@@ -24,7 +24,7 @@ chrome.input.ime.onFocus.addListener(function(context) {
 
 // Change all lowercase text to uppercase.
 chrome.input.ime.onKeyEvent.addListener(function(unusedEngineID, keyData) {
-  if (keyData.type == 'keydown' && keyData.key.match(/^[a-z]$/)) {
+  if (keyData.type === 'keydown' && keyData.key.match(/^[a-z]$/)) {
     chrome.input.ime.commitText(
         {contextID: contextId, text: keyData.key.toUpperCase()});
     // Delay this message to allow time for the browser to update the UI with

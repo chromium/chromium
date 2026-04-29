@@ -29,6 +29,6 @@ const availableTests = [
 
 chrome.test.getConfig(function(config) {
   chrome.test.runTests(availableTests.filter(function(op) {
-    return op.name == config.customArg;
+    return op.name === config.customArg;
   }));
 });

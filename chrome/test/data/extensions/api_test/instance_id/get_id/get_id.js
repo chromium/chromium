@@ -19,7 +19,7 @@ function getIDWithCallback() {
           `chrome.runtime.lastError: ${chrome.runtime.lastError.message}`);
       return;
     }
-    if (id == '') {
+    if (id === '') {
       chrome.test.fail('Empty ID returned.');
       return;
     }
@@ -38,7 +38,7 @@ function getIDTwice() {
     oldID = id;
 
     chrome.instanceID.getID(function(id) {
-      if (!id || id != oldID) {
+      if (!id || id !== oldID) {
         chrome.test.fail('Same ID should be returned.');
         return;
       }

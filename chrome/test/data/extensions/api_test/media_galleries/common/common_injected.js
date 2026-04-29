@@ -112,7 +112,7 @@ function runReadGalleriesTest(
     gotGalleriesCallback(results);
     chrome.test.assertEq(
         expectedGalleryCount, results.length, 'Gallery count mismatch');
-    if (expectedGalleryCount == 0) {
+    if (expectedGalleryCount === 0) {
       chrome.test.succeed();
       return;
     }
@@ -146,7 +146,7 @@ function runReadGalleriesTest(
   }
 
   function checkReadEntriesFinished() {
-    if (readEntriesResults.length != galleries.length) {
+    if (readEntriesResults.length !== galleries.length) {
       return;
     }
     let success = true;
@@ -186,7 +186,7 @@ function verifyDirectoryEntry(directoryEntry, verifyFunction) {
   }
 
   function readEntriesCallback(entries) {
-    if (entries.length == 0) {
+    if (entries.length === 0) {
       // This is the readEntries() is finished case.
       verifyFunction(directoryEntry, allEntries.sort());
       return;

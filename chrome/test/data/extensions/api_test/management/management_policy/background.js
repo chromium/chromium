@@ -17,11 +17,11 @@ function findByName(items, name) {
   let item;
   for (let i = 0; i < items.length; i++) {
     item = items[i];
-    if (item.name == name) {
+    if (item.name === name) {
       break;
     }
   }
-  if (name != item.name) {
+  if (name !== item.name) {
     chrome.test.fail(`Couldn\'t find installed extension ${name}`);
   }
   return item;

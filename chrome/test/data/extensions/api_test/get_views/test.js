@@ -39,7 +39,7 @@ function optionsPageCallback() {
     assertEq(2, chrome.extension.getViews({type: 'tab'}).length);
 
     for (let i = 0; i < tabs.length; i++) {
-      if (tabs[i].windowId == popupWindowId) {
+      if (tabs[i].windowId === popupWindowId) {
         assertEq(1, chrome.extension.getViews({tabId: tabs[i].id}).length);
         // Test tabId tag with other parameters.
         assertEq(
@@ -50,7 +50,7 @@ function optionsPageCallback() {
         assertEq(
             1,
             chrome.extension.getViews({type: 'tab', tabId: tabs[i].id}).length);
-      } else if (tabs[i].id == optionsTabId) {
+      } else if (tabs[i].id === optionsTabId) {
         assertEq(1, chrome.extension.getViews({tabId: tabs[i].id}).length);
       }
     }

@@ -31,13 +31,13 @@ function testSetLaunchType(id, type, error, listener) {
 
 function getAvailableLaunchTypes(app) {
   const types = [];
-  if (app.type == 'packaged_app') {
+  if (app.type === 'packaged_app') {
     types.push('OPEN_AS_WINDOW');
     return types;
   }
 
   types.push('OPEN_AS_REGULAR_TAB');
-  if (navigator.userAgent.indexOf('Mac') == -1) {
+  if (navigator.userAgent.indexOf('Mac') === -1) {
     types.push('OPEN_AS_WINDOW');
   } else {
     types.push('OPEN_AS_PINNED_TAB');
@@ -50,7 +50,7 @@ function getAvailableLaunchTypes(app) {
 function verifyAvailableLaunchTypes(expected, actual) {
   assertEq(expected.length, actual.length);
   for (let i = 0; i < expected.length; i++) {
-    assertTrue(actual.indexOf(expected[i]) != -1);
+    assertTrue(actual.indexOf(expected[i]) !== -1);
   }
 }
 
@@ -72,11 +72,11 @@ function testSetAllLaunchTypes(app) {
     } else {
       testSetLaunchType(app.id, type, null, function() {
         chrome.management.get(app.id, function(item) {
-          if (navigator.userAgent.indexOf('Mac') != -1) {
+          if (navigator.userAgent.indexOf('Mac') !== -1) {
             // In the current configuration, with the new bookmark app flow
             // disabled, hosted apps set to open in a window on Mac will open
             // instead in a tab.
-            if (item.type != 'packaged_app' && type == 'OPEN_AS_WINDOW') {
+            if (item.type !== 'packaged_app' && type === 'OPEN_AS_WINDOW') {
               type = 'OPEN_AS_REGULAR_TAB';
             }
           }
@@ -94,17 +94,19 @@ function testSetAllLaunchTypes(app) {
 
 const tests = [
   function verifyLaunchType() {
-    assertTrue(enabledApp.availableLaunchTypes != undefined);
+    assertTrue(enabledApp.availableLaunchTypes !== undefined);
     assertTrue(
-        enabledApp.availableLaunchTypes.indexOf(enabledApp.launchType) != -1);
+        enabledApp.availableLaunchTypes.indexOf(enabledApp.launchType) !== -1);
 
-    assertTrue(disabledApp.availableLaunchTypes != undefined);
+    assertTrue(disabledApp.availableLaunchTypes !== undefined);
     assertTrue(
-        disabledApp.availableLaunchTypes.indexOf(disabledApp.launchType) != -1);
+        disabledApp.availableLaunchTypes.indexOf(disabledApp.launchType) !==
+        -1);
 
-    assertTrue(packagedApp.availableLaunchTypes != undefined);
+    assertTrue(packagedApp.availableLaunchTypes !== undefined);
     assertTrue(
-        packagedApp.availableLaunchTypes.indexOf(packagedApp.launchType) != -1);
+        packagedApp.availableLaunchTypes.indexOf(packagedApp.launchType) !==
+        -1);
 
     assertEq(undefined, enabledExtension.launchType);
     assertEq(undefined, enabledExtension.availableLaunchTypes);

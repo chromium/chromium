@@ -7,7 +7,7 @@ let deviceId = null;
 const onDeviceChanged = (response) => {
   chrome.hid.getDevices({}, devices => {
     for (const device of devices) {
-      if (device.deviceId == deviceId && device.collections.length == 2) {
+      if (device.deviceId === deviceId && device.collections.length === 2) {
         chrome.test.sendMessage('changed');
         return;
       }
@@ -17,8 +17,8 @@ const onDeviceChanged = (response) => {
   });
 };
 
-chrome.hid.onDeviceAdded.addListener(function (device) {
-  if (device.collections.length == 1) {
+chrome.hid.onDeviceAdded.addListener(function(device) {
+  if (device.collections.length === 1) {
     deviceId = device.deviceId;
     chrome.test.sendMessage('added', onDeviceChanged);
   } else {
@@ -29,8 +29,8 @@ chrome.hid.onDeviceAdded.addListener(function (device) {
   }
 });
 
-chrome.hid.onDeviceRemoved.addListener(function (removedId) {
-  if (deviceId == removedId) {
+chrome.hid.onDeviceRemoved.addListener(function(removedId) {
+  if (deviceId === removedId) {
     chrome.test.sendMessage('success');
   } else {
     console.error('Received removed event for wrong device');

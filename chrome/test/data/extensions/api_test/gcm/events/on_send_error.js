@@ -18,12 +18,12 @@ onload = function() {
             error.details.expectedErrorMessage, error.errorMessage);
         currentError += 1;
         const tempTotalMessages = +error.details.totalMessages;
-        if (totalMessages == 0) {
+        if (totalMessages === 0) {
           totalMessages = tempTotalMessages;
         } else {
           chrome.test.assertEq(totalMessages, tempTotalMessages);
         }
-        if (currentError == totalMessages) {
+        if (currentError === totalMessages) {
           chrome.gcm.onSendError.removeListener(eventHandler);
           chrome.test.succeed();
         }

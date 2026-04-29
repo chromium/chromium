@@ -42,10 +42,10 @@ chrome.test.getConfig(config => {
       // Prepare the event listeners first.
       const done =
           chrome.test.listenForever(chrome.tabs.onUpdated, (id, info, tab) => {
-            if (id == incognitoTab.id) {
+            if (id === incognitoTab.id) {
               assertTrue(tab.incognito);
               assertEq(newUrl, tab.url);
-              if (info.status == 'complete') {
+              if (info.status === 'complete') {
                 done();
               }
             }

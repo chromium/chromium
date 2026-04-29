@@ -26,7 +26,7 @@ chrome.test.runTests([
     });
 
     chrome.test.sendMessage('createIncognitoTab', function(response) {
-      if (response == 'created') {
+      if (response === 'created') {
         chrome.tabs.create({url: 'about:blank'}, pass());
       }
     });

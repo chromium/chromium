@@ -7,10 +7,10 @@ onload = function() {
     function registerListener() {
       let numEvents = 0;
       chrome.mdns.onServiceList.addListener(function(services) {
-        if (services[0].serviceName != '_googlecast._tcp.local') {
+        if (services[0].serviceName !== '_googlecast._tcp.local') {
           chrome.test.fail();
           return;
-        } else if (numEvents == 1) {
+        } else if (numEvents === 1) {
           chrome.test.succeed();
         } else {
           numEvents++;

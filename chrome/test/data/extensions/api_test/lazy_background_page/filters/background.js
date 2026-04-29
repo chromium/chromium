@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-console.log('running extension!');
+console.info('running extension!');
 chrome.webNavigation.onBeforeNavigate.addListener(function(details) {
-  console.log('Got the event!');
+  console.info('Got the event!');
   chrome.test.succeed();
 });

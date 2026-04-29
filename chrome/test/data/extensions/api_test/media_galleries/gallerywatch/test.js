@@ -26,7 +26,7 @@ const onAddWatchRequestCallback = function(details) {
 };
 
 const onGalleryChangedCheckingCallback = function(result) {
-  if (result.galleryId != '' && result.type == 'contents_changed') {
+  if (result.galleryId !== '' && result.type === 'contents_changed') {
     chrome.test.sendMessage('on_gallery_changed_checking_ok');
   }
 };
@@ -49,7 +49,7 @@ const createUnlistenedAddWatchCallback = function(expectedNumCalls) {
       numErrors++;
     }
 
-    if (numCalls == expectedNumCalls && numErrors == expectedNumCalls) {
+    if (numCalls === expectedNumCalls && numErrors === expectedNumCalls) {
       chrome.test.sendMessage('add_watch_request_runtime_error');
     }
   };

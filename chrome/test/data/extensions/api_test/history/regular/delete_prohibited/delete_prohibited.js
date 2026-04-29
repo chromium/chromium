@@ -22,9 +22,9 @@ function verifyHistory(resultList) {
   let hasGoogle = false;
   let hasPicasa = false;
   for (let i = 0; i < resultList.length; i++) {
-    if (resultList[i].url == GOOGLE_URL) {
+    if (resultList[i].url === GOOGLE_URL) {
       hasGoogle = true;
-    } else if (resultList[i].url == PICASA_URL) {
+    } else if (resultList[i].url === PICASA_URL) {
       hasPicasa = true;
     }
   }

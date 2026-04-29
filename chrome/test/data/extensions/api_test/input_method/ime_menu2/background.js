@@ -79,7 +79,7 @@ chrome.test.runTests([
     });
     chrome.inputMethodPrivate.onImeMenuListChanged.addListener(function() {
       ++listChangeCount;
-      if (listChangeCount == 2) {
+      if (listChangeCount === 2) {
         chrome.test.sendMessage('list_change');
         chrome.test.succeed();
       }
@@ -90,7 +90,7 @@ chrome.test.runTests([
     chrome.inputMethodPrivate.onImeMenuItemsChanged.addListener(
         function(engineID, items) {
           chrome.test.assertEq('test', engineID);
-          if (onMenuItemChangeCount == 0) {
+          if (onMenuItemChangeCount === 0) {
             compareMenuItems(MENU_ITEMS, items);
             ++onMenuItemChangeCount;
           } else {

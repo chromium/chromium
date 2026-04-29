@@ -38,7 +38,7 @@ function deleteAfterGetID() {
         return;
       }
       chrome.instanceID.getID(function(id) {
-        if (!id || id == oldID) {
+        if (!id || id === oldID) {
           chrome.test.fail('Different ID should be returned after deleteID.');
           return;
         }
