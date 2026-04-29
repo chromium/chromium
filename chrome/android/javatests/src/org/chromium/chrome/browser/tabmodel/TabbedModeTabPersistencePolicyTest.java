@@ -108,7 +108,8 @@ public class TabbedModeTabPersistencePolicyTest {
                             ModalDialogManager modalDialogManager,
                             OneshotSupplier<ProfileProvider> profileProviderSupplier,
                             TabCreatorManager tabCreatorManager,
-                            NextTabPolicySupplier nextTabPolicySupplier) {
+                            NextTabPolicySupplier nextTabPolicySupplier,
+                            @SupportedProfileType int supportedProfileType) {
                         return new MockTabModelSelector(mProfile, mIncognitoProfile, 0, 0, null);
                     }
 
@@ -210,7 +211,8 @@ public class TabbedModeTabPersistencePolicyTest {
                                     null,
                                     null,
                                     mMismatchedIndicesHandler,
-                                    0);
+                                    0,
+                                    SupportedProfileType.MIXED);
                             TabModelSelector selector = tmpOrchestrator.getTabModelSelector();
                             ((MockTabModelSelector) selector)
                                     .initializeTabModels(normalTabModel, incognitoTabModel);

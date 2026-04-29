@@ -3579,7 +3579,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                         this,
                         mNextTabPolicySupplier,
                         mMismatchedIndicesHandler,
-                        mWindowId);
+                        mWindowId,
+                        mSupportedProfileType);
         if (!tabModelWasCreated) {
             finishAndRemoveTask();
             return;

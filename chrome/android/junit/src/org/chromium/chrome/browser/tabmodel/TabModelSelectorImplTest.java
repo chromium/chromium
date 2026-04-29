@@ -122,7 +122,8 @@ public class TabModelSelectorImplTest {
                         NO_RESTORE_TYPE,
                         /* customTabProfileType= */ null,
                         TabModelType.STANDARD,
-                        /* startIncognito= */ false);
+                        /* startIncognito= */ false,
+                        SupportedProfileType.MIXED);
 
         TabRemover regularTabRemover =
                 new PassthroughTabRemover(() -> mTabModelSelector.getModel(false));
@@ -411,7 +412,8 @@ public class TabModelSelectorImplTest {
                         NO_RESTORE_TYPE,
                         /* customTabProfileType= */ null,
                         TabModelType.STANDARD,
-                        /* startIncognito= */ false);
+                        /* startIncognito= */ false,
+                        SupportedProfileType.MIXED);
         MockTabModel regularTabModel = spy(new MockTabModel(mProfile, null));
         TabGroupModelFilterInternal filter = mock(TabGroupModelFilterInternal.class);
         when(filter.getTabModel()).thenReturn(regularTabModel);
@@ -481,7 +483,8 @@ public class TabModelSelectorImplTest {
                         NO_RESTORE_TYPE,
                         /* customTabProfileType= */ null,
                         TabModelType.STANDARD,
-                        /* startIncognito= */ false);
+                        /* startIncognito= */ false,
+                        SupportedProfileType.MIXED);
         when(regularModel.isActiveModel()).thenReturn(true);
         when(regularModel.getTabModel()).thenReturn(regularModel);
         mTabModelSelector.initializeForTesting(

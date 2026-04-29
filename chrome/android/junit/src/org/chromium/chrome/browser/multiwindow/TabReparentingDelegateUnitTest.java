@@ -49,6 +49,7 @@ import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeaturesJni;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.MismatchedIndicesHandler;
+import org.chromium.chrome.browser.tabmodel.SupportedProfileType;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
@@ -109,7 +110,8 @@ public class TabReparentingDelegateUnitTest {
                         /* tabCreatorManager= */ null,
                         /* nextTabPolicySupplier= */ null,
                         mMismatchedIndicesHandler,
-                        SOURCE_WINDOW_ID);
+                        SOURCE_WINDOW_ID,
+                        SupportedProfileType.MIXED);
         TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
 
         ReparentingTabsTask.setReparentingTabsTaskForTesting(mReparentingTabsTask);

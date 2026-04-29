@@ -50,7 +50,8 @@ public class HeadlessTabModelSelectorImpl extends TabModelSelectorImpl {
                 ActivityType.TABBED,
                 /* customTabProfileType= */ null,
                 TabModelType.HEADLESS,
-                /* startIncognito= */ false);
+                /* startIncognito= */ false,
+                SupportedProfileType.MIXED);
     }
 
     @Override

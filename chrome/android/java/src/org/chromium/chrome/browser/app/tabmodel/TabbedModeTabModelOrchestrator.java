@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.tabmodel.AccumulatingTabCreator;
 import org.chromium.chrome.browser.tabmodel.MismatchedIndicesHandler;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.chrome.browser.tabmodel.RecordingTabCreatorManager;
+import org.chromium.chrome.browser.tabmodel.SupportedProfileType;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -139,6 +140,7 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
      * @param nextTabPolicySupplier Policy for what to do when a tab is closed.
      * @param mismatchedIndicesHandler Handles when indices are mismatched.
      * @param selectorIndex Which index to use when requesting a selector.
+     * @param supportedProfileType The type of profile supported by the window.
      * @return Whether the creation was successful. It may fail is we reached the limit of number of
      *     windows.
      */
@@ -149,7 +151,8 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
             TabCreatorManager tabCreatorManager,
             NextTabPolicySupplier nextTabPolicySupplier,
             MismatchedIndicesHandler mismatchedIndicesHandler,
-            int selectorIndex) {
+            int selectorIndex,
+            @SupportedProfileType int supportedProfileType) {
         mProfileProviderSupplier = profileProviderSupplier;
         mRecordingTabCreatorManager = new RecordingTabCreatorManager(tabCreatorManager);
         boolean mergeTabsOnStartup = shouldMergeTabs(activity);
@@ -167,7 +170,8 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
                         tabCreatorManager,
                         nextTabPolicySupplier,
                         mismatchedIndicesHandler,
-                        selectorIndex);
+                        selectorIndex,
+                        supportedProfileType);
         if (selectorAssignment == null) {
             // We will early out and handle this case below.
             mTabModelSelector = assumeNonNull(null);

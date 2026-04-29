@@ -97,7 +97,8 @@ public class ArchivedTabModelSelectorImpl extends TabModelSelectorBase implement
                         tabRemover,
                         /* supportUndo= */ true,
                         TabModelType.ARCHIVED,
-                        ArchivedTabModelSelectorImpl::createTabUngrouper);
+                        ArchivedTabModelSelectorImpl::createTabUngrouper,
+                        SupportedProfileType.MIXED);
         if (tabCreator instanceof NeedsTabModel needsTabModel) {
             needsTabModel.setTabModel(normalModelHolder.tabModel);
         }

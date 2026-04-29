@@ -59,6 +59,7 @@ import org.chromium.chrome.browser.tabmodel.AsyncTabParamsManagerFactory;
 import org.chromium.chrome.browser.tabmodel.MismatchedIndicesHandler;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
+import org.chromium.chrome.browser.tabmodel.SupportedProfileType;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -122,7 +123,8 @@ public class TabWindowManagerImplUnitTest {
                             ModalDialogManager modalDialogManager,
                             OneshotSupplier<ProfileProvider> profileProviderSupplier,
                             TabCreatorManager tabCreatorManager,
-                            NextTabPolicySupplier nextTabPolicySupplier) {
+                            NextTabPolicySupplier nextTabPolicySupplier,
+                            @SupportedProfileType int supportedProfileType) {
                         return new MockTabModelSelector(
                                 mProfile,
                                 mIncognitoProfile,
@@ -187,7 +189,8 @@ public class TabWindowManagerImplUnitTest {
                         mTabCreatorManager,
                         mNextTabPolicySupplier,
                         mMismatchedIndicesHandler0,
-                        0);
+                        0,
+                        SupportedProfileType.MIXED);
 
         assertEquals(0, assignment0.first.intValue());
         TabModelSelector selector0 = assignment0.second;
@@ -215,7 +218,8 @@ public class TabWindowManagerImplUnitTest {
                         mTabCreatorManager,
                         mNextTabPolicySupplier,
                         mMismatchedIndicesHandler0,
-                        0);
+                        0,
+                        SupportedProfileType.MIXED);
         Pair<@WindowId Integer, TabModelSelector> assignment1 =
                 mSubject.requestSelector(
                         activity1,
@@ -224,7 +228,8 @@ public class TabWindowManagerImplUnitTest {
                         mTabCreatorManager,
                         mNextTabPolicySupplier,
                         mMismatchedIndicesHandler1,
-                        1);
+                        1,
+                        SupportedProfileType.MIXED);
 
         assertEquals(0, assignment0.first.intValue());
         assertEquals(1, assignment1.first.intValue());
@@ -257,7 +262,8 @@ public class TabWindowManagerImplUnitTest {
                             mTabCreatorManager,
                             mNextTabPolicySupplier,
                             mMismatchedIndicesHandler0,
-                            0));
+                            0,
+                            SupportedProfileType.MIXED));
         }
 
         ActivityController<Activity> activityController = createActivity();
@@ -271,7 +277,8 @@ public class TabWindowManagerImplUnitTest {
                         mTabCreatorManager,
                         mNextTabPolicySupplier,
                         mMismatchedIndicesHandler0,
-                        0));
+                        0,
+                        SupportedProfileType.MIXED));
 
         for (ActivityController<Activity> c : activityControllerList) {
             destroyActivity(c);
@@ -299,7 +306,8 @@ public class TabWindowManagerImplUnitTest {
                         mTabCreatorManager,
                         mNextTabPolicySupplier,
                         mMismatchedIndicesHandler0,
-                        0);
+                        0,
+                        SupportedProfileType.MIXED);
         // Request 0 again, but should get 1 instead.
         Pair<@WindowId Integer, TabModelSelector> assignment1 =
                 mSubject.requestSelector(
@@ -309,7 +317,8 @@ public class TabWindowManagerImplUnitTest {
                         mTabCreatorManager,
                         mNextTabPolicySupplier,
                         mMismatchedIndicesHandler1,
-                        0);
+                        0,
+                        SupportedProfileType.MIXED);
 
         assertEquals(0, assignment0.first.intValue());
         assertEquals(1, assignment1.first.intValue());
@@ -343,7 +352,8 @@ public class TabWindowManagerImplUnitTest {
                         mTabCreatorManager,
                         mNextTabPolicySupplier,
                         mMismatchedIndicesHandler0,
-                        2);
+                        2,
+                        SupportedProfileType.MIXED);
         // Request 2 again, but should get 0 instead.
         Pair<@WindowId Integer, TabModelSelector> assignment1 =
                 mSubject.requestSelector(
@@ -353,7 +363,8 @@ public class TabWindowManagerImplUnitTest {
                         mTabCreatorManager,
                         mNextTabPolicySupplier,
                         mMismatchedIndicesHandler1,
-                        2);
+                        2,
+                        SupportedProfileType.MIXED);
 
         assertEquals(2, assignment0.first.intValue());
         assertEquals(0, assignment1.first.intValue());
@@ -383,7 +394,8 @@ public class TabWindowManagerImplUnitTest {
                         mTabCreatorManager,
                         mNextTabPolicySupplier,
                         mMismatchedIndicesHandler0,
-                        0);
+                        0,
+                        SupportedProfileType.MIXED);
 
         assertEquals(0, assignment0.first.intValue());
         assertNotNull("Was not able to build the TabModelSelector", assignment0.second);
@@ -411,7 +423,8 @@ public class TabWindowManagerImplUnitTest {
                         mTabCreatorManager,
                         mNextTabPolicySupplier,
                         mMismatchedIndicesHandler0,
-                        0);
+                        0,
+                        SupportedProfileType.MIXED);
 
         assertEquals(0, assignment0.first.intValue());
         assertNotNull("Was not able to build the TabModelSelector", assignment0.second);
@@ -431,7 +444,8 @@ public class TabWindowManagerImplUnitTest {
                         mTabCreatorManager,
                         mNextTabPolicySupplier,
                         mMismatchedIndicesHandler1,
-                        0);
+                        0,
+                        SupportedProfileType.MIXED);
 
         assertEquals(0, assignment1.first.intValue());
         assertNotNull("Was not able to build the TabModelSelector", assignment1.second);
@@ -462,7 +476,8 @@ public class TabWindowManagerImplUnitTest {
                         mTabCreatorManager,
                         mNextTabPolicySupplier,
                         mMismatchedIndicesHandler0,
-                        0);
+                        0,
+                        SupportedProfileType.MIXED);
         Pair<@WindowId Integer, TabModelSelector> assignment1 =
                 mSubject.requestSelector(
                         activity1,
@@ -471,7 +486,8 @@ public class TabWindowManagerImplUnitTest {
                         mTabCreatorManager,
                         mNextTabPolicySupplier,
                         mMismatchedIndicesHandler1,
-                        1);
+                        1,
+                        SupportedProfileType.MIXED);
 
         assertEquals(0, assignment0.first.intValue());
         assertEquals(1, assignment1.first.intValue());
@@ -495,7 +511,8 @@ public class TabWindowManagerImplUnitTest {
                         mTabCreatorManager,
                         mNextTabPolicySupplier,
                         handler,
-                        1);
+                        1,
+                        SupportedProfileType.MIXED);
 
         assertEquals(1, assignment2.first.intValue());
         assertNotNull("Was not able to build the TabModelSelector", assignment2.second);
@@ -522,7 +539,8 @@ public class TabWindowManagerImplUnitTest {
                         mTabCreatorManager,
                         mNextTabPolicySupplier,
                         mMismatchedIndicesHandler0,
-                        0);
+                        0,
+                        SupportedProfileType.MIXED);
         Pair<@WindowId Integer, TabModelSelector> assignment1 =
                 mSubject.requestSelector(
                         activity1,
@@ -531,7 +549,8 @@ public class TabWindowManagerImplUnitTest {
                         mTabCreatorManager,
                         mNextTabPolicySupplier,
                         mMismatchedIndicesHandler1,
-                        1);
+                        1,
+                        SupportedProfileType.MIXED);
         MockTabModelSelector selector0 = (MockTabModelSelector) assignment0.second;
         MockTabModelSelector selector1 = (MockTabModelSelector) assignment1.second;
         Tab tab1 = selector0.addMockTab();
@@ -574,7 +593,8 @@ public class TabWindowManagerImplUnitTest {
                         mTabCreatorManager,
                         mNextTabPolicySupplier,
                         mMismatchedIndicesHandler0,
-                        0);
+                        0,
+                        SupportedProfileType.MIXED);
         Pair<@WindowId Integer, TabModelSelector> assignment1 =
                 mSubject.requestSelector(
                         activity1,
@@ -583,7 +603,8 @@ public class TabWindowManagerImplUnitTest {
                         mTabCreatorManager,
                         mNextTabPolicySupplier,
                         mMismatchedIndicesHandler1,
-                        1);
+                        1,
+                        SupportedProfileType.MIXED);
         MockTabModelSelector selector0 = (MockTabModelSelector) assignment0.second;
         MockTabModelSelector selector1 = (MockTabModelSelector) assignment1.second;
         Tab tab1 = selector0.addMockTab();
@@ -668,7 +689,8 @@ public class TabWindowManagerImplUnitTest {
                         mTabCreatorManager,
                         mNextTabPolicySupplier,
                         mMismatchedIndicesHandler0,
-                        0);
+                        0,
+                        SupportedProfileType.MIXED);
         Pair<@WindowId Integer, TabModelSelector> assignment1 =
                 mSubject.requestSelector(
                         activity1,
@@ -677,7 +699,8 @@ public class TabWindowManagerImplUnitTest {
                         mTabCreatorManager,
                         mNextTabPolicySupplier,
                         mMismatchedIndicesHandler1,
-                        1);
+                        1,
+                        SupportedProfileType.MIXED);
         MockTabModelSelector selector0 = (MockTabModelSelector) assignment0.second;
         MockTabModelSelector selector1 = (MockTabModelSelector) assignment1.second;
         Tab tab1 = selector0.addMockTab();
@@ -707,7 +730,8 @@ public class TabWindowManagerImplUnitTest {
                         mTabCreatorManager,
                         mNextTabPolicySupplier,
                         mMismatchedIndicesHandler0,
-                        0);
+                        0,
+                        SupportedProfileType.MIXED);
 
         TabModelSelector selector0 = assignment0.second;
         assertEquals(0, mSubject.getWindowIdForSelector(selector0));
@@ -728,7 +752,8 @@ public class TabWindowManagerImplUnitTest {
                         mTabCreatorManager,
                         mNextTabPolicySupplier,
                         mMismatchedIndicesHandler1,
-                        1);
+                        1,
+                        SupportedProfileType.MIXED);
         TabModelSelector selector1 = assignment1.second;
         assertEquals(0, mSubject.getWindowIdForSelector(selector0));
         assertEquals(1, mSubject.getWindowIdForSelector(selector1));
@@ -753,7 +778,8 @@ public class TabWindowManagerImplUnitTest {
                 mTabCreatorManager,
                 mNextTabPolicySupplier,
                 mMismatchedIndicesHandler0,
-                0);
+                0,
+                SupportedProfileType.MIXED);
 
         ActivityController<Activity> activityController1 = createActivity();
         Activity activity1 = activityController1.get();
@@ -769,7 +795,8 @@ public class TabWindowManagerImplUnitTest {
                     mTabCreatorManager,
                     mNextTabPolicySupplier,
                     mMismatchedIndicesHandler1,
-                    0);
+                    0,
+                    SupportedProfileType.MIXED);
         } finally {
             destroyActivity(activityController1);
         }
@@ -794,7 +821,8 @@ public class TabWindowManagerImplUnitTest {
                 mTabCreatorManager,
                 mNextTabPolicySupplier,
                 mMismatchedIndicesHandler0,
-                0);
+                0,
+                SupportedProfileType.MIXED);
 
         // Create activity1 and request its tab model selector to use window id 0.
         ActivityController<Activity> activityController1 = createActivity();
@@ -813,7 +841,8 @@ public class TabWindowManagerImplUnitTest {
                             mTabCreatorManager,
                             mNextTabPolicySupplier,
                             mMismatchedIndicesHandler1,
-                            0);
+                            0,
+                            SupportedProfileType.MIXED);
             assertEquals(
                     "Requested selector's window id assignment is incorrect.",
                     0,
@@ -852,7 +881,8 @@ public class TabWindowManagerImplUnitTest {
                 mTabCreatorManager,
                 mNextTabPolicySupplier,
                 mMismatchedIndicesHandler0,
-                0);
+                0,
+                SupportedProfileType.MIXED);
 
         // Create activity1 and request its tab model selector to use window id 0, but it should be
         // assigned 1 instead, since reassignment on conflict should be ignored.
@@ -866,7 +896,8 @@ public class TabWindowManagerImplUnitTest {
                         mTabCreatorManager,
                         mNextTabPolicySupplier,
                         mMismatchedIndicesHandler1,
-                        0);
+                        0,
+                        SupportedProfileType.MIXED);
         assertEquals(
                 "Requested selector's window id assignment is incorrect.",
                 1,
@@ -890,7 +921,8 @@ public class TabWindowManagerImplUnitTest {
                         mTabCreatorManager,
                         mNextTabPolicySupplier,
                         mMismatchedIndicesHandler0,
-                        0);
+                        0,
+                        SupportedProfileType.MIXED);
 
         assertEquals(0, assignment0.first.intValue());
         MockTabModelSelector selector0 = (MockTabModelSelector) assignment0.second;
@@ -954,7 +986,8 @@ public class TabWindowManagerImplUnitTest {
                         mTabCreatorManager,
                         mNextTabPolicySupplier,
                         mMismatchedIndicesHandler0,
-                        0);
+                        0,
+                        SupportedProfileType.MIXED);
 
         assertEquals(0, assignment0.first.intValue());
         MockTabModelSelector selector0 = (MockTabModelSelector) assignment0.second;
@@ -1029,7 +1062,8 @@ public class TabWindowManagerImplUnitTest {
                         mTabCreatorManager,
                         mNextTabPolicySupplier,
                         mMismatchedIndicesHandler0,
-                        0);
+                        0,
+                        SupportedProfileType.MIXED);
         TabModelSelector selector4 = assignment0.second;
         assertNotEquals(selector3, selector4);
 
@@ -1065,7 +1099,8 @@ public class TabWindowManagerImplUnitTest {
                 mTabCreatorManager,
                 mNextTabPolicySupplier,
                 mMismatchedIndicesHandler0,
-                0);
+                0,
+                SupportedProfileType.MIXED);
 
         assertEquals(1, mSubject.getAllTabModelSelectors().size());
 
@@ -1081,7 +1116,8 @@ public class TabWindowManagerImplUnitTest {
                 mTabCreatorManager,
                 mNextTabPolicySupplier,
                 mMismatchedIndicesHandler0,
-                1);
+                1,
+                SupportedProfileType.MIXED);
 
         mSubject.keepAllTabModelsLoaded(windowIds, mProfile, mTabModelSelector);
         assertEquals(3, mSubject.getAllTabModelSelectors().size());
@@ -1132,7 +1168,8 @@ public class TabWindowManagerImplUnitTest {
                 mTabCreatorManager,
                 mNextTabPolicySupplier,
                 mMismatchedIndicesHandler0,
-                0);
+                0,
+                SupportedProfileType.MIXED);
         assertEquals(1, mSubject.getAllTabModelSelectors().size());
 
         // A pre-31 device would not use persisted window ids.
@@ -1175,7 +1212,8 @@ public class TabWindowManagerImplUnitTest {
                         mTabCreatorManager,
                         mNextTabPolicySupplier,
                         mMismatchedIndicesHandler0,
-                        window0);
+                        window0,
+                        SupportedProfileType.MIXED);
         Pair<@WindowId Integer, TabModelSelector> assignment1 =
                 mSubject.requestSelector(
                         activity1,
@@ -1184,7 +1222,8 @@ public class TabWindowManagerImplUnitTest {
                         mTabCreatorManager,
                         mNextTabPolicySupplier,
                         mMismatchedIndicesHandler1,
-                        window1);
+                        window1,
+                        SupportedProfileType.MIXED);
         MockTabModelSelector selector0 = (MockTabModelSelector) assignment0.second;
         MockTabModelSelector selector1 = (MockTabModelSelector) assignment1.second;
         Tab tab1 = selector0.addMockTab();
@@ -1221,7 +1260,8 @@ public class TabWindowManagerImplUnitTest {
                         mTabCreatorManager,
                         mNextTabPolicySupplier,
                         mMismatchedIndicesHandler0,
-                        0);
+                        0,
+                        SupportedProfileType.MIXED);
 
         MockTabModelSelector selector0 = (MockTabModelSelector) assignment0.second;
 
@@ -1254,7 +1294,8 @@ public class TabWindowManagerImplUnitTest {
                         mTabCreatorManager,
                         mNextTabPolicySupplier,
                         mMismatchedIndicesHandler0,
-                        0);
+                        0,
+                        SupportedProfileType.MIXED);
 
         MockTabModelSelector selector0 = (MockTabModelSelector) assignment0.second;
 
@@ -1268,7 +1309,8 @@ public class TabWindowManagerImplUnitTest {
                         mTabCreatorManager,
                         mNextTabPolicySupplier,
                         mMismatchedIndicesHandler1,
-                        1);
+                        1,
+                        SupportedProfileType.MIXED);
 
         MockTabModelSelector selector1 = (MockTabModelSelector) assignment1.second;
 

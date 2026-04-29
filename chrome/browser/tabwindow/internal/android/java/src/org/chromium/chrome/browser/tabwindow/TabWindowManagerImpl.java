@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.tabmodel.AsyncTabParams;
 import org.chromium.chrome.browser.tabmodel.AsyncTabParamsManager;
 import org.chromium.chrome.browser.tabmodel.MismatchedIndicesHandler;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
+import org.chromium.chrome.browser.tabmodel.SupportedProfileType;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupVisualDataStore;
@@ -145,7 +146,8 @@ public class TabWindowManagerImpl implements TabWindowManager {
             TabCreatorManager tabCreatorManager,
             NextTabPolicySupplier nextTabPolicySupplier,
             MismatchedIndicesHandler mismatchedIndicesHandler,
-            @WindowId int windowId) {
+            @WindowId int windowId,
+            @SupportedProfileType int supportedProfileType) {
         if (windowId == INVALID_WINDOW_ID) return null;
 
         // Return the already existing selector if found.
@@ -209,7 +211,8 @@ public class TabWindowManagerImpl implements TabWindowManager {
                         modalDialogManager,
                         profileProviderSupplier,
                         tabCreatorManager,
-                        nextTabPolicySupplier);
+                        nextTabPolicySupplier,
+                        supportedProfileType);
 
         mWindowIdToSelectors.put(assignedWindowId, selector);
         mSelectorsToWindowId.put(selector, assignedWindowId);

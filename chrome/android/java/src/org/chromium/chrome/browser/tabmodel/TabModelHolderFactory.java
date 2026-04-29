@@ -9,6 +9,7 @@ import static org.chromium.chrome.browser.tab.TabStateStorageServiceFactory.crea
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ActivityType;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.CustomTabProfileType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
@@ -39,7 +40,14 @@ public class TabModelHolderFactory {
             TabRemover tabRemover,
             boolean supportUndo,
             @TabModelType int tabModelType,
-            TabUngrouperFactory tabUngrouperFactory) {
+            TabUngrouperFactory tabUngrouperFactory,
+            @SupportedProfileType int supportedProfileType) {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.ENFORCE_INCOGNITO_ISOLATION)
+                && supportedProfileType == SupportedProfileType.OFF_THE_RECORD) {
+            StubTabModel model = new StubTabModel(/* isIncognito= */ false, profile);
+            return new TabModelHolder(model, model);
+        }
+
         return createCollectionTabModelHolder(
                 profile,
                 activityType,
@@ -73,7 +81,14 @@ public class TabModelHolderFactory {
             @Nullable @CustomTabProfileType Integer customTabProfileType,
             TabModelDelegate modelDelegate,
             TabRemover tabRemover,
-            TabUngrouperFactory tabUngrouperFactory) {
+            TabUngrouperFactory tabUngrouperFactory,
+            @SupportedProfileType int supportedProfileType) {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.ENFORCE_INCOGNITO_ISOLATION)
+                && supportedProfileType == SupportedProfileType.REGULAR) {
+            StubTabModel model = new StubTabModel(/* isIncognito= */ true, /* profile= */ null);
+            return new IncognitoTabModelHolder(model, model);
+        }
+
         return createCollectionIncognitoTabModelHolder(
                 profileProvider,
                 regularTabCreator,

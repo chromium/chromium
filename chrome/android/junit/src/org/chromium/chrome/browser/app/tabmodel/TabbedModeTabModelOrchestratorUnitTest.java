@@ -49,6 +49,7 @@ import org.chromium.chrome.browser.tab.TabStateStorageServiceFactory;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.MismatchedIndicesHandler;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
+import org.chromium.chrome.browser.tabmodel.SupportedProfileType;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelJniBridge;
@@ -145,7 +146,8 @@ public class TabbedModeTabModelOrchestratorUnitTest {
                 mTabCreatorManager,
                 mNextTabPolicySupplier,
                 mMismatchedIndicesHandler,
-                0);
+                0,
+                SupportedProfileType.MIXED);
         List<Pair<AsyncTask<DataInputStream>, String>> tabStatesToMerge;
         TabPersistentStoreImpl tabPersistentStore =
                 (TabPersistentStoreImpl) orchestrator.getTabPersistentStore();
@@ -165,7 +167,8 @@ public class TabbedModeTabModelOrchestratorUnitTest {
                 mTabCreatorManager,
                 mNextTabPolicySupplier,
                 mMismatchedIndicesHandler,
-                1);
+                1,
+                SupportedProfileType.MIXED);
         tabPersistentStore = (TabPersistentStoreImpl) orchestrator.getTabPersistentStore();
         tabStatesToMerge = tabPersistentStore.getTabListToMergeTasksForTesting();
         assertTrue("Should not have any tab state file to merge", tabStatesToMerge.isEmpty());
@@ -174,7 +177,8 @@ public class TabbedModeTabModelOrchestratorUnitTest {
     @Test
     public void testCleanupInstance() {
         when(mTabModelSelector.getModel(anyBoolean())).thenReturn(mTabModel);
-        when(mTabWindowManager.requestSelector(any(), any(), any(), any(), any(), any(), anyInt()))
+        when(mTabWindowManager.requestSelector(
+                        any(), any(), any(), any(), any(), any(), anyInt(), anyInt()))
                 .thenReturn(new Pair<>(0, mTabModelSelector));
         TabWindowManagerSingleton.setTabWindowManagerForTesting(mTabWindowManager);
 
@@ -186,7 +190,8 @@ public class TabbedModeTabModelOrchestratorUnitTest {
                 mTabCreatorManager,
                 mNextTabPolicySupplier,
                 mMismatchedIndicesHandler,
-                0);
+                0,
+                SupportedProfileType.MIXED);
 
         orchestrator.cleanupInstance(1);
         verify(mPersistentStoreCleaner).cleanWindowForUnavailableStores(1, orchestrator);
@@ -197,7 +202,8 @@ public class TabbedModeTabModelOrchestratorUnitTest {
         when(mTabModel.getProfile()).thenReturn(mProfile);
         when(mTabModelSelector.getModel(anyBoolean())).thenReturn(mTabModel);
         when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
-        when(mTabWindowManager.requestSelector(any(), any(), any(), any(), any(), any(), anyInt()))
+        when(mTabWindowManager.requestSelector(
+                        any(), any(), any(), any(), any(), any(), anyInt(), anyInt()))
                 .thenReturn(new Pair<>(0, mTabModelSelector));
         TabWindowManagerSingleton.setTabWindowManagerForTesting(mTabWindowManager);
         ArchivedTabModelOrchestrator.setInstanceForTesting(mArchivedTabModelOrchestrator);
@@ -211,7 +217,8 @@ public class TabbedModeTabModelOrchestratorUnitTest {
                 mTabCreatorManager,
                 mNextTabPolicySupplier,
                 mMismatchedIndicesHandler,
-                0);
+                0,
+                SupportedProfileType.MIXED);
 
         Holder<Boolean> storesInitializedCalled = new Holder<>(false);
         TabModelOrchestratorObserver observer =

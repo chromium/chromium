@@ -59,6 +59,7 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
 
     // Type of the Activity for this tab model. Used by sync to determine how to handle restore
     // on cold start.
+    private final @SupportedProfileType int mSupportedProfileType;
     private final @ActivityType int mActivityType;
     private final @Nullable @CustomTabProfileType Integer mCustomTabProfileType;
     private final @TabModelType int mTabModelType;
@@ -87,7 +88,9 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
      * @param supportUndo Whether a tab closure can be undone.
      * @param activityType Type of the activity for the tab model selector.
      * @param customTabProfileType The profile type of the custom tab, may be null.
+     * @param tabModelType The type of the tab model.
      * @param startIncognito Whether to start in incognito mode.
+     * @param supportedProfileType The type of profile supported by this selector.
      */
     public TabModelSelectorImpl(
             Context context,
@@ -100,8 +103,10 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
             @ActivityType int activityType,
             @Nullable @CustomTabProfileType Integer customTabProfileType,
             @TabModelType int tabModelType,
-            boolean startIncognito) {
+            boolean startIncognito,
+            @SupportedProfileType int supportedProfileType) {
         super(tabCreatorManager, startIncognito);
+        mSupportedProfileType = supportedProfileType;
         mContext = context;
         mModalDialogManager = modalDialogManager;
         mProfileProviderSupplier = profileProviderSupplier;
@@ -178,7 +183,8 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
                         regularTabRemover,
                         mIsUndoSupported,
                         mTabModelType,
-                        tabUngrouperFactory);
+                        tabUngrouperFactory,
+                        mSupportedProfileType);
         if (regularTabCreator instanceof NeedsTabModel needsTabModel) {
             needsTabModel.setTabModel(normalModelHolder.tabModel);
         }
@@ -202,7 +208,8 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
                         mCustomTabProfileType,
                         this,
                         incognitoTabRemover,
-                        tabUngrouperFactory);
+                        tabUngrouperFactory,
+                        mSupportedProfileType);
         if (incognitoTabCreator instanceof NeedsTabModel needsTabModel) {
             needsTabModel.setTabModel(incognitoModelHolder.tabModel);
         }

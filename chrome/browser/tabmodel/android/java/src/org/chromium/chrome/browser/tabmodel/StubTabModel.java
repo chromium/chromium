@@ -159,6 +159,8 @@ public class StubTabModel extends EmptyTabModel {
 
     @Override
     public void setActive(boolean active) {
-        throw error();
+        if (active) {
+            throw error();
+        }
     }
 }

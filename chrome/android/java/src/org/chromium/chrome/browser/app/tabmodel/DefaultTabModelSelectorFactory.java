@@ -15,6 +15,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tabmodel.AsyncTabParamsManager;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
+import org.chromium.chrome.browser.tabmodel.SupportedProfileType;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
@@ -34,7 +35,8 @@ public class DefaultTabModelSelectorFactory implements TabModelSelectorFactory {
             ModalDialogManager modalDialogManager,
             OneshotSupplier<ProfileProvider> profileProviderSupplier,
             TabCreatorManager tabCreatorManager,
-            NextTabPolicySupplier nextTabPolicySupplier) {
+            NextTabPolicySupplier nextTabPolicySupplier,
+            @SupportedProfileType int supportedProfileType) {
         AsyncTabParamsManager asyncTabParamsManager = AsyncTabParamsManagerSingleton.getInstance();
 
         return new TabModelSelectorImpl(
@@ -48,7 +50,8 @@ public class DefaultTabModelSelectorFactory implements TabModelSelectorFactory {
                 ActivityType.TABBED,
                 /* customTabProfileType= */ null,
                 TabModelType.STANDARD,
-                /* startIncognito= */ false);
+                /* startIncognito= */ false,
+                supportedProfileType);
     }
 
     @Override

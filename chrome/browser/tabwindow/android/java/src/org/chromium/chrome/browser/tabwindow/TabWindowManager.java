@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tabmodel.MismatchedIndicesHandler;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
+import org.chromium.chrome.browser.tabmodel.SupportedProfileType;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -105,6 +106,7 @@ public interface TabWindowManager {
      * @param mismatchedIndicesHandler An instance of {@link MismatchedIndicesHandler}.
      * @param windowId The suggested id of the window that the selector should correspond to. Not
      *     guaranteed to be the index of the {@link TabModelSelector} returned.
+     * @param supportedProfileType The type of profile supported by this selector.
      * @return {@link Pair} of the window id and the assigned {@link TabModelSelector}, or {@code
      *     null} if there are too many {@link TabModelSelector}s already built.
      */
@@ -115,7 +117,8 @@ public interface TabWindowManager {
             TabCreatorManager tabCreatorManager,
             NextTabPolicySupplier nextTabPolicySupplier,
             MismatchedIndicesHandler mismatchedIndicesHandler,
-            @WindowId int windowId);
+            @WindowId int windowId,
+            @SupportedProfileType int supportedProfileType);
 
     /**
      * Creates and returns a headless selector if possible. If there's already a tabbed selector, it

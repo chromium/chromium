@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.tabmodel.AsyncTabParamsManager;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.chrome.browser.tabmodel.RecordingTabCreatorManager;
+import org.chromium.chrome.browser.tabmodel.SupportedProfileType;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
 import org.chromium.chrome.browser.tabmodel.TabModelType;
@@ -77,7 +78,8 @@ public class CustomTabsTabModelOrchestrator extends TabModelOrchestrator {
                         activityType,
                         customTabProfileType,
                         TabModelType.STANDARD,
-                        /* startIncognito= */ false);
+                        /* startIncognito= */ false,
+                        SupportedProfileType.MIXED);
 
         TabWindowManager tabWindowManager = TabWindowManagerSingleton.getInstance();
         tabWindowManager.registerCustomTabsTabModelSelector(

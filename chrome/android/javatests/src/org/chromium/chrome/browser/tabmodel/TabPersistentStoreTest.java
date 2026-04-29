@@ -274,7 +274,8 @@ public class TabPersistentStoreTest {
                         ModalDialogManager modalDialogManager,
                         OneshotSupplier<ProfileProvider> profileProviderSupplier,
                         TabCreatorManager tabCreatorManager,
-                        NextTabPolicySupplier nextTabPolicySupplier) {
+                        NextTabPolicySupplier nextTabPolicySupplier,
+                        int supportedProfileType) {
                     try {
                         return new TestTabModelSelector(
                                 context, profileProviderSupplier, tabCreatorManager);
@@ -1420,7 +1421,8 @@ public class TabPersistentStoreTest {
                                                     tabCreatorManager,
                                                     null,
                                                     mismatchedIndicesHandler,
-                                                    windowId)
+                                                    windowId,
+                                                    SupportedProfileType.MIXED)
                                             .second;
                         });
 

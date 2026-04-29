@@ -13,6 +13,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
+import org.chromium.chrome.browser.tabmodel.SupportedProfileType;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -28,6 +29,7 @@ public interface TabModelSelectorFactory {
      * @param profileProviderSupplier Provides the Profiles used in this selector.
      * @param tabCreatorManager A {@link TabCreatorManager} instance.
      * @param nextTabPolicySupplier A {@link NextTabPolicySupplier} instance.
+     * @param supportedProfileType The type of profile supported by this selector.
      * @return A new {@link TabModelSelector} instance.
      */
     TabModelSelector buildTabbedSelector(
@@ -35,7 +37,8 @@ public interface TabModelSelectorFactory {
             ModalDialogManager modalDialogManager,
             OneshotSupplier<ProfileProvider> profileProviderSupplier,
             TabCreatorManager tabCreatorManager,
-            NextTabPolicySupplier nextTabPolicySupplier);
+            NextTabPolicySupplier nextTabPolicySupplier,
+            @SupportedProfileType int supportedProfileType);
 
     /**
      * Builds and initializes the tab model. Outside infra should ensure that this is the exclusive

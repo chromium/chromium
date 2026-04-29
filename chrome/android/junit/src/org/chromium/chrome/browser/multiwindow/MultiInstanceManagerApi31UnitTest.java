@@ -1504,7 +1504,8 @@ public class MultiInstanceManagerApi31UnitTest {
                                 null,
                                 null,
                                 mMismatchedIndicesHandler,
-                                index);
+                                index,
+                                SupportedProfileType.MIXED);
         if (pair == null) return INVALID_WINDOW_ID;
 
         int instanceId = pair.first;

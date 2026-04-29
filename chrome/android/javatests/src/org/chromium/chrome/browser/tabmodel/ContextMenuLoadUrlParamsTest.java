@@ -113,7 +113,8 @@ public class ContextMenuLoadUrlParamsTest {
                     ActivityType.TABBED,
                     /* customTabProfileType= */ null,
                     TabModelType.STANDARD,
-                    false);
+                    false,
+                    SupportedProfileType.MIXED);
         }
     }
 
@@ -130,7 +131,8 @@ public class ContextMenuLoadUrlParamsTest {
                             ModalDialogManager modalDialogManager,
                             OneshotSupplier<ProfileProvider> profileProviderSupplier,
                             TabCreatorManager tabCreatorManager,
-                            NextTabPolicySupplier nextTabPolicySupplier) {
+                            NextTabPolicySupplier nextTabPolicySupplier,
+                            int supportedProfileType) {
                         return new RecordingTabModelSelector(
                                 context,
                                 modalDialogManager,
