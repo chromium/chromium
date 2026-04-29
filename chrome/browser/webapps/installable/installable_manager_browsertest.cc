@@ -381,13 +381,7 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest, ManagerInIncognito) {
 }
 #endif
 
-// TODO(crbug.com/379660142) Re-enable this test once the flakiness is fixed.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_CheckNoManifest DISABLED_CheckNoManifest
-#else
-#define MAYBE_CheckNoManifest CheckNoManifest
-#endif
-IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest, MAYBE_CheckNoManifest) {
+IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest, CheckNoManifest) {
   // Ensure that a page with no manifest returns the appropriate error and with
   // null fields for everything.
   base::HistogramTester histograms;
