@@ -20,7 +20,7 @@ static-libstdcpp = true
 
 [rust]
 download-rustc = false
-channel = "dev"
+channel = "nightly"  # See https://crbug.com/506182737
 
 [build]
 # Check that vendored dependencies match the root Cargo.lock.
