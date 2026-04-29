@@ -54,35 +54,7 @@ void SendTabToSelfToolbarBubbleController::ShowBubble(
   views::BubbleDialogDelegateView::CreateBubble(std::move(bubble_view))->Show();
 }
 
-SendTabToSelfBubbleView*
-SendTabToSelfToolbarBubbleController::ShowDevicePickerBubble(
-    content::WebContents* web_contents) {
-  auto anchor = ToolbarButtonProvider::From(base::to_address(bwi_))
-                    ->GetBubbleAnchor(kActionSendTabToSelf);
-  auto bubble_view =
-      std::make_unique<send_tab_to_self::SendTabToSelfDevicePickerBubbleView>(
-          std::move(anchor), web_contents);
-  auto* bubble_view_ptr = bubble_view.get();
 
-  views::BubbleDialogDelegateView::CreateBubble(std::move(bubble_view));
-  bubble_view_ptr->ShowForReason(LocationBarBubbleDelegateView::USER_GESTURE);
-  return bubble_view_ptr;
-}
-
-SendTabToSelfBubbleView* SendTabToSelfToolbarBubbleController::ShowPromoBubble(
-    content::WebContents* web_contents,
-    bool show_signin_button) {
-  auto anchor = ToolbarButtonProvider::From(base::to_address(bwi_))
-                    ->GetBubbleAnchor(kActionSendTabToSelf);
-  auto bubble_view =
-      std::make_unique<send_tab_to_self::SendTabToSelfPromoBubbleView>(
-          std::move(anchor), web_contents, show_signin_button);
-  auto* bubble_view_ptr = bubble_view.get();
-
-  views::BubbleDialogDelegateView::CreateBubble(std::move(bubble_view));
-  bubble_view_ptr->ShowForReason(LocationBarBubbleDelegateView::USER_GESTURE);
-  return bubble_view_ptr;
-}
 
 void SendTabToSelfToolbarBubbleController::HideBubble() {
   if (!IsBubbleShowing()) {

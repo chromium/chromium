@@ -29,8 +29,10 @@
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_util.h"
 #include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_controller.h"
+#include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_view.h"
-#include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_toolbar_bubble_controller.h"
+#include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_device_picker_bubble_view.h"
+#include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_promo_bubble_view.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -52,6 +54,7 @@
 #include "ui/events/event.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/strings/grit/ui_strings.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 namespace send_tab_to_self {
 
@@ -79,6 +82,11 @@ void SendTabToSelfBubbleController::HideBubble() {
 }
 
 void SendTabToSelfBubbleController::ShowBubble(bool show_back_button) {
+  // Avoid re-creation if a bubble is already being shown for this controller.
+  if (send_tab_to_self_bubble_view_) {
+    return;
+  }
+
   show_back_button_ = show_back_button;
   bubble_shown_ = true;
   BrowserWindowInterface* browser =
@@ -86,25 +94,29 @@ void SendTabToSelfBubbleController::ShowBubble(bool show_back_button) {
           &GetWebContents());
   std::optional<send_tab_to_self::EntryPointDisplayReason> reason =
       GetEntryPointDisplayReason();
-  DCHECK(reason);
-  auto* window_controller =
-      send_tab_to_self::SendTabToSelfToolbarBubbleController::From(browser);
+  CHECK(reason);
+  auto anchor = browser ? ToolbarButtonProvider::From(browser)->GetBubbleAnchor(
+                              kActionSendTabToSelf)
+                        : views::BubbleAnchor();
+  std::unique_ptr<SendTabToSelfBubbleView> bubble_view;
   switch (*reason) {
     case send_tab_to_self::EntryPointDisplayReason::kOfferFeature:
-      send_tab_to_self_bubble_view_ =
-          window_controller->ShowDevicePickerBubble(&GetWebContents());
+      bubble_view = std::make_unique<SendTabToSelfDevicePickerBubbleView>(
+          std::move(anchor), &GetWebContents());
       break;
     case send_tab_to_self::EntryPointDisplayReason::kOfferSignIn:
-      send_tab_to_self_bubble_view_ =
-          window_controller->ShowPromoBubble(&GetWebContents(),
-                                             /*show_signin_button=*/true);
+      bubble_view = std::make_unique<SendTabToSelfPromoBubbleView>(
+          std::move(anchor), &GetWebContents(), /*show_signin_button=*/true);
       break;
     case send_tab_to_self::EntryPointDisplayReason::kInformNoTargetDevice:
-      send_tab_to_self_bubble_view_ =
-          window_controller->ShowPromoBubble(&GetWebContents(),
-                                             /*show_signin_button=*/false);
+      bubble_view = std::make_unique<SendTabToSelfPromoBubbleView>(
+          std::move(anchor), &GetWebContents(), /*show_signin_button=*/false);
       break;
   }
+  send_tab_to_self_bubble_view_ = bubble_view.get();
+  views::BubbleDialogDelegateView::CreateBubble(std::move(bubble_view));
+  send_tab_to_self_bubble_view_->ShowForReason(
+      LocationBarBubbleDelegateView::USER_GESTURE);
 
   if (browser) {
     send_tab_to_self_action_item_ = actions::ActionManager::Get().FindAction(
