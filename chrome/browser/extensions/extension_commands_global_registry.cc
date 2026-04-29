@@ -22,8 +22,8 @@
 #if defined(USE_AURA) && !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/gfx/native_ui_types.h"
@@ -44,9 +44,7 @@ gfx::AcceleratedWidget GetAcceleratedWidgetForContext(
   }
 
   BrowserWindowInterface* const browser =
-      ProfileBrowserCollection::GetForProfile(
-          Profile::FromBrowserContext(context))
-          ->GetLastActiveBrowser();
+      chrome::FindLastActiveWithProfile(Profile::FromBrowserContext(context));
   if (!browser || !browser->GetWindow()) {
     return gfx::kNullAcceleratedWidget;
   }
