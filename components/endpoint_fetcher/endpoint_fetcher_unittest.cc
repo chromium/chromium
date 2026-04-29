@@ -229,7 +229,7 @@ TEST_F(EndpointFetcherTest, FetchOAuthError) {
       });
   endpoint_fetcher()->Fetch(endpoint_fetcher_callback().Get());
   identity_test_env().WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
-      GoogleServiceAuthError(GoogleServiceAuthError::SERVICE_UNAVAILABLE));
+      GoogleServiceAuthError::FromServiceUnavailable(""));
   run_loop.Run();
 }
 
