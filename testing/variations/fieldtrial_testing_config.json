@@ -1129,7 +1129,8 @@
     "AndroidMediaInsertion": [
         {
             "platforms": [
-                "android"
+                "android",
+                "android_webview"
             ],
             "experiments": [
                 {
