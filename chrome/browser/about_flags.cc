@@ -10283,6 +10283,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDataControlsDragEnforcementDescription, kOsAll,
      FEATURE_VALUE_TYPE(data_controls::kDataControlsDragEnforcement)},
 
+    {"data-controls-search-with",
+     flag_descriptions::kDataControlsSearchWithName,
+     flag_descriptions::kDataControlsSearchWithDescription, kOsAll,
+     FEATURE_VALUE_TYPE(data_controls::kDataControlsSearchWith)},
+
     {"data-sharing", flag_descriptions::kDataSharingName,
      flag_descriptions::kDataSharingDescription, kOsAll,
      FEATURE_WITH_PARAMS_VALUE_TYPE(data_sharing::features::kDataSharingFeature,

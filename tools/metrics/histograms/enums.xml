@@ -15689,6 +15689,7 @@ from previous Chrome versions.
   <int value="520982116" label="BuiltInModuleAll:enabled"/>
   <int value="521992655" label="LauncherPlayStoreSearch:disabled"/>
   <int value="522013077" label="LinkCapturingAutoDisplayIntentPicker:disabled"/>
+  <int value="522179748" label="DataControlsSearchWith:disabled"/>
   <int value="524557829" label="OmniboxSteadyStateTextColor:enabled"/>
   <int value="525286392" label="PageInfoAboutThisSiteNonMsbb:disabled"/>
   <int value="527010182"
@@ -18216,6 +18217,7 @@ from previous Chrome versions.
   <int value="1357967596" label="SettingsMultiColumn:disabled"/>
   <int value="1358271872"
       label="AutofillAndroidDesktopSuppressAccessoryOnEmpty:enabled"/>
+  <int value="1358309969" label="DataControlsSearchWith:enabled"/>
   <int value="1359703966" label="Prerender2InNewTab:disabled"/>
   <int value="1359972809" label="enable-gesture-deletion"/>
   <int value="1360774969"

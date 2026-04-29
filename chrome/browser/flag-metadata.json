@@ -2151,6 +2151,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "data-controls-search-with",
+    "owners": [ "anaercegovac@google.com", "cep-se@google.com" ],
+    "expiry_milestone": 154
+  },
+  {
     "name": "data-sharing",
     "owners": [ "haileywang@google.com", "chrome-tab-group-eng@google.com"],
     "expiry_milestone": 160

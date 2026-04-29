@@ -435,6 +435,12 @@ inline constexpr char kDataControlsDragEnforcementName[] =
 inline constexpr char kDataControlsDragEnforcementDescription[] =
     "Enables Data Controls drag-and-drop enforcement.";
 
+inline constexpr char kDataControlsSearchWithName[] =
+    "Data Controls enforcement for search context menu item";
+inline constexpr char kDataControlsSearchWithDescription[] =
+    "Enables the Enterprise Data Controls for restricting data exfiltration "
+    "with the \"Search with...\" context menu item.";
+
 inline constexpr char kDataSharingName[] = "Data Sharing";
 inline constexpr char kDataSharingDescription[] =
     "Enabled all Data Sharing related UI and features.";
