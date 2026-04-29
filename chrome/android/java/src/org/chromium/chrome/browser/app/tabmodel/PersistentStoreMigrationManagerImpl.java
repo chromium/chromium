@@ -28,7 +28,7 @@ public class PersistentStoreMigrationManagerImpl implements PersistentStoreMigra
      *
      * <p>This can be potentially destructive if users have any non-legacy authoritative stores.
      */
-    public static final int MANAGER_VERSION = 2;
+    public static final int MANAGER_VERSION = 3;
 
     private final String mCurrentAuthoritativeStoreKey;
     private final String mShadowWrittenStoreKey;

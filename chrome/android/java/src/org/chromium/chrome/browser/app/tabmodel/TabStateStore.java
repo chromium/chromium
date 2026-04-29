@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.app.tabmodel;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordHistogram;
@@ -513,7 +515,7 @@ public class TabStateStore implements TabPersistentStore {
     }
 
     private void onTabStateDirtinessChanged(Tab tab, @DirtinessState int dirtiness) {
-        if (dirtiness != DirtinessState.CLEAN && !tab.isDestroyed()) {
+        if (dirtiness != DirtinessState.CLEAN) {
             saveTab(tab);
         }
     }
@@ -531,7 +533,7 @@ public class TabStateStore implements TabPersistentStore {
     private void saveTab(Tab tab) {
         assertInitialized();
         assertOtrOperationSafe(tab.isOffTheRecord());
-        // If a tab is not in a closing or destroyed state we shouldn't save it. Tabs that are
+        // If a tab is in a closing or destroyed state we shouldn't save it. Tabs that are
         // not attached to a parent collection will not be restored at startup and shouldn't be
         // saved. If the tab becomes attached to a collection later it will be saved then.
         if (tab.isDestroyed() || tab.isClosing() || !tab.hasParentCollection()) return;
@@ -542,7 +544,8 @@ public class TabStateStore implements TabPersistentStore {
         assert !isOtrOperation || mHasCipherFactory;
     }
 
-    private void onTabRegistered(Tab tab) {
+    @VisibleForTesting
+    void onTabRegistered(Tab tab) {
         boolean isTabOtr = tab.isOffTheRecord();
         assertOtrOperationSafe(isTabOtr);
 
@@ -550,7 +553,7 @@ public class TabStateStore implements TabPersistentStore {
         assumeNonNull(attributes);
         // Save every clean tab on registration if we are not authoritative, we are catching up.
         if (attributes.addObserver(mAttributesObserver) != DirtinessState.CLEAN
-                || mIsAuthoritative) {
+                || !mIsAuthoritative) {
             saveTab(tab);
         }
         updateTabCountForModel(isTabOtr);
