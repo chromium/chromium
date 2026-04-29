@@ -69,6 +69,7 @@ class GlicHistogramTester {
 
  private:
   void CollectHistograms() const {
+    content::FetchHistogramsFromChildProcesses();
     metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
   }
 

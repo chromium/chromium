@@ -97,6 +97,24 @@ export enum LoadingStage {
 }
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:LoadingStage,//tools/metrics/histograms/metadata/glic/histograms.xml:LoadingStage)
 
+// Reasons for entering WebUiState.kError.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(PanelWebUiStateErrorReason)
+export enum WebUiErrorReason {
+  WEBVIEW_ERROR = 0,
+  LOAD_ERROR = 1,
+  COOKIE_SYNC_ERROR = 2,
+  TIMEOUT_NOTIFY_PANEL_WILL_OPEN = 3,
+  TIMEOUT_LOADING_CLIENT = 4,
+  TIMEOUT_WARMED = 5,
+  CLIENT_ERROR = 6,
+  CLOSE_DEBUG_VIEW = 7,
+  MAX_VALUE = CLOSE_DEBUG_VIEW,
+}
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:PanelWebUiStateErrorReason)
+
 export class GlicAppController implements WebviewDelegate, ApiHostEmbedder {
   loadingTimer: number|undefined;
 
@@ -242,7 +260,7 @@ export class GlicAppController implements WebviewDelegate, ApiHostEmbedder {
 
   webviewError(reason: string): void {
     console.warn(`webview exit. reason: ${reason}`);
-    this.setState(WebUiState.kError);
+    this.setErrorState(WebUiErrorReason.WEBVIEW_ERROR);
   }
 
   webviewPageCommit(type: PageType) {
@@ -265,7 +283,8 @@ export class GlicAppController implements WebviewDelegate, ApiHostEmbedder {
         }
         break;
       case 'loadError':
-        this.setState(WebUiState.kError);
+        this.setErrorState(WebUiErrorReason.LOAD_ERROR);
+
         break;
       default:
         assertNotReachedCase(type);
@@ -290,6 +309,16 @@ export class GlicAppController implements WebviewDelegate, ApiHostEmbedder {
     this.browserProxy.pageHandler.webUiStateChanged(this.state);
     this.browserProxy.pageHandler.enableDragResize(
         this.state === WebUiState.kReady && this.guestResizeEnabled);
+  }
+
+  private setErrorState(reason: WebUiErrorReason): void {
+    // Only record the histogram if not already in the error state.
+    if (this.state === WebUiState.kError) {
+      return;
+    }
+    chrome.histograms.recordEnumerationValue(
+        'Glic.PanelWebUiState.Error', reason, WebUiErrorReason.MAX_VALUE + 1);
+    this.setState(WebUiState.kError);
   }
 
   private stateDescriptor(): StateDescriptor|undefined {
@@ -495,7 +524,8 @@ export class GlicAppController implements WebviewDelegate, ApiHostEmbedder {
         break;
       case PrepareForClientResult.kErrorResyncingCookies:
         console.warn('prepareForClient in beginLoad() failed.');
-        this.setState(WebUiState.kError);
+        this.setErrorState(WebUiErrorReason.COOKIE_SYNC_ERROR);
+
         return;
       case PrepareForClientResult.kRequiresSignIn:
         this.setState(WebUiState.kSignIn);
@@ -543,14 +573,15 @@ export class GlicAppController implements WebviewDelegate, ApiHostEmbedder {
     this.loadingTimer = setTimeout(() => {
       if (this.webview?.waitingOnPanelWillOpen()) {
         console.warn('Exceeded timeout waiting for notifyPanelWillOpen');
-        this.setState(WebUiState.kError);
+        this.setErrorState(WebUiErrorReason.TIMEOUT_NOTIFY_PANEL_WILL_OPEN);
+
       } else if (
           this.webview?.getWebClientState().getCurrentValue() ===
           WebClientState.RESPONSIVE) {
         this.setState(WebUiState.kReady);
       } else {
         console.warn('Exceeded timeout waiting for client to load');
-        this.setState(WebUiState.kError);
+        this.setErrorState(WebUiErrorReason.TIMEOUT_LOADING_CLIENT);
       }
 
       if (this.state !== WebUiState.kReady) {
@@ -678,7 +709,7 @@ export class GlicAppController implements WebviewDelegate, ApiHostEmbedder {
     }
     this.loadingTimer = setTimeout(() => {
       if (this.state === WebUiState.kWarmed) {
-        this.setState(WebUiState.kError);
+        this.setErrorState(WebUiErrorReason.TIMEOUT_WARMED);
       }
     }, kMaxWaitTimeMs);
   }
@@ -706,7 +737,8 @@ export class GlicAppController implements WebviewDelegate, ApiHostEmbedder {
         break;
       case WebClientState.ERROR:
         this.guestResizeEnabled = false;
-        this.setState(WebUiState.kError);
+        this.setErrorState(WebUiErrorReason.CLIENT_ERROR);
+
         break;
       case WebClientState.UNINITIALIZED:
         break;
@@ -730,7 +762,8 @@ export class GlicAppController implements WebviewDelegate, ApiHostEmbedder {
     if (this.state === WebUiState.kReady &&
         $.guestPanel.classList.contains('debug')) {
       $.guestPanel.classList.toggle('debug', false);
-      this.setState(WebUiState.kError);
+      this.setErrorState(WebUiErrorReason.CLOSE_DEBUG_VIEW);
+
     } else if (this.state === WebUiState.kReady) {
       this.browserProxy.pageHandler.closePanel();
     } else {

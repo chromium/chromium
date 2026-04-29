@@ -2866,6 +2866,10 @@ class ApiTestFailsToInitialize extends ApiTestFixtureBase {
     await super.setUpClient();
   }
 
+  async testInitializeFails() {
+    await super.setUpClient();
+  }
+
   // Tests notifyPanelWillOpen() returning after the panel is closed and then
   // reopened.
   async testCloseAndOpenWhileOpening() {

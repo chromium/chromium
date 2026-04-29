@@ -952,6 +952,21 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/resources/glic/glic_app_controller.ts:LoadingStage) -->
 
+<!-- LINT.IfChange(PanelWebUiStateErrorReason) -->
+
+<enum name="PanelWebUiStateErrorReason">
+  <int value="0" label="Webview Error"/>
+  <int value="1" label="Load Error"/>
+  <int value="2" label="Cookie Sync Error"/>
+  <int value="3" label="Timeout Waiting For NotifyPanelWillOpen"/>
+  <int value="4" label="Timeout Loading Client"/>
+  <int value="5" label="Timeout Warmed"/>
+  <int value="6" label="Client Error"/>
+  <int value="7" label="Close Debug View"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/resources/glic/glic_app_controller.ts:PanelWebUiStateErrorReason) -->
+
 <enum name="PdfRequestStates">
   <int value="0" label="PDF main doc; PDF found"/>
   <int value="1" label="PDF main doc; PDF not found"/>

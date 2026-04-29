@@ -1869,6 +1869,16 @@ chromium-metrics-reviews@google.com.
   <summary>Record the panel webui state any time it changes.</summary>
 </histogram>
 
+<histogram name="Glic.PanelWebUiState.Error" enum="PanelWebUiStateErrorReason"
+    expires_after="2026-10-28">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Records the reason the WebUi entered the error state. Recorded just before
+    the WebUI enters the error state.
+  </summary>
+</histogram>
+
 <histogram name="Glic.PanelWebUiState.FinishState2" enum="WebUiState"
     expires_after="2026-07-26">
   <owner>dewittj@google.com</owner>

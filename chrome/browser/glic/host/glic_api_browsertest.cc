@@ -43,8 +43,10 @@
 #include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
+#include "chrome/browser/glic/host/auth_controller.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
+#include "chrome/browser/glic/host/glic_cookie_synchronizer.h"
 #include "chrome/browser/glic/host/glic_features.mojom.h"
 #include "chrome/browser/glic/host/glic_page_handler.h"
 #include "chrome/browser/glic/host/glic_region_capture_controller.h"
@@ -599,7 +601,7 @@ class GlicApiTestWithFastTimeout : public GlicApiTest {
 #if defined(SLOW_BINARY)
                 {features::kGlicMaxLoadingTimeMs.name, "6000"},
 #else
-                {features::kGlicMaxLoadingTimeMs.name, "3000"},
+                {features::kGlicMaxLoadingTimeMs.name, "2000"},
 #endif
             },
         }},
@@ -940,7 +942,43 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithFastTimeout, testInitializeTimesOut) {
       histogram_tester.GetBucketCount("Glic.Host.WebClientState.OnDestroy",
                                       3 /*WEB_CLIENT_NOT_INITIALIZED*/),
       0);
+  histogram_tester.ExpectTotalCount("Glic.PanelWebUiState.Error", 1);
+  histogram_tester.ExpectBucketCount("Glic.PanelWebUiState.Error",
+                                     5 /*TIMEOUT_WARMED*/, 1);
 #endif
+}
+
+IN_PROC_BROWSER_TEST_P(GlicApiTest, testInitializeFails) {
+  GlicHistogramTester histogram_tester;
+  RunTestSequence(OpenGlic(GlicInstrumentMode::kNone));
+  WebUIStateListener listener(GetHost());
+  ExecuteJsTest({
+      .params = base::Value(base::DictValue().Set("failWith", "error")),
+  });
+  listener.WaitForWebUiState(mojom::WebUiState::kError);
+  EXPECT_GT(histogram_tester.GetBucketCount("Glic.PanelWebUiState.Error",
+                                            6 /*CLIENT_ERROR*/),
+            0);
+}
+
+IN_PROC_BROWSER_TEST_P(GlicApiTest, testCookieSyncFails) {
+  GlicHistogramTester histogram_tester;
+  glic_test_service().SetResultForFutureCookieSync(false);
+  GlicInstanceTracker instance_tracker(browser()->profile());
+
+  GetService()->ToggleUI(/*bwi=*/browser(), /*prevent_close=*/false,
+                         /*source=*/mojom::InvocationSource::kOsButton);
+
+  ASSERT_TRUE(instance_tracker.WaitForShow());
+
+  Host* host = instance_tracker.GetHost();
+  ASSERT_TRUE(host);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return host->GetPrimaryWebUiState() == mojom::WebUiState::kError;
+  }));
+
+  histogram_tester.ExpectBucketCount("Glic.PanelWebUiState.Error",
+                                     2 /*COOKIE_SYNC_ERROR*/, 1);
 }
 
 // Connect the client, and check that the special request header is sent.
