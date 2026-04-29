@@ -85,6 +85,7 @@ if (current_toolchain == default_toolchain) {
       "dogfood.icon",
       "edit.icon",
       "edit_chrome_refresh.icon",
+      "edit_square.icon",
       "email.icon",
       "email_outline.icon",
       "error.icon",

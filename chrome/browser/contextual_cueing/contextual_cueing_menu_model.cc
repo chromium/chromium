@@ -45,11 +45,10 @@ ContextualCueingMenuModel::ContextualCueingMenuModel(
       kContextualCueingDismissCommand, IDS_CONTEXTUAL_CUEING_MENU_DISMISS,
       ui::ImageModel::FromVectorIcon(vector_icons::kCloseIcon,
                                      ui::kColorMenuIcon, 16));
-  // TODO: b/507138035 - Change icon to correct one.
   AddItemWithStringIdAndIcon(
       kContextualCueingEditPromptCommand,
       IDS_CONTEXTUAL_CUEING_MENU_EDIT_PROMPT,
-      ui::ImageModel::FromVectorIcon(vector_icons::kEditIcon,
+      ui::ImageModel::FromVectorIcon(vector_icons::kEditSquareIcon,
                                      ui::kColorMenuIcon, 16));
   AddSeparator(ui::NORMAL_SEPARATOR);
   AddItemWithStringIdAndIcon(
