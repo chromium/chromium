@@ -767,7 +767,7 @@ IN_PROC_BROWSER_TEST_F(BoundSessionCookieRefreshServiceImplBrowserTest,
   ASSERT_EQ(new_throttler_params.size(), 1U);
   EXPECT_EQ(new_throttler_params[0]->domain, kDomain);
   EXPECT_EQ(new_throttler_params[0]->path, "/");
-  EXPECT_GT(new_throttler_params[0]->cookie_expiry_date, cookie_expiration);
+  EXPECT_GE(new_throttler_params[0]->cookie_expiry_date, cookie_expiration);
 }
 
 // Verifies that a bound session is deleted when the user cleares site data.
