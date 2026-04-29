@@ -127,39 +127,6 @@ bool HasRecordedEventForKeyLessThanDelay(NSString* key, base::TimeDelta delay) {
   return base::Time::Now() - time < delay;
 }
 
-// Returns the number of time the fullscreen default browser promo has been
-// displayed.
-NSInteger GenericPromoInteractionCount() {
-  NSNumber* number =
-      GetObjectFromStorageForKey<NSNumber>(kGenericPromoInteractionCount);
-  return number.integerValue;
-}
-
-// Returns the number of time the tailored default browser promo has been
-// displayed.
-NSInteger TailoredPromoInteractionCount() {
-  NSNumber* number =
-      GetObjectFromStorageForKey<NSNumber>(kTailoredPromoInteractionCount);
-  return number.integerValue;
-}
-
-// Returns number of days since user last interacted with one of the promos.
-int NumDaysSincePromoInteraction() {
-  NSDate* timestamp = GetObjectFromStorageForKey<NSDate>(
-      kLastTimeUserInteractedWithFullscreenPromo);
-
-  if (timestamp == nil) {
-    return 0;
-  }
-
-  int days = (base::Time::Now() - base::Time::FromNSDate(timestamp)).InDays();
-  if (days < 0) {
-    return 0;
-  }
-
-  return days;
-}
-
 // Shows the default browser Picture-in-Picture.
 void showDefaultBrowserPictureInPictureInstructions(
     id<PictureInPictureCommands> handler) {
@@ -192,22 +159,9 @@ NSString* const kLastTimeUserInteractedWithNonModalPromo =
     @"lastTimeUserInteractedWithNonModalPromo";
 NSString* const kUserInteractedWithNonModalPromoCount =
     @"userInteractedWithNonModalPromoCount";
-NSString* const kLastTimeUserInteractedWithFullscreenPromo =
-    @"lastTimeUserInteractedWithFullscreenPromo";
 
-NSString* const kUserHasInteractedWithFullscreenPromo =
-    @"userHasInteractedWithFullscreenPromo";
-NSString* const kUserHasInteractedWithTailoredFullscreenPromo =
-    @"userHasInteractedWithTailoredFullscreenPromo";
-NSString* const kUserHasInteractedWithFirstRunPromo =
-    @"userHasInteractedWithFirstRunPromo";
-NSString* const kDisplayedFullscreenPromoCount = @"displayedPromoCount";
-NSString* const kGenericPromoInteractionCount = @"genericPromoInteractionCount";
-NSString* const kTailoredPromoInteractionCount =
-    @"tailoredPromoInteractionCount";
 constexpr base::TimeDelta kBlueDotPromoDuration = base::Days(15);
 constexpr base::TimeDelta kBlueDotPromoReoccurrancePeriod = base::Days(360);
-const int kDefaultBrowserSlidingWindowDays = 180;
 
 // Migration to FET keys.
 NSString* const kNonModalPromoMigrationDone = @"kNonModalPromoMigrationDone";
@@ -289,64 +243,10 @@ bool ShouldTriggerDefaultBrowserHighlightFeature(
   return false;
 }
 
-bool HasUserInteractedWithFullscreenPromoBefore() {
-    // When the total promo count is 1 it means that user has seen only the FRE
-    // promo. The cooldown from FRE will be taken care of in
-    // ```ComputeCooldown```. Here we only need to check the timestamp of the
-    // last promo if users seen more than FRE.
-    return DisplayedFullscreenPromoCount() > 1 &&
-           HasRecordedEventForKeyLessThanDelay(
-               kLastTimeUserInteractedWithFullscreenPromo,
-               base::Days(kDefaultBrowserSlidingWindowDays));
-}
-
-bool HasUserInteractedWithTailoredFullscreenPromoBefore() {
-  NSNumber* number = GetObjectFromStorageForKey<NSNumber>(
-      kUserHasInteractedWithTailoredFullscreenPromo);
-  return number.boolValue;
-}
-
 NSInteger UserInteractionWithNonModalPromoCount() {
   NSNumber* number = GetObjectFromStorageForKey<NSNumber>(
       kUserInteractedWithNonModalPromoCount);
   return number.integerValue;
-}
-
-NSInteger DisplayedFullscreenPromoCount() {
-  NSNumber* number =
-      GetObjectFromStorageForKey<NSNumber>(kDisplayedFullscreenPromoCount);
-  return number.integerValue;
-}
-
-void LogFullscreenDefaultBrowserPromoDisplayed() {
-  const NSInteger displayed_promo_count = DisplayedFullscreenPromoCount();
-  NSDictionary<NSString*, NSObject*>* update = @{
-    kDisplayedFullscreenPromoCount : @(displayed_promo_count + 1),
-  };
-
-  UpdateStorageWithDictionary(update);
-}
-
-void LogUserInteractionWithFullscreenPromo() {
-  const NSInteger generic_promo_interaction_count =
-      GenericPromoInteractionCount();
-  NSDictionary<NSString*, NSObject*>* update = @{
-    kUserHasInteractedWithFullscreenPromo : @YES,
-    kLastTimeUserInteractedWithFullscreenPromo : [NSDate date],
-    kGenericPromoInteractionCount : @(generic_promo_interaction_count + 1),
-  };
-
-  UpdateStorageWithDictionary(update);
-}
-
-void LogUserInteractionWithTailoredFullscreenPromo() {
-  const NSInteger tailored_promo_interaction_count =
-      TailoredPromoInteractionCount();
-  UpdateStorageWithDictionary(@{
-    kUserHasInteractedWithTailoredFullscreenPromo : @YES,
-    kLastTimeUserInteractedWithFullscreenPromo : [NSDate date],
-    kTailoredPromoInteractionCount : @(tailored_promo_interaction_count + 1),
-  });
 }
 
 void LogUserInteractionWithNonModalPromo(
@@ -355,15 +255,6 @@ void LogUserInteractionWithNonModalPromo(
     kLastTimeUserInteractedWithNonModalPromo : [NSDate date],
     kUserInteractedWithNonModalPromoCount :
         @(currentNonModalPromoInteractionsCount + 1),
-  });
-}
-
-void LogUserInteractionWithFirstRunPromo() {
-  const NSInteger displayed_promo_count = DisplayedFullscreenPromoCount();
-  UpdateStorageWithDictionary(@{
-    kUserHasInteractedWithFirstRunPromo : @YES,
-    kLastTimeUserInteractedWithFullscreenPromo : [NSDate date],
-    kDisplayedFullscreenPromoCount : @(displayed_promo_count + 1),
   });
 }
 
@@ -399,15 +290,8 @@ const NSArray<NSString*>* DefaultBrowserUtilsLegacyKeysForTesting() {
   NSArray<NSString*>* const keysForTesting = @[
     // clang-format off
     kLastHTTPURLOpenTime,
-    kLastTimeUserInteractedWithFullscreenPromo,
     kLastTimeUserInteractedWithNonModalPromo,
-    kUserHasInteractedWithFullscreenPromo,
-    kUserHasInteractedWithTailoredFullscreenPromo,
-    kUserHasInteractedWithFirstRunPromo,
     kUserInteractedWithNonModalPromoCount,
-    kDisplayedFullscreenPromoCount,
-    kTailoredPromoInteractionCount,
-    kGenericPromoInteractionCount,
     // clang-format on
   ];
 
@@ -471,18 +355,6 @@ const std::string GetFeatureEventNameForPromoReason(
     case NonModalDefaultBrowserPromoReason::PromoReasonNone:
       NOTREACHED();
   }
-}
-
-void RecordPromoDisplayStatsToUMA() {
-  base::UmaHistogramCounts1000(
-      "IOS.DefaultBrowserPromo.DaysSinceLastPromoInteraction",
-      NumDaysSincePromoInteraction());
-  base::UmaHistogramCounts100(
-      "IOS.DefaultBrowserPromo.GenericPromoDisplayCount",
-      GenericPromoInteractionCount());
-  base::UmaHistogramCounts100(
-      "IOS.DefaultBrowserPromo.TailoredPromoDisplayCount",
-      TailoredPromoInteractionCount());
 }
 
 // Migration to FET

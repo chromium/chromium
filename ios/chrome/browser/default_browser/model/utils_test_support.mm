@@ -29,26 +29,6 @@ void SetValuesInStorage(NSDictionary<NSString*, NSObject*>* dict) {
   [defaults setObject:dict forKey:kDefaultBrowserUtilsKey];
 }
 
-void SimulateUserInteractionWithPromos(const base::TimeDelta& timeAgo,
-                                       BOOL interactedWithFRE,
-                                       int genericCount,
-                                       int tailoredCount,
-                                       int totalCount) {
-  NSDictionary<NSString*, NSObject*>* values = @{
-    kUserHasInteractedWithFirstRunPromo :
-        [NSNumber numberWithBool:interactedWithFRE],
-    kUserHasInteractedWithFullscreenPromo : genericCount > 0 ? @YES : @NO,
-    kUserHasInteractedWithTailoredFullscreenPromo : tailoredCount > 0 ? @YES
-                                                                      : @NO,
-    kLastTimeUserInteractedWithFullscreenPromo : (base::Time::Now() - timeAgo)
-        .ToNSDate(),
-    kGenericPromoInteractionCount : [NSNumber numberWithInt:genericCount],
-    kTailoredPromoInteractionCount : [NSNumber numberWithInt:tailoredCount],
-    kDisplayedFullscreenPromoCount : [NSNumber numberWithInt:totalCount]
-  };
-  SetValuesInStorage(values);
-}
-
 void SimulateUserInteractionWithNonModalPromo(base::TimeDelta time_ago,
                                               int interaction_count) {
   NSDictionary<NSString*, NSObject*>* values = @{

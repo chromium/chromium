@@ -76,26 +76,15 @@ TEST_F(BaseDefaultBrowserPromoViewProviderTest, TestRecordMetricsOnDisplay) {
   base::UserActionTester user_action_tester;
   base::HistogramTester histogram_tester;
 
-  EXPECT_EQ(0, DisplayedFullscreenPromoCount());
-
   // Notify the view provider that promo was displayed.
   [test_provider_ promoWasDisplayed];
 
   // Check that all expected UMA histograms are recorded.
-  histogram_tester.ExpectTotalCount(
-      "IOS.DefaultBrowserPromo.DaysSinceLastPromoInteraction", 1);
-  histogram_tester.ExpectTotalCount(
-      "IOS.DefaultBrowserPromo.GenericPromoDisplayCount", 1);
-  histogram_tester.ExpectTotalCount(
-      "IOS.DefaultBrowserPromo.TailoredPromoDisplayCount", 1);
   histogram_tester.ExpectTotalCount("IOS.DefaultBrowserPromo.Shown", 1);
   histogram_tester.ExpectBucketCount("IOS.DefaultBrowserPromo.Shown", 3, 1);
 
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "IOS.DefaultBrowserPromo.TailoredFullscreen.Appear"));
-
-  // Check that user defaults are updated.
-  EXPECT_EQ(1, DisplayedFullscreenPromoCount());
 }
 
 // Tests that all expected metrics and logs are recorded on primary action.
@@ -103,8 +92,6 @@ TEST_F(BaseDefaultBrowserPromoViewProviderTest,
        TestRecordMetricsOnPrimaryAction) {
   base::UserActionTester user_action_tester;
   base::HistogramTester histogram_tester;
-
-  EXPECT_FALSE(HasUserInteractedWithTailoredFullscreenPromoBefore());
 
   // Notify the view provider that primary button was tapped.
   [test_provider_ standardPromoPrimaryAction];
@@ -117,9 +104,6 @@ TEST_F(BaseDefaultBrowserPromoViewProviderTest,
 
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "IOS.DefaultBrowserPromo.TailoredFullscreen.Accepted"));
-
-  // Check that user defaults are updated.
-  EXPECT_TRUE(HasUserInteractedWithTailoredFullscreenPromoBefore());
 }
 
 // Tests that all expected metrics and logs are recorded on secondary action.
@@ -127,8 +111,6 @@ TEST_F(BaseDefaultBrowserPromoViewProviderTest,
        TestRecordMetricsOnSecondaryAction) {
   base::UserActionTester user_action_tester;
   base::HistogramTester histogram_tester;
-
-  EXPECT_FALSE(HasUserInteractedWithTailoredFullscreenPromoBefore());
 
   // Notify the view provider that secondary button was tapped.
   [test_provider_ standardPromoSecondaryAction];
@@ -141,16 +123,11 @@ TEST_F(BaseDefaultBrowserPromoViewProviderTest,
 
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "IOS.DefaultBrowserPromo.TailoredFullscreen.Cancel"));
-
-  // Check that user defaults are updated.
-  EXPECT_TRUE(HasUserInteractedWithTailoredFullscreenPromoBefore());
 }
 
 // Tests that all expected metrics and logs are recorded on learn more.
 TEST_F(BaseDefaultBrowserPromoViewProviderTest, TestRecordMetricsOnLearnMore) {
   base::UserActionTester user_action_tester;
-
-  EXPECT_FALSE(HasUserInteractedWithTailoredFullscreenPromoBefore());
 
   // Notify the view provider that learn more was tapped.
   UIViewController* view_controller =
@@ -169,17 +146,12 @@ TEST_F(BaseDefaultBrowserPromoViewProviderTest, TestRecordMetricsOnLearnMore) {
   EXPECT_EQ(1,
             user_action_tester.GetActionCount(
                 "IOS.DefaultBrowserPromo.TailoredFullscreen.MoreInfoTapped"));
-
-  // Check that user defaults are updated.
-  EXPECT_TRUE(HasUserInteractedWithTailoredFullscreenPromoBefore());
 }
 
 // Tests that all expected metrics and logs are recorded on dismiss.
 TEST_F(BaseDefaultBrowserPromoViewProviderTest, TestRecordMetricsOnDismiss) {
   base::UserActionTester user_action_tester;
   base::HistogramTester histogram_tester;
-
-  EXPECT_FALSE(HasUserInteractedWithTailoredFullscreenPromoBefore());
 
   // Notify the view provider that promo was dismissed.
   [test_provider_ standardPromoDismissSwipe];
@@ -191,7 +163,4 @@ TEST_F(BaseDefaultBrowserPromoViewProviderTest, TestRecordMetricsOnDismiss) {
       "IOS.DefaultBrowserFullscreenTailoredPromoAllTabs", 3, 1);
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "IOS.DefaultBrowserPromo.TailoredFullscreen.Dismiss"));
-
-  // Check that user defaults are updated.
-  EXPECT_TRUE(HasUserInteractedWithTailoredFullscreenPromoBefore());
 }

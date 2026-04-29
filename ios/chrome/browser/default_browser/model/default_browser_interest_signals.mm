@@ -126,11 +126,6 @@ void NotifyOmniboxTextCopyPasteAndNavigate(
 }
 
 void NotifyDefaultBrowserFREPromoShown(feature_engagement::Tracker* tracker) {
-  // Continue logging to UserDefaults for non-modal promo.
-  // TODO(crbug.com/315329355): Remove once non-modal promos are migrated to
-  // FET.
-  LogUserInteractionWithFirstRunPromo();
-
   if (!tracker) {
     return;
   }

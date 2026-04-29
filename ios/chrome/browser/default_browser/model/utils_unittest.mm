@@ -24,43 +24,16 @@
 
 namespace {
 
-// More than 14 days.
-constexpr base::TimeDelta kMoreThan14Days = base::Days(14) + base::Minutes(1);
-
-// More than 6 hours.
-constexpr base::TimeDelta kMoreThan6Hours = base::Hours(6) + base::Minutes(1);
-
 // About 5 months.
 constexpr base::TimeDelta k5Months = base::Days(5 * 365 / 12);
 
 // About 1 year.
 constexpr base::TimeDelta kMoreThan1Year = base::Days(365) + base::Days(1);
 
-// About 2 years.
-constexpr base::TimeDelta k2Years = base::Days(2 * 365);
-
-// About 5 years.
-constexpr base::TimeDelta k5Years = base::Days(5 * 365);
-
 // TODO(crbug.com/41496010): We should reuse the ones from utils directly to
 // avoid manual errors. Test key for recording the last time a http link
 // was opened via Chrome, which indicates that it's set as default browser.
 NSString* const kLastHTTPURLOpenTime = @"lastHTTPURLOpenTime";
-
-// Test key in storage for flagging default browser promo interaction.
-NSString* const kUserHasInteractedWithFullscreenPromo =
-    @"userHasInteractedWithFullscreenPromo";
-
-// Test key in storage for the timestamp of last default browser promo
-// interaction.
-NSString* const kLastTimeUserInteractedWithFullscreenPromo =
-    @"lastTimeUserInteractedWithFullscreenPromo";
-
-// Test key in storage for counting past default browser promo interactions.
-NSString* const kGenericPromoInteractionCount = @"genericPromoInteractionCount";
-
-// Test Key in storage for counting all past default browser promo displays.
-NSString* const kDisplayedFullscreenPromoCount = @"displayedPromoCount";
 
 class DefaultBrowserUtilsTest : public PlatformTest {
  protected:
@@ -85,20 +58,6 @@ class DefaultBrowserUtilsTest : public PlatformTest {
   std::unique_ptr<TestingPrefServiceSimple> local_state_;
 };
 
-// Overwrite local storage with the provided interaction information.
-void SimulateUserInteractionWithFullscreenPromo(const base::TimeDelta& timeAgo,
-                                                int count,
-                                                int totalCount) {
-  NSDictionary<NSString*, NSObject*>* values = @{
-    kUserHasInteractedWithFullscreenPromo : @YES,
-    kLastTimeUserInteractedWithFullscreenPromo : (base::Time::Now() - timeAgo)
-        .ToNSDate(),
-    kGenericPromoInteractionCount : [NSNumber numberWithInt:count],
-    kDisplayedFullscreenPromoCount : [NSNumber numberWithInt:totalCount]
-  };
-  SetValuesInStorage(values);
-}
-
 // Tests logging user interactions with a non-modal promo multiple times with
 // the same current interactions count doesn't over-increment the value.
 TEST_F(DefaultBrowserUtilsTest,
@@ -111,71 +70,6 @@ TEST_F(DefaultBrowserUtilsTest,
 
   LogUserInteractionWithNonModalPromo(2);
   EXPECT_EQ(UserInteractionWithNonModalPromoCount(), 3);
-}
-
-// Tests no 2 tailored promos are not shown.
-TEST_F(DefaultBrowserUtilsTest, TailoredPromoDoesNotAppearTwoTimes) {
-  LogUserInteractionWithTailoredFullscreenPromo();
-  EXPECT_TRUE(HasUserInteractedWithTailoredFullscreenPromoBefore());
-}
-
-// Tests that past interactions with the default browser promo are correctly
-// detected.
-TEST_F(DefaultBrowserUtilsTest,
-       HasUserInteractedWithFullscreenPromoBeforeTest) {
-  // Test when there are no interaction recorded yet.
-  EXPECT_FALSE(HasUserInteractedWithFullscreenPromoBefore());
-
-  // Test that logging first run doesn't affect it.
-  LogUserInteractionWithFirstRunPromo();
-  EXPECT_FALSE(HasUserInteractedWithFullscreenPromoBefore());
-
-  // Test with multiple interactions.
-  SimulateUserInteractionWithFullscreenPromo(kMoreThan6Hours, 1, 2);
-  EXPECT_TRUE(HasUserInteractedWithFullscreenPromoBefore());
-  SimulateUserInteractionWithFullscreenPromo(kMoreThan14Days, 2, 3);
-  EXPECT_TRUE(HasUserInteractedWithFullscreenPromoBefore());
-
-  // Test with a single, more distant interaction (but still within the sliding
-  // window limit).
-  ClearDefaultBrowserPromoData();
-  EXPECT_FALSE(HasUserInteractedWithFullscreenPromoBefore());
-  SimulateUserInteractionWithFullscreenPromo(k5Months, 1, 2);
-  EXPECT_TRUE(HasUserInteractedWithFullscreenPromoBefore());
-
-  // Test with a single interaction that's outside the sliding window limit.
-  ClearDefaultBrowserPromoData();
-  EXPECT_FALSE(HasUserInteractedWithFullscreenPromoBefore());
-  SimulateUserInteractionWithFullscreenPromo(k2Years, 1, 2);
-  EXPECT_FALSE(HasUserInteractedWithFullscreenPromoBefore());
-
-  // Test with multiple interactions, some within and some outside the sliding
-  // window limit.
-  ClearDefaultBrowserPromoData();
-  EXPECT_FALSE(HasUserInteractedWithFullscreenPromoBefore());
-  SimulateUserInteractionWithFullscreenPromo(k5Years, 1, 2);
-  EXPECT_FALSE(HasUserInteractedWithFullscreenPromoBefore());
-  SimulateUserInteractionWithFullscreenPromo(k2Years, 2, 3);
-  EXPECT_FALSE(HasUserInteractedWithFullscreenPromoBefore());
-  SimulateUserInteractionWithFullscreenPromo(k5Months, 3, 4);
-  EXPECT_TRUE(HasUserInteractedWithFullscreenPromoBefore());
-  SimulateUserInteractionWithFullscreenPromo(kMoreThan14Days, 4, 5);
-  EXPECT_TRUE(HasUserInteractedWithFullscreenPromoBefore());
-}
-
-// Tests that cooldown from FRE is correct.
-TEST_F(DefaultBrowserUtilsTest, CooldownFromFRETest) {
-  // Test when there are no interaction recorded yet.
-  EXPECT_FALSE(HasUserInteractedWithFullscreenPromoBefore());
-
-  // Test that logging first run doesn't affect it.
-  LogUserInteractionWithFirstRunPromo();
-  EXPECT_FALSE(HasUserInteractedWithFullscreenPromoBefore());
-
-  // Test that logging a generic promo interaction will affect it.
-  LogUserInteractionWithFullscreenPromo();
-  LogFullscreenDefaultBrowserPromoDisplayed();
-  EXPECT_TRUE(HasUserInteractedWithFullscreenPromoBefore());
 }
 
 // Test IsChromeLikelyDefaultBrowser in multiple senarios.

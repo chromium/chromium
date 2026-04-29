@@ -1173,4 +1173,13 @@ void MigrateObsoleteUserDefault() {
   [defaults removeObjectForKey:@"lastSignificantUserEventMadeForIOS"];
   [defaults removeObjectForKey:@"lastSignificantUserEventAllTabs"];
   [defaults removeObjectForKey:@"lastSignificantUserEventStaySafe"];
+
+  // Added 04/2026
+  [defaults removeObjectForKey:@"displayedPromoCount"];
+  [defaults removeObjectForKey:@"genericPromoInteractionCount"];
+  [defaults removeObjectForKey:@"tailoredPromoInteractionCount"];
+  [defaults removeObjectForKey:@"userHasInteractedWithFullscreenPromo"];
+  [defaults removeObjectForKey:@"userHasInteractedWithTailoredFullscreenPromo"];
+  [defaults removeObjectForKey:@"userHasInteractedWithFirstRunPromo"];
+  [defaults removeObjectForKey:@"lastTimeUserInteractedWithFullscreenPromo"];
 }

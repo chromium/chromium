@@ -100,36 +100,6 @@ extern NSString* const kLastTimeUserInteractedWithNonModalPromo;
 // user has interacted with a non-modal promo.
 extern NSString* const kUserInteractedWithNonModalPromoCount;
 
-// Key in storage containing an NSDate indicating the last time a user
-// interacted with ANY full screen promo. The string value is kept from when the
-// promos first launched to avoid changing the behavior for users that have
-// already seen the promo.
-extern NSString* const kLastTimeUserInteractedWithFullscreenPromo;
-
-// Key in storage containing a bool indicating if the user has
-// previously interacted with a regular fullscreen promo.
-extern NSString* const kUserHasInteractedWithFullscreenPromo;
-
-// Key in storage containing a bool indicating if the user has
-// previously interacted with a tailored fullscreen promo.
-extern NSString* const kUserHasInteractedWithTailoredFullscreenPromo;
-
-// Key in storage containing a bool indicating if the user has
-// previously interacted with first run promo.
-extern NSString* const kUserHasInteractedWithFirstRunPromo;
-
-// Key in storage containing an int indicating the number of times a fullscreen
-// promo has been displayed.
-extern NSString* const kDisplayedFullscreenPromoCount;
-
-// Key in storage containing an int indicating the number of times a generic
-// promo has been displayed.
-extern NSString* const kGenericPromoInteractionCount;
-
-// Key in storage containing an int indicating the number of times a tailored
-// promo has been displayed.
-extern NSString* const kTailoredPromoInteractionCount;
-
 // Specifies how long blue dot occurrence should last.
 extern base::TimeDelta const kBlueDotPromoDuration;
 
@@ -159,39 +129,15 @@ void RecordDefaultBrowserBlueDotFirstDisplay();
 bool ShouldTriggerDefaultBrowserHighlightFeature(
     feature_engagement::Tracker* tracker);
 
-// Returns true if the user has interacted with the Fullscreen Promo previously.
-// Returns false otherwise.
-bool HasUserInteractedWithFullscreenPromoBefore();
-
-// Returns true if the user has interacted with a tailored Fullscreen Promo
-// previously. Returns false otherwise.
-bool HasUserInteractedWithTailoredFullscreenPromoBefore();
-
 // Returns the number of times the user has seen and interacted with the
 // non-modal promo before.
 NSInteger UserInteractionWithNonModalPromoCount();
-
-// Returns the number of times a fullscreen default browser promo has been
-// displayed.
-NSInteger DisplayedFullscreenPromoCount();
-
-// Logs that one of the fullscreen default browser promos was displayed.
-void LogFullscreenDefaultBrowserPromoDisplayed();
-
-// Logs that the user has interacted with the Fullscreen Promo.
-void LogUserInteractionWithFullscreenPromo();
-
-// Logs that the user has interacted with a Tailored Fullscreen Promo.
-void LogUserInteractionWithTailoredFullscreenPromo();
 
 // Logs that the user has interacted with a non-modal promo. The expected
 // parameter value is the current count, because it will be incremented by 1 and
 // then saved to NSUserDefaults.
 void LogUserInteractionWithNonModalPromo(
     NSInteger currentNonModalPromoInteractionsCount);
-
-// Logs that the user has interacted with the first run promo.
-void LogUserInteractionWithFirstRunPromo();
 
 // Returns true if the last URL open is within the specified number of `days`
 // which would indicate Chrome is likely still the default browser. Returns
@@ -244,9 +190,6 @@ const base::Feature& GetFeatureForPromoReason(
 //
 const std::string GetFeatureEventNameForPromoReason(
     NonModalDefaultBrowserPromoReason promo_reason);
-
-// Records stats related to promo display to UMA histograms.
-void RecordPromoDisplayStatsToUMA();
 
 // Migration to FET.
 

@@ -21,13 +21,6 @@ void ResetStorageAndSetTimestampForKey(NSString* key, base::Time timestamp);
 // provided one.
 void SetValuesInStorage(NSDictionary<NSString*, NSObject*>* data);
 
-// Overwrite local storage with the provided interaction information.
-void SimulateUserInteractionWithPromos(const base::TimeDelta& timeAgo,
-                                       BOOL interactedWithFRE,
-                                       int genericCount,
-                                       int tailoredCount,
-                                       int totalCount);
-
 // Overwrite local storage for non-modal promo interaction.
 void SimulateUserInteractionWithNonModalPromo(base::TimeDelta time_ago,
                                               int interaction_count);

@@ -68,8 +68,6 @@ NSString* kDefaultBrowserPromoDefaultAppsDestinationVideo =
 }
 
 - (void)stop {
-  LogUserInteractionWithFullscreenPromo();
-
   if (_promoWasFromRemindMeLater && _tracker) {
     _tracker->Dismissed(
         feature_engagement::kIPHiOSPromoDefaultBrowserReminderFeature);
@@ -238,10 +236,6 @@ NSString* kDefaultBrowserPromoDefaultAppsDestinationVideo =
 
 // Records that a default browser promo has been shown.
 - (void)recordVideoDefaultBrowserPromoShown {
-  // Record the current state before updating the local storage.
-  RecordPromoDisplayStatsToUMA();
-
-  LogFullscreenDefaultBrowserPromoDisplayed();
   RecordAction(UserMetricsAction("IOS.DefaultBrowserVideoPromo.Appear"));
   base::UmaHistogramEnumeration("IOS.DefaultBrowserPromo.Shown",
                                 DefaultPromoTypeForUMA::kGeneral);
