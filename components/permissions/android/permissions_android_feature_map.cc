@@ -6,6 +6,7 @@
 
 #include "base/android/feature_map.h"
 #include "base/no_destructor.h"
+#include "base/time/time.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/permissions/features.h"
 #include "media/base/media_switches.h"
@@ -53,6 +54,10 @@ BASE_FEATURE(kAndroidCancelPermissionPromptOnTouchOutside,
 
 // Enables the loud version of the Clapper permission prompt.
 BASE_FEATURE(kPermissionsAndroidClapperLoud, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Timeout for the Clapper Loud permission prompt.
+const base::FeatureParam<base::TimeDelta> kClapperLoudTimeout{
+    &kPermissionsAndroidClapperLoud, "message_timeout", base::Seconds(10)};
 
 // Enables the quiet version of the Clapper permission prompt.
 BASE_FEATURE(kPermissionsAndroidClapperQuiet, base::FEATURE_ENABLED_BY_DEFAULT);

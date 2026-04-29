@@ -7,6 +7,7 @@
 #include <variant>
 
 #include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
 #include "chrome/browser/android/android_theme_resources.h"
 #include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/permissions/quiet_notification_permission_ui_config.h"
@@ -21,6 +22,7 @@
 #include "components/permissions/android/permission_prompt/permission_dialog.h"
 #include "components/permissions/android/permission_prompt/permission_dialog_controller.h"
 #include "components/permissions/android/permission_prompt/permission_prompt_android.h"
+#include "components/permissions/android/permissions_android_feature_map.h"
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/permission_util.h"
@@ -181,6 +183,9 @@ void PermissionBlockedMessageDelegate::InitializeLoudUI() {
       static_cast<int>(LoudUiSecondayMenuItems::kManage),
       /*resource_id=*/0,
       l10n_util::GetStringUTF16(IDS_NOTIFICATION_CTA_MESSAGE_UI));
+
+  message_->SetDuration(
+      permissions::kClapperLoudTimeout.Get().InMilliseconds());
 
   messages::MessageDispatcherBridge::Get()->EnqueueMessage(
       message_.get(), web_contents_, messages::MessageScopeType::NAVIGATION,
