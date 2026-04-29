@@ -110,29 +110,6 @@
 
 namespace {
 
-// Returns the model option required by the given model mode.
-ComposeboxModelOption ModelOptionForModelMode(omnibox::ModelMode model_mode) {
-  using enum ComposeboxModelOption;
-  switch (model_mode) {
-    case omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_AUTOROUTE:
-      return ComposeboxModelOption::kAuto;
-    case omnibox::ModelMode::MODEL_MODE_GEMINI_PRO:
-      return ComposeboxModelOption::kThinking;
-    case omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_NO_GEN_UI:
-      return ComposeboxModelOption::kThinkingNoGenUI;
-    case omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR:
-    case omnibox::ModelMode::MODEL_MODE_UNSPECIFIED:
-      return ComposeboxModelOption::kRegular;
-    default:
-      // `ModelMode` is an open enum and prohibits exhaustive switch statements.
-      // See https://protobuf.dev/programming-guides/enum/
-      //
-      // Dump without crashing if the received model is not interpreted iOS.
-      base::debug::DumpWithoutCrashing();
-      return ComposeboxModelOption::kRegular;
-  }
-}
-
 // Reads data from a file URL. Runs on a background thread.
 NSData* ReadDataFromURL(GURL url) {
   NSURL* ns_url = net::NSURLWithGURL(url);
@@ -370,7 +347,6 @@ std::vector<lens::MimeType> MimeTypesFromCollection(
     _persistTabContextAgent = persistTabContextAgent;
     _isIncognito = isIncognito;
     _modeHolder = modeHolder;
-    [_modeHolder addObserver:self];
     _previousMode = _modeHolder.mode;
     _templateURLService = templateURLService;
     _searchEngineObserver =
@@ -416,7 +392,6 @@ std::vector<lens::MimeType> MimeTypesFromCollection(
 - (void)disconnect {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   [self recordSessionEndMetrics];
-  [_modeHolder removeObserver:self];
   _modeHolder = nil;
   _faviconLoader = nullptr;
   _webStateDeferredExecutor = nil;
@@ -718,60 +693,6 @@ std::vector<lens::MimeType> MimeTypesFromCollection(
   }
   _omniboxFocused = focused;
   [self requestUIRefresh];
-}
-
-- (void)changeModeForInputState:
-    (const contextual_search::InputState&)inputState {
-  using enum ComposeboxMode;
-  switch (inputState.active_tool) {
-    case omnibox::ToolMode::TOOL_MODE_CANVAS:
-      _modeHolder.mode = ComposeboxMode::kCanvas;
-      return;
-    case omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH:
-      _modeHolder.mode = ComposeboxMode::kDeepSearch;
-      return;
-    case omnibox::ToolMode::TOOL_MODE_IMAGE_GEN:
-    case omnibox::ToolMode::TOOL_MODE_IMAGE_GEN_UPLOAD:
-      _modeHolder.mode = ComposeboxMode::kImageGeneration;
-      return;
-    case omnibox::ToolMode::TOOL_MODE_UNSPECIFIED:
-    default:
-      if (_modeHolder.mode == ComposeboxMode::kAIM ||
-          _modeHolder.isRegularSearch) {
-        return;
-      }
-      _modeHolder.mode = ComposeboxMode::kRegularSearch;
-  }
-}
-
-#pragma mark - ComposeboxModeObserver
-
-// Handles mode transitions, updates the model, applies mode-specific state,
-// and refreshes the UI.
-- (void)composeboxModeDidChange:(ComposeboxMode)mode {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-
-  if (_entrypoint == ComposeboxEntrypoint::kCobrowse &&
-      mode == ComposeboxMode::kRegularSearch) {
-    _modeHolder.mode = ComposeboxMode::kAIM;
-    // Return early as setting mode triggers a new call.
-    return;
-  }
-
-  BOOL transitionedToAIMode = mode != ComposeboxMode::kRegularSearch &&
-                              _previousMode == ComposeboxMode::kRegularSearch;
-
-  if (transitionedToAIMode) {
-    [self.metricsRecorder
-        recordTextEditedBeforeAiMode:(_userInputInProgress && _hasText)];
-  }
-  _previousMode = mode;
-
-  [self applyStateForMode:mode];
-
-  [self updateModelOnModeChange];
-  [self commitUIUpdates];
-  [self reloadSuggestions];
 }
 
 #pragma mark - TabPickerSelectionDelegate
@@ -1116,45 +1037,6 @@ std::vector<lens::MimeType> MimeTypesFromCollection(
 
 #pragma mark - Private
 
-// Applies state changes and resets specific to the newly selected mode.
-- (void)applyStateForMode:(ComposeboxMode)mode {
-  switch (mode) {
-    case ComposeboxMode::kRegularSearch:
-      if (_contextualSearchSession) {
-        _contextualSearchSession->ClearFiles();
-      }
-      [_items clearItems];
-      _imageUploadCount = 0;
-      [self setActiveTool:omnibox::TOOL_MODE_UNSPECIFIED];
-      break;
-    case ComposeboxMode::kAIM:
-      if (![_stateManager isEligibleToAIM]) {
-        _modeHolder.mode = ComposeboxMode::kRegularSearch;
-      }
-      [self setActiveTool:omnibox::TOOL_MODE_UNSPECIFIED];
-      break;
-    case ComposeboxMode::kImageGeneration:
-      if (![_stateManager canSelectTool:ComposeboxMode::kImageGeneration]) {
-        _modeHolder.mode = ComposeboxMode::kRegularSearch;
-      }
-      [self cleanAttachmentsForImageGeneration];
-      [self updateImageGenerationToolMode];
-      break;
-    case ComposeboxMode::kCanvas:
-      if (![_stateManager canSelectTool:ComposeboxMode::kCanvas]) {
-        _modeHolder.mode = ComposeboxMode::kRegularSearch;
-      }
-      [self setActiveTool:omnibox::TOOL_MODE_CANVAS];
-      break;
-    case ComposeboxMode::kDeepSearch:
-      if (![_stateManager canSelectTool:ComposeboxMode::kDeepSearch]) {
-        _modeHolder.mode = ComposeboxMode::kRegularSearch;
-      }
-      [self setActiveTool:omnibox::TOOL_MODE_DEEP_SEARCH];
-      break;
-  }
-}
-
 // Whether the current instance is associated with cobrowse.
 - (BOOL)isCobrowse {
   return _entrypoint == ComposeboxEntrypoint::kCobrowse;
@@ -1474,42 +1356,6 @@ std::vector<lens::MimeType> MimeTypesFromCollection(
   }
   [self.delegate
       reloadAutocompleteSuggestionsRestarting:shouldRestartAutocomplete];
-}
-
-// Cleans attachments when switching to image generation mode.
-// This method ensures that only one image attachment is kept, and all other
-// attachments (including other images, tabs, and files) are removed.
-- (void)cleanAttachmentsForImageGeneration {
-  NSMutableArray<ComposeboxInputItem*>* itemsToKeep = [NSMutableArray array];
-  ComposeboxInputItem* imageToKeep = nil;
-
-  // Find one image to keep.
-  for (ComposeboxInputItem* item in _items.containedItems) {
-    if (item.type == ComposeboxInputItemType::kComposeboxInputItemTypeImage &&
-        !imageToKeep) {
-      imageToKeep = item;
-      [itemsToKeep addObject:item];
-      break;
-    }
-  }
-
-  if (itemsToKeep.count == _items.count) {
-    // No items were removed.
-    return;
-  }
-
-  // Find items to remove from the backend.
-  for (ComposeboxInputItem* item in _items.containedItems) {
-    if (![itemsToKeep containsObject:item]) {
-      if (_contextualSearchSession) {
-        _contextualSearchSession->DeleteFile(item.serverToken);
-      }
-    }
-  }
-
-  [_items replaceWithItems:itemsToKeep];
-
-  [self notifyContextChanged];
 }
 
 // Handles the loaded preview `image` for the item with the given `identifier`.
@@ -1886,25 +1732,6 @@ std::vector<lens::MimeType> MimeTypesFromCollection(
                             [self attachedWebStateIDsInCurrentContext]];
 }
 
-// Reacts to a change in the model choice.
-- (void)updateModelOnModeChange {
-  using enum ComposeboxModelOption;
-
-  if (_modeHolder.isRegularSearch) {
-    [self setModelOption:kNone];
-    return;
-  }
-
-  BOOL applyDefaultSelection = _stateManager.activeModel == kNone;
-  if (applyDefaultSelection) {
-    BOOL defaultToAuto = [_stateManager canSelectModel:kAuto];
-    ComposeboxModelOption defaultOption = defaultToAuto
-                                              ? ComposeboxModelOption::kAuto
-                                              : ComposeboxModelOption::kRegular;
-    [self setModelOption:defaultOption];
-  }
-}
-
 - (void)handleFailedAttachment:(base::UnguessableToken)identifier {
   [self.delegate showSnackbarForItemUploadDidFail];
   ComposeboxInputItem* item = [_items itemForIdentifier:identifier];
@@ -2065,15 +1892,30 @@ std::vector<lens::MimeType> MimeTypesFromCollection(
 #pragma mark - ComposeboxInputStateManagerDelegate
 
 - (void)inputStateManager:(ComposeboxInputStateManager*)manager
-      didUpdateInputState:(const contextual_search::InputState&)inputState {
-  [self changeModeForInputState:inputState];
-  if (!_modeHolder.isRegularSearch) {
-    ComposeboxModelOption requiredModel =
-        ModelOptionForModelMode(inputState.active_model);
-    [self setModelOption:requiredModel];
+             didChangeMode:(ComposeboxMode)mode
+    invalidatedAttachments:(NSArray<ComposeboxInputItem*>*)invalidatedItems {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+
+  for (ComposeboxInputItem* item in invalidatedItems) {
+    if (_contextualSearchSession) {
+      _contextualSearchSession->DeleteFile(item.serverToken);
+    }
+    [_items removeItem:item];
   }
 
-  [self commitUIUpdates];
+  if (invalidatedItems.count > 0) {
+    [self notifyContextChanged];
+  }
+
+  BOOL transitionedToAIMode = mode != ComposeboxMode::kRegularSearch &&
+                              _previousMode == ComposeboxMode::kRegularSearch;
+
+  if (transitionedToAIMode) {
+    [self.metricsRecorder
+        recordTextEditedBeforeAiMode:(_userInputInProgress && _hasText)];
+  }
+  _previousMode = mode;
+  [self reloadSuggestions];
 }
 
 - (void)inputStateManagerDidUpdateUIState:

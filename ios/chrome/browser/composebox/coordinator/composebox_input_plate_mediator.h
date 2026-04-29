@@ -58,7 +58,6 @@ class ContextualSearchSessionHandle;
     : NSObject <ComposeboxOmniboxClientDelegate,
                 ComposeboxInputPlateMutator,
                 ComposeboxContextUploadObserver,
-                ComposeboxModeObserver,
                 TabPickerSelectionDelegate,
                 TextFieldViewContainingHeightDelegate,
                 ComposeboxInputStateManagerDelegate,

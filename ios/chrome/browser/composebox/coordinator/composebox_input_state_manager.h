@@ -51,9 +51,11 @@ class WebStateID;
 // Delegate protocol for ComposeboxInputStateManager.
 @protocol ComposeboxInputStateManagerDelegate <NSObject>
 
-// Called when the input state is updated.
+// Called when the mode changes with the list of attachments that are now
+// invalid.
 - (void)inputStateManager:(ComposeboxInputStateManager*)manager
-      didUpdateInputState:(const contextual_search::InputState&)inputState;
+             didChangeMode:(ComposeboxMode)mode
+    invalidatedAttachments:(NSArray<ComposeboxInputItem*>*)invalidatedItems;
 
 // Called when the UI input state has changed. Delegate can call
 // `computeUIInputStateWithFavicon` to get the new state.
