@@ -45,6 +45,9 @@ IdentityUrlLoaderThrottle::IdentityUrlLoaderThrottle(SetIdpStatusCallback cb)
 IdentityUrlLoaderThrottle::~IdentityUrlLoaderThrottle() = default;
 
 void IdentityUrlLoaderThrottle::DetachFromCurrentSequence() {
+  // This gets called when the load is moved to a different thread, so we need
+  // to post a task to the original thread to set the signin status.
+  // See https://crbug.com/40285364 and https://crbug.com/40244488.
   set_idp_status_cb_ = base::BindRepeating(
       [](scoped_refptr<base::SequencedTaskRunner> task_runner,
          SetIdpStatusCallback original_cb,
