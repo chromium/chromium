@@ -77,7 +77,8 @@ class MEDIA_EXPORT CrasInputStream : public AgcAudioStream<AudioInputStream>,
 
   // Reads one or more buffers of audio from the device, passes on to the
   // registered callback. Called from SamplesReady().
-  void ReadAudio(size_t frames, uint8_t* buffer, const timespec* latency_ts);
+  void ReadAudio(base::span<const int16_t> source_data,
+                 const timespec* latency_ts);
 
   // Deals with an error that occurred in the stream.  Called from
   // StreamError().

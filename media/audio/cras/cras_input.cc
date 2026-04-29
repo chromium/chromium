@@ -464,7 +464,18 @@ int CrasInputStream::SamplesReady(struct libcras_stream_cb_data* data) {
   libcras_stream_cb_data_get_latency(data, &latency);
   libcras_stream_cb_data_get_usr_arg(data, &usr_arg);
   CrasInputStream* me = static_cast<CrasInputStream*>(usr_arg);
-  me->ReadAudio(frames, buf, &latency);
+
+  // The frames should be equal to CRAS actually delivered.
+  CHECK_EQ(static_cast<size_t>(me->audio_bus_->frames()), frames);
+
+  const size_t sample_count =
+      static_cast<size_t>(me->params_.channels()) * frames;
+  // SAFETY: buffer is guaranteed to be at least as large as the number of
+  // frames to read.
+  auto source_data =
+      UNSAFE_BUFFERS(base::span(reinterpret_cast<int16_t*>(buf), sample_count));
+  me->ReadAudio(source_data, &latency);
+
   // Audio glitches are checked every callback.
   libcras_stream_cb_data_get_overrun_frames(data, &overrun_frames);
   libcras_stream_cb_data_get_dropped_samples_duration(
@@ -485,8 +496,7 @@ int CrasInputStream::StreamError(cras_client* client,
   return 0;
 }
 
-void CrasInputStream::ReadAudio(size_t frames,
-                                uint8_t* buffer,
+void CrasInputStream::ReadAudio(base::span<const int16_t> source_data,
                                 const timespec* latency_ts) {
   DCHECK(callback_);
 
@@ -503,8 +513,7 @@ void CrasInputStream::ReadAudio(size_t frames,
   // Now() to find the capture time.
   const base::TimeTicks capture_time = base::TimeTicks::Now() - delay;
 
-  audio_bus_->FromInterleaved<SignedInt16SampleTypeTraits>(
-      reinterpret_cast<int16_t*>(buffer), audio_bus_->frames());
+  audio_bus_->FromInterleaved<SignedInt16SampleTypeTraits>(source_data);
 
   peak_detector_.FindPeak(audio_bus_.get());
 
