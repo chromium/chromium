@@ -33,7 +33,7 @@ import type {Uuid} from 'chrome://resources/mojo/mojo/public/mojom/base/uuid.moj
 import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
-import type {ComposeboxPosition} from './contextual_tasks.mojom-webui.js';
+import type {ComposeboxPosition, InjectedInput} from './contextual_tasks.mojom-webui.js';
 import type {BrowserProxy} from './contextual_tasks_browser_proxy.js';
 import {BrowserProxyImpl} from './contextual_tasks_browser_proxy.js';
 import {PostMessageHandler} from './post_message_handler.js';
@@ -419,17 +419,9 @@ export class ContextualTasksAppElement extends CrLitElement {
         }
         this.isInBasicMode_ = false;
       }),
-      callbackRouter.injectInput.addListener(
-          (title, thumbnail, fileToken, supportsUnimodal) => {
-            this.composebox_?.injectInput(
-                title, 'chrome://image?url=' + encodeURIComponent(thumbnail),
-                fileToken, supportsUnimodal);
-          }),
-      callbackRouter.injectInputWithIcon.addListener(
-          (title, iconId, fileToken, supportsUnimodal) => {
-            this.composebox_?.injectInputWithIcon(
-                title, iconId, fileToken, supportsUnimodal);
-          }),
+      callbackRouter.injectInput.addListener(async (input: InjectedInput) => {
+        await this.composebox_?.injectInput(input);
+      }),
       callbackRouter.removeInjectedInput.addListener(fileToken => {
         this.composebox_?.deleteFile(fileToken);
       }),
