@@ -789,13 +789,6 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    &kTextInputClient,
                    "ipc_timeout",
                    base::Milliseconds(1500));
-
-BASE_FEATURE(kTextInputClientUseNestedLoop, base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE_PARAM(bool,
-                   kTextInputClientNestedLoopEventMask,
-                   &kTextInputClientUseNestedLoop,
-                   "enable_event_mask",
-                   true);
 #endif
 
 // Allows swipe left/right from touchpad change browser navigation.

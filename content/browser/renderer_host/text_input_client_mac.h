@@ -11,11 +11,9 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
-#include "base/run_loop.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_checker.h"
-#include "base/time/time.h"
 #include "base/types/token_type.h"
 #include "content/common/content_export.h"
 #include "ui/base/mojom/attributed_string.mojom-forward.h"
@@ -148,13 +146,12 @@ class CONTENT_EXPORT TextInputClientMac {
   TextInputClientMac();
   ~TextInputClientMac();
 
-  // Implementations of the public sync methods that take a WeakPtr and a copy
-  // of the argument, because EnterNestedLoop could invalidate pointers and
-  // references.
+  // Implementations of the public sync methods that take a WeakPtr, in case the
+  // the RenderFrameHost is deleted while waiting for the response.
   uint32_t GetCharacterIndexAtPoint(base::WeakPtr<RenderFrameHostImpl> rfhi,
-                                    gfx::Point point);
+                                    const gfx::Point& point);
   gfx::Rect GetFirstRectForRange(base::WeakPtr<RenderFrameHostImpl> rfhi,
-                                 gfx::Range range);
+                                 const gfx::Range& range);
 
   // The critical sections that the Condition guards are in Get*() methods.
   // These methods lock the internal condition for use before the asynchronous
@@ -168,10 +165,6 @@ class CONTENT_EXPORT TextInputClientMac {
   void AfterRequest() VALID_CONTEXT_REQUIRED(thread_checker_)
       UNLOCK_FUNCTION(lock_);
 
-  void EnterNestedLoop(base::TimeDelta timeout)
-      VALID_CONTEXT_REQUIRED(thread_checker_) EXCLUSIVE_LOCKS_REQUIRED(lock_);
-  void OnNestedLoopTimeout();
-
   THREAD_CHECKER(thread_checker_);
 
   std::optional<uint32_t> character_index_ GUARDED_BY(lock_);
@@ -179,11 +172,6 @@ class CONTENT_EXPORT TextInputClientMac {
   std::optional<RequestToken> current_request_ GUARDED_BY(lock_);
 
   base::Lock lock_;
-
-  // If kTextInputClientUseNestedLoop is enabled, sync functions are
-  // implemented with `nested_loop_`. Otherwise they're implemented with
-  // `condition_`.
-  std::optional<base::RunLoop> nested_loop_ GUARDED_BY(lock_);
   base::ConditionVariable condition_;
 
   std::unique_ptr<AsyncRequestDelegate> async_request_delegate_

@@ -247,9 +247,6 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kStrictHighRankProcessLRU);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kTextInputClient);
 CONTENT_EXPORT BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
                                           kTextInputClientIPCTimeout);
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kTextInputClientUseNestedLoop);
-CONTENT_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
-                                          kTextInputClientNestedLoopEventMask);
 #endif
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kTouchpadOverscrollHistoryNavigation);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kTrustedTypesFromLiteral);

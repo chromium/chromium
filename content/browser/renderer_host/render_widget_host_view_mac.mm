@@ -2186,9 +2186,9 @@ bool RenderWidgetHostViewMac::SyncGetFirstRectForRange(
   *success = true;
   if (!GetCachedFirstRectForCharacterRange(requested_range, rect,
                                            actual_range)) {
-    // GetFirstRectForRange() can enter a nested RunLoop that might clear the
-    // ScreenInfos list used by GetDeviceScaleFactor(), so cache the result
-    // first.
+    // Cache the result of GetDeviceScaleFactor() before calling
+    // GetFirstRectForRange() in case anything clear the ScreenInfos list while
+    // waiting for the result.
     const float device_scale_factor = GetDeviceScaleFactor();
 
     // https://crbug.com/121917

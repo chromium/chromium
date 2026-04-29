@@ -12,7 +12,6 @@
 #include <tuple>
 #include <utility>
 #include <variant>
-#include <vector>
 
 #include "base/containers/queue.h"
 #include "base/functional/bind.h"
@@ -68,13 +67,6 @@ enum class TimeoutParam {
 enum class FunctionToTest {
   kGetCharacterIndexAtPoint,
   kGetFirstRectForRange,
-};
-
-// State of the kTextInputClientUseNestedLoop feature.
-enum class NestedLoopFeatureState {
-  kDisabled,
-  kEnabledWithoutEventMask,
-  kEnabledWithEventMask,
 };
 
 // GetCharacterIndexAtPoint() returns uint32_t.
@@ -233,13 +225,18 @@ class FakeAsyncRequestDelegate final
       GUARDED_BY_CONTEXT(sequence_checker_);
 };
 
-class TextInputClientMacTestBase : public content::RenderViewHostTestHarness {
+// This test does not test the Blink side of the dictionary system (which
+// performs the actual data fetching), but rather this just tests that the
+// service's signaling system works.
+class TextInputClientMacTest : public content::RenderViewHostTestHarness,
+                               public ::testing::WithParamInterface<
+                                   std::tuple<FunctionToTest, TimeoutParam>> {
  public:
-  TextInputClientMacTestBase(TimeoutParam timeout_param,
-                             NestedLoopFeatureState feature_state)
-      : RenderViewHostTestHarness(BrowserTaskEnvironment::REAL_IO_THREAD) {
+  TextInputClientMacTest()
+      : RenderViewHostTestHarness(BrowserTaskEnvironment::REAL_IO_THREAD),
+        function_to_test_(std::get<0>(GetParam())) {
     base::TimeDelta ipc_timeout;
-    switch (timeout_param) {
+    switch (std::get<1>(GetParam())) {
       case TimeoutParam::kLongTimeout:
         ipc_timeout = TestTimeouts::action_max_timeout();
         break;
@@ -248,42 +245,19 @@ class TextInputClientMacTestBase : public content::RenderViewHostTestHarness {
         ipc_timeout = TestTimeouts::tiny_timeout() * 1.5;
         break;
     }
-
-    std::vector<base::test::FeatureRefAndParams> enabled_features;
-    std::vector<base::test::FeatureRef> disabled_features;
-    enabled_features.push_back(base::test::FeatureRefAndParams(
+    feature_list_.InitAndEnableFeatureWithParameters(
         features::kTextInputClient,
         {{"ipc_timeout",
-          absl::StrFormat("%dms", ipc_timeout.InMilliseconds())}}));
-    switch (feature_state) {
-      case NestedLoopFeatureState::kDisabled:
-        disabled_features.push_back(
-            base::test::FeatureRef(features::kTextInputClientUseNestedLoop));
-        break;
-      case NestedLoopFeatureState::kEnabledWithoutEventMask:
-        enabled_features.push_back(base::test::FeatureRefAndParams(
-            features::kTextInputClientUseNestedLoop,
-            {{"enable_event_mask", "false"}}));
-        break;
-      case NestedLoopFeatureState::kEnabledWithEventMask:
-        enabled_features.push_back(base::test::FeatureRefAndParams(
-            features::kTextInputClientUseNestedLoop,
-            {{"enable_event_mask", "true"}}));
-        break;
-    }
-    feature_list_.InitWithFeaturesAndParameters(enabled_features,
-                                                disabled_features);
+          absl::StrFormat("%dms", ipc_timeout.InMilliseconds())}});
   }
 
  protected:
-  virtual std::unique_ptr<TextInputClientMac::AsyncRequestDelegate>
-  CreateDelegate() = 0;
-
   void SetUp() override {
     RenderViewHostTestHarness::SetUp();
     RenderViewHostTester::For(rvh())->CreateTestRenderView();
 
-    auto delegate = CreateDelegate();
+    auto delegate =
+        std::make_unique<FakeAsyncRequestDelegate>(function_to_test_);
     delegate_ = delegate.get();
     TextInputClientMac::GetInstance()->SetAsyncRequestDelegateForTesting(
         std::move(delegate));
@@ -304,34 +278,6 @@ class TextInputClientMacTestBase : public content::RenderViewHostTestHarness {
     GetIOThreadTaskRunner()->PostTaskAndReply(
         FROM_HERE, base::DoNothing(), task_environment()->QuitClosure());
     task_environment()->RunUntilQuit();
-  }
-
-  TextInputClientMac::AsyncRequestDelegate* delegate() {
-    return delegate_.get();
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-  raw_ptr<TextInputClientMac::AsyncRequestDelegate> delegate_ = nullptr;
-};
-
-// This test does not test the WebKit side of the dictionary system (which
-// performs the actual data fetching), but rather this just tests that the
-// service's signaling system works.
-class TextInputClientMacTest
-    : public TextInputClientMacTestBase,
-      public ::testing::WithParamInterface<
-          std::tuple<FunctionToTest, TimeoutParam, NestedLoopFeatureState>> {
- public:
-  TextInputClientMacTest()
-      : TextInputClientMacTestBase(/*ipc_timeout=*/std::get<1>(GetParam()),
-                                   /*feature_state=*/std::get<2>(GetParam())),
-        function_to_test_(std::get<0>(GetParam())) {}
-
- protected:
-  std::unique_ptr<TextInputClientMac::AsyncRequestDelegate> CreateDelegate()
-      override {
-    return std::make_unique<FakeAsyncRequestDelegate>(function_to_test_);
   }
 
   // Initializes a ResponseType value from an arbitrary integer.
@@ -379,12 +325,12 @@ class TextInputClientMacTest
 
   RenderWidgetHost* widget() { return rvh()->GetWidget(); }
 
-  FakeAsyncRequestDelegate& request_delegate() {
-    return *reinterpret_cast<FakeAsyncRequestDelegate*>(delegate());
-  }
+  FakeAsyncRequestDelegate& request_delegate() { return *delegate_; }
 
  private:
   FunctionToTest function_to_test_;
+  base::test::ScopedFeatureList feature_list_;
+  raw_ptr<FakeAsyncRequestDelegate> delegate_ = nullptr;
 };
 
 using TextInputClientMacTimeoutTest = TextInputClientMacTest;
@@ -394,20 +340,14 @@ INSTANTIATE_TEST_SUITE_P(
     TextInputClientMacTest,
     Combine(Values(FunctionToTest::kGetCharacterIndexAtPoint,
                    FunctionToTest::kGetFirstRectForRange),
-            Values(TimeoutParam::kLongTimeout),
-            Values(NestedLoopFeatureState::kDisabled,
-                   NestedLoopFeatureState::kEnabledWithoutEventMask,
-                   NestedLoopFeatureState::kEnabledWithEventMask)));
+            Values(TimeoutParam::kLongTimeout)));
 
 INSTANTIATE_TEST_SUITE_P(
     All,
     TextInputClientMacTimeoutTest,
     Combine(Values(FunctionToTest::kGetCharacterIndexAtPoint,
                    FunctionToTest::kGetFirstRectForRange),
-            Values(TimeoutParam::kShortTimeout),
-            Values(NestedLoopFeatureState::kDisabled,
-                   NestedLoopFeatureState::kEnabledWithoutEventMask,
-                   NestedLoopFeatureState::kEnabledWithEventMask)));
+            Values(TimeoutParam::kShortTimeout)));
 
 }  // namespace
 
