@@ -5,9 +5,15 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_RECORD_REPLAY_PAGE_ACTION_CONTROLLER_H_
 #define CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_RECORD_REPLAY_PAGE_ACTION_CONTROLLER_H_
 
+#include <memory>
+#include <optional>
+#include <string>
+
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "components/record_replay/core/browser/record_replay_manager.h"
+#include "components/record_replay/core/browser/recording.pb.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 namespace tabs {
@@ -20,6 +26,10 @@ class PageActionController;
 
 namespace actions {
 class ActionItem;
+}
+
+namespace views {
+class Widget;
 }
 
 // Controls the Record/Replay page action for a single tab.
@@ -44,14 +54,19 @@ class RecordReplayPageActionController {
 
   void ExecuteAction(actions::ActionItem* item);
 
+  bool has_recording_for_testing() const { return has_recording_; }
+
  private:
   void UpdateState();
-  void OnRetrieveRecordingComplete(std::optional<record_replay::Recording> r);
+  void OnRetrieveRecordingComplete(
+      std::optional<record_replay::Recording> recording);
 
   const raw_ref<tabs::TabInterface> tab_;
   const raw_ref<page_actions::PageActionController> page_action_controller_;
   base::RepeatingTimer timer_;
   bool has_recording_ = false;
+  std::u16string recording_name_;
+  std::unique_ptr<views::Widget> bubble_widget_;
   base::WeakPtrFactory<RecordReplayPageActionController> weak_ptr_factory_{
       this};
 };

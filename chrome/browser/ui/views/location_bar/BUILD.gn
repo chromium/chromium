@@ -313,9 +313,11 @@ source_set("interactive_ui_tests") {
     "lens_overlay_page_action_icon_view_interactive_uitest.cc",
     "location_icon_view_interactive_uitest.cc",
     "merchant_trust_chip_button_interactive_uitest.cc",
+    "record_replay_page_action_controller_interactive_uitest.cc",
     "selected_keyword_view_interactive_uitest.cc",
     "star_view_interactive_uitest.cc",
   ]
+
   deps = [
     ":location_bar",
     "//chrome/browser/ui:ui_features",

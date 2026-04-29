@@ -186,6 +186,12 @@ void RecordReplayManager::OnFillOrPreviewForm(
 
 void RecordReplayManager::GetMatchingRecording(
     base::OnceCallback<void(std::optional<Recording>)> cb) {
+  if (recording_for_testing_) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(cb), recording_for_testing_));
+    return;
+  }
+
   RecordingDataManager* rdm = client_->GetRecordingDataManager();
   if (!rdm) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -272,6 +278,10 @@ void RecordReplayManager::GetMatchingElements(
 
 void RecordReplayManager::ReportToUser(std::string_view message) {
   client_->ReportToUser(message);
+}
+
+void RecordReplayManager::SetRecordingForTesting(Recording recording) {
+  recording_for_testing_ = std::move(recording);
 }
 
 }  // namespace record_replay

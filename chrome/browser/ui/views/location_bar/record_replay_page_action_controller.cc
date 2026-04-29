@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/location_bar/record_replay_page_action_controller.h"
 
+#include "base/memory/ptr_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -16,6 +18,7 @@
 #include "chrome/browser/ui/views/page_action/page_action_container_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
+#include "chrome/browser/ui/views/record_replay/replay_recording_bubble_view.h"
 #include "chrome/browser/ui/views/record_replay/save_recording_bubble_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/record_replay/core/browser/record_replay_client.h"
@@ -32,6 +35,24 @@ using State = record_replay::RecordReplayManager::State;
 
 DEFINE_USER_DATA(RecordReplayPageActionController);
 
+namespace {
+
+views::View* GetAnchorViewForBubble(tabs::TabInterface& tab) {
+  BrowserWindowInterface* bwi = tab.GetBrowserWindowInterface();
+  if (!bwi) {
+    return nullptr;
+  }
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(bwi);
+  if (!browser_view) {
+    return nullptr;
+  }
+  return browser_view->GetLocationBarView()
+      ->page_action_container()
+      ->GetPageActionView(kActionRecordReplay);
+}
+
+}  // namespace
+
 RecordReplayPageActionController::RecordReplayPageActionController(
     tabs::TabInterface& tab,
     page_actions::PageActionController& page_action_controller)
@@ -39,7 +60,7 @@ RecordReplayPageActionController::RecordReplayPageActionController(
   timer_.Start(
       FROM_HERE, base::Seconds(1),
       base::BindRepeating(&RecordReplayPageActionController::UpdateState,
-                          base::Unretained(this)));
+                          weak_ptr_factory_.GetWeakPtr()));
   UpdateState();
 }
 
@@ -56,7 +77,19 @@ void RecordReplayPageActionController::ExecuteAction(
   switch (manager.state()) {
     case State::kIdle:
       if (has_recording_) {
-        manager.StartReplay();
+        views::View* anchor_view = GetAnchorViewForBubble(*tab_);
+        if (!anchor_view) {
+          break;
+        }
+
+        // TODO(crbug.com/507035858): Remove (UT) when strings are
+        // internationalized.
+        bubble_widget_ = record_replay::ReplayRecordingBubbleView::Show(
+            anchor_view, tab_->GetContents(),
+            recording_name_.empty() ? u"Unnamed Recording (UT)"
+                                    : recording_name_,
+            base::BindOnce(&record_replay::RecordReplayManager::StartReplay,
+                           manager.GetWeakPtr()));
       } else {
         manager.StartRecording();
       }
@@ -68,18 +101,8 @@ void RecordReplayPageActionController::ExecuteAction(
         break;
       }
 
-      BrowserWindowInterface* bwi = tab_->GetBrowserWindowInterface();
-      // bwi can be null if the tab is not attached to a window.
-      if (!bwi) {
-        break;
-      }
-      BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(bwi);
-      if (!browser_view) {
-        break;
-      }
-      views::View* anchor_view = browser_view->GetLocationBarView()
-                                     ->page_action_container()
-                                     ->GetPageActionView(kActionRecordReplay);
+      views::View* anchor_view = GetAnchorViewForBubble(*tab_);
+
       // anchor_view can be null if the page action is not visible.
       if (!anchor_view) {
         break;
@@ -97,7 +120,7 @@ void RecordReplayPageActionController::ExecuteAction(
               base::BindOnce(&record_replay::RecordReplayManager::ReportToUser,
                              manager.GetWeakPtr()),
               base::BindOnce(&RecordReplayPageActionController::UpdateState,
-                             base::Unretained(this))));
+                             weak_ptr_factory_.GetWeakPtr())));
       break;
     }
     case State::kReplaying:
@@ -122,8 +145,9 @@ void RecordReplayPageActionController::UpdateState() {
 }
 
 void RecordReplayPageActionController::OnRetrieveRecordingComplete(
-    std::optional<record_replay::Recording> r) {
-  has_recording_ = r.has_value();
+    std::optional<record_replay::Recording> recording) {
+  has_recording_ = recording.has_value();
+  recording_name_ = recording ? base::UTF8ToUTF16(recording->name()) : u"";
 
   record_replay::RecordReplayClient* client =
       tab_->GetTabFeatures()->record_replay_client();

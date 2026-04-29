@@ -88,6 +88,8 @@ class RecordReplayManager : public autofill::AutofillManager::Observer {
   // Displays a message to the user, typically via the browser's UI or console.
   void ReportToUser(std::string_view message);
 
+  void SetRecordingForTesting(Recording recording);
+
   base::WeakPtr<RecordReplayManager> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
@@ -104,6 +106,8 @@ class RecordReplayManager : public autofill::AutofillManager::Observer {
   raw_ref<RecordReplayClient> client_;
   std::optional<Recorder> recorder_;
   std::optional<Replayer> replayer_;
+
+  std::optional<Recording> recording_for_testing_;
 
   autofill::ScopedAutofillManagersObservation autofill_observation_{this};
   base::WeakPtrFactory<RecordReplayManager> weak_ptr_factory_{this};
