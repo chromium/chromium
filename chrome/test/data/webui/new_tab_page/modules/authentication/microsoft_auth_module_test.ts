@@ -4,8 +4,7 @@
 
 import type {DisableModuleEvent, DismissModuleInstanceEvent, MicrosoftAuthModuleElement} from 'chrome://new-tab-page/lazy_load.js';
 import {microsoftAuthModuleDescriptor, MicrosoftAuthProxyImpl, ParentTrustedDocumentProxy} from 'chrome://new-tab-page/lazy_load.js';
-import {MicrosoftAuthPageHandlerRemote} from 'chrome://new-tab-page/microsoft_auth.mojom-webui.js';
-import {AuthType, MicrosoftAuthUntrustedDocumentRemote} from 'chrome://new-tab-page/ntp_microsoft_auth_shared_ui.mojom-webui.js';
+import {AuthType, MicrosoftAuthPageHandlerRemote, MicrosoftAuthUntrustedDocumentRemote} from 'chrome://new-tab-page/new_tab_page.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';

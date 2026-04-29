@@ -4,10 +4,8 @@
 
 import type {DismissModuleElementEvent, DismissModuleInstanceEvent, MostRelevantTabResumptionModuleElement} from 'chrome://new-tab-page/lazy_load.js';
 import {mostRelevantTabResumptionDescriptor, MostRelevantTabResumptionProxyImpl} from 'chrome://new-tab-page/lazy_load.js';
-import {PageHandlerRemote, ScoredURLUserAction} from 'chrome://new-tab-page/most_relevant_tab_resumption.mojom-webui.js';
-import {$$} from 'chrome://new-tab-page/new_tab_page.js';
-import {DecorationType, FormFactor, VisitSource} from 'chrome://new-tab-page/url_visit_types.mojom-webui.js';
-import type {URLVisit} from 'chrome://new-tab-page/url_visit_types.mojom-webui.js';
+import type {URLVisit} from 'chrome://new-tab-page/new_tab_page.js';
+import {$$, DecorationType, FormFactor, ScoredURLUserAction, TabResumptionPageHandlerRemote as PageHandlerRemote, VisitSource} from 'chrome://new-tab-page/new_tab_page.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
