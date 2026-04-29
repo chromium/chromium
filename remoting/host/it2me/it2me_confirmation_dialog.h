@@ -33,6 +33,9 @@ class It2MeConfirmationDialog {
   // |callback| will not be called if the dialog is destroyed.
   virtual void Show(const std::string& remote_user_email,
                     ResultCallback callback) = 0;
+
+  // Set whether the dialog's inputs are disabled.
+  virtual void SetDisableInputs(bool disable) {}
 };
 
 class It2MeConfirmationDialogFactory {

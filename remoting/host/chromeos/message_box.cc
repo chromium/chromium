@@ -61,6 +61,8 @@ class MessageBoxCore : public views::DialogDelegateView {
 
   void SetMessageLabel(const std::u16string& message_label);
 
+  void SetDisableInputs(bool disable);
+
   // Called by MessageBox when it is destroyed.
   void OnMessageBoxDestroyed();
 
@@ -174,6 +176,11 @@ void MessageBoxCore::SetMessageLabel(const std::u16string& message_label) {
   message_box_view_->SetMessageLabel(message_label);
 }
 
+void MessageBoxCore::SetDisableInputs(bool disable) {
+  SetButtonEnabled(ui::mojom::DialogButton::kOk, !disable);
+  SetButtonEnabled(ui::mojom::DialogButton::kCancel, !disable);
+}
+
 void MessageBoxCore::OnMessageBoxDestroyed() {
   DCHECK(message_box_);
   message_box_ = nullptr;
@@ -212,6 +219,10 @@ void MessageBox::ChangeParentContainer(gfx::NativeView parent) {
 
 void MessageBox::SetMessageLabel(const std::u16string& message_label) {
   core_->SetMessageLabel(message_label);
+}
+
+void MessageBox::SetDisableInputs(bool disable) {
+  core_->SetDisableInputs(disable);
 }
 
 views::DialogDelegate& MessageBox::GetDialogDelegate() {

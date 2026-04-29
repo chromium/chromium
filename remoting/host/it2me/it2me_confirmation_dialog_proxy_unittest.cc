@@ -7,12 +7,14 @@
 #include <memory>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
+#include "base/synchronization/waitable_event.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -38,6 +40,8 @@ class StubIt2MeConfirmationDialog : public It2MeConfirmationDialog {
     std::move(callback_).Run(result);
   }
 
+  bool inputs_disabled() const { return inputs_disabled_; }
+
   MOCK_METHOD(void, OnShow, ());
 
   // It2MeConfirmationDialog implementation.
@@ -46,13 +50,24 @@ class StubIt2MeConfirmationDialog : public It2MeConfirmationDialog {
     EXPECT_TRUE(callback_.is_null());
     EXPECT_TRUE(task_runner_->BelongsToCurrentThread());
     EXPECT_EQ(remote_user_email.compare(kTestEmailAddress), 0);
+    // At the moment Show() is called, inputs should have been disabled by
+    // the proxy's draining logic.
+    EXPECT_TRUE(inputs_disabled_);
     callback_ = std::move(callback);
     OnShow();
   }
 
+  void SetDisableInputs(bool disable) override {
+    inputs_disabled_ = disable;
+    OnSetDisableInputs(disable);
+  }
+
+  MOCK_METHOD1(OnSetDisableInputs, void(bool));
+
  private:
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   ResultCallback callback_;
+  bool inputs_disabled_ = false;
 };
 
 // Encapsulates a target for It2MeConfirmationDialog::ResultCallback.
@@ -130,6 +145,9 @@ TEST_F(It2MeConfirmationDialogProxyTest, Show) {
   ResultCallbackTarget callback_target(main_task_runner());
 
   StubIt2MeConfirmationDialog* confirm_dialog = dialog();
+
+  EXPECT_CALL(*dialog(), OnSetDisableInputs(::testing::_))
+      .Times(::testing::AtLeast(2));
   EXPECT_CALL(*dialog(), OnShow())
       .WillOnce(InvokeWithoutArgs([confirm_dialog]() {
         confirm_dialog->ReportResult(It2MeConfirmationDialog::Result::CANCEL);
@@ -143,6 +161,100 @@ TEST_F(It2MeConfirmationDialogProxyTest, Show) {
   dialog_proxy()->Show(kTestEmailAddress, callback_target.MakeCallback());
 
   Run();
+}
+
+TEST_F(It2MeConfirmationDialogProxyTest, DrainingAndDisabling) {
+  ResultCallbackTarget callback_target(main_task_runner());
+
+  StubIt2MeConfirmationDialog* confirm_dialog = dialog();
+
+  // Sequence of events we expect on the dialog thread:
+  // 1. OnSetDisableInputs(true)
+  // 2. OnShow()
+  // 3. OnSetDisableInputs(false)
+
+  ::testing::InSequence s;
+  EXPECT_CALL(*dialog(), OnSetDisableInputs(true));
+  EXPECT_CALL(*dialog(), OnShow());
+  EXPECT_CALL(*dialog(), OnSetDisableInputs(false))
+      .WillOnce(InvokeWithoutArgs([confirm_dialog]() {
+        confirm_dialog->ReportResult(It2MeConfirmationDialog::Result::OK);
+      }));
+
+  EXPECT_CALL(callback_target,
+              OnDialogResult(It2MeConfirmationDialog::Result::OK))
+      .WillOnce(
+          InvokeWithoutArgs(this, &It2MeConfirmationDialogProxyTest::Quit));
+
+  dialog_proxy()->Show(kTestEmailAddress, callback_target.MakeCallback());
+
+  Run();
+  }
+
+  TEST_F(It2MeConfirmationDialogProxyTest, EventDraining) {
+  ResultCallbackTarget callback_target(main_task_runner());
+  StubIt2MeConfirmationDialog* confirm_dialog = dialog();
+
+  // Setup expectations FIRST to avoid race conditions with background thread.
+  // We expect these calls on the dialog thread.
+  EXPECT_CALL(*dialog(), OnSetDisableInputs(true));
+  EXPECT_CALL(*dialog(), OnShow());
+  EXPECT_CALL(*dialog(), OnSetDisableInputs(false));
+
+  // Setup the default action for OnShow to report the result.
+  ON_CALL(*dialog(), OnShow())
+      .WillByDefault(InvokeWithoutArgs([confirm_dialog]() {
+        confirm_dialog->ReportResult(It2MeConfirmationDialog::Result::OK);
+      }));
+
+  // We expect this call on the main thread.
+  EXPECT_CALL(callback_target,
+              OnDialogResult(It2MeConfirmationDialog::Result::OK))
+      .WillOnce(
+          InvokeWithoutArgs(this, &It2MeConfirmationDialogProxyTest::Quit));
+
+  base::WaitableEvent blocker_event;
+
+  // We want to guarantee this exact order on the dialog thread:
+  // 1. blocker_task (blocks until signaled)
+  // 2. Core::Show (posted by proxy->Show)
+  // 3. simulated_input_task (posted by test)
+  // 4. Core::ShowAfterDrain (posted by Core::Show)
+
+  // 1. Post blocker.
+  dialog_task_runner()->PostTask(
+      FROM_HERE, base::BindOnce(
+                     [](base::WaitableEvent* event) {
+                       event->Wait();
+                     },
+                     base::Unretained(&blocker_event)));
+
+  // 2. Call Show(). This posts Core::Show to the dialog thread.
+  dialog_proxy()->Show(kTestEmailAddress, callback_target.MakeCallback());
+
+  // 3. Post a "simulated input" task to the dialog thread.
+  dialog_task_runner()->PostTask(
+      FROM_HERE, base::BindOnce(
+                     [](StubIt2MeConfirmationDialog* dialog) {
+                       // At this point, Core::Show should have executed,
+                       // calling SetDisableInputs(true) and posting
+                       // ShowAfterDrain.
+                       EXPECT_TRUE(dialog->inputs_disabled());
+                     },
+                     base::Unretained(confirm_dialog)));
+
+  // Now release the blocker. Tasks will run in the guaranteed order.
+  blocker_event.Signal();
+
+  Run();
+
+  // After the run loop quits, we need to ensure the dialog thread has
+  // finished its remaining work (like re-enabling inputs) before the
+  // test ends and mocks are destroyed.
+  base::RunLoop fencing_run_loop;
+  dialog_task_runner()->PostTaskAndReply(FROM_HERE, base::DoNothing(),
+                                         fencing_run_loop.QuitClosure());
+  fencing_run_loop.Run();
 }
 
 }  // namespace remoting

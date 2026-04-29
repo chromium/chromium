@@ -65,6 +65,8 @@ class MessageBox {
 
   void SetMessageLabel(const std::u16string& message_label);
 
+  void SetDisableInputs(bool disable);
+
   views::DialogDelegate& GetDialogDelegate();
 
   // Called by MessageBoxCore when it is about to be destroyed.

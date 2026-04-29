@@ -34,6 +34,7 @@ class It2MeConfirmationDialogChromeOS : public It2MeConfirmationDialog {
   // It2MeConfirmationDialog implementation.
   void Show(const std::string& remote_user_email,
             ResultCallback callback) override;
+  void SetDisableInputs(bool disable) override;
 
   views::DialogDelegate& GetDialogDelegateForTest();
 
@@ -54,6 +55,7 @@ class It2MeConfirmationDialogChromeOS : public It2MeConfirmationDialog {
   ResultCallback callback_;
   DialogStyle style_;
   base::TimeDelta auto_accept_timeout_;
+  bool inputs_disabled_ = false;
 };
 
 }  // namespace remoting

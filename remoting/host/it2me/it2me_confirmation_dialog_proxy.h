@@ -32,6 +32,7 @@ class It2MeConfirmationDialogProxy : public It2MeConfirmationDialog {
   // It2MeConfirmationDialog implementation.
   void Show(const std::string& remote_user_email,
             It2MeConfirmationDialog::ResultCallback callback) override;
+  void SetDisableInputs(bool disable) override;
 
  private:
   class Core;

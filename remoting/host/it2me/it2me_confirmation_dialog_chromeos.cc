@@ -206,6 +206,8 @@ class It2MeConfirmationDialogChromeOS::Core : public ash::SessionObserver {
 
   void ShowConfirmationDialog();
 
+  void SetDisableInputs(bool disable);
+
   views::DialogDelegate& GetDialogDelegate();
 
  private:
@@ -266,6 +268,10 @@ void It2MeConfirmationDialogChromeOS::Core::ShowConfirmationDialog() {
   if (HasAutoAcceptTimeout()) {
     StartAutoAcceptCountDown();
   }
+}
+
+void It2MeConfirmationDialogChromeOS::Core::SetDisableInputs(bool disable) {
+  message_box_->SetDisableInputs(disable);
 }
 
 void It2MeConfirmationDialogChromeOS::Core::OnConfirmationDialogResult(
@@ -346,9 +352,17 @@ void It2MeConfirmationDialogChromeOS::Show(const std::string& remote_user_email,
         base::BindOnce(
             &It2MeConfirmationDialogChromeOS::OnConfirmationDialogResult,
             base::Unretained(this)));
+    core_->SetDisableInputs(inputs_disabled_);
     core_->ShowConfirmationDialog();
   } else {
     ShowConfirmationNotification(remote_user_email);
+  }
+}
+
+void It2MeConfirmationDialogChromeOS::SetDisableInputs(bool disable) {
+  inputs_disabled_ = disable;
+  if (core_) {
+    core_->SetDisableInputs(disable);
   }
 }
 
