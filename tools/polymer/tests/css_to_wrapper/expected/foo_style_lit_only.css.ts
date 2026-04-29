@@ -4,7 +4,7 @@ import {getCss as getOther2} from './other2.css.js';
 import './other_vars.css.js';
 
 let instance: CSSResultGroup|null = null;
-export function getCss() {
+export function getCss(): CSSResultGroup {
   return instance || (instance = [...[getOther1(),getOther2()], css`div {
   color: blue;
 }`]);

@@ -55,7 +55,7 @@ _LIT_STYLE_TEMPLATE = """import {css, CSSResultGroup} from '%(scheme)s//resource
 %(imports)s
 
 let instance: CSSResultGroup|null = null;
-export function getCss() {
+export function getCss(): CSSResultGroup {
   return instance || (instance = [...[%(deps)s], css`%(content)s`]);
 }"""
 
