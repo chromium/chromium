@@ -1,0 +1,21 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #scheme=relative
+ * #import=//resources/cr_elements/cr_icons_lit.css.js
+ * #import=//resources/cr_elements/cr_hidden_style_lit.css.js
+ * #import=//bookmarks-side-panel.top-chrome/shared/sp_shared_style_lit.css.js
+ * #include=cr-icons-lit cr-hidden-style-lit sp-shared-style-lit
+ * #css_wrapper_metadata_end */
+
+hr {
+  border: none;
+  border-top: var(--cr-hairline);
+}
+
+.dropdown-item {
+  justify-content: space-between;
+}

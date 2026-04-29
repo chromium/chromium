@@ -19,7 +19,6 @@ build_webui("build") {
   # Files holding a Polymer element definition and have an equivalent .html file.
   web_component_files = [
     "commerce/shopping_list.ts",
-    "power_bookmarks_context_menu.ts",
     "power_bookmarks_edit_dialog.ts",
     "power_bookmarks_list.ts",
   ]
@@ -31,6 +30,8 @@ build_webui("build") {
     "power_bookmark_row.ts",
     "power_bookmark_row_item.html.ts",
     "power_bookmark_row_item.ts",
+    "power_bookmarks_context_menu.html.ts",
+    "power_bookmarks_context_menu.ts",
     "power_bookmarks_drag_manager.ts",
     "power_bookmarks_labels.html.ts",
     "power_bookmarks_labels.ts",
@@ -41,6 +42,7 @@ build_webui("build") {
   css_files = [
     "power_bookmark_row.css",
     "power_bookmark_row_item.css",
+    "power_bookmarks_context_menu.css",
   ]
 
   icons_html_files = [

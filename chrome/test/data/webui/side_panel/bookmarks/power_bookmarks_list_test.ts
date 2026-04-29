@@ -956,11 +956,11 @@ suite('General', () => {
 
       // Get the edit option in the menu.
       const menuItems =
-          contextMenu.shadowRoot!.querySelectorAll('.dropdown-item');
+          contextMenu.shadowRoot.querySelectorAll('.dropdown-item');
       assertTrue(
           menuItems[4]!.textContent.includes(
               loadTimeData.getString('menuEdit')));
-      const editItem = contextMenu.shadowRoot!.querySelectorAll<HTMLElement>(
+      const editItem = contextMenu.shadowRoot.querySelectorAll<HTMLElement>(
           '.dropdown-item')[4]!;
 
       // Click on edit and wait for the call to propagate.
@@ -990,11 +990,11 @@ suite('General', () => {
 
       // Get the move option in the menu.
       const menuItems =
-          contextMenu.shadowRoot!.querySelectorAll('.dropdown-item');
+          contextMenu.shadowRoot.querySelectorAll('.dropdown-item');
       assertTrue(
           menuItems[4]!.textContent.includes(
               loadTimeData.getString('tooltipMove')));
-      const moveItem = contextMenu.shadowRoot!.querySelectorAll<HTMLElement>(
+      const moveItem = contextMenu.shadowRoot.querySelectorAll<HTMLElement>(
           '.dropdown-item')[4]!;
 
       // Click on move and wait for the call to propagate.

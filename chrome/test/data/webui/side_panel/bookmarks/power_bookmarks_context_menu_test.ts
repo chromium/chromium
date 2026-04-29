@@ -126,8 +126,8 @@ suite('SidePanelPowerBookmarksContextMenuTest', () => {
 
     await waitAfterNextRender(powerBookmarksContextMenu);
 
-    const menuItems = powerBookmarksContextMenu.shadowRoot!.querySelectorAll(
-        '.dropdown-item');
+    const menuItems =
+        powerBookmarksContextMenu.shadowRoot.querySelectorAll('.dropdown-item');
     assertEquals(menuItems.length, 7);
     assertTrue(
         menuItems[0]!.textContent.includes(
@@ -158,8 +158,8 @@ suite('SidePanelPowerBookmarksContextMenuTest', () => {
 
     await waitAfterNextRender(powerBookmarksContextMenu);
 
-    const menuItems = powerBookmarksContextMenu.shadowRoot!.querySelectorAll(
-        '.dropdown-item');
+    const menuItems =
+        powerBookmarksContextMenu.shadowRoot.querySelectorAll('.dropdown-item');
     assertEquals(menuItems.length, 7);
     assertTrue(
         menuItems[0]!.textContent.includes(
@@ -192,8 +192,8 @@ suite('SidePanelPowerBookmarksContextMenuTest', () => {
 
     await waitAfterNextRender(powerBookmarksContextMenu);
 
-    const menuItems = powerBookmarksContextMenu.shadowRoot!.querySelectorAll(
-        '.dropdown-item');
+    const menuItems =
+        powerBookmarksContextMenu.shadowRoot.querySelectorAll('.dropdown-item');
     assertEquals(menuItems.length, 6);
     assertTrue(
         menuItems[0]!.textContent.includes(
@@ -222,8 +222,8 @@ suite('SidePanelPowerBookmarksContextMenuTest', () => {
 
     await waitAfterNextRender(powerBookmarksContextMenu);
 
-    const menuItems = powerBookmarksContextMenu.shadowRoot!.querySelectorAll(
-        '.dropdown-item');
+    const menuItems =
+        powerBookmarksContextMenu.shadowRoot.querySelectorAll('.dropdown-item');
     assertEquals(menuItems.length, 8);
     assertTrue(
         menuItems[0]!.textContent.includes(
@@ -261,8 +261,8 @@ suite('SidePanelPowerBookmarksContextMenuTest', () => {
 
     await waitAfterNextRender(powerBookmarksContextMenu);
 
-    const menuItems = powerBookmarksContextMenu.shadowRoot!.querySelectorAll(
-        '.dropdown-item');
+    const menuItems =
+        powerBookmarksContextMenu.shadowRoot.querySelectorAll('.dropdown-item');
     assertEquals(menuItems.length, 6);
     assertTrue(
         menuItems[0]!.textContent.includes(
@@ -296,8 +296,8 @@ suite('SidePanelPowerBookmarksContextMenuTest', () => {
 
     await waitAfterNextRender(powerBookmarksContextMenu);
 
-    const menuItems = powerBookmarksContextMenu.shadowRoot!.querySelectorAll(
-        '.dropdown-item');
+    const menuItems =
+        powerBookmarksContextMenu.shadowRoot.querySelectorAll('.dropdown-item');
     assertEquals(menuItems.length, 7);
     const incognitoButton = menuItems[3] as HTMLButtonElement;
     assertTrue(incognitoButton.textContent.includes(
@@ -319,7 +319,7 @@ suite('SidePanelPowerBookmarksContextMenuTest', () => {
     const event = new FocusEvent('focusout', {
       relatedTarget: document.body,
     });
-    powerBookmarksContextMenu.shadowRoot!.querySelector('#menu')!.dispatchEvent(
+    powerBookmarksContextMenu.shadowRoot.querySelector('#menu')!.dispatchEvent(
         event);
 
     await flushTasks();
