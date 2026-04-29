@@ -198,14 +198,12 @@ public class FormsAiDelegate {
             }
 
             if (shouldHaveAddButton) {
-                addAddEntityButton(category, type, !addButtonEnabled);
+                category.addPreference(createAddEntityButton(type, !addButtonEnabled));
             }
         }
     }
 
-    /** Add button to create an entity of a certain type. */
-    private void addAddEntityButton(
-            PreferenceCategory screen, EntityType entityType, boolean disabled) {
+    private Preference createAddEntityButton(EntityType entityType, boolean disabled) {
         Preference pref = new Preference(getStyledContext());
         Drawable plusIcon =
                 ApiCompatibilityUtils.getDrawable(mFragment.getResources(), R.drawable.plus);
@@ -236,7 +234,7 @@ public class FormsAiDelegate {
                                     .build());
                     return true;
                 });
-        screen.addPreference(pref);
+        return pref;
     }
 
     private void editEntity(EntityInstance entityInstance) {
