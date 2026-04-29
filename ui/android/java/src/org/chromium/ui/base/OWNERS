@@ -13,3 +13,5 @@ per-file DeviceFormFactor.java=skavuluru@google.com
 # Activity result tracker
 per-file ActivityResultTracker.java=myuu@google.com
 per-file ActivityResultTrackerImpl.java=myuu@google.com
+
+per-file ViewUtils.java=clhager@google.com

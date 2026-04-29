@@ -4,11 +4,15 @@
 
 package org.chromium.ui.base;
 
+import static android.view.View.MeasureSpec.EXACTLY;
+import static android.view.View.MeasureSpec.makeMeasureSpec;
+
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Region;
+import android.transition.Transition;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.View;
@@ -275,5 +279,18 @@ public final class ViewUtils {
         assert view != null;
         TraceEvent.instant("requestLayout caller: " + caller);
         view.requestLayout();
+    }
+
+    /**
+     * Triggers a synchronous measure and layout pass for a view. This can be crucial when immediate
+     * geometry information is required, such as during animations performed via {@link Transition}.
+     *
+     * @param view The view to measure and layout.
+     */
+    public static void triggerSynchronousRemeasure(View view) {
+        view.measure(
+                makeMeasureSpec(view.getMeasuredWidth(), EXACTLY),
+                makeMeasureSpec(view.getMeasuredHeight(), EXACTLY));
+        view.layout(view.getLeft(), view.getTop(), view.getRight(), view.getBottom());
     }
 }
