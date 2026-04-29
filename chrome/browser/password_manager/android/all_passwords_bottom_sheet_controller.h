@@ -72,9 +72,9 @@ class AllPasswordsBottomSheetController
       const AllPasswordsBottomSheetController&) = delete;
 
   // PasswordStoreConsumer:
-  void OnGetPasswordStoreResults(
-      std::vector<std::unique_ptr<password_manager::PasswordForm>> results)
-      override;
+  void OnGetPasswordStoreResultsOrErrorFrom(
+      password_manager::PasswordStoreInterface* store,
+      password_manager::LoginsResultOrError results_or_error) override;
 
   // Instructs AllPasswordsBottomSheetView to show the credentials to the user.
   void Show();
@@ -110,8 +110,7 @@ class AllPasswordsBottomSheetController
   void FillPassword(const std::u16string& password);
 
   void OnResultFromAllStoresReceived(
-      std::vector<std::vector<std::unique_ptr<password_manager::PasswordForm>>>
-          results);
+      std::vector<std::vector<password_manager::PasswordForm>> results);
 
   // The controller takes |view_| ownership.
   std::unique_ptr<AllPasswordsBottomSheetView> view_;
@@ -126,8 +125,7 @@ class AllPasswordsBottomSheetController
   raw_ptr<password_manager::PasswordStoreInterface> account_store_;
 
   // Allows to aggregate GetAllLogins results from multiple stores.
-  base::RepeatingCallback<void(
-      std::vector<std::unique_ptr<password_manager::PasswordForm>>)>
+  base::RepeatingCallback<void(std::vector<password_manager::PasswordForm>)>
       on_password_forms_received_barrier_callback_;
 
   // A callback method will be consumed when the user dismisses the BottomSheet.

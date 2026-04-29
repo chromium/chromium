@@ -224,11 +224,9 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
   void OnPasskeyModelIsReady(bool is_ready) override;
 
   // PasswordStoreConsumer:
-  void OnGetPasswordStoreResults(
-      std::vector<std::unique_ptr<PasswordForm>> results) override;
-  void OnGetPasswordStoreResultsFrom(
+  void OnGetPasswordStoreResultsOrErrorFrom(
       PasswordStoreInterface* store,
-      std::vector<std::unique_ptr<PasswordForm>> results) override;
+      LoginsResultOrError results_or_error) override;
 
   // Notify observers about changes in the compromised credentials.
   void NotifyEdited(const CredentialUIEntry& password);

@@ -1764,7 +1764,7 @@ TEST_F(PasswordStoreTest, TestGetLoginRequestCancelable) {
       observed_form, {kTestAndroidRealm1});
 
   MockPasswordStoreConsumer mock_consumer;
-  EXPECT_CALL(mock_consumer, OnGetPasswordStoreResults).Times(0);
+  EXPECT_CALL(mock_consumer, OnGetPasswordStoreResultsOrErrorFrom).Times(0);
   store->GetLogins(observed_form, mock_consumer.GetWeakPtr());
   mock_consumer.CancelAllRequests();
   WaitForPasswordStore();

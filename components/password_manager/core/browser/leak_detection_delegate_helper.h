@@ -52,8 +52,9 @@ class LeakDetectionDelegateHelper : public PasswordStoreConsumer {
   // PasswordStoreConsumer:
   // Is called by the `PasswordStoreInterface` once all credentials with the
   // specific password are retrieved.
-  void OnGetPasswordStoreResults(
-      std::vector<std::unique_ptr<PasswordForm>> results) override;
+  void OnGetPasswordStoreResultsOrErrorFrom(
+      PasswordStoreInterface* store,
+      LoginsResultOrError results_or_error) override;
 
   // Called when all password store results are available. Computes the
   // resulting credential type and invokes `callback_`.
@@ -65,7 +66,7 @@ class LeakDetectionDelegateHelper : public PasswordStoreConsumer {
   PasswordForm credentials_;
 
   base::RepeatingClosure barrier_closure_;
-  std::vector<std::unique_ptr<PasswordForm>> partial_results_;
+  std::vector<PasswordForm> partial_results_;
 
   base::WeakPtrFactory<LeakDetectionDelegateHelper> weak_ptr_factory_{this};
 };

@@ -50,17 +50,32 @@ class PasswordStoreConsumerHelper : public PasswordStoreConsumer {
   PasswordStoreConsumerHelper& operator=(const PasswordStoreConsumerHelper&) =
       delete;
 
-  void OnGetPasswordStoreResults(
-      std::vector<std::unique_ptr<PasswordForm>> results) override {
-    result_.swap(results);
+  void OnGetPasswordStoreResultsOrErrorFrom(
+      PasswordStoreInterface* store,
+      password_manager::LoginsResultOrError results_or_error) override {
+    if (std::holds_alternative<password_manager::PasswordStoreBackendError>(
+            results_or_error)) {
+      result_ = std::vector<PasswordForm>();
+    } else {
+      result_ =
+          std::get<password_manager::LoginsResult>(std::move(results_or_error));
+    }
   }
 
   std::vector<std::unique_ptr<PasswordForm>> WaitForResult() {
     bool unused = WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^{
-      return result_.size() > 0;
+      return result_.has_value();
     });
     (void)unused;
-    return std::move(result_);
+    if (!result_.has_value()) {
+      return {};
+    }
+    std::vector<std::unique_ptr<PasswordForm>> unique_results;
+    unique_results.reserve(result_->size());
+    for (auto& form : *result_) {
+      unique_results.push_back(std::make_unique<PasswordForm>(std::move(form)));
+    }
+    return unique_results;
   }
 
   base::WeakPtr<PasswordStoreConsumer> GetWeakPtr() {
@@ -68,7 +83,7 @@ class PasswordStoreConsumerHelper : public PasswordStoreConsumer {
   }
 
  private:
-  std::vector<std::unique_ptr<PasswordForm>> result_;
+  std::optional<std::vector<PasswordForm>> result_;
   base::WeakPtrFactory<PasswordStoreConsumerHelper> weak_ptr_factory_{this};
 };
 

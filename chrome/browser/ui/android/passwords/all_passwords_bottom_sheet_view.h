@@ -27,8 +27,7 @@ class AllPasswordsBottomSheetView {
   // Instructs All Passwords Sheet to show the provided |credentials| to the
   // user.
   virtual void Show(
-      const std::vector<std::unique_ptr<password_manager::PasswordForm>>&
-          credentials,
+      const std::vector<password_manager::PasswordForm>& credentials,
       autofill::mojom::FocusedFieldType focused_field_type) = 0;
 };
 

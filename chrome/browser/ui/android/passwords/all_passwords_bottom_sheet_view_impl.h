@@ -31,8 +31,7 @@ class AllPasswordsBottomSheetViewImpl : public AllPasswordsBottomSheetView {
   ~AllPasswordsBottomSheetViewImpl() override;
 
   // AllPasswordsBottomSheetView:
-  void Show(const std::vector<std::unique_ptr<password_manager::PasswordForm>>&
-                credentials,
+  void Show(const std::vector<password_manager::PasswordForm>& credentials,
             autofill::mojom::FocusedFieldType focused_field_type) override;
 
   // Invoked in case the user chooses an entry from the credential list

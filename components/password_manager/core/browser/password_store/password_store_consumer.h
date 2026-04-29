@@ -34,13 +34,12 @@ class PasswordStoreConsumer {
   PasswordStoreConsumer();
 
   // Called when `GetLogins()` request is finished, with a vector of forms or
-  // with an error if the logins couldn't be fetched. The default implementation
-  // calls `OnGetPasswordStoreResultsFrom` with the results or an empty vector
-  // on error. Receives the originating `store`, useful for differentiateing
-  // between the profile-scoped and account-scoped password stores.
+  // with an error if the logins couldn't be fetched. Receives the originating
+  // `store`, useful for differentiateing between the profile-scoped and
+  // account-scoped password stores.
   virtual void OnGetPasswordStoreResultsOrErrorFrom(
       PasswordStoreInterface* store,
-      LoginsResultOrError results_or_error);
+      LoginsResultOrError results_or_error) = 0;
 
   // Called when the GetSiteStats() request is finished, with the associated
   // site statistics.
@@ -54,24 +53,6 @@ class PasswordStoreConsumer {
 
  protected:
   virtual ~PasswordStoreConsumer();
-
-  // Called when the GetLogins() request is finished, with the associated
-  // |results|.
-  // TODO(crbug.com/40863002): Remove when the `FormsOrError` version is
-  // implemented by all consumers.
-  virtual void OnGetPasswordStoreResults(
-      std::vector<std::unique_ptr<PasswordForm>> results);
-
-  // Like OnGetPasswordStoreResults(), but also receives the originating
-  // PasswordStoreInterface as a parameter. This is useful for consumers that
-  // query both the profile-scoped and the account-scoped store. The default
-  // implementation simply calls OnGetPasswordStoreResults(), so consumers that
-  // don't care about the store can just ignore this.
-  // TODO(crbug.com/40863002): Remove when the `FormsOrError` version is
-  // implemented by all consumers.
-  virtual void OnGetPasswordStoreResultsFrom(
-      PasswordStoreInterface* store,
-      std::vector<std::unique_ptr<PasswordForm>> results);
 
  private:
   base::CancelableTaskTracker cancelable_task_tracker_;

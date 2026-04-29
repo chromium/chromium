@@ -40,8 +40,16 @@ void AllPasswordsBottomSheetHelper::ClearUpdateCallback() {
   update_callback_.Reset();
 }
 
-void AllPasswordsBottomSheetHelper::OnGetPasswordStoreResults(
-    std::vector<std::unique_ptr<password_manager::PasswordForm>> results) {
+void AllPasswordsBottomSheetHelper::OnGetPasswordStoreResultsOrErrorFrom(
+    password_manager::PasswordStoreInterface* store,
+    password_manager::LoginsResultOrError results_or_error) {
+  if (std::holds_alternative<password_manager::PasswordStoreBackendError>(
+          results_or_error)) {
+    return;
+  }
+  auto results =
+      std::get<password_manager::LoginsResult>(std::move(results_or_error));
+
   int results_count = std::ranges::count_if(
       results, std::not_fn(&password_manager::PasswordForm::blocked_by_user));
   available_credentials_ = available_credentials_.value_or(0) + results_count;

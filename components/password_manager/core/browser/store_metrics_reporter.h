@@ -23,13 +23,12 @@ namespace password_manager {
 class PasswordManagerSettingsService;
 class PasswordReuseManager;
 struct PasswordStoreResults {
-  PasswordStoreResults(std::vector<std::unique_ptr<PasswordForm>> store_results,
-                       bool has_error);
+  PasswordStoreResults(std::vector<PasswordForm> store_results, bool has_error);
   ~PasswordStoreResults();
   PasswordStoreResults(PasswordStoreResults&& other);
   PasswordStoreResults& operator=(PasswordStoreResults&& other);
 
-  std::vector<std::unique_ptr<PasswordForm>> store_results;
+  std::vector<PasswordForm> store_results;
   bool has_error;
 };
 
@@ -64,11 +63,6 @@ class StoreMetricsReporter : public PasswordStoreConsumer {
 
  private:
   // PasswordStoreConsumer:
-  void OnGetPasswordStoreResults(
-      std::vector<std::unique_ptr<PasswordForm>> results) override;
-  void OnGetPasswordStoreResultsFrom(
-      PasswordStoreInterface* store,
-      std::vector<std::unique_ptr<PasswordForm>> results) override;
   void OnGetPasswordStoreResultsOrErrorFrom(
       PasswordStoreInterface* store,
       LoginsResultOrError results_or_error) override;

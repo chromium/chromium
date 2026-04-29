@@ -41,7 +41,7 @@ class PasswordReuseDetectorImpl : public PasswordReuseDetector {
       delete;
 
   void OnGetPasswordStoreResults(
-      std::vector<std::unique_ptr<PasswordForm>> results) override;
+      std::vector<PasswordForm> results) override;
 
   void OnLoginsChanged(
       const password_manager::PasswordStoreChangeList& changes) override;

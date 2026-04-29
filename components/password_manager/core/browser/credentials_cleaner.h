@@ -49,8 +49,8 @@ class CredentialsCleaner {
   // Iterates through |forms| and removes credentials whose signon_realm does
   // not correspond to a HTTP or HTTPS scheme. In particular, this filters out
   // Android and federated credentials. Returns the result.
-  static std::vector<std::unique_ptr<PasswordForm>> RemoveNonHTTPOrHTTPSForms(
-      std::vector<std::unique_ptr<PasswordForm>> forms);
+  static std::vector<PasswordForm> RemoveNonHTTPOrHTTPSForms(
+      std::vector<PasswordForm> forms);
 };
 
 }  // namespace password_manager

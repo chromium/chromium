@@ -79,47 +79,39 @@ GetPasswordProfileStore() {
 // processing.
 class TestStoreConsumer : public password_manager::PasswordStoreConsumer {
  public:
-  void OnGetPasswordStoreResults(
-      std::vector<std::unique_ptr<password_manager::PasswordForm>> obtained)
-      override {
-    obtained_ = std::move(obtained);
+  void OnGetPasswordStoreResultsOrErrorFrom(
+      password_manager::PasswordStoreInterface* store,
+      password_manager::LoginsResultOrError results_or_error) override {
+    if (std::holds_alternative<password_manager::PasswordStoreBackendError>(
+            results_or_error)) {
+      obtained_ = std::vector<password_manager::PasswordForm>();
+    } else {
+      obtained_ =
+          std::get<password_manager::LoginsResult>(std::move(results_or_error));
+    }
   }
 
   const std::vector<password_manager::PasswordForm>& GetStoreResults() {
     results_.clear();
-    ResetObtained();
+    obtained_.reset();
     GetPasswordProfileStore()->GetAllLogins(weak_ptr_factory_.GetWeakPtr());
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunused-result"
     base::test::ios::WaitUntilConditionOrTimeout(
         base::test::ios::kWaitForFileOperationTimeout, ^bool {
-          return !AreObtainedReset();
+          return obtained_.has_value();
         });
 #pragma clang diagnostic pop
-    AppendObtainedToResults();
+    if (obtained_.has_value()) {
+      results_ = std::move(obtained_.value());
+      obtained_.reset();
+    }
     return results_;
   }
 
  private:
-  // Puts `obtained_` in a known state not corresponding to any PasswordStore
-  // state.
-  void ResetObtained() {
-    obtained_.clear();
-    obtained_.emplace_back(nullptr);
-  }
-
-  // Returns true if `obtained_` are in the reset state.
-  bool AreObtainedReset() { return obtained_.size() == 1 && !obtained_[0]; }
-
-  void AppendObtainedToResults() {
-    for (const auto& source : obtained_) {
-      results_.emplace_back(*source);
-    }
-    ResetObtained();
-  }
-
   // Temporary cache of obtained store results.
-  std::vector<std::unique_ptr<password_manager::PasswordForm>> obtained_;
+  std::optional<std::vector<password_manager::PasswordForm>> obtained_;
 
   // Combination of fillable and blocked credentials from the store.
   std::vector<password_manager::PasswordForm> results_;

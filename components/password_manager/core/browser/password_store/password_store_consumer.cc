@@ -15,24 +15,6 @@ PasswordStoreConsumer::PasswordStoreConsumer() = default;
 
 PasswordStoreConsumer::~PasswordStoreConsumer() = default;
 
-void PasswordStoreConsumer::OnGetPasswordStoreResultsFrom(
-    PasswordStoreInterface* store,
-    std::vector<std::unique_ptr<PasswordForm>> results) {
-  OnGetPasswordStoreResults(std::move(results));
-}
-
-void PasswordStoreConsumer::OnGetPasswordStoreResultsOrErrorFrom(
-    PasswordStoreInterface* store,
-    LoginsResultOrError results_or_error) {
-  OnGetPasswordStoreResultsFrom(
-      store, password_manager::ConvertPasswordToUniquePtr(
-                 password_manager::GetLoginsOrEmptyListOnFailure(
-                     std::move(results_or_error))));
-}
-
-void PasswordStoreConsumer::OnGetPasswordStoreResults(
-    std::vector<std::unique_ptr<PasswordForm>> results) {}
-
 void PasswordStoreConsumer::OnGetSiteStatistics(
     std::vector<InteractionsStats> stats) {}
 

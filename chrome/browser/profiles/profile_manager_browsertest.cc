@@ -197,10 +197,17 @@ class ProfileRemovalObserver : public ProfileAttributesStorage::Observer {
 class PasswordStoreConsumerVerifier
     : public password_manager::PasswordStoreConsumer {
  public:
-  void OnGetPasswordStoreResults(
-      std::vector<std::unique_ptr<password_manager::PasswordForm>> results)
-      override {
-    password_entries_.swap(results);
+  void OnGetPasswordStoreResultsOrErrorFrom(
+      password_manager::PasswordStoreInterface* store,
+      password_manager::LoginsResultOrError results_or_error) override {
+    if (std::holds_alternative<password_manager::PasswordStoreBackendError>(
+            results_or_error)) {
+      ADD_FAILURE() << "Error from password store";
+      password_entries_ = std::vector<password_manager::PasswordForm>();
+    } else {
+      password_entries_ =
+          std::get<password_manager::LoginsResult>(std::move(results_or_error));
+    }
     run_loop_.Quit();
   }
 
@@ -208,8 +215,7 @@ class PasswordStoreConsumerVerifier
     run_loop_.Run();
   }
 
-  const std::vector<std::unique_ptr<password_manager::PasswordForm>>&
-  GetPasswords() const {
+  const std::vector<password_manager::PasswordForm>& GetPasswords() const {
     return password_entries_;
   }
 
@@ -219,8 +225,7 @@ class PasswordStoreConsumerVerifier
 
  private:
   base::RunLoop run_loop_;
-  std::vector<std::unique_ptr<password_manager::PasswordForm>>
-      password_entries_;
+  std::vector<password_manager::PasswordForm> password_entries_;
   base::WeakPtrFactory<PasswordStoreConsumerVerifier> weak_ptr_factory_{this};
 };
 

@@ -74,8 +74,14 @@ void PostSaveCompromisedHelper::AnalyzeLeakedCredentials(
   }
 }
 
-void PostSaveCompromisedHelper::OnGetPasswordStoreResults(
-    std::vector<std::unique_ptr<PasswordForm>> results) {
+void PostSaveCompromisedHelper::OnGetPasswordStoreResultsOrErrorFrom(
+    PasswordStoreInterface* store,
+    LoginsResultOrError results_or_error) {
+  if (std::holds_alternative<PasswordStoreBackendError>(results_or_error)) {
+    forms_received_.Run();
+    return;
+  }
+  auto results = std::get<LoginsResult>(std::move(results_or_error));
   std::ranges::move(results, std::back_inserter(passwords_));
   forms_received_.Run();
 }
@@ -84,15 +90,14 @@ void PostSaveCompromisedHelper::AnalyzeLeakedCredentialsInternal() {
   bool compromised_password_changed = false;
 
   for (const auto& form : passwords_) {
-    if (current_leak_ &&
-        form->username_value == current_leak_->username_value &&
-        form->signon_realm == current_leak_->signon_realm) {
-      if (form->password_issues.empty()) {
+    if (current_leak_ && form.username_value == current_leak_->username_value &&
+        form.signon_realm == current_leak_->signon_realm) {
+      if (form.password_issues.empty()) {
         compromised_password_changed = true;
       }
     }
 
-    if (std::ranges::any_of(form->password_issues, [](const auto& issue) {
+    if (std::ranges::any_of(form.password_issues, [](const auto& issue) {
           return !issue.second.is_muted;
         })) {
       compromised_count_++;

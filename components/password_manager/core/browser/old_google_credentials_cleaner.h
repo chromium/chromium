@@ -39,8 +39,9 @@ class OldGoogleCredentialCleaner : public PasswordStoreConsumer,
 
  private:
   // PasswordStoreConsumer:
-  void OnGetPasswordStoreResults(
-      std::vector<std::unique_ptr<PasswordForm>> results) override;
+  void OnGetPasswordStoreResultsOrErrorFrom(
+      PasswordStoreInterface* store,
+      LoginsResultOrError results_or_error) override;
 
   // Clean-up is performed on |store_|.
   scoped_refptr<PasswordStoreInterface> store_;

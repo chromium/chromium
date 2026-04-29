@@ -60,9 +60,9 @@ class PasswordStoreFetcher
              base::Time end,
              base::OnceClosure fetch_complete);
 
-  void OnGetPasswordStoreResults(
-      std::vector<std::unique_ptr<password_manager::PasswordForm>> results)
-      override;
+  void OnGetPasswordStoreResultsOrErrorFrom(
+      password_manager::PasswordStoreInterface* store,
+      password_manager::LoginsResultOrError results_or_error) override;
 
   // Called when the contents of the password store change. Triggers new
   // counting.
@@ -133,29 +133,36 @@ void PasswordStoreFetcher::Fetch(base::Time start,
   }
 }
 
-void PasswordStoreFetcher::OnGetPasswordStoreResults(
-    std::vector<std::unique_ptr<password_manager::PasswordForm>> results) {
+void PasswordStoreFetcher::OnGetPasswordStoreResultsOrErrorFrom(
+    password_manager::PasswordStoreInterface* store,
+    password_manager::LoginsResultOrError results_or_error) {
   domain_examples_.clear();
 
-  std::erase_if(
-      results,
-      [this](const std::unique_ptr<password_manager::PasswordForm>& form) {
-        return (form->date_created < start_ || form->date_created >= end_);
-      });
+  if (std::holds_alternative<password_manager::PasswordStoreBackendError>(
+          results_or_error)) {
+    std::move(fetch_complete_).Run();
+    return;
+  }
+  auto results =
+      std::get<password_manager::LoginsResult>(std::move(results_or_error));
+
+  std::erase_if(results, [this](const password_manager::PasswordForm& form) {
+    return (form.date_created < start_ || form.date_created >= end_);
+  });
   num_passwords_ = results.size();
   std::sort(results.begin(), results.end(),
-            [](const std::unique_ptr<password_manager::PasswordForm>& a,
-               const std::unique_ptr<password_manager::PasswordForm>& b) {
-              return a->times_used_in_html_form > b->times_used_in_html_form;
+            [](const password_manager::PasswordForm& a,
+               const password_manager::PasswordForm& b) {
+              return a.times_used_in_html_form > b.times_used_in_html_form;
             });
 
   std::vector<std::string> sorted_domains;
   for (const auto& result : results) {
     std::string domain = net::registry_controlled_domains::GetDomainAndRegistry(
-        result->url,
+        result.url,
         net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
     if (domain.empty())
-      domain = result->url.GetHost();
+      domain = result.url.GetHost();
     sorted_domains.emplace_back(domain);
   }
   // Only consecutive duplicates are removed below. Since we're only listing two

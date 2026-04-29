@@ -79,7 +79,7 @@ class MockAllPasswordsBottomSheetView : public AllPasswordsBottomSheetView {
  public:
   MOCK_METHOD(void,
               Show,
-              (const std::vector<std::unique_ptr<PasswordForm>>&,
+              (const std::vector<password_manager::PasswordForm>&,
                FocusedFieldType),
               (override));
 };
@@ -232,10 +232,9 @@ TEST_F(AllPasswordsBottomSheetControllerTest, Show) {
   profile_store().AddLogin(MakePasswordException(kExampleDe));
   profile_store().AddLogin(MakePasswordException(kExampleCom));
 
-  EXPECT_CALL(view(),
-              Show(UnorderedElementsAre(Pointee(Eq(form1)), Pointee(Eq(form2)),
-                                        Pointee(Eq(form3)), Pointee(Eq(form4))),
-                   FocusedFieldType::kFillablePasswordField));
+  EXPECT_CALL(view(), Show(UnorderedElementsAre(Eq(form1), Eq(form2), Eq(form3),
+                                                Eq(form4)),
+                           FocusedFieldType::kFillablePasswordField));
   all_passwords_controller()->Show();
 
   // Show method uses the store which has async work.
@@ -250,9 +249,8 @@ TEST_F(AllPasswordsBottomSheetControllerTest,
   profile_store().AddLogin(form1);
   profile_store().AddLogin(form2);
 
-  EXPECT_CALL(view(),
-              Show(UnorderedElementsAre(Pointee(Eq(form1)), Pointee(Eq(form2))),
-                   FocusedFieldType::kFillablePasswordField))
+  EXPECT_CALL(view(), Show(UnorderedElementsAre(Eq(form1), Eq(form2)),
+                           FocusedFieldType::kFillablePasswordField))
       .Times(1);
   all_passwords_controller()->Show();
   all_passwords_controller()->Show();
@@ -447,10 +445,9 @@ TEST_F(AllPasswordsBottomSheetControllerAccountStoreTest,
   form2.in_store = password_manager::PasswordForm::Store::kAccountStore;
   form3.in_store = password_manager::PasswordForm::Store::kAccountStore;
 
-  EXPECT_CALL(view(),
-              Show(UnorderedElementsAre(Pointee(Eq(form1)), Pointee(Eq(form2)),
-                                        Pointee(Eq(form3)), Pointee(Eq(form4))),
-                   FocusedFieldType::kFillablePasswordField));
+  EXPECT_CALL(view(), Show(UnorderedElementsAre(Eq(form1), Eq(form2), Eq(form3),
+                                                Eq(form4)),
+                           FocusedFieldType::kFillablePasswordField));
   all_passwords_controller()->Show();
 
   // Show method uses the store which has async work.
@@ -470,9 +467,8 @@ TEST_F(AllPasswordsBottomSheetControllerAccountStoreTest,
   form1.in_store = password_manager::PasswordForm::Store::kAccountStore;
   form2.in_store = password_manager::PasswordForm::Store::kAccountStore;
 
-  EXPECT_CALL(view(),
-              Show(UnorderedElementsAre(Pointee(Eq(form1)), Pointee(Eq(form2))),
-                   FocusedFieldType::kFillablePasswordField));
+  EXPECT_CALL(view(), Show(UnorderedElementsAre(Eq(form1), Eq(form2)),
+                           FocusedFieldType::kFillablePasswordField));
   all_passwords_controller()->Show();
 
   // Show method uses the store which has async work.

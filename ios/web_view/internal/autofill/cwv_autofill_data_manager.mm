@@ -93,26 +93,27 @@ class WebViewPasswordStoreConsumer
   explicit WebViewPasswordStoreConsumer(CWVAutofillDataManager* data_manager)
       : data_manager_(data_manager) {}
 
-  void OnGetPasswordStoreResults(
-      std::vector<std::unique_ptr<password_manager::PasswordForm>> results)
-      override {
+  void OnGetPasswordStoreResultsOrErrorFrom(
+      password_manager::PasswordStoreInterface* store,
+      password_manager::LoginsResultOrError results_or_error) override {
+    if (std::holds_alternative<password_manager::PasswordStoreBackendError>(
+            results_or_error)) {
+      [data_manager_ handlePasswordStoreResults:@[]];
+      return;
+    }
+    auto results =
+        std::get<password_manager::LoginsResult>(std::move(results_or_error));
+
     BOOL isAffiliationsEnabled = [data_manager_ isPasswordAffiliationEnabled];
 
-    // Move forms to a regular vector.
-    PasswordFormList forms;
-    forms.reserve(results.size());
+    NSMutableArray<CWVPassword*>* passwords = [NSMutableArray array];
     for (auto& form : results) {
-      forms.push_back(*form);
+      CWVPassword* password =
+          [[CWVPassword alloc] initWithPasswordForm:form
+                               isAffiliationEnabled:isAffiliationsEnabled];
+      [passwords addObject:password];
     }
-
-      NSMutableArray<CWVPassword*>* passwords = [NSMutableArray array];
-      for (auto& form : results) {
-        CWVPassword* password =
-            [[CWVPassword alloc] initWithPasswordForm:*form
-                                 isAffiliationEnabled:isAffiliationsEnabled];
-        [passwords addObject:password];
-      }
-      [data_manager_ handlePasswordStoreResults:passwords];
+    [data_manager_ handlePasswordStoreResults:passwords];
   }
 
   base::WeakPtr<password_manager::PasswordStoreConsumer> GetWeakPtr() {

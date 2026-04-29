@@ -127,8 +127,8 @@ int ReportNumberOfAccountsMetrics(bool is_account_store,
       accounts_per_site_map;
 
   for (const auto& form : results.store_results) {
-    accounts_per_site_map[{form->signon_realm, form->type,
-                           form->blocked_by_user}]++;
+    accounts_per_site_map[{form.signon_realm, form.type,
+                           form.blocked_by_user}]++;
   }
 
   std::string_view store_suffix = GetMetricsSuffixForStore(is_account_store);
@@ -245,9 +245,8 @@ int ReportNumberOfAccountsMetrics(bool is_account_store,
   return total_accounts;
 }
 
-void ReportLoginsWithSchemesMetrics(
-    bool is_account_store,
-    const std::vector<std::unique_ptr<PasswordForm>>& forms) {
+void ReportLoginsWithSchemesMetrics(bool is_account_store,
+                                    const std::vector<PasswordForm>& forms) {
   int android_logins = 0;
   int ftp_logins = 0;
   int http_logins = 0;
@@ -255,17 +254,17 @@ void ReportLoginsWithSchemesMetrics(
   int other_logins = 0;
 
   for (const auto& form : forms) {
-    if (form->blocked_by_user) {
+    if (form.blocked_by_user) {
       continue;
     }
 
-    if (affiliations::IsValidAndroidFacetURI(form->signon_realm)) {
+    if (affiliations::IsValidAndroidFacetURI(form.signon_realm)) {
       ++android_logins;
-    } else if (form->url.SchemeIs(url::kHttpsScheme)) {
+    } else if (form.url.SchemeIs(url::kHttpsScheme)) {
       ++https_logins;
-    } else if (form->url.SchemeIs(url::kHttpScheme)) {
+    } else if (form.url.SchemeIs(url::kHttpScheme)) {
       ++http_logins;
-    } else if (form->url.SchemeIs(url::kFtpScheme)) {
+    } else if (form.url.SchemeIs(url::kFtpScheme)) {
       ++ftp_logins;
     } else {
       ++other_logins;
@@ -334,16 +333,15 @@ CredentialsEnableServiceSettingToPasswordManagerEnableState(
              : PasswordManagerEnableState::kDisabledByOther;
 }
 
-void ReportPasswordNotesMetrics(
-    bool is_account_store,
-    const std::vector<std::unique_ptr<PasswordForm>>& forms) {
+void ReportPasswordNotesMetrics(bool is_account_store,
+                                const std::vector<PasswordForm>& forms) {
   std::string_view suffix_for_store =
       GetMetricsSuffixForStore(is_account_store);
 
   int credentials_with_non_empty_notes_count =
       std::ranges::count_if(forms, [](const auto& form) {
         return std::ranges::any_of(
-            form->notes, [](const auto& note) { return !note.value.empty(); });
+            form.notes, [](const auto& note) { return !note.value.empty(); });
       });
 
   base::UmaHistogramCounts1000(
@@ -355,23 +353,22 @@ void ReportPasswordNotesMetrics(
       base::StrCat({kPasswordManager, suffix_for_store,
                     ".PasswordNotes.CountNotesPerCredential3"});
   std::ranges::for_each(forms, [histogram_name](const auto& form) {
-    if (!form->notes.empty()) {
-      base::UmaHistogramCounts100(histogram_name, form->notes.size());
+    if (!form.notes.empty()) {
+      base::UmaHistogramCounts100(histogram_name, form.notes.size());
     }
   });
 }
 
-void ReportTimesPasswordUsedMetrics(
-    bool is_account_store,
-    bool custom_passphrase_enabled,
-    const std::vector<std::unique_ptr<PasswordForm>>& forms) {
+void ReportTimesPasswordUsedMetrics(bool is_account_store,
+                                    bool custom_passphrase_enabled,
+                                    const std::vector<PasswordForm>& forms) {
   std::string_view store_suffix = GetMetricsSuffixForStore(is_account_store);
   std::string_view custom_passphrase_suffix =
       GetCustomPassphraseSuffix(custom_passphrase_enabled);
 
   for (const auto& form : forms) {
-    auto type = form->type;
-    const int times_used_in_html_form = form->times_used_in_html_form;
+    auto type = form.type;
+    const int times_used_in_html_form = form.times_used_in_html_form;
 
     static constexpr std::string_view kTimesPasswordUsedSuffix =
         ".TimesPasswordUsed3";
@@ -408,16 +405,15 @@ void ReportTimesPasswordUsedMetrics(
   }
 }
 
-void ReportSyncingAccountStateMetrics(
-    const std::string& sync_username,
-    const std::vector<std::unique_ptr<PasswordForm>>& forms) {
+void ReportSyncingAccountStateMetrics(const std::string& sync_username,
+                                      const std::vector<PasswordForm>& forms) {
   const GURL gaia_signon_realm =
       GaiaUrls::GetInstance()->gaia_origin().GetURL();
   bool syncing_account_saved = std::ranges::any_of(
       forms, [&gaia_signon_realm, &sync_username](const auto& form) {
-        return gaia_signon_realm == GURL(form->signon_realm) &&
+        return gaia_signon_realm == GURL(form.signon_realm) &&
                gaia::AreEmailsSame(sync_username,
-                                   base::UTF16ToUTF8(form->username_value));
+                                   base::UTF16ToUTF8(form.username_value));
       });
   SyncingAccountState sync_account_state =
       sync_username.empty()
@@ -432,16 +428,15 @@ void ReportSyncingAccountStateMetrics(
       sync_account_state);
 }
 
-void ReportDuplicateCredentialsMetrics(
-    const std::vector<std::unique_ptr<PasswordForm>>& forms) {
+void ReportDuplicateCredentialsMetrics(const std::vector<PasswordForm>& forms) {
   // First group the passwords by [signon_realm, username] (which should be a
   // unique identifier).
   std::map<std::pair<std::string, std::u16string>, std::vector<std::u16string>>
       passwords_by_realm_and_user;
   for (const auto& form : forms) {
-    passwords_by_realm_and_user[std::make_pair(form->signon_realm,
-                                               form->username_value)]
-        .push_back(form->password_value);
+    passwords_by_realm_and_user[std::make_pair(form.signon_realm,
+                                               form.username_value)]
+        .push_back(form.password_value);
   }
   // Now go over the passwords by [realm, username] - typically there should
   // be only one password each.
@@ -475,28 +470,26 @@ void ReportDuplicateCredentialsMetrics(
       credentials_with_mismatched_duplicates, 0, 32, 6);
 }
 
-void ReportPasswordIssuesMetrics(
-    const std::vector<std::unique_ptr<PasswordForm>>& forms) {
+void ReportPasswordIssuesMetrics(const std::vector<PasswordForm>& forms) {
   int count_leaked = std::ranges::count_if(forms, [](const auto& form) {
-    return form->password_issues.contains(InsecureType::kLeaked);
+    return form.password_issues.contains(InsecureType::kLeaked);
   });
   base::UmaHistogramCounts100(
       base::StrCat({kPasswordManager, ".CompromisedCredentials3.CountLeaked"}),
       count_leaked);
 
   int count_phished = std::ranges::count_if(forms, [](const auto& form) {
-    return form->password_issues.contains(InsecureType::kPhished);
+    return form.password_issues.contains(InsecureType::kPhished);
   });
   base::UmaHistogramCounts100(
       base::StrCat({kPasswordManager, ".CompromisedCredentials3.CountPhished"}),
       count_phished);
 }
 
-void ReportPasswordProtectedMetrics(
-    const std::vector<std::unique_ptr<PasswordForm>>& forms) {
-  for (const std::unique_ptr<PasswordForm>& form : forms) {
-    if (!form->blocked_by_user && form->password_value.size() > 0) {
-      metrics_util::LogIsPasswordProtected(form->password_value.size() >=
+void ReportPasswordProtectedMetrics(const std::vector<PasswordForm>& forms) {
+  for (const PasswordForm& form : forms) {
+    if (!form.blocked_by_user && form.password_value.size() > 0) {
+      metrics_util::LogIsPasswordProtected(form.password_value.size() >=
                                            kMinPasswordLengthToCheck);
     }
   }
@@ -507,8 +500,7 @@ int ReportStoreMetrics(bool is_account_store,
                        const std::string& sync_username,
                        bool is_safe_browsing_enabled,
                        PasswordStoreResults password_store_results) {
-  std::vector<std::unique_ptr<PasswordForm>>& results =
-      password_store_results.store_results;
+  std::vector<PasswordForm>& results = password_store_results.store_results;
 
   int total_accounts = ReportNumberOfAccountsMetrics(
       is_account_store, custom_passphrase_enabled, password_store_results);
@@ -637,22 +629,22 @@ StoreMetricsReporter::CredentialsCount ReportAllMetrics(
   if (profile_store_results.has_value()) {
     profile_store_passwords_per_signon_and_username = std::make_unique<
         std::map<std::pair<std::string, std::u16string>, std::u16string>>();
-    for (const std::unique_ptr<PasswordForm>& form :
+    for (const PasswordForm& form :
          profile_store_results.value().store_results) {
-      profile_store_passwords_per_signon_and_username->insert(std::make_pair(
-          std::make_pair(form->signon_realm, form->username_value),
-          form->password_value));
+      profile_store_passwords_per_signon_and_username->insert(
+          std::make_pair(std::make_pair(form.signon_realm, form.username_value),
+                         form.password_value));
     }
   }
 
   if (account_store_results.has_value()) {
     account_store_passwords_per_signon_and_username = std::make_unique<
         std::map<std::pair<std::string, std::u16string>, std::u16string>>();
-    for (const std::unique_ptr<PasswordForm>& form :
+    for (const PasswordForm& form :
          account_store_results.value().store_results) {
-      account_store_passwords_per_signon_and_username->insert(std::make_pair(
-          std::make_pair(form->signon_realm, form->username_value),
-          form->password_value));
+      account_store_passwords_per_signon_and_username->insert(
+          std::make_pair(std::make_pair(form.signon_realm, form.username_value),
+                         form.password_value));
     }
   }
 
@@ -707,7 +699,7 @@ void ReportPasswordReencryption(PrefService* prefs) {
 }  // namespace
 
 PasswordStoreResults::PasswordStoreResults(
-    std::vector<std::unique_ptr<PasswordForm>> store_results,
+    std::vector<PasswordForm> store_results,
     bool has_error)
     : store_results(std::move(store_results)), has_error(has_error) {}
 PasswordStoreResults::~PasswordStoreResults() = default;
@@ -797,22 +789,7 @@ StoreMetricsReporter::StoreMetricsReporter(
   }
 }
 
-void StoreMetricsReporter::OnGetPasswordStoreResults(
-    std::vector<std::unique_ptr<PasswordForm>> results) {
-  // This class overrides OnGetPasswordStoreResultsFrom() (the version of this
-  // method that also receives the originating store), so the store-less version
-  // never gets called.
-  NOTREACHED();
-}
 
-void StoreMetricsReporter::OnGetPasswordStoreResultsFrom(
-    PasswordStoreInterface* store,
-    std::vector<std::unique_ptr<PasswordForm>> results) {
-  // This class overrides OnGetPasswordStoreResultsOrErrorFrom() (the version
-  // that also receives the error case), so the plain password form version
-  // never gets called.
-  NOTREACHED();
-}
 
 void StoreMetricsReporter::OnGetPasswordStoreResultsOrErrorFrom(
     PasswordStoreInterface* store,
@@ -820,9 +797,8 @@ void StoreMetricsReporter::OnGetPasswordStoreResultsOrErrorFrom(
   const bool has_error =
       std::holds_alternative<PasswordStoreBackendError>(results_or_error);
   PasswordStoreResults password_store_results{
-      password_manager::ConvertPasswordToUniquePtr(
-          password_manager::GetLoginsOrEmptyListOnFailure(
-              std::move(results_or_error))),
+      password_manager::GetLoginsOrEmptyListOnFailure(
+          std::move(results_or_error)),
       has_error};
 
   ProcessPasswordResults(store, std::move(password_store_results));

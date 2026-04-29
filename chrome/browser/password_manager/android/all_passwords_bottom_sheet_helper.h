@@ -41,9 +41,9 @@ class AllPasswordsBottomSheetHelper
 
  private:
   // PasswordStoreConsumer:
-  void OnGetPasswordStoreResults(
-      std::vector<std::unique_ptr<password_manager::PasswordForm>> results)
-      override;
+  void OnGetPasswordStoreResultsOrErrorFrom(
+      password_manager::PasswordStoreInterface* store,
+      password_manager::LoginsResultOrError results_or_error) override;
 
   // A callback used to update the suggestions if the password store provides
   // credentials and the focused field might still profit from them.

@@ -55,11 +55,15 @@ class PasswordStoreLoginsUpdateHelper : public PasswordStoreConsumer {
   }
 
  private:
-  void OnGetPasswordStoreResults(
-      std::vector<std::unique_ptr<PasswordForm>> results) override {
+  void OnGetPasswordStoreResultsOrErrorFrom(
+      PasswordStoreInterface* store,
+      LoginsResultOrError results_or_error) override {
+    ASSERT_FALSE(
+        std::holds_alternative<PasswordStoreBackendError>(results_or_error));
+    auto results = std::get<LoginsResult>(std::move(results_or_error));
     EXPECT_EQ(results.size(), expected_logins_num_);
     for (const auto& form : results) {
-      EXPECT_EQ(form->skip_zero_click, skip_zero_click_);
+      EXPECT_EQ(form.skip_zero_click, skip_zero_click_);
     }
   }
 

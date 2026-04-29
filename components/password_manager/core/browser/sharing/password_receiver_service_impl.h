@@ -44,8 +44,9 @@ class ProcessIncomingSharingInvitationTask : public PasswordStoreConsumer {
 
  private:
   // PasswordStoreConsumer implementation:
-  void OnGetPasswordStoreResults(
-      std::vector<std::unique_ptr<PasswordForm>> results) override;
+  void OnGetPasswordStoreResultsOrErrorFrom(
+      PasswordStoreInterface* store,
+      LoginsResultOrError results_or_error) override;
 
   // The incoming credentials that are being processed by this task.
   PasswordForm incoming_credentials_;

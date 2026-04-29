@@ -12,11 +12,10 @@
 namespace password_manager {
 
 // static
-std::vector<std::unique_ptr<PasswordForm>>
-CredentialsCleaner::RemoveNonHTTPOrHTTPSForms(
-    std::vector<std::unique_ptr<PasswordForm>> forms) {
-  std::erase_if(forms, [](const auto& form) {
-    return !GURL(form->signon_realm).SchemeIsHTTPOrHTTPS();
+std::vector<PasswordForm> CredentialsCleaner::RemoveNonHTTPOrHTTPSForms(
+    std::vector<PasswordForm> forms) {
+  std::erase_if(forms, [](const PasswordForm& form) {
+    return !GURL(form.signon_realm).SchemeIsHTTPOrHTTPS();
   });
 
   return forms;

@@ -62,9 +62,9 @@ class PostSaveCompromisedHelper
 
  private:
   // PasswordStoreConsumer:
-  void OnGetPasswordStoreResults(
-      std::vector<std::unique_ptr<password_manager::PasswordForm>> results)
-      override;
+  void OnGetPasswordStoreResultsOrErrorFrom(
+      PasswordStoreInterface* store,
+      LoginsResultOrError results_or_error) override;
 
   void AnalyzeLeakedCredentialsInternal();
 
@@ -80,7 +80,7 @@ class PostSaveCompromisedHelper
   // Closure which is released after both PasswordStores reply with results.
   base::RepeatingClosure forms_received_;
 
-  std::vector<std::unique_ptr<PasswordForm>> passwords_;
+  std::vector<PasswordForm> passwords_;
 
   base::WeakPtrFactory<PostSaveCompromisedHelper> weak_ptr_factory_{this};
 };

@@ -638,28 +638,22 @@ void SavedPasswordsPresenter::OnPasskeyModelShuttingDown() {
 
 void SavedPasswordsPresenter::OnPasskeyModelIsReady(bool is_ready) {}
 
-void SavedPasswordsPresenter::OnGetPasswordStoreResults(
-    std::vector<std::unique_ptr<PasswordForm>> results) {
-  // This class overrides OnGetPasswordStoreResultsFrom() (the version of this
-  // method that also receives the originating store), so the store-less version
-  // never gets called.
-  NOTREACHED();
-}
-
-void SavedPasswordsPresenter::OnGetPasswordStoreResultsFrom(
+void SavedPasswordsPresenter::OnGetPasswordStoreResultsOrErrorFrom(
     PasswordStoreInterface* store,
-    std::vector<std::unique_ptr<PasswordForm>> results) {
+    LoginsResultOrError results_or_error) {
   pending_store_updates_--;
   DCHECK_GE(pending_store_updates_, 0);
 
-  std::vector<PasswordForm> forms;
-  for (auto& form : results) {
-    forms.push_back(std::move(*form));
+  if (std::holds_alternative<PasswordStoreBackendError>(results_or_error)) {
+    NotifySavedPasswordsChanged(PasswordStoreChangeList());
+    return;
   }
-  AddForms(forms,
+  auto results = std::get<LoginsResult>(std::move(results_or_error));
+
+  AddForms(results,
            base::BindOnce(&SavedPasswordsPresenter::NotifySavedPasswordsChanged,
                           weak_ptr_factory_.GetWeakPtr(),
-                          GetChangesForAddedForms(forms)));
+                          GetChangesForAddedForms(results)));
 }
 
 PasswordStoreInterface& SavedPasswordsPresenter::GetStoreFor(

@@ -178,18 +178,25 @@ ProcessIncomingSharingInvitationTask::ProcessIncomingSharingInvitationTask(
 ProcessIncomingSharingInvitationTask::~ProcessIncomingSharingInvitationTask() =
     default;
 
-void ProcessIncomingSharingInvitationTask::OnGetPasswordStoreResults(
-    std::vector<std::unique_ptr<PasswordForm>> results) {
+void ProcessIncomingSharingInvitationTask::OnGetPasswordStoreResultsOrErrorFrom(
+    PasswordStoreInterface* store,
+    LoginsResultOrError results_or_error) {
+  if (std::holds_alternative<PasswordStoreBackendError>(results_or_error)) {
+    std::move(done_processing_invitation_callback_).Run(this);
+    return;
+  }
+  auto results = std::get<LoginsResult>(std::move(results_or_error));
+
   // Grouped credentials are ignored because they have different domains.
   std::erase_if(results, [](const auto& form) {
-    return form->match_type == PasswordForm::MatchType::kGrouped;
+    return form.match_type == PasswordForm::MatchType::kGrouped;
   });
   // TODO(crbug.com/40269204): process PSL and affilated credentials if needed.
   // TODO(crbug.com/40269204): process conflicting passwords differently if
   // necessary.
-  auto credential_with_same_username_it = std::ranges::find_if(
-      results, [this](const std::unique_ptr<PasswordForm>& result) {
-        return result->username_value == incoming_credentials_.username_value;
+  auto credential_with_same_username_it =
+      std::ranges::find_if(results, [this](const PasswordForm& result) {
+        return result.username_value == incoming_credentials_.username_value;
       });
   if (credential_with_same_username_it == results.end()) {
     metrics_util::LogProcessIncomingPasswordSharingInvitationResult(
@@ -203,7 +210,7 @@ void ProcessIncomingSharingInvitationTask::OnGetPasswordStoreResults(
 
   ProcessIncomingPasswordSharingInvitationResult processing_result =
       GetProcessSharingInvitationResultForIgnoredInvitations(
-          **credential_with_same_username_it, incoming_credentials_);
+          *credential_with_same_username_it, incoming_credentials_);
   metrics_util::LogProcessIncomingPasswordSharingInvitationResult(
       processing_result);
 

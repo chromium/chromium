@@ -80,14 +80,14 @@ using testing::NiceMock;
 using testing::UnorderedElementsAre;
 
 MATCHER_P2(MatchesLogin, username, password, "") {
-  return arg->username_value == base::UTF8ToUTF16(username) &&
-         arg->password_value == base::UTF8ToUTF16(password);
+  return arg.username_value == base::UTF8ToUTF16(username) &&
+         arg.password_value == base::UTF8ToUTF16(password);
 }
 
 MATCHER_P3(MatchesLoginAndRealm, username, password, signon_realm, "") {
-  return arg->username_value == base::UTF8ToUTF16(username) &&
-         arg->password_value == base::UTF8ToUTF16(password) &&
-         arg->signon_realm == signon_realm;
+  return arg.username_value == base::UTF8ToUTF16(username) &&
+         arg.password_value == base::UTF8ToUTF16(password) &&
+         arg.signon_realm == signon_realm;
 }
 
 const char kExampleHostname[] = "www.example.com";
@@ -332,7 +332,7 @@ class PasswordManagerSyncTest : public SyncTest {
 
   // Synchronously reads all credentials from the profile password store and
   // returns them.
-  std::vector<std::unique_ptr<password_manager::PasswordForm>>
+  std::vector<password_manager::PasswordForm>
   GetAllLoginsFromProfilePasswordStore() {
     scoped_refptr<password_manager::PasswordStoreInterface> password_store =
         passwords_helper::GetProfilePasswordStoreInterface(0);
@@ -344,7 +344,7 @@ class PasswordManagerSyncTest : public SyncTest {
 
   // Synchronously reads all credentials from the account password store and
   // returns them.
-  std::vector<std::unique_ptr<password_manager::PasswordForm>>
+  std::vector<password_manager::PasswordForm>
   GetAllLoginsFromAccountPasswordStore() {
     scoped_refptr<password_manager::PasswordStoreInterface> password_store =
         passwords_helper::GetAccountPasswordStoreInterface(0);

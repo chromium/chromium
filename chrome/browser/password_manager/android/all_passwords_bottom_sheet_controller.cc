@@ -94,12 +94,12 @@ void AllPasswordsBottomSheetController::Show() {
   }
 
   int awaiting_calls = account_store_ ? 2 : 1;
-  on_password_forms_received_barrier_callback_ = base::BarrierCallback<
-      std::vector<std::unique_ptr<password_manager::PasswordForm>>>(
-      awaiting_calls,
-      base::BindOnce(
-          &AllPasswordsBottomSheetController::OnResultFromAllStoresReceived,
-          weak_ptr_factory_.GetWeakPtr()));
+  on_password_forms_received_barrier_callback_ =
+      base::BarrierCallback<std::vector<password_manager::PasswordForm>>(
+          awaiting_calls,
+          base::BindOnce(
+              &AllPasswordsBottomSheetController::OnResultFromAllStoresReceived,
+              weak_ptr_factory_.GetWeakPtr()));
 
   profile_store_->GetAllLoginsWithAffiliationAndBrandingInformation(
       weak_ptr_factory_.GetWeakPtr());
@@ -109,11 +109,19 @@ void AllPasswordsBottomSheetController::Show() {
   }
 }
 
-void AllPasswordsBottomSheetController::OnGetPasswordStoreResults(
-    std::vector<std::unique_ptr<password_manager::PasswordForm>> results) {
+void AllPasswordsBottomSheetController::OnGetPasswordStoreResultsOrErrorFrom(
+    password_manager::PasswordStoreInterface* store,
+    password_manager::LoginsResultOrError results_or_error) {
   CHECK(on_password_forms_received_barrier_callback_);
-  std::erase_if(results,
-                [](const auto& form_ptr) { return form_ptr->blocked_by_user; });
+  if (std::holds_alternative<password_manager::PasswordStoreBackendError>(
+          results_or_error)) {
+    on_password_forms_received_barrier_callback_.Run({});
+    return;
+  }
+  auto results =
+      std::get<password_manager::LoginsResult>(std::move(results_or_error));
+  std::erase_if(results, [](const auto& form) { return form.blocked_by_user; });
+
   on_password_forms_received_barrier_callback_.Run(std::move(results));
 }
 
@@ -201,8 +209,7 @@ void AllPasswordsBottomSheetController::FillPassword(
 }
 
 void AllPasswordsBottomSheetController::OnResultFromAllStoresReceived(
-    std::vector<std::vector<std::unique_ptr<password_manager::PasswordForm>>>
-        results) {
+    std::vector<std::vector<password_manager::PasswordForm>> results) {
   CHECK(on_password_forms_received_barrier_callback_);
   CHECK(!results.empty());
   on_password_forms_received_barrier_callback_.Reset();

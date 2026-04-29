@@ -110,8 +110,9 @@ class PasswordReuseManagerImpl : public PasswordReuseManager,
   void RequestLoginsFromStores();
 
   // Implements PasswordStoreConsumer interface.
-  void OnGetPasswordStoreResults(
-      std::vector<std::unique_ptr<PasswordForm>> results) override;
+  void OnGetPasswordStoreResultsOrErrorFrom(
+      PasswordStoreInterface* store,
+      LoginsResultOrError results_or_error) override;
 
   // Implements PasswordStoreInterface::Observer
   void OnLoginsChanged(

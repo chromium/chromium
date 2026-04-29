@@ -85,12 +85,18 @@ void PasswordAffiliationSourceAdapter::OnLoginsRetained(
   // TODO(b/328037758): Handle retained passwords.
 }
 
-void PasswordAffiliationSourceAdapter::OnGetPasswordStoreResults(
-    std::vector<std::unique_ptr<PasswordForm>> results) {
+void PasswordAffiliationSourceAdapter::OnGetPasswordStoreResultsOrErrorFrom(
+    PasswordStoreInterface* store,
+    LoginsResultOrError results_or_error) {
+  if (std::holds_alternative<PasswordStoreBackendError>(results_or_error)) {
+    std::move(on_password_forms_received_callback_).Run({});
+    return;
+  }
+  auto results = std::get<LoginsResult>(std::move(results_or_error));
   std::vector<FacetURI> facets;
-  for (const std::unique_ptr<PasswordForm>& form : results) {
+  for (const auto& form : results) {
     FacetURI facet_uri =
-        FacetURI::FromPotentiallyInvalidSpec(form->signon_realm);
+        FacetURI::FromPotentiallyInvalidSpec(form.signon_realm);
     if (IsFacetValidForAffiliation(facet_uri)) {
       facets.push_back(std::move(facet_uri));
     }

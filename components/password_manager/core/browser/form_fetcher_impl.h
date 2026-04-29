@@ -77,30 +77,22 @@ class FormFetcherImpl : public FormFetcher,
   void NotifyConsumer(FormFetcher::Consumer* consumer);
 
   // Actually finds best matches and notifies consumers.
-  void FindMatchesAndNotifyConsumers(
-      std::vector<std::unique_ptr<PasswordForm>> results);
+  void FindMatchesAndNotifyConsumers(std::vector<PasswordForm> results);
 
   // Splits |results| into |federated_|, |non_federated_|,
   // |is_blocklisted_in_profile_store_| and |is_blocklisted_in_account_store_|.
-  void SplitResults(std::vector<std::unique_ptr<PasswordForm>> results);
+  void SplitResults(std::vector<PasswordForm> results);
 
   // PasswordStoreConsumer:
-  void OnGetPasswordStoreResults(
-      std::vector<std::unique_ptr<PasswordForm>> results) override;
-  void OnGetPasswordStoreResultsFrom(
-      PasswordStoreInterface* store,
-      std::vector<std::unique_ptr<PasswordForm>> results) override;
   void OnGetSiteStatistics(std::vector<InteractionsStats> stats) override;
   void OnGetPasswordStoreResultsOrErrorFrom(
       PasswordStoreInterface* store,
       LoginsResultOrError results_or_error) override;
 
   // HttpPasswordStoreMigrator::Consumer:
-  void ProcessMigratedForms(
-      std::vector<std::unique_ptr<PasswordForm>> forms) override;
+  void ProcessMigratedForms(std::vector<PasswordForm> forms) override;
 
-  void AggregatePasswordStoreResults(
-      std::vector<std::unique_ptr<PasswordForm>> results);
+  void AggregatePasswordStoreResults(std::vector<PasswordForm> results);
 
   // PasswordStore results will be fetched for this description.
   const PasswordFormDigest form_digest_;
@@ -152,7 +144,7 @@ class FormFetcherImpl : public FormFetcher,
   bool filter_grouped_credentials_ = true;
 
   int wait_counter_ = 0;
-  std::vector<std::unique_ptr<PasswordForm>> partial_results_;
+  std::vector<PasswordForm> partial_results_;
 
   // Statistics for the current domain.
   std::vector<InteractionsStats> interactions_stats_;

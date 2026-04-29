@@ -29,16 +29,17 @@ class PasswordStoreResultsObserver : public PasswordStoreConsumer {
   ~PasswordStoreResultsObserver() override;
 
   // Waits for OnGetPasswordStoreResults() and returns the result.
-  std::vector<std::unique_ptr<PasswordForm>> WaitForResults();
+  std::vector<PasswordForm> WaitForResults();
 
   base::WeakPtr<PasswordStoreConsumer> GetWeakPtr();
 
  private:
-  void OnGetPasswordStoreResults(
-      std::vector<std::unique_ptr<PasswordForm>> results) override;
+  void OnGetPasswordStoreResultsOrErrorFrom(
+      PasswordStoreInterface* store,
+      LoginsResultOrError results_or_error) override;
 
   base::RunLoop run_loop_;
-  std::vector<std::unique_ptr<PasswordForm>> results_;
+  std::vector<PasswordForm> results_;
   base::WeakPtrFactory<PasswordStoreResultsObserver> weak_ptr_factory_{this};
 };
 

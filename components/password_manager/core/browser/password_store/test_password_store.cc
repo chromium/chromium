@@ -63,11 +63,10 @@ const FakePasswordStoreBackend* TestPasswordStore::fake_backend() const {
 TestPasswordStore::PasswordMap GetAllLoginsSync(PasswordStoreInterface* store) {
   PasswordStoreResultsObserver observer;
   store->GetAllLogins(observer.GetWeakPtr());
-  std::vector<std::unique_ptr<PasswordForm>> results =
-      observer.WaitForResults();
+  std::vector<PasswordForm> results = observer.WaitForResults();
   TestPasswordStore::PasswordMap map;
   for (auto& result : results) {
-    map[result->signon_realm].push_back(std::move(*result));
+    map[result.signon_realm].push_back(std::move(result));
   }
   return map;
 }

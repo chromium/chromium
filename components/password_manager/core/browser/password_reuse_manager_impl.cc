@@ -492,17 +492,25 @@ void PasswordReuseManagerImpl::RequestLoginsFromStores() {
   }
 }
 
-void PasswordReuseManagerImpl::OnGetPasswordStoreResults(
-    std::vector<std::unique_ptr<PasswordForm>> results) {
+void PasswordReuseManagerImpl::OnGetPasswordStoreResultsOrErrorFrom(
+    PasswordStoreInterface* store,
+    LoginsResultOrError results_or_error) {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
-  if (!hash_password_manager_) {
-    CHECK(DelayUntilReady(&PasswordReuseManagerImpl::OnGetPasswordStoreResults,
-                          std::move(results)));
+  if (std::holds_alternative<PasswordStoreBackendError>(results_or_error)) {
     return;
   }
+
+  if (!hash_password_manager_) {
+    CHECK(DelayUntilReady(
+        &PasswordReuseManagerImpl::OnGetPasswordStoreResultsOrErrorFrom,
+        base::Unretained(store), std::move(results_or_error)));
+    return;
+  }
+
   if (!reuse_detector_) {
     return;
   }
+  auto results = std::get<LoginsResult>(std::move(results_or_error));
   ScheduleTask(base::BindOnce(&PasswordReuseDetector::OnGetPasswordStoreResults,
                               base::Unretained(reuse_detector_.get()),
                               std::move(results)));
