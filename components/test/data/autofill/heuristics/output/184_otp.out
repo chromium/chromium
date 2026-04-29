@@ -1,0 +1,4 @@
+EMAIL_ADDRESS | email | Email: |  | email_1
+ONE_TIME_CODE | otp_field | OTP: |  | email_1
+ONE_TIME_CODE | verification_code | Verification Code: |  | email_1
+UNKNOWN_TYPE | sms_code | One Time Password: |  | email_1

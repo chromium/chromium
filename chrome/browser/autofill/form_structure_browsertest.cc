@@ -233,6 +233,7 @@ FormStructureBrowserTest::FormStructureBrowserTest()
           features::kAutofillPreferPhoneCountryCodeTypeOverCountryHtmlType,
           // TODO(crbug.com/479503511): Remove once launched.
           features::kAutofillImprovePhoneNumberRationalization,
+          features::kAutofillEnableOneTimeCodeHeuristics,
       },
       // Disabled
       {

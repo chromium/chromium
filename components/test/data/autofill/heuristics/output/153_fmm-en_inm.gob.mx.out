@@ -45,4 +45,4 @@ ADDRESS_HOME_COUNTRY | nacionalidadTutor | Nationality (Country) | 0 | domicilio
 ADDRESS_HOME_COUNTRY | paisNacimientoTutor | Country of birth | 0 | domicilioMexico_4
 EMAIL_ADDRESS | correoElectronico | Email |  | domicilioMexico_4
 EMAIL_ADDRESS | confirmacionCorreoElectronico | Email (Confirmation) |  | domicilioMexico_4
-UNKNOWN_TYPE | captcha | Verification code: |  | domicilioMexico_4
+ONE_TIME_CODE | captcha | Verification code: |  | domicilioMexico_4
