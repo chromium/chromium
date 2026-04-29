@@ -1470,7 +1470,9 @@ class GapAccumulator {
   STACK_ALLOCATED();
 
  public:
-  GapAccumulator() = default;
+  GapAccumulator()
+      : gap_geometry_(MakeGarbageCollected<GapGeometry>(
+            GapGeometry::ContainerType::kGrid)) {}
 
   // Builds the list of "main" gaps for Grid. In the MC (Main-Cross)
   // gap geometry model, we pick rows as the main axis (an arbitrary but
@@ -1495,7 +1497,7 @@ class GapAccumulator {
 
     if (row_track_count > 2) {
       // With `n` tracks, we have `n - 1` gaps.
-      main_gaps_.ReserveInitialCapacity(row_track_count - 1);
+      gap_geometry_->ReserveMainGaps(row_track_count - 1);
     }
 
     // CSS Gaps[1] defines an intersection point to exist in the center of gaps.
@@ -1523,8 +1525,7 @@ class GapAccumulator {
 
       LayoutUnit row_midpoint =
           LayoutUnit(row_tracks[row_line_index] - (row_gutter_size_ / 2.0f));
-      MainGap main_gap = MainGap(row_midpoint);
-      main_gaps_.push_back(main_gap);
+      gap_geometry_->AddMainGap(row_midpoint);
     }
 
     content_block_start_ = row_tracks[0];
@@ -1547,7 +1548,7 @@ class GapAccumulator {
 
     if (col_track_count > 2) {
       // With `n` tracks, we have `n - 1` gaps.
-      cross_gaps_.ReserveInitialCapacity(col_track_count - 1);
+      gap_geometry_->ReserveCrossGaps(col_track_count - 1);
     }
 
     // CSS Gaps defines an intersection point to exist in the center
@@ -1575,8 +1576,7 @@ class GapAccumulator {
           LayoutUnit(col_tracks[col_line_index] - (col_gutter_size_ / 2.0f));
       LogicalOffset cross_gap_offset =
           LogicalOffset(col_midpoint, LayoutUnit());
-      CrossGap cross_gap = CrossGap(cross_gap_offset);
-      cross_gaps_.push_back(cross_gap);
+      gap_geometry_->AddCrossGap(cross_gap_offset);
     }
 
     content_inline_start_ = col_tracks[0];
@@ -1661,54 +1661,45 @@ class GapAccumulator {
 
   const GapGeometry* FinalizeGapGeometry() {
     // `GapGeometry` requires both row(main) and column(cross) gaps to be valid.
-    if (main_gaps_.empty() && cross_gaps_.empty()) {
+    if (gap_geometry_->MainGapCount() == 0 &&
+        gap_geometry_->CrossGapCount() == 0) {
       return nullptr;
     }
 
-    GapGeometry* gap_geometry =
-        MakeGarbageCollected<GapGeometry>(GapGeometry::ContainerType::kGrid);
-
-    gap_geometry->SetInlineGapSize(col_gutter_size_);
-    gap_geometry->SetBlockGapSize(row_gutter_size_);
+    gap_geometry_->SetInlineGapSize(col_gutter_size_);
+    gap_geometry_->SetBlockGapSize(row_gutter_size_);
 
     // Finalize the `GapSegmentStateRanges` for each gap using the aggregated
     // cell states collected during `AggregateCellStates`. Only finalize if there
     // were any cells for that axis.
     if (main_gaps_aggregator_.GetCellCount() > 0) {
-      for (wtf_size_t gap_index = 0; gap_index < main_gaps_.size();
+      for (wtf_size_t gap_index = 0; gap_index < gap_geometry_->MainGapCount();
            ++gap_index) {
         main_gaps_aggregator_.FinalizeGapSegmentStateRangesFor(
-            main_gaps_[gap_index], gap_index);
+            gap_geometry_->MainGapAt(gap_index), gap_index);
       }
     }
 
     if (cross_gaps_aggregator_.GetCellCount() > 0) {
-      for (wtf_size_t gap_index = 0; gap_index < cross_gaps_.size();
+      for (wtf_size_t gap_index = 0; gap_index < gap_geometry_->CrossGapCount();
            ++gap_index) {
         cross_gaps_aggregator_.FinalizeGapSegmentStateRangesFor(
-            cross_gaps_[gap_index], gap_index);
+            gap_geometry_->CrossGapAt(gap_index), gap_index);
       }
     }
 
-    if (!main_gaps_.empty()) {
-      gap_geometry->SetMainGaps(std::move(main_gaps_));
-    }
+    gap_geometry_->SetContentInlineOffsets(content_inline_start_,
+                                           content_inline_end_);
+    gap_geometry_->SetContentBlockOffsets(content_block_start_,
+                                          content_block_end_);
 
-    if (!cross_gaps_.empty()) {
-      gap_geometry->SetCrossGaps(std::move(cross_gaps_));
-    }
+    gap_geometry_->Finalize();
 
-    gap_geometry->SetContentInlineOffsets(content_inline_start_,
-                                          content_inline_end_);
-    gap_geometry->SetContentBlockOffsets(content_block_start_,
-                                         content_block_end_);
-
-    return gap_geometry;
+    return gap_geometry_;
   }
 
  private:
-  MainGaps main_gaps_;
-  CrossGaps cross_gaps_;
+  GapGeometry* gap_geometry_ = nullptr;
 
   LayoutUnit content_block_start_;
   LayoutUnit content_block_end_;

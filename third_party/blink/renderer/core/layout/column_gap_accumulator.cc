@@ -16,7 +16,9 @@ ColumnGapAccumulator::ColumnGapAccumulator(LayoutUnit column_gap_size,
     : column_gap_size_(column_gap_size),
       row_gap_size_(row_gap_size),
       specified_column_count_(specified_column_count),
-      has_auto_column_count_(has_auto_column_count) {}
+      has_auto_column_count_(has_auto_column_count),
+      gap_geometry_(MakeGarbageCollected<GapGeometry>(
+          GapGeometry::ContainerType::kMultiColumn)) {}
 
 void ColumnGapAccumulator::AddMainGap(LayoutUnit block_offset,
                                       SpannerMainGapType gap_type) {
@@ -26,7 +28,7 @@ void ColumnGapAccumulator::AddMainGap(LayoutUnit block_offset,
     block_offset += row_gap_size_ / 2;
   }
 
-  main_gaps_.emplace_back(block_offset, gap_type);
+  gap_geometry_->AddMainGap(block_offset, gap_type);
 }
 
 void ColumnGapAccumulator::AddEndSpannerMainGapIfNeeded(
@@ -40,7 +42,8 @@ void ColumnGapAccumulator::AddEndSpannerMainGapIfNeeded(
 
 void ColumnGapAccumulator::AddStartSpannerMainGapIfNeeded(
     LayoutUnit block_offset) {
-  if (!main_gaps_.empty() && main_gaps_.back().IsStartSpannerMainGap()) {
+  if (gap_geometry_->MainGapCount() > 0 &&
+      gap_geometry_->GetMainGaps().back().IsStartSpannerMainGap()) {
     return;
   }
 
@@ -55,7 +58,7 @@ void ColumnGapAccumulator::AddCrossGap(LayoutUnit column_inline_start_offset) {
 
   CHECK(first_column_offset_.has_value());
 
-  cross_gaps_.emplace_back(
+  gap_geometry_->AddCrossGap(
       LogicalOffset(gap_center, first_column_offset_.value().block_offset));
 }
 
@@ -85,29 +88,28 @@ bool ColumnGapAccumulator::ShouldAddCrossGapAt(
 }
 
 bool ColumnGapAccumulator::LastMainGapIsStartSpanner() const {
-  return !main_gaps_.empty() && main_gaps_.back().IsStartSpannerMainGap();
+  return gap_geometry_->MainGapCount() > 0 &&
+         gap_geometry_->GetMainGaps().back().IsStartSpannerMainGap();
 }
 
 const GapGeometry* ColumnGapAccumulator::BuildGapGeometry(
     const BoxFragmentBuilder& container_builder,
     LayoutUnit column_inline_size) {
-  if ((cross_gaps_.empty() && main_gaps_.empty()) ||
+  if ((gap_geometry_->CrossGapCount() == 0 &&
+       gap_geometry_->MainGapCount() == 0) ||
       !first_column_offset_.has_value()) {
     return nullptr;
   }
-
-  auto* gap_geometry =
-      MakeGarbageCollected<GapGeometry>(GapGeometry::kMultiColumn);
 
   // In the case where we didn't create as many columns as specified in
   // `column-count`, we need to add a cross gap for each remaining column
   // that would have been created, until we reach the specified column count.
   for (wtf_size_t i = max_columns_in_row_; i < specified_column_count_; ++i) {
     LayoutUnit inline_offset;
-    if (!cross_gaps_.empty()) {
-      inline_offset = cross_gaps_.back().GetGapOffset().inline_offset +
-                      column_gap_size_ / 2 + column_inline_size +
-                      column_gap_size_;
+    if (gap_geometry_->CrossGapCount() > 0) {
+      inline_offset =
+          gap_geometry_->GetCrossGaps().back().GetGapOffset().inline_offset +
+          column_gap_size_ / 2 + column_inline_size + column_gap_size_;
     }
     AddCrossGap(inline_offset);
   }
@@ -115,16 +117,16 @@ const GapGeometry* ColumnGapAccumulator::BuildGapGeometry(
   LayoutUnit content_inline_end =
       container_builder.FragmentInlineSize() -
       container_builder.BorderScrollbarPadding().inline_end;
-  if (!cross_gaps_.empty()) {
+  if (gap_geometry_->CrossGapCount() > 0) {
     content_inline_end = std::max(
-        content_inline_end, cross_gaps_.back().GetGapOffset().inline_offset);
+        content_inline_end,
+        gap_geometry_->GetCrossGaps().back().GetGapOffset().inline_offset);
 
     if (columns_per_row_.has_value()) {
       UpdateCrossGapSegmentStates();
     }
 
-    gap_geometry->SetCrossGaps(std::move(cross_gaps_));
-    gap_geometry->SetInlineGapSize(column_gap_size_);
+    gap_geometry_->SetInlineGapSize(column_gap_size_);
   }
 
   LayoutUnit content_block_end =
@@ -132,33 +134,34 @@ const GapGeometry* ColumnGapAccumulator::BuildGapGeometry(
       container_builder.ApplicableBorders().block_end -
       container_builder.ApplicableScrollbar().block_end -
       container_builder.ApplicablePadding().block_end;
-  if (!main_gaps_.empty()) {
+  if (gap_geometry_->MainGapCount() > 0) {
     // TODO(crbug.com/357648037): There is content beyond the last main gap,
     // so using this as the offset isn't right. The bug here is that if the
     // multicol container is overflowed, the column gaps in the last row will
     // be missing.
-    content_block_end =
-        std::max(content_block_end, main_gaps_.back().GetGapOffset());
-    gap_geometry->SetMainGaps(std::move(main_gaps_));
-    gap_geometry->SetBlockGapSize(row_gap_size_);
+    content_block_end = std::max(
+        content_block_end, gap_geometry_->GetMainGaps().back().GetGapOffset());
+    gap_geometry_->SetBlockGapSize(row_gap_size_);
   }
 
-  gap_geometry->SetContentInlineOffsets(first_column_offset_->inline_offset,
-                                        content_inline_end);
-  gap_geometry->SetContentBlockOffsets(first_column_offset_->block_offset,
-                                       content_block_end);
+  gap_geometry_->SetContentInlineOffsets(first_column_offset_->inline_offset,
+                                         content_inline_end);
+  gap_geometry_->SetContentBlockOffsets(first_column_offset_->block_offset,
+                                        content_block_end);
 
-  gap_geometry->SetMainDirection(kForRows);
+  gap_geometry_->SetMainDirection(kForRows);
 
-  return gap_geometry;
+  gap_geometry_->Finalize();
+
+  return gap_geometry_;
 }
 
 void ColumnGapAccumulator::FinalizeMainGapSegmentStateForCurrentRow(
     wtf_size_t cols_in_row) {
   // Now that we know the column count of the row, we can finalize the gap
   // segment state of the main gap directly above it (if any).
-  if (cols_in_row == kNotFound || main_gaps_.empty() ||
-      main_gaps_.back().IsSpannerMainGap()) {
+  if (cols_in_row == kNotFound || gap_geometry_->MainGapCount() == 0 ||
+      gap_geometry_->GetMainGaps().back().IsSpannerMainGap()) {
     return;
   }
 
@@ -186,16 +189,17 @@ void ColumnGapAccumulator::FinalizeMainGapSegmentStateForCurrentRow(
       (cols_above > cols_in_row)
           ? GapSegmentState(GapSegmentState::kEmptyAfter)
           : GapSegmentState(GapSegmentState::kEmptyBefore);
-  main_gaps_.back().AddGapSegmentStateRange(
-      GapSegmentStateRange(shorter_row_cols, longer_row_cols, state));
+  gap_geometry_->MainGapAt(gap_geometry_->MainGapCount() - 1)
+      .AddGapSegmentStateRange(
+          GapSegmentStateRange(shorter_row_cols, longer_row_cols, state));
 }
 
 void ColumnGapAccumulator::UpdateCrossGapSegmentStates() {
   // Computes per-row segment states for each cross gap based on how many
   // columns are present in each row of the multicol container.
-  for (wtf_size_t cross_gap_index = 0; cross_gap_index < cross_gaps_.size();
-       ++cross_gap_index) {
-    CrossGap& cross_gap = cross_gaps_[cross_gap_index];
+  for (wtf_size_t cross_gap_index = 0;
+       cross_gap_index < gap_geometry_->CrossGapCount(); ++cross_gap_index) {
+    CrossGap& cross_gap = gap_geometry_->CrossGapAt(cross_gap_index);
     for (wtf_size_t cols_in_row_index = 0;
          cols_in_row_index < columns_per_row_->size(); ++cols_in_row_index) {
       wtf_size_t cols_in_row = (*columns_per_row_)[cols_in_row_index];

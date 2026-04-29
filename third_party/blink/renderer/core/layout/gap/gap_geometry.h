@@ -148,12 +148,6 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
   void SetBlockGapSize(LayoutUnit size) { block_gap_size_ = size; }
   LayoutUnit GetBlockGapSize() const { return block_gap_size_; }
 
-  // Per-line main axis gap sizes for flex containers.
-  // This is needed because different lines in a flex container can have
-  // different effective gap sizes due to content distribution space.
-  void SetFlexCrossGapSizes(Vector<LayoutUnit>&& sizes) {
-    flex_cross_gap_sizes_ = std::move(sizes);
-  }
   LayoutUnit GetFlexCrossGapSize(wtf_size_t line_index) const {
     CHECK(flex_cross_gap_sizes_.has_value());
     CHECK_GT(flex_cross_gap_sizes_->size(), line_index);
@@ -168,22 +162,70 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
   LayoutUnit GetContentBlockStart() const { return content_block_start_; }
   LayoutUnit GetContentBlockEnd() const { return content_block_end_; }
 
-  void SetMainGaps(Vector<MainGap>&& main_gaps) {
-    CHECK(!main_gaps.empty());
-    main_gaps_ = std::move(main_gaps);
+  void ReserveMainGaps(wtf_size_t capacity) {
+    main_gaps_.ReserveInitialCapacity(capacity);
+  }
 
-    // The `main_gap_running_index_` should be the first main_gap index that has
-    // cross gaps before it.
+  void ReserveCrossGaps(wtf_size_t capacity) {
+    cross_gaps_.ReserveInitialCapacity(capacity);
+  }
+
+  MainGap& AddMainGap(LayoutUnit offset,
+                      SpannerMainGapType type = SpannerMainGapType::kNone) {
+    main_gaps_.emplace_back(offset, type);
+    return main_gaps_.back();
+  }
+
+  CrossGap& AddCrossGap(LogicalOffset offset) {
+    cross_gaps_.emplace_back(offset);
+    return cross_gaps_.back();
+  }
+
+  CrossGap& AddCrossGap(LogicalOffset offset,
+                        CrossGap::EdgeIntersectionState state) {
+    cross_gaps_.emplace_back(offset, state);
+    return cross_gaps_.back();
+  }
+
+  void RemoveLastMainGap() {
+    CHECK(!main_gaps_.empty());
+    main_gaps_.pop_back();
+  }
+
+  MainGap& MainGapAt(wtf_size_t index) {
+    CHECK_LT(index, main_gaps_.size());
+    return main_gaps_[index];
+  }
+
+  CrossGap& CrossGapAt(wtf_size_t index) {
+    CHECK_LT(index, cross_gaps_.size());
+    return cross_gaps_[index];
+  }
+
+  wtf_size_t MainGapCount() const { return main_gaps_.size(); }
+  wtf_size_t CrossGapCount() const { return cross_gaps_.size(); }
+
+  // Per-line main axis gap sizes for flex containers. This is needed because
+  // different lines in a flex container can have different effective gap sizes
+  // due to content distribution space.
+  void AddFlexCrossGapSize(LayoutUnit size) {
+    if (!flex_cross_gap_sizes_.has_value()) {
+      flex_cross_gap_sizes_.emplace();
+    }
+    flex_cross_gap_sizes_->push_back(size);
+  }
+
+  wtf_size_t GetFlexCrossGapSizeCount() const {
+    return flex_cross_gap_sizes_.has_value() ? flex_cross_gap_sizes_->size()
+                                             : 0;
+  }
+
+  void Finalize() {
     main_gap_running_index_ = 0;
     while (main_gap_running_index_ < main_gaps_.size() &&
            !main_gaps_[main_gap_running_index_].HasCrossGapsBefore()) {
       ++main_gap_running_index_;
     }
-  }
-
-  void SetCrossGaps(Vector<CrossGap>&& cross_gaps) {
-    CHECK(!cross_gaps.empty());
-    cross_gaps_ = std::move(cross_gaps);
   }
 
   void SetMainDirection(GridTrackSizingDirection direction) {
@@ -457,9 +499,10 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
   MainGaps main_gaps_;
   CrossGaps cross_gaps_;
 
-  // Per-line effective gap sizes for flex containers.
-  // Each flex line corresponds to one entry in this vector, indexed by
-  // fragment-relative line index.
+  // Per-line effective gap sizes (`gap` property + content distribution space)
+  // for flex containers. Each flex line corresponds to one entry in this
+  // vector, indexed by fragment-relative line index. Every line has a
+  // corresponding entry.
   std::optional<Vector<LayoutUnit>> flex_cross_gap_sizes_;
 
   // These represent the offsets of the content where the gaps begin and end.

@@ -62,8 +62,7 @@ class CORE_EXPORT ColumnGapAccumulator {
   wtf_size_t specified_column_count_;
   bool has_auto_column_count_;
 
-  Vector<MainGap> main_gaps_;
-  Vector<CrossGap> cross_gaps_;
+  GapGeometry* gap_geometry_ = nullptr;
   std::optional<LogicalOffset> first_column_offset_;
   wtf_size_t max_columns_in_row_ = 0;
   std::optional<Vector<wtf_size_t>> columns_per_row_;

@@ -121,6 +121,8 @@ struct FlexLine;
 // TODO(javiercon): Consider refactoring this code to be able to be reused for
 // grid-lanes, by abstracting away the flex-specific logic.
 class CORE_EXPORT FlexGapAccumulator {
+  STACK_ALLOCATED();
+
  public:
   explicit FlexGapAccumulator(LayoutUnit gap_between_items,
                               LayoutUnit effective_gap_between_lines,
@@ -128,20 +130,7 @@ class CORE_EXPORT FlexGapAccumulator {
                               wtf_size_t num_flex_items,
                               bool is_column,
                               LayoutUnit border_scrollbar_padding_block_start,
-                              LayoutUnit border_scrollbar_padding_inline_start)
-      : gap_between_items_(gap_between_items),
-        effective_gap_between_lines_(effective_gap_between_lines),
-        is_column_(is_column),
-        border_scrollbar_padding_block_start_(
-            border_scrollbar_padding_block_start),
-        border_scrollbar_padding_inline_start_(
-            border_scrollbar_padding_inline_start) {
-    cross_gaps_.ReserveInitialCapacity(num_flex_items);
-    if (num_lines > 0) {
-      cross_gap_sizes_.ReserveInitialCapacity(num_lines);
-      main_gaps_.ReserveInitialCapacity(num_lines - 1);
-    }
-  }
+                              LayoutUnit border_scrollbar_padding_inline_start);
 
   const GapGeometry* BuildGapGeometry(
       const BoxFragmentBuilder& container_builder);
@@ -264,8 +253,7 @@ class CORE_EXPORT FlexGapAccumulator {
 
   bool is_column_ = false;
 
-  Vector<MainGap> main_gaps_;
-  Vector<CrossGap> cross_gaps_;
+  GapGeometry* gap_geometry_ = nullptr;
 
   LayoutUnit border_scrollbar_padding_block_start_;
   LayoutUnit border_scrollbar_padding_inline_start_;
@@ -274,10 +262,6 @@ class CORE_EXPORT FlexGapAccumulator {
   LayoutUnit content_cross_end_;
   LayoutUnit content_main_start_ = LayoutUnit::Max();
 
-  // Per-line effective gap sizes (`gap` property + content distribution space).
-  // Indexed by fragment-relative line index.
-  // Every line has a corresponding entry on this vector.
-  Vector<LayoutUnit> cross_gap_sizes_;
   LayoutUnit content_main_end_;
 
   // Tracks the index of the first flex line processed within the current
