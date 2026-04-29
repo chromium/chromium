@@ -344,7 +344,6 @@ if (enable_extensions) {
 
     deps = [
       "//extensions/browser:browser_tests",
-      "//extensions/renderer:browser_tests",
       "//extensions/shell:browser_tests",
     ]
 

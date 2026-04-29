@@ -1,0 +1,11 @@
+{
+  // Simple testing platform app. Succeeds when its app window is loaded.
+  "name": "Test Platform App",
+  "manifest_version": 2,
+  "version": "1",
+  "app": {
+    "background": {
+      "scripts": ["background.js"]
+    }
+  }
+}
