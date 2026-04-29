@@ -10,6 +10,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
@@ -3028,7 +3029,32 @@ TEST_P(PDFiumEngineInkDrawTest, RotatedPdf) {
                     kExpectedFilePath);
 }
 
-TEST_P(PDFiumEngineInkDrawTest, DrawText) {
+// Don't be concerned about any slight rendering differences in AGG vs. Skia,
+// covering one of these is sufficient for checking how data is written out.
+INSTANTIATE_TEST_SUITE_P(All, PDFiumEngineInkDrawTest, testing::Values(false));
+
+class PDFiumEngineInkDrawTextTest : public PDFiumTestBase {
+ protected:
+  static FontId AddDefaultFont(PDFiumEngine* engine) {
+    sk_sp<SkTypeface> default_font = skia::DefaultTypeface();
+    sk_sp<SkData> serialized_font = default_font->serialize();
+    FontId font_id = static_cast<FontId>(default_font->uniqueID());
+    engine->AddFont(font_id, gfx::SkDataToSpan(serialized_font));
+    return font_id;
+  }
+
+  static std::vector<uint32_t> GetGlyphsForText(std::string_view text) {
+    CHECK(base::IsStringASCII(text));
+    std::vector<SkGlyphID> sk_glyphs(text.size());
+    size_t glyph_count = skia::DefaultTypeface()->textToGlyphs(
+        text.data(), text.size(), SkTextEncoding::kUTF8,
+        SkSpan<SkGlyphID>(sk_glyphs));
+    CHECK_EQ(glyph_count, sk_glyphs.size());  // Since `text` is ASCII.
+    return std::vector<uint32_t>(sk_glyphs.begin(), sk_glyphs.end());
+  }
+};
+
+TEST_P(PDFiumEngineInkDrawTextTest, DrawText) {
   TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("blank.pdf"));
@@ -3040,20 +3066,10 @@ TEST_P(PDFiumEngineInkDrawTest, DrawText) {
   PDFiumPage& page = GetPDFiumPage(*engine, kPageIndex);
   CheckPdfRenderingIsBlank200x200(page.GetPage());
 
-  // Add the default font.
-  sk_sp<SkTypeface> default_font = skia::DefaultTypeface();
-  sk_sp<SkData> serialized_font = default_font->serialize();
-  FontId font_id = static_cast<FontId>(default_font->uniqueID());
-  engine->AddFont(font_id, gfx::SkDataToSpan(serialized_font));
-
-  // Convert a string to glyphs.
+  FontId font_id = AddDefaultFont(engine.get());
   constexpr std::string_view kTextToDraw = "Hello!";
-  std::vector<SkGlyphID> sk_glyphs(kTextToDraw.size());
-  size_t glyph_count = default_font->textToGlyphs(
-      kTextToDraw.data(), kTextToDraw.size(), SkTextEncoding::kUTF8,
-      SkSpan<SkGlyphID>(sk_glyphs));
-  ASSERT_EQ(glyph_count, sk_glyphs.size());
-  std::vector<uint32_t> glyphs(sk_glyphs.begin(), sk_glyphs.end());
+  std::vector<uint32_t> glyphs = GetGlyphsForText(kTextToDraw);
+  ASSERT_FALSE(glyphs.empty());
 
   // Draw some text.
   engine->DrawText(
@@ -3075,7 +3091,7 @@ TEST_P(PDFiumEngineInkDrawTest, DrawText) {
   CheckPdfRendering(page.GetPage(), kPageSizeInPoints, kAppliedTextFilePath);
 }
 
-TEST_P(PDFiumEngineInkDrawTest, DrawOrangeText) {
+TEST_P(PDFiumEngineInkDrawTextTest, DrawOrangeText) {
   TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("blank.pdf"));
@@ -3087,19 +3103,10 @@ TEST_P(PDFiumEngineInkDrawTest, DrawOrangeText) {
   PDFiumPage& page = GetPDFiumPage(*engine, kPageIndex);
   CheckPdfRenderingIsBlank200x200(page.GetPage());
 
-  // Add the default font.
-  sk_sp<SkTypeface> default_font = skia::DefaultTypeface();
-  sk_sp<SkData> serialized_font = default_font->serialize();
-  FontId font_id = static_cast<FontId>(default_font->uniqueID());
-  engine->AddFont(font_id, gfx::SkDataToSpan(serialized_font));
-
-  // Convert a string to glyphs.
+  FontId font_id = AddDefaultFont(engine.get());
   constexpr std::string_view kTextToDraw = "orange";
-  std::vector<SkGlyphID> sk_glyphs(kTextToDraw.size());
-  size_t glyph_count = default_font->textToGlyphs(
-      kTextToDraw.data(), kTextToDraw.size(), SkTextEncoding::kUTF8, sk_glyphs);
-  ASSERT_EQ(glyph_count, sk_glyphs.size());
-  std::vector<uint32_t> glyphs(sk_glyphs.begin(), sk_glyphs.end());
+  std::vector<uint32_t> glyphs = GetGlyphsForText(kTextToDraw);
+  ASSERT_FALSE(glyphs.empty());
 
   // Draw some orange text.
   engine->DrawText(
@@ -3123,7 +3130,9 @@ TEST_P(PDFiumEngineInkDrawTest, DrawOrangeText) {
 
 // Don't be concerned about any slight rendering differences in AGG vs. Skia,
 // covering one of these is sufficient for checking how data is written out.
-INSTANTIATE_TEST_SUITE_P(All, PDFiumEngineInkDrawTest, testing::Values(false));
+INSTANTIATE_TEST_SUITE_P(All,
+                         PDFiumEngineInkDrawTextTest,
+                         testing::Values(false));
 
 using PDFiumEngineInkPrintTest = PDFiumTestBase;
 
