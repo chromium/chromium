@@ -5,6 +5,8 @@
 source_set("controllers") {
   sources = [
     "tab_strip_ui_controller.h",
+    "tab_strip_ui_controller_impl.cc",
+    "tab_strip_ui_controller_impl.h",
     "tab_strip_ui_controller_injector_impl.cc",
     "tab_strip_ui_controller_injector_impl.h",
   ]

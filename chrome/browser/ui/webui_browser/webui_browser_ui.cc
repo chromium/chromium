@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/controllers/tab_strip_ui_controller_impl.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service_feature.h"
 #include "chrome/browser/ui/webui/cr_components/searchbox/searchbox_handler.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
@@ -203,6 +204,14 @@ void WebUIBrowserUI::BindInterface(
       browser_->browser_window_features()->tab_strip_service_feature();
   CHECK(tab_strip_service_feature) << "Browser missing TabStripService";
   tab_strip_service_feature->AcceptExperimental(std::move(receiver));
+}
+
+void WebUIBrowserUI::BindInterface(
+    mojo::PendingReceiver<tabs_api::mojom::TabStripUIController> receiver) {
+  auto* ui_controller =
+      browser_->browser_window_features()->tab_strip_ui_controller();
+  CHECK(ui_controller) << "Browser missing TabStripUIController";
+  ui_controller->Bind(std::move(receiver));
 }
 
 void WebUIBrowserUI::BindInterface(

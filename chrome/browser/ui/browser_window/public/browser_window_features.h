@@ -154,6 +154,10 @@ class ExtensionSidePanelManager;
 class Mv2DisabledDialogController;
 }  // namespace extensions
 
+namespace tabs_api {
+class TabStripUIControllerImpl;
+}
+
 namespace tabs {
 class VerticalTabStripStateController;
 }  // namespace tabs
@@ -377,6 +381,10 @@ class BrowserWindowFeatures {
   // Only fetch the tab_strip_service to register a pending receiver.
   TabStripServiceFeature* tab_strip_service_feature() {
     return tab_strip_service_feature_.get();
+  }
+
+  tabs_api::TabStripUIControllerImpl* tab_strip_ui_controller() {
+    return tab_strip_ui_controller_.get();
   }
 
   LocationBarModel* location_bar_model() { return location_bar_model_.get(); }
@@ -731,6 +739,9 @@ class BrowserWindowFeatures {
 
   // This is an experimental API that interacts with the TabStripModel.
   std::unique_ptr<TabStripServiceFeature> tab_strip_service_feature_;
+
+  // Controller for managing TabStrip UI decoupled TabStrip platform.
+  std::unique_ptr<tabs_api::TabStripUIControllerImpl> tab_strip_ui_controller_;
 
   // The Find Bar. This may be NULL if there is no Find Bar, and if it is
   // non-NULL, it may or may not be visible.

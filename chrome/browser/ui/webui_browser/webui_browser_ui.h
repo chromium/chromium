@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/webui_browser/webui_browser_window.h"
 #include "components/browser_apis/tab_strip/tab_strip_api.mojom.h"
 #include "components/browser_apis/tab_strip/tab_strip_experiment_api.mojom.h"
+#include "components/browser_apis/tab_strip/tab_strip_ui_controller.mojom.h"
 #include "components/guest_contents/common/guest_contents.mojom.h"
 #include "components/omnibox/browser/searchbox.mojom.h"
 #include "content/public/browser/web_contents.h"
@@ -79,6 +80,8 @@ class WebUIBrowserUI : public ui::MojoWebUIController,
   void BindInterface(
       mojo::PendingReceiver<tabs_api::mojom::TabStripExperimentService>
           receiver);
+  void BindInterface(
+      mojo::PendingReceiver<tabs_api::mojom::TabStripUIController> receiver);
   void BindInterface(
       mojo::PendingReceiver<tracked_element::mojom::TrackedElementHandler>
           receiver);

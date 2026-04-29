@@ -709,6 +709,7 @@ void PopulateChromeWebUIFrameInterfaceBrokersTrustedPartsDesktop(
         .Add<searchbox::mojom::PageHandlerFactory>()
         .Add<tabs_api::mojom::TabStripService>()
         .Add<tabs_api::mojom::TabStripExperimentService>()
+        .Add<tabs_api::mojom::TabStripUIController>()
         .Add<tracked_element::mojom::TrackedElementHandler>();
   }
 
