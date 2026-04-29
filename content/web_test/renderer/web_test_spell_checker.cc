@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <array>
+#include <string_view>
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
@@ -64,11 +65,11 @@ bool WebTestSpellChecker::SpellCheckWord(const blink::WebString& text,
     int word_offset = std::distance(string_text.begin(), first_char);
     int max_word_length = static_cast<int>(string_text.length()) - word_offset;
     int word_length;
-    std::u16string word;
+    std::u16string_view word;
 
     // These words are known misspelled words in web tests. If there are other
     // misspelled words in web tests, please add them in this array.
-    static const auto misspelled_words = std::to_array<std::u16string>({
+    static const auto misspelled_words = std::to_array<std::u16string_view>({
         u"foo",
         u"Foo",
         u"baz",
@@ -108,10 +109,10 @@ bool WebTestSpellChecker::SpellCheckWord(const blink::WebString& text,
     // Look up our misspelled-word table to check if the extracted word is a
     // known misspelled word, and return the offset and the length of the
     // extracted word if this word is a known misspelled word.
-    for (const std::u16string& misspelled_word : misspelled_words) {
+    for (std::u16string_view misspelled_word : misspelled_words) {
       word_length =
           std::min(static_cast<int>(misspelled_word.length()), max_word_length);
-      word = string_text.substr(word_offset, word_length);
+      word = std::u16string_view(string_text).substr(word_offset, word_length);
       if (word == misspelled_word &&
           (static_cast<int>(string_text.length()) ==
                word_offset + word_length ||
@@ -133,7 +134,7 @@ bool WebTestSpellChecker::SpellCheckWord(const blink::WebString& text,
       word_length = std::distance(first_char, last_char);
 
     DCHECK_LT(0, word_offset + word_length);
-    string_text = string_text.substr(word_offset + word_length);
+    string_text.erase(0, word_offset + word_length);
     skipped_length += word_offset + word_length;
   }
 
