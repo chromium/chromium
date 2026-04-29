@@ -9235,11 +9235,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chrome::android::kPwaRestoreUiAtStartup)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
-    {"safe-browsing-local-lists-use-sbv5",
-     flag_descriptions::kSafeBrowsingLocalListsUseSBv5Name,
-     flag_descriptions::kSafeBrowsingLocalListsUseSBv5Description, kOsAll,
-     FEATURE_VALUE_TYPE(safe_browsing::kLocalListsUseSBv5)},
-
     {"xslt", flag_descriptions::kXSLTName, flag_descriptions::kXSLTDescription,
      kOsAll, FEATURE_VALUE_TYPE(blink::features::kXSLT)},
 

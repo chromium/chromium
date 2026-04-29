@@ -958,9 +958,6 @@ extern const char kRemoveExcessNTPsExperimentDescription[];
 extern const char kSafeBrowsingAvailableName[];
 extern const char kSafeBrowsingAvailableDescription[];
 
-extern const char kSafeBrowsingLocalListsUseSBv5Name[];
-extern const char kSafeBrowsingLocalListsUseSBv5Description[];
-
 extern const char kSafeBrowsingRealTimeLookupName[];
 extern const char kSafeBrowsingRealTimeLookupDescription[];
 

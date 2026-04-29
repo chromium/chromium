@@ -2236,12 +2236,6 @@ inline constexpr char kFaviconDisableHostFallbackName[] =
 inline constexpr char kFaviconDisableHostFallbackDescription[] =
     "Disables the host-level fallback when fetching favicons.";
 
-inline constexpr char kSafeBrowsingLocalListsUseSBv5Name[] =
-    "Safe Browsing Local Lists use v5 API";
-inline constexpr char kSafeBrowsingLocalListsUseSBv5Description[] =
-    "Fetch and check local lists using the Safe Browsing v5 API instead of the "
-    "v4 Update API.";
-
 inline constexpr char kXSLTName[] = "XSLT";
 inline constexpr char kXSLTDescription[] =
     "Toggles whether or not XSLT is supported by the browser.";
