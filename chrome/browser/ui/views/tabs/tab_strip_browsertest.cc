@@ -1431,7 +1431,7 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,
   EXPECT_FALSE(tab1->IsSelected());
   EXPECT_FALSE(
       ax_node_data_1.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
-  EXPECT_EQ(counter.GetCount(ax::mojom::Event::kSelection), 1);
+  EXPECT_EQ(counter.GetCount(ax::mojom::Event::kSelection), 2);
 
   tab_strip()->SelectTab(tab_strip()->tab_at(1), GetDummyEvent());
   ax_node_data_0 = ui::AXNodeData();
@@ -1444,7 +1444,7 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,
   EXPECT_TRUE(tab1->IsSelected());
   EXPECT_TRUE(
       ax_node_data_1.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
-  EXPECT_EQ(counter.GetCount(ax::mojom::Event::kSelection), 2);
+  EXPECT_EQ(counter.GetCount(ax::mojom::Event::kSelection), 4);
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, TabGroupHeaderAccessibleState) {

@@ -6,12 +6,12 @@
 
 #include <atk/atk.h>
 
-#include "base/test/task_environment.h"
 #include "base/functional/bind.h"
+#include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_enums.mojom.h"
-#include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/accessibility/platform/ax_platform_for_test.h"
+#include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/accessibility/platform/ax_platform_node_auralinux.h"
 #include "ui/accessibility/platform/browser_accessibility.h"
 #include "ui/accessibility/platform/browser_accessibility_manager.h"
@@ -135,6 +135,79 @@ TEST_F(BrowserAccessibilityManagerAuraLinuxTest, TestEmitChildrenChanged) {
   aura_linux_manager->FireSubtreeCreatedEvent(inline_text_accessible);
   aura_linux_manager->OnSubtreeWillBeDeleted(manager->ax_tree(),
                                              inline_text_accessible->node());
+}
+
+TEST_F(BrowserAccessibilityManagerAuraLinuxTest,
+       FireSelectedEventOnUnselectedNode) {
+  AXTreeUpdate initial_state;
+  AXTreeID tree_id = AXTreeID::CreateNewAXTreeID();
+  initial_state.tree_data.tree_id = tree_id;
+  initial_state.has_tree_data = true;
+  initial_state.tree_data.loaded = true;
+  initial_state.root_id = 1;
+  initial_state.nodes.resize(3);
+  initial_state.nodes[0].id = 1;
+  initial_state.nodes[0].child_ids = {2, 3};
+  initial_state.nodes[0].role = ax::mojom::Role::kListBox;
+  initial_state.nodes[1].id = 2;
+  initial_state.nodes[1].role = ax::mojom::Role::kListBoxOption;
+  initial_state.nodes[1].AddBoolAttribute(ax::mojom::BoolAttribute::kSelected,
+                                          false);
+  initial_state.nodes[2].id = 3;
+  initial_state.nodes[2].role = ax::mojom::Role::kListBoxOption;
+
+  std::unique_ptr<BrowserAccessibilityManager> manager(
+      BrowserAccessibilityManager::Create(
+          initial_state, node_id_delegate_,
+          test_browser_accessibility_delegate_.get()));
+
+  BrowserAccessibility* option =
+      manager->GetBrowserAccessibilityRoot()->PlatformGetChild(0);
+  ASSERT_FALSE(option->GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
+  AtkObject* option_atk_object = option->GetNativeViewAccessible();
+  ASSERT_TRUE(ATK_IS_OBJECT(option_atk_object));
+
+  bool saw_unselected = false;
+  ScopedGSignal selected_signal(
+      option_atk_object, "state-change",
+      base::BindRepeating(
+          +[](bool* saw_unselected, AtkObject*, gchar* state_changed,
+              gboolean new_value) {
+            if (!g_strcmp0(state_changed, "selected") && !new_value) {
+              *saw_unselected = true;
+            }
+          },
+          &saw_unselected));
+  ASSERT_TRUE(selected_signal.Connected());
+
+  BrowserAccessibilityManagerAuraLinux* aura_linux_manager =
+      manager->ToBrowserAccessibilityManagerAuraLinux();
+  aura_linux_manager->FireSelectedEvent(option);
+  EXPECT_TRUE(saw_unselected);
+
+  BrowserAccessibility* option_without_selected_state =
+      manager->GetBrowserAccessibilityRoot()->PlatformGetChild(1);
+  ASSERT_FALSE(option_without_selected_state->HasBoolAttribute(
+      ax::mojom::BoolAttribute::kSelected));
+  AtkObject* option_without_selected_state_atk_object =
+      option_without_selected_state->GetNativeViewAccessible();
+  ASSERT_TRUE(ATK_IS_OBJECT(option_without_selected_state_atk_object));
+
+  bool saw_selected = false;
+  ScopedGSignal no_selected_state_signal(
+      option_without_selected_state_atk_object, "state-change",
+      base::BindRepeating(
+          +[](bool* saw_selected, AtkObject*, gchar* state_changed,
+              gboolean new_value) {
+            if (!g_strcmp0(state_changed, "selected") && new_value) {
+              *saw_selected = true;
+            }
+          },
+          &saw_selected));
+  ASSERT_TRUE(no_selected_state_signal.Connected());
+
+  aura_linux_manager->FireSelectedEvent(option_without_selected_state);
+  EXPECT_FALSE(saw_selected);
 }
 
 }  // namespace ui

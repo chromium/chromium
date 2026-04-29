@@ -1171,14 +1171,7 @@ void ViewAccessibility::SetIsSelected(bool selected) {
   data_.AddBoolAttribute(ax::mojom::BoolAttribute::kSelected, selected);
 
   OnBoolAttributeChanged(ax::mojom::BoolAttribute::kSelected, selected);
-
-  // We only want to send the notification if the view gets selected,
-  // this is since the event serves to notify of a selection being made, not of
-  // a selection being unmade.
-  if (selected) {
-    NotifyEvent(ax::mojom::Event::kSelection, true);
-  }
-
+  NotifyEvent(ax::mojom::Event::kSelection, true);
   NotifyDataChanged();
 }
 

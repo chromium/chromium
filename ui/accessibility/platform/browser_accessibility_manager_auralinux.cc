@@ -103,14 +103,9 @@ void BrowserAccessibilityManagerAuraLinux::FireFocusEvent(AXNode* node) {
 
 void BrowserAccessibilityManagerAuraLinux::FireSelectedEvent(
     BrowserAccessibility* node) {
-  // Some browser UI widgets, such as the omnibox popup, only send notifications
-  // when they become selected. In contrast elements in a page, such as options
-  // in the select element, also send notifications when they become unselected.
-  // Since AXPlatformNodeAuraLinux must handle firing a platform event for the
-  // unselected case, we can safely ignore the unselected case for rendered
-  // elements.
-  if (!node->GetBoolAttribute(ax::mojom::BoolAttribute::kSelected))
+  if (!node->HasBoolAttribute(ax::mojom::BoolAttribute::kSelected)) {
     return;
+  }
 
   FireEvent(node, ax::mojom::Event::kSelection);
 }

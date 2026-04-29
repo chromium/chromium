@@ -702,9 +702,15 @@ void AXPlatformNodeWin::NotifyAccessibilityEvent(ax::mojom::Event event_type) {
   TRACE_EVENT("accessibility", "NotifyAccessibilityEvent",
               perfetto::Flow::FromPointer(this));
   AXPlatformNodeBase::NotifyAccessibilityEvent(event_type);
+  const bool selection_event_on_unselected_node =
+      event_type == ax::mojom::Event::kSelection &&
+      HasBoolAttribute(ax::mojom::BoolAttribute::kSelected) &&
+      !GetBoolAttribute(ax::mojom::BoolAttribute::kSelected);
+
   // Menu items fire selection events but Windows screen readers work reliably
-  // with focus events. Remap here.
-  if (event_type == ax::mojom::Event::kSelection) {
+  // with focus events. Remap here if the node is selected.
+  if (event_type == ax::mojom::Event::kSelection &&
+      !HasBoolAttribute(ax::mojom::BoolAttribute::kSelected)) {
     // A menu item could have something other than a role of
     // |ROLE_SYSTEM_MENUITEM|. Zoom modification controls for example have a
     // role of button.
@@ -746,18 +752,20 @@ void AXPlatformNodeWin::NotifyAccessibilityEvent(ax::mojom::Event event_type) {
     }
   }
 
-  if (std::optional<DWORD> native_event = MojoEventToMSAAEvent(event_type)) {
-    HWND hwnd = GetDelegate()->GetTargetForNativeAccessibilityEvent();
-    if (hwnd) {
-      TRACE_EVENT("accessibility", "NotifyWinEvent",
-                  [&](perfetto::EventContext ctx) {
-                    auto* event =
-                        ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
-                    auto* accessibility_event =
-                        event->set_chrome_accessibility_win_notify_win_event();
-                    accessibility_event->set_native_event(*native_event);
-                  });
-      ::NotifyWinEvent(*native_event, hwnd, OBJID_CLIENT, -GetUniqueId());
+  if (!selection_event_on_unselected_node) {
+    if (std::optional<DWORD> native_event = MojoEventToMSAAEvent(event_type)) {
+      HWND hwnd = GetDelegate()->GetTargetForNativeAccessibilityEvent();
+      if (hwnd) {
+        TRACE_EVENT(
+            "accessibility", "NotifyWinEvent", [&](perfetto::EventContext ctx) {
+              auto* event =
+                  ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+              auto* accessibility_event =
+                  event->set_chrome_accessibility_win_notify_win_event();
+              accessibility_event->set_native_event(*native_event);
+            });
+        ::NotifyWinEvent(*native_event, hwnd, OBJID_CLIENT, -GetUniqueId());
+      }
     }
   }
 
@@ -784,9 +792,11 @@ void AXPlatformNodeWin::NotifyAccessibilityEvent(ax::mojom::Event event_type) {
       }
     }
 
-    if (std::optional<EVENTID> uia_event = MojoEventToUIAEvent(event_type);
-        uia_event.has_value() && HasEventListenerForEvent(*uia_event)) {
-      ::UiaRaiseAutomationEvent(this, *uia_event);
+    if (!selection_event_on_unselected_node) {
+      if (std::optional<EVENTID> uia_event = MojoEventToUIAEvent(event_type);
+          uia_event.has_value() && HasEventListenerForEvent(*uia_event)) {
+        ::UiaRaiseAutomationEvent(this, *uia_event);
+      }
     }
   }
 

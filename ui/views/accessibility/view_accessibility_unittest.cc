@@ -270,6 +270,21 @@ TEST_F(ViewAccessibilityTest, ViewUsesChildViewSelected) {
             data_2.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
 }
 
+TEST_F(ViewAccessibilityTest, SetIsSelectedFiresSelectionEvents) {
+  auto widget = CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
+  auto* option = widget->SetContentsView(std::make_unique<TestView>());
+
+  std::vector<ax::mojom::Event> option_events;
+  CollectEvents(option, &option_events);
+
+  option->GetViewAccessibility().SetIsSelected(true);
+  EXPECT_TRUE(HasEvent(option_events, ax::mojom::Event::kSelection));
+
+  option_events.clear();
+  option->GetViewAccessibility().SetIsSelected(false);
+  EXPECT_TRUE(HasEvent(option_events, ax::mojom::Event::kSelection));
+}
+
 TEST_F(ViewAccessibilityTest, ViewUsesChildViewEditable) {
   base::CallbackListSubscription editable_changed_subscription_ =
       child_view()->GetViewAccessibility().AddStateChangedCallback(

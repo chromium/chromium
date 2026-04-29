@@ -129,11 +129,6 @@ AXPlatformNode* g_root_application = nullptr;
 // ATK_STATE_FOCUSED change to false.
 AtkObject* g_current_focused = nullptr;
 
-// The last object which was selected. Tracking this is required because
-// widgets in the browser UI only emit notifications upon becoming selected,
-// but clients also expect notifications when items become unselected.
-AXPlatformNodeAuraLinux* g_current_selected = nullptr;
-
 // The AtkObject with role=ATK_ROLE_FRAME that represents the toplevel desktop
 // window with focus. If this window is not one of our windows, this value
 // should be null. This is a weak pointer as well, so its value will also be
@@ -3309,9 +3304,6 @@ AtkRelationSet* AXPlatformNodeAuraLinux::GetAtkRelations() {
 AXPlatformNodeAuraLinux::AXPlatformNodeAuraLinux() = default;
 
 AXPlatformNodeAuraLinux::~AXPlatformNodeAuraLinux() {
-  if (g_current_selected == this)
-    g_current_selected = nullptr;
-
   DestroyAtkObjects();
 
   if (window_activate_event_postponed_)
@@ -3690,17 +3682,13 @@ void AXPlatformNodeAuraLinux::OnSelected() {
   AtkObject* atk_object = GetOrCreateAtkObject();
   if (!atk_object)
     return;
-  if (g_current_selected && !g_current_selected->GetBoolAttribute(
-                                ax::mojom::BoolAttribute::kSelected)) {
-    atk_object_notify_state_change(
-        ATK_OBJECT(g_current_selected->GetOrCreateAtkObject()),
-        ATK_STATE_SELECTED, false);
-  }
 
-  g_current_selected = this;
   if (ATK_IS_OBJECT(atk_object)) {
+    const bool selected =
+        !HasBoolAttribute(ax::mojom::BoolAttribute::kSelected) ||
+        GetBoolAttribute(ax::mojom::BoolAttribute::kSelected);
     atk_object_notify_state_change(ATK_OBJECT(atk_object), ATK_STATE_SELECTED,
-                                   true);
+                                   selected);
   }
 }
 

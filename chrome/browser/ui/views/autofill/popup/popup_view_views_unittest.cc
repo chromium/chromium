@@ -869,10 +869,10 @@ TEST_F(PopupViewViewsTest, AccessibilitySelectedEvent) {
   GetPopupRowViewAt(0).SetSelectedCell(PopupRowView::CellType::kContent);
   EXPECT_EQ(1, ax_counter.GetCount(ax::mojom::Event::kSelection));
 
-  // Checks that a new selection event is not sent when a selected view becomes
+  // Checks that a selection event is sent when a selected view becomes
   // unselected.
   GetPopupRowViewAt(0).SetSelectedCell(std::nullopt);
-  EXPECT_EQ(1, ax_counter.GetCount(ax::mojom::Event::kSelection));
+  EXPECT_EQ(2, ax_counter.GetCount(ax::mojom::Event::kSelection));
 }
 
 TEST_F(PopupViewViewsTest, AccessibilityTest) {

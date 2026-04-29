@@ -248,6 +248,7 @@ PopupRowView::PopupRowView(
                               /*add_call_to_action_if_expandable=*/false));
   GetViewAccessibility().SetPosInSet(position);
   GetViewAccessibility().SetSetSize(set_size);
+  GetViewAccessibility().SetIsSelected(false);
 
   content_event_handler_ =
       set_exit_enter_callbacks(CellType::kContent, *content_view_);

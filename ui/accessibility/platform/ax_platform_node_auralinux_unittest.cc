@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/version.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -2252,6 +2253,94 @@ TEST_F(AXPlatformNodeAuraLinuxTest, TestAtkSelectionInterface) {
   ASSERT_EQ(atk_selection_get_selection_count(selection), 3);
 
   g_object_unref(root_atk_object);
+}
+
+TEST_F(AXPlatformNodeAuraLinuxTest, SelectionEventReflectsSelectedState) {
+  AXNodeData list_box;
+  list_box.id = 1;
+  list_box.role = ax::mojom::Role::kListBox;
+  list_box.child_ids = {2, 3, 4};
+
+  AXNodeData selected_option;
+  selected_option.id = 2;
+  selected_option.role = ax::mojom::Role::kListBoxOption;
+  selected_option.AddBoolAttribute(ax::mojom::BoolAttribute::kSelected, true);
+
+  AXNodeData deselected_option;
+  deselected_option.id = 3;
+  deselected_option.role = ax::mojom::Role::kListBoxOption;
+  deselected_option.AddBoolAttribute(ax::mojom::BoolAttribute::kSelected,
+                                     false);
+
+  AXNodeData option_without_selected_state;
+  option_without_selected_state.id = 4;
+  option_without_selected_state.role = ax::mojom::Role::kListBoxOption;
+
+  AXTreeUpdate update;
+  update.root_id = list_box.id;
+  update.nodes = {list_box, selected_option, deselected_option,
+                  option_without_selected_state};
+  update.has_tree_data = true;
+  update.tree_data.tree_id = AXTreeID::CreateNewAXTreeID();
+  Init(update);
+
+  struct StateChangeCount {
+    int selected = 0;
+    int unselected = 0;
+  };
+
+  auto selected_state_change_callback = [](StateChangeCount* count) {
+    return base::BindRepeating(
+        +[](StateChangeCount* count, AtkObject*, gchar* state_changed,
+            gboolean new_value) {
+          if (g_strcmp0(state_changed, "selected")) {
+            return;
+          }
+
+          if (new_value) {
+            ++count->selected;
+          } else {
+            ++count->unselected;
+          }
+        },
+        count);
+  };
+
+  StateChangeCount selected_count;
+  AtkObject* selected_atk_object = AtkObjectFromNode(GetNode(2));
+  ASSERT_TRUE(ATK_IS_OBJECT(selected_atk_object));
+  ScopedGSignal selected_signal(
+      selected_atk_object, "state-change",
+      selected_state_change_callback(&selected_count));
+  ASSERT_TRUE(selected_signal.Connected());
+  GetPlatformNode(GetNode(2))
+      ->NotifyAccessibilityEvent(ax::mojom::Event::kSelection);
+  EXPECT_EQ(1, selected_count.selected);
+  EXPECT_EQ(0, selected_count.unselected);
+
+  StateChangeCount deselected_count;
+  AtkObject* deselected_atk_object = AtkObjectFromNode(GetNode(3));
+  ASSERT_TRUE(ATK_IS_OBJECT(deselected_atk_object));
+  ScopedGSignal deselected_signal(
+      deselected_atk_object, "state-change",
+      selected_state_change_callback(&deselected_count));
+  ASSERT_TRUE(deselected_signal.Connected());
+  GetPlatformNode(GetNode(3))
+      ->NotifyAccessibilityEvent(ax::mojom::Event::kSelection);
+  EXPECT_EQ(0, deselected_count.selected);
+  EXPECT_EQ(1, deselected_count.unselected);
+
+  StateChangeCount no_state_count;
+  AtkObject* no_state_atk_object = AtkObjectFromNode(GetNode(4));
+  ASSERT_TRUE(ATK_IS_OBJECT(no_state_atk_object));
+  ScopedGSignal no_state_signal(
+      no_state_atk_object, "state-change",
+      selected_state_change_callback(&no_state_count));
+  ASSERT_TRUE(no_state_signal.Connected());
+  GetPlatformNode(GetNode(4))
+      ->NotifyAccessibilityEvent(ax::mojom::Event::kSelection);
+  EXPECT_EQ(1, no_state_count.selected);
+  EXPECT_EQ(0, no_state_count.unselected);
 }
 
 // Tests GetPosInSet() and GetSetSize() functions of AXPlatformNodeBase.
