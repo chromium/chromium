@@ -1094,8 +1094,8 @@ void ToolbarView::UpdateGlicActorVisibility() {
         base::FeatureList::IsEnabled(features::kGlicToolbarButtonLocation) &&
         features::kGlicToolbarButtonLocationParam.Get() ==
             features::GlicToolbarButtonLocation::kLeftOfProfileChip;
-    glic_button_->UpdateStyle(
-        !(is_glic_left_of_profile && is_glic_actor_visible));
+    glic_button_->UpdateStyle(is_glic_left_of_profile &&
+                              !is_glic_actor_visible);
   }
 }
 
@@ -1125,7 +1125,7 @@ void ToolbarView::UpdateGlicButtonVisibility() {
           features::GlicToolbarButtonLocation::kLeftOfProfileChip;
   bool is_task_icon_visible =
       glic_actor_task_icon_ && glic_actor_task_icon_->GetVisible();
-  glic_button_->UpdateStyle(!(is_glic_left_of_profile && is_task_icon_visible));
+  glic_button_->UpdateStyle(is_glic_left_of_profile && !is_task_icon_visible);
 }
 
 void ToolbarView::SetGlicActorShowState(bool show) {
