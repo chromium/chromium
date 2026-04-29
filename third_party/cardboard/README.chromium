@@ -16,7 +16,4 @@ smartphones inserted into Cardboard viewers.
 Local Modifications:
 * Created local top-level BUILD.gn based on src/sdk/build.gradle
 * Created local proguard-rules.pro to create more scoped proto-specific rules
-* Created local override for LoadJClass in jni_utils to leaverage //base JNI loading due to splits.
 * Created local configuration header file with the OpenGL ES 2.0 binding customization required by setting the CARDBOARD_USE_CUSTOM_GL_BINDINGS buildflag.
-* Created local override of QrCodeCaptureActivity in preperation for edge-to-edge rendering
-  This should be removed once the Cardboard SDK is upgraded to version v1.29.0
