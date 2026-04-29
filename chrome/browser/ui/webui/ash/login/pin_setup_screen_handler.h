@@ -27,7 +27,8 @@ class PinSetupScreenView {
                     bool is_child_account,
                     bool has_login_support,
                     bool using_pin_as_main_factor,
-                    bool is_recovery_mode) = 0;
+                    bool is_recovery_mode,
+                    bool cannot_skip_flow) = 0;
 
   // Gets a WeakPtr to the instance.
   virtual base::WeakPtr<PinSetupScreenView> AsWeakPtr() = 0;
@@ -55,7 +56,8 @@ class PinSetupScreenHandler final : public BaseScreenHandler,
             bool is_child_account,
             bool has_login_support,
             bool using_pin_as_main_factor,
-            bool is_recovery_mode) override;
+            bool is_recovery_mode,
+            bool cannot_skip_flow) override;
 
   base::WeakPtr<PinSetupScreenView> AsWeakPtr() override;
 

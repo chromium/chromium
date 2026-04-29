@@ -106,7 +106,8 @@ found in the LICENSE file.
   </div>
   <div slot="bottom-buttons">
     <oobe-text-button id="setupSkipButton" on-click="onSkipButton"
-        disabled="[[isRecoveryMode]]" for-step="start, confirm"
+        disabled="[[isSkipProhibited(isRecoveryMode, cannotSkipFlow)]]"
+        for-step="start, confirm"
         text-key="[[getSkipButtonLabel(usingPinAsMainSignInFactor)]]">
     </oobe-text-button>
     <oobe-next-button inverse

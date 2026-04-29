@@ -105,13 +105,15 @@ void PinSetupScreenHandler::Show(const std::string& token,
                                  bool is_child_account,
                                  bool has_login_support,
                                  bool using_pin_as_main_factor,
-                                 bool is_recovery_mode) {
+                                 bool is_recovery_mode,
+                                 bool cannot_skip_flow) {
   ShowInWebUI(base::DictValue()
                   .Set("authToken", base::Value(token))
                   .Set("isChildAccount", is_child_account)
                   .Set("hasLoginSupport", has_login_support)
                   .Set("usingPinAsMainSignInFactor", using_pin_as_main_factor)
-                  .Set("isRecoveryMode", is_recovery_mode));
+                  .Set("isRecoveryMode", is_recovery_mode)
+                  .Set("cannotSkipFlow", cannot_skip_flow));
 }
 
 base::WeakPtr<PinSetupScreenView> PinSetupScreenHandler::AsWeakPtr() {

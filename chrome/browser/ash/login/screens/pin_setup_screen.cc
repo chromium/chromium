@@ -125,7 +125,8 @@ std::string PinSetupScreen::GetResultString(Result result) {
 PinSetupScreen::PinSetupScreen(PrefService* local_state,
                                base::WeakPtr<PinSetupScreenView> view,
                                const ScreenExitCallback& exit_callback)
-    : BaseScreen(PinSetupScreenView::kScreenId, OobeScreenPriority::DEFAULT),
+    : BaseOSAuthSetupScreen(PinSetupScreenView::kScreenId,
+                            OobeScreenPriority::DEFAULT),
       view_(std::move(view)),
       exit_callback_(exit_callback),
       auth_performer_(UserDataAuthClient::Get()),
@@ -244,6 +245,22 @@ void PinSetupScreen::ShowImpl() {
   CHECK(context()->extra_factors_token);
   CHECK(!IsInSetupMode(PinSetupMode::kAlreadyPerformed, *context()));
 
+  InspectContextAndContinue(
+      base::BindOnce(&PinSetupScreen::InspectContext,
+                     weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&PinSetupScreen::DoShow, weak_ptr_factory_.GetWeakPtr()));
+}
+
+void PinSetupScreen::InspectContext(UserContext* user_context) {
+  if (!user_context) {
+    return;
+  }
+  account_id_ = user_context->GetAccountId();
+  is_saml_flow_ =
+      user_context->GetAuthFlow() == UserContext::AUTH_FLOW_GAIA_WITH_SAML;
+}
+
+void PinSetupScreen::DoShow() {
   // When the screen is being shown offering PIN as a secondary factor
   // factor, a timer is used for invalidating the AuthSession.
   // TODO(b/365059362): Replace legacy timer logic with a AuthSessionStorage
@@ -277,10 +294,23 @@ void PinSetupScreen::ShowImpl() {
       hardware_support_.value() == HardwareSupport::kLoginCompatible;
   const bool is_recovery_mode =
       IsInSetupMode(PinSetupMode::kRecovery, *context());
+
+  bool cannot_skip_flow = false;
+  if (features::IsManagedLocalPinAndPasswordEnabled()) {
+    CHECK(account_id_.has_value());
+    CHECK(is_saml_flow_.has_value());
+    auto allowed_factors = AuthPolicyConnector::Get()->AllowedLocalAuthFactors(
+        account_id_.value());
+    if (is_saml_flow_.value() && allowed_factors.has_value() &&
+        !allowed_factors->Has(ash::AshAuthFactor::kLocalPassword)) {
+      cannot_skip_flow = true;
+    }
+  }
+
   if (view_) {
     // TODO(b/365059362): Wrap arguments in a struct. Also consolidate states.
     view_->Show(token, is_child_account, has_login_support,
-                using_pin_as_main_factor, is_recovery_mode);
+                using_pin_as_main_factor, is_recovery_mode, cannot_skip_flow);
   }
 }
 
@@ -317,7 +347,7 @@ void PinSetupScreen::OnUserAction(const base::ListValue& args) {
     }
     return;
   }
-  BaseScreen::OnUserAction(args);
+  BaseOSAuthSetupScreen::OnUserAction(args);
 }
 
 void PinSetupScreen::DetermineHardwareSupport() {

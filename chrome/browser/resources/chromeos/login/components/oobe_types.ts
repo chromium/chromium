@@ -92,6 +92,7 @@ export namespace OobeTypes {
     hasLoginSupport: boolean;
     usingPinAsMainSignInFactor: boolean;
     isRecoveryMode: boolean;
+    cannotSkipFlow: boolean;
   }
 
   /**

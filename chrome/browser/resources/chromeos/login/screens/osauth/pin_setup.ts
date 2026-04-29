@@ -113,6 +113,14 @@ class PinSetup extends PinSetupBase {
         type: Boolean,
         value: false,
       },
+
+      /**
+       * True when skip button should be disabled.
+       */
+      cannotSkipFlow: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
@@ -125,6 +133,7 @@ class PinSetup extends PinSetupBase {
   isChildAccount: boolean;
   private isRecoveryMode: boolean;
   private isSetupDoneButtonEnabled: boolean;
+  private cannotSkipFlow: boolean;
 
   override get UI_STEPS() {
     return PinSetupState;
@@ -160,6 +169,7 @@ class PinSetup extends PinSetupBase {
     this.hasLoginSupport = data.hasLoginSupport;
     this.usingPinAsMainSignInFactor = data.usingPinAsMainSignInFactor;
     this.isRecoveryMode = data.isRecoveryMode;
+    this.cannotSkipFlow = data.cannotSkipFlow;
     this.isSetupDoneButtonEnabled = true;
   }
 
@@ -181,6 +191,11 @@ class PinSetup extends PinSetupBase {
   private getSkipButtonLabel(usingPinAsMainSignInFactor: boolean): string {
     return usingPinAsMainSignInFactor ? 'discoverPinSetupPinAsMainFactorSkip' :
                                         'discoverPinSetupSkip';
+  }
+
+  private isSkipProhibited(isRecoveryMode: boolean, cannotSkipFlow: boolean):
+      boolean {
+    return isRecoveryMode || cannotSkipFlow;
   }
 
   private onSkipButton(): void {
