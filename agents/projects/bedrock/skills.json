@@ -1,0 +1,6 @@
+{
+  "entries": [
+    { "path": "agents/projects/bedrock/modularize-chrome-browser" },
+    { "path": "third_party/depot_tools/agents/skills/luci-test-results" }
+  ]
+}
