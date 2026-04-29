@@ -181,7 +181,6 @@ LensSidePanelUntrustedUI::LensSidePanelUntrustedUI(content::WebUI* web_ui)
   html_source->AddBoolean(
       "composeboxShowTypedSuggest",
       lens::features::IsLensAimTypeAheadSuggestionsEnabled());
-  html_source->AddBoolean("composeboxShowTypedSuggestWithContext", true);
   // Enable ZPS if suggestions are enabled.
   html_source->AddBoolean("composeboxShowZps",
                           lens::features::GetAimSuggestionsEnabled());
@@ -190,9 +189,6 @@ LensSidePanelUntrustedUI::LensSidePanelUntrustedUI(content::WebUI* web_ui)
   // Disable context menu and related features.
   html_source->AddBoolean("composeboxShowContextMenu", false);
   html_source->AddBoolean("composeboxShowContextMenuDescription", true);
-  // Enables a fix that causes no flickering when transitioning between ZPS and
-  // typed suggestions.
-  html_source->AddBoolean("composeboxNoFlickerSuggestionsFix", true);
   // Specify metrics source.
   html_source->AddString(
       "composeboxSource",

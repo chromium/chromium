@@ -442,7 +442,6 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
 
   test('SuggestionsHiddenWhenDropdownNotShown', async () => {
     loadTimeData.overrideValues({
-      composeboxShowTypedSuggestWithContext: false,
       enableNativeZeroStateSuggestions: true,
     });
 
@@ -514,7 +513,7 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
     await composebox.updateComplete;
 
     // show-dropdown should be false because we have a file and
-    // composeboxShowTypedSuggestWithContext is false.
+    // showTypedSuggestWithContext is false.
     assertFalse(
         composebox.hasAttribute('show-dropdown'),
         'Dropdown should hide when typing with' +

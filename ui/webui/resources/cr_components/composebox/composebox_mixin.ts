@@ -103,10 +103,12 @@ export const ComposeboxEmbedderMixin =
             },
             dropdownNeeded: {type: Boolean},
             closeOnEscape: {type: Boolean},
+            composeboxNoFlickerSuggestionsFix: {type: Boolean},
             showFileCarousel: {
               reflect: true,
               type: Boolean,
             },
+            showTypedSuggestWithContext: {type: Boolean},
             usePecApi: {
               type: Boolean,
               reflect: true,
@@ -155,8 +157,6 @@ export const ComposeboxEmbedderMixin =
             loadTimeData.getString('composeboxAttachmentFileTypes').split(',');
         imageFileTypes: string[] =
             loadTimeData.getString('composeboxImageFileTypes').split(',');
-        showTypedSuggestWithContext: boolean = getLoadTimeBoolean(
-            'composeboxShowTypedSuggestWithContext', /*defaultValue=*/ false);
         queryZpsOnLoad: boolean =
             getLoadTimeBoolean('queryZpsOnLoad', /*defaultValue=*/ true);
         clearAllInputsWhenSubmittingQuery: boolean = getLoadTimeBoolean(
@@ -165,6 +165,7 @@ export const ComposeboxEmbedderMixin =
 
         accessor canSubmitFilesAndInput: boolean = true;
         accessor closeOnEscape: boolean = true;
+        accessor composeboxNoFlickerSuggestionsFix: boolean = false;
         accessor contextMenuEnabled: boolean =
             loadTimeData.getBoolean('composeboxShowContextMenu');
         accessor errorMessage: string = '';
@@ -186,6 +187,7 @@ export const ComposeboxEmbedderMixin =
             loadTimeData.getBoolean('composeboxShowZps');
         accessor dropdownNeeded: boolean = true;
         accessor showFileCarousel: boolean = false;
+        accessor showTypedSuggestWithContext: boolean = false;
         accessor usePecApi: boolean = getLoadTimeBoolean(
             'contextualMenuUsePecApi', /*defaultValue=*/ false);
         showZps: boolean = loadTimeData.getBoolean('composeboxShowZps');
@@ -197,8 +199,6 @@ export const ComposeboxEmbedderMixin =
         accessor tabSuggestions: TabInfo[] = [];
         accessor transcript: string = '';
         accessor uploadButtonDisabled: boolean = false;
-        composeboxNoFlickerSuggestionsFix: boolean = getLoadTimeBoolean(
-            'composeboxNoFlickerSuggestionsFix', /*defaultValue=*/ false);
         showTypedSuggest: boolean =
             loadTimeData.getBoolean('composeboxShowTypedSuggest');
         lastQueriedInput: string = '';
