@@ -189,12 +189,10 @@ void ActorNavigationThrottle::OnNavigationConfirmationDecision(
 content::NavigationThrottle::ThrottleCheckResult
 ActorNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
   const GURL& navigation_url = navigation_handle()->GetURL();
-  const std::optional<url::Origin>& initiator_origin =
-      navigation_handle()->GetInitiatorOrigin();
 
   AggregatedJournal& journal = GetJournal();
 
-  if (!is_redirection && !initiator_origin) {
+  if (!is_redirection && !navigation_handle()->IsRendererInitiated()) {
     journal.Log(navigation_url, task_id_, "NavThrottle",
                 JournalDetailsBuilder()
                     .Add("navigate", "Not triggered by page")
