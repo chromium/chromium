@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
+#include "gpu/command_buffer/common/shared_image_info.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/sequence_id.h"
@@ -66,14 +67,8 @@ class GPU_IPC_SERVICE_EXPORT SharedImageStub {
 
   bool CreateSharedImage(
       const Mailbox& mailbox,
+      const SharedImageInfo& info,
       gfx::GpuMemoryBufferHandle handle,
-      viz::SharedImageFormat format,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      SharedImageUsageSet usage,
-      std::string debug_label,
       std::optional<SharedImagePoolId> pool_id = std::nullopt);
 
   bool UpdateSharedImage(const Mailbox& mailbox,

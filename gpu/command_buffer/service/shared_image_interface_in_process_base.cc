@@ -110,10 +110,8 @@ void SharedImageInterfaceInProcessBase::CreateSharedImageOnGpuThread(
     return;
   }
 
-  if (!shared_image_factory->CreateSharedImage(
-          mailbox, si_info.format, si_info.size, si_info.color_space,
-          si_info.surface_origin, si_info.alpha_type, surface_handle,
-          si_info.usage, std::string(si_info.debug_label))) {
+  if (!shared_image_factory->CreateSharedImage(mailbox, si_info,
+                                               surface_handle)) {
     MarkContextLostOnGpuThread();
   }
 }
@@ -153,10 +151,7 @@ void SharedImageInterfaceInProcessBase::CreateSharedImageWithDataOnGpuThread(
     return;
   }
 
-  if (!shared_image_factory->CreateSharedImage(
-          mailbox, si_info.format, si_info.size, si_info.color_space,
-          si_info.surface_origin, si_info.alpha_type, si_info.usage,
-          std::move(si_info.debug_label), pixel_data)) {
+  if (!shared_image_factory->CreateSharedImage(mailbox, si_info, pixel_data)) {
     MarkContextLostOnGpuThread();
   }
 }
@@ -220,10 +215,8 @@ void SharedImageInterfaceInProcessBase::
   // implementation and code path compared to ClientSharedImage implementation
   // which creates native buffer/shared memory on IO thread and then creates a
   // mailbox from it on GPU thread.
-  if (!shared_image_factory->CreateSharedImage(
-          mailbox, si_info.format, si_info.size, si_info.color_space,
-          si_info.surface_origin, si_info.alpha_type, surface_handle,
-          si_info.usage, std::move(si_info.debug_label), buffer_usage)) {
+  if (!shared_image_factory->CreateSharedImage(mailbox, si_info, surface_handle,
+                                               buffer_usage)) {
     MarkContextLostOnGpuThread();
   }
 }
@@ -374,10 +367,8 @@ void SharedImageInterfaceInProcessBase::CreateSharedImageWithBufferOnGpuThread(
     return;
   }
 
-  if (!shared_image_factory->CreateSharedImage(
-          mailbox, si_info.format, si_info.size, si_info.color_space,
-          si_info.surface_origin, si_info.alpha_type, si_info.usage,
-          std::move(si_info.debug_label), std::move(buffer_handle))) {
+  if (!shared_image_factory->CreateSharedImage(mailbox, si_info,
+                                               std::move(buffer_handle))) {
     MarkContextLostOnGpuThread();
   }
 }

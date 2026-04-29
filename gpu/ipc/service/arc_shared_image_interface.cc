@@ -119,10 +119,8 @@ void ArcSharedImageInterface::CreateSharedImageOnGpuThread(
     return;
   }
 
-  if (!shared_image_factory_->CreateSharedImage(
-          mailbox, si_info.format, si_info.size, si_info.color_space,
-          si_info.surface_origin, si_info.alpha_type, si_info.usage,
-          std::move(si_info.debug_label), std::move(buffer_handle))) {
+  if (!shared_image_factory_->CreateSharedImage(mailbox, si_info,
+                                                std::move(buffer_handle))) {
     shared_image_factory_->shared_context_state()->MarkContextLost();
     encountered_error_.store(true, std::memory_order_relaxed);
     return;

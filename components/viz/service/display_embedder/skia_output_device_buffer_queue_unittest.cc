@@ -364,11 +364,14 @@ class SkiaOutputDeviceBufferQueueTest : public TestOnGpu {
   std::unique_ptr<gpu::OverlayImageRepresentation> MakeOverlay() {
     gpu::Mailbox mailbox = gpu::Mailbox::Generate();
     bool success = shared_image_factory_->CreateSharedImage(
-        mailbox, SinglePlaneFormat::kRGBA_8888, gfx::Size(1000, 1000),
-        gfx::ColorSpace::CreateSRGB(),
-        GrSurfaceOrigin::kTopLeft_GrSurfaceOrigin,
-        SkAlphaType::kPremul_SkAlphaType, gpu::kNullSurfaceHandle,
-        gpu::SHARED_IMAGE_USAGE_SCANOUT, "TestLabel");
+        mailbox,
+        gpu::SharedImageInfo(SinglePlaneFormat::kRGBA_8888,
+                             gfx::Size(1000, 1000),
+                             gfx::ColorSpace::CreateSRGB(),
+                             GrSurfaceOrigin::kTopLeft_GrSurfaceOrigin,
+                             SkAlphaType::kPremul_SkAlphaType,
+                             gpu::SHARED_IMAGE_USAGE_SCANOUT, "TestLabel"),
+        gpu::kNullSurfaceHandle);
     CHECK(success);
 
     auto overlay =

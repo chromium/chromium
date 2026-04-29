@@ -815,9 +815,12 @@ SkiaOutputSurfaceImplOnGpu::CreateSharedImageRepresentationSkia(
     std::string_view debug_label) {
   gpu::Mailbox mailbox = gpu::Mailbox::Generate();
   bool result = shared_image_factory_->CreateSharedImage(
-      mailbox, format, size, color_space, kTopLeft_GrSurfaceOrigin,
-      kPremul_SkAlphaType, gpu::kNullSurfaceHandle,
-      CopyOutputResult::kDefaultSharedImageUsage, std::string(debug_label));
+      mailbox,
+      gpu::SharedImageInfo(format, size, color_space, kTopLeft_GrSurfaceOrigin,
+                           kPremul_SkAlphaType,
+                           CopyOutputResult::kDefaultSharedImageUsage,
+                           std::string(debug_label)),
+      gpu::kNullSurfaceHandle);
   if (!result) {
     DLOG(ERROR) << "Failed to create shared image.";
     return nullptr;
@@ -2650,8 +2653,10 @@ void SkiaOutputSurfaceImplOnGpu::CreateSharedImage(
     return;
   }
   shared_image_factory_->CreateSharedImage(
-      mailbox, format, size, color_space, kTopLeft_GrSurfaceOrigin, alpha_type,
-      surface_handle, usage, std::move(debug_label));
+      mailbox,
+      gpu::SharedImageInfo(format, size, color_space, kTopLeft_GrSurfaceOrigin,
+                           alpha_type, usage, std::move(debug_label)),
+      surface_handle);
   skia_representations_.emplace(mailbox, nullptr);
 }
 
@@ -2668,10 +2673,13 @@ void SkiaOutputSurfaceImplOnGpu::CreateSolidColorSharedImage(
   auto pixel_span = base::byte_span_from_ref(premul_bytes);
 
   shared_image_factory_->CreateSharedImage(
-      mailbox, SinglePlaneFormat::kRGBA_8888, size, color_space,
-      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-      gpu::SHARED_IMAGE_USAGE_SCANOUT | gpu::SHARED_IMAGE_USAGE_DISPLAY_READ,
-      "SkiaSolidColor", pixel_span);
+      mailbox,
+      gpu::SharedImageInfo(SinglePlaneFormat::kRGBA_8888, size, color_space,
+                           kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+                           gpu::SHARED_IMAGE_USAGE_SCANOUT |
+                               gpu::SHARED_IMAGE_USAGE_DISPLAY_READ,
+                           "SkiaSolidColor"),
+      pixel_span);
   solid_color_images_.insert(mailbox);
 }
 

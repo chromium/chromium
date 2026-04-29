@@ -412,10 +412,12 @@ class CommandBufferSetup {
       viz::SharedImageFormat si_format = viz::SinglePlaneFormat::kRGBA_8888;
 
       shared_image_factory_->CreateSharedImage(
-          mailbox, si_format, gfx::Size(256, 256),
-          gfx::ColorSpace::CreateSRGB(), kTopLeft_GrSurfaceOrigin,
-          kPremul_SkAlphaType, gpu::kNullSurfaceHandle,
-          SharedImageUsageSet(usage), "TestLabel");
+          mailbox,
+          SharedImageInfo(si_format, gfx::Size(256, 256),
+                          gfx::ColorSpace::CreateSRGB(),
+                          kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+                          SharedImageUsageSet(usage), "TestLabel"),
+          gpu::kNullSurfaceHandle);
     }
 
 #if defined(GPU_FUZZER_USE_RASTER_DECODER)

@@ -19,6 +19,7 @@
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
+#include "gpu/command_buffer/common/shared_image_info.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_pool_service.h"
@@ -98,43 +99,19 @@ class GPU_GLES2_EXPORT SharedImageFactory {
 
   bool CreateSharedImage(
       const Mailbox& mailbox,
-      viz::SharedImageFormat si_format,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
+      const SharedImageInfo& si_info,
       SurfaceHandle surface_handle,
-      SharedImageUsageSet usage,
-      std::string debug_label,
       std::optional<SharedImagePoolId> pool_id = std::nullopt);
   bool CreateSharedImage(const Mailbox& mailbox,
-                         viz::SharedImageFormat si_format,
-                         const gfx::Size& size,
-                         const gfx::ColorSpace& color_space,
-                         GrSurfaceOrigin surface_origin,
-                         SkAlphaType alpha_type,
+                         const SharedImageInfo& si_info,
                          SurfaceHandle surface_handle,
-                         SharedImageUsageSet usage,
-                         std::string debug_label,
                          gfx::BufferUsage buffer_usage);
   bool CreateSharedImage(const Mailbox& mailbox,
-                         viz::SharedImageFormat si_format,
-                         const gfx::Size& size,
-                         const gfx::ColorSpace& color_space,
-                         GrSurfaceOrigin surface_origin,
-                         SkAlphaType alpha_type,
-                         SharedImageUsageSet usage,
-                         std::string debug_label,
+                         const SharedImageInfo& si_info,
                          base::span<const uint8_t> pixel_data);
   bool CreateSharedImage(
       const Mailbox& mailbox,
-      viz::SharedImageFormat si_format,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      SharedImageUsageSet usage,
-      std::string debug_label,
+      const SharedImageInfo& si_info,
       gfx::GpuMemoryBufferHandle buffer_handle,
       std::optional<SharedImagePoolId> pool_id = std::nullopt);
   bool UpdateSharedImage(const Mailbox& mailbox,

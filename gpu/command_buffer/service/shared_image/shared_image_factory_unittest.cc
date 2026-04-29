@@ -80,8 +80,10 @@ TEST_F(SharedImageFactoryTest, Basic) {
   gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
   SharedImageUsageSet usage = SHARED_IMAGE_USAGE_GLES2_READ;
   EXPECT_TRUE(factory_->CreateSharedImage(
-      mailbox, format, size, color_space, kTopLeft_GrSurfaceOrigin,
-      kPremul_SkAlphaType, surface_handle, usage, "TestLabel"));
+      mailbox,
+      SharedImageInfo(format, size, color_space, kTopLeft_GrSurfaceOrigin,
+                      kPremul_SkAlphaType, usage, "TestLabel"),
+      surface_handle));
   EXPECT_TRUE(factory_->DestroySharedImage(mailbox));
 }
 
@@ -92,12 +94,10 @@ TEST_F(SharedImageFactoryTest, DuplicateMailbox) {
   auto color_space = gfx::ColorSpace::CreateSRGB();
   gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
   SharedImageUsageSet usage = SHARED_IMAGE_USAGE_GLES2_READ;
-  EXPECT_TRUE(factory_->CreateSharedImage(
-      mailbox, format, size, color_space, kTopLeft_GrSurfaceOrigin,
-      kPremul_SkAlphaType, surface_handle, usage, "TestLabel"));
-  EXPECT_FALSE(factory_->CreateSharedImage(
-      mailbox, format, size, color_space, kTopLeft_GrSurfaceOrigin,
-      kPremul_SkAlphaType, surface_handle, usage, "TestLabel"));
+  SharedImageInfo si_info(format, size, color_space, kTopLeft_GrSurfaceOrigin,
+                          kPremul_SkAlphaType, usage, "TestLabel");
+  EXPECT_TRUE(factory_->CreateSharedImage(mailbox, si_info, surface_handle));
+  EXPECT_FALSE(factory_->CreateSharedImage(mailbox, si_info, surface_handle));
 
   GpuPreferences preferences;
   GpuDriverBugWorkarounds workarounds;
@@ -105,9 +105,8 @@ TEST_F(SharedImageFactoryTest, DuplicateMailbox) {
       preferences, workarounds, GpuFeatureInfo(), context_state_.get(),
       &shared_image_manager_, nullptr,
       /*is_for_display_compositor=*/false);
-  EXPECT_FALSE(other_factory->CreateSharedImage(
-      mailbox, format, size, color_space, kTopLeft_GrSurfaceOrigin,
-      kPremul_SkAlphaType, surface_handle, usage, "TestLabel"));
+  EXPECT_FALSE(
+      other_factory->CreateSharedImage(mailbox, si_info, surface_handle));
 }
 
 TEST_F(SharedImageFactoryTest, DestroyInexistentMailbox) {

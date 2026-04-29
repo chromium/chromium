@@ -280,10 +280,13 @@ class RasterDecoderOOPTest : public testing::Test, DecoderClient {
     // Via this function, this test creates mailboxes that are used as both the
     // sources of reads and destinations of writes via the raster interface.
     shared_image_factory_->CreateSharedImage(
-        mailbox, format, size, color_space, kTopLeft_GrSurfaceOrigin,
-        kPremul_SkAlphaType, gpu::kNullSurfaceHandle,
-        SHARED_IMAGE_USAGE_RASTER_READ | SHARED_IMAGE_USAGE_RASTER_WRITE,
-        "TestLabel");
+        mailbox,
+        SharedImageInfo(
+            format, size, color_space, kTopLeft_GrSurfaceOrigin,
+            kPremul_SkAlphaType,
+            SHARED_IMAGE_USAGE_RASTER_READ | SHARED_IMAGE_USAGE_RASTER_WRITE,
+            "TestLabel"),
+        gpu::kNullSurfaceHandle);
 
     if (cleared) {
       SharedImageRepresentationFactory repr_factory(shared_image_manager(),
