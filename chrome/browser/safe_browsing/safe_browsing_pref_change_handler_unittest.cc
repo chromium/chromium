@@ -7,9 +7,14 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/safe_browsing/tailored_security/tailored_security_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/ui/browser_manager_service.h"
+#include "chrome/browser/ui/browser_manager_service_factory.h"
+#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
+#include "chrome/test/base/testing_profile.h"
 #include "components/safe_browsing/core/browser/tailored_security_service/tailored_security_service.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -18,6 +23,8 @@
 #include "components/sync/service/sync_user_settings.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "content/public/test/browser_task_environment.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -41,42 +48,72 @@ class MockToastController : public ToastController {
   MOCK_METHOD(bool, MaybeShowToast, (ToastParams params), (override));
 };
 
-class SafeBrowsingPrefChangeHandlerTest : public BrowserWithTestWindowTest {
+class SafeBrowsingPrefChangeHandlerTest : public testing::Test {
  public:
   SafeBrowsingPrefChangeHandlerTest() = default;
 
   void SetUp() override {
-    BrowserWithTestWindowTest::SetUp();
-
-    SyncServiceFactory::GetInstance()->SetTestingFactory(
-        profile(), base::BindRepeating([](content::BrowserContext* context)
-                                           -> std::unique_ptr<KeyedService> {
+    TestingProfile::Builder builder;
+    builder.AddTestingFactory(
+        SyncServiceFactory::GetInstance(),
+        base::BindRepeating([](content::BrowserContext* context)
+                                -> std::unique_ptr<KeyedService> {
           auto test_sync_service = std::make_unique<syncer::TestSyncService>();
           test_sync_service->SetSignedOut();
           return test_sync_service;
         }));
 
-    TailoredSecurityServiceFactory::GetInstance()->SetTestingFactory(
-        profile(), base::BindRepeating([](content::BrowserContext* context)
-                                           -> std::unique_ptr<KeyedService> {
+    builder.AddTestingFactory(
+        TailoredSecurityServiceFactory::GetInstance(),
+        base::BindRepeating([](content::BrowserContext* context)
+                                -> std::unique_ptr<KeyedService> {
           return std::make_unique<
               testing::NiceMock<MockTailoredSecurityService>>();
         }));
+    profile_ = builder.Build();
 
-    handler_ = std::make_unique<SafeBrowsingPrefChangeHandler>(profile());
+    handler_ = std::make_unique<SafeBrowsingPrefChangeHandler>(profile_.get());
 
     ON_CALL(toast_controller_, MaybeShowToast(testing::_))
         .WillByDefault(testing::Return(true));
 
     handler_->SetToastControllerForTesting(&toast_controller_);
+
+    // Setup mock browser
+    EXPECT_CALL(mock_browser_, RegisterDidBecomeActive(testing::_))
+        .WillOnce(testing::Return(base::CallbackListSubscription()));
+    EXPECT_CALL(mock_browser_, RegisterDidBecomeInactive(testing::_))
+        .WillOnce(testing::Return(base::CallbackListSubscription()));
+    EXPECT_CALL(mock_browser_, RegisterBrowserDidClose(testing::_))
+        .WillOnce([this](BrowserWindowInterface::BrowserDidCloseCallback cb) {
+          close_callback_ = std::move(cb);
+          return base::CallbackListSubscription();
+        });
+    EXPECT_CALL(mock_browser_, IsDeleteScheduled())
+        .WillRepeatedly(testing::Return(false));
+    EXPECT_CALL(mock_browser_, GetType())
+        .WillRepeatedly(testing::Return(BrowserWindowInterface::TYPE_NORMAL));
+    EXPECT_CALL(mock_browser_, GetTabStripModel())
+        .WillRepeatedly(testing::Return(&tab_strip_model_));
+    EXPECT_CALL(mock_browser_, GetProfile())
+        .WillRepeatedly(testing::Return(profile()));
+
+    // Register mock browser
+    BrowserManagerServiceFactory::GetForProfile(profile())
+        ->AddBrowserForTesting(&mock_browser_);
   }
 
   void TearDown() override {
+    if (close_callback_) {
+      close_callback_.Run(&mock_browser_);
+    }
     handler_.reset();
-    BrowserWithTestWindowTest::TearDown();
+    profile_.reset();
   }
 
  protected:
+  TestingProfile* profile() { return profile_.get(); }
+
   syncer::TestSyncService* sync_service() {
     return static_cast<syncer::TestSyncService*>(
         SyncServiceFactory::GetForProfile(profile()));
@@ -94,6 +131,14 @@ class SafeBrowsingPrefChangeHandlerTest : public BrowserWithTestWindowTest {
             : signin::ConsentLevel::kSync;
     sync_service()->SetSignedIn(consent_level);
   }
+
+  content::BrowserTaskEnvironment task_environment_;
+  std::unique_ptr<TestingProfile> profile_;
+  testing::NiceMock<MockBrowserWindowInterface> mock_browser_;
+  TestTabStripModelDelegate tab_strip_model_delegate_;
+  TabStripModel tab_strip_model_{&tab_strip_model_delegate_, nullptr};
+
+  BrowserWindowInterface::BrowserDidCloseCallback close_callback_;
 
   std::unique_ptr<SafeBrowsingPrefChangeHandler> handler_;
   base::test::ScopedFeatureList feature_list_;

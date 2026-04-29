@@ -747,6 +747,7 @@ source_set("unit_tests") {
 
     deps += [
       "//chrome/browser/sync",
+      "//chrome/browser/ui/tabs:test_support",
       "//chrome/browser/ui/toasts",
       "//testing/gmock",
     ]
