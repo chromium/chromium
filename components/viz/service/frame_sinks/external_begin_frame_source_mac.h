@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/power_monitor/power_observer.h"
 #include "components/viz/common/display/update_vsync_parameters_callback.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/service/display/output_surface.h"
@@ -24,7 +25,8 @@ class OutputSurface;
 class VIZ_COMMON_EXPORT ExternalBeginFrameSourceMac
     : public ExternalBeginFrameSource,
       public ExternalBeginFrameSourceClient,
-      public DelayBasedTimeSourceClient {
+      public DelayBasedTimeSourceClient,
+      public base::PowerSuspendObserver {
  public:
   using MultipleHWRefreshRatesCallback = base::RepeatingCallback<void(bool)>;
 
@@ -71,6 +73,10 @@ class VIZ_COMMON_EXPORT ExternalBeginFrameSourceMac
 
   void StartBeginFrame();
   void StopBeginFrame();
+
+  // Implements base::PowerSuspendObserver.
+  void OnSuspend() override;
+  void OnResume() override;
 
   BeginFrameArgsGenerator begin_frame_args_generator_;
 

@@ -31,6 +31,10 @@
 #include "ui/gfx/overlay_plane_data.h"
 #include "ui/gl/ca_renderer_layer_params.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "base/power_monitor/power_monitor.h"
+#endif
+
 #if BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_IOS_TVOS)
 #include "gpu/ipc/common/ios/be_layer_hierarchy_transport.h"
 #endif
@@ -136,6 +140,15 @@ ImageTransportSurfaceOverlayMacEGL::ImageTransportSurfaceOverlayMacEGL(
   bool no_post_task_for_callback = false;
 #if BUILDFLAG(IS_MAC)
   no_post_task_for_callback = AllowCallbackWithoutPostTask();
+
+  if (ui::DisplayLinkMac::SupportsDisplayLinkMacInBrowser()) {
+    bool is_system_suspended =
+        base::PowerMonitor::GetInstance()
+            ->AddPowerSuspendObserverAndReturnSuspendedState(this);
+    if (is_system_suspended) {
+      OnSuspend();
+    }
+  }
 #endif
 
   ca_layer_tree_coordinator_ = std::make_unique<ui::CALayerTreeCoordinator>(
@@ -180,6 +193,12 @@ ImageTransportSurfaceOverlayMacEGL::ImageTransportSurfaceOverlayMacEGL(
 
 ImageTransportSurfaceOverlayMacEGL::~ImageTransportSurfaceOverlayMacEGL() {
   ca_layer_tree_coordinator_.reset();
+
+#if BUILDFLAG(IS_MAC)
+  if (ui::DisplayLinkMac::SupportsDisplayLinkMacInBrowser()) {
+    base::PowerMonitor::GetInstance()->RemovePowerSuspendObserver(this);
+  }
+#endif
 
 #if BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_IOS_TVOS)
   // Capture and retain the BELayerHierarchy in a local __block var before
@@ -393,5 +412,17 @@ void ImageTransportSurfaceOverlayMacEGL::OnVSyncPresentation(
   }
 }
 
+void ImageTransportSurfaceOverlayMacEGL::OnSuspend() {
+  // TODO(crbug.com/345275139): For CADisplayLink only. Notify DisplayLinkMac
+  // and destroy the current displayLink if needed.
+}
+
+void ImageTransportSurfaceOverlayMacEGL::OnResume() {
+  // Only needs the first power suspend-resume event.
+  base::PowerMonitor::GetInstance()->RemovePowerSuspendObserver(this);
+
+  // TODO(crbug.com/345275139): For CADisplayLink only. Notify DisplayLinkMac
+  // and re-create a new displayLink if needed.
+}
 #endif
 }  // namespace gpu

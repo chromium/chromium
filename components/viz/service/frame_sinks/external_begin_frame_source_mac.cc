@@ -12,6 +12,7 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/power_monitor/power_monitor.h"
 #include "base/rand_util.h"
 #include "base/trace_event/trace_event.h"
 
@@ -71,6 +72,15 @@ ExternalBeginFrameSourceMac::ExternalBeginFrameSourceMac(
   VLOG(kOutputLevel) << "ExternalBeginFrameSourceMac(" << this << ")"
                      << "::ExternalBeginFrameSourceMac() ID:" << display_id;
 
+  if (ui::DisplayLinkMac::SupportsDisplayLinkMacInBrowser()) {
+    bool is_system_suspended =
+        base::PowerMonitor::GetInstance()
+            ->AddPowerSuspendObserverAndReturnSuspendedState(this);
+    if (is_system_suspended) {
+      OnSuspend();
+    }
+  }
+
   if (display_id == display::kInvalidDisplayId) {
     RecordDisplayLinkCreateStatus(DisplayLinkResult::kFailedInvalidDisplayId);
     DLOG(ERROR)
@@ -84,6 +94,9 @@ ExternalBeginFrameSourceMac::ExternalBeginFrameSourceMac(
 ExternalBeginFrameSourceMac::~ExternalBeginFrameSourceMac() {
   VLOG(kOutputLevel) << "ExternalBeginFrameSourceMac(" << this << ")"
                      << "::~ExternalBeginFrameSourceMac() ID:" << display_id_;
+  if (ui::DisplayLinkMac::SupportsDisplayLinkMacInBrowser()) {
+    base::PowerMonitor::GetInstance()->RemovePowerSuspendObserver(this);
+  }
 }
 
 void ExternalBeginFrameSourceMac::CreateDelayBasedTimeSourceIfNeeded() {
@@ -490,6 +503,19 @@ ExternalBeginFrameSourceMac::GetSupportedFrameIntervals(
   }
 
   return supported_intervals;
+}
+
+void ExternalBeginFrameSourceMac::OnSuspend() {
+  // TODO(crbug.com/345275139): For CADisplayLink only. Notify DisplayLinkMac
+  // and destroy the current displayLink if needed.
+}
+
+void ExternalBeginFrameSourceMac::OnResume() {
+  // Only needs the first power suspend-resume event.
+  base::PowerMonitor::GetInstance()->RemovePowerSuspendObserver(this);
+
+  // TODO(crbug.com/345275139): For CADisplayLink only. Notify DisplayLinkMac
+  // and re-create a new displayLink if needed.
 }
 
 }  // namespace viz
