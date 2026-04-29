@@ -28,7 +28,6 @@ class SkBitmap;
 
 namespace actor {
 class Journal;
-class PageStabilityMonitor;
 }  // namespace actor
 
 namespace gfx {
@@ -37,6 +36,10 @@ class Size;
 
 namespace optimization_guide {
 class PageTextAgent;
+}
+
+namespace page_content_annotations {
+class PageStabilityMonitor;
 }
 
 namespace safe_browsing {
@@ -211,7 +214,8 @@ class ChromeRenderFrameObserver : public content::RenderFrameObserver,
 #endif
 
   std::unique_ptr<actor::ToolExecutor> tool_executor_;
-  std::unique_ptr<actor::PageStabilityMonitor> page_stability_monitor_;
+  std::unique_ptr<page_content_annotations::PageStabilityMonitor>
+      page_stability_monitor_;
 
   mojo::AssociatedReceiverSet<chrome::mojom::ChromeRenderFrame> receivers_;
 

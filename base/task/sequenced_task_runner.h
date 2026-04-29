@@ -15,9 +15,6 @@
 #include "base/task/sequenced_task_runner_helpers.h"
 #include "base/task/task_runner.h"
 
-namespace actor {
-class PageStabilityMonitor;
-}  // namespace actor
 namespace blink {
 class LowPrecisionTimer;
 class PaintTiming;
@@ -34,6 +31,9 @@ class AlsaPcmOutputStream;
 class AlsaPcmInputStream;
 class FakeAudioWorker;
 }  // namespace media
+namespace page_content_annotations {
+class PageStabilityMonitor;
+}  // namespace page_content_annotations
 namespace viz {
 class ExternalBeginFrameSourceWin;
 }  // namespace viz
@@ -66,7 +66,6 @@ class PostDelayedTaskPassKey {
   // Avoid =default to disallow creation by uniform initialization.
   PostDelayedTaskPassKey() = default;
 
-  friend class actor::PageStabilityMonitor;
   friend class base::internal::DelayTimerBase;
   friend class base::internal::DelayedTaskManager;
   friend class base::DeadlineTimer;
@@ -78,6 +77,7 @@ class PostDelayedTaskPassKey {
   friend class blink::TimerBasedTickProvider;
   friend class blink::WebRtcTaskQueue;
   friend class PostDelayedTaskPassKeyForTesting;
+  friend class page_content_annotations::PageStabilityMonitor;
   friend class webrtc::ThreadWrapper;
   friend class media::AlsaPcmOutputStream;
   friend class media::AlsaPcmInputStream;

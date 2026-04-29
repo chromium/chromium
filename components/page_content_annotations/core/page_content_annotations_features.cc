@@ -137,6 +137,22 @@ const base::FeatureParam<bool> kPageContentCacheEnableScreenshot{
 const base::FeatureParam<bool> kPageContentCacheUseUserEngagement{
     &kPageContentCache, "page_content_cache_use_user_engagement", false};
 
+BASE_FEATURE(kPageSettledMonitor, base::FEATURE_ENABLED_BY_DEFAULT);
+
+const base::FeatureParam<base::TimeDelta> kPageStabilityTimeout{
+    &kPageSettledMonitor, "page-stability-timeout", base::Seconds(4)};
+
+const base::FeatureParam<base::TimeDelta> kPageStabilityMinWait{
+    &kPageSettledMonitor, "page-stability-min-wait", base::Seconds(1)};
+
+const base::FeatureParam<base::TimeDelta> kPaintStabilityInitialPaintTimeout{
+    &kPageSettledMonitor, "paint-stability-initial-paint-timeout",
+    base::Seconds(1)};
+
+const base::FeatureParam<base::TimeDelta> kPaintStabilitySubsequentPaintTimeout{
+    &kPageSettledMonitor, "paint-stability-subsequent-paint-timeout",
+    base::Seconds(1)};
+
 base::TimeDelta PCAServiceWaitForTitleDelayDuration() {
   return base::Milliseconds(GetFieldTrialParamByFeatureAsInt(
       kPageContentAnnotations,

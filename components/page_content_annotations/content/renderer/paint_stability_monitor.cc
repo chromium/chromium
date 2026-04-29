@@ -2,59 +2,30 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/renderer/actor/paint_stability_monitor.h"
+#include "components/page_content_annotations/content/renderer/paint_stability_monitor.h"
 
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/sequenced_task_runner.h"
-#include "chrome/common/actor/actor_logging.h"
-#include "chrome/common/actor/journal_details_builder.h"
-#include "chrome/common/chrome_features.h"
-#include "chrome/renderer/actor/page_stability_metrics.h"
+#include "components/page_content_annotations/content/renderer/page_stability_monitor_delegate.h"
+#include "components/page_content_annotations/core/page_content_annotations_features.h"
 #include "content/public/renderer/render_frame.h"
-#include "third_party/abseil-cpp/absl/strings/str_format.h"
 #include "third_party/blink/public/web/web_interaction_effects_monitor.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 
-namespace actor {
-
-namespace {
-
-// Returns how long the monitor should wait for the initial contenful paint
-// before declaring paint stability.
-//
-// TODO(crbug.com/434268231): This is not based on data and should be revisited
-// when histograms are available, or combined with other heuristics, e.g.
-// pending interaction-attributed network requests.
-base::TimeDelta GetInitialPaintTimeout() {
-  return features::kActorPaintStabilityIntialPaintTimeout.Get();
-}
-
-// Returns how long the monitor should wait for subsequent contenful paints
-// before declaring paint stability.
-//
-// TODO(crbug.com/434268231): This is not based on data and should be revisited
-// when histograms are available, or combined with other heuristics, e.g.
-// pending interaction-attributed network requests.
-base::TimeDelta GetSubsequentPaintTimeout() {
-  return features::kActorPaintStabilitySubsequentPaintTimeout.Get();
-}
-
-}  // namespace
+namespace page_content_annotations {
 
 // static
 std::unique_ptr<PaintStabilityMonitor> PaintStabilityMonitor::Create(
     content::RenderFrame& frame,
-    TaskId task_id,
-    Journal& journal) {
-  return base::WrapUnique(new PaintStabilityMonitor(frame, task_id, journal));
+    PageStabilityMonitorDelegate* delegate) {
+  return base::WrapUnique(new PaintStabilityMonitor(frame, delegate));
 }
 
-PaintStabilityMonitor::PaintStabilityMonitor(content::RenderFrame& frame,
-                                             TaskId task_id,
-                                             Journal& journal)
-    : task_id_(task_id),
-      journal_(journal),
+PaintStabilityMonitor::PaintStabilityMonitor(
+    content::RenderFrame& frame,
+    PageStabilityMonitorDelegate* delegate)
+    : delegate_(delegate),
       interaction_effects_monitor_(
           std::make_unique<blink::WebInteractionEffectsMonitor>(
               *frame.GetWebFrame(),
@@ -62,17 +33,16 @@ PaintStabilityMonitor::PaintStabilityMonitor(content::RenderFrame& frame,
 
 PaintStabilityMonitor::~PaintStabilityMonitor() = default;
 
-void PaintStabilityMonitor::Start(PageStabilityMetrics* metrics) {
+void PaintStabilityMonitor::Start() {
   CHECK(!is_stable_callback_);
-  metrics_ = metrics;
 
   is_started_ = true;
 
-  journal_->Log(task_id_, "PaintStabilityMonitor: InteractionContentfulPaint",
-                JournalDetailsBuilder()
-                    .Add("initial_painted_area",
-                         interaction_effects_monitor_->TotalPaintedArea())
-                    .Build());
+  if (delegate_) {
+    delegate_->OnEvent(PaintStabilityMonitorStartedEvent{
+        .initial_painted_area =
+            interaction_effects_monitor_->TotalPaintedArea()});
+  }
 
   // There won't be any interactions if the underlying frame does not support
   // monitoring, which is the case for iframes. Avoid invoking the
@@ -102,35 +72,37 @@ void PaintStabilityMonitor::OnContentfulPaint(uint64_t new_painted_area) {
     return;
   }
 
-  if (metrics_) {
-    metrics_->OnInteractionContentfulPaint();
-  }
-
   // We keep the paint stability monitor actively monitoring for interaction
   // effects so that the metric can still be recorded if there's new contentful
-  // paint after the stability was reached.
+  // paint after the stability was reached. Just report the event without data.
   if (is_wait_for_stable_started_ && is_stability_reached_) {
+    if (delegate_) {
+      delegate_->OnEvent(InteractionContentfulPaintEvent{});
+    }
     return;
   }
 
-  journal_->Log(task_id_, "PaintStabilityMonitor: InteractionContentfulPaint",
-                JournalDetailsBuilder()
-                    .Add("total_painted_area",
-                         interaction_effects_monitor_->TotalPaintedArea())
-                    .Add("new_painted_area", new_painted_area)
-                    .Add("was_stability_reached", is_stability_reached_)
-                    .Build());
+  // Otherwise, report the event with data for logging and metrics.
+  if (delegate_) {
+    delegate_->OnEvent(InteractionContentfulPaintEvent{
+        .data = InteractionContentfulPaintEvent::Data{
+            .total_painted_area =
+                interaction_effects_monitor_->TotalPaintedArea(),
+            .new_painted_area = new_painted_area,
+            .was_stability_reached = is_stability_reached_}});
+  }
+
   is_stability_reached_ = false;
   ScheduleContentfulPaintTimeoutTask(FROM_HERE, GetSubsequentPaintTimeout());
 }
 
 void PaintStabilityMonitor::OnPaintStabilityDetected() {
-  journal_->Log(task_id_, "PaintStabilityMonitor: Stability Detected",
-                JournalDetailsBuilder()
-                    .Add("total_painted_area",
-                         interaction_effects_monitor_->TotalPaintedArea())
-                    .Add("is_waiting_for_stable", !!is_stable_callback_)
-                    .Build());
+  if (delegate_) {
+    delegate_->OnEvent(PaintStabilityDetectedEvent{
+        .total_painted_area = interaction_effects_monitor_->TotalPaintedArea(),
+        .is_waiting_for_stable = !!is_stable_callback_});
+  }
+
   is_stability_reached_ = true;
 
   // If we're monitoring but not yet waiting for stability, wait for
@@ -139,7 +111,7 @@ void PaintStabilityMonitor::OnPaintStabilityDetected() {
     return;
   }
 
-  // TODO(crbug.com/434268231): This doesn't enforce a minimum area; should it?
+  // TODO(b/507143691): This doesn't enforce a minimum area; should it?
   // Since this doesn't require _any_ area, this essentially amounts to a
   // smaller global timeout for pages and interactions that the
   // `interaction_effects_monitor_` does a poor job of attributing (DOM node
@@ -157,4 +129,32 @@ void PaintStabilityMonitor::ScheduleContentfulPaintTimeoutTask(
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-}  // namespace actor
+// Returns how long the monitor should wait for the initial contentful paint
+// before declaring paint stability.
+//
+// TODO(b/507143691): This is not based on data and should be revisited when
+// histograms are available, or combined with other heuristics, e.g. pending
+// interaction-attributed network requests.
+base::TimeDelta PaintStabilityMonitor::GetInitialPaintTimeout() const {
+  if (delegate_) {
+    return delegate_->GetInitialPaintTimeout();
+  }
+
+  return features::kPaintStabilityInitialPaintTimeout.Get();
+}
+
+// Returns how long the monitor should wait for subsequent contentful paints
+// before declaring paint stability.
+//
+// TODO(b/507143691): This is not based on data and should be revisited when
+// histograms are available, or combined with other heuristics, e.g. pending
+// interaction-attributed network requests.
+base::TimeDelta PaintStabilityMonitor::GetSubsequentPaintTimeout() const {
+  if (delegate_) {
+    return delegate_->GetSubsequentPaintTimeout();
+  }
+
+  return features::kPaintStabilitySubsequentPaintTimeout.Get();
+}
+
+}  // namespace page_content_annotations

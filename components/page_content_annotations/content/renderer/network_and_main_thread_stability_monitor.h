@@ -2,16 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_RENDERER_ACTOR_NETWORK_AND_MAIN_THREAD_STABILITY_MONITOR_H_
-#define CHROME_RENDERER_ACTOR_NETWORK_AND_MAIN_THREAD_STABILITY_MONITOR_H_
+#ifndef COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CONTENT_RENDERER_NETWORK_AND_MAIN_THREAD_STABILITY_MONITOR_H_
+#define COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CONTENT_RENDERER_NETWORK_AND_MAIN_THREAD_STABILITY_MONITOR_H_
 
 #include <stddef.h>
 
 #include "base/functional/callback.h"
-#include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/common/actor/task_id.h"
 
 namespace base {
 class TimeTicks;
@@ -21,17 +20,17 @@ namespace content {
 class RenderFrame;
 }  // namespace content
 
-namespace actor {
+namespace page_content_annotations {
 
-class Journal;
+class PageStabilityMonitorDelegate;
 
-// Helper class for monitoring network and main thread stability after tool
-// usage. This is owned by `PageStabilityMonitor`.
+// Helper class for monitoring network and main thread stability. This is owned
+// by `PageStabilityMonitor`.
 class NetworkAndMainThreadStabilityMonitor {
  public:
-  NetworkAndMainThreadStabilityMonitor(content::RenderFrame& frame,
-                                       TaskId task_id,
-                                       Journal& journal);
+  explicit NetworkAndMainThreadStabilityMonitor(
+      content::RenderFrame& frame,
+      PageStabilityMonitorDelegate* delegate = nullptr);
   ~NetworkAndMainThreadStabilityMonitor();
 
   void WaitForStable(base::OnceClosure callback);
@@ -52,14 +51,16 @@ class NetworkAndMainThreadStabilityMonitor {
 
   raw_ref<content::RenderFrame> render_frame_;
 
-  TaskId task_id_;
-
-  raw_ref<Journal> journal_;
+  // The delegate is owned by the PageStabilityMonitor that created this
+  // sub-monitor. Both the paint and network/main thread monitors share the
+  // same delegate as they represent a single, unified monitoring session
+  // with consistent configuration and logging needs.
+  raw_ptr<PageStabilityMonitorDelegate> delegate_ = nullptr;
 
   base::WeakPtrFactory<NetworkAndMainThreadStabilityMonitor> weak_ptr_factory_{
       this};
 };
 
-}  // namespace actor
+}  // namespace page_content_annotations
 
-#endif  // CHROME_RENDERER_ACTOR_NETWORK_AND_MAIN_THREAD_STABILITY_MONITOR_H_
+#endif  // COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CONTENT_RENDERER_NETWORK_AND_MAIN_THREAD_STABILITY_MONITOR_H_

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_RENDERER_ACTOR_PAINT_STABILITY_MONITOR_H_
-#define CHROME_RENDERER_ACTOR_PAINT_STABILITY_MONITOR_H_
+#ifndef COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CONTENT_RENDERER_PAINT_STABILITY_MONITOR_H_
+#define COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CONTENT_RENDERER_PAINT_STABILITY_MONITOR_H_
 
 #include <memory>
 
@@ -11,8 +11,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
-#include "chrome/common/actor/task_id.h"
-#include "chrome/renderer/actor/journal.h"
 #include "third_party/blink/public/web/web_interaction_effects_monitor_observer.h"
 
 namespace blink {
@@ -23,9 +21,9 @@ namespace content {
 class RenderFrame;
 }  // namespace content
 
-namespace actor {
-class PageStabilityMetrics;
-class ToolBase;
+namespace page_content_annotations {
+
+class PageStabilityMonitorDelegate;
 
 // Helper class for monitoring paint stability after tool usage using
 // interaction-attributed contentful paints. This class is largely an
@@ -36,8 +34,9 @@ class PaintStabilityMonitor
     : public blink::WebInteractionEffectsMonitorObserver {
  public:
   // Returns a `PaintStabilityMonitor` for the given `frame`.
-  static std::unique_ptr<PaintStabilityMonitor>
-  Create(content::RenderFrame& frame, TaskId task_id, Journal& journal);
+  static std::unique_ptr<PaintStabilityMonitor> Create(
+      content::RenderFrame& frame,
+      PageStabilityMonitorDelegate* delegate = nullptr);
 
   ~PaintStabilityMonitor() override;
 
@@ -50,7 +49,7 @@ class PaintStabilityMonitor
   // allows clients to enforce a minimum stability timeout threshold and tie
   // paint stability to other signals, while allowing this monitor to observe
   // all relevant paints.
-  void Start(PageStabilityMetrics* metrics = nullptr);
+  void Start();
 
   // Wait for paint stability and invoke `callback` once reached. `callback`
   // will only be invoked if `mode_` is enabled and not log-only. `callback`
@@ -60,12 +59,21 @@ class PaintStabilityMonitor
 
  private:
   PaintStabilityMonitor(content::RenderFrame& frame,
-                        TaskId task_id,
-                        Journal& journal);
+                        PageStabilityMonitorDelegate* delegate);
 
   void OnPaintStabilityDetected();
   void ScheduleContentfulPaintTimeoutTask(const base::Location& location,
                                           base::TimeDelta delay);
+
+  base::TimeDelta GetInitialPaintTimeout() const;
+
+  base::TimeDelta GetSubsequentPaintTimeout() const;
+
+  // The delegate is owned by the PageStabilityMonitor that created this
+  // sub-monitor. Both the paint and network/main thread monitors share the
+  // same delegate as they represent a single, unified monitoring session
+  // with consistent configuration and logging needs.
+  raw_ptr<PageStabilityMonitorDelegate> delegate_ = nullptr;
 
   bool is_started_ = false;
 
@@ -80,15 +88,6 @@ class PaintStabilityMonitor
   // enabled and not log-only.
   base::OnceClosure is_stable_callback_;
 
-  TaskId task_id_;
-
-  // The journal for logging. The journal is owned by the render frame observer
-  // which owns PageStabilityMonitor so it never outlives this class.
-  raw_ref<Journal> journal_;
-
-  // This is owned by the PageStabilityMonitor and it never outlives this class.
-  raw_ptr<PageStabilityMetrics> metrics_;
-
   std::unique_ptr<blink::WebInteractionEffectsMonitor>
       interaction_effects_monitor_;
 
@@ -97,6 +96,6 @@ class PaintStabilityMonitor
   base::WeakPtrFactory<PaintStabilityMonitor> weak_ptr_factory_{this};
 };
 
-}  // namespace actor
+}  // namespace page_content_annotations
 
-#endif  // CHROME_RENDERER_ACTOR_PAINT_STABILITY_MONITOR_H_
+#endif  // COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CONTENT_RENDERER_PAINT_STABILITY_MONITOR_H_

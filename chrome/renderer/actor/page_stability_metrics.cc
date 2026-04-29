@@ -10,9 +10,11 @@
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "chrome/common/actor/page_stability_metrics_common.h"
-#include "chrome/renderer/actor/page_stability_monitor.h"
+#include "components/page_content_annotations/content/renderer/page_stability_state.h"
 
 namespace actor {
+
+using State = page_content_annotations::PageStabilityState;
 
 PageStabilityMetrics::PageStabilityMetrics() = default;
 
@@ -25,21 +27,21 @@ void PageStabilityMetrics::Start() {
   start_waiting_time_ = base::TimeTicks::Now();
 }
 
-void PageStabilityMetrics::WillMoveToState(PageStabilityMonitor::State state) {
+void PageStabilityMetrics::WillMoveToState(State state) {
   switch (state) {
-    case PageStabilityMonitor::State::kInitial:
+    case State::kInitial:
       NOTREACHED();
-    case PageStabilityMonitor::State::kMonitorStartDelay:
+    case State::kMonitorStartDelay:
       break;
-    case PageStabilityMonitor::State::kWaitForNavigation:
+    case State::kWaitForNavigation:
       break;
-    case PageStabilityMonitor::State::kStartMonitoring:
+    case State::kStartMonitoring:
       start_monitoring_time_ = base::TimeTicks::Now();
       break;
-    case PageStabilityMonitor::State::kTimeout:
+    case State::kTimeout:
       stability_outcome_ = PageStabilityOutcome::kTimeout;
       break;
-    case PageStabilityMonitor::State::kMonitorCompleted:
+    case State::kMonitorCompleted:
       CHECK_NE(paint_stability_reached_,
                network_and_main_thread_stability_reached_);
       if (paint_stability_reached_) {
@@ -48,7 +50,7 @@ void PageStabilityMetrics::WillMoveToState(PageStabilityMonitor::State state) {
         stability_outcome_ = PageStabilityOutcome::kNetworkAndMainThread;
       }
       break;
-    case PageStabilityMonitor::State::kDelayCallback:
+    case State::kDelayCallback:
       if (stability_outcome_ == PageStabilityOutcome::kPaint) {
         stability_outcome_ = PageStabilityOutcome::kPaintDelayed;
       } else {
@@ -57,15 +59,15 @@ void PageStabilityMetrics::WillMoveToState(PageStabilityMonitor::State state) {
         stability_outcome_ = PageStabilityOutcome::kNetworkAndMainThreadDelayed;
       }
       break;
-    case PageStabilityMonitor::State::kInvokeCallback:
+    case State::kInvokeCallback:
       break;
-    case PageStabilityMonitor::State::kRenderFrameGoingAway:
+    case State::kRenderFrameGoingAway:
       stability_outcome_ = PageStabilityOutcome::kRenderFrameGoingAway;
       break;
-    case PageStabilityMonitor::State::kMojoDisconnected:
+    case State::kMojoDisconnected:
       stability_outcome_ = PageStabilityOutcome::kMojoDisconnected;
       break;
-    case PageStabilityMonitor::State::kDone:
+    case State::kDone:
       // The state machine is not entered until we start to wait for page
       // stability.
       CHECK(!start_waiting_time_.is_null());

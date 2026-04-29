@@ -7,9 +7,9 @@ module page_content_annotations.mojom;
 import "mojo/public/mojom/base/time.mojom";
 
 // Used to monitor page stability in the renderer. Implemented by
-// `actor::PageStabilityMonitor` and lives in the renderer process. The browser
-// queries this interface to learn when the current page associated with
-// `actor::PageStabilityMonitor` is stable.
+// `page_content_annotations::PageStabilityMonitor` and lives in the renderer
+// process. The browser queries this interface to learn when the current page
+// associated with `page_content_annotations::PageStabilityMonitor` is stable.
 //
 // We CHECK that only one `NotifyWhenStable()` call is in flight at any given
 // time.

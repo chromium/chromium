@@ -44,6 +44,7 @@ include_rules = [
   "+components/no_state_prefetch/renderer",
   "+components/offline_pages/buildflags",
   "+components/page_content_annotations/content/mojom",
+  "+components/page_content_annotations/content/renderer",
   "+components/page_content_annotations/core",
   "+components/optimization_guide/content/renderer",
   "+components/optimization_guide/core",

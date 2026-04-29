@@ -7,7 +7,7 @@
 
 #include "base/time/time.h"
 #include "chrome/common/actor/page_stability_metrics_common.h"
-#include "chrome/renderer/actor/page_stability_monitor.h"
+#include "components/page_content_annotations/content/renderer/page_stability_state.h"
 
 namespace actor {
 
@@ -18,7 +18,7 @@ class PageStabilityMetrics {
 
   void Start();
 
-  void WillMoveToState(PageStabilityMonitor::State state);
+  void WillMoveToState(page_content_annotations::PageStabilityState state);
 
   void OnNetworkAndMainThreadIdle();
 

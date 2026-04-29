@@ -1,0 +1,28 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("renderer") {
+  sources = [
+    "network_and_main_thread_stability_monitor.cc",
+    "network_and_main_thread_stability_monitor.h",
+    "page_stability_event.h",
+    "page_stability_monitor.cc",
+    "page_stability_monitor.h",
+    "page_stability_monitor_delegate.cc",
+    "page_stability_monitor_delegate.h",
+    "page_stability_state.cc",
+    "page_stability_state.h",
+    "paint_stability_monitor.cc",
+    "paint_stability_monitor.h",
+  ]
+  public_deps = [
+    "//base",
+    "//components/page_content_annotations/content/mojom",
+    "//content/public/renderer",
+    "//mojo/public/cpp/bindings",
+    "//third_party/blink/public:blink_headers",
+    "//ui/base",
+  ]
+  deps = [ "//components/page_content_annotations/core:features" ]
+}

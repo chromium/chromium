@@ -55,6 +55,32 @@ extern const base::FeatureParam<bool> kPageContentCacheEnableScreenshot;
 COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
 extern const base::FeatureParam<bool> kPageContentCacheUseUserEngagement;
 
+// Enables the shared component for monitoring page stability to determine when
+// a page has settled enough for observations to take place.
+COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
+BASE_DECLARE_FEATURE(kPageSettledMonitor);
+
+// The overall observation timeout when waiting on a renderer tool to complete.
+COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
+extern const base::FeatureParam<base::TimeDelta> kPageStabilityTimeout;
+
+// The minimum amount of time to wait for page stability before invoking the
+// callback.
+COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
+extern const base::FeatureParam<base::TimeDelta> kPageStabilityMinWait;
+
+// Timeout controlling how long the paint stability monitor waits for the
+// initial contentful paint before considering the UI to have stabilized.
+COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
+extern const base::FeatureParam<base::TimeDelta>
+    kPaintStabilityInitialPaintTimeout;
+
+// Timeout controlling how long the paint stability monitor waits for subsequent
+// contentful paints before considering the UI to have stabilized.
+COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
+extern const base::FeatureParam<base::TimeDelta>
+    kPaintStabilitySubsequentPaintTimeout;
+
 // The maximum number of "related searches" entries allowed to be maintained in
 // a least-recently-used cache for "related searches" data obtained via ZPS
 // prefetch logic.

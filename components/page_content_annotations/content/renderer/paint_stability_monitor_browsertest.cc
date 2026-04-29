@@ -2,55 +2,46 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/renderer/actor/paint_stability_monitor.h"
+#include "components/page_content_annotations/content/renderer/paint_stability_monitor.h"
 
 #include <memory>
 #include <optional>
 
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/common/actor.mojom.h"
-#include "chrome/common/actor/action_result.h"
-#include "chrome/common/actor/task_id.h"
-#include "chrome/common/chrome_features.h"
-#include "chrome/renderer/actor/journal.h"
-#include "chrome/renderer/actor/tool_utils.h"
-#include "chrome/test/base/chrome_render_view_test.h"
+#include "components/page_content_annotations/core/page_content_annotations_features.h"
 #include "content/public/renderer/render_frame.h"
+#include "content/public/test/render_view_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/common/metrics/document_update_reason.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 
-namespace actor {
+namespace page_content_annotations {
 
-class PaintStabilityMonitorTest : public ChromeRenderViewTest {
+class PaintStabilityMonitorTest : public content::RenderViewTest {
  public:
-  PaintStabilityMonitorTest() : task_id_(100) {
+  PaintStabilityMonitorTest() {
     feature_list_.InitAndEnableFeatureWithParameters(
-        ::features::kGlicActor,
-        {{::features::kActorPaintStabilityIntialPaintTimeout.name, "1000ms"},
-         {::features::kActorPaintStabilitySubsequentPaintTimeout.name,
-          "500ms"}});
+        features::kPageSettledMonitor,
+        {{features::kPaintStabilityInitialPaintTimeout.name, "1000ms"},
+         {features::kPaintStabilitySubsequentPaintTimeout.name, "500ms"}});
   }
 
  protected:
   static base::TimeDelta GetInitialPaintTimeout() {
-    return features::kActorPaintStabilityIntialPaintTimeout.Get();
+    return features::kPaintStabilityInitialPaintTimeout.Get();
   }
 
   static base::TimeDelta GetSubsequentPaintTimeout() {
-    return features::kActorPaintStabilitySubsequentPaintTimeout.Get();
+    return features::kPaintStabilitySubsequentPaintTimeout.Get();
   }
 
   void Render() {
     GetWebFrameWidget()->UpdateAllLifecyclePhases(
         blink::DocumentUpdateReason::kTest);
   }
-
-  Journal journal_;
-  TaskId task_id_;
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -71,8 +62,8 @@ TEST_F(PaintStabilityMonitorTest, NoContentfulPaint) {
   bool did_reach_paint_stability = false;
   {
     std::unique_ptr<PaintStabilityMonitor> monitor =
-        PaintStabilityMonitor::Create(*GetMainRenderFrame(), task_id_,
-                                      journal_);
+        PaintStabilityMonitor::Create(*GetMainRenderFrame(),
+                                      /*delegate=*/nullptr);
 
     bool result = SimulateElementClick("target");
     ASSERT_TRUE(result);
@@ -115,8 +106,8 @@ TEST_F(PaintStabilityMonitorTest, SinglePaint) {
   bool did_reach_paint_stability = false;
   {
     std::unique_ptr<PaintStabilityMonitor> monitor =
-        PaintStabilityMonitor::Create(*GetMainRenderFrame(), task_id_,
-                                      journal_);
+        PaintStabilityMonitor::Create(*GetMainRenderFrame(),
+                                      /*delegate=*/nullptr);
 
     bool result = SimulateElementClick("target");
     ASSERT_TRUE(result);
@@ -163,8 +154,8 @@ TEST_F(PaintStabilityMonitorTest, PaintStabilityReached_DelayedPaint) {
   bool did_reach_paint_stability = false;
   {
     std::unique_ptr<PaintStabilityMonitor> monitor =
-        PaintStabilityMonitor::Create(*GetMainRenderFrame(), task_id_,
-                                      journal_);
+        PaintStabilityMonitor::Create(*GetMainRenderFrame(),
+                                      /*delegate=*/nullptr);
 
     bool result = SimulateElementClick("target");
     ASSERT_TRUE(result);
@@ -233,8 +224,8 @@ TEST_F(PaintStabilityMonitorTest, PaintStabilityReached_MultiplePaints) {
   bool did_reach_paint_stability = false;
   {
     std::unique_ptr<PaintStabilityMonitor> monitor =
-        PaintStabilityMonitor::Create(*GetMainRenderFrame(), task_id_,
-                                      journal_);
+        PaintStabilityMonitor::Create(*GetMainRenderFrame(),
+                                      /*delegate=*/nullptr);
 
     bool result = SimulateElementClick("target");
     ASSERT_TRUE(result);
@@ -294,8 +285,8 @@ TEST_F(PaintStabilityMonitorTest, DelayedStabilityCallback) {
   bool did_reach_paint_stability = false;
   {
     std::unique_ptr<PaintStabilityMonitor> monitor =
-        PaintStabilityMonitor::Create(*GetMainRenderFrame(), task_id_,
-                                      journal_);
+        PaintStabilityMonitor::Create(*GetMainRenderFrame(),
+                                      /*delegate=*/nullptr);
 
     bool result = SimulateElementClick("target");
     ASSERT_TRUE(result);
@@ -346,8 +337,8 @@ TEST_F(PaintStabilityMonitorTest, DelayedStabilityCallback_ResetTimer) {
   bool did_reach_paint_stability = false;
   {
     std::unique_ptr<PaintStabilityMonitor> monitor =
-        PaintStabilityMonitor::Create(*GetMainRenderFrame(), task_id_,
-                                      journal_);
+        PaintStabilityMonitor::Create(*GetMainRenderFrame(),
+                                      /*delegate=*/nullptr);
 
     bool result = SimulateElementClick("target");
     ASSERT_TRUE(result);
@@ -380,4 +371,4 @@ TEST_F(PaintStabilityMonitorTest, DelayedStabilityCallback_ResetTimer) {
   }
 }
 
-}  // namespace actor
+}  // namespace page_content_annotations

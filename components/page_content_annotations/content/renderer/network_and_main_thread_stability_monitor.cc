@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/renderer/actor/network_and_main_thread_stability_monitor.h"
+#include "components/page_content_annotations/content/renderer/network_and_main_thread_stability_monitor.h"
 
 #include <stddef.h>
 
@@ -11,27 +11,25 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
-#include "chrome/common/actor/journal_details_builder.h"
-#include "chrome/renderer/actor/journal.h"
+#include "components/page_content_annotations/content/renderer/page_stability_monitor_delegate.h"
 #include "content/public/renderer/render_frame.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 
-namespace actor {
+namespace page_content_annotations {
 
 NetworkAndMainThreadStabilityMonitor::NetworkAndMainThreadStabilityMonitor(
     content::RenderFrame& render_frame,
-    TaskId task_id,
-    Journal& journal)
-    : render_frame_(render_frame), task_id_(task_id), journal_(journal) {
+    PageStabilityMonitorDelegate* delegate)
+    : render_frame_(render_frame), delegate_(delegate) {
   CHECK(render_frame_->GetWebFrame());
   starting_request_count_ =
       render_frame_->GetWebFrame()->GetDocument().ActiveResourceRequestCount();
 
-  journal_->Log(task_id_, "NetworkAndMainThreadStabilityMonitor: Created",
-                JournalDetailsBuilder()
-                    .Add("requests_before", starting_request_count_)
-                    .Build());
+  if (delegate_) {
+    delegate_->OnEvent(NetworkAndMainThreadStabilityMonitorCreatedEvent{
+        .starting_request_count = starting_request_count_});
+  }
 }
 
 NetworkAndMainThreadStabilityMonitor::~NetworkAndMainThreadStabilityMonitor() =
@@ -44,10 +42,10 @@ void NetworkAndMainThreadStabilityMonitor::WaitForStable(
 
   size_t after_request_count =
       render_frame_->GetWebFrame()->GetDocument().ActiveResourceRequestCount();
-  journal_->Log(task_id_, "NetworkAndMainThreadStabilityMonitor: WaitForStable",
-                JournalDetailsBuilder()
-                    .Add("requests_after", after_request_count)
-                    .Build());
+  if (delegate_) {
+    delegate_->OnEvent(NetworkAndMainThreadStabilityMonitorStartedEvent{
+        .after_request_count = after_request_count});
+  }
 
   if (after_request_count > starting_request_count_) {
     render_frame_->GetWebFrame()->RequestNetworkIdleCallback(
@@ -59,8 +57,9 @@ void NetworkAndMainThreadStabilityMonitor::WaitForStable(
 }
 
 void NetworkAndMainThreadStabilityMonitor::OnNetworkIdle() {
-  journal_->Log(task_id_, "NetworkAndMainThreadStabilityMonitor::OnNetworkIdle",
-                {});
+  if (delegate_) {
+    delegate_->OnEvent(NetworkIdleEvent());
+  }
   WaitForMainThreadIdle();
 }
 
@@ -72,11 +71,12 @@ void NetworkAndMainThreadStabilityMonitor::WaitForMainThreadIdle() {
 }
 
 void NetworkAndMainThreadStabilityMonitor::OnMainThreadIdle(base::TimeTicks) {
-  journal_->Log(task_id_,
-                "NetworkAndMainThreadStabilityMonitor::OnMainThreadIdle", {});
+  if (delegate_) {
+    delegate_->OnEvent(MainThreadIdleEvent());
+  }
 
   CHECK(is_stable_callback_);
   std::move(is_stable_callback_).Run();
 }
 
-}  // namespace actor
+}  // namespace page_content_annotations

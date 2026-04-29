@@ -18,16 +18,12 @@ source_set("actor") {
     "key_dispatcher.h",
     "mouse_move_tool.cc",
     "mouse_move_tool.h",
-    "network_and_main_thread_stability_monitor.cc",
-    "network_and_main_thread_stability_monitor.h",
     "no_op_tool.cc",
     "no_op_tool.h",
     "page_stability_metrics.cc",
     "page_stability_metrics.h",
-    "page_stability_monitor.cc",
-    "page_stability_monitor.h",
-    "paint_stability_monitor.cc",
-    "paint_stability_monitor.h",
+    "page_stability_monitor_delegate.cc",
+    "page_stability_monitor_delegate.h",
     "script_tool.cc",
     "script_tool.h",
     "scroll_tool.cc",
@@ -46,7 +42,7 @@ source_set("actor") {
 
   public_deps = [
     "//base",
-    "//components/page_content_annotations/content/mojom",
+    "//components/page_content_annotations/content/renderer",
     "//content/public/renderer",
   ]
 
@@ -59,10 +55,7 @@ source_set("actor") {
 if (!skip_android_unmigrated_actor_files) {
   source_set("browser_tests") {
     testonly = true
-    sources = [
-      "paint_stability_monitor_browsertest.cc",
-      "tool_utils_browsertest.cc",
-    ]
+    sources = [ "tool_utils_browsertest.cc" ]
     deps = [
       ":actor",
       "//base/test:test_support",
