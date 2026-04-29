@@ -18,11 +18,24 @@ export interface GetClickDispositionFlagsOptions {
   ignoreShiftKey?: boolean;
 }
 
-interface DragState {
-  initialY: number;
+// Tracks state used for deciding whether to display a context menu instead of
+// treating a pointer interaction as a click (a "short press"). Only populated
+// while holding a pointer down, cleared on release, or when the interaction is
+// determined to be a "long press", which generally results in showing a context
+// menu.
+//
+// A press may be determined to be long based on either press duration or
+// vertical mouse movement.
+interface ContextMenuState {
+  // True as long as the pointer is down, and the interaction has not been
+  // passed along as a long or short press.
   isListening: boolean;
   activePointerId: number;
   activeElement: HTMLElement|null;
+
+  longPressTimer: TimerHelper;
+
+  initialY: number;
 }
 
 /**
@@ -72,7 +85,6 @@ export class PressHandler {
   private static readonly DRAG_THRESHOLD_PX = 8;
   private static readonly NO_ACTIVE_POINTER_ID = -1;
 
-  private longPressTimer_: TimerHelper = new TimerHelper();
   private onLongPress_: (source: MenuSourceType) => void;
   private onShortPress_: (e: MouseEvent) => void;
 
@@ -80,63 +92,71 @@ export class PressHandler {
   // instead of a short press. This is standard behavior for most buttons,
   // but some (like reload) need it disabled to handle Ctrl+Click differently.
   private enableMacContextClick_: boolean;
-  private dragState_: DragState|null = null;
+  private contextMenuState_: ContextMenuState|null = null;
 
   constructor(
       onLongPress: (source: MenuSourceType) => void,
       onShortPress: (e: MouseEvent) => void,
       enableMacContextClick: boolean = true,
-      enableDragToOpenMenu: boolean = true) {
+      enableContextMenu: boolean = true) {
     this.onLongPress_ = onLongPress;
     this.onShortPress_ = onShortPress;
     this.enableMacContextClick_ = enableMacContextClick;
-    if (enableDragToOpenMenu) {
-      this.dragState_ = {
-        initialY: 0,
+    if (enableContextMenu) {
+      this.contextMenuState_ = {
         isListening: false,
         activePointerId: PressHandler.NO_ACTIVE_POINTER_ID,
         activeElement: null,
+        longPressTimer: new TimerHelper(),
+        initialY: 0,
       };
     }
   }
 
   private onPointermove_ = (e: PointerEvent) => {
-    if (!this.dragState_ || e.pointerId !== this.dragState_.activePointerId) {
+    if (!this.contextMenuState_ ||
+        e.pointerId !== this.contextMenuState_.activePointerId) {
       return;
     }
     // Detect downward drag.
-    if (e.clientY - this.dragState_.initialY > PressHandler.DRAG_THRESHOLD_PX) {
-      this.longPressTimer_.clearTimeout();
+    if (e.clientY - this.contextMenuState_.initialY >
+        PressHandler.DRAG_THRESHOLD_PX) {
       this.onLongPress_(getContextMenuSourceType(e));
-      this.resetDragState_();
+      this.resetContextMenuState_();
     }
   };
 
-  private resetDragState_() {
-    if (this.dragState_?.isListening && this.dragState_.activeElement) {
-      this.dragState_.activeElement.removeEventListener(
-          'pointermove', this.onPointermove_);
-      if (this.dragState_.activePointerId !==
-          PressHandler.NO_ACTIVE_POINTER_ID) {
-        if (this.dragState_.activeElement.hasPointerCapture(
-                this.dragState_.activePointerId)) {
-          this.dragState_.activeElement.releasePointerCapture(
-              this.dragState_.activePointerId);
+  private resetContextMenuState_() {
+    if (this.contextMenuState_?.isListening) {
+      this.contextMenuState_.longPressTimer.clearTimeout();
+
+      if (this.contextMenuState_.activeElement) {
+        this.contextMenuState_.activeElement.removeEventListener(
+            'pointermove', this.onPointermove_);
+        if (this.contextMenuState_.activePointerId !==
+            PressHandler.NO_ACTIVE_POINTER_ID) {
+          if (this.contextMenuState_.activeElement.hasPointerCapture(
+                  this.contextMenuState_.activePointerId)) {
+            this.contextMenuState_.activeElement.releasePointerCapture(
+                this.contextMenuState_.activePointerId);
+          }
+          this.contextMenuState_.activePointerId =
+              PressHandler.NO_ACTIVE_POINTER_ID;
         }
-        this.dragState_.activePointerId = PressHandler.NO_ACTIVE_POINTER_ID;
       }
-      this.dragState_.activeElement = null;
-      this.dragState_.isListening = false;
+
+      this.contextMenuState_.activeElement = null;
+      this.contextMenuState_.isListening = false;
     }
   }
 
   private shouldCancelClick_(e: PointerEvent): boolean {
-    if (!this.dragState_?.activeElement) {
+    if (!this.contextMenuState_?.activeElement) {
       // If drag-to-open-menu is not enabled or we're not actively tracking an
       // element, don't cancel the click.
       return false;
     }
-    const rect = this.dragState_.activeElement.getBoundingClientRect();
+    const rect = this.contextMenuState_.activeElement.getBoundingClientRect();
     return e.clientX < rect.left || e.clientX > rect.right ||
         e.clientY < rect.top || e.clientY > rect.bottom;
   }
@@ -144,7 +164,7 @@ export class PressHandler {
   onPointerdown = (e: PointerEvent, skipLongPress: boolean = false) => {
     // Ignore secondary pointers if we are actively listening to a primary
     // pointer.
-    if (this.dragState_?.isListening) {
+    if (this.contextMenuState_?.isListening) {
       return;
     }
 
@@ -163,33 +183,28 @@ export class PressHandler {
       return;
     }
 
-    this.longPressTimer_.clearTimeout();
-
-    if (skipLongPress) {
+    if (skipLongPress || !this.contextMenuState_) {
       return;
     }
 
-    if (this.dragState_) {
-      this.dragState_.initialY = e.clientY;
-      this.dragState_.isListening = true;
-      // Use currentTarget to ensure we are capturing the button element that
-      // the listener was attached to, even if the pointer is over a child
-      // element (like an icon).
-      this.dragState_.activeElement = target;
-      this.dragState_.activePointerId = e.pointerId;
-      target.addEventListener('pointermove', this.onPointermove_);
-    }
+    // If can show a context menu, need to initialize `contextMenuState_` and
+    // start a timer.
 
-    this.longPressTimer_.setTimeout(() => {
+    this.contextMenuState_.isListening = true;
+    // Use currentTarget to ensure we are capturing the button element that
+    // the listener was attached to, even if the pointer is over a child
+    // element (like an icon).
+    this.contextMenuState_.activeElement = target;
+    this.contextMenuState_.activePointerId = e.pointerId;
+
+    this.contextMenuState_.longPressTimer.setTimeout(() => {
       // Have to release capture so that a short press will not be triggered.
-      // `resetDragState_()` may do that, but it may not, if not in use, so need
-      // to fall back to releasing capture directly.
-      this.resetDragState_();
-      if (target.hasPointerCapture(e.pointerId)) {
-        target.releasePointerCapture(e.pointerId);
-      }
+      this.resetContextMenuState_();
       this.onLongPress_(MenuSourceType.kLongPress);
     }, PressHandler.LONG_PRESS_TIMER_THRESHOLD_MS);
+
+    this.contextMenuState_.initialY = e.clientY;
+    target.addEventListener('pointermove', this.onPointermove_);
   };
 
   onPointerup = (e: PointerEvent) => {
@@ -204,13 +219,13 @@ export class PressHandler {
 
     // Ignore secondary pointers if we are actively listening to a primary
     // pointer.
-    if (this.dragState_?.isListening &&
-        e.pointerId !== this.dragState_.activePointerId) {
+    if (this.contextMenuState_?.isListening &&
+        e.pointerId !== this.contextMenuState_.activePointerId) {
       return;
     }
 
     if (e.button === BUTTON_RIGHT) {
-      this.resetDragState_();
+      this.resetContextMenuState_();
       return;
     }
 
@@ -219,14 +234,12 @@ export class PressHandler {
 
     // If it's Ctrl+LeftClick on Mac, skip the rest.
     if (isMacCtrlClick) {
-      this.longPressTimer_.clearTimeout();
-      this.resetDragState_();
+      this.resetContextMenuState_();
       return;
     }
 
-    this.longPressTimer_.clearTimeout();
     const shouldCancel = this.shouldCancelClick_(e);
-    this.resetDragState_();
+    this.resetContextMenuState_();
 
     if (shouldCancel) {
       return;
@@ -238,12 +251,11 @@ export class PressHandler {
   onPointercancel = (e: PointerEvent) => {
     // Ignore secondary pointers if we are actively listening to a primary
     // pointer.
-    if (this.dragState_?.isListening &&
-        e.pointerId !== this.dragState_.activePointerId) {
+    if (this.contextMenuState_?.isListening &&
+        e.pointerId !== this.contextMenuState_.activePointerId) {
       return;
     }
-    this.resetDragState_();
-    this.longPressTimer_.clearTimeout();
+    this.resetContextMenuState_();
   };
 
   onContextmenu = (e: PointerEvent) => {
