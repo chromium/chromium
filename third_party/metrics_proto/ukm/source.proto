@@ -72,7 +72,23 @@ enum UrlScheme {
   APP = 7;
 }
 
-// Next tag: 10
+// If the URL exceeds the length limit, the client will truncate the URL and
+// indicate where in the URL the truncation occurred.
+// If URLs are truncated at a given component, that component and all longer
+// components are considered incomplete. The collector replaces incomplete
+// components with kChromiumURLTooLong placeholder.
+enum TruncationStatus {
+  NOT_TRUNCATED = 0;
+  // Yields full_url incomplete.
+  TRUNCATED_AT_FULL_PATH = 1;
+  // This yields full_url and url_without_query incomplete.
+  TRUNCATED_AT_URL_WITHOUT_QUERY = 2;
+  // This yields full_url, url_without_query, origin, and
+  // registered_domain_with_scheme incomplete.
+  TRUNCATED_AT_ORIGIN = 3;
+}
+
+// Next tag: 11
 message UrlInfo {
   string url = 1;
 
