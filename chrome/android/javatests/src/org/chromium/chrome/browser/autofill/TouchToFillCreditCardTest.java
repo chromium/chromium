@@ -11,10 +11,6 @@ import static org.chromium.base.test.util.Criteria.checkThat;
 import static org.chromium.base.test.util.CriteriaHelper.pollUiThread;
 import static org.chromium.base.test.util.Matchers.containsString;
 import static org.chromium.base.test.util.Matchers.is;
-import static org.chromium.chrome.R.id.first_line_label;
-import static org.chromium.chrome.R.id.main_text;
-import static org.chromium.chrome.R.id.minor_text;
-import static org.chromium.chrome.R.id.touch_to_fill_payment_method_home_screen;
 import static org.chromium.chrome.browser.autofill.AutofillTestHelper.createCreditCard;
 
 import android.view.View;
@@ -32,6 +28,7 @@ import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -165,13 +162,13 @@ public class TouchToFillCreditCardTest {
     private RecyclerView getItemsList() {
         return mActivityTestRule
                 .getActivity()
-                .findViewById(touch_to_fill_payment_method_home_screen);
+                .findViewById(R.id.touch_to_fill_payment_method_home_screen);
     }
 
     private void verifyCardSuggestionIsCorrectlyDisplayed(View cardSuggestionItemLayout) {
-        TextView mainTextLayout = cardSuggestionItemLayout.findViewById(main_text);
-        TextView minorTextLayout = cardSuggestionItemLayout.findViewById(minor_text);
-        TextView cardDescLayout = cardSuggestionItemLayout.findViewById(first_line_label);
+        TextView mainTextLayout = cardSuggestionItemLayout.findViewById(R.id.main_text);
+        TextView minorTextLayout = cardSuggestionItemLayout.findViewById(R.id.minor_text);
+        TextView cardDescLayout = cardSuggestionItemLayout.findViewById(R.id.first_line_label);
         // Check that suggestion main text with the card name is displayed
         checkThat(mainTextLayout.getText().toString(), is(CARD_NAME));
         // Check that suggestion minor text with the last four digits of the card are displayed

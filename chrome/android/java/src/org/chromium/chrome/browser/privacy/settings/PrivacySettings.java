@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.privacy.settings;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.components.content_settings.PrefNames.COOKIE_CONTROLS_MODE;
-import static org.chromium.ui.R.drawable.gshield_colorful;
 
 import android.content.Context;
 import android.content.Intent;
@@ -517,7 +516,8 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
         if (additionalSecurityProvider == null) return;
 
         @Nullable Drawable additionalSecurityIcon =
-                ApiCompatibilityUtils.getDrawable(context.getResources(), gshield_colorful);
+                ApiCompatibilityUtils.getDrawable(
+                        context.getResources(), R.drawable.gshield_colorful);
 
         Consumer<Context> androidAdvancedProtectionLinkAction =
                 (linkContext) -> {

@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.password_edit_dialog;
 
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.base.test.util.ApplicationTestUtils.finishActivity;
-import static org.chromium.chrome.browser.password_edit_dialog.R.style.Theme_BrowserUI_DayNight;
 
 import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.MediumTest;
@@ -76,7 +75,7 @@ public class PasswordEditDialogRenderTest {
     @Before
     public void setUp() throws InterruptedException {
         mActivityTestRule.launchActivity(null);
-        mActivityTestRule.getActivity().setTheme(Theme_BrowserUI_DayNight);
+        mActivityTestRule.getActivity().setTheme(R.style.Theme_BrowserUI_DayNight);
         runOnUiThreadBlocking(
                 () -> {
                     mDialogView =
