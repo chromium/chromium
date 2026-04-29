@@ -101,6 +101,8 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
     private final Callback<@AutocompleteRequestType Integer> mOnAutocompleteRequestTypeChanged =
             this::onAutocompleteRequestTypeChanged;
     private final Callback<InputState> mOnInputStateChanged = this::onInputStateChange;
+    private final Callback<List<SuggestedTabInfo>> mOnSuggestedTabsChanged =
+            this::reconcileSuggestedTabs;
     private final SnackbarManager mSnackbarManager;
     private final Snackbar mAttachmentUploadFailedSnackbar;
     private final ScrimManager mScrimManager;
@@ -220,11 +222,15 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
     }
 
     private void setController(@Nullable ComposeboxQueryControllerBridge controller) {
-        if (mComposeboxQueryControllerBridge != null
-                && OmniboxFeatures.sShowModelPicker.getValue()) {
+        if (mComposeboxQueryControllerBridge != null) {
+            if (OmniboxFeatures.sShowModelPicker.getValue()) {
+                mComposeboxQueryControllerBridge
+                        .getInputStateSupplier()
+                        .removeObserver(mOnInputStateChanged);
+            }
             mComposeboxQueryControllerBridge
-                    .getInputStateSupplier()
-                    .removeObserver(mOnInputStateChanged);
+                    .getSuggestedTabsSupplier()
+                    .removeObserver(mOnSuggestedTabsChanged);
         }
 
         mComposeboxQueryControllerBridge = controller;
@@ -235,6 +241,10 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
                     .getInputStateSupplier()
                     .addSyncObserverAndCallIfNonNull(mOnInputStateChanged);
         }
+
+        mComposeboxQueryControllerBridge
+                .getSuggestedTabsSupplier()
+                .addSyncObserver(mOnSuggestedTabsChanged);
 
         mModel.set(
                 FuseboxProperties.POPUP_ATTACH_FILE_VISIBLE,
@@ -531,7 +541,8 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
                         tab,
                         isCurrentTab(tab),
                         mContext.getResources(),
-                        FuseboxAttachmentButtonType.CURRENT_TAB);
+                        FuseboxAttachmentButtonType.CURRENT_TAB,
+                        /* isSuggestedTab= */ false);
 
         // Use FuseboxModelList's add method which handles upload automatically
         mModelList.add(attachment);
@@ -682,11 +693,46 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
                                             tab,
                                             isCurrentTab(tab),
                                             mContext.getResources(),
-                                            FuseboxAttachmentButtonType.TAB_PICKER));
+                                            FuseboxAttachmentButtonType.TAB_PICKER,
+                                            /* isSuggestedTab= */ false));
                     if (addFailed) {
                         break;
                     }
                 }
+            }
+        }
+    }
+
+    private void reconcileSuggestedTabs(List<SuggestedTabInfo> suggestedTabs) {
+        if (!isInInputSession()) return;
+        if (mModelList == null) return;
+
+        // First, clear any existing suggested chips.
+        mModelList.removeSuggestedTabs();
+
+        if (suggestedTabs.isEmpty()) return;
+
+        TabModelSelector selector = mTabModelSelectorSupplier.get();
+        if (selector == null) return;
+
+        Set<Integer> attachedTabIds = mModelList.getAttachedTabIds();
+        for (SuggestedTabInfo info : suggestedTabs) {
+            if (!attachedTabIds.contains(info.tabId)) {
+                Tab tab = selector.getTabById(info.tabId);
+                if (tab == null) continue;
+
+                if (mModelList.getRemainingAttachments() == 0) break;
+
+                var attachment =
+                        FuseboxAttachment.forTab(
+                                tab,
+                                /* bypassTabCache= */ false,
+                                mContext.getResources(),
+                                FuseboxAttachmentButtonType.SUGGESTED_TAB,
+                                /* isSuggestedTab= */ true);
+                attachment.setUploadIsComplete();
+                mModelList.add(attachment);
+                mMetrics.notifyAttachmentButtonShown(FuseboxAttachmentButtonType.SUGGESTED_TAB);
             }
         }
     }
@@ -716,6 +762,10 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
     private void onAutocompleteRequestTypeChanged(@AutocompleteRequestType Integer type) {
         updateFuseboxState();
         mModel.set(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE, type);
+
+        if (type != AutocompleteRequestType.AI_MODE && isInInputSession() && mModelList != null) {
+            mModelList.removeSuggestedTabs();
+        }
 
         if (OmniboxFeatures.sShowModelPicker.getValue()) {
             if (!isInInputSession()) return;

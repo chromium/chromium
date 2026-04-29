@@ -82,14 +82,16 @@ public class FuseboxAttachmentModelListUnitTest {
                 tab,
                 /* bypassTabCache= */ false,
                 mResources,
-                FuseboxAttachmentButtonType.TAB_PICKER);
+                FuseboxAttachmentButtonType.TAB_PICKER,
+                /* isSuggestedTab= */ false);
     }
 
     private FuseboxAttachment createTabAttachment(int tabId, String token) {
         Tab tab = mock(Tab.class);
         when(tab.getId()).thenReturn(tabId);
         var attachment = createTabAttachment(tab);
-        when(mComposeboxQueryControllerBridge.addTabContextFromCache(tabId)).thenReturn(token);
+        when(mComposeboxQueryControllerBridge.addTabContextFromCache(tabId, false))
+                .thenReturn(token);
         return attachment;
     }
 
@@ -459,7 +461,7 @@ public class FuseboxAttachmentModelListUnitTest {
         doReturn(false).when(tab).isFrozen();
         doReturn(webContents).when(tab).getWebContents();
         doReturn(renderWidgetHostView).when(webContents).getRenderWidgetHostView();
-        when(mComposeboxQueryControllerBridge.addTabContext(tab)).thenReturn("token");
+        when(mComposeboxQueryControllerBridge.addTabContext(tab, false)).thenReturn("token");
 
         FuseboxAttachment tabAttachment = createTabAttachment(tab);
         mFuseboxAttachmentModelList.add(tabAttachment);
@@ -478,7 +480,7 @@ public class FuseboxAttachmentModelListUnitTest {
         doReturn(true).when(tab).isIncognitoBranded();
         doReturn(webContents).when(tab).getWebContents();
         doReturn(renderWidgetHostView).when(webContents).getRenderWidgetHostView();
-        when(mComposeboxQueryControllerBridge.addTabContext(tab)).thenReturn("token");
+        when(mComposeboxQueryControllerBridge.addTabContext(tab, false)).thenReturn("token");
 
         FuseboxAttachment tabAttachment = createTabAttachment(tab);
         mFuseboxAttachmentModelList.add(tabAttachment);
@@ -496,8 +498,8 @@ public class FuseboxAttachmentModelListUnitTest {
         doReturn(false).when(tab).isFrozen();
         doReturn(webContents).when(tab).getWebContents();
         doReturn(renderWidgetHostView).when(webContents).getRenderWidgetHostView();
-        when(mComposeboxQueryControllerBridge.addTabContext(tab)).thenReturn("token2");
-        when(mComposeboxQueryControllerBridge.addTabContextFromCache(1)).thenReturn("");
+        when(mComposeboxQueryControllerBridge.addTabContext(tab, false)).thenReturn("token2");
+        when(mComposeboxQueryControllerBridge.addTabContextFromCache(1, false)).thenReturn("");
 
         FuseboxAttachment tabAttachment = createTabAttachment(tab);
         mFuseboxAttachmentModelList.add(tabAttachment);
@@ -514,13 +516,13 @@ public class FuseboxAttachmentModelListUnitTest {
         doReturn(false).when(tab).isFrozen();
         doReturn(webContents).when(tab).getWebContents();
         doReturn(renderWidgetHostView).when(webContents).getRenderWidgetHostView();
-        when(mComposeboxQueryControllerBridge.addTabContextFromCache(1)).thenReturn("token");
+        when(mComposeboxQueryControllerBridge.addTabContextFromCache(1, false)).thenReturn("token");
 
         FuseboxAttachment tabAttachment = createTabAttachment(tab);
         mFuseboxAttachmentModelList.add(tabAttachment);
         assertEquals("token", tabAttachment.getToken());
 
-        when(mComposeboxQueryControllerBridge.addTabContext(tab)).thenReturn("token2");
+        when(mComposeboxQueryControllerBridge.addTabContext(tab, false)).thenReturn("token2");
         mFuseboxAttachmentModelList.onContextUploadStatusChanged(
                 "token", ContextUploadStatus.VALIDATION_FAILED);
         assertEquals("token2", tabAttachment.getToken());

@@ -232,7 +232,7 @@ public class FuseboxAttachmentModelList
         }
 
         if (attachment.type == FuseboxAttachmentType.ATTACHMENT_TAB) {
-            mAttachedTabIds.add(attachment.tabId);
+            mAttachedTabIds.add(attachment.getTabId());
         }
 
         attachment.model.set(FuseboxAttachmentProperties.COLOR_SCHEME, mBrandedColorScheme);
@@ -254,7 +254,7 @@ public class FuseboxAttachmentModelList
         mModelList.remove(attachment);
 
         if (attachment.type == FuseboxAttachmentType.ATTACHMENT_TAB) {
-            mAttachedTabIds.remove(attachment.tabId);
+            mAttachedTabIds.remove(attachment.getTabId());
         }
 
         if (isFailure) {
@@ -283,8 +283,7 @@ public class FuseboxAttachmentModelList
                     if (item.type != FuseboxAttachmentType.ATTACHMENT_TAB) return false;
                     FuseboxAttachment attachment =
                             item.model.get(FuseboxAttachmentProperties.ATTACHMENT);
-                    Integer tabId = assumeNonNull(attachment).tabId;
-                    return !tabIdsToKeep.contains(tabId);
+                    return !tabIdsToKeep.contains(assumeNonNull(attachment).getTabId());
                 });
     }
 
@@ -353,6 +352,11 @@ public class FuseboxAttachmentModelList
     /** Returns a set of currently attached Tab IDs. */
     public Set<Integer> getAttachedTabIds() {
         return mAttachedTabIds;
+    }
+
+    /** Removes all suggested tab chips from the model list and backend. */
+    public void removeSuggestedTabs() {
+        removeIf(item -> ((FuseboxAttachment) item).isSuggestedTab);
     }
 
     /** Apply a variant of the branded color scheme to Fusebox Attachment elements. */

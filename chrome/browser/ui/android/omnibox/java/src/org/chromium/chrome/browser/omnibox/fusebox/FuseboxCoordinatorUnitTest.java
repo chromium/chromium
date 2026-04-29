@@ -71,6 +71,7 @@ import org.chromium.ui.shadows.ShadowAsyncLayoutInflater;
 
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 
@@ -98,6 +99,8 @@ public class FuseboxCoordinatorUnitTest {
 
     private final SettableNonNullObservableSupplier<TabModelSelector> mTabModelSelectorSupplier =
             ObservableSuppliers.createNonNull(mTabModelSelector);
+    private final SettableNonNullObservableSupplier<List<SuggestedTabInfo>> mSuggestedTabsSupplier =
+            ObservableSuppliers.createNonNull(List.of());
     private final OneshotSupplierImpl<TemplateUrlService> mTemplateUrlServiceSupplier =
             new OneshotSupplierImpl<>();
     private final Function<Tab, Bitmap> mTabFaviconFunction = (tab) -> mBitmap;
@@ -118,6 +121,7 @@ public class FuseboxCoordinatorUnitTest {
         lenient().doReturn(mTabModel).when(mTabModelSelector).getCurrentModel();
         lenient().doReturn(Collections.emptyIterator()).when(mTabModel).iterator();
         doReturn(true).when(mComposebox).isFuseboxEligible();
+        doReturn(mSuggestedTabsSupplier).when(mComposebox).getSuggestedTabsSupplier();
 
         mAutocompleteInput =
                 new AutocompleteInput()

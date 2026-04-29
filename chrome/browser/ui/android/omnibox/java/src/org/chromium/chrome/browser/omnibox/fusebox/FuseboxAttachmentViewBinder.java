@@ -59,7 +59,7 @@ class FuseboxAttachmentViewBinder {
         View progressView = view.findViewById(R.id.attachment_spinner);
         ImageView imageView = view.findViewById(R.id.attachment_thumbnail);
         ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
-        if (attachment.isUploadComplete()) {
+        if (attachment.isUploadComplete() || attachment.isSuggestedTab) {
             progressView.setVisibility(View.GONE);
             imageView.setVisibility(View.VISIBLE);
             imageView.setImageDrawable(getThumbnailDrawable(model, attachment, view.getContext()));

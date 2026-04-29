@@ -60,6 +60,7 @@
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/ui/android/omnibox/jni_headers/ComposeboxQueryControllerBridge_jni.h"
+#include "chrome/browser/ui/android/omnibox/jni_headers/SuggestedTabInfo_jni.h"
 #include "components/contextual_search/jni_headers/InputState_jni.h"
 
 namespace {
@@ -270,7 +271,8 @@ ComposeboxQueryControllerBridge::AddFile(
 base::android::ScopedJavaLocalRef<jobject>
 ComposeboxQueryControllerBridge::AddTabContext(
     JNIEnv* env,
-    content::WebContents* web_contents) {
+    content::WebContents* web_contents,
+    bool is_suggested_tab) {
   tabs::TabInterface* const tab =
       tabs::TabInterface::GetFromContents(web_contents);
 
@@ -299,7 +301,8 @@ ComposeboxQueryControllerBridge::AddTabContext(
 
 base::android::ScopedJavaLocalRef<jobject>
 ComposeboxQueryControllerBridge::AddTabContextFromCache(JNIEnv* env,
-                                                        long tab_id) {
+                                                        long tab_id,
+                                                        bool is_suggested_tab) {
   page_content_annotations::PageContentExtractionService* service =
       page_content_annotations::PageContentExtractionServiceFactory::
           GetForProfile(profile_);
@@ -641,7 +644,26 @@ void ComposeboxQueryControllerBridge::ResetInputStateModel() {
 
 void ComposeboxQueryControllerBridge::UpdateSuggestedTabContext(
     const contextual_tasks::SuggestedTabInfo* suggested_tab) {
-  // TODO(crbug.com/493281303): Implement this.
+  JNIEnv* env = base::android::AttachCurrentThread();
+  std::vector<base::android::ScopedJavaLocalRef<jobject>> j_suggested_tabs;
+  if (suggested_tab) {
+    j_suggested_tabs.push_back(
+        contextual_tasks::Java_SuggestedTabInfo_Constructor(
+            env, suggested_tab->tab_id,
+            base::android::ConvertUTF16ToJavaString(env, suggested_tab->title),
+            url::GURLAndroid::FromNativeGURL(env, suggested_tab->url),
+            suggested_tab->last_active.since_origin().InMilliseconds()));
+  }
+
+  Java_ComposeboxQueryControllerBridge_onSuggestedTabsUpdated(
+      env, java_obj_,
+      base::android::ToJavaArrayOfObjects(
+          env,
+          base::android::GetClass(
+              env,
+              "org/chromium/chrome/browser/omnibox/fusebox/SuggestedTabInfo")
+              .obj(),
+          j_suggested_tabs));
 }
 
 void ComposeboxQueryControllerBridge::OnTaskChanged() {

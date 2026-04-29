@@ -13,6 +13,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
@@ -152,7 +153,11 @@ public class FuseboxMediatorUnitTest {
                     ObservableSuppliers.createNonNull(FuseboxLayoutMode.SEPARATED);
     private final SettableMonotonicObservableSupplier<InputState> mInputStateSupplier =
             ObservableSuppliers.createMonotonic();
+    private final SettableNonNullObservableSupplier<List<SuggestedTabInfo>> mSuggestedTabsSupplier =
+            ObservableSuppliers.createNonNull(List.of());
+
     private final Bitmap mBitmap = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
+
     private final AutocompleteInput mInput = new AutocompleteInput();
 
     @Before
@@ -184,6 +189,8 @@ public class FuseboxMediatorUnitTest {
         doReturn(mBitmap).when(mTabFaviconFactory).apply(any());
         when(mComposeboxQueryControllerBridge.getInputStateSupplier())
                 .thenReturn(mInputStateSupplier);
+        when(mComposeboxQueryControllerBridge.getSuggestedTabsSupplier())
+                .thenReturn(mSuggestedTabsSupplier);
 
         mInput.setPageClassification(
                 PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS_VALUE);
@@ -240,7 +247,8 @@ public class FuseboxMediatorUnitTest {
                         tab,
                         /* bypassTabCache= */ false,
                         mResources,
-                        FuseboxAttachmentButtonType.TAB_PICKER));
+                        FuseboxAttachmentButtonType.TAB_PICKER,
+                        /* isSuggestedTab= */ false));
         RobolectricUtil.runAllBackgroundAndUi();
     }
 
@@ -253,14 +261,16 @@ public class FuseboxMediatorUnitTest {
             when(mockTab.getId()).thenReturn(0);
             when(mockTab.getWebContents())
                     .thenReturn(null); // This will trigger addTabContextFromCache path
-            when(mComposeboxQueryControllerBridge.addTabContext(mockTab)).thenReturn(token);
-            when(mComposeboxQueryControllerBridge.addTabContextFromCache(0)).thenReturn(token);
+            when(mComposeboxQueryControllerBridge.addTabContext(mockTab, false)).thenReturn(token);
+            when(mComposeboxQueryControllerBridge.addTabContextFromCache(0, false))
+                    .thenReturn(token);
             attachment =
                     FuseboxAttachment.forTab(
                             mockTab,
                             /* bypassTabCache= */ false,
                             mResources,
-                            FuseboxAttachmentButtonType.TAB_PICKER);
+                            FuseboxAttachmentButtonType.TAB_PICKER,
+                            /* isSuggestedTab= */ false);
         } else if (attachmentType == FuseboxAttachmentType.ATTACHMENT_FILE) {
             doReturn(token).when(mComposeboxQueryControllerBridge).addFile(eq(title), any(), any());
             attachment =
@@ -317,8 +327,8 @@ public class FuseboxMediatorUnitTest {
         when(tab.getTitle()).thenReturn("Tab " + id);
         when(mTabModelSelector.getTabById(id)).thenReturn(tab);
 
-        when(mComposeboxQueryControllerBridge.addTabContext(tab)).thenReturn(token);
-        when(mComposeboxQueryControllerBridge.addTabContextFromCache(id)).thenReturn(token);
+        when(mComposeboxQueryControllerBridge.addTabContext(tab, false)).thenReturn(token);
+        when(mComposeboxQueryControllerBridge.addTabContextFromCache(id, false)).thenReturn(token);
         return tab;
     }
 
@@ -484,9 +494,9 @@ public class FuseboxMediatorUnitTest {
         assertNull(mModel.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_FAVICON));
 
         doReturn(mBitmap).when(mTabFaviconFactory).apply(any());
-        doReturn("token").when(mComposeboxQueryControllerBridge).addTabContext(mTab1);
+        doReturn("token").when(mComposeboxQueryControllerBridge).addTabContext(mTab1, false);
         mModel.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_CLICKED).run();
-        verify(mComposeboxQueryControllerBridge).addTabContext(mTab1);
+        verify(mComposeboxQueryControllerBridge).addTabContext(mTab1, false);
         assertEquals(mBitmap, ((BitmapDrawable) mAttachments.get(0).thumbnail).getBitmap());
 
         doReturn(mTab2).when(mTabModelSelector).getCurrentTab();
@@ -1011,7 +1021,7 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void testAddAttachment_disablesCreateImage() {
-        doReturn("token-tab1").when(mComposeboxQueryControllerBridge).addTabContext(mTab1);
+        doReturn("token-tab1").when(mComposeboxQueryControllerBridge).addTabContext(mTab1, false);
         doReturn(mTab1).when(mTabModelSelector).getCurrentTab();
         doReturn("Title1").when(mTab1).getTitle();
         doReturn(new GURL("https://www.google.com")).when(mTab1).getUrl();
@@ -1709,5 +1719,35 @@ public class FuseboxMediatorUnitTest {
         verify(mComposeboxQueryControllerBridge)
                 .setActiveModel(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE);
         assertEquals(AutocompleteRequestType.SEARCH, mInput.getRequestType());
+    }
+
+    @Test
+    public void testReconcileSuggestedTabs() {
+        mMediator.beginInput(createSession());
+        mMediator.activateAiMode(AiModeActivationSource.DEDICATED_BUTTON);
+
+        SuggestedTabInfo info =
+                new SuggestedTabInfo(1, "Title", new GURL("https://google.com"), 12345L);
+        Tab tab = mock(Tab.class);
+        when(tab.getId()).thenReturn(1);
+        when(tab.getTitle()).thenReturn("Title");
+        when(mTabModelSelector.getTabById(1)).thenReturn(tab);
+        when(mComposeboxQueryControllerBridge.addTabContextFromCache(eq(1L), anyBoolean()))
+                .thenReturn("token");
+
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Omnibox.MobileFusebox.AttachmentButtonShown",
+                                FuseboxAttachmentButtonType.SUGGESTED_TAB)
+                        .build();
+
+        mSuggestedTabsSupplier.set(List.of(info));
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        assertEquals(1, mAttachments.size());
+        assertEquals(1, mAttachments.get(0).getTabId());
+        assertTrue(mAttachments.get(0).isSuggestedTab);
+        histogramWatcher.assertExpected();
     }
 }

@@ -188,6 +188,26 @@ public class FuseboxAttachmentViewBinderUnitTest {
     }
 
     @Test
+    public void testSuggestedTab_noSpinner() {
+        doReturn(1).when(mTab).getId();
+        doReturn("Title").when(mTab).getTitle();
+        FuseboxAttachment attachment =
+                FuseboxAttachment.forTab(
+                        mTab,
+                        /* bypassTabCache= */ false,
+                        mContext.getResources(),
+                        FuseboxAttachmentButtonType.SUGGESTED_TAB,
+                        /* isSuggestedTab= */ true);
+        mModel.set(FuseboxAttachmentProperties.ATTACHMENT, attachment);
+
+        ImageView imageView = mView.findViewById(R.id.attachment_thumbnail);
+        View spinner = mView.findViewById(R.id.attachment_spinner);
+
+        assertEquals(View.VISIBLE, imageView.getVisibility());
+        assertEquals(View.GONE, spinner.getVisibility());
+    }
+
+    @Test
     public void testGetThumbnailDrawable_FileWithThumb_ReturnsPaperclipIcon() {
         FuseboxAttachment attachment =
                 FuseboxAttachment.forFile(
@@ -306,7 +326,8 @@ public class FuseboxAttachmentViewBinderUnitTest {
                         mTab,
                         /* bypassTabCache= */ false,
                         mContext.getResources(),
-                        FuseboxAttachmentButtonType.TAB_PICKER);
+                        FuseboxAttachmentButtonType.TAB_PICKER,
+                        /* isSuggestedTab= */ false);
 
         Drawable thumbnail =
                 FuseboxAttachmentViewBinder.getThumbnailDrawable(mModel, attachment, mContext);
@@ -324,7 +345,8 @@ public class FuseboxAttachmentViewBinderUnitTest {
                         mTab,
                         /* bypassTabCache= */ false,
                         mContext.getResources(),
-                        FuseboxAttachmentButtonType.TAB_PICKER);
+                        FuseboxAttachmentButtonType.TAB_PICKER,
+                        /* isSuggestedTab= */ false);
 
         Drawable thumbnail =
                 FuseboxAttachmentViewBinder.getThumbnailDrawable(mModel, attachment, mContext);

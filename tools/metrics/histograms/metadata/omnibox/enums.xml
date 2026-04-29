@@ -181,6 +181,7 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Gallery"/>
   <int value="4" label="Files"/>
   <int value="5" label="Clipboard"/>
+  <int value="6" label="Suggested Tab"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/ui/android/omnibox/java/src/org/chromium/chrome/browser/omnibox/fusebox/FuseboxMetrics.java:FuseboxAttachmentButtonType,//ios/chrome/browser/composebox/ui/composebox_metrics_recorder.h:FuseboxAttachmentButtonType) -->

@@ -34,6 +34,7 @@ public final class FuseboxAttachment extends ListItem {
     public final @Nullable Integer tabId;
     public final long startTime;
     public final @FuseboxAttachmentButtonType int buttonType;
+    public final boolean isSuggestedTab;
 
     private boolean mIsUploadComplete;
     private boolean mIsFetchingTabDataFromCache;
@@ -48,7 +49,8 @@ public final class FuseboxAttachment extends ListItem {
             @Nullable Tab tab,
             boolean bypassTabCache,
             @Nullable Long optionalStartTime,
-            @FuseboxAttachmentButtonType int buttonType) {
+            @FuseboxAttachmentButtonType int buttonType,
+            boolean isSuggestedTab) {
         super(itemType, new PropertyModel(FuseboxAttachmentProperties.ALL_KEYS));
         this.thumbnail = thumbnail;
         this.title = title;
@@ -67,6 +69,7 @@ public final class FuseboxAttachment extends ListItem {
         mToken = null;
         startTime = optionalStartTime == null ? SystemClock.elapsedRealtime() : optionalStartTime;
         this.buttonType = buttonType;
+        this.isSuggestedTab = isSuggestedTab;
 
         // Set the ATTACHMENT property to this instance after construction.
         model.set(FuseboxAttachmentProperties.ATTACHMENT, this);
@@ -89,7 +92,8 @@ public final class FuseboxAttachment extends ListItem {
                 /* tab= */ null,
                 /* bypassTabCache= */ false,
                 startTime,
-                buttonType);
+                buttonType,
+                /* isSuggestedTab= */ false);
     }
 
     /** Creates a FuseboxAttachment for an image without a thumbnail. */
@@ -108,7 +112,8 @@ public final class FuseboxAttachment extends ListItem {
                 /* tab= */ null,
                 /* bypassTabCache= */ false,
                 startTime,
-                buttonType);
+                buttonType,
+                /* isSuggestedTab= */ false);
     }
 
     /** Creates a FuseboxAttachment for a file. */
@@ -128,7 +133,8 @@ public final class FuseboxAttachment extends ListItem {
                 /* tab= */ null,
                 /* bypassTabCache= */ false,
                 startTime,
-                buttonType);
+                buttonType,
+                /* isSuggestedTab= */ false);
     }
 
     /** Creates a FuseboxAttachment for a PDF. */
@@ -148,7 +154,8 @@ public final class FuseboxAttachment extends ListItem {
                 /* tab= */ null,
                 /* bypassTabCache= */ false,
                 startTime,
-                buttonType);
+                buttonType,
+                /* isSuggestedTab= */ false);
     }
 
     /** Creates a FuseboxAttachment for a tab. */
@@ -156,7 +163,8 @@ public final class FuseboxAttachment extends ListItem {
             Tab tab,
             boolean bypassTabCache,
             Resources res,
-            @FuseboxAttachmentButtonType int buttonType) {
+            @FuseboxAttachmentButtonType int buttonType,
+            boolean isSuggestedTab) {
         return new FuseboxAttachment(
                 FuseboxAttachmentType.ATTACHMENT_TAB,
                 new BitmapDrawable(res, OmniboxResourceProvider.getFaviconBitmapForTab(tab)),
@@ -166,7 +174,8 @@ public final class FuseboxAttachment extends ListItem {
                 tab,
                 bypassTabCache,
                 /* optionalStartTime= */ null,
-                buttonType);
+                buttonType,
+                isSuggestedTab);
     }
 
     /**
@@ -194,7 +203,7 @@ public final class FuseboxAttachment extends ListItem {
             boolean canFetchFreshTabContent = FuseboxTabUtils.isTabActive(tab);
 
             if (mustFetchFreshTabContent && canFetchFreshTabContent) {
-                mToken = bridge.addTabContext(assumeNonNull(tab));
+                mToken = bridge.addTabContext(assumeNonNull(tab), isSuggestedTab);
             } else if (mustFetchFreshTabContent && !canFetchFreshTabContent) {
                 // We must do a fresh fetch and cannot rely on the cache, but it is not possible to
                 // perform a fresh fetch. The upload will fail.
@@ -202,7 +211,7 @@ public final class FuseboxAttachment extends ListItem {
             } else {
                 // Try the cache first.
                 mIsFetchingTabDataFromCache = true;
-                mToken = bridge.addTabContextFromCache(assumeNonNull(tab).getId());
+                mToken = bridge.addTabContextFromCache(getTabId(), isSuggestedTab);
 
                 // If cache fetch fails, try to fetch fresh data if possible.
                 if (TextUtils.isEmpty(mToken) && canFetchFreshTabContent) {
@@ -210,7 +219,7 @@ public final class FuseboxAttachment extends ListItem {
                     // instead.
                     mIsFetchingTabDataFromCache = false;
 
-                    mToken = bridge.addTabContext(assumeNonNull(tab));
+                    mToken = bridge.addTabContext(assumeNonNull(tab), isSuggestedTab);
                 }
             }
         } else {
@@ -252,6 +261,11 @@ public final class FuseboxAttachment extends ListItem {
 
     public void setUploadIsComplete() {
         mIsUploadComplete = true;
+    }
+
+    /** Returns the ID of the associated tab, or Tab.INVALID_TAB_ID if no tab is associated. */
+    public int getTabId() {
+        return tabId != null ? tabId : Tab.INVALID_TAB_ID;
     }
 
     public boolean retryUpload(ComposeboxQueryControllerBridge composeBoxQueryControllerBridge) {

@@ -29,7 +29,8 @@ enum class FuseboxAttachmentButtonType {
   kGallery = 3,
   kFiles = 4,
   kClipboard = 5,
-  kMaxValue = kClipboard
+  kSuggestedTab = 6,
+  kMaxValue = kSuggestedTab
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/enums.xml:FuseboxAttachmentButtonType)
 

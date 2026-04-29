@@ -65,6 +65,7 @@ public class FuseboxMetrics {
         FuseboxAttachmentButtonType.GALLERY,
         FuseboxAttachmentButtonType.FILES,
         FuseboxAttachmentButtonType.CLIPBOARD,
+        FuseboxAttachmentButtonType.SUGGESTED_TAB,
         FuseboxAttachmentButtonType.COUNT
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -75,7 +76,8 @@ public class FuseboxMetrics {
         int GALLERY = 3;
         int FILES = 4;
         int CLIPBOARD = 5;
-        int COUNT = 6;
+        int SUGGESTED_TAB = 6;
+        int COUNT = 7;
     }
 
     // LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/enums.xml:FuseboxAttachmentButtonType)
@@ -132,7 +134,7 @@ public class FuseboxMetrics {
         mAttachmentsPopupButtonUsedInSession = true;
     }
 
-    private void notifyAttachmentButtonShown(@FuseboxAttachmentButtonType int attachmentType) {
+    void notifyAttachmentButtonShown(@FuseboxAttachmentButtonType int attachmentType) {
         RecordHistogram.recordEnumeratedHistogram(
                 "Omnibox.MobileFusebox.AttachmentButtonShown",
                 attachmentType,
@@ -230,6 +232,7 @@ public class FuseboxMetrics {
             case FuseboxAttachmentButtonType.GALLERY -> "Gallery";
             case FuseboxAttachmentButtonType.FILES -> "Files";
             case FuseboxAttachmentButtonType.CLIPBOARD -> "Clipboard";
+            case FuseboxAttachmentButtonType.SUGGESTED_TAB -> "SuggestedTab";
             default -> "";
         };
     }

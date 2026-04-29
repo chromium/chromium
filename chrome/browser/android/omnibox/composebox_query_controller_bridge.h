@@ -57,10 +57,10 @@ class ComposeboxQueryControllerBridge
       const jni_zero::JavaRef<jobject>& file_data);
   base::android::ScopedJavaLocalRef<jobject> AddTabContext(
       JNIEnv* env,
-      content::WebContents* web_contents);
-  base::android::ScopedJavaLocalRef<jobject> AddTabContextFromCache(
-      JNIEnv* env,
-      long tab_id);
+      content::WebContents* web_contents,
+      bool is_suggested_tab);
+  base::android::ScopedJavaLocalRef<jobject>
+  AddTabContextFromCache(JNIEnv* env, long tab_id, bool is_suggested_tab);
   void GetAimUrl(JNIEnv* env,
                  GURL url,
                  const base::android::JavaRef<jobject>& j_callback);
