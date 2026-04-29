@@ -70,6 +70,7 @@ using testing::ElementsAre;
 using testing::ElementsAreArray;
 using testing::Field;
 using testing::InSequence;
+using testing::Matcher;
 using testing::NiceMock;
 using testing::Pair;
 using testing::Pointwise;
@@ -946,6 +947,60 @@ class PdfInkModuleTextTest : public testing::Test {
   PdfInkModule& ink_module() { return *ink_module_; }
   const PdfInkModule& ink_module() const { return *ink_module_; }
 
+  static base::DictValue SampleTextAttributesDict() {
+    base::DictValue text_attributes;
+    text_attributes.Set(
+        "color", base::DictValue().Set("r", 255).Set("g", 111).Set("b", 99));
+    text_attributes.Set("size", 12.0f);
+    return text_attributes;
+  }
+
+  static base::DictValue SampleTextBoxRectDict() {
+    base::DictValue textbox_rect;
+    textbox_rect.Set("locationX", 10.0f);
+    textbox_rect.Set("locationY", 20.0f);
+    textbox_rect.Set("width", 100.0f);
+    textbox_rect.Set("height", 15.0f);
+    return textbox_rect;
+  }
+
+  // Matches `SampleTextAttributesDict()` and `SampleTextBoxRectDict()`.
+  static Matcher<const InkTextBoxAttributes&>
+  SampleInkTextBoxAttributesMatcher() {
+    return InkTextBoxAttributesEq(
+        /*rect=*/gfx::RectF(10.0f, 20.0f, 100.0f, 15.0f),
+        /*color=*/SkColorSetRGB(255, 111, 99),
+        /*css_font_size=*/12.0f);
+  }
+
+  static base::BlobStorage SampleInkTextInfoBlob(FontId typeface_id) {
+    auto mojo_text_info = pdf::mojom::InkTextInfo::New();
+    mojo_text_info->effective_zoom = 10.0f;
+    auto mojo_text_run = pdf::mojom::InkTextRun::New();
+    mojo_text_run->location = gfx::RectF(100.0f, 200.0f, 300.0f, 400.0f);
+    auto mojo_typeface_run = pdf::mojom::InkTypefaceRun::New();
+    mojo_typeface_run->is_horizontal = true;
+    mojo_typeface_run->typeface_id = typeface_id.value();
+    auto mojo_glyph1 = pdf::mojom::InkGlyphInfo::New();
+    mojo_glyph1->glyph = 4;
+    auto mojo_glyph2 = pdf::mojom::InkGlyphInfo::New();
+    mojo_glyph2->glyph = 5;
+    mojo_typeface_run->glyphs.push_back(std::move(mojo_glyph1));
+    mojo_typeface_run->glyphs.push_back(std::move(mojo_glyph2));
+    mojo_text_run->typeface_runs.push_back(std::move(mojo_typeface_run));
+    mojo_text_info->text_runs.push_back(std::move(mojo_text_run));
+    return pdf::mojom::InkTextInfo::Serialize(&mojo_text_info);
+  }
+
+  // Matches `SampleInkTextInfoBlob()`.
+  static Matcher<const InkTextInfo&> SampleInkTextInfoMatcher(
+      FontId typeface_id) {
+    return InkTextInfoEq(typeface_id, /*glyphs=*/std::vector<uint32_t>{4, 5},
+                         /*glyph_positions=*/std::vector<gfx::Vector2dF>(2),
+                         /*location=*/gfx::RectF(10.0f, 20.0f, 30.0f, 40.0f),
+                         /*is_horizontal=*/true);
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
 
@@ -954,69 +1009,35 @@ class PdfInkModuleTextTest : public testing::Test {
 };
 
 TEST_F(PdfInkModuleTextTest, HandleFinishTextAnnotationMessage) {
+  static constexpr int kPageIndex = 3;
+  static constexpr FontId kFontId(123);
+  static constexpr auto kTypefaceBlob =
+      std::to_array<const uint8_t>({1, 2, 3, 4});
+
   base::DictValue typeface;
-  std::vector<char> typeface_blob{1, 2, 3, 4};
-  typeface.Set("uniqueId", 123);
-  typeface.Set("serializedTypeface", base::Value(typeface_blob));
+  typeface.Set("uniqueId", kFontId.value());
+  typeface.Set("serializedTypeface", base::Value(kTypefaceBlob));
 
   base::DictValue data;
   base::ListValue typefaces;
   typefaces.Append(std::move(typeface));
   data.Set("newTypefaces", std::move(typefaces));
 
-  data.Set("pageIndex", 3);
+  data.Set("pageIndex", kPageIndex);
   data.Set("pdfZoom", 2.0f);
-
-  base::DictValue text_attributes;
-  text_attributes.Set(
-      "color", base::DictValue().Set("r", 255).Set("g", 111).Set("b", 99));
-  text_attributes.Set("size", 12.0f);
-  data.Set("textAttributes", std::move(text_attributes));
-
-  base::DictValue textbox_rect;
-  textbox_rect.Set("locationX", 10.0f);
-  textbox_rect.Set("locationY", 20.0f);
-  textbox_rect.Set("width", 100.0f);
-  textbox_rect.Set("height", 15.0f);
-  data.Set("textBoxRect", std::move(textbox_rect));
-
-  auto mojo_text_info = pdf::mojom::InkTextInfo::New();
-  mojo_text_info->effective_zoom = 10.0f;
-  auto mojo_text_run = pdf::mojom::InkTextRun::New();
-  mojo_text_run->location = gfx::RectF(100.0f, 200.0f, 300.0f, 400.0f);
-  auto mojo_typeface_run = pdf::mojom::InkTypefaceRun::New();
-  mojo_typeface_run->is_horizontal = true;
-  mojo_typeface_run->typeface_id = 123;
-  auto mojo_glyph1 = pdf::mojom::InkGlyphInfo::New();
-  mojo_glyph1->glyph = 4;
-  auto mojo_glyph2 = pdf::mojom::InkGlyphInfo::New();
-  mojo_glyph2->glyph = 5;
-  mojo_typeface_run->glyphs.push_back(std::move(mojo_glyph1));
-  mojo_typeface_run->glyphs.push_back(std::move(mojo_glyph2));
-  mojo_text_run->typeface_runs.push_back(std::move(mojo_typeface_run));
-  mojo_text_info->text_runs.push_back(std::move(mojo_text_run));
-
-  std::vector<uint8_t> serialized_text_info =
-      pdf::mojom::InkTextInfo::Serialize(&mojo_text_info);
-  data.Set("mojoTextInfo", base::Value(serialized_text_info));
-
-  EXPECT_CALL(client(), AddFont(FontId(123), ElementsAreArray(typeface_blob)));
-  EXPECT_CALL(client(),
-              DrawText(3,
-                       ElementsAre(InkTextInfoEq(
-                           FontId(123), /*glyphs=*/std::vector<uint32_t>{4, 5},
-                           /*glyph_positions=*/std::vector<gfx::Vector2dF>(2),
-                           /*location=*/gfx::RectF(10.0f, 20.0f, 30.0f, 40.0f),
-                           /*is_horizontal=*/true)),
-                       2.0f,
-                       InkTextBoxAttributesEq(
-                           /*rect=*/gfx::RectF(10.0f, 20.0f, 100.0f, 15.0f),
-                           /*color=*/SkColorSetRGB(255, 111, 99),
-                           /*css_font_size=*/12.0f)));
+  data.Set("textAttributes", SampleTextAttributesDict());
+  data.Set("textBoxRect", SampleTextBoxRectDict());
+  data.Set("mojoTextInfo", SampleInkTextInfoBlob(kFontId));
 
   base::DictValue message = base::DictValue()
                                 .Set("type", "finishTextAnnotation")
                                 .Set("data", std::move(data));
+
+  EXPECT_CALL(client(), AddFont(kFontId, ElementsAreArray(kTypefaceBlob)));
+  EXPECT_CALL(client(), DrawText(kPageIndex,
+                                 ElementsAre(SampleInkTextInfoMatcher(kFontId)),
+                                 2.0f, SampleInkTextBoxAttributesMatcher()));
+
   EXPECT_TRUE(ink_module().OnMessage(message));
 }
 
