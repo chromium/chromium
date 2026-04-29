@@ -57,7 +57,12 @@ PageActionContainerView::PageActionContainerView(
     page_action_views_[action_item_id] = view;
     chip_state_changed_callbacks_.push_back(
         view->AddChipVisibilityChangedCallback(base::BindRepeating(
-            &PageActionContainerView::OnPageActionSuggestionChipStateChanged,
+            &PageActionContainerView::OnPageActionStateChanged,
+            base::Unretained(this))));
+
+    anchored_message_state_changed_callbacks_.push_back(
+        view->AddAnchoredMessageVisibilityChangedCallback(base::BindRepeating(
+            &PageActionContainerView::OnPageActionStateChanged,
             base::Unretained(this))));
 
     // Record the original index for the page action view so that even if it
@@ -89,24 +94,32 @@ PageActionView* PageActionContainerView::GetPageActionView(
   return id_to_view != page_action_views_.end() ? id_to_view->second : nullptr;
 }
 
-void PageActionContainerView::OnPageActionSuggestionChipStateChanged(
-    PageActionView* view) {
+void PageActionContainerView::OnPageActionStateChanged(PageActionView* view) {
   NormalizePageActionViewOrder();
 }
 
 void PageActionContainerView::NormalizePageActionViewOrder() {
-  std::vector<std::pair<size_t /*initial_index*/, PageActionView*>> chips;
-  std::vector<std::pair<size_t /*initial_index*/, PageActionView*>> non_chips;
+  // Three possible states of page actions: chip, icon, anchored message. There
+  // can be multiple chips and/or icons, but at most one anchored message.
+  std::vector<std::pair<size_t /*initial_index*/, PageActionView*>>
+      chip_state_views;
+  std::vector<std::pair<size_t /*initial_index*/, PageActionView*>>
+      icon_state_views;
+  std::optional<PageActionView*> anchored_message_state_view = std::nullopt;
 
-  chips.reserve(page_action_views_.size());
-  non_chips.reserve(page_action_views_.size());
+  chip_state_views.reserve(page_action_views_.size());
+  icon_state_views.reserve(page_action_views_.size());
 
   for (const auto& [action_id, view] : page_action_views_) {
     const auto it = page_action_view_initial_indices_.find(action_id);
     CHECK(it != page_action_view_initial_indices_.end());
+    if (view->IsAnchoredMessageVisible()) {
+      anchored_message_state_view = view;
+      continue;
+    }
 
     const size_t initial_index = it->second;
-    (view->IsChipVisible() ? chips : non_chips)
+    (view->IsChipVisible() ? chip_state_views : icon_state_views)
         .emplace_back(initial_index, view);
   }
 
@@ -115,17 +128,21 @@ void PageActionContainerView::NormalizePageActionViewOrder() {
   auto by_initial_index = [](const auto& a, const auto& b) {
     return a.first < b.first;
   };
-  std::sort(chips.begin(), chips.end(), by_initial_index);
-  std::sort(non_chips.begin(), non_chips.end(), by_initial_index);
+  std::sort(chip_state_views.begin(), chip_state_views.end(), by_initial_index);
+  std::sort(icon_state_views.begin(), icon_state_views.end(), by_initial_index);
 
-  // Place all chips first, in initial-order.
   size_t next_index = 0;
-  for (const auto& entry : chips) {
+  // Place the page action with an anchored message (if any) first.
+  if (anchored_message_state_view) {
+    ReorderChildView(anchored_message_state_view.value(), next_index++);
+  }
+  // Place all chips next, in initial-order.
+  for (const auto& entry : chip_state_views) {
     ReorderChildView(entry.second, next_index++);
   }
 
   // Place the rest, offset by the number of chips.
-  for (const auto& entry : non_chips) {
+  for (const auto& entry : icon_state_views) {
     ReorderChildView(entry.second, next_index++);
   }
 }

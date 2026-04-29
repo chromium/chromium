@@ -61,10 +61,19 @@ class PageActionView : public IconLabelBubbleView,
   // expanding and collapsing).
   bool IsChipVisible() const;
 
+  // Indicates whether this view is showing an anchored message
+  bool IsAnchoredMessageVisible() const;
+
   // Reports the chip visibility change state at the beginning of the animation.
   using ChipVisibilityChanged = base::RepeatingCallback<void(PageActionView*)>;
   base::CallbackListSubscription AddChipVisibilityChangedCallback(
       ChipVisibilityChanged callback);
+
+  // Reports the anchored message visibility change state
+  using AnchoredMessageVisibilityCallback =
+      base::RepeatingCallback<void(PageActionView*)>;
+  base::CallbackListSubscription AddAnchoredMessageVisibilityChangedCallback(
+      AnchoredMessageVisibilityCallback callback);
 
   // PageActionController::Delegate:
   // Reports the chip visibility change state at the end of the animation.
@@ -155,6 +164,10 @@ class PageActionView : public IconLabelBubbleView,
   // Client-provided callbacks for changes to chip state.
   base::RepeatingCallbackList<void(PageActionView*)>
       chip_visibility_changed_callbacks_;
+
+  // Client-provided callbacks for changes to anchored message state.
+  base::RepeatingCallbackList<void(PageActionView*)>
+      anchored_message_visibility_changed_callbacks_;
 
   // Used to notify when the chip state changes (expanded/hidden). The state is
   // only reported when there is not an ongoing animation. It's initialized to

@@ -82,9 +82,20 @@ bool PageActionView::IsChipVisible() const {
   return ShouldShowLabel();
 }
 
+bool PageActionView::IsAnchoredMessageVisible() const {
+  return (anchored_message_ != nullptr);
+}
+
 base::CallbackListSubscription PageActionView::AddChipVisibilityChangedCallback(
     ChipVisibilityChanged callback) {
   return chip_visibility_changed_callbacks_.Add(std::move(callback));
+}
+
+base::CallbackListSubscription
+PageActionView::AddAnchoredMessageVisibilityChangedCallback(
+    AnchoredMessageVisibilityCallback callback) {
+  return anchored_message_visibility_changed_callbacks_.Add(
+      std::move(callback));
 }
 
 void PageActionView::SetIsChipShowingChangedCallback(
@@ -407,6 +418,8 @@ void PageActionView::CreateAndShowAnchoredMessage(
   } else {
     anchored_message_ = nullptr;
   }
+
+  anchored_message_visibility_changed_callbacks_.Notify(this);
 }
 void PageActionView::OnAnchoredMessageWidgetClose(
     views::Widget::ClosedReason closed_reason) {
@@ -414,6 +427,7 @@ void PageActionView::OnAnchoredMessageWidgetClose(
   CHECK(anchored_message_widget_);
   anchored_message_ = nullptr;
   anchored_message_widget_ = nullptr;
+  anchored_message_visibility_changed_callbacks_.Notify(this);
 }
 
 void PageActionView::AnchoredMessageChipClick() {
