@@ -4,6 +4,7 @@
 
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/extensions/api/glic_private/glic_private_api_test_base.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
@@ -21,41 +22,13 @@
 
 namespace extensions {
 
-class GlicMessagingBrowserTest : public ExtensionApiTest {
+class GlicMessagingBrowserTest : public GlicPrivateApiTestBase {
  public:
   GlicMessagingBrowserTest() {
     feature_list_.InitWithFeatures(
         {extensions_features::kApiGlicPrivate,
          extensions_features::kApiGlicAccessFromGoogleWebpage},
         {});
-    UseHttpsTestServer();
-
-    net::EmbeddedTestServer::ServerCertificateConfig cert_config;
-    cert_config.dns_names = {"gemini.google.com", "example.com"};
-    embedded_test_server()->SetSSLConfig(cert_config);
-    embedded_test_server()->ServeFilesFromSourceDirectory("chrome/test/data");
-    EXPECT_TRUE(embedded_test_server()->Start());
-  }
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    // Add a host resolver rule to map all outgoing requests to the test server.
-    // This allows us to use "real" hostnames and standard ports in URLs (i.e.,
-    // without having to inject the port number into all URLs).
-    int port = embedded_test_server()->port();
-    command_line->AppendSwitchASCII(
-        network::switches::kHostResolverRules,
-        base::StringPrintf("MAP * 127.0.0.1:%d", port));
-
-    ExtensionApiTest::SetUpCommandLine(command_line);
-  }
-
-  void SetUpOnMainThread() override {
-    ExtensionApiTest::SetUpOnMainThread();
-
-    // Manually load the glic component extension.
-    ComponentLoader::Get(profile())->Add(
-        IDR_GLIC_EXTENSION_MANIFEST,
-        base::FilePath(FILE_PATH_LITERAL("glic_extension")));
   }
 
  protected:
@@ -144,10 +117,10 @@ IN_PROC_BROWSER_TEST_F(GlicMessagingBrowserTest, InvokeAPI) {
         }
         return new Promise((resolve) => {
           chrome.runtime.sendMessage(
-              '%s', {type: 'glicPrivate.invoke', args: [{
-                promptId: '',
+              '%s', {type: 'glicPrivate.invoke', args: {
+                promptId: '1',
                 invocationSource: 'universal-cart'
-              }]}, (response) => {
+              }}, (response) => {
                 if (chrome.runtime.lastError) {
                   resolve(chrome.runtime.lastError.message);
                 } else {

@@ -42,6 +42,12 @@ dictionary InvokeDetails {
   // The source of the invocation.
   required InvocationSource invocationSource;
 
+  // Document ID of the page that originated the invocation.
+  // This is provided by the caller (the extension background page) to specify
+  // the context of the user's action, since the API itself is called from the
+  // background context.
+  required DOMString documentId;
+
   // Whether should invoke the task in a new tab. Default to false.
   boolean inNewTab;
 };
@@ -56,7 +62,9 @@ enum ErrorCode {
   "local-glic-not-enabled",
   "local-glic-not-ready",
   "local-glic-actuation-not-allowed",
-  "local-glic-not-enabled-and-consented"
+  "local-glic-not-enabled-and-consented",
+  "local-account-mismatch",
+  "local-invalid-document-id"
 };
 
 
@@ -67,10 +75,10 @@ interface GlicPrivate {
   // Retrieves the current Glic state for the profile.
   // |Returns|: Promise that resolves to the current Glic state.
   // |PromiseValue|: state: The current Glic state.
-  static Promise<ProfileState> getState();
+  static Promise<ProfileState> getState(DOMString documentId);
 
   // Invokes glic with details.
-  // |Returns| : Resolves with tracking state on success.
+  // |Returns|: Promise that resolves when invocation is successful.
   static Promise<undefined> invoke(InvokeDetails details);
 };
 

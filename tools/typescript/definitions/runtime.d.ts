@@ -25,6 +25,7 @@ declare global {
         url?: string;
         tlsChannelId?: string;
         origin?: string;
+        documentId?: string;
       }
 
       export interface Port {

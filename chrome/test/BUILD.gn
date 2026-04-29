@@ -1643,6 +1643,8 @@ source_set("platform_browser_tests") {
       "../browser/extensions/api/font_settings/font_settings_apitest.cc",
       "../browser/extensions/api/gcm/gcm_apitest.cc",
       "../browser/extensions/api/glic_private/glic_messaging_browsertest.cc",
+      "../browser/extensions/api/glic_private/glic_private_api_test_base.cc",
+      "../browser/extensions/api/glic_private/glic_private_api_test_base.h",
       "../browser/extensions/api/glic_private/glic_private_apitest.cc",
       "../browser/extensions/api/history/history_apitest.cc",
       "../browser/extensions/api/i18n/i18n_apitest.cc",

@@ -19,14 +19,37 @@ chrome.runtime.onMessageExternal.addListener(
         throw new Error(`bad sender origin`);
       }
 
-      if (message && message.type === 'glicPrivate.getState') {
-        return await chrome.glicPrivate.getState();
+      if (!sender.documentId) {
+        throw new Error('missing documentId');
       }
 
-      if (message && message.type === 'glicPrivate.invoke' && message.args &&
-          message.args.length > 0) {
-        return await chrome.glicPrivate.invoke.apply(
-            chrome.glicPrivate, message.args);
+      if (message && message.type === 'glicPrivate.getState') {
+        const state = await chrome.glicPrivate.getState(sender.documentId);
+        return {state};
+      }
+
+      if (message && message.type === 'glicPrivate.invoke' && message.args) {
+        let details = message.args;
+        // Support old format where args was an array of arguments.
+        if (Array.isArray(message.args)) {
+          if (message.args.length === 0) {
+            throw new Error('missing invoke details');
+          }
+          details = message.args[0];
+        }
+
+        if (!details.promptId) {
+          throw new Error('missing promptId');
+        }
+        if (!details.invocationSource) {
+          throw new Error('missing invocationSource');
+        }
+        return await chrome.glicPrivate.invoke({
+          promptId: details.promptId,
+          invocationSource: details.invocationSource,
+          documentId: sender.documentId,
+          inNewTab: details.inNewTab,
+        });
       }
 
       throw new Error(`Unhandled message: ${JSON.stringify(message)}`);

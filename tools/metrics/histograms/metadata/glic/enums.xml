@@ -597,6 +597,8 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="LocalGlicNotReady"/>
   <int value="9" label="LocalGlicActuationNotAllowed"/>
   <int value="10" label="LocalGlicNotEnabledAndConsented"/>
+  <int value="11" label="LocalAccountMismatch"/>
+  <int value="12" label="LocalInvalidDocumentId"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/extensions/api/glic_private/glic_private_api.cc:GlicPrivateApiStatusCodeHistogramValue) -->

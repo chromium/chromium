@@ -40,6 +40,7 @@ declare namespace chrome {
     export interface InvokeDetails {
       promptId: string;
       invocationSource: InvocationSource;
+      documentId: string;
       inNewTab?: boolean;
     }
 
@@ -63,7 +64,7 @@ declare namespace chrome {
       statusCode: StatusCode;
     }
 
-    export function getState(): Promise<ProfileState>;
+    export function getState(documentId: string): Promise<ProfileState>;
 
     export function invoke(details: InvokeDetails): Promise<GlicInvokeResult>;
   }

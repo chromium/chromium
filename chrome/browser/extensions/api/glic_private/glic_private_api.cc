@@ -22,10 +22,17 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/common/chrome_features.h"
+#include "components/contextual_tasks/public/account_utils.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
+#include "components/google/core/common/google_util.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/browser/web_contents.h"
+#include "extensions/browser/extension_api_frame_id_map.h"
+#include "extensions/common/constants.h"
 #include "extensions/common/extension_features.h"
 
 namespace extensions {
@@ -66,7 +73,9 @@ enum class GlicPrivateApiStatusCodeHistogramValue {
   kLocalGlicNotReady = 8,
   kLocalGlicActuationNotAllowed = 9,
   kLocalGlicNotEnabledAndConsented = 10,
-  kMaxValue = kLocalGlicNotEnabledAndConsented,
+  kLocalAccountMismatch = 11,
+  kLocalInvalidDocumentId = 12,
+  kMaxValue = kLocalInvalidDocumentId,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicPrivateApiStatusCodeHistogramValue)
 
@@ -101,6 +110,10 @@ GlicPrivateApiStatusCodeHistogramValue ConvertStatusCodeToHistogramValue(
         kLocalGlicNotEnabledAndConsented:
       return GlicPrivateApiStatusCodeHistogramValue::
           kLocalGlicNotEnabledAndConsented;
+    case extensions::api::glic_private::ErrorCode::kLocalAccountMismatch:
+      return GlicPrivateApiStatusCodeHistogramValue::kLocalAccountMismatch;
+    case extensions::api::glic_private::ErrorCode::kLocalInvalidDocumentId:
+      return GlicPrivateApiStatusCodeHistogramValue::kLocalInvalidDocumentId;
   }
 }
 
@@ -236,15 +249,64 @@ void GetPromptFromId(Profile& profile,
                                     std::move(callback), std::move(fetcher)));
 }
 
+bool IsAccountConsistent(signin::IdentityManager* identity_manager,
+                         content::RenderFrameHost& rfh) {
+  const GURL& target_url = rfh.GetLastCommittedURL();
+
+  // Skip check for extension URLs.
+  if (target_url.SchemeIs(kExtensionScheme)) {
+    return true;
+  }
+
+  // We only check account consistency for Google domains.
+  bool is_google =
+      google_util::IsGoogleDomainUrl(target_url, google_util::ALLOW_SUBDOMAIN,
+                                     google_util::ALLOW_NON_STANDARD_PORTS);
+
+  if (!is_google) {
+    return true;
+  }
+
+  if (identity_manager &&
+      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin) &&
+      !contextual_tasks::IsUrlForPrimaryAccount(identity_manager, target_url)) {
+    return false;
+  }
+  return true;
+}
+
+content::RenderFrameHost* GetRfhForDocumentId(
+    const std::string& document_id_str) {
+  ExtensionApiFrameIdMap::DocumentId document_id =
+      ExtensionApiFrameIdMap::DocumentIdFromString(document_id_str);
+  return ExtensionApiFrameIdMap::Get()->GetRenderFrameHostByDocumentId(
+      document_id);
+}
+
 }  // namespace
 
 GlicPrivateGetStateFunction::GlicPrivateGetStateFunction() = default;
 GlicPrivateGetStateFunction::~GlicPrivateGetStateFunction() = default;
 
 ExtensionFunction::ResponseAction GlicPrivateGetStateFunction::Run() {
-  CHECK(base::FeatureList::IsEnabled(extensions_features::kApiGlicPrivate));
+  std::optional<api::glic_private::GetState::Params> params =
+      api::glic_private::GetState::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
 
   Profile* profile = Profile::FromBrowserContext(browser_context());
+
+  content::RenderFrameHost* rfh = GetRfhForDocumentId(params->document_id);
+  if (!rfh) {
+    return RespondNow(Error(api::glic_private::ToString(
+        api::glic_private::ErrorCode::kLocalInvalidDocumentId)));
+  }
+
+  if (!IsAccountConsistent(IdentityManagerFactory::GetForProfile(profile),
+                           *rfh)) {
+    return RespondNow(Error(api::glic_private::ToString(
+        api::glic_private::ErrorCode::kLocalAccountMismatch)));
+  }
+
   return RespondNow(ArgumentList(api::glic_private::GetState::Results::Create(
       CreateProfileState(profile))));
 }
@@ -296,6 +358,18 @@ ExtensionFunction::ResponseAction GlicPrivateInvokeFunction::Run() {
         GetPromptResponseValueAndLog(extensions::api::glic_private::ErrorCode::
                                          kLocalGlicNotEnabledAndConsented));
   }
+  content::RenderFrameHost* rfh =
+      GetRfhForDocumentId(params->details.document_id);
+  if (!rfh) {
+    return RespondNow(GetPromptResponseValueAndLog(
+        api::glic_private::ErrorCode::kLocalInvalidDocumentId));
+  }
+
+  if (!IsAccountConsistent(IdentityManagerFactory::GetForProfile(profile),
+                           *rfh)) {
+    return RespondNow(GetPromptResponseValueAndLog(
+        api::glic_private::ErrorCode::kLocalAccountMismatch));
+  }
 
   glic::mojom::InvocationSource source =
       glic::mojom::InvocationSource::kUnsupported;
@@ -332,7 +406,8 @@ ExtensionFunction::ResponseAction GlicPrivateInvokeFunction::Run() {
   GetPromptFromId(*profile, params->details.prompt_id,
                   InvocationSourceToString(params->details.invocation_source),
                   base::BindOnce(&GlicPrivateInvokeFunction::OnPromptRetrieved,
-                                 this, std::move(options), in_new_tab));
+                                 this, std::move(options), in_new_tab,
+                                 params->details.document_id));
 
   return RespondLater();
 }
@@ -340,6 +415,7 @@ ExtensionFunction::ResponseAction GlicPrivateInvokeFunction::Run() {
 void GlicPrivateInvokeFunction::OnPromptRetrieved(
     glic::GlicInvokeOptions options,
     bool in_new_tab,
+    const std::string& document_id,
     extensions::api::glic_private::ErrorCode result,
     std::optional<std::string> prompt) {
   if (!browser_context()) {
@@ -369,17 +445,21 @@ void GlicPrivateInvokeFunction::OnPromptRetrieved(
           navigation_handle->GetWebContents());
     }
   } else {
-    // Find the active tab.
-    // TODO(b/497936770): Find the tab from the caller. Make sure we actually
-    // need it before implement.
-    ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
-        [&](BrowserWindowInterface* browser) {
-          if (browser->GetProfile() == profile) {
-            tab_interface = TabListInterface::From(browser)->GetActiveTab();
-            return false;  // Stop iterating.
-          }
-          return true;  // Continue iterating.
-        });
+    content::RenderFrameHost* rfh = GetRfhForDocumentId(document_id);
+    if (!rfh) {
+      Respond(GetPromptResponseValueAndLog(
+          api::glic_private::ErrorCode::kLocalInvalidDocumentId));
+      return;
+    }
+
+    if (!IsAccountConsistent(IdentityManagerFactory::GetForProfile(profile),
+                             *rfh)) {
+      Respond(GetPromptResponseValueAndLog(
+          api::glic_private::ErrorCode::kLocalAccountMismatch));
+      return;
+    }
+    tab_interface = tabs::TabInterface::MaybeGetFromContents(
+        content::WebContents::FromRenderFrameHost(rfh));
   }
 
   if (!tab_interface) {
