@@ -241,14 +241,9 @@ h2 {
 
 #buttonContainer {
   display: flex;
+  flex-direction: row;
   gap: 12px;
   justify-content: center;
-  <if expr="not is_win">
-  flex-direction: row;
-  </if>
-  <if expr="is_win">
-  flex-direction: row-reverse;
-  </if>
 }
 
 .tangible-button {
