@@ -73,8 +73,12 @@ ParsedShareExtensionEntry* PerformBlockingFileReadAndParse(NSURL* file_url) {
     return result;
   }
 
-  unarchiver.requiresSecureCoding = NO;
-  id entryID = [unarchiver decodeObjectForKey:NSKeyedArchiveRootObjectKey];
+  unarchiver.requiresSecureCoding = YES;
+  NSSet* classes = [NSSet setWithObjects:[NSDictionary class], [NSNumber class],
+                                         [NSURL class], [NSString class],
+                                         [NSDate class], nil];
+  id entryID = [unarchiver decodeObjectOfClasses:classes
+                                          forKey:NSKeyedArchiveRootObjectKey];
   NSDictionary* entry = base::apple::ObjCCast<NSDictionary>(entryID);
   if (!entry) {
     return result;

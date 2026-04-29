@@ -61,18 +61,29 @@ NSString* const kPosition = @"position";
   return self;
 }
 
++ (BOOL)supportsSecureCoding {
+  return YES;
+}
+
 - (instancetype)initWithCoder:(NSCoder*)aDecoder {
-  return [self initWithTitle:[aDecoder decodeObjectForKey:kTitleKey]
-                          URL:[aDecoder decodeObjectForKey:kURLKey]
-              faviconFileName:[aDecoder decodeObjectForKey:kfaviconFileNameKey]
+  return [self initWithTitle:[aDecoder decodeObjectOfClass:[NSString class]
+                                                    forKey:kTitleKey]
+                          URL:[aDecoder decodeObjectOfClass:[NSURL class]
+                                                     forKey:kURLKey]
+              faviconFileName:[aDecoder decodeObjectOfClass:[NSString class]
+                                                     forKey:kfaviconFileNameKey]
             fallbackTextColor:[aDecoder
-                                  decodeObjectForKey:kFallbackTextColorKey]
+                                  decodeObjectOfClass:[UIColor class]
+                                               forKey:kFallbackTextColorKey]
       fallbackBackgroundColor:
-          [aDecoder decodeObjectForKey:kFallbackBackgroundColorKey]
+          [aDecoder decodeObjectOfClass:[UIColor class]
+                                 forKey:kFallbackBackgroundColorKey]
        fallbackIsDefaultColor:[aDecoder
                                   decodeBoolForKey:kFallbackIsDefaultColorKey]
-             fallbackMonogram:[aDecoder decodeObjectForKey:kFallbackMonogram]
-                     position:[[aDecoder decodeObjectForKey:kPosition]
+             fallbackMonogram:[aDecoder decodeObjectOfClass:[NSString class]
+                                                     forKey:kFallbackMonogram]
+                     position:[[aDecoder decodeObjectOfClass:[NSNumber class]
+                                                      forKey:kPosition]
                                   unsignedIntegerValue]];
 }
 

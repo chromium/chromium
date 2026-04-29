@@ -122,8 +122,11 @@ NSDictionary* DecodeData(NSData* data) {
     return [[NSMutableDictionary alloc] init];
   }
 
-  unarchiver.requiresSecureCoding = NO;
-  return [unarchiver decodeObjectForKey:NSKeyedArchiveRootObjectKey];
+  unarchiver.requiresSecureCoding = YES;
+  NSSet* classes = [NSSet
+      setWithObjects:[NSDictionary class], [NSURL class], [NTPTile class], nil];
+  return [unarchiver decodeObjectOfClasses:classes
+                                    forKey:NSKeyedArchiveRootObjectKey];
 }
 
 void GetFaviconsAndSave(
@@ -222,7 +225,7 @@ void WriteSavedMostVisited(
   NSDate* last_modification_date = NSDate.date;
   NSError* error = nil;
   NSData* data = [NSKeyedArchiver archivedDataWithRootObject:most_visited_data
-                                       requiringSecureCoding:NO
+                                       requiringSecureCoding:YES
                                                        error:&error];
   if (!data || error) {
     DLOG(WARNING) << "Error serializing most visited: "

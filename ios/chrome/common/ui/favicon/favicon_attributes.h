@@ -12,7 +12,7 @@ extern const CGFloat kFallbackIconDefaultTextColorGrayscale;
 
 // Attributes of a favicon. A favicon is represented either with an image or
 // with a fallback monogram of a given color and background color.
-@interface FaviconAttributes : NSObject <NSCoding>
+@interface FaviconAttributes : NSObject <NSSecureCoding>
 
 // Favicon image. Can be nil. If it is nil, monogram string and color are
 // guaranteed to be not nil.

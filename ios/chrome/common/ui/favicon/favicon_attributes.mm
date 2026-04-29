@@ -61,13 +61,21 @@ const CGFloat kFallbackIconDefaultTextColorGrayscale = 0.667;
 
 #pragma mark - NSCoding
 
++ (BOOL)supportsSecureCoding {
+  return YES;
+}
+
 - (instancetype)initWithCoder:(NSCoder*)aDecoder {
   UIImage* faviconImage =
-      [UIImage imageWithData:[aDecoder decodeObjectForKey:kFaviconImageKey]];
-  NSString* monogramString = [aDecoder decodeObjectForKey:kFaviconMonogramKey];
-  UIColor* textColor = [aDecoder decodeObjectForKey:kFaviconTextColorKey];
+      [UIImage imageWithData:[aDecoder decodeObjectOfClass:[NSData class]
+                                                    forKey:kFaviconImageKey]];
+  NSString* monogramString = [aDecoder decodeObjectOfClass:[NSString class]
+                                                    forKey:kFaviconMonogramKey];
+  UIColor* textColor = [aDecoder decodeObjectOfClass:[UIColor class]
+                                              forKey:kFaviconTextColorKey];
   UIColor* backgroundColor =
-      [aDecoder decodeObjectForKey:kFaviconBackgroundColorKey];
+      [aDecoder decodeObjectOfClass:[UIColor class]
+                             forKey:kFaviconBackgroundColorKey];
   if (faviconImage || (monogramString && textColor && backgroundColor)) {
     return [self initWithImage:faviconImage
                       monogram:monogramString
