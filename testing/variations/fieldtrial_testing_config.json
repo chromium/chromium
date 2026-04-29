@@ -14085,6 +14085,21 @@
             ]
         }
     ],
+    "IOSWebScriptMessageConversionLogging": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IOSScriptMessageConversionDurationLogging"
+                    ]
+                }
+            ]
+        }
+    ],
     "IdbInhibitCompactRange": [
         {
             "platforms": [
