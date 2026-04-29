@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <array>
 #include <functional>
 #include <memory>
 #include <string>
@@ -118,6 +119,7 @@ using ::testing::InSequence;
 using ::testing::IsEmpty;
 using ::testing::IsFalse;
 using ::testing::IsTrue;
+using ::testing::Matcher;
 using ::testing::MockFunction;
 using ::testing::NiceMock;
 using ::testing::Pair;
@@ -3583,6 +3585,18 @@ TEST_P(PdfViewWebPluginInkTest, DrawInProgressStrokeWithPenWithPressure) {
           "diagonal_stroke_pen_with_pressure.png"),
       events.start_event, {&events.move_event1, &events.move_event2},
       events.end_event);
+}
+
+TEST_P(PdfViewWebPluginInkTest, AddFont) {
+  static constexpr FontId kFontId(1);
+  static constexpr auto kSerializedTypeface =
+      std::to_array<const uint8_t>({1, 2, 3});
+
+  EXPECT_CALL(*engine_ptr_, AddFont(kFontId, Matcher<base::span<const uint8_t>>(
+                                                 kSerializedTypeface)));
+
+  plugin_->ink_module_client_for_testing()->AddFont(kFontId,
+                                                    kSerializedTypeface);
 }
 
 class PdfViewWebPluginInkTextHighlightTest : public PdfViewWebPluginInkTest {

@@ -401,8 +401,10 @@ class PDFiumEngine : public DocumentLoader::Client,
                                 float device_pixel_ratio,
                                 SendThumbnailCallback send_callback);
 #if BUILDFLAG(ENABLE_PDF_INK2)
-  // See method of the same name in PdfInkModuleClient.
-  void AddFont(FontId font_id, base::span<const uint8_t> serialized_typeface);
+  // See method of the same name in PdfInkModuleClient. Virtual to support
+  // testing.
+  virtual void AddFont(FontId font_id,
+                       base::span<const uint8_t> serialized_typeface);
   // Returns a font that was previously loaded with AddFont().
   FPDF_FONT GetAddedFont(FontId font_id);
 
