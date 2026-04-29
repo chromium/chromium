@@ -18,7 +18,6 @@
 #import "components/regional_capabilities/regional_capabilities_service.h"
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/base/signin_metrics.h"
-#import "components/signin/public/base/signin_switches.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/base/features.h"
@@ -152,9 +151,6 @@ enum class ActionAfterReauth {
   // The coordinator for the Personalize Google Services view.
   PersonalizeGoogleServicesCoordinator* _personalizeGoogleServicesCoordinator;
   SigninReauthCoordinator* _reauthCoordinator;
-  // TODO(crbug.com/471207686): Remove after kIdentityInAuthErrorFollowUps is
-  // launched.
-  SigninCoordinator* _addAccountCoordinator;
   // What to do once the user reauth is done.
   ActionAfterReauth _actionAfterReauth;
 }
@@ -240,12 +236,6 @@ enum class ActionAfterReauth {
 
 #pragma mark - Private
 
-// Called when the add account coordinator is complete.
-- (void)addAccountCoordinatorCompletedWithCoordinator:
-    (SigninCoordinator*)coordinator {
-  CHECK_EQ(_addAccountCoordinator, coordinator, base::NotFatalUntil::M151);
-  [self stopAddAccountCoordinator];
-}
 
 // Stops properly all views opened by the current coordinator.
 - (void)stopChildren {
@@ -253,7 +243,6 @@ enum class ActionAfterReauth {
   [self stopManageAccountsNavigationController];
   [self stopAccountMenuCoordinator];
   [self stopTrustedVaultReauthenticationCoordinator];
-  [self stopAddAccountCoordinator];
   [self stopSignoutActionSheetCoordinator];
   [self stopPersonalizedGoogleServicesCoordinator];
   [self stopReauthCoordinator];
@@ -272,10 +261,6 @@ enum class ActionAfterReauth {
   _reauthCoordinator = nil;
 }
 
-- (void)stopAddAccountCoordinator {
-  [_addAccountCoordinator stop];
-  _addAccountCoordinator = nil;
-}
 
 - (void)stopTrustedVaultReauthenticationCoordinator {
   [_trustedVaultReauthenticationCoordinator stop];
@@ -725,10 +710,6 @@ enum class ActionAfterReauth {
 
 - (void)openPrimaryAccountReauthDialogWithAction:
     (ActionAfterReauth)actionAfterReauth {
-  if (!base::FeatureList::IsEnabled(switches::kIdentityInAuthErrorFollowUps)) {
-    [self openPrimaryAccountReauthDialogLegacy];
-    return;
-  }
   if (_reauthCoordinator.viewWillPersist) {
     return;
   }
@@ -751,32 +732,6 @@ enum class ActionAfterReauth {
                                      kAccountSettings];
   _reauthCoordinator.delegate = self;
   [_reauthCoordinator start];
-}
-
-- (void)openPrimaryAccountReauthDialogLegacy {
-  if (_addAccountCoordinator.viewWillPersist) {
-    return;
-  }
-  [_addAccountCoordinator stop];
-  SigninContextStyle contextStyle = SigninContextStyle::kDefault;
-  AccessPoint accessPoint = AccessPoint::kSettings;
-  signin_metrics::PromoAction promoAction =
-      signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO;
-  _addAccountCoordinator = [SigninCoordinator
-      primaryAccountReauthCoordinatorWithBaseViewController:self.viewController
-                                                    browser:self.browser
-                                               contextStyle:contextStyle
-                                                accessPoint:accessPoint
-                                                promoAction:promoAction
-                                       continuationProvider:
-                                           DoNothingContinuationProvider()];
-  __weak __typeof(self) weakSelf = self;
-  _addAccountCoordinator.signinCompletion =
-      ^(SigninCoordinator* coordinator, SigninCoordinatorResult result,
-        id<SystemIdentity> identity) {
-        [weakSelf addAccountCoordinatorCompletedWithCoordinator:coordinator];
-      };
-  [_addAccountCoordinator start];
 }
 
 - (void)openAccountStorage {
