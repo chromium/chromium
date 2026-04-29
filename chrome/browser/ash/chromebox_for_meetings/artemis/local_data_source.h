@@ -80,8 +80,8 @@ class LocalDataSource : public mojom::DataSource {
  private:
   bool IsDataBufferOverMaxLimit();
   void RedactDataBuffer(std::vector<std::string>& buffer);
-  const std::string GetUniqueInsertId(const std::string& log_msg);
-  proto::LogSeverity SeverityStringToEnum(const std::string& severity);
+  const std::string GetUniqueInsertId(std::string_view log_msg);
+  proto::LogSeverity SeverityStringToEnum(std::string_view severity);
   bool IsWatchDogFilterValid(mojom::DataFilterPtr& filter);
   void FireChangeWatchdogCallbacks(const std::string& data);
   void CheckRegexWatchdogsAndFireCallbacks(const std::string& data);

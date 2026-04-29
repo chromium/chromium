@@ -7,6 +7,7 @@
 #include "base/hash/hash.h"
 #include "base/i18n/time_formatting.h"
 #include "base/process/launch.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -269,15 +270,15 @@ void LocalDataSource::BuildLogEntryFromLogLine(
     entry.set_timestamp_micros(time_since_epoch);
     entry.set_severity(severity.empty() ? default_severity
                                         : SeverityStringToEnum(severity));
-    entry.set_text_payload((severity.empty() ? "DEFAULT" : severity) + " " +
-                           log_msg);
+    entry.set_text_payload(base::StrCat(
+        {(severity.empty() ? "DEFAULT" : severity), " ", log_msg}));
   }
 }
 
-const std::string LocalDataSource::GetUniqueInsertId(
-    const std::string& log_msg) {
-  std::string to_be_hashed = device_id_ + ":" + GetDisplayName() + ":" +
-                             log_msg.substr(0, kLogMsgHashSize);
+const std::string LocalDataSource::GetUniqueInsertId(std::string_view log_msg) {
+  std::string to_be_hashed =
+      base::StrCat({device_id_, ":", GetDisplayName(), ":",
+                    log_msg.substr(0, kLogMsgHashSize)});
   size_t hash = base::FastHash(to_be_hashed);
   return base::NumberToString(hash);
 }
@@ -306,7 +307,7 @@ bool LocalDataSource::AreTimestampsExpected() const {
 }
 
 proto::LogSeverity LocalDataSource::SeverityStringToEnum(
-    const std::string& severity) {
+    std::string_view severity) {
   if (severity == "EMERGENCY" || severity == "EMERG") {
     return proto::LOG_SEVERITY_EMERGENCY;
   } else if (severity == "ALERT") {
