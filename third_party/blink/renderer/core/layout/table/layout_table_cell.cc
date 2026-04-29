@@ -45,7 +45,7 @@ void LayoutTableCell::InvalidateLayoutResultCacheAfterMeasure() const {
   }
 }
 
-LayoutUnit LayoutTableCell::BorderTop() const {
+PhysicalBoxStrut LayoutTableCell::BorderOutsets() const {
   NOT_DESTROYED();
   // TODO(1061423) Should return cell border, not fragment border.
   // To compute cell border, cell needs to know its starting row
@@ -53,36 +53,9 @@ LayoutUnit LayoutTableCell::BorderTop() const {
   // PhysicalFragmentCount() > 0 check should not be necessary,
   // but it is because of TextAutosizer/ScrollAnchoring.
   if (Table()->HasCollapsedBorders() && PhysicalFragmentCount() > 0) {
-    return GetPhysicalFragment(0)->Borders().top;
+    return GetPhysicalFragment(0)->Borders();
   }
-  return LayoutBlockFlow::BorderTop();
-}
-
-LayoutUnit LayoutTableCell::BorderBottom() const {
-  NOT_DESTROYED();
-  // TODO(1061423) Should return cell border, not fragment border.
-  if (Table()->HasCollapsedBorders() && PhysicalFragmentCount() > 0) {
-    return GetPhysicalFragment(0)->Borders().bottom;
-  }
-  return LayoutBlockFlow::BorderBottom();
-}
-
-LayoutUnit LayoutTableCell::BorderLeft() const {
-  NOT_DESTROYED();
-  // TODO(1061423) Should return cell border, not fragment border.
-  if (Table()->HasCollapsedBorders() && PhysicalFragmentCount() > 0) {
-    return GetPhysicalFragment(0)->Borders().left;
-  }
-  return LayoutBlockFlow::BorderLeft();
-}
-
-LayoutUnit LayoutTableCell::BorderRight() const {
-  NOT_DESTROYED();
-  // TODO(1061423) Should return cell border, not fragment border.
-  if (Table()->HasCollapsedBorders() && PhysicalFragmentCount() > 0) {
-    return GetPhysicalFragment(0)->Borders().right;
-  }
-  return LayoutBlockFlow::BorderRight();
+  return LayoutBlockFlow::BorderOutsets();
 }
 
 LayoutTableCell* LayoutTableCell::NextCell() const {

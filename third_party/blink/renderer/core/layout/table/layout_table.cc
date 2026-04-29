@@ -344,72 +344,21 @@ PhysicalRect LayoutTable::OverflowClipRect(
   return clip_rect;
 }
 
-LayoutUnit LayoutTable::BorderLeft() const {
+PhysicalBoxStrut LayoutTable::BorderOutsets() const {
   NOT_DESTROYED();
   // DCHECK(cached_table_borders_.get())
   // ScrollAnchoring fails this DCHECK.
   if (HasCollapsedBorders() && cached_table_borders_) {
-    return cached_table_borders_->TableBorder()
-        .ConvertToPhysical(StyleRef().GetWritingDirection())
-        .left;
+    return cached_table_borders_->TableBorder().ConvertToPhysical(
+        StyleRef().GetWritingDirection());
   }
-  return LayoutBlock::BorderLeft();
+  return LayoutBlock::BorderOutsets();
 }
 
-LayoutUnit LayoutTable::BorderRight() const {
+PhysicalBoxStrut LayoutTable::PaddingOutsets() const {
   NOT_DESTROYED();
-  // DCHECK(cached_table_borders_.get())
-  // ScrollAnchoring fails this DCHECK.
-  if (HasCollapsedBorders() && cached_table_borders_) {
-    return cached_table_borders_->TableBorder()
-        .ConvertToPhysical(StyleRef().GetWritingDirection())
-        .right;
-  }
-  return LayoutBlock::BorderRight();
-}
-
-LayoutUnit LayoutTable::BorderTop() const {
-  NOT_DESTROYED();
-  // DCHECK(cached_table_borders_.get())
-  // ScrollAnchoring fails this DCHECK.
-  if (HasCollapsedBorders() && cached_table_borders_) {
-    return cached_table_borders_->TableBorder()
-        .ConvertToPhysical(StyleRef().GetWritingDirection())
-        .top;
-  }
-  return LayoutBlock::BorderTop();
-}
-
-LayoutUnit LayoutTable::BorderBottom() const {
-  NOT_DESTROYED();
-  // DCHECK(cached_table_borders_.get())
-  // ScrollAnchoring fails this DCHECK.
-  if (HasCollapsedBorders() && cached_table_borders_) {
-    return cached_table_borders_->TableBorder()
-        .ConvertToPhysical(StyleRef().GetWritingDirection())
-        .bottom;
-  }
-  return LayoutBlock::BorderBottom();
-}
-
-LayoutUnit LayoutTable::PaddingTop() const {
-  NOT_DESTROYED();
-  return HasCollapsedBorders() ? LayoutUnit() : LayoutBlock::PaddingTop();
-}
-
-LayoutUnit LayoutTable::PaddingBottom() const {
-  NOT_DESTROYED();
-  return HasCollapsedBorders() ? LayoutUnit() : LayoutBlock::PaddingBottom();
-}
-
-LayoutUnit LayoutTable::PaddingLeft() const {
-  NOT_DESTROYED();
-  return HasCollapsedBorders() ? LayoutUnit() : LayoutBlock::PaddingLeft();
-}
-
-LayoutUnit LayoutTable::PaddingRight() const {
-  NOT_DESTROYED();
-  return HasCollapsedBorders() ? LayoutUnit() : LayoutBlock::PaddingRight();
+  return HasCollapsedBorders() ? PhysicalBoxStrut()
+                               : LayoutBlock::PaddingOutsets();
 }
 
 // Effective column index is index of columns with mergeable

@@ -50,10 +50,7 @@ class CORE_EXPORT LayoutTableCell : public LayoutBlockFlow {
   // fragment would be in the incorrect state).
   void InvalidateLayoutResultCacheAfterMeasure() const;
 
-  LayoutUnit BorderTop() const override;
-  LayoutUnit BorderBottom() const override;
-  LayoutUnit BorderLeft() const override;
-  LayoutUnit BorderRight() const override;
+  PhysicalBoxStrut BorderOutsets() const override;
 
   LayoutTableCell* NextCell() const;
   LayoutTableCell* PreviousCell() const;

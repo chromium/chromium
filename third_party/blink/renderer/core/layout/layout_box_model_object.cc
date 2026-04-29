@@ -820,14 +820,23 @@ PhysicalOffset LayoutBoxModelObject::AdjustedPositionRelativeTo(
   return reference_point;
 }
 
-LayoutUnit LayoutBoxModelObject::ComputedCSSPadding(
-    const Length& padding) const {
+PhysicalBoxStrut LayoutBoxModelObject::ComputedPaddingOutsets() const {
   NOT_DESTROYED();
-  LayoutUnit w;
-  if (padding.HasPercent()) {
-    w = ContainingBlockLogicalWidthForContent();
+
+  const ComputedStyle& style = StyleRef();
+  if (!style.MayHavePadding()) {
+    return PhysicalBoxStrut();
   }
-  return MinimumValueForLength(padding, w);
+
+  const LayoutUnit percentage_size =
+      (style.PaddingTop().HasPercent() || style.PaddingRight().HasPercent() ||
+       style.PaddingBottom().HasPercent() || style.PaddingLeft().HasPercent())
+          ? ContainingBlockLogicalWidthForContent()
+          : LayoutUnit();
+  return {MinimumValueForLength(style.PaddingTop(), percentage_size),
+          MinimumValueForLength(style.PaddingRight(), percentage_size),
+          MinimumValueForLength(style.PaddingBottom(), percentage_size),
+          MinimumValueForLength(style.PaddingLeft(), percentage_size)};
 }
 
 LayoutUnit LayoutBoxModelObject::ContainingBlockLogicalWidthForContent() const {

@@ -180,74 +180,19 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
   // it. If there are no filters, it returns its argument.
   PhysicalRect ApplyFiltersToRect(const PhysicalRect&) const;
 
-  // These return the CSS computed padding values.
-  LayoutUnit ComputedCSSPaddingTop() const {
+  PhysicalBoxStrut ComputedPaddingOutsets() const;
+
+  virtual PhysicalBoxStrut PaddingOutsets() const {
     NOT_DESTROYED();
-    return ComputedCSSPadding(StyleRef().PaddingTop());
-  }
-  LayoutUnit ComputedCSSPaddingBottom() const {
-    NOT_DESTROYED();
-    return ComputedCSSPadding(StyleRef().PaddingBottom());
-  }
-  LayoutUnit ComputedCSSPaddingLeft() const {
-    NOT_DESTROYED();
-    return ComputedCSSPadding(StyleRef().PaddingLeft());
-  }
-  LayoutUnit ComputedCSSPaddingRight() const {
-    NOT_DESTROYED();
-    return ComputedCSSPadding(StyleRef().PaddingRight());
+    return ComputedPaddingOutsets();
   }
 
-  PhysicalBoxStrut ComputedPaddingOutsets() const {
+  virtual PhysicalBoxStrut BorderOutsets() const {
     NOT_DESTROYED();
-    return {ComputedCSSPaddingTop(), ComputedCSSPaddingRight(),
-            ComputedCSSPaddingBottom(), ComputedCSSPaddingLeft()};
-  }
-
-  // These functions are used during layout.
-  // - Table override them to exclude padding with collapsing borders.
-  virtual LayoutUnit PaddingTop() const {
-    NOT_DESTROYED();
-    return ComputedCSSPaddingTop();
-  }
-  virtual LayoutUnit PaddingBottom() const {
-    NOT_DESTROYED();
-    return ComputedCSSPaddingBottom();
-  }
-  virtual LayoutUnit PaddingLeft() const {
-    NOT_DESTROYED();
-    return ComputedCSSPaddingLeft();
-  }
-  virtual LayoutUnit PaddingRight() const {
-    NOT_DESTROYED();
-    return ComputedCSSPaddingRight();
-  }
-
-  virtual LayoutUnit BorderTop() const {
-    NOT_DESTROYED();
-    return LayoutUnit(StyleRef().BorderTopWidth());
-  }
-  virtual LayoutUnit BorderBottom() const {
-    NOT_DESTROYED();
-    return LayoutUnit(StyleRef().BorderBottomWidth());
-  }
-  virtual LayoutUnit BorderLeft() const {
-    NOT_DESTROYED();
-    return LayoutUnit(StyleRef().BorderLeftWidth());
-  }
-  virtual LayoutUnit BorderRight() const {
-    NOT_DESTROYED();
-    return LayoutUnit(StyleRef().BorderRightWidth());
-  }
-
-  PhysicalBoxStrut BorderOutsets() const {
-    NOT_DESTROYED();
-    return {BorderTop(), BorderRight(), BorderBottom(), BorderLeft()};
-  }
-
-  PhysicalBoxStrut PaddingOutsets() const {
-    NOT_DESTROYED();
-    return {PaddingTop(), PaddingRight(), PaddingBottom(), PaddingLeft()};
+    return {LayoutUnit(StyleRef().BorderTopWidth()),
+            LayoutUnit(StyleRef().BorderRightWidth()),
+            LayoutUnit(StyleRef().BorderBottomWidth()),
+            LayoutUnit(StyleRef().BorderLeftWidth())};
   }
 
   LayoutUnit BorderPaddingBlockSize() const {
@@ -400,7 +345,6 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
  private:
   void CreateLayerAfterStyleChange();
 
-  LayoutUnit ComputedCSSPadding(const Length&) const;
   bool IsBoxModelObject() const final {
     NOT_DESTROYED();
     return true;

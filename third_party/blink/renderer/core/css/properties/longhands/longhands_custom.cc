@@ -7740,7 +7740,7 @@ const CSSValue* PaddingBottom::CSSValueFromComputedStyleInternal(
                                                                style);
   }
   return ZoomAdjustedPixelValue(
-      To<LayoutBox>(layout_object)->ComputedCSSPaddingBottom(), style);
+      To<LayoutBox>(layout_object)->ComputedPaddingOutsets().bottom, style);
 }
 
 bool PaddingInlineEnd::IsLayoutDependent(const ComputedStyle* style,
@@ -7799,7 +7799,7 @@ const CSSValue* PaddingLeft::CSSValueFromComputedStyleInternal(
                                                                style);
   }
   return ZoomAdjustedPixelValue(
-      To<LayoutBox>(layout_object)->ComputedCSSPaddingLeft(), style);
+      To<LayoutBox>(layout_object)->ComputedPaddingOutsets().left, style);
 }
 
 const CSSValue* PaddingRight::ParseSingleValue(
@@ -7830,7 +7830,7 @@ const CSSValue* PaddingRight::CSSValueFromComputedStyleInternal(
                                                                style);
   }
   return ZoomAdjustedPixelValue(
-      To<LayoutBox>(layout_object)->ComputedCSSPaddingRight(), style);
+      To<LayoutBox>(layout_object)->ComputedPaddingOutsets().right, style);
 }
 
 const CSSValue* PaddingTop::ParseSingleValue(
@@ -7861,7 +7861,7 @@ const CSSValue* PaddingTop::CSSValueFromComputedStyleInternal(
                                                                style);
   }
   return ZoomAdjustedPixelValue(
-      To<LayoutBox>(layout_object)->ComputedCSSPaddingTop(), style);
+      To<LayoutBox>(layout_object)->ComputedPaddingOutsets().top, style);
 }
 
 const CSSValue* Page::ParseSingleValue(
