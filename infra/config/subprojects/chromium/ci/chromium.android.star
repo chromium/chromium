@@ -30,7 +30,7 @@ ci.defaults.set(
     os = os.LINUX_DEFAULT,
     gardener_rotations = gardener_rotations.ANDROID,
     tree_closing_notifiers = ci_constants.DEFAULT_TREE_CLOSING_NOTIFIERS,
-    execution_timeout = ci_constants.DEFAULT_EXECUTION_TIMEOUT,
+    execution_timeout = 4 * time.hour,
     experiments = {
         "chromium_tests.resultdb_module": 100,
     },
@@ -125,7 +125,6 @@ ci.builder(
     ),
     cq_mirrors_console_view = "mirrors",
     contact_team_email = "clank-engprod@google.com",
-    execution_timeout = 4 * time.hour,
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
 )
 
@@ -1196,7 +1195,6 @@ ci.builder(
         short_name = "bfc",
     ),
     contact_team_email = "clank-engprod@google.com",
-    execution_timeout = 4 * time.hour,
 )
 
 ci.builder(
@@ -2833,7 +2831,6 @@ ci.builder(
         category = "builder_tester|x86",
         short_name = "11",
     ),
-    execution_timeout = 4 * time.hour,
 )
 
 ci.builder(
@@ -3007,7 +3004,6 @@ ci.builder(
         short_name = "12",
     ),
     contact_team_email = "clank-engprod@google.com",
-    execution_timeout = 4 * time.hour,
 )
 
 ci.builder(
@@ -3248,7 +3244,6 @@ ci.builder(
     ),
     cq_mirrors_console_view = "mirrors",
     contact_team_email = "clank-engprod@google.com",
-    execution_timeout = 4 * time.hour,
 )
 
 ci.builder(
@@ -3425,7 +3420,6 @@ ci.builder(
         short_name = "14",
     ),
     contact_team_email = "clank-engprod@google.com",
-    execution_timeout = 4 * time.hour,
 )
 
 ci.builder(
@@ -3498,7 +3492,6 @@ ci.builder(
         short_name = "14A",
     ),
     contact_team_email = "clank-engprod@google.com",
-    execution_timeout = 4 * time.hour,
 )
 
 ci.builder(
@@ -3778,7 +3771,6 @@ ci.builder(
         short_name = "15",
     ),
     contact_team_email = "clank-engprod@google.com",
-    execution_timeout = 4 * time.hour,
 )
 
 ci.builder(
@@ -3851,7 +3843,6 @@ ci.builder(
         short_name = "15T-L",
     ),
     contact_team_email = "clank-engprod@google.com",
-    execution_timeout = 4 * time.hour,
 )
 
 ci.builder(
@@ -3978,7 +3969,6 @@ ci.builder(
         short_name = "15T",
     ),
     contact_team_email = "clank-engprod@google.com",
-    execution_timeout = 4 * time.hour,
 )
 
 ci.builder(
@@ -4095,7 +4085,6 @@ ci.builder(
         short_name = "16",
     ),
     contact_team_email = "clank-engprod@google.com",
-    execution_timeout = 4 * time.hour,
 )
 
 ci.builder(
@@ -4255,7 +4244,6 @@ ci.builder(
         short_name = "16",
     ),
     contact_team_email = "clank-engprod@google.com",
-    execution_timeout = 4 * time.hour,
 )
 
 ci.builder(
