@@ -13,6 +13,7 @@
 #include <optional>
 #include <ranges>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -395,7 +396,7 @@ struct AutocompleteMatch {
   static std::string ClassificationsToString(
       const ACMatchClassifications& classifications);
   static ACMatchClassifications ClassificationsFromString(
-      const std::string& serialized_classifications);
+      std::string_view serialized_classifications);
 
   // Adds a classification to the end of |classifications| iff its style is
   // different from the last existing classification.  |offset| must be larger

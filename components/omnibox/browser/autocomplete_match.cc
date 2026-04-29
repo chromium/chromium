@@ -18,6 +18,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -85,13 +86,13 @@ bool WordMatchesURLContent(
   size_t prefix_length =
       url.GetScheme().length() + strlen(url::kStandardSchemeSeparator);
   DCHECK_GE(url.spec().length(), prefix_length);
-  const std::u16string& formatted_url = url_formatter::FormatUrl(
+  const std::u16string formatted_url = url_formatter::FormatUrl(
       url, url_formatter::kFormatUrlOmitNothing, base::UnescapeRule::NORMAL,
       nullptr, nullptr, &prefix_length);
   if (prefix_length == std::u16string::npos)
     return false;
-  const std::u16string& formatted_url_without_scheme =
-      formatted_url.substr(prefix_length);
+  const std::u16string_view formatted_url_without_scheme =
+      std::u16string_view(formatted_url).substr(prefix_length);
   for (const auto& term : terms_prefixed_by_http_or_https) {
     if (base::StartsWith(formatted_url_without_scheme, term,
                          base::CompareCase::SENSITIVE))
@@ -817,18 +818,17 @@ std::string AutocompleteMatch::ClassificationsToString(
     const ACMatchClassifications& classifications) {
   std::string serialized_classifications;
   for (size_t i = 0; i < classifications.size(); ++i) {
-    if (i)
-      serialized_classifications += ',';
-    serialized_classifications +=
-        base::NumberToString(classifications[i].offset) + ',' +
-        base::NumberToString(classifications[i].style);
+    base::StrAppend(
+        &serialized_classifications,
+        {i ? "," : "", base::NumberToString(classifications[i].offset), ",",
+         base::NumberToString(classifications[i].style)});
   }
   return serialized_classifications;
 }
 
 // static
 ACMatchClassifications AutocompleteMatch::ClassificationsFromString(
-    const std::string& serialized_classifications) {
+    std::string_view serialized_classifications) {
   ACMatchClassifications classifications;
   std::vector<std::string_view> tokens =
       base::SplitStringPiece(serialized_classifications, ",",
@@ -1328,13 +1328,13 @@ std::u16string AutocompleteMatch::GetKeywordPlaceholder(
 #if BUILDFLAG(IS_IOS)
   // `kOmniboxScoped` isn't defined on iOS and all history embedding subfeatures
   // are disabled on iOS.
-  return u"";
+  return std::u16string();
 #else
   if (!template_url) {
-    return u"";
+    return std::u16string();
   }
   if (!history_embeddings::GetFeatureParameters().omnibox_scoped) {
-    return u"";
+    return std::u16string();
   }
   int message_id;
   switch (template_url->starter_pack_id()) {
@@ -1359,7 +1359,7 @@ std::u16string AutocompleteMatch::GetKeywordPlaceholder(
       message_id = IDS_OMNIBOX_AI_MODE_SCOPE_PLACEHOLDER_TEXT;
       break;
     default:
-      return u"";
+      return std::u16string();
   }
   return l10n_util::GetStringUTF16(message_id);
 #endif
@@ -1764,9 +1764,13 @@ bool AutocompleteMatch::HasLensSearchAction() const {
 }
 
 bool AutocompleteMatch::IsSearchAimSuggestion() const {
-  return suggest_template.has_value() &&
-         suggest_template->default_search_parameters().contains("udm") &&
-         suggest_template->default_search_parameters().at("udm") == "50";
+  if (suggest_template.has_value()) {
+    if (auto it = suggest_template->default_search_parameters().find("udm");
+        it != suggest_template->default_search_parameters().end()) {
+      return it->second == "50";
+    }
+  }
+  return false;
 }
 
 void AutocompleteMatch::FilterOmniboxActions(
@@ -1854,11 +1858,11 @@ void AutocompleteMatch::SetAllowedToBeDefault(const AutocompleteInput& input) {
     size_t last_non_whitespace_pos =
         input.text().find_last_not_of(base::kWhitespaceUTF16);
     DCHECK_NE(last_non_whitespace_pos, std::string::npos);
-    auto whitespace_suffix = input.text().substr(last_non_whitespace_pos + 1);
+    std::u16string_view whitespace_suffix =
+        std::u16string_view(input.text()).substr(last_non_whitespace_pos + 1);
     if (base::StartsWith(inline_autocompletion, whitespace_suffix,
                          base::CompareCase::SENSITIVE)) {
-      inline_autocompletion =
-          inline_autocompletion.substr(whitespace_suffix.size());
+      inline_autocompletion.erase(0, whitespace_suffix.size());
       allowed_to_be_default_match = true;
     } else {
       allowed_to_be_default_match = false;
@@ -2014,10 +2018,11 @@ void AutocompleteMatch::MergeScoringSignals(const AutocompleteMatch& other) {
   const char kACMatchPropertyScoringSignalsMerged[] = "Scoring signals merged";
   RecordAdditionalInfo(
       kACMatchPropertyScoringSignalsMerged,
-      GetAdditionalInfoForDebugging(kACMatchPropertyScoringSignalsMerged) +
-          AutocompleteMatchType::ToString(other.type) + ", " +
-          other.GetAdditionalInfoForDebugging(
-              kACMatchPropertyScoringSignalsMerged));
+      base::StrCat(
+          {GetAdditionalInfoForDebugging(kACMatchPropertyScoringSignalsMerged),
+           AutocompleteMatchType::ToString(other.type), ", ",
+           other.GetAdditionalInfoForDebugging(
+               kACMatchPropertyScoringSignalsMerged)}));
 
   if (!scoring_signals.has_value()) {
     scoring_signals = std::make_optional<ScoringSignals>();
@@ -2385,12 +2390,13 @@ void AutocompleteMatch::ValidateClassifications(
     const ACMatchClassifications& classifications,
     const std::string& provider_name) {
 #if DCHECK_IS_ON()
-  std::string debug_string = " text: " + base::UTF16ToUTF8(text) +
-                             ", provider: " + provider_name +
-                             ", classifications (offset, style): ";
+  std::string debug_string = base::StrCat(
+      {" text: ", base::UTF16ToUTF8(text), ", provider: ", provider_name,
+       ", classifications (offset, style): "});
   for (const auto& classification : classifications) {
-    debug_string += " (" + base::NumberToString(classification.offset) + ", " +
-                    base::NumberToString(classification.style) + ")";
+    base::StrAppend(&debug_string,
+                    {" (", base::NumberToString(classification.offset), ", ",
+                     base::NumberToString(classification.style), ")"});
   }
 
   if (text.empty()) {
