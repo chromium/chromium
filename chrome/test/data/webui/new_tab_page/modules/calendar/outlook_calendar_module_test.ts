@@ -4,7 +4,8 @@
 
 import type {DisableModuleEvent, DismissModuleInstanceEvent, OutlookCalendarModuleElement} from 'chrome://new-tab-page/lazy_load.js';
 import {outlookCalendarDescriptor, OutlookCalendarProxyImpl, ParentTrustedDocumentProxy} from 'chrome://new-tab-page/lazy_load.js';
-import {MicrosoftAuthUntrustedDocumentRemote, OutlookCalendarPageHandlerRemote} from 'chrome://new-tab-page/new_tab_page.js';
+import {MicrosoftAuthUntrustedDocumentRemote} from 'chrome://new-tab-page/ntp_microsoft_auth_shared_ui.mojom-webui.js';
+import {OutlookCalendarPageHandlerRemote} from 'chrome://new-tab-page/outlook_calendar.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';

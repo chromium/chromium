@@ -219,12 +219,12 @@ IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, InfoDialog) {
   RunTest("new_tab_page/modules/info_dialog_test.js", "mocha.run()");
 }
 
-#if !defined(GOOGLE_CHROME_BRANDING)
+#if !defined(OFFICIAL_BUILD)
 // The dummy module is not available in official builds.
 IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, DummyModule) {
   RunTest("new_tab_page/modules/dummy/module_test.js", "mocha.run()");
 }
-#endif  // !defined(GOOGLE_CHROME_BRANDING)
+#endif  // !defined(OFFICIAL_BUILD)
 
 IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, Calendar) {
   RunTest("new_tab_page/modules/calendar/calendar_test.js",
