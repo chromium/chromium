@@ -341,7 +341,8 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, TestOpenPopup) {
 
 // Tests opening a popup in an incognito window.
 // TODO(crbug.com/345091943): Extremely flaky on Mac release builds.
-#if BUILDFLAG(IS_MAC) && defined(NDEBUG)
+// TODO(crbug.com/506956204): Extremely flaky on Linux builds.
+#if (BUILDFLAG(IS_MAC) && defined(NDEBUG)) || BUILDFLAG(IS_LINUX)
 #define MAYBE_TestOpenPopupIncognito DISABLED_TestOpenPopupIncognito
 #else
 #define MAYBE_TestOpenPopupIncognito TestOpenPopupIncognito
