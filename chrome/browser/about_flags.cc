@@ -9358,6 +9358,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kWebUIOmniboxFullPopupDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(omnibox::kWebUIOmniboxFullPopup)},
 
+    {"webui-omnibox-full-popup-v2",
+     flag_descriptions::kWebUIOmniboxFullPopupV2Name,
+     flag_descriptions::kWebUIOmniboxFullPopupV2Description, kOsDesktop,
+     FEATURE_VALUE_TYPE(omnibox::kWebUIOmniboxFullPopupV2)},
+
     {"webui-omnibox-popup", flag_descriptions::kWebUIOmniboxPopupName,
      flag_descriptions::kWebUIOmniboxPopupDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(omnibox::internal::kWebUIOmniboxPopup)},

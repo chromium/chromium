@@ -3527,6 +3527,15 @@ inline constexpr char kWebUIOmniboxFullPopupDescription[] =
     "If enabled, shows the omnibox suggestions and the search input in the "
     "popup in WebUI.";
 
+inline constexpr char kWebUIOmniboxFullPopupV2Name[] =
+    "WebUI Omnibox Full Popup V2";
+inline constexpr char kWebUIOmniboxFullPopupV2Description[] =
+    "If enabled, then both the input row and suggestions dropdown (in the "
+    "Omnibox) will be rendered using the WebUI stack (i.e. the cutout for the "
+    "location bar will be removed). NOTE: This flag is intended to control "
+    "the next-gen Omnibox experience and will eventually supersede the "
+    "'WebUI Omnibox Full Popup' feature flag.";
+
 inline constexpr char kWebUIOmniboxPopupName[] = "WebUI Omnibox Popup";
 inline constexpr char kWebUIOmniboxPopupDescription[] =
     "If enabled, shows the omnibox suggestions in the popup in WebUI.";

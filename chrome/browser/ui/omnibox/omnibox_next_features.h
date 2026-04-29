@@ -44,6 +44,7 @@ BASE_DECLARE_FEATURE(kAiModeEntryPointAlwaysNavigates);
 BASE_DECLARE_FEATURE(kWebUIOmniboxDisableCaretColorAnimation);
 BASE_DECLARE_FEATURE(kWebUIOmniboxAimPopupDisableAnimation);
 BASE_DECLARE_FEATURE(kWebUIOmniboxFullPopup);
+BASE_DECLARE_FEATURE(kWebUIOmniboxFullPopupV2);
 BASE_DECLARE_FEATURE(kWebUIOmniboxPopupDebug);
 BASE_DECLARE_FEATURE(kWebUIOmniboxPopupSelectionControl);
 // Caret animation for omnibox
@@ -97,6 +98,10 @@ extern const base::FeatureParam<bool> kContextMenuShowAskAboutTabsAction;
 
 // Returns true if `kWebUIOmniboxPopup` is enabled.
 bool IsWebUIOmniboxPopupEnabled();
+
+// Returns true if either `kWebUIOmniboxFullPopup` or `kWebUIOmniboxFullPopupV2`
+// is enabled.
+bool IsWebUIOmniboxFullPopupEnabled();
 
 // Returns true if the `kWebUIOmniboxAimPopup` base::Feature is enabled.
 // This does NOT include user eligibility checks. Most UI code should use the

@@ -70,6 +70,13 @@ BASE_FEATURE(kWebUIOmniboxAimPopupDisableAnimation, DISABLED);
 // If enabled, removes the cutout for the location bar and fills the entire
 // popup content with the WebUI WebView.
 BASE_FEATURE(kWebUIOmniboxFullPopup, DISABLED);
+// If enabled, then both the input row and suggestions dropdown (in the Omnibox)
+// will be rendered using the WebUI stack (i.e. the cutout for the location bar
+// will be removed).
+//
+// NOTE: This flag is intended to control the next-gen Omnibox experience and
+// will eventually supersede the `kWebUIOmniboxFullPopup` feature flag.
+BASE_FEATURE(kWebUIOmniboxFullPopupV2, DISABLED);
 // Enables the WebUI for omnibox suggestions without modifying the popup UI.
 BASE_FEATURE(kWebUIOmniboxPopupDebug, DISABLED);
 // Enables side-by-side comparison omnibox suggestions in WebUI and Views.
@@ -205,6 +212,11 @@ bool ShouldShowAimContextMenuOption(Profile* profile) {
 
 bool IsWebUIOmniboxPopupEnabled() {
   return base::FeatureList::IsEnabled(internal::kWebUIOmniboxPopup);
+}
+
+bool IsWebUIOmniboxFullPopupEnabled() {
+  return base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopup) ||
+         base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopupV2);
 }
 
 bool IsAimPopupFeatureEnabled() {

@@ -61,7 +61,7 @@ std::string_view AddContextButtonVariantToSearchboxLayoutMode(
 bool OmniboxPopupUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
   return omnibox::IsAimPopupFeatureEnabled() ||
-         base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopup) ||
+         omnibox::IsWebUIOmniboxFullPopupEnabled() ||
          omnibox::IsWebUIOmniboxPopupEnabled() ||
          features::IsWebUILocationBarEnabled();
 }
@@ -169,11 +169,10 @@ OmniboxPopupUI::OmniboxPopupUI(content::WebUI* web_ui)
       "energyEffectEnabled",
       base::FeatureList::IsEnabled(omnibox::kEnergyEffectInOmnibox));
 
-  webui::SetupWebUIDataSource(
-      source, kOmniboxPopupResources,
-      base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopup)
-          ? IDR_OMNIBOX_POPUP_OMNIBOX_POPUP_FULL_HTML
-          : IDR_OMNIBOX_POPUP_OMNIBOX_POPUP_HTML);
+  webui::SetupWebUIDataSource(source, kOmniboxPopupResources,
+                              omnibox::IsWebUIOmniboxFullPopupEnabled()
+                                  ? IDR_OMNIBOX_POPUP_OMNIBOX_POPUP_FULL_HTML
+                                  : IDR_OMNIBOX_POPUP_OMNIBOX_POPUP_HTML);
   webui::EnableTrustedTypesCSP(source);
 
   content::URLDataSource::Add(profile_,

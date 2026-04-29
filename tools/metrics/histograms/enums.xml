@@ -10807,6 +10807,7 @@ from previous Chrome versions.
   <int value="-1108624968" label="GlicLiveModeOnlyGlow:disabled"/>
   <int value="-1107762575" label="enable-data-reduction-proxy-config-client"/>
   <int value="-1107103335" label="FsNosymfollow:enabled"/>
+  <int value="-1106516640" label="WebUIOmniboxFullPopupV2:enabled"/>
   <int value="-1106191827" label="VirtualKeyboardNewHeader:enabled"/>
   <int value="-1105925767"
       label="StorageAccessApiFollowsSameOriginPolicy:disabled"/>
@@ -11454,6 +11455,7 @@ from previous Chrome versions.
   <int value="-891856063" label="MidiManagerAndroid:enabled"/>
   <int value="-890843885" label="ComposeboxDriveContextMenuOption:disabled"/>
   <int value="-889670978" label="AssistantRoutines:disabled"/>
+  <int value="-889192283" label="WebUIOmniboxFullPopupV2:disabled"/>
   <int value="-888688589" label="DevToolsAutomaticFileSystems:enabled"/>
   <int value="-888336510" label="NtpSingleRowShortcuts:enabled"/>
   <int value="-887094098" label="ForcedColors:enabled"/>

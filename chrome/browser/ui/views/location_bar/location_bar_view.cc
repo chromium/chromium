@@ -371,7 +371,7 @@ void LocationBarView::Init() {
 
   const bool web_ui_popup_dropdown_only =
       omnibox::IsWebUIOmniboxPopupEnabled() &&
-      !base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopup);
+      !omnibox::IsWebUIOmniboxFullPopupEnabled();
 
   // Default to the legacy popup view for web apps and devtools windows since
   // creating the WebUI popup results in an extra Omnibox process being created
@@ -382,7 +382,7 @@ void LocationBarView::Init() {
   if (!is_web_app && !is_devtools &&
       ((web_ui_popup_dropdown_only &&
         !base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxPopupDebug)) ||
-       base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopup))) {
+       omnibox::IsWebUIOmniboxFullPopupEnabled())) {
     omnibox_popup_view_ = std::make_unique<OmniboxPopupViewWebUI>(
         /*omnibox_view=*/omnibox_view_, omnibox_controller_.get(),
         /*location_bar=*/this, /*presenter_delegate=*/*this);
@@ -1974,7 +1974,8 @@ void LocationBarView::ValidatePopupState(OmniboxPopupState state) {
   // Note: GetWidget() returns the BrowserView's widget, not the popup widget.
   if (views::Widget* widget = GetWidget();
       !widget || !widget->IsVisible() ||
-      base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopup)) {
+      base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopup) ||
+      base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopupV2)) {
     return;
   }
 
