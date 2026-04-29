@@ -42,19 +42,28 @@ inline constexpr auto kActionIds = std::to_array<actions::ActionId>({
     kActionShowPaymentsBubbleOrPage,
     kActionSidePanelShowContextualTasks,
     kActionGlicContextualCueing,
-    kActionBookmarkThisTab,
     kActionAnchoredContextualCue,
     kActionWebAuthnAmbientSignin,
     kActionFederation,
+
+    // Add any new page actions before this line to ensure that the bookmark
+    // star is always the right-most page action.
+    kActionBookmarkThisTab,
 });
 
+// IMPORTANT NOTE: This assert SHOULD NOT be changed without prior consensus
+// from the page action team.
 static_assert(kActionIds[0] == kActionAiMode,
               "kActionAiMode must be the first entry in kActionIds to ensure "
               "it's the left-most page action");
+// IMPORTANT NOTE: This assert SHOULD NOT be changed without prior consensus
+// from the page action team.
 static_assert(
-    kActionIds.back() == kActionFederation,
-    "kActionFederation must be the last entry in kActionIds to ensure "
+    kActionIds.back() == kActionBookmarkThisTab,
+    "kActionBookmarkThisTab must be the last entry in kActionIds to ensure "
     "it's the right-most page action");
+// NOTE: If your page action needs to be in a specific position relative to the
+// other ones, add a static assert verifying its position here.
 
 }  // namespace page_actions
 
