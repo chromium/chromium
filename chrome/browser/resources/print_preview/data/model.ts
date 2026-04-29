@@ -21,6 +21,7 @@ import type {DocumentSettings} from './document_info.js';
 import type {Margins, MarginsSetting} from './margins.js';
 import {CustomMarginsOrientation, MarginsType} from './margins.js';
 import {Observable, setValueAtPath} from './observable.js';
+import type {Indexable} from './observable.js';
 import {ScalingType} from './scaling.js';
 import {Size} from './size.js';
 
@@ -73,6 +74,8 @@ export interface Settings {
   pagesPerSheet: Setting<number>;
   recentDestinations: Setting<RecentDestination[]>;
 }
+
+type IndexableSettings = Indexable<Settings>;
 
 export interface SerializedSettings {
   version: number;
@@ -483,7 +486,6 @@ function createSettings(): Settings {
   };
 }
 
-
 export class PrintPreviewModelElement extends CrLitElement {
   static get is() {
     return 'print-preview-model';
@@ -509,7 +511,7 @@ export class PrintPreviewModelElement extends CrLitElement {
   accessor margins: Margins|null = null;
   accessor pageSize: Size = new Size(612, 792);
 
-  observable: Observable<Settings>;
+  observable: Observable<IndexableSettings>;
   private initialized_: boolean = false;
   private stickySettings_: SerializedSettings|null = null;
   private policySettings_: PolicySettings|null = null;
@@ -525,7 +527,7 @@ export class PrintPreviewModelElement extends CrLitElement {
 
   constructor() {
     super();
-    this.observable = new Observable<Settings>(createSettings());
+    this.observable = new Observable<IndexableSettings>(createSettings());
     this.settings_ = this.observable.getProxy();
   }
 
@@ -598,7 +600,7 @@ export class PrintPreviewModelElement extends CrLitElement {
     const settingName = parts[0] as keyof Settings;
     const setting = this.getSetting(settingName);
     const oldValue = this.getSettingValue(settingName);
-    setValueAtPath(parts, this.settings_, value);
+    setValueAtPath(parts, this.settings_ as IndexableSettings, value);
     const newValue = this.getSettingValue(settingName);
     if (newValue !== oldValue && setting.updatesPreview) {
       this.fire('preview-setting-changed');

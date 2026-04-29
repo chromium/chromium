@@ -22,7 +22,7 @@ export {CustomMarginsOrientation, Margins, MarginsType} from './data/margins.js'
 export {MeasurementSystem, MeasurementSystemUnitType} from './data/measurement_system.js';
 export type {CloudJobTicket, PolicyObjectEntry, PrintTicket, SerializedSettings, Setting, Settings} from './data/model.js';
 export {DuplexMode, getInstance, PrintPreviewModelElement, whenReady} from './data/model.js';
-export type {WildcardChangeRecord} from './data/observable.js';
+export type {Indexable, WildcardChangeRecord} from './data/observable.js';
 export {Observable, setValueAtPath} from './data/observable.js';
 export {ScalingType} from './data/scaling.js';
 export {Size} from './data/size.js';

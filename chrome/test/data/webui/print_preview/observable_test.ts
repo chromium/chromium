@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {Observable, setValueAtPath} from 'chrome://print/print_preview.js';
-import type {WildcardChangeRecord} from 'chrome://print/print_preview.js';
+import type {Indexable, WildcardChangeRecord} from 'chrome://print/print_preview.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertDeepEquals, assertEquals, assertFalse} from 'chrome://webui-test/chai_assert.js';
 
@@ -13,6 +13,8 @@ suite('Observable', function() {
     bar: {value: number};
   }
 
+  type IndexablePrefs = Indexable<Prefs>;
+
   function createPrefs(): Prefs {
     return {
       foo: {value: 1},
@@ -20,20 +22,20 @@ suite('Observable', function() {
     };
   }
 
-  let observable: Observable<Prefs>;
+  let observable: Observable<IndexablePrefs>;
   let prefs: Prefs;
 
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    observable = new Observable(createPrefs());
+    observable = new Observable<IndexablePrefs>(createPrefs());
     prefs = observable.getProxy();
   });
 
   test('SetValueAtPath', function() {
-    setValueAtPath(['foo', 'value'], prefs, 3);
+    setValueAtPath(['foo', 'value'], prefs as IndexablePrefs, 3);
     assertEquals(3, prefs.foo.value);
 
-    setValueAtPath(['foo'], prefs, {value: 4});
+    setValueAtPath(['foo'], prefs as IndexablePrefs, {value: 4});
     assertEquals(4, prefs.foo.value);
   });
 
@@ -153,6 +155,8 @@ suite('ObservablePolymerCompatibility', function() {
     bar: {value: number[]};
   }
 
+  type IndexablePrefs = Indexable<Prefs>;
+
   function createPrefs(): Prefs {
     return {
       foo: {value: 1},
@@ -172,7 +176,7 @@ suite('ObservablePolymerCompatibility', function() {
     }
 
     declare prefs: Prefs;
-    observable: Observable<Prefs>;
+    observable: Observable<IndexablePrefs>;
 
     polymerNotifications: Map<string, any[]> = new Map();
     observableNotifications: Map<string, any[]> = new Map();
@@ -200,7 +204,7 @@ suite('ObservablePolymerCompatibility', function() {
     constructor() {
       super();
 
-      this.observable = new Observable<Prefs>(createPrefs());
+      this.observable = new Observable<IndexablePrefs>(createPrefs());
       this.prefs = this.observable.getProxy();
 
       // Register `Observable` observers (alternative non-Polymer mechanism).
