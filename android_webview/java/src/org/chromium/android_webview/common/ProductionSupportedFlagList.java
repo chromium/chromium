@@ -1402,6 +1402,9 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 "PreventSvgFilterPaint",
                 "Disables SVG filter painting for remote frames and web plugins."),
+        Flag.baseFeature(
+                ContentFeatures.PREFETCH_REQUEST_STATUS_LISTENER_ASYNC,
+                "Make PrefetchRequestStatusListener notifications async."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };

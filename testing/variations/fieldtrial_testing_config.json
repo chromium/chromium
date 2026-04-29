@@ -18787,11 +18787,6 @@
     "PrefetchRequestStatusListenerAsync": [
         {
             "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows",
                 "android_webview"
             ],
             "experiments": [

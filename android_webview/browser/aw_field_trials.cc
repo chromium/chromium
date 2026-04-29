@@ -334,4 +334,9 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   // concluded.
   aw_feature_overrides.DisableFeature(
       blink::features::kUnthrottleAsyncTouchMoves);
+
+  // Disable `PrefetchRequestStatusListenerAsync` on WebView to run an
+  // experiment on WebView.
+  aw_feature_overrides.DisableFeature(
+      ::features::kPrefetchRequestStatusListenerAsync);
 }
