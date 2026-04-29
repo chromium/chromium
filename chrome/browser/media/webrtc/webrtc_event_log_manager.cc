@@ -329,6 +329,7 @@ void WebRtcEventLogManager::StartRemoteLogging(
     size_t max_file_size_bytes,
     int output_period_ms,
     size_t web_app_id,
+    std::optional<std::string> diagnostic_uuid,
     base::OnceCallback<void(bool, const std::string&, const std::string&)>
         reply) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -371,7 +372,7 @@ void WebRtcEventLogManager::StartRemoteLogging(
                      base::Unretained(this), render_process_id,
                      browser_context_id, session_id, browser_context->GetPath(),
                      max_file_size_bytes, output_period_ms, web_app_id,
-                     std::move(reply)));
+                     std::move(diagnostic_uuid), std::move(reply)));
 }
 
 void WebRtcEventLogManager::FinishLogging(int render_process_id,
@@ -381,9 +382,7 @@ void WebRtcEventLogManager::FinishLogging(int render_process_id,
       FROM_HERE,
       base::BindOnce(&WebRtcEventLogManager::StopLoggingInternal,
                      base::Unretained(this), render_process_id,
-                     StopLoggingAction::kStore,
-                     base::BindPostTask(content::GetUIThreadTaskRunner({}),
-                                        std::move(callback))));
+                     StopLoggingAction::kStore, std::move(callback)));
 }
 
 void WebRtcEventLogManager::CancelLogging(int render_process_id,
@@ -393,9 +392,7 @@ void WebRtcEventLogManager::CancelLogging(int render_process_id,
       FROM_HERE,
       base::BindOnce(&WebRtcEventLogManager::StopLoggingInternal,
                      base::Unretained(this), render_process_id,
-                     StopLoggingAction::kDelete,
-                     base::BindPostTask(content::GetUIThreadTaskRunner({}),
-                                        std::move(callback))));
+                     StopLoggingAction::kDelete, std::move(callback)));
 }
 
 void WebRtcEventLogManager::EnableDataChannelLogging(
@@ -1140,6 +1137,7 @@ void WebRtcEventLogManager::StartRemoteLoggingInternal(
     size_t max_file_size_bytes,
     int output_period_ms,
     size_t web_app_id,
+    std::optional<std::string> diagnostic_uuid,
     base::OnceCallback<void(bool, const std::string&, const std::string&)>
         reply) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
@@ -1148,23 +1146,23 @@ void WebRtcEventLogManager::StartRemoteLoggingInternal(
   std::string error_message;
   const bool result = remote_logs_manager_.StartRemoteLogging(
       render_process_id, browser_context_id, session_id, browser_context_dir,
-      max_file_size_bytes, output_period_ms, web_app_id, &log_id,
-      &error_message);
+      max_file_size_bytes, output_period_ms, web_app_id,
+      std::move(diagnostic_uuid), &log_id, &error_message);
 
   // |log_id| set only if successful; |error_message| set only if unsuccessful.
   DCHECK_EQ(result, !log_id.empty());
   DCHECK_EQ(!result, !error_message.empty());
 
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(reply), result, log_id, error_message));
+  MaybeReply<bool, const std::string&, const std::string&>(
+      FROM_HERE, std::move(reply), result, log_id, error_message);
 }
 
 void WebRtcEventLogManager::StopLoggingInternal(int render_process_id,
                                                 StopLoggingAction action,
                                                 base::OnceClosure callback) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  base::RepeatingClosure barrier = base::BarrierClosure(2, std::move(callback));
+  base::RepeatingClosure barrier = base::BarrierClosure(
+      2, base::BindOnce(&MaybeReply<>, FROM_HERE, std::move(callback)));
   local_logs_manager_.StopLogging(render_process_id, action, barrier);
   remote_logs_manager_.StopLogging(render_process_id, action, barrier);
 }

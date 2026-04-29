@@ -126,6 +126,7 @@ class WebRtcRemoteEventLogManager final
                           size_t max_file_size_bytes,
                           int output_period_ms,
                           size_t web_app_id,
+                          std::optional<std::string> diagnostic_uuid,
                           std::string* log_id,
                           std::string* error_message);
 
@@ -271,7 +272,7 @@ class WebRtcRemoteEventLogManager final
                        size_t max_file_size_bytes,
                        int output_period_ms,
                        size_t web_app_id,
-                       std::string* log_id_out,
+                       const std::string& log_id,
                        std::string* error_message_out);
 
   // Checks if the referenced peer connection has an associated active
