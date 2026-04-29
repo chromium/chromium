@@ -191,7 +191,7 @@ class MockPasswordChangeService : public PasswordChangeServiceInterface {
   MOCK_METHOD(bool, IsPasswordChangeAvailable, (), (const override));
   MOCK_METHOD(bool,
               IsPasswordChangeSupported,
-              (const PasswordForm&),
+              (const PasswordForm&, bool),
               (const override));
   MOCK_METHOD(void,
               RecordLoginAttemptQuality,
@@ -1750,7 +1750,11 @@ TEST_P(PasswordManagerTest, NonPasswordLoginSuppressesSavePrompt) {
 
   OnPasswordFormSubmitted(form.form_data);
 
+  base::HistogramTester histogram_tester;
   manager()->OnNonPasswordLoginDetected();
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.FederatedLogin.SavePromptPrevented", true, 1);
 
   EXPECT_CALL(client_, PromptUserToSaveOrUpdatePassword).Times(0);
 

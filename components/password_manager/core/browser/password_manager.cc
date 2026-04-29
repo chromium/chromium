@@ -1281,6 +1281,9 @@ void PasswordManager::NotifyStorePasswordCalled() {
 void PasswordManager::OnNonPasswordLoginDetected() {
   if (base::FeatureList::IsEnabled(
           features::kPreventPasswordManagerOnFederatedLogin)) {
+    base::UmaHistogramBoolean(
+        "PasswordManager.FederatedLogin.SavePromptPrevented",
+        GetSubmittedManager() != nullptr);
     ResetSubmittedManager();
     return;
   }

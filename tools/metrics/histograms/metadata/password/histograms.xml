@@ -1644,6 +1644,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.FederatedLogin.SavePromptPrevented"
+    enum="BooleanYesNo" expires_after="2026-10-04">
+  <owner>atsvirchkova@google.com</owner>
+  <owner>chrome-password-manager-metrics-alerts@google.com</owner>
+  <summary>
+    Records whether a submitted form manager was available when the notification
+    about a non-password login was detected. If it's true, it means that the
+    show of the save/update password bubble was potentially prevented. Note:
+    even if a submitted form manager was available it's not guaranteed that the
+    save/update bubble would be shown as there are some exceptions: e. g. if the
+    password was generated.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.FilledCredentialWasFromAndroidApp2"
     enum="PasswordManagerFilledAndroidCredentials" expires_after="M155">
   <owner>vsemeniuk@google.com</owner>

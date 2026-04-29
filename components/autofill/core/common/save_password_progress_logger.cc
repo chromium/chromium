@@ -645,6 +645,8 @@ std::string_view SavePasswordProgressLogger::GetStringFromID(
       return "Automated password change: User is not active";
     case SavePasswordProgressLogger::STRING_PASSWORD_CHANGE_SIGNUP_FORM:
       return "Automated password change: Signup form";
+    case SavePasswordProgressLogger::STRING_PASSWORD_CHANGE_NON_PASSWORD_LOGIN:
+      return "Automated password change: Non-password login detected";
     case SavePasswordProgressLogger::STRING_LOGIN_STATE_CHECK_STARTED:
       return "Login state check: has started";
     case SavePasswordProgressLogger::STRING_LOGIN_STATE_CHECK_REQUEST_SENT:

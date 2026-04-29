@@ -1921,7 +1921,12 @@ void ChromePasswordManagerClient::ResourceLoadComplete(
 }
 
 void ChromePasswordManagerClient::OnFedCmFederatedLogin(bool success) {
-  OnNonPasswordLoginDetected();
+  // OnFedCmFederatedLogin notification may arrive even if there was no
+  // federated login (e. g. user logged in with a regular password). But in this
+  // case success=false. So only successful federated logins are handled.
+  if (success) {
+    OnNonPasswordLoginDetected();
+  }
 }
 
 void ChromePasswordManagerClient::OnNonFedCmFederatedLogin() {

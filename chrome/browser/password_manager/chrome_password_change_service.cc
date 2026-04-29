@@ -115,11 +115,13 @@ void ChromePasswordChangeService::RecordLoginAttemptQuality(
 }
 
 bool ChromePasswordChangeService::IsPasswordChangeSupported(
-    const password_manager::PasswordForm& form) const {
+    const password_manager::PasswordForm& form,
+    bool is_non_password_login_detected) const {
 #if BUILDFLAG(IS_ANDROID)
   return false;
 #else
-  auto availability = GetPerSiteAvailability(form);
+  PasswordChangeAvailability availability =
+      GetPerSiteAvailability(form, is_non_password_login_detected);
   base::UmaHistogramEnumeration("PasswordManager.PasswordChangeAvailability",
                                 availability);
 
@@ -320,7 +322,8 @@ PasswordChangeAvailability ChromePasswordChangeService::GetGeneralAvailability()
 }
 
 PasswordChangeAvailability ChromePasswordChangeService::GetPerSiteAvailability(
-    const password_manager::PasswordForm& form) const {
+    const password_manager::PasswordForm& form,
+    bool is_non_password_login_detected) const {
   auto [log_manager, logger] = CreateLoggerPair(log_router_);
 
   auto general_availability = GetGeneralAvailability();
@@ -352,6 +355,18 @@ PasswordChangeAvailability ChromePasswordChangeService::GetPerSiteAvailability(
     logger->LogBoolean(Logger::STRING_PASSWORD_CHANGE_URL_AVAILABLE,
                        has_change_url);
   }
-  return has_change_url ? PasswordChangeAvailability::kAvailable
-                        : PasswordChangeAvailability::kNotSupportedSite;
+
+  if (!has_change_url) {
+    return PasswordChangeAvailability::kNotSupportedSite;
+  }
+
+  if (is_non_password_login_detected) {
+    if (logger) {
+      logger->LogBoolean(Logger::STRING_PASSWORD_CHANGE_NON_PASSWORD_LOGIN,
+                         true);
+    }
+    return PasswordChangeAvailability::kNonPasswordLogin;
+  }
+
+  return PasswordChangeAvailability::kAvailable;
 }

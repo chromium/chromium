@@ -201,10 +201,36 @@ TEST_F(ChromePasswordChangeServiceTest, PasswordChangeSupportedForURL) {
   password_manager::PasswordForm form =
       CreateTestForm(url, /*is_signup_form=*/false);
   form.change_password_url = GURL("https://test.com/password/");
-  EXPECT_TRUE(change_service()->IsPasswordChangeSupported(form));
+  EXPECT_TRUE(change_service()->IsPasswordChangeSupported(
+      form, /*is_non_password_login_detected=*/false));
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.PasswordChangeAvailability",
       PasswordChangeAvailability::kAvailable, 1);
+}
+
+TEST_F(ChromePasswordChangeServiceTest,
+       PasswordChangeNotSupportedForNonPasswordLogin) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      variations::switches::kVariationsOverrideCountry, "us");
+
+  base::HistogramTester histogram_tester;
+  GURL url("https://test.com/");
+  EXPECT_CALL(mock_optimization_service(), ShouldModelExecutionBeAllowedForUser)
+      .WillOnce(testing::Return(true));
+  EXPECT_CALL(settings_service(), IsSettingEnabled)
+      .WillOnce(testing::Return(true));
+  EXPECT_CALL(*feature_manager(), IsGenerationEnabled)
+      .WillOnce(testing::Return(true));
+
+  password_manager::PasswordForm form =
+      CreateTestForm(url, /*is_signup_form=*/false);
+  form.change_password_url = GURL("https://test.com/password/");
+  EXPECT_FALSE(change_service()->IsPasswordChangeSupported(
+      form, /*is_non_password_login_detected=*/true));
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.PasswordChangeAvailability",
+      PasswordChangeAvailability::kNonPasswordLogin, 1);
 }
 
 TEST_F(ChromePasswordChangeServiceTest,
@@ -218,7 +244,8 @@ TEST_F(ChromePasswordChangeServiceTest,
   EXPECT_CALL(*feature_manager(), IsGenerationEnabled)
       .WillOnce(testing::Return(true));
   EXPECT_FALSE(change_service()->IsPasswordChangeSupported(
-      CreateTestForm(url, /*is_signup_form=*/true)));
+      CreateTestForm(url, /*is_signup_form=*/true),
+      /*is_non_password_login_detected=*/false));
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.PasswordChangeAvailability",
       PasswordChangeAvailability::kSignupForm, 1);
@@ -237,7 +264,8 @@ TEST_F(ChromePasswordChangeServiceTest, NoChangePasswordUrl) {
   EXPECT_CALL(*feature_manager(), IsGenerationEnabled)
       .WillOnce(testing::Return(true));
   EXPECT_FALSE(change_service()->IsPasswordChangeSupported(
-      CreateTestForm(url, /*is_signup_form=*/false)));
+      CreateTestForm(url, /*is_signup_form=*/false),
+      /*is_non_password_login_detected=*/false));
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.PasswordChangeAvailability",
       PasswordChangeAvailability::kNotSupportedSite, 1);
@@ -258,7 +286,8 @@ TEST_F(ChromePasswordChangeServiceTest, DifferentCountry) {
   password_manager::PasswordForm form =
       CreateTestForm(url, /*is_signup_form=*/false);
   form.change_password_url = GURL("https://test.com/password/");
-  EXPECT_TRUE(change_service()->IsPasswordChangeSupported(form));
+  EXPECT_TRUE(change_service()->IsPasswordChangeSupported(
+      form, /*is_non_password_login_detected=*/false));
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.PasswordChangeAvailability",
       PasswordChangeAvailability::kAvailable, 1);
@@ -279,7 +308,8 @@ TEST_F(ChromePasswordChangeServiceTest, DifferentLanguage) {
   password_manager::PasswordForm form =
       CreateTestForm(url, /*is_signup_form=*/false);
   form.change_password_url = GURL("https://test.com/password/");
-  EXPECT_TRUE(change_service()->IsPasswordChangeSupported(form));
+  EXPECT_TRUE(change_service()->IsPasswordChangeSupported(
+      form, /*is_non_password_login_detected=*/false));
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.PasswordChangeAvailability",
       PasswordChangeAvailability::kAvailable, 1);
@@ -295,7 +325,8 @@ TEST_F(ChromePasswordChangeServiceTest,
   EXPECT_CALL(*feature_manager(), IsGenerationEnabled)
       .WillOnce(testing::Return(true));
   EXPECT_FALSE(change_service()->IsPasswordChangeSupported(
-      CreateTestForm(url, /*is_signup_form=*/false)));
+      CreateTestForm(url, /*is_signup_form=*/false),
+      /*is_non_password_login_detected=*/false));
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.PasswordChangeAvailability",
       PasswordChangeAvailability::kModelExecutionNotAllowed, 1);
@@ -312,7 +343,8 @@ TEST_F(ChromePasswordChangeServiceTest,
   EXPECT_CALL(affiliation_service(), GetChangePasswordURL).Times(0);
 
   EXPECT_TRUE(change_service()->IsPasswordChangeSupported(
-      CreateTestForm(url, /*is_signup_form=*/false)));
+      CreateTestForm(url, /*is_signup_form=*/false),
+      /*is_non_password_login_detected=*/false));
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.PasswordChangeAvailability",
       PasswordChangeAvailability::kAvailable, 1);
@@ -329,7 +361,8 @@ TEST_F(ChromePasswordChangeServiceTest,
   EXPECT_CALL(affiliation_service(), GetChangePasswordURL).Times(0);
 
   EXPECT_TRUE(change_service()->IsPasswordChangeSupported(
-      CreateTestForm(url, /*is_signup_form=*/false)));
+      CreateTestForm(url, /*is_signup_form=*/false),
+      /*is_non_password_login_detected=*/false));
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.PasswordChangeAvailability",
       PasswordChangeAvailability::kAvailable, 1);
@@ -348,14 +381,16 @@ TEST_F(ChromePasswordChangeServiceTest,
       .WillRepeatedly(testing::Return(true));
 
   EXPECT_FALSE(change_service()->IsPasswordChangeSupported(
-      CreateTestForm(url, /*is_signup_form=*/false)));
+      CreateTestForm(url, /*is_signup_form=*/false),
+      /*is_non_password_login_detected=*/false));
 
   ChromePasswordChangeService* service =
       static_cast<ChromePasswordChangeService*>(change_service());
   service->AddChangePasswordUrlOverride(GURL("https://test.com/new_password/"));
 
   EXPECT_TRUE(change_service()->IsPasswordChangeSupported(
-      CreateTestForm(url, /*is_signup_form=*/false)));
+      CreateTestForm(url, /*is_signup_form=*/false),
+      /*is_non_password_login_detected=*/false));
 }
 
 TEST_F(ChromePasswordChangeServiceTest,
@@ -375,7 +410,8 @@ TEST_F(ChromePasswordChangeServiceTest,
       .WillOnce(testing::Return(true));
 
   EXPECT_FALSE(change_service()->IsPasswordChangeSupported(
-      CreateTestForm(url, /*is_signup_form=*/false)));
+      CreateTestForm(url, /*is_signup_form=*/false),
+      /*is_non_password_login_detected=*/false));
 }
 
 TEST_F(ChromePasswordChangeServiceTest, PasswordChangeThrottledAfterFailure) {
@@ -393,7 +429,8 @@ TEST_F(ChromePasswordChangeServiceTest, PasswordChangeThrottledAfterFailure) {
   password_manager::PasswordForm form =
       CreateTestForm(url, /*is_signup_form=*/false);
   form.change_password_url = GURL("https://test.com/password/");
-  EXPECT_TRUE(change_service()->IsPasswordChangeSupported(form));
+  EXPECT_TRUE(change_service()->IsPasswordChangeSupported(
+      form, /*is_non_password_login_detected=*/false));
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.PasswordChangeAvailability",
       PasswordChangeAvailability::kAvailable, 1);
@@ -402,7 +439,8 @@ TEST_F(ChromePasswordChangeServiceTest, PasswordChangeThrottledAfterFailure) {
       password_manager::prefs::kLastNegativePasswordChangeTimestamp,
       base::Time::Now());
   EXPECT_FALSE(change_service()->IsPasswordChangeSupported(
-      CreateTestForm(url, /*is_signup_form=*/false)));
+      CreateTestForm(url, /*is_signup_form=*/false),
+      /*is_non_password_login_detected=*/false));
 
   EXPECT_THAT(histogram_tester.GetAllSamples(
                   "PasswordManager.PasswordChangeAvailability"),
@@ -412,7 +450,8 @@ TEST_F(ChromePasswordChangeServiceTest, PasswordChangeThrottledAfterFailure) {
 
   AdvanceClock(base::Days(14) + base::Seconds(1));
 
-  EXPECT_TRUE(change_service()->IsPasswordChangeSupported(form));
+  EXPECT_TRUE(change_service()->IsPasswordChangeSupported(
+      form, /*is_non_password_login_detected=*/false));
   EXPECT_THAT(histogram_tester.GetAllSamples(
                   "PasswordManager.PasswordChangeAvailability"),
               testing::ElementsAre(

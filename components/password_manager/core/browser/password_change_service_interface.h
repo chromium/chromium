@@ -23,7 +23,9 @@ class PasswordChangeServiceInterface {
 
   // Checks whether password change is eligible for a given `form` and
   // `page_language`.
-  virtual bool IsPasswordChangeSupported(const PasswordForm& form) const = 0;
+  virtual bool IsPasswordChangeSupported(
+      const PasswordForm& form,
+      bool is_non_password_login_detected) const = 0;
 
   // Records the outcome of the first login attempt
   // using a previously saved APC-password and immediately

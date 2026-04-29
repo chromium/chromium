@@ -113,7 +113,7 @@ class MockPasswordChangeService : public PasswordChangeServiceInterface {
   MOCK_METHOD(bool, IsPasswordChangeAvailable, (), (const override));
   MOCK_METHOD(bool,
               IsPasswordChangeSupported,
-              (const PasswordForm&),
+              (const PasswordForm&, bool),
               (const override));
   MOCK_METHOD(void,
               RecordLoginAttemptQuality,
@@ -780,7 +780,8 @@ TEST_F(LeakDetectionDelegateTest, LeakNotifiedAfterChangePwdUrlIsFetched) {
   PasswordForm expected_form = form;
   expected_form.change_password_url = GURL("https://example.com/change");
   EXPECT_CALL(mock_password_change_service,
-              IsPasswordChangeSupported(expected_form))
+              IsPasswordChangeSupported(
+                  expected_form, /*is_non_password_login_detected=*/false))
       .WillOnce(Return(true));
   EXPECT_CALL(client(), NotifyUserCredentialsWereLeaked(LeakedPasswordDetails(
                             password_manager::CreateLeakType(
@@ -801,7 +802,9 @@ TEST_F(LeakDetectionDelegateTest, LeakDetectionDoneWithChangePwdFlag) {
       .WillRepeatedly(Return(profile_store()));
   EXPECT_CALL(client(), GetPasswordChangeService())
       .WillRepeatedly(Return(&mock_password_change_service));
-  EXPECT_CALL(mock_password_change_service, IsPasswordChangeSupported(form))
+  EXPECT_CALL(
+      mock_password_change_service,
+      IsPasswordChangeSupported(form, /*is_non_password_login_detected=*/false))
       .WillOnce(Return(true));
 
   ExpectPasswords({});
@@ -834,7 +837,9 @@ TEST_F(LeakDetectionDelegateTest, ApcNotSuggestedWhenFederatedLoginDetected) {
       .WillRepeatedly(Return(profile_store()));
   EXPECT_CALL(client(), GetPasswordChangeService())
       .WillRepeatedly(Return(&mock_password_change_service));
-  EXPECT_CALL(mock_password_change_service, IsPasswordChangeSupported(form))
+  EXPECT_CALL(
+      mock_password_change_service,
+      IsPasswordChangeSupported(form, /*is_non_password_login_detected=*/true))
       .WillRepeatedly(Return(true));
 
   ExpectPasswords({});
