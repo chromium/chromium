@@ -416,6 +416,7 @@ source_set("unit_tests") {
     "scoped_web_frame.h",
     "script_context_set_unittest.cc",
     "storage_area_unittest.cc",
+    "user_script_set_unittest.cc",
     "utils_unittest.cc",
   ]
 
