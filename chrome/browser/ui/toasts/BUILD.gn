@@ -59,6 +59,7 @@ source_set("impl") {
     "//chrome/browser/skills:public",
     "//chrome/browser/translate",
     "//chrome/browser/ui:browser_element_identifiers",
+    "//chrome/browser/ui/fullscreen",
     "//chrome/browser/ui/send_tab_to_self",
     "//chrome/browser/ui/side_panel",
     "//chrome/browser/ui/side_panel:side_panel_views_dependent",

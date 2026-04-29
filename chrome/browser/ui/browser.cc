@@ -121,6 +121,7 @@
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/exclusive_access/pointer_lock_controller.h"
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
+#include "chrome/browser/ui/fullscreen/browser_window_fullscreen_controller.h"
 #include "chrome/browser/ui/global_error/global_error.h"
 #include "chrome/browser/ui/global_error/global_error_service.h"
 #include "chrome/browser/ui/global_error/global_error_service_factory.h"
@@ -390,7 +391,8 @@ void UpdateTabGroupSessionMetadata(Browser* browser,
 }
 
 bool ShouldHideUIForFullscreenWrapper(const Browser* browser) {
-  return browser->ShouldHideUIForFullscreen();
+  return BrowserWindowFullscreenController::From(browser)
+      ->ShouldHideUIForFullscreen();
 }
 
 bool AlwaysReturnTrue(const Browser* browser) {
@@ -411,8 +413,10 @@ base::FunctionRef<bool(const Browser*)> MaybeLazyIsFullscreen(
   }
 
   // In the control branch, eagerly evaluate ShouldHideUIForFullscreen.
-  return browser->ShouldHideUIForFullscreen() ? &AlwaysReturnTrue
-                                              : &AlwaysReturnFalse;
+  return BrowserWindowFullscreenController::From(browser)
+                 ->ShouldHideUIForFullscreen()
+             ? &AlwaysReturnTrue
+             : &AlwaysReturnFalse;
 }
 
 }  // namespace
@@ -1075,12 +1079,6 @@ const TabStripModel* Browser::GetTabStripModel() const {
 
 bool Browser::IsTabStripVisible() {
   return window_ && window_->IsToolbarShowing();
-}
-
-bool Browser::ShouldHideUIForFullscreen() const {
-  // Windows and GTK remove the browser controls in fullscreen, but Mac and Ash
-  // keep the controls in a slide-down panel.
-  return window_ && window_->ShouldHideUIForFullscreen();
 }
 
 base::CallbackListSubscription Browser::RegisterBrowserDidClose(

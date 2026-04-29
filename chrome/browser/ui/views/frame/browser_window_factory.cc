@@ -6,6 +6,7 @@
 
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser_window_deleter.h"
+#include "chrome/browser/ui/fullscreen/browser_window_fullscreen_controller.h"
 #include "chrome/browser/ui/views/frame/browser_native_widget_factory.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/browser_widget.h"
@@ -75,7 +76,7 @@ BrowserWindow::CreateBrowserWindow(Browser* browser,
 #endif
 #if BUILDFLAG(IS_CHROMEOS)
   if (chromeos::IsKioskSession()) {
-    view->SetForceFullscreen(true);
+    BrowserWindowFullscreenController::From(browser)->SetForceFullscreen(true);
   }
 #endif
 

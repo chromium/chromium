@@ -539,11 +539,7 @@ class BrowserView : public BrowserWindow,
   void Restore() override;
   bool GetCanResize() override;
   ui::mojom::WindowShowState GetWindowShowState() const override;
-  bool ShouldHideUIForFullscreen() const override;
   bool IsFullscreen() const override;
-  bool IsFullscreenBubbleVisible() const override;
-  bool IsForceFullscreen() const override;
-  void SetForceFullscreen(bool force_fullscreen) override;
   void UpdatePageActionIcon(PageActionIconType type) override;
   autofill::AutofillBubbleHandler* GetAutofillBubbleHandler() override;
   void ExecutePageActionIconForTesting(PageActionIconType type) override;
@@ -1307,10 +1303,6 @@ class BrowserView : public BrowserWindow,
   // to ignore requests to layout while in ProcessFullscreen() to reduce
   // jankiness.
   bool in_process_fullscreen_ = false;
-
-  // True when we do not want to allow exiting fullscreen, e.g. in Chrome OS
-  // Kiosk session.
-  bool force_fullscreen_ = false;
 
   // The runner used for displaying tab-loading animations.
   std::unique_ptr<gfx::AnimationRunner> loading_animation_;

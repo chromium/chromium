@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window_state.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
+#include "chrome/browser/ui/fullscreen/browser_window_fullscreen_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
@@ -291,14 +292,11 @@ class FullscreenTestBrowserWindow : public TestBrowserWindow,
   ~FullscreenTestBrowserWindow() override = default;
 
   // TestBrowserWindow overrides:
-  bool ShouldHideUIForFullscreen() const override { return fullscreen_; }
   bool IsFullscreen() const override { return fullscreen_; }
   void EnterFullscreen(const url::Origin& origin,
                        ExclusiveAccessBubbleType type,
-                       FullscreenTabParams fullscreen_tab_params) override {
-    fullscreen_ = true;
-  }
-  void ExitFullscreen() override { fullscreen_ = false; }
+                       FullscreenTabParams fullscreen_tab_params) override;
+  void ExitFullscreen() override;
   bool IsToolbarShowing() const override { return toolbar_showing_; }
   bool IsLocationBarVisible() const override { return true; }
 
@@ -343,6 +341,21 @@ class BrowserCommandControllerFullscreenTest
     return std::make_unique<FullscreenTestBrowserWindow>(this);
   }
 };
+
+void FullscreenTestBrowserWindow::EnterFullscreen(
+    const url::Origin& origin,
+    ExclusiveAccessBubbleType type,
+    FullscreenTabParams fullscreen_tab_params) {
+  BrowserWindowFullscreenController::From(test_browser_->GetBrowser())
+      ->set_should_hide_ui_for_fullscreen_for_testing(true);
+  fullscreen_ = true;
+}
+
+void FullscreenTestBrowserWindow::ExitFullscreen() {
+  BrowserWindowFullscreenController::From(test_browser_->GetBrowser())
+      ->set_should_hide_ui_for_fullscreen_for_testing(false);
+  fullscreen_ = false;
+}
 
 Profile* FullscreenTestBrowserWindow::GetProfile() {
   return test_browser_->GetBrowser()->profile();

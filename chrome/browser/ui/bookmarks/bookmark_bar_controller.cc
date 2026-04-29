@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/bookmarks/bookmark_bar_controller.h"
 
+#include "base/types/to_address.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/extensions/extension_url_overrides.h"
@@ -13,6 +14,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/fullscreen/browser_window_fullscreen_controller.h"
 #include "chrome/browser/ui/sad_tab.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -160,7 +162,8 @@ bool BookmarkBarController::ShouldShowBookmarkBar() const {
 
   if (browser_defaults::bookmarks_enabled &&
       profile->GetPrefs()->GetBoolean(bookmarks::prefs::kShowBookmarkBar) &&
-      !browser_->ShouldHideUIForFullscreen()) {
+      !BrowserWindowFullscreenController::From(base::to_address(browser_))
+           ->ShouldHideUIForFullscreen()) {
     return true;
   }
 

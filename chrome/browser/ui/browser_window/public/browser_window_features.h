@@ -45,6 +45,7 @@ class BrowserLocationBarModelDelegate;
 class BrowserSyncedWindowDelegate;
 class BrowserUserEducationInterface;
 class BrowserView;
+class BrowserWindowFullscreenController;
 class BrowserWindowInterface;
 class BrowserWindowModalDialogDelegate;
 class BrowserWindowThemeObserver;
@@ -515,6 +516,8 @@ class BrowserWindowFeatures {
   // This must be initialized before |command_controller_| to ensure the correct
   // set of commands are enabled.
   std::unique_ptr<web_app::AppBrowserController> app_browser_controller_;
+
+  std::unique_ptr<BrowserWindowFullscreenController> fullscreen_controller_;
 
   std::unique_ptr<BrowserActions> browser_actions_;
 

@@ -88,10 +88,6 @@ class WebUIBrowserWindow : public BrowserWindow,
                           int index,
                           int reason) override;
   void OnTabDetached(content::WebContents* contents, bool was_active) override;
-  bool ShouldHideUIForFullscreen() const override;
-  bool IsFullscreenBubbleVisible() const override;
-  bool IsForceFullscreen() const override;
-  void SetForceFullscreen(bool force_fullscreen) override;
   gfx::Size GetContentsSize() const override;
   void SetContentsSize(const gfx::Size& size) override;
   void UpdatePageActionIcon(PageActionIconType type) override;

@@ -95,6 +95,7 @@
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/find_bar/find_bar.h"
+#include "chrome/browser/ui/fullscreen/browser_window_fullscreen_controller.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_view.h"
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
@@ -648,10 +649,6 @@ class BrowserView::ExclusiveAccessContextImpl
   void operator=(const ExclusiveAccessContextImpl&) = delete;
   ~ExclusiveAccessContextImpl() override = default;
 
-  bool IsFullscreenBubbleVisible() const {
-    return exclusive_access_bubble_ != nullptr;
-  }
-
   ExclusiveAccessBubbleViews* exclusive_access_bubble() {
     return exclusive_access_bubble_.get();
   }
@@ -730,7 +727,8 @@ class BrowserView::ExclusiveAccessContextImpl
   }
 
   void ExitFullscreen() override {
-    if (browser_view_->IsForceFullscreen()) {
+    if (BrowserWindowFullscreenController::From(browser_view_->browser())
+            ->IsForceFullscreen()) {
       return;
     }
 
@@ -1603,7 +1601,7 @@ bool BrowserView::IsVisible() const {
 }
 
 void BrowserView::SetBounds(const gfx::Rect& bounds) {
-  if (IsForceFullscreen()) {
+  if (BrowserWindowFullscreenController::From(browser())->IsForceFullscreen()) {
     return;
   }
 
@@ -2158,30 +2156,8 @@ void BrowserView::Restore() {
   browser_widget_->Restore();
 }
 
-bool BrowserView::ShouldHideUIForFullscreen() const {
-  // Immersive mode needs UI for the slide-down top panel.
-  if (ImmersiveModeController::From(browser())->IsEnabled()) {
-    return false;
-  }
-
-  return browser_widget_->IsFullscreen() &&
-         GetFrameView()->ShouldHideTopUIInFullscreen();
-}
-
 bool BrowserView::IsFullscreen() const {
   return browser_widget_->IsFullscreen();
-}
-
-bool BrowserView::IsFullscreenBubbleVisible() const {
-  return exclusive_access_context_->IsFullscreenBubbleVisible();
-}
-
-bool BrowserView::IsForceFullscreen() const {
-  return force_fullscreen_;
-}
-
-void BrowserView::SetForceFullscreen(bool force_fullscreen) {
-  force_fullscreen_ = force_fullscreen;
 }
 
 void BrowserView::RestoreFocus() {

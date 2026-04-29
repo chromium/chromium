@@ -15,6 +15,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/themes/custom_theme_supplier.h"
 #include "chrome/browser/themes/theme_properties.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
@@ -120,6 +121,7 @@ BrowserFrameView::BrowserFrameView(BrowserWidget* browser_widget,
     : browser_widget_(browser_widget), browser_view_(browser_view) {
   DCHECK(browser_widget_);
   DCHECK(browser_view_);
+  SetProperty(views::kElementIdentifierKey, kBrowserFrameElementId);
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           kShowBrowserFrameRegionsCommandLineSwitch)) {
     AddChildView(std::make_unique<ShowBrowserFrameRegionsView>(*this));

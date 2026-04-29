@@ -65,6 +65,7 @@
 #include "chrome/browser/ui/bookmarks/bookmark_bar_controller.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_ui_prefs.h"
@@ -74,6 +75,8 @@
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
+#include "chrome/browser/ui/fullscreen/browser_window_fullscreen_controller.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/search/search_tab_helper.h"
 #include "chrome/browser/ui/startup/launch_mode_recorder.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
@@ -2029,7 +2032,8 @@ class KioskModeTest : public BrowserTest {
 
   void SetUpOnMainThread() override {
     BrowserTest::SetUpOnMainThread();
-    browser()->window()->SetForceFullscreen(true);
+    BrowserWindowFullscreenController::From(browser())->SetForceFullscreen(
+        true);
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -2047,7 +2051,10 @@ class KioskModeTest : public BrowserTest {
 IN_PROC_BROWSER_TEST_F(KioskModeTest, MAYBE_EnableKioskModeTest) {
   // Check if browser is in fullscreen mode.
   ASSERT_TRUE(browser()->window()->IsFullscreen());
-  ASSERT_FALSE(browser()->window()->IsFullscreenBubbleVisible());
+  const auto* fullscreen_bubble_element =
+      BrowserElements::From(browser())->GetElement(
+          kExclusiveAccessBubbleViewElementId);
+  ASSERT_FALSE(fullscreen_bubble_element);
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

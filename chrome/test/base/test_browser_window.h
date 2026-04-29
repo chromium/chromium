@@ -105,11 +105,7 @@ class TestBrowserWindow : public BrowserWindow,
   void Restore() override {}
   bool GetCanResize() override;
   ui::mojom::WindowShowState GetWindowShowState() const override;
-  bool ShouldHideUIForFullscreen() const override;
   bool IsFullscreen() const override;
-  bool IsFullscreenBubbleVisible() const override;
-  bool IsForceFullscreen() const override;
-  void SetForceFullscreen(bool force_fullscreen) override {}
   LocationBar* GetLocationBar() const override;
   void UpdatePageActionIcon(PageActionIconType type) override {}
   autofill::AutofillBubbleHandler* GetAutofillBubbleHandler() override;

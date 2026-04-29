@@ -18,12 +18,14 @@
 #include "base/location.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/types/to_address.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
+#include "chrome/browser/ui/fullscreen/browser_window_fullscreen_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/api/toast_registry.h"
@@ -234,8 +236,9 @@ void ToastController::UpdateToastWidgetVisibility(bool show_toast_widget) {
 }
 
 bool ToastController::ShouldRenderToastOverWebContents() {
-  bool render_in_contents =
-      browser_window_interface_->ShouldHideUIForFullscreen();
+  bool render_in_contents = BrowserWindowFullscreenController::From(
+                                base::to_address(browser_window_interface_))
+                                ->ShouldHideUIForFullscreen();
 
 #if BUILDFLAG(IS_MAC)
   render_in_contents |=

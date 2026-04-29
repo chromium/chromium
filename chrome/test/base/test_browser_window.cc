@@ -236,10 +236,6 @@ bool TestBrowserWindow::IsMinimized() const {
   return is_minimized_;
 }
 
-bool TestBrowserWindow::ShouldHideUIForFullscreen() const {
-  return false;
-}
-
 bool TestBrowserWindow::GetCanResize() {
   return false;
 }
@@ -249,14 +245,6 @@ ui::mojom::WindowShowState TestBrowserWindow::GetWindowShowState() const {
 }
 
 bool TestBrowserWindow::IsFullscreen() const {
-  return false;
-}
-
-bool TestBrowserWindow::IsFullscreenBubbleVisible() const {
-  return false;
-}
-
-bool TestBrowserWindow::IsForceFullscreen() const {
   return false;
 }
 

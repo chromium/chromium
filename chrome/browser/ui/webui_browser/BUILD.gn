@@ -90,6 +90,7 @@ source_set("impl") {
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/extensions",
     "//chrome/browser/ui/find_bar",
+    "//chrome/browser/ui/fullscreen",
     "//chrome/browser/ui/location_bar",
     "//chrome/browser/ui/side_panel",
     "//chrome/browser/ui/side_panel:side_panel_views_dependent",

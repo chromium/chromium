@@ -239,21 +239,6 @@ class BrowserWindow : public ui::BaseWindow {
   virtual void OnTabDetached(content::WebContents* contents,
                              bool was_active) = 0;
 
-  // Windows and GTK remove the browser controls in fullscreen, but Mac and Ash
-  // keep the controls in a slide-down panel.
-  virtual bool ShouldHideUIForFullscreen() const = 0;
-
-  // Returns true if the fullscreen bubble is visible.
-  virtual bool IsFullscreenBubbleVisible() const = 0;
-
-  // True when we do not want to allow exiting fullscreen, e.g. in Chrome OS
-  // Kiosk session.
-  // TODO(crbug.com/462003245): Remove these methods from here. It's exclusively
-  // set by ChromeOS in kiosk mode and never changes for the life of the
-  // Browser.
-  virtual bool IsForceFullscreen() const = 0;
-  virtual void SetForceFullscreen(bool force_fullscreen) = 0;
-
   // Returns the size of `WebContents` in the browser. This may be called before
   // the `TabStripModel` has an active tab.
   // Returns the size of the active `WebContents` if in a split view.

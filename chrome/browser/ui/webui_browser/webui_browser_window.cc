@@ -693,25 +693,6 @@ void WebUIBrowserWindow::OnTabDetached(content::WebContents* contents,
   NOTIMPLEMENTED_LOG_ONCE();
 }
 
-bool WebUIBrowserWindow::ShouldHideUIForFullscreen() const {
-  NOTIMPLEMENTED_LOG_ONCE();
-  return false;
-}
-
-bool WebUIBrowserWindow::IsFullscreenBubbleVisible() const {
-  NOTIMPLEMENTED_LOG_ONCE();
-  return false;
-}
-
-bool WebUIBrowserWindow::IsForceFullscreen() const {
-  NOTIMPLEMENTED_LOG_ONCE();
-  return false;
-}
-
-void WebUIBrowserWindow::SetForceFullscreen(bool force_fullscreen) {
-  NOTIMPLEMENTED_LOG_ONCE();
-}
-
 gfx::Size WebUIBrowserWindow::GetContentsSize() const {
   return GetContentsBoundsInScreen().size();
 }

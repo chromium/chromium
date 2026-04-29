@@ -65,6 +65,7 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/customize_chrome/side_panel_controller.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
+#include "chrome/browser/ui/fullscreen/browser_window_fullscreen_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/managed_ui.h"
 #include "chrome/browser/ui/page_info/page_info_dialog.h"
@@ -2226,7 +2227,8 @@ void BrowserCommandController::UpdateCommandsForFullscreenMode() {
 void BrowserCommandController::UpdateCommandsForHostedAppAvailability() {
   bool has_toolbar = browser_->is_type_normal() ||
                      web_app::AppBrowserController::IsWebApp(browser_);
-  if (window() && window()->ShouldHideUIForFullscreen()) {
+  if (BrowserWindowFullscreenController::From(browser_)
+          ->ShouldHideUIForFullscreen()) {
     has_toolbar = false;
   }
   command_updater_.UpdateCommandEnabled(IDC_FOCUS_TOOLBAR, has_toolbar);

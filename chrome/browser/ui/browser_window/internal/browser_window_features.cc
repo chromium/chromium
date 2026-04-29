@@ -68,6 +68,7 @@
 #include "chrome/browser/ui/extensions/mv2_disabled_dialog_controller.h"
 #include "chrome/browser/ui/find_bar/find_bar.h"
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
+#include "chrome/browser/ui/fullscreen/browser_window_fullscreen_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
 #include "chrome/browser/ui/omnibox/ai_mode_page_action_controller.h"
 #include "chrome/browser/ui/performance_controls/memory_saver_bubble_controller.h"
@@ -270,6 +271,9 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
   app_browser_controller_ =
       GetUserDataFactory().CreateInstanceWithFactoryMethod(
           *browser, &web_app::MaybeCreateAppBrowserController, browser);
+
+  fullscreen_controller_ =
+      std::make_unique<BrowserWindowFullscreenController>(*browser);
 
   browser_actions_ = std::make_unique<BrowserActions>(browser);
 

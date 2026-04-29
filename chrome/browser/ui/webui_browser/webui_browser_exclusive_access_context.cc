@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
+#include "chrome/browser/ui/fullscreen/browser_window_fullscreen_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/exclusive_access_bubble_views.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_window.h"
@@ -58,7 +59,7 @@ void WebUIBrowserExclusiveAccessContext::EnterFullscreen(
 }
 
 void WebUIBrowserExclusiveAccessContext::ExitFullscreen() {
-  if (browser_->GetBrowserForMigrationOnly()->window()->IsForceFullscreen()) {
+  if (BrowserWindowFullscreenController::From(browser_)->IsForceFullscreen()) {
     return;
   }
 

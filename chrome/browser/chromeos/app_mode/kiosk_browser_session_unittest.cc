@@ -160,7 +160,6 @@ class FullscreenTestBrowserWindow : public TestBrowserWindow,
   ~FullscreenTestBrowserWindow() override = default;
 
   // TestBrowserWindow:
-  bool ShouldHideUIForFullscreen() const override { return fullscreen_; }
   bool IsFullscreen() const override { return fullscreen_; }
   void EnterFullscreen(const url::Origin& origin,
                        ExclusiveAccessBubbleType type,
