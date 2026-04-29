@@ -550,7 +550,8 @@ export class NtpSearchboxElement extends NtpSearchboxElementBase implements
           'ContextualSearch.UserAction.SubmitQueryV2.NewTabPage';
       // LINT.IfChange(ContextualSearchContextState)
       chrome.histograms.recordEnumerationValue(
-          histogramName, /*WithoutContext */ 0, 3);
+          histogramName, /*WithoutContext */ 0,
+          /*ContextualSearchContextState.Size + 1*/ 4);
       // LINT.ThenChange(//tools/metrics/histograms/metadata/contextual_search/enums.xml:ContextualSearchContextState)
 
       const userActionName =
