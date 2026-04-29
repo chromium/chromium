@@ -476,17 +476,11 @@ def _browser_startup_crossbench(estimated_runtime: int = 60,
       "InitialWebUISyncNavStartToCommit,InitialWebUIWithoutExtensions,"
       "WebUIBundledCodeCache,SendGPUChannelEarly"
   )
-  return CrossbenchConfig(
-      'browser_startup.crossbench',
-      'loading',
-      estimated_runtime=estimated_runtime,
-      flags=
-      ('--probe-config',
-       '../../third_party/crossbench/config/benchmark/browser_startup/probe.hjson',
-       '--page-config',
-       '../../third_party/crossbench/config/benchmark/browser_startup/story.hjson',
-       f'--extra-browser-args=--enable-features={INITIAL_WEBUI_FEATURES}',
-       *flags))
+  return CrossbenchConfig('browser_startup.crossbench',
+                          'browser-startup',
+                          estimated_runtime=estimated_runtime,
+                          flags=(f'--enable-features={INITIAL_WEBUI_FEATURES}',
+                                 *flags))
 
 
 @_register('speedometer_main.crossbench')
