@@ -16,6 +16,7 @@
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
+#include "base/test/test_timeouts.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -186,6 +187,26 @@ constexpr char kGetCoordinatesJS[] =
     "const x = rect.left + rect.width / 2; "
     "const y = rect.top + rect.height / 2; ";
 
+// Adds functions to `target` to mimic pointer capture functions. Note that real
+// pointer capture is lost on pointer up, but the returned functions cannot
+// handle that, so if that is important for a test, it must manually call
+// `releasePointerCapture('*')`.
+std::string AddMockPointerCaptureFunctions(const char* target) {
+  return base::StringPrintf(
+      R"({
+        var element = %s;
+        var hasCapture = null;
+        element.setPointerCapture = (id) => { hasCapture = id; };
+        element.hasPointerCapture = (id) => { return id == hasCapture; };
+        element.releasePointerCapture = (id) => {
+          if (id == hasCapture || id == '*') {
+            hasCapture = null;
+          }
+        };
+      })",
+      target);
+}
+
 // Dispatches an event to a WebUI toolbar button.
 // `selector`: The CSS selector for the button element.
 // `event_class`: The JS event class (e.g. 'MouseEvent', 'PointerEvent').
@@ -199,14 +220,14 @@ std::string DispatchEventScript(const std::string& selector,
       "(() => { const target = %s; "
       "if (target) { "
       "  %s"
-      "  target.setPointerCapture = () => {}; "
-      "  target.releasePointerCapture = () => {}; "
+      "  %s"
       "  target.dispatchEvent(new %s('%s', "
       "  {bubbles: true, cancelable: true, view: window, clientX: x, clientY: "
       "y, "
       "  %s}));"
       "} })();",
-      GetButtonIconJS(selector).c_str(), kGetCoordinatesJS, event_class.c_str(),
+      GetButtonIconJS(selector).c_str(), kGetCoordinatesJS,
+      AddMockPointerCaptureFunctions("target").c_str(), event_class.c_str(),
       type.c_str(), options.c_str());
 }
 
@@ -220,13 +241,13 @@ std::string DispatchPointerEvent(
   return base::StringPrintf(
       "(() => { const target = %s; "
       "%s"
-      "target.setPointerCapture = () => {}; "
-      "target.releasePointerCapture = () => {}; "
+      "%s"
       "target.dispatchEvent(new PointerEvent('%s', {bubbles: true, cancelable: "
       "true, view: window, pointerType: '%s', clientX: x, clientY: y, %s})); "
       "})();",
-      el.c_str(), kGetCoordinatesJS, event_name.c_str(), pointer_type.c_str(),
-      opts.c_str());
+      el.c_str(), kGetCoordinatesJS,
+      AddMockPointerCaptureFunctions("target").c_str(), event_name.c_str(),
+      pointer_type.c_str(), opts.c_str());
 }
 
 // Simulates a full physical click cycle (press + release) using PointerEvents.
@@ -238,8 +259,7 @@ std::string DispatchPointerClick(
   return base::StringPrintf(
       "(() => { const target = %s; "
       "%s"
-      "target.setPointerCapture = () => {}; "
-      "target.releasePointerCapture = () => {}; "
+      "%s"
       "target.dispatchEvent(new PointerEvent('pointerdown', {bubbles: true, "
       "cancelable: true, view: window, pointerType: '%s', clientX: x, clientY: "
       "y, "
@@ -248,8 +268,9 @@ std::string DispatchPointerClick(
       "cancelable: true, view: window, pointerType: '%s', clientX: x, clientY: "
       "y, "
       "%s})); })();",
-      el.c_str(), kGetCoordinatesJS, pointer_type.c_str(), opts.c_str(),
-      pointer_type.c_str(), opts.c_str());
+      el.c_str(), kGetCoordinatesJS,
+      AddMockPointerCaptureFunctions("target").c_str(), pointer_type.c_str(),
+      opts.c_str(), pointer_type.c_str(), opts.c_str());
 }
 
 class NavigationCounter : public content::WebContentsObserver {
@@ -260,6 +281,15 @@ class NavigationCounter : public content::WebContentsObserver {
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override {
     navigation_count_++;
+  }
+
+  // A helper that waits some time and then checks that no navigations occurred.
+  void WaitForNoNavigations() {
+    base::RunLoop run_loop;
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
+    run_loop.Run();
+    EXPECT_EQ(navigation_count_, 0u);
   }
 
   size_t navigation_count() const { return navigation_count_; }
@@ -287,6 +317,14 @@ class TestMenuRunnerHandler : public views::MenuRunnerHandler {
  private:
   base::RepeatingCallback<void(const gfx::Rect&)> callback_;
 };
+
+WebUIToolbarWebView* SetUpAndPinHomeButton(Browser* browser) {
+  WebUIToolbarWebView* webui_toolbar_view = GetWebUIToolbarWebView(browser);
+  views::WebView* web_view = webui_toolbar_view->GetWebViewForTesting();
+  PinButton(browser, web_view, prefs::kShowHomeButton);
+  EXPECT_TRUE(WaitForButtonVisible(web_view->GetWebContents(), kHomeSelector));
+  return webui_toolbar_view;
+}
 
 }  // namespace
 
@@ -1047,6 +1085,73 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
 
   // Verify navigation happened in a new window/web contents.
   EXPECT_EQ(url2, new_tab->GetLastCommittedURL());
+}
+
+// Simulate pressing pointer down on the home button, up on the reload button.
+// Either button, if clicked, triggers a navigation, but neither button should
+// treat this as a click. Since this test moves the pointer horizontally and
+// does so instantly, it should not trigger the long press logic.
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
+                       PointerDownOnOneUpOnAnother) {
+  WebUIToolbarWebView* webui_toolbar_view = SetUpAndPinHomeButton(browser());
+  views::WebView* web_view = webui_toolbar_view->GetWebViewForTesting();
+
+  // Release the pointer over the button.
+  NavigationCounter nav_observer(
+      browser()->tab_strip_model()->GetActiveWebContents());
+  std::string script = base::StringPrintf(
+      R"((() => {
+          const home = %s;
+          const home_rect = home.getBoundingClientRect();
+          const home_x = home_rect.left + home_rect.width / 2;
+          const home_y = home_rect.top + home_rect.height / 2;
+          // The home button is where the down event occurs, so should be the
+          // one with the usual mock pointer functions.
+          %s
+
+          const reload = %s;
+          const reload_rect = reload.getBoundingClientRect();
+          const reload_x = reload_rect.left + reload_rect.width / 2;
+          const reload_y = reload_rect.top + reload_rect.height / 2;
+          // The reload button should check for pointer capture, but then do
+          // nothing, since it doesn't have capture.
+          reload.setPointerCapture = () => {
+            throw 'setPointerCapture should not be called';
+          };
+          reload.hasPointerCapture = () => { return false; };
+          reload.releasePointerCapture = () => {
+            throw 'releasePointerCapture should not be called';
+          };
+
+          // Down on the home button.
+          home.dispatchEvent(new PointerEvent('pointerdown',
+              {bubbles: true, cancelable: true, view: window,
+                pointerType: 'mouse', detail: 1, button: 0,
+                clientX: home_x, clientY: home_y}));
+
+          // Move to the edge of the home button, and then to the center of the
+          // reload button
+          home.dispatchEvent(new PointerEvent('pointermove',
+              {bubbles: true, cancelable: true, view: window,
+                pointerType: 'mouse',
+                clientX: home_x + home_rect.width / 2 - 1, clientY: home_y}));
+          reload.dispatchEvent(new PointerEvent('pointermove',
+              {bubbles: true, cancelable: true, view: window,
+                pointerType: 'mouse',
+                clientX: reload_x, clientY: reload_y}));
+
+          // Up on the reload button.
+          reload.dispatchEvent(new PointerEvent('pointerup',
+              {bubbles: true, cancelable: true, view: window,
+                pointerType: 'mouse', detail: 1, button: 0,
+                clientX: reload_x, clientY: reload_y}));
+      })();)",
+      GetButtonIconJS(kHomeSelector),
+      AddMockPointerCaptureFunctions("home").c_str(),
+      GetButtonIconJS(kReloadButtonSelector));
+  EXPECT_TRUE(content::ExecJs(web_view->GetWebContents(), script));
+
+  nav_observer.WaitForNoNavigations();
 }
 
 class WebUIToolbarWebViewStabilityTest : public InProcessBrowserTest {
@@ -2129,6 +2234,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewTouchBrowserTest, VerifyLayout) {
       content::EvalJs(web_contents, get_indicator_bottom_js).ExtractString());
 }
 
+// Tests for the home button. Also serve as the general PressHandler tests.
 class WebUIToolbarWebViewHomeButtonBrowserTest : public InProcessBrowserTest {
  public:
   WebUIToolbarWebViewHomeButtonBrowserTest() {
@@ -2147,15 +2253,6 @@ class WebUIToolbarWebViewHomeButtonBrowserTest : public InProcessBrowserTest {
   }
 
  protected:
-  WebUIToolbarWebView* SetUpAndPinHomeButton() {
-    WebUIToolbarWebView* webui_toolbar_view = GetWebUIToolbarWebView(browser());
-    views::WebView* web_view = webui_toolbar_view->GetWebViewForTesting();
-    PinButton(browser(), web_view, prefs::kShowHomeButton);
-    EXPECT_TRUE(
-        WaitForButtonVisible(web_view->GetWebContents(), kHomeSelector));
-    return webui_toolbar_view;
-  }
-
   void WaitForUndoBubble(WebUIToolbarWebView* webui_toolbar_view) {
     ASSERT_TRUE(base::test::RunUntil([&]() {
       return views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
@@ -2175,7 +2272,7 @@ class WebUIToolbarWebViewHomeButtonBrowserTest : public InProcessBrowserTest {
   }
 
   WebUIToolbarWebView* PerformDragAndDrop(const std::string& new_home_url) {
-    WebUIToolbarWebView* webui_toolbar_view = SetUpAndPinHomeButton();
+    WebUIToolbarWebView* webui_toolbar_view = SetUpAndPinHomeButton(browser());
     views::WebView* web_view = webui_toolbar_view->GetWebViewForTesting();
     content::WebContents* web_contents = web_view->GetWebContents();
 
@@ -2227,7 +2324,7 @@ class WebUIToolbarWebViewHomeButtonBrowserTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewHomeButtonBrowserTest,
                        ClickHomeButton) {
-  WebUIToolbarWebView* webui_toolbar_view = SetUpAndPinHomeButton();
+  WebUIToolbarWebView* webui_toolbar_view = SetUpAndPinHomeButton(browser());
   views::WebView* web_view = webui_toolbar_view->GetWebViewForTesting();
 
   GURL home_url = GetHomeURL();
@@ -2262,7 +2359,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewHomeButtonBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewHomeButtonBrowserTest,
                        RightClickHomeButton) {
-  WebUIToolbarWebView* webui_toolbar_view = SetUpAndPinHomeButton();
+  WebUIToolbarWebView* webui_toolbar_view = SetUpAndPinHomeButton(browser());
   views::WebView* web_view = webui_toolbar_view->GetWebViewForTesting();
   EXPECT_TRUE(content::ExecJs(web_view->GetWebContents(),
                               DispatchEventScript(kHomeSelector, "MouseEvent",
@@ -2281,7 +2378,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewHomeButtonBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewHomeButtonBrowserTest,
                        LongPressHomeButton) {
-  WebUIToolbarWebView* webui_toolbar_view = SetUpAndPinHomeButton();
+  WebUIToolbarWebView* webui_toolbar_view = SetUpAndPinHomeButton(browser());
   views::WebView* web_view = webui_toolbar_view->GetWebViewForTesting();
 
   EXPECT_TRUE(content::ExecJs(web_view->GetWebContents(),
@@ -2302,7 +2399,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewHomeButtonBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewHomeButtonBrowserTest,
                        CtrlClickHomeButton) {
-  WebUIToolbarWebView* webui_toolbar_view = SetUpAndPinHomeButton();
+  WebUIToolbarWebView* webui_toolbar_view = SetUpAndPinHomeButton(browser());
   views::WebView* web_view = webui_toolbar_view->GetWebViewForTesting();
 
   GURL home_url = GetHomeURL();
@@ -2339,7 +2436,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewHomeButtonBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewHomeButtonBrowserTest,
                        CtrlShiftClickHomeButton) {
-  WebUIToolbarWebView* webui_toolbar_view = SetUpAndPinHomeButton();
+  WebUIToolbarWebView* webui_toolbar_view = SetUpAndPinHomeButton(browser());
   views::WebView* web_view = webui_toolbar_view->GetWebViewForTesting();
 
   GURL home_url = GetHomeURL();
@@ -2374,9 +2471,48 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewHomeButtonBrowserTest,
   EXPECT_EQ(home_url, new_tab->GetLastCommittedURL());
 }
 
+// Test the case the mouse is released over the home button without pressing on
+// it.
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewHomeButtonBrowserTest,
+                       ReleaseOnHomeButtonWithoutPress) {
+  WebUIToolbarWebView* webui_toolbar_view = SetUpAndPinHomeButton(browser());
+  views::WebView* web_view = webui_toolbar_view->GetWebViewForTesting();
+
+  GURL home_url = GetHomeURL();
+
+  // Navigate away so clicking home actually does something.
+  GURL other_url("chrome://version");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), other_url));
+
+  // Release the pointer over the button.
+  NavigationCounter nav_observer(
+      browser()->tab_strip_model()->GetActiveWebContents());
+  std::string script = base::StringPrintf(
+      R"((() => {
+          const target = %s;
+          %s
+          %s
+          // Up event with no matching down event.
+          target.dispatchEvent(new PointerEvent('pointerup',
+              {bubbles: true, cancelable: true, view: window,
+                pointerType: 'mouse', clientX: x, clientY: y,
+                detail: 1, button: 0}));
+      })();)",
+      GetButtonIconJS(kHomeSelector), kGetCoordinatesJS,
+      AddMockPointerCaptureFunctions("target").c_str());
+  EXPECT_TRUE(content::ExecJs(web_view->GetWebContents(), script));
+
+  nav_observer.WaitForNoNavigations();
+
+  EXPECT_EQ(other_url, browser()
+                           ->tab_strip_model()
+                           ->GetActiveWebContents()
+                           ->GetLastCommittedURL());
+}
+
 IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewHomeButtonBrowserTest,
                        TouchModeChangesIcon) {
-  WebUIToolbarWebView* webui_toolbar_view = SetUpAndPinHomeButton();
+  WebUIToolbarWebView* webui_toolbar_view = SetUpAndPinHomeButton(browser());
   views::WebView* web_view = webui_toolbar_view->GetWebViewForTesting();
   content::WebContents* web_contents = web_view->GetWebContents();
 
@@ -2413,7 +2549,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewHomeButtonBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewHomeButtonBrowserTest,
                        ShiftClickHomeButton) {
-  WebUIToolbarWebView* webui_toolbar_view = SetUpAndPinHomeButton();
+  WebUIToolbarWebView* webui_toolbar_view = SetUpAndPinHomeButton(browser());
   views::WebView* web_view = webui_toolbar_view->GetWebViewForTesting();
 
   GURL home_url = GetHomeURL();
@@ -2481,7 +2617,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewHomeButtonBrowserTest,
 // and the action can be undone.
 IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewHomeButtonBrowserTest,
                        DropFileOnHomeButtonAndUndo) {
-  WebUIToolbarWebView* webui_toolbar_view = SetUpAndPinHomeButton();
+  WebUIToolbarWebView* webui_toolbar_view = SetUpAndPinHomeButton(browser());
   content::WebContents* web_contents =
       webui_toolbar_view->GetWebViewForTesting()->GetWebContents();
 

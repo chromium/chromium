@@ -40,6 +40,12 @@ interface DragState {
  * HTML template, or called from within custom event listeners if the component
  * requires additional logic (like the reload button).
  *
+ * This class typically gets pointer capture on pointer down, and then on
+ * pointer up, only treats it as a click if it has pointer capture. This gets us
+ * the standard button behavior where pressing on a different button or on a
+ * non-button area and releasing on a button does nothing, nor does pressing
+ * on a button when it's disabled, and releasing after it's been enabled.
+ *
  * Important note on accessibility:
  * `PressHandler` specifically manages pointer (mouse, touch, pen) interactions.
  * Natively, `<cr-icon-button>` intercepts keyboard `Space` and `Enter` keys and
@@ -66,10 +72,10 @@ export class PressHandler {
   private static readonly DRAG_THRESHOLD_PX = 8;
   private static readonly NO_ACTIVE_POINTER_ID = -1;
 
-  private isLongPressed_: boolean = false;
   private longPressTimer_: TimerHelper = new TimerHelper();
   private onLongPress_: (source: MenuSourceType) => void;
   private onShortPress_: (e: MouseEvent) => void;
+
   // Whether to treat Mac Ctrl+LeftClick as a context menu trigger (long press)
   // instead of a short press. This is standard behavior for most buttons,
   // but some (like reload) need it disabled to handle Ctrl+Click differently.
@@ -100,7 +106,6 @@ export class PressHandler {
     }
     // Detect downward drag.
     if (e.clientY - this.dragState_.initialY > PressHandler.DRAG_THRESHOLD_PX) {
-      this.isLongPressed_ = true;
       this.longPressTimer_.clearTimeout();
       this.onLongPress_(getContextMenuSourceType(e));
       this.resetDragState_();
@@ -143,19 +148,21 @@ export class PressHandler {
       return;
     }
 
-    if (e.button === BUTTON_RIGHT) {
-      // The TypeScript code should only handle long press for the
-      // left-click/middle-click.
-      return;
-    }
-
     if (this.enableMacContextClick_ && isMac && e.button === BUTTON_LEFT &&
         e.ctrlKey) {
       this.onLongPress_(getContextMenuSourceType(e));
       return;
     }
 
-    this.isLongPressed_ = false;
+    const target = e.currentTarget as HTMLElement;
+    target.setPointerCapture(e.pointerId);
+
+    if (e.button === BUTTON_RIGHT) {
+      // The TypeScript code should only handle long press for the
+      // left-click/middle-click.
+      return;
+    }
+
     this.longPressTimer_.clearTimeout();
 
     if (skipLongPress) {
@@ -168,23 +175,33 @@ export class PressHandler {
       // Use currentTarget to ensure we are capturing the button element that
       // the listener was attached to, even if the pointer is over a child
       // element (like an icon).
-      const target = e.currentTarget as HTMLElement;
       this.dragState_.activeElement = target;
       this.dragState_.activePointerId = e.pointerId;
-      target.setPointerCapture(e.pointerId);
       target.addEventListener('pointermove', this.onPointermove_);
     }
 
     this.longPressTimer_.setTimeout(() => {
-      // When the long press is triggered and handled, mark `isLongPressed_`
-      // as true, so that it won't be treated as a normal click.
-      this.isLongPressed_ = true;
+      // Have to release capture so that a short press will not be triggered.
+      // `resetDragState_()` may do that, but it may not, if not in use, so need
+      // to fall back to releasing capture directly.
       this.resetDragState_();
+      if (target.hasPointerCapture(e.pointerId)) {
+        target.releasePointerCapture(e.pointerId);
+      }
       this.onLongPress_(MenuSourceType.kLongPress);
     }, PressHandler.LONG_PRESS_TIMER_THRESHOLD_MS);
   };
 
   onPointerup = (e: PointerEvent) => {
+    const target = e.currentTarget as HTMLElement;
+    // Ignore pointers that are not captured, indicating that there was no
+    // corresponding pointer down event over this button.
+    if (!target.hasPointerCapture(e.pointerId)) {
+      return;
+    }
+    // It's not necessary to release captured pointers on pointer up, since that
+    // will be done automatically.
+
     // Ignore secondary pointers if we are actively listening to a primary
     // pointer.
     if (this.dragState_?.isListening &&
@@ -200,10 +217,8 @@ export class PressHandler {
     const isMacCtrlClick = this.enableMacContextClick_ && isMac &&
         e.button === BUTTON_LEFT && e.ctrlKey;
 
-    // If the long press is already handled or it's Ctrl+LeftClick on Mac,
-    // skip the rest.
-    if (this.isLongPressed_ || isMacCtrlClick) {
-      this.isLongPressed_ = false;
+    // If it's Ctrl+LeftClick on Mac, skip the rest.
+    if (isMacCtrlClick) {
       this.longPressTimer_.clearTimeout();
       this.resetDragState_();
       return;
