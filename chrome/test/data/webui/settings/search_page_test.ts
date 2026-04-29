@@ -54,8 +54,7 @@ suite('SearchPageTests', function() {
   let metrics: MetricsTracker;
 
   setup(function() {
-    loadTimeData.overrideValues(
-        {searchSettingsUpdate: false, isEeaChoiceCountry: false});
+    loadTimeData.overrideValues({searchSettingsUpdate: false});
     resetRouterForTesting();
 
     metrics = fakeMetricsPrivate();
@@ -239,8 +238,7 @@ suite('SearchPageWithSearchSettingsUpdateEnabledTests', function() {
   let metrics: MetricsTracker;
 
   setup(async function() {
-    loadTimeData.overrideValues(
-        {searchSettingsUpdate: true, isEeaChoiceCountry: false});
+    loadTimeData.overrideValues({searchSettingsUpdate: true});
     resetRouterForTesting();
 
     metrics = fakeMetricsPrivate();
