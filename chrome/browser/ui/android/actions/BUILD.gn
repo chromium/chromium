@@ -31,6 +31,8 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ui/actions/button/FullButtonData.java",
     "java/src/org/chromium/chrome/browser/ui/actions/button/ResourceButtonData.java",
     "java/src/org/chromium/chrome/browser/ui/actions/button/TabSwitcherDrawableButtonData.java",
+    "java/src/org/chromium/chrome/browser/ui/actions/glic/GlicActionButtonBinder.java",
+    "java/src/org/chromium/chrome/browser/ui/actions/glic/GlicActionProperties.java",
   ]
 
   deps = [
