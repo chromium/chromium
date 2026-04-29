@@ -200,6 +200,14 @@ class ShortcutSubManagerExecuteTest : public ShortcutSubManagerTestBase {
 #endif
   }
 
+  bool HasShortcutsPinnedToTaskBar() {
+#if BUILDFLAG(IS_WIN)
+    return true;
+#else
+    return false;
+#endif  // BUILDFLAG(IS_WIN)
+  }
+
   SkColor GetShortcutColor(const webapps::AppId& app_id,
                            const std::string& app_name) {
     if (!HasShortcutsOsIntegration()) {
@@ -329,6 +337,8 @@ TEST_F(ShortcutSubManagerExecuteTest, InstallAppVerifyCorrectShortcuts) {
         profile(), app_id,
         fake_provider().registrar_unsafe().GetAppShortName(app_id)));
 
+    EXPECT_EQ(fake_os_integration().IsAppPinnedToTaskbar(app_id),
+              HasShortcutsPinnedToTaskBar());
     // On all desktop platforms, the shortcut icon that is used for the
     // launcher is icon_size::k128, which should be GREEN as per the icon_map
     // being used above.
@@ -356,6 +366,8 @@ TEST_F(ShortcutSubManagerExecuteTest, UpdateAppVerifyCorrectShortcuts) {
     EXPECT_TRUE(fake_os_integration().IsShortcutCreated(
         profile(), app_id,
         fake_provider().registrar_unsafe().GetAppShortName(app_id)));
+    EXPECT_EQ(fake_os_integration().IsAppPinnedToTaskbar(app_id),
+              HasShortcutsPinnedToTaskBar());
     EXPECT_THAT(
         GetShortcutColor(
             app_id, fake_provider().registrar_unsafe().GetAppShortName(app_id)),
@@ -379,6 +391,8 @@ TEST_F(ShortcutSubManagerExecuteTest, UpdateAppVerifyCorrectShortcuts) {
     EXPECT_TRUE(fake_os_integration().IsShortcutCreated(
         profile(), app_id,
         fake_provider().registrar_unsafe().GetAppShortName(app_id)));
+    EXPECT_EQ(fake_os_integration().IsAppPinnedToTaskbar(app_id),
+              HasShortcutsPinnedToTaskBar());
     EXPECT_THAT(
         GetShortcutColor(
             app_id, fake_provider().registrar_unsafe().GetAppShortName(app_id)),
@@ -410,9 +424,11 @@ TEST_F(ShortcutSubManagerExecuteTest,
   if (HasShortcutsOsIntegration()) {
     EXPECT_FALSE(
         fake_os_integration().IsShortcutCreated(profile(), app_id, app_name));
+    EXPECT_FALSE(fake_os_integration().IsAppPinnedToTaskbar(app_id));
   }
 
-  // This should trigger the application to become fully installed.
+  // This should trigger the application to become fully installed, but does not
+  // create taskbar entries on Windows.
   base::test::TestFuture<void> future;
   fake_provider().scheduler().SetUserDisplayMode(
       app_id, mojom::UserDisplayMode::kStandalone, future.GetCallback());
@@ -480,6 +496,8 @@ TEST_F(ShortcutSubManagerExecuteTest, UninstallAppRemovesShortcuts) {
     EXPECT_TRUE(OsIntegrationTestOverrideImpl::Get()->IsShortcutCreated(
         profile(), app_id,
         fake_provider().registrar_unsafe().GetAppShortName(app_id)));
+    EXPECT_EQ(fake_os_integration().IsAppPinnedToTaskbar(app_id),
+              HasShortcutsPinnedToTaskBar());
     EXPECT_THAT(
         GetShortcutColor(
             app_id, fake_provider().registrar_unsafe().GetAppShortName(app_id)),
@@ -491,6 +509,7 @@ TEST_F(ShortcutSubManagerExecuteTest, UninstallAppRemovesShortcuts) {
     EXPECT_FALSE(OsIntegrationTestOverrideImpl::Get()->IsShortcutCreated(
         profile(), app_id,
         fake_provider().registrar_unsafe().GetAppShortName(app_id)));
+    EXPECT_FALSE(fake_os_integration().IsAppPinnedToTaskbar(app_id));
   }
 }
 
@@ -513,6 +532,8 @@ TEST_F(ShortcutSubManagerExecuteTest, ForceUnregisterAppInRegistry) {
   if (HasShortcutsOsIntegration()) {
     EXPECT_TRUE(
         fake_os_integration().IsShortcutCreated(profile(), app_id, app_name));
+    EXPECT_EQ(fake_os_integration().IsAppPinnedToTaskbar(app_id),
+              HasShortcutsPinnedToTaskBar());
   }
 
   SynchronizeOsOptions options;
@@ -522,6 +543,7 @@ TEST_F(ShortcutSubManagerExecuteTest, ForceUnregisterAppInRegistry) {
   if (HasShortcutsOsIntegration()) {
     ASSERT_FALSE(
         fake_os_integration().IsShortcutCreated(profile(), app_id, app_name));
+    EXPECT_FALSE(fake_os_integration().IsAppPinnedToTaskbar(app_id));
   }
 }
 
@@ -544,12 +566,15 @@ TEST_F(ShortcutSubManagerExecuteTest, ForceUnregisterAppNotInRegistry) {
   if (HasShortcutsOsIntegration()) {
     EXPECT_TRUE(
         fake_os_integration().IsShortcutCreated(profile(), app_id, app_name));
+    EXPECT_EQ(fake_os_integration().IsAppPinnedToTaskbar(app_id),
+              HasShortcutsPinnedToTaskBar());
   }
 
   test::UninstallAllWebApps(profile());
   if (HasShortcutsOsIntegration()) {
     EXPECT_FALSE(
         fake_os_integration().IsShortcutCreated(profile(), app_id, app_name));
+    EXPECT_FALSE(fake_os_integration().IsAppPinnedToTaskbar(app_id));
   }
   EXPECT_FALSE(
       fake_provider().registrar_unsafe().GetInstallState(app_id).has_value());
@@ -561,6 +586,7 @@ TEST_F(ShortcutSubManagerExecuteTest, ForceUnregisterAppNotInRegistry) {
   if (HasShortcutsOsIntegration()) {
     EXPECT_FALSE(
         fake_os_integration().IsShortcutCreated(profile(), app_id, app_name));
+    EXPECT_FALSE(fake_os_integration().IsAppPinnedToTaskbar(app_id));
   }
 }
 

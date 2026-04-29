@@ -466,10 +466,15 @@ void GetShortcutLocationsAndDeleteShortcuts(
     return;
   }
 
-  // Calling UnpinShortcuts in unit-tests currently crashes the test, so skip it
-  // for now using the shortcut override mechanism.
-  if (OsIntegrationTestOverride::Get()) {
+  // If this is set, then keeping this as a local variable ensures it is not
+  // destroyed while we use state from it (retrieved in `GetShortcutPaths()`).
+  scoped_refptr<OsIntegrationTestOverride> test_override =
+      OsIntegrationTestOverride::Get();
+  if (test_override) {
     CHECK_IS_TEST();
+    if (app_id) {
+      test_override->RecordUnpinAppFromTaskbar(*app_id);
+    }
     DeleteShortcuts(all_shortcuts, std::move(result_callback));
     return;
   }
@@ -548,15 +553,8 @@ bool CreatePlatformShortcuts(const base::FilePath& web_app_path,
   scoped_refptr<OsIntegrationTestOverride> test_override =
       OsIntegrationTestOverride::Get();
 
-  bool pin_to_taskbar = false;
-  // PinShortcutToTaskbar in unit-tests are not preferred as unpinning causes
-  // crashes, so use the shortcut override for testing to not pin to taskbar.
-  // TODO(crbug.com/40250252): Figure out how to make this call not crash &
-  // incorporate unpin / pin methods in unit-tests.
-  if (!test_override) {
-    pin_to_taskbar =
-        creation_locations.in_quick_launch_bar && CanPinShortcutToTaskbar();
-  }
+  bool pin_to_taskbar =
+      creation_locations.in_quick_launch_bar && CanPinShortcutToTaskbar();
 
   // We don't want to actually create shortcuts in the quick launch directory.
   // Those are created by Windows as a side effect of pinning a shortcut to
@@ -569,7 +567,6 @@ bool CreatePlatformShortcuts(const base::FilePath& web_app_path,
   // Shortcut paths under which to create shortcuts.
   std::vector<base::FilePath> shortcut_paths =
       GetShortcutPaths(shortcut_locations_wo_quick_launch);
-
   // Create/update the shortcut in the web app path for the "Pin To Taskbar"
   // option in the Windows versions that support pinning. We use the web app
   // path shortcut because we will overwrite it rather than appending unique
@@ -592,6 +589,20 @@ bool CreatePlatformShortcuts(const base::FilePath& web_app_path,
   if (!pin_to_taskbar) {
     return true;
   }
+
+  // If the shortcut is pinned to the taskbar, ensure that we "mock" out that
+  // behavior instead of actually changing OS state and pinning/unpinning on
+  // Windows.
+  // Pinning shortcuts on Windows requires approving an OS specific notification
+  // dialog that pops up, which cannot be interacted with for testing due
+  // to Windows limited access feature limitations. As such, storing the user
+  // intent that the user wanted to pin the app to taskbar is enough here for
+  // testing Chromium's behavior, instead of actually testing the OS state.
+  if (test_override) {
+    test_override->RecordPinAppToTaskbar(shortcut_info.app_id);
+    return true;
+  }
+
   base::FilePath file_name = GetSanitizedFileName(shortcut_info.title);
   // Use the web app path shortcut for pinning to avoid having unique numbers
   // in the application name.

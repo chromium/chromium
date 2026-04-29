@@ -581,6 +581,11 @@ bool OsIntegrationTestOverrideImpl::IsShortcutCreated(
 #endif
 }
 
+bool OsIntegrationTestOverrideImpl::IsAppPinnedToTaskbar(
+    const webapps::AppId& app_id) const {
+  return taskbar_pinned_apps_.contains(app_id);
+}
+
 bool OsIntegrationTestOverrideImpl::HasOsIntegrationResourcesDirectory(
     Profile* profile,
     const webapps::AppId& app_id) {
@@ -740,6 +745,16 @@ void OsIntegrationTestOverrideImpl::DeleteShortcutsMenuJumpListEntryForApp(
     const std::wstring& app_user_model_id) {
   jump_list_entry_map_.erase(app_user_model_id);
   shortcut_menu_apps_registered_.erase(app_user_model_id);
+}
+
+void OsIntegrationTestOverrideImpl::RecordPinAppToTaskbar(
+    const webapps::AppId& app_id) {
+  taskbar_pinned_apps_.insert(app_id);
+}
+
+void OsIntegrationTestOverrideImpl::RecordUnpinAppFromTaskbar(
+    const webapps::AppId& app_id) {
+  taskbar_pinned_apps_.erase(app_id);
 }
 
 base::FilePath OsIntegrationTestOverrideImpl::desktop() {

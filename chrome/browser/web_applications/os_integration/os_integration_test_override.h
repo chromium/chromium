@@ -83,12 +83,16 @@ class OsIntegrationTestOverride
   // These should not be called from tests, these are automatically
   // called from production code in testing to set
   // up OS integration data for shortcuts menu registration and
-  // unregistration.
+  // unregistration, as well as whether an app was pinned to the taskbar
+  // or not.
   virtual void AddShortcutsMenuJumpListEntryForApp(
       const std::wstring& app_user_model_id,
       const std::vector<scoped_refptr<ShellLinkItem>>& shell_link_items) = 0;
   virtual void DeleteShortcutsMenuJumpListEntryForApp(
       const std::wstring& app_user_model_id) = 0;
+
+  virtual void RecordPinAppToTaskbar(const webapps::AppId& app_id) = 0;
+  virtual void RecordUnpinAppFromTaskbar(const webapps::AppId& app_id) = 0;
 
   virtual base::FilePath desktop() = 0;
   virtual base::FilePath application_menu() = 0;

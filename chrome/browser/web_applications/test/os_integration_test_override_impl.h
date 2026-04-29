@@ -204,6 +204,7 @@ class OsIntegrationTestOverrideImpl : public OsIntegrationTestOverride {
   bool IsShortcutCreated(Profile* profile,
                          const webapps::AppId& app_id,
                          const std::string& app_name);
+  bool IsAppPinnedToTaskbar(const webapps::AppId& app_id) const;
 
   // Verifies that the OS integration resources directory, ending with
   // `crx_<app_id>` exists on the disk.
@@ -252,13 +253,17 @@ class OsIntegrationTestOverrideImpl : public OsIntegrationTestOverride {
   // These should not be called from tests, these are automatically
   // called from production code in testing to set
   // up OS integration data for shortcuts menu registration and
-  // unregistration.
+  // unregistration, as well as whether an app was pinned to the taskbar
+  // or not.
   void AddShortcutsMenuJumpListEntryForApp(
       const std::wstring& app_user_model_id,
       const std::vector<scoped_refptr<ShellLinkItem>>& shell_link_items)
       override;
   void DeleteShortcutsMenuJumpListEntryForApp(
       const std::wstring& app_user_model_id) override;
+
+  void RecordPinAppToTaskbar(const webapps::AppId& app_id) override;
+  void RecordUnpinAppFromTaskbar(const webapps::AppId& app_id) override;
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -363,6 +368,9 @@ class OsIntegrationTestOverrideImpl : public OsIntegrationTestOverride {
   AppProtocolList protocol_scheme_registrations_;
 
   base::flat_set<std::wstring> shortcut_menu_apps_registered_;
+
+  // List of apps that are pinned to the taskbar on Windows.
+  base::flat_set<webapps::AppId> taskbar_pinned_apps_;
 };
 
 }  // namespace web_app
