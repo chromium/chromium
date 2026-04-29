@@ -473,7 +473,6 @@ void OmniboxPopupViewViews::UpdatePopupAppearance() {
     OmniboxResultView* result_view = result_view_at(0);
     if (result_view) {
       result_view->GetViewAccessibility().SetIsSelected(true);
-      FireAXEventsForNewActiveDescendant(result_view);
     }
 
     // Update the popup state manager that the classic popup is opening.
@@ -700,7 +699,9 @@ void OmniboxPopupViewViews::OnPopupFirstPaintPresented(
 
 void OmniboxPopupViewViews::FireAXEventsForNewActiveDescendant(
     View* descendant_view) {
-  // Selected children changed is fired on the popup.
+  // For normal selections, kSelectedChildrenChanged is auto-fired by
+  // ViewAccessibility::SetIsSelected. This method is still needed for
+  // non-selection callers like ProvideButtonFocusHint and popup close.
   NotifyAccessibilityEventDeprecated(ax::mojom::Event::kSelectedChildrenChanged,
                                      true);
 }

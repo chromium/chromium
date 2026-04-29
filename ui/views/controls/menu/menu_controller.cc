@@ -1750,18 +1750,12 @@ void MenuController::SetSelection(MenuItemView* menu_item,
   }
 
   if (should_notify_selected_child_changed) {
-    // Notify an accessibility selected children changed event on the parent
-    // submenu.
+    // Update the active descendant on the containing SubmenuView to point to
+    // the selected menu item, unless a hot button has focus (in which case
+    // the hot button is the active descendant).
     if (menu_item->GetParentMenuItem() &&
         menu_item->GetParentMenuItem()->GetSubmenu()) {
       SubmenuView* submenu = menu_item->GetParentMenuItem()->GetSubmenu();
-      submenu->NotifyAccessibilityEventDeprecated(
-          ax::mojom::Event::kSelectedChildrenChanged,
-          /*send_native_event=*/true);
-
-      // Update the active descendant on the containing SubmenuView to point to
-      // the selected menu item, unless a hot button has focus (in which case
-      // the hot button is the active descendant).
       if (!hot_button_) {
         submenu->GetViewAccessibility().SetActiveDescendant(*menu_item);
       }

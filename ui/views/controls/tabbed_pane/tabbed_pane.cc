@@ -582,9 +582,6 @@ bool TabbedPaneTabStrip::SelectTab(TabbedPaneTab* new_selected_tab,
     old_selected_tab->SetSelected(false);
     MaybeUpdateTabContentVisibility(GetIndexForTab(old_selected_tab), false);
     OnSelectedTabChanged(old_selected_tab, new_selected_tab, animate);
-
-    NotifyNewAccessibilityEvent(ax::mojom::Event::kSelectedChildrenChanged,
-                                true);
   }
 
   UpdateAccessibleName();

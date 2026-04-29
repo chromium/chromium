@@ -1172,6 +1172,15 @@ void ViewAccessibility::SetIsSelected(bool selected) {
 
   OnBoolAttributeChanged(ax::mojom::BoolAttribute::kSelected, selected);
   NotifyEvent(ax::mojom::Event::kSelection, true);
+
+  for (ViewAccessibility* ancestor = GetViewAccessibilityParent(); ancestor;
+       ancestor = ancestor->GetViewAccessibilityParent()) {
+    if (ui::IsContainerWithSelectableChildren(ancestor->GetCachedRole())) {
+      ancestor->NotifyEvent(ax::mojom::Event::kSelectedChildrenChanged, true);
+      break;
+    }
+  }
+
   NotifyDataChanged();
 }
 

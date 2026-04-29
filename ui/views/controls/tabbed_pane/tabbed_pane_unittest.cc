@@ -400,7 +400,7 @@ TEST_F(TabbedPaneWithWidgetTest, AccessibleEvents) {
   EXPECT_EQ(1u, tabbed_pane_->GetSelectedTabIndex());
   EXPECT_EQ(
       2, counter.GetCount(ax::mojom::Event::kSelection, ax::mojom::Role::kTab));
-  EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kSelectedChildrenChanged,
+  EXPECT_EQ(2, counter.GetCount(ax::mojom::Event::kSelectedChildrenChanged,
                                 ax::mojom::Role::kTabList));
   EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kFocus));
 
@@ -422,7 +422,7 @@ TEST_F(TabbedPaneWithWidgetTest, AccessibleEvents) {
   EXPECT_EQ(0u, tabbed_pane_->GetSelectedTabIndex());
   EXPECT_EQ(
       2, counter.GetCount(ax::mojom::Event::kSelection, ax::mojom::Role::kTab));
-  EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kSelectedChildrenChanged,
+  EXPECT_EQ(2, counter.GetCount(ax::mojom::Event::kSelectedChildrenChanged,
                                 ax::mojom::Role::kTabList));
   EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kFocus));
 

@@ -527,20 +527,6 @@ void OmniboxResultView::OnSelectionStateChanged() {
   UpdateRemoveSuggestionVisibility();
   UpdateAccessibleName();
   UpdateAccessibilitySelectedState();
-  if (GetMatchSelected()) {
-    const auto selection_state = popup_view_->GetSelection().state;
-
-    // The text is also accessible via text/value change events in the omnibox
-    // but this selection event allows the screen reader to get more details
-    // about the list and the user's position within it.
-    // Limit which selection states fire the events, in order to avoid duplicate
-    // events. Specifically, OmniboxPopupViewViews::ProvideButtonFocusHint()
-    // already fires the correct events when the user tabs to an attached button
-    // in the current row.
-    if (selection_state == OmniboxPopupSelection::NORMAL) {
-      popup_view_->FireAXEventsForNewActiveDescendant(this);
-    }
-  }
   ApplyThemeAndRefreshIcons();
   button_row_->SelectionStateChanged();
 }
