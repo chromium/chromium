@@ -11,11 +11,14 @@ import android.view.ViewConfiguration;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.ui.actions.ActionProperties;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.function.Supplier;
 
@@ -25,6 +28,9 @@ class AppMenuCoordinatorImpl implements AppMenuCoordinator {
     private static @Nullable Boolean sHasPermanentMenuKeyForTesting;
 
     private final Context mContext;
+    private @Nullable NullableObservableSupplier<PropertyModel> mActionModelSupplier;
+    private final Callback<@Nullable PropertyModel> mActionModelCallback =
+            this::onActionModelChanged;
     private final MenuButtonDelegate mButtonDelegate;
     private final AppMenuDelegate mAppMenuDelegate;
 
@@ -84,18 +90,28 @@ class AppMenuCoordinatorImpl implements AppMenuCoordinator {
         if (mAppMenuHandler != null) mAppMenuHandler.destroy();
 
         mAppMenuPropertiesDelegate.destroy();
+
+        if (mActionModelSupplier != null) {
+            mActionModelSupplier.removeObserver(mActionModelCallback);
+        }
     }
 
     @Override
     public void showAppMenuForKeyboardEvent() {
         if (mAppMenuHandler == null || !mAppMenuHandler.shouldShowAppMenu()) return;
 
+        showAppMenuInternal(mButtonDelegate.getMenuButtonView(), false);
+    }
+
+    private void showAppMenuInternal(@Nullable View specificAnchorView, boolean startDragging) {
+        if (mAppMenuHandler == null || !mAppMenuHandler.shouldShowAppMenu()) return;
+
         boolean hasPermanentMenuKey =
                 sHasPermanentMenuKeyForTesting != null
                         ? sHasPermanentMenuKeyForTesting.booleanValue()
                         : ViewConfiguration.get(mContext).hasPermanentMenuKey();
-        mAppMenuHandler.showAppMenu(
-                hasPermanentMenuKey ? null : mButtonDelegate.getMenuButtonView(), false);
+
+        mAppMenuHandler.showAppMenu(hasPermanentMenuKey ? null : specificAnchorView, startDragging);
     }
 
     @Override
@@ -116,6 +132,22 @@ class AppMenuCoordinatorImpl implements AppMenuCoordinator {
     @Override
     public void unregisterAppMenuBlocker(AppMenuBlocker blocker) {
         mAppMenuHandler.unregisterAppMenuBlocker(blocker);
+    }
+
+    @Override
+    public void setActionModelSupplier(NullableObservableSupplier<PropertyModel> supplier) {
+        mActionModelSupplier = supplier;
+        mActionModelSupplier.addSyncObserverAndCallIfNonNull(mActionModelCallback);
+    }
+
+    private void onActionModelChanged(@Nullable PropertyModel model) {
+        if (model == null) return;
+        model.set(
+                ActionProperties.ON_PRESS_CALLBACK,
+                view -> {
+                    showAppMenuInternal(view, false);
+                });
+        // TODO(crbug.com/491510507): Support AppMenuButtonHelper.
     }
 
     // Testing methods

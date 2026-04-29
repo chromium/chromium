@@ -4,7 +4,9 @@
 
 package org.chromium.chrome.browser.ui.appmenu;
 
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.ui.modelutil.PropertyModel;
 
 /** A UI coordinator the app menu. */
 @NullMarked
@@ -38,4 +40,12 @@ public interface AppMenuCoordinator {
      * @param blocker The {@link AppMenuBlocker} to unregister.
      */
     void unregisterAppMenuBlocker(AppMenuBlocker blocker);
+
+    /**
+     * Sets the supplier for the action model to bind the app menu button logic. This is for
+     * {link @ActionRegistry} to use.
+     *
+     * @param supplier The supplier for the action model.
+     */
+    void setActionModelSupplier(NullableObservableSupplier<PropertyModel> supplier);
 }

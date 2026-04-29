@@ -181,6 +181,7 @@ import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarBehavior;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.top.ToolbarActionModeCallback;
 import org.chromium.chrome.browser.toolbar.top.ToolbarControlContainer;
+import org.chromium.chrome.browser.ui.actions.ActionId;
 import org.chromium.chrome.browser.ui.actions.ActionRegistry;
 import org.chromium.chrome.browser.ui.activity_recreation.ActivityRecreationController;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuBlocker;
@@ -2139,6 +2140,10 @@ public class RootUiCoordinator
             mAppMenuCoordinator.registerAppMenuBlocker(mAppMenuBlocker);
 
             mAppMenuSupplier.set(mAppMenuCoordinator);
+
+            if (mActionRegistry != null) {
+                mAppMenuCoordinator.setActionModelSupplier(mActionRegistry.get(ActionId.APP_MENU));
+            }
 
             mAppMenuObserver =
                     new AppMenuObserver() {
