@@ -444,12 +444,7 @@ IN_PROC_BROWSER_TEST_F(WebViewAPITest, GuestVisibilityChanged) {
 // The test launches an app with guest and closes the window on loadcommit. It
 // then launches the app window again. The process is repeated 3 times.
 // TODO(http://crbug.com/41051990): Re-enable this test
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-#define MAYBE_CloseOnLoadcommit DISABLED_CloseOnLoadcommit
-#else
-#define MAYBE_CloseOnLoadcommit CloseOnLoadcommit
-#endif
-IN_PROC_BROWSER_TEST_F(WebViewAPITest, MAYBE_CloseOnLoadcommit) {
+IN_PROC_BROWSER_TEST_F(WebViewAPITest, DISABLED_CloseOnLoadcommit) {
   LaunchApp("web_view/close_on_loadcommit");
   ExtensionTestMessageListener test_done_listener("done-close-on-loadcommit");
   ASSERT_TRUE(test_done_listener.WaitUntilSatisfied());
@@ -951,8 +946,9 @@ class WebViewAPITestUserAgentOverride : public WebViewAPITest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// TODO(http://crbug.com/507831013): Re-enable once the test is fixed.
 IN_PROC_BROWSER_TEST_F(WebViewAPITestUserAgentOverride,
-                       TestSetUserAgentOverride) {
+                       DISABLED_TestSetUserAgentOverride) {
   // Set up a test ClientHintsControllerDelegate, wrapped in a KeyedService.
   auto callback = base::BindOnce(
       [](content::BrowserContext* context) -> std::unique_ptr<KeyedService> {
