@@ -167,7 +167,7 @@ extern NSString* const kSettingsShowReadingModeAvailableCellId;
 extern NSString* const kSettingsDetectAddressesCellId;
 
 // The accessibility identifier of the Mini map native cell.
-extern NSString* const kSettingsMiniMapNativeCellId;
+extern NSString* const kSettingsMimiMapNativeCellId;
 
 // The accessibility identifier of the Default Apps cell.
 extern NSString* const kSettingsDefaultAppsCellId;

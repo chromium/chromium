@@ -17,9 +17,6 @@
 // Shows the minimap directions for text.
 - (void)presentMiniMapDirectionsForText:(NSString*)text;
 
-// Shows the minimap native preview for `URL`.
-- (void)presentMiniMapNativePreviewForURL:(NSURL*)URL;
-
 // Hides the minimap.
 - (void)hideMiniMap;
 

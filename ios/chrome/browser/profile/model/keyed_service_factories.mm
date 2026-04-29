@@ -107,7 +107,6 @@
 #import "ios/chrome/browser/metrics/model/ios_profile_metrics_service_factory.h"
 #import "ios/chrome/browser/metrics/model/ios_profile_session_durations_service_factory.h"
 #import "ios/chrome/browser/metrics/model/tab_usage_recorder_service_factory.h"
-#import "ios/chrome/browser/mini_map/model/mini_map_service_factory.h"
 #import "ios/chrome/browser/ntp/model/ntp_background_image_cache_service_factory.h"
 #import "ios/chrome/browser/omnibox/model/placeholder_service/placeholder_service_factory.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
@@ -368,7 +367,6 @@ void EnsureProfileKeyedServiceFactoriesBuilt() {
   ListFamilyMembersServiceFactory::GetInstance();
   MailtoHandlerServiceFactory::GetInstance();
   ManagedBookmarkServiceFactory::GetInstance();
-  MiniMapServiceFactory::GetInstance();
   NTPBackgroundImageCacheServiceFactory::GetInstance();
   OhttpKeyServiceFactory::GetInstance();
   OnDeviceTailModelServiceFactory::GetInstance();

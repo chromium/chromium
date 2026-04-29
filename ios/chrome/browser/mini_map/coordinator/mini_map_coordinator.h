@@ -12,7 +12,6 @@
 enum class MiniMapMode {
   kMap,
   kDirections,
-  kMapNativePreviewURL,
 };
 
 // A coordinator to display mini maps showing an address.
@@ -26,7 +25,6 @@ enum class MiniMapMode {
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
                                       text:(NSString*)text
-                                       URL:(NSURL*)URL
                                    withIPH:(BOOL)withIPH
                                       mode:(MiniMapMode)mode
     NS_DESIGNATED_INITIALIZER;

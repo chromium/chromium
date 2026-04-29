@@ -63,7 +63,6 @@ specific_include_rules = {
     "+ios/chrome/browser/language/model",
     "+ios/chrome/browser/mailto_handler/model",
     "+ios/chrome/browser/metrics/model",
-    "+ios/chrome/browser/mini_map/model",
     "+ios/chrome/browser/ntp/model",
 
     "+ios/chrome/browser/optimization_guide/model",

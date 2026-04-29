@@ -196,7 +196,6 @@ source_set("keyed_service_factories") {
     "//ios/chrome/browser/metrics/model:google_groups_updater",
     "//ios/chrome/browser/metrics/model:profile_metrics_service_factory",
     "//ios/chrome/browser/metrics/model:tab_usage_recorder_service_factory",
-    "//ios/chrome/browser/mini_map/model",
     "//ios/chrome/browser/ntp/model",
     "//ios/chrome/browser/omnibox/model/placeholder_service",
     "//ios/chrome/browser/optimization_guide/model",
