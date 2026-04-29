@@ -91,7 +91,7 @@ void DefaultDecoderFactory::CreateAudioDecoders(
 #endif
 
   if (base::FeatureList::IsEnabled(kDirectOpusAudioDecoding)) {
-    audio_decoders->push_back(std::make_unique<OpusAudioDecoder>());
+    audio_decoders->push_back(std::make_unique<OpusAudioDecoder>(task_runner));
   }
 
 #if BUILDFLAG(ENABLE_FFMPEG)

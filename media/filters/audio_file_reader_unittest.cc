@@ -31,12 +31,17 @@ namespace media {
 class AudioFileReaderTest : public testing::TestWithParam<bool> {
  public:
   AudioFileReaderTest() {
+    std::vector<base::test::FeatureRef> features = {kDirectOpusAudioDecoding};
+
 #if BUILDFLAG(ENABLE_SYMPHONIA)
-    const std::vector<base::test::FeatureRef> features = {
+    const std::vector<base::test::FeatureRef> symphonia_features = {
         { kSymphoniaAudioDecoding,
           kSymphoniaMp3Decoding,
           kSymphoniaPcmDecoding,
           kSymphoniaVorbisDecoding }};
+    features.insert(features.end(), symphonia_features.begin(),
+                    symphonia_features.end());
+#endif
 
     if (GetParam()) {
       feature_list_.InitWithFeatures(features,
@@ -44,7 +49,6 @@ class AudioFileReaderTest : public testing::TestWithParam<bool> {
     } else {
       feature_list_.InitWithFeatures(/*enabled_features=*/{}, features);
     }
-#endif
   }
 
   AudioFileReaderTest(const AudioFileReaderTest&) = delete;

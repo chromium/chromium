@@ -140,7 +140,8 @@ static std::vector<std::unique_ptr<AudioDecoder>> CreateAudioDecodersForTest(
   }
 
   if (base::FeatureList::IsEnabled(kDirectOpusAudioDecoding)) {
-    audio_decoders.push_back(std::make_unique<OpusAudioDecoder>());
+    audio_decoders.push_back(
+        std::make_unique<OpusAudioDecoder>(media_task_runner));
   }
 
 #if BUILDFLAG(ENABLE_SYMPHONIA)

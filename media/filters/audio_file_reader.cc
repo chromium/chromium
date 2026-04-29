@@ -14,6 +14,7 @@
 
 #include "base/auto_reset.h"
 #include "base/compiler_specific.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -27,6 +28,7 @@
 #include "media/ffmpeg/ffmpeg_common.h"
 #include "media/ffmpeg/scoped_av_packet.h"
 #include "media/filters/ffmpeg_audio_decoder.h"
+#include "media/filters/opus_audio_decoder.h"
 #include "media/formats/mpeg/mpeg1_audio_stream_parser.h"
 
 #if BUILDFLAG(ENABLE_SYMPHONIA)
@@ -81,6 +83,13 @@ bool AudioFileReader::OpenDecoder() {
         SymphoniaAudioDecoder::ExecutionMode::kSynchronous);
   }
 #endif
+
+  if (!decoder_ && config.codec() == AudioCodec::kOpus &&
+      base::FeatureList::IsEnabled(kDirectOpusAudioDecoding)) {
+    decoder_ = std::make_unique<OpusAudioDecoder>(
+        nullptr, OpusAudioDecoder::ExecutionMode::kSynchronous);
+  }
+
   // By default, use the FFmpegAudioDecoder.
   if (!decoder_) {
     decoder_ = std::make_unique<FFmpegAudioDecoder>(

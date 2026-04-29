@@ -147,7 +147,8 @@ class AudioDecoderTest
             task_environment_.GetMainThreadTaskRunner(), &media_log_);
         break;
       case AudioDecoderType::kOpus:
-        decoder_ = std::make_unique<OpusAudioDecoder>();
+        decoder_ = std::make_unique<OpusAudioDecoder>(
+            task_environment_.GetMainThreadTaskRunner());
         break;
 #if BUILDFLAG(ENABLE_SYMPHONIA)
       case AudioDecoderType::kSymphonia:

@@ -65,6 +65,20 @@ struct OpusExtraData {
 std::optional<OpusExtraData> ParseOpusExtraData(
     base::span<const uint8_t> data,
     const AudioDecoderConfig& config) {
+  // WebCodecs allows developers to omit the extradata (description) for Opus
+  // streams with 1 or 2 channels. In these cases, we manually construct a
+  // default OpusExtraData block. We cannot do this for > 2 channels since the
+  // channel mapping is unpredictable.
+  if (data.empty() &&
+      config.channels() <= OPUS_MAX_CHANNELS_WITH_DEFAULT_LAYOUT) {
+    OpusExtraData extra_data;
+    extra_data.channels = config.channels();
+    extra_data.skip_samples = config.codec_delay();
+    extra_data.num_streams = 1;
+    extra_data.num_coupled = config.channels() > 1 ? 1 : 0;
+    return extra_data;
+  }
+
   if (data.size() < OPUS_EXTRADATA_SIZE) {
     return std::nullopt;
   }
@@ -146,9 +160,16 @@ std::optional<OpusExtraData> ParseOpusExtraData(
 
 }  // namespace
 
-OpusAudioDecoder::OpusAudioDecoder()
-    : pool_(base::MakeRefCounted<AudioBufferMemoryPool>()) {
-  DETACH_FROM_THREAD(thread_checker_);
+OpusAudioDecoder::OpusAudioDecoder(
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
+    ExecutionMode mode)
+    : task_runner_(std::move(task_runner)),
+      mode_(mode),
+      pool_(base::MakeRefCounted<AudioBufferMemoryPool>()) {
+  DETACH_FROM_SEQUENCE(sequence_checker_);
+  if (mode_ == ExecutionMode::kAsynchronous) {
+    CHECK(task_runner_);
+  }
 }
 
 AudioDecoderType OpusAudioDecoder::GetDecoderType() const {
@@ -160,72 +181,70 @@ void OpusAudioDecoder::Initialize(const AudioDecoderConfig& config,
                                   InitCB init_cb,
                                   const OutputCB& output_cb,
                                   const WaitingCB& waiting_cb) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (config.is_encrypted()) {
-    base::BindPostTaskToCurrentDefault(std::move(init_cb))
+    BindCallbackIfNeeded(std::move(init_cb))
         .Run(DecoderStatus::Codes::kUnsupportedEncryptionMode);
     return;
   }
 
   config_ = config;
-  output_cb_ = base::BindPostTaskToCurrentDefault(output_cb);
+  output_cb_ = BindCallbackIfNeeded(output_cb);
 
   if (!ConfigureDecoder()) {
-    base::BindPostTaskToCurrentDefault(std::move(init_cb))
-        .Run(DecoderStatus::Codes::kFailedToCreateDecoder);
+    BindCallbackIfNeeded(std::move(init_cb))
+        .Run(DecoderStatus::Codes::kUnsupportedConfig);
     return;
   }
 
-  base::BindPostTaskToCurrentDefault(std::move(init_cb))
-      .Run(DecoderStatus::Codes::kOk);
+  BindCallbackIfNeeded(std::move(init_cb)).Run(DecoderStatus::Codes::kOk);
 }
 
 void OpusAudioDecoder::Decode(scoped_refptr<DecoderBuffer> input,
                               DecodeCB decode_cb) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!decode_cb.is_null());
   CHECK(input.get());
 
   // Libopus does not buffer output. Decoding is complete when an end of stream
   // input buffer is received.
   if (input->end_of_stream()) {
-    base::BindPostTaskToCurrentDefault(std::move(decode_cb))
-        .Run(DecoderStatus::Codes::kOk);
+    BindCallbackIfNeeded(std::move(decode_cb)).Run(DecoderStatus::Codes::kOk);
     return;
   }
 
   if (input->is_encrypted()) {
     DLOG(ERROR) << "Encrypted buffer not supported";
-    base::BindPostTaskToCurrentDefault(std::move(decode_cb))
+    BindCallbackIfNeeded(std::move(decode_cb))
         .Run(DecoderStatus::Codes::kUnsupportedEncryptionMode);
     return;
   }
 
   if (input->timestamp() == kNoTimestamp) {
     DLOG(ERROR) << "Received a buffer without timestamps!";
-    base::BindPostTaskToCurrentDefault(std::move(decode_cb))
+    BindCallbackIfNeeded(std::move(decode_cb))
         .Run(DecoderStatus::Codes::kFailed);
     return;
   }
 
   // Allocate a buffer for the output samples.
   const bool result = DecodeBuffer(input);
-  base::BindPostTaskToCurrentDefault(std::move(decode_cb))
+  BindCallbackIfNeeded(std::move(decode_cb))
       .Run(result ? DecoderStatus::Codes::kOk : DecoderStatus::Codes::kFailed);
 }
 
 void OpusAudioDecoder::Reset(base::OnceClosure closure) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   opus_multistream_decoder_ctl(opus_decoder_.get(), OPUS_RESET_STATE);
   ResetTimestampState();
 
-  base::BindPostTaskToCurrentDefault(std::move(closure)).Run();
+  BindCallbackIfNeeded(std::move(closure)).Run();
 }
 
 OpusAudioDecoder::~OpusAudioDecoder() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!opus_decoder_) {
     return;
@@ -318,7 +337,8 @@ bool OpusAudioDecoder::ConfigureDecoder() {
 void OpusAudioDecoder::ResetTimestampState() {
   discard_helper_ = std::make_unique<AudioDiscardHelper>(
       config_.samples_per_second(), 0, false);
-  discard_helper_->Reset(config_.codec_delay());
+  discard_helper_->Reset(
+      config_.should_discard_decoder_delay() ? config_.codec_delay() : 0);
 }
 
 bool OpusAudioDecoder::DecodeBuffer(const scoped_refptr<DecoderBuffer>& input) {
@@ -333,7 +353,7 @@ bool OpusAudioDecoder::DecodeBuffer(const scoped_refptr<DecoderBuffer>& input) {
   auto input_span = base::span(*input);
   const int frames_decoded = opus_multistream_decode_float(
       opus_decoder_.get(), input_span.data(), input_span.size(),
-      float_output_buffer, output_buffer->data_size(), 0);
+      float_output_buffer, output_buffer->frame_count(), 0);
 
   if (frames_decoded < 0) {
     DLOG(ERROR) << "opus_multistream_decode failed for"

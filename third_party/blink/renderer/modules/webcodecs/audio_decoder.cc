@@ -277,6 +277,16 @@ AudioDecoder::MakeMediaAudioDecoderConfig(const ConfigType& config,
       return std::nullopt;
     }
 
+    if (config.codec() == "opus") {
+      // A size of 19 bytes corresponds to the minimum length of an Opus
+      // Identification Header for a standard mono or stereo stream.
+      constexpr size_t kMinDescriptionSize = 19;
+      if (desc_wrapper.size() < kMinDescriptionSize) {
+        *js_error_message = "Invalid config; description is too short.";
+        return std::nullopt;
+      }
+    }
+
     if (!desc_wrapper.empty()) {
       extra_data.assign(base::to_address(desc_wrapper.begin()),
                         base::to_address(desc_wrapper.end()));

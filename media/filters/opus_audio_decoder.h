@@ -8,7 +8,9 @@
 #include <memory>
 
 #include "base/functional/callback.h"
-#include "base/threading/thread_checker.h"
+#include "base/sequence_checker.h"
+#include "base/task/bind_post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "media/base/audio_decoder.h"
 #include "media/base/demuxer_stream.h"
@@ -29,7 +31,11 @@ struct OpusMSDecoderDeleter {
 
 class MEDIA_EXPORT OpusAudioDecoder : public AudioDecoder {
  public:
-  OpusAudioDecoder();
+  enum class ExecutionMode { kAsynchronous, kSynchronous };
+
+  explicit OpusAudioDecoder(
+      scoped_refptr<base::SequencedTaskRunner> task_runner,
+      ExecutionMode mode = ExecutionMode::kAsynchronous);
   OpusAudioDecoder(const OpusAudioDecoder&) = delete;
   OpusAudioDecoder(OpusAudioDecoder&&) = delete;
   OpusAudioDecoder& operator=(const OpusAudioDecoder&) = delete;
@@ -52,6 +58,18 @@ class MEDIA_EXPORT OpusAudioDecoder : public AudioDecoder {
   bool ConfigureDecoder();
   void ResetTimestampState();
 
+  // If the execution mode is set to asynchronous, wraps the `callback` in a
+  // bind post task on the current default task runner. Otherwise, a noop.
+  template <typename T>
+  std::decay_t<T> BindCallbackIfNeeded(T&& callback) {
+    return mode_ == ExecutionMode::kAsynchronous
+               ? base::BindPostTask(task_runner_, std::forward<T>(callback))
+               : std::forward<T>(callback);
+  }
+
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  const ExecutionMode mode_ = ExecutionMode::kAsynchronous;
+
   AudioDecoderConfig config_;
   OutputCB output_cb_;
   std::unique_ptr<OpusMSDecoder, OpusMSDecoderDeleter> opus_decoder_;
@@ -59,7 +77,7 @@ class MEDIA_EXPORT OpusAudioDecoder : public AudioDecoder {
 
   scoped_refptr<AudioBufferMemoryPool> pool_;
 
-  THREAD_CHECKER(thread_checker_);
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace media
