@@ -29,6 +29,8 @@ class SendTabToSelfDevicePickerBubbleView : public SendTabToSelfBubbleView {
   METADATA_HEADER(SendTabToSelfDevicePickerBubbleView, SendTabToSelfBubbleView)
 
  public:
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSendTabToSelfDevicePickerBubbleId);
+
   // Bubble will be anchored to `anchor`.
   SendTabToSelfDevicePickerBubbleView(views::BubbleAnchor anchor,
                                       content::WebContents* web_contents);

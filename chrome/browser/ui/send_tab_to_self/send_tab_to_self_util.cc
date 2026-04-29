@@ -7,6 +7,7 @@
 #include <optional>
 #include <string>
 
+#include "base/check.h"
 #include "base/feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_scroll_observer.h"
@@ -14,11 +15,14 @@
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/toasts/api/toast_id.h"
+#include "chrome/browser/ui/toasts/toast_controller.h"
 #include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/metrics_util.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/origin.h"
 
@@ -84,6 +88,15 @@ base::WeakPtr<content::WebContents> OpenEntryInNewBackgroundTab(
     const SendTabToSelfEntry& entry) {
   return OpenEntryInNewTabWithDisposition(
       profile, entry, WindowOpenDisposition::NEW_BACKGROUND_TAB);
+}
+
+void ShowTabSentSuccessToast(content::WebContents* web_contents) {
+  ToastController* toast_controller =
+      ToastController::MaybeGetForWebContents(web_contents);
+  if (toast_controller) {
+    toast_controller->MaybeShowToast(
+        ToastParams(ToastId::kSendTabToSelfSuccess));
+  }
 }
 
 }  // namespace send_tab_to_self

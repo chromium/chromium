@@ -33,6 +33,9 @@
 
 namespace send_tab_to_self {
 
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SendTabToSelfDevicePickerBubbleView,
+                                      kSendTabToSelfDevicePickerBubbleId);
+
 namespace {
 
 // The valid device button height.
@@ -52,6 +55,7 @@ SendTabToSelfDevicePickerBubbleView::SendTabToSelfDevicePickerBubbleView(
     views::BubbleAnchor anchor,
     content::WebContents* web_contents)
     : SendTabToSelfBubbleView(anchor, web_contents) {
+  SetProperty(views::kElementIdentifierKey, kSendTabToSelfDevicePickerBubbleId);
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
 }
 

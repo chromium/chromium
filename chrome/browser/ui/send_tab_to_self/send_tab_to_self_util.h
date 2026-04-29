@@ -7,6 +7,10 @@
 
 #include "base/memory/weak_ptr.h"
 
+namespace content {
+class WebContents;
+}  // namespace content
+
 namespace send_tab_to_self {
 
 class SendTabToSelfEntry;
@@ -14,10 +18,6 @@ class SendTabToSelfEntry;
 }  // namespace send_tab_to_self
 
 class Profile;
-
-namespace content {
-class WebContents;
-}
 
 namespace send_tab_to_self {
 
@@ -32,6 +32,10 @@ base::WeakPtr<content::WebContents> OpenEntryInNewForegroundTab(
 base::WeakPtr<content::WebContents> OpenEntryInNewBackgroundTab(
     Profile* profile,
     const SendTabToSelfEntry& entry);
+
+// Shows a success toast confirming that the tab was successfully sent, if
+// `kSendTabToSelfPostSendToast` is enabled.
+void ShowTabSentSuccessToast(content::WebContents* web_contents);
 
 }  // namespace send_tab_to_self
 

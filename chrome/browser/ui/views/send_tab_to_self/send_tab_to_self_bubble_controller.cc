@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
+#include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_util.h"
 #include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_controller.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_view.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_toolbar_bubble_controller.h"
@@ -197,6 +198,9 @@ void SendTabToSelfBubbleController::HandleSendTabToDeviceResult(
   switch (result) {
     case SendTabToSelfResult::kSuccess:
     case SendTabToSelfResult::kSuccessThrottled:
+      if (base::FeatureList::IsEnabled(kSendTabToSelfPostSendToast)) {
+        ShowTabSentSuccessToast(&GetWebContents());
+      }
       break;
     case SendTabToSelfResult::kFailureInvalidUrl:
     case SendTabToSelfResult::kFailureNotTrackingMetadata:

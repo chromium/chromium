@@ -56,7 +56,8 @@ enum class ToastId {
   kSkillSavedWithoutInvokeButton = 33,
   kSendTabToSelfTabOpened = 34,
   kSendTabToSelfTabsOpenedInBackground = 35,
-  kMaxValue = kSendTabToSelfTabsOpenedInBackground,
+  kSendTabToSelfSuccess = 36,
+  kMaxValue = kSendTabToSelfSuccess,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/toasts/enums.xml:ToastId)
 

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_context_menu_delegate.h"
 
+#include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/profiles/profile.h"
@@ -13,9 +15,11 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #include "content/public/browser/web_contents.h"
@@ -33,6 +37,28 @@ static_assert(IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_DEVICE_LAST -
                   kMaxDevices,
               "kMaxDevices must match the number of command IDs reserved for "
               "target devices in chrome_command_ids.h");
+
+void OnSendTabToDeviceComplete(base::WeakPtr<content::WebContents> web_contents,
+                               SendTabToSelfResult result) {
+  switch (result) {
+    case SendTabToSelfResult::kSuccess:
+    case SendTabToSelfResult::kSuccessThrottled:
+      if (web_contents &&
+          base::FeatureList::IsEnabled(kSendTabToSelfPostSendToast)) {
+        ShowTabSentSuccessToast(web_contents.get());
+      }
+      break;
+    case SendTabToSelfResult::kFailureInvalidUrl:
+    case SendTabToSelfResult::kFailureNotTrackingMetadata:
+    case SendTabToSelfResult::kFailureModelNotReady:
+    case SendTabToSelfResult::kFailureCommitAttemptFailed:
+    case SendTabToSelfResult::kFailureCommitAttemptError:
+    case SendTabToSelfResult::kFailureSyncDisabled:
+    case SendTabToSelfResult::kFailureEntryRemoved:
+    case SendTabToSelfResult::kFailureCommitTimeout:
+      break;
+  }
+}
 
 }  // namespace
 
@@ -133,9 +159,10 @@ void SendTabToSelfContextMenuDelegate::ExecuteCommand(int command_id,
     SendTabToSelfPageHandler* handler =
         SendTabToSelfPageHandler::GetOrCreateForWebContents(
             web_contents_.get());
-    handler->SendTabToDevice(devices_[device_index].cache_guid,
-                             web_contents_->GetLastCommittedURL(),
-                             base::UTF16ToUTF8(web_contents_->GetTitle()));
+    handler->SendTabToDevice(
+        devices_[device_index].cache_guid, web_contents_->GetLastCommittedURL(),
+        base::UTF16ToUTF8(web_contents_->GetTitle()),
+        base::BindOnce(&OnSendTabToDeviceComplete, web_contents_));
   }
 }
 

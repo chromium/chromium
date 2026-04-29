@@ -44,6 +44,10 @@ BASE_DECLARE_FEATURE(kSendTabToSelfAutoOpen);
 // list of devices directly.
 BASE_DECLARE_FEATURE(kSendTabToSelfShowTargetsInContextMenus);
 
+// If this feature is enabled, a toast will be shown after a tab is successfully
+// sent.
+BASE_DECLARE_FEATURE(kSendTabToSelfPostSendToast);
+
 #if BUILDFLAG(IS_IOS)
 // If this feature is enabled, users can schedule tab reminder iOS push
 // notifications.

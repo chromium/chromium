@@ -79,6 +79,8 @@ std::string_view GetToastName(ToastId toast_id) {
       return "SendTabToSelfOpened";
     case ToastId::kSendTabToSelfTabsOpenedInBackground:
       return "SendTabToSelfTabsOpenedInBackground";
+    case ToastId::kSendTabToSelfSuccess:
+      return "SendTabToSelfSuccess";
   }
 
   NOTREACHED();
