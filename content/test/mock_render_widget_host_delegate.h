@@ -66,6 +66,7 @@ class MockRenderWidgetHostDelegate
   input::RenderWidgetHostInputEventRouter* GetInputEventRouter() override;
   RenderWidgetHostImpl* GetFocusedRenderWidgetHost(
       RenderWidgetHostImpl* widget_host) override;
+  RenderWidgetHostImpl* GetRenderWidgetHostWithPageFocus() override;
   void SendScreenRects() override;
   TextInputManager* GetTextInputManager() override;
   bool IsFullscreen() override;

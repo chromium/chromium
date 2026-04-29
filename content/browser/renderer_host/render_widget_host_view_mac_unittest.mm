@@ -522,6 +522,7 @@ class RenderWidgetHostViewMacTest : public RenderViewHostImplTestHarness {
         process_host_->GetNextRoutingID(),
         /*for_frame_widget=*/true);
     host_->set_owner_delegate(&mock_owner_delegate_);
+    delegate_.set_focused_widget(host_.get());
     rwhv_mac_ = new RenderWidgetHostViewMac(host_.get());
     rwhv_cocoa_ = rwhv_mac_->GetInProcessNSView();
 

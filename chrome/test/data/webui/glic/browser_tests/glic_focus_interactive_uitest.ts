@@ -13,6 +13,14 @@ class GlicFocusInteractiveTest extends ApiTestFixtureBase {
     await runUntil(() => document.activeElement?.id === 'inputBox');
     await runUntil(() => document.hasFocus());
   }
+
+  async testBlurOnOmniboxFocus() {
+    await runUntil(() => document.hasFocus());
+    // Pass control to C++ to request focus on omnibox. This should trigger
+    // blur on the side panel.
+    await this.advanceToNextStep();
+    await runUntil(() => !document.hasFocus());
+  }
 }
 
 const TEST_FIXTURES = [

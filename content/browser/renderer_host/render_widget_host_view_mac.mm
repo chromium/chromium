@@ -46,6 +46,7 @@
 #include "content/browser/renderer_host/render_view_host_delegate.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/renderer_host/render_widget_helper.h"
+#include "content/browser/renderer_host/render_widget_host_delegate.h"
 #import "content/browser/renderer_host/text_input_client_mac.h"
 #include "content/browser/renderer_host/visible_time_request_trigger.h"
 #include "content/public/browser/browser_context.h"
@@ -1822,7 +1823,8 @@ void RenderWidgetHostViewMac::OnFirstResponderChanged(bool is_first_responder) {
   //   overwriting the valid focus set by OnWindowIsKeyChanged.
   //
   // - Losing focus:
-  //   - Only when the host is currently focused.
+  //   - When the widget is currently focused. The widget can be the main
+  //   frame's widget, or a guest view's widget.
   //   This prevents duplicate LostFocus notifications.
   if (is_first_responder_) {
     if (IsHeadless() || is_getting_focus_ || is_window_key_) {
@@ -1830,7 +1832,11 @@ void RenderWidgetHostViewMac::OnFirstResponderChanged(bool is_first_responder) {
       SetTextInputActive(true);
     }
   } else {
-    if (IsHeadless() || host()->is_focused()) {
+    bool has_focused_widget =
+        host()->delegate() &&
+        host()->delegate()->GetRenderWidgetHostWithPageFocus() &&
+        host()->delegate()->GetRenderWidgetHostWithPageFocus()->is_focused();
+    if (IsHeadless() || has_focused_widget) {
       SetTextInputActive(false);
       host()->LostFocus();
     }
