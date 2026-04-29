@@ -11,7 +11,7 @@
 import("//buildtools/deps_revisions.gni")
 
 assert(
-    libcxx_revision == "bcb59d372834c1a0f8aef51ab658429d92374a8b",
+    libcxx_revision == "99457fa555797f8c5ac3c076ca288d8481d3b23a",
     "libcxx_headers.gni and third_party/libc++ are out of sync.$0x0A$0x0AIf you were messing around with the libc++ repository, run:$0x0A`buildtools/third_party/libc++/generate_libcxx_headers.py`$0x0A$0x0AIf the script doesn't resolve the error, file a bug to msta@ with reproduction details.$0x0A")
 
 libcxx_headers = [
@@ -793,7 +793,6 @@ libcxx_headers = [
   "//third_party/libc++/src/include/__support/ibm/gettod_zos.h",
   "//third_party/libc++/src/include/__support/ibm/locale_mgmt_zos.h",
   "//third_party/libc++/src/include/__support/ibm/nanosleep.h",
-  "//third_party/libc++/src/include/__support/xlocale/__nop_locale_mgmt.h",
   "//third_party/libc++/src/include/__support/xlocale/__posix_l_fallback.h",
   "//third_party/libc++/src/include/__support/xlocale/__strtonum_fallback.h",
   "//third_party/libc++/src/include/__system_error/errc.h",
