@@ -11,6 +11,7 @@
 #include "build/branding_buildflags.h"
 #include "components/metrics/metrics_features.h"
 #include "components/metrics/metrics_pref_names.h"
+#include "components/metrics/metrics_reporting_choice_service.h"
 #include "components/metrics/metrics_reporting_level.h"
 #include "components/metrics/metrics_service.h"
 #include "components/metrics/metrics_switches.h"
@@ -24,27 +25,8 @@ namespace {
 bool g_force_official_enabled_test = false;
 
 bool IsMetricsReportingEnabledForOfficialBuild(PrefService* local_state) {
-  // TODO(b/493668490): Add appropriate Histograms if needed.
-  if ((!base::FeatureList::GetInstance() ||
-       base::FeatureList::IsEnabled(
-           features::kRestructureMetricsConsentSettings)) &&
-      local_state->GetBoolean(prefs::kMetricsReportingMigrationDone)) {
-    // If FeatureList is not initialized yet (e.g., during early startup), we
-    // can't check the feature flag. But if the user has already migrated, we
-    // know they were in the experiment, so we should assume the feature is
-    // enabled to avoid downgrading the entropy provider or crash reporting
-    // unnecessarily.
-    switch (static_cast<MetricsReportingLevel>(
-        local_state->GetInteger(prefs::kMetricsReportingLevel))) {
-      case MetricsReportingLevel::kBasic:
-      case MetricsReportingLevel::kAdvanced:
-        return true;
-      default:
-        return false;
-    }
-  }
-
-  return local_state->GetBoolean(prefs::kMetricsReportingEnabled);
+  return MetricsReportingChoiceService::IsBasicMetricsReportingEnabled(
+      local_state);
 }
 
 }  // namespace

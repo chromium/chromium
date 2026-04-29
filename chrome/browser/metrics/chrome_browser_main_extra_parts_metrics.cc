@@ -51,6 +51,8 @@
 #include "chrome/browser/web_applications/sampling_metrics_provider.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/metrics/android_metrics_helper.h"
+#include "components/metrics/metrics_reporting_choice_service.h"
+#include "components/metrics/metrics_service.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -1042,6 +1044,10 @@ void ChromeBrowserMainExtraPartsMetrics::PreBrowserStart() {
   flags_ui::PrefServiceFlagsStorage flags_storage(
       g_browser_process->local_state());
   about_flags::RecordUMAStatistics(&flags_storage, "Launch.FlagsAtStartup");
+
+  metrics::MetricsReportingChoiceService::InitSyntheticFieldTrial(
+      g_browser_process->local_state(),
+      g_browser_process->metrics_service()->GetSyntheticTrialRegistry());
 
   // Log once here at browser start rather than at each renderer launch.
   ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial("ClangPGO",

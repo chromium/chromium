@@ -10,6 +10,7 @@
 #include "components/country_codes/country_codes.h"
 #include "components/metrics/cloned_install_detector.h"
 #include "components/metrics/metrics_pref_names.h"
+#include "components/metrics/metrics_reporting_choice_service.h"
 #include "components/policy/policy_constants.h"
 #include "components/regional_capabilities/regional_capabilities_prefs.h"
 #include "components/regional_capabilities/regional_capabilities_switches.h"
@@ -37,6 +38,8 @@ SearchEngineChoiceServiceTestBase::SearchEngineChoiceServiceTestBase::
   local_state_.registry()->RegisterInt64Pref(
       prefs::kDefaultSearchProviderGuestModePrepopulatedId, 0);
   metrics::ClonedInstallDetector::RegisterPrefs(local_state_.registry());
+  metrics::MetricsReportingChoiceService::RegisterPrefs(
+      local_state_.registry());
 
   // Override the country checks to simulate being in Belgium.
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(

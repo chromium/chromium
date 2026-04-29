@@ -5,10 +5,12 @@
 #ifndef COMPONENTS_METRICS_METRICS_REPORTING_CHOICE_SERVICE_H_
 #define COMPONENTS_METRICS_METRICS_REPORTING_CHOICE_SERVICE_H_
 
-#include "base/memory/raw_ptr.h"
-
 class PrefRegistrySimple;
 class PrefService;
+
+namespace variations {
+class SyntheticTrialRegistry;
+}
 
 namespace metrics {
 
@@ -16,19 +18,38 @@ namespace metrics {
 // TODO(crbug.com/483043192): This feature is still under development.
 class MetricsReportingChoiceService {
  public:
-  explicit MetricsReportingChoiceService(PrefService* local_state);
-
-  MetricsReportingChoiceService(const MetricsReportingChoiceService&) = delete;
-  MetricsReportingChoiceService& operator=(
-      const MetricsReportingChoiceService&) = delete;
-
-  ~MetricsReportingChoiceService();
+  MetricsReportingChoiceService() = delete;
 
   // Registers local state prefs used by this class.
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
+  // Initializes the synthetic field trial for the metrics consent restructure
+  // feature and caches the current feature state to local state for the next
+  // session.
+  static void InitSyntheticFieldTrial(
+      PrefService* local_state,
+      variations::SyntheticTrialRegistry* synthetic_trial_registry);
+
+  // Returns true if kMetricsReportingLevel is set to either kBasic or
+  // kAdvanced, which means that basic metrics reporting is enabled.
+  static bool IsBasicMetricsReportingEnabled(const PrefService* local_state);
+
+  // Returns true if the metrics consent restructure feature is enabled.
+  static bool IsMetricsConsentRestructureFeatureEnabled(
+      const PrefService* local_state);
+
+  // Returns true if the metrics consent restructure should be used. This is
+  // different from IsMetricsConsentRestructureFeatureEnabled() in that it also
+  // checks if the migration has been completed (kMetricsReportingMigrationDone
+  // is true).
+  static bool ShouldUseMetricsConsentRestructure(
+      const PrefService* local_state);
+
+  // Clears the static cached feature state. Used only for testing.
+  static void ClearCachedFeatureStateForTesting();
+
  private:
-  raw_ptr<PrefService> local_state_;
+  friend class MetricsReportingChoiceServiceTest;
 };
 
 }  // namespace metrics

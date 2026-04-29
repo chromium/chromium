@@ -147,6 +147,11 @@ inline constexpr char kMetricsReportingLevel[] =
 // consent state to the new three-level metrics reporting consent state.
 inline constexpr char kMetricsReportingMigrationDone[] =
     "user_experience_metrics.consent_migration_done";
+// Boolean pref indicating the cached state of the
+// kRestructureMetricsConsentSettings feature. Caching is needed to keep the
+// flag immutable throughout the current session.
+inline constexpr char kMetricsConsentRestructureFeatureState[] =
+    "user_experience_metrics.consent_restructure_feature_state";
 // The metrics client session ID.
 inline constexpr char kMetricsSessionID[] =
     "user_experience_metrics.session_id";

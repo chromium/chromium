@@ -18,6 +18,7 @@
 
 namespace metrics {
 class MetricsServiceAccessor;
+class MetricsReportingChoiceService;
 }  // namespace metrics
 
 namespace content {
@@ -99,11 +100,12 @@ class COMPONENT_EXPORT(VARIATIONS) SyntheticTrialRegistry {
   std::vector<ActiveGroupId> GetCurrentSyntheticFieldTrialsForTest() const;
 
  private:
-  friend metrics::MetricsServiceAccessor;
-  friend FieldTrialsProvider;
-  friend FieldTrialsProviderTest;
-  friend SyntheticTrialRegistryTest;
-  friend content::SyntheticTrialSyncer;
+  friend class metrics::MetricsServiceAccessor;
+  friend class metrics::MetricsReportingChoiceService;
+  friend class FieldTrialsProvider;
+  friend class FieldTrialsProviderTest;
+  friend class SyntheticTrialRegistryTest;
+  friend class content::SyntheticTrialSyncer;
   FRIEND_TEST_ALL_PREFIXES(SyntheticTrialRegistryTest, RegisterSyntheticTrial);
   FRIEND_TEST_ALL_PREFIXES(SyntheticTrialRegistryTest,
                            GetSyntheticFieldTrialsOlderThanSuffix);
