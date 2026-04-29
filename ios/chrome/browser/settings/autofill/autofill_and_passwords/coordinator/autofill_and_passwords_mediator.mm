@@ -58,9 +58,10 @@
                    _userPrefService->GetBoolean(
                        autofill::prefs::kAutofillProfileEnabled)];
 
-    // TODO(crbug.com/491417038): Introduce logic to enable/disable identity
-    // docs based on pref value.
+    // TODO(crbug.com/491417038): Introduce logic to enable/disable values based
+    // on pref value.
     [_consumer setIdentityDocsEnabled:YES];
+    [_consumer setTravelInfoEnabled:YES];
   }
 }
 

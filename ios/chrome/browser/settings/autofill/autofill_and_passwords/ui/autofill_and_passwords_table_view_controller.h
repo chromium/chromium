@@ -35,6 +35,10 @@
 - (void)autofillAndPasswordsTableViewControllerDidSelectIdentityDocs:
     (AutofillAndPasswordsTableViewController*)controller;
 
+// Called when the user taps on the travel info item.
+- (void)autofillAndPasswordsTableViewControllerDidSelectTravelInfo:
+    (AutofillAndPasswordsTableViewController*)controller;
+
 @end
 
 // The TableView for Autofill and passwords settings page.

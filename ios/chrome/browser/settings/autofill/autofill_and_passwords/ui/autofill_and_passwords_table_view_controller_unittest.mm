@@ -48,11 +48,12 @@ TEST_F(AutofillAndPasswordsTableViewControllerTest, TestModel) {
   [view_controller setAutofillCreditCardEnabled:NO];
   [view_controller setAutofillProfileEnabled:YES];
   [view_controller setIdentityDocsEnabled:YES];
+  [view_controller setTravelInfoEnabled:NO];
 
   [view_controller loadModel];
 
   EXPECT_EQ(1, NumberOfSections());
-  EXPECT_EQ(4, NumberOfItemsInSection(0));
+  EXPECT_EQ(5, NumberOfItemsInSection(0));
 
   CheckDetailItemTextWithIds(IDS_IOS_PASSWORD_MANAGER, IDS_IOS_SETTING_ON, 0,
                              0);
@@ -60,9 +61,10 @@ TEST_F(AutofillAndPasswordsTableViewControllerTest, TestModel) {
                              0, 1);
   CheckDetailItemTextWithIds(IDS_AUTOFILL_CONTACT_INFO_TITLE,
                              IDS_IOS_SETTING_ON, 0, 2);
-
   CheckDetailItemTextWithIds(IDS_AUTOFILL_IDENTITY_DOCS_TITLE,
                              IDS_IOS_SETTING_ON, 0, 3);
+  CheckDetailItemTextWithIds(IDS_AUTOFILL_TRAVEL_TITLE, IDS_IOS_SETTING_OFF, 0,
+                             4);
 }
 
 }  // namespace

@@ -10,6 +10,9 @@ source_set("autofill_and_passwords") {
     "identity_docs_consumer.h",
     "identity_docs_table_view_controller.h",
     "identity_docs_table_view_controller.mm",
+    "travel_info_consumer.h",
+    "travel_info_table_view_controller.h",
+    "travel_info_table_view_controller.mm",
   ]
   deps = [
     "//base",

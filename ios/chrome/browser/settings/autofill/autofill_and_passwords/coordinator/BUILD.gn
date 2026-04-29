@@ -12,6 +12,10 @@ source_set("coordinator") {
     "identity_docs_coordinator.mm",
     "identity_docs_mediator.h",
     "identity_docs_mediator.mm",
+    "travel_info_coordinator.h",
+    "travel_info_coordinator.mm",
+    "travel_info_mediator.h",
+    "travel_info_mediator.mm",
   ]
   deps = [
     "//base",

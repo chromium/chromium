@@ -63,6 +63,10 @@ NSString* IdentityDocsItemDetailText(BOOL enabled) {
   return DetailTextForEnabledState(enabled);
 }
 
+NSString* TravelInfoItemDetailText(BOOL enabled) {
+  return DetailTextForEnabledState(enabled);
+}
+
 TableViewDetailIconItem* PasswordsItem(BOOL enabled) {
   NSString* passwordsSectionTitle =
       l10n_util::GetNSString(IDS_IOS_PASSWORD_MANAGER);
@@ -104,4 +108,11 @@ TableViewDetailIconItem* IdentityDocsItem(BOOL enabled) {
       IdentityDocsItemDetailText(enabled),
       DefaultSettingsRootSymbol(kPersonTextRectangleSymbol),
       kSettingsIdentityDocsCellId);
+}
+
+TableViewDetailIconItem* TravelInfoItem(BOOL enabled) {
+  NSString* title = l10n_util::GetNSString(IDS_AUTOFILL_TRAVEL_TITLE);
+  return DetailItemWithType(
+      SettingsItemTypeTravelInfo, title, TravelInfoItemDetailText(enabled),
+      DefaultSettingsRootSymbol(kSuitcaseSymbol), kSettingsTravelInfoCellId);
 }

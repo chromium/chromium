@@ -146,6 +146,7 @@ NSString* const kQRCodeSymbol = @"qrcode";
 NSString* const kPrinterSymbol = @"printer";
 NSString* const kAirplaneSymbol = @"airplane";
 NSString* const kAirplaneUpRightSymbol = @"airplane.up.right";
+NSString* const kSuitcaseSymbol = @"suitcase";
 NSString* const kCarSymbol = @"car";
 NSString* const kCreditCardSymbol = @"creditcard";
 NSString* const kMicrophoneFillSymbol = @"mic.fill";

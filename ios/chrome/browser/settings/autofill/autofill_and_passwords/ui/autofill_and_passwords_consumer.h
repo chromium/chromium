@@ -22,6 +22,9 @@
 // Sets the identity docs item with detail text.
 - (void)setIdentityDocsEnabled:(BOOL)enabled;
 
+// Sets the travel info item with detail text.
+- (void)setTravelInfoEnabled:(BOOL)enabled;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SETTINGS_AUTOFILL_AUTOFILL_AND_PASSWORDS_UI_AUTOFILL_AND_PASSWORDS_CONSUMER_H_

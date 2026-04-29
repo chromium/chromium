@@ -156,6 +156,7 @@ extern NSString* const kQRCodeSymbol;
 extern NSString* const kPrinterSymbol;
 extern NSString* const kAirplaneSymbol;
 extern NSString* const kAirplaneUpRightSymbol API_AVAILABLE(ios(26.0));
+extern NSString* const kSuitcaseSymbol;
 extern NSString* const kCarSymbol;
 extern NSString* const kCreditCardSymbol;
 extern NSString* const kMicrophoneFillSymbol;
