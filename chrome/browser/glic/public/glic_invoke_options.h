@@ -50,6 +50,7 @@ struct DefaultSurface {
 // Create a new tab in the specified window, or a new window if null.
 struct NewTab {
   raw_ptr<BrowserWindowInterface> window = nullptr;
+  bool open_in_foreground = true;
 };
 // The target for the invocation.
 struct Target {

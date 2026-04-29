@@ -102,6 +102,22 @@ class ShowInstanceTask : public GlicInvokeTask {
   ShowOptions options_;
 };
 
+class MaybeInitializeHiddenClientTask : public GlicInvokeTask {
+ public:
+  MaybeInitializeHiddenClientTask(GlicInstanceImpl* instance,
+                                  mojom::InvocationSource invocation_source,
+                                  mojom::FreOverride fre_override);
+  ~MaybeInitializeHiddenClientTask() override;
+  void Start(base::OnceClosure done_callback) override;
+  void OnSequenceCompleted(bool success) override;
+
+ private:
+  raw_ptr<GlicInstanceImpl> instance_;
+  mojom::InvocationSource invocation_source_;
+  mojom::FreOverride fre_override_;
+  bool forced_shown_ = false;
+};
+
 // Task that waits for the web client to be connected to the host.
 class WaitForClientConnectedTask : public GlicInvokeTask,
                                    public Host::Observer {

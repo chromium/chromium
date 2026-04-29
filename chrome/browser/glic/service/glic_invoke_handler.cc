@@ -27,7 +27,9 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/base/base_window.h"
+
 namespace glic {
 
 namespace {
@@ -84,8 +86,23 @@ GlicInvokeHandler::ResolvedTarget GlicInvokeHandler::ResolveTargetSurface(
       return {nullptr, /*is_new=*/false};
     }
     tabs::TabInterface* tab = TabListInterface::From(browser)->OpenTab(
-        chrome::ChromeUINewTabURLAsGURL(), -1);
+        chrome::ChromeUINewTabURLAsGURL(), -1, new_tab_opt->open_in_foreground);
     if (tab) {
+      // TODO(b/503310855): Test/handle Android invocations to see if same
+      // issue is present.
+#if !BUILDFLAG(IS_ANDROID)
+      if (!new_tab_opt->open_in_foreground) {
+        // Force the background tab to start loading. Chromium defers loading
+        // for background tabs to save resources. Calling WasShown() and then
+        // WasHidden() tricks the WebContents into thinking it was shown,
+        // triggering the load.
+        content::WebContents* contents = tab->GetContents();
+        if (contents) {
+          contents->WasShown();
+          contents->WasHidden();
+        }
+      }
+#endif
       return {tab, /*is_new=*/true};
     }
     return {nullptr, /*is_new=*/false};
@@ -153,6 +170,7 @@ void GlicInvokeHandler::Invoke() {
 
   auto show_options = ShowOptions::ForSidePanel(
       *tab_, GlicPinTrigger::kInstanceCreation, options_.invocation_source);
+
   if (options_.fre_override != mojom::FreOverride::kUnspecified) {
     if (RequiresOverrideIncompatibleFre()) {
       OnError(GlicInvokeError::kInvalidConfiguration);
@@ -169,6 +187,8 @@ void GlicInvokeHandler::Invoke() {
 
   tasks.push_back(
       std::make_unique<ShowInstanceTask>(&*instance_, show_options));
+  tasks.push_back(std::make_unique<MaybeInitializeHiddenClientTask>(
+      &*instance_, options_.invocation_source, options_.fre_override));
   tasks.push_back(
       std::make_unique<WaitForClientConnectedTask>(&instance_->host()));
   if (options_.on_client_connected) {

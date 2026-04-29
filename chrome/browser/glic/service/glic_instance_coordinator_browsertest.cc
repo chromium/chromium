@@ -1464,6 +1464,46 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
   EXPECT_TRUE(coordinator().GetInstanceForTab(active_tab));
 }
 
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_InvokeWithNewTabBackground DISABLED_InvokeWithNewTabBackground
+#else
+#define MAYBE_InvokeWithNewTabBackground InvokeWithNewTabBackground
+#endif
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
+                       MAYBE_InvokeWithNewTabBackground) {
+  BrowserWindowInterface* browser_window =
+      GetTabListInterface()->GetActiveTab()->GetBrowserWindowInterface();
+  int tab_count_before = GetTabListInterface()->GetTabCount();
+  tabs::TabInterface* active_tab_before = GetTabListInterface()->GetActiveTab();
+
+  base::test::TestFuture<void> success_future;
+  GlicInvokeOptions options(
+      glic::Target(glic::NewTab{browser_window, /*open_in_foreground=*/false}),
+      mojom::InvocationSource::kOsButton);
+  options.on_success = success_future.GetCallback();
+
+  GlicTestTabAddedWaiter waiter(GetProfile());
+
+  coordinator().Invoke(std::move(options));
+
+  tabs::TabInterface* new_tab = waiter.Wait();
+  ASSERT_TRUE(new_tab);
+
+  EXPECT_TRUE(success_future.Wait());
+
+  // Verify a new tab was added.
+  EXPECT_EQ(GetTabListInterface()->GetTabCount(), tab_count_before + 1);
+
+  // Verify the active tab is STILL the old one.
+  tabs::TabInterface* active_tab_after = GetTabListInterface()->GetActiveTab();
+  ASSERT_TRUE(active_tab_after);
+  EXPECT_EQ(active_tab_after, active_tab_before);
+  EXPECT_NE(active_tab_after, new_tab);
+
+  // Verify instance exists for the new tab.
+  EXPECT_TRUE(coordinator().GetInstanceForTab(new_tab));
+}
+
 // This test is disabled on Android because creating a new window behavior
 // differs and is not supported by this test setup.
 #if !BUILDFLAG(IS_ANDROID)
