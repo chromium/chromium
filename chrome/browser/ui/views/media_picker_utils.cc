@@ -9,13 +9,24 @@
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/browser/view_type_utils.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
+
+namespace {
+
+bool IsExtensionPopupWebContents(content::WebContents* web_contents) {
+  return extensions::GetViewType(web_contents) ==
+         extensions::mojom::ViewType::kExtensionPopup;
+}
+
+}  // namespace
 
 bool MediaPickerCanShowAsWebModal(content::WebContents* web_contents) {
   return web_contents && !web_contents->IsNeverComposited() &&
          web_modal::WebContentsModalDialogManager::FromWebContents(
-             web_contents);
+             web_contents) &&
+         !IsExtensionPopupWebContents(web_contents);
 }
 
 views::Widget* CreateMediaPickerDialogWidget(BrowserWindowInterface* browser,

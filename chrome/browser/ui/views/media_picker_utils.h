@@ -19,6 +19,9 @@ class Widget;
 }  // namespace views
 
 // Returns whether the media picker dialog can show as a web modal window.
+// If the picker was spawned from an invisible page (e.g. an extension
+// background page) or there is no associated tab (e.g. an extension popup menu)
+// then returns false.
 bool MediaPickerCanShowAsWebModal(content::WebContents* web_contents);
 
 // Creates a dialog and hides an extension popup if present.

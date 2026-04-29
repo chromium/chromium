@@ -5298,6 +5298,9 @@ if (!is_android) {
         ]
       } else {
         sources += [
+          # Depends on Aura which is not supported on Mac.
+          "../browser/ui/views/media_picker_utils_browsertest.cc",
+
           # TaskManagerView is not used or built on Mac.
           "../browser/ui/views/task_manager_view_browsertest.cc",
 
