@@ -11,6 +11,7 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/metrics/metrics_pref_names.h"
+#import "components/metrics/metrics_reporting_choice_service.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
@@ -295,11 +296,8 @@ enum class SigninScreenState {
       self.consumer.screenIntent = SigninScreenConsumerScreenIntentSigninOnly;
       break;
     case SigninScreenState::kFirstRunAsFirstScreen:
-      BOOL metricReportingDisabled =
-          self.localPrefService->IsManagedPreference(
-              metrics::prefs::kMetricsReportingEnabled) &&
-          !self.localPrefService->GetBoolean(
-              metrics::prefs::kMetricsReportingEnabled);
+      BOOL metricReportingDisabled = metrics::MetricsReportingChoiceService::
+          IsMetricsReportingDisabledByPolicy(self.localPrefService);
       self.consumer.screenIntent =
           metricReportingDisabled
               ? SigninScreenConsumerScreenIntentWelcomeWithoutUMAAndSignin

@@ -9,6 +9,7 @@
 #include "chrome/browser/preloading/preloading_prefs.h"
 #include "chrome/common/pref_names.h"
 #include "components/metrics/metrics_pref_names.h"
+#include "components/metrics/metrics_reporting_choice_service.h"
 #include "components/policy/core/common/features.h"
 #include "components/prefs/pref_service.h"
 
@@ -18,7 +19,8 @@
 static bool JNI_PrivacyPreferencesManagerImpl_IsMetricsReportingEnabled(
     JNIEnv* env) {
   PrefService* local_state = g_browser_process->local_state();
-  return local_state->GetBoolean(metrics::prefs::kMetricsReportingEnabled);
+  return metrics::MetricsReportingChoiceService::IsBasicMetricsReportingEnabled(
+      local_state);
 }
 
 static void JNI_PrivacyPreferencesManagerImpl_SetMetricsReportingEnabled(
@@ -32,9 +34,8 @@ static bool
 JNI_PrivacyPreferencesManagerImpl_IsMetricsReportingDisabledByPolicy(
     JNIEnv* env) {
   const PrefService* local_state = g_browser_process->local_state();
-  return local_state->IsManagedPreference(
-             metrics::prefs::kMetricsReportingEnabled) &&
-         !local_state->GetBoolean(metrics::prefs::kMetricsReportingEnabled);
+  return metrics::MetricsReportingChoiceService::
+      IsMetricsReportingDisabledByPolicy(local_state);
 }
 
 DEFINE_JNI(PrivacyPreferencesManagerImpl)

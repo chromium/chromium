@@ -55,6 +55,7 @@
 #include "components/drive/file_system_core_util.h"
 #include "components/drive/resource_metadata_storage.h"
 #include "components/metrics/metrics_pref_names.h"
+#include "components/metrics/metrics_reporting_choice_service.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
@@ -525,7 +526,8 @@ class DriveIntegrationService::DriveFsHolder
   }
 
   bool IsMetricsCollectionEnabled() override {
-    return local_state_->GetBoolean(metrics::prefs::kMetricsReportingEnabled);
+    return metrics::MetricsReportingChoiceService::
+        IsBasicMetricsReportingEnabled(&*local_state_);
   }
 
   void OnMountFailed(MountFailure failure,

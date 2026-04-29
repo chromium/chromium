@@ -14,6 +14,7 @@
 #import "base/task/sequenced_task_runner.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/metrics/metrics_pref_names.h"
+#import "components/metrics/metrics_reporting_choice_service.h"
 #import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/consent_level.h"
@@ -231,9 +232,9 @@
         break;
       }
 
-      bool metricsReportingEnabled =
-          GetApplicationContext()->GetLocalState()->GetBoolean(
-              metrics::prefs::kMetricsReportingEnabled);
+      bool metricsReportingEnabled = metrics::MetricsReportingChoiceService::
+          IsBasicMetricsReportingEnabled(
+              GetApplicationContext()->GetLocalState());
       _passkeyKeychainProviderBridge = [[PasskeyKeychainProviderBridge alloc]
             initWithEnableLogging:metricsReportingEnabled
           navigationItemTitleView:

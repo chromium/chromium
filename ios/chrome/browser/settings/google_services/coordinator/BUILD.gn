@@ -13,6 +13,7 @@ source_set("coordinator") {
   deps = [
     "//base",
     "//components/google/core/common",
+    "//components/metrics",
     "//components/metrics:metrics_pref_names",
     "//components/password_manager/core/common",
     "//components/password_manager/core/common:features",

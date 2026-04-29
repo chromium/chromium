@@ -147,7 +147,7 @@ if (!is_cronet_build || is_ios) {
     }
   }
 
-  static_library("metrics") {
+  source_set("metrics") {
     sources = [
       "call_stacks/call_stack_profile_metrics_provider.cc",
       "child_histogram_fetcher_impl.cc",

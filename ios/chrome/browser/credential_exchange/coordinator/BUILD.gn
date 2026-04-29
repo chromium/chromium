@@ -12,6 +12,7 @@ source_set("import_coordinator") {
   public_deps = [ "//ios/chrome/browser/shared/coordinator/chrome_coordinator" ]
   deps = [
     "//base",
+    "//components/metrics",
     "//components/metrics:metrics_pref_names",
     "//components/password_manager/core/browser/import:importer",
     "//components/password_manager/core/browser/ui",
@@ -65,6 +66,7 @@ source_set("export_coordinator") {
   public_deps = [ "//ios/chrome/browser/shared/coordinator/chrome_coordinator" ]
   deps = [
     "//components/favicon_base",
+    "//components/metrics",
     "//components/metrics:metrics_pref_names",
     "//components/password_manager/core/browser/ui",
     "//components/prefs",
