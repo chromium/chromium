@@ -159,10 +159,6 @@ version = "0.5.4"
 default-features = false
 features = ["flac", "mp3", "pcm", "vorbis"]
 
-[dependencies.symphonia-adapter-libopus]
-version = "0.2"
-default-features = false
-
 [dependencies.syn]
 version = "2"
 features = ["full"]

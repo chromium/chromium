@@ -286,7 +286,6 @@ dependencies = [
  "strum 0.28.0",
  "subtle",
  "symphonia",
- "symphonia-adapter-libopus",
  "syn",
  "temporal_capi",
  "temporal_rs",
@@ -1203,11 +1202,6 @@ version = "1.21.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
-name = "opusic-sys"
-version = "0.6.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-
-[[package]]
 name = "ordered-float"
 version = "5.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1570,16 +1564,6 @@ dependencies = [
  "symphonia-codec-vorbis",
  "symphonia-core",
  "symphonia-metadata",
-]
-
-[[package]]
-name = "symphonia-adapter-libopus"
-version = "0.2.7"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-dependencies = [
- "log",
- "opusic-sys",
- "symphonia-core",
 ]
 
 [[package]]
