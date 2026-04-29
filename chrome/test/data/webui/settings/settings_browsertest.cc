@@ -267,6 +267,10 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, ExtensionControlledIndicator) {
   RunTest("settings/extension_controlled_indicator_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(SettingsTest, ExtensionControlledMessage) {
+  RunTest("settings/extension_controlled_message_test.js", "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(SettingsTest, FileSystemSettingsSiteDetails) {
   RunTest("settings/file_system_site_details_test.js", "mocha.run()");
 }

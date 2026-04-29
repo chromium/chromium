@@ -64,22 +64,39 @@
       </cr-toast>
     </div>
     <template is="dom-if"
-        if="[[prefs.default_search_provider_data.template_url_data.extensionId]]">
-      <div class="cr-row continuation">
-        <extension-controlled-indicator
-            class="flex"
-            extension-id="[[
-                prefs.default_search_provider_data.template_url_data.extensionId]]"
-            extension-name="[[
-                prefs.default_search_provider_data.template_url_data.controlledByName]]"
-            extension-can-be-disabled="[[
-                prefs.default_search_provider_data.template_url_data.extensionCanBeDisabled]]"
-            on-disable-extension="onDisableExtension_">
-        </extension-controlled-indicator>
-      </div>
+        if="[[
+            prefs.default_search_provider_data.template_url_data.extensionId]]">
+      <template is="dom-if" if="[[searchSettingsUpdateEnabled_]]">
+        <div class="cr-row">
+          <extension-controlled-message
+              class="flex"
+              extension-id="[[prefs.default_search_provider_data
+                  .template_url_data.extensionId]]"
+              extension-name="[[prefs.default_search_provider_data
+                  .template_url_data.controlledByName]]"
+              extension-can-be-disabled="[[prefs.default_search_provider_data
+                  .template_url_data.extensionCanBeDisabled]]"
+              on-disable-extension="onDisableExtension_">
+          </extension-controlled-message>
+        </div>
+      </template>
+      <template is="dom-if" if="[[!searchSettingsUpdateEnabled_]]">
+        <div class="cr-row continuation">
+          <extension-controlled-indicator
+              class="flex"
+              extension-id="[[prefs.default_search_provider_data
+                  .template_url_data.extensionId]]"
+              extension-name="[[prefs.default_search_provider_data
+                  .template_url_data.controlledByName]]"
+              extension-can-be-disabled="[[prefs.default_search_provider_data
+                  .template_url_data.extensionCanBeDisabled]]"
+              on-disable-extension="onDisableExtension_">
+          </extension-controlled-indicator>
+        </div>
+      </template>
     </template>
 
-    <template is="dom-if" if="[[!searchSettingsUpdateEnabled_]]" restamp>
+    <template is="dom-if" if="[[!searchSettingsUpdateEnabled_]]">
       <!-- Manage search engines -->
       <cr-link-row class="hr" id="enginesSubpageTrigger"
           label="$i18n{searchEnginesManageSiteSearch}"

@@ -1,0 +1,23 @@
+<style include="settings-shared">
+  :host {
+    align-items: center;
+    display: flex;
+    padding: 16px 0px;
+    min-height: var(--cr-section-min-height);
+  }
+
+  cr-icon {
+    fill: var(--cr-link-color);
+    margin-inline-end: 16px;
+  }
+</style>
+
+<cr-icon icon="cr:info-outline"></cr-icon>
+<div class="flex">
+  $i18n{controlledByExtensionTitle}
+  <div class="secondary"
+      inner-h-t-m-l="[[getDisclaimerHtml_(extensionName,
+          extensionCanBeDisabled)]]"
+      on-click="onDisclaimerClick_">
+  </div>
+</div>

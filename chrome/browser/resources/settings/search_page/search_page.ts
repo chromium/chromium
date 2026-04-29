@@ -13,6 +13,7 @@ import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import '/shared/settings/controls/cr_policy_pref_indicator.js';
 import '/shared/settings/controls/extension_controlled_indicator.js';
+import './extension_controlled_message.js';
 import './search_engine_icon.js';
 import './search_engine_list_dialog.js';
 import '../settings_page/settings_section.js';

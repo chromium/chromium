@@ -2882,6 +2882,12 @@ void AddSearchStrings(content::WebUIDataSource* html_source, Profile* profile) {
       {"searchKeyboardKeyTitle", IDS_SETTINGS_SEARCH_KEYBOARD_KEY_TITLE},
       {"searchKeyboardKeyDescription",
        IDS_SETTINGS_SEARCH_KEYBOARD_KEY_DESCRIPTION},
+      {"controlledByExtensionTitle",
+       IDS_SETTINGS_CONTROLLED_BY_EXTENSION_TITLE},
+      {"controlledByExtensionWithDisableOption",
+       IDS_SETTINGS_CONTROLLED_BY_EXTENSION_WITH_DISABLE_AND_MANAGE_OPTION},
+      {"controlledByExtensionWithoutDisableOption",
+       IDS_SETTINGS_CONTROLLED_BY_EXTENSION_WITH_MANAGE_OPTION},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
   html_source->AddString("searchExplanationLearnMoreURL",
