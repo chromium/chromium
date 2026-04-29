@@ -58,8 +58,8 @@ public class GoogleBottomBarViewCreator {
      */
     public GoogleBottomBarViewCreator(
             Activity activity,
-            Supplier<Tab> tabProvider,
-            Supplier<ShareDelegate> shareDelegateSupplier,
+            Supplier<@Nullable Tab> tabProvider,
+            Supplier<@Nullable ShareDelegate> shareDelegateSupplier,
             BottomBarConfig config) {
         mContext = activity;
         mConfig = config;

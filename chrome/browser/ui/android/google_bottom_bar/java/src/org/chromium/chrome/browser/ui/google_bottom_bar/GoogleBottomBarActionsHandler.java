@@ -55,13 +55,13 @@ class GoogleBottomBarActionsHandler {
             "launched_from_chrome_search_entrypoint";
 
     private final Activity mActivity;
-    private final Supplier<Tab> mTabProvider;
-    private final Supplier<ShareDelegate> mShareDelegateSupplier;
+    private final Supplier<@Nullable Tab> mTabProvider;
+    private final Supplier<@Nullable ShareDelegate> mShareDelegateSupplier;
 
     GoogleBottomBarActionsHandler(
             Activity activity,
-            Supplier<Tab> tabProvider,
-            Supplier<ShareDelegate> shareDelegateSupplier) {
+            Supplier<@Nullable Tab> tabProvider,
+            Supplier<@Nullable ShareDelegate> shareDelegateSupplier) {
         mActivity = activity;
         mTabProvider = tabProvider;
         mShareDelegateSupplier = shareDelegateSupplier;

@@ -1424,7 +1424,7 @@ public class CustomTabsConnection {
      *
      * @param intent The intent that launched the custom tab.
      */
-    boolean isAppForAccountMismatchNotification(Intent intent) {
+    boolean isAppForAccountMismatchNotification(@Nullable Intent intent) {
         return false;
     }
 
@@ -1439,7 +1439,7 @@ public class CustomTabsConnection {
      * @return Whether the notification was shown or not.
      */
     boolean shouldShowAccountMismatchNotification(
-            Intent intent,
+            @Nullable Intent intent,
             Profile profile,
             String accountId,
             long lastShownTime,

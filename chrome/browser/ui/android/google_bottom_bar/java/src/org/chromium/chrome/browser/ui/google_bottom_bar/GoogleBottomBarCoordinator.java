@@ -9,6 +9,7 @@ import android.content.Context;
 import android.view.View;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -55,8 +56,8 @@ public class GoogleBottomBarCoordinator {
      */
     public GoogleBottomBarCoordinator(
             Activity activity,
-            Supplier<Tab> tabProvider,
-            Supplier<ShareDelegate> shareDelegateSupplier,
+            Supplier<@Nullable Tab> tabProvider,
+            Supplier<@Nullable ShareDelegate> shareDelegateSupplier,
             GoogleBottomBarIntentParams googleBottomBarIntentParams,
             List<CustomButtonParams> customButtonsOnGoogleBottomBar) {
         mContext = activity;

@@ -151,7 +151,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
     private EdgeToEdgeSupplier.@Nullable ChangeObserver mEdgeToEdgeChangeObserver;
     private final Runnable mOpenInBrowserRunnable;
     private @Nullable WebAppHeaderLayoutCoordinator mWebAppHeaderLayoutCoordinator;
-    private final Supplier<BrowserServicesThemeColorProvider> mWebAppThemeColorProvider;
+    private final @Nullable Supplier<BrowserServicesThemeColorProvider> mWebAppThemeColorProvider;
     private final @Nullable String mClientPackageName;
     private boolean mHeaderAsOverlay;
     private @Nullable DesktopPopupHeaderLayoutCoordinator mDesktopPopupHeaderLayoutCoordinator;
@@ -368,27 +368,32 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                     MismatchNotificationController.SuppressedReason.CCT_IS_OFF_THE_RECORD);
             return null;
         }
+        var identityManager = IdentityServicesProvider.get().getIdentityManager(profile);
+        assert identityManager != null;
+        var snackbarManager = mSnackbarManagerSupplier.get();
+        assert snackbarManager != null;
         return new MismatchNotificationChecker(
                 mActivity,
                 mWindowAndroid,
                 mActivityResultTracker,
                 DeviceLockActivityLauncherImpl.get(),
                 profile,
-                IdentityServicesProvider.get().getIdentityManager(profile),
+                identityManager,
                 SigninAndHistorySyncActivityLauncherImpl.get(),
                 getBottomSheetControllerSupplier(),
                 mModalDialogManagerSupplier.get(),
-                mSnackbarManagerSupplier.get(),
+                snackbarManager,
                 (signinDelegate, accountId, lastShownTime, mimData, onClose) -> {
+                    assert mimData != null;
                     boolean show =
                             connection.shouldShowAccountMismatchNotification(
                                     intent, profile, accountId, lastShownTime, mimData);
                     if (show) {
+
+                        var accountName = connection.getAppAccountName(intent);
+                        assert accountName != null;
                         MismatchNotificationController.get(
-                                        mWindowAndroid,
-                                        profile,
-                                        connection.getAppAccountName(intent),
-                                        signinDelegate)
+                                        mWindowAndroid, profile, accountName, signinDelegate)
                                 .showSignedOutMessage(mActivity, onClose);
                     }
                     return show;
@@ -789,13 +794,16 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
             OneshotSupplierImpl<AppMenuCoordinator> appMenuSupplier = new OneshotSupplierImpl<>();
             appMenuSupplier.set(mAppMenuCoordinator);
 
+            assert mWebAppThemeColorProvider != null;
+            var webAppThemeColorProvider = mWebAppThemeColorProvider.get();
+            assert webAppThemeColorProvider != null;
             mWebAppHeaderLayoutCoordinator =
                     new WebAppHeaderLayoutCoordinator(
                             mActivity,
                             mActivity.findViewById(R.id.web_app_header_layout),
                             desktopWindowStateManager,
                             mActivityTabProvider.asObservable(),
-                            mWebAppThemeColorProvider.get(),
+                            webAppThemeColorProvider,
                             intentDataProvider,
                             getScrimManager(),
                             (tab) -> {
