@@ -2546,7 +2546,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
         boolean incognito = mSupportedProfileType == SupportedProfileType.OFF_THE_RECORD;
 
         String url = null;
-        GURL homepageGurl = HomepageManager.getInstance().getHomepageGurl(incognito);
+        GURL homepageGurl = HomepageManager.getInstance().getHomepageGurlForZeroTabs(incognito);
 
         ProfileProvider profileProvider = getProfileProviderSupplier().get();
         Profile profile =

@@ -140,6 +140,17 @@ public class PartnerBrowserCustomizations {
         return homepageUrl != null && !homepageUrl.isEmpty();
     }
 
+    /** {@see #isHomepageProviderAvailableAndEnabled()} but for zero tabs state decisions. */
+    public boolean isHomepageProviderAvailableAndEnabledForZeroTabs() {
+        // Pretend this capability is not available if the feature is disabled for zero tabs.
+        if (ChromeFeatureList.sDisablePartnerHomepageAndroid.isEnabled()
+                && ChromeFeatureList.sDisablePartnerHomepageAndroidForZeroTabs.getValue()) {
+            return false;
+        }
+        GURL homepageUrl = getHomePageUrl();
+        return homepageUrl != null && !homepageUrl.isEmpty();
+    }
+
     /**
      * @return Whether incognito mode is disabled by the partner.
      */

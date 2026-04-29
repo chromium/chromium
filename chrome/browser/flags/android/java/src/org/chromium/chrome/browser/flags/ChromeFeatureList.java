@@ -1606,6 +1606,12 @@ public abstract class ChromeFeatureList {
             newStringCachedFeatureParam(
                     DESKTOP_UA_ON_CONNECTED_DISPLAY, "ext_display_desktop_ua_oem_allowlist", "");
 
+    public static final BooleanCachedFeatureParam sDisablePartnerHomepageAndroidForZeroTabs =
+            newBooleanCachedFeatureParam(
+                    DISABLE_PARTNER_HOMEPAGE_ANDROID,
+                    "disable_partner_homepage_android_for_zero_tabs",
+                    false);
+
     /**
      * A cached parameter used for specifying the height of the Google Bottom Bar in DP, when its
      * variant is NO_VARIANT.
@@ -1902,6 +1908,7 @@ public abstract class ChromeFeatureList {
                     sClankStartupLatencyInjectionAmountMs,
                     sDefaultBrowserPromoEntryPointShowAppMenu,
                     sDesktopUAAllowedOnExternalDisplayForOem,
+                    sDisablePartnerHomepageAndroidForZeroTabs,
                     sEdgeToEdgeEverywhereOemList,
                     sEdgeToEdgeEverywhereOemMinVersions,
                     sEdgeToEdgeTabletInvisibleBottomChinMinWidth,

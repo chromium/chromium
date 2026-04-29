@@ -507,4 +507,38 @@ public class HomepageManagerTest {
                 JUnitTestGURLs.EXAMPLE_URL,
                 homepageManager.getDefaultHomepageGurl(/* isIncognito= */ false));
     }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.DISABLE_PARTNER_HOMEPAGE_ANDROID
+                + ":disable_partner_homepage_android_for_zero_tabs/true"
+    })
+    public void testGetHomepageGurlForZeroTabs_DisablePartnerHomepage() {
+        HomepageManager homepageManager = HomepageManager.getInstance();
+
+        when(mPartnerBrowserCustomizations.isHomepageProviderAvailableAndEnabledForZeroTabs())
+                .thenReturn(false);
+        when(mPartnerBrowserCustomizations.getHomePageUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
+
+        Assert.assertEquals(
+                UrlConstantResolverFactory.getOriginalResolver().getNtpGurl(),
+                homepageManager.getHomepageGurlForZeroTabs(/* isIncognito= */ false));
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.DISABLE_PARTNER_HOMEPAGE_ANDROID
+                + ":disable_partner_homepage_android_for_zero_tabs/false"
+    })
+    public void testGetHomepageGurlForZeroTabs_PartnerHomepageEnabled() {
+        HomepageManager homepageManager = HomepageManager.getInstance();
+
+        when(mPartnerBrowserCustomizations.isHomepageProviderAvailableAndEnabledForZeroTabs())
+                .thenReturn(true);
+        when(mPartnerBrowserCustomizations.getHomePageUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
+
+        Assert.assertEquals(
+                JUnitTestGURLs.EXAMPLE_URL,
+                homepageManager.getHomepageGurlForZeroTabs(/* isIncognito= */ false));
+    }
 }
