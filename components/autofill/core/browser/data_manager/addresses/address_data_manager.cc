@@ -133,6 +133,10 @@ AddressDataManager::AddressDataManager(
   }
 }
 
+base::WeakPtr<AddressDataManager> AddressDataManager::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 AddressDataManager::~AddressDataManager() {
   CancelPendingQuery(pending_profile_query_);
 }

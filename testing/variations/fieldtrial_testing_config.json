@@ -2718,6 +2718,26 @@
             ]
         }
     ],
+    "AutofillEnableDeduplicationOnBackgroundThread": [
+        {
+            "platforms": [
+                "windows",
+                "mac",
+                "linux",
+                "chromeos",
+                "android",
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillEnableDeduplicationOnBackgroundThread"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillEnableDownstreamCardAwarenessIph": [
         {
             "platforms": [

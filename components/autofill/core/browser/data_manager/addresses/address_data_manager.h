@@ -100,6 +100,8 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence {
   AddressDataManager(const AddressDataManager&) = delete;
   AddressDataManager& operator=(const AddressDataManager&) = delete;
 
+  base::WeakPtr<AddressDataManager> GetWeakPtr();
+
   // Only intended to be called during shutdown of the parent `KeyedService`.
   void Shutdown();
 
