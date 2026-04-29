@@ -57,6 +57,11 @@ const base::FeatureParam<bool> kGlicRequireConsentForInvokeParam(
     "glic_require_consent_for_invoke",
     false);
 
+const base::FeatureParam<bool> kGlicOpenNewTabInForegroundParam(
+    &kApiGlicAccessFromGoogleWebpage,
+    "glic_open_new_tab_in_foreground",
+    true);
+
 BASE_FEATURE(kApiProxyOverrideRulesPrivate, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kApiRuntimeGetPlatformInfoNaClArch,
