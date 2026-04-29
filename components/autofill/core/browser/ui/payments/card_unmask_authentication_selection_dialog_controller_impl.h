@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_UI_PAYMENTS_CARD_UNMASK_AUTHENTICATION_SELECTION_DIALOG_CONTROLLER_IMPL_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_UI_PAYMENTS_CARD_UNMASK_AUTHENTICATION_SELECTION_DIALOG_CONTROLLER_IMPL_H_
 
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -20,6 +21,19 @@ class CardUnmaskAuthenticationSelectionDialog;
 class CardUnmaskAuthenticationSelectionDialogControllerImpl
     : public CardUnmaskAuthenticationSelectionDialogController {
  public:
+// A wrapper around a pointer to a CardUnmaskAuthenticationSelectionDialog. This
+// abstracts away the platform-specific differences in dialog lifecycle
+// management. On Android, the UI is owned by the C++ layer, so we use a
+// std::unique_ptr to manage its lifetime. On other platforms (Desktop, iOS),
+// the UI manages its own lifetime, so we hold a raw_ptr to it.
+#if BUILDFLAG(IS_ANDROID)
+  using CardUnmaskAuthenticationSelectionDialogWrapper =
+      std::unique_ptr<CardUnmaskAuthenticationSelectionDialog>;
+#else
+  using CardUnmaskAuthenticationSelectionDialogWrapper =
+      raw_ptr<CardUnmaskAuthenticationSelectionDialog>;
+#endif  // BUILDFLAG(IS_ANDROID)
+
   // Initialize this controller's parameters.
   // `challenge_options` must not be empty.
   CardUnmaskAuthenticationSelectionDialogControllerImpl(
@@ -65,7 +79,7 @@ class CardUnmaskAuthenticationSelectionDialogControllerImpl
           selected_challenge_option_id) override;
 
   CardUnmaskAuthenticationSelectionDialog* GetDialogViewForTesting() {
-    return dialog_view_;
+    return dialog_view_wrapper_.get();
   }
 
   const CardUnmaskChallengeOption::ChallengeOptionId&
@@ -90,7 +104,7 @@ class CardUnmaskAuthenticationSelectionDialogControllerImpl
   // Contains all of the challenge options an issuer has for the user.
   std::vector<CardUnmaskChallengeOption> challenge_options_;
 
-  raw_ptr<CardUnmaskAuthenticationSelectionDialog> dialog_view_ = nullptr;
+  CardUnmaskAuthenticationSelectionDialogWrapper dialog_view_wrapper_;
 
   // Callback invoked when the user confirmed an authentication method to use.
   base::OnceCallback<void(const std::string&)>

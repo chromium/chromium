@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ui.autofill;
 
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -76,13 +78,37 @@ public class AuthenticatorSelectionDialogBridgeTest {
 
     @Test
     @SmallTest
-    public void testBasic() throws Exception {
+    public void testDismissDialog() throws Exception {
         Assert.assertNotNull(mModalDialogManager.getShownDialogModel());
 
         mAuthenticatorSelectionDialogBridge.dismiss();
         // Verify that no dialog is shown and that the callback is triggered on dismissal.
         Assert.assertNull(mModalDialogManager.getShownDialogModel());
         verify(mNativeMock, times(1)).onDismissed(NATIVE_AUTHENTICATOR_SELECTION_DIALOG_VIEW);
+    }
+
+    @Test
+    @SmallTest
+    public void testDismissTwice() throws Exception {
+        mAuthenticatorSelectionDialogBridge.dismiss();
+        mAuthenticatorSelectionDialogBridge.dismiss();
+
+        // Make sure the native side is notified only once.
+        verify(mNativeMock, times(1)).onDismissed(NATIVE_AUTHENTICATOR_SELECTION_DIALOG_VIEW);
+    }
+
+    @Test
+    @SmallTest
+    public void testNativeMethodsNotCalledAfterDialogDismissed() {
+        mAuthenticatorSelectionDialogBridge.dismiss();
+        mAuthenticatorSelectionDialogBridge.onOptionSelected(OPTION_1.getIdentifier());
+        mAuthenticatorSelectionDialogBridge.onDialogDismissed();
+
+        verify(mNativeMock, times(1)).onDismissed(NATIVE_AUTHENTICATOR_SELECTION_DIALOG_VIEW);
+        // The Java side can't call the native side after the dialog was dismissed from the C++
+        // side.
+        verify(mNativeMock, times(0)).onOptionSelected(anyInt(), anyString());
+        verify(mNativeMock, times(0)).onDismissed(anyInt());
     }
 
     @Test

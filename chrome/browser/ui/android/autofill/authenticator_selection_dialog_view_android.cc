@@ -42,13 +42,19 @@ void AuthenticatorSelectionDialogViewAndroid::Dismiss(bool user_closed_dialog,
                                                       bool server_success) {
   if (controller_) {
     controller_->OnDialogClosed(user_closed_dialog, server_success);
+    // AuthenticatorSelectionDialogViewAndroid::Dismiss is called by the C++
+    // controller which destroys the native view immediately afterwards. Reset
+    // the `controller_` to guarantee that no further calls to `controller_`
+    // happen.
     controller_ = nullptr;
   }
-  JNIEnv* env = base::android::AttachCurrentThread();
   if (java_object_) {
-    Java_AuthenticatorSelectionDialogBridge_dismiss(env, java_object_);
-  } else {
-    delete this;
+    // Multiple calls to `AuthenticatorSelectionDialogViewAndroid::Dismiss`
+    // should result in only 1 call to
+    // `Java_AuthenticatorSelectionDialogBridge_dismiss`.
+    Java_AuthenticatorSelectionDialogBridge_dismiss(
+        base::android::AttachCurrentThread(), java_object_);
+    java_object_.Reset();
   }
 }
 
@@ -67,18 +73,25 @@ void AuthenticatorSelectionDialogViewAndroid::OnOptionSelected(
 }
 
 void AuthenticatorSelectionDialogViewAndroid::OnDismissed(JNIEnv* env) {
-  // If |controller_| is not nullptr, it means the dismissal was triggered by
-  // user cancellation.
   if (controller_) {
     controller_->OnDialogClosed(/*user_closed_dialog=*/true,
                                 /*server_success=*/false);
+    // The dismissal can happen either from C++ or from Java. `OnDismissed` is
+    // called from the Java side. `OnDialogClosed` must be called exactly once,
+    // the controller is reset immediately to guarantee that.
     controller_ = nullptr;
   }
-  delete this;
 }
 
 bool AuthenticatorSelectionDialogViewAndroid::ShowDialog(
     ui::WindowAndroid* window_android) {
+  // Don't show the dialog twice. This should be impossible as long as
+  // `ShowDialog` is called only from
+  // `CreateAndShowCardUnmaskAuthenticationSelectionDialog`.
+  CHECK(!java_object_, base::NotFatalUntil::M150);
+  if (java_object_) {
+    return false;
+  }
   JNIEnv* env = base::android::AttachCurrentThread();
   DCHECK(window_android);
 
