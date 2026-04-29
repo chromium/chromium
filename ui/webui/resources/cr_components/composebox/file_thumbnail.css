@@ -8,7 +8,7 @@
  * #css_wrapper_metadata_end */
 
 :host {
-  --image-chip-border-radius_: 8px;
+  --image-chip-border-radius_: var(--file-chip-border-radius, 8px);
 }
 
 @keyframes spin {
@@ -85,7 +85,7 @@
 .chip {
   align-items: center;
   background-color: var(--color-composebox-file-chip-background);
-  border-radius: 8px;
+  border-radius: var(--file-chip-border-radius, 8px);
   display: flex;
   gap: var(--file-chip-internal-gap, 6px);
   height: var(--file-chip-height, 44px);
@@ -104,7 +104,7 @@
 .thumbnail {
   align-items: center;
   background-color: var(--color-composebox-file-chip-favicon-background);
-  border-radius: var(--file-chip-border-radius, 4px);
+  border-radius: var(--file-thumbnail-border-radius, 4px);
   box-sizing: var(--file-chip-thumbnail-box-sizing, content-box);
   display: flex;
   flex-shrink: 0;
@@ -184,7 +184,7 @@
     var(--color-composebox-file-carousel-remove-gradient-start) 85.29%,
     var(--color-composebox-file-carousel-remove-gradient-end) 123.53%
   );
-  border-radius: 0 8px 8px 0;
+  border-radius: 0 var(--file-chip-border-radius, 8px) var(--file-chip-border-radius, 8px) 0;
   display: var(--file-chip-gradient-protection-display, block);
   inline-size: var(--gradient-protection-width, 56px);
   inset-block: 0;
@@ -272,7 +272,7 @@
 #spinnerOverlay {
   align-items: center;
   background-color: rgba(255, 255, 255, 0.5);
-  border-radius: var(--file-chip-border-radius, 50%);
+  border-radius: var(--file-thumbnail-border-radius, 50%);
   display: flex;
   height: 100%;
   justify-content: center;

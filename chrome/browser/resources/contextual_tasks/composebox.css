@@ -62,6 +62,14 @@
   --context-carousel-top-position: 12px;
   --cr-composebox-text-container-padding-block-start: 12px;
   --contextual-entrypoint-and-carousel-context-menu-container-padding-inline-start: 8px;
+  --file-thumbnail-border-radius: 6px;
+  --file-chip-border-radius: 12px;
+}
+
+@media (prefers-color-scheme: light) {
+  :host([energy-effect-enabled_]) {
+    --color-composebox-file-chip-background: rgba(240, 242, 245, 1);
+  }
 }
 
 /* Composebox default colors are for light mode on AIM results. */
