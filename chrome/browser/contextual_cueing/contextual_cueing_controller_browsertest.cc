@@ -30,11 +30,15 @@
 #include "chrome/browser/ui/side_panel/side_panel_ui_provider.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
+#include "chrome/browser/ui/views/infobars/confirm_infobar.h"
 #include "chrome/browser/ui/views/page_action/page_action_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_observer.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/user_education/mock_browser_user_education_interface.h"
+#include "components/infobars/content/content_infobar_manager.h"
+#include "components/infobars/core/confirm_infobar_delegate.h"
+#include "components/infobars/core/infobar.h"
 #include "components/optimization_guide/proto/features/contextual_cueing.pb.h"
 #include "components/sync/test/test_sync_service.h"
 #include "content/public/browser/navigation_entry.h"
@@ -52,6 +56,16 @@ std::unique_ptr<KeyedService> CreateTestSyncService(
 }
 
 using ::testing::Return;
+
+class TestInfoBarDelegate : public ConfirmInfoBarDelegate {
+ public:
+  TestInfoBarDelegate() = default;
+  ~TestInfoBarDelegate() override = default;
+  infobars::InfoBarDelegate::InfoBarIdentifier GetIdentifier() const override {
+    return infobars::InfoBarDelegate::TEST_INFOBAR;
+  }
+  std::u16string GetMessageText() const override { return u"Test InfoBar"; }
+};
 
 class ContextualCueingControllerBrowserTest : public SigninBrowserTestBase {
  public:
@@ -667,6 +681,35 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
   histogram_tester.ExpectUniqueSample(
       "ContextualCueing.V2.Decision",
       ContextualCueingDecision::kSidePanelShowing, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
+                       CueNotShowingBecauseInfobarVisible) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("https://www.activetab.com/abc"),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
+  base::HistogramTester histogram_tester;
+  SeedExecutionResult(MakeCompleteResponse());
+
+  // Add an infobar to the active tab.
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  auto* infobar_manager =
+      infobars::ContentInfoBarManager::FromWebContents(web_contents);
+  infobar_manager->AddInfoBar(std::make_unique<ConfirmInfoBar>(
+      std::make_unique<TestInfoBarDelegate>()));
+  ASSERT_FALSE(infobar_manager->infobars().empty());
+
+  SimulateFilterPassed();
+
+  optimization_guide::RetryForHistogramUntilCountReached(
+      &histogram_tester, "ContextualCueing.V2.Decision", 1);
+
+  histogram_tester.ExpectUniqueSample("ContextualCueing.V2.Decision",
+                                      ContextualCueingDecision::kInfobarVisible,
+                                      1);
 }
 
 // TODO(crbug.com/503910711): Add a test for hiding on navigation

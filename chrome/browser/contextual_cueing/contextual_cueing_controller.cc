@@ -36,6 +36,7 @@
 #include "chrome/browser/ui/side_panel/side_panel_ui_provider.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "components/google/core/common/google_util.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/optimization_guide/core/optimization_guide_common.mojom.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/features/contextual_cueing.pb.h"
@@ -430,6 +431,13 @@ bool ContextualCueingController::IsAllowedToShowCue() {
     return false;
   }
 #endif
+
+  auto* infobar_manager = infobars::ContentInfoBarManager::FromWebContents(
+      tab_list_interface_->GetActiveTab()->GetContents());
+  if (infobar_manager && !infobar_manager->infobars().empty()) {
+    RecordContextualCueingDecision(ContextualCueingDecision::kInfobarVisible);
+    return false;
+  }
 
   if (auto* side_panel_ui =
           SidePanelUIProvider::From(browser_window_interface_);
