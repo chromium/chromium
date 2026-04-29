@@ -19,6 +19,7 @@
 #include "ash/test/ash_test_util.h"
 #include "base/test/gtest_tags.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/vector2d.h"
@@ -485,12 +486,15 @@ TEST_F(GifRecordingTest, RecordingTypeIsRespected) {
       /*sample=*/1,  // 1 second.
       /*expected_bucket_count=*/1);
 
-  // Since getting the file size is an async operation, we have to run a loop
-  // until the task that records the file size is done.
-  base::RunLoop().RunUntilIdle();
-  histogram_tester_.ExpectTotalCount(
-      "Ash.CaptureModeController.GIFRecordingFileSize.ClamshellMode",
-      /*expected_count=*/1);
+  const char kFileSizeHistogramName[] =
+      "Ash.CaptureModeController.GIFRecordingFileSize.ClamshellMode";
+  // Since getting the file size is an async operation, wait until the task that
+  // records the file size is done.
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return !histogram_tester_.GetAllSamples(kFileSizeHistogramName).empty();
+  }));
+  histogram_tester_.ExpectTotalCount(kFileSizeHistogramName,
+                                     /*expected_count=*/1);
 }
 
 TEST_F(GifRecordingTest, RegionToScreenRatioHistogram) {
