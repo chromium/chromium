@@ -217,6 +217,10 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
         mWebContents = tab.getWebContents();
         mScrollState = ScrollState.from(tab);
 
+        if (mWebContents != null) {
+            mSignalsPaused = LinkToTextHelper.hasTextFragment(mWebContents.getVisibleUrl());
+        }
+
         mGestureStateListener =
                 new GestureStateListener() {
                     @Override
@@ -288,10 +292,12 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
                     }
 
                     @Override
-                    public void didStartNavigationInPrimaryMainFrame(
+                    public void didFinishNavigationInPrimaryMainFrame(
                             NavigationHandle navigationHandle) {
-                        mSignalsPaused =
-                                LinkToTextHelper.hasTextFragment(navigationHandle.getUrl());
+                        if (navigationHandle.hasCommitted()) {
+                            mSignalsPaused =
+                                    LinkToTextHelper.hasTextFragment(navigationHandle.getUrl());
+                        }
                     }
                 };
 

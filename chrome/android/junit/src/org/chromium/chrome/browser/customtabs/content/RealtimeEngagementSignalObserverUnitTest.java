@@ -56,8 +56,10 @@ import org.chromium.content.browser.RenderCoordinatesImpl;
 import org.chromium.content_public.browser.GestureStateListener;
 import org.chromium.content_public.browser.LoadCommittedDetails;
 import org.chromium.content_public.browser.NavigationHandle;
+import org.chromium.content_public.browser.Page;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.content_public.browser.test.mock.MockWebContents;
+import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.util.List;
@@ -622,8 +624,7 @@ public class RealtimeEngagementSignalObserverUnitTest {
     public void onAllTabsClosed_hadInteraction_sendsOnSessionEnded() {
         initializeTabForTest();
         doReturn(false).when(mTabInteractionRecorder).didGetUserInteraction();
-        Tab tab = mock(Tab.class);
-        doReturn(mock(MockWebContents.class)).when(tab).getWebContents();
+        Tab tab = createNewTab();
         mEngagementSignalObserver.onObservingDifferentTab(tab);
         doReturn(true).when(mTabInteractionRecorder).didGetUserInteraction();
         // Close all tabs.
@@ -640,8 +641,7 @@ public class RealtimeEngagementSignalObserverUnitTest {
     public void onAllTabsClosed_hadInteractionButIncognito_sendsOnSessionEnded() {
         initializeTabForTest();
         doReturn(false).when(mTabInteractionRecorder).didGetUserInteraction();
-        Tab tab = mock(Tab.class);
-        doReturn(mock(MockWebContents.class)).when(tab).getWebContents();
+        Tab tab = createNewTab();
         // Turn on Incognito.
         doReturn(true).when(tab).isIncognito();
         mEngagementSignalObserver.onObservingDifferentTab(tab);
@@ -662,10 +662,9 @@ public class RealtimeEngagementSignalObserverUnitTest {
     public void onAllTabsClosed_hadInteractionButUmaUploadDisabled_sendsOnSessionEnded() {
         initializeTabForTest();
         doReturn(false).when(mTabInteractionRecorder).didGetUserInteraction();
-        Tab tab = mock(Tab.class);
+        Tab tab = createNewTab();
         // Disable UMA upload.
         doReturn(false).when(mPrivacyPreferencesManagerImpl).isUsageAndCrashReportingPermitted();
-        doReturn(mock(MockWebContents.class)).when(tab).getWebContents();
         mEngagementSignalObserver.onObservingDifferentTab(tab);
         // User interacted.
         doReturn(true).when(mTabInteractionRecorder).didGetUserInteraction();
@@ -684,8 +683,7 @@ public class RealtimeEngagementSignalObserverUnitTest {
     public void onAllTabsClosed_hadNoInteraction_sendsOnSessionEnded() {
         initializeTabForTest();
         doReturn(false).when(mTabInteractionRecorder).didGetUserInteraction();
-        Tab tab = mock(Tab.class);
-        doReturn(mock(MockWebContents.class)).when(tab).getWebContents();
+        Tab tab = createNewTab();
         mEngagementSignalObserver.onObservingDifferentTab(tab);
         // Close all tabs.
         mEngagementSignalObserver.onClosingStateChanged(tab, true);
@@ -701,8 +699,7 @@ public class RealtimeEngagementSignalObserverUnitTest {
         initializeTabForTest();
         mEngagementSignalObserver.suppressNextSessionEndedCall();
         doReturn(false).when(mTabInteractionRecorder).didGetUserInteraction();
-        Tab tab = mock(Tab.class);
-        doReturn(mock(MockWebContents.class)).when(tab).getWebContents();
+        Tab tab = createNewTab();
         mEngagementSignalObserver.onObservingDifferentTab(tab);
         // Close all tabs.
         mEngagementSignalObserver.onClosingStateChanged(tab, true);
@@ -720,8 +717,7 @@ public class RealtimeEngagementSignalObserverUnitTest {
     public void onDestroyed_hadInteraction_sendsOnSessionEnded() {
         initializeTabForTest();
         doReturn(false).when(mTabInteractionRecorder).didGetUserInteraction();
-        Tab tab = mock(Tab.class);
-        doReturn(mock(MockWebContents.class)).when(tab).getWebContents();
+        Tab tab = createNewTab();
         mEngagementSignalObserver.onObservingDifferentTab(tab);
         // User interacted.
         doReturn(true).when(mTabInteractionRecorder).didGetUserInteraction();
@@ -737,8 +733,7 @@ public class RealtimeEngagementSignalObserverUnitTest {
     public void onDestroyed_hadInteractionButIncognito_sendsOnSessionEnded() {
         initializeTabForTest();
         doReturn(false).when(mTabInteractionRecorder).didGetUserInteraction();
-        Tab tab = mock(Tab.class);
-        doReturn(mock(MockWebContents.class)).when(tab).getWebContents();
+        Tab tab = createNewTab();
         // Turn on Incognito.
         doReturn(true).when(tab).isIncognito();
         mEngagementSignalObserver.onObservingDifferentTab(tab);
@@ -756,8 +751,7 @@ public class RealtimeEngagementSignalObserverUnitTest {
     public void onDestroyed_hadInteractionButUmaUploadDisabled_sendsOnSessionEnded() {
         initializeTabForTest();
         doReturn(false).when(mTabInteractionRecorder).didGetUserInteraction();
-        Tab tab = mock(Tab.class);
-        doReturn(mock(MockWebContents.class)).when(tab).getWebContents();
+        Tab tab = createNewTab();
         // Disable UMA upload.
         doReturn(false).when(mPrivacyPreferencesManagerImpl).isUsageAndCrashReportingPermitted();
         mEngagementSignalObserver.onObservingDifferentTab(tab);
@@ -777,8 +771,7 @@ public class RealtimeEngagementSignalObserverUnitTest {
         // Suspend.
         mEngagementSignalObserver.suppressNextSessionEndedCall();
         doReturn(false).when(mTabInteractionRecorder).didGetUserInteraction();
-        Tab tab = mock(Tab.class);
-        doReturn(mock(MockWebContents.class)).when(tab).getWebContents();
+        Tab tab = createNewTab();
         mEngagementSignalObserver.onObservingDifferentTab(tab);
         // Tab destroyed.
         mEngagementSignalObserver.onDestroyed(tab);
@@ -798,10 +791,8 @@ public class RealtimeEngagementSignalObserverUnitTest {
         WebContentsObserver webContentsObserver = captureWebContentsObserver();
 
         // Navigate to a URL with text fragment.
-        var navigationHandle =
-                NavigationHandle.createForTesting(
-                        JUnitTestGURLs.TEXT_FRAGMENT_URL, false, 0, false);
-        webContentsObserver.didStartNavigationInPrimaryMainFrame(navigationHandle);
+        var navigationHandle = createNavigationHandle(JUnitTestGURLs.TEXT_FRAGMENT_URL);
+        webContentsObserver.didFinishNavigationInPrimaryMainFrame(navigationHandle);
 
         // Do a scroll.
         listener.onScrollStarted(0, SCROLL_EXTENT, false);
@@ -816,9 +807,8 @@ public class RealtimeEngagementSignalObserverUnitTest {
                 .onGreatestScrollPercentageIncreased(anyInt(), any(Bundle.class));
 
         // Navigate back to a URL with no text fragment.
-        var navigationHandle2 =
-                NavigationHandle.createForTesting(JUnitTestGURLs.HTTP_URL, false, 0, false);
-        webContentsObserver.didStartNavigationInPrimaryMainFrame(navigationHandle2);
+        var navigationHandle2 = createNavigationHandle(JUnitTestGURLs.HTTP_URL);
+        webContentsObserver.didFinishNavigationInPrimaryMainFrame(navigationHandle2);
 
         // Do a scroll.
         listener.onScrollStarted(24, SCROLL_EXTENT, false);
@@ -915,8 +905,7 @@ public class RealtimeEngagementSignalObserverUnitTest {
     @Test
     public void collectUserInteraction_hasInteraction() {
         initializeTabForTest();
-        Tab tab = mock(Tab.class);
-        doReturn(mock(MockWebContents.class)).when(tab).getWebContents();
+        Tab tab = createNewTab();
         when(mTabInteractionRecorder.didGetUserInteraction()).thenReturn(true);
 
         assertFalse(mEngagementSignalObserver.getDidGetUserInteractionForTesting());
@@ -929,8 +918,7 @@ public class RealtimeEngagementSignalObserverUnitTest {
     @Test
     public void collectUserInteraction_hasNoInteraction() {
         initializeTabForTest();
-        Tab tab = mock(Tab.class);
-        doReturn(mock(MockWebContents.class)).when(tab).getWebContents();
+        Tab tab = createNewTab();
         when(mTabInteractionRecorder.didGetUserInteraction()).thenReturn(false);
 
         mEngagementSignalObserver.collectUserInteraction(tab);
@@ -945,6 +933,8 @@ public class RealtimeEngagementSignalObserverUnitTest {
     @SuppressWarnings("DirectInvocationOnMock")
     private void initializeTabForTest(boolean hadScrollDown) {
         Tab initialTab = env.prepareTab();
+        when(initialTab.getWebContents().getVisibleUrl()).thenReturn(GURL.emptyGURL());
+        when(env.webContents.getVisibleUrl()).thenReturn(GURL.emptyGURL());
         doAnswer(
                         invocation -> {
                             CustomTabTabObserver observer = invocation.getArgument(0);
@@ -1003,5 +993,34 @@ public class RealtimeEngagementSignalObserverUnitTest {
         listener.onScrollStarted(0, 1, false);
         listener.onVerticalScrollDirectionChanged(false, 0.1f);
         listener.onScrollEnded(1, 0);
+    }
+
+    private NavigationHandle createNavigationHandle(GURL url) {
+        var navigationHandle = NavigationHandle.createForTesting(url, false, 0, false);
+        navigationHandle.didFinish(
+                url,
+                /* isErrorPage= */ false,
+                /* hasCommitted= */ true,
+                /* isPrimaryMainFrameFragmentNavigation= */ false,
+                /* isDownload= */ false,
+                /* isValidSearchFormUrl= */ false,
+                /* transition= */ 0,
+                /* errorCode= */ 0,
+                /* errorDescription= */ "",
+                /* httpStatuscode= */ 200,
+                /* isExternalProtocol= */ false,
+                /* isPdf= */ false,
+                /* mimeType= */ "",
+                Page.createForTesting(),
+                /* isSameOrigin= */ true);
+        return navigationHandle;
+    }
+
+    private Tab createNewTab() {
+        Tab tab = mock(Tab.class);
+        var webContents = mock(MockWebContents.class);
+        when(webContents.getVisibleUrl()).thenReturn(GURL.emptyGURL());
+        when(tab.getWebContents()).thenReturn(webContents);
+        return tab;
     }
 }
