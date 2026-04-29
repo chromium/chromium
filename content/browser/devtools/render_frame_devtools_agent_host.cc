@@ -264,7 +264,8 @@ void RenderFrameDevToolsAgentHost::AttachToWebContents(
 
 // static
 void RenderFrameDevToolsAgentHost::UpdateRawHeadersAccess(
-    RenderFrameHostImpl* rfh) {
+    RenderFrameHostImpl* rfh,
+    RenderFrameDevToolsAgentHost* force_include_host) {
   if (!rfh) {
     return;
   }
@@ -272,10 +273,10 @@ void RenderFrameDevToolsAgentHost::UpdateRawHeadersAccess(
   std::set<url::Origin> process_origins;
   for (const auto& entry : GetAgentHostInstances()) {
     RenderFrameHostImpl* frame_host = entry.second->frame_host_;
-    if (!frame_host)
+    if (!frame_host) {
       continue;
-    // Do not skip the nodes if they're about to get attached.
-    if (!entry.second->IsAttached() && entry.first != rfh->frame_tree_node()) {
+    }
+    if (!entry.second->IsAttached() && entry.second != force_include_host) {
       continue;
     }
     RenderProcessHost* process_host = frame_host->GetProcess();
@@ -438,7 +439,7 @@ bool RenderFrameDevToolsAgentHost::AttachSession(DevToolsSession* session) {
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   if (sessions().empty()) {
-    UpdateRawHeadersAccess(frame_host_);
+    UpdateRawHeadersAccess(frame_host_, this);
 #if BUILDFLAG(IS_ANDROID)
     GetWakeLock()->RequestWakeLock();
 #endif
@@ -449,7 +450,7 @@ bool RenderFrameDevToolsAgentHost::AttachSession(DevToolsSession* session) {
 void RenderFrameDevToolsAgentHost::DetachSession(DevToolsSession* session) {
   // Destroying session automatically detaches in renderer.
   if (sessions().empty()) {
-    UpdateRawHeadersAccess(frame_host_);
+    UpdateRawHeadersAccess(frame_host_, nullptr);
 #if BUILDFLAG(IS_ANDROID)
     GetWakeLock()->CancelWakeLock();
 #endif
@@ -528,7 +529,7 @@ void RenderFrameDevToolsAgentHost::DidFinishNavigation(
       NotifyNavigated();
 
     if (IsAttached()) {
-      UpdateRawHeadersAccess(frame_tree_node_->current_frame_host());
+      UpdateRawHeadersAccess(frame_tree_node_->current_frame_host(), nullptr);
     }
 
     // Same-document navigations don't get a new RFH, so there isn't really
@@ -567,7 +568,7 @@ void RenderFrameDevToolsAgentHost::UpdateFrameHost(
   RenderFrameHostImpl* old_host = frame_host_;
   ChangeFrameHostAndObservedProcess(frame_host);
   if (IsAttached())
-    UpdateRawHeadersAccess(old_host);
+    UpdateRawHeadersAccess(old_host, nullptr);
 
   std::vector<DevToolsSession*> restricted_sessions;
   for (DevToolsSession* session : sessions()) {
@@ -638,7 +639,7 @@ void RenderFrameDevToolsAgentHost::DestroyOnRenderFrameGone() {
   scoped_refptr<DevToolsAgentHost> retain_this;
   if (IsAttached()) {
     retain_this = ForceDetachAllSessionsImpl();
-    UpdateRawHeadersAccess(frame_host_);
+    UpdateRawHeadersAccess(frame_host_, nullptr);
   }
   WebContentsObserver::Observe(nullptr);
   ChangeFrameHostAndObservedProcess(nullptr);

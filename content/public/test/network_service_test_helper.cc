@@ -59,6 +59,7 @@
 #include "services/network/network_service.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/network_service_buildflags.h"
+#include "services/network/public/cpp/originating_process_id.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/network_change_manager.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
@@ -814,6 +815,16 @@ class NetworkServiceTestHelper::NetworkServiceTestImpl
             use_mock_url_session_url_loader);
   }
 #endif
+
+  void HasRawHeadersAccess(uint32_t process_id,
+                           const GURL& url,
+                           HasRawHeadersAccessCallback callback) override {
+    std::move(callback).Run(
+        network::NetworkService::GetNetworkServiceForTesting()
+            ->HasRawHeadersAccess(
+                network::OriginatingProcessId::FromUnsafeValue(process_id),
+                url));
+  }
 
  private:
   void OnMemoryPressure(

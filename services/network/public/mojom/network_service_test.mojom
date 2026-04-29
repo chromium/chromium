@@ -19,6 +19,7 @@ import "services/network/public/mojom/network_param.mojom";
 import "services/network/public/mojom/network_types.mojom";
 import "services/network/public/mojom/transferable_socket.mojom";
 import "services/network/public/mojom/x509_certificate.mojom";
+import "url/mojom/url.mojom";
 
 // Maps to net::RuleBasedHostResolverProc::Rule::ResolverType.
 //
@@ -266,4 +267,9 @@ interface NetworkServiceTest {
   [EnableIf=is_mac]
   SetUseMockURLSessionURLLoaderForTesting(
       bool use_mock_url_session_url_loader);
+
+  // Returns true if the network service has raw headers access for the given
+  // process ID and URL.
+  [Sync]
+  HasRawHeadersAccess(uint32 process_id, url.mojom.Url url) => (bool result);
 };

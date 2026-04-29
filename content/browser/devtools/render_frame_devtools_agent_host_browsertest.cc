@@ -7,12 +7,16 @@
 
 #include <string_view>
 
+#include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/devtools_agent_host_client.h"
+#include "content/public/browser/network_service_instance.h"
+#include "content/public/browser/network_service_util.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/result_codes.h"
@@ -27,6 +31,7 @@
 #include "content/shell/browser/shell.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
+#include "services/network/public/mojom/network_service_test.mojom.h"
 
 namespace content {
 
@@ -303,6 +308,88 @@ IN_PROC_BROWSER_TEST_F(RenderFrameDevToolsAgentHostFencedFrameBrowserTest,
 
   EXPECT_FALSE(IsCrashed(main_rfh_devtools_agent));
   EXPECT_TRUE(IsCrashed(ff_rfh_devtools_agent));
+}
+
+class RenderFrameDevToolsAgentHostRawHeadersBrowserTest
+    : public RenderFrameDevToolsAgentHostBrowserTest {
+ public:
+  RenderFrameDevToolsAgentHostRawHeadersBrowserTest() {
+#if BUILDFLAG(IS_ANDROID)
+    // Network service is in-process by default on Android. Force it
+    // out-of-process so we can use the BindTestInterfaceForTesting which
+    // requires a registry that is only present in the utility process or when
+    // forced OOP.
+    ForceOutOfProcessNetworkService();
+#endif
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(RenderFrameDevToolsAgentHostRawHeadersBrowserTest,
+                       RawHeadersAccess) {
+  EXPECT_TRUE(embedded_test_server()->Start());
+
+  // 1) Loads a document.
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  WebContentsImpl* web_contents_impl =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+  RenderFrameHostImpl* rfh = web_contents_impl->GetPrimaryMainFrame();
+  uint32_t process_id = rfh->GetProcess()->GetID().GetUnsafeValue();
+
+  mojo::Remote<network::mojom::NetworkServiceTest>& network_service_test_remote =
+      network_service_test();
+  if (!network_service_test_remote.is_bound()) {
+    GetNetworkService()->BindTestInterfaceForTesting(
+        network_service_test_remote.BindNewPipeAndPassReceiver());
+  }
+
+  // 2) Verify raw headers access is NOT granted initially.
+  {
+    base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
+    bool has_access = true;
+    network_service_test_remote->HasRawHeadersAccess(
+        process_id, url_a, base::BindLambdaForTesting([&](bool result) {
+          has_access = result;
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+    EXPECT_FALSE(has_access);
+  }
+
+  // 3) Attach DevTools.
+  StubDevToolsAgentHostClient client;
+  scoped_refptr<DevToolsAgentHost> devtools_agent =
+      DevToolsAgentHost::GetOrCreateFor(web_contents_impl);
+  devtools_agent->AttachClient(&client);
+
+  // 4) Verify raw headers access IS granted.
+  {
+    base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
+    bool has_access = false;
+    network_service_test_remote->HasRawHeadersAccess(
+        process_id, url_a, base::BindLambdaForTesting([&](bool result) {
+          has_access = result;
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+    EXPECT_TRUE(has_access);
+  }
+
+  // 5) Detach DevTools.
+  devtools_agent->DetachClient(&client);
+
+  // 6) Verify raw headers access is NOT granted.
+  {
+    base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
+    bool has_access = true;
+    network_service_test_remote->HasRawHeadersAccess(
+        process_id, url_a, base::BindLambdaForTesting([&](bool result) {
+          has_access = result;
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+    EXPECT_FALSE(has_access);
+  }
 }
 
 }  // namespace content

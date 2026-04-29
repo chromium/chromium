@@ -136,7 +136,9 @@ class CONTENT_EXPORT RenderFrameDevToolsAgentHost
   friend class DevToolsAgentHost;
   friend class RenderFrameDevToolsAgentHostFencedFrameBrowserTest;
 
-  static void UpdateRawHeadersAccess(RenderFrameHostImpl* rfh);
+  static void UpdateRawHeadersAccess(
+      RenderFrameHostImpl* rfh,
+      RenderFrameDevToolsAgentHost* force_include_host);
 
   RenderFrameDevToolsAgentHost(FrameTreeNode*, RenderFrameHostImpl*);
   ~RenderFrameDevToolsAgentHost() override;
