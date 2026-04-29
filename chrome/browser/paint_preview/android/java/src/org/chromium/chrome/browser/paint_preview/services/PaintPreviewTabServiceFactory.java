@@ -21,7 +21,7 @@ public class PaintPreviewTabServiceFactory {
     }
 
     @NativeMethods
-    interface Natives {
+    public interface Natives {
         PaintPreviewTabService getServiceInstanceForCurrentProfile();
     }
 }

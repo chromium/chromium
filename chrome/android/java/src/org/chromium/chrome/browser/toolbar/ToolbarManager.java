@@ -2290,7 +2290,7 @@ public class ToolbarManager
      * @return Whether the UrlBar currently has focus.
      */
     public boolean isUrlBarFocused() {
-        if (mLocationBar.getOmniboxStub() == null) {
+        if (mLocationBar == null || mLocationBar.getOmniboxStub() == null) {
             return false;
         }
         return mLocationBar.getOmniboxStub().isUrlBarFocused();
@@ -3172,7 +3172,7 @@ public class ToolbarManager
      */
     public void setUrlBarFocusAndText(
             boolean focused, @OmniboxFocusReason int reason, @Nullable String text) {
-        if (!mInitializedWithNative) return;
+        if (!mInitializedWithNative || mIsDestroyed) return;
         OmniboxStub omniboxStub = mLocationBar.getOmniboxStub();
         if (omniboxStub == null) return;
         if (focused) {
