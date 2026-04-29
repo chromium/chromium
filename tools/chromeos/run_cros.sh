@@ -52,15 +52,14 @@ declare -A DISPLAY_RES=(
 # Use WXGA as default panel.
 DISPLAY_CONFIG=${DISPLAY_RES[wxga]}
 
-FEATURES=VerticalTabs
-
 # GLIC specific feature flags.
-GLIC_BASIC_FEATURES=Glic,TabstripComboButton,GlicUserStatusCheck,\
+GLIC_FEATURES=Glic,TabstripComboButton,GlicUserStatusCheck,\
 ContextualCueing,GlicKeyboardShortcutNewBadge,GlicRollout,\
-GlicZeroStateSuggestions,FeatureManagementGlic
+GlicZeroStateSuggestions,FeatureManagementGlic,GlicMultiInstance,\
+GlicDefaultTabContextSetting,GlicUnifiedFreScreen,GlicDaisyChainNewTabs,\
+GlicLiveModeOnlyGlow
 
-GLIC_SIDE_PANEL_FEATURES=GlicMultiInstance,GlicDefaultTabContextSetting,\
-GlicUnifiedFreScreen,GlicDaisyChainNewTabs,GlicLiveModeOnlyGlow
+FEATURES=VerticalTabs,FeatureManagementRoundedWindows,${GLIC_FEATURES}
 
 export XDG_RUNTIME_DIR=${USER_TMP_DIR}/xdg1
 
