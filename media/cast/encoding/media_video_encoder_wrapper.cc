@@ -43,6 +43,26 @@
 namespace media::cast {
 namespace {
 
+// H264 has a lower max quantizer value.
+constexpr double kMaxH264Quantizer = 51.0;
+
+// AV1 has the same quantizer bounds as VPX.
+constexpr double kMaxAv1Quantizer = 63.0;
+
+double GetMaxQuantizer(media::VideoCodec codec) {
+  switch (codec) {
+    case media::VideoCodec::kH264:
+      return kMaxH264Quantizer;
+    case media::VideoCodec::kAV1:
+      return kMaxAv1Quantizer;
+    case media::VideoCodec::kVP8:
+    case media::VideoCodec::kVP9:
+      return QuantizerEstimator::MAX_VPX_QUANTIZER;
+    default:
+      NOTREACHED() << "Unhandled codec. value=" << std::to_underlying(codec);
+  }
+}
+
 std::unique_ptr<media::VideoEncoder> CreateHardwareEncoder(
     media::GpuVideoAcceleratorFactories& gpu_factories,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
@@ -182,7 +202,9 @@ MediaVideoEncoderWrapper::MediaVideoEncoderWrapper(
       codec_(video_config.video_codec()),
       encoder_(nullptr,
                base::OnTaskRunnerDeleter(cast_environment_->GetTaskRunner(
-                   CastEnvironment::ThreadId::kVideo))) {
+                   CastEnvironment::ThreadId::kVideo))),
+      quantizer_estimator_(base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::USER_VISIBLE})) {
   CHECK(cast_environment_->CurrentlyOn(CastEnvironment::ThreadId::kMain));
   CHECK(metrics_provider_);
   CHECK(status_change_cb_);
@@ -233,11 +255,36 @@ bool MediaVideoEncoderWrapper::EncodeVideoFrame(
   }
   CHECK(encoder_);
 
-  recent_metadata_.emplace(CachedMetadata{
+  quantizer_estimator_
+      .AsyncCall(encode_options_.key_frame
+                     ? &QuantizerEstimator::EstimateForKeyFrame
+                     : &QuantizerEstimator::EstimateForDeltaFrame)
+      .WithArgs(std::cref(*video_frame))
+      .Then(base::BindOnce(&MediaVideoEncoderWrapper::OnQuantizerEstimated,
+                           weak_factory_.GetWeakPtr(), video_frame,
+                           encode_options_, reference_time,
+                           std::move(frame_encoded_callback)));
+
+  encode_options_.key_frame = false;
+
+  return true;
+}
+
+void MediaVideoEncoderWrapper::OnQuantizerEstimated(
+    scoped_refptr<media::VideoFrame> video_frame,
+    media::VideoEncoder::EncodeOptions encode_options,
+    base::TimeTicks reference_time,
+    FrameEncodedCallback frame_encoded_callback,
+    std::optional<double> estimated_quantizer) {
+  CHECK(cast_environment_->CurrentlyOn(CastEnvironment::ThreadId::kMain));
+  CHECK(encoder_);
+
+  recent_metadata_.emplace(
       video_frame->metadata().capture_begin_time,
       video_frame->metadata().capture_end_time, base::TimeTicks::Now(),
       ToRtpTimeTicks(video_frame->timestamp(), kVideoFrequency), reference_time,
-      GetFrameDuration(*video_frame), std::move(frame_encoded_callback)});
+      GetFrameDuration(*video_frame), estimated_quantizer,
+      std::move(frame_encoded_callback));
 
   // Now that `GetFrameDuration` has been called, we can update the last frame
   // timestamp. It must be monotonically increasing.
@@ -246,14 +293,17 @@ bool MediaVideoEncoderWrapper::EncodeVideoFrame(
   }
   last_frame_timestamp_ = video_frame->timestamp();
 
-  CallEncoderOnCorrectThread(base::BindOnce(
+  auto encode_task = base::BindOnce(
       &CallEncodeVideoFrame, std::ref(*encoder_), std::move(video_frame),
-      encode_options_,
+      encode_options,
       CreateCallback(&MediaVideoEncoderWrapper::OnFrameEncodeDone,
-                     reference_time)));
-  encode_options_.key_frame = false;
+                     reference_time));
 
-  return true;
+  if (num_pending_updates_ > 0) {
+    pending_encodes_.push_back(std::move(encode_task));
+  } else {
+    CallEncoderOnCorrectThread(std::move(encode_task));
+  }
 }
 
 // Inform the encoder about the new target bit rate.
@@ -300,11 +350,19 @@ void MediaVideoEncoderWrapper::OnEncodedFrame(
   encoded_frame->encoder_utilization =
       processing_time / metadata.frame_duration;
 
-  // TODO(crbug.com/282984511): determine if we need to adopt media::cast's
-  // QuantizerEstimator in order to calculate lossiness. Currently, we just pass
-  // a value of zero, which causes it to be ignored by the VideoSender's
-  // feedback logic.
-  encoded_frame->lossiness = 0.0f;
+  if (metadata.estimated_quantizer) {
+    const auto duration = metadata.frame_duration.InSecondsF();
+    const double actual_bitrate =
+        duration > 0 ? output.data.size() * 8.0 / duration : 0.0f;
+    const double target_bitrate = options_.bitrate->target_bps();
+    CHECK_GT(target_bitrate, 0.0);
+    const double bitrate_utilization = actual_bitrate / target_bitrate;
+    const double max_quantizer = GetMaxQuantizer(codec_);
+    encoded_frame->lossiness =
+        bitrate_utilization * (*metadata.estimated_quantizer / max_quantizer);
+  } else {
+    encoded_frame->lossiness = 0.0f;
+  }
 
   encoded_frame->capture_begin_time = metadata.capture_begin_time;
   encoded_frame->capture_end_time = metadata.capture_end_time;
@@ -352,6 +410,7 @@ MediaVideoEncoderWrapper::CachedMetadata::CachedMetadata(
     RtpTimeTicks rtp_timestamp,
     base::TimeTicks reference_time,
     base::TimeDelta frame_duration,
+    std::optional<double> estimated_quantizer,
     FrameEncodedCallback frame_encoded_callback)
     : capture_begin_time(capture_begin_time),
       capture_end_time(capture_end_time),
@@ -359,6 +418,7 @@ MediaVideoEncoderWrapper::CachedMetadata::CachedMetadata(
       rtp_timestamp(rtp_timestamp),
       reference_time(reference_time),
       frame_duration(frame_duration),
+      estimated_quantizer(estimated_quantizer),
       frame_encoded_callback(std::move(frame_encoded_callback)) {}
 MediaVideoEncoderWrapper::CachedMetadata::CachedMetadata() = default;
 MediaVideoEncoderWrapper::CachedMetadata::CachedMetadata(
@@ -475,6 +535,13 @@ void MediaVideoEncoderWrapper::OnOptionsUpdated(EncoderStatus status) {
   CHECK(cast_environment_->CurrentlyOn(CastEnvironment::ThreadId::kMain));
   --num_pending_updates_;
   OnEncoderStatus(status);
+
+  if (num_pending_updates_ == 0) {
+    for (auto& task : pending_encodes_) {
+      CallEncoderOnCorrectThread(std::move(task));
+    }
+    pending_encodes_.clear();
+  }
 }
 
 }  //  namespace media::cast
