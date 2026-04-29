@@ -165,6 +165,7 @@ source_set("unit_tests") {
     ":test_support",
     "//components/autofill/android:keyboard_suppressor",
     "//components/autofill/content/browser:test_support",
+    "//components/credential_management/android:features",
     "//components/webauthn/android",
     "//components/webauthn/android:test_support",
     "//content/test:test_support",

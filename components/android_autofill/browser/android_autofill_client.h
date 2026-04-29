@@ -22,6 +22,7 @@
 #include "components/autofill/core/browser/metrics/form_interactions_ukm_logger.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/credential_management/content_credential_manager.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "ui/android/view_android.h"
 
@@ -76,7 +77,8 @@ namespace android_autofill {
 // test derives from it. Member functions should be final unless they need to be
 // mocked or overridden in subclasses and you have verified that they are not
 // called, directly or indirectly, from the constructor.
-class AndroidAutofillClient : public autofill::ContentAutofillClient {
+class AndroidAutofillClient : public autofill::ContentAutofillClient,
+                              public content::WebContentsObserver {
  public:
   static void CreateForWebContents(content::WebContents* contents);
 
@@ -141,6 +143,10 @@ class AndroidAutofillClient : public autofill::ContentAutofillClient {
 
   credential_management::ContentCredentialManager* GetContentCredentialManager()
       override;
+
+  // content::WebContentsObserver:
+  void PrimaryPageChanged(content::Page& page) override;
+  void WebContentsDestroyed() override;
 
  protected:
   // Protected for testing.

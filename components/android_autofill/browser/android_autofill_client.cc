@@ -30,6 +30,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/page.h"
 #include "content/public/browser/ssl_status.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
@@ -49,6 +50,7 @@ void AndroidAutofillClient::CreateForWebContents(
 
 AndroidAutofillClient::AndroidAutofillClient(content::WebContents* web_contents)
     : autofill::ContentAutofillClient(web_contents),
+      content::WebContentsObserver(web_contents),
       content_credential_manager_(
           std::make_unique<
               credential_management::ThirdPartyCredentialManagerImpl>(
@@ -56,6 +58,22 @@ AndroidAutofillClient::AndroidAutofillClient(content::WebContents* web_contents)
 
 AndroidAutofillClient::~AndroidAutofillClient() {
   HideAutofillSuggestions(autofill::SuggestionHidingReason::kTabGone);
+}
+
+// From this point on, the ContentCredentialManager will service API calls
+// in the context of the new WebContents::GetLastCommittedURL, which may
+// very well be cross-origin. Disconnect existing client, and drop pending
+// requests.
+void AndroidAutofillClient::PrimaryPageChanged(content::Page& page) {
+  content_credential_manager_.DisconnectBinding();
+}
+
+void AndroidAutofillClient::WebContentsDestroyed() {
+  // TODO(crbug.com/40133549): Drop the connection before the
+  // WebContentsObserver destructors are invoked. Other classes may contain
+  // callbacks to the Mojo methods. Those callbacks don't like to be destroyed
+  // earlier than the pipe itself.
+  content_credential_manager_.DisconnectBinding();
 }
 
 base::WeakPtr<autofill::AutofillClient> AndroidAutofillClient::GetWeakPtr() {
