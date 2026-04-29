@@ -309,6 +309,7 @@ if (!is_android) {
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
     sources = [
+      "device_sensor_browsertest.cc",
       "geolocation_element_browsertest.cc",
       "one_time_permissions_browsertest.cc",
       "permission_delegation_browsertest.cc",
