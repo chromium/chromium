@@ -199,8 +199,8 @@ void foo() {
   // There is no need to append |.get()| inside static_cast - unlike the
   // const_cast and reinterpret_cast examples above, static_cast will compile
   // just fine.
-  DerivedClass* d = static_cast<DerivedClass*>(my_struct.ptr);
-  void* void_var = static_cast<void*>(my_struct.ptr);
+  DerivedClass* d = static_cast<DerivedClass*>(my_struct.ptr.get());
+  void* void_var = static_cast<void*>(my_struct.ptr.get());
 }
 
 void foo2() {
