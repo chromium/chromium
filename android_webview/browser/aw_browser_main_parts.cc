@@ -355,9 +355,24 @@ void AwBrowserMainParts::RegisterSyntheticTrials() {
       metrics, kWebViewApkTypeTrial, apk_type_string,
       variations::SyntheticTrialAnnotationMode::kCurrentLog);
 
+  std::vector<std::string> forced_variation_ids =
+      getIdsForWebViewApkType(apk_type);
+
+  // Configure experiment to measure impact of using a native renderer zygote.
+  std::string native_zygote_group;
+  if (AwBrowserProcess::IsNativeWebViewZygoteEnabled()) {
+    native_zygote_group = "Enabled";
+    forced_variation_ids.emplace_back("101000092");
+  } else {
+    native_zygote_group = "Disabled";
+    forced_variation_ids.emplace_back("101000091");
+  }
+  AwMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+      metrics, "WebViewNativeZygote", native_zygote_group,
+      variations::SyntheticTrialAnnotationMode::kCurrentLog);
+
   variations::VariationsIdsProvider::GetInstance()->ForceVariationIds(
-      base::PassKey<AwBrowserMainParts>(),
-      /*variation_ids=*/getIdsForWebViewApkType(apk_type),
+      base::PassKey<AwBrowserMainParts>(), forced_variation_ids,
       /*command_line_variation_ids=*/"");
 
   // Set up experiment for 64-bit WebView.
@@ -471,11 +486,6 @@ void AwBrowserMainParts::RegisterSyntheticTrials() {
 
   AwMetricsServiceAccessor::RegisterSyntheticFieldTrial(
       metrics, "WebViewStartupTasksMetrics2", startup_tasks_experiment_group,
-      variations::SyntheticTrialAnnotationMode::kCurrentLog);
-
-  AwMetricsServiceAccessor::RegisterSyntheticFieldTrial(
-      metrics, "NativeWebViewZygote",
-      AwBrowserProcess::IsNativeWebViewZygoteEnabled() ? "Enabled" : "Disabled",
       variations::SyntheticTrialAnnotationMode::kCurrentLog);
 }
 
