@@ -238,5 +238,61 @@ TEST_F(PromosManagerCoordinatorTest, DisplayPromoCallbackUINotAvailableTest) {
   EXPECT_OCMOCK_VERIFY(mockCoordinator);
 }
 
+// Tests that promo will not be displayed if the base view controller is
+// already presenting another view controller.
+TEST_F(PromosManagerCoordinatorTest, DisplayPromoCallbackBaseVCPresentingTest) {
+  // Prepare UI for promo display.
+  SetupUIForPromoDisplay();
+  CreatePromosManagerCoordinator();
+
+  id mockCoordinator = OCMPartialMock(coordinator_);
+
+  // Force test promos so there at least one promo to display.
+  ForceTestPromo();
+
+  // Check that test promo will not be displayed.
+  PromoDisplayData promoDisplayData = PromoDisplayData{
+      .promo = promos_manager::Promo::Test, .was_forced = true};
+  OCMReject([mockCoordinator displayPromo:promoDisplayData]);
+
+  // Simulate that the base view controller is already presenting another view
+  // controller.
+  id mockViewController = OCMPartialMock(view_controller_);
+  UIViewController* dummyPresentedVC = [[UIViewController alloc] init];
+  OCMStub([mockViewController presentedViewController])
+      .andReturn(dummyPresentedVC);
+
+  [mockCoordinator displayPromoCallback];
+
+  EXPECT_OCMOCK_VERIFY(mockCoordinator);
+}
+
+// Tests that promo will not be displayed if the base view controller is
+// not in the view hierarchy.
+TEST_F(PromosManagerCoordinatorTest,
+       DisplayPromoCallbackBaseVCNotInHierarchyTest) {
+  // Prepare UI for promo display.
+  SetupUIForPromoDisplay();
+  CreatePromosManagerCoordinator();
+
+  id mockCoordinator = OCMPartialMock(coordinator_);
+
+  // Force test promos so there at least one promo to display.
+  ForceTestPromo();
+
+  // Check that test promo will not be displayed.
+  PromoDisplayData promoDisplayData = PromoDisplayData{
+      .promo = promos_manager::Promo::Test, .was_forced = true};
+  OCMReject([mockCoordinator displayPromo:promoDisplayData]);
+
+  // Simulate that the view controller is not in the view hierarchy.
+  id mockView = OCMPartialMock(view_controller_.view);
+  OCMStub([mockView window]).andReturn(nil);
+
+  [mockCoordinator displayPromoCallback];
+
+  EXPECT_OCMOCK_VERIFY(mockCoordinator);
+}
+
 // TODO(crbug.com/40241101): Add unit tests for promoWasDisplayed being
 // called when promo is displayed.

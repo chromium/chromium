@@ -203,7 +203,8 @@
   // Check if UI is no longer available before proceeding. It is possible that
   // while tracker is being initialized the UI can change and become not
   // available.
-  if (!IsUIAvailableForPromo(self.browser->GetSceneState())) {
+  if (!IsUIAvailableForPromo(self.browser->GetSceneState(),
+                             self.baseViewController)) {
     return;
   }
 

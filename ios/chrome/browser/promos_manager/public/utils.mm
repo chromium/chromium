@@ -25,7 +25,8 @@ bool ShouldPromoManagerDisplayPromos() {
   return GetApplicationContext()->WasLastShutdownClean();
 }
 
-bool IsUIAvailableForPromo(SceneState* scene_state) {
+bool IsUIAvailableForPromo(SceneState* scene_state,
+                           UIViewController* base_view_controller) {
   // The following app & scene conditions need to be met to enable a promo's
   // display (please note the Promos Manager may still decide *not* to display a
   // promo, based on its own internal criteria):
@@ -65,6 +66,16 @@ bool IsUIAvailableForPromo(SceneState* scene_state) {
 
   // (7) The user isn't currently looking at a modal overlay.
   if (scene_state.uiBlockerState.presentingModalOverlay) {
+    return NO;
+  }
+
+  // (8) The user isn't already presenting a view controller.
+  if (base_view_controller && base_view_controller.presentedViewController) {
+    return NO;
+  }
+
+  // (9) The view controller is in the view hierarchy.
+  if (base_view_controller && base_view_controller.view.window == nil) {
     return NO;
   }
 

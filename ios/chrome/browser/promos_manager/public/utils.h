@@ -6,12 +6,14 @@
 #define IOS_CHROME_BROWSER_PROMOS_MANAGER_PUBLIC_UTILS_H_
 
 @class SceneState;
+@class UIViewController;
 
 // Returns whether Promos Manager can display promos in current session (cold
 // start to termination).
 bool ShouldPromoManagerDisplayPromos();
 
 // Returns YES if a promo can be displayed for the given scene state.
-bool IsUIAvailableForPromo(SceneState* scene_state);
+bool IsUIAvailableForPromo(SceneState* scene_state,
+                           UIViewController* base_view_controller = nullptr);
 
 #endif  // IOS_CHROME_BROWSER_PROMOS_MANAGER_PUBLIC_UTILS_H_
