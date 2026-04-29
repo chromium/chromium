@@ -892,12 +892,12 @@ InputManager* FrameSinkManagerImpl::GetInputManager() {
   return input_manager_.get();
 }
 
-void FrameSinkManagerImpl::SubmitHitTestRegionList(
+bool FrameSinkManagerImpl::SubmitHitTestRegionList(
     const SurfaceId& surface_id,
     uint64_t frame_index,
     std::optional<HitTestRegionList> hit_test_region_list) {
-  hit_test_manager_.SubmitHitTestRegionList(surface_id, frame_index,
-                                            std::move(hit_test_region_list));
+  return hit_test_manager_.SubmitHitTestRegionList(
+      surface_id, frame_index, std::move(hit_test_region_list));
 }
 
 void FrameSinkManagerImpl::OnFrameTokenChangedDirect(
