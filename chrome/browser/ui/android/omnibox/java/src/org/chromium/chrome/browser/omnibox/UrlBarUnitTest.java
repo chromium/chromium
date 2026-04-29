@@ -1074,7 +1074,7 @@ public class UrlBarUnitTest {
     }
 
     @Test
-    // Mockito.clearInvocations() takes generic T... varargs.
+    // clearInvocations() takes generic T... varargs.
     @SuppressWarnings("unchecked")
     public void testTextWrappingCallback() {
         Callback<Boolean> callback = MockitoHelper.mockCallback();

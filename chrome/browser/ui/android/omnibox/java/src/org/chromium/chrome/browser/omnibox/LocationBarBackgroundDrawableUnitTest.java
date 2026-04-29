@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.omnibox;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
@@ -20,7 +21,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InOrder;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
@@ -69,7 +69,7 @@ public class LocationBarBackgroundDrawableUnitTest {
         mDrawable.setHairlineBehavior(HairlineBehavior.RAINBOW);
         assertEquals(HairlineBehavior.RAINBOW, mDrawable.getHairlineBehaviorForTesting());
 
-        InOrder inOrder = Mockito.inOrder(mCanvas);
+        InOrder inOrder = inOrder(mCanvas);
         mDrawable.draw(mCanvas);
         verify(mGradientDrawable).draw(mCanvas);
         inOrder.verify(mCanvas).save();

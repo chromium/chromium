@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.omnibox.fusebox;
 
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
 
@@ -13,7 +14,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -155,12 +155,12 @@ public class FuseboxPopupUnitTest {
                         mActivity, mPopupWindow, mContentView, mDynamicRectProvider, false);
 
         // Verify that we can find the elements
-        Assert.assertNotNull(mFuseboxPopup.mAddCurrentTab);
-        Assert.assertNotNull(mFuseboxPopup.mTabButton);
-        Assert.assertNotNull(mFuseboxPopup.mClipboardButton);
-        Assert.assertNotNull(mFuseboxPopup.mCameraButton);
-        Assert.assertNotNull(mFuseboxPopup.mGalleryButton);
-        Assert.assertNotNull(mFuseboxPopup.mFileButton);
+        assertNotNull(mFuseboxPopup.mAddCurrentTab);
+        assertNotNull(mFuseboxPopup.mTabButton);
+        assertNotNull(mFuseboxPopup.mClipboardButton);
+        assertNotNull(mFuseboxPopup.mCameraButton);
+        assertNotNull(mFuseboxPopup.mGalleryButton);
+        assertNotNull(mFuseboxPopup.mFileButton);
     }
 
     @Test
@@ -178,11 +178,11 @@ public class FuseboxPopupUnitTest {
                         /* isBottomSheet= */ true);
 
         // Verify that we can find the elements
-        Assert.assertNotNull(mFuseboxPopup.mAddCurrentTab);
-        Assert.assertNotNull(mFuseboxPopup.mTabButton);
-        Assert.assertNotNull(mFuseboxPopup.mClipboardButton);
-        Assert.assertNotNull(mFuseboxPopup.mCameraButton);
-        Assert.assertNotNull(mFuseboxPopup.mGalleryButton);
-        Assert.assertNotNull(mFuseboxPopup.mFileButton);
+        assertNotNull(mFuseboxPopup.mAddCurrentTab);
+        assertNotNull(mFuseboxPopup.mTabButton);
+        assertNotNull(mFuseboxPopup.mClipboardButton);
+        assertNotNull(mFuseboxPopup.mCameraButton);
+        assertNotNull(mFuseboxPopup.mGalleryButton);
+        assertNotNull(mFuseboxPopup.mFileButton);
     }
 }

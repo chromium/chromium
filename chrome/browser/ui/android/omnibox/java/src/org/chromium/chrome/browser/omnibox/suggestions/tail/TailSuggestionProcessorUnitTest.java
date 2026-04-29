@@ -4,7 +4,12 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions.tail;
 
-import org.junit.Assert;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -86,11 +91,11 @@ public class TailSuggestionProcessorUnitTest {
         mProcessor.onSuggestionsReceived();
         createSearchSuggestion(OmniboxSuggestionType.SEARCH_SUGGEST_TAIL, "tail");
 
-        Assert.assertTrue(mProcessor.doesProcessSuggestion(mSuggestion, 1));
+        assertTrue(mProcessor.doesProcessSuggestion(mSuggestion, 1));
         // Alignment is suppressed on phones.
-        Assert.assertNull(mModel.get(TailSuggestionViewProperties.ALIGNMENT_MANAGER));
-        Assert.assertEquals("… tail", mModel.get(TailSuggestionViewProperties.TEXT).toString());
-        Assert.assertEquals(
+        assertNull(mModel.get(TailSuggestionViewProperties.ALIGNMENT_MANAGER));
+        assertEquals("… tail", mModel.get(TailSuggestionViewProperties.TEXT).toString());
+        assertEquals(
                 "fill into edit: tail", mModel.get(TailSuggestionViewProperties.FILL_INTO_EDIT));
     }
 
@@ -100,10 +105,10 @@ public class TailSuggestionProcessorUnitTest {
         mProcessor.onSuggestionsReceived();
         createSearchSuggestion(OmniboxSuggestionType.SEARCH_SUGGEST_TAIL, "tail");
 
-        Assert.assertTrue(mProcessor.doesProcessSuggestion(mSuggestion, 1));
-        Assert.assertNotNull(mModel.get(TailSuggestionViewProperties.ALIGNMENT_MANAGER));
-        Assert.assertEquals("… tail", mModel.get(TailSuggestionViewProperties.TEXT).toString());
-        Assert.assertEquals(
+        assertTrue(mProcessor.doesProcessSuggestion(mSuggestion, 1));
+        assertNotNull(mModel.get(TailSuggestionViewProperties.ALIGNMENT_MANAGER));
+        assertEquals("… tail", mModel.get(TailSuggestionViewProperties.TEXT).toString());
+        assertEquals(
                 "fill into edit: tail", mModel.get(TailSuggestionViewProperties.FILL_INTO_EDIT));
     }
 
@@ -111,11 +116,11 @@ public class TailSuggestionProcessorUnitTest {
     public void doesProcessSuggestion_nonTailSuggestion() {
         mProcessor.onSuggestionsReceived();
         createSearchSuggestion(OmniboxSuggestionType.SEARCH_SUGGEST, "search");
-        Assert.assertFalse(mProcessor.doesProcessSuggestion(mSuggestion, 1));
+        assertFalse(mProcessor.doesProcessSuggestion(mSuggestion, 1));
     }
 
     @Test
     public void getViewTypeId_forFullTestCoverage() {
-        Assert.assertEquals(OmniboxSuggestionUiType.TAIL_SUGGESTION, mProcessor.getViewTypeId());
+        assertEquals(OmniboxSuggestionUiType.TAIL_SUGGESTION, mProcessor.getViewTypeId());
     }
 }

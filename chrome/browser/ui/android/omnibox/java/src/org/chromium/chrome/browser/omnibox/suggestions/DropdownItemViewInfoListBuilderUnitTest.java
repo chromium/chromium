@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.omnibox.suggestions;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
@@ -23,7 +25,6 @@ import static org.chromium.components.omnibox.GroupConfigTestSupport.SECTION_MOS
 
 import android.content.Context;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -102,12 +103,12 @@ public class DropdownItemViewInfoListBuilderUnitTest {
             boolean wantTopCornersRounded,
             boolean wantBottomCornersRounded,
             boolean wantSeparator) {
-        Assert.assertEquals(
+        assertEquals(
                 wantTopCornersRounded, model.get(SuggestionCommonProperties.BG_TOP_CORNER_ROUNDED));
-        Assert.assertEquals(
+        assertEquals(
                 wantBottomCornersRounded,
                 model.get(SuggestionCommonProperties.BG_BOTTOM_CORNER_ROUNDED));
-        Assert.assertEquals(wantSeparator, model.get(SuggestionCommonProperties.SHOW_DIVIDER));
+        assertEquals(wantSeparator, model.get(SuggestionCommonProperties.SHOW_DIVIDER));
     }
 
     @Test
@@ -137,7 +138,7 @@ public class DropdownItemViewInfoListBuilderUnitTest {
                         mInput, AutocompleteResult.fromCache(actualList, groupsDetails));
 
         // 1 horizontal + 1 header + 2 vertical + 1 horizontal.
-        Assert.assertEquals(5, model.size());
+        assertEquals(5, model.size());
 
         // Check reported positions in list.
         verify(mMockSuggestionProcessor, atLeastOnce()).doesProcessSuggestion(horizontal, 0);
@@ -207,35 +208,35 @@ public class DropdownItemViewInfoListBuilderUnitTest {
                 .populateModel(eq(mInput), eq(suggestionForGroup2), any(), eq(3));
         verifier.verify(mMockSuggestionProcessor, times(1))
                 .populateModel(eq(mInput), eq(suggestionForGroup2), any(), eq(4));
-        Assert.assertEquals(7, model.size()); // 2 headers + 5 suggestions.
+        assertEquals(7, model.size()); // 2 headers + 5 suggestions.
 
         var defaultGroupConfig = GroupConfig.getDefaultInstance();
 
-        Assert.assertEquals(OmniboxSuggestionUiType.DEFAULT, model.get(0).type);
-        Assert.assertEquals(model.get(0).groupConfig, defaultGroupConfig);
+        assertEquals(OmniboxSuggestionUiType.DEFAULT, model.get(0).type);
+        assertEquals(model.get(0).groupConfig, defaultGroupConfig);
         verifyRounding(model.get(0).model, true, true, false);
 
-        Assert.assertEquals(OmniboxSuggestionUiType.HEADER, model.get(1).type);
-        Assert.assertEquals(model.get(1).groupConfig, SECTION_2_WITH_HEADER);
+        assertEquals(OmniboxSuggestionUiType.HEADER, model.get(1).type);
+        assertEquals(model.get(1).groupConfig, SECTION_2_WITH_HEADER);
         verifyRounding(model.get(1).model, false, false, false);
 
-        Assert.assertEquals(OmniboxSuggestionUiType.DEFAULT, model.get(2).type);
-        Assert.assertEquals(model.get(2).groupConfig, SECTION_2_WITH_HEADER);
+        assertEquals(OmniboxSuggestionUiType.DEFAULT, model.get(2).type);
+        assertEquals(model.get(2).groupConfig, SECTION_2_WITH_HEADER);
         verifyRounding(model.get(2).model, true, false, true);
 
-        Assert.assertEquals(OmniboxSuggestionUiType.DEFAULT, model.get(3).type);
-        Assert.assertEquals(model.get(3).groupConfig, SECTION_2_WITH_HEADER);
+        assertEquals(OmniboxSuggestionUiType.DEFAULT, model.get(3).type);
+        assertEquals(model.get(3).groupConfig, SECTION_2_WITH_HEADER);
         verifyRounding(model.get(3).model, false, true, false);
 
-        Assert.assertEquals(OmniboxSuggestionUiType.HEADER, model.get(4).type);
-        Assert.assertEquals(model.get(4).groupConfig, SECTION_3_WITH_HEADER);
+        assertEquals(OmniboxSuggestionUiType.HEADER, model.get(4).type);
+        assertEquals(model.get(4).groupConfig, SECTION_3_WITH_HEADER);
         verifyRounding(model.get(4).model, false, false, false);
 
-        Assert.assertEquals(OmniboxSuggestionUiType.DEFAULT, model.get(5).type);
-        Assert.assertEquals(model.get(5).groupConfig, SECTION_3_WITH_HEADER);
+        assertEquals(OmniboxSuggestionUiType.DEFAULT, model.get(5).type);
+        assertEquals(model.get(5).groupConfig, SECTION_3_WITH_HEADER);
         verifyRounding(model.get(5).model, true, false, true);
-        Assert.assertEquals(OmniboxSuggestionUiType.DEFAULT, model.get(6).type);
-        Assert.assertEquals(model.get(6).groupConfig, SECTION_3_WITH_HEADER);
+        assertEquals(OmniboxSuggestionUiType.DEFAULT, model.get(6).type);
+        assertEquals(model.get(6).groupConfig, SECTION_3_WITH_HEADER);
         verifyRounding(model.get(6).model, false, true, false);
     }
 
@@ -297,25 +298,25 @@ public class DropdownItemViewInfoListBuilderUnitTest {
         // - 2 suggestions (grouped),
         // - <header>
         // - 2 suggestions (grouped).
-        Assert.assertEquals(7, model.size());
+        assertEquals(7, model.size());
 
-        Assert.assertEquals(OmniboxSuggestionUiType.DEFAULT, model.get(0).type);
-        Assert.assertEquals(model.get(0).groupConfig, defaultGroupConfig);
+        assertEquals(OmniboxSuggestionUiType.DEFAULT, model.get(0).type);
+        assertEquals(model.get(0).groupConfig, defaultGroupConfig);
 
-        Assert.assertEquals(OmniboxSuggestionUiType.GROUP_SEPARATOR, model.get(1).type);
-        Assert.assertEquals(model.get(1).groupConfig, SECTION_1_NO_HEADER);
+        assertEquals(OmniboxSuggestionUiType.GROUP_SEPARATOR, model.get(1).type);
+        assertEquals(model.get(1).groupConfig, SECTION_1_NO_HEADER);
 
-        Assert.assertEquals(OmniboxSuggestionUiType.DEFAULT, model.get(2).type);
-        Assert.assertEquals(model.get(2).groupConfig, SECTION_1_NO_HEADER);
-        Assert.assertEquals(OmniboxSuggestionUiType.DEFAULT, model.get(3).type);
-        Assert.assertEquals(model.get(3).groupConfig, SECTION_1_NO_HEADER);
+        assertEquals(OmniboxSuggestionUiType.DEFAULT, model.get(2).type);
+        assertEquals(model.get(2).groupConfig, SECTION_1_NO_HEADER);
+        assertEquals(OmniboxSuggestionUiType.DEFAULT, model.get(3).type);
+        assertEquals(model.get(3).groupConfig, SECTION_1_NO_HEADER);
 
-        Assert.assertEquals(OmniboxSuggestionUiType.HEADER, model.get(4).type);
-        Assert.assertEquals(model.get(4).groupConfig, SECTION_2_WITH_HEADER);
-        Assert.assertEquals(OmniboxSuggestionUiType.DEFAULT, model.get(5).type);
-        Assert.assertEquals(model.get(5).groupConfig, SECTION_2_WITH_HEADER);
-        Assert.assertEquals(OmniboxSuggestionUiType.DEFAULT, model.get(6).type);
-        Assert.assertEquals(model.get(6).groupConfig, SECTION_2_WITH_HEADER);
+        assertEquals(OmniboxSuggestionUiType.HEADER, model.get(4).type);
+        assertEquals(model.get(4).groupConfig, SECTION_2_WITH_HEADER);
+        assertEquals(OmniboxSuggestionUiType.DEFAULT, model.get(5).type);
+        assertEquals(model.get(5).groupConfig, SECTION_2_WITH_HEADER);
+        assertEquals(OmniboxSuggestionUiType.DEFAULT, model.get(6).type);
+        assertEquals(model.get(6).groupConfig, SECTION_2_WITH_HEADER);
     }
 
     @Test
@@ -369,30 +370,30 @@ public class DropdownItemViewInfoListBuilderUnitTest {
         // - 1 suggestion (no group)
         // - 2 suggestions (Group 1 - no header)
         // - 2 suggestions (Group 2 - with header)
-        Assert.assertEquals(5, model.size());
+        assertEquals(5, model.size());
 
-        Assert.assertEquals(OmniboxSuggestionUiType.DEFAULT, model.get(0).type);
-        Assert.assertEquals(model.get(0).groupConfig, defaultGroupConfig);
-        Assert.assertNull(model.get(0).model.get(SuggestionCommonProperties.HEADER_TITLE));
+        assertEquals(OmniboxSuggestionUiType.DEFAULT, model.get(0).type);
+        assertEquals(model.get(0).groupConfig, defaultGroupConfig);
+        assertNull(model.get(0).model.get(SuggestionCommonProperties.HEADER_TITLE));
 
-        Assert.assertEquals(OmniboxSuggestionUiType.DEFAULT, model.get(1).type);
-        Assert.assertTrue(model.get(1).model.get(SuggestionCommonProperties.SHOW_GROUP_SEPARATOR));
-        Assert.assertEquals(model.get(1).groupConfig, SECTION_1_NO_HEADER);
-        Assert.assertNull(model.get(1).model.get(SuggestionCommonProperties.HEADER_TITLE));
+        assertEquals(OmniboxSuggestionUiType.DEFAULT, model.get(1).type);
+        assertTrue(model.get(1).model.get(SuggestionCommonProperties.SHOW_GROUP_SEPARATOR));
+        assertEquals(model.get(1).groupConfig, SECTION_1_NO_HEADER);
+        assertNull(model.get(1).model.get(SuggestionCommonProperties.HEADER_TITLE));
 
-        Assert.assertEquals(OmniboxSuggestionUiType.DEFAULT, model.get(2).type);
-        Assert.assertEquals(model.get(2).groupConfig, SECTION_1_NO_HEADER);
-        Assert.assertNull(model.get(2).model.get(SuggestionCommonProperties.HEADER_TITLE));
+        assertEquals(OmniboxSuggestionUiType.DEFAULT, model.get(2).type);
+        assertEquals(model.get(2).groupConfig, SECTION_1_NO_HEADER);
+        assertNull(model.get(2).model.get(SuggestionCommonProperties.HEADER_TITLE));
 
-        Assert.assertEquals(OmniboxSuggestionUiType.DEFAULT, model.get(3).type);
-        Assert.assertEquals(model.get(3).groupConfig, SECTION_2_WITH_HEADER);
-        Assert.assertEquals(
+        assertEquals(OmniboxSuggestionUiType.DEFAULT, model.get(3).type);
+        assertEquals(model.get(3).groupConfig, SECTION_2_WITH_HEADER);
+        assertEquals(
                 SECTION_2_WITH_HEADER.getHeaderText(),
                 model.get(3).model.get(SuggestionCommonProperties.HEADER_TITLE));
 
-        Assert.assertEquals(OmniboxSuggestionUiType.DEFAULT, model.get(4).type);
-        Assert.assertEquals(model.get(4).groupConfig, SECTION_2_WITH_HEADER);
-        Assert.assertNull(model.get(4).model.get(SuggestionCommonProperties.HEADER_TITLE));
+        assertEquals(OmniboxSuggestionUiType.DEFAULT, model.get(4).type);
+        assertEquals(model.get(4).groupConfig, SECTION_2_WITH_HEADER);
+        assertNull(model.get(4).model.get(SuggestionCommonProperties.HEADER_TITLE));
     }
 
     @Test
@@ -441,7 +442,7 @@ public class DropdownItemViewInfoListBuilderUnitTest {
                         mInput,
                         AutocompleteResult.fromCache(actualList, GroupsInfo.getDefaultInstance()));
 
-        Assert.assertEquals(1, model.size());
+        assertEquals(1, model.size());
 
         verify(mMockSuggestionProcessor).populateModel(eq(mInput), eq(regular), any(), anyInt());
         verify(mMockSuggestionProcessor, times(0))
@@ -543,7 +544,7 @@ public class DropdownItemViewInfoListBuilderUnitTest {
         assertEquals(/* 2 suggestions = */ 2, result.size());
         assertEquals(OmniboxSuggestionUiType.DEFAULT, result.get(0).type);
         assertEquals(OmniboxSuggestionUiType.DEFAULT, result.get(1).type);
-        Assert.assertTrue(result.get(0).model.get(SuggestionCommonProperties.SHOW_GROUP_SEPARATOR));
+        assertTrue(result.get(0).model.get(SuggestionCommonProperties.SHOW_GROUP_SEPARATOR));
     }
 
     @Test

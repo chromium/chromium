@@ -9,6 +9,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -31,7 +33,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
@@ -227,7 +228,7 @@ public class OmniboxSuggestionsDropdownUnitTest {
 
     @Test
     public void translateChildrenVertical() {
-        View childView = Mockito.mock(View.class);
+        View childView = mock(View.class);
 
         mDropdown.translateChildrenVertical(45.6f);
         mDropdown.onChildAttachedToWindow(childView);
@@ -239,7 +240,7 @@ public class OmniboxSuggestionsDropdownUnitTest {
 
     @Test
     public void setChildAlpha() {
-        View childView = Mockito.mock(View.class);
+        View childView = mock(View.class);
 
         mDropdown.setChildAlpha(0.6f);
         mDropdown.onChildAttachedToWindow(childView);
@@ -265,7 +266,7 @@ public class OmniboxSuggestionsDropdownUnitTest {
     public void updateVisualScrollState_notAtTop_doesNotScroll() {
         // Scroll down to move away from the top.
         mListener.updateKeyboardVisibilityAndScroll(10, 10);
-        Mockito.clearInvocations(mListener);
+        clearInvocations(mListener);
 
         mListener.updateVisualScrollState();
         verify(mListener, times(0)).postOnAnimation(any());

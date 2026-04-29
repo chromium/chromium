@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions.tabgroup;
 
+import static org.junit.Assert.assertEquals;
 import static org.robolectric.Shadows.shadowOf;
 
 import android.content.Context;
@@ -13,7 +14,6 @@ import android.text.style.ImageSpan;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -123,22 +123,21 @@ public class TabGroupSuggestionProcessorUnitTest {
         mInput.setPageClassification(PageClassification.ANDROID_HUB_VALUE);
 
         createTabGroupSuggestion(OmniboxSuggestionType.TAB_GROUP);
-        Assert.assertEquals(
+        assertEquals(
                 R.drawable.ic_features_24dp,
                 shadowOf(mModel.get(BaseSuggestionViewProperties.ICON).drawable)
                         .getCreatedFromResId());
 
         SuggestionSpannable suggestion = mModel.get(SuggestionViewProperties.TEXT_LINE_1_TEXT);
         ImageSpan[] imageSpans = suggestion.getSpans(0, suggestion.length(), ImageSpan.class);
-        Assert.assertEquals(1, imageSpans.length);
-        Assert.assertEquals(
+        assertEquals(1, imageSpans.length);
+        assertEquals(
                 TabGroupColorPickerUtils.getTabGroupColorPickerItemColor(
                         mContext, TabGroupColorId.RED, /* isIncognito= */ false),
                 ((ShapeDrawable) imageSpans[0].getDrawable()).getPaint().getColor());
 
-        Assert.assertEquals(
-                DESCRIPTION, mModel.get(SuggestionViewProperties.TEXT_LINE_2_TEXT).toString());
-        Assert.assertEquals(
+        assertEquals(DESCRIPTION, mModel.get(SuggestionViewProperties.TEXT_LINE_2_TEXT).toString());
+        assertEquals(
                 TITLE,
                 mModel.get(SuggestionViewProperties.TEXT_LINE_1_TEXT)
                         .subSequence(
@@ -151,6 +150,6 @@ public class TabGroupSuggestionProcessorUnitTest {
                         TITLE,
                         "Red",
                         DESCRIPTION);
-        Assert.assertEquals(targetString, mModel.get(SuggestionViewProperties.CONTENT_DESCRIPTION));
+        assertEquals(targetString, mModel.get(SuggestionViewProperties.CONTENT_DESCRIPTION));
     }
 }

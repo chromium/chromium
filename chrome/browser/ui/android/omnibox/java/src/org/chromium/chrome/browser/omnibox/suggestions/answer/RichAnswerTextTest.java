@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions.answer;
 
+import static org.junit.Assert.assertEquals;
+
 import android.app.Activity;
 import android.content.Context;
 import android.text.SpannableStringBuilder;
@@ -11,7 +13,6 @@ import android.text.style.TextAppearanceSpan;
 
 import androidx.test.filters.SmallTest;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -80,28 +81,27 @@ public class RichAnswerTextTest {
         AnswerType answerType = AnswerType.ANSWER_TYPE_DICTIONARY;
         AnswerText[] texts =
                 RichAnswerText.from(mContext, richAnswerTemplate, answerType, false, false);
-        Assert.assertEquals(1, texts[0].getMaxLines());
-        Assert.assertEquals(3, texts[1].getMaxLines());
-        Assert.assertEquals("define adroit • /əˈdroit/", texts[0].getAccessibilityDescription());
-        Assert.assertEquals(
+        assertEquals(1, texts[0].getMaxLines());
+        assertEquals(3, texts[1].getMaxLines());
+        assertEquals("define adroit • /əˈdroit/", texts[0].getAccessibilityDescription());
+        assertEquals(
                 "clever or skillful in using the hands or mind.",
                 texts[1].getAccessibilityDescription());
 
         SpannableStringBuilder primaryText = texts[0].getText();
         SpannableStringBuilder secondaryText = texts[1].getText();
 
-        Assert.assertEquals("define adroit • /əˈdroit/", primaryText.toString());
+        assertEquals("define adroit • /əˈdroit/", primaryText.toString());
         TextAppearanceSpan[] textAppearanceSpans =
                 primaryText.getSpans(0, primaryText.length(), TextAppearanceSpan.class);
-        Assert.assertEquals(1, textAppearanceSpans.length);
-        Assert.assertEquals(textAppearanceSpans[0].getTextSize(), mPrimaryText.getTextSize());
+        assertEquals(1, textAppearanceSpans.length);
+        assertEquals(textAppearanceSpans[0].getTextSize(), mPrimaryText.getTextSize());
 
-        Assert.assertEquals(
-                "clever or skillful in using the hands or mind.", secondaryText.toString());
+        assertEquals("clever or skillful in using the hands or mind.", secondaryText.toString());
         textAppearanceSpans =
                 secondaryText.getSpans(0, secondaryText.length(), TextAppearanceSpan.class);
-        Assert.assertEquals(1, textAppearanceSpans.length);
-        Assert.assertEquals(textAppearanceSpans[0].getTextSize(), mMediumText.getTextSize());
+        assertEquals(1, textAppearanceSpans.length);
+        assertEquals(textAppearanceSpans[0].getTextSize(), mMediumText.getTextSize());
     }
 
     @Test
@@ -140,27 +140,27 @@ public class RichAnswerTextTest {
         AnswerText[] texts =
                 RichAnswerText.from(mContext, richAnswerTemplate, answerType, false, false);
         // A11y descriptions are reverse of visual ordering.
-        Assert.assertEquals(
+        assertEquals(
                 "goog stock GOOG(NASDAQ), 3:22 PM EDT", texts[0].getAccessibilityDescription());
-        Assert.assertEquals("100.00 +1.00", texts[1].getAccessibilityDescription());
+        assertEquals("100.00 +1.00", texts[1].getAccessibilityDescription());
         SpannableStringBuilder primaryText = texts[0].getText();
         SpannableStringBuilder secondaryText = texts[1].getText();
 
-        Assert.assertEquals("100.00 +1.00", primaryText.toString());
+        assertEquals("100.00 +1.00", primaryText.toString());
         TextAppearanceSpan[] textAppearanceSpans =
                 primaryText.getSpans(0, primaryText.length(), TextAppearanceSpan.class);
-        Assert.assertEquals(2, textAppearanceSpans.length);
-        Assert.assertEquals(1, texts[0].getMaxLines());
-        Assert.assertEquals(1, texts[1].getMaxLines());
-        Assert.assertEquals(textAppearanceSpans[0].getTextSize(), mPrimaryText.getTextSize());
-        Assert.assertEquals(textAppearanceSpans[1].getTextSize(), mGreenText.getTextSize());
-        Assert.assertEquals(textAppearanceSpans[1].getTextColor(), mGreenText.getTextColor());
+        assertEquals(2, textAppearanceSpans.length);
+        assertEquals(1, texts[0].getMaxLines());
+        assertEquals(1, texts[1].getMaxLines());
+        assertEquals(textAppearanceSpans[0].getTextSize(), mPrimaryText.getTextSize());
+        assertEquals(textAppearanceSpans[1].getTextSize(), mGreenText.getTextSize());
+        assertEquals(textAppearanceSpans[1].getTextColor(), mGreenText.getTextColor());
 
-        Assert.assertEquals("goog stock GOOG(NASDAQ), 3:22 PM EDT", secondaryText.toString());
+        assertEquals("goog stock GOOG(NASDAQ), 3:22 PM EDT", secondaryText.toString());
         textAppearanceSpans =
                 secondaryText.getSpans(0, secondaryText.length(), TextAppearanceSpan.class);
-        Assert.assertEquals(1, textAppearanceSpans.length);
-        Assert.assertEquals(textAppearanceSpans[0].getTextSize(), mMediumText.getTextSize());
+        assertEquals(1, textAppearanceSpans.length);
+        assertEquals(textAppearanceSpans[0].getTextSize(), mMediumText.getTextSize());
 
         FormattedString negativeSubhead =
                 FormattedString.newBuilder()
@@ -186,13 +186,13 @@ public class RichAnswerTextTest {
         texts = RichAnswerText.from(mContext, negativeRichAnswerTemplate, answerType, false, false);
         primaryText = texts[0].getText();
 
-        Assert.assertEquals("100.00 -1.00", primaryText.toString());
+        assertEquals("100.00 -1.00", primaryText.toString());
         textAppearanceSpans =
                 primaryText.getSpans(0, primaryText.length(), TextAppearanceSpan.class);
-        Assert.assertEquals(2, textAppearanceSpans.length);
-        Assert.assertEquals(textAppearanceSpans[0].getTextSize(), mPrimaryText.getTextSize());
-        Assert.assertEquals(textAppearanceSpans[1].getTextSize(), mRedText.getTextSize());
-        Assert.assertEquals(textAppearanceSpans[1].getTextColor(), mRedText.getTextColor());
+        assertEquals(2, textAppearanceSpans.length);
+        assertEquals(textAppearanceSpans[0].getTextSize(), mPrimaryText.getTextSize());
+        assertEquals(textAppearanceSpans[1].getTextSize(), mRedText.getTextSize());
+        assertEquals(textAppearanceSpans[1].getTextColor(), mRedText.getTextColor());
     }
 
     @Test
@@ -232,12 +232,12 @@ public class RichAnswerTextTest {
                 RichAnswerText.from(mContext, richAnswerTemplate, answerType, true, false);
         SpannableStringBuilder primaryText = texts[0].getText();
 
-        Assert.assertEquals("100.00 +1.00", primaryText.toString());
+        assertEquals("100.00 +1.00", primaryText.toString());
         TextAppearanceSpan[] textAppearanceSpans =
                 primaryText.getSpans(0, primaryText.length(), TextAppearanceSpan.class);
-        Assert.assertEquals(2, textAppearanceSpans.length);
-        Assert.assertEquals(textAppearanceSpans[1].getTextSize(), mRedText.getTextSize());
-        Assert.assertEquals(textAppearanceSpans[1].getTextColor(), mRedText.getTextColor());
+        assertEquals(2, textAppearanceSpans.length);
+        assertEquals(textAppearanceSpans[1].getTextSize(), mRedText.getTextSize());
+        assertEquals(textAppearanceSpans[1].getTextColor(), mRedText.getTextColor());
 
         FormattedString negativeSubhead =
                 FormattedString.newBuilder()
@@ -264,12 +264,12 @@ public class RichAnswerTextTest {
         texts = RichAnswerText.from(mContext, negativeRichAnswerTemplate, answerType, true, false);
         primaryText = texts[0].getText();
 
-        Assert.assertEquals("100.00 -1.00", primaryText.toString());
+        assertEquals("100.00 -1.00", primaryText.toString());
         textAppearanceSpans =
                 primaryText.getSpans(0, primaryText.length(), TextAppearanceSpan.class);
-        Assert.assertEquals(2, textAppearanceSpans.length);
-        Assert.assertEquals(textAppearanceSpans[1].getTextSize(), mGreenText.getTextSize());
-        Assert.assertEquals(textAppearanceSpans[1].getTextColor(), mGreenText.getTextColor());
+        assertEquals(2, textAppearanceSpans.length);
+        assertEquals(textAppearanceSpans[1].getTextSize(), mGreenText.getTextSize());
+        assertEquals(textAppearanceSpans[1].getTextColor(), mGreenText.getTextColor());
     }
 
     @Test
@@ -300,23 +300,23 @@ public class RichAnswerTextTest {
         AnswerType answerType = AnswerType.ANSWER_TYPE_WEATHER;
         AnswerText[] texts =
                 RichAnswerText.from(mContext, richAnswerTemplate, answerType, false, false);
-        Assert.assertEquals(1, texts[0].getMaxLines());
-        Assert.assertEquals(1, texts[1].getMaxLines());
+        assertEquals(1, texts[0].getMaxLines());
+        assertEquals(1, texts[1].getMaxLines());
 
         SpannableStringBuilder primaryText = texts[0].getText();
         SpannableStringBuilder secondaryText = texts[1].getText();
 
-        Assert.assertEquals("64•F Thu - Redmond, WA", primaryText.toString());
+        assertEquals("64•F Thu - Redmond, WA", primaryText.toString());
         TextAppearanceSpan[] textAppearanceSpans =
                 primaryText.getSpans(0, primaryText.length(), TextAppearanceSpan.class);
-        Assert.assertEquals(1, textAppearanceSpans.length);
-        Assert.assertEquals(textAppearanceSpans[0].getTextSize(), mPrimaryText.getTextSize());
+        assertEquals(1, textAppearanceSpans.length);
+        assertEquals(textAppearanceSpans[0].getTextSize(), mPrimaryText.getTextSize());
 
-        Assert.assertEquals("redmond weather", secondaryText.toString());
+        assertEquals("redmond weather", secondaryText.toString());
         textAppearanceSpans =
                 secondaryText.getSpans(0, secondaryText.length(), TextAppearanceSpan.class);
-        Assert.assertEquals(1, textAppearanceSpans.length);
-        Assert.assertEquals(textAppearanceSpans[0].getTextSize(), mMediumText.getTextSize());
+        assertEquals(1, textAppearanceSpans.length);
+        assertEquals(textAppearanceSpans[0].getTextSize(), mMediumText.getTextSize());
     }
 
     @Test
@@ -347,8 +347,8 @@ public class RichAnswerTextTest {
         AnswerType answerType = AnswerType.ANSWER_TYPE_TRANSLATION;
         AnswerText[] texts =
                 RichAnswerText.from(mContext, richAnswerTemplate, answerType, false, false);
-        Assert.assertEquals(3, texts[0].getMaxLines());
-        Assert.assertEquals(1, texts[1].getMaxLines());
+        assertEquals(3, texts[0].getMaxLines());
+        assertEquals(1, texts[1].getMaxLines());
     }
 
     @Test
@@ -381,13 +381,13 @@ public class RichAnswerTextTest {
         SpannableStringBuilder primaryText = texts[0].getText();
         SpannableStringBuilder secondaryText = texts[1].getText();
 
-        Assert.assertEquals("156.23 Japanese Yen", primaryText.toString());
+        assertEquals("156.23 Japanese Yen", primaryText.toString());
         TextAppearanceSpan[] textAppearanceSpans =
                 primaryText.getSpans(0, primaryText.length(), TextAppearanceSpan.class);
-        Assert.assertEquals(1, textAppearanceSpans.length);
-        Assert.assertEquals(textAppearanceSpans[0].getTextSize(), mPrimaryText.getTextSize());
+        assertEquals(1, textAppearanceSpans.length);
+        assertEquals(textAppearanceSpans[0].getTextSize(), mPrimaryText.getTextSize());
 
-        Assert.assertEquals("1 usd to jpy", secondaryText.toString());
+        assertEquals("1 usd to jpy", secondaryText.toString());
     }
 
     @Test
@@ -410,16 +410,16 @@ public class RichAnswerTextTest {
         SpannableStringBuilder primaryText = texts[0].getText();
         SpannableStringBuilder secondaryText = texts[1].getText();
 
-        Assert.assertEquals("64•F Thu - Redmond, WA", primaryText.toString());
+        assertEquals("64•F Thu - Redmond, WA", primaryText.toString());
         TextAppearanceSpan[] textAppearanceSpans =
                 primaryText.getSpans(0, primaryText.length(), TextAppearanceSpan.class);
-        Assert.assertEquals(1, textAppearanceSpans.length);
-        Assert.assertEquals(textAppearanceSpans[0].getTextSize(), mPrimaryText.getTextSize());
+        assertEquals(1, textAppearanceSpans.length);
+        assertEquals(textAppearanceSpans[0].getTextSize(), mPrimaryText.getTextSize());
 
-        Assert.assertEquals("redmond weather", secondaryText.toString());
+        assertEquals("redmond weather", secondaryText.toString());
         textAppearanceSpans =
                 secondaryText.getSpans(0, secondaryText.length(), TextAppearanceSpan.class);
-        Assert.assertEquals(1, textAppearanceSpans.length);
-        Assert.assertEquals(textAppearanceSpans[0].getTextSize(), mMediumText.getTextSize());
+        assertEquals(1, textAppearanceSpans.length);
+        assertEquals(textAppearanceSpans[0].getTextSize(), mMediumText.getTextSize());
     }
 }

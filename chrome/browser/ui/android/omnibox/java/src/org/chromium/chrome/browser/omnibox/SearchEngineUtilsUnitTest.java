@@ -34,7 +34,6 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.shadow.api.Shadow;
@@ -535,13 +534,13 @@ public class SearchEngineUtilsUnitTest {
                 .needToCheckForSearchEnginePromo();
         assertFalse(searchEngineUtils.needToCheckForSearchEnginePromo());
 
-        Mockito.reset(mLocaleManagerDelegate);
+        reset(mLocaleManagerDelegate);
 
         doReturn(true).when(mLocaleManagerDelegate).needToCheckForSearchEnginePromo();
 
         assertTrue(searchEngineUtils.needToCheckForSearchEnginePromo());
 
-        Mockito.reset(mLocaleManagerDelegate);
+        reset(mLocaleManagerDelegate);
 
         doReturn(false).when(mLocaleManagerDelegate).needToCheckForSearchEnginePromo();
 

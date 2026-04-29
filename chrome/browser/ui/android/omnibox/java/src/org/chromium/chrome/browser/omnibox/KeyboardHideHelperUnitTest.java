@@ -4,6 +4,10 @@
 
 package org.chromium.chrome.browser.omnibox;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
@@ -12,13 +16,11 @@ import static org.mockito.Mockito.verify;
 import android.graphics.Rect;
 import android.view.View;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.MockitoJUnit;
@@ -56,13 +58,13 @@ public class KeyboardHideHelperUnitTest {
         doReturn(mRootView).when(mView).getRootView();
         doReturn(300).when(mRootView).getHeight();
         mKeyboardHideHelper.monitorForKeyboardHidden();
-        Assert.assertTrue(mKeyboardHideHelper.isMonitoringForLayoutChanges());
+        assertTrue(mKeyboardHideHelper.isMonitoringForLayoutChanges());
 
         doReturn(500).when(mRootView).getHeight();
         mKeyboardHideHelper.onGlobalLayout();
 
         verify(mKeyboardHiddenCallback, times(1)).run();
-        Assert.assertFalse(mKeyboardHideHelper.isMonitoringForLayoutChanges());
+        assertFalse(mKeyboardHideHelper.isMonitoringForLayoutChanges());
     }
 
     @Test
@@ -77,26 +79,26 @@ public class KeyboardHideHelperUnitTest {
                         return null;
                     }
                 };
-        Mockito.doAnswer(windowVisibleDisplayFrameAnswer)
+        doAnswer(windowVisibleDisplayFrameAnswer)
                 .when(mWindowDelegate)
-                .getWindowVisibleDisplayFrame(Mockito.any(Rect.class));
+                .getWindowVisibleDisplayFrame(any(Rect.class));
         doReturn(500).when(mWindowDelegate).getDecorViewHeight();
 
         mKeyboardHideHelper.monitorForKeyboardHidden();
-        Assert.assertTrue(mKeyboardHideHelper.isMonitoringForLayoutChanges());
+        assertTrue(mKeyboardHideHelper.isMonitoringForLayoutChanges());
 
         height.set(500);
         mKeyboardHideHelper.onGlobalLayout();
 
         verify(mKeyboardHiddenCallback, times(1)).run();
-        Assert.assertFalse(mKeyboardHideHelper.isMonitoringForLayoutChanges());
+        assertFalse(mKeyboardHideHelper.isMonitoringForLayoutChanges());
     }
 
     @Test
     public void testMonitorTimeElapsed() {
         mKeyboardHideHelper.monitorForKeyboardHidden();
-        Assert.assertTrue(mKeyboardHideHelper.isMonitoringForLayoutChanges());
+        assertTrue(mKeyboardHideHelper.isMonitoringForLayoutChanges());
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
-        Assert.assertFalse(mKeyboardHideHelper.isMonitoringForLayoutChanges());
+        assertFalse(mKeyboardHideHelper.isMonitoringForLayoutChanges());
     }
 }

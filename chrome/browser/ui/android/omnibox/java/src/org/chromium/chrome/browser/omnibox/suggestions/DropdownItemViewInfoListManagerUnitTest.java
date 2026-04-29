@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.components.omnibox.GroupConfigTestSupport.SECTION_1_NO_HEADER;
@@ -12,7 +13,6 @@ import static org.chromium.components.omnibox.GroupConfigTestSupport.SECTION_2_W
 import android.content.Context;
 import android.view.View;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -71,10 +71,10 @@ public class DropdownItemViewInfoListManagerUnitTest {
      * if the two lists differ.
      */
     private void verifyModelEquals(List<DropdownItemViewInfo> expected) {
-        Assert.assertEquals(expected.size(), mSuggestionModels.size());
+        assertEquals(expected.size(), mSuggestionModels.size());
 
         for (int index = 0; index < expected.size(); index++) {
-            Assert.assertEquals(
+            assertEquals(
                     "Element at position " + index + " does not match",
                     expected.get(index),
                     mSuggestionModels.get(index));
@@ -87,14 +87,14 @@ public class DropdownItemViewInfoListManagerUnitTest {
     private void verifyPropertyValues(
             int layoutDirection, @BrandedColorScheme int brandedColorScheme) {
         for (int index = 0; index < mSuggestionModels.size(); index++) {
-            Assert.assertEquals(
+            assertEquals(
                     "Unexpected layout direction for suggestion at position " + index,
                     layoutDirection,
                     mSuggestionModels
                             .get(index)
                             .model
                             .get(SuggestionCommonProperties.LAYOUT_DIRECTION));
-            Assert.assertEquals(
+            assertEquals(
                     "Unexpected visual theme for suggestion at position " + index,
                     brandedColorScheme,
                     mSuggestionModels

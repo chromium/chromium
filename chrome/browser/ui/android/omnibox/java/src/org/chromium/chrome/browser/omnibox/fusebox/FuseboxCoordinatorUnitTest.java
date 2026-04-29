@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
@@ -31,7 +32,6 @@ import android.view.View;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -327,7 +327,7 @@ public class FuseboxCoordinatorUnitTest {
         mCoordinator.setMediatorForTesting(mMediator);
         mCoordinator.getViewHolderForTesting().addButton.setVisibility(View.VISIBLE);
         mCoordinator.onContextPopupDismissed();
-        Assert.assertTrue(mCoordinator.getViewHolderForTesting().addButton.isFocused());
+        assertTrue(mCoordinator.getViewHolderForTesting().addButton.isFocused());
         assertEquals(
                 (int) FuseboxProperties.PopupState.HIDDEN,
                 (int) mCoordinator.getModelForTesting().get(FuseboxProperties.POPUP_STATE));

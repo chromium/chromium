@@ -6,6 +6,10 @@ package org.chromium.chrome.browser.omnibox;
 
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import android.app.Activity;
 import android.text.TextUtils;
 import android.view.ViewGroup;
@@ -15,7 +19,6 @@ import android.widget.FrameLayout.LayoutParams;
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matchers;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
@@ -79,7 +82,7 @@ public class UrlBarUiUnitTest {
     }
 
     private static void assertTextEquals(CharSequence a, CharSequence b) {
-        Assert.assertTrue(a + " should match: " + b, TextUtils.equals(a, b));
+        assertTrue(a + " should match: " + b, TextUtils.equals(a, b));
     }
 
     private void waitForUrlBarLayout() {
@@ -124,7 +127,7 @@ public class UrlBarUiUnitTest {
                             Matchers.lessThan((float) mUrlBar.getMeasuredWidth()));
                 });
 
-        Assert.assertNull(getVisibleTextPrefixHint());
+        assertNull(getVisibleTextPrefixHint());
     }
 
     @Test
@@ -145,7 +148,7 @@ public class UrlBarUiUnitTest {
                 });
 
         CharSequence urlText = getUrlText();
-        Assert.assertNull(getVisibleTextPrefixHint());
+        assertNull(getVisibleTextPrefixHint());
 
         // Append a string to the already long initial text and validate the prefix doesn't change.
         updateUrlBarText(
@@ -153,8 +156,8 @@ public class UrlBarUiUnitTest {
                 UrlBar.ScrollType.SCROLL_TO_TLD,
                 domain.length());
         final CharSequence prefixHint = getVisibleTextPrefixHint();
-        Assert.assertNotNull(prefixHint);
-        Assert.assertTrue(
+        assertNotNull(prefixHint);
+        assertTrue(
                 "Expected url text: '" + urlText + "' starts with " + prefixHint,
                 TextUtils.indexOf(urlText, prefixHint) == 0);
         assertThat(prefixHint.length(), Matchers.lessThan(urlText.length()));
@@ -176,7 +179,7 @@ public class UrlBarUiUnitTest {
                 TextUtils.substring(prefixHint, 0, prefixHint.length() - 2),
                 UrlBar.ScrollType.SCROLL_TO_TLD,
                 domain.length());
-        Assert.assertNull(getVisibleTextPrefixHint());
+        assertNull(getVisibleTextPrefixHint());
     }
 
     @Test
@@ -199,14 +202,14 @@ public class UrlBarUiUnitTest {
 
         // Assert null visible hint when there is RTl text anywhere in the visible url
         final CharSequence prefixHint = getVisibleTextPrefixHint();
-        Assert.assertNull(prefixHint);
+        assertNull(prefixHint);
 
         // Append a string to the already long initial text and validate the prefix doesn't change.
         updateUrlBarText(
                 getUrlText() + "bbbbbbbbbbbbbbbbbbbbbbb",
                 UrlBar.ScrollType.SCROLL_TO_TLD,
                 domain.length());
-        Assert.assertNull(prefixHint);
+        assertNull(prefixHint);
     }
 
     @Test
@@ -218,7 +221,7 @@ public class UrlBarUiUnitTest {
 
         final CharSequence urlText = getUrlText();
         CharSequence prefixHint = getVisibleTextPrefixHint();
-        Assert.assertNotNull(prefixHint);
+        assertNotNull(prefixHint);
         assertTextEquals(urlText, prefixHint);
 
         updateUrlBarText(
@@ -231,12 +234,12 @@ public class UrlBarUiUnitTest {
     @Feature("Omnibox")
     public void testVisibleTextPrefixHint_NonUrlText() {
         updateUrlBarText("a", UrlBar.ScrollType.SCROLL_TO_BEGINNING, 0);
-        Assert.assertNull(getVisibleTextPrefixHint());
+        assertNull(getVisibleTextPrefixHint());
 
         updateUrlBarText(
                 TextUtils.join("", Collections.nCopies(500, "a")),
                 UrlBar.ScrollType.SCROLL_TO_BEGINNING,
                 0);
-        Assert.assertNull(getVisibleTextPrefixHint());
+        assertNull(getVisibleTextPrefixHint());
     }
 }

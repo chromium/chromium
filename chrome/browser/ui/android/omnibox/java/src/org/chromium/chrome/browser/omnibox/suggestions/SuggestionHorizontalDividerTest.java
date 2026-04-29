@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
@@ -15,7 +17,6 @@ import android.view.View;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.filters.SmallTest;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -78,8 +79,8 @@ public class SuggestionHorizontalDividerTest {
     @Test
     @SmallTest
     public void testShouldDraw() {
-        Assert.assertTrue(mDecoration.shouldDrawDivider(mChildViewWithDivider, mRecyclerView));
-        Assert.assertFalse(mDecoration.shouldDrawDivider(mChildViewWithNoDivider, mRecyclerView));
+        assertTrue(mDecoration.shouldDrawDivider(mChildViewWithDivider, mRecyclerView));
+        assertFalse(mDecoration.shouldDrawDivider(mChildViewWithNoDivider, mRecyclerView));
     }
 
     @Test

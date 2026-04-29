@@ -23,6 +23,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -49,7 +50,6 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
@@ -891,7 +891,7 @@ public class LocationBarMediatorTest {
 
     @Test
     public void testGetViewForUrlBackFocus() {
-        Mockito.reset(mLocationBarDataProvider);
+        reset(mLocationBarDataProvider);
         doReturn(mView).when(mTab).getView();
         doReturn(mTab).when(mLocationBarDataProvider).getTab();
         assertEquals(mView, mMediator.getViewForUrlBackFocus());
@@ -1028,7 +1028,7 @@ public class LocationBarMediatorTest {
         {
             // Step 2: expect content to be reverted if suggestions are already cleared.
             doReturn(false).when(mAutocompleteCoordinator).isServingSuggestions();
-            Mockito.clearInvocations(mLocationBarLayout);
+            clearInvocations(mLocationBarLayout);
             assertTrue(mMediator.handleEscPress());
             verify(mLocationBarLayout).setDeleteButtonVisibility(false);
             assertEquals(input.getUserText(), input.getInitialUserText());
@@ -1255,7 +1255,7 @@ public class LocationBarMediatorTest {
     @Test
     public void testAnimateIconChanges_bottomToolbar() {
         doReturn(ControlsPosition.BOTTOM).when(mBrowserControlsStateProvider).getControlsPosition();
-        Mockito.reset(mStatusCoordinator);
+        reset(mStatusCoordinator);
         mMediator.onUrlFocusChange(true);
         verify(mStatusCoordinator).setShouldAnimateIconChanges(false);
     }
@@ -1350,7 +1350,7 @@ public class LocationBarMediatorTest {
         UrlBarData urlBarData = UrlBarData.create(null, "text", 0, 0, "text");
         doReturn(urlBarData).when(mLocationBarDataProvider).getUrlBarData();
         mTabletMediator.onUrlFocusChange(true);
-        Mockito.reset(mStatusCoordinator);
+        reset(mStatusCoordinator);
 
         mTabletMediator.onUrlFocusChange(false);
 
@@ -1444,7 +1444,7 @@ public class LocationBarMediatorTest {
         verify(mLocationBarLayout, atLeast(1)).setMicButtonVisibility(false);
         verify(mLocationBarLayout, never()).setMicButtonVisibility(true);
 
-        Mockito.reset(mLocationBarLayout);
+        reset(mLocationBarLayout);
         VoiceRecognitionHandler voiceRecognitionHandler = mock(VoiceRecognitionHandler.class);
         mMediator.setVoiceRecognitionHandlerForTesting(voiceRecognitionHandler);
         mMediator.onFinishNativeInitialization();
@@ -1479,7 +1479,7 @@ public class LocationBarMediatorTest {
         VoiceRecognitionHandler voiceRecognitionHandler = mock(VoiceRecognitionHandler.class);
         mMediator.setVoiceRecognitionHandlerForTesting(voiceRecognitionHandler);
         mMediator.onFinishNativeInitialization();
-        Mockito.reset(mLocationBarLayout);
+        reset(mLocationBarLayout);
 
         mMediator.updateButtonVisibility();
         verify(mLocationBarLayout).setDeleteButtonVisibility(false);
@@ -1518,7 +1518,7 @@ public class LocationBarMediatorTest {
         mTabletMediator.onUrlFocusChange(true);
         doReturn("").when(mUrlCoordinator).getTextWithAutocomplete();
         doReturn(true).when(voiceRecognitionHandler).isVoiceSearchEnabled();
-        Mockito.reset(mLocationBarTablet);
+        reset(mLocationBarTablet);
 
         mTabletMediator.updateButtonVisibility();
         updateTabletWidthConsumers(mTabletMediator);
@@ -1568,7 +1568,7 @@ public class LocationBarMediatorTest {
         mTabletMediator.setIsUrlBarFocusedWithoutAnimationsForTesting(true);
         mTabletMediator.onUrlFocusChange(true);
         doReturn(inputText).when(mUrlCoordinator).getTextWithAutocomplete();
-        Mockito.reset(mLocationBarTablet);
+        reset(mLocationBarTablet);
 
         mTabletMediator.updateButtonVisibility();
         updateTabletWidthConsumers(mTabletMediator);
@@ -1619,7 +1619,7 @@ public class LocationBarMediatorTest {
         VoiceRecognitionHandler voiceRecognitionHandler = mock(VoiceRecognitionHandler.class);
         mTabletMediator.setVoiceRecognitionHandlerForTesting(voiceRecognitionHandler);
         doReturn(true).when(voiceRecognitionHandler).isVoiceSearchEnabled();
-        Mockito.reset(mLocationBarTablet);
+        reset(mLocationBarTablet);
 
         mTabletMediator.updateButtonVisibility();
         updateTabletWidthConsumers(mTabletMediator);
@@ -1633,7 +1633,7 @@ public class LocationBarMediatorTest {
     public void testButtonVisibility_tablet() {
         doReturn(mTab).when(mLocationBarDataProvider).getTab();
         mTabletMediator.onFinishNativeInitialization();
-        Mockito.reset(mLocationBarTablet);
+        reset(mLocationBarTablet);
         int buttonWidth =
                 mContext.getResources()
                         .getDimensionPixelSize(R.dimen.location_bar_action_icon_width);
@@ -1652,7 +1652,7 @@ public class LocationBarMediatorTest {
         doReturn(mTab).when(mLocationBarDataProvider).getTab();
         mTabletMediator.onFinishNativeInitialization();
         mTabletMediator.setShouldShowButtonsWhenUnfocusedForTablet(false);
-        Mockito.reset(mLocationBarTablet);
+        reset(mLocationBarTablet);
         mTabletMediator.updateButtonVisibility();
 
         verify(mLocationBarTablet).setMicButtonVisibility(false);
@@ -2020,7 +2020,7 @@ public class LocationBarMediatorTest {
         mMediator.onUrlFocusChange(false);
         mMediator.setUrlFocusChangeInProgress(false);
 
-        Mockito.reset(mLocationBarLayout, mLocationBarEmbedder);
+        reset(mLocationBarLayout, mLocationBarEmbedder);
 
         mMediator.onInstallabilityUpdated(mAppBannerManager);
         verify(mLocationBarLayout).setInstallButtonVisibility(true);
@@ -2030,7 +2030,7 @@ public class LocationBarMediatorTest {
     @Test
     public void testInstallButton_invisibleIfNotInstallable() {
         doReturn(false).when(mAppBannerManagerJni).isProbablyPromotable(mWebContents);
-        Mockito.reset(mLocationBarLayout, mLocationBarEmbedder);
+        reset(mLocationBarLayout, mLocationBarEmbedder);
 
         mMediator.onInstallabilityUpdated(mAppBannerManager);
         verify(mLocationBarLayout).setInstallButtonVisibility(false);
@@ -2042,7 +2042,7 @@ public class LocationBarMediatorTest {
         mMediator.onUrlFocusChange(true);
         mMediator.setUrlFocusChangeInProgress(false);
 
-        Mockito.reset(mLocationBarLayout, mLocationBarEmbedder);
+        reset(mLocationBarLayout, mLocationBarEmbedder);
 
         mMediator.onInstallabilityUpdated(mAppBannerManager);
         verify(mLocationBarLayout).setInstallButtonVisibility(false);
@@ -2098,7 +2098,7 @@ public class LocationBarMediatorTest {
     @DisableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
     public void testUpdateZoomButtonVisibility_hideButton() {
         mMediator.onFinishNativeInitialization();
-        Mockito.clearInvocations(mLocationBarEmbedder);
+        clearInvocations(mLocationBarEmbedder);
 
         mMediator.updateZoomButtonVisibilityForTesting();
         verify(mLocationBarLayout).setZoomButtonVisibility(false);
@@ -2123,15 +2123,15 @@ public class LocationBarMediatorTest {
         assertTrue(mTabletMediator.shouldShowMicButton());
 
         ToolbarWidthConsumer micButtonConsumer = mTabletMediator.getMicButtonToolbarWidthConsumer();
-        Mockito.clearInvocations(mLocationBarTablet);
+        clearInvocations(mLocationBarTablet);
 
         micButtonConsumer.updateVisibility(buttonWidth);
         verify(mLocationBarTablet).setMicButtonVisibility(true);
-        Mockito.clearInvocations(mLocationBarTablet);
+        clearInvocations(mLocationBarTablet);
 
         micButtonConsumer.updateVisibility(0);
         verify(mLocationBarTablet).setMicButtonVisibility(false);
-        Mockito.clearInvocations(mLocationBarTablet);
+        clearInvocations(mLocationBarTablet);
     }
 
     @Test
@@ -2153,15 +2153,15 @@ public class LocationBarMediatorTest {
 
         ToolbarWidthConsumer lensButtonConsumer =
                 mTabletMediator.getLensButtonToolbarWidthConsumer();
-        Mockito.clearInvocations(mLocationBarTablet);
+        clearInvocations(mLocationBarTablet);
 
         lensButtonConsumer.updateVisibility(buttonWidth);
         verify(mLocationBarTablet).setLensButtonVisibility(true);
-        Mockito.clearInvocations(mLocationBarTablet);
+        clearInvocations(mLocationBarTablet);
 
         lensButtonConsumer.updateVisibility(0);
         verify(mLocationBarTablet).setLensButtonVisibility(false);
-        Mockito.clearInvocations(mLocationBarTablet);
+        clearInvocations(mLocationBarTablet);
     }
 
     @Test
@@ -2175,16 +2175,16 @@ public class LocationBarMediatorTest {
 
         ToolbarWidthConsumer bookmarkButtonConsumer =
                 mTabletMediator.getBookmarkButtonToolbarWidthConsumer();
-        Mockito.clearInvocations(mLocationBarTablet);
+        clearInvocations(mLocationBarTablet);
 
         bookmarkButtonConsumer.updateVisibility(buttonWidth);
         assertTrue(mTabletMediator.shouldShowBookmarkButton());
         verify(mLocationBarTablet).setBookmarkButtonVisibility(true);
-        Mockito.clearInvocations(mLocationBarTablet);
+        clearInvocations(mLocationBarTablet);
 
         bookmarkButtonConsumer.updateVisibility(0);
         verify(mLocationBarTablet).setBookmarkButtonVisibility(false);
-        Mockito.clearInvocations(mLocationBarTablet);
+        clearInvocations(mLocationBarTablet);
     }
 
     @Test
@@ -2201,15 +2201,15 @@ public class LocationBarMediatorTest {
 
         ToolbarWidthConsumer installButtonConsumer =
                 mTabletMediator.getInstallButtonToolbarWidthConsumer();
-        Mockito.clearInvocations(mLocationBarTablet);
+        clearInvocations(mLocationBarTablet);
 
         installButtonConsumer.updateVisibility(buttonWidth);
         verify(mLocationBarTablet).setInstallButtonVisibility(true);
-        Mockito.clearInvocations(mLocationBarTablet);
+        clearInvocations(mLocationBarTablet);
 
         installButtonConsumer.updateVisibility(0);
         verify(mLocationBarTablet).setInstallButtonVisibility(false);
-        Mockito.clearInvocations(mLocationBarTablet);
+        clearInvocations(mLocationBarTablet);
     }
 
     @Test
@@ -2224,15 +2224,15 @@ public class LocationBarMediatorTest {
 
         ToolbarWidthConsumer zoomButtonConsumer =
                 mTabletMediator.getZoomButtonToolbarWidthConsumer();
-        Mockito.clearInvocations(mLocationBarTablet);
+        clearInvocations(mLocationBarTablet);
 
         zoomButtonConsumer.updateVisibility(buttonWidth);
         verify(mLocationBarTablet).setZoomButtonVisibility(false);
-        Mockito.clearInvocations(mLocationBarTablet);
+        clearInvocations(mLocationBarTablet);
 
         zoomButtonConsumer.updateVisibility(0);
         verify(mLocationBarTablet).setZoomButtonVisibility(false);
-        Mockito.clearInvocations(mLocationBarTablet);
+        clearInvocations(mLocationBarTablet);
     }
 
     @Test
@@ -2247,17 +2247,17 @@ public class LocationBarMediatorTest {
 
         ToolbarWidthConsumer zoomButtonConsumer =
                 mTabletMediator.getZoomButtonToolbarWidthConsumer();
-        Mockito.clearInvocations(mLocationBarTablet, mLocationBarEmbedder);
+        clearInvocations(mLocationBarTablet, mLocationBarEmbedder);
 
         zoomButtonConsumer.updateVisibility(buttonWidth);
         verify(mLocationBarTablet).setZoomButtonVisibility(true);
         verify(mLocationBarEmbedder, never()).onWidthConsumerVisibilityChanged();
-        Mockito.clearInvocations(mLocationBarTablet, mLocationBarEmbedder);
+        clearInvocations(mLocationBarTablet, mLocationBarEmbedder);
 
         zoomButtonConsumer.updateVisibility(0);
         verify(mLocationBarTablet).setZoomButtonVisibility(false);
         verify(mLocationBarEmbedder, never()).onWidthConsumerVisibilityChanged();
-        Mockito.clearInvocations(mLocationBarTablet, mLocationBarEmbedder);
+        clearInvocations(mLocationBarTablet, mLocationBarEmbedder);
     }
 
     @Test
@@ -2362,7 +2362,7 @@ public class LocationBarMediatorTest {
     @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testUpdateBackButtonVisibility_visible() {
-        Mockito.clearInvocations(mLocationBarLayout);
+        clearInvocations(mLocationBarLayout);
         mMediator.updateBackButtonVisibility();
         verify(mLocationBarLayout).setBackButtonVisibility(true);
     }
@@ -2370,7 +2370,7 @@ public class LocationBarMediatorTest {
     @Test
     @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testUpdateBackButtonVisibility_hidden() {
-        Mockito.clearInvocations(mLocationBarLayout);
+        clearInvocations(mLocationBarLayout);
         mMediator.updateBackButtonVisibility();
         verify(mLocationBarLayout).setBackButtonVisibility(false);
     }
@@ -2379,7 +2379,7 @@ public class LocationBarMediatorTest {
     @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testUpdateBackButtonVisibility_hiddenWhenFocused() {
         mMediator.onUrlFocusChange(true);
-        Mockito.clearInvocations(mLocationBarLayout);
+        clearInvocations(mLocationBarLayout);
         mMediator.updateBackButtonVisibility();
         verify(mLocationBarLayout).setBackButtonVisibility(false);
     }
@@ -2388,7 +2388,7 @@ public class LocationBarMediatorTest {
     @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testUpdateBackButtonVisibility_hiddenOnNtp() {
         doReturn(new GURL("chrome://newtab/")).when(mTab).getUrl();
-        Mockito.clearInvocations(mLocationBarLayout);
+        clearInvocations(mLocationBarLayout);
         mMediator.updateBackButtonVisibility();
         verify(mLocationBarLayout).setBackButtonVisibility(false);
     }

@@ -17,6 +17,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
@@ -39,7 +40,6 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
@@ -285,7 +285,7 @@ public class VoiceRecognitionHandlerUnitTest {
         clearInvocations(mObserver);
 
         mHandler.destroy();
-        mProfileSupplier.set(Mockito.mock(Profile.class));
+        mProfileSupplier.set(mock(Profile.class));
         // Stop propagating changes after destroy.
         verifyNoInteractions(mObserver);
     }

@@ -7,6 +7,10 @@ package org.chromium.chrome.browser.omnibox.suggestions.entity;
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
@@ -21,7 +25,6 @@ import android.graphics.drawable.VectorDrawable;
 
 import androidx.test.filters.SmallTest;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -149,10 +152,10 @@ public class EntitySuggestionProcessorUnitTest {
     public void contentTest_basicContent() {
         SuggestionTestHelper suggHelper = createSuggestion("subject", "details", null, SEARCH_URL);
         processSuggestion(suggHelper);
-        Assert.assertEquals(
+        assertEquals(
                 "subject",
                 suggHelper.mModel.get(SuggestionViewProperties.TEXT_LINE_1_TEXT).toString());
-        Assert.assertEquals(
+        assertEquals(
                 "details",
                 suggHelper.mModel.get(SuggestionViewProperties.TEXT_LINE_2_TEXT).toString());
     }
@@ -163,7 +166,7 @@ public class EntitySuggestionProcessorUnitTest {
         SuggestionTestHelper suggHelper = createSuggestion("", "", null, SEARCH_URL);
         processSuggestion(suggHelper);
 
-        Assert.assertNotNull(suggHelper.getIcon());
+        assertNotNull(suggHelper.getIcon());
         assertThat(suggHelper.getIcon(), instanceOf(VectorDrawable.class));
     }
 
@@ -185,7 +188,7 @@ public class EntitySuggestionProcessorUnitTest {
 
         assertThat(suggHelper.getIcon(), instanceOf(ColorDrawable.class));
         ColorDrawable icon = (ColorDrawable) suggHelper.getIcon();
-        Assert.assertEquals(Color.RED, icon.getColor());
+        assertEquals(Color.RED, icon.getColor());
     }
 
     @Test
@@ -217,7 +220,7 @@ public class EntitySuggestionProcessorUnitTest {
         assertThat(suggHelper.getIcon(), instanceOf(ColorDrawable.class));
         callback.getValue().onResult(mBitmap);
         assertThat(suggHelper.getIcon(), instanceOf(BitmapDrawable.class));
-        Assert.assertEquals(mBitmap, ((BitmapDrawable) suggHelper.getIcon()).getBitmap());
+        assertEquals(mBitmap, ((BitmapDrawable) suggHelper.getIcon()).getBitmap());
     }
 
     @Test
@@ -239,13 +242,13 @@ public class EntitySuggestionProcessorUnitTest {
         processSuggestion(suggHelper);
         verifyNoMoreInteractions(mImageSupplier);
         // Expect a fallback icon.
-        Assert.assertNotNull(suggHelper.getIcon());
+        assertNotNull(suggHelper.getIcon());
     }
 
     @Test
     public void doesProcessSuggestion_entitySuggestion() {
         SuggestionTestHelper suggHelper = createSuggestion("", "", "red", WEB_URL);
-        Assert.assertTrue(mProcessor.doesProcessSuggestion(suggHelper.mSuggestion, 0));
+        assertTrue(mProcessor.doesProcessSuggestion(suggHelper.mSuggestion, 0));
     }
 
     @Test
@@ -253,18 +256,18 @@ public class EntitySuggestionProcessorUnitTest {
         AutocompleteMatch suggestion =
                 AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
                         .build();
-        Assert.assertFalse(mProcessor.doesProcessSuggestion(suggestion, 0));
+        assertFalse(mProcessor.doesProcessSuggestion(suggestion, 0));
     }
 
     @Test
     public void getViewTypeId_forFullTestCoverage() {
-        Assert.assertEquals(OmniboxSuggestionUiType.ENTITY_SUGGESTION, mProcessor.getViewTypeId());
+        assertEquals(OmniboxSuggestionUiType.ENTITY_SUGGESTION, mProcessor.getViewTypeId());
     }
 
     @Test
     public void populateModel_suggestionTextDoesNotWrap() {
         SuggestionTestHelper suggHelper = createSuggestion("subject", "details", null, SEARCH_URL);
         processSuggestion(suggHelper);
-        Assert.assertFalse(suggHelper.mModel.get(SuggestionViewProperties.ALLOW_WRAP_AROUND));
+        assertFalse(suggHelper.mModel.get(SuggestionViewProperties.ALLOW_WRAP_AROUND));
     }
 }

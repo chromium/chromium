@@ -9,6 +9,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -19,7 +20,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -72,8 +72,7 @@ public class FuseboxSessionStateUnitTest {
 
                     clearInvocations(mComposeboxQueryControllerBridge);
                     input.setHasAttachments(true);
-                    verify(mComposeboxQueryControllerBridge, never())
-                            .setActiveTool(ArgumentMatchers.anyInt());
+                    verify(mComposeboxQueryControllerBridge, never()).setActiveTool(anyInt());
                 };
 
         session.activate(ContextUtils.getApplicationContext(), mProfileSupplier, onFullyActivated);

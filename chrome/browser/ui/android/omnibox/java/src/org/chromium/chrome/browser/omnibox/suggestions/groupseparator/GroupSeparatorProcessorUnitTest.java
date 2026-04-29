@@ -4,9 +4,11 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions.groupseparator;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import androidx.test.filters.SmallTest;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,7 +33,7 @@ public class GroupSeparatorProcessorUnitTest {
     @Test
     @SmallTest
     public void basicInfoTest() {
-        Assert.assertEquals(OmniboxSuggestionUiType.GROUP_SEPARATOR, mProcessor.getViewTypeId());
+        assertEquals(OmniboxSuggestionUiType.GROUP_SEPARATOR, mProcessor.getViewTypeId());
 
         int minimumHeight =
                 ContextUtils.getApplicationContext()
@@ -41,8 +43,8 @@ public class GroupSeparatorProcessorUnitTest {
                                 .getResources()
                                 .getDimensionPixelSize(
                                         R.dimen.omnibox_suggestion_list_divider_line_padding);
-        Assert.assertEquals(minimumHeight, mProcessor.getMinimumViewHeight());
+        assertEquals(minimumHeight, mProcessor.getMinimumViewHeight());
 
-        Assert.assertNotNull(mProcessor.createModel());
+        assertNotNull(mProcessor.createModel());
     }
 }

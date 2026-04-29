@@ -4,10 +4,11 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions.entity;
 
+import static org.junit.Assert.assertEquals;
+
 import android.view.View;
 import android.widget.TextView;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,6 +40,6 @@ public class EntitySuggestionViewBinderUnitTest {
     @Test
     public void bind_passesCallsToSuggestionViewBinder() {
         mModel.set(SuggestionViewProperties.TEXT_LINE_1_TEXT, new SuggestionSpannable("abc"));
-        Assert.assertEquals("abc", mView.<TextView>findViewById(R.id.line_1).getText().toString());
+        assertEquals("abc", mView.<TextView>findViewById(R.id.line_1).getText().toString());
     }
 }

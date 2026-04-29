@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.clearInvocations;
@@ -18,7 +21,6 @@ import android.view.View;
 
 import androidx.recyclerview.widget.RecyclerView.LayoutManager;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -74,30 +76,30 @@ public class RecyclerViewSelectionControllerUnitTest {
 
     @Test
     public void selectNextItem_fromNone() {
-        Assert.assertEquals(Integer.valueOf(0), mSelectionController.getPosition());
+        assertEquals(Integer.valueOf(0), mSelectionController.getPosition());
         mSelectionController.selectNextItem();
-        Assert.assertEquals(Integer.valueOf(1), mSelectionController.getPosition());
-        Assert.assertEquals(mChildView2, mSelectionController.getSelectedView());
+        assertEquals(Integer.valueOf(1), mSelectionController.getPosition());
+        assertEquals(mChildView2, mSelectionController.getSelectedView());
     }
 
     @Test
     public void selectNextItem_fromNone_withSentinel() {
-        Assert.assertTrue(mSelectionControllerWithSentinel.isParkedAtSentinel());
+        assertTrue(mSelectionControllerWithSentinel.isParkedAtSentinel());
         mSelectionControllerWithSentinel.selectNextItem();
-        Assert.assertEquals(Integer.valueOf(0), mSelectionControllerWithSentinel.getPosition());
-        Assert.assertEquals(mChildView1, mSelectionControllerWithSentinel.getSelectedView());
+        assertEquals(Integer.valueOf(0), mSelectionControllerWithSentinel.getPosition());
+        assertEquals(mChildView1, mSelectionControllerWithSentinel.getSelectedView());
     }
 
     @Test
     public void selectNextItem_fromPrevious() {
         mSelectionController.setPosition(1);
-        Assert.assertEquals(Integer.valueOf(1), mSelectionController.getPosition());
-        Assert.assertEquals(mChildView2, mSelectionController.getSelectedView());
+        assertEquals(Integer.valueOf(1), mSelectionController.getPosition());
+        assertEquals(mChildView2, mSelectionController.getSelectedView());
         verify(mLayoutManager).scrollToPosition(3);
 
         mSelectionController.selectNextItem();
-        Assert.assertEquals(Integer.valueOf(2), mSelectionController.getPosition());
-        Assert.assertEquals(mChildView3, mSelectionController.getSelectedView());
+        assertEquals(Integer.valueOf(2), mSelectionController.getPosition());
+        assertEquals(mChildView3, mSelectionController.getSelectedView());
         verify(mLayoutManager).scrollToPosition(4);
     }
 
@@ -105,107 +107,107 @@ public class RecyclerViewSelectionControllerUnitTest {
     public void selectNextItem_fromLast() {
         mSelectionController.setPosition(4);
         verify(mLayoutManager).scrollToPosition(4);
-        Assert.assertEquals(Integer.valueOf(4), mSelectionController.getPosition());
-        Assert.assertEquals(mChildView5, mSelectionController.getSelectedView());
+        assertEquals(Integer.valueOf(4), mSelectionController.getPosition());
+        assertEquals(mChildView5, mSelectionController.getSelectedView());
 
         // Selecting next item should result in item being highlighted.
-        Assert.assertFalse(mSelectionController.selectNextItem());
-        Assert.assertEquals(Integer.valueOf(4), mSelectionController.getPosition());
-        Assert.assertEquals(mChildView5, mSelectionController.getSelectedView());
+        assertFalse(mSelectionController.selectNextItem());
+        assertEquals(Integer.valueOf(4), mSelectionController.getPosition());
+        assertEquals(mChildView5, mSelectionController.getSelectedView());
     }
 
     @Test
     public void selectNextItem_fromLast_withSentinel() {
         mSelectionControllerWithSentinel.setPosition(4);
         verify(mLayoutManager).scrollToPosition(4);
-        Assert.assertEquals(Integer.valueOf(4), mSelectionControllerWithSentinel.getPosition());
-        Assert.assertEquals(mChildView5, mSelectionControllerWithSentinel.getSelectedView());
+        assertEquals(Integer.valueOf(4), mSelectionControllerWithSentinel.getPosition());
+        assertEquals(mChildView5, mSelectionControllerWithSentinel.getSelectedView());
 
         // Selecting next item should result in leaving valid range.
-        Assert.assertFalse(mSelectionControllerWithSentinel.selectNextItem());
+        assertFalse(mSelectionControllerWithSentinel.selectNextItem());
 
-        Assert.assertEquals(null, mSelectionControllerWithSentinel.getPosition());
-        Assert.assertEquals(null, mSelectionControllerWithSentinel.getSelectedView());
+        assertEquals(null, mSelectionControllerWithSentinel.getPosition());
+        assertEquals(null, mSelectionControllerWithSentinel.getSelectedView());
     }
 
     @Test
     public void selectPreviousItem_fromNone_withSentinel() {
-        Assert.assertEquals(null, mSelectionControllerWithSentinel.getPosition());
+        assertEquals(null, mSelectionControllerWithSentinel.getPosition());
         mSelectionControllerWithSentinel.selectPreviousItem();
-        Assert.assertEquals(null, mSelectionControllerWithSentinel.getPosition());
-        Assert.assertEquals(null, mSelectionControllerWithSentinel.getSelectedView());
+        assertEquals(null, mSelectionControllerWithSentinel.getPosition());
+        assertEquals(null, mSelectionControllerWithSentinel.getSelectedView());
     }
 
     @Test
     public void selectPreviousItem_fromPrevious() {
         mSelectionController.setPosition(1);
         verify(mLayoutManager).scrollToPosition(3);
-        Assert.assertEquals(Integer.valueOf(1), mSelectionController.getPosition());
-        Assert.assertEquals(mChildView2, mSelectionController.getSelectedView());
+        assertEquals(Integer.valueOf(1), mSelectionController.getPosition());
+        assertEquals(mChildView2, mSelectionController.getSelectedView());
 
         mSelectionController.selectPreviousItem();
         verify(mLayoutManager).scrollToPosition(0);
-        Assert.assertEquals(Integer.valueOf(0), mSelectionController.getPosition());
-        Assert.assertEquals(mChildView1, mSelectionController.getSelectedView());
+        assertEquals(Integer.valueOf(0), mSelectionController.getPosition());
+        assertEquals(mChildView1, mSelectionController.getSelectedView());
     }
 
     @Test
     public void selectPreviousItem_fromFirst() {
         mSelectionController.setPosition(0);
-        Assert.assertEquals(Integer.valueOf(0), mSelectionController.getPosition());
-        Assert.assertEquals(mChildView1, mSelectionController.getSelectedView());
+        assertEquals(Integer.valueOf(0), mSelectionController.getPosition());
+        assertEquals(mChildView1, mSelectionController.getSelectedView());
 
         // Selecting previous item should result in item being highlighted.
-        Assert.assertFalse(mSelectionController.selectPreviousItem());
-        Assert.assertEquals(Integer.valueOf(0), mSelectionController.getPosition());
-        Assert.assertEquals(mChildView1, mSelectionController.getSelectedView());
+        assertFalse(mSelectionController.selectPreviousItem());
+        assertEquals(Integer.valueOf(0), mSelectionController.getPosition());
+        assertEquals(mChildView1, mSelectionController.getSelectedView());
     }
 
     @Test
     public void selectPreviousItem_fromFirst_withSentinel() {
         mSelectionControllerWithSentinel.setPosition(0);
-        Assert.assertEquals(Integer.valueOf(0), mSelectionControllerWithSentinel.getPosition());
-        Assert.assertEquals(mChildView1, mSelectionControllerWithSentinel.getSelectedView());
-        Assert.assertFalse(mSelectionControllerWithSentinel.selectPreviousItem());
-        Assert.assertEquals(null, mSelectionControllerWithSentinel.getPosition());
-        Assert.assertEquals(null, mSelectionControllerWithSentinel.getSelectedView());
+        assertEquals(Integer.valueOf(0), mSelectionControllerWithSentinel.getPosition());
+        assertEquals(mChildView1, mSelectionControllerWithSentinel.getSelectedView());
+        assertFalse(mSelectionControllerWithSentinel.selectPreviousItem());
+        assertEquals(null, mSelectionControllerWithSentinel.getPosition());
+        assertEquals(null, mSelectionControllerWithSentinel.getSelectedView());
     }
 
     @Test
     public void selectPreviousItem_skipNonFocusableItems_noCycling() {
         mSelectionController.setPosition(2);
-        Assert.assertEquals(Integer.valueOf(2), mSelectionController.getPosition());
-        Assert.assertEquals(mChildView3, mSelectionController.getSelectedView());
+        assertEquals(Integer.valueOf(2), mSelectionController.getPosition());
+        assertEquals(mChildView3, mSelectionController.getSelectedView());
 
         // View at position 1 is not focusable:
         doReturn(false).when(mChildView2).isFocusable();
 
         // Focus skips position 1.
         mSelectionController.selectPreviousItem();
-        Assert.assertEquals(Integer.valueOf(0), mSelectionController.getPosition());
-        Assert.assertEquals(mChildView1, mSelectionController.getSelectedView());
+        assertEquals(Integer.valueOf(0), mSelectionController.getPosition());
+        assertEquals(mChildView1, mSelectionController.getSelectedView());
     }
 
     @Test
     public void selectNextItem_skipNonFocusableItems_noCycling() {
         mSelectionController.setPosition(0);
-        Assert.assertEquals(Integer.valueOf(0), mSelectionController.getPosition());
-        Assert.assertEquals(mChildView1, mSelectionController.getSelectedView());
+        assertEquals(Integer.valueOf(0), mSelectionController.getPosition());
+        assertEquals(mChildView1, mSelectionController.getSelectedView());
 
         // View at position 1 is not focusable:
         doReturn(false).when(mChildView2).isFocusable();
 
         // Focus skips position 1.
         mSelectionController.selectNextItem();
-        Assert.assertEquals(Integer.valueOf(2), mSelectionController.getPosition());
-        Assert.assertEquals(mChildView3, mSelectionController.getSelectedView());
+        assertEquals(Integer.valueOf(2), mSelectionController.getPosition());
+        assertEquals(mChildView3, mSelectionController.getSelectedView());
     }
 
     @Test
     public void setSelectedItem_moveSelectionFromNone_withSentinel() {
-        Assert.assertEquals(null, mSelectionControllerWithSentinel.getPosition());
+        assertEquals(null, mSelectionControllerWithSentinel.getPosition());
         mSelectionControllerWithSentinel.setPosition(1);
-        Assert.assertEquals(Integer.valueOf(1), mSelectionControllerWithSentinel.getPosition());
+        assertEquals(Integer.valueOf(1), mSelectionControllerWithSentinel.getPosition());
 
         verify(mChildView2, atLeastOnce()).isFocusable();
         verify(mChildView2, times(1)).setSelected(true);
@@ -220,17 +222,17 @@ public class RecyclerViewSelectionControllerUnitTest {
         verify(mChildView2, times(2)).setSelected(anyBoolean());
         verifyNoMoreInteractions(mChildView1, mChildView2, mChildView3);
 
-        Assert.assertEquals(null, mSelectionControllerWithSentinel.getPosition());
+        assertEquals(null, mSelectionControllerWithSentinel.getPosition());
     }
 
     @Test
     public void setSelectedItem_moveSelectionFromAnotherItem_withSentinel() {
-        Assert.assertEquals(null, mSelectionControllerWithSentinel.getPosition());
+        assertEquals(null, mSelectionControllerWithSentinel.getPosition());
         mSelectionControllerWithSentinel.setPosition(1);
         clearInvocations(mChildView2);
 
         mSelectionControllerWithSentinel.setPosition(2);
-        Assert.assertEquals(Integer.valueOf(2), mSelectionControllerWithSentinel.getPosition());
+        assertEquals(Integer.valueOf(2), mSelectionControllerWithSentinel.getPosition());
 
         verify(mChildView1, times(0)).setSelected(anyBoolean());
         verify(mChildView2, times(0)).setSelected(true);
@@ -241,12 +243,12 @@ public class RecyclerViewSelectionControllerUnitTest {
 
     @Test
     public void setSelectedItem_moveSelectionToNone_withSentinel() {
-        Assert.assertTrue(mSelectionControllerWithSentinel.isParkedAtSentinel());
+        assertTrue(mSelectionControllerWithSentinel.isParkedAtSentinel());
         mSelectionControllerWithSentinel.setPosition(1);
         clearInvocations(mChildView2);
 
         mSelectionControllerWithSentinel.reset();
-        Assert.assertTrue(mSelectionControllerWithSentinel.isParkedAtSentinel());
+        assertTrue(mSelectionControllerWithSentinel.isParkedAtSentinel());
 
         verify(mChildView1, times(0)).setSelected(anyBoolean());
         verify(mChildView3, times(0)).setSelected(anyBoolean());
@@ -258,42 +260,42 @@ public class RecyclerViewSelectionControllerUnitTest {
     public void setSelectedItem_indexNegative() {
         mSelectionController.setPosition(1);
 
-        Assert.assertEquals(Integer.valueOf(1), mSelectionController.getPosition());
+        assertEquals(Integer.valueOf(1), mSelectionController.getPosition());
 
         // Clamped to valid range.
         mSelectionController.setPosition(-2);
-        Assert.assertEquals(Integer.valueOf(0), mSelectionController.getPosition());
+        assertEquals(Integer.valueOf(0), mSelectionController.getPosition());
     }
 
     @Test
     public void setSelectedItem_indexNegative_withSentinel() {
         mSelectionControllerWithSentinel.setPosition(1);
 
-        Assert.assertEquals(Integer.valueOf(1), mSelectionControllerWithSentinel.getPosition());
+        assertEquals(Integer.valueOf(1), mSelectionControllerWithSentinel.getPosition());
 
         // Parked at sentinel.
         mSelectionControllerWithSentinel.setPosition(-2);
-        Assert.assertEquals(null, mSelectionControllerWithSentinel.getPosition());
+        assertEquals(null, mSelectionControllerWithSentinel.getPosition());
     }
 
     @Test
     public void setSelectedItem_indexTooLarge() {
         mSelectionController.setPosition(1);
-        Assert.assertEquals(Integer.valueOf(1), mSelectionController.getPosition());
+        assertEquals(Integer.valueOf(1), mSelectionController.getPosition());
 
         // Clamped to valid range.
         mSelectionController.setPosition(30);
-        Assert.assertEquals(Integer.valueOf(4), mSelectionController.getPosition());
+        assertEquals(Integer.valueOf(4), mSelectionController.getPosition());
     }
 
     @Test
     public void setSelectedItem_indexTooLarge_withSentinel() {
         mSelectionControllerWithSentinel.setPosition(1);
-        Assert.assertEquals(Integer.valueOf(1), mSelectionControllerWithSentinel.getPosition());
+        assertEquals(Integer.valueOf(1), mSelectionControllerWithSentinel.getPosition());
 
         // Parked at sentinel.
         mSelectionControllerWithSentinel.setPosition(30);
-        Assert.assertEquals(null, mSelectionControllerWithSentinel.getPosition());
+        assertEquals(null, mSelectionControllerWithSentinel.getPosition());
     }
 
     @Test

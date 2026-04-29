@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.omnibox.suggestions;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.mockito.Mockito.spy;
 
 import android.content.Context;
 import android.view.View;
@@ -21,7 +22,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
@@ -52,7 +52,7 @@ public class PreWarmingRecycledViewPoolTest {
     public void setUp() {
         mContext = ApplicationProvider.getApplicationContext();
         mAdapter =
-                Mockito.spy(
+                spy(
                         new OmniboxSuggestionsDropdownAdapter(new ModelList()) {
                             @Override
                             protected View createView(ViewGroup parent, int viewType) {

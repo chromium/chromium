@@ -102,8 +102,7 @@ public class DynamicRectProviderUnitTest {
 
     @Test
     public void testGetPopupWidth_floating() {
-        org.mockito.Mockito.when(mResources.getDimensionPixelSize(R.dimen.fusebox_popup_width))
-                .thenReturn(500);
+        when(mResources.getDimensionPixelSize(R.dimen.fusebox_popup_width)).thenReturn(500);
         int width =
                 mDynamicRectProvider.getPopupWidth(
                         FuseboxProperties.PopupState.FLOATING, mResources);

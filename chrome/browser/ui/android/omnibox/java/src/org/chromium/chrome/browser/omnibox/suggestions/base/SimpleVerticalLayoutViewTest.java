@@ -4,13 +4,14 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions.base;
 
+import static org.junit.Assert.assertEquals;
+
 import android.app.Activity;
 import android.content.Context;
 import android.view.View;
 import android.view.View.MeasureSpec;
 import android.view.ViewGroup.LayoutParams;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -79,11 +80,11 @@ public class SimpleVerticalLayoutViewTest {
 
     /** Confirm that specified view is positioned at specific coordinates. */
     private void verifyViewLayout(View v, int left, int top, int right, int bottom) {
-        Assert.assertEquals("left view edge", left, v.getLeft());
-        Assert.assertEquals("top view edge", top, v.getTop());
-        Assert.assertEquals("right view edge", right, v.getRight());
-        Assert.assertEquals("bottom view edge", bottom, v.getBottom());
-        Assert.assertEquals("view height", bottom - top, v.getMeasuredHeight());
+        assertEquals("left view edge", left, v.getLeft());
+        assertEquals("top view edge", top, v.getTop());
+        assertEquals("right view edge", right, v.getRight());
+        assertEquals("bottom view edge", bottom, v.getBottom());
+        assertEquals("view height", bottom - top, v.getMeasuredHeight());
     }
 
     /** Verify that padding are respected during layout. */

@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.omnibox.suggestions.carousel;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.atLeastOnce;
@@ -19,7 +20,6 @@ import android.content.res.Resources;
 import android.graphics.Color;
 import android.view.ViewGroup.MarginLayoutParams;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -71,12 +71,12 @@ public class BaseCarouselSuggestionViewBinderUnitTest {
         tiles.add(new ListItem(0, tileModel));
         tiles.add(new ListItem(0, tileModel));
 
-        Assert.assertEquals(0, mTiles.size());
+        assertEquals(0, mTiles.size());
         mModel.set(BaseCarouselSuggestionViewProperties.TILES, tiles);
-        Assert.assertEquals(3, mTiles.size());
-        Assert.assertEquals(tiles.get(0), mTiles.get(0));
-        Assert.assertEquals(tiles.get(1), mTiles.get(1));
-        Assert.assertEquals(tiles.get(2), mTiles.get(2));
+        assertEquals(3, mTiles.size());
+        assertEquals(tiles.get(0), mTiles.get(0));
+        assertEquals(tiles.get(1), mTiles.get(1));
+        assertEquals(tiles.get(2), mTiles.get(2));
     }
 
     @Test
@@ -87,15 +87,15 @@ public class BaseCarouselSuggestionViewBinderUnitTest {
         tiles.add(new ListItem(0, tileModel));
         tiles.add(new ListItem(0, tileModel));
 
-        Assert.assertEquals(0, mTiles.size());
+        assertEquals(0, mTiles.size());
         mModel.set(BaseCarouselSuggestionViewProperties.TILES, tiles);
-        Assert.assertEquals(3, mTiles.size());
+        assertEquals(3, mTiles.size());
         verify(mView).resetSelection();
 
         clearInvocations(mView);
 
         mModel.set(BaseCarouselSuggestionViewProperties.TILES, null);
-        Assert.assertEquals(0, mTiles.size());
+        assertEquals(0, mTiles.size());
         verify(mView).resetSelection();
     }
 
@@ -200,7 +200,7 @@ public class BaseCarouselSuggestionViewBinderUnitTest {
     @Test
     public void itemDecoration_setItemWidth() {
         // View was initially created with no decorations.
-        Assert.assertEquals(0, mView.getItemDecorationCount());
+        assertEquals(0, mView.getItemDecorationCount());
 
         // Create a new model with a decoration attached.
         var decoration = new SpacingRecyclerViewItemDecoration(10, 5);
@@ -210,8 +210,8 @@ public class BaseCarouselSuggestionViewBinderUnitTest {
                         .build();
         PropertyModelChangeProcessor.create(mModel, mView, BaseCarouselSuggestionViewBinder::bind);
 
-        Assert.assertEquals(1, mView.getItemDecorationCount());
-        Assert.assertSame(decoration, mView.getItemDecorationAt(0));
+        assertEquals(1, mView.getItemDecorationCount());
+        assertSame(decoration, mView.getItemDecorationAt(0));
     }
 
     @Test

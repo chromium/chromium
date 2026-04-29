@@ -4,6 +4,10 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions.answer;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
 
@@ -15,7 +19,6 @@ import android.text.Spannable;
 import androidx.annotation.DrawableRes;
 
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -126,11 +129,11 @@ public class AnswerSuggestionProcessorUnitTest {
             final String actualTitle = actualTitleSpan == null ? null : actualTitleSpan.toString();
             final String actualDescription = mModel.get(descriptionKey);
 
-            Assert.assertNotNull(actualTitle);
-            Assert.assertEquals(expectedTitle, actualTitle);
+            assertNotNull(actualTitle);
+            assertEquals(expectedTitle, actualTitle);
 
-            Assert.assertEquals(expectedDescription, actualDescription);
-            Assert.assertEquals(expectedMaxLineCount, mModel.get(maxLineCountKey));
+            assertEquals(expectedDescription, actualDescription);
+            assertEquals(expectedMaxLineCount, mModel.get(maxLineCountKey));
         }
 
         void verifyLine1(
@@ -159,7 +162,7 @@ public class AnswerSuggestionProcessorUnitTest {
         /** Get Drawable associated with the suggestion. */
         Drawable getIcon() {
             final OmniboxDrawableState state = mModel.get(BaseSuggestionViewProperties.ICON);
-            Assert.assertTrue(state.isLarge);
+            assertTrue(state.isLarge);
             return state == null ? null : state.drawable;
         }
 
@@ -248,15 +251,14 @@ public class AnswerSuggestionProcessorUnitTest {
         for (AnswerType type : ANSWER_TYPES) {
             SuggestionTestHelper suggHelper = createRichAnswerSuggestion(type, 0, false);
             // Note: model is re-created on every iteration.
-            Assert.assertNotNull(
-                    "No icon associated with type: " + type.name(), suggHelper.getIcon());
+            assertNotNull("No icon associated with type: " + type.name(), suggHelper.getIcon());
         }
     }
 
     @Test
     public void answerImage_calculatorIcon() {
         var suggHelper = createCalculationSuggestion("", "");
-        Assert.assertEquals(R.drawable.ic_equals_sign_round, suggHelper.getIconRes());
+        assertEquals(R.drawable.ic_equals_sign_round, suggHelper.getIconRes());
     }
 
     @Test
@@ -264,7 +266,7 @@ public class AnswerSuggestionProcessorUnitTest {
     public void checkColorReversalRequired_ReturnsFalseIfOmniBoxAnswerColorReversalDisabled() {
         mProcessor.onNativeInitialized();
         for (AnswerType type : ANSWER_TYPES) {
-            Assert.assertFalse(mProcessor.checkColorReversalRequired(type));
+            assertFalse(mProcessor.checkColorReversalRequired(type));
         }
     }
 
@@ -275,9 +277,9 @@ public class AnswerSuggestionProcessorUnitTest {
         Locale.setDefault(new Locale("ja", "JP"));
         for (AnswerType type : ANSWER_TYPES) {
             if (type == AnswerType.ANSWER_TYPE_FINANCE) {
-                Assert.assertTrue(mProcessor.checkColorReversalRequired(type));
+                assertTrue(mProcessor.checkColorReversalRequired(type));
             } else {
-                Assert.assertFalse(mProcessor.checkColorReversalRequired(type));
+                assertFalse(mProcessor.checkColorReversalRequired(type));
             }
         }
     }
@@ -288,7 +290,7 @@ public class AnswerSuggestionProcessorUnitTest {
         mProcessor.onNativeInitialized();
         Locale.setDefault(new Locale("en", "US"));
         for (AnswerType type : ANSWER_TYPES) {
-            Assert.assertFalse(mProcessor.checkColorReversalRequired(type));
+            assertFalse(mProcessor.checkColorReversalRequired(type));
         }
     }
 
@@ -296,13 +298,13 @@ public class AnswerSuggestionProcessorUnitTest {
     public void doesProcessSuggestion_suggestionWithRichAnswer() {
         SuggestionTestHelper suggHelper =
                 createRichAnswerSuggestion(AnswerType.ANSWER_TYPE_DICTIONARY, 1, false);
-        Assert.assertTrue(mProcessor.doesProcessSuggestion(suggHelper.mSuggestion, 0));
+        assertTrue(mProcessor.doesProcessSuggestion(suggHelper.mSuggestion, 0));
     }
 
     @Test
     public void doesProcessSuggestion_calculatorSuggestion() {
         SuggestionTestHelper suggHelper = createCalculationSuggestion("abcd", "efgh");
-        Assert.assertTrue(mProcessor.doesProcessSuggestion(suggHelper.mSuggestion, 0));
+        assertTrue(mProcessor.doesProcessSuggestion(suggHelper.mSuggestion, 0));
     }
 
     @Test
@@ -310,11 +312,11 @@ public class AnswerSuggestionProcessorUnitTest {
         AutocompleteMatch suggestion =
                 AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
                         .build();
-        Assert.assertFalse(mProcessor.doesProcessSuggestion(suggestion, 0));
+        assertFalse(mProcessor.doesProcessSuggestion(suggestion, 0));
     }
 
     @Test
     public void getViewTypeId_forFullTestCoverage() {
-        Assert.assertEquals(OmniboxSuggestionUiType.ANSWER_SUGGESTION, mProcessor.getViewTypeId());
+        assertEquals(OmniboxSuggestionUiType.ANSWER_SUGGESTION, mProcessor.getViewTypeId());
     }
 }

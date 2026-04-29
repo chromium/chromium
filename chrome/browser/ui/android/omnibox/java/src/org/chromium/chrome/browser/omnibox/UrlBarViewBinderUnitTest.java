@@ -4,6 +4,10 @@
 
 package org.chromium.chrome.browser.omnibox;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -22,7 +26,6 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintLayout.LayoutParams;
 import androidx.test.filters.SmallTest;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -79,10 +82,10 @@ public class UrlBarViewBinderUnitTest {
     public void testSetHintTextColor() {
         int expectColor = Color.RED;
         mModel.set(HINT_TEXT_COLOR, expectColor);
-        Assert.assertEquals(expectColor, mUrlBar.getHintTextColors().getDefaultColor());
+        assertEquals(expectColor, mUrlBar.getHintTextColors().getDefaultColor());
         int newExpectColor = Color.GREEN;
         mModel.set(HINT_TEXT_COLOR, newExpectColor);
-        Assert.assertEquals(newExpectColor, mUrlBar.getHintTextColors().getDefaultColor());
+        assertEquals(newExpectColor, mUrlBar.getHintTextColors().getDefaultColor());
     }
 
     @Test
@@ -90,10 +93,10 @@ public class UrlBarViewBinderUnitTest {
     public void testSetTextColor() {
         int expectColor = Color.RED;
         mModel.set(TEXT_COLOR, expectColor);
-        Assert.assertEquals(expectColor, mUrlBar.getTextColors().getDefaultColor());
+        assertEquals(expectColor, mUrlBar.getTextColors().getDefaultColor());
         int newExpectColor = Color.GREEN;
         mModel.set(TEXT_COLOR, newExpectColor);
-        Assert.assertEquals(newExpectColor, mUrlBar.getTextColors().getDefaultColor());
+        assertEquals(newExpectColor, mUrlBar.getTextColors().getDefaultColor());
     }
 
     @Test
@@ -111,19 +114,19 @@ public class UrlBarViewBinderUnitTest {
     @SmallTest
     public void testSetHintText() {
         mModel.set(HINT_TEXT, "Hint Text");
-        Assert.assertEquals("Hint Text", mUrlBar.getHint());
+        assertEquals("Hint Text", mUrlBar.getHint());
         mModel.set(HINT_TEXT, "Different Hint Text");
-        Assert.assertEquals("Different Hint Text", mUrlBar.getHint());
+        assertEquals("Different Hint Text", mUrlBar.getHint());
 
         mModel.set(UrlBarProperties.USE_SMALL_TEXT, true);
-        Assert.assertNull(mUrlBar.getHint());
+        assertNull(mUrlBar.getHint());
         mModel.set(HINT_TEXT, "Hint Text");
-        Assert.assertNull(mUrlBar.getHint());
+        assertNull(mUrlBar.getHint());
         mModel.set(UrlBarProperties.USE_SMALL_TEXT, false);
-        Assert.assertEquals("Hint Text", mUrlBar.getHint());
+        assertEquals("Hint Text", mUrlBar.getHint());
 
         mModel.set(UrlBarProperties.SHOW_HINT_TEXT, false);
-        Assert.assertNull(mUrlBar.getHint());
+        assertNull(mUrlBar.getHint());
     }
 
     @Test
@@ -135,18 +138,18 @@ public class UrlBarViewBinderUnitTest {
         int smallPadding = 0;
 
         mModel.set(UrlBarProperties.USE_SMALL_TEXT, true);
-        Assert.assertEquals(LayoutParams.WRAP_CONTENT, mUrlBarLayoutParams.width);
-        Assert.assertEquals(smallPadding, mUrlBar.getPaddingBottom());
-        Assert.assertEquals(smallPadding, mUrlBar.getPaddingTop());
-        Assert.assertEquals(13, mUrlBar.getPaddingStart());
-        Assert.assertEquals(17, mUrlBar.getPaddingEnd());
+        assertEquals(LayoutParams.WRAP_CONTENT, mUrlBarLayoutParams.width);
+        assertEquals(smallPadding, mUrlBar.getPaddingBottom());
+        assertEquals(smallPadding, mUrlBar.getPaddingTop());
+        assertEquals(13, mUrlBar.getPaddingStart());
+        assertEquals(17, mUrlBar.getPaddingEnd());
 
         mModel.set(UrlBarProperties.USE_SMALL_TEXT, false);
-        Assert.assertEquals(LayoutParams.MATCH_CONSTRAINT, mUrlBarLayoutParams.width);
-        Assert.assertEquals(normalPadding, mUrlBar.getPaddingBottom());
-        Assert.assertEquals(normalPadding, mUrlBar.getPaddingTop());
-        Assert.assertEquals(13, mUrlBar.getPaddingStart());
-        Assert.assertEquals(17, mUrlBar.getPaddingEnd());
+        assertEquals(LayoutParams.MATCH_CONSTRAINT, mUrlBarLayoutParams.width);
+        assertEquals(normalPadding, mUrlBar.getPaddingBottom());
+        assertEquals(normalPadding, mUrlBar.getPaddingTop());
+        assertEquals(13, mUrlBar.getPaddingStart());
+        assertEquals(17, mUrlBar.getPaddingEnd());
     }
 
     @Test
@@ -155,12 +158,12 @@ public class UrlBarViewBinderUnitTest {
     public void testSetAllowMultilineInput() {
         mModel.set(UrlBarProperties.ALLOW_MULTILINE_INPUT, true);
         mUrlBar.onFocusChanged(true, View.FOCUS_DOWN, null);
-        Assert.assertFalse(mUrlBar.isSingleLine());
-        Assert.assertEquals(UrlBar.MULTILINE_EDIT_MAX_LINES, mUrlBar.getMaxLines());
+        assertFalse(mUrlBar.isSingleLine());
+        assertEquals(UrlBar.MULTILINE_EDIT_MAX_LINES, mUrlBar.getMaxLines());
 
         mModel.set(UrlBarProperties.ALLOW_MULTILINE_INPUT, false);
         mUrlBar.onFocusChanged(true, View.FOCUS_DOWN, null);
-        Assert.assertTrue(mUrlBar.isSingleLine());
-        Assert.assertEquals(1, mUrlBar.getMaxLines());
+        assertTrue(mUrlBar.isSingleLine());
+        assertEquals(1, mUrlBar.getMaxLines());
     }
 }
