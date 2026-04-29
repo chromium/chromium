@@ -196,9 +196,12 @@ AccessibilityAnnotatorBackendImpl::AccessibilityAnnotatorBackendImpl(
     history_service_observation_.Observe(history_service);
   }
   if (os_crypt_async) {
+    db_state_ = DbState::kInitializing;
     os_crypt_async->GetInstance(
         base::BindOnce(&AccessibilityAnnotatorBackendImpl::OnInitWithEncryptor,
                        weak_ptr_factory_.GetWeakPtr()));
+  } else {
+    db_state_ = DbState::kFailed;
   }
 }
 
@@ -213,14 +216,23 @@ void AccessibilityAnnotatorBackendImpl::OnInitWithEncryptor(
     os_crypt_async::Encryptor encryptor) {
   db_.AsyncCall(&AccessibilityAnnotatorDatabase::Init)
       .WithArgs(db_path_, std::move(encryptor))
-      .Then(base::BindOnce([](bool status) {
-        if (!status) {
-          // TODO(crbug.com/489690454): Replace this with a non-local histogram
-          // once metrics are finalized and setup as needed.
-          LOCAL_HISTOGRAM_BOOLEAN("AccessibilityAnnotator.DatabaseInitFailed",
-                                  true);
-        }
-      }));
+      .Then(base::BindOnce(
+          &AccessibilityAnnotatorBackendImpl::OnDatabaseInitialized,
+          weak_ptr_factory_.GetWeakPtr()));
+}
+
+void AccessibilityAnnotatorBackendImpl::OnDatabaseInitialized(bool success) {
+  db_state_ = success ? DbState::kReady : DbState::kFailed;
+  if (!success) {
+    // TODO(crbug.com/489690454): Replace this with a non-local histogram
+    // once metrics are finalized and setup as needed.
+    LOCAL_HISTOGRAM_BOOLEAN("AccessibilityAnnotator.DatabaseInitFailed", true);
+  }
+
+  for (base::OnceCallback<void()>& op : queued_operations_) {
+    std::move(op).Run();
+  }
+  queued_operations_.clear();
 }
 
 base::WeakPtr<syncer::DataTypeControllerDelegate>
@@ -512,28 +524,68 @@ void AccessibilityAnnotatorBackendImpl::AddContentAnnotation(
     history::VisitID visit_id,
     ContentAnnotationsData data,
     base::OnceCallback<void(bool)> callback) {
-  db_.AsyncCall(&AccessibilityAnnotatorDatabase::AddContentAnnotation)
-      .WithArgs(visit_id, data.Clone())
-      .Then(base::BindOnce(
-          &AccessibilityAnnotatorBackendImpl::OnContentAnnotationAdded,
+  switch (db_state_) {
+    case DbState::kUninitialized:
+    case DbState::kInitializing:
+      queued_operations_.push_back(base::BindOnce(
+          &AccessibilityAnnotatorBackendImpl::AddContentAnnotation,
           weak_ptr_factory_.GetWeakPtr(), visit_id, std::move(data),
           std::move(callback)));
+      break;
+    case DbState::kReady:
+      db_.AsyncCall(&AccessibilityAnnotatorDatabase::AddContentAnnotation)
+          .WithArgs(visit_id, data.Clone())
+          .Then(base::BindOnce(
+              &AccessibilityAnnotatorBackendImpl::OnContentAnnotationAdded,
+              weak_ptr_factory_.GetWeakPtr(), visit_id, std::move(data),
+              std::move(callback)));
+      break;
+    case DbState::kFailed:
+      std::move(callback).Run(false);
+      break;
+  }
 }
 
 void AccessibilityAnnotatorBackendImpl::GetContentAnnotation(
     history::VisitID visit_id,
     base::OnceCallback<void(std::optional<ContentAnnotationsData>)> callback) {
-  db_.AsyncCall(&AccessibilityAnnotatorDatabase::GetContentAnnotation)
-      .WithArgs(visit_id)
-      .Then(std::move(callback));
+  switch (db_state_) {
+    case DbState::kUninitialized:
+    case DbState::kInitializing:
+      queued_operations_.push_back(base::BindOnce(
+          &AccessibilityAnnotatorBackendImpl::GetContentAnnotation,
+          weak_ptr_factory_.GetWeakPtr(), visit_id, std::move(callback)));
+      break;
+    case DbState::kReady:
+      db_.AsyncCall(&AccessibilityAnnotatorDatabase::GetContentAnnotation)
+          .WithArgs(visit_id)
+          .Then(std::move(callback));
+      break;
+    case DbState::kFailed:
+      std::move(callback).Run(std::nullopt);
+      break;
+  }
 }
 
 void AccessibilityAnnotatorBackendImpl::GetAllContentAnnotations(
     base::OnceCallback<
         void(std::vector<std::pair<history::VisitID, ContentAnnotationsData>>)>
         callback) {
-  db_.AsyncCall(&AccessibilityAnnotatorDatabase::GetAllContentAnnotations)
-      .Then(std::move(callback));
+  switch (db_state_) {
+    case DbState::kUninitialized:
+    case DbState::kInitializing:
+      queued_operations_.push_back(base::BindOnce(
+          &AccessibilityAnnotatorBackendImpl::GetAllContentAnnotations,
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+      break;
+    case DbState::kReady:
+      db_.AsyncCall(&AccessibilityAnnotatorDatabase::GetAllContentAnnotations)
+          .Then(std::move(callback));
+      break;
+    case DbState::kFailed:
+      std::move(callback).Run({});
+      break;
+  }
 }
 
 void AccessibilityAnnotatorBackendImpl::DeleteContentAnnotations(
@@ -549,11 +601,25 @@ void AccessibilityAnnotatorBackendImpl::DeleteContentAnnotations(
     return;
   }
 
-  db_.AsyncCall(&AccessibilityAnnotatorDatabase::DeleteContentAnnotations)
-      .WithArgs(std::move(visit_ids))
-      .Then(base::BindOnce(
-          &AccessibilityAnnotatorBackendImpl::OnContentAnnotationsDeleted,
-          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  switch (db_state_) {
+    case DbState::kUninitialized:
+    case DbState::kInitializing:
+      queued_operations_.push_back(base::BindOnce(
+          &AccessibilityAnnotatorBackendImpl::DeleteContentAnnotations,
+          weak_ptr_factory_.GetWeakPtr(), std::move(visit_ids),
+          std::move(callback)));
+      break;
+    case DbState::kReady:
+      db_.AsyncCall(&AccessibilityAnnotatorDatabase::DeleteContentAnnotations)
+          .WithArgs(std::move(visit_ids))
+          .Then(base::BindOnce(
+              &AccessibilityAnnotatorBackendImpl::OnContentAnnotationsDeleted,
+              weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+      break;
+    case DbState::kFailed:
+      std::move(callback).Run(false);
+      break;
+  }
 }
 
 void AccessibilityAnnotatorBackendImpl::ClearAllContentAnnotations(
@@ -568,10 +634,23 @@ void AccessibilityAnnotatorBackendImpl::ClearAllContentAnnotations(
     return;
   }
 
-  db_.AsyncCall(&AccessibilityAnnotatorDatabase::ClearAllContentAnnotations)
-      .Then(base::BindOnce(
-          &AccessibilityAnnotatorBackendImpl::OnContentAnnotationsCleared,
+  switch (db_state_) {
+    case DbState::kUninitialized:
+    case DbState::kInitializing:
+      queued_operations_.push_back(base::BindOnce(
+          &AccessibilityAnnotatorBackendImpl::ClearAllContentAnnotations,
           weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+      break;
+    case DbState::kReady:
+      db_.AsyncCall(&AccessibilityAnnotatorDatabase::ClearAllContentAnnotations)
+          .Then(base::BindOnce(
+              &AccessibilityAnnotatorBackendImpl::OnContentAnnotationsCleared,
+              weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+      break;
+    case DbState::kFailed:
+      std::move(callback).Run(false);
+      break;
+  }
 }
 
 void AccessibilityAnnotatorBackendImpl::GetSyncAnnotationsByTypes(
