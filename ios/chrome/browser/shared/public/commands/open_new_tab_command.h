@@ -118,7 +118,7 @@ enum class OpenPosition {
 @property(nonatomic, readonly, assign) BOOL fromChrome;
 
 // Whether or not this URL command comes from Send Tab to Self.
-@property(nonatomic, assign) BOOL fromSendTabToSelf;
+@property(nonatomic, readonly, assign) BOOL fromSendTabToSelf;
 
 // The GUID of the Send Tab to Self entry that triggered this command.
 @property(nonatomic, copy) NSString* sendTabToSelfEntryGUID;

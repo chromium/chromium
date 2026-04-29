@@ -9,8 +9,6 @@ source_set("model") {
   sources = [
     "ios_send_tab_to_self_infobar_delegate.h",
     "ios_send_tab_to_self_infobar_delegate.mm",
-    "send_tab_push_notification_client.h",
-    "send_tab_push_notification_client.mm",
     "send_tab_to_self_browser_agent.h",
     "send_tab_to_self_browser_agent.mm",
     "send_tab_to_self_tab_helper.h",
@@ -35,15 +33,10 @@ source_set("model") {
     "//ios/chrome/app/theme:theme_grit",
     "//ios/chrome/browser/infobars/model",
     "//ios/chrome/browser/infobars/model:public",
-    "//ios/chrome/browser/push_notification/model:constants",
-    "//ios/chrome/browser/push_notification/model:push_notification_client",
-    "//ios/chrome/browser/push_notification/model:push_notification_client_id",
-    "//ios/chrome/browser/push_notification/model:push_notification_service_header",
-    "//ios/chrome/browser/push_notification/model:push_notification_settings_util_header",
-    "//ios/chrome/browser/push_notification/model:push_notification_util",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:features",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
@@ -59,6 +52,45 @@ source_set("model") {
     "//ui/base",
     "//ui/gfx",
     "//ui/strings:ui_strings_grit",
+  ]
+}
+
+source_set("push_notification_client") {
+  sources = [
+    "send_tab_push_notification_client.h",
+    "send_tab_push_notification_client.mm",
+  ]
+  deps = [
+    ":model",
+    "//base",
+    "//components/send_tab_to_self",
+    "//components/shared_highlighting/core/common",
+    "//ios/chrome/browser/push_notification/model:constants",
+    "//ios/chrome/browser/push_notification/model:push_notification_client",
+    "//ios/chrome/browser/push_notification/model:push_notification_client_id",
+    "//ios/chrome/browser/push_notification/model:push_notification_service_header",
+    "//ios/chrome/browser/push_notification/model:push_notification_settings_util_header",
+    "//ios/chrome/browser/push_notification/model:push_notification_util",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile:features",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/chrome/browser/sync/model",
+    "//url",
+  ]
+}
+
+source_set("user_data") {
+  sources = [
+    "send_tab_to_self_load_navigation_user_data.h",
+    "send_tab_to_self_load_navigation_user_data.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/web/public",
   ]
 }
 
@@ -95,6 +127,7 @@ source_set("unit_tests") {
   ]
   deps = [
     ":model",
+    ":push_notification_client",
     "//base",
     "//base/test:test_support",
     "//components/send_tab_to_self",

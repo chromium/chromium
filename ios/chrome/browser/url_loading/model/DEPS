@@ -1,10 +1,12 @@
 include_rules = [
   # keep-sorted start
+  "+components/send_tab_to_self/features.h",
   "+ios/chrome/browser/autocomplete/model/autocomplete_scheme_classifier_impl.h",
   "+ios/chrome/browser/crash_report/model",
   "+ios/chrome/browser/ntp/model/new_tab_page_util.h",
   "+ios/chrome/browser/policy/model",
   "+ios/chrome/browser/prerender/model",
+  "+ios/chrome/browser/send_tab_to_self/model",
   "+ios/chrome/browser/sessions/model",
   "+ios/chrome/browser/snapshots/model",
   "+ios/chrome/browser/tab_insertion/model",
