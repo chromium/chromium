@@ -34,6 +34,7 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "base/system/sys_info.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "extensions/common/constants.h"
@@ -1253,9 +1254,9 @@ TEST_P(GameDashboardCaptureModeHistogramTest,
   game_dashboard_test_api->OpenTheMainMenu();
   LeftClickOn(game_dashboard_test_api->GetMainMenuRecordGameTile());
   // Clicking on the record game tile closes the main menu, and asynchronously
-  // starts the capture session. Run until idle to ensure that the posted task
-  // runs synchronously and completes before proceeding.
-  base::RunLoop().RunUntilIdle();
+  // starts the capture session.
+  ASSERT_TRUE(base::test::RunUntil(
+      [] { return CaptureModeController::Get()->IsActive(); }));
   LeftClickOn(GetStartRecordingButton());
   WaitForRecordingToStart();
   EXPECT_TRUE(CaptureModeController::Get()->is_recording_in_progress());
