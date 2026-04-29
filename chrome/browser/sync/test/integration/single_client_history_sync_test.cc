@@ -1066,7 +1066,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientHistorySyncTest,
   ASSERT_TRUE(history_helper::GetUrlFromClient(/*index=*/0, url_remote, &row));
 
   // Turn Sync off *in two steps* (similar to what actually happens in practice,
-  // see crbug.com/40246310#c5):
+  // see crbug.com/40246310#comment6):
   // 1) Remove the Sync-consent bit (but leave the primary account around).
   // 2) Actually remove the primary account.
   // After step 1, Sync will *not* be fully disabled, but rather try to start up

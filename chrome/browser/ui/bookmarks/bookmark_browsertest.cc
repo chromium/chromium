@@ -259,7 +259,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, IncognitoPersistence) {
 
 // Regression for crash caused by opening folder as a group in an incognito
 // window when the folder contains URLs that cannot be displayed in incognito.
-// See discussion starting at crbug.com/40786567#c15
+// See discussion starting at crbug.com/40786567#comment16
 IN_PROC_BROWSER_TEST_F(
     BookmarkBrowsertest,
     OpenFolderAsGroupInIncognitoWhenBookmarksCantOpenInIncognito) {

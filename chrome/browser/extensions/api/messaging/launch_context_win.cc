@@ -167,7 +167,7 @@ base::FilePath LaunchContext::FindManifest(const std::string& host_name,
   std::wstring host_name_wide = base::UTF8ToWide(host_name);
 
   // If permitted, look in HKEY_CURRENT_USER first. If the manifest isn't found
-  // there, then try HKEY_LOCAL_MACHINE. https://crbug.com/40111968#c6
+  // there, then try HKEY_LOCAL_MACHINE. https://crbug.com/40111968#comment7
   std::wstring path_str;
   bool found = false;
   if (allow_user_level_hosts) {

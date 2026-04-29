@@ -2477,7 +2477,7 @@ class HostedAppOriginIsolationTest : public HostedOrWebAppTest {
 };
 
 // This test case implements creis@'s repro case from
-// https://crbug.com/40727308#c32.
+// https://crbug.com/40727308#comment33.
 // Prior to the fix, we end up putting the app's extension url into the opt-in
 // list, then later the second navigation tries to compare an effective URL to
 // the actual (extension) url in the ProcessLocks in CanAccessDataForOrigin,

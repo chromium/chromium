@@ -2916,7 +2916,7 @@ IN_PROC_BROWSER_TEST_F(MultiOriginSessionRestoreTest,
 
 // Test that it is possible to navigate back to a restored about:blank history
 // entry with a non-null initiator origin.  This test cases covers the variant
-// of the repro that was reported in https://crbug.com/40104314#c27.
+// of the repro that was reported in https://crbug.com/40104314#comment28.
 IN_PROC_BROWSER_TEST_F(MultiOriginSessionRestoreTest, BackToAboutBlank2) {
   // Open about:blank#foo in a new tab.
   //

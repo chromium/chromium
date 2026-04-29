@@ -1068,7 +1068,7 @@ using SystemWebAppManagerInstallAllAppsBrowserTest =
 IN_PROC_BROWSER_TEST_P(SystemWebAppManagerInstallAllAppsBrowserTest,
                        BasicConsistencyCheck) {
   // Wait for apps to install before performing assertions, otherwise the test
-  // might flake. See https://crbug.com/40210918#c6.
+  // might flake. See https://crbug.com/40210918#comment7.
   GetManager().InstallSystemAppsForTesting();
 
   const auto& app_map = GetManager().system_app_delegates();

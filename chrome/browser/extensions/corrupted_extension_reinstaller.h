@@ -57,12 +57,12 @@ class CorruptedExtensionReinstaller : public KeyedService {
     // from server), but for extensions outside Chrome Web Store that means that
     // we need to reinstall the extension (and compute hashes during
     // installation).
-    // Not used currently, see https://crbug.com/40625642#c22 for details.
+    // Not used currently, see https://crbug.com/40625642#comment23 for details.
     // NO_UNSIGNED_HASHES_FOR_NON_WEBSTORE = 3,
 
     // Extension doesn't have hashes for corruption checks. Ideally this
     // extension should be reinstalled in this case, but currently we just skip
-    // them. See https://crbug.com/40625642#c22 for details.
+    // them. See https://crbug.com/40625642#comment23 for details.
     NO_UNSIGNED_HASHES_FOR_NON_WEBSTORE_SKIP = 4,
 
     // Magic constant used by the histogram macros.
@@ -86,7 +86,7 @@ class CorruptedExtensionReinstaller : public KeyedService {
   // publicly because we now skip reinstall for non-webstore policy
   // force-installed extensions without hashes, but are interested in number
   // of such cases.
-  // See https://crbug.com/40625642#c22 for details.
+  // See https://crbug.com/40625642#comment23 for details.
   void RecordPolicyReinstallReason(PolicyReinstallReason reason_for_uma);
 
   // Notifies the manager that we are reinstalling the policy force-installed

@@ -74,7 +74,8 @@ void DiceInterceptedSessionStartupHelper::Startup(base::OnceClosure callback) {
         &DiceInterceptedSessionStartupHelper::MoveTab, base::Unretained(this)));
     // Adding accounts to the cookies can be an expensive operation. In
     // particular the ExternalCCResult fetch may time out after multiple seconds
-    // (see kExternalCCResultTimeoutSeconds and https://crbug.com/40532442#c37).
+    // (see kExternalCCResultTimeoutSeconds and
+    // https://crbug.com/40532442#comment38).
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, on_cookie_update_timeout_.callback(), base::Seconds(12));
 

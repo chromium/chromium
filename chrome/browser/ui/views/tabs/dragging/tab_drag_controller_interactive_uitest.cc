@@ -6099,8 +6099,8 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestTouch,
   AddTabsAndResetBrowser(browser(), 1);
 
   // Set the last mouse location at the center of tab 0. This shouldn't affect
-  // the touch behavior below. See https://crbug.com/40606256#c1 for the details
-  // of how this can affect the result.
+  // the touch behavior below. See https://crbug.com/40606256#comment2 for the
+  // details of how this can affect the result.
   gfx::Point tab_0_center(GetCenterInScreenCoordinates(tab_strip->tab_at(0)));
   base::RunLoop run_loop;
   ui_controls::SendMouseMoveNotifyWhenDone(tab_0_center.x(), tab_0_center.y(),

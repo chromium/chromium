@@ -308,7 +308,7 @@ void ToolbarView::Init() {
   // Avoid generating too many occlusion tracking calculation events before this
   // function returns. The occlusion status will be computed only once once this
   // function returns.
-  // See crbug.com/40171404#c2
+  // See crbug.com/40171404#comment3
   aura::WindowOcclusionTracker::ScopedPause pause_occlusion;
 #endif
 

@@ -171,7 +171,7 @@ IN_PROC_BROWSER_TEST_F(NoBestEffortTasksTest, DISABLED_LoadAndPaintFileScheme) {
 
 // Verify that an extension can be loaded and perform basic messaging without
 // running BEST_EFFORT tasks. Regression test for
-// http://crbug.com/40302452#c112.
+// http://crbug.com/40302452#comment113.
 //
 // NOTE: If this test times out, it might help to look at how
 // http://crbug.com/41436919 was resolved.

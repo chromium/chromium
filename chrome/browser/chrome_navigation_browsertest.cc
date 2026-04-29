@@ -667,8 +667,8 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
   }
 }
 
-// Test for https://crbug.com/40586222#c2. It verifies that about:blank does not
-// commit in the error page process when it is redirected to.
+// Test for https://crbug.com/40586222#comment3. It verifies that about:blank
+// does not commit in the error page process when it is redirected to.
 IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
                        RedirectErrorPageReloadToAboutBlank) {
   // TODO(https://crbug.com/40804030): Remove this when updated to use MV3.

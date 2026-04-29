@@ -18,9 +18,9 @@ namespace {
 //
 // These are lists of activities rather than packages, so that multiple share
 // targets from the same app can appear in different places in the ranking. This
-// is a bit brittle; see https://crbug.com/40773850#c4 for why. Regrettably, the
-// mapping from human-readable (app name, action) pairs to activities was done
-// by hand; see go/sh-3p-activities for that.
+// is a bit brittle; see https://crbug.com/40773850#comment5 for why.
+// Regrettably, the mapping from human-readable (app name, action) pairs to
+// activities was done by hand; see go/sh-3p-activities for that.
 //
 // These lists are used to rank which share targets are shown for users with no
 // share history. In all cases, only apps actually present on the device are

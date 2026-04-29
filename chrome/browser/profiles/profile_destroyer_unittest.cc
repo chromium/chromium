@@ -329,7 +329,7 @@ TEST_P(ProfileDestroyerTest, RenderProcessAddedAfterDestroyRequested) {
 }
 
 // Regression test for:
-// https://crbug.com/40059994#c11
+// https://crbug.com/40059994#comment12
 TEST_P(ProfileDestroyerTest, DestructionRequestedTwiceWhileDelayedOTRProfile) {
   CreateOriginalProfile();
   CreateOTRProfile();

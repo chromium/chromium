@@ -979,7 +979,7 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
 }
 // Verification that granting file access to extensions doesn't relax CORS in
 // case of requests to file: URLs (even from content scripts of extensions with
-// <all_urls> permission).  See also https://crbug.com/40672635#c14.
+// <all_urls> permission).  See also https://crbug.com/40672635#comment15.
 IN_PROC_BROWSER_TEST_F(
     OrbAndCorsExtensionBrowserTest,
     FromProgrammaticContentScript_PermissionToAllUrls_FileUrls) {
@@ -1043,7 +1043,8 @@ IN_PROC_BROWSER_TEST_F(
   //
   // The script below uses the XMLHttpRequest API, rather than fetch API,
   // because the fetch API doesn't support file: requests currently
-  // (see https://crbug.com/40673850#c9 and https://crbug.com/40673851#c19).
+  // (see https://crbug.com/40673850#comment10 and
+  // https://crbug.com/40673851#comment20).
   {
     content::WebContentsConsoleObserver console_observer(active_web_contents());
     ObserveResourceLoads();

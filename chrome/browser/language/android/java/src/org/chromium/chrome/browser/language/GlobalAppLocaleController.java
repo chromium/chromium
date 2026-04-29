@@ -130,7 +130,7 @@ public class GlobalAppLocaleController {
             config.densityDpi = resources.getConfiguration().densityDpi;
         }
         // Because of an Android bug with {@link Context#createConfigurationContext} the deprecated
-        // method {@link Resources#updateConfiguration} is used. (crbug.com/40687612#c20).
+        // method {@link Resources#updateConfiguration} is used. (crbug.com/40687612#comment21).
         // TODO(crbug.com/40152130): Use #createConfigurationContext once that method is fixed.
         resources.updateConfiguration(config, resources.getDisplayMetrics());
         // Update default locales so {@links LocaleList#getDefault} returns the correct value.

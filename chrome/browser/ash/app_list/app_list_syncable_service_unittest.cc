@@ -1245,7 +1245,7 @@ TEST_F(AppListSyncableServiceTest, PruneRedundantPageBreakItems) {
 // This test simulates that device 2 gets the sync changes from device 1, and
 // applies the changes in model updater and the apps should have the same layout
 // as the ones on the device 1. It verifies the fix for the repro issue
-// described in http://crbug.com/40616548#c15.
+// described in http://crbug.com/40616548#comment16.
 TEST_F(AppListSyncableServiceTest, PageBreakWithOverflowItem) {
   RemoveAllExistingItems();
 

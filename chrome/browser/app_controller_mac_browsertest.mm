@@ -861,7 +861,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest, OpenUrlInGuestBrowser) {
 
 // Tests that when a GURL is opened while incognito forced and there is no
 // browser opened, it is opened in a new incognito browser.
-// Test for https://crbug.com/40912038#c8
+// Test for https://crbug.com/40912038#comment9
 // TODO(crbug.com/505499902): Re-enable this test once it's no longer flaky.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_OpenUrlWhenForcedIncognito DISABLED_OpenUrlWhenForcedIncognito
@@ -902,7 +902,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest,
 
 // Tests that when a GURL is opened while incognito forced and an incognito
 // browser is opened, it is opened in the already opened incognito browser.
-// Test for https://crbug.com/40912038#c8
+// Test for https://crbug.com/40912038#comment9
 // TODO(crbug.com/504176001): Re-enable this test once it's no longer flaky.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_OpenUrlWhenForcedIncognitoAndIncognitoBrowserIsOpened \

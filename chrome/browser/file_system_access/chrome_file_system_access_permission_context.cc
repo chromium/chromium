@@ -398,7 +398,7 @@ GenerateBlockPaths(bool should_normalize_file_path) {
       // installed (sandboxed) application. It would be nice to limit a site to
       // access only _its_ corresponding natively installed application, but
       // unfortunately there's no straightforward way to do that. See
-      // https://crbug.com/40095723#c22.
+      // https://crbug.com/40095723#comment23.
       BlockPath::CreateRelative(base::DIR_HOME,
                                 FILE_PATH_LITERAL("Library/Containers"),
                                 BlockType::kDontBlockChildren),
@@ -2332,8 +2332,9 @@ void ChromeFileSystemAccessPermissionContext::DidCheckPathAgainstBlocklist(
   // If attempting to save a file with a dangerous extension, prompt the user
   // to make them confirm they actually want to save the file.
   if (handle_type == HandleType::kFile && user_action == UserAction::kSave) {
-    // See https://crbug.com/40059513#c4 for justification for why we show the
-    // prompt if `danger_level` is ALLOW_ON_USER_GESTURE as well as DANGEROUS.
+    // See https://crbug.com/40059513#comment5 for justification for why we show
+    // the prompt if `danger_level` is ALLOW_ON_USER_GESTURE as well as
+    // DANGEROUS.
     auto danger_level = GetFileTypeDangerLevel(
         path_info.path, origin, Profile::FromBrowserContext(profile_));
     if (danger_level == safe_browsing::DownloadFileType::DANGEROUS ||

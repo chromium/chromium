@@ -1023,7 +1023,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest, HostedAppOnWebsite) {
 // Tests that an invalid extension ID specified in a hosted app does not crash
 // the hosted app's renderer.
 //
-// This is a regression test for http://crbug.com/40343914#c12.
+// This is a regression test for http://crbug.com/40343914#comment13.
 IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest,
                        InvalidExtensionIDFromHostedApp) {
   // The presence of the chromium hosted app triggers this bug. The chromium
