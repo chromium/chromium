@@ -9,7 +9,6 @@
 #import "base/feature_list.h"
 #import "base/notreached.h"
 #import "components/metrics/metrics_pref_names.h"
-#import "components/metrics/metrics_reporting_choice_service.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/prefs/pref_service.h"
@@ -305,8 +304,10 @@ bool GetStatusForSigninPolicy() {
         kAllowSigninItemAccessibilityIdentifier;
     [items addObject:allowSigninItem];
 
-    if (metrics::MetricsReportingChoiceService::
-            IsMetricsReportingDisabledByPolicy(self.localPrefService)) {
+    if (self.localPrefService->IsManagedPreference(
+            metrics::prefs::kMetricsReportingEnabled) &&
+        !self.localPrefService->GetBoolean(
+            metrics::prefs::kMetricsReportingEnabled)) {
       TableViewInfoButtonItem* improveChromeItem = [self
           tableViewInfoButtonItemType:ImproveChromeManagedItemType
                          textStringID:

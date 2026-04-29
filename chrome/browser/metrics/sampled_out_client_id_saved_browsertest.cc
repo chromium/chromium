@@ -10,7 +10,6 @@
 #include "chrome/browser/metrics/metrics_reporting_state.h"
 #include "chrome/test/base/platform_browser_test.h"
 #include "components/metrics/metrics_pref_names.h"
-#include "components/metrics/metrics_reporting_choice_service.h"
 #include "components/metrics/metrics_service.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
 #include "content/public/test/browser_test.h"
@@ -131,8 +130,7 @@ IN_PROC_BROWSER_TEST_F(SampledOutClientIdSavedBrowserTest, ClientIdSaved) {
   // Enable metrics reporting, and verify that it was successful.
   ASSERT_TRUE(ChangeMetricsReporting(true));
   ASSERT_TRUE(
-      metrics::MetricsReportingChoiceService::IsBasicMetricsReportingEnabled(
-          local_state()));
+      local_state()->GetBoolean(metrics::prefs::kMetricsReportingEnabled));
 
   // Verify that we are still considered sampled out.
   EXPECT_FALSE(
@@ -159,8 +157,7 @@ IN_PROC_BROWSER_TEST_F(SampledOutClientIdSavedBrowserTest, ClientIdSaved) {
   // Disable metrics reporting, and verify that it was successful.
   ASSERT_FALSE(ChangeMetricsReporting(false));
   ASSERT_FALSE(
-      metrics::MetricsReportingChoiceService::IsBasicMetricsReportingEnabled(
-          local_state()));
+      local_state()->GetBoolean(metrics::prefs::kMetricsReportingEnabled));
 
   // Verify that the pref dictating whether we use new sampling trial should be
   // used is set to true.

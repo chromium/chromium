@@ -12,7 +12,6 @@
 #include "chrome/browser/ui/webui/settings/metrics_reporting_handler.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/metrics/metrics_pref_names.h"
-#include "components/metrics/metrics_reporting_choice_service.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/test/browser_task_environment.h"
@@ -71,8 +70,7 @@ TEST_F(MetricsReportingHandlerTest, PrefChangesNotifyPage) {
   // Toggle the pref.
   local_state()->SetBoolean(
       metrics::prefs::kMetricsReportingEnabled,
-      !metrics::MetricsReportingChoiceService::IsBasicMetricsReportingEnabled(
-          local_state()));
+      !local_state()->GetBoolean(metrics::prefs::kMetricsReportingEnabled));
   EXPECT_EQ(1u, test_web_ui()->call_data().size());
 
   test_web_ui()->ClearTrackedCalls();
@@ -81,8 +79,7 @@ TEST_F(MetricsReportingHandlerTest, PrefChangesNotifyPage) {
   // Toggle the pref again, while JavaScript is disabled.
   local_state()->SetBoolean(
       metrics::prefs::kMetricsReportingEnabled,
-      !metrics::MetricsReportingChoiceService::IsBasicMetricsReportingEnabled(
-          local_state()));
+      !local_state()->GetBoolean(metrics::prefs::kMetricsReportingEnabled));
   EXPECT_TRUE(test_web_ui()->call_data().empty());
 }
 

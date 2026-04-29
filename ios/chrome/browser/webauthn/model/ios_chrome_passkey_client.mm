@@ -9,7 +9,6 @@
 #import "base/functional/callback.h"
 #import "base/memory/raw_ptr.h"
 #import "components/metrics/metrics_pref_names.h"
-#import "components/metrics/metrics_reporting_choice_service.h"
 #import "components/password_manager/core/browser/password_manager_client.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/password_manager/ios/ios_password_manager_driver.h"
@@ -98,8 +97,8 @@ IOSChromePasskeyClient::GetPasskeyKeychainProviderBridge() {
     passkey_keychain_provider_bridge_ = test_bridge;
   } else {
     bool metrics_reporting_enabled =
-        metrics::MetricsReportingChoiceService::IsBasicMetricsReportingEnabled(
-            GetApplicationContext()->GetLocalState());
+        GetApplicationContext()->GetLocalState()->GetBoolean(
+            metrics::prefs::kMetricsReportingEnabled);
     passkey_keychain_provider_bridge_ = [[PasskeyKeychainProviderBridge alloc]
           initWithEnableLogging:metrics_reporting_enabled
         navigationItemTitleView:nil];

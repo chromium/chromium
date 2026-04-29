@@ -8,7 +8,6 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "components/metrics/metrics_pref_names.h"
-#import "components/metrics/metrics_reporting_choice_service.h"
 #import "components/prefs/pref_service.h"
 #import "components/web_resource/web_resource_pref_names.h"
 #import "ios/chrome/browser/first_run/default_browser/ui/default_browser_screen_consumer.h"
@@ -47,8 +46,10 @@
   if (_consumer) {
     if (_firstScreenInFRESequence) {
       _consumer.hasPlatformPolicies = HasPlatformPolicies();
-      BOOL metricReportingDisabled = metrics::MetricsReportingChoiceService::
-          IsMetricsReportingDisabledByPolicy(_localState);
+      BOOL metricReportingDisabled =
+          _localState->IsManagedPreference(
+              metrics::prefs::kMetricsReportingEnabled) &&
+          !_localState->GetBoolean(metrics::prefs::kMetricsReportingEnabled);
       _consumer.screenIntent =
           metricReportingDisabled
               ? DefaultBrowserScreenConsumerScreenIntent::kTOSWithoutUMA

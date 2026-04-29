@@ -48,10 +48,6 @@ class MetricsReportingChoiceService {
   // Clears the static cached feature state. Used only for testing.
   static void ClearCachedFeatureStateForTesting();
 
-  // Returns true if metrics reporting is disabled by policy.
-  static bool IsMetricsReportingDisabledByPolicy(
-      const PrefService* local_state);
-
  private:
   friend class MetricsReportingChoiceServiceTest;
 };

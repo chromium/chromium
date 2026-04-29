@@ -100,16 +100,4 @@ bool MetricsReportingChoiceService::IsBasicMetricsReportingEnabled(
   return local_state->GetBoolean(prefs::kMetricsReportingEnabled);
 }
 
-// static
-bool MetricsReportingChoiceService::IsMetricsReportingDisabledByPolicy(
-    const PrefService* local_state) {
-  CHECK(local_state);
-  if (ShouldUseMetricsConsentRestructure(local_state)) {
-    return local_state->IsManagedPreference(prefs::kMetricsReportingLevel) &&
-           !IsBasicMetricsReportingEnabled(local_state);
-  }
-  return local_state->IsManagedPreference(prefs::kMetricsReportingEnabled) &&
-         !IsBasicMetricsReportingEnabled(local_state);
-}
-
 }  // namespace metrics

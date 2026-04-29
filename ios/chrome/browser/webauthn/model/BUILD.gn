@@ -32,7 +32,6 @@ source_set("ios_chrome_passkey_client") {
     "ios_chrome_passkey_client.mm",
   ]
   deps = [
-    "//components/metrics",
     "//components/metrics:metrics_pref_names",
     "//components/password_manager/core/browser",
     "//components/password_manager/core/common",
