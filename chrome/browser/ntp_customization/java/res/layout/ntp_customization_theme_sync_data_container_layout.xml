@@ -13,12 +13,12 @@ found in the LICENSE file.
 
     <!-- Horizontal RecyclerView for theme history items. -->
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/ntp_theme_history_recycler_view"
+        android:id="@+id/ntp_theme_sync_history_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:scrollbars="none"
         android:orientation="horizontal"
-        android:padding="@dimen/ntp_customization_history_data_recyclerview_padding"
+        android:padding="@dimen/ntp_customization_theme_sync_history_recyclerview_padding"
         android:layout_marginBottom="@dimen/ntp_customization_theme_list_item_margin_top"
         android:clipToPadding="false"
         android:background="@drawable/ntp_customization_bottom_sheet_list_item_background_top"/>
@@ -34,8 +34,8 @@ found in the LICENSE file.
             android:layout_width="@dimen/ntp_customization_bottom_sheet_list_item_icon_size"
             android:layout_height="@dimen/ntp_customization_bottom_sheet_list_item_icon_size"
             android:src="@drawable/paint_icon"
-            android:layout_marginTop="@dimen/ntp_customization_history_data_recyclerview_padding"
-            android:layout_marginBottom="@dimen/ntp_customization_history_data_recyclerview_padding"
+            android:layout_marginTop="@dimen/ntp_customization_theme_sync_history_recyclerview_padding"
+            android:layout_marginBottom="@dimen/ntp_customization_theme_sync_history_recyclerview_padding"
             android:importantForAccessibility="no"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/more_options_title"

@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.ntp_customization.theme_history.data;
+package org.chromium.chrome.browser.ntp_customization.theme_sync.data;
 
-import static org.chromium.chrome.browser.ntp_customization.theme_history.data.NtpBackgroundDataBase.BACKGROUND_TYPE_KEY;
+import static org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataBase.BACKGROUND_TYPE_KEY;
 
 import android.graphics.Matrix;
 
