@@ -6,6 +6,7 @@ import("//third_party/mutter/visibility.gni")
 
 import("//build/config/linux/pkg_config.gni")
 import("//build/config/ui.gni")
+import("//third_party/gsettings-desktop-schemas/gschemas.gni")
 import("//third_party/wayland/wayland_protocol.gni")
 
 assert(is_linux)
@@ -747,6 +748,7 @@ source_set("clutter") {
   public_configs = [ ":clutter_public_config" ]
 
   public_deps = [ ":cogl" ]
+  deps = [ "//third_party/gsettings-desktop-schemas" ]
 }
 
 config("libmutter_config") {
@@ -762,6 +764,7 @@ config("libmutter_config") {
     "src/src",
     "data",
     "src/clutter/clutter",
+    "//third_party/gsettings-desktop-schemas/src/headers",
   ]
 
   configs = [
@@ -1469,6 +1472,7 @@ source_set("libmutter") {
     ":xcursor",
     ":xdg_system_bell_protocol",  # Remove once wayland-protocols is rolled
     "//build/config/linux/libdrm",
+    "//third_party/gsettings-desktop-schemas",
     "//third_party/gvdb",
     "//third_party/libdisplay-info:libdisplay_info",
     "//third_party/libei:libeis",
@@ -1527,6 +1531,99 @@ shared_library("libdefault") {
   configs += [ "//build/config/compiler:no_chromium_code" ]
 }
 
+template("mutter_gschema") {
+  action(target_name) {
+    script = "//third_party/glib/process_gschema.py"
+    sources = [ "src/data/${invoker.schema_xml}.in" ]
+    outputs = [ "$target_gen_dir/${invoker.schema_xml}" ]
+    args = [
+      "--input",
+      rebase_path(sources[0], root_build_dir),
+      "--output",
+      rebase_path(outputs[0], root_build_dir),
+      "--gettext-domain",
+      "mutter",
+    ]
+  }
+}
+
+mutter_gschema("org_gnome_mutter_gschema") {
+  schema_xml = "org.gnome.mutter.gschema.xml"
+}
+
+mutter_gschema("org_gnome_mutter_wayland_gschema") {
+  schema_xml = "org.gnome.mutter.wayland.gschema.xml"
+}
+
+action("collect_schemas") {
+  testonly = true
+  outputs = [ "$target_gen_dir/collected_schemas/.stamp" ]
+
+  # We use python to copy files to avoid shell issues
+  script = "//third_party/mutter/collect_schemas.py"
+
+  # Add all schemas from gsettings-desktop-schemas
+  _gsettings_gen_dir = get_label_info("//third_party/gsettings-desktop-schemas",
+                                      "target_gen_dir")
+
+  args = [
+    "--output-dir",
+    rebase_path("$target_gen_dir/collected_schemas", root_build_dir),
+    "--stamp",
+    rebase_path(outputs[0], root_build_dir),
+    "--schemas",
+  ]
+
+  inputs = [
+    "$target_gen_dir/org.gnome.mutter.gschema.xml",
+    "$target_gen_dir/org.gnome.mutter.wayland.gschema.xml",
+    "$_gsettings_gen_dir/org.gnome.desktop.enums.xml",
+  ]
+
+  deps = [
+    ":org_gnome_mutter_gschema",
+    ":org_gnome_mutter_wayland_gschema",
+    "//third_party/gsettings-desktop-schemas",
+  ]
+
+  # Add all schemas from gsettings-desktop-schemas
+  _gsettings_gen_dir = get_label_info("//third_party/gsettings-desktop-schemas",
+                                      "target_gen_dir")
+
+  foreach(s, gsettings_desktop_schemas) {
+    inputs += [ "$_gsettings_gen_dir/$s" ]
+  }
+
+  args += rebase_path(inputs, root_build_dir)
+}
+
+action("compile_schemas") {
+  testonly = true
+  script = "//third_party/glib/compile_schemas.py"
+
+  _host_tool = "//third_party/glib:glib-compile-schemas($host_toolchain)"
+  _host_executable =
+      get_label_info(_host_tool, "root_out_dir") + "/glib-compile-schemas"
+
+  inputs = [
+    "$target_gen_dir/collected_schemas/.stamp",
+    _host_executable,
+  ]
+  outputs = [ "$root_out_dir/gschemas.compiled" ]
+  data = outputs
+
+  deps = [
+    ":collect_schemas",
+    _host_tool,
+  ]
+
+  args = [
+    rebase_path(_host_executable, root_build_dir),
+    "--targetdir=" + rebase_path(root_out_dir, root_build_dir),
+    rebase_path("$target_gen_dir/collected_schemas", root_build_dir),
+  ]
+}
+
 executable("mutter") {
   testonly = true
 
@@ -1541,6 +1638,7 @@ executable("mutter") {
 
   deps = [
     ":clutter",
+    ":compile_schemas",
     ":libmutter",
   ]
 

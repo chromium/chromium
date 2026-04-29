@@ -207,6 +207,10 @@
 	path = third_party/glib/src
 	url = https://chromium.googlesource.com/external/gitlab.gnome.org/GNOME/glib
 	gclient-condition = checkout_linux and checkout_mutter
+[submodule "third_party/gsettings-desktop-schemas/src"]
+	path = third_party/gsettings-desktop-schemas/src
+	url = https://chromium.googlesource.com/external/gitlab.gnome.org/GNOME/gsettings-desktop-schemas
+	gclient-condition = checkout_linux and checkout_mutter
 [submodule "third_party/gvdb/src"]
 	path = third_party/gvdb/src
 	url = https://chromium.googlesource.com/external/gitlab.gnome.org/GNOME/gvdb

@@ -2150,6 +2150,11 @@ deps = {
       'condition': 'checkout_linux and checkout_mutter',
   },
 
+  'src/third_party/gsettings-desktop-schemas/src': {
+      'url': Var('chromium_git') + '/external/gitlab.gnome.org/GNOME/gsettings-desktop-schemas.git' + '@' + '599bada7f09f30a5d7a2d36e1742f6dc3624ae05',
+      'condition': 'checkout_linux and checkout_mutter',
+  },
+
   'src/third_party/gvdb/src': {
       'url': Var('chromium_git') + '/external/gitlab.gnome.org/GNOME/gvdb.git' + '@' + '2b42fc75f09dbe1cd1057580b5782b08f2dcb400',
       'condition': 'checkout_linux and checkout_mutter',

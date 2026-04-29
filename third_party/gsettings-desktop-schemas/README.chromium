@@ -1,0 +1,17 @@
+Name: gsettings-desktop-schemas
+URL: https://gitlab.gnome.org/GNOME/gsettings-desktop-schemas
+Version: 48.0
+Revision: 599bada7f09f30a5d7a2d36e1742f6dc3624ae05
+Update Mechanism: Manual
+License: LGPL-2.1
+License File: src/COPYING
+Shipped: no
+Security Critical: no
+
+Description:
+Shared GSettings schemas for the GNOME desktop.
+
+This is only used in tests.
+
+Local Modifications:
+None.

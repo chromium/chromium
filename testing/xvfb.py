@@ -645,6 +645,12 @@ def _run_with_mutter(cmd, env, stdoutfile, cwd, mutter_display):
           return 1
         return test_env.run_executable(cmd, env, stdoutfile, cwd)
 
+      # Set GSETTINGS_SCHEMA_DIR to the directory where the compiled schemas
+      # are located. Since _run_with_wayland_common may have changed the
+      # current directory to the build directory, we use the directory
+      # containing the mutter executable.
+      env['GSETTINGS_SCHEMA_DIR'] = os.path.dirname(mutter_executable)
+
       # Use headless wayland backend with a virtual monitor of appropriate size.
       mutter_cmd = [
           mutter_executable, '--headless',

@@ -1,0 +1,56 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/gsettings-desktop-schemas/gschemas.gni")
+import("//third_party/gsettings-desktop-schemas/visibility.gni")
+
+assert(is_linux)
+
+action_foreach("gsettings_gschemas") {
+  script = "//third_party/glib/process_gschema.py"
+  sources = []
+  foreach(s, gsettings_desktop_schemas) {
+    sources += [ "src/schemas/$s.in" ]
+  }
+  outputs = [ "$target_gen_dir/{{source_name_part}}" ]
+  args = [
+    "--input",
+    "{{source}}",
+    "--output",
+    rebase_path("$target_gen_dir/{{source_name_part}}", root_build_dir),
+    "--gettext-domain",
+    "gsettings-desktop-schemas",
+  ]
+}
+
+action("enums_xml") {
+  script = "//third_party/glib/glib_mkenums.py"
+  sources = [ "src/headers/gdesktop-enums.h" ]
+  outputs = [ "$target_gen_dir/org.gnome.desktop.enums.xml" ]
+  args = [
+    "--output",
+    rebase_path(outputs[0], root_build_dir),
+    "--comments",
+    "<!-- @comment@ -->",
+    "--fhead",
+    "<schemalist>",
+    "--vhead",
+    "<@type@ id=\"org.gnome.desktop.@EnumName@\">",
+    "--vprod",
+    "    <value nick=\"@valuenick@\" value=\"@valuenum@\"/>",
+    "--vtail",
+    "  </@type@>",
+    "--ftail",
+    "</schemalist>",
+    rebase_path(sources[0], root_build_dir),
+  ]
+}
+
+group("gsettings-desktop-schemas") {
+  testonly = true
+  public_deps = [
+    ":enums_xml",
+    ":gsettings_gschemas",
+  ]
+}

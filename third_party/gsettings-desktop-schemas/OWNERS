@@ -1,0 +1,3 @@
+# This dependency is only used for Mutter tests, so Wayland owners are
+# appropriate, just like glib, gvdb, libgudev, and mutter.
+file://ui/ozone/platform/wayland/OWNERS

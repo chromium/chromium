@@ -575,3 +575,31 @@ shared_library("gio") {
     "//third_party/zlib",
   ]
 }
+
+if (current_toolchain == host_toolchain) {
+  executable("glib-compile-schemas") {
+    testonly = true
+
+    sources = [ "src/gio/glib-compile-schemas.c" ]
+
+    configs += [ ":glib_common_config" ]
+
+    include_dirs = [
+      "include/gio",
+      "src/gio",
+    ]
+
+    deps = [
+      ":gio",
+      ":glib",
+      ":gmodule",
+      ":gobject",
+      "//third_party/gvdb",
+    ]
+
+    ldflags = [ "-Wl,-rpath=\$ORIGIN" ]
+
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [ "//build/config/compiler:no_chromium_code" ]
+  }
+}
