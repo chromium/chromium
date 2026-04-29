@@ -14,8 +14,18 @@
 #include "chrome/browser/ui/views/autofill/popup/popup_row_view.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/user_education/common/new_badge/new_badge_controller.h"
+#include "ui/views/style/typography.h"
 
 namespace autofill {
+// Text style for round corner badges in popup rows.
+inline constexpr auto kPopupBadgeTextStyle =
+    views::style::TextStyle::STYLE_BODY_5;
+// Border insets for round corner badges in popup rows.
+inline constexpr gfx::Insets kPopupBadgeBorderInsets =
+    gfx::Insets::TLBR(/*top=*/2,
+                      /*left=*/8,
+                      /*bottom=*/2,
+                      /*right=*/8);
 
 // Creates the content view for regular suggestions like address and credit
 // cards. Views for suggestions of other types and special suggestions are

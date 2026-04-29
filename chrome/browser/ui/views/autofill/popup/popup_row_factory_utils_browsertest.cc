@@ -12,6 +12,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/cancelable_task_tracker.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
 #include "chrome/browser/ui/autofill/mock_autofill_popup_controller.h"
@@ -21,8 +22,10 @@
 #include "chrome/browser/ui/views/autofill/popup/mock_selection_delegate.h"
 #include "chrome/browser/ui/views/autofill/popup/password_favicon_loader.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_view.h"
+#include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/compose/core/browser/compose_features.h"
 #include "components/user_education/common/new_badge/new_badge_controller.h"
 #include "components/user_education/common/user_education_features.h"
@@ -101,6 +104,20 @@ Suggestion CreateAllLoyaltyCardsEntry() {
   return suggestion;
 }
 
+Suggestion CreateBnplSuggestion(const std::u16string& main_text,
+                                bool linked,
+                                bool deactivated) {
+  Suggestion suggestion(main_text, SuggestionType::kBnplEntry);
+  BnplIssuer issuer(linked ? std::optional<int64_t>(1234) : std::nullopt,
+                    BnplIssuer::IssuerId::kBnplZip, {});
+  suggestion.payload = Suggestion::BnplIssuer(issuer);
+  if (deactivated) {
+    suggestion.acceptability =
+        Suggestion::Acceptability::kUnacceptableWithDeactivatedStyle;
+  }
+  return suggestion;
+}
+
 // Suggestion main text (Suggestion::main_text) is used for the test and
 // screenshot names, avoid special symbols and keep them unique.
 const Suggestion kSuggestions[] = {
@@ -138,6 +155,20 @@ const Suggestion kExpandableSuggestions[] = {
         SuggestionType::kAddressEntry,
         {Suggestion(u"Username", SuggestionType::kPasswordEntry)}),
     CreateAllLoyaltyCardsEntry()};
+
+const Suggestion kBnplSuggestions[] = {
+    CreateBnplSuggestion(u"Bnpl_linked",
+                         /*linked=*/true,
+                         /*deactivated=*/false),
+    CreateBnplSuggestion(u"Bnpl_unlinked",
+                         /*linked=*/false,
+                         /*deactivated=*/false),
+    CreateBnplSuggestion(u"Bnpl_linked_deactivated",
+                         /*linked=*/true,
+                         /*deactivated=*/true),
+    CreateBnplSuggestion(u"Bnpl_unlinked_deactivated",
+                         /*linked=*/false,
+                         /*deactivated=*/true)};
 
 class MockPasswordFaviconLoader : public PasswordFaviconLoader {
  public:
@@ -329,6 +360,32 @@ IN_PROC_BROWSER_TEST_F(CreatePopupRowViewTest, PasswordCustomIconLoader) {
                 /*selected_cell=*/std::nullopt, /*filter_match=*/std::nullopt);
   ShowAndVerifyUi();
 }
+
+class BnplCreatePopupRowViewTest : public BaseCreatePopupRowViewTest {
+ public:
+  BnplCreatePopupRowViewTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kAutofillEnablePayNowPayLaterTabs);
+  }
+  ~BnplCreatePopupRowViewTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(BnplCreatePopupRowViewTest, SuggestionRowUiTest) {
+  CreateRowView(std::get<Suggestion>(GetParam()),
+                std::get<std::optional<PopupRowView::CellType>>(GetParam()));
+  ShowAndVerifyUi();
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    BnplSuggestions,
+    BnplCreatePopupRowViewTest,
+    ::testing::Combine(::testing::ValuesIn(kBnplSuggestions),
+                       ::testing::Values(std::nullopt,
+                                         PopupRowView::CellType::kContent)),
+    BnplCreatePopupRowViewTest::GetTestName);
 
 class CreatePopupRowViewWithNoUserEducationRateLimitTest
     : public BaseCreatePopupRowViewTest {

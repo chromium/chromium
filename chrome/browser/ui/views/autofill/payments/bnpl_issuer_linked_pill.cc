@@ -5,6 +5,8 @@
 #include "chrome/browser/ui/views/autofill/payments/bnpl_issuer_linked_pill.h"
 
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_row_factory_utils.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -38,14 +40,30 @@ BnplLinkedIssuerPill::~BnplLinkedIssuerPill() = default;
 
 void BnplLinkedIssuerPill::AddedToWidget() {
   views::Label::AddedToWidget();
-  // TODO(kylixrd): Find appropriate metrics on ChromeLayoutProvider.
-  gfx::Size size = GetPreferredSize(views::SizeBounds());
-  size.Enlarge(0, 4);
+  gfx::Insets border_insets;
+  // TODO(crbug.com/507870463): Find appropriate metrics on ChromeLayoutProvider
+  // for size calculation.
+  gfx::Size size;
+
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnablePayNowPayLaterTabs)) {
+    // Use the style and size config for pop up badges in the Pay Later tab.
+    SetTextStyle(kPopupBadgeTextStyle);
+    size = GetPreferredSize(views::SizeBounds());
+    border_insets = kPopupBadgeBorderInsets;
+    size.Enlarge(0, border_insets.height());
+  } else {
+    // Calculate label border based on label size for issuer selection dialog.
+    size = GetPreferredSize(views::SizeBounds());
+    size.Enlarge(0, 4);
+    border_insets =
+        gfx::Insets::TLBR(2, size.height() / 2, 2, size.height() / 2);
+  }
+
   SetBackground(
       views::CreateSolidBackground(kColorBnplIssuerLinkedPillBackground));
   SetBorder(views::CreateRoundedRectBorder(
-      0, size.height() / 2,
-      gfx::Insets::TLBR(2, size.height() / 2, 2, size.height() / 2),
+      /*thickness=*/0, /*corner_radius=*/size.height() / 2, border_insets,
       kColorBnplIssuerLinkedPillBackground));
   SetPaintToLayer();
   layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(size.height() / 2));

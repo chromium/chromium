@@ -107,7 +107,6 @@ constexpr auto kMainTextStyleLight = views::style::TextStyle::STYLE_BODY_3;
 constexpr auto kMainTextStyleHighlighted =
     views::style::TextStyle::STYLE_BODY_3_BOLD;
 constexpr auto kMinorTextStyle = views::style::TextStyle::STYLE_BODY_4;
-constexpr auto kBadgeTextStyle = views::style::TextStyle::STYLE_BODY_5;
 constexpr auto kDisabledTextStyle = views::style::TextStyle::STYLE_DISABLED;
 
 // Returns a wrapper around `closure` that posts it to the default message
@@ -144,18 +143,23 @@ bool IsDeactivatedPasswordOrPasskey(const Suggestion& suggestion) {
   }
 }
 
-std::unique_ptr<views::BoxLayoutView> GetBadgeView(std::u16string_view label) {
+std::unique_ptr<views::BoxLayoutView> GetAlternativePaymentMethodBadge(
+    std::u16string_view label) {
+  // 100 is guaranteed to be larger than half the height of this view. Using 100
+  // as `corner_radius`, the view will be created with maximum possible radius
+  // which is half the height.
+  // TODO(crbug.com/507868678) calculate the precise `corner_radius` value
+  // instead of using a hard coded large number.
   return views::Builder<views::BoxLayoutView>()
-      .AddChildren(views::Builder<views::Label>()
-                       .SetText(std::u16string(label))
-                       .SetTextStyle(kBadgeTextStyle)
-                       .SetBorder(views::CreateRoundedRectBorder(
-                           /*thickness=*/0, /*corner_radius=*/100,
-                           gfx::Insets::TLBR(/*top=*/2, /*left=*/8,
-                                             /*bottom=*/2, /*right=*/8),
-                           ui::kColorSysNeutralContainer))
-                       .SetBackground(views::CreateRoundedRectBackground(
-                           ui::kColorSysNeutralContainer, 100)))
+      .AddChildren(
+          views::Builder<views::Label>()
+              .SetText(std::u16string(label))
+              .SetTextStyle(kPopupBadgeTextStyle)
+              .SetBorder(views::CreateRoundedRectBorder(
+                  /*thickness=*/0, /*corner_radius=*/100,
+                  kPopupBadgeBorderInsets, ui::kColorSysNeutralContainer))
+              .SetBackground(views::CreateRoundedRectBackground(
+                  ui::kColorSysNeutralContainer, 100)))
       .Build();
 }
 
@@ -572,7 +576,7 @@ CreateAlternativePaymentMethodPopupRowContentView(
       CreateMinorTextLabels(suggestion);
 
   std::unique_ptr<views::BoxLayoutView> badge_view =
-      GetBadgeView(l10n_util::GetStringUTF16(
+      GetAlternativePaymentMethodBadge(l10n_util::GetStringUTF16(
           suggestion.type == SuggestionType::kVirtualCreditCardEntry
               ? IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_OPTION_VALUE
               : IDS_AUTOFILL_IBAN_SUGGESTION_OPTION_VALUE));
