@@ -131,7 +131,8 @@ public class ContextualTasksFusebox {
                         snackbarManager,
                         bottomContainer,
                         /* omniboxChipManager= */ null,
-                        /* scrimHandler= */ null);
+                        /* scrimHandler= */ null,
+                        /* userEducationHelper= */ null);
         mLocationBarCoordinator.setUrlBarFocusable(true);
         mLocationBarCoordinator.setShouldShowMicButtonWhenUnfocused(true);
         mLocationBarCoordinator.setShouldShowLensButtonWhenUnfocused(true);

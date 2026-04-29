@@ -12,6 +12,8 @@ import android.util.AttributeSet;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewStub;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 
 import androidx.annotation.CallSuper;
@@ -31,6 +33,7 @@ import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.omnibox.status.StatusView;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
+import org.chromium.chrome.browser.toolbar.ToolbarVariationUtils;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.components.browser_ui.widget.CompositeTouchDelegate;
@@ -46,7 +49,11 @@ public class LocationBarLayout extends ConstraintLayout {
     protected ImageButton mLensButton;
     protected ImageButton mZoomButton;
     protected ImageButton mInstallButton;
+    // TODO(crbug.com/491511644): Move these to LocationBarPhone.
+    // Only used for the phone form factor.
     protected @Nullable ImageButton mBackButton;
+    // Only used for the phone form factor.
+    protected @Nullable FrameLayout mOptionalButton;
     protected final @Nullable View mNavigateButton;
     protected UrlBar mUrlBar;
 
@@ -96,12 +103,24 @@ public class LocationBarLayout extends ConstraintLayout {
         mZoomButton = findViewById(R.id.zoom_button);
         mInstallButton = findViewById(R.id.install_button);
         mBackButton = findViewById(R.id.omnibox_back_button);
+        ViewStub optionalButtonStub = findViewById(R.id.optional_button_location_bar_stub);
         mNavigateButton = findViewById(R.id.navigate_button);
         mMarginSpacer = findViewById(R.id.margin_spacer);
         mUrlActionContainerEndMargin =
                 getResources().getDimensionPixelOffset(R.dimen.location_bar_url_action_offset);
         mLocationBarIconStartingPadding =
                 getResources().getDimensionPixelSize(R.dimen.location_bar_icon_starting_padding);
+        if (optionalButtonStub != null
+                && ToolbarVariationUtils.isToolbarUiRefactorEnabled(context)) {
+            mOptionalButton = (FrameLayout) optionalButtonStub.inflate();
+            mOptionalButton.setVisibility(View.GONE);
+            ConstraintLayout.LayoutParams params =
+                    (ConstraintLayout.LayoutParams) mOptionalButton.getLayoutParams();
+            params.endToEnd = ConstraintLayout.LayoutParams.PARENT_ID;
+            mOptionalButton.setLayoutParams(params);
+        } else {
+            mOptionalButton = null;
+        }
     }
 
     /** Called when activity is being destroyed. */

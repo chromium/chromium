@@ -1003,7 +1003,10 @@ android_library("chrome_test_java_org.chromium.chrome.browser.omnibox") {
     "src/org/chromium/chrome/browser/omnibox/suggestions/mostvisited/MostVisitedTilesTest.java",
   ]
 
-  deps = [ ":chrome_test_java_helper" ]
+  deps = [
+    ":chrome_test_java_helper",
+    "//chrome/browser/ui/android/toolbar:optional_button_java",
+  ]
 }
 
 android_library("chrome_test_java_org.chromium.chrome.browser.page_info") {

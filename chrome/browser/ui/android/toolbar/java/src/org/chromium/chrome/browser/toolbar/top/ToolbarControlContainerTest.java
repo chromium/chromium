@@ -10,12 +10,15 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -52,6 +55,7 @@ import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
@@ -88,6 +92,7 @@ import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.widget.TouchEventObserver;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.resources.dynamics.ViewResourceAdapter;
 import org.chromium.url.GURL;
@@ -987,5 +992,51 @@ public class ToolbarControlContainerTest {
         toolbarPhone.updateOptionalButton(buttonData);
 
         verify(mOptionalButtonCoordinator).updateButton(eq(buttonData), anyBoolean());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void testUpdateOptionalButton_DelegatesToLocationBar() {
+        initControlContainer(R.layout.toolbar_phone);
+        ToolbarPhone toolbarPhone = mControlContainer.findViewById(R.id.toolbar);
+        toolbarPhone.setLocationBarCoordinator(mLocationBarCoordinator);
+
+        // NOTE: In this test mOptionalButtonCoordinator is never created.
+
+        ButtonData buttonData = mock(ButtonData.class);
+        toolbarPhone.updateOptionalButton(buttonData);
+
+        verify(mLocationBarCoordinator).updateOptionalButton(eq(buttonData));
+        verify(mOptionalButtonCoordinator, never()).updateButton(any(), anyBoolean());
+
+        toolbarPhone.hideOptionalButton();
+
+        verify(mLocationBarCoordinator).hideOptionalButton();
+        verify(mOptionalButtonCoordinator, never()).hideButton();
+    }
+
+    @Test
+    @DisableFeatures(SigninFeatures.SIGNIN_LEVEL_UP_BUTTON)
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void testUpdateOptionalButton_OnNtp_UpdatesToolbarButton() {
+        initControlContainer(R.layout.toolbar_phone);
+        ToolbarPhone toolbarPhone = mControlContainer.findViewById(R.id.toolbar);
+        toolbarPhone.setOptionalButtonCoordinatorForTesting(mOptionalButtonCoordinator);
+        toolbarPhone.setLocationBarCoordinator(mLocationBarCoordinator);
+
+        doReturn(true).when(mNewTabPageDelegate).isCurrentlyVisible();
+        toolbarPhone.mVisualState = ToolbarPhone.VisualState.NEW_TAB_NORMAL;
+
+        ButtonData buttonData = mock(ButtonData.class);
+        toolbarPhone.updateOptionalButton(buttonData);
+
+        verify(mLocationBarCoordinator, never()).updateOptionalButton(any());
+        verify(mLocationBarCoordinator).hideOptionalButton();
+        verify(mOptionalButtonCoordinator).updateButton(eq(buttonData), anyBoolean());
+
+        toolbarPhone.hideOptionalButton();
+
+        verify(mLocationBarCoordinator, times(2)).hideOptionalButton();
+        verify(mOptionalButtonCoordinator).hideButton();
     }
 }

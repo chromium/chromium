@@ -391,7 +391,8 @@ public class SearchActivity extends AsyncInitializationActivity
                         mSnackbarManager,
                         findViewById(R.id.bottom_container),
                         /* omniboxChipManager= */ null,
-                        /* scrimHandler= */ null);
+                        /* scrimHandler= */ null,
+                        /* userEducationHelper= */ null);
         mLocationBarCoordinator.setUrlBarFocusable(true);
         mLocationBarCoordinator.setShouldShowMicButtonWhenUnfocused(true);
         assumeNonNull(mLocationBarCoordinator.getOmniboxStub()).addUrlFocusChangeListener(this);

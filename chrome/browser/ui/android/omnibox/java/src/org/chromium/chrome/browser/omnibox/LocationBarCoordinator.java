@@ -8,6 +8,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
@@ -26,6 +27,7 @@ import android.view.WindowInsets;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.VisibleForTesting;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
@@ -37,12 +39,14 @@ import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.toolbar.ToolbarWidthConsumer;
 import org.chromium.chrome.browser.lens.LensController;
@@ -71,12 +75,17 @@ import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.toolbar.ToolbarVariationUtils;
+import org.chromium.chrome.browser.toolbar.optional_button.ButtonData;
+import org.chromium.chrome.browser.toolbar.optional_button.OptionalButtonCoordinator;
 import org.chromium.chrome.browser.ui.edge_to_edge.TopInsetProvider;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.accessibility.PageZoomIndicatorCoordinator;
 import org.chromium.components.browser_ui.accessibility.PageZoomManager;
 import org.chromium.components.browser_ui.accessibility.PageZoomUtils;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
+import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
@@ -138,6 +147,9 @@ public class LocationBarCoordinator
     private final Callback<Boolean> mTextWrappingListener;
     private final Callback<@FuseboxState Integer> mOnFuseboxStateChange =
             this::onFuseboxStateChange;
+    private final SettableMonotonicObservableSupplier<Tracker> mTrackerSupplier =
+            ObservableSuppliers.createMonotonic();
+    private final @Nullable UserEducationHelper mUserEducationHelper;
     private LocationBarMediator mLocationBarMediator;
     private View mUrlBar;
     private View mZoomButton;
@@ -151,6 +163,10 @@ public class LocationBarCoordinator
     private @Nullable PageZoomIndicatorCoordinator mPageZoomIndicatorCoordinator;
     private CallbackController mCallbackController = new CallbackController();
     private boolean mDestroyed;
+    private @Nullable OptionalButtonCoordinator mOptionalButtonCoordinator;
+    private @Nullable ButtonData mOptionalButtonData;
+    private LocationBarDataProvider.@Nullable Observer mOptionalButtonLocationBarDataObserver;
+    private @Nullable UrlFocusChangeListener mOptionalButtonUrlFocusChangeListener;
 
     private boolean mNativeInitialized;
 
@@ -211,6 +227,7 @@ public class LocationBarCoordinator
      * @param scrimManager Manager for scrims.
      * @param bottomContainerView The bottom container view.
      * @param omniboxChipManager The {@link OmniboxChipManager} to show chips in the omnibox.
+     * @param userEducationHelper The {@link UserEducationHelper} to show any user education events.
      */
     public LocationBarCoordinator(
             View locationBarLayout,
@@ -251,7 +268,8 @@ public class LocationBarCoordinator
             SnackbarManager snackbarManager,
             View bottomContainerView,
             @Nullable OmniboxChipManager omniboxChipManager,
-            @Nullable LocationBarFocusScrimHandler scrimHandler) {
+            @Nullable LocationBarFocusScrimHandler scrimHandler,
+            @Nullable UserEducationHelper userEducationHelper) {
         mLocationBarLayout = (LocationBarLayout) locationBarLayout;
         mWindowAndroid = windowAndroid;
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
@@ -259,6 +277,7 @@ public class LocationBarCoordinator
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mIsToolbarPositionCustomizationEnabled = isToolbarPositionCustomizationEnabled;
         mBottomContainerView = bottomContainerView;
+        mUserEducationHelper = userEducationHelper;
         mActivityLifecycleDispatcher.register(this);
         Context context = mLocationBarLayout.getContext();
         OneshotSupplierImpl<TemplateUrlService> templateUrlServiceSupplier =
@@ -460,6 +479,7 @@ public class LocationBarCoordinator
                     public void onResult(Profile profile) {
                         templateUrlServiceSupplier.set(
                                 TemplateUrlServiceFactory.getForProfile(profile));
+                        mTrackerSupplier.set(TrackerFactory.getTrackerForProfile(profile));
                         profileObservableSupplier.removeObserver(this);
                     }
                 };
@@ -548,6 +568,24 @@ public class LocationBarCoordinator
         if (mBookmarksButton != null) {
             mBookmarksButton.setOnClickListener(null);
             mBookmarksButton = null;
+        }
+
+        if (mOptionalButtonLocationBarDataObserver != null) {
+            mLocationBarMediator
+                    .getLocationBarDataProvider()
+                    .removeObserver(mOptionalButtonLocationBarDataObserver);
+            mOptionalButtonLocationBarDataObserver = null;
+        }
+
+        if (mOptionalButtonUrlFocusChangeListener != null) {
+            mLocationBarMediator.removeUrlFocusChangeListener(
+                    mOptionalButtonUrlFocusChangeListener);
+            mOptionalButtonUrlFocusChangeListener = null;
+        }
+
+        if (mOptionalButtonCoordinator != null) {
+            mOptionalButtonCoordinator.hideButton();
+            mOptionalButtonData = null;
         }
 
         mLocationBarMediator.removeUrlFocusChangeListener(mUrlCoordinator);
@@ -1296,5 +1334,117 @@ public class LocationBarCoordinator
     @FuseboxState
     int getCurrentFuseboxStateForTesting() {
         return mCurrentFuseboxState;
+    }
+
+    /**
+     * Updates the optional button with the given {@link ButtonData}.
+     *
+     * <p>This method is only applicable to the phone form factor with the bottom app bar enabled.
+     *
+     * @param buttonData The {@link ButtonData} to update the optional button with.
+     */
+    public void updateOptionalButton(@Nullable ButtonData buttonData) {
+        if (!isPhoneLayout()
+                || !ToolbarVariationUtils.isToolbarUiRefactorEnabled(
+                        mLocationBarLayout.getContext())) {
+            return;
+        }
+
+        assert mUserEducationHelper != null;
+        mOptionalButtonData = buttonData;
+
+        View optionalButtonView = mLocationBarLayout.findViewById(R.id.optional_button);
+        if (optionalButtonView == null) return;
+
+        if (mOptionalButtonCoordinator == null) {
+            mOptionalButtonCoordinator =
+                    new OptionalButtonCoordinator(
+                            optionalButtonView,
+                            () -> assumeNonNull(mUserEducationHelper),
+                            mLocationBarLayout,
+                            () -> !mLocationBarMediator.isUrlBarFocused(),
+                            mTrackerSupplier);
+
+            var context = mLocationBarLayout.getContext();
+            mOptionalButtonCoordinator.setIconForegroundColor(
+                    AppCompatResources.getColorStateList(
+                            context, R.color.default_icon_color_tint_list));
+            mOptionalButtonCoordinator.setCollapsedStateWidth(
+                    context.getResources().getDimensionPixelSize(R.dimen.min_touch_target_size));
+
+            // The optional button should hide when the URL bar gains focus and reappear when it
+            // loses focus.
+            mOptionalButtonUrlFocusChangeListener =
+                    new UrlFocusChangeListener() {
+                        @Override
+                        public void onUrlFocusChange(boolean hasFocus) {
+                            updateOptionalButtonState();
+                        }
+                    };
+            mLocationBarMediator.addUrlFocusChangeListener(mOptionalButtonUrlFocusChangeListener);
+
+            // This observer is to detect the transition to/from an NTP which results in the button
+            // changing visibility.
+            mOptionalButtonLocationBarDataObserver =
+                    new LocationBarDataProvider.Observer() {
+                        @Override
+                        public void onUrlChanged(boolean isTabChanging) {
+                            updateOptionalButtonState();
+                        }
+
+                        @Override
+                        public void onTabChanged(@Nullable Tab previousTab) {
+                            updateOptionalButtonState();
+                        }
+                    };
+            mLocationBarMediator
+                    .getLocationBarDataProvider()
+                    .addObserver(mOptionalButtonLocationBarDataObserver);
+        }
+
+        updateOptionalButtonState();
+    }
+
+    /** Hides the optional button. */
+    public void hideOptionalButton() {
+        mOptionalButtonData = null;
+        updateOptionalButtonState();
+    }
+
+    private void updateOptionalButtonState() {
+        if (mOptionalButtonCoordinator == null) return;
+
+        var locationBarDataProvider = mLocationBarMediator.getLocationBarDataProvider();
+        boolean isNtp = locationBarDataProvider.getNewTabPageDelegate().isCurrentlyVisible();
+        if (!ToolbarVariationUtils.shouldModifyToolbarButtons(
+                        mLocationBarLayout.getContext(), isNtp)
+                || mLocationBarMediator.isUrlBarFocused()
+                || mOptionalButtonData == null) {
+            mOptionalButtonCoordinator.hideButton();
+        } else {
+            mOptionalButtonCoordinator.updateButton(
+                    mOptionalButtonData, locationBarDataProvider.isIncognitoBranded());
+        }
+
+        updateUrlBarNextFocusForwardId();
+    }
+
+    private void updateUrlBarNextFocusForwardId() {
+        if (!ToolbarVariationUtils.isToolbarUiRefactorEnabled(mLocationBarLayout.getContext())) {
+            mUrlBar.setNextFocusForwardId(R.id.tab_switcher_button);
+            return;
+        }
+
+        if (mOptionalButtonCoordinator != null
+                && mOptionalButtonCoordinator.getViewVisibility() != View.GONE) {
+            mUrlBar.setNextFocusForwardId(R.id.optional_button);
+        } else if (ToolbarVariationUtils.shouldAppMenuBeInToolbar()) {
+            // The app menu is the next button to focus on after the url bar.
+            mUrlBar.setNextFocusForwardId(R.id.menu_button);
+        } else {
+            // There are no more buttons to focus on after the url bar revert to the default
+            // behavior.
+            mUrlBar.setNextFocusForwardId(View.NO_ID);
+        }
     }
 }

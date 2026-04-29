@@ -8,13 +8,24 @@ found in the LICENSE file.
 Layout for the control group representing ChromeTabbedActivity's URL bar on
 small devices.
 -->
-<merge xmlns:android="http://schemas.android.com/apk/res/android">
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
     <include layout="@layout/omnibox_back_button"/>
     <include layout="@layout/location_status"/>
     <include layout="@layout/fusebox_layout"/>
     <include
         layout="@layout/url_bar"
         android:nextFocusForward="@+id/tab_switcher_button"/>
+    <!-- Intentionally only present on phones. -->
+    <ViewStub
+        tools:ignore="InconsistentLayout"
+        android:id="@+id/optional_button_location_bar_stub"
+        android:layout="@layout/optional_button_layout"
+        android:layout_height="match_parent"
+        android:layout_width="52dp"
+        android:visibility="gone" />
 
     <include layout="@layout/url_action_container"/>
 </merge>

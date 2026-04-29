@@ -6,10 +6,12 @@ package org.chromium.chrome.browser.omnibox;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
+import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
@@ -19,6 +21,8 @@ import static org.chromium.base.test.transit.ViewFinder.waitForNoView;
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
 
 import android.content.res.Configuration;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -45,6 +49,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.ui.KeyboardUtils;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -56,6 +61,8 @@ import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.locale.LocaleManagerDelegate;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
+import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
+import org.chromium.chrome.browser.toolbar.optional_button.ButtonData;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
@@ -778,5 +785,93 @@ public class LocationBarTest {
 
         mActivityTestRule.loadUrl(UrlConstants.VERSION_URL);
         onView(withId(R.id.location_bar_status_icon)).check(matches(isDisplayed()));
+    }
+
+    private void showOptionalButton() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ButtonData.ButtonSpec spec =
+                            new ButtonData.ButtonSpec.Builder(
+                                            new ColorDrawable(Color.RED), "test", true)
+                                    .setButtonVariant(AdaptiveToolbarButtonVariant.SHARE)
+                                    .build();
+                    ButtonData buttonData =
+                            new ButtonData() {
+                                @Override
+                                public boolean canShow() {
+                                    return true;
+                                }
+
+                                @Override
+                                public boolean isEnabled() {
+                                    return true;
+                                }
+
+                                @Override
+                                public boolean shouldShowTextBubble() {
+                                    return false;
+                                }
+
+                                @Override
+                                public ButtonSpec getButtonSpec() {
+                                    return spec;
+                                }
+                            };
+                    mLocationBarCoordinator.updateOptionalButton(buttonData);
+                });
+
+        ViewUtils.waitForVisibleView(
+                allOf(withId(R.id.optional_button), isDescendantOfA(withId(R.id.location_bar))));
+    }
+
+    @Test
+    @SmallTest
+    @Restriction(DeviceFormFactor.PHONE)
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void testOptionalButton() {
+        startActivityNormally();
+
+        showOptionalButton();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mLocationBarCoordinator.hideOptionalButton();
+                });
+
+        waitForNoView(
+                allOf(withId(R.id.optional_button), isDescendantOfA(withId(R.id.location_bar))));
+    }
+
+    @Test
+    @SmallTest
+    @Restriction(DeviceFormFactor.PHONE)
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void testOptionalButton_HiddenWhenUrlFocused() {
+        startActivityNormally();
+
+        showOptionalButton();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mUrlBar.requestFocus();
+                });
+
+        waitForNoView(
+                allOf(withId(R.id.optional_button), isDescendantOfA(withId(R.id.location_bar))));
+    }
+
+    @Test
+    @SmallTest
+    @Restriction(DeviceFormFactor.PHONE)
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void testOptionalButton_HiddenOnNtp() {
+        startActivityNormally();
+
+        showOptionalButton();
+
+        mActivityTestRule.loadUrl(getOriginalNativeNtpUrl());
+
+        waitForNoView(
+                allOf(withId(R.id.optional_button), isDescendantOfA(withId(R.id.location_bar))));
     }
 }

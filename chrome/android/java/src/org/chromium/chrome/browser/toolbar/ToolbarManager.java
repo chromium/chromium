@@ -1350,7 +1350,8 @@ public class ToolbarManager
                             snackbarManager,
                             bottomContainerView,
                             omniboxChipManager,
-                            mLocationBarFocusHandler);
+                            mLocationBarFocusHandler,
+                            mUserEducationHelper);
             mToolbarLayout.setLocationBarCoordinator(locationBarCoordinator);
             mToolbarLayout.setBrowserControlsVisibilityDelegate(mControlsVisibilityDelegate);
             mToolbarLayout.setBrowserControlsStateProvider(mBrowserControlsSizer);

@@ -235,6 +235,7 @@ android_library("java") {
     "//chrome/browser/ui/android/page_info:java",
     "//chrome/browser/ui/android/searchactivityutils:java",
     "//chrome/browser/ui/android/theme:java",
+    "//chrome/browser/ui/android/toolbar:optional_button_java",
     "//chrome/browser/ui/android/toolbar:variation_utils_java",
     "//chrome/browser/ui/messages/android:java",
     "//chrome/browser/url_constants/android:java",
