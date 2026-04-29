@@ -1242,7 +1242,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         if (ChromeFeatureList.sGlic.isEnabled() && mTabBottomSheetManager != null) {
             mActorControlCoordinator =
                     new ActorControlCoordinator(
-                            mActivity, mTabBottomSheetManager, mProfileSupplier);
+                            mActivity,
+                            mTabBottomSheetManager,
+                            mProfileSupplier,
+                            mActivityTabProvider.asObservable());
 
             ViewStub stub = mActivity.findViewById(R.id.actor_overlay_stub);
             mActorOverlayCoordinator =

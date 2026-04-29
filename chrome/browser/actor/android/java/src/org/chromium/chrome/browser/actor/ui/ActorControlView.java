@@ -48,9 +48,11 @@ public class ActorControlView extends RelativeLayout {
      * Sets the description text for the current step.
      *
      * @param description The string describing the active step of the task.
+     * @param visibility The visibility of the description view.
      */
-    void setStepDescription(String description) {
+    void setDescriptionView(String description, @PeekViewUiState.Visibility int visibility) {
         mDescriptionView.setText(description);
+        mDescriptionView.setVisibility(visibility);
     }
 
     /**
@@ -87,7 +89,9 @@ public class ActorControlView extends RelativeLayout {
      */
     void configurePeekViewForState(PeekViewUiState state) {
         Context context = getContext();
-        setStepDescription(state.getDescription(context));
+        setDescriptionView(state.getDescription(context), state.getDescriptionVisibility());
+        mTitleView.setTextAppearance(state.getTitleTextAppearanceResId());
+
         mActorControlButton.setVisibility(state.getButtonVisibility());
         mActorControlButton.setText(state.getButtonText(context));
         mActorControlButton.setIconResource(state.buttonIconResId);

@@ -19,6 +19,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -28,6 +29,7 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.actor.ActorKeyedService;
@@ -35,7 +37,9 @@ import org.chromium.chrome.browser.actor.ActorKeyedServiceFactory;
 import org.chromium.chrome.browser.actor.ActorTask;
 import org.chromium.chrome.browser.actor.ActorTaskState;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.glic.GlicInstanceHelper;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetManager;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.ChromeImageButton;
@@ -48,11 +52,18 @@ public class ActorControlCoordinatorTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private static final int TASK_ID = 123;
+    private static final String CONVERSATION_ID_1 = "conversation_1";
+    private static final String CONVERSATION_ID_2 = "conversation_2";
     private static final String TASK_TITLE = "Test Task Title";
+    private static final String CONVERSATION_TITLE_1 = "Test Conversation Title 1";
+    private static final String CONVERSATION_TITLE_2 = "Test Conversation Title 2";
 
     @Mock private TabBottomSheetManager mTabBottomSheetManager;
     @Mock private Profile mProfile;
     @Mock private ActorKeyedService mActorKeyedService;
+    @Mock private GlicInstanceHelper mGlicInstanceHelper;
+    @Mock private GlicInstanceHelper.Natives mGlicInstanceHelperNatives;
+    @Mock private Tab mTab;
     @Mock private ActorTask mActorTask;
 
     private Activity mActivity;
@@ -60,6 +71,7 @@ public class ActorControlCoordinatorTest {
     private PropertyModel mModel;
     private ActorControlMediator mMediator;
     private SettableMonotonicObservableSupplier<Profile> mProfileSupplier;
+    private SettableNullableObservableSupplier<Tab> mTabSupplier;
 
     @Before
     public void setUp() {
@@ -67,13 +79,15 @@ public class ActorControlCoordinatorTest {
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
 
         ActorKeyedServiceFactory.setForTesting(mActorKeyedService);
+        GlicInstanceHelper.setNativesForTesting(mGlicInstanceHelperNatives);
+        when(mGlicInstanceHelperNatives.getForTab(mTab)).thenReturn(mGlicInstanceHelper);
+
         mProfileSupplier = ObservableSuppliers.createMonotonic();
+        mTabSupplier = ObservableSuppliers.createNullable();
 
         mCoordinator =
                 new ActorControlCoordinator(
-                        mActivity,
-                        mTabBottomSheetManager,
-                        mProfileSupplier);
+                        mActivity, mTabBottomSheetManager, mProfileSupplier, mTabSupplier);
 
         mModel = mCoordinator.getModelForTesting();
         mMediator = mCoordinator.getMediatorForTesting();
@@ -86,6 +100,16 @@ public class ActorControlCoordinatorTest {
         when(mProfile.isOffTheRecord()).thenReturn(false);
     }
 
+    private void expectValidGlicInstance1() {
+        when(mGlicInstanceHelper.getConversationTitle()).thenReturn(CONVERSATION_TITLE_1);
+        when(mGlicInstanceHelper.getConversationId()).thenReturn(CONVERSATION_ID_1);
+    }
+
+    private void expectValidGlicInstance2() {
+        when(mGlicInstanceHelper.getConversationTitle()).thenReturn(CONVERSATION_TITLE_2);
+        when(mGlicInstanceHelper.getConversationId()).thenReturn(CONVERSATION_ID_2);
+    }
+
     private void expectValidActorTask() {
         when(mActorTask.getId()).thenReturn(TASK_ID);
         when(mActorTask.getTitle()).thenReturn(TASK_TITLE);
@@ -94,6 +118,8 @@ public class ActorControlCoordinatorTest {
 
     private void setUpProfileSupplier() {
         expectValidProfile();
+        expectValidGlicInstance1();
+        mTabSupplier.set(mTab);
         mProfileSupplier.set(mProfile);
         ShadowLooper.idleMainLooper();
     }
@@ -193,38 +219,83 @@ public class ActorControlCoordinatorTest {
     }
 
     @Test
-    public void testOnProfileAdded_validProfile_withTask() {
+    public void testTabChanged_observesGlicInstanceHelper() {
         expectValidProfile();
-        when(mActorTask.getState()).thenReturn(ActorTaskState.ACTING);
-        expectValidActorTask();
-
+        expectValidGlicInstance1();
         mProfileSupplier.set(mProfile);
 
-        verify(mActorKeyedService).addObserver(mCoordinator);
-        assertEquals(TASK_TITLE, mModel.get(ActorControlProperties.TASK_TITLE));
-        assertEquals(PeekViewUiState.ACTING, mModel.get(ActorControlProperties.PEEK_VIEW_UI_STATE));
+        mTabSupplier.set(mTab);
+
+        verify(mGlicInstanceHelper).addObserver(mCoordinator);
+        assertEquals(CONVERSATION_TITLE_1, mModel.get(ActorControlProperties.TASK_TITLE));
+        assertEquals(
+                PeekViewUiState.DEFAULT, mModel.get(ActorControlProperties.PEEK_VIEW_UI_STATE));
     }
 
     @Test
-    public void testOnProfileAdded_validProfile_noTask() {
+    public void testOnInstanceChanged_updatesTitle() {
         expectValidProfile();
-        when(mActorKeyedService.getCurrentActiveTask()).thenReturn(null);
+        expectValidGlicInstance1();
+        mProfileSupplier.set(mProfile);
+        mTabSupplier.set(mTab);
 
+        ArgumentCaptor<GlicInstanceHelper.Observer> captor =
+                ArgumentCaptor.forClass(GlicInstanceHelper.Observer.class);
+        verify(mGlicInstanceHelper).addObserver(captor.capture());
+        when(mGlicInstanceHelper.getConversationTitle()).thenReturn(CONVERSATION_TITLE_2);
+
+        captor.getValue().onInstanceChanged();
+
+        assertEquals(CONVERSATION_TITLE_2, mModel.get(ActorControlProperties.TASK_TITLE));
+    }
+
+    @Test
+    public void testTabChanged_toNull_clearsContent() {
+        expectValidProfile();
+        expectValidGlicInstance1();
         mProfileSupplier.set(mProfile);
 
-        verify(mActorKeyedService).addObserver(mCoordinator);
+        mTabSupplier.set(mTab);
+        verify(mGlicInstanceHelper).addObserver(mCoordinator);
+
+        mTabSupplier.set(null);
+        verify(mGlicInstanceHelper).removeObserver(mCoordinator);
         assertEquals("", mModel.get(ActorControlProperties.TASK_TITLE));
         assertEquals(
                 PeekViewUiState.DEFAULT, mModel.get(ActorControlProperties.PEEK_VIEW_UI_STATE));
     }
 
     @Test
-    public void testOnProfileAdded_nonValidProfile() {
+    public void testOnProfileAdded_invalidProfile() {
         when(mProfile.isNativeInitialized()).thenReturn(false);
         mProfileSupplier.set(mProfile);
 
         verify(mActorKeyedService, never()).addObserver(any());
         assertEquals("", mModel.get(ActorControlProperties.TASK_TITLE));
+    }
+
+    @Test
+    public void testOnProfileAdded_withRunningTask() {
+        expectValidProfile();
+        expectValidActorTask();
+        when(mActorTask.getState()).thenReturn(ActorTaskState.ACTING);
+
+        mProfileSupplier.set(mProfile);
+
+        assertEquals(TASK_TITLE, mModel.get(ActorControlProperties.TASK_TITLE));
+        assertEquals(PeekViewUiState.ACTING, mModel.get(ActorControlProperties.PEEK_VIEW_UI_STATE));
+    }
+
+    @Test
+    public void testOnProfileAdded_withoutRunningTask() {
+        expectValidProfile();
+        when(mActorKeyedService.getCurrentActiveTask()).thenReturn(null);
+
+        mProfileSupplier.set(mProfile);
+
+        assertEquals("", mModel.get(ActorControlProperties.TASK_TITLE));
+        assertEquals(
+                PeekViewUiState.DEFAULT, mModel.get(ActorControlProperties.PEEK_VIEW_UI_STATE));
     }
 
     private void setUpForOnTaskStateChanged() {
@@ -302,13 +373,14 @@ public class ActorControlCoordinatorTest {
     }
 
     @Test
-    public void testOnTaskStateChanged_nullTask_notFinished_clearsContent() {
+    public void testOnTaskStateChanged_nullTask_notFinished_defaultsBackToConversationPeekView() {
         setUpProfileSupplier();
+        expectValidGlicInstance1();
         when(mActorKeyedService.getCurrentActiveTask()).thenReturn(null);
 
         mCoordinator.onTaskStateChanged(TASK_ID, ActorTaskState.ACTING);
 
-        assertEquals("", mModel.get(ActorControlProperties.TASK_TITLE));
+        assertEquals(CONVERSATION_TITLE_1, mModel.get(ActorControlProperties.TASK_TITLE));
         assertEquals(
                 PeekViewUiState.DEFAULT, mModel.get(ActorControlProperties.PEEK_VIEW_UI_STATE));
     }
@@ -342,6 +414,14 @@ public class ActorControlCoordinatorTest {
         assertEquals(TASK_TITLE, mModel.get(ActorControlProperties.TASK_TITLE));
         assertEquals(
                 PeekViewUiState.DEFAULT, mModel.get(ActorControlProperties.PEEK_VIEW_UI_STATE));
+    }
+
+    @Test
+    public void testOnConversationTitleChanged_updatesTitle() {
+        setUpProfileSupplier();
+        when(mGlicInstanceHelper.getConversationTitle()).thenReturn(CONVERSATION_TITLE_1);
+        mCoordinator.onInstanceChanged();
+        assertEquals(CONVERSATION_TITLE_1, mModel.get(ActorControlProperties.TASK_TITLE));
     }
 
     @Test
@@ -423,10 +503,13 @@ public class ActorControlCoordinatorTest {
         setUpProfileSupplier();
         when(mActorKeyedService.getCurrentActiveTask()).thenReturn(null);
         mModel.set(ActorControlProperties.PEEK_VIEW_UI_STATE, PeekViewUiState.WAITING);
+        mModel.set(ActorControlProperties.TASK_TITLE, TASK_TITLE);
 
         performActorControlClick();
 
+
         verify(mTabBottomSheetManager).setSheetExpanded(true);
+        assertEquals(CONVERSATION_TITLE_1, mModel.get(ActorControlProperties.TASK_TITLE));
         assertEquals(
                 PeekViewUiState.DEFAULT, mModel.get(ActorControlProperties.PEEK_VIEW_UI_STATE));
     }
@@ -461,5 +544,115 @@ public class ActorControlCoordinatorTest {
         performPeekViewClick();
 
         verify(mTabBottomSheetManager).setSheetExpanded(true);
+    }
+
+    @Test
+    public void testOnTaskStateChanged_matchingConversationId() {
+        setUpProfileSupplier();
+        expectValidGlicInstance1();
+        mCoordinator.onInstanceChanged();
+
+        expectValidActorTask();
+        mCoordinator.onTaskStateChanged(TASK_ID, ActorTaskState.ACTING);
+
+        assertEquals(TASK_TITLE, mModel.get(ActorControlProperties.TASK_TITLE));
+        assertEquals(PeekViewUiState.ACTING, mModel.get(ActorControlProperties.PEEK_VIEW_UI_STATE));
+    }
+
+    @Test
+    public void testOnTaskStateChanged_nonMatchingConversationId() {
+        setUpProfileSupplier();
+        expectValidGlicInstance1();
+        mCoordinator.onInstanceChanged();
+
+        expectValidActorTask();
+        mCoordinator.onTaskStateChanged(TASK_ID, ActorTaskState.ACTING);
+
+        assertEquals(PeekViewUiState.ACTING, mModel.get(ActorControlProperties.PEEK_VIEW_UI_STATE));
+
+        // Change active instance ID
+        expectValidGlicInstance2();
+        mCoordinator.onInstanceChanged();
+
+        // State changes for task 1
+        mCoordinator.onTaskStateChanged(TASK_ID, ActorTaskState.WAITING_ON_USER);
+
+        // Content should not be updated to WAITING
+        assertEquals(
+                PeekViewUiState.DEFAULT, mModel.get(ActorControlProperties.PEEK_VIEW_UI_STATE));
+        assertEquals(CONVERSATION_TITLE_2, mModel.get(ActorControlProperties.TASK_TITLE));
+    }
+
+    @Test
+    public void testOnActiveInstanceChanged_matchingConversationId_updatesContent() {
+        setUpProfileSupplier();
+        expectValidGlicInstance1();
+        mCoordinator.onInstanceChanged();
+
+        expectValidActorTask();
+        when(mActorTask.getState()).thenReturn(ActorTaskState.ACTING);
+        mCoordinator.onTaskStateChanged(TASK_ID, ActorTaskState.ACTING);
+
+        assertEquals(PeekViewUiState.ACTING, mModel.get(ActorControlProperties.PEEK_VIEW_UI_STATE));
+
+        // Switch to non-matching instance
+        expectValidGlicInstance2();
+        mCoordinator.onInstanceChanged();
+
+        // Should switch to non-matching instance content
+        assertEquals(
+                PeekViewUiState.DEFAULT, mModel.get(ActorControlProperties.PEEK_VIEW_UI_STATE));
+        assertEquals(CONVERSATION_TITLE_2, mModel.get(ActorControlProperties.TASK_TITLE));
+
+        // Switch back to matching instance
+        expectValidGlicInstance1();
+        mCoordinator.onInstanceChanged();
+
+        // Should update to ACTING again
+        assertEquals(PeekViewUiState.ACTING, mModel.get(ActorControlProperties.PEEK_VIEW_UI_STATE));
+    }
+
+    @Test
+    public void testTabChanged_betweenValidTabs_updatesObserverAndContent() {
+        expectValidProfile();
+        mProfileSupplier.set(mProfile);
+
+        GlicInstanceHelper helper1 = mGlicInstanceHelper;
+        expectValidGlicInstance1();
+
+        mTabSupplier.set(mTab);
+        verify(helper1).addObserver(mCoordinator);
+        assertEquals(CONVERSATION_TITLE_1, mModel.get(ActorControlProperties.TASK_TITLE));
+
+        Tab tab2 = org.mockito.Mockito.mock(Tab.class);
+
+        GlicInstanceHelper helper2 = org.mockito.Mockito.mock(GlicInstanceHelper.class);
+        when(helper2.getConversationId()).thenReturn(CONVERSATION_ID_2);
+        when(helper2.getConversationTitle()).thenReturn(CONVERSATION_TITLE_2);
+        when(mGlicInstanceHelperNatives.getForTab(tab2)).thenReturn(helper2);
+
+        mTabSupplier.set(tab2);
+
+        verify(helper1).removeObserver(mCoordinator);
+        verify(helper2).addObserver(mCoordinator);
+
+        assertEquals(CONVERSATION_TITLE_2, mModel.get(ActorControlProperties.TASK_TITLE));
+    }
+
+    @Test
+    public void testTabChanged_initialTabIncognito_doesNotObserveAndClearsContent() {
+        expectValidProfile();
+        mProfileSupplier.set(mProfile);
+
+        Tab incognitoTab = org.mockito.Mockito.mock(Tab.class);
+        when(incognitoTab.isOffTheRecord()).thenReturn(true);
+
+        mTabSupplier.set(incognitoTab);
+
+        verify(mGlicInstanceHelperNatives, never()).getForTab(incognitoTab);
+
+        assertEquals("", mModel.get(ActorControlProperties.TASK_TITLE));
+        assertEquals(
+                PeekViewUiState.DEFAULT, mModel.get(ActorControlProperties.PEEK_VIEW_UI_STATE));
     }
 }

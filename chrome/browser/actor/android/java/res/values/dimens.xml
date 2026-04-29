@@ -23,7 +23,7 @@ found in the LICENSE file.
     <dimen name="actor_control_icon_size">24dp</dimen>
     <dimen name="actor_control_icon_margin_start">6dp</dimen>
     <dimen name="actor_control_icon_margin_end">12dp</dimen>
-    <dimen name="actor_control_text_margin_end">4dp</dimen>
+    <dimen name="actor_control_text_container_margin_end">8dp</dimen>
     <dimen name="actor_control_description_margin_top">2dp</dimen>
 
     <!-- Actor Border Glow -->

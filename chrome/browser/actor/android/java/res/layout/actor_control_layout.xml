@@ -47,7 +47,7 @@ found in the LICENSE file.
         android:layout_toStartOf="@id/actor_control_close_button"
         android:layout_centerVertical="true"
         android:layout_marginEnd="@dimen/actor_control_button_margin_end"
-        android:textAppearance="@style/TextAppearance.TextSmall.Secondary.Baseline.Light"
+        android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
         android:visibility="gone"
         app:tint="@color/default_icon_color_tint_list"
         app:iconPadding="0dp"
@@ -56,27 +56,32 @@ found in the LICENSE file.
         style="?attr/materialIconButtonFilledStyle" />
 
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:id="@+id/actor_control_text_container"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:minHeight="?attr/minInteractTargetSize"
         android:orientation="vertical"
         android:layout_toEndOf="@id/actor_icon"
         android:layout_toStartOf="@id/actor_control_button"
         android:layout_centerVertical="true"
-        android:layout_marginEnd="@dimen/actor_control_text_margin_end">
+        android:layout_marginEnd="@dimen/actor_control_text_container_margin_end">
 
         <TextView
             android:id="@+id/actor_control_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:gravity="start|center_vertical"
             android:textAppearance="@style/TextAppearance.TextMediumThick.Primary"
             android:ellipsize="end"
             android:singleLine="true" />
 
         <TextView
             android:id="@+id/actor_control_description"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/actor_control_description_margin_top"
+            android:gravity="start|center_vertical"
             android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
             android:ellipsize="end"
             android:singleLine="true" />
