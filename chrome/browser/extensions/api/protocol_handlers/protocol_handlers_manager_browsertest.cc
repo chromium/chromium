@@ -479,4 +479,101 @@ IN_PROC_BROWSER_TEST_F(ProtocolHandlersManagerBrowserTest,
   ASSERT_TRUE(registry->HasDefaultHandler(kScheme2));
 }
 
+class ProtocolHandlersManagerOTRBrowserTest
+    : public ProtocolHandlersManagerBrowserTest {
+ protected:
+  Profile* GetOTRProfile() {
+    return browser()->profile()->GetPrimaryOTRProfile(
+        /*create_if_needed=*/true);
+  }
+
+  custom_handlers::ProtocolHandlerRegistry* GetOTRProtocolHandlersRegistry() {
+    return ProtocolHandlerRegistryFactory::GetForBrowserContext(
+        GetOTRProfile());
+  }
+};
+
+class ProtocolHandlersManagerOTRAllowIncognitoBrowserTest
+    : public ProtocolHandlersManagerOTRBrowserTest,
+      public ::testing::WithParamInterface<bool> {};
+
+// Extension protocol handlers registered in the regular profile must NOT
+// appear in the OTR profile's registry, regardless of whether the extension is
+// allowed in incognito. The OTR registry is constructed with a null
+// PrefService and no ProtocolHandlersManager runs in OTR, so extension
+// handlers never reach it.
+IN_PROC_BROWSER_TEST_P(ProtocolHandlersManagerOTRAllowIncognitoBrowserTest,
+                       ExtensionHandlersNotInOTRRegistry) {
+  const bool allow_in_incognito = GetParam();
+
+  const Extension* extension =
+      LoadExtension(test_data_dir_.AppendASCII(kExtensionPath),
+                    {.allow_in_incognito = allow_in_incognito});
+  ASSERT_TRUE(extension);
+
+  const auto* registry = GetProtocolHandlersRegistry();
+  EXPECT_EQ(1u, registry->GetHandlersFor("web+ecsearch").size());
+  EXPECT_EQ(1u, registry->GetHandlersFor("web+ducksearch").size());
+
+  const auto* otr_registry = GetOTRProtocolHandlersRegistry();
+  EXPECT_NE(registry, otr_registry);
+  EXPECT_TRUE(otr_registry->GetHandlersFor("web+ecsearch").empty());
+  EXPECT_TRUE(otr_registry->GetHandlersFor("web+ducksearch").empty());
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ProtocolHandlersManagerOTRAllowIncognitoBrowserTest,
+                         ::testing::Bool());
+
+// When the extension is not allowed in incognito, navigating to one of its
+// protocol URLs in an incognito browser must NOT resolve through the handler.
+// The OTR ProtocolHandlerRegistry is constructed with a null PrefService and
+// no ProtocolHandlersManager runs in OTR, so the extension's handlers never
+// reach the OTR registry.
+IN_PROC_BROWSER_TEST_F(ProtocolHandlersManagerOTRBrowserTest,
+                       ExtensionHandlerNavigationNotInIncognito) {
+  ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII(kExtensionPath)));
+
+  GURL url1("web+ecsearch:cats");
+  GURL url2("web+ducksearch:dogs");
+
+  // Navigation works in the regular browser.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url1));
+  EXPECT_EQ(GURL("https://www.ecosia.org/search?q=web%2Becsearch%3Acats"),
+            GetWebContents()->GetLastCommittedURL());
+
+  // Navigation should not work in the incognito browser.
+  Browser* incognito_browser = CreateIncognitoBrowser();
+  content::WebContents* incognito_web_contents =
+      incognito_browser->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(incognito_browser, url1));
+  EXPECT_EQ(GURL("about:blank"), incognito_web_contents->GetLastCommittedURL());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(incognito_browser, url2));
+  EXPECT_EQ(GURL("about:blank"), incognito_web_contents->GetLastCommittedURL());
+}
+
+// Disabling an extension must remove its handlers from the regular registry's
+// in-memory state (not just from prefs). The OTR registry, which never holds
+// extension handlers under the null-PrefService design, must remain empty
+// throughout.
+IN_PROC_BROWSER_TEST_F(ProtocolHandlersManagerOTRBrowserTest,
+                       DisableExtensionClearsInMemoryHandlers) {
+  ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII(kExtensionPath)));
+
+  const auto* registry = GetProtocolHandlersRegistry();
+  ASSERT_EQ(1u, registry->GetHandlersFor("web+ecsearch").size());
+  ASSERT_EQ(1u, registry->GetHandlersFor("web+ducksearch").size());
+
+  const auto* otr_registry = GetOTRProtocolHandlersRegistry();
+  ASSERT_TRUE(otr_registry->GetHandlersFor("web+ecsearch").empty());
+  ASSERT_TRUE(otr_registry->GetHandlersFor("web+ducksearch").empty());
+
+  DisableExtension(last_loaded_extension_id());
+
+  EXPECT_TRUE(registry->GetHandlersFor("web+ecsearch").empty());
+  EXPECT_TRUE(registry->GetHandlersFor("web+ducksearch").empty());
+  EXPECT_TRUE(otr_registry->GetHandlersFor("web+ecsearch").empty());
+  EXPECT_TRUE(otr_registry->GetHandlersFor("web+ducksearch").empty());
+}
+
 }  // namespace extensions

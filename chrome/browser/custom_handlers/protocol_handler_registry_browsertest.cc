@@ -16,8 +16,10 @@
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
+#include "chrome/browser/custom_handlers/chrome_protocol_handler_registry_delegate.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -47,6 +49,20 @@ using custom_handlers::ProtocolHandler;
 using custom_handlers::ProtocolHandlerRegistry;
 
 namespace {
+
+// Test delegate that disables OS-level registration. The real delegate calls
+// `shell_integration::DefaultSchemeClientWorker::StartSetAsDefault`, which on
+// Mac fails because the test app_bundle is not valid; the failure callback
+// then deletes the handler when `ShouldRemoveHandlersNotInOS()` is true. We
+// avoid the round-trip entirely so tests behave the same on every platform.
+// This also avoids the issues in Windows 7 when trying to perform the OS
+// registration, which causes DCHECKs when running as admin.
+class TestProtocolHandlerRegistryDelegate
+    : public ChromeProtocolHandlerRegistryDelegate {
+  void RegisterWithOSAsDefaultClient(const std::string& protocol,
+                                     DefaultClientCallback callback) override {}
+  bool ShouldRemoveHandlersNotInOS() override { return false; }
+};
 
 class ProtocolHandlerChangeWaiter : public ProtocolHandlerRegistry::Observer {
  public:
@@ -84,6 +100,9 @@ class ChromeRegisterProtocolHandlerBrowserTest : public InProcessBrowserTest {
     // files will be shared via //componennts
     embedded_test_server()->ServeFilesFromSourceDirectory(
         "components/test/data/custom_handlers/");
+
+    GetRegistry()->SetDelegateForTesting(
+        std::make_unique<TestProtocolHandlerRegistryDelegate>());
   }
 
   TestRenderViewContextMenu* CreateContextMenu(GURL url) {
@@ -110,27 +129,27 @@ class ChromeRegisterProtocolHandlerBrowserTest : public InProcessBrowserTest {
     return menu;
   }
 
-  void AddProtocolHandler(const std::string& protocol, const GURL& url) {
+  ProtocolHandlerRegistry* GetRegistry(Profile* profile = nullptr) {
+    if (!profile) {
+      profile = browser()->profile();
+    }
+    return ProtocolHandlerRegistryFactory::GetForBrowserContext(profile);
+  }
+
+  void AddProtocolHandler(const std::string& protocol,
+                          const GURL& url,
+                          Profile* profile = nullptr) {
     ProtocolHandler handler =
         ProtocolHandler::CreateProtocolHandler(protocol, url);
-    ProtocolHandlerRegistry* registry =
-        ProtocolHandlerRegistryFactory::GetForBrowserContext(
-            browser()->profile());
-    // Fake that this registration is happening on profile startup. Otherwise
-    // it'll try to register with the OS, which causes DCHECKs on Windows when
-    // running as admin on Windows 7.
-    registry->SetIsLoading(true);
+    ProtocolHandlerRegistry* registry = GetRegistry(profile);
     registry->OnAcceptRegisterProtocolHandler(handler);
-    registry->SetIsLoading(true);
     ASSERT_TRUE(registry->IsHandledProtocol(protocol));
   }
 
   void RemoveProtocolHandler(const std::string& protocol, const GURL& url) {
     ProtocolHandler handler =
         ProtocolHandler::CreateProtocolHandler(protocol, url);
-    ProtocolHandlerRegistry* registry =
-        ProtocolHandlerRegistryFactory::GetForBrowserContext(
-            browser()->profile());
+    ProtocolHandlerRegistry* registry = GetRegistry();
     registry->RemoveHandler(handler);
     ASSERT_FALSE(registry->IsHandledProtocol(protocol));
   }
@@ -153,9 +172,7 @@ IN_PROC_BROWSER_TEST_F(ChromeRegisterProtocolHandlerBrowserTest,
   AddProtocolHandler(std::string("web+search"),
                      GURL("https://www.google.com/%s"));
   GURL url("web+search:testing");
-  ProtocolHandlerRegistry* registry =
-      ProtocolHandlerRegistryFactory::GetForBrowserContext(
-          browser()->profile());
+  ProtocolHandlerRegistry* registry = GetRegistry();
   ASSERT_EQ(1u, registry->GetHandlersFor(url.GetScheme()).size());
   menu.reset(CreateContextMenu(url));
   ASSERT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_OPENLINKWITH));
@@ -170,9 +187,7 @@ IN_PROC_BROWSER_TEST_F(ChromeRegisterProtocolHandlerBrowserTest,
   AddProtocolHandler(std::string("web+search"),
                      GURL("https://www.google.com/%s"));
   GURL url("web+search:testing");
-  ProtocolHandlerRegistry* registry =
-      ProtocolHandlerRegistryFactory::GetForBrowserContext(
-          browser()->profile());
+  ProtocolHandlerRegistry* registry = GetRegistry();
   ASSERT_EQ(1u, registry->GetHandlersFor(url.GetScheme()).size());
   menu.reset(CreateContextMenu(url));
   ASSERT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_OPENLINKWITH));
@@ -220,9 +235,7 @@ IN_PROC_BROWSER_TEST_F(ChromeRegisterProtocolHandlerBrowserTest,
 
   // Ensure the registry is currently empty.
   GURL url("web+search:testing");
-  ProtocolHandlerRegistry* registry =
-      ProtocolHandlerRegistryFactory::GetForBrowserContext(
-          browser()->profile());
+  ProtocolHandlerRegistry* registry = GetRegistry();
   ASSERT_EQ(0u, registry->GetHandlersFor(url.GetScheme()).size());
 
   // Ensure there is no registration pending.
@@ -259,9 +272,7 @@ IN_PROC_BROWSER_TEST_F(ChromeRegisterProtocolHandlerBrowserTest, FencedFrame) {
 
   // Ensure the registry is currently empty.
   GURL url("web+search:testing");
-  ProtocolHandlerRegistry* registry =
-      ProtocolHandlerRegistryFactory::GetForBrowserContext(
-          browser()->profile());
+  ProtocolHandlerRegistry* registry = GetRegistry();
   ASSERT_EQ(0u, registry->GetHandlersFor(url.GetScheme()).size());
 
   // Attempt to add an entry.
@@ -365,6 +376,85 @@ IN_PROC_BROWSER_TEST_F(ChromeRegisterProtocolHandlerAndServiceWorkerInterceptor,
   EXPECT_EQ(true,
             content::EvalJs(web_contents,
                             "pageWithCustomSchemeHandledByServiceWorker();"));
+}
+
+class ProtocolHandlerRegistryOTRBrowserTest
+    : public ChromeRegisterProtocolHandlerBrowserTest {
+ public:
+  Profile* GetOTRProfile() {
+    Profile* otr_profile = browser()->profile()->GetPrimaryOTRProfile(
+        /*create_if_needed=*/true);
+    // Install the test delegate on the OTR registry so it behaves the same on
+    // every platform; see TestProtocolHandlerRegistryDelegate above. Re-install
+    // unconditionally so a freshly recreated OTR profile (e.g. after
+    // DestroyOffTheRecordProfile) also gets the test delegate.
+    GetRegistry(otr_profile)
+        ->SetDelegateForTesting(
+            std::make_unique<TestProtocolHandlerRegistryDelegate>());
+    return otr_profile;
+  }
+};
+
+// Verify that a custom protocol handler can be registered directly in an
+// incognito browser, and that navigation in that browser resolves to it.
+IN_PROC_BROWSER_TEST_F(ProtocolHandlerRegistryOTRBrowserTest,
+                       CustomHandlerRegistrationInIncognito) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL handler_url = embedded_test_server()->GetURL("/custom_handler.html");
+
+  Browser* incognito_browser = CreateIncognitoBrowser();
+  AddProtocolHandler("news", handler_url, incognito_browser->profile());
+
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(incognito_browser, GURL("news:test")));
+  EXPECT_EQ(handler_url, incognito_browser->tab_strip_model()
+                             ->GetActiveWebContents()
+                             ->GetLastCommittedURL());
+}
+
+// Verify that a handler registered in the OTR profile does not resolve when
+// navigating in the regular browser.
+IN_PROC_BROWSER_TEST_F(ProtocolHandlerRegistryOTRBrowserTest,
+                       OTRHandlerNavigationNotInRegularProfile) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL handler_url = embedded_test_server()->GetURL("/custom_handler.html");
+
+  AddProtocolHandler("news", handler_url, GetOTRProfile());
+
+  // The regular profile's registry should not have the handler.
+  ASSERT_FALSE(GetRegistry()->IsHandledProtocol("news"));
+
+  // Navigation should not work in the regular browser.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("news:test")));
+  EXPECT_NE(handler_url, browser()
+                             ->tab_strip_model()
+                             ->GetActiveWebContents()
+                             ->GetLastCommittedURL());
+}
+
+// Verify that a handler registered in the regular profile does NOT resolve in
+// incognito. The OTR ProtocolHandlerRegistry is constructed with a null
+// PrefService and therefore does not inherit the parent's handlers.
+IN_PROC_BROWSER_TEST_F(ProtocolHandlerRegistryOTRBrowserTest,
+                       RegularHandlerNavigationDoesNotWorkInIncognito) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL handler_url = embedded_test_server()->GetURL("/custom_handler.html");
+  AddProtocolHandler("news", handler_url);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("news:test")));
+  EXPECT_EQ(handler_url, browser()
+                             ->tab_strip_model()
+                             ->GetActiveWebContents()
+                             ->GetLastCommittedURL());
+
+  Browser* incognito_browser = CreateIncognitoBrowser();
+  EXPECT_FALSE(
+      GetRegistry(incognito_browser->profile())->IsHandledProtocol("news"));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(incognito_browser, GURL("news:test")));
+  EXPECT_NE(handler_url, incognito_browser->tab_strip_model()
+                             ->GetActiveWebContents()
+                             ->GetLastCommittedURL());
 }
 
 using ChromeRegisterProtocolHandlerIsolatedWebAppsTest =

@@ -240,6 +240,10 @@ class ProtocolHandlerRegistryTest : public testing::Test {
 
   void TearDown() override { TeadDownRegistry(); }
 
+  sync_preferences::TestingPrefServiceSyncable& testing_pref_service() {
+    return pref_service_;
+  }
+
  private:
   content::BrowserTaskEnvironment task_environment_;
 
@@ -1419,6 +1423,185 @@ TEST_F(ProtocolHandlerRegistryTest, CredentialsForNonStandardSchemes) {
   EXPECT_EQ(ph.TranslateUrl(GURL("web+bool://user:password@example/y")),
             GURL("https://example.com/"
                  "url=web%2Bbool%3A%2F%2Fexample%2Fy"));
+}
+
+// ---------------------------------------------------------------------------
+// OTR (Off-The-Record / Incognito) registry tests
+// ---------------------------------------------------------------------------
+
+class ProtocolHandlerRegistryOTRTest : public ProtocolHandlerRegistryTest {
+ protected:
+  void SetUp() override {
+    ProtocolHandlerRegistryTest::SetUp();
+    SetUpOTRRegistry();
+  }
+
+  void TearDown() override {
+    TearDownOTRRegistry();
+    ProtocolHandlerRegistryTest::TearDown();
+  }
+
+  void SetUpOTRRegistry() {
+    // The OTR registry is constructed with a null PrefService, matching the
+    // factory behavior for OTR browser contexts. It is isolated from the
+    // parent profile's prefs and does not persist registrations.
+    auto delegate = std::make_unique<TestProtocolHandlerRegistryDelegate>();
+    otr_delegate_ = delegate.get();
+    otr_registry_ = std::make_unique<ProtocolHandlerRegistry>(
+        /*prefs=*/nullptr, std::move(delegate));
+    otr_registry_->InitProtocolSettings();
+  }
+
+  void TearDownOTRRegistry() {
+    otr_delegate_ = nullptr;
+    otr_registry_->Shutdown();
+    otr_registry_.reset();
+  }
+
+  void RecreateOTRRegistry() {
+    TearDownOTRRegistry();
+    SetUpOTRRegistry();
+  }
+
+  ProtocolHandlerRegistry* otr_registry() { return otr_registry_.get(); }
+
+ private:
+  raw_ptr<TestProtocolHandlerRegistryDelegate> otr_delegate_ = nullptr;
+  std::unique_ptr<ProtocolHandlerRegistry> otr_registry_;
+};
+
+// Verify that the OTR profile gets a separate registry instance that is
+// isolated from the regular profile's handlers; including after the OTR
+// registry is re-initialized against fresh parent state.
+TEST_F(ProtocolHandlerRegistryOTRTest, OTRDoesNotInheritHandlersFromRegular) {
+  ProtocolHandler handler =
+      CreateProtocolHandler("web+test", GURL("https://example.com/%s"));
+  registry()->OnAcceptRegisterProtocolHandler(handler);
+  ASSERT_TRUE(registry()->IsHandledProtocol("web+test"));
+
+  RecreateOTRRegistry();
+
+  EXPECT_NE(registry(), otr_registry());
+  EXPECT_FALSE(otr_registry()->IsHandledProtocol("web+test"));
+  EXPECT_TRUE(otr_registry()->GetHandlersFor("web+test").empty());
+}
+
+// Verify that registering a handler in the OTR profile does not affect the
+// parent profile's registry.
+TEST_F(ProtocolHandlerRegistryOTRTest, OTRRegistrationDoesNotLeakToParent) {
+  ASSERT_FALSE(registry()->IsHandledProtocol("web+otrtest"));
+  ASSERT_FALSE(otr_registry()->IsHandledProtocol("web+otrtest"));
+
+  ProtocolHandler handler =
+      CreateProtocolHandler("web+otrtest", GURL("https://example.com/%s"));
+  otr_registry()->OnAcceptRegisterProtocolHandler(handler);
+
+  EXPECT_TRUE(otr_registry()->IsHandledProtocol("web+otrtest"));
+  EXPECT_FALSE(registry()->IsHandledProtocol("web+otrtest"));
+}
+
+// Verify that OTR handlers are ephemeral and vanish when the OTR registry is
+// destroyed and re-created.
+TEST_F(ProtocolHandlerRegistryOTRTest, OTRHandlersDoNotPersistAcrossSessions) {
+  ProtocolHandler handler =
+      CreateProtocolHandler("web+ephemeral", GURL("https://example.com/%s"));
+  otr_registry()->OnAcceptRegisterProtocolHandler(handler);
+  ASSERT_TRUE(otr_registry()->IsHandledProtocol("web+ephemeral"));
+
+  RecreateOTRRegistry();
+
+  EXPECT_FALSE(otr_registry()->IsHandledProtocol("web+ephemeral"));
+}
+
+// OTR registrations stay in-memory on the OTR registry (it has no PrefService)
+// and must never reach the regular profile's persisted prefs.
+TEST_F(ProtocolHandlerRegistryOTRTest,
+       OTRRegistrationDoesNotAffectParentPrefs) {
+  ASSERT_TRUE(GetPrefs()
+                  ->GetList(custom_handlers::prefs::kRegisteredProtocolHandlers)
+                  .empty());
+
+  ProtocolHandler otr_handler =
+      CreateProtocolHandler("web+otrpref", GURL("https://otr.example.com/%s"));
+  otr_registry()->OnAcceptRegisterProtocolHandler(otr_handler);
+
+  EXPECT_EQ(1u, otr_registry()->GetHandlersFor("web+otrpref").size());
+  EXPECT_TRUE(GetPrefs()
+                  ->GetList(custom_handlers::prefs::kRegisteredProtocolHandlers)
+                  .empty());
+
+  // A handler registered in the regular registry does persist.
+  ProtocolHandler regular_handler = CreateProtocolHandler(
+      "web+regular", GURL("https://regular.example.com/%s"));
+  registry()->OnAcceptRegisterProtocolHandler(regular_handler);
+
+  EXPECT_EQ(1u,
+            GetPrefs()
+                ->GetList(custom_handlers::prefs::kRegisteredProtocolHandlers)
+                .size());
+}
+
+// Ignoring a handler in the OTR profile must not affect the regular profile's
+// ignored handler list, either at the registry or pref-store level.
+TEST_F(ProtocolHandlerRegistryOTRTest, OTRIgnoredHandlerDoesNotLeakToParent) {
+  ProtocolHandler handler =
+      CreateProtocolHandler("web+ignored", GURL("https://example.com/%s"));
+
+  ASSERT_TRUE(registry()->GetIgnoredHandlers().empty());
+  ASSERT_TRUE(otr_registry()->GetIgnoredHandlers().empty());
+  ASSERT_TRUE(GetPrefs()
+                  ->GetList(custom_handlers::prefs::kIgnoredProtocolHandlers)
+                  .empty());
+
+  otr_registry()->OnIgnoreRegisterProtocolHandler(handler);
+
+  EXPECT_TRUE(otr_registry()->IsIgnored(handler));
+  EXPECT_EQ(1u, otr_registry()->GetIgnoredHandlers().size());
+
+  EXPECT_FALSE(registry()->IsIgnored(handler));
+  EXPECT_TRUE(registry()->GetIgnoredHandlers().empty());
+  EXPECT_TRUE(GetPrefs()
+                  ->GetList(custom_handlers::prefs::kIgnoredProtocolHandlers)
+                  .empty());
+}
+
+// Disabling the OTR registry must not disable the regular profile's registry.
+TEST_F(ProtocolHandlerRegistryOTRTest, OTRDisableDoesNotAffectRegularProfile) {
+  ASSERT_TRUE(registry()->enabled());
+  ASSERT_TRUE(otr_registry()->enabled());
+
+  otr_registry()->Disable();
+
+  EXPECT_FALSE(otr_registry()->enabled());
+  EXPECT_TRUE(registry()->enabled());
+  EXPECT_TRUE(
+      GetPrefs()->GetBoolean(custom_handlers::prefs::kCustomHandlersEnabled));
+}
+
+// Setting a default handler in the OTR profile must not change the default
+// handler in the regular profile, even when both register handlers for the
+// same scheme.
+TEST_F(ProtocolHandlerRegistryOTRTest, OTRDefaultHandlerDoesNotLeakToParent) {
+  GURL regular_url("https://regular.example.com/%s");
+  GURL otr_url("https://otr.example.com/%s");
+
+  ASSERT_TRUE(registry()->GetHandlersFor("web+default").empty());
+  ASSERT_TRUE(otr_registry()->GetHandlersFor("web+default").empty());
+
+  ProtocolHandler regular_handler =
+      CreateProtocolHandler("web+default", regular_url);
+  registry()->OnAcceptRegisterProtocolHandler(regular_handler);
+
+  ProtocolHandler otr_handler = CreateProtocolHandler("web+default", otr_url);
+  otr_registry()->OnAcceptRegisterProtocolHandler(otr_handler);
+
+  EXPECT_EQ(1u, registry()->GetHandlersFor("web+default").size());
+  EXPECT_EQ(regular_url, registry()->GetHandlerFor("web+default").url());
+  EXPECT_EQ(otr_url, otr_registry()->GetHandlerFor("web+default").url());
+  EXPECT_EQ(1u,
+            GetPrefs()
+                ->GetList(custom_handlers::prefs::kRegisteredProtocolHandlers)
+                .size());
 }
 
 }  // namespace custom_handlers
