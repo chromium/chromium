@@ -45,6 +45,12 @@ class BrowserViewTabbedLayoutImpl : public BrowserViewLayoutImpl {
       const BrowserLayoutParams& params) override;
 
  private:
+  // Does the works of laying out the top container.
+  gfx::Rect CalculateTopContainerLayoutImpl(ProposedLayout& layout,
+                                            BrowserLayoutParams params,
+                                            bool needs_exclusion,
+                                            bool suppress_top_separator) const;
+
   // Gets the amount of padding to place between
   int GetMinimumGrabHandlePadding() const;
 

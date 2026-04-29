@@ -641,6 +641,9 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
   const bool adjust_for_cracking = AvoidCrackingForFractionalDisplay();
   const TabStripType tab_strip_type = GetTabStripType();
   HorizontalLayout horizontal_layout = CalculateHorizontalLayout(params);
+  const bool suppress_top_separator =
+      horizontal_layout.has_toolbar_height_side_panel() &&
+      horizontal_layout.force_top_container_to_top;
 
   // Lay out horizontal tab strip region if present.
   if (IsParentedTo(views().horizontal_tab_strip_region_view,
@@ -827,8 +830,10 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
     auto top_container_params =
         params.InLocalCoordinates(params.visual_client_area);
 
-    const gfx::Rect top_container_local_bounds = CalculateTopContainerLayout(
-        top_container_layout, top_container_params, needs_exclusion);
+    const gfx::Rect top_container_local_bounds =
+        CalculateTopContainerLayoutImpl(top_container_layout,
+                                        top_container_params, needs_exclusion,
+                                        suppress_top_separator);
     top_container_layout.bounds =
         GetTopContainerBoundsInParent(top_container_local_bounds, params);
     params.SetTop(top_container_layout.bounds.bottom());
@@ -959,9 +964,11 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
       IsParentedTo(views().top_container, views().browser_view)) {
     auto& top_container_layout =
         layout.AddChild(views().top_container, gfx::Rect());
-    const gfx::Rect top_container_local_bounds = CalculateTopContainerLayout(
-        top_container_layout,
-        params.InLocalCoordinates(params.visual_client_area), needs_exclusion);
+    const gfx::Rect top_container_local_bounds =
+        CalculateTopContainerLayoutImpl(
+            top_container_layout,
+            params.InLocalCoordinates(params.visual_client_area),
+            needs_exclusion, suppress_top_separator);
     top_container_layout.bounds =
         GetTopContainerBoundsInParent(top_container_local_bounds, params);
     params.SetTop(top_container_layout.bounds.bottom());
@@ -1053,9 +1060,6 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
   // Top separator is unnecessary when already in the shadow box; this is
   // especially obvious in split view, where turning the separator off provides
   // the required top padding.
-  const bool suppress_top_separator =
-      horizontal_layout.has_toolbar_height_side_panel() &&
-      horizontal_layout.force_top_container_to_top;
   const auto top_separator_type = GetTopSeparatorType();
   views().multi_contents_view->SetShouldShowTopSeparator(
       !suppress_top_separator &&
@@ -1197,6 +1201,16 @@ gfx::Rect BrowserViewTabbedLayoutImpl::CalculateTopContainerLayout(
     ProposedLayout& layout,
     BrowserLayoutParams params,
     bool needs_exclusion) const {
+  return CalculateTopContainerLayoutImpl(layout, std::move(params),
+                                         needs_exclusion,
+                                         /*suppress_top_separator=*/false);
+}
+
+gfx::Rect BrowserViewTabbedLayoutImpl::CalculateTopContainerLayoutImpl(
+    ProposedLayout& layout,
+    BrowserLayoutParams params,
+    bool needs_exclusion,
+    bool suppress_top_separator) const {
   const int original_top = params.visual_client_area.y();
 
   const TabStripType tab_strip_type = GetTabStripType();
@@ -1267,7 +1281,10 @@ gfx::Rect BrowserViewTabbedLayoutImpl::CalculateTopContainerLayout(
   // Maybe show the separator in the top container.
   if (IsParentedTo(views().top_container_separator, views().top_container)) {
     gfx::Rect separator_bounds;
-    if (top_separator_type == TopSeparatorType::kTopContainer) {
+    const bool show_separator =
+        !suppress_top_separator &&
+        top_separator_type == TopSeparatorType::kTopContainer;
+    if (show_separator) {
       separator_bounds = gfx::Rect(
           params.visual_client_area.x(), params.visual_client_area.y(),
           params.visual_client_area.width(),
@@ -1275,7 +1292,7 @@ gfx::Rect BrowserViewTabbedLayoutImpl::CalculateTopContainerLayout(
       params.SetTop(separator_bounds.bottom());
     }
     layout.AddChild(views().top_container_separator, separator_bounds,
-                    top_separator_type == TopSeparatorType::kTopContainer);
+                    show_separator);
   }
 
   return gfx::Rect(params.visual_client_area.x(), original_top,
