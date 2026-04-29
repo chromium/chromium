@@ -60,8 +60,6 @@ target(link_target_type, "renderer") {
     "client_navigation_throttler.h",
     "content_security_policy_util.cc",
     "content_security_policy_util.h",
-    "discardable_memory_utils.cc",
-    "discardable_memory_utils.h",
     "document_state.cc",
     "document_state.h",
     "dom_automation_controller.cc",

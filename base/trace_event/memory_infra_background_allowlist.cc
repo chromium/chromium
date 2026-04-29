@@ -149,7 +149,6 @@ constexpr auto kAllocatorDumpNameAllowlist =
         "devtools/file_watcher_0x?",
         "devtools/durable_message_collectors",
         "discardable",
-        "discardable/madv_free_allocated",
         "discardable/child_0x?",
         "extensions/functions",
         "extensions/value_store/Extensions.Database.Open.OriginManagedConfiguration/0x?",

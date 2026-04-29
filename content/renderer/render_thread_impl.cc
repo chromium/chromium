@@ -577,7 +577,12 @@ void RenderThreadImpl::Init() {
             base::MemoryPressureListenerTag::kRenderThreadImpl, this);
   }
 
-  discardable_memory_allocator_ = CreateDiscardableMemoryAllocator();
+  mojo::PendingRemote<discardable_memory::mojom::DiscardableSharedMemoryManager>
+      manager_remote;
+  BindHostReceiver(manager_remote.InitWithNewPipeAndPassReceiver());
+  discardable_memory_allocator_ = base::MakeRefCounted<
+      discardable_memory::ClientDiscardableSharedMemoryManager>(
+      std::move(manager_remote), GetIOTaskRunner());
 
   // TODO(boliu): In single process, browser main loop should set up the
   // discardable memory manager, and should skip this if kSingleProcess.

@@ -17,7 +17,6 @@ namespace base {
 class DiscardableMemory;
 
 // An allocator which creates and manages DiscardableMemory. The allocator
-// itself should be created via CreateDiscardableMemoryAllocator, which
 // selects an appropriate implementation depending on platform support.
 class BASE_EXPORT DiscardableMemoryAllocator {
  public:
@@ -39,11 +38,10 @@ class BASE_EXPORT DiscardableMemoryAllocator {
   // Ownership of |instance| remains with the caller.
   static void SetInstance(DiscardableMemoryAllocator* allocator);
 
-  // Creates an initially-locked instance of discardable memory.
-  // If the platform supports Android ashmem or madvise(MADV_FREE),
-  // platform-specific techniques will be used to discard memory under pressure.
-  // Otherwise, discardable memory is emulated and manually discarded
-  // heuristicly (via memory pressure notifications).
+  // Creates an initially-locked instance of discardable memory. If the platform
+  // supports Android ashmem, platform-specific techniques will be used to
+  // discard memory under pressure. Otherwise, discardable memory is emulated
+  // and manually discarded heuristicly (via memory pressure notifications).
   virtual std::unique_ptr<DiscardableMemory> AllocateLockedDiscardableMemory(
       size_t size) = 0;
 

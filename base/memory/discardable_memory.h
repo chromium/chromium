@@ -78,9 +78,6 @@ class BASE_EXPORT DiscardableMemory {
       trace_event::ProcessMemoryDump* pmd) const = 0;
 };
 
-enum class DiscardableMemoryBacking { kSharedMemory, kMadvFree };
-BASE_EXPORT DiscardableMemoryBacking GetDiscardableMemoryBacking();
-
 }  // namespace base
 
 #endif  // BASE_MEMORY_DISCARDABLE_MEMORY_H_

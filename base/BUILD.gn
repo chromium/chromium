@@ -1645,7 +1645,6 @@ component("base") {
     "memory/discardable_memory.h",
     "memory/discardable_memory_allocator.cc",
     "memory/discardable_memory_allocator.h",
-    "memory/discardable_memory_internal.h",
     "metrics/persistent_histogram_storage.cc",
     "metrics/persistent_histogram_storage.h",
     "native_library.h",
@@ -1693,10 +1692,6 @@ component("base") {
   if (is_posix) {
     sources += [
       "base_paths_posix.h",
-      "memory/madv_free_discardable_memory_allocator_posix.cc",
-      "memory/madv_free_discardable_memory_allocator_posix.h",
-      "memory/madv_free_discardable_memory_posix.cc",
-      "memory/madv_free_discardable_memory_posix.h",
       "posix/unix_domain_socket.cc",
       "posix/unix_domain_socket.h",
       "rand_util_posix.cc",
@@ -3672,7 +3667,6 @@ test("base_unittests") {
     "macros/is_empty_unittest.cc",
     "memory/aligned_memory_unittest.cc",
     "memory/available_memory_monitor_unittest.cc",
-    "memory/discardable_memory_backing_field_trial_unittest.cc",
     "memory/discardable_shared_memory_unittest.cc",
     "memory/memory_pressure_listener_unittest.cc",
     "memory/platform_shared_memory_region_unittest.cc",
@@ -4195,8 +4189,6 @@ test("base_unittests") {
     sources += [
       "files/dir_reader_posix_unittest.cc",
       "files/file_descriptor_watcher_posix_unittest.cc",
-      "memory/madv_free_discardable_memory_allocator_posix_unittest.cc",
-      "memory/madv_free_discardable_memory_posix_unittest.cc",
       "message_loop/fd_watch_controller_posix_unittest.cc",
       "message_loop/io_watcher_fd_unittest.cc",
       "posix/file_descriptor_shuffle_unittest.cc",

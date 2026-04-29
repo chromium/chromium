@@ -14,8 +14,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/discardable_memory.h"
 #include "base/memory/discardable_memory_allocator.h"
-#include "base/memory/madv_free_discardable_memory_allocator_posix.h"
-#include "base/memory/madv_free_discardable_memory_posix.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
@@ -30,7 +28,6 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/test_utils.h"
-#include "content/renderer/discardable_memory_utils.h"
 #include "content/renderer/render_thread_impl.h"
 #include "content/shell/browser/shell.h"
 #include "url/gurl.h"
@@ -130,16 +127,6 @@ IN_PROC_BROWSER_TEST_F(RenderThreadImplDiscardableMemoryBrowserTest,
   const size_t kLargeSize = 4 * 1024 * 1024;   // 4MiB.
   const size_t kNumberOfInstances = 1024 + 1;  // >4GiB total.
 
-  base::DiscardableMemoryBacking impl = base::GetDiscardableMemoryBacking();
-
-  // TODO(gordonguan): When MADV_FREE DiscardableMemory is discarded, the
-  // backing memory is freed, but remains mapped in memory. It is only
-  // unmapped when the object is destroyed, or on the next Lock() after
-  // discard. Therefore, an abundance of discarded but mapped discardable
-  // memory instances may cause an out-of-memory condition.
-  if (impl != base::DiscardableMemoryBacking::kSharedMemory)
-    return;
-
   std::vector<std::unique_ptr<base::DiscardableMemory>> instances;
   for (size_t i = 0; i < kNumberOfInstances; ++i) {
     std::unique_ptr<base::DiscardableMemory> memory =
@@ -158,8 +145,6 @@ IN_PROC_BROWSER_TEST_F(RenderThreadImplDiscardableMemoryBrowserTest,
                        DISABLED_ReleaseFreeDiscardableMemory_Explicitly) {
   const size_t kSize = 1024 * 1024;  // 1MiB.
 
-  base::DiscardableMemoryBacking impl = base::GetDiscardableMemoryBacking();
-
   std::unique_ptr<base::DiscardableMemory> memory =
       AllocateLockedDiscardableMemory(kSize);
 
@@ -168,11 +153,6 @@ IN_PROC_BROWSER_TEST_F(RenderThreadImplDiscardableMemoryBrowserTest,
 
   memory.reset();
   EXPECT_EQ(discardable_memory_allocator()->GetBytesAllocated(), 0U);
-
-  if (impl != base::DiscardableMemoryBacking::kSharedMemory) {
-    LOG(INFO) << "Not using shared-memory backing. Skipping test.";
-    return;
-  }
 
   EXPECT_GE(discardable_memory::DiscardableSharedMemoryManager::Get()
                 ->GetBytesAllocated(),
@@ -202,8 +182,6 @@ IN_PROC_BROWSER_TEST_F(RenderThreadImplDiscardableMemoryBrowserTest,
                        MAYBE_ReleaseFreeDiscardableMemory_ByCriticalPressure) {
   const size_t kSize = 1024 * 1024;  // 1MiB.
 
-  base::DiscardableMemoryBacking impl = base::GetDiscardableMemoryBacking();
-
   std::unique_ptr<base::DiscardableMemory> memory =
       AllocateLockedDiscardableMemory(kSize);
 
@@ -212,11 +190,6 @@ IN_PROC_BROWSER_TEST_F(RenderThreadImplDiscardableMemoryBrowserTest,
 
   memory.reset();
   EXPECT_EQ(discardable_memory_allocator()->GetBytesAllocated(), 0U);
-
-  if (impl != base::DiscardableMemoryBacking::kSharedMemory) {
-    LOG(INFO) << "Not using shared-memory backing. Skipping test.";
-    return;
-  }
 
   EXPECT_GE(discardable_memory::DiscardableSharedMemoryManager::Get()
                 ->GetBytesAllocated(),
