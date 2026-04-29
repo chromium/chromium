@@ -2,7 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+dictionary HTMLMediaStreamConstraints {
+  MediaTrackConstraintSet video;
+  MediaTrackConstraintSet audio;
+};
+
 [RuntimeEnabled=UserMediaElement, ImplementedAs=UserMediaElementConstraints]
 partial interface HTMLUserMediaElement {
-    void setConstraints(optional MediaStreamConstraints constraints = {});
+    void setConstraints(optional HTMLMediaStreamConstraints constraints = {});
 };

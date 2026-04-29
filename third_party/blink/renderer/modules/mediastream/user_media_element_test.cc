@@ -5,11 +5,11 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_constrain_boolean_parameters.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_constrain_double_range.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_constrain_long_range.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_constraints.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_html_media_stream_constraints.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_constraint_set.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_boolean_constrainbooleanordomstringparameters_string.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_boolean_constrainbooleanparameters.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_boolean_constraindoublerange_double.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_union_boolean_mediatrackconstraints.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_constraindomstringparameters_string_stringsequence.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_constraindoublerange_double.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_constrainlongrange_long.h"
@@ -29,9 +29,8 @@ TEST_F(UserMediaElementTest, SetConstraintsStoresValue) {
   V8TestingScope scope;
   auto* element =
       MakeGarbageCollected<HTMLUserMediaElement>(scope.GetDocument());
-  MediaStreamConstraints* constraints = MediaStreamConstraints::Create();
-  constraints->setVideo(
-      MakeGarbageCollected<V8UnionBooleanOrMediaTrackConstraints>(true));
+  HTMLMediaStreamConstraints* constraints = HTMLMediaStreamConstraints::Create();
+  constraints->setVideo(MediaTrackConstraintSet::Create());
 
   UserMediaElementConstraints::setConstraints(*element, constraints);
 
@@ -42,19 +41,18 @@ TEST_F(UserMediaElementTest, SetConstraintsOnlySetsOnce) {
   V8TestingScope scope;
   auto* element =
       MakeGarbageCollected<HTMLUserMediaElement>(scope.GetDocument());
-  MediaStreamConstraints* constraints = MediaStreamConstraints::Create();
-  constraints->setVideo(
-      MakeGarbageCollected<V8UnionBooleanOrMediaTrackConstraints>(true));
+  HTMLMediaStreamConstraints* constraints = HTMLMediaStreamConstraints::Create();
+  constraints->setVideo(MediaTrackConstraintSet::Create());
 
   UserMediaElementConstraints::setConstraints(*element, constraints);
-  const MediaStreamConstraints* sanitized_constraints =
+  const HTMLMediaStreamConstraints* sanitized_constraints =
       UserMediaElementConstraints::From(*element).Constraints();
 
   EXPECT_TRUE(sanitized_constraints);
 
-  MediaStreamConstraints* constraints2 = MediaStreamConstraints::Create();
-  constraints2->setAudio(
-      MakeGarbageCollected<V8UnionBooleanOrMediaTrackConstraints>(true));
+  HTMLMediaStreamConstraints* constraints2 =
+      HTMLMediaStreamConstraints::Create();
+  constraints2->setAudio(MediaTrackConstraintSet::Create());
   UserMediaElementConstraints::setConstraints(*element, constraints2);
   EXPECT_EQ(UserMediaElementConstraints::From(*element).Constraints(),
             sanitized_constraints);
@@ -64,9 +62,9 @@ TEST_F(UserMediaElementTest, SanitizeTrackConstraints) {
   V8TestingScope scope;
   auto* element =
       MakeGarbageCollected<HTMLUserMediaElement>(scope.GetDocument());
-  MediaStreamConstraints* constraints = MediaStreamConstraints::Create();
-  MediaTrackConstraints* video_constraints = MediaTrackConstraints::Create();
-  MediaTrackConstraints* audio_constraints = MediaTrackConstraints::Create();
+  HTMLMediaStreamConstraints* constraints = HTMLMediaStreamConstraints::Create();
+  MediaTrackConstraintSet* video_constraints = MediaTrackConstraintSet::Create();
+  MediaTrackConstraintSet* audio_constraints = MediaTrackConstraintSet::Create();
 
   // Set some valid constraints
   video_constraints->setWidth(
@@ -98,62 +96,37 @@ TEST_F(UserMediaElementTest, SanitizeTrackConstraints) {
           V8UnionBooleanOrConstrainBooleanOrDOMStringParametersOrString>(
           echo_cancellation_params));
 
-  constraints->setVideo(
-      MakeGarbageCollected<V8UnionBooleanOrMediaTrackConstraints>(
-          video_constraints));
-  constraints->setAudio(
-      MakeGarbageCollected<V8UnionBooleanOrMediaTrackConstraints>(
-          audio_constraints));
+  constraints->setVideo(video_constraints);
+  constraints->setAudio(audio_constraints);
 
   UserMediaElementConstraints::setConstraints(*element, constraints);
 
-  const MediaStreamConstraints* sanitized_constraints =
+  const HTMLMediaStreamConstraints* sanitized_constraints =
       UserMediaElementConstraints::From(*element).Constraints();
 
   // Valid constraints should be preserved
-  EXPECT_TRUE(sanitized_constraints->video()
-                  ->GetAsMediaTrackConstraints()
-                  ->hasHeight());
-  EXPECT_EQ(sanitized_constraints->video()
-                ->GetAsMediaTrackConstraints()
-                ->height()
-                ->GetAsLong(),
-            480);
-  EXPECT_TRUE(sanitized_constraints->audio()
-                  ->GetAsMediaTrackConstraints()
-                  ->hasSampleSize());
-  EXPECT_EQ(sanitized_constraints->audio()
-                ->GetAsMediaTrackConstraints()
-                ->sampleSize()
-                ->GetAsLong(),
-            16);
+  EXPECT_TRUE(sanitized_constraints->video()->hasHeight());
+  EXPECT_EQ(sanitized_constraints->video()->height()->GetAsLong(), 480);
+  EXPECT_TRUE(sanitized_constraints->audio()->hasSampleSize());
+  EXPECT_EQ(sanitized_constraints->audio()->sampleSize()->GetAsLong(), 16);
 
   // Invalid constraints should be cleared
-  EXPECT_FALSE(
-      sanitized_constraints->video()->GetAsMediaTrackConstraints()->hasWidth());
-  EXPECT_FALSE(sanitized_constraints->video()
-                   ->GetAsMediaTrackConstraints()
-                   ->hasFrameRate());
-  EXPECT_FALSE(sanitized_constraints->audio()
-                   ->GetAsMediaTrackConstraints()
-                   ->hasEchoCancellation());
+  EXPECT_FALSE(sanitized_constraints->video()->hasWidth());
+  EXPECT_FALSE(sanitized_constraints->video()->hasFrameRate());
+  EXPECT_FALSE(sanitized_constraints->audio()->hasEchoCancellation());
 
   // Unsupported constraints, e.g of image and share screen tracks are ignored.
-  EXPECT_FALSE(sanitized_constraints->video()
-                   ->GetAsMediaTrackConstraints()
-                   ->hasBrightness());
-  EXPECT_FALSE(sanitized_constraints->video()
-                   ->GetAsMediaTrackConstraints()
-                   ->hasDisplaySurface());
+  EXPECT_FALSE(sanitized_constraints->video()->hasBrightness());
+  EXPECT_FALSE(sanitized_constraints->video()->hasDisplaySurface());
 }
 
 TEST_F(UserMediaElementTest, SanitizeTrackConstraintsMutatesCopy) {
   V8TestingScope scope;
   auto* element =
       MakeGarbageCollected<HTMLUserMediaElement>(scope.GetDocument());
-  MediaStreamConstraints* constraints = MediaStreamConstraints::Create();
-  MediaTrackConstraints* video_constraints = MediaTrackConstraints::Create();
-  MediaTrackConstraints* audio_constraints = MediaTrackConstraints::Create();
+  HTMLMediaStreamConstraints* constraints = HTMLMediaStreamConstraints::Create();
+  MediaTrackConstraintSet* video_constraints = MediaTrackConstraintSet::Create();
+  MediaTrackConstraintSet* audio_constraints = MediaTrackConstraintSet::Create();
 
   // Set some valid constraints
   video_constraints->setHeight(
@@ -174,34 +147,23 @@ TEST_F(UserMediaElementTest, SanitizeTrackConstraintsMutatesCopy) {
           V8UnionBooleanOrConstrainBooleanOrDOMStringParametersOrString>(
           echo_cancellation_params));
 
-  constraints->setVideo(
-      MakeGarbageCollected<V8UnionBooleanOrMediaTrackConstraints>(
-          video_constraints));
-  constraints->setAudio(
-      MakeGarbageCollected<V8UnionBooleanOrMediaTrackConstraints>(
-          audio_constraints));
+  constraints->setVideo(video_constraints);
+  constraints->setAudio(audio_constraints);
 
   UserMediaElementConstraints::setConstraints(*element, constraints);
 
-  const MediaStreamConstraints* sanitized_constraints =
+  const HTMLMediaStreamConstraints* sanitized_constraints =
       UserMediaElementConstraints::From(*element).Constraints();
 
   // Test that original constraints are unmodified
-  EXPECT_TRUE(constraints->video()
-                  ->GetAsMediaTrackConstraints()
-                  ->width()
-                  ->IsConstrainLongRange());
+  EXPECT_TRUE(constraints->video()->width()->IsConstrainLongRange());
   EXPECT_TRUE(constraints->audio()
-                  ->GetAsMediaTrackConstraints()
                   ->echoCancellation()
                   ->IsConstrainBooleanOrDOMStringParameters());
 
   // Test that sanitized constraints are modified
-  EXPECT_FALSE(
-      sanitized_constraints->video()->GetAsMediaTrackConstraints()->hasWidth());
-  EXPECT_FALSE(sanitized_constraints->audio()
-                   ->GetAsMediaTrackConstraints()
-                   ->hasEchoCancellation());
+  EXPECT_FALSE(sanitized_constraints->video()->hasWidth());
+  EXPECT_FALSE(sanitized_constraints->audio()->hasEchoCancellation());
 }
 
 }  // namespace blink

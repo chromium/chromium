@@ -6,6 +6,8 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_html_media_stream_constraints.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_constraint_set.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_domexception_overconstrainederror.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -20,7 +22,6 @@
 #include "third_party/blink/renderer/modules/mediastream/html_user_media_element_media_stream.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream.h"
 #include "third_party/blink/renderer/modules/mediastream/user_media_element_constraints.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_union_boolean_mediatrackconstraints.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 
@@ -43,9 +44,8 @@ TEST_F(UserMediaRequestProviderImplTest, StartRequestEarlyExitNoClient) {
   auto* element = MakeGarbageCollected<HTMLUserMediaElement>(GetDocument());
   element->setAttribute(html_names::kTypeAttr, AtomicString("camera"));
 
-  MediaStreamConstraints* constraints = MediaStreamConstraints::Create();
-  constraints->setVideo(
-      MakeGarbageCollected<V8UnionBooleanOrMediaTrackConstraints>(true));
+  HTMLMediaStreamConstraints* constraints = HTMLMediaStreamConstraints::Create();
+  constraints->setVideo(MediaTrackConstraintSet::Create());
   UserMediaElementConstraints::setConstraints(*element, constraints);
 
   provider->StartRequest(element, element->GetPermissionDescriptors());
@@ -61,9 +61,8 @@ TEST_F(UserMediaRequestProviderImplTest, StartRequestActiveStreamExists) {
   auto* element = MakeGarbageCollected<HTMLUserMediaElement>(GetDocument());
   element->setAttribute(html_names::kTypeAttr, AtomicString("camera"));
 
-  MediaStreamConstraints* constraints = MediaStreamConstraints::Create();
-  constraints->setVideo(
-      MakeGarbageCollected<V8UnionBooleanOrMediaTrackConstraints>(true));
+  HTMLMediaStreamConstraints* constraints = HTMLMediaStreamConstraints::Create();
+  constraints->setVideo(MediaTrackConstraintSet::Create());
   UserMediaElementConstraints::setConstraints(*element, constraints);
 
   auto* stream = MediaStream::Create(GetDocument().GetExecutionContext());
@@ -142,7 +141,7 @@ TEST_F(UserMediaRequestProviderImplTest, StartRequestNoConstraintsError) {
   auto* element = MakeGarbageCollected<HTMLUserMediaElement>(GetDocument());
   element->setAttribute(html_names::kTypeAttr, AtomicString("camera microphone"));
 
-  MediaStreamConstraints* constraints = MediaStreamConstraints::Create();
+  HTMLMediaStreamConstraints* constraints = HTMLMediaStreamConstraints::Create();
   UserMediaElementConstraints::setConstraints(*element, constraints);
 
   // Set up event listener

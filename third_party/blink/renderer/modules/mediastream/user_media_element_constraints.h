@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_USER_MEDIA_ELEMENT_CONSTRAINTS_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_USER_MEDIA_ELEMENT_CONSTRAINTS_H_
 
-#include "third_party/blink/renderer/bindings/modules/v8/v8_media_stream_constraints.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_html_media_stream_constraints.h"
 #include "third_party/blink/renderer/core/html/html_user_media_element.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
@@ -21,21 +21,21 @@ class MODULES_EXPORT UserMediaElementConstraints final
 
   // IDL Implementation
   static void setConstraints(HTMLUserMediaElement&,
-                             const MediaStreamConstraints*);
+                             const HTMLMediaStreamConstraints*);
 
   explicit UserMediaElementConstraints(HTMLUserMediaElement&);
 
-  void SetConstraints(const MediaStreamConstraints* constraints) {
+  void SetConstraints(const HTMLMediaStreamConstraints* constraints) {
     constraints_ = constraints;
   }
-  const MediaStreamConstraints* Constraints() const {
+  const HTMLMediaStreamConstraints* Constraints() const {
     return constraints_.Get();
   }
 
   void Trace(Visitor*) const override;
 
  private:
-  Member<const MediaStreamConstraints> constraints_;
+  Member<const HTMLMediaStreamConstraints> constraints_;
   bool did_set_constraints_ = false;
 };
 

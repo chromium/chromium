@@ -21,7 +21,7 @@
   </div>
   <script>
     document.querySelectorAll('usermedia').forEach((el) => {
-      el.setConstraints({video: true, audio: true});
+      el.setConstraints({video: {}, audio: {}});
     });
 
     document.getElementById('parent').addEventListener('promptaction', (event) => {

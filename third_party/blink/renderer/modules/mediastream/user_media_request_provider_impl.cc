@@ -4,6 +4,9 @@
 
 #include "third_party/blink/renderer/modules/mediastream/user_media_request_provider_impl.h"
 
+#include "third_party/blink/renderer/bindings/modules/v8/v8_html_media_stream_constraints.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_media_stream_constraints.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_constraints.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_boolean_mediatrackconstraints.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_domexception_overconstrainederror.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -22,19 +25,6 @@
 #include "third_party/blink/renderer/platform/mediastream/media_stream_descriptor.h"
 
 namespace blink {
-
-namespace {
-bool IsConstraintEnabled(
-    const V8UnionBooleanOrMediaTrackConstraints* constraint) {
-  if (!constraint) {
-    return false;
-  }
-  if (constraint->IsBoolean()) {
-    return constraint->GetAsBoolean();
-  }
-  return constraint->IsMediaTrackConstraints();
-}
-}  // namespace
 
 UserMediaRequestProviderCallbacks::UserMediaRequestProviderCallbacks(
     HTMLUserMediaElement* element)
@@ -123,7 +113,7 @@ void UserMediaRequestProviderImpl::StartRequest(
   }
 
   // Constraints that are set on the HTMLUserMediaElement.
-  const MediaStreamConstraints* constraints =
+  const HTMLMediaStreamConstraints* constraints =
       UserMediaElementConstraints::From(*element).Constraints();
 
   // Constraints that will be used for the UserMediaRequest.
@@ -131,8 +121,7 @@ void UserMediaRequestProviderImpl::StartRequest(
 
   if (permission_descriptors.size() == 2) {
     // Camera and Microphone element.
-    if (!IsConstraintEnabled(constraints->audio()) &&
-        !IsConstraintEnabled(constraints->video())) {
+    if (!constraints->hasAudio() && !constraints->hasVideo()) {
       HTMLUserMediaElementMediaStream::From(*element).SetError(
           WorldSafeV8Reference<v8::Value>(
               window->GetIsolate(),
@@ -142,12 +131,20 @@ void UserMediaRequestProviderImpl::StartRequest(
       return;
     }
     request_constraints = MediaStreamConstraints::Create();
-    request_constraints->setAudio(constraints->audio());
-    request_constraints->setVideo(constraints->video());
+    if (constraints->hasAudio()) {
+      request_constraints->setAudio(
+          MakeGarbageCollected<V8UnionBooleanOrMediaTrackConstraints>(
+              static_cast<const MediaTrackConstraints*>(constraints->audio())));
+    }
+    if (constraints->hasVideo()) {
+      request_constraints->setVideo(
+          MakeGarbageCollected<V8UnionBooleanOrMediaTrackConstraints>(
+              static_cast<const MediaTrackConstraints*>(constraints->video())));
+    }
   } else if (permission_descriptors[0]->name ==
              mojom::blink::PermissionName::AUDIO_CAPTURE) {
     // Audio only element.
-    if (!IsConstraintEnabled(constraints->audio())) {
+    if (!constraints->hasAudio()) {
       HTMLUserMediaElementMediaStream::From(*element).SetError(
           WorldSafeV8Reference<v8::Value>(
               window->GetIsolate(),
@@ -157,12 +154,14 @@ void UserMediaRequestProviderImpl::StartRequest(
       return;
     }
     request_constraints = MediaStreamConstraints::Create();
-    request_constraints->setAudio(constraints->audio());
+    request_constraints->setAudio(
+        MakeGarbageCollected<V8UnionBooleanOrMediaTrackConstraints>(
+            static_cast<const MediaTrackConstraints*>(constraints->audio())));
   } else {
     // Video only element.
     CHECK_EQ(permission_descriptors[0]->name,
              mojom::blink::PermissionName::VIDEO_CAPTURE);
-    if (!IsConstraintEnabled(constraints->video())) {
+    if (!constraints->hasVideo()) {
       HTMLUserMediaElementMediaStream::From(*element).SetError(
           WorldSafeV8Reference<v8::Value>(
               window->GetIsolate(),
@@ -172,7 +171,9 @@ void UserMediaRequestProviderImpl::StartRequest(
       return;
     }
     request_constraints = MediaStreamConstraints::Create();
-    request_constraints->setVideo(constraints->video());
+    request_constraints->setVideo(
+        MakeGarbageCollected<V8UnionBooleanOrMediaTrackConstraints>(
+            static_cast<const MediaTrackConstraints*>(constraints->video())));
   }
 
   ExceptionState exception_state(window->GetIsolate());

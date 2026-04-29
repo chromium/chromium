@@ -4,11 +4,12 @@
 
 #include "third_party/blink/renderer/modules/mediastream/user_media_element_constraints.h"
 
+#include "third_party/blink/renderer/bindings/modules/v8/v8_html_media_stream_constraints.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_constraint_set.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_constraints.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_boolean_constrainbooleanordomstringparameters_string.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_boolean_constrainbooleanparameters.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_boolean_constraindoublerange_double.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_union_boolean_mediatrackconstraints.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_constraindomstringparameters_string_stringsequence.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_constraindoublerange_double.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_constrainlongrange_long.h"
@@ -17,29 +18,13 @@
 
 namespace blink {
 
-namespace {
-bool IsConstraintEnabled(
-    const V8UnionBooleanOrMediaTrackConstraints* constraint) {
-  if (!constraint) {
-    return false;
-  }
-  if (constraint->IsBoolean()) {
-    return constraint->GetAsBoolean();
-  }
-  if (constraint->IsMediaTrackConstraints()) {
-    return true;
-  }
-  return false;
-}
-}  // namespace
-
 const char UserMediaElementConstraints::kSupplementName[] =
     "UserMediaElementConstraints";
 
 // Keep the most basic constraints, strip out 'ideal', 'exact', 'min', 'max'
 // from all properties
 MediaTrackConstraints* SanitizeTrackConstraints(
-    const MediaTrackConstraints* constraints) {
+    const MediaTrackConstraintSet* constraints) {
   if (!constraints) {
     return nullptr;
   }
@@ -144,41 +129,29 @@ void UserMediaElementConstraints::Trace(Visitor* visitor) const {
 
 void UserMediaElementConstraints::setConstraints(
     HTMLUserMediaElement& element,
-    const MediaStreamConstraints* constraints) {
+    const HTMLMediaStreamConstraints* constraints) {
   UserMediaElementConstraints& self = From(element);
   if (self.did_set_constraints_) {
     return;
   }
 
-  MediaStreamConstraints* sanitized_constraints =
-      MediaStreamConstraints::Create();
+  HTMLMediaStreamConstraints* sanitized_constraints =
+      HTMLMediaStreamConstraints::Create();
 
   if (constraints->hasVideo()) {
-    if (constraints->video()->IsMediaTrackConstraints()) {
-      sanitized_constraints->setVideo(
-          MakeGarbageCollected<V8UnionBooleanOrMediaTrackConstraints>(
-              SanitizeTrackConstraints(
-                  constraints->video()->GetAsMediaTrackConstraints())));
-    } else {
-      sanitized_constraints->setVideo(constraints->video());
-    }
+    sanitized_constraints->setVideo(
+        SanitizeTrackConstraints(constraints->video()));
   }
 
   if (constraints->hasAudio()) {
-    if (constraints->audio()->IsMediaTrackConstraints()) {
-      sanitized_constraints->setAudio(
-          MakeGarbageCollected<V8UnionBooleanOrMediaTrackConstraints>(
-              SanitizeTrackConstraints(
-                  constraints->audio()->GetAsMediaTrackConstraints())));
-    } else {
-      sanitized_constraints->setAudio(constraints->audio());
-    }
+    sanitized_constraints->setAudio(
+        SanitizeTrackConstraints(constraints->audio()));
   }
 
   self.SetConstraints(sanitized_constraints);
   self.did_set_constraints_ = true;
-  element.OnConstraintsSet(IsConstraintEnabled(sanitized_constraints->video()),
-                           IsConstraintEnabled(sanitized_constraints->audio()));
+  element.OnConstraintsSet(sanitized_constraints->hasVideo(),
+                           sanitized_constraints->hasAudio());
 }
 
 }  // namespace blink
