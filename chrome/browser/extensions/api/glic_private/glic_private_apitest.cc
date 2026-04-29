@@ -14,7 +14,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/common/webui_url_constants.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/test/browser_test.h"
@@ -219,49 +218,6 @@ IN_PROC_BROWSER_TEST_F(GlicPrivateApiFullyEnabledTest, InvokeInNewTab) {
   // Verify that at least one new tab was created.
   // Note: The test may run twice (in service worker and page), opening 2 tabs.
   EXPECT_GE(browser()->tab_strip_model()->count(), initial_tab_count + 1);
-
-  // Verify that the active tab is the new tab page.
-  content::WebContents* active_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  EXPECT_EQ(active_contents->GetLastCommittedURL(),
-            chrome::ChromeUINewTabURLAsGURL());
-}
-
-class GlicPrivateApiNewTabInBackgroundTest
-    : public GlicPrivateApiFullyEnabledTest {
- public:
-  GlicPrivateApiNewTabInBackgroundTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        extensions_features::kApiGlicAccessFromGoogleWebpage,
-        {{"glic_open_new_tab_in_foreground", "false"}});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(GlicPrivateApiNewTabInBackgroundTest,
-                       InvokeInNewTabBackground) {
-  SimpleFeature::ScopedThreadUnsafeAllowlistForTest allowlist(kExtensionId);
-
-  auto interceptor = CreateMockPromptResponseInterceptor();
-
-  int initial_tab_count = browser()->tab_strip_model()->count();
-  content::WebContents* initial_active_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-
-  EXPECT_TRUE(RunExtensionTest(
-      "glic_private",
-      {.extension_url = "test.html", .custom_arg = "invoke_new_tab"},
-      {.load_as_component = true}))
-      << message_;
-
-  // Verify that at least one new tab was created.
-  EXPECT_GE(browser()->tab_strip_model()->count(), initial_tab_count + 1);
-
-  // Verify that the active tab is STILL the initial one.
-  EXPECT_EQ(browser()->tab_strip_model()->GetActiveWebContents(),
-            initial_active_contents);
 }
 
 IN_PROC_BROWSER_TEST_F(GlicPrivateApiDisabledTest, Invoke) {

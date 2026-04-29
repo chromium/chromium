@@ -81,7 +81,6 @@ BASE_DECLARE_FEATURE(kApiGlicAccessFromGoogleWebpage);
 extern const base::FeatureParam<std::string> kProdPromptEndpointUrlParam;
 extern const base::FeatureParam<std::string> kGlicInvokeApiOAuth2ScopeParam;
 extern const base::FeatureParam<bool> kGlicRequireConsentForInvokeParam;
-extern const base::FeatureParam<bool> kGlicOpenNewTabInForegroundParam;
 
 // Controls the availability of the new `proxyOverrideRulesPrivate` API.
 BASE_DECLARE_FEATURE(kApiProxyOverrideRulesPrivate);
