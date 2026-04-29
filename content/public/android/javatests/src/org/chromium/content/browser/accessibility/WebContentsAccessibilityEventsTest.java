@@ -479,7 +479,6 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "https://crbug.com/1190218")
     public void test_ariaMenuItemFocus() {
         performTest("aria-menuitem-focus.html", "aria-menuitem-focus-expected-android.txt");
     }
@@ -865,14 +864,12 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "https://crbug.com/1190218")
     public void test_focusListbox() {
         performTest("focus-listbox.html", "focus-listbox-expected-android.txt");
     }
 
     @Test
     @SmallTest
-    @DisabledTest(message = "https://crbug.com/1190218")
     public void test_focusListboxMultiselect() {
         performTest(
                 "focus-listbox-multiselect.html", "focus-listbox-multiselect-expected-android.txt");
@@ -937,7 +934,6 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "https://crbug.com/1190218")
     public void test_listboxFocus() {
         performTest("listbox-focus.html", "listbox-focus-expected-android.txt");
     }
@@ -1178,7 +1174,6 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "https://crbug.com/1190218")
     public void test_menulistFocus() {
         performTest("menulist-focus.html", "menulist-focus-expected-android.txt");
     }
@@ -1424,7 +1419,6 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "https://crbug.com/1190218")
     public void test_tbodyFocus() {
         performTest("tbody-focus.html", "tbody-focus-expected-android.txt");
     }
@@ -1479,14 +1473,12 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "https://crbug.com/1190218")
     public void test_tfootFocus() {
         performTest("tfoot-focus.html", "tfoot-focus-expected-android.txt");
     }
 
     @Test
     @SmallTest
-    @DisabledTest(message = "https://crbug.com/1190218")
     public void test_theadFocus() {
         performTest("thead-focus.html", "thead-focus-expected-android.txt");
     }
