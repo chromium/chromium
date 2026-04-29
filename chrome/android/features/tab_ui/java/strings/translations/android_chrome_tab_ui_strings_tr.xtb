@@ -163,11 +163,13 @@
 <translation id="6589356853295569750">Ortak Sekme Grubu'ndaki değişikliklerle ilgili bildirim tam ekran olarak açıldı</translation>
 <translation id="6590332670428149473">Paylaşılan <ph name="COLOR_NAME" /> <ph name="TITLE_OF_GROUP" /> sekme grubu için sekme grubu işlem menüsünü aç</translation>
 <translation id="6615455863669487791">Göster</translation>
+<translation id="6686490380836145850">Sağdaki sekmeleri kapat</translation>
 <translation id="6694634756612002311">Paylaşımı yönet</translation>
 <translation id="6709297274997495821">Sekme seçin</translation>
 <translation id="6744956528665271406">Grup rengini düzenle</translation>
 <translation id="6784585810034073638">{TAB_COUNT,plural, =1{<ph name="TITLE_OF_GROUP" /> grubuna <ph name="TAB_COUNT1" /> sekme ekle}other{<ph name="TITLE_OF_GROUP" /> grubuna <ph name="TAB_COUNT1" /> sekme ekle}}</translation>
 <translation id="6818926723028410516">Öğe seç</translation>
+<translation id="68541483639528434">Diğer sekmeleri kapat</translation>
 <translation id="6856809498882026482">Çoklu seçim modunu gizle</translation>
 <translation id="6957436309971790274">21 gün boyunca işlem yapılmadığında</translation>
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> sekme içeren <ph name="COLOR_NAME" /> renkli sekme paylaşılan <ph name="TITLE_OF_GROUP" /> sekme grubunu genişletin.}other{<ph name="TABS_COUNT_MANY" /> sekme içeren <ph name="COLOR_NAME" /> renkli sekme paylaşılan <ph name="TITLE_OF_GROUP" /> sekme grubunu genişletin.}}</translation>

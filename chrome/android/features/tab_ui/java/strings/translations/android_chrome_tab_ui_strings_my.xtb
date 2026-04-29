@@ -163,11 +163,13 @@
 <translation id="6589356853295569750">‘မျှဝေထားသော တဘ်အုပ်စု’ အပြောင်းအလဲများအကြောင်း သတိပေးချက်ကို မြင်ကွင်းအပြည့်ဖွင့်ထားသည်</translation>
 <translation id="6590332670428149473">မျှဝေထားသော <ph name="TITLE_OF_GROUP" /> တဘ်အုပ်စု၊ <ph name="COLOR_NAME" /> အတွက် တဘ်အုပ်စု လုပ်ဆောင်ချက် မီနူးကို ဖွင့်ရန်။</translation>
 <translation id="6615455863669487791">ပြရန်</translation>
+<translation id="6686490380836145850">ညာဘက်ရှိ တဲဘ်များကို ပိတ်ရန်</translation>
 <translation id="6694634756612002311">မျှဝေခြင်းကို စီမံရန်</translation>
 <translation id="6709297274997495821">တဘ် ရွေးချယ်ရန်</translation>
 <translation id="6744956528665271406">အုပ်စုအရောင် တည်းဖြတ်ရန်</translation>
 <translation id="6784585810034073638">{TAB_COUNT,plural, =1{တဘ် <ph name="TAB_COUNT1" /> ခုပါသော <ph name="TITLE_OF_GROUP" /> အမည်ရှိ အုပ်စုတွင် ထည့်ရန်}other{တဘ် <ph name="TAB_COUNT1" /> ခုပါသော <ph name="TITLE_OF_GROUP" /> အမည်ရှိ အုပ်စုတွင် ထည့်ရန်}}</translation>
 <translation id="6818926723028410516">စာရင်းမှ ရွေးရန်</translation>
+<translation id="68541483639528434">တစ်ခြားတပ်ပ်များအား ပိတ်ရန်။</translation>
 <translation id="6856809498882026482">မျိုးစုံရွေးမုဒ်ကို ဝှက်ရန်</translation>
 <translation id="6957436309971790274">၂၁ ရက်ကြာ အသုံးမပြုသည့်နောက်</translation>
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{တဘ် <ph name="TABS_COUNT_ONE" /> ခု၊ <ph name="COLOR_NAME" /> ရောင်ဖြင့် မျှဝေထားသော <ph name="TITLE_OF_GROUP" /> တဘ်အုပ်စုကို ဖြန့်ပါ။}other{တဘ် <ph name="TABS_COUNT_MANY" /> ခု၊ <ph name="COLOR_NAME" /> ရောင်ဖြင့် မျှဝေထားသော <ph name="TITLE_OF_GROUP" /> တဘ်အုပ်စုကို ဖြန့်ပါ။}}</translation>

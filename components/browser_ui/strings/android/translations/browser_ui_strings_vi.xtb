@@ -37,6 +37,7 @@
 <translation id="1384959399684842514">Đã tạm dừng quá trình tải xuống</translation>
 <translation id="1396327438254055134">Cho phép trang web sử dụng trình tối ưu hoá V8.</translation>
 <translation id="1409338233051621926">Nhấn vào Ứng dụng rồi nhấn vào Ứng dụng mặc định</translation>
+<translation id="1414315029670184034">Không cho phép trang web sử dụng máy ảnh</translation>
 <translation id="1415402041810619267">URL đã được cắt bớt</translation>
 <translation id="1415855080660575082">Cho phép Chrome chia sẻ các thẻ gần đây với thiết bị của bạn để xem các thẻ này trong danh sách ứng dụng và kết quả tìm kiếm trên thiết bị. Bạn có thể bật hoặc tắt tính năng này trong phần cài đặt của Chrome.</translation>
 <translation id="1420688843103859429">Di chuyển qua lại bằng cách vuốt hai ngón tay trên bàn di chuột</translation>
@@ -742,7 +743,6 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="8676374126336081632">Xóa văn bản nhập</translation>
 <translation id="8681886425883659911">Quảng cáo sẽ bị chặn trên các trang web được xác định là hiện quảng cáo xâm nhập hoặc gây hiểu lầm</translation>
 <translation id="868929229000858085">Tìm kiếm trong danh bạ</translation>
-<translation id="8707904142362025782">Các trang web có thể yêu cầu sử dụng camera</translation>
 <translation id="8712637175834984815">Tôi hiểu</translation>
 <translation id="8715862698998036666">Kéo từ trên xuống và vuốt từ mép trái hoặc mép phải để thoát khỏi chế độ toàn màn hình.</translation>
 <translation id="8716050156658570300">Các trang web có thể yêu cầu sử dụng cảm biến chuyển động và cảm biến ánh sáng</translation>

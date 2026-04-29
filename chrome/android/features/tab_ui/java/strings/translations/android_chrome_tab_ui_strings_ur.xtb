@@ -163,11 +163,13 @@
 <translation id="6589356853295569750">مشترکہ ٹیب گروپ کی تبدیلیوں کے بارے میں نوٹس پوری اسکرین پر کھلا ہے</translation>
 <translation id="6590332670428149473">اشتراک کردہ ٹیب گروپ <ph name="TITLE_OF_GROUP" />، رنگ <ph name="COLOR_NAME" /> کے لیے ٹیب گروپ کارروائی مینو کھولیں۔</translation>
 <translation id="6615455863669487791">مجھے دکھائیں</translation>
+<translation id="6686490380836145850">دائیں جانب والے ٹیبز بند کریں</translation>
 <translation id="6694634756612002311">اشتراک کا نظم کریں</translation>
 <translation id="6709297274997495821">ٹیب منتخب کریں</translation>
 <translation id="6744956528665271406">گروپ کے رنگ میں ترمیم کریں</translation>
 <translation id="6784585810034073638">{TAB_COUNT,plural, =1{‫<ph name="TAB_COUNT1" /> ٹیب کے ساتھ <ph name="TITLE_OF_GROUP" /> نام والے گروپ میں شامل کریں}other{‫<ph name="TAB_COUNT1" /> ٹیبز کے ساتھ <ph name="TITLE_OF_GROUP" /> نام والے گروپ میں شامل کریں}}</translation>
 <translation id="6818926723028410516">آئٹمز منتخب کریں</translation>
+<translation id="68541483639528434">دیگر ٹیبز بند کریں</translation>
 <translation id="6856809498882026482">متعدد انتخاب کی وضع کو چھپائیں</translation>
 <translation id="6957436309971790274">‫21 دن غیر فعال ہونے کے بعد</translation>
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ٹیب، رنگ <ph name="COLOR_NAME" /> کے ساتھ اشتراک کردہ <ph name="TITLE_OF_GROUP" /> ٹیب گروپ کو پھیلائیں۔}other{<ph name="TABS_COUNT_MANY" /> ٹیبز، رنگ <ph name="COLOR_NAME" /> کے ساتھ اشتراک کردہ <ph name="TITLE_OF_GROUP" /> ٹیب گروپ کو پھیلائیں۔}}</translation>

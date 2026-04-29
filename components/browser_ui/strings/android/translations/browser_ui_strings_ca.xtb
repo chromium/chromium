@@ -37,6 +37,7 @@
 <translation id="1384959399684842514">La baixada s'ha posat en pausa</translation>
 <translation id="1396327438254055134">Permet que el lloc web utilitzi l'optimitzador de V8.</translation>
 <translation id="1409338233051621926">Toca Aplicacions i, a continuació, toca Aplicacions predeterminades</translation>
+<translation id="1414315029670184034">No permetis que els llocs web utilitzin la càmera</translation>
 <translation id="1415402041810619267">L'URL s'ha truncat</translation>
 <translation id="1415855080660575082">Permet que Chrome comparteixi les pestanyes recents amb el teu dispositiu per veure-les als resultats de la cerca i a la llista d'aplicacions del dispositiu. Pots activar o desactivar aquesta opció a la configuració de Chrome.</translation>
 <translation id="1420688843103859429">Navega endavant i endarrere lliscant amb dos dits al ratolí tàctil</translation>
@@ -742,7 +743,6 @@ La Protecció avançada controla aquestes opcions de configuració de Chrome:</t
 <translation id="8676374126336081632">Esborra l'entrada</translation>
 <translation id="8681886425883659911">Els anuncis es bloquegen en llocs web que se sap que mostren anuncis intrusius o enganyosos</translation>
 <translation id="868929229000858085">Cerca als contactes</translation>
-<translation id="8707904142362025782">El lloc web pot demanar permís per utilitzar la càmera</translation>
 <translation id="8712637175834984815">Entesos</translation>
 <translation id="8715862698998036666">Arrossega des de la part superior i llisca des de la vora esquerra o dreta per sortir de la pantalla completa.</translation>
 <translation id="8716050156658570300">Els llocs web poden demanar permís per utilitzar sensors de moviment i de llum</translation>

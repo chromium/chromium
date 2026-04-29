@@ -163,11 +163,13 @@
 <translation id="6589356853295569750">Η ειδοποίηση σχετικά με τις αλλαγές στην κοινόχρηστη ομάδα καρτελών άνοιξε σε πλήρες ύψος</translation>
 <translation id="6590332670428149473">Άνοιγμα του μενού ενεργειών ομάδας καρτελών για την κοινόχρηστη ομάδα καρτελών <ph name="TITLE_OF_GROUP" />, με χρώμα <ph name="COLOR_NAME" />.</translation>
 <translation id="6615455863669487791">Εμφάνιση</translation>
+<translation id="6686490380836145850">Κλείσιμο καρτελών δεξιά</translation>
 <translation id="6694634756612002311">Διαχείριση κοινοποίησης</translation>
 <translation id="6709297274997495821">Επιλογή καρτέλας</translation>
 <translation id="6744956528665271406">Επεξεργασία χρώματος ομάδας</translation>
 <translation id="6784585810034073638">{TAB_COUNT,plural, =1{Προσθήκη στην ομάδα με όνομα <ph name="TITLE_OF_GROUP" /> και <ph name="TAB_COUNT1" /> καρτέλα}other{Προσθήκη στην ομάδα με όνομα <ph name="TITLE_OF_GROUP" /> και <ph name="TAB_COUNT1" /> καρτέλες}}</translation>
 <translation id="6818926723028410516">Επιλέξτε στοιχεία</translation>
+<translation id="68541483639528434">Κλείσιμο των άλλων καρτελών</translation>
 <translation id="6856809498882026482">Απόκρυψη λειτουργίας πολλαπλής επιλογής</translation>
 <translation id="6957436309971790274">Μετά από 21 ημέρες αδράνειας</translation>
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{Ανάπτυξη κοινόχρηστης ομάδας καρτελών <ph name="TITLE_OF_GROUP" /> με <ph name="TABS_COUNT_ONE" /> καρτέλα, <ph name="COLOR_NAME" /> χρώμα.}other{Ανάπτυξη κοινόχρηστης ομάδας καρτελών <ph name="TITLE_OF_GROUP" /> με <ph name="TABS_COUNT_MANY" /> καρτέλες, <ph name="COLOR_NAME" /> χρώμα.}}</translation>

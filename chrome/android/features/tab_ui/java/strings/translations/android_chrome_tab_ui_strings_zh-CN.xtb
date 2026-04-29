@@ -163,11 +163,13 @@
 <translation id="6589356853295569750">关于共享标签页分组更改的通知已全屏打开</translation>
 <translation id="6590332670428149473">打开分享的标签页分组“<ph name="TITLE_OF_GROUP" />”（颜色为<ph name="COLOR_NAME" />）的操作菜单。</translation>
 <translation id="6615455863669487791">演示一下</translation>
+<translation id="6686490380836145850">关闭右侧标签页</translation>
 <translation id="6694634756612002311">管理共享设置</translation>
 <translation id="6709297274997495821">选择标签页</translation>
 <translation id="6744956528665271406">修改分组颜色</translation>
 <translation id="6784585810034073638">{TAB_COUNT,plural, =1{添加到包含 <ph name="TAB_COUNT1" /> 个标签页的“<ph name="TITLE_OF_GROUP" />”分组}other{添加到包含 <ph name="TAB_COUNT1" /> 个标签页的“<ph name="TITLE_OF_GROUP" />”分组}}</translation>
 <translation id="6818926723028410516">选择内容</translation>
+<translation id="68541483639528434">关闭其他标签页</translation>
 <translation id="6856809498882026482">隐藏多选模式</translation>
 <translation id="6957436309971790274">闲置 21 天后</translation>
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{展开包含 <ph name="TABS_COUNT_ONE" /> 个标签页的“<ph name="TITLE_OF_GROUP" />”分享标签页分组，颜色为<ph name="COLOR_NAME" />。}other{展开包含 <ph name="TABS_COUNT_MANY" /> 个标签页的“<ph name="TITLE_OF_GROUP" />”分享标签页分组，颜色为<ph name="COLOR_NAME" />。}}</translation>

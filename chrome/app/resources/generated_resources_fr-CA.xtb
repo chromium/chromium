@@ -703,6 +703,7 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="1473927070149284123">Réessayez ou connectez-vous manuellement à un réseau</translation>
 <translation id="1474785664565228650">Pour que la modification apportée au microphone soit appliquée, Parallels Desktop doit être relancé. Relancez Parallels Desktop pour continuer.</translation>
 <translation id="1476088332184200792">Copier vers votre appareil</translation>
+<translation id="1476595624592550506">Modifiez votre mot de passe</translation>
 <translation id="1476607407192946488">Paramètres &amp;linguistiques</translation>
 <translation id="1477446329585670721"><ph name="DOMAIN" /> vous demande de laisser votre carte à puce insérée.</translation>
 <translation id="1477654881618305065">Votre organisation ne vous autorise pas à partager ce contenu. Si vous avez besoin d'aide, communiquez avec votre administrateur.</translation>
@@ -2182,6 +2183,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou voir plus d'
 <translation id="2477218554275525952">Garder la barre latérale Gemini ouverte lorsque vous ouvrez un nouvel onglet</translation>
 <translation id="2478176599153288112">Autorisations de fichier média pour « <ph name="EXTENSION" /> »</translation>
 <translation id="24786041351753425">Activer le service de récupération de données.</translation>
+<translation id="2479148705183875116">Accéder aux paramètres</translation>
 <translation id="2479541499757560845">Paramètres du clavier d'accessibilité</translation>
 <translation id="2480868415629598489">Modifier les données que vous copiez et collez</translation>
 <translation id="2480881140544300950">Le moteur de recherche actuel qui gère votre page Nouvel onglet</translation>
@@ -4699,6 +4701,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4213918571089943508">Compte Google de l'enfant</translation>
 <translation id="4214192212360095377">Désactiver maintenant</translation>
 <translation id="4216407171061541111">Votre organisation a désactivé l'enregistrement des onglets dans votre compte Google</translation>
+<translation id="4216511743389425832">Écouter cette page</translation>
 <translation id="4217571870635786043">Dictée</translation>
 <translation id="4218081191298393750">Cliquez sur l'icône de haut-parleur pour désactiver le son de cet onglet</translation>
 <translation id="4220157655212610908">Utiliser une clé de sécurité externe</translation>
@@ -5652,6 +5655,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="4881685975363383806">Ne pas me le rappeler la prochaine fois</translation>
 <translation id="4881695831933465202">Ouvrir</translation>
 <translation id="4882312758060467256">A accès à ce site</translation>
+<translation id="4882805770036405108">Ouvrez le mode Lecture plus rapidement avec un raccourci. Appuyez sur ⌥+⌘+R pour activer ou désactiver le mode Lecture.</translation>
 <translation id="4882848900607400156">Lorsque vous partagez votre position exacte, Gemini peut répondre à vos questions avec plus de précision. Vos données ne sont pas utilisées pour améliorer les modèles d'IA générative.</translation>
 <translation id="4882919381756638075">Les sites utilisent généralement votre micro pour proposer des fonctionnalités de communication, comme le clavardage vidéo</translation>
 <translation id="4883436287898674711">Tous les sites <ph name="WEBSITE_1" /></translation>
@@ -8893,6 +8897,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7186903260115204164">Ajoutez des dessins à main levée, des signatures et des mises en évidence avec le nouvel outil Dessin</translation>
 <translation id="7186935534137027449">Commande d'appli</translation>
 <translation id="7188508872042490670">Données relatives aux sites sur l’appareil</translation>
+<translation id="7188755083797868960">Ouvrez le mode Lecture plus rapidement avec un raccourci. Appuyez sur Alt+Maj+R pour activer ou désactiver le mode Lecture.</translation>
 <translation id="7189234443051076392">Assurez-vous qu'il y a suffisamment d'espace sur votre appareil</translation>
 <translation id="7189451821249468368">Vous n'avez pas suffisamment de mises à niveau pour inscrire cet appareil. Veuillez communiquer avec le service commercial pour en acheter d'autres. Si vous pensez que ce message s'affiche par erreur, veuillez communiquer avec l'assistance technique.</translation>
 <translation id="7189558282078169397">Onglets ouverts sur d'autres appareils</translation>
@@ -9091,7 +9096,6 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="732845903678043302">{BOOKMARK_COUNT,plural, =1{1 favori est enregistré uniquement sur cet appareil. Pour l'utiliser sur vos autres appareils, enregistrez-le dans votre compte Google.}one{{BOOKMARK_COUNT} favori est enregistré uniquement sur cet appareil. Pour l'utiliser sur vos autres appareils, enregistrez-le dans votre compte Google.}other{{BOOKMARK_COUNT} favoris sont enregistrés uniquement sur cet appareil. Pour les utiliser sur vos autres appareils, enregistrez-les dans votre compte Google.}}</translation>
 <translation id="7328867076235380839">Combinaison incorrecte</translation>
-<translation id="7329009627557479564">Téléversement impossible. Le fichier dépasse la taille maximale prise en charge.</translation>
 <translation id="7329154610228416156">La connexion a échoué, car elle a été configurée pour utiliser une adresse URL non sécurisée (<ph name="BLOCKED_URL" />). Veuillez communiquer avec votre administrateur.</translation>
 <translation id="7330533963640151632">Paramètres <ph name="FEATURE_NAME" /> pour l'appareil de <ph name="USER_NAME" />, partage sous le compte <ph name="USER_EMAIL" />.</translation>
 <translation id="733058866272972585">Ce site a été bloqué pour qu'il ne puisse pas utiliser d'identifiants pour faire jouer du contenu protégé.</translation>

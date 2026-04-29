@@ -706,6 +706,7 @@ Leidimai, kuriuos jau esate suteikę programoms, gali būti taikomi šiai paskyr
 <translation id="1473927070149284123">Bandykite dar kartą arba prisijunkite prie tinklo neautomatiškai</translation>
 <translation id="1474785664565228650">Buvo pakeistas mikrofono nustatymas, todėl reikia iš naujo paleisti „Parallels Desktop“. Norėdami tęsti, paleiskite „Parallels Desktop“ iš naujo.</translation>
 <translation id="1476088332184200792">Kopijuoti į įrenginį</translation>
+<translation id="1476595624592550506">Pakeiskite slaptažodį</translation>
 <translation id="1476607407192946488">&amp;Kalbos nustatymai</translation>
 <translation id="1477446329585670721"><ph name="DOMAIN" /> reikia, kad paliktumėte įdėtą išmaniąją kortelę.</translation>
 <translation id="1477654881618305065">Organizacijoje neleidžiama bendrinti šio turinio. Jei reikia pagalbos, susisiekite su administratoriumi.</translation>
@@ -2197,6 +2198,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2477218554275525952">Atidarius naują skirtuką, palikti „Gemini“ šoninį skydelį atidarytą</translation>
 <translation id="2478176599153288112">Medijos failo leidimai, susiję su plėtiniu „<ph name="EXTENSION" />“</translation>
 <translation id="24786041351753425">Įgalinkite duomenų atkūrimo paslaugą.</translation>
+<translation id="2479148705183875116">Eiti į nustatymus</translation>
 <translation id="2479541499757560845">Pritaikomumo klaviatūros nustatymai</translation>
 <translation id="2480868415629598489">Keisti kopijuojamus ir įklijuojamus duomenis</translation>
 <translation id="2480881140544300950">Dabartinis paieškos variklis, valdantis jūsų naujo skirtuko puslapį</translation>
@@ -4712,6 +4714,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4213918571089943508">Vaiko „Google“ paskyra</translation>
 <translation id="4214192212360095377">Išjungti dabar</translation>
 <translation id="4216407171061541111">Organizacija išjungė skirtukų išsaugojimą „Google“ paskyroje</translation>
+<translation id="4216511743389425832">Klausytis šio puslapio</translation>
 <translation id="4217571870635786043">Diktavimas</translation>
 <translation id="4218081191298393750">Spustelėkite garsiakalbio piktogramą, kad nutildytumėte šio skirtuko garsą</translation>
 <translation id="4220157655212610908">Naudoti išorinį saugos raktą</translation>
@@ -5666,6 +5669,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="4881685975363383806">Nepriminti kitą kartą</translation>
 <translation id="4881695831933465202">Atidaryti</translation>
 <translation id="4882312758060467256">Turi prieigą prie šios svetainės</translation>
+<translation id="4882805770036405108">Naudokite šaukinį, kad sparčiau atidarytumėte skaitymo režimą. Paspauskite ⌥ + ⌘ + R, kad perjungtumėte skaitymo režimą.</translation>
 <translation id="4882848900607400156">Kai bendrinate tikslią vietovę, „Gemini“ gali tiksliau atsakyti į jūsų klausimus. Jūsų duomenys nenaudojami generatyviniams DI modeliams tobulinti.</translation>
 <translation id="4882919381756638075">Paprastai svetainėse naudojamas mikrofonas bendravimo funkcijoms, pvz., vaizdo pokalbiams, vykdyti</translation>
 <translation id="4883436287898674711">Visos <ph name="WEBSITE_1" /> svetainės</translation>
@@ -8914,6 +8918,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7186903260115204164">Pridėkite ranka nupieštų piešinių, parašų ir paryškinimų, naudodami naują piešimo įrankį</translation>
 <translation id="7186935534137027449">Programos komanda</translation>
 <translation id="7188508872042490670">Įrenginyje esantys svetainių duomenys</translation>
+<translation id="7188755083797868960">Naudokite šaukinį, kad sparčiau atidarytumėte skaitymo režimą. Paspauskite „Alt“ + „Shift“ + R, kad perjungtumėte skaitymo režimą.</translation>
 <translation id="7189234443051076392">Įsitikinkite, kad įrenginyje yra pakankamai vietos</translation>
 <translation id="7189451821249468368">Neturite pakankamai licencijų naujovinimų, kad galėtumėte užregistruoti šį įrenginį. Susisiekite su pardavimo atstovu, kad įsigytumėte daugiau. Jei manote, kad šį pranešimą gavote per klaidą, susisiekite su palaikymo komanda.</translation>
 <translation id="7189558282078169397">Skirtukai iš kitų įrenginių</translation>
@@ -9112,7 +9117,6 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="732845903678043302">{BOOKMARK_COUNT,plural, =1{Viena žymė išsaugota tik šiame įrenginyje. Jei norite ją naudoti kituose įrenginiuose, išsaugokite „Google“ paskyroje.}one{{BOOKMARK_COUNT} žymė išsaugota tik šiame įrenginyje. Jei norite jas naudoti kituose įrenginiuose, išsaugokite „Google“ paskyroje.}few{{BOOKMARK_COUNT} žymės išsaugotos tik šiame įrenginyje. Jei norite jas naudoti kituose įrenginiuose, išsaugokite „Google“ paskyroje.}many{{BOOKMARK_COUNT} žymės išsaugota tik šiame įrenginyje. Jei norite jas naudoti kituose įrenginiuose, išsaugokite „Google“ paskyroje.}other{{BOOKMARK_COUNT} žymių išsaugota tik šiame įrenginyje. Jei norite jas naudoti kituose įrenginiuose, išsaugokite „Google“ paskyroje.}}</translation>
 <translation id="7328867076235380839">Netinkamas derinys</translation>
-<translation id="7329009627557479564">Įkelti nepavyko. Failas viršija maksimalų palaikomą dydį.</translation>
 <translation id="7329154610228416156">Nepavyko prisijungti, nes buvo sukonfigūruota naudoti nesaugų URL (<ph name="BLOCKED_URL" />). Susisiekite su administratoriumi.</translation>
 <translation id="7330533963640151632"><ph name="USER_NAME" /> įrenginio funkcijos „<ph name="FEATURE_NAME" />“ nustatymai, bendrinami paskyroje <ph name="USER_EMAIL" />.</translation>
 <translation id="733058866272972585">Ši svetainė užblokuota, kad nebūtų naudojami identifikatoriai apsaugotam turiniui leisti.</translation>

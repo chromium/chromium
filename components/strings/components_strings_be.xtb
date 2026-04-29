@@ -152,6 +152,7 @@
 <translation id="1228893227497259893">Няправільны ідэнтыфікатар аб’екта</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (вызначана аўтаматычна)</translation>
 <translation id="1232569758102978740">Без назвы</translation>
+<translation id="1234539281285007945">Поле "<ph name="FIELD_1" />" павінна быць запоўнена</translation>
 <translation id="1236081509407217141">Дазволіць VR?</translation>
 <translation id="1236689197410206751">AfterPay</translation>
 <translation id="1240347957665416060">Назва вашай прылады</translation>
@@ -472,6 +473,7 @@
 <translation id="1721424275792716183">* Абавязковае поле</translation>
 <translation id="1723636263173393300">Максімальная колькасць ярлыкоў для гэтага правіла: <ph name="MAX_ITEMS_LIMIT" />.</translation>
 <translation id="1725591448053514783">Канверт You 6</translation>
+<translation id="172754119609519423">Поле "<ph name="FIELD_1" />", "<ph name="FIELD_2" />" ці "<ph name="FIELD_3" />" павінна быць запоўнена</translation>
 <translation id="1727613060316725209">Сертыфікат з’яўляецца сапраўдным</translation>
 <translation id="1728677426644403582">Вы праглядаеце крыніцу вэб-старонкі</translation>
 <translation id="173080396488393970">Карткі гэтага тыпу не падтрымліваюцца</translation>
@@ -1433,6 +1435,7 @@
 <translation id="3220264767789936523">Дзелавое адзенне</translation>
 <translation id="3223287115535306850">Круцёлка запуску праграмы</translation>
 <translation id="3223425961342298674">Выкарыстанне геаданых забаронена</translation>
+<translation id="3225277284238802910">Поле "<ph name="FIELD_1" />" ці "<ph name="FIELD_2" />" павінна быць запоўнена</translation>
 <translation id="3225319735946384299">Падпісванне кода</translation>
 <translation id="3225919329040284222">Сервер падаў сертыфікат, які не адпавядае ўбудаваным патрабаванням. Гэтыя патрабаванні ўключаны ў мэтах вашай бяспекі – ім адпавядаюць надзейныя вэб-сайты з высокім узроўнем бяспекі.</translation>
 <translation id="3226128629678568754">Каб паўторна адправіць неабходныя для загрузкі старонкі даныя, націсніце кнопку перазагрузкі.</translation>

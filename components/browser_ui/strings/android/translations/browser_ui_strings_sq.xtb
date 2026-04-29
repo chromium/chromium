@@ -37,6 +37,7 @@
 <translation id="1384959399684842514">Shkarkimi u ndërpre</translation>
 <translation id="1396327438254055134">Lejo që sajti të përdorë optimizuesin e V8.</translation>
 <translation id="1409338233051621926">Trokit tek "Aplikacionet" dhe më pas trokit tek "Aplikacionet e parazgjedhura"</translation>
+<translation id="1414315029670184034">Mos lejo që sajtet të përdorin kamerën tënde</translation>
 <translation id="1415402041810619267">URL e prerë</translation>
 <translation id="1415855080660575082">Lejo që Chrome të ndajë skedat e tua të fundit me pajisjen tënde për t'i shikuar në listën e aplikacioneve dhe rezultatet e kërkimit të pajisjes sate. Mund ta aktivizosh ose çaktivizosh këtë te cilësimet e Chrome.</translation>
 <translation id="1420688843103859429">Navigo prapa dhe përpara duke rrëshqitur shpejt me dy gishta në bllokun me prekje</translation>
@@ -742,7 +743,6 @@
 <translation id="8676374126336081632">Pastro hyrjen</translation>
 <translation id="8681886425883659911">Reklama që janë bllokuar në sajte që dihet se shfaqin reklama ndërhyrëse ose mashtruese</translation>
 <translation id="868929229000858085">Kërko te kontaktet e tua</translation>
-<translation id="8707904142362025782">Sajtet mund të kërkojnë që të përdorin kamerën</translation>
 <translation id="8712637175834984815">E kuptova</translation>
 <translation id="8715862698998036666">Zvarrit nga pjesa e sipërme ose rrëshqit shpejt nga skaji i majtë ose i djathtë për të dalë nga ekrani i plotë.</translation>
 <translation id="8716050156658570300">Sajtet mund të kërkojnë të përdorin sensorët e lëvizjes dhe të dritës</translation>

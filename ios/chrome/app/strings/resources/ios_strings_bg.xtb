@@ -1576,6 +1576,7 @@
 <translation id="6476800141292307438">Страницата се превежда на <ph name="LANGUAGE" />. Опциите са достъпни в долната част на екрана.</translation>
 <translation id="647867789226964031">Промяна на паролите ви</translation>
 <translation id="6480363549849064919">Удостоверяване на клиентска програма</translation>
+<translation id="6489174933860678546">Отворете раздели в режим „инкогнито“, за да сърфирате частно в мрежата.</translation>
 <translation id="6494931198667773526">Край</translation>
 <translation id="6503077044568424649">Ползвани</translation>
 <translation id="6503763061813913607">Известия от „Проверка на безопасността“</translation>
@@ -2295,6 +2296,7 @@
 <translation id="8915916167043355778">Затваряне на всички</translation>
 <translation id="892185197271200809">Всички хора незабавно ще загубят достъп до групата раздели „<ph name="GROUP_NAME" />“ и тя ще бъде изтрита от всички устройства</translation>
 <translation id="8923178205567790913">Пароли</translation>
+<translation id="8926498511977337209">Сърфиране в режим „инкогнито“</translation>
 <translation id="892776311701544612">Научете повече…</translation>
 <translation id="8928133177108699615">Настолна</translation>
 <translation id="8928426232677696166">Понастоящем сте избрали <ph name="EMAIL" />. Управлява се от организацията ви. Изберете профил.</translation>

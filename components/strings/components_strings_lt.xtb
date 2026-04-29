@@ -152,6 +152,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1228893227497259893">Netinkamas subjekto identifikatorius</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (aptikta automatiškai)</translation>
 <translation id="1232569758102978740">Be pavadinimo</translation>
+<translation id="1234539281285007945">Laukas „<ph name="FIELD_1" />“ yra būtinas</translation>
 <translation id="1236081509407217141">Leisti VR?</translation>
 <translation id="1236689197410206751">AfterPay</translation>
 <translation id="1240347957665416060">Įrenginio pavadinimas</translation>
@@ -472,6 +473,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1721424275792716183">* Būtina užpildyti lauką</translation>
 <translation id="1723636263173393300">Šioje politikoje gali būti ne daugiau nei tiek šaukinių: <ph name="MAX_ITEMS_LIMIT" />.</translation>
 <translation id="1725591448053514783">„You 6“ vokas</translation>
+<translation id="172754119609519423">Laukas „<ph name="FIELD_1" />“, „<ph name="FIELD_2" />“ arba „<ph name="FIELD_3" />“ yra būtinas</translation>
 <translation id="1727613060316725209">Sertifikatas galioja</translation>
 <translation id="1728677426644403582">Peržiūrite tinklalapio šaltinį</translation>
 <translation id="173080396488393970">Šio tipo kortelė nepalaikoma</translation>
@@ -1433,6 +1435,7 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="3220264767789936523">Oficiali apranga</translation>
 <translation id="3223287115535306850">Animuota programų paleidimo piktograma</translation>
 <translation id="3223425961342298674">Vietovė neleidžiama</translation>
+<translation id="3225277284238802910">Laukas „<ph name="FIELD_1" />“ arba „<ph name="FIELD_2" />“ yra būtinas</translation>
 <translation id="3225319735946384299">Kodo pasirašymas</translation>
 <translation id="3225919329040284222">Serveris pateikė sertifikatą, kuris neatitinka numatytų reikalavimų. Šie reikalavimai taikomi tam tikrose itin saugiose svetainėse, kad jūs būtumėte saugūs.</translation>
 <translation id="3226128629678568754">Spustelėkite įkėlimo iš naujo mygtuką, kad iš naujo pateiktumėte duomenis, reikalingus puslapiui įkelti.</translation>

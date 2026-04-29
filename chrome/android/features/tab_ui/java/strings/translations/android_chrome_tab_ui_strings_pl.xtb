@@ -163,11 +163,13 @@
 <translation id="6589356853295569750">Powiadomienie o zmianach w udostępnionej grupie kart otwarte na pełną wysokość</translation>
 <translation id="6590332670428149473">Otwórz menu czynności udostępnionej grupy kart <ph name="TITLE_OF_GROUP" />, kolor <ph name="COLOR_NAME" />.</translation>
 <translation id="6615455863669487791">Pokaż mi</translation>
+<translation id="6686490380836145850">Zamknij karty po prawej</translation>
 <translation id="6694634756612002311">Zarządzaj udostępnianiem</translation>
 <translation id="6709297274997495821">Wybierz kartę</translation>
 <translation id="6744956528665271406">Edytuj kolor grupy</translation>
 <translation id="6784585810034073638">{TAB_COUNT,plural, =1{Dodaj do grupy o nazwie <ph name="TITLE_OF_GROUP" /> z <ph name="TAB_COUNT1" /> kartą}few{Dodaj do grupy o nazwie <ph name="TITLE_OF_GROUP" /> z <ph name="TAB_COUNT1" /> kartami}many{Dodaj do grupy o nazwie <ph name="TITLE_OF_GROUP" /> z <ph name="TAB_COUNT1" /> kartami}other{Dodaj do grupy o nazwie <ph name="TITLE_OF_GROUP" /> z <ph name="TAB_COUNT1" /> karty}}</translation>
 <translation id="6818926723028410516">Wybierz elementy</translation>
+<translation id="68541483639528434">Zamknij inne karty</translation>
 <translation id="6856809498882026482">Ukryj tryb wielokrotnego wyboru</translation>
 <translation id="6957436309971790274">Po 21 dniach braku aktywności</translation>
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{Rozwiń udostępnioną grupę kart <ph name="TITLE_OF_GROUP" /> z <ph name="TABS_COUNT_ONE" /> kartą, kolor <ph name="COLOR_NAME" />.}few{Rozwiń udostępnioną grupę kart <ph name="TITLE_OF_GROUP" /> z <ph name="TABS_COUNT_MANY" /> kartami, kolor <ph name="COLOR_NAME" />.}many{Rozwiń udostępnioną grupę kart <ph name="TITLE_OF_GROUP" /> z <ph name="TABS_COUNT_MANY" /> kartami, kolor <ph name="COLOR_NAME" />.}other{Rozwiń udostępnioną grupę kart <ph name="TITLE_OF_GROUP" /> z <ph name="TABS_COUNT_MANY" /> karty, kolor <ph name="COLOR_NAME" />.}}</translation>

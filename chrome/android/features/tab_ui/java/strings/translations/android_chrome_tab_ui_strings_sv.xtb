@@ -163,11 +163,13 @@
 <translation id="6589356853295569750">Meddelande om ändringar i delade flikgrupper öppnades och visas på hela skärmen</translation>
 <translation id="6590332670428149473">Öppna åtgärdsmenyn för den delade flikgruppen <ph name="TITLE_OF_GROUP" /> med färgen <ph name="COLOR_NAME" /></translation>
 <translation id="6615455863669487791">Visa mig</translation>
+<translation id="6686490380836145850">Stäng flikar till höger</translation>
 <translation id="6694634756612002311">Hantera delning</translation>
 <translation id="6709297274997495821">Välj flik</translation>
 <translation id="6744956528665271406">Redigera gruppfärg</translation>
 <translation id="6784585810034073638">{TAB_COUNT,plural, =1{Lägg till i gruppen <ph name="TITLE_OF_GROUP" /> med <ph name="TAB_COUNT1" /> flik}other{Lägg till i gruppen <ph name="TITLE_OF_GROUP" /> med <ph name="TAB_COUNT1" /> flikar}}</translation>
 <translation id="6818926723028410516">Välj objekt</translation>
+<translation id="68541483639528434">Stäng andra flikar</translation>
 <translation id="6856809498882026482">Dölj flervalsläget</translation>
 <translation id="6957436309971790274">Efter 21 dagar utan aktivitet</translation>
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{Utöka den delade flikgruppen <ph name="TITLE_OF_GROUP" /> med <ph name="TABS_COUNT_ONE" /> flik, färgen <ph name="COLOR_NAME" />.}other{Utöka den delade flikgruppen <ph name="TITLE_OF_GROUP" /> med <ph name="TABS_COUNT_MANY" /> flikar, färgen <ph name="COLOR_NAME" />.}}</translation>

@@ -37,6 +37,7 @@
 <translation id="1384959399684842514">A letöltés szünetel</translation>
 <translation id="1396327438254055134">A V8-optimalizáló használatának engedélyezése az alábbi webhely számára.</translation>
 <translation id="1409338233051621926">Koppintson az Alkalmazások, majd az Alapértelmezett alkalmazások lehetőségre</translation>
+<translation id="1414315029670184034">A webhelyek nem használhatják a kamerát</translation>
 <translation id="1415402041810619267">URL csonkolva</translation>
 <translation id="1415855080660575082">Engedélyezze a Chrome-nak, hogy megossza eszközével a nemrég megnyitott lapokat, hogy azok megjelenjenek az eszköz alkalmazáslistáján és a keresési találatok között is. Ezt a Chrome beállításai között kapcsolhatja be vagy ki.</translation>
 <translation id="1420688843103859429">Navigálhat előre és hátra az érintőpadon két ujjal történő gyors csúsztatással</translation>
@@ -742,7 +743,6 @@ A Speciális védelem a következő Chrome-beállításokat vezérli:</translati
 <translation id="8676374126336081632">Beírt szöveg törlése</translation>
 <translation id="8681886425883659911">A hirdetések le vannak tiltva a köztudottan tolakodó vagy félrevezető hirdetéseket megjelenítő webhelyeken</translation>
 <translation id="868929229000858085">Keresés a névjegyek között</translation>
-<translation id="8707904142362025782">A webhely kérheti a kamerájához való hozzáférést</translation>
 <translation id="8712637175834984815">Értem</translation>
 <translation id="8715862698998036666">A teljes képernyős nézetből való kilépéshez csúsztassa gyorsan le az ujját a képernyő tetejétől, majd csúsztasson a képernyő bal vagy jobb széléről.</translation>
 <translation id="8716050156658570300">A webhelyek engedélyt kérhetnek a mozgás- és fényérzékelők használatára</translation>

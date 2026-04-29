@@ -163,11 +163,13 @@
 <translation id="6589356853295569750">পূৰ্ণ উচ্চতাত শ্বেয়াৰ কৰা টেবৰ গোটৰ সালসলনিসমূহৰ বিষয়ে জাননী খোলা হৈছে</translation>
 <translation id="6590332670428149473">শ্বেয়াৰ কৰা টেবৰ গোট <ph name="TITLE_OF_GROUP" />, ৰং <ph name="COLOR_NAME" />ৰ বাবে টেবৰ গোটৰ কামৰ মেনুখন খোলক।</translation>
 <translation id="6615455863669487791">মোক দেখুৱাওক</translation>
+<translation id="6686490380836145850">টেবটো সোঁফাললৈ বন্ধ কৰক</translation>
 <translation id="6694634756612002311">শ্বেয়াৰ কৰাৰ সুবিধা পৰিচালনা কৰক</translation>
 <translation id="6709297274997495821">টেব বাছনি কৰক</translation>
 <translation id="6744956528665271406">গোটৰ ৰং সম্পাদনা কৰক</translation>
 <translation id="6784585810034073638">{TAB_COUNT,plural, =1{<ph name="TITLE_OF_GROUP" /> নামৰ গোটটোত <ph name="TAB_COUNT1" /> টা টেবৰ জৰিয়তে যোগ দিয়ক}one{<ph name="TITLE_OF_GROUP" /> নামৰ গোটটোত <ph name="TAB_COUNT1" /> টা টেবৰ জৰিয়তে যোগ দিয়ক}other{<ph name="TITLE_OF_GROUP" /> নামৰ গোটটোত <ph name="TAB_COUNT1" /> টা টেবৰ জৰিয়তে যোগ দিয়ক}}</translation>
 <translation id="6818926723028410516">বস্তু বাছনি কৰক</translation>
+<translation id="68541483639528434">অন্য টেবসমূহ বন্ধ কৰক</translation>
 <translation id="6856809498882026482">একাধিক বাছনি কৰিব পৰা ম’ডটো লুকুৱাওক</translation>
 <translation id="6957436309971790274">২১ দিন নিষ্ক্ৰিয় হৈ থকাৰ পাছত</translation>
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{শ্বেয়াৰ কৰা <ph name="TITLE_OF_GROUP" /> টেবৰ গোটটো <ph name="TABS_COUNT_ONE" /> টা টেব, <ph name="COLOR_NAME" /> ৰঙলৈ বিস্তাৰ কৰক।}one{শ্বেয়াৰ কৰা <ph name="TITLE_OF_GROUP" /> টেবৰ গোটটো <ph name="TABS_COUNT_MANY" /> টা টেব, <ph name="COLOR_NAME" /> ৰঙলৈ বিস্তাৰ কৰক।}other{শ্বেয়াৰ কৰা <ph name="TITLE_OF_GROUP" /> টেবৰ গোটটো <ph name="TABS_COUNT_MANY" /> টা টেব, <ph name="COLOR_NAME" /> ৰঙলৈ বিস্তাৰ কৰক।}}</translation>

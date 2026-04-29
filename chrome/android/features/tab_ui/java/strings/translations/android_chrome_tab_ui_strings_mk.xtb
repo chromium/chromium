@@ -163,11 +163,13 @@
 <translation id="6589356853295569750">Известувањето за промените во споделената група картички е отворено на цел екран</translation>
 <translation id="6590332670428149473">Отворете го менито со дејства на групи картички за споделената група картички „<ph name="TITLE_OF_GROUP" />“, боја: <ph name="COLOR_NAME" />.</translation>
 <translation id="6615455863669487791">Покажи ми</translation>
+<translation id="6686490380836145850">Затвори картички на десно</translation>
 <translation id="6694634756612002311">Управувајте со споделувањето</translation>
 <translation id="6709297274997495821">Изберете картичка</translation>
 <translation id="6744956528665271406">Изменете ја бојата на групата</translation>
 <translation id="6784585810034073638">{TAB_COUNT,plural, =1{Додајте во групата именувана „<ph name="TITLE_OF_GROUP" />“ со <ph name="TAB_COUNT1" /> картичка}one{Додајте во групата именувана „<ph name="TITLE_OF_GROUP" />“ со <ph name="TAB_COUNT1" /> картичка}other{Додајте во групата именувана „<ph name="TITLE_OF_GROUP" />“ со <ph name="TAB_COUNT1" /> картички}}</translation>
 <translation id="6818926723028410516">Изберете ставки</translation>
+<translation id="68541483639528434">Затвори други картички</translation>
 <translation id="6856809498882026482">Скриј го режимот на повеќекратен избор</translation>
 <translation id="6957436309971790274">По неактивност од 21 ден</translation>
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{Прошири ја споделената група картички <ph name="TITLE_OF_GROUP" /> со <ph name="TABS_COUNT_ONE" /> картичка, боја: <ph name="COLOR_NAME" />.}one{Прошири ја споделената група картички <ph name="TITLE_OF_GROUP" /> со <ph name="TABS_COUNT_MANY" /> картичка, боја: <ph name="COLOR_NAME" />.}other{Прошири ја споделената група картички <ph name="TITLE_OF_GROUP" /> со <ph name="TABS_COUNT_MANY" /> картички, боја: <ph name="COLOR_NAME" />.}}</translation>

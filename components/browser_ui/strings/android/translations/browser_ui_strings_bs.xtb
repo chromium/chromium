@@ -37,6 +37,7 @@
 <translation id="1384959399684842514">Preuzimanje je pauzirano</translation>
 <translation id="1396327438254055134">Dozvolite web lokaciji da koristi optimizator V8.</translation>
 <translation id="1409338233051621926">Dodir na Aplikacije, a zatim na Zadane aplikacije</translation>
+<translation id="1414315029670184034">Nemoj dozvoliti web lokacijama korištenje kamere</translation>
 <translation id="1415402041810619267">URL je odsječen</translation>
 <translation id="1415855080660575082">Dozvolite Chromeu da dijeli nedavne kartice s uređajem da ih vidite na listi aplikacija i u rezultatima pretraživanja na uređaju. Možete uključiti ili isključiti u postavkama Chromea.</translation>
 <translation id="1420688843103859429">Krećite se naprijed-nazad prevlačenjem s dva prsta na dodirnoj podlozi</translation>
@@ -742,7 +743,6 @@ Napredna zaštita upravlja ovim postavkama Chromea:</translation>
 <translation id="8676374126336081632">Brisanje unosa</translation>
 <translation id="8681886425883659911">Oglasi se blokiraju na web lokacijama za koje je poznato da prikazuju ometajuće ili obmanjujuće oglase</translation>
 <translation id="868929229000858085">Pretražite kontakte</translation>
-<translation id="8707904142362025782">Web lokacije mogu zatražiti pristup kameri</translation>
 <translation id="8712637175834984815">Razumijem</translation>
 <translation id="8715862698998036666">Prevucite s vrha, a zatim s lijevog ili desnog ruba da izađete iz prikaza preko cijelog ekrana.</translation>
 <translation id="8716050156658570300">Web lokacije mogu tražiti da koriste senzore kretanja i svjetla</translation>

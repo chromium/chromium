@@ -163,11 +163,13 @@
 <translation id="6589356853295569750">Meddelelse om ændringer af en delt fanegruppe er åbnet i fuld højde</translation>
 <translation id="6590332670428149473">Åbn handlingsmenuen for fanegrupper for den delte fanegruppe <ph name="TITLE_OF_GROUP" /> i farven <ph name="COLOR_NAME" />.</translation>
 <translation id="6615455863669487791">Lad mig se</translation>
+<translation id="6686490380836145850">Luk fanerne til højre</translation>
 <translation id="6694634756612002311">Administrer deling</translation>
 <translation id="6709297274997495821">Vælg fane</translation>
 <translation id="6744956528665271406">Rediger gruppefarve</translation>
 <translation id="6784585810034073638">{TAB_COUNT,plural, =1{Føj til gruppen <ph name="TITLE_OF_GROUP" /> med <ph name="TAB_COUNT1" /> fane}one{Føj til gruppen <ph name="TITLE_OF_GROUP" /> med <ph name="TAB_COUNT1" /> fane}other{Føj til gruppen <ph name="TITLE_OF_GROUP" /> med <ph name="TAB_COUNT1" /> faner}}</translation>
 <translation id="6818926723028410516">Vælg elementer</translation>
+<translation id="68541483639528434">Luk alle andre faner</translation>
 <translation id="6856809498882026482">Skjul tilstanden Valg af flere</translation>
 <translation id="6957436309971790274">Efter 21 dages inaktivitet</translation>
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{Udvid den delte fanegruppe <ph name="TITLE_OF_GROUP" /> i farven <ph name="COLOR_NAME" /> med <ph name="TABS_COUNT_ONE" /> fane.}one{Udvid den delte fanegruppe <ph name="TITLE_OF_GROUP" /> i farven <ph name="COLOR_NAME" /> med <ph name="TABS_COUNT_MANY" /> fane.}other{Udvid den delte fanegruppe <ph name="TITLE_OF_GROUP" /> i farven <ph name="COLOR_NAME" /> med <ph name="TABS_COUNT_MANY" /> faner.}}</translation>

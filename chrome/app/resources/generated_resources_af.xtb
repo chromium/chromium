@@ -703,6 +703,7 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="1473927070149284123">Probeer weer of sluit handmatig by 'n netwerk aan</translation>
 <translation id="1474785664565228650">Die verandering in mikrofooninstelling vereis dat Parallels-werkskerm herbegin moet word. Parallels-werkskerm sal herbegin.</translation>
 <translation id="1476088332184200792">Kopieer na jou toestel toe</translation>
+<translation id="1476595624592550506">Verander jou wagwoord</translation>
 <translation id="1476607407192946488">Taalinstellings …</translation>
 <translation id="1477446329585670721"><ph name="DOMAIN" /> vereis dat jy jou slimkaart ingesteek hou.</translation>
 <translation id="1477654881618305065">Jou organisasie laat jou nie toe om hierdie inhoud te deel nie. Kontak jou administrateur as jy hulp nodig het.</translation>
@@ -2194,6 +2195,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="2477218554275525952">Hou die Gemini-kantbalk oop wanneer jy ’n nuwe oortjie oopmaak</translation>
 <translation id="2478176599153288112">Medialêer-toestemmings vir "<ph name="EXTENSION" />"</translation>
 <translation id="24786041351753425">Aktiveer dataherwinningdiens.</translation>
+<translation id="2479148705183875116">Gaan na Instellings</translation>
 <translation id="2479541499757560845">Sleutelbordinstellings vir Toeganklikheid</translation>
 <translation id="2480868415629598489">Verander data wat jy kopieer en plak</translation>
 <translation id="2480881140544300950">Huidige soekenjin bestuur jou Nuwe Oortjie-bladsy</translation>
@@ -4709,6 +4711,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="4213918571089943508">Kind se Google-rekening</translation>
 <translation id="4214192212360095377">Skakel nou af</translation>
 <translation id="4216407171061541111">Jou organisasie het die stoor van oortjies in jou Google-rekening afgeskakel</translation>
+<translation id="4216511743389425832">Luister na hierdie bladsy</translation>
 <translation id="4217571870635786043">Diktee</translation>
 <translation id="4218081191298393750">Klik die luidsprekerikoon om hierdie oortjie te demp</translation>
 <translation id="4220157655212610908">Gebruik ’n eksterne sekuriteitsleutel</translation>
@@ -5663,6 +5666,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="4881685975363383806">Moenie my volgende keer herinner nie</translation>
 <translation id="4881695831933465202">Maak oop</translation>
 <translation id="4882312758060467256">Het toegang tot hierdie werf</translation>
+<translation id="4882805770036405108">Maak leesmodus vinniger oop met ’n kortpad. Druk ⌥ + ⌘ + R om leesmodus te wissel.</translation>
 <translation id="4882848900607400156">Wanneer jy jou presiese ligging deel, kan Gemini jou vrae akkurater beantwoord. Jou data word nie gebruik om generatiewe KI-modelle te verbeter nie.</translation>
 <translation id="4882919381756638075">Werwe gebruik gewoonlik jou mikrofoon vir kommunikasiekenmerke soos videoklets</translation>
 <translation id="4883436287898674711">Alle <ph name="WEBSITE_1" />-werwe</translation>
@@ -8904,6 +8908,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7186903260115204164">Voeg vryhandtekeninge, handtekeninge en kleurmerke by met die nuwe Teken-nutsding</translation>
 <translation id="7186935534137027449">Appopdrag</translation>
 <translation id="7188508872042490670">Werfdata op toestel</translation>
+<translation id="7188755083797868960">Maak leesmodus vinniger oop met ’n kortpad. Druk Alt + Shift + R om leesmodus te wissel.</translation>
 <translation id="7189234443051076392">Maak seker dat daar genoeg spasie op jou toestel is</translation>
 <translation id="7189451821249468368">Jy het nie genoeg opgraderings om hierdie toestel in te skryf nie. Kontak asseblief die verkoopsafdeling om meer te koop. As jy meen dis 'n fout dat jy hierdie boodskap sien, moet jy asseblief steundienste kontak.</translation>
 <translation id="7189558282078169397">Oortjies van ander toestelle af</translation>
@@ -9102,7 +9107,6 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="732845903678043302">{BOOKMARK_COUNT,plural, =1{1 boekmerk word net op hierdie toestel gestoor. Stoor dit in jou Google-rekening om dit op jou ander toestelle te gebruik.}other{{BOOKMARK_COUNT} boekmerke word net op hierdie toestel gestoor. Stoor hulle in jou Google-rekening om hulle op jou ander toestelle te gebruik.}}</translation>
 <translation id="7328867076235380839">Ongeldige kombinasie</translation>
-<translation id="7329009627557479564">Kan nie oplaai nie. Lêer oorskry maksimum gesteunde grootte.</translation>
 <translation id="7329154610228416156">Kon nie aanmeld nie omdat dit opgestel is om 'n onveilige URL (<ph name="BLOCKED_URL" />) te gebruik. Kontak jou administrateur.</translation>
 <translation id="7330533963640151632"><ph name="FEATURE_NAME" />-instellings vir <ph name="USER_NAME" /> se toestel wat deel onder die rekening <ph name="USER_EMAIL" />.</translation>
 <translation id="733058866272972585">Hierdie werf word gekeer om identifiseerders te gebruik om beskermde inhoud te speel.</translation>

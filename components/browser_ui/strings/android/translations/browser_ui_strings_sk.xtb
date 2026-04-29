@@ -37,6 +37,7 @@
 <translation id="1384959399684842514">Sťahovanie bolo pozastavené</translation>
 <translation id="1396327438254055134">Povoľte webu používanie optimalizátora V8.</translation>
 <translation id="1409338233051621926">Klepnite na Aplikácie a potom na Predvolené aplikácie</translation>
+<translation id="1414315029670184034">Nepovoliť webom používať fotoaparát</translation>
 <translation id="1415402041810619267">Skrátená webová adresa</translation>
 <translation id="1415855080660575082">Povoľte Chromu zdieľať vaše nedávne karty so zariadením, aby sa v ňom mohli zobrazovať v zozname aplikácií a výsledkoch vyhľadávania. Túto možnosť môžete zapnúť alebo vypnúť v nastaveniach Chromu.</translation>
 <translation id="1420688843103859429">Prechádzajte dozadu a dopredu ťahaním dvoma prstami po touchpade</translation>
@@ -742,7 +743,6 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:</translation>
 <translation id="8676374126336081632">Vymazať vstup</translation>
 <translation id="8681886425883659911">Na weboch, o ktorých sa vie, že zobrazujú obťažujúce alebo zavádzajúce reklamy, sú reklamy blokované</translation>
 <translation id="868929229000858085">Prehľadať kontakty</translation>
-<translation id="8707904142362025782">Web môže žiadať o povolenie používať vašu kameru</translation>
 <translation id="8712637175834984815">Dobre</translation>
 <translation id="8715862698998036666">Režim celej obrazovky ukončíte presunutím zhora a potiahnutím z ľavého alebo pravého okraja.</translation>
 <translation id="8716050156658570300">Weby môžu žiadať o používanie senzorov pohybu a svetla</translation>

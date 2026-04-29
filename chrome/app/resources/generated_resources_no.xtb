@@ -703,6 +703,7 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1473927070149284123">Prøv på nytt, eller koble til et nettverk manuelt</translation>
 <translation id="1474785664565228650">Endringen i mikrofoninnstillingen krever omstart av Parallels Desktop. Start Parallels Desktop på nytt for å fortsette.</translation>
 <translation id="1476088332184200792">Kopiér til enheten din</translation>
+<translation id="1476595624592550506">Endre passordet</translation>
 <translation id="1476607407192946488">&amp;Språkinnstillinger</translation>
 <translation id="1477446329585670721"><ph name="DOMAIN" /> krever at smartkortet blir stående i.</translation>
 <translation id="1477654881618305065">Organisasjonen din lar deg ikke dele dette innholdet. Hvis du trenger hjelp, kan du kontakte administratoren din.</translation>
@@ -2188,6 +2189,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2477218554275525952">Hold Gemini-sidefeltet åpent når du åpner en ny fane</translation>
 <translation id="2478176599153288112">Mediafilrettigheter for «<ph name="EXTENSION" />»</translation>
 <translation id="24786041351753425">Slå på tjenesten for datagjenoppretting.</translation>
+<translation id="2479148705183875116">Gå til Innstillinger</translation>
 <translation id="2479541499757560845">Innstillinger for tilgjengelighetstastatur</translation>
 <translation id="2480868415629598489">endre data du kopierer og limer inn</translation>
 <translation id="2480881140544300950">Den nåværende søkemotoren som administrerer Ny fane-siden din</translation>
@@ -4701,6 +4703,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4213918571089943508">Google-kontoen til et barn</translation>
 <translation id="4214192212360095377">Slå av nå</translation>
 <translation id="4216407171061541111">Organisasjonen din har slått av lagring av faner i Google-kontoen din</translation>
+<translation id="4216511743389425832">Lytt til denne siden</translation>
 <translation id="4217571870635786043">Diktering</translation>
 <translation id="4218081191298393750">Klikk på høyttalerikonet for å kutte lyden for denne fanen</translation>
 <translation id="4220157655212610908">Bruk en ekstern sikkerhetsnøkkel</translation>
@@ -5654,6 +5657,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4881685975363383806">Ikke minn meg på dette neste gang</translation>
 <translation id="4881695831933465202">Åpne</translation>
 <translation id="4882312758060467256">Har tilgang til dette nettstedet</translation>
+<translation id="4882805770036405108">Åpne lesemodus raskere med en snarvei. Trykk på ⌥ + ⌘ + R for å slå lesemodus av eller på.</translation>
 <translation id="4882848900607400156">Når du deler den nøyaktige posisjonen din, kan Gemini svare på spørsmål mer nøyaktig. Dataene dine brukes ikke til å forbedre generative AI-modeller.</translation>
 <translation id="4882919381756638075">Nettsteder bruker vanligvis mikrofonen din for å kunne tilby kommunikasjonsfunksjoner, som videochat</translation>
 <translation id="4883436287898674711">Alle <ph name="WEBSITE_1" />-nettsteder</translation>
@@ -8545,6 +8549,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="6927200998271693557">For å raskt komme tilbake til nettsteder du har besøkt, synkroniser loggen og fanene dine til <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6928650056523249512">Fjern tillatelser fra ubrukte nettsteder automatisk</translation>
 <translation id="6929126689972602640">Foreldrekontroll støttes ikke for skolekontoer. For å legge til en skolekonto for å få tilgang til Google Classroom og andre nettsteder for skolearbeid hjemme, logg på med barnets personlige konto først. Du kan legge til skolekontoen senere i konfigureringen.</translation>
+<translation id="6929639755025587400">Installerer appen …</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{En utvidelse er avvist}other{# utvidelser er avvist}}</translation>
 <translation id="6930337524857202955">En ny nedlasting er tilgjengelig</translation>
 <translation id="6930477763029357444">Tillatelser du gir <ph name="APP_NAME" />, blir også gitt til <ph name="PARENT_APP_NAME" /> og dens installerte apper.</translation>
@@ -8710,6 +8715,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7038632520572155338">Brytertilgang</translation>
 <translation id="7038710352229712897">Legg til en ny Google-konto for <ph name="USER_NAME" /></translation>
 <translation id="7039326228527141150">Les USB-enheter fra <ph name="VENDOR_NAME" /></translation>
+<translation id="7039697949826432881">Kan ikke laste opp. Filen overskrider den maksimale støttede størrelsen på <ph name="MAX_FILE_SIZE" /> MB.</translation>
 <translation id="7039912931802252762">Pålogging med Microsoft-smartkort</translation>
 <translation id="7039951224110875196">Opprett en Google-konto for et barn</translation>
 <translation id="7042116641003232070">Nettsteder som har lov til å lagre data på enheten din</translation>
@@ -8893,6 +8899,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7186903260115204164">Legg til frihåndstegninger, signaturer og fremhevinger med det nye tegneverktøyet</translation>
 <translation id="7186935534137027449">Appkommando</translation>
 <translation id="7188508872042490670">Nettstedsdata på enheten</translation>
+<translation id="7188755083797868960">Åpne lesemodus raskere med en snarvei. Trykk på Alt + Shift + R for å slå lesemodus av eller på.</translation>
 <translation id="7189234443051076392">Sørg for at det er nok plass på enheten</translation>
 <translation id="7189451821249468368">Du har ikke tilstrekkelige oppgraderinger for å registrere denne enheten. Ta kontakt med salgsavdelingen for å kjøpe flere. Hvis du tror dette er en feil, kan du ta kontakt med brukerstøtten.</translation>
 <translation id="7189558282078169397">Faner fra andre enheter</translation>
@@ -9091,7 +9098,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="732845903678043302">{BOOKMARK_COUNT,plural, =1{1 bokmerke er bare lagret på denne enheten. For å bruke det på andre enheter, lagre det i Google-kontoen din.}other{{BOOKMARK_COUNT} bokmerker er bare lagret på denne enheten. For å bruke dem på andre enheter, lagre dem i Google-kontoen din.}}</translation>
 <translation id="7328867076235380839">Ugyldig kombinasjon</translation>
-<translation id="7329009627557479564">Kan ikke laste opp. Filen er for stor.</translation>
 <translation id="7329154610228416156">Påloggingen mislyktes fordi den var konfigurert til å bruke en usikret nettadresse (<ph name="BLOCKED_URL" />). Kontakt administratoren din.</translation>
 <translation id="7330533963640151632">Innstillinger for <ph name="FEATURE_NAME" /> for enheten til <ph name="USER_NAME" />, som deler via kontoen <ph name="USER_EMAIL" />.</translation>
 <translation id="733058866272972585">Dette nettstedet er blokkert fra å bruke identifikatorer til å spille av beskyttet innhold.</translation>
@@ -10754,6 +10760,7 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8460448946170646641">Gjennomgå viktige personvern- og sikkerhetskontroller</translation>
 <translation id="8460490661223303637">For å spare minne har Chrome fjernet noe innhold</translation>
 <translation id="8460932807646981183">Administrer søkemotorer og nettstedsøk</translation>
+<translation id="8461572080432076264">Lytt til denne siden</translation>
 <translation id="8461914792118322307">Proxy-tjener</translation>
 <translation id="8461973047386722744">Fant ingen passord</translation>
 <translation id="846205103980293931">{NUM_TABS,plural, =1{Listefelt med 1 element}other{Listefelt med {NUM_TABS} elementer}}</translation>

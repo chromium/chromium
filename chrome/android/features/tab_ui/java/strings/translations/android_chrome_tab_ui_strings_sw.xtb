@@ -163,11 +163,13 @@
 <translation id="6589356853295569750">Ilani kuhusu mabadiliko kwenye Kikundi cha Vichupo cha Pamoja imefunguliwa katika hali ya skrini nzima</translation>
 <translation id="6590332670428149473">Fungua menyu ya vitendo ya kikundi cha vichupo cha pamoja cha <ph name="TITLE_OF_GROUP" />, rangi <ph name="COLOR_NAME" /></translation>
 <translation id="6615455863669487791">Nionyeshe</translation>
+<translation id="6686490380836145850">Funga vichupo vilivyo upande wa kulia</translation>
 <translation id="6694634756612002311">Dhibiti ruhusa ya ufikiaji</translation>
 <translation id="6709297274997495821">Chagua kichupo</translation>
 <translation id="6744956528665271406">Badilisha rangi ya kikundi</translation>
 <translation id="6784585810034073638">{TAB_COUNT,plural, =1{Weka kwenye kikundi kinachoitwa <ph name="TITLE_OF_GROUP" /> chenye kichupo <ph name="TAB_COUNT1" />}other{Weka kwenye kikundi kinachoitwa <ph name="TITLE_OF_GROUP" /> chenye vichupo <ph name="TAB_COUNT1" />}}</translation>
 <translation id="6818926723028410516">Chagua vipengee</translation>
+<translation id="68541483639528434">Funga vichupo vingine</translation>
 <translation id="6856809498882026482">Ficha hali ya kuchagua vingi</translation>
 <translation id="6957436309971790274">Baada ya kutotumiwa kwa siku 21</translation>
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{Panua kikundi cha vichupo cha pamoja cha <ph name="TITLE_OF_GROUP" /> kilicho na kichupo <ph name="TABS_COUNT_ONE" />, cha rangi ya <ph name="COLOR_NAME" />.}other{Panua kikundi cha vichupo cha pamoja cha <ph name="TITLE_OF_GROUP" /> kilicho na vichupo <ph name="TABS_COUNT_MANY" />, cha rangi ya <ph name="COLOR_NAME" />.}}</translation>

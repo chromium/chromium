@@ -163,11 +163,13 @@
 <translation id="6589356853295569750">A megosztott lapcsoportok módosításairól szóló értesítés teljes magasságban megnyitva</translation>
 <translation id="6590332670428149473">A(z) <ph name="TITLE_OF_GROUP" /> nevű, <ph name="COLOR_NAME" /> színű megosztott lapcsoport műveleti menüjének megnyitása.</translation>
 <translation id="6615455863669487791">Megjelenítés</translation>
+<translation id="6686490380836145850">Jobbra lévő lapok bezárása</translation>
 <translation id="6694634756612002311">Megosztás kezelése</translation>
 <translation id="6709297274997495821">Lap kiválasztása</translation>
 <translation id="6744956528665271406">Csoport színének szerkesztése</translation>
 <translation id="6784585810034073638">{TAB_COUNT,plural, =1{Hozzáadás a következő, <ph name="TAB_COUNT1" /> lapot tartalmazó lapcsoporthoz: <ph name="TITLE_OF_GROUP" />}other{Hozzáadás a következő, <ph name="TAB_COUNT1" /> lapot tartalmazó lapcsoporthoz: <ph name="TITLE_OF_GROUP" />}}</translation>
 <translation id="6818926723028410516">Válasszon elemeket</translation>
+<translation id="68541483639528434">A többi lap bezárása</translation>
 <translation id="6856809498882026482">Több lapot kiválasztó mód elrejtése</translation>
 <translation id="6957436309971790274">21 nap inaktivitás után</translation>
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{A következő, <ph name="TABS_COUNT_ONE" /> lapot tartalmazó, <ph name="COLOR_NAME" /> színű megosztott lapcsoport kibontása: <ph name="TITLE_OF_GROUP" />.}other{A következő, <ph name="TABS_COUNT_MANY" /> lapot tartalmazó, <ph name="COLOR_NAME" /> színű megosztott lapcsoport kibontása: <ph name="TITLE_OF_GROUP" />.}}</translation>

@@ -219,7 +219,7 @@
 <translation id="1330449323196174374">Фальцовка левой четверти</translation>
 <translation id="133173645041092770">Закрыть сайт</translation>
 <translation id="1333745675627230582">Играть в Chrome Dino</translation>
-<translation id="1333989956347591814">Ваши действия <ph name="BEGIN_EMPHASIS" />будут видны<ph name="END_EMPHASIS" />:
+<translation id="1333989956347591814">Ваши действия <ph name="BEGIN_EMPHASIS" />могут быть видны<ph name="END_EMPHASIS" />:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />сайтам, которые вы посещаете;
           <ph name="LIST_ITEM" />вашему системному администратору;

@@ -163,11 +163,13 @@
 <translation id="6589356853295569750">Obvestilo o spremembah deljene skupine zavihkov, odprto pri polni višini</translation>
 <translation id="6590332670428149473">Odpiranje menija z dejanji za deljeno skupino zavihkov <ph name="TITLE_OF_GROUP" /> barve <ph name="COLOR_NAME" />.</translation>
 <translation id="6615455863669487791">Pokaži mi</translation>
+<translation id="6686490380836145850">Zapri zavihke na desni</translation>
 <translation id="6694634756612002311">Upravljaj deljenje</translation>
 <translation id="6709297274997495821">Izberite zavihek</translation>
 <translation id="6744956528665271406">Uredi barvo skupine</translation>
 <translation id="6784585810034073638">{TAB_COUNT,plural, =1{Dodajanje v skupino <ph name="TITLE_OF_GROUP" /> z <ph name="TAB_COUNT1" /> zavihkom}one{Dodajanje v skupino <ph name="TITLE_OF_GROUP" /> z/s <ph name="TAB_COUNT1" /> zavihkom}two{Dodajanje v skupino <ph name="TITLE_OF_GROUP" /> z/s <ph name="TAB_COUNT1" /> zavihkoma}few{Dodajanje v skupino <ph name="TITLE_OF_GROUP" /> s/z <ph name="TAB_COUNT1" /> zavihki}other{Dodajanje v skupino <ph name="TITLE_OF_GROUP" /> s/z <ph name="TAB_COUNT1" /> zavihki}}</translation>
 <translation id="6818926723028410516">Izberite elemente</translation>
+<translation id="68541483639528434">Zapri druge zavihke</translation>
 <translation id="6856809498882026482">Skrij način z več izbirami</translation>
 <translation id="6957436309971790274">Po 21 dneh neaktivnosti</translation>
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{Razširitev deljene skupine zavihkov <ph name="TITLE_OF_GROUP" /> z <ph name="TABS_COUNT_ONE" /> zavihkom, barva: <ph name="COLOR_NAME" />.}one{Razširitev deljene skupine zavihkov <ph name="TITLE_OF_GROUP" /> s/z <ph name="TABS_COUNT_MANY" /> zavihkom, barva: <ph name="COLOR_NAME" />.}two{Razširitev deljene skupine zavihkov <ph name="TITLE_OF_GROUP" /> s/z <ph name="TABS_COUNT_MANY" /> zavihkoma, barva: <ph name="COLOR_NAME" />.}few{Razširitev deljene skupine zavihkov <ph name="TITLE_OF_GROUP" /> s/z <ph name="TABS_COUNT_MANY" /> zavihki, barva: <ph name="COLOR_NAME" />.}other{Razširitev deljene skupine zavihkov <ph name="TITLE_OF_GROUP" /> s/z <ph name="TABS_COUNT_MANY" /> zavihki, barva: <ph name="COLOR_NAME" />.}}</translation>

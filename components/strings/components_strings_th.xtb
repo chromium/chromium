@@ -152,6 +152,7 @@
 <translation id="1228893227497259893">ตัวระบุเอนทิตีไม่ถูกต้อง</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (ตรวจพบอัตโนมัติ)</translation>
 <translation id="1232569758102978740">ไม่ระบุชื่อ</translation>
+<translation id="1234539281285007945">ต้องระบุ<ph name="FIELD_1" /></translation>
 <translation id="1236081509407217141">อนุญาต VR ไหม</translation>
 <translation id="1236689197410206751">AfterPay</translation>
 <translation id="1240347957665416060">ชื่ออุปกรณ์ของคุณ</translation>
@@ -472,6 +473,7 @@
 <translation id="1721424275792716183">* ช่องที่ต้องกรอก</translation>
 <translation id="1723636263173393300">นโยบายนี้ควรมีทางลัดไม่เกิน <ph name="MAX_ITEMS_LIMIT" /> รายการ</translation>
 <translation id="1725591448053514783">Envelope You 6</translation>
+<translation id="172754119609519423">ต้องระบุ<ph name="FIELD_1" /> <ph name="FIELD_2" /> หรือ<ph name="FIELD_3" /></translation>
 <translation id="1727613060316725209">ใบรับรองถูกต้อง</translation>
 <translation id="1728677426644403582">คุณกำลังดูซอร์สโค้ดของหน้าเว็บ</translation>
 <translation id="173080396488393970">ไม่รองรับบัตรประเภทนี้</translation>
@@ -1432,6 +1434,7 @@
 <translation id="3220264767789936523">ชุดออกงาน</translation>
 <translation id="3223287115535306850">ทรอบเบอร์การเปิดแอป</translation>
 <translation id="3223425961342298674">ไม่อนุญาตให้เข้าถึงตําแหน่ง</translation>
+<translation id="3225277284238802910">ต้องระบุ<ph name="FIELD_1" />หรือ<ph name="FIELD_2" /></translation>
 <translation id="3225319735946384299">การรับรองโค้ด</translation>
 <translation id="3225919329040284222">เซิร์ฟเวอร์แสดงใบรับรองที่ไม่ตรงกับการคาดการณ์ที่มีอยู่ การคาดการณ์เหล่านี้มีอยู่ในบางเว็บไซต์ที่มีการรักษาความปลอดภัยสูงเพื่อปกป้องคุณ</translation>
 <translation id="3226128629678568754">กดปุ่มโหลดซ้ำเพื่อส่งซ้ำข้อมูลที่จำเป็นในการโหลดหน้าเว็บ</translation>

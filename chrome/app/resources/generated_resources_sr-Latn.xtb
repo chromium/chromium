@@ -704,6 +704,7 @@ Dozvole koje ste već dali aplikacijama mogu da važe za ovaj nalog. Možete da
 <translation id="1473927070149284123">Probajte ponovo ili se povežite ručno na mrežu</translation>
 <translation id="1474785664565228650">Promena podešavanja mikrofona zahteva ponovno pokretanje Parallels Desktop-a. Ponovo pokrenite Parallels Desktop da biste nastavili.</translation>
 <translation id="1476088332184200792">Kopirajte na svoj uređaj</translation>
+<translation id="1476595624592550506">Promenite lozinku</translation>
 <translation id="1476607407192946488">&amp;Podešavanja jezika</translation>
 <translation id="1477446329585670721"><ph name="DOMAIN" /> zahteva da pametna kartica ostane umetnuta.</translation>
 <translation id="1477654881618305065">Organizacija vam ne dozvoljava deljenje ovog sadržaja. Ako vam treba pomoć, obratite se administratoru.</translation>
@@ -2179,6 +2180,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2477218554275525952">Ne zatvaraj Gemini bočnu traku pri otvaranju nove kartice</translation>
 <translation id="2478176599153288112">Dozvole za medijske datoteke za „<ph name="EXTENSION" />“</translation>
 <translation id="24786041351753425">Omogućite uslugu vraćanja podataka.</translation>
+<translation id="2479148705183875116">Idi u Podešavanja</translation>
 <translation id="2479541499757560845">Podešavanja tastature za pristupnost</translation>
 <translation id="2480868415629598489">Menjanje podataka koje prekopirate</translation>
 <translation id="2480881140544300950">Aktuelni pretraživač koji upravlja stranicom nove kartice</translation>
@@ -4694,6 +4696,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="4213918571089943508">Google nalog deteta</translation>
 <translation id="4214192212360095377">Isključi</translation>
 <translation id="4216407171061541111">Organizacija je isključila čuvanje kartica na Google nalogu</translation>
+<translation id="4216511743389425832">Slušajte ovu stranicu</translation>
 <translation id="4217571870635786043">Diktiranje</translation>
 <translation id="4218081191298393750">Kliknite na ikonu zvučnika da biste isključili zvuk za ovu karticu</translation>
 <translation id="4220157655212610908">Koristite spoljni bezbednosni ključ</translation>
@@ -9092,7 +9095,6 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="732845903678043302">{BOOKMARK_COUNT,plural, =1{1 obeleživač je sačuvan samo na ovom uređaju. Da biste ga koristili na drugim uređajima, sačuvajte ga na Google nalogu.}one{{BOOKMARK_COUNT} obeleživač je sačuvan samo na ovom uređaju. Da biste ih koristili na drugim uređajima, sačuvajte ih na Google nalogu.}few{{BOOKMARK_COUNT} obeleživača su sačuvana samo na ovom uređaju. Da biste ih koristili na drugim uređajima, sačuvajte ih na Google nalogu.}other{{BOOKMARK_COUNT} obeleživača je sačuvano samo na ovom uređaju. Da biste ih koristili na drugim uređajima, sačuvajte ih na Google nalogu.}}</translation>
 <translation id="7328867076235380839">Nevažeća kombinacija</translation>
-<translation id="7329009627557479564">Otpremanje nije uspelo. Fajl premašuje maksimalnu podržanu veličinu.</translation>
 <translation id="7329154610228416156">Prijavljivanje nije uspelo jer je konfigurisano za korišćenje nebezbednog URL-a (<ph name="BLOCKED_URL" />). Kontaktirajte administratora.</translation>
 <translation id="7330533963640151632">Podešavanja funkcije <ph name="FEATURE_NAME" /> za uređaj koji koristi <ph name="USER_NAME" />. Deli se pomoću naloga <ph name="USER_EMAIL" />.</translation>
 <translation id="733058866272972585">Ovom sajtu nije dozvoljeno korišćenje identifikatora za puštanje zaštićenog sadržaja.</translation>

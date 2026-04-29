@@ -163,11 +163,13 @@
 <translation id="6589356853295569750">ແຈ້ງການກ່ຽວກັບການປ່ຽນແປງກຸ່ມແຖບທີ່ແບ່ງປັນແລ້ວທີ່ເປີດຢູ່ທີ່ຄວາມສູງເຕັມ</translation>
 <translation id="6590332670428149473">ເປີດເມນູຄຳສັ່ງຂອງກຸ່ມແຖບສຳລັບກຸ່ມແຖບ <ph name="TITLE_OF_GROUP" /> ທີ່ແບ່ງປັນ, ສີ <ph name="COLOR_NAME" />.</translation>
 <translation id="6615455863669487791">ສະ​ແດງຂ້ອຍ</translation>
+<translation id="6686490380836145850">ປິດແຖບໄປທາງຂວາ</translation>
 <translation id="6694634756612002311">ຈັດການການແບ່ງປັນ</translation>
 <translation id="6709297274997495821">ເລືອກແຖບ</translation>
 <translation id="6744956528665271406">ແກ້ໄຂສີກຸ່ມ</translation>
 <translation id="6784585810034073638">{TAB_COUNT,plural, =1{ເພີ່ມໃສ່ກຸ່ມທີ່ມີຊື່ວ່າ <ph name="TITLE_OF_GROUP" /> ດ້ວຍ <ph name="TAB_COUNT1" /> ແຖບ}other{ເພີ່ມໃສ່ກຸ່ມທີ່ມີຊື່ວ່າ <ph name="TITLE_OF_GROUP" /> ດ້ວຍ <ph name="TAB_COUNT1" /> ແຖບ}}</translation>
 <translation id="6818926723028410516">ເລືອກລາຍການ</translation>
+<translation id="68541483639528434">ປິດແຖບອື່ນ</translation>
 <translation id="6856809498882026482">ເຊື່ອງໂໝດເລືອກຫຼາຍລາຍການ</translation>
 <translation id="6957436309971790274">ຫຼັງຈາກບໍ່ເຄື່ອນໄຫວ 21 ມື້</translation>
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{ຂະຫຍາຍກຸ່ມແຖບ <ph name="TITLE_OF_GROUP" /> ທີ່ແບ່ງປັນເຊິ່ງມີ <ph name="TABS_COUNT_ONE" /> ແຖບ, ສີ <ph name="COLOR_NAME" />.}other{ຂະຫຍາຍກຸ່ມແຖບ <ph name="TITLE_OF_GROUP" /> ທີ່ແບ່ງປັນເຊິ່ງມີ <ph name="TABS_COUNT_MANY" /> ແຖບ, ສີ <ph name="COLOR_NAME" />.}}</translation>

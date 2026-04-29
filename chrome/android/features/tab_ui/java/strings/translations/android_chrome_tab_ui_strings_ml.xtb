@@ -163,11 +163,13 @@
 <translation id="6589356853295569750">പങ്കിട്ട ടാബ് ഗ്രൂപ്പിലെ മാറ്റങ്ങളെ കുറിച്ചുള്ള അറിയിപ്പ് സ്ക്രീനിന്റെ പൂർണ്ണ ഉയരത്തിൽ തുറന്നു</translation>
 <translation id="6590332670428149473"><ph name="TITLE_OF_GROUP" /> എന്ന പങ്കിട്ട ടാബ് ഗ്രൂപ്പിനുള്ള, ടാബ് ഗ്രൂപ്പ് പ്രവർത്തന മെനു തുറക്കുക, <ph name="COLOR_NAME" /> നിറം.</translation>
 <translation id="6615455863669487791">എന്നെ കാണിക്കുക</translation>
+<translation id="6686490380836145850">വലത്തേക്കുള്ള ടാബുകള്‍ അടയ്ക്കുക</translation>
 <translation id="6694634756612002311">പങ്കിടൽ മാനേജ് ചെയ്യുക</translation>
 <translation id="6709297274997495821">ടാബ് തിരഞ്ഞെടുക്കുക</translation>
 <translation id="6744956528665271406">ഗ്രൂപ്പിന്റെ നിറം എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="6784585810034073638">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT1" /> ടാബുള്ള <ph name="TITLE_OF_GROUP" /> എന്ന പേരിലുള്ള ഗ്രൂപ്പിലേക്ക് ചേർത്തു}other{<ph name="TAB_COUNT1" /> ടാബുകളുള്ള <ph name="TITLE_OF_GROUP" /> എന്ന പേരിലുള്ള ഗ്രൂപ്പിലേക്ക് ചേർത്തു}}</translation>
 <translation id="6818926723028410516">ഇനങ്ങൾ തിരഞ്ഞെടുക്കുക</translation>
+<translation id="68541483639528434">മറ്റ് ടാബുകള്‍ അടയ്ക്കുക</translation>
 <translation id="6856809498882026482">ഒന്നിലധികം തിരഞ്ഞെടുക്കൽ മോഡ് മറയ്ക്കുക</translation>
 <translation id="6957436309971790274">21 ദിവസത്തിന് ശേഷം നിഷ്‌ക്രിയമായി</translation>
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{<ph name="COLOR_NAME" /> നിറത്തിലുള്ള <ph name="TABS_COUNT_ONE" /> ടാബ് ഉൾപ്പെടുത്തി <ph name="TITLE_OF_GROUP" /> എന്ന പങ്കിട്ട ടാബ് ഗ്രൂപ്പ് വികസിപ്പിക്കുക.}other{<ph name="COLOR_NAME" /> നിറത്തിലുള്ള <ph name="TABS_COUNT_MANY" /> ടാബുകൾ ഉൾപ്പെടുത്തി <ph name="TITLE_OF_GROUP" /> എന്ന പങ്കിട്ട ടാബ് ഗ്രൂപ്പ് വികസിപ്പിക്കുക.}}</translation>

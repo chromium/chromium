@@ -37,6 +37,7 @@
 <translation id="1384959399684842514">Nedladdningen har pausats</translation>
 <translation id="1396327438254055134">Tillåt att webbplatsen använder V8-optimeraren.</translation>
 <translation id="1409338233051621926">Tryck på Appar och sedan på Standardappar</translation>
+<translation id="1414315029670184034">Tillåt inte att webbplatser använder kameran</translation>
 <translation id="1415402041810619267">Webbadressen har trunkerats</translation>
 <translation id="1415855080660575082">Tillåt att Chrome delar dina senaste flikar med enheten så att du kan se dem i enhetens applista och sökresultat. Du kan aktivera eller inaktivera detta i Chrome-inställningarna.</translation>
 <translation id="1420688843103859429">Navigera framåt och bakåt genom att svepa med två fingrar på styrplattan</translation>
@@ -742,7 +743,6 @@ Avancerat skydd styr följande Chrome-inställningar:</translation>
 <translation id="8676374126336081632">Radera inmatning</translation>
 <translation id="8681886425883659911">Annonser blockeras på webbplatser som är kända för att visa påträngande eller vilseledande annonser</translation>
 <translation id="868929229000858085">Sök bland kontakterna</translation>
-<translation id="8707904142362025782">Webbplatsen får begära åtkomst till kameran</translation>
 <translation id="8712637175834984815">Uppfattat</translation>
 <translation id="8715862698998036666">Dra uppifrån och svep från den vänstra eller högra kanten för att avsluta helskärmsläget.</translation>
 <translation id="8716050156658570300">Webbplatser får begära åtkomst till rörelse- och ljussensorer</translation>

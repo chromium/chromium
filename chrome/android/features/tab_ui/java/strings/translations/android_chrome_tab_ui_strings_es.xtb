@@ -163,11 +163,13 @@
 <translation id="6589356853295569750">Aviso sobre los cambios en el grupo de pestañas compartido a altura completa</translation>
 <translation id="6590332670428149473">Abrir el menú de acciones del grupo de pestañas compartido <ph name="TITLE_OF_GROUP" />, color <ph name="COLOR_NAME" />.</translation>
 <translation id="6615455863669487791">Ver</translation>
+<translation id="6686490380836145850">Cerrar pestañas a la derecha</translation>
 <translation id="6694634756612002311">Gestionar uso compartido</translation>
 <translation id="6709297274997495821">Seleccionar pestaña</translation>
 <translation id="6744956528665271406">Editar color del grupo</translation>
 <translation id="6784585810034073638">{TAB_COUNT,plural, =1{Añadir al grupo titulado <ph name="TITLE_OF_GROUP" /> con <ph name="TAB_COUNT1" /> pestaña}other{Añadir al grupo titulado <ph name="TITLE_OF_GROUP" /> con <ph name="TAB_COUNT1" /> pestañas}}</translation>
 <translation id="6818926723028410516">Seleccionar elementos</translation>
+<translation id="68541483639528434">Cerrar las demás pestañas</translation>
 <translation id="6856809498882026482">Ocultar el modo de selección múltiple</translation>
 <translation id="6957436309971790274">Después de 21 días de inactividad</translation>
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{Desplegar el grupo de pestañas compartido <ph name="TITLE_OF_GROUP" /> con <ph name="TABS_COUNT_ONE" /> pestaña de color <ph name="COLOR_NAME" />.}other{Desplegar el grupo de pestañas compartido <ph name="TITLE_OF_GROUP" /> con <ph name="TABS_COUNT_MANY" /> pestañas de color <ph name="COLOR_NAME" />.}}</translation>

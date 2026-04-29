@@ -163,11 +163,13 @@
 <translation id="6589356853295569750">เปิดประกาศเกี่ยวกับการเปลี่ยนแปลงกลุ่มแท็บที่แชร์ไว้ที่ระดับความสูงเต็มหน้าจอแล้ว</translation>
 <translation id="6590332670428149473">เปิดเมนูการทำงานกลุ่มแท็บสำหรับกลุ่มแท็บ "<ph name="TITLE_OF_GROUP" />" ที่แชร์ สี<ph name="COLOR_NAME" /></translation>
 <translation id="6615455863669487791">แสดงให้ฉันเห็น</translation>
+<translation id="6686490380836145850">ปิดแท็บทางด้านขวา</translation>
 <translation id="6694634756612002311">จัดการการแชร์</translation>
 <translation id="6709297274997495821">เลือกแท็บ</translation>
 <translation id="6744956528665271406">แก้ไขสีกลุ่ม</translation>
 <translation id="6784585810034073638">{TAB_COUNT,plural, =1{เพิ่มไปยังกลุ่มชื่อ <ph name="TITLE_OF_GROUP" /> ที่มี <ph name="TAB_COUNT1" /> แท็บ}other{เพิ่มไปยังกลุ่มชื่อ <ph name="TITLE_OF_GROUP" /> ที่มี <ph name="TAB_COUNT1" /> แท็บ}}</translation>
 <translation id="6818926723028410516">เลือกรายการ</translation>
+<translation id="68541483639528434">ปิดแท็บอื่นๆ</translation>
 <translation id="6856809498882026482">ซ่อนโหมดเลือกหลายรายการ</translation>
 <translation id="6957436309971790274">หลังจากไม่มีการใช้งาน 21 วัน</translation>
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{ขยายกลุ่มแท็บ "<ph name="TITLE_OF_GROUP" />" ที่แชร์ซึ่งมี <ph name="TABS_COUNT_ONE" /> แท็บ สี<ph name="COLOR_NAME" />}other{ขยายกลุ่มแท็บ "<ph name="TITLE_OF_GROUP" />" ที่แชร์ซึ่งมี <ph name="TABS_COUNT_MANY" /> แท็บ สี<ph name="COLOR_NAME" />}}</translation>

@@ -163,11 +163,13 @@
 <translation id="6589356853295569750">Isaziso ngoshintsho lokuvuleka ekuphakameni okugcwele eQenjini Lethebhu Elabiwe</translation>
 <translation id="6590332670428149473">Vula imenyu yesenzo seqembu lethebhu yeqembu lethebhu elabiwe le-<ph name="TITLE_OF_GROUP" />, umbala <ph name="COLOR_NAME" />.</translation>
 <translation id="6615455863669487791">Ngibonise</translation>
+<translation id="6686490380836145850">Vala amathebhu ngakwesokudla</translation>
 <translation id="6694634756612002311">Lawula ukwabelana</translation>
 <translation id="6709297274997495821">Khetha ithebhu</translation>
 <translation id="6744956528665271406">Hlela umbala weqembu</translation>
 <translation id="6784585810034073638">{TAB_COUNT,plural, =1{Faka eqenjini okuthiwa yi-<ph name="TITLE_OF_GROUP" /> elinethebhu e-<ph name="TAB_COUNT1" />}one{Faka eqenjini okuthiwa yi-<ph name="TITLE_OF_GROUP" /> elinamathebhu angu-<ph name="TAB_COUNT1" />}other{Faka eqenjini okuthiwa yi-<ph name="TITLE_OF_GROUP" /> elinamathebhu angu-<ph name="TAB_COUNT1" />}}</translation>
 <translation id="6818926723028410516">Khetha izinto</translation>
+<translation id="68541483639528434">Vala amanye amathebhu</translation>
 <translation id="6856809498882026482">Fihla imodi yokukhetha okuningi</translation>
 <translation id="6957436309971790274">Ngemva kwezinsuku ezingama-21 ingasebenzi</translation>
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{Nweba iqembu lethebhu eyabiwe ngethebhu ye-<ph name="TITLE_OF_GROUP" /> ngethebhu engu-<ph name="TABS_COUNT_ONE" />, umbala o-<ph name="COLOR_NAME" />.}one{Nweba iqembu lethebhu eyabiwe ngethebhu ye-<ph name="TITLE_OF_GROUP" /> ngamathebhu angu-<ph name="TABS_COUNT_MANY" />, umbala o-<ph name="COLOR_NAME" />.}other{Nweba iqembu lethebhu eyabiwe ngethebhu ye-<ph name="TITLE_OF_GROUP" /> ngamathebhu angu-<ph name="TABS_COUNT_MANY" />, umbala o-<ph name="COLOR_NAME" />.}}</translation>

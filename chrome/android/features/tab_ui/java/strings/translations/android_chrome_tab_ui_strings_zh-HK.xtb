@@ -163,11 +163,13 @@
 <translation id="6589356853295569750">共用分頁群組變更通知已開啟，並顯示在整個畫面</translation>
 <translation id="6590332670428149473">開啟共享分頁群組「<ph name="TITLE_OF_GROUP" />」的操作選單，顏色為「<ph name="COLOR_NAME" />」。</translation>
 <translation id="6615455863669487791">顯示</translation>
+<translation id="6686490380836145850">關閉右側分頁</translation>
 <translation id="6694634756612002311">管理共用設定</translation>
 <translation id="6709297274997495821">選取分頁</translation>
 <translation id="6744956528665271406">編輯群組顏色</translation>
 <translation id="6784585810034073638">{TAB_COUNT,plural, =1{加去有 <ph name="TAB_COUNT1" /> 個分頁嘅「<ph name="TITLE_OF_GROUP" />」群組}other{加去有 <ph name="TAB_COUNT1" /> 個分頁嘅「<ph name="TITLE_OF_GROUP" />」群組}}</translation>
 <translation id="6818926723028410516">選取項目</translation>
+<translation id="68541483639528434">關閉其他分頁</translation>
 <translation id="6856809498882026482">隱藏多重選取模式</translation>
 <translation id="6957436309971790274">閒置 21 天後</translation>
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{展開有 <ph name="TABS_COUNT_ONE" /> 個分頁嘅共享分頁群組「<ph name="TITLE_OF_GROUP" />」，顏色係<ph name="COLOR_NAME" />。}other{展開有 <ph name="TABS_COUNT_MANY" /> 個分頁嘅共享分頁群組「<ph name="TITLE_OF_GROUP" />」，顏色係<ph name="COLOR_NAME" />。}}</translation>

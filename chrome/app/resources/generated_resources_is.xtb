@@ -704,6 +704,7 @@ Heimildir sem þú hefur þegar veitt forritum kunna að gilda á þessum reikni
 <translation id="1473927070149284123">Reyndu aftur eða tengstu handvirkt við netkerfi</translation>
 <translation id="1474785664565228650">Breytingin á hljóðnemastillingu krefst þess að Parallels Desktop sé endurræst. Endurræstu Parallels Desktop til að halda áfram.</translation>
 <translation id="1476088332184200792">Afrita í tæki</translation>
+<translation id="1476595624592550506">Breyta aðgangsorði</translation>
 <translation id="1476607407192946488">Tungumá&amp;lastillingar</translation>
 <translation id="1477446329585670721"><ph name="DOMAIN" /> krefst þess að snjallkortið sé haft í.</translation>
 <translation id="1477654881618305065">Fyrirtækið leyfir þér ekki að deila þessu efni. Hafðu samband við kerfisstjórann ef þig vantar aðstoð.</translation>
@@ -2195,6 +2196,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2477218554275525952">Haltu Gemini-hliðarstikunni opinni þegar þú opnar nýjan flipa</translation>
 <translation id="2478176599153288112">Heimildir margmiðlunarskráa fyrir „<ph name="EXTENSION" />“</translation>
 <translation id="24786041351753425">Kveikja á þjónustu fyrir endurheimt gagna.</translation>
+<translation id="2479148705183875116">Opna stillingar</translation>
 <translation id="2479541499757560845">Stillingar á aðgengi lyklaborðs</translation>
 <translation id="2480868415629598489">Breyta gögnum sem þú afritar og límir</translation>
 <translation id="2480881140544300950">Núverandi leitarvél stjórnar síðu nýrra flipa</translation>
@@ -4710,6 +4712,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4213918571089943508">Google-reikningur barns</translation>
 <translation id="4214192212360095377">Slökkva núna</translation>
 <translation id="4216407171061541111">Fyrirtækið þitt slökkti á vistun flipa á Google-reikningnum þínum</translation>
+<translation id="4216511743389425832">Hlusta á þessa síðu</translation>
 <translation id="4217571870635786043">Upplestur</translation>
 <translation id="4218081191298393750">Smelltu á hátalaratáknið til að slökkva á hljóði þessa flipa</translation>
 <translation id="4220157655212610908">Nota ytri öryggislykil</translation>
@@ -9106,7 +9109,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="732845903678043302">{BOOKMARK_COUNT,plural, =1{Eitt bókamerki er aðeins vistað í þessu tæki. Til að nota það í öðrum tækjum skaltu vista það á Google-reikningnum þínum.}one{{BOOKMARK_COUNT} bókamerki er aðeins vistað í þessu tæki. Til að nota þau í öðrum tækjum skaltu vista þau á Google-reikningnum þínum.}other{{BOOKMARK_COUNT} bókamerki eru aðeins vistuð í þessu tæki. Til að nota þau í öðrum tækjum skaltu vista þau á Google-reikningnum þínum.}}</translation>
 <translation id="7328867076235380839">Ógild samsetning</translation>
-<translation id="7329009627557479564">Ekki hægt að hlaða upp. Skrá er umfram hámarksstærð sem studd er.</translation>
 <translation id="7329154610228416156">Innskráning mistókst vegna þess að hún var stillt á að nota óörugga vefslóð (<ph name="BLOCKED_URL" />). Hafðu samband við kerfisstjóra.</translation>
 <translation id="7330533963640151632">Stillingar fyrir <ph name="FEATURE_NAME" /> fyrir tækið sem <ph name="USER_NAME" /> á og deilir með reikningnum <ph name="USER_EMAIL" />.</translation>
 <translation id="733058866272972585">Lokað hefur verið fyrir að þetta vefsvæði noti auðkenni til að spila varið efni.</translation>

@@ -37,6 +37,7 @@
 <translation id="1384959399684842514">Descarga en pausa</translation>
 <translation id="1396327438254055134">Permite que el sitio use el optimizador de V8.</translation>
 <translation id="1409338233051621926">Toca Aplicaciones y, a continuación, Aplicaciones predeterminadas</translation>
+<translation id="1414315029670184034">No permitir que los sitios usen tu cámara</translation>
 <translation id="1415402041810619267">URL truncada</translation>
 <translation id="1415855080660575082">Permite que Chrome comparta tus pestañas recientes con tu dispositivo para que aparezcan en la lista de aplicaciones y en los resultados de búsqueda de tu dispositivo. Puedes activar o desactivar esta opción en la configuración de Chrome.</translation>
 <translation id="1420688843103859429">Desliza dos dedos hacia delante o hacia atrás en el panel táctil para desplazarte</translation>
@@ -742,7 +743,6 @@ Protección Avanzada controla estos ajustes de Chrome:</translation>
 <translation id="8676374126336081632">Borrar entrada</translation>
 <translation id="8681886425883659911">Los anuncios se bloquean en sitios que se caracterizan por mostrar anuncios invasivos o engañosos</translation>
 <translation id="868929229000858085">Buscar en tus contactos</translation>
-<translation id="8707904142362025782">El sitio puede solicitar permiso para usar tu cámara</translation>
 <translation id="8712637175834984815">Entendido</translation>
 <translation id="8715862698998036666">Arrastra desde la parte superior y desliza desde el borde izquierdo o derecho para salir del modo de pantalla completa.</translation>
 <translation id="8716050156658570300">Los sitios pueden solicitar permiso para usar sensores de luz y movimiento</translation>

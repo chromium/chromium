@@ -163,11 +163,13 @@
 <translation id="6589356853295569750">Notis tentang perubahan Kumpulan Tab Kongsi yang dibuka pada ketinggian penuh</translation>
 <translation id="6590332670428149473">Buka menu tindakan kumpulan tab untuk kumpulan tab dikongsi <ph name="TITLE_OF_GROUP" />, warna <ph name="COLOR_NAME" />.</translation>
 <translation id="6615455863669487791">Tunjukkan kepada saya</translation>
+<translation id="6686490380836145850">Tutup tab di sebelah kanan</translation>
 <translation id="6694634756612002311">Urus perkongsian</translation>
 <translation id="6709297274997495821">Pilih tab</translation>
 <translation id="6744956528665271406">Edit warna kumpulan</translation>
 <translation id="6784585810034073638">{TAB_COUNT,plural, =1{Tambahkan pada kumpulan bernama <ph name="TITLE_OF_GROUP" /> dengan <ph name="TAB_COUNT1" /> tab}other{Tambahkan pada kumpulan bernama <ph name="TITLE_OF_GROUP" /> dengan <ph name="TAB_COUNT1" /> tab}}</translation>
 <translation id="6818926723028410516">Pilih item</translation>
+<translation id="68541483639528434">Tutup tab lain</translation>
 <translation id="6856809498882026482">Sembunyikan mod berbilang pilihan</translation>
 <translation id="6957436309971790274">Selepas tidak aktif selama 21 hari</translation>
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{Kembangkan kumpulan tab <ph name="TITLE_OF_GROUP" /> yang dikongsi dengan <ph name="TABS_COUNT_ONE" /> tab, warna <ph name="COLOR_NAME" />.}other{Kembangkan kumpulan tab <ph name="TITLE_OF_GROUP" /> yang dikongsi dengan <ph name="TABS_COUNT_MANY" /> tab, warna <ph name="COLOR_NAME" />.}}</translation>

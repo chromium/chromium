@@ -152,6 +152,7 @@
 <translation id="1228893227497259893">實體 ID 錯誤</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (自動偵測)</translation>
 <translation id="1232569758102978740">未命名</translation>
+<translation id="1234539281285007945">必須提供「<ph name="FIELD_1" />」</translation>
 <translation id="1236081509407217141">要允許 VR 嗎？</translation>
 <translation id="1236689197410206751">Afterpay</translation>
 <translation id="1240347957665416060">你的裝置名稱</translation>
@@ -471,6 +472,7 @@
 <translation id="1721424275792716183">* 這是必填欄位</translation>
 <translation id="1723636263173393300">這項政策最多只能有 <ph name="MAX_ITEMS_LIMIT" /> 個捷徑。</translation>
 <translation id="1725591448053514783">Envelope You 6</translation>
+<translation id="172754119609519423">必須提供「<ph name="FIELD_1" />」、「<ph name="FIELD_2" />」或「<ph name="FIELD_3" />」</translation>
 <translation id="1727613060316725209">憑證有效</translation>
 <translation id="1728677426644403582">目前顯示的是網頁原始碼</translation>
 <translation id="173080396488393970">不支援這種信用卡類型</translation>
@@ -1430,6 +1432,7 @@
 <translation id="3220264767789936523">正式服裝</translation>
 <translation id="3223287115535306850">應用程式啟動中動畫</translation>
 <translation id="3223425961342298674">不允許存取位置資訊</translation>
+<translation id="3225277284238802910">必須提供「<ph name="FIELD_1" />」或「<ph name="FIELD_2" />」</translation>
 <translation id="3225319735946384299">程式碼簽署</translation>
 <translation id="3225919329040284222">伺服器呈現的憑證與內建的預期條件不符。我們在系統中針對特定高安全性的網站內建了這些預期條件，目的在於保護你的資料安全無虞。</translation>
 <translation id="3226128629678568754">按下重新載入按鈕，重新提交載入網頁所需的資料。</translation>

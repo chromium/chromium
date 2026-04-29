@@ -702,6 +702,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1473927070149284123">Probeer het opnieuw of maak handmatig verbinding met een netwerk</translation>
 <translation id="1474785664565228650">Parallels Desktop moet worden herstart om de microfooninstelling te wijzigen. Herstart Parallels Desktop om door te gaan.</translation>
 <translation id="1476088332184200792">Kopiëren naar je apparaat</translation>
+<translation id="1476595624592550506">Je wachtwoord wijzigen</translation>
 <translation id="1476607407192946488">&amp;Taalinstellingen</translation>
 <translation id="1477446329585670721"><ph name="DOMAIN" /> vereist dat je smartcard geplaatst blijft.</translation>
 <translation id="1477654881618305065">Je organisatie staat niet toe dat je deze content deelt. Als je hulp nodig hebt, neem je contact op met de beheerder.</translation>
@@ -1464,6 +1465,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1989288015781834552">Herstart om de update af te ronden. Je tabbladen worden opnieuw geopend.</translation>
 <translation id="1989903373608997757">Altijd gebruiken</translation>
 <translation id="1990046457226896323">Spraakbestanden gedownload</translation>
+<translation id="1991370806334788445">Sta cookies van derden toe. Dit betekent dat je minder browserbeveiliging hebt, maar dat sitefuncties waarschijnlijk wel werken zoals verwacht.</translation>
 <translation id="1991829061375381344">Je hebt niet genoeg beschikbare licenties om dit Google Meet-hardwareapparaat in te schrijven. Neem contact op met je reseller om er meer aan te schaffen. Als je denkt dat je dit bericht ten onrechte krijgt, neem je contact op met je reseller.</translation>
 <translation id="199191324030140441">Niet storen uitzetten</translation>
 <translation id="1992397118740194946">Niet ingesteld</translation>
@@ -1772,6 +1774,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2204387456724731099">Deze selectie kan niet worden vertaald</translation>
 <translation id="2204613850236199029">Informatie verwijderd</translation>
 <translation id="2207116775853792104">Deze extensie behouden</translation>
+<translation id="2208283860517704341"><ph name="CREDENTIAL_TYPE" /> delen</translation>
 <translation id="2209841631181508629"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> deelt je <ph name="FIELDS_STRING" /> met deze site om door te gaan. Bekijk de <ph name="BEGIN_LINK" />servicevoorwaarden<ph name="END_LINK" /> van deze site.</translation>
 <translation id="2210462644007531147">Kan de installatie niet afronden</translation>
 <translation id="2211043920024403606">Profielgegevens</translation>
@@ -2181,6 +2184,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2477218554275525952">De Gemini-zijbalk openhouden als je een nieuw tabblad opent</translation>
 <translation id="2478176599153288112">Mediabestandsrechten voor '<ph name="EXTENSION" />'</translation>
 <translation id="24786041351753425">Gegevensherstelservice aanzetten</translation>
+<translation id="2479148705183875116">Naar Instellingen</translation>
 <translation id="2479541499757560845">Instellingen voor toetsenbord voor toegankelijkheid</translation>
 <translation id="2480868415629598489">Gegevens aanpassen die je kopieert en plakt</translation>
 <translation id="2480881140544300950">Huidige zoekmachine die je pagina Nieuw tabblad beheert</translation>
@@ -2346,6 +2350,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2588636910004461974">Apparaten van <ph name="VENDOR_NAME" /></translation>
 <translation id="2589658397149952302">Drive-bestanden nooit tonen</translation>
 <translation id="2593499352046705383">Check voordat je begint of je een back-up van je gegevens hebt. Als je <ph name="DEVICE_OS" /> installeert, wordt je harde schijf overschreven. Bekijk meer informatie op g.co/flex/InstallGuide.</translation>
+<translation id="2595508219468433076">Uit (geen regelfocus)</translation>
 <translation id="2597073208962000830">Dichtbij delen gebruikt bluetooth-scans om apparaten in de buurt te vinden.</translation>
 <translation id="2598136842498757793">Knoppen op werkbalk aanpassen</translation>
 <translation id="2598710988533271874">Nieuwe versie van Chrome beschikbaar</translation>
@@ -2455,7 +2460,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2665056444046933274">Sites kunnen deze functie gebruiken om toegang te krijgen tot andere apps en services op dit apparaat</translation>
 <translation id="2665394472441560184">Een nieuw woord toevoegen</translation>
 <translation id="2665647207431876759">Verlopen</translation>
-<translation id="2665919335226618153">Asjemenou! Er is iets misgegaan bij het formatteren.</translation>
+<translation id="2665919335226618153">Oeps! Er is iets misgegaan bij het formatteren.</translation>
 <translation id="2666247341166669829">Batterijniveau links: <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">Andere apps zijn ingesteld om dezelfde links te openen als <ph name="APP_NAME" />. Hiermee zet je uit dat <ph name="APP_NAME_2" /> en <ph name="APP_NAME_3" /> ondersteunde links openen.</translation>
 <translation id="2667463864537187133">Spellingcontrole beheren</translation>
@@ -4693,6 +4698,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4213918571089943508">Google-account van kind</translation>
 <translation id="4214192212360095377">Nu uitzetten</translation>
 <translation id="4216407171061541111">Je organisatie heeft tabbladen opslaan uitgezet in je Google-account</translation>
+<translation id="4216511743389425832">Deze pagina beluisteren</translation>
 <translation id="4217571870635786043">Dicteren</translation>
 <translation id="4218081191298393750">Klik op het speakericoon om het geluid uit te zetten voor dit tabblad</translation>
 <translation id="4220157655212610908">Een externe beveiligingssleutel gebruiken</translation>
@@ -5268,6 +5274,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4623894491222334521">Identiteitsdocumenten</translation>
 <translation id="4624054169152573743">Kleurenthema</translation>
 <translation id="4625078469366263107">App aanzetten</translation>
+<translation id="4625350031596795804">Stijl voor grote focus</translation>
 <translation id="4625905218692741757">Standaardkleur grijs</translation>
 <translation id="4627107755957573804">Sta toe dat sites en apps bestaande accounts upgraden om toegangssleutels te gebruiken</translation>
 <translation id="4627442949885028695">Doorgaan vanaf een ander apparaat</translation>
@@ -5646,6 +5653,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="4881685975363383806">Niet opnieuw herinneren</translation>
 <translation id="4881695831933465202">Openen</translation>
 <translation id="4882312758060467256">Heeft toegang tot deze site</translation>
+<translation id="4882805770036405108">Open de leesmodus sneller met een snelkoppeling. Druk op ⌥ + ⌘ + R om de leesmodus aan of uit te zetten.</translation>
 <translation id="4882848900607400156">Als je je exacte locatie deelt, kan Gemini je vragen nauwkeuriger beantwoorden. Je gegevens worden niet gebruikt om generatieve AI-modellen te verbeteren.</translation>
 <translation id="4882919381756638075">Sites gebruiken je microfoon vaak voor communicatiefuncties zoals videochatten</translation>
 <translation id="4883436287898674711">Alle sites op <ph name="WEBSITE_1" /></translation>
@@ -6760,6 +6768,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5678888125599911373">Je kunt tabbladen die je onlangs hebt gesloten opnieuw openen vanaf elk apparaat waarop je Chrome gebruikt</translation>
 <translation id="5678955352098267522">Je gegevens voor <ph name="WEBSITE_1" /> lezen</translation>
 <translation id="5680050361008726776"><ph name="ESIM_PROFILE_NAME" /> verwijderen?</translation>
+<translation id="5680716514229021751"><ph name="FILE_NAME" /> bevat gevoelige gegevens. Je organisatie laat je het bestand opslaan in cloudopslag of verwijderen. Je beheerder zegt: <ph name="CUSTOM_MESSAGE" /></translation>
 <translation id="5681586175480958839">Bestand wordt al geopend</translation>
 <translation id="5684110242705861346">De extensie <ph name="NAME" /> is toegevoegd door het beleid van je organisatie en beheert deze instelling. <ph name="BEGIN_LINK" />Details bekijken<ph name="END_LINK" /></translation>
 <translation id="5684181005476681636">Wifi-gegevens</translation>
@@ -6797,6 +6806,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5704875434923668958">Synchroniseren naar</translation>
 <translation id="5705005699929844214">Toegankelijkheidsopties altijd tonen</translation>
 <translation id="5705882733397021510">Terug</translation>
+<translation id="5707079561391284762">Cursorbeweging volgen</translation>
 <translation id="5707674184620508665">Je organisatie, <ph name="ACCOUNT_MANAGER" />, kan je bestaande gegevens niet bekijken of beheren. Ze blijven in het bestaande profiel staan.</translation>
 <translation id="5708171344853220004">Principal-naam van Microsoft</translation>
 <translation id="5711010025974903573">Servicelogboeken</translation>
@@ -6954,6 +6964,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5828181959764767444">Zonsondergang</translation>
 <translation id="5828545842856466741">Profiel toevoegen...</translation>
 <translation id="5828633471261496623">Bezig met afdrukken....</translation>
+<translation id="5829214552954466783"><ph name="CREDENTIAL_TYPE" /> delen voor gebruikersnaam: <ph name="USER_EMAIL" /></translation>
 <translation id="5829544019044013776">Je betaalmethoden in Google Wallet</translation>
 <translation id="5830205393314753525">Kan <ph name="APP_NAME" /> niet openen</translation>
 <translation id="5830512293931520102">Je wachtwoord is versleuteld en wordt nooit door iemand gezien</translation>
@@ -7499,6 +7510,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="6207937957461833379">Land/regio</translation>
 <translation id="6208521041562685716">Mobiele data activeren</translation>
 <translation id="6208725777148613371">Kan niet opslaan in <ph name="WEB_DRIVE" /> - <ph name="INTERRUPT_REASON" /></translation>
+<translation id="6209589022625766110">Het wachtwoord moet minstens 8 tekens lang zijn en minstens 2 van de volgende elementen bevatten: hoofdletters, kleine letters, cijfers of symbolen. Het wachtwoord mag geen herhaalde tekens of reeksen van 4 of meer tekens bevatten.</translation>
 <translation id="6209908325007204267">Je apparaat omvat een Chrome Enterprise Upgrade, maar je gebruikersnaam is niet gekoppeld aan een Enterprise-account. Ga op een secundair apparaat naar g.co/ChromeEnterpriseAccount om een Enterprise-account te maken.</translation>
 <translation id="6210282067670792090">Je kunt in de adresbalk deze sneltoetsen met snelkoppelingen voor zoekmachines en het doorzoeken van sites gebruiken.</translation>
 <translation id="6211067089253408231">Instant hotspot aanzetten</translation>
@@ -7633,6 +7645,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="6295855836753816081">Opslaan...</translation>
 <translation id="6298456705131259420">Dit heeft gevolgen voor de hier vermelde sites. Als je [*.] invoegt vóór een domeinnaam, wordt er een uitzondering gemaakt voor het hele domein. Als je bijvoorbeeld '[*.]google.com' toevoegt, kunnen cookies van derden ook actief zijn voor mail.google.com, omdat dit onderdeel is van google.com.</translation>
 <translation id="6300177430812514606">Geen toestemming om het sturen of ontvangen van gegevens te voltooien</translation>
+<translation id="6300478323573969040">Het wachtwoord moet minstens 12 tekens lang zijn en hoofdletters, kleine letters, cijfers en symbolen bevatten. Het wachtwoord mag geen herhaalde tekens of reeksen van 4 of meer tekens bevatten.</translation>
 <translation id="630065524203833229">&amp;Sluiten</translation>
 <translation id="6300718114348072351"><ph name="PRINTER_NAME" /> kan niet automatisch worden ingesteld. Geef geavanceerde printergegevens op. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="6301300352769835063">Toestaan dat Google je hardwaregegevens gebruikt om <ph name="DEVICE_OS" /> te verbeteren. Als je geen toestemming geeft, worden deze gegevens nog wel naar Google gestuurd om te bepalen welke updates nodig zijn. De gegevens worden niet anderszins opgeslagen of gebruikt. Bekijk meer informatie op g.co/flex/HWDataCollection.</translation>
@@ -8373,6 +8386,7 @@ Je hebt nog # gehackte wachtwoorden. Google Wachtwoordmanager raadt je aan deze 
 <translation id="6820079682647046800">Kerberos-verificatie mislukt</translation>
 <translation id="6820107710950761542">Neem contact op met je beheerder of check <ph name="BEGIN_LINK" /><ph name="LINK_TEXT" /><ph name="END_LINK" /> voor meer informatie</translation>
 <translation id="6821439254917412979"><ph name="EXTENSION_NAME" /> losmaken</translation>
+<translation id="6822549133264420850">Stijl voor kleine focus</translation>
 <translation id="6823174134746916417">Tikken-om-te-klikken voor touchpad</translation>
 <translation id="6823561724060793716">Via de adresbalk kun je paginagegevens openen om aanvullende informatie te bekijken over de pagina die je bezoekt</translation>
 <translation id="6824564591481349393">&amp;E-mailadres kopiëren</translation>
@@ -8883,6 +8897,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7186903260115204164">Voeg tekeningen uit de vrije hand, handtekeningen en markeringen toe met de nieuwe tool Tekenen</translation>
 <translation id="7186935534137027449">App-opdracht</translation>
 <translation id="7188508872042490670">Sitegegevens op het apparaat</translation>
+<translation id="7188755083797868960">Open de leesmodus sneller met een snelkoppeling. Druk op Alt + Shift + R om de leesmodus aan of uit te zetten.</translation>
 <translation id="7189234443051076392">Zorg dat er voldoende ruimte op je apparaat beschikbaar is</translation>
 <translation id="7189451821249468368">Je hebt niet voldoende upgrades om dit apparaat in te schrijven. Neem contact op met de salesafdeling om meer upgrades te kopen. Als je denkt dat dit bericht ten onrechte wordt weergegeven, neem je contact op met support.</translation>
 <translation id="7189558282078169397">Tabbladen van andere apparaten</translation>
@@ -9081,7 +9096,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="732845903678043302">{BOOKMARK_COUNT,plural, =1{1 bookmark wordt alleen op dit apparaat opgeslagen. Als je het wilt gebruiken op je andere apparaten, sla je het op in je Google-account.}other{{BOOKMARK_COUNT} bookmarks worden alleen op dit apparaat opgeslagen. Als je ze wilt gebruiken op je andere apparaten, sla je ze op in je Google-account.}}</translation>
 <translation id="7328867076235380839">Ongeldige combinatie</translation>
-<translation id="7329009627557479564">Kan niet uploaden. Bestand overschrijdt de maximale ondersteunde grootte.</translation>
 <translation id="7329154610228416156">Inloggen is mislukt omdat er een onbeveiligde URL (<ph name="BLOCKED_URL" />) wordt gebruikt. Neem contact op met je beheerder.</translation>
 <translation id="7330533963640151632">Instellingen voor <ph name="FEATURE_NAME" /> voor het apparaat van <ph name="USER_NAME" />, delen via het account <ph name="USER_EMAIL" />.</translation>
 <translation id="733058866272972585">Deze site mag geen ID's gebruiken om beveiligde content af te spelen.</translation>
@@ -9254,7 +9268,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7434509671034404296">Ontwikkelaar</translation>
 <translation id="7434757724413878233">Muisversnelling</translation>
 <translation id="7434969625063495310">Kan de printerserver niet toevoegen. Controleer de configuratie van de server en probeer het opnieuw.</translation>
-<translation id="7436921188514130341">Asjemenou! Er is iets misgegaan bij het veranderen van de naam.</translation>
+<translation id="7436921188514130341">Oeps! Er is iets misgegaan bij het veranderen van de naam.</translation>
 <translation id="7439519621174723623">Voeg een apparaatnaam toe om door te gaan</translation>
 <translation id="743982235360757672">Houd de AI-modus bij de hand terwijl je browst</translation>
 <translation id="7441736532026945583">Selecteer Groep verbergen om de groep uit je tabbladstrook te verwijderen</translation>
@@ -10391,6 +10405,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8217399928341212914">Automatische downloads van meerdere bestanden blijven blokkeren</translation>
 <translation id="8219785583603399823">Beoordelingen voor deze winkel bekijken</translation>
 <translation id="822050276545350872">Vanaf nu hoef je niet meer te wachten</translation>
+<translation id="8221358554841691213">Stijl voor gemiddelde focus</translation>
 <translation id="8221942262855134126">Wachtwoord beheren</translation>
 <translation id="8222112516148944758">Je tabbladgroepen worden automatisch opgeslagen en geüpdatet op al je apparaten</translation>
 <translation id="8222674561049363989">Bestand is geen geldig document</translation>
@@ -10804,6 +10819,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="850399339579925930">Woordenboeken</translation>
 <translation id="850561044295157831">Meer informatie over Help me met schrijven</translation>
 <translation id="8505669004895429027">Kleine besparingen</translation>
+<translation id="8507052544157927817">Stijl voor onderstreping</translation>
 <translation id="8507227974644337342">Schermresolutie</translation>
 <translation id="850763987657366362">Kan certificaat niet importeren</translation>
 <translation id="8508532351844333131"><ph name="WEBSITE_ORIGIN" /> wil informatie opslaan op je Android-apparaat</translation>
@@ -11839,6 +11855,7 @@ Op <ph name="BEGIN_LINK2" />policies.google.com<ph name="END_LINK2" /> vind je m
 <translation id="9192019773545828776">Krijg gesproken feedback zodat je je apparaat kunt gebruiken zonder naar het scherm te kijken. Braillefeedback is beschikbaar met een verbonden apparaat. Gebruik Ctrl + Alt + Z om ChromeVox aan en uit te zetten. Gebruik Zoeken + pijl-links of pijl-rechts om te navigeren. Gebruik Zoeken + spatiebalk om te selecteren (activeren).</translation>
 <translation id="9195969368671142407">Als je organisatie opslaan in je Google-account beperkt, kun je geen tabbladgroepen delen of eraan deelnemen</translation>
 <translation id="919686179725692564">Meer informatie over hoe je back-ups van je apps maakt</translation>
+<translation id="919840898042157087">Statische beweging</translation>
 <translation id="9199503643457729322">Klik om de Privacygids te verlaten.</translation>
 <translation id="9199695835892108985">Rechten voor alle seriële poorten resetten?</translation>
 <translation id="9200339982498053969"><ph name="ORIGIN" /> kan bestanden in <ph name="FOLDERNAME" /> bewerken</translation>

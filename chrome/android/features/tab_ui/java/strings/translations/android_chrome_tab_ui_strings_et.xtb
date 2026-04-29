@@ -163,11 +163,13 @@
 <translation id="6589356853295569750">Teade, kui jagatud vahelehegruppide muutused on avatud täiskõrgusel</translation>
 <translation id="6590332670428149473">Avage jagatud vahelehegrupi <ph name="TITLE_OF_GROUP" /> toimingute menüü, värv <ph name="COLOR_NAME" />.</translation>
 <translation id="6615455863669487791">Kuva mulle</translation>
+<translation id="6686490380836145850">Sule vahelehed paremalt</translation>
 <translation id="6694634756612002311">Halda jagamist</translation>
 <translation id="6709297274997495821">Vahelehe valimine</translation>
 <translation id="6744956528665271406">Muuda grupi värvi</translation>
 <translation id="6784585810034073638">{TAB_COUNT,plural, =1{Lisage grupile nimega <ph name="TITLE_OF_GROUP" /> koos <ph name="TAB_COUNT1" /> vahelehega}other{Lisage grupile nimega <ph name="TITLE_OF_GROUP" /> koos <ph name="TAB_COUNT1" /> vahelehega}}</translation>
 <translation id="6818926723028410516">Valige üksused</translation>
+<translation id="68541483639528434">Sule muud vahelehed</translation>
 <translation id="6856809498882026482">Peida mitmikvalimise režiim</translation>
 <translation id="6957436309971790274">21 passiivse päeva järel</translation>
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{Laienda jagatud vahelehegruppi <ph name="TITLE_OF_GROUP" /> vahelehega <ph name="TABS_COUNT_ONE" />, värv on <ph name="COLOR_NAME" />.}other{Laienda jagatud vahelehegruppi <ph name="TITLE_OF_GROUP" /> vahelehega <ph name="TABS_COUNT_MANY" />, värv on <ph name="COLOR_NAME" />.}}</translation>

@@ -702,6 +702,7 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1473927070149284123">Téntao de novo ou conéctate a unha rede de maneira manual.</translation>
 <translation id="1474785664565228650">Para cambiar a configuración do micrófono, é necesario reiniciar Parallels Desktop. Reiníciao para continuar.</translation>
 <translation id="1476088332184200792">Copiar no teu dispositivo</translation>
+<translation id="1476595624592550506">Cambia o teu contrasinal</translation>
 <translation id="1476607407192946488">&amp;Configuración de idioma</translation>
 <translation id="1477446329585670721"><ph name="DOMAIN" /> require que manteñas a tarxeta intelixente inserida.</translation>
 <translation id="1477654881618305065">A túa organización non che permite compartir este contido. Se precisas axuda, ponte en contacto co teu administrador.</translation>
@@ -2180,6 +2181,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2477218554275525952">Mantén aberta a barra lateral de Gemini cando abras unha pestana nova</translation>
 <translation id="2478176599153288112">Permisos de ficheiros multimedia para "<ph name="EXTENSION" />"</translation>
 <translation id="24786041351753425">Activar servizo de recuperación de datos.</translation>
+<translation id="2479148705183875116">Ir a Configuración</translation>
 <translation id="2479541499757560845">Configuración do teclado de accesibilidade</translation>
 <translation id="2480868415629598489">Modificar os datos que copias e pegas</translation>
 <translation id="2480881140544300950">Buscador actual que xestiona a páxina Nova pestana</translation>
@@ -4698,6 +4700,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4213918571089943508">Conta de Google do teu fillo ou filla</translation>
 <translation id="4214192212360095377">Desactivar agora</translation>
 <translation id="4216407171061541111">A túa organización desactivou a opción de gardar pestanas na túa Conta de Google</translation>
+<translation id="4216511743389425832">Escoitar esta páxina</translation>
 <translation id="4217571870635786043">Ditado</translation>
 <translation id="4218081191298393750">Fai clic na icona do altofalante para silenciar esta pestana</translation>
 <translation id="4220157655212610908">Usar unha chave de seguranza externa</translation>
@@ -5652,6 +5655,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="4881685975363383806">Non lembrar a próxima vez</translation>
 <translation id="4881695831933465202">Abrir</translation>
 <translation id="4882312758060467256">Ten acceso a este sitio</translation>
+<translation id="4882805770036405108">Abre o modo de lectura máis rápido cun atallo. Para activalo ou desactivalo, preme ⌥ + ⌘ + R.</translation>
 <translation id="4882848900607400156">Se compartes a túa localización precisa, Gemini poderá responder as túas preguntas con máis precisión. Os teus datos non se usarán para mellorar os modelos de IA xenerativa.</translation>
 <translation id="4882919381756638075">Os sitios adoitan usar o micrófono para ofrecerche determinadas funcións relacionadas coa comunicación (por exemplo, chat de vídeo)</translation>
 <translation id="4883436287898674711">Todos os sitios de <ph name="WEBSITE_1" /></translation>
@@ -8889,6 +8893,7 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="7186903260115204164">Engade debuxos á man alzada, sinaturas e destaques coa nova ferramenta de debuxar</translation>
 <translation id="7186935534137027449">Comando da aplicación</translation>
 <translation id="7188508872042490670">Datos dos sitios no dispositivo</translation>
+<translation id="7188755083797868960">Abre o modo de lectura máis rápido cun atallo. Para activalo ou desactivalo, preme Alt + Maiúsculas + R.</translation>
 <translation id="7189234443051076392">Asegúrate de que hai espazo suficiente no teu dispositivo</translation>
 <translation id="7189451821249468368">Non tes licenzas suficientes para inscribir este dispositivo. Ponte en contacto co departamento de vendas para comprar máis. Se cres que esta mensaxe apareceu por erro, ponte en contacto co servizo de asistencia.</translation>
 <translation id="7189558282078169397">Pestanas doutros dispositivos</translation>
@@ -9087,7 +9092,6 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="732845903678043302">{BOOKMARK_COUNT,plural, =1{Hai 1 marcador gardado só neste dispositivo. Para usalo noutros, gárdao na túa Conta de Google.}other{Hai {BOOKMARK_COUNT} marcadores gardados só neste dispositivo. Para usalos noutros dispositivos, gárdaos na túa Conta de Google.}}</translation>
 <translation id="7328867076235380839">A combinación non é válida</translation>
-<translation id="7329009627557479564">Non se puido cargar o ficheiro. Supera o tamaño máximo permitido.</translation>
 <translation id="7329154610228416156">Produciuse un erro no inicio de sesión porque se configurou para utilizar un URL non seguro (<ph name="BLOCKED_URL" />). Ponte en contacto co administrador.</translation>
 <translation id="7330533963640151632">Configuración de <ph name="FEATURE_NAME" /> para o dispositivo de <ph name="USER_NAME" />, que comparte contido coa conta <ph name="USER_EMAIL" />.</translation>
 <translation id="733058866272972585">Denegóuselle a este sitio o permiso de usar identificadores para reproducir contido protexido.</translation>

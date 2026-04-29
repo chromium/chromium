@@ -152,6 +152,7 @@
 <translation id="1228893227497259893">Неправильний ідентифікатор організації</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (визначено автоматично)</translation>
 <translation id="1232569758102978740">Без імені</translation>
+<translation id="1234539281285007945">Потрібно заповнити поле "<ph name="FIELD_1" />"</translation>
 <translation id="1236081509407217141">Дозволити віртуальну реальність?</translation>
 <translation id="1236689197410206751">AfterPay</translation>
 <translation id="1240347957665416060">Назва пристрою</translation>
@@ -472,6 +473,7 @@
 <translation id="1721424275792716183">* Обов’язкове поле</translation>
 <translation id="1723636263173393300">Максимальна кількість ярликів у цьому правилі: <ph name="MAX_ITEMS_LIMIT" />.</translation>
 <translation id="1725591448053514783">Конверт You 6</translation>
+<translation id="172754119609519423">Потрібно заповнити поле "<ph name="FIELD_1" />", "<ph name="FIELD_2" />" або "<ph name="FIELD_3" />"</translation>
 <translation id="1727613060316725209">Сертифікат дійсний</translation>
 <translation id="1728677426644403582">Ви переглядаєте джерело веб-сторінки</translation>
 <translation id="173080396488393970">Цей тип картки не підтримується</translation>
@@ -1432,6 +1434,7 @@
 <translation id="3220264767789936523">Офіційний одяг</translation>
 <translation id="3223287115535306850">Тробер запуску додатка</translation>
 <translation id="3223425961342298674">Доступ до геоданих заборонено</translation>
+<translation id="3225277284238802910">Потрібно заповнити поле "<ph name="FIELD_1" />" або "<ph name="FIELD_2" />"</translation>
 <translation id="3225319735946384299">Підписування коду</translation>
 <translation id="3225919329040284222">Сервер надав сертифікат, який не відповідає очікуваним вбудованим параметрам. Ці очікувані параметри встановлено для певних веб-сайтів із високим рівнем безпеки, щоб захистити вас.</translation>
 <translation id="3226128629678568754">Натисніть кнопку перезавантаження, щоб повторно надіслати дані, потрібні для завантаження сторінки.</translation>

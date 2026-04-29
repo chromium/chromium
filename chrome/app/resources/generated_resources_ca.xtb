@@ -702,6 +702,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1473927070149284123">Torna-ho a provar o connecta't a una xarxa manualment</translation>
 <translation id="1474785664565228650">El canvi a l'opció de configuració del micròfon requereix reiniciar Parallels Desktop. Fes-ho per continuar.</translation>
 <translation id="1476088332184200792">Copia-ho al dispositiu</translation>
+<translation id="1476595624592550506">Canvia la contrasenya</translation>
 <translation id="1476607407192946488">&amp;Configuració d'idioma</translation>
 <translation id="1477446329585670721"><ph name="DOMAIN" /> requereix que mantinguis la targeta intel·ligent inserida.</translation>
 <translation id="1477654881618305065">La teva organització no et permet compartir aquest contingut. Si necessites ajuda, contacta amb l'administrador.</translation>
@@ -2181,6 +2182,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2477218554275525952">Mantén oberta la barra lateral de Gemini quan obris una pestanya nova</translation>
 <translation id="2478176599153288112">Permisos de fitxer multimèdia per a "<ph name="EXTENSION" />"</translation>
 <translation id="24786041351753425">Activa el servei de recuperació de dades</translation>
+<translation id="2479148705183875116">Ves a Configuració</translation>
 <translation id="2479541499757560845">Configuració del teclat d'accessibilitat</translation>
 <translation id="2480868415629598489">Modificar les dades que copies i enganxes</translation>
 <translation id="2480881140544300950">Motor de cerca actual que gestiona la teva pàgina Pestanya nova</translation>
@@ -4693,6 +4695,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4213918571089943508">Compte de Google del nen o nena</translation>
 <translation id="4214192212360095377">Desactiva ara</translation>
 <translation id="4216407171061541111">La teva organització ha desactivat l'opció de desar pestanyes al teu Compte de Google</translation>
+<translation id="4216511743389425832">Escolta aquesta pàgina</translation>
 <translation id="4217571870635786043">Dictat</translation>
 <translation id="4218081191298393750">Fes clic a la icona del micròfon per silenciar aquesta pestanya</translation>
 <translation id="4220157655212610908">Utilitza una clau de seguretat externa</translation>
@@ -5646,6 +5649,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir el zoom.</translation>
 <translation id="4881685975363383806">No m'ho recordis la pròxima vegada</translation>
 <translation id="4881695831933465202">Obre</translation>
 <translation id="4882312758060467256">Té accés a aquest lloc web</translation>
+<translation id="4882805770036405108">Obre el mode de lectura més ràpidament amb una drecera. Prem ⌥+⌘+R per commutar el mode de lectura.</translation>
 <translation id="4882848900607400156">Quan comparteixes la teva ubicació precisa, Gemini et pot respondre a les preguntes d'una manera més exacta. Les teves dades no s'utilitzen per millorar els models d'IA generativa.</translation>
 <translation id="4882919381756638075">Els llocs web solen utilitzar el micròfon per a funcions de comunicació com ara el xat de vídeo</translation>
 <translation id="4883436287898674711">Tots els llocs web de <ph name="WEBSITE_1" /></translation>
@@ -8885,6 +8889,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7186903260115204164">Afegeix signatures, marques i dibuixos a mà alçada amb la nova eina Dibuixa</translation>
 <translation id="7186935534137027449">Ordre de l'aplicació</translation>
 <translation id="7188508872042490670">Dades dels llocs web al dispositiu</translation>
+<translation id="7188755083797868960">Obre el mode de lectura més ràpidament amb una drecera. Prem Alt+Maj+R per commutar el mode de lectura.</translation>
 <translation id="7189234443051076392">Comprova que hi hagi prou espai al dispositiu</translation>
 <translation id="7189451821249468368">No tens prou actualitzacions per inscriure aquest dispositiu. Contacta amb l'equip de vendes per comprar-ne més. Si creus que veus aquest missatge per error, posa't en contacte amb el servei d'assistència.</translation>
 <translation id="7189558282078169397">Pestanyes d'altres dispositius</translation>
@@ -9083,7 +9088,6 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="732845903678043302">{BOOKMARK_COUNT,plural, =1{1 adreça d'interès s'ha desat només en aquest dispositiu. Per utilitzar-la als altres dispositius que fas servir, desa-la al teu Compte de Google.}other{{BOOKMARK_COUNT} adreces d'interès s'han desat només en aquest dispositiu. Per utilitzar-les als altres dispositius que fas servir, desa-les al teu Compte de Google.}}</translation>
 <translation id="7328867076235380839">La combinació no és vàlida</translation>
-<translation id="7329009627557479564">No es pot penjar. El fitxer supera la mida màxima admesa.</translation>
 <translation id="7329154610228416156">Hi ha hagut un problema en iniciar la sessió perquè s'ha configurat per utilitzar un URL no segur (<ph name="BLOCKED_URL" />). Contacteu amb l'administrador.</translation>
 <translation id="7330533963640151632">Configuració de <ph name="FEATURE_NAME" /> per al dispositiu de <ph name="USER_NAME" />, amb el compte <ph name="USER_EMAIL" />.</translation>
 <translation id="733058866272972585">No es permet que aquest lloc web utilitzi identificadors per reproduir contingut protegit.</translation>

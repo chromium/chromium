@@ -12,7 +12,7 @@
 <translation id="1035113036584565771">Notifica di promozione suggerita chiusa</translation>
 <translation id="1036348656032585052">Disattiva</translation>
 <translation id="1045899828449635435">Vuoi cancellare anche i dati di questi siti?</translation>
-<translation id="1049743911850919806">In incognito</translation>
+<translation id="1049743911850919806">Incognito</translation>
 <translation id="1052842760770519282">Alcune delle tue password non sono accessibili</translation>
 <translation id="1057623954802068161">Scorri a inizio pagina</translation>
 <translation id="1066338698580889414">Notifica di promozione suggerita aperta a schermo intero</translation>
@@ -550,7 +550,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="3435465986463792564">Hai tante finestre? Puoi gestirle da qui</translation>
 <translation id="3435575784518354875">Per continuare ad accedere alle tue password, esportale ora, aggiorna Google Play Services e poi importale in Gestore delle password di Google. <ph name="BEGIN_LINK" />Visualizza le istruzioni complete<ph name="END_LINK" />.</translation>
 <translation id="3435738964857648380">Sicurezza</translation>
-<translation id="3435914367318771664">Aggiungi scheda a nuovo gruppo</translation>
+<translation id="3435914367318771664">Agg. scheda a nuovo gruppo</translation>
 <translation id="3438681572027105609">Accedi a Chrome per trovare le password e altri dati su tutti i dispositivi</translation>
 <translation id="3439276997620616816">Qui troverai le schede recenti</translation>
 <translation id="3443221991560634068">Ricarica la pagina corrente</translation>
@@ -842,7 +842,7 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="4665799914191099447">Tocca Privacy e sicurezza &gt; Navigazione sicura</translation>
 <translation id="4668279686271488041">I dati di misurazione degli annunci vengono eliminati dal dispositivo a cadenza regolare</translation>
 <translation id="4668347365065281350">Tutti i dati memorizzati dai siti, inclusi i cookie e altri dati memorizzati localmente</translation>
-<translation id="4673702426794876519">Finestra nav. in incognito</translation>
+<translation id="4673702426794876519">Finestra Incognito</translation>
 <translation id="4675298276894277358">Questo sito non verrà più mostrato</translation>
 <translation id="4678082183394354975">Il tema scuro per i siti è attivo in Chrome</translation>
 <translation id="4685741273709472646">Seleziona dall'elenco a discesa</translation>
@@ -1319,7 +1319,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="661266467055912436">Migliora il livello di sicurezza per te e per chiunque sul web.</translation>
 <translation id="6621391692573306628">Per inviare questa scheda a un altro dispositivo, accedi a Chrome su entrambi i dispositivi</translation>
 <translation id="6627583120233659107">Modifica cartella</translation>
-<translation id="6633067410344541938">Sblocca la modalità in incognito</translation>
+<translation id="6633067410344541938">Sblocca la modalità Incognito</translation>
 <translation id="6636623428211296678">Scopri altre impostazioni qui sotto oppure termina ora</translation>
 <translation id="6637100877383020115">Per contribuire a migliorare l'app, Chrome invia a Google dati sull'utilizzo e sugli arresti anomali. <ph name="BEGIN_UMA_LINK" />Gestisci<ph name="END_UMA_LINK" /></translation>
 <translation id="6641780377503683465">Rimuovi <ph name="INTEREST" /></translation>

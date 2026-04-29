@@ -703,6 +703,7 @@
 <translation id="1473927070149284123">እንደገና ይሞክሩ ወይም ራስዎ ከአውታረ መረቡ ጋር ይገናኙ</translation>
 <translation id="1474785664565228650">በማይክራፎን ቅንብር ላይ የሚደረግ ለውጥ ዳግም ለመጀመር የትይዩዎች ዴስክቶፕን ይፈልጋል። ለመቀጠል Parallels Desktopን ዳግም ያስጀምሩ።</translation>
 <translation id="1476088332184200792">ወደ መሣሪያዎ ይቅዱ</translation>
+<translation id="1476595624592550506">የይለፍ ቃልዎን ይቀይሩ</translation>
 <translation id="1476607407192946488">የ&amp;ቋንቋ ቅንብሮች...</translation>
 <translation id="1477446329585670721"><ph name="DOMAIN" /> የእርስዎን ዘመናዊ ካርድ እንደገባ እንዲቆይ ይፈልግብዎታል።</translation>
 <translation id="1477654881618305065">የእርስዎ ድርጅት ይህን ይዘት እርስዎ እንዲያጋሩ አይፈቅድም። እገዛ ካስፈለገዎት አስተዳዳሪዎን ያነጋግሩ።</translation>
@@ -2190,6 +2191,7 @@
 <translation id="2477218554275525952">አዲስ ትር ሲከፍቱ የGemini የጎን አሞሌን ክፍት አድርገው ያቆዩ</translation>
 <translation id="2478176599153288112">የ«<ph name="EXTENSION" />» ማህደረ መረጃ ፋይል ፍቃዶች</translation>
 <translation id="24786041351753425">የውሂብ መልሶ ማግኛ አገልግሎትን አንቃ</translation>
+<translation id="2479148705183875116">ወደ ቅንብሮች ሂድ</translation>
 <translation id="2479541499757560845">የተደራሽነት ቁልፍ ሰሌዳ ቅንብሮች</translation>
 <translation id="2480868415629598489">እርስዎ የሚቀዱትን እና የሚለጥፉትን ውሂብ መቀየር</translation>
 <translation id="2480881140544300950">የእርስዎን አዲስ የትር ገፅ የሚያስተዳድር የአሁን የፍለጋ ፕሮግራም</translation>
@@ -4703,6 +4705,7 @@
 <translation id="4213918571089943508">የልጅ Google መለያ</translation>
 <translation id="4214192212360095377">አሁን አጥፋ</translation>
 <translation id="4216407171061541111">ድርጅትዎ በGoogle መለያዎ ውስጥ ትሮችን ማስቀመጥን አጥፍቷል</translation>
+<translation id="4216511743389425832">ይህን ገጽ ያዳምጡት</translation>
 <translation id="4217571870635786043">በቃል ማስጻፍ</translation>
 <translation id="4218081191298393750">በዚህ ትር ላይ ድምጸ-ከል ለማድረግ የድምጽ ማውጫ አዶውን ጠቅ ያድርጉ</translation>
 <translation id="4220157655212610908">የውጭ የደህንነት ቁልፍ ተጠቀም</translation>
@@ -5657,6 +5660,7 @@
 <translation id="4881685975363383806">በሚቀጥለው ጊዜ አታስታውሰኝ</translation>
 <translation id="4881695831933465202">ክፍት የሚሆንባቸው</translation>
 <translation id="4882312758060467256">የዚህ ጣቢያ መዳረሻ አላቸው</translation>
+<translation id="4882805770036405108">በአቋራጭ የንባብ ሁነታን በበለጠ ፍጥነት ይክፈቱ። የንባብ ሁነታን ለመቀያየር ⌥ + ⌘ + R ይጫኑ።</translation>
 <translation id="4882848900607400156">ትክክለኛ አካባቢዎን ሲያጋሩ Gemini ጥያቄዎችዎን ይበልጥ በትክክል መመለስ ይችላል። ውሂብዎ ሰው ሠራሽ አስተውሎት አመንጪ ሞዴሎችን ለማሻሻል ጥቅም ላይ አይውልም።</translation>
 <translation id="4882919381756638075">ጣቢያዎች አብዛኛው ጊዜ ማይክሮፎንዎን እንደ የቪዲዮ ውይይት ላሉ የመገናኛ ባህሪዎች ይጠቀሙበታል</translation>
 <translation id="4883436287898674711">ሁሉም የ<ph name="WEBSITE_1" /> ጣቢያዎች</translation>
@@ -8900,6 +8904,7 @@
 <translation id="7186903260115204164">በአዲሱ የመሳያ መሣሪያ የነፃ እጅ ስዕሎችን፣ ፊርማዎችን እና ድምቀቶችን ያክሉ</translation>
 <translation id="7186935534137027449">የመተግበሪያ ትዕዛዝ</translation>
 <translation id="7188508872042490670">በመሣሪያ ላይ ያለ የጣቢያ ውሂብ</translation>
+<translation id="7188755083797868960">በአቋራጭ የንባብ ሁነታን በበለጠ ፍጥነት ይክፈቱ። የንባብ ሁነታን ለመቀያየር Alt + Shift + R ይጫኑ።</translation>
 <translation id="7189234443051076392">በእርስዎ መሣሪያ ላይ በቂ ባዶ ቦታ መኖሩን ያረጋግጡ</translation>
 <translation id="7189451821249468368">ይህን መሣሪያ ለማስመዝገብ በቂ ማላቂያዎች የለዎትም። ተጨማሪ ለመግዛት እባክዎ ሽያጭን ያነጋግሩ። ይህን መልዕክት የሚያዩት በስህተት ነው ብለው ካመኑ እባክዎ ድጋፍን ያነጋግሩ።</translation>
 <translation id="7189558282078169397">ከሌሎች መሣሪያዎች የመጡ ትሮች</translation>
@@ -9098,7 +9103,6 @@
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="732845903678043302">{BOOKMARK_COUNT,plural, =1{1 ዕልባት በዚህ መሣሪያ ላይ ብቻ ተቀምጧል። በሌሎች መሣሪያዎችዎ ላይ እሱን ለመጠቀም በGoogle መለያዎ ውስጥ ያስቀምጡት።}one{{BOOKMARK_COUNT} ዕልባት ብቻ በዚህ መሣሪያ ላይ ተቀምጧል። በሌሎች መሣሪያዎችዎ ላይ እሱን ለመጠቀም በGoogle መለያዎ ውስጥ ያስቀምጡት።}other{{BOOKMARK_COUNT} ዕልባቶች ብቻ በዚህ መሣሪያ ላይ ተቀምጠዋል። በሌሎች መሣሪያዎችዎ ላይ እነሱን ለመጠቀም በGoogle መለያዎ ውስጥ ያስቀምጧቸው።}}</translation>
 <translation id="7328867076235380839">ልክ ያልሆነ ጥምረት</translation>
-<translation id="7329009627557479564">መስቀል አልተቻለም። ፋይል ከፍተኛውን የተደገፈ መጠን ይበልጣል።</translation>
 <translation id="7329154610228416156">ደህንነቱ አስተማማኝ ያልሆነ ዩአርኤል (<ph name="BLOCKED_URL" />) እንዲጠቀም ስለተዋቀረ በመለያ መግባት አልተሳካም። እባክዎ የእርስዎን አስተዳዳሪ ያነጋግሩ።</translation>
 <translation id="7330533963640151632"><ph name="FEATURE_NAME" /> ቅንብሮች ለ <ph name="USER_NAME" /> መሣሪያ፣ በመለያው <ph name="USER_EMAIL" /> ስር ማጋራት።</translation>
 <translation id="733058866272972585">ይህ ጣቢያ ጥበቃ የሚደረግለት ይዘትን ለማጫወት ለዪዎችን እንዳይጠቀም ታግዷል።</translation>

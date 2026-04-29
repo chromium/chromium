@@ -163,11 +163,13 @@
 <translation id="6589356853295569750">Pemberitahuan terkait perubahan Grup Tab Bersama dibuka sepenuhnya</translation>
 <translation id="6590332670428149473">Buka menu tindakan grup tab untuk grup tab <ph name="TITLE_OF_GROUP" />, warna <ph name="COLOR_NAME" /> yang dibagikan.</translation>
 <translation id="6615455863669487791">Tunjukkan</translation>
+<translation id="6686490380836145850">Tutup tab di sisi kanan</translation>
 <translation id="6694634756612002311">Kelola pembagian</translation>
 <translation id="6709297274997495821">Pilih tab</translation>
 <translation id="6744956528665271406">Edit warna grup</translation>
 <translation id="6784585810034073638">{TAB_COUNT,plural, =1{Tambahkan ke grup bernama <ph name="TITLE_OF_GROUP" /> yang berisi <ph name="TAB_COUNT1" /> tab}other{Tambahkan ke grup bernama <ph name="TITLE_OF_GROUP" /> yang berisi <ph name="TAB_COUNT1" /> tab}}</translation>
 <translation id="6818926723028410516">Pilih item</translation>
+<translation id="68541483639528434">Tutup tab lain</translation>
 <translation id="6856809498882026482">Sembunyikan mode multi-pilihan</translation>
 <translation id="6957436309971790274">Setelah 21 hari tidak aktif</translation>
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{Luaskan grup tab <ph name="TITLE_OF_GROUP" /> yang dibagikan yang berisi <ph name="TABS_COUNT_ONE" /> tab, warna <ph name="COLOR_NAME" />.}other{Luaskan grup tab <ph name="TITLE_OF_GROUP" /> yang dibagikan yang berisi <ph name="TABS_COUNT_MANY" /> tab, warna <ph name="COLOR_NAME" />.}}</translation>

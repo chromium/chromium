@@ -152,6 +152,7 @@
 <translation id="1228893227497259893">エンティティ識別子が正しくありません</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" />（自動検出）</translation>
 <translation id="1232569758102978740">無題</translation>
+<translation id="1234539281285007945"><ph name="FIELD_1" /> が必要です</translation>
 <translation id="1236081509407217141">VR を許可しますか？</translation>
 <translation id="1236689197410206751">AfterPay</translation>
 <translation id="1240347957665416060">デバイス名</translation>
@@ -472,6 +473,7 @@
 <translation id="1721424275792716183">* 必須欄です</translation>
 <translation id="1723636263173393300">このポリシーで指定できるショートカットは <ph name="MAX_ITEMS_LIMIT" /> 件までです。</translation>
 <translation id="1725591448053514783">洋形 6 号封筒</translation>
+<translation id="172754119609519423"><ph name="FIELD_1" />、<ph name="FIELD_2" />、<ph name="FIELD_3" /> のいずれかが必要です</translation>
 <translation id="1727613060316725209">証明書は有効です</translation>
 <translation id="1728677426644403582">ウェブページのソースを表示しています</translation>
 <translation id="173080396488393970">この種類のカードはご利用いただけません</translation>
@@ -1432,6 +1434,7 @@
 <translation id="3220264767789936523">礼服</translation>
 <translation id="3223287115535306850">アプリ起動スロバー</translation>
 <translation id="3223425961342298674">位置情報は許可されていません</translation>
+<translation id="3225277284238802910"><ph name="FIELD_1" /> または <ph name="FIELD_2" /> のいずれかが必要です</translation>
 <translation id="3225319735946384299">コード署名</translation>
 <translation id="3225919329040284222">サーバーの提示した証明書が、組み込まれている想定の証明書と一致しません。これらの想定の証明書は、ユーザー保護のため、特定の安全性の高いウェブサイトについて用意されています。</translation>
 <translation id="3226128629678568754">ページの読み込みに必要なデータを再送信するには、再読み込みボタンを押してください。</translation>

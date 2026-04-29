@@ -37,6 +37,7 @@
 <translation id="1384959399684842514">Téléchargement suspendu</translation>
 <translation id="1396327438254055134">Autorisez le site à utiliser l'optimiseur V8.</translation>
 <translation id="1409338233051621926">Appuyer sur Applis, puis sur Applis par défaut</translation>
+<translation id="1414315029670184034">Ne pas autoriser les sites à utiliser votre caméra</translation>
 <translation id="1415402041810619267">URL tronquée</translation>
 <translation id="1415855080660575082">Autorisez Chrome à partager vos onglets récents avec votre appareil pour les voir s'afficher dans la liste d'applis et les résultats de recherche de votre appareil. Vous pouvez activer ou désactiver cette option à tout moment dans les paramètres de Chrome.</translation>
 <translation id="1420688843103859429">Passez à la page suivante ou précédente en balayant le pavé tactile avec deux doigts</translation>
@@ -742,7 +743,6 @@ La Protection Avancée contrôle les paramètres Chrome suivants :</translatio
 <translation id="8676374126336081632">Effacer la saisie</translation>
 <translation id="8681886425883659911">Les annonces sont bloquées sur les sites connus pour afficher des annonces intrusives ou trompeuses</translation>
 <translation id="868929229000858085">Rechercher des contacts</translation>
-<translation id="8707904142362025782">Les sites peuvent demander à utiliser votre caméra</translation>
 <translation id="8712637175834984815">OK</translation>
 <translation id="8715862698998036666">Faites glisser votre doigt du haut vers le bas et balayez l'écran depuis le bord gauche ou droit pour quitter le plein écran.</translation>
 <translation id="8716050156658570300">Les sites peuvent demander à utiliser les capteurs de mouvement et de luminosité</translation>

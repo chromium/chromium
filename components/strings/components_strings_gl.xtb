@@ -152,6 +152,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1228893227497259893">Identificador de entidades incorrecto</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (detectado automaticamente)</translation>
 <translation id="1232569758102978740">Sen título</translation>
+<translation id="1234539281285007945">É obrigatorio completar o campo <ph name="FIELD_1" /></translation>
 <translation id="1236081509407217141">Queres permitir RV?</translation>
 <translation id="1236689197410206751">AfterPay</translation>
 <translation id="1240347957665416060">O nome do teu dispositivo</translation>
@@ -472,6 +473,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1721424275792716183">* O campo é obrigatorio</translation>
 <translation id="1723636263173393300">Esta política non pode ter máis de <ph name="MAX_ITEMS_LIMIT" /> atallos.</translation>
 <translation id="1725591448053514783">Sobre You-6</translation>
+<translation id="172754119609519423">É obrigatorio completar o campo <ph name="FIELD_1" />, <ph name="FIELD_2" /> ou <ph name="FIELD_3" /></translation>
 <translation id="1727613060316725209">O certificado é válido</translation>
 <translation id="1728677426644403582">Estas vendo a fonte dunha páxina web</translation>
 <translation id="173080396488393970">Este tipo de tarxeta non é compatible</translation>
@@ -1432,6 +1434,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="3220264767789936523">Roupa formal</translation>
 <translation id="3223287115535306850">Icona animada de inicio de aplicación</translation>
 <translation id="3223425961342298674">O acceso á localización non está permitido</translation>
+<translation id="3225277284238802910">É obrigatorio completar o campo <ph name="FIELD_1" /> ou <ph name="FIELD_2" /></translation>
 <translation id="3225319735946384299">Sinatura de código</translation>
 <translation id="3225919329040284222">O servidor presentou un certificado que non coincide coas expectativas integradas. Estas expectativas inclúense para determinados sitios web de alta seguranza co fin de protexerte.</translation>
 <translation id="3226128629678568754">Preme o botón Volver cargar para volver enviar os datos necesarios para cargar a páxina.</translation>

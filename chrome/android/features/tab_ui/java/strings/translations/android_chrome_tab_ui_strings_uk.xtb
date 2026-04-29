@@ -163,11 +163,13 @@
 <translation id="6589356853295569750">Сповіщення про зміни в спільній групі вкладок відкрито на повну висоту</translation>
 <translation id="6590332670428149473">Відкрити меню дій для спільної групи вкладок "<ph name="TITLE_OF_GROUP" />", колір: <ph name="COLOR_NAME" />.</translation>
 <translation id="6615455863669487791">Показати</translation>
+<translation id="6686490380836145850">Закрити вкладки праворуч</translation>
 <translation id="6694634756612002311">Керувати параметрами спільного доступу</translation>
 <translation id="6709297274997495821">Вибрати вкладку</translation>
 <translation id="6744956528665271406">Змінити колір групи</translation>
 <translation id="6784585810034073638">{TAB_COUNT,plural, =1{Додати в групу "<ph name="TITLE_OF_GROUP" />" з <ph name="TAB_COUNT1" /> вкладкою}one{Додати в групу "<ph name="TITLE_OF_GROUP" />" з <ph name="TAB_COUNT1" /> вкладкою}few{Додати в групу "<ph name="TITLE_OF_GROUP" />" з <ph name="TAB_COUNT1" /> вкладками}many{Додати в групу "<ph name="TITLE_OF_GROUP" />" з <ph name="TAB_COUNT1" /> вкладками}other{Додати в групу "<ph name="TITLE_OF_GROUP" />" з <ph name="TAB_COUNT1" /> вкладки}}</translation>
 <translation id="6818926723028410516">Виберіть елементи</translation>
+<translation id="68541483639528434">Закрити інші вкладки</translation>
 <translation id="6856809498882026482">Вийти з режиму вибору кількох вкладок</translation>
 <translation id="6957436309971790274">Через 21 день без активності</translation>
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{Розгорнути спільну групу "<ph name="TITLE_OF_GROUP" />" з <ph name="TABS_COUNT_ONE" /> вкладкою; колір: <ph name="COLOR_NAME" />.}one{Розгорнути спільну групу "<ph name="TITLE_OF_GROUP" />" з <ph name="TABS_COUNT_MANY" /> вкладкою; колір: <ph name="COLOR_NAME" />.}few{Розгорнути спільну групу "<ph name="TITLE_OF_GROUP" />" з <ph name="TABS_COUNT_MANY" /> вкладками; колір: <ph name="COLOR_NAME" />.}many{Розгорнути спільну групу "<ph name="TITLE_OF_GROUP" />" з <ph name="TABS_COUNT_MANY" /> вкладками; колір: <ph name="COLOR_NAME" />.}other{Розгорнути спільну групу "<ph name="TITLE_OF_GROUP" />" з <ph name="TABS_COUNT_MANY" /> вкладки; колір: <ph name="COLOR_NAME" />.}}</translation>

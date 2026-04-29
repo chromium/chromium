@@ -703,6 +703,7 @@ Kebenaran yang telah anda berikan kepada apl mungkin dikenakan pada akaun ini. A
 <translation id="1473927070149284123">Cuba lagi atau sambungkan kepada rangkaian secara manual</translation>
 <translation id="1474785664565228650">Perubahan dalam tetapan mikrofon memerlukan Desktop Parallels dilancarkan semula. Lancarkan semula Desktop Parallels untuk meneruskan.</translation>
 <translation id="1476088332184200792">Salin ke Peranti Anda</translation>
+<translation id="1476595624592550506">Tukar kata laluan anda</translation>
 <translation id="1476607407192946488">&amp;Tetapan Bahasa</translation>
 <translation id="1477446329585670721"><ph name="DOMAIN" /> menghendaki anda memastikan kad pintar anda tidak dikeluarkan.</translation>
 <translation id="1477654881618305065">Organisasi anda tidak membenarkan anda berkongsi kandungan ini. Hubungi pentadbir anda jika anda memerlukan bantuan.</translation>
@@ -2196,6 +2197,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2477218554275525952">Pastikan bar sisi Gemini dibuka apabila anda membuka tab baharu</translation>
 <translation id="2478176599153288112">Kebenaran Fail Media untuk "<ph name="EXTENSION" />"</translation>
 <translation id="24786041351753425">Dayakan perkhidmatan pemulihan data.</translation>
+<translation id="2479148705183875116">Pergi ke Tetapan</translation>
 <translation id="2479541499757560845">Tetapan kebolehaksesan papan kekunci</translation>
 <translation id="2480868415629598489">Ubah suai data yang anda salin dan tampal</translation>
 <translation id="2480881140544300950">Enjin carian semasa mengurus halaman tab baharu anda</translation>
@@ -4712,6 +4714,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="4213918571089943508">Google Account Anak</translation>
 <translation id="4214192212360095377">Matikan Sekarang</translation>
 <translation id="4216407171061541111">Organisasi anda telah mematikan penyimpanan tab dalam Google Account anda</translation>
+<translation id="4216511743389425832">Dengar halaman ini</translation>
 <translation id="4217571870635786043">Pengimlakan</translation>
 <translation id="4218081191298393750">Klik ikon pembesar suara untuk meredamkan tab ini</translation>
 <translation id="4220157655212610908">Gunakan kunci keselamatan luaran</translation>
@@ -9114,7 +9117,6 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="732845903678043302">{BOOKMARK_COUNT,plural, =1{1 penanda halaman disimpan pada peranti ini sahaja. Untuk menggunakan penanda halaman ini pada peranti anda yang lain, simpan penanda halaman dalam Google Account anda.}other{{BOOKMARK_COUNT} penanda halaman disimpan pada peranti ini sahaja. Untuk menggunakan penanda halaman ini pada peranti anda yang lain, simpan penanda halaman dalam Google Account anda.}}</translation>
 <translation id="7328867076235380839">Gabungan tidak sah</translation>
-<translation id="7329009627557479564">Tidak dapat dimuat naik. Fail melebihi saiz maksimum yang disokong.</translation>
 <translation id="7329154610228416156">Log masuk gagal kerana telah dikonfigurasikan untuk menggunakan URL tidak selamat (<ph name="BLOCKED_URL" />). Sila hubungi pentadbir anda.</translation>
 <translation id="7330533963640151632">Tetapan <ph name="FEATURE_NAME" /> untuk peranti <ph name="USER_NAME" />, berkongsi menggunakan akaun <ph name="USER_EMAIL" />.</translation>
 <translation id="733058866272972585">Laman ini telah disekat daripada menggunakan pengecam untuk memainkan kandungan yang dilindungi.</translation>

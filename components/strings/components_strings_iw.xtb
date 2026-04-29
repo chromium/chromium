@@ -152,6 +152,7 @@
 <translation id="1228893227497259893">מזהה יישות שגוי</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (בוצע זיהוי אוטומטי)</translation>
 <translation id="1232569758102978740">ללא שם</translation>
+<translation id="1234539281285007945">צריך לציין <ph name="FIELD_1" /></translation>
 <translation id="1236081509407217141">‏להתיר VR?</translation>
 <translation id="1236689197410206751">AfterPay</translation>
 <translation id="1240347957665416060">שם המכשיר שלך</translation>
@@ -472,6 +473,7 @@
 <translation id="1721424275792716183">* זהו שדה חובה</translation>
 <translation id="1723636263173393300">המדיניות הזו יכולה לכלול עד <ph name="MAX_ITEMS_LIMIT" /> קיצורי דרך.</translation>
 <translation id="1725591448053514783">‏מעטפה – You 6</translation>
+<translation id="172754119609519423">צריך לציין <ph name="FIELD_1" />, <ph name="FIELD_2" /> או <ph name="FIELD_3" /></translation>
 <translation id="1727613060316725209">האישור תקין</translation>
 <translation id="1728677426644403582">זהו המקור של דף אינטרנט</translation>
 <translation id="173080396488393970">אין תמיכה בכרטיס מסוג זה</translation>
@@ -1432,6 +1434,7 @@
 <translation id="3220264767789936523">ביגוד רשמי</translation>
 <translation id="3223287115535306850">סמל הפעלת האפליקציה</translation>
 <translation id="3223425961342298674">אין הרשאת גישה למיקום</translation>
+<translation id="3225277284238802910">צריך לציין <ph name="FIELD_1" /> או <ph name="FIELD_2" /></translation>
 <translation id="3225319735946384299">חתימת קוד</translation>
 <translation id="3225919329040284222">השרת הציג אישור שאינו תואם את הציפיות המובנות. ציפיות אלה נכללות עבור אתרי אינטרנט מסוימים בעלי אבטחה גבוהה כדי להגן עליך.</translation>
 <translation id="3226128629678568754">יש ללחוץ על כפתור הטעינה מחדש כדי לשלוח מחדש את הנתונים הדרושים לטעינת הדף.</translation>
@@ -2156,6 +2159,7 @@
 <translation id="4318312030194671742">שירות קומפוזיציה של תצוגה מקדימה של תמונה במסך</translation>
 <translation id="4318566738941496689">שם המכשיר וכתובת הרשת שלך</translation>
 <translation id="4320119221194966055">הלוואות אישיות</translation>
+<translation id="432088302786119211">{COUNT,plural, =1{התקבל קישור ממכשיר <ph name="DEVICE_NAME" />}one{התקבלו # קישורים ממכשיר <ph name="DEVICE_NAME" />}two{התקבלו # קישורים ממכשיר <ph name="DEVICE_NAME" />}other{התקבלו # קישורים ממכשיר <ph name="DEVICE_NAME" />}}</translation>
 <translation id="4325600325087822253">מגש 17</translation>
 <translation id="4325863107915753736">לא ניתן היה למצוא את הפריט</translation>
 <translation id="4326324639298822553">יש לבדוק את תאריך התפוגה ולנסות שוב</translation>
@@ -4988,6 +4992,7 @@ Del</translation>
 <translation id="8758529215314160755">‏אפשר לערוך את השם <ph name="BEGIN_LINK" />בחשבון ב-Google<ph name="END_LINK" />: <ph name="ACCOUNT" /></translation>
 <translation id="8759274551635299824">פג תוקפו של הכרטיס</translation>
 <translation id="87601671197631245">באתר הזה נעשה שימוש בתצורת הגנה מיושנת, כך שמידע נשלח אליו עשוי להיחשף (למשל סיסמאות, הודעות או כרטיסי אשראי).</translation>
+<translation id="8763676559028782284">{COUNT,plural, =1{נשלח קישור ממכשיר <ph name="DEVICE_NAME" />}one{נשלחו # קישורים ממכשיר <ph name="DEVICE_NAME" />}two{נשלחו # קישורים ממכשיר <ph name="DEVICE_NAME" />}other{נשלחו # קישורים ממכשיר <ph name="DEVICE_NAME" />}}</translation>
 <translation id="8763927697961133303">‏התקן USB</translation>
 <translation id="8763986294015493060">סגירת כל החלונות הפרטיים שפתוחים כרגע</translation>
 <translation id="8766943070169463815">גיליון האימות של פרטי הכניסה לתשלום המאובטח פתוח</translation>

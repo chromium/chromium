@@ -37,6 +37,7 @@
 <translation id="1384959399684842514">已暫停下載</translation>
 <translation id="1396327438254055134">允許網站使用 V8 最佳化工具。</translation>
 <translation id="1409338233051621926">依序輕觸「應用程式」和「預設應用程式」</translation>
+<translation id="1414315029670184034">禁止網站使用攝影機</translation>
 <translation id="1415402041810619267">已截斷網址</translation>
 <translation id="1415855080660575082">允許 Chrome 將最近開啟的分頁分享給裝置，讓這些資訊顯示在裝置的應用程式清單和搜尋結果。你可以前往 Chrome 設定頁面開啟或關閉這項功能。</translation>
 <translation id="1420688843103859429">用兩指在觸控板上滑動，即可瀏覽上一個或下一個頁面</translation>
@@ -742,7 +743,6 @@
 <translation id="8676374126336081632">清除輸入</translation>
 <translation id="8681886425883659911">已在網站上封鎖已知的侵入式廣告或誤導性廣告</translation>
 <translation id="868929229000858085">搜尋聯絡人</translation>
-<translation id="8707904142362025782">網站可以要求使用攝影機</translation>
 <translation id="8712637175834984815">我瞭解了</translation>
 <translation id="8715862698998036666">從頂端向下拖曳並向右側或左側滑動，即可退出全螢幕模式。</translation>
 <translation id="8716050156658570300">網站可以要求使用動作感應器和光度感應器</translation>

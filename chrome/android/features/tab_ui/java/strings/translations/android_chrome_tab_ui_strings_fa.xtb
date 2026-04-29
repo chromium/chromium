@@ -163,11 +163,13 @@
 <translation id="6589356853295569750">اعلان درباره تغییرات «گروه زبانه هم‌رسانی‌شده» به‌صورت کامل باز شده است</translation>
 <translation id="6590332670428149473">باز کردن منوِ کنش‌های گروه زبانه برای گروه زبانه <ph name="TITLE_OF_GROUP" /> هم‌رسانی‌شده، به‌رنگ <ph name="COLOR_NAME" />.</translation>
 <translation id="6615455863669487791">نشانم داده شود</translation>
+<translation id="6686490380836145850">بستن برگه‌های سمت راست</translation>
 <translation id="6694634756612002311">مدیریت هم‌رسانی</translation>
 <translation id="6709297274997495821">انتخاب زبانه</translation>
 <translation id="6744956528665271406">ویرایش رنگ گروه</translation>
 <translation id="6784585810034073638">{TAB_COUNT,plural, =1{افزودن به گروهی به نام <ph name="TITLE_OF_GROUP" /> با <ph name="TAB_COUNT1" /> زبانه}one{افزودن به گروهی به نام <ph name="TITLE_OF_GROUP" /> با <ph name="TAB_COUNT1" /> زبانه}other{افزودن به گروهی به نام <ph name="TITLE_OF_GROUP" /> با <ph name="TAB_COUNT1" /> زبانه}}</translation>
 <translation id="6818926723028410516">انتخاب موارد</translation>
+<translation id="68541483639528434">بستن برگه‌های دیگر</translation>
 <translation id="6856809498882026482">پنهان کردن حالت چندانتخابی</translation>
 <translation id="6957436309971790274">پس‌از ۲۱ روز غیرفعال بودن</translation>
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{ازهم باز کردن گروه زبانه <ph name="TITLE_OF_GROUP" /> هم‌رسانی‌شده با <ph name="TABS_COUNT_ONE" /> زبانه، به‌رنگ <ph name="COLOR_NAME" />.}one{ازهم باز کردن گروه زبانه <ph name="TITLE_OF_GROUP" /> هم‌رسانی‌شده با <ph name="TABS_COUNT_MANY" /> زبانه، به‌رنگ <ph name="COLOR_NAME" />.}other{ازهم باز کردن گروه زبانه <ph name="TITLE_OF_GROUP" /> هم‌رسانی‌شده با <ph name="TABS_COUNT_MANY" /> زبانه، به‌رنگ <ph name="COLOR_NAME" />.}}</translation>

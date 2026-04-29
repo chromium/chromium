@@ -37,6 +37,7 @@
 <translation id="1384959399684842514">Nedlastingen er satt på pause</translation>
 <translation id="1396327438254055134">Tillat nettstedet å bruke V8-optimalisering.</translation>
 <translation id="1409338233051621926">Trykk på Apper og deretter på Standardapper</translation>
+<translation id="1414315029670184034">Ikke la nettsteder bruke kameraet</translation>
 <translation id="1415402041810619267">Nettadressen er avkortet</translation>
 <translation id="1415855080660575082">La Chrome dele de nylige fanene dine med enheten din, slik at du kan se dem på applisten og i søkeresultater på enheten. Du kan slå dette på eller av i Chrome-innstillingene.</translation>
 <translation id="1420688843103859429">Naviger frem og tilbake ved å sveipe med to fingre på styreflaten</translation>
@@ -164,6 +165,7 @@
 <translation id="257931822824936280">Utvidet – klikk for å minimere.</translation>
 <translation id="2586657967955657006">Utklippstavle</translation>
 <translation id="2588271083332682494">Rydd opp med fanegrupper</translation>
+<translation id="2592917252160773942">Nettsteder kan be om å få bruke kameraet ditt</translation>
 <translation id="2597457036804169544">Ikke bruk mørkt tema på nettsteder</translation>
 <translation id="2606760465469169465">Automatisk bekreftelse</translation>
 <translation id="2621115761605608342">Tillat JavaScript for et bestemt nettsted.</translation>
@@ -360,6 +362,7 @@
 <translation id="4635969503923889910">Ikke la nettsteder bruke NFC-enheter</translation>
 <translation id="4644713492825682049">Slett og tilbakestill</translation>
 <translation id="4645575059429386691">Administreres av foreldrene dine</translation>
+<translation id="4651224148644053314">Flere farger og alternativer</translation>
 <translation id="4652266463001779298">Ikke tillatt</translation>
 <translation id="4655846733459137112">Trykk på ja for å bruke dette passordet enkelt neste gang du logger på</translation>
 <translation id="4663373278480897665">Kameraet er tillatt</translation>
@@ -742,7 +745,6 @@ Avansert beskyttelse styrer disse Chrome-innstillingene:</translation>
 <translation id="8676374126336081632">Slett teksten</translation>
 <translation id="8681886425883659911">Annonser blokkeres på nettsteder som er kjent for å vise forstyrrende eller villedende annonser</translation>
 <translation id="868929229000858085">Søk i kontaktene dine</translation>
-<translation id="8707904142362025782">Nettstedet kan be om å få bruke kameraet</translation>
 <translation id="8712637175834984815">Skjønner</translation>
 <translation id="8715862698998036666">Dra fra toppen og sveip fra venstre eller høyre kant for å avslutte fullskjerm.</translation>
 <translation id="8716050156658570300">Nettsteder kan be om å få bruke bevegelses- og lyssensorer</translation>

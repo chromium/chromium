@@ -163,11 +163,13 @@
 <translation id="6589356853295569750">Avviso sulle modifiche al gruppo di schede condiviso aperto a schermo intero</translation>
 <translation id="6590332670428149473">Apri il menu Azioni del gruppo di schede condiviso <ph name="TITLE_OF_GROUP" />, colore <ph name="COLOR_NAME" />.</translation>
 <translation id="6615455863669487791">Mostrami</translation>
+<translation id="6686490380836145850">Chiudi schede a destra</translation>
 <translation id="6694634756612002311">Gestisci condivisione</translation>
 <translation id="6709297274997495821">Seleziona la scheda</translation>
 <translation id="6744956528665271406">Modifica il colore del gruppo</translation>
 <translation id="6784585810034073638">{TAB_COUNT,plural, =1{Aggiungi al gruppo denominato <ph name="TITLE_OF_GROUP" /> con <ph name="TAB_COUNT1" /> scheda}other{Aggiungi al gruppo denominato <ph name="TITLE_OF_GROUP" /> con <ph name="TAB_COUNT1" /> schede}}</translation>
 <translation id="6818926723028410516">Seleziona elementi</translation>
+<translation id="68541483639528434">Chiudi le altre schede</translation>
 <translation id="6856809498882026482">Nascondi modalità di selezione multipla</translation>
 <translation id="6957436309971790274">Dopo 21 giorni di inattività</translation>
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{Espandi il gruppo di schede condiviso <ph name="TITLE_OF_GROUP" /> con <ph name="TABS_COUNT_ONE" /> scheda, colore <ph name="COLOR_NAME" />.}other{Espandi il gruppo di schede condiviso <ph name="TITLE_OF_GROUP" /> con <ph name="TABS_COUNT_MANY" /> schede, colore <ph name="COLOR_NAME" />.}}</translation>

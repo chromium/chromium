@@ -704,6 +704,7 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="1473927070149284123">Prøv igen, eller opret forbindelse til et netværk manuelt</translation>
 <translation id="1474785664565228650">Ændringen af mikrofonindstillingen kræver, at Parallels Desktop genstartes. Genstart Parallels Desktop for at fortsætte.</translation>
 <translation id="1476088332184200792">Kopiér til din enhed</translation>
+<translation id="1476595624592550506">Skift adgangskode</translation>
 <translation id="1476607407192946488">&amp;Sprogindstillinger</translation>
 <translation id="1477446329585670721"><ph name="DOMAIN" /> kræver, at chipkortet er indsat.</translation>
 <translation id="1477654881618305065">Din organisation tillader ikke, at du deler dette indhold. Hvis du har brug for hjælp, skal du kontakte din administrator.</translation>
@@ -2196,6 +2197,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2477218554275525952">Lad Gemini-sidebjælken forblive åben, når du åbner en ny fane</translation>
 <translation id="2478176599153288112">Mediefiltilladelser for "<ph name="EXTENSION" />"</translation>
 <translation id="24786041351753425">Aktivér tjenesten til gendannelse af data.</translation>
+<translation id="2479148705183875116">Gå til Indstillinger</translation>
 <translation id="2479541499757560845">Indstillinger for hjælpefunktionstastatur</translation>
 <translation id="2480868415629598489">Redigere data, du kopierer og indsætter</translation>
 <translation id="2480881140544300950">Aktuel søgemaskine, der administrerer siden Ny fane</translation>
@@ -4711,6 +4713,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4213918571089943508">Barnets Google-konto</translation>
 <translation id="4214192212360095377">Deaktiver nu</translation>
 <translation id="4216407171061541111">Din organisation har deaktiveret lagring af faner på din Google-konto</translation>
+<translation id="4216511743389425832">Få oplæst denne side</translation>
 <translation id="4217571870635786043">Diktering</translation>
 <translation id="4218081191298393750">Klik på højttalerikonet for at slå lyden fra på denne fane</translation>
 <translation id="4220157655212610908">Brug en ekstern sikkerhedsnøgle</translation>
@@ -5665,6 +5668,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="4881685975363383806">Påmind mig ikke næste gang</translation>
 <translation id="4881695831933465202">Åbn</translation>
 <translation id="4882312758060467256">Udvidelsen har adgang til dette website.</translation>
+<translation id="4882805770036405108">Åbn læsetilstand hurtigere med en genvej. Tryk på ⌥ + ⌘ + R for at slå læsetilstand til/fra.</translation>
 <translation id="4882848900607400156">Når du deler din præcise lokation, kan Gemini besvare dine spørgsmål mere nøjagtigt. Dine data anvendes ikke til at forbedre generativ AI-modeller.</translation>
 <translation id="4882919381756638075">Websites bruger normalt din mikrofon til kommunikationsformål såsom videochat</translation>
 <translation id="4883436287898674711">Alle websites på <ph name="WEBSITE_1" /></translation>
@@ -8908,6 +8912,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="7186903260115204164">Tilføj frihåndstegninger, underskrifter og fremhævelser med det nye tegneværktøj</translation>
 <translation id="7186935534137027449">Appkommando</translation>
 <translation id="7188508872042490670">Websitedata på enheden</translation>
+<translation id="7188755083797868960">Åbn læsetilstand hurtigere med en genvej. Tryk på Alt + Shift + R for at slå læsetilstand til/fra.</translation>
 <translation id="7189234443051076392">Sørg for, at der er nok ledig plads på din enhed</translation>
 <translation id="7189451821249468368">Du har ikke nok opgraderinger til at tilmelde denne enhed. Kontakt salgsafdelingen for at købe flere. Hvis du mener, at du får denne meddelelse ved en fejl, skal du kontakte support.</translation>
 <translation id="7189558282078169397">Faner fra andre enheder</translation>
@@ -9106,7 +9111,6 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="732845903678043302">{BOOKMARK_COUNT,plural, =1{1 bogmærke gemmes kun på denne enhed. Hvis du vil bruge det på dine andre enheder, skal du gemme det på din Google-konto.}one{{BOOKMARK_COUNT} bogmærke gemmes kun på denne enhed. Hvis du vil bruge det på dine andre enheder, skal du gemme det på din Google-konto.}other{{BOOKMARK_COUNT} bogmærker gemmes kun på denne enhed. Hvis du vil bruge dem på dine andre enheder, skal du gemme dem på din Google-konto.}}</translation>
 <translation id="7328867076235380839">Ugyldig kombination</translation>
-<translation id="7329009627557479564">Det er ikke muligt at uploade. Filen overskrider den maksimalt understøttede størrelse.</translation>
 <translation id="7329154610228416156">Login mislykkedes, da det er konfigureret til at anvende en webadresse, der ikke er sikker (<ph name="BLOCKED_URL" />). Kontakt din administrator.</translation>
 <translation id="7330533963640151632">Indstillinger for <ph name="FEATURE_NAME" /> på enheden, der tilhører <ph name="USER_NAME" />. Deles under kontoen <ph name="USER_EMAIL" />.</translation>
 <translation id="733058866272972585">Brug af id'er til at afspille beskyttet indhold er blokeret for dette website.</translation>

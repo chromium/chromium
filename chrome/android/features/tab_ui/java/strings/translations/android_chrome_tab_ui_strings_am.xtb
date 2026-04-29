@@ -163,11 +163,13 @@
 <translation id="6589356853295569750">ስለ በሙሉ ቁመት ላይ የተጋራ የትር ቡድን ለውጦች ማሳወቂያ</translation>
 <translation id="6590332670428149473">ለተጋራ የትር ቡድን <ph name="TITLE_OF_GROUP" />፣ ቀለም <ph name="COLOR_NAME" /> የትር ቡድን የእርምጃ ምናሌ ይክፈቱ።</translation>
 <translation id="6615455863669487791">አሳየኝ</translation>
+<translation id="6686490380836145850">በቀኝ በኩል ያሉ ትሮችን ዝጋ</translation>
 <translation id="6694634756612002311">ማጋራትን አስተዳድር</translation>
 <translation id="6709297274997495821">ትር ይምረጡ</translation>
 <translation id="6744956528665271406">የቡድን ቀለም አርትዕ</translation>
 <translation id="6784585810034073638">{TAB_COUNT,plural, =1{ከ<ph name="TAB_COUNT1" /> ትር ጋር ወደ <ph name="TITLE_OF_GROUP" /> ቡድን ያክሉ}one{ከ<ph name="TAB_COUNT1" /> ትር ጋር ወደ <ph name="TITLE_OF_GROUP" /> ቡድን ያክሉ}other{ከ<ph name="TAB_COUNT1" /> ትሮች ጋር ወደ <ph name="TITLE_OF_GROUP" /> ቡድን ያክሉ}}</translation>
 <translation id="6818926723028410516">ንጥሎችን ይምረጡ</translation>
+<translation id="68541483639528434">ሌሎች ትሮችን ዝጋ</translation>
 <translation id="6856809498882026482">ባለብዙ ምርጫ ሁነታን ደብቅ</translation>
 <translation id="6957436309971790274">ከ21 የቦዘኑ ቀናት በኋላ</translation>
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{የተጋራ <ph name="TITLE_OF_GROUP" /> የትር ቡድንን በ<ph name="TABS_COUNT_ONE" /> ትር፣ በ<ph name="COLOR_NAME" /> ቀለም ይዘረጋል።}one{የተጋራ <ph name="TITLE_OF_GROUP" /> የትር ቡድንን፣ በ<ph name="TABS_COUNT_MANY" /> ትር፣ በ<ph name="COLOR_NAME" /> ቀለም ይዘረጋል።}other{የተጋራ <ph name="TITLE_OF_GROUP" /> የትር ቡድንን፣ በ<ph name="TABS_COUNT_MANY" /> ትሮች፣ በ<ph name="COLOR_NAME" /> ቀለም ይዘረጋል።}}</translation>

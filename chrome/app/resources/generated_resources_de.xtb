@@ -702,6 +702,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1473927070149284123">Versuche es noch einmal oder verbinde dich manuell mit einem Netzwerk</translation>
 <translation id="1474785664565228650">Nach dem Ändern der Mikrofoneinstellung muss Parallels Desktop neu gestartet werden. Starte Parallels Desktop neu, um fortzufahren.</translation>
 <translation id="1476088332184200792">Auf mein Gerät kopieren</translation>
+<translation id="1476595624592550506">Passwort ändern</translation>
 <translation id="1476607407192946488">&amp;Spracheinstellungen</translation>
 <translation id="1477446329585670721"><ph name="DOMAIN" /> erfordert, dass deine Smartcard eingesteckt ist.</translation>
 <translation id="1477654881618305065">Deine Organisation lässt das Teilen dieser Inhalte nicht zu. Wenn du Hilfe benötigst, wende dich bitte an deinen Administrator.</translation>
@@ -2178,6 +2179,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2477218554275525952">Gemini-Seitenleiste geöffnet lassen, wenn ein neuer Tab geöffnet wird</translation>
 <translation id="2478176599153288112">Mediendatei-Berechtigungen für "<ph name="EXTENSION" />"</translation>
 <translation id="24786041351753425">Dienst zur Datenwiederherstellung aktivieren</translation>
+<translation id="2479148705183875116">Zu den Einstellungen</translation>
 <translation id="2479541499757560845">Tastatureinstellungen für Bedienungshilfen</translation>
 <translation id="2480868415629598489">Daten ändern, die du kopierst und einfügst</translation>
 <translation id="2480881140544300950">Suchmaschine, die aktuell deine „Neuer Tab“-Seite verwaltet</translation>
@@ -4691,6 +4693,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4213918571089943508">Google-Konto eines Kindes</translation>
 <translation id="4214192212360095377">Jetzt deaktivieren</translation>
 <translation id="4216407171061541111">Deine Organisation hat das Speichern von Tabs in deinem Google-Konto deaktiviert</translation>
+<translation id="4216511743389425832">Diese Seite anhören</translation>
 <translation id="4217571870635786043">Spracheingabe</translation>
 <translation id="4218081191298393750">Klicke auf das Lautsprechersymbol, um diesen Tab stummzuschalten</translation>
 <translation id="4220157655212610908">Externen Sicherheitsschlüssel verwenden</translation>
@@ -5644,6 +5647,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="4881685975363383806">Nicht mehr erinnern</translation>
 <translation id="4881695831933465202">Öffnen</translation>
 <translation id="4882312758060467256">Hat Zugriff auf diese Website</translation>
+<translation id="4882805770036405108">Mit einer Verknüpfung kannst du den Lesemodus schneller öffnen. Drücke ⌥ + ⌘ + R, um den Lesemodus zu aktivieren oder zu deaktivieren.</translation>
 <translation id="4882848900607400156">Wenn du deinen genauen Standort teilst, kann Gemini deine Fragen genauer beantworten. Deine Daten werden nicht zur Verbesserung generativer KI-Modelle verwendet.</translation>
 <translation id="4882919381756638075">Websites verwenden normalerweise dein Mikrofon für Kommunikationsfunktionen wie Videochats</translation>
 <translation id="4883436287898674711">Alle <ph name="WEBSITE_1" />-Websites</translation>
@@ -8881,6 +8885,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7186903260115204164">Mit dem neuen Zeichentool kannst du Freihandzeichnungen, Signaturen und Markierungen hinzufügen</translation>
 <translation id="7186935534137027449">App-Befehl</translation>
 <translation id="7188508872042490670">Websitedaten auf dem Gerät</translation>
+<translation id="7188755083797868960">Mit einer Verknüpfung kannst du den Lesemodus schneller öffnen. Drücke „Alt + Umschalttaste + R“, um den Lesemodus zu aktivieren oder zu deaktivieren.</translation>
 <translation id="7189234443051076392">Achte darauf, dass auf deinem Gerät ausreichend Speicherplatz vorhanden ist</translation>
 <translation id="7189451821249468368">Du hast nicht genügend Upgrades zum Anmelden dieses Geräts. Weitere Upgrades kannst du beim Vertrieb erwerben. Wenn du glaubst, dass du diese Meldung fälschlicherweise erhalten hast, kontaktiere bitte den Support.</translation>
 <translation id="7189558282078169397">Tabs von anderen Geräten</translation>
@@ -9079,7 +9084,6 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="732845903678043302">{BOOKMARK_COUNT,plural, =1{1 Lesezeichen wird nur auf diesem Gerät gespeichert. Wenn du es auf deinen anderen Geräten verwenden möchtest, speichere es in deinem Google-Konto.}other{{BOOKMARK_COUNT} Lesezeichen werden nur auf diesem Gerät gespeichert. Wenn du sie auf deinen anderen Geräten verwenden möchtest, speichere sie in deinem Google-Konto.}}</translation>
 <translation id="7328867076235380839">Ungültige Kombination</translation>
-<translation id="7329009627557479564">Datei kann nicht hochgeladen werden. Sie überschreitet die unterstützte Maximalgröße.</translation>
 <translation id="7329154610228416156">Du konntest nicht angemeldet werden, weil in der Konfiguration eine unsichere URL angegeben ist (<ph name="BLOCKED_URL" />). Bitte wende dich an deinen Administrator.</translation>
 <translation id="7330533963640151632"><ph name="FEATURE_NAME" />-Einstellungen für das Gerät von <ph name="USER_NAME" />. Die Freigabe erfolgt unter dem Konto <ph name="USER_EMAIL" />.</translation>
 <translation id="733058866272972585">Diese Website darf keine Kennungen verwenden, um geschützte Inhalte wiederzugeben.</translation>

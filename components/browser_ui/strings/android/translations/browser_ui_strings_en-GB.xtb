@@ -37,6 +37,7 @@
 <translation id="1384959399684842514">Download paused</translation>
 <translation id="1396327438254055134">Allow site to use V8 optimiser.</translation>
 <translation id="1409338233051621926">Tap Apps, then tap Default apps</translation>
+<translation id="1414315029670184034">Don't allow sites to use your camera</translation>
 <translation id="1415402041810619267">URL truncated</translation>
 <translation id="1415855080660575082">Let Chrome share your recent tabs with your device to see them in your device's app list and search results. You can turn this on or off in Chrome settings.</translation>
 <translation id="1420688843103859429">Navigate back and forth by swiping with two fingers on the touchpad</translation>
@@ -99,6 +100,7 @@
 <translation id="1985247341569771101">When on, sites can use your device's motion sensors. When off, sites can't use motion sensors.</translation>
 <translation id="1985716030964443178">This will reset all the sites in your list to the default zoom</translation>
 <translation id="1989112275319619282">Browse</translation>
+<translation id="1991370806334788445">Try allowing third-party cookies, which means less browsing protection but site features are more likely to work as expected.</translation>
 <translation id="1994173015038366702">Site URL</translation>
 <translation id="1994558116414798016">Font Lexend</translation>
 <translation id="2004697686368036666">Features on some sites may not work</translation>
@@ -742,7 +744,6 @@ Advanced Protection controls these Chrome settings:</translation>
 <translation id="8676374126336081632">Clear input</translation>
 <translation id="8681886425883659911">Ads are blocked on sites known to show intrusive or misleading ads</translation>
 <translation id="868929229000858085">Search your contacts</translation>
-<translation id="8707904142362025782">Site can ask for your camera</translation>
 <translation id="8712637175834984815">Got it</translation>
 <translation id="8715862698998036666">Drag from the top and swipe from the left or right edge to exit full screen.</translation>
 <translation id="8716050156658570300">Sites can ask to use motion and light sensors</translation>

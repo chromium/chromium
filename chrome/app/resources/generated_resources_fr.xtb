@@ -703,6 +703,7 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1473927070149284123">Réessayez ou connectez-vous manuellement à un réseau</translation>
 <translation id="1474785664565228650">La modification des paramètres du micro nécessite le redémarrage de Parallels Desktop. Relancez Parallels Desktop pour continuer.</translation>
 <translation id="1476088332184200792">Copier sur votre appareil</translation>
+<translation id="1476595624592550506">Modifiez votre mot de passe</translation>
 <translation id="1476607407192946488">&amp;Paramètres linguistiques</translation>
 <translation id="1477446329585670721"><ph name="DOMAIN" /> vous demande de laisser votre carte à puce insérée.</translation>
 <translation id="1477654881618305065">Votre organisation ne vous permet pas de partager ce contenu. Pour toute question, contactez votre administrateur.</translation>
@@ -2182,6 +2183,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2477218554275525952">Laisser la barre latérale Gemini ouverte lorsque vous ouvrez un nouvel onglet</translation>
 <translation id="2478176599153288112">Autorisations de fichier média pour "<ph name="EXTENSION" />"</translation>
 <translation id="24786041351753425">Activer le service de récupération de données.</translation>
+<translation id="2479148705183875116">Accéder aux paramètres</translation>
 <translation id="2479541499757560845">Paramètres du clavier d'accessibilité</translation>
 <translation id="2480868415629598489">Modifier les données que vous copiez-collez</translation>
 <translation id="2480881140544300950">Moteur de recherche actuel qui gère votre page "Nouvel onglet"</translation>
@@ -4695,6 +4697,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4213918571089943508">Compte Google de l'enfant</translation>
 <translation id="4214192212360095377">Désactiver maintenant</translation>
 <translation id="4216407171061541111">Votre organisation a désactivé l'enregistrement des onglets dans votre compte Google</translation>
+<translation id="4216511743389425832">Écouter cette page</translation>
 <translation id="4217571870635786043">Dictée</translation>
 <translation id="4218081191298393750">Cliquez sur l'icône de haut-parleur pour couper le son de cet onglet</translation>
 <translation id="4220157655212610908">Utiliser une clé de sécurité externe</translation>
@@ -5648,6 +5651,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="4881685975363383806">Ne pas afficher de rappel la prochaine fois</translation>
 <translation id="4881695831933465202">Ouvrir</translation>
 <translation id="4882312758060467256">A accès à ce site</translation>
+<translation id="4882805770036405108">Ouvrir le mode Lecture plus rapidement avec un raccourci. Appuyer sur ⌥+⌘+R pour activer ou désactiver le mode Lecture.</translation>
 <translation id="4882848900607400156">Lorsque vous partagez votre position exacte, Gemini peut répondre à vos questions plus précisément. Vos données ne sont pas utilisées pour améliorer les modèles d'IA générative.</translation>
 <translation id="4882919381756638075">Les sites utilisent généralement votre micro pour proposer des fonctionnalités de communication, comme le chat vidéo</translation>
 <translation id="4883436287898674711">Tous les sites <ph name="WEBSITE_1" /></translation>
@@ -8891,6 +8895,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7186903260115204164">Ajoutez des dessins à main levée, des signatures et des mises en surbrillance avec le nouvel outil Draw</translation>
 <translation id="7186935534137027449">Commande d'appli</translation>
 <translation id="7188508872042490670">Données des sites sur l'appareil</translation>
+<translation id="7188755083797868960">Ouvrir le mode Lecture plus rapidement avec un raccourci. Appuyer sur Alt+Maj+R pour activer/désactiver le mode Lecture.</translation>
 <translation id="7189234443051076392">Assurez-vous de disposer de suffisamment d'espace sur votre appareil</translation>
 <translation id="7189451821249468368">Vous n'avez pas suffisamment de licences de mise à niveau pour enregistrer cet appareil. Veuillez contacter le service commercial pour en acheter d'autres. Si vous pensez que ce message s'affiche par erreur, veuillez contacter l'assistance technique.</translation>
 <translation id="7189558282078169397">Onglets d'autres appareils</translation>
@@ -9089,7 +9094,6 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="732845903678043302">{BOOKMARK_COUNT,plural, =1{1 favori n'est enregistré que sur cet appareil. Pour l'utiliser sur vos autres appareils, enregistrez-le dans votre compte Google.}one{{BOOKMARK_COUNT} favori n'est enregistré que sur cet appareil. Pour l'utiliser sur vos autres appareils, enregistrez-le dans votre compte Google.}other{{BOOKMARK_COUNT} favoris ne sont enregistrés que sur cet appareil. Pour les utiliser sur vos autres appareils, enregistrez-les dans votre compte Google.}}</translation>
 <translation id="7328867076235380839">Combinaison non valide</translation>
-<translation id="7329009627557479564">Impossible d'importer. Le fichier dépasse la taille maximale acceptée.</translation>
 <translation id="7329154610228416156">La connexion a échoué, car elle a été configurée pour utiliser une URL non sécurisée (<ph name="BLOCKED_URL" />). Veuillez contacter votre administrateur.</translation>
 <translation id="7330533963640151632">Paramètres de <ph name="FEATURE_NAME" /> pour l'appareil de <ph name="USER_NAME" /> dans le compte <ph name="USER_EMAIL" />.</translation>
 <translation id="733058866272972585">Ce site n'est pas autorisé à utiliser des identifiants pour lire du contenu protégé.</translation>

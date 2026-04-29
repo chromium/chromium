@@ -703,6 +703,7 @@
 <translation id="1473927070149284123">Опитайте отново или се свържете с мрежа ръчно</translation>
 <translation id="1474785664565228650">Промяната в настройката за микрофона изисква повторно стартиране на Parallels Desktop. За да продължите, стартирайте отново Parallels Desktop.</translation>
 <translation id="1476088332184200792">Копиране на устройството ви</translation>
+<translation id="1476595624592550506">Променете паролата си</translation>
 <translation id="1476607407192946488">&amp;Езикови настройки</translation>
 <translation id="1477446329585670721"><ph name="DOMAIN" /> изисква да не изваждате смарткартата си.</translation>
 <translation id="1477654881618305065">Организацията ви не разрешава споделянето на това съдържание. Ако имате нужда от помощ, свържете се с администратора си.</translation>
@@ -2190,6 +2191,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2477218554275525952">Страничната лента на Gemini да остава отворена, когато отворите нов раздел</translation>
 <translation id="2478176599153288112">Разрешения за медийни файлове за <ph name="EXTENSION" /></translation>
 <translation id="24786041351753425">Активиране на услугата за възстановяване на данни.</translation>
+<translation id="2479148705183875116">Към настройките</translation>
 <translation id="2479541499757560845">Настройки за клавиатурата за достъпност</translation>
 <translation id="2480868415629598489">Промяна на данните, които копирате и поставяте</translation>
 <translation id="2480881140544300950">Текущата търсеща машина управлява новия раздел в браузъра</translation>
@@ -4706,6 +4708,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4213918571089943508">Профил в Google на дете</translation>
 <translation id="4214192212360095377">Изключване сега</translation>
 <translation id="4216407171061541111">Организацията ви е изключила запазването на разделите в профила ви в Google</translation>
+<translation id="4216511743389425832">Слушане на тази страница</translation>
 <translation id="4217571870635786043">Диктуване</translation>
 <translation id="4218081191298393750">Кликнете върху иконата на високоговорител, за да заглушите този раздел</translation>
 <translation id="4220157655212610908">Използване на външен ключ за сигурност</translation>
@@ -8555,6 +8558,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6927200998271693557">За да се връщате бързо към посетените от вас сайтове, синхронизирайте историята и разделите си с(ъс) <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6928650056523249512">Автоматично премахване на разрешенията за неизползваните сайтове</translation>
 <translation id="6929126689972602640">Родителските контроли не се поддържат за училищни профили. За да добавите училищен профил за достъп до Google Classroom и други уебсайтове за изпълнение на училищни задачи у дома, първо влезте с личния профил на детето. Можете да добавите училищния профил по-късно при настройването.</translation>
+<translation id="6929639755025587400">Приложението се инсталира…</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{Разширение бе отхвърлено}other{# разширения бяха отхвърлени}}</translation>
 <translation id="6930337524857202955">Налице е ново изтегляне</translation>
 <translation id="6930477763029357444">Разрешенията, които дадете на <ph name="APP_NAME" />, ще бъдат предоставени и на <ph name="PARENT_APP_NAME" /> и инсталираните от него приложения.</translation>
@@ -8720,6 +8724,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7038632520572155338">Достъп с превключване</translation>
 <translation id="7038710352229712897">Добавяне на друг профил в Google за <ph name="USER_NAME" /></translation>
 <translation id="7039326228527141150">Достъп до USB устройства от <ph name="VENDOR_NAME" /></translation>
+<translation id="7039697949826432881">Качването не е възможно. Файлът надвишава максималния поддържан размер от <ph name="MAX_FILE_SIZE" /> MB.</translation>
 <translation id="7039912931802252762">Влизане със смарт карта от Microsoft</translation>
 <translation id="7039951224110875196">Създаване на профил в Google за дете</translation>
 <translation id="7042116641003232070">С разрешение за запазване на данни на устройството ви</translation>
@@ -9102,7 +9107,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="732845903678043302">{BOOKMARK_COUNT,plural, =1{1 отметка е запазена само на това устройство. За да я използвате на другите си устройства, запазете я в профила си в Google.}other{{BOOKMARK_COUNT} отметки са запазени само на това устройство. За да ги използвате на другите си устройства, запазете ги в профила си в Google.}}</translation>
 <translation id="7328867076235380839">Невалидна комбинация</translation>
-<translation id="7329009627557479564">Качването не е възможно. Файлът надвишава максималния поддържан размер.</translation>
 <translation id="7329154610228416156">Влизането не бе успешно, тъй като е конфигурирано да се извършва през незащитен URL адрес (<ph name="BLOCKED_URL" />). Моля, свържете се с администратора си.</translation>
 <translation id="7330533963640151632">Настройки за функцията „<ph name="FEATURE_NAME" />“ за устройството на <ph name="USER_NAME" />, което споделя чрез профила <ph name="USER_EMAIL" />.</translation>
 <translation id="733058866272972585">Използването на идентификатори с цел възпроизвеждане на защитено съдържание е забранено за този сайт.</translation>
@@ -10765,6 +10769,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8460448946170646641">Прегледайте ключовите контроли за поверителност и сигурност</translation>
 <translation id="8460490661223303637">С цел освобождаване на място в паметта Chrome премахна част от съдържанието</translation>
 <translation id="8460932807646981183">Управление на търсещите машини и търсенето в сайтовете</translation>
+<translation id="8461572080432076264">Слушане на тази страница</translation>
 <translation id="8461914792118322307">Прокси сървър</translation>
 <translation id="8461973047386722744">Няма открити пароли</translation>
 <translation id="846205103980293931">{NUM_TABS,plural, =1{Списъчно поле с 1 елемент}other{Списъчно поле с(ъс) {NUM_TABS} елемента}}</translation>

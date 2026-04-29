@@ -163,11 +163,13 @@
 <translation id="6589356853295569750">Pranešimas apie bendrinamos skirtukų grupės pakeitimus atidarytas per visą ekrano aukštį</translation>
 <translation id="6590332670428149473">Atidaryti bendrinamos skirtukų grupės „<ph name="TITLE_OF_GROUP" />“, kurios spalva <ph name="COLOR_NAME" />, veiksmų meniu.</translation>
 <translation id="6615455863669487791">Rodyti</translation>
+<translation id="6686490380836145850">Uždaryti dešinėje esančius skirtukus</translation>
 <translation id="6694634756612002311">Tvarkyti bendrinimą</translation>
 <translation id="6709297274997495821">Pasirinkite skirtuką</translation>
 <translation id="6744956528665271406">Redaguoti grupės spalvą</translation>
 <translation id="6784585810034073638">{TAB_COUNT,plural, =1{Pridėti prie grupės „<ph name="TITLE_OF_GROUP" />“, kurioje yra <ph name="TAB_COUNT1" /> skirtukas}one{Pridėti prie grupės „<ph name="TITLE_OF_GROUP" />“, kurioje yra <ph name="TAB_COUNT1" /> skirtukas}few{Pridėti prie grupės „<ph name="TITLE_OF_GROUP" />“, kurioje yra <ph name="TAB_COUNT1" /> skirtukai}many{Pridėti prie grupės „<ph name="TITLE_OF_GROUP" />“, kurioje yra <ph name="TAB_COUNT1" /> skirtuko}other{Pridėti prie grupės „<ph name="TITLE_OF_GROUP" />“, kurioje yra <ph name="TAB_COUNT1" /> skirtukų}}</translation>
 <translation id="6818926723028410516">Pasirinkite elementus</translation>
+<translation id="68541483639528434">Uždaryti kitus skirtukus</translation>
 <translation id="6856809498882026482">Slėpti kelių elementų pasirinkimo režimą</translation>
 <translation id="6957436309971790274">Po dvidešimt pirmos neaktyvumo dienos</translation>
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{Išskleisti bendrinamą skirtukų grupę „<ph name="TITLE_OF_GROUP" />“ su <ph name="TABS_COUNT_ONE" /> skirtuku, kurios spalva <ph name="COLOR_NAME" />.}one{Išskleisti bendrinamą skirtukų grupę „<ph name="TITLE_OF_GROUP" />“ su <ph name="TABS_COUNT_MANY" /> skirtuku, kurios spalva <ph name="COLOR_NAME" />.}few{Išskleisti bendrinamą skirtukų grupę „<ph name="TITLE_OF_GROUP" />“ su <ph name="TABS_COUNT_MANY" /> skirtukais, kurios spalva <ph name="COLOR_NAME" />.}many{Išskleisti bendrinamą skirtukų grupę „<ph name="TITLE_OF_GROUP" />“ su <ph name="TABS_COUNT_MANY" /> skirtuko, kurios spalva <ph name="COLOR_NAME" />.}other{Išskleisti bendrinamą skirtukų grupę „<ph name="TITLE_OF_GROUP" />“ su <ph name="TABS_COUNT_MANY" /> skirtukų, kurios spalva <ph name="COLOR_NAME" />.}}</translation>

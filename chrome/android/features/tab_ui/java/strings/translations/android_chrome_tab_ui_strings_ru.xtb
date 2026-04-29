@@ -163,11 +163,13 @@
 <translation id="6589356853295569750">Нижний экран с информацией об изменениях в общей группе вкладок открыт полностью</translation>
 <translation id="6590332670428149473">Открыть меню действий для группы вкладок "<ph name="TITLE_OF_GROUP" />" с общим доступом, которой присвоен цвет "<ph name="COLOR_NAME" />".</translation>
 <translation id="6615455863669487791">Показать</translation>
+<translation id="6686490380836145850">Закрыть вкладки справа</translation>
 <translation id="6694634756612002311">Управление доступом</translation>
 <translation id="6709297274997495821">Выбрать вкладку</translation>
 <translation id="6744956528665271406">Изменить цвет группы</translation>
 <translation id="6784585810034073638">{TAB_COUNT,plural, =1{Добавить в группу "<ph name="TITLE_OF_GROUP" />" с <ph name="TAB_COUNT1" /> вкладкой}one{Добавить в группу "<ph name="TITLE_OF_GROUP" />" с <ph name="TAB_COUNT1" /> вкладкой}few{Добавить в группу "<ph name="TITLE_OF_GROUP" />" с <ph name="TAB_COUNT1" /> вкладками}many{Добавить в группу "<ph name="TITLE_OF_GROUP" />" с <ph name="TAB_COUNT1" /> вкладками}other{Добавить в группу "<ph name="TITLE_OF_GROUP" />" с <ph name="TAB_COUNT1" /> вкладки}}</translation>
 <translation id="6818926723028410516">Выбрать</translation>
+<translation id="68541483639528434">Закрыть другие вкладки</translation>
 <translation id="6856809498882026482">Выйти из режима выбора вкладок</translation>
 <translation id="6957436309971790274">Через 21 день</translation>
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{Развернуть группу вкладок "<ph name="TITLE_OF_GROUP" />", которой присвоен цвет "<ph name="COLOR_NAME" />". В ней <ph name="TABS_COUNT_ONE" /> вкладка.}one{Развернуть группу вкладок "<ph name="TITLE_OF_GROUP" />", которой присвоен цвет "<ph name="COLOR_NAME" />". В ней <ph name="TABS_COUNT_MANY" /> вкладка.}few{Развернуть группу вкладок "<ph name="TITLE_OF_GROUP" />", которой присвоен цвет "<ph name="COLOR_NAME" />". В ней <ph name="TABS_COUNT_MANY" /> вкладки.}many{Развернуть группу вкладок "<ph name="TITLE_OF_GROUP" />", которой присвоен цвет "<ph name="COLOR_NAME" />". В ней <ph name="TABS_COUNT_MANY" /> вкладок.}other{Развернуть группу вкладок "<ph name="TITLE_OF_GROUP" />", которой присвоен цвет "<ph name="COLOR_NAME" />". В ней <ph name="TABS_COUNT_MANY" /> вкладки.}}</translation>

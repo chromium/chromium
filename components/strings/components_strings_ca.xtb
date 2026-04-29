@@ -152,6 +152,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1228893227497259893">Identificador d'entitat incorrecte</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (detectat automàticament)</translation>
 <translation id="1232569758102978740">Sense títol</translation>
+<translation id="1234539281285007945">El camp <ph name="FIELD_1" /> és obligatori</translation>
 <translation id="1236081509407217141">Vols permetre la realitat virtual?</translation>
 <translation id="1236689197410206751">Afterpay</translation>
 <translation id="1240347957665416060">Nom del teu dispositiu</translation>
@@ -472,6 +473,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1721424275792716183">* El camp és obligatori</translation>
 <translation id="1723636263173393300">Aquesta política no pot tenir més de <ph name="MAX_ITEMS_LIMIT" /> dreceres.</translation>
 <translation id="1725591448053514783">Sobre You 6</translation>
+<translation id="172754119609519423">Els camps <ph name="FIELD_1" />, <ph name="FIELD_2" /> o <ph name="FIELD_3" /> són obligatoris</translation>
 <translation id="1727613060316725209">El certificat és vàlid</translation>
 <translation id="1728677426644403582">Estàs consultant el codi font d'una pàgina web</translation>
 <translation id="173080396488393970">Aquest tipus de targeta no s'admet</translation>
@@ -1432,6 +1434,7 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="3220264767789936523">Roba formal</translation>
 <translation id="3223287115535306850">Icona animada d'inici d'una aplicació</translation>
 <translation id="3223425961342298674">No està permès utilitzar la ubicació</translation>
+<translation id="3225277284238802910">Els camps <ph name="FIELD_1" /> o <ph name="FIELD_2" /> són obligatoris</translation>
 <translation id="3225319735946384299">Signatura de codi</translation>
 <translation id="3225919329040284222">El servidor ha presentat un certificat que no coincideix amb les expectatives integrades. Les expectatives s'inclouen perquè determinats llocs web d'alta seguretat us protegeixin.</translation>
 <translation id="3226128629678568754">Premeu el botó de tornar a carregar per tornar a enviar les dades necessàries per carregar la pàgina.</translation>

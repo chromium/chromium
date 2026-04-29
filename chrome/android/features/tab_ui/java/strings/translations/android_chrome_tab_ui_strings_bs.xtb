@@ -163,11 +163,13 @@
 <translation id="6589356853295569750">Obavještenje o promjenama dijeljene grupe kartica je otvoreno u punoj visini</translation>
 <translation id="6590332670428149473">Otvaranje menija s radnjama grupe kartica za dijeljenu grupu kartica <ph name="TITLE_OF_GROUP" />, boje <ph name="COLOR_NAME" />.</translation>
 <translation id="6615455863669487791">Pokaži mi</translation>
+<translation id="6686490380836145850">Zatvori kartice s desne strane</translation>
 <translation id="6694634756612002311">Upravljajte dijeljenjem</translation>
 <translation id="6709297274997495821">Odabir kartice</translation>
 <translation id="6744956528665271406">Uredite boju grupe</translation>
 <translation id="6784585810034073638">{TAB_COUNT,plural, =1{Dodavanje u grupu pod nazivom <ph name="TITLE_OF_GROUP" /> s <ph name="TAB_COUNT1" /> karticom}one{Dodavanje u grupu pod nazivom <ph name="TITLE_OF_GROUP" /> sa <ph name="TAB_COUNT1" /> karticom}few{Dodavanje u grupu pod nazivom <ph name="TITLE_OF_GROUP" /> sa <ph name="TAB_COUNT1" /> kartice}other{Dodavanje u grupu pod nazivom <ph name="TITLE_OF_GROUP" /> sa <ph name="TAB_COUNT1" /> kartica}}</translation>
 <translation id="6818926723028410516">Odaberite stavke</translation>
+<translation id="68541483639528434">Zatvori ostale kartice</translation>
 <translation id="6856809498882026482">Skrivanje načina rada višestrukog izbora</translation>
 <translation id="6957436309971790274">Nakon 21 dana neaktivnosti</translation>
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{Proširivanje dijeljene grupe kartica <ph name="TITLE_OF_GROUP" /> s <ph name="TABS_COUNT_ONE" /> karticom, boja <ph name="COLOR_NAME" />.}one{Proširivanje dijeljene grupe kartica <ph name="TITLE_OF_GROUP" /> s <ph name="TABS_COUNT_MANY" /> karticom, boja <ph name="COLOR_NAME" />.}few{Proširivanje dijeljene grupe kartica <ph name="TITLE_OF_GROUP" /> s <ph name="TABS_COUNT_MANY" /> kartice, boja <ph name="COLOR_NAME" />.}other{Proširivanje dijeljene grupe kartica <ph name="TITLE_OF_GROUP" /> s <ph name="TABS_COUNT_MANY" /> kartica, boja <ph name="COLOR_NAME" />.}}</translation>

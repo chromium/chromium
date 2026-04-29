@@ -37,6 +37,7 @@
 <translation id="1384959399684842514">Transferência interrompida</translation>
 <translation id="1396327438254055134">Permita que o site use o otimizador do V8.</translation>
 <translation id="1409338233051621926">Toque em Apps e, de seguida, em Apps predefinidas</translation>
+<translation id="1414315029670184034">Não permitir que os sites utilizem a câmara</translation>
 <translation id="1415402041810619267">URL truncado</translation>
 <translation id="1415855080660575082">Permita que o Chrome partilhe os seus separadores recentes com o seu dispositivo para os ver na lista de apps e nos resultados da pesquisa do dispositivo. Pode ativar ou desativar esta opção nas definições do Chrome.</translation>
 <translation id="1420688843103859429">Navegue para a frente e para trás deslizando rapidamente com dois dedos no touchpad</translation>
@@ -742,7 +743,6 @@ A Proteção avançada controla estas definições do Chrome:</translation>
 <translation id="8676374126336081632">Limpar texto</translation>
 <translation id="8681886425883659911">Os anúncios são bloqueados em sites conhecidos por mostrarem anúncios intrusivos ou enganadores</translation>
 <translation id="868929229000858085">Pesquise os seus contactos</translation>
-<translation id="8707904142362025782">O site pode pedir acesso à sua câmara</translation>
 <translation id="8712637175834984815">OK</translation>
 <translation id="8715862698998036666">Arraste a partir da parte superior e deslize rapidamente a partir da extremidade esquerda ou direita para sair do ecrã inteiro.</translation>
 <translation id="8716050156658570300">Os sites podem pedir para usar sensores de movimento e de luz</translation>

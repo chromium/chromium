@@ -163,11 +163,13 @@
 <translation id="6589356853295569750">បានបើកសេចក្ដីជូនដំណឹងអំពីការផ្លាស់ប្ដូរក្រុមផ្ទាំងដែលបានចែករំលែកពេញអេក្រង់</translation>
 <translation id="6590332670428149473">បើក​ម៉ឺនុយ​សកម្មភាព​ក្រុមផ្ទាំង​សម្រាប់​ក្រុមផ្ទាំង <ph name="TITLE_OF_GROUP" /> ដែលបាន​ចែករំលែក ដែលមានពណ៌<ph name="COLOR_NAME" />។</translation>
 <translation id="6615455863669487791">បង្ហាញខ្ញុំ</translation>
+<translation id="6686490380836145850">បិទផ្ទាំងទៅខាងស្តាំ</translation>
 <translation id="6694634756612002311">គ្រប់គ្រង​ការចែករំលែក</translation>
 <translation id="6709297274997495821">ជ្រើសរើស​ផ្ទាំង</translation>
 <translation id="6744956528665271406">កែ​ពណ៌​ក្រុម</translation>
 <translation id="6784585810034073638">{TAB_COUNT,plural, =1{បញ្ចូល​ទៅ​ក្រុម​ដែលមាន​ឈ្មោះថា <ph name="TITLE_OF_GROUP" /> ដែលមាន <ph name="TAB_COUNT1" /> ផ្ទាំង}other{បញ្ចូល​ទៅ​ក្រុម​ដែលមាន​ឈ្មោះថា <ph name="TITLE_OF_GROUP" /> ដែលមាន <ph name="TAB_COUNT1" /> ផ្ទាំង}}</translation>
 <translation id="6818926723028410516">ជ្រើសរើសធាតុ</translation>
+<translation id="68541483639528434">បិទផ្ទាំងផ្សេងទៀត</translation>
 <translation id="6856809498882026482">លាក់មុខងារ​ជ្រើសរើសច្រើន</translation>
 <translation id="6957436309971790274">បន្ទាប់ពី​អសកម្ម​រយៈពេល 21 ថ្ងៃ</translation>
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{ពង្រីក​ក្រុមផ្ទាំង <ph name="TITLE_OF_GROUP" /> ដែលបាន​ចែករំលែក​ដែលមាន <ph name="TABS_COUNT_ONE" /> ផ្ទាំង ពណ៌<ph name="COLOR_NAME" />។}other{ពង្រីក​ក្រុមផ្ទាំង <ph name="TITLE_OF_GROUP" /> ដែលបាន​ចែករំលែក​ដែលមាន <ph name="TABS_COUNT_MANY" /> ផ្ទាំង ពណ៌<ph name="COLOR_NAME" />។}}</translation>

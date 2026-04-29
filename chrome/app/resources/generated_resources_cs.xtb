@@ -704,6 +704,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili aplik
 <translation id="1473927070149284123">Zkuste to znovu nebo se připojte k síti ručně</translation>
 <translation id="1474785664565228650">Změna nastavení mikrofonu vyžaduje restart nástroje Parallels Desktop. Pokračujte restartováním nástroje Parallels Desktop.</translation>
 <translation id="1476088332184200792">Kopírovat do zařízení</translation>
+<translation id="1476595624592550506">Změna hesla</translation>
 <translation id="1476607407192946488">&amp;Jazyková nastavení</translation>
 <translation id="1477446329585670721"><ph name="DOMAIN" /> vyžaduje, abyste čipovou kartu ponechali vloženou.</translation>
 <translation id="1477654881618305065">Vaše organizace nepovoluje sdílet tento obsah. Pokud potřebujete pomoc, obraťte se na administrátora.</translation>
@@ -2183,6 +2184,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2477218554275525952">Při otevření nové karty nechat otevřený postranní panel Gemini</translation>
 <translation id="2478176599153288112">Oprávnění souborů médií pro rozšíření <ph name="EXTENSION" /></translation>
 <translation id="24786041351753425">Zapnout službu obnovení dat.</translation>
+<translation id="2479148705183875116">Přejít do nastavení</translation>
 <translation id="2479541499757560845">Nastavení klávesnice pro přístupnost</translation>
 <translation id="2480868415629598489">Upravovat data, která kopírujete a vkládáte</translation>
 <translation id="2480881140544300950">Aktuální vyhledávač spravující vaši stránku Nová karta</translation>
@@ -4695,6 +4697,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4213918571089943508">Účet Google dítěte</translation>
 <translation id="4214192212360095377">Vypnout</translation>
 <translation id="4216407171061541111">Vaše organizace vypnula ukládání karet do vašeho účtu Google</translation>
+<translation id="4216511743389425832">Poslechnout si tuto stránku</translation>
 <translation id="4217571870635786043">Diktování</translation>
 <translation id="4218081191298393750">Kliknutím na ikonu reproduktoru tuto kartu ztlumíte</translation>
 <translation id="4220157655212610908">Použít externí bezpečnostní klíč</translation>
@@ -5648,6 +5651,7 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="4881685975363383806">Příště nepřipomínat</translation>
 <translation id="4881695831933465202">Otevřít</translation>
 <translation id="4882312758060467256">Má přístup k tomuto webu</translation>
+<translation id="4882805770036405108">Otevírejte režim čtení rychleji pomocí zkratky. Režim čtení můžete přepnout stisknutím ⌥ + ⌘ + R.</translation>
 <translation id="4882848900607400156">Když sdílíte svou přesnou polohu, může Gemini na otázky odpovídat přesněji. Vaše data se nepoužívají k vylepšování modelů generativní umělé inteligence.</translation>
 <translation id="4882919381756638075">Weby obvykle používají mikrofon ke komunikačním funkcím, jako je videohovor</translation>
 <translation id="4883436287898674711">Všechny weby <ph name="WEBSITE_1" /></translation>
@@ -8889,6 +8893,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7186903260115204164">Přidávejte ruční kresby, podpisy a zvýraznění pomocí nového nástroje Kreslení</translation>
 <translation id="7186935534137027449">Příkaz aplikace</translation>
 <translation id="7188508872042490670">Data webu v zařízení</translation>
+<translation id="7188755083797868960">Otevírejte režim čtení rychleji pomocí zkratky. Režim čtení můžete přepnout stisknutím kláves Alt + Shift + R.</translation>
 <translation id="7189234443051076392">V zařízení musí být dost místa</translation>
 <translation id="7189451821249468368">Nemáte dostatečný počet upgradů k registraci tohoto zařízení. Kontaktujte obchodní oddělení a kupte si další. Pokud se domníváte, že se jedná o chybu, kontaktujte podporu.</translation>
 <translation id="7189558282078169397">Karty z ostatních zařízení</translation>
@@ -9087,7 +9092,6 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="732845903678043302">{BOOKMARK_COUNT,plural, =1{1 záložka je uložená jen na tomto zařízení. Pokud ho chcete používat i na jiných zařízeních, uložte ho do svého účtu Google.}few{{BOOKMARK_COUNT} záložky jsou uložené jen na tomto zařízení. Pokud je chcete používat i na jiných zařízeních, uložte je do svého účtu Google.}many{{BOOKMARK_COUNT} záložky je uloženo jen na tomto zařízení. Pokud je chcete používat i na jiných zařízeních, uložte je do svého účtu Google.}other{{BOOKMARK_COUNT} záložek je uloženo jen na tomto zařízení. Pokud je chcete používat i na jiných zařízeních, uložte je do svého účtu Google.}}</translation>
 <translation id="7328867076235380839">Neplatná kombinace</translation>
-<translation id="7329009627557479564">Soubor nelze nahrát. Soubor překračuje maximální podporovanou velikost.</translation>
 <translation id="7329154610228416156">Přihlášení se nezdařilo, protože bylo nakonfigurováno k použití nezabezpečené adresy URL (<ph name="BLOCKED_URL" />). Obraťte se na svého administrátora.</translation>
 <translation id="7330533963640151632">Nastavení funkce <ph name="FEATURE_NAME" /> pro zařízení uživatele <ph name="USER_NAME" />. Sdílení bude probíhat pod e‑mailem <ph name="USER_EMAIL" />.</translation>
 <translation id="733058866272972585">Tomuto webu bylo zablokováno používání identifikátorů k přehrávání chráněného obsahu.</translation>

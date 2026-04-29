@@ -163,11 +163,13 @@
 <translation id="6589356853295569750">Thông báo về các thay đổi trong Nhóm thẻ được chia sẻ đã mở trên toàn màn hình</translation>
 <translation id="6590332670428149473">Mở trình đơn thao tác đối với nhóm thẻ cho nhóm thẻ <ph name="TITLE_OF_GROUP" /> được chia sẻ, màu <ph name="COLOR_NAME" />.</translation>
 <translation id="6615455863669487791">Hiển thị cho tôi</translation>
+<translation id="6686490380836145850">Đóng các thẻ bên phải</translation>
 <translation id="6694634756612002311">Quản lý việc chia sẻ</translation>
 <translation id="6709297274997495821">Chọn thẻ</translation>
 <translation id="6744956528665271406">Chỉnh sửa màu cho nhóm</translation>
 <translation id="6784585810034073638">{TAB_COUNT,plural, =1{Thêm vào nhóm <ph name="TITLE_OF_GROUP" /> có <ph name="TAB_COUNT1" /> thẻ}other{Thêm vào nhóm <ph name="TITLE_OF_GROUP" /> có <ph name="TAB_COUNT1" /> thẻ}}</translation>
 <translation id="6818926723028410516">Chọn mục</translation>
+<translation id="68541483639528434">Đóng các thẻ khác</translation>
 <translation id="6856809498882026482">Ẩn chế độ chọn nhiều thẻ</translation>
 <translation id="6957436309971790274">Sau 21 ngày không hoạt động</translation>
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{Mở rộng nhóm thẻ <ph name="TITLE_OF_GROUP" /> được chia sẻ có <ph name="TABS_COUNT_ONE" /> thẻ, màu <ph name="COLOR_NAME" />.}other{Mở rộng nhóm thẻ <ph name="TITLE_OF_GROUP" /> được chia sẻ có <ph name="TABS_COUNT_MANY" /> thẻ, màu <ph name="COLOR_NAME" />.}}</translation>

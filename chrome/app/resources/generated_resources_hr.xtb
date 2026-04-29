@@ -704,6 +704,7 @@ Dopuštenja koja ste već dali aplikacijama mogu se primijeniti na ovaj račun. 
 <translation id="1473927070149284123">Pokušajte ponovo ili se ručno povežite s mrežom</translation>
 <translation id="1474785664565228650">Za promjenu postavke mikrofona potrebno je ponovno pokrenuti Parallels Desktop. Ponovo pokrenite Parallels Desktop da biste nastavili.</translation>
 <translation id="1476088332184200792">Kopiraj na svoj uređaj</translation>
+<translation id="1476595624592550506">Promijenite zaporku</translation>
 <translation id="1476607407192946488">&amp;Postavke jezika</translation>
 <translation id="1477446329585670721"><ph name="DOMAIN" /> zahtijeva da vaša pametna kartica ostane umetnuta.</translation>
 <translation id="1477654881618305065">Vaša organizacija ne dopušta vam dijeljenje ovog sadržaja. Ako vam je potrebna pomoć, obratite se svom administratoru.</translation>
@@ -2184,6 +2185,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2477218554275525952">Ostavi bočnu traku Geminija otvorenom kad otvorim novu karticu</translation>
 <translation id="2478176599153288112">Dozvole medijske datoteke za proširenje "<ph name="EXTENSION" />"</translation>
 <translation id="24786041351753425">Omogući uslugu oporavka podataka.</translation>
+<translation id="2479148705183875116">Otvori Postavke</translation>
 <translation id="2479541499757560845">Postavke tipkovnice za pristupačnost</translation>
 <translation id="2480868415629598489">izmjenjivati podatke koje kopirate i lijepite</translation>
 <translation id="2480881140544300950">Trenutačna tražilica koja upravlja vašom stranicom nove kartice</translation>
@@ -4698,6 +4700,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="4213918571089943508">Google račun djeteta</translation>
 <translation id="4214192212360095377">Isključi odmah</translation>
 <translation id="4216407171061541111">Vaša organizacija isključila je spremanje kartica na vaš Google račun</translation>
+<translation id="4216511743389425832">Poslušajte ovu stranicu</translation>
 <translation id="4217571870635786043">Diktat</translation>
 <translation id="4218081191298393750">Kliknite ikonu zvučnika da biste isključili zvuk za ovu karticu</translation>
 <translation id="4220157655212610908">Koristite vanjski sigurnosni ključ</translation>
@@ -5651,6 +5654,7 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="4881685975363383806">Nemoj me podsjećati sljedeći put</translation>
 <translation id="4881695831933465202">Otvori</translation>
 <translation id="4882312758060467256">Ima pristup ovoj web-lokaciji</translation>
+<translation id="4882805770036405108">Brže otvorite način čitanja pomoću prečaca. Pritisnite ⌥ + ⌘ + R da biste uključili ili isključili način čitanja.</translation>
 <translation id="4882848900607400156">Kad podijelite točnu lokaciju, Gemini može točnije odgovoriti na vaša pitanja. Vaši se podaci ne upotrebljavaju za poboljšanje generativnih AI modela.</translation>
 <translation id="4882919381756638075">Web-lokacije obično upotrebljavaju mikrofon za komunikacijske značajke poput videochata</translation>
 <translation id="4883436287898674711">Sve web-lokacije <ph name="WEBSITE_1" /></translation>
@@ -8892,6 +8896,7 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="7186903260115204164">Dodajte vlastoručne crteže, potpise i isticanja pomoću novog alata za crtanje</translation>
 <translation id="7186935534137027449">Naredba aplikacije</translation>
 <translation id="7188508872042490670">Podaci web-lokacije na uređaju</translation>
+<translation id="7188755083797868960">Brže otvorite način čitanja pomoću prečaca. Pritisnite Alt + Shift + R da biste uključili ili isključili način čitanja.</translation>
 <translation id="7189234443051076392">Provjerite ima li dovoljno prostora na uređaju</translation>
 <translation id="7189451821249468368">Nemate dovoljno nadogradnji za prijavu ovog uređaja. Obratite se prodaji da biste kupili više. Ako smatrate da vam se ova poruka prikazuje pogreškom, obratite se podršci.</translation>
 <translation id="7189558282078169397">Kartice s drugih uređaja</translation>
@@ -9090,7 +9095,6 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="732845903678043302">{BOOKMARK_COUNT,plural, =1{Jedna oznaka sprema se samo na ovaj uređaj. Da biste je upotrebljavali na svojim drugim uređajima, spremite je na svoj Google račun.}one{{BOOKMARK_COUNT} oznaka sprema se samo na ovaj uređaj. Da biste ih upotrebljavali na svojim drugim uređajima, spremite ih na svoj Google račun.}few{{BOOKMARK_COUNT} oznake spremaju se samo na ovaj uređaj. Da biste ih upotrebljavali na svojim drugim uređajima, spremite ih na svoj Google račun.}other{{BOOKMARK_COUNT} oznaka sprema se samo na ovaj uređaj. Da biste ih upotrebljavali na svojim drugim uređajima, spremite ih na svoj Google račun.}}</translation>
 <translation id="7328867076235380839">Nevažeća kombinacija</translation>
-<translation id="7329009627557479564">Prijenos nije moguć. Datoteka premašuje maksimalnu podržanu veličinu.</translation>
 <translation id="7329154610228416156">Prijava nije uspjela jer je konfigurirana za upotrebu nesigurnog URL-a (<ph name="BLOCKED_URL" />). Obratite se administratoru.</translation>
 <translation id="7330533963640151632">Postavke značajke <ph name="FEATURE_NAME" /> za uređaj na kojem <ph name="USER_NAME" /> dijeli putem računa <ph name="USER_EMAIL" />.</translation>
 <translation id="733058866272972585">Web-lokaciji je blokirana upotreba identifikatora za reprodukciju zaštićenog sadržaja.</translation>

@@ -37,6 +37,7 @@
 <translation id="1384959399684842514">İndirme işlemi duraklatıldı</translation>
 <translation id="1396327438254055134">Sitenin, V8 optimize ediciyi kullanmasına izin verin.</translation>
 <translation id="1409338233051621926">Uygulamalar'a, ardından "Varsayılan uygulamalar"a dokunun</translation>
+<translation id="1414315029670184034">Sitelerin kameramı kullanmasına izin verme</translation>
 <translation id="1415402041810619267">URL kısaltıldı</translation>
 <translation id="1415855080660575082">Chrome'un son sekmelerinizi cihazınızla paylaşmasına izin verdiğinizde bu sekmeleri cihazınızın uygulama listesinde ve arama sonuçlarında görebilirsiniz. Bu özelliği Chrome ayarlarından etkinleştirebilir veya devre dışı bırakabilirsiniz.</translation>
 <translation id="1420688843103859429">Dokunmatik alanda iki parmağınızla kaydırarak ileri ve geri gidin</translation>
@@ -742,7 +743,6 @@ Gelişmiş Koruma, şu Chrome ayarlarını kontrol eder:</translation>
 <translation id="8676374126336081632">Girişi temizle</translation>
 <translation id="8681886425883659911">Araya giren veya yanıltıcı reklamlar gösterdiği bilinen sitelerdeki reklamlar engellenir</translation>
 <translation id="868929229000858085">Kişilerinizde arama yapın</translation>
-<translation id="8707904142362025782">Site, kameranızı kullanmak isteyebilir</translation>
 <translation id="8712637175834984815">Anladım</translation>
 <translation id="8715862698998036666">Tam ekrandan çıkmak için yukarıdan sürükleyip sol veya sağ kenardan kaydırın.</translation>
 <translation id="8716050156658570300">Siteler, hareket ve ışık sensörlerini kullanmak için izin isteyebilir</translation>

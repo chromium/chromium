@@ -702,6 +702,7 @@ Baliteke aplikazioei emandako baimenak kontu honi aplikatzea. <ph name="APPS_LIN
 <translation id="1473927070149284123">Saiatu berriro edo konektatu sare batera eskuz</translation>
 <translation id="1474785664565228650">Mikrofonoaren ezarpenean egindako aldaketa gauzatzeko, Parallels Desktop berriro exekutatu behar da. Aurrera egiteko, exekutatu Parallels Desktop berriro.</translation>
 <translation id="1476088332184200792">Kopiatu zure gailuan</translation>
+<translation id="1476595624592550506">Aldatu pasahitza</translation>
 <translation id="1476607407192946488">&amp;Hizkuntza-ezarpenak</translation>
 <translation id="1477446329585670721">Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.</translation>
 <translation id="1477654881618305065">Erakundeak ez dizu eman baimenik eduki hau partekatzeko. Laguntza behar baduzu, jarri administratzailearekin harremanetan.</translation>
@@ -2180,6 +2181,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2477218554275525952">Eduki Gemini-ren alboko barra irekita beste fitxa bat irekitzean</translation>
 <translation id="2478176599153288112">"<ph name="EXTENSION" />" luzapenaren baimenak multimedia-fitxategietarako</translation>
 <translation id="24786041351753425">Gaitu datuak berreskuratzeko zerbitzua.</translation>
+<translation id="2479148705183875116">Joan "Ezarpenak" atalera</translation>
 <translation id="2479541499757560845">Erabilerraztasun-teklatuaren ezarpenak</translation>
 <translation id="2480868415629598489">Kopiatzen eta itsasten dituzun datuak aldatu.</translation>
 <translation id="2480881140544300950">Fitxa berriaren orria une honetan kudeatzen duen bilatzailea</translation>
@@ -4693,6 +4695,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="4213918571089943508">Haurraren Google-ko kontua</translation>
 <translation id="4214192212360095377">Desaktibatu</translation>
 <translation id="4216407171061541111">Erakundeak fitxak gordetzeko aukera desaktibatu du Google-ko kontuan</translation>
+<translation id="4216511743389425832">Entzun orri honetan dagoena</translation>
 <translation id="4217571870635786043">Diktaketa</translation>
 <translation id="4218081191298393750">Fitxaren audioa desaktibatzeko, egin klik bozgorailuaren ikonoan</translation>
 <translation id="4220157655212610908">Erabili kanpoko segurtasun-giltza bat</translation>
@@ -9082,7 +9085,6 @@ Arriskuan dauden # pasahitz gehiago dauzkazu. Google-ren Pasahitz-kudeatzailea z
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="732845903678043302">{BOOKMARK_COUNT,plural, =1{1 laster-marka gailu honetan soilik gordeta dago. Beste gailuetan erabiltzeko, gorde ezazu Google-ko kontuan.}other{{BOOKMARK_COUNT} laster-marka gailu honetan soilik gordeta daude. Beste gailuetan erabiltzeko, gorde itzazu Google-ko kontuan.}}</translation>
 <translation id="7328867076235380839">Konbinazioak ez du balio</translation>
-<translation id="7329009627557479564">Ezin da kargatu. Fitxategiak onartutako gehieneko tamaina gainditzen du.</translation>
 <translation id="7329154610228416156">Ezin izan da hasi saioa, segurua ez den URL bat (<ph name="BLOCKED_URL" />) erabiltzeko konfiguratu delako. Jarri administratzailearekin harremanetan.</translation>
 <translation id="7330533963640151632"><ph name="FEATURE_NAME" /> eginbidearen ezarpenak <ph name="USER_NAME" /> erabiltzailearen gailurako; <ph name="USER_EMAIL" /> kontuaren bidez partekatzen dira.</translation>
 <translation id="733058866272972585">Babestutako edukia erreproduzitzeko identifikatzaileak erabiltzea galarazi zaio webgune honi.</translation>

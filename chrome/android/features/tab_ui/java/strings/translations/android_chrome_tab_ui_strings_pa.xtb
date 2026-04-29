@@ -163,11 +163,13 @@
 <translation id="6589356853295569750">ਸਾਂਝੇ ਕੀਤੇ ਟੈਬ ਗਰੁੱਪ ਵਿੱਚ ਕੀਤੀਆਂ ਜਾਣ ਵਾਲੀਆਂ ਤਬਦੀਲੀਆਂ ਬਾਰੇ ਨੋਟਿਸ ਪੂਰੀ ਸਕ੍ਰੀਨ 'ਤੇ ਦਿਖ ਰਿਹਾ ਹੈ</translation>
 <translation id="6590332670428149473">ਸਾਂਝਾ ਕੀਤੇ ਟੈਬ ਗਰੁੱਪ <ph name="TITLE_OF_GROUP" />, ਰੰਗ <ph name="COLOR_NAME" /> ਲਈ, ਟੈਬ ਗਰੁੱਪ ਕਾਰਵਾਈ ਮੀਨੂ ਖੋਲ੍ਹੋ।</translation>
 <translation id="6615455863669487791">ਮੈਨੂੰ ਦਿਖਾਓ</translation>
+<translation id="6686490380836145850">ਟੈਬਸ ਨੂੰ ਸੱਜੇ ਪਾਸੇ ਬੰਦ ਕਰੋ</translation>
 <translation id="6694634756612002311">ਸਾਂਝਾਕਰਨ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="6709297274997495821">ਟੈਬ ਚੁਣੋ</translation>
 <translation id="6744956528665271406">ਗਰੁੱਪ ਦੇ ਰੰਗ ਦਾ ਸੰਪਾਦਨ ਕਰੋ</translation>
 <translation id="6784585810034073638">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT1" /> ਟੈਬ ਵਾਲੇ <ph name="TITLE_OF_GROUP" /> ਨਾਮ ਦੇ ਗਰੁੱਪ ਵਿੱਚ ਸ਼ਾਮਲ ਕਰੋ}one{<ph name="TAB_COUNT1" /> ਟੈਬ ਵਾਲੇ <ph name="TITLE_OF_GROUP" /> ਨਾਮ ਦੇ ਗਰੁੱਪ ਵਿੱਚ ਸ਼ਾਮਲ ਕਰੋ}other{<ph name="TAB_COUNT1" /> ਟੈਬਾਂ ਵਾਲੇ <ph name="TITLE_OF_GROUP" /> ਨਾਮ ਦੇ ਗਰੁੱਪ ਵਿੱਚ ਸ਼ਾਮਲ ਕਰੋ}}</translation>
 <translation id="6818926723028410516">ਆਈਟਮਾਂ ਚੁਣੋ</translation>
+<translation id="68541483639528434">ਹੋਰ ਟੈਬਸ ਬੰਦ ਕਰੋ</translation>
 <translation id="6856809498882026482">ਬਹੁ-ਚੋਣ ਮੋਡ ਨੂੰ ਲੁਕਾਓ</translation>
 <translation id="6957436309971790274">21 ਦਿਨ ਅਕਿਰਿਆਸ਼ੀਲ ਰਹਿਣ ਤੋਂ ਬਾਅਦ</translation>
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{<ph name="COLOR_NAME" /> ਰੰਗ ਅਤੇ <ph name="TABS_COUNT_ONE" /> ਟੈਬ ਵਾਲੇ ਸਾਂਝੇ ਕੀਤੇ <ph name="TITLE_OF_GROUP" /> ਟੈਬ ਗਰੁੱਪ ਦਾ ਵਿਸਤਾਰ ਕਰੋ।}one{<ph name="COLOR_NAME" /> ਰੰਗ ਅਤੇ <ph name="TABS_COUNT_MANY" /> ਟੈਬ ਵਾਲੇ ਸਾਂਝੇ ਕੀਤੇ <ph name="TITLE_OF_GROUP" /> ਟੈਬ ਗਰੁੱਪ ਦਾ ਵਿਸਤਾਰ ਕਰੋ।}other{<ph name="COLOR_NAME" /> ਰੰਗ ਅਤੇ <ph name="TABS_COUNT_MANY" /> ਟੈਬਾਂ ਵਾਲੇ ਸਾਂਝੇ ਕੀਤੇ <ph name="TITLE_OF_GROUP" /> ਟੈਬ ਗਰੁੱਪ ਦਾ ਵਿਸਤਾਰ ਕਰੋ।}}</translation>

@@ -37,6 +37,7 @@
 <translation id="1384959399684842514">Gert var hlé á niðurhali</translation>
 <translation id="1396327438254055134">Leyfa vefsvæði að nota V8 optimizer.</translation>
 <translation id="1409338233051621926">Ýttu á „Forrit“ og síðan á „Sjálfgefin forrit“</translation>
+<translation id="1414315029670184034">Ekki leyfa vefsvæðum að nota myndavélina</translation>
 <translation id="1415402041810619267">Stytt vefslóð</translation>
 <translation id="1415855080660575082">Leyfðu Chrome að deila nýlegum flipum með tækinu þínu svo að þú getir séð þá á forritalista og í leitarniðurstöðum tækisins. Þú getur kveikt eða slökkt á þessu í stillingum Chrome.</translation>
 <translation id="1420688843103859429">Flettu fram og til baka með því að strjúka með tveimur fingrum á snertifletinum</translation>
@@ -742,7 +743,6 @@
 <translation id="8676374126336081632">Hreinsa innslátt</translation>
 <translation id="8681886425883659911">Lokað er fyrir auglýsingar á vefsvæðum sem eru þekkt fyrir að birta ágengar eða villandi auglýsingar</translation>
 <translation id="868929229000858085">Leita í tengiliðum</translation>
-<translation id="8707904142362025782">Vefsvæði geta beðið um myndavélina þína</translation>
 <translation id="8712637175834984815">Ég skil</translation>
 <translation id="8715862698998036666">Dragðu niður frá efsta hluta skjásins og strjúktu frá vinstri eða hægri brún til að hætta að nota allan skjáinn.</translation>
 <translation id="8716050156658570300">Vefsvæði geta beðið um að fá að nota hreyfi- og birtuskynjara</translation>

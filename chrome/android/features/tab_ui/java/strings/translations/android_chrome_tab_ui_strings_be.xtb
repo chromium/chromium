@@ -163,11 +163,13 @@
 <translation id="6589356853295569750">Адкрытае на ўвесь экран апавяшчэнне пра змяненні ў абагуленай групе ўкладак</translation>
 <translation id="6590332670428149473">Адкрыць меню дзеянняў для абагуленай групы ўкладак "<ph name="TITLE_OF_GROUP" />", колер <ph name="COLOR_NAME" />.</translation>
 <translation id="6615455863669487791">Паказаць</translation>
+<translation id="6686490380836145850">Закрыць укладкі справа</translation>
 <translation id="6694634756612002311">Кіраваць абагульваннем</translation>
 <translation id="6709297274997495821">Выбраць укладку</translation>
 <translation id="6744956528665271406">Змяніць колер групы</translation>
 <translation id="6784585810034073638">{TAB_COUNT,plural, =1{Дадаць да групы "<ph name="TITLE_OF_GROUP" />", якая змяшчае <ph name="TAB_COUNT1" /> укладку}one{Дадаць да групы "<ph name="TITLE_OF_GROUP" />", якая змяшчае <ph name="TAB_COUNT1" /> укладку}few{Дадаць да групы "<ph name="TITLE_OF_GROUP" />", якая змяшчае <ph name="TAB_COUNT1" /> укладкі}many{Дадаць да групы "<ph name="TITLE_OF_GROUP" />", якая змяшчае <ph name="TAB_COUNT1" /> укладак}other{Дадаць да групы "<ph name="TITLE_OF_GROUP" />", якая змяшчае <ph name="TAB_COUNT1" /> укладкі}}</translation>
 <translation id="6818926723028410516">Выберыце элементы</translation>
+<translation id="68541483639528434">Закрыць іншыя ўкладкі</translation>
 <translation id="6856809498882026482">Схаваць рэжым множнага выбару</translation>
 <translation id="6957436309971790274">Праз 21 дзень бяздзейнасці</translation>
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{Разгарнуць абагуленую групу ўкладак "<ph name="TITLE_OF_GROUP" />" з <ph name="TABS_COUNT_ONE" /> укладкі, колер: <ph name="COLOR_NAME" />.}one{Разгарнуць абагуленую групу ўкладак "<ph name="TITLE_OF_GROUP" />" з <ph name="TABS_COUNT_MANY" /> укладкі, колер: <ph name="COLOR_NAME" />.}few{Разгарнуць абагуленую групу ўкладак "<ph name="TITLE_OF_GROUP" />" з <ph name="TABS_COUNT_MANY" /> укладак, колер: <ph name="COLOR_NAME" />.}many{Разгарнуць абагуленую групу ўкладак "<ph name="TITLE_OF_GROUP" />" з <ph name="TABS_COUNT_MANY" /> укладак, колер: <ph name="COLOR_NAME" />.}other{Разгарнуць абагуленую групу ўкладак "<ph name="TITLE_OF_GROUP" />" з <ph name="TABS_COUNT_MANY" /> укладкі, колер: <ph name="COLOR_NAME" />.}}</translation>

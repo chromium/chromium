@@ -704,6 +704,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris lietotnēm. Vara
 <translation id="1473927070149284123">Mēģiniet vēlreiz vai manuāli izveidojiet savienojumu ar tīklu.</translation>
 <translation id="1474785664565228650">Lai mikrofona iestatījuma izmaiņas stātos spēkā, ir atkārtoti jāpalaiž programmatūra Parallels Desktop. Atkārtoti palaidiet programmatūru Parallels Desktop, lai turpinātu.</translation>
 <translation id="1476088332184200792">Kopēt uz jūsu ierīci</translation>
+<translation id="1476595624592550506">Paroles maiņa</translation>
 <translation id="1476607407192946488">&amp;Valodas iestatījumi</translation>
 <translation id="1477446329585670721">Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievietotai.</translation>
 <translation id="1477654881618305065">Jūsu organizācija neatļauj kopīgot šo saturu. Ja jums ir nepieciešama palīdzība, sazinieties ar administratoru.</translation>
@@ -2183,6 +2184,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2477218554275525952">Saglabāt Gemini sānjoslu atvērtu, kad atverat jaunu cilni</translation>
 <translation id="2478176599153288112">Multivides faila atļaujas paplašinājumam “<ph name="EXTENSION" />”</translation>
 <translation id="24786041351753425">Iespējojiet datu atkopšanas pakalpojumu</translation>
+<translation id="2479148705183875116">Atvērt iestatījumus</translation>
 <translation id="2479541499757560845">Pieejamības tastatūras iestatījumi</translation>
 <translation id="2480868415629598489">Modificēt datus, kurus jūs kopējat un ielīmējat</translation>
 <translation id="2480881140544300950">Jūsu jaunas cilnes lapu pārvalda pašreizējā meklētājprogramma</translation>
@@ -4696,6 +4698,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="4213918571089943508">Bērna Google konts</translation>
 <translation id="4214192212360095377">Izslēgt tūlīt</translation>
 <translation id="4216407171061541111">Jūsu organizācija izslēdza ciļņu saglabāšanu jūsu Google kontā.</translation>
+<translation id="4216511743389425832">Klausīties šo lapu</translation>
 <translation id="4217571870635786043">Diktēšana</translation>
 <translation id="4218081191298393750">Lai izslēgtu šīs cilnes skaņu, noklikšķiniet uz skaļruņa ikonas</translation>
 <translation id="4220157655212610908">Izmantot ārēju drošības atslēgu</translation>
@@ -5650,6 +5653,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="4881685975363383806">Nākamreiz vairs neatgādināt</translation>
 <translation id="4881695831933465202">Atvērt</translation>
 <translation id="4882312758060467256">Var piekļūt šai vietnei</translation>
+<translation id="4882805770036405108">Ātrāk atveriet lasīšanas režīmu, izmantojot saīsni. Lai pārslēgtu lasīšanas režīmu, nospiediet taustiņu kombināciju ⌥ + ⌘ + R.</translation>
 <translation id="4882848900607400156">Ja kopīgosiet precīzu savu atrašanās vietu, Gemini varēs precīzāk atbildēt uz jūsu jautājumiem. Jūsu dati netiek izmantoti ģeneratīvo MI modeļu uzlabošanai.</translation>
 <translation id="4882919381756638075">Parasti vietnēs mikrofons tiek izmantots, lai nodrošinātu noteiktas saziņas funkcijas, piemēram, video tērzēšanu.</translation>
 <translation id="4883436287898674711">Visās <ph name="WEBSITE_1" /> vietnēs</translation>
@@ -8891,6 +8895,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="7186903260115204164">Izmantojot jauno rīku Zīmēt, varat ar brīvu roku zīmēt, pievienot parakstus un atzīmēt saturu.</translation>
 <translation id="7186935534137027449">Lietotnes komanda</translation>
 <translation id="7188508872042490670">Vietnes dati ierīcē</translation>
+<translation id="7188755083797868960">Ātrāk atveriet lasīšanas režīmu, izmantojot saīsni. Lai pārslēgtu lasīšanas režīmu, nospiediet taustiņu kombināciju Alt + Shift + R.</translation>
 <translation id="7189234443051076392">Ierīcē ir jābūt pietiekami daudz vietas.</translation>
 <translation id="7189451821249468368">Jums nav pietiekami daudz jauninātu licenču, lai reģistrētu šo ierīci. Lūdzu, sazinieties ar tirdzniecības nodaļu, lai iegādātos vairāk licenču. Ja uzskatāt, ka šis ziņojums tiek rādīts kļūdas dēļ, lūdzu, sazinieties ar atbalsta dienestu.</translation>
 <translation id="7189558282078169397">Cilnes no citām ierīcēm</translation>
@@ -9089,7 +9094,6 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="732845903678043302">{BOOKMARK_COUNT,plural, =1{Viena grāmatzīme ir saglabāta tikai šajā ierīcē. Lai varētu izmantot šo grāmatzīmi citās ierīcēs, saglabājiet to savā Google kontā.}zero{{BOOKMARK_COUNT} grāmatzīmes ir saglabātas tikai šajā ierīcē. Lai varētu izmantot šīs grāmatzīmes citās ierīcēs, saglabājiet tās savā Google kontā.}one{{BOOKMARK_COUNT} grāmatzīme ir saglabāta tikai šajā ierīcē. Lai varētu izmantot šīs grāmatzīmes citās ierīcēs, saglabājiet tās savā Google kontā.}other{{BOOKMARK_COUNT} grāmatzīmes ir saglabātas tikai šajā ierīcē. Lai varētu izmantot šīs grāmatzīmes citās ierīcēs, saglabājiet tās savā Google kontā.}}</translation>
 <translation id="7328867076235380839">Nederīga kombinācija</translation>
-<translation id="7329009627557479564">Nevar augšupielādēt. Faila lielums pārsniedz maksimālo atbalstīto lielumu.</translation>
 <translation id="7329154610228416156">Neizdevās pierakstīties, jo konfigurācijā tika norādīts izmantot nedrošu URL (<ph name="BLOCKED_URL" />). Lūdzu, sazinieties ar savu administratoru.</translation>
 <translation id="7330533963640151632">Funkcijas “<ph name="FEATURE_NAME" />” iestatījumi ierīcei, kuru izmanto <ph name="USER_NAME" />; kopīgošanai tiek izmantots konts <ph name="USER_EMAIL" />.</translation>
 <translation id="733058866272972585">Šai vietnei ir liegts izmantot identifikatorus, lai atskaņotu aizsargātu saturu.</translation>

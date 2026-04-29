@@ -163,11 +163,13 @@
 <translation id="6589356853295569750">Hinweis zu Änderungen an geteilten Tabgruppen, die ganz geöffnet sind</translation>
 <translation id="6590332670428149473">Aktionsmenü für die freigegebene Tabgruppe „<ph name="TITLE_OF_GROUP" />“ mit der Farbe <ph name="COLOR_NAME" /> öffnen.</translation>
 <translation id="6615455863669487791">Zeigen</translation>
+<translation id="6686490380836145850">Tabs rechts schließen</translation>
 <translation id="6694634756612002311">Freigaben verwalten</translation>
 <translation id="6709297274997495821">Tab auswählen</translation>
 <translation id="6744956528665271406">Gruppenfarbe bearbeiten</translation>
 <translation id="6784585810034073638">{TAB_COUNT,plural, =1{Zur Gruppe mit dem Namen „<ph name="TITLE_OF_GROUP" />“ und <ph name="TAB_COUNT1" /> Tab hinzufügen}other{Zur Gruppe mit dem Namen „<ph name="TITLE_OF_GROUP" />“ und <ph name="TAB_COUNT1" /> Tabs hinzufügen}}</translation>
 <translation id="6818926723028410516">Elemente auswählen</translation>
+<translation id="68541483639528434">Andere Tabs schließen</translation>
 <translation id="6856809498882026482">Modus für die Mehrfachauswahl ausblenden</translation>
 <translation id="6957436309971790274">Nach 21 Tagen Inaktivität</translation>
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{Freigegebene Tabgruppe „<ph name="TITLE_OF_GROUP" />“ mit <ph name="TABS_COUNT_ONE" /> Tab maximieren, Farbe: <ph name="COLOR_NAME" />.}other{Freigegebene Tabgruppe „<ph name="TITLE_OF_GROUP" />“ mit <ph name="TABS_COUNT_MANY" /> Tabs maximieren, Farbe: <ph name="COLOR_NAME" />.}}</translation>

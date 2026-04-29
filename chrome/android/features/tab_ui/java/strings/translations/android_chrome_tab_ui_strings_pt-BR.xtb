@@ -163,11 +163,13 @@
 <translation id="6589356853295569750">O aviso sobre mudanças no grupo de guias compartilhado está aberto no tamanho máximo</translation>
 <translation id="6590332670428149473">Abrir o menu de ações do grupo de guias compartilhado <ph name="TITLE_OF_GROUP" />, de cor <ph name="COLOR_NAME" />.</translation>
 <translation id="6615455863669487791">Exibir</translation>
+<translation id="6686490380836145850">Fechar guias à direita</translation>
 <translation id="6694634756612002311">Gerenciar compartilhamento</translation>
 <translation id="6709297274997495821">Selecionar guia</translation>
 <translation id="6744956528665271406">Editar cor do grupo</translation>
 <translation id="6784585810034073638">{TAB_COUNT,plural, =1{Adicionar ao grupo <ph name="TITLE_OF_GROUP" /> com <ph name="TAB_COUNT1" /> guia}one{Adicionar ao grupo <ph name="TITLE_OF_GROUP" /> com <ph name="TAB_COUNT1" /> guia}other{Adicionar ao grupo <ph name="TITLE_OF_GROUP" /> com <ph name="TAB_COUNT1" /> guias}}</translation>
 <translation id="6818926723028410516">Selecionar itens</translation>
+<translation id="68541483639528434">Fechar outras guias</translation>
 <translation id="6856809498882026482">Ocultar modo de seleção múltipla</translation>
 <translation id="6957436309971790274">Após 21 dias de inatividade</translation>
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{Abrir o grupo de guias compartilhado <ph name="TITLE_OF_GROUP" /> com <ph name="TABS_COUNT_ONE" /> guia na cor <ph name="COLOR_NAME" />.}one{Abrir o grupo de guias compartilhado <ph name="TITLE_OF_GROUP" /> com <ph name="TABS_COUNT_MANY" /> guia na cor <ph name="COLOR_NAME" />.}other{Abrir o grupo de guias compartilhado <ph name="TITLE_OF_GROUP" /> com <ph name="TABS_COUNT_MANY" /> guias na cor <ph name="COLOR_NAME" />.}}</translation>

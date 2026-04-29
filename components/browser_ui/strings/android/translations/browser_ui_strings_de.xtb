@@ -37,6 +37,7 @@
 <translation id="1384959399684842514">Download angehalten</translation>
 <translation id="1396327438254055134">Du kannst einer Website erlauben, dass V8‑Optimierungstool zu verwenden.</translation>
 <translation id="1409338233051621926">Tippe auf „Apps“ und dann auf „Standard-Apps“</translation>
+<translation id="1414315029670184034">Websites dürfen nicht meine Kamera verwenden</translation>
 <translation id="1415402041810619267">URL abgeschnitten</translation>
 <translation id="1415855080660575082">Erlaube Chrome, deine zuletzt geöffneten Tabs mit deinem Gerät zu teilen, damit sie dort in der App-Liste und in den Suchergebnissen angezeigt werden können. Diese Funktion lässt sich in den Chrome-Einstellungen aktivieren oder deaktivieren.</translation>
 <translation id="1420688843103859429">Du kannst vorwärts- und zurückgehen, indem du mit zwei Fingern auf dem Touchpad wischst</translation>
@@ -742,7 +743,6 @@ Diese Chrome-Einstellungen werden durch das erweiterte Sicherheitsprogramm geste
 <translation id="8676374126336081632">Eingabe löschen</translation>
 <translation id="8681886425883659911">Werbung auf Websites, die bekanntermaßen aufdringliche oder irreführende Anzeigen präsentieren, wird blockiert</translation>
 <translation id="868929229000858085">Kontakte durchsuchen</translation>
-<translation id="8707904142362025782">Website darf nach Kamerazugriff fragen</translation>
 <translation id="8712637175834984815">Ok</translation>
 <translation id="8715862698998036666">Ziehe zum Beenden des Vollbildmodus von oben und wische vom linken oder rechten Rand nach innen.</translation>
 <translation id="8716050156658570300">Websites können die Berechtigung anfordern, Bewegungs- und Lichtsensoren zu verwenden</translation>

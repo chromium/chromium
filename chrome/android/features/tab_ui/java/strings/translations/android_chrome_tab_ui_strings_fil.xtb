@@ -163,11 +163,13 @@
 <translation id="6589356853295569750">Binuksan nang buo ang abiso tungkol sa mga pagbabago sa Naka-share na Grupo ng Tab</translation>
 <translation id="6590332670428149473">Buksan ang menu ng aksyon ng grupo ng tab para sa naka-share na grupo ng tab na <ph name="TITLE_OF_GROUP" />, na kulay <ph name="COLOR_NAME" />.</translation>
 <translation id="6615455863669487791">Ipakita sa akin</translation>
+<translation id="6686490380836145850">Isara ang mga tab sa kanan</translation>
 <translation id="6694634756612002311">Pamahalaan ang pag-share</translation>
 <translation id="6709297274997495821">Pumili ng tab</translation>
 <translation id="6744956528665271406">I-edit ang kulay ng grupo</translation>
 <translation id="6784585810034073638">{TAB_COUNT,plural, =1{Idagdag sa grupong pinangalanang <ph name="TITLE_OF_GROUP" /> sa <ph name="TAB_COUNT1" /> tab}one{Idagdag sa grupong pinangalanang <ph name="TITLE_OF_GROUP" /> sa <ph name="TAB_COUNT1" /> tab}other{Idagdag sa grupong pinangalanang <ph name="TITLE_OF_GROUP" /> sa <ph name="TAB_COUNT1" /> na tab}}</translation>
 <translation id="6818926723028410516">Pumili ng mga item</translation>
+<translation id="68541483639528434">Isara ang ibang mga tab</translation>
 <translation id="6856809498882026482">Itago ang multi-select mode</translation>
 <translation id="6957436309971790274">Pagkalipas ng 21 araw na hindi aktibo</translation>
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{I-expand ang naka-share na grupo ng tab na <ph name="TITLE_OF_GROUP" /> na may <ph name="TABS_COUNT_ONE" /> tab, na may kulay na <ph name="COLOR_NAME" />.}one{I-expand ang naka-share na grupo ng tab na <ph name="TITLE_OF_GROUP" /> na may <ph name="TABS_COUNT_MANY" /> tab, na may kulay na <ph name="COLOR_NAME" />.}other{I-expand ang naka-share na grupo ng tab na <ph name="TITLE_OF_GROUP" /> na may <ph name="TABS_COUNT_MANY" /> na tab, na may kulay na <ph name="COLOR_NAME" />.}}</translation>

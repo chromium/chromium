@@ -152,6 +152,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="1228893227497259893">Nesprávny identifikátor entity</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (automaticky rozpoznané)</translation>
 <translation id="1232569758102978740">Bez názvu</translation>
+<translation id="1234539281285007945">Pole <ph name="FIELD_1" /> je povinné</translation>
 <translation id="1236081509407217141">Chcete povoliť VR?</translation>
 <translation id="1236689197410206751">AfterPay</translation>
 <translation id="1240347957665416060">Názov vášho zariadenia</translation>
@@ -472,6 +473,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="1721424275792716183">* Toto pole je povinné</translation>
 <translation id="1723636263173393300">Toto pravidlo by nemalo mať viac ako tento počet skratiek: <ph name="MAX_ITEMS_LIMIT" />.</translation>
 <translation id="1725591448053514783">Obálka You 6</translation>
+<translation id="172754119609519423">Vyžaduje sa <ph name="FIELD_1" />, <ph name="FIELD_2" /> alebo <ph name="FIELD_3" /></translation>
 <translation id="1727613060316725209">Certifikát je platný</translation>
 <translation id="1728677426644403582">Prezeráte si zdrojový kód webovej stránky</translation>
 <translation id="173080396488393970">Tento typ karty nie je podporovaný</translation>
@@ -1429,6 +1431,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="3220264767789936523">Formálne oblečenie</translation>
 <translation id="3223287115535306850">Ikona spúšťania aplikácie</translation>
 <translation id="3223425961342298674">Poloha nie je povolená</translation>
+<translation id="3225277284238802910">Vyžaduje sa <ph name="FIELD_1" /> alebo <ph name="FIELD_2" /></translation>
 <translation id="3225319735946384299">Podpisovanie kódu</translation>
 <translation id="3225919329040284222">Server sa preukázal certifikátom, ktorý nezodpovedá integrovaným očakávaniam. Tieto očakávania sú kvôli vašej ochrane zahrnuté pri určitých webových stránkach s vysokou úrovňou zabezpečenia.</translation>
 <translation id="3226128629678568754">Stlačením tlačidla opakovaného spustenia znova odošlete údaje potrebné na načítanie stránky.</translation>

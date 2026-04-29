@@ -152,6 +152,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1228893227497259893">Falsche Entitätskennung</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (automatisch erkannt)</translation>
 <translation id="1232569758102978740">Unbenannt</translation>
+<translation id="1234539281285007945"><ph name="FIELD_1" /> ist erforderlich</translation>
 <translation id="1236081509407217141">VR zulassen?</translation>
 <translation id="1236689197410206751">AfterPay</translation>
 <translation id="1240347957665416060">Gerätename</translation>
@@ -472,6 +473,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1721424275792716183">* Pflichtfeld</translation>
 <translation id="1723636263173393300">Diese Richtlinie sollte nicht mehr als <ph name="MAX_ITEMS_LIMIT" /> Verknüpfungen enthalten.</translation>
 <translation id="1725591448053514783">Umschlag You 6</translation>
+<translation id="172754119609519423"><ph name="FIELD_1" />, <ph name="FIELD_2" /> oder <ph name="FIELD_3" /> ist erforderlich</translation>
 <translation id="1727613060316725209">Zertifikat ist gültig</translation>
 <translation id="1728677426644403582">Dies ist die Quelle einer Webseite</translation>
 <translation id="173080396488393970">Dieser Kartentyp wird nicht unterstützt</translation>
@@ -1432,6 +1434,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="3220264767789936523">Abendgarderobe</translation>
 <translation id="3223287115535306850">Ladesymbol beim Starten der App</translation>
 <translation id="3223425961342298674">Standortermittlung nicht zulässig</translation>
+<translation id="3225277284238802910"><ph name="FIELD_1" /> oder <ph name="FIELD_2" /> ist erforderlich</translation>
 <translation id="3225319735946384299">Codesignatur</translation>
 <translation id="3225919329040284222">Der Server hat ein Zertifikat übermittelt, das nicht mit den integrierten Erwartungen übereinstimmt. Diese Erwartungen sind zu deinem Schutz in bestimmten Websites mit hohen Sicherheitsstandards enthalten.</translation>
 <translation id="3226128629678568754">Klicke auf den Button zum erneuten Laden, um die für das Laden der Seite erforderlichen Daten noch einmal zu senden.</translation>

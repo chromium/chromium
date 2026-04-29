@@ -152,6 +152,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="1228893227497259893">Pogrešan identifikator entiteta</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (automatski otkriveno)</translation>
 <translation id="1232569758102978740">Neimenovano</translation>
+<translation id="1234539281285007945"><ph name="FIELD_1" /> je obavezno polje</translation>
 <translation id="1236081509407217141">Dopustiti virtualnu stvarnost?</translation>
 <translation id="1236689197410206751">AfterPay</translation>
 <translation id="1240347957665416060">Naziv vašeg uređaja</translation>
@@ -472,6 +473,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="1721424275792716183">* Polje je obavezno</translation>
 <translation id="1723636263173393300">Broj prečaca u ovom pravilu ne smije biti veći od <ph name="MAX_ITEMS_LIMIT" />.</translation>
 <translation id="1725591448053514783">Omotnica You 6</translation>
+<translation id="172754119609519423"><ph name="FIELD_1" />, <ph name="FIELD_2" /> i <ph name="FIELD_3" /> obavezna su polja</translation>
 <translation id="1727613060316725209">Certifikat je važeći</translation>
 <translation id="1728677426644403582">Gledate izvor web-stranice</translation>
 <translation id="173080396488393970">Ova vrsta kartice nije podržana</translation>
@@ -1432,6 +1434,7 @@ Da biste sakrili opcije plaćanja kasnije, otvorite <ph name="BEGIN_LINK" />post
 <translation id="3220264767789936523">Formalna odjeća</translation>
 <translation id="3223287115535306850">Ikona za učitavanje prilikom pokretanja aplikacije</translation>
 <translation id="3223425961342298674">Lokacija nije dopuštena</translation>
+<translation id="3225277284238802910"><ph name="FIELD_1" /> i <ph name="FIELD_2" /> obavezna su polja</translation>
 <translation id="3225319735946384299">Kodno potpisivanje</translation>
 <translation id="3225919329040284222">Poslužitelj je pokazao certifikat koji ne odgovara ugrađenim očekivanjima. Ta su očekivanja uključena za određene web-lokacije s visokim stupnjem sigurnosti radi vaše zaštite.</translation>
 <translation id="3226128629678568754">Pritisnite gumb za ponovno učitavanje da biste ponovo poslali podatke koji su potrebni za učitavanje stranice.</translation>

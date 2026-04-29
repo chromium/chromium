@@ -703,6 +703,7 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="1473927070149284123">Încearcă din nou sau conectează-te manual la o rețea</translation>
 <translation id="1474785664565228650">Modificarea setării pentru microfon necesită relansarea Parallels Desktop. Relansează Parallels Desktop pentru a continua.</translation>
 <translation id="1476088332184200792">Copiază pe dispozitiv</translation>
+<translation id="1476595624592550506">Schimbă parola</translation>
 <translation id="1476607407192946488">&amp;Setări de limbă</translation>
 <translation id="1477446329585670721"><ph name="DOMAIN" /> solicită să nu scoți cardul inteligent din dispozitiv.</translation>
 <translation id="1477654881618305065">Organizația ta nu îți permite să trimiți acest conținut. Dacă ai nevoie de ajutor, contactează administratorul.</translation>
@@ -2182,6 +2183,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2477218554275525952">Păstrează bara laterală Gemini deschisă când deschizi o filă nouă</translation>
 <translation id="2478176599153288112">Permisiuni privind fișierele media pentru „<ph name="EXTENSION" />”</translation>
 <translation id="24786041351753425">Activează serviciul de recuperare a datelor.</translation>
+<translation id="2479148705183875116">Accesează Setările</translation>
 <translation id="2479541499757560845">Setările tastaturii de accesibilitate</translation>
 <translation id="2480868415629598489">Modifică datele pe care le copiezi și le inserezi</translation>
 <translation id="2480881140544300950">Motorul de căutare actual care gestionează pagina Filă nouă</translation>
@@ -4696,6 +4698,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4213918571089943508">Contul Google al copilului</translation>
 <translation id="4214192212360095377">Dezactivează acum</translation>
 <translation id="4216407171061541111">Organizația ta a dezactivat salvarea filelor în Contul Google</translation>
+<translation id="4216511743389425832">Ascultă pagina</translation>
 <translation id="4217571870635786043">Dictare</translation>
 <translation id="4218081191298393750">Dă clic pe pictograma difuzor pentru a dezactiva sunetul filei</translation>
 <translation id="4220157655212610908">Folosește o cheie de securitate externă</translation>
@@ -5649,6 +5652,7 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="4881685975363383806">Nu-mi reaminti data viitoare</translation>
 <translation id="4881695831933465202">Deschide</translation>
 <translation id="4882312758060467256">Are acces la acest site</translation>
+<translation id="4882805770036405108">Deschide mai rapid modul de lectură cu o comandă rapidă. Apasă pe ⌥ + ⌘ + R pentru a comuta modul de lectură.</translation>
 <translation id="4882848900607400156">Când permiți accesul la locația exactă, Gemini poate să-ți răspundă mai precis la întrebări. Datele tale nu sunt folosite pentru a îmbunătăți modelele de AI generativ.</translation>
 <translation id="4882919381756638075">Site-urile folosesc de obicei microfonul pentru opțiuni de comunicare, cum ar fi chatul video</translation>
 <translation id="4883436287898674711">Toate site-urile <ph name="WEBSITE_1" /></translation>
@@ -8891,6 +8895,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7186903260115204164">Adaugă desene, semnături și evidențieri libere cu noul instrument de desenare</translation>
 <translation id="7186935534137027449">Comandă în aplicație</translation>
 <translation id="7188508872042490670">Date privind site-urile pe dispozitiv</translation>
+<translation id="7188755083797868960">Deschide mai rapid modul de lectură cu o comandă rapidă. Apasă pe Alt + Shift + R pentru a comuta modul de lectură.</translation>
 <translation id="7189234443051076392">Asigură-te că există spațiu suficient pe dispozitiv</translation>
 <translation id="7189451821249468368">Nu deții suficiente upgrade-uri pentru a înscrie acest dispozitiv. Contactează departamentul de vânzări pentru a achiziționa upgrade-uri suplimentare. În cazul în care consideri că acest mesaj este afișat din greșeală, contactează serviciul de asistență.</translation>
 <translation id="7189558282078169397">File de pe alte dispozitive</translation>
@@ -9089,7 +9094,6 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="732845903678043302">{BOOKMARK_COUNT,plural, =1{Un marcaj se salvează numai pe acest dispozitiv. Pentru a-l folosi pe celelalte dispozitive, salvează-l în Contul Google.}few{{BOOKMARK_COUNT} marcaje se salvează numai pe acest dispozitiv. Pentru a le folosi pe celelalte dispozitive, salvează-le în Contul Google.}other{{BOOKMARK_COUNT} de marcaje se salvează numai pe acest dispozitiv. Pentru a le folosi pe celelalte dispozitive, salvează-le în Contul Google.}}</translation>
 <translation id="7328867076235380839">Combinație nevalidă</translation>
-<translation id="7329009627557479564">Încărcarea nu a reușit. Fișierul depășește dimensiunea maximă acceptată.</translation>
 <translation id="7329154610228416156">Nu s-a conectat, deoarece era configurată folosirea unei adrese URL nesecurizate (<ph name="BLOCKED_URL" />). Contactează administratorul.</translation>
 <translation id="7330533963640151632">Setări <ph name="FEATURE_NAME" /> pentru dispozitivul folosit de <ph name="USER_NAME" />, care sunt trimise din contul cu adresa de e-mail <ph name="USER_EMAIL" />.</translation>
 <translation id="733058866272972585">Site-ul nu are permisiunea de a folosi identificatori pentru a reda conținut protejat.</translation>

@@ -702,6 +702,7 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="1473927070149284123">Yenidən cəhd edin və ya şəbəkəyə manual qaydada qoşulun</translation>
 <translation id="1474785664565228650">Mikrofon ayarına edilən dəyişiklik Parallels Desktop'un yenidən başladılmasını tələb edir. Davam etmək üçün Parallels Desktop'u yenidən başladın.</translation>
 <translation id="1476088332184200792">Cihazınıza Kopyalayın</translation>
+<translation id="1476595624592550506">Parolunuzu dəyişin</translation>
 <translation id="1476607407192946488">&amp;Dil Ayarları</translation>
 <translation id="1477446329585670721"><ph name="DOMAIN" /> smart kartınızın taxılı qalmasını tələb edir.</translation>
 <translation id="1477654881618305065">Təşkilatınız bu məzmunu paylaşmağa icazə vermir. Yardıma ehtiyacınız varsa, admininizlə əlaqə saxlayın.</translation>
@@ -2184,6 +2185,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2477218554275525952">Yeni tab açdığınız zaman Gemini kənar panelini açıq saxlayın</translation>
 <translation id="2478176599153288112">"<ph name="EXTENSION" />" üçün Media-Fayl İcazələri</translation>
 <translation id="24786041351753425">Data bərpa xidmətini aktivləşdirin.</translation>
+<translation id="2479148705183875116">Ayarlara keçin</translation>
 <translation id="2479541499757560845">Əlçatanlıq klaviaturası ayarları</translation>
 <translation id="2480868415629598489">Kopyaladığınız və yerləşdirdiyiniz datanı dəyişdirin</translation>
 <translation id="2480881140544300950">Tab səhifənizi idarə edən cari axtarış mühərriki</translation>
@@ -4697,6 +4699,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4213918571089943508">Uşağın Google Hesabı</translation>
 <translation id="4214192212360095377">İndi deaktiv edin</translation>
 <translation id="4216407171061541111">Təşkilatınız Google Hesabınızda tabların yadda saxlanılmasını deaktiv etdi</translation>
+<translation id="4216511743389425832">Bu səhifəni dinləyin</translation>
 <translation id="4217571870635786043">İmla</translation>
 <translation id="4218081191298393750">Bu tabı səssiz etmək üçün dinamik işarəsinə klikləyin</translation>
 <translation id="4220157655212610908">Xarici təhlükəsizlik açarından istifadə edin</translation>
@@ -5651,6 +5654,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="4881685975363383806">Növbəti dəfə xatırlatmayın</translation>
 <translation id="4881695831933465202">Açın</translation>
 <translation id="4882312758060467256">Bu sayta girişi var</translation>
+<translation id="4882805770036405108">Qısayol ilə oxu rejimini daha tez açın. Oxu rejimini aktiv/deaktiv etmək üçün ⌥ + ⌘ + R kombinasiyasına basın.</translation>
 <translation id="4882848900607400156">Dəqiq məkanınızı paylaşdığınız zaman Gemini suallarınızı daha dəqiq cavablandıra bilər. Datanız generativ Sİ modellərini təkmilləşdirmək üçün istifadə edilmir.</translation>
 <translation id="4882919381756638075">Saytlar adətən video çat kimi ünsiyyət xüsusiyyətləri üçün mikrofondan istifadə edir</translation>
 <translation id="4883436287898674711">Bütün <ph name="WEBSITE_1" /> saytları</translation>
@@ -8889,6 +8893,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7186903260115204164">Yeni Rəsm aləti ilə sərbəst çəkilmiş rəsmlər, imzalar və vurğular əlavə edin</translation>
 <translation id="7186935534137027449">Tətbiq əmri</translation>
 <translation id="7188508872042490670">Cihazda olan sayt məlumatları</translation>
+<translation id="7188755083797868960">Qısayol ilə oxu rejimini daha tez açın. Oxu rejimini aktiv/deaktiv etmək üçün Alt + Shift + R kombinasiyasına basın.</translation>
 <translation id="7189234443051076392">Əmin olun ki cihazda kifayət qədər yer var</translation>
 <translation id="7189451821249468368">Bu cihazı qeydiyyata almaq üçün yetərincə güncəlləməniz yoxdur. Daha çoxunu almaq üçün satış şöbəsi ilə əlaqə saxlayın. Bu mesajın səhvən göndərildiyini düünürsünüzsə, dəstək xidməti ilə əlaqə saxlayın.</translation>
 <translation id="7189558282078169397">Digər cihazlardakı tablar</translation>
@@ -9087,7 +9092,6 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="732845903678043302">{BOOKMARK_COUNT,plural, =1{1 əlfəcin yalnız bu cihazda yadda saxlanıldı. Onu digər cihazlarda istifadə etmək üçün Google Hesabınızda yadda saxlayın.}other{{BOOKMARK_COUNT} əlfəcin yalnız bu cihazda yadda saxlanıldı. Onları digər cihazlarda istifadə etmək üçün Google Hesabınızda yadda saxlayın.}}</translation>
 <translation id="7328867076235380839">Yanlış kombinasiya</translation>
-<translation id="7329009627557479564">Yükləmək olmur. Fayl dəstəklənən maksimum ölçünü keçir.</translation>
 <translation id="7329154610228416156">Qeydiyyat-in uğursuz qeyri-təhlükəsiz URL istifadə üçün yapılandırılmış çünki ( <ph name="BLOCKED_URL" /> ). Administratora müraciət edin.</translation>
 <translation id="7330533963640151632"><ph name="USER_NAME" /> adlı istifadəçinin cihazı üçün <ph name="FEATURE_NAME" /> ayarları, <ph name="USER_EMAIL" /> hesabında paylaşılır.</translation>
 <translation id="733058866272972585">Bu saytın qorunan kontenti oxutmaq üçün identifikatorlardan istifadə etməyi bloklanıb.</translation>

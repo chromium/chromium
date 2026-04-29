@@ -152,6 +152,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1228893227497259893">Forkert enheds-id</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (automatisk registreret)</translation>
 <translation id="1232569758102978740">Unavngivet</translation>
+<translation id="1234539281285007945"><ph name="FIELD_1" /> skal udfyldes</translation>
 <translation id="1236081509407217141">Vil du tillade VR?</translation>
 <translation id="1236689197410206751">AfterPay</translation>
 <translation id="1240347957665416060">Navnet på din enhed</translation>
@@ -472,6 +473,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1721424275792716183">* Feltet skal udfyldes</translation>
 <translation id="1723636263173393300">Denne politik må ikke have mere end <ph name="MAX_ITEMS_LIMIT" /> genveje.</translation>
 <translation id="1725591448053514783">Konvolut Dig 6</translation>
+<translation id="172754119609519423"><ph name="FIELD_1" />, <ph name="FIELD_2" /> eller <ph name="FIELD_3" /> skal udfyldes</translation>
 <translation id="1727613060316725209">Certifikatet er gyldigt</translation>
 <translation id="1728677426644403582">Du ser kilden for en webside</translation>
 <translation id="173080396488393970">Denne korttype understøttes ikke</translation>
@@ -1432,6 +1434,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="3220264767789936523">Formel beklædning</translation>
 <translation id="3223287115535306850">Spinner for app, der startes</translation>
 <translation id="3223425961342298674">Adgang til lokation er ikke tilladt</translation>
+<translation id="3225277284238802910"><ph name="FIELD_1" /> eller <ph name="FIELD_2" /> skal udfyldes</translation>
 <translation id="3225319735946384299">Kodesignering</translation>
 <translation id="3225919329040284222">Serveren præsenterede et certifikat, der ikke svarer til de indbyggede forventninger. Disse forventninger medtages for bestemte websites med høj sikkerhed for at beskytte dig.</translation>
 <translation id="3226128629678568754">Tryk på genindlæsningsknappen for at genindsende de data, der er nødvendige for at indlæse siden.</translation>

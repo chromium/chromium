@@ -37,6 +37,7 @@
 <translation id="1384959399684842514">Pausouse a descarga</translation>
 <translation id="1396327438254055134">Permite que un sitio use o optimizador de V8.</translation>
 <translation id="1409338233051621926">Toca Aplicacións e, a continuación, Aplicacións predeterminadas</translation>
+<translation id="1414315029670184034">Non permitir que os sitios utilicen a túa cámara</translation>
 <translation id="1415402041810619267">URL truncado</translation>
 <translation id="1415855080660575082">Permite que Chrome comparta as pestanas recentes co teu dispositivo para que se mostren na lista de aplicacións e nos resultados de busca do aparello. Activa ou desactiva esta opción na configuración de Chrome.</translation>
 <translation id="1420688843103859429">Pasa dous dedos no panel táctil para navegar cara adiante ou cara atrás</translation>
@@ -742,7 +743,6 @@ A Protección avanzada controla estas opcións de Chrome:</translation>
 <translation id="8676374126336081632">Borrar texto</translation>
 <translation id="8681886425883659911">Bloquéanse anuncios nos sitios que conteñen anuncios enganosos ou intrusivos</translation>
 <translation id="868929229000858085">Busca nos teus contactos</translation>
-<translation id="8707904142362025782">O sitio pode pedirche permiso para acceder á cámara</translation>
 <translation id="8712637175834984815">De acordo</translation>
 <translation id="8715862698998036666">Para saír da pantalla completa, arrástraa desde a parte superior e pasa o dedo desde o bordo esquerdo ou dereito.</translation>
 <translation id="8716050156658570300">Os sitios poden pedir permiso para usar os sensores de movemento e de luz</translation>

@@ -702,6 +702,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1473927070149284123">Vuelve a intentarlo o conéctate a una red de forma manual</translation>
 <translation id="1474785664565228650">Es necesario que reinicies Parallels Desktop para aplicar los cambios en la configuración del micrófono. Para continuar, reinicia Parallels Desktop.</translation>
 <translation id="1476088332184200792">Copiar a tu dispositivo</translation>
+<translation id="1476595624592550506">Cambia la contraseña</translation>
 <translation id="1476607407192946488">&amp;Configuración de idiomas</translation>
 <translation id="1477446329585670721"><ph name="DOMAIN" /> requiere que no quites la tarjeta inteligente.</translation>
 <translation id="1477654881618305065">Tu organización no te permite compartir este contenido. Si necesitas ayuda, comunícate con tu administrador.</translation>
@@ -2178,6 +2179,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2477218554275525952">Mantener abierta la barra lateral de Gemini cuando abras una pestaña nueva</translation>
 <translation id="2478176599153288112">Permisos de archivo de medios para "<ph name="EXTENSION" />"</translation>
 <translation id="24786041351753425">Habilita el servicio de recuperación de datos</translation>
+<translation id="2479148705183875116">Configurar</translation>
 <translation id="2479541499757560845">Configuración del teclado de accesibilidad</translation>
 <translation id="2480868415629598489">Modificar los datos copiados y pegados</translation>
 <translation id="2480881140544300950">Motor de búsqueda actual que administra tu página Nueva pestaña</translation>
@@ -4693,6 +4695,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4213918571089943508">Cuenta de Google de tu hijo o hija</translation>
 <translation id="4214192212360095377">Desactivar ahora</translation>
 <translation id="4216407171061541111">Tu organización desactivó el guardado de pestañas en tu Cuenta de Google</translation>
+<translation id="4216511743389425832">Escuchar esta página</translation>
 <translation id="4217571870635786043">Dictado</translation>
 <translation id="4218081191298393750">Haz clic en el ícono de altavoz para silenciar esta pestaña</translation>
 <translation id="4220157655212610908">Usar una llave de seguridad externa</translation>
@@ -9086,7 +9089,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="732845903678043302">{BOOKMARK_COUNT,plural, =1{1 favorito se guarda solo en este dispositivo. Para usarlo en tus otros dispositivos, guárdalo en tu Cuenta de Google.}other{{BOOKMARK_COUNT} favoritos se guardan solo en este dispositivo. Para usarlos en tus otros dispositivos, guárdalos en tu Cuenta de Google.}}</translation>
 <translation id="7328867076235380839">La combinación no es válida</translation>
-<translation id="7329009627557479564">No se puede subir. El archivo supera el tamaño máximo admitido.</translation>
 <translation id="7329154610228416156">Se produjo un error de acceso porque está configurado para usar una URL no segura (<ph name="BLOCKED_URL" />). Comunícate con el administrador.</translation>
 <translation id="7330533963640151632">Configuración de <ph name="FEATURE_NAME" /> para el dispositivo de <ph name="USER_NAME" />, quien comparte contenido con la cuenta <ph name="USER_EMAIL" />.</translation>
 <translation id="733058866272972585">Este sitio no tiene permiso para usar identificadores para reproducir contenido protegido.</translation>

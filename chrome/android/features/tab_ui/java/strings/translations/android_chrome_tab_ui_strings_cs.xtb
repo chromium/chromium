@@ -163,11 +163,13 @@
 <translation id="6589356853295569750">Oznámení o změnách ve sdílené skupině karet je otevřené na celou výšku</translation>
 <translation id="6590332670428149473">Otevřít nabídku akcí pro sdílenou skupinu karet <ph name="TITLE_OF_GROUP" />, barva <ph name="COLOR_NAME" /></translation>
 <translation id="6615455863669487791">Ukázat</translation>
+<translation id="6686490380836145850">Zavřít karty napravo</translation>
 <translation id="6694634756612002311">Spravovat sdílení</translation>
 <translation id="6709297274997495821">Vybrat kartu</translation>
 <translation id="6744956528665271406">Upravit barvu skupiny</translation>
 <translation id="6784585810034073638">{TAB_COUNT,plural, =1{Přidat do skupiny nazvané <ph name="TITLE_OF_GROUP" /> s <ph name="TAB_COUNT1" /> kartou}few{Přidat do skupiny nazvané <ph name="TITLE_OF_GROUP" /> se <ph name="TAB_COUNT1" /> kartami}many{Přidat do skupiny nazvané <ph name="TITLE_OF_GROUP" /> s <ph name="TAB_COUNT1" /> karty}other{Přidat do skupiny nazvané <ph name="TITLE_OF_GROUP" /> s <ph name="TAB_COUNT1" /> kartami}}</translation>
 <translation id="6818926723028410516">Výběr položek</translation>
+<translation id="68541483639528434">Zavřít ostatní karty</translation>
 <translation id="6856809498882026482">Skrýt režim výběru několika položek</translation>
 <translation id="6957436309971790274">Po 21 dnech bez aktivity</translation>
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{Rozbalit sdílenou skupinu karet <ph name="TITLE_OF_GROUP" /> s <ph name="TABS_COUNT_ONE" /> kartou, barva <ph name="COLOR_NAME" />.}few{Rozbalit sdílenou skupinu karet <ph name="TITLE_OF_GROUP" /> se <ph name="TABS_COUNT_MANY" /> kartami, barva <ph name="COLOR_NAME" />.}many{Rozbalit sdílenou skupinu karet <ph name="TITLE_OF_GROUP" /> s <ph name="TABS_COUNT_MANY" /> karty, barva <ph name="COLOR_NAME" />.}other{Rozbalit sdílenou skupinu karet <ph name="TITLE_OF_GROUP" /> s <ph name="TABS_COUNT_MANY" /> kartami, barva <ph name="COLOR_NAME" />.}}</translation>

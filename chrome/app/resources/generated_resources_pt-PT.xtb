@@ -702,6 +702,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1473927070149284123">Tente novamente ou ligue-se a uma rede manualmente</translation>
 <translation id="1474785664565228650">A alteração na definição do microfone requer que o Parallels Desktop seja reiniciado. Reinicie o Parallels Desktop para continuar.</translation>
 <translation id="1476088332184200792">Copiar para o dispositivo</translation>
+<translation id="1476595624592550506">Altere a palavra-passe</translation>
 <translation id="1476607407192946488">&amp;Definições de idioma</translation>
 <translation id="1477446329585670721"><ph name="DOMAIN" /> requer que mantenha o seu cartão inteligente inserido.</translation>
 <translation id="1477654881618305065">A sua organização não lhe permite partilhar este conteúdo. Se precisar de ajuda, contacte o seu administrador.</translation>
@@ -2181,6 +2182,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2477218554275525952">Manter a barra lateral do Gemini aberta quando abrir um novo separador</translation>
 <translation id="2478176599153288112">Autorizações de ficheiros multimédia para "<ph name="EXTENSION" />"</translation>
 <translation id="24786041351753425">Ative o serviço de recuperação de dados.</translation>
+<translation id="2479148705183875116">Aceder às Definições</translation>
 <translation id="2479541499757560845">Definições do teclado de acessibilidade</translation>
 <translation id="2480868415629598489">Modificar os dados que copia e cola</translation>
 <translation id="2480881140544300950">O motor de pesquisa atual que gere a página Novo separador</translation>
@@ -4697,6 +4699,7 @@ Quer pará-lo?</translation>
 <translation id="4213918571089943508">Conta Google da criança</translation>
 <translation id="4214192212360095377">Desativar agora</translation>
 <translation id="4216407171061541111">A sua organização desativou a gravação de separadores na sua Conta Google</translation>
+<translation id="4216511743389425832">Ouvir esta página</translation>
 <translation id="4217571870635786043">Ditado</translation>
 <translation id="4218081191298393750">Clique no ícone de altifalante para desativar o som deste separador</translation>
 <translation id="4220157655212610908">Usar uma chave de segurança externa</translation>
@@ -9093,7 +9096,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="732845903678043302">{BOOKMARK_COUNT,plural, =1{1 marcador está guardado apenas neste dispositivo. Para usá-lo nos seus outros dispositivos, guarde-o na sua Conta Google.}other{{BOOKMARK_COUNT} marcadores estão guardados apenas neste dispositivo. Para usá-los nos seus outros dispositivos, guarde-os na sua Conta Google.}}</translation>
 <translation id="7328867076235380839">Combinação inválida.</translation>
-<translation id="7329009627557479564">Não é possível carregar. O ficheiro excede o tamanho máximo compatível.</translation>
 <translation id="7329154610228416156">O início de sessão falhou porque foi configurado para utilizar um URL não seguro (<ph name="BLOCKED_URL" />). Contacte o gestor.</translation>
 <translation id="7330533963640151632">Definições da funcionalidade <ph name="FEATURE_NAME" /> para o dispositivo de <ph name="USER_NAME" />, a partilhar com a conta <ph name="USER_EMAIL" />.</translation>
 <translation id="733058866272972585">Este site foi impedido de usar identificadores para reproduzir conteúdo protegido.</translation>

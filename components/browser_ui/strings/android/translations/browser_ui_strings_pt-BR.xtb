@@ -37,6 +37,7 @@
 <translation id="1384959399684842514">Download pausado</translation>
 <translation id="1396327438254055134">Permitir que o site use o otimizador V8.</translation>
 <translation id="1409338233051621926">Toque em "Apps" e em "Apps padrão"</translation>
+<translation id="1414315029670184034">Não permitir que os sites usem a câmera</translation>
 <translation id="1415402041810619267">URL truncado</translation>
 <translation id="1415855080660575082">Permita que o Chrome compartilhe suas guias recentes com o dispositivo para que elas apareçam na lista de apps e nos resultados da pesquisa do aparelho. É possível ativar ou desativar essa opção nas configurações do Chrome.</translation>
 <translation id="1420688843103859429">Deslize com os dois dedos no touchpad para avançar ou voltar</translation>
@@ -99,6 +100,7 @@
 <translation id="1985247341569771101">Quando essa configuração está ativada, os sites podem usar os sensores de movimento. Quando está desativada, os sites não podem usar sensores de movimento.</translation>
 <translation id="1985716030964443178">Todos os sites da sua lista serão redefinidos para o zoom padrão</translation>
 <translation id="1989112275319619282">Procurar</translation>
+<translation id="1991370806334788445">Permita o uso de cookies de terceiros, o que diminui a proteção da navegação, mas os recursos do site têm mais chances de funcionar conforme o esperado.</translation>
 <translation id="1994173015038366702">URL do site</translation>
 <translation id="1994558116414798016">Fonte Lexend</translation>
 <translation id="2004697686368036666">Os recursos de alguns sites podem não funcionar</translation>
@@ -742,7 +744,6 @@ A Proteção Avançada controla estas configurações do Chrome:</translation>
 <translation id="8676374126336081632">Limpar entrada</translation>
 <translation id="8681886425883659911">A publicidade é bloqueada em sites que mostram anúncios invasivos ou enganosos</translation>
 <translation id="868929229000858085">Pesquisar seus contatos</translation>
-<translation id="8707904142362025782">Os sites podem pedir acesso à câmera</translation>
 <translation id="8712637175834984815">Entendi</translation>
 <translation id="8715862698998036666">Arraste da parte de cima da tela e deslize da borda esquerda ou direita para sair da tela cheia.</translation>
 <translation id="8716050156658570300">Os sites podem pedir para usar sensores de movimento e luz</translation>

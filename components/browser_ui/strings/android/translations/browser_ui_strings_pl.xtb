@@ -37,6 +37,7 @@
 <translation id="1384959399684842514">Pobieranie wstrzymane</translation>
 <translation id="1396327438254055134">Zezwalaj witrynie na korzystanie z optymalizatora V8.</translation>
 <translation id="1409338233051621926">Kliknij Aplikacje, a potem Aplikacje domyślne</translation>
+<translation id="1414315029670184034">Nie zezwalaj witrynom na używanie kamery</translation>
 <translation id="1415402041810619267">URL obcięty</translation>
 <translation id="1415855080660575082">Pozwól Chrome udostępniać ostatnie karty swojemu urządzeniu, aby były one widoczne na nim na liście aplikacji i w wynikach wyszukiwania. Tę funkcję możesz w każdej chwili włączyć lub wyłączyć w ustawieniach Chrome.</translation>
 <translation id="1420688843103859429">Przechodź do przodu i do tyłu, przesuwając 2 palcami po touchpadzie</translation>
@@ -742,7 +743,6 @@ Ochrona zaawansowana kontroluje te ustawienia Chrome:</translation>
 <translation id="8676374126336081632">Wyczyść wpisany tekst</translation>
 <translation id="8681886425883659911">Reklamy są blokowane w witrynach, o których wiadomo, że wyświetlają reklamy uciążliwe lub wprowadzające w błąd</translation>
 <translation id="868929229000858085">Wyszukaj w kontaktach</translation>
-<translation id="8707904142362025782">Strona może prosić o dostęp do kamery</translation>
 <translation id="8712637175834984815">OK</translation>
 <translation id="8715862698998036666">Aby zamknąć pełny ekran, przeciągnij od góry i przesuń palcem od lewej lub prawej krawędzi.</translation>
 <translation id="8716050156658570300">Strony mogą prosić o dostęp do czujników ruchu i światła</translation>

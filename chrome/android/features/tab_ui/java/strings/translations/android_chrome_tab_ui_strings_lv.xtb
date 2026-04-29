@@ -163,11 +163,13 @@
 <translation id="6589356853295569750">Paziņojums par kopīgotās ciļņu grupas izmaiņām ir atvērts pilna ekrāna augstumā</translation>
 <translation id="6590332670428149473">Atvērt kopīgotās ciļņu grupas “<ph name="TITLE_OF_GROUP" />” (krāsa: <ph name="COLOR_NAME" />) darbību izvēlni</translation>
 <translation id="6615455863669487791">Rādīt man</translation>
+<translation id="6686490380836145850">Aizvērt cilnes pa labi</translation>
 <translation id="6694634756612002311">Pārvaldīt kopīgošanu</translation>
 <translation id="6709297274997495821">Atlasīt cilni</translation>
 <translation id="6744956528665271406">Rediģēt grupas krāsu</translation>
 <translation id="6784585810034073638">{TAB_COUNT,plural, =1{Pievienot grupai <ph name="TITLE_OF_GROUP" />, kurā ir <ph name="TAB_COUNT1" /> cilne}zero{Pievienot grupai <ph name="TITLE_OF_GROUP" />, kurā ir <ph name="TAB_COUNT1" /> cilnes}one{Pievienot grupai <ph name="TITLE_OF_GROUP" />, kurā ir <ph name="TAB_COUNT1" /> cilne}other{Pievienot grupai <ph name="TITLE_OF_GROUP" />, kurā ir <ph name="TAB_COUNT1" /> cilnes}}</translation>
 <translation id="6818926723028410516">Vienumu atlase</translation>
+<translation id="68541483639528434">Aizvērt citas cilnes</translation>
 <translation id="6856809498882026482">Paslēpt vairākatlases režīmu</translation>
 <translation id="6957436309971790274">Pēc 21 neaktivitātes dienas</translation>
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{Izvērst kopīgoto ciļņu grupu “<ph name="TITLE_OF_GROUP" />” ar <ph name="TABS_COUNT_ONE" /> cilni šādā krāsā: <ph name="COLOR_NAME" />.}zero{Izvērst kopīgoto ciļņu grupu “<ph name="TITLE_OF_GROUP" />” ar <ph name="TABS_COUNT_MANY" /> cilnēm šādā krāsā: <ph name="COLOR_NAME" />.}one{Izvērst kopīgoto ciļņu grupu “<ph name="TITLE_OF_GROUP" />” ar <ph name="TABS_COUNT_MANY" /> cilni šādā krāsā: <ph name="COLOR_NAME" />.}other{Izvērst kopīgoto ciļņu grupu “<ph name="TITLE_OF_GROUP" />” ar <ph name="TABS_COUNT_MANY" /> cilnēm šādā krāsā: <ph name="COLOR_NAME" />.}}</translation>

@@ -37,6 +37,7 @@
 <translation id="1384959399684842514">Lataus keskeytettiin.</translation>
 <translation id="1396327438254055134">Salli sivuston käyttää V8-optimoijaa.</translation>
 <translation id="1409338233051621926">Valitse Sovellukset ja sitten Oletussovellukset</translation>
+<translation id="1414315029670184034">Älä salli sivustojen käyttää kameraasi</translation>
 <translation id="1415402041810619267">URL näkyy lyhennettynä</translation>
 <translation id="1415855080660575082">Salli Chromen jakaa viimeaikaiset välilehdet laitteelle, jotta näet ne laitteen sovelluslistalla ja hakutuloksissa. Voit laittaa tämän päälle tai pois päältä Chromen asetuksista.</translation>
 <translation id="1420688843103859429">Siirry taakse- ja eteenpäin pyyhkäisemällä kosketuslevyllä kahdella sormella</translation>
@@ -742,7 +743,6 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:</translation>
 <translation id="8676374126336081632">Tyhjennä teksti</translation>
 <translation id="8681886425883659911">Mainokset estetään sivustoilla, joiden tiedetään näyttävän häiritseviä tai harhaanjohtavia mainoksia</translation>
 <translation id="868929229000858085">Hae yhteystiedoistasi</translation>
-<translation id="8707904142362025782">Sivusto voi pyytää kameran käyttölupaa</translation>
 <translation id="8712637175834984815">Ymmärretty</translation>
 <translation id="8715862698998036666">Poistu koko näytön tilasta vetämällä näytön yläreunasta ja pyyhkäisemällä vasemmasta tai oikeasta reunasta.</translation>
 <translation id="8716050156658570300">Sivustot voivat pyytää lupaa käyttää liike- ja valoantureita</translation>

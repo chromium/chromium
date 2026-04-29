@@ -163,11 +163,13 @@
 <translation id="6589356853295569750">Обавештење о променама у вези са дељеном групом картица је отворено на целом екрану</translation>
 <translation id="6590332670428149473">Отворите мени са радњама групе картица за дељену групу картица <ph name="TITLE_OF_GROUP" />, чија боја је <ph name="COLOR_NAME" />.</translation>
 <translation id="6615455863669487791">Покажи ми</translation>
+<translation id="6686490380836145850">Затвори картице са десне стране</translation>
 <translation id="6694634756612002311">Управљај дељењем</translation>
 <translation id="6709297274997495821">Изаберите картицу</translation>
 <translation id="6744956528665271406">Измени боју групе</translation>
 <translation id="6784585810034073638">{TAB_COUNT,plural, =1{Додајте у групу под називом <ph name="TITLE_OF_GROUP" /> са <ph name="TAB_COUNT1" /> картицом}one{Додајте у групу под називом <ph name="TITLE_OF_GROUP" /> са <ph name="TAB_COUNT1" /> картицом}few{Додајте у групу под називом <ph name="TITLE_OF_GROUP" /> са <ph name="TAB_COUNT1" /> картице}other{Додајте у групу под називом <ph name="TITLE_OF_GROUP" /> са <ph name="TAB_COUNT1" /> картица}}</translation>
 <translation id="6818926723028410516">Изаберите ставке</translation>
+<translation id="68541483639528434">Затвори друге картице</translation>
 <translation id="6856809498882026482">Сакријте режим вишеструког избора</translation>
 <translation id="6957436309971790274">После 21 дан неактивности</translation>
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{Проширите дељену групу картица <ph name="TITLE_OF_GROUP" /> са <ph name="TABS_COUNT_ONE" /> картицом, боје <ph name="COLOR_NAME" />.}one{Проширите дељену групу картица <ph name="TITLE_OF_GROUP" /> са <ph name="TABS_COUNT_MANY" /> картицом, боје <ph name="COLOR_NAME" />.}few{Проширите дељену групу картица <ph name="TITLE_OF_GROUP" /> са <ph name="TABS_COUNT_MANY" /> картице, боје <ph name="COLOR_NAME" />.}other{Проширите дељену групу картица <ph name="TITLE_OF_GROUP" /> са <ph name="TABS_COUNT_MANY" /> картица, боје <ph name="COLOR_NAME" />.}}</translation>

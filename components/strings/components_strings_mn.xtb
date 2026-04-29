@@ -152,6 +152,7 @@
 <translation id="1228893227497259893">Буруу өгөгдөл тодорхойлогч</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (автоматаар илрүүлсэн)</translation>
 <translation id="1232569758102978740">Гарчиггүй</translation>
+<translation id="1234539281285007945"><ph name="FIELD_1" />-г бөглөх шаардлагатай</translation>
 <translation id="1236081509407217141">Виртуал Орчин (VR)-ыг зөвшөөрөх үү?</translation>
 <translation id="1236689197410206751">AfterPay</translation>
 <translation id="1240347957665416060">Таны төхөөрөмжийн нэр</translation>
@@ -472,6 +473,7 @@
 <translation id="1721424275792716183">* Талбарыг бөглөх шаардлагатай</translation>
 <translation id="1723636263173393300">Энэ бодлого <ph name="MAX_ITEMS_LIMIT" />-с олон товчлолтой байх ёсгүй.</translation>
 <translation id="1725591448053514783">Юү дугтуй 6</translation>
+<translation id="172754119609519423"><ph name="FIELD_1" />, <ph name="FIELD_2" />, <ph name="FIELD_3" />-г бөглөх шаардлагатай</translation>
 <translation id="1727613060316725209">Гэрчилгээ хүчинтэй байна</translation>
 <translation id="1728677426644403582">Та веб хуудасны эх сурвалжийг харж байна.</translation>
 <translation id="173080396488393970">Энэ төрлийн аппыг дэмждэггүй</translation>
@@ -1432,6 +1434,7 @@
 <translation id="3220264767789936523">Ёслолын хувцас</translation>
 <translation id="3223287115535306850">Апп эхлүүлэх дүрс тэмдэг</translation>
 <translation id="3223425961342298674">Байршлыг зөвшөөрөөгүй</translation>
+<translation id="3225277284238802910"><ph name="FIELD_1" />, <ph name="FIELD_2" />-г бөглөх шаардлагатай</translation>
 <translation id="3225319735946384299">Код баталгаажуулалт</translation>
 <translation id="3225919329040284222">Серверөөс өгсөн гэрчилгээ нь өгөгдсөн хүлээлттэй таарахгүй байна. Эдгээр хүлээлтүүдийг таныг хамгаалахын тулд тодорхой, аюулгүйн өндөр зэрэглэлийн 
 вэбсайтуудад оруулж өгдөг.</translation>

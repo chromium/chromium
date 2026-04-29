@@ -37,6 +37,7 @@
 <translation id="1384959399684842514">Stahování pozastaveno</translation>
 <translation id="1396327438254055134">Povolit webu používat optimalizátor V8.</translation>
 <translation id="1409338233051621926">Klepněte na Aplikace a potom na Výchozí aplikace</translation>
+<translation id="1414315029670184034">Nepovolovat webům používat kameru</translation>
 <translation id="1415402041810619267">Zkrácená adresa URL</translation>
 <translation id="1415855080660575082">Umožněte Chromu sdílet nedávno použité karty se zařízením, abyste je na něm viděli v seznamu aplikací a ve výsledcích vyhledávání. Tuto funkci můžete zapnout nebo vypnout v nastavení Chromu.</translation>
 <translation id="1420688843103859429">Přecházet dopředu a zpět přejížděním dvěma prsty po touchpadu</translation>
@@ -742,7 +743,6 @@ Pokročilá ochrana spravuje tato nastavení Chromu:</translation>
 <translation id="8676374126336081632">Vymazat vstup</translation>
 <translation id="8681886425883659911">Na webech, o kterých je známo, že zobrazují rušivé nebo zavádějící reklamy, jsou reklamy blokovány</translation>
 <translation id="868929229000858085">Vyhledat v kontaktech</translation>
-<translation id="8707904142362025782">Web může požádat o přístup ke kameře</translation>
 <translation id="8712637175834984815">Hotovo</translation>
 <translation id="8715862698998036666">Celou obrazovku ukončíte přetažením shora a přejetím z levého nebo pravého okraje.</translation>
 <translation id="8716050156658570300">Weby mohou žádat o použití senzorů pohybu a světla</translation>

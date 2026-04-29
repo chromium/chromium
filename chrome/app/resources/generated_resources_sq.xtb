@@ -702,6 +702,7 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="1473927070149284123">Provo përsëri ose lidhu me një rrjet në mënyrë manuale</translation>
 <translation id="1474785664565228650">Ndryshimi në cilësimin e mikrofonit kërkon që të riniset Parallels Desktop. Rinis Parallels Desktop për të vazhduar.</translation>
 <translation id="1476088332184200792">Kopjo te pajisja jote</translation>
+<translation id="1476595624592550506">Ndrysho fjalëkalimin</translation>
 <translation id="1476607407192946488">&amp;Cilësimet e gjuhës</translation>
 <translation id="1477446329585670721"><ph name="DOMAIN" /> kërkon që ti ta mbash kartën tënde smart të futur.</translation>
 <translation id="1477654881618305065">Organizata jote nuk të lejon ta ndash këtë përmbajtje. Nëse ke nevojë për ndihmë, kontakto me administratorin.</translation>
@@ -2178,6 +2179,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2477218554275525952">Mbaje të hapur shiritin anësor të Gemini kur hap një skedë të re</translation>
 <translation id="2478176599153288112">Lejet e skedarëve të medias për "<ph name="EXTENSION" />"</translation>
 <translation id="24786041351753425">Aktivizo shërbimin e rikuperimit të të dhënave.</translation>
+<translation id="2479148705183875116">Shko te "Cilësimet"</translation>
 <translation id="2479541499757560845">Cilësimet e tastierës për qasshmërinë</translation>
 <translation id="2480868415629598489">Modifiko të dhënat që kopjon dhe ngjit</translation>
 <translation id="2480881140544300950">Motori aktual i kërkimit që menaxhon faqen e skedës së re</translation>
@@ -4693,6 +4695,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4213918571089943508">"Llogaria e Google" e fëmijës</translation>
 <translation id="4214192212360095377">Çaktivizo tani</translation>
 <translation id="4216407171061541111">Organizata jote ka çaktivizuar ruajtjen e skedave në "Llogarinë tënde të Google"</translation>
+<translation id="4216511743389425832">Dëgjoje këtë faqe</translation>
 <translation id="4217571870635786043">Diktimi</translation>
 <translation id="4218081191298393750">Kliko ikonën e altoparlantit për t'i hequr zërin kësaj skede</translation>
 <translation id="4220157655212610908">Përdor një çelës të jashtëm sigurie</translation>
@@ -5646,6 +5649,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="4881685975363383806">Mos ma kujto herën tjetër</translation>
 <translation id="4881695831933465202">Hap</translation>
 <translation id="4882312758060467256">Ka qasje te ky sajt</translation>
+<translation id="4882805770036405108">Hap modalitetin e leximit më shpejt me një shkurtore. Shtyp ⌥ + ⌘ + R për të aktivizuar/çaktivizuar modalitetin e leximit.</translation>
 <translation id="4882848900607400156">Kur e ndan vendndodhjen tënde të saktë, Gemini mund t'u përgjigjet pyetjeve të tua me më shumë saktësi. Të dhënat e tua nuk përdoren për të përmirësuar modelet e IA-së gjeneruese.</translation>
 <translation id="4882919381756638075">Sajtet përdorin zakonisht mikrofonin për veçoritë e komunikimit si biseda me video</translation>
 <translation id="4883436287898674711">Të gjitha sajtet <ph name="WEBSITE_1" /></translation>
@@ -8885,6 +8889,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7186903260115204164">Shto vizatime me dorë të lirë, nënshkrime dhe theksime me veglën e re "Vizato"</translation>
 <translation id="7186935534137027449">Komanda e aplikacionit</translation>
 <translation id="7188508872042490670">Të dhënat e sajteve në pajisje</translation>
+<translation id="7188755083797868960">Hap modalitetin e leximit më shpejt me një shkurtore. Shtyp Alt + Shift + R për të aktivizuar/çaktivizuar modalitetin e leximit.</translation>
 <translation id="7189234443051076392">Sigurohu që ka hapësirë ​​të mjaftueshme në pajisjen tënde</translation>
 <translation id="7189451821249468368">Nuk ke përmirësime të mjaftueshme për të regjistruar këtë pajisje. Kontakto me ekipin e shitjeve për të blerë më shumë. Nëse beson se po e shikon gabimisht këtë mesazh, kontakto me ekipin e mbështetjes.</translation>
 <translation id="7189558282078169397">Skedat nga pajisjet e tjera</translation>
@@ -9083,7 +9088,6 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="732845903678043302">{BOOKMARK_COUNT,plural, =1{1 faqeshënues është ruajtur vetëm në këtë pajisje. Për ta përdorur atë në pajisje të tjera, ruaje në "Llogarinë tënde të Google".}other{{BOOKMARK_COUNT} faqeshënues janë ruajtur vetëm në këtë pajisje. Për t'i përdorur në pajisjet e tua të tjera, ruaji në "Llogarinë tënde të Google".}}</translation>
 <translation id="7328867076235380839">Kombinim i pavlefshëm</translation>
-<translation id="7329009627557479564">Nuk mund të ngarkohet. Skedari e tejkalon madhësinë maksimale të mbështetur.</translation>
 <translation id="7329154610228416156">Identifikimi dështoi, sepse ishte i konfiguruar të përdorte një URL jo të sigurt <ph name="BLOCKED_URL" />. Kontakto me administratorin.</translation>
 <translation id="7330533963640151632">Cilësimet e "<ph name="FEATURE_NAME" />" për pajisjen e <ph name="USER_NAME" />, e cila ndan duke përdorur llogarinë <ph name="USER_EMAIL" />.</translation>
 <translation id="733058866272972585">Ky sajt është bllokuar që të mos përdorë identifikuesit për të luajtur përmbajtjet e mbrojtura.</translation>

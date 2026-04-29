@@ -152,6 +152,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1228893227497259893">Identifikues i gabuar i entitetit</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (zbuluar automatikisht)</translation>
 <translation id="1232569758102978740">Pa titull</translation>
+<translation id="1234539281285007945">Kërkohet <ph name="FIELD_1" /></translation>
 <translation id="1236081509407217141">Të lejohet VR?</translation>
 <translation id="1236689197410206751">AfterPay</translation>
 <translation id="1240347957665416060">Emri i pajisjes sate</translation>
@@ -472,6 +473,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1721424275792716183">* Fusha është e detyrueshme</translation>
 <translation id="1723636263173393300">Kjo politikë nuk duhet të ketë më shumë se <ph name="MAX_ITEMS_LIMIT" /> shkurtore.</translation>
 <translation id="1725591448053514783">Zarf You 6</translation>
+<translation id="172754119609519423">Kërkohet <ph name="FIELD_1" />, <ph name="FIELD_2" /> ose <ph name="FIELD_3" /></translation>
 <translation id="1727613060316725209">Certifikata është e vlefshme</translation>
 <translation id="1728677426644403582">Po shikon burimin e një faqe uebi</translation>
 <translation id="173080396488393970">Kjo lloj karte nuk mbështetet</translation>
@@ -1432,6 +1434,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="3220264767789936523">Veshje formale</translation>
 <translation id="3223287115535306850">Ikona e ngarkimit për hapjen e aplikacionit</translation>
 <translation id="3223425961342298674">Vendndodhja nuk lejohet</translation>
+<translation id="3225277284238802910">Kërkohet <ph name="FIELD_1" /> ose <ph name="FIELD_2" /></translation>
 <translation id="3225319735946384299">Nënshkrimi me kod</translation>
 <translation id="3225919329040284222">Serveri paraqiti një certifikatë që nuk përputhet me pritshmëritë e integruara. Këto pritshmëri përfshihen për uebsajte të caktuara të sigurisë së lartë, me qëllim që të të mbrojnë.</translation>
 <translation id="3226128629678568754">Shtyp butonin e ringarkimit për të dorëzuar përsëri të dhënat që duhen për të ngarkuar faqen.</translation>

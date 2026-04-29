@@ -37,6 +37,7 @@
 <translation id="1384959399684842514">Atsisiuntimas pristabdytas</translation>
 <translation id="1396327438254055134">Leisti svetainei naudoti V8 optimizavimo priemonę.</translation>
 <translation id="1409338233051621926">Palieskite „Programos“, tada – „Numatytosios programos“</translation>
+<translation id="1414315029670184034">Neleisti svetainėms naudoti fotoaparato</translation>
 <translation id="1415402041810619267">URL sutrumpintas</translation>
 <translation id="1415855080660575082">Leiskite „Chrome“ bendrinti naujausius skirtukus su įrenginiu, kad juos matytumėte įrenginio programų sąraše ir paieškos rezultatuose. Galite įjungti arba išjungti tai „Chrome“ nustatymuose.</translation>
 <translation id="1420688843103859429">Eikite atgal ir pirmyn perbraukdami dviem pirštais jutiklinėje dalyje</translation>
@@ -742,7 +743,6 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.</
 <translation id="8676374126336081632">Išvalyti įvestą tekstą</translation>
 <translation id="8681886425883659911">Skelbimai blokuojami svetainėse, kuriose rodomi nepageidaujami arba klaidinantys skelbimai</translation>
 <translation id="868929229000858085">Ieškokite savo kontaktuose</translation>
-<translation id="8707904142362025782">Svetainė gali prašyti leidimo naudoti vaizdo kamerą</translation>
 <translation id="8712637175834984815">Supratau</translation>
 <translation id="8715862698998036666">Vilkite nuo viršaus ir perbraukite nuo kairiojo arba dešiniojo krašto, kad išeitumėte iš viso ekrano režimo.</translation>
 <translation id="8716050156658570300">Svetainėse gali būti prašoma naudoti judesio ir šviesos jutiklius</translation>

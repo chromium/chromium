@@ -163,11 +163,13 @@
 <translation id="6589356853295569750">Ներդիրների ընդհանուր խմբի փոփոխությունների մասին նշումը ամբողջությամբ է բացված</translation>
 <translation id="6590332670428149473">Բացել «<ph name="TITLE_OF_GROUP" />» ներդիրների ընդհանուր խմբի գործողությունների ընտրացանկը, գույնը՝ <ph name="COLOR_NAME" />։</translation>
 <translation id="6615455863669487791">Ցույց տալ</translation>
+<translation id="6686490380836145850">Փակել աջ կողմի ներդիրները</translation>
 <translation id="6694634756612002311">Կառավարել հասանելիության պարամետրերը</translation>
 <translation id="6709297274997495821">Ընտրել ներդիր</translation>
 <translation id="6744956528665271406">Փոփոխել խմբի գույնը</translation>
 <translation id="6784585810034073638">{TAB_COUNT,plural, =1{Ավելացնել <ph name="TAB_COUNT1" /> ներդիրից բաղկացած <ph name="TITLE_OF_GROUP" /> խմբում}one{Ավելացնել <ph name="TAB_COUNT1" /> ներդիրից բաղկացած <ph name="TITLE_OF_GROUP" /> խմբում}other{Ավելացնել <ph name="TAB_COUNT1" /> ներդիրից բաղկացած <ph name="TITLE_OF_GROUP" /> խմբում}}</translation>
 <translation id="6818926723028410516">Ընտրեք տարրեր</translation>
+<translation id="68541483639528434">Փակել մյուս ներդիրները</translation>
 <translation id="6856809498882026482">Թաքցնել մի քանի ներդիրի ընտրության ռեժիմը</translation>
 <translation id="6957436309971790274">21 օր հետո ներդիրը կդառնա ոչ ակտիվ</translation>
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{Ծավալել <ph name="TITLE_OF_GROUP" /> ներդիրների ընդհանուր խումբը, որին տրված է <ph name="COLOR_NAME" /> գույնը, այնտեղ կա <ph name="TABS_COUNT_ONE" /> ներդիր։}one{Ծավալել <ph name="TITLE_OF_GROUP" /> ներդիրների ընդհանուր խումբը, որին տրված է <ph name="COLOR_NAME" /> գույնը, այնտեղ կա <ph name="TABS_COUNT_MANY" /> ներդիր։}other{Ծավալել <ph name="TITLE_OF_GROUP" /> ներդիրների ընդհանուր խումբը, որին տրված է <ph name="COLOR_NAME" /> գույնը, այնտեղ կա <ph name="TABS_COUNT_MANY" /> ներդիր։}}</translation>

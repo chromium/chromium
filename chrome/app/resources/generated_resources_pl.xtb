@@ -704,6 +704,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1473927070149284123">Spróbuj ponownie lub połącz się z siecią ręcznie</translation>
 <translation id="1474785664565228650">Zmiana ustawienia mikrofonu wymaga ponownego uruchomienia aplikacji Parallels Desktop. Aby kontynuować, uruchom ponownie Parallels Desktop.</translation>
 <translation id="1476088332184200792">Skopiuj na swoje urządzenie</translation>
+<translation id="1476595624592550506">Zmień hasło</translation>
 <translation id="1476607407192946488">&amp;Ustawienia języka</translation>
 <translation id="1477446329585670721">Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieździe.</translation>
 <translation id="1477654881618305065">Twoja organizacja nie pozwala udostępniać tej zawartości. Jeśli potrzebujesz pomocy, skontaktuj się z administratorem.</translation>
@@ -2168,6 +2169,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2477218554275525952">Pozostaw otwarty pasek boczny Gemini po otwarciu nowej karty</translation>
 <translation id="2478176599153288112">Uprawnienia pliku multimedialnego dla rozszerzenia „<ph name="EXTENSION" />”</translation>
 <translation id="24786041351753425">Włącz usługę przywracania danych.</translation>
+<translation id="2479148705183875116">Otwórz Ustawienia</translation>
 <translation id="2479541499757560845">Ustawienia ułatwień dostępu dotyczące klawiatury</translation>
 <translation id="2480868415629598489">Modyfikowanie danych, które kopiujesz i wklejasz</translation>
 <translation id="2480881140544300950">Wyszukiwarka zarządzająca teraz Twoją stroną nowej karty</translation>
@@ -4675,6 +4677,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="4213918571089943508">Konto Google dziecka</translation>
 <translation id="4214192212360095377">Wyłącz teraz</translation>
 <translation id="4216407171061541111">Twoja organizacja wyłączyła zapisywanie kart na Twoim koncie Google</translation>
+<translation id="4216511743389425832">Odsłuchaj tę stronę</translation>
 <translation id="4217571870635786043">Dyktowanie</translation>
 <translation id="4218081191298393750">Kliknij ikonę głośnika, aby wyciszyć tę kartę</translation>
 <translation id="4220157655212610908">Użyj zewnętrznego klucza bezpieczeństwa</translation>
@@ -9069,7 +9072,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="732845903678043302">{BOOKMARK_COUNT,plural, =1{1 zakładka została zapisana tylko na tym urządzeniu. Aby używać jej na innych urządzeniach, zapisz ją na swoim koncie Google.}few{{BOOKMARK_COUNT} zakładki zostały zapisane tylko na tym urządzeniu. Aby używać ich na innych urządzeniach, zapisz je na swoim koncie Google.}many{{BOOKMARK_COUNT} zakładek zostało zapisanych tylko na tym urządzeniu. Aby używać ich na innych urządzeniach, zapisz je na swoim koncie Google.}other{{BOOKMARK_COUNT} zakładki zostało zapisane tylko na tym urządzeniu. Aby używać ich na innych urządzeniach, zapisz je na swoim koncie Google.}}</translation>
 <translation id="7328867076235380839">Niepoprawna kombinacja</translation>
-<translation id="7329009627557479564">Nie udało się przesłać. Plik przekracza maksymalny obsługiwany rozmiar.</translation>
 <translation id="7329154610228416156">Nie udało się zalogować, bo mechanizm logowania korzysta z niezabezpieczonego URL-a (<ph name="BLOCKED_URL" />). Skontaktuj się z administratorem.</translation>
 <translation id="7330533963640151632">Ustawienia funkcji <ph name="FEATURE_NAME" /> dla urządzenia, z którego korzysta <ph name="USER_NAME" />, przypisane do konta <ph name="USER_EMAIL" />.</translation>
 <translation id="733058866272972585">Tej witrynie zablokowano możliwość używania identyfikatorów do odtwarzania treści chronionych.</translation>

@@ -163,11 +163,13 @@
 <translation id="6589356853295569750">Avís sobre els canvis en el grup de pestanyes compartit obert a alçada completa</translation>
 <translation id="6590332670428149473">Obre el menú d'accions del grup de pestanyes compartit <ph name="TITLE_OF_GROUP" />, de color <ph name="COLOR_NAME" />.</translation>
 <translation id="6615455863669487791">Mostra-m'ho</translation>
+<translation id="6686490380836145850">Tanca les pestanyes de la dreta</translation>
 <translation id="6694634756612002311">Gestiona la compartició</translation>
 <translation id="6709297274997495821">Selecciona una pestanya</translation>
 <translation id="6744956528665271406">Edita el color del grup</translation>
 <translation id="6784585810034073638">{TAB_COUNT,plural, =1{Afegeix al grup anomenat <ph name="TITLE_OF_GROUP" /> amb <ph name="TAB_COUNT1" /> pestanya}other{Afegeix al grup anomenat <ph name="TITLE_OF_GROUP" /> amb <ph name="TAB_COUNT1" /> pestanyes}}</translation>
 <translation id="6818926723028410516">Selecciona elements</translation>
+<translation id="68541483639528434">Tanca les altres pestanyes</translation>
 <translation id="6856809498882026482">Amaga el mode de multiselecció</translation>
 <translation id="6957436309971790274">Després de 21 dies d'inactivitat</translation>
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{Desplega el grup de pestanyes compartit <ph name="TITLE_OF_GROUP" /> de color <ph name="COLOR_NAME" /> amb <ph name="TABS_COUNT_ONE" /> pestanya.}other{Desplega el grup de pestanyes compartit <ph name="TITLE_OF_GROUP" /> de color <ph name="COLOR_NAME" /> amb <ph name="TABS_COUNT_MANY" /> pestanyes.}}</translation>

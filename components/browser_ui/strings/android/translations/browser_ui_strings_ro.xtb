@@ -37,6 +37,7 @@
 <translation id="1384959399684842514">Descărcare întreruptă</translation>
 <translation id="1396327438254055134">Permite site-ului să folosească instrumentul de optimizare V8.</translation>
 <translation id="1409338233051621926">Atinge Aplicații, apoi atinge Aplicații prestabilite</translation>
+<translation id="1414315029670184034">Nu permite site-urilor să utilizeze camera</translation>
 <translation id="1415402041810619267">Adresă URL trunchiată</translation>
 <translation id="1415855080660575082">Permite ca Chrome să-ți trimită filele recente pe dispozitiv ca să le vezi în lista de aplicații și în rezultatele căutării pe dispozitiv. Poți să activezi sau să dezactivezi opțiunea din setările Chrome.</translation>
 <translation id="1420688843103859429">Navighează înainte și înapoi glisând cu două degete pe touchpad</translation>
@@ -742,7 +743,6 @@ Protecția avansată gestionează următoarele setări Chrome:</translation>
 <translation id="8676374126336081632">Șterge textul introdus</translation>
 <translation id="8681886425883659911">Anunțurile sunt blocate pe site-urile despre care se știe că afișează anunțuri deranjante sau înșelătoare</translation>
 <translation id="868929229000858085">Caută în agendă</translation>
-<translation id="8707904142362025782">Site-ul poate solicita permisiunea de a folosi camera</translation>
 <translation id="8712637175834984815">Am înțeles</translation>
 <translation id="8715862698998036666">Trage din partea de sus și glisează dinspre marginea stângă sau dreaptă pentru a ieși din ecranul complet.</translation>
 <translation id="8716050156658570300">Site-urile pot solicita permisiunea de a folosi senzorii de mișcare și de lumină</translation>

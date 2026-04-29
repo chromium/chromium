@@ -703,6 +703,7 @@ Izin yang telah Anda berikan ke aplikasi dapat berlaku untuk akun ini. Anda dapa
 <translation id="1473927070149284123">Coba lagi atau hubungkan ke jaringan secara manual</translation>
 <translation id="1474785664565228650">Perubahan pada setelan mikrofon mengharuskan Parallels Desktop diluncurkan kembali. Luncurkan kembali Parallels Desktop untuk melanjutkan.</translation>
 <translation id="1476088332184200792">Salin ke Perangkat Anda</translation>
+<translation id="1476595624592550506">Ubah sandi Anda</translation>
 <translation id="1476607407192946488">&amp;Setelan Bahasa</translation>
 <translation id="1477446329585670721"><ph name="DOMAIN" /> mengharuskan Anda tetap memasang kartu smart.</translation>
 <translation id="1477654881618305065">Organisasi tidak mengizinkan Anda membagikan konten ini. Jika Anda perlu bantuan, hubungi administrator.</translation>
@@ -2193,6 +2194,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2477218554275525952">Biarkan sidebar Gemini tetap terbuka saat Anda membuka tab baru</translation>
 <translation id="2478176599153288112">Izin File-Media untuk "<ph name="EXTENSION" />"</translation>
 <translation id="24786041351753425">Aktifkan layanan pemulihan data.</translation>
+<translation id="2479148705183875116">Buka Setelan</translation>
 <translation id="2479541499757560845">Setelan keyboard aksesibilitas</translation>
 <translation id="2480868415629598489">Mengubah data yang Anda salin dan tempel</translation>
 <translation id="2480881140544300950">Mesin telusur saat ini mengelola halaman tab baru Anda</translation>
@@ -4708,6 +4710,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="4213918571089943508">Akun Google Anak</translation>
 <translation id="4214192212360095377">Nonaktifkan Sekarang</translation>
 <translation id="4216407171061541111">Organisasi Anda menonaktifkan penyimpanan tab di Akun Google Anda</translation>
+<translation id="4216511743389425832">Dengarkan halaman ini</translation>
 <translation id="4217571870635786043">Dikte</translation>
 <translation id="4218081191298393750">Klik ikon speaker untuk membisukan tab ini</translation>
 <translation id="4220157655212610908">Gunakan kunci keamanan eksternal</translation>
@@ -5662,6 +5665,7 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="4881685975363383806">Jangan ingatkan saya lain kali</translation>
 <translation id="4881695831933465202">Buka</translation>
 <translation id="4882312758060467256">Memiliki akses ke situs ini</translation>
+<translation id="4882805770036405108">Buka mode baca lebih cepat dengan pintasan. Tekan ⌥ + ⌘ + R untuk mengaktifkan/menonaktifkan mode baca.</translation>
 <translation id="4882848900607400156">Jika Anda membagikan lokasi presisi, Gemini dapat menjawab pertanyaan Anda dengan lebih akurat. Data Anda tidak digunakan untuk meningkatkan kualitas model AI generatif.</translation>
 <translation id="4882919381756638075">Situs biasanya menggunakan mikrofon Anda untuk fitur komunikasi seperti video chat</translation>
 <translation id="4883436287898674711">Semua situs <ph name="WEBSITE_1" /></translation>
@@ -8903,6 +8907,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7186903260115204164">Tambahkan gambar bebas, tanda tangan, dan sorotan dengan alat Gambar baru</translation>
 <translation id="7186935534137027449">Perintah Aplikasi</translation>
 <translation id="7188508872042490670">Data situs di perangkat</translation>
+<translation id="7188755083797868960">Buka mode baca lebih cepat dengan pintasan. Tekan Alt + Shift + R untuk mengaktifkan/menonaktifkan mode baca.</translation>
 <translation id="7189234443051076392">Pastikan ruang di perangkat Anda mencukupi</translation>
 <translation id="7189451821249468368">Anda tidak memiliki cukup upgrade untuk mendaftarkan perangkat ini. Hubungi pihak penjualan untuk membeli yang lainnya. Jika Anda yakin Anda tidak seharusnya mendapatkan pesan ini, hubungi dukungan.</translation>
 <translation id="7189558282078169397">Tab Dari Perangkat Lain</translation>
@@ -9101,7 +9106,6 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="732845903678043302">{BOOKMARK_COUNT,plural, =1{1 bookmark hanya disimpan ke perangkat ini. Untuk menggunakannya di perangkat lain, simpan sandi di Akun Google Anda.}other{{BOOKMARK_COUNT} bookmark hanya disimpan ke perangkat ini. Untuk menggunakannya di perangkat lain, simpan sandi di Akun Google Anda.}}</translation>
 <translation id="7328867076235380839">Kombinasi tidak valid</translation>
-<translation id="7329009627557479564">Tidak dapat mengupload. File melebihi ukuran maksimum yang didukung.</translation>
 <translation id="7329154610228416156">Login gagal karena dikonfigurasi untuk menggunakan URL yang tidak aman (<ph name="BLOCKED_URL" />). Hubungi administrator Anda.</translation>
 <translation id="7330533963640151632">Setelan <ph name="FEATURE_NAME" /> untuk perangkat <ph name="USER_NAME" />, yang dibagikan dengan akun <ph name="USER_EMAIL" />.</translation>
 <translation id="733058866272972585">Situs ini telah diblokir agar tidak menggunakan ID untuk memutar konten yang dilindungi.</translation>

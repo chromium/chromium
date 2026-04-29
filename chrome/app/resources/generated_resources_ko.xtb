@@ -703,6 +703,7 @@
 <translation id="1473927070149284123">다시 시도하거나 수동으로 네트워크에 연결하세요</translation>
 <translation id="1474785664565228650">마이크 설정을 변경하려면 Parallels Desktop을 다시 실행해야 합니다. 계속하려면 Parallels Desktop을 다시 실행하세요.</translation>
 <translation id="1476088332184200792">기기로 복사</translation>
+<translation id="1476595624592550506">비밀번호 변경</translation>
 <translation id="1476607407192946488">언어 설정(&amp;L)</translation>
 <translation id="1477446329585670721"><ph name="DOMAIN" />에서 스마트 카드를 삽입해 둘 것을 요청합니다.</translation>
 <translation id="1477654881618305065">조직에서 이 콘텐츠를 공유하도록 허용하지 않습니다. 도움이 필요하면 관리자에게 문의하세요.</translation>
@@ -2196,6 +2197,7 @@
 <translation id="2477218554275525952">새 탭을 열 때 Gemini 사이드바를 열어 둠</translation>
 <translation id="2478176599153288112">'<ph name="EXTENSION" />'의 미디어 파일 권한</translation>
 <translation id="24786041351753425">데이터 복구 서비스 사용 설정</translation>
+<translation id="2479148705183875116">설정으로 이동</translation>
 <translation id="2479541499757560845">접근성 키보드 설정</translation>
 <translation id="2480868415629598489">복사하고 붙여넣는 데이터 수정</translation>
 <translation id="2480881140544300950">현재 새 탭 페이지를 관리하는 검색엔진</translation>
@@ -4709,6 +4711,7 @@
 <translation id="4213918571089943508">자녀의 Google 계정</translation>
 <translation id="4214192212360095377">지금 끄기</translation>
 <translation id="4216407171061541111">조직에서 사용자의 Google 계정에 탭 저장을 사용 중지했습니다.</translation>
+<translation id="4216511743389425832">이 페이지의 내용 듣기</translation>
 <translation id="4217571870635786043">음성기록</translation>
 <translation id="4218081191298393750">이 탭을 음소거하려면 스피커 아이콘을 클릭하세요.</translation>
 <translation id="4220157655212610908">외부 보안 키 사용</translation>
@@ -5663,6 +5666,7 @@
 <translation id="4881685975363383806">다음번에 알리지 않음</translation>
 <translation id="4881695831933465202">열기</translation>
 <translation id="4882312758060467256">이 사이트의 액세스 권한이 있습니다.</translation>
+<translation id="4882805770036405108">단축키를 사용하여 더 빠르게 읽기 모드를 여세요. ⌥ + ⌘ + R을 누르면 읽기 모드로 전환됩니다.</translation>
 <translation id="4882848900607400156">정확한 위치를 공유하면 Gemini가 질문에 더 정확하게 답변할 수 있습니다. 사용자의 데이터는 생성형 AI 모델을 개선하는 데 사용되지 않습니다.</translation>
 <translation id="4882919381756638075">사이트에서는 일반적으로 영상 채팅 같은 커뮤니케이션 기능에 마이크를 사용합니다.</translation>
 <translation id="4883436287898674711">모든 <ph name="WEBSITE_1" /> 사이트</translation>
@@ -8904,6 +8908,7 @@
 <translation id="7186903260115204164">새로운 그리기 도구를 활용하여 자유롭게 그림을 그리고, 서명하고, 강조 표시하세요.</translation>
 <translation id="7186935534137027449">앱 명령어</translation>
 <translation id="7188508872042490670">기기 내 사이트 데이터</translation>
+<translation id="7188755083797868960">단축키를 사용하여 더 빠르게 읽기 모드를 여세요. Alt + Shift + R을 누르면 읽기 모드로 전환됩니다.</translation>
 <translation id="7189234443051076392">기기 저장용량이 충분한지 확인합니다.</translation>
 <translation id="7189451821249468368">기기를 등록하는 데 필요한 업그레이드가 부족합니다. 판매처에 문의하여 추가로 구매하시기 바랍니다. 이 메시지가 잘못 표시되었다고 판단되는 경우 지원팀에 문의하세요.</translation>
 <translation id="7189558282078169397">다른 기기의 탭</translation>
@@ -9102,7 +9107,6 @@
 <translation id="7328162502911382168">(<ph name="COUNT" />명)</translation>
 <translation id="732845903678043302">{BOOKMARK_COUNT,plural, =1{북마크 1개가 이 기기에만 저장됩니다. 다른 기기에서 사용하려면 Google 계정에 저장하세요}other{북마크 {BOOKMARK_COUNT}개가 이 기기에만 저장됩니다. 다른 기기에서 사용하려면 Google 계정에 저장하세요}}</translation>
 <translation id="7328867076235380839">잘못된 조합입니다</translation>
-<translation id="7329009627557479564">업로드할 수 없습니다. 파일이 지원되는 최대 크기를 초과합니다.</translation>
 <translation id="7329154610228416156">보안되지 않은 URL(<ph name="BLOCKED_URL" />)을 사용하도록 설정되어 있기 때문에 로그인할 수 없습니다. 관리자에게 문의하세요.</translation>
 <translation id="7330533963640151632"><ph name="USER_EMAIL" /> 계정에서 공유하는 <ph name="USER_NAME" />님의 기기에 관한 <ph name="FEATURE_NAME" /> 설정입니다.</translation>
 <translation id="733058866272972585">이 사이트에서 보호된 콘텐츠를 재생하기 위해 식별자를 사용하지 못하도록 차단되었습니다.</translation>

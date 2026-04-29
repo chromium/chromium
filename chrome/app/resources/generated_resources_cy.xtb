@@ -707,6 +707,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i apiau yn berthnasol i'
 <translation id="1473927070149284123">Rhowch gynnig arall arni neu cysylltwch â rhwydwaith yn bwrpasol</translation>
 <translation id="1474785664565228650">Mae'r newid yn y gosodiad meicroffon yn ei gwneud yn ofynnol i Parallels Desktop ail-lansio. Ail-lansiwch Parallels Desktop i barhau.</translation>
 <translation id="1476088332184200792">Copïo i'ch Dyfais</translation>
+<translation id="1476595624592550506">Newidiwch eich cyfrinair</translation>
 <translation id="1476607407192946488">&amp;Gosodiadau Iaith</translation>
 <translation id="1477446329585670721">Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</translation>
 <translation id="1477654881618305065">Nid yw'ch sefydliad yn caniatáu i chi rannu'r cynnwys hwn. Os oes angen help arnoch, cysylltwch â'ch gweinyddwr.</translation>
@@ -2197,6 +2198,7 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="2477218554275525952">Cadwch y bar ochr Gemini ar agor pan fyddwch yn agor tab newydd</translation>
 <translation id="2478176599153288112">Caniatadau Ffeil Cyfryngau ar gyfer "<ph name="EXTENSION" />"</translation>
 <translation id="24786041351753425">Galluogi'r gwasanaeth adfer data.</translation>
+<translation id="2479148705183875116">Mynd i'r Gosodiadau</translation>
 <translation id="2479541499757560845">Gosodiadau bysellfwrdd hygyrchedd</translation>
 <translation id="2480868415629598489">Addasu'r data rydych yn eu copïo a'u gludo</translation>
 <translation id="2480881140544300950">Peiriant chwilio cyfredol sy'n rheoli eich tudalen tab newydd</translation>
@@ -4712,6 +4714,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="4213918571089943508">Cyfrif Google y plentyn</translation>
 <translation id="4214192212360095377">Diffodd Nawr</translation>
 <translation id="4216407171061541111">Mae eich sefydliad wedi diffodd cadw tabiau yn eich Cyfrif Google</translation>
+<translation id="4216511743389425832">Gwrando ar y dudalen hon</translation>
 <translation id="4217571870635786043">Arddweud</translation>
 <translation id="4218081191298393750">Cliciwch yr eicon seinydd i ddistewi'r tab hwn</translation>
 <translation id="4220157655212610908">Defnyddiwch allwedd ddiogelwch allanol</translation>
@@ -5666,6 +5669,7 @@ Defnyddiwch Ctrl + Alt + Lleihau disgleirdeb i bellhau.</translation>
 <translation id="4881685975363383806">Peidio â fy atgoffa y tro nesaf</translation>
 <translation id="4881695831933465202">Agor</translation>
 <translation id="4882312758060467256">Mae ganddo fynediad at y wefan hon</translation>
+<translation id="4882805770036405108">Agorwch y modd darllen yn gyflymach gyda llwybr byr. Pwyswch ⌥ + ⌘ + R i doglo'r modd darllen.</translation>
 <translation id="4882848900607400156">Pan fyddwch yn rhannu eich union leoliad, gall Gemini ateb eich cwestiynau yn fwy cywir. Ni ddefnyddir eich data i wella modelau AI cynhyrchiol.</translation>
 <translation id="4882919381756638075">Mae gwefannau fel arfer yn defnyddio'ch meicroffon ar gyfer nodweddion cyfathrebu megis sgwrsio fideo</translation>
 <translation id="4883436287898674711">Pob un o'r <ph name="WEBSITE_1" /> o wefannau</translation>
@@ -8914,6 +8918,7 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="7186903260115204164">Ychwanegwch luniau llawrydd, llofnodion, ac uchafbwyntiau gyda'r Offeryn lluniadu newydd</translation>
 <translation id="7186935534137027449">Gorchymyn Ap</translation>
 <translation id="7188508872042490670">Data gwefan ar y ddyfais</translation>
+<translation id="7188755083797868960">Agorwch y modd darllen yn gyflymach gyda llwybr byr. Pwyswch Alt + Shift + R i doglo modd darllen.</translation>
 <translation id="7189234443051076392">Gwnewch yn siŵr bod digon o le ar eich dyfais</translation>
 <translation id="7189451821249468368">Nid oes gennych ddigon o uwchraddiadau i gofrestru'r ddyfais hon. Cysylltwch â'r tîm gwerthu i brynu rhagor. Os ydych yn credu eich bod yn gweld y neges hon drwy gamgymeriad, cysylltwch â'r tîm cymorth.</translation>
 <translation id="7189558282078169397">Tabiau O Ddyfeisiau Eraill</translation>
@@ -9112,7 +9117,6 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="732845903678043302">{BOOKMARK_COUNT,plural, =1{Mae 1 nod tudalen wedi'i gadw i'r ddyfais hon yn unig. Er mwyn ei defnyddio ar eich dyfeisiau eraill, cadwch hi yn eich Cyfrif Google.}zero{Mae {BOOKMARK_COUNT} nodau tudalen wedi'u cadw i'r ddyfais hon yn unig. Er mwyn eu defnyddio ar eich dyfeisiau eraill, cadwch nhw yn eich Cyfrif Google.}two{Mae {BOOKMARK_COUNT} nod tudalen wedi'u cadw i'r ddyfais hon yn unig. Er mwyn eu defnyddio ar eich dyfeisiau eraill, cadwch nhw yn eich Cyfrif Google.}few{Mae {BOOKMARK_COUNT} nod tudalen wedi'u cadw i'r ddyfais hon yn unig. Er mwyn eu defnyddio ar eich dyfeisiau eraill, cadwch nhw yn eich Cyfrif Google.}many{Mae {BOOKMARK_COUNT} nod tudalen wedi'u cadw i'r ddyfais hon yn unig. Er mwyn eu defnyddio ar eich dyfeisiau eraill, cadwch nhw yn eich Cyfrif Google.}other{Mae {BOOKMARK_COUNT} nod tudalen wedi'u cadw i'r ddyfais hon yn unig. Er mwyn eu defnyddio ar eich dyfeisiau eraill, cadwch nhw yn eich Cyfrif Google.}}</translation>
 <translation id="7328867076235380839">Cyfuniad annilys</translation>
-<translation id="7329009627557479564">Methu ag uwchlwytho. Mae'r ffeil yn fwy na'r maint mwyaf a gefnogir.</translation>
 <translation id="7329154610228416156">Wedi methu â mewngofnodi oherwydd ei fod wedi'i ffurfweddu i ddefnyddio URL nad yw'n ddiogel (<ph name="BLOCKED_URL" />). Cysylltwch â'ch gweinyddwr.</translation>
 <translation id="7330533963640151632">Gosodiadau <ph name="FEATURE_NAME" /> ar gyfer dyfais <ph name="USER_NAME" />, sy'n rhannu o dan y cyfrif <ph name="USER_EMAIL" />.</translation>
 <translation id="733058866272972585">Mae'r wefan hon wedi'i rhwystro rhag defnyddio dynodwyr i chwarae cynnwys gwarchodedig.</translation>

@@ -163,11 +163,13 @@
 <translation id="6589356853295569750">Upozornenie na zmeny zdieľanej skupiny kariet je otvorené na celú výšku</translation>
 <translation id="6590332670428149473">Otvorte ponuku akcií zdieľanej skupiny kariet <ph name="TITLE_OF_GROUP" /> vo farbe <ph name="COLOR_NAME" />.</translation>
 <translation id="6615455863669487791">Ukázať</translation>
+<translation id="6686490380836145850">Zavrieť karty vpravo</translation>
 <translation id="6694634756612002311">Spravovať zdieľanie</translation>
 <translation id="6709297274997495821">Vybrať kartu</translation>
 <translation id="6744956528665271406">Upraviť farbu skupiny</translation>
 <translation id="6784585810034073638">{TAB_COUNT,plural, =1{Pridať do skupiny s názvom <ph name="TITLE_OF_GROUP" /> s <ph name="TAB_COUNT1" /> kartou}few{Pridať do skupiny s názvom <ph name="TITLE_OF_GROUP" /> s <ph name="TAB_COUNT1" /> kartami}many{Add to group named <ph name="TITLE_OF_GROUP" /> with <ph name="TAB_COUNT1" /> tabs}other{Pridať do skupiny s názvom <ph name="TITLE_OF_GROUP" /> s <ph name="TAB_COUNT1" /> kartami}}</translation>
 <translation id="6818926723028410516">Vyberte položky</translation>
+<translation id="68541483639528434">Zavrieť ostatné karty</translation>
 <translation id="6856809498882026482">Skryť režim hromadného výberu</translation>
 <translation id="6957436309971790274">Po 21 dňoch nečinnosti</translation>
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{Rozbaľte zdieľanú skupinu kariet <ph name="TITLE_OF_GROUP" /> vo farbe <ph name="COLOR_NAME" /> s <ph name="TABS_COUNT_ONE" /> kartou.}few{Rozbaľte zdieľanú skupinu kariet <ph name="TITLE_OF_GROUP" /> vo farbe <ph name="COLOR_NAME" /> s <ph name="TABS_COUNT_MANY" /> kartami.}many{Expand shared <ph name="TITLE_OF_GROUP" /> tab group with <ph name="TABS_COUNT_MANY" /> tabs, color <ph name="COLOR_NAME" />.}other{Rozbaľte zdieľanú skupinu kariet <ph name="TITLE_OF_GROUP" /> vo farbe <ph name="COLOR_NAME" /> s <ph name="TABS_COUNT_MANY" /> kartami.}}</translation>

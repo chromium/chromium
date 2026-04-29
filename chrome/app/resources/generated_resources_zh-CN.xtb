@@ -700,6 +700,7 @@
 <translation id="1473927070149284123">请重试，或手动连接到网络</translation>
 <translation id="1474785664565228650">重新启动 Parallels Desktop 后，对麦克风设置做出的更改才能生效。请重新启动 Parallels Desktop 以继续。</translation>
 <translation id="1476088332184200792">复制到您的设备</translation>
+<translation id="1476595624592550506">更改您的密码</translation>
 <translation id="1476607407192946488">语言设置(&amp;L)</translation>
 <translation id="1477446329585670721"><ph name="DOMAIN" /> 要求您让智能卡保持插入状态。</translation>
 <translation id="1477654881618305065">贵组织不允许您分享此内容。如果需要帮助，请与您的管理员联系。</translation>
@@ -2174,6 +2175,7 @@
 <translation id="2477218554275525952">打开新标签页时保持 Gemini 边栏处于打开状态</translation>
 <translation id="2478176599153288112">“<ph name="EXTENSION" />”的媒体文件权限</translation>
 <translation id="24786041351753425">启用数据恢复服务。</translation>
+<translation id="2479148705183875116">前往“设置”</translation>
 <translation id="2479541499757560845">无障碍键盘设置</translation>
 <translation id="2480868415629598489">修改您复制和粘贴的数据</translation>
 <translation id="2480881140544300950">当前正在管理“新标签页”页面的搜索引擎</translation>
@@ -4685,6 +4687,7 @@
 <translation id="4213918571089943508">孩子的 Google 账号</translation>
 <translation id="4214192212360095377">立即关闭</translation>
 <translation id="4216407171061541111">您的组织已关闭在您的 Google 账号中保存标签页的功能</translation>
+<translation id="4216511743389425832">读出此网页的内容</translation>
 <translation id="4217571870635786043">语音输入</translation>
 <translation id="4218081191298393750">点击扬声器图标即可将此标签页静音</translation>
 <translation id="4220157655212610908">使用外部安全密钥</translation>
@@ -5638,6 +5641,7 @@
 <translation id="4881685975363383806">下次不再提醒我</translation>
 <translation id="4881695831933465202">打开</translation>
 <translation id="4882312758060467256">可以访问此网站</translation>
+<translation id="4882805770036405108">使用快捷键可更快地打开阅读模式。按 ⌥ + ⌘ + R 组合键可开启/关闭阅读模式。</translation>
 <translation id="4882848900607400156">分享精确位置后，Gemini 可以更准确地回答您的问题。您的数据不会用于改进生成式 AI 模型。</translation>
 <translation id="4882919381756638075">网站通常会使用您的麦克风以实现通信功能（例如视频聊天）</translation>
 <translation id="4883436287898674711">所有<ph name="WEBSITE_1" />网站</translation>
@@ -8875,6 +8879,7 @@
 <translation id="7186903260115204164">使用新的“绘图”工具添加手绘图、签名和突出显示内容</translation>
 <translation id="7186935534137027449">应用命令</translation>
 <translation id="7188508872042490670">设备端网站数据</translation>
+<translation id="7188755083797868960">使用快捷键可更快地打开阅读模式。按 Alt + Shift + R 组合键可开启/关闭阅读模式。</translation>
 <translation id="7189234443051076392">确保您的设备上有足够的空间</translation>
 <translation id="7189451821249468368">您没有足够的升级许可来注册此设备。请与销售代表联系，以购买更多升级许可。如果您认为自己不应看到这条消息，请与支持人员联系。</translation>
 <translation id="7189558282078169397">从其他设备打开的标签页</translation>
@@ -9073,7 +9078,6 @@
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="732845903678043302">{BOOKMARK_COUNT,plural, =1{有 1 个书签只保存到此设备上。若要在其他设备上使用它，请将它保存到您的 Google 账号中。}other{有 {BOOKMARK_COUNT} 个书签只保存到此设备上。若要在其他设备上使用它们，请将它们保存到您的 Google 账号中。}}</translation>
 <translation id="7328867076235380839">无效的组合</translation>
-<translation id="7329009627557479564">无法上传。文件超过了支持的大小上限。</translation>
 <translation id="7329154610228416156">由于已配置为使用不安全的网址 (<ph name="BLOCKED_URL" />)，因此登录失败了。请与管理员联系。</translation>
 <translation id="7330533963640151632"><ph name="USER_NAME" />的设备的“<ph name="FEATURE_NAME" />”设置，通过账号 <ph name="USER_EMAIL" /> 分享。</translation>
 <translation id="733058866272972585">此网站已被禁止使用标识符播放受保护内容。</translation>

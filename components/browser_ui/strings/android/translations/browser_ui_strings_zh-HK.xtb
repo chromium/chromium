@@ -37,6 +37,7 @@
 <translation id="1384959399684842514">已暫停下載</translation>
 <translation id="1396327438254055134">允許網站使用 V8 優化工具。</translation>
 <translation id="1409338233051621926">㩒一下 [應用程式] 同 [預設應用程式]</translation>
+<translation id="1414315029670184034">不允許網站使用攝錄機</translation>
 <translation id="1415402041810619267">縮短咗網址</translation>
 <translation id="1415855080660575082">讓 Chrome 與你的裝置分享最近使用的分頁，並在裝置應用程式清單和搜尋結果中顯示。你可以在 Chrome 設定中開啟或關閉此功能。</translation>
 <translation id="1420688843103859429">用兩指在觸控板上滑動，即可瀏覽上一個或下一個頁面</translation>
@@ -742,7 +743,6 @@
 <translation id="8676374126336081632">清除輸入</translation>
 <translation id="8681886425883659911">已在網站上封鎖已知的滋擾性或誤導廣告。</translation>
 <translation id="868929229000858085">搜尋您的聯絡人</translation>
-<translation id="8707904142362025782">網站可以要求使用攝錄機</translation>
 <translation id="8712637175834984815">我知道了</translation>
 <translation id="8715862698998036666">從頂端拖曳並從左側或右側輕掃，即可離開全螢幕。</translation>
 <translation id="8716050156658570300">網站可以要求使用動作和光線感應器</translation>

@@ -163,11 +163,13 @@
 <translation id="6589356853295569750">शेअर केलेल्या टॅब गट मधील बदलांविषयी नोटिस पूर्ण उंचीवर उघडली आहे</translation>
 <translation id="6590332670428149473"><ph name="TITLE_OF_GROUP" /> या शेअर केलेल्या टॅब गटासाठी टॅब गट अ‍ॅक्‍शन मेनू उघडा, <ph name="COLOR_NAME" /> रंग.</translation>
 <translation id="6615455863669487791">मला दर्शवा</translation>
+<translation id="6686490380836145850">उजवीकडील टॅब बंद करा</translation>
 <translation id="6694634756612002311">शेअरिंग व्यवस्थापित करा</translation>
 <translation id="6709297274997495821">टॅब निवडा</translation>
 <translation id="6744956528665271406">गटाचा रंग संपादित करा</translation>
 <translation id="6784585810034073638">{TAB_COUNT,plural, =1{<ph name="TITLE_OF_GROUP" /> नावाच्या गटामध्ये <ph name="TAB_COUNT1" /> टॅबसह जोडा}other{<ph name="TITLE_OF_GROUP" /> नावाच्या गटामध्ये <ph name="TAB_COUNT1" /> टॅबसह जोडा}}</translation>
 <translation id="6818926723028410516">आयटम निवडा</translation>
+<translation id="68541483639528434">अन्य टॅब बंद करा</translation>
 <translation id="6856809498882026482">एकाहून अधिक निवड मोड लपवा</translation>
 <translation id="6957436309971790274">२१ दिवस इनॅक्टिव्ह राहिल्यानंतर</translation>
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> टॅब, <ph name="COLOR_NAME" /> रंग वापरून शेअर केलेल्या <ph name="TITLE_OF_GROUP" /> टॅब गटाचा विस्तार करा.}other{<ph name="TABS_COUNT_MANY" /> टॅब, <ph name="COLOR_NAME" /> रंग वापरून शेअर केलेल्या <ph name="TITLE_OF_GROUP" /> टॅब गटाचा विस्तार करा.}}</translation>

@@ -152,6 +152,7 @@
 <translation id="1228893227497259893">ತಪ್ಪಾದ ಅಸ್ತಿತ್ವದ ಗುರುತು</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (ಸ್ವಯಂ-ಪತ್ತೆಹಚ್ಚಲಾಗಿದೆ)</translation>
 <translation id="1232569758102978740">ಶೀರ್ಷಿಕೆರಹಿತ</translation>
+<translation id="1234539281285007945"><ph name="FIELD_1" /> ಅಗತ್ಯವಿದೆ</translation>
 <translation id="1236081509407217141">VR ಅನ್ನು ಅನುಮತಿಸುವುದೇ?</translation>
 <translation id="1236689197410206751">AfterPay</translation>
 <translation id="1240347957665416060">ನಿಮ್ಮ ಸಾಧನದ ಹೆಸರು</translation>
@@ -471,6 +472,7 @@
 <translation id="1721424275792716183">* ಈ ಫೀಲ್ಡ್ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="1723636263173393300">ಈ ನೀತಿಯು <ph name="MAX_ITEMS_LIMIT" /> ಕ್ಕಿಂತ ಹೆಚ್ಚು ಶಾರ್ಟ್‌ಕಟ್‌ಗಳನ್ನು ಹೊಂದಿರಬಾರದು.</translation>
 <translation id="1725591448053514783">ಎನ್ವಲಪ್ ಯು 6</translation>
+<translation id="172754119609519423"><ph name="FIELD_1" />, <ph name="FIELD_2" /> ಅಥವಾ <ph name="FIELD_3" /> ಅಗತ್ಯವಿದೆ</translation>
 <translation id="1727613060316725209">ಪ್ರಮಾಣಪತ್ರ ಮಾನ್ಯವಾಗಿದೆ</translation>
 <translation id="1728677426644403582">ನೀವು ವೆಬ್ ಪುಟದ ಮೂಲವನ್ನು ವೀಕ್ಷಿಸುತ್ತಿರುವಿರಿ</translation>
 <translation id="173080396488393970">ಈ ರೀತಿಯ ಕಾರ್ಡ್‌ಗೆ ಬೆಂಬಲವಿಲ್ಲ</translation>
@@ -1430,6 +1432,7 @@
 <translation id="3220264767789936523">ಸಾಂಪ್ರದಾಯಿಕ ಉಡುಗೆ</translation>
 <translation id="3223287115535306850">ಆ್ಯಪ್ ಬಿಡುಗಡೆ ಥ್ರೋಬರ್</translation>
 <translation id="3223425961342298674">ಸ್ಥಳವನ್ನು ಅನುಮತಿಸಲಾಗಿಲ್ಲ</translation>
+<translation id="3225277284238802910"><ph name="FIELD_1" /> ಅಥವಾ <ph name="FIELD_2" /> ಅಗತ್ಯವಿದೆ</translation>
 <translation id="3225319735946384299">ಕೋಡ್ ಸೈನ್ ಮಾಡುವಿಕೆ</translation>
 <translation id="3225919329040284222">ಆಂತರಿಕ ಮಾನದಂಡಗಳಿಗೆ ಹೊಂದಿಕೆಯಾಗದ ಪ್ರಮಾಣಪತ್ರವನ್ನು ಸರ್ವರ್ ಹಾಜರಿಪಡಿಸಿದೆ. ನಿಮ್ಮ ಸುರಕ್ಷತೆಯ ಸಲುವಾಗಿ ಕೆಲವು ಹೆಚ್ಚು ಸುರಕ್ಷಿತ ವೆಬ್ ಸೈಟ್‌ಗಳಲ್ಲಿ ಈ ಮಾನದಂಡಗಳನ್ನು ಸೇರ್ಪಡೆಗೊಳಿಸಲಾಗಿದೆ.</translation>
 <translation id="3226128629678568754">ಪುಟವನ್ನು ಲೋಡ್ ಮಾಡುವುದಕ್ಕೆ ಅಗತ್ಯವಿರುವ ಡೇಟಾವನ್ನು ಮರುಸಲ್ಲಿಸಲು ಮರುಲೋಡ್ ಬಟನ್ ಒತ್ತಿರಿ.</translation>

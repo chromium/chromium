@@ -37,6 +37,7 @@
 <translation id="1384959399684842514">已暂停下载</translation>
 <translation id="1396327438254055134">允许网站使用 V8 优化工具。</translation>
 <translation id="1409338233051621926">点按“应用”，然后点按“默认应用”</translation>
+<translation id="1414315029670184034">不允许网站使用您的摄像头</translation>
 <translation id="1415402041810619267">网址被截断了</translation>
 <translation id="1415855080660575082">允许 Chrome 与您的设备分享您近期打开的标签页，以便在设备的应用列表和搜索结果中查看这些标签页。您可以在 Chrome 设置中开启或关闭此功能。</translation>
 <translation id="1420688843103859429">在触控板上用两根手指滑动，即可向后/向前导航</translation>
@@ -742,7 +743,6 @@
 <translation id="8676374126336081632">清除输入的内容</translation>
 <translation id="8681886425883659911">在已知会展示侵扰性或误导性广告的网站上屏蔽广告</translation>
 <translation id="868929229000858085">搜索联系人</translation>
-<translation id="8707904142362025782">网站可以请求使用摄像头</translation>
 <translation id="8712637175834984815">知道了</translation>
 <translation id="8715862698998036666">从顶部拖动并从左侧或右侧边缘滑动即可退出全屏模式。</translation>
 <translation id="8716050156658570300">网站可以请求使用移动传感器和光传感器</translation>

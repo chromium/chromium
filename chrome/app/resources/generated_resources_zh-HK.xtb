@@ -703,6 +703,7 @@
 <translation id="1473927070149284123">請再試一次或手動連線至特定網路</translation>
 <translation id="1474785664565228650">Parallels Desktop 需要重新啟動，麥克風設定的變更才會生效。重新啟動 Parallels Desktop 即可繼續。</translation>
 <translation id="1476088332184200792">複製至您的裝置</translation>
+<translation id="1476595624592550506">變更您的密碼</translation>
 <translation id="1476607407192946488">語言設定(&amp;L)</translation>
 <translation id="1477446329585670721"><ph name="DOMAIN" /> 需要您繼續插入智能卡。</translation>
 <translation id="1477654881618305065">您的機構不允許分享此內容。如果您需要協助，請與管理員聯絡。</translation>
@@ -2194,6 +2195,7 @@
 <translation id="2477218554275525952">打開新分頁時保持開啟 Gemini 側欄</translation>
 <translation id="2478176599153288112">「<ph name="EXTENSION" />」的媒體檔案權限</translation>
 <translation id="24786041351753425">啟用資料復原服務。</translation>
+<translation id="2479148705183875116">前往「設定」</translation>
 <translation id="2479541499757560845">無障礙鍵盤設定</translation>
 <translation id="2480868415629598489">修改您複製並貼上的資料</translation>
 <translation id="2480881140544300950">目前管理新分頁的搜尋引擎</translation>
@@ -4706,6 +4708,7 @@
 <translation id="4213918571089943508">子女的 Google 帳戶</translation>
 <translation id="4214192212360095377">立即關閉</translation>
 <translation id="4216407171061541111">你的機構已關閉將分頁儲存到 Google 帳戶的功能</translation>
+<translation id="4216511743389425832">朗讀此頁面內容</translation>
 <translation id="4217571870635786043">語音輸入</translation>
 <translation id="4218081191298393750">按一下「喇叭」圖示即可將此分頁設定為靜音</translation>
 <translation id="4220157655212610908">使用外置安全密鑰</translation>
@@ -5659,6 +5662,7 @@
 <translation id="4881685975363383806">下次不要提醒我</translation>
 <translation id="4881695831933465202">開啟</translation>
 <translation id="4882312758060467256">可以在此網站上執行</translation>
+<translation id="4882805770036405108">透過捷徑更快開啟閱讀模式。按 ⌥ + ⌘ + R 鍵即可切換閱讀模式。</translation>
 <translation id="4882848900607400156">分享精確位置後，Gemini 便可更準確地回答問題。你的資料不會用於改善生成式 AI 模型。</translation>
 <translation id="4882919381756638075">網站通常會使用麥克風來提供視像通訊等通訊功能</translation>
 <translation id="4883436287898674711">所有 <ph name="WEBSITE_1" /> 網站</translation>
@@ -8896,6 +8900,7 @@
 <translation id="7186903260115204164">使用全新「繪圖」工具加入手繪圖、簽名和突顯內容</translation>
 <translation id="7186935534137027449">應用程式指令</translation>
 <translation id="7188508872042490670">裝置上的網站資料</translation>
+<translation id="7188755083797868960">透過捷徑更快開啟閱讀模式。按 Alt + Shift + R 鍵即可切換閱讀模式。</translation>
 <translation id="7189234443051076392">確保您的裝置上有足夠的儲存空間</translation>
 <translation id="7189451821249468368">您沒有足夠升級，無法註冊這部裝置。如要購買更多升級，請與銷售人員聯絡。如果您認為這則訊息有誤，請與支援團隊聯絡。</translation>
 <translation id="7189558282078169397">其他裝置上的分頁</translation>
@@ -9094,7 +9099,6 @@
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="732845903678043302">{BOOKMARK_COUNT,plural, =1{1 個書籤只會儲存至此裝置。如要在其他裝置上使用，請將項目儲存至 Google 帳戶。}other{{BOOKMARK_COUNT} 個書籤只會儲存至此裝置。如要在其他裝置上使用，請將項目儲存至 Google 帳戶。}}</translation>
 <translation id="7328867076235380839">無效的組合</translation>
-<translation id="7329009627557479564">無法上載。檔案超出支援的大小上限。</translation>
 <translation id="7329154610228416156">由於設定使用的網址 (<ph name="BLOCKED_URL" />) 不安全，導致登入失敗。請與您的管理員聯絡。</translation>
 <translation id="7330533963640151632">「<ph name="USER_NAME" />」裝置的「<ph name="FEATURE_NAME" />」設定，所用分享帳戶為 <ph name="USER_EMAIL" />。</translation>
 <translation id="733058866272972585">已禁止此網站使用識別碼來播放受保護的內容。</translation>

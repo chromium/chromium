@@ -163,11 +163,13 @@
 <translation id="6589356853295569750">ಹಂಚಿಕೊಳ್ಳಲಾದ ಟ್ಯಾಬ್ ಗುಂಪು ಬದಲಾವಣೆಗಳ ಕುರಿತ ಸೂಚನೆಯನ್ನು ಪೂರ್ಣ ಎತ್ತರದಲ್ಲಿ ತೆರೆಯಲಾಗಿದೆ</translation>
 <translation id="6590332670428149473">ಹಂಚಿಕೊಳ್ಳಲಾದ ಟ್ಯಾಬ್ ಗುಂಪು <ph name="TITLE_OF_GROUP" />, ಬಣ್ಣ <ph name="COLOR_NAME" /> ಗಾಗಿ ಟ್ಯಾಬ್ ಗುಂಪಿನ ಕ್ರಿಯೆಯ ಮೆನುವನ್ನು ತೆರೆಯಿರಿ.</translation>
 <translation id="6615455863669487791">ನನಗೆ ತೋರಿಸಿ</translation>
+<translation id="6686490380836145850">ಬಲಗಡೆಗೆ ಟ್ಯಾಬ್ ಅನ್ನು ಮುಚ್ಚಿರಿ</translation>
 <translation id="6694634756612002311">ಹಂಚಿಕೊಳ್ಳುವಿಕೆಯನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="6709297274997495821">ಟ್ಯಾಬ್ ಅನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="6744956528665271406">ಗುಂಪಿನ ಬಣ್ಣವನ್ನು ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="6784585810034073638">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT1" /> ಟ್ಯಾಬ್‌ನೊಂದಿಗೆ <ph name="TITLE_OF_GROUP" /> ಎಂದು ಹೆಸರಿಸಲಾದ ಗುಂಪಿಗೆ ಸೇರಿಸಿ}one{<ph name="TAB_COUNT1" /> ಟ್ಯಾಬ್‌ಗಳೊಂದಿಗೆ <ph name="TITLE_OF_GROUP" /> ಎಂದು ಹೆಸರಿಸಲಾದ ಗುಂಪಿಗೆ ಸೇರಿಸಿ}other{<ph name="TAB_COUNT1" /> ಟ್ಯಾಬ್‌ಗಳೊಂದಿಗೆ <ph name="TITLE_OF_GROUP" /> ಎಂದು ಹೆಸರಿಸಲಾದ ಗುಂಪಿಗೆ ಸೇರಿಸಿ}}</translation>
 <translation id="6818926723028410516">ಐಟಂಗಳನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
+<translation id="68541483639528434">ಇತರ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಿ</translation>
 <translation id="6856809498882026482">ಬಹು ಆಯ್ಕೆ ಮೋಡ್ ಅನ್ನು ಮರೆಮಾಡಿ</translation>
 <translation id="6957436309971790274">21 ದಿನಗಳ ನಿಷ್ಕ್ರಿಯತೆಯ ನಂತರ</translation>
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ಟ್ಯಾಬ್ ಅನ್ನು ಹೊಂದಿರುವ, <ph name="COLOR_NAME" /> ಬಣ್ಣದ ಹಂಚಿಕೊಳ್ಳಲಾದ <ph name="TITLE_OF_GROUP" /> ಟ್ಯಾಬ್ ಗುಂಪನ್ನು ವಿಸ್ತರಿಸಿ.}one{<ph name="TABS_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳನ್ನು ಹೊಂದಿರುವ, <ph name="COLOR_NAME" /> ಬಣ್ಣದ ಹಂಚಿಕೊಳ್ಳಲಾದ <ph name="TITLE_OF_GROUP" /> ಟ್ಯಾಬ್ ಗುಂಪನ್ನು ವಿಸ್ತರಿಸಿ.}other{<ph name="TABS_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳನ್ನು ಹೊಂದಿರುವ, <ph name="COLOR_NAME" /> ಬಣ್ಣದ ಹಂಚಿಕೊಳ್ಳಲಾದ <ph name="TITLE_OF_GROUP" /> ಟ್ಯಾಬ್ ಗುಂಪನ್ನು ವಿಸ್ತರಿಸಿ.}}</translation>

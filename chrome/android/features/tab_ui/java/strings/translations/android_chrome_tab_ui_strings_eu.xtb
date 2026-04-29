@@ -163,11 +163,13 @@
 <translation id="6589356853295569750">Partekatutako fitxa taldeetako aldaketei buruzko oharra altuera osoan irekita dago</translation>
 <translation id="6590332670428149473">Ireki <ph name="COLOR_NAME" /> koloreko <ph name="TITLE_OF_GROUP" /> fitxa talde partekatuaren ekintza-menua.</translation>
 <translation id="6615455863669487791">Erakutsi</translation>
+<translation id="6686490380836145850">Itxi eskuineko fitxak</translation>
 <translation id="6694634756612002311">Kudeatu partekatzea</translation>
 <translation id="6709297274997495821">Hautatu fitxa</translation>
 <translation id="6744956528665271406">Editatu taldearen kolorea</translation>
 <translation id="6784585810034073638">{TAB_COUNT,plural, =1{Gehitu <ph name="TITLE_OF_GROUP" /> izena duen eta fitxa <ph name="TAB_COUNT1" /> duen fitxa taldean}other{Gehitu <ph name="TITLE_OF_GROUP" /> izena duen eta <ph name="TAB_COUNT1" /> fitxa dituen fitxa taldean}}</translation>
 <translation id="6818926723028410516">Hautatu elementuak</translation>
+<translation id="68541483639528434">Itxi beste fitxak</translation>
 <translation id="6856809498882026482">Ezkutatu hautespen anizkoitzeko modua</translation>
 <translation id="6957436309971790274">21 egunez inaktibo egon ostean</translation>
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{Zabaldu fitxa <ph name="TABS_COUNT_ONE" /> duen <ph name="TITLE_OF_GROUP" /> fitxa talde partekatu <ph name="COLOR_NAME" />.}other{Zabaldu <ph name="TABS_COUNT_MANY" /> fitxa dituen <ph name="TITLE_OF_GROUP" /> fitxa talde partekatu <ph name="COLOR_NAME" />.}}</translation>

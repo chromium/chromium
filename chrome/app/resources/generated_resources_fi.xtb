@@ -703,6 +703,7 @@ Sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä. Voit päättä
 <translation id="1473927070149284123">Yritä uudelleen tai yhdistä verkkoon manuaalisesti</translation>
 <translation id="1474785664565228650">Mikrofoniasetuksen muutos edellyttää Parallels Desktopin käynnistämistä uudelleen. Käynnistä Parallels Desktop uudelleen jatkaaksesi.</translation>
 <translation id="1476088332184200792">Kopioi laitteelle</translation>
+<translation id="1476595624592550506">Vaihda salasana</translation>
 <translation id="1476607407192946488">&amp;Kieliasetukset</translation>
 <translation id="1477446329585670721"><ph name="DOMAIN" /> ei salli älykortin poistamista.</translation>
 <translation id="1477654881618305065">Organisaatiosi ei salli sinun jakaa tätä sisältöä. Jos tarvitset apua, ota yhteyttä järjestelmänvalvojaasi.</translation>
@@ -2193,6 +2194,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2477218554275525952">Pidä Gemini-sivupaneeli auki, kun avaat uuden välilehden</translation>
 <translation id="2478176599153288112">Mediatiedoston luvat laajennukselle <ph name="EXTENSION" /></translation>
 <translation id="24786041351753425">Ota datan palautuspalvelu käyttöön.</translation>
+<translation id="2479148705183875116">Avaa Asetukset</translation>
 <translation id="2479541499757560845">Saavutettavuusnäppäimistön asetukset</translation>
 <translation id="2480868415629598489">muokata kopioituja ja liitettyjä tietoja</translation>
 <translation id="2480881140544300950">Nykyinen hakukone, joka hallinnoi uutta välilehtisivua</translation>
@@ -4705,6 +4707,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="4213918571089943508">Lapsen Google-tili</translation>
 <translation id="4214192212360095377">Laita pois päältä</translation>
 <translation id="4216407171061541111">Organisaatio on laittanut välilehtien tallentamisen Google-tilille pois päältä</translation>
+<translation id="4216511743389425832">Kuuntele tämä sivu</translation>
 <translation id="4217571870635786043">Sanelu</translation>
 <translation id="4218081191298393750">Mykistä tämä välilehti klikkaamalla kaiutinkuvaketta</translation>
 <translation id="4220157655212610908">Käytä ulkoista suojausavainta</translation>
@@ -5659,6 +5662,7 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="4881685975363383806">Älä muistuta seuraavalla kerralla</translation>
 <translation id="4881695831933465202">Avaa</translation>
 <translation id="4882312758060467256">Saa toimia tällä sivustolla</translation>
+<translation id="4882805770036405108">Avaa lukutila nopeammin pikakuvakkeella. Laita lukutila päälle tai pois päältä painamalla ⌥ + ⌘ + R.</translation>
 <translation id="4882848900607400156">Kun jaat tarkan sijaintisi, Gemini voi vastata kysymyksiin tarkemmin. Dataasi ei käytetä generatiivisten tekoälymallien kehittämiseen.</translation>
 <translation id="4882919381756638075">Sivustot käyttävät mikrofonia yleensä kommunikaatio-ominaisuuksiin, kuten videopuheluihin</translation>
 <translation id="4883436287898674711">Kaikki verkkotunnuksen <ph name="WEBSITE_1" /> sivustot</translation>
@@ -8900,6 +8904,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7186903260115204164">Lisää käsin piirrettyjä kuvia, allekirjoituksia ja korostuksia uudella piirtotyökalulla</translation>
 <translation id="7186935534137027449">Sovelluskomento</translation>
 <translation id="7188508872042490670">Laitepohjainen sivustodata</translation>
+<translation id="7188755083797868960">Avaa lukutila nopeammin pikakuvakkeella. Vaihda lukutilaa painamalla Alt + vaihto + R.</translation>
 <translation id="7189234443051076392">Varmista, että laitteellasi on tarpeeksi tilaa.</translation>
 <translation id="7189451821249468368">Sinulla ei ole tarpeeksi päivityksiä tämän laitteen rekisteröintiä varten. Osta niitä lisää ottamalla yhteyttä myyntitiimiin. Jos sinun ei mielestäsi pitäisi nähdä tätä viestiä, ota yhteyttä tukeen.</translation>
 <translation id="7189558282078169397">Välilehdet muilta laitteilta</translation>
@@ -9098,7 +9103,6 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="732845903678043302">{BOOKMARK_COUNT,plural, =1{1 kirjanmerkki tallennetaan vain tälle laitteelle. Jos haluat käyttää sitä muilla laitteilla, tallenna se Google-tilillesi.}other{{BOOKMARK_COUNT} kirjanmerkkiä tallennetaan vain tälle laitteelle. Jos haluat käyttää niitä muilla laitteilla, tallenna ne Google-tilillesi.}}</translation>
 <translation id="7328867076235380839">Virheellinen yhdistelmä</translation>
-<translation id="7329009627557479564">Ei voi ladata. Tiedosto ylittää suurimman tuetun koon.</translation>
 <translation id="7329154610228416156">Sisäänkirjautuminen epäonnistui, koska se määritettiin käyttämään suojaamatonta URL-osoitetta (<ph name="BLOCKED_URL" />). Ota yhteyttä järjestelmänvalvojaan.</translation>
 <translation id="7330533963640151632">Käyttäjän <ph name="USER_NAME" /> <ph name="FEATURE_NAME" /> ‑asetukset, jaetaan tilillä <ph name="USER_EMAIL" />.</translation>
 <translation id="733058866272972585">Tältä sivustolta on estetty tunnisteiden käyttö suojatun sisällön toistamiseen.</translation>

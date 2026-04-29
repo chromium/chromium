@@ -163,11 +163,13 @@
 <translation id="6589356853295569750">Tam hündürlükdə açılan Paylaşılan Tab Qrupu dəyişiklikləri haqqında bildiriş</translation>
 <translation id="6590332670428149473">Paylaşılan <ph name="TITLE_OF_GROUP" /> tab qrupu (rəng <ph name="COLOR_NAME" />) üçün tab qrupunun əməliyyat menyusunu açın.</translation>
 <translation id="6615455863669487791">Mənə göstərin</translation>
+<translation id="6686490380836145850">Sağ panelləri bağlayın</translation>
 <translation id="6694634756612002311">Paylaşımı idarə edin</translation>
 <translation id="6709297274997495821">Tab seçin</translation>
 <translation id="6744956528665271406">Qrup rəngini redaktə edin</translation>
 <translation id="6784585810034073638">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT1" /> tabı olan <ph name="TITLE_OF_GROUP" /> adlı qrupa əlavə edin}other{<ph name="TAB_COUNT1" /> tabı olan <ph name="TITLE_OF_GROUP" /> adlı qrupa əlavə edin}}</translation>
 <translation id="6818926723028410516">Element seçin</translation>
+<translation id="68541483639528434">Digər tabları qapadın</translation>
 <translation id="6856809498882026482">Çoxsaylı seçim rejimini gizlədin</translation>
 <translation id="6957436309971790274">21 gün qeyri-aktiv olduqdan sonra</translation>
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> tabdan ibarət paylaşılan <ph name="TITLE_OF_GROUP" /> tab qrupunu genişləndirin. Rəng: <ph name="COLOR_NAME" />.}other{<ph name="TABS_COUNT_MANY" /> tabdan ibarət paylaşılan <ph name="TITLE_OF_GROUP" /> tab qrupunu genişləndirin. Rəng: <ph name="COLOR_NAME" />.}}</translation>

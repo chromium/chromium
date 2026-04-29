@@ -163,11 +163,13 @@
 <translation id="6589356853295569750">Известието за промените в споделената група раздели е отворено на пълната височина</translation>
 <translation id="6590332670428149473">Отваряне на менюто с действия за споделената група раздели „<ph name="TITLE_OF_GROUP" />“ с(ъс) <ph name="COLOR_NAME" /> цвят</translation>
 <translation id="6615455863669487791">Покажете ми</translation>
+<translation id="6686490380836145850">Затваряне на разделите отдясно</translation>
 <translation id="6694634756612002311">Управление на споделянето</translation>
 <translation id="6709297274997495821">Избиране на раздел</translation>
 <translation id="6744956528665271406">Редактиране на цвета на групата</translation>
 <translation id="6784585810034073638">{TAB_COUNT,plural, =1{Добавяне към групата „<ph name="TITLE_OF_GROUP" />“ с <ph name="TAB_COUNT1" /> раздел}other{Добавяне към групата „<ph name="TITLE_OF_GROUP" />“ с(ъс) <ph name="TAB_COUNT1" /> раздела}}</translation>
 <translation id="6818926723028410516">Избор на елементи</translation>
+<translation id="68541483639528434">Затваряне на другите раздели</translation>
 <translation id="6856809498882026482">Изход от режима за избор на няколко раздела</translation>
 <translation id="6957436309971790274">След 21 дни неактивност</translation>
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{Разгъване на споделената група раздели „<ph name="TITLE_OF_GROUP" />“ с(ъс) <ph name="COLOR_NAME" /> цвят, в която има <ph name="TABS_COUNT_ONE" /> раздел.}other{Разгъване на споделената група раздели „<ph name="TITLE_OF_GROUP" />“ с(ъс) <ph name="COLOR_NAME" /> цвят, в която има <ph name="TABS_COUNT_MANY" /> раздела.}}</translation>

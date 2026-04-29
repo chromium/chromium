@@ -163,11 +163,13 @@
 <translation id="6589356853295569750">Хуваалцсан табын бүлгийн өөрчлөлтийн талаарх мэдэгдлийг бүтэн өндрөөр нээсэн</translation>
 <translation id="6590332670428149473">Табын бүлгийн үйлдлийн цэсийг <ph name="COLOR_NAME" /> өнгөтэй, хуваалцсан <ph name="TITLE_OF_GROUP" /> табын бүлэгт зориулж нээнэ үү.</translation>
 <translation id="6615455863669487791">Надад үзүүлнэ үү</translation>
+<translation id="6686490380836145850">Цонхнуудыг баруун тийш нь хаах</translation>
 <translation id="6694634756612002311">Хуваалцахыг удирдах</translation>
 <translation id="6709297274997495821">Таб сонгоно уу</translation>
 <translation id="6744956528665271406">Бүлгийн өнгийг засах</translation>
 <translation id="6784585810034073638">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT1" /> табтай <ph name="TITLE_OF_GROUP" /> нэртэй бүлэгт нэмнэ үү}other{<ph name="TAB_COUNT1" /> табтай <ph name="TITLE_OF_GROUP" /> нэртэй бүлэгт нэмнэ үү}}</translation>
 <translation id="6818926723028410516">Зүйл сонгох</translation>
+<translation id="68541483639528434">Бусад tab-г хаах</translation>
 <translation id="6856809498882026482">Олон сонголттой горимыг нуух</translation>
 <translation id="6957436309971790274">21 хоног идэвхгүй байсны дараа</translation>
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> табтай, <ph name="COLOR_NAME" /> өнгөтэй хуваалцсан <ph name="TITLE_OF_GROUP" /> нэртэй табын бүлгийг дэлгэх.}other{<ph name="TABS_COUNT_MANY" /> табтай, <ph name="COLOR_NAME" /> өнгөтэй хуваалцсан <ph name="TITLE_OF_GROUP" /> нэртэй табын бүлгийг дэлгэх.}}</translation>

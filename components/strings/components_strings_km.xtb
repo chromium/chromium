@@ -153,6 +153,7 @@
 <translation id="1228893227497259893">ឧបករណ៍សម្គាល់ស្ថាប័នមិនត្រឹមត្រូវ</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (រក​ឃើញ​ស្វ័យប្រវត្តិ)</translation>
 <translation id="1232569758102978740">គ្មានចំណងជើង</translation>
+<translation id="1234539281285007945">តម្រូវឱ្យ​បញ្ចូល<ph name="FIELD_1" /></translation>
 <translation id="1236081509407217141">អនុញ្ញាត VR ឬ?</translation>
 <translation id="1236689197410206751">AfterPay</translation>
 <translation id="1240347957665416060">ឈ្មោះឧបករណ៍​របស់អ្នក</translation>
@@ -473,6 +474,7 @@
 <translation id="1721424275792716183">* តម្រូវឲ្យបំពេញ</translation>
 <translation id="1723636263173393300">គោលការណ៍នេះ​មិនគួរ​មាន​ផ្លូវ​កាត់​ច្រើនជាង <ph name="MAX_ITEMS_LIMIT" /> ទេ។</translation>
 <translation id="1725591448053514783">ស្រោមសំបុត្រ You 6</translation>
+<translation id="172754119609519423">តម្រូវឱ្យ​បំពេញ<ph name="FIELD_1" /> <ph name="FIELD_2" /> ឬ<ph name="FIELD_3" /></translation>
 <translation id="1727613060316725209">វិញ្ញាបនបត្រ​មានសុពលភាព</translation>
 <translation id="1728677426644403582">អ្នក​កំពុងមើល​ប្រភព​របស់គេហទំព័រ</translation>
 <translation id="173080396488393970">មិនស្គាល់បណ្ណប្រភេទនេះទេ</translation>
@@ -1435,6 +1437,7 @@
 <translation id="3220264767789936523">សម្លៀកបំពាក់​ផ្លូវការ</translation>
 <translation id="3223287115535306850">រូបកំពុងដំណើរការនៃការចាប់ផ្ដើមកម្មវិធី</translation>
 <translation id="3223425961342298674">មិនបានអនុញ្ញាតឱ្យប្រើទីតាំងទេ</translation>
+<translation id="3225277284238802910">តម្រូវឱ្យ​បំពេញ<ph name="FIELD_1" /> ឬ<ph name="FIELD_2" /></translation>
 <translation id="3225319735946384299">ការចុះហត្ថលេខាជាលេខកូដ</translation>
 <translation id="3225919329040284222">ម៉ាស៊ីនមេនេះបានបង្ហាញទិន្នន័យដែលមិនត្រូវគ្នាជាមួយការរំពឺងដែលភ្ជាប់ជាមួយ។ ការរំពឹងទុកទាំងនេះរាប់បញ្ចូលទាំងគេហទំព័រសុវត្ថិភាពខ្ពស់ជាក់លាក់ដើម្បីការពារអ្នក។</translation>
 <translation id="3226128629678568754">ចុចប៊ូតុងដំណើរការឡើងវិញដើម្បីដាក់ស្នើទិន្នន័យដែលត្រូវការឡើងវិញដើម្បីដំណើរការទំព័រនេះ។</translation>

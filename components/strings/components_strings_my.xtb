@@ -152,6 +152,7 @@
 <translation id="1228893227497259893">မှားယွင်းသည့် အဆောက်အဦး မည်သူမည်ဝါဖြစ်ကြောင်း ဖော်ထုတ်ကိရိယာ</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (အလိုအလျောက် သိရှိသည်)</translation>
 <translation id="1232569758102978740">ခေါင်းစဉ်မဲ့</translation>
+<translation id="1234539281285007945"><ph name="FIELD_1" /> လိုအပ်သည်</translation>
 <translation id="1236081509407217141">VR ကို ခွင့်ပြုမလား။</translation>
 <translation id="1236689197410206751">AfterPay</translation>
 <translation id="1240347957665416060">သင့်စက်၏ အမည်</translation>
@@ -472,6 +473,7 @@
 <translation id="1721424275792716183">* ပြထားသော အကွက်ကို ဖြည့်ရန်လိုသည်</translation>
 <translation id="1723636263173393300">ဤမူဝါဒတွင် ဖြတ်လမ်းလင့်ခ် <ph name="MAX_ITEMS_LIMIT" /> ခုထက် မပိုရပါ။</translation>
 <translation id="1725591448053514783">You 6 စာအိတ်</translation>
+<translation id="172754119609519423"><ph name="FIELD_1" />၊ <ph name="FIELD_2" /> (သို့) <ph name="FIELD_3" /> လိုအပ်သည်</translation>
 <translation id="1727613060316725209">အသိအမှတ်ပြုလက်မှတ် မှန်ကန်သည်</translation>
 <translation id="1728677426644403582">ဝဘ်စာမျက်နှာ၏ အရင်းအမြစ်တစ်ခုကို သင်ကြည့်ရှုနေခြင်းဖြစ်သည်</translation>
 <translation id="173080396488393970">ဤကဒ်အမျိုးအစားကို လက်မခံပါ</translation>
@@ -1434,6 +1436,7 @@
 <translation id="3220264767789936523">အခမ်းအနားတက် ဝတ်စုံ</translation>
 <translation id="3223287115535306850">အက်ပ်ဖွင့်နေကြောင်းပြသော လည်နေသည့်သင်္ကေတ</translation>
 <translation id="3223425961342298674">တည်နေရာ ခွင့်ပြုမထားပါ</translation>
+<translation id="3225277284238802910"><ph name="FIELD_1" /> (သို့) <ph name="FIELD_2" /> လိုအပ်သည်</translation>
 <translation id="3225319735946384299">ကုဒ်ဖြင့် လက်မှတ်ထိုးရန်</translation>
 <translation id="3225919329040284222">ဆာဗာက ပြသခဲ့သည့် လက်မှတ်မှာ တပ်ဆင်ထားသည့် မျှော်လင့်ချက်များနှင့် မတိုက်ဆိုင်ပါ။ ယင်း မျှော်လင့်ချက်များမှာ သင့်ကို ကာကွယ်ပေးရန် အတွက် အဆင့်မြင့် လုံခြုံမှု ရှိကြသည့် ဝက်ဘ်ဆိုက်များကို ရည်ရွယ် ထည့်သွင်းထားပါသည်။</translation>
 <translation id="3226128629678568754">စာမျက်နှာကိုဖွင့်ရန် လိုအပ်သည့်အချက်အလက်များအား ပြန်လည်တင်ပြရန် ပြန်ဖွင့်ခလုတ်ကို နှိပ်ပါ။</translation>

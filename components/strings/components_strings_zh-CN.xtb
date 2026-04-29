@@ -152,6 +152,7 @@
 <translation id="1228893227497259893">实体标识符有误</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" />（自动检测）</translation>
 <translation id="1232569758102978740">无标题</translation>
+<translation id="1234539281285007945">“<ph name="FIELD_1" />”是必填项</translation>
 <translation id="1236081509407217141">允许 VR？</translation>
 <translation id="1236689197410206751">AfterPay</translation>
 <translation id="1240347957665416060">您的设备名称</translation>
@@ -472,6 +473,7 @@
 <translation id="1721424275792716183">标有“*”的字段均是必填字段</translation>
 <translation id="1723636263173393300">此政策最多只能包含 <ph name="MAX_ITEMS_LIMIT" /> 个快捷方式。</translation>
 <translation id="1725591448053514783">You 6 信封</translation>
+<translation id="172754119609519423">“<ph name="FIELD_1" />”“<ph name="FIELD_2" />”或“<ph name="FIELD_3" />”是必填项</translation>
 <translation id="1727613060316725209">证书有效</translation>
 <translation id="1728677426644403582">您正在查看网页的源代码</translation>
 <translation id="173080396488393970">此信用卡类型不受支持</translation>
@@ -1430,6 +1432,7 @@
 <translation id="3220264767789936523">正装</translation>
 <translation id="3223287115535306850">“应用正在启动”图标</translation>
 <translation id="3223425961342298674">已拒绝授予位置信息使用权限</translation>
+<translation id="3225277284238802910">“<ph name="FIELD_1" />”或“<ph name="FIELD_2" />”是必填项</translation>
 <translation id="3225319735946384299">代码签名</translation>
 <translation id="3225919329040284222">服务器提供的证书与内置预期证书不匹配。这些预期证书是针对某些高安全性网站提供的，以便为您提供保护。</translation>
 <translation id="3226128629678568754">按“重新加载”按钮，重新提交加载该网页所需的数据。</translation>

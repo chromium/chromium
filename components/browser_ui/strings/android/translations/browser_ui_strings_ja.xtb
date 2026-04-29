@@ -37,6 +37,7 @@
 <translation id="1384959399684842514">ダウンロードを一時停止しました</translation>
 <translation id="1396327438254055134">V8 オプティマイザーの使用を許可するサイトを指定します。</translation>
 <translation id="1409338233051621926">[アプリ]、[デフォルトのアプリ] をタップします</translation>
+<translation id="1414315029670184034">サイトにカメラの使用を許可しない</translation>
 <translation id="1415402041810619267">URL の短縮バージョンです</translation>
 <translation id="1415855080660575082">Chrome で最近使ったタブをデバイスと共有して、デバイスのアプリリストと検索結果に表示できます。この機能は Chrome の設定でオンまたはオフにできます。</translation>
 <translation id="1420688843103859429">タッチパッドを 2 本の指でスワイプして前後に移動します</translation>
@@ -742,7 +743,6 @@
 <translation id="8676374126336081632">入力内容を消去</translation>
 <translation id="8681886425883659911">煩わしい広告や誤解を招く広告が表示されることがわかっているサイトで広告がブロックされます</translation>
 <translation id="868929229000858085">連絡先を検索</translation>
-<translation id="8707904142362025782">サイトがカメラへのアクセスを要求できるようにする</translation>
 <translation id="8712637175834984815">理解しました</translation>
 <translation id="8715862698998036666">全画面表示を終了するには、上からドラッグして、左端または右端からスワイプします。</translation>
 <translation id="8716050156658570300">サイトがモーション センサーと光センサーの使用を要求できるようにする</translation>

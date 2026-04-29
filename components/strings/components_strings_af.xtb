@@ -152,6 +152,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="1228893227497259893">Verkeerde entiteit-identifiseerder</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (outobespeur)</translation>
 <translation id="1232569758102978740">Titelloos</translation>
+<translation id="1234539281285007945"><ph name="FIELD_1" /> word vereis</translation>
 <translation id="1236081509407217141">Laat VR toe?</translation>
 <translation id="1236689197410206751">AfterPay</translation>
 <translation id="1240347957665416060">Jou toestelnaam</translation>
@@ -472,6 +473,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="1721424275792716183">* Veld word vereis</translation>
 <translation id="1723636263173393300">Hierdie beleid moenie meer as <ph name="MAX_ITEMS_LIMIT" /> kortpaaie hê nie.</translation>
 <translation id="1725591448053514783">Koevert You 6</translation>
+<translation id="172754119609519423"><ph name="FIELD_1" />, <ph name="FIELD_2" /> of <ph name="FIELD_3" /> word vereis</translation>
 <translation id="1727613060316725209">Sertifikaat is geldig</translation>
 <translation id="1728677426644403582">Jy bekyk tans die bron van 'n webbladsy</translation>
 <translation id="173080396488393970">Hierdie tipe kaart word nie gesteun nie</translation>
@@ -1432,6 +1434,7 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="3220264767789936523">Formele drag</translation>
 <translation id="3223287115535306850">Geanimeerde programlaai-ikoon</translation>
 <translation id="3223425961342298674">Ligging nie toegelaat nie</translation>
+<translation id="3225277284238802910"><ph name="FIELD_1" /> of <ph name="FIELD_2" /> word vereis</translation>
 <translation id="3225319735946384299">Kode-ondertekening</translation>
 <translation id="3225919329040284222">Die bediener het 'n sertifikaat voorgehou wat nie ooreenstem met ingeboude verwagtinge nie. Hierdie verwagtinge is vir sekere hoësekerheidwebwerwe ingesluit om jou te beskerm.</translation>
 <translation id="3226128629678568754">Druk die herlaaiknoppie om die data wat benodig word om die bladsy te laai, weer in te dien.</translation>

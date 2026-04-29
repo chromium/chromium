@@ -163,11 +163,13 @@
 <translation id="6589356853295569750">ההודעה על השינויים בקבוצת הכרטיסיות המשותפת נפתחה בגובה מלא</translation>
 <translation id="6590332670428149473">פתיחה של תפריט הפעולות בקבוצת הכרטיסיות המשותפת <ph name="TITLE_OF_GROUP" />, בצבע <ph name="COLOR_NAME" />.</translation>
 <translation id="6615455863669487791">איך עושים את זה?</translation>
+<translation id="6686490380836145850">סגירת הכרטיסיות מימין</translation>
 <translation id="6694634756612002311">ניהול אפשרויות השיתוף</translation>
 <translation id="6709297274997495821">בחירה בכרטיסייה</translation>
 <translation id="6744956528665271406">שינוי הצבע של הקבוצה</translation>
 <translation id="6784585810034073638">{TAB_COUNT,plural, =1{הוספה לקבוצה בשם <ph name="TITLE_OF_GROUP" /> עם כרטיסייה אחת (<ph name="TAB_COUNT1" />)}one{הוספה לקבוצה בשם <ph name="TITLE_OF_GROUP" /> עם <ph name="TAB_COUNT1" /> כרטיסיות}two{הוספה לקבוצה בשם <ph name="TITLE_OF_GROUP" /> עם <ph name="TAB_COUNT1" /> כרטיסיות}other{הוספה לקבוצה בשם <ph name="TITLE_OF_GROUP" /> עם <ph name="TAB_COUNT1" /> כרטיסיות}}</translation>
 <translation id="6818926723028410516">בחירת פריטים</translation>
+<translation id="68541483639528434">סגירת כרטיסיות אחרות</translation>
 <translation id="6856809498882026482">הסתרת מצב הבחירה המרובה</translation>
 <translation id="6957436309971790274">אחרי 21 ימים ללא פעילות</translation>
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{הרחבה של קבוצת הכרטיסיות המשותפת <ph name="TITLE_OF_GROUP" /> שמכילה כרטיסייה אחת (<ph name="TABS_COUNT_ONE" />), בצבע <ph name="COLOR_NAME" />.}one{הרחבה של קבוצת הכרטיסיות המשותפת <ph name="TITLE_OF_GROUP" /> שמכילה <ph name="TABS_COUNT_MANY" /> כרטיסיות, בצבע <ph name="COLOR_NAME" />.}two{הרחבה של קבוצת הכרטיסיות המשותפת <ph name="TITLE_OF_GROUP" /> שמכילה <ph name="TABS_COUNT_MANY" /> כרטיסיות, בצבע <ph name="COLOR_NAME" />.}other{הרחבה של קבוצת הכרטיסיות המשותפת <ph name="TITLE_OF_GROUP" /> שמכילה <ph name="TABS_COUNT_MANY" /> כרטיסיות, בצבע <ph name="COLOR_NAME" />.}}</translation>

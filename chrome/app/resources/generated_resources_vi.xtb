@@ -703,6 +703,7 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="1473927070149284123">Hãy thử lại hoặc kết nối mạng theo cách thủ công</translation>
 <translation id="1474785664565228650">Bạn cần chạy lại ứng dụng Parallels Desktop để thay đổi tùy chọn cài đặt micrô. Hãy chạy lại ứng dụng Parallels Desktop để tiếp tục.</translation>
 <translation id="1476088332184200792">Sao chép vào Thiết bị của bạn</translation>
+<translation id="1476595624592550506">Thay đổi mật khẩu của bạn</translation>
 <translation id="1476607407192946488">&amp;Cài đặt ngôn ngữ</translation>
 <translation id="1477446329585670721"><ph name="DOMAIN" /> yêu cầu bạn không tháo thẻ thông minh.</translation>
 <translation id="1477654881618305065">Tổ chức của bạn không cho phép bạn chia sẻ nội dung này. Nếu bạn cần trợ giúp, hãy liên hệ với quản trị viên của mình.</translation>
@@ -2194,6 +2195,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2477218554275525952">Vẫn mở thanh bên Gemini khi bạn mở một thẻ mới</translation>
 <translation id="2478176599153288112">Quyền của tệp phương tiện cho "<ph name="EXTENSION" />"</translation>
 <translation id="24786041351753425">Bật dịch vụ khôi phục dữ liệu.</translation>
+<translation id="2479148705183875116">Chuyển đến phần Cài đặt</translation>
 <translation id="2479541499757560845">Cài đặt bàn phím hỗ trợ tiếp cận</translation>
 <translation id="2480868415629598489">Sửa đổi dữ liệu bạn sao chép và dán</translation>
 <translation id="2480881140544300950">Công cụ tìm kiếm hiện đang quản lý trang thẻ mới</translation>
@@ -4709,6 +4711,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4213918571089943508">Tài khoản Google của trẻ</translation>
 <translation id="4214192212360095377">Tắt ngay</translation>
 <translation id="4216407171061541111">Tổ chức của bạn đã tắt tính năng lưu thẻ vào Tài khoản Google</translation>
+<translation id="4216511743389425832">Đọc trang này</translation>
 <translation id="4217571870635786043">Nhập bằng giọng nói</translation>
 <translation id="4218081191298393750">Nhấp vào biểu tượng loa để tắt tiếng thẻ này</translation>
 <translation id="4220157655212610908">Dùng khoá bảo mật bên ngoài</translation>
@@ -9104,7 +9107,6 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="732845903678043302">{BOOKMARK_COUNT,plural, =1{Có 1 dấu trang chỉ được lưu trên thiết bị này. Để sử dụng dấu trang này trên các thiết bị khác, hãy lưu dấu trang vào Tài khoản Google của bạn.}other{Có {BOOKMARK_COUNT} dấu trang chỉ được lưu trên thiết bị này. Để sử dụng những dấu trang này trên các thiết bị khác, hãy lưu dấu trang vào Tài khoản Google của bạn.}}</translation>
 <translation id="7328867076235380839">Tổ hợp phím không hợp lệ</translation>
-<translation id="7329009627557479564">Không tải lên được. Tệp vượt quá kích thước tối đa được hỗ trợ.</translation>
 <translation id="7329154610228416156">Đăng nhập không thành công vì đã được định cấu hình sử dụng URL không an toàn (<ph name="BLOCKED_URL" />). Vui lòng liên hệ với quản trị viên của bạn.</translation>
 <translation id="7330533963640151632">Các chế độ cài đặt <ph name="FEATURE_NAME" /> cho thiết bị của <ph name="USER_NAME" />, chia sẻ bằng tài khoản <ph name="USER_EMAIL" />.</translation>
 <translation id="733058866272972585">Trang web này đã bị chặn dùng giá trị nhận dạng để phát nội dung được bảo vệ.</translation>
@@ -10764,7 +10766,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8458627787104127436">Mở tất cả (<ph name="URL_COUNT" />) trong cửa sổ mới</translation>
 <translation id="8459023460357294721">Vẫn mở <ph name="FILE_NAME" /></translation>
 <translation id="8459333762072051247">Trạng thái đăng nhập</translation>
-<translation id="8460448946170646641">Xem xét các chế độ kiểm soát quan trọng đối với quyền riêng tư và tính bảo mật</translation>
+<translation id="8460448946170646641">Xem xét các chế độ kiểm soát quan trọng đối với quyền riêng tư và bảo mật</translation>
 <translation id="8460490661223303637">Chrome đã xóa một số nội dung để tiết kiệm bộ nhớ</translation>
 <translation id="8460932807646981183">Quản lý các công cụ tìm kiếm và tính năng tìm kiếm trong trang web</translation>
 <translation id="8461914792118322307">Proxy</translation>

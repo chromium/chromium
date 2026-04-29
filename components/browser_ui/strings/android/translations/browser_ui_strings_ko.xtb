@@ -37,6 +37,7 @@
 <translation id="1384959399684842514">다운로드 일시중지됨</translation>
 <translation id="1396327438254055134">사이트에서 V8 옵티마이저를 사용하도록 허용합니다.</translation>
 <translation id="1409338233051621926">앱을 탭한 다음 기본 앱을 탭합니다</translation>
+<translation id="1414315029670184034">사이트에서 카메라를 사용하도록 허용하지 않음</translation>
 <translation id="1415402041810619267">URL 잘림</translation>
 <translation id="1415855080660575082">Chrome에서 내 기기와 최근 탭을 공유하도록 허용하면 기기의 앱 목록과 검색 결과에서 최근 탭을 볼 수 있습니다. 이 기능은 Chrome 설정에서 사용 또는 사용 중지할 수 있습니다.</translation>
 <translation id="1420688843103859429">터치패드에서 두 손가락으로 스와이프하여 앞뒤로 이동</translation>
@@ -742,7 +743,6 @@
 <translation id="8676374126336081632">입력내용 지우기</translation>
 <translation id="8681886425883659911">방해가 되거나 사용자를 현혹하는 광고를 표시하는 것으로 알려진 사이트에서 광고가 차단됩니다.</translation>
 <translation id="868929229000858085">연락처 검색</translation>
-<translation id="8707904142362025782">사이트에서 카메라를 요청할 수 있음</translation>
 <translation id="8712637175834984815">확인</translation>
 <translation id="8715862698998036666">전체 화면을 종료하려면 위에서 드래그하고 왼쪽 또는 오른쪽 가장자리에서 스와이프하세요.</translation>
 <translation id="8716050156658570300">사이트에서 움직임 감지 센서 및 조도 센서를 사용하도록 요청할 수 있음</translation>

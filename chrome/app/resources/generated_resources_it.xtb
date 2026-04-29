@@ -77,7 +77,7 @@
 <translation id="1047431265488717055">Copia testo del lin&amp;k</translation>
 <translation id="1048986595386481879">Allocazione dinamica</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{Ricezione di <ph name="ATTACHMENTS" /> dal dispositivo <ph name="DEVICE_NAME" />}other{Ricezione di <ph name="ATTACHMENTS" /> dal dispositivo <ph name="DEVICE_NAME" />}}</translation>
-<translation id="1049743911850919806">In incognito</translation>
+<translation id="1049743911850919806">Incognito</translation>
 <translation id="1049795001945932310">&amp;Impostazioni lingua</translation>
 <translation id="1050693411695664090">Scadente</translation>
 <translation id="1053226848101751430">Voce eliminata</translation>
@@ -702,6 +702,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1473927070149284123">Riprova o connettiti manualmente a una rete</translation>
 <translation id="1474785664565228650">La modifica dell'impostazione del microfono richiede il riavvio di Parallels Desktop. Riavvia Parallels Desktop per continuare.</translation>
 <translation id="1476088332184200792">Copia sul tuo dispositivo</translation>
+<translation id="1476595624592550506">Cambia la password</translation>
 <translation id="1476607407192946488">&amp;Impostazioni lingua</translation>
 <translation id="1477446329585670721"><ph name="DOMAIN" /> richiede di lasciare la smart card inserita.</translation>
 <translation id="1477654881618305065">La tua organizzazione non ti consente di condividere questo contenuto. Se hai bisogno di assistenza, contatta l'amministratore.</translation>
@@ -2180,6 +2181,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2477218554275525952">Mantieni aperta la barra laterale di Gemini quando apri una nuova scheda</translation>
 <translation id="2478176599153288112">Autorizzazioni file multimediali per "<ph name="EXTENSION" />"</translation>
 <translation id="24786041351753425">Attiva il servizio di recupero dati</translation>
+<translation id="2479148705183875116">Vai a Impostazioni</translation>
 <translation id="2479541499757560845">Impostazioni della tastiera di accessibilità</translation>
 <translation id="2480868415629598489">Modifica dei dati copiati e incollati</translation>
 <translation id="2480881140544300950">Motore di ricerca corrente che gestisce la pagina Nuova scheda</translation>
@@ -4695,6 +4697,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4213918571089943508">Account Google di tuo figlio</translation>
 <translation id="4214192212360095377">Disattiva ora</translation>
 <translation id="4216407171061541111">La tua organizzazione ha disattivato il salvataggio delle schede nel tuo Account Google</translation>
+<translation id="4216511743389425832">Ascolta questa pagina</translation>
 <translation id="4217571870635786043">Dettatura</translation>
 <translation id="4218081191298393750">Fai clic sull'icona dell'altoparlante per disattivare l'audio di questa scheda</translation>
 <translation id="4220157655212610908">Usa un token di sicurezza esterno</translation>
@@ -5648,6 +5651,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="4881685975363383806">Non visualizzare più il promemoria</translation>
 <translation id="4881695831933465202">Apri</translation>
 <translation id="4882312758060467256">Ha accesso a questo sito</translation>
+<translation id="4882805770036405108">Apri la modalità Lettura più velocemente con una scorciatoia. Premi ⌥ + ⌘ + R per attivare/disattivare la modalità Lettura.</translation>
 <translation id="4882848900607400156">Se condividi la tua posizione esatta, Gemini può rispondere alle tue domande in modo più accurato. I tuoi dati non vengono usati per migliorare i modelli di AI generativa.</translation>
 <translation id="4882919381756638075">In genere, i siti usano il microfono per funzionalità di comunicazione come la chat video</translation>
 <translation id="4883436287898674711">Tutti i siti <ph name="WEBSITE_1" /></translation>
@@ -8886,6 +8890,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7186903260115204164">Aggiungi disegni a mano libera, firme ed evidenziazioni con il nuovo strumento Disegna</translation>
 <translation id="7186935534137027449">Comando app</translation>
 <translation id="7188508872042490670">Dati dei siti sul dispositivo</translation>
+<translation id="7188755083797868960">Apri la modalità Lettura più velocemente con una scorciatoia. Premi Alt + Maiusc + R per attivare/disattivare la modalità Lettura.</translation>
 <translation id="7189234443051076392">Assicurati di avere spazio sufficiente sul dispositivo</translation>
 <translation id="7189451821249468368">Non disponi di licenze Upgrade sufficienti per registrare questo dispositivo. Contatta l'ufficio vendite per acquistarne altre. Se ritieni che questo messaggio sia stato visualizzato per sbaglio, contatta l'assistenza.</translation>
 <translation id="7189558282078169397">Schede di altri dispositivi</translation>
@@ -9084,7 +9089,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="732845903678043302">{BOOKMARK_COUNT,plural, =1{1 preferito è salvato solo su questo dispositivo. Per usarlo sugli altri dispositivi, salvalo nel tuo Account Google.}other{{BOOKMARK_COUNT} preferiti sono salvati solo su questo dispositivo. Per usarli sugli altri dispositivi, salvali nel tuo Account Google.}}</translation>
 <translation id="7328867076235380839">Combinazione non valida</translation>
-<translation id="7329009627557479564">Caricamento non riuscito. Il file supera le dimensioni massime supportate.</translation>
 <translation id="7329154610228416156">Accesso non riuscito perché è stato configurato l'utilizzo di un URL non protetto (<ph name="BLOCKED_URL" />). Contatta l'amministratore.</translation>
 <translation id="7330533963640151632">Impostazioni di <ph name="FEATURE_NAME" /> per il dispositivo di <ph name="USER_NAME" />, condivisione con l'account <ph name="USER_EMAIL" />.</translation>
 <translation id="733058866272972585">A questo sito è stato impedito l'uso di identificatori per riprodurre contenuti protetti.</translation>

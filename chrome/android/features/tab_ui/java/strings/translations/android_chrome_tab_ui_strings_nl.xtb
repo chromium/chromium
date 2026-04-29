@@ -163,11 +163,13 @@
 <translation id="6589356853295569750">Kennisgeving over wijzigingen in gedeelde tabbladgroepen is op volledige hoogte geopend</translation>
 <translation id="6590332670428149473">Het actiemenu van de tabbladgroep openen voor de gedeelde tabbladgroep <ph name="TITLE_OF_GROUP" />, kleur <ph name="COLOR_NAME" />.</translation>
 <translation id="6615455863669487791">Tonen</translation>
+<translation id="6686490380836145850">Tabbladen aan de rechterkant sluiten</translation>
 <translation id="6694634756612002311">Delen beheren</translation>
 <translation id="6709297274997495821">Tabblad selecteren</translation>
 <translation id="6744956528665271406">Groepskleur bewerken</translation>
 <translation id="6784585810034073638">{TAB_COUNT,plural, =1{Toevoegen aan groep met de naam <ph name="TITLE_OF_GROUP" /> met <ph name="TAB_COUNT1" /> tabblad}other{Toevoegen aan groep met de naam <ph name="TITLE_OF_GROUP" /> met <ph name="TAB_COUNT1" /> tabbladen}}</translation>
 <translation id="6818926723028410516">Items selecteren</translation>
+<translation id="68541483639528434">Andere tabbladen sluiten</translation>
 <translation id="6856809498882026482">Optie om meerdere tabbladen te selecteren verbergen</translation>
 <translation id="6957436309971790274">Na 21 dagen inactiviteit</translation>
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{Gedeelde tabbladgroep <ph name="TITLE_OF_GROUP" /> met <ph name="TABS_COUNT_ONE" /> tabblad uitvouwen, kleur <ph name="COLOR_NAME" />.}other{Gedeelde tabbladgroep <ph name="TITLE_OF_GROUP" /> met <ph name="TABS_COUNT_MANY" /> tabbladen uitvouwen, kleur <ph name="COLOR_NAME" />.}}</translation>

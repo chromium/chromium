@@ -163,11 +163,13 @@
 <translation id="6589356853295569750">共有タブグループの変更に関する通知が画面全体に表示されています</translation>
 <translation id="6590332670428149473">共有タブグループ <ph name="TITLE_OF_GROUP" />、色 <ph name="COLOR_NAME" /> のタブグループ操作メニューを開く</translation>
 <translation id="6615455863669487791">表示</translation>
+<translation id="6686490380836145850">右側のタブを閉じる</translation>
 <translation id="6694634756612002311">共有の管理</translation>
 <translation id="6709297274997495821">タブを選択</translation>
 <translation id="6744956528665271406">グループの色を編集</translation>
 <translation id="6784585810034073638">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT1" /> 個のタブがある「<ph name="TITLE_OF_GROUP" />」グループに追加します}other{<ph name="TAB_COUNT1" /> 個のタブがある「<ph name="TITLE_OF_GROUP" />」グループに追加します}}</translation>
 <translation id="6818926723028410516">アイテムを選択</translation>
+<translation id="68541483639528434">他のタブをすべて閉じる</translation>
 <translation id="6856809498882026482">複数選択モードを非表示にします</translation>
 <translation id="6957436309971790274">アクティブでない状態で 21 日経過</translation>
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{共有タブグループ <ph name="TITLE_OF_GROUP" />（タブの数: <ph name="TABS_COUNT_ONE" />、色: <ph name="COLOR_NAME" />）を開きます。}other{共有タブグループ <ph name="TITLE_OF_GROUP" />（タブの数: <ph name="TABS_COUNT_MANY" />、色: <ph name="COLOR_NAME" />）を開きます。}}</translation>

@@ -703,6 +703,7 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1473927070149284123">Försök igen eller anslut till ett nätverk manuellt</translation>
 <translation id="1474785664565228650">Ändringen av mikrofoninställning kräver att Parallels Desktop startas om. Starta om Parallels Desktop för att fortsätta.</translation>
 <translation id="1476088332184200792">Kopiera till din enhet</translation>
+<translation id="1476595624592550506">Ändra lösenordet</translation>
 <translation id="1476607407192946488">&amp;Språkinställningar</translation>
 <translation id="1477446329585670721"><ph name="DOMAIN" /> kräver att du har smartkortet isatt.</translation>
 <translation id="1477654881618305065">Organisationen tillåter inte att du delar innehållet. Kontakta administratören om du behöver hjälp.</translation>
@@ -2194,6 +2195,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2477218554275525952">Behåll Gemini-sidofältet öppet när du öppnar en ny flik</translation>
 <translation id="2478176599153288112">Mediefilsbehörigheter för <ph name="EXTENSION" /></translation>
 <translation id="24786041351753425">Aktivera tjänsten för dataåterställning.</translation>
+<translation id="2479148705183875116">Öppna inställningarna</translation>
 <translation id="2479541499757560845">Tillgänglighetsinställningar för tangentbord</translation>
 <translation id="2480868415629598489">Ändra data som du kopierar och klistrar in</translation>
 <translation id="2480881140544300950">Den aktuella sökmotorn som hanterar sidan Ny flik</translation>
@@ -4709,6 +4711,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4213918571089943508">Barnets Google-konto</translation>
 <translation id="4214192212360095377">Inaktivera nu</translation>
 <translation id="4216407171061541111">Organisationen har inaktiverat möjligheten att spara flikar i Google-kontot</translation>
+<translation id="4216511743389425832">Lyssna på sidan</translation>
 <translation id="4217571870635786043">Diktering</translation>
 <translation id="4218081191298393750">Klicka på högtalarikonen om du vill stänga av ljudet på den här fliken</translation>
 <translation id="4220157655212610908">Använda en extern säkerhetsnyckel</translation>
@@ -9104,7 +9107,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="732845903678043302">{BOOKMARK_COUNT,plural, =1{1 bokmärke sparas endast på den här enheten. Om du vill använda det på dina andra enheter sparar du det i Google-kontot.}other{{BOOKMARK_COUNT} bokmärken sparas endast på den här enheten. Om du vill använda dem på dina andra enheter sparar du dem i Google-kontot.}}</translation>
 <translation id="7328867076235380839">Ogiltig kombination</translation>
-<translation id="7329009627557479564">Det gick inte att ladda upp. Filen överskrider den maximala storleken som stöds.</translation>
 <translation id="7329154610228416156">Inloggningen misslyckades eftersom den har konfigurerats att använda en webbadress som inte är säker (<ph name="BLOCKED_URL" />). Kontakta administratören.</translation>
 <translation id="7330533963640151632">Inställningar för <ph name="FEATURE_NAME" /> för enheten som tillhör <ph name="USER_NAME" /> och som delar via kontot <ph name="USER_EMAIL" />.</translation>
 <translation id="733058866272972585">Den här webbplatsen har blockerats från att använda identifierare för att spela upp skyddat innehåll.</translation>

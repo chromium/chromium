@@ -152,6 +152,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="1228893227497259893">Pengidentifikasi entitas salah</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (deteksi otomatis)</translation>
 <translation id="1232569758102978740">Tanpa Judul</translation>
+<translation id="1234539281285007945"><ph name="FIELD_1" /> wajib diisi</translation>
 <translation id="1236081509407217141">Izinkan VR?</translation>
 <translation id="1236689197410206751">AfterPay</translation>
 <translation id="1240347957665416060">Nama perangkat Anda</translation>
@@ -472,6 +473,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="1721424275792716183">* Kolom wajib diisi</translation>
 <translation id="1723636263173393300">Kebijakan ini tidak boleh memiliki lebih dari <ph name="MAX_ITEMS_LIMIT" /> pintasan.</translation>
 <translation id="1725591448053514783">Envelope You 6</translation>
+<translation id="172754119609519423"><ph name="FIELD_1" />, <ph name="FIELD_2" />, atau <ph name="FIELD_3" /> diperlukan</translation>
 <translation id="1727613060316725209">Sertifikat valid</translation>
 <translation id="1728677426644403582">Anda melihat sumber halaman web</translation>
 <translation id="173080396488393970">Jenis kartu tidak didukung</translation>
@@ -1433,6 +1435,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="3220264767789936523">Pakaian Resmi</translation>
 <translation id="3223287115535306850">Aplikasi sedang meluncurkan ikon pemuatan</translation>
 <translation id="3223425961342298674">Lokasi tidak diizinkan</translation>
+<translation id="3225277284238802910"><ph name="FIELD_1" /> atau <ph name="FIELD_2" /> diperlukan</translation>
 <translation id="3225319735946384299">Penandaan Kode</translation>
 <translation id="3225919329040284222">Server menunjukkan sertifikat yang tidak sesuai dengan harapan terpasang. Harapan ini disertakan untuk situs web tertentu dengan keamanan tinggi guna melindungi Anda.</translation>
 <translation id="3226128629678568754">Tekan tombol muat ulang untuk mengirimkan lagi data yang dibutuhkan untuk memuat halaman ini.</translation>
