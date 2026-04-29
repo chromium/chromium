@@ -684,7 +684,6 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorSharingRecentActivityDialogFaviconContainer] = {
       ui::kColorSysSurface};
 
-
   mixer[kColorTabHoverCardBackground] = {dark_mode ? gfx::kGoogleGrey900
                                                    : gfx::kGoogleGrey050};
   mixer[kColorTabHoverCardForeground] = {dark_mode ? gfx::kGoogleGrey700
@@ -735,6 +734,8 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorThumbnailTabStripBackgroundInactive] = {ui::kColorFrameInactive};
   mixer[kColorToolbar] = {dark_mode ? SkColorSetRGB(0x35, 0x36, 0x3A)
                                     : SK_ColorWHITE};
+  mixer[kColorToolbarContextualTasksButtonShadow] = {
+      ui::SetAlpha(ui::kColorShadowBase, 0x255 * 17 / 100)};
   mixer[kColorToolbarButtonBackgroundHighlightedDefault] =
       ui::SetAlpha(ui::GetColorWithMaxContrast(kColorToolbarButtonText), 0xCC);
   mixer[kColorAvatarButtonHighlightIncognito] = {

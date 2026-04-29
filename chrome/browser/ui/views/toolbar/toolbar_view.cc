@@ -446,7 +446,13 @@ void ToolbarView::Init() {
       AddChildView(std::make_unique<ContextualTasksButton>(browser_));
     } else if (contextual_tasks::kShowEntryPoint.Get() ==
                contextual_tasks::EntryPointOption::kToolbarEphemeralBranded) {
-      AddChildViewAt(std::make_unique<ContextualTasksButton>(browser_), 0);
+      auto button = std::make_unique<ContextualTasksButton>(browser_);
+      auto* vts_controller =
+          tabs::VerticalTabStripStateController::From(browser_);
+      if (!vts_controller || !vts_controller->ShouldDisplayVerticalTabs()) {
+        button->SetProperty(views::kMarginsKey, gfx::Insets());
+      }
+      AddChildViewAt(std::move(button), 0);
     }
   }
 
@@ -1586,6 +1592,14 @@ void ToolbarView::LayoutCommon() {
   gfx::Insets interior_margin =
       GetLayoutInsets(LayoutInset::TOOLBAR_INTERIOR_MARGIN);
 
+  auto* vts_controller = tabs::VerticalTabStripStateController::From(browser_);
+  if (base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks) &&
+      (contextual_tasks::kShowEntryPoint.Get() ==
+       contextual_tasks::EntryPointOption::kToolbarEphemeralBranded) &&
+      (!vts_controller || !vts_controller->ShouldDisplayVerticalTabs())) {
+    interior_margin.set_left(0);
+  }
+
   if (app_menu_button_->IsLabelPresentAndVisible()) {
     // The interior margin in an expanded state should be more than in a
     // collapsed state.
@@ -1804,10 +1818,10 @@ IntentChipButton* ToolbarView::GetIntentChipButton() {
 }
 
 ToolbarButton* ToolbarView::GetDownloadButton() {
-    return pinned_toolbar_actions_container_
-               ? pinned_toolbar_actions_container_->GetButtonFor(
-                     kActionShowDownloads)
-               : nullptr;
+  return pinned_toolbar_actions_container_
+             ? pinned_toolbar_actions_container_->GetButtonFor(
+                   kActionShowDownloads)
+             : nullptr;
 }
 
 WebUIToolbarWebView* ToolbarView::GetWebUIToolbarViewForTesting() {

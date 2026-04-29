@@ -75,14 +75,18 @@ class ToolbarButtonHighlightPathGenerator
     gfx::Rect rect(view->size());
     rect.Inset(GetToolbarInkDropInsets(view));
 
-    const SkScalar left_radius =
-        toolbar_button_->GetCornerRadiusFor(ToolbarButton::Edge::kLeft);
-    const SkScalar right_radius =
-        toolbar_button_->GetCornerRadiusFor(ToolbarButton::Edge::kRight);
-    const SkVector radii[4] = {{left_radius,  left_radius},
-                               {right_radius, right_radius},
-                               {right_radius, right_radius},
-                               {left_radius,  left_radius}};
+    const SkScalar top_left_radius =
+        toolbar_button_->GetCornerRadiusFor(ToolbarButton::Edge::kTopLeft);
+    const SkScalar bottom_right_radius =
+        toolbar_button_->GetCornerRadiusFor(ToolbarButton::Edge::kBottomRight);
+    const SkScalar top_right_radius =
+        toolbar_button_->GetCornerRadiusFor(ToolbarButton::Edge::kTopRight);
+    const SkScalar bottom_left_radius =
+        toolbar_button_->GetCornerRadiusFor(ToolbarButton::Edge::kBottomLeft);
+    const SkVector radii[4] = {{top_left_radius, top_left_radius},
+                               {top_right_radius, top_right_radius},
+                               {bottom_right_radius, bottom_right_radius},
+                               {bottom_left_radius, bottom_left_radius}};
 
     return SkPath::RRect(
         SkRRect::MakeRectRadii(gfx::RectToSkRect(rect), radii));

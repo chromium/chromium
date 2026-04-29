@@ -1039,6 +1039,7 @@
   E_CPONLY(kColorToolbarButtonText) \
   E_CPONLY(kColorToolbarCloseButtonBackgroundDefault) \
   E_CPONLY(kColorToolbarContentAreaSeparator) \
+  E_CPONLY(kColorToolbarContextualTasksButtonShadow) \
   E_CPONLY(kColorToolbarExtensionSeparatorDisabled) \
   E_CPONLY(kColorToolbarExtensionSeparatorEnabled) \
   E_CPONLY(kColorToolbarFeaturePromoHighlight) \

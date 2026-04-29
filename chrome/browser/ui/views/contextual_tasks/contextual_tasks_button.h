@@ -30,6 +30,7 @@ class ContextualTasksButton
       BrowserWindowInterface* browser_window_interface);
   ~ContextualTasksButton() override;
 
+  float GetCornerRadiusFor(ToolbarButton::Edge edge) const override;
   // contextual_tasks::ContextualTasksPanelController::Observer:
   void OnSurfaceStateChanged(
       contextual_tasks::ContextualTasksPanelHost::SurfaceState state,

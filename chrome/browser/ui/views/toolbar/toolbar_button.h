@@ -54,7 +54,11 @@ class ToolbarButton : public views::LabelButton,
  public:
   enum class Edge {
     kLeft = 0,
+    kTopLeft,
+    kTopRight,
     kRight,
+    kBottomLeft,
+    kBottomRight,
   };
 
   // More convenient form of the ctor below, when |model| and |tab_strip_model|
