@@ -243,6 +243,7 @@ bool AutofillExternalDelegate::IsAutofillAndFirstLayerSuggestionId(
     case SuggestionType::kPendingStateSignin:
     case SuggestionType::kLoadingThrobber:
     case SuggestionType::kAtMemorySearchResult:
+    case SuggestionType::kAtMemoryInactivityNudge:
     case SuggestionType::kBnplFootnote:
       return false;
   }
@@ -615,6 +616,7 @@ void AutofillExternalDelegate::DidSelectSuggestion(
       manager_->DelegateSelectToPasswordManager(suggestion, query_field_);
       break;
     case SuggestionType::kAllLoyaltyCardsEntry:
+    case SuggestionType::kAtMemoryInactivityNudge:
     case SuggestionType::kComposeDisable:
     case SuggestionType::kComposeGoToSettings:
     case SuggestionType::kComposeNeverShowOnThisSiteAgain:
@@ -832,6 +834,10 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
                                   GetTriggerSource(), /*blocked_fields=*/{});
       break;
     }
+    case SuggestionType::kAtMemoryInactivityNudge:
+      manager_->driver().RendererShouldTriggerSuggestions(
+          query_field_.global_id(), AutofillSuggestionTriggerSource::kAtMemory);
+      break;
     case SuggestionType::kAtMemorySearchResult:
       at_memory_controller_.FillOrPreviewSearchResult(
           mojom::ActionPersistence::kFill, query_form_, query_field_,
@@ -975,6 +981,7 @@ bool AutofillExternalDelegate::RemoveSuggestion(const Suggestion& suggestion) {
     case SuggestionType::kOneTimePasswordEntry:
     case SuggestionType::kLoadingThrobber:
     case SuggestionType::kAtMemorySearchResult:
+    case SuggestionType::kAtMemoryInactivityNudge:
     case SuggestionType::kBnplFootnote:
       return false;
   }

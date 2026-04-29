@@ -5672,6 +5672,7 @@ Called by update_autofill_enums.py.-->
   <int value="77" label="Loading throbber"/>
   <int value="78" label="@memory search result"/>
   <int value="79" label="BNPL footnote"/>
+  <int value="80" label="AtMemory inactivity nudge"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/autofill/core/browser/suggestions/suggestion_type.h:SuggestionType) -->

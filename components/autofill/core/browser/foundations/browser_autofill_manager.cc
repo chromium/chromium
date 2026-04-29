@@ -133,6 +133,7 @@
 #include "components/autofill/core/browser/single_field_fillers/payments/merchant_promo_code_manager.h"
 #include "components/autofill/core/browser/studies/autofill_experiments.h"
 #include "components/autofill/core/browser/suggestions/addresses/address_suggestion_generator.h"
+#include "components/autofill/core/browser/suggestions/at_memory/at_memory_nudge_generator.h"
 #include "components/autofill/core/browser/suggestions/autofill_ai/autofill_ai_suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/compose/compose_suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/one_time_passwords/otp_suggestion_generator.h"
@@ -186,6 +187,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -338,6 +340,7 @@ FillDataType GetEventTypeFromSingleFieldSuggestionType(SuggestionType type) {
     case SuggestionType::kOneTimePasswordEntry:
     case SuggestionType::kLoadingThrobber:
     case SuggestionType::kAtMemorySearchResult:
+    case SuggestionType::kAtMemoryInactivityNudge:
     case SuggestionType::kBnplFootnote:
       NOTREACHED();
   }
@@ -442,6 +445,7 @@ bool IsTriggerSourceOnlyRelevantForCompose(
     case AutofillSuggestionTriggerSource::kGlic:
     case AutofillSuggestionTriggerSource::kAtMemory:
     case AutofillSuggestionTriggerSource::kAtMemoryContextMenu:
+    case AutofillSuggestionTriggerSource::kAtMemoryInactivityNudge:
       return false;
   }
 }
@@ -546,6 +550,8 @@ FillingProductSet GetFillingProductsToSuggest(
     case kAtMemory:
     case kAtMemoryContextMenu:
       return {FillingProduct::kAtMemory};
+    case kAtMemoryInactivityNudge:
+      return {FillingProduct::kNone};
   }
 }
 
@@ -741,6 +747,7 @@ bool IsManagementFooterOption(const Suggestion& suggestion) {
     case SuggestionType::kDevtoolsTestAddressEntry:
     case SuggestionType::kDevtoolsTestAddressByCountry:
     case SuggestionType::kAtMemorySearchResult:
+    case SuggestionType::kAtMemoryInactivityNudge:
     case SuggestionType::kFillAutofillAi:
     case SuggestionType::kPendingStateSignin:
     case SuggestionType::kLoadingThrobber:
@@ -1168,6 +1175,12 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
     // acquires focus on page load). Therefore, this is a temporary workaround
     // that should be deleted with crbug.com/349982907.
     autofill_field->set_was_focused(true);
+  }
+
+  if (trigger_source ==
+          AutofillSuggestionTriggerSource::kAtMemoryInactivityNudge &&
+      client().GetSessionIdForCurrentAutofillSuggestions().has_value()) {
+    return;
   }
 
   const FormFieldData& field = CHECK_DEREF(form.FindFieldByGlobalId(field_id));
@@ -3083,6 +3096,15 @@ std::vector<Suggestion> BrowserAutofillManager::GetAvailableSuggestions(
     return {};
   }
 
+  // TODO(crbug.com/489659527): This currently overrides Autofill suggestions if
+  // suggestions were presented to the user after typing started. Fix that.
+  if (trigger_source ==
+      AutofillSuggestionTriggerSource::kAtMemoryInactivityNudge) {
+    // TODO(crbug.com/489659527): Localize the string.
+    return {Suggestion(u"Try searching in Chrome Memory",
+                       SuggestionType::kAtMemoryInactivityNudge)};
+  }
+
   std::vector<Suggestion> suggestions;
   switch (context.filling_product) {
     case FillingProduct::kAddress:
@@ -3358,6 +3380,12 @@ void BrowserAutofillManager::InitializeSuggestionGenerators(
   suggestion_generators_.clear();
   const FillingProductSet relevant_filling_products =
       GetFillingProductsToSuggest(trigger_source);
+
+  if (trigger_source ==
+      AutofillSuggestionTriggerSource::kAtMemoryInactivityNudge) {
+    suggestion_generators_.push_back(
+        std::make_unique<AtMemoryNudgeGenerator>());
+  }
 
   if (relevant_filling_products.contains(FillingProduct::kAutofillAi)) {
     suggestion_generators_.push_back(

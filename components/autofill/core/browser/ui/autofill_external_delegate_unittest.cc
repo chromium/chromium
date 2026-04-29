@@ -1198,6 +1198,36 @@ TEST_F(AutofillExternalDelegateTest, AtMemoryStaleResponseIgnored) {
   received_callback2.Run(std::move(search_results2));
 }
 
+class AutofillExternalDelegateAutoSuggestInactivityTest
+    : public AutofillExternalDelegateTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  AutofillExternalDelegateAutoSuggestInactivityTest() {
+    feature_list_.InitWithFeatureState(
+        features::kAutofillNewSuggestionGeneration, GetParam());
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         AutofillExternalDelegateAutoSuggestInactivityTest,
+                         testing::Bool());
+
+// Test that selecting the AutoSuggest inactivity triggers the AtMemory dialog.
+TEST_P(AutofillExternalDelegateAutoSuggestInactivityTest,
+       SelectAutoSuggestInactivity) {
+  IssueOnQuery();
+  EXPECT_CALL(autofill_driver(),
+              RendererShouldTriggerSuggestions(
+                  queried_field().global_id(),
+                  AutofillSuggestionTriggerSource::kAtMemory));
+  external_delegate().DidAcceptSuggestion(
+      Suggestion(SuggestionType::kAtMemoryInactivityNudge),
+      SuggestionPosition{.row = 0});
+}
+
 // Test that our external delegate called the virtual methods at the right time.
 TEST_F(AutofillExternalDelegateTest, TestExternalDelegateVirtualCalls) {
   IssueOnQuery();

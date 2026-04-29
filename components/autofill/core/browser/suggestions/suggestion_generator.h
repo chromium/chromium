@@ -52,7 +52,8 @@ class SuggestionGenerator {
     kCompose,
     kOneTimePassword,
     kAddressOnTyping,
-    kMaxValue = kAddressOnTyping
+    kAtMemoryInactivityNudge,
+    kMaxValue = kAtMemoryInactivityNudge
   };
 
   // Priority order for cases, when we have suggestion data from multiple
@@ -74,6 +75,7 @@ class SuggestionGenerator {
           SuggestionDataSource::kAutocomplete,
           SuggestionDataSource::kAddressOnTyping,
           SuggestionDataSource::kPasskey,
+          SuggestionDataSource::kAtMemoryInactivityNudge,
       });
   // clang-format on
 
@@ -110,6 +112,8 @@ class SuggestionGenerator {
        {SuggestionDataSource::kIban, {SuggestionDataSource::kPasskey}},
        {SuggestionDataSource::kAutocomplete, {SuggestionDataSource::kPasskey}},
        {SuggestionDataSource::kAddressOnTyping,
+        {SuggestionDataSource::kPasskey}},
+       {SuggestionDataSource::kAtMemoryInactivityNudge,
         {SuggestionDataSource::kPasskey}},
        {SuggestionDataSource::kPasskey, {}}});
 

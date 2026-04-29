@@ -604,4 +604,6 @@ enum AutofillSuggestionTriggerSource {
   kAtMemory = 22,
   // Suggestions triggered by the @memory feature via context menu.
   kAtMemoryContextMenu = 23,
+  // Suggestions triggered by the inactivity timer.
+  kAtMemoryInactivityNudge = 24,
 };

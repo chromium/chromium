@@ -111,6 +111,8 @@ std::string_view SuggestionTypeToStringView(SuggestionType type) {
       return "kPendingStateSignin";
     case SuggestionType::kAtMemorySearchResult:
       return "kAtMemorySearchResult";
+    case SuggestionType::kAtMemoryInactivityNudge:
+      return "kAtMemoryInactivityNudge";
     case SuggestionType::kLoyaltyCardEntry:
       return "kLoyaltyCardEntry";
     case SuggestionType::kAllLoyaltyCardsEntry:

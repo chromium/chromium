@@ -107,6 +107,7 @@ FillingProduct GetFillingProductFromSuggestionType(SuggestionType type) {
     case SuggestionType::kUndoOrClear:
     case SuggestionType::kLoadingThrobber:
     case SuggestionType::kBnplFootnote:
+    case SuggestionType::kAtMemoryInactivityNudge:
       return FillingProduct::kNone;
     case SuggestionType::kFillAutofillAi:
     case SuggestionType::kManageAutofillAi:
@@ -158,6 +159,8 @@ FillingProduct GetFillingProductFromSuggestionDataSource(
       return FillingProduct::kCompose;
     case SuggestionGenerator::SuggestionDataSource::kOneTimePassword:
       return FillingProduct::kOneTimePassword;
+    case SuggestionGenerator::SuggestionDataSource::kAtMemoryInactivityNudge:
+      return FillingProduct::kNone;
   }
   NOTREACHED();
 }

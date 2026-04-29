@@ -2472,6 +2472,38 @@ TEST_F(AutofillAgentMemoryContentEditableTriggerTest,
   EXPECT_EQ(12, selection.StartOffset());
 }
 
+class AutofillAgentAtMemoryInactivityNudgeTest : public AutofillAgentTest {
+ public:
+  AutofillAgentAtMemoryInactivityNudgeTest() {
+    feature_list_.InitWithFeatures({features::kAutofillAtMemoryInactivityNudge,
+                                    features::kAutofillAtMemory},
+                                   {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(AutofillAgentAtMemoryInactivityNudgeTest, InactivityTriggersNudge) {
+  EXPECT_CALL(autofill_driver(), FormsSeen);
+  LoadHTML(R"(<body><input id="input"></body>)");
+  WaitForFormsSeen();
+
+  SimulateElementClickAndWait("input");
+
+  blink::WebFormControlElement element = GetFormControlElementById("input");
+  element.SetValue(blink::WebString::FromUtf16(u"Elvis"));
+  test_api(autofill_agent()).TextFieldValueChanged(element);
+
+  EXPECT_CALL(
+      autofill_driver(),
+      AskForValuesToFill(
+          _, _, _, AutofillSuggestionTriggerSource::kAtMemoryInactivityNudge,
+          _));
+
+  task_environment_.FastForwardBy(base::Seconds(5));
+}
+
 }  // namespace
 
 }  // namespace autofill

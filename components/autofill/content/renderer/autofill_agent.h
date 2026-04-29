@@ -362,6 +362,16 @@ class AutofillAgent : public content::RenderFrameObserver,
   void HandleFocusChangeComplete(bool focused_node_was_last_clicked,
                                  const SynchronousFormCache& form_cache);
 
+  // Called when the user has typed in the focused text field and then not typed
+  // for 5 seconds (the field had to be focused for this whole time).
+  // TODO(crbug.com/489659527): The inactivity timer currently only resets on
+  // typing for <input> text fields, and does not consider caret movement as
+  // activity. This is because `ObserveCaret` is only active for
+  // contenteditables and textareas. We could fix this by extending
+  // `ObserveCaret` to all text fields, but that might have performance
+  // implications due to the frequency of selectionchange events.
+  void OnInactivityTimerFired(FieldRendererId field_id);
+
   void DidChangeScrollOffsetImpl(FieldRendererId element_id);
 
   // At least on Android, multiple AskForValuesToFill() events may be fired in
@@ -506,6 +516,9 @@ class AutofillAgent : public content::RenderFrameObserver,
   base::OneShotTimer process_forms_after_dynamic_change_timer_;
   base::OneShotTimer process_forms_form_extraction_timer_;
   base::OneShotTimer process_forms_form_extraction_with_response_timer_;
+  // Timer to track inactivity (field editing started and then stopped without
+  // losing focus) for triggering the autosuggest nudge.
+  base::OneShotTimer inactivity_timer_;
 
   // True iff DidDispatchDOMContentLoadedEvent() fired since the last
   // navigation.

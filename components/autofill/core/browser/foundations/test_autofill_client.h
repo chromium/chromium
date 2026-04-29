@@ -336,7 +336,8 @@ class TestAutofillClientTemplate : public T {
       base::WeakPtr<AutofillSuggestionDelegate> delegate) override {
     is_showing_popup_ = true;
     static AutofillClient::SuggestionUiSessionId::Generator generator;
-    return generator.GenerateNextId();
+    suggestion_ui_session_id_ = generator.GenerateNextId();
+    return *suggestion_ui_session_id_;
   }
 
   void UpdateAutofillDataListValues(
@@ -364,6 +365,7 @@ class TestAutofillClientTemplate : public T {
   void HideAutofillSuggestions(SuggestionHidingReason reason) override {
     popup_hidden_reason_ = reason;
     is_showing_popup_ = false;
+    suggestion_ui_session_id_.reset();
   }
 
   bool IsShowingAutofillPopup() { return is_showing_popup_; }

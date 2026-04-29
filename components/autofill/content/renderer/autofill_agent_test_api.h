@@ -46,6 +46,10 @@ class AutofillAgentTestApi {
     agent_->ContentEditableDidChange(element);
   }
 
+  void TextFieldValueChanged(const blink::WebFormControlElement& element) {
+    agent_->TextFieldValueChanged(element);
+  }
+
   const FormCache& form_cache() { return agent_->form_cache_; }
 
   PasswordAutofillAgent& password_autofill_agent() {

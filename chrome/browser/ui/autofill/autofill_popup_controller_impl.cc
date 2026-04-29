@@ -565,6 +565,7 @@ AutofillPopupControllerImpl::GetSearchBarConfig(
     case AutofillSuggestionTriggerSource::kProactivePasswordRecovery:
     case AutofillSuggestionTriggerSource::kGlic:
     case AutofillSuggestionTriggerSource::kUnspecified:
+    case AutofillSuggestionTriggerSource::kAtMemoryInactivityNudge:
       return std::nullopt;
   }
   NOTREACHED();
