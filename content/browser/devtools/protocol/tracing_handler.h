@@ -11,6 +11,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <unordered_set>
 #include <vector>
 
 #include "base/gtest_prod_util.h"
@@ -137,6 +138,9 @@ class TracingHandler : public DevToolsDomainHandler, public Tracing::Backend {
   static bool IsStartupTracingActive();
   CONTENT_EXPORT static base::trace_event::TraceConfig
   GetTraceConfigFromDevToolsConfig(const base::Value& devtools_config);
+  CONTENT_EXPORT static void AddPidsToProcessFilter(
+      const std::unordered_set<base::ProcessId>& included_process_ids,
+      perfetto::TraceConfig& trace_config);
   perfetto::TraceConfig CreatePerfettoConfiguration(
       const base::trace_event::TraceConfig& browser_config,
       bool return_as_stream,
@@ -172,6 +176,8 @@ class TracingHandler : public DevToolsDomainHandler, public Tracing::Backend {
 
   FRIEND_TEST_ALL_PREFIXES(TracingHandlerTest,
                            GetTraceConfigFromDevToolsConfig);
+  FRIEND_TEST_ALL_PREFIXES(TracingHandlerTest, ProcessFilterClearsRegex);
+  FRIEND_TEST_ALL_PREFIXES(TracingHandlerTest, ProcessFilterAppendsPids);
 };
 
 }  // namespace protocol

@@ -6,6 +6,7 @@
 
 #include <cstddef>
 #include <memory>
+#include <optional>
 #include <string_view>
 #include <utility>
 
@@ -3884,6 +3885,88 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, TracingWithPerfettoConfig) {
   EXPECT_TRUE(SendCommandSync("Tracing.end"));
 
   WaitForNotification("Tracing.tracingComplete", true);
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, TracingPerfettoSiteIsolation) {
+  content::SetupCrossSiteRedirector(embedded_test_server());
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL url_a = embedded_test_server()->GetURL("a.com", "/title1.html");
+  GURL url_b = embedded_test_server()->GetURL("b.com", "/title1.html");
+
+  NavigateToURLBlockUntilNavigationsComplete(shell(), url_a, 1);
+  Shell* shell_b = CreateBrowser();
+  NavigateToURLBlockUntilNavigationsComplete(shell_b, url_b, 1);
+
+  Attach();
+
+  base::trace_event::TraceConfig chrome_config("blink.user_timing", "");
+  perfetto::TraceConfig perfetto_config =
+      tracing::GetDefaultPerfettoConfig(chrome_config,
+                                        /*privacy_filtering_enabled=*/false,
+                                        /*convert_to_legacy_json=*/true);
+
+  std::optional<perfetto::DataSourceConfig> track_event_config;
+  for (auto& ds : *perfetto_config.mutable_data_sources()) {
+    if (ds.config().name() == "track_event") {
+      ds.add_producer_name_regex_filter(".*");
+      track_event_config = ds.config();
+    }
+  }
+
+  if (track_event_config) {
+    auto* ds2 = perfetto_config.add_data_sources();
+    *ds2->mutable_config() = *track_event_config;
+    ds2->add_producer_name_regex_filter(".*");
+  }
+
+  auto* ds3 = perfetto_config.add_data_sources();
+  ds3->mutable_config()->set_name("org.chromium.sampler_profiler");
+
+  std::string perfetto_config_encoded =
+      base::Base64Encode(perfetto_config.SerializeAsString());
+
+  base::DictValue params;
+  params.Set("perfettoConfig", perfetto_config_encoded);
+  params.Set("transferMode", "ReturnAsStream");
+
+  EXPECT_TRUE(SendCommandSync("Tracing.start", std::move(params)));
+
+  EXPECT_TRUE(content::ExecJs(shell(), "performance.mark('mark_a');"));
+  EXPECT_TRUE(content::ExecJs(shell_b, "performance.mark('mark_b');"));
+
+  EXPECT_TRUE(SendCommandSync("Tracing.end"));
+
+  base::DictValue complete_notification =
+      WaitForNotification("Tracing.tracingComplete", true);
+  const std::string* stream_handle_ptr =
+      complete_notification.FindString("stream");
+  ASSERT_TRUE(stream_handle_ptr);
+  std::string stream_handle = *stream_handle_ptr;
+
+  std::string trace_json;
+  bool eof = false;
+  while (!eof) {
+    base::DictValue read_params;
+    read_params.Set("handle", stream_handle);
+    const base::DictValue* response =
+        SendCommandSync("IO.read", std::move(read_params));
+    ASSERT_TRUE(response);
+    const std::string* data = response->FindString("data");
+    ASSERT_TRUE(data);
+    std::optional<bool> base64_encoded = response->FindBool("base64Encoded");
+    if (base64_encoded.value_or(false)) {
+      std::string decoded;
+      ASSERT_TRUE(base::Base64Decode(*data, &decoded));
+      trace_json += decoded;
+    } else {
+      trace_json += *data;
+    }
+    eof = response->FindBool("eof").value_or(false);
+  }
+
+  EXPECT_THAT(trace_json, testing::HasSubstr("mark_a"));
+  EXPECT_THAT(trace_json, testing::Not(testing::HasSubstr("mark_b")));
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, NavigateToAboutBlankLoaderId) {

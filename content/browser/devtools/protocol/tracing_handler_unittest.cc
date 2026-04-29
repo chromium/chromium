@@ -2,12 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "content/browser/devtools/protocol/tracing_handler.h"
+
 #include <memory>
 
 #include "base/json/json_reader.h"
 #include "base/trace_event/trace_config.h"
 #include "base/values.h"
-#include "content/browser/devtools/protocol/tracing_handler.h"
+#include "services/tracing/public/cpp/perfetto/perfetto_data_source_names.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {
@@ -136,6 +139,85 @@ TEST_F(TracingHandlerTest, ComplexGetValidTraceFragment) {
   EXPECT_EQ(chunk2,
             GetValidTraceFragment(trace_data.substr(trace_data.size() - 1, 1)));
 }
+
+TEST_F(TracingHandlerTest, ProcessFilterClearsRegex) {
+  perfetto::TraceConfig trace_config;
+
+  auto* data_source = trace_config.add_data_sources();
+  auto* config = data_source->mutable_config();
+  config->set_name("track_event");
+  data_source->add_producer_name_regex_filter(".*");
+  data_source->add_producer_name_filter("old_filter");
+
+  auto* data_source2 = trace_config.add_data_sources();
+  auto* config2 = data_source2->mutable_config();
+  config2->set_name("org.chromium.foo");
+  data_source2->add_producer_name_regex_filter(".*");
+
+  auto* data_source3 = trace_config.add_data_sources();
+  auto* config3 = data_source3->mutable_config();
+  config3->set_name("other_source");
+  data_source3->add_producer_name_regex_filter(".*");
+
+  std::unordered_set<base::ProcessId> pids = {1234};
+  TracingHandler::AddPidsToProcessFilter(pids, trace_config);
+
+  ASSERT_EQ(3, trace_config.data_sources_size());
+
+  // Chrome track_event data source: regex cleared, pid added
+  EXPECT_EQ("track_event", trace_config.data_sources()[0].config().name());
+  EXPECT_EQ(0, trace_config.data_sources()[0].producer_name_regex_filter_size());
+  ASSERT_EQ(1, trace_config.data_sources()[0].producer_name_filter_size());
+  EXPECT_EQ(std::string(tracing::kPerfettoProducerNamePrefix) + "1234",
+            trace_config.data_sources()[0].producer_name_filter()[0]);
+
+  // Chrome data source: regex cleared, pid added
+  EXPECT_EQ("org.chromium.foo", trace_config.data_sources()[1].config().name());
+  EXPECT_EQ(0, trace_config.data_sources()[1].producer_name_regex_filter_size());
+  ASSERT_EQ(1, trace_config.data_sources()[1].producer_name_filter_size());
+  EXPECT_EQ(std::string(tracing::kPerfettoProducerNamePrefix) + "1234",
+            trace_config.data_sources()[1].producer_name_filter()[0]);
+
+  // Other data source: regex retained, pid not added
+  EXPECT_EQ("other_source", trace_config.data_sources()[2].config().name());
+  ASSERT_EQ(1, trace_config.data_sources()[2].producer_name_regex_filter_size());
+  EXPECT_EQ(".*", trace_config.data_sources()[2].producer_name_regex_filter()[0]);
+  EXPECT_EQ(0, trace_config.data_sources()[2].producer_name_filter_size());
+}
+
+TEST_F(TracingHandlerTest, ProcessFilterAppendsPids) {
+  perfetto::TraceConfig trace_config;
+
+  auto* data_source = trace_config.add_data_sources();
+  auto* config = data_source->mutable_config();
+  config->set_name("track_event");
+
+  // Initial PIDs
+  std::unordered_set<base::ProcessId> pids1 = {1234, 5678};
+  TracingHandler::AddPidsToProcessFilter(pids1, trace_config);
+
+  ASSERT_EQ(1, trace_config.data_sources_size());
+  EXPECT_EQ(2, trace_config.data_sources()[0].producer_name_filter_size());
+
+  // Append new PID
+  std::unordered_set<base::ProcessId> pids2 = {9012};
+  TracingHandler::AddPidsToProcessFilter(pids2, trace_config);
+
+  ASSERT_EQ(1, trace_config.data_sources_size());
+  // Should have 3 PIDs now
+  EXPECT_EQ(3, trace_config.data_sources()[0].producer_name_filter_size());
+
+  EXPECT_THAT(trace_config.data_sources()[0].producer_name_filter(),
+              testing::Contains(
+                  std::string(tracing::kPerfettoProducerNamePrefix) + "1234"));
+  EXPECT_THAT(trace_config.data_sources()[0].producer_name_filter(),
+              testing::Contains(
+                  std::string(tracing::kPerfettoProducerNamePrefix) + "5678"));
+  EXPECT_THAT(trace_config.data_sources()[0].producer_name_filter(),
+              testing::Contains(
+                  std::string(tracing::kPerfettoProducerNamePrefix) + "9012"));
+}
+
 
 }  // namespace protocol
 }  // namespace content
