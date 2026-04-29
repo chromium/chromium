@@ -18,6 +18,9 @@
 // Notifies the delegate that the date picker value changed.
 - (void)didChangeDate:(NSDate*)date forItem:(AutofillAIEntityEditDateItem*)item;
 
+// Notifies the delegate that the date picker was dismissed.
+- (void)didDismissDateItem:(AutofillAIEntityEditDateItem*)item;
+
 @end
 
 // Table view item for a date field.

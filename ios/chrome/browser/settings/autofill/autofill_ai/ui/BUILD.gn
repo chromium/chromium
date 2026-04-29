@@ -38,6 +38,8 @@ source_set("ui") {
 
 source_set("edit_items") {
   sources = [
+    "autofill_ai_date_picker_input_view.h",
+    "autofill_ai_date_picker_input_view.mm",
     "autofill_ai_entity_country_item.h",
     "autofill_ai_entity_country_item.mm",
     "autofill_ai_entity_edit_date_item.h",
@@ -51,6 +53,7 @@ source_set("edit_items") {
   deps = [
     "//base",
     "//components/autofill/core/browser",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/autofill/autofill_ai/public",
     "//ios/chrome/browser/settings/autofill/autofill_ai/utils",
     "//ios/chrome/browser/shared/ui/list_model",
@@ -58,7 +61,10 @@ source_set("edit_items") {
     "//ios/chrome/browser/shared/ui/table_view/cells",
     "//ios/chrome/browser/shared/ui/table_view/cells:generic_cells",
     "//ios/chrome/browser/shared/ui/table_view/content_configuration",
+    "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
+    "//ui/base",
   ]
 }
 

@@ -284,6 +284,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [self.mutator didChangeDate:date forItem:item];
 }
 
+- (void)didDismissDateItem:(AutofillAIEntityEditDateItem*)item {
+  [self.view endEditing:YES];
+}
+
 #pragma mark - Actions
 
 - (void)handleTapOutside:(UITapGestureRecognizer*)gesture {
