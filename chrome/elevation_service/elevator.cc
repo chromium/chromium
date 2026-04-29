@@ -59,15 +59,15 @@ ProtectionLevel RemoveFlags(ProtectionLevel protection_level,
 }  // namespace
 
 HRESULT Elevator::RunRecoveryCRXElevated(const wchar_t* crx_path,
-                                         const wchar_t* browser_appid,
+                                         const wchar_t* /*browser_appid*/,
                                          const wchar_t* browser_version,
                                          const wchar_t* session_id,
                                          DWORD caller_proc_id,
                                          ULONG_PTR* proc_handle) {
   base::win::ScopedHandle scoped_proc_handle;
-  HRESULT hr = RunChromeRecoveryCRX(base::FilePath(crx_path), browser_appid,
-                                    browser_version, session_id, caller_proc_id,
-                                    &scoped_proc_handle);
+  HRESULT hr =
+      RunChromeRecoveryCRX(base::FilePath(crx_path), browser_version,
+                           session_id, caller_proc_id, &scoped_proc_handle);
   *proc_handle = base::win::HandleToUint32(scoped_proc_handle.Take());
   return hr;
 }

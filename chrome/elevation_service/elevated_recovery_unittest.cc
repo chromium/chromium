@@ -84,39 +84,24 @@ class ElevatedRecoveryTest : public testing::Test {
 TEST_F(ElevatedRecoveryTest, Do_RunChromeRecoveryCRX_InvalidArgs) {
   base::win::ScopedHandle proc_handle;
 
-  // Empty browser_appid/browser_version/session_id.
-  EXPECT_EQ(E_INVALIDARG, elevation_service::RunChromeRecoveryCRX(
-                              TestFile("valid_publisher.crx3"), std::wstring(),
-                              std::wstring(), std::wstring(),
-                              ::GetCurrentProcessId(), &proc_handle));
-
-  // Invalid browser_appid, valid browser_version/session_id.
+  // Empty browser_version/session_id.
   EXPECT_EQ(E_INVALIDARG,
             elevation_service::RunChromeRecoveryCRX(
-                TestFile("valid_publisher.crx3"), L"invalidappid", L"1.2.3.4",
+                TestFile("valid_publisher.crx3"), std::wstring(),
+                std::wstring(), ::GetCurrentProcessId(), &proc_handle));
+
+  // Invalid browser_version, valid session_id.
+  EXPECT_EQ(E_INVALIDARG,
+            elevation_service::RunChromeRecoveryCRX(
+                TestFile("valid_publisher.crx3"), L"invalidbrowserversion",
                 L"{c49ab053-2387-4809-b188-1902648802e1}",
                 ::GetCurrentProcessId(), &proc_handle));
 
-  // Empty browser_appid, invalid browser_version, valid session_id.
-  EXPECT_EQ(E_INVALIDARG, elevation_service::RunChromeRecoveryCRX(
-                              TestFile("valid_publisher.crx3"), std::wstring(),
-                              L"invalidbrowserversion",
-                              L"{c49ab053-2387-4809-b188-1902648802e1}",
-                              ::GetCurrentProcessId(), &proc_handle));
-
-  // Valid browser_appid, invalid browser_version, valid session_id.
-  EXPECT_EQ(E_INVALIDARG, elevation_service::RunChromeRecoveryCRX(
-                              TestFile("valid_publisher.crx3"),
-                              L"{c49ab053-2387-4809-b188-1902648802e1}",
-                              L"invalidbrowserversion",
-                              L"{c49ab053-2387-4809-b188-1902648802e1}",
-                              ::GetCurrentProcessId(), &proc_handle));
-
-  // Valid browser_appid, valid browser_version, invalid session_id.
+  // Invalid browser_version, valid session_id.
+  // Valid browser_version, invalid session_id.
   EXPECT_EQ(E_INVALIDARG,
             elevation_service::RunChromeRecoveryCRX(
-                TestFile("valid_publisher.crx3"),
-                L"{c49ab053-2387-4809-b188-1902648802e1}", L"57.8.0.1",
+                TestFile("valid_publisher.crx3"), L"1.2.3.4",
                 L"invalidsessionid", ::GetCurrentProcessId(), &proc_handle));
 }
 

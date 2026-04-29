@@ -241,16 +241,8 @@ HRESULT LaunchCmd(const base::CommandLine& command_line,
   return S_OK;
 }
 
-HRESULT ValidateCRXArgs(const std::wstring& browser_appid,
-                        const std::wstring& browser_version,
+HRESULT ValidateCRXArgs(const std::wstring& browser_version,
                         const std::wstring& session_id) {
-  if (!browser_appid.empty()) {
-    GUID guid = {};
-    HRESULT hr = ::IIDFromString(browser_appid.c_str(), &guid);
-    if (FAILED(hr))
-      return hr;
-  }
-
   const base::Version version(base::WideToASCII(browser_version));
   if (!version.IsValid())
     return E_INVALIDARG;
@@ -309,7 +301,6 @@ HRESULT CleanupChromeRecoveryDirectory() {
 }
 
 HRESULT RunChromeRecoveryCRX(const base::FilePath& crx_path,
-                             const std::wstring& browser_appid,
                              const std::wstring& browser_version,
                              const std::wstring& session_id,
                              uint32_t caller_proc_id,
@@ -317,15 +308,16 @@ HRESULT RunChromeRecoveryCRX(const base::FilePath& crx_path,
   if (crx_path.empty() || !caller_proc_id || !proc_handle)
     return E_INVALIDARG;
 
-  HRESULT hr = ValidateCRXArgs(browser_appid, browser_version, session_id);
+  HRESULT hr = ValidateCRXArgs(browser_version, session_id);
   if (FAILED(hr))
     return hr;
 
   // Read version autonomously from secured HKLM machine registries based on
-  // AppID.
+  // AppID. We use the installed app GUID instead of the potentially spoofable
+  // |browser_appid| passed over RPC.
   base::win::RegKey key(
       HKEY_LOCAL_MACHINE,
-      install_static::GetClientsKeyPath(browser_appid.c_str()).c_str(),
+      install_static::GetClientsKeyPath(install_static::GetAppGuid()).c_str(),
       KEY_QUERY_VALUE);
   std::wstring registry_version;
   if (key.ReadValue(FILE_PATH_LITERAL("version"), &registry_version) !=
@@ -352,8 +344,7 @@ HRESULT RunChromeRecoveryCRX(const base::FilePath& crx_path,
   }
 
   base::CommandLine args(base::CommandLine::NO_PROGRAM);
-  if (!browser_appid.empty())
-    args.AppendSwitchNative("appguid", browser_appid);
+  args.AppendSwitchNative("appguid", install_static::GetAppGuid());
   args.AppendSwitchNative(installer::switches::kBrowserVersionSwitch,
                           browser_version);
   args.AppendSwitchNative("sessionid", session_id);
