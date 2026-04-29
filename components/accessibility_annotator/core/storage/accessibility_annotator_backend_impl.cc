@@ -536,6 +536,16 @@ void AccessibilityAnnotatorBackendImpl::AddContentAnnotation(
     history::VisitID visit_id,
     ContentAnnotationsData data,
     base::OnceCallback<void(bool)> callback) {
+  // TODO (crbug.com/496386554): Remove after cache is no longer used.
+  if (!base::FeatureList::IsEnabled(
+          features::kAccessibilityAnnotatorDatabaseStorage)) {
+    SetContentAnnotationsCacheData(visit_id, std::move(data));
+    if (callback) {
+      std::move(callback).Run(true);
+    }
+    return;
+  }
+
   switch (db_state_) {
     case DbState::kUninitialized:
     case DbState::kInitializing:
@@ -561,6 +571,17 @@ void AccessibilityAnnotatorBackendImpl::AddContentAnnotation(
 void AccessibilityAnnotatorBackendImpl::GetContentAnnotation(
     history::VisitID visit_id,
     base::OnceCallback<void(std::optional<ContentAnnotationsData>)> callback) {
+  // TODO (crbug.com/496386554): Remove after cache is no longer used.
+  if (!base::FeatureList::IsEnabled(
+          features::kAccessibilityAnnotatorDatabaseStorage)) {
+    base::optional_ref<
+        const AccessibilityAnnotatorBackend::ContentAnnotationsData>
+        ref = GetContentAnnotationsCacheData(visit_id);
+    std::move(callback).Run(ref.has_value() ? std::make_optional(ref->Clone())
+                                            : std::nullopt);
+    return;
+  }
+
   switch (db_state_) {
     case DbState::kUninitialized:
     case DbState::kInitializing:

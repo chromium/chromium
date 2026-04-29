@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
@@ -321,8 +322,8 @@ void ContentAnnotatorService::HandleModelExecutionResult(
         content_annotation = response->content_annotation();
     if (content_annotation.has_value()) {
       data.content_annotation = std::move(*content_annotation);
-      accessibility_annotator_backend_->SetContentAnnotationsCacheData(
-          visit_id, std::move(data));
+      accessibility_annotator_backend_->AddContentAnnotation(
+          visit_id, std::move(data), base::DoNothing());
     }
   }
 }

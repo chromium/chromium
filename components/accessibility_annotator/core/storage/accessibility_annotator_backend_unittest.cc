@@ -911,7 +911,38 @@ TEST_F(AccessibilityAnnotatorBackendTest, AddAndGetContentAnnotationFromDb) {
                                  success_future.GetCallback());
   EXPECT_TRUE(success_future.Get());
 
+  // Confirm that nothing was saved to the cache.
+  EXPECT_FALSE(backend_->GetContentAnnotationsCacheData(visit_id).has_value());
+
   // Retrieve the content annotation from the database and verify its contents.
+  backend_->GetContentAnnotation(visit_id, get_future.GetCallback());
+  EXPECT_THAT(get_future.Get(), Optional(EqualsAnnotations(std::ref(data))));
+}
+
+TEST_F(AccessibilityAnnotatorBackendTest,
+       AddAndGetContentAnnotationFromCacheWhenDbDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kAccessibilityAnnotatorDatabaseStorage);
+
+  history::VisitID visit_id(123);
+  AccessibilityAnnotatorBackend::ContentAnnotationsData data =
+      CreateContentAnnotationsData("Test Page Title");
+
+  base::test::TestFuture<bool> success_future;
+  base::test::TestFuture<
+      std::optional<AccessibilityAnnotatorBackend::ContentAnnotationsData>>
+      get_future;
+
+  // Add the content annotation.
+  backend_->AddContentAnnotation(visit_id, data.Clone(),
+                                 success_future.GetCallback());
+  EXPECT_TRUE(success_future.Get());
+
+  // Confirm it was saved to the cache.
+  EXPECT_TRUE(backend_->GetContentAnnotationsCacheData(visit_id).has_value());
+
+  // Retrieve the content annotation and verify its contents.
   backend_->GetContentAnnotation(visit_id, get_future.GetCallback());
   EXPECT_THAT(get_future.Get(), Optional(EqualsAnnotations(std::ref(data))));
 }
