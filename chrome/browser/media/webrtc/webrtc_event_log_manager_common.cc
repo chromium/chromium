@@ -19,7 +19,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/unguessable_token.h"
-#include "base/uuid.h"
 #include "build/build_config.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
@@ -926,11 +925,14 @@ base::FilePath WebRtcEventLogPath(const base::FilePath& remote_logs_dir,
 }
 
 bool IsValidRemoteBoundLogFilename(const std::string& filename) {
+  // The -1 is because of the implict \0.
   const size_t kPrefixLength =
       std::size(kRemoteBoundWebRtcEventLogFileNamePrefix) - 1;
 
-  if (filename.length() <
-      kPrefixLength + 1 + kWebAppIdLength + 1 + kWebRtcEventLogIdLength) {
+  // [prefix]_[web_app_id]_[log_id]
+  const size_t expected_length =
+      kPrefixLength + 1 + kWebAppIdLength + 1 + kWebRtcEventLogIdLength;
+  if (filename.length() != expected_length) {
     return false;
   }
 
@@ -942,7 +944,7 @@ bool IsValidRemoteBoundLogFilename(const std::string& filename) {
   }
   index += kPrefixLength;
 
-  // Expect underscore.
+  // Expect underscore between prefix and web-app ID.
   if (filename[index] != '_') {
     return false;
   }
@@ -956,42 +958,16 @@ bool IsValidRemoteBoundLogFilename(const std::string& filename) {
   }
   index += kWebAppIdLength;
 
-  // Expect underscore.
+  // Expect underscore between web-app ID and log ID.
   if (filename[index] != '_') {
     return false;
   }
   index += 1;
 
-  // The rest of the string must contain at least the log ID.
-  const std::string rest = filename.substr(index);
-
-  if (rest.length() == kWebRtcEventLogIdLength) {
-    // Extension API format: rest is log_id.
-    return base::ContainsOnlyChars(rest, "0123456789ABCDEF");
-  } else {
-    // New format: rest is diagnostic_uuid + "_" + session_id.
-    const size_t underscore_pos = rest.find('_');
-    if (underscore_pos == std::string::npos) {
-      return false;
-    }
-
-    const std::string diagnostic_uuid = rest.substr(0, underscore_pos);
-    const std::string session_id = rest.substr(underscore_pos + 1);
-
-    if (session_id.empty()) {
-      return false;
-    }
-
-    if (!base::ContainsOnlyChars(session_id, "0123456789")) {
-      return false;
-    }
-
-    if (!base::Uuid::ParseCaseInsensitive(diagnostic_uuid).is_valid()) {
-      return false;
-    }
-
-    return true;
-  }
+  // Expect log ID.
+  const std::string log_id = filename.substr(index);
+  DCHECK_EQ(log_id.length(), kWebRtcEventLogIdLength);
+  return base::ContainsOnlyChars(log_id, "0123456789ABCDEF");
 }
 
 bool IsValidRemoteBoundLogFilePath(const base::FilePath& path) {
@@ -1012,12 +988,8 @@ std::string ExtractRemoteBoundWebRtcEventLogLocalIdFromPath(
     return std::string();
   }
 
-  const size_t kPrefixLength =
-      std::size(kRemoteBoundWebRtcEventLogFileNamePrefix) - 1;
-  const size_t log_id_start = kPrefixLength + 1 + kWebAppIdLength + 1;
-
-  DCHECK_GE(filename.length(), log_id_start);
-  return filename.substr(log_id_start);
+  DCHECK_GE(filename.length(), kWebRtcEventLogIdLength);
+  return filename.substr(filename.length() - kWebRtcEventLogIdLength);
 }
 
 size_t ExtractRemoteBoundWebRtcEventLogWebAppIdFromPath(

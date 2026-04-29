@@ -130,7 +130,7 @@ IN_PROC_BROWSER_TEST_P(WebRtcEventLogCollectionAllowedPolicyTest, RunTest) {
     // TODO(crbug.com/379869738) Remove GetUnsafeValue.
     webrtc_event_log_manager->StartRemoteLogging(
         frame_id.child_id.GetUnsafeValue(), kSessionId, kMaxFileSizeBytes,
-        kOutputPeriodMs, kWebAppId, std::nullopt,
+        kOutputPeriodMs, kWebAppId,
         BlockingBoolExpectingReplyWithExtras(&run_loop,
                                              remote_logging_allowed));
     run_loop.Run();
