@@ -292,11 +292,6 @@ void LayoutInline::AddChild(LayoutObject* new_child,
   while (before_child && before_child->IsTablePart())
     before_child = before_child->Parent();
 
-  // Make sure we don't append things after :after-generated content if we have
-  // it.
-  if (!before_child && IsAfterContent(LastChild()))
-    before_child = LastChild();
-
   if (!new_child->IsInline() && !new_child->IsFloatingOrOutOfFlowPositioned() &&
       // Table parts can be either inline or block. When creating its table
       // wrapper, |CreateAnonymousTableWithParent| creates an inline table if
