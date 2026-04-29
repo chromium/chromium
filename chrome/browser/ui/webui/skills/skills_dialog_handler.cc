@@ -118,8 +118,8 @@ void SkillsDialogHandler::SubmitSkill(
                            /*is_edit_mode=*/IsEditMode(&initial_skill_));
   // Triggers toast
   delegate_->OnSkillSaved(response->id);
-  delegate_->CloseDialog();
   RecordSkillsSaveResult(SkillsSaveResult::kSuccess);
+  delegate_->CloseDialog();
   std::move(wrapped_callback).Run(true);
 }
 
@@ -129,9 +129,9 @@ void SkillsDialogHandler::DeleteSkill(const std::string& skill_id) {
   }
   // Triggers toast
   delegate_->OnSkillDeleted(skill_id);
-  delegate_->CloseDialog();
   RecordSkillsDialogAction(SkillsDialogAction::kDeleted, entrypoint_,
                            /*is_edit_mode=*/true);
+  delegate_->CloseDialog();
 }
 
 void SkillsDialogHandler::CloseDialog() {
