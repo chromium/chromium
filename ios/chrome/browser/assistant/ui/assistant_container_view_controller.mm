@@ -602,21 +602,26 @@ NSInteger GetMediumDetentHeight(NSInteger absoluteMax) {
   _assistantContainerView.grabberButton.enabled = YES;
 }
 
-// Handles the tap on the grabber button to toggle container size.
+// Handles the tap on the grabber button to cycle through detents.
 - (void)handleGrabberButtonTapped:(UIButton*)sender {
   if (self.isAnimating) {
     return;
   }
 
-  AssistantContainerDetent minDetent = self.detents.front();
-  AssistantContainerDetent maxDetent = self.detents.back();
+  std::vector<AssistantContainerDetent> currentDetents = self.detents;
 
-  if (minDetent == maxDetent) {
-    return;
+  AssistantContainerDetent currentDetent =
+      _activeDetent.value_or(currentDetents.front());
+  auto it =
+      std::find(currentDetents.begin(), currentDetents.end(), currentDetent);
+
+  size_t nextIndex = 0;
+  if (it != currentDetents.end()) {
+    size_t currentIndex = std::distance(currentDetents.begin(), it);
+    nextIndex = (currentIndex + 1) % currentDetents.size();
   }
 
-  AssistantContainerDetent targetDetent =
-      _activeDetent.value() == maxDetent ? minDetent : maxDetent;
+  AssistantContainerDetent targetDetent = currentDetents[nextIndex];
 
   [self animateToDetent:targetDetent
                duration:kAssistantSheetSpringDuration
