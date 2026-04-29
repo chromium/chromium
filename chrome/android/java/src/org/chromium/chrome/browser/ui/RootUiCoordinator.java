@@ -1414,6 +1414,7 @@ public class RootUiCoordinator
 
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.CROSS_DEVICE_TASK_HANDOFF)
                 && Build.VERSION.SDK_INT >= HANDOFF_SDK_VERSION) {
+            // TODO(crbug.com/444503472) Verify handoff works in custom tabs.
             mHandoffController =
                     new HandoffController(
                             mActivity,

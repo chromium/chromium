@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.handoff;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.HandoffActivityData;
@@ -18,13 +20,18 @@ import android.provider.Browser;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.lifetime.Destroyable;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ActivityTabProvider;
+import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
+import org.chromium.url.GURL;
+
+import java.util.Objects;
 
 /**
  * Orchestrates Handoff integration for a {@link Activity}. This class manages the opt-in state for
@@ -32,11 +39,14 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
  */
 @NullMarked
 @SuppressLint("NewApi")
-public class HandoffController implements TabModelSelectorObserver {
+public class HandoffController implements TabModelSelectorObserver, Destroyable {
     private final Activity mActivity;
     private final TabModelSelector mTabModelSelector;
     private final ActivityTabProvider mActivityTabProvider;
     private final Delegate mDelegate;
+    private final ActivityTabTabObserver mActivityTabTabObserver;
+
+    private @Nullable GURL mTabLastUrlSeen;
 
     /** Delegate interface for Android Handoff system APIs. */
     interface Delegate {
@@ -48,11 +58,11 @@ public class HandoffController implements TabModelSelectorObserver {
     private static class DelegateImpl implements Delegate {
         @Override
         public void setHandoffEnabled(Activity activity, boolean enabled) {
-            // TODO(crbug.com/444503472): Verify with xfn whether we should allow handoff to be
-            //  opened in default browser if Chrome is not installed.
+            // TODO(crbug.com/444503472): Re-enabling setAllowHandoffWithoutPackageInstalled(true)
+            //  pending approval to open URLs in the receiver's default browser.
             HandoffActivityParams params =
                     new HandoffActivityParams.Builder()
-                            .setAllowHandoffWithoutPackageInstalled(true)
+                            .setAllowHandoffWithoutPackageInstalled(false)
                             .build();
             activity.setHandoffEnabled(enabled, params);
         }
@@ -91,11 +101,36 @@ public class HandoffController implements TabModelSelectorObserver {
         mDelegate = delegate;
         mTabModelSelector.addObserver(this);
 
-        // TODO(crbug.com/444503472): implement updates for url navigation and tab switches.
-        updateHandoffState();
+        Tab currentTab = activityTabProvider.get();
+        mTabLastUrlSeen = (currentTab != null) ? currentTab.getUrl() : null;
+
+        mActivityTabTabObserver =
+                new ActivityTabTabObserver(activityTabProvider) {
+                    @Override
+                    protected void onObservingDifferentTab(@Nullable Tab tab) {
+                        boolean isNormalTab = tab != null && !tab.isIncognitoBranded();
+                        assumeNonNull(tab);
+                        mTabLastUrlSeen = isNormalTab ? tab.getUrl() : null;
+
+                        updateHandoffState();
+                    }
+
+                    @Override
+                    public void onUrlUpdated(Tab tab) {
+                        // Ignore duplicate calls to #onUrlUpdate within the same navigation.
+                        GURL currentUrl = tab.getUrl();
+                        if (Objects.equals(currentUrl, mTabLastUrlSeen)) return;
+                        if (tab.isIncognitoBranded()) return;
+                        mTabLastUrlSeen = currentUrl;
+
+                        updateHandoffState();
+                    }
+                };
     }
 
+    @Override
     public void destroy() {
+        mActivityTabTabObserver.destroy();
         mTabModelSelector.removeObserver(this);
     }
 
@@ -105,14 +140,21 @@ public class HandoffController implements TabModelSelectorObserver {
         updateHandoffState();
     }
 
+    ActivityTabTabObserver getActiveTabObserverForTesting() {
+        return mActivityTabTabObserver;
+    }
+
     /**
      * Updates the handoff enablement state for the activity. Handoff is disabled if the user is in
-     * Incognito mode.
+     * Incognito mode or if there is no active tab (e.g. in the tab switcher).
      */
     private void updateHandoffState() {
+        if (mActivityTabProvider == null) return;
+
+        Tab tab = mActivityTabProvider.get();
         boolean isIncognito = mTabModelSelector.isIncognitoBrandedModelSelected();
 
-        // Check enterprise policy / user restrictions.
+        // 1. Check enterprise policy / user restrictions.
         UserManager userManager = (UserManager) mActivity.getSystemService(Context.USER_SERVICE);
         boolean isDisallowedByPolicy = false;
         if (userManager != null) {
@@ -122,11 +164,16 @@ public class HandoffController implements TabModelSelectorObserver {
             isDisallowedByPolicy = restrictions.getBoolean("disallow_handoff", false);
         }
 
-        // Opt-out if in incognito or disallowed by policy to protect privacy/comply with
-        // enterprise.
-        boolean handoffEnabled = !isIncognito && !isDisallowedByPolicy;
+        // 2. Opt-out if in incognito, disallowed by policy, or no active tab to protect
+        // privacy/comply with enterprise/reflect actual activity.
+        boolean handoffEnabled = tab != null && !isIncognito && !isDisallowedByPolicy;
 
-        // Update handoff state via delegate.
+        // 3. Resets the handoff state to allow OS to refresh and resurface the handoff icon.
+        if (handoffEnabled) {
+            mDelegate.setHandoffEnabled(mActivity, false);
+        }
+
+        // 4. Update handoff state via delegate.
         mDelegate.setHandoffEnabled(mActivity, handoffEnabled);
     }
 
