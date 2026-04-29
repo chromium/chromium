@@ -72,7 +72,8 @@ void SwizzleUIImageImageNamed() {
     UIImage* image = imp(aClass, @selector(imageNamed:), imageName);
 
     if (![exceptions containsObject:imageName] &&
-        ![imageName containsString:@".FAUXBUNDLEID."]) {
+        ![imageName containsString:@".FAUXBUNDLEID."] &&
+        ![imageName hasPrefix:@"asw_"]) {
 // TODO(crbug.com/40225445): Temporarily turn off DCHECK while bootstrapping
 // Catalyst. Log the error to the console instead.
 #if BUILDFLAG(IS_IOS_MACCATALYST)
