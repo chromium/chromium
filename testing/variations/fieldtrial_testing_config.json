@@ -17047,6 +17047,24 @@
             ]
         }
     ],
+    "OnDeviceModelConstrainedDecodingHint": [
+        {
+            "platforms": [
+                "chromeos",
+                "windows",
+                "mac",
+                "linux"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "OnDeviceModelConstrainedDecodingHint"
+                    ]
+                }
+            ]
+        }
+    ],
     "OnDeviceModelLitertLmBackend": [
         {
             "platforms": [
