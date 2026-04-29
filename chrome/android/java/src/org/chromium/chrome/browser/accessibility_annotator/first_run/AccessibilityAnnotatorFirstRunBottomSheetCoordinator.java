@@ -44,32 +44,33 @@ public class AccessibilityAnnotatorFirstRunBottomSheetCoordinator {
                                 AccessibilityAnnotatorFirstRunBottomSheetProperties.ALL_KEYS)
                         .with(
                                 AccessibilityAnnotatorFirstRunBottomSheetProperties.TITLE,
-                                context.getString(
-                                        R.string.accessibility_partial_custom_tab_bottom_sheet))
+                                context.getString(R.string.accessibility_annotator_info_title))
                         .with(
                                 AccessibilityAnnotatorFirstRunBottomSheetProperties.DESCRIPTION,
                                 context.getString(
-                                        R.string.accessibility_partial_custom_tab_bottom_sheet))
+                                        R.string.accessibility_annotator_info_description_android))
                         .with(
                                 AccessibilityAnnotatorFirstRunBottomSheetProperties
                                         .LEARN_MORE_DESCRIPTION,
-                                context.getString(R.string.ntp_learn_more_about_suggested_content))
+                                context.getString(R.string.accessibility_annotator_info_learn_more))
                         .with(
                                 AccessibilityAnnotatorFirstRunBottomSheetProperties.CARD_1_TEXT,
                                 context.getString(
-                                        R.string.accessibility_partial_custom_tab_bottom_sheet))
+                                        R.string.accessibility_annotator_info_card_1_android))
                         .with(
                                 AccessibilityAnnotatorFirstRunBottomSheetProperties.CARD_2_TEXT,
                                 context.getString(
-                                        R.string.accessibility_partial_custom_tab_bottom_sheet))
+                                        R.string.accessibility_annotator_info_card_2_android))
                         .with(
                                 AccessibilityAnnotatorFirstRunBottomSheetProperties
                                         .PRIMARY_BUTTON_LABEL,
-                                context.getString(R.string.got_it))
+                                context.getString(
+                                        R.string.accessibility_annotator_info_primary_button))
                         .with(
                                 AccessibilityAnnotatorFirstRunBottomSheetProperties
                                         .SECONDARY_BUTTON_LABEL,
-                                context.getString(R.string.page_info_site_settings_button))
+                                context.getString(
+                                        R.string.accessibility_annotator_info_secondary_button))
                         .build();
 
         ClickableSpan learnMoreSpan =
@@ -107,7 +108,7 @@ public class AccessibilityAnnotatorFirstRunBottomSheetCoordinator {
         mView.mPrimaryButton.setOnClickListener(v -> mMediator.onAcknowledgeClicked());
         mView.mSecondaryButton.setOnClickListener(v -> mMediator.onManageSettingsClicked());
 
-        mView.setAnimation(R.raw.finds_opt_in_animation);
+        mView.setAnimation(R.raw.accessibility_annotator_first_run_animation);
     }
 
     /**
