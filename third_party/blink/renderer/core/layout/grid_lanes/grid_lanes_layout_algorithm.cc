@@ -926,15 +926,24 @@ GridItems* GridLanesLayoutAlgorithm::BuildVirtualGridLanesItems(
     // shared baseline(s) and shims. Increase the group's intrinsic size
     // contributions accordingly." [1]
     //
-    // TODO(yanlingwang): Store the shared baseline in the virtual item
-    // separately from item contributions. After virtual items with different
-    // spans are placed into the same track, an additional baseline shim
-    // needs to be computed for each virtual item to account for the combined
-    // track baseline.
-    //
     // [1] https://www.w3.org/TR/css-grid-3/#track-sizing-performance
     const LayoutUnit shared_baseline = ComputeSharedBaselineForGroup(
         group_items, grid_axis_direction, sizing_constraint);
+
+    // Store the group's shared baseline so copies inherit it for baseline
+    // shim computation during track sizing.
+    virtual_item->SetSharedBaseline(shared_baseline);
+
+    // Copy baseline alignment properties from the first item in the group,
+    // since all items in a group have the same baseline-sharing group.
+    if (is_for_columns) {
+      virtual_item->column_alignment = group_items[0]->column_alignment;
+      virtual_item->column_baseline_group =
+          group_items[0]->column_baseline_group;
+    } else {
+      virtual_item->row_alignment = group_items[0]->row_alignment;
+      virtual_item->row_baseline_group = group_items[0]->row_baseline_group;
+    }
 
     for (const Member<GridItemData>& group_item : group_items) {
       GridItemData& item_data = *group_item;
@@ -1162,19 +1171,26 @@ GridItems* GridLanesLayoutAlgorithm::BuildVirtualGridLanesItems(
 
 LayoutUnit GridLanesLayoutAlgorithm::ContributionSizeForVirtualItem(
     const GridLayoutTrackCollection& track_collection,
+    LayoutUnit track_baseline,
     GridItemContributionType contribution_type,
     GridItemData* virtual_item) const {
   DCHECK(virtual_item);
   DCHECK(virtual_item->contribution_sizes);
 
+  const GridTrackSizingDirection track_direction = track_collection.Direction();
+
+  LayoutUnit baseline_shim;
+  if (track_baseline != LayoutUnit::Min()) {
+    baseline_shim = track_baseline -
+                    virtual_item->contribution_sizes->group_shared_baseline;
+  }
+
   switch (contribution_type) {
     case GridItemContributionType::kForContentBasedMinimums:
     case GridItemContributionType::kForIntrinsicMaximums:
-      return virtual_item->contribution_sizes->min_max_contribution.min_size;
+      return virtual_item->contribution_sizes->min_max_contribution.min_size +
+             baseline_shim;
     case GridItemContributionType::kForIntrinsicMinimums: {
-      const GridTrackSizingDirection track_direction =
-          track_collection.Direction();
-
       // See https://drafts.csswg.org/css-grid/#min-size-auto for more details
       // on the special logic applied for intrinsic minimums.
       if (!virtual_item->IsSpanningAutoMinimumTrack(track_direction) ||
@@ -1186,7 +1202,8 @@ LayoutUnit GridLanesLayoutAlgorithm::ContributionSizeForVirtualItem(
         // - if it spans more than one track in that axis, none of those tracks
         // are flexible.
         return virtual_item->contribution_sizes
-            ->intrinsic_min_assuming_track_placement;
+                   ->intrinsic_min_assuming_track_placement +
+               baseline_shim;
       } else {
         // When we aren't spanning tracks that force all items to their
         // automatic minimum, we end up with some items that use the automatic
@@ -1214,12 +1231,14 @@ LayoutUnit GridLanesLayoutAlgorithm::ContributionSizeForVirtualItem(
               spanned_tracks_definite_max_size);
         }
 
-        return max(contribution_to_clamp, contribution_unclamped);
+        return max(contribution_to_clamp, contribution_unclamped) +
+               baseline_shim;
       }
     }
     case GridItemContributionType::kForMaxContentMaximums:
     case GridItemContributionType::kForMaxContentMinimums:
-      return virtual_item->contribution_sizes->min_max_contribution.max_size;
+      return virtual_item->contribution_sizes->min_max_contribution.max_size +
+             baseline_shim;
     case GridItemContributionType::kForFreeSpace:
       NOTREACHED() << "`kForFreeSpace` should only be used to distribute extra "
                       "space in maximize tracks and stretch auto tracks steps.";
@@ -1530,6 +1549,27 @@ void GridLanesLayoutAlgorithm::InitializeTrackSizes(
         (grid_axis_direction == kForColumns)
             ? BorderScrollbarPadding().inline_start
             : BorderScrollbarPadding().block_start);
+
+    // Build per-track shared baselines from all virtual item copies. Each
+    // copy's `group_shared_baseline` is set to the maximum baseline across
+    // its item group. Here, we take the max across all copies for each track,
+    // so the track ends up with the largest baseline from any group.
+    //
+    // Note: these track baselines are specific to this track sizing phase —
+    // they are derived from virtual items and used to compute baseline shims
+    // for intrinsic track sizing. Later, in `ComputeBaselineAlignment`, track
+    // baselines are reset and recomputed from actual item placements.
+    if (layout_data.HasBaselines(grid_axis_direction)) {
+      for (auto& virtual_item : sizing_subtree.GetVirtualItems()) {
+        if (!virtual_item.IsBaselineAligned(grid_axis_direction) ||
+            !virtual_item.contribution_sizes) {
+          continue;
+        }
+        SetTrackBaseline(virtual_item, grid_axis_direction,
+                         virtual_item.contribution_sizes->group_shared_baseline,
+                         layout_data);
+      }
+    }
   } else {
     // If all tracks have a definite size upfront, we can use the current set
     // sizes as the used track sizes (applying alignment, if present).
@@ -1655,10 +1695,17 @@ void GridLanesLayoutAlgorithm::ComputeUsedTrackSizes(
       style, grid_lanes_available_size_, grid_lanes_min_available_size_,
       sizing_constraint);
 
+  const auto& layout_data = sizing_subtree.LayoutData();
+
   track_sizing_algorithm.ComputeUsedTrackSizes(
       [&](GridItemContributionType contribution_type,
           GridItemData* virtual_item) {
-        return ContributionSizeForVirtualItem(track_collection,
+        const LayoutUnit track_baseline =
+            virtual_item->IsBaselineAligned(grid_axis_direction)
+                ? GetTrackBaseline(*virtual_item, layout_data,
+                                   grid_axis_direction)
+                : LayoutUnit::Min();
+        return ContributionSizeForVirtualItem(track_collection, track_baseline,
                                               contribution_type, virtual_item);
       },
       &track_collection, &sizing_subtree.GetVirtualItems(),

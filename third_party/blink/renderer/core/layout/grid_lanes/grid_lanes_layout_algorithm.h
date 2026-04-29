@@ -287,8 +287,12 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
       const ConstraintSpace& space_for_measure,
       SizingConstraint sizing_constraint) const;
 
+  // `track_baseline` is the shared baseline for the track that `virtual_item`
+  // participates in, or `LayoutUnit::Min()` if the item is not
+  // baseline-aligned.
   LayoutUnit ContributionSizeForVirtualItem(
       const GridLayoutTrackCollection& track_collection,
+      LayoutUnit track_baseline,
       GridItemContributionType contribution_type,
       GridItemData* virtual_item) const;
 

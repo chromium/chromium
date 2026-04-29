@@ -300,6 +300,13 @@ struct CORE_EXPORT GridItemData : public GarbageCollected<GridItemData> {
         std::max(contribution_sizes->min_clamp_size, min_clamp_size);
   }
 
+  void SetSharedBaseline(LayoutUnit baseline) {
+    if (!contribution_sizes) {
+      contribution_sizes = VirtualItemContributions();
+    }
+    contribution_sizes->group_shared_baseline = baseline;
+  }
+
   // Clear all contribution sizes stored on a virtual item so that they are set
   // back to their default values.
   void ClearContributionSizes() {
@@ -410,6 +417,11 @@ struct CORE_EXPORT GridItemData : public GarbageCollected<GridItemData> {
     LayoutUnit intrinsic_min_ignoring_track_placement;
     LayoutUnit intrinsic_min_ignoring_track_placement_unclamped;
     LayoutUnit min_clamp_size;
+
+    // The shared baseline of this virtual item's group (i.e. the max baseline
+    // across all items in the group), used for baseline shim computation in
+    // grid-lanes track sizing.
+    LayoutUnit group_shared_baseline;
   };
   std::optional<VirtualItemContributions> contribution_sizes;
 };

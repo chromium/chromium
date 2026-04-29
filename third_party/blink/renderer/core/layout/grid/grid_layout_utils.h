@@ -160,6 +160,14 @@ LayoutUnit GetLogicalBaseline(const LogicalBoxFragment& baseline_fragment,
                               FontBaseline font_baseline,
                               bool is_last_baseline);
 
+// Updates `layout_data` with a baseline value on the appropriate track for the
+// given item, based on its baseline-sharing group (major → start-most track,
+// minor → end-most track).
+void SetTrackBaseline(const GridItemData& grid_item,
+                      GridTrackSizingDirection track_direction,
+                      LayoutUnit baseline,
+                      GridLayoutData& layout_data);
+
 // Calculates and stores an item's baseline in the appropriate track.
 // `extra_margin` should include any margins and subgrid extra margins that need
 // to be added to the baseline.
