@@ -279,6 +279,10 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
   void RemoveHitTestRegionObserver(HitTestRegionObserver* observer) override;
   const DisplayHitTestQueryMap& GetDisplayHitTestQuery() const override;
 
+  // HitTestAggregatorDelegate and HitTestManager::Delegate implementation:
+  bool IsChildOf(const FrameSinkId& parent,
+                 const FrameSinkId& child) const override;
+
   // CompositorFrameSinkSupport, hierarchy, and BeginFrameSource can be
   // registered and unregistered in any order with respect to each other.
   //
