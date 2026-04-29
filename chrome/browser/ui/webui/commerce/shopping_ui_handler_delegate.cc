@@ -61,7 +61,7 @@ std::optional<GURL> ShoppingUiHandlerDelegate::GetCurrentTabUrl() {
 const bookmarks::BookmarkNode*
 ShoppingUiHandlerDelegate::GetOrAddBookmarkForCurrentUrl() {
   BrowserWindowInterface* const browser =
-      ProfileBrowserCollection::GetForProfile(profile_)->GetLastActiveBrowser();
+      chrome::FindLastActiveWithProfile(profile_);
   if (!browser) {
     return nullptr;
   }
@@ -91,8 +91,7 @@ ShoppingUiHandlerDelegate::GetOrAddBookmarkForCurrentUrl() {
 }
 
 void ShoppingUiHandlerDelegate::OpenUrlInNewTab(const GURL& url) {
-  BrowserWindowInterface* browser =
-      ProfileBrowserCollection::GetForProfile(profile_)->GetLastActiveBrowser();
+  BrowserWindowInterface* browser = chrome::FindLastActiveWithProfile(profile_);
   if (!browser) {
     return;
   }
@@ -107,8 +106,7 @@ void ShoppingUiHandlerDelegate::SwitchToOrOpenTab(const GURL& url) {
   BrowserWindowInterface* browser =
       GlobalBrowserCollection::GetInstance()->GetActiveBrowser();
   if (!browser) {
-    browser = ProfileBrowserCollection::GetForProfile(profile_)
-                  ->GetLastActiveBrowser();
+    browser = chrome::FindLastActiveWithProfile(profile_);
   }
   if (!browser) {
     return;

@@ -104,7 +104,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
-#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/keyboard_lock_controller.h"
@@ -1866,8 +1865,7 @@ void RenderViewContextMenu::AppendLinkItems() {
         if (profile_for_path != GetProfile() && !entry->IsOmitted() &&
             !entry->IsSigninRequired()) {
           target_profiles_entries.push_back(entry);
-          if (ProfileBrowserCollection::GetForProfile(profile_for_path)
-                  ->GetLastActiveBrowser()) {
+          if (chrome::FindLastActiveWithProfile(profile_for_path)) {
             multiple_profiles_open_ = true;
           }
           if (ProfileMetrics::IsProfileActive(entry)) {
