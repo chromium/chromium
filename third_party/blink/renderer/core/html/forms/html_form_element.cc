@@ -93,6 +93,7 @@
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -667,11 +668,33 @@ void HTMLFormElement::PrepareForSubmission(const Event* event,
     if (!skip_validation && !ValidateInteractively()) {
       should_submit = false;
       if (declarative_webmcp_call) {
-        // TODO(crbug.com/493951236) This error message should describe more
-        // of the details of what failed validation.
+        StringBuilder error_message;
+        error_message.Append("Form validation failed: ");
+
+        for (const auto& control : ListedElements()) {
+          // If the control is a candidate for validation and is currently
+          // invalid
+          if (!control->IsNotCandidateOrValid()) {
+            String name;
+            if (auto* form_control =
+                    DynamicTo<HTMLFormControlElement>(control.Get())) {
+              name = form_control->GetWebMCPParameterName();
+            } else if (auto* element_internals =
+                           DynamicTo<ElementInternals>(control.Get())) {
+              name = element_internals->GetName();
+            } else {
+              name = "{unknown}";
+            }
+            error_message.Append(name);
+            error_message.Append(": ");
+            error_message.Append(control->validationMessage());
+            error_message.Append(". ");
+          }
+        }
+
         executing_tool->CallDoneCallback(base::unexpected(
             ScriptToolError(ScriptToolErrorCode::kToolInvocationFailed,
-                            "Form validation failed")));
+                            error_message.ToString())));
       }
     } else {
       frame->Client()->DispatchWillSendSubmitEvent(this);

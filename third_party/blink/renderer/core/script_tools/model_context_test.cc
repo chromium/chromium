@@ -22,11 +22,13 @@
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
+#include "third_party/blink/renderer/core/page/validation_message_client.h"
 #include "third_party/blink/renderer/core/script_tools/model_context_supplement.h"
 #include "third_party/blink/renderer/core/script_tools/script_tool_types.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
@@ -451,6 +453,102 @@ TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_ValidationFailure) {
           [&](base::expected<String, ScriptToolError> res) {
             got_result = true;
             EXPECT_FALSE(res.has_value());
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+  EXPECT_TRUE(got_result);
+}
+
+class MockFormValidationMessageClient
+    : public GarbageCollected<MockFormValidationMessageClient>,
+      public ValidationMessageClient {
+ public:
+  void ShowValidationMessage(Element& anchor,
+                             const String&,
+                             TextDirection,
+                             const String&,
+                             TextDirection) override {
+    anchor_ = anchor;
+  }
+
+  void HideValidationMessage(const Element& anchor) override {
+    if (anchor_ == &anchor) {
+      anchor_ = nullptr;
+    }
+  }
+
+  bool IsValidationMessageVisible(const Element& anchor) override {
+    return anchor_ == &anchor;
+  }
+
+  void DocumentDetached(const Document&) override {}
+  void DidChangeFocusTo(const Element*) override {}
+  void WillBeDestroyed() override {}
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(anchor_);
+    ValidationMessageClient::Trace(visitor);
+  }
+
+ private:
+  Member<const Element> anchor_;
+};
+
+class ModelContextValidationTest : public ModelContextTest {
+ public:
+  void SetUp() override {
+    ModelContextTest::SetUp();
+    mock_client_ = MakeGarbageCollected<MockFormValidationMessageClient>();
+    original_client_ =
+        &Window().GetFrame()->GetPage()->GetValidationMessageClient();
+    Window().GetFrame()->GetPage()->SetValidationMessageClientForTesting(
+        mock_client_);
+  }
+
+  void TearDown() override {
+    Window().GetFrame()->GetPage()->SetValidationMessageClientForTesting(
+        original_client_);
+    ModelContextTest::TearDown();
+  }
+
+ private:
+  Persistent<MockFormValidationMessageClient> mock_client_;
+  Persistent<ValidationMessageClient> original_client_;
+};
+
+TEST_F(ModelContextValidationTest,
+       ExecuteDeclarativeFormTool_ValidationFailureDetails) {
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+  v8::HandleScope handle_scope(Window().GetIsolate());
+  ScriptState::Scope script_scope(
+      ToScriptStateForMainWorld(Window().GetFrame()));
+  main_resource.Complete(R"(
+    <form toolautosubmit toolname="validation_tool" tooldescription="Validation">
+      <input id=mytext type=text name=text_required required>
+      <input id=mynumber type=number name=number_min min=10>
+      <button type=submit>Submit</button>
+    </form>
+  )");
+
+  auto* model_context =
+      ModelContextSupplement::modelContext(*Window().navigator());
+  ASSERT_TRUE(model_context);
+
+  base::RunLoop run_loop;
+  bool got_result = false;
+  model_context->ExecuteTool(
+      base::UnguessableToken::Create(), "validation_tool",
+      "{\"text_required\": \"\", \"number_min\": 5}",
+      /* signal= */ nullptr,
+      base::BindLambdaForTesting(
+          [&](base::expected<String, ScriptToolError> res) {
+            got_result = true;
+            EXPECT_FALSE(res.has_value());
+            EXPECT_EQ(res.error(), ScriptToolErrorCode::kToolInvocationFailed);
+            EXPECT_EQ(
+                res.error().message,
+                "Form validation failed: text_required: "
+                "<<ValidationValueMissing>>. number_min: range underflow. ");
             run_loop.Quit();
           }));
   run_loop.Run();
