@@ -17,6 +17,12 @@ import android.os.Handler;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.transition.ChangeBounds;
+import android.transition.Fade;
+import android.transition.Transition;
+import android.transition.TransitionListenerAdapter;
+import android.transition.TransitionManager;
+import android.transition.TransitionSet;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -567,6 +573,21 @@ public class SettingsSearchCoordinator
             mHandler.post(() -> showUiInSingleColumn(searchBox, show));
             return;
         }
+        searchBox.setOnClickListener(v -> {}); // Temporary disables search during the animation
+        Transition transition =
+                new TransitionSet()
+                        .addTransition(new Fade(show ? Fade.IN : Fade.OUT))
+                        .addTransition(new ChangeBounds())
+                        .setOrdering(TransitionSet.ORDERING_TOGETHER)
+                        .addListener(
+                                new TransitionListenerAdapter() {
+                                    @Override
+                                    public void onTransitionEnd(Transition transition) {
+                                        searchBox.setOnClickListener(v -> onClickSearchBox(v));
+                                    }
+                                });
+        var parentView = (ViewGroup) mActivity.findViewById(R.id.settings_activity);
+        TransitionManager.beginDelayedTransition(parentView, transition);
         searchBox.setVisibility(show ? View.VISIBLE : View.GONE);
     }
 
