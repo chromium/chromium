@@ -41,9 +41,6 @@ class SearchBoxViewBinder
         } else if (SearchBoxProperties.DSE_ICON_DRAWABLE == propertyKey) {
             ((SearchBoxContainerView) searchBoxlayout)
                     .setDseIconDrawable(model.get(SearchBoxProperties.DSE_ICON_DRAWABLE));
-        } else if (SearchBoxProperties.DSE_ICON_RESOURCE_ID == propertyKey) {
-            ((SearchBoxContainerView) searchBoxlayout)
-                    .setDseIconResource(model.get(SearchBoxProperties.DSE_ICON_RESOURCE_ID));
         } else if (SearchBoxProperties.ENABLE_SEARCH_BOX_EDIT_TEXT == propertyKey) {
             searchBoxTextView.setEnabled(
                     model.get(SearchBoxProperties.ENABLE_SEARCH_BOX_EDIT_TEXT));

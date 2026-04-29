@@ -96,13 +96,6 @@ public class SearchBoxViewBinderUnitTest {
     }
 
     @Test
-    public void testSetDseIconResource() {
-        int resId = 123;
-        mPropertyModel.set(SearchBoxProperties.DSE_ICON_RESOURCE_ID, resId);
-        verify(mSearchBoxLayout).setDseIconResource(eq(resId));
-    }
-
-    @Test
     public void testSetDseIconDrawable() {
         Drawable drawable = mock(Drawable.class);
         mPropertyModel.set(SearchBoxProperties.DSE_ICON_DRAWABLE, drawable);

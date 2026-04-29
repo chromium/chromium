@@ -103,7 +103,9 @@ class SearchBoxMediator implements DestroyObserver {
 
     void setSearchEngineIcon(StatusProperties.@Nullable StatusIconResource newIcon) {
         if (newIcon == null) {
-            mModel.set(SearchBoxProperties.DSE_ICON_RESOURCE_ID, R.drawable.ic_search_24dp);
+            mModel.set(
+                    SearchBoxProperties.DSE_ICON_DRAWABLE,
+                    mContext.getDrawable(R.drawable.ic_search_24dp));
             return;
         }
 
@@ -111,7 +113,9 @@ class SearchBoxMediator implements DestroyObserver {
         // NewTabPageLayout#setSearchProviderInfo(). Thus, we check the icon's resource id to change
         // the icon to be R.drawable.ic_logo_googleg_24dp which doesn't have a padding.
         if (newIcon.getIconRes() == R.drawable.ic_logo_googleg_20dp) {
-            mModel.set(SearchBoxProperties.DSE_ICON_RESOURCE_ID, R.drawable.ic_logo_googleg_24dp);
+            mModel.set(
+                    SearchBoxProperties.DSE_ICON_DRAWABLE,
+                    mContext.getDrawable(R.drawable.ic_logo_googleg_24dp));
             return;
         }
 

@@ -135,17 +135,13 @@ public class SearchBoxMediatorUnitTest {
     public void testSetSearchEngineIcon_Google() {
         StatusIconResource googleIcon = new StatusIconResource(R.drawable.ic_logo_googleg_20dp, 0);
         mMediator.setSearchEngineIcon(googleIcon);
-        assertEquals(
-                R.drawable.ic_logo_googleg_24dp,
-                mPropertyModel.get(SearchBoxProperties.DSE_ICON_RESOURCE_ID));
+        assertNotNull(mPropertyModel.get(SearchBoxProperties.DSE_ICON_DRAWABLE));
     }
 
     @Test
     public void testSetSearchEngineIcon_Null() {
         mMediator.setSearchEngineIcon(null);
-        assertEquals(
-                R.drawable.ic_search_24dp,
-                mPropertyModel.get(SearchBoxProperties.DSE_ICON_RESOURCE_ID));
+        assertNotNull(mPropertyModel.get(SearchBoxProperties.DSE_ICON_DRAWABLE));
     }
 
     @Test

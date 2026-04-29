@@ -15,7 +15,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.annotation.DrawableRes;
 import androidx.core.widget.ImageViewCompat;
 
 import org.chromium.base.Log;
@@ -69,10 +68,6 @@ public class SearchBoxContainerView extends LinearLayout {
             }
         }
         return super.onInterceptTouchEvent(ev);
-    }
-
-    void setDseIconResource(@DrawableRes int resId) {
-        mDseIconView.setImageResource(resId);
     }
 
     void setDseIconDrawable(@Nullable Drawable drawable) {
