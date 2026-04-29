@@ -214,7 +214,7 @@ GeminiBrowserAgent::GeminiBrowserAgent(Browser* browser)
       FullscreenBrowserAgent* agent =
           FullscreenBrowserAgent::FromBrowser(browser_);
       CHECK(agent);
-      agent->AddObserver(this);
+      fullscreen_observation_.Observe(agent);
     } else {
       FullscreenController::CreateForBrowser(browser_);
       fullscreen_controller_ = FullscreenController::FromBrowser(browser_);
@@ -293,14 +293,6 @@ GeminiBrowserAgent::~GeminiBrowserAgent() {
   if (fullscreen_controller_) {
     fullscreen_controller_->RemoveObserver(this);
     fullscreen_controller_ = nullptr;
-  }
-
-  if (IsFullscreenRefactoringEnabled()) {
-    FullscreenBrowserAgent* fullscreenBrowserAgent =
-        FullscreenBrowserAgent::FromBrowser(browser_);
-    if (fullscreenBrowserAgent) {
-      fullscreenBrowserAgent->RemoveObserver(this);
-    }
   }
 
   if (IsGeminiCopresenceWithFullscreenDisablerEnabled()) {
@@ -1092,7 +1084,7 @@ void GeminiBrowserAgent::DidUpdateObscuredInsetRange(
 }
 
 void GeminiBrowserAgent::WillShutDown(FullscreenBrowserAgent* agent) {
-  agent->RemoveObserver(this);
+  fullscreen_observation_.Reset();
 }
 
 #pragma mark - Private

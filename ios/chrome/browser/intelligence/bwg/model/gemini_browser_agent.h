@@ -367,6 +367,11 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   // Scoped fullscreen disabler.
   std::unique_ptr<ScopedFullscreenDisabler> fullscreen_disabler_;
 
+  // Scoped fullscreen observervation.
+  base::ScopedObservation<FullscreenBrowserAgent,
+                          FullscreenBrowserAgentObserver>
+      fullscreen_observation_{this};
+
   // Timer to reset the fullscreen disabler. Re-enabling fullscreen should be
   // handled in floaty interaction logic such as the floaty being collapsed or
   // dismissed. For any reason, if an exit point doesn't re-enable fullscreen,
