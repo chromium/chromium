@@ -5,12 +5,14 @@
 #import "ios/chrome/browser/enterprise/cloud_content_scanning/model/files_request_handler_ios.h"
 
 #import "components/enterprise/connectors/core/cloud_content_scanning/deep_scanning_utils.h"
+#import "components/enterprise/connectors/core/cloud_content_scanning/request_handler_base.h"
 #import "components/enterprise/connectors/core/reporting_constants.h"
 #import "components/enterprise/connectors/core/reporting_event_router.h"
 #import "ios/chrome/browser/enterprise/cloud_content_scanning/model/ios_content_analysis_request.h"
 #import "ios/chrome/browser/enterprise/connectors/connectors_service_factory.h"
 #import "ios/chrome/browser/enterprise/connectors/connectors_util.h"
 #import "ios/chrome/browser/enterprise/connectors/reporting/ios_reporting_event_router_factory.h"
+#import "ios/chrome/browser/enterprise/connectors/reporting/reporting_util.h"
 
 namespace enterprise_connectors {
 
@@ -45,6 +47,9 @@ void FilesRequestHandlerIOS::ReportWarningBypass(
     const ContentAnalysisInfoBase& info,
     const std::string& trigger,
     const std::string& content_transfer_method) {
+  if (!was_warned_) {
+    return;
+  }
   ReportAnalysisConnectorWarningBypass(
       GetReportingEventRouter(), &info, GetSource(), GetDestination(),
       path_.AsUTF8Unsafe(), file_info_.sha256_or_cb, file_info_.mime_type,
@@ -93,7 +98,15 @@ void FilesRequestHandlerIOS::UpdateRequestHandlerResult(
     RequestHandlerResult result,
     ContentAnalysisResponse response) {
   result_ = result;
+  was_warned_ = result.final_result == FinalContentAnalysisResult::WARNING;
   response_ = response;
+
+  EventResult event_result = GetEventResult(result);
+  if (event_result != EventResult::ALLOWED) {
+    MaybeReportDangerousDownloadEvent(*handler_->content_analysis_info(),
+                                      response_, path_, file_info_,
+                                      event_result, GetReportingEventRouter());
+  }
 }
 
 const base::FilePath& FilesRequestHandlerIOS::GetPath(size_t index) const {

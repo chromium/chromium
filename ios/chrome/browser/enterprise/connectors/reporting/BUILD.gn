@@ -46,6 +46,7 @@ source_set("util") {
     ":reporting",
     "//base",
     "//components/enterprise/connectors/core",
+    "//components/enterprise/connectors/core:cloud_content_scanning",
     "//components/safe_browsing/core/common/proto:csd_proto",
     "//components/security_interstitials/core:unsafe_resource",
     "//ios/chrome/browser/shared/model/profile",

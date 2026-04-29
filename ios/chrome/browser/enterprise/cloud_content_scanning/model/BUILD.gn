@@ -28,6 +28,7 @@ source_set("model") {
     "//ios/chrome/browser/enterprise/connectors:util",
     "//ios/chrome/browser/enterprise/connectors/analysis",
     "//ios/chrome/browser/enterprise/connectors/reporting",
+    "//ios/chrome/browser/enterprise/connectors/reporting:util",
     "//ios/chrome/browser/enterprise/enterprise_dialog/model",
     "//ios/chrome/browser/policy/model",
     "//ios/chrome/browser/shared/model/application_context",

@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/download/model/download_manager_tab_helper.h"
 
+#import <optional>
+
 #import "base/check_op.h"
 #import "base/feature_list.h"
 #import "base/files/file_path.h"
@@ -369,21 +371,14 @@ DownloadFileService* DownloadManagerTabHelper::GetDownloadFileService() {
 
 void DownloadManagerTabHelper::MaybeMoveDownloadToDownloadsDirectory(
     bool shouldProceed) {
-  // Ensure the handler and content_analysis_info_ are destroyed as soon as they
-  // are no longer necessary.
-  base::ScopedClosureRunner cleanup(base::BindOnce(
-      [](std::unique_ptr<enterprise_connectors::FilesRequestHandlerBase>
-             handler,
-         std::unique_ptr<enterprise_connectors::ContentAnalysisInfo> info) {
-        // Make sure the request_handler is destroyed first.
-        handler.reset();
-      },
-      std::move(files_request_handler_), std::move(content_analysis_info_)));
-
   if (!shouldProceed) {
     CleanupCurrentDownload();
     return;
   }
+
+  // This will only report when scan result is WARNING and bypassed.
+  files_request_handler_->ReportWarningBypass(
+      /* user_justification */ std::nullopt);
 
   base::FilePath user_download_path;
   GetDownloadsDirectory(&user_download_path);
@@ -393,6 +388,11 @@ void DownloadManagerTabHelper::MaybeMoveDownloadToDownloadsDirectory(
       user_download_path, base_file_name,
       base::BindOnce(&DownloadManagerTabHelper::UseAvailableUserDocumentsPath,
                      weak_ptr_factory_.GetWeakPtr()));
+
+  // Ensure the handler and content_analysis_info_ are destroyed as soon as they
+  // are no longer necessary.
+  files_request_handler_.reset();
+  content_analysis_info_.reset();
 }
 
 void DownloadManagerTabHelper::ProcessCompleteDownloadTask() {

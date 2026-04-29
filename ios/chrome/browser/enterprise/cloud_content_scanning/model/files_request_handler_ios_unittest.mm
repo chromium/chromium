@@ -243,8 +243,8 @@ TEST_F(FilesRequestHandlerIOSTest, UpdateRequestHandlerResult) {
   EXPECT_EQ(final_result.tag, result.tag);
 }
 
-// Tests that ReportWarningBypass correctly triggers a sensitive data event
-// via the reporting event router when called.
+// Tests that ReportWarningBypass and MaybeReportDangerousDownload correctly
+// triggers a sensitive data event via the reporting event router when called.
 TEST_F(FilesRequestHandlerIOSTest, ReportWarningBypass) {
   base::test::TestFuture<RequestHandlerResult> future;
   auto delegate_ptr = std::make_unique<FilesRequestHandlerIOS>(
@@ -261,7 +261,8 @@ TEST_F(FilesRequestHandlerIOSTest, ReportWarningBypass) {
   result->set_status(ContentAnalysisResponse::Result::SUCCESS);
   result->add_triggered_rules()->set_action(TriggeredRule::WARN);
 
-  delegate->UpdateRequestHandlerResult(0, RequestHandlerResult(), response);
+  RequestHandlerResult request_result;
+  request_result.final_result = FinalContentAnalysisResult::WARNING;
 
   google::protobuf::RepeatedPtrField<::safe_browsing::ReferrerChainEntry>
       referrer_chain;
@@ -280,6 +281,7 @@ TEST_F(FilesRequestHandlerIOSTest, ReportWarningBypass) {
 
   EXPECT_CALL(*reporting_router_, OnSensitiveDataEvent(testing::_)).Times(1);
 
+  delegate->UpdateRequestHandlerResult(0, request_result, response);
   handler.ReportWarningBypass(u"justification");
 }
 

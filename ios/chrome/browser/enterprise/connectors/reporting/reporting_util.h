@@ -5,8 +5,12 @@
 #ifndef IOS_CHROME_BROWSER_ENTERPRISE_CONNECTORS_REPORTING_REPORTING_UTIL_H_
 #define IOS_CHROME_BROWSER_ENTERPRISE_CONNECTORS_REPORTING_REPORTING_UTIL_H_
 
+#import "components/enterprise/connectors/core/cloud_content_scanning/files_request_handler_base.h"
+#import "components/enterprise/connectors/core/common.h"
+
 class GURL;
 class ReportingEventRouter;
+class ContentAnalysisInfoBase;
 
 namespace safe_browsing {
 class RTLookupResponse;
@@ -24,6 +28,9 @@ enum class UrlFilteringEventType {
   kBypassed,
 };
 
+// Map RequestHandler Scanning Result to Event Result.
+EventResult GetEventResult(const RequestHandlerResult& result);
+
 // Reports a URL filtering event (e.g., interstitial shown, bypassed) to the
 // enterprise reporting system.
 //
@@ -37,6 +44,16 @@ void ReportEnterpriseUrlFilteringEvent(
     const GURL& page_url,
     const safe_browsing::RTLookupResponse& rt_lookup_response,
     ReportingEventRouter* event_router);
+
+// Reports a dangerous download event with the content analysis info and
+// response, the event result can be BLOCK or WARN.
+void MaybeReportDangerousDownloadEvent(
+    const ContentAnalysisInfoBase& info,
+    const ContentAnalysisResponse& response,
+    const base::FilePath& path,
+    const FilesRequestHandlerBase::FileInfo& file_info,
+    EventResult result,
+    ReportingEventRouter* router);
 
 }  // namespace enterprise_connectors
 

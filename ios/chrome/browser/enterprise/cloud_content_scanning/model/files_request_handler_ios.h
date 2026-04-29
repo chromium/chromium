@@ -77,6 +77,9 @@ class FilesRequestHandlerIOS : public FilesRequestHandlerBase::Delegate {
   ContentAnalysisResponse response_;
   bool was_reported_ = false;
 
+  // Whether the scan result is WARNING.
+  bool was_warned_ = false;
+
   base::WeakPtrFactory<FilesRequestHandlerIOS> weak_ptr_factory_{this};
 };
 
