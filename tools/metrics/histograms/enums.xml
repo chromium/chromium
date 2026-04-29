@@ -9581,6 +9581,7 @@ from previous Chrome versions.
   <int value="-1505836593" label="ImprovedIncognitoScreenshot:disabled"/>
   <int value="-1505222604" label="ClearIdentityInCanMakePaymentEvent:disabled"/>
   <int value="-1505076171" label="AutomaticUsbDetach:enabled"/>
+  <int value="-1504321908" label="EnablePixAccountLinkingNative:enabled"/>
   <int value="-1504305449" label="NTPPhysicalWebPageSuggestions:enabled"/>
   <int value="-1503943605" label="AndroidComposeplate:enabled"/>
   <int value="-1503851906" label="EnableSettingsShortcutSearch:enabled"/>
@@ -10435,6 +10436,7 @@ from previous Chrome versions.
   <int value="-1227660915" label="WebContentsOcclusion:disabled"/>
   <int value="-1227571965" label="SnapGroup:enabled"/>
   <int value="-1226536953" label="DeskTemplateSync:disabled"/>
+  <int value="-1226013774" label="EnablePixAccountLinkingNative:disabled"/>
   <int value="-1225861190" label="SupportTool:disabled"/>
   <int value="-1225772151" label="OfflineHome:disabled"/>
   <int value="-1225629234" label="SyncPseudoUSSFavicons:enabled"/>

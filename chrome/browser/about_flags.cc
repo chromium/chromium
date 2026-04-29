@@ -9962,6 +9962,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnablePixAccountLinkingDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(payments::facilitated::kEnablePixAccountLinking)},
 
+    {"enable-pix-account-linking-native",
+     flag_descriptions::kEnablePixAccountLinkingNativeName,
+     flag_descriptions::kEnablePixAccountLinkingNativeDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(payments::facilitated::kEnablePixAccountLinkingNative)},
+
     {"enable-pix-payments-in-landscape-mode",
      flag_descriptions::kEnablePixPaymentsInLandscapeModeName,
      flag_descriptions::kEnablePixPaymentsInLandscapeModeDescription,

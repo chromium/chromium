@@ -1695,6 +1695,13 @@ inline constexpr char kEnablePixAccountLinkingDescription[] =
     "When enabled, users without linked Pix accounts will be prompted to link "
     "their Pix accounts to Google Wallet.";
 
+inline constexpr char kEnablePixAccountLinkingNativeName[] =
+    "Enable native Pix account linking";
+inline constexpr char kEnablePixAccountLinkingNativeDescription[] =
+    "Enables a native Pix account linking flow for Brazilian users in Chrome "
+    "on Android. This removes the Google Wallet app dependency and optimizes "
+    "the prompt timing to improve user engagement.";
+
 inline constexpr char kEnablePixInCctName[] =
     "Enable Pix code detection in Chrome custom tabs";
 inline constexpr char kEnablePixInCctDescription[] =

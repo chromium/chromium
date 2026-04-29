@@ -6,6 +6,7 @@
 #define COMPONENTS_FACILITATED_PAYMENTS_CORE_FEATURES_FEATURES_H_
 
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
 
 namespace payments::facilitated {
@@ -15,6 +16,11 @@ BASE_DECLARE_FEATURE(kUseRustPixCodeValidator);
 #if BUILDFLAG(IS_ANDROID)
 BASE_DECLARE_FEATURE(kDisableFacilitatedPaymentsMerchantAllowlist);
 BASE_DECLARE_FEATURE(kEnablePixAccountLinking);
+BASE_DECLARE_FEATURE(kEnablePixAccountLinkingNative);
+extern const base::FeatureParam<std::string>
+    kPixAccountLinkingNativePromptVariant;
+extern const base::FeatureParam<int>
+    kPixAccountLinkingNativeTriggerDelaySeconds;
 BASE_DECLARE_FEATURE(kEnableStaticQrCodeForPix);
 BASE_DECLARE_FEATURE(kEnableIframeForPix);
 BASE_DECLARE_FEATURE(kEnablePixInCct);

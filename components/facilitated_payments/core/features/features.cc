@@ -4,6 +4,8 @@
 
 #include "components/facilitated_payments/core/features/features.h"
 
+#include "base/metrics/field_trial_params.h"
+
 namespace payments::facilitated {
 
 // When enabled, Chrome will offer to pay with accounts supporting Pix to users
@@ -24,6 +26,16 @@ BASE_FEATURE(kDisableFacilitatedPaymentsMerchantAllowlist,
 // When enabled, Chrome will prompt users without linked Pix accounts to link
 // their Pix accounts to Google Wallet.
 BASE_FEATURE(kEnablePixAccountLinking, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, Chrome will offer a native Pix account linking flow for
+// users on Chrome, removing the Wallet app dependency.
+BASE_FEATURE(kEnablePixAccountLinkingNative, base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<std::string> kPixAccountLinkingNativePromptVariant{
+    &kEnablePixAccountLinkingNative, "prompt_variant", "VariationA"};
+
+const base::FeatureParam<int> kPixAccountLinkingNativeTriggerDelaySeconds{
+    &kEnablePixAccountLinkingNative, "trigger_delay_seconds", 3};
 
 // When enabled, static qr code will be supported for pix pay flow.
 BASE_FEATURE(kEnableStaticQrCodeForPix, base::FEATURE_DISABLED_BY_DEFAULT);
