@@ -82,7 +82,7 @@ class TestReviewMonitor(unittest.TestCase):
         self.assertFalse(res.finished)
         self.assertIn("Failed: 1", res.stats)
         self.assertIn("Pending: 1", res.stats)
-        self.assertEqual(res.failed_builders, ['bot1'])
+        self.assertEqual(res.failed_builders, ['bot1 (PS 5)'])
 
     def test_parse_results_with_retries(self):
         # Bot1 failed at T1, then succeeded at T2.
@@ -127,7 +127,7 @@ class TestReviewMonitor(unittest.TestCase):
 
         # 1st call: bot failed, but CQ label is still 1.
         # 2nd call: bot succeeded.
-        self.monitor.get_try_results = MagicMock(side_effect=[
+        self.monitor.get_all_try_results = MagicMock(side_effect=[
             [{
                 'builder': {
                     'builder': 'bot1'
@@ -150,8 +150,123 @@ class TestReviewMonitor(unittest.TestCase):
 
         self.monitor.monitor()
 
-        self.assertEqual(self.monitor.get_try_results.call_count, 2)
+        self.assertEqual(self.monitor.get_all_try_results.call_count, 2)
         self.monitor.set_ready.assert_called_once()
+
+
+    @patch('send_after_cq_dryrun.run_command')
+    def test_get_all_try_results(self, mock_run_command):
+        import json
+        # Mock Gerrit response for ALL_REVISIONS
+        gerrit_resp = json.dumps(
+            {"revisions": {
+                "rev1": {
+                    "_number": 1
+                },
+                "rev2": {
+                    "_number": 2
+                }
+            }})
+
+        # Mock git cl try-results responses
+        ps1_resp = json.dumps([{
+            "builder": {
+                "builder": "bot1"
+            },
+            "status": "FAILURE",
+            "createTime": "T1"
+        }])
+        ps2_resp = json.dumps([{
+            "builder": {
+                "builder": "bot1"
+            },
+            "status": "SUCCESS",
+            "createTime": "T2"
+        }])
+
+        # side_effect returns values in sequence for consecutive calls
+        mock_run_command.side_effect = [
+            (gerrit_resp, 0),  # For Gerrit query
+            (ps1_resp, 0),  # For PS 1 results
+            (ps2_resp, 0)  # For PS 2 results
+        ]
+
+        results = self.monitor.get_all_try_results()
+
+        # Verify that it called run_command 3 times
+        self.assertEqual(mock_run_command.call_count, 3)
+
+        # Verify that results are concatenated
+        self.assertEqual(len(results), 2)
+        self.assertEqual(results[0]["status"], "FAILURE")
+        self.assertEqual(results[1]["status"], "SUCCESS")
+
+    def test_parse_results_newest_patchset_per_builder(self):
+        results = [
+            # Builder A on PS1 (Failed)
+            {
+                'builder': {
+                    'builder': 'builder_A'
+                },
+                'status':
+                'FAILURE',
+                'createTime':
+                '2026-02-13T10:00:00Z',
+                'tags': [{
+                    'key':
+                    'buildset',
+                    'value':
+                    'patch/gerrit/chromium-review.googlesource.com/7793289/1'
+                }]
+            },
+            # Builder A on PS2 (Success)
+            {
+                'builder': {
+                    'builder': 'builder_A'
+                },
+                'status':
+                'SUCCESS',
+                'createTime':
+                '2026-02-13T11:00:00Z',
+                'tags': [{
+                    'key':
+                    'buildset',
+                    'value':
+                    'patch/gerrit/chromium-review.googlesource.com/7793289/2'
+                }]
+            },
+            # Builder B on PS1 (Failed)
+            {
+                'builder': {
+                    'builder': 'builder_B'
+                },
+                'status':
+                'FAILURE',
+                'createTime':
+                '2026-02-13T10:30:00Z',
+                'tags': [{
+                    'key':
+                    'buildset',
+                    'value':
+                    'patch/gerrit/chromium-review.googlesource.com/7793289/1'
+                }]
+            },
+        ]
+
+        # We need to mock self.patchset to handle fallback if not found in tags
+        self.monitor.patchset = '2'
+
+        res = self.monitor.parse_results(results)
+
+        self.assertTrue(res.finished)
+        # Because Builder B failed on its max patchset (PS1)
+        self.assertFalse(res.success)
+        self.assertEqual(len(res.failed_builders), 1)
+        self.assertIn('builder_B (PS 1)', res.failed_builders)
+        # Builder A should be successful because PS2 succeeded
+        self.assertIn("Success: 1/2",
+                      res.stats)  # builder_A success, builder_B failed
+        self.assertIn("Failed: 1", res.stats)
 
 
 if __name__ == '__main__':
