@@ -700,9 +700,7 @@ void BrowsingDataRemoverImpl::RemoveImpl(base::Time delete_begin,
     // The user just changed the account and chose to clear the previously
     // existing data. As browsing data is being cleared, it is fine to clear the
     // last username, as there will be no data to be merged.
-    profile_->GetPrefs()->ClearPref(prefs::kGoogleServicesLastSyncingGaiaId);
     profile_->GetPrefs()->ClearPref(prefs::kGoogleServicesLastSignedInUsername);
-    profile_->GetPrefs()->ClearPref(prefs::kGoogleServicesLastSyncingUsername);
   }
 
   // Remove stored zoom levels.

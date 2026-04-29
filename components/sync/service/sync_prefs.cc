@@ -1121,41 +1121,6 @@ void SyncPrefs::MigrateGlobalDataTypePrefsToAccount(PrefService* pref_service,
                            kMigratedPart2AndFullyDone);
 }
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-// static
-void SyncPrefs::MaybeMigrateAutofillToPerAccountPref(
-    PrefService* pref_service) {
-  if (pref_service->GetBoolean(kAutofillPerAccountPrefMigrationDone)) {
-    return;
-  }
-  pref_service->SetBoolean(kAutofillPerAccountPrefMigrationDone, true);
-
-  const GaiaId last_syncing_gaia_id(
-      pref_service->GetString(::prefs::kGoogleServicesLastSyncingGaiaId));
-  if (last_syncing_gaia_id.empty()) {
-    return;
-  }
-
-  if (pref_service->GetBoolean(prefs::internal::kSyncKeepEverythingSynced)) {
-    return;
-  }
-
-  for (auto user_selectable_type :
-       {UserSelectableType::kPasswords, UserSelectableType::kAutofill}) {
-    const char* const pref_name_for_type =
-        GetPrefNameForType(user_selectable_type);
-    if (pref_service->GetBoolean(pref_name_for_type)) {
-      continue;
-    }
-
-    SetAccountKeyedPrefDictEntry(
-        pref_service, prefs::internal::kSelectedTypesPerAccount,
-        signin::GaiaIdHash::FromGaiaId(last_syncing_gaia_id),
-        pref_name_for_type, base::Value(false));
-  }
-}
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
-
 void SyncPrefs::MarkPartialSyncToSigninMigrationFullyDone() {
   // If the first part of the migration has run, but the second part has not,
   // then mark the migration as fully done - at this point (after signout)

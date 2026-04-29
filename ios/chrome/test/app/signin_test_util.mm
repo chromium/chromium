@@ -107,9 +107,9 @@ void ClearPreferences() {
   ProfileIOS* profile = GetOriginalProfile();
   CHECK(profile);
   // Clear last signed in user preference.
-  profile->GetPrefs()->ClearPref(prefs::kGoogleServicesLastSyncingGaiaId);
   profile->GetPrefs()->ClearPref(prefs::kGoogleServicesLastSignedInUsername);
-  profile->GetPrefs()->ClearPref(prefs::kGoogleServicesLastSyncingUsername);
+  profile->GetPrefs()->ClearPref(
+      prefs::kGoogleServicesSyncingGaiaIdMigratedToSignedIn);
 
   // `SignOutAndClearIdentities()` is called during shutdown. Commit all pref
   // changes to ensure that clearing the last signed in account is saved on

@@ -15,6 +15,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_restrictions.h"
+#include "build/build_config.h"
 #include "components/bookmarks/common/bookmark_features.h"
 #include "components/browser_sync/browser_sync_switches.h"
 #include "components/prefs/testing_pref_service.h"
@@ -35,6 +36,8 @@
 
 namespace browser_sync {
 namespace {
+
+#if !BUILDFLAG(IS_IOS)
 
 // Parameter controlling whether to use the synchronous or asynchronous
 // version of MaybeMigrateSyncingUserToSignedIn(...) function.
@@ -2480,6 +2483,8 @@ TEST_F(SyncSetupIncompleteMigrationTest, ShouldNotMigrateIfFlagDisabled) {
   }
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+
+#endif  // !BUILDFLAG(IS_IOS)
 
 }  // namespace
 }  // namespace browser_sync

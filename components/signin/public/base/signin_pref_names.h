@@ -27,10 +27,12 @@ COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const char kGoogleServicesAccountId[];
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const char kGoogleServicesConsentedToSync[];
+#if !BUILDFLAG(IS_IOS)
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const char kGoogleServicesLastSyncingGaiaId[];
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const char kGoogleServicesLastSyncingUsername[];
+#endif  // !BUILDFLAG(IS_IOS)
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const char kGoogleServicesLastSignedInUsername[];
 COMPONENT_EXPORT(SIGNIN_SWITCHES)

@@ -605,8 +605,10 @@ TEST_F(PrimaryAccountManagerTest, SetPrimaryAccountInfoWithSigninConsent) {
             manager_->GetPrimaryAccountInfo(ConsentLevel::kSync));
   EXPECT_EQ(user_prefs_.GetString(prefs::kGoogleServicesLastSignedInUsername),
             "user@gmail.com");
+#if !BUILDFLAG(IS_IOS)
   EXPECT_EQ(user_prefs_.GetString(prefs::kGoogleServicesLastSyncingUsername),
             std::string());
+#endif  // !BUILDFLAG(IS_IOS)
   CheckSigninMetrics({.sign_in = AccessPoint::kSettings});
 
   // The primary account info and metrics should be changed synchronously, only
@@ -669,8 +671,10 @@ TEST_F(PrimaryAccountManagerTest, SetPrimaryAccountInfoWithSyncConsent) {
   EXPECT_EQ(account_info, manager_->GetPrimaryAccountInfo(ConsentLevel::kSync));
   EXPECT_EQ(user_prefs_.GetString(prefs::kGoogleServicesLastSignedInUsername),
             "user@gmail.com");
+#if !BUILDFLAG(IS_IOS)
   EXPECT_EQ(user_prefs_.GetString(prefs::kGoogleServicesLastSyncingUsername),
             "user@gmail.com");
+#endif  // !BUILDFLAG(IS_IOS)
   CheckSigninMetrics({.sign_in = AccessPoint::kSettings,
                       .sync_opt_in = AccessPoint::kSettings});
 
@@ -739,6 +743,7 @@ TEST_F(PrimaryAccountManagerTest, ClearPrimaryAccount) {
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
+#if !BUILDFLAG(IS_IOS)
 TEST_F(PrimaryAccountManagerTest, RestoreSyncAccountInfo) {
   user_prefs_.SetString(prefs::kGoogleServicesLastSyncingUsername,
                         "user@gmail.com");
@@ -796,6 +801,7 @@ TEST_F(PrimaryAccountManagerTest, RestoreFailedLastSyncEmailMissing) {
       PrimaryAccountManager::InitializeAccountInfoState::
           kEmptyAccountInfo_RestoreFailedNoLastSyncEmail);
 }
+#endif  // !BUILDFLAG(IS_IOS)
 
 TEST_F(PrimaryAccountManagerTest, RestoreFailedNotSyncing) {
   CoreAccountId account_id = account_tracker()->PickAccountIdForAccount(

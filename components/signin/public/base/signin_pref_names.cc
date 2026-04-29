@@ -4,6 +4,8 @@
 
 #include "components/signin/public/base/signin_pref_names.h"
 
+#include "build/build_config.h"
+
 namespace prefs {
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -39,6 +41,7 @@ const char kGoogleServicesAccountId[] = "google.services.account_id";
 const char kGoogleServicesConsentedToSync[] =
     "google.services.consented_to_sync";
 
+#if !BUILDFLAG(IS_IOS)
 // Similar to `kGoogleServicesLastSyncingUsername` that is not cleared on
 // signout. Note this is always a Gaia ID, as opposed to
 // `kGoogleServicesAccountId` which may be an email.
@@ -51,6 +54,7 @@ const char kGoogleServicesLastSyncingGaiaId[] = "google.services.last_gaia_id";
 // last account should use `kGoogleServicesLastSyncingGaiaId` instead.
 const char kGoogleServicesLastSyncingUsername[] =
     "google.services.last_username";
+#endif  // !BUILDFLAG(IS_IOS)
 
 // Similar to kGoogleServicesLastSyncingUsername above but written for all
 // signed-in users, no matter whether they were syncing or not.

@@ -43,9 +43,6 @@ using ::testing::StrictMock;
 constexpr char kObsoleteAutofillWalletImportEnabled[] =
     "autofill.wallet_import_enabled";
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-constexpr GaiaId::Literal kGaiaId("gaia-id");
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 class SyncPrefsTest : public testing::Test {
  protected:
   SyncPrefsTest() {
@@ -893,102 +890,6 @@ TEST_F(SyncPrefsMigrationTest,
   EXPECT_TRUE(pref_service_.GetBoolean(
       SyncPrefs::GetPrefNameForTypeForTesting(UserSelectableType::kPayments)));
 }
-
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-TEST_F(SyncPrefsMigrationTest,
-       DoNotMigratePasswordsToPerAccountPrefIfLastGaiaIdMissing) {
-  ASSERT_EQ(pref_service_.GetString(::prefs::kGoogleServicesLastSyncingGaiaId),
-            std::string());
-  pref_service_.SetBoolean(prefs::internal::kSyncKeepEverythingSynced, false);
-  ASSERT_FALSE(pref_service_.GetBoolean(kGlobalPasswordsPref));
-  ASSERT_TRUE(SyncPrefs(&pref_service_)
-                  .GetSelectedTypesForAccount(kGaiaId)
-                  .Has(UserSelectableType::kPasswords));
-
-  SyncPrefs::MaybeMigrateAutofillToPerAccountPref(&pref_service_);
-
-  EXPECT_TRUE(SyncPrefs(&pref_service_)
-                  .GetSelectedTypesForAccount(kGaiaId)
-                  .Has(UserSelectableType::kPasswords));
-}
-
-TEST_F(SyncPrefsMigrationTest,
-       DoNotMigratePasswordsToPerAccountPrefIfSyncEverythingEnabled) {
-  pref_service_.SetString(::prefs::kGoogleServicesLastSyncingGaiaId,
-                          kGaiaId.ToString());
-  ASSERT_TRUE(
-      pref_service_.GetBoolean(prefs::internal::kSyncKeepEverythingSynced));
-  ASSERT_FALSE(pref_service_.GetBoolean(kGlobalPasswordsPref));
-  ASSERT_TRUE(SyncPrefs(&pref_service_)
-                  .GetSelectedTypesForAccount(kGaiaId)
-                  .Has(UserSelectableType::kPasswords));
-
-  SyncPrefs::MaybeMigrateAutofillToPerAccountPref(&pref_service_);
-
-  EXPECT_TRUE(SyncPrefs(&pref_service_)
-                  .GetSelectedTypesForAccount(kGaiaId)
-                  .Has(UserSelectableType::kPasswords));
-}
-
-TEST_F(SyncPrefsMigrationTest,
-       DoNotMigratePasswordsToPerAccountPrefIfPasswordsEnabled) {
-  pref_service_.SetString(::prefs::kGoogleServicesLastSyncingGaiaId,
-                          kGaiaId.ToString());
-  pref_service_.SetBoolean(prefs::internal::kSyncKeepEverythingSynced, false);
-  pref_service_.SetBoolean(kGlobalPasswordsPref, true);
-  ASSERT_TRUE(SyncPrefs(&pref_service_)
-                  .GetSelectedTypesForAccount(kGaiaId)
-                  .Has(UserSelectableType::kPasswords));
-
-  SyncPrefs::MaybeMigrateAutofillToPerAccountPref(&pref_service_);
-
-  EXPECT_TRUE(SyncPrefs(&pref_service_)
-                  .GetSelectedTypesForAccount(kGaiaId)
-                  .Has(UserSelectableType::kPasswords));
-}
-
-TEST_F(SyncPrefsMigrationTest, MigratePasswordsToPerAccountPrefRunsOnce) {
-  pref_service_.SetString(::prefs::kGoogleServicesLastSyncingGaiaId,
-                          kGaiaId.ToString());
-  pref_service_.SetBoolean(prefs::internal::kSyncKeepEverythingSynced, false);
-  ASSERT_FALSE(pref_service_.GetBoolean(kGlobalPasswordsPref));
-  ASSERT_TRUE(SyncPrefs(&pref_service_)
-                  .GetSelectedTypesForAccount(kGaiaId)
-                  .Has(UserSelectableType::kPasswords));
-
-  SyncPrefs::MaybeMigrateAutofillToPerAccountPref(&pref_service_);
-
-  EXPECT_FALSE(SyncPrefs(&pref_service_)
-                   .GetSelectedTypesForAccount(kGaiaId)
-                   .Has(UserSelectableType::kPasswords));
-
-  // Manually re-enable and attempt to run the migration again.
-  SyncPrefs(&pref_service_)
-      .SetSelectedTypeForAccount(UserSelectableType::kPasswords, true, kGaiaId);
-  SyncPrefs::MaybeMigrateAutofillToPerAccountPref(&pref_service_);
-
-  // This time the migration didn't run, because it was one-off.
-  EXPECT_TRUE(SyncPrefs(&pref_service_)
-                  .GetSelectedTypesForAccount(kGaiaId)
-                  .Has(UserSelectableType::kPasswords));
-}
-
-TEST_F(SyncPrefsMigrationTest, MigrateAddressesToPerAccountPref) {
-  pref_service_.SetString(::prefs::kGoogleServicesLastSyncingGaiaId,
-                          kGaiaId.ToString());
-  pref_service_.SetBoolean(prefs::internal::kSyncKeepEverythingSynced, false);
-  ASSERT_FALSE(pref_service_.GetBoolean(kGlobalAutofillPref));
-  ASSERT_TRUE(SyncPrefs(&pref_service_)
-                  .GetSelectedTypesForAccount(kGaiaId)
-                  .Has(UserSelectableType::kAutofill));
-
-  SyncPrefs::MaybeMigrateAutofillToPerAccountPref(&pref_service_);
-
-  EXPECT_FALSE(SyncPrefs(&pref_service_)
-                   .GetSelectedTypesForAccount(kGaiaId)
-                   .Has(UserSelectableType::kAutofill));
-}
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 TEST_F(SyncPrefsMigrationTest, NoPassphraseMigrationForSignoutUsers) {
   SyncPrefs prefs(&pref_service_);

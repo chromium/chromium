@@ -159,7 +159,7 @@ void DismissBatchUploadConfirmationSnackbar(int count, NSString* email) {
   // Add last syncing account.
   [ChromeEarlGrey
       setStringValue:[FakeSystemIdentity fakeIdentity1].gaiaId.ToNSString()
-         forUserPref:prefs::kGoogleServicesLastSyncingGaiaId];
+         forUserPref:prefs::kGoogleServicesSyncingGaiaIdMigratedToSignedIn];
   // Reset pref to offer upload sync left-behind bookamrks.
   [ChromeEarlGrey
       setBoolValue:false
@@ -223,8 +223,9 @@ void DismissBatchUploadConfirmationSnackbar(int count, NSString* email) {
 // account that is different than the last syncing account.
 - (void)testNoBatchUploadDialogIfSignedInWithAnotherAccount {
   // Change the default last syncing account.
-  [ChromeEarlGrey setStringValue:@"foo2ID"
-                     forUserPref:prefs::kGoogleServicesLastSyncingGaiaId];
+  [ChromeEarlGrey
+      setStringValue:@"foo2ID"
+         forUserPref:prefs::kGoogleServicesSyncingGaiaIdMigratedToSignedIn];
 
   // Add one local bookmark.
   [BookmarkEarlGrey addBookmarkWithTitle:@"example1"

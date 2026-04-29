@@ -37,6 +37,7 @@
 
 namespace browser_sync {
 
+#if !BUILDFLAG(IS_IOS)
 namespace {
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -738,6 +739,7 @@ void MaybeMigrateSyncingUserToSignedInAsync(const base::FilePath& profile_path,
   MaybeMigrateSyncingUserToSignedInInternal(profile_path, pref_service,
                                             std::move(closure));
 }
+#endif  // !BUILDFLAG(IS_IOS)
 
 bool WasPrimaryAccountMigratedFromSyncingToSignedIn(
     const signin::IdentityManager* identity_manager,

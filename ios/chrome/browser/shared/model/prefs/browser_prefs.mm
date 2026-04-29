@@ -14,7 +14,6 @@
 #import "base/values.h"
 #import "components/autofill/core/common/autofill_prefs.h"
 #import "components/breadcrumbs/core/breadcrumbs_status.h"
-#import "components/browser_sync/sync_to_signin_migration.h"
 #import "components/browsing_data/core/pref_names.h"
 #import "components/collaboration/public/pref_names.h"
 #import "components/commerce/core/pref_names.h"
@@ -223,6 +222,12 @@ inline constexpr char kBottomOmniboxByDefault[] =
 // Deprecated 02/2026.
 inline constexpr char kIosParcelTrackingPolicyEnabled[] =
     "ios.parcel_tracking.policy_enabled";
+
+// Deprecated 04/2026.
+constexpr char kDeprecatedGoogleServicesLastSyncingGaiaId[] =
+    "google.services.last_gaia_id";
+constexpr char kDeprecatedGoogleServicesLastSyncingUsername[] =
+    "google.services.last_username";
 
 // Deprecated 04/2026.
 inline constexpr char kPreallocatedAddressesVersion[] =
@@ -1017,6 +1022,12 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(prefs::kIosMiniMapShowNativeMap, true);
 
   // Deprecated 04/2026.
+  registry->RegisterStringPref(kDeprecatedGoogleServicesLastSyncingGaiaId,
+                               std::string());
+  registry->RegisterStringPref(kDeprecatedGoogleServicesLastSyncingUsername,
+                               std::string());
+
+  // Deprecated 04/2026.
   registry->RegisterIntegerPref(kPreallocatedAddressesVersion, 1);
   registry->RegisterListPref(kPreallocatedAddresses);
   registry->RegisterIntegerPref(kPreallocatedAddressesNext, 0);
@@ -1128,6 +1139,10 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
   // Added 12/2025.
   prefs->ClearPref(kAutofillStatesDataDir);
   prefs->ClearPref(prefs::kIosMiniMapShowNativeMap);
+
+  // Added 04/2026.
+  prefs->ClearPref(kDeprecatedGoogleServicesLastSyncingGaiaId);
+  prefs->ClearPref(kDeprecatedGoogleServicesLastSyncingUsername);
 
   // Added 04/2026.
   prefs->ClearPref(kPreallocatedAddressesVersion);

@@ -182,7 +182,7 @@
                             withUnknownCapabilities:NO];
   std::string emailAddress = base::SysNSStringToUTF8(identity.userEmail);
   PrefService* prefService = chrome_test_util::GetOriginalProfile()->GetPrefs();
-  prefService->SetString(prefs::kGoogleServicesLastSyncingUsername,
+  prefService->SetString(prefs::kGoogleServicesLastSignedInUsername,
                          emailAddress);
   ShowSigninCommand* command = [[ShowSigninCommand alloc]
       initWithOperation:AuthenticationOperation::kResignin

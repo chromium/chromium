@@ -764,18 +764,12 @@ bool IsABookmarkNodeSectionForIdentifier(
     return NO;
   }
   // Do not show if last syncing account is different from the current one.
-  // Note that the "last syncing" account pref is cleared during the migration
-  // of syncing users to the signed-in state, but these users should also be
-  // covered here, so check the "migrated syncing user" pref too.
   // This implicitly covers the case when SyncDisabled policy is enabled, as
-  // kGoogleServicesLastSyncingGaiaId will be empty.
+  // kGoogleServicesSyncingGaiaIdMigratedToSignedIn will be empty.
   ProfileIOS* profile = [self originalProfile];
-  const GaiaId lastSyncingGaiaId(
-      profile->GetPrefs()->GetString(prefs::kGoogleServicesLastSyncingGaiaId));
   const GaiaId migratedGaiaId(profile->GetPrefs()->GetString(
       prefs::kGoogleServicesSyncingGaiaIdMigratedToSignedIn));
-  if (self.syncService->GetAccountInfo().gaia != lastSyncingGaiaId &&
-      self.syncService->GetAccountInfo().gaia != migratedGaiaId) {
+  if (self.syncService->GetAccountInfo().gaia != migratedGaiaId) {
     return NO;
   }
   // Do not show if the user is in an error state that makes data upload

@@ -340,7 +340,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   // Add last syncing account to mimic signing out without clearing data.
   [ChromeEarlGrey
       setStringValue:[FakeSystemIdentity fakeIdentity1].gaiaId.ToNSString()
-         forUserPref:prefs::kGoogleServicesLastSyncingGaiaId];
+         forUserPref:prefs::kGoogleServicesSyncingGaiaIdMigratedToSignedIn];
 
   OpenReadingList();
   [SigninEarlGreyUI

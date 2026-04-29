@@ -265,18 +265,6 @@ class SyncPrefs {
   static void MigrateGlobalDataTypePrefsToAccount(PrefService* pref_service,
                                                   const GaiaId& gaia_id);
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  // Performs a one-off migration which ensures that, for a user who...
-  // ...enabled sync-the-feature, then...
-  // ...disabled an autofill data type, then...
-  // ...disabled sync-the-feature, then...
-  // ...signed-in with the same account (without sync-the-feture), the autofill
-  // data type is disabled.
-  // Internally this works by reading the global passwords setting and writing
-  // it to the account setting for kGoogleServicesLastSyncingGaiaId.
-  static void MaybeMigrateAutofillToPerAccountPref(PrefService* pref_service);
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
-
   // Returns whether a UserSelectableType is enabled by default in transport
   // mode, that is, without an explicit value stored in prefs.
   bool IsTypeSelectedByDefaultInTransportMode(UserSelectableType type,
