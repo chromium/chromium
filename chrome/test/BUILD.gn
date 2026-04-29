@@ -9737,6 +9737,7 @@ test("unit_tests") {
       "../browser/lifetime/switch_utils_unittest.cc",
       "../browser/profiles/profile_list_desktop_unittest.cc",
       "../browser/profiles/profile_statistics_aggregator_unittest.cc",
+      "../browser/signin/chrome_signin_and_sync_status_metrics_provider_unittest.cc",
     ]
   }
 
