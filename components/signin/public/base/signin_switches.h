@@ -512,11 +512,6 @@ BASE_DECLARE_FEATURE(kPasswordUploadUiUpdate);
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kProfileCreationDeclineSigninCTAExperiment);
 
-// Experimenting with prefill name requirement for the profile creation flow.
-COMPONENT_EXPORT(SIGNIN_SWITCHES)
-BASE_DECLARE_FEATURE(
-    kProfileCreationFrictionReductionExperimentPrefillNameRequirement);
-
 // Experimenting with removing the profile customization bubble in the profile
 // creation flow.
 COMPONENT_EXPORT(SIGNIN_SWITCHES)

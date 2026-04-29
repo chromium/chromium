@@ -4278,15 +4278,6 @@ inline constexpr char kProfileCreationDeclineSigninCTAExperimentDescription[] =
     "sign in CTA string in profile creation entry points";
 
 inline constexpr char
-    kProfileCreationFrictionReductionExperimentPrefillNameRequirementName[] =
-        "Enable prefill name requirement for profile creation for friction "
-        "reduction experiment";
-inline constexpr char
-    kProfileCreationFrictionReductionExperimentPrefillNameRequirementDescription
-        [] = "As part of the profile creation friction reduction experiment, "
-             "prefills the name requirement in profile customization bubble";
-
-inline constexpr char
     kProfileCreationFrictionReductionExperimentSkipCustomizeProfileName[] =
         "Skip customize profile step for friction reduction experiment";
 inline constexpr char

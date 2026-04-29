@@ -12172,18 +12172,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-    {"profile-creation-friction-reduction-experiment-prefill-name-requirement",
-     flag_descriptions::
-         kProfileCreationFrictionReductionExperimentPrefillNameRequirementName,
-     flag_descriptions::
-         kProfileCreationFrictionReductionExperimentPrefillNameRequirementDescription,
-     kOsMac | kOsWin | kOsLinux,
-     FEATURE_VALUE_TYPE(
-         switches::
-             kProfileCreationFrictionReductionExperimentPrefillNameRequirement)},
-#endif
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
     {"profile-creation-friction-reduction-experiment-skip-customize-profile",
      flag_descriptions::
          kProfileCreationFrictionReductionExperimentSkipCustomizeProfileName,

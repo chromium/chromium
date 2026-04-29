@@ -39,7 +39,7 @@ export function getHtml(this: ProfileCustomizationAppElement) {
         <div id="title">${this.welcomeTitle_}</div>
       </div>
         <div id="inputTitle"
-          ?hidden="${!this.shouldShowInputLabels_}">
+          ?hidden="${!this.isRefreshedUI_}">
           $i18n{profileCustomizationInputTitle}
         </div>
         <cr-input id="nameInput" pattern=".*\\S.*" .value="${this.profileName_}"

@@ -114,11 +114,6 @@ ProfileCustomizationUI::ProfileCustomizationUI(content::WebUI* web_ui)
   source->AddBoolean("isLocalProfileCreation",
                      GetProfileCustomizationStyle(url) ==
                          ProfileCustomizationStyle::kLocalProfileCreation);
-  source->AddBoolean(
-      "shouldShowDefaultProfileName",
-      base::FeatureList::IsEnabled(
-          switches::
-              kProfileCreationFrictionReductionExperimentPrefillNameRequirement));
 
   const bool is_in_search_engine_choice_region =
       CHECK_DEREF(regional_capabilities::RegionalCapabilitiesServiceFactory::
