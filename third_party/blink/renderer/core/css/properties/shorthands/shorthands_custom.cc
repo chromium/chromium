@@ -129,7 +129,7 @@ bool ParseAnimationShorthand(const StylePropertyShorthand& shorthand,
 
 namespace {
 
-enum class AnimationNameConflcit {
+enum class AnimationNameConflict {
   kNoConflict,
   kTimingFunctionConflict,
   kFillModeConflict,
@@ -137,21 +137,21 @@ enum class AnimationNameConflcit {
   kPlayStateConflict,
 };
 
-static AnimationNameConflcit CheckAnimationNameConflicts(
+static AnimationNameConflict CheckAnimationNameConflicts(
     const AtomicString& name) {
   if (ComputedStyleUtils::AnimationNameIsTimingFunction(name)) {
-    return AnimationNameConflcit::kTimingFunctionConflict;
+    return AnimationNameConflict::kTimingFunctionConflict;
   }
   if (ComputedStyleUtils::AnimationNameIsFillMode(name)) {
-    return AnimationNameConflcit::kFillModeConflict;
+    return AnimationNameConflict::kFillModeConflict;
   }
   if (ComputedStyleUtils::AnimationNameIsDirection(name)) {
-    return AnimationNameConflcit::kDirectionConflict;
+    return AnimationNameConflict::kDirectionConflict;
   }
   if (ComputedStyleUtils::AnimationNameIsPlayState(name)) {
-    return AnimationNameConflcit::kPlayStateConflict;
+    return AnimationNameConflict::kPlayStateConflict;
   }
-  return AnimationNameConflcit::kNoConflict;
+  return AnimationNameConflict::kNoConflict;
 }
 
 }  // namespace
@@ -177,7 +177,7 @@ const CSSValue* CSSValueFromComputedAnimation(
       const AtomicString& name = scoped_name
                                      ? scoped_name->GetName()
                                      : CSSAnimationData::InitialNameString();
-      AnimationNameConflcit conflict = CheckAnimationNameConflicts(name);
+      AnimationNameConflict conflict = CheckAnimationNameConflicts(name);
       auto duration =
           CSSTimingData::GetRepeated(animation_data->DurationList(), i);
       if (duration != CSSAnimationData::InitialDuration()) {
@@ -188,7 +188,7 @@ const CSSValue* CSSValueFromComputedAnimation(
       if (auto timing_function = CSSTimingData::GetRepeated(
               animation_data->TimingFunctionList(), i);
           timing_function != CSSAnimationData::InitialTimingFunction() ||
-          conflict == AnimationNameConflcit::kTimingFunctionConflict) {
+          conflict == AnimationNameConflict::kTimingFunctionConflict) {
         list->Append(*ComputedStyleUtils::ValueForAnimationTimingFunction(
             timing_function));
       }
@@ -213,20 +213,20 @@ const CSSValue* CSSValueFromComputedAnimation(
       if (auto direction =
               CSSTimingData::GetRepeated(animation_data->DirectionList(), i);
           direction != CSSAnimationData::InitialDirection() ||
-          conflict == AnimationNameConflcit::kDirectionConflict) {
+          conflict == AnimationNameConflict::kDirectionConflict) {
         list->Append(
             *ComputedStyleUtils::ValueForAnimationDirection(direction));
       }
       if (auto fill_mode =
               CSSTimingData::GetRepeated(animation_data->FillModeList(), i);
           fill_mode != CSSAnimationData::InitialFillMode() ||
-          conflict == AnimationNameConflcit::kFillModeConflict) {
+          conflict == AnimationNameConflict::kFillModeConflict) {
         list->Append(*ComputedStyleUtils::ValueForAnimationFillMode(fill_mode));
       }
       if (auto play_state =
               CSSTimingData::GetRepeated(animation_data->PlayStateList(), i);
           play_state != CSSAnimationData::InitialPlayState() ||
-          conflict == AnimationNameConflcit::kPlayStateConflict) {
+          conflict == AnimationNameConflict::kPlayStateConflict) {
         list->Append(
             *ComputedStyleUtils::ValueForAnimationPlayState(play_state));
       }
