@@ -208,7 +208,6 @@ bool HTMLButtonElement::CanBeCommandInvoker() const {
 }
 
 bool HTMLButtonElement::IsValidInterestInvoker(Element& target) const {
-  DCHECK(RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled());
   // Buttons need to be enabled in order to support interest invokers.
   return !IsDisabledFormControl();
 }

@@ -3290,20 +3290,12 @@
       name: "HTMLInputElementDropWebkitClearButton",
       status: "stable"
     },
-    // Adds support for the `interestfor` attribute. See crbug.com/326681249.
-    // https://open-ui.org/components/interest-invokers.explainer/
-    // This shipped in M142 and the flag can be removed in M144.
-    {
-      name: "HTMLInterestForAttribute",
-      status: "stable",
-    },
     // Adds support for the `::interest-button` pseudo element, which is a sub-
-    // feature of the HTMLInterestForAttribute feature.
+    // feature of the interest invokers feature.
     // https://open-ui.org/components/interest-invokers.explainer/
     {
       name: "HTMLInterestForInterestButtonPseudo",
       status: "experimental",
-      depends_on: ["HTMLInterestForAttribute"],
     },
     {
       // Prevents the HTMLLinkElement processing model from being invoked when

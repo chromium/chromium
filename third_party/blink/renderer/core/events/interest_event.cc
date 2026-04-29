@@ -16,7 +16,6 @@ namespace blink {
 InterestEvent::InterestEvent(const AtomicString& type,
                              const InterestEventInit* initializer)
     : Event(type, initializer) {
-  DCHECK(RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled());
   if (initializer->hasSource()) {
     source_ = initializer->source();
   }
@@ -32,7 +31,6 @@ InterestEvent::InterestEvent(const AtomicString& type,
                 ? ComposedMode::kScoped
                 : ComposedMode::kComposed),
       source_(source) {
-  DCHECK(RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled());
 }
 
 Element* InterestEvent::source() const {

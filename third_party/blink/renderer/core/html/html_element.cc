@@ -1354,12 +1354,9 @@ void AddBeforetoggleConsoleWarning(Document& document) {
   document.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
       mojom::blink::ConsoleMessageSource::kOther,
       mojom::blink::ConsoleMessageLevel::kWarning,
-      RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled()
-          ? "The `beforetoggle` event handler for a popover triggered "
-            "another popover to be shown, or a `loseinterest` "
-            "event handler was cancelled. This is not recommended."
-          : "The `beforetoggle` event handler for a popover triggered "
-            "another popover to be shown. This is not recommended."));
+      "The `beforetoggle` event handler for a popover triggered "
+      "another popover to be shown, or a `loseinterest` "
+      "event handler was cancelled. This is not recommended."));
 }
 }  // namespace
 
@@ -2266,7 +2263,6 @@ PopoverHideResult HTMLElement::HidePopoverInternal(
     // If this is the target of an active interest invoker, closing the popover
     // constitutes an automatic loss of interest in the invoker.
     if (Element* upstream_invoker = SourceInterestInvoker()) {
-      DCHECK(RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled());
       DCHECK_EQ(upstream_invoker->InterestForElement(), this);
       DCHECK_NE(upstream_invoker->GetInvokerData()->GetInterestState(),
                 InterestState::kNoInterest);

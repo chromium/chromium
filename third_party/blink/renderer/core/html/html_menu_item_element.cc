@@ -146,7 +146,6 @@ bool HTMLMenuItemElement::CanBeCommandInvoker() const {
 }
 
 bool HTMLMenuItemElement::IsValidInterestInvoker(Element& target) const {
-  DCHECK(RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled());
   // Menu items need to be enabled in order to support interest invokers.
   return !FastHasAttribute(html_names::kDisabledAttr);
 }

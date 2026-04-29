@@ -396,7 +396,6 @@ TEST_F(HTMLElementTest, TitleAttributeDirectionality) {
 }
 
 TEST_F(HTMLElementTest, InterestForLongPressCrash) {
-  ScopedHTMLInterestForAttributeForTest interest_for(true);
   ScopedLightDismissFromClickForTest light_dismiss(true);
 
   SetBodyInnerHTML(R"HTML(

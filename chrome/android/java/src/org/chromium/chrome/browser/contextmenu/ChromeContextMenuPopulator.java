@@ -517,8 +517,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                 }
                 if (mParams.getOpenedFromInterestFor()) {
                     // This is a context menu for a link with `interestfor`. Add a context menu
-                    // item to show interest in the link. This item will only be created if the
-                    // HTMLInterestForAttribute runtime flag is enabled.
+                    // item to show interest in the link.
                     linkGroup.add(createListItem(Item.SHOW_INTEREST_IN_ELEMENT));
                     // Additionally record `interestfor` activations in a separate category,
                     // "LinkWithInterestFor", which only records activations from links that

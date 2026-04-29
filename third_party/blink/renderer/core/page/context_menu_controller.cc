@@ -525,7 +525,6 @@ bool ContextMenuController::ShowContextMenu(
     for (Node* node = result.InnerNode(); node; node = node->parentNode()) {
       if (HTMLElement* element = DynamicTo<HTMLElement>(node);
           element && element->InterestForElement()) {
-        CHECK(RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled());
         data.opened_from_interest_for = true;
         data.interest_for_node_id = element->GetDomNodeId();
         break;

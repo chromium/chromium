@@ -2641,10 +2641,6 @@ AXObject* AXObject::GetInterestForTargetPopover() const {
     return nullptr;
   }
 
-  if (!RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled()) {
-    return nullptr;
-  }
-
   // Only return if the target is a popover.
   HTMLElement* popover =
       DynamicTo<HTMLElement>(GetElement()->InterestForElement());

@@ -104,8 +104,6 @@ TEST_F(AccessibilityTest, TextOffsetInFormattingContextWithLayoutText) {
 }
 
 TEST_F(AccessibilityTest, TextAlternativeFromInterestForAttribute) {
-  ScopedHTMLInterestForAttributeForTest interest_for_attribute_enabled(true);
-
   SetBodyInnerHTML(R"HTML(
       <div id="target" class="hint">Tooltip text</div>
       <button id="button" interestfor="target">Button</button>")HTML");

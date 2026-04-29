@@ -500,7 +500,6 @@ void HTMLAnchorElementBase::NavigateToHyperlink(
 }
 
 bool HTMLAnchorElementBase::IsValidInterestInvoker(Element& target) const {
-  DCHECK(RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled());
   // Anchor elements that don't have the `href` attribute are not interactive,
   // so they can't support `interestfor`.
   return IsLink();

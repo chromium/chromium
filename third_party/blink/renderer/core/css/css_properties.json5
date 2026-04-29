@@ -3915,7 +3915,6 @@
     },
     {
       name: "interest-delay",
-      runtime_flag: "HTMLInterestForAttribute",
       longhands: [
         "interest-delay-start", "interest-delay-end"
       ],
@@ -3924,7 +3923,6 @@
     },
     {
       name: "interest-delay-start",
-      runtime_flag: "HTMLInterestForAttribute",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       field_group: "*",
       field_template: "external",
@@ -3936,7 +3934,6 @@
       supports_incremental_style: true,
     },
     {
-      runtime_flag: "HTMLInterestForAttribute",
       name: "interest-delay-end",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       field_group: "*",

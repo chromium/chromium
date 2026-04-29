@@ -2,10 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-[
-    RuntimeEnabled=HTMLInterestForAttribute,
-    Exposed=Window
-] interface InterestEvent : Event {
+[Exposed=Window]
+interface InterestEvent : Event {
     constructor(DOMString type, optional InterestEventInit eventInitDict = {});
     readonly attribute Element? source;
 };

@@ -6963,14 +6963,11 @@ String AXNodeObject::TextAlternativeFromTooltip(
     return title_text;
   }
 
-  // First try for interest for, then for hint popover.
+  // First try for interestfor, then for hint popover.
   // TODO(accessibility) Consider only using interest for.
-  AXObject* popover_ax_object = nullptr;
-  if (RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled()) {
-    popover_ax_object = AXObjectCache().Get(GetElement()->InterestForElement());
-  }
+  AXObject* popover_ax_object =
+      AXObjectCache().Get(GetElement()->InterestForElement());
   if (popover_ax_object) {
-    DCHECK(RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled());
     name_from = ax::mojom::blink::NameFrom::kInterestFor;
   } else {
     auto* form_control = DynamicTo<HTMLFormControlElement>(GetElement());
@@ -7974,10 +7971,8 @@ String AXNodeObject::Description(
 
   // For form controls that act as interest for triggering elements, use
   // the target for a description if it only contains plain contents.
-  if (RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled() &&
-      name_from != ax::mojom::blink::NameFrom::kInterestFor) {
+  if (name_from != ax::mojom::blink::NameFrom::kInterestFor) {
     if (Element* target = element->InterestForElement()) {
-      DCHECK(RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled());
       description_from = ax::mojom::blink::DescriptionFrom::kInterestFor;
       if (description_sources) {
         description_sources->push_back(
