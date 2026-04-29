@@ -20545,10 +20545,10 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "background-password-check-interval": "10d",
-                        "password-check-mon-weight": "4",
-                        "password-check-sat-weight": "4",
-                        "password-check-sun-weight": "4"
+                        "background-password-check-interval": "5d",
+                        "password-check-mon-weight": "3",
+                        "password-check-sat-weight": "12",
+                        "password-check-sun-weight": "12"
                     },
                     "enable_features": [
                         "SafetyHub"
