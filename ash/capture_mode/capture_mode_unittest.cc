@@ -84,6 +84,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/services/recording/recording_service_test_api.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
@@ -315,6 +316,8 @@ class CaptureModeTestBase : public AshTestBase {
   }
 
   void RemoveSecondaryDisplay() {
+    ASSERT_GT(Shell::GetAllRootWindows().size(), 1u);
+    const size_t expected_root_count = Shell::GetAllRootWindows().size() - 1;
     const int64_t primary_id = WindowTreeHostManager::GetPrimaryDisplayId();
     display::ManagedDisplayInfo primary_info =
         display_manager()->GetDisplayInfo(primary_id);
@@ -322,9 +325,11 @@ class CaptureModeTestBase : public AshTestBase {
     display_info_list.push_back(primary_info);
     display_manager()->OnNativeDisplaysChanged(display_info_list);
 
-    // Spin the run loop so that we get a signal that the associated root window
-    // of the removed display is destroyed.
-    base::RunLoop().RunUntilIdle();
+    // Wait until the associated root window of the removed display is
+    // destroyed.
+    ASSERT_TRUE(base::test::RunUntil([expected_root_count] {
+      return Shell::GetAllRootWindows().size() == expected_root_count;
+    }));
   }
 
   void SwitchToUser2() {
