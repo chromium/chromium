@@ -4,8 +4,6 @@
 
 type MessageSender = chrome.runtime.MessageSender;
 
-let AudioAndCopyHandlerObject;
-
 // Number of milliseconds to wait after requesting a clipboard read
 // before clipboard change and paste events are ignored.
 const kClipboardReadMaxDelayMs = 1000;
@@ -114,5 +112,5 @@ class AudioAndCopyHandler {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  AudioAndCopyHandlerObject = new AudioAndCopyHandler();
+  Object.assign(window, {AudioAndCopyHandlerObject: new AudioAndCopyHandler()});
 });

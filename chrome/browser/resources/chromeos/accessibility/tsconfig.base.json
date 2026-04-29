@@ -1,9 +1,6 @@
 {
   "extends": "../../../../../tools/typescript/tsconfig_base.json",
   "compilerOptions": {
-    "ignoreDeprecations": "6.0",
-    "module": "ESNext",
-    "moduleResolution": "classic",
     "noUncheckedIndexedAccess": false,
     "allowJs": true
   }
