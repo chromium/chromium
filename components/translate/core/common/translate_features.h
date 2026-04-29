@@ -15,6 +15,9 @@ BASE_DECLARE_FEATURE(kEnableTranslatePdf);
 // Controls whether the simplified Hindi model is used.
 BASE_DECLARE_FEATURE(kTranslateSimplifiedHindi);
 
+// Controls whether the target language selection uses the new Search UI.
+BASE_DECLARE_FEATURE(kTranslateLanguageSearchUI);
+
 }  // namespace translate
 
 #endif  // COMPONENTS_TRANSLATE_CORE_COMMON_TRANSLATE_FEATURES_H_
