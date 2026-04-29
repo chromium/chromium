@@ -108,15 +108,6 @@ void AddContextMenuItemEligibilityLoadTimeData(content::WebUIDataSource* source,
                                                Profile* profile) {
   AimEligibilityService* aim_eligibility_service =
       AimEligibilityServiceFactory::GetForProfile(profile);
-  source->AddBoolean("composeboxShowDeepSearchButton",
-                     aim_eligibility_service &&
-                         aim_eligibility_service->IsDeepSearchEligible());
-  source->AddBoolean("composeboxShowCreateImageButton",
-                     aim_eligibility_service &&
-                         aim_eligibility_service->IsCreateImagesEligible());
-  source->AddBoolean("composeboxShowPdfUpload",
-                     aim_eligibility_service &&
-                         aim_eligibility_service->IsPdfUploadEligible());
   if (aim_eligibility_service &&
       aim_eligibility_service->GetSearchboxConfig()->has_hint_text()) {
     source->AddString(

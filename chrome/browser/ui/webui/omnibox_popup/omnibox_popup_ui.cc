@@ -119,13 +119,6 @@ OmniboxPopupUI::OmniboxPopupUI(content::WebUI* web_ui)
   source->AddString("composeboxImageFileTypes", image_mime_types);
   source->AddBoolean("lensSendRawFileMediaTypesEnabled",
                      lens::features::IsLensSendRawFileMediaTypesEnabled());
-  const auto* aim_eligibility_service =
-      AimEligibilityServiceFactory::GetForProfile(profile_);
-  bool show_pdf_upload = aim_eligibility_service &&
-                         aim_eligibility_service->IsPdfUploadEligible() &&
-                         composebox_config.is_pdf_upload_enabled();
-  source->AddBoolean("composeboxShowPdfUpload", show_pdf_upload);
-
   source->AddBoolean(
       "caretAnimationEnabled",
       base::FeatureList::IsEnabled(omnibox::kOmniboxAnimatedCaret));
@@ -140,10 +133,6 @@ OmniboxPopupUI::OmniboxPopupUI(content::WebUI* web_ui)
               omnibox::AddContextButtonVariant::kInline);
   source->AddBoolean("composeboxShowContextMenuTabPreviews",
                      omnibox::kShowContextMenuTabPreviews.Get());
-  source->AddBoolean("composeboxShowCreateImageButton",
-                     omnibox::IsCreateImagesEnabled(profile_));
-  source->AddBoolean("composeboxShowDeepSearchButton",
-                     omnibox::IsDeepSearchEnabled(profile_));
   source->AddBoolean("composeboxShowImageSuggest",
                      omnibox::kShowComposeboxImageSuggestions.Get());
   source->AddBoolean("composeboxShowLensSearchChip",
