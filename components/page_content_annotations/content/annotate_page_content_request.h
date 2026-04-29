@@ -148,7 +148,6 @@ class AnnotatedPageContentRequest
   raw_ref<PageContentExtractionService> page_content_extraction_service_;
   raw_ptr<optimization_guide::PageContextEligibility> page_context_eligibility_;
   const blink::mojom::AIPageContentOptionsPtr options_;
-  const base::TimeDelta delay_;
   const bool include_inner_text_;
 
   // LINT.IfChange(Lifecycle)
@@ -156,25 +155,29 @@ class AnnotatedPageContentRequest
   // numeric values should never be reused.
   // Tracks the state of the current extraction.
   enum class Lifecycle {
+    // The state before any navigation has occurred. Extraction is not allowed
+    // until the first navigation has occurred.
+    kInitial = 0,
+
     // Indicates that a new navigation occurred and we may need to schedule an
     // extraction.
-    kNavigated = 0,
+    kNavigated = 1,
 
     // An extraction has been scheduled and we are waiting for the delay timer
     // to fire.
-    kScheduled = 1,
+    kScheduled = 2,
 
     // An extraction is in progress (e.g. after the delay timer fired) and we
     // are waiting for a response from the renderer.
-    kRunning = 2,
+    kRunning = 3,
 
     // An extraction has occurred and no others are currently scheduled.
-    kExtracted = 3,
+    kExtracted = 4,
 
     kMaxValue = kExtracted,
   };
-  // LINT.ThenChange(//tools/metrics/histograms/metadata/optimization/enums.xml:OptimizationGuideOnDemandExtractionState)
-  Lifecycle lifecycle_ = Lifecycle::kExtracted;
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/optimization/enums.xml:OptimizationGuideOnDemandExtractionState2)
+  Lifecycle lifecycle_ = Lifecycle::kInitial;
 
   bool waiting_for_load_ = false;
   bool waiting_for_fcp_ = false;

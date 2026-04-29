@@ -2180,8 +2180,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="OptimizationGuide.PageContentExtraction.OnDemand.StateAtRequest"
-    enum="OptimizationGuideOnDemandExtractionState" expires_after="2026-09-16">
+    name="OptimizationGuide.PageContentExtraction.OnDemand.StateAtRequest2"
+    enum="OptimizationGuideOnDemandExtractionState2" expires_after="2026-09-16">
   <owner>alexmt@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>

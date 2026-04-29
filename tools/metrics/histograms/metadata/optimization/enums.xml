@@ -322,13 +322,14 @@ struct.unpack('>L', hashlib.md5(version.encode('utf-8')).digest()[4:8])[0]
   </int>
 </enum>
 
-<!-- LINT.IfChange(OptimizationGuideOnDemandExtractionState) -->
+<!-- LINT.IfChange(OptimizationGuideOnDemandExtractionState2) -->
 
-<enum name="OptimizationGuideOnDemandExtractionState">
-  <int value="0" label="Navigated"/>
-  <int value="1" label="Scheduled"/>
-  <int value="2" label="Running"/>
-  <int value="3" label="Extracted"/>
+<enum name="OptimizationGuideOnDemandExtractionState2">
+  <int value="0" label="Initial"/>
+  <int value="1" label="Navigated"/>
+  <int value="2" label="Scheduled"/>
+  <int value="3" label="Running"/>
+  <int value="4" label="Extracted"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/page_content_annotations/content/annotate_page_content_request.h:Lifecycle) -->

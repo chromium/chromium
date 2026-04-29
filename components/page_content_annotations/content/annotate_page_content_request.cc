@@ -106,7 +106,6 @@ AnnotatedPageContentRequest::AnnotatedPageContentRequest(
       content::WebContentsUserData<AnnotatedPageContentRequest>(*web_contents),
       page_content_extraction_service_(page_content_extraction_service),
       options_(CreateOptions()),
-      delay_(features::GetAnnotatedPageContentCaptureDelay()),
       include_inner_text_(
           features::ShouldAnnotatedPageContentStudyIncludeInnerText()),
       fetch_page_context_callback_(std::move(fetch_page_context_callback)),
@@ -244,7 +243,7 @@ void AnnotatedPageContentRequest::MaybeScheduleExtraction(bool on_hide) {
       FROM_HERE,
       base::BindOnce(&AnnotatedPageContentRequest::OnExtractionTimerFired,
                      weak_factory_.GetWeakPtr()),
-      delay_);
+      features::GetAnnotatedPageContentCaptureDelay());
 }
 
 void AnnotatedPageContentRequest::OnExtractionTimerFired() {
@@ -300,19 +299,22 @@ bool AnnotatedPageContentRequest::ShouldScheduleExtraction(bool on_hide) const {
   if (!page_content_extraction_service_->ShouldEnablePageContentExtraction()) {
     return false;
   }
-  auto triggering_mode = features::GetPageContentExtractionTriggeringMode();
 
   // If the page is not loaded, the extraction would not work.
   if (waiting_for_fcp_ || waiting_for_load_) {
     return false;
   }
 
-  if (lifecycle_ == Lifecycle::kScheduled ||
+  if (lifecycle_ == Lifecycle::kInitial ||
+      lifecycle_ == Lifecycle::kScheduled ||
       lifecycle_ == Lifecycle::kRunning) {
-    // Already scheduled or running, no need to duplicate.
+    // Until the initial navigation completes, extraction is disallowed.
+    // Otherwise, an extraction is already scheduled or running, no need to
+    // duplicate.
     return false;
   }
 
+  auto triggering_mode = features::GetPageContentExtractionTriggeringMode();
   bool trigger_on_hide =
       triggering_mode ==
           features::PageContentExtractionTriggeringMode::kOnHidden ||
@@ -467,6 +469,8 @@ bool AnnotatedPageContentRequest::ShouldAsyncWaitForExtraction() const {
   }
 
   switch (lifecycle_) {
+    case Lifecycle::kInitial:
+      return false;
     case Lifecycle::kNavigated: {
       bool is_on_hidden_mode =
           features::GetPageContentExtractionTriggeringMode() ==
@@ -526,7 +530,7 @@ void AnnotatedPageContentRequest::
   }
 
   base::UmaHistogramEnumeration(
-      "OptimizationGuide.PageContentExtraction.OnDemand.StateAtRequest",
+      "OptimizationGuide.PageContentExtraction.OnDemand.StateAtRequest2",
       lifecycle_);
 
   auto wrapped_callback =
@@ -546,9 +550,11 @@ void AnnotatedPageContentRequest::
         // ago the page navigated.
         MaybeScheduleExtraction();
         break;
+      case Lifecycle::kInitial:
       case Lifecycle::kScheduled:
       case Lifecycle::kRunning:
-        // Already scheduled or running, wait for it.
+        // Initial navigation not complete, or already scheduled or running.
+        // Wait for it.
         break;
       case Lifecycle::kExtracted:
         // The previous extraction is complete. Start a new one immediately.

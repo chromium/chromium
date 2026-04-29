@@ -500,38 +500,42 @@ TEST_F(AnnotatePageContentRequestTest, RefreshAPC) {
 TEST_F(AnnotatePageContentRequestTest, RefreshAPC_Batching) {
   SetTriggeringMode("on_load");
 
-  SimulatePageLoad();
-  WaitForExtraction();
-
-  EXPECT_EQ(extraction_service().extraction_count(), 1);
-
-  // Create another request with an async fetcher to test batching.
+  // Override the request with an async fetcher to test batching.
   FetchPageContextResultCallback saved_callback;
-  auto async_request = AnnotatedPageContentRequest::CreateForTesting(
+  base::RunLoop run_loop;
+  request_ = nullptr;
+  web_contents()->RemoveUserData(AnnotatedPageContentRequest::UserDataKey());
+  AnnotatedPageContentRequest::CreateForWebContents(
       web_contents(), extraction_service(),
       base::BindRepeating(
-          [](FetchPageContextResultCallback* saved, content::WebContents&,
+          [](FetchPageContextResultCallback* saved,
+             base::RepeatingClosure quit_closure, content::WebContents&,
              const FetchPageContextOptions&,
              std::unique_ptr<FetchPageProgressListener>,
              FetchPageContextResultCallback callback) {
             *saved = std::move(callback);
+            quit_closure.Run();
           },
-          &saved_callback),
+          &saved_callback, run_loop.QuitClosure()),
       base::BindRepeating([](content::WebContents* web_contents) {
         return std::make_optional(reinterpret_cast<int64_t>(web_contents));
       }));
+  request_ = AnnotatedPageContentRequest::FromWebContents(web_contents());
+
+  SimulatePageLoad();
+  run_loop.Run();
 
   base::test::TestFuture<std::optional<ExtractedPageContentResult>> future1;
   base::test::TestFuture<std::optional<ExtractedPageContentResult>> future2;
 
-  async_request->RefreshExtractedPageContentAndEligibilityForPage(
+  request_->RefreshExtractedPageContentAndEligibilityForPage(
       future1.GetCallback());
-  async_request->RefreshExtractedPageContentAndEligibilityForPage(
+  request_->RefreshExtractedPageContentAndEligibilityForPage(
       future2.GetCallback());
 
   // The request is now running, but has not completed.
   EXPECT_TRUE(saved_callback);
-  EXPECT_EQ(extraction_service().extraction_count(), 1);
+  EXPECT_EQ(extraction_service().extraction_count(), 0);
 
   // Complete the async call.
   auto page_content =
@@ -543,7 +547,7 @@ TEST_F(AnnotatePageContentRequestTest, RefreshAPC_Batching) {
 
   EXPECT_TRUE(future1.Get().has_value());
   EXPECT_TRUE(future2.Get().has_value());
-  EXPECT_EQ(extraction_service().extraction_count(), 2);
+  EXPECT_EQ(extraction_service().extraction_count(), 1);
 }
 
 TEST_F(AnnotatePageContentRequestTest, RefreshAPC_PdfShortCircuit) {
@@ -587,8 +591,11 @@ TEST_F(AnnotatePageContentRequestTest,
 TEST_F(AnnotatePageContentRequestTest, RefreshAPC_ExtractionFailure) {
   // Ensures extraction is enabled for this class.
   SetTriggeringMode("on_load");
-  // Create a request with a failing fetcher.
-  auto failing_request = AnnotatedPageContentRequest::CreateForTesting(
+
+  // Override the request with a failing fetcher.
+  request_ = nullptr;
+  web_contents()->RemoveUserData(AnnotatedPageContentRequest::UserDataKey());
+  AnnotatedPageContentRequest::CreateForWebContents(
       web_contents(), extraction_service(),
       base::BindRepeating([](content::WebContents&,
                              const FetchPageContextOptions&,
@@ -601,37 +608,48 @@ TEST_F(AnnotatePageContentRequestTest, RefreshAPC_ExtractionFailure) {
       base::BindRepeating([](content::WebContents* web_contents) {
         return std::make_optional(reinterpret_cast<int64_t>(web_contents));
       }));
+  request_ = AnnotatedPageContentRequest::FromWebContents(web_contents());
+
+  SimulatePageLoad();
 
   base::test::TestFuture<std::optional<ExtractedPageContentResult>>
       refresh_future;
-  failing_request->RefreshExtractedPageContentAndEligibilityForPage(
+  request_->RefreshExtractedPageContentAndEligibilityForPage(
       refresh_future.GetCallback());
-
   EXPECT_FALSE(refresh_future.Get().has_value());
 }
 
 TEST_F(AnnotatePageContentRequestTest, RefreshAPC_NavigationWhileRunning) {
   // Ensures extraction is enabled for this class.
   SetTriggeringMode("on_load");
-  // Create a request with an async fetcher (saves the callback).
+  // Override the request with an async fetcher.
   FetchPageContextResultCallback saved_callback;
-  auto async_request = AnnotatedPageContentRequest::CreateForTesting(
+  base::RunLoop run_loop;
+  request_ = nullptr;
+  web_contents()->RemoveUserData(AnnotatedPageContentRequest::UserDataKey());
+  AnnotatedPageContentRequest::CreateForWebContents(
       web_contents(), extraction_service(),
       base::BindRepeating(
-          [](FetchPageContextResultCallback* saved, content::WebContents&,
+          [](FetchPageContextResultCallback* saved,
+             base::RepeatingClosure quit_closure, content::WebContents&,
              const FetchPageContextOptions&,
              std::unique_ptr<FetchPageProgressListener>,
              FetchPageContextResultCallback callback) {
             *saved = std::move(callback);
+            quit_closure.Run();
           },
-          &saved_callback),
+          &saved_callback, run_loop.QuitClosure()),
       base::BindRepeating([](content::WebContents* web_contents) {
         return std::make_optional(reinterpret_cast<int64_t>(web_contents));
       }));
+  request_ = AnnotatedPageContentRequest::FromWebContents(web_contents());
+
+  SimulatePageLoad();
+  run_loop.Run();
 
   base::test::TestFuture<std::optional<ExtractedPageContentResult>>
       refresh_future;
-  async_request->RefreshExtractedPageContentAndEligibilityForPage(
+  request_->RefreshExtractedPageContentAndEligibilityForPage(
       refresh_future.GetCallback());
 
   // Extraction should be scheduled now.
