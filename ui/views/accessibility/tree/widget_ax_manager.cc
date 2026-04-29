@@ -57,6 +57,8 @@ bool ShouldSerializeEvent(Event event_type) {
     case Event::kEnabledChanged:
     case Event::kExpandedChanged:
     case Event::kLiveRegionChanged:
+    case Event::kSelection:
+    case Event::kSelectedChildrenChanged:
     case Event::kTextChanged:
     case Event::kValueChanged:
       return false;
@@ -92,8 +94,6 @@ bool ShouldSerializeEvent(Event event_type) {
     case Event::kMenuPopupEnd:
     case Event::kMenuPopupStart:
     case Event::kMenuStart:
-    case Event::kSelection:
-    case Event::kSelectedChildrenChanged:
     case Event::kTextSelectionChanged:
       return false;
     default:

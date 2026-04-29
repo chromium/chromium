@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string>
+
 #include "build/build_config.h"
 #include "chrome/browser/ui/views/accessibility/dump_accessibility_events_views_browsertest_base.h"
 #include "content/public/test/browser_test.h"
@@ -94,6 +96,25 @@ IN_PROC_BROWSER_TEST_P(TreeViewDumpAccessibilityEventsTest, CollapseNode) {
 
   BEGIN_RECORDING_EVENTS_OR_SKIP("tree-collapse-node");
   tree_view_->Collapse(child1);
+}
+
+// Verifies that selecting a tree node fires the appropriate platform selection
+// events. TreeView::SetSelectedNode() calls SetIsSelected(true) on the node's
+// AXVirtualView, which fires Event::kSelection through ViewAccessibility.
+IN_PROC_BROWSER_TEST_P(TreeViewDumpAccessibilityEventsTest, SelectNode) {
+  AddDenyFilter("*");
+  SetFilters(R"(
+@WIN-ALLOW:EVENT_OBJECT_SELECTION on*
+@UIA-WIN-ALLOW:SelectionItem_ElementSelected*
+@AURALINUX-ALLOW:STATE-CHANGE:SELECTED*
+@AURALINUX-ALLOW:SELECTION-CHANGED*
+)");
+  ui::TreeModelNode* child2 = model_->GetRoot()->children()[1].get();
+  const std::string test_name =
+      IsViewsAXEnabled() ? "tree-select-node-viewsax" : "tree-select-node";
+  BEGIN_RECORDING_EVENTS_OR_SKIP(test_name);
+  tree_view_->SetSelectedNode(child2);
+  WaitForPendingSerialization();
 }
 
 INSTANTIATE_TEST_SUITE_P(
