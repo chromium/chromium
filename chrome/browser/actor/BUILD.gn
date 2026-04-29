@@ -384,7 +384,10 @@ source_set("browser_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-  sources = [ "actor_keyed_service_browsertest.cc" ]
+  sources = [
+    "actor_keyed_service_browsertest.cc",
+    "actor_util_browsertest.cc",
+  ]
   deps = [
     ":actor",
     ":impl",

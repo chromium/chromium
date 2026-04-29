@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ACTOR_ACTOR_UTIL_H_
 #define CHROME_BROWSER_ACTOR_ACTOR_UTIL_H_
 
+#include "content/public/browser/render_frame_host.h"
+
 namespace content {
 class WebContents;
 }
@@ -21,6 +23,12 @@ bool HaveActiveTaskForContents(content::WebContents* source_contents);
 // associated with the task is showing, then the task is not considered to be in
 // the background.
 bool IsRunningBackgroundActorTask(content::WebContents& source_contents);
+
+// Returns true if the given RenderFrameHost belongs to a tab being controlled
+// by an actor task and if the task's current state disallows opening new web
+// contents.
+// TODO(b/420669167): Remove this.
+bool HasActorTaskPreventingNewWebContents(content::RenderFrameHost* rfh);
 
 }  // namespace actor
 

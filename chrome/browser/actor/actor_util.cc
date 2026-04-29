@@ -5,6 +5,7 @@
 #include "chrome/browser/actor/actor_util.h"
 
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/glic/public/glic_instance.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -71,6 +72,30 @@ bool IsRunningBackgroundActorTask(content::WebContents& source_contents) {
   }
 
   return !task_instance->IsShowing();
+}
+
+bool HasActorTaskPreventingNewWebContents(content::RenderFrameHost* rfh) {
+  auto* wc = content::WebContents::FromRenderFrameHost(rfh);
+  if (!wc) {
+    return false;
+  }
+
+  auto* actor_service = ActorKeyedService::Get(wc->GetBrowserContext());
+  if (!actor_service) {
+    return false;
+  }
+
+  const auto* tab_interface = tabs::TabInterface::MaybeGetFromContents(wc);
+  if (!tab_interface) {
+    return false;
+  }
+
+  const ActorTask* task = actor_service->GetTaskFromTab(*tab_interface);
+  if (!task) {
+    return false;
+  }
+
+  return !task->GetExecutionEngine().TabsCanOpenNewWebContents();
 }
 
 }  // namespace actor
