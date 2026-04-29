@@ -27,7 +27,6 @@ import android.view.WindowInsets;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.VisibleForTesting;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
@@ -584,6 +583,7 @@ public class LocationBarCoordinator
         }
 
         if (mOptionalButtonCoordinator != null) {
+            mLocationBarMediator.setOptionalButtonColorChangeCallback(null);
             mOptionalButtonCoordinator.hideButton();
             mOptionalButtonData = null;
         }
@@ -1366,9 +1366,9 @@ public class LocationBarCoordinator
                             mTrackerSupplier);
 
             var context = mLocationBarLayout.getContext();
-            mOptionalButtonCoordinator.setIconForegroundColor(
-                    AppCompatResources.getColorStateList(
-                            context, R.color.default_icon_color_tint_list));
+            mLocationBarMediator.setOptionalButtonColorChangeCallback(
+                    mOptionalButtonCoordinator::setIconForegroundColor);
+
             mOptionalButtonCoordinator.setCollapsedStateWidth(
                     context.getResources().getDimensionPixelSize(R.dimen.min_touch_target_size));
             mOptionalButtonCoordinator.setSuppressBackground(true);

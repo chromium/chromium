@@ -57,6 +57,7 @@ import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
 import org.robolectric.shadows.ShadowLooper;
 
+import org.chromium.base.Callback;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
@@ -2430,5 +2431,15 @@ public class LocationBarMediatorTest {
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
         verify(mScrimHandler).updateScrimVisualState();
+    }
+
+    @Test
+    public void testOnPrimaryColorChanged_updatesBackButtonAndOptionalButtonColors() {
+        int[] callCount = new int[] {0};
+        Callback<ColorStateList> callback = (colorStateList) -> callCount[0]++;
+        mMediator.setOptionalButtonColorChangeCallback(callback);
+
+        verify(mLocationBarLayout).setBackButtonTint(any());
+        assertEquals(1, callCount[0]);
     }
 }

@@ -272,6 +272,8 @@ public class LocationBarLayout extends ConstraintLayout {
 
     /* package */ void setBackButtonEnabled(boolean enabled) {}
 
+    /* package */ void setBackButtonTint(ColorStateList colorStateList) {}
+
     /* package */ void updateStartPadding() {
         View statusView = findViewById(R.id.location_bar_status);
         boolean statusVisible = statusView != null && statusView.getVisibility() == VISIBLE;

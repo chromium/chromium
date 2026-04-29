@@ -5,17 +5,19 @@
 package org.chromium.chrome.browser.omnibox;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewStub;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 
-import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.widget.ImageViewCompat;
 
 import org.chromium.base.TraceEvent;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.toolbar.ToolbarVariationUtils;
 
 /** A location bar implementation specific for smaller/phone screens. */
@@ -58,6 +60,11 @@ class LocationBarPhone extends LocationBarLayout {
     @Override
     /* package */ void setBackButtonEnabled(boolean enabled) {
         mBackButton.setEnabled(enabled);
+    }
+
+    @Override
+    /* package */ void setBackButtonTint(ColorStateList colorStateList) {
+        ImageViewCompat.setImageTintList(mBackButton, colorStateList);
     }
 
     @Override

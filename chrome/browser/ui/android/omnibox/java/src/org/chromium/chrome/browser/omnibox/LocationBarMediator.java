@@ -273,6 +273,7 @@ class LocationBarMediator
     private final @Nullable OmniboxChipManager mOmniboxChipManager;
     private final SettableNullableObservableSupplier<GURL> mExactMatchUrlSupplier =
             ObservableSuppliers.createNullable();
+    private @Nullable Callback<ColorStateList> mOptionalButtonColorChangeCallback;
 
     /*package */ LocationBarMediator(
             Context context,
@@ -577,6 +578,19 @@ class LocationBarMediator
 
     /*package */ void updateVisualsForState() {
         onPrimaryColorChanged();
+    }
+
+    /* package */ void setOptionalButtonColorChangeCallback(
+            @Nullable Callback<ColorStateList> callback) {
+        mOptionalButtonColorChangeCallback = callback;
+        if (mOptionalButtonColorChangeCallback != null) {
+            updateButtonTints();
+        }
+    }
+
+    /*package */ @BrandedColorScheme
+    int getBrandedColorScheme() {
+        return mBrandedColorScheme;
     }
 
     /*package */ void setShowTitle(boolean showTitle) {
@@ -2423,6 +2437,10 @@ class LocationBarMediator
         mLocationBarLayout.setLensButtonTint(tint);
         mLocationBarLayout.setInstallButtonTint(tint);
         mLocationBarLayout.setZoomButtonTint(tint);
+        mLocationBarLayout.setBackButtonTint(tint);
+        if (mOptionalButtonColorChangeCallback != null) {
+            mOptionalButtonColorChangeCallback.onResult(tint);
+        }
     }
 
     /**
