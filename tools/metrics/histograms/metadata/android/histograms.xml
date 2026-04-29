@@ -2381,34 +2381,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.FontLookup.Blink.DLFontsLatencyFailure2"
-    units="microseconds" expires_after="2023-01-15">
-  <owner>drott@chromium.org</owner>
-  <owner>layout-dev@chromium.org</owner>
-  <summary>
-    Records the latency of looking up a local font from Android downloadable
-    fonts at the time of instantiating the font in the fonts backend in the
-    renderer. Includes time for error checking and attempting to create the font
-    from the retrieved blob, if there is one. Only records timings for
-    situations in which a font could not be instantiated. This is recorded only
-    on devices that support high resolution timers.
-  </summary>
-</histogram>
-
-<histogram name="Android.FontLookup.Blink.DLFontsLatencySuccess2"
-    units="microseconds" expires_after="2023-07-30">
-  <owner>drott@chromium.org</owner>
-  <owner>layout-dev@chromium.org</owner>
-  <summary>
-    Records the latency of looking up a local font from Android downloadable
-    fonts at the time of instantiating the font in the fonts backend in the
-    renderer. Includes time for error checking and attempting to create the font
-    from the retrieved blob, if there is one. Only records timings for
-    situations in which a font was successfully instantiated and returned. This
-    is recorded only on devices that support high resolution timers.
-  </summary>
-</histogram>
-
 <histogram name="Android.FontLookup.Blink.GetTableLatency" units="ms"
     expires_after="2023-11-12">
   <owner>drott@chromium.org</owner>
