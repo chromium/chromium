@@ -176,6 +176,10 @@
   min-width: 200px;
 }
 
+:host([energy-effect-enabled_]) #composebox::part(composebox) {
+  box-shadow: var(--cr-elevation-2);
+}
+
 #composebox::part(thumbnail) {
   --thumbnail-size_: var(--file-chip-thumbnail-full-size);
   height: var(--thumbnail-size_);
