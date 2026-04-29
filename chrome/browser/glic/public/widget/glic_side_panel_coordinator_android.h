@@ -11,10 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/context_sharing/tab_bottom_sheet/android/tab_bottom_sheet_bridge.h"
 #include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
-
-namespace tabs {
-class TabInterface;
-}  // namespace tabs
+#include "components/tabs/public/tab_interface.h"
 
 namespace glic {
 
@@ -47,6 +44,8 @@ class GlicSidePanelCoordinatorAndroid
   void SetState(State state);
   void OnTabDidActivate(tabs::TabInterface* tab);
   void OnTabWillDeactivate(tabs::TabInterface* tab);
+  void OnTabWillDetach(tabs::TabInterface* tab,
+                       tabs::TabInterface::DetachReason detach_reason);
 
   State state_ = State::kClosed;
   base::RepeatingCallbackList<void(State)> state_callbacks_;
@@ -54,6 +53,7 @@ class GlicSidePanelCoordinatorAndroid
   base::WeakPtr<content::WebContents> web_contents_;
   base::CallbackListSubscription did_activate_subscription_;
   base::CallbackListSubscription will_deactivate_subscription_;
+  base::CallbackListSubscription will_detach_subscription_;
   bool pending_starts_expanded_state_ = true;
   std::unique_ptr<context_sharing::TabBottomSheetBridge> bridge_;
 };

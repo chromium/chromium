@@ -7,6 +7,7 @@
 #include <climits>
 
 #include "base/functional/bind.h"
+#include "base/logging.h"
 #include "base/rand_util.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/context_sharing/tab_bottom_sheet/android/tab_bottom_sheet_bridge.h"
@@ -23,6 +24,9 @@ GlicSidePanelCoordinatorAndroid::GlicSidePanelCoordinatorAndroid(
                           base::Unretained(this)));
   will_deactivate_subscription_ = tab_->RegisterWillDeactivate(
       base::BindRepeating(&GlicSidePanelCoordinatorAndroid::OnTabWillDeactivate,
+                          base::Unretained(this)));
+  will_detach_subscription_ = tab_->RegisterWillDetach(
+      base::BindRepeating(&GlicSidePanelCoordinatorAndroid::OnTabWillDetach,
                           base::Unretained(this)));
 
   bridge_ = std::make_unique<context_sharing::TabBottomSheetBridge>(
@@ -139,6 +143,21 @@ void GlicSidePanelCoordinatorAndroid::OnTabWillDeactivate(
   SetState(State::kBackgrounded);
 
   bridge_->Close(/* animate= */ false);
+}
+
+void GlicSidePanelCoordinatorAndroid::OnTabWillDetach(
+    tabs::TabInterface* tab,
+    tabs::TabInterface::DetachReason detach_reason) {
+  // If the tab was deleted, set the state to backgrounded in case the
+  // deletion is undone.
+  // This can happen if the user closes the tab in the tab switcher, causing the
+  // bottom sheet to appear for the next active tab.
+  if (detach_reason == tabs::TabInterface::DetachReason::kDelete) {
+    if (state_ != State::kClosed) {
+      SetState(State::kBackgrounded);
+      bridge_->Close(/* animate= */ false);
+    }
+  }
 }
 
 void GlicSidePanelCoordinatorAndroid::OnClosed() {
