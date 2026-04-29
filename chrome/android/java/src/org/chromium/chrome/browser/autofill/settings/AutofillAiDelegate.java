@@ -19,7 +19,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AndroidAutofillAvailabilityStatus;
 import org.chromium.chrome.browser.autofill.AutofillClientProviderUtils;
-import org.chromium.chrome.browser.autofill.AutofillFallbackSurfaceLauncher;
 import org.chromium.chrome.browser.autofill.GoogleWalletLauncher;
 import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManager;
 import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManagerFactory;
@@ -181,17 +180,30 @@ public class AutofillAiDelegate {
                 }
                 pref.setOnPreferenceClickListener(
                         preference -> {
+                            Context context = mFragment.getContext();
+                            if (context == null) {
+                                return true;
+                            }
                             if (entity.isStoredInWallet()) {
-                                AutofillFallbackSurfaceLauncher.openGoogleWalletPassesPage(
-                                        mFragment.getActivity());
-                                return true;
+                                String walletEntityUrl = entity.getWalletEntityUrl();
+                                if (ChromeFeatureList.isEnabled(
+                                                ChromeFeatureList
+                                                        .AUTOFILL_AI_WALLET_PRIVATE_PASSES_DEEP_LINK)
+                                        && walletEntityUrl != null) {
+                                    GoogleWalletLauncher.openGoogleWalletWithFallbackUrl(
+                                            context, context.getPackageManager(), walletEntityUrl);
+                                } else {
+                                    GoogleWalletLauncher.openGoogleWallet(
+                                            context, context.getPackageManager());
+                                }
+                            } else {
+                                EntityInstance entityInstance =
+                                        entityDataManager.getEntityInstance(preference.getKey());
+                                if (entityInstance == null) {
+                                    return true;
+                                }
+                                editEntity(entityInstance);
                             }
-                            EntityInstance entityInstance =
-                                    entityDataManager.getEntityInstance(preference.getKey());
-                            if (entityInstance == null) {
-                                return true;
-                            }
-                            editEntity(entityInstance);
                             return true;
                         });
                 category.addPreference(pref);
