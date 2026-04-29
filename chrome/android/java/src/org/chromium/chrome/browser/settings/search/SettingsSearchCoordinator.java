@@ -470,12 +470,19 @@ public class SettingsSearchCoordinator
                     @Override
                     public void onFragmentResumed(FragmentManager fm, Fragment f) {
                         updateSearchUiWidth();
+                        maybeInitSearchResultsFragmentCallback(f);
                     }
                 },
                 false);
 
         fm.addOnBackStackChangedListener(this::disableBackgroundTalkbackNavigation);
         adjustTalkbackTraversalOrder(searchBox);
+    }
+
+    private void maybeInitSearchResultsFragmentCallback(Fragment f) {
+        if (f instanceof SearchResultsPreferenceFragment srpf) {
+            srpf.setSelectedCallback(this::onResultSelected);
+        }
     }
 
     // Prevent TalkBack from navigating background fragments.
@@ -543,6 +550,7 @@ public class SettingsSearchCoordinator
                                 } else if (f instanceof PreferenceFragmentCompat) {
                                     showUiInSingleColumn(searchBox, false);
                                 }
+                                maybeInitSearchResultsFragmentCallback(f);
                             }
                         },
                         false);
