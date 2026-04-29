@@ -984,16 +984,26 @@ SharedImageBackingFactory* SharedImageFactory::GetFactoryByUsage(
 
   bool share_between_threads = IsSharedBetweenThreads(usage);
   for (auto& factory : factories_) {
+    // If a specific stream is being requested (for dynamic allocation),
+    // perform an additional check using the factory's
+    // `IsSupportedForAccessStream`. This check is performed before
+    // `CanCreateSharedImage` (which calls the virtual `IsSupported`) because
+    // `IsSupported` may access thread-bound state that is unsafe to touch
+    // if the factory belongs to a different context/thread.
+    // `IsSupportedForAccessStream` acts as a guard by comparing the provided
+    // `SharedContextState` in `params` with the factory's internal state.
+    // Note that because of this, thread-affine factories (like those using GL
+    // or Skia) can currently only be selected and used on the GPU main thread.
+    // If a factory is refactored in the future to remove its dependency on
+    // thread-bound state, this restriction can be relaxed for that factory.
+    if (stream.has_value() &&
+        !factory->IsSupportedForAccessStream(*stream, format, params)) {
+      continue;
+    }
+
     if (factory->CanCreateSharedImage(SharedImageUsageSet(usage), format, size,
                                       share_between_threads, gmb_type,
                                       gr_context_type_, pixel_data)) {
-      // If a specific stream is being requested (for dynamic allocation),
-      // perform an additional check using the factory's
-      // `IsSupportedForAccessStream`.
-      if (stream.has_value() &&
-          !factory->IsSupportedForAccessStream(*stream, format, params)) {
-        continue;
-      }
       return factory.get();
     }
   }

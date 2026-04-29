@@ -106,7 +106,11 @@ class GPU_GLES2_EXPORT SharedImageBackingFactory {
                             base::span<const uint8_t> pixel_data);
 
   // Returns true if the backing created by this factory will support the given
-  // access stream.
+  // access stream. This method is called by `SharedImageFactory` before
+  // `CanCreateSharedImage` (and the virtual `IsSupported`) to act as a
+  // thread-safe guard. Implementation that access thread-bound state in
+  // `IsSupported` should override this method to verify thread/context
+  // affinity (e.g., by comparing `SharedContextState` pointers).
   virtual bool IsSupportedForAccessStream(SharedImageAccessStream stream,
                                           viz::SharedImageFormat format,
                                           const AccessParams* params) const;

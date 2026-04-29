@@ -122,6 +122,25 @@ bool DCompImageBackingFactory::IsSupported(
   return true;
 }
 
+bool DCompImageBackingFactory::IsSupportedForAccessStream(
+    SharedImageAccessStream stream,
+    viz::SharedImageFormat format,
+    const AccessParams* params) const {
+  // `DCompImageBackingFactory` is strictly bound to the `SharedContextState`
+  // it was created with. If a request is made from a different thread/context,
+  // we must return false early to protect the subsequent `IsSupported` call
+  // which accesses `context_state_`.
+  // Note that this currently restricts this factory to only be selected and
+  // used on the GPU main thread. If it's refactored in the future to remove its
+  // dependency on `SharedContextState` in `IsSupported`, this restriction can
+  // be relaxed.
+  if (params && params->context_state &&
+      params->context_state != context_state_) {
+    return false;
+  }
+  return true;
+}
+
 SharedImageBackingType DCompImageBackingFactory::GetBackingType() {
   return SharedImageBackingType::kDCompSurface;
 }
