@@ -2064,7 +2064,6 @@ public class CustomTabsConnection {
         }
     }
 
-    @VisibleForTesting
     HiddenTabHolder.@Nullable SpeculationParams getSpeculationParamsForTesting() {
         return mHiddenTabHolder.getSpeculationParamsForTesting();
     }

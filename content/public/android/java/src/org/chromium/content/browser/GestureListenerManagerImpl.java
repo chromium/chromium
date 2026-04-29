@@ -258,7 +258,6 @@ public class GestureListenerManagerImpl
         return mHasActiveFlingScroll;
     }
 
-    @VisibleForTesting
     @RootScrollOffsetUpdateFrequency.EnumType
     public int getRootScrollOffsetUpdateFrequencyForTesting() {
         return calculateMaxRootScrollOffsetUpdateFrequency();

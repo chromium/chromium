@@ -110,16 +110,12 @@ public class CaretBrowsingDialog implements ModalDialogProperties.Controller {
                 AccessibilitySettingsBridge.AccessibilityCaretBrowsingAction.COUNT);
     }
 
-    /**
-     * @return The {@link PropertyModel} for this dialog. @VisibleForTesting
-     */
+    /** Returns the {@link PropertyModel} for this dialog. */
     PropertyModel getModelForTesting() {
         return mModel;
     }
 
-    /**
-     * @return The custom {@link View} for this dialog. @VisibleForTesting
-     */
+    /** Returns the custom {@link View} for this dialog. */
     View getCustomViewForTesting() {
         return mModel.get(ModalDialogProperties.CUSTOM_VIEW);
     }

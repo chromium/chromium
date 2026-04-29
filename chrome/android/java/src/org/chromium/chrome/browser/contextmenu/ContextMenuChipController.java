@@ -178,16 +178,10 @@ class ContextMenuChipController implements View.OnClickListener {
         }
     }
 
-    // This method should only be used in test files.  It is not marked
-    // @VisibleForTesting to allow the Coordinator to reference it in its
-    // own testing methods.
     @Nullable AnchoredPopupWindow getCurrentPopupWindowForTesting() {
         return mPopupWindow;
     }
 
-    // This method should only be used in test files.  It is not marked
-    // @VisibleForTesting to allow the Coordinator to reference it in its
-    // own testing methods.
     void clickChipForTesting() {
         if (mChipView != null) onClick(mChipView);
     }

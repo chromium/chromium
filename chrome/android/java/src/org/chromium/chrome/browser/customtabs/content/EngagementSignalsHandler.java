@@ -8,7 +8,6 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.os.Bundle;
 
-import androidx.annotation.VisibleForTesting;
 import androidx.browser.customtabs.CustomTabsSessionToken;
 import androidx.browser.customtabs.EngagementSignalsCallback;
 
@@ -148,7 +147,6 @@ public class EngagementSignalsHandler {
                 });
     }
 
-    @VisibleForTesting
     public @Nullable RealtimeEngagementSignalObserver getEngagementSignalsObserverForTesting() {
         return mObserver;
     }

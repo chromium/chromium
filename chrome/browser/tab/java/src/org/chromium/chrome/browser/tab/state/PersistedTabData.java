@@ -580,7 +580,6 @@ public abstract class PersistedTabData implements UserData {
         }
     }
 
-    @VisibleForTesting
     protected static Set<Class<? extends PersistedTabData>>
             getSupportedMaintenanceClassesForTesting() {
         return sSupportedMaintenanceClasses;

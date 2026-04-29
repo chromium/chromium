@@ -1694,7 +1694,6 @@ class BottomSheet extends FrameLayout
         mEdgeToEdgeBottomInsetSupplier = edgeToEdgeBottomInsetSupplier;
     }
 
-    @VisibleForTesting
     Rect getVisibleViewportRectForTesting() {
         return mVisibleViewportRect;
     }
