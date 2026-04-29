@@ -174,4 +174,27 @@ TEST(FedCmMetricsTest, AccountFieldsOnlyPhone) {
       1);
 }
 
+TEST(FedCmMetricsTest, AccountsSize) {
+  base::test::TaskEnvironment task_environment;
+  base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  {
+    Metrics metrics(ukm::AssignNewSourceId());
+    metrics.RecordRawAccountsSize(3);
+    metrics.RecordReadyToShowAccountsSize(1);
+  }
+
+  histogram_tester.ExpectUniqueSample("Blink.FedCm.AccountsSize.Raw", 3, 1);
+  histogram_tester.ExpectUniqueSample("Blink.FedCm.AccountsSize.ReadyToShow", 1,
+                                      1);
+
+  auto entries =
+      ukm_recorder.GetEntriesByName(ukm::builders::Blink_FedCm::kEntryName);
+  ASSERT_EQ(1u, entries.size());
+  ukm_recorder.ExpectEntryMetric(
+      entries[0], ukm::builders::Blink_FedCm::kAccountsSize_RawName, 3);
+  ukm_recorder.ExpectEntryMetric(
+      entries[0], ukm::builders::Blink_FedCm::kAccountsSize_ReadyToShowName, 1);
+}
+
 }  // namespace content::webid

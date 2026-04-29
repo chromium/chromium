@@ -343,7 +343,8 @@ void AccountsFetcher::OnAccountsResponseReceived(
         std::vector<IdentityRequestAccountPtr>(), accounts_fetched_time);
     return;
   }
-  RecordRawAccountsSize(accounts.accounts.size());
+  CHECK(fedcm_metrics_);
+  fedcm_metrics_->RecordRawAccountsSize(accounts.accounts.size());
   RecordAccountFieldsType(accounts.accounts);
   MarkAccountsWithLabel(idp_info->metadata.requested_label, accounts.accounts);
   MarkAccountsWithLoginHint(idp_info->provider->login_hint, accounts.accounts);
@@ -376,7 +377,7 @@ void AccountsFetcher::OnAccountsResponseReceived(
                                accounts_fetched_time);
     return;
   }
-  RecordReadyToShowAccountsSize(accounts.accounts.size());
+  fedcm_metrics_->RecordReadyToShowAccountsSize(accounts.accounts.size());
   ComputeLoginStates(idp_info->provider->config->config_url, accounts.accounts);
   ComputeAccountFields(GetDisclosureFields(idp_info->provider->fields),
                        accounts.accounts);

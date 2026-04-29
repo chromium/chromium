@@ -4600,6 +4600,22 @@ be describing additional metrics about the same event.
       requests.
     </summary>
   </metric>
+  <metric name="AccountsSize.Raw">
+    <summary>
+      Records the size of the accounts received from the IdP before applying any
+      filters. Records one sample per accounts fetch if there's at least one
+      account returned. The units is number of accounts (using exponential
+      bucketing).
+    </summary>
+  </metric>
+  <metric name="AccountsSize.ReadyToShow">
+    <summary>
+      Records the size of the accounts received from the IdP after applying the
+      filters. Records one sample per accounts fetch if there's at least one
+      account left after filtering. The units is number of accounts (using
+      exponential bucketing).
+    </summary>
+  </metric>
   <metric name="AutoReauthn.BlockedByContentSettings" enum="Boolean">
     <summary>
       Records whether the FedCM auto re-authn call is blocked because the auto

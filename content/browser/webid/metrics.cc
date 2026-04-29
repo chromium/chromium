@@ -851,18 +851,23 @@ void RecordLifecycleStateFailureReason(LifecycleStateFailureReason reason) {
                                 reason);
 }
 
-void RecordRawAccountsSize(int size) {
+void Metrics::RecordRawAccountsSize(int size) {
   CHECK_GT(size, 0);
   base::UmaHistogramCustomCounts("Blink.FedCm.AccountsSize.Raw", size,
                                  /*min=*/1,
                                  /*exclusive_max=*/10, /*buckets=*/10);
+
+  GetOrCreateFedCmBuilder()->SetAccountsSize_Raw(
+      ukm::GetExponentialBucketMinForCounts1000(size));
 }
 
-void RecordReadyToShowAccountsSize(int size) {
+void Metrics::RecordReadyToShowAccountsSize(int size) {
   CHECK_GT(size, 0);
   base::UmaHistogramCustomCounts("Blink.FedCm.AccountsSize.ReadyToShow", size,
                                  /*min=*/1,
                                  /*exclusive_max=*/10, /*buckets=*/10);
+  GetOrCreateFedCmBuilder()->SetAccountsSize_ReadyToShow(
+      ukm::GetExponentialBucketMinForCounts1000(size));
 }
 
 void RecordAccountFieldsType(

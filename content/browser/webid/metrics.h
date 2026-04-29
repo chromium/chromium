@@ -595,8 +595,16 @@ class CONTENT_EXPORT Metrics {
   // Records whether the RP's URL has a path.
   void RecordRpUrlHasPath(bool rp_url_has_path);
 
-  // Records the count of identity providers in the request
+  // Records the number of identity providers in the request
   void RecordIdentityProvidersCount(int count);
+
+  // Records the number of accounts received before applying filters such as
+  // login/domain hints.
+  void RecordRawAccountsSize(int size);
+
+  // Records the number of accounts received after applying filters such as
+  // login/domain hints. If no account is left, nothing will be recorded.
+  void RecordReadyToShowAccountsSize(int size);
 
   // Returns the session ID.
   int GetSessionID() const;
@@ -672,14 +680,6 @@ void RecordSetLoginStatusIgnoredReason(SetLoginStatusIgnoredReason reason);
 // Records the lifecycle state if we fail a FedCM request due to a page not
 // being primary.
 void RecordLifecycleStateFailureReason(LifecycleStateFailureReason reason);
-
-// Records the number of accounts received before applying login/domain hints
-// filter.
-void RecordRawAccountsSize(int size);
-
-// Records the number of accounts received after applying login/domain hints
-// filter. If no account left, nothing will be recorded.
-void RecordReadyToShowAccountsSize(int size);
 
 // Records what kinds of fields we received in the accounts from the IDP.
 CONTENT_EXPORT void RecordAccountFieldsType(

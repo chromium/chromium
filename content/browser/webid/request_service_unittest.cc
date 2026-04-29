@@ -2383,6 +2383,8 @@ TEST_F(RequestServiceTest, AccountsCannotBeParsed) {
 
   histogram_tester_.ExpectTotalCount("Blink.FedCm.AccountsSize.Raw", 0);
   histogram_tester_.ExpectTotalCount("Blink.FedCm.AccountsSize.ReadyToShow", 0);
+  ExpectNoUKMPresence("AccountsSize.Raw");
+  ExpectNoUKMPresence("AccountsSize.ReadyToShow");
 
   // Only records the following histograms if there are accounts to be shown.
   histogram_tester_.ExpectTotalCount(
@@ -3476,6 +3478,8 @@ TEST_F(RequestServiceTest, MetricsForSuccessfulSignInCase) {
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.AccountsSize.Raw", 1, 1);
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.AccountsSize.ReadyToShow",
                                        1, 1);
+  ExpectUkmValueInEntry("AccountsSize.Raw", FedCmEntry::kEntryName, 1);
+  ExpectUkmValueInEntry("AccountsSize.ReadyToShow", FedCmEntry::kEntryName, 1);
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.RpMode",
                                        static_cast<int>(RpMode::kPassive), 1);
   histogram_tester_.ExpectUniqueSample(
@@ -5845,6 +5849,8 @@ TEST_F(RequestServiceTest, AccountLabelMultipleAccountsNoMatch) {
       Metrics::NumAccounts::kZero, 1);
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.AccountsSize.Raw", 3, 1);
   histogram_tester_.ExpectTotalCount("Blink.FedCm.AccountsSize.ReadyToShow", 0);
+  ExpectUkmValueInEntry("AccountsSize.Raw", FedCmEntry::kEntryName, 3);
+  ExpectNoUKMPresence("AccountsSize.ReadyToShow");
   ExpectUkmValueInEntry("AccountLabel.NumMatchingAccounts",
                         FedCmEntry::kEntryName, 0);
   ExpectNoUKMPresence("DomainHint.NumMatchingAccounts");
@@ -5978,6 +5984,8 @@ TEST_F(RequestServiceTest, LoginHintLastAccountMatch) {
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.AccountsSize.Raw", 3, 1);
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.AccountsSize.ReadyToShow",
                                        1, 1);
+  ExpectUkmValueInEntry("AccountsSize.Raw", FedCmEntry::kEntryName, 3);
+  ExpectUkmValueInEntry("AccountsSize.ReadyToShow", FedCmEntry::kEntryName, 1);
   ExpectUkmValueInEntry("LoginHint.NumMatchingAccounts", FedCmEntry::kEntryName,
                         1);
   ExpectNoUKMPresence("AccountLabel.NumMatchingAccounts");
@@ -6010,6 +6018,7 @@ TEST_F(RequestServiceTest, LoginHintMultipleAccountsNoMatch) {
   ExpectNoUKMPresence("DomainHint.NumMatchingAccounts");
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.AccountsSize.Raw", 3, 1);
   histogram_tester_.ExpectTotalCount("Blink.FedCm.AccountsSize.ReadyToShow", 0);
+  ExpectUkmValueInEntry("AccountsSize.Raw", FedCmEntry::kEntryName, 3);
 }
 
 TEST_F(RequestServiceTest, DomainHintSingleAccountMatch) {
@@ -6107,6 +6116,7 @@ TEST_F(RequestServiceTest, DomainHintSingleAccountNoMatch) {
   ExpectNoUKMPresence("LoginHint.NumMatchingAccounts");
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.AccountsSize.Raw", 1, 1);
   histogram_tester_.ExpectTotalCount("Blink.FedCm.AccountsSize.ReadyToShow", 0);
+  ExpectUkmValueInEntry("AccountsSize.Raw", FedCmEntry::kEntryName, 1);
 }
 
 TEST_F(RequestServiceTest, DomainHintNoMatch) {
@@ -6153,6 +6163,8 @@ TEST_F(RequestServiceTest, DomainHintMultipleAccountsSingleMatch) {
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.AccountsSize.Raw", 3, 1);
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.AccountsSize.ReadyToShow",
                                        1, 1);
+  ExpectUkmValueInEntry("AccountsSize.Raw", FedCmEntry::kEntryName, 3);
+  ExpectUkmValueInEntry("AccountsSize.ReadyToShow", FedCmEntry::kEntryName, 1);
 }
 
 TEST_F(RequestServiceTest, DomainHintMultipleAccountsMultipleMatches) {
@@ -6178,6 +6190,8 @@ TEST_F(RequestServiceTest, DomainHintMultipleAccountsMultipleMatches) {
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.AccountsSize.Raw", 3, 1);
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.AccountsSize.ReadyToShow",
                                        2, 1);
+  ExpectUkmValueInEntry("AccountsSize.Raw", FedCmEntry::kEntryName, 3);
+  ExpectUkmValueInEntry("AccountsSize.ReadyToShow", FedCmEntry::kEntryName, 2);
 }
 
 TEST_F(RequestServiceTest, DomainHintMultipleAccountsStar) {
