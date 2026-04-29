@@ -24,6 +24,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/omnibox/geolocation_header_service_factory.h"
 #include "chrome/browser/preloading/chrome_preloading.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/cache_alias_search_prefetch_url_loader.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/field_trial_settings.h"
@@ -49,6 +50,8 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/omnibox/browser/autocomplete_input.h"
+#include "components/omnibox/browser/geolocation_header_service.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/security_state/content/security_state_tab_helper.h"
@@ -72,6 +75,7 @@
 #include "net/base/network_interfaces.h"
 #include "net/base/url_util.h"
 #include "net/test/embedded_test_server/http_request.h"
+#include "services/device/public/cpp/test/scoped_geolocation_overrider.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/network/public/cpp/network_quality_tracker.h"
@@ -505,6 +509,225 @@ class SearchPrefetchServiceEnabledBrowserTest
   std::unique_ptr<content::test::PreloadingAttemptUkmEntryBuilder>
       attempt_entry_builder_;
 };
+
+// Verifies that when the kPlatformAgnosticXGeo flag is disabled, Desktop
+// clients do not attach the X-Geo header to prefetch requests (while Android
+// clients continue to do so via legacy logic).
+IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
+                       PrefetchSendsXGeoHeader_FlagDisabled) {
+  base::HistogramTester histogram_tester;
+  auto* search_prefetch_service =
+      SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
+  EXPECT_TRUE(search_prefetch_service);
+
+  std::string search_terms = "prefetch_content";
+
+  GURL prefetch_url = GetSearchServerQueryURL(search_terms);
+  GURL canonical_search_url = GetCanonicalSearchURL(prefetch_url);
+
+  // Grant geolocation permission to the DSE origin.
+  HostContentSettingsMap* settings_map =
+      HostContentSettingsMapFactory::GetForProfile(browser()->profile());
+  settings_map->SetPermissionSettingDefaultScope(
+      prefetch_url, prefetch_url, ContentSettingsType::GEOLOCATION,
+      CONTENT_SETTING_ALLOW);
+
+  EXPECT_TRUE(search_prefetch_service->MaybePrefetchURL(prefetch_url,
+                                                        GetWebContents()));
+
+  WaitUntilStatusChangesTo(canonical_search_url,
+                           SearchPrefetchStatus::kComplete);
+
+  EXPECT_EQ(1u, search_server_requests().size());
+  auto headers = search_server_requests()[0].headers;
+#if BUILDFLAG(IS_ANDROID)
+  ASSERT_TRUE(headers.contains("X-Geo"));
+#else
+  ASSERT_FALSE(headers.contains("X-Geo"));
+#endif
+}
+
+class SearchPrefetchXGeoEnabledBrowserTest
+    : public SearchPrefetchServiceEnabledBrowserTest {
+ public:
+  SearchPrefetchXGeoEnabledBrowserTest() {
+    xgeo_feature_list_.InitAndEnableFeature(omnibox::kPlatformAgnosticXGeo);
+  }
+
+ private:
+  base::test::ScopedFeatureList xgeo_feature_list_;
+};
+
+// Verifies that when the kPlatformAgnosticXGeo flag is enabled and geolocation
+// permissions are granted, valid cached coordinates are synchronously attached
+// as an X-Geo header to prefetch requests.
+IN_PROC_BROWSER_TEST_F(SearchPrefetchXGeoEnabledBrowserTest,
+
+                       PrefetchSendsXGeoHeader_FlagEnabled) {
+  base::HistogramTester histogram_tester;
+  auto* search_prefetch_service =
+      SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
+  EXPECT_TRUE(search_prefetch_service);
+
+  std::string search_terms = "prefetch_content";
+
+  GURL prefetch_url = GetSearchServerQueryURL(search_terms);
+  GURL canonical_search_url = GetCanonicalSearchURL(prefetch_url);
+
+  // Setup: Mock location.
+  double kTestLat = 20.3;
+  double kTestLong = 155.8;
+  device::ScopedGeolocationOverrider geolocation_overrider(kTestLat, kTestLong);
+
+  // Grant geolocation permission to the DSE origin.
+  HostContentSettingsMap* settings_map =
+      HostContentSettingsMapFactory::GetForProfile(browser()->profile());
+  settings_map->SetPermissionSettingDefaultScope(
+      prefetch_url, prefetch_url, ContentSettingsType::GEOLOCATION,
+      CONTENT_SETTING_ALLOW);
+
+  // Prime location and wait for cache.
+  GeolocationHeaderService* geo_service =
+      GeolocationHeaderServiceFactory::GetForProfile(browser()->profile());
+  ASSERT_TRUE(geo_service);
+  geo_service->PrimeLocation();
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return geo_service->HasCachedLocation(); }));
+
+  EXPECT_TRUE(search_prefetch_service->MaybePrefetchURL(prefetch_url,
+                                                        GetWebContents()));
+
+  WaitUntilStatusChangesTo(canonical_search_url,
+                           SearchPrefetchStatus::kComplete);
+
+  EXPECT_EQ(1u, search_server_requests().size());
+  auto headers = search_server_requests()[0].headers;
+  ASSERT_TRUE(headers.contains("X-Geo"));
+}
+
+// Ensures that prefetch requests drop the X-Geo header entirely if the user
+// explicitly blocked geolocation capabilities for the default search engine
+// origin.
+IN_PROC_BROWSER_TEST_F(SearchPrefetchXGeoEnabledBrowserTest,
+                       PrefetchNoXGeoHeader_PermissionDenied) {
+  base::HistogramTester histogram_tester;
+  auto* search_prefetch_service =
+      SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
+  EXPECT_TRUE(search_prefetch_service);
+
+  std::string search_terms = "prefetch_content";
+
+  GURL prefetch_url = GetSearchServerQueryURL(search_terms);
+  GURL canonical_search_url = GetCanonicalSearchURL(prefetch_url);
+
+  // Setup: Mock location.
+  double kTestLat = 20.3;
+  double kTestLong = 155.8;
+  device::ScopedGeolocationOverrider geolocation_overrider(kTestLat, kTestLong);
+
+  // Deny geolocation permission to the DSE origin.
+  HostContentSettingsMap* settings_map =
+      HostContentSettingsMapFactory::GetForProfile(browser()->profile());
+  settings_map->SetPermissionSettingDefaultScope(
+      prefetch_url, prefetch_url, ContentSettingsType::GEOLOCATION,
+      CONTENT_SETTING_BLOCK);
+
+  EXPECT_TRUE(search_prefetch_service->MaybePrefetchURL(prefetch_url,
+                                                        GetWebContents()));
+
+  WaitUntilStatusChangesTo(canonical_search_url,
+                           SearchPrefetchStatus::kComplete);
+
+  EXPECT_EQ(1u, search_server_requests().size());
+  auto headers = search_server_requests()[0].headers;
+  ASSERT_FALSE(headers.contains("X-Geo"));
+}
+
+// Validates that private browsing contexts (Incognito) suppress position state
+// dissemination, omitting the X-Geo header from prefetch payloads.
+IN_PROC_BROWSER_TEST_F(SearchPrefetchXGeoEnabledBrowserTest,
+                       PrefetchNoXGeoHeader_Incognito) {
+  Browser* incognito_browser = CreateIncognitoBrowser();
+  auto* search_prefetch_service =
+      SearchPrefetchServiceFactory::GetForProfile(incognito_browser->profile());
+  EXPECT_TRUE(search_prefetch_service);
+
+  std::string search_terms = "prefetch_content";
+
+  GURL prefetch_url = GetSearchServerQueryURL(search_terms);
+  GURL canonical_search_url = GetCanonicalSearchURL(prefetch_url);
+
+  // Grant geolocation permission to the DSE origin in original profile.
+  HostContentSettingsMap* settings_map =
+      HostContentSettingsMapFactory::GetForProfile(browser()->profile());
+  settings_map->SetPermissionSettingDefaultScope(
+      prefetch_url, prefetch_url, ContentSettingsType::GEOLOCATION,
+      CONTENT_SETTING_ALLOW);
+
+  EXPECT_TRUE(search_prefetch_service->MaybePrefetchURL(
+      prefetch_url,
+      incognito_browser->tab_strip_model()->GetActiveWebContents()));
+
+  // Custom wait loop for Incognito service.
+  while (search_prefetch_service->GetSearchPrefetchStatusForTesting(
+             canonical_search_url) != SearchPrefetchStatus::kComplete) {
+    base::RunLoop run_loop;
+    run_loop.RunUntilIdle();
+  }
+
+  EXPECT_EQ(1u, search_server_requests().size());
+  auto headers = search_server_requests()[0].headers;
+  ASSERT_FALSE(headers.contains("X-Geo"));
+}
+
+// Confirms that if no fresh position fix exists within the cache constraints,
+// the prefetch request refrains from transmitting expired data via the X-Geo
+// header.
+IN_PROC_BROWSER_TEST_F(SearchPrefetchXGeoEnabledBrowserTest,
+                       PrefetchNoXGeoHeader_StaleLocation) {
+  base::HistogramTester histogram_tester;
+  auto* search_prefetch_service =
+      SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
+  EXPECT_TRUE(search_prefetch_service);
+
+  std::string search_terms = "prefetch_content";
+
+  GURL prefetch_url = GetSearchServerQueryURL(search_terms);
+  GURL canonical_search_url = GetCanonicalSearchURL(prefetch_url);
+
+  // Setup: Mock location.
+  double kTestLat = 20.3;
+  double kTestLong = 155.8;
+  device::ScopedGeolocationOverrider geolocation_overrider(kTestLat, kTestLong);
+
+  // Grant geolocation permission to the DSE origin.
+  HostContentSettingsMap* settings_map =
+      HostContentSettingsMapFactory::GetForProfile(browser()->profile());
+  settings_map->SetPermissionSettingDefaultScope(
+      prefetch_url, prefetch_url, ContentSettingsType::GEOLOCATION,
+      CONTENT_SETTING_ALLOW);
+
+  // Prime location and wait for cache.
+  GeolocationHeaderService* geo_service =
+      GeolocationHeaderServiceFactory::GetForProfile(browser()->profile());
+  ASSERT_TRUE(geo_service);
+  geo_service->PrimeLocation();
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return geo_service->HasCachedLocation(); }));
+
+  // Set stale location age.
+  geo_service->SetLocationAgeForTesting(base::Hours(25));
+
+  EXPECT_TRUE(search_prefetch_service->MaybePrefetchURL(prefetch_url,
+                                                        GetWebContents()));
+
+  WaitUntilStatusChangesTo(canonical_search_url,
+                           SearchPrefetchStatus::kComplete);
+
+  EXPECT_EQ(1u, search_server_requests().size());
+  auto headers = search_server_requests()[0].headers;
+  ASSERT_FALSE(headers.contains("X-Geo"));
+}
 
 IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
                        BasicPrefetchFunctionality) {

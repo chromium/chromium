@@ -24,6 +24,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/named_trigger.h"
 #include "base/trace_event/trace_event.h"
+#include "chrome/browser/omnibox/geolocation_header_service_factory.h"
 #include "chrome/browser/preloading/chrome_preloading.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/field_trial_settings.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/streaming_search_prefetch_url_loader.h"
@@ -37,6 +38,8 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/embedder_support/user_agent_utils.h"
+#include "components/omnibox/browser/geolocation_header_service.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/client_hints.h"
@@ -315,21 +318,33 @@ bool SearchPrefetchRequest::StartPrefetchRequest(
       net::HttpRequestHeaders::kAccept,
       content::FrameAcceptHeaderValue(/*allow_sxg_responses=*/true, profile));
 
+  if (base::FeatureList::IsEnabled(omnibox::kPlatformAgnosticXGeo)) {
+    GeolocationHeaderService* geo_service =
+        GeolocationHeaderServiceFactory::GetForProfile(profile);
+    if (geo_service) {
+      std::optional<std::string> geo_header =
+          geo_service->GetLocationHeader(resource_request->url);
+      if (geo_header) {
+        resource_request->headers.SetHeader("X-Geo", geo_header.value());
+      }
+    }
+  } else {
 #if BUILDFLAG(IS_ANDROID)
-  base::TimeTicks geo_header_start_timestamp = base::TimeTicks::Now();
-  std::optional<std::string> geo_header =
-      GetGeolocationHeaderIfAllowed(resource_request->url, profile);
-  if (geo_header) {
-    resource_request->headers.AddHeaderFromString(geo_header.value());
+    base::TimeTicks geo_header_start_timestamp = base::TimeTicks::Now();
+    std::optional<std::string> geo_header =
+        GetGeolocationHeaderIfAllowed(resource_request->url, profile);
+    if (geo_header) {
+      resource_request->headers.AddHeaderFromString(geo_header.value());
 
-    std::string histogram_name =
-        "Omnibox.SearchPrefetch.GeoLocationHeaderTime.";
-    histogram_name.append(navigation_prefetch_ ? "NavigationPrefetch"
-                                               : "SuggestionPrefetch");
-    base::UmaHistogramTimes(
-        histogram_name, (base::TimeTicks::Now() - geo_header_start_timestamp));
-  }
+      std::string histogram_name =
+          "Omnibox.SearchPrefetch.GeoLocationHeaderTime.";
+      histogram_name.append(navigation_prefetch_ ? "NavigationPrefetch"
+                                                 : "SuggestionPrefetch");
+      base::UmaHistogramTimes(histogram_name, (base::TimeTicks::Now() -
+                                               geo_header_start_timestamp));
+    }
 #endif  // BUILDFLAG(IS_ANDROID)
+  }
 
   // Before sending out the request, allow throttles to modify the request (not
   // the URL). The rest of the URL Loader throttle calls are captured in the
