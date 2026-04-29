@@ -302,6 +302,7 @@ BASE_DECLARE_FEATURE(kUpdateCompositorForSurfaceControl);
 BASE_DECLARE_FEATURE(kUseActivityManagerForTabActivation);
 BASE_DECLARE_FEATURE(kUseInitialNetworkStateAtStartup);
 BASE_DECLARE_FEATURE(kUseLibunwindstackNativeUnwinderAndroid);
+BASE_DECLARE_FEATURE(kVirtualKeyboardTransientInnerHeightFix);
 BASE_DECLARE_FEATURE(kWebOtpCrossDeviceSimpleString);
 BASE_DECLARE_FEATURE(kXplatSyncedSetup);
 BASE_DECLARE_FEATURE(kYourSavedInfoSettingsPageAndroid);

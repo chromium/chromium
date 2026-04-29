@@ -713,6 +713,8 @@ public abstract class ChromeFeatureList {
     public static final String USE_LIBUNWINDSTACK_NATIVE_UNWINDER_ANDROID =
             "UseLibunwindstackNativeUnwinderAndroid";
     public static final String VERIFY_QWACS = "VerifyQWACs";
+    public static final String VIRTUAL_KEYBOARD_TRANSIENT_INNER_HEIGHT_FIX =
+            "VirtualKeyboardTransientInnerHeightFix";
     public static final String VISITED_URL_RANKING_SERVICE = "VisitedURLRankingService";
     public static final String WEB_APK_BACKUP_AND_RESTORE_BACKEND = "WebApkBackupAndRestoreBackend";
     public static final String WEB_APK_INSTALL_FAILURE_NOTIFICATION =
@@ -1203,6 +1205,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(USE_INITIAL_NETWORK_STATE_AT_STARTUP, true);
     public static final CachedFlag sUseLibunwindstackNativeUnwinderAndroid =
             newCachedFlag(USE_LIBUNWINDSTACK_NATIVE_UNWINDER_ANDROID, true);
+    public static final CachedFlag sVirtualKeyboardTransientInnerHeightFix =
+            newCachedFlag(VIRTUAL_KEYBOARD_TRANSIENT_INNER_HEIGHT_FIX, true);
     public static final CachedFlag sWebApkMinShellApkVersion =
             newCachedFlag(WEB_APK_MIN_SHELL_APK_VERSION, true);
     // keep-sorted end
@@ -1384,6 +1388,7 @@ public abstract class ChromeFeatureList {
                     sUseChimeAndroidSdk,
                     sUseInitialNetworkStateAtStartup,
                     sUseLibunwindstackNativeUnwinderAndroid,
+                    sVirtualKeyboardTransientInnerHeightFix,
                     sWebApkMinShellApkVersion
                     // keep-sorted end
                     );
