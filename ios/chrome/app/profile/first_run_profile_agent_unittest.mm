@@ -4,6 +4,7 @@
 
 #import "ios/chrome/app/profile/first_run_profile_agent.h"
 
+#import "base/ios/block_types.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/sync_preferences/features.h"
@@ -21,7 +22,11 @@
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/guided_tour_commands.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
+#import "ios/chrome/browser/shared/public/commands/tab_grid_commands.h"
+#import "ios/chrome/browser/shared/public/commands/tab_grid_toolbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/synced_set_up/public/synced_set_up_metrics.h"
 #import "ios/chrome/browser/welcome_back/model/features.h"
@@ -31,6 +36,51 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 
+@interface FakeTabGridToolbarCommands : NSObject <TabGridToolbarCommands>
+@property(nonatomic, copy) ProceduralBlock dismissalCompletion;
+@end
+
+@implementation FakeTabGridToolbarCommands
+- (void)showGuidedTourIncognitoStepWithDismissalCompletion:
+    (ProceduralBlock)completion {
+  self.dismissalCompletion = completion;
+}
+- (void)showGuidedTourTabGroupStepWithDismissalCompletion:
+    (ProceduralBlock)completion {
+  self.dismissalCompletion = completion;
+}
+- (void)showSavedTabGroupIPH {
+}
+- (void)hideTabGridToolbarGuidedTour {
+}
+@end
+
+@interface FakeTabGridCommands : NSObject <TabGridCommands>
+@property(nonatomic, copy) ProceduralBlock dismissalCompletion;
+@end
+
+@implementation FakeTabGridCommands
+- (void)showGuidedTourLongPressStepWithDismissalCompletion:
+    (ProceduralBlock)completion {
+  self.dismissalCompletion = completion;
+}
+- (void)bringGroupIntoView:(const TabGroup*)group animated:(BOOL)animated {
+}
+- (void)showHistoryForText:(NSString*)text {
+}
+- (void)showWebSearchForText:(NSString*)text {
+}
+- (void)showPage:(TabGridPage)page animated:(BOOL)animated {
+}
+- (void)prepareToExitTabGrid {
+}
+- (void)exitTabGrid {
+}
+- (void)hideTabGridGuidedTour {
+}
+- (void)showPageActionMenuFromTabGrid {
+}
+@end
 // Tests the FirstRunProfileAgent.
 class FirstRunProfileAgentTest : public PlatformTest {
  public:
@@ -97,9 +147,52 @@ TEST_F(FirstRunProfileAgentTest, GuidedTourPromoMetrics) {
 TEST_F(FirstRunProfileAgentTest, GuidedTourStepMetrics) {
   enabled_feature_list_.InitAndEnableFeatureWithParameters(
       kBestOfAppFRE, {{kWelcomeBackParam, "4"}});
+
+  InitializeActiveSceneState();
+  InitializeTestBrowser();
+  [profile_agent_ profileState:profile_state_
+      firstSceneHasInitializedUI:scene_state_];
+
+  FakeTabGridToolbarCommands* fake_tab_grid_toolbar_commands =
+      [[FakeTabGridToolbarCommands alloc] init];
+  [browser_->GetCommandDispatcher()
+      startDispatchingToTarget:fake_tab_grid_toolbar_commands
+                   forProtocol:@protocol(TabGridToolbarCommands)];
+
+  FakeTabGridCommands* fake_tab_grid_commands =
+      [[FakeTabGridCommands alloc] init];
+  [browser_->GetCommandDispatcher()
+      startDispatchingToTarget:fake_tab_grid_commands
+                   forProtocol:@protocol(TabGridCommands)];
+
+  id scene_commands_handler = OCMProtocolMock(@protocol(SceneCommands));
+  [browser_->GetCommandDispatcher()
+      startDispatchingToTarget:scene_commands_handler
+                   forProtocol:@protocol(SceneCommands)];
+
   base::HistogramTester tester;
-  [profile_agent_ nextTappedForStep:GuidedTourStep::kTabGridIncognito];
+
+  // Start and stop step 1 (NTP).
+  [profile_agent_ startGuidedTour];
+  [profile_agent_ stepCompleted:GuidedTourStep::kNTP];
+  tester.ExpectBucketCount("IOS.GuidedTour.DidFinishStep", 0, 1);
+
+  // Tab grid being presented is the signal to start step 2.
+  [profile_agent_ tabGridWasPresented];
+
+  ASSERT_NE(fake_tab_grid_toolbar_commands.dismissalCompletion, nil);
+  fake_tab_grid_toolbar_commands.dismissalCompletion();
   tester.ExpectBucketCount("IOS.GuidedTour.DidFinishStep", 1, 1);
+
+  // Step 2 completion triggers step 3.
+  ASSERT_NE(fake_tab_grid_commands.dismissalCompletion, nil);
+  fake_tab_grid_commands.dismissalCompletion();
+  tester.ExpectBucketCount("IOS.GuidedTour.DidFinishStep", 2, 1);
+
+  // Step 3 completion triggers step 4.
+  ASSERT_NE(fake_tab_grid_toolbar_commands.dismissalCompletion, nil);
+  fake_tab_grid_toolbar_commands.dismissalCompletion();
+  tester.ExpectBucketCount("IOS.GuidedTour.DidFinishStep", 3, 1);
 }
 
 // Validates that the Synced Set Up flow does not trigger from an off-the-record

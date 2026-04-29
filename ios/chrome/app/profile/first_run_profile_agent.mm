@@ -133,6 +133,7 @@ const char kGuidedTourStepDidFinishHistogram[] = "IOS.GuidedTour.DidFinishStep";
         HandlerForProtocol([self commandDispatcher], TabGridToolbarCommands);
     __weak FirstRunProfileAgent* weakSelf = self;
     ProceduralBlock completion = ^{
+      [weakSelf stepCompleted:GuidedTourStep::kTabGridIncognito];
       [weakSelf showLongPressStep];
     };
     [handler showGuidedTourIncognitoStepWithDismissalCompletion:completion];
@@ -257,6 +258,7 @@ const char kGuidedTourStepDidFinishHistogram[] = "IOS.GuidedTour.DidFinishStep";
 - (void)stepCompleted:(GuidedTourStep)step {
   CHECK(_currentGuidedTourStep);
   CHECK_EQ(step, _currentGuidedTourStep.value());
+  base::UmaHistogramEnumeration(kGuidedTourStepDidFinishHistogram, step);
   if (step == GuidedTourStep::kNTP) {
     [_guidedTourCoordinator stop];
     _guidedTourCoordinator = nil;
@@ -269,7 +271,6 @@ const char kGuidedTourStepDidFinishHistogram[] = "IOS.GuidedTour.DidFinishStep";
 }
 
 - (void)nextTappedForStep:(GuidedTourStep)step {
-  base::UmaHistogramEnumeration(kGuidedTourStepDidFinishHistogram, step);
   if (IsManualUploadForBestOfAppEnabled()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(^{
@@ -474,6 +475,7 @@ const char kGuidedTourStepDidFinishHistogram[] = "IOS.GuidedTour.DidFinishStep";
   _currentGuidedTourStep = GuidedTourStep::kTabGridLongPress;
   __weak FirstRunProfileAgent* weakSelf = self;
   ProceduralBlock completion = ^{
+    [weakSelf stepCompleted:GuidedTourStep::kTabGridLongPress];
     [weakSelf showTabGroupStep];
   };
   id<TabGridCommands> handler =
@@ -488,6 +490,7 @@ const char kGuidedTourStepDidFinishHistogram[] = "IOS.GuidedTour.DidFinishStep";
       HandlerForProtocol([self commandDispatcher], TabGridToolbarCommands);
   __weak FirstRunProfileAgent* weakSelf = self;
   ProceduralBlock completion = ^{
+    [weakSelf stepCompleted:GuidedTourStep::kTabGridTabGroup];
     [weakSelf guidedTourCompleted];
   };
   [handler showGuidedTourTabGroupStepWithDismissalCompletion:completion];
