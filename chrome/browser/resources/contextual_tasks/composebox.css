@@ -392,7 +392,7 @@
   bottom: 0;
 }
 
-#composebox:not([submit-enabled])::part(submit) {
+:host([energy-effect-enabled_]) #composebox:not([submit-enabled])::part(submit) {
   display: block; /* Override display: none from shared CSS */
   opacity: 0;
   transform: scale(0);
@@ -406,6 +406,9 @@
   inset-inline-start: auto;
   position: absolute;
   top: auto;
+}
+
+:host([energy-effect-enabled_]) #composebox[submit-enabled]::part(submit) {
   opacity: 1;
   transform: scale(1);
   visibility: visible;
