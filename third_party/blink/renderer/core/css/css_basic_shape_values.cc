@@ -40,34 +40,15 @@
 namespace blink {
 namespace cssvalue {
 
-static String BuildCircleString(const String& radius,
-                                const String& center_x,
-                                const String& center_y,
-                                bool has_explicit_center) {
-  char at[] = "at";
-  char separator[] = " ";
-  StringBuilder result;
-  result.Append("circle(");
-  if (!radius.IsNull()) {
-    result.Append(radius);
-  }
+namespace {
 
-  if (has_explicit_center) {
-    if (!radius.IsNull()) {
-      result.Append(separator);
-    }
-    result.Append(at);
-    result.Append(separator);
-    result.Append(center_x);
-    result.Append(separator);
-    result.Append(center_y);
-  }
-  result.Append(')');
-  return result.ReleaseString();
+bool MatchesIdentifier(const CSSValue& value, CSSValueID ident) {
+  auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
+  return identifier_value && identifier_value->GetValueID() == ident;
 }
 
-static String SerializePositionOffset(const CSSValuePair& offset,
-                                      const CSSValuePair& other) {
+String SerializePositionOffset(const CSSValuePair& offset,
+                               const CSSValuePair& other) {
   if ((To<CSSIdentifierValue>(offset.First()).GetValueID() ==
            CSSValueID::kLeft &&
        To<CSSIdentifierValue>(other.First()).GetValueID() ==
@@ -81,15 +62,12 @@ static String SerializePositionOffset(const CSSValuePair& offset,
   return offset.CssText();
 }
 
-static CSSValuePair* BuildSerializablePositionOffset(CSSValue* offset,
-                                                     CSSValueID default_side) {
+const CSSValuePair* BuildSerializablePositionOffset(const CSSValue& offset,
+                                                    CSSValueID default_side) {
   CSSValueID side = default_side;
   const CSSPrimitiveValue* amount = nullptr;
 
-  if (!offset) {
-    side = CSSValueID::kCenter;
-  } else if (auto* offset_identifier_value =
-                 DynamicTo<CSSIdentifierValue>(offset)) {
+  if (auto* offset_identifier_value = DynamicTo<CSSIdentifierValue>(offset)) {
     side = offset_identifier_value->GetValueID();
   } else if (auto* offset_value_pair = DynamicTo<CSSValuePair>(offset)) {
     side = To<CSSIdentifierValue>(offset_value_pair->First()).GetValueID();
@@ -101,7 +79,7 @@ static CSSValuePair* BuildSerializablePositionOffset(CSSValue* offset,
           amount->SubtractFrom(100, CSSPrimitiveValue::UnitType::kPercentage);
     }
   } else {
-    amount = To<CSSPrimitiveValue>(offset);
+    amount = &To<CSSPrimitiveValue>(offset);
   }
 
   if (side == CSSValueID::kCenter) {
@@ -125,23 +103,41 @@ static CSSValuePair* BuildSerializablePositionOffset(CSSValue* offset,
                                             CSSValuePair::kKeepIdenticalValues);
 }
 
-String CSSBasicShapeCircleValue::CustomCSSText() const {
-  CSSValuePair* normalized_cx =
-      BuildSerializablePositionOffset(center_x_, CSSValueID::kLeft);
-  CSSValuePair* normalized_cy =
-      BuildSerializablePositionOffset(center_y_, CSSValueID::kTop);
+void SerializePosition(const CSSValue& center_x,
+                       const CSSValue& center_y,
+                       bool needs_separator,
+                       StringBuilder& result) {
+  if (needs_separator) {
+    result.Append(' ');
+  }
+  const CSSValuePair* normalized_cx =
+      BuildSerializablePositionOffset(center_x, CSSValueID::kLeft);
+  const CSSValuePair* normalized_cy =
+      BuildSerializablePositionOffset(center_y, CSSValueID::kTop);
+  result.Append("at ");
+  result.Append(SerializePositionOffset(*normalized_cx, *normalized_cy));
+  result.Append(' ');
+  result.Append(SerializePositionOffset(*normalized_cy, *normalized_cx));
+}
 
-  String radius;
-  auto* radius_identifier_value = DynamicTo<CSSIdentifierValue>(radius_.Get());
-  if (radius_ &&
-      !(radius_identifier_value &&
-        radius_identifier_value->GetValueID() == CSSValueID::kClosestSide)) {
-    radius = radius_->CssText();
+}  // namespace
+
+String CSSBasicShapeCircleValue::CustomCSSText() const {
+  StringBuilder result;
+  result.Append("circle(");
+
+  bool needs_separator = false;
+  if (radius_ && !MatchesIdentifier(*radius_, CSSValueID::kClosestSide)) {
+    result.Append(radius_->CssText());
+    needs_separator = true;
   }
 
-  return BuildCircleString(
-      radius, SerializePositionOffset(*normalized_cx, *normalized_cy),
-      SerializePositionOffset(*normalized_cy, *normalized_cx), center_x_);
+  const bool has_explicit_center = center_x_;
+  if (has_explicit_center) {
+    SerializePosition(*center_x_, *center_y_, needs_separator, result);
+  }
+  result.Append(')');
+  return result.ReleaseString();
 }
 
 bool CSSBasicShapeCircleValue::Equals(
@@ -159,75 +155,25 @@ void CSSBasicShapeCircleValue::TraceAfterDispatch(
   CSSValue::TraceAfterDispatch(visitor);
 }
 
-static String BuildEllipseString(const String& radius_x,
-                                 const String& radius_y,
-                                 const String& center_x,
-                                 const String& center_y,
-                                 bool has_explicit_center) {
-  char at[] = "at";
-  char separator[] = " ";
+String CSSBasicShapeEllipseValue::CustomCSSText() const {
   StringBuilder result;
   result.Append("ellipse(");
+
   bool needs_separator = false;
-  if (!radius_x.IsNull()) {
-    result.Append(radius_x);
-    needs_separator = true;
-  }
-  if (!radius_y.IsNull()) {
-    if (needs_separator) {
-      result.Append(separator);
-    }
-    result.Append(radius_y);
+  if (radius_x_ && !(MatchesIdentifier(*radius_x_, CSSValueID::kClosestSide) &&
+                     MatchesIdentifier(*radius_y_, CSSValueID::kClosestSide))) {
+    result.Append(radius_x_->CssText());
+    result.Append(' ');
+    result.Append(radius_y_->CssText());
     needs_separator = true;
   }
 
+  const bool has_explicit_center = center_x_;
   if (has_explicit_center) {
-    if (needs_separator) {
-      result.Append(separator);
-    }
-    result.Append(at);
-    result.Append(separator);
-    result.Append(center_x);
-    result.Append(separator);
-    result.Append(center_y);
+    SerializePosition(*center_x_, *center_y_, needs_separator, result);
   }
   result.Append(')');
   return result.ReleaseString();
-}
-
-String CSSBasicShapeEllipseValue::CustomCSSText() const {
-  CSSValuePair* normalized_cx =
-      BuildSerializablePositionOffset(center_x_, CSSValueID::kLeft);
-  CSSValuePair* normalized_cy =
-      BuildSerializablePositionOffset(center_y_, CSSValueID::kTop);
-
-  String radius_x;
-  String radius_y;
-  if (radius_x_) {
-    DCHECK(radius_y_);
-
-    auto* radius_x_identifier_value =
-        DynamicTo<CSSIdentifierValue>(radius_x_.Get());
-    bool radius_x_closest_side =
-        (radius_x_identifier_value &&
-         radius_x_identifier_value->GetValueID() == CSSValueID::kClosestSide);
-
-    auto* radius_y_identifier_value =
-        DynamicTo<CSSIdentifierValue>(radius_y_.Get());
-    bool radius_y_closest_side =
-        (radius_y_identifier_value &&
-         radius_y_identifier_value->GetValueID() == CSSValueID::kClosestSide);
-
-    if (!radius_x_closest_side || !radius_y_closest_side) {
-      radius_x = radius_x_->CssText();
-      radius_y = radius_y_->CssText();
-    }
-  }
-
-  return BuildEllipseString(
-      radius_x, radius_y,
-      SerializePositionOffset(*normalized_cx, *normalized_cy),
-      SerializePositionOffset(*normalized_cy, *normalized_cx), center_x_);
 }
 
 bool CSSBasicShapeEllipseValue::Equals(
