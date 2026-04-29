@@ -871,6 +871,9 @@
     <message name="IDS_AUTOFILL_SHOPPING_OPT_IN_TOGGLE_SUB_LABEL" desc="Sub-label for a toggle allowing users to opt into Enhanced Autofill for shopping-related data types. Sentence-Cased." formatter_data="android_java" translateable="false">
       Includes information such as orders and shipments
     </message>
+    <message name="IDS_AUTOFILL_AI_SAVE_OR_UPDATE_LOCAL_ENTITY_SOURCE_NOTICE" desc="A description that appears beneath the entity details notifying the user that their data is going to be stored locally on device.">
+      Your info is saved to your device
+    </message>
   </if>
 
   <!-- TODO(crbug.com/481979475): Make strings translatable -->

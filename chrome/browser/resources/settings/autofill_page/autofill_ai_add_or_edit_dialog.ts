@@ -473,9 +473,14 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
   // backend code.
   // LINT.IfChange
   private computeFooterText_(): TrustedHTML {
-    if (!this.entityInstance || this.entityInstance.guid || !this.userEmail_ ||
-        !this.entityInstance?.type.supportsWalletStorage) {
+    if (!this.entityInstance || !this.userEmail_) {
       return sanitizeInnerHtml('');
+    }
+
+    if (!this.entityInstance.type.supportsWalletStorage ||
+        this.entityInstance.guid) {
+      return sanitizeInnerHtml(
+          this.i18n('autofillAiSaveOrUpdateLocalEntitySourceNotice'));
     }
 
     const walletTitle = this.i18n('googleWalletTitle');

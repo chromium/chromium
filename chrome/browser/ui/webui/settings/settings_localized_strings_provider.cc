@@ -1683,7 +1683,9 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
       {"walletablePassDetectionToConsiderDataUsage",
        IDS_SETTINGS_WALLETABLE_PASS_DETECTION_TO_CONSIDER_DATA_USAGE},
       {"walletablePassDetectionToConsiderDataStorage",
-       IDS_SETTINGS_WALLETABLE_PASS_DETECTION_TO_CONSIDER_DATA_STORAGE}};
+       IDS_SETTINGS_WALLETABLE_PASS_DETECTION_TO_CONSIDER_DATA_STORAGE},
+      {"autofillAiSaveOrUpdateLocalEntitySourceNotice",
+       IDS_AUTOFILL_AI_SAVE_OR_UPDATE_LOCAL_ENTITY_SOURCE_NOTICE}};
 
   html_source->AddString("manageAddressesUrl",
                          autofill::payments::GetManageAddressesUrl().spec());
