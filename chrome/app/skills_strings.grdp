@@ -60,6 +60,9 @@
   <message name="IDS_SKILL_PAGE_FIRST_PARTY_ADD_SKILL_ERROR_TOAST" desc="Text on the toast if a skill no longer exists in the 1p catalog in the chrome://skills/browse-skills page.">
     Unable to add skill
   </message>
+  <message name="IDS_SKILLS_PAGE_ALL_CATEGORY" desc="Text for the all category filter in the chrome://skills/browse-skills page.">
+    All
+  </message>
 
   <!-- chrome://skills/user-skills page-->
   <message name="IDS_SKILL_PAGE_EMPTY_STATE_TITLE" desc="Text for the zero state title in the chrome://skills page.">

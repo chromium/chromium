@@ -26,7 +26,7 @@ import {SkillsPageBrowserProxy} from './skills_page_browser_proxy.js';
 // The category name for top skills.
 const kTopPickCategoryString: string = 'Top Pick';
 // The default category name for all skills.
-const kAllCategoriesString: string = 'All';
+const kAllCategoriesString: string = loadTimeData.getString('all');
 // The category name for partner skills.
 const kPartnerCategoryString: string = 'Partner picks';
 
