@@ -29,6 +29,7 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/drive/model:drive_tab_helper",
     "//ios/chrome/browser/drive/model:metrics",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/public/commands",

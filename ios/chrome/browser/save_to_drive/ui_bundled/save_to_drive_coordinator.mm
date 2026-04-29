@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/save_to_drive/ui_bundled/file_destination_picker_view_controller.h"
 #import "ios/chrome/browser/save_to_drive/ui_bundled/save_to_drive_mediator.h"
 #import "ios/chrome/browser/save_to_drive/ui_bundled/save_to_drive_util.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/account_picker_commands.h"
@@ -301,6 +302,18 @@
     return;
   }
   [_signinCoordinator stop];
+
+  if ([self.browser->GetSceneState() isUIBlocked]) {
+    // If the UI is blocked in this scene, potentially because a sign-in flow
+    // is already ongoing in another scene, starting another sign-in flow in
+    // this scene will try to create a ScopedUIBlocker, which will fail a CHECK
+    // in ProfileState. This hides Save to Drive instead.
+    id<SaveToDriveCommands> saveToDriveHandler = HandlerForProtocol(
+        self.browser->GetCommandDispatcher(), SaveToDriveCommands);
+    [saveToDriveHandler hideSaveToDrive];
+    return;
+  }
+
   __weak __typeof(self) weakSelf = self;
   ShowSigninCommand* command = [[ShowSigninCommand alloc]
       initWithOperation:AuthenticationOperation::kSigninOnly
