@@ -297,7 +297,7 @@ chrome.tabs.getCurrent(function(tab) {
         function testExtraRequestHeadersVisible() {
           const url = getWSTestURL(testWebSocketPort);
 
-          var extraHeadersListener = callbackPass(function(details) {
+          const extraHeadersListener = callbackPass(function(details) {
             checkHeaders(
                 details.requestHeaders, ['user-agent', 'accept-language'], []);
             chrome.webRequest.onBeforeSendHeaders.removeListener(
@@ -307,7 +307,7 @@ chrome.tabs.getCurrent(function(tab) {
               extraHeadersListener, {urls: [url]},
               ['requestHeaders', 'extraHeaders']);
 
-          var standardListener = callbackPass(function(details) {
+          const standardListener = callbackPass(function(details) {
             checkHeaders(
                 details.requestHeaders, ['user-agent'], ['accept-language']);
             chrome.webRequest.onBeforeSendHeaders.removeListener(
@@ -330,7 +330,7 @@ chrome.tabs.getCurrent(function(tab) {
 
             // Test modification.
             for (let i = 0; i < details.requestHeaders.length; i++) {
-              if (details.requestHeaders[i].name == 'User-Agent') {
+              if (details.requestHeaders[i].name === 'User-Agent') {
                 details.requestHeaders[i].value = 'Foo';
               }
             }
@@ -344,13 +344,13 @@ chrome.tabs.getCurrent(function(tab) {
               beforeSendHeadersListener, {urls: [url]},
               ['requestHeaders', 'blocking', 'extraHeaders']);
 
-          var sendHeadersListener = callbackPass(function(details) {
+          const sendHeadersListener = callbackPass(function(details) {
             checkHeaders(
                 details.requestHeaders, ['x-new-header'], ['accept-language']);
 
             let seen = false;
             for (let i = 0; i < details.requestHeaders.length; i++) {
-              if (details.requestHeaders[i].name == 'User-Agent') {
+              if (details.requestHeaders[i].name === 'User-Agent') {
                 chrome.test.assertEq(details.requestHeaders[i].value, 'Foo');
                 seen = true;
               }
@@ -384,7 +384,7 @@ chrome.tabs.getCurrent(function(tab) {
               onHeadersReceivedHeadersListener, {urls: [url]},
               ['responseHeaders', 'blocking', 'extraHeaders']);
 
-          var onResponseStartedListener = callbackPass(function(details) {
+          const onResponseStartedListener = callbackPass(function(details) {
             checkHeaders(details.responseHeaders, ['x-new-header'], []);
 
             chrome.webRequest.onHeadersReceived.removeListener(

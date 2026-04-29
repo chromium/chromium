@@ -288,7 +288,7 @@ const testRoutines = {
       i++;
     });
     chrome.vpnProvider.onUIEvent.addListener(function(event, id) {
-      if (event == 'showAddDialog') {
+      if (event === 'showAddDialog') {
         chrome.test.assertEq(i, 1);
         chrome.test.assertEq(id, '');
         i++;

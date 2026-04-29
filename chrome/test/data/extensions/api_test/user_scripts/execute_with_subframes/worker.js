@@ -229,7 +229,7 @@ chrome.test.runTests([
       findFrameIdWithHostname(frames, 'c.com'),
     ];
     const deniedFrame = frames.find((frame) => {
-      return (new URL(frame.url)).hostname == 'c.com';
+      return (new URL(frame.url)).hostname === 'c.com';
     });
 
     const script = {
@@ -258,7 +258,7 @@ chrome.test.runTests([
       findDocumentIdWithHostname(frames, 'c.com'),
     ];
     const deniedFrame = frames.find((frame) => {
-      return (new URL(frame.url)).hostname == 'c.com';
+      return (new URL(frame.url)).hostname === 'c.com';
     });
 
     const script = {

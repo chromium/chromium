@@ -116,7 +116,7 @@ loadScript.then(async function() {
       // This page must be opened in the main frame, because OSDD requests are
       // only generated for main frame documents.
       navigateAndWait(getPageWithOSDDURL(), function() {
-        console.log(`Navigated to ${getPageWithOSDDURL()}`);
+        console.info(`Navigated to ${getPageWithOSDDURL()}`);
       });
     },
   ]);

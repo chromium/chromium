@@ -20,9 +20,9 @@ const availableTests = [
 
 chrome.test.getConfig((config) => {
   const tests = availableTests.filter((t) => {
-    return config.customArg == t.name;
+    return config.customArg === t.name;
   });
-  if (tests.length == 0) {
+  if (tests.length === 0) {
     chrome.test.notifyFail('No test found');
     return;
   }

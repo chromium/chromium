@@ -9,7 +9,7 @@
 function callbackResult(result) {
   if (chrome.runtime.lastError) {
     chrome.test.fail(chrome.runtime.lastError.message);
-  } else if (result == false) {
+  } else if (result === false) {
     chrome.test.fail('Failed: ' + result);
   }
 }
@@ -27,7 +27,7 @@ const availableTests = [
       chrome.usersPrivate.getUsers(function(users) {
         let foundUser = false;
         users.forEach(function(user) {
-          if (user.email == kEmail1 && user.name == kName1) {
+          if (user.email === kEmail1 && user.name === kName1) {
             foundUser = true;
           }
         });
@@ -46,7 +46,7 @@ const availableTests = [
 
         chrome.usersPrivate.removeUser(kEmail1, function(result3) {
           chrome.usersPrivate.getUsers(function(users) {
-            chrome.test.assertTrue(users.length == 1);
+            chrome.test.assertTrue(users.length === 1);
             chrome.test.assertEq(kEmail2, users[0].email);
             chrome.test.assertEq(kName2, users[0].name);
             chrome.test.succeed();
@@ -65,7 +65,7 @@ const availableTests = [
 
         // Confirm kEmail2 was added to the list of users.
         chrome.usersPrivate.getUsers(function(users) {
-          chrome.test.assertTrue(users.length == 1);
+          chrome.test.assertTrue(users.length === 1);
           chrome.test.assertEq(kEmail2, users[0].email);
           chrome.test.assertEq(kName2, users[0].name);
           chrome.test.succeed();
@@ -106,11 +106,11 @@ const availableTests = [
         chrome.test.assertEq(typeof (status), 'object');
         chrome.test.assertTrue(status.hasOwnProperty('isLoggedIn'));
         chrome.test.assertTrue(status.hasOwnProperty('isScreenLocked'));
-        console.log(status.isLoggedIn);
-        console.log(config.loginStatus.isLoggedIn);
+        console.info(status.isLoggedIn);
+        console.info(config.loginStatus.isLoggedIn);
         chrome.test.assertEq(status.isLoggedIn, config.loginStatus.isLoggedIn);
-        console.log(status.isScreenLocked);
-        console.log(config.loginStatus.isScreenLocked);
+        console.info(status.isScreenLocked);
+        console.info(config.loginStatus.isScreenLocked);
         chrome.test.assertEq(
             status.isScreenLocked, config.loginStatus.isScreenLocked);
       }));
@@ -120,5 +120,5 @@ const availableTests = [
 
 const testToRun = window.location.search.substring(1);
 chrome.test.runTests(availableTests.filter(function(op) {
-  return op.name == testToRun;
+  return op.name === testToRun;
 }));

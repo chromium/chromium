@@ -36,7 +36,7 @@ async function perform2SecondsOfWebSocketActivity() {
 
   // Send messages back and forth to the web socket for two seconds.
   socket.onmessage = (messageEvent) => {
-    if (messageEvent.data != MESSAGE) {
+    if (messageEvent.data !== MESSAGE) {
       chrome.test.sendScriptResult(`unexpected message: ${messageEvent.data}`);
     }
 

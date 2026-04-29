@@ -18,7 +18,7 @@ function checkRestoreAfterFullscreen(theWindow) {
 }
 
 function checkFullscreen(theWindow) {
-  if (theWindow.type == 'panel') {
+  if (theWindow.type === 'panel') {
     // Panels do not support fullscreen.
     chrome.test.assertEq('normal', theWindow.state);
   } else {
@@ -39,7 +39,7 @@ function checkRestoreWithBounds(theWindow) {
 }
 
 function checkMaximized(theWindow) {
-  if (theWindow.type == 'panel') {
+  if (theWindow.type === 'panel') {
     // Maximize is the same as restore for panels.
     chrome.test.assertEq('normal', theWindow.state);
     chrome.test.assertEq(width, theWindow.width);

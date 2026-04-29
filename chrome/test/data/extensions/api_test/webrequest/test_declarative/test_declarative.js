@@ -62,9 +62,7 @@ function getURLEchoUserAgent() {
   return getServerURL('echoheader?User-Agent');
 }
 
-function getURLHttpSimple() {
-  return getServerURL('extensions/api_test/webrequest/simpleLoad/a.html');
-}
+
 
 function getURLSetHeader() {
   return getServerURL(`set-header?${HEADER_NAME}: ${HEADER_VALUE}`);
@@ -89,24 +87,24 @@ function cancelThirdPartyExpected() {
       details: {
         url: getURLOfHTMLWithThirdParty(),
         frameUrl: getURLOfHTMLWithThirdParty(),
-        initiator: getServerDomain(initiators.BROWSER_INITIATED)
-      }
+        initiator: getServerDomain(initiators.BROWSER_INITIATED),
+      },
     },
     {
       label: 'onBeforeSendHeaders',
       event: 'onBeforeSendHeaders',
       details: {
         url: getURLOfHTMLWithThirdParty(),
-        initiator: getServerDomain(initiators.BROWSER_INITIATED)
-      }
+        initiator: getServerDomain(initiators.BROWSER_INITIATED),
+      },
     },
     {
       label: 'onSendHeaders',
       event: 'onSendHeaders',
       details: {
         url: getURLOfHTMLWithThirdParty(),
-        initiator: getServerDomain(initiators.BROWSER_INITIATED)
-      }
+        initiator: getServerDomain(initiators.BROWSER_INITIATED),
+      },
     },
     {
       label: 'onHeadersReceived',
@@ -115,8 +113,8 @@ function cancelThirdPartyExpected() {
         url: getURLOfHTMLWithThirdParty(),
         statusLine: 'HTTP/1.1 200 OK',
         statusCode: 200,
-        initiator: getServerDomain(initiators.BROWSER_INITIATED)
-      }
+        initiator: getServerDomain(initiators.BROWSER_INITIATED),
+      },
     },
     {
       label: 'onResponseStarted',
@@ -127,8 +125,8 @@ function cancelThirdPartyExpected() {
         ip: '127.0.0.1',
         statusCode: 200,
         statusLine: 'HTTP/1.1 200 OK',
-        initiator: getServerDomain(initiators.BROWSER_INITIATED)
-      }
+        initiator: getServerDomain(initiators.BROWSER_INITIATED),
+      },
     },
     {
       label: 'onCompleted',
@@ -139,8 +137,8 @@ function cancelThirdPartyExpected() {
         url: getURLOfHTMLWithThirdParty(),
         statusCode: 200,
         statusLine: 'HTTP/1.1 200 OK',
-        initiator: getServerDomain(initiators.BROWSER_INITIATED)
-      }
+        initiator: getServerDomain(initiators.BROWSER_INITIATED),
+      },
     },
     {
       label: 'img-onBeforeRequest',
@@ -149,8 +147,8 @@ function cancelThirdPartyExpected() {
         type: 'image',
         url: 'http://non_existing_third_party.com/image.png',
         frameUrl: getURLOfHTMLWithThirdParty(),
-        initiator: getServerDomain(initiators.WEB_INITIATED)
-      }
+        initiator: getServerDomain(initiators.WEB_INITIATED),
+      },
     },
     {
       label: 'img-onErrorOccurred',
@@ -160,8 +158,8 @@ function cancelThirdPartyExpected() {
         fromCache: false,
         type: 'image',
         url: 'http://non_existing_third_party.com/image.png',
-        initiator: getServerDomain(initiators.WEB_INITIATED)
-      }
+        initiator: getServerDomain(initiators.WEB_INITIATED),
+      },
     },
   ];
 }
@@ -169,10 +167,14 @@ function cancelThirdPartyExpected() {
 function cancelThirdPartyExpectedOrder() {
   return [
     [
-      'onBeforeRequest', 'onBeforeSendHeaders', 'onSendHeaders',
-      'onHeadersReceived', 'onResponseStarted', 'onCompleted'
+      'onBeforeRequest',
+      'onBeforeSendHeaders',
+      'onSendHeaders',
+      'onHeadersReceived',
+      'onResponseStarted',
+      'onCompleted',
     ],
-    ['img-onBeforeRequest', 'img-onErrorOccurred']
+    ['img-onBeforeRequest', 'img-onErrorOccurred'],
   ];
 }
 
@@ -189,8 +191,8 @@ const allTests = [
               url: getURLHttpWithHeaders(),
               fromCache: false,
               error: 'net::ERR_BLOCKED_BY_CLIENT',
-              initiator: getServerDomain(initiators.BROWSER_INITIATED)
-            }
+              initiator: getServerDomain(initiators.BROWSER_INITIATED),
+            },
           },
         ],
         [['onErrorOccurred']]);
@@ -200,16 +202,16 @@ const allTests = [
             url: {
               pathSuffix: '.html',
               ports: [testServerPort, [1000, 2000]],
-              schemes: ['http']
+              schemes: ['http'],
             },
             resourceType: ['main_frame'],
             contentType: ['text/plain'],
             excludeContentType: ['image/png'],
             responseHeaders: [{nameContains: ['content', 'type']}],
             excludeResponseHeaders: [{valueContains: 'nonsense'}],
-            stages: ['onHeadersReceived', 'onAuthRequired']
+            stages: ['onHeadersReceived', 'onAuthRequired'],
           })],
-          actions: [new CancelRequest()]
+          actions: [new CancelRequest()],
         }],
         function() {
           navigateAndWait(getURLHttpWithHeaders());
@@ -228,18 +230,18 @@ const allTests = [
             event: 'onBeforeRequest',
             details: {
               url: getURLHttpWithHeaders(),
-              frameUrl: getURLHttpWithHeaders()
-            }
+              frameUrl: getURLHttpWithHeaders(),
+            },
           },
           {
             label: 'onBeforeSendHeaders',
             event: 'onBeforeSendHeaders',
-            details: {url: getURLHttpWithHeaders()}
+            details: {url: getURLHttpWithHeaders()},
           },
           {
             label: 'onSendHeaders',
             event: 'onSendHeaders',
-            details: {url: getURLHttpWithHeaders()}
+            details: {url: getURLHttpWithHeaders()},
           },
           {
             label: 'onHeadersReceived',
@@ -247,8 +249,8 @@ const allTests = [
             details: {
               statusLine: 'HTTP/1.1 200 OK',
               url: getURLHttpWithHeaders(),
-              statusCode: 200
-            }
+              statusCode: 200,
+            },
           },
           {
             label: 'onErrorOccurred',
@@ -256,18 +258,21 @@ const allTests = [
             details: {
               url: getURLHttpWithHeaders(),
               fromCache: false,
-              error: 'net::ERR_BLOCKED_BY_CLIENT'
-            }
+              error: 'net::ERR_BLOCKED_BY_CLIENT',
+            },
           },
         ],
         [[
-          'onBeforeRequest', 'onBeforeSendHeaders', 'onSendHeaders',
-          'onHeadersReceived', 'onErrorOccurred'
+          'onBeforeRequest',
+          'onBeforeSendHeaders',
+          'onSendHeaders',
+          'onHeadersReceived',
+          'onErrorOccurred',
         ]]);
     onRequest.addRules(
         [{
           conditions: [new RequestMatcher({stages: ['onHeadersReceived']})],
-          actions: [new CancelRequest()]
+          actions: [new CancelRequest()],
         }],
         function() {
           navigateAndWait(getURLHttpWithHeaders());
@@ -281,7 +286,7 @@ const allTests = [
         [
           {
             conditions: [new RequestMatcher({thirdPartyForCookies: true})],
-            actions: [new chrome.declarativeWebRequest.CancelRequest()]
+            actions: [new chrome.declarativeWebRequest.CancelRequest()],
           },
         ],
         function() {
@@ -301,12 +306,12 @@ const allTests = [
             priority: 2,
             conditions: [new RequestMatcher({thirdPartyForCookies: false})],
             actions: [new chrome.declarativeWebRequest.IgnoreRules(
-                {lowerPriorityThan: 2})]
+                {lowerPriorityThan: 2})],
           },
           {
             priority: 1,
             conditions: [new RequestMatcher({})],
-            actions: [new chrome.declarativeWebRequest.CancelRequest()]
+            actions: [new chrome.declarativeWebRequest.CancelRequest()],
           },
         ],
         function() {
@@ -326,8 +331,8 @@ const allTests = [
             details: {
               url: getURLOfHTMLWithThirdParty(),
               frameUrl: getURLOfHTMLWithThirdParty(),
-              initiator: getServerDomain(initiators.BROWSER_INITIATED)
-            }
+              initiator: getServerDomain(initiators.BROWSER_INITIATED),
+            },
           },
           {
             label: 'onErrorOccurred',
@@ -336,8 +341,8 @@ const allTests = [
               url: getURLOfHTMLWithThirdParty(),
               fromCache: false,
               error: 'net::ERR_BLOCKED_BY_CLIENT',
-              initiator: getServerDomain(initiators.BROWSER_INITIATED)
-            }
+              initiator: getServerDomain(initiators.BROWSER_INITIATED),
+            },
           },
         ],
         [['onBeforeRequest', 'onErrorOccurred']]);
@@ -346,7 +351,7 @@ const allTests = [
           {
             conditions: [new RequestMatcher(
                 {firstPartyForCookiesUrl: {hostEquals: `not${TEST_SERVER}`}})],
-            actions: [new chrome.declarativeWebRequest.CancelRequest()]
+            actions: [new chrome.declarativeWebRequest.CancelRequest()],
           },
         ],
         function() {
@@ -365,7 +370,7 @@ const allTests = [
               type: 'main_frame',
               url: getURLHttpComplex(),
               frameUrl: getURLHttpComplex(),
-              initiator: getServerDomain(initiators.BROWSER_INITIATED)
+              initiator: getServerDomain(initiators.BROWSER_INITIATED),
             },
           },
           {
@@ -377,8 +382,8 @@ const allTests = [
               fromCache: false,
               statusLine: 'HTTP/1.1 307 Internal Redirect',
               statusCode: 307,
-              initiator: getServerDomain(initiators.BROWSER_INITIATED)
-            }
+              initiator: getServerDomain(initiators.BROWSER_INITIATED),
+            },
           },
           {
             label: 'onBeforeRequest-b',
@@ -387,7 +392,7 @@ const allTests = [
               type: 'main_frame',
               url: getURLHttpSimple(),
               frameUrl: getURLHttpSimple(),
-              initiator: getServerDomain(initiators.BROWSER_INITIATED)
+              initiator: getServerDomain(initiators.BROWSER_INITIATED),
             },
           },
           {
@@ -399,19 +404,21 @@ const allTests = [
               fromCache: false,
               statusCode: 200,
               statusLine: 'HTTP/1.1 200 OK',
-              initiator: getServerDomain(initiators.BROWSER_INITIATED)
-            }
+              initiator: getServerDomain(initiators.BROWSER_INITIATED),
+            },
           },
         ],
         [[
-          'onBeforeRequest-a', 'onBeforeRedirect', 'onBeforeRequest-b',
-          'onCompleted'
+          'onBeforeRequest-a',
+          'onBeforeRedirect',
+          'onBeforeRequest-b',
+          'onCompleted',
         ]]);
 
     onRequest.addRules(
         [{
           conditions: [new RequestMatcher({url: {pathSuffix: '.html'}})],
-          actions: [new RedirectRequest({redirectUrl: getURLHttpSimple()})]
+          actions: [new RedirectRequest({redirectUrl: getURLHttpSimple()})],
         }],
         function() {
           navigateAndWait(getURLHttpComplex());
@@ -431,8 +438,8 @@ const allTests = [
               fromCache: false,
               statusCode: 200,
               statusLine: 'HTTP/1.1 200 OK',
-              initiator: getServerDomain(initiators.BROWSER_INITIATED)
-            }
+              initiator: getServerDomain(initiators.BROWSER_INITIATED),
+            },
           },
           // We cannot wait for onCompleted signals because these are not sent
           // for data:// URLs.
@@ -450,8 +457,8 @@ const allTests = [
               statusLine: 'HTTP/1.1 307 Internal Redirect',
               statusCode: 307,
               type: 'image',
-              initiator: getServerDomain(initiators.WEB_INITIATED)
-            }
+              initiator: getServerDomain(initiators.WEB_INITIATED),
+            },
           },
           {
             label: 'onBeforeRedirect-2',
@@ -466,8 +473,8 @@ const allTests = [
               statusLine: 'HTTP/1.1 307 Internal Redirect',
               statusCode: 307,
               type: 'sub_frame',
-              initiator: getServerDomain(initiators.WEB_INITIATED)
-            }
+              initiator: getServerDomain(initiators.WEB_INITIATED),
+            },
           },
         ],
         [['onCompleted'], ['onBeforeRedirect-1'], ['onBeforeRedirect-2']]);
@@ -476,11 +483,11 @@ const allTests = [
         [
           {
             conditions: [new RequestMatcher({url: {pathSuffix: 'image.png'}})],
-            actions: [new RedirectToTransparentImage()]
+            actions: [new RedirectToTransparentImage()],
           },
           {
             conditions: [new RequestMatcher({url: {pathSuffix: 'frame.html'}})],
-            actions: [new RedirectToEmptyDocument()]
+            actions: [new RedirectToEmptyDocument()],
           },
         ],
         function() {
@@ -501,7 +508,7 @@ const allTests = [
               type: 'main_frame',
               url: getURLHttpWithHeaders(),
               frameUrl: getURLHttpWithHeaders(),
-              initiator: getServerDomain(initiators.BROWSER_INITIATED)
+              initiator: getServerDomain(initiators.BROWSER_INITIATED),
             },
           },
           {
@@ -514,8 +521,8 @@ const allTests = [
               statusCode: 302,
               fromCache: false,
               ip: '127.0.0.1',
-              initiator: getServerDomain(initiators.BROWSER_INITIATED)
-            }
+              initiator: getServerDomain(initiators.BROWSER_INITIATED),
+            },
           },
           {
             label: 'onBeforeRequest-b',
@@ -524,7 +531,7 @@ const allTests = [
               type: 'main_frame',
               url: getURLHttpNotCached(),
               frameUrl: getURLHttpNotCached(),
-              initiator: getServerDomain(initiators.BROWSER_INITIATED)
+              initiator: getServerDomain(initiators.BROWSER_INITIATED),
             },
           },
           {
@@ -536,19 +543,21 @@ const allTests = [
               fromCache: false,
               statusCode: 200,
               statusLine: 'HTTP/1.1 200 OK',
-              initiator: getServerDomain(initiators.BROWSER_INITIATED)
-            }
+              initiator: getServerDomain(initiators.BROWSER_INITIATED),
+            },
           },
         ],
         [[
-          'onBeforeRequest-a', 'onBeforeRedirect', 'onBeforeRequest-b',
-          'onCompleted'
+          'onBeforeRequest-a',
+          'onBeforeRedirect',
+          'onBeforeRequest-b',
+          'onCompleted',
         ]]);
 
     onRequest.addRules(
         [{
           conditions: [new RequestMatcher({contentType: ['text/plain']})],
-          actions: [new RedirectRequest({redirectUrl: getURLHttpNotCached()})]
+          actions: [new RedirectRequest({redirectUrl: getURLHttpNotCached()})],
         }],
         function() {
           navigateAndWait(getURLHttpWithHeaders());
@@ -568,8 +577,8 @@ const allTests = [
               fromCache: false,
               statusCode: 200,
               statusLine: 'HTTP/1.1 200 OK',
-              initiator: getServerDomain(initiators.BROWSER_INITIATED)
-            }
+              initiator: getServerDomain(initiators.BROWSER_INITIATED),
+            },
           },
         ],
         [['onCompleted']]);
@@ -578,7 +587,7 @@ const allTests = [
         [{
           conditions: [new RequestMatcher({url: {pathSuffix: '.html'}})],
           actions:
-              [new RedirectByRegEx({from: '^(.*)/a.html$', to: '$1/b.html'})]
+              [new RedirectByRegEx({from: '^(.*)/a.html$', to: '$1/b.html'})],
         }],
         function() {
           navigateAndWait(getURLHttpSimple());
@@ -596,8 +605,8 @@ const allTests = [
               url: getURLHttpSimple(),
               fromCache: false,
               error: 'net::ERR_BLOCKED_BY_CLIENT',
-              initiator: getServerDomain(initiators.BROWSER_INITIATED)
-            }
+              initiator: getServerDomain(initiators.BROWSER_INITIATED),
+            },
           },
         ],
         [['onErrorOccurred']]);
@@ -606,7 +615,7 @@ const allTests = [
           conditions: [new RequestMatcher({
             url: {urlMatches: 'simple[A-Z].*a\.html$', schemes: ['http']},
           })],
-          actions: [new CancelRequest()]
+          actions: [new CancelRequest()],
         }],
         function() {
           navigateAndWait(getURLHttpSimple());
@@ -619,7 +628,7 @@ const allTests = [
         [{
           conditions: [new RequestMatcher()],
           actions:
-              [new SetRequestHeader({name: 'User-Agent', value: 'FoobarUA'})]
+              [new SetRequestHeader({name: 'User-Agent', value: 'FoobarUA'})],
         }],
         function() {
           // Check the page content for our modified User-Agent string.
@@ -630,7 +639,7 @@ const allTests = [
             });
             chrome.tabs.executeScript(tabId, {
               code: 'chrome.runtime.sendMessage(' +
-                  `{pass: document.body.innerText.indexOf('FoobarUA') >= 0});`
+                  `{pass: document.body.innerText.indexOf('FoobarUA') >= 0});`,
             });
           });
         });
@@ -642,7 +651,7 @@ const allTests = [
     onRequest.addRules(
         [{
           conditions: [new RequestMatcher()],
-          actions: [new RemoveRequestHeader({name: HEADER_NAME})]
+          actions: [new RemoveRequestHeader({name: HEADER_NAME})],
         }],
         chrome.test.callbackPass(function() {
           passCallback = chrome.test.callbackPass((response) => {
@@ -665,7 +674,7 @@ const allTests = [
         [{
           conditions: [new RequestMatcher()],
           actions:
-              [new AddResponseHeader({name: HEADER_NAME, value: HEADER_VALUE})]
+              [new AddResponseHeader({name: HEADER_NAME, value: HEADER_VALUE})],
         }],
         chrome.test.callbackPass(function() {
           passCallback = chrome.test.callbackPass((response) => {
@@ -689,7 +698,7 @@ const allTests = [
         [{
           conditions: [new RequestMatcher()],
           actions: [new RemoveResponseHeader(
-              {name: HEADER_NAME, value: HEADER_VALUE})]
+              {name: HEADER_NAME, value: HEADER_VALUE})],
         }],
         chrome.test.callbackPass(function() {
           passCallback = chrome.test.callbackPass((response) => {
@@ -717,8 +726,8 @@ const allTests = [
             fromCache: false,
             statusLine: 'HTTP/1.1 200 OK',
             ip: '127.0.0.1',
-            initiator: getServerDomain(initiators.BROWSER_INITIATED)
-          }
+            initiator: getServerDomain(initiators.BROWSER_INITIATED),
+          },
         }],
         [['onCompleted']]);
 
@@ -727,13 +736,13 @@ const allTests = [
           {
             conditions:
                 [new RequestMatcher({url: {pathContains: 'simpleLoad'}})],
-            actions: [new CancelRequest()]
+            actions: [new CancelRequest()],
           },
           {
             conditions: [new RequestMatcher({url: {pathContains: 'a.html'}})],
             actions: [new IgnoreRules({lowerPriorityThan: 200})],
-            priority: 200
-          }
+            priority: 200,
+          },
         ],
         function() {
           navigateAndWait(getURLHttpSimple());
@@ -752,12 +761,13 @@ const allTests = [
             // We exploit the fact that cookies are first added, then modified
             // and finally removed.
             new AddRequestCookie({cookie: cookie1}),
-            new AddRequestCookie({cookie: cookie2}), new EditRequestCookie({
+            new AddRequestCookie({cookie: cookie2}),
+            new EditRequestCookie({
               filter: {name: 'requestCookie1'},
-              modification: {value: 'bar'}
+              modification: {value: 'bar'},
             }),
-            new RemoveRequestCookie({filter: {name: 'requestCookie2'}})
-          ]
+            new RemoveRequestCookie({filter: {name: 'requestCookie2'}}),
+          ],
         }],
         function() {
           navigateAndWait(getURLEchoCookie(), function() {
@@ -776,7 +786,7 @@ const allTests = [
                   `              !hasCookie('requestCookie1', 'foo') && ` +
                   `              !hasCookie('requestCookie2', 'foo');` +
                   'result.cookies = document.body.innerText;' +
-                  'chrome.runtime.sendMessage(result);'
+                  'chrome.runtime.sendMessage(result);',
             });
           });
         });
@@ -793,8 +803,8 @@ const allTests = [
               url: getURLHttpSimple(),
               fromCache: false,
               error: 'net::ERR_BLOCKED_BY_CLIENT',
-              initiator: getServerDomain(initiators.BROWSER_INITIATED)
-            }
+              initiator: getServerDomain(initiators.BROWSER_INITIATED),
+            },
           },
         ],
         [['onErrorOccurred']]);
@@ -804,12 +814,12 @@ const allTests = [
             url: {
               pathSuffix: '.html',
               ports: [testServerPort, [1000, 2000]],
-              schemes: ['http']
+              schemes: ['http'],
             },
             requestHeaders: [{nameContains: ''}],
-            excludeRequestHeaders: [{valueContains: ['', 'value123']}]
+            excludeRequestHeaders: [{valueContains: ['', 'value123']}],
           })],
-          actions: [new CancelRequest()]
+          actions: [new CancelRequest()],
         }],
         function() {
           navigateAndWait(getURLHttpSimple());
@@ -854,11 +864,11 @@ const loadScript = chrome.test.loadScript(SCRIPT_URL);
 loadScript.then(async function() {
   chrome.test.getConfig(function(config) {
     const args = JSON.parse(config.customArg);
-    if (args.testSuite == 'normal1') {
+    if (args.testSuite === 'normal1') {
       runTests(allTests.filter(function(op) {
         return workingTests1.includes(op.name);
       }));
-    } else if (args.testSuite == 'normal2') {
+    } else if (args.testSuite === 'normal2') {
       runTests(allTests.filter(function(op) {
         return workingTests2.includes(op.name);
       }));
@@ -868,5 +878,5 @@ loadScript.then(async function() {
         return brokenTests.includes(op.name);
       }));
     }
-  })
+  });
 });

@@ -18,7 +18,7 @@ function createErrorTest(resultCode, errorMessage) {
         } else {
           chrome.test.assertNoLastError();
         }
-        chrome.test.assertTrue(resultCode == result.resultCode);
+        chrome.test.assertTrue(resultCode === result.resultCode);
         chrome.test.succeed();
       });
     });
@@ -42,13 +42,13 @@ function createIsochronousErrorTest(resultCode, errorMessage) {
         if (errorMessage) {
           chrome.test.assertLastError(errorMessage);
           // Device responds with only 8-byte packets and the second half fail.
-          chrome.test.assertTrue(result.data.byteLength == 40);
+          chrome.test.assertTrue(result.data.byteLength === 40);
         } else {
           chrome.test.assertNoLastError();
           // Device responds with a full set of 10 8-byte packets.
-          chrome.test.assertTrue(result.data.byteLength == 80);
+          chrome.test.assertTrue(result.data.byteLength === 80);
         }
-        chrome.test.assertTrue(resultCode == result.resultCode);
+        chrome.test.assertTrue(resultCode === result.resultCode);
         chrome.test.succeed();
       });
     });

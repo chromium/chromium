@@ -26,7 +26,7 @@ loadScript.then(async function() {
 
       // 2) Wait for the load to complete and then navigate to A3.
       chrome.webNavigation.onCompleted.addListener(function(details) {
-        if (details.tabId != tab.id || details.url != urlA2) {
+        if (details.tabId !== tab.id || details.url !== urlA2) {
           return;
         }
         chrome.tabs.update(tab.id, {url: urlA3});
@@ -34,7 +34,7 @@ loadScript.then(async function() {
 
       // 3) On A3's commit, check GetAllFrame returns only {A3}.
       chrome.webNavigation.onCommitted.addListener(function(details) {
-        if (details.tabId != tab.id || details.url != urlA3) {
+        if (details.tabId !== tab.id || details.url !== urlA3) {
           return;
         }
 
@@ -54,7 +54,7 @@ loadScript.then(async function() {
 
       // 2) Wait for the load to complete and then navigate to B3.
       chrome.webNavigation.onCompleted.addListener(function(details) {
-        if (details.tabId != tab.id || details.url != urlA2) {
+        if (details.tabId !== tab.id || details.url !== urlA2) {
           return;
         }
         chrome.tabs.update(tab.id, {url: urlB3});
@@ -62,7 +62,7 @@ loadScript.then(async function() {
 
       // 3) On B3's commit, check GetAllFrame returns only {B3}.
       chrome.webNavigation.onCommitted.addListener(function(details) {
-        if (details.tabId != tab.id || details.url != urlB3) {
+        if (details.tabId !== tab.id || details.url !== urlB3) {
           return;
         }
         chrome.webNavigation.getAllFrames({tabId: tab.id}, function(details) {

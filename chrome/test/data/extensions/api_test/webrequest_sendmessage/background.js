@@ -39,9 +39,9 @@ runTests([
       'onHeadersReceived-Extension': 1,
       // "onAuthRequired-Extension" is not sent for this test case.
     };
-    var done = chrome.test.listenForever(
+    const done = chrome.test.listenForever(
         chrome.declarativeWebRequest.onMessage, function(details) {
-          if (EVENT_MESSAGE_EXTENSION_STRING != details.message) {
+          if (EVENT_MESSAGE_EXTENSION_STRING !== details.message) {
             chrome.test.fail('Invalid message: ' + details.message);
           }
           chrome.test.assertEq(getURLHttpSimpleLoad(), details.url);
@@ -52,7 +52,7 @@ runTests([
           const messageKey = details.stage + '-' + details.message;
           if (messageKey in expectedEvents) {
             delete expectedEvents[messageKey];
-            if (size(expectedEvents) == 0) {
+            if (size(expectedEvents) === 0) {
               done();
             }
           } else {

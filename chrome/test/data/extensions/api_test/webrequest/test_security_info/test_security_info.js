@@ -62,8 +62,7 @@ function isSha256Fingerprint(input) {
 
   runTests([
     function testSecurityInfoAbsentWithoutFlag() {
-      let listener;
-      listener = callbackPass(function(details) {
+      const listener = callbackPass(function(details) {
         chrome.webRequest.onHeadersReceived.removeListener(listener);
         chrome.test.assertFalse('securityInfo' in details);
       });
@@ -74,8 +73,7 @@ function isSha256Fingerprint(input) {
     },
 
     function testSecurityInfoBasic() {
-      let listener;
-      listener = callbackPass(function(details) {
+      const listener = callbackPass(function(details) {
         chrome.webRequest.onHeadersReceived.removeListener(listener);
 
         chrome.test.assertTrue('securityInfo' in details);
@@ -96,8 +94,7 @@ function isSha256Fingerprint(input) {
     // Using only securityInfoRawDer dictionary member is the same as
     // using two dictionary members: securityInfo, securityInfoRawDer.
     function testSecurityInfoRawDer() {
-      let listener;
-      listener = callbackPass(function(details) {
+      const listener = callbackPass(function(details) {
         chrome.webRequest.onHeadersReceived.removeListener(listener);
 
         chrome.test.assertTrue('securityInfo' in details);
@@ -120,8 +117,7 @@ function isSha256Fingerprint(input) {
     },
 
     function testSecurityInfoBothFlags() {
-      let listener;
-      listener = callbackPass(function(details) {
+      const listener = callbackPass(function(details) {
         chrome.webRequest.onHeadersReceived.removeListener(listener);
 
         chrome.test.assertTrue('securityInfo' in details);
@@ -148,16 +144,14 @@ function isSha256Fingerprint(input) {
     // ExtraInfoSpec will not receive SecurityInfo object even when there's a
     // second listener with securityInfo.
     function testOnlyOneListenerReceivesSecurityInfo() {
-      let listener1;
-      listener1 = callbackPass(function(details) {
+      const listener1 = callbackPass(function(details) {
         chrome.webRequest.onHeadersReceived.removeListener(listener1);
         chrome.test.assertFalse('securityInfo' in details);
       });
       chrome.webRequest.onHeadersReceived.addListener(
           listener1, {urls: filter}, ['extraHeaders']);
 
-      let listener2;
-      listener2 = callbackPass(function(details) {
+      const listener2 = callbackPass(function(details) {
         chrome.webRequest.onHeadersReceived.removeListener(listener2);
         chrome.test.assertTrue('securityInfo' in details);
       });
@@ -169,8 +163,7 @@ function isSha256Fingerprint(input) {
     },
 
     function testOnlyOneListenerReceivesSecurityInfoRawDer() {
-      let listener1;
-      listener1 = callbackPass(function(details) {
+      const listener1 = callbackPass(function(details) {
         chrome.webRequest.onHeadersReceived.removeListener(listener1);
 
         chrome.test.assertFalse(
@@ -179,8 +172,7 @@ function isSha256Fingerprint(input) {
       chrome.webRequest.onHeadersReceived.addListener(
           listener1, {urls: filter}, ['securityInfo']);
 
-      let listener2;
-      listener2 = callbackPass(function(details) {
+      const listener2 = callbackPass(function(details) {
         chrome.webRequest.onHeadersReceived.removeListener(listener2);
 
         chrome.test.assertTrue(

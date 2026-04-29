@@ -16,7 +16,7 @@ function resetTest(focused) {
 }
 
 function onFocusChanged(changedWinId) {
-  if (chrome.windows.WINDOW_ID_NONE != changedWinId) {
+  if (chrome.windows.WINDOW_ID_NONE !== changedWinId) {
     focusedWinId = changedWinId;
     if (expectFocusChange) {
       maybeFocusedTestDone();
@@ -31,8 +31,8 @@ function checkFocused(win) {
 
 // Test is done when focus has changed to the created window.
 function maybeFocusedTestDone() {
-  if (focusedWinId != chrome.windows.WINDOW_ID_NONE &&
-      createdWinId != chrome.windows.WINDOW_ID_NONE) {
+  if (focusedWinId !== chrome.windows.WINDOW_ID_NONE &&
+      createdWinId !== chrome.windows.WINDOW_ID_NONE) {
     listenDoneCallback();
     chrome.test.assertEq(focusedWinId, createdWinId);
   }

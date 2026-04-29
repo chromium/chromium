@@ -43,7 +43,7 @@ async function perform2SecondsOfWebSocketActivity() {
   // seconds (quite possibly more, depending on the speed of the bot).
   let receivedMessages = 0;
   socket.onmessage = ({data}) => {
-    if (data != expectedMessage) {
+    if (data !== expectedMessage) {
       chrome.test.sendScriptResult(`unexpected message: ${data}`);
     }
 
@@ -51,7 +51,7 @@ async function perform2SecondsOfWebSocketActivity() {
 
     // Close the port if we've received at least three messages *and* two
     // seconds have passed; otherwise, keep waiting.
-    if (receivedMessages == 9) {
+    if (receivedMessages === 9) {
       const millis = performance.now() - start;
       if (millis > waitForMs) {
         reachedEnd = true;

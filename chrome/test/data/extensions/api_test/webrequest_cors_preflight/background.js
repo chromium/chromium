@@ -10,7 +10,7 @@ self.preflightResponseStartedSuccessfullyCount = 0;
 chrome.webRequest.onHeadersReceived.addListener(function(details) {
   if (details.method === 'OPTIONS') {
     ++self.preflightHeadersReceivedCount;
-    if (details.statusCode == 407) {
+    if (details.statusCode === 407) {
       ++self.preflightProxyAuthRequiredCount;
     }
   }
@@ -19,14 +19,14 @@ chrome.webRequest.onHeadersReceived.addListener(function(details) {
 chrome.webRequest.onResponseStarted.addListener(function(details) {
   if (details.method === 'OPTIONS') {
     ++self.preflightResponseStartedCount;
-    if (details.statusCode == 204) {
+    if (details.statusCode === 204) {
       ++self.preflightResponseStartedSuccessfullyCount;
     }
   }
 }, {urls: ['http://cors.test/*']}, ['extraHeaders']);
 
 chrome.webRequest.onCompleted.addListener(function(details) {
-  if (details.method === 'OPTIONS' && details.statusCode == 204) {
+  if (details.method === 'OPTIONS' && details.statusCode === 204) {
     chrome.test.sendMessage('cors-preflight-succeeded');
   }
 }, {urls: ['http://cors.test/*']}, ['extraHeaders']);

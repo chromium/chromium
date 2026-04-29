@@ -7,7 +7,7 @@ function check_overflow_check(value) {
     chrome.windows.create({'left': value}, function() {});
   } catch (e) {
     const expectedError = 'Invalid type: expected integer, found number.';
-    chrome.test.assertTrue(e.message.indexOf(expectedError) != -1, e.message);
+    chrome.test.assertTrue(e.message.indexOf(expectedError) !== -1, e.message);
     chrome.test.succeed();
     return;
   }

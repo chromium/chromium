@@ -32,7 +32,7 @@ ready.then(async function() {
     async function testGetFrame() {
       const done = chrome.test.listenForever(
           chrome.webNavigation.onCommitted, function(details) {
-            if (details.tabId != tab.id || details.url != url) {
+            if (details.tabId !== tab.id || details.url !== url) {
               return;
             }
             processId = details.processId;
@@ -181,11 +181,12 @@ ready.then(async function() {
       const done = chrome.test.listenForever(
           chrome.webNavigation.onCommitted, function(details) {
             // Ignore frames other than the pre-rendered frame.
-            if (details.tabId != tab.id || details.url != prerenderTargetUrl) {
+            if (details.tabId !== tab.id ||
+                details.url !== prerenderTargetUrl) {
               return;
             }
             // prerendered main frame shouldn't have frameId = 0.
-            if (details.frameId == 0) {
+            if (details.frameId === 0) {
               return;
             }
             chrome.webNavigation.getAllFrames(
@@ -225,13 +226,13 @@ ready.then(async function() {
           chrome.webNavigation.onCommitted, function(details) {
             // Ignore frames other than the pre-rendered subframe to ensure all
             // frames are loaded.
-            if (details.tabId != tab.id ||
-                details.url != prerenderTargetSubframeUrl) {
+            if (details.tabId !== tab.id ||
+                details.url !== prerenderTargetSubframeUrl) {
               return;
             }
 
             // A prerendered subframe is expected to have a parent.
-            if (details.parentFrameId == -1) {
+            if (details.parentFrameId === -1) {
               return;
             }
 
@@ -290,7 +291,7 @@ ready.then(async function() {
       const done = chrome.test.listenForever(
           chrome.webNavigation.onCommitted, function(details) {
             // Ignore frames other than the pre-rendered frame.
-            if (details.url != prerenderTargetUrl) {
+            if (details.url !== prerenderTargetUrl) {
               return;
             }
 
@@ -348,7 +349,8 @@ ready.then(async function() {
       const done = chrome.test.listenForever(
           chrome.webNavigation.onCommitted, function(details) {
             // Ignore frames other than the pre-rendered frame.
-            if (details.tabId != tab.id || details.url != prerenderTargetUrl) {
+            if (details.tabId !== tab.id ||
+                details.url !== prerenderTargetUrl) {
               return;
             }
 
@@ -393,7 +395,7 @@ ready.then(async function() {
       const tab = await promise(chrome.tabs.create, {url: 'about:blank'});
       const done = chrome.test.listenForever(
           chrome.webNavigation.onCommitted, function(details) {
-            if (details.tabId != tab.id || details.url != urlFrames) {
+            if (details.tabId !== tab.id || details.url !== urlFrames) {
               return;
             }
             processId = details.processId;

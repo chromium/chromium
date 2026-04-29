@@ -6,7 +6,7 @@ window.onload = function() {
   if (location.hash) {
     const completionUrl = new URL(location.hash.slice(1)).href;
 
-    console.log(
+    console.info(
         'Fake devtools loaded. Going to notify test extension via ' +
         completionUrl);
 

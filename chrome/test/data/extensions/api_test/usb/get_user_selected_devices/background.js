@@ -19,7 +19,7 @@ chrome.test.runWithUserGesture(function() {
 });
 
 chrome.usb.onDeviceRemoved.addListener(function(device) {
-  if (device.device == device_from_user.device) {
+  if (device.device === device_from_user.device) {
     chrome.test.sendMessage('success');
   } else {
     chrome.test.sendMessage('failure');

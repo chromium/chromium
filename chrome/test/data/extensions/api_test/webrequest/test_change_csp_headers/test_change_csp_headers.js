@@ -20,7 +20,7 @@ function navigate(url) {
   chrome.test.sendMessage(JSON.stringify({navigate: {tabId: tabId, url: url}}));
   return new Promise(resolve => {
     const listener = (_, info, tab) => {
-      if (tab.id == tabId && info.status == 'complete') {
+      if (tab.id === tabId && info.status === 'complete') {
         chrome.tabs.onUpdated.removeListener(listener);
         resolve();
       }

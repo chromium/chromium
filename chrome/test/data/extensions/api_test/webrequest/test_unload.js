@@ -58,7 +58,7 @@ function waitUntilSendHeaders(type, url, callback) {
 const id = location.search.slice(1);
 chrome.test.assertTrue(
     /^\d+$/.test(id), `Page URL should end with digits, but got ${id}`);
-console.log(`Running test_unload ${id}`);
+console.info(`Running test_unload ${id}`);
 
 const s = document.createElement('script');
 // test_unload1.js, test_unload2.js, ..., etc.

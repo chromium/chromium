@@ -17,7 +17,7 @@ chrome.usb.getDevices({}, devices => {
 
     chrome.usb.bulkTransfer(
         connection, {direction: 'in', endpoint: 1, length: 8}, result => {
-          if (chrome.runtime.lastError.message == 'Device disconnected.') {
+          if (chrome.runtime.lastError.message === 'Device disconnected.') {
             chrome.test.sendMessage('success');
             return;
           }

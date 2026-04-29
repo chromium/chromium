@@ -53,8 +53,7 @@ const callbackPass = chrome.test.callbackPass;
 
   runTests([
     function testSecurityInfoFlagInsecure() {
-      let listener;
-      listener = callbackPass(function(details) {
+      const listener = callbackPass(function(details) {
         chrome.webRequest.onHeadersReceived.removeListener(listener);
 
         chrome.test.assertTrue('securityInfo' in details);
@@ -68,8 +67,7 @@ const callbackPass = chrome.test.callbackPass;
     },
 
     function testSecurityInfoRawDerFlagInsecure() {
-      let listener;
-      listener = callbackPass(function(details) {
+      const listener = callbackPass(function(details) {
         chrome.webRequest.onHeadersReceived.removeListener(listener);
 
         chrome.test.assertTrue('securityInfo' in details);
@@ -84,8 +82,7 @@ const callbackPass = chrome.test.callbackPass;
     },
 
     function testSecurityInfoBothFlagsInsecure() {
-      let listener;
-      listener = callbackPass(function(details) {
+      const listener = callbackPass(function(details) {
         chrome.webRequest.onHeadersReceived.removeListener(listener);
 
         chrome.test.assertTrue('securityInfo' in details);

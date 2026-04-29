@@ -10,11 +10,11 @@ chrome.webRequest.onHeadersReceived.addListener(function(details) {
   const headerValue = 'ValueFromExtension';
   const diceResponseHeader = 'X-Chrome-ID-Consistency-Response';
   details.responseHeaders.forEach(function(header) {
-    if (header.name == diceResponseHeader) {
+    if (header.name === diceResponseHeader) {
       ++self.diceResponseHeaderCount;
       diceHeaderFound = true;
       header.value = headerValue;
-    } else if (header.name == 'X-Control') {
+    } else if (header.name === 'X-Control') {
       ++self.controlResponseHeaderCount;
       header.value = headerValue;
     }

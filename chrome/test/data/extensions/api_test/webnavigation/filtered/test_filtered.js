@@ -15,11 +15,11 @@ loadScript.then(async function() {
         chrome.test.fail();
       }, {url: [{pathSuffix: 'never-navigated.html'}]});
       chrome.webNavigation.onCommitted.addListener(function(details) {
-        chrome.test.assertTrue(details.url == getURL('a.html'));
+        chrome.test.assertTrue(details.url === getURL('a.html'));
         aVisited = true;
       }, {url: [{pathSuffix: 'a.html'}]});
       chrome.webNavigation.onCommitted.addListener(function(details) {
-        chrome.test.assertTrue(details.url == getURL('b.html'));
+        chrome.test.assertTrue(details.url === getURL('b.html'));
         chrome.test.assertTrue(aVisited);
         chrome.test.succeed();
       }, {url: [{pathSuffix: 'b.html'}]});

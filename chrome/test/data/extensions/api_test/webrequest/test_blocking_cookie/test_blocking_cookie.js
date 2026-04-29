@@ -65,7 +65,7 @@ loadScript.then(async function() {
                 let found = false;
                 for (let i = 0; i < responseHeaders.length; ++i) {
                   if (responseHeaders[i].name === 'Set-Cookie' &&
-                      responseHeaders[i].value.indexOf('Foo') != -1) {
+                      responseHeaders[i].value.indexOf('Foo') !== -1) {
                     found = true;
                     responseHeaders.splice(i);
                     break;

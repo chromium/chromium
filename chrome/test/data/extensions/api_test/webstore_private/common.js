@@ -23,7 +23,7 @@ const succeed = chrome.test.succeed;
 function checkItemInstalled(id, callback) {
   chrome.management.getAll(function(extensions) {
     callback(extensions.some(function(ext) {
-      return ext.id == id;
+      return ext.id === id;
     }));
   });
 }

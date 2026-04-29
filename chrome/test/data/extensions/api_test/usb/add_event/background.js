@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 chrome.usb.onDeviceAdded.addListener(function(device) {
-  if (device.vendorId == 6353 && device.productId == 22768) {
+  if (device.vendorId === 6353 && device.productId === 22768) {
     chrome.test.sendMessage('success');
   } else {
     console.error(

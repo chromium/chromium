@@ -7,7 +7,7 @@ let connectionHandle;
 chrome.usb.onDeviceRemoved.addListener(() => {
   chrome.usb.bulkTransfer(
       connectionHandle, {direction: 'in', endpoint: 1, length: 8}, result => {
-        if (chrome.runtime.lastError.message == 'No such connection.') {
+        if (chrome.runtime.lastError.message === 'No such connection.') {
           chrome.test.sendMessage('success');
           return;
         }

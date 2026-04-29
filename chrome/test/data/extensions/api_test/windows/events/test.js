@@ -40,46 +40,46 @@ chrome.windows.onFocusChanged.addListener(function(id) {
 chrome.test.sendMessage('ready', function(message) {
   chrome.windows.getCurrent(function(currentWindow) {
     let filteredCount = 0;
-    for (var i in results.filtered) {
-      var win = results.filtered[i];
-      if (win.id == currentWindow.id || win.id == -1) {
+    for (const i in results.filtered) {
+      const win = results.filtered[i];
+      if (win.id === currentWindow.id || win.id === -1) {
         continue;
       }
       filteredCount++;
       chrome.test.assertFalse(
-          win.type == 'app' || win.type == 'devtools',
+          win.type === 'app' || win.type === 'devtools',
           'Unexpected window type "' + win.type + '" in filtered events');
       chrome.test.assertTrue(
-          win.create == true, 'Missing create event for ' + win.type);
+          win.create === true, 'Missing create event for ' + win.type);
       chrome.test.assertTrue(
-          win.remove == true, 'Missing remove event for ' + win.type);
+          win.remove === true, 'Missing remove event for ' + win.type);
       chrome.test.assertTrue(
-          win.focus == true, 'Missing focus event for ' + win.type);
+          win.focus === true, 'Missing focus event for ' + win.type);
     }
     chrome.test.assertEq(1, filteredCount);
 
     let unfilteredCount = 0;
     let includes_app = false;
     let includes_devtools = false;
-    for (var i in results.unfiltered) {
-      var win = results.unfiltered[i];
-      if (win.id == currentWindow.id || win.id == -1) {
+    for (const i in results.unfiltered) {
+      const win = results.unfiltered[i];
+      if (win.id === currentWindow.id || win.id === -1) {
         continue;
       }
       unfilteredCount++;
-      if (win.type == 'app') {
+      if (win.type === 'app') {
         includes_app = true;
       }
-      if (win.type == 'devtools') {
+      if (win.type === 'devtools') {
         includes_devtools = true;
       }
       chrome.test.assertTrue(
-          win.create == true, 'Missing create event for ' + win.type);
+          win.create === true, 'Missing create event for ' + win.type);
       chrome.test.assertTrue(
-          win.remove == true, 'Missing remove event for ' + win.type);
-      if (message == 'focus') {
+          win.remove === true, 'Missing remove event for ' + win.type);
+      if (message === 'focus') {
         chrome.test.assertTrue(
-            win.focus == true, 'Missing focus event for ' + win.type);
+            win.focus === true, 'Missing focus event for ' + win.type);
       }
     }
     chrome.test.assertEq(2, unfilteredCount);

@@ -56,7 +56,7 @@ function testModifyHeadersOnRedirect(useExtraHeaders) {
           chrome.test.assertTrue(
               results[0].indexOf('foo') >= 0, 'User-Agent should be modified.');
           chrome.test.assertTrue(
-              results[0].indexOf('image/webp') == -1,
+              results[0].indexOf('image/webp') === -1,
               'Accept should be removed.');
           chrome.test.assertTrue(
               results[0].indexOf('Baz') >= 0, 'X-New-Header should be added.');
@@ -158,7 +158,7 @@ loadScript.then(async function() {
               },
               callbackPass(function(results) {
                 chrome.test.assertTrue(
-                    results[0].indexOf('bar') == -1, 'Header not removed.');
+                    results[0].indexOf('bar') === -1, 'Header not removed.');
               }));
         });
       });
@@ -322,7 +322,7 @@ loadScript.then(async function() {
               },
               callbackPass(function(results) {
                 chrome.test.assertTrue(
-                    results[0].indexOf('bar') == -1, 'Header not removed.');
+                    results[0].indexOf('bar') === -1, 'Header not removed.');
               }));
         });
       });

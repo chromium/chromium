@@ -27,13 +27,13 @@ const tests = [
               } else {
                 for (let i = 0; i < devices.length; i++) {
                   const device = devices[i];
-                  console.log('device: ' + JSON.stringify(device));
+                  console.info('device: ' + JSON.stringify(device));
                   usb.listInterfaces(device, function(result) {
                     if (typeof result !== 'object') {
                       chrome.test.fail(
                           'should be object type. was: ' + typeof result);
                     } else {
-                      console.log(JSON.stringify(result));
+                      console.info(JSON.stringify(result));
                       chrome.test.succeed();
                     }
                   });

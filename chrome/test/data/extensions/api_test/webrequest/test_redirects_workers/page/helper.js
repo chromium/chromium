@@ -45,7 +45,7 @@ function isStateAdvanced(stateA, stateB) {
 }
 
 function waitForState(worker, state) {
-  if (!worker || worker.state == undefined) {
+  if (!worker || worker.state === undefined) {
     return Promise.reject(
         new Error('waitForState needs a ServiceWorker object to be passed.'));
   }

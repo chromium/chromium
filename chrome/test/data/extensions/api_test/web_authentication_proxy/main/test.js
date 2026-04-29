@@ -43,7 +43,7 @@ const availableTests = [
           receivedRequests++;
           chrome.test.assertTrue(receivedRequests <= 2);
           // We set the first request to false, and the second to true.
-          const isUvpaa = receivedRequests == 2;
+          const isUvpaa = receivedRequests === 2;
           await chrome.webAuthenticationProxy.completeIsUvpaaRequest(
               {requestId: requestInfo.requestId, isUvpaa});
           chrome.test.assertNoLastError();
@@ -128,7 +128,7 @@ const availableTests = [
         (canceledRequestId) => {
           chrome.test.assertFalse(canceled);
           canceled = true;
-          chrome.test.assertTrue(canceledRequestId == requestId);
+          chrome.test.assertTrue(canceledRequestId === requestId);
         });
     chrome.webAuthenticationProxy.onCreateRequest.addListener(
         async (request) => {
@@ -196,7 +196,7 @@ const availableTests = [
         (canceledRequestId) => {
           chrome.test.assertFalse(canceled);
           canceled = true;
-          chrome.test.assertTrue(canceledRequestId == requestId);
+          chrome.test.assertTrue(canceledRequestId === requestId);
         });
     chrome.webAuthenticationProxy.onGetRequest.addListener(async (request) => {
       chrome.test.assertFalse(canceled);
@@ -239,9 +239,9 @@ const availableTests = [
 
 chrome.test.getConfig((config) => {
   const tests = availableTests.filter((t) => {
-    return config.customArg == t.name;
+    return config.customArg === t.name;
   });
-  if (tests.length == 0) {
+  if (tests.length === 0) {
     // Log because the C++ side might stall rather than notice the call to
     // notifyFail.
     console.error('No test found');

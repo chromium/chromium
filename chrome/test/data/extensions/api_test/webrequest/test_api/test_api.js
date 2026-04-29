@@ -39,7 +39,7 @@ chrome.test.runTests([
   function removeListeners() {
     function newCallback(value) {
       return function(details) {
-        console.log(value);
+        console.info(value);
       };
     }
     const cb1 = newCallback(1);

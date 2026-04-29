@@ -45,9 +45,9 @@ const availableTests = [
 
 chrome.test.getConfig((config) => {
   const tests = availableTests.filter((t) => {
-    return config.customArg == t.name;
+    return config.customArg === t.name;
   });
-  if (tests.length == 0) {
+  if (tests.length === 0) {
     // Log because the C++ side might stall rather than notice the call to
     // notifyFail.
     console.error('No test found');

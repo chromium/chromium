@@ -86,10 +86,10 @@ function runTests(tests) {
 
     const waitForAboutBlank = function(_, info, tab) {
       if (debug) {
-        console.log(`tabs.OnUpdated received in waitForAboutBlank: ${
+        console.info(`tabs.OnUpdated received in waitForAboutBlank: ${
             JSON.stringify(info)} ${JSON.stringify(tab)}`);
       }
-      if (info.status == 'complete' && tab.url == 'about:blank') {
+      if (info.status === 'complete' && tab.url === 'about:blank') {
         chrome.tabs.onUpdated.removeListener(waitForAboutBlank);
         runTestsForTab(tests, tab);
       }
@@ -114,7 +114,7 @@ function getServerURL(optPath, optHost, optScheme) {
 
 // Throws error if an invalid navigation type was presented.
 function validateNavigationType(navigationType) {
-  if (navigationType == undefined) {
+  if (navigationType === undefined) {
     throw new Error('A navigation type must be defined.');
   }
   if (Object.values(initiators).indexOf(navigationType) === -1) {
@@ -127,7 +127,7 @@ function validateNavigationType(navigationType) {
 // navigation doesn't have an initiator.
 function getDomain(navigationType) {
   validateNavigationType(navigationType);
-  if (navigationType == initiators.BROWSER_INITIATED) {
+  if (navigationType === initiators.BROWSER_INITIATED) {
     return undefined;
   } else {
     return getURL('').slice(0, -1);
@@ -139,7 +139,7 @@ function getDomain(navigationType) {
 // initiated navigation doesn't have an initiator.
 function getServerDomain(navigationType, optHost, optScheme) {
   validateNavigationType(navigationType);
-  if (navigationType == initiators.BROWSER_INITIATED) {
+  if (navigationType === initiators.BROWSER_INITIATED) {
     return undefined;
   }
   return getServerURL(undefined, optHost, optScheme).slice(0, -1);
@@ -152,10 +152,10 @@ function navigateAndWait(url, callback) {
   const done =
       chrome.test.listenForever(chrome.tabs.onUpdated, function(_, info, tab) {
         if (debug) {
-          console.log(`tabs.OnUpdated received in navigateAndWait: ${
+          console.info(`tabs.OnUpdated received in navigateAndWait: ${
               JSON.stringify(info)} ${JSON.stringify(tab)}`);
         }
-        if (tab.id == tabId && info.status == 'complete') {
+        if (tab.id === tabId && info.status === 'complete') {
           if (callback) {
             callback(tab);
           }
@@ -237,7 +237,7 @@ function expect(data, order, filter, extraInfoSpec) {
       expectedEventData[i].details.type = 'main_frame';
     }
     if ('initiator' in expectedEventData[i].details &&
-        expectedEventData[i].details.initiator == undefined) {
+        expectedEventData[i].details.initiator === undefined) {
       delete expectedEventData[i].details.initiator;
     }
     if (expectedEventData[i].details.frameId >= 0) {
@@ -249,7 +249,7 @@ function expect(data, order, filter, extraInfoSpec) {
       }
     }
     if ('documentId' in expectedEventData[i].details &&
-        expectedEventData[i].details.documentId == undefined) {
+        expectedEventData[i].details.documentId === undefined) {
       delete expectedEventData[i].details.documentId;
     }
   }
@@ -298,8 +298,8 @@ function checkExpectations() {
 // an expected value. This is a basic check that the request headers are valid.
 function checkUserAgent(headers) {
   for (const i in headers) {
-    if (headers[i].name.toLowerCase() == 'user-agent') {
-      return headers[i].value.toLowerCase().indexOf('chrome') != -1;
+    if (headers[i].name.toLowerCase() === 'user-agent') {
+      return headers[i].value.toLowerCase().indexOf('chrome') !== -1;
     }
   }
   return false;
@@ -337,7 +337,7 @@ function isUnexpectedDetachedRequest(name, details) {
 function captureEvent(name, details, callback) {
   // Ignore system-level requests like safebrowsing updates and favicon fetches
   // since they are unpredictable.
-  if ((details.type == 'other' && !details.url.includes('dont-ignore-me')) ||
+  if ((details.type === 'other' && !details.url.includes('dont-ignore-me')) ||
       isUnexpectedDetachedRequest(name, details) ||
       details.url.match(/\/favicon.ico$/) ||
       details.url.match(/https:\/\/dl.google.com/)) {
@@ -348,14 +348,14 @@ function captureEvent(name, details, callback) {
 
   // Check that the frameId can be used to reliably determine the URL of the
   // frame that caused requests.
-  if (name == 'onBeforeRequest') {
+  if (name === 'onBeforeRequest') {
     chrome.test.assertTrue(
         'frameId' in details && typeof details.frameId === 'number');
     chrome.test.assertTrue(
         'tabId' in details && typeof details.tabId === 'number');
     const key = `${details.tabId}-${details.frameId}`;
-    if (details.type == 'main_frame' || details.type == 'sub_frame' ||
-        details.type == 'webtransport') {
+    if (details.type === 'main_frame' || details.type === 'sub_frame' ||
+        details.type === 'webtransport') {
       tabAndFrameUrls[key] = details.url;
     }
     details.frameUrl = tabAndFrameUrls[key] || 'unknown frame URL';
@@ -443,7 +443,7 @@ function captureEvent(name, details, callback) {
     }
   });
   if (!matchingExpectedEvent && !ignoreUnexpected) {
-    console.log(
+    console.info(
         `Expected events: ${JSON.stringify(expectedEventData, null, 2)}`);
     chrome.test.fail(`Received unexpected event '${name}':\n${
         JSON.stringify(details, null, 2)}`);
@@ -453,7 +453,7 @@ function captureEvent(name, details, callback) {
   let retvalFunction;
   if (matchingExpectedEvent) {
     if (debug) {
-      console.log(
+      console.info(
           `Expected event received: ${name}: ${JSON.stringify(details)}`);
     }
     capturedEventData.push(
@@ -469,7 +469,7 @@ function captureEvent(name, details, callback) {
     retvalFunction = matchingExpectedEvent.retvalFunction;
   } else {
     if (debug) {
-      console.log(
+      console.info(
           `NOT Expected event received: ${name}: ${JSON.stringify(details)}`);
     }
     capturedUnexpectedData.push({event: name, details: details});
@@ -490,7 +490,7 @@ function captureEvent(name, details, callback) {
 // that only the allowed specs are sent to each listener.
 function intersect(array1, array2) {
   return array1.filter(function(x) {
-    return array2.indexOf(x) != -1;
+    return array2.indexOf(x) !== -1;
   });
 }
 
@@ -622,7 +622,7 @@ function checkHeaders(headers, requiredNames, disallowedNames) {
 
 function removeHeader(headers, name) {
   for (let i = 0; i < headers.length; i++) {
-    if (headers[i].name.toLowerCase() == name) {
+    if (headers[i].name.toLowerCase() === name) {
       headers.splice(i, 1);
       break;
     }

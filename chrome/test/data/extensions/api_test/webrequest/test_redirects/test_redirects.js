@@ -252,7 +252,7 @@ loadScript.then(async function() {
 
         const onBeforeSendHeadersListener = function(details) {
           chrome.test.assertFalse(
-              details.url == intermediateURL,
+              details.url === intermediateURL,
               'intermediateURL should be redirected before the request starts.');
         };
         // Make sure all URLs use the extraHeaders path to expose

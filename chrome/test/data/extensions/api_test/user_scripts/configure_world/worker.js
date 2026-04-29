@@ -113,7 +113,7 @@ chrome.test.runTests([
           chrome.test.assertEq(0, sender.frameId);
           chrome.test.assertTrue(!!sender.tab);
 
-          if (message.step == 1) {
+          if (message.step === 1) {
             sendResponse({nextStep: true});
           } else {
             chrome.test.assertEq(2, message.step);
@@ -217,10 +217,10 @@ chrome.test.runTests([
     let hellocount = 0;
     chrome.runtime.onUserScriptMessage.addListener(
         async function listener(message, sender, sendResponse) {
-          if (message == 'hello') {
+          if (message === 'hello') {
             hellocount++;
           }
-          if (hellocount == 3) {
+          if (hellocount === 3) {
             chrome.runtime.onUserScriptMessage.removeListener(listener);
             chrome.test.succeed();
           }
@@ -500,7 +500,7 @@ chrome.test.runTests([
           // worlds to be active at a time.
           // We verify which world they injected into by checking whether eval
           // was allowed.
-          chrome.test.assertTrue(msg.worldId != undefined);
+          chrome.test.assertTrue(msg.worldId !== undefined);
           chrome.test.assertTrue(msg.worldId < 12);
           const expected =
               msg.worldId < 10 ? 'eval disallowed' : 'eval allowed';
@@ -508,7 +508,7 @@ chrome.test.runTests([
               expected, msg.result, 'Failed for msg: ' + JSON.stringify(msg));
 
           ++msgCount;
-          if (msgCount == 12) {  // All messages responded.
+          if (msgCount === 12) {  // All messages responded.
             chrome.runtime.onUserScriptMessage.removeListener(listener);
             chrome.test.succeed();
           }

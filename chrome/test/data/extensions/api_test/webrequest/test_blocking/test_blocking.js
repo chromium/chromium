@@ -716,7 +716,7 @@ function modifyResponseHeaders() {
             let found = false;
             for (let i = 0; i < responseHeaders.length; ++i) {
               if (responseHeaders[i].name === 'Foo' &&
-                  responseHeaders[i].value.indexOf('Bar') != -1) {
+                  responseHeaders[i].value.indexOf('Bar') !== -1) {
                 found = true;
                 responseHeaders.splice(i);
                 break;
@@ -1600,7 +1600,7 @@ function getFilteredTests(tests) {
 loadScript.then(async function() {
   chrome.test.getConfig(function(config) {
     const args = JSON.parse(config.customArg);
-    if (args.testSuite == 'normal') {
+    if (args.testSuite === 'normal') {
       runTests(getFilteredTests(normalTests));
     } else {
       chrome.test.assertEq('slow', args.testSuite);

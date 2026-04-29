@@ -40,7 +40,7 @@ runTests([
         getFrameIdsListener, {urls: ['<all_urls>']});
 
     chrome.declarativeWebRequest.onMessage.addListener((details) => {
-      if (EVENT_MESSAGE_EXTENSION_STRING != details.message) {
+      if (EVENT_MESSAGE_EXTENSION_STRING !== details.message) {
         chrome.test.fail(`Invalid message: ${details.message}`);
       }
 
@@ -65,7 +65,7 @@ runTests([
       chrome.test.assertFalse('documentId' in details);
       chrome.test.assertEq(getURLFencedFrame(), details.url);
       chrome.test.assertEq(details.stage, expectedEvents.shift());
-      if (expectedEvents.length == 0) {
+      if (expectedEvents.length === 0) {
         chrome.webRequest.onBeforeRequest.removeListener(getFrameIdsListener);
         chrome.test.succeed();
       }
