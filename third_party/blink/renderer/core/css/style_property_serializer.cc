@@ -3423,7 +3423,7 @@ String StylePropertySerializer::LineClampValue(
   const CSSIdentifierValue* continue_value = To<CSSIdentifierValue>(
       property_set_.GetPropertyCSSValue(GetCSSPropertyContinue()));
 
-  if (continue_value->GetValueID() == CSSValueID::kAuto) {
+  if (continue_value->GetValueID() == CSSValueID::kNormal) {
     if (max_lines->IsIdentifierValue() &&
         block_ellipsis->GetValueID() == CSSValueID::kNoEllipsis) {
       DCHECK_EQ(To<CSSIdentifierValue>(max_lines)->GetValueID(),
@@ -3436,9 +3436,18 @@ String StylePropertySerializer::LineClampValue(
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
   if (max_lines->IsNumericLiteralValue()) {
     list->Append(*max_lines);
+  } else {
+    DCHECK_EQ(To<CSSIdentifierValue>(max_lines)->GetValueID(),
+              CSSValueID::kNone);
+    if (is_webkit_line_clamp) {
+      return g_empty_string;
+    }
+    if (block_ellipsis->GetValueID() == CSSValueID::kEllipsis) {
+      list->Append(*CSSIdentifierValue::Create(CSSValueID::kAuto));
+    }
   }
 
-  if (!list->length() || block_ellipsis->GetValueID() != CSSValueID::kAuto) {
+  if (block_ellipsis->GetValueID() != CSSValueID::kEllipsis) {
     if (is_webkit_line_clamp) {
       return g_empty_string;
     }

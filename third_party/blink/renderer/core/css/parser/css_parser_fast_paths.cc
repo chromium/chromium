@@ -1717,11 +1717,11 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
     case CSSPropertyID::kInteractivity:
       return value_id == CSSValueID::kAuto || value_id == CSSValueID::kInert;
     case CSSPropertyID::kContinue:
-      return value_id == CSSValueID::kAuto ||
+      return value_id == CSSValueID::kNormal ||
              value_id == CSSValueID::kCollapse ||
              value_id == CSSValueID::kWebkitLegacy;
     case CSSPropertyID::kBlockEllipsis:
-      return value_id == CSSValueID::kAuto ||
+      return value_id == CSSValueID::kEllipsis ||
              value_id == CSSValueID::kNoEllipsis;
     case CSSPropertyID::kInternalOverscrollArea:
       return value_id == CSSValueID::kNone || value_id == CSSValueID::kAuto ||

@@ -5200,7 +5200,7 @@ bool LineClamp::ParseShorthand(
   if (stream.Peek().Id() == CSSValueID::kNone) {
     max_lines = css_parsing_utils::ConsumeIdent(stream);
     block_ellipsis = CSSIdentifierValue::Create(CSSValueID::kNoEllipsis);
-    continue_value = CSSIdentifierValue::Create(CSSValueID::kAuto);
+    continue_value = CSSIdentifierValue::Create(CSSValueID::kNormal);
   } else {
     do {
       if (stream.Peek().Id() == CSSValueID::kWebkitLegacy) {
@@ -5208,9 +5208,15 @@ bool LineClamp::ParseShorthand(
         break;
       }
 
+      if (!max_lines && stream.Peek().Id() == CSSValueID::kAuto) {
+        css_parsing_utils::ConsumeIdent(stream);
+        max_lines = CSSIdentifierValue::Create(CSSValueID::kNone);
+        continue;
+      }
+
       if (!block_ellipsis) {
         block_ellipsis =
-            css_parsing_utils::ConsumeIdent<CSSValueID::kAuto,
+            css_parsing_utils::ConsumeIdent<CSSValueID::kEllipsis,
                                             CSSValueID::kNoEllipsis>(stream);
         if (block_ellipsis) {
           continue;
@@ -5225,7 +5231,7 @@ bool LineClamp::ParseShorthand(
         }
       }
 
-      return false;
+      break;
     } while (!stream.AtEnd());
 
     if (!max_lines && !block_ellipsis) {
@@ -5236,7 +5242,7 @@ bool LineClamp::ParseShorthand(
       max_lines = CSSIdentifierValue::Create(CSSValueID::kNone);
     }
     if (!block_ellipsis) {
-      block_ellipsis = CSSIdentifierValue::Create(CSSValueID::kAuto);
+      block_ellipsis = CSSIdentifierValue::Create(CSSValueID::kEllipsis);
     }
     if (!continue_value) {
       continue_value = CSSIdentifierValue::Create(CSSValueID::kCollapse);
@@ -5260,7 +5266,7 @@ const CSSValue* LineClamp::CSSValueFromComputedStyleInternal(
     const LayoutObject* layout_object,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  if (style.Continue() == EContinue::kAuto) {
+  if (style.Continue() == EContinue::kNormal) {
     if (style.MaxLines() == 0 &&
         style.BlockEllipsis() == EBlockEllipsis::kNoEllipsis) {
       return CSSIdentifierValue::Create(CSSValueID::kNone);
@@ -5273,9 +5279,11 @@ const CSSValue* LineClamp::CSSValueFromComputedStyleInternal(
   if (style.MaxLines() != 0) {
     list->Append(*GetCSSPropertyMaxLines().CSSValueFromComputedStyle(
         style, layout_object, allow_visited_style, value_phase));
+  } else if (style.BlockEllipsis() == EBlockEllipsis::kEllipsis) {
+    list->Append(*CSSIdentifierValue::Create(CSSValueID::kAuto));
   }
 
-  if (!list->length() || style.BlockEllipsis() != EBlockEllipsis::kAuto) {
+  if (style.BlockEllipsis() != EBlockEllipsis::kEllipsis) {
     list->Append(*GetCSSPropertyBlockEllipsis().CSSValueFromComputedStyle(
         style, layout_object, allow_visited_style, value_phase));
   }
@@ -5304,14 +5312,14 @@ bool AlternativeWebkitLineClamp::ParseShorthand(
   if (stream.Peek().Id() == CSSValueID::kNone) {
     max_lines = css_parsing_utils::ConsumeIdent(stream);
     block_ellipsis = CSSIdentifierValue::Create(CSSValueID::kNoEllipsis);
-    continue_value = CSSIdentifierValue::Create(CSSValueID::kAuto);
+    continue_value = CSSIdentifierValue::Create(CSSValueID::kNormal);
   } else {
     max_lines = css_parsing_utils::ConsumePositiveInteger(stream, context,
                                                           local_context);
     if (!max_lines) {
       return false;
     }
-    block_ellipsis = CSSIdentifierValue::Create(CSSValueID::kAuto);
+    block_ellipsis = CSSIdentifierValue::Create(CSSValueID::kEllipsis);
     continue_value = CSSIdentifierValue::Create(CSSValueID::kWebkitLegacy);
   }
 
@@ -5334,13 +5342,14 @@ const CSSValue* AlternativeWebkitLineClamp::CSSValueFromComputedStyleInternal(
     const LayoutObject* layout_object,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  if (style.Continue() == EContinue::kAuto &&
+  if (style.Continue() == EContinue::kNormal &&
       style.BlockEllipsis() == EBlockEllipsis::kNoEllipsis &&
       style.MaxLines() == 0) {
     return CSSIdentifierValue::Create(CSSValueID::kNone);
   }
   if (style.Continue() == EContinue::kWebkitLegacy &&
-      style.BlockEllipsis() == EBlockEllipsis::kAuto && style.MaxLines() != 0) {
+      style.BlockEllipsis() == EBlockEllipsis::kEllipsis &&
+      style.MaxLines() != 0) {
     return GetCSSPropertyMaxLines().CSSValueFromComputedStyle(
         style, layout_object, allow_visited_style, value_phase);
   }

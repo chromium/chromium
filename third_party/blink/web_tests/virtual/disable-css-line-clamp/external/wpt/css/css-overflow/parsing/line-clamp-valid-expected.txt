@@ -7,17 +7,23 @@ This is a testharness.js-based test.
   assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['line-clamp'] = "auto" should set the property value
   assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['line-clamp'] = "ellipsis" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['line-clamp'] = "\\" etc., etc. \\"" should set the property value
   assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['line-clamp'] = "7 no-ellipsis" should set the property value
   assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['line-clamp'] = "8 auto" should set the property value
   assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['line-clamp'] = "8 ellipsis" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['line-clamp'] = "9 \\" etc., etc. \\"" should set the property value
   assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['line-clamp'] = "no-ellipsis 10" should set the property value
   assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['line-clamp'] = "auto 11" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['line-clamp'] = "ellipsis 11" should set the property value
   assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['line-clamp'] = "\\" etc., etc. \\" 12" should set the property value
   assert_not_equals: property should be set got disallowed value ""

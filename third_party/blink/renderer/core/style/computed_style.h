@@ -661,7 +661,7 @@ class ComputedStyle final : public ComputedStyleBase {
   // `StandardLineClamp()` or `WebkitLineClamp()`.
   int LineClamp() const {
     if (!RuntimeEnabledFeatures::CSSLineClampEnabled()) {
-      DCHECK_EQ(Continue(), EContinue::kAuto);
+      DCHECK_EQ(Continue(), EContinue::kNormal);
       if (IsSpecifiedDisplayWebkitBox()) {
         return WebkitLineClamp();
       }
@@ -673,7 +673,7 @@ class ComputedStyle final : public ComputedStyleBase {
   bool IsEffectiveContinueCollapse() const {
     DCHECK(RuntimeEnabledFeatures::CSSLineClampEnabled());
     switch (Continue()) {
-      case EContinue::kAuto:
+      case EContinue::kNormal:
         return false;
       case EContinue::kCollapse:
         return true;

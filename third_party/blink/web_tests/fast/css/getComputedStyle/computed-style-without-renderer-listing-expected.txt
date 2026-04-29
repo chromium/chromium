@@ -163,7 +163,7 @@ container-name: none
 container-type: normal
 content: normal
 content-visibility: visible
-continue: auto
+continue: normal
 corner-bottom-left-shape: round
 corner-bottom-right-shape: round
 corner-end-end-shape: round
