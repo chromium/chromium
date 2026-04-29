@@ -91,6 +91,8 @@ class TabInterface : public SupportsTabHandles {
   // unavoidable, this method may be used. Features that live entirely above the
   // //content layer should not use this method.
   static TabInterface* MaybeGetFromContents(content::WebContents* web_contents);
+  static const TabInterface* MaybeGetFromContents(
+      const content::WebContents* web_contents);
 
   // Returns a weak pointer to `this`.
   //

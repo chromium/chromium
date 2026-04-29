@@ -39,4 +39,15 @@ TabInterface* TabInterface::MaybeGetFromContents(
   return lookup->model();
 }
 
+// static
+const TabInterface* TabInterface::MaybeGetFromContents(
+    const content::WebContents* web_contents) {
+  const TabLookupFromWebContents* lookup =
+      TabLookupFromWebContents::FromWebContents(web_contents);
+  if (!lookup) {
+    return nullptr;
+  }
+  return lookup->model();
+}
+
 }  // namespace tabs
