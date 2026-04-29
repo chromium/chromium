@@ -299,4 +299,40 @@ TEST_F(PlistSettingsClientTest,
   EXPECT_EQ(items, future_.Get());
 }
 
+// Tests a request to GetSettings with an array index that is exactly equal to
+// the array size. This should be handled as "Not Found".
+TEST_F(PlistSettingsClientTest,
+       GetSettings_Plist_MixOfArrayDictItems_ArrayOutOfBounds) {
+  test_file_path_ = test::GetMixArrayDictionaryPlistPath();
+
+  std::string key_path = "Key1.Array[2]";
+
+  std::vector<GetSettingsOptions> options;
+  options.push_back(CreateOption(key_path, true));
+
+  std::vector<SettingsItem> items;
+  items.push_back(CreateSettingItem(key_path, PresenceValue::kNotFound, ""));
+
+  client_.GetSettings(options, future_.GetCallback());
+  EXPECT_EQ(items, future_.Get());
+}
+
+// Tests that a key path containing a KVC operator is not executed and is
+// instead treated as a literal key (which should not be found).
+TEST_F(PlistSettingsClientTest,
+       GetSettings_Plist_OnlyDictionaryItems_KVCVulnerability) {
+  test_file_path_ = test::GetOnlyDictionaryPlistPath();
+
+  std::string key_path = "@count";
+
+  std::vector<GetSettingsOptions> options;
+  options.push_back(CreateOption(key_path, true));
+
+  std::vector<SettingsItem> items;
+  items.push_back(CreateSettingItem(key_path, PresenceValue::kNotFound, ""));
+
+  client_.GetSettings(options, future_.GetCallback());
+  EXPECT_EQ(items, future_.Get());
+}
+
 }  // namespace device_signals

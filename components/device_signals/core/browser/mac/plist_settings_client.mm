@@ -65,7 +65,7 @@ id ParseArrays(id data_obj, NSString* path) {
     }
 
     NSUInteger index = base::checked_cast<NSUInteger>(index_str.integerValue);
-    if (index > data_array.count) {
+    if (index >= data_array.count) {
       return nil;
     }
 
@@ -78,30 +78,39 @@ id ParseArrays(id data_obj, NSString* path) {
 // Parses the loaded plist `dict` for the setting item at `key_path`. Returns
 // the setting object if it is found or nil otherwise.
 id ParsePlist(NSDictionary* dict, NSString* key_path) {
-  // Check if an array exists in the path, If not, the plist can be parsed
-  // directly.
-  NSRange test_range = [key_path rangeOfString:@"["];
-  if (test_range.location == NSNotFound)
-    return [dict valueForKeyPath:key_path];
-
-  NSDictionary* current_obj = dict;
+  id current_obj = dict;
+  bool has_brackets = false;
   for (NSString* sub_path in [key_path componentsSeparatedByString:@"."]) {
+    NSDictionary* current_dict =
+        base::apple::ObjCCast<NSDictionary>(current_obj);
+    if (!current_dict) {
+      return nil;
+    }
+
     NSRange range = [sub_path rangeOfString:@"["];
     if (range.location == NSNotFound) {
-      current_obj = [current_obj valueForKey:sub_path];
+      current_obj = [current_dict objectForKey:sub_path];
     } else {
-      current_obj =
-          [current_obj valueForKey:[sub_path substringToIndex:range.location]];
+      has_brackets = true;
+      current_obj = [current_dict
+          objectForKey:[sub_path substringToIndex:range.location]];
       current_obj = ParseArrays(current_obj,
                                 [sub_path substringFromIndex:range.location]);
+    }
+
+    if (!current_obj) {
+      return nil;
     }
   }
 
   // This will occur if the key path is incorrect and does not actually point to
   // a setting item. At the end of a parse, the only remaining object should be
   // the single setting item.
-  if ([current_obj isKindOfClass:[NSArray class]] && current_obj.count != 1) {
-    return nil;
+  if (has_brackets) {
+    NSArray* final_array = base::apple::ObjCCast<NSArray>(current_obj);
+    if (final_array && final_array.count != 1) {
+      return nil;
+    }
   }
   return current_obj;
 }
