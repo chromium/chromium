@@ -40,6 +40,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/google/core/common/google_switches.h"
 #include "components/history/core/browser/history_service.h"
+#include "components/history/core/common/pref_names.h"
 #include "components/lens/lens_features.h"
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
@@ -3879,6 +3880,32 @@ TEST_F(SearchProviderTest, TestDeleteHistoryQueryMatch) {
   profile_->BlockUntilHistoryProcessesPendingRequests();
   ASSERT_NO_FATAL_FAILURE(FinishDefaultSuggestQuery(u"fla"));
   EXPECT_FALSE(FindMatchWithContents(u"flash games", &games));
+}
+
+TEST_F(SearchProviderTest, TestHistoryMatchDeletablePolicy) {
+  AddSearchToHistory(default_t_url_, u"flash games", 1);
+  profile_->BlockUntilHistoryProcessesPendingRequests();
+
+  AutocompleteMatch games;
+
+  // By default, the match should be deletable.
+  QueryForInput(u"fla", false, false, false);
+  profile_->BlockUntilHistoryProcessesPendingRequests();
+  ASSERT_NO_FATAL_FAILURE(FinishDefaultSuggestQuery(u"fla"));
+  ASSERT_TRUE(FindMatchWithContents(u"flash games", &games));
+  EXPECT_TRUE(games.deletable);
+
+  // Disable deleting browser history policy.
+  profile_->GetPrefs()->SetBoolean(prefs::kAllowDeletingBrowserHistory, false);
+
+  // The match should no longer be deletable.
+  test_url_loader_factory_.ClearResponses();
+  ClearAllResults();
+  QueryForInput(u"fla", false, false, false);
+  profile_->BlockUntilHistoryProcessesPendingRequests();
+  ASSERT_NO_FATAL_FAILURE(FinishDefaultSuggestQuery(u"fla"));
+  ASSERT_TRUE(FindMatchWithContents(u"flash games", &games));
+  EXPECT_FALSE(games.deletable);
 }
 
 // Verifies that duplicates are preserved in AddMatchToMap().

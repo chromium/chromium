@@ -1227,7 +1227,8 @@ void SearchProvider::AddTransformedHistoryResultsToMap(
     AddMatchToMap(result, GetInput(result.from_keyword()),
                   GetTemplateURL(result.from_keyword()),
                   client()->GetTemplateURLService()->search_terms_data(),
-                  did_not_accept_suggestion, true,
+                  did_not_accept_suggestion,
+                  client()->AllowDeletingBrowserHistory(),
                   providers_.GetKeywordProviderURL() != nullptr, map);
   }
 }
