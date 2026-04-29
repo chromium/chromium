@@ -57,5 +57,18 @@ found in the LICENSE file.
             android:maxLines="1"
             android:textDirection="locale"
             android:textAppearance="@style/TextAppearance.TextSmall.Secondary"/>
+
+        <TextView
+            android:id="@+id/memory_usage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/tab_hover_card_text_content_margin"
+            android:layout_marginEnd="@dimen/tab_hover_card_text_content_margin"
+            android:layout_marginBottom="@dimen/tab_hover_card_text_content_margin"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:visibility="gone"
+            android:textDirection="locale"
+            android:textAppearance="@style/TextAppearance.TextSmall.Secondary"/>
     </LinearLayout>
 </org.chromium.chrome.browser.compositor.overlays.strip.StripTabHoverCardView>

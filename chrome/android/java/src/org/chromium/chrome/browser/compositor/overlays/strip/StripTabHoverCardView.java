@@ -8,6 +8,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
 import android.graphics.drawable.BitmapDrawable;
+import android.text.format.Formatter;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Size;
@@ -44,6 +45,7 @@ public class StripTabHoverCardView extends FrameLayout {
     private ViewGroup mContentView;
     private TextView mTitleView;
     private TextView mUrlView;
+    private TextView mMemoryUsageView;
     private TabThumbnailView mThumbnailView;
     private @Nullable TabModelSelector mTabModelSelector;
     private @Nullable Callback<TabModel> mCurrentTabModelObserver;
@@ -62,6 +64,7 @@ public class StripTabHoverCardView extends FrameLayout {
         mContentView = findViewById(R.id.content_view);
         mTitleView = mContentView.findViewById(R.id.title);
         mUrlView = mContentView.findViewById(R.id.url);
+        mMemoryUsageView = mContentView.findViewById(R.id.memory_usage);
         mThumbnailView = mContentView.findViewById(R.id.thumbnail);
         maybeUpdateBackgroundOnLowEndDevice();
     }
@@ -98,6 +101,20 @@ public class StripTabHoverCardView extends FrameLayout {
             url = url.replaceFirst("/$", "");
         }
         mUrlView.setText(url);
+
+        mMemoryUsageView.setVisibility(GONE);
+        hoveredTab.getMemoryUsageBytes(
+                bytes -> {
+                    if (hoveredTab.getId() != mLastHoveredTabId || !mIsShowing) return;
+                    if (bytes > 0) {
+                        String memoryText = Formatter.formatShortFileSize(getContext(), bytes);
+                        mMemoryUsageView.setText(
+                                getContext()
+                                        .getString(
+                                                R.string.tab_hover_card_memory_usage, memoryText));
+                        mMemoryUsageView.setVisibility(VISIBLE);
+                    }
+                });
 
         float[] position = getHoverCardPosition(isSelectedTab, tabX, tabWidth, height, topPadding);
         setX(position[0]);
@@ -149,6 +166,8 @@ public class StripTabHoverCardView extends FrameLayout {
         mTitleView.setTextColor(
                 TabUiThemeProvider.getStripTabHoverCardTextColorPrimary(getContext(), incognito));
         mUrlView.setTextColor(
+                TabUiThemeProvider.getStripTabHoverCardTextColorSecondary(getContext(), incognito));
+        mMemoryUsageView.setTextColor(
                 TabUiThemeProvider.getStripTabHoverCardTextColorSecondary(getContext(), incognito));
 
         ViewCompat.setBackgroundTintList(
