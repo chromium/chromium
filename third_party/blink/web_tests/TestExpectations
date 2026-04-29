@@ -2734,7 +2734,20 @@ crbug.com/503882535 virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_
 crbug.com/503882535 virtual/webnn-service-on-npu/external/wpt/webnn/conformance_tests/reduce_log_sum_exp.https.any.html?npu [ Failure ]
 crbug.com/503882535 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/reduce_log_sum_exp.https.any.html?gpu [ Failure ]
 
+# UUIDs in `*-expected.txt`
+external/wpt/fetch/fetch-later/quota/cross-origin-iframe/empty-payload.https.window.html [ Failure ]
+external/wpt/fetch/fetch-later/quota/same-origin-iframe/empty-payload.https.window.html [ Failure ]
+virtual/produce-compile-hints/external/wpt/fetch/fetch-later/quota/cross-origin-iframe/empty-payload.https.window.html [ Failure ]
+virtual/produce-compile-hints/external/wpt/fetch/fetch-later/quota/same-origin-iframe/empty-payload.https.window.html [ Failure ]
+
 # ====== New tests from wpt-importer added here ======
+external/wpt/css/css-align/baseline-rules/inline-table-inline-block-baseline-vert-rl-export.tentative.html [ Failure ]
+external/wpt/css/css-align/baseline-rules/inline-table-inline-block-baseline-vert-rl-synthesis.tentative.html [ Failure ]
+external/wpt/css/css-conditional/container-queries/style-query-registered-custom-em-change.html [ Crash Pass ]
+[ Win ] external/wpt/css/css-lists/parsing/counter-increment-computed.html [ Pass Timeout ]
+[ Win ] external/wpt/fullscreen/api/document-fullscreen-keyboard-lock-shadowdom.tentative.window.html [ Pass Timeout ]
+virtual/jxl-enabled/external/wpt/jpegxl/patches-reftest.html [ Failure ]
+virtual/jxl-enabled/external/wpt/jpegxl/smallest-valid-reftest.html [ Failure ]
 external/wpt/css/css-backgrounds/border-image-repeat-round.html [ Failure ]
 virtual/threaded/external/wpt/css/css-backgrounds/border-image-repeat-round.html [ Failure ]
 crbug.com/505118033 virtual/jxl-enabled/external/wpt/jpegxl/cmyk-basic-conversion-reftest.html [ Failure ]

@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+[FAIL] Returns animations on pseudo-element when it is specified
+  assert_equals: Returns one animation when the pseudo-element is specified expected 1 but got 0
+[FAIL] Returns animations on functional pseudo-element when it is specified
+  assert_equals: Returns one animation when the pseudo-element is specified expected 1 but got 0
+[FAIL] The legacy Selectors Level 2 single-colon selectors can be used
+  assert_equals: Returns one animation when the pseudo-element is specified by the legacy selector expected 1 but got 0
+[FAIL] Throws SyntaxError for an invalid pseudo-element selector
+  assert_throws_dom: function "() => {\n    div.getAnimations({ pseudoElement: ':invalid-pseudo' });\n  }" did not throw
+[FAIL] Throws SyntaxError for an empty selector
+  assert_throws_dom: function "() => {\n    div.getAnimations({ pseudoElement: '' });\n  }" did not throw
+Harness: the test ran to completion.
+

@@ -1,0 +1,23 @@
+This is a testharness.js-based test.
+[FAIL] e.style['link-parameters'] = "none" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['link-parameters'] = "param(--a, orange)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['link-parameters'] = "param(--a, orange), param(--b, blue)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['link-parameters'] = "param(--a, )" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['link-parameters'] = "param(--a, ), param(--b, )" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['link-parameters'] = "param(--a)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['link-parameters'] = "param(--a), param(--b)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['link-parameters'] = "param(--a" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['link-parameters'] = "param(--)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['link-parameters'] = "param(--, --)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+Harness: the test ran to completion.
+

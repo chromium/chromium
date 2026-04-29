@@ -1,0 +1,248 @@
+This is a testharness.js-based test.
+Found 122 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Compositing CSS Animations: property <stroke-dasharray> underlying [5 5] from add [0 5] to add [10 15] at (-0.6) should be [ 0  0]
+  assert_equals: expected "0px , 0px " but got "0px , 4px "
+[FAIL] Compositing CSS Animations: property <stroke-dasharray> underlying [5 5] from add [0 5] to add [10 15] at (-0.4) should be [ 0  1]
+  assert_equals: expected "0px , 1px " but got "1px , 6px "
+[FAIL] Compositing CSS Animations: property <stroke-dasharray> underlying [5 5] from add [0 5] to add [10 15] at (-0.2) should be [ 0  3]
+  assert_equals: expected "0px , 3px " but got "3px , 8px "
+[FAIL] Compositing CSS Animations: property <stroke-dasharray> underlying [5 5] from add [0 5] to add [10 15] at (0) should be [ 0  5]
+  assert_equals: expected "0px , 5px " but got "5px , 10px "
+[FAIL] Compositing CSS Animations: property <stroke-dasharray> underlying [5 5] from add [0 5] to add [10 15] at (0.2) should be [ 2  7]
+  assert_equals: expected "2px , 7px " but got "7px , 12px "
+[FAIL] Compositing CSS Animations: property <stroke-dasharray> underlying [5 5] from add [0 5] to add [10 15] at (0.4) should be [ 4  9]
+  assert_equals: expected "4px , 9px " but got "9px , 14px "
+[FAIL] Compositing CSS Animations: property <stroke-dasharray> underlying [5 5] from add [0 5] to add [10 15] at (0.6) should be [ 6 11]
+  assert_equals: expected "6px , 11px " but got "11px , 16px "
+[FAIL] Compositing CSS Animations: property <stroke-dasharray> underlying [5 5] from add [0 5] to add [10 15] at (0.8) should be [ 8 13]
+  assert_equals: expected "8px , 13px " but got "13px , 18px "
+[FAIL] Compositing CSS Animations: property <stroke-dasharray> underlying [5 5] from add [0 5] to add [10 15] at (1) should be [10 15]
+  assert_equals: expected "10px , 15px " but got "15px , 20px "
+[FAIL] Compositing CSS Animations: property <stroke-dasharray> underlying [5 5] from add [0 5] to add [10 15] at (1.2) should be [12 17]
+  assert_equals: expected "12px , 17px " but got "17px , 22px "
+[FAIL] Compositing Web Animations: property <stroke-dasharray> underlying [5 5] from add [0 5] to add [10 15] at (-0.6) should be [ 0  0]
+  assert_equals: expected "0px , 0px " but got "0px , 4px "
+[FAIL] Compositing Web Animations: property <stroke-dasharray> underlying [5 5] from add [0 5] to add [10 15] at (-0.4) should be [ 0  1]
+  assert_equals: expected "0px , 1px " but got "1px , 6px "
+[FAIL] Compositing Web Animations: property <stroke-dasharray> underlying [5 5] from add [0 5] to add [10 15] at (-0.2) should be [ 0  3]
+  assert_equals: expected "0px , 3px " but got "3px , 8px "
+[FAIL] Compositing Web Animations: property <stroke-dasharray> underlying [5 5] from add [0 5] to add [10 15] at (0) should be [ 0  5]
+  assert_equals: expected "0px , 5px " but got "5px , 10px "
+[FAIL] Compositing Web Animations: property <stroke-dasharray> underlying [5 5] from add [0 5] to add [10 15] at (0.2) should be [ 2  7]
+  assert_equals: expected "2px , 7px " but got "7px , 12px "
+[FAIL] Compositing Web Animations: property <stroke-dasharray> underlying [5 5] from add [0 5] to add [10 15] at (0.4) should be [ 4  9]
+  assert_equals: expected "4px , 9px " but got "9px , 14px "
+[FAIL] Compositing Web Animations: property <stroke-dasharray> underlying [5 5] from add [0 5] to add [10 15] at (0.6) should be [ 6 11]
+  assert_equals: expected "6px , 11px " but got "11px , 16px "
+[FAIL] Compositing Web Animations: property <stroke-dasharray> underlying [5 5] from add [0 5] to add [10 15] at (0.8) should be [ 8 13]
+  assert_equals: expected "8px , 13px " but got "13px , 18px "
+[FAIL] Compositing Web Animations: property <stroke-dasharray> underlying [5 5] from add [0 5] to add [10 15] at (1) should be [10 15]
+  assert_equals: expected "10px , 15px " but got "15px , 20px "
+[FAIL] Compositing Web Animations: property <stroke-dasharray> underlying [5 5] from add [0 5] to add [10 15] at (1.2) should be [12 17]
+  assert_equals: expected "12px , 17px " but got "17px , 22px "
+[FAIL] Compositing CSS Animations: property <stroke-dasharray> underlying [10 10] from replace [5 10] to add [5 10] at (-0.6) should be [5 10]
+  assert_equals: expected "5px , 10px " but got "0px , 4px "
+[FAIL] Compositing CSS Animations: property <stroke-dasharray> underlying [10 10] from replace [5 10] to add [5 10] at (-0.4) should be [5 10]
+  assert_equals: expected "5px , 10px " but got "1px , 6px "
+[FAIL] Compositing CSS Animations: property <stroke-dasharray> underlying [10 10] from replace [5 10] to add [5 10] at (-0.2) should be [5 10]
+  assert_equals: expected "5px , 10px " but got "3px , 8px "
+[FAIL] Compositing CSS Animations: property <stroke-dasharray> underlying [10 10] from replace [5 10] to add [5 10] at (0.2) should be [5 10]
+  assert_equals: expected "5px , 10px " but got "7px , 12px "
+[FAIL] Compositing CSS Animations: property <stroke-dasharray> underlying [10 10] from replace [5 10] to add [5 10] at (0.4) should be [5 10]
+  assert_equals: expected "5px , 10px " but got "9px , 14px "
+[FAIL] Compositing CSS Animations: property <stroke-dasharray> underlying [10 10] from replace [5 10] to add [5 10] at (0.6) should be [5 10]
+  assert_equals: expected "5px , 10px " but got "11px , 16px "
+[FAIL] Compositing CSS Animations: property <stroke-dasharray> underlying [10 10] from replace [5 10] to add [5 10] at (0.8) should be [5 10]
+  assert_equals: expected "5px , 10px " but got "13px , 18px "
+[FAIL] Compositing CSS Animations: property <stroke-dasharray> underlying [10 10] from replace [5 10] to add [5 10] at (1) should be [5 10]
+  assert_equals: expected "5px , 10px " but got "15px , 20px "
+[FAIL] Compositing CSS Animations: property <stroke-dasharray> underlying [10 10] from replace [5 10] to add [5 10] at (1.2) should be [5 10]
+  assert_equals: expected "5px , 10px " but got "17px , 22px "
+[FAIL] Compositing Web Animations: property <stroke-dasharray> underlying [10 10] from replace [5 10] to add [5 10] at (-0.6) should be [5 10]
+  assert_equals: expected "5px , 10px " but got "0px , 4px "
+[FAIL] Compositing Web Animations: property <stroke-dasharray> underlying [10 10] from replace [5 10] to add [5 10] at (-0.4) should be [5 10]
+  assert_equals: expected "5px , 10px " but got "1px , 6px "
+[FAIL] Compositing Web Animations: property <stroke-dasharray> underlying [10 10] from replace [5 10] to add [5 10] at (-0.2) should be [5 10]
+  assert_equals: expected "5px , 10px " but got "3px , 8px "
+[FAIL] Compositing Web Animations: property <stroke-dasharray> underlying [10 10] from replace [5 10] to add [5 10] at (0.2) should be [5 10]
+  assert_equals: expected "5px , 10px " but got "7px , 12px "
+[FAIL] Compositing Web Animations: property <stroke-dasharray> underlying [10 10] from replace [5 10] to add [5 10] at (0.4) should be [5 10]
+  assert_equals: expected "5px , 10px " but got "9px , 14px "
+[FAIL] Compositing Web Animations: property <stroke-dasharray> underlying [10 10] from replace [5 10] to add [5 10] at (0.6) should be [5 10]
+  assert_equals: expected "5px , 10px " but got "11px , 16px "
+[FAIL] Compositing Web Animations: property <stroke-dasharray> underlying [10 10] from replace [5 10] to add [5 10] at (0.8) should be [5 10]
+  assert_equals: expected "5px , 10px " but got "13px , 18px "
+[FAIL] Compositing Web Animations: property <stroke-dasharray> underlying [10 10] from replace [5 10] to add [5 10] at (1) should be [5 10]
+  assert_equals: expected "5px , 10px " but got "15px , 20px "
+[FAIL] Compositing Web Animations: property <stroke-dasharray> underlying [10 10] from replace [5 10] to add [5 10] at (1.2) should be [5 10]
+  assert_equals: expected "5px , 10px " but got "17px , 22px "
+[FAIL] Compositing CSS Animations: property <stroke-dasharray> underlying [10 30] from add [none] to add [10 10] at (0.5) should be [10 10]
+  assert_equals: expected "10px , 10px " but got "20px , 40px "
+[FAIL] Compositing CSS Animations: property <stroke-dasharray> underlying [10 30] from add [none] to add [10 10] at (0.6) should be [10 10]
+  assert_equals: expected "10px , 10px " but got "20px , 40px "
+[FAIL] Compositing CSS Animations: property <stroke-dasharray> underlying [10 30] from add [none] to add [10 10] at (1) should be [10 10]
+  assert_equals: expected "10px , 10px " but got "20px , 40px "
+[FAIL] Compositing CSS Animations: property <stroke-dasharray> underlying [10 30] from add [none] to add [10 10] at (1.5) should be [10 10]
+  assert_equals: expected "10px , 10px " but got "20px , 40px "
+[FAIL] Compositing Web Animations: property <stroke-dasharray> underlying [10 30] from add [none] to add [10 10] at (0.5) should be [10 10]
+  assert_equals: expected "10px , 10px " but got "20px , 40px "
+[FAIL] Compositing Web Animations: property <stroke-dasharray> underlying [10 30] from add [none] to add [10 10] at (0.6) should be [10 10]
+  assert_equals: expected "10px , 10px " but got "20px , 40px "
+[FAIL] Compositing Web Animations: property <stroke-dasharray> underlying [10 30] from add [none] to add [10 10] at (1) should be [10 10]
+  assert_equals: expected "10px , 10px " but got "20px , 40px "
+[FAIL] Compositing Web Animations: property <stroke-dasharray> underlying [10 30] from add [none] to add [10 10] at (1.5) should be [10 10]
+  assert_equals: expected "10px , 10px " but got "20px , 40px "
+[FAIL] Compositing CSS Animations: property <stroke-dasharray> underlying [0 5] from add [5] to replace [15 20 25] at (-0.2) should be [3 2 1]
+  assert_equals: expected "3px , 2px , 1px " but got "3px , 8px , 1px , 9px , 2px , 7px "
+[FAIL] Compositing CSS Animations: property <stroke-dasharray> underlying [0 5] from add [5] to replace [15 20 25] at (0) should be [5 5 5]
+  assert_equals: expected "5px , 5px , 5px " but got "5px , 10px , 5px , 10px , 5px , 10px "
+[FAIL] Compositing CSS Animations: property <stroke-dasharray> underlying [0 5] from add [5] to replace [15 20 25] at (0.2) should be [7 8 9]
+  assert_equals: expected "7px , 8px , 9px " but got "7px , 12px , 9px , 11px , 8px , 13px "
+[FAIL] Compositing CSS Animations: property <stroke-dasharray> underlying [0 5] from add [5] to replace [15 20 25] at (0.4) should be [9 11 13]
+  assert_equals: expected "9px , 11px , 13px " but got "9px , 14px , 13px , 12px , 11px , 16px "
+[FAIL] Compositing CSS Animations: property <stroke-dasharray> underlying [0 5] from add [5] to replace [15 20 25] at (0.6) should be [11 14 17]
+  assert_equals: expected "11px , 14px , 17px " but got "11px , 16px , 17px , 13px , 14px , 19px "
+[FAIL] Compositing CSS Animations: property <stroke-dasharray> underlying [0 5] from add [5] to replace [15 20 25] at (0.8) should be [13 17 21]
+  assert_equals: expected "13px , 17px , 21px " but got "13px , 18px , 21px , 14px , 17px , 22px "
+[FAIL] Compositing CSS Animations: property <stroke-dasharray> underlying [0 5] from add [5] to replace [15 20 25] at (1) should be [15 20 25]
+  assert_equals: expected "15px , 20px , 25px " but got "15px , 20px , 25px , 15px , 20px , 25px "
+[FAIL] Compositing CSS Animations: property <stroke-dasharray> underlying [0 5] from add [5] to replace [15 20 25] at (1.2) should be [17 23 29]
+  assert_equals: expected "17px , 23px , 29px " but got "17px , 22px , 29px , 16px , 23px , 28px "
+[FAIL] Compositing Web Animations: property <stroke-dasharray> underlying [0 5] from add [5] to replace [15 20 25] at (-0.2) should be [3 2 1]
+  assert_equals: expected "3px , 2px , 1px " but got "3px , 8px , 1px , 9px , 2px , 7px "
+[FAIL] Compositing Web Animations: property <stroke-dasharray> underlying [0 5] from add [5] to replace [15 20 25] at (0) should be [5 5 5]
+  assert_equals: expected "5px , 5px , 5px " but got "5px , 10px , 5px , 10px , 5px , 10px "
+[FAIL] Compositing Web Animations: property <stroke-dasharray> underlying [0 5] from add [5] to replace [15 20 25] at (0.2) should be [7 8 9]
+  assert_equals: expected "7px , 8px , 9px " but got "7px , 12px , 9px , 11px , 8px , 13px "
+[FAIL] Compositing Web Animations: property <stroke-dasharray> underlying [0 5] from add [5] to replace [15 20 25] at (0.4) should be [9 11 13]
+  assert_equals: expected "9px , 11px , 13px " but got "9px , 14px , 13px , 12px , 11px , 16px "
+[FAIL] Compositing Web Animations: property <stroke-dasharray> underlying [0 5] from add [5] to replace [15 20 25] at (0.6) should be [11 14 17]
+  assert_equals: expected "11px , 14px , 17px " but got "11px , 16px , 17px , 13px , 14px , 19px "
+[FAIL] Compositing Web Animations: property <stroke-dasharray> underlying [0 5] from add [5] to replace [15 20 25] at (0.8) should be [13 17 21]
+  assert_equals: expected "13px , 17px , 21px " but got "13px , 18px , 21px , 14px , 17px , 22px "
+[FAIL] Compositing Web Animations: property <stroke-dasharray> underlying [0 5] from add [5] to replace [15 20 25] at (1) should be [15 20 25]
+  assert_equals: expected "15px , 20px , 25px " but got "15px , 20px , 25px , 15px , 20px , 25px "
+[FAIL] Compositing Web Animations: property <stroke-dasharray> underlying [0 5] from add [5] to replace [15 20 25] at (1.2) should be [17 23 29]
+  assert_equals: expected "17px , 23px , 29px " but got "17px , 22px , 29px , 16px , 23px , 28px "
+[FAIL] Compositing CSS Animations: property <stroke-dasharray> underlying [10 30] from replace [5 10 15 20] to add [15 0 25 10 35 20] at (-0.2) should be [ 3 12 13 22  0  8 15 24  1 10 11 20]
+  assert_equals: expected "3px , 12px , 13px , 22px , 0px , 8px , 15px , 24px , 1px , 10px , 11px , 20px " but got "1px , 6px , 11px , 16px , 0px , 2px , 13px , 18px , 0px , 4px , 9px , 14px "
+[FAIL] Compositing CSS Animations: property <stroke-dasharray> underlying [10 30] from replace [5 10 15 20] to add [15 0 25 10 35 20] at (0.2) should be [ 7  8 17 18 11 12 15 16  9 10 19 20]
+  assert_equals: expected "7px , 8px , 17px , 18px , 11px , 12px , 15px , 16px , 9px , 10px , 19px , 20px " but got "9px , 14px , 19px , 24px , 13px , 18px , 17px , 22px , 11px , 16px , 21px , 26px "
+[FAIL] Compositing CSS Animations: property <stroke-dasharray> underlying [10 30] from replace [5 10 15 20] to add [15 0 25 10 35 20] at (0.4) should be [ 9  6 19 16 17 14 15 12 13 10 23 20]
+  assert_equals: expected "9px , 6px , 19px , 16px , 17px , 14px , 15px , 12px , 13px , 10px , 23px , 20px " but got "13px , 18px , 23px , 28px , 21px , 26px , 19px , 24px , 17px , 22px , 27px , 32px "
+[FAIL] Compositing CSS Animations: property <stroke-dasharray> underlying [10 30] from replace [5 10 15 20] to add [15 0 25 10 35 20] at (0.6) should be [11  4 21 14 23 16 15  8 17 10 27 20]
+  assert_equals: expected "11px , 4px , 21px , 14px , 23px , 16px , 15px , 8px , 17px , 10px , 27px , 20px " but got "17px , 22px , 27px , 32px , 29px , 34px , 21px , 26px , 23px , 28px , 33px , 38px "
+[FAIL] Compositing CSS Animations: property <stroke-dasharray> underlying [10 30] from replace [5 10 15 20] to add [15 0 25 10 35 20] at (0.8) should be [13  2 23 12 29 18 15  4 21 10 31 20]
+  assert_equals: expected "13px , 2px , 23px , 12px , 29px , 18px , 15px , 4px , 21px , 10px , 31px , 20px " but got "21px , 26px , 31px , 36px , 37px , 42px , 23px , 28px , 29px , 34px , 39px , 44px "
+[FAIL] Compositing CSS Animations: property <stroke-dasharray> underlying [10 30] from replace [5 10 15 20] to add [15 0 25 10 35 20] at (1) should be [15  0 25 10 35 20 15  0 25 10 35 20]
+  assert_equals: expected "15px , 0px , 25px , 10px , 35px , 20px , 15px , 0px , 25px , 10px , 35px , 20px " but got "25px , 30px , 35px , 40px , 45px , 50px , 25px , 30px , 35px , 40px , 45px , 50px "
+[FAIL] Compositing CSS Animations: property <stroke-dasharray> underlying [10 30] from replace [5 10 15 20] to add [15 0 25 10 35 20] at (1.2) should be [17  0 27  8 41 22 15  0 29 10 39 20]
+  assert_equals: expected "17px , 0px , 27px , 8px , 41px , 22px , 15px , 0px , 29px , 10px , 39px , 20px " but got "29px , 34px , 39px , 44px , 53px , 58px , 27px , 32px , 41px , 46px , 51px , 56px "
+[FAIL] Compositing Web Animations: property <stroke-dasharray> underlying [10 30] from replace [5 10 15 20] to add [15 0 25 10 35 20] at (-0.2) should be [ 3 12 13 22  0  8 15 24  1 10 11 20]
+  assert_equals: expected "3px , 12px , 13px , 22px , 0px , 8px , 15px , 24px , 1px , 10px , 11px , 20px " but got "1px , 6px , 11px , 16px , 0px , 2px , 13px , 18px , 0px , 4px , 9px , 14px "
+[FAIL] Compositing Web Animations: property <stroke-dasharray> underlying [10 30] from replace [5 10 15 20] to add [15 0 25 10 35 20] at (0.2) should be [ 7  8 17 18 11 12 15 16  9 10 19 20]
+  assert_equals: expected "7px , 8px , 17px , 18px , 11px , 12px , 15px , 16px , 9px , 10px , 19px , 20px " but got "9px , 14px , 19px , 24px , 13px , 18px , 17px , 22px , 11px , 16px , 21px , 26px "
+[FAIL] Compositing Web Animations: property <stroke-dasharray> underlying [10 30] from replace [5 10 15 20] to add [15 0 25 10 35 20] at (0.4) should be [ 9  6 19 16 17 14 15 12 13 10 23 20]
+  assert_equals: expected "9px , 6px , 19px , 16px , 17px , 14px , 15px , 12px , 13px , 10px , 23px , 20px " but got "13px , 18px , 23px , 28px , 21px , 26px , 19px , 24px , 17px , 22px , 27px , 32px "
+[FAIL] Compositing Web Animations: property <stroke-dasharray> underlying [10 30] from replace [5 10 15 20] to add [15 0 25 10 35 20] at (0.6) should be [11  4 21 14 23 16 15  8 17 10 27 20]
+  assert_equals: expected "11px , 4px , 21px , 14px , 23px , 16px , 15px , 8px , 17px , 10px , 27px , 20px " but got "17px , 22px , 27px , 32px , 29px , 34px , 21px , 26px , 23px , 28px , 33px , 38px "
+[FAIL] Compositing Web Animations: property <stroke-dasharray> underlying [10 30] from replace [5 10 15 20] to add [15 0 25 10 35 20] at (0.8) should be [13  2 23 12 29 18 15  4 21 10 31 20]
+  assert_equals: expected "13px , 2px , 23px , 12px , 29px , 18px , 15px , 4px , 21px , 10px , 31px , 20px " but got "21px , 26px , 31px , 36px , 37px , 42px , 23px , 28px , 29px , 34px , 39px , 44px "
+[FAIL] Compositing Web Animations: property <stroke-dasharray> underlying [10 30] from replace [5 10 15 20] to add [15 0 25 10 35 20] at (1) should be [15  0 25 10 35 20 15  0 25 10 35 20]
+  assert_equals: expected "15px , 0px , 25px , 10px , 35px , 20px , 15px , 0px , 25px , 10px , 35px , 20px " but got "25px , 30px , 35px , 40px , 45px , 50px , 25px , 30px , 35px , 40px , 45px , 50px "
+[FAIL] Compositing Web Animations: property <stroke-dasharray> underlying [10 30] from replace [5 10 15 20] to add [15 0 25 10 35 20] at (1.2) should be [17  0 27  8 41 22 15  0 29 10 39 20]
+  assert_equals: expected "17px , 0px , 27px , 8px , 41px , 22px , 15px , 0px , 29px , 10px , 39px , 20px " but got "29px , 34px , 39px , 44px , 53px , 58px , 27px , 32px , 41px , 46px , 51px , 56px "
+[FAIL] Compositing CSS Animations: property <stroke-dasharray> underlying [10 20] from replace [5 10 15] to add [10 5 20 15] at (-0.2) should be [ 4 11 14  3 10 17  2  9 16  5  8 15]
+  assert_equals: expected "4px , 11px , 14px , 3px , 10px , 17px , 2px , 9px , 16px , 5px , 8px , 15px " but got "2px , 7px , 12px , 0px , 8px , 13px , 0px , 5px , 14px , 1px , 6px , 11px "
+[FAIL] Compositing CSS Animations: property <stroke-dasharray> underlying [10 20] from replace [5 10 15] to add [10 5 20 15] at (0.2) should be [ 6  9 16  7 10 13  8 11 14  5 12 15]
+  assert_equals: expected "6px , 9px , 16px , 7px , 10px , 13px , 8px , 11px , 14px , 5px , 12px , 15px " but got "8px , 13px , 18px , 11px , 12px , 17px , 10px , 15px , 16px , 9px , 14px , 19px "
+[FAIL] Compositing CSS Animations: property <stroke-dasharray> underlying [10 20] from replace [5 10 15] to add [10 5 20 15] at (0.4) should be [ 7  8 17  9 10 11 11 12 13  5 14 15]
+  assert_equals: expected "7px , 8px , 17px , 9px , 10px , 11px , 11px , 12px , 13px , 5px , 14px , 15px " but got "11px , 16px , 21px , 17px , 14px , 19px , 15px , 20px , 17px , 13px , 18px , 23px "
+[FAIL] Compositing CSS Animations: property <stroke-dasharray> underlying [10 20] from replace [5 10 15] to add [10 5 20 15] at (0.6) should be [ 8  7 18 11 10  9 14 13 12  5 16 15]
+  assert_equals: expected "8px , 7px , 18px , 11px , 10px , 9px , 14px , 13px , 12px , 5px , 16px , 15px " but got "14px , 19px , 24px , 23px , 16px , 21px , 20px , 25px , 18px , 17px , 22px , 27px "
+[FAIL] Compositing CSS Animations: property <stroke-dasharray> underlying [10 20] from replace [5 10 15] to add [10 5 20 15] at (0.8) should be [ 9  6 19 13 10  7 17 14 11  5 18 15]
+  assert_equals: expected "9px , 6px , 19px , 13px , 10px , 7px , 17px , 14px , 11px , 5px , 18px , 15px " but got "17px , 22px , 27px , 29px , 18px , 23px , 25px , 30px , 19px , 21px , 26px , 31px "
+[FAIL] Compositing CSS Animations: property <stroke-dasharray> underlying [10 20] from replace [5 10 15] to add [10 5 20 15] at (1) should be [10  5 20 15 10  5 20 15 10  5 20 15]
+  assert_equals: expected "10px , 5px , 20px , 15px , 10px , 5px , 20px , 15px , 10px , 5px , 20px , 15px " but got "20px , 25px , 30px , 35px , 20px , 25px , 30px , 35px , 20px , 25px , 30px , 35px "
+[FAIL] Compositing CSS Animations: property <stroke-dasharray> underlying [10 20] from replace [5 10 15] to add [10 5 20 15] at (1.2) should be [11  4 21 17 10  3 23 16  9  5 22 15]
+  assert_equals: expected "11px , 4px , 21px , 17px , 10px , 3px , 23px , 16px , 9px , 5px , 22px , 15px " but got "23px , 28px , 33px , 41px , 22px , 27px , 35px , 40px , 21px , 29px , 34px , 39px "
+[FAIL] Compositing Web Animations: property <stroke-dasharray> underlying [10 20] from replace [5 10 15] to add [10 5 20 15] at (-0.2) should be [ 4 11 14  3 10 17  2  9 16  5  8 15]
+  assert_equals: expected "4px , 11px , 14px , 3px , 10px , 17px , 2px , 9px , 16px , 5px , 8px , 15px " but got "2px , 7px , 12px , 0px , 8px , 13px , 0px , 5px , 14px , 1px , 6px , 11px "
+[FAIL] Compositing Web Animations: property <stroke-dasharray> underlying [10 20] from replace [5 10 15] to add [10 5 20 15] at (0.2) should be [ 6  9 16  7 10 13  8 11 14  5 12 15]
+  assert_equals: expected "6px , 9px , 16px , 7px , 10px , 13px , 8px , 11px , 14px , 5px , 12px , 15px " but got "8px , 13px , 18px , 11px , 12px , 17px , 10px , 15px , 16px , 9px , 14px , 19px "
+[FAIL] Compositing Web Animations: property <stroke-dasharray> underlying [10 20] from replace [5 10 15] to add [10 5 20 15] at (0.4) should be [ 7  8 17  9 10 11 11 12 13  5 14 15]
+  assert_equals: expected "7px , 8px , 17px , 9px , 10px , 11px , 11px , 12px , 13px , 5px , 14px , 15px " but got "11px , 16px , 21px , 17px , 14px , 19px , 15px , 20px , 17px , 13px , 18px , 23px "
+[FAIL] Compositing Web Animations: property <stroke-dasharray> underlying [10 20] from replace [5 10 15] to add [10 5 20 15] at (0.6) should be [ 8  7 18 11 10  9 14 13 12  5 16 15]
+  assert_equals: expected "8px , 7px , 18px , 11px , 10px , 9px , 14px , 13px , 12px , 5px , 16px , 15px " but got "14px , 19px , 24px , 23px , 16px , 21px , 20px , 25px , 18px , 17px , 22px , 27px "
+[FAIL] Compositing Web Animations: property <stroke-dasharray> underlying [10 20] from replace [5 10 15] to add [10 5 20 15] at (0.8) should be [ 9  6 19 13 10  7 17 14 11  5 18 15]
+  assert_equals: expected "9px , 6px , 19px , 13px , 10px , 7px , 17px , 14px , 11px , 5px , 18px , 15px " but got "17px , 22px , 27px , 29px , 18px , 23px , 25px , 30px , 19px , 21px , 26px , 31px "
+[FAIL] Compositing Web Animations: property <stroke-dasharray> underlying [10 20] from replace [5 10 15] to add [10 5 20 15] at (1) should be [10  5 20 15 10  5 20 15 10  5 20 15]
+  assert_equals: expected "10px , 5px , 20px , 15px , 10px , 5px , 20px , 15px , 10px , 5px , 20px , 15px " but got "20px , 25px , 30px , 35px , 20px , 25px , 30px , 35px , 20px , 25px , 30px , 35px "
+[FAIL] Compositing Web Animations: property <stroke-dasharray> underlying [10 20] from replace [5 10 15] to add [10 5 20 15] at (1.2) should be [11  4 21 17 10  3 23 16  9  5 22 15]
+  assert_equals: expected "11px , 4px , 21px , 17px , 10px , 3px , 23px , 16px , 9px , 5px , 22px , 15px " but got "23px , 28px , 33px , 41px , 22px , 27px , 35px , 40px , 21px , 29px , 34px , 39px "
+[FAIL] Compositing CSS Animations: property <stroke-dasharray> underlying [5] from add [0 5 10] to add [15 20 25 30 35] at (-0.2) should be [ 0  2  7  0  0  9  0  1  6  0  3  8  0  0  5]
+  assert_equals: expected "0px , 2px , 7px , 0px , 0px , 9px , 0px , 1px , 6px , 0px , 3px , 8px , 0px , 0px , 5px " but got "2px , 7px , 12px , 0px , 4px , 14px , 1px , 6px , 11px , 0px , 8px , 13px , 0px , 5px , 10px "
+[FAIL] Compositing CSS Animations: property <stroke-dasharray> underlying [5] from add [0 5 10] to add [15 20 25 30 35] at (0) should be [ 0  5 10  0  5 10  0  5 10  0  5 10  0  5 10]
+  assert_equals: expected "0px , 5px , 10px , 0px , 5px , 10px , 0px , 5px , 10px , 0px , 5px , 10px , 0px , 5px , 10px " but got "5px , 10px , 15px , 5px , 10px , 15px , 5px , 10px , 15px , 5px , 10px , 15px , 5px , 10px , 15px "
+[FAIL] Compositing CSS Animations: property <stroke-dasharray> underlying [5] from add [0 5 10] to add [15 20 25 30 35] at (0.2) should be [ 3  8 13  6 11 11  4  9 14  7  7 12  5 10 15]
+  assert_equals: expected "3px , 8px , 13px , 6px , 11px , 11px , 4px , 9px , 14px , 7px , 7px , 12px , 5px , 10px , 15px " but got "8px , 13px , 18px , 11px , 16px , 16px , 9px , 14px , 19px , 12px , 12px , 17px , 10px , 15px , 20px "
+[FAIL] Compositing CSS Animations: property <stroke-dasharray> underlying [5] from add [0 5 10] to add [15 20 25 30 35] at (0.4) should be [ 6 11 16 12 17 12  8 13 18 14  9 14 10 15 20]
+  assert_equals: expected "6px , 11px , 16px , 12px , 17px , 12px , 8px , 13px , 18px , 14px , 9px , 14px , 10px , 15px , 20px " but got "11px , 16px , 21px , 17px , 22px , 17px , 13px , 18px , 23px , 19px , 14px , 19px , 15px , 20px , 25px "
+[FAIL] Compositing CSS Animations: property <stroke-dasharray> underlying [5] from add [0 5 10] to add [15 20 25 30 35] at (0.6) should be [ 9 14 19 18 23 13 12 17 22 21 11 16 15 20 25]
+  assert_equals: expected "9px , 14px , 19px , 18px , 23px , 13px , 12px , 17px , 22px , 21px , 11px , 16px , 15px , 20px , 25px " but got "14px , 19px , 24px , 23px , 28px , 18px , 17px , 22px , 27px , 26px , 16px , 21px , 20px , 25px , 30px "
+[FAIL] Compositing CSS Animations: property <stroke-dasharray> underlying [5] from add [0 5 10] to add [15 20 25 30 35] at (0.8) should be [12 17 22 24 29 14 16 21 26 28 13 18 20 25 30]
+  assert_equals: expected "12px , 17px , 22px , 24px , 29px , 14px , 16px , 21px , 26px , 28px , 13px , 18px , 20px , 25px , 30px " but got "17px , 22px , 27px , 29px , 34px , 19px , 21px , 26px , 31px , 33px , 18px , 23px , 25px , 30px , 35px "
+[FAIL] Compositing CSS Animations: property <stroke-dasharray> underlying [5] from add [0 5 10] to add [15 20 25 30 35] at (1) should be [15 20 25 30 35 15 20 25 30 35 15 20 25 30 35]
+  assert_equals: expected "15px , 20px , 25px , 30px , 35px , 15px , 20px , 25px , 30px , 35px , 15px , 20px , 25px , 30px , 35px " but got "20px , 25px , 30px , 35px , 40px , 20px , 25px , 30px , 35px , 40px , 20px , 25px , 30px , 35px , 40px "
+[FAIL] Compositing CSS Animations: property <stroke-dasharray> underlying [5] from add [0 5 10] to add [15 20 25 30 35] at (1.2) should be [18 23 28 36 41 16 24 29 34 42 17 22 30 35 40]
+  assert_equals: expected "18px , 23px , 28px , 36px , 41px , 16px , 24px , 29px , 34px , 42px , 17px , 22px , 30px , 35px , 40px " but got "23px , 28px , 33px , 41px , 46px , 21px , 29px , 34px , 39px , 47px , 22px , 27px , 35px , 40px , 45px "
+[FAIL] Compositing Web Animations: property <stroke-dasharray> underlying [5] from add [0 5 10] to add [15 20 25 30 35] at (-0.2) should be [ 0  2  7  0  0  9  0  1  6  0  3  8  0  0  5]
+  assert_equals: expected "0px , 2px , 7px , 0px , 0px , 9px , 0px , 1px , 6px , 0px , 3px , 8px , 0px , 0px , 5px " but got "2px , 7px , 12px , 0px , 4px , 14px , 1px , 6px , 11px , 0px , 8px , 13px , 0px , 5px , 10px "
+[FAIL] Compositing Web Animations: property <stroke-dasharray> underlying [5] from add [0 5 10] to add [15 20 25 30 35] at (0) should be [ 0  5 10  0  5 10  0  5 10  0  5 10  0  5 10]
+  assert_equals: expected "0px , 5px , 10px , 0px , 5px , 10px , 0px , 5px , 10px , 0px , 5px , 10px , 0px , 5px , 10px " but got "5px , 10px , 15px , 5px , 10px , 15px , 5px , 10px , 15px , 5px , 10px , 15px , 5px , 10px , 15px "
+[FAIL] Compositing Web Animations: property <stroke-dasharray> underlying [5] from add [0 5 10] to add [15 20 25 30 35] at (0.2) should be [ 3  8 13  6 11 11  4  9 14  7  7 12  5 10 15]
+  assert_equals: expected "3px , 8px , 13px , 6px , 11px , 11px , 4px , 9px , 14px , 7px , 7px , 12px , 5px , 10px , 15px " but got "8px , 13px , 18px , 11px , 16px , 16px , 9px , 14px , 19px , 12px , 12px , 17px , 10px , 15px , 20px "
+[FAIL] Compositing Web Animations: property <stroke-dasharray> underlying [5] from add [0 5 10] to add [15 20 25 30 35] at (0.4) should be [ 6 11 16 12 17 12  8 13 18 14  9 14 10 15 20]
+  assert_equals: expected "6px , 11px , 16px , 12px , 17px , 12px , 8px , 13px , 18px , 14px , 9px , 14px , 10px , 15px , 20px " but got "11px , 16px , 21px , 17px , 22px , 17px , 13px , 18px , 23px , 19px , 14px , 19px , 15px , 20px , 25px "
+[FAIL] Compositing Web Animations: property <stroke-dasharray> underlying [5] from add [0 5 10] to add [15 20 25 30 35] at (0.6) should be [ 9 14 19 18 23 13 12 17 22 21 11 16 15 20 25]
+  assert_equals: expected "9px , 14px , 19px , 18px , 23px , 13px , 12px , 17px , 22px , 21px , 11px , 16px , 15px , 20px , 25px " but got "14px , 19px , 24px , 23px , 28px , 18px , 17px , 22px , 27px , 26px , 16px , 21px , 20px , 25px , 30px "
+[FAIL] Compositing Web Animations: property <stroke-dasharray> underlying [5] from add [0 5 10] to add [15 20 25 30 35] at (0.8) should be [12 17 22 24 29 14 16 21 26 28 13 18 20 25 30]
+  assert_equals: expected "12px , 17px , 22px , 24px , 29px , 14px , 16px , 21px , 26px , 28px , 13px , 18px , 20px , 25px , 30px " but got "17px , 22px , 27px , 29px , 34px , 19px , 21px , 26px , 31px , 33px , 18px , 23px , 25px , 30px , 35px "
+[FAIL] Compositing Web Animations: property <stroke-dasharray> underlying [5] from add [0 5 10] to add [15 20 25 30 35] at (1) should be [15 20 25 30 35 15 20 25 30 35 15 20 25 30 35]
+  assert_equals: expected "15px , 20px , 25px , 30px , 35px , 15px , 20px , 25px , 30px , 35px , 15px , 20px , 25px , 30px , 35px " but got "20px , 25px , 30px , 35px , 40px , 20px , 25px , 30px , 35px , 40px , 20px , 25px , 30px , 35px , 40px "
+[FAIL] Compositing Web Animations: property <stroke-dasharray> underlying [5] from add [0 5 10] to add [15 20 25 30 35] at (1.2) should be [18 23 28 36 41 16 24 29 34 42 17 22 30 35 40]
+  assert_equals: expected "18px , 23px , 28px , 36px , 41px , 16px , 24px , 29px , 34px , 42px , 17px , 22px , 30px , 35px , 40px " but got "23px , 28px , 33px , 41px , 46px , 21px , 29px , 34px , 39px , 47px , 22px , 27px , 35px , 40px , 45px "
+[FAIL] Compositing CSS Animations: property <stroke-dasharray> underlying [1em] from add [9em 14px] to add [304px 1.5em] at (-0.2) should be [7em 12px]
+  assert_equals: expected "112px , 12px " but got "128px , 28px "
+[FAIL] Compositing CSS Animations: property <stroke-dasharray> underlying [1em] from add [9em 14px] to add [304px 1.5em] at (0) should be [9em 14px]
+  assert_equals: expected "144px , 14px " but got "160px , 30px "
+[FAIL] Compositing CSS Animations: property <stroke-dasharray> underlying [1em] from add [9em 14px] to add [304px 1.5em] at (0.2) should be [11em 16px]
+  assert_equals: expected "176px , 16px " but got "192px , 32px "
+[FAIL] Compositing CSS Animations: property <stroke-dasharray> underlying [1em] from add [9em 14px] to add [304px 1.5em] at (0.4) should be [13em 18px]
+  assert_equals: expected "208px , 18px " but got "224px , 34px "
+[FAIL] Compositing CSS Animations: property <stroke-dasharray> underlying [1em] from add [9em 14px] to add [304px 1.5em] at (0.6) should be [15em 20px]
+  assert_equals: expected "240px , 20px " but got "256px , 36px "
+[FAIL] Compositing CSS Animations: property <stroke-dasharray> underlying [1em] from add [9em 14px] to add [304px 1.5em] at (0.8) should be [17em 22px]
+  assert_equals: expected "272px , 22px " but got "288px , 38px "
+[FAIL] Compositing CSS Animations: property <stroke-dasharray> underlying [1em] from add [9em 14px] to add [304px 1.5em] at (1) should be [19em 24px]
+  assert_equals: expected "304px , 24px " but got "320px , 40px "
+[FAIL] Compositing CSS Animations: property <stroke-dasharray> underlying [1em] from add [9em 14px] to add [304px 1.5em] at (1.2) should be [21em 26px]
+  assert_equals: expected "336px , 26px " but got "352px , 42px "
+[FAIL] Compositing Web Animations: property <stroke-dasharray> underlying [1em] from add [9em 14px] to add [304px 1.5em] at (-0.2) should be [7em 12px]
+  assert_equals: expected "112px , 12px " but got "128px , 28px "
+[FAIL] Compositing Web Animations: property <stroke-dasharray> underlying [1em] from add [9em 14px] to add [304px 1.5em] at (0) should be [9em 14px]
+  assert_equals: expected "144px , 14px " but got "160px , 30px "
+[FAIL] Compositing Web Animations: property <stroke-dasharray> underlying [1em] from add [9em 14px] to add [304px 1.5em] at (0.2) should be [11em 16px]
+  assert_equals: expected "176px , 16px " but got "192px , 32px "
+[FAIL] Compositing Web Animations: property <stroke-dasharray> underlying [1em] from add [9em 14px] to add [304px 1.5em] at (0.4) should be [13em 18px]
+  assert_equals: expected "208px , 18px " but got "224px , 34px "
+[FAIL] Compositing Web Animations: property <stroke-dasharray> underlying [1em] from add [9em 14px] to add [304px 1.5em] at (0.6) should be [15em 20px]
+  assert_equals: expected "240px , 20px " but got "256px , 36px "
+[FAIL] Compositing Web Animations: property <stroke-dasharray> underlying [1em] from add [9em 14px] to add [304px 1.5em] at (0.8) should be [17em 22px]
+  assert_equals: expected "272px , 22px " but got "288px , 38px "
+[FAIL] Compositing Web Animations: property <stroke-dasharray> underlying [1em] from add [9em 14px] to add [304px 1.5em] at (1) should be [19em 24px]
+  assert_equals: expected "304px , 24px " but got "320px , 40px "
+[FAIL] Compositing Web Animations: property <stroke-dasharray> underlying [1em] from add [9em 14px] to add [304px 1.5em] at (1.2) should be [21em 26px]
+  assert_equals: expected "336px , 26px " but got "352px , 42px "
+Harness: the test ran to completion.
+

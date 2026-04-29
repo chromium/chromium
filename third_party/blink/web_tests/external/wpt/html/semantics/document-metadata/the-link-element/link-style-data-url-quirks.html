@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>data: URI stylesheets in quirks mode</title>
+<title>data: URL stylesheets in quirks mode</title>
 <link rel="help" href="https://html.spec.whatwg.org/#link-type-stylesheet">
 <link rel="author" href="mailto:emilio@crisal.io" title="Emilio Cobos Álvarez">
 <link rel="author" href="https://mozilla.com" title="Mozilla">
@@ -14,6 +14,8 @@
 
   If the resource's Content-Type metadata is not text/css, then set success to
   false.
+
+  data: URLs have opaque origins, so the quirk never applies to them.
 -->
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -47,16 +49,16 @@ promise_test(async t => {
   assert_equals(doc.compatMode, "BackCompat", "iframe should be in quirks mode");
   assert_equals(event, "load");
   assert_equals(getComputedStyle(doc.body).backgroundColor, "rgb(0, 128, 0)");
-}, "data: URI stylesheet with text/css loads in quirks mode");
+}, "data: URL stylesheet with text/css loads in quirks mode");
 
 promise_test(async t => {
   const { iframe, event } = await iframeWith("data:text/plain,body { background: green }", true);
   t.add_cleanup(() => iframe.remove());
   const doc = iframe.contentDocument;
   assert_equals(doc.compatMode, "BackCompat", "iframe should be in quirks mode");
-  assert_equals(event, "load");
-  assert_equals(getComputedStyle(doc.body).backgroundColor, "rgb(0, 128, 0)");
-}, "data: URI stylesheet with text/plain loads in quirks mode");
+  assert_equals(event, "error");
+  assert_not_equals(getComputedStyle(doc.body).backgroundColor, "rgb(0, 128, 0)");
+}, "data: URL stylesheet with text/plain is blocked in quirks mode");
 
 promise_test(async t => {
   const { iframe, event } = await iframeWith("data:text/plain,body { background: green }", false);
@@ -65,6 +67,6 @@ promise_test(async t => {
   assert_equals(doc.compatMode, "CSS1Compat", "iframe should be in standards mode");
   assert_equals(event, "error");
   assert_not_equals(getComputedStyle(doc.body).backgroundColor, "rgb(0, 128, 0)");
-}, "data: URI stylesheet with text/plain is blocked in standards mode");
+}, "data: URL stylesheet with text/plain is blocked in standards mode");
 </script>
 </body>

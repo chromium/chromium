@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Property counter-reset value 'a 1 b 2 c 3 d 4 e 5'
+  assert_equals: expected "a 1 b 2 c 3 d 4 e 5" but got "a 1 c 3 e 5 d 4 b 2"
+[FAIL] Property counter-reset value 'a 1 b 2 c 3 a 4 b 5'
+  assert_equals: expected "a 1 b 2 c 3 a 4 b 5" but got "c 3 a 4 b 5"
+Harness: the test ran to completion.
+

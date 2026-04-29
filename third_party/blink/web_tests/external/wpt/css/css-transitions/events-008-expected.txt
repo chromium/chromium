@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] transitionrun event has animation property and its value is the corresponding CSSTransition object
+  assert_idl_attribute: transitionrun has animation property property "animation" not found in prototype chain
+[FAIL] transitionstart event has animation property and its value is the corresponding CSSTransition object
+  assert_idl_attribute: transitionstart has animation property property "animation" not found in prototype chain
+[FAIL] transitionend event has animation property and its value is the corresponding CSSTransition object
+  assert_idl_attribute: transitionend has animation property property "animation" not found in prototype chain
+Harness: the test ran to completion.
+

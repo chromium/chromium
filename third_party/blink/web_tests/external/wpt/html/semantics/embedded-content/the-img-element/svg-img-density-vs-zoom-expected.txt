@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+[FAIL] SVG, no intrinsic dims: baseline
+  assert_equals: naturalWidth expected 300 but got 0
+[FAIL] SVG, no intrinsic dims + 2x density: defaults not scaled
+  assert_equals: naturalWidth expected 300 but got 0
+[FAIL] SVG, no intrinsic dims + 2x zoom: rendered size scaled, naturalWidth/Height not
+  assert_equals: naturalWidth expected 300 but got 0
+[FAIL] SVG, intrinsic width only: baseline
+  assert_equals: naturalHeight expected 150 but got 0
+[FAIL] SVG, intrinsic width only + 2x density: width scaled, default height not
+  assert_equals: naturalHeight expected 150 but got 0
+[FAIL] SVG, intrinsic width only + 2x zoom: everything scaled
+  assert_equals: naturalHeight expected 150 but got 0
+Harness: the test ran to completion.
+

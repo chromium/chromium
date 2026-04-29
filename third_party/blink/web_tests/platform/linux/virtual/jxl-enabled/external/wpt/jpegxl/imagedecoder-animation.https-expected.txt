@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Animated JXL with repetition count 0 plays exactly once.
+  assert_equals: repetitionCount must match expected 0 but got 1
+[FAIL] Animated JXL with repetition count 1 plays exactly twice.
+  assert_equals: repetitionCount must match expected 1 but got 2
+Harness: the test ran to completion.
+

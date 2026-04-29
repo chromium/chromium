@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] data: URL stylesheet with text/plain is blocked in quirks mode
+  assert_equals: expected "error" but got "load"
+[FAIL] data: URL stylesheet with text/plain is blocked in standards mode
+  assert_equals: expected "error" but got "load"
+Harness: the test ran to completion.
+

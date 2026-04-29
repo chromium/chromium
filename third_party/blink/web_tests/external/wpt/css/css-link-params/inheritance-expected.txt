@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Property link-parameters has initial value none
+  assert_true: link-parameters doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property link-parameters does not inherit
+  assert_true: expected true got false
+Harness: the test ran to completion.
+
