@@ -1487,16 +1487,22 @@ gfx::Rect PaintLayerScrollableArea::RectForHorizontalScrollbar() const {
     return gfx::Rect();
 
   const gfx::Rect& scroll_corner = ScrollCornerRect();
-  gfx::Size border_box_size = PixelSnappedBorderBoxSize();
-  return gfx::Rect(
-      HorizontalScrollbarStart(),
-      border_box_size.height() - GetLayoutBox()->BorderBottom().ToInt() -
-          HorizontalScrollbar()->ScrollbarThickness(),
-      border_box_size.width() -
-          (GetLayoutBox()->BorderLeft() + GetLayoutBox()->BorderRight())
-              .ToInt() -
-          scroll_corner.width(),
-      HorizontalScrollbar()->ScrollbarThickness());
+  const gfx::Size border_box_size = PixelSnappedBorderBoxSize();
+  const PhysicalBoxStrut border = GetLayoutBox()->BorderOutsets();
+
+  int left = border.left.ToInt();
+  if (GetLayoutBox()->ShouldPlaceBlockDirectionScrollbarOnLogicalLeft()) {
+    left += HasVerticalScrollbar()
+                ? VerticalScrollbar()->ScrollbarThickness()
+                : ResizerCornerRect(kResizerForPointer).width();
+  }
+
+  return gfx::Rect(left,
+                   border_box_size.height() - border.bottom.ToInt() -
+                       HorizontalScrollbar()->ScrollbarThickness(),
+                   border_box_size.width() - border.HorizontalSum().ToInt() -
+                       scroll_corner.width(),
+                   HorizontalScrollbar()->ScrollbarThickness());
 }
 
 gfx::Rect PaintLayerScrollableArea::RectForVerticalScrollbar() const {
@@ -1504,46 +1510,31 @@ gfx::Rect PaintLayerScrollableArea::RectForVerticalScrollbar() const {
     return gfx::Rect();
 
   const gfx::Rect& scroll_corner = ScrollCornerRect();
-  return gfx::Rect(
-      VerticalScrollbarStart(), GetLayoutBox()->BorderTop().ToInt(),
-      VerticalScrollbar()->ScrollbarThickness(),
-      PixelSnappedBorderBoxSize().height() -
-          (GetLayoutBox()->BorderTop() + GetLayoutBox()->BorderBottom())
-              .ToInt() -
-          scroll_corner.height());
-}
+  const gfx::Size border_box_size = PixelSnappedBorderBoxSize();
+  const PhysicalBoxStrut border = GetLayoutBox()->BorderOutsets();
 
-int PaintLayerScrollableArea::VerticalScrollbarStart() const {
-  if (GetLayoutBox()->ShouldPlaceBlockDirectionScrollbarOnLogicalLeft())
-    return GetLayoutBox()->BorderLeft().ToInt();
-  return PixelSnappedBorderBoxSize().width() -
-         GetLayoutBox()->BorderRight().ToInt() -
-         VerticalScrollbar()->ScrollbarThickness();
-}
+  const int left =
+      GetLayoutBox()->ShouldPlaceBlockDirectionScrollbarOnLogicalLeft()
+          ? border.left.ToInt()
+          : (border_box_size.width() - border.right.ToInt() -
+             VerticalScrollbar()->ScrollbarThickness());
 
-int PaintLayerScrollableArea::HorizontalScrollbarStart() const {
-  int x = GetLayoutBox()->BorderLeft().ToInt();
-  if (GetLayoutBox()->ShouldPlaceBlockDirectionScrollbarOnLogicalLeft()) {
-    x += HasVerticalScrollbar() ? VerticalScrollbar()->ScrollbarThickness()
-                                : ResizerCornerRect(kResizerForPointer).width();
-  }
-  return x;
+  return gfx::Rect(left, border.top.ToInt(),
+                   VerticalScrollbar()->ScrollbarThickness(),
+                   border_box_size.height() - border.VerticalSum().ToInt() -
+                       scroll_corner.height());
 }
 
 gfx::Vector2d PaintLayerScrollableArea::ScrollbarOffset(
     const Scrollbar& scrollbar) const {
-  // TODO(szager): Factor out vertical offset calculation into other methods,
-  // for symmetry with *ScrollbarStart methods for horizontal offset.
   if (&scrollbar == VerticalScrollbar()) {
-    return gfx::Vector2d(VerticalScrollbarStart(),
-                         GetLayoutBox()->BorderTop().ToInt());
+    const gfx::Rect rect = RectForVerticalScrollbar();
+    return {rect.x(), rect.y()};
   }
 
   if (&scrollbar == HorizontalScrollbar()) {
-    return gfx::Vector2d(HorizontalScrollbarStart(),
-                         GetLayoutBox()->BorderTop().ToInt() +
-                             VisibleContentRect(kIncludeScrollbars).height() -
-                             HorizontalScrollbar()->ScrollbarThickness());
+    const gfx::Rect rect = RectForHorizontalScrollbar();
+    return gfx::Vector2d(rect.x(), rect.y());
   }
 
   NOTREACHED();
@@ -2229,38 +2220,19 @@ bool PaintLayerScrollableArea::HitTestOverflowControls(
       return true;
     }
   }
-  int resize_control_size = max(resize_control_rect.height(), 0);
-
-  gfx::Rect visible_rect = VisibleContentRect(kIncludeScrollbars);
 
   if (HasVerticalScrollbar() &&
       VerticalScrollbar()->ShouldParticipateInHitTesting()) {
-    gfx::Rect v_bar_rect(VerticalScrollbarStart(),
-                         GetLayoutBox()->BorderTop().ToInt(),
-                         VerticalScrollbar()->ScrollbarThickness(),
-                         visible_rect.height() -
-                             (HasHorizontalScrollbar()
-                                  ? HorizontalScrollbar()->ScrollbarThickness()
-                                  : resize_control_size));
+    gfx::Rect v_bar_rect(RectForVerticalScrollbar());
     if (v_bar_rect.Contains(local_point)) {
       result.SetScrollbar(VerticalScrollbar());
       return true;
     }
   }
 
-  resize_control_size = max(resize_control_rect.width(), 0);
   if (HasHorizontalScrollbar() &&
       HorizontalScrollbar()->ShouldParticipateInHitTesting()) {
-    // TODO(crbug.com/638981): Are the conversions to int intentional?
-    int h_scrollbar_thickness = HorizontalScrollbar()->ScrollbarThickness();
-    gfx::Rect h_bar_rect(
-        HorizontalScrollbarStart(),
-        GetLayoutBox()->BorderTop().ToInt() + visible_rect.height() -
-            h_scrollbar_thickness,
-        visible_rect.width() - (HasVerticalScrollbar()
-                                    ? VerticalScrollbar()->ScrollbarThickness()
-                                    : resize_control_size),
-        h_scrollbar_thickness);
+    gfx::Rect h_bar_rect(RectForHorizontalScrollbar());
     if (h_bar_rect.Contains(local_point)) {
       result.SetScrollbar(HorizontalScrollbar());
       return true;

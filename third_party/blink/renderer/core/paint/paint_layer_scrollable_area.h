@@ -747,8 +747,6 @@ class CORE_EXPORT PaintLayerScrollableArea final
                           const ScrollOffset& new_offset,
                           cc::ScrollSourceType);
 
-  int VerticalScrollbarStart() const;
-  int HorizontalScrollbarStart() const;
   gfx::Vector2d ScrollbarOffset(const Scrollbar&) const;
 
   // If OverflowIndependent is specified, will only change current scrollbar
