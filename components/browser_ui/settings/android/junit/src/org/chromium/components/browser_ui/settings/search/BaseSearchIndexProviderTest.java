@@ -17,7 +17,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.components.browser_ui.settings.test.R;
+import org.chromium.components.browser_ui.settings.R;
 
 import java.util.HashMap;
 import java.util.HashSet;

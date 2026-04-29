@@ -389,7 +389,7 @@ android_library("test_support_java") {
 
 android_library("unit_device_javatests") {
   testonly = true
-  resources_package = "org.chromium.components.browser_ui.widget.test"
+  resources_package = "org.chromium.components.browser_ui.widget"
 
   sources = [
     "java/src/org/chromium/components/browser_ui/widget/CheckBoxWithDescriptionRenderTest.java",

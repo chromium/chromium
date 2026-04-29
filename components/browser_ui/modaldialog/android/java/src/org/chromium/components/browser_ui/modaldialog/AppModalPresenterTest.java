@@ -56,7 +56,6 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.components.browser_ui.modaldialog.test.R;
 import org.chromium.ui.base.ImmutableWeakReference;
 import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.modaldialog.DialogDismissalCause;

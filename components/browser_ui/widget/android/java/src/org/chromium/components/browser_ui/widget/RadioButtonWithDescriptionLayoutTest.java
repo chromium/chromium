@@ -28,7 +28,6 @@ import org.mockito.Mockito;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.components.browser_ui.widget.test.R;
 
 import java.util.Arrays;
 import java.util.List;

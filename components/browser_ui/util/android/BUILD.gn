@@ -117,5 +117,5 @@ android_library("unit_device_javatests") {
     "//third_party/junit",
     "//ui/android:ui_java_test_support",
   ]
-  resources_package = "org.chromium.components.browser_ui.util.test"
+  resources_package = "org.chromium.components.browser_ui.util"
 }

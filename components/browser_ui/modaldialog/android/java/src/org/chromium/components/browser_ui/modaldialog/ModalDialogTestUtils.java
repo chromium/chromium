@@ -24,7 +24,6 @@ import org.junit.Assert;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.transit.ViewFinder;
-import org.chromium.components.browser_ui.modaldialog.test.R;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;

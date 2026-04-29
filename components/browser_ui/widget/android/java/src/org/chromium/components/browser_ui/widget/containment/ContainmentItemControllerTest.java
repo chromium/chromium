@@ -28,8 +28,8 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.components.browser_ui.settings.BlankUiTestActivitySettingsTestRule;
 import org.chromium.components.browser_ui.settings.PlaceholderSettingsForTest;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
+import org.chromium.components.browser_ui.widget.R;
 import org.chromium.components.browser_ui.widget.containment.ContainmentItem.BackgroundStyle;
-import org.chromium.components.browser_ui.widget.test.R;
 
 import java.util.ArrayList;
 import java.util.List;

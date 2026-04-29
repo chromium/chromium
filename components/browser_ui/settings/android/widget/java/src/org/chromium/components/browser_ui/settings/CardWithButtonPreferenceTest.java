@@ -31,7 +31,6 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.components.browser_ui.settings.test.R;
 
 /** Tests of {@link CardWithButtonPreferenceTest}. TODO(crbug.com/376697449): Add a render test. */
 @RunWith(BaseJUnit4ClassRunner.class)

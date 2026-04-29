@@ -258,7 +258,7 @@ robolectric_library("components_permissions_junit_tests") {
     "//ui/android:ui_java",
     "//ui/android:ui_java_test_support",
   ]
-  resources_package = "org.chromium.components.permissions.test"
+  resources_package = "org.chromium.components.permissions"
 }
 
 source_set("native") {

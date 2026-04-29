@@ -70,7 +70,6 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Feature;
-import org.chromium.components.browser_ui.modaldialog.test.R;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.DualControlLayout;
 import org.chromium.components.browser_ui.widget.ModalDialogViewUtils;

@@ -121,5 +121,5 @@ android_library("unit_device_javatests") {
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",
   ]
-  resources_package = "org.chromium.components.infobars.test"
+  resources_package = "org.chromium.components.infobars"
 }

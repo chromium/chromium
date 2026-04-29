@@ -7,8 +7,6 @@ package org.chromium.components.browser_ui.settings;
 import androidx.annotation.LayoutRes;
 import androidx.preference.Preference;
 
-import org.chromium.components.browser_ui.settings.test.R;
-
 /** Instances of {@link ManagedPreferenceDelegate} used by tests. */
 public class ManagedPreferenceTestDelegates {
     /** A configurable {@link ManagedPreferenceDelegate} for tests. */

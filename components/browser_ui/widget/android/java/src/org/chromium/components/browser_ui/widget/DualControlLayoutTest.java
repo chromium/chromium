@@ -26,7 +26,6 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.components.browser_ui.widget.DualControlLayout.ButtonType;
 import org.chromium.components.browser_ui.widget.DualControlLayout.DualControlLayoutAlignment;
-import org.chromium.components.browser_ui.widget.test.R;
 
 /** Tests for DualControlLayout. */
 @RunWith(BaseJUnit4ClassRunner.class)

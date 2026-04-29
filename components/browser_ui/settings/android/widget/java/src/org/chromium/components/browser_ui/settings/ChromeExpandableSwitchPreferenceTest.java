@@ -35,7 +35,6 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.components.browser_ui.settings.test.R;
 
 /**
  * Tests for {@link ChromeExpandableSwitchPreference}. This class verifies the behavior of the

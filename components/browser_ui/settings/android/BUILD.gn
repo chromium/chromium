@@ -159,7 +159,7 @@ android_library("unit_device_javatests") {
     "//ui/android:ui_java_test_support",
     "//ui/android:ui_no_recycler_view_java",
   ]
-  resources_package = "org.chromium.components.browser_ui.settings.test"
+  resources_package = "org.chromium.components.browser_ui.settings"
 }
 
 robolectric_library("junit") {
@@ -191,7 +191,7 @@ robolectric_library("junit") {
     "//ui/android:ui_no_recycler_view_java",
   ]
 
-  resources_package = "org.chromium.components.browser_ui.settings.test"
+  resources_package = "org.chromium.components.browser_ui.settings"
 }
 
 android_library("test_support_java") {
@@ -218,7 +218,7 @@ android_library("test_support_java") {
     "//ui/android:ui_java_test_support",
   ]
 
-  resources_package = "org.chromium.components.browser_ui.settings.test"
+  resources_package = "org.chromium.components.browser_ui.settings"
 }
 
 android_resources("java_test_resources") {

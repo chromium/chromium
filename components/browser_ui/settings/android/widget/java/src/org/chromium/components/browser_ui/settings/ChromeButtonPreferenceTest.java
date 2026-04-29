@@ -33,7 +33,6 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.DisableIf;
-import org.chromium.components.browser_ui.settings.test.R;
 
 /** Tests of {@link ChromeButtonPreference}. */
 @RunWith(BaseJUnit4ClassRunner.class)

@@ -35,7 +35,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceTestDelegates.TestManagedPreferenceDelegate;
-import org.chromium.components.browser_ui.settings.test.R;
 
 /** Tests of {@link ChromeSwitchPreference}. */
 @RunWith(BaseJUnit4ClassRunner.class)

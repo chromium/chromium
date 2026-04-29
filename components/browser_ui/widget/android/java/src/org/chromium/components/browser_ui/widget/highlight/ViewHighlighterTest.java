@@ -30,7 +30,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.components.browser_ui.widget.test.R;
+import org.chromium.components.browser_ui.widget.R;
 
 /** Tests the utility methods for highlighting of a view. */
 @RunWith(BaseJUnit4ClassRunner.class)
