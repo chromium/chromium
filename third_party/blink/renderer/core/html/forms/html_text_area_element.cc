@@ -203,6 +203,14 @@ int HTMLTextAreaElement::scrollHeight() {
       .Round();
 }
 
+double HTMLTextAreaElement::scrollLeft() {
+  if (RuntimeEnabledFeatures::TextAreaScrollTopPreviewEnabled() &&
+      !SuggestedValue().empty()) {
+    return 0;
+  }
+  return TextControlElement::scrollLeft();
+}
+
 double HTMLTextAreaElement::scrollTop() {
   if (RuntimeEnabledFeatures::TextAreaScrollTopPreviewEnabled() &&
       !SuggestedValue().empty()) {

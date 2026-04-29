@@ -581,4 +581,34 @@ TEST_F(HTMLTextAreaElementTest, AutofillPreviewScrollTopLeak) {
   EXPECT_EQ(preview_scroll_top_2, 0);
 }
 
+TEST_F(HTMLTextAreaElementTest, AutofillPreviewScrollLeftLeak) {
+  LoadAhem();
+  SetBodyContent(R"HTML(
+    <textarea id=test style="width: 30px; height: 100px; letter-spacing: 2000px; overflow: auto; writing-mode: vertical-lr;"></textarea>
+  )HTML");
+  HTMLTextAreaElement& textarea = TestElement();
+  RunDocumentLifecycle();
+
+  // Set suggested value (simulate autofill preview)
+  textarea.SetSuggestedValue("XXXXXXXXXX");
+  RunDocumentLifecycle();
+
+  textarea.setScrollLeft(1e9);
+  double preview_scroll_left = static_cast<Element&>(textarea).scrollLeft();
+  textarea.setScrollLeft(0);
+
+  // The preview value should NOT leak via scrollLeft.
+  EXPECT_EQ(preview_scroll_left, 0);
+
+  // Verify it does not scale with length
+  textarea.SetSuggestedValue("XXXXXXXXXXXXXXXXXXXX");
+  RunDocumentLifecycle();
+
+  textarea.setScrollLeft(1e9);
+  double preview_scroll_left_2 = static_cast<Element&>(textarea).scrollLeft();
+  textarea.setScrollLeft(0);
+
+  EXPECT_EQ(preview_scroll_left_2, 0);
+}
+
 }  // namespace blink
