@@ -2361,19 +2361,21 @@ select optgroup optgroup {
   }
 
   menulist {
-    display: flex;
-    flex-direction: column;
-    position: absolute;
+    display: block;
+    position: fixed;
     position-anchor: auto;
+    margin: 0;
+    inset: auto;
+    /* TODO(https://crbug.com/406566432): width:max-content probably isn't
+     * ideal, but ::picker(select) has the same desired behavior without
+     * setting width. We should figure out how ::picker(select) does this and
+     * copy it here. */
     width: max-content;
-    min-width: 150px;
+    max-block-size: stretch;
+    overflow: auto;
     color: CanvasText;
     background-color: Canvas;
     border: 1px solid currentColor;
-    /* TODO(https://crbug.com/406566432): Enable this, or some variation of it,
-     * once we figure out why the border radius contributes to subtle pixel
-     * differences in reference tests. */
-    /*border-radius: 0.25em;*/
     padding: 0.25em;
   }
 
