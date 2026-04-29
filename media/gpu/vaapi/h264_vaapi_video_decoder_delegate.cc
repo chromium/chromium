@@ -366,6 +366,11 @@ DecodeStatus H264VaapiVideoDecoderDelegate::ParseEncryptedSliceHeader(
       full_data.insert(full_data.end(), start_code.begin(), start_code.end());
       full_data.insert(full_data.end(), nalu.begin(), nalu.end());
     }
+    if (total_size != full_data.size()) {
+      LOG(ERROR) << "CENCv1 segment/NALU size mismatch: segments cover "
+                 << total_size << " bytes, buffer is " << full_data.size();
+      return DecodeStatus::kFail;
+    }
     if (!vaapi_wrapper_->SubmitBuffers(
             {{VAEncryptionParameterBufferType, sizeof(crypto_params),
               &crypto_params},
