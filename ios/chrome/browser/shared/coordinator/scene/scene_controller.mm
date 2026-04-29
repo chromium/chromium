@@ -170,6 +170,7 @@
 #import "net/base/apple/url_conversions.h"
 #import "net/base/url_util.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
+#import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -1097,6 +1098,27 @@ bool IsProfileUnmanaged(ProfileIOS* profile) {
   // around crbug.com/850387, causing a flicker if -makeKeyAndVisible has been
   // called.
   [self.sceneState.window makeKeyAndVisible];
+
+  // On iPad (iOS 26.4+), observe windowScene Light/Dark trait changes so that
+  // the appearance flip is propagated to any visible popover whose detached
+  // presentation window does not participate in normal trait propagation.
+  // TODO(crbug.com/507265316): Remove once UIKit propagates trait changes to
+  // popover presentation windows (tracked with Apple as FB22646087).
+  if (@available(iOS 26.4, *)) {
+    if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+      UIWindowScene* windowScene = self.sceneState.window.windowScene;
+      if (windowScene) {
+        __weak __typeof(self) weakSelf = self;
+        [windowScene
+            registerForTraitChanges:@[ UITraitUserInterfaceStyle.class ]
+                        withHandler:^(id<UITraitEnvironment> env,
+                                      UITraitCollection* previous) {
+                          [weakSelf
+                              propagateUserInterfaceStyleToPresentedViewControllers];
+                        }];
+      }
+    }
+  }
 
   if (!self.sceneState.profileState.startupInformation.isFirstRun) {
     [self reconcileEulaAsAccepted];
@@ -2740,6 +2762,41 @@ bool IsProfileUnmanaged(ProfileIOS* profile) {
 
 - (void)onServiceStatusChanged {
   [self signoutIfNeeded];
+}
+
+#pragma mark - iPad popover appearance propagation
+
+// Walks the presentation chain rooted at the host window and forwards the
+// current windowScene userInterfaceStyle to popover-presented view
+// controllers. iPad popovers (e.g. the overflow menu) are presented in
+// detached UIPresentationController windows that are not part of
+// `windowScene.windows` and do not receive the windowScene's trait
+// propagation, so we have to push the appearance to them explicitly.
+//
+// Only VCs presented as popovers and which do not already have an explicit
+// overrideUserInterfaceStyle are touched, so that intentional per-VC
+// overrides (e.g. a sheet that wants to stay light) are preserved.
+//
+// TODO(crbug.com/507265316): Remove once UIKit propagates trait changes to
+// popover presentation windows (tracked with Apple as FB22646087).
+- (void)propagateUserInterfaceStyleToPresentedViewControllers {
+  UIWindow* window = self.sceneState.window;
+  UIWindowScene* windowScene = window.windowScene;
+  if (!windowScene) {
+    return;
+  }
+  UIUserInterfaceStyle style =
+      windowScene.traitCollection.userInterfaceStyle;
+  UIViewController* presented =
+      window.rootViewController.presentedViewController;
+  while (presented) {
+    if (presented.modalPresentationStyle == UIModalPresentationPopover &&
+        presented.overrideUserInterfaceStyle ==
+            UIUserInterfaceStyleUnspecified) {
+      presented.overrideUserInterfaceStyle = style;
+    }
+    presented = presented.presentedViewController;
+  }
 }
 
 @end
