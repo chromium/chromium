@@ -8,11 +8,23 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
+#include "extensions/buildflags/buildflags.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/menus/simple_menu_model.h"
 
 namespace send_tab_to_self {
 class SendTabToSelfContextMenuDelegate;
+}
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+namespace extensions {
+class ContextMenuMatcher;
+}
+#endif
+
+namespace tabs {
+class TabInterface;
 }
 
 class TabStripModel;
@@ -47,11 +59,26 @@ class TabMenuModel : public ui::SimpleMenuModel {
   TabMenuModel& operator=(const TabMenuModel&) = delete;
   ~TabMenuModel() override;
 
+  // ui::SimpleMenuModel:
+  bool IsItemCheckedAt(size_t index) const override;
+  bool IsEnabledAt(size_t index) const override;
+  bool IsVisibleAt(size_t index) const override;
+  void ActivatedAt(size_t index) override;
+  void ActivatedAt(size_t index, int event_flags) override;
+
  private:
   void Build(int index);
   void BuildForWebApp(int index);
   void BuildSendTabToSelfSubmenu(int index);
   void BuildLegacySendTabToSelfItem();
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  // Support for appending and executing commands for extension items in the
+  // tab context menu.
+  // Returns the `ContextMenuMatcher` if the item at `index` is an
+  // extension-provided item.
+  extensions::ContextMenuMatcher* GetMatcherIfExtension(size_t index) const;
+#endif
 
   std::unique_ptr<ui::SimpleMenuModel> add_to_existing_group_submenu_;
   std::unique_ptr<ui::SimpleMenuModel> add_to_existing_window_submenu_;
@@ -67,6 +94,14 @@ class TabMenuModel : public ui::SimpleMenuModel {
   // `tab_strip_` needs to outlive this class.
   raw_ptr<TabStripModel> tab_strip_;
   raw_ptr<TabMenuModelDelegate> tab_menu_model_delegate_;
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  std::unique_ptr<extensions::ContextMenuMatcher> extension_items_;
+#endif
+  // Uses WeakPtr because the menu model outlives the tab in tests. The
+  // recommended RegisterWillDetach approach failed to prevent dangling pointers
+  // during teardown.
+  base::WeakPtr<tabs::TabInterface> tab_interface_;
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_TAB_MENU_MODEL_H_

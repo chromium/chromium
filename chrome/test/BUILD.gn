@@ -1530,6 +1530,7 @@ source_set("platform_browser_tests") {
       "//chrome/browser/new_tab_page",
       "//chrome/browser/ui/location_bar",
       "//chrome/browser/ui/side_panel:side_panel_views_dependent",
+      "//chrome/browser/ui/tabs:tab_menu",
     ]
   }
 

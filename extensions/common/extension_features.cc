@@ -130,6 +130,8 @@ BASE_FEATURE(kAllowLegacyMV2Extensions, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kExtensionProtocolHandlers, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kExtensionTabContextMenu, base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kExtensionsManifestV3Only, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kExtensionsMenuAccessControl,

@@ -2261,6 +2261,11 @@ inline constexpr char kExtensionAiDataCollectionDescription[] =
     "Enables an extension API to allow specific extensions to collect data "
     "from browser process. This data may contain profile specific information "
     " and may be otherwise unavailable to an extension.";
+inline constexpr char kExtensionTabContextMenuName[] =
+    "Extension Tab Context Menu";
+inline constexpr char kExtensionTabContextMenuDescription[] =
+    "Allowing extensions to add custom items when right-clicking a tab.";
+
 inline constexpr char
     kExtensionTelemetryEnterpriseShortReportingIntervalName[] =
         "Extension Telemetry Enterprise Short Reporting Interval";

@@ -163,6 +163,10 @@ BASE_DECLARE_FEATURE(kAllowLegacyMV2Extensions);
 // section of the HTML specification.
 BASE_DECLARE_FEATURE(kExtensionProtocolHandlers);
 
+// Enables extension support for the "tab" context menu, allowing extensions
+// to add custom items when right-clicking a tab.
+BASE_DECLARE_FEATURE(kExtensionTabContextMenu);
+
 // If enabled, only manifest v3 extensions is allowed while v2 will be disabled.
 // Note that this feature is now only checked by `ExtensionManagement` which
 // represents enterprise extension configurations. Flip the feature will block

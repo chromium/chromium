@@ -8893,6 +8893,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kExtensionManifestV2DeprecationUnsupportedDescription,
      kOsDesktop,
      FEATURE_VALUE_TYPE(extensions_features::kExtensionManifestV2Unsupported)},
+
+    {"extension-tab-context-menu",
+     flag_descriptions::kExtensionTabContextMenuName,
+     flag_descriptions::kExtensionTabContextMenuDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(extensions_features::kExtensionTabContextMenu)},
 #endif  // ENABLE_EXTENSIONS
 
 #if !BUILDFLAG(IS_ANDROID)

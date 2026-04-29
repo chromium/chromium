@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/tabs/tab_menu_model.h"
 
+#include "build/build_config.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_menu_model_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -12,7 +13,18 @@
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
+#include "extensions/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/extensions/context_menu_matcher.h"
+#include "chrome/browser/extensions/menu_manager.h"
+#include "chrome/browser/extensions/menu_manager_factory.h"
+#include "extensions/browser/extension_registry.h"
+#include "extensions/common/extension_builder.h"
+#include "extensions/common/extension_features.h"
+#endif
 
 // A TabStripModelDelegate for simulating web apps.
 class WebAppTabStripModelDelegate : public TestTabStripModelDelegate {
@@ -156,3 +168,83 @@ TEST_F(TabMenuModelTest, TabbedWebAppHomeTab) {
       regular_tab_model.GetIndexOfCommandId(TabStripModel::CommandCloseAllTabs)
           .has_value());
 }
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+TEST_F(TabMenuModelTest, ExtensionItems) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      extensions_features::kExtensionTabContextMenu);
+
+  TestTabStripModelDelegate delegate;
+  TabStripModel tab_strip_model(&delegate, profile());
+
+  // Initialize MenuManager for the TestingProfile.
+  extensions::MenuManagerFactory::GetInstance()->SetTestingFactoryAndUse(
+      profile(), base::BindOnce([](content::BrowserContext* context)
+                                    -> std::unique_ptr<KeyedService> {
+        return std::make_unique<extensions::MenuManager>(context, nullptr);
+      }));
+
+  tab_strip_model.AppendWebContents(
+      content::WebContents::Create(
+          content::WebContents::CreateParams(profile())),
+      /*foreground=*/true);
+
+  // Create a mock extension.
+  scoped_refptr<const extensions::Extension> extension =
+      extensions::ExtensionBuilder("Test Extension").Build();
+  ASSERT_TRUE(extension);
+  extensions::ExtensionRegistry::Get(profile())->AddEnabled(extension);
+
+  // Create a baseline model to capture the number of standard items.
+  TabMenuModel baseline_model(&delegate_, &menu_model_delegate(),
+                              &tab_strip_model, 0);
+  size_t baseline_count = baseline_model.GetItemCount();
+
+  // Add a context menu item with 'tab' layout context to MenuManager.
+  extensions::MenuManager* manager = extensions::MenuManager::Get(profile());
+  ASSERT_TRUE(manager);
+  extensions::MenuItem::Id id(
+      profile()->IsOffTheRecord(),
+      extensions::MenuItem::ExtensionKey(extension->id()));
+  auto item = std::make_unique<extensions::MenuItem>(
+      id, "Test Extension Item", /*checked=*/false, /*visible=*/true,
+      /*enabled=*/true, extensions::MenuItem::NORMAL,
+      extensions::MenuItem::ContextList(extensions::MenuItem::TAB));
+
+  // Use correct AddContextItem method.
+  manager->AddContextItem(extension.get(), std::move(item));
+
+  TabMenuModel model(&delegate_, &menu_model_delegate(), &tab_strip_model, 0);
+
+  // Verify that the menu model successfully populated items (standard +
+  // extension).
+  size_t count = model.GetItemCount();
+#if BUILDFLAG(IS_CHROMEOS)
+  // On ChromeOS, ContextMenuMatcher does not add a separator before the first
+  // extension item. See:
+  // https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/extensions/context_menu_matcher.cc;l=87-97;drc=8b9a95f24181fb0d3975b1760045e0d1ed38c159
+  EXPECT_EQ(count, baseline_count + 1);  // Adds 1 item (no separator).
+#else
+  EXPECT_EQ(count, baseline_count + 2);  // Adds 1 separator and 1 item.
+#endif
+
+  // Find the index of the extension item by searching for an extension custom
+  // command ID.
+  size_t ext_index = count;
+  for (size_t i = 0; i < count; ++i) {
+    if (extensions::ContextMenuMatcher::IsExtensionsCustomCommandId(
+            model.GetCommandIdAt(i))) {
+      ext_index = i;
+      break;
+    }
+  }
+  ASSERT_LT(ext_index, count);
+
+  // Cast to base class to access private overrides
+  ui::MenuModel* menu_base = &model;
+  EXPECT_TRUE(menu_base->IsVisibleAt(ext_index));
+  EXPECT_TRUE(menu_base->IsEnabledAt(ext_index));
+  EXPECT_FALSE(menu_base->IsItemCheckedAt(ext_index));
+}
+#endif

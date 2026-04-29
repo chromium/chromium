@@ -104,6 +104,7 @@ if (!is_android) {
       ":tabs",
       "//chrome/app/vector_icons",
       "//chrome/browser/commerce",
+      "//chrome/browser/extensions",
       "//chrome/browser/glic",
       "//chrome/browser/glic/browser_ui",
       "//chrome/browser/profiles:profile",

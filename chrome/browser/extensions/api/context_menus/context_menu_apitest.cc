@@ -8,6 +8,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/extensions/context_menu_matcher.h"
 #include "chrome/browser/extensions/extension_apitest.h"
@@ -25,7 +26,9 @@
 #include "extensions/browser/extension_action.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/buildflags/buildflags.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_id.h"
+#include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/base/models/menu_model.h"
@@ -37,6 +40,7 @@
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/renderer_context_menu/render_view_context_menu.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
+#include "chrome/browser/ui/tabs/tab_menu_model.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
@@ -90,6 +94,63 @@ IN_PROC_BROWSER_TEST_F(ExtensionContextMenuApiTest,
 IN_PROC_BROWSER_TEST_F(ExtensionContextMenuApiTest, ContextMenusBasics) {
   ASSERT_TRUE(RunExtensionTest("context_menus/basics")) << message_;
 }
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+class ExtensionTabContextMenuApiTest : public ExtensionContextMenuApiTest {
+ public:
+  ExtensionTabContextMenuApiTest() {
+    feature_list_.InitAndEnableFeature(
+        extensions_features::kExtensionTabContextMenu);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ExtensionTabContextMenuApiTest, ContextMenusTabContext) {
+  // Wait for the extension to signal that it has created the menu item.
+  ExtensionTestMessageListener listener("created");
+
+  ResultCatcher catcher;
+
+  // Load the extension which calls chrome.contextMenus.create.
+  const Extension* extension =
+      LoadExtension(test_data_dir_.AppendASCII("context_menus/tab_context"));
+  ASSERT_TRUE(extension);
+
+  // Wait until the extension has completed the menu item creation call.
+  ASSERT_TRUE(listener.WaitUntilSatisfied());
+
+  // Verify the menu model. We create a TabMenuModel for the active tab
+  // to inspect its contents.
+  TabStripModel* tab_strip = browser()->tab_strip_model();
+  int index = tab_strip->active_index();
+  TabMenuModel menu(nullptr, nullptr, tab_strip, index);
+
+  // Iterate through the menu items to count how many times the
+  // extension-provided item is present. This ensures that exactly one such item
+  // has been added, validating against duplicates or missing items.
+  int match_count = 0;
+  size_t item_index = 0;
+  for (size_t i = 0; i < menu.GetItemCount(); ++i) {
+    if (menu.GetLabelAt(i) == u"Test Tab Item") {
+      match_count++;
+      item_index = i;
+    }
+  }
+  ASSERT_EQ(1, match_count);
+
+  EXPECT_TRUE(menu.IsVisibleAt(item_index));
+  EXPECT_TRUE(menu.IsEnabledAt(item_index));
+  // Tap on the context menu item. This will trigger the background script's
+  // onClicked listener.
+  menu.ActivatedAt(item_index);
+
+  // Wait for the extension to verify it received the onClicked event, which it
+  // indicates via success in the test.
+  ASSERT_TRUE(catcher.GetNextResult());
+}
+#endif
 
 IN_PROC_BROWSER_TEST_F(ExtensionContextMenuApiTest, ContextMenusNoPerms) {
   ASSERT_TRUE(RunExtensionTest("context_menus/no_perms")) << message_;

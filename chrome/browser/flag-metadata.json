@@ -4541,6 +4541,11 @@
     "expiry_milestone": 137
   },
   {
+    "name": "extension-tab-context-menu",
+    "owners": [ "migueloruiz@google.com" ],
+    "expiry_milestone": 152
+  },
+  {
     "name": "extension-telemetry-enterprise-short-reporting-interval",
     "owners": [ "anunoy@chromium.org" ],
     "expiry_milestone": 152

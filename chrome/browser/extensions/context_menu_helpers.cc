@@ -153,6 +153,10 @@ MenuItem::ContextList GetContexts(
         // Not available for <webview>.
         contexts.Add(MenuItem::ACTION);
         break;
+      case api::context_menus::ContextType::kTab:
+        // Not available for <webview>.
+        contexts.Add(MenuItem::TAB);
+        break;
       case api::context_menus::ContextType::kNone:
         NOTREACHED();
     }

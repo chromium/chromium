@@ -9,6 +9,7 @@
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/metrics/user_metrics.h"
 #include "build/build_config.h"
@@ -50,8 +51,16 @@
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/feed/feed_feature_list.h"
 #include "components/send_tab_to_self/features.h"
+#include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/buildflags/buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/extensions/context_menu_matcher.h"
+#include "chrome/browser/extensions/menu_manager.h"
+#include "extensions/common/extension_features.h"
+#endif
 
 using base::UserMetricsAction;
 
@@ -71,8 +80,10 @@ TabMenuModel::TabMenuModel(ui::SimpleMenuModel::Delegate* delegate,
                            int index)
     : ui::SimpleMenuModel(delegate),
       tab_strip_(tab_strip),
-      tab_menu_model_delegate_(tab_menu_model_delegate) {
+      tab_menu_model_delegate_(tab_menu_model_delegate),
+      tab_interface_(tab_strip_->GetTabAtIndex(index)->GetWeakPtr()) {
   CHECK(tab_strip_);
+
   if (tab_strip_->delegate()->IsForWebApp()) {
     BuildForWebApp(index);
   } else {
@@ -358,6 +369,29 @@ void TabMenuModel::Build(int index) {
     }
   }
 
+// Append extension items for the 'tab' context if the feature is enabled.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kExtensionTabContextMenu)) {
+    extension_items_ = std::make_unique<extensions::ContextMenuMatcher>(
+        tab_strip_->profile(), delegate(), this,
+        base::BindRepeating([](const extensions::MenuItem* item) {
+          return item->contexts().Contains(extensions::MenuItem::TAB);
+        }));
+
+    int extension_index = 0;
+    // Iterate over all extensions that have menu items loaded in the
+    // MenuManager.
+    for (const auto& key :
+         extensions::MenuManager::Get(tab_strip_->profile())->ExtensionIds()) {
+      extension_items_->AppendExtensionItems(key, std::u16string(),
+                                             &extension_index,
+                                             /*is_action_menu=*/false);
+    }
+  }
+#endif
+
+  // Separator Close Tab items
   AddSeparator(ui::NORMAL_SEPARATOR);
   AddItemWithStringId(TabStripModel::CommandCloseTab, IDS_TAB_CXMENU_CLOSETAB);
   AddItemWithStringId(TabStripModel::CommandCloseOtherTabs,
@@ -378,3 +412,76 @@ void TabMenuModel::Build(int index) {
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TabMenuModel,
                                       kAddToNewGroupItemIdentifier);
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+// Helper to retrieve the extension matcher if item at 'index' is an extension.
+extensions::ContextMenuMatcher* TabMenuModel::GetMatcherIfExtension(
+    size_t index) const {
+  int command_id = GetCommandIdAt(index);
+  if (extensions::ContextMenuMatcher::IsExtensionsCustomCommandId(command_id)) {
+    return extension_items_.get();
+  }
+  return nullptr;
+}
+#endif
+
+// Overridden to check if the checked status of the item
+// should be evaluated by the extension matcher instead of the simple model.
+bool TabMenuModel::IsItemCheckedAt(size_t index) const {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  if (auto* matcher = GetMatcherIfExtension(index)) {
+    return matcher->IsCommandIdChecked(GetCommandIdAt(index));
+  }
+#endif
+  return ui::SimpleMenuModel::IsItemCheckedAt(index);
+}
+
+// Overridden to check if the enabled status of the item
+// should be evaluated by the extension matcher instead of the simple model.
+bool TabMenuModel::IsEnabledAt(size_t index) const {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  if (auto* matcher = GetMatcherIfExtension(index)) {
+    return matcher->IsCommandIdEnabled(GetCommandIdAt(index));
+  }
+#endif
+  return ui::SimpleMenuModel::IsEnabledAt(index);
+}
+
+// Overridden to check if the visible status of the item
+// should be evaluated by the extension matcher instead of the simple model.
+bool TabMenuModel::IsVisibleAt(size_t index) const {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  if (auto* matcher = GetMatcherIfExtension(index)) {
+    return matcher->IsCommandIdVisible(GetCommandIdAt(index));
+  }
+#endif
+  return ui::SimpleMenuModel::IsVisibleAt(index);
+}
+
+void TabMenuModel::ActivatedAt(size_t index) {
+  ActivatedAt(index, 0);
+}
+
+// Overridden to execute core context menu command logic on activation for
+// extension items.
+void TabMenuModel::ActivatedAt(size_t index, int event_flags) {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  if (auto* matcher = GetMatcherIfExtension(index)) {
+    content::WebContents* web_contents =
+        tab_interface_ ? tab_interface_->GetContents() : nullptr;
+    // The underlying tab could be closed, crashed, or moved in the background
+    // while the context menu is still open.
+    if (web_contents) {
+      // Create minimal ContextMenuParams sufficient for executing the command
+      // for 'contextMenus' extension API. E.g. providing the current page
+      // URL.
+      content::ContextMenuParams params;
+      params.page_url = web_contents->GetLastCommittedURL();
+      matcher->ExecuteCommand(GetCommandIdAt(index), web_contents, nullptr,
+                              params);
+    }
+    return;
+  }
+#endif
+  ui::SimpleMenuModel::ActivatedAt(index, event_flags);
+}
