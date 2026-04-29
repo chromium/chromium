@@ -7,7 +7,6 @@
 #include "base/check_op.h"
 #include "base/functional/callback.h"
 #include "base/notreached.h"
-#include "remoting/protocol/channel_authenticator.h"
 
 namespace remoting::protocol {
 
@@ -64,11 +63,6 @@ const std::string& RejectingAuthenticator::GetAuthKey() const {
 }
 
 const SessionPolicies* RejectingAuthenticator::GetSessionPolicies() const {
-  NOTREACHED();
-}
-
-std::unique_ptr<ChannelAuthenticator>
-RejectingAuthenticator::CreateChannelAuthenticator() const {
   NOTREACHED();
 }
 

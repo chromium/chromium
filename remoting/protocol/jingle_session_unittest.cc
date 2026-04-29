@@ -24,9 +24,7 @@
 #include "net/url_request/url_request_context_getter.h"
 #include "remoting/base/constants.h"
 #include "remoting/protocol/authenticator.h"
-#include "remoting/protocol/channel_authenticator.h"
 #include "remoting/protocol/chromium_port_allocator_factory.h"
-#include "remoting/protocol/connection_tester.h"
 #include "remoting/protocol/errors.h"
 #include "remoting/protocol/fake_authenticator.h"
 #include "remoting/protocol/jingle_session_manager.h"
@@ -162,9 +160,11 @@ class FakePlugin : public SessionPlugin {
 std::unique_ptr<JingleTransportInfo> CreateTransportInfo(
     const std::string& id) {
   auto result = std::make_unique<JingleTransportInfo>();
-  result->xml_namespace = "google:remoting:ice";
-  // Store the ID in the channel name so it can be verified in the test.
-  result->ice_credentials.emplace_back(id, "ufrag", "password");
+  result->xml_namespace = "google:remoting:webrtc";
+  // Store the ID in the candidate name so it can be verified in the test.
+  IceTransportInfo::NamedCandidate candidate;
+  candidate.name = id;
+  result->candidates.push_back(std::move(candidate));
   return result;
 }
 
@@ -424,12 +424,8 @@ TEST_F(JingleSessionTest, ConnectWithOutOfOrderIqs) {
   base::RunLoop().RunUntilIdle();
 
   ASSERT_EQ(client_transport_.received_messages().size(), 2U);
-  EXPECT_EQ(
-      client_transport_.received_messages()[0]->ice_credentials[0].channel,
-      "1");
-  EXPECT_EQ(
-      client_transport_.received_messages()[1]->ice_credentials[0].channel,
-      "2");
+  EXPECT_EQ(client_transport_.received_messages()[0]->candidates[0].name, "1");
+  EXPECT_EQ(client_transport_.received_messages()[1]->candidates[0].name, "2");
 }
 
 // Verify that out-of-order messages are handled correctly when the session is
@@ -450,9 +446,7 @@ TEST_F(JingleSessionTest, ConnectWithOutOfOrderIqsDestroyOnFirstMessage) {
   base::RunLoop().RunUntilIdle();
 
   ASSERT_EQ(client_transport_.received_messages().size(), 1U);
-  EXPECT_EQ(
-      client_transport_.received_messages()[0]->ice_credentials[0].channel,
-      "1");
+  EXPECT_EQ(client_transport_.received_messages()[0]->candidates[0].name, "1");
 }
 
 // Verify that connection is terminated when single-step auth fails.
@@ -590,9 +584,7 @@ TEST_F(JingleSessionTest, TransportInfoDuringAuthentication) {
   // Verify that transport-info that the first transport-info message was
   // received.
   ASSERT_EQ(client_transport_.received_messages().size(), 1U);
-  EXPECT_EQ(
-      client_transport_.received_messages()[0]->ice_credentials[0].channel,
-      "1");
+  EXPECT_EQ(client_transport_.received_messages()[0]->candidates[0].name, "1");
 }
 
 TEST_F(JingleSessionTest, TestSessionPlugin) {

@@ -17,8 +17,8 @@
 #include "base/notreached.h"
 #include "base/strings/string_split.h"
 #include "remoting/protocol/auth_util.h"
-#include "remoting/protocol/channel_authenticator.h"
-#include "remoting/protocol/host_authentication_config.h"
+#include "remoting/protocol/authenticator.h"
+#include "remoting/protocol/client_authentication_config.h"
 #include "remoting/protocol/pairing_client_authenticator.h"
 #include "remoting/protocol/spake2_authenticator.h"
 

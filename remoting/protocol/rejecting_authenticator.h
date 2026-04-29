@@ -40,8 +40,6 @@ class RejectingAuthenticator : public Authenticator {
   JingleAuthentication GetNextMessage() override;
   const std::string& GetAuthKey() const override;
   const SessionPolicies* GetSessionPolicies() const override;
-  std::unique_ptr<ChannelAuthenticator> CreateChannelAuthenticator()
-      const override;
 
  private:
   RejectionReason rejection_reason_;

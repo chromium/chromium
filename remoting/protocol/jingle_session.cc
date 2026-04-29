@@ -335,7 +335,7 @@ void JingleSession::ContinueAcceptIncomingConnection() {
   }
 
   message->description = std::make_unique<ContentDescription>(
-      CandidateSessionConfig::CreateFrom(*config_), auth_message);
+      CandidateSessionConfig::CreateDefault(), auth_message);
   SendMessage(std::move(message));
 
   // Update state.
@@ -785,14 +785,6 @@ bool JingleSession::InitializeConfigFromDescription(
     error_code = ErrorCode::INVALID_ARGUMENT;
     error_details =
         "Received session-accept message does not specify the session "
-        "configuration.";
-    error_location = FROM_HERE;
-    return false;
-  }
-  if (!session_manager_->protocol_config_->IsSupported(*config_)) {
-    error_code = ErrorCode::INCOMPATIBLE_PROTOCOL;
-    error_details =
-        "Received session-accept message specifies an invalid session "
         "configuration.";
     error_location = FROM_HERE;
     return false;

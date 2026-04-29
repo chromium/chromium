@@ -169,13 +169,6 @@ const SessionPolicies* SessionAuthzAuthenticator::GetSessionPolicies() const {
   return session_policies_.has_value() ? &session_policies_.value() : nullptr;
 }
 
-std::unique_ptr<ChannelAuthenticator>
-SessionAuthzAuthenticator::CreateChannelAuthenticator() const {
-  DCHECK_EQ(state(), ACCEPTED);
-
-  return underlying_->CreateChannelAuthenticator();
-}
-
 void SessionAuthzAuthenticator::SetReauthorizerForTesting(
     std::unique_ptr<SessionAuthzReauthorizer> reauthorizer) {
   reauthorizer_ = std::move(reauthorizer);

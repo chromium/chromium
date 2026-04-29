@@ -18,7 +18,6 @@
 #include "remoting/base/constants.h"
 #include "remoting/base/rsa_key_pair.h"
 #include "remoting/protocol/authenticator.h"
-#include "remoting/protocol/ssl_hmac_channel_authenticator.h"
 #include "third_party/boringssl/src/include/openssl/curve25519.h"
 
 namespace remoting::protocol {
@@ -245,20 +244,6 @@ const std::string& Spake2Authenticator::GetAuthKey() const {
 
 const SessionPolicies* Spake2Authenticator::GetSessionPolicies() const {
   return nullptr;
-}
-
-std::unique_ptr<ChannelAuthenticator>
-Spake2Authenticator::CreateChannelAuthenticator() const {
-  DCHECK_EQ(state(), ACCEPTED);
-  CHECK(!auth_key_.empty());
-
-  if (is_host_) {
-    return SslHmacChannelAuthenticator::CreateForHost(
-        local_cert_, local_key_pair_, auth_key_);
-  } else {
-    return SslHmacChannelAuthenticator::CreateForClient(remote_cert_,
-                                                        auth_key_);
-  }
 }
 
 std::string Spake2Authenticator::CalculateVerificationHash(

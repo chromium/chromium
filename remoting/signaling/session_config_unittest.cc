@@ -8,102 +8,34 @@
 
 namespace remoting {
 
-void TestGetFinalConfig(std::unique_ptr<SessionConfig> config) {
-  std::unique_ptr<CandidateSessionConfig> candidate_config =
-      CandidateSessionConfig::CreateFrom(*config);
-  ASSERT_TRUE(candidate_config);
-  std::unique_ptr<SessionConfig> config2 =
-      SessionConfig::GetFinalConfig(candidate_config.get());
-  ASSERT_TRUE(config2);
-  EXPECT_EQ(config->protocol(), config2->protocol());
-
-  if (config->protocol() == SessionConfig::Protocol::ICE) {
-    EXPECT_EQ(config->control_config(), config2->control_config());
-    EXPECT_EQ(config->event_config(), config2->event_config());
-    EXPECT_EQ(config->video_config(), config2->video_config());
-    EXPECT_EQ(config->audio_config(), config2->audio_config());
-  }
-}
-
 TEST(SessionConfig, SelectCommon) {
-  std::unique_ptr<CandidateSessionConfig> default_candidate_config =
+  std::unique_ptr<CandidateSessionConfig> client_config =
+      CandidateSessionConfig::CreateDefault();
+  std::unique_ptr<CandidateSessionConfig> host_config =
       CandidateSessionConfig::CreateDefault();
 
-  std::unique_ptr<CandidateSessionConfig> candidate_config_with_ice =
-      CandidateSessionConfig::CreateEmpty();
-  candidate_config_with_ice->set_ice_supported(true);
-  candidate_config_with_ice->set_webrtc_supported(false);
-
-  std::unique_ptr<CandidateSessionConfig> hybrid_candidate_config =
-      CandidateSessionConfig::CreateDefault();
-  hybrid_candidate_config->set_ice_supported(true);
-  hybrid_candidate_config->set_webrtc_supported(true);
-
-  std::unique_ptr<SessionConfig> selected;
-
-  // WebRTC is selected by default.
-  selected = SessionConfig::SelectCommon(default_candidate_config.get(),
-                                         default_candidate_config.get());
+  std::unique_ptr<SessionConfig> selected =
+      SessionConfig::SelectCommon(client_config.get(), host_config.get());
   ASSERT_TRUE(selected);
-  EXPECT_EQ(selected->protocol(), SessionConfig::Protocol::WEBRTC);
 
-  // ICE protocol is not supported by default.
-  selected = SessionConfig::SelectCommon(default_candidate_config.get(),
-                                         candidate_config_with_ice.get());
+  // WebRTC is not supported by either peer.
+  client_config->set_webrtc_supported(false);
+  selected =
+      SessionConfig::SelectCommon(client_config.get(), host_config.get());
   EXPECT_FALSE(selected);
-
-  // WebRTC is selected when client supports both protocols
-  selected = SessionConfig::SelectCommon(default_candidate_config.get(),
-                                         hybrid_candidate_config.get());
-  ASSERT_TRUE(selected);
-  EXPECT_EQ(selected->protocol(), SessionConfig::Protocol::WEBRTC);
-
-  // WebRTC is selected when both peers support it.
-  selected = SessionConfig::SelectCommon(hybrid_candidate_config.get(),
-                                         hybrid_candidate_config.get());
-  ASSERT_TRUE(selected);
-  EXPECT_EQ(selected->protocol(), SessionConfig::Protocol::WEBRTC);
 }
 
 TEST(SessionConfig, GetFinalConfig) {
-  TestGetFinalConfig(SessionConfig::ForTest());
-  TestGetFinalConfig(SessionConfig::ForTestWithWebrtc());
-}
-
-TEST(SessionConfig, IsSupported) {
-  std::unique_ptr<CandidateSessionConfig> default_candidate_config =
+  std::unique_ptr<CandidateSessionConfig> candidate_config =
       CandidateSessionConfig::CreateDefault();
 
-  std::unique_ptr<CandidateSessionConfig> candidate_config_with_ice =
-      CandidateSessionConfig::CreateDefault();
-  candidate_config_with_ice->set_ice_supported(true);
-  candidate_config_with_ice->set_webrtc_supported(false);
+  std::unique_ptr<SessionConfig> config =
+      SessionConfig::GetFinalConfig(candidate_config.get());
+  ASSERT_TRUE(config);
 
-  std::unique_ptr<CandidateSessionConfig> candidate_config_with_webrtc =
-      CandidateSessionConfig::CreateEmpty();
-  candidate_config_with_webrtc->set_ice_supported(false);
-  candidate_config_with_webrtc->set_webrtc_supported(true);
-
-  std::unique_ptr<CandidateSessionConfig> hybrid_candidate_config =
-      CandidateSessionConfig::CreateDefault();
-  hybrid_candidate_config->set_ice_supported(true);
-  hybrid_candidate_config->set_webrtc_supported(true);
-
-  std::unique_ptr<SessionConfig> ice_config = SessionConfig::ForTest();
-  std::unique_ptr<SessionConfig> webrtc_config =
-      SessionConfig::ForTestWithWebrtc();
-
-  EXPECT_FALSE(default_candidate_config->IsSupported(*ice_config));
-  EXPECT_TRUE(default_candidate_config->IsSupported(*webrtc_config));
-
-  EXPECT_FALSE(candidate_config_with_webrtc->IsSupported(*ice_config));
-  EXPECT_TRUE(candidate_config_with_webrtc->IsSupported(*webrtc_config));
-
-  EXPECT_TRUE(candidate_config_with_ice->IsSupported(*ice_config));
-  EXPECT_FALSE(candidate_config_with_ice->IsSupported(*webrtc_config));
-
-  EXPECT_TRUE(hybrid_candidate_config->IsSupported(*ice_config));
-  EXPECT_TRUE(hybrid_candidate_config->IsSupported(*webrtc_config));
+  candidate_config->set_webrtc_supported(false);
+  config = SessionConfig::GetFinalConfig(candidate_config.get());
+  EXPECT_FALSE(config);
 }
 
 }  // namespace remoting

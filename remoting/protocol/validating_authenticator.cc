@@ -15,7 +15,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "remoting/protocol/authenticator.h"
-#include "remoting/protocol/channel_authenticator.h"
 
 namespace remoting::protocol {
 
@@ -67,11 +66,6 @@ const std::string& ValidatingAuthenticator::GetAuthKey() const {
 
 const SessionPolicies* ValidatingAuthenticator::GetSessionPolicies() const {
   return current_authenticator_->GetSessionPolicies();
-}
-
-std::unique_ptr<ChannelAuthenticator>
-ValidatingAuthenticator::CreateChannelAuthenticator() const {
-  return current_authenticator_->CreateChannelAuthenticator();
 }
 
 void ValidatingAuthenticator::ProcessMessage(

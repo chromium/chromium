@@ -1983,9 +1983,6 @@ void HostProcess::StartHost() {
   }
 
   auto protocol_config = CandidateSessionConfig::CreateDefault();
-  if (!desktop_environment_factory_->SupportsAudioCapture()) {
-    protocol_config->DisableAudioChannel();
-  }
   protocol_config->set_webrtc_supported(true);
   if (corp_session_manager) {
     corp_session_manager->set_protocol_config(protocol_config->Clone());

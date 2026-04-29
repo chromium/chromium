@@ -31,7 +31,6 @@
 #include "remoting/proto/session_authz_service.h"
 #include "remoting/protocol/authenticator.h"
 #include "remoting/protocol/authenticator_test_base.h"
-#include "remoting/protocol/connection_tester.h"
 #include "remoting/protocol/credentials_type.h"
 #include "remoting/protocol/protocol_mock_objects.h"
 #include "remoting/protocol/spake2_authenticator.h"
@@ -53,8 +52,6 @@ constexpr std::string_view kFakeSharedSecret = "fake_shared_secret";
 constexpr std::string_view kFakeSessionReauthToken =
     "fake_session_reauth_token";
 constexpr base::TimeDelta kFakeSessionReauthTokenLifetime = base::Minutes(5);
-constexpr int kMessageSize = 100;
-constexpr int kMessages = 1;
 
 auto RespondGenerateHostToken() {
   auto response = std::make_unique<internal::GenerateHostTokenResponseStruct>();
@@ -104,8 +101,6 @@ class FakeClientAuthenticator : public Authenticator {
   JingleAuthentication GetNextMessage() override;
   const std::string& GetAuthKey() const override;
   const SessionPolicies* GetSessionPolicies() const override;
-  std::unique_ptr<ChannelAuthenticator> CreateChannelAuthenticator()
-      const override;
 
   const std::string& host_token() const { return host_token_; }
 
@@ -230,12 +225,6 @@ const SessionPolicies* FakeClientAuthenticator::GetSessionPolicies() const {
   return nullptr;
 }
 
-std::unique_ptr<ChannelAuthenticator>
-FakeClientAuthenticator::CreateChannelAuthenticator() const {
-  EXPECT_EQ(state(), ACCEPTED);
-  return underlying_->CreateChannelAuthenticator();
-}
-
 }  // namespace
 
 class SessionAuthzAuthenticatorTest : public AuthenticatorTestBase {
@@ -303,19 +292,6 @@ TEST_F(SessionAuthzAuthenticatorTest, SuccessfulAuth) {
   ASSERT_EQ(host_->state(), Authenticator::ACCEPTED);
   ASSERT_EQ(client_->state(), Authenticator::ACCEPTED);
   ASSERT_EQ(client_authenticator_->host_token(), kFakeHostToken);
-
-  // Verify that authenticated channels can be created after authentication.
-  client_auth_ = client_->CreateChannelAuthenticator();
-  host_auth_ = host_->CreateChannelAuthenticator();
-  RunChannelAuth(false);
-
-  StreamConnectionTester tester(host_socket_.get(), client_socket_.get(),
-                                kMessageSize, kMessages);
-
-  base::RunLoop run_loop;
-  tester.Start(run_loop.QuitClosure());
-  run_loop.Run();
-  tester.CheckResults();
 }
 
 TEST_F(SessionAuthzAuthenticatorTest,

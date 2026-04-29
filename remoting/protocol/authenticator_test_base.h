@@ -20,9 +20,6 @@ class RsaKeyPair;
 namespace protocol {
 
 class Authenticator;
-class ChannelAuthenticator;
-class FakeStreamSocket;
-class P2PStreamSocket;
 
 class AuthenticatorTestBase : public testing::Test {
  public:
@@ -51,10 +48,6 @@ class AuthenticatorTestBase : public testing::Test {
   void SetUp() override;
   void RunAuthExchange();
   void RunHostInitiatedAuthExchange();
-  void RunChannelAuth(bool expected_fail);
-
-  void OnHostConnected(int error, std::unique_ptr<P2PStreamSocket> socket);
-  void OnClientConnected(int error, std::unique_ptr<P2PStreamSocket> socket);
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -64,14 +57,6 @@ class AuthenticatorTestBase : public testing::Test {
   std::string host_cert_;
   std::unique_ptr<Authenticator> host_;
   std::unique_ptr<Authenticator> client_;
-  std::unique_ptr<FakeStreamSocket> client_fake_socket_;
-  std::unique_ptr<FakeStreamSocket> host_fake_socket_;
-  std::unique_ptr<ChannelAuthenticator> client_auth_;
-  std::unique_ptr<ChannelAuthenticator> host_auth_;
-  MockChannelDoneCallback client_callback_;
-  MockChannelDoneCallback host_callback_;
-  std::unique_ptr<P2PStreamSocket> client_socket_;
-  std::unique_ptr<P2PStreamSocket> host_socket_;
 };
 
 }  // namespace protocol

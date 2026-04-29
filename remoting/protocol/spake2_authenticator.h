@@ -56,8 +56,6 @@ class Spake2Authenticator : public Authenticator {
   JingleAuthentication GetNextMessage() override;
   const std::string& GetAuthKey() const override;
   const SessionPolicies* GetSessionPolicies() const override;
-  std::unique_ptr<ChannelAuthenticator> CreateChannelAuthenticator()
-      const override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(Spake2AuthenticatorTest, InvalidSecret);

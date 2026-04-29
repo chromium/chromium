@@ -19,7 +19,6 @@
 #include "remoting/base/session_policies.h"
 #include "remoting/proto/session_authz_service.h"
 #include "remoting/protocol/authenticator.h"
-#include "remoting/protocol/channel_authenticator.h"
 #include "remoting/protocol/credentials_type.h"
 #include "remoting/protocol/session_authz_reauthorizer.h"
 
@@ -72,8 +71,6 @@ class SessionAuthzAuthenticator : public Authenticator {
   JingleAuthentication GetNextMessage() override;
   const std::string& GetAuthKey() const override;
   const SessionPolicies* GetSessionPolicies() const override;
-  std::unique_ptr<ChannelAuthenticator> CreateChannelAuthenticator()
-      const override;
 
   void SetReauthorizerForTesting(
       std::unique_ptr<SessionAuthzReauthorizer> reauthorizer);

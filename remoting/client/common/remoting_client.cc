@@ -154,9 +154,6 @@ void RemotingClient::StartConnection() {
   CLIENT_LOG << "Creating session manager...";
   auto protocol_config = CandidateSessionConfig::CreateDefault();
   protocol_config->set_webrtc_supported(true);
-  if (!audio_stream_consumer_) {
-    protocol_config->DisableAudioChannel();
-  }
   session_manager_ =
       std::make_unique<protocol::JingleSessionManager>(signal_strategy_.get());
   session_manager_->set_protocol_config(std::move(protocol_config));

@@ -10,16 +10,8 @@
 #include "base/strings/string_util.h"
 #include "base/strings/string_view_util.h"
 #include "crypto/hmac.h"
-#include "net/base/net_errors.h"
-#include "net/socket/ssl_socket.h"
 
 namespace remoting::protocol {
-
-const char kClientAuthSslExporterLabel[] =
-    "EXPORTER-remoting-channel-auth-client";
-const char kHostAuthSslExporterLabel[] = "EXPORTER-remoting-channel-auth-host";
-
-const char kSslFakeHostName[] = "chromoting";
 
 std::string GetSharedSecretHash(const std::string& tag,
                                 const std::string& shared_secret) {
@@ -32,24 +24,6 @@ std::string GetSharedSecretHash(const std::string& tag,
 
   const auto hmac = crypto::hmac::SignSha256(key, message);
   return std::string(base::as_string_view(hmac));
-}
-
-// static
-std::string GetAuthBytes(net::SSLSocket* socket,
-                         const std::string_view& label,
-                         const std::string_view& shared_secret) {
-  // Get keying material from SSL.
-  std::array<uint8_t, kAuthDigestLength> key;
-  int export_result = socket->ExportKeyingMaterial(label, std::nullopt, key);
-  if (export_result != net::OK) {
-    LOG(ERROR) << "Error fetching keying material: " << export_result;
-    return std::string();
-  }
-
-  // Generate auth digest based on the keying material and shared secret.
-  base::span<const uint8_t> message = base::as_byte_span(shared_secret);
-  const auto out = crypto::hmac::SignSha256(key, message);
-  return std::string(base::as_string_view(out));
 }
 
 }  // namespace remoting::protocol

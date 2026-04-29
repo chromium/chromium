@@ -97,19 +97,6 @@ bool VerifyXml(const XmlElement* exp,
   return true;
 }
 
-// Parses |message_text| to JingleMessage.
-void ParseJingleMessageFromXml(const char* message_text,
-                               JingleMessage* parsed) {
-  std::unique_ptr<XmlElement> source_message(XmlElement::ForStr(message_text));
-  ASSERT_TRUE(source_message.get());
-
-  EXPECT_TRUE(IsJingleMessage(source_message.get()));
-
-  std::string error;
-  EXPECT_TRUE(JingleMessageFromXml(source_message.get(), parsed, &error))
-      << error;
-}
-
 // Parses |message_text| to JingleMessage then attempts to format it to XML and
 // verifies that the same XML content is generated.
 void ParseFormatAndCompare(const char* message_text, JingleMessage* parsed) {
@@ -129,40 +116,6 @@ void ParseFormatAndCompare(const char* message_text, JingleMessage* parsed) {
 }
 
 }  // namespace
-
-// Session-initiate message for current ICE-based protocol.
-TEST(JingleMessageTest, SessionInitiate) {
-  // clang-format off
-  const char* kTestSessionInitiateMessage =
-      "<iq to='user@gmail.com/chromoting016DBB07' type='set' "
-          "from='user@gmail.com/chromiumsy5C6A652D' "
-          "xmlns='jabber:client'>"
-        "<jingle xmlns='urn:xmpp:jingle:1' "
-                "action='session-initiate' sid='2227053353' "
-                "initiator='user@gmail.com/chromiumsy5C6A652D'>"
-          "<content name='chromoting' creator='initiator'>"
-            "<description xmlns='google:remoting'>"
-              "<standard-ice/>"
-              "<control transport='stream' version='2'/>"
-              "<event transport='stream' version='2'/>"
-              "<video transport='stream' version='2' codec='vp8'/>"
-              "<audio transport='stream' version='2' codec='verbatim'/>"
-              "<authentication>"
-                "<spake-message>RmFrZSBhdXRoIHRva2VuCg==</spake-message>"
-              "</authentication>"
-            "</description>"
-          "</content>"
-        "</jingle>"
-      "</iq>";
-  // clang-format on
-
-  JingleMessage message;
-  ParseFormatAndCompare(kTestSessionInitiateMessage, &message);
-
-  EXPECT_EQ(message.action(), ActionType::kSessionInitiate);
-  EXPECT_FALSE(message.description->config()->webrtc_supported());
-  EXPECT_TRUE(message.description->config()->ice_supported());
-}
 
 // Session-initiate message for WebRTC-based protocol.
 TEST(JingleMessageTest, SessionInitiateWebrtc) {
@@ -191,111 +144,6 @@ TEST(JingleMessageTest, SessionInitiateWebrtc) {
 
   EXPECT_EQ(message.action(), ActionType::kSessionInitiate);
   EXPECT_TRUE(message.description->config()->webrtc_supported());
-  EXPECT_FALSE(message.description->config()->ice_supported());
-}
-
-// Session-initiate message for hybrid clients that support both versions of the
-// protocol.
-TEST(JingleMessageTest, SessionInitiateHybrid) {
-  // clang-format off
-  const char* kTestSessionInitiateMessage =
-      "<iq to='user@gmail.com/chromoting016DBB07' type='set' "
-          "from='user@gmail.com/chromiumsy5C6A652D' "
-          "xmlns='jabber:client'>"
-        "<jingle xmlns='urn:xmpp:jingle:1' "
-                "action='session-initiate' sid='2227053353' "
-                "initiator='user@gmail.com/chromiumsy5C6A652D'>"
-          "<content name='chromoting' creator='initiator'>"
-            "<description xmlns='google:remoting'>"
-              "<standard-ice/>"
-              "<control transport='stream' version='2'/>"
-              "<event transport='stream' version='2'/>"
-              "<video transport='stream' version='2' codec='vp8'/>"
-              "<audio transport='stream' version='2' codec='verbatim'/>"
-              "<authentication>"
-                "<spake-message>RmFrZSBhdXRoIHRva2VuCg==</spake-message>"
-              "</authentication>"
-            "</description>"
-            "<transport xmlns='google:remoting:webrtc' />"
-          "</content>"
-        "</jingle>"
-      "</iq>";
-  // clang-format on
-
-  JingleMessage message;
-  ParseFormatAndCompare(kTestSessionInitiateMessage, &message);
-
-  EXPECT_EQ(message.action(), ActionType::kSessionInitiate);
-  EXPECT_TRUE(message.description->config()->webrtc_supported());
-  EXPECT_TRUE(message.description->config()->ice_supported());
-}
-
-// Old GICE session-initiate message from older clients that are no longer
-// supported.
-TEST(JingleMessageTest, SessionInitiateNoIce) {
-  // clang-format off
-  const char* kTestSessionInitiateMessage =
-      "<iq to='user@gmail.com/chromoting016DBB07' type='set' "
-          "from='user@gmail.com/chromiumsy5C6A652D' "
-          "xmlns='jabber:client'>"
-        "<jingle xmlns='urn:xmpp:jingle:1' "
-                "action='session-initiate' sid='2227053353' "
-                "initiator='user@gmail.com/chromiumsy5C6A652D'>"
-          "<content name='chromoting' creator='initiator'>"
-            "<description xmlns='google:remoting'>"
-              "<control transport='stream' version='2'/>"
-              "<event transport='stream' version='2'/>"
-              "<video transport='stream' version='2' codec='vp8'/>"
-              "<audio transport='stream' version='2' codec='verbatim'/>"
-              "<authentication>"
-                "<spake-message>RmFrZSBhdXRoIHRva2VuCg==</spake-message>"
-              "</authentication>"
-            "</description>"
-          "</content>"
-        "</jingle>"
-      "</iq>";
-  // clang-format on
-
-  JingleMessage message;
-  ParseJingleMessageFromXml(kTestSessionInitiateMessage, &message);
-
-  EXPECT_EQ(message.action(), ActionType::kSessionInitiate);
-  EXPECT_FALSE(message.description->config()->ice_supported());
-}
-
-// Session-accept message for current ICE-based protocol.
-TEST(JingleMessageTest, SessionAccept) {
-  // clang-format off
-  const char* kTestSessionAcceptMessage =
-      "<cli:iq from='user@gmail.com/chromoting016DBB07' "
-              "to='user@gmail.com/chromiumsy5C6A652D' type='set' "
-              "xmlns:cli='jabber:client'>"
-        "<jingle action='session-accept' sid='2227053353' "
-                "xmlns='urn:xmpp:jingle:1'>"
-          "<content creator='initiator' name='chromoting'>"
-            "<description xmlns='google:remoting'>"
-              "<standard-ice/>"
-              "<control transport='stream' version='2'/>"
-              "<event transport='stream' version='2'/>"
-              "<video codec='vp8' transport='stream' version='2'/>"
-              "<audio transport='stream' version='2' codec='verbatim'/>"
-              "<authentication>"
-                "<certificate>"
-                  "MIICpjCCAY6gW0Cert0TANBgkqhkiG9w0BAQUFA="
-                "</certificate>"
-              "</authentication>"
-            "</description>"
-          "</content>"
-        "</jingle>"
-      "</cli:iq>";
-  // clang-format on
-
-  JingleMessage message;
-  ParseFormatAndCompare(kTestSessionAcceptMessage, &message);
-
-  EXPECT_EQ(message.action(), ActionType::kSessionAccept);
-  EXPECT_FALSE(message.description->config()->webrtc_supported());
-  EXPECT_TRUE(message.description->config()->ice_supported());
 }
 
 // Session-accept message for WebRTC-based protocol.
@@ -326,79 +174,6 @@ TEST(JingleMessageTest, SessionAcceptWebrtc) {
 
   EXPECT_EQ(message.action(), ActionType::kSessionAccept);
   EXPECT_TRUE(message.description->config()->webrtc_supported());
-  EXPECT_FALSE(message.description->config()->ice_supported());
-}
-
-// Old GICE session-accept message from older host that are no longer
-// supported.
-TEST(JingleMessageTest, SessionAcceptNoIce) {
-  // clang-format off
-  const char* kTestSessionAcceptMessage =
-      "<cli:iq from='user@gmail.com/chromoting016DBB07' "
-              "to='user@gmail.com/chromiumsy5C6A652D' type='set' "
-              "xmlns:cli='jabber:client'>"
-        "<jingle action='session-accept' sid='2227053353' "
-                "xmlns='urn:xmpp:jingle:1'>"
-          "<content creator='initiator' name='chromoting'>"
-            "<description xmlns='google:remoting'>"
-              "<control transport='stream' version='2'/>"
-              "<event transport='stream' version='2'/>"
-              "<video codec='vp8' transport='stream' version='2'/>"
-              "<audio transport='stream' version='2' codec='verbatim'/>"
-              "<authentication>"
-                "<certificate>"
-                  "MIICpjCCAY6gW0Cert0TANBgkqhkiG9w0BAQUFA="
-                "</certificate>"
-              "</authentication>"
-            "</description>"
-          "</content>"
-        "</jingle>"
-      "</cli:iq>";
-  // clang-format on
-
-  JingleMessage message;
-  ParseJingleMessageFromXml(kTestSessionAcceptMessage, &message);
-
-  EXPECT_EQ(message.action(), ActionType::kSessionAccept);
-  EXPECT_FALSE(message.description->config()->ice_supported());
-  EXPECT_FALSE(message.description->config()->webrtc_supported());
-}
-
-TEST(JingleMessageTest, IceTransportInfo) {
-  // clang-format off
-  const char* kTestIceTransportInfoMessage =
-      "<cli:iq to='user@gmail.com/chromoting016DBB07' "
-              "from='foo@bar.com/resource' "
-              "type='set' xmlns:cli='jabber:client'>"
-        "<jingle xmlns='urn:xmpp:jingle:1' action='transport-info' "
-                "sid='2227053353'>"
-          "<content name='chromoting' creator='initiator'>"
-            "<transport xmlns='google:remoting:ice'>"
-              "<credentials channel='event' ufrag='tPUyEAmQrEw3y7hi' "
-                           "password='2iRdhLfawKZC5ydJ'/>"
-              "<credentials channel='video' ufrag='EPK3CXo5sTLJSez0' "
-                           "password='eM0VUfUkZ+1Pyi0M'/>"
-              "<candidate name='event' foundation='725747215' "
-                         "address='172.23.164.186' port='59089' type='local' "
-                         "protocol='udp' priority='2122194688' generation='0'/>"
-              "<candidate name='video' foundation='3623806809' "
-                         "address='172.23.164.186' port='57040' type='local' "
-                         "protocol='udp' priority='2122194688' generation='0'/>"
-            "</transport>"
-          "</content>"
-        "</jingle>"
-      "</cli:iq>";
-  // clang-format on
-
-  JingleMessage message;
-  ParseFormatAndCompare(kTestIceTransportInfoMessage, &message);
-
-  EXPECT_EQ(message.action(), ActionType::kTransportInfo);
-
-  auto* transport_info = std::get_if<JingleTransportInfo>(&message.payload());
-  ASSERT_TRUE(transport_info);
-  EXPECT_EQ(transport_info->ice_credentials.size(), 2U);
-  EXPECT_EQ(transport_info->candidates.size(), 2U);
 }
 
 TEST(JingleMessageTest, SessionTerminate) {
@@ -586,7 +361,7 @@ TEST(JingleMessageReplyTest, ToXml) {
 
   for (size_t i = 0; i < std::size(tests); ++i) {
     std::unique_ptr<XmlElement> incoming_message(
-        XmlElement::ForStr(tests[i].incoming_message));
+        XmlElement::ForStr(tests[i].incoming_message.c_str()));
     ASSERT_TRUE(incoming_message.get());
 
     SCOPED_TRACE(testing::Message() << "Running test case: " << i);
@@ -604,51 +379,12 @@ TEST(JingleMessageReplyTest, ToXml) {
         JingleMessageReplyToXml(reply_msg, incoming_message.get()));
 
     std::unique_ptr<XmlElement> expected(
-        XmlElement::ForStr(tests[i].expected_text));
+        XmlElement::ForStr(tests[i].expected_text.c_str()));
     ASSERT_TRUE(expected.get());
 
     std::string error;
     EXPECT_TRUE(VerifyXml(expected.get(), reply.get(), &error)) << error;
   }
-}
-
-TEST(JingleMessageTest, ErrorMessage) {
-  // clang-format off
-  const char* kTestSessionInitiateErrorMessage =
-      "<iq to='user@gmail.com/chromoting016DBB07' type='error' "
-          "from='user@gmail.com/chromiumsy5C6A652D' "
-          "xmlns='jabber:client'>"
-        "<jingle xmlns='urn:xmpp:jingle:1' "
-                "action='session-initiate' sid='2227053353' "
-                "initiator='user@gmail.com/chromiumsy5C6A652D'>"
-          "<content name='chromoting' creator='initiator'>"
-            "<description xmlns='google:remoting'>"
-              "<control transport='stream' version='2'/>"
-              "<event transport='stream' version='2'/>"
-              "<video transport='stream' version='2' codec='vp8'/>"
-              "<audio transport='stream' version='2' codec='verbatim'/>"
-              "<authentication>"
-                "<spake-message>RmFrZSBhdXRoIHRva2VuCg==</spake-message>"
-              "</authentication>"
-            "</description>"
-          "</content>"
-        "</jingle>"
-        "<error code='501' type='cancel'>"
-          "<feature-not-implemented "
-              "xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'/>"
-        "</error>"
-      "</iq>";
-  // clang-format on
-  std::unique_ptr<XmlElement> source_message(
-      XmlElement::ForStr(kTestSessionInitiateErrorMessage));
-  ASSERT_TRUE(source_message.get());
-
-  EXPECT_FALSE(IsJingleMessage(source_message.get()));
-
-  JingleMessage message;
-  std::string error;
-  EXPECT_FALSE(JingleMessageFromXml(source_message.get(), &message, &error));
-  EXPECT_FALSE(error.empty());
 }
 
 TEST(JingleMessageTest, RemotingErrorCode) {
@@ -676,7 +412,11 @@ TEST(JingleMessageTest, RemotingErrorCode) {
     JingleMessage message;
     if (error == ErrorCode::UNKNOWN_ERROR) {
       // We do not include UNKNOWN_ERROR in xml output, so VerifyXml will fail.
-      ParseJingleMessageFromXml(message_str.c_str(), &message);
+      std::unique_ptr<XmlElement> source_message(
+          XmlElement::ForStr(message_str.c_str()));
+      std::string parse_error;
+      EXPECT_TRUE(
+          JingleMessageFromXml(source_message.get(), &message, &parse_error));
     } else {
       ParseFormatAndCompare(message_str.c_str(), &message);
     }
@@ -685,51 +425,6 @@ TEST(JingleMessageTest, RemotingErrorCode) {
     EXPECT_EQ(message.reason, SessionTerminate::Reason::kDecline);
     EXPECT_EQ(message.error_code, error);
   }
-}
-
-TEST(JingleMessageTest, ErrorDetails) {
-  // clang-format off
-  static constexpr char kTestSessionTerminateMessage[] =
-      "<cli:iq from='user@gmail.com/chromoting016DBB07' "
-              "to='user@gmail.com/chromiumsy5C6A652D' type='set' "
-              "xmlns:cli='jabber:client'>"
-        "<jingle action='session-terminate' sid='2227053353' "
-                "xmlns='urn:xmpp:jingle:1'>"
-          "<reason><decline/></reason>"
-          "<gr:error-details xmlns:gr='google:remoting'>"
-            "These are the error details."
-          "</gr:error-details>"
-        "</jingle>"
-      "</cli:iq>";
-  // clang-format on
-
-  JingleMessage message;
-  ParseFormatAndCompare(kTestSessionTerminateMessage, &message);
-
-  EXPECT_EQ(message.error_details, "These are the error details.");
-}
-
-TEST(JingleMessageTest, ErrorLocation) {
-  // clang-format off
-  static constexpr char kTestSessionTerminateMessage[] =
-      "<cli:iq from='user@gmail.com/chromoting016DBB07' "
-              "to='user@gmail.com/chromiumsy5C6A652D' type='set' "
-              "xmlns:cli='jabber:client'>"
-        "<jingle action='session-terminate' sid='2227053353' "
-                "xmlns='urn:xmpp:jingle:1'>"
-          "<reason><decline/></reason>"
-          "<gr:error-location xmlns:gr='google:remoting'>"
-            "OnAuthenticated@remoting/protocol/jingle_session.cc:836"
-          "</gr:error-location>"
-        "</jingle>"
-      "</cli:iq>";
-  // clang-format on
-
-  JingleMessage message;
-  ParseFormatAndCompare(kTestSessionTerminateMessage, &message);
-
-  EXPECT_EQ(message.error_location,
-            "OnAuthenticated@remoting/protocol/jingle_session.cc:836");
 }
 
 TEST(JingleMessageTest, Attachment) {
@@ -803,15 +498,11 @@ TEST(JingleMessageTest, AttachmentsMessage) {
       substitutes.push_back(
           "<content creator='initiator' name='chromoting'>"
             "<description xmlns='google:remoting'>"
-              "<standard-ice/>"
-              "<control transport='stream' version='2'/>"
-              "<event transport='stream' version='2'/>"
-              "<video codec='vp8' transport='stream' version='2'/>"
-              "<audio transport='stream' version='2' codec='verbatim'/>"
               "<authentication>"
                 "<spake-message>RmFrZSBhdXRoIHRva2VuCg==</spake-message>"
               "</authentication>"
             "</description>"
+            "<transport xmlns='google:remoting:webrtc' />"
           "</content>");
       // clang-format on
     } else if (action_type == ActionType::kSessionInfo) {
@@ -822,10 +513,10 @@ TEST(JingleMessageTest, AttachmentsMessage) {
       // clang-format off
       substitutes.push_back(
           "<content name='chromoting' creator='initiator'>"
-            "<transport xmlns='google:remoting:ice'>"
-              "<candidate name='event' foundation='725747215' "
-                         "address='172.23.164.186' port='59089' type='local' "
-                         "protocol='udp' priority='2122194688' generation='0'/>"
+            "<transport xmlns='google:remoting:webrtc'>"
+              "<candidate sdpMid='event' sdpMLineIndex='0'>"
+                "candidate:1 1 udp 2122194688 172.23.164.186 59089 typ host generation 0"
+              "</candidate>"
             "</transport>"
           "</content>");
       // clang-format on

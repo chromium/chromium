@@ -10,41 +10,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "remoting/protocol/authenticator.h"
-#include "remoting/protocol/channel_authenticator.h"
 #include "remoting/protocol/credentials_type.h"
 
 namespace remoting::protocol {
-
-class FakeChannelAuthenticator : public ChannelAuthenticator {
- public:
-  FakeChannelAuthenticator(bool accept, bool async);
-
-  FakeChannelAuthenticator(const FakeChannelAuthenticator&) = delete;
-  FakeChannelAuthenticator& operator=(const FakeChannelAuthenticator&) = delete;
-
-  ~FakeChannelAuthenticator() override;
-
-  // ChannelAuthenticator interface.
-  void SecureAndAuthenticate(std::unique_ptr<P2PStreamSocket> socket,
-                             DoneCallback done_callback) override;
-
- private:
-  void OnAuthBytesWritten(int result);
-  void OnAuthBytesRead(int result);
-
-  void CallDoneCallback();
-
-  const int result_;
-  const bool async_;
-
-  std::unique_ptr<P2PStreamSocket> socket_;
-  DoneCallback done_callback_;
-
-  bool did_read_bytes_ = false;
-  bool did_write_bytes_ = false;
-
-  base::WeakPtrFactory<FakeChannelAuthenticator> weak_factory_{this};
-};
 
 class FakeAuthenticator : public Authenticator {
  public:
@@ -109,8 +77,6 @@ class FakeAuthenticator : public Authenticator {
   JingleAuthentication GetNextMessage() override;
   const std::string& GetAuthKey() const override;
   const SessionPolicies* GetSessionPolicies() const override;
-  std::unique_ptr<ChannelAuthenticator> CreateChannelAuthenticator()
-      const override;
 
  protected:
   void SubscribeRejectedAfterAcceptedIfNecessary();

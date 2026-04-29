@@ -175,16 +175,13 @@ void ClientSession::NotifyClientResolution(
 
   webrtc::DesktopSize client_size(resolution.width_pixels(),
                                   resolution.height_pixels());
-  if (connection_->session()->config().protocol() ==
-      SessionConfig::Protocol::WEBRTC) {
-    // When using WebRTC round down the dimensions to multiple of 2. Otherwise
-    // the dimensions will be rounded on the receiver, which will cause blurring
-    // due to scaling. The resulting size is still close to the client size and
-    // will fit on the client's screen without scaling.
-    // TODO(sergeyu): Make WebRTC handle odd dimensions properly.
-    // crbug.com/636071
-    client_size.set(client_size.width() & (~1), client_size.height() & (~1));
-  }
+  // Round down the dimensions to a multiple of 2. Otherwise the dimensions will
+  // be rounded on the receiver, which will cause blurring due to scaling. The
+  // resulting size is still close to the client size and will fit on the
+  // client's screen without scaling.
+  // TODO(sergeyu): Make WebRTC handle odd dimensions properly.
+  // crbug.com/636071
+  client_size.set(client_size.width() & (~1), client_size.height() & (~1));
 
   // TODO(joedow): Determine if other platforms support desktop scaling.
   webrtc::DesktopVector dpi_vector{kDefaultDpi, kDefaultDpi};
@@ -1058,25 +1055,16 @@ void ClientSession::SetMouseClampingFilter(const DisplaySize& size) {
                                          size.HeightAsPixels());
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-  switch (connection_->session()->config().protocol()) {
-    case SessionConfig::Protocol::ICE:
-      mouse_clamping_filter_.set_input_size(size.WidthAsPixels(),
-                                            size.HeightAsPixels());
-      break;
-
-    case SessionConfig::Protocol::WEBRTC: {
 #if BUILDFLAG(IS_APPLE)
-      mouse_clamping_filter_.set_input_size(size.WidthAsPixels(),
-                                            size.HeightAsPixels());
+  mouse_clamping_filter_.set_input_size(size.WidthAsPixels(),
+                                        size.HeightAsPixels());
 #else
-      // When using the WebRTC protocol the client sends mouse coordinates in
-      // DIPs, while InputInjector expects them in physical pixels.
-      // TODO(sergeyu): Fix InputInjector implementations to use DIPs as well.
-      mouse_clamping_filter_.set_input_size(size.WidthAsDips(),
-                                            size.HeightAsDips());
+  // The client sends mouse coordinates in DIPs, while InputInjector expects
+  // them in physical pixels.
+  // TODO(sergeyu): Fix InputInjector implementations to use DIPs as well.
+  mouse_clamping_filter_.set_input_size(size.WidthAsDips(),
+                                        size.HeightAsDips());
 #endif  // BUILDFLAG(IS_APPLE)
-    }
-  }
 }
 
 void ClientSession::UpdateMouseClampingFilterOffset() {
@@ -1201,11 +1189,6 @@ void ClientSession::OnVideoSizeChanged(protocol::VideoStream* video_stream,
   default_y_dpi_ = dpi.y();
   if (dpi.x() != dpi.y()) {
     LOG(WARNING) << "Mismatch x,y dpi. x=" << dpi.x() << " y=" << dpi.y();
-  }
-
-  if (connection_->session()->config().protocol() !=
-      SessionConfig::Protocol::WEBRTC) {
-    return;
   }
 
   // Generate and send VideoLayout message.

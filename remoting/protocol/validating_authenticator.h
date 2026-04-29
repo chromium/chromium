@@ -53,8 +53,6 @@ class ValidatingAuthenticator : public Authenticator {
   RejectionDetails rejection_details() const override;
   const std::string& GetAuthKey() const override;
   const SessionPolicies* GetSessionPolicies() const override;
-  std::unique_ptr<ChannelAuthenticator> CreateChannelAuthenticator()
-      const override;
   void ProcessMessage(const JingleAuthentication& message,
                       base::OnceClosure resume_callback) override;
   JingleAuthentication GetNextMessage() override;

@@ -16,80 +16,9 @@
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "remoting/base/constants.h"
 #include "remoting/protocol/authenticator.h"
-#include "remoting/protocol/p2p_stream_socket.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace remoting::protocol {
-
-FakeChannelAuthenticator::FakeChannelAuthenticator(bool accept, bool async)
-    : result_(accept ? net::OK : net::ERR_FAILED), async_(async) {}
-
-FakeChannelAuthenticator::~FakeChannelAuthenticator() = default;
-
-void FakeChannelAuthenticator::SecureAndAuthenticate(
-    std::unique_ptr<P2PStreamSocket> socket,
-    DoneCallback done_callback) {
-  socket_ = std::move(socket);
-
-  done_callback_ = std::move(done_callback);
-
-  if (async_) {
-    if (result_ != net::OK) {
-      // Don't write anything if we are going to reject auth to make test
-      // ordering deterministic.
-      did_write_bytes_ = true;
-    } else {
-      auto write_buf = base::MakeRefCounted<net::IOBufferWithSize>(1);
-      write_buf->data()[0] = 0;
-      int result = socket_->Write(
-          write_buf.get(), 1,
-          base::BindOnce(&FakeChannelAuthenticator::OnAuthBytesWritten,
-                         weak_factory_.GetWeakPtr()),
-          TRAFFIC_ANNOTATION_FOR_TESTS);
-      if (result != net::ERR_IO_PENDING) {
-        // This will not call the callback because |did_read_bytes_| is
-        // still set to false.
-        OnAuthBytesWritten(result);
-      }
-    }
-
-    auto read_buf = base::MakeRefCounted<net::IOBufferWithSize>(1);
-    int result =
-        socket_->Read(read_buf.get(), 1,
-                      base::BindOnce(&FakeChannelAuthenticator::OnAuthBytesRead,
-                                     weak_factory_.GetWeakPtr()));
-    if (result != net::ERR_IO_PENDING) {
-      OnAuthBytesRead(result);
-    }
-  } else {
-    CallDoneCallback();
-  }
-}
-
-void FakeChannelAuthenticator::OnAuthBytesWritten(int result) {
-  EXPECT_EQ(1, result);
-  EXPECT_FALSE(did_write_bytes_);
-  did_write_bytes_ = true;
-  if (did_read_bytes_) {
-    CallDoneCallback();
-  }
-}
-
-void FakeChannelAuthenticator::OnAuthBytesRead(int result) {
-  EXPECT_EQ(1, result);
-  EXPECT_FALSE(did_read_bytes_);
-  did_read_bytes_ = true;
-  if (did_write_bytes_) {
-    CallDoneCallback();
-  }
-}
-
-void FakeChannelAuthenticator::CallDoneCallback() {
-  if (result_ != net::OK) {
-    socket_.reset();
-  }
-  std::move(done_callback_).Run(result_, std::move(socket_));
-}
 
 FakeAuthenticator::Config::Config() = default;
 FakeAuthenticator::Config::Config(Action action) : action(action) {}
@@ -234,13 +163,6 @@ const std::string& FakeAuthenticator::GetAuthKey() const {
 const SessionPolicies* FakeAuthenticator::GetSessionPolicies() const {
   EXPECT_EQ(ACCEPTED, state());
   return nullptr;
-}
-
-std::unique_ptr<ChannelAuthenticator>
-FakeAuthenticator::CreateChannelAuthenticator() const {
-  EXPECT_EQ(ACCEPTED, state());
-  return std::make_unique<FakeChannelAuthenticator>(
-      config_.action != REJECT_CHANNEL, config_.async);
 }
 
 void FakeAuthenticator::SubscribeRejectedAfterAcceptedIfNecessary() {

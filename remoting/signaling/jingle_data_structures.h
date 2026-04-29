@@ -122,7 +122,7 @@ struct JingleAuthentication {
   bool is_empty() const;
 };
 
-// Represents the ICE transport information including candidates and credentials
+// Represents the ICE transport information including candidates.
 struct IceTransportInfo {
   IceTransportInfo();
   ~IceTransportInfo();
@@ -145,20 +145,6 @@ struct IceTransportInfo {
     std::optional<int> sdp_m_line_index;
   };
 
-  // Represents ICE credentials for a specific channel.
-  struct IceCredentials {
-    IceCredentials();
-    IceCredentials(std::string channel,
-                   std::string ufrag,
-                   std::string password);
-    ~IceCredentials();
-
-    std::string channel;
-    std::string ufrag;
-    std::string password;
-  };
-
-  std::list<IceCredentials> ice_credentials;
   std::list<NamedCandidate> candidates;
 };
 
@@ -173,10 +159,8 @@ struct JingleTransportInfo {
 
   // The XML namespace for this transport (e.g., google:remoting:ice or
   // google:remoting:webrtc).
-  // TODO: joedow - Remove this field when we no longer support chromotocol.
   std::string xml_namespace;
 
-  std::vector<IceTransportInfo::IceCredentials> ice_credentials;
   std::vector<IceTransportInfo::NamedCandidate> candidates;
 
   std::optional<SessionDescription> session_description;

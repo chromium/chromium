@@ -55,8 +55,6 @@ class PairingAuthenticatorBase : public Authenticator {
   JingleAuthentication GetNextMessage() override;
   const std::string& GetAuthKey() const override;
   const SessionPolicies* GetSessionPolicies() const override;
-  std::unique_ptr<ChannelAuthenticator> CreateChannelAuthenticator()
-      const override;
 
  protected:
   // Create a Spake2 authenticator in the specified state, prompting the user

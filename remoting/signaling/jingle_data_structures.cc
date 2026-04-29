@@ -223,15 +223,6 @@ IceTransportInfo::NamedCandidate& IceTransportInfo::NamedCandidate::operator=(
 
 IceTransportInfo::NamedCandidate::~NamedCandidate() = default;
 
-IceTransportInfo::IceCredentials::IceCredentials() = default;
-
-IceTransportInfo::IceCredentials::IceCredentials(std::string channel,
-                                                 std::string ufrag,
-                                                 std::string password)
-    : channel(channel), ufrag(ufrag), password(password) {}
-
-IceTransportInfo::IceCredentials::~IceCredentials() = default;
-
 HostAttributesAttachment::HostAttributesAttachment() = default;
 HostAttributesAttachment::HostAttributesAttachment(
     const HostAttributesAttachment&) = default;

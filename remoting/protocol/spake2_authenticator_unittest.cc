@@ -9,8 +9,6 @@
 #include "base/run_loop.h"
 #include "remoting/base/rsa_key_pair.h"
 #include "remoting/protocol/authenticator_test_base.h"
-#include "remoting/protocol/channel_authenticator.h"
-#include "remoting/protocol/connection_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -21,9 +19,6 @@ using testing::SaveArg;
 namespace remoting::protocol {
 
 namespace {
-
-const int kMessageSize = 100;
-const int kMessages = 1;
 
 const char kTestSharedSecret[] = "1234-1234-5678";
 const char kTestSharedSecretBad[] = "0000-0000-0001";
@@ -57,18 +52,6 @@ TEST_F(Spake2AuthenticatorTest, SuccessfulAuth) {
 
   ASSERT_EQ(host_->state(), Authenticator::ACCEPTED);
   ASSERT_EQ(client_->state(), Authenticator::ACCEPTED);
-
-  client_auth_ = client_->CreateChannelAuthenticator();
-  host_auth_ = host_->CreateChannelAuthenticator();
-  RunChannelAuth(false);
-
-  StreamConnectionTester tester(host_socket_.get(), client_socket_.get(),
-                                kMessageSize, kMessages);
-
-  base::RunLoop run_loop;
-  tester.Start(run_loop.QuitClosure());
-  run_loop.Run();
-  tester.CheckResults();
 }
 
 // Verify that connection is rejected when secrets don't match.

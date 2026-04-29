@@ -19,7 +19,6 @@
 namespace remoting::protocol {
 
 class Authenticator;
-class ChannelAuthenticator;
 
 // Authenticator is an abstract interface for authentication protocol
 // implementations. Different implementations of this interface may be used on
@@ -199,11 +198,6 @@ class Authenticator {
   // Returns the session policies, or nullptr if no session policies are
   // specified. Must be called in the ACCEPTED state.
   virtual const SessionPolicies* GetSessionPolicies() const = 0;
-
-  // Creates new authenticator for a channel. Can be called only in
-  // the ACCEPTED state.
-  virtual std::unique_ptr<ChannelAuthenticator> CreateChannelAuthenticator()
-      const = 0;
 
   // Sets a callback that will be called if `state()` has changed from
   // `ACCEPTED` from something else, likely because the authenticator has some

@@ -12,7 +12,6 @@
 #include "base/logging.h"
 #include "remoting/base/constants.h"
 #include "remoting/protocol/authenticator.h"
-#include "remoting/protocol/channel_authenticator.h"
 #include "remoting/protocol/credentials_type.h"
 
 namespace remoting::protocol {
@@ -111,11 +110,6 @@ const std::string& PairingAuthenticatorBase::GetAuthKey() const {
 
 const SessionPolicies* PairingAuthenticatorBase::GetSessionPolicies() const {
   return nullptr;
-}
-
-std::unique_ptr<ChannelAuthenticator>
-PairingAuthenticatorBase::CreateChannelAuthenticator() const {
-  return spake2_authenticator_->CreateChannelAuthenticator();
 }
 
 void PairingAuthenticatorBase::MaybeAddErrorMessage(

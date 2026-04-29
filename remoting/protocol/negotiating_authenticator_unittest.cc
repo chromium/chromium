@@ -15,8 +15,6 @@
 #include "remoting/protocol/auth_util.h"
 #include "remoting/protocol/authenticator.h"
 #include "remoting/protocol/authenticator_test_base.h"
-#include "remoting/protocol/channel_authenticator.h"
-#include "remoting/protocol/connection_tester.h"
 #include "remoting/protocol/credentials_type.h"
 #include "remoting/protocol/host_authentication_config.h"
 #include "remoting/protocol/negotiating_authenticator_base.h"
@@ -35,9 +33,6 @@ using testing::SaveArg;
 namespace remoting::protocol {
 
 namespace {
-
-const int kMessageSize = 100;
-const int kMessages = 1;
 
 const char kNoClientId[] = "";
 const char kNoPairedSecret[] = "";
@@ -103,10 +98,6 @@ class ProxyAuthenticator : public Authenticator {
   }
   const SessionPolicies* GetSessionPolicies() const override {
     return authenticator_->GetSessionPolicies();
-  }
-  std::unique_ptr<ChannelAuthenticator> CreateChannelAuthenticator()
-      const override {
-    return authenticator_->CreateChannelAuthenticator();
   }
 
  private:
@@ -212,21 +203,6 @@ class NegotiatingAuthenticatorTest : public AuthenticatorTestBase {
 
     ASSERT_EQ(host_->state(), Authenticator::ACCEPTED);
     ASSERT_EQ(client_->state(), Authenticator::ACCEPTED);
-
-    client_auth_ = client_->CreateChannelAuthenticator();
-    host_auth_ = host_->CreateChannelAuthenticator();
-    RunChannelAuth(false);
-
-    EXPECT_TRUE(client_socket_.get() != nullptr);
-    EXPECT_TRUE(host_socket_.get() != nullptr);
-
-    StreamConnectionTester tester(host_socket_.get(), client_socket_.get(),
-                                  kMessageSize, kMessages);
-
-    base::RunLoop run_loop;
-    tester.Start(run_loop.QuitClosure());
-    run_loop.Run();
-    tester.CheckResults();
   }
 
   AuthenticationMethod current_method() {

@@ -16,7 +16,6 @@
 #include "base/notreached.h"
 #include "base/strings/string_split.h"
 #include "remoting/base/rsa_key_pair.h"
-#include "remoting/protocol/channel_authenticator.h"
 #include "remoting/protocol/credentials_type.h"
 #include "remoting/protocol/host_authentication_config.h"
 #include "remoting/protocol/pairing_host_authenticator.h"

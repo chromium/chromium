@@ -16,7 +16,6 @@
 #include "remoting/base/logging.h"
 #include "remoting/base/username.h"
 #include "remoting/host/pam_utils.h"
-#include "remoting/protocol/channel_authenticator.h"
 
 namespace remoting {
 
@@ -38,8 +37,6 @@ class PamAuthorizer : public protocol::Authenticator {
   JingleAuthentication GetNextMessage() override;
   const std::string& GetAuthKey() const override;
   const SessionPolicies* GetSessionPolicies() const override;
-  std::unique_ptr<protocol::ChannelAuthenticator> CreateChannelAuthenticator()
-      const override;
 
  private:
   void MaybeCheckLocalLogin();
@@ -133,11 +130,6 @@ const std::string& PamAuthorizer::GetAuthKey() const {
 
 const SessionPolicies* PamAuthorizer::GetSessionPolicies() const {
   return underlying_->GetSessionPolicies();
-}
-
-std::unique_ptr<protocol::ChannelAuthenticator>
-PamAuthorizer::CreateChannelAuthenticator() const {
-  return underlying_->CreateChannelAuthenticator();
 }
 
 void PamAuthorizer::MaybeCheckLocalLogin() {

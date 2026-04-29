@@ -72,8 +72,6 @@ class NegotiatingAuthenticatorBase : public Authenticator {
   RejectionDetails rejection_details() const override;
   const std::string& GetAuthKey() const override;
   const SessionPolicies* GetSessionPolicies() const override;
-  std::unique_ptr<ChannelAuthenticator> CreateChannelAuthenticator()
-      const override;
 
   // Calls |current_authenticator_| to process |message|, passing the supplied
   // |resume_callback|.

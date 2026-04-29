@@ -22,7 +22,6 @@
 #include "remoting/proto/internal.pb.h"
 #include "remoting/proto/video.pb.h"
 #include "remoting/protocol/authenticator.h"
-#include "remoting/protocol/channel_authenticator.h"
 #include "remoting/protocol/client_stub.h"
 #include "remoting/protocol/clipboard_stub.h"
 #include "remoting/protocol/connection_to_client.h"
@@ -68,21 +67,12 @@ class MockAuthenticator : public Authenticator {
               (),
               (const, override));
   MOCK_METHOD(const std::string&, GetAuthKey, (), (const, override));
-  MOCK_METHOD(ChannelAuthenticator*,
-              CreateChannelAuthenticatorPtr,
-              (),
-              (const));
   MOCK_METHOD(void,
               ProcessMessage,
               (const JingleAuthentication& message,
                base::OnceClosure resume_callback),
               (override));
   MOCK_METHOD(JingleAuthentication, GetNextMessage, (), (override));
-
-  std::unique_ptr<ChannelAuthenticator> CreateChannelAuthenticator()
-      const override {
-    return base::WrapUnique(CreateChannelAuthenticatorPtr());
-  }
 
   // Make this method public.
   void NotifyStateChangeAfterAccepted() override {

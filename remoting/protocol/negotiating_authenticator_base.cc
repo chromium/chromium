@@ -15,7 +15,6 @@
 #include "remoting/base/constants.h"
 #include "remoting/base/rsa_key_pair.h"
 #include "remoting/protocol/authenticator.h"
-#include "remoting/protocol/channel_authenticator.h"
 #include "remoting/protocol/credentials_type.h"
 
 namespace remoting::protocol {
@@ -149,12 +148,6 @@ const SessionPolicies* NegotiatingAuthenticatorBase::GetSessionPolicies()
     const {
   DCHECK_EQ(state(), ACCEPTED);
   return current_authenticator_->GetSessionPolicies();
-}
-
-std::unique_ptr<ChannelAuthenticator>
-NegotiatingAuthenticatorBase::CreateChannelAuthenticator() const {
-  DCHECK_EQ(state(), ACCEPTED);
-  return current_authenticator_->CreateChannelAuthenticator();
 }
 
 }  // namespace remoting::protocol

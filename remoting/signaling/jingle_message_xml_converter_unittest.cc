@@ -282,13 +282,7 @@ TEST(JingleMessageXmlConverterTest, SessionInfo_Generic_RoundTrip) {
 
 TEST(JingleMessageXmlConverterTest, ContentDescription_RoundTrip) {
   std::unique_ptr<CandidateSessionConfig> config =
-      CandidateSessionConfig::CreateEmpty();
-  config->set_ice_supported(true);
-  config->set_webrtc_supported(true);
-
-  ChannelConfig channel_config(ChannelConfig::TRANSPORT_STREAM, 2,
-                               ChannelConfig::CODEC_VP8);
-  config->mutable_video_configs()->push_back(channel_config);
+      CandidateSessionConfig::CreateDefault();
 
   JingleAuthentication auth;
   auth.id = "auth_id";
@@ -302,43 +296,29 @@ TEST(JingleMessageXmlConverterTest, ContentDescription_RoundTrip) {
       ContentDescriptionFromXml(xml.get(), true);
   ASSERT_TRUE(parsed);
 
-  EXPECT_TRUE(parsed->config()->ice_supported());
   EXPECT_TRUE(parsed->config()->webrtc_supported());
-  ASSERT_EQ(parsed->config()->video_configs().size(), 1U);
-  EXPECT_EQ(parsed->config()->video_configs().front().transport,
-            ChannelConfig::TRANSPORT_STREAM);
-  EXPECT_EQ(parsed->config()->video_configs().front().version, 2);
-  EXPECT_EQ(parsed->config()->video_configs().front().codec,
-            ChannelConfig::CODEC_VP8);
   EXPECT_EQ(parsed->authentication().id, "auth_id");
 }
 
-TEST(JingleMessageXmlConverterTest, IceTransportInfo_RoundTrip) {
-  IceTransportInfo transport;
-  IceTransportInfo::IceCredentials cred;
-  cred.channel = "test-channel";
-  cred.ufrag = "test-ufrag";
-  cred.password = "test-password";
-  transport.ice_credentials.push_back(cred);
+TEST(JingleMessageXmlConverterTest, JingleTransportInfo_RoundTrip) {
+  JingleTransportInfo transport;
+  transport.xml_namespace = "google:remoting:webrtc";
 
   IceTransportInfo::NamedCandidate candidate;
   candidate.name = "test-candidate";
   candidate.candidate = webrtc::Candidate(
       1, "udp", webrtc::SocketAddress("1.2.3.4", 1234), 1, "ufrag", "password",
       webrtc::IceCandidateType::kHost, 0, "foundation");
+  candidate.sdp_m_line_index = 0;
   transport.candidates.push_back(candidate);
 
-  std::unique_ptr<XmlElement> xml = IceTransportInfoToXml(transport);
+  std::unique_ptr<XmlElement> xml = JingleTransportInfoToXml(transport);
   ASSERT_TRUE(xml);
 
-  IceTransportInfo parsed_transport;
-  EXPECT_TRUE(IceTransportInfoFromXml(xml.get(), &parsed_transport));
+  JingleTransportInfo parsed_transport;
+  EXPECT_TRUE(JingleTransportInfoFromXml(xml.get(), &parsed_transport));
 
-  ASSERT_EQ(parsed_transport.ice_credentials.size(), 1U);
-  EXPECT_EQ(parsed_transport.ice_credentials.front().channel, "test-channel");
-  EXPECT_EQ(parsed_transport.ice_credentials.front().ufrag, "test-ufrag");
-  EXPECT_EQ(parsed_transport.ice_credentials.front().password, "test-password");
-
+  EXPECT_EQ(parsed_transport.xml_namespace, "google:remoting:webrtc");
   ASSERT_EQ(parsed_transport.candidates.size(), 1U);
   EXPECT_EQ(parsed_transport.candidates.front().name, "test-candidate");
   EXPECT_EQ(parsed_transport.candidates.front()
