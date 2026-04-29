@@ -2966,7 +2966,10 @@ TEST_F(CommitToActiveTreeLayerTreeHostImplTest,
   EXPECT_FALSE(did_request_redraw_);
   EXPECT_FALSE(did_request_commit_);
 
-  host_impl_->CommitComplete();
+  // TODO(496580137): Move this to ClientLayerTreeHostImpl specific tests.
+  if (!host_impl_->settings().trees_in_viz_in_viz_process) {
+    static_cast<ClientLayerTreeHostImpl*>(host_impl_.get())->CommitComplete();
+  }
 
   // Animations on the active tree should be started and ticked, and a new frame
   // should be requested to continue ticking them.
@@ -13862,6 +13865,9 @@ TEST_P(LayerTreeHostImplTest,
 
 // Test that TotalFrameCounter resets itself under certain conditions
 TEST_P(LayerTreeHostImplTest, FrameCounterReset) {
+  if (host_impl_->settings().trees_in_viz_in_viz_process) {
+    return;
+  }
   FrameSorter* frame_sorter = host_impl_->frame_sorter_for_testing();
   EXPECT_EQ(frame_sorter->total_frames(), 0u);
   FrameInfo frame_info;
@@ -13885,20 +13891,31 @@ TEST_P(LayerTreeHostImplTest, FrameCounterReset) {
 
   BeginMainFrameMetrics begin_frame_metrics;
   begin_frame_metrics.should_measure_smoothness = true;
-  host_impl_->ReadyToCommit(/*scroll_and_viewport_changes_synced=*/true,
-                            &begin_frame_metrics, /*commit_timeout=*/false);
+  // TODO(496580137): Move this to ClientLayerTreeHostImpl specific tests.
+  if (!host_impl_->settings().trees_in_viz_in_viz_process) {
+    static_cast<ClientLayerTreeHostImpl*>(host_impl_.get())
+        ->ReadyToCommit(/*scroll_and_viewport_changes_synced=*/true,
+                        &begin_frame_metrics, /*commit_timeout=*/false);
+  }
   frame_sorter->AddNewFrame(args);
   // Delegates to DFC::AddSortedFrame, which calls DFC::OnEndFrame.
   frame_sorter->AddFrameResult(
       args, CreateFakeFrameInfo(FrameInfo::FrameFinalState::kDropped));
   frame_sorter->AddFrameInfoToBuffer(frame_info);
-  host_impl_->SetActiveURL(GURL(), 1u);
+  // TODO(496580137): Move this to ClientLayerTreeHostImpl specific tests.
+  if (!host_impl_->settings().trees_in_viz_in_viz_process) {
+    static_cast<ClientLayerTreeHostImpl*>(host_impl_.get())
+        ->SetActiveURL(GURL(), 1u);
+  }
   EXPECT_EQ(frame_sorter->total_frames(), 0u);
   EXPECT_EQ(frame_sorter->total_dropped(), 0u);
 }
 
 // Test that TotalFrameCounter does not reset itself under certain conditions
 TEST_P(LayerTreeHostImplTest, FrameCounterNotReset) {
+  if (host_impl_->settings().trees_in_viz_in_viz_process) {
+    return;
+  }
   FrameSorter* frame_sorter = host_impl_->frame_sorter_for_testing();
   EXPECT_EQ(frame_sorter->total_frames(), 0u);
 
@@ -13910,8 +13927,12 @@ TEST_P(LayerTreeHostImplTest, FrameCounterNotReset) {
       deadline, interval, viz::BeginFrameArgs::NORMAL);
   BeginMainFrameMetrics begin_frame_metrics;
   begin_frame_metrics.should_measure_smoothness = true;
-  host_impl_->ReadyToCommit(/*scroll_and_viewport_changes_synced=*/true,
-                            &begin_frame_metrics, /*commit_timeout=*/false);
+  // TODO(496580137): Move this to ClientLayerTreeHostImpl specific tests.
+  if (!host_impl_->settings().trees_in_viz_in_viz_process) {
+    static_cast<ClientLayerTreeHostImpl*>(host_impl_.get())
+        ->ReadyToCommit(/*scroll_and_viewport_changes_synced=*/true,
+                        &begin_frame_metrics, /*commit_timeout=*/false);
+  }
   EXPECT_EQ(frame_sorter->total_frames(), 0u);
   FrameInfo frame_info;
   frame_info.final_state = FrameInfo::FrameFinalState::kPresentedAll;
@@ -13925,8 +13946,12 @@ TEST_P(LayerTreeHostImplTest, FrameCounterNotReset) {
       deadline, interval, viz::BeginFrameArgs::NORMAL);
   // Consecutive BeginFrameMetrics with the same |should_measure_smoothness|
   // flag should not reset the counter.
-  host_impl_->ReadyToCommit(/*scroll_and_viewport_changes_synced=*/true,
-                            &begin_frame_metrics, /*commit_timeout=*/false);
+  // TODO(496580137): Move this to ClientLayerTreeHostImpl specific tests.
+  if (!host_impl_->settings().trees_in_viz_in_viz_process) {
+    static_cast<ClientLayerTreeHostImpl*>(host_impl_.get())
+        ->ReadyToCommit(/*scroll_and_viewport_changes_synced=*/true,
+                        &begin_frame_metrics, /*commit_timeout=*/false);
+  }
   EXPECT_EQ(frame_sorter->total_frames(), 1u);
 }
 
@@ -15593,7 +15618,10 @@ TEST_F(MsaaIsSlowLayerTreeHostImplTest, GpuRasterizationStatusMsaaIsSlow) {
   // Ensure that without the msaa_is_slow or avoid_stencil_buffers caps
   // we raster slow paths with msaa.
   CreateHostImplWithCaps(false, false);
-  host_impl_->CommitComplete();
+  // TODO(496580137): Move this to ClientLayerTreeHostImpl specific tests.
+  if (!host_impl_->settings().trees_in_viz_in_viz_process) {
+    static_cast<ClientLayerTreeHostImpl*>(host_impl_.get())->CommitComplete();
+  }
   EXPECT_TRUE(host_impl_->use_gpu_rasterization());
   EXPECT_TRUE(host_impl_->can_use_msaa());
 
@@ -15601,19 +15629,28 @@ TEST_F(MsaaIsSlowLayerTreeHostImplTest, GpuRasterizationStatusMsaaIsSlow) {
   // we don't raster slow paths with msaa (we'll still use GPU raster, though).
   // msaa_is_slow = true, avoid_stencil_buffers = false
   CreateHostImplWithCaps(true, false);
-  host_impl_->CommitComplete();
+  // TODO(496580137): Move this to ClientLayerTreeHostImpl specific tests.
+  if (!host_impl_->settings().trees_in_viz_in_viz_process) {
+    static_cast<ClientLayerTreeHostImpl*>(host_impl_.get())->CommitComplete();
+  }
   EXPECT_TRUE(host_impl_->use_gpu_rasterization());
   EXPECT_FALSE(host_impl_->can_use_msaa());
 
   // msaa_is_slow = false, avoid_stencil_buffers = true
   CreateHostImplWithCaps(false, true);
-  host_impl_->CommitComplete();
+  // TODO(496580137): Move this to ClientLayerTreeHostImpl specific tests.
+  if (!host_impl_->settings().trees_in_viz_in_viz_process) {
+    static_cast<ClientLayerTreeHostImpl*>(host_impl_.get())->CommitComplete();
+  }
   EXPECT_TRUE(host_impl_->use_gpu_rasterization());
   EXPECT_FALSE(host_impl_->can_use_msaa());
 
   // msaa_is_slow = true, avoid_stencil_buffers = true
   CreateHostImplWithCaps(true, true);
-  host_impl_->CommitComplete();
+  // TODO(496580137): Move this to ClientLayerTreeHostImpl specific tests.
+  if (!host_impl_->settings().trees_in_viz_in_viz_process) {
+    static_cast<ClientLayerTreeHostImpl*>(host_impl_.get())->CommitComplete();
+  }
   EXPECT_TRUE(host_impl_->use_gpu_rasterization());
   EXPECT_FALSE(host_impl_->can_use_msaa());
 }
@@ -15770,7 +15807,11 @@ TEST_P(PendingTreeLayerTreeHostImplTest, CheckerImagingTileInvalidation) {
   host_impl_->WillBeginImplFrame(begin_frame_args);
 
   // Create the pending tree.
-  host_impl_->BeginCommit(0, BeginMainFrameTraceId{1});
+  // TODO(496580137): Move this to ClientLayerTreeHostImpl specific tests.
+  if (!host_impl_->settings().trees_in_viz_in_viz_process) {
+    static_cast<ClientLayerTreeHostImpl*>(host_impl_.get())
+        ->BeginCommit(0, BeginMainFrameTraceId{1});
+  }
   LayerTreeImpl* pending_tree = host_impl_->pending_tree();
   auto* root = SetupRootLayer<FakePictureLayerImpl>(pending_tree, layer_size,
                                                     raster_source);
@@ -15779,7 +15820,10 @@ TEST_P(PendingTreeLayerTreeHostImplTest, CheckerImagingTileInvalidation) {
 
   // CompleteCommit which should perform a PrepareTiles, adding tilings for the
   // root layer, each one having a raster task.
-  host_impl_->CommitComplete();
+  // TODO(496580137): Move this to ClientLayerTreeHostImpl specific tests.
+  if (!host_impl_->settings().trees_in_viz_in_viz_process) {
+    static_cast<ClientLayerTreeHostImpl*>(host_impl_.get())->CommitComplete();
+  }
   EXPECT_EQ(root->num_tilings(), 1U);
   const PictureLayerTiling* tiling = root->tilings()->tiling_at(0);
   EXPECT_EQ(tiling->AllTilesForTesting().size(), 9U);
@@ -15799,7 +15843,11 @@ TEST_P(PendingTreeLayerTreeHostImplTest, CheckerImagingTileInvalidation) {
 
   // Invalidate content on impl-side and ensure that the correct tiles are
   // invalidated on the pending tree.
-  host_impl_->InvalidateContentOnImplSide();
+  // TODO(496580137): Move this to ClientLayerTreeHostImpl specific tests.
+  if (!host_impl_->settings().trees_in_viz_in_viz_process) {
+    static_cast<ClientLayerTreeHostImpl*>(host_impl_.get())
+        ->InvalidateContentOnImplSide();
+  }
   pending_tree = host_impl_->pending_tree();
   root = static_cast<FakePictureLayerImpl*>(pending_tree->root_layer());
   for (auto* tile : root->tilings()->tiling_at(0)->AllTilesForTesting()) {
@@ -16702,7 +16750,11 @@ TEST_P(ClientModeLayerTreeHostImplTest,
   auto args = viz::CreateBeginFrameArgsForTesting(BEGINFRAME_FROM_HERE, 0, 1);
   host_impl_->WillBeginImplFrame(args);
   // Expect no crash because the operation is within an impl frame.
-  host_impl_->InvalidateContentOnImplSide();
+  // TODO(496580137): Move this to ClientLayerTreeHostImpl specific tests.
+  if (!host_impl_->settings().trees_in_viz_in_viz_process) {
+    static_cast<ClientLayerTreeHostImpl*>(host_impl_.get())
+        ->InvalidateContentOnImplSide();
+  }
 
   // Once the impl frame is finished the impl thread phase is set to IDLE.
   host_impl_->DidFinishImplFrame(args);
@@ -16711,7 +16763,11 @@ TEST_P(ClientModeLayerTreeHostImplTest,
   CreateHostImpl(settings, CreateLayerTreeFrameSink());
   // Expect no crash when using synchronous renderer compositor regardless the
   // impl thread phase.
-  host_impl_->InvalidateContentOnImplSide();
+  // TODO(496580137): Move this to ClientLayerTreeHostImpl specific tests.
+  if (!host_impl_->settings().trees_in_viz_in_viz_process) {
+    static_cast<ClientLayerTreeHostImpl*>(host_impl_.get())
+        ->InvalidateContentOnImplSide();
+  }
 
   // Test passes when there is no crash.
 }
@@ -16777,24 +16833,38 @@ TEST_P(LayerTreeHostImplTest, TouchScrollOnAndroidScrollbar) {
 
 TEST_P(PendingTreeLayerTreeHostImplTest, CommitWithNoPaintWorkletLayerPainter) {
   ASSERT_FALSE(host_impl_->GetPaintWorkletLayerPainterForTesting());
-  host_impl_->CreatePendingTree();
+  // TODO(496580137): Move this to ClientLayerTreeHostImpl specific tests.
+  if (!host_impl_->settings().trees_in_viz_in_viz_process) {
+    static_cast<ClientLayerTreeHostImpl*>(host_impl_.get())
+        ->CreatePendingTree();
+  }
 
   // When there is no PaintWorkletLayerPainter registered, commits should finish
   // immediately and move onto preparing tiles.
   ASSERT_FALSE(did_prepare_tiles_);
-  host_impl_->CommitComplete();
+  // TODO(496580137): Move this to ClientLayerTreeHostImpl specific tests.
+  if (!host_impl_->settings().trees_in_viz_in_viz_process) {
+    static_cast<ClientLayerTreeHostImpl*>(host_impl_.get())->CommitComplete();
+  }
   EXPECT_TRUE(did_prepare_tiles_);
 }
 
 TEST_P(PendingTreeLayerTreeHostImplTest, CommitWithNoPaintWorklets) {
   host_impl_->SetPaintWorkletLayerPainter(
       std::make_unique<TestPaintWorkletLayerPainter>());
-  host_impl_->CreatePendingTree();
+  // TODO(496580137): Move this to ClientLayerTreeHostImpl specific tests.
+  if (!host_impl_->settings().trees_in_viz_in_viz_process) {
+    static_cast<ClientLayerTreeHostImpl*>(host_impl_.get())
+        ->CreatePendingTree();
+  }
 
   // When there are no PaintWorklets in the committed display lists, commits
   // should finish immediately and move onto preparing tiles.
   ASSERT_FALSE(did_prepare_tiles_);
-  host_impl_->CommitComplete();
+  // TODO(496580137): Move this to ClientLayerTreeHostImpl specific tests.
+  if (!host_impl_->settings().trees_in_viz_in_viz_process) {
+    static_cast<ClientLayerTreeHostImpl*>(host_impl_.get())->CommitComplete();
+  }
   EXPECT_TRUE(did_prepare_tiles_);
 }
 
@@ -16805,7 +16875,11 @@ TEST_P(PendingTreeLayerTreeHostImplTest, CommitWithDirtyPaintWorklets) {
 
   // Setup the pending tree with a PictureLayerImpl that will contain
   // PaintWorklets.
-  host_impl_->CreatePendingTree();
+  // TODO(496580137): Move this to ClientLayerTreeHostImpl specific tests.
+  if (!host_impl_->settings().trees_in_viz_in_viz_process) {
+    static_cast<ClientLayerTreeHostImpl*>(host_impl_.get())
+        ->CreatePendingTree();
+  }
   auto* root = SetupRootLayer<PictureLayerImpl>(host_impl_->pending_tree(),
                                                 gfx::Size(100, 100));
   root->SetNeedsPushProperties();
@@ -16820,7 +16894,10 @@ TEST_P(PendingTreeLayerTreeHostImplTest, CommitWithDirtyPaintWorklets) {
   // preparation to happen. Instead, it will be delayed until the callback
   // passed to the PaintWorkletLayerPainter is called.
   did_prepare_tiles_ = false;
-  host_impl_->CommitComplete();
+  // TODO(496580137): Move this to ClientLayerTreeHostImpl specific tests.
+  if (!host_impl_->settings().trees_in_viz_in_viz_process) {
+    static_cast<ClientLayerTreeHostImpl*>(host_impl_.get())->CommitComplete();
+  }
   EXPECT_FALSE(did_prepare_tiles_);
 
   // Set up a result to have been 'painted'.
@@ -16851,7 +16928,11 @@ TEST_P(PendingTreeLayerTreeHostImplTest, CommitWithNoDirtyPaintWorklets) {
   host_impl_->SetPaintWorkletLayerPainter(
       std::make_unique<TestPaintWorkletLayerPainter>());
 
-  host_impl_->CreatePendingTree();
+  // TODO(496580137): Move this to ClientLayerTreeHostImpl specific tests.
+  if (!host_impl_->settings().trees_in_viz_in_viz_process) {
+    static_cast<ClientLayerTreeHostImpl*>(host_impl_.get())
+        ->CreatePendingTree();
+  }
   auto* root = SetupRootLayer<PictureLayerImpl>(host_impl_->pending_tree(),
                                                 gfx::Size(100, 100));
   root->SetNeedsPushProperties();
@@ -16871,7 +16952,10 @@ TEST_P(PendingTreeLayerTreeHostImplTest, CommitWithNoDirtyPaintWorklets) {
   // Since there are no dirty PaintWorklets, the commit should immediately
   // prepare tiles.
   ASSERT_FALSE(did_prepare_tiles_);
-  host_impl_->CommitComplete();
+  // TODO(496580137): Move this to ClientLayerTreeHostImpl specific tests.
+  if (!host_impl_->settings().trees_in_viz_in_viz_process) {
+    static_cast<ClientLayerTreeHostImpl*>(host_impl_.get())->CommitComplete();
+  }
   EXPECT_TRUE(did_prepare_tiles_);
 }
 
@@ -16899,7 +16983,11 @@ TEST_P(ForceActivateAfterPaintWorkletPaintLayerTreeHostImplTest,
 
   // Setup the pending tree with a PictureLayerImpl that will contain
   // PaintWorklets.
-  host_impl_->CreatePendingTree();
+  // TODO(496580137): Move this to ClientLayerTreeHostImpl specific tests.
+  if (!host_impl_->settings().trees_in_viz_in_viz_process) {
+    static_cast<ClientLayerTreeHostImpl*>(host_impl_.get())
+        ->CreatePendingTree();
+  }
   auto* root = SetupRootLayer<PictureLayerImpl>(host_impl_->pending_tree(),
                                                 gfx::Size(100, 100));
   root->SetNeedsPushProperties();
@@ -16915,7 +17003,10 @@ TEST_P(ForceActivateAfterPaintWorkletPaintLayerTreeHostImplTest,
   // preparation to happen. Instead, it will be delayed until the callback
   // passed to the PaintWorkletLayerPainter is called.
   did_prepare_tiles_ = false;
-  host_impl_->CommitComplete();
+  // TODO(496580137): Move this to ClientLayerTreeHostImpl specific tests.
+  if (!host_impl_->settings().trees_in_viz_in_viz_process) {
+    static_cast<ClientLayerTreeHostImpl*>(host_impl_.get())->CommitComplete();
+  }
   EXPECT_FALSE(did_prepare_tiles_);
 
   // Set up a result to have been 'painted'.
@@ -17800,7 +17891,11 @@ TEST_P(ClientModeLayerTreeHostImplTest, NonCompositedScrollUsesRaster) {
     EXPECT_EQ(DrawResult::kSuccess, host_impl_->PrepareToDraw(&frame));
 
     // This call sets the invalidate_raster_scroll bit.
-    host_impl_->InvalidateContentOnImplSide();
+    // TODO(496580137): Move this to ClientLayerTreeHostImpl specific tests.
+    if (!host_impl_->settings().trees_in_viz_in_viz_process) {
+      static_cast<ClientLayerTreeHostImpl*>(host_impl_.get())
+          ->InvalidateContentOnImplSide();
+    }
     if (!CommitsToActiveTree()) {
       // Activate the pending tree before drawing layers.
       host_impl_->ActivateSyncTree();
@@ -17891,7 +17986,11 @@ TEST_P(PendingTreeLayerTreeHostImplTest,
     EXPECT_EQ(DrawResult::kSuccess, host_impl_->PrepareToDraw(&frame));
   }
   // This call creates a new pending tree.
-  host_impl_->InvalidateContentOnImplSide();
+  // TODO(496580137): Move this to ClientLayerTreeHostImpl specific tests.
+  if (!host_impl_->settings().trees_in_viz_in_viz_process) {
+    static_cast<ClientLayerTreeHostImpl*>(host_impl_.get())
+        ->InvalidateContentOnImplSide();
+  }
   if (!CommitsToActiveTree()) {
     // If a pending tree exists, we expect to see that there are metrics
     // associated with the raster frame associated with it.

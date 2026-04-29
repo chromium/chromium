@@ -229,24 +229,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   }
 
   virtual void WillSendBeginMainFrame() {}
-  virtual void BeginMainFrameAborted(
-      CommitEarlyOutReason reason,
-      std::vector<std::unique_ptr<SwapPromise>> swap_promises,
-      const viz::BeginFrameArgs& args,
-      bool next_bmf,
-      bool scroll_and_viewport_changes_synced);
-  virtual void ReadyToCommit(
-      bool scroll_and_viewport_changes_synced,
-      const BeginMainFrameMetrics* begin_main_frame_metrics,
-      bool commit_timeout);
-  virtual void BeginCommit(int source_frame_number,
-                           BeginMainFrameTraceId trace_id);
-  virtual void FinishCommit(CommitState& commit_state,
-                            const ThreadUnsafeCommitState& unsafe_state);
-  virtual void CommitComplete();
   virtual void UpdateAnimationState(bool start_ready_animations);
-  void PullLayerTreeHostPropertiesFrom(const CommitState&);
-  void RecordGpuRasterizationHistogram();
   bool Mutate(base::TimeTicks monotonic_time);
   void ActivateAnimations();
   void Animate();
@@ -358,8 +341,6 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   // Analogous to a commit, this function is used to create a sync tree and
   // add impl-side invalidations to it.
   // virtual for testing.
-  virtual void InvalidateContentOnImplSide();
-  virtual void InvalidateLayerTreeFrameSink(bool needs_redraw);
 
   void SetTreeLayerScrollOffsetMutated(ElementId element_id,
                                        LayerTreeImpl* tree,
@@ -643,7 +624,6 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   LayerTreeImpl* sync_tree() const {
     return CommitsToActiveTree() ? active_tree_.get() : pending_tree_.get();
   }
-  virtual void CreatePendingTree();
   virtual void ActivateSyncTree();
 
   // Shortcuts to layers/nodes on the active tree.
@@ -704,7 +684,6 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   void SetDebugState(const LayerTreeDebugState& new_debug_state);
   const LayerTreeDebugState& debug_state() const { return debug_state_; }
 
-  void SetTreePriority(TreePriority priority);
   TreePriority GetTreePriority() const;
 
   // TODO(mithro): Remove this methods which exposes the internal
@@ -833,7 +812,6 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   void SetRenderFrameObserver(
       std::unique_ptr<RenderFrameMetadataObserver> observer);
 
-  void SetActiveURL(const GURL& url, ukm::SourceId source_id);
 
   // Notifies FrameTrackers, impl side callbacks that the compsitor frame
   // was presented.
@@ -940,7 +918,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
 
   BeginFrameTracker current_begin_frame_tracker_;
 
- private:
+ protected:
   // Holds image decode cache instance. It can either be a shared cache or
   // a cache create by this instance. Which is used depends on the settings.
   class ImageDecodeCacheHolder;

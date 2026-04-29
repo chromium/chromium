@@ -52,9 +52,9 @@ class FakeLayerTreeHostImpl : public ClientLayerTreeHostImpl {
   TargetColorParams GetTargetColorParams(
       gfx::ContentColorUsage content_color_usage) const override;
 
-  using LayerTreeHostImpl::ActivateSyncTree;
-  using LayerTreeHostImpl::prepare_tiles_needed;
+  using ClientLayerTreeHostImpl::ActivateSyncTree;
   using LayerTreeHostImpl::is_likely_to_require_a_draw;
+  using LayerTreeHostImpl::prepare_tiles_needed;
   using LayerTreeHostImpl::RemoveRenderPasses;
 
   bool notify_tile_state_changed_called() const {

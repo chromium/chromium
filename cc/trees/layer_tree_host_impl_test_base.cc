@@ -179,7 +179,8 @@ void LayerTreeHostImplTestBase::EnsureSyncTree() {
 }
 
 void LayerTreeHostImplTestBase::CreatePendingTree() {
-  host_impl_->CreatePendingTree();
+  // TODO(496580137): Move this to ClientLayerTreeHostImpl specific tests.
+  static_cast<ClientLayerTreeHostImpl*>(host_impl_.get())->CreatePendingTree();
   LayerTreeImpl* pending_tree = host_impl_->pending_tree();
   pending_tree->SetDeviceViewportRect(
       host_impl_->active_tree()->GetDeviceViewport());
@@ -203,7 +204,8 @@ void LayerTreeHostImplTestBase::OnCanDrawStateChanged(bool can_draw) {
 }
 void LayerTreeHostImplTestBase::NotifyReadyToActivate() {
   did_notify_ready_to_activate_ = true;
-  host_impl_->ActivateSyncTree();
+  // TODO(496580137): Move this to ClientLayerTreeHostImpl specific tests.
+  static_cast<ClientLayerTreeHostImpl*>(host_impl_.get())->ActivateSyncTree();
 }
 bool LayerTreeHostImplTestBase::IsReadyToActivate() {
   // in NotifyReadyToActivate(), call ActivateSyncTree() directly

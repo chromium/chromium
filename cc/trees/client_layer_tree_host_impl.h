@@ -7,6 +7,8 @@
 
 #include "cc/cc_export.h"
 #include "cc/trees/layer_tree_host_impl.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
+#include "url/gurl.h"
 
 namespace cc {
 
@@ -26,6 +28,40 @@ class CC_EXPORT ClientLayerTreeHostImpl : public LayerTreeHostImpl {
 
   using LayerTreeHostImpl::LayerTreeHostImpl;
   ~ClientLayerTreeHostImpl() override;
+
+  void SetActiveURL(const GURL& url, ukm::SourceId source_id);
+
+  // LayerTreeHostImpl methods only used in the client.
+  virtual void BeginMainFrameAborted(
+      CommitEarlyOutReason reason,
+      std::vector<std::unique_ptr<SwapPromise>> swap_promises,
+      const viz::BeginFrameArgs& args,
+      bool next_bmf,
+      bool scroll_and_viewport_changes_synced);
+  virtual void BeginCommit(int source_frame_number,
+                           BeginMainFrameTraceId trace_id);
+  virtual void FinishCommit(CommitState& commit_state,
+                            const ThreadUnsafeCommitState& unsafe_state);
+  virtual void CommitComplete();
+  virtual void ReadyToCommit(
+      bool scroll_and_viewport_changes_synced,
+      const BeginMainFrameMetrics* begin_main_frame_metrics,
+      bool commit_timeout);
+  virtual void InvalidateContentOnImplSide();
+  virtual void InvalidateLayerTreeFrameSink(bool needs_redraw);
+  virtual void SetTreePriority(TreePriority priority);
+  virtual void CreatePendingTree();
+
+  void RecordGpuRasterizationHistogram();
+
+ private:
+  void PullLayerTreeHostPropertiesFrom(const CommitState&);
+  void UpdateSyncTreeAfterCommitOrImplSideInvalidation();
+  PaintWorkletJobMap GatherDirtyPaintWorklets(
+      PaintImageIdFlatSet* dirty_paint_worklet_ids) const;
+  void OnPaintWorkletResultsReady(PaintWorkletJobMap results);
+  void NotifyPendingTreeFullyPainted();
+  void AnimatePendingTreeAfterCommit();
 };
 
 }  // namespace cc

@@ -231,7 +231,7 @@ class LayerTreeHostImplForTesting : public ClientLayerTreeHostImpl {
       const viz::BeginFrameArgs& args,
       bool next_bmf,
       bool scroll_and_viewport_changes_synced) override {
-    LayerTreeHostImpl::BeginMainFrameAborted(
+    ClientLayerTreeHostImpl::BeginMainFrameAborted(
         reason, std::move(swap_promises), args, next_bmf,
         scroll_and_viewport_changes_synced);
     test_hooks_->BeginMainFrameAbortedOnThread(
@@ -241,26 +241,27 @@ class LayerTreeHostImplForTesting : public ClientLayerTreeHostImpl {
   void ReadyToCommit(bool scroll_and_viewport_changes_synced,
                      const BeginMainFrameMetrics* begin_main_frame_metrics,
                      bool commit_timeout) override {
-    LayerTreeHostImpl::ReadyToCommit(scroll_and_viewport_changes_synced,
-                                     begin_main_frame_metrics, commit_timeout);
+    ClientLayerTreeHostImpl::ReadyToCommit(scroll_and_viewport_changes_synced,
+                                           begin_main_frame_metrics,
+                                           commit_timeout);
     test_hooks_->ReadyToCommitOnThread(this);
   }
 
   void BeginCommit(int source_frame_number,
                    BeginMainFrameTraceId trace_id) override {
-    LayerTreeHostImpl::BeginCommit(source_frame_number, trace_id);
+    ClientLayerTreeHostImpl::BeginCommit(source_frame_number, trace_id);
     test_hooks_->BeginCommitOnThread(this);
   }
 
   void CommitComplete() override {
     test_hooks_->WillCommitCompleteOnThread(this);
-    LayerTreeHostImpl::CommitComplete();
+    ClientLayerTreeHostImpl::CommitComplete();
     test_hooks_->CommitCompleteOnThread(this);
   }
 
   bool PrepareTiles() override {
     test_hooks_->WillPrepareTilesOnThread(this);
-    return LayerTreeHostImpl::PrepareTiles();
+    return ClientLayerTreeHostImpl::PrepareTiles();
   }
 
   DrawResult PrepareToDraw(FrameData* frame, bool expects_to_draw) override {
@@ -336,7 +337,7 @@ class LayerTreeHostImplForTesting : public ClientLayerTreeHostImpl {
 
   void ActivateSyncTree() override {
     test_hooks_->WillActivateTreeOnThread(this);
-    LayerTreeHostImpl::ActivateSyncTree();
+    ClientLayerTreeHostImpl::ActivateSyncTree();
     DCHECK(!pending_tree());
     test_hooks_->DidActivateTreeOnThread(this);
   }
@@ -383,12 +384,12 @@ class LayerTreeHostImplForTesting : public ClientLayerTreeHostImpl {
   }
 
   void InvalidateContentOnImplSide() override {
-    LayerTreeHostImpl::InvalidateContentOnImplSide();
+    ClientLayerTreeHostImpl::InvalidateContentOnImplSide();
     test_hooks_->DidInvalidateContentOnImplSide(this);
   }
 
   void InvalidateLayerTreeFrameSink(bool needs_redraw) override {
-    LayerTreeHostImpl::InvalidateLayerTreeFrameSink(needs_redraw);
+    ClientLayerTreeHostImpl::InvalidateLayerTreeFrameSink(needs_redraw);
     test_hooks_->DidInvalidateLayerTreeFrameSink(this);
   }
 

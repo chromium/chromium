@@ -2237,7 +2237,7 @@ class VerifyResourceContentIdRasterBufferProvider
 // Runs a test to ensure that partial raster is either enabled or disabled,
 // depending on |partial_raster_enabled|'s value. Takes ownership of host_impl
 // so that cleanup order can be controlled.
-void RunPartialRasterCheck(std::unique_ptr<LayerTreeHostImpl> host_impl,
+void RunPartialRasterCheck(std::unique_ptr<ClientLayerTreeHostImpl> host_impl,
                            bool partial_raster_enabled) {
   // Pick arbitrary IDs - they don't really matter as long as they're constant.
   const int kLayerId = 7;
@@ -2314,8 +2314,9 @@ void RunPartialRasterCheck(std::unique_ptr<LayerTreeHostImpl> host_impl,
   host_impl = nullptr;
 }
 
-void RunPartialTileDecodeCheck(std::unique_ptr<LayerTreeHostImpl> host_impl,
-                               bool partial_raster_enabled) {
+void RunPartialTileDecodeCheck(
+    std::unique_ptr<ClientLayerTreeHostImpl> host_impl,
+    bool partial_raster_enabled) {
   // Pick arbitrary IDs - they don't really matter as long as they're constant.
   const int kLayerId = 7;
   const uint64_t kInvalidatedId = 43;
