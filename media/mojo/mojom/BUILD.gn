@@ -301,10 +301,6 @@ mojom("mojom") {
           mojom = "media.mojom.HdcpVersion"
           cpp = "::media::HdcpVersion"
         },
-        {
-          mojom = "media.mojom.OverlayInfo"
-          cpp = "::media::OverlayInfo"
-        },
       ]
       traits_headers = [ "//media/base/ipc/media_param_traits_macros.h" ]
       traits_public_deps = [ "//media/base/ipc" ]
@@ -510,6 +506,16 @@ mojom("media_types") {
       ]
       traits_headers = [ "//media/base/ipc/media_param_traits_macros.h" ]
       traits_public_deps = [ "//media/base/ipc" ]
+    },
+    {
+      types = [
+        {
+          mojom = "media.mojom.OverlayInfo"
+          cpp = "::media::OverlayInfo"
+        },
+      ]
+      traits_headers = [ "overlay_info_mojom_traits.h" ]
+      traits_public_deps = [ ":shared_mojom_traits" ]
     },
     {
       types = [
@@ -1008,6 +1014,8 @@ source_set("shared_mojom_traits") {
     "audio_parameters_mojom_traits.h",
     "audio_processing_mojom_traits.cc",
     "audio_processing_mojom_traits.h",
+    "overlay_info_mojom_traits.cc",
+    "overlay_info_mojom_traits.h",
     "picture_in_picture_events_info_mojom_traits.cc",
     "picture_in_picture_events_info_mojom_traits.h",
     "status_mojom_traits.cc",
@@ -1066,6 +1074,7 @@ source_set("unit_tests") {
     "audio_decoder_config_mojom_traits_unittest.cc",
     "audio_processing_mojom_traits_unittest.cc",
     "cdm_key_information_mojom_traits_unittest.cc",
+    "overlay_info_mojom_traits_unittest.cc",
     "picture_in_picture_events_info_mojom_traits_unittest.cc",
     "speech_recognition_recognition_context_mojom_traits_unittest.cc",
     "supported_video_decoder_config_mojom_traits_unittest.cc",

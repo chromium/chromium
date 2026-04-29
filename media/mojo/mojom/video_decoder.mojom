@@ -41,9 +41,6 @@ struct CommandBufferId {
   int32 route_id;
 };
 
-[Native]
-struct OverlayInfo;
-
 // Interface for releasing remote VideoFrames. It is separated from VideoDecoder
 // so that VideoFrames can outlive their VideoDecoder.
 interface VideoFrameHandleReleaser {

@@ -137,7 +137,6 @@ _NATIVE_ALLOWLIST = {
     'media.mojom.MediaLogRecord',
     'media.mojom.MediaStatusState',
     'media.mojom.OutputDeviceStatus',
-    'media.mojom.OverlayInfo',
     'media.mojom.PrimaryID',
     'media.mojom.RangeID',
     'media.mojom.SampleFormat',

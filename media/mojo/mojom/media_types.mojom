@@ -92,6 +92,13 @@ struct VideoTransformation {
 [Native]
 enum WaitingReason;
 
+// See media/base/overlay_info.h for descriptions.
+struct OverlayInfo {
+  mojo_base.mojom.UnguessableToken? routing_token;
+  bool is_fullscreen;
+  bool is_persistent_video;
+};
+
 // See media/base/watch_time_keys.h for descriptions.
 [Native]
 enum WatchTimeKey;
