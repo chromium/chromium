@@ -4,11 +4,13 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
+#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -36,7 +38,12 @@
 // screenshots.
 class OmniboxSuggestionButtonRowBrowserTest : public DialogBrowserTest {
  public:
-  OmniboxSuggestionButtonRowBrowserTest() = default;
+  OmniboxSuggestionButtonRowBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features*/ {},
+        /*disabled_features*/ {omnibox::internal::kWebUIOmniboxPopup,
+                               omnibox::internal::kWebUIOmniboxAimPopup});
+  }
 
   OmniboxSuggestionButtonRowBrowserTest(
       const OmniboxSuggestionButtonRowBrowserTest&) = delete;
@@ -187,6 +194,7 @@ class OmniboxSuggestionButtonRowBrowserTest : public DialogBrowserTest {
   }
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
   scoped_refptr<OmniboxAction> action_;
 };
 
