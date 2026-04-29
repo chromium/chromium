@@ -72,11 +72,9 @@ class FakeGlicInstance : public glic::GlicInstance {
   raw_ptr<glic::Host> host_ = nullptr;
 };
 
-class FakeInstanceDelegate : public glic::Host::InstanceDelegate,
-                             public glic::GlicInstanceMetrics {
+class FakeInstanceDelegate : public glic::Host::InstanceDelegate {
  public:
-  FakeInstanceDelegate()
-      : glic::GlicInstanceMetrics(&profile_metrics_service_) {}
+  FakeInstanceDelegate() : instance_metrics_(&profile_metrics_service_) {}
 
  public:
   tabs::TabInterface* CreateTab(
@@ -142,16 +140,19 @@ class FakeInstanceDelegate : public glic::Host::InstanceDelegate,
 
   void OnInteractionModeChange(glic::mojom::WebClientMode new_mode) override {}
 
-  glic::GlicInstanceMetrics& instance_metrics() override { return *this; }
+  glic::GlicInstanceMetrics& instance_metrics() override {
+    return instance_metrics_;
+  }
   glic::GlicInstanceMetricsBackwardsCompatibility&
   instance_metrics_backwards_compatibility() override {
-    return *this;
+    return instance_metrics_;
   }
 
   bool IsActive() override { return false; }
 
  private:
   metrics::ProfileMetricsService profile_metrics_service_{1};
+  glic::GlicInstanceMetrics instance_metrics_;
 };
 
 class MockInstanceDelegate : public FakeInstanceDelegate {
