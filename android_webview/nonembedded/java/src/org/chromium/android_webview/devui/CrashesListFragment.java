@@ -14,10 +14,12 @@ import android.content.pm.PackageManager;
 import android.database.DataSetObserver;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
@@ -80,6 +82,7 @@ public class CrashesListFragment extends DevUiBaseFragment {
     public static final int MAX_CRASHES_NUMBER = 20;
 
     private CrashListExpandableAdapter mCrashListViewAdapter;
+    private ExpandableListView mCrashListView;
     private Context mContext;
 
     private static @Nullable Runnable sCrashInfoLoadedListener;
@@ -163,8 +166,29 @@ public class CrashesListFragment extends DevUiBaseFragment {
 
         TextView crashesSummaryView = view.findViewById(R.id.crashes_summary_textview);
         mCrashListViewAdapter = new CrashListExpandableAdapter(crashesSummaryView);
-        ExpandableListView crashListView = view.findViewById(R.id.crashes_list);
-        crashListView.setAdapter(mCrashListViewAdapter);
+        mCrashListView = view.findViewById(R.id.crashes_list);
+        mCrashListView.setAdapter(mCrashListViewAdapter);
+
+        if (isTV()) {
+            View navBarButton = activity.findViewById(R.id.navigation_crash_ui);
+            setupTvFocusOnCreated(crashesSummaryView, mCrashListView, navBarButton);
+        }
+    }
+
+    private void setupTvFocusOnCreated(
+            View crashesSummaryView, ExpandableListView crashListView, View navBarButton) {
+        crashesSummaryView.setFocusable(true);
+        if (shouldRequestFocus()) {
+            crashesSummaryView.requestFocus();
+        }
+
+        crashesSummaryView.setBackgroundResource(getSelectableItemBackgroundResId());
+        crashesSummaryView.setNextFocusUpId(crashesSummaryView.getId());
+        crashesSummaryView.setNextFocusDownId(crashListView.getId());
+
+        crashListView.setItemsCanFocus(true);
+
+        registerBackPressToNavBarCallback(navBarButton);
     }
 
     @Override
@@ -242,7 +266,39 @@ public class CrashesListFragment extends DevUiBaseFragment {
                     view.findViewById(R.id.crash_header),
                     packageName,
                     new Date(crashInfo.captureTime).toString());
+
+            if (isTV()) {
+                setupTvFocusForGroupView(view, groupPosition, isExpanded);
+            }
+
             return view;
+        }
+
+        private void setupTvFocusForGroupView(View view, int position, boolean isExpanded) {
+            view.setFocusable(true);
+            view.setBackgroundResource(getSelectableItemBackgroundResId());
+
+            view.setOnKeyListener(
+                    (v, keyCode, event) -> {
+                        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                            // Trap the focus when pressing down on the last item
+                            if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN
+                                    && position == getGroupCount() - 1
+                                    && !isExpanded) {
+                                return true;
+                            }
+                            // Handle DPAD_CENTER to expand/collapse the group
+                            if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER) {
+                                if (mCrashListView.isGroupExpanded(position)) {
+                                    mCrashListView.collapseGroup(position);
+                                } else {
+                                    mCrashListView.expandGroup(position);
+                                }
+                                return true;
+                            }
+                        }
+                        return false; // Let the system handle other keys/positions
+                    });
         }
 
         // Child View where more info about the crash is shown:
@@ -344,7 +400,31 @@ public class CrashesListFragment extends DevUiBaseFragment {
                         updateCrashes();
                     });
 
+            if (isTV()) {
+                setupTvFocusForChildView(view, bugButton, uploadButton, hideButton);
+            }
+
             return view;
+        }
+
+        private void setupTvFocusForChildView(
+                View view, Button bugButton, Button uploadButton, ImageButton hideButton) {
+            view.setFocusable(false);
+
+            uploadButton.setFocusable(true);
+            uploadButton.setClickable(true);
+            uploadButton.setNextFocusRightId(hideButton.getId());
+            uploadButton.setNextFocusLeftId(uploadButton.getId());
+
+            bugButton.setFocusable(true);
+            bugButton.setClickable(true);
+            bugButton.setNextFocusRightId(hideButton.getId());
+            bugButton.setNextFocusLeftId(bugButton.getId());
+
+            hideButton.setFocusable(true);
+            hideButton.setClickable(true);
+            hideButton.setNextFocusLeftId(hideButton.getId());
+            hideButton.setNextFocusRightId(hideButton.getId());
         }
 
         private void attemptUploadCrash(String crashLocalId) {

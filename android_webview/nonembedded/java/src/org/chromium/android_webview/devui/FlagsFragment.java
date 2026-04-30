@@ -23,6 +23,7 @@ import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextWatcher;
 import android.text.style.BackgroundColorSpan;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -174,6 +175,50 @@ public class FlagsFragment extends DevUiBaseFragment {
                 (View v, boolean hasFocus) -> {
                     if (!hasFocus) hideKeyboard(mContext, v);
                 });
+
+        if (isTV()) {
+            View navBarButton = activity.findViewById(R.id.navigation_flags_ui);
+            setupTvFocusOnCreated(flagsListView, resetFlagsButton, mSearchBar, navBarButton);
+        }
+    }
+
+    private void setupTvFocusOnCreated(
+            ListView flagsListView, Button resetFlagsButton, View searchBar, View navBarButton) {
+        if (shouldRequestFocus()) {
+            searchBar.requestFocus();
+        }
+        searchBar.setNextFocusUpId(searchBar.getId());
+        resetFlagsButton.setNextFocusUpId(resetFlagsButton.getId());
+        flagsListView.setItemsCanFocus(true);
+
+        // Without forcing this, the focus will focus on a random item in the list.
+        registerDownPressToFocusOnFirstFlag(searchBar, flagsListView);
+        registerDownPressToFocusOnFirstFlag(resetFlagsButton, flagsListView);
+
+        registerBackPressToNavBarCallback(navBarButton);
+    }
+
+    private void registerDownPressToFocusOnFirstFlag(View view, ListView flagsListView) {
+        // When the user presses the down key, force the focus to the first item in the list.
+        View.OnKeyListener forceFocusToTopListener =
+                (v, keyCode, event) -> {
+                    if (event.getAction() == MotionEvent.ACTION_DOWN
+                            && keyCode == android.view.KeyEvent.KEYCODE_DPAD_DOWN) {
+                        if (mListAdapter.getCount() > 0) {
+                            flagsListView.setSelection(0);
+                            flagsListView.post(
+                                    () -> {
+                                        View firstChild = flagsListView.getChildAt(0);
+                                        if (firstChild != null) {
+                                            firstChild.requestFocus();
+                                        }
+                                    });
+                            return true;
+                        }
+                    }
+                    return false;
+                };
+        view.setOnKeyListener(forceFocusToTopListener);
     }
 
     private static void hideKeyboard(Context context, View view) {
@@ -453,7 +498,7 @@ public class FlagsFragment extends DevUiBaseFragment {
                     };
         }
 
-        private View getToggleableFlag(@NonNull Flag flag, View view) {
+        private View getToggleableFlag(@NonNull Flag flag, View view, int position) {
             // If the the old view is already created then reuse it, else create a new one by layout
             // inflation.
             if (view == null) {
@@ -475,6 +520,11 @@ public class FlagsFragment extends DevUiBaseFragment {
 
             Spinner flagToggle = view.findViewById(R.id.flag_toggle);
             flagToggle.setEnabled(mEnabled);
+
+            if (isTV()) {
+                setupTvFocusForToggleableFlag(
+                        view, flagName, flagDescription, flagToggle, position);
+            }
 
             ArrayAdapter<String> adapter;
             if (flag.isBaseFeature()) {
@@ -500,6 +550,45 @@ public class FlagsFragment extends DevUiBaseFragment {
             return view;
         }
 
+        private void setupTvFocusForToggleableFlag(
+                View view,
+                TextView flagName,
+                TextView flagDescription,
+                Spinner flagToggle,
+                int position) {
+            // Making the whole view focusable so the screen auto-scrolls to the correct position.
+            view.setFocusable(true);
+            view.setClickable(true);
+            view.setBackgroundResource(getSelectableItemBackgroundResId());
+
+            flagName.setFocusable(false);
+            flagDescription.setFocusable(false);
+            flagToggle.setFocusable(false);
+
+            flagToggle.setClickable(true);
+            view.setOnClickListener(
+                    v -> {
+                        // Because the flag view is focusable, user would perform click on the flag
+                        // view. We need to trigger the toggle when the flag view is clicked.
+                        flagToggle.post(() -> flagToggle.performClick());
+                    });
+            // Without this, the focus escape to the nav bar when pressing down on the last item.
+            preventFocusEscapeFromLastItem(view, position);
+        }
+
+        private void preventFocusEscapeFromLastItem(View view, int position) {
+            // Trap the focus when pressing down on the last item
+            view.setOnKeyListener(
+                    (v, keyCode, event) -> {
+                        if (event.getAction() == MotionEvent.ACTION_DOWN
+                                && keyCode == KeyEvent.KEYCODE_DPAD_DOWN
+                                && position == getCount() - 1) {
+                            return true;
+                        }
+                        return false;
+                    });
+        }
+
         private View getWarningMessage(View view) {
             // If the the old view is already created then reuse it, else create a new one by layout
             // inflation.
@@ -513,7 +602,18 @@ public class FlagsFragment extends DevUiBaseFragment {
                         + " security or privacy. Enabled features apply to WebViews across all apps"
                         + " on the device.");
 
+            if (isTV()) {
+                setupTvFocusForWarningMessage(view);
+            }
+
             return view;
+        }
+
+        private void setupTvFocusForWarningMessage(View view) {
+            view.setFocusable(true);
+
+            // When focused, the background would be highlighted.
+            view.setBackgroundResource(getSelectableItemBackgroundResId());
         }
 
         @Override
@@ -544,7 +644,7 @@ public class FlagsFragment extends DevUiBaseFragment {
             if (getItemViewType(position) == LayoutType.WARNING_MESSAGE) {
                 return getWarningMessage(view);
             } else {
-                return getToggleableFlag(flag, view);
+                return getToggleableFlag(flag, view, position);
             }
         }
 

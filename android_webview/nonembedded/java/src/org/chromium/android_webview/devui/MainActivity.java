@@ -39,6 +39,7 @@ import androidx.fragment.app.FragmentTransaction;
 import org.chromium.android_webview.common.BugTrackerConstants;
 import org.chromium.android_webview.devui.util.SafeIntentUtils;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
@@ -55,6 +56,7 @@ public class MainActivity extends FragmentActivity {
     private WebViewPackageError mDifferentPackageError;
     private boolean mDifferentPackageErrorVisible;
     private boolean mSwitchFragmentOnResume;
+    private boolean mIsTV;
     final Map<Integer, Integer> mFragmentIdMap = new HashMap<>();
 
     // Store in a variable to allow for replacement during test
@@ -201,9 +203,19 @@ public class MainActivity extends FragmentActivity {
                     logFragmentNavigation("NavBar", fragmentId);
                 };
         final int childCount = bottomNavBar.getChildCount();
+
+        mIsTV = DeviceInfo.isTV();
+
         for (int i = 0; i < childCount; ++i) {
             View v = bottomNavBar.getChildAt(i);
             v.setOnClickListener(listener);
+            if (mIsTV) {
+                setupTvFocusForNavBarButton(
+                        v, /* isFirst= */ i == 0, /* isLast= */ i == childCount - 1);
+            }
+        }
+        if (mIsTV) {
+            findViewById(R.id.navigation_home).requestFocus();
         }
 
         FragmentManager fm = getSupportFragmentManager();
@@ -222,6 +234,29 @@ public class MainActivity extends FragmentActivity {
 
         // The boolean value doesn't matter, we only care about the total count.
         RecordHistogram.recordBooleanHistogram("Android.WebView.DevUi.AppLaunch", true);
+    }
+
+    private void setupTvFocusForNavBarButton(View v, boolean isFirst, boolean isLast) {
+        // When focused, the background will be highlighted.
+        v.setBackgroundResource(getSelectableItemBackgroundResId());
+
+        v.setFocusable(true);
+
+        // Prevent UP navigation from escaping the bottom nav bar on TVs
+        v.setNextFocusUpId(v.getId());
+
+        if (isFirst) {
+            v.setNextFocusLeftId(v.getId());
+        }
+        if (isLast) {
+            v.setNextFocusRightId(v.getId());
+        }
+    }
+
+    private int getSelectableItemBackgroundResId() {
+        android.util.TypedValue outValue = new android.util.TypedValue();
+        getTheme().resolveAttribute(android.R.attr.selectableItemBackground, outValue, true);
+        return outValue.resourceId;
     }
 
     private void switchFragment(int chosenFragmentId, boolean onResume) {
@@ -266,6 +301,9 @@ public class MainActivity extends FragmentActivity {
                 break;
         }
         assert fragment != null;
+        if (mIsTV) {
+            fragment.setShouldRequestFocus(!onResume);
+        }
         logFragmentNavigation("AnyMethod", chosenFragmentId);
 
         // Switch fragments
