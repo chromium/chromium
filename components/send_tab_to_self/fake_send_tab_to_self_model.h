@@ -32,7 +32,7 @@ class FakeSendTabToSelfModel final : public SendTabToSelfModel {
   std::vector<std::string> GetAllGuids() const override;
   const SendTabToSelfEntry* GetEntryByGUID(
       const std::string& guid) const override;
-  const SendTabToSelfEntry* AddEntry(
+  const SendTabToSelfEntry* SendEntry(
       const GURL& url,
       const std::string& title,
       const std::string& target_device_cache_guid,
@@ -54,9 +54,9 @@ class FakeSendTabToSelfModel final : public SendTabToSelfModel {
   void AddTargetDevice(const TargetDeviceInfo& device);
   void SetLocalDeviceName(std::string_view device_name);
 
-  using AddEntryCallback =
+  using SendEntryCallback =
       base::RepeatingCallback<void(const SendTabToSelfEntry*)>;
-  void SetAddEntryCallback(AddEntryCallback callback);
+  void SetSendEntryCallback(SendEntryCallback callback);
 
   // Simulates an entry being added from a remote device.
   const SendTabToSelfEntry* AddEntryRemotely(
@@ -79,7 +79,7 @@ class FakeSendTabToSelfModel final : public SendTabToSelfModel {
   std::vector<TargetDeviceInfo> devices_;
   std::string last_opened_guid_;
   std::string last_dismissed_guid_;
-  AddEntryCallback add_entry_callback_;
+  SendEntryCallback send_entry_callback_;
 };
 
 }  // namespace send_tab_to_self

@@ -105,9 +105,9 @@ static void JNI_SendTabToSelfAndroidBridge_SendTabToDevice(
       SendTabToSelfSyncServiceFactory::GetForProfile(profile)
           ->GetSendTabToSelfModel();
   CHECK(model);
-  model->AddEntry(GURL(url), title, target_device_sync_cache_guid,
-                  PageContext(), NavigationHistory(),
-                  std::move(commit_confirmation));
+  model->SendEntry(GURL(url), title, target_device_sync_cache_guid,
+                   PageContext(), NavigationHistory(),
+                   std::move(commit_confirmation));
 }
 
 // Marks the entry with the associated GUID as opened.

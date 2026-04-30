@@ -422,10 +422,10 @@ class BirchKeyedServiceTest : public BrowserWithTestWindowTest {
     const GURL kUrl(kChromeSyncUrl);
     const std::string kTitle("Chrome Sync Title");
     const std::string kTargetDeviceSyncCacheGuid(kTargetDeviceCacheGuid);
-    send_tab_to_self_model_->AddEntry(kUrl, kTitle, kTargetDeviceSyncCacheGuid,
-                                      send_tab_to_self::PageContext(),
-                                      send_tab_to_self::NavigationHistory(),
-                                      base::DoNothing());
+    send_tab_to_self_model_->SendEntry(kUrl, kTitle, kTargetDeviceSyncCacheGuid,
+                                       send_tab_to_self::PageContext(),
+                                       send_tab_to_self::NavigationHistory(),
+                                       base::DoNothing());
   }
 
   void SimulateMediaMetadataInit() {

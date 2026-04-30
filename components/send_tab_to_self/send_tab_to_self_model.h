@@ -64,7 +64,7 @@ class SendTabToSelfModel {
   // if it failed to be queued. Callers do not need to check IsReady() before
   // calling this method; if the model is not ready, the callback will be
   // invoked with kFailureNotTrackingMetadata.
-  virtual const SendTabToSelfEntry* AddEntry(
+  virtual const SendTabToSelfEntry* SendEntry(
       const GURL& url,
       const std::string& title,
       const std::string& target_device_cache_guid,

@@ -448,7 +448,7 @@ const SendTabToSelfEntry* SendTabToSelfBridge::GetEntryByGUID(
   return it->second.get();
 }
 
-const SendTabToSelfEntry* SendTabToSelfBridge::AddEntry(
+const SendTabToSelfEntry* SendTabToSelfBridge::SendEntry(
     const GURL& url,
     const std::string& title,
     const std::string& target_device_cache_guid,

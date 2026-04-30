@@ -92,7 +92,7 @@ class SendTabToSelfBridge : public syncer::DataTypeSyncBridge,
   std::vector<std::string> GetAllGuids() const override;
   const SendTabToSelfEntry* GetEntryByGUID(
       const std::string& guid) const override;
-  const SendTabToSelfEntry* AddEntry(
+  const SendTabToSelfEntry* SendEntry(
       const GURL& url,
       const std::string& title,
       const std::string& target_device_cache_guid,

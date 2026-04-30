@@ -121,8 +121,8 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfScrollObserverBrowserTest,
       TextFragmentData("Some text", "", "", "");
 
   const SendTabToSelfEntry* entry =
-      model_fake_->AddEntry(test_url, "title", "device", page_context,
-                            NavigationHistory(), base::DoNothing());
+      model_fake_->SendEntry(test_url, "title", "device", page_context,
+                             NavigationHistory(), base::DoNothing());
 
   content::TestNavigationObserver navigation_observer{test_url};
   navigation_observer.StartWatchingNewWebContents();
@@ -164,8 +164,8 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfScrollObserverBrowserTest,
   PageContext page_context;
 
   const SendTabToSelfEntry* entry =
-      model_fake_->AddEntry(test_url, "title", "device", page_context,
-                            NavigationHistory(), base::DoNothing());
+      model_fake_->SendEntry(test_url, "title", "device", page_context,
+                             NavigationHistory(), base::DoNothing());
 
   content::TestNavigationObserver navigation_observer{test_url};
   navigation_observer.StartWatchingNewWebContents();

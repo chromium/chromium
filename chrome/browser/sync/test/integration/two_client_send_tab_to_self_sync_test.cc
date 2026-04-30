@@ -93,7 +93,7 @@ IN_PROC_BROWSER_TEST_P(TwoClientSendTabToSelfSyncTest,
       SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile(0))
           ->GetSendTabToSelfModel();
 
-  ASSERT_TRUE(model0->AddEntry(
+  ASSERT_TRUE(model0->SendEntry(
       kUrl, kTitle, kTargetDeviceSyncCacheGuid, send_tab_to_self::PageContext(),
       send_tab_to_self::NavigationHistory(), base::DoNothing()));
 
@@ -124,22 +124,22 @@ IN_PROC_BROWSER_TEST_P(TwoClientSendTabToSelfSyncTest,
       SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile(0))
           ->GetSendTabToSelfModel();
 
-  ASSERT_TRUE(model0->AddEntry(kGurl0, kTitle0, kTargetDeviceSyncCacheGuid0,
-                               send_tab_to_self::PageContext(),
-                               send_tab_to_self::NavigationHistory(),
-                               base::DoNothing()));
+  ASSERT_TRUE(model0->SendEntry(kGurl0, kTitle0, kTargetDeviceSyncCacheGuid0,
+                                send_tab_to_self::PageContext(),
+                                send_tab_to_self::NavigationHistory(),
+                                base::DoNothing()));
 
-  ASSERT_TRUE(model0->AddEntry(kGurl1, kTitle1, kTargetDeviceSyncCacheGuid1,
-                               send_tab_to_self::PageContext(),
-                               send_tab_to_self::NavigationHistory(),
-                               base::DoNothing()));
+  ASSERT_TRUE(model0->SendEntry(kGurl1, kTitle1, kTargetDeviceSyncCacheGuid1,
+                                send_tab_to_self::PageContext(),
+                                send_tab_to_self::NavigationHistory(),
+                                base::DoNothing()));
 
   ASSERT_TRUE(SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile(1))
                   ->GetSendTabToSelfModel()
-                  ->AddEntry(kGurl2, kTitle2, kTargetDeviceSyncCacheGuid2,
-                             send_tab_to_self::PageContext(),
-                             send_tab_to_self::NavigationHistory(),
-                             base::DoNothing()));
+                  ->SendEntry(kGurl2, kTitle2, kTargetDeviceSyncCacheGuid2,
+                              send_tab_to_self::PageContext(),
+                              send_tab_to_self::NavigationHistory(),
+                              base::DoNothing()));
 
   EXPECT_TRUE(send_tab_to_self_helper::SendTabToSelfModelEqualityChecker(
                   SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile(1)),
@@ -265,7 +265,7 @@ IN_PROC_BROWSER_TEST_P(TwoClientSendTabToSelfSyncTest,
   send_tab_to_self::SendTabToSelfModel* model0 =
       service0->GetSendTabToSelfModel();
 
-  ASSERT_TRUE(model0->AddEntry(
+  ASSERT_TRUE(model0->SendEntry(
       kUrl, kTitle, kTargetDeviceSyncCacheGuid, send_tab_to_self::PageContext(),
       send_tab_to_self::NavigationHistory(), base::DoNothing()));
 
@@ -319,8 +319,8 @@ IN_PROC_BROWSER_TEST_P(TwoClientSendTabToSelfSyncTest,
       send_tab_to_self::ExtractFormFieldsFromWebContents(sender_web_contents);
   SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile(0))
       ->GetSendTabToSelfModel()
-      ->AddEntry(kUrl, "example", target_guid, context,
-                 send_tab_to_self::NavigationHistory(), base::DoNothing());
+      ->SendEntry(kUrl, "example", target_guid, context,
+                  send_tab_to_self::NavigationHistory(), base::DoNothing());
 
   // Client 1: Wait for entry and fill.
   send_tab_to_self::SendTabToSelfSyncService* service1 =

@@ -394,7 +394,7 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
 
   SendTabToSelfSyncServiceFactory::GetForProfile(self.profile)
       ->GetSendTabToSelfModel()
-      ->AddEntry(
+      ->SendEntry(
           self.url, base::SysNSStringToUTF8(self.title),
           base::SysNSStringToUTF8(cacheGUID), pageContext,
           send_tab_to_self::NavigationHistory(),

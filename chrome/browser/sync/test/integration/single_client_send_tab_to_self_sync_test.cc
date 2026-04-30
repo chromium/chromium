@@ -260,8 +260,8 @@ IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfSyncTest,
       send_tab_to_self::ExtractFormFieldsFromWebContents(web_contents);
   SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile(0))
       ->GetSendTabToSelfModel()
-      ->AddEntry(kUrl, "example", target_guid, context,
-                 send_tab_to_self::NavigationHistory(), base::DoNothing());
+      ->SendEntry(kUrl, "example", target_guid, context,
+                  send_tab_to_self::NavigationHistory(), base::DoNothing());
 
   // Wait for the entry to be committed to the server.
   ASSERT_TRUE(
@@ -380,7 +380,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfSyncTest,
       SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile(0))
           ->GetSendTabToSelfModel();
 
-  ASSERT_TRUE(model->AddEntry(
+  ASSERT_TRUE(model->SendEntry(
       kUrl, kTitle, kTargetDeviceSyncCacheGuid, send_tab_to_self::PageContext(),
       send_tab_to_self::NavigationHistory(), base::DoNothing()));
 
@@ -413,7 +413,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfSyncTest,
       SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile(0))
           ->GetSendTabToSelfModel();
 
-  ASSERT_FALSE(model->AddEntry(
+  ASSERT_FALSE(model->SendEntry(
       kUrl, kTitle, kTargetDeviceSyncCacheGuid, send_tab_to_self::PageContext(),
       send_tab_to_self::NavigationHistory(), base::DoNothing()));
 
