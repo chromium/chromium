@@ -830,10 +830,10 @@ bool ScopedFocusNavigation::IsNonEntryFocusgroupItem(const Element& element) {
   const Element* focused_directional_key_handler_root =
       *focused_directional_key_handler_root_;
 
-  // When an element is in an excluded subtree (explicitly via
-  // focusgroup="none"), treat it as not a focusgroup item for sequential
-  // navigation purposes. This allows normal Tab order to apply within the
-  // opted-out subtree.
+  // When an element is in an excluded subtree (via focusgroup="none" or
+  // inside a top-layer element without its own focusgroup), treat it as
+  // not a focusgroup item for sequential navigation purposes. This allows
+  // normal Tab order to apply within the excluded subtree.
   if (FocusgroupControllerUtils::FindExcludedSubtreeRoot(&element)) {
     return false;
   }
@@ -849,11 +849,17 @@ bool ScopedFocusNavigation::IsNonEntryFocusgroupItem(const Element& element) {
   }
 
   // Find the first item in this element's segment to use as the cache key.
+  // FocusgroupItemInSegment uses IsKeyboardFocusableSlow(), which may return
+  // false even though GetFocusgroupOwnerOfItem (IsFocusable) returned non-null.
+  // This happens for elements that are focusable but not keyboard-focusable
+  // (e.g., tabindex="-1" popover invokers). These elements are not segment
+  // participants for sequential (Tab) navigation, so return false.
   const Element* segment_first_item =
       FocusgroupControllerUtils::FocusgroupItemInSegment(
           element, FocusgroupItemPosition::kFirst);
-  // An element in a focusgroup defines a segment, so this should never be null.
-  CHECK(segment_first_item);
+  if (!segment_first_item) {
+    return false;
+  }
 
   // Check if we've already computed the entry element for this segment.
   auto it = focusgroup_segment_entry_cache_.find(segment_first_item);

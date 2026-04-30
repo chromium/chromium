@@ -368,8 +368,11 @@ Element* FocusgroupControllerUtils::NextFocusgroupItemInDirection(
       current_item, focus_direction, /*skip_subtree=*/false);
   while (next_element &&
          FlatTreeTraversal::IsDescendantOf(*next_element, *owner)) {
-    // Handle opted-out subtrees: skip entirely.
-    if (HasExplicitOptOut(next_element)) {
+    // Handle opted-out subtrees and top-layer elements: skip entirely.
+    // Top-layer elements are excluded from ancestor focusgroups regardless of
+    // whether they define their own focusgroup; they are never entry elements
+    // for the ancestor.
+    if (HasExplicitOptOut(next_element) || next_element->IsInTopLayer()) {
       next_element =
           traversal_context.NextInDirection(next_element, focus_direction,
                                             /*skip_subtree=*/true);
@@ -408,15 +411,10 @@ Element* FocusgroupControllerUtils::GetFocusgroupOwnerOfItem(
     return nullptr;
   }
 
-  // An element with focusgroup="none" is opted out of focusgroup management.
-  // It and its subtree should not be considered a focusgroup item.
-  // Note: We only check for explicit opt-out here, not focused arrow key
-  // handlers. Arrow key handlers are still focusgroup items for the purpose
-  // of memory tracking and segment computation; they just have special
-  // behavior during navigation.
-  if (IsInExplicitlyOptedOutSubtree(element)) {
+  if (IsExcludedFromAncestorFocusgroup(element)) {
     return nullptr;
   }
+
   return focusgroup::FindFocusgroupOwner(element);
 }
 
@@ -641,24 +639,6 @@ bool FocusgroupControllerUtils::HasExplicitOptOut(const Element* element) {
          element->GetFocusgroupData().behavior == FocusgroupBehavior::kOptOut;
 }
 
-bool FocusgroupControllerUtils::IsInExplicitlyOptedOutSubtree(
-    const Element* element) {
-  // Starting with this element, walk up the ancestor chain looking for an
-  // element with focusgroup="none". Stop when we reach a focusgroup root or
-  // the document root.
-  while (element) {
-    if (HasExplicitOptOut(element)) {
-      return true;
-    }
-    // Stop at the first focusgroup root.
-    if (IsActualFocusgroup(element->GetFocusgroupData())) {
-      return false;
-    }
-    element = FlatTreeTraversal::ParentElement(*element);
-  }
-  return false;
-}
-
 GridFocusgroupStructureInfo*
 FocusgroupControllerUtils::CreateGridFocusgroupStructureInfoForGridRoot(
     const Element* root) {
@@ -708,7 +688,8 @@ Element* FindFocusgroupItemWithin(const Element* owner,
   while (el && FlatTreeTraversal::IsDescendantOf(*el, *owner)) {
     bool skip_subtree = false;
 
-    if (FocusgroupControllerUtils::HasExplicitOptOut(el)) {
+    if (FocusgroupControllerUtils::HasExplicitOptOut(el) ||
+        el->IsInTopLayer()) {
       // Skip opted-out subtree entirely.
       skip_subtree = true;
     } else if (IsActualFocusgroup(el->GetFocusgroupData())) {
@@ -780,14 +761,20 @@ FocusgroupControllerUtils::NextFocusgroupItemInSegmentInDirection(
       // When going backwards, we need to check the entire subtree of the
       // current element to see if it is in an excluded subtree.
       opted_out_subtree_root = FindExcludedSubtreeRoot(element);
+      // Top-layer elements with their own focusgroup are not caught by
+      // FindExcludedSubtreeRoot (it stops at focusgroup roots). Check the
+      // element itself.
+      if (!opted_out_subtree_root && element->IsInTopLayer()) {
+        opted_out_subtree_root = element;
+      }
       nested_focusgroup_owner = focusgroup::FindFocusgroupOwner(element);
       if (nested_focusgroup_owner == &owner) {
         nested_focusgroup_owner = nullptr;
       }
     } else {
       // When going forward, we only care if the element itself is an
-      // excluded subtree root (explicit opt-out via focusgroup="none").
-      if (IsExcludedSubtreeRoot(element)) {
+      // excluded subtree root or a top-layer element.
+      if (IsExcludedSubtreeRoot(element) || element->IsInTopLayer()) {
         opted_out_subtree_root = element;
       } else if (IsActualFocusgroup(element->GetFocusgroupData())) {
         nested_focusgroup_owner = element;
@@ -880,11 +867,38 @@ bool FocusgroupControllerUtils::IsExcludedSubtreeRoot(const Element* element) {
   if (!element) {
     return false;
   }
-  // Check for explicit opt-out via focusgroup="none".
+  // Explicit opt-out via focusgroup="none".
   if (HasExplicitOptOut(element)) {
     return true;
   }
+  // Top-layer elements (popovers, modal dialogs, fullscreen) without their own
+  // focusgroup are excluded from ancestor focusgroups with the same semantics
+  // as focusgroup="none". Top-layer elements WITH their own focusgroup are
+  // handled separately by IsExcludedFromAncestorFocusgroup so that their
+  // descendants can still participate in the inner focusgroup.
+  if (element->IsInTopLayer() &&
+      !IsActualFocusgroup(element->GetFocusgroupData())) {
+    return true;
+  }
   return false;
+}
+
+bool FocusgroupControllerUtils::IsExcludedFromAncestorFocusgroup(
+    const Element* element) {
+  if (!element) {
+    return false;
+  }
+  // A top-layer element is excluded from any ancestor focusgroup, even if it
+  // defines its own focusgroup internally. IsExcludedSubtreeRoot deliberately
+  // does not cover that case so that descendants of a top-layer focusgroup
+  // owner can still participate in the inner focusgroup; here we want the
+  // broader question, so check it directly.
+  if (element->IsInTopLayer()) {
+    return true;
+  }
+  // Otherwise, the element is excluded if it is itself, or has an ancestor
+  // that is, an excluded subtree root within the nearest focusgroup boundary.
+  return FindExcludedSubtreeRoot(element) != nullptr;
 }
 
 // static

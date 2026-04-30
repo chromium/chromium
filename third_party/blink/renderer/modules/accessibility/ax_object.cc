@@ -2943,7 +2943,7 @@ ax::mojom::blink::Role AXObject::ComputeFinalRoleForSerialization() const {
     bool is_item =
         element->IsKeyboardFocusableSlow(
             Element::UpdateBehavior::kNoneForAccessibility) &&
-        element->GetFocusgroupData().behavior != FocusgroupBehavior::kOptOut;
+        !FocusgroupControllerUtils::IsExcludedFromAncestorFocusgroup(element);
     Element* focusgroup_owner =
         is_item ? focusgroup::FindFocusgroupOwner(element) : nullptr;
     if (focusgroup_owner) {
