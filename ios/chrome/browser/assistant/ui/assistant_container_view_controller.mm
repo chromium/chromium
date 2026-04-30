@@ -208,19 +208,17 @@ NSInteger GetMediumDetentHeight(NSInteger absoluteMax) {
            (id<UIViewControllerTransitionCoordinator>)coordinator {
   [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
 
+  AssistantContainerDetent detentBeforeRotation = _activeDetent.value();
+
   __weak __typeof(self) weakSelf = self;
   [coordinator
       animateAlongsideTransition:^(
           id<UIViewControllerTransitionCoordinatorContext> context) {
-        __typeof(self) strongSelf = weakSelf;
-        if (!strongSelf) {
-          return;
-        }
-        if (strongSelf->_hasAppeared) {
-          [strongSelf updateHeightConstraint];
-        }
+        // Do nothing here to avoid snapping during transition.
       }
-                      completion:nil];
+      completion:^(id<UIViewControllerTransitionCoordinatorContext> context) {
+        [weakSelf completeOrientationTransitionWithDetent:detentBeforeRotation];
+      }];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -444,6 +442,14 @@ NSInteger GetMediumDetentHeight(NSInteger absoluteMax) {
 }
 
 #pragma mark - Private
+
+// Completes the orientation transition by animating to the active detent.
+- (void)completeOrientationTransitionWithDetent:
+    (AssistantContainerDetent)detent {
+  [self animateToDetent:detent
+               duration:kAssistantSheetSpringDuration
+                  curve:UIViewAnimationCurveEaseInOut];
+}
 
 // Resumes all the previously paused scroll views.
 - (void)resumeAllScrollViews {
@@ -1032,6 +1038,7 @@ NSInteger GetMediumDetentHeight(NSInteger absoluteMax) {
   [view setNeedsLayout];
 
   [self updateDetentHeights];
+
   if (_activeDetent.has_value()) {
     _heightConstraint.constant = _detentHeights[_activeDetent.value()];
   }
