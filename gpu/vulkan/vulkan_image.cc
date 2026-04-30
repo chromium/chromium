@@ -38,13 +38,12 @@ std::unique_ptr<VulkanImage> VulkanImage::Create(
     VkFormat format,
     VkImageUsageFlags usage,
     VkImageCreateFlags flags,
-    VkImageTiling image_tiling,
-    const void* extra_image_create_info,
-    const void* extra_memory_allocation_info) {
+    VkImageTiling image_tiling) {
   auto image = std::make_unique<VulkanImage>(base::PassKey<VulkanImage>());
   if (image->InitializeSingleOrJointPlanes(
           device_queue, size, format, usage, flags, image_tiling,
-          extra_image_create_info, extra_memory_allocation_info,
+          /*extra_image_create_info=*/nullptr,
+          /*extra_memory_allocation_info=*/nullptr,
           /*requirements=*/nullptr) != kSuccess) {
     return nullptr;
   }
@@ -58,13 +57,12 @@ std::unique_ptr<VulkanImage> VulkanImage::CreateWithExternalMemory(
     VkFormat format,
     VkImageUsageFlags usage,
     VkImageCreateFlags flags,
-    VkImageTiling image_tiling,
-    const void* extra_image_create_info,
-    const void* extra_memory_allocation_info) {
+    VkImageTiling image_tiling) {
   auto image = std::make_unique<VulkanImage>(base::PassKey<VulkanImage>());
   if (image->InitializeWithExternalMemory(
           device_queue, size, format, usage, flags, image_tiling,
-          extra_image_create_info, extra_memory_allocation_info) != kSuccess) {
+          /*extra_image_create_info=*/nullptr,
+          /*extra_memory_allocation_info=*/nullptr) != kSuccess) {
     return nullptr;
   }
   return image;

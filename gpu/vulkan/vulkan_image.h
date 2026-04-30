@@ -48,9 +48,7 @@ class COMPONENT_EXPORT(VULKAN) VulkanImage {
       VkFormat format,
       VkImageUsageFlags usage,
       VkImageCreateFlags flags = 0,
-      VkImageTiling image_tiling = VK_IMAGE_TILING_OPTIMAL,
-      const void* extra_image_create_info = nullptr,
-      const void* extra_memory_allocation_info = nullptr);
+      VkImageTiling image_tiling = VK_IMAGE_TILING_OPTIMAL);
 
   // Create VulkanImage with external memory, it can be exported and used by
   // foreign API
@@ -60,9 +58,7 @@ class COMPONENT_EXPORT(VULKAN) VulkanImage {
       VkFormat format,
       VkImageUsageFlags usage,
       VkImageCreateFlags flags = 0,
-      VkImageTiling image_tiling = VK_IMAGE_TILING_OPTIMAL,
-      const void* extra_image_create_info = nullptr,
-      const void* extra_memory_allocation_info = nullptr);
+      VkImageTiling image_tiling = VK_IMAGE_TILING_OPTIMAL);
 
   static std::unique_ptr<VulkanImage> CreateFromGpuMemoryBufferHandle(
       VulkanDeviceQueue* device_queue,
