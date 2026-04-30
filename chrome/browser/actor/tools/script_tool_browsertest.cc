@@ -141,7 +141,7 @@ class ActorToolsTestScriptTool : public ActorToolsTest,
 
   ToolResult RunScriptTool(std::unique_ptr<ToolRequest> action) {
     ActResultFuture result;
-    actor_task().Act(ToRequestList(action), result.GetCallback());
+    actor_task().Act(ToRequestList(std::move(action)), result.GetCallback());
     ExpectOkResult(result);
 
     const auto& action_results = result.Get();
@@ -274,7 +274,7 @@ IN_PROC_BROWSER_TEST_P(ActorToolsTestScriptTool, BadToolName) {
   auto action =
       MakeScriptToolRequest(*main_frame(), "invalid", input_arguments);
   ActResultFuture result;
-  actor_task().Act(ToRequestList(action), result.GetCallback());
+  actor_task().Act(ToRequestList(std::move(action)), result.GetCallback());
   ExpectErrorResult(result, mojom::ActionResultCode::kScriptToolInvalidName);
 }
 
@@ -290,7 +290,7 @@ IN_PROC_BROWSER_TEST_P(ActorToolsTestScriptTool, EmitsCdpEventsOnFailure) {
   auto action =
       MakeScriptToolRequest(*main_frame(), "invalid", input_arguments);
   ActResultFuture result;
-  actor_task().Act(ToRequestList(action), result.GetCallback());
+  actor_task().Act(ToRequestList(std::move(action)), result.GetCallback());
   ExpectErrorResult(result, mojom::ActionResultCode::kScriptToolInvalidName);
 
   client.WaitForInvokedEvent();
@@ -521,7 +521,7 @@ IN_PROC_BROWSER_TEST_P(ActorToolsTestScriptTool,
   auto action = MakeScriptToolRequest(*main_frame(), "declarative_tool",
                                       declarative_input);
   ActResultFuture result;
-  actor_task().Act(ToRequestList(action), result.GetCallback());
+  actor_task().Act(ToRequestList(std::move(action)), result.GetCallback());
 
   // Wait for the task to be paused. The Act() call has not returned yet.
   ASSERT_TRUE(base::test::RunUntil([&]() {
@@ -566,6 +566,105 @@ IN_PROC_BROWSER_TEST_P(ActorToolsTestScriptTool,
   EXPECT_EQ(actor_keyed_service().GetTask(task_id_), nullptr);
 }
 
+class ActorToolsTestScriptToolNoTimeout
+    : public ActorToolsTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  ActorToolsTestScriptToolNoTimeout() {
+    std::vector<base::test::FeatureRefAndParams> enabled_features = {
+        {blink::features::kWebMCP, {}},
+        {blink::features::kDevToolsWebMCPSupport, {}},
+        {actor::kGlicActorEnableScriptTools, {{"execution_timeout", "1s"}}}};
+
+    std::vector<base::test::FeatureRef> disabled_features;
+
+    if (GetParam()) {
+      enabled_features.push_back({::features::kBackForwardCache, {}});
+    } else {
+      disabled_features.push_back(::features::kBackForwardCache);
+    }
+
+    features_.InitWithFeaturesAndParameters(enabled_features,
+                                            disabled_features);
+  }
+
+  void SetUpOnMainThread() override {
+    ActorToolsTest::SetUpOnMainThread();
+    ASSERT_TRUE(embedded_test_server()->Start());
+    ASSERT_TRUE(embedded_https_test_server().Start());
+  }
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
+IN_PROC_BROWSER_TEST_P(ActorToolsTestScriptToolNoTimeout,
+                       DeclarativeToolNoTimeout) {
+  const GURL url = embedded_test_server()->GetURL(
+      "/actor/declarative_script_tool_pause.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  const std::string declarative_input =
+      R"JSON({"echo":"declarative_input"})JSON";
+  auto action = MakeScriptToolRequest(*main_frame(), "declarative_tool",
+                                      declarative_input);
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(std::move(action)), result.GetCallback());
+
+  // Wait for the task to be paused. The Act() call has not returned yet.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return actor_task().GetState() == ActorTask::State::kPausedByActor;
+  }));
+
+  // Wait for more than the timeout (1s).
+  base::RunLoop run_loop;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(1500));
+  run_loop.Run();
+
+  // Verify that the task is still paused and has not timed out.
+  EXPECT_EQ(actor_task().GetState(), ActorTask::State::kPausedByActor);
+  EXPECT_FALSE(result.IsReady());
+
+  // Trigger the submission manually.
+  content::ExecuteScriptAsync(web_contents(),
+                              "document.querySelector('button').click()");
+
+  // The Act() call should now complete successfully.
+  ExpectOkResult(result);
+  EXPECT_EQ(actor_task().GetState(), ActorTask::State::kReflecting);
+
+  const auto& action_results = result.Get();
+  ASSERT_EQ(action_results.size(), 1u);
+  ASSERT_TRUE(action_results.at(0).result->script_tool_response);
+  base::Value actual_json = base::test::ParseJson(
+      *action_results.at(0).result->script_tool_response->result);
+
+  base::Value expected_json = base::test::ParseJson(R"JSON(
+  [
+    {
+      "@context": "https://schema.org",
+      "@type": "Message",
+      "text": "echoed value"
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "Message",
+      "text": "extra stuff"
+    }
+  ]
+  )JSON");
+  EXPECT_EQ(actual_json, expected_json);
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ActorToolsTestScriptToolNoTimeout,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "BFCacheEnabled"
+                                             : "BFCacheDisabled";
+                         });
+
 IN_PROC_BROWSER_TEST_P(ActorToolsTestScriptTool, Histograms) {
   base::HistogramTester histogram_tester;
   const GURL url = embedded_test_server()->GetURL("/actor/script_tool.html");
@@ -590,7 +689,7 @@ IN_PROC_BROWSER_TEST_P(ActorToolsTestScriptTool, Histograms) {
   auto bad_action =
       MakeScriptToolRequest(*main_frame(), "invalid", input_arguments);
   ActResultFuture result;
-  actor_task().Act(ToRequestList(bad_action), result.GetCallback());
+  actor_task().Act(ToRequestList(std::move(bad_action)), result.GetCallback());
   ExpectErrorResult(result, mojom::ActionResultCode::kScriptToolInvalidName);
 
   histogram_tester.ExpectBucketCount("Actor.Tools.ScriptTool.InputSizeBytes",
@@ -625,7 +724,7 @@ IN_PROC_BROWSER_TEST_P(ActorToolsTestScriptTool, NavigationFailed) {
   auto action = MakeScriptToolRequest(*main_frame(), "declarative_tool",
                                       declarative_input);
   ActResultFuture result;
-  actor_task().Act(ToRequestList(action), result.GetCallback());
+  actor_task().Act(ToRequestList(std::move(action)), result.GetCallback());
 
   ExpectErrorResult(result,
                     mojom::ActionResultCode::kScriptToolNavigationDidNotCommit);
@@ -648,7 +747,7 @@ IN_PROC_BROWSER_TEST_P(ActorToolsTestScriptTool, NavigationCommittedErrorPage) {
   auto action = MakeScriptToolRequest(*main_frame(), "declarative_tool",
                                       declarative_input);
   ActResultFuture result;
-  actor_task().Act(ToRequestList(action), result.GetCallback());
+  actor_task().Act(ToRequestList(std::move(action)), result.GetCallback());
 
   ExpectErrorResult(
       result, mojom::ActionResultCode::kScriptToolNavigationCommittedErrorPage);
@@ -671,7 +770,7 @@ IN_PROC_BROWSER_TEST_P(ActorToolsTestScriptTool, NavigationFailedLoad) {
                                       declarative_input);
 
   ActResultFuture result;
-  actor_task().Act(ToRequestList(action), result.GetCallback());
+  actor_task().Act(ToRequestList(std::move(action)), result.GetCallback());
 
   ExpectErrorResult(result,
                     mojom::ActionResultCode::kScriptToolNavigationFailedLoad);
@@ -712,7 +811,7 @@ IN_PROC_BROWSER_TEST_P(ActorToolsTestScriptTool,
   const std::string input_arguments = R"JSON({"text": "test_input"})JSON";
   auto action = MakeScriptToolRequest(*main_frame(), "echo", input_arguments);
   ActResultFuture result;
-  actor_task().Act(ToRequestList(action), result.GetCallback());
+  actor_task().Act(ToRequestList(std::move(action)), result.GetCallback());
 
   content::TestNavigationObserver nav_observer(web_contents());
   content::ExecuteScriptAsync(
@@ -732,7 +831,7 @@ IN_PROC_BROWSER_TEST_P(ActorToolsTestScriptTool,
   const std::string input_arguments = R"JSON({"text": "test_input"})JSON";
   auto action = MakeScriptToolRequest(*main_frame(), "echo", input_arguments);
   ActResultFuture result;
-  actor_task().Act(ToRequestList(action), result.GetCallback());
+  actor_task().Act(ToRequestList(std::move(action)), result.GetCallback());
 
   content::TestNavigationObserver nav_observer(web_contents());
   content::ExecuteScriptAsync(web_contents(),
@@ -752,7 +851,7 @@ IN_PROC_BROWSER_TEST_P(ActorToolsTestScriptTool,
   const std::string input_arguments = R"JSON({"text": "test_input"})JSON";
   auto action = MakeScriptToolRequest(*main_frame(), "echo", input_arguments);
   ActResultFuture result;
-  actor_task().Act(ToRequestList(action), result.GetCallback());
+  actor_task().Act(ToRequestList(std::move(action)), result.GetCallback());
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return actor_task().GetState() == ActorTask::State::kActing; }));
 
@@ -790,7 +889,7 @@ IN_PROC_BROWSER_TEST_P(ActorToolsTestScriptTool,
   ActResultFuture result;
   content::TestNavigationManager nav_manager(
       web_contents(), embedded_test_server()->GetURL("/title1.html"));
-  actor_task().Act(ToRequestList(action), result.GetCallback());
+  actor_task().Act(ToRequestList(std::move(action)), result.GetCallback());
   ASSERT_TRUE(nav_manager.WaitForRequestStart());
 
   browser()->tab_strip_model()->CloseWebContentsAt(
@@ -810,7 +909,7 @@ IN_PROC_BROWSER_TEST_P(ActorToolsTestScriptTool,
   const std::string input_arguments = R"JSON({"text": "test_input"})JSON";
   auto action = MakeScriptToolRequest(*main_frame(), "echo", input_arguments);
   ActResultFuture result;
-  actor_task().Act(ToRequestList(action), result.GetCallback());
+  actor_task().Act(ToRequestList(std::move(action)), result.GetCallback());
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return actor_task().GetState() == ActorTask::State::kActing; }));
 
@@ -831,7 +930,7 @@ IN_PROC_BROWSER_TEST_P(ActorToolsTestScriptTool, ToolSelfNavigates) {
       MakeScriptToolRequest(*main_frame(), "navigate", input_arguments);
   content::TestNavigationObserver nav_observer(web_contents());
   ActResultFuture result;
-  actor_task().Act(ToRequestList(action), result.GetCallback());
+  actor_task().Act(ToRequestList(std::move(action)), result.GetCallback());
 
   nav_observer.Wait();
   EXPECT_TRUE(nav_observer.last_navigation_succeeded());
@@ -850,7 +949,7 @@ IN_PROC_BROWSER_TEST_P(ActorToolsTestScriptTool, ToolNavigatesAsyncTask) {
       MakeScriptToolRequest(*main_frame(), "navigate_delayed", input_arguments);
   content::TestNavigationObserver nav_observer(web_contents());
   ActResultFuture result;
-  actor_task().Act(ToRequestList(action), result.GetCallback());
+  actor_task().Act(ToRequestList(std::move(action)), result.GetCallback());
 
   nav_observer.Wait();
   EXPECT_TRUE(nav_observer.last_navigation_succeeded());
@@ -867,7 +966,7 @@ IN_PROC_BROWSER_TEST_P(ActorToolsTestScriptTool, ToolReentrantExecution) {
   const std::string input_arguments = R"JSON({"text": "test_input"})JSON";
   auto action1 = MakeScriptToolRequest(*main_frame(), "echo", input_arguments);
   ActResultFuture result1;
-  actor_task().Act(ToRequestList(action1), result1.GetCallback());
+  actor_task().Act(ToRequestList(std::move(action1)), result1.GetCallback());
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return actor_task().GetState() == ActorTask::State::kActing; }));
 
@@ -875,8 +974,8 @@ IN_PROC_BROWSER_TEST_P(ActorToolsTestScriptTool, ToolReentrantExecution) {
   ActResultFuture result2;
   auto task_id2 = actor_keyed_service().CreateTask(
       actor::TestTaskSourceInfo(), actor::NoEnterprisePolicyChecker());
-  actor_keyed_service().GetTask(task_id2)->Act(ToRequestList(action2),
-                                               result2.GetCallback());
+  actor_keyed_service().GetTask(task_id2)->Act(
+      ToRequestList(std::move(action2)), result2.GetCallback());
 
   auto response1 = result1.Get();
   auto response2 = result2.Get();
@@ -898,7 +997,7 @@ IN_PROC_BROWSER_TEST_P(
   auto action = MakeScriptToolRequest(*main_frame(), "declarative_tool",
                                       declarative_input);
   ActResultFuture result;
-  actor_task().Act(ToRequestList(action), result.GetCallback());
+  actor_task().Act(ToRequestList(std::move(action)), result.GetCallback());
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return actor_task().GetState() == ActorTask::State::kPausedByActor;
   }));

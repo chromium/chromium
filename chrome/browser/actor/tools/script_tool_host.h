@@ -40,6 +40,7 @@ class ScriptToolHost : public Tool, content::WebContentsObserver {
       override;
   void Invoke(ToolCallback callback) override;
   void Cancel() override;
+  void NotifyPaused() override;
   std::string DebugString() const override;
   GURL JournalURL() const override;
   std::string JournalEvent() const override;

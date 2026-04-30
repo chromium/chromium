@@ -31,15 +31,18 @@ namespace {
 
 // The maximum amount of time a tool can take to execute, before it is assumed
 // to have failed.
-constexpr base::TimeDelta kToolExecutionTimeout = base::Seconds(30);
+base::TimeDelta GetToolExecutionTimeout() {
+  return kActorScriptToolExecutionTimeout.Get();
+}
 
 // The maximum amount of time to wait for a script tool to extract and return
 // its result from a newly committed cross-document navigation. This timeout
 // starts upon navigation commit, which happens when the first headers are
 // received. This timeout covers downloading and parsing the main document HTML
 // and firing DOMContentLoaded.
-// TODO(https://crbug.com/500355577): make this a configurable parameter.
-constexpr base::TimeDelta kCrossDocumentResultTimeout = base::Seconds(5);
+base::TimeDelta GetCrossDocumentResultTimeout() {
+  return kActorScriptToolCrossDocumentTimeout.Get();
+}
 
 }  // namespace
 
@@ -155,9 +158,21 @@ void ScriptToolHost::Invoke(ToolCallback callback) {
         base::BindRepeating(&ScriptToolHost::OnTabWillBeRemoved,
                             weak_ptr_factory_.GetWeakPtr()));
   }
-  timeout_timer_.Start(FROM_HERE, kToolExecutionTimeout,
+  timeout_timer_.Start(FROM_HERE, GetToolExecutionTimeout(),
                        base::BindOnce(&ScriptToolHost::OnToolTimeout,
                                       weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ScriptToolHost::NotifyPaused() {
+  // If a declarative form tool needs user action to confirm submission, then
+  // don't timeout the tool invocation.
+  // TODO(crbug.com/508075344): Restart the timer after the user submits.
+  if (timeout_timer_.IsRunning()) {
+    timeout_timer_.Stop();
+  }
+  if (cross_document_timeout_timer_.IsRunning()) {
+    cross_document_timeout_timer_.Stop();
+  }
 }
 
 void ScriptToolHost::Cancel() {
@@ -235,7 +250,6 @@ void ScriptToolHost::OnToolInvokedInOldDocument(mojom::ActionResultPtr result) {
     pending_result_->script_tool_response->tool =
         result->script_tool_response->tool.Clone();
   }
-
   if (has_tool_response && !result->script_tool_response->result) {
     lifecycle_ = Lifecycle::kWaitingForNavigation;
     return;
@@ -346,8 +360,9 @@ void ScriptToolHost::DidFinishNavigation(
   new_document_render_frame_->GetCrossDocumentScriptToolResult(
       base::BindOnce(&ScriptToolHost::OnResultReceivedFromNewDocument,
                      weak_ptr_factory_.GetWeakPtr()));
+
   cross_document_timeout_timer_.Start(
-      FROM_HERE, kCrossDocumentResultTimeout,
+      FROM_HERE, GetCrossDocumentResultTimeout(),
       base::BindOnce(&ScriptToolHost::OnCrossDocumentResultTimeout,
                      weak_ptr_factory_.GetWeakPtr()));
 }

@@ -164,6 +164,9 @@ class ExecutionEngine : public ToolDelegate,
   // Cancels any ongoing actions.
   void CancelOngoingActions(mojom::ActionResultCode reason);
 
+  // Notifies ongoing actions that they have been paused.
+  void PauseOngoingActions();
+
   // If there is an ongoing tool request, treat it as having failed with the
   // given reason.
   void FailCurrentTool(mojom::ActionResultCode reason) override;

@@ -471,6 +471,8 @@ void ActorTask::Pause(bool from_actor, bool cancel_existing_action) {
 
   if (cancel_existing_action) {
     CancelOngoingActions(mojom::ActionResultCode::kTaskPaused);
+  } else {
+    execution_engine_->PauseOngoingActions();
   }
   if (from_actor) {
     SetState(State::kPausedByActor);

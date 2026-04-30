@@ -650,6 +650,13 @@ void ExecutionEngine::CancelOngoingActions(mojom::ActionResultCode reason) {
   }
 }
 
+void ExecutionEngine::PauseOngoingActions() {
+  TRACE_EVENT0("actor", "ExecutionEngine::PauseOngoingActions");
+  if (tool_controller_) {
+    tool_controller_->Pause();
+  }
+}
+
 void ExecutionEngine::FailCurrentTool(mojom::ActionResultCode reason) {
   TRACE_EVENT0("actor", "ExecutionEngine::FailCurrentTool");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

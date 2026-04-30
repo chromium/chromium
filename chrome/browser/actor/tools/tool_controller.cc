@@ -215,6 +215,12 @@ void ToolController::Invoke(ResultCallback result_callback) {
                              weak_ptr_factory_.GetWeakPtr()));
 }
 
+void ToolController::Pause() {
+  if (active_state_ && state_ == State::kInvoking) {
+    active_state_->tool->NotifyPaused();
+  }
+}
+
 void ToolController::Cancel() {
   // Only cancel callbacks and states if the tool has been created.
   if (state_ != State::kInit && state_ != State::kReady) {
