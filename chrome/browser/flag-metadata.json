@@ -60,6 +60,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "ai-omnibox-ask-placeholder",
+    "owners": [ "christianxu@chromium.org", "bling-search@google.com" ],
+    "expiry_milestone": 155
+  },
+  {
     "name": "aim-cobrowse",
     "owners": [ "ameurhosni@google.com", "bling-search@google.com" ],
     "expiry_milestone": 152

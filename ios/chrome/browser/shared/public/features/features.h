@@ -743,6 +743,13 @@ extern const char kEnableFuseboxKeyboardAccessoryOnlySymbols[];
 extern const char kEnableFuseboxKeyboardAccessoryOnlyFeatures[];
 extern const char kEnableFuseboxKeyboardAccessoryBoth[];
 
+// Enables the placeholder text to be "Ask..." instead of "Search..." when
+// AI Omnibox is available.
+BASE_DECLARE_FEATURE(kAIOmniboxAskPlaceholder);
+
+// Returns true if the AIOmniboxAskPlaceholder feature is enabled.
+bool IsAIOmniboxAskPlaceholderEnabled();
+
 // Returns true if keyboard accessory is enabled.
 bool ShouldShowKeyboardAccessory();
 // Returns true if the symbols :/- and .com in the keyboard accessory are

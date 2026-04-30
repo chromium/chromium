@@ -829,6 +829,12 @@ const char kDisableKeyboardAccessoryCompletely[] =
 BASE_FEATURE(kEnableFuseboxKeyboardAccessory,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kAIOmniboxAskPlaceholder, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsAIOmniboxAskPlaceholderEnabled() {
+  return base::FeatureList::IsEnabled(kAIOmniboxAskPlaceholder);
+}
+
 const char kEnableFuseboxKeyboardAccessoryParam[] =
     "kEnableFuseboxKeyboardAccessoryParam";
 const char kEnableFuseboxKeyboardAccessoryOnlySymbols[] =
