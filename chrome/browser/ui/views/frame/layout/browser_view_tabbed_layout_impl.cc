@@ -35,6 +35,7 @@
 #include "chrome/browser/ui/views/tabs/projects/layout_constants.h"
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_utils.h"
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_view.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/outsets.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/controls/separator.h"
@@ -1264,6 +1265,10 @@ void BrowserViewTabbedLayoutImpl::DoPostLayoutVisualAdjustments(
     auto* const vertical_tabs_background =
         static_cast<CustomCornersBackground*>(
             views().vertical_tab_strip_region_view->background());
+    CHECK(vertical_tabs_background);
+    const bool is_expand_on_hover_visible = animation.expand_on_hover > 0.0;
+    vertical_tabs_background->SetVisible(!features::IsGlassFrameEnabled() ||
+                                         is_expand_on_hover_visible);
 
     // Ensure that corners of the window remain rounded.
     CustomCornersBackground::Corners vertical_tabs_corners;

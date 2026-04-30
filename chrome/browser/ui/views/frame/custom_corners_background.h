@@ -95,6 +95,8 @@ class CustomCornersBackground : public views::Background, public CustomCorners {
   // as they may be different on some platforms.
   Corner GetWindowCorner(bool upper) const;
 
+  bool visible_for_testing() const { return visible_; }
+
   // views::Background:
   void Paint(gfx::Canvas* canvas, views::View* view) const override;
   void OnViewThemeChanged(views::View* view) override;

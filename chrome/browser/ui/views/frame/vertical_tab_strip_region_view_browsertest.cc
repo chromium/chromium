@@ -8,6 +8,7 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/animation/browser_animation_controller.h"
@@ -23,6 +24,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/animations/tab_strip_animations.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/custom_corners_background.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/views/tabs/vertical/root_tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_pinned_tab_container_view.h"
@@ -39,6 +41,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/pointer/touch_ui_controller.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/display/screen.h"
 #include "ui/views/controls/button/button_controller.h"
 #include "ui/views/controls/button/label_button.h"
@@ -103,6 +106,20 @@ class VerticalTabStripRegionViewTest
         TabStripAnimations::kVerticalTabStrip);
   }
 };
+
+#if BUILDFLAG(IS_MAC)
+class VerticalTabStripRegionViewGlassFrameTest
+    : public VerticalTabStripRegionViewTest {
+ public:
+  const std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
+      override {
+    std::vector<base::test::FeatureRefAndParams> enabled_features =
+        VerticalTabStripRegionViewTest::GetEnabledFeatures();
+    enabled_features.push_back({features::kGlassFrame, {}});
+    return enabled_features;
+  }
+};
+#endif  // BUILDFLAG(IS_MAC)
 
 IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
                        SeparatorVisibilityChangesWithCollapsedState) {
@@ -1230,3 +1247,32 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
   histogram_tester.ExpectTotalCount(
       "Tabs.VerticalTabs.ExpandOnHover.ShowDuration", 1);
 }
+
+#if BUILDFLAG(IS_MAC)
+IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewGlassFrameTest,
+                       GlassFrameBackgroundVisibleDuringExpandOnHover) {
+  auto* const background =
+      static_cast<CustomCornersBackground*>(region_view()->background());
+
+  state_controller()->SetExpandOnHoverEnabled(true);
+  state_controller()->RequestCollapse(true);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return state_controller()->IsCollapsed(); }));
+  RunScheduledLayouts();
+  EXPECT_FALSE(background->visible_for_testing());
+
+  region_view()->RequestFocus();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return region_view()->is_expanded_on_hover(); }));
+  ASSERT_TRUE(base::test::RunUntil([&]() { return !IsAnimatingSize(); }));
+  RunScheduledLayouts();
+  EXPECT_TRUE(background->visible_for_testing());
+
+  state_controller()->SetExpandOnHoverEnabled(false);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return !region_view()->is_expanded_on_hover(); }));
+  ASSERT_TRUE(base::test::RunUntil([&]() { return !IsAnimatingSize(); }));
+  RunScheduledLayouts();
+  EXPECT_FALSE(background->visible_for_testing());
+}
+#endif  // BUILDFLAG(IS_MAC)

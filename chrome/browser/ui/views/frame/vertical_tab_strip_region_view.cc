@@ -60,7 +60,6 @@
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/compositor_observer.h"
@@ -274,15 +273,10 @@ VerticalTabStripRegionView::VerticalTabStripRegionView(
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kTabList);
 
-  std::unique_ptr<CustomCornersBackground> background =
-      std::make_unique<CustomCornersBackground>(
-          *this, *browser_view,
-          /*primary_color=*/CustomCornersBackground::FrameTheme(),
-          /*corner_color=*/CustomCornersBackground::ToolbarTheme());
-  if (features::IsGlassFrameEnabled()) {
-    background->SetVisible(false);
-  }
-  SetBackground(std::move(background));
+  SetBackground(std::make_unique<CustomCornersBackground>(
+      *this, *browser_view,
+      /*primary_color=*/CustomCornersBackground::FrameTheme(),
+      /*corner_color=*/CustomCornersBackground::ToolbarTheme()));
 
   shadow_frame_ = AddChildView(std::make_unique<ShadowFrameView>(
       kExpandOnHoverShadowElevation, kExpandOnHoverShadowAlpha));
