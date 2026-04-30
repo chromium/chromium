@@ -54,18 +54,32 @@ android_library("tabswitcher_java") {
   sources = [
     "java/src/org/chromium/chrome/browser/ui/actions/tabswitcher/TabSwitcherActionButtonBinder.java",
     "java/src/org/chromium/chrome/browser/ui/actions/tabswitcher/TabSwitcherActionProperties.java",
+    "java/src/org/chromium/chrome/browser/ui/actions/tabswitcher/TabSwitcherActionProvider.java",
     "java/src/org/chromium/chrome/browser/ui/actions/tabswitcher/TabSwitcherActionUtils.java",
   ]
 
   deps = [
     ":java",
+    "//base:base_java",
     "//build/android:build_java",
+    "//chrome/browser/data_sharing:versioning_java",
     "//chrome/browser/flags:java",
+    "//chrome/browser/incognito:incognito_utils_java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/tab:java",
+    "//chrome/browser/tab_group_sync:factory_java",
     "//chrome/browser/tab_ui/android:java",
+    "//chrome/browser/tabmodel:java",
+    "//chrome/browser/ui/android/layouts:java",
     "//chrome/browser/ui/android/toolbar:java",
+    "//chrome/browser/ui/android/toolbar:java_resources",
+    "//chrome/browser/user_education:java",
     "//components/browser_ui/widget/android:java",
     "//components/feature_engagement/public:public_java",
+    "//components/saved_tab_groups/public:java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
     "//ui/android:ui_no_recycler_view_java",
+    "//url:gurl_java",
   ]
 }
 
@@ -81,6 +95,7 @@ robolectric_library("junit") {
     "junit/src/org/chromium/chrome/browser/ui/actions/button/ResourceButtonDataUnitTest.java",
     "junit/src/org/chromium/chrome/browser/ui/actions/tabswitcher/TabSwitcherActionButtonBinderUnitTest.java",
     "junit/src/org/chromium/chrome/browser/ui/actions/tabswitcher/TabSwitcherActionPropertiesUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/ui/actions/tabswitcher/TabSwitcherActionProviderUnitTest.java",
   ]
 
   deps = [
@@ -89,6 +104,10 @@ robolectric_library("junit") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/incognito:incognito_utils_java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/tab_group_sync:factory_java",
     "//chrome/browser/tab_ui/android:java",
     "//chrome/browser/tabmodel:java",
     "//chrome/browser/ui/android/layouts:java",
@@ -96,6 +115,11 @@ robolectric_library("junit") {
     "//chrome/browser/user_education:java",
     "//components/browser_ui/styles/android:java_resources",
     "//components/browser_ui/util/android:java",
+    "//components/feature_engagement/public:public_java",
+    "//components/prefs/android:java",
+    "//components/saved_tab_groups/public:java",
+    "//components/user_prefs/android:java",
+    "//content/public/android:content_full_java",
     "//third_party/androidx:androidx_test_core_java",
     "//third_party/androidx:androidx_test_ext_junit_java",
     "//third_party/androidx:androidx_test_runner_java",
