@@ -62,6 +62,10 @@ BASE_DECLARE_FEATURE(kAimUsePecApi);
 // request.
 BASE_DECLARE_FEATURE(kAimServerEligibilityIncludeClientLocale);
 
+// Configures whether to include the client country in the AIM eligibility
+// request.
+BASE_DECLARE_FEATURE(kAimServerEligibilityIncludeClientCountry);
+
 enum class AimServerEligibilityIncludeClientLocaleMode {
   kLegacyGet,
   kGetWithLocale,

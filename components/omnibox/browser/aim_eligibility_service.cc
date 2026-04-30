@@ -391,8 +391,8 @@ std::string AimEligibilityService::GetLocale() const {
 }
 
 std::string AimEligibilityService::GetCountryCode() const {
-  std::string country_code =
-      variations::GetCurrentCountryCode(GetVariationsService());
+  variations::VariationsService* variations = GetVariationsService();
+  std::string country_code = variations::GetCurrentCountryCode(variations);
   base::UmaHistogramBoolean("Omnibox.AimEligibility.CountryCodeEmpty",
                             country_code.empty());
   // The server side sanitizer expects ZZ to be capitalized, so ZZ is capital
@@ -909,6 +909,12 @@ GURL AimEligibilityService::GetRequestUrl(
   if (GetServerEligibilityRequestMode() ==
       ServerEligibilityRequestMode::kGetWithLocale) {
     url = net::AppendQueryParameter(url, "client_locale", locale);
+  }
+
+  if (base::FeatureList::IsEnabled(
+          omnibox::kAimServerEligibilityIncludeClientCountry)) {
+    std::string country_code = GetCountryCode();
+    url = net::AppendQueryParameter(url, "client_country", country_code);
   }
 
   // Get the index of the primary account in the cookie jar.

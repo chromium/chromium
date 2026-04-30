@@ -9,15 +9,18 @@
 #include <utility>
 
 #include "base/base64.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "components/country_codes/country_codes.h"
 #include "components/omnibox/browser/aim_eligibility_service_features.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/search/search.h"
 #include "components/search_engines/search_engines_test_environment.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/variations/pref_names.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -217,6 +220,53 @@ TEST_F(AimEligibilityServiceTest, ClientLocaleParam) {
   EXPECT_TRUE(
       net::GetValueForKeyInQuery(request->url, "client_locale", &value));
   EXPECT_EQ(value, "es-419");
+}
+
+TEST_F(AimEligibilityServiceTest, ClientCountryParam_Enabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      omnibox::kAimServerEligibilityIncludeClientCountry);
+
+  // Trigger the request.
+  test_url_loader_factory_.pending_requests()->clear();
+  aim_eligibility_service_->StartServerEligibilityRequestForDebugging();
+
+  // Verify that the request URL contains the client_country query param falling
+  // back to country_codes.
+  ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
+  const network::ResourceRequest& request =
+      test_url_loader_factory_.GetPendingRequest(0)->request;
+  std::string value;
+  EXPECT_TRUE(
+      net::GetValueForKeyInQuery(request.url, "client_country", &value));
+  std::string expected_country{
+      country_codes::GetCurrentCountryID().CountryCode()};
+  // Check if this environment has a CountryCode() defined as "zz", since that
+  // country code should be capitalized. All other country codes are lowercase.
+  if (base::EqualsCaseInsensitiveASCII(expected_country, "zz")) {
+    EXPECT_EQ(value, "ZZ");
+  } else {
+    EXPECT_EQ(value, base::ToLowerASCII(expected_country));
+  }
+}
+
+TEST_F(AimEligibilityServiceTest, ClientCountryParam_Disabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      omnibox::kAimServerEligibilityIncludeClientCountry);
+
+  // Trigger the request.
+  test_url_loader_factory_.pending_requests()->clear();
+  aim_eligibility_service_->StartServerEligibilityRequestForDebugging();
+
+  // Verify that the request URL does NOT contain the client_country query
+  // param.
+  ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
+  const network::ResourceRequest& request =
+      test_url_loader_factory_.GetPendingRequest(0)->request;
+  std::string value;
+  EXPECT_FALSE(
+      net::GetValueForKeyInQuery(request.url, "client_country", &value));
 }
 
 TEST_F(AimEligibilityServiceTest, UdmParamAppended) {
