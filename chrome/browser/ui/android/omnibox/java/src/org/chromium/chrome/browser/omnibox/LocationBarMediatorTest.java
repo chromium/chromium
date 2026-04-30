@@ -440,6 +440,39 @@ public class LocationBarMediatorTest {
     }
 
     @Test
+    public void testGetUrlBarDataForCurrentInput_UneditedUrl() {
+        AutocompleteInput input = new AutocompleteInput();
+        GURL url = JUnitTestGURLs.BLUE_1;
+        input.setUserText("www.blue.com").setInitialUserText("www.blue.com").setPageUrl(url);
+
+        UrlBarData data = LocationBarMediator.getUrlBarDataForCurrentInput(input);
+        assertEquals(url, data.url);
+        assertEquals("www.blue.com", data.displayText.toString());
+    }
+
+    @Test
+    public void testGetUrlBarDataForCurrentInput_EditedText() {
+        AutocompleteInput input = new AutocompleteInput();
+        GURL url = JUnitTestGURLs.BLUE_1;
+        input.setUserText("user text").setInitialUserText("www.blue.com").setPageUrl(url);
+
+        UrlBarData data = LocationBarMediator.getUrlBarDataForCurrentInput(input);
+        assertNull(data.url);
+        assertEquals("user text", data.displayText.toString());
+    }
+
+    @Test
+    public void testGetUrlBarDataForCurrentInput_EmptyText() {
+        AutocompleteInput input = new AutocompleteInput();
+        GURL url = JUnitTestGURLs.BLUE_1;
+        input.setUserText("").setInitialUserText("").setPageUrl(url);
+
+        UrlBarData data = LocationBarMediator.getUrlBarDataForCurrentInput(input);
+        assertNull(data.url);
+        assertEquals("", data.displayText.toString());
+    }
+
+    @Test
     @SuppressWarnings("DirectInvocationOnMock")
     public void testOnSuggestionsChanged() {
         ArgumentCaptor<OmniboxPrerender> omniboxPrerenderCaptor =

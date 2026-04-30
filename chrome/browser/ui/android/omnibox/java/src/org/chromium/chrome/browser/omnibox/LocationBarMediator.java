@@ -665,7 +665,7 @@ class LocationBarMediator
                     .setAutocompleteState(AutocompleteState.STANDBY)
                     .setUserText(mCurrentInput.getInitialUserText());
             mUrlCoordinator.setUrlBarData(
-                    UrlBarData.forNonUrlText(mCurrentInput.getUserText()),
+                    getUrlBarDataForCurrentInput(mCurrentInput),
                     UrlBar.ScrollType.NO_SCROLL,
                     UrlBarData.SELECT_ALL);
             mUrlCoordinator.setKeyboardVisibility(false, false);
@@ -1204,7 +1204,7 @@ class LocationBarMediator
                 .addSyncObserverAndCallIfNonNull(mAutocompleteRequestTypeObserver);
         mStatusCoordinator.setSiteSearchDataSupplier(mCurrentInput.getSiteSearchDataSupplier());
 
-        UrlBarData data = UrlBarData.forNonUrlText(mCurrentInput.getUserText());
+        UrlBarData data = getUrlBarDataForCurrentInput(mCurrentInput);
         mUrlCoordinator.setUrlBarData(
                 data, UrlBar.ScrollType.NO_SCROLL, mCurrentInput.getSelection());
 
@@ -1212,6 +1212,19 @@ class LocationBarMediator
         if (mCurrentInput.isInCacheableContext() && mAutocompleteCoordinator != null) {
             mAutocompleteCoordinator.serveCachedZeroSuggest(mCurrentInput);
         }
+    }
+
+    @VisibleForTesting
+    /* package */ static UrlBarData getUrlBarDataForCurrentInput(
+            @Nullable AutocompleteInput currentInput) {
+        if (currentInput == null) return UrlBarData.EMPTY;
+
+        String userText = currentInput.getUserText();
+        if (!TextUtils.isEmpty(userText)
+                && TextUtils.equals(userText, currentInput.getInitialUserText())) {
+            return UrlBarData.forUrlAndText(currentInput.getPageUrl(), userText);
+        }
+        return UrlBarData.forNonUrlText(userText);
     }
 
     private void setupSuggestionsListShowAnimation() {

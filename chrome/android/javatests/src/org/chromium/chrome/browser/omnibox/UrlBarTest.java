@@ -6,6 +6,9 @@ package org.chromium.chrome.browser.omnibox;
 
 import static org.hamcrest.core.IsEqual.equalTo;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
@@ -36,6 +39,7 @@ import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.ReusedCtaTransitTestRule;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
+import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.content_public.common.ContentUrlConstants;
 
 import java.util.concurrent.TimeoutException;
@@ -669,5 +673,59 @@ public class UrlBarTest {
         mOmnibox.typeText("test", false);
         mOmnibox.clearFocus();
         mOmnibox.checkText(equalTo(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL), null);
+    }
+
+    @Test
+    @SmallTest
+    public void testCopyUrl_SchemePreservation() throws Exception {
+        // Force desktop mode.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> OmniboxFeatures.setHasDesktopExperienceForTesting(Boolean.TRUE));
+
+        // Defocus so that loadUrl can update the URL bar text!
+        mOmnibox.clearFocus();
+
+        String url = "https://www.foo.com/index.html";
+        mActivityTestRule.loadUrl(url);
+
+        mOmnibox.requestFocus();
+
+        String expectedStripped = "www.foo.com/index.html";
+        mOmnibox.checkText(equalTo(expectedStripped), null);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mUrlBar.setSelection(0, mUrlBar.getText().length()));
+        ThreadUtils.runOnUiThreadBlocking(() -> mUrlBar.onTextContextMenuItem(android.R.id.copy));
+
+        String clipboardText = getClipboardText();
+        Assert.assertEquals(url, clipboardText);
+
+        mOmnibox.setText("");
+        mOmnibox.typeText("bar", false);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mUrlBar.setSelection(0, mUrlBar.getText().length()));
+        ThreadUtils.runOnUiThreadBlocking(() -> mUrlBar.onTextContextMenuItem(android.R.id.copy));
+
+        clipboardText = getClipboardText();
+        Assert.assertEquals("bar", clipboardText);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> OmniboxFeatures.setHasDesktopExperienceForTesting((Boolean) null));
+    }
+
+    private String getClipboardText() {
+        return ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ClipboardManager clipboard =
+                            (ClipboardManager)
+                                    mUrlBar.getContext()
+                                            .getSystemService(Context.CLIPBOARD_SERVICE);
+                    ClipData clip = clipboard.getPrimaryClip();
+                    if (clip != null && clip.getItemCount() > 0) {
+                        return clip.getItemAt(0).getText().toString();
+                    }
+                    return "";
+                });
     }
 }
