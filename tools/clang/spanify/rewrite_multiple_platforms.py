@@ -41,6 +41,22 @@ PROJECTS = {
         'tool_arg': '--project=dawn',
         'build_targets': ['//third_party/dawn/src/dawn'],
     },
+    'webrtc': {
+        'compile_dirs':
+        'third_party/webrtc',
+        'tool_arg':
+        '--project=webrtc',
+        'build_targets': [
+            '//third_party/webrtc_overrides:webrtc_component',
+
+            # These proto targets are needed to build some required generated
+            # files that the script isn't smart enough to discover on its own.
+            '//third_party/webrtc/api/test/metrics:metric_proto',
+            '//third_party/catapult/tracing/tracing/proto:histogram_proto',
+            '//third_party/webrtc/api/test/network_emulation:network_config_schedule_proto',
+            '//third_party/webrtc/modules/audio_coding:neteq_unittest_proto',
+        ],
+    },
 }
 
 # Standard GN arguments common to most platforms for spanification.

@@ -33,6 +33,7 @@
 #include "partition_alloc_project.h"
 #include "project.h"
 #include "skia_project.h"
+#include "webrtc_project.h"
 
 namespace {
 
@@ -44,6 +45,7 @@ enum class ProjectName {
   kDawn,
   kSkia,
   kAngle,
+  kWebrtc,
 };
 
 ProjectName g_project;
@@ -54,6 +56,7 @@ const Project* GetProject() {
   static constexpr PartitionAllocProject kPartitionAllocProject;
   static constexpr SkiaProject kSkiaProject;
   static constexpr DawnProject kDawnProject;
+  static constexpr WebrtcProject kWebrtcProject;
   switch (g_project) {
     case ProjectName::kChrome:
       return &kChromeProject;
@@ -63,6 +66,8 @@ const Project* GetProject() {
       return &kSkiaProject;
     case ProjectName::kDawn:
       return &kDawnProject;
+    case ProjectName::kWebrtc:
+      return &kWebrtcProject;
     default:
       llvm_unreachable("Unhandled project type in GetProject()");
   }
@@ -568,6 +573,8 @@ std::string GetReplacementDirective(const clang::SourceRange& replacement_range,
                        precedence, replacement_text);
 }
 
+// TODO(crbug.com/364338808): Set `is_system_include_path` to true when
+// `include_path` is "<span>".
 std::string GetIncludeDirective(
     const clang::SourceRange replacement_range,
     const clang::SourceManager& source_manager,
@@ -3877,7 +3884,8 @@ static llvm::cl::opt<ProjectName> g_project_opt(
                    "The PartitionAlloc project."),
         clEnumValN(ProjectName::kDawn, "dawn", "The Dawn project."),
         clEnumValN(ProjectName::kSkia, "skia", "The Skia project."),
-        clEnumValN(ProjectName::kAngle, "angle", "The Angle project.")),
+        clEnumValN(ProjectName::kAngle, "angle", "The Angle project."),
+        clEnumValN(ProjectName::kWebrtc, "webrtc", "The WebRTC project.")),
     llvm::cl::init(ProjectName::kChrome),
     llvm::cl::cat(g_spanifier_category));
 
