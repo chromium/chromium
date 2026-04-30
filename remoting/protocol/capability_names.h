@@ -52,6 +52,9 @@ inline constexpr char kDefaultResizeCapability[] = "defaultResize";
 inline constexpr char kClientRenderedHostCursorCapability[] =
     "clientRenderedHostCursor";
 
+// Host supports remoting of microphone audio.
+inline constexpr char kMicrophoneRemotingCapability[] = "microphoneRemoting";
+
 }  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_CAPABILITY_NAMES_H_

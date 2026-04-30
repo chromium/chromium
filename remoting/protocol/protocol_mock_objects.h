@@ -226,6 +226,10 @@ class MockClientStub : public ClientStub {
               SetActiveDisplay,
               (const ActiveDisplay& active_display),
               (override));
+  MOCK_METHOD(void,
+              ControlMicrophone,
+              (const MicrophoneControl& control),
+              (override));
 
   // ClipboardStub mock implementation.
   MOCK_METHOD(void,

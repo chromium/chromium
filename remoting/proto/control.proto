@@ -286,3 +286,43 @@ message ActiveDisplay {
 message HostCursorPosition {
   optional FractionalCoordinate fractional_coordinate = 1;
 }
+
+// Next ID: 2
+message MicrophoneControl {
+  // Enables the microphone channel if true or disables if false. Note that the
+  // most recent request will be honored. It is the responsibility of the host
+  // to "reference-count" microphone requests and only disable the microphone
+  // when nothing is using it.
+  //
+  // If enabling the microphone fails, a MicrophoneError will be sent with the
+  // reason for the failure. If it succeeds, a new audio track will be added to
+  // the RTCPeerConnection if one doesn't already exist. Enabling the microphone
+  // when it is already enabled will not generally elicit any response, though
+  // there may be edge cases such as the client having revoked permission or
+  // disconnected the microphone.
+  //
+  // Disabling the microphone always succeeds. If there is a microphone stream,
+  // it will be removed. Disabling the microphone when it is already disabled
+  // will not elicit any response.
+  optional bool enable = 1;
+}
+
+// Next ID: 2
+message MicrophoneError {
+  enum Reason {
+    // Some other (unexpected) error occurred. The client logs will have the
+    // full error message.
+    UNSPECIFIED_REASON = 0;
+
+    // The user denied permission to access the microphone.
+    PERMISSION_DENIED = 1;
+
+    // The client does not have a microphone.
+    NO_MICROPHONE = 2;
+
+    // The microphone is not working due to a hardware issue.
+    HARDWARE_ERROR = 3;
+  }
+
+  optional Reason reason = 1;
+}

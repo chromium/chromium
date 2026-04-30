@@ -153,6 +153,8 @@ void ClientControlDispatcher::OnIncomingMessage(
     client_stub_->DeliverHostMessage(message->extension_message());
   } else if (message->has_video_layout()) {
     client_stub_->SetVideoLayout(message->video_layout());
+  } else if (message->has_microphone_control()) {
+    client_stub_->ControlMicrophone(message->microphone_control());
   } else {
     LOG(WARNING) << "Unknown control message received.";
   }

@@ -39,6 +39,7 @@ class HostControlDispatcher : public ChannelDispatcherBase, public ClientStub {
   void SetVideoLayout(const VideoLayout& layout) override;
   void SetTransportInfo(const TransportInfo& transport_info) override;
   void SetActiveDisplay(const ActiveDisplay& active_display) override;
+  void ControlMicrophone(const MicrophoneControl& control) override;
 
   // ClipboardStub implementation for sending clipboard data to client.
   void InjectClipboardEvent(const ClipboardEvent& event) override;

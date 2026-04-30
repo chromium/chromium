@@ -113,6 +113,7 @@ static_library("protocol") {
     "me2me_host_authenticator_factory.h",
     "message_pipe.h",
     "message_serialization.h",
+    "microphone_stub.h",
     "mouse_cursor_monitor.h",
     "mouse_input_filter.cc",
     "mouse_input_filter.h",

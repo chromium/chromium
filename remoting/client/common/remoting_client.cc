@@ -251,6 +251,12 @@ void RemotingClient::SetActiveDisplay(
   NOTIMPLEMENTED();
 }
 
+void RemotingClient::ControlMicrophone(
+    const protocol::MicrophoneControl& control) {
+  // This client implementation does not support microphone remoting.
+  NOTIMPLEMENTED();
+}
+
 void RemotingClient::InjectClipboardEvent(
     const protocol::ClipboardEvent& event) {
   NOTIMPLEMENTED();

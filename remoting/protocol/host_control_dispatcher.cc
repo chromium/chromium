@@ -62,6 +62,13 @@ void HostControlDispatcher::SetActiveDisplay(
   message_pipe()->Send(&message, {});
 }
 
+void HostControlDispatcher::ControlMicrophone(
+    const MicrophoneControl& control) {
+  ControlMessage message;
+  message.mutable_microphone_control()->CopyFrom(control);
+  message_pipe()->Send(&message, {});
+}
+
 void HostControlDispatcher::InjectClipboardEvent(const ClipboardEvent& event) {
   ControlMessage message;
   message.mutable_clipboard_event()->CopyFrom(event);

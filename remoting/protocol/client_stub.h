@@ -13,6 +13,7 @@
 #include "remoting/protocol/clipboard_stub.h"
 #include "remoting/protocol/cursor_shape_stub.h"
 #include "remoting/protocol/keyboard_layout_stub.h"
+#include "remoting/protocol/microphone_stub.h"
 
 namespace remoting::protocol {
 
@@ -25,14 +26,15 @@ class VideoLayout;
 
 class ClientStub : public ClipboardStub,
                    public CursorShapeStub,
-                   public KeyboardLayoutStub {
+                   public KeyboardLayoutStub,
+                   public MicrophoneStub {
  public:
-  ClientStub() {}
+  ClientStub() = default;
 
   ClientStub(const ClientStub&) = delete;
   ClientStub& operator=(const ClientStub&) = delete;
 
-  ~ClientStub() override {}
+  ~ClientStub() override = default;
 
   // Passes the set of capabilities supported by the host to the client.
   virtual void SetCapabilities(const Capabilities& capabilities) = 0;
