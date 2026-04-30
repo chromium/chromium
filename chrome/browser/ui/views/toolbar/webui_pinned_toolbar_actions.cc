@@ -21,7 +21,10 @@
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
 #include "chrome/browser/ui/webui/webui_toolbar/utils/toolbar_button_utils.h"
 #include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_ui.h"
+#include "chrome/grit/generated_resources.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/menu/menu_runner.h"
 
 WebUIPinnedToolbarActions::WebUIPinnedToolbarActions(
@@ -204,7 +207,14 @@ PinnedActionToolbarButton* WebUIPinnedToolbarActions::GetChromeLabsButton() {
 void WebUIPinnedToolbarActions::UpdatePinnedStateAndAnnounce(
     actions::ActionId id,
     bool pin) {
-  NOTIMPLEMENTED();
+  if (pin == IsActionPinned(id) ||
+      !GetActionItemFor(id)->GetProperty(actions::kActionItemPinnableKey)) {
+    return;
+  }
+  webui_toolbar_web_view_->GetViewAccessibility().AnnounceAlert(
+      l10n_util::GetStringUTF16(pin ? IDS_TOOLBAR_BUTTON_PINNED
+                                    : IDS_TOOLBAR_BUTTON_UNPINNED));
+  model_->UpdatePinnedState(id, pin);
 }
 
 void WebUIPinnedToolbarActions::Invoke(
