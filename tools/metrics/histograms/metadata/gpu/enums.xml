@@ -26,48 +26,6 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
-<enum name="AMDDeviceId">
-  <int value="5592" label="0x15D8, Picasso"/>
-  <int value="5597"
-      label="0x15DD, Raven Ridge [Radeon Vega Series / Radeon Vega Mobile
-             Series]"/>
-  <int value="5686" label="0x1636, Renoir"/>
-  <int value="26112" label="0x6600, Mars [Radeon HD 8670A/8670M/8750M]"/>
-  <int value="26113" label="0x6601, Mars [Radeon HD 8730M]"/>
-  <int value="26129"
-      label="0x6611, Oland [Radeon HD 8570 / R5 430 OEM / R7 240/340 / Radeon
-             520 OEM]"/>
-  <int value="26208"
-      label="0x6660, Sun XT [Radeon HD 8670A/8670M/8690M / R5 M330 / M430 /
-             Radeon 520 Mobile]"/>
-  <int value="26213"
-      label="0x6665, Jet PRO [Radeon R5 M230 / R7 M260DX / Radeon 520 Mobile]"/>
-  <int value="26223" label="0x666F, Sun LE [Radeon HD 8550M / R5 M230]"/>
-  <int value="26464" label="0x6760, Seymour [Radeon HD 6400M/7400M Series]"/>
-  <int value="26591"
-      label="0x67DF, Ellesmere [Radeon RX 470/480/570/570X/580/580X/590]"/>
-  <int value="26607"
-      label="0x67EF, Baffin [Radeon RX 460/560D / Pro
-             450/455/460/555/555X/560/560X]"/>
-  <int value="26657"
-      label="0x6821, Venus XT [Radeon HD 8870M / R9 M270X/M370X]"/>
-  <int value="26688" label="0x6840, Thames [Radeon HD 7500M/7600M Series]"/>
-  <int value="26873"
-      label="0x68F9, Cedar [Radeon HD 5000/6000/7350/8350 Series]"/>
-  <int value="26880"
-      label="0x6900, Topaz XT [Radeon R7 M260/M265 / M340/M360 / M440/M445 /
-             530/535 / 620/625 Mobile]"/>
-  <int value="27015"
-      label="0x6987, Lexa [Radeon 540X/550X/630 / RX 640 / E9171 MCM]"/>
-  <int value="27039"
-      label="0x699F, Lexa PRO [Radeon 540/540X/550/550X / RX 540X/550/550X]"/>
-  <int value="27055" label="0x69AF, Vega 12 [Radeon Pro Vega 20]"/>
-  <int value="29471"
-      label="0x731F, Navi 10 [Radeon RX 5600 OEM/5600 XT / 5700/5700 XT]"/>
-  <int value="29504"
-      label="0x7340, Navi 14 [Radeon RX 5500/5500M / Pro 5500M]"/>
-</enum>
-
 <enum name="BlockZeroSerialNumberType">
   <int value="0" label="Normal serial number"/>
   <int value="1" label="Repeating pattern in serial number"/>
