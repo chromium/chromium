@@ -13,8 +13,12 @@ source_set("supervised_user") {
       "//ui/gfx",
     ]
     deps = [
+      "//chrome/app:branded_strings",
+      "//chrome/app:generated_resources",
       "//chrome/browser/supervised_user",
       "//chrome/browser/ui/extensions",
+      "//components/strings:components_strings_grit",
+      "//components/vector_icons",
     ]
   }
 

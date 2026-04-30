@@ -2067,19 +2067,6 @@ static_library("browser") {
       "preloading/android/preloading_data_bridge.cc",
       "preloading/android/preloading_feature_map.cc",
       "shell_integration_android.cc",
-      "supervised_user/android/extension_parent_approval.cc",
-      "supervised_user/android/extension_parent_approval.h",
-      "supervised_user/android/favicon_fetcher.cc",
-      "supervised_user/android/favicon_fetcher.h",
-      "supervised_user/android/supervised_user_service_bridge.cc",
-      "supervised_user/android/supervised_user_service_platform_delegate.cc",
-      "supervised_user/android/supervised_user_service_platform_delegate.h",
-      "supervised_user/android/supervised_user_web_content_handler_impl.cc",
-      "supervised_user/android/supervised_user_web_content_handler_impl.h",
-      "supervised_user/android/website_parent_approval.cc",
-      "supervised_user/android/website_parent_approval.h",
-      "supervised_user/child_accounts/child_account_service_android.cc",
-      "supervised_user/child_accounts/child_account_service_android.h",
     ]
 
     deps += [
@@ -4593,15 +4580,6 @@ static_library("browser") {
       # "browser_public_dependencies".
       allow_circular_includes_from += [ "//chrome/browser/guest_view:impl" ]
     }
-    sources += [
-      "supervised_user/extension_icon_loader.cc",
-      "supervised_user/extension_icon_loader.h",
-      "supervised_user/supervised_user_extensions_delegate_impl.cc",
-      "supervised_user/supervised_user_extensions_delegate_impl.h",
-      "supervised_user/supervised_user_extensions_manager.cc",
-      "supervised_user/supervised_user_extensions_manager.h",
-      "supervised_user/supervised_user_extensions_metrics_recorder.cc",
-    ]
 
     # Any circular includes must depend on the target
     # "browser_public_dependencies".
@@ -4721,32 +4699,6 @@ static_library("browser") {
       "//chrome/browser/ui/extensions:impl",
     ]
 
-    if (is_chromeos) {
-      sources += [
-        "supervised_user/chromeos/parent_access_extension_approvals_manager.cc",
-        "supervised_user/chromeos/parent_access_extension_approvals_manager.h",
-      ]
-      deps += [
-        "//chromeos/services/tts/public/mojom",
-        "//services/accessibility:buildflags",
-        "//services/accessibility/public/mojom",
-        "//ui/events/ozone/layout",
-
-        # For allow_circular_includes_from below.
-        "//chrome/browser/chromeos/extensions/login_screen/login",
-        "//chrome/browser/extensions/api/enterprise_device_attributes",
-        "//chrome/browser/extensions/api/enterprise_login",
-      ]
-      allow_circular_includes_from += [
-        # TODO(crbug.com/40227502): Currently EnterpriseDeviceAttributes
-        # internally uses profile manager. We should get rid of it.
-        "//chrome/browser/extensions/api/enterprise_device_attributes",
-
-        # For chrome::AttemptUserExit().
-        "//chrome/browser/chromeos/extensions/login_screen/login",
-        "//chrome/browser/extensions/api/enterprise_login",
-      ]
-    }
   }
 
   # TODO(https://crbug.com/356905053): Add more dependencies here and merge this

@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//third_party/jni_zero/jni_zero.gni")
 import("//tools/grit/grit_rule.gni")
@@ -68,7 +67,24 @@ source_set("supervised_user") {
     ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_android) {
+    public += [
+      "android/extension_parent_approval.h",
+      "android/favicon_fetcher.h",
+      "android/supervised_user_service_platform_delegate.h",
+      "android/supervised_user_web_content_handler_impl.h",
+      "android/website_parent_approval.h",
+      "child_accounts/child_account_service_android.h",
+    ]
+    public_deps += [
+      ":supervised_extension_approval_result_java_enum_srcjar",
+      "//components/favicon/core",
+      "//components/favicon_base",
+      "//components/signin/public/identity_manager",
+    ]
+  }
+
+  if (is_chromeos) {
     public += [
       "chromeos/supervised_user_favicon_request_handler.h",
       "chromeos/supervised_user_web_content_handler_impl.h",
@@ -80,8 +96,17 @@ source_set("supervised_user") {
   }
 
   if (enable_extensions_core) {
-    public += [ "supervised_user_extensions_metrics_recorder.h" ]
+    public += [
+      "extension_icon_loader.h",
+      "supervised_user_extensions_delegate_impl.h",
+      "supervised_user_extensions_manager.h",
+      "supervised_user_extensions_metrics_recorder.h",
+    ]
     public_deps += [ "//extensions/browser" ]
+
+    if (is_chromeos) {
+      public += [ "chromeos/parent_access_extension_approvals_manager.h" ]
+    }
   }
 }
 
@@ -134,7 +159,22 @@ source_set("impl") {
   ]
 
   if (is_android) {
+    sources += [
+      "android/extension_parent_approval.cc",
+      "android/favicon_fetcher.cc",
+      "android/supervised_user_service_bridge.cc",
+      "android/supervised_user_service_platform_delegate.cc",
+      "android/supervised_user_web_content_handler_impl.cc",
+      "android/website_parent_approval.cc",
+      "child_accounts/child_account_service_android.cc",
+    ]
     deps += [
+      ":extension_parent_approval_jni_headers",
+      ":supervised_user_service_bridge_jni_headers",
+      ":supervised_user_service_platform_delegate_jni_headers",
+      ":website_parent_approval_jni_headers",
+      "//chrome/android:chrome_jni_headers",
+      "//components/favicon/core",
       "//components/supervised_user/core/browser/android",
       "//ui/android",
     ]
@@ -169,12 +209,30 @@ source_set("impl") {
     ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "chromeos/supervised_user_favicon_request_handler.cc",
       "chromeos/supervised_user_web_content_handler_impl.cc",
     ]
     deps += [ "//chrome/browser/ash/profiles" ]
+  }
+
+  if (enable_extensions_core) {
+    sources += [
+      "extension_icon_loader.cc",
+      "supervised_user_extensions_delegate_impl.cc",
+      "supervised_user_extensions_manager.cc",
+      "supervised_user_extensions_metrics_recorder.cc",
+    ]
+    deps += [
+      "//chrome/browser/extensions",
+      "//chrome/browser/ui/extensions",
+      "//chrome/browser/ui/supervised_user",
+    ]
+
+    if (is_chromeos) {
+      sources += [ "chromeos/parent_access_extension_approvals_manager.cc" ]
+    }
   }
 }
 
@@ -226,7 +284,7 @@ source_set("unit_tests") {
     sources += [ "linux_mac_windows/supervised_user_extensions_metrics_delegate_impl_unittest.cc" ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "chromeos/mock_large_icon_service.cc",
       "chromeos/mock_large_icon_service.h",
@@ -315,7 +373,7 @@ if (!is_android) {
       "//url",
     ]
 
-    if (is_chromeos_ash) {
+    if (is_chromeos) {
       deps += [
         "//chrome/browser/ui/webui/ash/parent_access",
         "//chrome/browser/ui/webui/ash/parent_access:test_support",
