@@ -1,3 +1,8 @@
 asvitkine@chromium.org
 
 per-file android_session_durations_service.*=rhalavati@chromium.org
+
+# Strict Privacy reviews needed for the allowlist of histograms to be sent to
+# Westworld.
+per-file westworld_histogram_allowlist.h=set noparent
+per-file westworld_histogram_allowlist.h=file://chrome/browser/android/metrics/PRIVACY_OWNERS
