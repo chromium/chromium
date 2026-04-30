@@ -367,11 +367,8 @@ TEST_F(ActionFactoryTest, CloseAllTabsAction) {
   UIImage* expectedImage =
       DefaultSymbolWithPointSize(kXMarkSymbol, kSymbolActionPointSize);
 
-  int titleID = base::FeatureList::IsEnabled(kTabSwitcherOverflowMenu)
-                    ? IDS_IOS_INACTIVE_TABS_CLOSE_ALL_CONFIRMATION_OPTION
-                    : IDS_IOS_CONTENT_CONTEXT_CLOSEALLTABSANDGROUPS;
-
-  NSString* expectedTitle = l10n_util::GetNSString(titleID);
+  NSString* expectedTitle =
+      l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_CLOSEALLTABSANDGROUPS);
 
   UIAction* action = [factory actionToCloseAllTabsWithBlock:^{
   }];
