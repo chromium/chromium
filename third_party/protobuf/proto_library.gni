@@ -674,10 +674,7 @@ template("proto_library") {
     # This will link any libraries in the deps (the use of invoker.deps in the
     # action won't link it).
     if (defined(invoker.deps)) {
-      # Proto deps need to be public deps because their public .pb.h files
-      # include .pb.h files of dependencies. Otherwise, configs (and include
-      # dirs) wouldn't be propagated properly.
-      public_deps += invoker.deps
+      deps += invoker.deps
     }
     if (defined(invoker.link_deps)) {
       deps += invoker.link_deps
