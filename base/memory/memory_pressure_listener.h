@@ -52,7 +52,7 @@ enum class MemoryPressureListenerTag {
   // kSkiaOutputSurfaceImpl = 19,
   // kGpuImageDecodeCache = 20,
   // kResourcePool = 21,
-  kOnDeviceTailModelService = 22,
+  // kOnDeviceTailModelService = 22,
   kGpuChannelManager = 23,
   // kSharedDictionaryManagerOnDisk = 24,
   kSharedDictionaryManager = 25,

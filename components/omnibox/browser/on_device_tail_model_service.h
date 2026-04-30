@@ -8,8 +8,9 @@
 #include <memory>
 
 #include "base/functional/callback.h"
-#include "base/memory/memory_pressure_listener.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory_coordinator/memory_consumer.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/omnibox/browser/on_device_tail_model_executor.h"
@@ -19,7 +20,7 @@
 class OnDeviceTailModelService
     : public KeyedService,
       public optimization_guide::OptimizationTargetModelObserver,
-      public base::MemoryPressureListener {
+      public base::MemoryConsumer {
  public:
   using ResultCallback = base::OnceCallback<void(
       std::vector<OnDeviceTailModelExecutor::Prediction>)>;
@@ -46,8 +47,9 @@ class OnDeviceTailModelService
       const OnDeviceTailModelExecutor::ModelInput& input,
       ResultCallback result_callback);
 
-  // Helper which unloads the executor from memory when memory pressure is high.
-  void OnMemoryPressure(base::MemoryPressureLevel level) override;
+  // base::MemoryConsumer implementation:
+  void OnUpdateMemoryLimit() override;
+  void OnReleaseMemory() override;
 
  private:
   friend class OnDeviceTailModelServiceTest;
@@ -71,10 +73,10 @@ class OnDeviceTailModelService
   raw_ptr<optimization_guide::OptimizationGuideModelProvider> model_provider_ =
       nullptr;
 
-  // The memory pressure listener which unloads executor when memory pressure
+  // The memory coordinator listener which unloads executor when memory pressure
   // level is high.
-  std::unique_ptr<base::MemoryPressureListenerRegistration>
-      memory_pressure_listener_registration_;
+  std::unique_ptr<base::MemoryConsumerRegistration>
+      memory_consumer_registration_;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_ON_DEVICE_TAIL_MODEL_SERVICE_H_

@@ -33,6 +33,13 @@ constexpr std::string kTestPrefix = "google m";
 constexpr std::string_view kModelValidationSwitchName =
     "omnibox-on-device-tail-model-validation";
 
+constexpr base::MemoryConsumerTraits kMemoryConsumerTraits(
+    base::MemoryConsumerTraits::EstimatedMemoryUsage::kSmall,
+    base::MemoryConsumerTraits::ReleaseMemoryCost::kFreesPagesWithoutTraversal,
+    base::MemoryConsumerTraits::InformationRetention::kLossless,
+    base::MemoryConsumerTraits::ExecutionType::kAsynchronous,
+    base::MemoryConsumerTraits::IsStateful::kNo);
+
 void InitializeTailModelExecutor(
     OnDeviceTailModelExecutor* executor,
     const base::FilePath& model_file,
@@ -118,10 +125,10 @@ OnDeviceTailModelService::OnDeviceTailModelService(
           OPTIMIZATION_TARGET_OMNIBOX_ON_DEVICE_TAIL_SUGGEST,
       /* model_metadata= */ std::nullopt, model_task_runner_, this);
 
-  memory_pressure_listener_registration_ =
-      std::make_unique<base::MemoryPressureListenerRegistration>(
-          FROM_HERE, base::MemoryPressureListenerTag::kOnDeviceTailModelService,
-          this);
+  memory_consumer_registration_ =
+      std::make_unique<base::MemoryConsumerRegistration>(
+          "OnDeviceTailModelService", kMemoryConsumerTraits, this,
+          base::MemoryConsumerRegistration::CheckUnregister::kDisabled);
 }
 
 OnDeviceTailModelService::OnDeviceTailModelService()
@@ -138,7 +145,7 @@ OnDeviceTailModelService::~OnDeviceTailModelService() {
 }
 
 void OnDeviceTailModelService::Shutdown() {
-  memory_pressure_listener_registration_.reset();
+  memory_consumer_registration_.reset();
 }
 
 void OnDeviceTailModelService::OnModelUpdated(
@@ -179,9 +186,10 @@ void OnDeviceTailModelService::OnModelUpdated(
                      tail_model_metadata.value()));
 }
 
-void OnDeviceTailModelService::OnMemoryPressure(
-    base::MemoryPressureLevel level) {
-  if (level != base::MEMORY_PRESSURE_LEVEL_CRITICAL) {
+void OnDeviceTailModelService::OnUpdateMemoryLimit() {}
+
+void OnDeviceTailModelService::OnReleaseMemory() {
+  if (memory_limit() > base::kCriticalMemoryPressureThreshold) {
     return;
   }
 
@@ -197,7 +205,7 @@ void OnDeviceTailModelService::GetPredictionsForInput(
     ResultCallback result_callback) {
   if (model_task_runner_) {
     // Do not call the model if memory pressure level is too high.
-    if (GetMemoryLimit() > base::kCriticalMemoryPressureThreshold) {
+    if (memory_limit() > base::kCriticalMemoryPressureThreshold) {
       model_task_runner_->PostTaskAndReplyWithResult(
           FROM_HERE,
           base::BindOnce(&RunTailModelExecutor, tail_model_executor_.get(),
