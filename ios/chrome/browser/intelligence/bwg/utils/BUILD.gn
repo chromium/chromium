@@ -6,6 +6,7 @@ source_set("constants") {
   sources = [
     "gemini_constants.h",
     "gemini_constants.mm",
+    "gemini_entry_flow_result.h",
   ]
 }
 
