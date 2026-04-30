@@ -20,6 +20,9 @@ base::File CreateTemporaryFile() {
     return base::File();
   }
 
+  // The file may be passed to an untrusted process, so set
+  // `FLAG_WIN_NO_EXECUTE` to match the flags added by
+  // `base::File::AddFlagsForPassingToUntrustedProcess()` for read/write files.
   base::File weights_file;
   weights_file.Initialize(
       temp_path, base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_READ |

@@ -215,12 +215,21 @@ void ML::EnsureInProcessTFLiteConnection() {
   auto task_runner =
       GetExecutionContext()->GetTaskRunner(TaskType::kMachineLearning);
 
+  // Get a WebNNWeightsFileCreator remote from the browser process to create
+  // weight files for the in-process TFLite context provider. The remote is
+  // passed to the provider as a raw message pipe handle.
+  mojo::PendingRemote<webnn::mojom::blink::WebNNWeightsFileCreator>
+      weights_file_creator;
+  GetExecutionContext()->GetBrowserInterfaceBroker().GetInterface(
+      weights_file_creator.InitWithNewPipeAndPassReceiver());
+
   // Create the in-process TFLite context provider via the thin factory.
   // The factory returns a raw pipe handle for a WebNNContextProvider remote.
   // We wrap it into a blink-variant PendingRemote — this works because blink
   // and non-blink Mojo variants use the same wire format.
   mojo::ScopedMessagePipeHandle context_provider_pipe =
-      webnn::tflite::CreateInProcessContextProvider(task_runner);
+      webnn::tflite::CreateInProcessContextProvider(
+          weights_file_creator.PassPipe(), task_runner);
   tflite_context_provider_.Bind(
       mojo::PendingRemote<webnn::mojom::blink::WebNNContextProvider>(
           std::move(context_provider_pipe), 0u),

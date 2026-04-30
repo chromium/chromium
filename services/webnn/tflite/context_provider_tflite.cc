@@ -17,8 +17,15 @@
 namespace webnn::tflite {
 
 ContextProviderTflite::ContextProviderTflite(
+    mojo::PendingRemote<mojom::WebNNWeightsFileCreator>
+        weights_file_creator_remote,
     scoped_refptr<base::SingleThreadTaskRunner> main_task_runner)
-    : main_task_runner_(std::move(main_task_runner)) {}
+    : main_task_runner_(std::move(main_task_runner)) {
+  // Bind the SharedRemote explicitly to `main_task_runner_` so that the
+  // underlying Mojo Remote lives on the renderer's main thread.
+  shared_weights_file_creator_.Bind(std::move(weights_file_creator_remote),
+                                    main_task_runner_);
+}
 ContextProviderTflite::~ContextProviderTflite() = default;
 
 void ContextProviderTflite::CreateWebNNContext(
@@ -82,9 +89,11 @@ void ContextProviderTflite::OnCreateWebNNContextImpl(
 
 void ContextProviderTflite::CreateWeightsFile(
     base::OnceCallback<void(base::File)> callback) {
-  // TODO(crbug.com/364445586): Request file creation from the browser process
-  // via WebNNWeightsFileCreator.
-  std::move(callback).Run(base::File());
+  if (!shared_weights_file_creator_.is_bound()) {
+    std::move(callback).Run(base::File());
+    return;
+  }
+  shared_weights_file_creator_->CreateWeightsFile(std::move(callback));
 }
 
 void ContextProviderTflite::RemoveWebNNContextImpl(

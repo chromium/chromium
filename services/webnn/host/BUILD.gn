@@ -4,11 +4,17 @@
 
 source_set("host") {
   sources = [
+    "weights_file_creator_impl.cc",
+    "weights_file_creator_impl.h",
     "weights_file_provider.cc",
     "weights_file_provider.h",
   ]
 
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//mojo/public/cpp/bindings",
+    "//services/webnn/public/mojom",
+  ]
 
   if (is_win) {
     sources += [

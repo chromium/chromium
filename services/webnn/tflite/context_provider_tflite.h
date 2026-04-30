@@ -10,8 +10,9 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/shared_remote.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
-#include "services/webnn/webnn_context_impl.h"
 #include "services/webnn/webnn_context_provider_impl.h"
 
 namespace webnn::tflite {
@@ -22,6 +23,8 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) ContextProviderTflite
     : public mojom::WebNNContextProvider {
  public:
   ContextProviderTflite(
+      mojo::PendingRemote<mojom::WebNNWeightsFileCreator>
+          weights_file_creator_remote,
       scoped_refptr<base::SingleThreadTaskRunner> main_task_runner);
   ~ContextProviderTflite() override;
 
@@ -46,6 +49,11 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) ContextProviderTflite
       CreateWebNNContextCallback callback,
       mojo::PendingRemote<mojom::WebNNContext> remote,
       WebNNContextImpl::WebNNContextImplPtr context_impl);
+
+  // SharedRemote for creating weights files in the browser process.
+  // Uses SharedRemote so it can be called from any sequence.
+  mojo::SharedRemote<mojom::WebNNWeightsFileCreator>
+      shared_weights_file_creator_;
 
   // Task runner for the main thread (where the Mojo pipe lives).
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;

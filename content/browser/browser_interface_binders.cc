@@ -130,6 +130,7 @@
 #include "services/shape_detection/public/mojom/facedetection_provider.mojom.h"
 #include "services/shape_detection/public/mojom/shape_detection_service.mojom.h"
 #include "services/shape_detection/public/mojom/textdetection.mojom.h"
+#include "services/webnn/host/weights_file_creator_impl.h"
 #include "services/webnn/public/mojom/features.mojom-features.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "storage/browser/quota/quota_internals.mojom.h"
@@ -326,6 +327,22 @@ void BindWebNNContextProviderForWorker(
   process_host->GetGpuClient()->BindWebNNContextProvider(std::move(receiver),
                                                          is_incognito);
 #endif
+}
+
+void BindWebNNWeightsFileCreatorForRenderFrame(
+    RenderFrameHost* host,
+    mojo::PendingReceiver<webnn::mojom::WebNNWeightsFileCreator> receiver) {
+  const bool is_incognito = host->GetBrowserContext()->IsOffTheRecord();
+  webnn::WeightsFileCreatorImpl::Create(std::move(receiver), is_incognito);
+}
+
+template <typename WorkerHost>
+void BindWebNNWeightsFileCreatorForWorker(
+    WorkerHost* host,
+    mojo::PendingReceiver<webnn::mojom::WebNNWeightsFileCreator> receiver) {
+  const bool is_incognito =
+      host->GetProcessHost()->GetBrowserContext()->IsOffTheRecord();
+  webnn::WeightsFileCreatorImpl::Create(std::move(receiver), is_incognito);
 }
 
 #if BUILDFLAG(IS_MAC)
@@ -968,6 +985,8 @@ void PopulateBinderMapWithContext(
           webnn::mojom::features::kWebMachineLearningNeuralNetwork)) {
     map->Add<webnn::mojom::WebNNContextProvider>(
         &BindWebNNContextProviderForRenderFrame);
+    map->Add<webnn::mojom::WebNNWeightsFileCreator>(
+        &BindWebNNWeightsFileCreatorForRenderFrame);
   }
 
   map->Add<blink::mojom::WebBluetoothService>(
@@ -1369,6 +1388,9 @@ void PopulateDedicatedWorkerBinders(DedicatedWorkerHost* host,
     map->Add<webnn::mojom::WebNNContextProvider>(base::BindRepeating(
         &BindWebNNContextProviderForWorker<DedicatedWorkerHost>,
         base::Unretained(host)));
+    map->Add<webnn::mojom::WebNNWeightsFileCreator>(base::BindRepeating(
+        &BindWebNNWeightsFileCreatorForWorker<DedicatedWorkerHost>,
+        base::Unretained(host)));
   }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -1564,6 +1586,9 @@ void PopulateSharedWorkerBinders(SharedWorkerHost* host, mojo::BinderMap* map) {
     map->Add<webnn::mojom::WebNNContextProvider>(base::BindRepeating(
         &BindWebNNContextProviderForWorker<SharedWorkerHost>,
         base::Unretained(host)));
+    map->Add<webnn::mojom::WebNNWeightsFileCreator>(base::BindRepeating(
+        &BindWebNNWeightsFileCreatorForWorker<SharedWorkerHost>,
+        base::Unretained(host)));
   }
   map->Add<blink::mojom::TranslationManager>(base::BindRepeating(
       [](SharedWorkerHost* host,
@@ -1733,6 +1758,9 @@ void PopulateServiceWorkerBinders(ServiceWorkerHost* host,
           webnn::mojom::features::kWebMachineLearningNeuralNetwork)) {
     map->Add<webnn::mojom::WebNNContextProvider>(base::BindRepeating(
         &BindWebNNContextProviderForWorker<ServiceWorkerHost>,
+        base::Unretained(host)));
+    map->Add<webnn::mojom::WebNNWeightsFileCreator>(base::BindRepeating(
+        &BindWebNNWeightsFileCreatorForWorker<ServiceWorkerHost>,
         base::Unretained(host)));
   }
   map->Add<blink::mojom::TranslationManager>(base::BindRepeating(

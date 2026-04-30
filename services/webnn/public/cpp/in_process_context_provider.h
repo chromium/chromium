@@ -15,8 +15,11 @@ namespace webnn::tflite {
 // pipe handle for a WebNNContextProvider remote. The caller can wrap this
 // into a blink-variant PendingRemote to bind a HeapMojoRemote.
 //
+// |weights_file_creator_pipe| is the raw message pipe handle for a
+// WebNNWeightsFileCreator remote.
 // |task_runner| is the task runner the provider will run on.
 mojo::ScopedMessagePipeHandle CreateInProcessContextProvider(
+    mojo::ScopedMessagePipeHandle weights_file_creator_pipe,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
 }  // namespace webnn::tflite
