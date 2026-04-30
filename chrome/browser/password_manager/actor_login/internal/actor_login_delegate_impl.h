@@ -104,7 +104,7 @@ class ActorLoginDelegateImpl
   void OnAttemptLoginCompleted(
       base::expected<LoginStatusResult, ActorLoginError> result);
 
-  void OnContinuationFlowEnded(bool success);
+  void OnFederatedLoginCompletedPostButtonClick(bool success);
 
   // Called when `OnAttemptLoginCompleted` is invoked with a result for
   // a federated credential login.
@@ -117,8 +117,6 @@ class ActorLoginDelegateImpl
       base::expected<LoginStatusResult, ActorLoginError> result);
 
   void OnActorTaskStateChanged(actor::ActorTask& task);
-
-  void OnActionSequenceEnded(bool success);
 
   bool ShouldCleanUpConflictingPermissions(
       const password_manager::PasswordForm& form) const;
@@ -146,7 +144,6 @@ class ActorLoginDelegateImpl
   LoginStatusResultOrErrorReply pending_attempt_login_done_callback_;
 
   base::WeakPtr<ActionSequenceDelegate> action_sequence_delegate_;
-  base::CallbackListSubscription action_sequence_subscription_;
 
   // Helper for `GetCredentials`. Scoped to one `GetCredentials` request.
   std::unique_ptr<ActorLoginGetCredentialsHelper> get_credentials_helper_;

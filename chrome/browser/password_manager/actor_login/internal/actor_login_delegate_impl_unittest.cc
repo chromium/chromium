@@ -1622,11 +1622,13 @@ TEST_F(ActorLoginDelegateImplTest, FailedFederatedLoginDoesntClearPermissions) {
   EXPECT_EQ(attempt_login_future.Get().value(),
             LoginStatusResult::kRequiresButtonClick);
 
-  ASSERT_TRUE(captured_callback);
+  auto* request = content::webid::FederatedEmbedderLoginRequest::Get(
+      delegate_->web_contents());
+  ASSERT_TRUE(request);
+  request->OnFederatedResultReceived(
+      content::webid::FederatedLoginResult::kAccountIsSignUp);
 
   EXPECT_CALL(*mock_cleaning_service, ClearConflictingPermissions).Times(0);
-
-  std::move(captured_callback).Run(/*success=*/false);
 }
 
 TEST_F(ActorLoginDelegateImplTest,

@@ -174,6 +174,10 @@ class ActorLoginSiwgControllerTest : public ChromeRenderViewHostTestHarness {
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
 
+    ON_CALL(mock_action_sequence_delegate_, RegisterActionSequenceEnded)
+        .WillByDefault([](base::OnceCallback<void(bool)> callback) {
+          return base::CallbackListSubscription();
+        });
 
     // Navigate to a URL so we have a valid last committed URL.
     NavigateAndCommit(GURL("https://example.com/login"));
@@ -200,12 +204,19 @@ class ActorLoginSiwgControllerTest : public ChromeRenderViewHostTestHarness {
  protected:
   StrictMock<MockActorLoginPermissionService> mock_permission_service_;
   MockActorLoginQualityLogger mock_mqls_logger_;
+  testing::NiceMock<MockActionSequenceDelegate> mock_action_sequence_delegate_;
 };
 
 TEST_F(ActorLoginSiwgControllerTest, DelegatesClick) {
   base::HistogramTester histogram_tester;
   base::MockCallback<LoginStatusResultOrErrorReply> finished_callback;
-  StrictMock<MockActionSequenceDelegate> action_sequence_delegate;
+
+  base::OnceCallback<void(bool)> captured_callback;
+  EXPECT_CALL(mock_action_sequence_delegate_, RegisterActionSequenceEnded)
+      .WillOnce([&](base::OnceCallback<void(bool)> callback) {
+        captured_callback = std::move(callback);
+        return base::CallbackListSubscription();
+      });
 
   auto metrics_helper_owned =
       std::make_unique<ActorLoginMetricsHelper>(ukm::kInvalidSourceId);
@@ -213,10 +224,12 @@ TEST_F(ActorLoginSiwgControllerTest, DelegatesClick) {
   Credential credential;
   credential.federation_detail = FederationDetail();
 
+  base::test::TestFuture<bool> post_button_click_login_result_future;
   auto controller = std::make_unique<ActorLoginSiwgController>(
       web_contents(), credential, false, mock_permission_service_,
-      finished_callback.Get(), action_sequence_delegate.GetWeakPtr(),
-      mqls_logger(), base::TimeTicks::Now(), base::DoNothing());
+      finished_callback.Get(), mock_action_sequence_delegate_.GetWeakPtr(),
+      mqls_logger(), base::TimeTicks::Now(),
+      post_button_click_login_result_future.GetCallback());
   base::RunLoop start_run_loop;
   EXPECT_CALL(finished_callback,
               Run(base::test::ValueIs(LoginStatusResult::kRequiresButtonClick)))
@@ -229,6 +242,7 @@ TEST_F(ActorLoginSiwgControllerTest, DelegatesClick) {
           ActorLoginQuality_AttemptLoginDetails_AttemptLoginOutcome_FEDERATED_SUCCESS);
   expected_details.set_attempt_login_time_ms(kAttemptLoginTimeMs);
   expected_details.set_button_click_required(true);
+  expected_details.set_button_click_succeeded(true);
 
   EXPECT_CALL(
       mock_mqls_logger_,
@@ -243,11 +257,14 @@ TEST_F(ActorLoginSiwgControllerTest, DelegatesClick) {
 
   // The result still needs to be reported.
   base::RunLoop outcome_run_loop;
-  EXPECT_CALL(action_sequence_delegate,
+  EXPECT_CALL(mock_action_sequence_delegate_,
               OnFederatedLoginOutcome(LoginStatusResult::kSuccessFederated))
       .WillOnce(base::test::RunClosure(outcome_run_loop.QuitClosure()));
 
   task_environment()->AdvanceClock(base::Milliseconds(kAttemptLoginTimeMs));
+
+  // Simulate the action sequence ending with success.
+  std::move(captured_callback).Run(true);
 
   // Manually trigger the federated login completion callback.
   auto* request =
@@ -257,6 +274,8 @@ TEST_F(ActorLoginSiwgControllerTest, DelegatesClick) {
       content::webid::FederatedLoginResult::kSuccess);
 
   outcome_run_loop.Run();
+
+  EXPECT_TRUE(post_button_click_login_result_future.Get());
 
   // Simulate the action sequence ending, at which point the delegate would
   // destroy its SIWG controller.
@@ -269,10 +288,8 @@ TEST_F(ActorLoginSiwgControllerTest, DelegatesClick) {
 
 TEST_F(ActorLoginSiwgControllerTest, StoresPermissionOnSuccess) {
   base::MockCallback<LoginStatusResultOrErrorReply> finished_callback;
-  StrictMock<MockActionSequenceDelegate> action_sequence_delegate;
   auto metrics_helper_owned =
       std::make_unique<ActorLoginMetricsHelper>(ukm::kInvalidSourceId);
-
   Credential credential;
   credential.username = u"test@gmail.com";
   credential.request_origin = url::Origin::Create(GURL("https://example.com"));
@@ -285,7 +302,7 @@ TEST_F(ActorLoginSiwgControllerTest, StoresPermissionOnSuccess) {
   ActorLoginSiwgController controller(
       web_contents(), credential,
       /*should_store_permission=*/true, mock_permission_service_,
-      finished_callback.Get(), action_sequence_delegate.GetWeakPtr(),
+      finished_callback.Get(), mock_action_sequence_delegate_.GetWeakPtr(),
       mqls_logger(), base::TimeTicks::Now(), base::DoNothing());
 
   const int kAttemptLoginTimeMs = 50;
@@ -321,7 +338,7 @@ TEST_F(ActorLoginSiwgControllerTest, StoresPermissionOnSuccess) {
               GrantPermission(testing::Eq(expected_permission), _));
 
   base::RunLoop outcome_run_loop;
-  EXPECT_CALL(action_sequence_delegate,
+  EXPECT_CALL(mock_action_sequence_delegate_,
               OnFederatedLoginOutcome(LoginStatusResult::kSuccessFederated))
       .WillOnce(base::test::RunClosure(outcome_run_loop.QuitClosure()));
 
@@ -339,18 +356,18 @@ TEST_F(ActorLoginSiwgControllerTest, StoresPermissionOnSuccess) {
 
 TEST_F(ActorLoginSiwgControllerTest, DoesNotStorePermissionOnFailure) {
   base::MockCallback<LoginStatusResultOrErrorReply> finished_callback;
-  StrictMock<MockActionSequenceDelegate> action_sequence_delegate;
   auto metrics_helper_owned =
       std::make_unique<ActorLoginMetricsHelper>(ukm::kInvalidSourceId);
-
   Credential credential;
   credential.federation_detail = FederationDetail();
 
+  base::test::TestFuture<bool> post_button_click_login_result_future;
   ActorLoginSiwgController controller(
       web_contents(), credential,
       /*should_store_permission=*/true, mock_permission_service_,
-      finished_callback.Get(), action_sequence_delegate.GetWeakPtr(),
-      mqls_logger(), base::TimeTicks::Now(), base::DoNothing());
+      finished_callback.Get(), mock_action_sequence_delegate_.GetWeakPtr(),
+      mqls_logger(), base::TimeTicks::Now(),
+      post_button_click_login_result_future.GetCallback());
 
   const int kAttemptLoginTimeMs = 50;
   AttemptLoginDetails expected_details;
@@ -374,7 +391,7 @@ TEST_F(ActorLoginSiwgControllerTest, DoesNotStorePermissionOnFailure) {
   start_run_loop.Run();
 
   base::RunLoop outcome_run_loop;
-  EXPECT_CALL(action_sequence_delegate,
+  EXPECT_CALL(mock_action_sequence_delegate_,
               OnFederatedLoginOutcome(
                   LoginStatusResult::kErrorFederatedIdpReturnedError))
       .WillOnce(base::test::RunClosure(outcome_run_loop.QuitClosure()));
@@ -390,11 +407,12 @@ TEST_F(ActorLoginSiwgControllerTest, DoesNotStorePermissionOnFailure) {
       content::webid::FederatedLoginResult::kIdpReturnedError);
 
   outcome_run_loop.Run();
+
+  EXPECT_FALSE(post_button_click_login_result_future.Get());
 }
 
 TEST_F(ActorLoginSiwgControllerTest, Continuation_Success_StoresPermission) {
   base::MockCallback<LoginStatusResultOrErrorReply> finished_callback;
-  StrictMock<MockActionSequenceDelegate> action_sequence_delegate;
   auto metrics_helper_owned =
       std::make_unique<ActorLoginMetricsHelper>(ukm::kInvalidSourceId);
 
@@ -407,13 +425,13 @@ TEST_F(ActorLoginSiwgControllerTest, Continuation_Success_StoresPermission) {
   fed_detail.account_id = "12345";
   credential.federation_detail = fed_detail;
 
-  base::test::TestFuture<bool> continuation_ended_future;
+  base::test::TestFuture<bool> post_button_click_login_result_future;
   ActorLoginSiwgController controller(
       web_contents(), credential,
       /*should_store_permission=*/true, mock_permission_service_,
-      finished_callback.Get(), action_sequence_delegate.GetWeakPtr(),
+      finished_callback.Get(), mock_action_sequence_delegate_.GetWeakPtr(),
       mqls_logger(), base::TimeTicks::Now(),
-      continuation_ended_future.GetCallback());
+      post_button_click_login_result_future.GetCallback());
 
   EXPECT_CALL(
       finished_callback,
@@ -426,7 +444,7 @@ TEST_F(ActorLoginSiwgControllerTest, Continuation_Success_StoresPermission) {
   ASSERT_TRUE(request);
 
   EXPECT_CALL(
-      action_sequence_delegate,
+      mock_action_sequence_delegate_,
       OnFederatedLoginOutcome(LoginStatusResult::kErrorFederatedContinuation));
 
   request->OnFederatedResultReceived(
@@ -444,12 +462,11 @@ TEST_F(ActorLoginSiwgControllerTest, Continuation_Success_StoresPermission) {
               GrantPermission(testing::Eq(expected_permission), _));
 
   SimulateContinuationLoginResult(&controller, /*success=*/true);
-  EXPECT_TRUE(continuation_ended_future.Get());
+  EXPECT_TRUE(post_button_click_login_result_future.Get());
 }
 
 TEST_F(ActorLoginSiwgControllerTest, Continuation_Failed_NoPermissionStored) {
   base::MockCallback<LoginStatusResultOrErrorReply> finished_callback;
-  StrictMock<MockActionSequenceDelegate> action_sequence_delegate;
   auto metrics_helper_owned =
       std::make_unique<ActorLoginMetricsHelper>(ukm::kInvalidSourceId);
 
@@ -462,13 +479,13 @@ TEST_F(ActorLoginSiwgControllerTest, Continuation_Failed_NoPermissionStored) {
   fed_detail.account_id = "12345";
   credential.federation_detail = fed_detail;
 
-  base::test::TestFuture<bool> continuation_ended_future;
+  base::test::TestFuture<bool> post_button_click_login_result_future;
   ActorLoginSiwgController controller(
       web_contents(), credential,
       /*should_store_permission=*/true, mock_permission_service_,
-      finished_callback.Get(), action_sequence_delegate.GetWeakPtr(),
+      finished_callback.Get(), mock_action_sequence_delegate_.GetWeakPtr(),
       mqls_logger(), base::TimeTicks::Now(),
-      continuation_ended_future.GetCallback());
+      post_button_click_login_result_future.GetCallback());
 
   EXPECT_CALL(
       finished_callback,
@@ -481,7 +498,7 @@ TEST_F(ActorLoginSiwgControllerTest, Continuation_Failed_NoPermissionStored) {
   ASSERT_TRUE(request);
 
   EXPECT_CALL(
-      action_sequence_delegate,
+      mock_action_sequence_delegate_,
       OnFederatedLoginOutcome(LoginStatusResult::kErrorFederatedContinuation));
 
   request->OnFederatedResultReceived(
@@ -490,13 +507,12 @@ TEST_F(ActorLoginSiwgControllerTest, Continuation_Failed_NoPermissionStored) {
   EXPECT_CALL(mock_permission_service_, GrantPermission).Times(0);
 
   SimulateContinuationLoginResult(&controller, /*success=*/false);
-  EXPECT_FALSE(continuation_ended_future.Get());
+  EXPECT_FALSE(post_button_click_login_result_future.Get());
 }
 
 TEST_F(ActorLoginSiwgControllerTest,
        Continuation_ShouldStoreFalse_NoPermissionStored) {
   base::MockCallback<LoginStatusResultOrErrorReply> finished_callback;
-  StrictMock<MockActionSequenceDelegate> action_sequence_delegate;
   auto metrics_helper_owned =
       std::make_unique<ActorLoginMetricsHelper>(ukm::kInvalidSourceId);
 
@@ -509,13 +525,13 @@ TEST_F(ActorLoginSiwgControllerTest,
   fed_detail.account_id = "12345";
   credential.federation_detail = fed_detail;
 
-  base::test::TestFuture<bool> continuation_ended_future;
+  base::test::TestFuture<bool> post_button_click_login_result_future;
   ActorLoginSiwgController controller(
       web_contents(), credential,
       /*should_store_permission=*/false, mock_permission_service_,
-      finished_callback.Get(), action_sequence_delegate.GetWeakPtr(),
+      finished_callback.Get(), mock_action_sequence_delegate_.GetWeakPtr(),
       mqls_logger(), base::TimeTicks::Now(),
-      continuation_ended_future.GetCallback());
+      post_button_click_login_result_future.GetCallback());
 
   EXPECT_CALL(
       finished_callback,
@@ -528,7 +544,7 @@ TEST_F(ActorLoginSiwgControllerTest,
   ASSERT_TRUE(request);
 
   EXPECT_CALL(
-      action_sequence_delegate,
+      mock_action_sequence_delegate_,
       OnFederatedLoginOutcome(LoginStatusResult::kErrorFederatedContinuation));
 
   request->OnFederatedResultReceived(
@@ -537,7 +553,7 @@ TEST_F(ActorLoginSiwgControllerTest,
   EXPECT_CALL(mock_permission_service_, GrantPermission).Times(0);
 
   SimulateContinuationLoginResult(&controller, /*success=*/true);
-  EXPECT_TRUE(continuation_ended_future.Get());
+  EXPECT_TRUE(post_button_click_login_result_future.Get());
 }
 
 TEST_F(ActorLoginSiwgControllerTest,
@@ -554,13 +570,13 @@ TEST_F(ActorLoginSiwgControllerTest,
   fed_detail.account_id = "12345";
   credential.federation_detail = fed_detail;
 
-  base::test::TestFuture<bool> continuation_ended_future;
+  base::test::TestFuture<bool> post_button_click_login_result_future;
   ActorLoginSiwgController controller(
       web_contents(), credential,
       /*should_store_permission=*/true, mock_permission_service_,
-      finished_callback.Get(), action_sequence_delegate.GetWeakPtr(),
+      finished_callback.Get(), mock_action_sequence_delegate_.GetWeakPtr(),
       mqls_logger(), base::TimeTicks::Now(),
-      continuation_ended_future.GetCallback());
+      post_button_click_login_result_future.GetCallback());
 
   EXPECT_CALL(mock_permission_service_, GrantPermission).Times(0);
 
@@ -568,13 +584,12 @@ TEST_F(ActorLoginSiwgControllerTest,
   // RunUntilIdle because there is no signal to wait for when not in a
   // continuation flow.
   base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(continuation_ended_future.IsReady());
+  EXPECT_FALSE(post_button_click_login_result_future.IsReady());
 }
 
 TEST_F(ActorLoginSiwgControllerTest,
        ContinuationInPopup_PopupDestroyed_NoPermission) {
   base::MockCallback<LoginStatusResultOrErrorReply> finished_callback;
-  StrictMock<MockActionSequenceDelegate> action_sequence_delegate;
   auto metrics_helper_owned =
       std::make_unique<ActorLoginMetricsHelper>(ukm::kInvalidSourceId);
 
@@ -587,13 +602,13 @@ TEST_F(ActorLoginSiwgControllerTest,
   fed_detail.account_id = "12345";
   credential.federation_detail = fed_detail;
 
-  base::test::TestFuture<bool> continuation_ended_future;
+  base::test::TestFuture<bool> post_button_click_login_result_future;
   ActorLoginSiwgController controller(
       web_contents(), credential,
       /*should_store_permission=*/true, mock_permission_service_,
-      finished_callback.Get(), action_sequence_delegate.GetWeakPtr(),
+      finished_callback.Get(), mock_action_sequence_delegate_.GetWeakPtr(),
       mqls_logger(), base::TimeTicks::Now(),
-      continuation_ended_future.GetCallback());
+      post_button_click_login_result_future.GetCallback());
 
   EXPECT_CALL(
       finished_callback,
@@ -606,7 +621,7 @@ TEST_F(ActorLoginSiwgControllerTest,
   ASSERT_TRUE(request);
 
   EXPECT_CALL(
-      action_sequence_delegate,
+      mock_action_sequence_delegate_,
       OnFederatedLoginOutcome(LoginStatusResult::kErrorFederatedContinuation));
 
   request->OnFederatedResultReceived(
@@ -626,13 +641,12 @@ TEST_F(ActorLoginSiwgControllerTest,
   popup_contents.reset();
 
   // Wait for the posted task to run.
-  EXPECT_FALSE(continuation_ended_future.Get());
+  EXPECT_FALSE(post_button_click_login_result_future.Get());
 }
 
 TEST_F(ActorLoginSiwgControllerTest,
        ContinuationInPopup_Success_StoresPermission) {
   base::MockCallback<LoginStatusResultOrErrorReply> finished_callback;
-  StrictMock<MockActionSequenceDelegate> action_sequence_delegate;
   auto metrics_helper_owned =
       std::make_unique<ActorLoginMetricsHelper>(ukm::kInvalidSourceId);
 
@@ -645,13 +659,13 @@ TEST_F(ActorLoginSiwgControllerTest,
   fed_detail.account_id = "12345";
   credential.federation_detail = fed_detail;
 
-  base::test::TestFuture<bool> continuation_ended_future;
+  base::test::TestFuture<bool> post_button_click_login_result_future;
   ActorLoginSiwgController controller(
       web_contents(), credential,
       /*should_store_permission=*/true, mock_permission_service_,
-      finished_callback.Get(), action_sequence_delegate.GetWeakPtr(),
+      finished_callback.Get(), mock_action_sequence_delegate_.GetWeakPtr(),
       mqls_logger(), base::TimeTicks::Now(),
-      continuation_ended_future.GetCallback());
+      post_button_click_login_result_future.GetCallback());
 
   // Simulate opening a popup.
   std::unique_ptr<content::WebContents> popup_contents =
@@ -671,7 +685,7 @@ TEST_F(ActorLoginSiwgControllerTest,
   ASSERT_TRUE(request);
 
   EXPECT_CALL(
-      action_sequence_delegate,
+      mock_action_sequence_delegate_,
       OnFederatedLoginOutcome(LoginStatusResult::kErrorFederatedContinuation));
 
   request->OnFederatedResultReceived(
@@ -689,13 +703,12 @@ TEST_F(ActorLoginSiwgControllerTest,
               GrantPermission(testing::Eq(expected_permission), _));
 
   controller.SimulateContinuationInPopupForTesting(true);
-  EXPECT_TRUE(continuation_ended_future.Get());
+  EXPECT_TRUE(post_button_click_login_result_future.Get());
 }
 
 TEST_F(ActorLoginSiwgControllerTest,
        ContinuationInPopup_Failed_NoPermissionStored) {
   base::MockCallback<LoginStatusResultOrErrorReply> finished_callback;
-  StrictMock<MockActionSequenceDelegate> action_sequence_delegate;
   auto metrics_helper_owned =
       std::make_unique<ActorLoginMetricsHelper>(ukm::kInvalidSourceId);
 
@@ -708,13 +721,13 @@ TEST_F(ActorLoginSiwgControllerTest,
   fed_detail.account_id = "12345";
   credential.federation_detail = fed_detail;
 
-  base::test::TestFuture<bool> continuation_ended_future;
+  base::test::TestFuture<bool> post_button_click_login_result_future;
   ActorLoginSiwgController controller(
       web_contents(), credential,
       /*should_store_permission=*/true, mock_permission_service_,
-      finished_callback.Get(), action_sequence_delegate.GetWeakPtr(),
+      finished_callback.Get(), mock_action_sequence_delegate_.GetWeakPtr(),
       mqls_logger(), base::TimeTicks::Now(),
-      continuation_ended_future.GetCallback());
+      post_button_click_login_result_future.GetCallback());
 
   // Simulate opening a popup.
   std::unique_ptr<content::WebContents> popup_contents =
@@ -734,7 +747,7 @@ TEST_F(ActorLoginSiwgControllerTest,
   ASSERT_TRUE(request);
 
   EXPECT_CALL(
-      action_sequence_delegate,
+      mock_action_sequence_delegate_,
       OnFederatedLoginOutcome(LoginStatusResult::kErrorFederatedContinuation));
 
   request->OnFederatedResultReceived(
@@ -743,7 +756,7 @@ TEST_F(ActorLoginSiwgControllerTest,
   EXPECT_CALL(mock_permission_service_, GrantPermission).Times(0);
 
   controller.SimulateContinuationInPopupForTesting(false);
-  EXPECT_FALSE(continuation_ended_future.Get());
+  EXPECT_FALSE(post_button_click_login_result_future.Get());
 }
 
 }  // namespace actor_login

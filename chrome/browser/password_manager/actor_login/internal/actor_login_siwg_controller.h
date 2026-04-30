@@ -41,7 +41,7 @@ class ActorLoginSiwgController : public content::WebContentsObserver {
       base::RepeatingCallback<void(content::WebContents*,
                                    blink::mojom::AIPageContentOptionsPtr,
                                    optimization_guide::OnAIPageContentDone)>;
-  using ContinuationFlowEndedCallback = base::OnceCallback<void(bool)>;
+  using PostButtonClickLoginResultCallback = base::OnceCallback<void(bool)>;
 
   ActorLoginSiwgController(
       content::WebContents* web_contents,
@@ -52,7 +52,8 @@ class ActorLoginSiwgController : public content::WebContentsObserver {
       base::WeakPtr<ActionSequenceDelegate> action_sequence_delegate,
       base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger,
       base::TimeTicks attempt_login_tool_start_time,
-      ContinuationFlowEndedCallback continuation_flow_ended_callback);
+      PostButtonClickLoginResultCallback
+          post_button_click_login_result_callback);
   ActorLoginSiwgController(
       content::WebContents* web_contents,
       const Credential& credential,
@@ -63,7 +64,8 @@ class ActorLoginSiwgController : public content::WebContentsObserver {
       base::WeakPtr<ActionSequenceDelegate> action_sequence_delegate,
       base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger,
       base::TimeTicks attempt_login_tool_start_time,
-      ContinuationFlowEndedCallback continuation_flow_ended_callback);
+      PostButtonClickLoginResultCallback
+          post_button_click_login_result_callback);
   ~ActorLoginSiwgController() override;
 
   // Not copyable or movable.
@@ -82,16 +84,14 @@ class ActorLoginSiwgController : public content::WebContentsObserver {
   // clicks the first one found.
   void ClickSiwgButton();
 
-  // Informs the controller about the success of a button click triggered by
-  // the actor framework.
-  void OnButtonClickCompleted(bool success);
-
   // Calls `OnFedCmFederatedLogin` on `popup_observer_`.
   // TODO(crbug.com/508169237): Utilize `WebContentsTester` instead.
   void SimulateContinuationInPopupForTesting(bool success);
 
  private:
   class PopupObserver;
+
+  void OnActionSequenceEnded(bool success);
 
   // content::WebContentsObserver implementation:
   void OnFedCmFederatedLogin(bool success) override;
@@ -123,6 +123,7 @@ class ActorLoginSiwgController : public content::WebContentsObserver {
   // Delegate to notify once the login request initiated by this class produces
   // a result.
   base::WeakPtr<ActionSequenceDelegate> action_sequence_delegate_;
+  base::CallbackListSubscription action_sequence_subscription_;
 
   Credential credential_;
   // Passed from the attempt login tool when the user clicked "Allow always".
@@ -146,10 +147,8 @@ class ActorLoginSiwgController : public content::WebContentsObserver {
   base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger_;
   base::TimeTicks attempt_login_tool_start_time_;
 
-  // Callback to notify when the continuation flow ends.
-  // TODO(crbug.com/508168144): Also notify about the success on
-  // non-continuation flows.
-  ContinuationFlowEndedCallback continuation_flow_ended_callback_;
+  // Callback to notify when the federated login flow ends after a button click.
+  PostButtonClickLoginResultCallback post_button_click_login_result_callback_;
   std::unique_ptr<PopupObserver> popup_observer_;
 
   base::WeakPtrFactory<ActorLoginSiwgController> weak_ptr_factory_{this};

@@ -125,7 +125,7 @@ ActorLoginSiwgController::ActorLoginSiwgController(
     base::WeakPtr<ActionSequenceDelegate> action_sequence_delegate,
     base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger,
     base::TimeTicks attempt_login_tool_start_time,
-    ContinuationFlowEndedCallback continuation_flow_ended_callback)
+    PostButtonClickLoginResultCallback post_button_click_login_result_callback)
     : ActorLoginSiwgController(
           web_contents,
           credential,
@@ -136,7 +136,7 @@ ActorLoginSiwgController::ActorLoginSiwgController(
           std::move(action_sequence_delegate),
           std::move(mqls_logger),
           attempt_login_tool_start_time,
-          std::move(continuation_flow_ended_callback)) {}
+          std::move(post_button_click_login_result_callback)) {}
 
 ActorLoginSiwgController::ActorLoginSiwgController(
     content::WebContents* web_contents,
@@ -148,7 +148,7 @@ ActorLoginSiwgController::ActorLoginSiwgController(
     base::WeakPtr<ActionSequenceDelegate> action_sequence_delegate,
     base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger,
     base::TimeTicks attempt_login_tool_start_time,
-    ContinuationFlowEndedCallback continuation_flow_ended_callback)
+    PostButtonClickLoginResultCallback post_button_click_login_result_callback)
     : content::WebContentsObserver(web_contents),
       get_page_content_provider_(std::move(get_page_content_provider)),
       on_finished_callback_(std::move(on_finished_callback)),
@@ -158,8 +158,8 @@ ActorLoginSiwgController::ActorLoginSiwgController(
       permission_service_(permission_service),
       mqls_logger_(std::move(mqls_logger)),
       attempt_login_tool_start_time_(attempt_login_tool_start_time),
-      continuation_flow_ended_callback_(
-          std::move(continuation_flow_ended_callback)) {}
+      post_button_click_login_result_callback_(
+          std::move(post_button_click_login_result_callback)) {}
 
 ActorLoginSiwgController::~ActorLoginSiwgController() = default;
 
@@ -187,6 +187,12 @@ void ActorLoginSiwgController::StartFederatedLogin(
   if (!source->SelectAccount(credential_.federation_detail->idp_origin,
                              credential_.federation_detail->account_id)) {
     federated_attempt_login_details_.set_button_click_required(true);
+    if (action_sequence_delegate_) {
+      action_sequence_subscription_ =
+          action_sequence_delegate_->RegisterActionSequenceEnded(
+              base::BindOnce(&ActorLoginSiwgController::OnActionSequenceEnded,
+                             weak_ptr_factory_.GetWeakPtr()));
+    }
     std::move(on_finished_callback_)
         .Run(LoginStatusResult::kRequiresButtonClick);
   }
@@ -215,8 +221,23 @@ void ActorLoginSiwgController::OnFederatedLoginResultReceived(
   if (action_sequence_delegate_) {
     action_sequence_delegate_->OnFederatedLoginOutcome(status);
   }
+  // If the flow required button click, this callback was already called.
   if (on_finished_callback_) {
     std::move(on_finished_callback_).Run(status);
+    return;
+  }
+  // Continuation is reported to the model via
+  // `action_sequence_delegate_->OnFederatedLoginOutcome` because it's an error
+  // for the model. However continuation can still finish successfully. The
+  // status will be handled in `OnFedCmFederatedLogin`.
+  if (result == content::webid::FederatedLoginResult::kContinuation) {
+    return;
+  }
+  // This is the end of the login flow. Report result to the caller to clean up
+  // state.
+  if (post_button_click_login_result_callback_) {
+    std::move(post_button_click_login_result_callback_)
+        .Run(result == content::webid::FederatedLoginResult::kSuccess);
   }
 }
 
@@ -243,11 +264,12 @@ void ActorLoginSiwgController::OnFedCmFederatedLogin(bool success) {
     GrantPermission();
   }
   waiting_for_continuation_success_ = false;
-  std::move(continuation_flow_ended_callback_).Run(success);
+  std::move(post_button_click_login_result_callback_).Run(success);
 }
 
-void ActorLoginSiwgController::OnButtonClickCompleted(bool success) {
+void ActorLoginSiwgController::OnActionSequenceEnded(bool success) {
   federated_attempt_login_details_.set_button_click_succeeded(success);
+  action_sequence_subscription_ = {};
 }
 
 void ActorLoginSiwgController::LogFederatedLoginResult(

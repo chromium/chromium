@@ -214,7 +214,6 @@ void ActorLoginDelegateImpl::AttemptLogin(
   // Store the callback to mark as active
   pending_attempt_login_done_callback_ = std::move(done_callback);
   action_sequence_delegate_ = std::move(action_sequence_delegate);
-  action_sequence_subscription_ = {};
 
   const url::Origin origin =
       GetWebContents().GetPrimaryMainFrame()->GetLastCommittedOrigin();
@@ -253,9 +252,9 @@ void ActorLoginDelegateImpl::AttemptLogin(
             base::BindOnce(&ActorLoginDelegateImpl::OnAttemptLoginCompleted,
                            weak_ptr_factory_.GetWeakPtr())),
         action_sequence_delegate_, mqls_logger, attempt_login_tool_start_time,
-        base::BindPostTaskToCurrentDefault(
-            base::BindOnce(&ActorLoginDelegateImpl::OnContinuationFlowEnded,
-                           weak_ptr_factory_.GetWeakPtr())));
+        base::BindPostTaskToCurrentDefault(base::BindOnce(
+            &ActorLoginDelegateImpl::OnFederatedLoginCompletedPostButtonClick,
+            weak_ptr_factory_.GetWeakPtr())));
     siwg_controller_->StartFederatedLogin(std::move(metrics_helper_));
     return;
   }
@@ -305,7 +304,8 @@ void ActorLoginDelegateImpl::PrimaryPageChanged(content::Page& page) {
   }
 }
 
-void ActorLoginDelegateImpl::OnContinuationFlowEnded(bool success) {
+void ActorLoginDelegateImpl::OnFederatedLoginCompletedPostButtonClick(
+    bool success) {
   if (last_attempted_credential_->type != CredentialType::kFederated) {
     // The last login attempt wasn't a federated login, so this result
     // doesn't correspond to the `last_attempted_credential_`.
@@ -396,14 +396,9 @@ void ActorLoginDelegateImpl::ProcessFederatedResult(
   // `kRequiresButtonClick` means that the federated login is not yet done.
   // We need to keep the controller alive so it can receive the result of the
   // login and store permissions if needed. It will be cleaned up together with
-  // the delegate or when the current sequence of actions completes.
+  // the delegate.
   if (result.has_value() &&
-      result.value() == LoginStatusResult::kRequiresButtonClick &&
-      action_sequence_delegate_) {
-    action_sequence_subscription_ =
-        action_sequence_delegate_->RegisterActionSequenceEnded(
-            base::BindOnce(&ActorLoginDelegateImpl::OnActionSequenceEnded,
-                           weak_ptr_factory_.GetWeakPtr()));
+      result.value() == LoginStatusResult::kRequiresButtonClick) {
     return;
   }
 
@@ -424,8 +419,9 @@ void ActorLoginDelegateImpl::ProcessFederatedResult(
       siwg_controller_->should_store_permission()) {
     ClearConflictingPermissions();
   }
-  // This is the end of the non-continuation federated login flow, so reset the
-  // state. Continuation flow ends in `OnContinuationFlowEnded`.
+  // This is the end of the federated login flow if it didn't require a button
+  // click. Flows requiring a button click end in
+  // `OnFederatedLoginCompletedPostButtonClick`
   ResetState();
   siwg_controller_.reset();
 }
@@ -456,11 +452,6 @@ void ActorLoginDelegateImpl::ProcessPasswordResult(
   // `OnLoginSucceeded` is called or if that doesn't happen, at the latest
   // when a new request comes in.
   password_manager_observation_.Observe(client_->GetPasswordManager());
-}
-
-void ActorLoginDelegateImpl::OnActionSequenceEnded(bool success) {
-  siwg_controller_->OnButtonClickCompleted(success);
-  action_sequence_subscription_ = {};
 }
 
 void ActorLoginDelegateImpl::OnActorTaskStateChanged(actor::ActorTask& task) {
