@@ -12,9 +12,6 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Process;
 import android.text.format.DateUtils;
-import android.view.inputmethod.InputMethodInfo;
-import android.view.inputmethod.InputMethodManager;
-import android.view.inputmethod.InputMethodSubtype;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.WorkerThread;
@@ -675,8 +672,6 @@ public class ProcessInitializationHandler {
                     UsbNotificationManager.clearUsbNotifications(UsbNotificationService.class);
 
                     startBindingManagementIfNeeded();
-
-                    recordKeyboardLocaleUma();
                 });
 
         tasks.add(() -> LocaleManager.getInstance().recordStartupMetrics());
@@ -958,29 +953,6 @@ public class ProcessInitializationHandler {
             return;
         }
         ChildProcessLauncherHelper.startBindingManagement(ContextUtils.getApplicationContext());
-    }
-
-    @SuppressWarnings("deprecation") // InputMethodSubtype.getLocale() deprecated in API 24
-    private void recordKeyboardLocaleUma() {
-        InputMethodManager imm =
-                (InputMethodManager)
-                        ContextUtils.getApplicationContext()
-                                .getSystemService(Context.INPUT_METHOD_SERVICE);
-        List<InputMethodInfo> ims = imm.getEnabledInputMethodList();
-        ArrayList<String> uniqueLanguages = new ArrayList<>();
-        for (InputMethodInfo method : ims) {
-            List<InputMethodSubtype> submethods =
-                    imm.getEnabledInputMethodSubtypeList(method, true);
-            for (InputMethodSubtype submethod : submethods) {
-                if (submethod.getMode().equals("keyboard")) {
-                    String language = submethod.getLocale().split("_")[0];
-                    if (!uniqueLanguages.contains(language)) {
-                        uniqueLanguages.add(language);
-                    }
-                }
-            }
-        }
-        RecordHistogram.recordCount1MHistogram("InputMethod.ActiveCount", uniqueLanguages.size());
     }
 
     private static boolean shouldDialogPadForContent(WindowAndroid windowAndroid) {

@@ -161,12 +161,11 @@ chromium-metrics-reviews@google.com.
   <owner>essential-inputs-team@google.com</owner>
   <summary>
     The number of enabled input methods. Recorded when the user logs in to
-    Chrome OS or each cold start of Chrome on Android. The enabled input methods
-    are selected by user in the language settings page on Chrome OS and in
-    system language settings on Android. NOTE: 'Active' in the metric name is a
-    legacy misnomer; 'active' should refer to just the single current aka.
-    activated input method that is one of the enabled input methods whose total
-    count is being tracked by this metric.
+    Chrome OS. The enabled input methods are selected by user in the language
+    settings page on Chrome OS. NOTE: 'Active' in the metric name is a legacy
+    misnomer; 'active' should refer to just the single current aka. activated
+    input method that is one of the enabled input methods whose total count is
+    being tracked by this metric.
   </summary>
 </histogram>
 
