@@ -30,15 +30,13 @@ void EchoAIProofreader::Proofread(
   responder->OnCompletion(/*context_info=*/nullptr);
 }
 
-void EchoAIProofreader::GetCorrectionType(
-    const std::string& input,
-    const std::string& corrected_input,
-    const std::string& correction,
+void EchoAIProofreader::GetCorrectionsTypes(
+    const std::string& corrections,
     mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
         pending_responder) {
   mojo::Remote<blink::mojom::ModelStreamingResponder> responder(
       std::move(pending_responder));
-  responder->OnStreaming("Model not available in Chromium\n" + input);
+  responder->OnStreaming("Model not available in Chromium\n" + corrections);
   responder->OnCompletion(/*context_info=*/nullptr);
 }
 

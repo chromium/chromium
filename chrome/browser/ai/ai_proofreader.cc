@@ -91,17 +91,15 @@ void AIProofreader::Proofread(
     const std::string& input,
     mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
         pending_responder) {
-  StartExecution(input, /*corrected_input=*/"", /*correction_instruction=*/"",
+  StartExecution(input, /*serialized_corrections=*/std::string(),
                  /*is_label_mode=*/false, std::move(pending_responder));
 }
 
-void AIProofreader::GetCorrectionType(
-    const std::string& input,
-    const std::string& corrected_input,
-    const std::string& correction_instruction,
+void AIProofreader::GetCorrectionsTypes(
+    const std::string& correction_instructions,
     mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
         pending_responder) {
-  StartExecution(input, corrected_input, correction_instruction,
+  StartExecution(/*input=*/std::string(), correction_instructions,
                  /*is_label_mode=*/true, std::move(pending_responder));
 }
 
@@ -114,8 +112,7 @@ void AIProofreader::SetPriority(on_device_model::mojom::Priority priority) {
 
 void AIProofreader::StartExecution(
     const std::string& input,
-    const std::string& corrected_input,
-    const std::string& correction_instruction,
+    const std::string& serialized_corrections,
     bool is_label_mode,
     mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
         pending_responder) {
@@ -131,7 +128,7 @@ void AIProofreader::StartExecution(
 
   mojo::RemoteSetElementId responder_id =
       responder_set_.Add(std::move(pending_responder));
-  auto request = BuildRequest(input, corrected_input, correction_instruction);
+  auto request = BuildRequest(input, serialized_corrections);
 
   session->GetExecutionInputSizeInTokens(
       optimization_guide::MultimodalMessageReadView(request),
@@ -216,12 +213,10 @@ void AIProofreader::ModelExecutionCallback(
 
 optimization_guide::proto::ProofreaderApiRequest AIProofreader::BuildRequest(
     const std::string& input,
-    const std::string& corrected_input,
-    const std::string& correction_instruction) {
+    const std::string& serialized_corrections) {
   optimization_guide::proto::ProofreaderApiRequest request;
   request.set_text(input);
-  request.set_corrected_text(corrected_input);
-  request.set_correction(correction_instruction);
+  request.set_correction(serialized_corrections);
   request.set_allocated_options(
       AIProofreader::ToProtoOptions(options_).release());
   return request;

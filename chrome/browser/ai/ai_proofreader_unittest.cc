@@ -51,9 +51,7 @@ using ::testing::ElementsAre;
 using ::testing::ElementsAreArray;
 
 constexpr char kInputString[] = "input string";
-constexpr char kInputStringWithError[] = "`input` string";
-constexpr char kCorrectedInputWithCorrection[] = "`Input` string.";
-constexpr char kCorrectionInstruction[] = "From `input` to `Input`";
+constexpr char kCorrections[] = "[\"From `input` to `Input`\"]";
 
 using CreateProofreaderResult =
     base::expected<mojo::PendingRemote<blink::mojom::AIProofreader>,
@@ -443,9 +441,7 @@ TEST_F(AIProofreaderTest, GetCorretionTypeDefault) {
   mojo::Remote<blink::mojom::AIProofreader> proofreader_remote =
       GetAIProofreaderRemote(options.Clone());
   AITestUtils::TestStreamingResponder responder;
-  proofreader_remote->GetCorrectionType(
-      kInputStringWithError, kCorrectedInputWithCorrection,
-      kCorrectionInstruction, responder.BindRemote());
+  proofreader_remote->GetCorrectionsTypes(kCorrections, responder.BindRemote());
   EXPECT_TRUE(responder.WaitForCompletion());
   EXPECT_THAT(responder.responses_without_last(),
               ElementsAreArray({"Correction type"}));
@@ -574,9 +570,7 @@ TEST_F(AIProofreaderTest, DynamicConstraints) {
       GetAIProofreaderRemote(std::move(options));
 
   AITestUtils::TestStreamingResponder responder;
-  proofreader_remote->GetCorrectionType(
-      kInputStringWithError, kCorrectedInputWithCorrection,
-      kCorrectionInstruction, responder.BindRemote());
+  proofreader_remote->GetCorrectionsTypes(kCorrections, responder.BindRemote());
   EXPECT_TRUE(responder.WaitForCompletion());
   EXPECT_THAT(responder.responses_without_last(),
               ElementsAreArray({"Hint: constrained_decoding ",
@@ -607,9 +601,7 @@ TEST_F(AIProofreaderTest, NoConstraints) {
       GetAIProofreaderRemote(std::move(options));
 
   AITestUtils::TestStreamingResponder responder;
-  proofreader_remote->GetCorrectionType(
-      kInputStringWithError, kCorrectedInputWithCorrection,
-      kCorrectionInstruction, responder.BindRemote());
+  proofreader_remote->GetCorrectionsTypes(kCorrections, responder.BindRemote());
   EXPECT_TRUE(responder.WaitForCompletion());
   EXPECT_THAT(responder.responses_without_last(),
               ElementsAreArray({"Correction type: Spelling"}));
@@ -631,9 +623,7 @@ TEST_F(AIProofreaderTest, NoMetadata) {
       GetAIProofreaderRemote(std::move(options));
 
   AITestUtils::TestStreamingResponder responder;
-  proofreader_remote->GetCorrectionType(
-      kInputStringWithError, kCorrectedInputWithCorrection,
-      kCorrectionInstruction, responder.BindRemote());
+  proofreader_remote->GetCorrectionsTypes(kCorrections, responder.BindRemote());
   EXPECT_TRUE(responder.WaitForCompletion());
   EXPECT_THAT(responder.responses_without_last(),
               ElementsAreArray({"Correction type: Spelling"}));

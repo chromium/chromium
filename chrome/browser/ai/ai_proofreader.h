@@ -33,10 +33,8 @@ class AIProofreader : public AIContextBoundObject,
   void Proofread(const std::string& input,
                  mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
                      pending_responder) override;
-  void GetCorrectionType(
-      const std::string& input,
-      const std::string& corrected_input,
-      const std::string& correction_instruction,
+  void GetCorrectionsTypes(
+      const std::string& correction_instructions,
       mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
           pending_responder) override;
 
@@ -58,8 +56,7 @@ class AIProofreader : public AIContextBoundObject,
   friend class AITestUtils;
 
   void StartExecution(const std::string& input,
-                      const std::string& corrected_input,
-                      const std::string& correction_instruction,
+                      const std::string& serialized_corrections,
                       bool is_label_mode,
                       mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
                           pending_responder);
@@ -77,16 +74,16 @@ class AIProofreader : public AIContextBoundObject,
 
   // Builds a request for the model with two primary modes:
   //
-  // - To explain a correction: When `corrected_input` and
-  //   `correction_instruction` are provided, the request asks the model to
-  //   return the type of the correction.
+  // - To explain a list of corrections: When
+  //   `serialized_corrections` are provided in the format
+  //   "["Correcting `error_0` to `correction_0`", ...]", the request asks the
+  //   model to return the types of the list of corrections.
   //
   // - To proofread text: Otherwise, the request asks the model to return the
   //   fully corrected text of the input.
   optimization_guide::proto::ProofreaderApiRequest BuildRequest(
       const std::string& input,
-      const std::string& corrected_input,
-      const std::string& correction_instruction);
+      const std::string& serialized_corrections);
 
   // The underlying session provided by optimization guide component.
   AIOnDeviceSession session_wrapper_;
