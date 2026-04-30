@@ -15,6 +15,7 @@
 #include <iomanip>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "ash/constants/ash_pref_names.h"
@@ -152,8 +153,7 @@ arc::mojom::BluetoothGattStatus ConvertGattErrorCodeToStatus(
 // Example of identifier: /org/bluez/hci0/dev_E0_CF_65_8C_86_1A/service001a
 // Convert the last 4 characters of |identifier| to an
 // int, by interpreting them as hexadecimal digits.
-std::optional<uint16_t> ConvertGattIdentifierToId(
-    const std::string& identifier) {
+std::optional<uint16_t> ConvertGattIdentifierToId(std::string_view identifier) {
   uint32_t result;
   if (identifier.size() < 4 ||
       !base::HexStringToUInt(identifier.substr(identifier.size() - 4), &result))
