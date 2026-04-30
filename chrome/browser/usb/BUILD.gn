@@ -291,7 +291,7 @@ source_set("platform_browser_tests") {
     "//chrome/browser",
     "//chrome/browser:browser_process",
     "//chrome/browser/content_settings:content_settings_factory",
-    "//chrome/browser/ui:browser_navigator_params_headers",
+    "//chrome/browser/ui/navigator",
     "//chrome/test:test_support",
   ]
   if (!is_android) {

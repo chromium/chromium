@@ -57,7 +57,7 @@ source_set("pixel_tests") {
     "//base",
     "//chrome/browser/default_browser",
     "//chrome/browser/ui",
-    "//chrome/browser/ui:browser_navigator_params_headers",
+    "//chrome/browser/ui/navigator",
     "//chrome/browser/ui/tabs:tab_strip_model_observer",
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",

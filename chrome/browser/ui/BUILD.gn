@@ -48,10 +48,6 @@ generate_allowlist_from_histograms_file("webui_name_variants") {
 static_library("ui") {
   sources = [
     "accelerator_utils.h",
-    "browser_navigator.h",
-    "browser_navigator_params.cc",
-    "browser_navigator_params_utils.cc",
-    "browser_navigator_params_utils.h",
     "browser_ui_prefs.cc",
     "browser_ui_prefs.h",
     "confirm_bubble.h",
@@ -1246,7 +1242,6 @@ static_library("ui") {
       "browser_manager_service.h",
       "browser_manager_service_factory.cc",
       "browser_manager_service_factory.h",
-      "browser_navigator.cc",
       "browser_otr_state.cc",
       "browser_otr_state.h",
       "browser_select_file_dialog_controller.cc",
@@ -5801,29 +5796,6 @@ source_set("tab_search_feature") {
     "//chrome/common:buildflags",
     "//components/variations/service",
   ]
-}
-
-source_set("browser_navigator_params_headers") {
-  sources = [ "browser_navigator_params.h" ]
-
-  public_deps = [
-    "//base",
-    "//build:android_buildflags",
-    "//chrome/browser/ui/tabs:tab_enums",
-    "//components/captive_portal/core",
-    "//components/tab_groups",
-    "//content/public/browser",
-    "//content/public/common",
-    "//services/network/public/cpp",
-    "//third_party/blink/public/common",
-    "//third_party/blink/public/common:headers",
-    "//third_party/blink/public/common/tokens:tokens_headers",
-    "//ui/base",
-    "//ui/base:types",
-    "//ui/gfx/geometry",
-    "//url",
-  ]
-  deps = []
 }
 
 if (!is_android) {

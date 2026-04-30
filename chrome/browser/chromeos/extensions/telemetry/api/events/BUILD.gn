@@ -22,7 +22,7 @@ source_set("events") {
     "//chrome/browser/chromeos/extensions/telemetry/api/common",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
-    "//chrome/browser/ui:browser_navigator_params_headers",
+    "//chrome/browser/ui/navigator",
     "//chrome/common/chromeos/extensions/api",
     "//chromeos/crosapi/mojom",
     "//extensions/browser",

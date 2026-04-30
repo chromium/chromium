@@ -342,6 +342,7 @@ static_library("browser") {
     "//chrome/browser/content_settings:content_settings_factory_impl",
     "//chrome/browser/content_settings:content_settings_util_impl",
     "//chrome/browser/content_settings:impl",
+    "//chrome/browser/ui/navigator:impl",
     "//chrome/browser/contextual_tasks:ui_impl",
 
     # TODO(crbug.com/353332589): Remove this circular dependency once the
@@ -1029,6 +1030,7 @@ static_library("browser") {
     "//chrome/browser/ui/javascript_dialogs:impl",
     "//chrome/browser/ui/login",
     "//chrome/browser/ui/login:impl",
+    "//chrome/browser/ui/navigator:impl",
     "//chrome/browser/ui/omnibox",
     "//chrome/browser/ui/omnibox:impl",
     "//chrome/browser/ui/page_info",

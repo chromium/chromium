@@ -14,8 +14,8 @@ source_set("common") {
   deps = [
     "//base",
     "//chrome/browser/ui",
-    "//chrome/browser/ui:browser_navigator_params_headers",
     "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/navigator",
     "//components/tabs:public",
   ]
 

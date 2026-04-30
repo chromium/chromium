@@ -65,7 +65,7 @@ source_set("permissions") {
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/media/webrtc",
     "//chrome/browser/permissions/system",
-    "//chrome/browser/ui:browser_navigator_params_headers",
+    "//chrome/browser/ui/navigator",
   ]
 
   deps = [

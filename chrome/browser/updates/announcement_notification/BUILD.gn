@@ -72,7 +72,7 @@ source_set("impl") {
     ]
 
     deps += [
-      "//chrome/browser/ui:browser_navigator_params_headers",
+      "//chrome/browser/ui/navigator",
       "//ui/message_center/public/cpp",
     ]
   }

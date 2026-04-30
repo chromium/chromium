@@ -321,8 +321,8 @@ source_set("impl") {
     deps += [
       ":signin_promo",
       "//chrome/browser/feature_engagement",
-      "//chrome/browser/ui:browser_navigator_params_headers",
       "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui/navigator",
     ]
   }
 

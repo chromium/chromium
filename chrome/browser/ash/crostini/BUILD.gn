@@ -112,7 +112,7 @@ static_library("crostini") {
     "//chrome/browser/notifications",
     "//chrome/browser/notifications:system_notification_helper",
     "//chrome/browser/profiles:profile_manager",
-    "//chrome/browser/ui:browser_navigator_params_headers",
+    "//chrome/browser/ui/navigator",
     "//chrome/browser/ui/select_file_policy",
     "//chrome/browser/ui/webui/ash/crostini_installer",
     "//chrome/browser/ui/webui/ash/system_web_dialog",

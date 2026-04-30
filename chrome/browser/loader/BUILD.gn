@@ -31,7 +31,7 @@ source_set("impl") {
   deps = [
     ":loader",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui:browser_navigator_params_headers",
+    "//chrome/browser/ui/navigator",
     "//components/page_load_metrics/browser",
     "//components/page_load_metrics/google/browser",
     "//services/metrics/public/cpp:metrics_cpp",

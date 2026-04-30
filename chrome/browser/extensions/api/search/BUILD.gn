@@ -23,6 +23,7 @@ source_set("search") {
     "//chrome/browser/search_engines",
     "//chrome/browser/ui",
     "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/navigator",
     "//chrome/common/extensions/api",
     "//components/search_engines",
   ]

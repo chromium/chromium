@@ -20,7 +20,7 @@ static_library("echo_private") {
     "//chrome/browser/extensions",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
-    "//chrome/browser/ui:browser_navigator_params_headers",
+    "//chrome/browser/ui/navigator",
     "//chrome/common",
     "//chrome/common:constants",
     "//chrome/common/extensions/api",

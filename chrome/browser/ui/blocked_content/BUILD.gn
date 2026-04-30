@@ -17,7 +17,7 @@ source_set("blocked_content") {
 
   public_deps = [
     "//base",
-    "//chrome/browser/ui:browser_navigator_params_headers",
+    "//chrome/browser/ui/navigator",
     "//components/blocked_content",
     "//content/public/browser",
     "//content/public/common",

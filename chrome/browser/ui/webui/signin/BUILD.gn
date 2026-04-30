@@ -269,8 +269,8 @@ source_set("login_ui_service_impl") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/signin:signin_promo",
-    "//chrome/browser/ui:browser_navigator_params_headers",
     "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/navigator",
     "//chrome/browser/ui/signin",
   ]
 }
@@ -316,7 +316,7 @@ if (is_win || is_chromeos) {
       "//chrome/browser/profiles",
       "//chrome/browser/resources/gaia_auth_host:resources_grit",
       "//chrome/browser/signin:signin_promo",
-      "//chrome/browser/ui:browser_navigator_params_headers",
+      "//chrome/browser/ui/navigator",
       "//components/signin/core/browser",
       "//ui/webui",
     ]

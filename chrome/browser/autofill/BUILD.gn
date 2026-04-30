@@ -251,7 +251,7 @@ source_set("browser_tests") {
   deps = [
     "//base/version_info",
     "//chrome/browser/autofill",
-    "//chrome/browser/ui:browser_navigator_params_headers",
+    "//chrome/browser/ui/navigator",
     "//chrome/browser/webdata_services",
     "//chrome/test:test_support",
     "//components/autofill/content/browser:test_support",

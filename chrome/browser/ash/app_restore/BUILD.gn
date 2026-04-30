@@ -100,7 +100,7 @@ static_library("app_restore") {
     "//chrome/browser/notifications",
     "//chrome/browser/prefs:util",
     "//chrome/browser/profiles:profile_io_data",
-    "//chrome/browser/ui:browser_navigator_params_headers",
+    "//chrome/browser/ui/navigator",
     "//chrome/browser/ui/startup",
     "//chrome/browser/ui/startup:startup_tab",
     "//chrome/browser/web_applications",

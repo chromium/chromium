@@ -184,7 +184,7 @@ source_set("impl") {
         "//chrome/app:generated_resources",
         "//chrome/browser/prefs",
         "//chrome/browser/themes",
-        "//chrome/browser/ui:browser_navigator_params_headers",
+        "//chrome/browser/ui/navigator",
         "//chrome/browser/ui/tabs:tab_strip",
         "//chrome/common",
         "//components/custom_handlers",

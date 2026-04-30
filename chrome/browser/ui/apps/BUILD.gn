@@ -44,7 +44,7 @@ source_set("impl") {
     "//chrome/browser/picture_in_picture",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiles/keep_alive",
-    "//chrome/browser/ui:browser_navigator_params_headers",
+    "//chrome/browser/ui/navigator",
     "//components/keep_alive_registry",
     "//components/version_info",
     "//components/zoom",

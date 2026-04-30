@@ -84,7 +84,7 @@ source_set("impl") {
     "//chrome/browser/permissions",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/safe_browsing",
-    "//chrome/browser/ui:browser_navigator_params_headers",
+    "//chrome/browser/ui/navigator",
     "//components/content_settings/browser",
     "//components/content_settings/core/browser",
     "//components/permissions",

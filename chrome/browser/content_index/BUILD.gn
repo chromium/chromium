@@ -32,7 +32,7 @@ source_set("impl") {
     "//chrome/browser/offline_items_collection",
     "//chrome/browser/profiles",
     "//chrome/browser/ui",
-    "//chrome/browser/ui:browser_navigator_params_headers",
+    "//chrome/browser/ui/navigator",
     "//components/site_engagement/content",
     "//services/metrics/public/cpp:ukm_builders",
   ]

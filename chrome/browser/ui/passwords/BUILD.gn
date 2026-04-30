@@ -19,7 +19,7 @@ source_set("passwords") {
     "//services/network/public/mojom",
     "//ui/gfx",
   ]
-  deps = [ "//chrome/browser/ui:browser_navigator_params_headers" ]
+  deps = [ "//chrome/browser/ui/navigator" ]
 
   if (!is_android) {
     sources += [
@@ -81,8 +81,8 @@ source_set("impl") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/sync",
     "//chrome/browser/sync:factories",
-    "//chrome/browser/ui:browser_navigator_params_headers",
     "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/navigator",
     "//chrome/common",
     "//components/affiliations/core/browser:affiliations",
     "//components/autofill/core/browser",
@@ -335,9 +335,9 @@ if (!is_android) {
       "//chrome/browser/password_manager",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui",
-      "//chrome/browser/ui:browser_navigator_params_headers",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/hats:test_support",
+      "//chrome/browser/ui/navigator",
       "//chrome/browser/ui/passwords:test_support",
       "//chrome/common",
       "//chrome/test:test_support",

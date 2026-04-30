@@ -26,7 +26,7 @@ static_library("nearby_share") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/chromeos/nearby_share:resources",
     "//chrome/browser/sharesheet",
-    "//chrome/browser/ui:browser_navigator_params_headers",
+    "//chrome/browser/ui/navigator",
     "//chrome/browser/ui/webui",
     "//chrome/browser/ui/webui/sanitized_image:sanitized_image_source",
     "//ui/webui",

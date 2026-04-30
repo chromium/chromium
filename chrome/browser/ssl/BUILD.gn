@@ -133,6 +133,7 @@ source_set("impl") {
     "//chrome/browser/safe_browsing:advanced_protection",
     "//chrome/browser/safe_browsing:metrics_collector",
     "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/navigator",
     "//chrome/browser/ui/tab_contents",
     "//chrome/browser/ui/tabs:tabs_public",
     "//components/captive_portal/content",

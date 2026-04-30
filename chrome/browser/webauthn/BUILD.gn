@@ -158,7 +158,7 @@ source_set("impl") {
       "//chrome/browser/profiles",
       "//chrome/browser/signin",
       "//chrome/browser/sync",
-      "//chrome/browser/ui:browser_navigator_params_headers",
+      "//chrome/browser/ui/navigator",
       "//chrome/browser/ui/passwords",
       "//chrome/browser/ui/webauthn",
       "//components/cbor",
