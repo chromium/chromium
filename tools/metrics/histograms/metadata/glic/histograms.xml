@@ -991,6 +991,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.Instance.InputSubmitted.Selection.PolylinePointCount"
+    units="points" expires_after="2026-08-30">
+  <owner>wusirui@google.com</owner>
+  <owner>naai-xfn@google.com</owner>
+  <summary>
+    Recorded when user input is submitted. Counts the number of points in active
+    polylines drawn by the user at the time of submission.
+  </summary>
+</histogram>
+
 <histogram name="Glic.Instance.InputSubmitted.SelectionCount" units="areas"
     expires_after="2026-08-30">
   <owner>dtapuska@google.com</owner>

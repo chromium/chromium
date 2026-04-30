@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_GLIC_PUBLIC_GLIC_INSTANCE_H_
 #define CHROME_BROWSER_GLIC_PUBLIC_GLIC_INSTANCE_H_
 
+#include <vector>
+
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "base/observer_list_types.h"
@@ -115,6 +117,7 @@ class GlicInstance {
   // given that GlicInstanceMetrics can't be used outside of glic
   // implementation.
   virtual void OnSelectionAreasChanged(int count) = 0;
+  virtual void OnPolylinePointsChanged(const std::vector<int>& counts) = 0;
 
   virtual void BindTabForTesting(tabs::TabInterface* tab) = 0;
 };

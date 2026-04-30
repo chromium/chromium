@@ -315,6 +315,7 @@ void SelectionOverlayController::NotifyIsOverlayShowing(bool is_showing) {
     if (service) {
       if (GlicInstance* instance = service->GetInstanceForTab(tab_)) {
         instance->OnSelectionAreasChanged(0);
+        instance->OnPolylinePointsChanged({});
       }
     }
   }
@@ -428,6 +429,7 @@ void SelectionOverlayController::RenderRegions() {
   std::vector<std::pair<base::UnguessableToken, glic::mojom::CapturedRegionPtr>>
       captured_regions;
   std::vector<selection::SelectedRegionPtr> regions_mojo;
+  std::vector<int> polyline_counts;
   // TODO(http://b/452032491): Reconsider what happens if the regions overlap.
   // TODO(http://b/452032491): Currently this class is only used once per
   // selection and only one region is supported, so it is fine to always loop
@@ -469,6 +471,7 @@ void SelectionOverlayController::RenderRegions() {
         }
         if (all_points_valid && !line_points.empty()) {
           regions_mojo.push_back(region.Clone());
+          polyline_counts.push_back(line_points.size());
           captured_regions.emplace_back(
               id,
               glic::mojom::CapturedRegion::NewPolyline(std::move(line_points)));
@@ -491,6 +494,7 @@ void SelectionOverlayController::RenderRegions() {
     service->SendAdditionalContext(tab_->GetHandle(),
                                    std::move(additional_context));
     instance->OnSelectionAreasChanged(selected_regions_.size());
+    instance->OnPolylinePointsChanged(polyline_counts);
     if (instance->IsActive()) {
       if (content::WebContents* web_contents =
               instance->host().webui_contents()) {

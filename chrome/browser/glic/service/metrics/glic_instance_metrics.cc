@@ -151,6 +151,11 @@ void GlicInstanceMetrics::OnSelectionAreasChanged(int count) {
   selection_areas_count_ = count;
 }
 
+void GlicInstanceMetrics::OnPolylinePointsChanged(
+    const std::vector<int>& counts) {
+  polyline_point_counts_ = counts;
+}
+
 void GlicInstanceMetrics::OnPinnedTabsChanged(
     const std::vector<content::WebContents*>& pinned_contents) {
   pinned_tab_count_ = pinned_contents.size();
@@ -815,6 +820,12 @@ void GlicInstanceMetrics::OnUserInputSubmitted(mojom::WebClientMode mode) {
   if (base::FeatureList::IsEnabled(features::kGlicCaptureRegion)) {
     base::UmaHistogramExactLinear("Glic.Instance.InputSubmitted.SelectionCount",
                                   selection_areas_count_, 10);
+  }
+  if (base::FeatureList::IsEnabled(features::kGlicRegionSelectionLine)) {
+    for (int count : polyline_point_counts_) {
+      base::UmaHistogramCounts1000(
+          "Glic.Instance.InputSubmitted.Selection.PolylinePointCount", count);
+    }
   }
   // Reset turn data and start populating it for the new turn being started.
   turn_ = {};

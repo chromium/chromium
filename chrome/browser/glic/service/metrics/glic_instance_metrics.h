@@ -291,6 +291,7 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   void OnUserResizeEnded(const gfx::Size& end_size);
 
   void OnSelectionAreasChanged(int count);
+  void OnPolylinePointsChanged(const std::vector<int>& counts);
 
   void OnZoomLevelChange();
 
@@ -425,6 +426,7 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
 
   // Whether region selection is active.
   int selection_areas_count_ = 0;
+  std::vector<int> polyline_point_counts_;
 
   // The number of zoom change attempts (tracked per instance and reset when
   // the instance is destroyed).

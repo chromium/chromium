@@ -340,6 +340,10 @@ void GlicInstanceImpl::OnSelectionAreasChanged(int count) {
   instance_metrics_.OnSelectionAreasChanged(count);
 }
 
+void GlicInstanceImpl::OnPolylinePointsChanged(const std::vector<int>& counts) {
+  instance_metrics_.OnPolylinePointsChanged(counts);
+}
+
 std::unique_ptr<WebUIContentsContainer>
 GlicInstanceImpl::CreateWebUIContentsContainer() {
   return coordinator_delegate_->CreateWebUIContentsContainer();

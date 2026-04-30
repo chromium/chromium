@@ -49,6 +49,16 @@ class GlicInstanceMetricsTest : public testing::Test {
       features::kGlicCaptureRegion};
 };
 
+class GlicInstanceMetricsTestWithPolyline : public GlicInstanceMetricsTest {
+ public:
+  GlicInstanceMetricsTestWithPolyline() {
+    feature_list_.InitAndEnableFeature(features::kGlicRegionSelectionLine);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 TEST_F(GlicInstanceMetricsTest, OnActivationChanged_LogsTimeSinceLastActive) {
   // First activation.
   metrics_.OnActivationChanged(true);
@@ -560,6 +570,38 @@ TEST_F(GlicInstanceMetricsTest, SelectionUsed) {
       "Glic.Instance.InputSubmitted.SelectionCount", 0, 1);
   histogram_tester_.ExpectBucketCount(
       "Glic.Instance.InputSubmitted.SelectionCount", 2, 2);
+}
+
+TEST_F(GlicInstanceMetricsTestWithPolyline, PolylineSelectionUsed) {
+  metrics_.OnVisibilityChanged(true);
+  metrics_.OnPolylinePointsChanged({4, 10});
+  metrics_.OnUserInputSubmitted(mojom::WebClientMode::kText);
+
+  histogram_tester_.ExpectBucketCount(
+      "Glic.Instance.InputSubmitted.Selection.PolylinePointCount", 4, 1);
+  histogram_tester_.ExpectBucketCount(
+      "Glic.Instance.InputSubmitted.Selection.PolylinePointCount", 10, 1);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Instance.InputSubmitted.Selection.PolylinePointCount", 2);
+
+  // Check that it's NOT reset after submission (Persistence)
+  metrics_.OnPolylinePointsChanged({4, 8, 8, 10});
+  metrics_.OnUserInputSubmitted(mojom::WebClientMode::kText);
+  histogram_tester_.ExpectBucketCount(
+      "Glic.Instance.InputSubmitted.Selection.PolylinePointCount", 4, 2);
+  histogram_tester_.ExpectBucketCount(
+      "Glic.Instance.InputSubmitted.Selection.PolylinePointCount", 8, 2);
+  histogram_tester_.ExpectBucketCount(
+      "Glic.Instance.InputSubmitted.Selection.PolylinePointCount", 10, 2);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Instance.InputSubmitted.Selection.PolylinePointCount", 6);
+
+  // Check that it can be cleared
+  metrics_.OnPolylinePointsChanged({});
+  metrics_.OnUserInputSubmitted(mojom::WebClientMode::kText);
+
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Instance.InputSubmitted.Selection.PolylinePointCount", 6);
 }
 
 TEST_F(GlicInstanceMetricsTest, Floaty_OpenCloseClose_LogsError) {

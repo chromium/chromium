@@ -70,6 +70,7 @@ class FakeGlicInstance : public glic::GlicInstance {
   base::Time GetLastActivationTimestamp() const override { return {}; }
   base::TimeDelta GetTimeSinceLastActive() const override { return {}; }
   void OnSelectionAreasChanged(int count) override {}
+  void OnPolylinePointsChanged(const std::vector<int>& counts) override {}
   void BindTabForTesting(tabs::TabInterface* tab) override {}
 
   glic::InstanceId id_{"test-id"};

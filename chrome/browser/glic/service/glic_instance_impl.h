@@ -251,6 +251,7 @@ class GlicInstanceImpl : public GlicInstance,
   glic::GlicInstanceMetricsBackwardsCompatibility&
   instance_metrics_backwards_compatibility() override;
   void OnSelectionAreasChanged(int count) override;
+  void OnPolylinePointsChanged(const std::vector<int>& counts) override;
   std::unique_ptr<WebUIContentsContainer> CreateWebUIContentsContainer()
       override;
 
