@@ -260,9 +260,7 @@ void HTMLButtonElement::DefaultEventHandler(Event& event) {
         return;
       }
     }
-  }
 
-  if (event.type() == event_type_names::kDOMActivate) {
     if (HandleCommandForActivation()) {
       return;
     }
