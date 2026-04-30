@@ -57,5 +57,6 @@ export async function waitForLoad() {
 
 export async function waitForRender() {
   await new Promise(requestAnimationFrame);
+  await new Promise(requestAnimationFrame);
   await new Promise(setTimeout);
 }
