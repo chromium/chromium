@@ -174,6 +174,7 @@ class CustomTabActivityTimeoutHandler {
                     180);
 
             if (elapsedTime >= timeoutMillis) {
+                mLeaveTimestamp = -1;
                 // Finish the activity if the timeout has elapsed. If an embedder closing intent is
                 // specified, send it, otherwise finish the activity.
                 if (mEmbedderClosingIntent != null) {
