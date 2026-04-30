@@ -896,6 +896,9 @@ ci.thin_tester(
                 # Only retry the individual failed tests instead of rerunning entire
                 # shards.
                 retry_only_failed_tests = True,
+                swarming = targets.swarming(
+                    shards = 4,
+                ),
             ),
             "views_unittests": targets.mixin(
                 args = [
