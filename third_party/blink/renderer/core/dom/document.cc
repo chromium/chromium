@@ -3417,7 +3417,8 @@ void Document::AddedEventListener(
     const AtomicString& event_type,
     RegisteredEventListener& registered_listener) {
   ContainerNode::AddedEventListener(event_type, registered_listener);
-  if (event_type == event_type_names::kAutofill) {
+  if (event_type == event_type_names::kAutofill &&
+      RuntimeEnabledFeatures::AutofillEventEnabled(GetExecutionContext())) {
     UseCounter::Count(*this, WebFeature::kAutofillEvent);
   }
 }
