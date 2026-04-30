@@ -273,7 +273,7 @@ public class AwSupervisedUserTest extends AwParameterizedTest {
         String embeddedUrl = setUpWebPage(MATURE_SITE_IFRAME_PATH, MATURE_SITE_IFRAME_TITLE, null);
         String requestUrl = setUpWebPage(MATURE_SITE_PATH, MATURE_SITE_TITLE, embeddedUrl);
 
-        new AwSupervisedUserSafeModeAction().execute();
+        new AwSupervisedUserSafeModeAction().executeAtStartup();
         loadUrl(requestUrl);
 
         assertPageTitle(MATURE_SITE_TITLE);

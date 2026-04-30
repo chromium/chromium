@@ -10,6 +10,7 @@ import org.jni_zero.JNINamespace;
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.android_webview.common.SafeModeAction;
 import org.chromium.android_webview.common.SafeModeActionIds;
+import org.chromium.android_webview.common.SafeModeController;
 import org.chromium.build.annotations.NullMarked;
 
 /**
@@ -22,25 +23,18 @@ import org.chromium.build.annotations.NullMarked;
 @JNINamespace("android_webview")
 @Lifetime.Singleton
 @NullMarked
-public class AwSafeBrowsingSafeModeAction implements SafeModeAction {
+public class AwSafeBrowsingSafeModeAction extends SafeModeAction {
     // This ID should not be changed or reused.
     private static final String ID = SafeModeActionIds.DISABLE_AW_SAFE_BROWSING;
-
-    private static boolean sSafeBrowsingDisabled;
 
     @Override
     public String getId() {
         return ID;
     }
 
-    @Override
-    public boolean execute() {
-        sSafeBrowsingDisabled = true;
-        return true;
-    }
-
     @CalledByNative
     public static boolean isSafeBrowsingDisabled() {
-        return sSafeBrowsingDisabled;
+        return SafeModeController.getInstance()
+                .isActionEnabled(SafeModeActionIds.DISABLE_AW_SAFE_BROWSING);
     }
 }

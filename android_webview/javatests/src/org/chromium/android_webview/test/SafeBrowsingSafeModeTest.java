@@ -108,8 +108,11 @@ public class SafeBrowsingSafeModeTest extends AwParameterizedTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testSafeModeActionSavesState() throws Throwable {
+        SafeModeController.getInstance()
+                .registerActions(new SafeModeAction[] {new AwSafeBrowsingSafeModeAction()});
         assertFalse(AwSafeBrowsingSafeModeAction.isSafeBrowsingDisabled());
-        new AwSafeBrowsingSafeModeAction().execute();
+        SafeModeController.getInstance()
+                .executeActions(Set.of(SafeModeActionIds.DISABLE_AW_SAFE_BROWSING));
         assertTrue(AwSafeBrowsingSafeModeAction.isSafeBrowsingDisabled());
     }
 

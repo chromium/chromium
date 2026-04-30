@@ -20,7 +20,7 @@ import org.chromium.build.annotations.NullMarked;
 @JNINamespace("android_webview")
 @Lifetime.Singleton
 @NullMarked
-public class AwSupervisedUserSafeModeAction implements SafeModeAction {
+public class AwSupervisedUserSafeModeAction extends SafeModeAction {
     private static final String TAG = "WebViewSafeMode";
 
     // This ID should not be changed or reused.
@@ -40,7 +40,7 @@ public class AwSupervisedUserSafeModeAction implements SafeModeAction {
     }
 
     @Override
-    public boolean execute() {
+    public boolean executeAtStartup() {
         AwSupervisedUserSafeModeActionJni.get().setSupervisionEnabled(false);
         return true;
     }

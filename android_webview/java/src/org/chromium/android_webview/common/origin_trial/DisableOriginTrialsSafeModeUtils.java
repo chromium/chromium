@@ -7,6 +7,8 @@ package org.chromium.android_webview.common.origin_trial;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
+import org.chromium.android_webview.common.SafeModeActionIds;
+import org.chromium.android_webview.common.SafeModeController;
 import org.chromium.build.annotations.NullMarked;
 
 /** A util class for disable origin trials Safe Mode operations. */
@@ -18,6 +20,7 @@ public class DisableOriginTrialsSafeModeUtils {
 
     @CalledByNative
     public static boolean isDisableOriginTrialsEnabled() {
-        return DisableOriginTrialsSafeModeAction.isDisableOriginTrialsEnabled();
+        return SafeModeController.getInstance()
+                .isActionEnabled(SafeModeActionIds.DISABLE_ORIGIN_TRIALS);
     }
 }

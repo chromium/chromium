@@ -10,22 +10,12 @@ import org.chromium.build.annotations.NullMarked;
 
 /** A {@link SafeModeAction} to disable the experiment to run WebView startup asynchronously. */
 @NullMarked
-public class DisableStartupTasksSafeModeAction implements SafeModeAction {
-    private static boolean sDisableStartupTasksLogic;
+public class DisableStartupTasksSafeModeAction extends SafeModeAction {
+    // This ID should not be changed or reused.
+    private static final String ID = SafeModeActionIds.DISABLE_STARTUP_TASKS_LOGIC;
 
     @Override
     public String getId() {
-        // This ID should not be changed or reused.
-        return SafeModeActionIds.DISABLE_STARTUP_TASKS_LOGIC;
-    }
-
-    @Override
-    public boolean execute() {
-        sDisableStartupTasksLogic = true;
-        return true;
-    }
-
-    public static boolean isStartupTasksExperimentDisabled() {
-        return sDisableStartupTasksLogic;
+        return ID;
     }
 }

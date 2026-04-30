@@ -217,6 +217,28 @@ public class SafeModeController {
     }
 
     /**
+     * Helper method to return whether a given SafeModeAction is enabled. If it has not been
+     * registered, this method defaults to false and DOES NOT fail loudly. If this method is called
+     * before executeActions then it will return false. If a SafeModeAction is later executed, it
+     * will return true for the same action.
+     *
+     * @param id the SafeModeActionId of the action to query.
+     * @return if a SafeModeAction has been registered and has been enabled.
+     */
+    public boolean isActionEnabled(String id) {
+        if (mRegisteredActions == null) {
+            Log.w(TAG, "SafeModeAction enablement checked before registerActions was called");
+            return false;
+        }
+        for (SafeModeAction action : mRegisteredActions) {
+            if (id.equals(action.getId())) {
+                return action.isEnabled();
+            }
+        }
+        return false;
+    }
+
+    /**
      * Executes the given set of {@link SafeModeAction}s. Execution order is determined by the order
      * of the array registered by {@link registerActions}.
      *
@@ -242,12 +264,13 @@ public class SafeModeController {
                     // Allow SafeModeActions in general to perform disk reads and writes.
                     try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
                         Log.i(TAG, "Starting to execute %s", currentSafeModeActionName);
-                        if (action.execute()) {
+                        if (action.executeAtStartup()) {
                             Log.i(
                                     TAG,
                                     "Finished executing %s (%s)",
                                     currentSafeModeActionName,
                                     "success");
+                            action.enable();
                         } else {
                             overallStatus = SafeModeExecutionResult.ACTION_FAILED;
                             Log.e(

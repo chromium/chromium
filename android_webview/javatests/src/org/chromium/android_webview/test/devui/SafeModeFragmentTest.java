@@ -116,11 +116,6 @@ public class SafeModeFragmentTest {
             public String getId() {
                 return actionId;
             }
-
-            @Override
-            public boolean execute() {
-                return true;
-            }
         };
     }
 

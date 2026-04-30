@@ -40,7 +40,7 @@ import java.util.concurrent.TimeUnit;
  */
 @Lifetime.Singleton
 @NullMarked
-public class FastVariationsSeedSafeModeAction implements SafeModeAction {
+public class FastVariationsSeedSafeModeAction extends SafeModeAction {
     private static final String TAG = "FastVariationsSeed";
     // This ID should not be reused.
     private static final String ID = SafeModeActionIds.FAST_VARIATIONS_SEED;
@@ -49,6 +49,11 @@ public class FastVariationsSeedSafeModeAction implements SafeModeAction {
 
     private static class LazyHolder {
         private static File sSeedFile = VariationsUtils.getSeedFile();
+    }
+
+    @Override
+    public String getId() {
+        return ID;
     }
 
     @VisibleForTesting
@@ -74,12 +79,7 @@ public class FastVariationsSeedSafeModeAction implements SafeModeAction {
     }
 
     @Override
-    public String getId() {
-        return ID;
-    }
-
-    @Override
-    public boolean execute() {
+    public boolean executeAtStartup() {
         sHasRun = true;
         long currDateTime = System.currentTimeMillis();
         SeedParser parser = new SeedParser();

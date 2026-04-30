@@ -17,24 +17,12 @@ import org.chromium.build.annotations.NullMarked;
  */
 @Lifetime.Singleton
 @NullMarked
-public class AndroidAutofillSafeModeAction implements SafeModeAction {
+public class AndroidAutofillSafeModeAction extends SafeModeAction {
     // This ID should not be changed or reused.
     private static final String ID = SafeModeActionIds.DISABLE_ANDROID_AUTOFILL;
-
-    private static boolean sIsAndroidAutofillDisabled;
 
     @Override
     public String getId() {
         return ID;
-    }
-
-    @Override
-    public boolean execute() {
-        sIsAndroidAutofillDisabled = true;
-        return true;
-    }
-
-    public static boolean isAndroidAutofillDisabled() {
-        return sIsAndroidAutofillDisabled;
     }
 }

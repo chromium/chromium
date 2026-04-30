@@ -8,12 +8,22 @@ import org.chromium.build.annotations.NullMarked;
 
 /** An interface for defining a precaution WebView may take during SafeMode. */
 @NullMarked
-public interface SafeModeAction {
+public abstract class SafeModeAction {
+    private boolean mIsEnabled;
+
+    public final void enable() {
+        mIsEnabled = true;
+    }
+
+    public final boolean isEnabled() {
+        return mIsEnabled;
+    }
+
     /**
      * Returns a unique identifier for this action. This must not be used by any other registered
      * action.
      */
-    String getId();
+    public abstract String getId();
 
     /**
      * Executes the given action. Implementations of this method should be Java-only (no JNI/C++)
@@ -22,5 +32,8 @@ public interface SafeModeAction {
      *
      * @return {@code true} if the action succeeded, {@code false} otherwise.
      */
-    boolean execute();
+    public boolean executeAtStartup() {
+        return true;
+    }
+    ;
 }

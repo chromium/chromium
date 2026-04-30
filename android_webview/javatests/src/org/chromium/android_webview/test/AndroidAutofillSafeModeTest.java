@@ -8,7 +8,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
@@ -67,13 +66,19 @@ public class AndroidAutofillSafeModeTest extends AwParameterizedTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testSafeModeActionSavesState() throws Throwable {
+        SafeModeController controller = SafeModeController.getInstance();
+        controller.registerActions(new SafeModeAction[] {new AndroidAutofillSafeModeAction()});
         // Given
-        assertFalse(AndroidAutofillSafeModeAction.isAndroidAutofillDisabled());
+        assertFalse(
+                SafeModeController.getInstance()
+                        .isActionEnabled(SafeModeActionIds.DISABLE_ANDROID_AUTOFILL));
 
         // When
-        new AndroidAutofillSafeModeAction().execute();
+        controller.executeActions(Set.of(SafeModeActionIds.DISABLE_ANDROID_AUTOFILL));
 
         // Then
-        assertTrue(AndroidAutofillSafeModeAction.isAndroidAutofillDisabled());
+        assertTrue(
+                SafeModeController.getInstance()
+                        .isActionEnabled(SafeModeActionIds.DISABLE_ANDROID_AUTOFILL));
     }
 }

@@ -6,19 +6,10 @@ package org.chromium.android_webview.services;
 
 import org.chromium.android_webview.common.SafeModeAction;
 
-/** An interface for defining a precaution WebView may take during SafeMode in non-embedded WebView. */
-public interface NonEmbeddedSafeModeAction extends SafeModeAction {
-    /**
-     * Executes the given action. Implementations of this method should be Java-only (no JNI/C++)
-     * because the native library may not yet be loaded. The return status is used for logging
-     * purposes only.
-     *
-     * @return {@code true} if the action succeeded, {@code false} otherwise.
-     */
-    @Override
-    default boolean execute() {
-        return true;
-    }
+/**
+ * An interface for defining a precaution WebView may take during SafeMode in non-embedded WebView.
+ */
+public abstract class NonEmbeddedSafeModeAction extends SafeModeAction {
 
     /**
      * Performs any setup/cleanup work required by the SafeModeAction on activation. Not to be
@@ -29,7 +20,7 @@ public interface NonEmbeddedSafeModeAction extends SafeModeAction {
      *
      * @return {@code true} if the action succeeded, {@code false} otherwise.
      */
-    default boolean onActivate() {
+    public boolean onActivate() {
         return true;
     }
 
@@ -42,7 +33,7 @@ public interface NonEmbeddedSafeModeAction extends SafeModeAction {
      *
      * @return {@code true} if the action succeeded, {@code false} otherwise.
      */
-    default boolean onDeactivate() {
+    public boolean onDeactivate() {
         return true;
     }
 }

@@ -60,7 +60,6 @@ import org.chromium.android_webview.common.SafeModeActionIds;
 import org.chromium.android_webview.common.SafeModeController;
 import org.chromium.android_webview.common.WebViewCachedFlags;
 import org.chromium.android_webview.safe_mode.BrowserSafeModeActionList;
-import org.chromium.android_webview.safe_mode.DisableStartupTasksSafeModeAction;
 import org.chromium.android_webview.variations.FastVariationsSeedSafeModeAction;
 import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.ApkInfo;
@@ -365,7 +364,8 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
             return true;
         }
         // TODO: Remove this once WebViewCachedFlags has landed (and seems safe).
-        if (DisableStartupTasksSafeModeAction.isStartupTasksExperimentDisabled()) {
+        if (SafeModeController.getInstance()
+                .isActionEnabled(SafeModeActionIds.DISABLE_STARTUP_TASKS_LOGIC)) {
             return false;
         }
         return WebViewCachedFlags.get()
@@ -442,7 +442,7 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
                 // Since N, getSharedPreferences creates the preference dir if it doesn't exist,
                 // causing a disk write.
                 mWebViewPrefs = ctx.getSharedPreferences(CHROMIUM_PREFS_NAME, Context.MODE_PRIVATE);
-                if (safeModeActions.contains(SafeModeActionIds.DELETE_VARIATIONS_SEED)) {
+                if (controller.isActionEnabled(SafeModeActionIds.DELETE_VARIATIONS_SEED)) {
                     WebViewCachedFlags.initForSafeMode(mWebViewPrefs);
                 } else {
                     WebViewCachedFlags.init(mWebViewPrefs);

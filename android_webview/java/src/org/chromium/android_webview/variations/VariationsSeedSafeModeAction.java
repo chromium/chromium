@@ -16,7 +16,7 @@ import java.io.File;
 /** A {@link SafeModeAction} to delete the variations seed. */
 @Lifetime.Singleton
 @NullMarked
-public class VariationsSeedSafeModeAction implements SafeModeAction {
+public class VariationsSeedSafeModeAction extends SafeModeAction {
     private static final String TAG = "WebViewSafeMode";
 
     // This ID should not be changed or reused.
@@ -28,7 +28,7 @@ public class VariationsSeedSafeModeAction implements SafeModeAction {
     }
 
     @Override
-    public boolean execute() {
+    public boolean executeAtStartup() {
         boolean success = true;
         // Try deleting each file even if a previous step failed, but indicate the overall success
         // of all steps.

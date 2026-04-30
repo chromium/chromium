@@ -10,24 +10,12 @@ import org.chromium.build.annotations.NullMarked;
 
 /** A {@link SafeModeAction} to disable all origin trials */
 @NullMarked
-public class DisableOriginTrialsSafeModeAction implements SafeModeAction {
-    private static boolean sDisableOriginTrials;
-
+public class DisableOriginTrialsSafeModeAction extends SafeModeAction {
     // This ID should not be changed or reused.
     private static final String ID = SafeModeActionIds.DISABLE_ORIGIN_TRIALS;
 
     @Override
     public String getId() {
         return ID;
-    }
-
-    @Override
-    public boolean execute() {
-        sDisableOriginTrials = true;
-        return true;
-    }
-
-    public static boolean isDisableOriginTrialsEnabled() {
-        return sDisableOriginTrials;
     }
 }

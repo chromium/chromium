@@ -13,7 +13,7 @@ import org.chromium.build.annotations.NullMarked;
 /** A {@link SafeModeAction} that has no effect. */
 @Lifetime.Singleton
 @NullMarked
-public class NoopSafeModeAction implements SafeModeAction {
+public class NoopSafeModeAction extends SafeModeAction {
     private static final String TAG = "WebViewSafeMode";
     // This ID should not be changed or reused.
     private static final String ID = SafeModeActionIds.NOOP;
@@ -24,7 +24,7 @@ public class NoopSafeModeAction implements SafeModeAction {
     }
 
     @Override
-    public boolean execute() {
+    public boolean executeAtStartup() {
         // This is intentionally no operation as this action is meant for testing purposes only.
         Log.i(TAG, "NOOP action executed");
         return true;

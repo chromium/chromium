@@ -13,7 +13,7 @@ import org.chromium.android_webview.common.SafeModeActionIds;
  * is the nonembedded-process counterpart to {@link
  * org.chromium.android_webview.variations.FastVariationsSeedSafeModeAction}.
  */
-public class NonEmbeddedFastVariationsSeedSafeModeAction implements NonEmbeddedSafeModeAction {
+public class NonEmbeddedFastVariationsSeedSafeModeAction extends NonEmbeddedSafeModeAction {
     // This ID should not be reused for NonEmbedded SafeMode Actions.
     private static final String ID = SafeModeActionIds.FAST_VARIATIONS_SEED;
 

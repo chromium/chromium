@@ -24,24 +24,12 @@ import org.chromium.build.annotations.NullMarked;
  */
 @Lifetime.Singleton
 @NullMarked
-public class DisableCrashyClassSafeModeAction implements SafeModeAction {
+public class DisableCrashyClassSafeModeAction extends SafeModeAction {
     // This ID should not be changed or reused.
     private static final String ID = SafeModeActionIds.DISABLE_CRASHY_CLASS;
-
-    private static boolean sShouldDisableCrashyClass;
 
     @Override
     public String getId() {
         return ID;
-    }
-
-    @Override
-    public boolean execute() {
-        sShouldDisableCrashyClass = true;
-        return true;
-    }
-
-    public static boolean shouldDisableCrashyClass() {
-        return sShouldDisableCrashyClass;
     }
 }
