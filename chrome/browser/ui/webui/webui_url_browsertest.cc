@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string>
+#include <string_view>
+
 #include "base/strings/string_util.h"
 #include "chrome/browser/ui/webui/web_ui_all_urls_browser_test.h"
 #include "chrome/browser/ui/webui/webui_urls_for_test.h"
@@ -10,34 +13,49 @@
 #include "content/public/browser/webui_config_map.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
-using WebUIUrlBrowserTest = InProcessBrowserTest;
+namespace {
+
+using WebUIUrlBrowserTest = ::InProcessBrowserTest;
+
+std::string GetOrigin(std::string_view url) {
+  return url::Origin::Resolve(GURL(url), url::Origin()).Serialize();
+}
+
+}  // namespace
 
 // Tests that all registered WebUIs have their URL listed in kChromeUrls or in
 // kChromeUntestedUrls, so that basic sanity checks can run on them.
 IN_PROC_BROWSER_TEST_F(WebUIUrlBrowserTest, UrlsInTestList) {
-  content::WebUIConfigMap& map = content::WebUIConfigMap::GetInstance();
-  std::set<std::string> missing_entries;
+  const absl::flat_hash_set<std::string> origins_in_test_list = []() {
+    absl::flat_hash_set<std::string> origins;
+    for (std::string_view url : GetChromeUrlsForTest()) {
+      origins.insert(GetOrigin(url));
+    }
+    for (std::string_view url : GetUntestedChromeUrlsForTest()) {
+      origins.insert(GetOrigin(url));
+    }
+    return origins;
+  }();
+
+  std::vector<std::string> missing_entries;
   for (const content::WebUIConfigInfo& config_info :
-       map.GetWebUIConfigList(nullptr)) {
-    std::string url = config_info.origin.Serialize();
-    missing_entries.insert(url);
-  }
-
-  for (std::string_view url : GetChromeUrlsForTest()) {
-    missing_entries.erase(std::string(url));
-  }
-
-  for (std::string_view url : GetUntestedChromeUrlsForTest()) {
-    missing_entries.erase(std::string(url));
+       content::WebUIConfigMap::GetInstance().GetWebUIConfigList(
+           /*browser_context=*/nullptr)) {
+    const std::string registered_url = config_info.origin.Serialize();
+    if (!origins_in_test_list.contains(registered_url)) {
+      missing_entries.push_back(registered_url);
+    }
   }
 
   EXPECT_TRUE(missing_entries.empty())
       << "Please add this URL to kChromeUrls in "
          "//chrome/browser/ui/webui/webui_urls_for_test.h:"
       << std::endl
-      << base::JoinString(
-             std::vector(missing_entries.begin(), missing_entries.end()), "\n");
+      << base::JoinString(missing_entries, "\n");
 }
 
 static const char* const kConsoleErrorUrls[] = {
