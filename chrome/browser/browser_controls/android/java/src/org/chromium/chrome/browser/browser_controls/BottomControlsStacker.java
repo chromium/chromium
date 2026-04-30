@@ -228,6 +228,16 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
         return mLayers.get(layerType) != null && mLayerVisibilities.get(layerType);
     }
 
+    /** Returns whether the specified layer is the topmost visible layer. */
+    public boolean isTopmostVisibleLayer(@LayerType int layerType) {
+        for (int type : STACK_ORDER) {
+            if (mLayerVisibilities.get(type)) {
+                return type == layerType;
+            }
+        }
+        return false;
+    }
+
     /** Returns the calculated total height of all visible layers. */
     public int getTotalHeight() {
         return mTotalHeight;

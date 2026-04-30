@@ -40,6 +40,9 @@ class BottomControlsProperties {
     static final PropertyModel.WritableObjectPropertyKey<OffsetTag> OFFSET_TAG =
             new PropertyModel.WritableObjectPropertyKey<>();
 
+    /** Whether the top shadow should be visible. */
+    static final WritableBooleanPropertyKey SHOW_SHADOW = new WritableBooleanPropertyKey();
+
     static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
                 ANDROID_VIEW_HEIGHT,
@@ -48,6 +51,8 @@ class BottomControlsProperties {
                 ANDROID_VIEW_VISIBLE,
                 COMPOSITED_VIEW_VISIBLE,
                 IS_OBSCURED,
-                OFFSET_TAG
+                OFFSET_TAG,
+                SHOW_SHADOW
             };
 }
+

@@ -14,6 +14,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.toolbar.bottom.BottomControlsProperties.ANDROID_VIEW_HEIGHT;
 import static org.chromium.chrome.browser.toolbar.bottom.BottomControlsProperties.ANDROID_VIEW_VISIBLE;
@@ -43,6 +44,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerType;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsOffsetTagsInfo;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
@@ -281,5 +283,34 @@ public class BottomControlsMediatorTest {
                 "Android view is not visible during overlay panel.",
                 mModel.get(ANDROID_VIEW_VISIBLE));
         assertThat(mBrowserControlsVisibilityDelegate.get()).isEqualTo(BrowserControlsState.SHOWN);
+    }
+
+    @Test
+    public void testShowShadow() {
+        when(mBottomControlsStacker.isTopmostVisibleLayer(LayerType.TABSTRIP_TOOLBAR))
+                .thenReturn(true);
+        mMediator.onBrowserControlsOffsetUpdate(0);
+        assertTrue(mModel.get(BottomControlsProperties.SHOW_SHADOW));
+
+        when(mBottomControlsStacker.isTopmostVisibleLayer(LayerType.TABSTRIP_TOOLBAR))
+                .thenReturn(false);
+        mMediator.onBrowserControlsOffsetUpdate(0);
+        assertFalse(mModel.get(BottomControlsProperties.SHOW_SHADOW));
+    }
+
+    @Test
+    public void testUpdateOffsetTag() {
+        when(mBottomControlsStacker.isTopmostVisibleLayer(LayerType.TABSTRIP_TOOLBAR))
+                .thenReturn(true);
+        mMediator.onBrowserControlsOffsetUpdate(0);
+
+        BrowserControlsOffsetTagsInfo offsetTagsInfo =
+                new BrowserControlsOffsetTagsInfo(null, null, null);
+        assertEquals(DEFAULT_SHADOW_HEIGHT, mMediator.updateOffsetTag(offsetTagsInfo));
+
+        when(mBottomControlsStacker.isTopmostVisibleLayer(LayerType.TABSTRIP_TOOLBAR))
+                .thenReturn(false);
+        mMediator.onBrowserControlsOffsetUpdate(0);
+        assertEquals(0, mMediator.updateOffsetTag(offsetTagsInfo));
     }
 }

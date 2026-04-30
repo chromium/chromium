@@ -50,6 +50,9 @@ public class ScrollingBottomViewSceneLayer extends SceneOverlayLayer implements 
     /** The {@link ViewResourceFrameLayout} that this scene layer represents. */
     private final ViewResourceFrameLayout mBottomView;
 
+    /** Whether the shadow should be visible. */
+    private boolean mShowShadow = true;
+
     /**
      * Build a composited bottom view layer.
      * @param bottomView The view used to generate the composited version.
@@ -102,6 +105,13 @@ public class ScrollingBottomViewSceneLayer extends SceneOverlayLayer implements 
         mIsVisible = visible;
     }
 
+    /**
+     * @param show Whether the shadow should be visible.
+     */
+    public void setShowShadow(boolean show) {
+        mShowShadow = show;
+    }
+
     @Override
     protected void initializeNative() {
         if (mNativePtr == 0) {
@@ -126,7 +136,7 @@ public class ScrollingBottomViewSceneLayer extends SceneOverlayLayer implements 
                         mTopShadowHeightPx,
                         mCurrentXOffsetPx,
                         viewport.height() + mCurrentYOffsetPx,
-                        true,
+                        mShowShadow,
                         mOffsetTag);
 
         return this;

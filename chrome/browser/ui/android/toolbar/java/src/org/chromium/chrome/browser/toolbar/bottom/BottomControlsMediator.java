@@ -265,6 +265,9 @@ class BottomControlsMediator
         final boolean isCompositedViewVisible = isCompositedViewVisible();
         mModel.set(BottomControlsProperties.COMPOSITED_VIEW_VISIBLE, isCompositedViewVisible);
         mBottomControlsStacker.requestLayerUpdate(false);
+        mModel.set(
+                BottomControlsProperties.SHOW_SHADOW,
+                mBottomControlsStacker.isTopmostVisibleLayer(mLayerType));
     }
 
     private int getAndroidViewHeight() {
@@ -340,13 +343,16 @@ class BottomControlsMediator
     @Override
     public void onBrowserControlsOffsetUpdate(int layerYOffset) {
         setYOffset(layerYOffset);
+        mModel.set(
+                BottomControlsProperties.SHOW_SHADOW,
+                mBottomControlsStacker.isTopmostVisibleLayer(mLayerType));
     }
 
     @Override
     public int updateOffsetTag(BrowserControlsOffsetTagsInfo offsetTagsInfo) {
         mModel.set(
                 BottomControlsProperties.OFFSET_TAG, offsetTagsInfo.getBottomControlsOffsetTag());
-        return mBottomControlsShadowHeight;
+        return mModel.get(BottomControlsProperties.SHOW_SHADOW) ? mBottomControlsShadowHeight : 0;
     }
 
     @Nullable ChangeObserver getEdgeToEdgeChangeObserverForTesting() {

@@ -74,6 +74,13 @@ class BottomControlsViewBinder {
                             : View.IMPORTANT_FOR_ACCESSIBILITY_AUTO);
         } else if (BottomControlsProperties.OFFSET_TAG == propertyKey) {
             view.sceneLayer.setOffsetTag(model.get(BottomControlsProperties.OFFSET_TAG));
+        } else if (BottomControlsProperties.SHOW_SHADOW == propertyKey) {
+            boolean show = model.get(BottomControlsProperties.SHOW_SHADOW);
+            view.sceneLayer.setShowShadow(show);
+            view.root.setShowShadow(show);
+            View shadow = view.root.findViewById(R.id.bottom_container_top_shadow);
+            assert shadow != null;
+            shadow.setVisibility(show ? View.VISIBLE : View.INVISIBLE);
         } else {
             assert false : "Unhandled property detected in BottomControlsViewBinder!";
         }

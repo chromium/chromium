@@ -1995,4 +1995,27 @@ public class BottomControlsStackerUnitTest {
         // Verify that the top layer's color is used since bottom layer doesn't provide a color.
         verify(mBrowserControlsSizer).notifyBackgroundColor(Color.RED);
     }
+
+    @Test
+    public void testIsTopmostVisibleLayer() {
+        TestLayer top =
+                new TestLayer(
+                        TOP_LAYER,
+                        100,
+                        LayerScrollBehavior.DEFAULT_SCROLL_OFF,
+                        LayerVisibility.VISIBLE);
+        TestLayer bottom =
+                new TestLayer(
+                        BOTTOM_LAYER,
+                        50,
+                        LayerScrollBehavior.DEFAULT_SCROLL_OFF,
+                        LayerVisibility.VISIBLE);
+
+        mBottomControlsStacker.addLayer(top);
+        mBottomControlsStacker.addLayer(bottom);
+        mBottomControlsStacker.requestLayerUpdate(false);
+
+        assertTrue(mBottomControlsStacker.isTopmostVisibleLayer(TOP_LAYER));
+        assertFalse(mBottomControlsStacker.isTopmostVisibleLayer(BOTTOM_LAYER));
+    }
 }
