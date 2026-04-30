@@ -1178,6 +1178,11 @@ class AutocompleteMediator
             return false;
         }
 
+        // If a site search is already active, do not trigger another site search.
+        if (mAutocompleteInput.getSiteSearchData() != null) {
+            return false;
+        }
+
         Profile profile = mSessionState.getProfile();
         if (profile == null) {
             return false;

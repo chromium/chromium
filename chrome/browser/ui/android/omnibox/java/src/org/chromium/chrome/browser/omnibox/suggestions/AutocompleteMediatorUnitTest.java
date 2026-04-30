@@ -415,6 +415,27 @@ public class AutocompleteMediatorUnitTest {
 
     @Test
     @SmallTest
+    public void triggerSiteSearch_Failure_AlreadyInSiteSearchMode() {
+        var session = createEmptySession();
+        mMediator.beginInput(session);
+        session.getAutocompleteInput()
+                .setSiteSearchData(new SiteSearchData("existing", "Existing site search"));
+
+        doReturn(true)
+                .when(mPrefService)
+                .getBoolean(AutocompleteMediator.KEYWORD_SPACE_TRIGGERING_ENABLED_PREF);
+        doReturn("bing").when(mTextStateProvider).getTextWithoutAutocomplete();
+        doReturn(true).when(mTemplateUrlService).isLoaded();
+        var mockTemplateUrl = mock(TemplateUrl.class);
+        doReturn("bing").when(mockTemplateUrl).getKeyword();
+        doReturn("Bing").when(mockTemplateUrl).getShortName();
+        doReturn(mockTemplateUrl).when(mAutocompleteController).getTemplateUrlForText("bing");
+
+        assertFalse(mMediator.triggerSiteSearch(SiteSearchActivationSource.TAB));
+    }
+
+    @Test
+    @SmallTest
     public void updateSuggestionsList_worksWithNullList() {
         final int maximumListHeight = SUGGESTION_MIN_HEIGHT * 7;
 
