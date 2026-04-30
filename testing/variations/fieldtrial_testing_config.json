@@ -17995,6 +17995,21 @@
             ]
         }
     ],
+    "PauseMediaOnSystemSleepAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PauseMediaOnSystemSleepAndroid"
+                    ]
+                }
+            ]
+        }
+    ],
     "PaymentHandlerDialogUseInitiatorInUrlLoad": [
         {
             "platforms": [
