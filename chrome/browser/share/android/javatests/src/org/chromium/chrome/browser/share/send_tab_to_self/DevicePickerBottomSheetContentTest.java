@@ -14,18 +14,24 @@ import android.app.Activity;
 
 import androidx.test.filters.SmallTest;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowToast;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.tab.Tab;
@@ -42,7 +48,9 @@ import java.util.Arrays;
 import java.util.List;
 
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
+@Config(
+        manifest = Config.NONE,
+        shadows = {ShadowToast.class})
 public class DevicePickerBottomSheetContentTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -88,6 +96,7 @@ public class DevicePickerBottomSheetContentTest {
 
     @Test
     @SmallTest
+    @DisableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_POST_SEND_TOAST)
     public void testOnItemClick() {
         DevicePickerBottomSheetContent content =
                 new DevicePickerBottomSheetContent(
@@ -108,5 +117,141 @@ public class DevicePickerBottomSheetContentTest {
                         eq("Title"),
                         any());
         verify(mBottomSheetController).hideContent(content, true);
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_POST_SEND_TOAST)
+    public void testOnItemClick_ShowsSuccessToast() {
+        DevicePickerBottomSheetContent content =
+                new DevicePickerBottomSheetContent(
+                        mContext,
+                        "https://example.com/",
+                        "Title",
+                        mBottomSheetController,
+                        mDevices,
+                        mProfile,
+                        () -> mTab);
+        ArgumentCaptor<SendTabToSelfAndroidBridge.CommitConfirmationCallback> confirmationCallbackCaptor =
+                ArgumentCaptor.forClass(
+                        SendTabToSelfAndroidBridge.CommitConfirmationCallback.class);
+        content.onItemClick(null, null, 0, 0);
+
+        verify(mNativeMock)
+                .sendTabToDevice(
+                        eq(mWebContents),
+                        eq("guid"),
+                        eq("https://example.com/"),
+                        eq("Title"),
+                        confirmationCallbackCaptor.capture());
+
+        confirmationCallbackCaptor.getValue().onResult(SendTabToSelfResult.SUCCESS);
+
+        // Verify that the completion success toast was shown.
+        Assert.assertTrue(
+                ShadowToast.showedCustomToast(
+                        "Sent. Open Chrome on your other device.", R.id.toast_text));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_POST_SEND_TOAST)
+    public void testOnItemClick_ShowsSuccessToast_Throttled() {
+        DevicePickerBottomSheetContent content =
+                new DevicePickerBottomSheetContent(
+                        mContext,
+                        "https://example.com/",
+                        "Title",
+                        mBottomSheetController,
+                        mDevices,
+                        mProfile,
+                        () -> mTab);
+        ArgumentCaptor<SendTabToSelfAndroidBridge.CommitConfirmationCallback> confirmationCallbackCaptor =
+                ArgumentCaptor.forClass(
+                        SendTabToSelfAndroidBridge.CommitConfirmationCallback.class);
+        content.onItemClick(null, null, 0, 0);
+
+        verify(mNativeMock)
+                .sendTabToDevice(
+                        eq(mWebContents),
+                        eq("guid"),
+                        eq("https://example.com/"),
+                        eq("Title"),
+                        confirmationCallbackCaptor.capture());
+
+        confirmationCallbackCaptor.getValue().onResult(SendTabToSelfResult.SUCCESS_THROTTLED);
+
+        // Verify that the completion success toast was shown even when throttled.
+        Assert.assertTrue(
+                ShadowToast.showedCustomToast(
+                        "Sent. Open Chrome on your other device.", R.id.toast_text));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_POST_SEND_TOAST)
+    public void testOnItemClick_ShowsNoToast_OnFailure() {
+        DevicePickerBottomSheetContent content =
+                new DevicePickerBottomSheetContent(
+                        mContext,
+                        "https://example.com/",
+                        "Title",
+                        mBottomSheetController,
+                        mDevices,
+                        mProfile,
+                        () -> mTab);
+        ArgumentCaptor<SendTabToSelfAndroidBridge.CommitConfirmationCallback> confirmationCallbackCaptor =
+                ArgumentCaptor.forClass(
+                        SendTabToSelfAndroidBridge.CommitConfirmationCallback.class);
+        content.onItemClick(null, null, 0, 0);
+
+        verify(mNativeMock)
+                .sendTabToDevice(
+                        eq(mWebContents),
+                        eq("guid"),
+                        eq("https://example.com/"),
+                        eq("Title"),
+                        confirmationCallbackCaptor.capture());
+
+        confirmationCallbackCaptor.getValue().onResult(SendTabToSelfResult.FAILURE_INVALID_URL);
+
+        // Verify that the completion success toast was NOT shown.
+        Assert.assertFalse(
+                ShadowToast.showedCustomToast(
+                        "Sent. Open Chrome on your other device.", R.id.toast_text));
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_POST_SEND_TOAST)
+    public void testOnItemClick_PostSendToastFeatureDisabled() {
+        DevicePickerBottomSheetContent content =
+                new DevicePickerBottomSheetContent(
+                        mContext,
+                        "https://example.com/",
+                        "Title",
+                        mBottomSheetController,
+                        mDevices,
+                        mProfile,
+                        () -> mTab);
+        ArgumentCaptor<SendTabToSelfAndroidBridge.CommitConfirmationCallback> confirmationCallbackCaptor =
+                ArgumentCaptor.forClass(
+                        SendTabToSelfAndroidBridge.CommitConfirmationCallback.class);
+        content.onItemClick(null, null, 0, 0);
+
+        verify(mNativeMock)
+                .sendTabToDevice(
+                        eq(mWebContents),
+                        eq("guid"),
+                        eq("https://example.com/"),
+                        eq("Title"),
+                        confirmationCallbackCaptor.capture());
+
+        confirmationCallbackCaptor.getValue().onResult(SendTabToSelfResult.SUCCESS);
+
+        // The completion success toast should not be shown when the feature flag is disabled.
+        Assert.assertFalse(
+                ShadowToast.showedCustomToast(
+                        "Sent. Open Chrome on your other device.", R.id.toast_text));
     }
 }

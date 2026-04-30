@@ -43,7 +43,7 @@
   <message name="IDS_SEND_TAB_RECEIVE_TOAST_BACKGROUND_ACTION_BUTTON" desc = "Label for the action button on the notification shown when the user receives a tab on the target device while the user is not actively using the device.">
     Switch to tab
   </message>
-  <message name="IDS_SEND_TAB_TO_SELF_POST_SEND_SUCCESS_TOAST" desc = "Text for a toast indicating that the tab was successfully sent to another device.">
+  <message name="IDS_SEND_TAB_TO_SELF_POST_SEND_SUCCESS_TOAST" desc = "Text for a toast indicating that the tab was successfully sent to another device." formatter_data="android_java">
     Sent. Open Chrome on your other device.
   </message>
 </grit-part>

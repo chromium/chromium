@@ -1116,6 +1116,7 @@ if (is_android) {
     deps = [
       ":chrome_junit_tests_helper",
       "//components/paint_preview/common/mojom:mojom_java",
+      "//components/strings:components_strings_grd",
     ]
   }
 

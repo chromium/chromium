@@ -18,6 +18,7 @@ import androidx.annotation.StringRes;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
@@ -162,9 +163,14 @@ class DevicePickerBottomSheetContent implements BottomSheetContent, OnItemClickL
         SendTabToSelfMetricsRecorder.recordCrossDeviceTabJourney();
         TargetDeviceInfo targetDeviceInfo = mAdapter.getItem(position);
 
-        String toastMessage =
-                mContext.getString(R.string.send_tab_to_self_toast, targetDeviceInfo.deviceName);
-        Toast.makeText(mContext, toastMessage, Toast.LENGTH_SHORT).show();
+        // TODO(crbug.com/492072882): Remove the optimistic toast completely once the
+        // SendTabToSelfPostSendToast feature has fully launched.
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SEND_TAB_TO_SELF_POST_SEND_TOAST)) {
+            String toastMessage =
+                    mContext.getString(
+                            R.string.send_tab_to_self_toast, targetDeviceInfo.deviceName);
+            Toast.makeText(mContext, toastMessage, Toast.LENGTH_SHORT).show();
+        }
 
         Tab tab = mTabProvider.get();
         WebContents webContents = (tab != null) ? tab.getWebContents() : null;
@@ -174,9 +180,21 @@ class DevicePickerBottomSheetContent implements BottomSheetContent, OnItemClickL
                 targetDeviceInfo.cacheGuid,
                 mUrl,
                 mTitle,
-                (result) -> {
-                    // TODO(crbug.com/492072882): Add logic to surface a toast
-                    // and required strings.
-                });
+                this::sendTabToDeviceComplete);
+    }
+
+    private void sendTabToDeviceComplete(@SendTabToSelfResult int result) {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.SEND_TAB_TO_SELF_POST_SEND_TOAST)) {
+            switch (result) {
+                case SendTabToSelfResult.SUCCESS:
+                case SendTabToSelfResult.SUCCESS_THROTTLED:
+                    Toast.makeText(
+                                    mContext,
+                                    R.string.send_tab_to_self_post_send_success_toast,
+                                    Toast.LENGTH_SHORT)
+                            .show();
+                    break;
+            }
+        }
     }
 }
