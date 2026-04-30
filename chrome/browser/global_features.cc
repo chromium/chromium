@@ -211,6 +211,10 @@ void GlobalFeatures::PostBrowserProcessInitCore() {
   }
 }
 
+void GlobalFeatures::Init() {
+  global_browser_collection_ = CreateGlobalBrowserCollection();
+}
+
 void GlobalFeatures::PostMainMessageLoopRun() {
 #if !BUILDFLAG(IS_ANDROID)
   smart_restart_manager_.reset();
@@ -260,6 +264,11 @@ GlobalFeatures::CreateWhatsNewRegistry() {
 }
 #endif
 
+std::unique_ptr<GlobalBrowserCollection>
+GlobalFeatures::CreateGlobalBrowserCollection() {
+  return std::make_unique<GlobalBrowserCollection>();
+}
+
 // static
 ui::UserDataFactoryWithOwner<BrowserProcess>&
 GlobalFeatures::GetUserDataFactoryForTesting() {
@@ -274,5 +283,4 @@ GlobalFeatures::GetUserDataFactory() {
   return *factory;
 }
 
-GlobalFeatures::GlobalFeatures()
-    : global_browser_collection_(std::make_unique<GlobalBrowserCollection>()) {}
+GlobalFeatures::GlobalFeatures() = default;

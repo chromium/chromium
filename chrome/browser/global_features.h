@@ -109,6 +109,11 @@ class GlobalFeatures {
   // TestingBrowserProcess.
   void PostBrowserProcessInitCore();
 
+  // Initializes features that must come before core features. This is
+  // called immediately after construction, before any other
+  // initialization.
+  void Init();
+
   // Each of these is called exactly once when the browser starts to shutdown,
   // in the named browser shutdown lifecycle phases. Importantly,
   // `PostMainMessageLoopRun()` must be called before the `ProfileManager` is
@@ -203,6 +208,8 @@ class GlobalFeatures {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   virtual std::unique_ptr<whats_new::WhatsNewRegistry> CreateWhatsNewRegistry();
 #endif
+  virtual std::unique_ptr<GlobalBrowserCollection>
+  CreateGlobalBrowserCollection();
 
  private:
   static ui::UserDataFactoryWithOwner<BrowserProcess>& GetUserDataFactory();

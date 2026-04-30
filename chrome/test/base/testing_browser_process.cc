@@ -275,6 +275,7 @@ const ui::UnownedUserDataHost& TestingBrowserProcess::GetUnownedUserDataHost()
 
 void TestingBrowserProcess::Init() {
   features_ = GlobalFeatures::CreateGlobalFeatures();
+  features_->Init();
   // Only initialize core features for now. If needed unit tests can call
   // TestingBrowserProcess::CreateGlobalFeaturesForTesting() to initialize rest
   // of the features.
@@ -715,6 +716,7 @@ void TestingBrowserProcess::CreateGlobalFeaturesPreProfileManager() {
   features_.reset();
 
   features_ = GlobalFeatures::CreateGlobalFeatures();
+  features_->Init();
 }
 
 void TestingBrowserProcess::CreateGlobalFeaturesPostProfileManager() {

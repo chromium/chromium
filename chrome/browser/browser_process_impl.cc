@@ -330,6 +330,8 @@ BrowserProcessImpl::BrowserProcessImpl(StartupData* startup_data)
   CHECK(!g_browser_process);
   g_browser_process = this;
 
+  features_->Init();
+
   DCHECK(browser_policy_connector_);
   DCHECK(local_state_);
   DCHECK(startup_data);
