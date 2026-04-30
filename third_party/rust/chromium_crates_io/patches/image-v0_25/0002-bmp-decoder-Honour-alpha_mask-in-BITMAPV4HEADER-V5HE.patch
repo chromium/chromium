@@ -1,0 +1,52 @@
+From 0000000000000000000000000000000000000002 Mon Sep 17 00:00:00 2001
+From: Sergio Gonzalez Martin <sergiog@microsoft.com>
+Date: Wed, 30 Apr 2026 00:00:00 +0000
+Subject: [PATCH] bmp/decoder: Honour alpha_mask in BITMAPV4HEADER/V5HEADER
+ under BI_RGB
+
+BITMAPV4HEADER and BITMAPV5HEADER may declare an alpha channel via the
+alpha_mask field even when compression == BI_RGB.  When alpha_mask is
+non-zero the fourth byte of every 32-bit pixel is an alpha value, not
+padding.  Previously the decoder ignored that field for BI_RGB images
+and reported the colour type as opaque (RGB), causing transparent pixels
+to be rendered as black.
+
+The fix mirrors upstream image-rs PR #2933:
+  https://github.com/image-rs/image/pull/2933
+
+In strict mode a non-standard alpha mask (anything other than
+0xFF000000) is rejected.  In lenient mode (the default) any non-zero
+alpha_mask is treated as "alpha present", matching the behaviour of
+browsers and Windows GDI.
+
+diff --git a/third_party/rust/chromium_crates_io/vendor/image-v0_25/src/codecs/bmp/decoder.rs b/third_party/rust/chromium_crates_io/vendor/image-v0_25/src/codecs/bmp/decoder.rs
+--- a/third_party/rust/chromium_crates_io/vendor/image-v0_25/src/codecs/bmp/decoder.rs
++++ b/third_party/rust/chromium_crates_io/vendor/image-v0_25/src/codecs/bmp/decoder.rs
+@@ -1471,6 +1471,25 @@ impl<R: BufRead + Seek> BmpDecoder<R> {
+                     BitfieldCompression::Rgb => 12,  // 3 masks * 4 bytes
+                 };
+             }
++        } else if self.image_type == ImageType::RGB32
++            && bmp_header_size >= BITMAPV4HEADER_SIZE
++        {
++            // V4/V5 headers may declare an alpha channel via alpha_mask even under BI_RGB.
++            let mut masks_buf = [0u8; 16];
++            self.reader.read_exact(&mut masks_buf)?;
++            let alpha_mask = u32::from_le_bytes(masks_buf[12..16].try_into().unwrap());
++            if alpha_mask != 0 {
++                // BI_RGB implies fixed BGRA byte layout, so the only spec-valid
++                // alpha mask is 0xFF000000. In lenient mode we still treat any
++                // non-zero alpha_mask as "alpha present" because some encoders
++                // (e.g. older GDI+ versions) write incorrect mask values while
++                // still storing alpha in the high byte.
++                if self.spec_strictness == BmpSpec::Strict && alpha_mask != 0xFF000000 {
++                    return Err(DecoderError::BitfieldMaskInvalid.into());
++                }
++                self.add_alpha_channel = true;
++                self.image_type = ImageType::RGBA32;
++            }
+         };
+ 
+         // Parse ICC profile metadata from V5 header (but don't read the profile data yet)
+-- 
+2.34.1

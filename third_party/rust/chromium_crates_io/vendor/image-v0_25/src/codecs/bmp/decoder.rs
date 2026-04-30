@@ -1471,6 +1471,25 @@ impl<R: BufRead + Seek> BmpDecoder<R> {
                     BitfieldCompression::Rgb => 12,  // 3 masks * 4 bytes
                 };
             }
+        } else if self.image_type == ImageType::RGB32
+            && bmp_header_size >= BITMAPV4HEADER_SIZE
+        {
+            // V4/V5 headers may declare an alpha channel via alpha_mask even under BI_RGB.
+            let mut masks_buf = [0u8; 16];
+            self.reader.read_exact(&mut masks_buf)?;
+            let alpha_mask = u32::from_le_bytes(masks_buf[12..16].try_into().unwrap());
+            if alpha_mask != 0 {
+                // BI_RGB implies fixed BGRA byte layout, so the only spec-valid
+                // alpha mask is 0xFF000000. In lenient mode we still treat any
+                // non-zero alpha_mask as "alpha present" because some encoders
+                // (e.g. older GDI+ versions) write incorrect mask values while
+                // still storing alpha in the high byte.
+                if self.spec_strictness == BmpSpec::Strict && alpha_mask != 0xFF000000 {
+                    return Err(DecoderError::BitfieldMaskInvalid.into());
+                }
+                self.add_alpha_channel = true;
+                self.image_type = ImageType::RGBA32;
+            }
         };
 
         // Parse ICC profile metadata from V5 header (but don't read the profile data yet)

@@ -338,6 +338,8 @@ INSTANTIATE_TEST_SUITE_P(
         BMPSuiteEntry{"questionable", "rgba32h56"},
         // TODO: crbug.com/40244265 - a bitcount of 64 is not yet supported.
         BMPSuiteEntry{"questionable", "rgba64"},
+        // Regression test: BITMAPV5HEADER with alpha_mask under BI_RGB.
+        BMPSuiteEntry{"questionable", "rgba32-v5-alpha"},
 
         BMPSuiteEntry{"bad", "badbitcount"},
         BMPSuiteEntry{"bad", "badbitssize"},
@@ -698,6 +700,11 @@ INSTANTIATE_TEST_SUITE_P(
         std::make_tuple(BMPSuiteEntry{"questionable", "rgba32h56"},
                         NoDifference()),
         std::make_tuple(BMPSuiteEntry{"questionable", "rgba64"},
+                        NoDifference()),
+        // Regression: BITMAPV5HEADER declares alpha_mask under BI_RGB.
+        // The Rust decoder was ignoring alpha_mask, rendering transparent
+        // pixels as opaque black. Fixed by image-rs/image#2933.
+        std::make_tuple(BMPSuiteEntry{"questionable", "rgba32-v5-alpha"},
                         NoDifference()),
 
         // Bad files - both should reject
