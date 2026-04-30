@@ -979,16 +979,18 @@ void HTMLFormElement::ScheduleFormSubmission(const Event* event,
       target_frame->ScheduleFormSubmission(scheduler, form_submission);
 }
 
-FormData* HTMLFormElement::ConstructEntryList(
-    HTMLFormControlElement* submit_button,
-    const TextEncoding& encoding) {
+FormData* HTMLFormElement::ConstructEntryList(Element* submitter,
+                                              const TextEncoding& encoding) {
   if (is_constructing_entry_list_) {
     return nullptr;
   }
   auto& form_data = *MakeGarbageCollected<FormData>(encoding);
   base::AutoReset<bool> entry_list_scope(&is_constructing_entry_list_, true);
-  if (submit_button)
-    submit_button->SetActivatedSubmit(true);
+
+  if (submitter) {
+    submitter->SetActivatedSubmit(true);
+  }
+
   for (ListedElement* control : ListedElements()) {
     DCHECK(control);
     HTMLElement& element = control->ToHTMLElement();
@@ -1003,8 +1005,9 @@ FormData* HTMLFormElement::ConstructEntryList(
   }
   DispatchEvent(*MakeGarbageCollected<FormDataEvent>(form_data));
 
-  if (submit_button)
-    submit_button->SetActivatedSubmit(false);
+  if (submitter) {
+    submitter->SetActivatedSubmit(false);
+  }
   return &form_data;
 }
 

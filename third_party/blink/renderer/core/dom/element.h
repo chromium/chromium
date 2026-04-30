@@ -1636,6 +1636,12 @@ class CORE_EXPORT Element : public ContainerNode {
   // Returns the HTMLSubmitButtonBehavior for this element, if any.
   HTMLSubmitButtonBehavior* SubmitBehavior() const;
 
+  // Activated-submit flag for form submission. For native submit buttons
+  // (HTMLButtonElement, HTMLInputElement), subclasses override these. For
+  // custom elements with HTMLSubmitButtonBehavior, delegates to the behavior.
+  virtual void SetActivatedSubmit(bool flag);
+  virtual bool IsActivatedSubmit() const;
+
   bool ContainsFullScreenElement() const {
     return HasElementFlag(ElementFlags::kContainsFullScreenElement);
   }

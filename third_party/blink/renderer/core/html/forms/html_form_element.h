@@ -164,7 +164,9 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
   // 'construct the entry list'
   // https://html.spec.whatwg.org/C/#constructing-the-form-data-set
   // Returns nullptr if this form is already running this function.
-  FormData* ConstructEntryList(HTMLFormControlElement* submit_button,
+  // |submitter| may be an HTMLFormControlElement (native submit button) or a
+  // custom element with HTMLSubmitButtonBehavior.
+  FormData* ConstructEntryList(Element* submitter,
                                const TextEncoding& encoding);
 
   void InvalidateListedElementsForAutofill();

@@ -7378,6 +7378,19 @@ HTMLSubmitButtonBehavior* Element::SubmitBehavior() const {
                    : nullptr;
 }
 
+void Element::SetActivatedSubmit(bool flag) {
+  if (auto* behavior = SubmitBehavior()) {
+    behavior->SetActivatedSubmit(flag);
+  }
+}
+
+bool Element::IsActivatedSubmit() const {
+  if (const auto* behavior = SubmitBehavior()) {
+    return behavior->IsActivatedSubmit();
+  }
+  return false;
+}
+
 bool Element::CanAttachShadowRoot() const {
   const AtomicString& local_name = localName();
   // Checking IsCustomElement() here is just an optimization

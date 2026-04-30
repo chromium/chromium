@@ -299,13 +299,8 @@ FormSubmission* FormSubmission::Create(HTMLFormElement* form,
           : FormDataEncoder::EncodingFromAcceptCharset(
                 copied_attributes.AcceptCharset(), document.Encoding());
   FormData* dom_form_data = form->ConstructEntryList(
-      submit_button, data_encoding.EncodingForFormSubmission());
+      submitter, data_encoding.EncodingForFormSubmission());
   DCHECK(dom_form_data);
-  // For custom elements with behaviors, manually add the behavior's name/value.
-  if (behavior && !behavior->name().empty()) {
-    CHECK(!submit_button);
-    dom_form_data->AppendFromElement(behavior->name(), behavior->value());
-  }
 
   scoped_refptr<EncodedFormData> form_data;
   String boundary;

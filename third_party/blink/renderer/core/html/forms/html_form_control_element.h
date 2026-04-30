@@ -90,8 +90,8 @@ class CORE_EXPORT HTMLFormControlElement : public HTMLElement,
   // Return true if this control can submit a form.
   // i.e. canBeSuccessfulSubmitButton() && !isDisabledFormControl().
   bool IsSuccessfulSubmitButton() const;
-  virtual bool IsActivatedSubmit() const { return false; }
-  virtual void SetActivatedSubmit(bool) {}
+  bool IsActivatedSubmit() const override { return false; }
+  void SetActivatedSubmit(bool) override {}
 
   struct PopoverTargetElement final {
    public:

@@ -66,6 +66,11 @@ class CORE_EXPORT HTMLSubmitButtonBehavior final : public ElementBehavior {
   String value() const { return value_; }
   void setValue(const String& value) { value_ = value; }
 
+  // Set to true during ConstructEntryList so that
+  // ElementInternals::AppendToFormData() can append the submitter's name/value.
+  bool IsActivatedSubmit() const { return is_activated_submit_; }
+  void SetActivatedSubmit(bool flag) { is_activated_submit_ = flag; }
+
   void Trace(Visitor* visitor) const override;
 
  private:
@@ -74,6 +79,7 @@ class CORE_EXPORT HTMLSubmitButtonBehavior final : public ElementBehavior {
   ElementInternals* GetInternalsOrThrow(ExceptionState& exception_state) const;
 
   bool disabled_ = false;
+  bool is_activated_submit_ = false;
   String form_action_;
   String form_enctype_;
   String form_method_;
