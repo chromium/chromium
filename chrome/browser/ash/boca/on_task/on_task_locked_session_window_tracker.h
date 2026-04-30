@@ -16,7 +16,6 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/browser_delegate/browser_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
-#include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chromeos/ash/components/boca/on_task/on_task_blocklist.h"
 #include "chromeos/ash/components/boca/on_task/on_task_notifications_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -51,7 +50,6 @@ class BocaWindowObserver;
 class LockedSessionWindowTracker : public KeyedService,
                                    public TabStripModelObserver,
                                    public ash::BrowserController::Observer,
-                                   public ImmersiveModeController::Observer,
                                    public content::WebContentsObserver {
  public:
   LockedSessionWindowTracker(std::unique_ptr<OnTaskBlocklist> on_task_blocklist,
@@ -130,10 +128,6 @@ class LockedSessionWindowTracker : public KeyedService,
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
 
-  // ImmersiveModeController::Observer:
-  void OnImmersiveRevealStarted() override;
-  void OnImmersiveModeControllerDestroyed() override;
-
   // Callback for browser closed events.
   void OnBrowserDidClose(BrowserWindowInterface* browser_window_interface);
 
@@ -151,8 +145,6 @@ class LockedSessionWindowTracker : public KeyedService,
   std::unique_ptr<ash::boca::OnTaskNotificationsManager> notifications_manager_;
   std::unique_ptr<ash::OnTaskPodController> on_task_pod_controller_;
   raw_ptr<ash::BrowserDelegate> browser_ = nullptr;
-  base::ScopedObservation<ImmersiveModeController, LockedSessionWindowTracker>
-      immersive_mode_controller_observation_{this};
   base::ScopedObservation<ash::BrowserController,
                           ash::BrowserController::Observer>
       browser_controller_observation_{this};
