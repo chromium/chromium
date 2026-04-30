@@ -1,6 +1,5 @@
 include_rules = [
   # keep-sorted start
-  "+components/plus_addresses/core/common/features.h",
   "+components/signin/internal/identity_manager",
   # keep-sorted end
 ]

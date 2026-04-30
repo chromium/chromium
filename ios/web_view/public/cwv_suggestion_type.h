@@ -46,7 +46,7 @@ typedef NS_ENUM(NSInteger, CWVSuggestionType) {
   CWVSuggestionTypeManageAddress = 10,
   CWVSuggestionTypeManageCreditCard = 11,
   CWVSuggestionTypeManageIban = 12,
-  CWVSuggestionTypeManagePlusAddress = 13,
+  // CWVSuggestionTypeManagePlusAddress = 13, // DEPRECATED
 
   // Compose popup suggestion shown when no Compose session exists.
   CWVSuggestionTypeComposeProactiveNudge = 14,
@@ -84,9 +84,8 @@ typedef NS_ENUM(NSInteger, CWVSuggestionType) {
   CWVSuggestionTypeCreditCardFieldByFieldFilling = 37,
   CWVSuggestionTypeIbanEntry = 38,
 
-  // Plus address suggestions.
-  CWVSuggestionTypeCreateNewPlusAddress = 39,
-  CWVSuggestionTypeFillExistingPlusAddress = 40,
+  // CWVSuggestionTypeCreateNewPlusAddress = 39, // DEPRECATED
+  // CWVSuggestionTypeFillExistingPlusAddress = 40,
 
   // Promotion suggestions.
   CWVSuggestionTypeMerchantPromoCodeEntry = 41,
