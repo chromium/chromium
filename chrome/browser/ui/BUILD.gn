@@ -1532,6 +1532,8 @@ static_library("ui") {
       "webui/side_panel/reading_list/reading_list_page_handler.h",
       "webui/side_panel/reading_list/reading_list_ui.cc",
       "webui/side_panel/reading_list/reading_list_ui.h",
+      "webui/side_panel/tabs_from_other_devices/synced_screenshot_data_source.cc",
+      "webui/side_panel/tabs_from_other_devices/synced_screenshot_data_source.h",
       "webui/side_panel/tabs_from_other_devices/tabs_from_other_devices_side_panel_ui.cc",
       "webui/side_panel/tabs_from_other_devices/tabs_from_other_devices_side_panel_ui.h",
       "webui/suggest_internals/suggest_internals_handler.cc",
