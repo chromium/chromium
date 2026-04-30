@@ -12,6 +12,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/test_future.h"
+#include "build/build_config.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
 #include "chrome/browser/actor/actor_keyed_service_fake.h"
@@ -19,10 +20,8 @@
 #include "chrome/browser/password_manager/actor_login/actor_login_permission_service_factory.h"
 #include "chrome/browser/password_manager/actor_login/internal/actor_login_metrics_helper.h"
 #include "chrome/browser/password_manager/actor_login/internal/actor_login_permission_cleaning_service.h"
-#include "chrome/browser/ui/bookmarks/bookmark_bar_controller.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
@@ -42,6 +41,7 @@
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/browser/stub_password_manager_driver.h"
 #include "components/tabs/public/mock_tab_interface.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/webid/federated_embedder_login_request.h"
@@ -188,7 +188,16 @@ class ActorLoginDelegateImplTest : public ChromeRenderViewHostTestHarness {
  public:
   ActorLoginDelegateImplTest()
       : ChromeRenderViewHostTestHarness(
-            base::test::TaskEnvironment::MainThreadType::UI) {}
+            base::test::TaskEnvironment::MainThreadType::UI) {
+    std::vector<base::test::FeatureRef> disabled_features;
+#if BUILDFLAG(IS_ANDROID)
+    disabled_features.push_back(
+        password_manager::features::kActorLoginNoPermanentPermissionsAndroid);
+#endif
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kGlicActor},
+        /*disabled_features=*/disabled_features);
+  }
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
@@ -207,13 +216,21 @@ class ActorLoginDelegateImplTest : public ChromeRenderViewHostTestHarness {
           return mock_service;
         }));
 
-    std::unique_ptr<content::WebContents> contents = CreateTestWebContents();
-    content::NavigationSimulator::NavigateAndCommitFromBrowser(contents.get(),
-                                                               GURL(kTestUrl));
+    web_contents_ = CreateTestWebContents();
+    content::NavigationSimulator::NavigateAndCommitFromBrowser(
+        web_contents_.get(), GURL(kTestUrl));
+
+    mock_tab_interface_ = std::make_unique<tabs::MockTabInterface>();
+    tabs::TabLookupFromWebContents::CreateForWebContents(
+        web_contents_.get(), mock_tab_interface_.get());
+
+    ON_CALL(*mock_tab_interface_, GetBrowserWindowInterface())
+        .WillByDefault(Return(&mock_browser_window_interface_));
+    ON_CALL(*mock_tab_interface_, IsActivated).WillByDefault(Return(true));
 
     delegate_ = static_cast<ActorLoginDelegateImpl*>(
         ActorLoginDelegateImpl::GetOrCreateForTesting(
-            contents.get(), &client_,
+            web_contents_.get(), &client_,
             base::BindRepeating(
                 [](MockPasswordManagerDriver* driver, content::WebContents*)
                     -> PasswordManagerDriver* { return driver; },
@@ -222,17 +239,6 @@ class ActorLoginDelegateImplTest : public ChromeRenderViewHostTestHarness {
     client_.profile_store()->Init(/*affiliated_match_helper=*/nullptr);
     client_.account_store()->Init(/*affiliated_match_helper=*/nullptr);
 
-    // Associate `contents` with a tab
-    test_tab_strip_model_delegate_.SetBrowserWindowInterface(
-        &mock_browser_window_interface_);
-    tab_strip_model_ = std::make_unique<TabStripModel>(
-        &test_tab_strip_model_delegate_, profile());
-    auto tab_model = std::make_unique<tabs::TabModel>(std::move(contents),
-                                                      tab_strip_model_.get());
-    tab_strip_model_->AppendTab(std::move(tab_model),
-                                /*foreground=*/true);
-    ON_CALL(mock_browser_window_interface_, GetTabStripModel())
-        .WillByDefault(Return(tab_strip_model_.get()));
     ON_CALL(mock_browser_window_interface_, GetUnownedUserDataHost)
         .WillByDefault(::testing::ReturnRef(user_data_host_));
   }
@@ -245,7 +251,8 @@ class ActorLoginDelegateImplTest : public ChromeRenderViewHostTestHarness {
     // Reset the raw pointer before it becomes dangling in
     // ChromeRenderViewHostTestHarness::TearDown()
     delegate_ = nullptr;
-    tab_strip_model_.reset();
+    web_contents_.reset();
+    mock_tab_interface_.reset();
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
@@ -324,11 +331,10 @@ class ActorLoginDelegateImplTest : public ChromeRenderViewHostTestHarness {
 
   // Tab setup
   NiceMock<MockBrowserWindowInterface> mock_browser_window_interface_;
-  TestTabStripModelDelegate test_tab_strip_model_delegate_;
-  std::unique_ptr<TabStripModel> tab_strip_model_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<content::WebContents> web_contents_;
+  std::unique_ptr<tabs::MockTabInterface> mock_tab_interface_;
   ui::UnownedUserDataHost user_data_host_;
-  const tabs::TabModel::PreventFeatureInitializationForTesting
-      prevent_tab_features_;
 };
 
 TEST_F(ActorLoginDelegateImplTest, GetCredentialsSuccess_FeatureOn) {
@@ -589,13 +595,14 @@ TEST_F(ActorLoginDelegateImplTest, WebContentsDestroyedDuringAttemptLogin) {
 
   delegate_ = nullptr;
   // This should invoke `WebContentsDestroyed`.
-  tab_strip_model_.reset();
+  web_contents_.reset();
   task_environment()->RunUntilIdle();
   // The callback should never be invoked because the
   // delegate was destroyed.
   EXPECT_FALSE(future.IsReady());
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 // If the window is not active and reauth before filling is required,
 // `AttemptLogin` should return LoginStatusResult::kErrorDeviceReauthRequired.
 TEST_F(ActorLoginDelegateImplTest, FillingReauthRequiredWindowNotActive) {
@@ -643,6 +650,7 @@ TEST_F(ActorLoginDelegateImplTest, FillingReauthRequiredWindowNotActive) {
   EXPECT_EQ(future.Get().value(),
             LoginStatusResult::kErrorDeviceReauthRequired);
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(ActorLoginDelegateImplTest, RecordActorLoginMetricsNoCredentials) {
   base::test::ScopedFeatureList feature_list(
@@ -756,7 +764,7 @@ TEST_F(ActorLoginDelegateImplTest,
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
-  content::WebContents* test_contents = tab_strip_model_->GetWebContentsAt(0);
+  content::WebContents* test_contents = web_contents_.get();
   GURL url = GURL(kTestUrl);
   url::Origin origin = url::Origin::Create(url);
   Credential credential = CreateTestCredential(u"username", url, origin);
@@ -1357,7 +1365,7 @@ TEST_F(ActorLoginDelegateImplTest, RemovedOnUserTakeover) {
   // Create a task and associate it with the tab.
   actor::TaskId task_id = actor_service->CreateTaskForTesting();
   actor::ActorTask* task = actor_service->GetTask(task_id);
-  content::WebContents* test_contents = tab_strip_model_->GetWebContentsAt(0);
+  content::WebContents* test_contents = web_contents_.get();
   base::RunLoop loop;
   task->AddTab(tabs::TabInterface::GetFromContents(test_contents)->GetHandle(),
                /*stop_task_on_detach=*/true,
@@ -1463,7 +1471,7 @@ TEST_F(ActorLoginDelegateImplTest,
 
   actor::TaskId task_id = actor_service->CreateTaskForTesting();
   actor::ActorTask* task = actor_service->GetTask(task_id);
-  content::WebContents* test_contents = tab_strip_model_->GetWebContentsAt(0);
+  content::WebContents* test_contents = web_contents_.get();
   base::RunLoop loop;
   task->AddTab(tabs::TabInterface::GetFromContents(test_contents)->GetHandle(),
                /*stop_task_on_detach=*/true,
@@ -1577,7 +1585,7 @@ TEST_F(ActorLoginDelegateImplTest, FailedFederatedLoginDoesntClearPermissions) {
 
   actor::TaskId task_id = actor_service->CreateTaskForTesting();
   actor::ActorTask* task = actor_service->GetTask(task_id);
-  content::WebContents* test_contents = tab_strip_model_->GetWebContentsAt(0);
+  content::WebContents* test_contents = web_contents_.get();
   base::RunLoop loop;
   task->AddTab(tabs::TabInterface::GetFromContents(test_contents)->GetHandle(),
                /*stop_task_on_detach=*/true,

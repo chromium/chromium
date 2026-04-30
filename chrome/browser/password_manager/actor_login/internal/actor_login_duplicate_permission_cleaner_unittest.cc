@@ -285,8 +285,15 @@ TEST_F(ActorLoginDuplicatePermissionCleanerTest,
   // All updates are guaranteed to be finished here.
   EXPECT_TRUE(
       GetAllLoginsSync(store()).at(kSignonRealm)[0].actor_login_approved);
+#if !BUILDFLAG(IS_ANDROID)
+  // On Android, the `FakePasswordStoreBackend` ignores web affiliations due to
+  // the C++ filter in `AffiliatedMatchHelper` (which is dead code in prod but
+  // active in tests). So the affiliated credential is not cleared in the test.
+  // TODO(crbug.com/504896739): Update the test once the fake backend supports
+  // affiliation without the helper on Android.
   EXPECT_FALSE(
       GetAllLoginsSync(store()).at(kAffiliatedRealm)[0].actor_login_approved);
+#endif
 }
 
 // Tests that when a new permission is saved for a federated credential
@@ -387,6 +394,7 @@ TEST_F(ActorLoginDuplicatePermissionCleanerTest,
   form2.url = GURL("https://affiliated.com/login");
   form2.signon_realm = kOtherSignonRealm;
   form2.username_value = kExcludeUser;
+  form2.password_value = u"pass2";
   form2.actor_login_approved = true;
   form2.match_type = password_manager::PasswordForm::MatchType::kAffiliated;
   store()->AddLogin(form2);
@@ -422,8 +430,15 @@ TEST_F(ActorLoginDuplicatePermissionCleanerTest,
   EXPECT_TRUE(GetAllLoginsSync(store())
                   .at(kExcludedSignonRealm)[0]
                   .actor_login_approved);
+#if !BUILDFLAG(IS_ANDROID)
+  // On Android, the `FakePasswordStoreBackend` ignores web affiliations due to
+  // the C++ filter in `AffiliatedMatchHelper` (which is dead code in prod but
+  // active in tests). So the affiliated credential is not cleared in the test.
+  // TODO(crbug.com/504896739): Update the test once the fake backend supports
+  // affiliation without the helper on Android.
   EXPECT_FALSE(
       GetAllLoginsSync(store()).at(kOtherSignonRealm)[0].actor_login_approved);
+#endif
 }
 
 TEST_F(ActorLoginDuplicatePermissionCleanerTest,
