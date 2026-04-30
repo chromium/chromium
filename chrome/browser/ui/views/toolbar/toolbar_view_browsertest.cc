@@ -4,6 +4,10 @@
 
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 
+#include "base/test/run_until.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
@@ -13,28 +17,52 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/view.h"
 
-class ToolbarViewUnitTest : public InProcessBrowserTest {
- public:
-  ToolbarButton* GetForwardButton() {
-    return BrowserView::GetBrowserViewForBrowser(browser())
-        ->toolbar()
-        ->forward_button();
-  }
-};
+using ToolbarViewUnitTest = InProcessBrowserTest;
+
+namespace {
+
+// This macro attaches the location that the helper function was called to any
+// test failures. This helps disambiguate where the test failed when if fails
+// in a test helper.
+#define WITH_SCOPE(function_call) \
+  do {                            \
+    SCOPED_TRACE(#function_call); \
+    function_call;                \
+  } while (false)
+
+void WaitForTrackedElementVisible(BrowserWindowInterface* browser,
+                                  ui::ElementIdentifier id) {
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return BrowserElements::From(browser)->GetElement(id) != nullptr;
+  }));
+}
+
+void WaitForTrackedElementNotVisible(BrowserWindowInterface* browser,
+                                     ui::ElementIdentifier id) {
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return BrowserElements::From(browser)->GetElement(id) == nullptr;
+  }));
+}
+
+}  // namespace
 
 IN_PROC_BROWSER_TEST_F(ToolbarViewUnitTest, ForwardButtonVisibility) {
   // Forward button should be visible by default.
-  EXPECT_TRUE(GetForwardButton()->GetVisible());
+  WITH_SCOPE(
+      WaitForTrackedElementVisible(browser(), kToolbarForwardButtonElementId));
 
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
 
   browser_view->GetProfile()->GetPrefs()->SetBoolean(prefs::kShowForwardButton,
                                                      false);
-  EXPECT_FALSE(GetForwardButton()->GetVisible());
+  // Now it should disappear
+  WITH_SCOPE(WaitForTrackedElementNotVisible(browser(),
+                                             kToolbarForwardButtonElementId));
 }
 
 IN_PROC_BROWSER_TEST_F(ToolbarViewUnitTest, AccessibleProperties) {
@@ -101,35 +129,44 @@ IN_PROC_BROWSER_TEST_F(ToolbarViewUnitTest,
 
 IN_PROC_BROWSER_TEST_F(ToolbarViewUnitTest,
                        IsPositionInWindowCaption_OnButton) {
+  WITH_SCOPE(
+      WaitForTrackedElementVisible(browser(), kToolbarForwardButtonElementId));
+
   ToolbarView* toolbar =
       BrowserView::GetBrowserViewForBrowser(browser())->toolbar();
   ASSERT_TRUE(toolbar);
 
   // The forward button center should NOT be caption (it's an interactive
   // control).
-  ToolbarButton* forward = toolbar->forward_button();
+  ui::TrackedElement* forward = BrowserElements::From(browser())->GetElement(
+      kToolbarForwardButtonElementId);
   ASSERT_TRUE(forward);
-  ASSERT_TRUE(forward->GetVisible());
-  gfx::Point forward_center = forward->bounds().CenterPoint();
+  gfx::Point forward_center = forward->GetScreenBounds().CenterPoint();
+  views::View::ConvertPointFromScreen(toolbar, &forward_center);
   EXPECT_FALSE(toolbar->IsPositionInWindowCaption(forward_center));
 }
 
 IN_PROC_BROWSER_TEST_F(ToolbarViewUnitTest,
                        IsPositionInWindowCaption_BelowButton) {
+  WITH_SCOPE(
+      WaitForTrackedElementVisible(browser(), kToolbarForwardButtonElementId));
+
   ToolbarView* toolbar =
       BrowserView::GetBrowserViewForBrowser(browser())->toolbar();
   ASSERT_TRUE(toolbar);
 
   // A point directly below a button (same x, but y below the button's bottom
   // edge) should be caption since it's not inside any child's bounds.
-  ToolbarButton* forward = toolbar->forward_button();
+  ui::TrackedElement* forward = BrowserElements::From(browser())->GetElement(
+      kToolbarForwardButtonElementId);
   ASSERT_TRUE(forward);
-  ASSERT_TRUE(forward->GetVisible());
+  gfx::Rect forward_bounds =
+      views::View::ConvertRectFromScreen(toolbar, forward->GetScreenBounds());
+  gfx::Point forward_center = forward_bounds.CenterPoint();
+  gfx::Point below_button(forward_center.x(), toolbar->height() - 1);
 
-  gfx::Point below_button(forward->bounds().CenterPoint().x(),
-                           toolbar->height() - 1);
   // This point is below the button — should be treated as caption.
-  if (!forward->bounds().Contains(below_button)) {
+  if (!forward_bounds.Contains(below_button)) {
     EXPECT_TRUE(toolbar->IsPositionInWindowCaption(below_button));
   }
 }
