@@ -51,6 +51,10 @@ export class SearchAnimatedGlowElement extends CrLitElement {
       },
       transcript: {type: String},
       receivedSpeech: {type: Boolean},
+      inVoiceSearchMode: {
+        type: Boolean,
+        reflect: true,
+      },
     };
   }
 
@@ -62,6 +66,9 @@ export class SearchAnimatedGlowElement extends CrLitElement {
   accessor isCollapsible: boolean = false;
   accessor transcript: string = '';
   accessor receivedSpeech: boolean = false;
+  // Source of truth for voice search (as not every parent has
+  // `animationState`).
+  accessor inVoiceSearchMode: boolean = false;
 }
 
 declare global {

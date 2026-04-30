@@ -20,7 +20,7 @@ export function getHtml(this: AudioWaveElement) {
    *    for varying blurs and positioning for nuanced diffused glow.
    * Use section: applies the mask to the image.
    */
-  //clang-format on
+  //clang-format off
   return html`<!--_html_template_start_-->
     <div id="eclipseSvgWrapper" class="eclipse-svg-wrapper">
       <svg id="eclipseSvg" class="eclipse-svg" width="100%" height="100%">
@@ -70,5 +70,5 @@ export function getHtml(this: AudioWaveElement) {
       </svg>
     </div>
   <!--_html_template_end_-->`;
-  //clang-format off
+  //clang-format on
 }

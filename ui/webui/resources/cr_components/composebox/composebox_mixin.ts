@@ -1299,6 +1299,10 @@ export const ComposeboxEmbedderMixin =
             // An error that did not cancel voice search.
             this.fire('composebox-voice-search-error');
           }
+          // Do not call `voiceSearchEndCleanup()` here since
+          // error scrim should stay open, or close itself based on timer.
+          // When scrim does that, it will call `onVoiceSearchCancel` in this
+          // file.
         }
 
         shouldShowVoiceSearch(): boolean {

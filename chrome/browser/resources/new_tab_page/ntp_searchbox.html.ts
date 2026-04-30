@@ -20,7 +20,10 @@ export function getHtml(this: NtpSearchboxElement) {
     @drop="${this.dragAndDropHandler?.handleDrop || nothing}">
   ${this.ntpRealboxNextEnabled ?
     html`
-      <search-animated-glow animation-state="${this.animationState}" part="animated-glow">
+      <search-animated-glow
+        animation-state="${this.animationState}"
+        .inVoiceSearchMode="${this.inVoiceSearchMode}"
+        part="animated-glow">
       </search-animated-glow>
     ` : ''}
   <cr-searchbox-input id="input"
@@ -46,7 +49,7 @@ export function getHtml(this: NtpSearchboxElement) {
     ${this.shouldShowVoiceLens_(this.searchboxVoiceSearchEnabled_) ? html`
       <div slot="action-buttons" class="searchbox-icon-button-container voice">
         <button id="voiceSearchButton" class="searchbox-icon-button"
-            @click="${this.onVoiceSearchClick_}"
+            @click="${this.onWrapperVoiceSearchClick_}"
             title="${this.i18n('voiceSearchButtonLabel')}">
         </button>
       </div>

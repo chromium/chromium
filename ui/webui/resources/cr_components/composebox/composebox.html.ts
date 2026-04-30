@@ -18,6 +18,7 @@ export function getHtml(this: ComposeboxElement) {
         .requiresVoice="${this.shouldShowVoiceSearchAnimation()}"
         .transcript="${this.transcript}"
         .receivedSpeech="${this.receivedSpeech}"
+        .inVoiceSearchMode="${this.inVoiceSearchMode}"
         exportparts="composebox-background">
     </search-animated-glow>
   ` : ''}

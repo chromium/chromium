@@ -126,6 +126,11 @@ export class NtpSearchboxElement extends NtpSearchboxElementBase implements
         reflect: true,
       },
 
+      inVoiceSearchMode: {
+        type: Boolean,
+        reflect: true,
+      },
+
       /**
        * Whether the secondary side was at any point available to be shown.
        */
@@ -210,6 +215,7 @@ export class NtpSearchboxElement extends NtpSearchboxElementBase implements
       loadTimeData.getBoolean('searchboxCr23SteadyStateShadow');
   accessor placeholderText: string = '';
 
+  accessor inVoiceSearchMode: boolean = false;
   protected accessor tabSuggestions_: TabInfo[] = [];
   protected accessor inputState_: InputState|null = null;
   protected accessor searchboxIcon_: string =
@@ -507,6 +513,20 @@ export class NtpSearchboxElement extends NtpSearchboxElementBase implements
         }
       });
     }
+  }
+
+  // Perform animation work in this file (`ntp_searchbox.ts`) since this
+  // file owns the animation state while `new_tab_page/app.ts` owns the
+  // voice component and its initialization.
+  protected async onWrapperVoiceSearchClick_() {
+    this.animationState = GlowAnimationState.NONE;
+    await this.updateComplete;
+    this.animationState = GlowAnimationState.LISTENING;
+    // `new_tab_page/app.ts` controls the voice component and when it will
+    // start. `new_tab_page/app.ts` sets `inVoiceSearchMode` to `true`
+    // with `new_tab_page/app.ts`'s equivalent state
+    // `showVoiceSearchOverlay`.
+    this.onVoiceSearchClick_();
   }
 
   protected onContextMenuEntrypointClick_() {

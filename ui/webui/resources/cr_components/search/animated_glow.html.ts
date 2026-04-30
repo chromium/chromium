@@ -5,7 +5,6 @@
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {SearchAnimatedGlowElement} from './animated_glow.js';
-import {GlowAnimationState} from './constants.js';
 
 export function getHtml(this: SearchAnimatedGlowElement) {
   /*
@@ -41,7 +40,7 @@ export function getHtml(this: SearchAnimatedGlowElement) {
     </div>
     ${this.requiresVoice ? html`
       <audio-wave
-          ?is-listening="${this.animationState === GlowAnimationState.LISTENING}"
+          ?is-listening="${this.inVoiceSearchMode}"
           .transcript="${this.transcript}"
           .receivedSpeech="${this.receivedSpeech}">
       </audio-wave>
