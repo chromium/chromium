@@ -342,7 +342,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, TestOpenPopup) {
 // Tests opening a popup in an incognito window.
 // TODO(crbug.com/345091943): Extremely flaky on Mac release builds.
 // TODO(crbug.com/506956204): Extremely flaky on Linux builds.
-#if (BUILDFLAG(IS_MAC) && defined(NDEBUG)) || BUILDFLAG(IS_LINUX)
+#if (BUILDFLAG(IS_MAC) && defined(NDEBUG))
 #define MAYBE_TestOpenPopupIncognito DISABLED_TestOpenPopupIncognito
 #else
 #define MAYBE_TestOpenPopupIncognito TestOpenPopupIncognito
@@ -356,18 +356,37 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest,
   }
 #endif  // BUILDFLAG(IS_MAC)
 
+  // Load the extension with incognito support.
+  const Extension* extension = LoadExtension(
+      test_data_dir_.AppendASCII("browser_action").AppendASCII("open_popup"),
+      {.allow_in_incognito = true});
+  ASSERT_TRUE(extension);
+
   Profile* incognito_profile =
       profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   ExtensionHostTestHelper host_helper(incognito_profile);
   host_helper.RestrictToType(mojom::ViewType::kExtensionPopup);
 
-  ASSERT_TRUE(RunExtensionTest(
-      "browser_action/open_popup",
-      {.extension_url = "open_popup_succeeds.html", .open_in_incognito = true},
-      {.allow_in_incognito = true}))
-      << message_;
+  // Open an incognito window.
+  Browser* incognito_browser =
+      OpenURLOffTheRecord(profile(), GURL("about:blank"));
+  ASSERT_TRUE(incognito_browser);
 
+  // Ensure the incognito browser is fully active.
+  ui_test_utils::BrowserActivationWaiter waiter(incognito_browser);
+  waiter.WaitForActivation();
+
+  ResultCatcher catcher;
+
+  // Navigate to the extension URL in the incognito browser to trigger the
+  // popup.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      incognito_browser,
+      extension->GetResourceURL("open_popup_succeeds.html")));
+
+  ASSERT_TRUE(catcher.GetNextResult()) << message_;
   ASSERT_TRUE(host_helper.WaitForHostCompletedFirstLoad());
+
   // Non-Aura Linux uses a singleton for the popup, so it looks like all windows
   // have popups if there is any popup open.
 #if !((BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && !defined(USE_AURA))
@@ -375,9 +394,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest,
   EXPECT_FALSE(ExtensionActionTestHelper::Create(browser())->HasPopup());
 #endif
   // Incognito window should have a popup.
-  auto test_util = ExtensionActionTestHelper::Create(
-      GetLastActiveBrowserWindowInterfaceWithAnyProfile()
-          ->GetBrowserForMigrationOnly());
+  auto test_util = ExtensionActionTestHelper::Create(incognito_browser);
   EXPECT_TRUE(test_util->HasPopup());
   test_util->HidePopup();
 }
