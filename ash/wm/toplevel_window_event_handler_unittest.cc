@@ -202,8 +202,12 @@ TEST_F(ToplevelWindowEventHandlerTest, WindowPositionAutoManagement) {
       base::BindOnce(&ContinueAndCompleteDrag, base::Unretained(&generator),
                      base::Unretained(window_state),
                      base::Unretained(w1.get())));
+  // Calculate the actual drag offset to avoid moving the window more than it is
+  // dragged.
+  gfx::Vector2d drag_offset =
+      generator.current_screen_location() - w1->bounds().origin();
   EXPECT_EQ(::wm::MOVE_SUCCESSFUL,
-            move_client->RunMoveLoop(w1.get(), gfx::Vector2d(100, 100),
+            move_client->RunMoveLoop(w1.get(), drag_offset,
                                      ::wm::WINDOW_MOVE_SOURCE_MOUSE));
   // Window position auto manage property should be restored to true.
   EXPECT_TRUE(window_state->GetWindowPositionManaged());
@@ -221,8 +225,9 @@ TEST_F(ToplevelWindowEventHandlerTest, WindowPositionAutoManagement) {
       base::BindOnce(&ContinueAndCompleteDrag, base::Unretained(&generator),
                      base::Unretained(window_state),
                      base::Unretained(w1.get())));
+  drag_offset = generator.current_screen_location() - w1->bounds().origin();
   EXPECT_EQ(::wm::MOVE_SUCCESSFUL,
-            move_client->RunMoveLoop(w1.get(), gfx::Vector2d(100, 100),
+            move_client->RunMoveLoop(w1.get(), drag_offset,
                                      ::wm::WINDOW_MOVE_SOURCE_MOUSE));
   // Window position auto manage property should be restored to true.
   EXPECT_FALSE(window_state->GetWindowPositionManaged());

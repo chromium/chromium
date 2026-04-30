@@ -3274,7 +3274,22 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest, DragAll) {
 
   // Move to the first tab and drag it enough so that it would normally
   // detach.
-  DragTabAndNotify(tab_strip, base::BindOnce(&DragAllStep2, this));
+  const int x_offset = 20;
+  const gfx::Point tab_0_center =
+      GetCenterInScreenCoordinates(tab_strip->tab_at(0));
+  DragTabAndNotify(tab_strip, base::BindLambdaForTesting([&]() {
+                     // Trigger a second event since in ChromeOS, `SetBounds` is
+                     // only called after movement are detected within the
+                     // moveloop. The first drag call only starts the moveloop.
+                     // A small touch offset is used so touch movement is
+                     // triggered rather than skip.
+                     const gfx::NativeWindow window_hint =
+                         GetWindowHint(tab_strip);
+                     ASSERT_TRUE(DragInputToNotifyWhenDone(
+                         gfx::Point(tab_0_center.x() + x_offset,
+                                    tab_0_center.y() + GetDetachY(tab_strip)),
+                         base::BindOnce(&DragAllStep2, this), window_hint));
+                   }));
 
   // Should not be dragging.
   ASSERT_FALSE(IsDragSessionActive(tab_strip));
@@ -3297,7 +3312,8 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest, DragAll) {
   if (test::PlatformSupportsScreenCoordinates()) {
     // Size unchanged, but it should have moved down.
     EXPECT_EQ(initial_bounds.size(), final_bounds.size());
-    EXPECT_EQ(initial_bounds.origin().x(), final_bounds.origin().x());
+    EXPECT_EQ(initial_bounds.origin().x() + x_offset,
+              final_bounds.origin().x());
     EXPECT_EQ(initial_bounds.origin().y() + GetDetachY(tab_strip),
               final_bounds.origin().y());
   }

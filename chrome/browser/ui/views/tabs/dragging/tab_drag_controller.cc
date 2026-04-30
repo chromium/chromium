@@ -46,9 +46,9 @@
 #include "chrome/browser/ui/views/tabs/dragging/drag_session_data.h"
 #include "chrome/browser/ui/views/tabs/dragging/tab_drag_context.h"
 #include "chrome/browser/ui/views/tabs/dragging/tab_drag_target.h"
+#include "chrome/browser/ui/views/tabs/dragging/window_finder.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_slot_view.h"
-#include "chrome/browser/ui/views/tabs/dragging/window_finder.h"
 #include "chrome/browser/ui/waap/initial_webui_window_metrics_manager.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
@@ -1694,9 +1694,14 @@ TabDragController::Liveness TabDragController::RunMoveLoop(
 
   move_loop_widget_ = GetAttachedBrowserWidget();
   DCHECK(move_loop_widget_);
+#if !BUILDFLAG(IS_CHROMEOS)
+  // In ChromeOS, `SetBounds` is not used to avoid accidentally moving the
+  // window to a different display. `drag_offset` is used to calculate initial
+  // location in ToplevelWindowEventHandler.
+  // TODO(crbug.com/508016410): Verify if this is necessary and remove it.
   move_loop_widget_->SetBounds(
       gfx::Rect(point_in_screen - drag_offset, move_loop_widget_->GetSize()));
-
+#endif  //! BUILDFLAG(IS_CHROMEOS)
   // RunMoveLoop can be called reentrantly from within another RunMoveLoop,
   // in which case the observation is already established.
   widget_observation_.Reset();

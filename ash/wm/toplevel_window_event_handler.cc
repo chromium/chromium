@@ -32,6 +32,8 @@
 #include "ui/display/manager/display_manager_observer.h"
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
+#include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
@@ -606,21 +608,15 @@ wm::WindowMoveResult ToplevelWindowEventHandler::RunMoveLoop(
   DCHECK(!in_move_loop_);  // Can only handle one nested loop at a time.
   aura::Window* root_window = source->GetRootWindow();
   DCHECK(root_window);
-  gfx::PointF drag_location;
-  if (move_source == ::wm::WINDOW_MOVE_SOURCE_TOUCH &&
-      aura::Env::GetInstance()->is_touch_down()) {
-    gfx::PointF drag_location_f;
-    bool has_point = aura::Env::GetInstance()
-                         ->gesture_recognizer()
-                         ->GetLastTouchPointForTarget(source, &drag_location_f);
-    drag_location = drag_location_f;
-    DCHECK(has_point);
-  } else {
-    drag_location = gfx::PointF(
-        root_window->GetHost()->dispatcher()->GetLastMouseLocationInRoot());
-    aura::Window::ConvertPointToTarget(root_window, source->parent(),
-                                       &drag_location);
-  }
+
+  // Calculate the drag location by using the drag_offset. `drag_offset` is the
+  // mouse position's offset from the source window's origin when drag is
+  // initiated.
+  gfx::PointF location_in_source =
+      gfx::PointF(drag_offset.x(), drag_offset.y());
+  gfx::PointF drag_location = location_in_source;
+  aura::Window::ConvertPointToTarget(source, source->parent(), &drag_location);
+
   // Set the cursor before calling AttemptToStartDrag(), as that will
   // eventually call LockCursor() and prevent the cursor from changing.
   aura::client::CursorClient* cursor_client =
