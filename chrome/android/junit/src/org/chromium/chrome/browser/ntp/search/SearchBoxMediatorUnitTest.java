@@ -11,9 +11,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -31,6 +29,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import androidx.test.core.app.ApplicationProvider;
 
@@ -89,10 +88,9 @@ public class SearchBoxMediatorUnitTest {
                         ApplicationProvider.getApplicationContext(),
                         R.style.Theme_BrowserUI_DayNight);
         mView =
-                spy(
-                        (SearchBoxContainerView)
-                                LayoutInflater.from(mContext)
-                                        .inflate(R.layout.fake_search_box_layout, null));
+                (SearchBoxContainerView)
+                        LayoutInflater.from(mContext)
+                                .inflate(R.layout.fake_search_box_layout, null);
 
         mPropertyModel = new PropertyModel.Builder(SearchBoxProperties.ALL_KEYS).build();
         LensController.setInstanceForTesting(mLensController);
@@ -110,7 +108,6 @@ public class SearchBoxMediatorUnitTest {
 
     @Test
     public void testOnDestroy() {
-
         mPropertyModel.set(SearchBoxProperties.LENS_CLICK_CALLBACK, mLensClickListener);
         mPropertyModel.set(
                 SearchBoxProperties.VOICE_SEARCH_CLICK_CALLBACK, mVoiceSearchClickListener);
@@ -432,7 +429,6 @@ public class SearchBoxMediatorUnitTest {
     public void testGetSearchBoxBounds() {
         Rect bounds = new Rect();
         Point translation = new Point();
-        ViewGroup rootView = mock(ViewGroup.class);
         int verticalInset = 5;
 
         int searchBoxLeft = 10;
@@ -444,20 +440,20 @@ public class SearchBoxMediatorUnitTest {
         mView.setRight(searchBoxLeft + searchBoxWidth);
         mView.setBottom(searchBoxTop + searchBoxHeight);
 
-        // Mock parent hierarchy
-        ViewGroup parentView = mock(ViewGroup.class);
-        doReturn(parentView).when(mView).getParent();
-        doReturn(rootView).when(parentView).getParent();
+        ViewGroup parentView = new FrameLayout(mContext);
+        ViewGroup rootView = new FrameLayout(mContext);
+        rootView.addView(parentView);
+        parentView.addView(mView);
 
         int parentX = 5;
         int parentY = 10;
-        when(parentView.getX()).thenReturn((float) parentX);
-        when(parentView.getY()).thenReturn((float) parentY);
-        when(parentView.getScrollX()).thenReturn(0);
-        when(parentView.getScrollY()).thenReturn(0);
+        parentView.setX(parentX);
+        parentView.setY(parentY);
+        parentView.setScrollX(0);
+        parentView.setScrollY(0);
 
-        when(rootView.getScrollX()).thenReturn(0);
-        when(rootView.getScrollY()).thenReturn(0);
+        rootView.setScrollX(0);
+        rootView.setScrollY(0);
 
         when(mScrollDelegate.isScrollViewInitialized()).thenReturn(true);
         when(mScrollDelegate.isChildVisibleAtPosition(0)).thenReturn(true);
