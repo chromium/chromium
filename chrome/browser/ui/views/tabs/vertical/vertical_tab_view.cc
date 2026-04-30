@@ -60,11 +60,13 @@
 #include "ui/base/models/list_selection_model.h"
 #include "ui/base/theme_provider.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/compositor/layer.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/scoped_canvas.h"
@@ -285,9 +287,7 @@ std::optional<SkColor> VerticalTabView::GetBackgroundColor() {
 }
 
 SkPath VerticalTabView::GetPath() const {
-  const SkScalar corner_radius = SkIntToScalar(
-      GetLayoutConstant(LayoutConstant::kVerticalTabCornerRadius) +
-      (split_ ? GetInsets().height() : 0));
+  const SkScalar corner_radius = GetCornerRadius();
   return SkPath::RRect(SkRRect::MakeRectXY(gfx::RectToSkRect(GetLocalBounds()),
                                            corner_radius, corner_radius));
 }
@@ -662,6 +662,19 @@ void VerticalTabView::OnBlur() {
 
 void VerticalTabView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   SetClipPath(GetPath());
+}
+
+void VerticalTabView::UpdateParentLayer() {
+  views::View::UpdateParentLayer();
+  if (layer()) {
+    UpdateLayerRoundedCorners();
+  }
+}
+
+void VerticalTabView::UpdateLayerRoundedCorners() {
+  const SkScalar corner_radius = GetCornerRadius();
+  layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(corner_radius));
+  layer()->SetIsFastRoundedCorner(true);
 }
 
 void VerticalTabView::OnThemeChanged() {
@@ -1190,6 +1203,12 @@ void VerticalTabView::UpdateHoverCard(HoverCardAnchorTarget* target,
         target, static_cast<TabSlotController::HoverCardUpdateType>(
                     hover_card_update_type));
   }
+}
+
+SkScalar VerticalTabView::GetCornerRadius() const {
+  return SkIntToScalar(
+      GetLayoutConstant(LayoutConstant::kVerticalTabCornerRadius) +
+      (split_ ? GetInsets().height() : 0));
 }
 
 BEGIN_METADATA(VerticalTabView)
