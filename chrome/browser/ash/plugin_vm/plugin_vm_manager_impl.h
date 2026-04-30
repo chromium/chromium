@@ -16,7 +16,6 @@
 #include "chrome/browser/ash/guest_os/guest_os_dlc_helper.h"
 #include "chrome/browser/ash/guest_os/vm_starting_observer.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_manager.h"
-#include "chrome/browser/ash/plugin_vm/plugin_vm_metrics_util.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_uninstaller_notification.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
 #include "chromeos/ash/components/dbus/vm_concierge/concierge_service.pb.h"

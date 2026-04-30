@@ -17,11 +17,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_drive_image_download_service.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_image_download_client.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_installer_factory.h"
-#include "chrome/browser/ash/plugin_vm/plugin_vm_metrics_util.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_pref_names.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_test_helper.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
@@ -79,8 +77,6 @@ const char kHash2[] =
 const int64_t kDefaultRequiredFreeDiskSpaceGB = 20LL;
 const int kRequiredFreeDiskSpaceGB = 40;
 const int64_t kBytesPerGigabyte = 1024 * 1024 * 1024;
-
-constexpr char kFailureReasonHistogram[] = "PluginVm.SetupFailureReason";
 
 }  // namespace
 
@@ -320,11 +316,9 @@ class PluginVmInstallerDownloadServiceTest : public PluginVmInstallerTestBase {
     client_ = std::make_unique<PluginVmImageDownloadClient>(profile_.get());
     download_service_->set_client(client_.get());
     installer_->SetDownloadServiceForTesting(download_service_.get());
-    histogram_tester_ = std::make_unique<base::HistogramTester>();
   }
 
   void TearDown() override {
-    histogram_tester_.reset();
     download_service_.reset();
     client_.reset();
 
@@ -332,7 +326,6 @@ class PluginVmInstallerDownloadServiceTest : public PluginVmInstallerTestBase {
   }
 
   std::unique_ptr<download::test::TestDownloadService> download_service_;
-  std::unique_ptr<base::HistogramTester> histogram_tester_;
 
  private:
   std::unique_ptr<PluginVmImageDownloadClient> client_;
@@ -386,11 +379,10 @@ class PluginVmInstallerDriveTest : public PluginVmInstallerTestBase {
 
     installer_->SetDriveDownloadServiceForTesting(
         std::move(drive_download_service));
-    histogram_tester_ = std::make_unique<base::HistogramTester>();
   }
 
   void TearDown() override {
-    histogram_tester_.reset();
+
 
     PluginVmInstallerTestBase::TearDown();
   }
@@ -408,7 +400,6 @@ class PluginVmInstallerDriveTest : public PluginVmInstallerTestBase {
   raw_ptr<PluginVmDriveImageDownloadService, DanglingUntriaged>
       drive_download_service_;
   raw_ptr<drive::FakeDriveService, DanglingUntriaged> fake_drive_service_;
-  std::unique_ptr<base::HistogramTester> histogram_tester_;
 };
 
 TEST_F(PluginVmInstallerDownloadServiceTest, InsufficientDisk) {
@@ -417,10 +408,6 @@ TEST_F(PluginVmInstallerDownloadServiceTest, InsufficientDisk) {
   ExpectObserverEventsUntil(InstallingState::kCheckingDiskSpace);
   EXPECT_CALL(*observer_, OnError(FailureReason::INSUFFICIENT_DISK_SPACE));
   StartAndRunToCompletion();
-  histogram_tester_->ExpectUniqueSample(
-      kFailureReasonHistogram, FailureReason::INSUFFICIENT_DISK_SPACE, 1);
-  histogram_tester_->ExpectUniqueSample(kPluginVmSetupResultHistogram,
-                                        PluginVmSetupResult::kError, 1);
 }
 
 TEST_F(PluginVmInstallerDownloadServiceTest, InsufficientDiskWhenSetInPolicy) {
@@ -431,8 +418,6 @@ TEST_F(PluginVmInstallerDownloadServiceTest, InsufficientDiskWhenSetInPolicy) {
   ExpectObserverEventsUntil(InstallingState::kCheckingDiskSpace);
   EXPECT_CALL(*observer_, OnError(FailureReason::INSUFFICIENT_DISK_SPACE));
   StartAndRunToCompletion();
-  histogram_tester_->ExpectUniqueSample(
-      kFailureReasonHistogram, FailureReason::INSUFFICIENT_DISK_SPACE, 1);
 }
 
 TEST_F(PluginVmInstallerDownloadServiceTest, VmExists) {
@@ -449,9 +434,6 @@ TEST_F(PluginVmInstallerDownloadServiceTest, VmExists) {
   ExpectObserverEventsUntil(InstallingState::kCheckingForExistingVm);
   EXPECT_CALL(*observer_, OnVmExists());
   StartAndRunToCompletion();
-
-  histogram_tester_->ExpectUniqueSample(
-      kPluginVmSetupResultHistogram, PluginVmSetupResult::kVmAlreadyExists, 1);
 }
 
 TEST_F(PluginVmInstallerDownloadServiceTest, InvalidVmExists) {
@@ -469,9 +451,6 @@ TEST_F(PluginVmInstallerDownloadServiceTest, InvalidVmExists) {
   ExpectObserverEventsUntil(InstallingState::kCheckingForExistingVm);
   EXPECT_CALL(*observer_, OnError(FailureReason::EXISTING_IMAGE_INVALID));
   StartAndRunToCompletion();
-
-  histogram_tester_->ExpectUniqueSample(
-      kFailureReasonHistogram, FailureReason::EXISTING_IMAGE_INVALID, 1);
 }
 
 TEST_F(PluginVmInstallerDownloadServiceTest, CancelOnVmExistsCheck) {
@@ -485,10 +464,6 @@ TEST_F(PluginVmInstallerDownloadServiceTest, CancelOnVmExistsCheck) {
   run_loop.Run();
   installer_->Cancel();
   task_environment_.RunUntilIdle();
-
-  histogram_tester_->ExpectUniqueSample(
-      kPluginVmSetupResultHistogram,
-      PluginVmSetupResult::kUserCancelledCheckingForExistingVm, 1);
 }
 
 TEST_F(PluginVmInstallerDownloadServiceTest, CancelledDownloadTest) {
@@ -498,11 +473,6 @@ TEST_F(PluginVmInstallerDownloadServiceTest, CancelledDownloadTest) {
   StartAndRunUntil(InstallingState::kDownloadingImage);
   installer_->Cancel();
   task_environment_.RunUntilIdle();
-
-  histogram_tester_->ExpectTotalCount(kFailureReasonHistogram, 0);
-  histogram_tester_->ExpectUniqueSample(
-      kPluginVmSetupResultHistogram,
-      PluginVmSetupResult::kUserCancelledDownloadingPluginVmImage, 1);
 }
 
 TEST_F(PluginVmInstallerDownloadServiceTest, ImportNonExistingImageTest) {
@@ -526,10 +496,6 @@ TEST_F(PluginVmInstallerDownloadServiceTest, CancelledImportTest) {
   EXPECT_CALL(*observer_, OnCancelFinished());
   installer_->Cancel();
   task_environment_.RunUntilIdle();
-
-  histogram_tester_->ExpectUniqueSample(
-      kPluginVmSetupResultHistogram,
-      PluginVmSetupResult::kUserCancelledImportingPluginVmImage, 1);
 }
 
 TEST_F(PluginVmInstallerDownloadServiceTest, EmptyPluginVmImageUrlTest) {
@@ -537,9 +503,6 @@ TEST_F(PluginVmInstallerDownloadServiceTest, EmptyPluginVmImageUrlTest) {
   ExpectObserverEventsUntil(InstallingState::kDownloadingDlc);
   EXPECT_CALL(*observer_, OnError(FailureReason::INVALID_IMAGE_URL));
   StartAndRunToCompletion();
-
-  histogram_tester_->ExpectUniqueSample(kFailureReasonHistogram,
-                                        FailureReason::INVALID_IMAGE_URL, 1);
 }
 
 TEST_F(PluginVmInstallerDownloadServiceTest, VerifyDownloadTest) {
@@ -632,8 +595,6 @@ TEST_F(PluginVmInstallerDriveTest, SuccessfulDriveDownloadTest) {
   EXPECT_CALL(*observer_, OnError(_));
 
   StartAndRunToCompletion();
-  histogram_tester_->ExpectUniqueSample(kPluginVmDlcUseResultHistogram,
-                                        PluginVmDlcUseResult::kDlcSuccess, 1);
 }
 
 TEST_F(PluginVmInstallerDriveTest, InstallingPluginVmDlcNeedReboot) {
@@ -644,9 +605,6 @@ TEST_F(PluginVmInstallerDriveTest, InstallingPluginVmDlcNeedReboot) {
   EXPECT_CALL(*observer_, OnError(FailureReason::DLC_NEED_REBOOT));
 
   StartAndRunToCompletion();
-  histogram_tester_->ExpectUniqueSample(
-      kPluginVmDlcUseResultHistogram, PluginVmDlcUseResult::kNeedRebootDlcError,
-      1);
 }
 
 TEST_F(PluginVmInstallerDriveTest, InstallingPluginVmDlcNeedSpace) {
@@ -657,9 +615,6 @@ TEST_F(PluginVmInstallerDriveTest, InstallingPluginVmDlcNeedSpace) {
   EXPECT_CALL(*observer_, OnError(FailureReason::DLC_NEED_SPACE));
 
   StartAndRunToCompletion();
-  histogram_tester_->ExpectUniqueSample(
-      kPluginVmDlcUseResultHistogram, PluginVmDlcUseResult::kNeedSpaceDlcError,
-      1);
 }
 
 TEST_F(PluginVmInstallerDriveTest, InstallingPluginVmDlcWhenUnsupported) {
@@ -670,9 +625,6 @@ TEST_F(PluginVmInstallerDriveTest, InstallingPluginVmDlcWhenUnsupported) {
   EXPECT_CALL(*observer_, OnError(FailureReason::DLC_UNSUPPORTED));
 
   StartAndRunToCompletion();
-  histogram_tester_->ExpectUniqueSample(kPluginVmDlcUseResultHistogram,
-                                        PluginVmDlcUseResult::kInvalidDlcError,
-                                        1);
 }
 
 TEST_F(PluginVmInstallerDriveTest, InstallingPluginVmDlcWhenNoImageFound) {
@@ -683,9 +635,6 @@ TEST_F(PluginVmInstallerDriveTest, InstallingPluginVmDlcWhenNoImageFound) {
   EXPECT_CALL(*observer_, OnError(FailureReason::DLC_INTERNAL));
 
   StartAndRunToCompletion();
-  histogram_tester_->ExpectUniqueSample(
-      kPluginVmDlcUseResultHistogram,
-      PluginVmDlcUseResult::kNoImageFoundDlcError, 1);
 }
 
 }  // namespace plugin_vm

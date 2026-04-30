@@ -17,6 +17,20 @@ class VmStartingObserver;
 
 namespace plugin_vm {
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class PluginVmLaunchResult {
+  kSuccess = 0,
+  kError = 1,
+  kInvalidLicense = 2,
+  kVmMissing = 3,
+  kExpiredLicense = 4,
+  kNetworkError = 5,
+  kInsufficientDiskSpace = 6,
+  kStoppedWaitingForVmTools = 7,
+  kMaxValue = kStoppedWaitingForVmTools,
+};
+
 class PluginVmManager : public KeyedService {
  public:
   using LaunchPluginVmCallback = base::OnceCallback<void(bool success)>;

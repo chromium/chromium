@@ -21,7 +21,6 @@
 #include "chrome/browser/ash/plugin_vm/plugin_vm_license_checker.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_manager.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_manager_factory.h"
-#include "chrome/browser/ash/plugin_vm/plugin_vm_metrics_util.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_pref_names.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -51,8 +50,6 @@ namespace {
 constexpr int64_t kBytesPerGigabyte = 1024 * 1024 * 1024;
 // Size to use for calculating progress when the actual size isn't available.
 constexpr int64_t kDownloadSizeFallbackEstimate = 15LL * kBytesPerGigabyte;
-
-constexpr char kFailureReasonHistogram[] = "PluginVm.SetupFailureReason";
 
 constexpr char kHomeDirectory[] = "/home/chronos/user";
 
@@ -88,28 +85,6 @@ std::optional<base::ScopedFD> PrepareFD(const base::FilePath& image) {
   }
 
   return base::ScopedFD(file.TakePlatformFile());
-}
-
-PluginVmSetupResult BucketForCancelledInstall(
-    PluginVmInstaller::InstallingState installing_state) {
-  switch (installing_state) {
-    case PluginVmInstaller::InstallingState::kInactive:
-      NOTREACHED();
-    case PluginVmInstaller::InstallingState::kCheckingLicense:
-      return PluginVmSetupResult::kUserCancelledValidatingLicense;
-    case PluginVmInstaller::InstallingState::kCheckingDiskSpace:
-      return PluginVmSetupResult::kUserCancelledCheckingDiskSpace;
-    case PluginVmInstaller::InstallingState::kDownloadingDlc:
-      return PluginVmSetupResult::kUserCancelledDownloadingPluginVmDlc;
-    case PluginVmInstaller::InstallingState::kStartingDispatcher:
-      return PluginVmSetupResult::kUserCancelledStartingDispatcher;
-    case PluginVmInstaller::InstallingState::kCheckingForExistingVm:
-      return PluginVmSetupResult::kUserCancelledCheckingForExistingVm;
-    case PluginVmInstaller::InstallingState::kDownloadingImage:
-      return PluginVmSetupResult::kUserCancelledDownloadingPluginVmImage;
-    case PluginVmInstaller::InstallingState::kImporting:
-      return PluginVmSetupResult::kUserCancelledImportingPluginVmImage;
-  }
 }
 
 }  // namespace
@@ -165,13 +140,8 @@ std::optional<PluginVmInstaller::FailureReason> PluginVmInstaller::Start() {
 void PluginVmInstaller::Cancel() {
   LOG_FUNCTION_CALL();
   if (state_ != State::kInstalling) {
-    RecordPluginVmSetupResultHistogram(
-        PluginVmSetupResult::kUserCancelledWithoutStarting);
     return;
   }
-
-  RecordPluginVmSetupResultHistogram(
-      BucketForCancelledInstall(installing_state_));
 
   state_ = State::kCancelling;
   switch (installing_state_) {
@@ -433,7 +403,6 @@ void PluginVmInstaller::OnListVmDisks(
     auto& image = response->images(0);
     if (image.storage_location() ==
         vm_tools::concierge::STORAGE_CRYPTOHOME_PLUGINVM) {
-      RecordPluginVmSetupResultHistogram(PluginVmSetupResult::kVmAlreadyExists);
       if (observer_) {
         observer_->OnVmExists();
       }
@@ -510,13 +479,11 @@ void PluginVmInstaller::OnDlcDownloadCompleted(
 
   // If success, continue to the next state.
   if (install_result.has_value()) {
-    RecordPluginVmDlcUseResultHistogram(PluginVmDlcUseResult::kDlcSuccess);
     StartDispatcher();
     return;
   }
 
   // At this point, PluginVM DLC download failed.
-  PluginVmDlcUseResult result = PluginVmDlcUseResult::kInternalDlcError;
   FailureReason reason = FailureReason::DLC_INTERNAL;
 
   switch (install_result.error()) {
@@ -527,30 +494,25 @@ void PluginVmInstaller::OnDlcDownloadCompleted(
     case guest_os::GuestOsDlcInstallation::Error::Invalid:
       LOG(ERROR)
           << "PluginVM DLC is not supported, need to enable PluginVM DLC.";
-      result = PluginVmDlcUseResult::kInvalidDlcError;
       reason = FailureReason::DLC_UNSUPPORTED;
       break;
     case guest_os::GuestOsDlcInstallation::Error::Busy:
       LOG(ERROR)
           << "PluginVM DLC is not able to be downloaded as dlcservice is busy.";
-      result = PluginVmDlcUseResult::kBusyDlcError;
       reason = FailureReason::DLC_BUSY;
       break;
     case guest_os::GuestOsDlcInstallation::Error::NeedReboot:
       LOG(ERROR) << "Device has pending update and needs a reboot to use "
                     "PluginVM DLC.";
-      result = PluginVmDlcUseResult::kNeedRebootDlcError;
       reason = FailureReason::DLC_NEED_REBOOT;
       break;
     case guest_os::GuestOsDlcInstallation::Error::DiskFull:
       LOG(ERROR) << "Device needs to free space to use PluginVM DLC.";
-      result = PluginVmDlcUseResult::kNeedSpaceDlcError;
       reason = FailureReason::DLC_NEED_SPACE;
       break;
     case guest_os::GuestOsDlcInstallation::Error::NeedUpdate:
       LOG(ERROR) << "The PluginVM DLC could not be found in the server."
                  << "The version the OS is on is probably not live.";
-      result = PluginVmDlcUseResult::kNoImageFoundDlcError;
       // Keep using the reason `FailureReason::DLC_INTERNAL`, but distinguish so
       // developers can see why it wasn't updated as well as for metrics
       // reporting.
@@ -562,8 +524,6 @@ void PluginVmInstaller::OnDlcDownloadCompleted(
                  << install_result.error();
       break;
   }
-
-  RecordPluginVmDlcUseResultHistogram(result);
   InstallFailed(reason);
 }
 
@@ -800,7 +760,7 @@ void PluginVmInstaller::OnImported(
   }
 
   profile_->GetPrefs()->SetBoolean(prefs::kPluginVmImageExists, true);
-  RecordPluginVmSetupResultHistogram(PluginVmSetupResult::kSuccess);
+
   if (observer_) {
     if (creating_new_vm_) {
       observer_->OnCreated();
@@ -869,8 +829,7 @@ void PluginVmInstaller::InstallFailed(FailureReason reason) {
   state_ = State::kIdle;
   GetWakeLock()->CancelWakeLock();
   installing_state_ = InstallingState::kInactive;
-  base::UmaHistogramEnumeration(kFailureReasonHistogram, reason);
-  RecordPluginVmSetupResultHistogram(PluginVmSetupResult::kError);
+
   if (observer_) {
     observer_->OnError(reason);
   }

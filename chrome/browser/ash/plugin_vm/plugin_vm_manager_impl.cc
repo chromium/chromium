@@ -16,10 +16,8 @@
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path_factory.h"
 #include "chrome/browser/ash/guest_os/public/types.h"
-#include "chrome/browser/ash/plugin_vm/plugin_vm_engagement_metrics_service.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_features.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_files.h"
-#include "chrome/browser/ash/plugin_vm/plugin_vm_metrics_util.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_pref_names.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -394,14 +392,6 @@ void PluginVmManagerImpl::OnVmStateChanged(
 
     ChromeShelfController::instance()->Close(ash::ShelfID(kPluginVmShelfAppId));
   }
-
-  auto* engagement_metrics_service =
-      PluginVmEngagementMetricsService::Factory::GetForProfile(profile_);
-  // This is null in unit tests.
-  if (engagement_metrics_service) {
-    engagement_metrics_service->SetBackgroundActive(
-        vm_state_ == vm_tools::plugin_dispatcher::VmState::VM_STATE_RUNNING);
-  }
 }
 
 void PluginVmManagerImpl::StartDispatcher(
@@ -601,8 +591,6 @@ void PluginVmManagerImpl::OnShowVm(
     return;
   }
 
-  RecordPluginVmLaunchResultHistogram(PluginVmLaunchResult::kSuccess);
-
   if (vm_tools_state_ ==
       vm_tools::plugin_dispatcher::VmToolsState::VM_TOOLS_STATE_INSTALLED) {
     LaunchSuccessful();
@@ -668,8 +656,6 @@ void PluginVmManagerImpl::LaunchFailed(PluginVmLaunchResult result) {
                                      false);
     plugin_vm::ShowPluginVmInstallerView(profile_);
   }
-
-  RecordPluginVmLaunchResultHistogram(result);
 
   ChromeShelfController::instance()->GetShelfSpinnerController()->CloseSpinner(
       kPluginVmShelfAppId);

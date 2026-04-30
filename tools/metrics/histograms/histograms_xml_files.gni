@@ -205,7 +205,6 @@ histograms_xml_files = [
   "//tools/metrics/histograms/metadata/phonehub/histograms.xml",
   "//tools/metrics/histograms/metadata/platform/enums.xml",
   "//tools/metrics/histograms/metadata/platform/histograms.xml",
-  "//tools/metrics/histograms/metadata/plugin_vm/histograms.xml",
   "//tools/metrics/histograms/metadata/plus_addresses/enums.xml",
   "//tools/metrics/histograms/metadata/plus_addresses/histograms.xml",
   "//tools/metrics/histograms/metadata/power/enums.xml",
