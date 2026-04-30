@@ -130,6 +130,15 @@ class BottomSheet extends FrameLayout
     /** The view that contains the sheet background color. */
     private View mSheetBackground;
 
+    /** Whether the keyboard was visible in the previous layout pass. */
+    private boolean mWasKeyboardVisible;
+
+    /** The state of the sheet before the keyboard was shown. */
+    private @SheetState int mStateBeforeKeyboardShown = SheetState.NONE;
+
+    /** The height of the screen in the previous layout pass. */
+    private int mPreviousScreenHeight;
+
     /** The view that contains the sheet background glow color. */
     private ShadowLayerView mShadowLayer;
 
@@ -197,6 +206,7 @@ class BottomSheet extends FrameLayout
     /** Whether or not always use the full width of the container. */
     private boolean mAlwaysFullWidth;
 
+    /** The window for the bottom sheet. */
     private @MonotonicNonNull Window mWindow;
 
     /** The supplier of the bottom inset when edge to edge is enabled. */
@@ -454,6 +464,7 @@ class BottomSheet extends FrameLayout
                             }
                         }
 
+                        maybeRevertStateOnLayoutChange();
                         mPreviousViewportBottomInset = viewportBottomInset;
                     }
                 });
@@ -467,19 +478,18 @@ class BottomSheet extends FrameLayout
                     public void onStart(
                             WindowInsetsAnimationCompat animation,
                             WindowInsetsAnimationCompat.BoundsCompat bounds) {
-                        updateContentContainerHeight();
+                        onInsetChanged();
                     }
 
                     @Override
                     public void onProgress(
-                            WindowInsetsCompat windowInsetsCompat,
-                            List<WindowInsetsAnimationCompat> list) {
-                        updateContentContainerHeight();
+                            WindowInsetsCompat insets, List<WindowInsetsAnimationCompat> list) {
+                        onInsetChanged();
                     }
 
                     @Override
                     public void onEnd(WindowInsetsAnimationCompat animation) {
-                        updateContentContainerHeight();
+                        onInsetChanged();
                     }
                 });
 
@@ -487,7 +497,7 @@ class BottomSheet extends FrameLayout
                 new WindowInsetObserver() {
                     @Override
                     public void onInsetChanged() {
-                        updateContentContainerHeight();
+                        BottomSheet.this.onInsetChanged();
                     }
                 });
 
@@ -520,6 +530,11 @@ class BottomSheet extends FrameLayout
         mSheetContainer.removeView(this);
     }
 
+    private void onInsetChanged() {
+        maybeCacheStateOnKeyboardShown();
+        updateContentContainerHeight();
+    }
+
     private int getEdgeToEdgeBottomInset() {
         return mBottomMargin == 0
                 ? ViewUtils.dpToPx(getContext(), mEdgeToEdgeBottomInsetSupplier.get())
@@ -535,6 +550,46 @@ class BottomSheet extends FrameLayout
             viewportBottomInset = Math.max(viewportBottomInset, mContainerHeight - visibleViewport);
         }
         return viewportBottomInset;
+    }
+
+    /**
+     * Detects keyboard being closed upon layout changes. Done lazily during layout changes instead
+     * of directly in a keyboard visibility listener due since layout changes will not have been
+     * processed yet in the bottom sheet.
+     */
+    private void maybeRevertStateOnLayoutChange() {
+        assert mWindow != null;
+
+        // If the screen height has changed, reset the cached state since it may no longer valid.
+        @Px int decorHeight = mWindow.getDecorView().getHeight();
+        if (mPreviousScreenHeight != decorHeight) {
+            mStateBeforeKeyboardShown = SheetState.NONE;
+        }
+
+        boolean keyboardVisible = isKeyboardShowing();
+        if (!keyboardVisible
+                && mWasKeyboardVisible
+                && mStateBeforeKeyboardShown != SheetState.NONE
+                && isFullHeightResizeContent()) {
+            setInternalCurrentState(SheetState.NONE, StateChangeReason.NONE);
+            setSheetState(mStateBeforeKeyboardShown, /* animate= */ false);
+            mStateBeforeKeyboardShown = SheetState.NONE;
+        }
+
+        mWasKeyboardVisible = keyboardVisible;
+        mPreviousScreenHeight = decorHeight;
+    }
+
+    private boolean isKeyboardShowing() {
+        return mInsetObserver.getSupplierForKeyboardInset().get() > 0;
+    }
+
+    private void maybeCacheStateOnKeyboardShown() {
+        if (isKeyboardShowing() && mStateBeforeKeyboardShown == SheetState.NONE) {
+            // The bottom sheet state will not have been updated yet at this point, so
+            // store for later use.
+            mStateBeforeKeyboardShown = mCurrentState;
+        }
     }
 
     /**
