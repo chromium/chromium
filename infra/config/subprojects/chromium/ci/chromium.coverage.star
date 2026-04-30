@@ -6,7 +6,7 @@ load("@chromium-luci//args.star", "args")
 load("@chromium-luci//branches.star", "branches")
 load("@chromium-luci//builder_config.star", "builder_config")
 load("@chromium-luci//builder_health_indicators.star", "health_spec")
-load("@chromium-luci//builders.star", "cpu", "os")
+load("@chromium-luci//builders.star", "builders", "cpu", "os")
 load("@chromium-luci//ci.star", "ci")
 load("@chromium-luci//consoles.star", "consoles")
 load("@chromium-luci//gn_args.star", "gn_args")
@@ -1204,6 +1204,7 @@ coverage_builder(
     ),
     builderless = True,
     os = os.LINUX_DEFAULT,
+    free_space = builders.free_space.high,
     console_view_entry = [
         consoles.console_view_entry(
             category = "linux-fuzz",
