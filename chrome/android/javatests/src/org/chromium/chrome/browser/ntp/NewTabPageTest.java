@@ -70,6 +70,7 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.composeplate.ComposeplateUtils;
 import org.chromium.chrome.browser.feed.FeedActionDelegate;
 import org.chromium.chrome.browser.feed.FeedReliabilityLogger;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.logo.LogoBridge;
 import org.chromium.chrome.browser.logo.LogoBridgeJni;
@@ -504,7 +505,47 @@ public class NewTabPageTest {
     @Test
     @SmallTest
     @Feature({"NewTabPage", "FeedNewTabPage"})
-    public void testSetSearchProviderInfo() throws Throwable {
+    @EnableFeatures({ChromeFeatureList.LOGO_VIEW_REFACTOR})
+    public void testSetSearchProviderInfo_logoViewRefactorFlagEnabled() throws Throwable {
+        ThreadUtils.runOnUiThreadBlocking(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        NewTabPageCoordinator ntpCoordinator = mNtp.getNewTabPageCoordinator();
+                        View logoContainerView =
+                                mNtp.getLayout().findViewById(R.id.logo_container_view);
+                        Assert.assertEquals(View.VISIBLE, logoContainerView.getVisibility());
+
+                        ntpCoordinator.setSearchProviderInfo(
+                                /* hasLogo= */ false, /* isGoogle= */ true);
+                        // Mock to notify the template URL service observer.
+                        when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo())
+                                .thenReturn(false);
+                        when(mTemplateUrlService.isDefaultSearchEngineGoogle()).thenReturn(true);
+                        ntpCoordinator
+                                .getLogoCoordinatorForTesting()
+                                .onTemplateURLServiceChangedForTesting();
+                        Assert.assertEquals(View.GONE, logoContainerView.getVisibility());
+
+                        ntpCoordinator.setSearchProviderInfo(
+                                /* hasLogo= */ true, /* isGoogle= */ true);
+                        // Mock to notify the template URL service observer.
+                        when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo())
+                                .thenReturn(true);
+                        ntpCoordinator
+                                .getLogoCoordinatorForTesting()
+                                .onTemplateURLServiceChangedForTesting();
+                        Assert.assertEquals(View.VISIBLE, logoContainerView.getVisibility());
+                    }
+                });
+    }
+
+    /** Tests setting whether the search provider has a logo when LogoViewRefactor is disabled. */
+    @Test
+    @SmallTest
+    @Feature({"NewTabPage", "FeedNewTabPage"})
+    @DisableFeatures({ChromeFeatureList.LOGO_VIEW_REFACTOR})
+    public void testSetSearchProviderInfo_logoViewRefactorFlagDisabled() throws Throwable {
         ThreadUtils.runOnUiThreadBlocking(
                 new Runnable() {
                     @Override
