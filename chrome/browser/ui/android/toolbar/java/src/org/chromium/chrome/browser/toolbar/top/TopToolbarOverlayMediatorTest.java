@@ -421,6 +421,54 @@ public class TopToolbarOverlayMediatorTest {
 
     @Test
     @DisableFeatures(ChromeFeatureList.TOP_CONTROLS_REFACTOR_V2)
+    public void testTopToolbarOffset_hidesHairlineWhenContentOffsetAtBoundary() {
+        int minHeight = 10;
+        int hairlineHeight = 3;
+        int boundaryContentOffset = minHeight + hairlineHeight;
+
+        doReturn(boundaryContentOffset).when(mBrowserControlsStateProvider).getContentOffset();
+        doReturn(minHeight).when(mBrowserControlsStateProvider).getTopControlsMinHeight();
+        doReturn(hairlineHeight).when(mBrowserControlsStateProvider).getTopControlsHairlineHeight();
+
+        doReturn(ControlsPosition.TOP).when(mBrowserControlsStateProvider).getControlsPosition();
+        mBrowserControlsObserverCaptor.getValue().onControlsPositionChanged(ControlsPosition.TOP);
+
+        mBrowserControlsObserverCaptor
+                .getValue()
+                .onControlsOffsetChanged(0, 0, false, 0, 0, false, true, false);
+
+        assertEquals(
+                boundaryContentOffset - hairlineHeight,
+                mModel.get(TopToolbarOverlayProperties.LEGACY_CONTENT_OFFSET),
+                MathUtils.EPSILON);
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.TOP_CONTROLS_REFACTOR_V2)
+    public void testTopToolbarOffset_hidesHairlineWhenContentOffsetInsideRange() {
+        int minHeight = 10;
+        int hairlineHeight = 3;
+        int insideRangeContentOffset = minHeight + 1;
+
+        doReturn(insideRangeContentOffset).when(mBrowserControlsStateProvider).getContentOffset();
+        doReturn(minHeight).when(mBrowserControlsStateProvider).getTopControlsMinHeight();
+        doReturn(hairlineHeight).when(mBrowserControlsStateProvider).getTopControlsHairlineHeight();
+
+        doReturn(ControlsPosition.TOP).when(mBrowserControlsStateProvider).getControlsPosition();
+        mBrowserControlsObserverCaptor.getValue().onControlsPositionChanged(ControlsPosition.TOP);
+
+        mBrowserControlsObserverCaptor
+                .getValue()
+                .onControlsOffsetChanged(0, 0, false, 0, 0, false, true, false);
+
+        assertEquals(
+                insideRangeContentOffset - hairlineHeight,
+                mModel.get(TopToolbarOverlayProperties.LEGACY_CONTENT_OFFSET),
+                MathUtils.EPSILON);
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.TOP_CONTROLS_REFACTOR_V2)
     public void testOffsetTagAndConstraintChanges() {
         BrowserControlsOffsetTagsInfo tagsInfo = new BrowserControlsOffsetTagsInfo();
         int offset = -10;
