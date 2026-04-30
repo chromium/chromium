@@ -247,6 +247,14 @@ cr-button#entrypoint:focus {
       var(--cr-composebox-entrypoint-background-color, transparent);
 }
 
+:host([is-oblong-shape_]) cr-icon-button#entrypoint {
+  border-radius: 100px;
+  /* This line handles specific margin spacing for the oblong shape in omnibox
+     and the composebox. */
+  margin-inline-start: var(--contextual-entrypoint-oblong-margin-inline-start, 0);
+  padding-inline: 4px;
+}
+
 :host([has-popup-focus]) #entrypoint {
   box-shadow: inset 0 0 0 2px var(--cr-focus-outline-color);
 }

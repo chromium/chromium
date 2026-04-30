@@ -68,6 +68,10 @@
   color: var(--color-searchbox-results-foreground);
 }
 
+#context[is-oblong-shape_] {
+  --contextual-entrypoint-oblong-margin-inline-start: 2px;
+}
+
 .context-menu-container {
   margin-top: var(--omnibox-context-menu-container-margin-top);
 }

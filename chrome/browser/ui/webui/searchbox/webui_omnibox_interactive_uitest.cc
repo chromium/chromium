@@ -825,3 +825,36 @@ IN_PROC_BROWSER_TEST_P(OmniboxAimUploadInteractiveTest,
       // Ensure Google search occurs.
       WaitForGoogleSearch(kNewTab, {{"q", "test"}}));
 }
+
+class WebUIOmniboxSimplificationInteractiveTest
+    : public OmniboxAimWebUiInteractiveTestBase {
+ public:
+  WebUIOmniboxSimplificationInteractiveTest() {
+    std::vector<base::test::FeatureRefAndParams> enabled_features =
+        GetEnabledFeatures(/*force_enable_aim=*/true);
+    enabled_features.emplace_back(
+        omnibox::internal::kWebUIOmniboxSimplification,
+        base::FieldTrialParams{{"Omnibox_ContextButtonShapeIsOblong", "true"}});
+    feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(WebUIOmniboxSimplificationInteractiveTest,
+                       OblongShapeApplied) {
+  const DeepQuery kContextButton = {"omnibox-popup-app", "#context",
+                                    "#entrypoint"};
+  RunTestSequence(
+      AddInstrumentedTab(kNewTab, chrome::ChromeUINewTabURLAsGURL()),
+      SetAimEligibleResponse(),
+      SeedSearchboxResult("a"),
+      FocusElement(kOmniboxElementId), EnterText(kOmniboxElementId, u"a"),
+      WaitForClassicPopupReady(),
+      InAnyContext(
+          WaitForElementToRender(kClassicPopupWebView, kContextButton)),
+      InSameContext(CheckJsResultAt(
+          kClassicPopupWebView, kContextButton,
+          "el => window.getComputedStyle(el).borderRadius", "100px")));
+}
