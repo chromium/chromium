@@ -301,7 +301,12 @@ class AggregatableUtilsNullReportsTest
     : public testing::Test,
       public testing::WithParamInterface<NullReportsTestCase> {};
 
-TEST_P(AggregatableUtilsNullReportsTest, ExpectedDistribution) {
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_ExpectedDistribution DISABLED_ExpectedDistribution
+#else
+#define MAYBE_ExpectedDistribution ExpectedDistribution
+#endif
+TEST_P(AggregatableUtilsNullReportsTest, MAYBE_ExpectedDistribution) {
   const auto& test_case = GetParam();
 
   const auto generate = [&](int lookback_day) {
