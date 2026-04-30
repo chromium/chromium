@@ -630,8 +630,16 @@ std::optional<int> HorizontalTabStripRegionView::GetFocusedTabIndex() const {
   return std::nullopt;
 }
 
-const tabs::TabData& HorizontalTabStripRegionView::GetTabData(int tab_index) {
-  return tab_strip_->tab_at(tab_index)->data();
+const tabs::TabData& HorizontalTabStripRegionView::GetTabData(
+    const tabs::TabHandle& tab) {
+  for (int i = 0; i < tab_strip_->GetTabCount(); ++i) {
+    Tab* tab_view = tab_strip_->tab_at(i);
+    if (tab_view->tab_handle() == tab) {
+      return tab_view->data();
+    }
+  }
+
+  NOTREACHED() << "Tab view not found for handle";
 }
 
 views::View* HorizontalTabStripRegionView::GetTabAnchorViewAt(int tab_index) {

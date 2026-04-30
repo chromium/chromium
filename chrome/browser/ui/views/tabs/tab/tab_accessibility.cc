@@ -74,20 +74,28 @@ bool ShouldUpdateAccessibleName(const TabData& old_data,
 
 std::u16string GetAccessibleTabLabel(const TabInterface* tab, bool is_for_tab) {
   const BrowserWindowInterface* bwi = tab->GetBrowserWindowInterface();
-  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(bwi);
-  Browser* browser = browser_view->browser();
-  TabStripModel* tab_strip_model = browser->tab_strip_model();
-  int index = tab_strip_model->GetIndexOfTab(tab);
-  if (index == TabStripModel::kNoTab) {
+  if (!bwi) {
     return std::u16string();
   }
 
-  const TabData& tab_data = browser_view->tab_strip_view()->GetTabData(index);
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(bwi);
+  Browser* browser = browser_view->browser();
+  TabStripModel* tab_strip_model = browser->tab_strip_model();
 
-  std::u16string title = is_for_tab ? browser->GetTitleForTab(index)
-                                    : browser->GetWindowTitleForTab(index);
+  const TabData& tab_data =
+      browser_view->tab_strip_view()->GetTabData(tab->GetHandle());
+
+  std::u16string title = is_for_tab
+                             ? browser->GetTitleForTab(tab->GetHandle())
+                             : browser->GetWindowTitleForTab(tab->GetHandle());
 
   if (const std::optional<split_tabs::SplitTabId> split = tab->GetSplit()) {
+    if (!tab_strip_model->ContainsSplit(split.value())) {
+      // This can happen when a split tab is in the process of being closed and
+      // the accessible title needs to be updated.
+      return std::u16string();
+    }
+
     const split_tabs::SplitTabData* split_data =
         tab_strip_model->GetSplitData(split.value());
     const std::vector<tabs::TabInterface*> tabs_in_split =

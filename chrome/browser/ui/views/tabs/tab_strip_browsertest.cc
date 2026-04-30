@@ -991,7 +991,8 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, AccessibleName) {
 
   // AccessibleName should update when tab group is changed
   tab_groups::TabGroupId group = AddTabToNewGroup(1);
-  std::u16string tab_title = browser()->GetTitleForTab(1);
+  std::u16string tab_title = browser()->GetTitleForTab(
+      browser()->tab_strip_model()->GetTabAtIndex(1)->GetHandle());
   std::u16string group_title = tab_strip()->GetGroupTitle(group);
   std::u16string title =
       group_title.empty()

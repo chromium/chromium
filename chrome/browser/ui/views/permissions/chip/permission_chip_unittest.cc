@@ -328,7 +328,8 @@ TEST_F(PermissionChipUnitTest, AccessibleName) {
 
   AddTab(browser(), GURL("http://a.com"));
 
-  std::u16string tab_title = browser()->GetTitleForTab(0);
+  std::u16string tab_title = browser()->GetTitleForTab(
+      browser()->tab_strip_model()->GetTabAtIndex(0)->GetHandle());
   std::u16string permission_title = l10n_util::GetStringFUTF16(
       IDS_TAB_AX_LABEL_PERMISSION_REQUESTED_FORMAT, tab_title);
 

@@ -766,11 +766,11 @@ std::u16string Browser::GetWindowTitleForCurrentTab(
                                        web_contents_for_title);
 }
 
-std::u16string Browser::GetWindowTitleForTab(int index) const {
+std::u16string Browser::GetWindowTitleForTab(const tabs::TabHandle& tab) const {
   std::u16string title = base::UTF8ToUTF16(user_title_);
 
   if (title.empty()) {
-    title = tab_strip_model_->GetWebContentsAt(index)->GetTitle();
+    title = tab.Get()->GetContents()->GetTitle();
     if (is_type_picture_in_picture()) {
       content::WebContents* pip_web_contents =
           PictureInPictureWindowManager::GetInstance()->GetWebContents();
@@ -788,9 +788,9 @@ std::u16string Browser::GetWindowTitleForTab(int index) const {
   return title;
 }
 
-std::u16string Browser::GetTitleForTab(int index) const {
-  std::u16string title = FormatTitleForDisplay(
-      tab_strip_model_->GetWebContentsAt(index)->GetTitle());
+std::u16string Browser::GetTitleForTab(const tabs::TabHandle& tab) const {
+  std::u16string title =
+      FormatTitleForDisplay(tab.Get()->GetContents()->GetTitle());
 
   if (title.empty()) {
     title = CoreTabHelper::GetDefaultTitle();

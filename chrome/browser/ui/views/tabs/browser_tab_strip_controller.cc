@@ -647,8 +647,12 @@ gfx::Range BrowserTabStripController::ListTabsInGroup(
 
 std::u16string BrowserTabStripController::GetAccessibleTabName(
     const Tab* tab) const {
-  int tab_index = tabstrip_->GetModelIndexOf(tab).value();
-  return tabs::GetAccessibleTabLabel(model_->GetTabAtIndex(tab_index),
+  tabs::TabInterface* interface = tab->tab_handle().Get();
+  if (!interface) {
+    return std::u16string();
+  }
+
+  return tabs::GetAccessibleTabLabel(tab->tab_handle().Get(),
                                      /*is_for_tab=*/true);
 }
 

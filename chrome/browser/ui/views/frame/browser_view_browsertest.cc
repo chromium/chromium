@@ -905,14 +905,20 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, AccessibleTabLabel) {
                 IDS_TAB_AX_LABEL_PINNED_FORMAT,
                 l10n_util::GetStringFUTF16(
                     IDS_TAB_AX_LABEL_SPLIT_TAB_LEFT_VIEW_FORMAT,
-                    browser()->GetTitleForTab(0))),
+                    browser()->GetTitleForTab(browser()
+                                                  ->tab_strip_model()
+                                                  ->GetTabAtIndex(0)
+                                                  ->GetHandle()))),
             tabs::GetAccessibleTabLabel(
                 browser()->tab_strip_model()->GetTabAtIndex(0), false));
   EXPECT_EQ(l10n_util::GetStringFUTF16(
                 IDS_TAB_AX_LABEL_PINNED_FORMAT,
                 l10n_util::GetStringFUTF16(
                     IDS_TAB_AX_LABEL_SPLIT_TAB_RIGHT_VIEW_FORMAT,
-                    browser()->GetTitleForTab(1))),
+                    browser()->GetTitleForTab(browser()
+                                                  ->tab_strip_model()
+                                                  ->GetTabAtIndex(1)
+                                                  ->GetHandle()))),
             tabs::GetAccessibleTabLabel(
                 browser()->tab_strip_model()->GetTabAtIndex(1), false));
 
@@ -924,13 +930,17 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, AccessibleTabLabel) {
       {3}, split_tabs::SplitTabVisualData(),
       split_tabs::SplitTabCreatedSource::kToolbarButton);
   EXPECT_EQ(
-      l10n_util::GetStringFUTF16(IDS_TAB_AX_LABEL_SPLIT_TAB_LEFT_VIEW_FORMAT,
-                                 browser()->GetTitleForTab(2)),
+      l10n_util::GetStringFUTF16(
+          IDS_TAB_AX_LABEL_SPLIT_TAB_LEFT_VIEW_FORMAT,
+          browser()->GetTitleForTab(
+              browser()->tab_strip_model()->GetTabAtIndex(2)->GetHandle())),
       tabs::GetAccessibleTabLabel(
           browser()->tab_strip_model()->GetTabAtIndex(2), false));
   EXPECT_EQ(
-      l10n_util::GetStringFUTF16(IDS_TAB_AX_LABEL_SPLIT_TAB_RIGHT_VIEW_FORMAT,
-                                 browser()->GetTitleForTab(3)),
+      l10n_util::GetStringFUTF16(
+          IDS_TAB_AX_LABEL_SPLIT_TAB_RIGHT_VIEW_FORMAT,
+          browser()->GetTitleForTab(
+              browser()->tab_strip_model()->GetTabAtIndex(3)->GetHandle())),
       tabs::GetAccessibleTabLabel(
           browser()->tab_strip_model()->GetTabAtIndex(3), false));
 
@@ -946,14 +956,20 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, AccessibleTabLabel) {
                 IDS_TAB_AX_LABEL_UNNAMED_GROUP_FORMAT,
                 l10n_util::GetStringFUTF16(
                     IDS_TAB_AX_LABEL_SPLIT_TAB_LEFT_VIEW_FORMAT,
-                    browser()->GetTitleForTab(4))),
+                    browser()->GetTitleForTab(browser()
+                                                  ->tab_strip_model()
+                                                  ->GetTabAtIndex(4)
+                                                  ->GetHandle()))),
             tabs::GetAccessibleTabLabel(
                 browser()->tab_strip_model()->GetTabAtIndex(4), false));
   EXPECT_EQ(l10n_util::GetStringFUTF16(
                 IDS_TAB_AX_LABEL_UNNAMED_GROUP_FORMAT,
                 l10n_util::GetStringFUTF16(
                     IDS_TAB_AX_LABEL_SPLIT_TAB_RIGHT_VIEW_FORMAT,
-                    browser()->GetTitleForTab(5))),
+                    browser()->GetTitleForTab(browser()
+                                                  ->tab_strip_model()
+                                                  ->GetTabAtIndex(5)
+                                                  ->GetHandle()))),
             tabs::GetAccessibleTabLabel(
                 browser()->tab_strip_model()->GetTabAtIndex(5), false));
 }

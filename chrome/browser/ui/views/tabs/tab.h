@@ -126,6 +126,7 @@ class Tab : public gfx::AnimationDelegate,
                        const std::optional<std::string>& name);
 
   TabSlotController* controller() const { return controller_; }
+  const tabs::TabHandle& tab_handle() const { return tab_handle_; }
 
   // Used to set/check whether this Tab is being animated closed.
   void SetClosing(bool closing);

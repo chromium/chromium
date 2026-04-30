@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/common/buildflags.h"
+#include "components/tabs/public/tab_interface.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/views/accessible_pane_view.h"
@@ -99,7 +100,7 @@ class HorizontalTabStripRegionView final : public TabStripRegionView {
   bool IsTabStripCloseable() const override;
   void UpdateLoadingAnimations(const base::TimeDelta& elapsed_time) override;
   std::optional<int> GetFocusedTabIndex() const override;
-  const tabs::TabData& GetTabData(int tab_index) override;
+  const tabs::TabData& GetTabData(const tabs::TabHandle& tab) override;
   views::View* GetTabAnchorViewAt(int tab_index) override;
   views::View* GetTabGroupAnchorView(
       const tab_groups::TabGroupId& group) override;
