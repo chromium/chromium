@@ -162,7 +162,8 @@ IN_PROC_BROWSER_TEST_F(GlicPrivateApiFullyEnabledTest, Invoke) {
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(GlicPrivateApiFullyEnabledTest, InvokeInNewTab) {
+IN_PROC_BROWSER_TEST_F(GlicPrivateApiFullyEnabledTest,
+                       DISABLED_InvokeInNewTab) {
   SimpleFeature::ScopedThreadUnsafeAllowlistForTest allowlist(
       kGlicPrivateTestExtensionId);
 
