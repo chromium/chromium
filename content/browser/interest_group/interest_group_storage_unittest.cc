@@ -481,7 +481,9 @@ class InterestGroupStorageTest : public testing::Test {
 TEST_F(InterestGroupStorageTest, DatabaseInitialized_CreateDatabase) {
   EXPECT_FALSE(base::PathExists(db_path()));
 
-  { std::unique_ptr<InterestGroupStorage> storage = CreateStorage(); }
+  {
+    std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
+  }
 
   // InterestGroupStorageSqlImpl opens the database lazily.
   EXPECT_FALSE(base::PathExists(db_path()));
@@ -3428,11 +3430,11 @@ TEST_F(InterestGroupStorageTest, DeleteOriginDeleteAll) {
               UnorderedElementsAre(joining_originA, joining_originB));
 
   storage->DeleteInterestGroupData(
-      base::BindLambdaForTesting([&owner_originA](
-                                     const blink::StorageKey& storage_key) {
-        return storage_key ==
-               blink::StorageKey::CreateFirstParty(owner_originA);
-      }),
+      base::BindLambdaForTesting(
+          [&owner_originA](const blink::StorageKey& storage_key) {
+            return storage_key ==
+                   blink::StorageKey::CreateFirstParty(owner_originA);
+          }),
       /*user_initiated_deletion=*/true);
 
   origins = storage->GetAllInterestGroupOwners();
@@ -3444,11 +3446,11 @@ TEST_F(InterestGroupStorageTest, DeleteOriginDeleteAll) {
   // Delete all interest groups that joined on joining_origin A. We expect that
   // we will be left with the one that joined on joining_origin B.
   storage->DeleteInterestGroupData(
-      base::BindLambdaForTesting([&joining_originA](
-                                     const blink::StorageKey& storage_key) {
-        return storage_key ==
-               blink::StorageKey::CreateFirstParty(joining_originA);
-      }),
+      base::BindLambdaForTesting(
+          [&joining_originA](const blink::StorageKey& storage_key) {
+            return storage_key ==
+                   blink::StorageKey::CreateFirstParty(joining_originA);
+          }),
       /*user_initiated_deletion=*/true);
 
   origins = storage->GetAllInterestGroupOwners();
@@ -4181,6 +4183,13 @@ TEST_F(InterestGroupStorageWithNoIdleFastForwardTest, ViewClickExpire) {
 
 // Regression check for no failures if compaction has to remove multiple rows.
 TEST_F(InterestGroupStorageWithNoIdleFastForwardTest, ViewClickExpire2) {
+#if BUILDFLAG(IS_MAC)
+  // TODO(crbug.com/434660312): Re-enable on macOS 26 once issues with
+  // unexpected test timeout failures are resolved.
+  if (base::mac::MacOSMajorVersion() == 26) {
+    GTEST_SKIP() << "Disabled on macOS Tahoe.";
+  }
+#endif
   std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
 
   AdAuctionEventRecord record_view;
