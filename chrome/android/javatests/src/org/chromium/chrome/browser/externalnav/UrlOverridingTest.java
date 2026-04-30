@@ -10,6 +10,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import static org.mockito.Mockito.when;
+
 import android.app.Activity;
 import android.app.Instrumentation;
 import android.app.Instrumentation.ActivityMonitor;
@@ -81,6 +83,8 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
+import org.chromium.chrome.browser.actor.ActorKeyedService;
+import org.chromium.chrome.browser.actor.ActorKeyedServiceFactory;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityTestUtil;
 import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
@@ -191,6 +195,8 @@ public class UrlOverridingTest {
             BASE_PATH + "navigation_from_xhr_callback_lost_activation.html";
     private static final String NAVIGATION_WITH_FALLBACK_URL_PAGE =
             BASE_PATH + "navigation_with_fallback_url.html";
+    private static final String NAVIGATION_WITH_FALLBACK_URL_VALID_SCHEME_PAGE =
+            BASE_PATH + "navigation_with_fallback_url_valid_scheme.html";
     private static final String FALLBACK_LANDING_PATH = BASE_PATH + "hello.html";
     private static final String OPEN_WINDOW_FROM_USER_GESTURE_PAGE =
             BASE_PATH + "open_window_from_user_gesture.html";
@@ -942,6 +948,40 @@ public class UrlOverridingTest {
                                         ApiCompatibilityUtils.getBytesUtf8(fallbackUrl),
                                         Base64.URL_SAFE));
         TestParams params = new TestParams(originalUrl, true, false);
+        params.expectedFinalUrl = fallbackUrl;
+        loadUrlAndWaitForIntentUrl(params, ctaPage);
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.GLIC})
+    public void testNavigationWithFallbackURL_ActorTaskShouldBlock() throws Exception {
+        ActorKeyedService mockActorService = Mockito.mock(ActorKeyedService.class);
+        ActorKeyedServiceFactory.setForTesting(mockActorService);
+        WebPageStation ctaPage = mTabbedActivityTestRule.startOnBlankPage();
+        // The current tab is attached to an active ActorTask.
+        when(mockActorService.getActiveTaskIdOnTab(ctaPage.getTab().getId())).thenReturn(123);
+
+        String fallbackUrl = mTestServer.getURL(FALLBACK_LANDING_PATH);
+        // Load a URL with a valid intent scheme and a fallback URL.
+        String originalUrl =
+                mTestServer.getURL(
+                        NAVIGATION_WITH_FALLBACK_URL_VALID_SCHEME_PAGE
+                                + "?replace_text="
+                                + Base64.encodeToString(
+                                        ApiCompatibilityUtils.getBytesUtf8("PARAM_FALLBACK_URL"),
+                                        Base64.URL_SAFE)
+                                + ":"
+                                + Base64.encodeToString(
+                                        ApiCompatibilityUtils.getBytesUtf8(fallbackUrl),
+                                        Base64.URL_SAFE));
+        // Because the tab is being used by ActorTask we shouldn't launch an external intent.
+        TestParams params =
+                new TestParams(
+                        originalUrl,
+                        /* needClick= */ true,
+                        /* shouldLaunchExternalIntent= */ false);
+        // We should open the fallback URL instead.
         params.expectedFinalUrl = fallbackUrl;
         loadUrlAndWaitForIntentUrl(params, ctaPage);
     }

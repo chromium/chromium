@@ -28,11 +28,14 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ChromeTabbedActivity2;
 import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.actor.ActorKeyedServiceFactory;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.open_in_app.OpenInAppDelegate;
 import org.chromium.chrome.browser.open_in_app.OpenInAppUtils;
 import org.chromium.chrome.browser.password_manager.CctPasswordSavingMetricsRecorderBridge;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
@@ -258,7 +261,19 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
 
     @Override
     public boolean shouldDisableAllExternalIntents() {
-        return false;
+        if (!ChromeFeatureList.sGlic.isEnabled()) {
+            return false;
+        }
+
+        Profile profile = mTab.getProfile();
+        if (profile == null) return false;
+        var actorService = ActorKeyedServiceFactory.getForProfile(profile);
+        if (actorService == null) {
+            return false;
+        }
+
+        var activeTaskId = actorService.getActiveTaskIdOnTab(mTab.getId());
+        return activeTaskId != null;
     }
 
     @Override

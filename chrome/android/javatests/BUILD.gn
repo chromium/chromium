@@ -1712,6 +1712,7 @@ android_library("chrome_test_java_various") {
     "//base:base_java_test_support",
     "//base:holder_java",
     "//base/test:leak_canary_java",
+    "//chrome/browser/actor/android:java",
     "//chrome/browser/educational_tip:java",
     "//chrome/browser/ntp_customization:java",
     "//chrome/browser/ui/android/logo:utils_java",
