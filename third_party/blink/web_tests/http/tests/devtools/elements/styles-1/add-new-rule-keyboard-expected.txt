@@ -5,7 +5,7 @@ Is editing? true
 element.style { ()
 
 [expanded] 
-div#inspected { (inspector-stylesheet:1 -> inspector-stylesheet:1:16)
+div#inspected { (*inspector-stylesheet:1 -> inspector-stylesheet:1:16)
 : ;
 
 [expanded] 
