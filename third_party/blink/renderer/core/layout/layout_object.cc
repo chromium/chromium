@@ -3798,7 +3798,7 @@ PhysicalOffset LayoutObject::OffsetFromOverscrollContainer(
   // scroll of all overscroll areas, and each individual overscroll area is
   // shifted by each one before it.
   wtf_size_t affecting_overscroll_areas =
-      IsPseudoElementContent(kPseudoIdOverscrollAreaParent)
+      IsOverscrollAreaParent()
           ? overscroll_areas.Find(
                 &To<PseudoElement>(GetNode())->UltimateOriginatingElement())
           : overscroll_areas.size();
