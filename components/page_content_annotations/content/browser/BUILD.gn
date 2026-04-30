@@ -1,0 +1,18 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("browser") {
+  sources = [
+    "page_settled_monitor.cc",
+    "page_settled_monitor.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/page_content_annotations/content/mojom",
+    "//components/page_content_annotations/core:features",
+    "//components/page_load_metrics/browser",
+    "//content/public/browser",
+  ]
+}

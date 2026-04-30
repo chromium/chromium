@@ -5,11 +5,14 @@
 #include "chrome/browser/actor/tools/observation_delay_controller.h"
 
 #include <memory>
+#include <optional>
+#include <utility>
 
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ref.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/state_transitions.h"
@@ -19,7 +22,6 @@
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/actor/tools/observation_delay_metrics.h"
 #include "chrome/browser/actor/tools/tool_callbacks.h"
-#include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/journal_details_builder.h"
 #include "chrome/common/actor/task_id.h"
 #include "chrome/common/chrome_features.h"
@@ -27,6 +29,8 @@
 #include "components/actor/core/actor_features.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/form_predictions_tracker.h"
+#include "components/page_content_annotations/content/browser/page_settled_monitor.h"
+#include "components/page_content_annotations/content/mojom/page_stability.mojom.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
 #include "components/page_load_metrics/browser/observers/core/largest_contentful_paint_handler.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer_delegate.h"
@@ -39,26 +43,19 @@
 #include "content/public/browser/webid/identity_credential_source.h"
 #include "content/public/common/content_features.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 
 namespace actor {
+
+namespace {
 
 using ::content::RenderFrameHost;
 using ::content::WebContents;
 using ::content::WebContentsObserver;
 
-namespace {
-
-// Timeout used when waiting for the tool to complete.
-base::TimeDelta GetCompletionTimeout() {
-  return features::kActorObservationDelayTimeout.Get();
-}
-
-// The additional delay to complete the tool if LCP is not detected yet upon
-// loading.
-base::TimeDelta GetLcpDelay() {
-  return features::kActorObservationDelayLcp.Get();
-}
+using PageSettledMonitorState =
+    ::page_content_annotations::PageSettledMonitor::State;
 
 // The timeout to wait for Autofill to parse and classify form fields.
 // It's autofill's `FormPredictionsTracker`'s responsibility to respect this
@@ -71,6 +68,80 @@ base::TimeDelta GetAutofillPredictionsTimeout() {
 constexpr size_t kMaxNavigations = 20;
 
 }  // namespace
+
+// Implementation of PageSettledMonitor::Delegate for Actor.
+class PageSettledMonitorDelegate
+    : public page_content_annotations::PageSettledMonitor::Delegate {
+ public:
+  PageSettledMonitorDelegate(
+      ObservationDelayController& controller,
+      TaskId task_id,
+      std::optional<ObservationDelayController::PageStabilityConfig>
+          page_stability_config)
+      : page_content_annotations::PageSettledMonitor::Delegate(
+            std::move(page_stability_config)),
+        controller_(controller),
+        task_id_(task_id) {}
+
+  ~PageSettledMonitorDelegate() override = default;
+
+  // page_content_annotations::PageSettledMonitor::Delegate:
+  void WillMoveToState(PageSettledMonitorState state) override {
+    controller_->WillMoveToState(state);
+  }
+
+  void OnMilestoneReached(
+      page_content_annotations::PageSettledMonitor::Milestone milestone,
+      base::OnceClosure resume_callback) override {
+    controller_->OnMilestoneReached(milestone, std::move(resume_callback));
+  }
+
+  void OnEvent(
+      page_content_annotations::PageSettledMonitor::Event event) override {
+    controller_->OnEvent(event);
+  }
+
+  mojo::PendingRemote<page_content_annotations::mojom::PageStabilityMonitor>
+  CreatePageStabilityMonitor(content::RenderFrameHost* target_frame) override {
+    if (!target_frame || !page_stability_config_.has_value()) {
+      return mojo::NullRemote();
+    }
+
+    mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame>
+        chrome_render_frame;
+    target_frame->GetRemoteAssociatedInterfaces()->GetInterface(
+        &chrome_render_frame);
+
+    mojo::PendingRemote<page_content_annotations::mojom::PageStabilityMonitor>
+        monitor;
+    chrome_render_frame->CreatePageStabilityMonitor(
+        monitor.InitWithNewPipeAndPassReceiver(), task_id_,
+        page_stability_config_->supports_paint_stability);
+    return monitor;
+  }
+
+  bool ShouldExcludeAdSubframes() const override {
+    return base::FeatureList::IsEnabled(
+        features::kGlicActorObservationDelayExcludeAdFrameLoading);
+  }
+
+  bool ShouldSkipVisualStateUpdateForHiddenTabs() const override {
+    return base::FeatureList::IsEnabled(
+        actor::kGlicSkipAwaitVisualStateForNewTabs);
+  }
+
+  base::TimeDelta GetLcpDelay() const override {
+    return features::kActorObservationDelayLcp.Get();
+  }
+
+  base::TimeDelta GetCompletionTimeout() const override {
+    return features::kActorObservationDelayTimeout.Get();
+  }
+
+ private:
+  base::raw_ref<ObservationDelayController> controller_;
+  TaskId task_id_;
+};
 
 ObservationDelayController::ObservationDelayController(
     content::RenderFrameHost& target_frame,
@@ -91,17 +162,10 @@ ObservationDelayController::ObservationDelayController(
   // Note: It's important that the PageStabilityMonitor be created on the same
   // interface as tool invocation since it relies on being created before a
   // tool is invoked.
-  mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame> chrome_render_frame;
-  target_frame.GetRemoteAssociatedInterfaces()->GetInterface(
-      &chrome_render_frame);
-
-  chrome_render_frame->CreatePageStabilityMonitor(
-      page_stability_monitor_remote_.BindNewPipeAndPassReceiver(), task_id,
-      page_stability_config.supports_paint_stability);
-  page_stability_monitor_remote_.set_disconnect_handler(
-      base::BindOnce(&ObservationDelayController::OnMonitorDisconnected,
-                     base::Unretained(this)));
-  page_stability_start_delay_ = page_stability_config.start_delay;
+  page_settled_monitor_ =
+      std::make_unique<page_content_annotations::PageSettledMonitor>(
+          &target_frame, std::make_unique<PageSettledMonitorDelegate>(
+                             *this, task_id, std::move(page_stability_config)));
 }
 
 ObservationDelayController::ObservationDelayController(
@@ -111,59 +175,42 @@ ObservationDelayController::ObservationDelayController(
   journal.Log(
       GURL::EmptyGURL(), task_id, "ObservationDelay: Created",
       JournalDetailsBuilder().Add("May Use PageStability", false).Build());
+
+  page_settled_monitor_ =
+      std::make_unique<page_content_annotations::PageSettledMonitor>(
+          /*target_frame=*/nullptr,
+          std::make_unique<PageSettledMonitorDelegate>(
+              *this, task_id,
+              /*page_stability_config=*/std::nullopt));
 }
 
 ObservationDelayController::~ObservationDelayController() = default;
 
 void ObservationDelayController::Wait(tabs::TabInterface& target_tab,
                                       ReadyCallback callback) {
+  CHECK_EQ(state_, State::kInitial);
+  CHECK(callback);
+
+  CHECK(!ready_callback_);
   ready_callback_ = std::move(callback);
 
   metrics_ = std::make_unique<ObservationDelayMetrics>();
   metrics_->Start();
 
-  WebContentsObserver::Observe(target_tab.GetContents());
+  WebContents* web_contents = target_tab.GetContents();
+  WebContentsObserver::Observe(web_contents);
 
   wait_journal_entry_ = journal_->CreatePendingAsyncEntry(
       GURL::EmptyGURL(), task_id_, MakeBrowserTrackUUID(task_id_),
       "ObservationDelay: Wait", {});
 
-  PostMoveToStateClosure(State::kDidTimeout, GetCompletionTimeout()).Run();
-
-  if (page_stability_monitor_remote_.is_bound()) {
-    MoveToState(State::kWaitForPageStability);
-  } else {
-    MoveToState(State::kWaitForFederatedLogin);
-  }
+  page_settled_monitor_->Wait(
+      web_contents, base::BindOnce(&ObservationDelayController::OnPageSettled,
+                                   weak_ptr_factory_.GetWeakPtr()));
 }
 
-void ObservationDelayController::OnPageStable() {
-  if (state_ != State::kWaitForPageStability) {
-    return;
-  }
-
-  CHECK(metrics_);
-  metrics_->OnPageStable();
-
-  page_stability_monitor_remote_.reset();
-  MoveToState(State::kWaitForFederatedLogin);
-}
-
-void ObservationDelayController::OnMonitorDisconnected() {
-  page_stability_monitor_remote_.reset();
-
-  if (state_ == State::kInitial) {
-    // If Wait hasn't been called, don't enter the state machine yet. Resetting
-    // the remote will skip the page stability state.
-    journal_->Log(GURL::EmptyGURL(), task_id_,
-                  "ObservationDelay: Monitor Disconnect Before Wait", {});
-    return;
-  }
-
-  MoveToState(State::kPageStabilityMonitorDisconnected);
-}
-
-void ObservationDelayController::OnFederatedLoginRequestComplete() {
+void ObservationDelayController::OnFederatedLoginRequestComplete(
+    base::OnceClosure resume_callback) {
   if (state_ != State::kWaitForFederatedLogin) {
     return;
   }
@@ -171,17 +218,21 @@ void ObservationDelayController::OnFederatedLoginRequestComplete() {
   CHECK(metrics_);
   metrics_->OnFederatedLoginRequestComplete();
 
-  PostMoveToStateClosure(State::kWaitForLoadCompletion).Run();
+  CHECK(resume_callback);
+  std::move(resume_callback).Run();
 }
 
-void ObservationDelayController::OnAutofillPredictionsFinished() {
+void ObservationDelayController::OnAutofillPredictionsFinished(
+    base::OnceClosure resume_callback) {
   if (state_ != State::kWaitForAutofillPredictions) {
     return;
   }
 
   CHECK(metrics_);
   metrics_->OnAutofillPredictionsFinished();
-  MoveToState(State::kDone);
+
+  CHECK(resume_callback);
+  std::move(resume_callback).Run();
 }
 
 void ObservationDelayController::MoveToState(State new_state) {
@@ -207,28 +258,22 @@ void ObservationDelayController::MoveToState(State new_state) {
     case State::kInitial: {
       NOTREACHED();
     }
-    case State::kWaitForPageStability: {
-      // Unretained since `this` owns the pipe.
-      page_stability_monitor_remote_->NotifyWhenStable(
-          page_stability_start_delay_,
-          base::BindOnce(&ObservationDelayController::OnPageStable,
-                         base::Unretained(this)));
+    case State::kWaitForPageStability:
       break;
-    }
-    case State::kPageStabilityMonitorDisconnected: {
-      MoveToState(State::kWaitForFederatedLogin);
+    case State::kPageStabilityMonitorDisconnected:
       break;
-    }
     case State::kWaitForFederatedLogin: {
+      CHECK(resume_callback_);
+
       if (!base::FeatureList::IsEnabled(
               features::kFedCmEmbedderInitiatedLogin)) {
-        MoveToState(State::kWaitForLoadCompletion);
+        std::move(resume_callback_).Run();
         break;
       }
       auto* request =
           content::webid::FederatedEmbedderLoginRequest::Get(web_contents());
       if (!request) {
-        PostMoveToStateClosure(State::kWaitForLoadCompletion).Run();
+        std::move(resume_callback_).Run();
         break;
       }
       inner_journal_entry_ = journal_->CreatePendingAsyncEntry(
@@ -240,92 +285,33 @@ void ObservationDelayController::MoveToState(State new_state) {
       federated_login_subscription_ =
           request->RegisterCompletion(base::BindOnce(
               &ObservationDelayController::OnFederatedLoginRequestComplete,
-              base::Unretained(this)));
+              base::Unretained(this), std::move(resume_callback_)));
       break;
     }
     case State::kWaitForLoadCompletion: {
       inner_journal_entry_ = journal_->CreatePendingAsyncEntry(
           GURL::EmptyGURL(), task_id_, MakeBrowserTrackUUID(task_id_),
           "WaitForLoadCompletion", {});
-
-      bool is_web_contents_loading =
-          base::FeatureList::IsEnabled(
-              features::kGlicActorObservationDelayExcludeAdFrameLoading)
-              ? web_contents()->IsLoadingExcludingAdSubframes()
-              : web_contents()->IsLoading();
-      if (is_web_contents_loading) {
-        // State will advance from DidStopLoading in this case.
-        break;
-      }
-
-      // Posted so that this state transition is consistently async.
-      PostMoveToStateClosure(State::kWaitForVisualStateUpdate).Run();
       break;
     }
     case State::kWaitForVisualStateUpdate: {
       inner_journal_entry_ = journal_->CreatePendingAsyncEntry(
           GURL::EmptyGURL(), task_id_, MakeBrowserTrackUUID(task_id_),
           "WaitForVisualStateUpdate", {});
-      if (base::FeatureList::IsEnabled(
-              actor::kGlicSkipAwaitVisualStateForNewTabs) &&
-          web_contents()->GetVisibility() != content::Visibility::VISIBLE &&
-          !web_contents()->IsBeingCaptured()) {
-        // If this is a new tab that is not yet being captured, we won't get
-        // visual updates, so we proceed to the next step.
-        // TODO(mcnee): Consider a more general approach of skipping this when
-        // the creator of this delay controller is not watching for page
-        // stability.
-        journal_->Log(
-            web_contents()->GetLastCommittedURL(), task_id_,
-            "ObservationDelay: Skip visual state update of non-captured tab",
-            {});
-
-        // Posted so that this state transition is consistently async.
-        PostMoveToStateClosure(State::kMaybeDelayForLcp).Run();
-      } else {
-        // TODO(crbug.com/414662842): This should probably ensure an update from
-        // all/selected OOPIFS?
-        web_contents()->GetPrimaryMainFrame()->InsertVisualStateCallback(
-            base::BindOnce(&ObservationDelayController::OnVisualStateUpdated,
-                           weak_ptr_factory_.GetWeakPtr()));
-      }
       break;
     }
     case State::kMaybeDelayForLcp: {
       inner_journal_entry_ = journal_->CreatePendingAsyncEntry(
           GURL::EmptyGURL(), task_id_, MakeBrowserTrackUUID(task_id_),
           "MaybeDelayForLcp", {});
-      State next_state = State::kWaitForAutofillPredictions;
-      if (GetLcpDelay().is_positive()) {
-        // Conservatively, only apply delay if we get a clear signal that LCP
-        // has not yet occurred on a trackable webpage. This avoids adding
-        // unnecessary delays on pages where LCP is not applicable or
-        // `PageLoadMetricsObserver is not in a valid state to be queried.
-        if (auto* metrics_observer =
-                page_load_metrics::MetricsWebContentsObserver::FromWebContents(
-                    web_contents())) {
-          if (const page_load_metrics::PageLoadMetricsObserverDelegate*
-                  delegate =
-                      metrics_observer->GetDelegateForCommittedLoadOrNull()) {
-            const page_load_metrics::ContentfulPaintTimingInfo& lcp =
-                delegate->GetLargestContentfulPaintHandler()
-                    .MergeMainFrameAndSubframes();
-            if (!lcp.ContainsValidTime()) {
-              next_state = State::kDelayForLcp;
-            }
-          }
-        }
-      }
-      // Posted so that this state transition is consistently async.
-      PostMoveToStateClosure(next_state).Run();
       break;
     }
     case State::kDelayForLcp: {
-      PostMoveToStateClosure(State::kWaitForAutofillPredictions, GetLcpDelay())
-          .Run();
       break;
     }
     case State::kWaitForAutofillPredictions: {
+      CHECK(resume_callback_);
+
       inner_journal_entry_ = journal_->CreatePendingAsyncEntry(
           GURL::EmptyGURL(), task_id_, MakeBrowserTrackUUID(task_id_),
           "WaitForAutofillPredictions", {});
@@ -333,25 +319,26 @@ void ObservationDelayController::MoveToState(State new_state) {
       autofill::ContentAutofillClient* autofill_client =
           autofill::ContentAutofillClient::FromWebContents(web_contents());
       if (!autofill_client) {
-        PostMoveToStateClosure(State::kDone).Run();
+        std::move(resume_callback_).Run();
         break;
       }
       autofill::FormPredictionsTracker* tracker =
           autofill_client->GetFormPredictionsTracker();
       if (!tracker) {
-        PostMoveToStateClosure(State::kDone).Run();
+        std::move(resume_callback_).Run();
         break;
       }
       tracker->Wait(
           base::BindOnce(
               &ObservationDelayController::OnAutofillPredictionsFinished,
-              weak_ptr_factory_.GetWeakPtr()),
+              weak_ptr_factory_.GetWeakPtr(), std::move(resume_callback_)),
           GetAutofillPredictionsTimeout());
-      // `OnAutofillPredictionsFinished()` will advance to the next state.
       break;
     }
     case State::kPageNavigated: {
       result_ = Result::kPageNavigated;
+      // Stop monitoring.
+      page_settled_monitor_.reset();
       MoveToState(State::kDone);
       break;
     }
@@ -368,8 +355,6 @@ void ObservationDelayController::MoveToState(State new_state) {
               content::webid::FederatedLoginResult::kTimeoutByEmbedder);
         }
       }
-
-      MoveToState(State::kDone);
       break;
     }
     case State::kDone: {
@@ -377,8 +362,8 @@ void ObservationDelayController::MoveToState(State new_state) {
       // must be provided.
       CHECK(ready_callback_);
       wait_journal_entry_.reset();
-      page_stability_monitor_remote_.reset();
       federated_login_subscription_ = {};
+      resume_callback_.Reset();
       PostFinishedTask(
           base::BindOnce([](ReadyCallback callback,
                             Result result) { std::move(callback).Run(result); },
@@ -388,21 +373,124 @@ void ObservationDelayController::MoveToState(State new_state) {
   }
 }
 
-std::ostream& operator<<(std::ostream& o,
-                         const ObservationDelayController::State& state) {
-  return o << ObservationDelayController::StateToString(state);
+void ObservationDelayController::OnPageSettled() {
+  MoveToState(State::kDone);
 }
 
-void ObservationDelayController::OnVisualStateUpdated(bool) {
-  if (state_ != State::kWaitForVisualStateUpdate) {
+void ObservationDelayController::WillMoveToState(
+    PageSettledMonitorState state) {
+  // Map generic state to Actor state for metrics and logging.
+  State actor_state;
+  switch (state) {
+    case PageSettledMonitorState::kInitial:
+      NOTREACHED();
+    case PageSettledMonitorState::kWaitForPageStability:
+      actor_state = State::kWaitForPageStability;
+      break;
+    case PageSettledMonitorState::kPageStabilityMonitorDisconnected:
+      actor_state = State::kPageStabilityMonitorDisconnected;
+      break;
+    case PageSettledMonitorState::kWaitForLoadCompletion:
+      actor_state = State::kWaitForLoadCompletion;
+      break;
+    case PageSettledMonitorState::kWaitForVisualStateUpdate:
+      actor_state = State::kWaitForVisualStateUpdate;
+      break;
+    case PageSettledMonitorState::kMaybeDelayForLcp:
+      actor_state = State::kMaybeDelayForLcp;
+      break;
+    case PageSettledMonitorState::kDelayForLcp:
+      actor_state = State::kDelayForLcp;
+      break;
+    case PageSettledMonitorState::kDidTimeout:
+      actor_state = State::kDidTimeout;
+      break;
+    case PageSettledMonitorState::kDone:
+      // kDone is handled via OnPageSettled().
+      return;
+  }
+
+  MoveToState(actor_state);
+}
+
+void ObservationDelayController::OnMilestoneReached(
+    page_content_annotations::PageSettledMonitor::Milestone milestone,
+    base::OnceClosure resume_callback) {
+  if (state_ == State::kDone) {
     return;
   }
 
-  CHECK(metrics_);
-  metrics_->OnVisualStateUpdated();
+  CHECK(resume_callback);
+  CHECK(!resume_callback_);
+  resume_callback_ = std::move(resume_callback);
 
-  // Posted so that this state transition is consistently async.
-  PostMoveToStateClosure(State::kMaybeDelayForLcp).Run();
+  switch (milestone) {
+    case page_content_annotations::PageSettledMonitor::Milestone::
+        kPageStability:
+      // Once the page is stable (network/main thread idle), we check if there's
+      // a pending Federated Login request to wait for.
+      PostMoveToStateClosure(State::kWaitForFederatedLogin).Run();
+      break;
+    case page_content_annotations::PageSettledMonitor::Milestone::
+        kLoadCompletion:
+      // Just resume the monitor.
+      std::move(resume_callback_).Run();
+      break;
+    case page_content_annotations::PageSettledMonitor::Milestone::
+        kVisualStateUpdate:
+      // Just resume the monitor.
+      std::move(resume_callback_).Run();
+      break;
+    case page_content_annotations::PageSettledMonitor::Milestone::kLcpSettled:
+      // After LCP has settled, we wait for Autofill to finish its field
+      // classification, as tool-use often depends on having accurate form
+      // metadata.
+      PostMoveToStateClosure(State::kWaitForAutofillPredictions).Run();
+      break;
+  }
+}
+
+void ObservationDelayController::OnEvent(
+    page_content_annotations::PageSettledMonitor::Event event) {
+  if (state_ == State::kDone) {
+    return;
+  }
+
+  switch (event) {
+    case page_content_annotations::PageSettledMonitor::Event::kPageStabilized:
+      if (metrics_) {
+        metrics_->OnPageStable();
+      }
+      break;
+    case page_content_annotations::PageSettledMonitor::Event::kLoadCompleted:
+      if (metrics_) {
+        metrics_->OnLoadCompleted();
+      }
+      break;
+    case page_content_annotations::PageSettledMonitor::Event::
+        kVisualStateUpdated:
+      if (metrics_) {
+        metrics_->OnVisualStateUpdated();
+      }
+      break;
+    case page_content_annotations::PageSettledMonitor::Event::kMojoDisconnected:
+      if (state_ == State::kInitial) {
+        journal_->Log(GURL::EmptyGURL(), task_id_,
+                      "ObservationDelay: Monitor Disconnect Before Wait", {});
+      }
+      break;
+    case page_content_annotations::PageSettledMonitor::Event::
+        kVisualStateUpdateSkipped:
+      journal_->Log(
+          web_contents()->GetLastCommittedURL(), task_id_,
+          "ObservationDelay: Skip visual state update of non-captured tab", {});
+      break;
+  }
+}
+
+std::ostream& operator<<(std::ostream& o,
+                         const ObservationDelayController::State& state) {
+  return o << ObservationDelayController::StateToString(state);
 }
 
 void ObservationDelayController::DCheckStateTransition(State old_state,
@@ -413,33 +501,42 @@ void ObservationDelayController::DCheckStateTransition(State old_state,
           // clang-format off
           {State::kInitial,
               {State::kWaitForPageStability,
-               State::kWaitForFederatedLogin}},
+               State::kDone}},
           {State::kWaitForPageStability,
               {State::kWaitForFederatedLogin,
                State::kPageStabilityMonitorDisconnected,
                State::kDidTimeout,
+               State::kDone,
                State::kPageNavigated}},
           {State::kPageStabilityMonitorDisconnected,
-              {State::kWaitForFederatedLogin}},
+              {State::kWaitForFederatedLogin,
+               State::kDidTimeout,
+               State::kDone,
+               State::kPageNavigated}},
           {State::kWaitForFederatedLogin,
               {State::kWaitForLoadCompletion,
                State::kDidTimeout,
+               State::kDone,
                State::kPageNavigated}},
           {State::kWaitForLoadCompletion,
               {State::kDidTimeout,
+               State::kDone,
                State::kPageNavigated,
                State::kWaitForVisualStateUpdate}},
           {State::kWaitForVisualStateUpdate,
               {State::kDidTimeout,
+               State::kDone,
                State::kPageNavigated,
                State::kMaybeDelayForLcp}},
           {State::kMaybeDelayForLcp,
               {State::kDidTimeout,
+               State::kDone,
                State::kPageNavigated,
                State::kDelayForLcp,
                State::kWaitForAutofillPredictions}},
           {State::kDelayForLcp,
               {State::kDidTimeout,
+               State::kDone,
                State::kPageNavigated,
                State::kWaitForAutofillPredictions}},
           {State::kWaitForAutofillPredictions,
@@ -471,17 +568,6 @@ void ObservationDelayController::DidStartNavigation(
     return;
   }
   MoveToState(State::kPageNavigated);
-}
-
-void ObservationDelayController::DidStopLoading() {
-  if (state_ != State::kWaitForLoadCompletion) {
-    return;
-  }
-
-  CHECK(metrics_);
-  metrics_->OnLoadCompleted();
-
-  MoveToState(State::kWaitForVisualStateUpdate);
 }
 
 void ObservationDelayController::SetState(State state) {

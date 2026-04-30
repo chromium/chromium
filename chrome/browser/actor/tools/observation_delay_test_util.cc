@@ -96,7 +96,7 @@ TestObservationDelayController::TestObservationDelayController(
   // Ensure the monitor is created in the renderer before returning. This
   // ensures the PageStabilityMonitor captures the initial state at the
   // current point in the test.
-  page_stability_monitor_remote_.FlushForTesting();
+  page_settled_monitor_->page_stability_monitor_remote_.FlushForTesting();
 }
 
 TestObservationDelayController::~TestObservationDelayController() = default;

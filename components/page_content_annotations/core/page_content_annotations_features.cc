@@ -156,6 +156,18 @@ const base::FeatureParam<base::TimeDelta> kPaintStabilitySubsequentPaintTimeout{
     &kPageSettledMonitor, "paint-stability-subsequent-paint-timeout",
     base::Seconds(1)};
 
+const base::FeatureParam<base::TimeDelta> kObservationDelayTimeout{
+    &kPageSettledMonitor, "observation-delay-timeout", base::Seconds(10)};
+
+const base::FeatureParam<base::TimeDelta> kObservationDelayLcp{
+    &kPageSettledMonitor, "observation-delay-lcp", base::Seconds(1)};
+
+BASE_FEATURE(kPageSettledMonitorExcludeAdFrameLoading,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kPageSettledMonitorSkipAwaitVisualStateForHiddenTabs,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 base::TimeDelta PCAServiceWaitForTitleDelayDuration() {
   return base::Milliseconds(GetFieldTrialParamByFeatureAsInt(
       kPageContentAnnotations,

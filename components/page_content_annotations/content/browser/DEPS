@@ -1,0 +1,10 @@
+include_rules = [
+    "+components/page_load_metrics/browser",
+    "+mojo/public/cpp/bindings",
+]
+
+specific_include_rules = {
+  "page_settled_monitor_browsertest.cc": [
+    "+content/shell/browser",
+  ],
+}
