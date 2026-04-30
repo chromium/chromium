@@ -778,6 +778,8 @@ if (is_ios) {
 cc_test("cc_unittests") {
   use_xvfb = use_xvfb_in_this_config
 
+  fuzztests = [ "RTreeTest.BuildDoesNotCrash" ]
+
   sources = [
     "base/delayed_unique_notifier_unittest.cc",
     "base/histograms_unittest.cc",
