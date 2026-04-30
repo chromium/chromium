@@ -57,7 +57,7 @@ class SendTabToSelfBubbleController
   // Displays send tab to self bubble.
   void ShowBubble(bool show_back_button = false);
 
-  bool IsBubbleShown() { return bubble_shown_; }
+  bool IsBubbleShown() const;
 
   // Returns nullptr if no bubble is currently shown.
   SendTabToSelfBubbleView* send_tab_to_self_bubble_view() const;
@@ -118,8 +118,7 @@ class SendTabToSelfBubbleController
   raw_ptr<SendTabToSelfBubbleView> send_tab_to_self_bubble_view_ = nullptr;
   // True if the back button is currently shown.
   bool show_back_button_ = false;
-  // True if the bubble is currently shown.
-  bool bubble_shown_ = false;
+
 
   raw_ptr<actions::ActionItem> send_tab_to_self_action_item_ = nullptr;
 

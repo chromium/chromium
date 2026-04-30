@@ -148,6 +148,7 @@ DECLARE_ELEMENT_IDENTIFIER_VALUE(kPerformanceSidePanelWebViewElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(
     kPinnedToolbarActionsContainerDividerElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kPinnedToolbarActionsContainerElementId);
+DECLARE_ELEMENT_IDENTIFIER_VALUE(kPinnedToolbarActionSendTabToSelfElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(
     kPinnedToolbarActionShowSidePanelBookmarksElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(

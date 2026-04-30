@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
@@ -33,6 +34,7 @@
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_view.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_device_picker_bubble_view.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_promo_bubble_view.h"
+#include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -59,25 +61,21 @@
 namespace send_tab_to_self {
 
 SendTabToSelfBubbleController::~SendTabToSelfBubbleController() {
-  if (send_tab_to_self_bubble_view_) {
-    send_tab_to_self_bubble_view_->Hide();
-  }
+  HideBubble();
 }
 
 // Static:
 SendTabToSelfBubbleController*
 SendTabToSelfBubbleController::CreateOrGetFromWebContents(
     content::WebContents* web_contents) {
-  SendTabToSelfBubbleController::CreateForWebContents(web_contents);
-  SendTabToSelfBubbleController* controller =
-      SendTabToSelfBubbleController::FromWebContents(web_contents);
-  return controller;
+  // TODO(crbug.com/498659392: Remove `CreateOrGetFromWebContents` and use
+  // `GetOrCreateForWebContents` instead everywhere.
+  return GetOrCreateForWebContents(web_contents);
 }
 
 void SendTabToSelfBubbleController::HideBubble() {
   if (send_tab_to_self_bubble_view_) {
     send_tab_to_self_bubble_view_->Hide();
-    send_tab_to_self_bubble_view_ = nullptr;
   }
 }
 
@@ -88,16 +86,27 @@ void SendTabToSelfBubbleController::ShowBubble(bool show_back_button) {
   }
 
   show_back_button_ = show_back_button;
-  bubble_shown_ = true;
   BrowserWindowInterface* browser =
       GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
           &GetWebContents());
   std::optional<send_tab_to_self::EntryPointDisplayReason> reason =
       GetEntryPointDisplayReason();
   CHECK(reason);
-  auto anchor = browser ? ToolbarButtonProvider::From(browser)->GetBubbleAnchor(
-                              kActionSendTabToSelf)
-                        : views::BubbleAnchor();
+
+  views::BubbleAnchor anchor;
+  if (browser) {
+    if (PinnedToolbarActions* pinned_toolbar_actions =
+            browser->GetFeatures().pinned_toolbar_actions()) {
+      // Show the toolbar action button.
+      pinned_toolbar_actions->ShowActionEphemerallyInToolbar(
+          kActionSendTabToSelf, true);
+      anchor = pinned_toolbar_actions->GetBubbleAnchor(kActionSendTabToSelf);
+    } else {
+      anchor = ToolbarButtonProvider::From(browser)->GetBubbleAnchor(
+          kActionSendTabToSelf);
+    }
+  }
+
   std::unique_ptr<SendTabToSelfBubbleView> bubble_view;
   switch (*reason) {
     case send_tab_to_self::EntryPointDisplayReason::kOfferFeature:
@@ -115,6 +124,10 @@ void SendTabToSelfBubbleController::ShowBubble(bool show_back_button) {
   }
   send_tab_to_self_bubble_view_ = bubble_view.get();
   views::BubbleDialogDelegateView::CreateBubble(std::move(bubble_view));
+  send_tab_to_self_bubble_view_->SetHighlightedElement(
+      kPinnedToolbarActionSendTabToSelfElementId);
+  // This is always triggered due to a user gesture, c.f. method
+  // documentation.
   send_tab_to_self_bubble_view_->ShowForReason(
       LocationBarBubbleDelegateView::USER_GESTURE);
 
@@ -127,6 +140,10 @@ void SendTabToSelfBubbleController::ShowBubble(bool show_back_button) {
       send_tab_to_self_action_item_->SetIsShowingBubble(true);
     }
   }
+}
+
+bool SendTabToSelfBubbleController::IsBubbleShown() const {
+  return send_tab_to_self_bubble_view_;
 }
 
 SendTabToSelfBubbleView*
@@ -190,8 +207,16 @@ void SendTabToSelfBubbleController::OnManageDevicesClicked(
 }
 
 void SendTabToSelfBubbleController::OnBubbleClosed() {
-  bubble_shown_ = false;
   send_tab_to_self_bubble_view_ = nullptr;
+  BrowserWindowInterface* browser =
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+          &GetWebContents());
+  if (browser && browser->GetFeatures().pinned_toolbar_actions()) {
+    // Hide the toolbar action button.
+    browser->GetFeatures()
+        .pinned_toolbar_actions()
+        ->ShowActionEphemerallyInToolbar(kActionSendTabToSelf, false);
+  }
   if (send_tab_to_self_action_item_) {
     send_tab_to_self_action_item_->SetIsShowingBubble(false);
   }

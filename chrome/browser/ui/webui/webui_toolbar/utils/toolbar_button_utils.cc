@@ -27,7 +27,6 @@ DECLARE_ELEMENT_IDENTIFIER_VALUE(kToolbarNewIncognitoWindowElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kToolbarPrintElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kToolbarQrCodeGeneratorElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kToolbarRouteMediaElementId);
-DECLARE_ELEMENT_IDENTIFIER_VALUE(kToolbarSendTabToSelfElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kToolbarShowAddressesBubbleOrPageElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kToolbarShowDownloadsElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kToolbarShowPasswordsBubbleOrPageElementId);
@@ -53,7 +52,6 @@ DEFINE_ELEMENT_IDENTIFIER_VALUE(kToolbarNewIncognitoWindowElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kToolbarPrintElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kToolbarQrCodeGeneratorElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kToolbarRouteMediaElementId);
-DEFINE_ELEMENT_IDENTIFIER_VALUE(kToolbarSendTabToSelfElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kToolbarShowAddressesBubbleOrPageElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kToolbarShowDownloadsElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kToolbarShowPasswordsBubbleOrPageElementId);
@@ -79,7 +77,6 @@ std::vector<ui::ElementIdentifier> GetPinnedToolbarActionElementIds() {
           webui_toolbar::kToolbarPrintElementId,
           webui_toolbar::kToolbarQrCodeGeneratorElementId,
           webui_toolbar::kToolbarRouteMediaElementId,
-          webui_toolbar::kToolbarSendTabToSelfElementId,
           webui_toolbar::kToolbarShowAddressesBubbleOrPageElementId,
           webui_toolbar::kToolbarShowDownloadsElementId,
           webui_toolbar::kToolbarShowPasswordsBubbleOrPageElementId,
@@ -131,8 +128,6 @@ ui::ElementIdentifier ActionIdToElementIdentifier(actions::ActionId action) {
       return kToolbarSidePanelShowReadAnythingElementId;
     case kActionCopyUrl:
       return kToolbarCopyUrlElementId;
-    case kActionSendTabToSelf:
-      return kToolbarSendTabToSelfElementId;
     case kActionTaskManager:
       return kToolbarTaskManagerElementId;
     case kActionDevTools:

@@ -10,10 +10,12 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_controller.h"
+#include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_view.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_toolbar_bubble_controller.h"
 #include "chrome/browser/ui/views/toolbar/pinned_action_toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
@@ -24,6 +26,7 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/views/layout/animating_layout_manager_test_util.h"
+#include "ui/views/view_class_properties.h"
 
 namespace send_tab_to_self {
 
@@ -169,8 +172,6 @@ IN_PROC_BROWSER_TEST_P(SendTabToSelfBubbleParameterizedTest,
       kActionSendTabToSelf, browser_action_item);
   action_item->SetEnabled(true);
   action_item->SetVisible(true);
-  CHECK(!features::IsWebUIPinnedToolbarActionsEnabled())
-      << "Test needs modification to support WebUIPinnedToolbarActions";
   PinnedToolbarActionsContainer* container =
       static_cast<PinnedToolbarActionsContainer*>(
           browser_view->toolbar_button_provider()->GetPinnedToolbarActions());
@@ -190,6 +191,8 @@ IN_PROC_BROWSER_TEST_P(SendTabToSelfBubbleParameterizedTest,
     }
   }
   EXPECT_NE(send_tab_to_self_button, nullptr);
+  EXPECT_EQ(send_tab_to_self_button->GetProperty(views::kElementIdentifierKey),
+            kPinnedToolbarActionSendTabToSelfElementId);
 
   // Simulate triggering the bubble and confirm it is shown.
   ui::MouseEvent press_event(ui::EventType::kMousePressed, gfx::Point(),
@@ -206,6 +209,43 @@ IN_PROC_BROWSER_TEST_P(SendTabToSelfBubbleParameterizedTest,
   EXPECT_TRUE(send_tab_to_self_button->ShouldSkipExecutionForTesting());
   send_tab_to_self_button->OnMouseReleased(release_event);
   EXPECT_FALSE(send_tab_to_self_button->ShouldSkipExecutionForTesting());
+}
+
+IN_PROC_BROWSER_TEST_P(SendTabToSelfBubbleParameterizedTest,
+                       BubbleTriggersCorrectlyWhenNotPinned) {
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  PinnedToolbarActionsContainer* container =
+      static_cast<PinnedToolbarActionsContainer*>(
+          browser_view->toolbar_button_provider()->GetPinnedToolbarActions());
+
+  // Ensure it is not pinned or popped out.
+  ASSERT_FALSE(container->IsActionPinnedOrPoppedOut(kActionSendTabToSelf));
+
+  // Trigger the bubble.
+  controller_->ShowBubble();
+  EXPECT_TRUE(controller_->IsBubbleShown());
+
+  // Confirm it is now popped out.
+  EXPECT_TRUE(container->IsActionPoppedOut(kActionSendTabToSelf));
+
+  // Find the send tab to self button.
+  PinnedActionToolbarButton* send_tab_to_self_button =
+      container->GetButtonFor(kActionSendTabToSelf);
+  ASSERT_TRUE(send_tab_to_self_button);
+  EXPECT_TRUE(send_tab_to_self_button->GetVisible());
+
+  // Confirm the bubble is anchored to the button.
+  auto* bubble_delegate = controller_->send_tab_to_self_bubble_view();
+  EXPECT_EQ(bubble_delegate->GetAnchorView(), send_tab_to_self_button);
+  EXPECT_EQ(send_tab_to_self_button->GetProperty(views::kElementIdentifierKey),
+            kPinnedToolbarActionSendTabToSelfElementId);
+
+  // Close the bubble.
+  bubble_delegate->GetWidget()->CloseNow();
+  EXPECT_FALSE(controller_->IsBubbleShown());
+
+  // Confirm it is no longer popped out.
+  EXPECT_FALSE(container->IsActionPoppedOut(kActionSendTabToSelf));
 }
 
 IN_PROC_BROWSER_TEST_P(SendTabToSelfBubbleParameterizedTest,

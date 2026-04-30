@@ -249,6 +249,7 @@ WebUIToolbarUI::GetKnownElementIdentifiers() {
        kSharedTabGroupCommentsActionElementId,
        kPinnedToolbarActionShowSidePanelLensOverlayResultsElementId,
        kPinnedToolbarActionShowSidePanelBookmarksElementId,
+       kPinnedToolbarActionSendTabToSelfElementId,
        kToolbarAvatarButtonElementId});
   auto pinned_ids = webui_toolbar::GetPinnedToolbarActionElementIds();
   pinned_ids.reserve(pinned_ids.size() + ids->size());
