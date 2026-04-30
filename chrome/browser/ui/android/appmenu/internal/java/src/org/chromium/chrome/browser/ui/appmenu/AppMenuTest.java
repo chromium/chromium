@@ -63,6 +63,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.LifecycleObserver;
 import org.chromium.chrome.browser.ui.actions.ActionProperties;
+import org.chromium.chrome.browser.ui.actions.AppMenuActionProperties;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler.AppMenuItemType;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
@@ -523,7 +524,8 @@ public class AppMenuTest {
                             SettableNullableObservableSupplier<PropertyModel> supplier =
                                     ObservableSuppliers.createNullable();
                             PropertyModel m =
-                                    new PropertyModel.Builder(ActionProperties.ALL_KEYS).build();
+                                    new PropertyModel.Builder(AppMenuActionProperties.ALL_KEYS)
+                                            .build();
                             mAppMenuCoordinator.setActionModelSupplier(supplier);
                             supplier.set(m);
                             return m;
@@ -538,6 +540,34 @@ public class AppMenuTest {
         ThreadUtils.runOnUiThreadBlocking(() -> onPressCallback.onResult(testView));
 
         waitForMenuToShow(currentCallCount, mAppMenuHandler);
+    }
+
+    @Test
+    @MediumTest
+    public void testSetActionModelSupplier_SetupCallback() throws TimeoutException {
+        AppMenuCoordinatorImpl.setHasPermanentMenuKeyForTesting(false);
+
+        PropertyModel model =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            SettableNullableObservableSupplier<PropertyModel> supplier =
+                                    ObservableSuppliers.createNullable();
+                            PropertyModel m =
+                                    new PropertyModel.Builder(AppMenuActionProperties.ALL_KEYS)
+                                            .build();
+                            mAppMenuCoordinator.setActionModelSupplier(supplier);
+                            supplier.set(m);
+                            return m;
+                        });
+
+        Callback<View> setupCallback = model.get(AppMenuActionProperties.APP_MENU_SETUP_CALLBACK);
+        Assert.assertNotNull("Setup callback should be set on the model", setupCallback);
+
+        View mockView = Mockito.mock(View.class);
+        ThreadUtils.runOnUiThreadBlocking(() -> setupCallback.onResult(mockView));
+
+        verify(mockView).setOnTouchListener(any(View.OnTouchListener.class));
+        verify(mockView).setAccessibilityDelegate(any(View.AccessibilityDelegate.class));
     }
 
     @Test

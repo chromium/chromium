@@ -13,6 +13,8 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ui/actions/ActionRegistry.java",
     "java/src/org/chromium/chrome/browser/ui/actions/ActionUtils.java",
     "java/src/org/chromium/chrome/browser/ui/actions/ActionViewBinding.java",
+    "java/src/org/chromium/chrome/browser/ui/actions/AppMenuActionButtonBinder.java",
+    "java/src/org/chromium/chrome/browser/ui/actions/AppMenuActionProperties.java",
     "java/src/org/chromium/chrome/browser/ui/actions/DelegatingActionView.java",
     "java/src/org/chromium/chrome/browser/ui/actions/HomeActionButtonBinder.java",
     "java/src/org/chromium/chrome/browser/ui/actions/HomeActionProperties.java",

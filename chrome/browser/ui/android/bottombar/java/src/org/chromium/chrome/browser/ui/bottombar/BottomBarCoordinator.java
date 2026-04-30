@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.ui.actions.ActionId;
 import org.chromium.chrome.browser.ui.actions.ActionProperties;
 import org.chromium.chrome.browser.ui.actions.ActionRegistry;
 import org.chromium.chrome.browser.ui.actions.ActionViewBinding;
+import org.chromium.chrome.browser.ui.actions.AppMenuActionButtonBinder;
 import org.chromium.chrome.browser.ui.actions.HomeActionButtonBinder;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarHostManager.Host;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
@@ -98,7 +99,10 @@ public class BottomBarCoordinator implements BottomBar {
             menuContainer.setVisibility(View.VISIBLE);
             mRegisteredActionIds.add(ActionId.APP_MENU);
             mBindings.add(
-                    new ActionViewBinding(actionRegistry.get(ActionId.APP_MENU), menuContainer));
+                    new ActionViewBinding(
+                            actionRegistry.get(ActionId.APP_MENU),
+                            menuContainer,
+                            AppMenuActionButtonBinder::bind));
         }
 
         mModelObserver =

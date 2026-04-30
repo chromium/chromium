@@ -17,6 +17,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.ui.actions.ActionProperties;
+import org.chromium.chrome.browser.ui.actions.AppMenuActionProperties;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -147,7 +148,13 @@ class AppMenuCoordinatorImpl implements AppMenuCoordinator {
                 view -> {
                     showAppMenuInternal(view, false);
                 });
-        // TODO(crbug.com/491510507): Support AppMenuButtonHelper.
+        AppMenuButtonHelper helper = mAppMenuHandler.createAppMenuButtonHelper();
+        model.set(
+                AppMenuActionProperties.APP_MENU_SETUP_CALLBACK,
+                view -> {
+                    view.setOnTouchListener(helper);
+                    view.setAccessibilityDelegate(helper.getAccessibilityDelegate());
+                });
     }
 
     // Testing methods
