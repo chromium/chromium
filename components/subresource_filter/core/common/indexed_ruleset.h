@@ -8,16 +8,12 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <memory>
-#include <string_view>
-
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "components/subresource_filter/core/common/flat/indexed_ruleset_generated.h"
 #include "components/subresource_filter/core/common/load_policy.h"
-#include "components/subresource_filter/core/common/style_rule_indexer.h"
 #include "components/url_pattern_index/url_pattern_index.h"
 #include "third_party/flatbuffers/src/include/flatbuffers/flatbuffers.h"
 
@@ -29,7 +25,6 @@ class Origin;
 
 namespace url_pattern_index {
 namespace proto {
-class StyleRule;
 class UrlRule;
 }
 }  // namespace url_pattern_index
@@ -37,9 +32,6 @@ class UrlRule;
 namespace subresource_filter {
 
 class FirstPartyOrigin;
-
-// Returns a hash for a style rule selector, e.g., a class or ID name.
-uint32_t GetStyleRuleHash(std::string_view name);
 
 // Detailed result of IndexedRulesetMatcher::Verify.
 // Note: Logged to UMA, keep in sync with SubresourceFilterVerifyStatus in
@@ -68,7 +60,7 @@ class RulesetIndexer {
   // contributors aware of that.
   static const int kIndexedFormatVersion;
 
-  explicit RulesetIndexer(uint64_t ruleset_id);
+  RulesetIndexer();
 
   RulesetIndexer(const RulesetIndexer&) = delete;
   RulesetIndexer& operator=(const RulesetIndexer&) = delete;
@@ -79,9 +71,6 @@ class RulesetIndexer {
   // filter options, in which case the data structures remain unmodified.
   // Returns whether the |rule| has been serialized and added to the index.
   bool AddUrlRule(const url_pattern_index::proto::UrlRule& rule);
-
-  // Adds |rule| to the style rule index.
-  bool AddStyleRuleFromProto(const url_pattern_index::proto::StyleRule& rule);
 
   // Finalizes construction of the data structures.
   void Finish();
@@ -96,8 +85,6 @@ class RulesetIndexer {
         base::span(builder_.GetBufferPointer(), builder_.GetSize()));
   }
 
-  uint64_t ruleset_id() const { return ruleset_id_; }
-
  private:
   flatbuffers::FlatBufferBuilder builder_;
 
@@ -105,13 +92,9 @@ class RulesetIndexer {
   url_pattern_index::UrlPatternIndexBuilder allowlist_;
   url_pattern_index::UrlPatternIndexBuilder deactivation_;
 
-  StyleRuleIndexer style_rule_indexer_;
-
   // Maintains a map of domain vectors to their existing offsets, to avoid
   // storing a particular vector more than once.
   url_pattern_index::FlatDomainMap domain_map_;
-
-  uint64_t ruleset_id_ = 0;
 };
 
 // Matches URLs against the FlatBuffer representation of an indexed ruleset.
@@ -129,8 +112,6 @@ class IndexedRulesetMatcher {
 
   IndexedRulesetMatcher(const IndexedRulesetMatcher&) = delete;
   IndexedRulesetMatcher& operator=(const IndexedRulesetMatcher&) = delete;
-
-  ~IndexedRulesetMatcher();
 
   // Returns whether the subset of subresource filtering rules specified by the
   // |activation_type| should be disabled for the |document| loaded from
@@ -164,8 +145,6 @@ class IndexedRulesetMatcher {
       const FirstPartyOrigin& first_party,
       url_pattern_index::proto::ElementType element_type,
       bool disable_generic_rules) const;
-
-  uint64_t ruleset_id() const { return root_->ruleset_id(); }
 
  private:
   raw_ptr<const flat::IndexedRuleset> root_;

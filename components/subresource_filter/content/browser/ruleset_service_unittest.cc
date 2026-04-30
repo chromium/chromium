@@ -207,10 +207,6 @@ bool MockFailingIndexRuleset(const RulesetConfig&,
 }
 #endif
 
-uint64_t GetTestRulesetId() {
-  return 0;
-}
-
 }  // namespace
 
 // Test fixtures --------------------------------------------------------------
@@ -237,9 +233,6 @@ class SubresourceFilteringRulesetServiceTest : public ::testing::Test {
 
  protected:
   void SetUp() override {
-    ruleset_id_override_ = OverrideFunctionForScope(
-        &RulesetService::g_get_ruleset_id_func, &GetTestRulesetId);
-
     IndexedRulesetVersion::RegisterPrefs(pref_service_.registry(),
                                          kSafeBrowsingRulesetConfig.filter_tag);
 
@@ -477,10 +470,6 @@ class SubresourceFilteringRulesetServiceTest : public ::testing::Test {
   TestRulesetPair test_ruleset_1_;
   TestRulesetPair test_ruleset_2_;
   TestRulesetPair test_ruleset_3_;
-
-  std::unique_ptr<
-      ScopedFunctionOverride<decltype(RulesetService::g_get_ruleset_id_func)>>
-      ruleset_id_override_;
 
   std::unique_ptr<RulesetService> service_;
 };

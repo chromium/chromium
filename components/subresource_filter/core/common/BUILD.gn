@@ -33,8 +33,6 @@ static_library("common") {
     "scoped_rule.cc",
     "scoped_rule.h",
     "scoped_timers.h",
-    "style_rule_indexer.cc",
-    "style_rule_indexer.h",
     "time_measurements.cc",
     "time_measurements.h",
     "unindexed_ruleset.cc",
@@ -53,7 +51,6 @@ static_library("common") {
     "//third_party/abseil-cpp:absl",
     "//third_party/flatbuffers",
     "//third_party/protobuf:protobuf_lite",
-    "//third_party/rapidhash",
     "//url",
   ]
 
@@ -86,7 +83,6 @@ source_set("unit_tests") {
     "load_policy_unittest.cc",
     "ruleset_dealer_unittest.cc",
     "scoped_timers_unittest.cc",
-    "style_rule_indexer_unittest.cc",
     "time_measurements_unittest.cc",
     "unindexed_ruleset_unittest.cc",
   ]

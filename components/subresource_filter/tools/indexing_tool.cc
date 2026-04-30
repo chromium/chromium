@@ -10,7 +10,6 @@
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/rand_util.h"
 #include "base/strings/stringprintf.h"
 #include "components/subresource_filter/core/common/copying_file_stream.h"
 #include "components/subresource_filter/core/common/indexed_ruleset.h"
@@ -21,8 +20,7 @@ namespace subresource_filter {
 
 bool IndexAndWriteRuleset(const base::FilePath& unindexed_path,
                           const base::FilePath& indexed_path,
-                          int* out_checksum,
-                          std::optional<uint64_t> ruleset_id) {
+                          int* out_checksum) {
   if (!base::PathExists(unindexed_path) ||
       !base::DirectoryExists(indexed_path.DirName())) {
     return false;
@@ -31,8 +29,7 @@ bool IndexAndWriteRuleset(const base::FilePath& unindexed_path,
   base::File unindexed_file(base::MakeAbsoluteFilePath(unindexed_path),
                             base::File::FLAG_OPEN | base::File::FLAG_READ);
 
-  subresource_filter::RulesetIndexer indexer(
-      ruleset_id.value_or(base::RandUint64()));
+  subresource_filter::RulesetIndexer indexer;
 
   CopyingFileInputStream copying_stream(std::move(unindexed_file));
   google::protobuf::io::CopyingInputStreamAdaptor zero_copy_stream_adaptor(
@@ -44,9 +41,6 @@ bool IndexAndWriteRuleset(const base::FilePath& unindexed_path,
   while (reader.ReadNextChunk(&ruleset_chunk)) {
     for (const auto& rule : ruleset_chunk.url_rules()) {
       indexer.AddUrlRule(rule);
-    }
-    for (const auto& rule : ruleset_chunk.style_rules()) {
-      indexer.AddStyleRuleFromProto(rule);
     }
   }
 

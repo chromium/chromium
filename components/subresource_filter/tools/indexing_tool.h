@@ -5,10 +5,6 @@
 #ifndef COMPONENTS_SUBRESOURCE_FILTER_TOOLS_INDEXING_TOOL_H_
 #define COMPONENTS_SUBRESOURCE_FILTER_TOOLS_INDEXING_TOOL_H_
 
-#include <stdint.h>
-
-#include <optional>
-
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 
@@ -20,8 +16,7 @@ namespace subresource_filter {
 // the ruleset in the outparam.
 bool IndexAndWriteRuleset(const base::FilePath& unindexed_path,
                           const base::FilePath& indexed_path,
-                          int* out_checksum = nullptr,
-                          std::optional<uint64_t> ruleset_id = std::nullopt);
+                          int* out_checksum = nullptr);
 
 // Write version JSON to |path|. This matches the version JSON found in
 // preferences.

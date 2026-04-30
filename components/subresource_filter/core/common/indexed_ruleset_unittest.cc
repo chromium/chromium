@@ -99,7 +99,7 @@ class SubresourceFilterIndexedRulesetTest : public ::testing::Test {
 
   void Reset() {
     matcher_.reset(nullptr);
-    indexer_ = std::make_unique<RulesetIndexer>(0);
+    indexer_ = std::make_unique<RulesetIndexer>();
   }
 
   std::unique_ptr<RulesetIndexer> indexer_;
@@ -399,13 +399,6 @@ TEST_F(SubresourceFilterIndexedRulesetTest,
   Finish();
   EXPECT_TRUE(MatchingRule("https://example.com"));
   EXPECT_FALSE(MatchingRule("https://xample.com"));
-}
-
-TEST_F(SubresourceFilterIndexedRulesetTest, RulesetId) {
-  indexer_ = std::make_unique<RulesetIndexer>(0x12345678);
-  ASSERT_TRUE(AddSimpleRule("example.com"));
-  Finish();
-  EXPECT_EQ(0x12345678u, matcher_->ruleset_id());
 }
 
 }  // namespace subresource_filter

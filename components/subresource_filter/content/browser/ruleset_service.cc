@@ -17,7 +17,6 @@
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/rand_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -174,10 +173,6 @@ decltype(&base::ReplaceFile) RulesetService::g_replace_file_func =
     &base::ReplaceFile;
 
 // static
-decltype(&base::RandUint64) RulesetService::g_get_ruleset_id_func =
-    &base::RandUint64;
-
-// static
 std::unique_ptr<RulesetService> RulesetService::Create(
     const RulesetConfig& config,
     PrefService* local_state,
@@ -327,7 +322,7 @@ IndexedRulesetVersion RulesetService::IndexAndWriteRuleset(
   // Crashes or errors occurring here will leave behind a sentinel file that
   // will prevent this version of the ruleset from ever being indexed again.
 
-  RulesetIndexer indexer((*g_get_ruleset_id_func)());
+  RulesetIndexer indexer;
   if (!(*g_index_ruleset_func)(config, &unindexed_ruleset_stream_generator,
                                &indexer)) {
     RecordIndexAndWriteRulesetResult(
@@ -380,11 +375,6 @@ bool RulesetService::IndexRuleset(
   while (reader.ReadNextChunk(&ruleset_chunk)) {
     for (const auto& rule : ruleset_chunk.url_rules()) {
       if (!indexer->AddUrlRule(rule)) {
-        ++num_unsupported_rules;
-      }
-    }
-    for (const auto& rule : ruleset_chunk.style_rules()) {
-      if (!indexer->AddStyleRuleFromProto(rule)) {
         ++num_unsupported_rules;
       }
     }
