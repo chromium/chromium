@@ -73,6 +73,9 @@ class LargeIconService;
 /// Toggle visibility of the omnibox debugger view.
 - (void)toggleOmniboxDebuggerView;
 
+/// Disconnects properties before destruction.
+- (void)disconnect;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_OMNIBOX_UI_POPUP_OMNIBOX_POPUP_VIEW_CONTROLLER_H_

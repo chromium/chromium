@@ -173,6 +173,7 @@
   [self.sharingCoordinator stop];
   self.sharingCoordinator = nil;
 
+  [self.popupViewController disconnect];
   self.popupViewController = nil;
   self.mediator = nil;
   self.autocompleteController = nullptr;
