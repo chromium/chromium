@@ -27,4 +27,8 @@ BASE_DECLARE_FEATURE(kIOSPasskeyConditionalLoginWithShim);
 // This is a no-op if kIOSPasskeyShim is disabled.
 BASE_DECLARE_FEATURE(kIOSPasskeyUVPAAWorkaround);
 
+// Returns true if the passkey shim and the conditional passkey login flow are
+// enabled.
+bool IsConditionalPasskeyLoginEnabled();
+
 #endif  // COMPONENTS_WEBAUTHN_IOS_FEATURES_H_

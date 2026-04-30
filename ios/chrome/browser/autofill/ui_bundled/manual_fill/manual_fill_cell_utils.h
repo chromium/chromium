@@ -169,7 +169,7 @@ UIView* CreateGraySeparatorForContainer(UIView* container);
 
 // Creates the button used to fill the current form with the manual fill entity
 // data.
-UIButton* CreateAutofillFormButton();
+UIButton* CreateAutofillFormButton(NSString* title);
 
 // Creates a layout guide for the cell and adds it to the given 'content_view`.
 // `cell_has_header` indicates whether or not the layout guide should take a

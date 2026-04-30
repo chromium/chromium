@@ -308,7 +308,8 @@ constexpr CGFloat kOverflowMenuButtonTopSpacing = 14;
       staticConstraints, @[ self.emailAddressButton ], self.layoutGuide,
       AppendConstraintsHorizontalEqualOrSmallerThanGuide);
 
-  self.autofillFormButton = CreateAutofillFormButton();
+  self.autofillFormButton = CreateAutofillFormButton(l10n_util::GetNSString(
+      IDS_IOS_MANUAL_FALLBACK_AUTOFILL_FORM_BUTTON_TITLE));
   [self.contentView addSubview:self.autofillFormButton];
   [self.autofillFormButton addTarget:self
                               action:@selector(onAutofillFormButtonTapped)

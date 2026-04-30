@@ -363,7 +363,8 @@ CGFloat GPayIconTopAnchorOffset() {
   [self.contentView addSubview:self.CVCLabeledChip];
   [accessibilityElements addObject:self.CVCLabeledChip.singleButton];
 
-  self.autofillFormButton = CreateAutofillFormButton();
+  self.autofillFormButton = CreateAutofillFormButton(l10n_util::GetNSString(
+      IDS_IOS_MANUAL_FALLBACK_AUTOFILL_FORM_BUTTON_TITLE));
   [self.contentView addSubview:self.autofillFormButton];
   [accessibilityElements addObject:self.autofillFormButton];
   [self.autofillFormButton addTarget:self

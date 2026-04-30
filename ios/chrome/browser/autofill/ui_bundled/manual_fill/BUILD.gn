@@ -169,6 +169,7 @@ source_set("manual_fill_ui") {
     "//components/plus_addresses/core/browser/resources/strings",
     "//components/plus_addresses/core/common:features",
     "//components/strings",
+    "//components/webauthn/ios:features",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/menu/ui_bundled",

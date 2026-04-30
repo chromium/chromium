@@ -4,10 +4,12 @@
 
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_password_cell.h"
 
+#import "base/feature_list.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/strcat.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/webauthn/ios/features.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_cell_utils.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_constants.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_content_injector.h"
@@ -253,6 +255,11 @@ void LogAutofillFormButtonTappedMetrics(BOOL from_all_passwords_context,
   GiveAccessibilityContextToCellAndButton(
       self.contentView, self.overflowMenuButton, self.autofillFormButton,
       accessibilityLabel);
+  if (IsConditionalPasskeyLoginEnabled()) {
+    self.autofillFormButton.accessibilityLabel = l10n_util::GetNSStringF(
+        IDS_IOS_MANUAL_FALLBACK_SIGN_IN_BUTTON_ACCESSIBILITY_LABEL,
+        base::SysNSStringToUTF16(accessibilityLabel));
+  }
   self.siteNameLabel.hidden = NO;
   self.faviconContainerView.hidden = NO;
   AddViewToVerticalLeadViews(self.headerView,
@@ -411,7 +418,11 @@ void LogAutofillFormButtonTappedMetrics(BOOL from_all_passwords_context,
       staticConstraints, @[ self.passwordButton ], self.layoutGuide,
       AppendConstraintsHorizontalEqualOrSmallerThanGuide);
 
-  self.autofillFormButton = CreateAutofillFormButton();
+  NSString* buttonTitle = l10n_util::GetNSString(
+      IsConditionalPasskeyLoginEnabled()
+          ? IDS_IOS_MANUAL_FALLBACK_SIGN_IN_BUTTON_TITLE
+          : IDS_IOS_MANUAL_FALLBACK_AUTOFILL_FORM_BUTTON_TITLE);
+  self.autofillFormButton = CreateAutofillFormButton(buttonTitle);
   [self.contentView addSubview:self.autofillFormButton];
   [self.autofillFormButton addTarget:self
                               action:@selector(onAutofillFormButtonTapped)

@@ -4534,6 +4534,12 @@
       <message name="IDS_IOS_MANUAL_FALLBACK_SHOW_PAYMENT_METHODS" desc="Label for the payment methods icon in manual fallback. Read by Text To Speech" meaning="Voice Over will read this to the user followed by 'Button' when this button is focused.">
         Payment methods
       </message>
+      <message name="IDS_IOS_MANUAL_FALLBACK_SIGN_IN_BUTTON_ACCESSIBILITY_LABEL" desc="Accessibility label for the button displayed in the password manual fallback cells, which allows the user to sign in with the credential. This label is ending with the accessibility label of the cell the button is displayed in.">
+        Sign in with <ph name="CELL_ACCESSIBILITY_LABEL">$1<ex>1 of 3 passwords, twitter.com</ex></ph>
+      </message>
+      <message name="IDS_IOS_MANUAL_FALLBACK_SIGN_IN_BUTTON_TITLE" desc="Title of the button displayed in the password manual fallback cells, which allows the user to sign in with the credential.">
+        Sign in
+      </message>
       <message name="IDS_IOS_MANUAL_FALLBACK_SUGGEST_STRONG_PASSWORD_WITH_DOTS" desc="The title for the button in the manual fallback passwords UI that is used to trigger password generation on the active field. 'Strong' refers to the fact that the password is randomly-generated, and thus hard to guess and unlikely to be reused. [30em]">
         Suggest strong password…
       </message>

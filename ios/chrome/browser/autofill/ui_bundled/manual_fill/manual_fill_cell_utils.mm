@@ -467,13 +467,12 @@ UIView* CreateGraySeparatorForContainer(UIView* container) {
   return gray_line;
 }
 
-UIButton* CreateAutofillFormButton() {
+UIButton* CreateAutofillFormButton(NSString* title) {
   ChromeButton* button =
       [[ChromeButton alloc] initWithStyle:ChromeButtonStylePrimary];
   button.accessibilityIdentifier =
       manual_fill::kExpandedManualFillAutofillFormButtonID;
-  button.title = l10n_util::GetNSString(
-      IDS_IOS_MANUAL_FALLBACK_AUTOFILL_FORM_BUTTON_TITLE);
+  button.title = title;
   return button;
 }
 
