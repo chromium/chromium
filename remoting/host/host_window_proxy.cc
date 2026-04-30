@@ -54,6 +54,7 @@ class HostWindowProxy::Core : public base::RefCountedThreadSafe<Core>,
   void SetDisableInputs(bool disable_inputs) override;
   void OnDesktopDisplayChanged(
       std::unique_ptr<protocol::VideoLayout> layout) override;
+  void OnMicrophoneControl(const protocol::MicrophoneControl& control) override;
 
   // Task runner on which public methods of this class must be called.
   scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner_;
@@ -212,6 +213,11 @@ void HostWindowProxy::Core::SetDisableInputs(bool disable_inputs) {
 
 void HostWindowProxy::Core::OnDesktopDisplayChanged(
     std::unique_ptr<protocol::VideoLayout> layout) {
+  NOTREACHED();
+}
+
+void HostWindowProxy::Core::OnMicrophoneControl(
+    const protocol::MicrophoneControl& control) {
   NOTREACHED();
 }
 

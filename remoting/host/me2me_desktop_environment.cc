@@ -27,6 +27,7 @@
 #include "remoting/host/host_window.h"
 #include "remoting/host/host_window_proxy.h"
 #include "remoting/host/input_monitor/local_input_monitor.h"
+#include "remoting/host/remote_audio_input.h"
 #include "remoting/host/resizing_host_observer.h"
 #include "remoting/protocol/capability_names.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_options.h"
@@ -117,6 +118,11 @@ std::string Me2MeDesktopEnvironment::GetCapabilities() const {
   if (desktop_environment_options().enable_remote_webauthn()) {
     capabilities += " ";
     capabilities += protocol::kRemoteWebAuthnCapability;
+  }
+
+  if (RemoteAudioInput::IsSupported()) {
+    capabilities += " ";
+    capabilities += protocol::kMicrophoneRemotingCapability;
   }
 
 #if BUILDFLAG(IS_LINUX) && defined(REMOTING_USE_X11)

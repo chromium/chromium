@@ -44,6 +44,7 @@ class GnomeInteractionStrategy : public DesktopInteractionStrategy,
       override;
   std::unique_ptr<ActiveDisplayMonitor> CreateActiveDisplayMonitor(
       base::RepeatingCallback<void(webrtc::ScreenId)> callback) override;
+  std::unique_ptr<RemoteAudioInput> CreateRemoteAudioInput() override;
 
   // Used by DesktopEnvironment implementations.
   std::unique_ptr<DesktopDisplayInfoMonitor> CreateDisplayInfoMonitor()

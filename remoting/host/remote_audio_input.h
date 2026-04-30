@@ -16,6 +16,12 @@ class AudioPacket;
 // A class for injecting audio packets into a virtual audio input device.
 class RemoteAudioInput {
  public:
+  // Returns true if the current platform supports remote audio input.
+  // Note: For multi-process host, returning true only means that the platform
+  // supports remote audio input. The RemoteAudioInput class itself may only
+  // work in the desktop process due to user isolation.
+  static bool IsSupported();
+
   class Delegate {
    public:
     virtual ~Delegate() = default;

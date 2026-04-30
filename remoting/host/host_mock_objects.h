@@ -36,6 +36,7 @@
 #include "remoting/host/mojom/chromoting_host_services.mojom.h"
 #include "remoting/host/mojom/remote_url_opener.mojom.h"
 #include "remoting/host/mojom/webauthn_proxy.mojom.h"
+#include "remoting/host/remote_audio_input.h"
 #include "remoting/host/remote_open_url/url_forwarder_configurator.h"
 #include "remoting/host/security_key/security_key_auth_handler.h"
 #include "remoting/host/webauthn/remote_webauthn_state_change_notifier.h"
@@ -106,6 +107,10 @@ class MockDesktopEnvironment : public DesktopEnvironment {
               CreateRemoteWebAuthnStateChangeNotifier,
               (),
               (override));
+  MOCK_METHOD(std::unique_ptr<RemoteAudioInput>,
+              CreateRemoteAudioInput,
+              (),
+              (override));
   MOCK_METHOD(std::string, GetCapabilities, (), (const, override));
   MOCK_METHOD(void, SetCapabilities, (const std::string&), (override));
 };
@@ -135,6 +140,10 @@ class MockClientSessionControl : public ClientSessionControl {
   MOCK_METHOD(void,
               OnDesktopDisplayChanged,
               (std::unique_ptr<protocol::VideoLayout>),
+              (override));
+  MOCK_METHOD(void,
+              OnMicrophoneControl,
+              (const protocol::MicrophoneControl&),
               (override));
 };
 

@@ -189,6 +189,7 @@ class ClientSession : public protocol::HostStub,
   void SetDisableInputs(bool disable_inputs) override;
   void OnDesktopDisplayChanged(
       std::unique_ptr<protocol::VideoLayout> layout) override;
+  void OnMicrophoneControl(const protocol::MicrophoneControl& control) override;
 
   // ClientSessionEvents interface.
   void OnDesktopAttached() override;

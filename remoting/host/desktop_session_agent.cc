@@ -220,6 +220,11 @@ void DesktopSessionAgent::OnDesktopDisplayChanged(
   }
 }
 
+void DesktopSessionAgent::OnMicrophoneControl(
+    const protocol::MicrophoneControl& control) {
+  DCHECK(caller_task_runner_->BelongsToCurrentThread());
+}
+
 void DesktopSessionAgent::Start(
     const std::string& authenticated_jid,
     const ScreenResolution& resolution,

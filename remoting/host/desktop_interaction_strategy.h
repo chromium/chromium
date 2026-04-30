@@ -28,6 +28,7 @@ class ClientSessionControl;
 class CurtainMode;
 class DesktopDisplayInfoMonitor;
 class LocalInputMonitor;
+class RemoteAudioInput;
 
 // Interface that encapulates interacting with a desktop environment via a
 // relevant set of APIs. This enables state to be shared between implementations
@@ -61,6 +62,7 @@ class DesktopInteractionStrategy {
           callback) = 0;
   virtual std::unique_ptr<ActiveDisplayMonitor> CreateActiveDisplayMonitor(
       base::RepeatingCallback<void(webrtc::ScreenId)> callback) = 0;
+  virtual std::unique_ptr<RemoteAudioInput> CreateRemoteAudioInput() = 0;
 
   // Factory methods used by DesktopEnvironment that aren't exposed directly.
   virtual std::unique_ptr<DesktopDisplayInfoMonitor>

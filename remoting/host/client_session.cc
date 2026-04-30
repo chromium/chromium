@@ -22,6 +22,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/notimplemented.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -1279,6 +1280,12 @@ void ClientSession::OnDesktopDisplayChanged(
 
   // Create and remove video-streams to match the new list of displays.
   CreatePerMonitorVideoStreams();
+}
+
+void ClientSession::OnMicrophoneControl(
+    const protocol::MicrophoneControl& control) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  NOTIMPLEMENTED();
 }
 
 void ClientSession::OnDesktopAttached() {

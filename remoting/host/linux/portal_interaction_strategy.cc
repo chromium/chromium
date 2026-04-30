@@ -20,6 +20,7 @@
 #include "remoting/host/linux/pipewire_desktop_capturer.h"
 #include "remoting/host/linux/pipewire_local_input_monitor.h"
 #include "remoting/host/linux/pipewire_mouse_cursor_monitor.h"
+#include "remoting/host/linux/pipewire_remote_audio_input.h"
 #include "remoting/host/linux/portal_curtain_mode.h"
 #include "remoting/host/linux/portal_desktop_resizer.h"
 #include "remoting/host/linux/portal_display_info_loader.h"
@@ -93,6 +94,10 @@ std::unique_ptr<ActiveDisplayMonitor>
 PortalInteractionStrategy::CreateActiveDisplayMonitor(
     base::RepeatingCallback<void(webrtc::ScreenId)> callback) {
   return nullptr;
+}
+std::unique_ptr<RemoteAudioInput>
+PortalInteractionStrategy::CreateRemoteAudioInput() {
+  return PipewireRemoteAudioInput::Create();
 }
 std::unique_ptr<DesktopDisplayInfoMonitor>
 PortalInteractionStrategy::CreateDisplayInfoMonitor() {

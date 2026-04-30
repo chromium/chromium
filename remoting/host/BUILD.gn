@@ -516,6 +516,7 @@ static_library("common") {
     "register_support_host_request.h",
     "register_support_host_request_base.cc",
     "register_support_host_request_base.h",
+    "remote_audio_input.cc",
     "remote_input_filter.cc",
     "remote_input_filter.h",
     "remoting_register_support_host_request.cc",

@@ -20,6 +20,9 @@ class AudioPacket;
 // audio source in PipeWire and feeds audio packets into it.
 class PipewireRemoteAudioInput : public RemoteAudioInput {
  public:
+  static bool IsSupported();
+  static std::unique_ptr<PipewireRemoteAudioInput> Create();
+
   PipewireRemoteAudioInput();
   ~PipewireRemoteAudioInput() override;
 

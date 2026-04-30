@@ -32,6 +32,7 @@
 #include "remoting/host/input_injector.h"
 #include "remoting/host/keyboard_layout_monitor.h"
 #include "remoting/host/mouse_cursor_monitor_proxy.h"
+#include "remoting/host/remote_audio_input.h"
 #include "remoting/host/remote_open_url/url_forwarder_configurator.h"
 #include "remoting/host/resizing_host_observer.h"
 #include "remoting/host/webauthn/remote_webauthn_extension_notifier.h"
@@ -148,6 +149,13 @@ void BasicDesktopEnvironment::SetCapabilities(const std::string& capabilities) {
 std::unique_ptr<RemoteWebAuthnStateChangeNotifier>
 BasicDesktopEnvironment::CreateRemoteWebAuthnStateChangeNotifier() {
   return std::make_unique<RemoteWebAuthnExtensionNotifier>();
+}
+
+std::unique_ptr<RemoteAudioInput>
+BasicDesktopEnvironment::CreateRemoteAudioInput() {
+  DCHECK(caller_task_runner_->BelongsToCurrentThread());
+
+  return interaction_strategy_->CreateRemoteAudioInput();
 }
 
 std::unique_ptr<DesktopCapturer> BasicDesktopEnvironment::CreateVideoCapturer(

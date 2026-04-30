@@ -29,6 +29,7 @@
 #include "remoting/host/linux/pipewire_desktop_capturer.h"
 #include "remoting/host/linux/pipewire_local_input_monitor.h"
 #include "remoting/host/linux/pipewire_mouse_cursor_monitor.h"
+#include "remoting/host/linux/pipewire_remote_audio_input.h"
 #include "remoting/protocol/desktop_capturer_proxy.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 
@@ -140,6 +141,11 @@ std::unique_ptr<ActiveDisplayMonitor>
 GnomeInteractionStrategy::CreateActiveDisplayMonitor(
     base::RepeatingCallback<void(webrtc::ScreenId)> callback) {
   return nullptr;
+}
+
+std::unique_ptr<RemoteAudioInput>
+GnomeInteractionStrategy::CreateRemoteAudioInput() {
+  return PipewireRemoteAudioInput::Create();
 }
 
 std::unique_ptr<DesktopDisplayInfoMonitor>

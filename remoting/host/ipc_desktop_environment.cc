@@ -135,6 +135,11 @@ IpcDesktopEnvironment::CreateRemoteWebAuthnStateChangeNotifier() {
   return desktop_session_proxy_->CreateRemoteWebAuthnStateChangeNotifier();
 }
 
+std::unique_ptr<RemoteAudioInput>
+IpcDesktopEnvironment::CreateRemoteAudioInput() {
+  return nullptr;
+}
+
 IpcDesktopEnvironmentFactory::DesktopConnection::DesktopConnection(
     DesktopSessionProxy* desktop_session_proxy,
     std::string_view client_id)

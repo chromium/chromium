@@ -309,6 +309,19 @@ PipewireRemoteAudioInput::~PipewireRemoteAudioInput() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
+// static
+bool PipewireRemoteAudioInput::IsSupported() {
+  return EnsurePipewireInitialized();
+}
+
+// static
+std::unique_ptr<PipewireRemoteAudioInput> PipewireRemoteAudioInput::Create() {
+  if (!IsSupported()) {
+    return nullptr;
+  }
+  return std::make_unique<PipewireRemoteAudioInput>();
+}
+
 bool PipewireRemoteAudioInput::Start(base::WeakPtr<Delegate> delegate) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
