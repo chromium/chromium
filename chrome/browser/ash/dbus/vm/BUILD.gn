@@ -79,6 +79,11 @@ source_set("unit_tests") {
 
   deps = [
     ":vm",
+    "//chrome/browser/ash/guest_os",
+    "//chrome/test:test_support",
+    "//components/enterprise/data_controls/core/browser",
+    "//components/prefs:test_support",
+    "//content/test:test_support",
     "//testing/gtest",
     "//ui/shell_dialogs",
   ]

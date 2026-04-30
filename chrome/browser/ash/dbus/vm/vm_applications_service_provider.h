@@ -17,6 +17,12 @@ namespace dbus {
 class MethodCall;
 }  // namespace dbus
 
+class Profile;
+
+namespace data_controls {
+enum class Component;
+}  // namespace data_controls
+
 namespace ash {
 
 // This class exports D-Bus methods for functions that we want to be available
@@ -38,6 +44,8 @@ class VmApplicationsServiceProvider
  private:
   FRIEND_TEST_ALL_PREFIXES(VmApplicationsServiceProviderTest,
                            ParseSelectFileDialogFileTypes);
+  FRIEND_TEST_ALL_PREFIXES(VmApplicationsServiceProviderTest,
+                           DetermineDlpComponent);
 
   // Called from ExportedObject when UpdateApplicationList() is exported as a
   // D-Bus method or failed to be exported.
@@ -62,6 +70,8 @@ class VmApplicationsServiceProvider
       ui::SelectFileDialog::FileTypeInfo* file_types,
       int* file_type_index);
 
+  data_controls::Component DetermineDlpComponent(Profile* profile,
+                                                 const std::string& vm_name);
   base::WeakPtrFactory<VmApplicationsServiceProvider> weak_ptr_factory_{this};
 };
 

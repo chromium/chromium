@@ -103,10 +103,11 @@ std::optional<DlpFileDestination> GetFileDestinationForApp(
       // Expecting `PublisherId()` to return an URL. For web apps this should be
       // the start URL.
       return DlpFileDestination(GURL(app_update.PublisherId()));
-    case apps::AppType::kUnknown:
-    case apps::AppType::kRemote:
     case apps::AppType::kBorealis:
     case apps::AppType::kBruschetta:
+      return DlpFileDestination(data_controls::Component::kCrostini);
+    case apps::AppType::kUnknown:
+    case apps::AppType::kRemote:
       return std::nullopt;
   }
   return std::nullopt;
@@ -731,6 +732,17 @@ DlpFilesControllerAsh::MapFilePathToPolicyComponent(
       file_manager::util::GetCrostiniMountDirectory(profile);
   if (linux_files == file_path || linux_files.IsParent(file_path)) {
     return data_controls::Component::kCrostini;
+  }
+
+  std::string mount_name;
+  std::string file_system_name;
+  std::string full_path;
+  if (file_path.IsAbsolute() &&
+      file_manager::util::ExtractMountNameFileSystemNameFullPath(
+          file_path, &mount_name, &file_system_name, &full_path)) {
+    if (file_manager::util::IsBruschettaMountPointName(mount_name, profile)) {
+      return data_controls::Component::kCrostini;
+    }
   }
 
   return {};

@@ -14,6 +14,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/values.h"
 #include "chrome/browser/ash/borealis/borealis_features.h"
 #include "chrome/browser/ash/borealis/borealis_service.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
@@ -22,6 +23,7 @@
 #include "chrome/browser/ash/guest_os/guest_id.h"
 #include "chrome/browser/ash/guest_os/guest_os_mime_types_service.h"
 #include "chrome/browser/ash/guest_os/guest_os_mime_types_service_factory.h"
+#include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/ash/guest_os/guest_os_terminal.h"
@@ -35,6 +37,8 @@
 #include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
 #include "chromeos/ash/components/dbus/cicerone/cicerone_service.pb.h"
 #include "chromeos/ash/components/dbus/vm_applications/apps.pb.h"
+#include "components/enterprise/data_controls/core/browser/component.h"
+#include "components/prefs/pref_service.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
@@ -248,6 +252,8 @@ void VmApplicationsServiceProvider::SelectFile(
   }
   std::move(response_sender).Run(dbus::Response::FromMethodCall(method_call));
 
+  Profile* profile = ProfileManager::GetPrimaryUserProfile();
+
   // Match strings used by FilesApp GetDialogTypeAsString().
   ui::SelectFileDialog::Type type = ui::SelectFileDialog::SELECT_OPEN_FILE;
   if (request.type() == "open-multi-file") {
@@ -262,6 +268,10 @@ void VmApplicationsServiceProvider::SelectFile(
   std::u16string title = base::UTF8ToUTF16(request.title());
   base::FilePath default_path;
   SelectFileDialogExtension::Owner owner;
+
+  owner.dialog_caller = policy::DlpFileDestination(
+      DetermineDlpComponent(profile, request.vm_name()));
+
   if (!request.default_path().empty()) {
     // Parse as file: URL if possible.
     std::vector<ui::FileInfo> file_infos =
@@ -297,6 +307,35 @@ void VmApplicationsServiceProvider::SelectFile(
   dialog->SelectFileWithFileManagerParams(
       type, title, default_path, &file_types, file_type_index, owner,
       /*search_query=*/"", /*show_android_picker_apps=*/false);
+}
+
+data_controls::Component VmApplicationsServiceProvider::DetermineDlpComponent(
+    Profile* profile,
+    const std::string& vm_name) {
+  std::optional<int> vm_type = guest_os::GetContainerVmType(profile, vm_name);
+
+  if (vm_type) {
+    if (*vm_type < vm_tools::apps::VmType_MIN ||
+        *vm_type > vm_tools::apps::VmType_MAX) {
+      LOG(ERROR) << "Unknown VM type " << *vm_type << " for VM " << vm_name;
+      return data_controls::Component::kCrostini;
+    }
+    switch (static_cast<guest_os::VmType>(*vm_type)) {
+      case guest_os::VmType::TERMINA:
+      case guest_os::VmType::BAGUETTE:
+      case guest_os::VmType::BRUSCHETTA:
+        return data_controls::Component::kCrostini;
+      case guest_os::VmType::PLUGIN_VM:
+        return data_controls::Component::kPluginVm;
+      case guest_os::VmType::ARCVM:
+        return data_controls::Component::kArc;
+      default:
+        // Secure fallback: if VM type is unknown, treat as Crostini.
+        return data_controls::Component::kCrostini;
+    }
+  }
+  // If we can't find the VM in prefs, fallback to Crostini for security.
+  return data_controls::Component::kCrostini;
 }
 
 // static

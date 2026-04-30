@@ -143,6 +143,13 @@ std::string GetAndroidFilesMountPointName();
 // The canonical mount point name for crostini "Linux files" folder.
 std::string GetCrostiniMountPointName(Profile* profile);
 
+// Returns true if `name` is a Bruschetta mount point name (as
+// produced by GetGuestOsMountPointName). If `guest_id` is non-null,
+// it is populated with the corresponding GuestId.
+bool IsBruschettaMountPointName(const std::string& name,
+                                Profile* profile,
+                                guest_os::GuestId* guest_id = nullptr);
+
 // The canonical mount point name for the Guest OS `id`.
 std::string GetGuestOsMountPointName(Profile* profile,
                                      const guest_os::GuestId& id);

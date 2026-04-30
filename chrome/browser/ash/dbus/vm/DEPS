@@ -35,4 +35,7 @@ specific_include_rules = {
   "vm_applications_service_provider.cc": [
     "+chrome/browser/ui/views/select_file_dialog_extension/select_file_dialog_extension.h",
   ],
+  ".*_unittest.cc": [
+    "+chrome/test/base/testing_profile.h",
+  ],
 }

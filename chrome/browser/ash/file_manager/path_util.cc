@@ -492,7 +492,9 @@ bool IsBruschettaMountPointName(const std::string& name,
       continue;
     }
     if (name == util::GetGuestOsMountPointName(profile, provider->GuestId())) {
-      *guest_id = provider->GuestId();
+      if (guest_id) {
+        *guest_id = provider->GuestId();
+      }
       return true;
     }
   }
