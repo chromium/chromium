@@ -42,7 +42,7 @@ struct CONTENT_EXPORT PrerenderAttributes {
   PrerenderAttributes(
       const GURL& prerendering_url,
       PreloadingTriggerType trigger_type,
-      const std::string& embedder_histogram_suffix,
+      const std::string& histogram_suffix,
       std::optional<SpeculationRulesParams> speculation_rules_params,
       Referrer referrer,
       std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
@@ -79,9 +79,9 @@ struct CONTENT_EXPORT PrerenderAttributes {
 
   PreloadingTriggerType trigger_type;
 
-  // Used for kEmbedder trigger type to avoid exposing information of embedders
-  // to content/. Only used for metrics.
-  std::string embedder_histogram_suffix;
+  // Used to avoid exposing information of embedders to content/. Also used for
+  // speculation rules to distinguish variants. Only used for metrics.
+  std::string histogram_suffix;
 
   // This is std::nullopt when prerendering is initiated by browser.
   std::optional<SpeculationRulesParams> speculation_rules_params;

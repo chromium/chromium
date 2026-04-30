@@ -1244,10 +1244,10 @@ PrerenderHostRegistry::ReserveHostToActivate(
   CHECK(!reserved_prerender_host_);
   reserved_prerender_host_ = std::move(host);
 
-  return ReservedPrerenderHostInfo(
-      expected_host_id, reserved_prerender_host_->trigger_type(),
-      reserved_prerender_host_->embedder_histogram_suffix(),
-      reserved_prerender_host_->host_reused());
+  return ReservedPrerenderHostInfo(expected_host_id,
+                                   reserved_prerender_host_->trigger_type(),
+                                   reserved_prerender_host_->histogram_suffix(),
+                                   reserved_prerender_host_->host_reused());
 }
 
 RenderFrameHostImpl* PrerenderHostRegistry::GetRenderFrameHostForReservedHost(

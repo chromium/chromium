@@ -215,7 +215,7 @@ class PrerenderHostRegistryTest : public RenderViewHostImplTestHarness {
   PrerenderAttributes GeneratePrerenderAttributes(
       const GURL& url,
       PreloadingTriggerType trigger_type,
-      const std::string& embedder_histogram_suffix,
+      const std::string& histogram_suffix,
       std::optional<blink::mojom::SpeculationEagerness> eagerness,
       RenderFrameHostImpl* rfh) {
     switch (trigger_type) {
@@ -223,7 +223,7 @@ class PrerenderHostRegistryTest : public RenderViewHostImplTestHarness {
       case PreloadingTriggerType::kSpeculationRuleFromIsolatedWorld:
       case PreloadingTriggerType::kSpeculationRuleFromAutoSpeculationRules:
         return PrerenderAttributes(
-            url, trigger_type, embedder_histogram_suffix,
+            url, trigger_type, histogram_suffix,
             std::make_optional(SpeculationRulesParams(
                 blink::mojom::SpeculationTargetHint::kNoHint,
                 eagerness.value_or(
@@ -243,7 +243,7 @@ class PrerenderHostRegistryTest : public RenderViewHostImplTestHarness {
             /*form_submission=*/false);
       case PreloadingTriggerType::kEmbedder:
         return PrerenderAttributes(
-            url, trigger_type, embedder_histogram_suffix,
+            url, trigger_type, histogram_suffix,
             /*speculation_rules_params=*/std::nullopt, Referrer(),
             /*no_vary_search_hint=*/std::nullopt,
             /*initiator_render_frame_host=*/nullptr, contents()->GetWeakPtr(),
@@ -279,21 +279,21 @@ class PrerenderHostRegistryTest : public RenderViewHostImplTestHarness {
 
   void ExpectUniqueSampleOfEmbedderFinalStatus(
       PrerenderFinalStatus status,
-      const std::string& embedder_histogram_suffix,
+      const std::string& histogram_suffix,
       base::HistogramBase::Count32 count = 1) {
     histogram_tester_.ExpectUniqueSample(
         "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_" +
-            embedder_histogram_suffix,
+            histogram_suffix,
         status, count);
   }
 
   void ExpectBucketCountOfEmbedderFinalStatus(
       PrerenderFinalStatus status,
-      const std::string& embedder_histogram_suffix,
+      const std::string& histogram_suffix,
       base::HistogramBase::Count32 count = 1) {
     histogram_tester_.ExpectBucketCount(
         "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_" +
-            embedder_histogram_suffix,
+            histogram_suffix,
         status, count);
   }
 
@@ -675,7 +675,7 @@ class PrerenderHostRegistryLimitGroupTest
  public:
   using PrerenderLimitGroup = PrerenderHostRegistry::PrerenderLimitGroup;
 
-  const std::string embedder_histogram_suffix = "EmbedderSuffixForTest";
+  const std::string histogram_suffix = "EmbedderSuffixForTest";
 
   bool IsNewTabTrigger(PrerenderLimitGroup limit_group) {
     return GetParam() && limit_group != PrerenderLimitGroup::kEmbedder;
@@ -702,7 +702,7 @@ class PrerenderHostRegistryLimitGroupTest
         case PrerenderLimitGroup::kEmbedder:
           return GeneratePrerenderAttributes(
               prerendering_url, PreloadingTriggerType::kEmbedder,
-              embedder_histogram_suffix, std::nullopt, nullptr);
+              histogram_suffix, std::nullopt, nullptr);
       }
     }();
 
@@ -774,7 +774,7 @@ TEST_P(PrerenderHostRegistryLimitGroupTest, Immediate) {
       PrerenderFinalStatus::kMaxNumOfRunningImmediatePrerendersExceeded, 1);
   ExpectUniqueSampleOfEmbedderFinalStatus(
       PrerenderFinalStatus::kMaxNumOfRunningEmbedderPrerendersExceeded,
-      embedder_histogram_suffix, 0);
+      histogram_suffix, 0);
 }
 
 TEST_P(PrerenderHostRegistryLimitGroupTest, NonImmediate) {
@@ -833,7 +833,7 @@ TEST_P(PrerenderHostRegistryLimitGroupTest, NonImmediate) {
       PrerenderFinalStatus::kMaxNumOfRunningNonImmediatePrerendersExceeded, 1);
   ExpectUniqueSampleOfEmbedderFinalStatus(
       PrerenderFinalStatus::kMaxNumOfRunningEmbedderPrerendersExceeded,
-      embedder_histogram_suffix, 0);
+      histogram_suffix, 0);
 }
 
 TEST_P(PrerenderHostRegistryLimitGroupTest, Embedder) {
@@ -853,7 +853,7 @@ TEST_P(PrerenderHostRegistryLimitGroupTest, Embedder) {
   EXPECT_FALSE(prerender_host_id_embedder_exceeded);
   ExpectUniqueSampleOfEmbedderFinalStatus(
       PrerenderFinalStatus::kMaxNumOfRunningEmbedderPrerendersExceeded,
-      embedder_histogram_suffix, 1);
+      histogram_suffix, 1);
 
   // On the other hand, prerenders belonging to different limit group(immediate,
   // non-egaer) can still be started.
@@ -870,7 +870,7 @@ TEST_P(PrerenderHostRegistryLimitGroupTest, Embedder) {
       PrerenderFinalStatus::kMaxNumOfRunningNonImmediatePrerendersExceeded, 0);
   ExpectUniqueSampleOfEmbedderFinalStatus(
       PrerenderFinalStatus::kMaxNumOfRunningEmbedderPrerendersExceeded,
-      embedder_histogram_suffix, 1);
+      histogram_suffix, 1);
 }
 
 TEST_F(PrerenderHostRegistryTest,

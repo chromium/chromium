@@ -90,7 +90,7 @@ class CONTENT_EXPORT PrefetchRendererInitiatorInfo final {
 class CONTENT_EXPORT PrefetchBrowserInitiatorInfo final {
  public:
   PrefetchBrowserInitiatorInfo(
-      const std::string& embedder_histogram_suffix,
+      const std::string& histogram_suffix,
       std::unique_ptr<PrefetchRequestStatusListener> request_status_listener);
   ~PrefetchBrowserInitiatorInfo();
 
@@ -100,17 +100,16 @@ class CONTENT_EXPORT PrefetchBrowserInitiatorInfo final {
       delete;
   PrefetchBrowserInitiatorInfo(PrefetchBrowserInitiatorInfo&&);
 
-  const std::string& embedder_histogram_suffix() const {
-    return embedder_histogram_suffix_;
-  }
   PrefetchContainerObserver* request_status_listener_observer() const {
     return request_status_listener_observer_.get();
   }
 
+  const std::string& histogram_suffix() const { return histogram_suffix_; }
+
  private:
   // The suffix string of embedder triggers used for generating histogram
   // recorded per trigger.
-  std::string embedder_histogram_suffix_;
+  std::string histogram_suffix_;
 
   // `PrefetchContainerObserver` connected to `PrefetchStatusListener`.
   // Currently used for WebView initiated prefetch.
@@ -172,7 +171,7 @@ class CONTENT_EXPORT PrefetchRequest final {
       WebContents& referring_web_contents,
       const GURL& url,
       const PrefetchType& prefetch_type,
-      const std::string& embedder_histogram_suffix,
+      const std::string& histogram_suffix,
       const blink::mojom::Referrer& referrer,
       const std::optional<url::Origin>& referring_origin,
       std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
@@ -191,7 +190,7 @@ class CONTENT_EXPORT PrefetchRequest final {
       BrowserContext* browser_context,
       const GURL& url,
       const PrefetchType& prefetch_type,
-      const std::string& embedder_histogram_suffix,
+      const std::string& histogram_suffix,
       const blink::mojom::Referrer& referrer,
       bool javascript_enabled,
       const std::optional<url::Origin>& referring_origin,
@@ -214,7 +213,7 @@ class CONTENT_EXPORT PrefetchRequest final {
       base::WeakPtr<BrowserContext> browser_context,
       const GURL& url,
       const PrefetchType& prefetch_type,
-      const std::string& embedder_histogram_suffix,
+      const std::string& histogram_suffix,
       const blink::mojom::Referrer& referrer,
       bool javascript_enabled,
       const std::optional<url::Origin>& referring_origin,

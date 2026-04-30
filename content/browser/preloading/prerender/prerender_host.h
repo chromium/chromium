@@ -368,8 +368,8 @@ class CONTENT_EXPORT PrerenderHost {
   PreloadingTriggerType trigger_type() const {
     return attributes_.trigger_type;
   }
-  const std::string& embedder_histogram_suffix() const {
-    return attributes_.embedder_histogram_suffix;
+  const std::string& histogram_suffix() const {
+    return attributes_.histogram_suffix;
   }
 
   std::optional<blink::mojom::SpeculationEagerness> eagerness() const {
