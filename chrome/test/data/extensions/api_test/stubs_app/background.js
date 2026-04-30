@@ -57,7 +57,7 @@ function getApiPaths() {
       Object.getOwnPropertyNames(module.properties).forEach(function(propName) {
         const fullPath = `${namespace}.${propName}`;
         // Skip storage.session, since it's restricted to MV3.
-        if (fullPath != 'storage.session') {
+        if (fullPath !== 'storage.session') {
           apiPaths.push(fullPath);
         }
       });
@@ -80,7 +80,7 @@ function testPath(path) {
 
     // The component should be defined unless it is lastError, which depends on
     // there being an error.
-    if (typeof (module) === 'undefined' && path != 'runtime.lastError') {
+    if (typeof (module) === 'undefined' && path !== 'runtime.lastError') {
       return false;
     }
   }
@@ -97,10 +97,10 @@ function doTest() {
   });
 
   // Lack of failure implies success.
-  if (failures.length == 0) {
+  if (failures.length === 0) {
     chrome.test.notifyPass();
   } else {
-    console.log(
+    console.info(
         `failures on:\n${failures.join('\n')}\n\n\n` +
         '>>> See comment in stubs_apitest.cc for a ' +
         'hint about fixing this failure.\n\n');

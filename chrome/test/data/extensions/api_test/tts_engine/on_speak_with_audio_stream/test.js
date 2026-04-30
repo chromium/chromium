@@ -47,7 +47,7 @@ chrome.test.runTests([
     function onEvent(event) {
       const expected = expectedEvents.shift();
       chrome.test.assertEq(JSON.stringify(expected), JSON.stringify(event));
-      if (event.type == 'end') {
+      if (event.type === 'end') {
         chrome.test.assertEq(0, expectedEvents.length);
         chrome.test.assertEq(1, errors);
         chrome.ttsEngine.onSpeakWithAudioStream.removeListener(listener);

@@ -5,7 +5,7 @@
 function assertNoSensitiveFields(tab) {
   ['url', 'pendingUrl', 'title', 'favIconUrl'].forEach(function(field) {
     chrome.test.assertEq(
-        undefined, tab[field], `Sensitive property ${field} is visible`)
+        undefined, tab[field], `Sensitive property ${field} is visible`);
   });
 }
 
@@ -18,7 +18,7 @@ function testUrl(domain, file) {
 
 function makeCallbackAfterLoaded(expectedTabId, needsFavIcon, callback) {
   chrome.tabs.onUpdated.addListener(function _listener(tabId, info, tab) {
-    if (expectedTabId == tabId && tab.status == 'complete' &&
+    if (expectedTabId === tabId && tab.status === 'complete' &&
         (tab.favIconUrl || !needsFavIcon)) {
       chrome.tabs.onUpdated.removeListener(_listener);
       callback();
@@ -100,22 +100,23 @@ chrome.test.getConfig(function(config) {
     },
 
     function testOnUpdatedRevealsNoSensitiveFieldsWithNoHostPermission() {
-      const getCurrentTabs = function(resolve) {
-      chrome.tabs.query({}, (tabs) => {
-        resolve(tabs);
-      });
+      const getCurrentTabs = new Promise((resolve) => {
+        chrome.tabs.query({}, (tabs) => {
+          resolve(tabs);
+        });
       });
 
       getCurrentTabs.then((existingTabs) => {
         let neededCallbacks = 2;
         const existingTabIds = existingTabs.map(tab => tab.id);
         chrome.tabs.onUpdated.addListener(function _listener(tabId, info, tab) {
-          if (existingTabIds.includes(tabId))
+          if (existingTabIds.includes(tabId)) {
             return;  // Ignore tabs that were already around.
+          }
           assertNoSensitiveFields(info);
           assertNoSensitiveFields(tab);
           neededCallbacks--;
-          if (neededCallbacks == 0) {
+          if (neededCallbacks === 0) {
             chrome.tabs.onUpdated.removeListener(_listener);
             chrome.test.succeed();
           }
@@ -138,6 +139,6 @@ chrome.test.getConfig(function(config) {
                           chrome.test.assertEq(1, tabs.length);
                           assertNoSensitiveFields(tabs[0]);
                         }));
-    }
+    },
   ]);
 });

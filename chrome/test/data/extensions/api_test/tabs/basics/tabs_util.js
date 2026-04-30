@@ -42,7 +42,7 @@ function waitForAllTabs(callback) {
       let ready = true;
       for (const i in windows) {
         for (const j in windows[i].tabs) {
-          if (windows[i].tabs[j].status != 'complete') {
+          if (windows[i].tabs[j].status !== 'complete') {
             ready = false;
             break;
           }
@@ -68,7 +68,7 @@ function queryForTab(tabId, queryInfo, callback) {
       queryInfo,
       pass(function(tabs) {
         const foundTabs = tabs.filter(function(tab) {
-          return (tab.id == tabId);
+          return (tab.id === tabId);
         });
         if (callback !== null) {
           callback(foundTabs.length ? foundTabs[0] : null);

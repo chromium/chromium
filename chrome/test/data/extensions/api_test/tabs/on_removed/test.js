@@ -28,16 +28,16 @@ function setupWindow(tabUrls, callback) {
     let removedCount = 0;
     chrome.windows.getAll({}, function(windows) {
       for (const i in windows) {
-        if (windows[i].id != winId) {
+        if (windows[i].id !== winId) {
           chrome.windows.remove(windows[i].id, function() {
             removedCount++;
-            if (removedCount == windows.length - 1) {
+            if (removedCount === windows.length - 1) {
               callback(winId, tabIds);
             }
           });
         }
       }
-      if (windows.length == 1) {
+      if (windows.length === 1) {
         callback(winId, tabIds);
       }
     });

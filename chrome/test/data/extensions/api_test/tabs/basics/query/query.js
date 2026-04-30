@@ -55,7 +55,7 @@ loadScript.then(async function() {
                             if (tabs[x].active) {
                               activeTabs.push(tabs[x]);
                             }
-                            if (tabs[x].windowId == testWindowId) {
+                            if (tabs[x].windowId === testWindowId) {
                               windowTabs.push(tabs[x]);
                               if (tabs[x].active) {
                                 activeAndWindowTabs.push(tabs[x]);
@@ -181,7 +181,7 @@ loadScript.then(async function() {
                           for (let x = 0; x < tabs.length; x++) {
                             chrome.windows.get(
                                 tabs[x].windowId, pass(function(win) {
-                                  assertTrue(win.type == 'normal');
+                                  assertTrue(win.type === 'normal');
                                   assertEq(false, win.alwaysOnTop);
                                 }));
                           }
@@ -210,7 +210,7 @@ loadScript.then(async function() {
                       {windowType: 'popup'}, pass(function(tabs) {
                         assertEq(2, tabs.length);
                         for (let i = 0; i < tabs.length; i++) {
-                          assertFalse(tabs[i].id == chrome.tabs.TAB_ID_NONE);
+                          assertFalse(tabs[i].id === chrome.tabs.TAB_ID_NONE);
                         }
                       }));
                   chrome.tabs.query(
@@ -221,7 +221,7 @@ loadScript.then(async function() {
                       pass(function(tabs) {
                         assertEq(2, tabs.length);
                         for (let i = 0; i < tabs.length; i++) {
-                          assertFalse(tabs[i].id == chrome.tabs.TAB_ID_NONE);
+                          assertFalse(tabs[i].id === chrome.tabs.TAB_ID_NONE);
                         }
                       }));
                 }));

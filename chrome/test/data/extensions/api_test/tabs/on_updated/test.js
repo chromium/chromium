@@ -24,7 +24,7 @@ function checkExpectations() {
 const getURL = chrome.runtime.getURL;
 
 chrome.tabs.onUpdated.addListener(function(tabId, info, tab) {
-  console.log(`---onUpdated: ${info.status}, ${info.url}. ${info.favIconUrl}`);
+  console.info(`---onUpdated: ${info.status}, ${info.url}. ${info.favIconUrl}`);
   if (shouldIgnore && shouldIgnore(info)) {
     return;
   }
@@ -112,7 +112,7 @@ chrome.test.runTests([
 
   async function faviconLoaded() {
     // TODO(https://crbug.com/449095632): Enable this on desktop Android.
-    if ((await chrome.runtime.getPlatformInfo()).os == 'android') {
+    if ((await chrome.runtime.getPlatformInfo()).os === 'android') {
       chrome.test.succeed('skipped');
       return;
     }
@@ -127,7 +127,7 @@ chrome.test.runTests([
 
   async function titleUpdated() {
     // TODO(https://crbug.com/449095632): Enable this on desktop Android.
-    if ((await chrome.runtime.getPlatformInfo()).os == 'android') {
+    if ((await chrome.runtime.getPlatformInfo()).os === 'android') {
       chrome.test.succeed('skipped');
       return;
     }

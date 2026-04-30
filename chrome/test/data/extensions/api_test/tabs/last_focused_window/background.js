@@ -9,7 +9,7 @@ chrome.test.runTests([
         chrome.test.callbackPass(function(win) {
           chrome.windows.getLastFocused(
               chrome.test.callbackPass(function(lastFocusedWindowData) {
-                chrome.test.assertTrue(lastFocusedWindowData.id == win.id);
+                chrome.test.assertTrue(lastFocusedWindowData.id === win.id);
               }));
         }));
   },

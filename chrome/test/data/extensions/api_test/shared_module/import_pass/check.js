@@ -7,10 +7,10 @@ if (typeof passExported === 'undefined') {
 }
 
 chrome.runtime.onInstalled.addListener(function(details) {
-  if (details.reason == 'shared_module_update' &&
-      details.previousVersion == '1.0' &&
+  if (details.reason === 'shared_module_update' &&
+      details.previousVersion === '1.0' &&
       // This ID corresponds to the public key in 'shared'.
-      details.id == 'gpcckkmippodnppallflahfabmeilgjg') {
+      details.id === 'gpcckkmippodnppallflahfabmeilgjg') {
     chrome.test.sendMessage('shared_module_updated');
   }
 });

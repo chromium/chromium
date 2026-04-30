@@ -40,7 +40,7 @@ function testMulticast() {
         return;
       }
 
-      if (result.resultCode == kTestMessageLength * 2 &&
+      if (result.resultCode === kTestMessageLength * 2 &&
           kTestMessage === arrayBufferToString(result.data)) {
         callback(cancelled);
       } else {
@@ -117,7 +117,6 @@ function testMulticast() {
   }
 
   function recvBeforeAddMembership(serverSocketId) {
-    let recvTimeout;
     const canceller = waitForMessage(serverSocketId, function(cancelled) {
       clearTimeout(recvTimeout);
       if (cancelled) {
@@ -127,7 +126,7 @@ function testMulticast() {
       }
     });
     testSendMessage(kTestMessage);  // Meant to be lost.
-    recvTimeout = setTimeout(function() {
+    const recvTimeout = setTimeout(function() {
       canceller();
       testSendMessage(kTestMessage, '127.0.0.1', kPort);
     }, 2000);
@@ -137,7 +136,6 @@ function testMulticast() {
     // Join group.
     socket.joinGroup(serverSocketId, kMulticastAddress, function(result) {
       chrome.test.assertEq(0, result, 'Join group failed.');
-      let recvTimeout;
       const canceller = waitForMessage(serverSocketId, function(cancelled) {
         clearTimeout(recvTimeout);
         if (!cancelled) {
@@ -147,7 +145,7 @@ function testMulticast() {
         }
       });
       testSendMessage(kTestMessage);
-      recvTimeout = setTimeout(function() {
+      const recvTimeout = setTimeout(function() {
         canceller();
         socket.destroy(serverSocketId);
         chrome.test.fail('Cannot receive from multicast group.');
@@ -158,7 +156,6 @@ function testMulticast() {
   function recvWithoutMembership(serverSocketId) {
     socket.leaveGroup(serverSocketId, kMulticastAddress, function(result) {
       chrome.test.assertEq(0, result, 'leave group failed.');
-      let recvTimeout;
       const canceller = waitForMessage(serverSocketId, function(cancelled) {
         clearTimeout(recvTimeout);
         if (cancelled) {
@@ -169,7 +166,7 @@ function testMulticast() {
         }
       });
       testSendMessage(request);
-      recvTimeout = setTimeout(function() {
+      const recvTimeout = setTimeout(function() {
         canceller();
       }, 2000);
     });

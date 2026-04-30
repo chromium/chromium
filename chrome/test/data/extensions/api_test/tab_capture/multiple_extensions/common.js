@@ -10,7 +10,7 @@ function startTabCapture() {
       console.error(JSON.stringify(chrome.runtime.lastError));
     }
     if (captureStream) {
-      console.log('Sending success response...');
+      console.info('Sending success response...');
       chrome.test.sendMessage('success');
     }
   });
@@ -27,4 +27,4 @@ function loop() {
 
 loop();
 
-console.log('Extension loaded.');
+console.info('Extension loaded.');

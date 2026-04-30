@@ -39,7 +39,7 @@ loadScript.then(async function() {
       const onUpdatedCompleted = chrome.test.listenForever(
           chrome.tabs.onUpdated,
           function(tabid, changeInfo) {
-            if (tabid == otherTabId && changeInfo.status == 'complete') {
+            if (tabid === otherTabId && changeInfo.status === 'complete') {
               onUpdatedCompleted();
             }
           },
@@ -62,7 +62,7 @@ loadScript.then(async function() {
               assertEq(changeInfo.status, tab.status);
             }
 
-            if (tabid == otherTabId && changeInfo.status == 'complete') {
+            if (tabid === otherTabId && changeInfo.status === 'complete') {
               onUpdatedCompleted();
             }
           },

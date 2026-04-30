@@ -81,7 +81,7 @@ function renderTestPatternLoop() {
       // Increase the wait time between switching test patterns for overloaded
       // bots that aren't capturing all the frames of video. Only do this for
       // the first test phase, since increases shouldn't be needed after that.
-      if (testRoundNumber == 0) {
+      if (testRoundNumber === 0) {
         this.stepTimeMillis *= 1.25;
       }
     }
@@ -123,8 +123,8 @@ function waitForExpectedColors(colorDeviation) {
       if (Math.abs(pixel[0] - curColor[0]) <= colorDeviation &&
           Math.abs(pixel[1] - curColor[1]) <= colorDeviation &&
           Math.abs(pixel[2] - curColor[2]) <= colorDeviation) {
-        console.debug(
-            `${testRoundNumber == 0 ? 'First' : 'Second'} round: ` +
+        console.info(
+            `${testRoundNumber === 0 ? 'First' : 'Second'} round: ` +
             `Observed expected color RGB(${curColor}) in the video as ` +
             `RGB(${pixel})`);
         expectedColors.splice(i, 1);
@@ -132,11 +132,11 @@ function waitForExpectedColors(colorDeviation) {
     }
   }
 
-  if (expectedColors.length == 0) {
+  if (expectedColors.length === 0) {
     // Successful end of the current test round. If the first round, sleep, then
     // execute the second round. If the second round, then the whole test has
     // succeeded.
-    if (testRoundNumber == 0) {
+    if (testRoundNumber === 0) {
       // Destroy the video, which will disconnect the consumer of the
       // MediaStream.
       this.video.removeEventListener('error', chrome.test.fail);
@@ -146,7 +146,7 @@ function waitForExpectedColors(colorDeviation) {
       // Wait one second, then execute the second round of testing. This tests
       // the suspend/resume functionality of tab capture (w.r.t. a MediaStream
       // having no consumers, and then being re-used with a new consumer).
-      console.debug('First round succeeded! Now testing suspend/resume...');
+      console.info('First round succeeded! Now testing suspend/resume...');
       setTimeout(function() {
         ++testRoundNumber;
         for (const color of colors) {

@@ -12,7 +12,7 @@ chrome.test.runTests([
     chrome.tts.speak(
         'native speech', {
           'onEvent': function(event) {
-            if (event.type == 'end') {
+            if (event.type === 'end') {
               chrome.test.succeed();
             }
           },
@@ -41,7 +41,7 @@ chrome.test.runTests([
         'extension speech', {
           'voiceName': 'Alice',
           'onEvent': function(event) {
-            if (event.type == 'end') {
+            if (event.type === 'end') {
               chrome.test.assertEq(true, calledOurEngine);
               chrome.ttsEngine.onSpeak.removeListener(speakListener);
               chrome.ttsEngine.onStop.removeListener(stopListener);
@@ -76,7 +76,7 @@ chrome.test.runTests([
           'voiceName': 'George',
           'enqueue': true,
           'onEvent': function(event) {
-            if (event.type == 'end') {
+            if (event.type === 'end') {
               callbacks++;
             }
           },
@@ -90,7 +90,7 @@ chrome.test.runTests([
           'lang': 'fr-FR',
           'enqueue': true,
           'onEvent': function(event) {
-            if (event.type == 'end') {
+            if (event.type === 'end') {
               callbacks++;
             }
           },
@@ -106,7 +106,7 @@ chrome.test.runTests([
           'voiceName': 'Alice',
           'enqueue': true,
           'onEvent': function(event) {
-            if (event.type == 'end') {
+            if (event.type === 'end') {
               callbacks++;
             }
           },
@@ -119,11 +119,11 @@ chrome.test.runTests([
           'voiceName': 'Pat',
           'enqueue': true,
           'onEvent': function(event) {
-            if (event.type == 'end') {
+            if (event.type === 'end') {
               callbacks++;
               chrome.ttsEngine.onSpeak.removeListener(speakListener);
               chrome.ttsEngine.onStop.removeListener(stopListener);
-              if (callbacks == 4 && speakListenerCalls == 2) {
+              if (callbacks === 4 && speakListenerCalls === 2) {
                 chrome.test.succeed();
               }
             }

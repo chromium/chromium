@@ -9,7 +9,7 @@ let shouldIgnore = true;
 function expect(data) {
   chrome.tabs.onUpdated.addListener(function(tabId, info, tab) {
     // Wait until the first loading of a non-blank url.
-    if (info.status === 'loading' && info.url != 'about:blank') {
+    if (info.status === 'loading' && info.url !== 'about:blank') {
       shouldIgnore = false;
     }
     if (shouldIgnore) {

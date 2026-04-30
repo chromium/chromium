@@ -100,8 +100,8 @@ function onDataRead(readInfo) {
 
 function onWriteOrSendToComplete(writeInfo) {
   bytesWritten += writeInfo.bytesWritten;
-  if (bytesWritten == request.length) {
-    if (protocol == 'tcp') {
+  if (bytesWritten === request.length) {
+    if (protocol === 'tcp') {
       socket.read(socketId, onDataRead);
     } else {
       socket.recvFrom(socketId, onDataRead);
@@ -110,14 +110,14 @@ function onWriteOrSendToComplete(writeInfo) {
 }
 
 function onSetKeepAlive(result) {
-  if (protocol == 'tcp') {
+  if (protocol === 'tcp') {
     chrome.test.assertTrue(result, 'setKeepAlive failed for TCP.');
   } else {
     chrome.test.assertFalse(result, 'setKeepAlive did not fail for UDP.');
   }
 
   string2ArrayBuffer(request, function(arrayBuffer) {
-    if (protocol == 'tcp') {
+    if (protocol === 'tcp') {
       socket.write(socketId, arrayBuffer, onWriteOrSendToComplete);
     } else {
       socket.sendTo(
@@ -127,7 +127,7 @@ function onSetKeepAlive(result) {
 }
 
 function onSetNoDelay(result) {
-  if (protocol == 'tcp') {
+  if (protocol === 'tcp') {
     chrome.test.assertTrue(result, 'setNoDelay failed for TCP.');
   } else {
     chrome.test.assertFalse(result, 'setNoDelay did not fail for UDP.');
@@ -142,7 +142,7 @@ function onGetInfo(result) {
       !!result.localPort, 'Bound socket should always have local port');
   chrome.test.assertEq(result.socketType, protocol, 'Unexpected socketType');
 
-  if (protocol == 'tcp') {
+  if (protocol === 'tcp') {
     // NOTE: We're always called with 'localhost', but getInfo will only return
     // IPs, not names.
     chrome.test.assertEq(
@@ -166,7 +166,7 @@ function onGetInfo(result) {
 function onConnectOrBindComplete(result) {
   chrome.test.assertEq(
       0, result, `Connect or bind failed with error ${result}`);
-  if (result == 0) {
+  if (result === 0) {
     socket.getInfo(socketId, onGetInfo);
   }
 }
@@ -174,7 +174,7 @@ function onConnectOrBindComplete(result) {
 function onCreate(socketInfo) {
   socketId = socketInfo.socketId;
   chrome.test.assertTrue(socketId > 0, 'failed to create socket');
-  if (protocol == 'tcp') {
+  if (protocol === 'tcp') {
     socket.connect(socketId, address, port, onConnectOrBindComplete);
   } else {
     socket.bind(socketId, '0.0.0.0', 0, onConnectOrBindComplete);
@@ -308,14 +308,14 @@ const testPendingCallback = function() {
   succeeded = false;
   waitCount = 0;
 
-  console.log('calling create');
+  console.info('calling create');
   chrome.socket.create(protocol, null, onCreate);
 
   function onCreate(createInfo) {
     chrome.test.assertTrue(createInfo.socketId > 0, 'failed to create socket');
     socketId = createInfo.socketId;
-    console.log('calling connect');
-    if (protocol == 'tcp') {
+    console.info('calling connect');
+    if (protocol === 'tcp') {
       chrome.socket.connect(socketId, address, port, onConnect1);
     } else {
       chrome.socket.bind(socketId, '0.0.0.0', 0, onConnect1);
@@ -324,20 +324,20 @@ const testPendingCallback = function() {
 
   function onConnect1(result) {
     chrome.test.assertEq(0, result, 'failed to connect');
-    console.log(`Socket connect: result=${result}`, chrome.runtime.lastError);
+    console.info(`Socket connect: result=${result}`, chrome.runtime.lastError);
 
-    console.log('calling read with readCB1 callback');
-    if (protocol == 'tcp') {
+    console.info('calling read with readCB1 callback');
+    if (protocol === 'tcp') {
       chrome.socket.read(socketId, readCB1);
     } else {
       chrome.socket.recvFrom(socketId, readCB1);
     }
 
-    console.log('calling disconnect');
+    console.info('calling disconnect');
     chrome.socket.disconnect(socketId);
 
-    console.log('calling connect');
-    if (protocol == 'tcp') {
+    console.info('calling connect');
+    if (protocol === 'tcp') {
       chrome.socket.connect(socketId, address, port, onConnect2);
     } else {
       chrome.socket.bind(socketId, '0.0.0.0', 0, onConnect2);
@@ -346,17 +346,17 @@ const testPendingCallback = function() {
 
   function onConnect2(result) {
     chrome.test.assertEq(0, result, 'failed to connect');
-    console.log(`Socket connect: result=${result}`, chrome.runtime.lastError);
+    console.info(`Socket connect: result=${result}`, chrome.runtime.lastError);
 
-    console.log('calling read with readCB2 callback');
-    if (protocol == 'tcp') {
+    console.info('calling read with readCB2 callback');
+    if (protocol === 'tcp') {
       chrome.socket.read(socketId, readCB2);
     } else {
       chrome.socket.recvFrom(socketId, readCB2);
     }
 
     string2ArrayBuffer(request, function(arrayBuffer) {
-      if (protocol == 'tcp') {
+      if (protocol === 'tcp') {
         chrome.socket.write(socketId, arrayBuffer, onWriteComplete);
       } else {
         chrome.socket.sendTo(
@@ -366,12 +366,12 @@ const testPendingCallback = function() {
   }
 
   function onWriteComplete(res) {
-    console.log(`write callback: bytesWritten=${res.bytesWritten}`);
+    console.info(`write callback: bytesWritten=${res.bytesWritten}`);
   }
 
   // Callback 1 for initial read call
   function readCB1(readInfo) {
-    console.log(
+    console.info(
         `Socket read CB1: result=${readInfo.resultCode}`,
         chrome.runtime.lastError);
     // We disconnect the socket right after calling read(), so behavior here
@@ -381,7 +381,7 @@ const testPendingCallback = function() {
 
   // Second callback, for read call after re-connect
   function readCB2(readInfo) {
-    console.log(
+    console.info(
         `Socket read CB2: result=${readInfo.resultCode}`,
         chrome.runtime.lastError);
     if (readInfo.resultCode === -1) {
@@ -391,7 +391,7 @@ const testPendingCallback = function() {
     } else {
       arrayBuffer2String(readInfo.data, function(s) {
         assertDataMatch(expectedResponsePattern, s);
-        console.log('Success!');
+        console.info('Success!');
         succeeded = true;
         chrome.test.succeed();
       });
@@ -401,7 +401,7 @@ const testPendingCallback = function() {
 
 // See http://crbug.com/41134291.
 const testUsingTCPSocketOnUDPMethods = function() {
-  if (protocol == 'udp') {
+  if (protocol === 'udp') {
     socket.create('tcp', function(createInfo) {
       socket.recvFrom(createInfo.socketId, 256, function(recvFromInfo) {
         chrome.test.assertTrue(recvFromInfo.resultCode < 0);
@@ -428,27 +428,27 @@ const testUsingTCPSocketOnUDPMethods = function() {
 };
 
 const testWriteQuota = function() {
-  console.log('calling create, protoocol=', protocol);
+  console.info('calling create, protoocol=', protocol);
   chrome.socket.create(protocol, {}, onCreate);
 
   function onCreate(createInfo) {
     chrome.test.assertTrue(createInfo.socketId > 0, 'failed to create socket');
     socketId = createInfo.socketId;
-    if (protocol == 'tcp') {
-      console.log('calling connect');
+    if (protocol === 'tcp') {
+      console.info('calling connect');
       chrome.socket.connect(socketId, address, port, onConnectOrBindComplete);
     } else {
-      console.log('calling bind');
+      console.info('calling bind');
       socket.bind(socketId, '0.0.0.0', 0, onConnectOrBindComplete);
     }
   }
 
   function onConnectOrBindComplete(result) {
     chrome.test.assertEq(0, result, 'failed to connect');
-    console.log(`Socket connect: result=${result}`, chrome.runtime.lastError);
+    console.info(`Socket connect: result=${result}`, chrome.runtime.lastError);
 
     string2ArrayBuffer(request, function(arrayBuffer) {
-      if (protocol == 'tcp') {
+      if (protocol === 'tcp') {
         chrome.socket.write(socketId, arrayBuffer, onComplete);
       } else {
         socket.sendTo(socketId, arrayBuffer, address, port, onComplete);
@@ -457,9 +457,9 @@ const testWriteQuota = function() {
   }
 
   function onComplete(result) {
-    console.log(`onComplete: result=${result}`, chrome.runtime.lastError);
+    console.info(`onComplete: result=${result}`, chrome.runtime.lastError);
     if (chrome.runtime.lastError &&
-        chrome.runtime.lastError.message == 'Exceeded write quota.') {
+        chrome.runtime.lastError.message === 'Exceeded write quota.') {
       chrome.test.succeed();
       return;
     }
@@ -473,28 +473,28 @@ const onMessageReply = function(message) {
   const testType = parts[0];
   address = parts[1];
   port = parseInt(parts[2]);
-  console.log(
+  console.info(
       `Running tests, protocol ${testType}, echo server ` +
       `${address}:${port}`);
-  if (testType == 'tcp_server') {
+  if (testType === 'tcp_server') {
     chrome.test.runTests([
       testSocketListening,
       testSocketListenInUse,
     ]);
-  } else if (testType == 'multicast') {
-    console.log('Running multicast tests');
+  } else if (testType === 'multicast') {
+    console.info('Running multicast tests');
     chrome.test.runTests([testMulticast]);
-  } else if (testType == 'tcp_write_quota') {
-    console.log('Running TCP write quota tests');
+  } else if (testType === 'tcp_write_quota') {
+    console.info('Running TCP write quota tests');
     protocol = 'tcp';
     chrome.test.runTests([testWriteQuota]);
-  } else if (testType == 'udp_sendTo_quota') {
-    console.log('Running UDP sendTo write quota tests');
+  } else if (testType === 'udp_sendTo_quota') {
+    console.info('Running UDP sendTo write quota tests');
     protocol = 'udp';
     chrome.test.runTests([testWriteQuota]);
   } else {
     protocol = testType;
-    if (protocol == 'udp') {
+    if (protocol === 'udp') {
       request = UDP_REQUEST;
       expectedResponsePattern = UDP_EXPECTED_RESPONSE_PATTERN;
     } else {

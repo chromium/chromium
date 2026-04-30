@@ -43,11 +43,11 @@ function testMulticast() {
     let cancelled = false;
     let relayCanceller = null;
     chrome.sockets.udp.onReceive.addListener(function(info) {
-      console.log(
+      console.info(
           'Data received: ' +
           'socketId=' + info.socketId + ', bytes=' + info.data.byteLength +
           ', address=' + info.remoteAddress + ', port=' + info.remotePort);
-      if (socketId != info.socketId) {
+      if (socketId !== info.socketId) {
         return;
       }
 
@@ -55,7 +55,7 @@ function testMulticast() {
         return;
       }
 
-      if (info.data.byteLength == kTestMessageLength * 2 &&
+      if (info.data.byteLength === kTestMessageLength * 2 &&
           kTestMessage === arrayBufferToString(info.data)) {
         callback(false);
       } else {
@@ -74,7 +74,7 @@ function testMulticast() {
   }
 
   function testMulticastSettings(nextTest) {
-    console.log('*************** testMulticastSettings');
+    console.info('*************** testMulticastSettings');
     chrome.sockets.udp.create({}, function(socketInfo) {
       let socketId;
       if (socketInfo) {
@@ -125,7 +125,7 @@ function testMulticast() {
                   chrome.sockets.udp.send(
                       clientSocketId, stringToArrayBuffer(kTestMessage),
                       address, kPort, function(result) {
-                        console.log(
+                        console.info(
                             'Sent bytes to socket:' +
                             ' socketId=' + clientSocketId +
                             ', bytes=' + result.bytesSent +
@@ -141,8 +141,7 @@ function testMulticast() {
   }
 
   function testRecvBeforeAddMembership(serverSocketId, nextTest) {
-    console.log('*************** testRecvBeforeAddMembership');
-    let recvTimeout;
+    console.info('*************** testRecvBeforeAddMembership');
     const canceller = waitForMessage(serverSocketId, function(cancelled) {
       clearTimeout(recvTimeout);
       if (cancelled) {
@@ -152,18 +151,17 @@ function testMulticast() {
       }
     });
     testSendMessage(kTestMessage, kMulticastAddress); // Meant to be lost.
-    recvTimeout = setTimeout(function () {
+    const recvTimeout = setTimeout(function () {
       // This is expected to execute.
       canceller();
     }, 2000);
   }
 
   function testRecvWithMembership(serverSocketId, nextTest) {
-    console.log('*************** testRecvWithMembership');
+    console.info('*************** testRecvWithMembership');
     chrome.sockets.udp.joinGroup(
         serverSocketId, kMulticastAddress, function(result) {
           chrome.test.assertEq(0, result, 'Join group failed.');
-          let recvTimeout;
           const canceller = waitForMessage(serverSocketId, function(cancelled) {
             clearTimeout(recvTimeout);
             if (!cancelled) {
@@ -174,7 +172,7 @@ function testMulticast() {
             }
           });
           testSendMessage(kTestMessage, kMulticastAddress);
-          recvTimeout = setTimeout(function() {
+          const recvTimeout = setTimeout(function() {
             canceller();
             chrome.test.fail('Cannot receive from multicast group.');
           }, 2000);
@@ -182,11 +180,10 @@ function testMulticast() {
   }
 
   function testRecvWithoutMembership(serverSocketId, nextTest) {
-    console.log('*************** testRecvWithoutMembership');
+    console.info('*************** testRecvWithoutMembership');
     chrome.sockets.udp.leaveGroup(
         serverSocketId, kMulticastAddress, function(result) {
           chrome.test.assertEq(0, result, 'leave group failed.');
-          let recvTimeout;
           const canceller = waitForMessage(serverSocketId, function(cancelled) {
             clearTimeout(recvTimeout);
             if (cancelled) {
@@ -196,7 +193,7 @@ function testMulticast() {
             }
           });
           testSendMessage(request, kMulticastAddress);
-          recvTimeout = setTimeout(function() {
+          const recvTimeout = setTimeout(function() {
             // This is expected to execute.
             canceller();
           }, 2000);
@@ -204,7 +201,7 @@ function testMulticast() {
   }
 
   function testMulticastRecv() {
-    console.log('*************** testMulticastRecv');
+    console.info('*************** testMulticastRecv');
     chrome.sockets.udp.create({}, function(socketInfo) {
       const serverSocketId = socketInfo.socketId;
       chrome.sockets.udp.bind(
@@ -218,7 +215,7 @@ function testMulticast() {
                 testRecvWithoutMembership(serverSocketId, function() {
                   // Success!
                   chrome.sockets.udp.close(serverSocketId, function() {
-                    console.log('*************** SUCCESS! ');
+                    console.info('*************** SUCCESS! ');
                     chrome.test.succeed();
                   });
                 });

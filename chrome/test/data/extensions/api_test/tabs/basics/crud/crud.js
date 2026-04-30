@@ -34,7 +34,7 @@ function getSelectedAdapter(winId, callback) {
 
   chrome.test.assertEq(3, manifest.manifest_version);
   chrome.tabs.query({windowId: winId, active: true}, tabs => {
-    if (tabs.length == 0) {
+    if (tabs.length === 0) {
       callback(undefined);
     } else {
       callback(tabs[0]);

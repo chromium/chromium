@@ -13,7 +13,7 @@ window.sinewave = {
       data.gainNode.gain.value = 0.5;
       data.gainNode.connect(data.audioContext.destination);
     }
-    if (!data.oscillator || data.oscillator.frequency.value != frequency) {
+    if (!data.oscillator || data.oscillator.frequency.value !== frequency) {
       // Note: We recreate the oscillator each time because this switches the
       // audio frequency immediately.  Re-using the same oscillator tends to
       // take several hundred milliseconds to ramp-up/down the frequency.

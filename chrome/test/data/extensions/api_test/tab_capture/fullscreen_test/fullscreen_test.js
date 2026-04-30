@@ -28,9 +28,9 @@ let mediaStream = null;
 const events = [];
 
 chrome.tabCapture.onStatusChanged.addListener(function(info) {
-  if (info.status == 'active') {
+  if (info.status === 'active') {
     events.push(info.fullscreen);
-    if (events.length == 3) {
+    if (events.length === 3) {
       chrome.test.assertFalse(events[0]);
       chrome.test.assertTrue(events[1]);
       chrome.test.assertFalse(events[2]);

@@ -85,12 +85,12 @@ const testSending = function() {
   socketId = 0;
   let localSocketId;
 
-  console.log('testSending');
+  console.info('testSending');
   setTimeout(waitForBlockingOperation, 1000);
   chrome.sockets.udp.create({}, onCreate);
 
   function onCreate(socketInfo) {
-    console.log('socket created: ' + socketInfo.socketId);
+    console.info('socket created: ' + socketInfo.socketId);
     localSocketId = socketId = socketInfo.socketId;
     chrome.test.assertTrue(localSocketId > 0, 'failed to create socket');
     chrome.sockets.udp.onReceive.addListener(onReceive);
@@ -99,7 +99,7 @@ const testSending = function() {
   }
 
   function onBind(result) {
-    console.log('socket bound to local host');
+    console.info('socket bound to local host');
     chrome.test.assertEq(0, result, 'Bind failed with error: ' + result);
     if (result < 0) {
       return;
@@ -109,7 +109,7 @@ const testSending = function() {
   }
 
   function onGetInfo(result) {
-    console.log('got socket info');
+    console.info('got socket info');
     chrome.test.assertTrue(
         !!result.localAddress, 'Bound socket should always have local address');
     chrome.test.assertTrue(
@@ -119,7 +119,7 @@ const testSending = function() {
   }
 
   function onArrayBuffer(arrayBuffer) {
-    console.log('sending bytes to echo server: ' + arrayBuffer.byteLength);
+    console.info('sending bytes to echo server: ' + arrayBuffer.byteLength);
     chrome.sockets.udp.send(localSocketId, arrayBuffer, address, port,
                             function(sendInfo) {
       chrome.test.assertEq(0, sendInfo.resultCode);
@@ -132,10 +132,10 @@ const testSending = function() {
   }
 
   function onReceive(info) {
-    console.log(
+    console.info(
         'received bytes on from echo server: ' + info.data.byteLength + '(' +
         info.socketId + ')');
-    if (localSocketId == info.socketId) {
+    if (localSocketId === info.socketId) {
       arrayBuffer2String(info.data, function(response) {
         dataAsString = response;  // save this for error reporting
         chrome.test.assertEq(request, response);
@@ -158,12 +158,12 @@ const testSetPaused = function() {
   let localSocketId = 0;
   let receiveTimer;
 
-  console.log('testSetPaused');
+  console.info('testSetPaused');
   setTimeout(waitForBlockingOperation, 1000);
   chrome.sockets.udp.create({}, onCreate);
 
   function onCreate(socketInfo) {
-    console.log('socket created: ' + socketInfo.socketId);
+    console.info('socket created: ' + socketInfo.socketId);
     localSocketId = socketId = socketInfo.socketId;
     chrome.test.assertTrue(localSocketId > 0, 'failed to create socket');
 
@@ -176,7 +176,7 @@ const testSetPaused = function() {
   }
 
   function onBind(result) {
-    console.log('socket bound to local host');
+    console.info('socket bound to local host');
     chrome.test.assertEq(0, result, 'Bind failed with error: ' + result);
     if (result < 0) {
       return;
@@ -186,7 +186,7 @@ const testSetPaused = function() {
   }
 
   function onArrayBuffer(arrayBuffer) {
-    console.log('sending bytes to echo server: ' + arrayBuffer.byteLength);
+    console.info('sending bytes to echo server: ' + arrayBuffer.byteLength);
     chrome.sockets.udp.send(localSocketId, arrayBuffer, address, port,
                             function(sendInfo) {
       chrome.test.assertEq(0, sendInfo.resultCode);
@@ -205,7 +205,7 @@ const testSetPaused = function() {
   }
 
   function onReceiveError(info) {
-    if (localSocketId == info.socketId) {
+    if (localSocketId === info.socketId) {
       if (receiveTimer) {
         clearTimeout(receiveTimer);
       }
@@ -214,10 +214,10 @@ const testSetPaused = function() {
   }
 
   function onReceive(info) {
-    console.log(
+    console.info(
         'Received data on socket' +
         '(' + info.socketId + ')');
-    if (localSocketId == info.socketId) {
+    if (localSocketId === info.socketId) {
       if (receiveTimer) {
         clearTimeout(receiveTimer);
       }
@@ -232,12 +232,12 @@ const testPauseAndThenResume = function() {
   waitCount = 0;
   socketId = 0;
 
-  console.log('testPauseAndThenResume');
+  console.info('testPauseAndThenResume');
   setTimeout(waitForBlockingOperation, 1000);
   chrome.sockets.udp.create({}, onCreate);
 
   function onCreate(socketInfo) {
-    console.log('socket created: ' + socketInfo.socketId);
+    console.info('socket created: ' + socketInfo.socketId);
     socketId = socketInfo.socketId;
     chrome.test.assertTrue(socketId > 0, 'failed to create socket');
 
@@ -252,13 +252,13 @@ const testPauseAndThenResume = function() {
   function send(callback) {
     const encoder = new TextEncoder();
     sendNumber++;
-    console.log(`Issuing send request #${sendNumber}`);
+    console.info(`Issuing send request #${sendNumber}`);
     chrome.sockets.udp.send(
       socketId, encoder.encode(request), address, port, callback);
   }
 
   function onBind(result) {
-    console.log('socket bound to local host');
+    console.info('socket bound to local host');
     chrome.test.assertEq(0, result, 'Bind failed with error: ' + result);
     if (result < 0) {
       return;
@@ -271,7 +271,7 @@ const testPauseAndThenResume = function() {
 
   let packetsReceived = 0;
   function waitForFirstReceiveToTimeout() {
-    console.log('waitForFirstReceiveToTimeout');
+    console.info('waitForFirstReceiveToTimeout');
     // No packets should arrive in response to the first send request.
     chrome.test.assertEq(packetsReceived, 0);
     chrome.sockets.udp.setPaused(socketId, false, () => {
@@ -282,7 +282,7 @@ const testPauseAndThenResume = function() {
   }
 
   function waitForSecondReceiveToSucceed() {
-    console.log('waitForSecondReceiveToSucceed');
+    console.info('waitForSecondReceiveToSucceed');
     // After unpausing the socket and issuing one more send request there should
     // be two packets -- echoes from the first and second send respectively.
     chrome.test.assertEq(packetsReceived, 2);
@@ -290,7 +290,7 @@ const testPauseAndThenResume = function() {
   }
 
   function onReceive(info) {
-    if (socketId == info.socketId) {
+    if (socketId === info.socketId) {
       // Packets should only arrive in response to the second send request.
       chrome.test.assertEq(sendNumber, 2);
       packetsReceived++;
@@ -304,14 +304,14 @@ const testBroadcast = function() {
   let listeningSocketId;
   let sendingSocketId;
 
-  console.log('testBroadcast');
+  console.info('testBroadcast');
   chrome.sockets.udp.create({}, onCreate);
 
   function onCreate(socketInfo) {
-    console.log('socket created: ' + socketInfo.socketId);
+    console.info('socket created: ' + socketInfo.socketId);
     chrome.test.assertTrue(socketInfo.socketId > 0, 'failed to create socket');
 
-    if (listeningSocketId == undefined) {
+    if (listeningSocketId === undefined) {
       listeningSocketId = socketInfo.socketId;
       chrome.sockets.udp.onReceive.addListener(onReceive);
       chrome.sockets.udp.onReceiveError.addListener(onReceiveError);
@@ -364,7 +364,7 @@ const testBroadcast = function() {
   }
 
   function onArrayBuffer(arrayBuffer) {
-    console.log('sending bytes to broadcast: ' + arrayBuffer.byteLength);
+    console.info('sending bytes to broadcast: ' + arrayBuffer.byteLength);
     chrome.sockets.udp.send(
         sendingSocketId, arrayBuffer, '127.255.255.255', 8000,
         function(sendInfo) {
@@ -378,7 +378,7 @@ const testBroadcast = function() {
   }
 
   function onReceive(info) {
-    console.log(
+    console.info(
         'Received data on socket' +
         '(' + info.socketId + ')');
     chrome.test.assertEq(listeningSocketId, info.socketId);
@@ -395,12 +395,12 @@ const testSendWriteQuota = function() {
   socketId = 0;
   let localSocketId;
 
-  console.log('testSendWriteQuota');
+  console.info('testSendWriteQuota');
   setTimeout(waitForBlockingOperation, 1000);
   chrome.sockets.udp.create({}, onCreate);
 
   function onCreate(socketInfo) {
-    console.log('socket created: ' + socketInfo.socketId);
+    console.info('socket created: ' + socketInfo.socketId);
     localSocketId = socketId = socketInfo.socketId;
     chrome.test.assertTrue(localSocketId > 0, 'failed to create socket');
 
@@ -408,7 +408,7 @@ const testSendWriteQuota = function() {
   }
 
   function onBind(result) {
-    console.log('socket bound to local host');
+    console.info('socket bound to local host');
     chrome.test.assertEq(0, result, 'Bind failed with error: ' + result);
     if (result < 0) {
       return;
@@ -421,10 +421,10 @@ const testSendWriteQuota = function() {
   }
 
   function onSendComplete(sendInfo) {
-    console.log(
+    console.info(
         'onSendComplete: ', sendInfo, ', lastError=', chrome.runtime.lastError);
     if (chrome.runtime.lastError &&
-        chrome.runtime.lastError.message == 'Exceeded write quota.') {
+        chrome.runtime.lastError.message === 'Exceeded write quota.') {
       chrome.test.succeed();
       return;
     }
@@ -443,15 +443,15 @@ const onMessageReply = function(message) {
   const test_type = parts[0];
   address = parts[1];
   port = parseInt(parts[2]);
-  console.log('Running tests, echo server ' + address + ':' + port);
-  if (test_type == 'multicast') {
-    console.log('Running multicast tests');
+  console.info('Running tests, echo server ' + address + ':' + port);
+  if (test_type === 'multicast') {
+    console.info('Running multicast tests');
     chrome.test.runTests([ testMulticast ]);
-  } else if (test_type == 'udp_send_write_quota') {
-    console.log('Running UDP send write quota tests');
+  } else if (test_type === 'udp_send_write_quota') {
+    console.info('Running UDP send write quota tests');
     chrome.test.runTests([ testSendWriteQuota ]);
   } else {
-    console.log('Running udp tests');
+    console.info('Running udp tests');
     chrome.test.runTests([testSocketCreation, testSending, testSetPaused,
       testPauseAndThenResume]);
   }

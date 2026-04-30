@@ -81,7 +81,7 @@ loadScript.then(() => {
 
                             // Check that previous capture was done.
                             assertEq('string', typeof (whiteImageUrl));
-                            assertTrue(whiteImageUrl != blackImageUrl);
+                            assertTrue(whiteImageUrl !== blackImageUrl);
                             testPixelsAreExpectedColor(
                                 blackImageUrl, WINDOW_RECT,
                                 '0,0,0,255');  // Black.

@@ -4,7 +4,7 @@
 
 let testTabId;
 
-console.log('audible start');
+console.info('audible start');
 
 function getOnlyTab() {
   const views = chrome.extension.getViews({type: 'tab'});
@@ -14,7 +14,7 @@ function getOnlyTab() {
 
 chrome.test.runTests([
   function setupWindow() {
-    console.log('setupwindow');
+    console.info('setupwindow');
 
     chrome.tabs.getCurrent(pass(function(tab) {
       testTabId = tab.id;
@@ -22,7 +22,7 @@ chrome.test.runTests([
   },
 
   function audibleStartsFalse() {
-    console.log('audiblestartsfirst');
+    console.info('audiblestartsfirst');
 
     chrome.tabs.get(
         testTabId, pass(function(tab) {

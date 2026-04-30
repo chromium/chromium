@@ -21,7 +21,7 @@ const kWindowRect = {
 };
 
 function log(message) {
-  console.log(`${new Date().toLocaleTimeString()} - ${message}`);
+  console.info(`${new Date().toLocaleTimeString()} - ${message}`);
 }
 
 const loadScript = chrome.test.loadScript(scriptUrl);
@@ -74,7 +74,7 @@ loadScript.then(() => {
                     imgDataUrl, kWindowRect, expectedColor);
                 log(`tested pixels for ${windowId}`);
                 testedWindowCount++;
-                if (testedWindowCount == windowsAndColors.length) {
+                if (testedWindowCount === windowsAndColors.length) {
                   log('test complete');
                   callbackCompleted();
                 }

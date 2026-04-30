@@ -228,7 +228,7 @@ loadScript.then(async function() {
     function moveToCurrentWindow() {
       chrome.windows.getCurrent(pass(function(win) {
         const targetWin =
-            win.id == firstWindowId ? secondWindowId : firstWindowId;
+            win.id === firstWindowId ? secondWindowId : firstWindowId;
         chrome.tabs.query(
             {windowId: targetWin}, pass(function(tabs) {
               chrome.tabs.move(

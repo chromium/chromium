@@ -46,13 +46,13 @@ async function start() {
     'FETCHED',
   ];
   const data = await getMessageFromWorker(sharedWorker);
-  if (data.length != kExpectedMessage.length) {
+  if (data.length !== kExpectedMessage.length) {
     throw new Error(
         'bad message length: ' +
         `expected ${kExpectedMessage.length}, got ${data.length}`);
   }
   for (let i = 0; i < data.length; i++) {
-    if (data[i] != kExpectedMessage[i]) {
+    if (data[i] !== kExpectedMessage[i]) {
       throw new Error(
           `bad message: expected ${kExpectedMessage[i]}, got ${data[i]}`);
     }
@@ -68,13 +68,13 @@ async function start() {
     'shared_worker_import.js',
     'data_for_fetch',
   ];
-  if (urls.length != kExpectedUrls.length) {
+  if (urls.length !== kExpectedUrls.length) {
     throw new Error(
         `bad urls: expected ${kExpectedUrls.length}, got ${urls.length}`);
   }
   for (let i = 0; i < urls.length; i++) {
     const expected = new URL(kExpectedUrls[i], self.location).toString();
-    if (urls[i] != expected) {
+    if (urls[i] !== expected) {
       throw new Error(`bad url: expected ${expected}, got ${urls[i]}`);
     }
   }

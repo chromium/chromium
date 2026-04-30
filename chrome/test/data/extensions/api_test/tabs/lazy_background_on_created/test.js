@@ -6,7 +6,7 @@ chrome.test.runTests([
   async function testCreateWithActiveTrue() {
     // TODO(https://crbug.com/430344931): `NavigateParams::tabstrip_add_types`
     // isn't supported on android builds yet, so we can't create active tabs.
-    if ((await chrome.runtime.getPlatformInfo()).os == 'android') {
+    if ((await chrome.runtime.getPlatformInfo()).os === 'android') {
       chrome.test.succeed('skipped');
       return;
     }

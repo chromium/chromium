@@ -26,7 +26,7 @@ chrome.test.runTests([
           'onEvent': function(event) {
             chrome.test.assertEq('end', event.type);
             callbacks++;
-            if (callbacks == 4) {
+            if (callbacks === 4) {
               chrome.test.succeed();
             } else {
               chrome.test.fail();

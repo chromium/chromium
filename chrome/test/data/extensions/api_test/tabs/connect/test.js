@@ -31,17 +31,19 @@ function setupWindow(tabUrls, callback) {
     // Remove all other windows.
     let removedCount = 0;
     chrome.windows.getAll({}, function(windows) {
-      for (let i in windows) {
-        if (windows[i].id != winId) {
+      for (const i in windows) {
+        if (windows[i].id !== winId) {
           chrome.windows.remove(windows[i].id, function() {
             removedCount++;
-            if (removedCount == windows.length - 1)
+            if (removedCount === windows.length - 1) {
               callback(winId, tabIds);
+            }
           });
         }
       }
-      if (windows.length == 1)
+      if (windows.length === 1) {
         callback(winId, tabIds);
+      }
     });
   });
 }
@@ -56,8 +58,9 @@ function createWindow(tabUrls, winOptions, callback) {
     assertTrue(win.id > 0);
     assertEq(tabUrls.length, win.tabs.length);
 
-    for (let i = 0; i < win.tabs.length; i++)
+    for (let i = 0; i < win.tabs.length; i++) {
       newTabIds.push(win.tabs[i].id);
+    }
 
     callback(win.id, newTabIds);
   });
@@ -88,8 +91,9 @@ chrome.test.runTests([
       const port = chrome.tabs.connect(testTab.id);
       listenOnce(port.onMessage, function(msg) {
         assertEq(++connectCount, msg.connections);
-        if (connectCount < 10)
+        if (connectCount < 10) {
           connect10();
+        }
       });
       port.postMessage('GET');
     }
@@ -129,11 +133,11 @@ chrome.test.runTests([
     const port = chrome.tabs.connect(testTab.id);
     let count = 0;
     const done = function(msg) {
-    assertEq(count++, msg);
-    if (count == 100) {
-      done();
-    }
-    });
+      assertEq(count++, msg);
+      if (count === 100) {
+        done();
+      }
+    };
     for (let i = 0; i < 100; i++) {
       port.postMessage(i);
     }
@@ -191,14 +195,15 @@ chrome.test.runTests([
     // chrome.tabs.create doesn't guarantee that.
     chrome.tabs.sendMessage(testTab.id, {open: emptyDocumentURL});
     waitForReady(pass(function(secondTab) {
-      const gotDuplicates = false;
+      let gotDuplicates = false;
       const messages = new Set();
       const done = function(msg) {
-      if (messages.has(msg))
-        gotDuplicates = true;
-      else
-        messages.add(msg);
-      });
+        if (messages.has(msg)) {
+          gotDuplicates = true;
+        } else {
+          messages.add(msg);
+        }
+      };
       chrome.tabs.sendMessage(testTab.id, {send: 'msg1'}, function() {
         chrome.tabs.sendMessage(secondTab.id, {send: 'msg2'}, function() {
           // Send an empty final message to hopefully ensure that the events

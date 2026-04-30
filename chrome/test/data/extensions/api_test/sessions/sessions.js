@@ -77,8 +77,8 @@ function checkOnChangedEvent(expectedCallbackCount) {
     const checkEvent = function() {
       if (callbackCount < expectedCallbackCount) {
         retry++;
-        if (retry % 10 == 0) {
-          console.log(
+        if (retry % 10 === 0) {
+          console.info(
               `Waiting for ${expectedCallbackCount - callbackCount} ` +
               'more onChanged events');
         }

@@ -12,7 +12,7 @@ chrome.runtime.sendMessage('ready');
 chrome.runtime.onConnect.addListener(function onConnect(port) {
   connections++;
   port.onMessage.addListener(function onMessage(msg) {
-    if (msg == 'GET') {
+    if (msg === 'GET') {
       port.postMessage({name: port.name, connections: connections});
     } else {
       port.postMessage(msg);

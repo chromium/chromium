@@ -6,13 +6,13 @@
 // background page, so that the latter can output the message via the
 // chrome.test.log() function.
 function logToConsoleAndStdout(msg) {
-  console.log(msg);
+  console.info(msg);
   chrome.extension.sendRequest(`log: ${msg}`);
 }
 
 // We ask the background page to get the extension API to test against. When it
 // responds we start the test.
-console.log('asking for api ...');
+console.info('asking for api ...');
 chrome.extension.sendRequest('getApi', function(apis) {
   const apiFeatures = chrome.test.getApiFeatures();
   // TODO(crbug.com/41478937): This really should support more than two levels
@@ -32,7 +32,7 @@ chrome.extension.sendRequest('getApi', function(apis) {
       if (!contexts) {
         return results.NULL;
       }
-      if (contexts == 'all' || contexts.includes('content_script')) {
+      if (contexts === 'all' || contexts.includes('content_script')) {
         return results.FOUND;
       }
       return results.NOT_FOUND;
@@ -74,7 +74,7 @@ chrome.extension.sendRequest('getApi', function(apis) {
     return false;
   } /* isAvailableToContentScripts */
 
-  console.log('got api response');
+  console.info('got api response');
   const privilegedPaths = [];
   const unprivilegedPaths = [];
   apis.forEach(function(module) {
@@ -137,7 +137,7 @@ function testPath(path, expectError) {
       // to throw an error on access.
       if (typeof (module[parts[i]]) === 'undefined' &&
           // lastError being defined depends on there being an error obviously.
-          path != 'extension.lastError' && path != 'runtime.lastError') {
+          path !== 'extension.lastError' && path !== 'runtime.lastError') {
         if (expectError) {
           return true;
         } else {
@@ -176,7 +176,7 @@ function reportFailure() {
 // Runs over each string path in privilegedPaths and unprivilegedPaths, testing
 // to ensure a proper error is thrown on access or the path is defined.
 function doTest(privilegedPaths, unprivilegedPaths) {
-  console.log('starting');
+  console.info('starting');
 
   if (!privilegedPaths || privilegedPaths.length < 1 || !unprivilegedPaths ||
       unprivilegedPaths.length < 1) {
@@ -192,8 +192,8 @@ function doTest(privilegedPaths, unprivilegedPaths) {
     return function(path) {
       // runtime.connect and runtime.sendMessage are available in all contexts,
       // unlike the runtime API in general.
-      const expectErrorForPath = expectError && path != 'runtime.connect' &&
-          path != 'runtime.sendMessage';
+      const expectErrorForPath = expectError && path !== 'runtime.connect' &&
+          path !== 'runtime.sendMessage';
       if (!testPath(path, expectErrorForPath)) {
         success = false;
         failures.push(path);
@@ -203,7 +203,7 @@ function doTest(privilegedPaths, unprivilegedPaths) {
   privilegedPaths.forEach(makeTestFunction(true));
   unprivilegedPaths.forEach(makeTestFunction(false));
 
-  console.log(success ? 'pass' : 'fail');
+  console.info(success ? 'pass' : 'fail');
   if (success) {
     reportSuccess();
   } else {

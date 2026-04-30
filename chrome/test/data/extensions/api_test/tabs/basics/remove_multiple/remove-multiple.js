@@ -10,7 +10,7 @@ let fourthTabId;
 function resolveOnStorageChanged(key, resolve) {
   chrome.storage.local.onChanged.addListener(function local(changes, areaName) {
     const change = changes[key];
-    if (change == undefined) {
+    if (change === undefined) {
       return;
     }
     assertEq({newValue: 'yes'}, change);
@@ -25,7 +25,7 @@ function createTab(createParams) {
       const createdTabId = tab.id;
       chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
         // Wait for the tab to finish loading.
-        if (tabId == createdTabId && changeInfo.status == 'complete') {
+        if (tabId === createdTabId && changeInfo.status === 'complete') {
           resolve(tab);
         }
       });

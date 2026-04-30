@@ -11,8 +11,6 @@ import {openTab} from '/_test_resources/test_util/tabs_util.js';
 // * Waits for the corresponding tabs.onUpdated and tabs.onRemoved events.
 chrome.test.runTests([
   async function addTabsToGroupAndRemove() {
-    let tab1;
-    let tab2;
     let resolveTabGroupUpdated;
     let resolveTabRemoved;
     // Promises to wait for the given events from the tabs.
@@ -25,7 +23,7 @@ chrome.test.runTests([
 
     chrome.tabs.onUpdated.addListener(
         function listener(tabId, changeInfo, tab) {
-          if (!changeInfo.groupId || changeInfo.groupId != -1) {
+          if (!changeInfo.groupId || changeInfo.groupId !== -1) {
             return;
           }
 
@@ -57,8 +55,8 @@ chrome.test.runTests([
     });
 
     // Create two tabs.
-    tab1 = await openTab('chrome://version');
-    tab2 = await openTab('chrome://about');
+    const tab1 = await openTab('chrome://version');
+    const tab2 = await openTab('chrome://about');
     chrome.test.assertNe(tab1.id, tab2.id);
     chrome.test.assertNe(tab1.index, tab2.index);
     chrome.test.assertEq(tab1.windowId, tab2.windowId);

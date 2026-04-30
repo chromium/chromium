@@ -44,7 +44,7 @@ chrome.test.runTests([
         // Check to see if we get no policies and return immediately if so.
         // In that case, we'll verify the initial policies in the onChanged()
         // handler below.
-        if (Object.keys(results).length == 0) {
+        if (Object.keys(results).length === 0) {
           return;
         }
 

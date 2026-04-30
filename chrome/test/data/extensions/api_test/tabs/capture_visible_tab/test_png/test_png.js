@@ -77,7 +77,7 @@ loadScript.then(() => {
                                 'data:image/png;base64,', imgDataUrl);
 
                             textImageUrl = imgDataUrl;
-                            assertTrue(whiteImageUrl != textImageUrl);
+                            assertTrue(whiteImageUrl !== textImageUrl);
 
                             countPixelsWithColors(
                                 imgDataUrl, WINDOW_RECT, ['255,255,255,255'],

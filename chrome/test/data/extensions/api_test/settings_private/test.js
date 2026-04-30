@@ -28,7 +28,7 @@ const kTestSupervisedPrefName = 'signin.allowed_on_next_startup';
 function callbackResult(result) {
   if (chrome.runtime.lastError) {
     chrome.test.fail(chrome.runtime.lastError.message);
-  } else if (result == false) {
+  } else if (result === false) {
     chrome.test.fail(`Failed: ${result}`);
   }
 }
@@ -158,6 +158,6 @@ const availableTests = [
 
 chrome.test.getConfig(function(config) {
   chrome.test.runTests(availableTests.filter(function(op) {
-    return op.name == config.customArg;
+    return op.name === config.customArg;
   }));
 });

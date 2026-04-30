@@ -23,7 +23,7 @@ chrome.test.runTests([
       // of the tests. If we get an empty value for the results, the
       // installed onChange listener will catch the change and verify
       // it. Otherwise, remove the listener and verify the results.
-      if (Object.keys(results).length != 0) {
+      if (Object.keys(results).length !== 0) {
         chrome.storage.onChanged.removeListener(onChangedListener);
         chrome.test.assertEq(expectedStringPolicy, results);
         chrome.test.succeed();

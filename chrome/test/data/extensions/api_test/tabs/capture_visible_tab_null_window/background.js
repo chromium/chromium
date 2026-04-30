@@ -12,7 +12,7 @@ chrome.test.runTests([function captureNullWindow() {
     const error = `No window with id: ${invalidWindowId}.`;
     chrome.test.assertTrue(!!chrome.runtime.lastError);
     const actualError = chrome.runtime.lastError.message;
-    chrome.test.assertTrue(actualError == error);
+    chrome.test.assertTrue(actualError === error);
     chrome.test.succeed();
   });
 }]);

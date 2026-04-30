@@ -23,7 +23,7 @@ chrome.test.getConfig(function(config) {
       let neededCallbacks = 3;
       const countDown = function() {
         neededCallbacks--;
-        if (neededCallbacks == 0) {
+        if (neededCallbacks === 0) {
           chrome.tabs.onUpdated.removeListener(onUpdateListener);
           chrome.test.succeed();
         }

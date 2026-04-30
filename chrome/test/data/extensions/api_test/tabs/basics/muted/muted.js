@@ -29,7 +29,7 @@ async function waitForTabLoaded(tabId) {
 // has to be here, since adding it after the tab is created might be too late if
 // tabs load very quickly.
 chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
-  if (tab.status == 'complete') {
+  if (tab.status === 'complete') {
     loadedTabs.add(tabId);
     if (waitingForTabs.has(tabId)) {
       const resolve = waitingForTabs.get(tabId);
@@ -74,7 +74,7 @@ loadScript.then(async function() {
       };
 
       chrome.tabs.onUpdated.addListener(function local(tabId, changeInfo, tab) {
-        if (tabId != testTabId || !changeInfo.mutedInfo) {
+        if (tabId !== testTabId || !changeInfo.mutedInfo) {
           return;  // Ignore unrelated events.
         }
         assertEq(expectedAfterMute, changeInfo.mutedInfo);
@@ -104,7 +104,7 @@ loadScript.then(async function() {
       };
 
       chrome.tabs.onUpdated.addListener(function local(tabId, changeInfo, tab) {
-        if (tabId != testTabId || !changeInfo.mutedInfo) {
+        if (tabId !== testTabId || !changeInfo.mutedInfo) {
           return;  // Ignore unrelated events.
         }
         chrome.tabs.onUpdated.removeListener(local);

@@ -73,13 +73,13 @@ TestProcess.prototype.processReceivedCharacter_ = function(char, stream) {
   }
 
   const expectedChar = this.lineExpectation_[this.checkedStreamEnd_[stream]];
-  if (expectedChar != char) {
+  if (expectedChar !== char) {
     return false;
   }
 
   this.checkedStreamEnd_[stream]++;
 
-  if (this.checkedStreamEnd_[stream] == this.lineExpectation_.length &&
+  if (this.checkedStreamEnd_[stream] === this.lineExpectation_.length &&
       this.linesLeftToCheck_ > 0) {
     this.checkedStreamEnd_[stream] = 0;
     this.linesLeftToCheck_--;
@@ -88,7 +88,7 @@ TestProcess.prototype.processReceivedCharacter_ = function(char, stream) {
 };
 
 TestProcess.prototype.testOutputType = function(receivedType) {
-  if (receivedType == 'exit') {
+  if (receivedType === 'exit') {
     chrome.test.assertTrue(this.done());
   } else {
     chrome.test.assertEq('stdout', receivedType);
@@ -104,9 +104,9 @@ TestProcess.prototype.started = function() {
 };
 
 TestProcess.prototype.done = function() {
-  return this.checkedStreamEnd_[0] == this.lineExpectation_.length &&
-      this.checkedStreamEnd_[1] == this.lineExpectation_.length &&
-      this.linesLeftToCheck_ == 0;
+  return this.checkedStreamEnd_[0] === this.lineExpectation_.length &&
+      this.checkedStreamEnd_[1] === this.lineExpectation_.length &&
+      this.linesLeftToCheck_ === 0;
 };
 
 TestProcess.prototype.isClosed = function() {
@@ -118,7 +118,7 @@ TestProcess.prototype.setClosed = function() {
 };
 
 TestProcess.prototype.getCatCommand = function() {
-  if (this.type_ == 'stdout') {
+  if (this.type_ === 'stdout') {
     return catCommand;
   }
   return catErrCommand;
@@ -159,7 +159,7 @@ TestProcess.prototype.kickOffTest_ = function(line, lineNum) {
 
 function getProcessIndexForId(id) {
   for (let i = 0; i < testProcessTotal; i++) {
-    if (testProcesses[i] && id == testProcesses[i].id()) {
+    if (testProcesses[i] && id === testProcesses[i].id()) {
       return i;
     }
   }
@@ -168,7 +168,7 @@ function getProcessIndexForId(id) {
 
 function processOutputListener(id, type, data) {
   const processIndex = getProcessIndexForId(id);
-  if (processIndex == undefined) {
+  if (processIndex === undefined) {
     return;
   }
 

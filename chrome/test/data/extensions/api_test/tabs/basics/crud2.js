@@ -54,7 +54,7 @@ const tests = [
             assertEq(i, tabs[i].index);
 
             // The first tab should be active
-            assertEq((i == 0), tabs[i].active && tabs[i].selected);
+            assertEq((i === 0), tabs[i].active && tabs[i].selected);
           }
           assertEq('about:blank', tabs[0].url);
           assertTrue(
@@ -155,10 +155,10 @@ const tests = [
   function testRedirectingToAnotherWindow() {
     chrome.windows.create(
         {url: 'about:blank', type: 'popup'}, pass(function(window) {
-          assertFalse(window.tabs[0].id == chrome.tabs.TAB_ID_NONE);
+          assertFalse(window.tabs[0].id === chrome.tabs.TAB_ID_NONE);
           chrome.tabs.create(
               {url: 'about:blank', windowId: window.id}, pass(function(tab) {
-                assertTrue(window.id != tab.windowId);
+                assertTrue(window.id !== tab.windowId);
               }));
         }));
   },
@@ -213,7 +213,7 @@ const tests = [
                 chrome.tabs.get(
                     tab.id, pass(function(updatedTabInfo) {
                       assertEq(tab.windowId, updatedTabInfo.windowId);
-                      assertTrue(window.id != updatedTabInfo.windowId);
+                      assertTrue(window.id !== updatedTabInfo.windowId);
                     }));
               }));
         }));

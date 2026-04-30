@@ -14,9 +14,9 @@ chrome.test.runTests([
           const info = result[i];
           chrome.test.assertEq(`${i}`, info.id);
           chrome.test.assertEq(`DISPLAY NAME FOR ${i}`, info.name);
-          chrome.test.assertEq(i == 0 ? true : false, info.isPrimary);
-          chrome.test.assertEq(i == 0 ? true : false, info.isInternal);
-          if (i == 1) {
+          chrome.test.assertEq(i === 0 ? true : false, info.isPrimary);
+          chrome.test.assertEq(i === 0 ? true : false, info.isInternal);
+          if (i === 1) {
             chrome.test.assertEq('0', info.mirroringSourceId);
           } else {
             chrome.test.assertEq('', info.mirroringSourceId);
@@ -29,7 +29,7 @@ chrome.test.runTests([
           chrome.test.assertEq(0, info.bounds.top);
           chrome.test.assertEq(1280, info.bounds.width);
           chrome.test.assertEq(720, info.bounds.height);
-          if (i == 0) {
+          if (i === 0) {
             chrome.test.assertEq(20, info.overscan.left);
             chrome.test.assertEq(40, info.overscan.top);
             chrome.test.assertEq(60, info.overscan.right);

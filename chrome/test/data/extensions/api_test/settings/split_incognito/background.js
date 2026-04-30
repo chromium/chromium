@@ -12,7 +12,7 @@ let onEventSeen;
 ['sync', 'local', 'session'].forEach(function(namespace) {
   chrome.storage[namespace].notifications = {};
   chrome.storage.onChanged.addListener(function(changes, eventNamespace) {
-    if (eventNamespace == namespace) {
+    if (eventNamespace === namespace) {
       const notifications = chrome.storage[namespace].notifications;
       Object.keys(changes).forEach(function(key) {
         notifications[key] = changes[key];
@@ -107,7 +107,7 @@ function testEverything() {
     chrome.test.sendMessage(waiting, function(messageJson) {
       // We will get empty messages, which are considered a noop.
       let message = {action: 'noop', isFinalAction: false, namespace: 'sync'};
-      if (messageJson.length != 0) {
+      if (messageJson.length !== 0) {
         message = JSON.parse(messageJson);
       }
       const action = testActions[message.action];

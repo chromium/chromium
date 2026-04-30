@@ -43,7 +43,7 @@ tabCapture.onStatusChanged.addListener(function(info) {
 // Since if capture is already stopped this method immediately calls succeed,
 // tests should use it directly in place of a chrome.test.succeed call.
 function succeedOnCaptureStopped() {
-  if (gState == CaptureState.kStopped) {
+  if (gState === CaptureState.kStopped) {
     chrome.test.succeed();
   } else {
     gShouldCallSucceed = true;
@@ -71,7 +71,7 @@ function assertIsValidStreamId(streamId) {
         // Successful stream creation is not guaranteed and may time out because
         // of resource constraints.  Do not treat this as a failure.
         // See: crbug.com/393188938
-        if (error.name == 'AbortError' &&
+        if (error.name === 'AbortError' &&
             error.message.indexOf('Timeout') > -1) {
           chrome.test.succeed();
         } else {
@@ -105,7 +105,7 @@ const testsToRun = [
     const tabCaptureEvents = [];
 
     const tabCaptureListener = function(info) {
-      if (info.status == 'stopped') {
+      if (info.status === 'stopped') {
         chrome.test.assertEq('active', tabCaptureEvents.pop());
         chrome.test.assertEq('pending', tabCaptureEvents.pop());
         tabCapture.onStatusChanged.removeListener(tabCaptureListener);
@@ -130,7 +130,7 @@ const testsToRun = [
 
       function checkInfoForSecondTabHasStatus(infos, status) {
         for (let i = 0; i < infos.length; ++i) {
-          if (infos[i].tabId == secondTab) {
+          if (infos[i].tabId === secondTab) {
             chrome.test.assertNe(null, status);
             chrome.test.assertEq(status, infos[i].status);
             chrome.test.assertEq(false, infos[i].fullscreen);
@@ -249,7 +249,7 @@ const testsToRun = [
     let secondTabId;
 
     const listener = function(tabId, changeInfo, tab) {
-      if (changeInfo.status == 'complete') {
+      if (changeInfo.status === 'complete') {
         chrome.tabs.onUpdated.removeListener(listener);
         tabCapture.getMediaStreamId(
             {consumerTabId: secondTabId}, function(streamId) {
@@ -272,7 +272,7 @@ const testsToRun = [
 
   function getMediaStreamIdWithCallerTabWithoutSecuredUrl() {
     const listener = function(tabId, changeInfo, tab) {
-      if (changeInfo.status == 'complete') {
+      if (changeInfo.status === 'complete') {
         chrome.tabs.onUpdated.removeListener(listener);
         tabCapture.getMediaStreamId({consumerTabId: tabId}, function(streamId) {
           chrome.test.assertTrue(typeof streamId === 'undefined');

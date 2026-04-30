@@ -11,7 +11,7 @@ chrome.test.runTests([
     chrome.tts.speak('test 1', {
       'enqueue': true,
       'onEvent': function(event) {
-        if (event.type == 'end') {
+        if (event.type === 'end') {
           chrome.test.succeed();
         }
       },
@@ -21,7 +21,7 @@ chrome.test.runTests([
   function testPauseDuringSpeak() {
     chrome.tts.speak('test 2', {
       'onEvent': function(event) {
-        if (event.type == 'end') {
+        if (event.type === 'end') {
           chrome.test.succeed();
         }
       },

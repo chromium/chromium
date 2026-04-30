@@ -13,7 +13,7 @@ chrome.tabs.onRemoved.addListener(errorListener);
 chrome.tabs.onUpdated.addListener(errorListener);
 
 chrome.test.sendMessage('ready', function(message) {
-  if (errors == 0) {
+  if (errors === 0) {
     chrome.test.notifyPass();
   } else {
     chrome.test.notifyFail('Unexpected chrome.tabs events');
