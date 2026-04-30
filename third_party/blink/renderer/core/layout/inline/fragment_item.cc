@@ -819,7 +819,24 @@ void FragmentItem::SetTextRareData(const FitTextScale* scale,
 }
 
 const UsedFont FragmentItem::GetUsedFont() const {
-  return UsedFont(ScaledFont(), GetFitTextScale());
+  if (const auto* svg_inline_text =
+          DynamicTo<LayoutSVGInlineText>(GetLayoutObject())) {
+    return UsedFont(svg_inline_text->ScaledFont(), 1.0f);
+  }
+  const TextFragmentRareData* data = nullptr;
+  if (Type() == kText) {
+    data = text_.rare_data.Get();
+  } else if (Type() == kGeneratedText) {
+    data = generated_text_.rare_data.Get();
+  } else if (Type() == kLine) {
+    return UsedFont(*Style().GetFont(), line_.text_fit_scale);
+  }
+  if (data) {
+    DCHECK(!data->is_svg);
+    return UsedFont(data->scaled_font ? *data->scaled_font : *Style().GetFont(),
+                    data->length_adjust_scale);
+  }
+  return UsedFont(*Style().GetFont(), 1.0f);
 }
 
 float FragmentItem::GetFitTextScale() const {
@@ -981,9 +998,8 @@ void FragmentItem::RecalcInkOverflow(const InlineCursor& cursor,
       if (const TextFragmentRareData* svg_data = GetSvgFragmentData()) {
         ink_overflow_type_ =
             static_cast<unsigned>(ink_overflow_.SetSvgTextInkOverflow(
-                InkOverflowType(), cursor, paint_info, Style(), ScaledFont(),
-                svg_data->rect, SvgScalingFactor(),
-                svg_data->length_adjust_scale,
+                InkOverflowType(), cursor, paint_info, Style(), svg_data->rect,
+                SvgScalingFactor(), svg_data->length_adjust_scale,
                 BuildSvgTransformForBoundingBox(), self_and_contents_rect_out));
         return;
       }

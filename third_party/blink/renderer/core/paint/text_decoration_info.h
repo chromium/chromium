@@ -10,6 +10,7 @@
 #include "base/types/strong_alias.h"
 #include "cc/paint/paint_record.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/layout/inline/used_font.h"
 #include "third_party/blink/renderer/core/paint/decoration_line_painter.h"
 #include "third_party/blink/renderer/core/paint/line_relative_rect.h"
 #include "third_party/blink/renderer/core/paint/text_paint_style.h"
@@ -93,6 +94,7 @@ class CORE_EXPORT TextDecorationInfo {
   TextDecorationInfo(LineRelativeOffset local_origin,
                      LayoutUnit width,
                      const ComputedStyle& target_style,
+                     const UsedFont& target_font,
                      const InlinePaintContext* inline_context,
                      const TextDecorationLine selection_decoration_line,
                      const Color selection_decoration_color,
@@ -168,6 +170,7 @@ class CORE_EXPORT TextDecorationInfo {
   const ComputedStyle* decorating_box_style_ = nullptr;
 
   const InlinePaintContext* const inline_context_ = nullptr;
+  const UsedFont target_used_font_;
 
   const TextDecorationLine selection_decoration_line_ =
       TextDecorationLine::kNone;

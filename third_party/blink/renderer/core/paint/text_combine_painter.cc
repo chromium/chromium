@@ -84,6 +84,7 @@ void TextCombinePainter::Paint(const PaintInfo& paint_info,
   if (has_text_decoration) {
     decoration_info.emplace(
         text_frame_rect.offset, text_frame_rect.InlineSize(), style,
+        UsedFont(*style.GetFont(), 1.0f),
         /* inline_context */ nullptr, TextDecorationLine::kNone, Color());
     decoration_painter.emplace(text_painter, /* inline_context */ nullptr,
                                paint_info, style, text_style, text_frame_rect,

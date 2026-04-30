@@ -135,6 +135,7 @@ TextDecorationInfo::TextDecorationInfo(
     LineRelativeOffset local_origin,
     LayoutUnit width,
     const ComputedStyle& target_style,
+    const UsedFont& target_font,
     const InlinePaintContext* inline_context,
     const TextDecorationLine selection_decoration_line,
     const Color selection_decoration_color,
@@ -144,6 +145,7 @@ TextDecorationInfo::TextDecorationInfo(
     float svg_resource_scaling_factor)
     : target_style_(target_style),
       inline_context_(inline_context),
+      target_used_font_(target_font),
       selection_decoration_line_(selection_decoration_line),
       selection_decoration_color_(selection_decoration_color),
       decoration_override_(decoration_override),

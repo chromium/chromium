@@ -79,17 +79,18 @@ void TextDecorationPainter::UpdateDecorationInfo(
     top += text_item.ScaledFont().PrimaryFont()->GetFontMetrics().FixedAscent();
     top *= scaling_factor / text_item.SvgScalingFactor();
     top -= scaled_font->PrimaryFont()->GetFontMetrics().FixedAscent();
-    result.emplace(LineRelativeOffset{decoration_rect_.offset.line_left, top},
-                   decoration_rect_.InlineSize(), style, inline_context_,
-                   effective_selection_decoration_lines,
-                   effective_selection_decoration_color, decoration_override,
-                   scaled_font, IsSvgText(true),
-                   text_item.SvgScalingFactor() / scaling_factor);
+    result.emplace(
+        LineRelativeOffset{decoration_rect_.offset.line_left, top},
+        decoration_rect_.InlineSize(), style, UsedFont(*scaled_font, 1.0f),
+        inline_context_, effective_selection_decoration_lines,
+        effective_selection_decoration_color, decoration_override, scaled_font,
+        IsSvgText(true), text_item.SvgScalingFactor() / scaling_factor);
   } else {
     LineRelativeRect decoration_rect =
         decoration_rect_override.value_or(decoration_rect_);
     result.emplace(decoration_rect.offset, decoration_rect.InlineSize(), style,
-                   inline_context_, effective_selection_decoration_lines,
+                   text_item.GetUsedFont(), inline_context_,
+                   effective_selection_decoration_lines,
                    effective_selection_decoration_color, decoration_override,
                    &text_item.ScaledFont(), IsSvgText(text_item.IsSvgText()));
   }
