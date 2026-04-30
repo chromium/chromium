@@ -909,7 +909,7 @@ void VerticalTabStripRegionView::HandleDragUpdate(
   UpdateExpandOnHoverState(true);
   if (is_expanded_on_hover_ && !link_drag_lock_) {
     link_drag_lock_ =
-        GetExpandOnHoverLock(ExpandOnHoverLockType::kKeepExpanded);
+        GetExpandOnHoverLock(ExpandOnHoverLockType::kKeepCurrentState);
   }
 }
 
@@ -1190,7 +1190,7 @@ void VerticalTabStripRegionView::UpdateExpandOnHoverState(
 
   // If a bubble or menu is open, then we don't want to change the state. If
   // expanded, stay expanded. If collapsed, stay collapsed.
-  if (keep_expanded_lock_count_ > 0) {
+  if (keep_current_state_lock_count_ > 0) {
     ResetExpandOnHoverTimers();
     return;
   }
@@ -1212,7 +1212,7 @@ void VerticalTabStripRegionView::UpdateExpandOnHoverState(
        (GetFocusManager() && Contains(GetFocusManager()->GetFocusedView())));
 
   if (!should_expand) {
-    if (is_expanded_on_hover_ && keep_expanded_lock_count_ == 0) {
+    if (is_expanded_on_hover_ && keep_current_state_lock_count_ == 0) {
       AnimateExpandOnHover(/*expand=*/false);
     } else {
       ResetExpandOnHoverTimers();
@@ -1377,8 +1377,8 @@ void VerticalTabStripRegionView::RegisterExpandOnHoverLock(
   ExpandOnHoverLockType lock_type = lock->lock_type();
   if (lock_type == ExpandOnHoverLockType::kForceCollapse) {
     force_collapse_lock_count_++;
-  } else {
-    keep_expanded_lock_count_++;
+  } else if (lock_type == ExpandOnHoverLockType::kKeepCurrentState) {
+    keep_current_state_lock_count_++;
   }
   UpdateExpandOnHoverState();
 }
@@ -1393,10 +1393,10 @@ void VerticalTabStripRegionView::UnregisterExpandOnHoverLock(
     if (force_collapse_lock_count_ == 0) {
       UpdateExpandOnHoverState();
     }
-  } else {
-    CHECK_GT(keep_expanded_lock_count_, 0);
-    keep_expanded_lock_count_--;
-    if (keep_expanded_lock_count_ == 0) {
+  } else if (lock_type == ExpandOnHoverLockType::kKeepCurrentState) {
+    CHECK_GT(keep_current_state_lock_count_, 0);
+    keep_current_state_lock_count_--;
+    if (keep_current_state_lock_count_ == 0) {
       UpdateExpandOnHoverState();
     }
   }

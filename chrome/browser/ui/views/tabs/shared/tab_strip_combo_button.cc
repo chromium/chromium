@@ -348,7 +348,7 @@ void TabStripComboButton::ShowContextMenuForViewImpl(
   CHECK(browser_view);
   CHECK(browser_view->tab_strip_view());
   expand_on_hover_lock_ = browser_view->tab_strip_view()->GetExpandOnHoverLock(
-      ExpandOnHoverLockType::kKeepExpanded);
+      ExpandOnHoverLockType::kKeepCurrentState);
 
   menu_runner_->RunMenuAt(GetWidget(), nullptr,
                           source->GetAnchorBoundsInScreen(),
@@ -394,7 +394,7 @@ void TabStripComboButton::OnBubbleInitializing() {
   CHECK(browser_view);
   CHECK(browser_view->tab_strip_view());
   expand_on_hover_lock_ = browser_view->tab_strip_view()->GetExpandOnHoverLock(
-      ExpandOnHoverLockType::kKeepExpanded);
+      ExpandOnHoverLockType::kKeepCurrentState);
 
   OnTabSearchBubbleShown();
 

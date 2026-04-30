@@ -19,7 +19,7 @@ class VerticalTabStripExpandOnHoverLockTest : public views::ViewsTestBase {
 TEST_F(VerticalTabStripExpandOnHoverLockTest,
        CreateWithNullRegionViewDoesNotCrash) {
   auto lock = std::make_unique<VerticalTabStripExpandOnHoverLock>(
-      nullptr, ExpandOnHoverLockType::kKeepExpanded);
+      nullptr, ExpandOnHoverLockType::kKeepCurrentState);
   EXPECT_TRUE(lock);
   lock.reset();
 }

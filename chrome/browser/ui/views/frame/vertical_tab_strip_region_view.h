@@ -373,7 +373,7 @@ class VerticalTabStripRegionView final
   // Given that both lock counters are non-zero, force_collapse_lock_count_ will
   // always take precedence.
   int force_collapse_lock_count_ = 0;
-  int keep_expanded_lock_count_ = 0;
+  int keep_current_state_lock_count_ = 0;
   std::unique_ptr<ExpandOnHoverLock> omnibox_open_lock_;
   std::unique_ptr<ExpandOnHoverLock> link_drag_lock_;
   base::flat_set<raw_ptr<VerticalTabStripExpandOnHoverLock>> hover_locks_;

@@ -545,7 +545,7 @@ VerticalTabGroupView::AcquireExpandOnHoverLock() {
   CHECK(browser_view);
   CHECK(browser_view->tab_strip_view());
   return browser_view->tab_strip_view()->GetExpandOnHoverLock(
-      ExpandOnHoverLockType::kKeepExpanded);
+      ExpandOnHoverLockType::kKeepCurrentState);
 }
 
 void VerticalTabGroupView::ShiftGroupUp() {

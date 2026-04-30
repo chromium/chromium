@@ -353,7 +353,7 @@ void VerticalTabStripTopContainer::ShowContextMenuForViewImpl(
     CHECK(browser_view->tab_strip_view());
     expand_on_hover_lock_ =
         browser_view->tab_strip_view()->GetExpandOnHoverLock(
-            ExpandOnHoverLockType::kKeepExpanded);
+            ExpandOnHoverLockType::kKeepCurrentState);
 
     // `base::Unretained(this)` is safe because `context_menu_runner_` is owned
     // by `this`, ensuring the callback cannot outlive `this`.

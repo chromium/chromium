@@ -213,7 +213,7 @@ void SystemMenuModelDelegate::OnMenuWillShow(ui::SimpleMenuModel* source) {
   CHECK(browser_view);
   CHECK(browser_view->tab_strip_view());
   expand_on_hover_lock_ = browser_view->tab_strip_view()->GetExpandOnHoverLock(
-      ExpandOnHoverLockType::kKeepExpanded);
+      ExpandOnHoverLockType::kKeepCurrentState);
 }
 
 void SystemMenuModelDelegate::MenuClosed(ui::SimpleMenuModel* source) {
