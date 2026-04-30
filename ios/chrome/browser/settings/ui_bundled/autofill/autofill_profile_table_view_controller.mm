@@ -1651,6 +1651,7 @@ ItemType ItemTypeForEntitySectionHeader(SectionIdentifier section_identifier) {
     _addButtonInToolbar.target = nil;
     _addButtonInToolbar.menu =
         [self buildAddEntitiesMenuWithProfileEnabled:profileEnabled];
+    _addButtonInToolbar.enabled = YES;
   } else {
     _addButtonInToolbar.enabled = profileEnabled;
   }
