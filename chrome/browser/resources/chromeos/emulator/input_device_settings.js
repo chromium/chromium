@@ -6,16 +6,18 @@ import 'chrome://resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.
 import 'chrome://resources/ash/common/cr_elements/cr_toggle/cr_toggle.js';
 import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
-import './icons.js';
+import './icons.html.js';
 import './shared_styles.js';
 
 import {WebUIListenerBehavior} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {getTemplate} from './input_device_settings.html.js';
+
 Polymer({
   is: 'input-device-settings',
 
-  _template: html`{__html_template__}`,
+  _template: getTemplate(),
 
   behaviors: [WebUIListenerBehavior],
 

@@ -24,6 +24,7 @@ group("resources") {
     "drive_internals:resources",
     "edu_coexistence:resources",
     "emoji_picker:resources",
+    "emulator:resources",
     "enterprise_reporting:resources",
     "floating_workspace:resources",
     "gaia_action_buttons:resources",
@@ -89,7 +90,6 @@ group("closure_compile") {
   deps = [
     "account_manager:closure_compile",
     "account_manager/components:closure_compile",
-    "emulator:closure_compile",
     "multidevice_internals:closure_compile",
     "smb_shares:closure_compile",
   ]

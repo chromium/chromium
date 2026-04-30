@@ -852,6 +852,10 @@
     "META": {"sizes": {"includes": [30]}},
     "includes": [5300],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/emulator/resources.grd": {
+    "META": {"sizes": {"includes": [20]}},
+    "includes": [5330],
+  },
   # END chrome/ WebUI resources section
 
   # START chrome/ miscellaneous section.

@@ -11,11 +11,13 @@ import 'chrome://resources/ash/common/cr_elements/cr_radio_button/cr_radio_butto
 import 'chrome://resources/ash/common/cr_elements/cr_radio_group/cr_radio_group.js';
 import 'chrome://resources/ash/common/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
-import './icons.js';
+import './icons.html.js';
 import './shared_styles.js';
 
 import {WebUIListenerBehavior} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {getTemplate} from './bluetooth_settings.html.js';
 
 
 /**
@@ -70,7 +72,7 @@ const BluetoothDevice = function() {
 Polymer({
   is: 'bluetooth-settings',
 
-  _template: html`{__html_template__}`,
+  _template: getTemplate(),
 
   behaviors: [WebUIListenerBehavior],
 

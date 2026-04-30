@@ -2,67 +2,32 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/polymer/html_to_js.gni")
+import("//ui/webui/resources/tools/build_webui.gni")
 
-js_type_check("closure_compile") {
-  is_polymer3 = true
-  deps = [
-    ":audio_settings",
-    ":battery_settings",
-    ":bluetooth_settings",
-    ":device_emulator_pages",
-    ":input_device_settings",
+build_webui("build") {
+  grd_prefix = "emulator"
+
+  static_files = [
+    "device_emulator.css",
+    "device_emulator.html",
   ]
-}
 
-js_library("audio_settings") {
-  deps = [
-    "//ash/webui/common/resources:cr.m",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  externs_list = [ "$externs_path/chrome_send.js" ]
-}
+  icons_html_files = [ "icons.html" ]
 
-js_library("bluetooth_settings") {
-  deps = [
-    "//ash/webui/common/resources:web_ui_listener_behavior",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  externs_list = [ "$externs_path/chrome_send.js" ]
-}
-
-js_library("battery_settings") {
-  deps = [
-    "//ash/webui/common/resources:web_ui_listener_behavior",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  externs_list = [ "$externs_path/chrome_send.js" ]
-}
-
-js_library("input_device_settings") {
-  deps = [
-    "//ash/webui/common/resources:web_ui_listener_behavior",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  externs_list = [ "$externs_path/chrome_send.js" ]
-}
-
-js_library("device_emulator_pages") {
-  deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  externs_list = [ "$externs_path/chrome_send.js" ]
-}
-
-html_to_js("web_components") {
-  js_files = [
+  web_component_files = [
     "audio_settings.js",
     "battery_settings.js",
     "bluetooth_settings.js",
-    "input_device_settings.js",
     "device_emulator_pages.js",
-    "icons.js",
+    "input_device_settings.js",
     "shared_styles.js",
+  ]
+
+  ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
+
+  ts_deps = [
+    "//ash/webui/common/resources:build_ts",
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources/js:build_ts",
   ]
 }

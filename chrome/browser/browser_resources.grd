@@ -133,15 +133,7 @@
           <else>
           </else>
         </if>
-        <include name="IDR_DEVICE_EMULATOR_HTML" file="resources\chromeos\emulator\device_emulator.html" type="BINDATA" />
-        <include name="IDR_DEVICE_EMULATOR_CSS" file="resources\chromeos\emulator\device_emulator.css" type="BINDATA" />
-        <include name="IDR_DEVICE_EMULATOR_AUDIO_SETTINGS_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\emulator\audio_settings.js" use_base_dir="false" type="BINDATA" />
-        <include name="IDR_DEVICE_EMULATOR_BATTERY_SETTINGS_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\emulator\battery_settings.js" use_base_dir="false" type="BINDATA" />
-        <include name="IDR_DEVICE_EMULATOR_BLUETOOTH_SETTINGS_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\emulator\bluetooth_settings.js" use_base_dir="false" type="BINDATA" />
-        <include name="IDR_DEVICE_EMULATOR_ICONS_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\emulator\icons.js" use_base_dir="false"  type="BINDATA" />
-        <include name="IDR_DEVICE_EMULATOR_INPUT_DEVICE_SETTINGS_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\emulator\input_device_settings.js" use_base_dir="false"  type="BINDATA" />
-        <include name="IDR_DEVICE_EMULATOR_PAGES_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\emulator\device_emulator_pages.js" use_base_dir="false"  type="BINDATA" />
-        <include name="IDR_DEVICE_EMULATOR_SHARED_STYLES_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\emulator\shared_styles.js" use_base_dir="false"  type="BINDATA" />
+
         <if expr="_google_chrome">
           <then>
             <include name="IDR_GOOGLE_XKB_MANIFEST" file="resources\chromeos\input_method\google_xkb_manifest.json" type="BINDATA" />

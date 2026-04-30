@@ -12,7 +12,8 @@
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/emulator/device_emulator_message_handler.h"
-#include "chrome/grit/browser_resources.h"
+#include "chrome/grit/emulator_resources.h"
+#include "chrome/grit/emulator_resources_map.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -29,21 +30,8 @@ void CreateAndAddDeviceEmulatorUIDataSource(content::WebUI* web_ui) {
   ash::EnableTrustedTypesCSP(html);
 
   // Add resources.
-  html->AddResourcePath("audio_settings.js",
-                        IDR_DEVICE_EMULATOR_AUDIO_SETTINGS_JS);
-  html->AddResourcePath("battery_settings.js",
-                        IDR_DEVICE_EMULATOR_BATTERY_SETTINGS_JS);
-  html->AddResourcePath("bluetooth_settings.js",
-                        IDR_DEVICE_EMULATOR_BLUETOOTH_SETTINGS_JS);
-  html->AddResourcePath("icons.js", IDR_DEVICE_EMULATOR_ICONS_JS);
-  html->AddResourcePath("input_device_settings.js",
-                        IDR_DEVICE_EMULATOR_INPUT_DEVICE_SETTINGS_JS);
-  html->AddResourcePath("device_emulator_pages.js",
-                        IDR_DEVICE_EMULATOR_PAGES_JS);
-  html->AddResourcePath("shared_styles.js",
-                        IDR_DEVICE_EMULATOR_SHARED_STYLES_JS);
-  html->AddResourcePath("device_emulator.css", IDR_DEVICE_EMULATOR_CSS);
-  html->SetDefaultResource(IDR_DEVICE_EMULATOR_HTML);
+  html->AddResourcePaths(kEmulatorResources);
+  html->SetDefaultResource(IDR_EMULATOR_DEVICE_EMULATOR_HTML);
 }
 
 }  // namespace

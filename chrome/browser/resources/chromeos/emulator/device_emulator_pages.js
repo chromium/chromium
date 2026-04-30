@@ -11,16 +11,18 @@ import 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
 import './audio_settings.js';
 import './battery_settings.js';
 import './bluetooth_settings.js';
-import './icons.js';
+import './icons.html.js';
 import './input_device_settings.js';
 import './shared_styles.js';
 
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {getTemplate} from './device_emulator_pages.html.js';
+
 Polymer({
   is: 'device-emulator-pages',
 
-  _template: html`{__html_template__}`,
+  _template: getTemplate(),
 
   properties: {
     selectedPage: {
