@@ -9,7 +9,6 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
-#import "ios/components/enterprise/analysis/features.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
 
@@ -42,15 +41,6 @@ using base::test::ios::WaitUntilConditionOrTimeout;
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
 }
 
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-  if ([self isRunningTest:@selector(testEnterpriseDLPEnabledOpenInPDF)]) {
-    config.features_enabled.push_back(
-        enterprise_connectors::kEnableFileDownloadConnectorIOS);
-  }
-  return config;
-}
-
 #pragma mark - Public
 
 - (void)openActivityMenu {
@@ -62,21 +52,6 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 // Tests that open in button appears when opening a PDF, and that tapping on it
 // will open the activity view.
 - (void)testOpenInPDF {
-  // Open the activity menu.
-  [ChromeEarlGrey loadURL:self.testServer->GetURL(kPDFPath)];
-  [self openActivityMenu];
-
-  [ChromeEarlGrey verifyActivitySheetVisible];
-
-  // Check that tapping on the Cancel button closes the activity menu and hides
-  // the open in toolbar.
-  [ChromeEarlGrey closeActivitySheet];
-  [ChromeEarlGrey verifyActivitySheetNotVisible];
-}
-
-// Tests that when Enterprise DLP feature is enabled and user is non-Enterprise
-// user, tapping the share button will open the activity sheet normally.
-- (void)testEnterpriseDLPEnabledOpenInPDF {
   // Open the activity menu.
   [ChromeEarlGrey loadURL:self.testServer->GetURL(kPDFPath)];
   [self openActivityMenu];

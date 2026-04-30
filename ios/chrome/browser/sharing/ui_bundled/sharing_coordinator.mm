@@ -11,15 +11,6 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/thread_pool.h"
 #import "base/threading/scoped_blocking_call.h"
-#import "components/enterprise/common/proto/connectors.pb.h"
-#import "components/enterprise/connectors/core/analysis_settings.h"
-#import "components/enterprise/connectors/core/cloud_content_scanning/files_request_handler_base.h"
-#import "ios/chrome/browser/enterprise/cloud_content_scanning/model/files_request_handler_ios.h"
-#import "ios/chrome/browser/enterprise/cloud_content_scanning/model/ios_cloud_binary_upload_service.h"
-#import "ios/chrome/browser/enterprise/cloud_content_scanning/model/ios_cloud_binary_upload_service_factory.h"
-#import "ios/chrome/browser/enterprise/cloud_content_scanning/model/scan_decision_helper.h"
-#import "ios/chrome/browser/enterprise/connectors/analysis/content_analysis_info.h"
-#import "ios/chrome/browser/enterprise/connectors/connectors_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
@@ -43,9 +34,6 @@
 // without file options.
 - (void)startDownloadForWebState:(web::WebState*)webState
                 directoryCreated:(BOOL)directoryCreated;
-
-// The download is successful and should proceed.
-- (void)downloadShouldProceed:(BOOL)shouldProceed;
 
 @end
 
@@ -126,11 +114,6 @@ void StartDownloadForWebState(__weak SharingCoordinator* coordinator,
   }
 }
 
-void DownloadShouldProceed(__weak SharingCoordinator* coordinator,
-                           BOOL should_proceed) {
-  [coordinator downloadShouldProceed:should_proceed];
-}
-
 }  // namespace
 
 @interface SharingCoordinator () <ActivityServicePresentation,
@@ -180,16 +163,6 @@ void DownloadShouldProceed(__weak SharingCoordinator* coordinator,
   UIView* _sourceView;
   // The source rect in the _sourceView for the presentation.
   CGRect _sourceRect;
-  // The necessary info for the scan of the downloaded file.
-  std::unique_ptr<enterprise_connectors::ContentAnalysisInfo>
-      _contentAnalysisInfo;
-  // The handler that will request scan for the downloaded file.
-  std::unique_ptr<enterprise_connectors::FilesRequestHandlerBase>
-      _filesRequestHandler;
-  // The webstate that initiates the download.
-  base::WeakPtr<web::WebState> _downloadWebState;
-  // The GURL of the download.
-  GURL _downloadGURL;
 }
 
 - (instancetype)
@@ -258,11 +231,11 @@ void DownloadShouldProceed(__weak SharingCoordinator* coordinator,
     // Creating the directory can block the main thread, so perform it on a
     // background sequence, then on current sequence complete the workflow.
     __weak SharingCoordinator* weakSelf = self;
-    _downloadWebState = activeWebState->GetWeakPtr();
     _taskRunner->PostTaskAndReplyWithResult(
         FROM_HERE,
         base::BindOnce(&CreateDestinationDirectoryAndRemoveObsoleteFiles),
-        base::BindOnce(&StartDownloadForWebState, weakSelf, _downloadWebState));
+        base::BindOnce(&StartDownloadForWebState, weakSelf,
+                       activeWebState->GetWeakPtr()));
   } else {
     [self startActivityService];
   }
@@ -271,7 +244,6 @@ void DownloadShouldProceed(__weak SharingCoordinator* coordinator,
 - (void)stop {
   [self activityServiceDidEndPresenting];
   [self hideQRCode];
-  [self cleanUpAnalysisResources];
   _sourceItem = nil;
   _sourceView = nil;
   _sourceRect = CGRectZero;
@@ -359,7 +331,6 @@ void DownloadShouldProceed(__weak SharingCoordinator* coordinator,
       stringByAppendingPathComponent:base::SysUTF16ToNSString(
                                          helper->GetFileNameSuggestion())];
   self.fileNSURL = [NSURL fileURLWithPath:self.filePath];
-  [self initializeContentAnalysisInfoForWebState:webState];
 
   __weak SharingCoordinator* weakSelf = self;
   webState->DownloadCurrentPage(self.filePath, self,
@@ -382,27 +353,6 @@ void DownloadShouldProceed(__weak SharingCoordinator* coordinator,
   [self.overlay start];
 }
 
-// Download is successful and should proceed.
-- (void)downloadShouldProceed:(BOOL)shouldProceed {
-  // Always check and clean up the resources because even if download did
-  // finish, user can cancel while waiting for scanning.
-  [self cleanUpAnalysisResources];
-  if (self.isDownloadCanceled) {
-    return;
-  }
-
-  [self stopDisplayDownloadOverlay];
-  if (shouldProceed) {
-    [self startActivityService];
-    UMA_HISTOGRAM_ENUMERATION(kOpenInDownloadHistogram,
-                              OpenInDownloadResult::kSucceeded);
-  } else {
-    [self stop];
-    UMA_HISTOGRAM_ENUMERATION(kOpenInDownloadHistogram,
-                              OpenInDownloadResult::kCanceled);
-  }
-}
-
 // Removes `self.overlay` from the top view of the application.
 - (void)stopDisplayDownloadOverlay {
   [self.overlay stop];
@@ -410,84 +360,20 @@ void DownloadShouldProceed(__weak SharingCoordinator* coordinator,
   [self.dispatcher stopDispatchingToTarget:self];
 }
 
-// Called to process the finished download. The sharesheet will open normally
-// for non-enterprise users. For enterprise users, the downloaded file will be
-// scanned and receive a verdict and there will be 3 scenarios:
-// 1. ALLOW: Sharesheet opens normally.
-// 2. BLOCK: Sharesheet will be disabled for this download and a snackbar
-//           message will inform the user that it is blocked by their
-//           organization policy.
-// 3. WARN: Warning dialog will show and let the user choose to proceed or
-//          dismiss.
-- (void)processCompleteDownload {
-  ProfileIOS* profile = self.browser->GetProfile();
-
-  __weak SharingCoordinator* weakSelf = self;
-  auto files_request_handler_delegate =
-      std::make_unique<enterprise_connectors::FilesRequestHandlerIOS>(
-          profile, base::apple::NSStringToFilePath(self.filePath),
-          base::BindOnce(&enterprise_connectors::HandleScanDecision,
-                         _downloadWebState,
-                         enterprise_connectors::TriggerType::kShareSheet,
-                         base::BindOnce(&DownloadShouldProceed, weakSelf)));
-
-  _filesRequestHandler = std::make_unique<
-      enterprise_connectors::FilesRequestHandlerBase>(
-      _contentAnalysisInfo.get(),
-      enterprise_connectors::IOSCloudBinaryUploadServiceFactory::GetForProfile(
-          profile),
-      _downloadGURL, /*content_transfer_method=*/"",
-      enterprise_connectors::DeepScanAccessPoint::DOWNLOAD,
-      std::move(files_request_handler_delegate));
-  _filesRequestHandler->UploadData();
-}
-
-- (void)initializeContentAnalysisInfoForWebState:(web::WebState*)webState {
-  CHECK(webState);
-
-  ProfileIOS* profile = self.browser->GetProfile();
-  _downloadGURL = webState->GetLastCommittedURL();
-  std::optional<enterprise_connectors::AnalysisSettings> settings =
-      std::nullopt;
-
-  enterprise_connectors::ConnectorsService* connectors_service =
-      enterprise_connectors::ConnectorsServiceFactory::GetForProfile(profile);
-  if (connectors_service) {
-    settings = connectors_service->GetAnalysisSettings(
-        _downloadGURL,
-        enterprise_connectors::AnalysisConnector::FILE_DOWNLOADED);
-  }
-
-  _contentAnalysisInfo =
-      std::make_unique<enterprise_connectors::ContentAnalysisInfo>(
-          _downloadGURL,
-          settings.has_value() ? std::move(settings.value())
-                               : enterprise_connectors::AnalysisSettings(),
-          enterprise_connectors::ContentAnalysisRequest::NORMAL_DOWNLOAD,
-          *webState);
-}
-
-- (void)cleanUpAnalysisResources {
-  _filesRequestHandler.reset();
-  _contentAnalysisInfo.reset();
-  _downloadWebState = nullptr;
-  _downloadGURL = GURL();
-}
-
 #pragma mark - CRWWebViewDownloadDelegate
 
 - (void)downloadDidFinish {
   if (self.isDownloadCanceled) {
-    _contentAnalysisInfo.reset();
-    _downloadGURL = GURL();
     return;
   }
+  [self stopDisplayDownloadOverlay];
   self.params.filePath = self.fileNSURL;
-  [self processCompleteDownload];
+  [self startActivityService];
+  UMA_HISTOGRAM_ENUMERATION(kOpenInDownloadHistogram,
+                            OpenInDownloadResult::kSucceeded);
 }
 
 - (void)downloadDidFailWithError:(NSError*)error {
-  [self cleanUpAnalysisResources];
   if (self.isDownloadCanceled) {
     return;
   }
@@ -515,7 +401,6 @@ void DownloadShouldProceed(__weak SharingCoordinator* coordinator,
   [self.download cancelDownload:^{
     [weakSelf downloadWasCancelledFromView:shareButton];
   }];
-  [self cleanUpAnalysisResources];
   UMA_HISTOGRAM_ENUMERATION(kOpenInDownloadHistogram,
                             OpenInDownloadResult::kCanceled);
 }

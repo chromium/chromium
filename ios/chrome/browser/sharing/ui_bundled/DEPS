@@ -1,9 +1,6 @@
 include_rules = [
   # keep-sorted start
   "+ios/chrome/browser/bookmarks/model/bookmark_model_factory.h",
-  "+ios/chrome/browser/enterprise/cloud_content_scanning/model",
-  "+ios/chrome/browser/enterprise/connectors/analysis/content_analysis_info.h",
-  "+ios/chrome/browser/enterprise/connectors/connectors_service_factory.h",
   "+ios/chrome/browser/find_in_page/model/find_tab_helper.h",
   "+ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h",
   "+ios/chrome/browser/reading_list/model/reading_list_browser_agent.h",
@@ -11,7 +8,5 @@ include_rules = [
   "+ios/chrome/browser/sync/model/send_tab_to_self_sync_service_factory.h",
   "+ios/chrome/browser/tabs/model/tab_title_util.h",
   "+ios/chrome/browser/web/model/web_navigation_browser_agent.h",
-  "+ios/components/enterprise/analysis/features.h",
-  "+ios/web/download/crw_web_view_download.h",
   # keep-sorted end
 ]

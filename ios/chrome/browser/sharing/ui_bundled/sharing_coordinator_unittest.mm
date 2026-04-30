@@ -3,15 +3,11 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/sharing/ui_bundled/sharing_coordinator.h"
-
 #import <UIKit/UIKit.h>
 
-#import "base/files/scoped_temp_dir.h"
 #import "base/ios/block_types.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
-#import "base/test/run_until.h"
-#import "base/test/scoped_feature_list.h"
 #import "base/values.h"
 #import "components/bookmarks/browser/bookmark_node.h"
 #import "components/bookmarks/test/bookmark_test_helpers.h"
@@ -28,15 +24,12 @@
 #import "ios/chrome/browser/shared/public/commands/qr_generation_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller.h"
-#import "ios/chrome/browser/sharing/model/share_file_download_tab_helper.h"
 #import "ios/chrome/browser/sharing/ui_bundled/activity_services/activity_service_presentation.h"
 #import "ios/chrome/browser/sharing/ui_bundled/activity_services/canonical_url_retriever.h"
 #import "ios/chrome/browser/sharing/ui_bundled/sharing_params.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_source_tab_helper.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/test/scoped_key_window.h"
-#import "ios/components/enterprise/analysis/features.h"
-#import "ios/web/download/crw_web_view_download.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_frame.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
@@ -87,35 +80,6 @@ class SharingCoordinatorTest : public BookmarkIOSUnitTestSupport {
         WebStateList::InsertionParams::Automatic().Activate());
   }
 
-  void SetupForFileDownload() {
-    GURL test_url = GURL("https://example.com/test.pdf");
-    base::Value url_value = base::Value(test_url.spec());
-    auto test_web_state = std::make_unique<web::FakeWebState>();
-    test_web_state->SetCurrentURL(test_url);
-    test_web_state->SetContentsMimeType("application/pdf");
-    test_web_state->SetBrowserState(browser_->GetProfile());
-    test_web_state->SetView(fake_origin_view_);
-    test_web_state->SetNavigationManager(
-        std::make_unique<web::FakeNavigationManager>());
-    ShareFileDownloadTabHelper::CreateForWebState(test_web_state.get());
-    SnapshotTabHelper::CreateForWebState(test_web_state.get());
-    SnapshotSourceTabHelper::CreateForWebState(test_web_state.get());
-
-    auto frames_manager = std::make_unique<web::FakeWebFramesManager>();
-    web::FakeWebFramesManager* frames_manager_ptr = frames_manager.get();
-    test_web_state->SetWebFramesManager(std::move(frames_manager));
-
-    auto main_frame = web::FakeWebFrame::CreateMainWebFrame(test_url);
-    web::FakeWebFrame* main_frame_ptr = main_frame.get();
-    frames_manager_ptr->AddWebFrame(std::move(main_frame));
-
-    main_frame_ptr->AddResultForExecutedJs(
-        &url_value, activity_services::kCanonicalURLScript);
-
-    AppendNewWebState(std::move(test_web_state));
-  }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
   ScopedKeyWindow scoped_key_window_;
   UIViewController* base_view_controller_;
   UIView* fake_origin_view_;
@@ -268,100 +232,5 @@ TEST_F(SharingCoordinatorTest, Start_ShareURL) {
   // canPerformWithActivityItems and reading prefs) before the
   // WebTaskEnvironment is shut down.
   base::RunLoop().RunUntilIdle();
-  [coordinator stop];
-}
-
-// Test that a file can be downloaded and shared. This verifies that when the
-// Enterprise Download Protection feature is disabled, the scan result is always
-// SUCCESS and it proceeds normally.
-TEST_F(SharingCoordinatorTest, Start_FileDownloadShouldProceed) {
-  SetupForFileDownload();
-
-  SharingParams* params =
-      [[SharingParams alloc] initWithScenario:test_scenario_];
-
-  SharingCoordinator* coordinator = [[SharingCoordinator alloc]
-      initWithBaseViewController:base_view_controller_
-                         browser:browser_.get()
-                          params:params
-                      sourceItem:fake_origin_view_];
-
-  auto completion_handler_called = std::make_shared<BOOL>(false);
-  id vc_partial_mock = OCMPartialMock(base_view_controller_);
-  [[vc_partial_mock expect]
-      presentViewController:[OCMArg checkWithBlock:^BOOL(
-                                        UIViewController* viewController) {
-        if ([viewController isKindOfClass:[UIActivityViewController class]]) {
-          *completion_handler_called = true;
-          return YES;
-        }
-        return NO;
-      }]
-                   animated:YES
-                 completion:nil];
-
-  // Start the coordinator and finish the download.
-  [coordinator start];
-  [(id<CRWWebViewDownloadDelegate>)coordinator downloadDidFinish];
-
-  ASSERT_TRUE(base::test::RunUntil(
-      [&completion_handler_called]() { return *completion_handler_called; }));
-
-  // Verify that the positioning is correct.
-  auto activityHandler =
-      static_cast<id<ActivityServicePresentation>>(coordinator);
-
-  [activityHandler activityServiceDidEndPresenting];
-
-  EXPECT_OCMOCK_VERIFY(vc_partial_mock);
-  [coordinator stop];
-}
-
-// Test that a file can be downloaded and shared normally when the Enterprise
-// Download Protection Feature is enabled but no policy is set.
-TEST_F(SharingCoordinatorTest,
-       Start_DLPEnabledNoPolicy_FileDownloadShouldProceed) {
-  scoped_feature_list_.InitAndEnableFeature(
-      enterprise_connectors::kEnableFileDownloadConnectorIOS);
-  SetupForFileDownload();
-
-  SharingParams* params =
-      [[SharingParams alloc] initWithScenario:test_scenario_];
-
-  SharingCoordinator* coordinator = [[SharingCoordinator alloc]
-      initWithBaseViewController:base_view_controller_
-                         browser:browser_.get()
-                          params:params
-                      sourceItem:fake_origin_view_];
-
-  auto completion_handler_called = std::make_shared<BOOL>(false);
-  id vc_partial_mock = OCMPartialMock(base_view_controller_);
-  [[vc_partial_mock expect]
-      presentViewController:[OCMArg checkWithBlock:^BOOL(
-                                        UIViewController* viewController) {
-        if ([viewController isKindOfClass:[UIActivityViewController class]]) {
-          *completion_handler_called = true;
-          return YES;
-        }
-        return NO;
-      }]
-                   animated:YES
-                 completion:nil];
-
-  // Start the coordinator and finish the download.
-  [coordinator start];
-  [(id<CRWWebViewDownloadDelegate>)coordinator downloadDidFinish];
-
-  // Test that downloading the file can be proceed and sharesheet is shown.
-  ASSERT_TRUE(base::test::RunUntil(
-      [&completion_handler_called]() { return *completion_handler_called; }));
-
-  // Verify that the positioning is correct.
-  auto activityHandler =
-      static_cast<id<ActivityServicePresentation>>(coordinator);
-
-  [activityHandler activityServiceDidEndPresenting];
-
-  EXPECT_OCMOCK_VERIFY(vc_partial_mock);
   [coordinator stop];
 }
