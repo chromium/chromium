@@ -27,7 +27,7 @@ enum class SendTabToSelfResult {
   kSuccessThrottled = 1,
   kFailureNotTrackingMetadata = 2,
   kFailureInvalidUrl = 3,
-  kFailureModelNotReady = 4,
+  // Deprecated: kFailureModelNotReady = 4,
   kFailureCommitAttemptFailed = 5,
   kFailureCommitAttemptError = 6,
   kFailureSyncDisabled = 7,
@@ -61,7 +61,9 @@ class SendTabToSelfModel {
   // Returns the entry if it was successfully added to the local model.
   // `commit_confirmation` is an asynchronous callback that will be invoked
   // once the entry has been successfully queued in the local sync pipeline or
-  // if it failed to be queued.
+  // if it failed to be queued. Callers do not need to check IsReady() before
+  // calling this method; if the model is not ready, the callback will be
+  // invoked with kFailureNotTrackingMetadata.
   virtual const SendTabToSelfEntry* AddEntry(
       const GURL& url,
       const std::string& title,

@@ -50,9 +50,10 @@ public class SendTabToSelfAndroidBridgeTest {
     @SmallTest
     public void testSendTabToDevice() {
         SendTabToSelfAndroidBridge.sendTabToDevice(
-                mWebContents, TARGET_DEVICE_SYNC_CACHE_GUID, URL, TITLE, null);
+                mProfile, mWebContents, TARGET_DEVICE_SYNC_CACHE_GUID, URL, TITLE, null);
         verify(mNativeMock)
                 .sendTabToDevice(
+                        eq(mProfile),
                         eq(mWebContents),
                         eq(TARGET_DEVICE_SYNC_CACHE_GUID),
                         eq(URL),

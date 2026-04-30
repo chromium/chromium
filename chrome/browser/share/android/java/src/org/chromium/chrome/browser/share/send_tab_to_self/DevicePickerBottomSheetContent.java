@@ -176,6 +176,7 @@ class DevicePickerBottomSheetContent implements BottomSheetContent, OnItemClickL
         WebContents webContents = (tab != null) ? tab.getWebContents() : null;
 
         SendTabToSelfAndroidBridge.sendTabToDevice(
+                mProfile,
                 webContents,
                 targetDeviceInfo.cacheGuid,
                 mUrl,

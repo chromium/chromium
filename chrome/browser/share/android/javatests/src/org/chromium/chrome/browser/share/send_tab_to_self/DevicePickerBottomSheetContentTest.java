@@ -111,6 +111,7 @@ public class DevicePickerBottomSheetContentTest {
 
         verify(mNativeMock)
                 .sendTabToDevice(
+                        eq(mProfile),
                         eq(mWebContents),
                         eq("guid"),
                         eq("https://example.com/"),
