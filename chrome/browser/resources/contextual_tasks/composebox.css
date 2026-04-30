@@ -316,6 +316,32 @@
   --cr-icon-button-margin-start: 8px;
 }
 
+:host([energy-effect-animation-enabled_]) #composebox::part(context-menu-entrypoint-icon),
+:host([energy-effect-animation-enabled_]) #composebox::part(entrypoint-button) {
+  --button-scale-x: 1.16;
+  --cr-icon-button-transition:
+    var(--on-release-duration) var(--expressive-fast-curve);
+  --expressive-fast-curve: cubic-bezier(0.42, 1.67, 0.21, 0.9);
+  --icon-scale-x: 0.95;
+  --on-press-duration: 200ms;
+  --on-release-duration: 400ms;
+
+  transform-origin: center;
+  transition: transform var(--on-release-duration) var(--expressive-fast-curve);
+  will-change: transform;
+}
+
+:host([energy-effect-animation-enabled_]) #composebox::part(context-menu-entrypoint-icon):active,
+:host([energy-effect-animation-enabled_]) #composebox::part(entrypoint-button):active {
+  --cr-icon-button-icon-size:
+    calc(var(--icon-menu-icon-size, 24px) * var(--icon-scale-x));
+  --cr-icon-button-transition:
+    var(--on-press-duration) var(--expressive-fast-curve);
+
+  transform: scale(var(--button-scale-x), 1);
+  transition-duration: var(--on-press-duration);
+}
+
 :host([energy-effect-enabled_][in-tool-mode_]) #composebox::part(context-menu-entrypoint-icon),
 :host([energy-effect-enabled_][in-tool-mode_]) #composebox::part(entrypoint-button) {
   --cr-composebox-entrypoint-background-color: transparent;
