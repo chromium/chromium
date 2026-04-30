@@ -7,8 +7,10 @@
 #import <CoreMedia/CoreMedia.h>
 #import <Vision/Vision.h>
 
+#import "base/metrics/histogram_functions.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/task/task_runner.h"
+#import "base/time/time.h"
 #import "ios/chrome/browser/settings/ui_bundled/credit_card_scanner/credit_card_scanner_consumer.h"
 #import "ios/chrome/browser/settings/ui_bundled/credit_card_scanner/credit_card_scanner_string_util.h"
 
@@ -20,6 +22,9 @@ namespace {
 // between more times causing higher latency, versus fewer times causing a
 // higher chance of a misrecognition.
 const int kMinConfidenceCount = 15;
+
+// The threshold for a frame to be considered slow (approx. 30 fps).
+constexpr base::TimeDelta kSlowFrameThreshold = base::Milliseconds(33);
 
 // Structure for storing possible candidates (for either a card number or
 // expiration dates) that have been recognized, mapped to how many times (i.e.,
@@ -65,6 +70,21 @@ struct KeyAndCount {
   // TaskRunner for the main thread, used to post results to the
   // `_creditCardScannerConsumer` from the vision API thread.
   scoped_refptr<base::SequencedTaskRunner> _mainThreadTaskRunner;
+
+  // The time when the first video frame is processed.
+  base::TimeTicks _scanStartTime;
+
+  // The number of frames processed so far.
+  int _frameCount;
+
+  // Whether a credit card has been found.
+  BOOL _hasFoundCard;
+
+  // The maximum latency observed during the scan.
+  base::TimeDelta _maxFrameLatency;
+
+  // Count of frames that took longer than 33ms (target ~30fps).
+  int _slowFramesCount;
 }
 
 #pragma mark - Lifecycle
@@ -74,6 +94,9 @@ struct KeyAndCount {
   if (self) {
     _creditCardScannerConsumer = consumer;
     _mainThreadTaskRunner = base::SequencedTaskRunner::GetCurrentDefault();
+    _frameCount = 0;
+    _hasFoundCard = NO;
+    _slowFramesCount = 0;
   }
   return self;
 }
@@ -84,6 +107,11 @@ struct KeyAndCount {
                          viewport:(CGRect)viewport {
   // Note: Current thread is an unknown background thread as this is a callback
   // from UIKit.
+
+  if (_scanStartTime.is_null()) {
+    _scanStartTime = base::TimeTicks::Now();
+  }
+  _frameCount++;
 
   // TODO(crbug.com/442869727): Currently we process buffers as fast as possible
   // as long as the camera is open. Excess buffers are discarded due to how
@@ -127,7 +155,16 @@ struct KeyAndCount {
                                                    options:@{}];
 
   NSError* requestError = nil;
+  base::TimeTicks start = base::TimeTicks::Now();
   [handler performRequests:@[ _textRecognitionRequest ] error:&requestError];
+  base::TimeDelta latency = base::TimeTicks::Now() - start;
+
+  if (latency > _maxFrameLatency) {
+    _maxFrameLatency = latency;
+  }
+  if (latency > kSlowFrameThreshold) {
+    _slowFramesCount++;
+  }
 }
 
 #pragma mark - Helper Methods
@@ -171,6 +208,24 @@ struct KeyAndCount {
   // was (probably) not a one-off misrecognition.
   KeyAndCount cardNumberAndCount = [self mostCommonKey:_candidateCardNumbers];
   if (cardNumberAndCount._count >= kMinConfidenceCount) {
+    if (!_hasFoundCard) {
+      _hasFoundCard = YES;
+      // Add histogram to record the number of frames to success and the time to
+      // success.
+      base::TimeDelta duration = base::TimeTicks::Now() - _scanStartTime;
+      base::UmaHistogramMediumTimes("Autofill.CreditCardScanner.TimeToSuccess",
+                                    duration);
+      base::UmaHistogramCounts100("Autofill.CreditCardScanner.FramesToSuccess",
+                                  _frameCount);
+      base::UmaHistogramTimes("Autofill.CreditCardScanner.MaxFrameLatency",
+                              _maxFrameLatency);
+      base::UmaHistogramCounts100("Autofill.CreditCardScanner.SlowFramesCount",
+                                  _slowFramesCount);
+
+      base::UmaHistogramCounts100("Autofill.CreditCardScanner.CandidatesCount",
+                                  [_candidateCardNumbers._counts count]);
+    }
+
     NSString* cardNumber = (NSString*)cardNumberAndCount._key;
 
     // Our minimum requirement is that we find a card number. Finding an expiry

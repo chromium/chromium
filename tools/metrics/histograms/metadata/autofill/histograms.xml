@@ -3346,6 +3346,69 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <token key="SaveType" variants="AutofillCreditCardSaveType"/>
 </histogram>
 
+<histogram name="Autofill.CreditCardScanner.CandidatesCount" units="count"
+    expires_after="2027-04-01">
+  <owner>yiwenqian@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records how many unique potential card numbers were detected during the
+    scan. A high number suggests &quot;noisy&quot; detection or a difficult
+    environment, which helps evaluate if the minimum confidence count is
+    filtering effectively. Recorded when a credit card is successfully
+    recognized by the scanner.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.CreditCardScanner.FramesToSuccess" units="count"
+    expires_after="2027-04-01">
+  <owner>yiwenqian@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records the number of frames processed before a credit card is successfully
+    recognized. This helps distinguish between slow devices (low FPS) and
+    recognition difficulty. Recorded when a credit card is successfully
+    recognized by the scanner.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.CreditCardScanner.MaxFrameLatency" units="ms"
+    expires_after="2027-04-01">
+  <owner>yiwenqian@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records the maximum latency observed for processing a single frame during a
+    credit card scan. Recorded when a credit card is successfully recognized by
+    the scanner.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.CreditCardScanner.SlowFramesCount" units="count"
+    expires_after="2027-04-01">
+  <owner>yiwenqian@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records the number of frames that took longer than 33ms to process during a
+    credit card scan. Recorded when a credit card is successfully recognized by
+    the scanner.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.CreditCardScanner.TimeToSuccess" units="ms"
+    expires_after="2027-04-01">
+  <owner>yiwenqian@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records the time elapsed from the first frame processed until a credit card
+    is successfully recognized. Recorded when a credit card is successfully
+    recognized by the scanner.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.CreditCardsDeletedForDisuse" units="units"
     expires_after="2026-12-12">
   <owner>battre@chromium.org</owner>
