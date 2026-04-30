@@ -9229,7 +9229,7 @@ TEST_P(BrowserAutofillManagerSuggestionMergingTest, MergingLogic) {
 
   test_api(autofill_manager())
       .OnIndividualSuggestionsGenerated(
-          form.global_id(), form.fields()[0].global_id(),
+          form, form.fields()[0],
           AutofillSuggestionTriggerSource::kFormControlElementClicked, {},
           base::TimeTicks::Now(), std::move(returned_suggestions));
 
@@ -9275,7 +9275,7 @@ TEST_F(BrowserAutofillManagerTest, GeneratedFillingProductMetric) {
   FormData form = CreateTestAddressFormData();
   test_api(autofill_manager())
       .OnIndividualSuggestionsGenerated(
-          form.global_id(), form.fields()[0].global_id(),
+          form, form.fields()[0],
           AutofillSuggestionTriggerSource::kFormControlElementClicked, {},
           base::TimeTicks::Now(),
           {{SuggestionGenerator::SuggestionDataSource::kAddress,

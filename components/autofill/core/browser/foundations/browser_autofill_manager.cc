@@ -1218,9 +1218,8 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
           suggestion_generators_.size(),
           base::BindOnce(
               &BrowserAutofillManager::OnIndividualSuggestionsGenerated,
-              weak_ptr_factory_.GetWeakPtr(), form.global_id(),
-              field.global_id(), trigger_source, context,
-              suggestion_generation_start_time));
+              weak_ptr_factory_.GetWeakPtr(), form, field, trigger_source,
+              context, suggestion_generation_start_time));
 
   for (const std::unique_ptr<SuggestionGenerator>& suggestion_generator :
        suggestion_generators_) {
@@ -1231,8 +1230,8 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
 }
 
 void BrowserAutofillManager::OnIndividualSuggestionsGenerated(
-    const FormGlobalId& form_id,
-    const FieldGlobalId& field_id,
+    const FormData& form,
+    const FormFieldData& field,
     AutofillSuggestionTriggerSource trigger_source,
     SuggestionsContext context,
     base::TimeTicks suggestion_generation_start_time,
@@ -1250,8 +1249,8 @@ void BrowserAutofillManager::OnIndividualSuggestionsGenerated(
   // still need to offer Autocomplete.
   // TODO(crbug.com/433224307): Consider early returning here when the cache
   // starts storing all forms and fields.
-  std::ignore = GetCachedFormAndField(form_id, field_id, &form_structure,
-                                      &autofill_field);
+  std::ignore = GetCachedFormAndField(form.global_id(), field.global_id(),
+                                      &form_structure, &autofill_field);
 
   base::flat_map<SuggestionDataSource, std::vector<Suggestion>> all_suggestions(
       std::move(returned_suggestions));
@@ -1311,8 +1310,20 @@ void BrowserAutofillManager::OnIndividualSuggestionsGenerated(
   auto passkey_suggestions =
       prioritized_suggestions.extract(FillingProduct::kPasskey);
 
+  // TODO(crbug.com/409962888): Consider moving the TTF logic to
+  // `OnGenerateSuggestionsComplete()` when the old suggestion generation logic
+  // is removed.
   auto on_generate_suggestions_complete =
       [&](std::vector<Suggestion> suggestions) {
+        if (TryToShowTouchToFillSuggestions(form, field, autofill_field,
+                                            suggestions, trigger_source)) {
+          OnGenerateSuggestionsComplete(
+              form.global_id(), field.global_id(), trigger_source, context,
+              suggestion_generation_start_time,
+              /*show_suggestions=*/false, suggestions);
+          return;
+        }
+
         // Handle passkeys separately, since they can merge with every
         // suggestion.
         if (!passkey_suggestions.empty()) {
@@ -1320,8 +1331,9 @@ void BrowserAutofillManager::OnIndividualSuggestionsGenerated(
           MergePasskeysAndExistingSuggestions(
               suggestions, std::move(passkey_suggestions.mapped()[0]));
         }
-        OnGenerateSuggestionsComplete(form_id, field_id, trigger_source,
-                                      context, suggestion_generation_start_time,
+        OnGenerateSuggestionsComplete(form.global_id(), field.global_id(),
+                                      trigger_source, context,
+                                      suggestion_generation_start_time,
                                       /*show_suggestions=*/true, suggestions);
       };
 
@@ -1340,6 +1352,37 @@ void BrowserAutofillManager::OnIndividualSuggestionsGenerated(
   // combination during prioritization.
   CHECK_EQ(prioritized_suggestions.size(), 1u);
   on_generate_suggestions_complete(prioritized_suggestions.begin()->second);
+}
+
+bool BrowserAutofillManager::TryToShowTouchToFillSuggestions(
+    const FormData& form,
+    const FormFieldData& trigger_field,
+    const AutofillField* trigger_autofill_field,
+    const std::vector<Suggestion>& suggestions,
+    AutofillSuggestionTriggerSource trigger_source) {
+  if (!touch_to_fill_delegate_) {
+    return false;
+  }
+
+  if (touch_to_fill_delegate_->IsShowingTouchToFill()) {
+    return true;
+  }
+
+  // Touch to fill is not shown if other address suggestions are available
+  // for EMAIL_OR_LOYALTY_MEMBERSHIP_ID fields.
+  if (trigger_autofill_field &&
+      trigger_autofill_field->Type().GetLoyaltyCardType() ==
+          EMAIL_OR_LOYALTY_MEMBERSHIP_ID &&
+      std::ranges::any_of(suggestions, [](const Suggestion& suggestion) {
+        return GetFillingProductFromSuggestionType(suggestion.type) ==
+               FillingProduct::kAddress;
+      })) {
+    return false;
+  }
+
+  return trigger_source ==
+             AutofillSuggestionTriggerSource::kFormControlElementClicked &&
+         touch_to_fill_delegate_->TryToShowTouchToFill(form, trigger_field);
 }
 
 std::vector<Suggestion> BrowserAutofillManager::MergeWithAddressSuggestions(
@@ -1482,22 +1525,8 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2(
     return;
   }
 
-  // Touch to fill is not shown if other address suggestions are available for
-  // EMAIL_OR_LOYALTY_MEMBERSHIP_ID fields.
-  const bool has_address_suggestions_on_email_or_loyalty_card_field =
-      autofill_field &&
-      autofill_field->Type().GetLoyaltyCardType() ==
-          EMAIL_OR_LOYALTY_MEMBERSHIP_ID &&
-      std::ranges::any_of(suggestions, [](const Suggestion& suggestion) {
-        return GetFillingProductFromSuggestionType(suggestion.type) ==
-               FillingProduct::kAddress;
-      });
-  if (touch_to_fill_delegate_ &&
-      (touch_to_fill_delegate_->IsShowingTouchToFill() ||
-       (trigger_source ==
-            AutofillSuggestionTriggerSource::kFormControlElementClicked &&
-        !has_address_suggestions_on_email_or_loyalty_card_field &&
-        touch_to_fill_delegate_->TryToShowTouchToFill(form, field)))) {
+  if (TryToShowTouchToFillSuggestions(form, field, autofill_field, suggestions,
+                                      trigger_source)) {
     std::move(callback).Run(/*show_suggestions=*/false, std::move(suggestions));
     return;
   }

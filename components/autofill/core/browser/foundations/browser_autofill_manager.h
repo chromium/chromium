@@ -483,13 +483,22 @@ class BrowserAutofillManager : public AutofillManager {
   // suggestions. It combines the returned suggestions respecting their
   // priorities and calls `OnGenerateSuggestionsComplete` to show them.
   void OnIndividualSuggestionsGenerated(
-      const FormGlobalId& form_id,
-      const FieldGlobalId& field_id,
+      const FormData& form,
+      const FormFieldData& field,
       AutofillSuggestionTriggerSource trigger_source,
       SuggestionsContext context,
       base::TimeTicks suggestion_generation_start_time,
       std::vector<SuggestionGenerator::ReturnedSuggestions>
           returned_suggestions);
+
+  // Returns true if TouchToFill is already showing, otherwise checks whether or
+  // not to show it and returns true if it was shown and false otherwise.
+  bool TryToShowTouchToFillSuggestions(
+      const FormData& form,
+      const FormFieldData& trigger_field,
+      const AutofillField* trigger_autofill_field,
+      const std::vector<Suggestion>& suggestions,
+      AutofillSuggestionTriggerSource trigger_source);
 
   // Merges suggestions with `FillingProduct::kAddress` with the other
   // suggestions whose products supports merging with address suggestions (see

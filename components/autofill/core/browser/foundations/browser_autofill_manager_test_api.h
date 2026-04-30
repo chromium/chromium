@@ -63,15 +63,15 @@ class BrowserAutofillManagerTestApi : public AutofillManagerTestApi {
   }
 
   void OnIndividualSuggestionsGenerated(
-      const FormGlobalId& form_id,
-      const FieldGlobalId& field_id,
+      const FormData& form,
+      const FormFieldData& field,
       AutofillSuggestionTriggerSource trigger_source,
       SuggestionsContext context,
       base::TimeTicks suggestion_generation_start_time,
       std::vector<SuggestionGenerator::ReturnedSuggestions>
           returned_suggestions) {
     manager_->OnIndividualSuggestionsGenerated(
-        form_id, field_id, trigger_source, std::move(context),
+        form, field, trigger_source, std::move(context),
         suggestion_generation_start_time, std::move(returned_suggestions));
   }
 

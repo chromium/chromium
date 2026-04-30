@@ -409,6 +409,11 @@ void CreditCardSuggestionGenerator::GenerateSuggestions(
     const AutofillField* trigger_autofill_field,
     const AutofillClient& client,
     base::FunctionRef<void(ReturnedSuggestions)> callback) {
+  if (!form_structure || !trigger_autofill_field) {
+    callback({SuggestionDataSource::kCreditCard, {}});
+    return;
+  }
+
   if (credit_card_form_event_logger_) {
     credit_card_form_event_logger_->set_signin_state_for_metrics(
         signin_state_for_metrics_);
