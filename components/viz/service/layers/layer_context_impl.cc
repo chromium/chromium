@@ -1256,6 +1256,10 @@ DeserializeTimingFunction(mojom::TimingFunction& wire) {
       if (points.empty()) {
         return gfx::LinearTimingFunction::Create();
       }
+      if (points.size() < 2) {
+        return base::unexpected(
+            "Invalid number of points: must be at least 2 for LinearTiming");
+      }
       return gfx::LinearTimingFunction::Create(std::move(points));
     }
     case mojom::TimingFunction::Tag::kCubicBezier: {

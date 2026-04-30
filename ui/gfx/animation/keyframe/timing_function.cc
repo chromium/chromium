@@ -168,7 +168,7 @@ std::unique_ptr<LinearTimingFunction> LinearTimingFunction::Create() {
 
 std::unique_ptr<LinearTimingFunction> LinearTimingFunction::Create(
     std::vector<LinearEasingPoint> points) {
-  DCHECK(points.size() >= 2);
+  CHECK(points.size() >= 2);
   return base::WrapUnique(new LinearTimingFunction(std::move(points)));
 }
 
