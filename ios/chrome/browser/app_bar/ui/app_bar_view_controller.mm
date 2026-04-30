@@ -11,11 +11,11 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/app_bar/ui/app_bar_background_view.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_constants.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_iph_background_view.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_mutator.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_utils.h"
-#import "ios/chrome/browser/app_bar/ui/app_bar_view.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_animator.h"
 #import "ios/chrome/browser/intents/model/intents_donation_helper.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
@@ -145,7 +145,7 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
   // Cached avatar for the assistant button.
   UIImage* _assistantButtonAvatar;
   // The background view.
-  AppBarView* _backgroundView;
+  AppBarBackgroundView* _backgroundView;
   // The stack view constraints that are updated on rotation.
   NSLayoutConstraint* _stackViewTopConstraint;
   NSLayoutConstraint* _stackViewBottomConstraint;
@@ -225,7 +225,7 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
 - (void)viewDidLoad {
   [super viewDidLoad];
 
-  _backgroundView = [[AppBarView alloc] init];
+  _backgroundView = [[AppBarBackgroundView alloc] init];
   _backgroundView.translatesAutoresizingMaskIntoConstraints = NO;
   [self.view insertSubview:_backgroundView atIndex:0];
 

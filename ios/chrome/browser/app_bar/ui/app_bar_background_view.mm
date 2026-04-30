@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/app_bar/ui/app_bar_view.h"
+#import "ios/chrome/browser/app_bar/ui/app_bar_background_view.h"
 
 #import <QuartzCore/QuartzCore.h>
 
@@ -40,7 +40,7 @@ void AddCutoutToPath(UIBezierPath* path, CGRect bounds) {
 
 }  // namespace
 
-@implementation AppBarView {
+@implementation AppBarBackgroundView {
   CAShapeLayer* _maskLayer;
   UIBezierPath* _maskPath;
   CGRect _lastBounds;
