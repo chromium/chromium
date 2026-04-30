@@ -10,11 +10,8 @@ or https://bughunters.google.com/report/vrp -> Chrome VRP.
 
 Please check here for any news and updates about the Chrome VRP.
 
+* April 2026 : Updates for new reward structure.
 * March 2026 : Updated formatting criteria & added self-service hotlists.
-* January 2026: Announcing the [top 20 Chrome VRP reporters of 2025](https://crbug.com/473635778)
-  -- another great year of actionable and sometimes surprising reports -- well done to every
-  researcher who made the list and thanks to all VRP reporters for helping keep people using
-  Chrome safe on the internet.
 
 ## About the Program
 
@@ -69,15 +66,14 @@ reports:
 * Please format your PoCs so they do not require running python as root.
   * Your PoC should be constructed to reproduce locally when at all possible.
 * Do *not* provide links to websites (public or unlisted) as PoCs.
-  * The PoC should ALWAYS be a file directly attached to the report, even if it
-    cannot be reproduced in ClusterFuzz.
+  * The PoC should ALWAYS be a file directly attached to the report.
 * Example servers should be written only in Python, other languages may lead
   to your report being rejected.
 
 ### Patches to simulate a compromised renderer
 
 * Instead of providing a patch, use MojoJS to simulate a compromised renderer.
-* Explain why MojoJS is not sufficient.
+  * Otherwise, explain why MojoJS is not sufficient.
 * Upload a git generated patch with a clear base commit.
 * Use process guards (e.g. test the commandline for `--type="renderer"`) if
   code can run in multiple processes.
@@ -114,6 +110,16 @@ reports:
   * DO feel free to include music, sound effects, or animal pics in your
     videos. :)
 
+### Test Harnesses
+
+ * Do not provide a custom test harness.
+ * Do not modify browser or unittests.
+ * Do not run Chrome with a harness, debugging client or shell script.
+ * Chrome provides some test binaries you can use directly:
+   * `chrome`
+   * `d8` (but do not supply experiment features)
+   * `pdfium_test`
+
 ### Bug Reporting
 
 * Please ensure your report is concise and clearly articulates the bug,
@@ -122,35 +128,18 @@ reports:
     renderer.
   * The security consequences / user harm resulting from exploitation of the
     bug.
-* Avoid reporting theoretical bugs; reports that simply state a potential bug
+* Avoid reporting theoretical bugs: reports that simply state a potential bug
   from static analysis without demonstration of the security issue.
-  * These reports will be considered as unactionable and will be triaged at a
-    lower priority, and may be closed as WontFix without demonstrable evidence
-    of a security bug.
-  * These reports are also considered below baseline quality and qualify for
-    reduced or no VRP reward.
+  * These reports will be considered as unactionable and will be closed as
+    WontFix (Not reproducible).
 * At a minimum, please include the version number and release channel
   (Stable/Beta/Dev) on which you discovered and reproduced the issue you are
   reporting.
-  * For an opportunity at increasing your potential reward amount to receive a
-    [Bisect Bonus](https://g.co/chrome/vrp/#bisect-bonus),
-    please consider performing a full bisection, detailing the commit that
-    introduced the issue and / or all the active release channels impacted by
-    the bug.
+  * For a full reward,  please consider performing a full bisection, detailing
+    the commit that introduced the issue and / or all the active release
+    channels impacted by the bug.
 * Empty initial comments will lead to your report being closed and may lead to
-  your account being suspended. Do not create then populate placeholder issues.
-
-### Suggested Fix / Patch Rewards
-
-* If suggesting a patch to fix the issue you are reporting, please upload it to
-  the report as its own attachment.
-* We reward [bonuses for your patches](https://g.co/chrome/vrp/#patch-bonus)
-  but you must upload them to gerrit for review to be eligible.
-  * Remember to include the Chromium bug tracker issue number in the CL, if you
-    land the patch after filing the bug report, so that it can be linked to the
-    report.
-* Suggested patches (attached to the report as `fix.patch`) will contribute to
-  our assessment of report quality, but will not be eligible for a patch bonus.
+  your account being suspended. Do not create placeholder issues.
 
 ### Demonstrating controlled read or write
 
@@ -203,7 +192,7 @@ enabled):
 
 * `win` - Windows 11 on `x64` or `ARM64`
 * `mac` - The latest release of MacOS on `ARM64`
-* `linux` - The latest release of Debian stable on `x64` or `ARM64`
+* `linux` - The latest release of Debian stable w/wayland on `x64` or `ARM64`
 
 Non-standard, debugging or unsafe command line flags and features are not
 accepted.
@@ -212,17 +201,36 @@ accepted.
 
 ### Scope / Reward Eligibility
 
+#### What features are definitively out of scope?
+
+This list is not exhaustive but should help reporters focus on issues in Chrome:
+
+* *V8 features marked as Experimental*. Security bugs that are specific to V8
+    Experimental features are not eligible for Chrome VRP rewards. The
+    experimental status of a V8 feature will be denoted in the flag definition
+    in source code, in the flag description in the help menu, or via a printed
+    message at runtime.
+* *Swiftshader* is deprecated and only supported for limited test and debug
+    environments.
+* *WebNN* is not enabled and undergoing security hardening. It is not eligible
+    for the VRP at this time.
+* *Unsafe Flags*. Any flags which show a warning infobar that they present a
+    risk to the user are not in scope. These flags are intended for testing and
+    debugging only.
+* *--single-process* mode is purely for test and debugging and can lead to
+    races and ownership issues that do not manifest in multi-process mode.
+
 #### How do I know if my bug report is possibly eligible for a VRP reward?
 
 * All validated, [qualifying vulnerability
   reports](https://g.co/chrome/vrp/#qualifying-vulnerabilities) are
-  automatically considered for a reward once they are fixed. At which point you
+  automatically considered for a reward once they are accepted. At which point you
   will see the reward-topanel hotlist signifier added to your bug report. This
   indicates that it will be reviewed at a Chrome VRP panel meeting for a
   reward decision.
 * The bug will be updated again once the panel has made a reward decision.
 
-#### I want to report a bug through a broker / not directly to you.
+#### I want to report a bug through a broker / not directly to Chrome.
 
 * We believe it is against the spirit of the program to privately disclose
   security vulnerabilities to third parties for purposes other than fixing the
@@ -234,7 +242,7 @@ accepted.
   unaware of is eligible for a potential VRP reward. In the event of a duplicate
   submission, the earliest actionable report in the tracker is considered the
   first report.
-* If the issue is discovered by one of our internal fuzzers within 48 hours of
+* If the issue is discovered by one of our internal tools within seven days of
   your report, it is considered a known issue and is not eligible for a reward.
 
 #### What does actionable report mean?
@@ -274,13 +282,8 @@ accepted.
   through release testing and exhibit short-lived regression that are typically
   identified and fixed quickly. Reports of bugs in new code in trunk may collide
   with on-going work of the engineers as part of "trunk-churn".
-* Reports for bugs in newly landed code on Trunk / Head landed within 48 hours
+* Reports for bugs in newly landed code on Trunk / Head landed within seven days
   of the report are not eligible for VRP rewards.
-  * VRP eligibility for reports in Head will be based on assessment of ongoing
-    development efforts and discussion with the engineering team to determine if
-    the VRP report was used in identifying and fixing that issue.
-  * Bugs for issues resulting from newly landed commits on Head that are seven
-    (7) or fewer days old are likely to not be eligible for a VRP reward.
 
 #### Are bugs in third-party components in scope and eligible for VRP rewards?
 
@@ -317,8 +320,11 @@ accepted.
 #### Is there a time limit for submitting an exploit?
 
 * Although we don't have a set time limit, we would expect that the exploit
-  would follow within six  weeks of the initial report. If more time is needed,
-  we are happy to discuss extended timelines.
+  would follow within four weeks of the initial report.
+* The number of exploit bonuses is capped and priority for exploit bonuses
+  will be taken from the time an exploit is added to an issue, and the hotlist
+  [Security-Request-Exploit-Assessment](https://issues.chromium.org/hotlists/8186895)
+  is added.
 
 #### Will you reward for types of bugs that are not specifically listed?
 
@@ -469,7 +475,7 @@ accepted.
       decision.
     * Please reach out to p2p-vrp@google.com with questions about the payment
       enrollment process or assistance with any payments issues.
-  * Through Bugcrowd:
+  * Through Bugcrowd (preferred):
     * You must already have or create a new Google
       [Bughunters](https://bughunters.google.com/profile) profile.
       (Please note, you can set your Bughunters profile to be private if you
