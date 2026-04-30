@@ -118,7 +118,7 @@ public class AutocompleteController {
                         input.getTextForAutocomplete(),
                         input.getCursorPositionForAutocomplete(cursorPosition),
                         null,
-                        input.getPageUrl().getSpec(),
+                        input.getPageUrl(),
                         input.getPageClassification(),
                         input.getToolMode(),
                         preventInlineAutocomplete,
@@ -152,7 +152,7 @@ public class AutocompleteController {
         AutocompleteControllerJni.get()
                 .startPrefetch(
                         mNativeController,
-                        input.getPageUrl().getSpec(),
+                        input.getPageUrl(),
                         input.getPageClassification(),
                         webContents);
     }
@@ -187,7 +187,7 @@ public class AutocompleteController {
                 .onOmniboxFocused(
                         mNativeController,
                         input.getUserText(),
-                        input.getPageUrl().getSpec(),
+                        input.getPageUrl(),
                         input.getPageClassification(),
                         input.getToolMode(),
                         input.getPageTitle());
@@ -309,7 +309,7 @@ public class AutocompleteController {
                         match.getNativeObjectRef(),
                         suggestionLine,
                         disposition,
-                        currentPageUrl.getSpec(),
+                        currentPageUrl,
                         pageClassification,
                         elapsedTimeSinceModified,
                         completedLength,
@@ -451,10 +451,10 @@ public class AutocompleteController {
     public interface Natives {
         void start(
                 long nativeAutocompleteControllerAndroid,
-                String text,
+                @JniType("std::u16string") String text,
                 int cursorPosition,
-                @Nullable String desiredTld,
-                String currentUrl,
+                @Nullable @JniType("std::string") String desiredTld,
+                @JniType("GURL") GURL currentUrl,
                 @JniType("metrics::OmniboxEventProto::PageClassification") int pageClassification,
                 @JniType("omnibox::ToolMode") int toolMode,
                 boolean preventInlineAutocomplete,
@@ -462,7 +462,8 @@ public class AutocompleteController {
                 boolean allowExactKeywordMatch,
                 boolean wantAsynchronousMatches);
 
-        AutocompleteMatch classify(long nativeAutocompleteControllerAndroid, String text);
+        @Nullable AutocompleteMatch classify(
+                long nativeAutocompleteControllerAndroid, @JniType("std::u16string") String text);
 
         void stop(long nativeAutocompleteControllerAndroid, boolean clearResults);
 
@@ -473,26 +474,26 @@ public class AutocompleteController {
                 long nativeAutocompleteMatch,
                 int matchIndex,
                 int disposition,
-                String currentPageUrl,
+                @JniType("GURL") GURL currentPageUrl,
                 @JniType("metrics::OmniboxEventProto::PageClassification") int pageClassification,
                 long elapsedTimeSinceModified,
                 int completedLength,
-                @Nullable WebContents webContents,
+                @Nullable @JniType("content::WebContents*") WebContents webContents,
                 long nativeOmniboxAction);
 
         boolean onSuggestionTouchDown(
                 long nativeAutocompleteControllerAndroid,
                 long nativeAutocompleteMatch,
                 int matchIndex,
-                @Nullable WebContents webContents);
+                @Nullable @JniType("content::WebContents*") WebContents webContents);
 
         void onOmniboxFocused(
                 long nativeAutocompleteControllerAndroid,
-                String omniboxText,
-                String currentUrl,
+                @JniType("std::u16string") String omniboxText,
+                @JniType("GURL") GURL currentUrl,
                 @JniType("metrics::OmniboxEventProto::PageClassification") int pageClassification,
                 @JniType("omnibox::ToolMode") int toolMode,
-                String currentTitle);
+                @JniType("std::u16string") String currentTitle);
 
         void deleteMatchElement(
                 long nativeAutocompleteControllerAndroid,
@@ -512,15 +513,15 @@ public class AutocompleteController {
 
         void setVoiceMatches(
                 long nativeAutocompleteControllerAndroid,
-                String[] matches,
-                float[] confidenceScores);
+                @JniType("std::vector<std::u16string>") String[] matches,
+                @JniType("std::vector<float>") float[] confidenceScores);
 
         // Sends a zero suggest request to the server in order to pre-populate the result cache.
         void startPrefetch(
                 long nativeAutocompleteControllerAndroid,
-                String currentUrl,
+                @JniType("GURL") GURL currentUrl,
                 @JniType("metrics::OmniboxEventProto::PageClassification") int pageClassification,
-                @Nullable WebContents webContents);
+                @Nullable @JniType("content::WebContents*") WebContents webContents);
 
         // Create a navigation observser.
         void createNavigationObserver(
@@ -537,7 +538,8 @@ public class AutocompleteController {
 
         // Start prewarming a tab.
         void startPrewarm(
-                long nativeAutocompleteControllerAndroid, @Nullable WebContents webContents);
+                long nativeAutocompleteControllerAndroid,
+                @Nullable @JniType("content::WebContents*") WebContents webContents);
 
         /** Acquire an instance of AutocompleteController associated with the supplied profile. */
         AutocompleteController getForProfile(@JniType("Profile*") Profile profile);

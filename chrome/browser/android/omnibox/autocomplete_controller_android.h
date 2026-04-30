@@ -41,10 +41,10 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer,
   // Methods that forward to AutocompleteController:
   void Start(
       JNIEnv* env,
-      const base::android::JavaRef<jstring>& j_text,
-      int32_t j_cursor_pos,
-      const base::android::JavaRef<jstring>& j_desired_tld,
-      const base::android::JavaRef<jstring>& j_current_url,
+      const std::u16string& text,
+      int32_t cursor_pos,
+      const std::string& desired_tld,
+      const GURL& current_url,
       ::metrics::OmniboxEventProto::PageClassification page_classification,
       omnibox::ToolMode tool_mode,
       bool prevent_inline_autocomplete,
@@ -53,40 +53,38 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer,
       bool want_asynchronous_matches);
   void StartPrefetch(
       JNIEnv* env,
-      const base::android::JavaRef<jstring>& j_current_url,
+      const GURL& current_url,
       ::metrics::OmniboxEventProto::PageClassification page_classification,
-      const base::android::JavaRef<jobject>& j_web_contents);
+      content::WebContents* web_contents);
   base::android::ScopedJavaLocalRef<jobject> Classify(
       JNIEnv* env,
-      const base::android::JavaRef<jstring>& j_text);
+      const std::u16string& text);
   void OnOmniboxFocused(
       JNIEnv* env,
-      const base::android::JavaRef<jstring>& j_omnibox_text,
-      const base::android::JavaRef<jstring>& j_current_url,
+      const std::u16string& omnibox_text,
+      const GURL& current_url,
       ::metrics::OmniboxEventProto::PageClassification page_classification,
       omnibox::ToolMode tool_mode,
-      const base::android::JavaRef<jstring>& j_current_title);
+      const std::u16string& current_title);
   void Stop(JNIEnv* env, bool clear_result);
   void ResetSession(JNIEnv* env);
-  void StartPrewarm(JNIEnv* env,
-                    const base::android::JavaRef<jobject>& j_web_contents);
+  void StartPrewarm(JNIEnv* env, content::WebContents* web_contents);
 
   void OnSuggestionSelected(
       JNIEnv* env,
       uintptr_t match_ptr,
       int suggestion_line,
       const int32_t j_window_open_disposition,
-      const base::android::JavaRef<jstring>& j_current_url,
+      const GURL& current_url,
       ::metrics::OmniboxEventProto::PageClassification page_classification,
       int64_t elapsed_time_since_first_modified,
       int32_t completed_length,
-      const base::android::JavaRef<jobject>& j_web_contents,
+      content::WebContents* web_contents,
       int64_t omnibox_action_ptr);
-  bool OnSuggestionTouchDown(
-      JNIEnv* env,
-      uintptr_t match_ptr,
-      int match_index,
-      const base::android::JavaRef<jobject>& j_web_contents);
+  bool OnSuggestionTouchDown(JNIEnv* env,
+                             uintptr_t match_ptr,
+                             int match_index,
+                             content::WebContents* web_contents);
   void DeleteMatch(JNIEnv* env, uintptr_t match_ptr);
   void DeleteMatchElement(JNIEnv* env,
                           uintptr_t match_ptr,
@@ -116,10 +114,9 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer,
       uintptr_t composebox_controller_bridge_ptr);
 
   // Pass detected voice matches down to VoiceSuggestionsProvider.
-  void SetVoiceMatches(
-      JNIEnv* env,
-      const base::android::JavaRef<jobjectArray>& j_voice_matches,
-      const base::android::JavaRef<jfloatArray>& j_confidence_scores);
+  void SetVoiceMatches(JNIEnv* env,
+                       const std::vector<std::u16string>& voice_matches,
+                       const std::vector<float>& confidence_scores);
 
   // Pass the information about the suggestion dropdown height changes to the
   // Grouping framework.
