@@ -495,6 +495,23 @@ UIImage* IconForModel(ComposeboxModelOption option) {
   configuration.imageProperties.tintColor =
       [UIColor colorNamed:kTextPrimaryColor];
   cell.contentConfiguration = configuration;
+
+  BOOL isSelected = NO;
+  if (_inputState.activeTool != ComposeboxMode::kRegularSearch &&
+      item.type == MenuItemTypeForTool(_inputState.activeTool)) {
+    isSelected = YES;
+  } else if (_inputState.activeModel != ComposeboxModelOption::kNone &&
+             item.type == MenuItemTypeForModel(_inputState.activeModel)) {
+    isSelected = YES;
+  }
+
+  if (isSelected) {
+    UICellAccessoryCheckmark* checkmark =
+        [[UICellAccessoryCheckmark alloc] init];
+    cell.accessories = @[ checkmark ];
+  } else {
+    cell.accessories = @[];
+  }
 }
 
 - (void)configureAttachmentCell:(UICollectionViewCell*)cell
