@@ -188,6 +188,7 @@ source_set("asan_raw_ptr_service") {
   # Used by raw_ptr_service.cc to override {malloc,free,ignore_free} hooks.
   sources = []
   if (use_asan_backup_ref_ptr) {
+    defines = [ "BASE_IMPLEMENTATION" ]
     sources += [
       "memory/raw_ptr_asan_allocator.cc",
       "memory/raw_ptr_asan_allocator.h",
