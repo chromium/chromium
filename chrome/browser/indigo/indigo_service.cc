@@ -204,12 +204,18 @@ void IndigoService::TriggerRemoteEligibilityFetch() {
     return;
   }
 
-  LOG(WARNING) << "indigo: status RPC stub in use";
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(on_rpc_status_received),
-                     RemoteEligibility{.is_service_supported_for_account = true,
-                                       .has_user_image = true}));
+  api_client_->GetStatus(base::BindOnce(
+      [](RemoteEligibilityCallback callback,
+         base::expected<StatusResult, StatusError> result) {
+        if (!result.has_value()) {
+          std::move(callback).Run(base::unexpected(result.error().message));
+          return;
+        }
+        std::move(callback).Run(
+            RemoteEligibility{.is_service_supported_for_account = true,
+                              .has_user_image = result.value().has_user_image});
+      },
+      std::move(on_rpc_status_received)));
 }
 
 void IndigoService::InvalidateRemoteEligibility() {

@@ -28,6 +28,7 @@ namespace indigo {
 namespace {
 
 constexpr char kTestGenerateUrl[] = "https://example.com/generate";
+constexpr char kTestStatusUrl[] = "https://example.com/status";
 constexpr uint8_t kTestBytes[] = {1, 2, 3};
 constexpr char kTestDataUrl[] =
     "data:image/png;base64,"
@@ -67,7 +68,8 @@ class IndigoApiClientTest : public testing::Test {
                 &test_url_loader_factory_)) {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         features::kIndigo,
-        {{features::kIndigoGenerateUrl.name, kTestGenerateUrl}});
+        {{features::kIndigoGenerateUrl.name, kTestGenerateUrl},
+         {features::kIndigoStatusUrl.name, kTestStatusUrl}});
   }
 
   void WaitForAccessTokenRequestIfNecessaryAndRespondWithToken() {
@@ -126,6 +128,95 @@ TEST_F(IndigoApiClientTest, GenerateSuccess) {
   auto result = future.Get();
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result.value().image_url, GURL(kTestDataUrl));
+}
+
+TEST_F(IndigoApiClientTest, GetStatusSuccess) {
+  identity_test_env_.MakePrimaryAccountAvailable("test@example.com",
+                                                 signin::ConsentLevel::kSignin);
+
+  ApiClient client(identity_test_env_.identity_manager(),
+                   shared_url_loader_factory_);
+
+  base::test::TestFuture<base::expected<StatusResult, StatusError>> future;
+  client.GetStatus(future.GetCallback());
+  WaitForAccessTokenRequestIfNecessaryAndRespondWithToken();
+
+  test_url_loader_factory_.WaitForRequest(GURL(kTestStatusUrl));
+  auto* pending_request = test_url_loader_factory_.GetPendingRequest(0);
+  ASSERT_TRUE(pending_request);
+  EXPECT_EQ(pending_request->request.url, GURL(kTestStatusUrl));
+
+  std::string request_body = network::GetUploadData(pending_request->request);
+  EXPECT_EQ(request_body, "{}");
+
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      pending_request->request.url.spec(), R"({"hasUserImage": true})");
+
+  auto result = future.Get();
+  ASSERT_TRUE(result.has_value());
+  EXPECT_TRUE(result.value().has_user_image);
+}
+
+TEST_F(IndigoApiClientTest, GetStatusFalse) {
+  identity_test_env_.MakePrimaryAccountAvailable("test@example.com",
+                                                 signin::ConsentLevel::kSignin);
+
+  ApiClient client(identity_test_env_.identity_manager(),
+                   shared_url_loader_factory_);
+
+  base::test::TestFuture<base::expected<StatusResult, StatusError>> future;
+  client.GetStatus(future.GetCallback());
+  WaitForAccessTokenRequestIfNecessaryAndRespondWithToken();
+
+  test_url_loader_factory_.WaitForRequest(GURL(kTestStatusUrl));
+  auto* pending_request = test_url_loader_factory_.GetPendingRequest(0);
+  ASSERT_TRUE(pending_request);
+
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      pending_request->request.url.spec(), R"({"hasUserImage": false})");
+
+  auto result = future.Get();
+  ASSERT_TRUE(result.has_value());
+  EXPECT_FALSE(result.value().has_user_image);
+}
+
+TEST_F(IndigoApiClientTest, GetStatusHttpError) {
+  identity_test_env_.MakePrimaryAccountAvailable("test@example.com",
+                                                 signin::ConsentLevel::kSignin);
+
+  ApiClient client(identity_test_env_.identity_manager(),
+                   shared_url_loader_factory_);
+
+  test_url_loader_factory_.AddResponse(kTestStatusUrl, "",
+                                       net::HTTP_INTERNAL_SERVER_ERROR);
+
+  base::test::TestFuture<base::expected<StatusResult, StatusError>> future;
+  client.GetStatus(future.GetCallback());
+  WaitForAccessTokenRequestIfNecessaryAndRespondWithToken();
+
+  auto result = future.Get();
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error().message, "HTTP error: HTTP_INTERNAL_SERVER_ERROR");
+}
+
+TEST_F(IndigoApiClientTest, GetStatusMalformedJson) {
+  identity_test_env_.MakePrimaryAccountAvailable("test@example.com",
+                                                 signin::ConsentLevel::kSignin);
+
+  ApiClient client(identity_test_env_.identity_manager(),
+                   shared_url_loader_factory_);
+
+  test_url_loader_factory_.AddResponse(kTestStatusUrl, "invalid json");
+
+  base::test::TestFuture<base::expected<StatusResult, StatusError>> future;
+  client.GetStatus(future.GetCallback());
+  WaitForAccessTokenRequestIfNecessaryAndRespondWithToken();
+
+  auto result = future.Get();
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error().message,
+            "Invalid JSON response from https://example.com/status: line 1, "
+            "column 1: expected value at line 1 column 1");
 }
 
 TEST_F(IndigoApiClientTest, GenerateFailure) {

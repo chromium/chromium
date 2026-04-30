@@ -40,6 +40,14 @@ struct GenerateImageError {
   std::string message;
 };
 
+struct StatusResult {
+  bool has_user_image = false;
+};
+
+struct StatusError {
+  std::string message;
+};
+
 class ApiClient : public signin::IdentityManager::Observer {
  public:
   ApiClient(signin::IdentityManager* identity_manager,
@@ -54,6 +62,11 @@ class ApiClient : public signin::IdentityManager::Observer {
   void Generate(base::span<const uint8_t> product_image_bytes,
                 GenerateCallback callback);
 
+  // Sends a request to the status endpoint.
+  using StatusCallback =
+      base::OnceCallback<void(base::expected<StatusResult, StatusError>)>;
+  void GetStatus(StatusCallback callback);
+
  private:
   // signin::IdentityManager::Observer:
   void OnPrimaryAccountChanged(
@@ -64,6 +77,7 @@ class ApiClient : public signin::IdentityManager::Observer {
   const raw_ptr<signin::IdentityManager> identity_manager_;
   const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   const GURL generate_url_;
+  const GURL status_url_;
 
   // Null when the profile has no primary account.
   std::unique_ptr<google_apis::RequestSender> request_sender_;
