@@ -816,6 +816,11 @@ const char kGeminiUpdatedEligibilityName[] = "Gemini Updated Eligibility";
 const char kGeminiUpdatedEligibilityDescription[] =
     "Enables the updated eligibility checks for Gemini users.";
 
+const char kGeneralizedGeminiEntryFlowName[] = "Generalized Gemini Entry Flow";
+const char kGeneralizedGeminiEntryFlowDescription[] =
+    "Generalizes the Gemini entry flow to handle auth and eligibility outside "
+    "of the Page Action Menu.";
+
 const char kHandleMdmErrorsForDasherAccountsName[] =
     "Mdm error handling for dasher accounts";
 const char kHandleMdmErrorsForDasherAccountsDescription[] =

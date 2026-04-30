@@ -763,3 +763,12 @@ bool IsAppStoreInAppEventsEnabled() {
   return IsPageActionMenuEnabled() &&
          base::FeatureList::IsEnabled(kAppStoreInAppEvents);
 }
+
+BASE_FEATURE(kGeneralizedGeminiEntryFlow, base::FEATURE_ENABLED_BY_DEFAULT);
+
+bool IsGeneralizedGeminiEntryFlowEnabled() {
+  if (!IsPageActionMenuEnabled()) {
+    return false;
+  }
+  return base::FeatureList::IsEnabled(kGeneralizedGeminiEntryFlow);
+}

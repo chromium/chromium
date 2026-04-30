@@ -5133,6 +5133,14 @@
     "expiry_milestone": 156
   },
   {
+    "name": "generalized-gemini-entry-flow",
+    "owners": [
+      "kanouche@google.com",
+      "bling-alchemy-eng@google.com"
+    ],
+    "expiry_milestone": 170
+  },
+  {
     "name": "gesture-properties-dbus-service",
     "owners": [ "hcutts@chromium.org", "chromeos-tango@google.com" ],
     // Used by developers for debugging and input device tuning.

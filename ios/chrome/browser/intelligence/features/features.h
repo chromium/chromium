@@ -410,4 +410,11 @@ BASE_DECLARE_FEATURE(kAppStoreInAppEvents);
 // Returns true if the App Store In-App Events feature is enabled.
 bool IsAppStoreInAppEventsEnabled();
 
+// Feature flag controlling the generalized Gemini entry flow outside of the
+// Page Action Menu.
+BASE_DECLARE_FEATURE(kGeneralizedGeminiEntryFlow);
+
+// Returns true if the generalized Gemini entry flow is enabled.
+bool IsGeneralizedGeminiEntryFlowEnabled();
+
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_FEATURES_FEATURES_H_

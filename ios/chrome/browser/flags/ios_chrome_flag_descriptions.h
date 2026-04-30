@@ -505,6 +505,9 @@ extern const char kGeminiUnaryMigrationDescription[];
 extern const char kGeminiUpdatedEligibilityName[];
 extern const char kGeminiUpdatedEligibilityDescription[];
 
+extern const char kGeneralizedGeminiEntryFlowName[];
+extern const char kGeneralizedGeminiEntryFlowDescription[];
+
 extern const char kHandleMdmErrorsForDasherAccountsName[];
 extern const char kHandleMdmErrorsForDasherAccountsDescription[];
 
