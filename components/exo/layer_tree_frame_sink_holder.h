@@ -5,11 +5,15 @@
 #ifndef COMPONENTS_EXO_LAYER_TREE_FRAME_SINK_HOLDER_H_
 #define COMPONENTS_EXO_LAYER_TREE_FRAME_SINK_HOLDER_H_
 
+#include <list>
 #include <memory>
 #include <optional>
+#include <set>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/containers/queue.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "cc/trees/layer_tree_frame_sink_client.h"
@@ -18,6 +22,10 @@
 #include "components/exo/wm_helper.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/common/quads/compositor_frame.h"
+
+namespace gfx {
+struct PresentationFeedback;
+}
 
 namespace viz {
 class FrameTimingDetails;
@@ -37,6 +45,10 @@ class LayerTreeFrameSinkHolder : public cc::LayerTreeFrameSinkClient,
                                  public WMHelper::LifetimeManager::Observer,
                                  public viz::BeginFrameObserverBase {
  public:
+  using PresentationCallback =
+      base::RepeatingCallback<void(const gfx::PresentationFeedback&)>;
+  using PresentationCallbacks = std::list<PresentationCallback>;
+
   LayerTreeFrameSinkHolder(
       SurfaceTreeHost* surface_tree_host,
       std::unique_ptr<cc::mojo_embedder::AsyncLayerTreeFrameSink> frame_sink);
@@ -57,6 +69,7 @@ class LayerTreeFrameSinkHolder : public cc::LayerTreeFrameSinkClient,
   // via SubmitCompositorFrame(), whether it needs full damage.
   bool NeedsFullDamageForNextFrame() const { return cached_frame_.has_value(); }
   void SubmitCompositorFrame(viz::CompositorFrame frame,
+                             PresentationCallbacks callbacks,
                              bool submit_now = false);
   void SetLocalSurfaceId(const viz::LocalSurfaceId& local_surface_id);
 
@@ -91,7 +104,14 @@ class LayerTreeFrameSinkHolder : public cc::LayerTreeFrameSinkClient,
 
   void ClearPendingBeginFramesForTesting();
 
+  void ClearPendingCallbacks();
+
   void DeleteFrameTimingHistory() { frame_timing_history_.reset(); }
+
+  base::flat_map<uint32_t, PresentationCallbacks>&
+  GetActivePresentationCallbacksForTesting() {
+    return active_presentation_callbacks_;
+  }
 
  private:
   struct PendingBeginFrame {
@@ -108,12 +128,13 @@ class LayerTreeFrameSinkHolder : public cc::LayerTreeFrameSinkClient,
   bool OnBeginFrameDerivedImpl(const viz::BeginFrameArgs& args) override;
   void OnBeginFrameSourcePausedChanged(bool paused) override;
 
-  void SubmitCompositorFrameToRemote(viz::CompositorFrame* frame);
+  void SubmitCompositorFrameToRemote(viz::CompositorFrame* frame,
+                                     PresentationCallbacks callbacks);
 
   // Discards `cached_frame_`, reclaims resources and returns failure
   // presentation feedback.
   void DiscardCachedFrame(const viz::CompositorFrame* new_frame);
-  void SendDiscardedFrameNotifications(uint32_t frame_token);
+  void SendDiscardedFrameNotifications(PresentationCallbacks callbacks);
 
   void StopProcessingPendingFrames();
 
@@ -134,6 +155,8 @@ class LayerTreeFrameSinkHolder : public cc::LayerTreeFrameSinkClient,
   // submit an unsolicited frame.
   bool UnsolicitedFrameAllowed() const;
 
+  uint32_t GenerateNextFrameToken() { return ++next_token_; }
+
   raw_ptr<SurfaceTreeHost> surface_tree_host_;
   std::unique_ptr<cc::mojo_embedder::AsyncLayerTreeFrameSink> frame_sink_;
 
@@ -142,6 +165,7 @@ class LayerTreeFrameSinkHolder : public cc::LayerTreeFrameSinkClient,
   std::vector<viz::ResourceId> last_frame_resources_;
 
   std::optional<viz::CompositorFrame> cached_frame_;
+  PresentationCallbacks cached_presentation_callbacks_;
 
   // Resources that are submitted and still in use by the remote side.
   std::set<viz::ResourceId> in_use_resources_;
@@ -160,9 +184,14 @@ class LayerTreeFrameSinkHolder : public cc::LayerTreeFrameSinkClient,
   // been received.
   int pending_submit_frames_ = 0;
 
-  // A queue of discarded frame tokens for which acks and presentation feedbacks
-  // haven't been sent to `surface_tree_host_`.
-  base::queue<uint32_t> pending_discarded_frame_notifications_;
+  // A queue of discarded frame callbacks for which acks and presentation
+  // feedbacks haven't been sent to `surface_tree_host_`.
+  base::queue<PresentationCallbacks> pending_discarded_frame_notifications_;
+
+  base::flat_map<uint32_t, PresentationCallbacks>
+      active_presentation_callbacks_;
+
+  viz::FrameTokenGenerator next_token_;
 
   base::DeadlineTimer submit_frame_timer_;
 

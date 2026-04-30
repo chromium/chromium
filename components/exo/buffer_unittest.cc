@@ -60,7 +60,6 @@ viz::CompositorFrame CreateCompositorFrame(
       viz::BeginFrameId(viz::BeginFrameArgs::kManualSourceId,
                         viz::BeginFrameArgs::kStartingFrameNumber);
   frame.metadata.begin_frame_ack.has_damage = true;
-  frame.metadata.frame_token = surface_tree_host->GenerateNextFrameToken();
   frame.metadata.device_scale_factor = 1;
   auto pass = viz::CompositorRenderPass::Create();
   pass->SetNew(viz::CompositorRenderPassId{1}, output_rect, damage_rect,

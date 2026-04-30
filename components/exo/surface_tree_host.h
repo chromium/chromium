@@ -72,11 +72,6 @@ class SurfaceTreeHost : public SurfaceDelegate,
   // the surface is being scheduled for a draw.
   virtual void DidReceiveCompositorFrameAck();
 
-  // Call this to indicate that the CompositorFrame with given
-  // |presentation_token| has been first time presented to user.
-  void DidPresentCompositorFrame(uint32_t presentation_token,
-                                 const gfx::PresentationFeedback& feedback);
-
   // Sets the scale factor for all buffers associated with this surface. This
   // affects all future commits.
   void SetScaleFactor(float scale_factor);
@@ -95,7 +90,7 @@ class SurfaceTreeHost : public SurfaceDelegate,
     return layer_tree_frame_sink_holder_.get();
   }
 
-  using PresentationCallbacks = std::list<Surface::PresentationCallback>;
+  using PresentationCallbacks = LayerTreeFrameSinkHolder::PresentationCallbacks;
 
   base::queue<std::list<Surface::FrameCallback>>&
   GetFrameCallbacksForTesting() {
@@ -103,11 +98,7 @@ class SurfaceTreeHost : public SurfaceDelegate,
   }
 
   base::flat_map<uint32_t, PresentationCallbacks>&
-  GetActivePresentationCallbacksForTesting() {
-    return active_presentation_callbacks_;
-  }
-
-  uint32_t GenerateNextFrameToken() { return ++next_token_; }
+  GetActivePresentationCallbacksForTesting();
 
   // Returns the primary SurfaceId.
   viz::SurfaceId GetSurfaceId() const;
@@ -317,11 +308,6 @@ class SurfaceTreeHost : public SurfaceDelegate,
   // fire when the effect of the Commit() is scheduled to be drawn.
   base::queue<std::list<Surface::FrameCallback>> frame_callbacks_;
 
-  // These lists contain the callbacks to notify the client when surface
-  // contents have been presented.
-  base::flat_map<uint32_t, PresentationCallbacks>
-      active_presentation_callbacks_;
-
   // When a client calls set_scale_factor they're actually setting the scale
   // factor for all future commits.
   std::optional<float> pending_scale_factor_;
@@ -329,8 +315,6 @@ class SurfaceTreeHost : public SurfaceDelegate,
   // This is the client-set scale factor that is being used for the current
   // buffer.
   std::optional<float> scale_factor_;
-
-  viz::FrameTokenGenerator next_token_;
 
   scoped_refptr<viz::RasterContextProvider> context_provider_;
 
