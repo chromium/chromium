@@ -6,11 +6,16 @@
 
 #include <iterator>
 #include <string>
+#include <vector>
 
+#include "base/containers/span.h"
 #include "base/i18n/rtl.h"
+#include "base/no_destructor.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/global_features.h"
+#include "chrome/browser/indigo/resources/grit/indigo_browser_resources.h"
+#include "chrome/browser/indigo/resources/grit/indigo_browser_resources_map.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/indigo_resources.h"
 #include "chrome/grit/indigo_resources_map.h"
@@ -46,7 +51,20 @@ base::DictValue GetStrings() {
 }
 
 base::span<const webui::ResourcePath> GetResources() {
-  return base::span<const webui::ResourcePath>(kIndigoResources);
+  static const base::NoDestructor<std::vector<webui::ResourcePath>>
+      kAllResources([] {
+        std::vector<webui::ResourcePath> resources;
+        resources.reserve(std::size(kIndigoResources) +
+                          std::size(kIndigoBrowserResources));
+        for (const auto& resource : kIndigoResources) {
+          resources.push_back(resource);
+        }
+        for (const auto& resource : kIndigoBrowserResources) {
+          resources.push_back(resource);
+        }
+        return resources;
+      }());
+  return *kAllResources;
 }
 
 }  // namespace indigo_extension_utils

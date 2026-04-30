@@ -120,6 +120,7 @@ template("chrome_extra_paks") {
     sources = [
       "$root_gen_dir/base/tracing/protos/tracing_proto_resources.pak",
       "$root_gen_dir/chrome/browser/glic/resources/glic_browser_resources.pak",
+      "$root_gen_dir/chrome/browser/indigo/resources/indigo_browser_resources.pak",
       "$root_gen_dir/chrome/browser_resources.pak",
       "$root_gen_dir/chrome/chrome_unscaled_resources.pak",
       "$root_gen_dir/chrome/common_resources.pak",
@@ -164,6 +165,7 @@ template("chrome_extra_paks") {
       "//chrome/app/theme:chrome_unscaled_resources",
       "//chrome/browser:resources",
       "//chrome/browser/glic/resources:browser_resources",
+      "//chrome/browser/indigo/resources:browser_resources",
       "//chrome/browser/resources",
       "//chrome/browser/resources/contextual_tasks:resources",
       "//chrome/browser/resources/glic:resources",

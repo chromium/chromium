@@ -61,6 +61,7 @@ source_set("impl") {
     "//chrome/browser/component_updater",
     "//chrome/browser/extensions",
     "//chrome/browser/indigo/onboarding",
+    "//chrome/browser/indigo/resources:browser_resources",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/indigo:resources",

@@ -170,6 +170,9 @@
     "messages": [2540],
     "includes": [2600],
   },
+  "chrome/browser/indigo/resources/browser_resources.grd": {
+    "includes": [2640],
+  },
   # END chrome/browser section.
 
   # START chrome/ WebUI resources section

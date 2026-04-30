@@ -9,11 +9,13 @@ found in the LICENSE file.
     <output filename="grit/indigo_browser_resources.h" type="rc_header">
       <emit emit_type="prepend"></emit>
     </output>
+    <output filename="grit/indigo_browser_resources_map.cc" type="resource_file_map_source" />
+    <output filename="grit/indigo_browser_resources_map.h" type="resource_map_header" />
     <output filename="indigo_browser_resources.pak" type="data_package" />
   </outputs>
   <release seq="1">
     <includes>
-      <!-- Add resources here -->
+      <include name="IDR_INDIGO_TEXT_LAYER_ENTRY_ICON" file="text_layer_entry_icon.svg" type="BINDATA" resource_path="indigo/text_layer_entry_icon.svg" />
     </includes>
   </release>
 </grit>

@@ -9,9 +9,16 @@ import type {IndigoTextOverlayElement} from './text_overlay.js';
 export function getHtml(this: IndigoTextOverlayElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
-${this.currentStep_ === 1 ? html`<div>$i18n{textLayerStep1}</div>` : ''}
-${this.currentStep_ === 2 ? html`<div>$i18n{textLayerStep2}</div>` : ''}
-${this.currentStep_ === 3 ? html`<div>$i18n{textLayerStep3}</div>` : ''}
+<div id="container">
+  ${this.showIcon_ ? html`<div id="icon"></div>` : ''}
+  ${this.currentStep_ !== 0 ? html`
+    <div id="steps">
+      ${this.currentStep_ === 1 ? html`<div>$i18n{textLayerStep1}</div>` : ''}
+      ${this.currentStep_ === 2 ? html`<div>$i18n{textLayerStep2}</div>` : ''}
+      ${this.currentStep_ === 3 ? html`<div>$i18n{textLayerStep3}</div>` : ''}
+    </div>
+  ` : ''}
+</div>
 <!--_html_template_end_-->`;
   // clang-format on
 }

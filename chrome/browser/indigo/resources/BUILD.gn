@@ -13,6 +13,8 @@ grit("grit") {
   outputs = [
     "indigo_browser_resources.pak",
     "grit/indigo_browser_resources.h",
+    "grit/indigo_browser_resources_map.cc",
+    "grit/indigo_browser_resources_map.h",
   ]
 }
 
