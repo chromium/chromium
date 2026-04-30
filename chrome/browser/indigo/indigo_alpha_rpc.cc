@@ -117,32 +117,7 @@ base::expected<GURL, AlphaGenerateError> ParseAlphaGenerateResponse(
       AlphaGenerateError{kClientError, "Malformed response"});
 }
 
-base::expected<void, std::string> ParseAlphaStatusResponse(
-    std::string_view body) {
-  auto jspb_value_or_error = GetJspbValue(body);
-  if (!jspb_value_or_error.has_value()) {
-    return base::unexpected(std::move(jspb_value_or_error.error()));
-  }
-  const base::Value& jspb_value = *jspb_value_or_error;
 
-  std::optional<base::Value> status_value = JspbGet(jspb_value, 3);
-
-  if (!status_value) {
-    return base::unexpected("Status field not found in response.");
-  }
-
-  if (!status_value->is_int()) {
-    return base::unexpected("Unexpected type for status field");
-  }
-
-  int status_int = status_value->GetInt();
-  if (status_int != 3) {
-    return base::unexpected(base::StrCat({"Unexpected value for status field: ",
-                                          base::NumberToString(status_int)}));
-  }
-
-  return base::ok();
-}
 
 void ExecuteAlphaGenerateRpc(
     network::SharedURLLoaderFactory* loader_factory,
@@ -206,65 +181,6 @@ void ExecuteAlphaGenerateRpc(
       network::SimpleURLLoader::kMaxBoundedStringDownloadSize);
 }
 
-void ExecuteAlphaStatusRpc(
-    network::SharedURLLoaderFactory* loader_factory,
-    base::OnceCallback<void(base::expected<void, std::string>)> callback) {
-  auto resource_request = std::make_unique<network::ResourceRequest>();
-  resource_request->url = GURL(features::kIndigoAlphaStatusUrl.Get());
-  resource_request->method = "GET";
-  resource_request->credentials_mode =
-      network::mojom::CredentialsMode::kInclude;
 
-  constexpr net::NetworkTrafficAnnotationTag traffic_annotation =
-      net::DefineNetworkTrafficAnnotation("indigo_alpha_status", R"(
-        semantics {
-          sender: "Indigo"
-          description:
-            "Checks the status of content generation for the Indigo feature. "
-            "This is for internal experimentation only and must be removed or "
-            "updated before launch. b/487320384"
-          trigger: "User activates the Indigo page action on an eligible page."
-          user_data {
-            type: ACCESS_TOKEN
-          }
-          data: "User identity only."
-          destination: GOOGLE_OWNED_SERVICE
-          internal {
-            contacts {
-              owners: "//chrome/browser/indigo/OWNERS"
-            }
-          }
-          last_reviewed: "2026-02-20"
-        }
-        policy {
-          cookies_allowed: YES
-          cookies_store: "user"
-          setting: "n/a for now"
-          policy_exception_justification:
-            "Currently for internal prototyping only; policy controls will be "
-            "added before any general use."
-        })");
-
-  auto simple_loader = network::SimpleURLLoader::Create(
-      std::move(resource_request), traffic_annotation);
-
-  simple_loader->DownloadToString(
-      loader_factory,
-      base::BindOnce(
-          [](base::OnceCallback<void(base::expected<void, std::string>)>
-                 callback,
-             std::unique_ptr<network::SimpleURLLoader> loader,
-             std::optional<std::string> response_body) {
-            if (!response_body) {
-              LOG(ERROR) << "Indigo Alpha Status Net error"
-                         << loader->CompletionStatus()->error_code;
-              std::move(callback).Run(base::unexpected("Net error"));
-              return;
-            }
-            std::move(callback).Run(ParseAlphaStatusResponse(*response_body));
-          },
-          std::move(callback), std::move(simple_loader)),
-      network::SimpleURLLoader::kMaxBoundedStringDownloadSize);
-}
 
 }  // namespace indigo

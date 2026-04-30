@@ -522,7 +522,6 @@ Refer to README.md for content description and update process.
  <item id="skills_model_execution" added_in_milestone="146" content_hash_code="02f1c115" os_list="linux,windows,android,chromeos" file_path="components/optimization_guide/core/model_execution/model_execution_fetcher_impl.cc" />
  <item id="settings_overridden_dialog_icon_fetcher" added_in_milestone="147" content_hash_code="040080cc" os_list="windows,linux,chromeos" file_path="chrome/browser/ui/extensions/settings_overridden_params_providers.cc" />
  <item id="indigo_alpha_generate" added_in_milestone="147" content_hash_code="045833be" os_list="windows,linux,chromeos" file_path="chrome/browser/indigo/indigo_alpha_rpc.cc" />
- <item id="indigo_alpha_status" added_in_milestone="147" content_hash_code="05424773" os_list="windows,linux,chromeos" file_path="chrome/browser/indigo/indigo_alpha_rpc.cc" />
  <item id="devtools_gca_service" added_in_milestone="147" content_hash_code="06699f6b" os_list="linux,windows,android,chromeos" file_path="chrome/browser/devtools/gca_service_handler.cc" />
  <item id="actor_login_permission_service" added_in_milestone="148" content_hash_code="004d2614" os_list="linux,windows,android,chromeos" file_path="components/password_manager/core/browser/actor_login/internal/actor_login_permission_service_impl.cc" />
  <item id="fetch_email_one_time_token" added_in_milestone="148" content_hash_code="02856672" os_list="linux,windows,android,chromeos" file_path="components/one_time_tokens/core/browser/email_one_time_token_fetcher.cc" />

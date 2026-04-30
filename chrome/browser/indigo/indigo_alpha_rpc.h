@@ -27,8 +27,6 @@ struct AlphaGenerateError {
 // development. This should not be used in production.
 base::expected<GURL, AlphaGenerateError> ParseAlphaGenerateResponse(
     std::string_view body);
-base::expected<void, std::string> ParseAlphaStatusResponse(
-    std::string_view body);
 
 // Executes the alpha generate RPC and calls the callback with the parsed
 // response.
@@ -36,12 +34,6 @@ void ExecuteAlphaGenerateRpc(
     network::SharedURLLoaderFactory* loader_factory,
     base::OnceCallback<void(base::expected<GURL, AlphaGenerateError>)>
         callback);
-
-// Executes the alpha status RPC and calls the callback with the parsed
-// response.
-void ExecuteAlphaStatusRpc(
-    network::SharedURLLoaderFactory* loader_factory,
-    base::OnceCallback<void(base::expected<void, std::string>)> callback);
 
 }  // namespace indigo
 

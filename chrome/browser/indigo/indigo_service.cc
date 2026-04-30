@@ -9,7 +9,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/indigo/api_client.h"
-#include "chrome/browser/indigo/indigo_alpha_rpc.h"
 #include "chrome/browser/indigo/indigo_extension_utils.h"
 #include "chrome/browser/indigo/indigo_prefs.h"
 #include "chrome/browser/profiles/profile.h"
@@ -185,22 +184,6 @@ void IndigoService::TriggerRemoteEligibilityFetch() {
 
   if (remote_eligibility_fetcher_) {
     remote_eligibility_fetcher_.Run(std::move(on_rpc_status_received));
-    return;
-  }
-
-  if (!features::kIndigoAlphaStatusUrl.Get().empty()) {
-    LOG(WARNING) << "indigo: alpha status RPC in use";
-    scoped_refptr<network::SharedURLLoaderFactory> loader_factory =
-        profile_->GetDefaultStoragePartition()
-            ->GetURLLoaderFactoryForBrowserProcess();
-    ExecuteAlphaStatusRpc(
-        loader_factory.get(),
-        base::BindOnce([](base::expected<void, std::string> result) {
-          return result.transform([] {
-            return RemoteEligibility{.is_service_supported_for_account = true,
-                                     .has_user_image = true};
-          });
-        }).Then(std::move(on_rpc_status_received)));
     return;
   }
 

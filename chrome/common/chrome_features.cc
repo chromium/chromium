@@ -1158,8 +1158,7 @@ BASE_FEATURE(kHttpsFirstModeIncognito, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIndigo, base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<std::string> kIndigoAlphaGenerateUrl{
     &kIndigo, "indigo_alpha_generate_url", ""};
-const base::FeatureParam<std::string> kIndigoAlphaStatusUrl{
-    &kIndigo, "indigo_alpha_status_url", ""};
+
 const base::FeatureParam<base::TimeDelta> kIndigoAnchoredMessageResetDuration{
     &kIndigo, "indigo_anchored_message_reset_duration", base::Hours(24)};
 const base::FeatureParam<std::string> kIndigoGenerateUrl{

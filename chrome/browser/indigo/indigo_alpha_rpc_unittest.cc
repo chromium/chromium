@@ -28,7 +28,6 @@ MATCHER_P2(IsAlphaGenerateError, error_type, error_message, "") {
 }
 
 constexpr char kTestGenerateUrl[] = "https://placeholder.google.com/generate";
-constexpr char kTestStatusUrl[] = "https://placeholder.google.com/status";
 
 TEST(IndigoAlphaRpcTest, ParseAlphaGenerateResponse_Success) {
   const char kValidResponse[] = R"()]}'{"":
@@ -119,60 +118,14 @@ TEST(IndigoAlphaRpcTest, ParseAlphaGenerateResponse_MalformedResponse) {
   EXPECT_THAT(result.error(), IsAlphaGenerateError(-1, "Malformed response"));
 }
 
-TEST(IndigoAlphaRpcTest, ParseAlphaStatusResponse_Success) {
-  const char kValidResponse[] = R"()]}'{"":[null, null, 3]})";
-  auto result = ParseAlphaStatusResponse(kValidResponse);
-  EXPECT_TRUE(result.has_value());
-}
 
-TEST(IndigoAlphaRpcTest, ParseAlphaStatusResponse_SuccessSparse) {
-  const char kValidResponse[] = R"()]}'{"":[{"3": 3}]})";
-  auto result = ParseAlphaStatusResponse(kValidResponse);
-  EXPECT_TRUE(result.has_value());
-}
-
-TEST(IndigoAlphaRpcTest, ParseAlphaStatusResponse_WrongValue) {
-  const char kResponse[] = R"()]}'{"":[null, null, 4]})";
-  auto result = ParseAlphaStatusResponse(kResponse);
-  ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(result.error(), "Unexpected value for status field: 4");
-}
-
-TEST(IndigoAlphaRpcTest, ParseAlphaStatusResponse_WrongValueSparse) {
-  const char kResponse[] = R"()]}'{"":[{"3": 4}]})";
-  auto result = ParseAlphaStatusResponse(kResponse);
-  ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(result.error(), "Unexpected value for status field: 4");
-}
-
-TEST(IndigoAlphaRpcTest, ParseAlphaStatusResponse_NoStatus) {
-  const char kResponse[] = R"()]}'{"":[]})";
-  auto result = ParseAlphaStatusResponse(kResponse);
-  ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(result.error(), "Status field not found in response.");
-}
-
-TEST(IndigoAlphaRpcTest, ParseAlphaStatusResponse_WrongType) {
-  const char kResponse[] = R"()]}'{"":[null, null, "hello"]})";
-  auto result = ParseAlphaStatusResponse(kResponse);
-  ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(result.error(), "Unexpected type for status field");
-}
-
-TEST(IndigoAlphaRpcTest, ParseAlphaStatusResponse_InvalidJson) {
-  const char kInvalidJson[] = R"([)";
-  auto result = ParseAlphaStatusResponse(kInvalidJson);
-  ASSERT_FALSE(result.has_value());
-  EXPECT_THAT(result.error(), testing::StartsWith("Invalid JSON in response:"));
-}
 
 class IndigoAlphaRpcExecuteTest : public testing::Test {
  protected:
   IndigoAlphaRpcExecuteTest() {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         features::kIndigo,
-        {{features::kIndigoAlphaGenerateUrl.name, kTestGenerateUrl},
-         {features::kIndigoAlphaStatusUrl.name, kTestStatusUrl}});
+        {{features::kIndigoAlphaGenerateUrl.name, kTestGenerateUrl}});
   }
 
   base::test::TaskEnvironment task_environment_;
@@ -214,29 +167,7 @@ TEST_F(IndigoAlphaRpcExecuteTest, ExecuteAlphaGenerateRpcNetworkError) {
   EXPECT_THAT(res.error(), IsAlphaGenerateError(-1, "Net error"));
 }
 
-TEST_F(IndigoAlphaRpcExecuteTest, ExecuteAlphaStatusRpcSuccess) {
-  const char kValidResponse[] = R"()]}'{"":[null, null, 3]})";
-  test_url_loader_factory_.AddResponse(kTestStatusUrl, kValidResponse);
 
-  base::test::TestFuture<base::expected<void, std::string>> result;
-  ExecuteAlphaStatusRpc(shared_url_loader_factory_.get(), result.GetCallback());
-
-  const auto& res = result.Get();
-  EXPECT_TRUE(res.has_value());
-}
-
-TEST_F(IndigoAlphaRpcExecuteTest, ExecuteAlphaStatusRpcNetworkError) {
-  test_url_loader_factory_.AddResponse(
-      GURL(kTestStatusUrl), network::mojom::URLResponseHead::New(), "",
-      network::URLLoaderCompletionStatus(net::ERR_FAILED));
-
-  base::test::TestFuture<base::expected<void, std::string>> result;
-  ExecuteAlphaStatusRpc(shared_url_loader_factory_.get(), result.GetCallback());
-
-  const auto& res = result.Get();
-  ASSERT_FALSE(res.has_value());
-  EXPECT_EQ(res.error(), "Net error");
-}
 
 }  // namespace
 }  // namespace indigo
