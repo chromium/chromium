@@ -103,8 +103,6 @@ InstallFromSyncCommand::Params::Params(
       trusted_icons(trusted_icons),
       migrated_from_manifest_id(migrated_from_manifest_id) {
   CHECK(!app_id.empty());
-  CHECK(manifest_id.is_valid());
-  CHECK(!manifest_id.is_empty());
 }
 
 InstallFromSyncCommand::Params::Params(const Params&) = default;

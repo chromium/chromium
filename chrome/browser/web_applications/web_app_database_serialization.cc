@@ -425,12 +425,12 @@ std::unique_ptr<WebApp> ParseWebAppProto(
   }
 
   if (sync_data.has_migrated_from_manifest_id()) {
-    webapps::ManifestId migrated_from_manifest_id(
-        sync_data.migrated_from_manifest_id());
-    if (!migrated_from_manifest_id.is_valid()) {
+    std::optional<webapps::ManifestId> manifest_id =
+          webapps::ManifestId::Create(sync_data.migrated_from_manifest_id());
+    if (!manifest_id.has_value()) {
       RecordProtoParseResult(ProtoParseResult::kMigratedFromManifestIdInvalid);
       DLOG(ERROR) << "WebApp sync proto migrated from manifest id parse error "
-                  << migrated_from_manifest_id.possibly_invalid_spec();
+                  << sync_data.migrated_from_manifest_id();
       return nullptr;
     }
   }

@@ -43,6 +43,14 @@ struct ParsedConfigs;
 class WebAppProvider;
 
 struct PreinstalledAppForUpdating {
+  PreinstalledAppForUpdating(webapps::ManifestId manifest_id,
+                             GURL install_url);
+  ~PreinstalledAppForUpdating();
+  PreinstalledAppForUpdating(const PreinstalledAppForUpdating& other);
+  PreinstalledAppForUpdating& operator=(
+      const PreinstalledAppForUpdating& other);
+  PreinstalledAppForUpdating(PreinstalledAppForUpdating&& other);
+  PreinstalledAppForUpdating& operator=(PreinstalledAppForUpdating&& other);
   webapps::ManifestId manifest_id;
   GURL install_url;
 };
@@ -209,10 +217,9 @@ class PreinstalledWebAppManager {
   std::optional<PreinstalledAppForUpdating> preinstalled_app_for_updating_
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       = PreinstalledAppForUpdating{
-          .manifest_id =
-              webapps::ManifestId(webapps::kMailGoogleChatManifestId),
-          .install_url = GURL(webapps::kMailGoogleChatInstallUrl),
-      };
+        webapps::ManifestId::Create(GURL(webapps::kMailGoogleChatManifestId))
+            .value(),
+          GURL(webapps::kMailGoogleChatInstallUrl)};
 #else
       = std::nullopt;
 #endif

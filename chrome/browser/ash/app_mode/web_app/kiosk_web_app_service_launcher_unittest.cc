@@ -156,7 +156,7 @@ class KioskWebAppServiceLauncherTest : public BrowserWithTestWindowTest {
     install_page_state.manifest_before_default_processing->start_url =
         start_url;
     install_page_state.manifest_before_default_processing->id =
-        web_app::GenerateManifestIdFromStartUrlOnly(start_url);
+        web_app::GenerateManifestIdFromStartUrlOnly(start_url).value();
     install_page_state.manifest_before_default_processing->display =
         blink::mojom::DisplayMode::kStandalone;
     install_page_state.manifest_before_default_processing->short_name =

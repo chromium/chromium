@@ -242,15 +242,13 @@ void CheckValidPendingUpdateInfo(
 void RunWebAppConstructionValidations(const webapps::ManifestId& manifest_id,
                                       const GURL& start_url,
                                       const GURL& scope) {
-  CHECK(manifest_id.is_valid());
   CHECK(start_url.is_valid());
   CHECK(scope.is_valid());
-  CHECK(url::IsSameOriginWith(manifest_id, start_url))
+  CHECK(url::IsSameOriginWith(manifest_id.value(), start_url))
       << manifest_id.spec() << " vs " << start_url.spec();
   CHECK(url::IsSameOriginWith(start_url, scope))
       << start_url.spec() << " vs " << scope.spec();
   CHECK(!scope.has_ref() && !scope.has_query());
-  CHECK(!manifest_id.has_ref());
   CHECK(base::StartsWith(start_url.spec(), scope.spec(),
                          base::CompareCase::SENSITIVE))
       << "Start URL " << start_url << " must be nested in scope " << scope;
@@ -307,17 +305,20 @@ WebApp::WebApp(const sync_pb::WebAppSpecifics& sync_proto)
     : chromeos_data_(IsChromeOsDataMandatory()
                          ? std::make_optional<WebAppChromeOsData>()
                          : std::nullopt),
-      sync_proto_(sync_proto) {
+      sync_proto_(sync_proto),
+      manifest_id_(sync_proto.has_relative_manifest_id()
+                       ? GenerateManifestId(sync_proto.relative_manifest_id(),
+                                            GURL(sync_proto.start_url()))
+                       : GenerateManifestIdFromStartUrlOnly(
+                             GURL(sync_proto.start_url()))) {
   CHECK(sync_proto_.has_start_url() && GURL(sync_proto_.start_url()).is_valid())
       << "Invalid start_url in sync proto: " << sync_proto_.start_url();
   CHECK(sync_proto_.has_scope() && GURL(sync_proto_.scope()).is_valid())
       << "Invalid scope in sync proto: " << sync_proto_.scope();
   GURL start_url = GURL(sync_proto_.start_url());
 
-  webapps::ManifestId manifest_id_from_sync =
-      GenerateManifestId(sync_proto_.relative_manifest_id(), start_url);
-  SetManifestId(manifest_id_from_sync);
-  app_id_ = GenerateAppIdFromManifestId(manifest_id_from_sync);
+  SetManifestId(manifest_id_);
+  app_id_ = GenerateAppIdFromManifestId(manifest_id_);
 
   SetStartUrlAndScope(start_url, GURL(sync_proto_.scope()));
 
@@ -350,16 +351,6 @@ WebAppScope WebApp::GetScope() const {
 }
 
 webapps::ManifestId WebApp::manifest_id() const {
-  // Almost all production use-cases should have the manifest_id set, but in
-  // some test it is not. If the manifest id is not set, then fall back to the
-  // start_url, as per the algorithm in
-  // https://www.w3.org/TR/appmanifest/#id-member.
-  if (manifest_id_.is_empty()) {
-    CHECK_IS_TEST();
-    // This is why the function must return a value instead of a const ref, as
-    // this object would be temporary.
-    return GenerateManifestIdFromStartUrlOnly(start_url_);
-  }
   return manifest_id_;
 }
 
@@ -489,7 +480,7 @@ void WebApp::SetDescription(const std::string& description) {
 void WebApp::SetStartUrlAndScope(const GURL& start_url, const GURL& scope) {
   CHECK(start_url.is_valid());
   CHECK(manifest_id_.is_valid());
-  CHECK(url::IsSameOriginWith(manifest_id(), start_url))
+  CHECK(url::IsSameOriginWith(manifest_id().value(), start_url))
       << manifest_id().spec() << " " << start_url.spec();
   CHECK(scope.is_valid());
   CHECK(base::StartsWith(start_url.spec(), scope.spec(),
@@ -752,7 +743,7 @@ void WebApp::SetIsolationData(IsolationData isolation_data) {
   CHECK(manifest_id_.is_valid()
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
-        && manifest_id_.SchemeIs(webapps::kIsolatedAppScheme))
+        && manifest_id_.value().SchemeIs(webapps::kIsolatedAppScheme))
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
       ;
@@ -904,9 +895,7 @@ void WebApp::SetValidatedMigrationSources(
 
 void WebApp::SetPendingMigrationInfo(std::optional<PendingMigrationInfo> info) {
   if (info.has_value()) {
-    GURL manifest_id(info->manifest_id());
-    CHECK(manifest_id.is_valid());
-    CHECK(!url::Origin::Create(manifest_id).opaque());
+    CHECK(!url::Origin::Create(info->manifest_id().value()).opaque());
   }
   pending_migration_info_ = std::move(info);
 }
@@ -1450,8 +1439,9 @@ base::Value WebApp::AsDebugValue() const {
 }
 
 void WebApp::SetManifestId(const webapps::ManifestId& manifest_id) {
-  CHECK(manifest_id.is_valid());
-  CHECK(!manifest_id.has_ref());
+  CHECK(start_url_.is_empty() ||
+        url::IsSameOriginWith(start_url_, manifest_id.value()))
+      << start_url_.spec() << " vs " << manifest_id.spec();
   manifest_id_ = manifest_id;
 
   // Ensure sync proto is initialized and remains consistent.

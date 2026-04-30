@@ -97,9 +97,14 @@ std::optional<std::string> AppDiscoveryMetrics::GetAppStringToRecordForPackage(
       return ukm::AppSourceUrlRecorder::GetURLForChromeApp(
                  package_id.identifier())
           .spec();
-    case apps::PackageType::kWeb:
-      return web_app::GenerateAppIdFromManifestId(
-          GURL(package_id.identifier()));
+    case apps::PackageType::kWeb: {
+      std::optional<webapps::ManifestId> manifest_id =
+          webapps::ManifestId::Create(GURL(package_id.identifier()));
+      if (!manifest_id.has_value()) {
+        return std::nullopt;
+      }
+      return web_app::GenerateAppIdFromManifestId(*manifest_id);
+    }
     case apps::PackageType::kGeForceNow:
       // GFN is not currently supported by the metrics system.
     case apps::PackageType::kWebsite:

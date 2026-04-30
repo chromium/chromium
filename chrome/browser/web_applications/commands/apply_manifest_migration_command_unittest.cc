@@ -160,7 +160,8 @@ class ApplyManifestMigrationCommandTest : public WebAppTest {
         fake_provider().registrar_unsafe().GetAppById(migrated_app_id);
     return migrated_app->IsSynced() &&
            migrated_app->sync_proto().has_migrated_from_manifest_id() &&
-           migrated_app->sync_proto().migrated_from_manifest_id() ==
+           webapps::ManifestId(GURL(migrated_app->sync_proto()
+                                        .migrated_from_manifest_id())) ==
                source_manifest_id;
   }
 
@@ -230,8 +231,11 @@ TEST_F(ApplyManifestMigrationCommandTest,
   const webapps::AppId& source_app_id = InstallAppWithInstallState(
       GURL("https://app.source.com/"), source_app_name, std::move(icon_map),
       install_options);
-  const webapps::ManifestId& source_manifest_id =
+
+  std::optional<webapps::ManifestId> valid_source_manifest_id =
       fake_provider().registrar_unsafe().GetAppManifestId(source_app_id);
+  EXPECT_TRUE(valid_source_manifest_id.has_value());
+  const webapps::ManifestId& source_manifest_id = *valid_source_manifest_id;
 
   auto state =
       fake_provider().registrar_unsafe().GetAppCurrentOsIntegrationState(
@@ -328,8 +332,11 @@ TEST_F(ApplyManifestMigrationCommandTest,
   const webapps::AppId& source_app_id = InstallAppWithInstallState(
       GURL("https://app.source.com/"), source_app_name, std::move(icon_map),
       install_options);
-  const webapps::ManifestId& source_manifest_id =
+
+  std::optional<webapps::ManifestId> valid_source_manifest_id =
       fake_provider().registrar_unsafe().GetAppManifestId(source_app_id);
+  EXPECT_TRUE(valid_source_manifest_id.has_value());
+  const webapps::ManifestId& source_manifest_id = *valid_source_manifest_id;
 
   auto state =
       fake_provider().registrar_unsafe().GetAppCurrentOsIntegrationState(
@@ -418,8 +425,10 @@ TEST_F(ApplyManifestMigrationCommandTest,
   const webapps::AppId& source_app_id = InstallAppWithInstallState(
       GURL("https://app.source.com/"), source_app_name, std::move(icon_map),
       install_options);
-  const webapps::ManifestId& source_manifest_id =
+  std::optional<webapps::ManifestId> valid_source_manifest_id =
       fake_provider().registrar_unsafe().GetAppManifestId(source_app_id);
+  EXPECT_TRUE(valid_source_manifest_id.has_value());
+  const webapps::ManifestId& source_manifest_id = *valid_source_manifest_id;
 
   auto state =
       fake_provider().registrar_unsafe().GetAppCurrentOsIntegrationState(
@@ -506,8 +515,11 @@ TEST_F(ApplyManifestMigrationCommandTest, SuccessSuggestedForMigration) {
   const webapps::AppId& source_app_id = InstallAppWithInstallState(
       GURL("https://app.source.com/"), source_app_name, std::move(icon_map),
       install_options);
-  const webapps::ManifestId& source_manifest_id =
+
+  std::optional<webapps::ManifestId> valid_source_manifest_id =
       fake_provider().registrar_unsafe().GetAppManifestId(source_app_id);
+  EXPECT_TRUE(valid_source_manifest_id.has_value());
+  const webapps::ManifestId& source_manifest_id = *valid_source_manifest_id;
 
   auto state =
       fake_provider().registrar_unsafe().GetAppCurrentOsIntegrationState(
@@ -591,8 +603,10 @@ TEST_F(ApplyManifestMigrationCommandTest, RunOnOsLoginMigrated) {
   const webapps::AppId& source_app_id = InstallAppWithInstallState(
       GURL("https://app.source.com/"), source_app_name, std::move(icon_map),
       install_options);
-  const webapps::ManifestId& source_manifest_id =
+  std::optional<webapps::ManifestId> valid_source_manifest_id =
       fake_provider().registrar_unsafe().GetAppManifestId(source_app_id);
+  EXPECT_TRUE(valid_source_manifest_id.has_value());
+  const webapps::ManifestId& source_manifest_id = *valid_source_manifest_id;
 
   // Set up Run on OS login for the web app to be opened in a windowed mode.
   base::test::TestFuture<void> future;

@@ -61,7 +61,7 @@ class GetInstalledRelatedAppsBrowserTest : public WebAppBrowserTestBase {
 IN_PROC_BROWSER_TEST_F(GetInstalledRelatedAppsBrowserTest, SameOriginSuccess) {
   GURL app_url = embedded_https_test_server().GetURL("example.com",
                                                      "/web_apps/basic.html");
-  webapps::ManifestId app_manifest_id = webapps::ManifestId(app_url.spec());
+  webapps::ManifestId app_manifest_id = webapps::ManifestId(app_url);
 
   // Install an app that lists itself as related.
   // We use $REQUEST_HOST/... to dynamically match the manifest id.
@@ -101,7 +101,7 @@ IN_PROC_BROWSER_TEST_F(GetInstalledRelatedAppsBrowserTest,
                        CrossOriginWithScopeExtensions_CurrentlyFails) {
   GURL app_url = embedded_https_test_server().GetURL("example.com",
                                                      "/web_apps/basic.html");
-  webapps::ManifestId app_manifest_id = webapps::ManifestId(app_url.spec());
+  webapps::ManifestId app_manifest_id = webapps::ManifestId(app_url);
 
   GURL other_url =
       embedded_https_test_server().GetURL("foo.com", "/web_apps/basic.html");

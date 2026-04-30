@@ -571,18 +571,18 @@ void WebAppDatabase::MigrateToRelativeManifestIdNoFragment(
     }
 
     // Calculate the expected manifest_id and relative path without fragment.
-    webapps::ManifestId expected_manifest_id;
+    std::optional<webapps::ManifestId> expected_manifest_id;
     if (sync_data->has_relative_manifest_id()) {
-      expected_manifest_id =
-          GenerateManifestId(sync_data->relative_manifest_id(), start_url);
+      expected_manifest_id = GenerateManifestIdUnsafe(
+          sync_data->relative_manifest_id(), start_url);
     } else {
-      expected_manifest_id = GenerateManifestIdFromStartUrlOnly(start_url);
+      expected_manifest_id = webapps::ManifestId::Create(start_url);
     }
-    if (!expected_manifest_id.is_valid()) {
+    if (!expected_manifest_id.has_value()) {
       continue;
     }
     std::string expected_relative_path =
-        RelativeManifestIdPath(expected_manifest_id);
+        RelativeManifestIdPath(*expected_manifest_id);
 
     bool changed = false;
     if (!sync_data->has_relative_manifest_id()) {

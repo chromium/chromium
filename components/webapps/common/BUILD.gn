@@ -38,6 +38,7 @@ source_set("unit_tests") {
   deps = [
     ":common",
     "//testing/gtest",
+    "//third_party/abseil-cpp:absl",
     "//url",
   ]
 }

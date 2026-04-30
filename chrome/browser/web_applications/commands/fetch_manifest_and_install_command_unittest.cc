@@ -206,7 +206,7 @@ class FetchManifestAndInstallCommandTest
     manifest->name = u"foo";
     manifest->short_name = u"bar";
     manifest->start_url = kWebAppUrl;
-    manifest->id = GenerateManifestIdFromStartUrlOnly(kWebAppUrl);
+    manifest->id = GenerateManifestIdFromStartUrlOnly(kWebAppUrl).value();
     manifest->display = blink::mojom::DisplayMode::kStandalone;
     blink::Manifest::ImageResource icon;
     icon.src = kDefaultIconUrl;
@@ -1124,7 +1124,7 @@ class UniversalInstallComboTest
     }
 
     if (GetManifestIdentity()) {
-      manifest->id = GetManifestIdentity().value();
+      manifest->id = GetManifestIdentity()->value();
     }
 
     if (GetDisplayMode()) {
@@ -1245,9 +1245,10 @@ TEST_P(UniversalInstallComboTest, InstallStateValid) {
   GURL start_url = GetStartUrl().value_or(kWebAppUrl);
   EXPECT_EQ(registrar.GetAppStartUrl(app_id), start_url);
 
-  webapps::ManifestId manifest_id =
-      GetManifestIdentity().value_or(GetStartUrl().value_or(kWebAppUrl));
-  EXPECT_EQ(registrar.GetAppManifestId(app_id), manifest_id);
+  webapps::ManifestId manifest_id = GetManifestIdentity().value_or(
+      webapps::ManifestId(GetStartUrl().value_or(kWebAppUrl)));
+  EXPECT_TRUE(registrar.GetAppManifestId(app_id).has_value());
+  EXPECT_EQ(registrar.GetAppManifestId(app_id).value(), manifest_id);
 
   auto display_mode =
       GetDisplayMode().value_or(blink::mojom::DisplayMode::kMinimalUi);

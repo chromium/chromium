@@ -282,9 +282,10 @@ void ApplyManifestMigrationCommand::SynchronizeOsIntegration(
 
 void ApplyManifestMigrationCommand::SetupDestinationAppUninstallSourceApp() {
   // Set the destination app to be have all information necessary for syncing.
-  const webapps::ManifestId& source_manifest_id =
-      all_apps_lock_->registrar().GetComputedManifestId(source_app_id_);
-  CHECK(source_manifest_id.is_valid());
+  std::optional<webapps::ManifestId> source_manifest_id =
+      webapps::ManifestId::Create(
+          all_apps_lock_->registrar().GetComputedManifestId(source_app_id_));
+  CHECK(source_manifest_id.has_value());
   {
     ScopedRegistryUpdate update = all_apps_lock_->sync_bridge().BeginUpdate();
     WebApp* destination_app = update->UpdateApp(destination_app_id_);
@@ -294,7 +295,7 @@ void ApplyManifestMigrationCommand::SetupDestinationAppUninstallSourceApp() {
     }
 
     // Set the source app's manifest id to be synced.
-    destination_app->SetMigratedFromManifestIdInSyncProto(source_manifest_id);
+    destination_app->SetMigratedFromManifestIdInSyncProto(*source_manifest_id);
   }
   GetMutableDebugValue().Set("os_integration_set", true);
   const WebApp* source_app =

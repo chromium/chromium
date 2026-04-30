@@ -151,7 +151,7 @@ IN_PROC_BROWSER_TEST_F(WebAppInstallFromMigrateFromFieldCommandBrowserTest,
   ASSERT_TRUE(source_app);
   ASSERT_TRUE(source_app->pending_migration_info().has_value());
   EXPECT_EQ(source_app->pending_migration_info()->manifest_id(),
-            GetTargetManifestId().spec());
+            GetTargetManifestId());
 }
 
 }  // namespace

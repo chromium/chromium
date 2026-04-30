@@ -167,14 +167,15 @@ void FakeWebAppDatabaseFactory::WriteProtos(
   for (const proto::WebApp& proto : protos) {
     GURL start_url(proto.sync_data().start_url());
     CHECK(start_url.is_valid());
-    webapps::ManifestId manifest_id;
+    std::optional<webapps::ManifestId> manifest_id;
     if (proto.sync_data().has_relative_manifest_id()) {
       manifest_id = GenerateManifestId(proto.sync_data().relative_manifest_id(),
                                        start_url);
     } else {
       manifest_id = GenerateManifestIdFromStartUrlOnly(start_url);
     }
-    webapps::AppId app_id = GenerateAppIdFromManifestId(manifest_id);
+    CHECK(manifest_id.has_value());
+    webapps::AppId app_id = GenerateAppIdFromManifestId(manifest_id.value());
     write_batch->WriteData(app_id, proto.SerializeAsString());
   }
 

@@ -441,14 +441,16 @@ void FetchManifestAndInstallCommand::OnDidPerformInstallableCheck(
   GetMutableDebugValue().Set("skip_page_favicons_on_initial_download",
                              skip_page_favicons_on_initial_download_);
   CHECK(opt_manifest->start_url.is_valid());
-  CHECK(opt_manifest->id.is_valid());
   opt_manifest_ = std::move(opt_manifest);
   StartPreloadingScreenshots();
+  std::optional<webapps::ManifestId> manifest_id =
+      webapps::ManifestId::Create(opt_manifest_->id);
+  CHECK(manifest_id.has_value());
 
   app_lock_ = std::make_unique<AppLock>();
   command_manager()->lock_manager().UpgradeAndAcquireLock(
       std::move(noop_lock_), *app_lock_,
-      {GenerateAppIdFromManifestId(webapps::ManifestId(opt_manifest_->id))},
+      {GenerateAppIdFromManifestId(*manifest_id)},
       base::BindOnce(
           &FetchManifestAndInstallCommand::CheckForPlayStoreIntentOrGetIcons,
           weak_ptr_factory_.GetWeakPtr()));

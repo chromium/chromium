@@ -602,24 +602,27 @@ void WebAppProvider::DoDelayedPostStartupWork() {
 
   const std::optional<PreinstalledAppForUpdating>& app_to_update =
       preinstalled_web_app_manager().preinstalled_app_for_updating();
-  webapps::AppId preinstalled_app_id = GenerateAppIdFromManifestId(
-      app_to_update.value_or(PreinstalledAppForUpdating()).manifest_id);
   if (base::FeatureList::IsEnabled(features::kWebAppPeriodicPreinstallUpdate) &&
-      app_to_update.has_value() &&
-      !guardrails.IsBlockedByGuardrails(preinstalled_app_id)) {
-    GURL::Replacements add_query;
-    add_query.SetQueryStr("usp=chrome_preinstall_update");
-    GURL install_url = app_to_update->install_url.ReplaceComponents(add_query);
-    // The unsafe registrar is checked to prevent wasting resources loading the
-    // install_url. If the app isn't installed, do not bother.
-    if (registrar_unsafe().AppMatches(preinstalled_app_id,
-                                      WebAppFilter::InstalledInChrome())) {
-      scheduler().FetchManifestAndUpdate(
-          install_url, app_to_update->manifest_id,
-          /*previous_time_for_silent_icon_update=*/std::nullopt,
-          /*force_trusted_silent_update=*/true,
-          base::BindOnce(&WebAppProvider::OnDefaultAppUpdateComplete,
-                         weak_ptr_factory_.GetWeakPtr(), preinstalled_app_id));
+      app_to_update.has_value()) {
+    webapps::AppId preinstalled_app_id =
+        GenerateAppIdFromManifestId(app_to_update->manifest_id);
+    if (!guardrails.IsBlockedByGuardrails(preinstalled_app_id)) {
+      GURL::Replacements add_query;
+      add_query.SetQueryStr("usp=chrome_preinstall_update");
+      GURL install_url =
+          app_to_update->install_url.ReplaceComponents(add_query);
+      // The unsafe registrar is checked to prevent wasting resources loading
+      // the install_url. If the app isn't installed, do not bother.
+      if (registrar_unsafe().AppMatches(preinstalled_app_id,
+                                        WebAppFilter::InstalledInChrome())) {
+        scheduler().FetchManifestAndUpdate(
+            install_url, app_to_update->manifest_id,
+            /*previous_time_for_silent_icon_update=*/std::nullopt,
+            /*force_trusted_silent_update=*/true,
+            base::BindOnce(&WebAppProvider::OnDefaultAppUpdateComplete,
+                           weak_ptr_factory_.GetWeakPtr(),
+                           preinstalled_app_id));
+      }
     }
   }
 

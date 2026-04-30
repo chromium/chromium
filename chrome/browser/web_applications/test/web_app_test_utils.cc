@@ -677,7 +677,7 @@ std::vector<MigrationSource> CreateRandomMigrationSources(
       install_url = GURL("https://example.com/install_url_" +
                          base::NumberToString(random.next_uint()));
     }
-    sources.emplace_back(std::move(manifest_id), behavior,
+    sources.emplace_back(webapps::ManifestId(std::move(manifest_id)), behavior,
                          std::move(install_url));
   }
   return sources;

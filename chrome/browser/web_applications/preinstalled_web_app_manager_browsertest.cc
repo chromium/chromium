@@ -1878,9 +1878,8 @@ class PreinstalledWebAppManagerSimpleBrowserTest
                   provider->DisableDelayedPostStartupWorkForTesting();
               provider->preinstalled_web_app_manager()
                   .SetPreinstalledAppForUpdatingForTesting(
-                      PreinstalledAppForUpdating{
-                          .manifest_id = test->GetManifestId(),
-                          .install_url = test->GetInstallUrl()});
+                      PreinstalledAppForUpdating{test->GetManifestId(),
+                                                 test->GetInstallUrl()});
               provider->Start();
               return provider;
             },

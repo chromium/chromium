@@ -674,11 +674,13 @@ TEST_F(WebAppInstallFinalizerUnitTest, ValidateMigrationSourcesApproved) {
   EXPECT_THAT(
       installed_app->unvalidated_migration_sources(),
       testing::ElementsAre(testing::Property(
-          &MigrationSource::manifest_id, "https://migration.foo.example/")));
+          &MigrationSource::manifest_id,
+          webapps::ValidManifestId(GURL("https://migration.foo.example/")))));
   EXPECT_THAT(
       installed_app->validated_migration_sources(),
       testing::ElementsAre(testing::Property(
-          &MigrationSource::manifest_id, "https://migration.foo.example/")));
+          &MigrationSource::manifest_id,
+          webapps::ValidManifestId(GURL("https://migration.foo.example/")))));
 }
 
 TEST_F(WebAppInstallFinalizerUnitTest,
@@ -710,7 +712,8 @@ TEST_F(WebAppInstallFinalizerUnitTest,
   EXPECT_THAT(
       installed_app->unvalidated_migration_sources(),
       testing::ElementsAre(testing::Property(
-          &MigrationSource::manifest_id, "https://migration.foo.example/")));
+          &MigrationSource::manifest_id,
+          webapps::ValidManifestId(GURL("https://migration.foo.example/")))));
   EXPECT_TRUE(installed_app->validated_migration_sources().empty());
 }
 

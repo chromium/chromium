@@ -55,13 +55,15 @@ std::unique_ptr<syncer::EntityData> CreateSyncEntityData(
   return CreateSyncEntityDataFromSpecifics(app.sync_data());
 }
 
-webapps::AppId ManifestIdStrToAppId(const std::string& manifest_id) {
-  GURL manifest_id_gurl(manifest_id);
-  if (!manifest_id_gurl.is_valid()) {
-    LOG(ERROR) << "Invalid manifest_id: " << manifest_id;
+webapps::AppId ManifestIdStrToAppId(const std::string& manifest_id_str) {
+  GURL manifest_id_gurl(manifest_id_str);
+  std::optional<webapps::ManifestId> manifest_id =
+      webapps::ManifestId::Create(manifest_id_gurl);
+  if (!manifest_id.has_value()) {
+    LOG(ERROR) << "Invalid manifest_id: " << manifest_id_str;
     return "";
   }
-  return GenerateAppIdFromManifestId(manifest_id_gurl.GetWithoutRef());
+  return GenerateAppIdFromManifestId(*manifest_id);
 }
 
 namespace {

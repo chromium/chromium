@@ -200,7 +200,7 @@ class InstallFromSyncTest : public WebAppTest {
     blink::mojom::ManifestPtr manifest = blink::mojom::Manifest::New();
     manifest->name = kManifestName;
     manifest->start_url = start_url;
-    manifest->id = manifest_id;
+    manifest->id = manifest_id.value();
     if (icons) {
       blink::Manifest::ImageResource primary_icon;
       primary_icon.type = u"image/png";
@@ -615,7 +615,7 @@ TEST_F(InstallFromSyncTest, FallbackManifestIdMismatch) {
   fake_page_state.manifest_before_default_processing =
       CreateManifest(kWebAppStartUrl, kWebAppManifestId, /*icons=*/true);
   fake_page_state.manifest_before_default_processing->id =
-      kOtherWebAppManifestId;
+      kOtherWebAppManifestId.value();
 
   // Icon state.
   web_contents_manager().GetOrCreateIconState(kDocumentIconUrl).bitmaps = {

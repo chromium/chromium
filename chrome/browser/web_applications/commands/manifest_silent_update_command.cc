@@ -199,8 +199,15 @@ void ManifestSilentUpdateCommand::OnManifestFetchedAcquireAppLock(
     return;
   }
 
-  CHECK(opt_manifest->id.is_valid());
-  app_id_ = GenerateAppIdFromManifestId(opt_manifest->id);
+  std::optional<webapps::ManifestId> manifest_id =
+        webapps::ManifestId::Create(opt_manifest->id);
+  if (!manifest_id.has_value()) {
+    CompleteCommandAndSelfDestruct(
+        FROM_HERE, ManifestSilentUpdateCheckResult::kInvalidManifest);
+    return;
+  }
+
+  app_id_ = GenerateAppIdFromManifestId(*manifest_id);
 
   SetStage(ManifestSilentUpdateCommandStage::kAcquiringAppLock);
   app_lock_ = std::make_unique<AppLock>();

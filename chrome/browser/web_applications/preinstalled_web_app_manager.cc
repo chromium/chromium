@@ -577,6 +577,21 @@ void MaybeForceInstallForRemigration(
 
 }  // namespace
 
+PreinstalledAppForUpdating::PreinstalledAppForUpdating(
+    webapps::ManifestId manifest_id,
+    GURL install_url)
+    : manifest_id(std::move(manifest_id)),
+      install_url(std::move(install_url)) {}
+PreinstalledAppForUpdating::~PreinstalledAppForUpdating() = default;
+PreinstalledAppForUpdating::PreinstalledAppForUpdating(
+    const PreinstalledAppForUpdating& other) = default;
+PreinstalledAppForUpdating& PreinstalledAppForUpdating::operator=(
+    const PreinstalledAppForUpdating& other) = default;
+PreinstalledAppForUpdating::PreinstalledAppForUpdating(
+    PreinstalledAppForUpdating&& other) = default;
+PreinstalledAppForUpdating& PreinstalledAppForUpdating::operator=(
+    PreinstalledAppForUpdating&& other) = default;
+
 class PreinstalledWebAppManager::DeviceDataInitializedEvent
     : public ui::InputDeviceEventObserver {
  public:

@@ -63,7 +63,7 @@ std::optional<std::string> MatchAppByManifestId(
   }
 
   const webapps::ManifestId& manifest_id = web_app->manifest_id();
-  GURL canonicalized_manifest_id = CanonicalizeUrl(manifest_id);
+  GURL canonicalized_manifest_id = CanonicalizeUrl(manifest_id.value());
 
   bool is_match = false;
   if (selector.type == SelectorType::kUrlExact) {

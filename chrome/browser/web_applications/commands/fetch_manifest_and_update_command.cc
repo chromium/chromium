@@ -61,8 +61,9 @@ FetchManifestAndUpdateCommand::FetchManifestAndUpdateCommand(
       force_trusted_silent_update_(force_trusted_silent_update) {
   GetMutableDebugValue().Set("install_url",
                              install_url.possibly_invalid_spec());
-  GetMutableDebugValue().Set("expected_manifest_id",
-                             expected_manifest_id_.possibly_invalid_spec());
+  GetMutableDebugValue().Set(
+      "expected_manifest_id",
+      expected_manifest_id_.value().possibly_invalid_spec());
 }
 
 void FetchManifestAndUpdateCommand::StartWithLock(
@@ -130,7 +131,7 @@ void FetchManifestAndUpdateCommand::OnManifestRetrieved(
     return;
   }
 
-  if (manifest->id != expected_manifest_id_) {
+  if (manifest->id != expected_manifest_id_.value()) {
     GetMutableDebugValue().Set("foundmanifest_id",
                                manifest->id.possibly_invalid_spec());
     GetMutableDebugValue().Set("manifest_error", "manifest_id_mismatch");

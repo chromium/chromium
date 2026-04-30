@@ -43,8 +43,10 @@ ExternalInstallOptions GetConfigForGoogleChat(bool is_standalone,
                     : mojom::UserDisplayMode::kBrowser,
       /*install_source=*/ExternalInstallSource::kExternalDefault);
 
-  const webapps::ManifestId manifest_id = webapps::ManifestId(
-      GURL(use_dedicated_origin_chat ? kManifestId : kOldManifestId));
+  const webapps::ManifestId manifest_id =
+      webapps::ManifestId::Create(
+          GURL(use_dedicated_origin_chat ? kManifestId : kOldManifestId))
+          .value();
   const GURL start_url =
       GURL(use_dedicated_origin_chat ? kStartUrl : kOldStartUrl);
   const GURL scope = GURL(use_dedicated_origin_chat ? kScope : kOldScope);
@@ -54,7 +56,8 @@ ExternalInstallOptions GetConfigForGoogleChat(bool is_standalone,
   // or it was policy installed.)
   if (use_dedicated_origin_chat) {
     options.SetOnlyUninstallAndReplaceWhenCompatible(
-        GenerateAppIdFromManifestId(webapps::ManifestId(GURL(kOldManifestId))),
+        GenerateAppIdFromManifestId(
+            webapps::ManifestId::Create(GURL(kOldManifestId)).value()),
         ExternalInstallOptions::
             SetOnlyUninstallAndReplaceWhenCompatiblePassKey());
   }

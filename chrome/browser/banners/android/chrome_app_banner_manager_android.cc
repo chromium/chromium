@@ -43,7 +43,7 @@ ChromeAppBannerManagerAndroid::~ChromeAppBannerManagerAndroid() = default;
 void ChromeAppBannerManagerAndroid::OnInstallableCheckedNoErrors(
     const ManifestId& manifest_id) const {
   // TODO(b/320681613): Maybe move this to components.
-  webapk::WebApkUkmRecorder::RecordWebApkableVisit(manifest_id);
+  webapk::WebApkUkmRecorder::RecordWebApkableVisit(manifest_id.value());
 }
 
 segmentation_platform::SegmentationPlatformService*

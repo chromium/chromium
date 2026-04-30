@@ -43,8 +43,10 @@ std::optional<PendingMigrationInfo> PendingMigrationInfo::ParseAndCreate(
 
   // The `manifest_id` for the destination app should be valid, otherwise this
   // is an incorrect state for the app to exist as.
-  webapps::ManifestId manifest_id(proto.manifest_id());
-  if (!manifest_id.is_valid() || url::Origin::Create(manifest_id).opaque()) {
+  std::optional<webapps::ManifestId> manifest_id =
+      webapps::ManifestId::Create(proto.manifest_id());
+  if (!manifest_id.has_value() ||
+      url::Origin::Create(GURL(proto.manifest_id())).opaque()) {
     return std::nullopt;
   }
 
@@ -53,7 +55,7 @@ std::optional<PendingMigrationInfo> PendingMigrationInfo::ParseAndCreate(
     last_ignored_time = syncer::ProtoTimeToTime(proto.last_ignored_time());
   }
 
-  return PendingMigrationInfo(manifest_id,
+  return PendingMigrationInfo(*manifest_id,
                               FromProtoMigrationBehavior(proto.behavior()),
                               last_ignored_time);
 }
@@ -70,7 +72,7 @@ proto::PendingMigrationInfo PendingMigrationInfo::ToProto() const {
 
 base::Value PendingMigrationInfo::AsDebugValue() const {
   base::DictValue root;
-  root.Set("manifest_id", manifest_id_.possibly_invalid_spec());
+  root.Set("manifest_id", manifest_id_.value().possibly_invalid_spec());
   root.Set("behavior", base::ToString(behavior_));
   if (last_ignored_time_.has_value()) {
     root.Set("last_ignored_time", base::ToString(*last_ignored_time_));

@@ -210,10 +210,15 @@ AppBannerManager::ShowBannerUiResult AppBannerManagerDesktop::ShowBannerUi(
       AppBannerSettingsHelper::APP_BANNER_EVENT_DID_SHOW,
       app_banner_manager_->GetCurrentTime());
   TrackDisplayEvent(DISPLAY_EVENT_WEB_APP_BANNER_CREATED);
+  std::optional<webapps::ManifestId> manifest_id =
+      webapps::ManifestId::Create(config.web_app_data.manifest().id);
+  if (!manifest_id.has_value()) {
+    return AppBannerManager::ShowBannerUiResult::kFailed;
+  }
   CreateWebApp(install_source,
                base::BindOnce(&AppBannerManagerDesktop::DidFinishCreatingWebApp,
                               weak_factory_.GetWeakPtr(),
-                              config.web_app_data.manifest().id,
+                              *manifest_id,
                               weak_factory_.GetWeakPtr()));
   return AppBannerManager::ShowBannerUiResult::kShownAppInstallationDialog;
 }
@@ -285,15 +290,15 @@ void AppBannerManagerDesktop::DidFinishCreatingWebApp(
       app_banner_manager_->SendBannerAccepted();
     }
     TrackUserResponse(USER_RESPONSE_WEB_APP_ACCEPTED);
-    AppBannerSettingsHelper::RecordBannerInstallEvent(contents,
-                                                      manifest_id.spec());
+    AppBannerSettingsHelper::RecordBannerInstallEvent(
+        contents, manifest_id.spec());
   } else if (code == webapps::InstallResultCode::kUserInstallDeclined) {
     if (is_navigation_current) {
       app_banner_manager_->SendBannerDismissed();
     }
     TrackUserResponse(USER_RESPONSE_WEB_APP_DISMISSED);
-    AppBannerSettingsHelper::RecordBannerDismissEvent(contents,
-                                                      manifest_id.spec());
+    AppBannerSettingsHelper::RecordBannerDismissEvent(
+        contents, manifest_id.spec());
   }
 }
 

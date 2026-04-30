@@ -466,9 +466,14 @@ ScopeExtensions ToWebAppScopeExtensions(
   return apps_scope_extensions;
 }
 
-MigrationSource ToMigrationSource(
+std::optional<MigrationSource> ToMigrationSource(
     const blink::mojom::ManifestMigrateFrom& migrate_from) {
-  return MigrationSource(migrate_from.id, migrate_from.behavior,
+  std::optional<webapps::ManifestId> manifest_id =
+      webapps::ManifestId::Create(migrate_from.id);
+  if (!manifest_id.has_value()) {
+    return std::nullopt;
+  }
+  return MigrationSource(*manifest_id, migrate_from.behavior,
                          migrate_from.install_url);
 }
 
@@ -697,8 +702,13 @@ void ManifestToWebAppInstallInfoJob::Start(
     return;
   }
 
-  install_info_ =
-      std::make_unique<WebAppInstallInfo>(manifest_->id, manifest_->start_url);
+  std::optional<webapps::ManifestId> manifest_id =
+          webapps::ManifestId::Create(manifest_->id);
+
+  CHECK(manifest_id.has_value());
+
+  install_info_ = std::make_unique<WebAppInstallInfo>(
+      *manifest_id, manifest_->start_url);
 
   // First, populate the `install_info()` by parsing the fields provided in the
   // manifest.
@@ -860,8 +870,10 @@ void ManifestToWebAppInstallInfoJob::ParseManifestAndPopulateInfo() {
                                         migrate_from->id)) {
       continue;
     }
-    install_info().migration_sources.push_back(
-        ToMigrationSource(*migrate_from));
+    std::optional<MigrationSource> source = ToMigrationSource(*migrate_from);
+    if (source.has_value()) {
+      install_info().migration_sources.push_back(std::move(*source));
+    }
   }
 
   if (manifest_->manifest_url.is_valid()) {

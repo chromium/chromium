@@ -181,7 +181,6 @@ void WebInstallFromUrlCommand::OnDidPerformInstallableCheck(
   }
 
   CHECK(opt_manifest->start_url.is_valid());
-  CHECK(opt_manifest->id.is_valid());
 
   // If navigator.install was invoked with only an `install_url` (1 parameter
   // version), the manifest must have a developer-specified, or "custom", id.
@@ -195,13 +194,16 @@ void WebInstallFromUrlCommand::OnDidPerformInstallableCheck(
     Abort(webapps::InstallResultCode::kNoValidIconsInManifest);
     return;
   }
+  std::optional<webapps::ManifestId> opt_manifest_id =
+          webapps::ManifestId::Create(opt_manifest_->id);
+  CHECK(opt_manifest_id.has_value());
 
   CHECK(!shared_web_contents_with_app_lock_);
   shared_web_contents_with_app_lock_ =
       std::make_unique<SharedWebContentsWithAppLock>();
   command_manager()->lock_manager().UpgradeAndAcquireLock(
       std::move(web_contents_lock_), *shared_web_contents_with_app_lock_,
-      {GenerateAppIdFromManifestId(opt_manifest_->id)},
+      {GenerateAppIdFromManifestId(*opt_manifest_id)},
       base::BindOnce(
           &WebInstallFromUrlCommand::CreateWebAppInstallInfoFromManifest,
           weak_ptr_factory_.GetWeakPtr()));
@@ -230,10 +232,17 @@ void WebInstallFromUrlCommand::OnWebAppInstallInfoCreatedShowDialog(
   // If navigator.install was invoked with both `install_url` and `manifest_id`
   // (2 param version), the given `manifest_id` must match the computed id of
   // the manifest we just fetched.
-  if (manifest_id_.has_value() &&
-      manifest_id_ != web_app_info_->manifest_id()) {
-    Abort(webapps::InstallResultCode::kManifestIdMismatch);
-    return;
+  if (manifest_id_.has_value()) {
+    std::optional<webapps::ManifestId> valid_manifest_id_ =
+        webapps::ManifestId::Create(*manifest_id_);
+    if (!valid_manifest_id_.has_value()) {
+      Abort(webapps::InstallResultCode::kInvalidManifestId);
+      return;
+    }
+    if (valid_manifest_id_.value() != web_app_info_->manifest_id()) {
+      Abort(webapps::InstallResultCode::kManifestIdMismatch);
+      return;
+    }
   }
 
   // TODO(crbug.com/415825168): Support detailed install dialog for background

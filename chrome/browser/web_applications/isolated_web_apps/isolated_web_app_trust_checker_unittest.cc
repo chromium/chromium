@@ -232,7 +232,10 @@ TEST_F(IsolatedWebAppTrustCheckerTest, TrustedWebBundleIDsForTesting) {
 }
 
 TEST_F(IsolatedWebAppTrustCheckerTest, ResourceLoadingForInstalledApp) {
-  auto iwa = std::make_unique<WebApp>(kStartUrl1, kStartUrl1, kStartUrl1);
+  std::optional<webapps::ManifestId> manifest_id =
+      webapps::ManifestId::Create(kStartUrl1);
+  EXPECT_TRUE(manifest_id.has_value());
+  auto iwa = std::make_unique<WebApp>(*manifest_id, kStartUrl1, kStartUrl1);
   iwa->SetIsolationData(
       IsolationData::Builder(
           IwaStorageOwnedBundle("dir_name", /*dev_mode=*/false),

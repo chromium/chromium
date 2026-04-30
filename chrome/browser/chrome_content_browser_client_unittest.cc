@@ -563,7 +563,8 @@ TEST_F(ChromeContentBrowserClientWindowTest,
   EXPECT_EQ(result->platform, "webapp");
   EXPECT_FALSE(result->url.has_value());
   EXPECT_FALSE(result->version.has_value());
-  EXPECT_EQ(result->id, registrar.GetAppManifestId(app_id));
+  EXPECT_TRUE(registrar.GetAppManifestId(app_id).has_value());
+  EXPECT_EQ(result->id, registrar.GetAppManifestId(app_id)->value());
 }
 
 TEST_F(ChromeContentBrowserClientWindowTest,

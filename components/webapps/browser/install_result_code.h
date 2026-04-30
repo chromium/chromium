@@ -112,7 +112,10 @@ enum class InstallResultCode {
   // No valid migration source was found for an app that requires one.
   kNoValidMigrationSource = 36,
 
-  kMaxValue = kNoValidMigrationSource,
+  // The manifest id is invalid.
+  kInvalidManifestId = 37,
+
+  kMaxValue = kInvalidManifestId,
 };
 // LINT.ThenChange(//tools/metrics/histograms/enums.xml:WebAppInstallResultCode)
 

@@ -7,7 +7,7 @@
 
 #include <string>
 
-class GURL;
+#include "components/webapps/common/manifest_id.h"
 
 namespace webapps {
 
@@ -26,7 +26,9 @@ using AppId = std::string;
 // https://www.w3.org/TR/appmanifest/#id-member. This can be hashed using
 // GenerateAppIdFromManifestId in
 // chrome/browser/web_applications/web_app_helpers.h to produce an AppId above.
-using ManifestId = GURL;
+// NOTE: Prefer ManifestId::Create() for safe creation.
+// This constructor enforces validity via a hard CHECK.
+using ManifestId = ValidManifestId;
 
 }  // namespace webapps
 

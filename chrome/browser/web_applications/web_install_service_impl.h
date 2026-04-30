@@ -72,7 +72,7 @@ enum class WebInstallServiceType {
 using InstallCallbackWithMetrics =
     base::OnceCallback<void(web_app::WebInstallServiceResult,
                             blink::mojom::WebInstallServiceResult,
-                            webapps::ManifestId)>;
+                            std::optional<webapps::ManifestId>)>;
 
 // Service side implementation for the Blink Web Install API. Takes the
 // parameters from the API call in the form of `InstallOptionsPtr`, and decides

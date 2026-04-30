@@ -77,6 +77,32 @@ namespace web_app {
 
 namespace {
 
+SubAppInstallParams::SubAppInstallParams(webapps::ManifestId manifest_id,
+                                         const GURL& install_url)
+    : manifest_id(std::move(manifest_id)), install_url(install_url) {}
+SubAppInstallParams::~SubAppInstallParams() = default;
+SubAppInstallParams::SubAppInstallParams(const SubAppInstallParams&) = default;
+SubAppInstallParams& SubAppInstallParams::operator=(
+    const SubAppInstallParams&) = default;
+SubAppInstallParams::SubAppInstallParams(SubAppInstallParams&&) = default;
+SubAppInstallParams& SubAppInstallParams::operator=(SubAppInstallParams&&) =
+    default;
+
+SubAppInstallResult::SubAppInstallResult(
+    webapps::ManifestId manifest_id,
+    const webapps::AppId& app_id,
+    webapps::InstallResultCode install_result_code)
+    : manifest_id(std::move(manifest_id)),
+      app_id(app_id),
+      install_result_code(install_result_code) {}
+SubAppInstallResult::~SubAppInstallResult() = default;
+SubAppInstallResult::SubAppInstallResult(const SubAppInstallResult&) = default;
+SubAppInstallResult& SubAppInstallResult::operator=(
+    const SubAppInstallResult&) = default;
+SubAppInstallResult::SubAppInstallResult(SubAppInstallResult&&) = default;
+SubAppInstallResult& SubAppInstallResult::operator=(SubAppInstallResult&&) =
+    default;
+
 constexpr char kSubAppsUninstallNotifierId[] = "sub_apps_service";
 
 // Resolve string `path` with `origin`, and if the resulting GURL isn't same
@@ -103,7 +129,7 @@ base::expected<GURL, std::string> ConvertPathToUrl(const std::string& path,
 }
 
 std::string ConvertUrlToPath(const webapps::ManifestId& manifest_id) {
-  return manifest_id.PathForRequest();
+  return manifest_id.value().PathForRequest();
 }
 
 base::expected<std::vector<SubAppInstallParams>, std::string>
@@ -114,10 +140,12 @@ AddOptionsFromMojo(
   for (const auto& sub_app : sub_apps_to_add_mojo) {
     ASSIGN_OR_RETURN(GURL manifest_url,
                      ConvertPathToUrl(sub_app->manifest_id_path, origin));
+    std::optional<webapps::ManifestId> manifest_id =
+        webapps::ManifestId::Create(manifest_url);
+    CHECK(manifest_id.has_value());
     ASSIGN_OR_RETURN(GURL install_url,
                      ConvertPathToUrl(sub_app->install_url_path, origin));
-    sub_apps.emplace_back(webapps::ManifestId(std::move(manifest_url)),
-                          std::move(install_url));
+    sub_apps.emplace_back(std::move(*manifest_id), std::move(install_url));
   }
   return sub_apps;
 }
@@ -516,10 +544,13 @@ void SubAppsServiceImpl::List(ListCallback result_callback) {
   std::vector<SubAppsServiceListResultEntryPtr> sub_apps_list;
   for (const webapps::AppId& sub_app_id :
        registrar.GetAllSubAppIds(*GetAppId(render_frame_host()))) {
-    webapps::ManifestId manifest_id = registrar.GetAppManifestId(sub_app_id);
-    CHECK(manifest_id.is_valid());
+    std::optional<webapps::ManifestId> manifest_id =
+        registrar.GetAppManifestId(sub_app_id);
+    if (!manifest_id.has_value()) {
+      continue;
+    }
     sub_apps_list.push_back(SubAppsServiceListResultEntry::New(
-        ConvertUrlToPath(manifest_id), registrar.GetAppShortName(sub_app_id)));
+        ConvertUrlToPath(*manifest_id), registrar.GetAppShortName(sub_app_id)));
   }
 
   std::move(result_callback)
@@ -575,7 +606,7 @@ void SubAppsServiceImpl::RemoveSubApp(
     const webapps::AppId* calling_app_id) {
   // Convert `manifest_id_path` from path form to full URL form.
   ASSIGN_OR_RETURN(
-      const webapps::ManifestId manifest_id,
+      const GURL manifest_id,
       ConvertPathToUrl(manifest_id_path,
                        render_frame_host().GetLastCommittedOrigin()),
       // Compromised renderer, bail immediately (this call deletes *this).
@@ -588,13 +619,18 @@ void SubAppsServiceImpl::RemoveSubApp(
     return ReportBadMessageAndDeleteThis("Parent app id is null");
   }
 
-  webapps::ManifestId parent_manifest_id =
+  std::optional<webapps::ManifestId> parent_manifest_id =
       provider->registrar_unsafe().GetAppManifestId(*parent_app_id);
-  if (!parent_manifest_id.is_valid()) {
-    return ReportBadMessageAndDeleteThis("Parent manifest is null");
+  if (!parent_manifest_id.has_value()) {
+    return ReportBadMessageAndDeleteThis("Invalid parent manifest id");
   }
 
-  webapps::AppId sub_app_id = GenerateAppIdFromManifestId(manifest_id);
+  std::optional<webapps::ManifestId> valid_manifest_id =
+      webapps::ManifestId::Create(manifest_id);
+  if (!valid_manifest_id.has_value()) {
+    return ReportBadMessageAndDeleteThis("Invalid manifest id");
+  }
+  webapps::AppId sub_app_id = GenerateAppIdFromManifestId(*valid_manifest_id);
   const WebApp* app = provider->registrar_unsafe().GetAppById(sub_app_id);
 
   // Verify that the app we're trying to remove exists, is installed and that

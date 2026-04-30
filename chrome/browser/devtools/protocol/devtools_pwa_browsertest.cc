@@ -212,7 +212,7 @@ class PWAProtocolTest : public PWAProtocolTestWithoutApp {
 
   void AssertActiveWebContentsBelongToApp(const ManifestId& manifest_id) {
     AssertActiveWebContentsBelongToApp(
-        manifest_id, web_app::GenerateAppIdFromManifestId(manifest_id));
+        manifest_id.value(), web_app::GenerateAppIdFromManifestId(manifest_id));
   }
 
   base::ListValue AbsolutePaths(std::initializer_list<std::string> paths) {
@@ -503,7 +503,7 @@ IN_PROC_BROWSER_TEST_F(PWAProtocolTest, Install_FromManifest_InvalidStartUrl) {
       "PWA.install", base::DictValue{}.Set("manifestId", url.spec())));
   AssertErrorMessageContains({url.spec()});
   ASSERT_FALSE(AppExists(ManifestId(url)));
-  ASSERT_FALSE(AppExists(ManifestId{"http://different.origin/is-invalid"}));
+  ASSERT_FALSE(AppExists(ManifestId(GURL("http://different.origin/is-invalid"))));
 }
 
 IN_PROC_BROWSER_TEST_F(PWAProtocolTest,
@@ -570,7 +570,7 @@ IN_PROC_BROWSER_TEST_F(PWAProtocolTest, Install_FromUrl_UpperCase) {
       "PWA.install",
       base::DictValue{}
           .Set("manifestId",
-               UpperCaseScheme(InstallableWebAppManifestId()).spec())
+               UpperCaseScheme(InstallableWebAppManifestId().value()).spec())
           .Set("installUrlOrBundleUrl",
                UpperCaseScheme(InstallableWebAppUrl()).spec())));
   ASSERT_TRUE(AppExists(InstallableWebAppManifestId()));

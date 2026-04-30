@@ -675,7 +675,8 @@ class PreinstalledWebAppManagerBasicTest : public WebAppTest {
   }
 
   PreinstalledWebAppManagerBasicTest()
-      : app_id_(GenerateAppIdFromManifestId(webapps::ManifestId(GURL(kManifestId)))) {}
+      : app_id_(GenerateAppIdFromManifestId(
+            webapps::ManifestId(GURL(kManifestId)))) {}
   ~PreinstalledWebAppManagerBasicTest() override = default;
 
   void SetUp() override {
@@ -692,9 +693,9 @@ class PreinstalledWebAppManagerBasicTest : public WebAppTest {
     fake_provider().SetSynchronizePreinstalledAppsOnStartup(true);
     fake_provider()
         .preinstalled_web_app_manager()
-        .SetPreinstalledAppForUpdatingForTesting(
-            PreinstalledAppForUpdating{.manifest_id = webapps::ManifestId(GURL(kManifestId)),
-                                       .install_url = GURL(kInstallUrl)});
+        .SetPreinstalledAppForUpdatingForTesting(PreinstalledAppForUpdating{
+            webapps::ManifestId(GURL(kManifestId)),
+            GURL(kInstallUrl)});
     auto fake_extensions_manager = std::make_unique<FakeExtensionsManager>();
     fake_extensions_manager->SetExtensionsSytemReady(true);
     fake_provider().SetExtensionsManager(std::move(fake_extensions_manager));
@@ -702,10 +703,11 @@ class PreinstalledWebAppManagerBasicTest : public WebAppTest {
     SetupPageState();
   }
 
-  void SetupPageState(webapps::ManifestId manifest_id = webapps::ManifestId(GURL(kManifestId)),
-                      GURL install_url = GURL(kInstallUrl),
-                      GURL start_url = GURL(kStartUrl),
-                      GURL manifest_url = GURL(kManifestUrl)) {
+  void SetupPageState(
+      webapps::ManifestId manifest_id = webapps::ManifestId(GURL(kManifestId)),
+      GURL install_url = GURL(kInstallUrl),
+      GURL start_url = GURL(kStartUrl),
+      GURL manifest_url = GURL(kManifestUrl)) {
     // Make sure the 'manifest' preinstall state matches the app factory
     // preinstall state
     fake_web_contents_manager().CreateBasicInstallPageState(
@@ -714,7 +716,7 @@ class PreinstalledWebAppManagerBasicTest : public WebAppTest {
     // Make the manifest state match GetInstallOptionsWithFactory().
     auto& page_state =
         fake_web_contents_manager().GetOrCreatePageState(install_url);
-    page_state.manifest_before_default_processing->id = manifest_id;
+    page_state.manifest_before_default_processing->id = manifest_id.value();
     page_state.manifest_before_default_processing->name = kAppName;
 
     auto& icon_state = fake_web_contents_manager().GetOrCreateIconState(
@@ -772,8 +774,8 @@ class PreinstalledWebAppManagerChatUpdate
     fake_provider()
         .preinstalled_web_app_manager()
         .SetPreinstalledAppForUpdatingForTesting(
-            PreinstalledAppForUpdating{.manifest_id = GetChatManifestId(),
-                                       .install_url = GetChatInstallUrl()});
+            PreinstalledAppForUpdating{GetChatManifestId(),
+                                       GetChatInstallUrl()});
   }
 
   GURL GetChatInstallUrl() const {

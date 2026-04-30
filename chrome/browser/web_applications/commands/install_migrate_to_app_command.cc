@@ -157,7 +157,8 @@ void InstallMigrateToAppCommand::OnManifestFetched(
 }
 
 void InstallMigrateToAppCommand::OnAppLockAcquired() {
-  webapps::AppId target_app_id = GenerateAppIdFromManifestId(manifest_->id);
+  webapps::AppId target_app_id =
+      GenerateAppIdFromManifestId(target_manifest_id_);
   std::optional<proto::InstallState> install_state =
       shared_web_contents_with_app_lock_->registrar().GetInstallState(
           target_app_id);

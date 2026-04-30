@@ -76,7 +76,7 @@ class ApplyPendingManifestUpdateCommandTest : public WebAppTest {
     // Set up manifest.
     auto manifest = blink::mojom::Manifest::New();
     manifest->start_url = kAppUrl;
-    manifest->id = GenerateManifestIdFromStartUrlOnly(kAppUrl);
+    manifest->id = GenerateManifestIdFromStartUrlOnly(kAppUrl).value();
     manifest->name = u"Foo App";
     manifest->icons = {icon};
     manifest->has_valid_specified_start_url = true;

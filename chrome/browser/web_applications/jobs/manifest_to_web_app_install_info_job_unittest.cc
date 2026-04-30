@@ -136,7 +136,7 @@ class ManifestToWebAppInstallInfoJobTest : public WebAppTest {
     // Set up manifest.
     auto manifest = blink::mojom::Manifest::New();
     manifest->start_url = start_url_;
-    manifest->id = GenerateManifestIdFromStartUrlOnly(start_url_);
+    manifest->id = GenerateManifestIdFromStartUrlOnly(start_url_).value();
     manifest->scope = start_url_.GetWithoutFilename();
     manifest->display = DisplayMode::kStandalone;
     manifest->name = u"Foo App";
@@ -747,7 +747,7 @@ TEST_F(ManifestToWebAppInstallInfoJobTest, MigrateFromDropsCrossSiteData) {
 
   ASSERT_EQ(1u, web_app_info->migration_sources.size());
   EXPECT_EQ(GURL("https://old.foo.bar/id").spec(),
-            web_app_info->migration_sources[0].manifest_id());
+            web_app_info->migration_sources[0].manifest_id().spec());
 }
 
 TEST_F(ManifestToWebAppInstallInfoJobTest, InvalidManifestUrl) {

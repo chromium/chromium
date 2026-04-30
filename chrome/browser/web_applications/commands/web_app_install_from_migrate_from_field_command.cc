@@ -86,8 +86,13 @@ void WebAppInstallFromMigrateFromFieldCommand::StartWithLock(
     // not allowed to migrate, to also install the destination app but keep it
     // hidden from the user, so as to populate the pending migration metadata
     // in the source app.
+    std::optional<webapps::ManifestId> manifest_id =
+        webapps::ManifestId::Create(migrate_from->id);
+    if (!manifest_id.has_value()) {
+      continue;
+    }
     if (lock_->registrar().AppMatches(
-            GenerateAppIdFromManifestId(migrate_from->id),
+            GenerateAppIdFromManifestId(*manifest_id),
             WebAppFilter::CanAppInstallTargetMigrationApp())) {
       source_installed = true;
       break;

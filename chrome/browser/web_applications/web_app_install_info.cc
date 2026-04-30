@@ -229,7 +229,7 @@ base::expected<WebAppInstallInfo, std::string> WebAppInstallInfo::Create(
         manifest_url.possibly_invalid_spec());
   }
   if (!url::Origin::Create(start_url).IsSameOriginWith(
-          url::Origin::Create(manifest_id))) {
+          url::Origin::Create(manifest_id.value()))) {
     return base::unexpected(
         "Manifest `id` and `start_url` must have the same origin. "
         "manifest_url: " +
@@ -246,10 +246,10 @@ namespace {
 void CheckValidManifestIdAndStartUrl(const webapps::ManifestId& manifest_id,
                                      const GURL& start_url) {
   CHECK(manifest_id.is_valid());
-  CHECK(!manifest_id.has_ref());
+  CHECK(!manifest_id.value().has_ref());
   CHECK(start_url.is_valid());
   CHECK(url::Origin::Create(start_url).IsSameOriginWith(
-      url::Origin::Create(manifest_id)));
+      url::Origin::Create(manifest_id.value())));
 }
 }  // namespace
 

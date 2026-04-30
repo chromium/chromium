@@ -315,7 +315,7 @@ void FinalizeInstallJob::Start(InstallFinalizedCallback callback) {
     origin_associations.migration_sources = web_app_info_.migration_sources;
   }
   origin_association_manager().GetWebAppOriginAssociations(
-      manifest_id, std::move(origin_associations),
+      manifest_id.value(), std::move(origin_associations),
       base::BindOnce(&FinalizeInstallJob::OnOriginAssociationValidated,
                      weak_ptr_factory_.GetWeakPtr()));
 }

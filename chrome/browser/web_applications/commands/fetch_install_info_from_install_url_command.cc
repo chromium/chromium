@@ -55,16 +55,16 @@ FetchInstallInfoFromInstallUrlCommand::FetchInstallInfoFromInstallUrlCommand(
   CHECK(install_url_.is_valid());
 
   if (parent_manifest_id_.has_value()) {
-    CHECK(parent_manifest_id_.value().is_valid());
-    CHECK(url::Origin::Create(manifest_id_)
-              .IsSameOriginWith(
-                  url::Origin::Create(parent_manifest_id_.value())));
-    CHECK_NE(parent_manifest_id_.value(), manifest_id_);
+    CHECK(parent_manifest_id_->is_valid());
+    CHECK(url::IsSameOriginWith(manifest_id_.value(),
+                                parent_manifest_id_->value()));
+    CHECK_NE(*parent_manifest_id_, manifest_id_);
   }
 
   GetMutableDebugValue().Set("manifest_id", manifest_id_.spec());
-  GetMutableDebugValue().Set("parent_manifest_id",
-                             parent_manifest_id_.value_or(GURL("")).spec());
+  GetMutableDebugValue().Set(
+      "parent_manifest_id",
+      parent_manifest_id_.has_value() ? parent_manifest_id_->spec() : "");
   GetMutableDebugValue().Set("install_url", install_url_.spec());
 }
 

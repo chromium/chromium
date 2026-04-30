@@ -335,7 +335,7 @@ void PageHandler::OnDidGetManifest(std::unique_ptr<GetAppIdCallback> callback,
     current_app_id_str = data.manifest->id.spec();
     recommended_manifest_id_path_only =
         web_app::GenerateManifestIdFromStartUrlOnly(data.manifest->start_url)
-            .PathForRequest();
+            .value().PathForRequest();
   } else {
     CHECK(!data.manifest->start_url.is_valid());
   }

@@ -69,6 +69,12 @@ protocol::Response InconsistentManifestId(const std::string& in_manifest_id,
                     " does not match input url or app id ", url_or_appid}));
 }
 
+// Returns a error when manifest id is in invalid format.
+protocol::Response InvalidManifestId(const std::string& manifest_id) {
+  return protocol::Response::InvalidRequest(
+      base::StrCat({"Invalid manifest id: ", manifest_id}));
+}
+
 }  // namespace errors
 
 using FileHandlers =
@@ -190,8 +196,14 @@ void PWAHandler::GetOsAppState(
     const std::string& in_manifest_id,
     std::unique_ptr<GetOsAppStateCallback> callback) {
   Profile* profile = GetProfile();
+  std::optional<webapps::ManifestId> manifest_id =
+      webapps::ManifestId::Create(in_manifest_id);
+  if (!manifest_id.has_value()) {
+    std::move(callback)->sendFailure(errors::InvalidManifestId(in_manifest_id));
+    return;
+  }
   const webapps::AppId app_id =
-      web_app::GenerateAppIdFromManifestId(GURL{in_manifest_id});
+      web_app::GenerateAppIdFromManifestId(*manifest_id);
   int badge_count = 0;
   {
     badging::BadgeManager* badge_manager =
@@ -332,8 +344,14 @@ void PWAHandler::InstallFromUrl(const std::string& in_manifest_id,
     std::move(callback)->sendFailure(errors::WebAppUnavailable());
     return;
   }
+  std::optional<webapps::ManifestId> manifest_id =
+      webapps::ManifestId::Create(in_manifest_id);
+  if (!manifest_id.has_value()) {
+    std::move(callback)->sendFailure(errors::InvalidManifestId(in_manifest_id));
+    return;
+  }
   scheduler->FetchInstallInfoFromInstallUrl(
-      manifest_id_url, url,
+      *manifest_id, url,
       base::BindOnce(&PWAHandler::InstallFromInstallInfo,
                      weak_ptr_factory_.GetWeakPtr(), in_manifest_id,
                      in_install_url_or_bundle_url, std::move(callback)));
@@ -460,8 +478,14 @@ void PWAHandler::Install(
 
 void PWAHandler::Uninstall(const std::string& in_manifest_id,
                            std::unique_ptr<UninstallCallback> callback) {
+  std::optional<webapps::ManifestId> manifest_id =
+      webapps::ManifestId::Create(in_manifest_id);
+  if (!manifest_id.has_value()) {
+    std::move(callback)->sendFailure(errors::InvalidManifestId(in_manifest_id));
+    return;
+  }
   const webapps::AppId app_id =
-      web_app::GenerateAppIdFromManifestId(GURL{in_manifest_id});
+      web_app::GenerateAppIdFromManifestId(*manifest_id);
   auto* scheduler = GetScheduler();
   if (!scheduler) {
     std::move(callback)->sendFailure(errors::WebAppUnavailable());
@@ -488,8 +512,14 @@ void PWAHandler::Uninstall(const std::string& in_manifest_id,
 void PWAHandler::Launch(const std::string& in_manifest_id,
                         std::optional<std::string> in_url,
                         std::unique_ptr<LaunchCallback> callback) {
+  std::optional<webapps::ManifestId> manifest_id =
+      webapps::ManifestId::Create(in_manifest_id);
+  if (!manifest_id.has_value()) {
+    std::move(callback)->sendFailure(errors::InvalidManifestId(in_manifest_id));
+    return;
+  }
   const webapps::AppId app_id =
-      web_app::GenerateAppIdFromManifestId(GURL{in_manifest_id});
+      web_app::GenerateAppIdFromManifestId(*manifest_id);
   const auto url =
       (in_url ? std::optional<GURL>{in_url.value()} : std::nullopt);
   web_app::WebAppProvider* provider =
@@ -540,9 +570,14 @@ void PWAHandler::LaunchFilesInApp(
     const std::string& in_manifest_id,
     std::unique_ptr<protocol::Array<std::string>> in_files,
     std::unique_ptr<LaunchFilesInAppCallback> callback) {
-  const GURL manifest_id = GURL{in_manifest_id};
+  std::optional<webapps::ManifestId> valid_manifest_id =
+      webapps::ManifestId::Create(in_manifest_id);
+  if (!valid_manifest_id.has_value()) {
+    std::move(callback)->sendFailure(errors::InvalidManifestId(in_manifest_id));
+    return;
+  }
   const webapps::AppId app_id =
-      web_app::GenerateAppIdFromManifestId(manifest_id);
+      web_app::GenerateAppIdFromManifestId(*valid_manifest_id);
   web_app::WebAppProvider* provider =
       web_app::WebAppProvider::GetForWebApps(GetProfile());
   if (!provider) {
@@ -634,8 +669,14 @@ protocol::Response PWAHandler::OpenCurrentPageInApp(
   }
 
   GURL manifest_url(in_manifest_id);
+  std::optional<webapps::ManifestId> manifest_id =
+      webapps::ManifestId::Create(in_manifest_id);
+  if(!manifest_id.has_value()){
+    return protocol::Response::InvalidParams(
+        base::StrCat({"Manifest id is invalid: ", in_manifest_id}));
+  }
   const webapps::AppId app_id =
-      web_app::GenerateAppIdFromManifestId(manifest_url);
+      web_app::GenerateAppIdFromManifestId(*manifest_id);
 
   // TODO(crbug.com/478855148): Add support for IWA's.
   if (manifest_url.SchemeIs(webapps::kIsolatedAppScheme)) {
@@ -678,8 +719,15 @@ void PWAHandler::ChangeAppUserSettings(
     std::optional<bool> in_link_capturing,
     std::optional<protocol::PWA::DisplayMode> in_display_mode,
     std::unique_ptr<ChangeAppUserSettingsCallback> callback) {
+  std::optional<webapps::ManifestId> manifest_id =
+      webapps::ManifestId::Create(in_manifest_id);
+  if (!manifest_id.has_value()) {
+    std::move(callback)->sendFailure(errors::InvalidManifestId(in_manifest_id));
+    return;
+  }
+
   const webapps::AppId app_id =
-      web_app::GenerateAppIdFromManifestId(GURL{in_manifest_id});
+      web_app::GenerateAppIdFromManifestId(*manifest_id);
 
   // Always checks the availability of web app system to ensure the consistency
   // of the API behavior.

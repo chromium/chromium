@@ -8,10 +8,26 @@
 #include <sstream>
 #include <utility>
 
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
 namespace webapps {
+
+TEST(ValidManifestIdTest, Hashing) {
+  auto id1 = ValidManifestId::Create("https://example.com/app");
+  auto id2 = ValidManifestId::Create("https://example.com/app");
+  auto id3 = ValidManifestId::Create("https://other.com/app");
+
+  ASSERT_TRUE(id1.has_value());
+  ASSERT_TRUE(id2.has_value());
+  ASSERT_TRUE(id3.has_value());
+
+  absl::flat_hash_set<ValidManifestId> set;
+  set.insert(*id1);
+  EXPECT_TRUE(set.contains(*id2));
+  EXPECT_FALSE(set.contains(*id3));
+}
 
 TEST(ValidManifestIdTest, CreateFromString) {
   // Valid URL
@@ -43,7 +59,7 @@ TEST(ValidManifestIdTest, CreateFromGURL) {
 
   // Invalid String
   GURL invalid("str_invalid");
-  auto id3 = ValidManifestId::Create(invalid_url);
+  auto id3 = ValidManifestId::Create(invalid);
   EXPECT_FALSE(id3.has_value());
 }
 
@@ -96,6 +112,37 @@ TEST(ValidManifestIdTest, Operators) {
   std::stringstream ss;
   ss << id1;
   EXPECT_EQ(ss.str(), "https://a.com/");
+}
+
+TEST(ValidManifestIdTest, CompareWithGURL) {
+  std::string url_str = "https://example.com/app";
+  std::string different_url_str = "https://other.com/app";
+
+  auto id_opt = ValidManifestId::Create(url_str);
+  ASSERT_TRUE(id_opt.has_value());
+  ValidManifestId id = *id_opt;
+
+  GURL url(url_str);
+  GURL different_url(different_url_str);
+
+  // Compare with identical GURL
+  EXPECT_EQ(id, url);
+  EXPECT_EQ(url, id);
+  EXPECT_FALSE(id != url);
+  EXPECT_FALSE(url != id);
+
+  // Compare with GURL that has a ref
+  GURL url_with_ref(url_str + "#ref");
+  EXPECT_EQ(id, url_with_ref);
+  EXPECT_EQ(url_with_ref, id);
+  EXPECT_FALSE(id != url_with_ref);
+  EXPECT_FALSE(url_with_ref != id);
+
+  // Compare with different GURL
+  EXPECT_NE(id, different_url);
+  EXPECT_NE(different_url, id);
+  EXPECT_TRUE(id != different_url);
+  EXPECT_TRUE(different_url != id);
 }
 
 }  // namespace webapps

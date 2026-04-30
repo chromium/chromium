@@ -336,8 +336,11 @@ void WebAppBrowserController::CreateMetadataAndTriggerAppMigrationDialog(
   auto pending_migration_info =
       registrar().GetAppById(app_id())->pending_migration_info();
   CHECK(pending_migration_info);
-  webapps::AppId destination_app_id = GenerateAppIdFromManifestId(
-      webapps::ManifestId(pending_migration_info->manifest_id()));
+  std::optional<webapps::ManifestId> manifest_id =
+      pending_migration_info->manifest_id();
+  CHECK(manifest_id.has_value());
+  webapps::AppId destination_app_id =
+      GenerateAppIdFromManifestId(*manifest_id);
   provider_->scheduler().ReadAppMigrationDataFromDisk(
       app_id(), destination_app_id, is_forced_migration_on_startup,
       base::BindOnce(
@@ -953,8 +956,10 @@ void WebAppBrowserController::OnMigrationDialogResult(
 
       if (auto pending_migration_info =
               registrar().GetAppById(app_id())->pending_migration_info()) {
+        std::optional<webapps::ManifestId> manifest_id =
+            pending_migration_info->manifest_id();
         webapps::AppId destination_app_id = GenerateAppIdFromManifestId(
-            webapps::ManifestId(pending_migration_info->manifest_id()));
+            *manifest_id);
 
         const MigrationBehavior migration_behavior =
             identity_update.is_forced_migration ? MigrationBehavior::kForce

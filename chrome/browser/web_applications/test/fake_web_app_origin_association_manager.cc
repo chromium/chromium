@@ -32,8 +32,7 @@ void FakeWebAppOriginAssociationManager::GetWebAppOriginAssociations(
       }
     }
     for (const auto& migration_source : origin_associations.migration_sources) {
-      if (migration_sources_data_.contains(
-              webapps::ManifestId(migration_source.manifest_id()))) {
+      if (migration_sources_data_.contains(migration_source.manifest_id())) {
         result.migration_sources.push_back(migration_source);
       }
     }

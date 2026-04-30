@@ -86,7 +86,7 @@ void WebappsClientAndroid::DoesNewWebAppConflictWithExistingInstallation(
   // some time, so ensure we don't accidentally allow a new installation whilst
   // one is in flight for the current site.
   const bool is_installation_in_progress =
-      IsInstallationInProgress(browser_context, manifest_id);
+      IsInstallationInProgress(browser_context, manifest_id.value());
   if (is_installation_in_progress) {
     std::move(callback).Run(/* does_conflict= */ true);
     return;

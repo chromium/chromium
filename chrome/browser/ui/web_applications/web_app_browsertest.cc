@@ -477,7 +477,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ThemeColor) {
     blink::mojom::Manifest manifest;
     manifest.manifest_url = GURL(kExampleManifestURL);
     manifest.start_url = start_url;
-    manifest.id = GenerateManifestIdFromStartUrlOnly(start_url);
+    manifest.id = GenerateManifestIdFromStartUrlOnly(start_url).value();
     manifest.scope = manifest.start_url.GetWithoutFilename();
     manifest.theme_color = theme_color;
     std::unique_ptr<WebAppInstallInfo> web_app_info =
@@ -509,7 +509,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, BackgroundColor) {
   blink::mojom::Manifest manifest;
   manifest.manifest_url = GURL(kExampleManifestURL);
   manifest.start_url = GURL(kExampleURL);
-  manifest.id = GenerateManifestIdFromStartUrlOnly(manifest.start_url);
+  manifest.id = GenerateManifestIdFromStartUrlOnly(manifest.start_url).value();
   manifest.scope = GURL(kExampleURL);
   manifest.background_color = SkColorSetA(SK_ColorBLUE, 0xF0);
   std::unique_ptr<WebAppInstallInfo> web_app_info =
@@ -2736,7 +2736,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_ManifestId, NoManifestId) {
                 /*manifest_id_path=*/std::nullopt,
                 provider->registrar_unsafe().GetAppStartUrl(app_id)),
             app_id);
-  EXPECT_EQ(app->start_url(), app->manifest_id());
+  EXPECT_EQ(app->start_url(), app->manifest_id().value());
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_ManifestId, ManifestIdSpecified) {

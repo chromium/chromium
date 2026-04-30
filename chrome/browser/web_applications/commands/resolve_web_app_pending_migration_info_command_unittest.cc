@@ -78,7 +78,7 @@ TEST_F(ResolveWebAppPendingMigrationInfoCommandTest, SingleMigration) {
       provider()->registrar_unsafe().GetAppById(app_id_source);
   ASSERT_TRUE(app_source->pending_migration_info().has_value());
   EXPECT_EQ(GenerateManifestIdFromStartUrlOnly(GURL(kTargetAppUrl)).spec(),
-            app_source->pending_migration_info()->manifest_id());
+            app_source->pending_migration_info()->manifest_id().spec());
   EXPECT_EQ(MigrationBehavior::kForce,
             app_source->pending_migration_info()->behavior());
 }
@@ -142,7 +142,7 @@ TEST_F(ResolveWebAppPendingMigrationInfoCommandTest, PreservesLastIgnoredTime) {
       provider()->registrar_unsafe().GetAppById(app_id_source);
   ASSERT_TRUE(app_source->pending_migration_info().has_value());
   EXPECT_EQ(GenerateManifestIdFromStartUrlOnly(GURL(kTargetAppUrl)).spec(),
-            app_source->pending_migration_info()->manifest_id());
+            app_source->pending_migration_info()->manifest_id().spec());
   EXPECT_EQ(MigrationBehavior::kForce,
             app_source->pending_migration_info()->behavior());
   EXPECT_EQ(expected_ignored_time,

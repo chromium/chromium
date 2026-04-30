@@ -216,7 +216,7 @@ IN_PROC_BROWSER_TEST_P(ReplaceMigrationSuggestedAppBrowserTest,
       base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
           install_future;
       provider().scheduler().InstallAppFromUrl(
-          start_url, GenerateManifestIdFromStartUrlOnly(start_url),
+          start_url, GenerateManifestIdFromStartUrlOnly(start_url).value(),
           browser()->tab_strip_model()->GetActiveWebContents()->GetWeakPtr(),
           start_url, base::BindOnce(test::TestAcceptDialogCallback),
           install_future.GetCallback());

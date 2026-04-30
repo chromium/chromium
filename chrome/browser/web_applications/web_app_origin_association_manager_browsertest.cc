@@ -216,7 +216,7 @@ IN_PROC_BROWSER_TEST_F(WebAppOriginAssociationManagerTest,
   base::test::TestFuture<OriginAssociations> future;
   OriginAssociations origin_associations;
   origin_associations.migration_sources.emplace_back(
-      GURL(kInvalidFileUrl), MigrationBehavior::kSuggest);
+      webapps::ManifestId(GURL(kInvalidFileUrl)), MigrationBehavior::kSuggest);
 
   manager_->GetWebAppOriginAssociations(GURL(kWebAppIdentity),
                                         std::move(origin_associations),
@@ -254,7 +254,7 @@ IN_PROC_BROWSER_TEST_F(WebAppOriginAssociationManagerTest,
         std::move(origin_associations), future.GetCallback());
     const OriginAssociations result = future.Get<0>();
     ASSERT_EQ(result.migration_sources.size(), 1u);
-    EXPECT_EQ(GURL(result.migration_sources[0].manifest_id()).spec(),
+    EXPECT_EQ(result.migration_sources[0].manifest_id().spec(),
               GURL(kAppWithMultipleMigrationCasesUrl).spec());
   }
 
@@ -299,7 +299,7 @@ IN_PROC_BROWSER_TEST_F(WebAppOriginAssociationManagerTest,
 
   const OriginAssociations result = future.Get<0>();
   ASSERT_EQ(result.migration_sources.size(), 1u);
-  EXPECT_EQ(GURL(result.migration_sources[0].manifest_id()).spec(),
+  EXPECT_EQ(result.migration_sources[0].manifest_id().spec(),
             same_origin_manifest_id);
 }
 

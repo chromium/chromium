@@ -113,7 +113,8 @@ void FakeDataRetriever::BuildDefaultDataToRetrieve(const GURL& url,
 
   auto manifest = blink::mojom::Manifest::New();
   manifest->start_url = url;
-  manifest->id = GenerateManifestIdFromStartUrlOnly(manifest->start_url);
+  manifest->id =
+      GenerateManifestIdFromStartUrlOnly(manifest->start_url).value();
   manifest->scope = scope;
   manifest->display = DisplayMode::kStandalone;
   manifest->short_name = u"Manifest Name";

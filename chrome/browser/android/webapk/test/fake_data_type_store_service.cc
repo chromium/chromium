@@ -5,6 +5,7 @@
 #include "chrome/browser/android/webapk/test/fake_data_type_store_service.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/logging.h"
 #include "base/run_loop.h"
@@ -82,12 +83,13 @@ void FakeDataTypeStoreService::WriteProtos(
       GetStore()->CreateWriteBatch();
 
   for (const WebApkProto* proto : protos) {
-    GURL manifest_id(proto->sync_data().manifest_id());
-    DCHECK(!manifest_id.is_empty());
-    DCHECK(manifest_id.is_valid());
-
-    write_batch->WriteData(GenerateAppIdFromManifestId(manifest_id),
-                           proto->SerializeAsString());
+    GURL manifest_id_gurl(proto->sync_data().manifest_id());
+    std::optional<webapps::ManifestId> manifest_id =
+        webapps::ManifestId::Create(manifest_id_gurl);
+    CHECK(manifest_id.has_value(), base::NotFatalUntil::M150);
+    write_batch->WriteData(
+        GenerateAppIdFromManifestId(*manifest_id),
+        proto->SerializeAsString());
   }
 
   GetStore()->CommitWriteBatch(

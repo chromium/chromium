@@ -359,14 +359,18 @@ void ChromeManagementAPIDelegate::InstallOrLaunchReplacementWebApp(
 
   // Launch the app if web_app_url happens to match start_url. If not, the app
   // could still be installed with different start_url.
-  webapps::AppId app_id = web_app::GenerateAppIdFromManifestId(web_app_url);
-  if (provider->registrar_unsafe().AppMatches(
-          app_id, web_app::WebAppFilter::InstalledInChrome())) {
-    LaunchWebApp(
-        web_app::GenerateAppId(/*manifest_id_path=*/std::nullopt, web_app_url),
-        profile);
-    std::move(callback).Run(InstallOrLaunchWebAppResult::kSuccess);
-    return;
+  std::optional<webapps::ManifestId> manifest_id =
+      webapps::ManifestId::Create(web_app_url);
+  if (manifest_id.has_value()) {
+    webapps::AppId app_id = web_app::GenerateAppIdFromManifestId(*manifest_id);
+    if (provider->registrar_unsafe().AppMatches(
+            app_id, web_app::WebAppFilter::InstalledInChrome())) {
+      LaunchWebApp(web_app::GenerateAppId(/*manifest_id_path=*/std::nullopt,
+                                          web_app_url),
+                   profile);
+      std::move(callback).Run(InstallOrLaunchWebAppResult::kSuccess);
+      return;
+    }
   }
 
   std::unique_ptr<content::WebContents> web_contents =

@@ -203,7 +203,7 @@ class WebInstallFromUrlCommandBrowserTest
   // manifest_id.
   std::deque<AppInstalledBy> GetInstalledBy(const GURL& manifest_id) {
     webapps::AppId app_id_from_manifest_id =
-        GenerateAppIdFromManifestId(manifest_id);
+        GenerateAppIdFromManifestId(webapps::ManifestId(manifest_id));
 
     bool found_app = provider().registrar_unsafe().AppMatches(
         app_id_from_manifest_id, WebAppFilter::LaunchableFromInstallApi());
@@ -1278,10 +1278,10 @@ IN_PROC_BROWSER_TEST_F(WebInstallBackgroundAppAlreadyInstalledBrowserTest,
       "/banners/manifest_with_id_test_page.html");
   const GURL manifest_url =
       embedded_https_test_server().GetURL("/banners/manifest_with_id.json");
-  const GURL manifest_id = GenerateManifestId("some_id", install_url);
+  const GURL manifest_id = GenerateManifestId("some_id", install_url).value();
 
-  auto info_result =
-      WebAppInstallInfo::Create(manifest_url, manifest_id, install_url);
+  auto info_result = WebAppInstallInfo::Create(
+      manifest_url, webapps::ManifestId(manifest_id), install_url);
   ASSERT_TRUE(info_result.has_value());
   std::unique_ptr<WebAppInstallInfo> info =
       std::make_unique<WebAppInstallInfo>(std::move(info_result.value()));
@@ -1359,10 +1359,10 @@ IN_PROC_BROWSER_TEST_P(WebInstallFromUrlCommandBrowserTest, LaunchApp) {
       "/banners/manifest_with_id_test_page.html");
   const GURL manifest_url =
       embedded_https_test_server().GetURL("/banners/manifest_with_id.json");
-  const GURL manifest_id = GenerateManifestId("some_id", install_url);
+  const GURL manifest_id = GenerateManifestId("some_id", install_url).value();
 
-  auto info_result =
-      WebAppInstallInfo::Create(manifest_url, manifest_id, install_url);
+  auto info_result = WebAppInstallInfo::Create(
+      manifest_url, webapps::ManifestId(manifest_id), install_url);
   ASSERT_TRUE(info_result.has_value());
   std::unique_ptr<WebAppInstallInfo> info =
       std::make_unique<WebAppInstallInfo>(std::move(info_result.value()));

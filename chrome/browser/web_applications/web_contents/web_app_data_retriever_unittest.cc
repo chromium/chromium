@@ -407,7 +407,8 @@ TEST_F(WebAppDataRetrieverTest, CheckInstallabilityAndRetrieveManifest) {
     manifest->short_name = manifest_short_name;
     manifest->name = manifest_name;
     manifest->start_url = manifest_start_url;
-    manifest->id = GenerateManifestIdFromStartUrlOnly(manifest_start_url);
+    manifest->id =
+        GenerateManifestIdFromStartUrlOnly(manifest_start_url).value();
     manifest->scope = manifest_scope;
     manifest->theme_color = manifest_theme_color;
 

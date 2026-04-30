@@ -78,7 +78,7 @@ IN_PROC_BROWSER_TEST_F(WebAppInstallMigrationBrowserTest,
       provider().registrar_unsafe().GetAppById(target_app_id);
   ASSERT_TRUE(source_app->pending_migration_info().has_value());
   EXPECT_EQ(source_app->pending_migration_info()->manifest_id(),
-            target_app->manifest_id().spec());
+            target_app->manifest_id());
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppInstallMigrationBrowserTest,
@@ -108,7 +108,7 @@ IN_PROC_BROWSER_TEST_F(WebAppInstallMigrationBrowserTest,
       provider().registrar_unsafe().GetAppById(target_app_id);
   ASSERT_TRUE(source_app->pending_migration_info().has_value());
   EXPECT_EQ(source_app->pending_migration_info()->manifest_id(),
-            target_app->manifest_id().spec());
+            target_app->manifest_id());
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppInstallMigrationBrowserTest,

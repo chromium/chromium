@@ -27066,6 +27066,7 @@ others/histograms.xml -->
   <int value="34" label="kManifestIdMismatch"/>
   <int value="35" label="kFallbackInstallUsingTrustedIcons"/>
   <int value="36" label="kNoValidMigrationSource"/>
+  <int value="37" label="kInvalidManifestId"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/webapps/browser/install_result_code.h:InstallResultCode) -->

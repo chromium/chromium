@@ -111,7 +111,7 @@ void AddValidatedOriginAssociationsCommand::StartWithLock(
   origin_associations.migration_sources = app->unvalidated_migration_sources();
 
   lock_->origin_association_manager().GetWebAppOriginAssociations(
-      app->manifest_id(), std::move(origin_associations),
+      app->manifest_id().value(), std::move(origin_associations),
       base::BindOnce(
           &AddValidatedOriginAssociationsCommand::OnOriginAssociationValidated,
           weak_factory_.GetWeakPtr()));

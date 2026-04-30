@@ -22,10 +22,10 @@ MigrationSource::MigrationSource(webapps::ManifestId manifest_id,
       behavior_(behavior),
       install_url_(std::move(install_url)) {
   CHECK(manifest_id_.is_valid());
-  CHECK(!url::Origin::Create(manifest_id_).opaque());
+  CHECK(!url::Origin::Create(manifest_id_.value()).opaque());
   if (install_url_.has_value()) {
     CHECK(install_url_->is_valid());
-    CHECK(url::IsSameOriginWith(manifest_id_, *install_url_));
+    CHECK(url::IsSameOriginWith(manifest_id_.value(), *install_url_));
   }
 }
 
@@ -47,8 +47,10 @@ std::optional<MigrationSource> MigrationSource::ParseAndCreate(
 
   // The `manifest_id` for the destination app should be valid, otherwise this
   // is an incorrect state for the app to exist as.
-  webapps::ManifestId manifest_id(proto.manifest_id());
-  if (!manifest_id.is_valid() || url::Origin::Create(manifest_id).opaque()) {
+  std::optional<webapps::ManifestId> manifest_id =
+      webapps::ManifestId::Create(proto.manifest_id());
+  if (!manifest_id.has_value() ||
+      url::Origin::Create(GURL(proto.manifest_id())).opaque()) {
     return std::nullopt;
   }
 
@@ -56,12 +58,12 @@ std::optional<MigrationSource> MigrationSource::ParseAndCreate(
   if (proto.has_install_url()) {
     install_url = GURL(proto.install_url());
     if (!install_url->is_valid() ||
-        !url::IsSameOriginWith(manifest_id, *install_url)) {
+        !url::IsSameOriginWith(manifest_id->value(), *install_url)) {
       return std::nullopt;
     }
   }
 
-  return MigrationSource(std::move(manifest_id),
+  return MigrationSource(std::move(*manifest_id),
                          FromProtoMigrationBehavior(proto.behavior()),
                          std::move(install_url));
 }
@@ -78,7 +80,7 @@ proto::WebAppMigrationSource MigrationSource::ToProto() const {
 
 base::Value MigrationSource::AsDebugValue() const {
   base::DictValue root;
-  root.Set("manifest_id", manifest_id_.possibly_invalid_spec());
+  root.Set("manifest_id", manifest_id_.value().possibly_invalid_spec());
   root.Set("behavior", base::ToString(behavior_));
   if (install_url_.has_value()) {
     root.Set("install_url", install_url_->possibly_invalid_spec());

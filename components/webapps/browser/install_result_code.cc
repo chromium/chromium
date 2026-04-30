@@ -95,6 +95,8 @@ std::ostream& operator<<(std::ostream& os, InstallResultCode code) {
       return os << "kFallbackInstallUsingTrustedIcons";
     case InstallResultCode::kNoValidMigrationSource:
       return os << "kNoValidMigrationSource";
+    case InstallResultCode::kInvalidManifestId:
+      return os << "kInvalidManifestId";
   }
 }
 

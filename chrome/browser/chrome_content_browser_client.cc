@@ -8862,7 +8862,14 @@ void ChromeContentBrowserClient::QueryInstalledWebAppsByManifestId(
   web_app::WebAppProvider* const provider =
       web_app::WebAppProvider::GetForLocalAppsUnchecked(profile);
 
-  webapps::AppId app_id = web_app::GenerateAppIdFromManifestId(manifest_id);
+  std::optional<webapps::ManifestId> valid_manifest_id =
+      webapps::ManifestId::Create(manifest_id);
+  if (!valid_manifest_id.has_value()) {
+    return std::move(callback).Run(std::nullopt);
+  }
+
+  webapps::AppId app_id =
+      web_app::GenerateAppIdFromManifestId(*valid_manifest_id);
 
   if (app_id.empty()) {
     return std::move(callback).Run(std::nullopt);
@@ -8882,9 +8889,10 @@ void ChromeContentBrowserClient::QueryInstalledWebAppsByManifestId(
              GURL frame_url, web_app::AppLock& lock,
              base::DictValue& debug_value)
               -> std::optional<blink::mojom::RelatedApplication> {
-            debug_value.Set("input", base::DictValue()
-                                         .Set("manifest_id", manifest_id.spec())
-                                         .Set("frame_url", frame_url.spec()));
+            debug_value.Set("input",
+                            base::DictValue()
+                                .Set("manifest_id", manifest_id.spec())
+                                .Set("frame_url", frame_url.spec()));
 
             if (!lock.registrar().AppMatches(
                     app_id, web_app::WebAppFilter::InstalledInChrome())) {
@@ -8899,7 +8907,13 @@ void ChromeContentBrowserClient::QueryInstalledWebAppsByManifestId(
 
             blink::mojom::RelatedApplication application;
             application.platform = "webapp";
-            application.id = lock.registrar().GetAppManifestId(app_id).spec();
+            std::optional<webapps::ManifestId> app_manifest_id =
+                lock.registrar().GetAppManifestId(app_id);
+            if(!app_manifest_id.has_value()){
+              debug_value.Set("manifest_id", "invalid manifest id");
+              return std::nullopt;
+            }
+            application.id = app_manifest_id->spec();
             // Note: This url is the manifest_url for purely legacy reasons
             // where Android used to implement the unique identifier using the
             // manifest url.
@@ -8916,7 +8930,8 @@ void ChromeContentBrowserClient::QueryInstalledWebAppsByManifestId(
                     .Set("manifest_url", application.url.value_or("")));
             return application;
           },
-          std::move(app_id), std::move(manifest_id), std::move(frame_url)),
+          std::move(app_id), *valid_manifest_id,
+          std::move(frame_url)),
       std::move(callback), std::move(arg_for_shutdown));
 }
 #endif  // !BUILDFLAG(IS_ANDROID)

@@ -100,8 +100,7 @@ void RecordCommandResultMetric(apps::AppInstallSurface surface,
 
 namespace apps {
 
-WebAppInstaller::WebAppInstaller(Profile* profile) : profile_(profile) {
-}
+WebAppInstaller::WebAppInstaller(Profile* profile) : profile_(profile) {}
 
 WebAppInstaller::~WebAppInstaller() = default;
 
@@ -167,8 +166,18 @@ void WebAppInstaller::OnManifestRetrieved(
     return;
   }
 
+  std::optional<webapps::ManifestId> manifest_id =
+      webapps::ManifestId::Create(GURL(data.package_id.identifier()));
+  if (!manifest_id.has_value()) {
+    LOG(ERROR) << "Invalid manifest_id: " << data.package_id.identifier();
+    RecordInstallResultMetric(surface,
+                              WebAppInstallResult::kInvalidManifestId);
+    std::move(callback).Run(/*success=*/false);
+    return;
+  }
+
   webapps::AppId expected_app_id =
-      web_app::GenerateAppIdFromManifestId(GURL(data.package_id.identifier()));
+      web_app::GenerateAppIdFromManifestId(*manifest_id);
 
   auto& web_app_data = std::get<WebAppInstallData>(data.app_type_data);
 

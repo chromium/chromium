@@ -56,8 +56,10 @@ webapps::AppId GenerateAppId(const std::optional<std::string>& manifest_id_path,
 
 webapps::AppId GenerateAppIdFromManifest(
     const blink::mojom::Manifest& manifest) {
-  CHECK(manifest.id.is_valid());
-  return GenerateAppIdFromManifestId(manifest.id);
+  std::optional<webapps::ManifestId> manifest_id =
+      webapps::ManifestId::Create(manifest.id);
+  CHECK(manifest_id.has_value());
+  return GenerateAppIdFromManifestId(manifest_id.value());
 }
 
 webapps::AppId GenerateAppIdFromManifestId(
@@ -67,24 +69,26 @@ webapps::AppId GenerateAppIdFromManifestId(
   // this way for backwards compatibility. (Back then, a web app's input to the
   // hash needed to be formatted like an extension public key.)
   return crx_file::id_util::GenerateId(
-      crypto::SHA256HashString(manifest_id.GetWithoutRef().spec()));
+      crypto::SHA256HashString(manifest_id.spec()));
 }
 
 webapps::ManifestId GenerateManifestIdFromStartUrlOnly(const GURL& start_url) {
-  CHECK(start_url.is_valid()) << start_url.spec();
-  return webapps::ManifestId(start_url.GetWithoutRef());
+  std::optional<webapps::ManifestId> manifest_id =
+      webapps::ManifestId::Create(start_url);
+  CHECK(manifest_id.has_value()) << start_url.spec();
+  return *manifest_id;
 }
 
 webapps::ManifestId GenerateManifestId(const std::string& manifest_id_path,
                                        const GURL& start_url) {
-  const webapps::ManifestId manifest_id =
+  std::optional<webapps::ManifestId> manifest_id =
       GenerateManifestIdUnsafe(manifest_id_path, start_url);
-  CHECK(manifest_id.is_valid())
+  CHECK(manifest_id.has_value())
       << "start_url: " << start_url << ", manifest_id = " << manifest_id_path;
-  return manifest_id;
+  return *manifest_id;
 }
 
-webapps::ManifestId GenerateManifestIdUnsafe(
+std::optional<webapps::ManifestId> GenerateManifestIdUnsafe(
     const std::string& manifest_id_path,
     const GURL& start_url) {
   // When manifest_id_path is specified, the manifest_id is generated from
@@ -93,7 +97,8 @@ webapps::ManifestId GenerateManifestIdUnsafe(
   // with slash.
   const GURL manifest_id(start_url.DeprecatedGetOriginAsURL().spec() +
                          manifest_id_path);
-  return webapps::ManifestId(manifest_id.GetWithoutRef());
+
+  return webapps::ManifestId::Create(manifest_id);
 }
 
 std::optional<webapps::AppId> FindInstalledAppWithUrlInScope(Profile* profile,

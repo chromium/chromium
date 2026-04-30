@@ -4,6 +4,7 @@
 
 #include "components/webapps/common/manifest_id.h"
 
+#include <compare>
 #include <ostream>
 #include <string_view>
 
@@ -52,11 +53,19 @@ const GURL& ValidManifestId::value() const {
   return url_;
 }
 
-auto operator<=>(const ValidManifestId& lhs, const ValidManifestId& rhs) {
+std::strong_ordering operator<=>(const ValidManifestId& lhs,
+                                 const ValidManifestId& rhs) {
   return lhs.value() <=> rhs.value();
 }
 
 bool ValidManifestId::operator==(const ValidManifestId& other) const = default;
+
+bool ValidManifestId::operator==(const GURL& other) const {
+  if (!other.is_valid()) {
+    return false;
+  }
+  return url_ == other.GetWithoutRef();
+}
 
 std::ostream& operator<<(std::ostream& out,
                          const ValidManifestId& manifest_id) {

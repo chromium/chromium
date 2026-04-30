@@ -112,7 +112,7 @@ class InstallMigrateToAppCommandTest : public WebAppTest {
 
 TEST_F(InstallMigrateToAppCommandTest, SuccessInstall) {
   webapps::AppId source_app_id = InstallSourceApp();
-  SetupTargetPageState(kTargetManifestId, kSourceManifestId);
+  SetupTargetPageState(kTargetManifestId.value(), kSourceManifestId.value());
 
   EXPECT_EQ(ScheduleCommandAndWait(kSourceManifestId, kTargetManifestId,
                                    kTargetInstallUrl),
@@ -132,7 +132,7 @@ TEST_F(InstallMigrateToAppCommandTest, SuccessInstall) {
 
 TEST_F(InstallMigrateToAppCommandTest, SuccessUpdate) {
   webapps::AppId source_app_id = InstallSourceApp();
-  SetupTargetPageState(kTargetManifestId, kSourceManifestId);
+  SetupTargetPageState(kTargetManifestId.value(), kSourceManifestId.value());
 
   // Pre-install the target app.
   auto web_app_install_info =
@@ -158,7 +158,7 @@ TEST_F(InstallMigrateToAppCommandTest, SuccessUpdate) {
 TEST_F(InstallMigrateToAppCommandTest, SuccessUpdateSuggested) {
   webapps::AppId source_app_id = InstallSourceApp();
   webapps::AppId target_app_id = GenerateAppIdFromManifestId(kTargetManifestId);
-  SetupTargetPageState(kTargetManifestId, kSourceManifestId);
+  SetupTargetPageState(kTargetManifestId.value(), kSourceManifestId.value());
 
   // Pre-install the target app as suggested-from-another-device.
   syncer::EntityData entity_data;
@@ -221,7 +221,7 @@ TEST_F(InstallMigrateToAppCommandTest, UrlLoadFailure) {
 
 TEST_F(InstallMigrateToAppCommandTest, ManifestIdMismatch) {
   webapps::AppId source_app_id = InstallSourceApp();
-  SetupTargetPageState(GURL("https://app.com/wrong-id"), kSourceManifestId);
+  SetupTargetPageState(GURL("https://app.com/wrong-id"), kSourceManifestId.value());
 
   EXPECT_EQ(ScheduleCommandAndWait(kSourceManifestId, kTargetManifestId,
                                    kTargetInstallUrl),
@@ -233,7 +233,7 @@ TEST_F(InstallMigrateToAppCommandTest, ManifestIdMismatch) {
 
 TEST_F(InstallMigrateToAppCommandTest, MigrateFromMismatch) {
   webapps::AppId source_app_id = InstallSourceApp();
-  SetupTargetPageState(kTargetManifestId, GURL("https://app.com/wrong-source"));
+  SetupTargetPageState(kTargetManifestId.value(), GURL("https://app.com/wrong-source"));
 
   EXPECT_EQ(ScheduleCommandAndWait(kSourceManifestId, kTargetManifestId,
                                    kTargetInstallUrl),
@@ -268,12 +268,12 @@ TEST_F(InstallMigrateToAppCommandTest, SuccessInstallSameSiteCrossOrigin) {
 
   auto manifest = blink::mojom::Manifest::New();
   manifest->start_url = kTargetUrl;
-  manifest->id = kTargetManifestId;
+  manifest->id = kTargetManifestId.value();
   manifest->name = u"Target App";
   manifest->manifest_url = kTargetUrl;
 
   auto migrate_from = blink::mojom::ManifestMigrateFrom::New();
-  migrate_from->id = kSourceManifestId;
+  migrate_from->id = kSourceManifestId.value();
   manifest->migrate_from.push_back(std::move(migrate_from));
 
   page_state.manifest_url = kTargetUrl;

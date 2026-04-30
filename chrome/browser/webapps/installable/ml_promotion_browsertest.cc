@@ -315,7 +315,7 @@ class MLPromotionBrowserTest : public MLPromotionBrowserTestBase {
     base::flat_map<std::string, ProcessedValue> expected_input = {
         {"origin", ProcessedValue(url::Origin::Create(site_url).GetURL())},
         {"site_url", ProcessedValue(site_url)},
-        {"manifest_id", ProcessedValue(manifest_id)}};
+        {"manifest_id", ProcessedValue(manifest_id.value())}};
     EXPECT_CALL(*GetMockSegmentation(),
                 GetClassificationResult(
                     segmentation_platform::kWebAppInstallationPromoKey, _,
@@ -684,7 +684,7 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowserTest,
 
   ExpectClasificationCallReturnResult(
       /*site_url=*/GetUrlWithFaviconsNoManifest(),
-      /*manifest_id=*/GetUrlWithFaviconsNoManifest(),
+      /*manifest_id=*/webapps::ManifestId(GetUrlWithFaviconsNoManifest()),
       MLInstallabilityPromoter::kShowInstallPromptLabel,
       TrainingRequestId(1ll));
 
@@ -719,7 +719,7 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowserTest, MLInstallEmptyPageNoIcons) {
 
   ExpectClasificationCallReturnResult(
       /*site_url=*/GetUrlWithNoManifest(),
-      /*manifest_id=*/GetUrlWithNoManifest(),
+      /*manifest_id=*/webapps::ManifestId(GetUrlWithNoManifest()),
       MLInstallabilityPromoter::kShowInstallPromptLabel, TrainingRequestId(1ll),
       web_contents());
   task_runner_->RunPendingTasks();
@@ -742,12 +742,12 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowserTest,
   // Expect the pipeline to trigger both on the first and second url.
   ExpectClasificationCallReturnResult(
       /*site_url=*/GetInstallableAppURL(),
-      /*manifest_id=*/GetInstallableAppURL(),
+      /*manifest_id=*/webapps::ManifestId(GetInstallableAppURL()),
       MLInstallabilityPromoter::kShowInstallPromptLabel, TrainingRequestId(1ll),
       web_contents());
   ExpectClasificationCallReturnResult(
       /*site_url=*/GetUrlOuterApp(),
-      /*manifest_id=*/GetUrlOuterApp(),
+      /*manifest_id=*/webapps::ManifestId(GetUrlOuterApp()),
       MLInstallabilityPromoter::kShowInstallPromptLabel, TrainingRequestId(2ll),
       web_contents());
 
@@ -782,7 +782,7 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowserTestNestedPromptBlocking,
   // time this finishes.
   ExpectClasificationCallReturnResult(
       /*site_url=*/GetUrlOuterApp(),
-      /*manifest_id=*/GetUrlOuterApp(),
+      /*manifest_id=*/webapps::ManifestId(GetUrlOuterApp()),
       MLInstallabilityPromoter::kDontShowLabel, TrainingRequestId(1ll),
       web_contents());
   task_runner_->RunPendingTasks();
@@ -806,7 +806,7 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowserTestNestedPromptBlocking,
   // time this finishes.
   ExpectClasificationCallReturnResult(
       /*site_url=*/GetUrlOuterApp(),
-      /*manifest_id=*/GetUrlOuterApp(),
+      /*manifest_id=*/webapps::ManifestId(GetUrlOuterApp()),
       MLInstallabilityPromoter::kDontShowLabel, TrainingRequestId(1ll),
       web_contents());
   task_runner_->RunPendingTasks();
@@ -819,7 +819,7 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowserTestNestedPromptBlocking,
 
   ExpectClasificationCallReturnResult(
       /*site_url=*/GetUrlInnerCraftedApp(),
-      /*manifest_id=*/GetUrlInnerCraftedApp(),
+      /*manifest_id=*/webapps::ManifestId(GetUrlInnerCraftedApp()),
       MLInstallabilityPromoter::kShowInstallPromptLabel, TrainingRequestId(2ll),
       web_contents());
 
@@ -910,8 +910,8 @@ IN_PROC_BROWSER_TEST_P(MLPromotionInstallDialogBrowserTest, MlInstallNotShown) {
 
   ExpectClasificationCallReturnResult(
       /*site_url=*/GetUrlBasedOnDialogState(),
-      /*manifest_id=*/GetUrlBasedOnDialogState(), "DontShow",
-      TrainingRequestId(1ll));
+      /*manifest_id=*/webapps::ManifestId(GetUrlBasedOnDialogState()),
+      "DontShow", TrainingRequestId(1ll));
 
   // This calls unblocks the metrics tasks, allowing ML to be called.
   task_runner_->RunPendingTasks();
@@ -931,7 +931,7 @@ IN_PROC_BROWSER_TEST_P(MLPromotionInstallDialogBrowserTest,
 
   ExpectClasificationCallReturnResult(
       /*site_url=*/GetUrlBasedOnDialogState(),
-      /*manifest_id=*/GetUrlBasedOnDialogState(),
+      /*manifest_id=*/webapps::ManifestId(GetUrlBasedOnDialogState()),
       MLInstallabilityPromoter::kShowInstallPromptLabel,
       TrainingRequestId(1ll));
 
@@ -960,7 +960,7 @@ IN_PROC_BROWSER_TEST_P(MLPromotionInstallDialogBrowserTest,
 
   ExpectClasificationCallReturnResult(
       /*site_url=*/GetUrlBasedOnDialogState(),
-      /*manifest_id=*/GetUrlBasedOnDialogState(),
+      /*manifest_id=*/webapps::ManifestId(GetUrlBasedOnDialogState()),
       MLInstallabilityPromoter::kShowInstallPromptLabel,
       TrainingRequestId(1ll));
 
@@ -992,7 +992,7 @@ IN_PROC_BROWSER_TEST_P(MLPromotionInstallDialogBrowserTest,
 
   ExpectClasificationCallReturnResult(
       /*site_url=*/GetUrlBasedOnDialogState(),
-      /*manifest_id=*/GetUrlBasedOnDialogState(),
+      /*manifest_id=*/webapps::ManifestId(GetUrlBasedOnDialogState()),
       MLInstallabilityPromoter::kShowInstallPromptLabel,
       TrainingRequestId(1ll));
 
@@ -1021,7 +1021,7 @@ IN_PROC_BROWSER_TEST_P(MLPromotionInstallDialogBrowserTest,
 
   ExpectClasificationCallReturnResult(
       /*site_url=*/GetUrlBasedOnDialogState(),
-      /*manifest_id=*/GetUrlBasedOnDialogState(),
+      /*manifest_id=*/webapps::ManifestId(GetUrlBasedOnDialogState()),
       MLInstallabilityPromoter::kShowInstallPromptLabel,
       TrainingRequestId(1ll));
 
@@ -1080,7 +1080,7 @@ IN_PROC_BROWSER_TEST_P(MLPromotionInstallDialogBrowserTest,
 
   ExpectClasificationCallReturnResult(
       /*site_url=*/GetUrlBasedOnDialogState(),
-      /*manifest_id=*/GetUrlBasedOnDialogState(),
+      /*manifest_id=*/webapps::ManifestId(GetUrlBasedOnDialogState()),
       MLInstallabilityPromoter::kShowInstallPromptLabel, TrainingRequestId(1ll),
       original_web_contents);
 
@@ -1117,7 +1117,7 @@ IN_PROC_BROWSER_TEST_P(MLPromotionInstallDialogBrowserTest,
 
   ExpectClasificationCallReturnResult(
       /*site_url=*/GetUrlBasedOnDialogState(),
-      /*manifest_id=*/GetUrlBasedOnDialogState(),
+      /*manifest_id=*/webapps::ManifestId(GetUrlBasedOnDialogState()),
       MLInstallabilityPromoter::kShowInstallPromptLabel,
       TrainingRequestId(1ll));
 
@@ -1150,7 +1150,7 @@ IN_PROC_BROWSER_TEST_P(MLPromotionInstallDialogBrowserTest,
 
   ExpectClasificationCallReturnResult(
       /*site_url=*/GetUrlBasedOnDialogState(),
-      /*manifest_id=*/GetUrlBasedOnDialogState(),
+      /*manifest_id=*/webapps::ManifestId(GetUrlBasedOnDialogState()),
       MLInstallabilityPromoter::kShowInstallPromptLabel,
       TrainingRequestId(1ll));
 
@@ -1179,7 +1179,7 @@ IN_PROC_BROWSER_TEST_P(MLPromotionInstallDialogBrowserTest,
 
   ExpectClasificationCallReturnResult(
       /*site_url=*/GetUrlBasedOnDialogState(),
-      /*manifest_id=*/GetUrlBasedOnDialogState(),
+      /*manifest_id=*/webapps::ManifestId(GetUrlBasedOnDialogState()),
       MLInstallabilityPromoter::kShowInstallPromptLabel,
       TrainingRequestId(2ll));
   // This will cause the ML pipeline to complete, but not report anything yet.
@@ -1203,7 +1203,7 @@ IN_PROC_BROWSER_TEST_P(MLPromotionInstallDialogBrowserTest,
 
   ExpectClasificationCallReturnResult(
       /*site_url=*/GetUrlBasedOnDialogState(),
-      /*manifest_id=*/GetUrlBasedOnDialogState(),
+      /*manifest_id=*/webapps::ManifestId(GetUrlBasedOnDialogState()),
       MLInstallabilityPromoter::kShowInstallPromptLabel,
       TrainingRequestId(1ll));
 
@@ -1233,7 +1233,7 @@ IN_PROC_BROWSER_TEST_P(MLPromotionInstallDialogBrowserTest,
   // Navigate back to the app url to re-trigger the ml pipeline.
   ExpectClasificationCallReturnResult(
       /*site_url=*/GetUrlBasedOnDialogState(),
-      /*manifest_id=*/GetUrlBasedOnDialogState(),
+      /*manifest_id=*/webapps::ManifestId(GetUrlBasedOnDialogState()),
       MLInstallabilityPromoter::kShowInstallPromptLabel,
       TrainingRequestId(2ll));
   NavigateAndAwaitMetricsCollectionPending(GetUrlBasedOnDialogState());
@@ -1256,7 +1256,7 @@ IN_PROC_BROWSER_TEST_P(MLPromotionInstallDialogBrowserTest,
 
   ExpectClasificationCallReturnResult(
       /*site_url=*/GetUrlBasedOnDialogState(),
-      /*manifest_id=*/GetUrlBasedOnDialogState(),
+      /*manifest_id=*/webapps::ManifestId((GetUrlBasedOnDialogState())),
       MLInstallabilityPromoter::kShowInstallPromptLabel,
       TrainingRequestId(1ll));
 
@@ -1285,7 +1285,7 @@ IN_PROC_BROWSER_TEST_P(MLPromotionInstallDialogBrowserTest,
   // Navigate back to the app url to re-trigger the ml pipeline.
   ExpectClasificationCallReturnResult(
       /*site_url=*/GetUrlBasedOnDialogState(),
-      /*manifest_id=*/GetUrlBasedOnDialogState(),
+      /*manifest_id=*/webapps::ManifestId(GetUrlBasedOnDialogState()),
       MLInstallabilityPromoter::kShowInstallPromptLabel,
       TrainingRequestId(2ll));
   NavigateAndAwaitMetricsCollectionPending(GetUrlBasedOnDialogState());

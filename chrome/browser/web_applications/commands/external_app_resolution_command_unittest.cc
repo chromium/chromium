@@ -126,7 +126,7 @@ class ExternalAppResolutionCommandTest : public WebAppTest {
     manifest->name = u"Example App";
     manifest->short_name = u"App";
     manifest->start_url = kWebAppUrl;
-    manifest->id = GenerateManifestIdFromStartUrlOnly(kWebAppUrl);
+    manifest->id = GenerateManifestIdFromStartUrlOnly(kWebAppUrl).value();
     manifest->display = blink::mojom::DisplayMode::kStandalone;
     return manifest;
   }
@@ -221,7 +221,7 @@ class ExternalAppResolutionCommandTest : public WebAppTest {
       state.manifest_before_default_processing->id = *mock_options.manifest_id;
     } else {
       state.manifest_before_default_processing->id =
-          GenerateManifestIdFromStartUrlOnly(options.install_url);
+          GenerateManifestIdFromStartUrlOnly(options.install_url).value();
     }
 
     state.manifest_before_default_processing->name = u"Manifest Name";
@@ -495,7 +495,8 @@ TEST_F(ExternalAppResolutionCommandTest,
   }
 
   // Replace the placeholder with a real app.
-  const webapps::AppId final_app_id = GenerateAppIdFromManifestId(kManifestId);
+  const webapps::AppId final_app_id =
+      GenerateAppIdFromManifestId(webapps::ManifestId(kManifestId));
   options.placeholder_resolution_behavior =
       PlaceholderResolutionBehavior::kCloseAndRelaunch;
   SetPageState(options, {.manifest_id = kManifestId});
@@ -566,7 +567,8 @@ TEST_F(ExternalAppResolutionCommandTest,
   }
 
   // Replace the placeholder with a real app.
-  const webapps::AppId final_app_id = GenerateAppIdFromManifestId(kManifestId);
+  const webapps::AppId final_app_id =
+      GenerateAppIdFromManifestId(webapps::ManifestId(kManifestId));
   options.placeholder_resolution_behavior =
       PlaceholderResolutionBehavior::kCloseAndRelaunch;
   SetPageState(options, {.manifest_id = kManifestId});

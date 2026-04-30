@@ -311,7 +311,8 @@ class WebAppRegistrar {
   std::optional<SkColor> GetAppDarkModeBackgroundColor(
       const webapps::AppId& app_id) const;
   const GURL& GetAppStartUrl(const webapps::AppId& app_id) const;
-  webapps::ManifestId GetAppManifestId(const webapps::AppId& app_id) const;
+  std::optional<webapps::ManifestId> GetAppManifestId(
+      const webapps::AppId& app_id) const;
   const std::string* GetAppLaunchQueryParams(
       const webapps::AppId& app_id) const;
   const apps::ShareTarget* GetAppShareTarget(
@@ -475,6 +476,7 @@ class WebAppRegistrar {
 
   // Computes and returns the unhashed app id from entries in the web app
   // manifest.
+  // TODO(crbug.com/505088712): Return webapps::ManifestId instead of GURL.
   GURL GetComputedManifestId(const webapps::AppId& app_id) const;
 
   // Returns whether the app should be opened in tabbed window mode.

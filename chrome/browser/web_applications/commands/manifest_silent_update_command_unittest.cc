@@ -101,7 +101,7 @@ class ManifestSilentUpdateCommandTest : public WebAppTest {
     // Set up manifest.
     auto manifest = blink::mojom::Manifest::New();
     manifest->start_url = kAppUrl;
-    manifest->id = GenerateManifestIdFromStartUrlOnly(kAppUrl);
+    manifest->id = GenerateManifestIdFromStartUrlOnly(kAppUrl).value();
     manifest->scope = kAppUrl.GetWithoutFilename();
     manifest->display = DisplayMode::kStandalone;
     manifest->name = u"Foo App";

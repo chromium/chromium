@@ -222,6 +222,8 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest, MultipleManifests) {
   // multiple_manifest_test_page.html includes both manifest_with_id.json and
   // manifest.json. Section 4.6.7.10 of the HTML spec says the first manifest
   // should be used.
+  EXPECT_TRUE(
+      provider().registrar_unsafe().GetAppManifestId(app_id).has_value());
   EXPECT_EQ(provider().registrar_unsafe().GetAppManifestId(app_id),
             embedded_https_test_server().GetURL("/some_id"));
 }

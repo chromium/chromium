@@ -26,11 +26,28 @@ namespace web_app {
 namespace {
 
 struct SubAppInstallParams {
+  SubAppInstallParams(webapps::ManifestId manifest_id,
+                      const GURL& install_url);
+  ~SubAppInstallParams();
+  SubAppInstallParams(const SubAppInstallParams&);
+  SubAppInstallParams& operator=(const SubAppInstallParams&);
+  SubAppInstallParams(SubAppInstallParams&&);
+  SubAppInstallParams& operator=(SubAppInstallParams&&);
+
   webapps::ManifestId manifest_id;
   GURL install_url;
 };
 
 struct SubAppInstallResult {
+  SubAppInstallResult(webapps::ManifestId manifest_id,
+                      const webapps::AppId& app_id,
+                      webapps::InstallResultCode install_result_code);
+  ~SubAppInstallResult();
+  SubAppInstallResult(const SubAppInstallResult&);
+  SubAppInstallResult& operator=(const SubAppInstallResult&);
+  SubAppInstallResult(SubAppInstallResult&&);
+  SubAppInstallResult& operator=(SubAppInstallResult&&);
+
   webapps::ManifestId manifest_id;
   webapps::AppId app_id;
   webapps::InstallResultCode install_result_code;

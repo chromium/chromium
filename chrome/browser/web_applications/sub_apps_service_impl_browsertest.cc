@@ -306,7 +306,7 @@ class SubAppsServiceImplBrowserTest : public IsolatedWebAppBrowserTestHarness {
  protected:
   base::test::ScopedFeatureList features_{blink::features::kSubApps};
   webapps::AppId parent_app_id_;
-  webapps::ManifestId parent_app_manifest_id_;
+  std::optional<webapps::ManifestId> parent_app_manifest_id_;
   mojo::Remote<SubAppsService> remote_;
   base::AutoReset<
       std::optional<SubAppsInstallDialogController::DialogActionForTesting>>

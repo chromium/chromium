@@ -512,7 +512,7 @@ webapps::AppId FakeWebContentsManager::CreateBasicInstallPageState(
       blink::mojom::Manifest::New();
   blink::mojom::Manifest& manifest =
       *install_page_state.manifest_before_default_processing;
-  manifest.id = GenerateManifestIdFromStartUrlOnly(start_url);
+  manifest.id = GenerateManifestIdFromStartUrlOnly(start_url).value();
   manifest.start_url = start_url;
   manifest.display = blink::mojom::DisplayMode::kStandalone;
   manifest.name = name;

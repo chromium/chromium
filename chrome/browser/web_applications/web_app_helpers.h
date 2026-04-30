@@ -77,7 +77,7 @@ webapps::ManifestId GenerateManifestId(const std::string& manifest_id_path,
 
 // Same as above but does not CHECK that the resulting id is valid. Only used
 // for sync parsing to avoid crashes, and ignore bad sync data.
-webapps::ManifestId GenerateManifestIdUnsafe(
+std::optional<webapps::ManifestId> GenerateManifestIdUnsafe(
     const std::string& manifest_id_path,
     const GURL& start_url);
 

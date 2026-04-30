@@ -89,17 +89,17 @@ ParseManifestIdFromSyncEntity(const sync_pb::WebAppSpecifics& specifics) {
 
   // Set the manifest id first, as `WebApp::MergeInSyncDataFromApp()` ensures
   // that the computed manifest ids match.
-  webapps::ManifestId manifest_id;
+  std::optional<webapps::ManifestId> manifest_id;
   if (specifics.has_relative_manifest_id()) {
     manifest_id =
         GenerateManifestIdUnsafe(specifics.relative_manifest_id(), start_url);
   } else {
     manifest_id = GenerateManifestIdFromStartUrlOnly(start_url);
   }
-  if (!manifest_id.is_valid()) {
+  if (!manifest_id.has_value()) {
     return base::unexpected(StorageKeyParseResult::kInvalidManifestId);
   }
-  return base::ok(manifest_id);
+  return base::ok(*manifest_id);
 }
 
 base::expected<webapps::ManifestId, ManifestIdParseResult>
@@ -111,11 +111,10 @@ ValidateManifestIdFromParsableSyncEntity(
   // These are guaranteed to be true, as it is checked in IsEntityDataValid,
   // which prevents the entity from ever being given to our system.
   CHECK(manifest_id.has_value());
-  CHECK(manifest_id->is_valid());
   GURL start_url = GURL(specifics.start_url());
   CHECK(start_url.is_valid());
 
-  if (!url::IsSameOriginWith(start_url, manifest_id.value())) {
+  if (!url::IsSameOriginWith(start_url, manifest_id->value())) {
     return base::unexpected(
         ManifestIdParseResult::kManifestIdResolutionFailure);
   }
@@ -125,7 +124,7 @@ ValidateManifestIdFromParsableSyncEntity(
         ManifestIdParseResult::kManifestIdDoesNotMatchLocalData);
   }
 
-  return base::ok(manifest_id.value());
+  return base::ok(*manifest_id);
 }
 
 }  // namespace
@@ -903,7 +902,7 @@ std::string WebAppSyncBridge::GetClientTag(
   // This is guaranteed to be true, as the contract for this function is that
   // IsEntityDataValid must be true.
   CHECK(manifest_id.has_value());
-  return GenerateAppIdFromManifestId(manifest_id.value());
+  return GenerateAppIdFromManifestId(*manifest_id);
 }
 
 std::string WebAppSyncBridge::GetStorageKey(

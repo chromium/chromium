@@ -374,8 +374,11 @@ void AppBannerManager::OnDidGetManifest(const InstallableData& data) {
     return;
   }
 
-  CHECK(data.manifest->id.is_valid());
-  web_app_data_.emplace(data.manifest->id, data.manifest->Clone(),
+  std::optional<webapps::ManifestId> manifest_id =
+        webapps::ManifestId::Create(data.manifest->id);
+  CHECK(manifest_id.has_value());
+
+  web_app_data_.emplace(*manifest_id, data.manifest->Clone(),
                         data.web_page_metadata->Clone(), *(data.manifest_url));
   WebappsClient::Get()->OnManifestSeen(web_contents()->GetBrowserContext(),
                                        *data.manifest);
@@ -463,7 +466,14 @@ void AppBannerManager::OnDidPerformInstallableWebAppCheck(
     Stop(data.GetFirstError());
     return;
   }
-  delegate_->OnWebAppInstallableCheckedNoErrors(data.manifest->id);
+
+  std::optional<webapps::ManifestId> manifest_id =
+      webapps::ManifestId::Create(data.manifest->id);
+  if (!manifest_id.has_value()) {
+    return;
+  }
+
+  delegate_->OnWebAppInstallableCheckedNoErrors(*manifest_id);
 
   UpdateState(State::PENDING_CONFLICTING_INSTALLATION_CHECK);
 

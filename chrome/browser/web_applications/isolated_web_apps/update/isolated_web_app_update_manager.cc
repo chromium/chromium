@@ -581,7 +581,7 @@ bool IsolatedWebAppUpdateManager::MaybeQueueUpdateDiscoveryTask(
   }
 
   ASSIGN_OR_RETURN(auto url_info,
-                   IsolatedWebAppUrlInfo::Create(web_app.manifest_id()),
+                   IsolatedWebAppUrlInfo::Create(web_app.manifest_id().value()),
                    [](auto error) { return false; });
 
   const IsolatedWebAppUpdateOptions* update_options =

@@ -28,6 +28,8 @@ namespace apps {
 // The result of a call to WebAppInstaller::InstallApp. These values are
 // persisted to logs. Entries should not be renumbered and numeric values should
 // never be reused.
+// TODO(crbug.com/505096781): Fix mismatch with WebAppInstallResultCode in
+// histograms.xml.
 enum class WebAppInstallResult {
   // Web app was successfully installed.
   kSuccess = 0,
@@ -43,7 +45,9 @@ enum class WebAppInstallResult {
   kManifestResponseEmpty = 4,
   // The web app installation command completed with an error.
   kWebAppInstallError = 5,
-  kMaxValue = kWebAppInstallError
+  // The manifest ID was invalid.
+  kInvalidManifestId = 6,
+  kMaxValue = kInvalidManifestId
 };
 
 using WebAppInstalledCallback = base::OnceCallback<void(bool success)>;

@@ -265,7 +265,7 @@ class ShortcutSubManagerExecuteTest : public ShortcutSubManagerTestBase {
     // Create fake manifest.
     auto manifest = blink::mojom::Manifest::New();
     manifest->start_url = kWebAppUrl;
-    manifest->id = GenerateManifestIdFromStartUrlOnly(kWebAppUrl);
+    manifest->id = GenerateManifestIdFromStartUrlOnly(kWebAppUrl).value();
     manifest->scope = kWebAppUrl.GetWithoutFilename();
     manifest->name = u"New App";
 

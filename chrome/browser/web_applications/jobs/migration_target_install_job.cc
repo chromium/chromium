@@ -75,7 +75,17 @@ MigrationTargetInstallJob::MigrationTargetInstallJob(
       callback_(std::move(callback)) {}
 
 void MigrationTargetInstallJob::Start() {
-  webapps::AppId app_id = GenerateAppIdFromManifestId(manifest_->id);
+  std::optional<webapps::ManifestId> manifest_id =
+      webapps::ManifestId::Create(manifest_->id);
+  if (!manifest_id.has_value()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(&MigrationTargetInstallJob::Complete,
+                                  weak_factory_.GetWeakPtr(),
+                                  MigrationTargetInstallJobResult::
+                                      kManifestToWebAppInstallInfoError));
+    return;
+  }
+  webapps::AppId app_id = GenerateAppIdFromManifestId(*manifest_id);
   if (lock_resources_->registrar().AppMatches(
           app_id, WebAppFilter::IsAppEligibleForManifestUpdate())) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(

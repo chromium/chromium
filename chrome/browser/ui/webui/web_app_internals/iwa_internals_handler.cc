@@ -474,8 +474,8 @@ void IwaInternalsHandler::GetIsolatedWebAppDevModeAppInfo(
                                               app.isolation_data()->location()),
         [](const auto&) { NOTREACHED(); });
 
-    auto signed_web_bundle_id =
-        web_package::SignedWebBundleId::Create(app.manifest_id().host());
+    auto signed_web_bundle_id = web_package::SignedWebBundleId::Create(
+        app.manifest_id().value().host());
     CHECK(signed_web_bundle_id.has_value())
         << "Invalid host in manifest_id for IWA: " << app.app_id()
         << " with manifest_id: " << app.manifest_id();
@@ -556,7 +556,7 @@ void IwaInternalsHandler::ApplyDevModeUpdate(
                        profile()->GetPath(), iwa->isolation_data()->location()),
                    [&](const auto&) { NOTREACHED(); });
 
-  auto url_info = IsolatedWebAppUrlInfo::Create(iwa->manifest_id());
+  auto url_info = IsolatedWebAppUrlInfo::Create(iwa->manifest_id().value());
   if (!url_info.has_value()) {
     std::move(callback).Run("unable to create UrlInfo from start url");
     return;

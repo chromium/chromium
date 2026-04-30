@@ -475,7 +475,7 @@ std::optional<TabStrip> ProtoToTabStrip(proto::TabStrip tab_strip_proto) {
 std::string RelativeManifestIdPath(webapps::ManifestId manifest_id) {
   CHECK(manifest_id.is_valid());
   // The relative id does not include the initial '/' character.
-  std::string relative_manifest_id_path = manifest_id.PathForRequest();
+  std::string relative_manifest_id_path = manifest_id.value().PathForRequest();
   if (relative_manifest_id_path.starts_with("/")) {
     relative_manifest_id_path = relative_manifest_id_path.substr(1);
   }

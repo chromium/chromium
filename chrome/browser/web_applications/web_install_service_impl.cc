@@ -93,8 +93,14 @@ std::optional<webapps::AppId> IsAppInstalled(
   // avoids issues with nested app scopes and `install_target` potentially
   // launching the wrong app.
   if (manifest_id) {
+    std::optional<webapps::ManifestId> valid_manifest_id =
+        webapps::ManifestId::Create(manifest_id.value());
+    if (!valid_manifest_id.has_value()) {
+      return std::nullopt;
+    }
+
     webapps::AppId app_id_from_manifest_id =
-        GenerateAppIdFromManifestId(webapps::ManifestId(manifest_id.value()));
+        GenerateAppIdFromManifestId(valid_manifest_id.value());
 
     bool found_app =
         provider.registrar_unsafe().AppMatches(app_id_from_manifest_id, filter);
@@ -224,7 +230,7 @@ void WebInstallServiceImpl::InstallInternal(
          ukm::SourceId installed_app_source_id,
          web_app::WebInstallServiceResult metrics_result,
          blink::mojom::WebInstallServiceResult install_result,
-         webapps::ManifestId manifest_id_result) {
+         std::optional<webapps::ManifestId> manifest_id_result) {
         // TODO(crbug.com/477993292): Reevaluate/clean up web install telemetry
         // after Origin Trials.
 
@@ -237,7 +243,6 @@ void WebInstallServiceImpl::InstallInternal(
                           triggered_from_element ? "Element" : "Api",
                           ".Result"}),
             metrics_result);
-
         // Record UKMs for background document installs.
         if (requesting_page_source_id != ukm::kInvalidSourceId &&
             installed_app_source_id != ukm::kInvalidSourceId) {
@@ -266,7 +271,10 @@ void WebInstallServiceImpl::InstallInternal(
           }
           installed_app_builder.Record(ukm::UkmRecorder::Get());
         }
-        std::move(callback).Run(install_result, manifest_id_result);
+        std::move(callback).Run(install_result,
+                                manifest_id_result.has_value()
+                                    ? manifest_id_result->value()
+                                    : GURL());
       },
       std::move(callback), triggered_from_element, requesting_page_source_id,
       installed_app_source_id);
@@ -287,8 +295,7 @@ void WebInstallServiceImpl::InstallInternal(
   if (!rfh) {
     std::move(callback_with_metrics)
         .Run(web_app::WebInstallServiceResult::kUnexpectedFailure,
-             blink::mojom::WebInstallServiceResult::kAbortError,
-             webapps::ManifestId());
+             blink::mojom::WebInstallServiceResult::kAbortError, std::nullopt);
     return;
   }
 
@@ -299,8 +306,7 @@ void WebInstallServiceImpl::InstallInternal(
   if (!install_target.SchemeIsHTTPOrHTTPS()) {
     std::move(callback_with_metrics)
         .Run(web_app::WebInstallServiceResult::kUnexpectedFailure,
-             blink::mojom::WebInstallServiceResult::kAbortError,
-             webapps::ManifestId());
+             blink::mojom::WebInstallServiceResult::kAbortError, std::nullopt);
     return;
   }
 
@@ -348,8 +354,7 @@ void WebInstallServiceImpl::InstallInternal(
           network::mojom::PermissionsPolicyFeature::kWebAppInstallation)) {
     std::move(callback_with_metrics)
         .Run(web_app::WebInstallServiceResult::kPermissionDenied,
-             blink::mojom::WebInstallServiceResult::kAbortError,
-             webapps::ManifestId());
+             blink::mojom::WebInstallServiceResult::kAbortError, std::nullopt);
     return;
   }
 
@@ -362,8 +367,7 @@ void WebInstallServiceImpl::OnInstallNotSupportedDialogClosed(
     InstallCallbackWithMetrics callback_with_metrics) {
   std::move(callback_with_metrics)
       .Run(web_app::WebInstallServiceResult::kUnsupportedProfile,
-           blink::mojom::WebInstallServiceResult::kAbortError,
-           webapps::ManifestId());
+           blink::mojom::WebInstallServiceResult::kAbortError, std::nullopt);
 }
 
 void WebInstallServiceImpl::TryInstallCurrentDocument(
@@ -428,8 +432,7 @@ void WebInstallServiceImpl::CheckForInstalledAppMaybeLaunch(
                      *app_id, web_app::WebAppFilter::InstalledInChrome())) {
     std::move(callback_with_metrics)
         .Run(web_app::WebInstallServiceResult::kUnexpectedFailure,
-             blink::mojom::WebInstallServiceResult::kAbortError,
-             webapps::ManifestId());
+             blink::mojom::WebInstallServiceResult::kAbortError, std::nullopt);
     return;
   }
 
@@ -456,8 +459,7 @@ void WebInstallServiceImpl::OnIntentPickerMaybeLaunched(
   } else {
     std::move(callback_with_metrics)
         .Run(web_app::WebInstallServiceResult::kSuccessAlreadyInstalled,
-             blink::mojom::WebInstallServiceResult::kAbortError,
-             webapps::ManifestId());
+             blink::mojom::WebInstallServiceResult::kAbortError, std::nullopt);
   }
 }
 
@@ -476,8 +478,7 @@ void WebInstallServiceImpl::OnGotManifestForCurrentDocumentInstall(
   if (!result.has_value() || blink::IsEmptyManifest(result.value())) {
     std::move(callback_with_metrics)
         .Run(web_app::WebInstallServiceResult::kInstallCommandFailed,
-             blink::mojom::WebInstallServiceResult::kDataError,
-             webapps::ManifestId());
+             blink::mojom::WebInstallServiceResult::kDataError, std::nullopt);
     return;
   }
 
@@ -488,8 +489,7 @@ void WebInstallServiceImpl::OnGotManifestForCurrentDocumentInstall(
   if (!origin().IsSameOriginWith(manifest->id)) {
     std::move(callback_with_metrics)
         .Run(web_app::WebInstallServiceResult::kInstallCommandFailed,
-             blink::mojom::WebInstallServiceResult::kDataError,
-             webapps::ManifestId());
+             blink::mojom::WebInstallServiceResult::kDataError, std::nullopt);
     return;
   }
 
@@ -498,8 +498,7 @@ void WebInstallServiceImpl::OnGotManifestForCurrentDocumentInstall(
   if (!manifest->has_custom_id) {
     std::move(callback_with_metrics)
         .Run(web_app::WebInstallServiceResult::kNoCustomManifestId,
-             blink::mojom::WebInstallServiceResult::kDataError,
-             webapps::ManifestId());
+             blink::mojom::WebInstallServiceResult::kDataError, std::nullopt);
     return;
   }
 
@@ -515,16 +514,14 @@ void WebInstallServiceImpl::OnGotManifestForCurrentDocumentInstall(
   if (promoter && promoter->HasCurrentInstall()) {
     std::move(callback_with_metrics)
         .Run(web_app::WebInstallServiceResult::kUnexpectedFailure,
-             blink::mojom::WebInstallServiceResult::kAbortError,
-             webapps::ManifestId());
+             blink::mojom::WebInstallServiceResult::kAbortError, std::nullopt);
     return;
   }
 
   if (provider->command_manager().IsInstallingForWebContents(web_contents)) {
     std::move(callback_with_metrics)
         .Run(web_app::WebInstallServiceResult::kUnexpectedFailure,
-             blink::mojom::WebInstallServiceResult::kAbortError,
-             webapps::ManifestId());
+             blink::mojom::WebInstallServiceResult::kAbortError, std::nullopt);
     return;
   }
 
@@ -602,8 +599,7 @@ void WebInstallServiceImpl::OnPermissionDecided(
   if (permission_result[0].status != PermissionStatus::GRANTED) {
     std::move(callback_with_metrics)
         .Run(web_app::WebInstallServiceResult::kPermissionDenied,
-             blink::mojom::WebInstallServiceResult::kAbortError,
-             webapps::ManifestId());
+             blink::mojom::WebInstallServiceResult::kAbortError, std::nullopt);
     return;
   }
 
@@ -621,8 +617,7 @@ void WebInstallServiceImpl::OnPermissionDecided(
     // this background install/launch flow.
     std::move(callback_with_metrics)
         .Run(web_app::WebInstallServiceResult::kUnexpectedFailure,
-             blink::mojom::WebInstallServiceResult::kAbortError,
-             webapps::ManifestId());
+             blink::mojom::WebInstallServiceResult::kAbortError, std::nullopt);
     return;
   }
 
@@ -635,8 +630,7 @@ void WebInstallServiceImpl::OnPermissionDecided(
     // Cancel this background install/launch flow.
     std::move(callback_with_metrics)
         .Run(web_app::WebInstallServiceResult::kUnexpectedFailure,
-             blink::mojom::WebInstallServiceResult::kAbortError,
-             webapps::ManifestId());
+             blink::mojom::WebInstallServiceResult::kAbortError, std::nullopt);
     return;
   }
 
@@ -648,16 +642,18 @@ void WebInstallServiceImpl::OnPermissionDecided(
   if (app_id) {
     // See `IsAppInstalled` for why this can be unsafe.
     const GURL& installed_manifest_id =
-        provider->registrar_unsafe().GetComputedManifestId(app_id.value());
+        provider->registrar_unsafe().GetComputedManifestId(*app_id);
     CHECK(!installed_manifest_id.is_empty());
-
+    std::optional<webapps::ManifestId> valid_manifest_id =
+        webapps::ManifestId::Create(installed_manifest_id);
+    CHECK(valid_manifest_id.has_value());
     // Get the information to display in the launch dialog.
     provider->scheduler().FetchInstallInfoFromInstallUrl(
-        installed_manifest_id, install_options_->install_url,
+        *valid_manifest_id, install_options_->install_url,
         base::BindOnce(
             &WebInstallServiceImpl::OnInstallInfoFromInstallUrlFetched,
             weak_ptr_factory_.GetWeakPtr(), std::move(callback_with_metrics),
-            app_id.value(), installed_manifest_id));
+            *app_id, installed_manifest_id));
     return;
   }
 
@@ -687,8 +683,7 @@ void WebInstallServiceImpl::OnInstallInfoFromInstallUrlFetched(
     // TODO(crbug.com/471021583): Evaluate supporting redirects.
     std::move(callback_with_metrics)
         .Run(web_app::WebInstallServiceResult::kUnexpectedFailure,
-             blink::mojom::WebInstallServiceResult::kDataError,
-             webapps::ManifestId());
+             blink::mojom::WebInstallServiceResult::kDataError, std::nullopt);
     return;
   }
   // Choose the icon bitmap based on OS specific icon guidelines. See
@@ -740,14 +735,18 @@ void WebInstallServiceImpl::OnBackgroundAppLaunchDialogClosed(
     InstallCallbackWithMetrics callback_with_metrics,
     const GURL& manifest_id,
     bool accepted) {
+  std::optional<webapps::ManifestId> valid_manifest_id =
+      webapps::ManifestId::Create(manifest_id);
+
   // Update the installed_by field if the user accepted the launch.
-  if (accepted) {
+  if (accepted && valid_manifest_id.has_value()) {
     auto* profile =
         Profile::FromBrowserContext(render_frame_host().GetBrowserContext());
     auto* provider = WebAppProvider::GetForWebApps(profile);
     CHECK(provider);
 
-    webapps::AppId app_id = GenerateAppIdFromManifestId(webapps::ManifestId(manifest_id));
+    webapps::AppId app_id =
+        GenerateAppIdFromManifestId(valid_manifest_id.value());
     provider->scheduler().ScheduleCallback<AppLock>(
         "CheckInstalledByAndMaybeUpdate", AppLockDescription(app_id),
         base::BindOnce(&CheckInstalledByAndMaybeUpdate, provider->clock().Now(),
@@ -759,9 +758,12 @@ void WebInstallServiceImpl::OnBackgroundAppLaunchDialogClosed(
   // the user accepted.
   std::move(callback_with_metrics)
       .Run(web_app::WebInstallServiceResult::kSuccessAlreadyInstalled,
-           accepted ? blink::mojom::WebInstallServiceResult::kSuccess
-                    : blink::mojom::WebInstallServiceResult::kAbortError,
-           accepted ? webapps::ManifestId(manifest_id) : webapps::ManifestId());
+           (accepted && valid_manifest_id.has_value())
+               ? blink::mojom::WebInstallServiceResult::kSuccess
+               : blink::mojom::WebInstallServiceResult::kAbortError,
+           (accepted && valid_manifest_id.has_value())
+               ? std::optional<webapps::ManifestId>(valid_manifest_id.value())
+               : std::nullopt);
 }
 
 void WebInstallServiceImpl::OnAppInstalled(
@@ -770,7 +772,7 @@ void WebInstallServiceImpl::OnAppInstalled(
     webapps::InstallResultCode code) {
   blink::mojom::WebInstallServiceResult install_result;
   web_app::WebInstallServiceResult uma_result;
-  webapps::ManifestId manifest_id_result;
+  std::optional<webapps::ManifestId> manifest_id_result;
 
   if (webapps::IsSuccess(code)) {
     install_result = blink::mojom::WebInstallServiceResult::kSuccess;
@@ -785,10 +787,11 @@ void WebInstallServiceImpl::OnAppInstalled(
         Profile::FromBrowserContext(render_frame_host().GetBrowserContext());
     auto* provider = WebAppProvider::GetForWebApps(profile);
     CHECK(provider);
-
     manifest_id_result =
-        provider->registrar_unsafe().GetComputedManifestId(app_id);
-    CHECK(!manifest_id_result.is_empty());
+        webapps::ManifestId::Create(
+            provider->registrar_unsafe().GetComputedManifestId(app_id));
+    CHECK(manifest_id_result.has_value());
+
   } else {
     switch (code) {
       case webapps::InstallResultCode::kNoCustomManifestId:
