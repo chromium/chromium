@@ -171,8 +171,12 @@ class WebRtcRemoteEventLogManager final
   // Stops logging all the peer connections associated with the renderer
   // process. If StopLoggingAction is kStore, the logs are stored and uploaded,
   // otherwise the logs are deleted.
+  // In addition, if the provided |diagnostic_uuid| matches the one in any of
+  // the PENDING logs and the StopLoggingAction is kDelete, the matching logs
+  // will be deleted.
   void StopLogging(int render_process_id,
                    StopLoggingAction action,
+                   std::optional<std::string> diagnostic_uuid,
                    base::OnceClosure callback);
 
   // network::NetworkConnectionTracker::NetworkConnectionObserver implementation

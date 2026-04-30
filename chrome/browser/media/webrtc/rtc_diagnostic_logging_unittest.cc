@@ -877,7 +877,8 @@ TEST_F(RTCDiagnosticLoggingTest, EventLogCancelledAfterSessionIdSet) {
   content::GetContentClientForTesting()->browser()->StartRtcDiagnosticLogging(
       *main_rfh(), /*should_upload_on_stop=*/true, {},
       start_future.GetCallback());
-  EXPECT_TRUE(start_future.Wait());
+  std::string uuid = start_future.Get();
+  EXPECT_FALSE(uuid.empty());
 
   base::FilePath log_file_path;
   EXPECT_CALL(remote_observer_,
@@ -894,7 +895,7 @@ TEST_F(RTCDiagnosticLoggingTest, EventLogCancelledAfterSessionIdSet) {
 
   base::test::TestFuture<void> cancel_future;
   event_log_manager_->CancelLogging(main_rfh()->GetProcess()->GetDeprecatedID(),
-                                    cancel_future.GetCallback());
+                                    uuid, cancel_future.GetCallback());
   EXPECT_TRUE(cancel_future.Wait());
 
   base::test::TestFuture<void> log_manager_future;

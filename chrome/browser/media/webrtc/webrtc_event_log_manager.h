@@ -167,9 +167,13 @@ class WebRtcEventLogManager final
   // bound.
   void FinishLogging(int render_process_id, base::OnceClosure callback);
 
-  // Cancels logging for all peer connections in the given process. Any
-  // existing logs for these peer connections are deleted and not uploaded.
-  void CancelLogging(int render_process_id, base::OnceClosure callback);
+  // Cancels logging for the given process. Any logs for active peer connections
+  // are deleted and not uploaded. Any logs for inactive peer connections that
+  // are pending for upload and match the provided |diagnostic_uuid| are also
+  // deleted.
+  void CancelLogging(int render_process_id,
+                     const std::string& diagnostic_uuid,
+                     base::OnceClosure callback);
 
   // Clear WebRTC event logs associated with a given browser context, in a given
   // time range (|delete_begin| inclusive, |delete_end| exclusive), then
@@ -426,6 +430,7 @@ class WebRtcEventLogManager final
 
   void StopLoggingInternal(int render_process_id,
                            StopLoggingAction action,
+                           std::optional<std::string> diagnostic_uuid,
                            base::OnceClosure callback);
 
   void ClearCacheForBrowserContextInternal(BrowserContextId browser_context_id,

@@ -524,6 +524,7 @@ class WebRtcEventLogManagerTestBase : public ::testing::Test {
                           size_t max_size_bytes,
                           int output_period_ms,
                           size_t web_app_id,
+                          std::optional<std::string> diagnostic_uuid,
                           std::string* log_id_output = nullptr,
                           std::string* error_message_output = nullptr) {
     bool result;
@@ -532,7 +533,7 @@ class WebRtcEventLogManagerTestBase : public ::testing::Test {
 
     event_log_manager_->StartRemoteLogging(
         key.render_process_id, session_id, max_size_bytes, output_period_ms,
-        web_app_id, std::nullopt,
+        web_app_id, std::move(diagnostic_uuid),
         ReplyClosure(&result, &log_id, &error_message));
 
     WaitForReply();
@@ -554,6 +555,18 @@ class WebRtcEventLogManagerTestBase : public ::testing::Test {
 
   bool StartRemoteLogging(const PeerConnectionKey& key,
                           const std::string& session_id,
+                          size_t max_size_bytes,
+                          int output_period_ms,
+                          size_t web_app_id,
+                          std::string* log_id_output = nullptr,
+                          std::string* error_message_output = nullptr) {
+    return StartRemoteLogging(key, session_id, max_size_bytes, output_period_ms,
+                              web_app_id, std::nullopt, log_id_output,
+                              error_message_output);
+  }
+
+  bool StartRemoteLogging(const PeerConnectionKey& key,
+                          const std::string& session_id,
                           std::string* log_id_output = nullptr,
                           std::string* error_message_output = nullptr) {
     return StartRemoteLogging(key, session_id, kMaxRemoteLogFileSizeBytes, 0,
@@ -563,8 +576,7 @@ class WebRtcEventLogManagerTestBase : public ::testing::Test {
   bool StartRemoteLogging(const PeerConnectionKey& key,
                           std::string* log_id_output = nullptr,
                           std::string* error_message_output = nullptr) {
-    return StartRemoteLogging(key, GetUniqueId(key), kMaxRemoteLogFileSizeBytes,
-                              0, kWebAppId, log_id_output,
+    return StartRemoteLogging(key, GetUniqueId(key), log_id_output,
                               error_message_output);
   }
 
@@ -3821,15 +3833,19 @@ TEST_F(WebRtcEventLogManagerTest, RemoteLoggingCancelledDeletesFile) {
 
   ASSERT_TRUE(OnPeerConnectionAdded(key));
   ASSERT_TRUE(OnPeerConnectionSessionIdSet(key));
-  ASSERT_TRUE(StartRemoteLogging(key));
+
+  const std::string kDiagnosticUuid = "123e4567-e89b-12d3-a456-426614174000";
+  ASSERT_TRUE(StartRemoteLogging(key, GetUniqueId(key),
+                                 kMaxRemoteLogFileSizeBytes, 0, kWebAppId,
+                                 kDiagnosticUuid));
   ASSERT_TRUE(file_path);
   ASSERT_TRUE(base::PathExists(*file_path));
 
   EXPECT_CALL(remote_observer_, OnRemoteLogStopped(key)).Times(1);
 
   base::test::TestFuture<void> future;
-  WebRtcEventLogManager::GetInstance()->CancelLogging(rph_->GetID().value(),
-                                                      future.GetCallback());
+  WebRtcEventLogManager::GetInstance()->CancelLogging(
+      rph_->GetID().value(), kDiagnosticUuid, future.GetCallback());
   EXPECT_TRUE(future.Wait());
 
   EXPECT_FALSE(base::PathExists(*file_path));
@@ -4040,6 +4056,45 @@ TEST_F(WebRtcEventLogManagerTest,
   const size_t written_web_app_id =
       ExtractRemoteBoundWebRtcEventLogWebAppIdFromPath(*file_path);
   EXPECT_EQ(written_web_app_id, expected_web_app_id);
+}
+
+TEST_F(WebRtcEventLogManagerTest, CancelLoggingDeletesPendingFile) {
+  const auto key = GetPeerConnectionKey(rph_.get(), kLid);
+
+  std::optional<base::FilePath> file_path;
+  ON_CALL(remote_observer_, OnRemoteLogStarted(key, _, _))
+      .WillByDefault(SaveFilePathTo(&file_path));
+
+  ASSERT_TRUE(OnPeerConnectionAdded(key));
+  ASSERT_TRUE(OnPeerConnectionSessionIdSet(key, kSessionId));
+
+  const std::string kDiagnosticUuid = "123e4567-e89b-12d3-a456-426614174000";
+  std::string log_id;
+  std::string error_message;
+  bool result;
+
+  event_log_manager_->StartRemoteLogging(
+      key.render_process_id, kSessionId, kMaxRemoteLogFileSizeBytes, 0,
+      kWebAppId, kDiagnosticUuid,
+      ReplyClosure(&result, &log_id, &error_message));
+
+  WaitForReply();
+  ASSERT_TRUE(result);
+
+  ASSERT_TRUE(file_path.has_value());
+  ASSERT_TRUE(base::PathExists(*file_path));
+
+  ASSERT_TRUE(OnPeerConnectionRemoved(key));
+  WaitForPendingTasks();
+
+  ASSERT_TRUE(base::PathExists(*file_path));
+
+  base::RunLoop run_loop;
+  event_log_manager_->CancelLogging(key.render_process_id, kDiagnosticUuid,
+                                    run_loop.QuitClosure());
+  run_loop.Run();
+
+  EXPECT_FALSE(base::PathExists(*file_path));
 }
 
 INSTANTIATE_TEST_SUITE_P(UploadCompleteResult,

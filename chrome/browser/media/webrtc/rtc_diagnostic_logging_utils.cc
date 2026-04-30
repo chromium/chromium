@@ -260,7 +260,8 @@ void CancelRtcDiagnosticLogging(content::RenderFrameHost& frame_host,
   base::RepeatingClosure barrier = base::BarrierClosure(2, std::move(callback));
   if (auto* manager =
           ::webrtc_event_logging::WebRtcEventLogManager::GetInstance()) {
-    manager->CancelLogging(frame_host.GetProcess()->GetID().value(), barrier);
+    manager->CancelLogging(frame_host.GetProcess()->GetID().value(),
+                           controller->web_api_settings()->uuid, barrier);
   } else {
     barrier.Run();
   }
