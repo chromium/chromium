@@ -208,6 +208,14 @@ XRLayer* XRRenderState::GetFirstLayer() const {
 }
 
 WebGLTexture* XRRenderState::GetCameraTexture() {
+  // TODO(https://crbug.com/507508099): This is a temporary patch for a renderer
+  // crash when using an XRProjectionLayer with camera access enabled but the
+  // full suite of layers disabled. Sites using this configuration won't get the
+  // camera image, until this is fixed, but at least they won't crash either.
+  if (!camera_helper_) {
+    return nullptr;
+  }
+
   return camera_helper_->GetCameraTexture();
 }
 
