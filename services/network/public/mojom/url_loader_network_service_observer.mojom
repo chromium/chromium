@@ -171,6 +171,12 @@ interface URLLoaderNetworkServiceObserver {
       TransportType transport_type, IPAddressSpace ip_address_space)
       => (LocalNetworkAccessResult result);
 
+  // Called when a platform-specific (OS-level) Local Network Access permission
+  // prompt is required.
+  // This must not be called again while a previous call's response is pending.
+  // Returns true if the user granted the permission.
+  OnPlatformLocalNetworkPermissionRequired() => (bool granted);
+
   // Called when the Clear-Site-Data header has been received. The callback
   // should be run after the data is deleted.
   // https://www.w3.org/TR/clear-site-data/

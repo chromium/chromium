@@ -2386,6 +2386,12 @@ void StoragePartitionImpl::OnLocalNetworkAccessPermissionRequired(
   return;
 }
 
+void StoragePartitionImpl::OnPlatformLocalNetworkPermissionRequired(
+    OnPlatformLocalNetworkPermissionRequiredCallback callback) {
+  // TODO(crbug.com/506495945): Implement the logic to obtain permission.
+  std::move(callback).Run(/*granted=*/false);
+}
+
 void StoragePartitionImpl::OnCertificateRequested(
     const std::optional<base::UnguessableToken>& window_id,
     const scoped_refptr<net::SSLCertRequestInfo>& cert_info,

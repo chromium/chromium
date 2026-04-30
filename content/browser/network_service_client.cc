@@ -306,6 +306,11 @@ void NetworkServiceClient::OnLocalNetworkAccessPermissionRequired(
   std::move(callback).Run(network::mojom::LocalNetworkAccessResult::kDenied);
 }
 
+void NetworkServiceClient::OnPlatformLocalNetworkPermissionRequired(
+    OnPlatformLocalNetworkPermissionRequiredCallback callback) {
+  std::move(callback).Run(/*granted=*/false);
+}
+
 void NetworkServiceClient::OnClearSiteData(
     const GURL& url,
     const std::string& header_value,

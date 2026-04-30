@@ -214,6 +214,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
                       const net::AuthChallengeInfo& info) override;
   void OnCertificateRequested(net::URLRequest* request,
                               net::SSLCertRequestInfo* info) override;
+  void OnPlatformLocalNetworkAccessPermissionRequired(
+      net::URLRequest* request) override;
   void OnSSLCertificateError(net::URLRequest* request,
                              int net_error,
                              const net::SSLInfo& info,
@@ -251,6 +253,16 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
       mojo::PendingRemote<mojom::SSLPrivateKey> ssl_private_key) override;
   void ContinueWithoutCertificate() override;
   void CancelRequest() override;
+
+  // Cancel the request because network revocation was triggered.
+  void CancelRequestIfNonceMatchesAndUrlNotExempted(
+      const base::UnguessableToken& nonce,
+      const std::set<GURL>& exemptions);
+
+  // Called when the browser process responds to a request for platform-specific
+  // local network permission. If the user granted the permission, this will
+  // restart the transaction. Otherwise, it will cancel the request.
+  void OnPlatformLocalNetworkPermissionRequiredResponse(bool granted);
 
   net::LoadState GetLoadState() const;
   net::UploadProgress GetUploadProgress() const;
@@ -780,6 +792,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
 
   // Keeps the result of IsSharedDictionaryReadAllowed(). Used only for metrics.
   bool shared_dictionary_allowed_check_passed_ = false;
+
+  // True if we are waiting for the platform local network permission response.
+  bool is_waiting_for_platform_local_network_permission_ = false;
 
   // Permissions policy of the request.
   const std::optional<network::PermissionsPolicy> permissions_policy_;

@@ -8323,6 +8323,96 @@ TEST_F(URLLoaderTest,
   EXPECT_FALSE(devtools_observer.local_network_request_params());
 }
 
+namespace {
+
+// A mock URLRequestJob that simulates the requirement of platform-specific
+// local network access permission.
+class URLRequestPlatformLocalNetworkAccessPermissionJob
+    : public net::URLRequestJob {
+ public:
+  explicit URLRequestPlatformLocalNetworkAccessPermissionJob(
+      net::URLRequest* request)
+      : net::URLRequestJob(request) {}
+
+  void Start() override {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &URLRequestPlatformLocalNetworkAccessPermissionJob::StartAsync,
+            weak_factory_.GetWeakPtr()));
+  }
+
+  void SetPlatformLocalNetworkAccessGranted() override {
+    NotifyHeadersComplete();
+  }
+
+  void CancelPlatformLocalNetworkAccessRequest() override {
+    NotifyStartError(net::ERR_LOCAL_NETWORK_PERMISSION_MISSING);
+  }
+
+ private:
+  void StartAsync() { NotifyPlatformLocalNetworkAccessPermissionRequired(); }
+
+  base::WeakPtrFactory<URLRequestPlatformLocalNetworkAccessPermissionJob>
+      weak_factory_{this};
+};
+
+// An interceptor that creates
+// URLRequestPlatformLocalNetworkAccessPermissionJob.
+class PlatformLocalNetworkAccessPermissionInterceptor
+    : public net::URLRequestInterceptor {
+ public:
+  std::unique_ptr<net::URLRequestJob> MaybeInterceptRequest(
+      net::URLRequest* request) const override {
+    return std::make_unique<URLRequestPlatformLocalNetworkAccessPermissionJob>(
+        request);
+  }
+};
+
+}  // namespace
+
+TEST_F(URLLoaderTest, PlatformLocalNetworkPermissionWithoutObserver) {
+  // Do not set network observer.
+  GURL url("http://fake-endpoint");
+  net::URLRequestFilter::GetInstance()->AddUrlInterceptor(
+      url, std::make_unique<PlatformLocalNetworkAccessPermissionInterceptor>());
+
+  ResourceRequest request = CreateCrossOriginResourceRequest();
+  request.url = url;
+
+  EXPECT_EQ(net::ERR_LOCAL_NETWORK_PERMISSION_MISSING, LoadRequest(request));
+}
+
+TEST_F(URLLoaderTest, PlatformLocalNetworkPermissionDenied) {
+  TestURLLoaderNetworkObserver observer;
+  observer.set_platform_local_network_permission_response(false);
+  set_network_observer_for_next_request(&observer);
+
+  GURL url("http://fake-endpoint");
+  net::URLRequestFilter::GetInstance()->AddUrlInterceptor(
+      url, std::make_unique<PlatformLocalNetworkAccessPermissionInterceptor>());
+
+  ResourceRequest request = CreateCrossOriginResourceRequest();
+  request.url = url;
+
+  EXPECT_NE(net::OK, LoadRequest(request));
+}
+
+TEST_F(URLLoaderTest, PlatformLocalNetworkPermissionGranted) {
+  TestURLLoaderNetworkObserver observer;
+  observer.set_platform_local_network_permission_response(true);
+  set_network_observer_for_next_request(&observer);
+
+  GURL url("http://fake-endpoint");
+  net::URLRequestFilter::GetInstance()->AddUrlInterceptor(
+      url, std::make_unique<PlatformLocalNetworkAccessPermissionInterceptor>());
+
+  ResourceRequest request = CreateCrossOriginResourceRequest();
+  request.url = url;
+
+  EXPECT_EQ(net::OK, LoadRequest(request));
+}
+
 // An empty ACCEPT_CH frame should skip the client call.
 TEST_F(URLLoaderFakeTransportInfoTest, AcceptCHFrameEmptyString) {
   net::TransportInfo info = net::DefaultTransportInfo();

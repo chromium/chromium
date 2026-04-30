@@ -125,6 +125,11 @@ void UrlLoaderNetworkServiceObserver::OnLocalNetworkAccessPermissionRequired(
     network::mojom::IPAddressSpace ip_address_space,
     OnLocalNetworkAccessPermissionRequiredCallback callback) {}
 
+void UrlLoaderNetworkServiceObserver::OnPlatformLocalNetworkPermissionRequired(
+    OnPlatformLocalNetworkPermissionRequiredCallback callback) {
+  std::move(callback).Run(/*granted=*/false);
+}
+
 void UrlLoaderNetworkServiceObserver::OnClearSiteData(
     const GURL& url,
     const std::string& header_value,

@@ -55,6 +55,11 @@ void TestURLLoaderNetworkObserver::OnLocalNetworkAccessPermissionRequired(
   std::move(callback).Run(mojom::LocalNetworkAccessResult::kDenied);
 }
 
+void TestURLLoaderNetworkObserver::OnPlatformLocalNetworkPermissionRequired(
+    OnPlatformLocalNetworkPermissionRequiredCallback callback) {
+  std::move(callback).Run(platform_local_network_permission_response_);
+}
+
 void TestURLLoaderNetworkObserver::OnClearSiteData(
     const GURL& url,
     const std::string& header_value,

@@ -239,6 +239,11 @@ void BruschettaNetworkContext::OnLocalNetworkAccessPermissionRequired(
   std::move(callback).Run(network::mojom::LocalNetworkAccessResult::kDenied);
 }
 
+void BruschettaNetworkContext::OnPlatformLocalNetworkPermissionRequired(
+    OnPlatformLocalNetworkPermissionRequiredCallback callback) {
+  std::move(callback).Run(/*granted=*/false);
+}
+
 void BruschettaNetworkContext::OnClearSiteData(
     const GURL& url,
     const std::string& header_value,
