@@ -24,7 +24,6 @@
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -61,6 +60,7 @@
 #include "extensions/common/manifest_handlers/shared_module_info.h"
 #include "extensions/common/switches.h"
 #include "extensions/strings/grit/extensions_strings.h"
+#include "net/base/url_util.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
@@ -129,33 +129,21 @@ base::FilePath GetDownloadFilePath(const base::FilePath& download_directory,
   return base::GetUniquePath(file);
 }
 
-void MaybeAppendAuthUserParameter(const std::string& authuser, GURL* url) {
-  if (authuser.empty()) {
+}  // namespace
+
+// static
+void WebstoreInstaller::MaybeAppendAuthUserParameter(
+    const std::string& authuser,
+    GURL& url) {
+  if (authuser.empty() || net::GetValueForKeyInQuery(url, kAuthUserQueryKey,
+                                                     /*out_value=*/nullptr)) {
     return;
   }
-  std::string old_query = url->GetQuery();
-  url::Component query(0, old_query.length());
-  url::Component key, value;
-  // Ensure that the URL doesn't already specify an authuser parameter.
-  while (url::ExtractQueryKeyValue(old_query, &query, &key, &value)) {
-    std::string key_string = old_query.substr(key.begin, key.len);
-    if (key_string == kAuthUserQueryKey) {
-      return;
-    }
-  }
-  if (!old_query.empty()) {
-    old_query += "&";
-  }
-  std::string authuser_param =
-      base::StringPrintf("%s=%s", kAuthUserQueryKey, authuser.c_str());
 
-  // TODO(rockot): Share this duplicated code with the extension updater.
-  // See http://crbug.com/40364679.
-  std::string new_query_string = old_query + authuser_param;
-  GURL::Replacements replacements;
-  replacements.SetQueryStr(new_query_string);
-  *url = url->ReplaceComponents(replacements);
+  url = net::AppendQueryParameter(url, kAuthUserQueryKey, authuser);
 }
+
+namespace {
 
 std::string GetErrorMessageForDownloadInterrupt(
     download::DownloadInterruptReason reason) {
@@ -496,7 +484,7 @@ void WebstoreInstaller::DownloadNextPendingModule() {
 void WebstoreInstaller::DownloadCrx(const ExtensionId& extension_id,
                                     InstallSource source) {
   download_url_ = GetWebstoreInstallURL(extension_id, source);
-  MaybeAppendAuthUserParameter(approval_->authuser, &download_url_);
+  MaybeAppendAuthUserParameter(approval_->authuser, download_url_);
 
   base::FilePath user_data_dir =
       ExtensionsBrowserClient::Get()->GetUserDataDir();

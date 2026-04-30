@@ -107,6 +107,7 @@ class WebstoreInstaller : public ExtensionRegistryObserver,
 
  private:
   FRIEND_TEST_ALL_PREFIXES(WebstoreInstallerTest, PlatformParams);
+  FRIEND_TEST_ALL_PREFIXES(WebstoreInstallerTest, AuthUserParameterEncoding);
   friend struct content::BrowserThread::DeleteOnThread<
       content::BrowserThread::UI>;
   friend class base::DeleteHelper<WebstoreInstaller>;
@@ -114,6 +115,11 @@ class WebstoreInstaller : public ExtensionRegistryObserver,
   // Helper to get install URL.
   static GURL GetWebstoreInstallURL(const std::string& extension_id,
                                     InstallSource source);
+
+  // Appends or replaces the authuser query parameter in the URL.
+  // Exposed for testing.
+  static void MaybeAppendAuthUserParameter(const std::string& authuser,
+                                           GURL& url);
 
   // DownloadManager::DownloadUrl callback.
   void OnDownloadStarted(const std::string& extension_id,
