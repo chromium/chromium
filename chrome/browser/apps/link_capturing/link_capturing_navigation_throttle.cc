@@ -14,7 +14,6 @@
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"  // nogncheck https://crbug.com/40279225
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"  // nogncheck https://crbug.com/40279225
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_finder.h"  // nogncheck https://crbug.com/40279479
 #include "chrome/browser/ui/web_applications/navigation_capturing_process.h"  // nogncheck https://crbug.com/377760841
 #include "chrome/browser/web_applications/link_capturing_features.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
@@ -22,6 +21,7 @@
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/page_load_metrics/google/browser/google_url_util.h"
+#include "components/tabs/public/tab_interface.h"  // nogncheck https://crbug.com/40279479
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
@@ -173,10 +173,12 @@ bool LinkCapturingNavigationThrottle::MaybeCreateAndAdd(
     return false;
   }
 
-  // If there is no browser attached to this web-contents yet, this was a
+  // If this web-contents is not yet inserted into a tab strip, this was a
   // middle-mouse-click action, which should not be captured.
   // TODO(crbug.com/40279479): Find a better way to detect middle-clicks.
-  if (chrome::FindBrowserWithTab(web_contents) == nullptr) {
+  tabs::TabInterface* tab =
+      tabs::TabInterface::MaybeGetFromContents(web_contents);
+  if (!tab || !tab->GetParentCollection()) {
     return false;
   }
 
