@@ -8,6 +8,7 @@ import android.os.Build;
 
 import androidx.test.filters.MediumTest;
 
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.FixMethodOrder;
@@ -63,6 +64,10 @@ public class MostVisitedTilesPTTest {
     public static void beforeClass() {
         sSiteSuggestions =
                 NewTabPageTestUtils.createFakeSiteSuggestions(sTestServerRule.getServer());
+    }
+
+    @Before
+    public void setUp() {
         FakeMostVisitedSites mostVisitedSites = new FakeMostVisitedSites();
         mostVisitedSites.setTileSuggestions(sSiteSuggestions);
         sSuggestionsDeps.getFactory().mostVisitedSites = mostVisitedSites;
