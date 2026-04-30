@@ -9,6 +9,7 @@
 #include "base/values.h"
 #include "content/public/browser/storage_partition.h"
 #include "services/network/public/cpp/request_destination.h"
+#include "services/network/public/cpp/url_util.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
 namespace content {
@@ -16,13 +17,6 @@ namespace content {
 namespace {
 
 constexpr char kType[] = "coep";
-
-GURL StripUsernameAndPassword(const GURL& url) {
-  GURL::Replacements replacements;
-  replacements.ClearUsername();
-  replacements.ClearPassword();
-  return url.ReplaceComponents(replacements);
-}
 
 }  // namespace
 
@@ -55,7 +49,7 @@ void CrossOriginEmbedderPolicyReporter::QueueCorpViolationReport(
     const GURL& blocked_url,
     network::mojom::RequestDestination destination,
     bool report_only) {
-  GURL url_to_pass = StripUsernameAndPassword(blocked_url);
+  GURL url_to_pass = network::SerializeResponseUrlForReporting(blocked_url);
   QueueAndNotify(
       {std::make_pair("type", "corp"),
        std::make_pair("blockedURL", url_to_pass.spec()),
@@ -72,7 +66,7 @@ void CrossOriginEmbedderPolicyReporter::BindObserver(
 void CrossOriginEmbedderPolicyReporter::QueueNavigationReport(
     const GURL& blocked_url,
     bool report_only) {
-  GURL url_to_pass = StripUsernameAndPassword(blocked_url);
+  GURL url_to_pass = network::SerializeResponseUrlForReporting(blocked_url);
   QueueAndNotify({std::make_pair("type", "navigation"),
                   std::make_pair("blockedURL", url_to_pass.spec())},
                  report_only);
@@ -81,7 +75,7 @@ void CrossOriginEmbedderPolicyReporter::QueueNavigationReport(
 void CrossOriginEmbedderPolicyReporter::QueueWorkerInitializationReport(
     const GURL& blocked_url,
     bool report_only) {
-  GURL url_to_pass = StripUsernameAndPassword(blocked_url);
+  GURL url_to_pass = network::SerializeResponseUrlForReporting(blocked_url);
   QueueAndNotify({std::make_pair("type", "worker initialization"),
                   std::make_pair("blockedURL", url_to_pass.spec())},
                  report_only);

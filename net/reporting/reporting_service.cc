@@ -104,6 +104,12 @@ class ReportingServiceImpl : public ReportingService {
       return;
 
     // Strip username, password, and ref fragment from the URL.
+    //
+    // Note: This uses GURL::GetAsReferrer() which restricts the URL to
+    // http/https schemes. This is inconsistent with the Reporting API
+    // specification's "strip a URL for use in reports" algorithm
+    // (https://w3c.github.io/reporting/#strip-url-for-use-in-reports), which
+    // has no scheme restrictions (but clears credentials for fetch schemes).
     GURL sanitized_url = url.GetAsReferrer();
     if (!sanitized_url.is_valid())
       return;

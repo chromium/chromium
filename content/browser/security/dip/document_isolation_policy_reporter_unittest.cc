@@ -178,7 +178,7 @@ TEST_F(DocumentIsolationPolicyReporterTest, BasicCorp) {
   EXPECT_EQ(r1.group, "e1");
   EXPECT_EQ(r1.url, kContextUrl);
   EXPECT_EQ(r1.network_anonymization_key, kNetworkIsolationKey);
-  EXPECT_EQ(r1.body, CreateBodyForCorp("https://www1.example.com/x#foo?bar=baz",
+  EXPECT_EQ(r1.body, CreateBodyForCorp("https://www1.example.com/x",
                                        RequestDestination::kScript, "enforce"));
   EXPECT_EQ(r2.type, "dip");
   EXPECT_EQ(r2.group, "e2");
@@ -195,12 +195,14 @@ TEST_F(DocumentIsolationPolicyReporterTest, UserAndPassForCorp) {
       GetStoragePartition(), kContextUrl, "e1", "e2",
       base::UnguessableToken::Create(), net::NetworkAnonymizationKey());
 
-  reporter.QueueCorpViolationReport(GURL("https://u:p@www1.example.com/x"),
-                                    RequestDestination::kImage,
-                                    /*report_only=*/false);
-  reporter.QueueCorpViolationReport(GURL("https://u:p@www2.example.com/y"),
-                                    RequestDestination::kScript,
-                                    /*report_only=*/true);
+  reporter.QueueCorpViolationReport(
+      GURL("https://u:p@www1.example.com/x#fragment"),
+      RequestDestination::kImage,
+      /*report_only=*/false);
+  reporter.QueueCorpViolationReport(
+      GURL("https://u:p@www2.example.com/y#fragment"),
+      RequestDestination::kScript,
+      /*report_only=*/true);
 
   ASSERT_EQ(2u, network_context().reports().size());
   const Report& r1 = network_context().reports()[0];

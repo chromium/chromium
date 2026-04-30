@@ -905,6 +905,7 @@ source_set("tests") {
     "url_loader_completion_status_mojom_traits_unittest.cc",
     "url_loader_factory_builder_unittest.cc",
     "url_request_mojom_traits_unittest.cc",
+    "url_util_unittest.cc",
     "web_sandbox_flags_unittest.cc",
     "x_frame_options_parser_unittest.cc",
   ]

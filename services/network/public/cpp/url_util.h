@@ -24,6 +24,12 @@ namespace network {
 COMPONENT_EXPORT(NETWORK_CPP)
 bool IsURLHandledByNetworkService(const GURL& url);
 
+// https://fetch.spec.whatwg.org/#serialize-a-response-url-for-reporting
+// This function serializes a URL for reporting, stripping fragments,
+// usernames, and passwords.
+COMPONENT_EXPORT(NETWORK_CPP)
+GURL SerializeResponseUrlForReporting(const GURL& url);
+
 }  // namespace network
 
 #endif  // SERVICES_NETWORK_PUBLIC_CPP_URL_UTIL_H_

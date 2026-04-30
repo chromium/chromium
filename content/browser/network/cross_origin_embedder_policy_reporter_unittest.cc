@@ -233,7 +233,7 @@ TEST_F(CrossOriginEmbedderPolicyReporterTest, BasicCorp) {
   EXPECT_EQ(r1.group, "e1");
   EXPECT_EQ(r1.url, kContextUrl);
   EXPECT_EQ(r1.network_anonymization_key, kNetworkIsolationKey);
-  EXPECT_EQ(r1.body, CreateBodyForCorp("https://www1.example.com/x#foo?bar=baz",
+  EXPECT_EQ(r1.body, CreateBodyForCorp("https://www1.example.com/x",
                                        RequestDestination::kScript, "enforce"));
   EXPECT_EQ(r2.type, "coep");
   EXPECT_EQ(r2.group, "e2");
@@ -250,12 +250,14 @@ TEST_F(CrossOriginEmbedderPolicyReporterTest, UserAndPassForCorp) {
       GetStoragePartition(), kContextUrl, "e1", "e2",
       base::UnguessableToken::Create(), net::NetworkAnonymizationKey());
 
-  reporter.QueueCorpViolationReport(GURL("https://u:p@www1.example.com/x"),
-                                    RequestDestination::kImage,
-                                    /*report_only=*/false);
-  reporter.QueueCorpViolationReport(GURL("https://u:p@www2.example.com/y"),
-                                    RequestDestination::kScript,
-                                    /*report_only=*/true);
+  reporter.QueueCorpViolationReport(
+      GURL("https://u:p@www1.example.com/x#fragment"),
+      RequestDestination::kImage,
+      /*report_only=*/false);
+  reporter.QueueCorpViolationReport(
+      GURL("https://u:p@www2.example.com/y#fragment"),
+      RequestDestination::kScript,
+      /*report_only=*/true);
 
   ASSERT_EQ(2u, network_context().reports().size());
   const Report& r1 = network_context().reports()[0];
@@ -375,8 +377,8 @@ TEST_F(CrossOriginEmbedderPolicyReporterTest, BasicNavigation) {
   EXPECT_EQ(r1.type, "coep");
   EXPECT_EQ(r1.group, "e1");
   EXPECT_EQ(r1.url, kContextUrl);
-  EXPECT_EQ(r1.body, CreateBodyForNavigation(
-                         "https://www1.example.com/x#foo?bar=baz", "enforce"));
+  EXPECT_EQ(r1.body,
+            CreateBodyForNavigation("https://www1.example.com/x", "enforce"));
   EXPECT_EQ(r2.type, "coep");
   EXPECT_EQ(r2.group, "e2");
   EXPECT_EQ(r2.url, kContextUrl);
@@ -406,8 +408,8 @@ TEST_F(CrossOriginEmbedderPolicyReporterTest, ObserverForNavigation) {
   EXPECT_EQ(r1.type, "coep");
   EXPECT_EQ(r1.url, kContextUrl);
   EXPECT_TRUE(mojo::Equals(
-      r1.body, CreateMojomBodyForNavigation(
-                   "https://www1.example.com/x#foo?bar=baz", "enforce")));
+      r1.body,
+      CreateMojomBodyForNavigation("https://www1.example.com/x", "enforce")));
   EXPECT_EQ(r2.type, "coep");
   EXPECT_EQ(r2.url, kContextUrl);
   EXPECT_TRUE(
@@ -420,10 +422,12 @@ TEST_F(CrossOriginEmbedderPolicyReporterTest, UserAndPassForNavigation) {
   CrossOriginEmbedderPolicyReporter reporter(
       GetStoragePartition(), kContextUrl, "e1", "e2",
       base::UnguessableToken::Create(), net::NetworkAnonymizationKey());
-  reporter.QueueNavigationReport(GURL("https://u:p@www1.example.com/x"),
-                                 /*report_only=*/false);
-  reporter.QueueNavigationReport(GURL("https://u:p@www2.example.com/y"),
-                                 /*report_only=*/true);
+  reporter.QueueNavigationReport(
+      GURL("https://u:p@www1.example.com/x#fragment"),
+      /*report_only=*/false);
+  reporter.QueueNavigationReport(
+      GURL("https://u:p@www2.example.com/y#fragment"),
+      /*report_only=*/true);
 
   ASSERT_EQ(2u, network_context().reports().size());
   const Report& r1 = network_context().reports()[0];
@@ -510,9 +514,9 @@ TEST_F(CrossOriginEmbedderPolicyReporterTest, ObserverForWorkerInitialization) {
 
   EXPECT_EQ(r1.type, "coep");
   EXPECT_EQ(r1.url, kContextUrl);
-  EXPECT_TRUE(mojo::Equals(
-      r1.body, CreateMojomBodyForWorkerInitialization(
-                   "https://www1.example.com/x.js#foo?bar=baz", "enforce")));
+  EXPECT_TRUE(
+      mojo::Equals(r1.body, CreateMojomBodyForWorkerInitialization(
+                                "https://www1.example.com/x.js", "enforce")));
   EXPECT_EQ(r2.type, "coep");
   EXPECT_EQ(r2.url, kContextUrl);
   EXPECT_TRUE(mojo::Equals(
@@ -527,10 +531,10 @@ TEST_F(CrossOriginEmbedderPolicyReporterTest,
       GetStoragePartition(), kContextUrl, "e1", "e2",
       base::UnguessableToken::Create(), net::NetworkAnonymizationKey());
   reporter.QueueWorkerInitializationReport(
-      GURL("https://u:p@www1.example.com/x.js"),
+      GURL("https://u:p@www1.example.com/x.js#fragment"),
       /*report_only=*/false);
   reporter.QueueWorkerInitializationReport(
-      GURL("https://u:p@www2.example.com/y.js"),
+      GURL("https://u:p@www2.example.com/y.js#fragment"),
       /*report_only=*/true);
 
   ASSERT_EQ(2u, network_context().reports().size());

@@ -9,6 +9,7 @@
 #include "base/values.h"
 #include "content/public/browser/storage_partition.h"
 #include "services/network/public/cpp/request_destination.h"
+#include "services/network/public/cpp/url_util.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
 namespace content {
@@ -16,13 +17,6 @@ namespace content {
 namespace {
 
 constexpr char kType[] = "dip";
-
-GURL StripUsernameAndPassword(const GURL& url) {
-  GURL::Replacements replacements;
-  replacements.ClearUsername();
-  replacements.ClearPassword();
-  return url.ReplaceComponents(replacements);
-}
 
 }  // namespace
 
@@ -49,7 +43,7 @@ void DocumentIsolationPolicyReporter::QueueCorpViolationReport(
     const GURL& blocked_url,
     network::mojom::RequestDestination destination,
     bool report_only) {
-  GURL url_to_pass = StripUsernameAndPassword(blocked_url);
+  GURL url_to_pass = network::SerializeResponseUrlForReporting(blocked_url);
   QueueAndNotify(
       {{"type", "corp"},
        {"blockedURL", url_to_pass.spec()},
