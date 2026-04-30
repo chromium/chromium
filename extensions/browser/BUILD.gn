@@ -741,7 +741,10 @@ source_set("browser_sources") {
       ]
 
       if (!is_android) {
-        deps += [ "//extensions/browser/mime_handler:stream_container" ]
+        deps += [
+          "//extensions/browser/mime_handler:mime_handler_page",
+          "//extensions/browser/mime_handler:stream_container",
+        ]
       }
     }
     sources += [

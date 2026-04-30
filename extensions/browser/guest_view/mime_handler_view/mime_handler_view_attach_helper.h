@@ -36,14 +36,6 @@ class MimeHandlerViewAttachHelper : content::RenderProcessHostObserver {
   // Returns the unique helper for process identified with `render_process_id`.
   static MimeHandlerViewAttachHelper* Get(int render_process_id);
 
-  // Creates and returns a template HTML page containing an embed for a MIME
-  // handler. The MIME handler is expected to use this embed to load the MIME
-  // extension. `internal_id` is assigned to the embed.
-  static std::string CreateTemplateMimeHandlerPage(
-      const GURL& resource_url,
-      const std::string& mime_type,
-      const std::string& internal_id);
-
   // Called on IO thread to override the response body for frame-based
   // MimeHandlerView. The resulting payload will be populated with a template
   // HTML page which appends a child frame to the frame associated with

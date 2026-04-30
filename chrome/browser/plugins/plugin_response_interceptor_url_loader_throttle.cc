@@ -19,6 +19,7 @@
 #include "content/public/browser/download_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_attach_helper.h"
+#include "extensions/browser/mime_handler/mime_handler_page.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -162,9 +163,8 @@ void PluginResponseInterceptorURLLoaderThrottle::WillProcessResponse(
 #endif
   if (is_for_oopif_pdf) {
     // For the PDF viewer, set the payload without creating a MimeHandlerView.
-    payload =
-        extensions::MimeHandlerViewAttachHelper::CreateTemplateMimeHandlerPage(
-            response_url, response_head->mime_type, internal_id);
+    payload = extensions::CreateTemplateMimeHandlerPage(
+        response_url, response_head->mime_type, internal_id);
   } else {
     // The resource is handled by frame-based MimeHandlerView, so let the
     // MimeHandlerView code set the payload.
