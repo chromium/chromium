@@ -169,7 +169,7 @@ base::android::ScopedJavaLocalRef<jintArray> ContextManagerGL::Draw(
 }
 
 void ContextManagerGL::DoCreateContext(JNIEnv* env, int width, int height) {
-  fake_hwui_context_.CreateContext(native_window_.a_native_window());
+  fake_hwui_context_.CreateWindowContext(native_window_.a_native_window());
 }
 
 void ContextManagerGL::DestroyContext() {

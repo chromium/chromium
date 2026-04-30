@@ -25,25 +25,35 @@ FakeHWUIGLContext::~FakeHWUIGLContext() {
   }
 }
 
-void FakeHWUIGLContext::CreateContext(ANativeWindow* a_native_window) {
-  {
-    std::vector<EGLint> egl_window_attributes;
-    egl_window_attributes.push_back(EGL_NONE);
-    gl_surface_ = eglCreateWindowSurfaceFn(
-        GetDisplay(), GetConfig(), a_native_window, &egl_window_attributes[0]);
-    CHECK(gl_surface_);
-  }
+void FakeHWUIGLContext::CreateOffscreenContext(int width, int height) {
+  std::vector<EGLint> egl_surface_attributes = {EGL_WIDTH, width, EGL_HEIGHT,
+                                                height, EGL_NONE};
+  gl_surface_ = eglCreatePbufferSurfaceFn(GetDisplay(), GetConfig(),
+                                          &egl_surface_attributes[0]);
+  CHECK(gl_surface_);
 
-  {
-    std::vector<EGLint> context_attributes = {EGL_CONTEXT_CLIENT_VERSION, 3,
-                                              EGL_NONE};
+  CreateContextImpl();
+}
 
-    CHECK(eglBindAPIFn(EGL_OPENGL_ES_API));
+void FakeHWUIGLContext::CreateWindowContext(ANativeWindow* a_native_window) {
+  std::vector<EGLint> egl_window_attributes;
+  egl_window_attributes.push_back(EGL_NONE);
+  gl_surface_ = eglCreateWindowSurfaceFn(
+      GetDisplay(), GetConfig(), a_native_window, &egl_window_attributes[0]);
+  CHECK(gl_surface_);
 
-    gl_context_ = eglCreateContextFn(GetDisplay(), GetConfig(), nullptr,
-                                     context_attributes.data());
-    CHECK(gl_context_);
-  }
+  CreateContextImpl();
+}
+
+void FakeHWUIGLContext::CreateContextImpl() {
+  std::vector<EGLint> context_attributes = {EGL_CONTEXT_CLIENT_VERSION, 3,
+                                            EGL_NONE};
+
+  CHECK(eglBindAPIFn(EGL_OPENGL_ES_API));
+
+  gl_context_ = eglCreateContextFn(GetDisplay(), GetConfig(), nullptr,
+                                   context_attributes.data());
+  CHECK(gl_context_);
 }
 
 void FakeHWUIGLContext::DestroyContext() {
@@ -103,6 +113,7 @@ void FakeHWUIGLContext::InitializeGLBindings() {
   AssignProc(eglCreateContextFn, "eglCreateContext");
   AssignProc(eglDestroyContextFn, "eglDestroyContext");
   AssignProc(eglCreateWindowSurfaceFn, "eglCreateWindowSurface");
+  AssignProc(eglCreatePbufferSurfaceFn, "eglCreatePbufferSurface");
   AssignProc(eglDestroySurfaceFn, "eglDestroySurface");
   AssignProc(glReadPixelsFn, "glReadPixels");
 }

@@ -13,39 +13,11 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
-#include "ui/gl/gl_bindings.h"
-#include "ui/gl/gl_utils.h"
-#include "ui/gl/init/gl_factory.h"
 
 namespace android_webview {
 namespace {
 std::unique_ptr<base::Thread> g_render_thread;
 }
-
-class FakeWindow::ScopedMakeCurrent {
- public:
-  ScopedMakeCurrent(FakeWindow* view_root) : view_root_(view_root) {
-    DCHECK(!view_root_->context_current_);
-    view_root_->context_current_ = true;
-    bool result = view_root_->context_->MakeCurrent(view_root_->surface_.get());
-    DCHECK(result);
-  }
-
-  ~ScopedMakeCurrent() {
-    DCHECK(view_root_->context_current_);
-    view_root_->context_current_ = false;
-
-    // Release the underlying EGLContext. This is required because the real
-    // GLContextEGL may no longer be current here and to satisfy DCHECK in
-    // GLContextEGL::IsCurrent.
-    eglMakeCurrent(view_root_->surface_->GetGLDisplay()->GetDisplay(),
-                   EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
-    view_root_->context_->ReleaseCurrent(view_root_->surface_.get());
-  }
-
- private:
-  raw_ptr<FakeWindow> view_root_;
-};
 
 FakeWindow::FakeWindow(BrowserViewRenderer* view,
                        WindowHooks* hooks,
@@ -54,8 +26,7 @@ FakeWindow::FakeWindow(BrowserViewRenderer* view,
       hooks_(hooks),
       surface_size_(100, 100),
       location_(location),
-      on_draw_hardware_pending_(false),
-      context_current_(false) {
+      on_draw_hardware_pending_(false) {
   CheckCurrentlyOnUIThread();
   DCHECK(view_);
   view_->OnAttachedToWindow(location_.width(), location_.height());
@@ -100,7 +71,7 @@ void FakeWindow::RequestInvokeGL(FakeFunctor* functor,
 void FakeWindow::InvokeFunctorOnRT(FakeFunctor* functor,
                                    base::WaitableEvent* sync) {
   CheckCurrentlyOnRT();
-  ScopedMakeCurrent make_current(this);
+  hwui_gl_context_.MakeCurrent();
   functor->Invoke(hooks_);
   if (sync)
     sync->Signal();
@@ -156,7 +127,7 @@ void FakeWindow::ProcessSyncOnRT(FakeFunctor* functor,
 
 void FakeWindow::ProcessDrawOnRT(FakeFunctor* functor) {
   CheckCurrentlyOnRT();
-  ScopedMakeCurrent make_current(this);
+  hwui_gl_context_.MakeCurrent();
   functor->Draw(hooks_);
 }
 
@@ -196,22 +167,15 @@ void FakeWindow::CreateRenderThreadIfNeeded() {
 
 void FakeWindow::InitializeOnRT(base::WaitableEvent* sync) {
   CheckCurrentlyOnRT();
-  surface_ = gl::init::CreateOffscreenGLSurface(gl::GetDefaultDisplayEGL(),
-                                                surface_size_);
-  DCHECK(surface_);
-  DCHECK(surface_->GetHandle());
-  context_ = gl::init::CreateGLContext(nullptr, surface_.get(),
-                                       gl::GLContextAttribs());
-  DCHECK(context_);
+  hwui_gl_context_.CreateOffscreenContext(surface_size_.width(),
+                                          surface_size_.height());
   sync->Signal();
 }
 
 void FakeWindow::DestroyOnRT(base::WaitableEvent* sync) {
   CheckCurrentlyOnRT();
-  if (context_) {
-    DCHECK(!context_->IsCurrent(surface_.get()));
-    context_ = nullptr;
-    surface_ = nullptr;
+  if (hwui_gl_context_.HaveContext()) {
+    hwui_gl_context_.DestroyContext();
   }
   sync->Signal();
 }

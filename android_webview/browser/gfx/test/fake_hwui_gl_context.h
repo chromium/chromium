@@ -24,7 +24,8 @@ class FakeHWUIGLContext {
 
   ~FakeHWUIGLContext();
 
-  void CreateContext(ANativeWindow* a_native_window);
+  void CreateWindowContext(ANativeWindow* a_native_window);
+  void CreateOffscreenContext(int width, int height);
   void DestroyContext();
   bool HaveContext();
   void MakeCurrent();
@@ -52,6 +53,10 @@ class FakeHWUIGLContext {
       EGLConfig config,
       EGLNativeWindowType win,
       const EGLint* attrib_list);
+  typedef EGLSurface(EGLAPIENTRYP PFNEGLCREATEPBUFFERSURFACEPROC)(
+      EGLDisplay dpy,
+      EGLConfig config,
+      const EGLint* attrib_list);
   typedef EGLBoolean(EGLAPIENTRYP PFNEGLDESTROYCONTEXTPROC)(EGLDisplay dpy,
                                                             EGLContext ctx);
   typedef EGLBoolean(EGLAPIENTRYP PFNEGLDESTROYSURFACEPROC)(EGLDisplay dpy,
@@ -77,7 +82,7 @@ class FakeHWUIGLContext {
   void InitializeGLBindings();
   EGLDisplay GetDisplay();
   EGLConfig GetConfig();
-  int rgbaToArgb(GLubyte* bytes);
+  void CreateContextImpl();
 
   PFNEGLGETPROCADDRESSPROC eglGetProcAddressFn = nullptr;
   PFNEGLBINDAPIPROC eglBindAPIFn = nullptr;
@@ -89,6 +94,7 @@ class FakeHWUIGLContext {
   PFNEGLCREATECONTEXTPROC eglCreateContextFn = nullptr;
   PFNEGLDESTROYCONTEXTPROC eglDestroyContextFn = nullptr;
   PFNEGLCREATEWINDOWSURFACEPROC eglCreateWindowSurfaceFn = nullptr;
+  PFNEGLCREATEPBUFFERSURFACEPROC eglCreatePbufferSurfaceFn = nullptr;
   PFNEGLDESTROYSURFACEPROC eglDestroySurfaceFn = nullptr;
   PFNGLREADPIXELSPROC glReadPixelsFn = nullptr;
 

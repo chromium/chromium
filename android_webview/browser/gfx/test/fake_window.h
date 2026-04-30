@@ -8,13 +8,12 @@
 #include <map>
 
 #include "android_webview/browser/gfx/hardware_renderer.h"
+#include "android_webview/browser/gfx/test/fake_hwui_gl_context.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/single_thread_task_runner.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gl/gl_context.h"
-#include "ui/gl/gl_surface.h"
 
 namespace base {
 class WaitableEvent;
@@ -93,9 +92,7 @@ class FakeWindow {
   // Render thread members.
   SEQUENCE_CHECKER(rt_checker_);
   scoped_refptr<base::SingleThreadTaskRunner> render_thread_loop_;
-  scoped_refptr<gl::GLSurface> surface_;
-  scoped_refptr<gl::GLContext> context_;
-  bool context_current_ = false;
+  FakeHWUIGLContext hwui_gl_context_;
 
   base::WeakPtrFactory<FakeWindow> weak_ptr_factory_{this};
 };

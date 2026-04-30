@@ -10,6 +10,7 @@
 #include "android_webview/browser/gfx/root_frame_sink_proxy.h"
 #include "android_webview/browser/gfx/scoped_app_gl_state_restore.h"
 #include "android_webview/browser/gfx/task_queue_webview.h"
+#include "android_webview/browser/gfx/test/fake_hwui_gl_context.h"
 #include "android_webview/browser/gfx/viz_compositor_thread_runner_webview.h"
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
@@ -326,15 +327,10 @@ class InvalidateTest
     // explicitly.
     render_thread_manager_ = std::make_unique<RenderThreadManager>(
         base::SingleThreadTaskRunner::GetCurrentDefault());
-    surface_ = gl::init::CreateOffscreenGLSurface(gl::GetDefaultDisplayEGL(),
-                                                  gfx::Size(100, 100));
-    DCHECK(surface_);
-    DCHECK(surface_->GetHandle());
-    context_ = gl::init::CreateGLContext(nullptr, surface_.get(),
-                                         gl::GLContextAttribs());
-    DCHECK(context_);
 
-    context_->MakeCurrent(surface_.get());
+    gl_context_.CreateOffscreenContext(100, 100);
+    gl_context_.MakeCurrent();
+
     render_thread_manager_->SetRootFrameSinkGetterForTesting(
         root_frame_sink_proxy_->GetRootFrameSinkCallback());
   }
@@ -646,8 +642,7 @@ class InvalidateTest
   std::unique_ptr<RootFrameSinkProxy> root_frame_sink_proxy_;
 
   std::unique_ptr<RenderThreadManager> render_thread_manager_;
-  scoped_refptr<gl::GLSurface> surface_;
-  scoped_refptr<gl::GLContext> context_;
+  FakeHWUIGLContext gl_context_;
 
   std::unique_ptr<VizClient> client_;
   viz::ParentLocalSurfaceIdAllocator root_local_surface_id_allocator_;

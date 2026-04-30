@@ -792,6 +792,7 @@ test("android_webview_unittests") {
     ":android_webview_unittests_assets",
     ":android_webview_unittests_java",
     ":android_webview_unittests_jni",
+    ":test_support",
     "//android_webview/browser",
     "//android_webview/browser/gfx",
     "//android_webview/browser/lifecycle",
