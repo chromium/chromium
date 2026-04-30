@@ -14677,6 +14677,10 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         desc="Text shown as needed while the speech recognition service is transcribing the user's voice input.">
         Transcribing...
       </message>
+      <message name="IDS_FUSEBOX_VOICE_SEARCH_STOP_TITLE"
+        desc="Accessibility text shown for the stop button's title.">
+        Stop
+      </message>
 
       <if expr="not use_titlecase">
         <message name="IDS_NEW_TAB_APP_OPTIONS"
