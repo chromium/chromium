@@ -3594,6 +3594,12 @@ deps = {
       'condition': 'checkout_src_internal',
   },
 
+  'src/chrome/browser/resources/webui_toolbar/internal': {
+      'url': Var('chrome_git') + '/chrome/browser/resources/webui_toolbar/internal.git' + '@' +
+        '954b77c6600807ee3118061397416bc647575c63',
+      'condition': 'checkout_src_internal',
+  },
+
   'src/chrome/browser/spellchecker/internal': {
       'url': Var('chrome_git') + '/chrome/spellchecker/internal.git' + '@' +
         'a22002a5b3cf7c6b872b25712af97a5664a350e2', # from svn revision 24388

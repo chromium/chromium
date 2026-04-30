@@ -687,6 +687,10 @@
 	path = chrome/browser/resources/webui_browser/internal
 	url = https://chrome-internal.googlesource.com/chrome/browser/resources/webui_browser/internal
 	gclient-condition = checkout_src_internal
+[submodule "chrome/browser/resources/webui_toolbar/internal"]
+	path = chrome/browser/resources/webui_toolbar/internal
+	url = https://chrome-internal.googlesource.com/chrome/browser/resources/webui_toolbar/internal
+	gclient-condition = checkout_src_internal
 [submodule "chrome/browser/spellchecker/internal"]
 	path = chrome/browser/spellchecker/internal
 	url = https://chrome-internal.googlesource.com/chrome/spellchecker/internal
