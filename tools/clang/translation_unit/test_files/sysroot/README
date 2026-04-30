@@ -1,0 +1,19 @@
+Clang looks for the presence of crtbegin.o to decide whether to add GCC standard
+C++ library directories to the system header lookup path.
+
+The presence of usr/lib/gcc/x86_64-linux-gnu/4.6/crtbegin.o and
+usr/include/c++/4.6 inside this sysroot will cause clang to add the following
+directories to the path:
+  - $SYSROOT/usr/lib/gcc/x86_64-linux-gnu/4.6/../../../../include/c++/4.6
+  - $SYSROOT/usr/lib/gcc/x86_64-linux-gnu/4.6/../../../../include/x86_64-linux-gnu/c++/4.6
+  - $SYSROOT/usr/lib/gcc/x86_64-linux-gnu/4.6/../../../../include/x86_64-unknown-linux-gnu/c++/4.6
+  - $SYSROOT/usr/lib/gcc/x86_64-linux-gnu/4.6/../../../../include/c++/4.6/backward
+
+As well as the standard paths:
+  - $SYSROOT/usr/local/include
+  - $SYSROOT/include
+  - $SYSROOT/usr/include
+
+See clang's lib/Driver/ToolChains.cpp:
+  - FilterNonExistent: checks for crtbegin.o
+  - Linux::AddClangCXXStdlibIncludeArgs: looks for various c++ directories
