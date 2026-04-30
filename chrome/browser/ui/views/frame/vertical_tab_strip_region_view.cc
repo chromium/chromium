@@ -1195,6 +1195,15 @@ void VerticalTabStripRegionView::UpdateExpandOnHoverState(
     return;
   }
 
+  // If a tab is being dragged, then we should enter the expand on hover state
+  // and stay there.
+  if (keep_expanded_lock_count_ > 0) {
+    if (!is_expanded_on_hover_) {
+      AnimateExpandOnHover(/*expand=*/true);
+    }
+    return;
+  }
+
   // If the window becomes inactive, then we should not enter the expand on
   // hover state or exit it if already expanded. We evaluate this after the
   // locks because IsFrameActive can also return false when a WebUI bubble is
@@ -1375,10 +1384,19 @@ void VerticalTabStripRegionView::RegisterExpandOnHoverLock(
     VerticalTabStripExpandOnHoverLock* lock) {
   hover_locks_.insert(lock);
   ExpandOnHoverLockType lock_type = lock->lock_type();
-  if (lock_type == ExpandOnHoverLockType::kForceCollapse) {
-    force_collapse_lock_count_++;
-  } else if (lock_type == ExpandOnHoverLockType::kKeepCurrentState) {
-    keep_current_state_lock_count_++;
+  switch (lock_type) {
+    case ExpandOnHoverLockType::kForceCollapse: {
+      force_collapse_lock_count_++;
+      break;
+    }
+    case ExpandOnHoverLockType::kKeepCurrentState: {
+      keep_current_state_lock_count_++;
+      break;
+    }
+    case ExpandOnHoverLockType::kKeepExpanded: {
+      keep_expanded_lock_count_++;
+      break;
+    }
   }
   UpdateExpandOnHoverState();
 }
@@ -1387,17 +1405,30 @@ void VerticalTabStripRegionView::UnregisterExpandOnHoverLock(
     VerticalTabStripExpandOnHoverLock* lock) {
   hover_locks_.erase(lock);
   ExpandOnHoverLockType lock_type = lock->lock_type();
-  if (lock_type == ExpandOnHoverLockType::kForceCollapse) {
-    CHECK_GT(force_collapse_lock_count_, 0);
-    force_collapse_lock_count_--;
-    if (force_collapse_lock_count_ == 0) {
-      UpdateExpandOnHoverState();
+  switch (lock_type) {
+    case ExpandOnHoverLockType::kForceCollapse: {
+      CHECK_GT(force_collapse_lock_count_, 0);
+      force_collapse_lock_count_--;
+      if (force_collapse_lock_count_ == 0) {
+        UpdateExpandOnHoverState();
+      }
+      break;
     }
-  } else if (lock_type == ExpandOnHoverLockType::kKeepCurrentState) {
-    CHECK_GT(keep_current_state_lock_count_, 0);
-    keep_current_state_lock_count_--;
-    if (keep_current_state_lock_count_ == 0) {
-      UpdateExpandOnHoverState();
+    case ExpandOnHoverLockType::kKeepCurrentState: {
+      CHECK_GT(keep_current_state_lock_count_, 0);
+      keep_current_state_lock_count_--;
+      if (keep_current_state_lock_count_ == 0) {
+        UpdateExpandOnHoverState();
+      }
+      break;
+    }
+    case ExpandOnHoverLockType::kKeepExpanded: {
+      CHECK_GT(keep_expanded_lock_count_, 0);
+      keep_expanded_lock_count_--;
+      if (keep_expanded_lock_count_ == 0) {
+        UpdateExpandOnHoverState();
+      }
+      break;
     }
   }
 }

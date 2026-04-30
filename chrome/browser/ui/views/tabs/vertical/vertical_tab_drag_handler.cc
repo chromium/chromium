@@ -677,6 +677,14 @@ void VerticalTabDragHandlerImpl::DestroyDragController() {
 
 void VerticalTabDragHandlerImpl::StartedDragging(
     const std::vector<TabSlotView*>& views) {
+  if (gfx::NativeWindow source_window = GetWidget()->GetNativeWindow()) {
+    const BrowserView* browser_view =
+        BrowserView::GetBrowserViewForNativeWindow(source_window);
+    expand_on_hover_lock_ =
+        browser_view->tab_strip_view()->GetExpandOnHoverLock(
+            ExpandOnHoverLockType::kKeepExpanded);
+  }
+
   CHECK(drag_controller_);
   auto* source_dragged_view = ViewFromTabSlot(drag_controller_->GetSessionData()
                                                   .source_view_drag_data()
@@ -706,9 +714,13 @@ void VerticalTabDragHandlerImpl::StartedDragging(
   }
 }
 
-void VerticalTabDragHandlerImpl::DraggedTabsDetached() {}
+void VerticalTabDragHandlerImpl::DraggedTabsDetached() {
+  expand_on_hover_lock_.reset();
+}
 
 void VerticalTabDragHandlerImpl::StoppedDragging() {
+  expand_on_hover_lock_.reset();
+
   for (auto& [_, slot_view] : slot_views_) {
     views::View* dragged_view = ViewFromTabSlot(slot_view);
     CHECK(dragged_view);

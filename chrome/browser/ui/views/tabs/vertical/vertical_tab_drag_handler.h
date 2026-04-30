@@ -27,6 +27,7 @@
 class TabCollectionNode;
 class TabStripModel;
 class VerticalTabLinkDropHandler;
+class ExpandOnHoverLock;
 
 enum class DragPositionHint {
   kBefore,  // The drag is before the drag target.
@@ -224,6 +225,8 @@ class VerticalTabDragHandlerImpl : public VerticalTabDragHandler,
 
   // Null if this handler is not managing a dragging session.
   std::unique_ptr<TabDragController> drag_controller_ = nullptr;
+
+  std::unique_ptr<ExpandOnHoverLock> expand_on_hover_lock_;
 
   // A mapping from nodes to their `TabSlotView`, used for compatibility
   // with the core dragging system.

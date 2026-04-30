@@ -1129,6 +1129,27 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
 }
 
 IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
+                       KeepExpandedLockTriggersExpandOnHover) {
+  // Set up collapsed vertical tab strip with expand on hover enabled.
+  VerticalTabStripRegionView* view = region_view();
+  state_controller()->SetExpandOnHoverEnabled(true);
+  state_controller()->RequestCollapse(true);
+
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return state_controller()->IsCollapsed(); }));
+
+  EXPECT_FALSE(view->is_expanded_on_hover());
+
+  // Acquire a `kKeepExpanded` lock while the strip is collapsed.
+  auto keep_expanded_lock =
+      view->GetExpandOnHoverLock(ExpandOnHoverLockType::kKeepExpanded);
+
+  // Verify that expand on hover is triggered.
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return view->is_expanded_on_hover(); }));
+}
+
+IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
                        ExpandOnHoverEnabledChanged) {
   // Fully collapse the tabstrip.
   state_controller()->RequestCollapse(true);

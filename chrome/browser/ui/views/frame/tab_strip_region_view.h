@@ -33,7 +33,13 @@ class ExpandOnHoverLock {
 // `kKeepCurrentState` should be used when the user is interacting with a bubble
 // or context menu so that their interaction with the tab strip is not
 // interrupted.
-enum class ExpandOnHoverLockType { kForceCollapse, kKeepCurrentState };
+// `kKeepExpanded` should be used when the tab strip should be forced to be
+// expanded and not allowed to collapse.
+enum class ExpandOnHoverLockType {
+  kForceCollapse,
+  kKeepCurrentState,
+  kKeepExpanded
+};
 
 // This class serves as the single point of interaction for all consumers of
 // tabstrip-related functionality. This should only be owned by BrowserView and
