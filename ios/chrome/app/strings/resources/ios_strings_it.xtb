@@ -15,7 +15,7 @@
 <translation id="1041322626941363065">Ricevi un avviso se le password vengono esposte a causa di una violazione dei dati</translation>
 <translation id="104491362976654916">Pagina offline</translation>
 <translation id="1046742265332833834">Tema blu</translation>
-<translation id="1049743911850919806">In incognito</translation>
+<translation id="1049743911850919806">Incognito</translation>
 <translation id="1053651653201045802">Account disconnesso. Accedi di nuovo per avere preferiti, password e altro nel tuo account.</translation>
 <translation id="1054745118061919935">Se continui, accetti i <ph name="BEGIN_LINK" />Termini di servizio<ph name="END_LINK" />.</translation>
 <translation id="10614374240317010">Mai salvate</translation>
@@ -239,7 +239,7 @@
 <translation id="1810976980198522421">Annulla</translation>
 <translation id="1815941218935345331">Passcode</translation>
 <translation id="1818687879307252150">{count,plural, =0{Nessuna password compromessa}=1{{count} password compromessa}other{{count} password compromesse}}</translation>
-<translation id="1819374301217551116">Monitoraggio dei prezzi e approfondimenti</translation>
+<translation id="1819374301217551116">Monitoraggio dei prezzi e insight</translation>
 <translation id="1820195936249950412">Accedi con un account valido</translation>
 <translation id="1820259098641718022">Aggiunta all'elenco di lettura</translation>
 <translation id="1823768272150895732">Carattere</translation>

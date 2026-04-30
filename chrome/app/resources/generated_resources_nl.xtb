@@ -2452,7 +2452,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2665056444046933274">Sites kunnen deze functie gebruiken om toegang te krijgen tot andere apps en services op dit apparaat</translation>
 <translation id="2665394472441560184">Een nieuw woord toevoegen</translation>
 <translation id="2665647207431876759">Verlopen</translation>
-<translation id="2665919335226618153">Asjemenou! Er is iets misgegaan bij het formatteren.</translation>
+<translation id="2665919335226618153">Oeps! Er is iets misgegaan bij het formatteren.</translation>
 <translation id="2666247341166669829">Batterijniveau links: <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">Andere apps zijn ingesteld om dezelfde links te openen als <ph name="APP_NAME" />. Hiermee zet je uit dat <ph name="APP_NAME_2" /> en <ph name="APP_NAME_3" /> ondersteunde links openen.</translation>
 <translation id="2667463864537187133">Spellingcontrole beheren</translation>
@@ -8739,7 +8739,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7082568314107259011"><ph name="NETWORK_NAME" /> wordt beheerd door je beheerder</translation>
 <translation id="7082850163410901674">Meldingen staan uit in de Mac-systeeminstellingen</translation>
 <translation id="7083729794572207131">Sites vragen meestal of ze web-apps mogen installeren om de functionaliteit op de site te verbeteren</translation>
-<translation id="7084095352418993433">Google vragen stellen over deze pagina: <ph name="PAGE_TITLE" /></translation>
+<translation id="7084095352418993433">Vraag Google iets over deze pagina: <ph name="PAGE_TITLE" /></translation>
 <translation id="708550780726587276">(niet ingesteld)</translation>
 <translation id="7086377898680121060">helderheid omhoog</translation>
 <translation id="7086672505018440886">Chrome-logbestanden opnemen in het archief.</translation>
@@ -9240,7 +9240,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7434509671034404296">Ontwikkelaar</translation>
 <translation id="7434757724413878233">Muisversnelling</translation>
 <translation id="7434969625063495310">Kan de printerserver niet toevoegen. Controleer de configuratie van de server en probeer het opnieuw.</translation>
-<translation id="7436921188514130341">Asjemenou! Er is iets misgegaan bij het veranderen van de naam.</translation>
+<translation id="7436921188514130341">Oeps! Er is iets misgegaan bij het veranderen van de naam.</translation>
 <translation id="7439519621174723623">Voeg een apparaatnaam toe om door te gaan</translation>
 <translation id="743982235360757672">Houd de AI-modus bij de hand terwijl je browst</translation>
 <translation id="7441736532026945583">Selecteer Groep verbergen om de groep uit je tabbladstrook te verwijderen</translation>
@@ -9461,7 +9461,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7602079150116086782">Geen tabbladen van andere apparaten</translation>
 <translation id="7602173054665172958">Afdrukbeheer</translation>
 <translation id="7602805861133750578">Je kunt nu je tabbladgroepen, Gemini-chats en AI-modusgesprekken op één plek beheren. Je kunt dit altijd losmaken.</translation>
-<translation id="7602868996817972616">Google vragen over deze pagina</translation>
+<translation id="7602868996817972616">Vraag Google iets over deze pagina</translation>
 <translation id="7603785829538808504">De hieronder vermelde sites volgen een aangepaste instelling</translation>
 <translation id="7604543761927773395">{NUM_PASSWORDS,plural, =1{1 wachtwoord niet geïmporteerd}other{{NUM_PASSWORDS} wachtwoorden niet geïmporteerd}}</translation>
 <translation id="7605163396341021431">Geef Android-apps controle over USB-apparaten op deze Chromebook</translation>

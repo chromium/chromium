@@ -3370,7 +3370,7 @@
 <translation id="3312470654018965389">正在配置 Linux 容器</translation>
 <translation id="3312883087018430408">若要在某一特定网站或 Chrome 的某个部分中进行搜索，请先在地址栏中输入相应的快捷字词，然后按您的首选键盘快捷键。例如，若要仅在“书签”部分中进行搜索，请先输入“@bookmarks”，然后按 Tab 键或空格键。</translation>
 <translation id="3313622045786997898">证书签名值</translation>
-<translation id="3314239811356311272">并打开书签管理器</translation>
+<translation id="3314239811356311272">打开书签管理器(&amp;O)</translation>
 <translation id="3315158641124845231">隐藏<ph name="PRODUCT_NAME" /></translation>
 <translation id="3317459757438853210">双面</translation>
 <translation id="3317678681329786349">已禁止使用摄像头和麦克风</translation>
@@ -6315,7 +6315,7 @@
 <translation id="5377367976106153749">开启摄像头使用权限？</translation>
 <translation id="5379140238605961210">继续禁止使用麦克风</translation>
 <translation id="5382591305415226340">管理支持的链接</translation>
-<translation id="5384401776498845256">哪些对象可与您分享内容</translation>
+<translation id="5384401776498845256">谁能与您分享内容</translation>
 <translation id="5385628342687007304">这个密码仅会保存到此设备上。若要在其他设备上使用该密码，请将它保存到您的 Google 账号。</translation>
 <translation id="5387116558048951800">修改<ph name="CREDENTIAL_TYPE" /></translation>
 <translation id="538822246583124912">企业政策已更改。实验按钮已添加到工具栏。点击此按钮即可打开对话框以启用实验。</translation>
@@ -7676,7 +7676,7 @@
 <translation id="6345878117466430440">标记为已读</translation>
 <translation id="6346952829206698721">从剪贴板中粘贴</translation>
 <translation id="6347010704471250799">显示通知</translation>
-<translation id="634792071306410644">您需要将您的设备设为可见，其他人才能与您分享内容</translation>
+<translation id="634792071306410644">您需要将设备设为可见，其他人才能与您分享内容</translation>
 <translation id="6348252528297699679">您可依次前往“设置”&gt;“隐私和安全”&gt;“隐私控制”&gt;“位置信息使用权”，关闭位置信息服务。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="6348655410494610085">使用现有 Google 账号或创建新账号</translation>
 <translation id="6348805481186204412">离线存储空间</translation>
