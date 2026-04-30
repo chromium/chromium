@@ -68,8 +68,8 @@ void OutputController::OnDidProcessDisplayChanges(
     output->set_global(wl_global_create(delegate_->GetWaylandDisplay(),
                                         &wl_output_interface, kWlOutputVersion,
                                         output.get(), bind_output));
-    CHECK_EQ(outputs_.count(added_display.id()), 0u);
-    outputs_.insert(std::make_pair(added_display.id(), std::move(output)));
+    CHECK(!outputs_.contains(added_display.id()));
+    outputs_.emplace(added_display.id(), std::move(output));
   }
 
   for (const auto& change : configuration_change.display_metrics_changes) {
@@ -89,11 +89,11 @@ void OutputController::OnDidProcessDisplayChanges(
   for (const display::Display& removed_display :
        configuration_change.removed_displays) {
     // There should always be at least one display tracked by Exo.
-    CHECK(outputs_.size() > 1);
-    CHECK_EQ(outputs_.count(removed_display.id()), 1u);
-    std::unique_ptr<WaylandDisplayOutput> output =
-        std::move(outputs_[removed_display.id()]);
-    outputs_.erase(removed_display.id());
+    CHECK_GT(outputs_.size(), 1u);
+    auto it = outputs_.find(removed_display.id());
+    CHECK(it != outputs_.end());
+    std::unique_ptr<WaylandDisplayOutput> output = std::move(it->second);
+    outputs_.erase(it);
     output.release()->OnDisplayRemoved();
   }
 
