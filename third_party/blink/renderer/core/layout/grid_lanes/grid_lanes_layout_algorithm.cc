@@ -512,6 +512,8 @@ void GridLanesLayoutAlgorithm::RunGridLanesPlacementPhase(
       GridLayoutData* child_layout_data = child_layout_subtree->LayoutData();
       CHECK(child_layout_data->HasSubgriddedAxis(grid_axis_direction));
 
+      // TODO(almaher): `SubgriddedItemData` should incorporate the parent
+      // subgrid's info.
       const SubgriddedItemData subgridded_item_data(
           grid_lanes_item, &layout_data, container_writing_mode);
       const ConstraintSpace subgrid_space =
@@ -552,6 +554,8 @@ void GridLanesLayoutAlgorithm::RunGridLanesPlacementPhase(
     // offset of the item.
     LogicalRect containing_grid_area;
 
+    // TODO(almaher): `SubgriddedItemData` should incorporate the parent
+    // subgrid's info.
     const ConstraintSpace space =
         is_for_layout
             ? CreateConstraintSpaceForLayout(
@@ -1963,10 +1967,6 @@ ConstraintSpace GridLanesLayoutAlgorithm::CreateConstraintSpace(
   return builder.ToConstraintSpace();
 }
 
-// TODO(celestepan): If item-direction is row, we should not be returning an
-// indefinite inline size. Discussions are still ongoing on if we want to always
-// return min/max-content or inherit from the parent.
-//
 // TODO(almaher): `opt_child_block_offset` and `unavailable_block_size` aren't
 // used yet, but they will likely be needed for fragmentatation support.
 //
@@ -2029,8 +2029,30 @@ ConstraintSpace GridLanesLayoutAlgorithm::CreateConstraintSpaceForLayout(
     }
   }
 
-  // TODO(almaher): Will likely need special fixed available size handling for
-  // subgrid.
+  // For subgrid items, fix the available size along the subgridded axis to
+  // the size carved out by the parent grid-lanes (minus the subgrid's own
+  // margins). This ensures the subgrid's tracks line up with the parent's
+  // and that the subgrid doesn't size itself independently in that
+  // dimension.
+  //
+  // TODO(almaher): For the standalone axis of a subgrid, we should also
+  // derive `containing_size` from the parent subgrid's track collection
+  // (rather than the grid-lanes' own available size) so subgridded
+  // descendants are measured against the correct subgrid-relative
+  // containing block. See `GridLayoutAlgorithm::CreateConstraintSpaceFor*`
+  // for the analogous handling in regular grid.
+  if (subgridded_item.IsSubgrid()) {
+    const auto subgrid_margins = ComputeMarginsFor(
+        subgridded_item->node.Style(), containing_size.inline_size,
+        GetConstraintSpace().GetWritingDirection());
+    const auto fixed_size = ShrinkLogicalSize(containing_size, subgrid_margins);
+    if (subgridded_item->has_subgridded_columns) {
+      fixed_available_size.inline_size = fixed_size.inline_size;
+    } else if (subgridded_item->has_subgridded_rows) {
+      fixed_available_size.block_size = fixed_size.block_size;
+    }
+  }
+
   return CreateConstraintSpace(*subgridded_item, containing_size,
                                fixed_available_size,
                                LayoutResultCacheSlot::kLayout,
