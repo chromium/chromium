@@ -78,6 +78,8 @@ class GlicPinnedTabManagerImpl : public GlicPinnedTabManager {
   // Visible for testing.
   virtual bool IsBrowserValidForSharing(BrowserWindowInterface* browser_window);
   // Visible for testing.
+  virtual bool IsTabValidForPinning(tabs::TabInterface* tab);
+  // Visible for testing.
   virtual bool IsValidForSharing(content::WebContents* web_contents);
   // Visible for testing.
   virtual bool IsGlicWindowShowing();

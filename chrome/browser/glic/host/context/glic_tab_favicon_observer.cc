@@ -272,7 +272,7 @@ void GlicTabFaviconObserver::SubscribeToTabFavicon(
     remote.reset();
     return;
   }
-  if (tab->GetBrowserWindowInterface()->GetProfile() != profile_) {
+  if (tab->GetProfile() != profile_) {
     remote.reset();
     return;
   }

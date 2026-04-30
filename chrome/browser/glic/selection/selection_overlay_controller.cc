@@ -311,8 +311,7 @@ GURL SelectionOverlayController::GetInitialURL() {
 
 void SelectionOverlayController::NotifyIsOverlayShowing(bool is_showing) {
   if (!is_showing) {
-    GlicKeyedService* service =
-        GlicKeyedService::Get(tab_->GetBrowserWindowInterface()->GetProfile());
+    GlicKeyedService* service = GlicKeyedService::Get(tab_->GetProfile());
     if (service) {
       if (GlicInstance* instance = service->GetInstanceForTab(tab_)) {
         instance->OnSelectionAreasChanged(0);
@@ -485,8 +484,7 @@ void SelectionOverlayController::RenderRegions() {
 
   page_->SetPostRegionSelections(std::move(regions_mojo));
 
-  GlicKeyedService* service =
-      GlicKeyedService::Get(tab_->GetBrowserWindowInterface()->GetProfile());
+  GlicKeyedService* service = GlicKeyedService::Get(tab_->GetProfile());
   if (GlicInstance* instance = service->GetInstanceForTab(tab_)) {
     mojom::AdditionalContextPtr additional_context =
         CreateAdditionalContext(std::move(captured_regions));

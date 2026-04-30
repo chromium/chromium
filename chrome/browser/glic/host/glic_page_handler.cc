@@ -1385,7 +1385,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     if (!tab) {
       return;
     }
-    if (tab->GetBrowserWindowInterface()->GetProfile() != profile_) {
+    if (tab->GetProfile() != profile_) {
       return;
     }
     glic_service_->DeleteCapturedRegion(tab, id);

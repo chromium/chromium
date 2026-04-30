@@ -30,6 +30,11 @@ bool IsBrowserValidForSharingInProfile(
          !profile->IsOffTheRecord();
 }
 
+bool IsTabValidForPinningInProfile(tabs::TabInterface* tab, Profile* profile) {
+  return tab && profile && tab->GetProfile() == profile &&
+         !profile->IsOffTheRecord();
+}
+
 bool IsTabValidForSharing(content::WebContents* web_contents) {
   // We allow blank pages to avoid flicker during transitions.
   static const base::NoDestructor<std::vector<GURL>> kUrlAllowList{

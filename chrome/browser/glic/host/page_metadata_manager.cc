@@ -76,7 +76,7 @@ void PageMetadataManager::SubscribeToPageMetadata(
     std::move(callback).Run(false);
     return;
   }
-  if (tab->GetBrowserWindowInterface()->GetProfile() != profile_) {
+  if (tab->GetProfile() != profile_) {
     std::move(callback).Run(false);
     return;
   }

@@ -29,8 +29,8 @@ GlicTabIndicatorHelper* GlicTabIndicatorHelper::From(tabs::TabInterface* tab) {
 
 GlicTabIndicatorHelper::GlicTabIndicatorHelper(tabs::TabInterface* tab)
     : tab_(tab),
-      glic_keyed_service_(GlicKeyedServiceFactory::GetGlicKeyedService(
-          tab_->GetBrowserWindowInterface()->GetProfile())),
+      glic_keyed_service_(
+          GlicKeyedServiceFactory::GetGlicKeyedService(tab_->GetProfile())),
       scoped_unowned_user_data_(tab->GetUnownedUserDataHost(), *this) {
   subscriptions_.push_back(
       glic_keyed_service_->active_instance_sharing_manager()

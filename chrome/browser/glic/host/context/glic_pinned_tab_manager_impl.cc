@@ -340,8 +340,7 @@ bool GlicPinnedTabManagerImpl::PinTabs(
       continue;
     }
     auto* tab = tab_handle.Get();
-    if (!tab || IsTabPinned(tab_handle) ||
-        !IsBrowserValidForSharing(tab->GetBrowserWindowInterface())) {
+    if (!tab || IsTabPinned(tab_handle) || !IsTabValidForPinning(tab)) {
       pinning_fully_succeeded = false;
       metrics_->OnTabPinnedForSharing(
           GlicTabPinnedForSharingResult::
@@ -557,7 +556,7 @@ GlicPinnedTabManagerImpl::GetUnsortedPinCandidates() {
           if (IsTabPinned(tab->GetHandle())) {
             continue;
           }
-          if (!IsBrowserValidForSharing(tab->GetBrowserWindowInterface())) {
+          if (!IsTabValidForPinningInProfile(tab, profile_)) {
             continue;
           }
           auto* web_contents = tab->GetContents();
@@ -628,9 +627,13 @@ bool GlicPinnedTabManagerImpl::IsBrowserValidForSharing(
   return IsBrowserValidForSharingInProfile(browser_window, profile_);
 }
 
+bool GlicPinnedTabManagerImpl::IsTabValidForPinning(tabs::TabInterface* tab) {
+  return IsTabValidForPinningInProfile(tab, profile_);
+}
+
 bool GlicPinnedTabManagerImpl::IsValidForSharing(
     content::WebContents* web_contents) {
-  return IsTabValidForSharing(web_contents);
+  return glic::IsTabValidForSharing(web_contents);
 }
 
 bool GlicPinnedTabManagerImpl::IsGlicWindowShowing() {

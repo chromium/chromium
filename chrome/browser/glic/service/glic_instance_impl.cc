@@ -158,8 +158,7 @@ class GlicTabContentsObserver : public content::WebContentsObserver {
       LOG(ERROR) << "Invalid tab_to_bind, null";
       return;
     }
-    if (tab_to_bind->GetBrowserWindowInterface()->GetProfile() !=
-        instance_->profile()) {
+    if (tab_to_bind->GetProfile() != instance_->profile()) {
       LOG(ERROR) << "Invalid tab_to_bind, wrong profile";
       return;
     }
@@ -169,9 +168,7 @@ class GlicTabContentsObserver : public content::WebContentsObserver {
       return;
     }
 
-    if (!tab_to_bind ||
-        (tab_to_bind->GetBrowserWindowInterface()->GetProfile() !=
-         instance_->profile()) ||
+    if (!tab_to_bind || (tab_to_bind->GetProfile() != instance_->profile()) ||
         !GlicInstanceHelper::From(tab_to_bind)) {
       LOG(ERROR) << "Invalid tab_to_bind, null or wrong profile or no "
                     "GlicInstanceHelper in its UnownedUserData";

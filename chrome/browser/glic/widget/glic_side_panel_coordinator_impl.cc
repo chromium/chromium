@@ -40,8 +40,8 @@ GlicSidePanelCoordinatorImpl::GlicSidePanelCoordinatorImpl(
     : GlicSidePanelCoordinator(tab),
       tab_(tab),
       side_panel_registry_(side_panel_registry) {
-  auto* glic_service = GlicKeyedServiceFactory::GetGlicKeyedService(
-      tab->GetBrowserWindowInterface()->GetProfile());
+  auto* glic_service =
+      GlicKeyedServiceFactory::GetGlicKeyedService(tab->GetProfile());
   on_glic_enabled_changed_subscription_ =
       glic_service->enabling().RegisterAllowedChanged(base::BindRepeating(
           &GlicSidePanelCoordinatorImpl::OnGlicEnabledChanged,
@@ -157,16 +157,15 @@ void GlicSidePanelCoordinatorImpl::OnEntryShown(SidePanelEntry* entry) {
 
 void GlicSidePanelCoordinatorImpl::OnGlicEnabledChanged() {
   // Maybe register side panel entry if not yet registered.
-  if (glic::GlicEnabling::IsEnabledForProfile(
-          tab_->GetBrowserWindowInterface()->GetProfile())) {
+  if (glic::GlicEnabling::IsEnabledForProfile(tab_->GetProfile())) {
     CreateAndRegisterEntry();
   }
 }
 
 std::unique_ptr<views::View> GlicSidePanelCoordinatorImpl::CreateView(
     SidePanelEntryScope& scope) {
-  auto* glic_service = GlicKeyedServiceFactory::GetGlicKeyedService(
-      tab_->GetBrowserWindowInterface()->GetProfile());
+  auto* glic_service =
+      GlicKeyedServiceFactory::GetGlicKeyedService(tab_->GetProfile());
   if (!glic_service) {
     return nullptr;
   }
