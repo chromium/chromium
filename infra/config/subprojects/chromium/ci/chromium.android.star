@@ -3611,7 +3611,6 @@ ci.builder(
         short_name = "14T-L",
     ),
     contact_team_email = "clank-engprod@google.com",
-    execution_timeout = 3 * time.hour,
     # crbug.com/372192123 - downloading with "minimum" strategy doesn't work
     # well for Android builds because some steps have additional inputs/outputs
     # they are not configured in the build graph.
