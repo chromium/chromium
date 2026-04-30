@@ -72,6 +72,11 @@ constexpr CGFloat kFullscreenCollapsedThreshold = 0.05;
 const base::TimeDelta kProgressBarEndAnimationDuration =
     base::Milliseconds(250);
 
+// The vertical distance the location bar translates during the NTP scroll
+// animation. Set to `kToolbarPadding` so the location bar slides exactly down
+// to the bottom edge of the toolbar container as it fades out of view.
+const CGFloat kNTPLocationBarTranslation = kToolbarPadding;
+
 }  // namespace
 
 @interface ToolbarViewController () <TabGroupIndicatorViewDelegate>
@@ -164,6 +169,9 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
   // Used to record the latest fullscreen progress.
   CGFloat _fullscreenProgress;
 
+  // Used to record the scroll progress to show and hide the toolbar.
+  CGFloat _NTPScrollProgress;
+
   // Background and container for the banner promo.
   UIView* _bannerPromoBackground;
   // The banner promo view.
@@ -229,45 +237,30 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
   ]];
 }
 
-- (void)setLocationBarHidden:(BOOL)hidden {
-  _locationBarContainer.hidden = hidden || !_visible;
-}
+- (void)setNTPScrollProgress:(CGFloat)progress {
+  CHECK(_NTPVisible);
+  _NTPScrollProgress = progress;
 
-- (void)setScrollProgressForTabletOmnibox:(CGFloat)progress {
-  CHECK_EQ(ui::GetDeviceFormFactor(), ui::DEVICE_FORM_FACTOR_TABLET);
-
-  if (!_NTPVisible) {
-    // While browsing (not on the NTP), the location bar will always be visible
-    // in the expanded toolbar.
-    progress = 1.0;
-  }
-
-  CGAffineTransform targetTransform;
-
-  if (progress == 1) {
-    targetTransform = CGAffineTransformIdentity;
-  } else {
-    targetTransform =
-        CGAffineTransformMakeTranslation(0, kToolbarPadding * (1 - progress));
-  }
-
-  if (_locationBarContainer.alpha == progress &&
-      CGAffineTransformEqualToTransform(_locationBarContainer.transform,
-                                        targetTransform)) {
-    // No changes.
+  if (!CanShowTabStrip(self)) {
+    if (self.view.alpha == progress) {
+      // No change in toolbar visibility alpha.
+      return;
+    }
+    // On iPhone, the entire toolbar is initially hidden on the NTP, and appears
+    // based on the scroll `progress`.
+    [self setNTPScrollProgressForToolbar:progress];
     return;
   }
 
-  _locationBarContainer.transform = targetTransform;
-  _locationBarContainer.alpha = progress;
-
-  // When the location bar is fully hidden, activate the fake omnibox
-  // target in its place.
-  if (_locationBarContainer.alpha == 0.0 && _fakeOmniboxTarget.hidden) {
-    _fakeOmniboxTarget.hidden = NO;
-  } else if (_locationBarContainer.alpha > 0.0 && !_fakeOmniboxTarget.hidden) {
-    _fakeOmniboxTarget.hidden = YES;
+  if (_topPosition) {
+    // On iPad, the toolbar is always visible. The location bar is initially
+    // hidden on the NTP and  appears based on the scroll `progress`.
+    [self setNTPScrollProgressForOmnibox:progress];
   }
+}
+
+- (void)setLocationBarHidden:(BOOL)hidden {
+  _locationBarContainer.hidden = hidden || !_visible;
 }
 
 - (UIView*)locationBarContainerCopy {
@@ -441,7 +434,7 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
   }
   _NTPVisible = NTPVisible;
   [self updateToolbarVisibility];
-  /// TODO(crbug.com/498602138): The location bar should be initially hidden on
+  /// TODO(crbug.com/508170459): The location bar should be initially hidden on
   /// the NTP, until the fakebox is swiped up out of view.
 }
 
@@ -757,6 +750,50 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
   }
 }
 
+// Sets the NTP scroll progress for the toolbar. The toolbar is revealed as the
+// page is scrolled.
+- (void)setNTPScrollProgressForToolbar:(CGFloat)progress {
+  [self updateToolbarVisibility];
+  [self setNTPScrollProgressForOmnibox:progress];
+  self.view.alpha = progress;
+}
+
+// Sets the NTP scroll progress for the location bar. The location bar in the
+// toolbar is revealed with a translation effect as the page is scrolled.
+- (void)setNTPScrollProgressForOmnibox:(CGFloat)progress {
+  CGAffineTransform translationTransform =
+      (progress == 1.0)
+          ? CGAffineTransformIdentity
+          : CGAffineTransformMakeTranslation(
+                0.0, kNTPLocationBarTranslation * (1.0 - progress));
+
+  if (_locationBarContainer.alpha == progress &&
+
+      CGAffineTransformEqualToTransform(_locationBarContainer.transform,
+                                        translationTransform)) {
+    // No changes.
+    return;
+  }
+
+  _locationBarContainer.transform = translationTransform;
+  _locationBarContainer.alpha = progress;
+
+  if (!_fakeOmniboxTarget || !CanShowTabStrip(self)) {
+    return;
+  }
+
+  CHECK(_topPosition);
+
+  // When the location bar is fully hidden, activate the fake omnibox
+  // target in its place.
+  if (_locationBarContainer.alpha == 0.0 && _fakeOmniboxTarget.isHidden) {
+    _fakeOmniboxTarget.hidden = NO;
+  } else if (_locationBarContainer.alpha > 0.0 &&
+             !_fakeOmniboxTarget.isHidden) {
+    _fakeOmniboxTarget.hidden = YES;
+  }
+}
+
 // Returns whether the a accessory view position should be used.
 - (BOOL)useAccessoryViewPosition {
   UIView* inputAccessory = [self.layoutGuideCenter
@@ -853,7 +890,8 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
   _locationBarContainer =
       [self createLocationBarContainerWithBackground:_locationBarBackground];
 
-  if (CanShowTabStrip(self)) {
+  if (_topPosition &&
+      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
     _fakeOmniboxTarget = [self createFakeOmniboxTarget];
   }
   _progressBar = [self createProgressBar];
@@ -1142,10 +1180,7 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
 // Creates a fake omnibox target to activate when the location bar is not
 // visible (iPad only).
 - (UIView*)createFakeOmniboxTarget {
-  CHECK_EQ(ui::GetDeviceFormFactor(), ui::DEVICE_FORM_FACTOR_TABLET);
-
   UIView* fakeOmniboxTarget = [[UIView alloc] init];
-
   fakeOmniboxTarget.translatesAutoresizingMaskIntoConstraints = NO;
   fakeOmniboxTarget.hidden = YES;
 
@@ -1205,26 +1240,37 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
 
 // Updates the visibility of the toolbar.
 - (void)updateToolbarVisibility {
-  BOOL hideToolbar = _NTPVisible && !_incognito && !CanShowTabStrip(self) &&
-                     IsSplitToolbarMode(self);
-  BOOL visibilityChanged = hideToolbar != self.view.hidden;
-  BOOL needsLocationBarReset =
+  /// TODO(crbug.com/508170459): Allow the toolbar to be unhidden in split
+  /// toolbar mode.
+  BOOL hideToolbar;
+  BOOL alwaysShowToolbar = CanShowTabStrip(self) && _topPosition;
+  if (alwaysShowToolbar) {
+    self.view.alpha = 1.0;
+    hideToolbar = NO;
+  } else {
+    hideToolbar = _NTPVisible && !_incognito && !CanShowTabStrip(self) &&
+                  (_NTPScrollProgress == 0.0 || IsSplitToolbarMode(self));
+  }
+
+  BOOL visibilityChanged = hideToolbar != self.view.isHidden;
+  BOOL needsToolbarReset =
       !_NTPVisible &&
       (!CGAffineTransformIsIdentity(_locationBarContainer.transform) ||
-       _locationBarContainer.alpha != 1.0);
+       _locationBarContainer.alpha != 1.0 || self.view.alpha != 1.0);
 
-  if (!visibilityChanged && !needsLocationBarReset) {
+  if (!visibilityChanged && !needsToolbarReset) {
     // No change.
     return;
   }
 
   self.view.hidden = hideToolbar;
 
-  // Resets the position and alpha of the location bar. Away from the NTP,
-  // the location bar will become fully visible.
-  if (needsLocationBarReset) {
+  // Resets the position of the location bar and the alpha of the toolbar. While
+  // browsing (non-NTP), the toolbar should be fully visible.
+  if (needsToolbarReset) {
     _locationBarContainer.transform = CGAffineTransformIdentity;
     _locationBarContainer.alpha = 1.0;
+    self.view.alpha = 1.0;
   }
 
   [self.toolbarHeightDelegate toolbarsHeightChanged];

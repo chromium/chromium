@@ -136,6 +136,8 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
   BOOL _isAIMAllowed;
   // Whether the session is fusebox eligible.
   BOOL _fuseboxEligible;
+  // Whether the omnibox is pinned to the bottom position.
+  BOOL _isBottomOmnibox;
   // The logo for the default search engine. This is owned by the caching system
   // backing this logo.
   __weak UIImage* _dseLogo;
@@ -168,6 +170,13 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
     }
   }
   return self;
+}
+
+- (void)setOmniboxInBottomPosition:(BOOL)isBottomOmnibox {
+  CHECK(IsChromeNextIaEnabled());
+  _isBottomOmnibox = isBottomOmnibox;
+  [self.headerView setOmniboxPositionIsBottom:isBottomOmnibox];
+  [self.delegate didChangeOmniboxPosition:self];
 }
 
 #pragma mark - Public
@@ -255,12 +264,15 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
             // RxR with no logo hides the fakebox, so always show the omnibox.
             : 1;
     [self updateLogoForOffset:offset];
-    if (CanShowTabStrip(self) || !IsSplitToolbarMode(self)) {
-      [self.toolbarDelegate setScrollProgressForTabletOmnibox:progress];
-    } else {
-      // Ensure omnibox is reset when not a regular tablet.
-      [self.toolbarDelegate setScrollProgressForTabletOmnibox:1];
+
+    if (!IsChromeNextIaEnabled()) {
+      if (!CanShowTabStrip(self) && IsSplitToolbarMode(self)) {
+        // Ensure omnibox is reset when not a regular tablet.
+        progress = 1.0;
+      }
     }
+
+    [self.toolbarDelegate setScrollProgressForTabletOmnibox:progress];
   }
 
   if (animateScrollAnimation) {
@@ -332,6 +344,11 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
         initWithUseNewBadgeForLensButton:_useNewBadgeForLensButton];
     [self.headerView setAIMAllowed:_isAIMAllowed];
     [self.headerView setFuseboxEligible:_fuseboxEligible];
+
+    if (IsChromeNextIaEnabled()) {
+      [self.headerView setOmniboxPositionIsBottom:_isBottomOmnibox];
+    }
+
     self.headerView.NTPShortcutsHandler = self.NTPShortcutsHandler;
     self.headerView.isGoogleDefaultSearchEngine =
         self.isGoogleDefaultSearchEngine;
@@ -445,9 +462,11 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
           return;
         }
 
-        // Ensure omnibox is reset when not a regular tablet.
-        if (isSplitToolbarMode && !CanShowTabStrip(newCollection)) {
-          [strongSelf.toolbarDelegate setScrollProgressForTabletOmnibox:1];
+        if (!IsChromeNextIaEnabled()) {
+          // Ensure omnibox is reset when not a regular tablet.
+          if (isSplitToolbarMode && !CanShowTabStrip(newCollection)) {
+            [strongSelf.toolbarDelegate setScrollProgressForTabletOmnibox:1];
+          }
         }
         // Fake Tap button only needs to work in portrait. Disable the button
         // in landscape because in landscape the button covers logoView (which
