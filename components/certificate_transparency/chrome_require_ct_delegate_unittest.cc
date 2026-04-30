@@ -88,7 +88,8 @@ TEST_F(ChromeRequireCTDelegateTest, DelegateChecksExcludedSPKIs) {
             delegate->IsCTRequiredForHost("google.com", cert_.get(), hashes_));
 
   // Add a excluded SPKI
-  delegate->UpdateCTPolicies({}, {net::HashValue(hashes_.front()).ToString()});
+  delegate->UpdateCTPolicies(
+      {}, {net::HashValue(net::HASH_VALUE_SHA256, hashes_.front()).ToString()});
 
   // The new setting should take effect.
   EXPECT_EQ(CTRequirementLevel::NOT_REQUIRED_APPLIES_ACROSS_NAMES,
@@ -251,7 +252,8 @@ TEST_F(ChromeRequireCTDelegateTest, SupportsOrgRestrictions) {
     EXPECT_EQ(CTRequirementLevel::REQUIRED,
               delegate->IsCTRequiredForHost("google.com", leaf.get(), hashes));
 
-    delegate->UpdateCTPolicies({}, {net::HashValue(test.spki).ToString()});
+    delegate->UpdateCTPolicies(
+        {}, {net::HashValue(net::HASH_VALUE_SHA256, test.spki).ToString()});
 
     // The new setting should take effect.
     EXPECT_EQ(test.expected,
@@ -338,7 +340,8 @@ TEST_F(ChromeRequireCTDelegateTest, OrgRestrictionsMatchCorrectCert) {
 
   // If the SPKI for the intermediate with O1 is excluded, CT should not be
   // required.
-  delegate->UpdateCTPolicies({}, {net::HashValue(i1_spki_hash).ToString()});
+  delegate->UpdateCTPolicies(
+      {}, {net::HashValue(net::HASH_VALUE_SHA256, i1_spki_hash).ToString()});
   EXPECT_EQ(
       CTRequirementLevel::NOT_REQUIRED_APPLIES_ACROSS_NAMES,
       delegate->IsCTRequiredForHost(
@@ -346,7 +349,8 @@ TEST_F(ChromeRequireCTDelegateTest, OrgRestrictionsMatchCorrectCert) {
 
   // If the SPKI for the intermediate with O2 is excluded, CT should still be
   // required.
-  delegate->UpdateCTPolicies({}, {net::HashValue(i2_spki_hash).ToString()});
+  delegate->UpdateCTPolicies(
+      {}, {net::HashValue(net::HASH_VALUE_SHA256, i2_spki_hash).ToString()});
   EXPECT_EQ(
       CTRequirementLevel::REQUIRED,
       delegate->IsCTRequiredForHost(
