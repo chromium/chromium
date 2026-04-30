@@ -3134,9 +3134,6 @@ config("split_dwarf") {
   if (use_thin_lto && !is_apple) {
     ldflags = split_dwarf_flags
   }
-
-  c_additional_outputs =
-      [ "{{target_out_dir}}/{{label_name}}/{{source_name_part}}.dwo" ]
 }
 
 # Full symbols.
