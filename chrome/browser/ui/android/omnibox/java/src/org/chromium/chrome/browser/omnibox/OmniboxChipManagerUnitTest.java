@@ -16,7 +16,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -51,7 +50,6 @@ public class OmniboxChipManagerUnitTest {
     private ToolbarWidthConsumer mCollapsedConsumer;
     private ToolbarWidthConsumer mExpandedConsumer;
     private Drawable mIcon;
-    @Mock private OmniboxChipManager.ChipCallback mCallback;
     @Mock private LocationBarEmbedder mLocationBarEmbedder;
 
     @Before
@@ -73,7 +71,7 @@ public class OmniboxChipManagerUnitTest {
 
     @Test
     public void placeChip_shownCollapsed() {
-        mManager.placeChip("text", mIcon, "contentDesc", () -> {}, mCallback);
+        mManager.placeChip("text", mIcon, "contentDesc", () -> {});
         assertTrue(mManager.isChipPlaced());
         assertEquals(View.VISIBLE, mRootView.getVisibility());
         verify(mLocationBarEmbedder).onWidthConsumerVisibilityChanged();
@@ -87,7 +85,6 @@ public class OmniboxChipManagerUnitTest {
                             makeMeasureSpec(0, UNSPECIFIED));
             assertEquals(mManager.getCollapsedWidthForTesting(), used);
             assertTrue(mCollapsedConsumer.isVisible());
-            verify(mCallback).onChipShown();
         }
 
         {
@@ -103,14 +100,12 @@ public class OmniboxChipManagerUnitTest {
                             makeMeasureSpec(0, UNSPECIFIED));
             assertEquals(available, used);
             assertFalse(mExpandedConsumer.isVisible());
-            // Callback shouldn't be called again.
-            verify(mCallback, times(1)).onChipShown();
         }
     }
 
     @Test
     public void placeChip_notShown() {
-        mManager.placeChip("text", mIcon, "contentDesc", () -> {}, mCallback);
+        mManager.placeChip("text", mIcon, "contentDesc", () -> {});
         // Even if the chip isn't currently visible on the toolbar, it's still shown.
         assertTrue(mManager.isChipPlaced());
 
@@ -123,8 +118,6 @@ public class OmniboxChipManagerUnitTest {
                             makeMeasureSpec(0, UNSPECIFIED));
             assertEquals(available, used);
             assertFalse(mCollapsedConsumer.isVisible());
-            // Never been shown, so we don't call the callback.
-            verify(mCallback, never()).onChipHidden();
         }
 
         {
@@ -136,13 +129,12 @@ public class OmniboxChipManagerUnitTest {
                             makeMeasureSpec(0, UNSPECIFIED));
             assertEquals(0, used);
             assertFalse(mExpandedConsumer.isVisible());
-            verify(mCallback, never()).onChipHidden();
         }
     }
 
     @Test
     public void placeChip_shownCollapsedThenHidden() {
-        mManager.placeChip("text", mIcon, "contentDesc", () -> {}, mCallback);
+        mManager.placeChip("text", mIcon, "contentDesc", () -> {});
 
         {
             int available = mManager.getCollapsedWidthForTesting() + 10;
@@ -153,7 +145,6 @@ public class OmniboxChipManagerUnitTest {
                             makeMeasureSpec(0, UNSPECIFIED));
             assertEquals(mManager.getCollapsedWidthForTesting(), used);
             assertTrue(mCollapsedConsumer.isVisible());
-            verify(mCallback).onChipShown();
         }
 
         {
@@ -169,8 +160,6 @@ public class OmniboxChipManagerUnitTest {
                             makeMeasureSpec(0, UNSPECIFIED));
             assertEquals(available, used);
             assertFalse(mExpandedConsumer.isVisible());
-            // Callback shouldn't be called again.
-            verify(mCallback, times(1)).onChipShown();
         }
 
         {
@@ -182,7 +171,6 @@ public class OmniboxChipManagerUnitTest {
                             makeMeasureSpec(0, UNSPECIFIED));
             assertEquals(available, used);
             assertFalse(mCollapsedConsumer.isVisible());
-            verify(mCallback).onChipHidden();
         }
 
         {
@@ -194,14 +182,12 @@ public class OmniboxChipManagerUnitTest {
                             makeMeasureSpec(0, UNSPECIFIED));
             assertEquals(0, used);
             assertFalse(mExpandedConsumer.isVisible());
-            // Callback shouldn't be called again.
-            verify(mCallback, times(1)).onChipHidden();
         }
     }
 
     @Test
     public void placeChip_shownExpanded() {
-        mManager.placeChip("text", mIcon, "contentDesc", () -> {}, mCallback);
+        mManager.placeChip("text", mIcon, "contentDesc", () -> {});
 
         {
             int available = mManager.getMinExpandedWidthForTesting();
@@ -212,7 +198,6 @@ public class OmniboxChipManagerUnitTest {
                             makeMeasureSpec(0, UNSPECIFIED));
             assertEquals(mManager.getCollapsedWidthForTesting(), used);
             assertTrue(mCollapsedConsumer.isVisible());
-            verify(mCallback).onChipShown();
         }
 
         {
@@ -227,14 +212,12 @@ public class OmniboxChipManagerUnitTest {
                             makeMeasureSpec(0, UNSPECIFIED));
             assertTrue(used > 0);
             assertTrue(mExpandedConsumer.isVisible());
-            // Callback shouldn't be called again.
-            verify(mCallback, times(1)).onChipShown();
         }
     }
 
     @Test
     public void placeChip_shownExpandedThenCollapsed() {
-        mManager.placeChip("text", mIcon, "contentDesc", () -> {}, mCallback);
+        mManager.placeChip("text", mIcon, "contentDesc", () -> {});
 
         {
             int available = mManager.getMinExpandedWidthForTesting();
@@ -245,7 +228,6 @@ public class OmniboxChipManagerUnitTest {
                             makeMeasureSpec(0, UNSPECIFIED));
             assertEquals(mManager.getCollapsedWidthForTesting(), used);
             assertTrue(mCollapsedConsumer.isVisible());
-            verify(mCallback).onChipShown();
         }
 
         {
@@ -260,8 +242,6 @@ public class OmniboxChipManagerUnitTest {
                             makeMeasureSpec(0, UNSPECIFIED));
             assertTrue(used > 0);
             assertTrue(mExpandedConsumer.isVisible());
-            // Callback shouldn't be called again.
-            verify(mCallback, times(1)).onChipShown();
         }
 
         {
@@ -273,8 +253,6 @@ public class OmniboxChipManagerUnitTest {
                             makeMeasureSpec(0, UNSPECIFIED));
             assertEquals(mManager.getCollapsedWidthForTesting(), used);
             assertTrue(mCollapsedConsumer.isVisible());
-            // Callback shouldn't be called again.
-            verify(mCallback, times(1)).onChipShown();
         }
 
         {
@@ -286,17 +264,12 @@ public class OmniboxChipManagerUnitTest {
                             makeMeasureSpec(0, UNSPECIFIED));
             assertEquals(0, used);
             assertFalse(mExpandedConsumer.isVisible());
-            // Callback shouldn't be called again.
-            verify(mCallback, times(1)).onChipShown();
         }
-
-        // Chip was never hidden.
-        verify(mCallback, never()).onChipHidden();
     }
 
     @Test
     public void dismissChip() {
-        mManager.placeChip("text", mIcon, "contentDesc", () -> {}, mCallback);
+        mManager.placeChip("text", mIcon, "contentDesc", () -> {});
         assertTrue(mManager.isChipPlaced());
         verify(mLocationBarEmbedder).onWidthConsumerVisibilityChanged();
         mManager.dismissChip();
@@ -310,7 +283,7 @@ public class OmniboxChipManagerUnitTest {
 
     @Test
     public void updateChip() {
-        mManager.placeChip("text", mIcon, "contentDesc", () -> {}, mCallback);
+        mManager.placeChip("text", mIcon, "contentDesc", () -> {});
         {
             int available =
                     mManager.getMinExpandedWidthForTesting()
@@ -320,13 +293,13 @@ public class OmniboxChipManagerUnitTest {
         }
         onView(withText("text")).check(matches(isDisplayed()));
 
-        mManager.placeChip("other text", mIcon, "other contentDesc", () -> {}, mCallback);
+        mManager.placeChip("other text", mIcon, "other contentDesc", () -> {});
         onView(withText("other text")).check(matches(isDisplayed()));
     }
 
     @Test
     public void omniboxFocused() {
-        mManager.placeChip("text", mIcon, "contentDesc", () -> {}, mCallback);
+        mManager.placeChip("text", mIcon, "contentDesc", () -> {});
         {
             int available =
                     mManager.getMinExpandedWidthForTesting()

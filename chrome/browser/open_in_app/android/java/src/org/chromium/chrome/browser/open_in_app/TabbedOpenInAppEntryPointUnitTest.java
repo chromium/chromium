@@ -148,18 +148,11 @@ public class TabbedOpenInAppEntryPointUnitTest {
         // Resolve infos received; the app info should be non-null.
         assertNonNull(delegate.getCurrentOpenInAppInfo());
 
-        ArgumentCaptor<OmniboxChipManager.ChipCallback> callbackCaptor =
-                ArgumentCaptor.forClass(OmniboxChipManager.ChipCallback.class);
         ArgumentCaptor<Runnable> actionCaptor = ArgumentCaptor.forClass(Runnable.class);
         String chipTitle = mContext.getString(R.string.open_in_app);
         String chipDescription = mContext.getString(R.string.open_in_app_desc, LABEL);
         verify(mOmniboxChipManager)
-                .placeChip(
-                        eq(chipTitle),
-                        eq(mIcon),
-                        eq(chipDescription),
-                        actionCaptor.capture(),
-                        callbackCaptor.capture());
+                .placeChip(eq(chipTitle), eq(mIcon), eq(chipDescription), actionCaptor.capture());
 
         // Simulate chip click.
         actionCaptor.getValue().run();
@@ -169,12 +162,6 @@ public class TabbedOpenInAppEntryPointUnitTest {
 
         when(mOmniboxChipManager.isChipPlaced()).thenReturn(true);
 
-        // When chip is shown, it shouldn't be in the menu.
-        callbackCaptor.getValue().onChipShown();
-        assertNull(mEntryPoint.getOpenInAppInfoForMenuItem());
-
-        // When chip is hidden, it should be in the menu.
-        callbackCaptor.getValue().onChipHidden();
         var appInfo = mEntryPoint.getOpenInAppInfoForMenuItem();
         assertNonNull(appInfo);
         assertEquals(LABEL, appInfo.appName);
@@ -210,7 +197,7 @@ public class TabbedOpenInAppEntryPointUnitTest {
         mEntryPoint.onResolveInfosFetched(delegate, infos, mIntent, mUrl, /* navigationId= */ 123L);
 
         ArgumentCaptor<Runnable> actionCaptor = ArgumentCaptor.forClass(Runnable.class);
-        verify(mOmniboxChipManager).placeChip(any(), any(), any(), actionCaptor.capture(), any());
+        verify(mOmniboxChipManager).placeChip(any(), any(), any(), actionCaptor.capture());
 
         // Simulate chip click.
         actionCaptor.getValue().run();

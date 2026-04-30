@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.omnibox;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.omnibox.OmniboxChipProperties.CONTENT_DESC;
 import static org.chromium.chrome.browser.omnibox.OmniboxChipProperties.ICON;
 import static org.chromium.chrome.browser.omnibox.OmniboxChipProperties.ON_CLICK;
@@ -31,15 +30,6 @@ import java.util.Collection;
 /** Manager that manages showing and hiding omnibox chips. */
 @NullMarked
 public class OmniboxChipManager {
-    /** Callback interface to get notified when the chip is hidden or shown. */
-    public interface ChipCallback {
-        /** Called when the chip is hidden because there is no more space for it. */
-        void onChipHidden();
-
-        /** Called when the chip is shown. */
-        void onChipShown();
-    }
-
     @IntDef({
         VisibilityState.UNINITIALIZED,
         VisibilityState.HIDDEN,
@@ -78,12 +68,6 @@ public class OmniboxChipManager {
             if (mChip == null) return 0;
             if (availableWidth < mCollapsedWidth) {
                 if (mChipVisibilityState != VisibilityState.HIDDEN) {
-                    if (mChipVisibilityState != VisibilityState.UNINITIALIZED) {
-                        // If we're initializing as hidden, we don't need to call the callback.
-                        // TODO(crbug.com/450253146): This can be done in the view binder at the
-                        // point we actually set the view visibility.
-                        assumeNonNull(mChipCallback).onChipHidden();
-                    }
                     mChipVisibilityState = VisibilityState.HIDDEN;
                     mChip.setAvailableWidth(0);
                 }
@@ -97,7 +81,6 @@ public class OmniboxChipManager {
             if (mChipVisibilityState == VisibilityState.UNINITIALIZED
                     || mChipVisibilityState == VisibilityState.HIDDEN) {
                 mChipVisibilityState = VisibilityState.COLLAPSED;
-                assumeNonNull(mChipCallback).onChipShown();
             }
 
             return mCollapsedWidth;
@@ -160,7 +143,6 @@ public class OmniboxChipManager {
 
     private @Nullable OmniboxChipCoordinator mChip;
     private @VisibilityState int mChipVisibilityState;
-    private @Nullable ChipCallback mChipCallback;
     private boolean mOmniboxFocused;
 
     /**
@@ -189,14 +171,8 @@ public class OmniboxChipManager {
      * @param icon The icon drawable to display on the chip.
      * @param contentDesc The content description of the chip.
      * @param onClick A runnable to execute when the chip is clicked.
-     * @param callback A callback to get notified when the chip is hidden or shown.
      */
-    public void placeChip(
-            String text,
-            Drawable icon,
-            String contentDesc,
-            Runnable onClick,
-            ChipCallback callback) {
+    public void placeChip(String text, Drawable icon, String contentDesc, Runnable onClick) {
         var model =
                 new PropertyModel.Builder(OmniboxChipProperties.ALL_KEYS)
                         .with(TEXT, text)
@@ -204,7 +180,6 @@ public class OmniboxChipManager {
                         .with(CONTENT_DESC, contentDesc)
                         .with(ON_CLICK, onClick)
                         .build();
-        mChipCallback = callback;
         if (mChip == null) {
             mChip = new OmniboxChipCoordinator(mRootView, model);
         } else {
@@ -221,7 +196,6 @@ public class OmniboxChipManager {
         if (mChip != null) {
             mChip.destroy();
             mChip = null;
-            mChipCallback = null;
             mChipVisibilityState = VisibilityState.UNINITIALIZED;
             mRootView.setVisibility(View.GONE);
             mLocationBarEmbedder.onWidthConsumerVisibilityChanged();

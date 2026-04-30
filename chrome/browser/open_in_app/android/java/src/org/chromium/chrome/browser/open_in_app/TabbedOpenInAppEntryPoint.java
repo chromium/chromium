@@ -19,7 +19,6 @@ import org.chromium.chrome.browser.tab.Tab;
 @NullMarked
 public class TabbedOpenInAppEntryPoint extends OpenInAppEntryPoint {
     private final OmniboxChipManager mOmniboxChipManager;
-    private boolean mShowingChip;
 
     /**
      * Constructor for this class.
@@ -53,29 +52,7 @@ public class TabbedOpenInAppEntryPoint extends OpenInAppEntryPoint {
                             ? mContext.getString(R.string.open_in_app_desc, openInAppInfo.appName)
                             : text;
 
-            mOmniboxChipManager.placeChip(
-                    text,
-                    icon,
-                    desc,
-                    openInAppInfo.action,
-                    new OmniboxChipManager.ChipCallback() {
-                        @Override
-                        public void onChipHidden() {
-                            mShowingChip = false;
-                        }
-
-                        @Override
-                        public void onChipShown() {
-                            mShowingChip = true;
-                        }
-                    });
+            mOmniboxChipManager.placeChip(text, icon, desc, openInAppInfo.action);
         }
-    }
-
-    @Override
-    public OpenInAppDelegate.@Nullable OpenInAppInfo getOpenInAppInfoForMenuItem() {
-        if (mShowingChip) return null;
-
-        return super.getOpenInAppInfoForMenuItem();
     }
 }
