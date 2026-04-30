@@ -8,16 +8,22 @@
 #import <UIKit/UIKit.h>
 
 @class GradientView;
-@class NewTabPageColorPalette;
+@class TabGroupIndicatorView;
 @protocol NewTabPageShortcutsHandler;
 @class OmniboxContainerView;
+@class NewTabPageColorPalette;
 enum class SearchEngineLogoState;
-@class TabGroupIndicatorView;
 
 // Header view for the NTP. The header view contains all views that are
 // displayed above the list of most visited sites, which includes the
 // primary toolbar, doodle, and fake omnibox.
 @interface NewTabPageHeaderView : UIView
+
+// Initializes the view with the Lens button new badge status.
+- (instancetype)initWithUseNewBadgeForLensButton:(BOOL)useNewBadgeForLensButton
+    NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
+- (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
 
 // Returns the toolbar view.
 @property(nonatomic, readonly) UIView* toolBarView;
@@ -68,13 +74,6 @@ enum class SearchEngineLogoState;
 
 // The logo state.
 @property(nonatomic, assign) SearchEngineLogoState logoState;
-
-// Initializes the view with the Lens button new badge status.
-- (instancetype)initWithUseNewBadgeForLensButton:(BOOL)useNewBadgeForLensButton
-    NS_DESIGNATED_INITIALIZER;
-
-- (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
-- (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
 
 // Adds the separator to the searchField. Must be called after the searchField
 // is added as a subview.
@@ -136,9 +135,6 @@ enum class SearchEngineLogoState;
 
 // Whether the current session is eligible for fusebox.
 - (void)setFuseboxEligible:(BOOL)eligible;
-
-// Sets whether the omnibox is pinned to the bottom position.
-- (void)setOmniboxPositionIsBottom:(BOOL)isBottomOmnibox;
 
 // Whether to show the plus button.
 - (BOOL)shouldShowPlusButton;

@@ -69,7 +69,6 @@ include_rules = [
   "+ios/chrome/browser/toolbar/tab_group/coordinator/tab_group_indicator_coordinator.h",
   "+ios/chrome/browser/toolbar/tab_group/ui/tab_group_indicator_constants.h",
   "+ios/chrome/browser/toolbar/tab_group/ui/tab_group_indicator_view.h",
-  "+ios/chrome/browser/toolbar/ui",
   "+ios/chrome/browser/url_loading/model/url_loading_browser_agent.h",
   "+ios/chrome/browser/url_loading/model/url_loading_params.h",
   "+ios/chrome/browser/web/model/web_navigation_util.h",

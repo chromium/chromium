@@ -40,9 +40,6 @@
 // Whether the current session is eligible for fusebox.
 - (void)setFuseboxEligible:(BOOL)eligible;
 
-// Whether the omnibox is pinned to the bottom position.
-- (void)setOmniboxInBottomPosition:(BOOL)isBottomOmnibox;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_NTP_UI_BUNDLED_NEW_TAB_PAGE_HEADER_CONSUMER_H_

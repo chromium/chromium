@@ -46,7 +46,6 @@
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/public/toolbar_utils.h"
 #import "ios/chrome/browser/toolbar/tab_group/ui/tab_group_indicator_constants.h"
 #import "ios/chrome/browser/toolbar/tab_group/ui/tab_group_indicator_view.h"
-#import "ios/chrome/browser/toolbar/ui/toolbar_constants.h"
 #import "ios/chrome/common/NSString+Chromium.h"
 #import "ios/chrome/common/material_timing.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -254,9 +253,6 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   // Whether the current session is eligible to fusebox.
   BOOL _fuseboxEligible;
 
-  // Whether the omnibox is pinned to the bottom position.
-  BOOL _isBottomOmnibox;
-
   // Location bar view for when it has a colored gradient.
   GradientView* _fakeLocationBarGradientView;
   // Location bar view to use for when it should have a blur effect.
@@ -264,6 +260,17 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 }
 
 #pragma mark - Public
+
+- (void)setIsGoogleDefaultSearchEngine:(BOOL)isGoogleDefaultSearchEngine {
+  if (_isGoogleDefaultSearchEngine == isGoogleDefaultSearchEngine) {
+    return;
+  }
+
+  _isGoogleDefaultSearchEngine = isGoogleDefaultSearchEngine;
+
+  [self removeAllFakeboxButtonsFromStack];
+  [self addFakeboxButtonsToStack];
+}
 
 - (instancetype)initWithUseNewBadgeForLensButton:
     (BOOL)useNewBadgeForLensButton {
@@ -333,22 +340,6 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   _placeholderText = placeholderText;
   [self.omnibox.textInput setDefaultPlaceholderText:placeholderText];
   self.searchHintLabel.text = placeholderText;
-}
-
-- (void)setOmniboxPositionIsBottom:(BOOL)isBottomOmnibox {
-  CHECK(IsChromeNextIaEnabled());
-  _isBottomOmnibox = isBottomOmnibox;
-}
-
-- (void)setIsGoogleDefaultSearchEngine:(BOOL)isGoogleDefaultSearchEngine {
-  if (_isGoogleDefaultSearchEngine == isGoogleDefaultSearchEngine) {
-    return;
-  }
-
-  _isGoogleDefaultSearchEngine = isGoogleDefaultSearchEngine;
-
-  [self removeAllFakeboxButtonsFromStack];
-  [self addFakeboxButtonsToStack];
 }
 
 - (void)addViewsToSearchField:(UIView*)searchField {
@@ -1284,8 +1275,6 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
     // iPads pin slightly earlier than landscape iPhones.
     if (CanShowTabStrip(self)) {
       offset -= content_suggestions::SearchFieldTopMargin(self.logoState);
-    } else if (IsChromeNextIaEnabled() && !_isBottomOmnibox) {
-      offset -= kToolbarHeight + self.safeAreaInsets.top;
     }
   }
   return offset;
