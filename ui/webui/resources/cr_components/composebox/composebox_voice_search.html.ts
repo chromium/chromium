@@ -46,6 +46,7 @@ export function getHtml(this: ComposeboxVoiceSearchElement) {
               exportparts="submit"
               .iconType="${this.submitButtonIconType}"
               .submitButtonTitle="${this.i18n('composeboxSubmitButtonTitle')}"
+              @submit-click="${this.onSubmitClick_}"
               ?disabled="${!(this.finalResult_ || this.interimResult_)}">
           </cr-composebox-submit>
         </div>

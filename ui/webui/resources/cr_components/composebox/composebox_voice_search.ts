@@ -275,6 +275,13 @@ export class ComposeboxVoiceSearchElement extends
         this.onIdleTimeout_.bind(this), IDLE_TIMEOUT_MS);
   }
 
+  protected onSubmitClick_(e: Event) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    this.onFinalResult_(this.transcript_);
+  }
+
   private onIdleTimeout_() {
     if (this.state_ === State.RESULT_FINAL) {
       // Waiting for query redirect.

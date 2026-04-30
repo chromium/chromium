@@ -494,6 +494,67 @@ suite('ComposeboxVoiceSearch', () => {
             composeboxElement.animationState, GlowAnimationState.LISTENING);
       });
 
+  test(
+      'Records QUERY_SUBMITTED action and fires event on submit click',
+      async () => {
+        loadTimeData.overrideValues({
+          voiceSearchCoherenceComposeboxesEnabled: true,
+        });
+
+        document.body.innerHTML = window.trustedTypes!.emptyHTML;
+        composeboxElement = document.createElement('cr-composebox');
+        document.body.appendChild(composeboxElement);
+        await microtasksFinished();
+
+        const voiceSearchElement = getVoiceSearchElement(composeboxElement);
+
+        voiceSearchElement.start();
+        await microtasksFinished();
+
+        assertTrue(mockSpeechRecognition.voiceSearchInProgress);
+
+        // Simulate a voice recognition result containing both final and interim
+        // text. This allows the component to internally update finalResult_ and
+        // interimResult_.
+        const result = createResults(2);
+        Object.assign(
+            result.results[0]![0]!, {confidence: 1, transcript: 'hello'});
+        Object.assign(
+            result.results[1]![0]!, {confidence: 0, transcript: ' world'});
+        mockSpeechRecognition.onresult!(result);
+        await microtasksFinished();
+
+        let firedTranscript = '';
+        voiceSearchElement.addEventListener(
+            'voice-search-final-result', (e: Event) => {
+              firedTranscript = (e as CustomEvent<string>).detail;
+            });
+
+        // Simulate a user clicking the Submit button.
+        const submitButton =
+            voiceSearchElement.shadowRoot.querySelector<HTMLElement>(
+                '#submitButton');
+        assertTrue(!!submitButton);
+        submitButton.dispatchEvent(new CustomEvent('submit-click'));
+        await microtasksFinished();
+
+        // Verify the emitted transcript is cleanly concatenated and trimmed.
+        assertEquals('hello world', firedTranscript);
+
+        // Verify that the voice search engine has successfully stopped.
+        assertFalse(mockSpeechRecognition.voiceSearchInProgress);
+
+        assertEquals(
+            1,
+            metrics.count(
+                'VoiceSearch.Action.NTP_REALBOX',
+                VoiceSearchAction.QUERY_SUBMITTED));
+
+        // Clean up internal state.
+        voiceSearchElement['voiceModeEndCleanup_']();
+        await microtasksFinished();
+      });
+
   test('on result updates the searchbox input', async () => {
     const voiceSearchButton = getVoiceSearchButton(composeboxElement);
     voiceSearchButton!.click();
