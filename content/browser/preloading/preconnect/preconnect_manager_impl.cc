@@ -322,11 +322,6 @@ void PreconnectManagerImpl::LookupProxyForUrl(
 void PreconnectManagerImpl::TryToLaunchPreresolveJobs() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  // We assume that the number of jobs in the queue will be relatively small at
-  // any given time. We can revisit this as needed.
-  UMA_HISTOGRAM_COUNTS_100("Navigation.Preconnect.PreresolveJobQueueLength",
-                           queued_jobs_.size());
-
   while (!queued_jobs_.empty() &&
          inflight_preresolves_count_ < kMaxInflightPreresolves) {
     auto job_id = queued_jobs_.front();

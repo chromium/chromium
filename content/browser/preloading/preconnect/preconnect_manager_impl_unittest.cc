@@ -836,9 +836,6 @@ TEST_F(PreconnectManagerImplTest, TestQueueingMetricsRecorded) {
   preconnect_manager_->Start(main_frame_url, requests,
                              TRAFFIC_ANNOTATION_FOR_TESTS);
 
-  // The number of queued jobs should have been recorded.
-  histogram_tester.ExpectUniqueSample(
-      "Navigation.Preconnect.PreresolveJobQueueLength", num_preresolves + 1, 1);
   // Each job that was actually executed should have had its queueing time
   // recorded.
   histogram_tester.ExpectTotalCount(

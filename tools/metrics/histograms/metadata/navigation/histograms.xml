@@ -1989,19 +1989,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Navigation.Preconnect.PreresolveJobQueueLength" units="count"
-    expires_after="2023-08-08">
-  <owner>alexilin@chromium.org</owner>
-  <owner>blundell@chromium.org</owner>
-  <owner>lizeb@chromium.org</owner>
-  <owner>pasko@chromium.org</owner>
-  <summary>
-    Measures the length of the queue of preresolve jobs at the beginning of
-    PreconnectManager processing this queue to execute jobs. Recorded each time
-    that PreconnectManager processes the queue of pending jobs.
-  </summary>
-</histogram>
-
 <histogram name="Navigation.Preconnect.ResolveHostCallbackQueueingTime"
     units="ms" expires_after="2023-06-04">
   <owner>alexilin@chromium.org</owner>
