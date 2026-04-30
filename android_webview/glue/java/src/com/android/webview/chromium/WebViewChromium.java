@@ -143,6 +143,8 @@ class WebViewChromium
 
     private static boolean sRecordWholeDocumentEnabledByApi;
 
+    private boolean mEvaluateJavaScriptCalled;
+
     static void enableSlowWholeDocumentDraw() {
         sRecordWholeDocumentEnabledByApi = true;
     }
@@ -1209,6 +1211,10 @@ class WebViewChromium
         }
     }
 
+    public static void recordWebViewApiCallWithoutUserAction(@ApiCall int sample) {
+        RecordHistogram.recordEnumeratedHistogram("Android.WebView.ApiCall", sample, ApiCall.COUNT);
+    }
+
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
     @IntDef({
@@ -1964,9 +1970,16 @@ class WebViewChromium
         mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_EVALUATE_JAVASCRIPT);
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.EVALUATE_JAVASCRIPT")) {
-            recordWebViewApiCall(
-                    ApiCall.EVALUATE_JAVASCRIPT,
-                    ApiCallUserAction.WEBVIEW_INSTANCE_EVALUATE_JAVASCRIPT);
+            // Not recording the user action more than once as this method is called so many times
+            // (~20% of all user actions) and would overwhelm the data processing pipeline.
+            if (!mEvaluateJavaScriptCalled) {
+                recordWebViewApiCall(
+                        ApiCall.EVALUATE_JAVASCRIPT,
+                        ApiCallUserAction.WEBVIEW_INSTANCE_EVALUATE_JAVASCRIPT);
+                mEvaluateJavaScriptCalled = true;
+            } else {
+                recordWebViewApiCallWithoutUserAction(ApiCall.EVALUATE_JAVASCRIPT);
+            }
             checkThread();
             mAwContents.evaluateJavaScript(
                     script, CallbackConverter.fromValueCallback(resultCallback));
