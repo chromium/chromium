@@ -236,4 +236,24 @@ TEST_F(NavigatorShareTest, CancelShareWithFile) {
       WebFeature::kWebShareUnsuccessfulContainingFiles));
 }
 
+TEST_F(NavigatorShareTest, ShareFileUrlWithBaseTag) {
+  GetDocument().SetBaseURLOverride(KURL("file:///"));
+
+  const String url = "file:///etc/passwd";
+  ShareData* share_data = MakeGarbageCollected<ShareData>();
+  share_data->setUrl(url);
+
+  LocalFrame::NotifyUserActivation(
+      &GetFrame(), mojom::UserActivationNotificationType::kTest);
+  Navigator* navigator = GetFrame().DomWindow()->navigator();
+  DummyExceptionStateForTesting exception_state;
+  NavigatorShare::share(GetScriptState(), *navigator, share_data,
+                        exception_state);
+
+  // Regression test for crbug.com/501541341.
+  // Verify that the URL is rejected by CanShareInternal even when the
+  // document's base URL protocol is manipulated to match the shared URL.
+  EXPECT_TRUE(exception_state.HadException());
+}
+
 }  // namespace blink
