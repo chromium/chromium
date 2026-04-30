@@ -433,6 +433,16 @@
     "channel": "stable",
     "source": "metricsPrivate"
    },
+  "metricsPrivate.getHistogram": {
+    "allowlist": [
+      // The Autotest extension is loaded with --allowlisted-extension-id, so it
+      // technically bypasses this check, but this entry is included anyway to
+      // restrict access to this function under normal circumstances.
+      // TODO(crbug.com/508312478): getHistogram should be moved back to the
+      // autotestPrivate namespace.
+      "0D209B5E4401BB8E7873B5AB5B1346A1CB067015"  // ChromeOS Autotest extension
+    ]
+  },
   "metricsPrivate.getIsCrashReportingEnabled": {
     "allowlist": [
       // This function inherits the extension restrictions of metricsPrivate,
