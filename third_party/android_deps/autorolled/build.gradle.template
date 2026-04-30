@@ -46,6 +46,7 @@ dependencies {
     androidTestCompileLatest 'io.grpc:grpc-testing:+'
     androidTestCompileLatest 'io.grpc:grpc-inprocess:+'
     androidTestCompileLatest 'io.grpc:grpc-util:+'
+    androidTestCompileLatest 'com.google.truth:truth:+'
 
     // A dependency of androidx.xr.runtime:runtime, but must be listed here in
     // order to be auto-rolled and not manually rolled.

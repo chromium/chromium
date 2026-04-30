@@ -123,6 +123,9 @@ class ChromiumDepGraph {
                     exclude: true, // There is a phantom dep on this target, but this is deprecated and not used in chrome.
                     licenseUrl: 'https://raw.githubusercontent.com/protocolbuffers/protobuf/master/LICENSE',
                     licenseName: 'BSD'),
+            com_google_truth_truth: new PropertyOverride(
+                    licenseUrl: 'https://raw.githubusercontent.com/google/truth/master/LICENSE',
+                    licenseName: 'Apache 2.0'),
             com_google_protobuf_protobuf_javalite: new PropertyOverride(
                     cpePrefix: 'cpe:/a:google:protobuf-javalite',
                     licenseUrl: 'https://raw.githubusercontent.com/protocolbuffers/protobuf/master/LICENSE',
