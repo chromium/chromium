@@ -115,12 +115,8 @@ public class SigninButtonCoordinatorTest {
     @Test
     @MediumTest
     public void testSigninButtonVisibleOnNtp() {
-        // Sign-in button should be visible on NTP with sign-in promo description.
-        ViewUtils.waitForVisibleView(
-                allOf(
-                        withId(R.id.signin_text_button),
-                        isDisplayed(),
-                        withText(R.string.signin_promo_sign_in)));
+        // Button to sign-in should be visible on NTP.
+        verifySignedOutButtonVisible();
     }
 
     @Test
@@ -138,12 +134,8 @@ public class SigninButtonCoordinatorTest {
 
         setSigninAllowed(true);
 
-        // Should show sign-in text button.
-        ViewUtils.waitForVisibleView(
-                allOf(
-                        withId(R.id.signin_text_button),
-                        isDisplayed(),
-                        withText(R.string.signin_promo_sign_in)));
+        // Should show sign-in button.
+        verifySignedOutButtonVisible();
     }
 
     @Test
@@ -153,12 +145,8 @@ public class SigninButtonCoordinatorTest {
     // UserActionableError.NEEDS_UPM_BACKEND_UPGRADE.
     @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_24W15)
     public void testSignIn_ShowsPersonalizedIdentityDisc() {
-        // Initially shows sign-in text button.
-        ViewUtils.waitForVisibleView(
-                allOf(
-                        withId(R.id.signin_text_button),
-                        isDisplayed(),
-                        withText(R.string.signin_promo_sign_in)));
+        // Initially shows sign-in button.
+        verifySignedOutButtonVisible();
 
         mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
 
@@ -177,12 +165,8 @@ public class SigninButtonCoordinatorTest {
     // UserActionableError.NEEDS_UPM_BACKEND_UPGRADE.
     @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_24W15)
     public void testSignIn_ShowsPersonalizedIdentityDiscNonDisplayableEmail() {
-        // Initially shows sign-in text button.
-        ViewUtils.waitForVisibleView(
-                allOf(
-                        withId(R.id.signin_text_button),
-                        isDisplayed(),
-                        withText(R.string.signin_promo_sign_in)));
+        // Initially shows sign-in button.
+        verifySignedOutButtonVisible();
 
         mSigninTestRule.addAccount(TestAccounts.CHILD_ACCOUNT_NON_DISPLAYABLE_EMAIL);
         mSigninTestRule.waitForSignin(TestAccounts.CHILD_ACCOUNT_NON_DISPLAYABLE_EMAIL);
@@ -208,12 +192,8 @@ public class SigninButtonCoordinatorTest {
     // UserActionableError.NEEDS_UPM_BACKEND_UPGRADE.
     @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_24W15)
     public void testSignIn_ShowsPersonalizedIdentityDiscNoName() {
-        // Initially shows sign-in text button.
-        ViewUtils.waitForVisibleView(
-                allOf(
-                        withId(R.id.signin_text_button),
-                        isDisplayed(),
-                        withText(R.string.signin_promo_sign_in)));
+        // Initially shows sign-in button.
+        verifySignedOutButtonVisible();
 
         mSigninTestRule.addAccount(TestAccounts.CHILD_ACCOUNT_NON_DISPLAYABLE_EMAIL_AND_NO_NAME);
         mSigninTestRule.waitForSignin(TestAccounts.CHILD_ACCOUNT_NON_DISPLAYABLE_EMAIL_AND_NO_NAME);
@@ -252,12 +232,8 @@ public class SigninButtonCoordinatorTest {
 
         mSigninTestRule.signOut();
 
-        // Should update to the sign-in text button.
-        ViewUtils.waitForVisibleView(
-                allOf(
-                        withId(R.id.signin_text_button),
-                        isDisplayed(),
-                        withText(R.string.signin_promo_sign_in)));
+        // Should update to the sign-in button.
+        verifySignedOutButtonVisible();
     }
 
     @Test
@@ -379,7 +355,7 @@ public class SigninButtonCoordinatorTest {
     public void testClickSigninButton_SignedOut() {
         ViewUtils.waitForVisibleView(withId(R.id.signin_button));
 
-        // Clicking the sign-in text button should lead to the sign-in bottom sheet.
+        // Clicking the sign-in button should lead to the sign-in bottom sheet.
         onView(withId(R.id.signin_button)).perform(click());
         ViewUtils.waitForVisibleView(withText(R.string.signin_account_picker_bottom_sheet_title));
     }
@@ -390,7 +366,7 @@ public class SigninButtonCoordinatorTest {
     public void testClickSigninButton_SignedOut_SeamlessSigninDisabled() {
         ViewUtils.waitForVisibleView(withId(R.id.signin_button));
 
-        // Clicking the signed-out avatar should lead to the sign-in activity.
+        // Clicking the signed-out button should lead to the sign-in activity.
         Activity signinActivity =
                 ActivityTestUtils.waitForActivity(
                         InstrumentationRegistry.getInstrumentation(),
@@ -465,22 +441,22 @@ public class SigninButtonCoordinatorTest {
     @Restriction(DeviceFormFactor.DESKTOP_FREEFORM)
     public void testSigninButtonDisabledOnInactiveWindow() {
         AppHeaderUtils.setAppInDesktopWindowForTesting(true);
-        ViewUtils.waitForVisibleView(withId(R.id.signin_text_button));
-        onView(withId(R.id.signin_text_button)).check(matches(isEnabled()));
+        ViewUtils.waitForVisibleView(withId(R.id.avatar_button));
+        onView(withId(R.id.avatar_button)).check(matches(isEnabled()));
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mActivityTestRule.getActivity().onTopResumedActivityChanged(false);
                 });
 
-        onView(withId(R.id.signin_text_button)).check(matches(not(isEnabled())));
+        onView(withId(R.id.avatar_button)).check(matches(not(isEnabled())));
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mActivityTestRule.getActivity().onTopResumedActivityChanged(true);
                 });
 
-        onView(withId(R.id.signin_text_button)).check(matches(isEnabled()));
+        onView(withId(R.id.avatar_button)).check(matches(isEnabled()));
     }
 
     @Test
@@ -503,6 +479,23 @@ public class SigninButtonCoordinatorTest {
         ColorStateList unfocusedTint = avatarButton.getImageTintList();
         assertNotNull(unfocusedTint);
         assertNotEquals("Tint should change when window is inactive", focusedTint, unfocusedTint);
+    }
+
+    private void verifySignedOutButtonVisible() {
+        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivityTestRule.getActivity())) {
+            ViewUtils.waitForVisibleView(
+                    allOf(
+                            withId(R.id.avatar_button),
+                            isDisplayed(),
+                            withContentDescription(
+                                    R.string.accessibility_toolbar_btn_signed_out_identity_disc)));
+        } else {
+            ViewUtils.waitForVisibleView(
+                    allOf(
+                            withId(R.id.signin_text_button),
+                            isDisplayed(),
+                            withText(R.string.signin_promo_sign_in)));
+        }
     }
 
     private void setSigninAllowed(boolean allowed) {

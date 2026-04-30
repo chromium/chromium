@@ -104,6 +104,8 @@ final class SigninButtonMediator
 
     private @Nullable ColorStateList mActivityFocusTint;
 
+    private boolean mShowAvatarWhenSignedOut;
+
     private boolean mHasSpaceToShow = true;
 
     private boolean mShouldShowOnPage;
@@ -224,6 +226,11 @@ final class SigninButtonMediator
         }
     }
 
+    void showAvatarWhenSignedOut(boolean showAvatarWhenSignedOut) {
+        mShowAvatarWhenSignedOut = showAvatarWhenSignedOut;
+        updateButtonState();
+    }
+
     void setHasSpaceToShow(boolean hasSpaceToShow) {
         if (mHasSpaceToShow == hasSpaceToShow) return;
         mHasSpaceToShow = hasSpaceToShow;
@@ -272,7 +279,9 @@ final class SigninButtonMediator
 
     private void setButton(@Nullable DisplayableProfileData profileData) {
         boolean showSigninText =
-                profileData == null && assumeNonNull(mSigninManager).isSigninAllowed();
+                profileData == null
+                        && assumeNonNull(mSigninManager).isSigninAllowed()
+                        && !mShowAvatarWhenSignedOut;
 
         if (!showSigninText) {
             mModel.set(
