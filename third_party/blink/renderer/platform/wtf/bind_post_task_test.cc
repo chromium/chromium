@@ -33,14 +33,14 @@ int Multiply(int value) {
 }
 
 // Helper class from base/task/bind_post_task_unittest.cc, adapted for WTF.
-class WTFSequenceRestrictionChecker {
+class WtfSequenceRestrictionChecker {
  public:
-  WTFSequenceRestrictionChecker(bool* set_on_destroy,
+  WtfSequenceRestrictionChecker(bool* set_on_destroy,
                                 base::OnceClosure quit_closure)
       : set_on_destroy_(set_on_destroy),
         quit_closure_(std::move(quit_closure)) {}
 
-  ~WTFSequenceRestrictionChecker() {
+  ~WtfSequenceRestrictionChecker() {
     EXPECT_TRUE(checker_.CalledOnValidSequence());
     *set_on_destroy_ = true;
     if (quit_closure_) {
@@ -139,11 +139,11 @@ TEST_F(BindPostTaskTest, OnceWithIgnoreResult) {
 
 TEST_F(BindPostTaskTest, OnceRunDestroyedOnBound) {
   bool destroyed_on_main = false;
-  auto checker = std::make_unique<WTFSequenceRestrictionChecker>(
+  auto checker = std::make_unique<WtfSequenceRestrictionChecker>(
       &destroyed_on_main, task_environment_.QuitClosure());
 
   auto cb_owning_checker = CrossThreadBindOnce(
-      &WTFSequenceRestrictionChecker::Run, std::move(checker));
+      &WtfSequenceRestrictionChecker::Run, std::move(checker));
   auto post_cb = BindPostTask(task_runner_, std::move(cb_owning_checker));
 
   base::Thread other_thread("other_thread_once_run");
@@ -159,11 +159,11 @@ TEST_F(BindPostTaskTest, OnceRunDestroyedOnBound) {
 
 TEST_F(BindPostTaskTest, OnceNotRunDestroyedOnBound) {
   bool destroyed_on_main = false;
-  auto checker = std::make_unique<WTFSequenceRestrictionChecker>(
+  auto checker = std::make_unique<WtfSequenceRestrictionChecker>(
       &destroyed_on_main, task_environment_.QuitClosure());
 
   auto cb_owning_checker = CrossThreadBindOnce(
-      &WTFSequenceRestrictionChecker::Run, std::move(checker));
+      &WtfSequenceRestrictionChecker::Run, std::move(checker));
   auto post_cb = BindPostTask(task_runner_, std::move(cb_owning_checker));
 
   base::Thread other_thread("other_thread_once_not_run");
@@ -232,10 +232,10 @@ TEST_F(BindPostTaskTest, RepeatingWithIgnoreResult) {
 
 TEST_F(BindPostTaskTest, RepeatingRunDestroyedOnBound) {
   bool destroyed_on_main = false;
-  auto checker_ptr = std::make_unique<WTFSequenceRestrictionChecker>(
+  auto checker_ptr = std::make_unique<WtfSequenceRestrictionChecker>(
       &destroyed_on_main, task_environment_.QuitClosure());
   auto cb_owning_checker = CrossThreadBindRepeating(
-      &WTFSequenceRestrictionChecker::Run, std::move(checker_ptr));
+      &WtfSequenceRestrictionChecker::Run, std::move(checker_ptr));
   auto post_cb = BindPostTask(task_runner_, std::move(cb_owning_checker));
 
   base::Thread other_thread("other_thread_repeating_run");
@@ -255,10 +255,10 @@ TEST_F(BindPostTaskTest, RepeatingRunDestroyedOnBound) {
 
 TEST_F(BindPostTaskTest, RepeatingNotRunDestroyedOnBound) {
   bool destroyed_on_main = false;
-  auto checker_ptr = std::make_unique<WTFSequenceRestrictionChecker>(
+  auto checker_ptr = std::make_unique<WtfSequenceRestrictionChecker>(
       &destroyed_on_main, task_environment_.QuitClosure());
   auto cb_owning_checker = CrossThreadBindRepeating(
-      &WTFSequenceRestrictionChecker::Run, std::move(checker_ptr));
+      &WtfSequenceRestrictionChecker::Run, std::move(checker_ptr));
   auto post_cb = BindPostTask(task_runner_, std::move(cb_owning_checker));
 
   base::Thread other_thread("other_thread_repeating_run");
