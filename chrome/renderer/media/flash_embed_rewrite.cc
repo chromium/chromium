@@ -4,6 +4,9 @@
 
 #include "chrome/renderer/media/flash_embed_rewrite.h"
 
+#include <string_view>
+
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "url/gurl.h"
 
@@ -91,11 +94,11 @@ GURL FlashEmbedRewrite::RewriteDailymotionFlashEmbedURL(const GURL& url) {
 GURL FlashEmbedRewrite::RewriteVimeoFlashEmbedURL(const GURL& url) {
   // Vimeo flash embeds are of the form of:
   // http://vimeo.com/moogaloop.swf?clip_id=XXX
-  if (!base::StartsWith(url.GetPath(), "/moogaloop.swf")) {
+  if (!base::StartsWith(url.path(), "/moogaloop.swf")) {
     return GURL();
   }
 
-  std::string url_str = url.spec();
+  std::string_view url_str = url.spec();
   size_t clip_id_start = url_str.find("clip_id=");
   if (clip_id_start == std::string::npos)
     return GURL();
@@ -103,7 +106,8 @@ GURL FlashEmbedRewrite::RewriteVimeoFlashEmbedURL(const GURL& url) {
   clip_id_start += 8;
   size_t clip_id_end = url_str.find("&", clip_id_start);
 
-  std::string clip_id =
+  std::string_view clip_id =
       url_str.substr(clip_id_start, clip_id_end - clip_id_start);
-  return GURL(url.GetScheme() + "://player.vimeo.com/video/" + clip_id);
+  return GURL(
+      base::StrCat({url.scheme(), "://player.vimeo.com/video/", clip_id}));
 }
