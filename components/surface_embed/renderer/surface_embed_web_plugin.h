@@ -10,6 +10,7 @@
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "cc/layers/content_layer_client.h"
 #include "cc/layers/surface_layer.h"
 #include "components/surface_embed/common/surface_embed.mojom.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
@@ -23,9 +24,14 @@ namespace blink {
 struct WebPluginParams;
 }  // namespace blink
 
+namespace cc {
+class DisplayItemList;
+class PictureLayer;
+}  // namespace cc
+
 namespace content {
 class RenderFrame;
-}
+}  // namespace content
 
 namespace surface_embed {
 
@@ -34,12 +40,11 @@ namespace surface_embed {
 // an <embed> element. The 1:1 browser process counterpart is the
 // SurfaceEmbedHost.
 class SurfaceEmbedWebPlugin : public blink::WebPlugin,
-                              public mojom::SurfaceEmbed {
+                              public mojom::SurfaceEmbed,
+                              public cc::ContentLayerClient {
  public:
   static SurfaceEmbedWebPlugin* Create(content::RenderFrame* render_frame,
                                        const blink::WebPluginParams& params);
-
-  ~SurfaceEmbedWebPlugin() override;
 
   SurfaceEmbedWebPlugin(const SurfaceEmbedWebPlugin&) = delete;
   SurfaceEmbedWebPlugin& operator=(const SurfaceEmbedWebPlugin&) = delete;
@@ -65,6 +70,8 @@ class SurfaceEmbedWebPlugin : public blink::WebPlugin,
   void DidFailLoading(const blink::WebURLError& error) override;
 
  private:
+  // Destroy via ->Destroy().
+  ~SurfaceEmbedWebPlugin() override;
   SurfaceEmbedWebPlugin(const base::UnguessableToken& contents_id,
                         content::RenderFrame* render_frame,
                         const blink::WebPluginParams& params);
@@ -82,12 +89,22 @@ class SurfaceEmbedWebPlugin : public blink::WebPlugin,
   void SetFrameSinkId(const ::viz::FrameSinkId& frame_sink_id) override;
   void UpdateLocalSurfaceIdFromChild(
       const ::viz::LocalSurfaceId& local_surface_id) override;
+  void ChildProcessGone() override;
+
+  // cc::ContentLayerClient, used only if we're painting a sad plugin.
+  scoped_refptr<cc::DisplayItemList> PaintContentsToDisplayList() override;
+  bool FillsBoundsCompletely() const override;
+
+  void ReleaseCrashedLayer();
 
   // The child contents ID parsed from the `data-content-id` attribute.
   base::UnguessableToken contents_id_;
 
   raw_ptr<blink::WebPluginContainer> container_ = nullptr;
   scoped_refptr<cc::SurfaceLayer> layer_;
+  // Layer we show as a fallback if the renderer process crashed.
+  // Only set if needed.
+  scoped_refptr<cc::PictureLayer> crashed_layer_;
 
   std::optional<blink::FrameVisualProperties> sent_visual_properties_;
   std::optional<bool> sent_last_is_visible_;

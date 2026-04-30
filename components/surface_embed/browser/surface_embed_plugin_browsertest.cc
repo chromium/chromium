@@ -18,13 +18,16 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/result_codes.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/no_renderer_crashes_assertion.h"
 #include "content/shell/browser/shell.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
+#include "third_party/blink/public/common/switches.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect.h"
@@ -34,7 +37,9 @@ namespace surface_embed {
 namespace {
 constexpr std::string_view kAttachHarnessUrl =
     "/surface_embed/attach_harness.html";
+constexpr std::string_view kBlueBoxUrl = "/surface_embed/blue_box.html";
 constexpr std::string_view kEmptyUrl = "/surface_embed/empty.html";
+constexpr std::string_view kRedBoxUrl = "/surface_embed/red_box.html";
 constexpr size_t kSingleEmbedCount = 1;
 constexpr float kTestDeviceScaleFactor = 1.5f;
 
@@ -127,6 +132,9 @@ class SurfaceEmbedBrowserTest : public content::ContentBrowserTest {
     // Note that we force a device scale factor of 1.5 to also test scaling of
     // the surface embed plugin.
     EnablePixelOutput(kTestDeviceScaleFactor);
+
+    command_line->AppendSwitchASCII(blink::switches::kJavaScriptFlags,
+                                    "--expose-gc");
   }
 
   void SetUpOnMainThread() override {
@@ -417,6 +425,94 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest, EmbedTagRemovedDestroysHost) {
   // Verify that the host is destroyed.
   WaitForHostCount(0);
   EXPECT_EQ(0u, GetHostCount());
+}
+
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest, Crash) {
+  auto child_contents = SetupHarnessAndChildWithContent(kRedBoxUrl);
+  AttachChildToEmbed(child_contents.get());
+
+  EXPECT_TRUE(CheckHasPixelInColor(SK_ColorRED));
+
+  // Simulate a crash.
+  content::ScopedAllowRendererCrashes testing_crashes_here(
+      child_contents->GetPrimaryMainFrame());
+  child_contents->GetPrimaryMainFrame()->GetProcess()->Shutdown(
+      content::RESULT_CODE_KILLED);
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return child_contents->IsCrashed(); }));
+  // The crashed frame gets drawn with a gray background, with an image
+  // in the middle (which doesn't seem configured for tests). The gray in
+  // question is a bit different than SK_ColorGRAY.
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return CheckHasPixelInColor(SK_ColorRED) == false; }));
+  EXPECT_TRUE(CheckHasPixelInColor(SkColors::kGray.toSkColor()));
+
+  // Remove the embed element from the page.
+  EXPECT_TRUE(content::ExecJs(web_contents(),
+                              "document.querySelector('embed').remove();"));
+
+  // Trigger garbage collection. The C++ side of the heap has
+  // blink::PendingLayer which refer to a PictureLayer we use, which was caught
+  // with a dangling pointer in review. This call would have raw_ptr catch it
+  // if the bug were still there.
+  EXPECT_TRUE(content::ExecJs(web_contents(), "gc()"));
+
+  // Verify that the host is destroyed.
+  WaitForHostCount(0);
+}
+
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest, CrashThenReattach) {
+  auto child_contents = SetupHarnessAndChildWithContent(kRedBoxUrl);
+  AttachChildToEmbed(child_contents.get());
+
+  EXPECT_TRUE(CheckHasPixelInColor(SK_ColorRED));
+
+  // Simulate a crash.
+  content::ScopedAllowRendererCrashes testing_crashes_here(
+      child_contents->GetPrimaryMainFrame());
+  child_contents->GetPrimaryMainFrame()->GetProcess()->Shutdown(
+      content::RESULT_CODE_KILLED);
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return child_contents->IsCrashed(); }));
+  // The crashed frame gets drawn with a gray background, with an image
+  // in the middle (which doesn't seem configured for tests). The gray in
+  // question is a bit different than SK_ColorGRAY.
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return CheckHasPixelInColor(SK_ColorRED) == false; }));
+  EXPECT_TRUE(CheckHasPixelInColor(SkColors::kGray.toSkColor()));
+
+  auto child_contents2 = CreateChildWebContents();
+  NavigateChildToUrl(child_contents2.get(), kBlueBoxUrl);
+  AttachChildToEmbed(child_contents2.get());
+
+  // ...actually should be blue, but that part hasn't landed yet.
+  EXPECT_TRUE(CheckHasPixelInColor(SK_ColorRED));
+}
+
+// Test case where child process crashed before the attach.
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest, CrashEarly) {
+  auto child_contents = SetupHarnessAndChildWithContent(kRedBoxUrl);
+
+  // Simulate a crash.
+  content::ScopedAllowRendererCrashes testing_crashes_here(
+      child_contents->GetPrimaryMainFrame());
+  child_contents->GetPrimaryMainFrame()->GetProcess()->Shutdown(
+      content::RESULT_CODE_KILLED);
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return child_contents->IsCrashed(); }));
+
+  // Now try to attach. This doesn't actually attach successfully, so can't
+  // use the usual helper.
+  guest_contents::GuestContentsHandle* guest_handle =
+      guest_contents::GuestContentsHandle::CreateForWebContents(
+          child_contents.get());
+  ASSERT_NE(guest_handle, nullptr);
+  std::string script = "createEmbed('" + guest_handle->id().ToString() + "')";
+  EXPECT_TRUE(content::ExecJs(web_contents(), script));
+
+  // Should have a gray background.
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return CheckHasPixelInColor(SkColors::kGray.toSkColor()); }));
 }
 
 }  // namespace surface_embed

@@ -5650,6 +5650,7 @@ class SurfaceEmbedConnectorWebContentsBrowserTest
         const viz::LocalSurfaceId& local_surface_id) override {}
     void DetachedByHost() override {}
     bool IsAttachedForTesting() const override { return false; }
+    void ChildProcessGone() override {}
   };
 
   content::test::PrerenderTestHelper prerender_helper_;

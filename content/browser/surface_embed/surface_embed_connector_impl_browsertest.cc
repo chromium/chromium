@@ -47,6 +47,7 @@ class MockSurfaceEmbedConnectorDelegate
               (override));
   MOCK_METHOD(void, DetachedByHost, (), (override));
   MOCK_METHOD(bool, IsAttachedForTesting, (), (const, override));
+  MOCK_METHOD(void, ChildProcessGone, (), (override));
 };
 
 }  // namespace
@@ -209,8 +210,11 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorImplBrowserTest,
   EXPECT_EQ(connector->GetRootRenderWidgetHostView(),
             connector->GetParentRenderWidgetHostView());
 
-  // These return void, just call them to ensure no crash.
+  // RenderProcessGone just forwards to the delegate's ChildProcessGone.
+  EXPECT_CALL(delegate, ChildProcessGone()).Times(1);
   connector->RenderProcessGone();
+
+  // These return void, just call them to ensure no crash.
   connector->FirstSurfaceActivation(viz::SurfaceInfo());
   connector->SendIntrinsicSizingInfoToParent(nullptr);
 

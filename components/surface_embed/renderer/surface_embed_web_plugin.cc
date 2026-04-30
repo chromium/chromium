@@ -5,17 +5,24 @@
 #include "components/surface_embed/renderer/surface_embed_web_plugin.h"
 
 #include "base/notimplemented.h"
+#include "cc/layers/picture_layer.h"
 #include "cc/layers/surface_layer.h"
+#include "cc/paint/paint_image_builder.h"
+#include "cc/paint/paint_op.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "content/public/renderer/render_frame.h"
 #include "third_party/blink/public/common/frame/frame_visual_properties.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_plugin_container.h"
 #include "third_party/blink/public/web/web_plugin_params.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkBlendMode.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "third_party/skia/include/core/SkImage.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace surface_embed {
@@ -89,6 +96,7 @@ void SurfaceEmbedWebPlugin::Destroy() {
     container_ = nullptr;
   }
   layer_.reset();
+  ReleaseCrashedLayer();
 
   receiver_.reset();
   host_.reset();
@@ -305,8 +313,8 @@ void SurfaceEmbedWebPlugin::SetFrameSinkId(
   CHECK(container_);
   CHECK(frame_sink_id.is_valid());
   // Make sure we use a normal layer, not crash one.
-  // TODO(surface-embed): draw sad tab in a PictureLayer for crashed pages.
   container_->SetCcLayer(layer_.get());
+  ReleaseCrashedLayer();
 
   // The same ParentLocalSurfaceIdAllocator cannot provide LocalSurfaceIds for
   // two different frame sinks, so recreate it here.
@@ -329,6 +337,71 @@ void SurfaceEmbedWebPlugin::UpdateLocalSurfaceIdFromChild(
   // The viz::LocalSurfaceId has changed so we call SynchronizeVisualProperties
   // here to embed it.
   SynchronizeVisualProperties();
+}
+
+void SurfaceEmbedWebPlugin::ChildProcessGone() {
+  crashed_layer_ = cc::PictureLayer::Create(this);
+  crashed_layer_->SetMasksToBounds(true);
+  crashed_layer_->SetIsDrawable(true);
+  container_->SetCcLayer(crashed_layer_.get());
+  container_->ScheduleAnimation();
+}
+
+scoped_refptr<cc::DisplayItemList>
+SurfaceEmbedWebPlugin::PaintContentsToDisplayList() {
+  blink::WebFrameWidget* ancestor_widget =
+      container_->GetDocument().GetFrame()->LocalRoot()->FrameWidget();
+  auto device_scale_factor =
+      ancestor_widget->GetOriginalScreenInfo().device_scale_factor;
+  // Adapted from ChildFrameCompositingHelper::PaintContentsToDisplayList().
+  auto layer_size = crashed_layer_->bounds();
+  auto display_list = base::MakeRefCounted<cc::DisplayItemList>();
+  display_list->StartPaint();
+  display_list->push<cc::DrawColorOp>(SkColors::kGray, SkBlendMode::kSrc);
+
+  SkBitmap* sad_bitmap = blink::Platform::Current()->GetSadPageBitmap();
+  if (sad_bitmap) {
+    float paint_width = sad_bitmap->width() * device_scale_factor;
+    float paint_height = sad_bitmap->height() * device_scale_factor;
+    if (layer_size.width() >= paint_width &&
+        layer_size.height() >= paint_height) {
+      float x = (layer_size.width() - paint_width) / 2.0f;
+      float y = (layer_size.height() - paint_height) / 2.0f;
+      if (device_scale_factor != 1.f) {
+        display_list->push<cc::SaveOp>();
+        display_list->push<cc::TranslateOp>(x, y);
+        display_list->push<cc::ScaleOp>(device_scale_factor,
+                                        device_scale_factor);
+        x = 0;
+        y = 0;
+      }
+
+      auto image = cc::PaintImageBuilder::WithDefault()
+                       .set_id(cc::PaintImage::GetNextId())
+                       .set_image(SkImages::RasterFromBitmap(*sad_bitmap),
+                                  cc::PaintImage::GetNextContentId())
+                       .TakePaintImage();
+      display_list->push<cc::DrawImageOp>(image, x, y);
+
+      if (device_scale_factor != 1.f) {
+        display_list->push<cc::RestoreOp>();
+      }
+    }
+  }
+  display_list->EndPaintOfUnpaired(gfx::Rect(layer_size));
+  display_list->Finalize();
+  return display_list;
+}
+
+bool SurfaceEmbedWebPlugin::FillsBoundsCompletely() const {
+  return true;
+}
+
+void SurfaceEmbedWebPlugin::ReleaseCrashedLayer() {
+  if (crashed_layer_) {
+    crashed_layer_->ClearClient();
+    crashed_layer_.reset();
+  }
 }
 
 }  // namespace surface_embed

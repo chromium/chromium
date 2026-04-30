@@ -45,6 +45,9 @@ class CONTENT_EXPORT SurfaceEmbedConnector {
     // Returns whether this delegate's parent WebContents still has an attached
     // SurfaceEmbed child WebContents.
     virtual bool IsAttachedForTesting() const = 0;
+
+    // Called when the process for the child frame crashed.
+    virtual void ChildProcessGone() = 0;
   };
 
   // Attach a child WebContents to a parent WebContents. This creates a

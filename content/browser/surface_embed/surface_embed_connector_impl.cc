@@ -200,7 +200,14 @@ SurfaceEmbedConnectorImpl::GetRootRenderWidgetHostView() {
       root_web_contents->GetRenderWidgetHostView());
 }
 
-void SurfaceEmbedConnectorImpl::RenderProcessGone() {}
+void SurfaceEmbedConnectorImpl::RenderProcessGone() {
+  delegate_->ChildProcessGone();
+
+  // TODO(crbug.com/479743223): CrossProcessFrameConnector does a lot of logging
+  // and sometimes reloading here that's about child frames in the usual sense.
+  // Things embedded here do not always have those semantics, but it might make
+  // sense to do something parallel.
+}
 
 void SurfaceEmbedConnectorImpl::FirstSurfaceActivation(
     const viz::SurfaceInfo& surface_info) {}

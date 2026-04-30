@@ -135,20 +135,20 @@ void SurfaceEmbedHost::AttachConnector(
   // SurfaceEmbed as it initiated the detachment.
   DetachConnector();
 
+  if (web_contents_to_attach->IsCrashed()) {
+    // The child process may have crashed before the renderer for the parent
+    // got the chance to attach it. We want to handle this early since attaching
+    // the connector will make WebContents think the process is alive.
+    surface_embed_->ChildProcessGone();
+    return;
+  }
+
   child_contents_ = web_contents_to_attach->GetWeakPtr();
   content::WebContents* parent_web_contents =
       content::WebContents::FromRenderFrameHost(
           &collection_->render_frame_host());
   content::SurfaceEmbedConnector::Attach(web_contents_to_attach,
                                          parent_web_contents, this);
-
-  if (web_contents_to_attach->IsCrashed()) {
-    // The child process may have crashed before the renderer for the parent
-    // got the chance to attach it.
-    // TODO(surface-embed): Notify the plugin.
-    // surface_embed_->ChildProcessGone();
-    return;
-  }
 
   auto* connector = GetConnector();
   CHECK(connector->GetFrameSinkId().is_valid());
@@ -187,6 +187,12 @@ void SurfaceEmbedHost::UpdateLocalSurfaceIdFromChild(
     const viz::LocalSurfaceId& local_surface_id) {
   if (surface_embed_) {
     surface_embed_->UpdateLocalSurfaceIdFromChild(local_surface_id);
+  }
+}
+
+void SurfaceEmbedHost::ChildProcessGone() {
+  if (surface_embed_) {
+    surface_embed_->ChildProcessGone();
   }
 }
 
