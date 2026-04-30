@@ -31,6 +31,14 @@ class MimeHandlerStreamDelegate {
   virtual void OnStreamClaimed(content::RenderFrameHost* embedder_host,
                                StreamInfo* stream_info);
 
+  // Called during `ReadyToCommitNavigation()` for the extension frame
+  // navigation to the handler URL. Neither `navigation_handle` nor
+  // `stream_info` may be null, and neither pointer is retained past the
+  // call. Default implementation is a no-op.
+  virtual void OnExtensionFrameReadyToCommit(
+      content::NavigationHandle* navigation_handle,
+      StreamInfo* stream_info);
+
   // Called once the MIME handler extension frame has committed its
   // navigation to the claimed stream's handler URL. Gives the delegate a
   // chance to perform any post-commit setup that needs the just-committed

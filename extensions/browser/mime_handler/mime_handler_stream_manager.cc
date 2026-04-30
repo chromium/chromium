@@ -446,6 +446,21 @@ void MimeHandlerStreamManager::ReadyToCommitNavigation(
     return;
   }
 
+  // Extension frame navigation: when the extension frame (child of the
+  // embedder) navigates to the handler URL, dispatch to the delegate.
+  // The default implementation is a no-op; subclasses can override to
+  // hook into the extension frame's ReadyToCommit.
+  if (auto* parent_host = navigation_handle->GetParentFrame()) {
+    if (auto* stream_info = GetClaimedStreamInfo(parent_host);
+        stream_info && stream_info->DidExtensionStartNavigation() &&
+        stream_info->extension_host_frame_tree_node_id() ==
+            navigation_handle->GetFrameTreeNodeId()) {
+      stream_info->delegate()->OnExtensionFrameReadyToCommit(navigation_handle,
+                                                             stream_info);
+      return;
+    }
+  }
+
   // The initial load notification for the URL being served in the embedder
   // host. The `embedder_host` should claim the unclaimed `StreamInfo`. This
   // should replace any existing `StreamInfo` objects related to

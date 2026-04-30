@@ -987,4 +987,67 @@ TEST_F(MimeHandlerStreamManagerTest, AddStreamContainerWithDelegate) {
   EXPECT_EQ(stream_info->delegate(), delegate_ptr);
 }
 
+// `ReadyToCommitNavigation` dispatches to the delegate's
+// `OnExtensionFrameReadyToCommit` hook if and only if the committing
+// frame is the claimed stream's extension host. Exercise the gating
+// conditions with several navigation commits in one flow.
+TEST_F(MimeHandlerStreamManagerTest,
+       ExtensionFrameReadyToCommitDispatchesToDelegate) {
+  content::RenderFrameHost* embedder_host =
+      NavigateAndCommit(main_rfh(), GURL(kOriginalUrl1));
+  MimeHandlerStreamManager* manager = mime_handler_stream_manager();
+
+  auto delegate = std::make_unique<NiceMock<MockMimeHandlerStreamDelegate>>();
+  auto* delegate_ptr = delegate.get();
+  manager->AddStreamContainer(
+      embedder_host->GetFrameTreeNodeId(), "internal_id",
+      extensions::mime_handler::GenerateSampleStreamContainer(1),
+      std::move(delegate));
+
+  // The embedder's own commit (top-level, no parent frame) claims the
+  // stream and must not dispatch to the extension-frame hook.
+  EXPECT_CALL(*delegate_ptr, OnExtensionFrameReadyToCommit(_, _)).Times(0);
+  NiceMock<content::MockNavigationHandle> claim_handle;
+  claim_handle.set_render_frame_host(embedder_host);
+  manager->ReadyToCommitNavigation(&claim_handle);
+  testing::Mock::VerifyAndClearExpectations(delegate_ptr);
+
+  // Create the extension child frame but do not mark its FrameTreeNodeId
+  // on the stream yet -- simulates the transient about:blank commit
+  // before `NavigateToExtensionUrl()` runs. `DidExtensionStartNavigation()`
+  // returns false, so the dispatch must not fire.
+  content::RenderFrameHost* extension_host =
+      CreateChildRenderFrameHost(embedder_host, "extension host");
+  EXPECT_CALL(*delegate_ptr, OnExtensionFrameReadyToCommit(_, _)).Times(0);
+  NiceMock<content::MockNavigationHandle> about_blank_handle;
+  about_blank_handle.set_render_frame_host(extension_host);
+  about_blank_handle.set_is_in_primary_main_frame(false);
+  manager->ReadyToCommitNavigation(&about_blank_handle);
+  testing::Mock::VerifyAndClearExpectations(delegate_ptr);
+
+  // Mark the extension child frame's FrameTreeNodeId on the stream,
+  // simulating `NavigateToExtensionUrl()`.
+  manager->SetExtensionFrameTreeNodeIdForTesting(
+      embedder_host, extension_host->GetFrameTreeNodeId());
+
+  // A sibling iframe under the same embedder has a different
+  // FrameTreeNodeId, so its commit must not dispatch.
+  content::RenderFrameHost* sibling_host =
+      CreateChildRenderFrameHost(embedder_host, "sibling host");
+  EXPECT_CALL(*delegate_ptr, OnExtensionFrameReadyToCommit(_, _)).Times(0);
+  NiceMock<content::MockNavigationHandle> sibling_handle;
+  sibling_handle.set_render_frame_host(sibling_host);
+  sibling_handle.set_is_in_primary_main_frame(false);
+  manager->ReadyToCommitNavigation(&sibling_handle);
+  testing::Mock::VerifyAndClearExpectations(delegate_ptr);
+
+  // The extension frame's commit satisfies all gating conditions and
+  // must dispatch exactly once.
+  EXPECT_CALL(*delegate_ptr, OnExtensionFrameReadyToCommit(_, _));
+  NiceMock<content::MockNavigationHandle> extension_handle;
+  extension_handle.set_render_frame_host(extension_host);
+  extension_handle.set_is_in_primary_main_frame(false);
+  manager->ReadyToCommitNavigation(&extension_handle);
+}
+
 }  // namespace extensions::mime_handler

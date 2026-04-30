@@ -16,6 +16,10 @@ bool MimeHandlerStreamDelegate::ShouldSetUpPostMessage() const {
 void MimeHandlerStreamDelegate::OnPostMessageSetUp(
     content::RenderFrameHost* embedder_host) {}
 
+void MimeHandlerStreamDelegate::OnExtensionFrameReadyToCommit(
+    content::NavigationHandle* navigation_handle,
+    StreamInfo* stream_info) {}
+
 void MimeHandlerStreamDelegate::OnExtensionFrameFinished(
     content::NavigationHandle* navigation_handle,
     StreamInfo* stream_info) {}

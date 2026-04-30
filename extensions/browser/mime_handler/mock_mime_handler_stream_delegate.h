@@ -22,6 +22,10 @@ class MockMimeHandlerStreamDelegate
               (content::RenderFrameHost*),
               (override));
   MOCK_METHOD(void,
+              OnExtensionFrameReadyToCommit,
+              (content::NavigationHandle*, extensions::StreamInfo*),
+              (override));
+  MOCK_METHOD(void,
               OnExtensionFrameFinished,
               (content::NavigationHandle*, extensions::StreamInfo*),
               (override));
