@@ -120,15 +120,15 @@ void SharedDictionaryOnDisk::SetState(State state) {
   CHECK_NE(State::kLoading, state);
   CHECK_EQ(State::kLoading, state_);
   state_ = state;
+  auto readall_callbacks = std::move(readall_callbacks_);
 
-  if (state_ == State::kFailed && disk_cache_error_callback_) {
+  if (state == State::kFailed && disk_cache_error_callback_) {
     std::move(disk_cache_error_callback_).Run();
   }
-  auto readall_callbacks = std::move(readall_callbacks_);
   for (auto& readall_callback : readall_callbacks) {
-    if (state_ == State::kDone) {
+    if (state == State::kDone) {
       std::move(readall_callback).Run(net::OK);
-    } else if (state_ == State::kFailed) {
+    } else if (state == State::kFailed) {
       std::move(readall_callback).Run(net::ERR_FAILED);
     }
   }
