@@ -24,20 +24,3 @@ source_set("controllers") {
     "//chrome/browser/ui/tabs/tab_strip_api/tab_strip_model_impl",
   ]
 }
-
-source_set("unit_tests") {
-  testonly = true
-
-  sources = [ "tab_strip_ui_controller_impl_unittest.cc" ]
-
-  deps = [
-    ":controllers",
-    "//base",
-    "//base/test:test_support",
-    "//chrome/browser/ui/tabs/tab_strip_api/testing",
-    "//components/browser_apis/tab_strip/types",
-    "//mojo/public/mojom/base",
-    "//testing/gtest",
-    "//ui/gfx/geometry",
-  ]
-}
