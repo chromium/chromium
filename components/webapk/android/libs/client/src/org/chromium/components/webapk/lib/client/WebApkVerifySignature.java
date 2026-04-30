@@ -9,6 +9,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
@@ -60,16 +61,16 @@ public class WebApkVerifySignature {
     private static final String TAG = "WebApkVerifySignature";
 
     /** End Of Central Directory Signature. */
-    private static final long EOCD_SIG = 0x06054b50;
+    private static final int EOCD_SIG = 0x06054b50;
 
     /** Central Directory Signature. */
-    private static final long CD_SIG = 0x02014b50;
+    private static final int CD_SIG = 0x02014b50;
 
     /** Local File Header Signature. */
-    private static final long LFH_SIG = 0x04034b50;
+    private static final int LFH_SIG = 0x04034b50;
 
     /** Data descriptor Signature. */
-    private static final long DATA_DESCRIPTOR_SIG = 0x08074b50;
+    private static final int DATA_DESCRIPTOR_SIG = 0x08074b50;
 
     /** Minimum end-of-central-directory size in bytes, including variable length file comment. */
     private static final int MIN_EOCD_SIZE = 22;
@@ -304,7 +305,7 @@ public class WebApkVerifySignature {
         seek(start + 10);
         mRecordCount = read2(); // Number of Central Directory records
         seekDelta(4); // Size of central directory
-        mCentralDirOffset = read4(); // as bytes from start of file.
+        mCentralDirOffset = read4InIntRange(); // as bytes from start of file.
         int commentLength = read2();
         mComment = readString(commentLength);
         if (mBuffer.position() < mBuffer.limit()) {
@@ -324,7 +325,7 @@ public class WebApkVerifySignature {
         mBlocks = new ArrayList<>(mRecordCount);
         seek(mCentralDirOffset);
         for (int i = 0; i < mRecordCount; i++) {
-            int signature = read4();
+            int signature = read4Raw();
             if (signature != CD_SIG) {
                 Log.d(TAG, "Missing Central Directory Signature");
                 return Error.BAD_APK;
@@ -332,13 +333,13 @@ public class WebApkVerifySignature {
             // CreatorVersion(2), ReaderVersion(2), Flags(2), CompressionMethod(2)
             // ModifiedTime(2), ModifiedDate(2), CRC32(4) = 16 bytes
             seekDelta(16);
-            int compressedSize = read4();
+            int compressedSize = read4InIntRange();
             seekDelta(4); // uncompressed size
             int fileNameLength = read2();
             int extraLen = read2();
             int fileCommentLength = read2();
             seekDelta(8); // DiskNumberStart(2), Internal Attrs(2), External Attrs(4)
-            int offset = read4();
+            int offset = read4InIntRange();
             String filename = readString(fileNameLength);
             seekDelta(extraLen + fileCommentLength);
             if (fileCommentLength > MAX_FILE_COMMENT_LENGTH) {
@@ -363,7 +364,7 @@ public class WebApkVerifySignature {
             }
 
             seek(block.mPosition);
-            int signature = read4();
+            int signature = read4Raw();
             if (signature != LFH_SIG) {
                 Log.d(TAG, "LFH Signature missing");
                 return Error.BAD_APK;
@@ -383,7 +384,7 @@ public class WebApkVerifySignature {
             lastByte = block.mPosition + block.mHeaderSize + block.mCompressedSize;
             if ((flags & 0x8) != 0) {
                 seek(lastByte);
-                if (read4() == DATA_DESCRIPTOR_SIG) {
+                if (read4Raw() == DATA_DESCRIPTOR_SIG) {
                     // Data descriptor, style 1: sig(4), crc-32(4), compressed size(4),
                     // uncompressed size(4) = 16 bytes
                     lastByte += 16;
@@ -422,7 +423,7 @@ public class WebApkVerifySignature {
         int minSearchOffset = Math.max(0, offset - MAX_EOCD_SIZE);
         for (; offset >= minSearchOffset; offset--) {
             seek(offset);
-            if (read4() == EOCD_SIG) {
+            if (read4Raw() == EOCD_SIG) {
                 // found!
                 return offset;
             }
@@ -453,8 +454,11 @@ public class WebApkVerifySignature {
      *
      * @return short value read (as an int).
      */
-    private int read2() {
-        return mBuffer.getShort();
+    @VisibleForTesting
+    int read2() {
+        // Mask with 0xFFFF to treat the short as an unsigned 16-bit integer and avoid sign
+        // extension.
+        return mBuffer.getShort() & 0xFFFF;
     }
 
     /**
@@ -462,8 +466,24 @@ public class WebApkVerifySignature {
      *
      * @return value read.
      */
-    private int read4() {
+    private int read4Raw() {
         return mBuffer.getInt();
+    }
+
+    /**
+     * Reads four bytes as an int.
+     *
+     * @return value read.
+     */
+    @VisibleForTesting
+    int read4InIntRange() {
+        int val = read4Raw();
+        if (val < 0) {
+            // Mask with 0xFFFFFFFFL to treat the int as an unsigned 32-bit integer for the error
+            // message.
+            throw new IndexOutOfBoundsException("32-bit value too large: " + (val & 0xFFFFFFFFL));
+        }
+        return val;
     }
 
     /** Read {@link length} many bytes into a string. */

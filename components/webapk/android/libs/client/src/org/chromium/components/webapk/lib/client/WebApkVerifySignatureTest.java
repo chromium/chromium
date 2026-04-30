@@ -17,6 +17,8 @@ import org.chromium.components.webapk.lib.client.WebApkVerifySignature.Error;
 import org.chromium.testing.local.TestDir;
 
 import java.io.RandomAccessFile;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.file.Files;
@@ -40,6 +42,56 @@ public class WebApkVerifySignatureTest {
 
     private static PublicKey createPublicKey(byte[] bytes) throws Exception {
         return KeyFactory.getInstance(KEY_FACTORY).generatePublic(new X509EncodedKeySpec(bytes));
+    }
+
+    @Test
+    public void testRead2() {
+        byte[] data = {
+            (byte) 0x01, (byte) 0x00, // 1
+            (byte) 0xFF, (byte) 0x7F, // 32767
+            (byte) 0x00, (byte) 0x80, // 32768
+            (byte) 0xFF, (byte) 0xFF // 65535
+        };
+        ByteBuffer buf = ByteBuffer.wrap(data);
+        buf.order(ByteOrder.LITTLE_ENDIAN);
+        WebApkVerifySignature v = new WebApkVerifySignature(buf);
+
+        assertEquals(1, v.read2());
+        assertEquals(32767, v.read2());
+        assertEquals(32768, v.read2());
+        assertEquals(65535, v.read2());
+    }
+
+    @Test
+    public void testRead4() {
+        byte[] data = {
+            (byte) 0x01, (byte) 0x00, (byte) 0x00, (byte) 0x00, // 1
+            (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0x7F, // 2147483647
+            (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x80, // 2147483648
+            (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF // 4294967295
+        };
+        ByteBuffer buf = ByteBuffer.wrap(data);
+        buf.order(ByteOrder.LITTLE_ENDIAN);
+        WebApkVerifySignature v = new WebApkVerifySignature(buf);
+
+        // test read4InIntRange() for small values
+        assertEquals(1, v.read4InIntRange());
+        assertEquals(2147483647, v.read4InIntRange());
+
+        // test read4InIntRange() for values > 2GB (should throw)
+        try {
+            v.read4InIntRange();
+            Assert.fail("Should have thrown IndexOutOfBoundsException for 2147483648");
+        } catch (IndexOutOfBoundsException e) {
+            assertEquals("32-bit value too large: 2147483648", e.getMessage());
+        }
+
+        try {
+            v.read4InIntRange();
+            Assert.fail("Should have thrown IndexOutOfBoundsException for 4294967295");
+        } catch (IndexOutOfBoundsException e) {
+            assertEquals("32-bit value too large: 4294967295", e.getMessage());
+        }
     }
 
     @Test
