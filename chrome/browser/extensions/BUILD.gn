@@ -609,8 +609,6 @@ source_set("extensions") {
     "//extensions/browser/api/storage:settings_observer",
     "//extensions/browser/api/system_display:display_info_provider",
     "//extensions/browser/forced_extensions",
-    "//extensions/browser/mime_handler",
-    "//extensions/browser/mime_handler:stream_container",
     "//extensions/browser/updater",
     "//extensions/common",
     "//extensions/strings",
@@ -684,6 +682,8 @@ source_set("extensions") {
       "//chrome/browser/ui/interaction",
       "//chrome/browser/ui/user_education",
       "//chrome/browser/ui/web_applications:launch_utils",
+      "//extensions/browser/mime_handler",
+      "//extensions/browser/mime_handler:stream_container",
     ]
   }
 

@@ -4,7 +4,7 @@
 
 import("//extensions/buildflags/buildflags.gni")
 
-assert(enable_extensions_core)
+assert(enable_extensions && !is_android)
 
 source_set("mime_handler") {
   sources = [
@@ -45,17 +45,30 @@ source_set("mime_handler_registry") {
   ]
 }
 
-source_set("mime_handler_registry_unittest") {
+source_set("unit_tests") {
   testonly = true
-  sources = [ "mime_handler_registry_unittest.cc" ]
+  sources = [
+    "mime_handler_registry_unittest.cc",
+    "mime_handler_stream_delegate_unittest.cc",
+    "mime_handler_stream_manager_unittest.cc",
+  ]
   deps = [
+    ":mime_handler",
     ":mime_handler_registry",
+    ":stream_container",
+    ":test_helpers",
+    "//base",
     "//base/test:test_support",
     "//components/version_info",
+    "//content/public/browser",
+    "//content/test:test_support",
     "//extensions:test_support",
     "//extensions/browser",
     "//extensions/common",
+    "//testing/gmock",
     "//testing/gtest",
+    "//third_party/blink/public/mojom:mojom_platform_headers",
+    "//url",
   ]
 }
 

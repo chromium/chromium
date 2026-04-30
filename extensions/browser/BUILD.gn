@@ -80,10 +80,13 @@ source_set("core_keyed_service_factories") {
     "//components/guest_view/buildflags",
     "//extensions/browser:browser_sources",
     "//extensions/browser:crx_installer",
-    "//extensions/browser/mime_handler:mime_handler_registry",
     "//extensions/browser/updater",
     "//extensions/buildflags",
   ]
+
+  if (enable_extensions && !is_android) {
+    deps += [ "//extensions/browser/mime_handler:mime_handler_registry" ]
+  }
 }
 
 # The set of all sources that are related to the core extensions system.
@@ -648,7 +651,6 @@ source_set("browser_sources") {
     "//extensions/browser/api/storage:settings_namespace",
     "//extensions/browser/api/storage:settings_observer",
     "//extensions/browser/api/system_display:display_info_provider",
-    "//extensions/browser/mime_handler:stream_container",
     "//extensions/buildflags",
     "//extensions/common",
     "//extensions/common/api",
@@ -737,6 +739,10 @@ source_set("browser_sources") {
         "guest_view/mime_handler_view/mime_handler_view_guest_delegate.cc",
         "guest_view/mime_handler_view/mime_handler_view_guest_delegate.h",
       ]
+
+      if (!is_android) {
+        deps += [ "//extensions/browser/mime_handler:stream_container" ]
+      }
     }
     sources += [
       "guest_view/extension_options/extension_options_constants.cc",
@@ -1102,8 +1108,6 @@ source_set("unit_tests") {
     "lazy_background_task_queue_unittest.cc",
     "management_policy_unittest.cc",
     "message_tracker_unittest.cc",
-    "mime_handler/mime_handler_stream_delegate_unittest.cc",
-    "mime_handler/mime_handler_stream_manager_unittest.cc",
     "mojo/keep_alive_impl_unittest.cc",
     "path_util_unittest.cc",
     "permissions/site_permissions_helper_unittest.cc",
@@ -1165,10 +1169,6 @@ source_set("unit_tests") {
     "//extensions/browser/api/content_settings",
     "//extensions/browser/api/storage:settings_namespace",
     "//extensions/browser/api/system_display:display_info_provider",
-    "//extensions/browser/mime_handler",
-    "//extensions/browser/mime_handler:mime_handler_registry_unittest",
-    "//extensions/browser/mime_handler:stream_container",
-    "//extensions/browser/mime_handler:test_helpers",
     "//extensions/browser/updater",
     "//extensions/buildflags",
     "//extensions/common",
@@ -1209,6 +1209,13 @@ source_set("unit_tests") {
       "//extensions/browser/api/declarative_net_request/filter_list_converter:unit_tests",
       "//extensions/shell:app_shell_lib",
     ]
+
+    if (!is_android) {
+      deps += [
+        "//extensions/browser/mime_handler:stream_container",
+        "//extensions/browser/mime_handler:unit_tests",
+      ]
+    }
   }
 
   if (enable_platform_apps) {

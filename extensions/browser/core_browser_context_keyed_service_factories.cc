@@ -4,6 +4,7 @@
 
 #include "extensions/browser/core_browser_context_keyed_service_factories.h"
 
+#include "build/build_config.h"
 #include "components/guest_view/buildflags/buildflags.h"
 #include "extensions/browser/api/web_request/web_request_event_router_factory.h"
 #include "extensions/browser/crx_installer.h"
@@ -31,8 +32,10 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_stream_manager.h"
+#if !BUILDFLAG(IS_ANDROID)
 #include "extensions/browser/mime_handler/mime_handler_registry.h"
-#endif
+#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if BUILDFLAG(ENABLE_PLATFORM_APPS)
 #include "extensions/browser/app_window/app_window_geometry_cache.h"
@@ -59,9 +62,11 @@ void EnsureCoreBrowserContextKeyedServiceFactoriesBuilt() {
   ImageLoaderFactory::GetInstance();
   MessageTracker::GetFactory();
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  MimeHandlerRegistry::EnsureFactoryBuilt();
   MimeHandlerStreamManager::EnsureFactoryBuilt();
-#endif
+#if !BUILDFLAG(IS_ANDROID)
+  MimeHandlerRegistry::EnsureFactoryBuilt();
+#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
   PendingExtensionManagerFactory::GetInstance();
   PermissionsManager::GetFactory();
   ProcessManagerFactory::GetInstance();
