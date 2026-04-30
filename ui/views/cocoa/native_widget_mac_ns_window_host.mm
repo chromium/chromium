@@ -888,7 +888,7 @@ bool NativeWidgetMacNSWindowHost::IsWindowKey() const {
 }
 
 void NativeWidgetMacNSWindowHost::SetVisibilityState(
-    remote_cocoa::mojom::WindowVisibilityState new_state) {
+    WindowVisibilityState new_state) {
   // On macOS 14 an application can't generally activate themselves. If we're
   // trying to activate a window in a remote application host, this yield
   // should make sure this works as long as chrome is the currently active
@@ -899,6 +899,22 @@ void NativeWidgetMacNSWindowHost::SetVisibilityState(
       [NSApp yieldActivationToApplicationWithBundleIdentifier:
                  base::SysUTF8ToNSString(application_host_->bundle_id())];
     }
+  }
+
+  // If we are going to be making the window visible, make the compositor
+  // visible pre-emptively, rather than waiting until the visibilty
+  // notification makes its way back via OnVisibilityChanged.
+  bool preemptively_make_visible =
+      new_state == WindowVisibilityState::kShowInactive ||
+      new_state == WindowVisibilityState::kShowAndActivateWindow;
+  if (!compositor_) {
+    preemptively_make_visible = false;
+  }
+  if (parent_ && !parent_->is_visible_) {
+    preemptively_make_visible = false;
+  }
+  if (preemptively_make_visible) {
+    OnVisibilityChanged(true);
   }
 
   GetNSWindowMojo()->SetVisibilityState(new_state);
