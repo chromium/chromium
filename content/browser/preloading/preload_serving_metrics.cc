@@ -420,7 +420,11 @@ void PreloadServingMetrics::RecordMetricsForPrerenderInitialNavigationFailed()
           }
           SCOPED_CRASH_KEY_STRING256("PreloadServingMetrics", "nvs_hint",
                                      nvs_string);
-          base::debug::DumpWithoutCrashing();
+          // Temporarily disable `DumpWithoutCrashing` as we collected data.
+          // Reenable it when we need it.
+          //
+          // Removal is managed by https://crbug.com/479983093.
+          // base::debug::DumpWithoutCrashing();
         }
       }
     }
