@@ -11,6 +11,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/new_tab_page/new_tab_page_util.h"
 #include "chrome/browser/ntp_tiles/chrome_most_visited_sites_factory.h"
@@ -386,7 +387,12 @@ void MostVisitedHandler::OnURLsAvailable(
     const std::map<ntp_tiles::SectionType, ntp_tiles::NTPTilesVector>&
         sections) {
   // Filter out stale shortcuts and notify the UI to show the toast.
-  MaybeRemoveStaleShortcuts();
+  // If a removal was scheduled, return early to avoid sending stale tiles
+  // to the UI and causing a flicker. The scheduled task will trigger a
+  // fresh OnURLsAvailable call.
+  if (MaybeRemoveStaleShortcuts()) {
+    return;
+  }
   auto* template_url_service =
       TemplateURLServiceFactory::GetForProfile(profile_);
   auto result = most_visited::mojom::MostVisitedInfo::New();
@@ -430,39 +436,50 @@ MostVisitedHandler::GetNewTabPagePreloadPipelineManager() {
              : nullptr;
 }
 
-void MostVisitedHandler::MaybeRemoveStaleShortcuts() {
+bool MostVisitedHandler::MaybeRemoveStaleShortcuts() {
   // Don't remove stale shortcuts if the feature is disabled.
   if (!base::FeatureList::IsEnabled(
           ntp_features::kNtpFeatureOptimizationShortcutsRemoval)) {
-    return;
+    return false;
   }
 
   // Don't remove stale shortcuts if the user has enterprise shortcuts.
   if (most_visited_sites_->IsEnterpriseShortcutsEnabled()) {
-    return;
+    return false;
   }
 
   // Remove shortcuts if they are enabled, visible, and the staleness count is
   // above the threshold.
   if (!profile_->GetPrefs()->GetBoolean(ntp_prefs::kNtpShortcutsVisible)) {
-    return;
+    return false;
   }
 
   if (profile_->GetPrefs()->GetBoolean(
           ntp_prefs::kNtpShortcutsAutoRemovalDisabled)) {
-    return;
+    return false;
   }
 
   if (profile_->GetPrefs()->GetInteger(ntp_prefs::kNtpShortcutsStalenessCount) <
       ntp_features::kStaleShortcutsCountThreshold.Get()) {
-    return;
+    return false;
   }
 
-  profile_->GetPrefs()->SetBoolean(ntp_prefs::kNtpShortcutsVisible, false);
-  profile_->GetPrefs()->SetBoolean(ntp_prefs::kNtpShortcutsAutoRemovalDisabled,
-                                   true);
-  page_->OnMostVisitedTilesAutoRemoval();
-  logger_.LogEvent(NTP_SHORTCUTS_AUTO_REMOVE, base::TimeDelta() /* unused */);
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](base::WeakPtr<MostVisitedHandler> handler, PrefService* prefs) {
+            if (!handler) {
+              return;
+            }
+            prefs->SetBoolean(ntp_prefs::kNtpShortcutsVisible, false);
+            prefs->SetBoolean(ntp_prefs::kNtpShortcutsAutoRemovalDisabled,
+                              true);
+            handler->page_->OnMostVisitedTilesAutoRemoval();
+            handler->logger_.LogEvent(NTP_SHORTCUTS_AUTO_REMOVE,
+                                      base::TimeDelta());
+          },
+          weak_ptr_factory_.GetWeakPtr(), profile_->GetPrefs()));
+  return true;
 }
 
 void MostVisitedHandler::OnMigrationRun() {

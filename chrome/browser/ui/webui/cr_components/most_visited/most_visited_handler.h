@@ -107,7 +107,7 @@ class MostVisitedHandler : public most_visited::mojom::MostVisitedPageHandler,
 
   NewTabPagePreloadPipelineManager* GetNewTabPagePreloadPipelineManager();
 
-  void MaybeRemoveStaleShortcuts();
+  bool MaybeRemoveStaleShortcuts();
 
   raw_ptr<Profile> profile_;
   // web_app::PreinstalledWebAppManager::Observer
