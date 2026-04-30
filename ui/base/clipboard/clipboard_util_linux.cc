@@ -23,12 +23,12 @@ std::string GetUriListFromPaths(const std::vector<std::string>& paths) {
 }
 
 std::vector<std::string> GetPathsFromUriList(std::string_view uri_list) {
-  std::vector<std::string> uris = base::SplitString(
+  std::vector<std::string_view> uris = base::SplitStringPiece(
       uri_list, "\r\n", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   std::vector<std::string> paths;
   paths.reserve(uris.size());
 
-  for (const auto& uri : uris) {
+  for (std::string_view uri : uris) {
     if (uri.empty() || uri[0] == '#') {
       continue;
     }
