@@ -2802,7 +2802,7 @@ deps = {
     Var('chromium_git') + '/external/github.com/protocolbuffers/protobuf-javascript' + '@' + 'e6d763860001ba1a76a63adcff5efb12b1c96024',
 
   'src/third_party/pthreadpool/src':
-    Var('chromium_git') + '/external/github.com/google/pthreadpool.git' + '@' + '9003ee6c137cea3b94161bd5c614fb43be523ee1',
+    Var('chromium_git') + '/external/github.com/google/pthreadpool.git' + '@' + '85d171824002c2b08a71770e511d022d5d83efee',
 
   # Dependency of skia.
   'src/third_party/pyelftools': {
