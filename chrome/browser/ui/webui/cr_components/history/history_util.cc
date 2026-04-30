@@ -71,6 +71,8 @@ content::WebUIDataSource* HistoryUtil::PopulateCommonSourceForHistory(
       {"searchResults", IDS_HISTORY_SEARCH_RESULTS},
       {"searchResultExactMatch", IDS_HISTORY_SEARCH_EXACT_MATCH_RESULT},
       {"searchResultExactMatches", IDS_HISTORY_SEARCH_EXACT_MATCH_RESULTS},
+      {"sourceFilterChipsAriaLabel",
+       IDS_HISTORY_SOURCE_FILTER_CHIPS_ARIA_LABEL},
       {"sourceFilterChipActor", IDS_HISTORY_SOURCE_FILTER_CHIP_ACTOR},
       {"sourceFilterChipUser", IDS_HISTORY_SOURCE_FILTER_CHIP_USER},
       {"title", IDS_HISTORY_TITLE},

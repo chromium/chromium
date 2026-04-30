@@ -138,6 +138,9 @@
   <message name="IDS_HISTORY_SHOWFULLHISTORY_LINK" desc="The label of the Show Full History link at the bottom of the back/forward menu.">
     Show Full History
   </message>
+  <message name="IDS_HISTORY_SOURCE_FILTER_CHIPS_ARIA_LABEL" desc="This string is the ARIA label of the filter chips that filter the history results when the user selects them; they sit next to each other on top of the Chrome history page, where users can see their browsing history.">
+    Auto browse filters
+  </message>
   <message name="IDS_HISTORY_SOURCE_FILTER_CHIP_ACTOR" desc="This string is found on a chip that filters the history results when the user selects it; it sits next to its opposite filter: 'You' (the user's browsing activity). It is at the top of the Chrome history page, where users can see their browsing history. This text is a noun and is short for the longer phrase 'Browsing history that AUTO BROWSE performed.' The users will then see entries in Chrome history that are the result of Gemini in Chrome browsing while performing an auto browse task for the user. The tone should be short and telegraphic.">
     Auto browse
   </message>

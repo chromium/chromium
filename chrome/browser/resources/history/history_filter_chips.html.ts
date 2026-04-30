@@ -9,7 +9,8 @@ import type {HistoryFilterChipsElement} from './history_filter_chips.js';
 export function getHtml(this: HistoryFilterChipsElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
-    <div class="filter-chip-container">
+    <div class="filter-chip-container" role="group"
+        aria-label="$i18n{sourceFilterChipsAriaLabel}">
       <cr-chip
           id="userVisitsChip"
           ?selected="${this.isUserSelected()}"
