@@ -152,6 +152,10 @@ EInsideLink StyleResolverState::InsideLink() const {
     // [1] https://drafts.csswg.org/css-pseudo-4/#highlight-cascade
     inside_link_ = ElementLinkState();
   }
+  if (*inside_link_ == EInsideLink::kInsideVisitedLink &&
+      GetElement().IsInCanvasSubtree()) {
+    inside_link_ = EInsideLink::kInsideUnvisitedLink;
+  }
   return *inside_link_;
 }
 
