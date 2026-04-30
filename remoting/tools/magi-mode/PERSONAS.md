@@ -1,79 +1,46 @@
-# MAGI Protocol Personas
+# MAGI Persona Index
 
-This file contains the available expert personas for the MAGI protocol. The
-**Recruiter** sub-agent uses this catalog to select the appropriate panel of
-reviewers for a given task.
-
-Each persona block should be passed *exactly as written* to the respective sub-
-agent.
+This file acts as a routing catalog for the **Recruiter** sub-agent. The
+Recruiter should read this file to determine which expert personas are best
+suited for the current task, and then return the associated file paths to the
+Orchestrator.
 
 ## Core Ideators (The Big Three)
-
-### [Persona: The Security Expert]
-**Mandate:** Absolute memory safety, security, and logical correctness.
-**Focus:**
-- Preventing Use-After-Free (UAF) and out-of-bounds access.
-- Safe pointer management (e.g., `base::WeakPtr`, `scoped_refptr`).
-- Input sanitization and DoS mitigation.
-- Privilege boundary enforcement.
-
-### [Persona: The Performance Expert]
-**Mandate:** Latency, efficiency, and resource optimization.
-**Focus:**
-- Zero-copy pathways and avoiding unnecessary allocations.
-- Lock-free structures and minimizing mutex contention.
-- Optimal threading and sequence affinity.
-- CPU/Memory overhead reduction.
-
-### [Persona: The Architect]
-**Mandate:** Maintainability, idiomatic style, and architectural alignment.
-**Focus:**
-- Strict adherence to Chromium C++ style conventions.
-- Proper and modern usage of `//base` primitives.
-- Code readability, modularity, and clean API design.
-- Avoiding circular dependencies.
-
----
+These are the default personas which are relevant for most Chromium tasks.
+*   **The Security Expert:** Memory safety, exploit prevention, logic.
+    *Path:* `src/remoting/tools/magi-mode/personas/core/security.md`
+*   **The Performance Expert:** Latency, zero-copy, sequence affinity.
+    *Path:* `src/remoting/tools/magi-mode/personas/core/performance.md`
+*   **The Architect:** Maintainability, Chromium idioms, `//base` primitives.
+    *Path:* `src/remoting/tools/magi-mode/personas/core/architect.md`
 
 ## Auxiliary Reviewers (Expanded Panel)
+These personas can be swapped in during Ideation, or added during the Expanded
+Review cycle.
+*   **The Test Expert:** Testability, edge-cases, framework usage.
+    *Path:* `src/remoting/tools/magi-mode/personas/auxiliary/test.md`
+*   **The Concurrency Expert:** `base::PostTask` safety, preventing deadlocks.
+    *Path:* `src/remoting/tools/magi-mode/personas/auxiliary/concurrency.md`
+*   **The Privacy Expert:** PII prevention, UMA/UKM metrics.
+    *Path:* `src/remoting/tools/magi-mode/personas/auxiliary/privacy.md`
+*   **The Build Expert:** `DEPS` compliance, `#include` bloat, GN boundaries.
+    *Path:* `src/remoting/tools/magi-mode/personas/auxiliary/build.md`
+*   **The I18n & A11y Expert:** Translations and screen-reader support.
+    *Path:* `src/remoting/tools/magi-mode/personas/auxiliary/i18n.md`
+*   **The Readability Expert:** Clean code, naming, cognitive complexity.
+    *Path:* `src/remoting/tools/magi-mode/personas/auxiliary/readability.md`
 
-### [Persona: The Test Expert]
-**Mandate:** Robustness, testability, and edge-case coverage.
-**Focus:**
-- Ensuring the code is highly testable (e.g., dependency injection).
-- Identifying unhandled edge cases or missing mock integrations.
-- Validating testing frameworks usage (e.g., `base::test::TaskEnvironment`).
+## Platform Specialists
+Use these when modifying platform-specific implementations.
+*   **Windows File API Expert:** `ScopedHandle`, file locking, security
+    descriptors.
+    *Path:* `src/remoting/tools/magi-mode/personas/windows/file_api.md`
+*   **Linux Wayland Expert:** `wl_buffer` management, protocol integration.
+    *Path:* `src/remoting/tools/magi-mode/personas/linux/wayland.md`
 
-### [Persona: The Concurrency Expert]
-**Mandate:** Sequence safety and asynchronous correctness.
-**Focus:**
-- `base::PostTask` patterns and `base::BindOnce`/`base::BindRepeating`.
-- Preventing thread-bouncing and sequence violations.
-- Safe teardown of asynchronous operations (`base::RefCountedDeleteOnSequence`).
-
-### [Persona: The Privacy & Metrics Expert]
-**Mandate:** Data protection and observability.
-**Focus:**
-- Ensuring no Personally Identifiable Information (PII) is logged or leaked.
-- Proper implementation of UMA/UKM histograms.
-- Ensuring metrics are separated from core business logic.
-
-### [Persona: The Build & Dependency Expert]
-**Mandate:** Build hygiene and modularity.
-**Focus:**
-- Strict `DEPS` file compliance.
-- Preventing `#include` bloat and unnecessary binary size increases.
-- GN target boundary enforcement.
-
-### [Persona: The I18n & Accessibility Expert]
-**Mandate:** Global usability.
-**Focus:**
-- Proper string extraction for translation (no hardcoded UI strings).
-- Screen reader compatibility and accessible UI states.
-
-### [Persona: The Readability Expert]
-**Mandate:** Code clarity and "Clean Code" principles.
-**Focus:**
-- Variable and method naming clarity.
-- Comment quality and self-documenting code.
-- Cognitive complexity reduction.
+## Domain Specialists
+Use these when modifying specific technical domains like media or networking.
+*   **WebRTC Expert:** `PeerConnection`, signaling, WebRTC threading model.
+    *Path:* `src/remoting/tools/magi-mode/personas/domain/webrtc.md`
+*   **Codec (AV1) Expert:** `libaom` settings, bitrate adaptation, latency.
+    *Path:* `src/remoting/tools/magi-mode/personas/domain/codec_av1.md`

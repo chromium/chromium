@@ -39,14 +39,14 @@ code or summarize state itself. It delegates to three auxiliary personas:
 ### 1. Preparation & Persona Selection (The Recruiter)
 - Identify the target file(s) and the core problem.
 - **The Recruiter:** The Orchestrator MUST invoke a sub-agent acting as the
-  "Recruiter". The Recruiter reads `src/remoting/tools/magi-mode/PERSONAS.md`,
-  selects the appropriate personas for the task, and returns their definitions
-  as an opaque context block.
+  "Recruiter". The Recruiter reads `src/remoting/tools/magi-mode/PERSONAS.md`
+  (the routing catalog) to select the most appropriate experts. It returns the
+  absolute file paths of their definition files to the Orchestrator.
 - **Transparency:** The Orchestrator MUST output the Recruiter's persona
   selection logic to the human. Ensure the workspace is clean.
-- **Opaque Passing:** The Orchestrator passes the persona context blocks
-  directly to the sub-agents without analyzing or parsing them, reducing context
-  bloat.
+- **Opaque Passing:** The Orchestrator passes the *file paths* of the selected
+  personas to the sub-agents. The sub-agents use `read_file` to load their
+  mandate, keeping the Orchestrator's context window lean.
 
 ### 2. Scaffolding (The Pathfinder)
 - **Roughing In:** Invoke a "Pathfinder" sub-agent (e.g., Chromium Expert) to
@@ -82,7 +82,8 @@ Once the ideation agents finish:
     panel MUST include the core ideators PLUS 3-6 specialized reviewer personas
     (e.g., **Test Expert**, **Readability Expert**, **Cross-Platform Expert**).
     **Prompt Template:**
-    > "Role: [Persona]. Priority: [Priority].
+    > "Role Details: Read your mandate from `[persona_file_path]`.
+    > Priority: [Priority].
     > Task: Review Draft [filename].
     > Output ONLY: `Verdict: [ACCEPT/REJECT]` and `Reasoning: [Bullet points]`."
 2.  **The Moderator:** If any agent rejects, pass all feedback to the Moderator
