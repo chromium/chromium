@@ -178,6 +178,40 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Signin.AccountCapabilities.ExternalPrivacyContextBuildDuration"
+    units="ms" expires_after="2026-09-01">
+  <owner>ddac@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the duration it takes to build the External Privacy Context for an
+    identity. Recorded when the asynchronous EPC build operation finishes. (iOS
+    only).
+  </summary>
+</histogram>
+
+<histogram
+    name="Signin.AccountCapabilities.ExternalPrivacyContextBuildErrorCode"
+    units="ErrorCode" expires_after="2026-09-01">
+  <owner>ddac@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the error code when the External Privacy Context build fails.
+    Recorded when the asynchronous EPC build operation finishes with an error.
+    (iOS only).
+  </summary>
+</histogram>
+
+<histogram name="Signin.AccountCapabilities.ExternalPrivacyContextBuildSuccess"
+    enum="BooleanSuccess" expires_after="2026-09-01">
+  <owner>ddac@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records whether the External Privacy Context build was successful or not.
+    Recorded when the asynchronous EPC build operation finishes. (iOS only).
+  </summary>
+</histogram>
+
 <histogram name="Signin.AccountCapabilities.FetchLatency" units="ms"
     expires_after="2026-09-27">
   <owner>tju@google.com</owner>
