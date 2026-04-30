@@ -2318,6 +2318,8 @@ ci.builder(
             "remoteexec",
             "minimal_symbols",
             "x86",
+            # See crbug.com/507825820
+            "strip_debug_info",
             "android_fastbuild",
             "webview_trichrome",
             "webview_shell",
@@ -2524,6 +2526,7 @@ ci.builder(
             "remoteexec",
             "minimal_symbols",
             "x86",
+            "strip_debug_info",
             "android_fastbuild",
             "webview_trichrome",
             "webview_shell",
