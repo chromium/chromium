@@ -60,13 +60,6 @@ def add_blinkpy_thirdparty_dir_to_sys_path():
         sys.path.insert(0, path)
 
 
-def add_pyjson5_dir_to_sys_path():
-    path = os.path.join(get_chromium_src_dir(), 'third_party', 'pyjson5',
-                        'src')
-    if path not in sys.path:
-        sys.path.insert(0, path)
-
-
 def add_testing_dir_to_sys_path():
     path = get_testing_dir()
     if path not in sys.path:
@@ -244,11 +237,6 @@ class PathFinder(object):
 
     def path_from_wpt_tests(self, *comps):
         return self._filesystem.join(self.wpt_tests_dir(), *comps)
-
-    def add_pyjson5_dir_to_sys_path(self):
-        path = self.path_from_chromium_base('third_party', 'pyjson5', 'src')
-        if path not in self._sys_path:
-            self._sys_path.insert(0, path)
 
     def strip_web_tests_path(self, web_test_abs_path):
         web_tests_path = self.path_from_web_tests('')

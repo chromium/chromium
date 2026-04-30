@@ -26,8 +26,6 @@ group("wpt_tests_isolate") {
     "//third_party/blink/web_tests/VirtualTestSuites",
     "//third_party/blink/web_tests/TestLists/",
 
-    "//third_party/pyjson5/",
-
     # exception reporting protos
     "//build/util/lib/proto",
 

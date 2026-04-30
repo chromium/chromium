@@ -17,10 +17,6 @@
 ../../../../catapult/third_party/typ/typ/stats.py
 ../../../../catapult/third_party/typ/typ/test_case.py
 ../../../../catapult/third_party/typ/typ/version.py
-../../../../pyjson5/src/json5/__init__.py
-../../../../pyjson5/src/json5/lib.py
-../../../../pyjson5/src/json5/parser.py
-../../../../pyjson5/src/json5/version.py
 ../__init__.py
 ../common/__init__.py
 ../common/checkout/__init__.py
