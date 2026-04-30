@@ -6,9 +6,7 @@ import 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
-import 'chrome://resources/cr_elements/mwb_element_shared_style.css.js';
 import './icons.html.js';
 
 import type {PriceTrackingBrowserProxy} from '//resources/cr_components/commerce/price_tracking_browser_proxy.js';
@@ -17,14 +15,15 @@ import type {BookmarkProductInfo} from '//resources/cr_components/commerce/share
 import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {ActionSource} from '../bookmarks.mojom-webui.js';
 import type {BookmarksApiProxy} from '../bookmarks_api_proxy.js';
 import {BookmarksApiProxyImpl} from '../bookmarks_api_proxy.js';
 
-import {getTemplate} from './shopping_list.html.js';
+import {getCss} from './shopping_list.css.js';
+import {getHtml} from './shopping_list.html.js';
 
 export const LOCAL_STORAGE_EXPAND_STATUS_KEY = 'shoppingListExpanded';
 export const ACTION_BUTTON_TRACK_IMAGE =
@@ -38,38 +37,30 @@ export interface ShoppingListElement {
   };
 }
 
-export class ShoppingListElement extends PolymerElement {
+export class ShoppingListElement extends CrLitElement {
   static get is() {
     return 'shopping-list';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      open_: {
-        type: Boolean,
-        value: true,
-      },
-
-      untrackedItems_: {
-        type: Array,
-        value: () => [],
-      },
-
-      productInfos: {
-        type: Array,
-        value: () => [],
-        observer: 'onProductInfoChanged_',
-      },
+      open_: {type: Boolean},
+      untrackedItems_: {type: Array},
+      productInfos: {type: Array},
     };
   }
 
-  declare productInfos: BookmarkProductInfo[];
-  declare private untrackedItems_: BookmarkProductInfo[];
-  declare private open_: boolean;
+  accessor productInfos: BookmarkProductInfo[] = [];
+  private accessor untrackedItems_: BookmarkProductInfo[] = [];
+  protected accessor open_: boolean = true;
   private bookmarksApi_: BookmarksApiProxy =
       BookmarksApiProxyImpl.getInstance();
   private priceTrackingProxy_: PriceTrackingBrowserProxy =
@@ -108,11 +99,19 @@ export class ShoppingListElement extends PolymerElement {
         id => this.priceTrackingProxy_.getCallbackRouter().removeListener(id));
   }
 
-  private getFaviconUrl_(url: string): string {
+  override willUpdate(changedProperties: PropertyValues) {
+    super.willUpdate(changedProperties as PropertyValues<this>);
+    if (changedProperties.has('productInfos')) {
+      this.untrackedItems_ = this.untrackedItems_.filter(
+          untrackedItem => this.productInfos.includes(untrackedItem));
+    }
+  }
+
+  protected getFaviconUrl_(url: string): string {
     return getFaviconForPageURL(url, false);
   }
 
-  private onFolderClick_(event: Event) {
+  protected onFolderClick_(event: Event) {
     event.preventDefault();
     event.stopPropagation();
 
@@ -127,8 +126,13 @@ export class ShoppingListElement extends PolymerElement {
     }
   }
 
-  private onProductAuxClick_(
-      event: DomRepeatEvent<BookmarkProductInfo, MouseEvent>) {
+  private getProductInfoFromEvent_(event: Event): BookmarkProductInfo {
+    const target = event.currentTarget as HTMLElement;
+    const index = Number(target.dataset['index']);
+    return this.productInfos[index];
+  }
+
+  protected onProductAuxclick_(event: MouseEvent) {
     if (event.button !== 1) {
       // Not a middle click.
       return;
@@ -138,8 +142,9 @@ export class ShoppingListElement extends PolymerElement {
     event.stopPropagation();
     chrome.metricsPrivate.recordUserAction(
         'Commerce.PriceTracking.SidePanel.ClickedTrackedProduct');
+    const item = this.getProductInfoFromEvent_(event);
     this.bookmarksApi_.openBookmark(
-        event.model.item.bookmarkId.toString(), 0, {
+        item.bookmarkId.toString(), 0, {
           middleButton: true,
           altKey: event.altKey,
           ctrlKey: event.ctrlKey,
@@ -149,14 +154,14 @@ export class ShoppingListElement extends PolymerElement {
         ActionSource.kPriceTracking);
   }
 
-  private onProductClick_(event:
-                              DomRepeatEvent<BookmarkProductInfo, MouseEvent>) {
+  protected onProductClick_(event: MouseEvent) {
     event.preventDefault();
     event.stopPropagation();
     chrome.metricsPrivate.recordUserAction(
         'Commerce.PriceTracking.SidePanel.ClickedTrackedProduct');
+    const item = this.getProductInfoFromEvent_(event);
     this.bookmarksApi_.openBookmark(
-        event.model.item.bookmarkId.toString(), 0, {
+        item.bookmarkId.toString(), 0, {
           middleButton: false,
           altKey: event.altKey,
           ctrlKey: event.ctrlKey,
@@ -166,40 +171,42 @@ export class ShoppingListElement extends PolymerElement {
         ActionSource.kPriceTracking);
   }
 
-  private onProductContextMenu_(
-      event: DomRepeatEvent<BookmarkProductInfo, MouseEvent>) {
+  protected onProductContextmenu_(event: MouseEvent) {
     event.preventDefault();
     event.stopPropagation();
+    const item = this.getProductInfoFromEvent_(event);
     this.bookmarksApi_.showContextMenu(
-        event.model.item.bookmarkId.toString(), event.clientX, event.clientY,
+        item.bookmarkId.toString(), event.clientX, event.clientY,
         ActionSource.kPriceTracking);
   }
 
-  private onActionButtonClick_(
-      event: DomRepeatEvent<BookmarkProductInfo, MouseEvent>) {
+  protected onActionButtonClick_(event: MouseEvent) {
     event.preventDefault();
     event.stopPropagation();
-    const bookmarkId = event.model.item.bookmarkId;
-    if (this.untrackedItems_.includes(event.model.item)) {
-      const index = this.untrackedItems_.indexOf(event.model.item);
-      this.splice('untrackedItems_', index, 1);
+    const item = this.getProductInfoFromEvent_(event);
+    const bookmarkId = item.bookmarkId;
+    if (this.untrackedItems_.includes(item)) {
+      const index = this.untrackedItems_.indexOf(item);
+      this.untrackedItems_.splice(index, 1);
+      this.requestUpdate();
       this.priceTrackingProxy_.trackPriceForBookmark(bookmarkId);
       chrome.metricsPrivate.recordUserAction(
           'Commerce.PriceTracking.SidePanel.Track.BellButton');
     } else {
-      this.push('untrackedItems_', event.model.item);
+      this.untrackedItems_.push(item);
+      this.requestUpdate();
       this.priceTrackingProxy_.untrackPriceForBookmark(bookmarkId);
       chrome.metricsPrivate.recordUserAction(
           'Commerce.PriceTracking.SidePanel.Untrack.BellButton');
     }
   }
 
-  private getIconForItem_(item: BookmarkProductInfo): string {
+  protected getIconForItem_(item: BookmarkProductInfo): string {
     return this.untrackedItems_.includes(item) ? ACTION_BUTTON_TRACK_IMAGE :
                                                  ACTION_BUTTON_UNTRACK_IMAGE;
   }
 
-  private getButtonDescriptionForItem_(item: BookmarkProductInfo): string {
+  protected getButtonDescriptionForItem_(item: BookmarkProductInfo): string {
     return this.untrackedItems_.includes(item) ?
         loadTimeData.getString('shoppingListTrackPriceButtonDescription') :
         loadTimeData.getString('shoppingListUntrackPriceButtonDescription');
@@ -209,15 +216,17 @@ export class ShoppingListElement extends PolymerElement {
     const productItem =
         this.productInfos.find(item => item.bookmarkId === product.bookmarkId);
     if (productItem == null) {
-      this.push('productInfos', product);
+      this.productInfos.push(product);
+      this.requestUpdate();
       return;
     }
     this.untrackedItems_ = this.untrackedItems_.filter(
         item => item.bookmarkId !== product.bookmarkId);
+    this.requestUpdate();
     if (!this.isSameProduct_(productItem, product)) {
       const index = this.productInfos.indexOf(productItem);
-      this.splice('productInfos', index, 1);
-      this.splice('productInfos', index, 0, product);
+      this.productInfos.splice(index, 1, product);
+      this.requestUpdate();
     }
   }
 
@@ -228,7 +237,8 @@ export class ShoppingListElement extends PolymerElement {
       return;
     }
     if (!this.untrackedItems_.includes(untrackedItem)) {
-      this.push('untrackedItems_', untrackedItem);
+      this.untrackedItems_.push(untrackedItem);
+      this.requestUpdate();
     }
   }
 
@@ -244,18 +254,15 @@ export class ShoppingListElement extends PolymerElement {
     return true;
   }
 
-  private onProductInfoChanged_() {
-    this.untrackedItems_ = this.untrackedItems_.filter(
-        untrackedItem => this.productInfos.includes(untrackedItem));
-  }
-
-  private onImageLoadSuccess_() {
+  protected onProductImageLoad_() {
     chrome.metricsPrivate.recordBoolean(
         'Commerce.PriceTracking.SidePanelImageLoad', true);
   }
 
-  private onImageLoadError_(event: DomRepeatEvent<BookmarkProductInfo>) {
-    this.set('productInfos.' + event.model.index + '.info.imageUrl', '');
+  protected onImageLoadError_(event: Event) {
+    const item = this.getProductInfoFromEvent_(event);
+    item.info.imageUrl = '';
+    this.requestUpdate();
     chrome.metricsPrivate.recordBoolean(
         'Commerce.PriceTracking.SidePanelImageLoad', false);
   }
@@ -272,7 +279,7 @@ export class ShoppingListElement extends PolymerElement {
     this.$.errorToast.show();
   }
 
-  private onErrorRetryClicked_() {
+  protected onErrorRetryClick_() {
     if (this.retryOperationCallback_ == null) {
       return;
     }
