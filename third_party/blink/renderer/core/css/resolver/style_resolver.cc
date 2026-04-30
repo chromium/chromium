@@ -63,7 +63,9 @@
 #include "third_party/blink/renderer/core/css/css_selector_watch.h"
 #include "third_party/blink/renderer/core/css/css_style_declaration.h"
 #include "third_party/blink/renderer/core/css/css_style_rule.h"
+#include "third_party/blink/renderer/core/css/css_unparsed_declaration_value.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
+#include "third_party/blink/renderer/core/css/css_variable_data.h"
 #include "third_party/blink/renderer/core/css/element_rule_collector.h"
 #include "third_party/blink/renderer/core/css/font_face.h"
 #include "third_party/blink/renderer/core/css/out_of_flow_data.h"
@@ -2965,9 +2967,30 @@ const CSSValue* StyleResolver::ComputeValue(
   // read out computed <image> values. Work around that DCHECK by saying this
   // style is not for a rendered element.
   state.StyleBuilder().SetIsEnsuredInDisplayNone();
+
+  // Pre-resolve any var() references in the value against the element's
+  // already-computed style. This avoids a false cycle detection that would
+  // occur when the value references the same custom property it's being set on
+  // (e.g. evaluating style(--foo: var(--foo)) in a container query).
+  const CSSValue* resolved_value = &value;
+  if (property_name.IsCustomProperty()) {
+    if (const auto* unparsed = DynamicTo<CSSUnparsedDeclarationValue>(value)) {
+      CHECK(unparsed->VariableDataValue());
+      if (unparsed->VariableDataValue()->NeedsVariableResolution()) {
+        const CSSUnparsedDeclarationValue* substituted =
+            StyleCascade::ResolveSubstitutions(
+                state, *unparsed, &element->GetTreeScope(),
+                /*mixin_parameter_bindings=*/nullptr);
+        if (substituted) {
+          resolved_value = substituted;
+        }
+      }
+    }
+  }
+
   auto* set =
       MakeGarbageCollected<MutableCSSPropertyValueSet>(state.GetParserMode());
-  set->SetProperty(property_name, value);
+  set->SetProperty(property_name, *resolved_value);
   cascade.MutableMatchResult().BeginAddingAuthorRulesForTreeScope(
       element->GetTreeScope());
   cascade.MutableMatchResult().AddMatchedProperties(

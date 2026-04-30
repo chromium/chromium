@@ -184,8 +184,6 @@ class CORE_EXPORT StyleCascade {
 
   // Resolve arbitrary substitution functions `var()`, `attr()`, `if()`, etc.
   // within `value` in the context of the `element`.
-  //
-  // This is intended for use by the Inspector Agent.
   static const CSSUnparsedDeclarationValue* ResolveSubstitutions(
       StyleResolverState&,
       const CSSUnparsedDeclarationValue& value,
