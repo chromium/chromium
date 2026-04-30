@@ -4,12 +4,14 @@
 
 package org.chromium.chrome.browser.signin;
 
+import android.os.SystemClock;
 import android.view.LayoutInflater;
 import android.view.View;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.signin.services.WebSigninBridge;
@@ -39,13 +41,18 @@ import java.lang.annotation.RetentionPolicy;
  */
 @NullMarked
 public class WebSigninRedirectCoordinator {
+    // LINT.IfChange(DialogState)
     @IntDef({DialogState.NOT_SHOWN, DialogState.SHOWN, DialogState.DISMISSED})
     @Retention(RetentionPolicy.SOURCE)
-    private @interface DialogState {
+    @VisibleForTesting
+    public @interface DialogState {
         int NOT_SHOWN = 0;
         int SHOWN = 1;
         int DISMISSED = 2;
+        int NUM_ENTRIES = 3;
     }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:WebSigninLoadingDialogStatus)
 
     private static final int SHOW_WEB_SIGNIN_LOADING_DIALOG_DELAY_MS = 1000;
     private static final int MIN_DIALOG_VISIBLE_DURATION_MS = 500;
@@ -59,7 +66,9 @@ public class WebSigninRedirectCoordinator {
     private @Nullable PropertyModel mModel;
     private @Nullable ModalDialogManager mDialogManager;
     private boolean mMinShowTimePassed;
+    private boolean mIsSigninResultReceived;
     private @Nullable Integer mDeferredSigninResult;
+    private long mInitializeStartTime;
 
     /**
      * If refresh tokens and cookies are successfully minted for the account associated with the
@@ -68,6 +77,7 @@ public class WebSigninRedirectCoordinator {
      */
     public void initializeWebSigninAndRedirect(
             Tab tab, String email, GURL continueUrl, GURL initialTabURL) {
+        mInitializeStartTime = SystemClock.elapsedRealtime();
         mTab = tab;
         mContinueUrl = continueUrl;
         mInitialTabURL = initialTabURL;
@@ -90,6 +100,7 @@ public class WebSigninRedirectCoordinator {
      */
     public void initializeWebSigninAndRedirect(
             Tab tab, CoreAccountId accountId, GURL continueUrl, GURL initialTabURL) {
+        mInitializeStartTime = SystemClock.elapsedRealtime();
         mTab = tab;
         mContinueUrl = continueUrl;
         mInitialTabURL = initialTabURL;
@@ -119,6 +130,12 @@ public class WebSigninRedirectCoordinator {
         }
 
         if (mDialogState == DialogState.SHOWN) {
+            if (!mIsSigninResultReceived) {
+                RecordHistogram.recordEnumeratedHistogram(
+                        "Signin.ProcessMirrorHeaders.LoadingDialog.Status",
+                        DialogState.DISMISSED,
+                        DialogState.NUM_ENTRIES);
+            }
             mDialogState = DialogState.DISMISSED;
             if (mModel != null && mDialogManager != null) {
                 mDialogManager.dismissDialog(mModel, DialogDismissalCause.ACTION_ON_CONTENT);
@@ -197,9 +214,7 @@ public class WebSigninRedirectCoordinator {
 
             @Override
             public void onDismiss(PropertyModel model, int dismissalCause) {
-                if (mDialogState == DialogState.SHOWN) {
-                    destroy();
-                }
+                destroy();
             }
         };
     }
@@ -212,6 +227,10 @@ public class WebSigninRedirectCoordinator {
     }
 
     private void onSigninResult(@WebSigninTrackerResult int result) {
+        if (mWebSigninBridge == null) {
+            // mWebSigninBridge has already been destroyed so return early.
+            return;
+        }
         assert mTab != null;
         assert mContinueUrl != null;
         assert mInitialTabURL != null;
@@ -221,6 +240,17 @@ public class WebSigninRedirectCoordinator {
             mDeferredSigninResult = result;
             return;
         }
+
+        mIsSigninResultReceived = true;
+        RecordHistogram.recordEnumeratedHistogram(
+                "Signin.ProcessMirrorHeaders.LoadingDialog.Status",
+                mDialogState,
+                DialogState.NUM_ENTRIES);
+
+        RecordHistogram.recordTimesHistogram(
+                "Signin.ProcessMirrorHeaders.LoadingDuration"
+                        + getWebSigninTrackerResultString(result),
+                SystemClock.elapsedRealtime() - mInitializeStartTime);
 
         destroy();
 
@@ -244,5 +274,21 @@ public class WebSigninRedirectCoordinator {
         } else if (SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_WEB_SIGNIN_LOADING_DIALOG)) {
             mShowDialogTimer.startTimer(SHOW_WEB_SIGNIN_LOADING_DIALOG_DELAY_MS, this::showDialog);
         }
+    }
+
+    private static String getWebSigninTrackerResultString(int result) {
+        String resultSuffix = "";
+        switch (result) {
+            case WebSigninTrackerResult.SUCCESS:
+                resultSuffix = ".Success";
+                break;
+            case WebSigninTrackerResult.AUTH_ERROR:
+                resultSuffix = ".AuthError";
+                break;
+            case WebSigninTrackerResult.OTHER_ERROR:
+                resultSuffix = ".OtherError";
+                break;
+        }
+        return resultSuffix;
     }
 }

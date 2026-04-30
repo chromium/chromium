@@ -2783,6 +2783,34 @@ should be kept to monitor/debug signin Multilogin issues-->
   </summary>
 </histogram>
 
+<histogram name="Signin.ProcessMirrorHeaders.LoadingDialog.Status"
+    enum="WebSigninLoadingDialogStatus" expires_after="2027-04-22">
+  <owner>mlbipin@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
+  <summary>
+    Records whether the web signin loading dialog was shown, not shown (because
+    signin finished fast enough), or dismissed by the user. Recorded when the
+    web signin process finishes or the dialog is dismissed.
+  </summary>
+</histogram>
+
+<histogram name="Signin.ProcessMirrorHeaders.LoadingDuration.{Result}"
+    units="ms" expires_after="2027-04-22">
+  <owner>mlbipin@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
+  <summary>
+    Time taken for cookies to be minted and the user to be redirected to a
+    specified URL. Recorded from when the WebSigninRedirectCoordinator is
+    initialized to when the user either gets redirected or if the user receives
+    an error.
+  </summary>
+  <token key="Result">
+    <variant name="AuthError" summary="An auth error occurred"/>
+    <variant name="OtherError" summary="An other error occurred"/>
+    <variant name="Success" summary="The web sign-in succeeded"/>
+  </token>
+</histogram>
+
 <histogram name="Signin.Promo.ImpressionsUntil.{Action}.{AccessPoint}"
     units="impressions" expires_after="2026-10-25">
   <owner>myuu@google.com</owner>

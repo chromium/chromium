@@ -1592,6 +1592,16 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//google_apis/gaia/token_binding_response_encryption_error.h:TokenBindingResponseEncryptionError) -->
 
+<!-- LINT.IfChange(WebSigninLoadingDialogStatus) -->
+
+<enum name="WebSigninLoadingDialogStatus">
+  <int value="0" label="Not shown"/>
+  <int value="1" label="Shown"/>
+  <int value="2" label="Dismissed by user"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/signin/WebSigninRedirectCoordinator.java:DialogState) -->
+
 </enums>
 
 </histogram-configuration>

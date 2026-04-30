@@ -40,6 +40,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.signin.WebSigninRedirectCoordinator;
@@ -152,9 +153,49 @@ public class WebSigninLoadingDialogTest {
                     mCoordinator.showDialog();
                 });
         onViewWaiting(withId(R.id.web_signin_loading_dialog)).check(matches(isDisplayed()));
+
+        HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Signin.ProcessMirrorHeaders.LoadingDialog.Status",
+                        WebSigninRedirectCoordinator.DialogState.DISMISSED);
         onView(withId(R.id.cancel_button)).perform(click());
 
         Assert.assertNull(mCoordinator.getDialogModelForTesting());
+        watcher.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    public void testSigninResultAfterDestroy() {
+        when(mWebSigninBridgeMocks.createWithEmail(any(), anyString(), mCallbackCaptor.capture()))
+                .thenReturn(NATIVE_WEB_SIGNIN_BRIDGE);
+        mCoordinator = new WebSigninRedirectCoordinator();
+
+        HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Signin.ProcessMirrorHeaders.LoadingDialog.Status",
+                        WebSigninRedirectCoordinator.DialogState.DISMISSED);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mCoordinator.initializeWebSigninAndRedirect(
+                            mActivityTestRule.getActivityTab(),
+                            "test@gmail.com",
+                            /* continueUrl */ new GURL("https://continue.url"),
+                            /* initialTabURL */ new GURL("about:blank"));
+                    mCoordinator.showDialog();
+                });
+
+        onViewWaiting(withId(R.id.web_signin_loading_dialog)).check(matches(isDisplayed()));
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mCoordinator.destroy();
+                    // Result returns after destroy. It should not record again.
+                    mCallbackCaptor.getValue().onResult(WebSigninTrackerResult.SUCCESS);
+                });
+
+        watcher.assertExpected();
     }
 
     @Test
@@ -164,6 +205,13 @@ public class WebSigninLoadingDialogTest {
                 .thenReturn(NATIVE_WEB_SIGNIN_BRIDGE);
         mCoordinator = new WebSigninRedirectCoordinator();
         mCoordinator.setShowDialogTimerForTesting(mMockShowDialogTimer);
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Signin.ProcessMirrorHeaders.LoadingDialog.Status",
+                                WebSigninRedirectCoordinator.DialogState.NOT_SHOWN)
+                        .expectAnyRecord("Signin.ProcessMirrorHeaders.LoadingDuration.Success")
+                        .build();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -178,6 +226,7 @@ public class WebSigninLoadingDialogTest {
 
         Assert.assertNull(mCoordinator.getDialogModelForTesting());
         verify(mMockShowDialogTimer, atLeastOnce()).cancelTimer();
+        watcher.assertExpected();
     }
 
     @Test
@@ -186,6 +235,13 @@ public class WebSigninLoadingDialogTest {
         when(mWebSigninBridgeMocks.createWithEmail(any(), anyString(), mCallbackCaptor.capture()))
                 .thenReturn(NATIVE_WEB_SIGNIN_BRIDGE);
         mCoordinator = new WebSigninRedirectCoordinator();
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Signin.ProcessMirrorHeaders.LoadingDialog.Status",
+                                WebSigninRedirectCoordinator.DialogState.SHOWN)
+                        .expectAnyRecord("Signin.ProcessMirrorHeaders.LoadingDuration.Success")
+                        .build();
         // Use a 0ms delay to show the dialog immediately by running the runnable passed to
         // startTimer.
         mCoordinator.setShowDialogTimerForTesting(mMockShowDialogTimer);
@@ -237,5 +293,6 @@ public class WebSigninLoadingDialogTest {
 
         // Dialog should be dismissed.
         Assert.assertNull(mCoordinator.getDialogModelForTesting());
+        watcher.assertExpected();
     }
 }
