@@ -28,7 +28,7 @@ void PrefURLListMatcher::OnPrefUpdated() {
   base::MatcherStringPattern::ID id = 0;
   url_matcher::URLMatcherConditionSet::Vector conditions;
   url_matcher_ = std::make_unique<url_matcher::URLMatcher>();
-  path_length_.clear();
+  filters_.clear();
   for (const auto& url : pref_service_->GetList(pref_name_)) {
     url_matcher::util::FilterComponents components;
     url_matcher::util::FilterToComponents(
@@ -43,11 +43,11 @@ void PrefURLListMatcher::OnPrefUpdated() {
     components.query = "";
 
     auto condition = url_matcher::util::CreateConditionSet(
-        url_matcher_.get(), id++, components.scheme, components.host,
+        url_matcher_.get(), id, components.scheme, components.host,
         components.match_subdomains, components.port, components.path,
         components.query, components.allow);
     conditions.push_back(condition);
-    path_length_.push_back(components.path.size());
+    filters_.emplace(id++, std::move(components));
   }
   url_matcher_->AddConditionSets(conditions);
 }
@@ -60,15 +60,44 @@ std::optional<std::string> PrefURLListMatcher::GetMatchedURL(
   if (matched_ids.empty()) {
     return std::nullopt;
   }
-  size_t maximum_path_length = 0;
-  base::MatcherStringPattern::ID maximum_path_id;
+
+  base::MatcherStringPattern::ID best_match_id = *matched_ids.begin();
   for (const auto id : matched_ids) {
-    if (path_length_[id] >= maximum_path_length) {
-      maximum_path_id = id;
-      maximum_path_length = path_length_[id];
+    if (IsHigherPriority(id, best_match_id)) {
+      best_match_id = id;
     }
   }
-  return pref_service_->GetList(pref_name_)[maximum_path_id].GetString();
+
+  return pref_service_->GetList(pref_name_)[best_match_id].GetString();
+}
+
+// Returns true if `lhs` filter is higher priority than `rhs` filter.
+// See the class comment for the priority rules.
+bool PrefURLListMatcher::IsHigherPriority(
+    base::MatcherStringPattern::ID lhs,
+    base::MatcherStringPattern::ID rhs) const {
+  const auto& lhs_filter = filters_.at(lhs);
+  const auto& rhs_filter = filters_.at(rhs);
+
+  // 1. Exact host matches (.example.com) beat subdomain matches (example.com)
+  if (lhs_filter.match_subdomains != rhs_filter.match_subdomains) {
+    // If lhs_filter.match_subdomains is false, it means the filter is an exact
+    // host match, which is higher priority than a subdomain match.
+    return !lhs_filter.match_subdomains;
+  }
+
+  // 2. Longer host wins
+  if (lhs_filter.host.length() != rhs_filter.host.length()) {
+    return lhs_filter.host.length() > rhs_filter.host.length();
+  }
+
+  // 3. Longer path wins
+  if (lhs_filter.path.length() != rhs_filter.path.length()) {
+    return lhs_filter.path.length() > rhs_filter.path.length();
+  }
+
+  // 4. Later entry wins
+  return lhs > rhs;
 }
 
 }  // namespace enterprise_reporting

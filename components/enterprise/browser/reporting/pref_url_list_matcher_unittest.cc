@@ -82,6 +82,24 @@ TEST_F(PrefURLListMatcherTest, SubDomain) {
   EXPECT_FALSE(matcher.GetMatchedURL(GURL("https://chat.example3.com")));
 }
 
+TEST_F(PrefURLListMatcherTest, HostPrecedence) {
+  PrefURLListMatcher matcher(&pref_service_, kTestPref);
+  SetPref({"copilot.microsoft.com", "microsoft.com"});
+  EXPECT_EQ("copilot.microsoft.com",
+            *matcher.GetMatchedURL(GURL("https://copilot.microsoft.com/")));
+}
+
+TEST_F(PrefURLListMatcherTest, ReturnLastMatchIfHostAndPathLengthsAreEqual) {
+  PrefURLListMatcher matcher(&pref_service_, kTestPref);
+  // Both patterns result in identical FilterComponents (same host, same path).
+  SetPref({"example.com", "http://example.com"});
+  EXPECT_EQ("http://example.com",
+            *matcher.GetMatchedURL(GURL("https://example.com/")));
+  SetPref({"http://example.com", "example.com"});
+  EXPECT_EQ("example.com",
+            *matcher.GetMatchedURL(GURL("https://example.com/")));
+}
+
 TEST_F(PrefURLListMatcherTest, PathPrecedence) {
   PrefURLListMatcher matcher(&pref_service_, kTestPref);
   SetPref({"www.example.com", "www.example.com/p1", "www.example.com/p1/p2"});

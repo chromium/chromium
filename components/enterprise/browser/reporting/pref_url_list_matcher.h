@@ -10,10 +10,12 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/url_matcher/url_matcher.h"
+#include "components/url_matcher/url_util.h"
 
 class GURL;
 
@@ -32,8 +34,11 @@ namespace enterprise_reporting {
 //   "https://example.com/foo" and "https://example.com/foobar".
 //
 // Tie-breaking for multiple matches:
-// 1. The pattern with the longest path string is chosen.
-// 2. If path lengths are equal, the pattern appearing LAST in the
+// 1. Exact host matches (.example.com) beat subdomain matches (example.com)
+// 2. The pattern with the longest host string is chosen.
+// 3. If host lengths are equal, the pattern with the longest path string is
+// chosen.
+// 4. If path lengths are equal, the pattern appearing LAST in the
 //    pref list is chosen.
 //
 class PrefURLListMatcher {
@@ -53,7 +58,12 @@ class PrefURLListMatcher {
   PrefChangeRegistrar pref_change_;
 
   std::unique_ptr<url_matcher::URLMatcher> url_matcher_;
-  std::vector<size_t> path_length_;
+  base::flat_map<base::MatcherStringPattern::ID,
+                 url_matcher::util::FilterComponents>
+      filters_;
+
+  bool IsHigherPriority(base::MatcherStringPattern::ID lhs,
+                        base::MatcherStringPattern::ID rhs) const;
 };
 
 }  // namespace enterprise_reporting
