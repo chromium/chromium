@@ -23,7 +23,7 @@ const RemoveLocalAuthFactorsScreenElementBase =
     LoginScreenMixin(MultiStepMixin(OobeI18nMixin(PolymerElement)));
 
 interface RemoveLocalAuthFactorsScreenData {
-  domain: string;
+  email: string;
 }
 
 enum UserAction {
@@ -47,12 +47,12 @@ class RemoveLocalAuthFactorsScreen extends
 
   static get properties(): PolymerElementProperties {
     return {
-      // The domain this user belongs to.
-      domain: {type: String, value: ''}
+      // User email address.
+      email: {type: String, value: ''}
     };
   }
 
-  private domain: string = '';
+  private email: string = '';
 
   override get EXTERNAL_API(): string[] {
     return ['showRemoveLocalAuthFactorsSuccessStep'];
@@ -61,12 +61,11 @@ class RemoveLocalAuthFactorsScreen extends
 
   /**
    * Event handler that is invoked just before the frame is shown.
-   * data contains domain string which is used for localization.
+   * data contains email string which is used for localization.
    */
-  override onBeforeShow(data: RemoveLocalAuthFactorsScreen): void {
+  override onBeforeShow(data: RemoveLocalAuthFactorsScreenData): void {
     super.onBeforeShow(data);
-    this.domain = data.domain;
-    console.log('domain is =====' + this.domain);
+    this.email = data.email;
   }
 
   override defaultUIStep(): string {

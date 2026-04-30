@@ -28,7 +28,7 @@ class RemoveLocalAuthFactorsScreenView {
   virtual ~RemoveLocalAuthFactorsScreenView() = default;
 
   // Shows the contents of the screen.
-  virtual void Show(const std::string& domain) = 0;
+  virtual void Show(const std::string& email) = 0;
 
   // Shows the success step of the screen.
   virtual void ShowRemoveLocalAuthFactorsSuccessStep() = 0;
@@ -57,7 +57,7 @@ class RemoveLocalAuthFactorsScreenHandler
       ::login::LocalizedValuesBuilder* builder) override;
 
   // RemoveLocalAuthFactorsScreenView:
-  void Show(const std::string& domain) override;
+  void Show(const std::string& email) override;
   void ShowRemoveLocalAuthFactorsSuccessStep() override;
   base::WeakPtr<RemoveLocalAuthFactorsScreenView> AsWeakPtr() override;
 

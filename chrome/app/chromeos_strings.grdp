@@ -1775,7 +1775,7 @@
     Sign-in method updated
   </message>
    <message name="IDS_LOGIN_FACTORS_REMOVED_SUBTITLE" desc="Subtitle for the factor removed informational dialog, shown when all local auth factors are successuly removed..">
-    For security reasons, your administrator disabled your device PIN and password. From now on, use your <ph name="MANAGER">$1<ex>example.com</ex></ph> password.
+    For security reasons, your administrator disabled your device PIN and password. From now on, use your <ph name="MANAGER">$1<ex>user@example.com</ex></ph> password.
   </message>
   <message name="IDS_LOGIN_MANUAL_PASSWORD_TITLE" desc="Title for the manual password setting dialog.">
     Please create a password to protect your local data.

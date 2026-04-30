@@ -17,7 +17,6 @@
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/wizard_context.h"
-#include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/ui/webui/ash/login/remove_local_auth_factors_screen_handler.h"
 #include "chromeos/ash/components/cryptohome/auth_factor.h"
 #include "chromeos/ash/components/login/auth/public/auth_factors_configuration.h"
@@ -68,14 +67,13 @@ void RemoveLocalAuthFactorsScreen::ShowImpl() {
     LOG(ERROR) << "Invalid AccountId detected";
   }
 
-  std::string domain = enterprise_util::GetDomainFromEmail(
-      context()->user_context->GetAccountId().GetUserEmail());
-  if (domain.empty()) {
-    LOG(ERROR) << "Unable to resolve a domain name for remove local auth "
+  std::string email = context()->user_context->GetAccountId().GetUserEmail();
+  if (email.empty()) {
+    LOG(ERROR) << "Unable to resolve user email for remove local auth "
                   "factors screen";
   }
 
-  view_->Show(domain);
+  view_->Show(email);
 
   GetAuthFactorEditor()->GetAuthFactorsConfiguration(
       std::move(context()->user_context),

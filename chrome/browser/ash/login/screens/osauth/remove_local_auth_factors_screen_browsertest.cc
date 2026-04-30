@@ -128,6 +128,10 @@ class RemoveLocalAuthFactorsScreenTest : public LoginManagerTest {
     EXPECT_FALSE(cryptohome_.HasLocalPasswordFactor(account_id));
     EXPECT_TRUE(cryptohome_.HasGaiaPasswordFactor(account_id));
 
+    test::OobeJS().ExpectElementContainsText(account_id.GetUserEmail(),
+                                             {"remove-local-auth-factors",
+                                              "subtitleText"});
+
     test::OobeJS().ClickOnPath(kDoneButtonPath);
 
     login_manager_mixin_.WaitForActiveSession();

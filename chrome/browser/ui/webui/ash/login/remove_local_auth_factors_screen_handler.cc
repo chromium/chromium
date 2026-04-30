@@ -27,9 +27,9 @@ void RemoveLocalAuthFactorsScreenHandler::DeclareLocalizedValues(
   builder->Add("factorsRemovedSubtitle", IDS_LOGIN_FACTORS_REMOVED_SUBTITLE);
 }
 
-void RemoveLocalAuthFactorsScreenHandler::Show(const std::string& domain) {
+void RemoveLocalAuthFactorsScreenHandler::Show(const std::string& email) {
   base::DictValue data;
-  data.Set("domain", domain);
+  data.Set("email", email);
 
   ShowInWebUI(std::move(data));
 }
