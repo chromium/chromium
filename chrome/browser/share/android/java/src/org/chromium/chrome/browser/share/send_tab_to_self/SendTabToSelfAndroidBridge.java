@@ -37,12 +37,16 @@ public class SendTabToSelfAndroidBridge {
     /**
      * Handles the action when the user selects a device.
      *
-     * @param webContents The web contents that the user is sharing.
+     * @param profile The profile to use for sending.
+     * @param webContents The web contents of the current tab, or null if not available. When
+     *     null, page context such as scroll position, form fields and navigation history will
+     *     not be captured.
      * @param targetDeviceSyncCacheGuid The GUID of the target device.
      * @param url The URL being shared.
      * @param title The title of the page being shared.
      */
     public static void sendTabToDevice(
+            Profile profile,
             @Nullable WebContents webContents,
             String targetDeviceSyncCacheGuid,
             String url,
@@ -50,7 +54,8 @@ public class SendTabToSelfAndroidBridge {
             CommitConfirmationCallback commitConfirmation) {
         SendTabToSelfAndroidBridgeJni.get()
                 .sendTabToDevice(
-                        webContents, targetDeviceSyncCacheGuid, url, title, commitConfirmation);
+                        profile, webContents, targetDeviceSyncCacheGuid, url, title,
+                        commitConfirmation);
     }
 
     /**
@@ -99,6 +104,7 @@ public class SendTabToSelfAndroidBridge {
     @NativeMethods
     public interface Natives {
         void sendTabToDevice(
+                @JniType("Profile*") Profile profile,
                 @Nullable WebContents webContents,
                 String targetDeviceSyncCacheGuid,
                 String url,

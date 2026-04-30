@@ -47,6 +47,14 @@ const SendTabToSelfEntry* FakeSendTabToSelfModel::AddEntry(
     const PageContext& context,
     NavigationHistory navigation_history,
     base::OnceCallback<void(SendTabToSelfResult)> commit_confirmation) {
+  if (!IsReady()) {
+    if (commit_confirmation) {
+      std::move(commit_confirmation)
+          .Run(SendTabToSelfResult::kFailureNotTrackingMetadata);
+    }
+    return nullptr;
+  }
+
   std::string guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
   std::unique_ptr<SendTabToSelfEntry> entry =
       std::make_unique<SendTabToSelfEntry>(

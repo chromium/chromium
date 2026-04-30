@@ -50,7 +50,6 @@ void OnSendTabToDeviceComplete(base::WeakPtr<content::WebContents> web_contents,
       break;
     case SendTabToSelfResult::kFailureInvalidUrl:
     case SendTabToSelfResult::kFailureNotTrackingMetadata:
-    case SendTabToSelfResult::kFailureModelNotReady:
     case SendTabToSelfResult::kFailureCommitAttemptFailed:
     case SendTabToSelfResult::kFailureCommitAttemptError:
     case SendTabToSelfResult::kFailureSyncDisabled:
