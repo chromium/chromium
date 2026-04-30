@@ -189,6 +189,8 @@ bool Canvas2DResourceProviderBitmap::WritePixelsForCanvas2D(
 
 BASE_FEATURE(kCanvas2DAutoFlushParams, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kAppendCpuUsages, base::FEATURE_ENABLED_BY_DEFAULT);
+
 // When enabled, unused resources (ready to be recycled) are reclaimed after a
 // delay.
 BASE_FEATURE(kCanvas2DReclaimUnusedResources,
@@ -284,6 +286,10 @@ CanvasResourceProviderSharedImage::CanvasResourceProviderSharedImage(
         // TODO(https://crbug.com/40280504): Add that usage flag back here once
         // the issue is resolved.
         buffer_usage = gfx::BufferUsage::SCANOUT_CPU_READ_WRITE;
+        if (base::FeatureList::IsEnabled(kAppendCpuUsages)) {
+          shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_CPU_READ |
+                                      gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY;
+        }
       }
 
       gpu::ImageInfo image_info(size, format, shared_image_usage_flags,
