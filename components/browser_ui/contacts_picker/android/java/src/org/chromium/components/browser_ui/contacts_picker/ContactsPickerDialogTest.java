@@ -45,9 +45,11 @@ import org.chromium.content.browser.contacts.ContactsPickerProperties;
 import org.chromium.content_public.browser.ContactsFetcher;
 import org.chromium.content_public.browser.ContactsFetcher.RetrievedContact;
 import org.chromium.content_public.browser.ContactsPicker;
+import org.chromium.content_public.browser.ContactsPickerDelegate;
 import org.chromium.content_public.browser.ContactsPickerListener;
 import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.payments.mojom.PaymentAddress;
 import org.chromium.ui.base.ActivityWindowAndroid;
@@ -151,7 +153,11 @@ public class ContactsPickerDialogTest
                                     mInsetObserver,
                                     /* occlusionTrackingAllowed= */ true);
                         });
-        mWebContents = Mockito.mock(WebContents.class);
+        mWebContents =
+                Mockito.mock(
+                        WebContents.class,
+                        Mockito.withSettings()
+                                .extraInterfaces(WebContentsObserver.Observable.class));
         when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindowAndroid);
         when(mWebContents.isDestroyed()).thenReturn(false);
         when(mWebContents.getVisibility()).thenReturn(Visibility.VISIBLE);
@@ -229,43 +235,54 @@ public class ContactsPickerDialogTest
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ContactsPicker.setContactsPickerDelegate(
-                            (WebContents webContents,
-                                    ContactsPickerListener listener,
-                                    boolean multiple,
-                                    boolean names,
-                                    boolean emails,
-                                    boolean tels,
-                                    boolean addresses,
-                                    boolean icons,
-                                    String formattedOrigin,
-                                    ContactsFetcher contactsFetcher) -> {
-                                mDialog =
-                                        new ContactsPickerDialog(
-                                                webContents.getTopLevelNativeWindow(),
-                                                new PickerAdapter() {
-                                                    @Override
-                                                    protected String findOwnerEmail() {
-                                                        return null;
-                                                    }
+                            new ContactsPickerDelegate() {
+                                @Override
+                                public Object showContactsPicker(
+                                        WebContents webContents,
+                                        ContactsPickerListener listener,
+                                        boolean multiple,
+                                        boolean names,
+                                        boolean emails,
+                                        boolean tels,
+                                        boolean addresses,
+                                        boolean icons,
+                                        String formattedOrigin,
+                                        ContactsFetcher contactsFetcher) {
+                                    mDialog =
+                                            new ContactsPickerDialog(
+                                                    webContents.getTopLevelNativeWindow(),
+                                                    new PickerAdapter() {
+                                                        @Override
+                                                        protected String findOwnerEmail() {
+                                                            return null;
+                                                        }
 
-                                                    @Override
-                                                    protected void addOwnerInfoToContacts(
-                                                            ArrayList<ContactDetails> contacts,
-                                                            String ownerEmail) {}
-                                                },
-                                                listener,
-                                                multiple,
-                                                names,
-                                                emails,
-                                                tels,
-                                                addresses,
-                                                icons,
-                                                formattedOrigin,
-                                                /* shouldPadForContent= */ false,
-                                                contactsFetcher);
+                                                        @Override
+                                                        protected void addOwnerInfoToContacts(
+                                                                ArrayList<ContactDetails> contacts,
+                                                                String ownerEmail) {}
+                                                    },
+                                                    listener,
+                                                    multiple,
+                                                    names,
+                                                    emails,
+                                                    tels,
+                                                    addresses,
+                                                    icons,
+                                                    formattedOrigin,
+                                                    /* shouldPadForContent= */ false,
+                                                    contactsFetcher);
 
-                                mDialog.show();
-                                return true;
+                                    mDialog.show();
+                                    return mDialog;
+                                }
+
+                                @Override
+                                public void cancelContactsPicker(Object picker) {
+                                    if (mDialog != null) {
+                                        mDialog.cancel();
+                                    }
+                                }
                             });
 
                     if (!ContactsPicker.showContactsPicker(

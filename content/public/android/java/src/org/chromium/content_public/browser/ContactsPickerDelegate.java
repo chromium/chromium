@@ -36,4 +36,11 @@ public interface ContactsPickerDelegate {
             boolean includeIcons,
             String formattedOrigin,
             ContactsFetcher contactsFetcher);
+
+    /**
+     * Called to cancel the contacts picker.
+     *
+     * @param picker The contacts picker object returned by showContactsPicker.
+     */
+    void cancelContactsPicker(Object picker);
 }
