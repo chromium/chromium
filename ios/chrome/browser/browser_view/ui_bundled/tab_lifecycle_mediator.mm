@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/itunes_urls/model/itunes_urls_handler_tab_helper.h"
 #import "ios/chrome/browser/lens/model/lens_tab_helper.h"
+#import "ios/chrome/browser/mini_map/model/mini_map_tab_helper.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/overscroll_actions/model/overscroll_actions_tab_helper.h"
 #import "ios/chrome/browser/passwords/model/password_tab_helper.h"
@@ -228,6 +229,12 @@
         HandlerForProtocol(_commandDispatcher, UnitConversionCommands));
   }
 
+  MiniMapTabHelper* miniMapTabHelper = MiniMapTabHelper::FromWebState(webState);
+  if (miniMapTabHelper) {
+    miniMapTabHelper->SetMiniMapCommands(
+        HandlerForProtocol(_commandDispatcher, MiniMapCommands));
+  }
+
   PriceNotificationsTabHelper* priceNotificationsTabHelper =
       PriceNotificationsTabHelper::FromWebState(webState);
   if (priceNotificationsTabHelper) {
@@ -380,6 +387,11 @@
     annotationsTabHelper->SetBaseViewController(nil);
     annotationsTabHelper->SetMiniMapCommands(nil);
     annotationsTabHelper->SetUnitConversionCommands(nil);
+  }
+
+  MiniMapTabHelper* miniMapTabHelper = MiniMapTabHelper::FromWebState(webState);
+  if (miniMapTabHelper) {
+    miniMapTabHelper->SetMiniMapCommands(nil);
   }
 
   PriceNotificationsTabHelper* priceNotificationsTabHelper =

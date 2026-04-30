@@ -18,7 +18,6 @@ MiniMapTabHelper::MiniMapTabHelper(web::WebState* web_state)
   ProfileIOS* profile =
       ProfileIOS::FromBrowserState(web_state->GetBrowserState());
   mini_map_service_ = MiniMapServiceFactory::GetForProfile(profile);
-  CHECK(!profile->IsOffTheRecord());
 }
 
 MiniMapTabHelper::~MiniMapTabHelper() {}
@@ -102,6 +101,6 @@ bool MiniMapTabHelper::ShouldInterceptRequest(
     return false;
   }
 
-  // TODO(crbug.com/505402932): Add call to Mini Map once method is added.
+  [mini_map_handler_ presentMiniMapNativePreviewForURL:url];
   return true;
 }

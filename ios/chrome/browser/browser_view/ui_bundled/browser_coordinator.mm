@@ -5326,6 +5326,7 @@ const char kChromeAppStoreUrl[] =
       [[MiniMapCoordinator alloc] initWithBaseViewController:self.viewController
                                                      browser:self.browser
                                                         text:text
+                                                         URL:nil
                                                      withIPH:YES
                                                         mode:MiniMapMode::kMap];
   [self.miniMapCoordinator start];
@@ -5336,6 +5337,7 @@ const char kChromeAppStoreUrl[] =
       [[MiniMapCoordinator alloc] initWithBaseViewController:self.viewController
                                                      browser:self.browser
                                                         text:text
+                                                         URL:nil
                                                      withIPH:NO
                                                         mode:MiniMapMode::kMap];
   [self.miniMapCoordinator start];
@@ -5346,8 +5348,20 @@ const char kChromeAppStoreUrl[] =
       initWithBaseViewController:self.viewController
                          browser:self.browser
                             text:text
+                             URL:nil
                          withIPH:NO
                             mode:MiniMapMode::kDirections];
+  [self.miniMapCoordinator start];
+}
+
+- (void)presentMiniMapNativePreviewForURL:(NSURL*)URL {
+  self.miniMapCoordinator = [[MiniMapCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser
+                            text:nil
+                             URL:URL
+                         withIPH:NO
+                            mode:MiniMapMode::kMapNativePreviewURL];
   [self.miniMapCoordinator start];
 }
 

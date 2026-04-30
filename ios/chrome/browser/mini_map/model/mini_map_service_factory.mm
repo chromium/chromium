@@ -25,7 +25,8 @@ MiniMapServiceFactory* MiniMapServiceFactory::GetInstance() {
 }
 
 MiniMapServiceFactory::MiniMapServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("MiniMapService") {
+    : ProfileKeyedServiceFactoryIOS("MiniMapService",
+                                    ProfileSelection::kRedirectedInIncognito) {
   DependsOn(ios::TemplateURLServiceFactory::GetInstance());
 }
 
@@ -33,7 +34,6 @@ MiniMapServiceFactory::~MiniMapServiceFactory() = default;
 
 std::unique_ptr<KeyedService> MiniMapServiceFactory::BuildServiceInstanceFor(
     ProfileIOS* profile) const {
-  CHECK(!profile->IsOffTheRecord());
   CHECK(base::FeatureList::IsEnabled(kIOSMiniMapUniversalLink));
 
   return std::make_unique<MiniMapService>(
