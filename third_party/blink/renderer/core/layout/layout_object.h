@@ -1050,7 +1050,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     return IsTableCell() || IsLayoutTableCol() || IsTableCaption() ||
            IsTableRow() || IsTableSection();
   }
-  inline bool IsBeforeContent() const;
   inline bool IsMarkerContent() const;
 
   bool IsOverscrollAreaParent() const {
@@ -4245,11 +4244,6 @@ inline bool LayoutObject::IsPseudoElementContent(PseudoId pseudo_id) const {
     return false;
   }
   return true;
-}
-
-inline bool LayoutObject::IsBeforeContent() const {
-  NOT_DESTROYED();
-  return IsPseudoElementContent(kPseudoIdBefore);
 }
 
 inline bool LayoutObject::IsMarkerContent() const {

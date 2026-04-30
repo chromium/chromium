@@ -719,8 +719,7 @@ void LayoutObject::AddChild(LayoutObject* new_child,
     LayoutObject* table = nullptr;
     LayoutObject* after_child =
         before_child ? before_child->PreviousSibling() : children->LastChild();
-    if (after_child && after_child->IsAnonymous() && after_child->IsTable() &&
-        !after_child->IsBeforeContent()) {
+    if (after_child && after_child->IsAnonymous() && after_child->IsTable()) {
       table = after_child;
     } else {
       table = LayoutTable::CreateAnonymousWithParent(*this);

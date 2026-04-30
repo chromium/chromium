@@ -808,7 +808,6 @@ TEST_F(LayoutTextTest, PlainTextInPseudo) {
 
   const auto GetPlainText = [](const LayoutObject* parent) {
     const LayoutObject* before = parent->SlowFirstChild();
-    EXPECT_TRUE(before->IsBeforeContent());
     const auto* before_text = To<LayoutText>(before->SlowFirstChild());
     EXPECT_FALSE(before_text->GetNode());
     return before_text->PlainText();

@@ -235,7 +235,7 @@ void LayoutTable::AddChild(LayoutObject* child, LayoutObject* before_child) {
   }
 
   if (!before_child && LastChild() && LastChild()->IsTableSection() &&
-      LastChild()->IsAnonymous() && !LastChild()->IsBeforeContent()) {
+      LastChild()->IsAnonymous()) {
     LastChild()->AddChild(child);
     return;
   }
