@@ -185,13 +185,13 @@ class WebAppInstallDialogBrowserTest
   }
 
  protected:
+  InstallOsType GetOsType() { return std::get<0>(GetParam()); }
   std::optional<bool> dialog_accepted_;
   std::unique_ptr<WebAppInstallInfo> dialog_install_info_;
   TestWebAppScreenshotFetcher screenshot_fetcher_;
   base::WeakPtr<views::Widget> widget_ = nullptr;
 
  private:
-  InstallOsType GetOsType() { return std::get<0>(GetParam()); }
   InstallDialogType GetDialogType() { return std::get<1>(GetParam()); }
 
   base::test::ScopedFeatureList feature_list_;
@@ -310,10 +310,16 @@ class WebAppInstallDialogCheckboxTest : public WebAppInstallDialogBrowserTest {
     EXPECT_EQ(dialog_accepted_, true);
     ASSERT_TRUE(dialog_install_info_);
   }
+
+  bool IsWin() { return GetOsType() == InstallOsType::kWin; }
+  bool IsCros() { return GetOsType() == InstallOsType::kCros; }
 };
 
 IN_PROC_BROWSER_TEST_P(WebAppInstallDialogCheckboxTest,
                        VerifyCrosCheckboxUnchecked) {
+  if (!IsCros()) {
+    GTEST_SKIP() << "Pin to shelf checkbox only works on CrOS";
+  }
   WebAppInstallOptionsView* options_view = NavigateToAndGetOptionsView();
   ASSERT_TRUE(options_view);
   options_view->SetPinToShelfCheckedForTesting(false);
@@ -323,6 +329,9 @@ IN_PROC_BROWSER_TEST_P(WebAppInstallDialogCheckboxTest,
 
 IN_PROC_BROWSER_TEST_P(WebAppInstallDialogCheckboxTest,
                        VerifyCrosCheckboxChecked) {
+  if (!IsCros()) {
+    GTEST_SKIP() << "Pin to shelf checkbox only works on CrOS";
+  }
   WebAppInstallOptionsView* options_view = NavigateToAndGetOptionsView();
   ASSERT_TRUE(options_view);
   options_view->SetPinToShelfCheckedForTesting(true);
@@ -330,10 +339,40 @@ IN_PROC_BROWSER_TEST_P(WebAppInstallDialogCheckboxTest,
   EXPECT_EQ(dialog_install_info_->add_to_quick_launch_bar, true);
 }
 
+IN_PROC_BROWSER_TEST_P(WebAppInstallDialogCheckboxTest,
+                       VerifyWinCheckboxUnchecked) {
+  if (!IsWin()) {
+    GTEST_SKIP() << "Creating desktop shortcut and pinning to task bar only "
+                    "works for Windows";
+  }
+  WebAppInstallOptionsView* options_view = NavigateToAndGetOptionsView();
+  ASSERT_TRUE(options_view);
+  options_view->SetAddDesktopShortcutCheckedForTesting(false);
+  options_view->SetPinToTaskBarCheckedForTesting(false);
+  CompleteInstallationAndVerifyDialogAccepted();
+  EXPECT_EQ(dialog_install_info_->add_to_desktop, false);
+  EXPECT_EQ(dialog_install_info_->add_to_quick_launch_bar, false);
+}
+
+IN_PROC_BROWSER_TEST_P(WebAppInstallDialogCheckboxTest,
+                       VerifyWinCheckboxChecked) {
+  if (!IsWin()) {
+    GTEST_SKIP() << "Creating desktop shortcut and pinning to task bar only "
+                    "works for Windows";
+  }
+  WebAppInstallOptionsView* options_view = NavigateToAndGetOptionsView();
+  ASSERT_TRUE(options_view);
+  options_view->SetAddDesktopShortcutCheckedForTesting(true);
+  options_view->SetPinToTaskBarCheckedForTesting(true);
+  CompleteInstallationAndVerifyDialogAccepted();
+  EXPECT_EQ(dialog_install_info_->add_to_desktop, true);
+  EXPECT_EQ(dialog_install_info_->add_to_quick_launch_bar, true);
+}
+
 INSTANTIATE_TEST_SUITE_P(
     /* prefix */,
     WebAppInstallDialogCheckboxTest,
-    testing::Combine(testing::Values(InstallOsType::kCros),
+    testing::Combine(testing::Values(InstallOsType::kCros, InstallOsType::kWin),
                      testing::Values(InstallDialogType::kSimple,
                                      InstallDialogType::kDetailed,
                                      InstallDialogType::kDiy)),

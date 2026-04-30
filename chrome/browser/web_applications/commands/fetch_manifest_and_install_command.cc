@@ -672,7 +672,8 @@ void FetchManifestAndInstallCommand::OnDialogCompleted(
       proto::InstallState::INSTALLED_WITH_OS_INTEGRATION;
   finalize_options.overwrite_existing_manifest_fields = true;
   finalize_options.add_to_applications_menu = true;
-  finalize_options.add_to_desktop = true;
+  finalize_options.add_to_desktop =
+      web_app_info_->add_to_desktop.value_or(true);
   finalize_options.add_to_quick_launch_bar =
       web_app_info_->add_to_quick_launch_bar.value_or(
           kAddAppsToQuickLaunchBarByDefault);

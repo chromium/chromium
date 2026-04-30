@@ -291,8 +291,13 @@ struct WebAppInstallInfo {
       web_app::mojom::UserDisplayMode::kBrowser;
 
   // User preference for whether the app should be added to the quick launch bar
-  // (shelf on ChromeOS).
+  // on ChromeOS, or the taskbar on Windows, passed from the installation
+  // dialogs.
   std::optional<bool> add_to_quick_launch_bar;
+
+  // User preference for whether the app should be added to the desktop or not,
+  // passed from the installation dialogs.
+  std::optional<bool> add_to_desktop;
 
   // The extensions and mime types the app can handle.
   apps::FileHandlers file_handlers;

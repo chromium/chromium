@@ -238,8 +238,14 @@ void WebAppInstallFlowDialogDelegate::OnLearnMoreButtonClicked() {
 
 void WebAppInstallFlowDialogDelegate::OnAccept() {
   if (options_view_) {
+    // Pin to Shelf and Pin to Taskbar cannot both be true at the same time
+    // because they're only set in different OS configurations, so this should
+    // be fine.
     install_info_->add_to_quick_launch_bar =
-        options_view_->IsPinToShelfChecked();
+        options_view_->IsPinToShelfChecked() ||
+        options_view_->IsPinToTaskBarChecked();
+    install_info_->add_to_desktop =
+        options_view_->IsAddDesktopShortcutChecked();
   }
   WebAppInstallDialogDelegate::OnAccept();
 }

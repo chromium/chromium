@@ -51,8 +51,6 @@ class WebAppInstallOptionsView : public views::View {
 
   void SetPinToShelfCheckedForTesting(bool checked);
 
-  base::WeakPtr<WebAppInstallOptionsView> GetWeakPtr();
-
   // Returns true if the "Add desktop shortcut" option is checked.
   // Only applicable for kWin.
   bool IsAddDesktopShortcutChecked() const;
@@ -60,6 +58,11 @@ class WebAppInstallOptionsView : public views::View {
   // Returns true if the "Pin to Task Bar" option is checked.
   // Only applicable for kWin.
   bool IsPinToTaskBarChecked() const;
+
+  void SetAddDesktopShortcutCheckedForTesting(bool checked);
+  void SetPinToTaskBarCheckedForTesting(bool checked);
+
+  base::WeakPtr<WebAppInstallOptionsView> GetWeakPtr();
 
  private:
   WebAppInstallOptionsView(InstallOsType os_type,

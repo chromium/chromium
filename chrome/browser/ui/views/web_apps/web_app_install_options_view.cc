@@ -271,10 +271,6 @@ void WebAppInstallOptionsView::SetPinToShelfCheckedForTesting(bool checked) {
   }
 }
 
-base::WeakPtr<WebAppInstallOptionsView> WebAppInstallOptionsView::GetWeakPtr() {
-  return weak_ptr_factory_.GetWeakPtr();
-}
-
 bool WebAppInstallOptionsView::IsAddDesktopShortcutChecked() const {
   return add_desktop_shortcut_checkbox_ &&
          add_desktop_shortcut_checkbox_->GetChecked();
@@ -282,6 +278,23 @@ bool WebAppInstallOptionsView::IsAddDesktopShortcutChecked() const {
 
 bool WebAppInstallOptionsView::IsPinToTaskBarChecked() const {
   return pin_to_task_bar_checkbox_ && pin_to_task_bar_checkbox_->GetChecked();
+}
+
+void WebAppInstallOptionsView::SetAddDesktopShortcutCheckedForTesting(
+    bool checked) {
+  if (add_desktop_shortcut_checkbox_) {
+    add_desktop_shortcut_checkbox_->SetChecked(checked);
+  }
+}
+
+void WebAppInstallOptionsView::SetPinToTaskBarCheckedForTesting(bool checked) {
+  if (pin_to_task_bar_checkbox_) {
+    pin_to_task_bar_checkbox_->SetChecked(checked);
+  }
+}
+
+base::WeakPtr<WebAppInstallOptionsView> WebAppInstallOptionsView::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 }  // namespace web_app
