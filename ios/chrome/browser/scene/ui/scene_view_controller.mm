@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_view_controller_presenter.h"
 #import "ios/chrome/browser/scene/ui/app_container_view.h"
 #import "ios/chrome/browser/scene/ui/scene_mutator.h"
+#import "ios/chrome/browser/scene/ui/scene_ui_constants.h"
 #import "ios/chrome/browser/scene/ui/scene_view.h"
 #import "ios/chrome/browser/scene/ui/scene_view_controller_delegate.h"
 #import "ios/chrome/browser/scene/ui/scene_view_delegate.h"
@@ -40,6 +41,9 @@
   UIViewController* _appBar;
   // The assistant container view controller.
   AssistantContainerViewController* _assistantContainerViewController;
+
+  // Constraints making app content fill the screen for Chrome Next IA.
+  NSArray<NSLayoutConstraint*>* _chromeNextIaFillConstraints;
 
   // Container for App Content view to handle shadow for Side Panel floating
   // card effect.
@@ -89,6 +93,7 @@
   _appContentContainerView = [[UIView alloc] init];
   _appContentView = [[AppContainerView alloc] init];
   _appContentView.clipsToBounds = YES;
+  _appContentView.accessibilityIdentifier = kAppContentAccessibilityIdentifier;
 
   if (IsFullscreenRefactoringEnabled()) {
     _appContentContainerView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -109,7 +114,17 @@
   if (IsFullscreenRefactoringEnabled()) {
     AddSameConstraints(_appContentView, _appContentContainerView);
     if (IsChromeNextIaEnabled()) {
-      AddSameConstraints(_appContentContainerView, view);
+      _chromeNextIaFillConstraints = @[
+        [_appContentContainerView.leadingAnchor
+            constraintEqualToAnchor:view.leadingAnchor],
+        [_appContentContainerView.trailingAnchor
+            constraintEqualToAnchor:view.trailingAnchor],
+        [_appContentContainerView.topAnchor
+            constraintEqualToAnchor:view.topAnchor],
+        [_appContentContainerView.bottomAnchor
+            constraintEqualToAnchor:view.bottomAnchor],
+      ];
+      [NSLayoutConstraint activateConstraints:_chromeNextIaFillConstraints];
     }
   }
 
@@ -414,6 +429,9 @@
     [self setupDefaultConstraints];
     _activeAssistantConstraints = _baseAssistantConstraints;
     [NSLayoutConstraint activateConstraints:_activeAssistantConstraints];
+    if (IsChromeNextIaEnabled()) {
+      [NSLayoutConstraint activateConstraints:_chromeNextIaFillConstraints];
+    }
     return;
   }
 
@@ -428,10 +446,16 @@
         AssistantPresentationContext::kPanel;
     _activeAssistantConstraints = _assistantPanelConstraints;
     [self updateAssistantTopConstraints:self.layoutState.containedLayoutActive];
+    if (IsChromeNextIaEnabled()) {
+      [NSLayoutConstraint deactivateConstraints:_chromeNextIaFillConstraints];
+    }
   } else {
     _assistantContainerViewController.presentationContext =
         AssistantPresentationContext::kSheet;
     _activeAssistantConstraints = _assistantSheetConstraints;
+    if (IsChromeNextIaEnabled()) {
+      [NSLayoutConstraint activateConstraints:_chromeNextIaFillConstraints];
+    }
   }
 
   [NSLayoutConstraint activateConstraints:_activeAssistantConstraints];
@@ -634,7 +658,7 @@
   NSLayoutConstraint* proportionalWidth = [assistantView.widthAnchor
       constraintEqualToAnchor:view.widthAnchor
                    multiplier:kAssistantSidePanelWidthMultiplier];
-  proportionalWidth.priority = UILayoutPriorityDefaultHigh;
+  proportionalWidth.priority = UILayoutPriorityRequired - 1;
 
   _assistantPanelConstraints = @[
     _assistantLeadingConstraint,
@@ -702,7 +726,7 @@
   ];
 
   _assistantSheetConstraints = sheetConstraints;
-  if (IsFullscreenRefactoringEnabled()) {
+  if (IsFullscreenRefactoringEnabled() && !IsChromeNextIaEnabled()) {
     _assistantSheetConstraints =
         [sheetConstraints arrayByAddingObjectsFromArray:@[
           [_appContentContainerView.leadingAnchor

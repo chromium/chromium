@@ -2,6 +2,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+source_set("constants") {
+  sources = [
+    "scene_ui_constants.h",
+    "scene_ui_constants.mm",
+  ]
+  deps = [ "//base" ]
+}
+
 source_set("ui") {
   sources = [
     "app_container_view.h",
@@ -17,6 +25,7 @@ source_set("ui") {
   ]
 
   deps = [
+    ":constants",
     "//base",
     "//ios/chrome/app/strings:ios_strings",
     "//ios/chrome/browser/app_bar/ui",

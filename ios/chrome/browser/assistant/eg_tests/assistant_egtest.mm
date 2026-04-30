@@ -3,12 +3,14 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/assistant/ui/assistant_container_constants.h"
+#import "ios/chrome/browser/scene/ui/scene_ui_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
+#import "ios/third_party/earl_grey2/src/CommonLib/Matcher/GREYLayoutConstraint.h"  // nogncheck
 #import "net/test/embedded_test_server/embedded_test_server.h"
 
 namespace {
@@ -20,6 +22,17 @@ std::unique_ptr<net::test_server::HttpResponse> SimpleResponse(
   http_response->set_code(net::HTTP_OK);
   http_response->set_content("<html><body>Assistant Test</body></html>");
   return http_response;
+}
+
+// Returns a constraint that ensures the element is to the right of the
+// reference element (Left attribute >= Right attribute of reference).
+GREYLayoutConstraint* RightOf() {
+  return [GREYLayoutConstraint
+      layoutConstraintWithAttribute:kGREYLayoutAttributeLeft
+                          relatedBy:kGREYLayoutRelationGreaterThanOrEqual
+               toReferenceAttribute:kGREYLayoutAttributeRight
+                         multiplier:1.0
+                           constant:0.0];
 }
 
 // Long presses the omnibox and taps "Ask Gemini" to open the assistant.
@@ -92,6 +105,30 @@ void OpenAssistantFromOmnibox() {
   config.features_enabled_and_params.push_back({kAssistantSidePanel, {}});
 
   return config;
+}
+
+// Tests that the Assistant side panel and the app content do not overlap.
+- (void)testSidePanelAndAppContentSideBySide {
+  if (![ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Test only supported on iPad.");
+  }
+
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
+
+  OpenAssistantFromOmnibox();
+
+  // Verify assistant container is shown.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:
+          grey_accessibilityID(kAssistantContainerAccessibilityIdentifier)];
+
+  // Verify that the app content is to the right of the Assistant Container.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kAppContentAccessibilityIdentifier)]
+      assertWithMatcher:grey_layout(
+                            @[ RightOf() ],
+                            grey_accessibilityID(
+                                kAssistantContainerAccessibilityIdentifier))];
 }
 
 // Tests that the omnibox remains visible when the assistant side panel is

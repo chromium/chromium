@@ -10,6 +10,7 @@ source_set("eg2_tests") {
     "//base",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/assistant/ui:constants",
+    "//ios/chrome/browser/scene/ui:constants",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
