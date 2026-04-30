@@ -279,6 +279,7 @@ blink_core_sources_editing = [
   "position_units.cc",
   "position_units.h",
   "position_units_sentence.cc",
+  "position_units_word.cc",
   "position_with_affinity.cc",
   "position_with_affinity.h",
   "range_in_flat_tree.cc",
@@ -367,7 +368,6 @@ blink_core_sources_editing = [
   "visible_units_line.cc",
   "visible_units_paragraph.cc",
   "visible_units_sentence.cc",
-  "visible_units_word.cc",
 ]
 
 if (is_mac) {
@@ -456,6 +456,7 @@ blink_core_tests_editing = [
   "position_test.cc",
   "position_units_test.cc",
   "position_units_sentence_test.cc",
+  "position_units_word_test.cc",
   "position_with_affinity_test.cc",
   "relocatable_position_test.cc",
   "selection_adjuster_test.cc",

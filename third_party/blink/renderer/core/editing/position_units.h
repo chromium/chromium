@@ -6,11 +6,40 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_POSITION_UNITS_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/editing/editing_boundary.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
 
 namespace blink {
 
+enum class PlatformWordBehavior { kWordSkipSpaces, kWordDontSkipSpaces };
 enum class SentenceTrailingSpaceBehavior { kIncludeSpace, kOmitSpace };
+
+// ----- words -----
+// Definitions are in position_units_word.cc.
+CORE_EXPORT Position StartOfWordPosition(const Position&,
+                                         WordSide = kNextWordIfOnBoundary);
+CORE_EXPORT PositionInFlatTree
+StartOfWordPosition(const PositionInFlatTree&,
+                    WordSide = kNextWordIfOnBoundary);
+CORE_EXPORT Position MiddleOfWordPosition(const Position&, const Position&);
+CORE_EXPORT PositionInFlatTree MiddleOfWordPosition(const PositionInFlatTree&,
+                                                    const PositionInFlatTree&);
+CORE_EXPORT Position EndOfWordPosition(const Position&,
+                                       WordSide = kNextWordIfOnBoundary);
+CORE_EXPORT PositionInFlatTree
+EndOfWordPosition(const PositionInFlatTree&, WordSide = kNextWordIfOnBoundary);
+CORE_EXPORT PositionWithAffinity PreviousWordPosition(const Position&);
+CORE_EXPORT PositionInFlatTreeWithAffinity
+PreviousWordPosition(const PositionInFlatTree&);
+CORE_EXPORT PositionWithAffinity NextWordPosition(
+    const Position&,
+    PlatformWordBehavior = PlatformWordBehavior::kWordDontSkipSpaces);
+CORE_EXPORT PositionInFlatTreeWithAffinity NextWordPosition(
+    const PositionInFlatTree&,
+    PlatformWordBehavior = PlatformWordBehavior::kWordDontSkipSpaces);
+bool IsWordBreak(UChar);
+bool IsWordBoundary(UChar);
 
 // ----- sentences -----
 // Definitions are in position_units_sentence.cc.

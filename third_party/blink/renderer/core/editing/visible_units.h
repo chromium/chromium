@@ -48,8 +48,6 @@ class LayoutObject;
 class Node;
 class LocalFrame;
 
-enum class PlatformWordBehavior { kWordSkipSpaces, kWordDontSkipSpaces };
-
 // offset functions on Node
 CORE_EXPORT int CaretMinOffset(const Node*);
 CORE_EXPORT int CaretMaxOffset(const Node*);
@@ -123,31 +121,6 @@ PreviousPositionOf(const VisiblePosition&,
 CORE_EXPORT VisiblePositionInFlatTree
 PreviousPositionOf(const VisiblePositionInFlatTree&,
                    EditingBoundaryCrossingRule = kCanCrossEditingBoundary);
-
-// words
-CORE_EXPORT Position StartOfWordPosition(const Position&,
-                                         WordSide = kNextWordIfOnBoundary);
-CORE_EXPORT PositionInFlatTree
-StartOfWordPosition(const PositionInFlatTree&,
-                    WordSide = kNextWordIfOnBoundary);
-CORE_EXPORT Position MiddleOfWordPosition(const Position&, const Position&);
-CORE_EXPORT PositionInFlatTree MiddleOfWordPosition(const PositionInFlatTree&,
-                                                    const PositionInFlatTree&);
-CORE_EXPORT Position EndOfWordPosition(const Position&,
-                                       WordSide = kNextWordIfOnBoundary);
-CORE_EXPORT PositionInFlatTree
-EndOfWordPosition(const PositionInFlatTree&, WordSide = kNextWordIfOnBoundary);
-CORE_EXPORT PositionWithAffinity PreviousWordPosition(const Position&);
-CORE_EXPORT PositionInFlatTreeWithAffinity
-PreviousWordPosition(const PositionInFlatTree&);
-CORE_EXPORT PositionWithAffinity NextWordPosition(
-    const Position&,
-    PlatformWordBehavior = PlatformWordBehavior::kWordDontSkipSpaces);
-CORE_EXPORT PositionInFlatTreeWithAffinity NextWordPosition(
-    const PositionInFlatTree&,
-    PlatformWordBehavior = PlatformWordBehavior::kWordDontSkipSpaces);
-bool IsWordBreak(UChar);
-bool IsWordBoundary(UChar);
 
 // sentences
 CORE_EXPORT VisiblePosition
