@@ -48,6 +48,7 @@ export class OmniboxAimAppElement extends CrLitElement {
       caretAnimationsEnabled_: {type: Boolean},
       disableComposeboxAnimation_: {type: Boolean},
       energyEffectEnabled_: {type: Boolean, reflect: true},
+      energyEffectAnimationEnabled_: {type: Boolean, reflect: true},
     };
   }
 
@@ -61,6 +62,11 @@ export class OmniboxAimAppElement extends CrLitElement {
   protected accessor caretAnimationsEnabled_: boolean =
       loadTimeData.getBoolean('caretAnimationEnabled');
   protected accessor energyEffectEnabled_: boolean =
+      loadTimeData.getBoolean('energyEffectEnabled');
+  // The use of energyEffectEnabled to set energyEffectAnimationEnabled_ is
+  // intentional. This is to align the gating properties for energy effects
+  // across all surfaces (= Nextbox, Omnibox, and Realbox).
+  protected accessor energyEffectAnimationEnabled_: boolean =
       loadTimeData.getBoolean('energyEffectEnabled');
 
   private eventTracker_ = new EventTracker();
