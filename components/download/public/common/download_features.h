@@ -30,6 +30,11 @@ COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(kShowBlockedSensitiveDownload);
 
 // Whether to show the download scanning state on download home.
 COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(kShowDownloadScanningState);
+
+// Whether to offer a compact list view (small thumbnails + text metadata) for
+// images and videos on the Android Downloads page, in place of the default
+// large preview cards. See crbug.com/505631139.
+COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(kDownloadsCompactListView);
 #endif
 
 // Whether download notification service uses new unified API based on offline
