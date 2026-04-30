@@ -298,9 +298,10 @@ void ActorLoginDelegateImpl::WebContentsDestroyed() {
 
 void ActorLoginDelegateImpl::PrimaryPageChanged(content::Page& page) {
   // If the page changed while trying to fill in passwords,
+  // signal this to the filler so it can interrupt its processes and
   // terminate the operation.
   if (credential_filler_) {
-    OnAttemptLoginCompleted(LoginStatusResult::kErrorPageChangedDuringFilling);
+    credential_filler_->OnPrimaryPageChanged();
   }
 }
 

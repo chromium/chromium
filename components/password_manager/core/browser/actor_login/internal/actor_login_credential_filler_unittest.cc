@@ -314,6 +314,36 @@ TEST_P(ActorLoginCredentialFillerTest, NoSigninForm_NoManagers) {
   filler.reset();
 }
 
+TEST_P(ActorLoginCredentialFillerTest, PrimaryPageChanged) {
+  url::Origin origin = url::Origin::Create(GURL(kLoginUrl));
+  Credential credential =
+      CreateTestCredential(kTestUsername, origin.GetURL(), origin);
+
+  base::test::TestFuture<LoginStatusResultOrError> future;
+  auto filler = std::make_unique<ActorLoginCredentialFiller>(
+      origin, credential, should_store_permission(), &mock_client_,
+      mqls_logger(), base::TimeTicks::Now(), mock_is_task_in_focus_.Get(),
+      future.GetCallback());
+
+  AttemptLoginDetails expected_details;
+  expected_details.set_outcome(
+      optimization_guide::proto::
+          ActorLoginQuality_AttemptLoginDetails_AttemptLoginOutcome_FILLING_INTERRUPTED_BY_PAGE_CHANGE);
+  expected_details.set_attempt_login_time_ms(0);
+  EXPECT_CALL(
+      mock_mqls_logger_,
+      AddAttemptLoginDetails(EqualsAttemptLoginDetails(expected_details)));
+
+  filler->OnPrimaryPageChanged();
+
+  ASSERT_TRUE(future.Get().has_value());
+  EXPECT_EQ(future.Get().value(),
+            LoginStatusResult::kErrorPageChangedDuringFilling);
+
+  // Destroy the filler, because it sends logs in the destructor.
+  filler.reset();
+}
+
 TEST_P(ActorLoginCredentialFillerTest, NoSigninForm_CrossSiteIframe) {
   url::Origin origin = url::Origin::Create(GURL("https://example.com/login"));
   url::Origin cross_site_origin =
@@ -1766,7 +1796,7 @@ TEST_P(ActorLoginCredentialFillerTest, FillingIsDisabled) {
   AttemptLoginDetails expected_details;
   expected_details.set_outcome(
       optimization_guide::proto::
-          ActorLoginQuality_AttemptLoginDetails_AttemptLoginOutcome_UNSPECIFIED);
+          ActorLoginQuality_AttemptLoginDetails_AttemptLoginOutcome_FILLING_NOT_ALLOWED);
   expected_details.set_attempt_login_time_ms(0);
   EXPECT_CALL(
       mock_mqls_logger_,

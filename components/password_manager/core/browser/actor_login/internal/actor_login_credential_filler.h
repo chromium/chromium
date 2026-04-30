@@ -59,6 +59,10 @@ class ActorLoginCredentialFiller {
 
   bool should_store_permission() const { return should_store_permission_; }
 
+  // Called when the primary page changed, so that the filler can
+  // properly populate the actor login MQLS logs.
+  void OnPrimaryPageChanged();
+
  private:
   enum class FieldType { kUsername, kPassword };
 

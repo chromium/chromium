@@ -240,6 +240,8 @@ enum class AttemptLoginOutcomeMqls {
   kFederatedFrameNotActive,
   kFederatedExpectedAccountNotPresent,
   kFederatedTimeout,
+  kFillingNotAllowed,
+  kFillingInterruptedByPageChange,
 };
 
 optimization_guide::proto::

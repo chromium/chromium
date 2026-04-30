@@ -136,6 +136,12 @@ optimization_guide::proto::
     case AttemptLoginOutcomeMqls::kFederatedTimeout:
       return optimization_guide::proto::
           ActorLoginQuality_AttemptLoginDetails_AttemptLoginOutcome_FEDERATED_TIMEOUT;
+    case AttemptLoginOutcomeMqls::kFillingNotAllowed:
+      return optimization_guide::proto::
+          ActorLoginQuality_AttemptLoginDetails_AttemptLoginOutcome_FILLING_NOT_ALLOWED;
+    case AttemptLoginOutcomeMqls::kFillingInterruptedByPageChange:
+      return optimization_guide::proto::
+          ActorLoginQuality_AttemptLoginDetails_AttemptLoginOutcome_FILLING_INTERRUPTED_BY_PAGE_CHANGE;
   }
   NOTREACHED();
 }
