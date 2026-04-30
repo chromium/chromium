@@ -45,10 +45,12 @@
 #include "extensions/browser/api/web_request/web_request_api_constants.h"
 #include "extensions/browser/api/web_request/web_request_api_helpers.h"
 #include "extensions/browser/api/web_request/web_request_info.h"
+#include "extensions/browser/extension_navigation_registry.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/api/declarative_net_request.h"
 #include "extensions/common/api/web_request.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/extension_builder.h"
 #include "extensions/common/features/feature.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/http/http_util.h"
@@ -305,6 +307,34 @@ TEST_F(ExtensionWebRequestTest, PollutedPrefsActivationConverges) {
   // The inactive entry should have been consumed by activation.
   EXPECT_EQ(0u, event_router->GetInactiveListenerCountForTesting(&profile_,
                                                                  kEventName));
+}
+
+// Regression test for ExtensionNavigationRegistry::CanRedirect logic bug.
+// This ensures that an extension cannot redirect to another extension's
+// non-web-accessible resources by claiming a redirect recorded by that
+// extension. See crbug.com/497599683.
+TEST_F(ExtensionWebRequestTest, CanRedirectLogicBug) {
+  ExtensionNavigationRegistry* registry =
+      ExtensionNavigationRegistry::Get(&profile_);
+  int64_t nav_id = 42;
+  GURL target_url("chrome-extension://victim/resource.html");
+  ExtensionId attacker_id = "attacker";
+  ExtensionId victim_id = "victim";
+
+  auto attacker_extension =
+      ExtensionBuilder("Attacker").SetID(attacker_id).Build();
+  auto victim_extension = ExtensionBuilder("Victim").SetID(victim_id).Build();
+
+  // Record a redirect initiated by the attacker.
+  registry->RecordExtensionRedirect(nav_id, target_url, attacker_id);
+
+  // The victim extension should NOT be allowed to claim a redirect recorded by
+  // attacker.
+  EXPECT_FALSE(registry->CanRedirect(nav_id, target_url, *victim_extension));
+
+  // Re-record for the attacker check.
+  registry->RecordExtensionRedirect(nav_id, target_url, attacker_id);
+  EXPECT_TRUE(registry->CanRedirect(nav_id, target_url, *attacker_extension));
 }
 
 namespace {

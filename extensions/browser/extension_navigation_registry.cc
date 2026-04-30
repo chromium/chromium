@@ -86,7 +86,7 @@ bool ExtensionNavigationRegistry::CanRedirect(int64_t navigation_id,
     return true;
   }
 
-  return true;
+  return false;
 }
 
 }  // namespace extensions
