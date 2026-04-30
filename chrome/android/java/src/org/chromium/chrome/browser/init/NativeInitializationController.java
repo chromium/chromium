@@ -136,7 +136,15 @@ class NativeInitializationController {
 
     /** Called when native initialization for an activity has been finished. */
     public void onNativeInitializationComplete() {
-        // Callback when we finished with ChromeActivityNativeDelegate.onCreateWithNative tasks
+        // The activity may have been finished/destroyed between the time
+        // finishNativeInitialization was posted and now. Bail out before flipping
+        // mInitializationComplete: signalNativeLibraryLoadedIfReady() likewise skipped
+        // onCreateWithNative on the same condition, so onStartWithNative /
+        // onResumeWithNative were never dispatched. If we set the flag here, later
+        // onPause/onStop would route to the *WithNative branch and touch state that
+        // was never initialized.
+        if (mActivityDelegate.isActivityFinishingOrDestroyed()) return;
+
         mInitializationComplete = true;
 
         if (mOnStartPending) {
