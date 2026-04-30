@@ -9,6 +9,8 @@ assert(enable_extensions && !is_android)
 
 source_set("mime_handler") {
   sources = [
+    "generic_mime_handler_stream_delegate.cc",
+    "generic_mime_handler_stream_delegate.h",
     "mime_handler_stream_delegate.cc",
     "mime_handler_stream_delegate.h",
     "mime_handler_stream_manager.cc",
@@ -64,9 +66,7 @@ source_set("mime_handler_page") {
   ]
   if (enable_pdf) {
     deps += [
-      "//components/pdf/common:constants",
       "//components/resources:components_resources_grit",
-      "//pdf:features",
       "//ui/base",
     ]
   }

@@ -71,7 +71,9 @@ std::string MimeHandlerViewAttachHelper::OverrideBodyForInterceptedResponse(
                      navigating_frame_tree_node_id, resource_url, stream_id,
                      internal_id),
       std::move(resume_load));
-  return CreateTemplateMimeHandlerPage(resource_url, mime_type, internal_id);
+  return CreateTemplateMimeHandlerPage(resource_url, mime_type, internal_id,
+                                       /*use_oopif=*/false,
+                                       /*is_oopif_pdf=*/false);
 }
 
 void MimeHandlerViewAttachHelper::RenderProcessHostDestroyed(

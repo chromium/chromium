@@ -14,12 +14,12 @@
 
 namespace extensions::mime_handlers {
 
-// Send the onExecuteMimeTypeHandler event to `extension_id`. A non-empty
-// `stream_id` will be used to identify the created stream during
-// MimeHandlerViewGuest creation. `embedded` should be set to whether the
-// document is embedded within another document. The `frame_tree_node_id`
-// parameter is used for the top level plugins case. (PDF, etc).
-// `mime_type` is used to resolve the handler URL from the extension manifest.
+// Dispatches the MIME type handler event to `extension_id`. `mime_type` is
+// used to resolve the handler URL from the extension manifest, including
+// per-type URLs for generic (third-party) handlers. A non-empty `stream_id`
+// identifies the created stream for legacy GuestView-based handlers.
+// `embedded` indicates whether the document is embedded, and
+// `frame_tree_node_id` identifies the target frame.
 void SendExecuteMimeTypeHandlerEvent(
     const ExtensionId& extension_id,
     const std::string& stream_id,

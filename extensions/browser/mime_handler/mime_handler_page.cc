@@ -17,7 +17,6 @@
 #if BUILDFLAG(ENABLE_PDF)
 #include "base/strings/string_util.h"
 #include "components/grit/components_resources.h"  // nogncheck
-#include "pdf/pdf_features.h"
 #include "ui/base/resource/resource_bundle.h"
 #endif
 
@@ -38,6 +37,16 @@ constexpr char kFullPageMimeHandlerViewHTML[] =
     " src='about:blank' type='%s' "
     "internalid='%s'></body></html>";
 
+// Generic iframe-based template for Generic MIME handlers (non-OOPIF PDF).
+constexpr char kOopifMimeHandlerViewHTML[] =
+    "<!doctype html><html style='height:100%%;width:100%%'><body "
+    "style='height:100%%;width:100%%;overflow:hidden;margin:0;padding:0'>"
+    "<template shadowrootmode='closed'>"
+    "<iframe name='%s' src='about:blank' type='%s' internalid='%s' "
+    "style='border:0;position:absolute;top:0;left:0;width:100%%;height:100%%' "
+    "allow='fullscreen *'>"
+    "</iframe><slot></slot></template></body></html>";
+
 SkColor GetBackgroundColorStringForMimeType(const GURL& url,
                                             const std::string& mime_type) {
 #if BUILDFLAG(ENABLE_PLUGINS)
@@ -56,10 +65,11 @@ SkColor GetBackgroundColorStringForMimeType(const GURL& url,
 
 std::string CreateTemplateMimeHandlerPage(const GURL& resource_url,
                                           const std::string& mime_type,
-                                          const std::string& internal_id) {
+                                          const std::string& internal_id,
+                                          bool use_oopif,
+                                          bool is_oopif_pdf) {
 #if BUILDFLAG(ENABLE_PDF)
-  if (chrome_pdf::features::IsOopifPdfEnabled() &&
-      mime_type == "application/pdf") {
+  if (is_oopif_pdf) {
     std::string pdf_embedder_html =
         ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
             IDR_PDF_EMBEDDER_HTML);
@@ -68,6 +78,10 @@ std::string CreateTemplateMimeHandlerPage(const GURL& resource_url,
         /*offsets=*/nullptr);
   }
 #endif
+  if (use_oopif) {
+    return base::StringPrintf(kOopifMimeHandlerViewHTML, internal_id.c_str(),
+                              mime_type.c_str(), internal_id.c_str());
+  }
   auto color = GetBackgroundColorStringForMimeType(resource_url, mime_type);
   return base::StringPrintf(kFullPageMimeHandlerViewHTML, SkColorGetR(color),
                             SkColorGetG(color), SkColorGetB(color),

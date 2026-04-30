@@ -1612,6 +1612,7 @@ source_set("platform_browser_tests") {
       "//chrome/browser/ui/tabs/alert:tab_alert",
       "//chrome/browser/ui/tabs/saved_tab_groups:test_support",
       "//chrome/test/supervised_user:test_support",
+      "//extensions/browser/mime_handler:mime_handler_registry",
     ]
   }
 
@@ -5063,6 +5064,7 @@ if (!is_android) {
         "//chrome/browser/extensions/api/braille_display_private:controller",
         "//chrome/browser/extensions/api/messaging:browser_tests",
         "//chrome/browser/extensions/api/messaging:test_support",
+        "//chrome/browser/extensions/api/mime_handlers:browser_tests",
         "//chrome/browser/extensions/api/pdf_viewer_private:browser_tests",
         "//chrome/browser/hid",
         "//chrome/browser/prefetch",

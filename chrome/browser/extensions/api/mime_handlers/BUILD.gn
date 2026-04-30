@@ -1,0 +1,29 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//extensions/buildflags/buildflags.gni")
+
+assert(enable_extensions,
+       "Cannot depend on extensions because enable_extensions=false.")
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "generic_mime_handler_browsertest.cc" ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/extensions",
+    "//chrome/browser/profiles:profile",
+    "//chrome/test:test_support",
+    "//components/version_info:channel",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//extensions:test_support",
+    "//extensions/browser/mime_handler:mime_handler_registry",
+    "//extensions/common",
+    "//net:test_support",
+  ]
+}

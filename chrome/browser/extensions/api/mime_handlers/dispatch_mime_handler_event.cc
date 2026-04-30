@@ -16,6 +16,8 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_stream_manager.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
+#include "extensions/browser/mime_handler/generic_mime_handler_stream_delegate.h"
+#include "extensions/browser/mime_handler/mime_handler_stream_manager.h"
 #include "extensions/browser/mime_handler/stream_container.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_id.h"
@@ -24,7 +26,6 @@
 
 #if BUILDFLAG(ENABLE_PDF)
 #include "chrome/browser/pdf/pdf_handler_stream_delegate.h"
-#include "extensions/browser/mime_handler/mime_handler_stream_manager.h"
 #include "pdf/pdf_features.h"
 #endif  // BUILDFLAG(ENABLE_PDF)
 
@@ -71,16 +72,18 @@ void SendExecuteMimeTypeHandlerEvent(
   if (!handler) {
     return;
   }
-  const GURL per_type_url = handler->GetHandlerUrl(mime_type);
-  if (!per_type_url.is_valid()) {
+  const GURL handler_url = handler->GetHandlerUrl(mime_type);
+  if (!handler_url.is_valid()) {
     return;
   }
-  CHECK(per_type_url.SchemeIs(kExtensionScheme));
-  CHECK_EQ(per_type_url.host(), extension_id);
+  CHECK(handler_url.SchemeIs(kExtensionScheme));
+  CHECK_EQ(handler_url.host(), extension_id);
+
+  const bool is_generic_handler = !handler->IsPluginExtension();
 
   int tab_id = ExtensionTabUtil::GetTabId(web_contents);
   std::unique_ptr<StreamContainer> stream_container(
-      new StreamContainer(tab_id, embedded, per_type_url, extension_id,
+      new StreamContainer(tab_id, embedded, handler_url, extension_id,
                           std::move(transferrable_loader), original_url));
 
 #if BUILDFLAG(ENABLE_PDF)
@@ -96,6 +99,20 @@ void SendExecuteMimeTypeHandlerEvent(
   }
 #endif  // BUILDFLAG(ENABLE_PDF)
 
+  // Generic MIME handlers (third-party extensions) use the OOPIF path
+  // with the generic delegate.
+  if (is_generic_handler) {
+    extensions::mime_handler::MimeHandlerStreamManager::Create(web_contents);
+    extensions::mime_handler::MimeHandlerStreamManager::FromWebContents(
+        web_contents)
+        ->AddStreamContainer(
+            frame_tree_node_id, internal_id, std::move(stream_container),
+            std::make_unique<
+                extensions::mime_handler::GenericMimeHandlerStreamDelegate>());
+    return;
+  }
+
+  // Legacy GuestView path for allowlisted extensions.
   MimeHandlerStreamManager::Get(browser_context)
       ->AddStream(stream_id, std::move(stream_container), frame_tree_node_id);
 }

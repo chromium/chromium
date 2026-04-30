@@ -18,10 +18,12 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/download_utils.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_attach_helper.h"
 #include "extensions/browser/mime_handler/mime_handler_page.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/manifest_handlers/mime_types_handler.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -108,8 +110,9 @@ void PluginResponseInterceptorURLLoaderThrottle::WillProcessResponse(
 
   content::WebContents* web_contents =
       content::WebContents::FromFrameTreeNodeId(frame_tree_node_id_);
-  if (!web_contents)
+  if (!web_contents) {
     return;
+  }
 
   if (content::download_utils::MustDownload(
           web_contents->GetBrowserContext(), response_url,
@@ -120,8 +123,9 @@ void PluginResponseInterceptorURLLoaderThrottle::WillProcessResponse(
   std::string extension_id = PluginUtils::GetExtensionIdForMimeType(
       web_contents->GetBrowserContext(), response_head->mime_type);
 
-  if (extension_id.empty())
+  if (extension_id.empty()) {
     return;
+  }
 
   // TODO(crbug.com/40180674): Support prerendering of MimeHandlerViews.
   if (web_contents->IsPrerenderedFrame(frame_tree_node_id_)) {
@@ -155,16 +159,34 @@ void PluginResponseInterceptorURLLoaderThrottle::WillProcessResponse(
   std::string payload;
   const std::string internal_id = base::UnguessableToken::Create().ToString();
 
+  // Check generic MIME handler first -- a generic (third-party) handler
+  // that handles application/pdf should use the generic OOPIF template,
+  // not Chrome's PDF-specific embedder HTML.
+  bool is_for_generic_mime_handler = false;
+  if (const auto* extension =
+          extensions::ExtensionRegistry::Get(web_contents->GetBrowserContext())
+              ->enabled_extensions()
+              .GetByID(extension_id)) {
+    if (MimeTypesHandler* handler = MimeTypesHandler::GetHandler(extension)) {
+      is_for_generic_mime_handler = !handler->IsPluginExtension();
+    }
+  }
+
 #if BUILDFLAG(ENABLE_PDF)
-  const bool is_for_oopif_pdf = chrome_pdf::features::IsOopifPdfEnabled() &&
+  const bool is_for_oopif_pdf = !is_for_generic_mime_handler &&
+                                chrome_pdf::features::IsOopifPdfEnabled() &&
                                 response_head->mime_type == pdf::kPDFMimeType;
 #else
   constexpr bool is_for_oopif_pdf = false;
 #endif
-  if (is_for_oopif_pdf) {
-    // For the PDF viewer, set the payload without creating a MimeHandlerView.
+
+  const bool use_oopif_path = is_for_oopif_pdf || is_for_generic_mime_handler;
+
+  if (use_oopif_path) {
+    // Set the payload without creating a MimeHandlerView.
     payload = extensions::CreateTemplateMimeHandlerPage(
-        response_url, response_head->mime_type, internal_id);
+        response_url, response_head->mime_type, internal_id,
+        /*use_oopif=*/true, /*is_oopif_pdf=*/is_for_oopif_pdf);
   } else {
     // The resource is handled by frame-based MimeHandlerView, so let the
     // MimeHandlerView code set the payload.
@@ -205,6 +227,24 @@ void PluginResponseInterceptorURLLoaderThrottle::WillProcessResponse(
             response_head->headers->raw_headers());
   }
 
+  // Save the original MIME type before any overrides. This is passed to
+  // SendExecuteMimeTypeHandlerEvent for handler URL resolution.
+  const std::string original_mime_type = response_head->mime_type;
+
+  // Tell the navigation system that a plugin intercepted this response, so
+  // it does not trigger a download for unrecognized MIME types.
+  response_head->intercepted_by_plugin = true;
+
+  // For generic MIME handlers, override the MIME type to text/html so the
+  // renderer parses the template HTML body. Without this, the renderer
+  // discards the body for unrecognized MIME types (only MIME types with
+  // a registered plugin or supported by the renderer are rendered).
+  // The original MIME type is preserved in the deep-copied response passed
+  // to the extension via the `TransferrableURLLoader`.
+  if (is_for_generic_mime_handler) {
+    response_head->mime_type = "text/html";
+  }
+
   // `client_side_content_decoding_types` must be cleared to prevent the
   // renderer from mistakenly decoding the `payload`.
   response_head->client_side_content_decoding_types.clear();
@@ -227,10 +267,9 @@ void PluginResponseInterceptorURLLoaderThrottle::WillProcessResponse(
           &extensions::mime_handlers::SendExecuteMimeTypeHandlerEvent,
           extension_id, stream_id, embedded, frame_tree_node_id_,
           std::move(transferrable_loader), response_url, internal_id,
-          response_head->mime_type));
+          original_mime_type));
 
-#if BUILDFLAG(ENABLE_PDF)
-  if (is_for_oopif_pdf) {
+  if (use_oopif_path) {
     // Schedule `ResumeLoad()` for after the SendExecuteMimeTypeHandlerEvent()
     // call, to ensure the work in SendExecuteMimeTypeHandlerEvent() does not
     // race against subsequent network events.
@@ -239,7 +278,6 @@ void PluginResponseInterceptorURLLoaderThrottle::WillProcessResponse(
         base::BindOnce(&PluginResponseInterceptorURLLoaderThrottle::ResumeLoad,
                        weak_factory_.GetWeakPtr()));
   }
-#endif
 }
 
 void PluginResponseInterceptorURLLoaderThrottle::ResumeLoad() {
