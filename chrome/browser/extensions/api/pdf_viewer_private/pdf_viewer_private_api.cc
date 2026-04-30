@@ -20,6 +20,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/api/pdf_viewer_private.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/pdf/common/constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_interface.h"
@@ -28,6 +29,7 @@
 #include "extensions/browser/mime_handler/stream_container.h"
 #include "pdf/buildflags.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "url/url_constants.h"
 
 #if BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
@@ -56,8 +58,6 @@ namespace SetPdfPluginAttributes =
     api::pdf_viewer_private::SetPdfPluginAttributes;
 
 namespace SetPdfDocumentTitle = api::pdf_viewer_private::SetPdfDocumentTitle;
-
-constexpr char kSummarizePrompt[] = "Summarize this document";
 
 // Check if the current URL is allowed based on a list of allowlisted domains.
 bool IsUrlAllowedToEmbedLocalFiles(const GURL& current_url,
@@ -339,7 +339,8 @@ ExtensionFunction::ResponseAction PdfViewerPrivateGlicSummarizeFunction::Run() {
   glic::GlicInvokeOptions options(
       glic::Target(tab_interface, glic::NewConversation()),
       glic::mojom::InvocationSource::kPdfSummarizeButton);
-  options.prompts.push_back(kSummarizePrompt);
+  options.prompts.push_back(
+      l10n_util::GetStringUTF8(IDS_PDF_GLIC_SUMMARIZE_PROMPT));
 
   if (has_consented) {
     glic_service->InvokeWithAutoSubmit(
