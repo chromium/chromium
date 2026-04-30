@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/contextual_tasks/public/account_utils.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/google/core/common/google_util.h"
@@ -435,9 +436,13 @@ void GlicPrivateInvokeFunction::OnPromptRetrieved(
 
   if (in_new_tab) {
     // Navigate to a new tab.
-    NavigateParams navigate_params(profile, GURL("about:blank"),
+    NavigateParams navigate_params(profile, chrome::ChromeUINewTabURLAsGURL(),
                                    ui::PAGE_TRANSITION_LINK);
-    navigate_params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+    bool open_in_foreground =
+        extensions_features::kGlicOpenNewTabInForegroundParam.Get();
+    navigate_params.disposition =
+        open_in_foreground ? WindowOpenDisposition::NEW_FOREGROUND_TAB
+                           : WindowOpenDisposition::NEW_BACKGROUND_TAB;
     base::WeakPtr<content::NavigationHandle> navigation_handle =
         Navigate(&navigate_params);
     if (navigation_handle) {
