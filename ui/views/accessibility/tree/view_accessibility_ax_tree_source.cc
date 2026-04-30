@@ -59,7 +59,7 @@ bool ViewAccessibilityAXTreeSource::GetTreeData(
   tree_data->tree_id = tree_id_;
   tree_data->loaded = true;
   tree_data->loading_progress = 1.0;
-  // TODO(accessibility): Implement focus handling.
+  tree_data->focus_id = focused_node_id_;
   return true;
 }
 

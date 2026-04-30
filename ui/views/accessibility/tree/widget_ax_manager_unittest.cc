@@ -13,6 +13,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/accessibility_features.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/platform/ax_platform_for_test.h"
 #include "ui/accessibility/platform/browser_accessibility.h"
 #include "ui/views/accessibility/ax_virtual_view.h"
@@ -40,6 +41,16 @@ class WidgetAXManagerTest : public test::WidgetTest {
 
   Widget* widget() { return widget_.get(); }
   WidgetAXManager* manager() { return widget_->ax_manager(); }
+
+  View* AddFocusableView() { return AddFocusableView(widget()->GetRootView()); }
+
+  View* AddFocusableView(View* parent) {
+    auto* view = parent->AddChildView(std::make_unique<View>());
+    view->SetFocusBehavior(View::FocusBehavior::ALWAYS);
+    view->GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
+    view->GetViewAccessibility().SetName("Focusable test view");
+    return view;
+  }
 
  private:
   WidgetAutoclosePtr widget_;
@@ -869,10 +880,8 @@ TEST_F(WidgetAXManagerTest, FocusTracking_TracksFocusedView) {
   WidgetAXManagerTestApi api(manager());
   api.Enable();
 
-  auto* v1 = widget()->GetRootView()->AddChildView(std::make_unique<View>());
-  v1->SetFocusBehavior(View::FocusBehavior::ALWAYS);
-  auto* v2 = widget()->GetRootView()->AddChildView(std::make_unique<View>());
-  v2->SetFocusBehavior(View::FocusBehavior::ALWAYS);
+  auto* v1 = AddFocusableView();
+  auto* v2 = AddFocusableView();
 
   api.WaitForNextSerialization();
 
@@ -893,8 +902,7 @@ TEST_F(WidgetAXManagerTest, FocusTracking_ClearsFocusOnBlur) {
   WidgetAXManagerTestApi api(manager());
   api.Enable();
 
-  auto* v = widget()->GetRootView()->AddChildView(std::make_unique<View>());
-  v->SetFocusBehavior(View::FocusBehavior::ALWAYS);
+  auto* v = AddFocusableView();
 
   api.WaitForNextSerialization();
 
@@ -910,8 +918,7 @@ TEST_F(WidgetAXManagerTest, FocusTracking_SchedulesPendingUpdate) {
   WidgetAXManagerTestApi api(manager());
   api.Enable();
 
-  auto* v = widget()->GetRootView()->AddChildView(std::make_unique<View>());
-  v->SetFocusBehavior(View::FocusBehavior::ALWAYS);
+  auto* v = AddFocusableView();
 
   api.WaitForNextSerialization();
   ASSERT_FALSE(api.processing_update_posted());
@@ -925,8 +932,7 @@ TEST_F(WidgetAXManagerTest, FocusTracking_DoesNotResolveActiveDescendant) {
   WidgetAXManagerTestApi api(manager());
   api.Enable();
 
-  auto* parent = widget()->GetRootView()->AddChildView(std::make_unique<View>());
-  parent->SetFocusBehavior(View::FocusBehavior::ALWAYS);
+  auto* parent = AddFocusableView();
   auto* child = parent->AddChildView(std::make_unique<View>());
 
   api.WaitForNextSerialization();
@@ -948,8 +954,7 @@ TEST_F(WidgetAXManagerTest, FocusTracking_HandlesManagerDestruction) {
   WidgetAXManagerTestApi api(manager());
   api.Enable();
 
-  auto* v = widget()->GetRootView()->AddChildView(std::make_unique<View>());
-  v->SetFocusBehavior(View::FocusBehavior::ALWAYS);
+  auto* v = AddFocusableView();
 
   api.WaitForNextSerialization();
 
@@ -961,6 +966,71 @@ TEST_F(WidgetAXManagerTest, FocusTracking_HandlesManagerDestruction) {
   // directly, then verify focused_node_id_ is cleared.
   manager()->OnFocusManagerDestroying(widget()->GetFocusManager());
   EXPECT_EQ(manager()->GetFocusedNodeId(), ui::kInvalidAXNodeID);
+}
+
+TEST_F(WidgetAXManagerTest, FocusTracking_FocusIdInTreeData) {
+  WidgetAXManagerTestApi api(manager());
+  api.Enable();
+
+  auto* v = AddFocusableView();
+  api.WaitForNextSerialization();
+
+  widget()->Show();
+  v->RequestFocus();
+  api.WaitForNextSerialization();
+
+  // Find the update that contains tree data with the focus_id.
+  bool found_focus_id = false;
+  const ui::AXNodeID expected_id =
+      static_cast<ui::AXNodeID>(v->GetViewAccessibility().GetUniqueId());
+  for (const auto& update : api.last_serialization().updates) {
+    if (update.has_tree_data && update.tree_data.focus_id == expected_id) {
+      found_focus_id = true;
+      break;
+    }
+  }
+  EXPECT_TRUE(found_focus_id);
+}
+
+TEST_F(WidgetAXManagerTest, FocusTracking_FocusIdUpdatesOnFocusChange) {
+  WidgetAXManagerTestApi api(manager());
+  api.Enable();
+
+  auto* v1 = AddFocusableView();
+  auto* v2 = AddFocusableView();
+  api.WaitForNextSerialization();
+
+  widget()->Show();
+
+  // Focus v1.
+  v1->RequestFocus();
+  api.WaitForNextSerialization();
+
+  const ui::AXNodeID v1_id =
+      static_cast<ui::AXNodeID>(v1->GetViewAccessibility().GetUniqueId());
+  bool found_v1 = false;
+  for (const auto& update : api.last_serialization().updates) {
+    if (update.has_tree_data && update.tree_data.focus_id == v1_id) {
+      found_v1 = true;
+      break;
+    }
+  }
+  EXPECT_TRUE(found_v1);
+
+  // Move focus to v2.
+  v2->RequestFocus();
+  api.WaitForNextSerialization();
+
+  const ui::AXNodeID v2_id =
+      static_cast<ui::AXNodeID>(v2->GetViewAccessibility().GetUniqueId());
+  bool found_v2 = false;
+  for (const auto& update : api.last_serialization().updates) {
+    if (update.has_tree_data && update.tree_data.focus_id == v2_id) {
+      found_v2 = true;
+      break;
+    }
+  }
+  EXPECT_TRUE(found_v2);
 }
 
 }  // namespace views::test

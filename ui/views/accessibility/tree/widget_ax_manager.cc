@@ -397,6 +397,8 @@ void WidgetAXManager::OnDidChangeFocus(View* focused_before,
   // suppress events when the window isn't active.
   focused_node_id_ = GetFocusedViewNodeId();
   if (is_enabled_) {
+    CHECK(tree_source_);
+    tree_source_->SetFocusedNodeId(focused_node_id_);
     SchedulePendingUpdate();
   }
 }
@@ -404,6 +406,8 @@ void WidgetAXManager::OnDidChangeFocus(View* focused_before,
 void WidgetAXManager::OnFocusManagerDestroying(FocusManager* focus_manager) {
   focus_manager_observation_.Reset();
   focused_node_id_ = ui::kInvalidAXNodeID;
+  CHECK(tree_source_);
+  tree_source_->SetFocusedNodeId(ui::kInvalidAXNodeID);
 }
 
 void WidgetAXManager::StartObservingFocus() {
@@ -416,6 +420,8 @@ void WidgetAXManager::StartObservingFocus() {
   }
   focus_manager_observation_.Observe(fm);
   focused_node_id_ = GetFocusedViewNodeId();
+  CHECK(tree_source_);
+  tree_source_->SetFocusedNodeId(focused_node_id_);
 }
 
 // Returns the focused view's AXNodeID, or kInvalidAXNodeID if no view
@@ -591,7 +597,20 @@ void WidgetAXManager::SendPendingUpdate() {
     }
   }
 
-  // TODO(crbug.com/40672441): Make sure the focused node is serialized.
+  // Ensure the focused node is serialized so it is added to the accessibility
+  // tree cache before tree_data.focus_id refers to it.
+  if (focused_node_id_ != ui::kInvalidAXNodeID &&
+      !already_serialized_ids.contains(focused_node_id_)) {
+    if (ViewAccessibility* focused_ax = cache_->Get(focused_node_id_)) {
+      ui::AXTreeUpdate update;
+      if (tree_serializer_->SerializeChanges(focused_ax, &update)) {
+        for (auto& node : update.nodes) {
+          already_serialized_ids.insert(node.id);
+        }
+        tree_updates.push_back(std::move(update));
+      }
+    }
+  }
 
   if (tree_updates.empty() && events.empty()) {
     // Nothing to do, no updates or events.

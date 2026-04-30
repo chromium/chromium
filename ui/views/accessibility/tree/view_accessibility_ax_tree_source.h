@@ -44,6 +44,8 @@ class VIEWS_EXPORT ViewAccessibilityAXTreeSource
   // Invokes an action on an Aura object.
   void HandleAccessibleAction(const ui::AXActionData& action);
 
+  void SetFocusedNodeId(ui::AXNodeID id) { focused_node_id_ = id; }
+
   // AXTreeSource:
   bool GetTreeData(ui::AXTreeData* data) const override;
   ViewAccessibility* GetRoot() const override;
@@ -77,6 +79,9 @@ class VIEWS_EXPORT ViewAccessibilityAXTreeSource
   const ui::AXTreeID tree_id_;
 
   raw_ptr<WidgetViewAXCache> cache_;
+
+  // The AXNodeID of the currently focused node, set by WidgetAXManager.
+  ui::AXNodeID focused_node_id_ = ui::kInvalidAXNodeID;
 };
 
 }  // namespace views
