@@ -13,6 +13,8 @@ option java_outer_classname = 'ChromeSearchboxStatsProto';
 
 package omnibox.metrics;
 
+import "smart_compose_stats.proto";
+
 // Chrome-specific version of searchbox_stats.proto containing a strict subset
 // of the fields in searchbox_stats.proto.
 //
@@ -53,6 +55,7 @@ message ChromeSearchboxStats {
   }
   repeated GroupInfo group_infos = 103;
   repeated fixed64 gws_event_id_hash = 94;
+  optional SmartComposeStats smart_compose_stats = 125;
 }
 
 message ActionInfo {

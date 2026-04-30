@@ -35,6 +35,7 @@ _proto_files = [
   "search_context.proto",
   "searchbox_config.proto",
   "section_config.proto",
+  "smart_compose_stats.proto",
   "suggest_template_info.proto",
   "tool_config.proto",
   "tool_mode.proto",
