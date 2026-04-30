@@ -531,24 +531,10 @@ const LayoutResult* LayoutBox::CachedLayoutResult(
         .ReplaceTableRowData(*new_space.TableData(), new_space.TableRowIndex());
   }
 
-  // OOF-positioned nodes have to two-tier cache. The additional cache check
-  // runs before the OOF-positioned sizing, and positioning calculations.
-  //
-  // This additional check compares the percentage resolution size.
-  //
-  // As a result, the cached layout result always needs to contain the previous
-  // percentage resolution size in order for the first-tier cache to work.
-  // See |BlockNode::CachedLayoutResultForOutOfFlowPositioned|.
-  bool needs_cached_result_update =
-      node.IsOutOfFlowPositioned() &&
-      new_space.PercentageResolutionSize() !=
-          cached_layout_result->GetConstraintSpaceForCaching()
-              .PercentageResolutionSize();
-
   // We can safely reuse this result if our BFC and "input" exclusion spaces
   // were equal.
   if (are_bfc_offsets_equal && is_exclusion_space_equal &&
-      is_margin_strut_equal && !needs_cached_result_update) {
+      is_margin_strut_equal) {
     // In order not to rebuild the internal derived-geometry "cache" of float
     // data, we need to move this to the new "output" exclusion space.
     cached_layout_result->GetExclusionSpace().MoveAndUpdateDerivedGeometry(
@@ -556,16 +542,9 @@ const LayoutResult* LayoutBox::CachedLayoutResult(
     return cached_layout_result;
   }
 
-  const auto* new_result = MakeGarbageCollected<LayoutResult>(
+  return MakeGarbageCollected<LayoutResult>(
       *cached_layout_result, new_space, end_margin_strut, bfc_line_offset,
       bfc_block_offset, block_offset_delta);
-
-  if (needs_cached_result_update &&
-      !DisableLayoutSideEffectsScope::IsDisabled()) {
-    SetCachedLayoutResult(new_result, FragmentIndex(break_token));
-  }
-
-  return new_result;
 }
 
 const PhysicalBoxFragment* LayoutBox::GetPhysicalFragment(wtf_size_t i) const {
