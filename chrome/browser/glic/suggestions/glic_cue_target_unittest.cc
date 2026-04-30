@@ -5,6 +5,7 @@
 #include "chrome/browser/glic/suggestions/glic_cue_target.h"
 
 #include "chrome/browser/actor/actor_keyed_service_fake.h"
+#include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
@@ -21,6 +22,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/optimization_guide/proto/features/contextual_cueing.pb.h"
+#include "components/prefs/pref_service.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/session_id.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -250,6 +252,38 @@ TEST_F(GlicCueTargetTest, CueActionDataFromResponse_InvalidTabs) {
   EXPECT_EQ("response prompt", glic_data.prompt);
   // No valid tabs to share.
   EXPECT_TRUE(glic_data.tabs_to_share.empty());
+}
+
+TEST_F(GlicCueTargetTest, CueActionDataFromResponse_DefaultTabContextDisabled) {
+#if BUILDFLAG(IS_CHROMEOS)
+  GTEST_SKIP() << "crbug.com/41100311: Disabled on ChromeOS until profile "
+                  "loading is fixed for this test.";
+#else
+  GlicCueTarget target(*mock_glic_keyed_service_,
+                       /*optimization_guide_keyed_service=*/nullptr,
+                       *mock_browser_window_interface_);
+
+  optimization_guide::proto::ContextualCueingResponse response;
+  auto* surface = response.mutable_gemini_in_chrome_surface();
+  surface->set_prompt("response prompt");
+
+  SessionID session_id_a = CreateTab();
+  surface->add_tabs_to_share()->set_tab_id(session_id_a.id());
+  SessionID session_id_b = CreateTab();
+  surface->add_tabs_to_share()->set_tab_id(session_id_b.id());
+
+  // User turns off default tab context sharing.
+  profile_->GetPrefs()->SetBoolean(prefs::kGlicDefaultTabContextEnabled, false);
+
+  contextual_cueing::CueActionData data =
+      target.CueActionDataFromResponse(response);
+  ASSERT_TRUE(
+      std::holds_alternative<contextual_cueing::GlicCueActionData>(data));
+  auto& glic_data = std::get<contextual_cueing::GlicCueActionData>(data);
+  EXPECT_EQ("response prompt", glic_data.prompt);
+  // No tabs shared.
+  EXPECT_EQ(0ul, glic_data.tabs_to_share.size());
+#endif
 }
 
 }  // namespace
