@@ -60,9 +60,12 @@ from typing import (
 
 from urllib.parse import urljoin
 
+from blinkpy.common import path_finder
+path_finder.add_pyjson5_dir_to_sys_path()
+import json5
+
 from blinkpy.common import exit_codes
 from blinkpy.common import find_files
-from blinkpy.common import path_finder
 from blinkpy.common import read_checksum_from_png
 from blinkpy.common.host import Host
 from blinkpy.common.memoized import memoized
@@ -2854,12 +2857,9 @@ class Port(object):
             path_to_virtual_test_suites + ' not found'
         virtual_test_suites = []
         try:
-            test_suite_json = json.loads(
+            test_suite_json = json5.loads(
                 self._filesystem.read_text_file(path_to_virtual_test_suites))
             for json_config in test_suite_json:
-                # Strings are treated as comments.
-                if isinstance(json_config, str):
-                    continue
                 vts = VirtualTestSuite(**json_config)
                 if any(vts.full_prefix == s.full_prefix
                        for s in virtual_test_suites):

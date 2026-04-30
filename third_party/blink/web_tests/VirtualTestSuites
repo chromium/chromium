@@ -1,32 +1,30 @@
 [
-  "Top-level string entries are treated as comments.",
+  // Each object entry defines a virtual suite with the following fields:
+  //  prefix: The name of the virtual suite. A virtual test name will be like
+  //      virtual/<prefix>/<base-test-name>.
+  //  owners: A list of emails of the owners who are responsible for the virtual
+  //      suite. The owners will be copied on any bugs created for the virtual
+  //      suite, e.g. on virtual suite expiration.
+  //  platforms: A list of platforms on which the virtual suite will run.
+  //      Linux is recommended if the test suite is platform-agnostic.
+  //      Platforms supported now: Android, Fuchsia, Linux, Mac, Win, Webview.
+  //  bases: A list of test directories or names that will be run under the
+  //      virtual suite.
+  //  exclusive_tests (optional): \"ALL\" or a list containing a subset of
+  //      `bases` specifying the tests that will be exclusively run under this
+  //      virtual suite. The specified base tests will be skipped on all
+  //      platforms (regardless of `platforms`). Corresponding virtual tests
+  //      under other virtual suites that don't specify the tests in their
+  //     `exclusive_tests` list will be skipped on all platforms, too.
+  //  args: A list of command line switches that will be passed to the test
+  //      driver for the tests under this virtual suite.
+  //  expires: An expiration date formatted as either `%b %d, %Y` (Jan 1, 2000)
+  //      or `%B %d, %Y` (January 1, 2000). If the suite is not supposed to
+  //      expire, use `never`. A bug will be filed for removing expired suites.
 
-  "Each object entry defines a virtual suite with the following fields:       ",
-  " prefix: The name of the virtual suite. A virtual test name will be like   ",
-  "     virtual/<prefix>/<base-test-name>.                                    ",
-  " owners: A list of emails of the owners who are responsible for the virtual",
-  "     suite. The owners will be copied on any bugs created for the virtual  ",
-  "     suite, e.g. on virtual suite expiration.                              ",
-  " platforms: A list of platforms on which the virtual suite will run.       ",
-  "     Linux is recommended if the test suite is platform-agnostic.          ",
-  "     Platforms supported now: Android, Fuchsia, Linux, Mac, Win, Webview.  ",
-  " bases: A list of test directories or names that will be run under the     ",
-  "     virtual suite.                                                        ",
-  " exclusive_tests (optional): \"ALL\" or a list containing a subset of      ",
-  "     `bases` specifying the tests that will be exclusively run under this  ",
-  "     virtual suite. The specified base tests will be skipped on all        ",
-  "     platforms (regardless of `platforms`). Corresponding virtual tests    ",
-  "     under other virtual suites that don't specify the tests in their      ",
-  "    `exclusive_tests` list will be skipped on all platforms, too.          ",
-  " args: A list of command line switches that will be passed to the test     ",
-  "     driver for the tests under this virtual suite.                        ",
-  " expires: An expiration date formatted as either `%b %d, %Y` (Jan 1, 2000) ",
-  "     or `%B %d, %Y` (January 1, 2000). If the suite is not supposed to     ",
-  "     expire, use `never`. A bug will be filed for removing expired suites. ",
-
-  "Note: for VTS includes wpt_internal tests, please also list them in",
-  "content_shell.filter so that they can be run in blink_wpt_tests step.",
-  "TODO(crbug.com/380755410): Find a way to do this systematically.",
+  // Note: for VTS includes wpt_internal tests, please also list them in
+  // content_shell.filter so that they can be run in blink_wpt_tests step.
+  // TODO(crbug.com/380755410): Find a way to do this systematically.
 
   {
     "prefix": "ai_tool_use",
@@ -104,7 +102,7 @@
     ],
     "expires": "Jan 1, 2027"
   },
-  "This suite tests some android features on Linux and should never expire.",
+  // This suite tests some android features on Linux and should never expire.
   {
     "prefix": "android",
     "platforms": [
@@ -297,13 +295,13 @@
     ],
     "expires": "never"
   },
-  "---------------------------- Close watchers -------------------------------",
-  "TODO(https://crbug.com/1495208): These cannot be run in the normal web ",
-  "platform tests environment because of",
-  "https://github.com/web-platform-tests/wpt/issues/23364#issuecomment-1661452441.",
-  "If we figure out how to properly reset user activation and history-action",
-  "activation between tests, then we can remove ",
-  "--reset-browsing-instance-between-tests and remove this virtual test suite.",
+  // ---------------------------- Close watchers -------------------------------
+  // TODO(https://crbug.com/1495208): These cannot be run in the normal web
+  // platform tests environment because of
+  // https://github.com/web-platform-tests/wpt/issues/23364#issuecomment-1661452441.
+  // If we figure out how to properly reset user activation and history-action
+  // activation between tests, then we can remove
+  // --reset-browsing-instance-between-tests and remove this virtual test suite.
   {
     "prefix": "close-watcher",
     "owners": [
@@ -456,7 +454,7 @@
     ],
     "expires": "Jul 1, 2023"
   },
-  "This never expires because it tests a shipping configuration",
+  // This never expires because it tests a shipping configuration
   {
     "prefix": "cpu-compositing",
     "owners": [
@@ -620,10 +618,10 @@
       "abotella@igalia.com"
     ]
   },
-  "This never expires because it tests rendering of form controls when the",
-  "preferred color-scheme is dark. It should now be possible to render",
-  "controls dark even if the preferred is light, but that requires a bit of",
-  "work",
+  // This never expires because it tests rendering of form controls when the
+  // preferred color-scheme is dark. It should now be possible to render
+  // controls dark even if the preferred is light, but that requires a bit of
+  // work
   {
     "prefix": "dark-color-scheme",
     "owners": [
@@ -883,7 +881,7 @@
     ],
     "expires": "Jul 1, 2025"
   },
-  "Exclusive tests due to crbug.com/349939555",
+  // Exclusive tests due to crbug.com/349939555
   {
     "prefix": "disable-raster-inducing-scroll",
     "platforms": [
@@ -955,8 +953,8 @@
     "expires": "Nov 29, 2025"
   },
 
-  "The elastic-overscroll virtual suite is testing a feature that is enabled",
-  "or not based on platform and settings, so it should not expire.",
+  // The elastic-overscroll virtual suite is testing a feature that is enabled
+  // or not based on platform and settings, so it should not expire.
   {
     "prefix": "elastic-overscroll",
     "platforms": [
@@ -1078,8 +1076,8 @@
     "expires": "Jul 1, 2026"
   },
 
-  "The fast api bindings test requires access to V8 internals, so only the",
-  "virtual test should be run.",
+  // The fast api bindings test requires access to V8 internals, so only the
+  // virtual test should be run.
   {
     "prefix": "fast-api",
     "owners": [
@@ -1276,11 +1274,11 @@
     ],
     "expires": "Jan 9, 2027"
   },
-  "This is the same as the 'fenced-frame-mparch' test suite, but this suite",
-  "exposes debug behavior that isn't implemented in WebDriver yet.",
-  "TODO(crbug.com/350526049): Remove this suite and have 'fenced-frame-mparch'",
-  "include 'wpt_internal/fenced_frame' once Private Aggregation has a",
-  "WebDriver extension.",
+  // This is the same as the 'fenced-frame-mparch' test suite, but this suite
+  // exposes debug behavior that isn't implemented in WebDriver yet.
+  // TODO(crbug.com/350526049): Remove this suite and have 'fenced-frame-mparch'
+  // include 'wpt_internal/fenced_frame' once Private Aggregation has a
+  // WebDriver extension.
   {
     "prefix": "fenced-frame-mparch-internal",
     "owners": [
@@ -1322,8 +1320,8 @@
       "chrome-first-party-sets@chromium.org"
     ]
   },
- "RasterInducingScroll disabled due to crbug.com/349939555",
-  "TODO(crbug.com/398193016): Merge this suite into virtual/overlay-scrollbar",
+ // RasterInducingScroll disabled due to crbug.com/349939555
+  // TODO(crbug.com/398193016): Merge this suite into virtual/overlay-scrollbar
   {
     "prefix": "fluent-overlay-scrollbar",
     "platforms": [
@@ -1505,9 +1503,9 @@
     ],
     "expires": "never"
   },
-  "The GenericSensorExtraClasses feature is controlled by a flag, which has ",
-  "an expiration date. |expires| below is set to 'never' to avoid having to ",
-  "manage the expiration date in two locations.",
+  // The GenericSensorExtraClasses feature is controlled by a flag, which has
+  // an expiration date. |expires| below is set to 'never' to avoid having to
+  // manage the expiration date in two locations.
   {
     "prefix": "generic-sensor-extra-classes",
     "owners": [
@@ -1530,7 +1528,7 @@
     ],
     "expires": "never"
   },
-  "This never expires because it tests a shipping configuration",
+  // This never expires because it tests a shipping configuration
   {
     "prefix": "gpu",
     "owners": [
@@ -2113,17 +2111,17 @@
     ],
     "expires": "Dec 1, 2024"
   },
-  "This suite is incompatible with the default WPT Origin Isolation mode of ",
-  "Site Isolation (see",
-  "WebTestContentBrowserClient::GetOriginsRequiringDedicatedProcess) which",
-  "isolates WPT origins on top of the default site-per-process mode (see",
-  "ContentBrowserClient::ShouldEnableStrictSiteIsolation).",
-  "Origin-keyed agent clusters web platform tests are for the feature at",
-  "https://html.spec.whatwg.org/#origin-keyed-agent-clusters. It doesn't make",
-  "sense to test that feature when web-platform.test domains are being forced",
-  "into origin-isolation mode. Note that since we also want coverage of this",
-  "feature with site isolation enabled, we use a different virtual test suite",
-  "than not-site-per-process, named no-auto-wpt-origin-isolation.",
+  // This suite is incompatible with the default WPT Origin Isolation mode of
+  // Site Isolation (see
+  // WebTestContentBrowserClient::GetOriginsRequiringDedicatedProcess) which
+  // isolates WPT origins on top of the default site-per-process mode (see
+  // ContentBrowserClient::ShouldEnableStrictSiteIsolation).
+  // Origin-keyed agent clusters web platform tests are for the feature at
+  // https://html.spec.whatwg.org/#origin-keyed-agent-clusters. It doesn't make
+  // sense to test that feature when web-platform.test domains are being forced
+  // into origin-isolation mode. Note that since we also want coverage of this
+  // feature with site isolation enabled, we use a different virtual test suite
+  // than not-site-per-process, named no-auto-wpt-origin-isolation.
   {
     "prefix": "no-auto-wpt-origin-isolation",
     "platforms": [
@@ -2160,8 +2158,8 @@
     ],
     "expires": "never"
   },
-  "The following tests never pass in the default Blink test runner due to",
-  "forced frame updates, but still pass in the full browser.",
+  // The following tests never pass in the default Blink test runner due to
+  // forced frame updates, but still pass in the full browser.
   {
     "prefix": "no-forced-frame-updates",
     "owners": [
@@ -2188,8 +2186,8 @@
     ],
     "expires": "Dec 1, 2024"
   },
-  "The non-overlay-scrollbar virtual suite is testing a feature that is",
-  "enabled or not based on platform and settings, so it should not expire.",
+  // The non-overlay-scrollbar virtual suite is testing a feature that is
+  // enabled or not based on platform and settings, so it should not expire.
   {
     "prefix": "non-overlay-scrollbar",
     "platforms": [
@@ -2207,25 +2205,25 @@
       "gerchiko@microsoft.com"
     ]
   },
-  "This suite is incompatible with the default WPT Origin Isolation mode of",
-  "Site Isolation (see",
-  "WebTestContentBrowserClient::GetOriginsRequiringDedicatedProcess) which",
-  "isolates WPT origins on top of the default site-per-process mode (see",
-  "ContentBrowserClient::ShouldEnableStrictSiteIsolation).",
-  "--------------------------- document.domain -----------------------",
-  "To test OOPIF support in various web platform features, we isolate all WPT",
-  "*origins* (under assumptions that hopefully some WPT tests will exercise",
-  "cross-origin scenarios, but that cross-site test coverage is unlikely).",
-  "*Origin* isolation is incompatible with document.domain and this means that",
-  "tests exercising document.domain might fail - such tests are listed as",
-  "Skip below.  Note that by default Site Isolation isolates *sites* rather",
-  "than *origin* and therefore avoids problems related to document.domain",
-  "compatibility.",
-  "TODO(crbug.com/1515794): fast/dom/raf-throttling-out-of-view-cross-origin-page.html",
-  "  fails when run with IsolateSandboxedIframes enabled as it needs to be same-process",
-  "  to run reliably. We should investigate whether it's possible to rewrite the",
-  "  test to run reliably with process-isolation for sandboxed iframes",
-  "  enabled, If not, it can continue to run in this virtual test suite.",
+  // This suite is incompatible with the default WPT Origin Isolation mode of
+  // Site Isolation (see
+  // WebTestContentBrowserClient::GetOriginsRequiringDedicatedProcess) which
+  // isolates WPT origins on top of the default site-per-process mode (see
+  // ContentBrowserClient::ShouldEnableStrictSiteIsolation).
+  // --------------------------- document.domain -----------------------
+  // To test OOPIF support in various web platform features, we isolate all WPT
+  // *origins* (under assumptions that hopefully some WPT tests will exercise
+  // cross-origin scenarios, but that cross-site test coverage is unlikely).
+  // *Origin* isolation is incompatible with document.domain and this means that
+  // tests exercising document.domain might fail - such tests are listed as
+  // Skip below.  Note that by default Site Isolation isolates *sites* rather
+  // than *origin* and therefore avoids problems related to document.domain
+  // compatibility.
+  // TODO(crbug.com/1515794): fast/dom/raf-throttling-out-of-view-cross-origin-page.html
+  //   fails when run with IsolateSandboxedIframes enabled as it needs to be same-process
+  //   to run reliably. We should investigate whether it's possible to rewrite the
+  //   test to run reliably with process-isolation for sandboxed iframes
+  //   enabled, If not, it can continue to run in this virtual test suite.
   {
     "prefix": "not-site-per-process",
     "platforms": [
@@ -2320,8 +2318,8 @@
     ],
     "expires": "Dec 1, 2026"
   },
-  "The origin trials suite tests that OT-controlled features are exposed to",
-  "the web as expected, so should not expire.",
+  // The origin trials suite tests that OT-controlled features are exposed to
+  // the web as expected, so should not expire.
   {
     "prefix": "origin-trials-runtimeflags-disabled",
     "owners": [
@@ -2398,8 +2396,8 @@
       "jarhar@chromium.org"
     ]
   },
-  "The overlay-scrollbar virtual suite is testing a feature that is enabled",
-  "or not based on platform and settings, so it should not expire.",
+  // The overlay-scrollbar virtual suite is testing a feature that is enabled
+  // or not based on platform and settings, so it should not expire.
   {
     "prefix": "overlay-scrollbar",
     "platforms": [
@@ -2436,8 +2434,8 @@
     ],
     "expires": "Jul 1, 2023"
   },
-  "Running existing tests that assert that processing instructions are parsed as bogus comments",
-  "while actual processing-instruction HTML parser support is being worked on",
+  // Running existing tests that assert that processing instructions are parsed as bogus comments
+  // while actual processing-instruction HTML parser support is being worked on
   {
     "prefix": "parse-processing-instructions-as-bogus-comments",
     "owners": [
@@ -2518,7 +2516,7 @@
       "amarjotgill@chromium.org"
     ]
   },
-  "This never expires because it tests a shipping configuration",
+  // This never expires because it tests a shipping configuration
   {
     "prefix": "prefer_compositing_to_lcd_text",
     "platforms": [
@@ -2590,11 +2588,11 @@
     ],
     "expires": "Dec 31, 2026"
   },
-  "These tests involve requiring a prefetch proxy, but since WPT origins are ",
-  "not allowed to use the proxy in Chromium, we pass an argument telling ",
-  "Chromium to bypass the proxy and pretend it was used instead. See also",
-  "external/wpt/speculation-rules/prefetch/resources/utils.sub.js.",
-  "These tests are skipped in other configurations via text expectations.",
+  // These tests involve requiring a prefetch proxy, but since WPT origins are
+  // not allowed to use the proxy in Chromium, we pass an argument telling
+  // Chromium to bypass the proxy and pretend it was used instead. See also
+  // external/wpt/speculation-rules/prefetch/resources/utils.sub.js.
+  // These tests are skipped in other configurations via text expectations.
   {
     "prefix": "prefetch-proxy",
     "owners": [
@@ -4297,9 +4295,9 @@
       "arthursonzogni@chromium.org"
     ]
   },
-  "This pair of test suites never expire because they test a feature that is",
-  "enabled by default for Chrome, but not by default in content/ so as to not",
-  "affect other embedders",
+  // This pair of test suites never expire because they test a feature that is
+  // enabled by default for Chrome, but not by default in content/ so as to not
+  // affect other embedders
   {
     "prefix": "split-http-cache",
     "platforms": [
@@ -4324,9 +4322,9 @@
       "jkarlin@chromium.org"
     ]
   },
-  "The stable suite tests for conformance to HTML/web specifications, and",
-  "detects unintentional changes to web exposed surface, so should not expire.",
-  "Owners are part of third_party/blink/API_OWNERS.",
+  // The stable suite tests for conformance to HTML/web specifications, and
+  // detects unintentional changes to web exposed surface, so should not expire.
+  // Owners are part of third_party/blink/API_OWNERS.
   {
     "prefix": "stable",
     "owners": [
@@ -4496,8 +4494,8 @@
     ],
     "expires": "never"
   },
-  "Task tracking tests require UnexposedTaskIds to work, so these tests are run",
-  "exclusively with a virtual test suite that never expires.",
+  // Task tracking tests require UnexposedTaskIds to work, so these tests are run
+  // exclusively with a virtual test suite that never expires.
   {
     "prefix": "task-tracking",
     "owners": [
@@ -4651,10 +4649,10 @@
       "katabolism-finch@google.com"
     ]
   },
-  "The threaded virtual suite tests with threaded compositing, which is the",
-  "configuration that we ship.  Because this is testing what we ship (in a way",
-  "that the default configuration does not), this virtual suite never expires.",
-  "The skipped base tests require a compositor, e.g. some uses requestIdleCallback",
+  // The threaded virtual suite tests with threaded compositing, which is the
+  // configuration that we ship.  Because this is testing what we ship (in a way
+  // that the default configuration does not), this virtual suite never expires.
+  // The skipped base tests require a compositor, e.g. some uses requestIdleCallback
   {
     "prefix": "threaded",
     "platforms": [
@@ -4761,9 +4759,9 @@
     ],
     "expires": "never"
   },
-  "isInputPending requires threaded compositing and layerized iframes, so ",
-  "these tests are run exclusively with a virtual test suite that never ",
-  "expires.",
+  // isInputPending requires threaded compositing and layerized iframes, so
+  // these tests are run exclusively with a virtual test suite that never
+  // expires.
   {
     "prefix": "threaded-composited-iframes",
     "owners": [
@@ -4786,9 +4784,9 @@
     ],
     "expires": "never"
   },
-  "The skipped base test requires a compositor to pass as root scrollbar scrolling",
-  "is always done on the compositor thread",
-  "This never expires because it tests a shipping configuration",
+  // The skipped base test requires a compositor to pass as root scrollbar scrolling
+  // is always done on the compositor thread
+  // This never expires because it tests a shipping configuration
   {
     "prefix": "threaded-prefer-compositing",
     "platforms": [
@@ -4995,8 +4993,8 @@
       "rakina@chromium.org"
     ]
   },
-  "This virtual test suite ensures state cached from the old is also added to",
-  "the serialization code-path for cross-document transitions.",
+  // This virtual test suite ensures state cached from the old is also added to
+  // the serialization code-path for cross-document transitions.
   {
     "prefix": "view-transition-mpa-serialization",
     "platforms": [
@@ -5051,8 +5049,8 @@
     "exclusive_tests": "ALL",
     "expires": "never"
   },
-  "This virtual test suite ensures the ViewTransition feature works correctly",
-  "for non-sRGB color spaces.",
+  // This virtual test suite ensures the ViewTransition feature works correctly
+  // for non-sRGB color spaces.
   {
     "prefix": "view-transition-wide-gamut",
     "platforms": [
@@ -5099,9 +5097,9 @@
     ],
     "expires": "never"
   },
-  "The Wasm code cache test requires access to V8 internals, so only the",
-  "virtual test should be run. Additionally the tiering budget is reduced to",
-  "speed up the test.",
+  // The Wasm code cache test requires access to V8 internals, so only the
+  // virtual test should be run. Additionally the tiering budget is reduced to
+  // speed up the test.
   {
     "prefix": "wasm-code-caching",
     "owners": [
@@ -5161,8 +5159,8 @@
     ],
     "expires": "Jan 1, 2028"
   },
-  "--webauthn-remote-desktop-support can be toggled with enterprise policies, ",
-  "so we need to support this long term.",
+  // --webauthn-remote-desktop-support can be toggled with enterprise policies,
+  // so we need to support this long term.
   {
     "prefix": "webauthn-remote-desktop-client-override",
     "owners": [
@@ -5200,11 +5198,11 @@
     ],
     "expires": "May 2, 2026"
   },
-  "This individual test must be run separately from others, because it makes a",
-  "huge memory allocation that often causes OOM if other tests have run in the",
-  "same content_shell harness. For this reason this virtual test suite must",
-  "never expire. Virtual test suites require command line args so pick one",
-  "which is effectively a no-op.",
+  // This individual test must be run separately from others, because it makes a
+  // huge memory allocation that often causes OOM if other tests have run in the
+  // same content_shell harness. For this reason this virtual test suite must
+  // never expire. Virtual test suites require command line args so pick one
+  // which is effectively a no-op.
   {
     "prefix": "webgl-oversized-printing",
     "owners": [
@@ -5225,10 +5223,10 @@
     ],
     "expires": "never"
   },
-  "Run the WebNN WPTs with a CPU context with the WebNN service enabled.",
-  "Note that tests for most individual ops are only run in the window,",
-  "context to save testing cycles. Tests for identity() are run in all",
-  "contexts to serve as a canary.",
+  // Run the WebNN WPTs with a CPU context with the WebNN service enabled.
+  // Note that tests for most individual ops are only run in the window,
+  // context to save testing cycles. Tests for identity() are run in all
+  // contexts to serve as a canary.
   {
     "prefix": "webnn-service-on-cpu",
     "platforms": [
@@ -5500,10 +5498,10 @@
       "reillyg@chromium.org"
     ]
   },
-  "Run the WebNN WPTs with a NPU context with the WebNN service enabled.",
-  "Note that tests for most individual ops are only run in the window,",
-  "context to save testing cycles. Tests for identity() are run in all",
-  "contexts to serve as a canary.",
+  // Run the WebNN WPTs with a NPU context with the WebNN service enabled.
+  // Note that tests for most individual ops are only run in the window,
+  // context to save testing cycles. Tests for identity() are run in all
+  // contexts to serve as a canary.
   {
     "prefix": "webnn-service-on-npu",
     "platforms": [
@@ -5770,10 +5768,10 @@
       "reillyg@chromium.org"
     ]
   },
-  "Run the WebNN WPTs with a GPU context with the WebNN service enabled.",
-  "Note that tests for most individual ops are only run in the window,",
-  "context to save testing cycles. Tests for identity() are run in all",
-  "contexts to serve as a canary.",
+  // Run the WebNN WPTs with a GPU context with the WebNN service enabled.
+  // Note that tests for most individual ops are only run in the window,
+  // context to save testing cycles. Tests for identity() are run in all
+  // contexts to serve as a canary.
   {
     "prefix": "webnn-service-with-gpu",
     "platforms": [
@@ -6042,7 +6040,7 @@
       "reillyg@chromium.org"
     ]
   },
-  "Run selected WPTs with webui browser.",
+  // Run selected WPTs with webui browser.
   {
     "prefix": "webui-browser",
     "owners": [
@@ -6131,13 +6129,13 @@
     "owners": ["hongchan@chromium.org"],
     "expires": "Jan 1, 2027"
   },
-  "Currently, XSLT is disabled on ToT for tests, via the",
-  "fieldtrial_testing_config.json file which enables the XSLTSpecialTrial",
-  "flag and disables the XSLT flag. The `xslt-enabled` virtual suite just",
-  "enables the XSLT flag, via the base::Feature, which should re-enable",
-  "XSLT. The `xslt-disabled` virtual suite just disables the XSLTSpecialTrial",
-  "flag, and leaves the main XSLT flag disabled, which should just change the",
-  "console messages, keeping XSLT disabled.",
+  // Currently, XSLT is disabled on ToT for tests, via the
+  // fieldtrial_testing_config.json file which enables the XSLTSpecialTrial
+  // flag and disables the XSLT flag. The `xslt-enabled` virtual suite just
+  // enables the XSLT flag, via the base::Feature, which should re-enable
+  // XSLT. The `xslt-disabled` virtual suite just disables the XSLTSpecialTrial
+  // flag, and leaves the main XSLT flag disabled, which should just change the
+  // console messages, keeping XSLT disabled.
   {
     "prefix": "xslt-enabled",
     "platforms": ["Linux", "Mac", "Win"],
@@ -6159,9 +6157,9 @@
     ],
     "expires": "Aug 1, 2026"
   },
-  "This suite just verifies that both XSLT-disabled flags work. The main ToT",
-  "code verifies XSLTSpecialTrial, since it is enabled via fieldtrial testing",
-  "config. This virtual suite checks XSLTSpecialTrial=false.",
+  // This suite just verifies that both XSLT-disabled flags work. The main ToT
+  // code verifies XSLTSpecialTrial, since it is enabled via fieldtrial testing
+  // config. This virtual suite checks XSLTSpecialTrial=false.
   {
     "prefix": "xslt-disabled",
     "platforms": ["Linux", "Mac", "Win"],

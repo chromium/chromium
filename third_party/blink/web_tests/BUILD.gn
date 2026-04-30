@@ -134,6 +134,8 @@ group("expectations") {
   testonly = true
 
   data = [
+    "//third_party/pyjson5/",
+
     # Include virtual baselines.
     "virtual/",
 
