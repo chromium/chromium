@@ -12,6 +12,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/context/glic_sharing_manager.h"
@@ -221,7 +222,7 @@ struct GlicInvokeOptions {
 
   // Browser-specific callback for when the web client connects (i.e., the
   // initialization handshake with the web client is complete).
-  base::OnceCallback<void(GlicInstance*)> on_client_connected;
+  base::OnceCallback<void(base::WeakPtr<GlicInstance>)> on_client_connected;
 
   // Browser-specific callback for when the invocation fails.
   // This is called asynchronously.

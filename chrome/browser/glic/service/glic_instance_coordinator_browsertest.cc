@@ -1188,7 +1188,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
                        InvokeCallsOnClientConnected) {
   tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
   base::test::TestFuture<void> success_future;
-  base::test::TestFuture<GlicInstance*> connected_future;
+  base::test::TestFuture<base::WeakPtr<GlicInstance>> connected_future;
 
   GlicInvokeOptions options(glic::Target(tab),
                             mojom::InvocationSource::kOsButton);
@@ -1207,12 +1207,12 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
   EXPECT_TRUE(connected_future.Wait());
 
   // Verify that there is a connected web client when our callback fires.
-  GlicInstance* instance = connected_future.Get();
+  base::WeakPtr<GlicInstance> instance = connected_future.Get();
   ASSERT_TRUE(instance);
   EXPECT_TRUE(instance->host().IsWebClientConnected());
 
   // Verify that the passed instance is the correct one.
-  EXPECT_EQ(instance, coordinator().GetInstanceForTab(tab));
+  EXPECT_EQ(instance.get(), coordinator().GetInstanceForTab(tab));
 
   // The success callback should be called after full completion.
   EXPECT_TRUE(success_future.Wait());

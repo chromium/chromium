@@ -361,7 +361,8 @@ TEST_F(GlicExperimentalTriggeringMessageHandlerTest, RelaysUpdatesToServer) {
 
   // Run the callback to simulate connection.
   ASSERT_FALSE(captured_options.on_client_connected.is_null());
-  std::move(captured_options.on_client_connected).Run(&mock_instance);
+  std::move(captured_options.on_client_connected)
+      .Run(mock_instance.GetWeakPtr());
 
   // Now simulate updates from the remote
   ASSERT_TRUE(updates_handler_remote.is_valid());
@@ -460,7 +461,8 @@ TEST_F(GlicExperimentalTriggeringMessageHandlerTest,
 
   // Run the callback to simulate connection.
   ASSERT_FALSE(captured_options.on_client_connected.is_null());
-  std::move(captured_options.on_client_connected).Run(&mock_instance);
+  std::move(captured_options.on_client_connected)
+      .Run(mock_instance.GetWeakPtr());
 
   // Now simulate updates from the remote
   ASSERT_TRUE(updates_handler_remote.is_valid());
@@ -577,7 +579,8 @@ TEST_F(GlicExperimentalTriggeringMessageHandlerTest,
 
   // Run the callback to simulate connection.
   ASSERT_FALSE(captured_options.on_client_connected.is_null());
-  std::move(captured_options.on_client_connected).Run(&mock_instance);
+  std::move(captured_options.on_client_connected)
+      .Run(mock_instance.GetWeakPtr());
 
   // Simulate updates from remote.
   ASSERT_TRUE(updates_handler_remote.is_valid());

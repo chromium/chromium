@@ -50,7 +50,7 @@ class GlicExperimentalTriggeringMessageHandler : public SharingMessageHandler {
   void OnClientConnectedForUpdates(
       components_sharing_message::ServerChannelConfiguration server_channel,
       std::optional<int64_t> last_seen_sequence_number,
-      glic::GlicInstance* instance);
+      base::WeakPtr<glic::GlicInstance> instance);
 
   void ProcessStopActionRequest(
       components_sharing_message::SharingMessage message,

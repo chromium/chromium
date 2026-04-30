@@ -273,7 +273,7 @@ void GlicExperimentalTriggeringMessageHandler::OnMessage(
 void GlicExperimentalTriggeringMessageHandler::OnClientConnectedForUpdates(
     components_sharing_message::ServerChannelConfiguration server_channel,
     std::optional<int64_t> last_seen_sequence_number,
-    glic::GlicInstance* instance) {
+    base::WeakPtr<glic::GlicInstance> instance) {
   CHECK(instance);
 
   mojo::PendingRemote<glic::mojom::ExperimentalTriggeringUpdatesHandler> remote;

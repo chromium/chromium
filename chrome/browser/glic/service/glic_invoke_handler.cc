@@ -184,9 +184,9 @@ void GlicInvokeHandler::Invoke() {
   if (options_.on_client_connected) {
     tasks.push_back(std::make_unique<PostCallbackTask>(base::BindOnce(
         [](base::WeakPtr<GlicInstanceImpl> instance,
-           base::OnceCallback<void(GlicInstance*)> cb) {
+           base::OnceCallback<void(base::WeakPtr<GlicInstance>)> cb) {
           if (instance) {
-            std::move(cb).Run(instance.get());
+            std::move(cb).Run(instance);
           }
         },
         instance_->GetWeakPtr(), std::move(options_.on_client_connected))));

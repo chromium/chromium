@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/glic/public/glic_instance.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -52,6 +53,13 @@ class MockGlicInstance : public GlicInstance {
   MOCK_METHOD(void, OnSelectionAreasChanged, (int), (override));
   MOCK_METHOD(void, BindTabForTesting, (tabs::TabInterface*), (override));
   MOCK_METHOD(Host&, host, (), (override));
+
+  base::WeakPtr<MockGlicInstance> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  base::WeakPtrFactory<MockGlicInstance> weak_ptr_factory_{this};
 };
 
 }  // namespace glic
