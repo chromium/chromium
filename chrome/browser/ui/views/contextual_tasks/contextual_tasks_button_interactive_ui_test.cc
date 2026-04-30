@@ -557,7 +557,7 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksEphemeralButtonInteractiveTest,
 
 IN_PROC_BROWSER_TEST_P(ContextualTasksEphemeralButtonInteractiveTest,
                        CloseButtonHiddenInImmersiveMode) {
-#if !BUILDFLAG(IS_CHROMEOS) || !BUILDFLAG(IS_MAC)
+#if !(BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC))
   GTEST_SKIP() << "Immersive mode not supported on this platform.";
 #else
   RunTestSequence(

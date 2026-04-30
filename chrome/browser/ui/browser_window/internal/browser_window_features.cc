@@ -859,6 +859,10 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
             *browser_view->browser(), browser_view->browser());
   }
 
+  immersive_mode_controller_ =
+      GetUserDataFactory().CreateInstanceWithFactoryMethod(
+          *browser_, &chrome::CreateImmersiveModeController, browser_view);
+
   if (base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks)) {
     contextual_tasks_active_task_context_provider_ =
         std::make_unique<contextual_tasks::ActiveTaskContextProviderImpl>(
@@ -900,10 +904,6 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
   extension_side_panel_manager_ =
       std::make_unique<extensions::ExtensionSidePanelManager>(
           browser_view->browser(), side_panel_registry_.get());
-
-  immersive_mode_controller_ =
-      GetUserDataFactory().CreateInstanceWithFactoryMethod(
-          *browser_, &chrome::CreateImmersiveModeController, browser_view);
 
   if (browser_view->GetIsNormalType()) {
     glic::GlicKeyedService* glic_service =
