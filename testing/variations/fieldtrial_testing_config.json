@@ -3492,6 +3492,26 @@
             ]
         }
     ],
+    "AutofillUpstreamEnforceStrikeDelay": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillUpstreamEnforceStrikeDelay"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillYourSavedInfoHatsSurveysContactInfo": [
         {
             "platforms": [
