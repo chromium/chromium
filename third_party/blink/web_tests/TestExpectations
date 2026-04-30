@@ -6681,8 +6681,6 @@ crbug.com/429365670 external/wpt/css/css-break/out-of-flow-in-multicolumn-109.ht
 crbug.com/429365670 external/wpt/css/css-multicol/multicol-nested-column-rule-002.html [ Failure ]
 
 crbug.com/445971864 external/wpt/css/css-gaps/multicol/multicol-gap-decorations-007.html [ Failure ]
-crbug.com/357648037 external/wpt/css/css-gaps/flex/fragmentation/flex-gap-decorations-fragmentation-005.html [ Failure ]
-crbug.com/357648037 external/wpt/css/css-gaps/flex/fragmentation/flex-gap-decorations-fragmentation-006.html [ Failure ]
 
 ### End of tests failing with CSSGapDecorations Enabled
 ### Tests for CSSGapDecorations disabled

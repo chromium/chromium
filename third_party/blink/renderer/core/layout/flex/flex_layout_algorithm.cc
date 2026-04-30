@@ -2577,10 +2577,10 @@ FlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
       }
 
       LayoutUnit line_cross_start =
-          !is_column_ ? offset.block_offset : offset.inline_offset;
+          !is_column_ ? offset.block_offset : flex_line.cross_axis_offset;
       LayoutUnit line_cross_end =
           !is_column_ ? item_block_end
-                      : offset.inline_offset + flex_line.line_cross_size;
+                      : flex_line.cross_axis_offset + flex_line.line_cross_size;
 
       gap_accumulator->BuildGapsForCurrentItem(
           (*flex_lines)[flex_line_idx], flex_line_idx, offset,
