@@ -102,8 +102,8 @@ SqliteBackendImpl::SqliteBackendImpl(sqlite_vfs::SqliteVfsFileSet vfs_file_set,
               // Set the database's locking_mode to EXCLUSIVE if the file set
               // supports only a single connection to the database.
               .set_exclusive_locking(vfs_file_set_.is_single_connection())
-              // Enable write-ahead logging if such a file is provided.
-              .set_wal_mode(vfs_file_set_.wal_journal_mode())
+              // Enable write-ahead logging as indicated.
+              .set_wal_mode(vfs_file_set_.wal_mode())
               .set_vfs_name_discouraged(
                   sqlite_vfs::SqliteSandboxedVfsDelegate::kSqliteVfsName)
               // Prevent SQLite from trying to use mmap, as SandboxedVfs does

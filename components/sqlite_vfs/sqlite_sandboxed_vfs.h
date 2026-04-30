@@ -34,7 +34,7 @@ namespace sqlite_vfs {
 //
 //  // Register the file set for use by any sql::Database in this process
 //  // that uses the `SqliteSandboxedVfsDelegate`.
-//  auto unregister_runner = SqliteSandboxedVfsDelelegate::GetInstance()
+//  auto unregister_runner = SqliteSandboxedVfsDelegate::GetInstance()
 //    ->RegisterSandboxedFiles(vfs_file_set);
 //
 //  // Create an `sql::Database` which uses the

@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_SQLITE_VFS_FILE_TYPE_H_
 #define COMPONENTS_SQLITE_VFS_FILE_TYPE_H_
 
+#include "build/build_config.h"
+
 namespace sqlite_vfs {
 
 enum class FileType {
@@ -16,6 +18,10 @@ enum class FileType {
   kSubjournal,    // A statement journal file.
   kSuperJournal,  // A super-journal file.
   kWal,           // A WAL-mode journal.
+  kWalIndex,      // A WAL-mode shared-memory index.
+#if !BUILDFLAG(IS_WIN)
+  kWalIndexReadOnly,  // A read-only handle to the WAL-mode shared-memory index.
+#endif
 };
 
 }  // namespace sqlite_vfs

@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/strings/strcat.h"
 #include "base/test/gmock_expected_support.h"
 #include "build/blink_buildflags.h"
 #include "build/build_config.h"
@@ -191,6 +192,9 @@ TEST_P(SqliteVfsFileSetTest, MultipleConnections) {
   if (is_single_connection()) {
     child_command_line.AppendSwitch(kSingleConnection);
   }
+  if (journal_mode_wal()) {
+    child_command_line.AppendSwitch(kJournalModeWal);
+  }
   base::LaunchOptions launch_options;
 #if BUILDFLAG(IS_WIN)
   launch_options.start_hidden = true;
@@ -213,18 +217,101 @@ TEST_P(SqliteVfsFileSetTest, MultipleConnections) {
 
 #endif  // BUILDFLAG(USE_BLINK) && !BUILDFLAG(IS_ANDROID)
 
-INSTANTIATE_TEST_SUITE_P(MultipleConnections,
-                         SqliteVfsFileSetTest,
-                         testing::Combine(testing::Values(false),
-                                          testing::Values(false)));
-INSTANTIATE_TEST_SUITE_P(SingleConnection,
-                         SqliteVfsFileSetTest,
-                         testing::Combine(testing::Values(true),
-                                          testing::Values(false)));
-INSTANTIATE_TEST_SUITE_P(JournalModeWal,
-                         SqliteVfsFileSetTest,
-                         testing::Combine(testing::Values(true),
-                                          testing::Values(true)));
+TEST_P(SqliteVfsFileSetTest, AbandonAndReopen) {
+  if (is_single_connection()) {
+    GTEST_SKIP()
+        << "Abandon and Reopen is only supported for multiple connections.";
+  }
+  ASSERT_OK_AND_ASSIGN(auto file_set, CreateFilesAndBuildVfsFileSet());
+
+  // Share with renderer (read-only).
+  std::optional<PendingFileSet> shared_file_set;
+  if (!is_single_connection()) {
+    shared_file_set =
+        ShareConnection(file_set_directory(), base::FilePath(kBaseName),
+                        file_set, /*read_write=*/false);
+    ASSERT_TRUE(shared_file_set.has_value());
+    EXPECT_TRUE(shared_file_set->db_file.IsValid());
+    EXPECT_TRUE(shared_file_set->journal_file.IsValid());
+    if (journal_mode_wal()) {
+      EXPECT_TRUE(shared_file_set->wal_file.IsValid());
+      EXPECT_TRUE(shared_file_set->wal_index_file.IsValid());
+    }
+  }
+
+  // Abandon file set.
+  LockState state = LockState::kNotHeld;
+  if (!is_single_connection()) {
+    state = file_set.Abandon();
+    EXPECT_EQ(state, LockState::kNotHeld);
+  }
+
+  // Re-open file set (via MakePendingFileSet).
+  ASSERT_OK_AND_ASSIGN(
+      auto pending_file_set2,
+      MakePendingFileSet(Client::kTest, file_set_directory(),
+                         base::FilePath(kBaseName), is_single_connection(),
+                         journal_mode_wal()));
+
+  // Verify new handles are valid.
+  EXPECT_TRUE(pending_file_set2.db_file.IsValid());
+  EXPECT_TRUE(pending_file_set2.journal_file.IsValid());
+  if (journal_mode_wal() && !is_single_connection()) {
+    EXPECT_TRUE(pending_file_set2.wal_file.IsValid());
+    EXPECT_TRUE(pending_file_set2.wal_index_file.IsValid());
+  }
+}
+
+TEST_P(SqliteVfsFileSetTest, ShareReadOnlyTwice) {
+  if (is_single_connection()) {
+    GTEST_SKIP()
+        << "Sharing connections is only supported for multiple connections.";
+  }
+  ASSERT_OK_AND_ASSIGN(auto file_set, CreateFilesAndBuildVfsFileSet());
+
+  // Share for read-only access.
+  ASSERT_OK_AND_ASSIGN(
+      auto shared_pending_file_set,
+      ShareConnection(file_set_directory(), base::FilePath(kBaseName), file_set,
+                      /*read_write=*/false));
+  EXPECT_TRUE(shared_pending_file_set.db_file.IsValid());
+  EXPECT_TRUE(shared_pending_file_set.journal_file.IsValid());
+  if (journal_mode_wal()) {
+    EXPECT_TRUE(shared_pending_file_set.wal_file.IsValid());
+    EXPECT_TRUE(shared_pending_file_set.wal_index_file.IsValid());
+  }
+
+  // Bind the new file set.
+  ASSERT_OK_AND_ASSIGN(auto shared_file_set,
+                       SqliteVfsFileSet::Bind(
+                           Client::kTest, std::move(shared_pending_file_set)));
+  EXPECT_TRUE(shared_file_set.read_only());
+
+  // Share the new file set for read-only access.
+  ASSERT_OK_AND_ASSIGN(
+      auto shared_pending_file_set2,
+      ShareConnection(file_set_directory(), base::FilePath(kBaseName),
+                      shared_file_set, /*read_write=*/false));
+  EXPECT_TRUE(shared_pending_file_set2.db_file.IsValid());
+  EXPECT_TRUE(shared_pending_file_set2.journal_file.IsValid());
+  if (journal_mode_wal()) {
+    EXPECT_TRUE(shared_pending_file_set2.wal_file.IsValid());
+    EXPECT_TRUE(shared_pending_file_set2.wal_index_file.IsValid());
+  }
+  EXPECT_TRUE(shared_file_set.read_only());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    SqliteVfsFileSetTest,
+    testing::Combine(testing::Bool(), testing::Bool()),
+    [](const testing::TestParamInfo<SqliteVfsFileSetTest::ParamType>& info) {
+      bool single_connection = std::get<0>(info.param);
+      bool journal_mode_wal = std::get<1>(info.param);
+      return base::StrCat(
+          {single_connection ? "SingleConnection" : "MultipleConnections",
+           journal_mode_wal ? "Wal" : "Rollback"});
+    });
 
 TEST(SqliteVfsFileSetStaticsTest, GetVirtualFilePathType) {
   ASSERT_EQ(SqliteVfsFileSet::GetVirtualFileHistogramVariant(

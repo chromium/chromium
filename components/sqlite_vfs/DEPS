@@ -3,3 +3,8 @@ include_rules = [
   "+sql",
   "+third_party/sqlite",
 ]
+specific_include_rules = {
+  "multiprocess_unittest\.cc": [
+    "+mojo/core/embedder",
+  ]
+}

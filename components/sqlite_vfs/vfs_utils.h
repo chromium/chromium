@@ -19,13 +19,24 @@ namespace sqlite_vfs {
 enum class Client;
 class SqliteVfsFileSet;
 
-// Creates a new pending file set for a database at the location described by
-// `directory` and `base_name`, granting read-write access. If `single
-// connection` is true, the database files are locked for exclusive access;
-// otherwise, multiple connections are permitted. If `journal_mode_wal` (which
-// may only be true for single connections) is true, the database will use
-// write-ahead log journaling. Returns no value in case of error (e.g., if the
-// file set's files could not be opened or created).
+// Creates a new pending file set for read-write access to a database at the
+// location described by `directory` and `base_name`.
+//
+// If `single connection` is false, a sql::Database connection to a bound file
+// set must disable exclusive locking via
+// `sql::DatabaseOptions::set_exclusive_locking(false)`. `ShareConnection()` can
+// be used to create new pending file sets to connect to the same database,
+// thereby allowing multiple connections across one or more processes.
+//
+// If `journal_mode_wal` is true, a sql::Database connection to a bound file set
+// must enable WAL mode via `sql::DatabaseOptions::set_wal_mode(true)`.
+//
+// Returns no value in case of error (e.g., if the backing files are already
+// open, there is insufficient access to open them, or if there is insufficient
+// disk space to create them). In particular, attempting to recreate a file set
+// after destroying one for a given `directory` and `base_name` will fail until
+// all parties with which a connection has been shared have destroyed their file
+// set.
 COMPONENT_EXPORT(SQLITE_VFS)
 std::optional<PendingFileSet> MakePendingFileSet(
     Client client,

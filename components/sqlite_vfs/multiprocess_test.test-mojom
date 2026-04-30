@@ -1,0 +1,55 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module sqlite_vfs.mojom;
+
+import "components/sqlite_vfs/mojom/sqlite_vfs.mojom";
+
+// Interface for read-only operations on the database.
+interface ReadOnlyConnection {
+  // Tells the child to perform a read operation. Returns the value or a SQLite
+  // result code.
+  Read() => result<string, int32>;
+
+  // Runs a sequence of reads and returns how many succeeded.
+  RunReadSequence(int32 count) => (int32 successful_reads);
+
+  // Closes the database connection, returning the list of all errors
+  // encountered while interacting with the database.
+  CloseDatabase() => (array<int32> errors);
+};
+
+// Interface for read-write operations on the database.
+interface ReadWriteConnection {
+  // Tells the child to perform a read operation. Returns the value or a SQLite
+  // result code.
+  Read() => result<string, int32>;
+
+  // Runs a sequence of reads and returns how many succeeded.
+  RunReadSequence(int32 count) => (int32 successful_reads);
+
+  // Tells the child to perform a write operation.
+  Write(string value) => (bool success);
+
+  // Runs stress test with mixed operations.
+  RunStressTest(int32 iterations) => (int32 successful_ops);
+
+  // Forces a checkpoint from the child.
+  Checkpoint() => (bool success);
+
+  // Closes the database connection, returning the list of all errors
+  // encountered while interacting with the database.
+  CloseDatabase() => (array<int32> errors);
+};
+
+// Interface for controlling the child process in multi-process tests.
+interface SqliteVfsMultiprocessTestHelper {
+  // Passes the file set to the child process and opens the database.
+  // Returns a remote to the operations interface if successful.
+  OpenDatabase(PendingReadWriteFileSet file_set)
+      => (pending_remote<ReadWriteConnection>? connection);
+
+  OpenDatabaseReadOnly(PendingReadOnlyFileSet file_set)
+      => (pending_remote<ReadOnlyConnection>? connection);
+};

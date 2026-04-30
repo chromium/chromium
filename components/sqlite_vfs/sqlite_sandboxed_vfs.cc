@@ -178,7 +178,7 @@ void SqliteSandboxedVfsDelegate::UnregisterSandboxedFiles(
   num_erased = sandboxed_files_map_.erase(
       sqlite_vfs_file_set.GetJournalVirtualFilePath());
   CHECK_EQ(num_erased, 1U);
-  if (sqlite_vfs_file_set.wal_journal_mode()) {
+  if (sqlite_vfs_file_set.has_wal_file()) {
     num_erased = sandboxed_files_map_.erase(
         sqlite_vfs_file_set.GetWalJournalVirtualFilePath());
     CHECK_EQ(num_erased, 1U);
@@ -199,7 +199,7 @@ SqliteSandboxedVfsDelegate::RegisterSandboxedFiles(
       sqlite_vfs_file_set.GetJournalVirtualFilePath(),
       sqlite_vfs_file_set.GetSandboxedJournalFile());
   CHECK(inserted);
-  if (sqlite_vfs_file_set.wal_journal_mode()) {
+  if (sqlite_vfs_file_set.has_wal_file()) {
     std::tie(it, inserted) = sandboxed_files_map_.emplace(
         sqlite_vfs_file_set.GetWalJournalVirtualFilePath(),
         sqlite_vfs_file_set.GetSandboxedWalJournalFile());

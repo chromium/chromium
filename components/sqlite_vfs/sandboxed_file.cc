@@ -14,6 +14,7 @@
 #include "base/files/platform_file.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "components/sqlite_vfs/file_type.h"
 #include "components/sqlite_vfs/metrics_util.h"
@@ -25,13 +26,17 @@ SandboxedFile::SandboxedFile(Client client,
                              FileType file_type,
                              base::File file,
                              AccessRights access_rights,
-                             std::optional<SharedLocks> shared_locks)
+                             std::optional<SharedLocks> shared_locks,
+                             base::File wal_index_file)
     : client_(client),
       file_type_(file_type),
       underlying_file_(std::move(file)),
       access_rights_(access_rights),
-      shared_locks_(std::move(shared_locks)) {
+      shared_locks_(std::move(shared_locks)),
+      wal_index_file_(std::move(wal_index_file)) {
   CHECK(!shared_locks_ || file_type_ == FileType::kMainDb);
+  CHECK(!wal_index_file_.IsValid() || file_type_ == FileType::kMainDb);
+  CHECK(!wal_index_file_.IsValid() || shared_locks_.has_value());
 }
 
 SandboxedFile::~SandboxedFile() = default;
@@ -291,12 +296,78 @@ int SandboxedFile::ShmMap(int page_index,
                           int page_size,
                           int extend_file_if_needed,
                           void volatile** result) {
+  CHECK_GE(page_index, 0);
   // Single-connection databases (which are in exclusive mode) do not use a
   // mapped WAL-index; see https://sqlite.org/wal.html#noshm
   CHECK(!is_single_connection());
-  // TODO(crbug.com/486665177): Support multiple connections for databases that
-  // use a write-ahead log.
-  return SQLITE_IOERR_SHMMAP;
+
+  if (!wal_index_file_.IsValid()) {
+    return SQLITE_IOERR_SHMMAP;
+  }
+
+  // Grow the collection of mappings if `page_index` is out of bounds.
+  size_t index = base::checked_cast<size_t>(page_index);
+  if (shm_mappings_.size() <= index) {
+    shm_mappings_.resize(index + 1);
+  }
+
+  // Map the page at `page_index` if this is the first request for it.
+  if (!shm_mappings_[index]) {
+    // Make sure that the file is large enough; expanding it as needed.
+    const int64_t file_size = wal_index_file_.GetLength();
+    if (file_size < 0) {
+      return SQLITE_IOERR_SHMMAP;  // Failed to get size of file.
+    }
+
+    int64_t required_size =
+        base::CheckMul<int64_t>(index + 1, page_size).ValueOrDie();
+    if (file_size < required_size) {
+      if (access_rights_ == AccessRights::kReadOnly) {
+        // This read-only connection does not have the rights required to grow
+        // the file. In general, a read-only connection will not try to do this.
+        // The exception is when a read-only connection tries to map the
+        // WAL-index before any read-write connection has had a chance to build
+        // it. Return SQLITE_READONLY_CANTINIT so that SQLite knows to consider
+        // the WAL-index to be "unreliable". This connection will use its own
+        // in-memory WAL-index until it discovers that a writer has made the
+        // shared index "reliable".
+        return SQLITE_READONLY_CANTINIT;
+      }
+      if (!extend_file_if_needed) {
+        // The caller doesn't wish to resize the file, so return a null ptr and
+        // report success.
+        *result = nullptr;
+        return SQLITE_OK;
+      }
+      if (!wal_index_file_.SetLength(required_size)) {
+        return SQLITE_IOERR_SHMMAP;  // Failed to grow the file.
+      }
+    }
+
+    // Map the page.
+    base::MemoryMappedFile::Access access =
+        access_rights_ == AccessRights::kReadWrite
+            ? base::MemoryMappedFile::READ_WRITE
+            : base::MemoryMappedFile::READ_ONLY;
+
+    auto mapping = std::make_unique<base::MemoryMappedFile>();
+    base::MemoryMappedFile::Region region{
+        base::CheckMul<int64_t>(index, page_size).ValueOrDie(),
+        static_cast<size_t>(page_size)};
+    if (!mapping->Initialize(wal_index_file_.Duplicate(), region, access)) {
+      return SQLITE_IOERR_SHMMAP;  // Failed to map the page.
+    }
+    shm_mappings_[index] = std::move(mapping);
+  }
+
+  *result = shm_mappings_[index]->mutable_bytes().data();
+  if (access_rights_ == AccessRights::kReadWrite) {
+    return SQLITE_OK;
+  }
+  // Returning SQLITE_READONLY tells SQLite not to attempt writes to the
+  // mapping, which would cause a segmentation fault since the memory is mapped
+  // read-only.
+  return SQLITE_READONLY;
 }
 
 int SandboxedFile::ShmLock(int offset, int size, int flags) {
@@ -328,8 +399,11 @@ int SandboxedFile::ShmUnmap(int also_delete_file) {
   // Single-connection databases (which are in exclusive mode) do not use a
   // mapped WAL-index; see https://sqlite.org/wal.html#noshm
   CHECK(!is_single_connection());
-  // TODO(crbug.com/486665177): Support multiple connections for databases that
-  // use a write-ahead log.
+
+  shm_mappings_.clear();
+
+  // The underlying file is held open via wal_index_file_. Never try to delete
+  // it.
   return SQLITE_OK;
 }
 

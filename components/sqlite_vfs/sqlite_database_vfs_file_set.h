@@ -12,6 +12,7 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/memory/unsafe_shared_memory_region.h"
+#include "build/build_config.h"
 #include "components/sqlite_vfs/lock_state.h"
 #include "components/sqlite_vfs/sandboxed_file.h"
 
@@ -54,23 +55,32 @@ class COMPONENT_EXPORT(SQLITE_VFS) SqliteVfsFileSet {
   SandboxedFile* GetSandboxedDbFile() const { return db_file_.get(); }
   SandboxedFile* GetSandboxedJournalFile() const { return journal_file_.get(); }
   SandboxedFile* GetSandboxedWalJournalFile() const {
-    CHECK(wal_journal_mode());
+    CHECK(has_wal_file());
     return wal_journal_file_.get();
   }
 
   bool read_only() const { return read_only_; }
+  bool wal_mode() const { return wal_mode_; }
 
   // The underlying handles.
   const base::File& GetDbFile() const;
   const base::File& GetJournalFile() const;
   const base::File& GetWalJournalFile() const;
+  const base::File& GetWalIndexFile() const {
+    return db_file_->GetWalIndexFile();
+  }
+#if !BUILDFLAG(IS_WIN)
+  const base::File& GetWalIndexFileReadOnly() const {
+    return wal_index_file_read_only_;
+  }
+#endif
   const base::UnsafeSharedMemoryRegion& GetSharedLock() const {
     return shared_lock_;
   }
 
   bool is_single_connection() const { return !shared_lock_.IsValid(); }
 
-  bool wal_journal_mode() const { return !!wal_journal_file_; }
+  bool has_wal_file() const { return !!wal_journal_file_; }
 
   // Permanently marks this file set's database as no longer suitable for use by
   // any connection. Returns the state of the primary database lock at the time
@@ -88,7 +98,11 @@ class COMPONENT_EXPORT(SQLITE_VFS) SqliteVfsFileSet {
   SqliteVfsFileSet(std::unique_ptr<SandboxedFile> db_file,
                    std::unique_ptr<SandboxedFile> journal_file,
                    std::unique_ptr<SandboxedFile> wal_journal_file,
-                   base::UnsafeSharedMemoryRegion shared_lock);
+#if !BUILDFLAG(IS_WIN)
+                   base::File wal_index_file_read_only,
+#endif
+                   base::UnsafeSharedMemoryRegion shared_lock,
+                   bool wal_mode);
 
   // The shared lock is absent if the file set supports only a single
   // connection.
@@ -99,6 +113,12 @@ class COMPONENT_EXPORT(SQLITE_VFS) SqliteVfsFileSet {
   // The write-ahead journal file is only present if
   std::unique_ptr<SandboxedFile> wal_journal_file_;
 
+#if !BUILDFLAG(IS_WIN)
+  // Read-only handle to the database's WAL-index file ("-shm") on POSIX systems
+  // for a read-write database open for multiple connections.
+  base::File wal_index_file_read_only_;
+#endif
+
   // SQLite databases use standard naming for their files. Since the vfs might
   // register files for many databases at once it needs some way to
   // differentiate them. This is guaranteed to be unique because it is based on
@@ -106,6 +126,7 @@ class COMPONENT_EXPORT(SQLITE_VFS) SqliteVfsFileSet {
   base::FilePath virtual_fs_path_;
 
   bool read_only_;
+  bool wal_mode_;
 };
 
 }  // namespace sqlite_vfs

@@ -4,9 +4,12 @@
 
 #include "components/persistent_cache/sqlite/backend_storage_delegate.h"
 
+#include <tuple>
+
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/strings/strcat.h"
 #include "base/test/gmock_expected_support.h"
 #include "components/persistent_cache/backend.h"
 #include "components/persistent_cache/client.h"
@@ -46,12 +49,19 @@ TEST_F(SqliteBackendStorageDelegateTest, GetBaseName) {
             base::FilePath());
 }
 
-TEST_F(SqliteBackendStorageDelegateTest, CreateAndDelete) {
+class SqliteBackendStorageDelegateParamTest
+    : public SqliteBackendStorageDelegateTest,
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
+ protected:
+  static bool is_single_connection() { return std::get<0>(GetParam()); }
+  static bool journal_mode_wal() { return std::get<1>(GetParam()); }
+};
+
+TEST_P(SqliteBackendStorageDelegateParamTest, CreateAndDelete) {
   base::FilePath base_name = base::FilePath::FromASCII("base_name");
   auto pending_backend =
       delegate().MakePendingBackend(Client::kTest, temp_path(), base_name,
-                                    /*single_connection=*/false,
-                                    /*journal_mode_wal=*/false);
+                                    is_single_connection(), journal_mode_wal());
   ASSERT_NE(pending_backend, std::nullopt);
   ASSERT_OK_AND_ASSIGN(
       auto backend,
@@ -74,33 +84,18 @@ TEST_F(SqliteBackendStorageDelegateTest, CreateAndDelete) {
   ASSERT_TRUE(base::IsDirectoryEmpty(temp_path()));
 }
 
-TEST_F(SqliteBackendStorageDelegateTest, CreateAndDeleteWal) {
-  base::FilePath base_name = base::FilePath::FromASCII("base_name");
-  auto pending_backend =
-      delegate().MakePendingBackend(Client::kTest, temp_path(), base_name,
-                                    /*single_connection=*/true,
-                                    /*journal_mode_wal=*/true);
-  ASSERT_NE(pending_backend, std::nullopt);
-  ASSERT_OK_AND_ASSIGN(
-      auto backend,
-      SqliteBackendImpl::Bind(*std::move(pending_backend), Client::kTest));
-  ASSERT_NE(backend, nullptr);
-
-  // The backend should have created some files.
-  ASSERT_FALSE(base::IsDirectoryEmpty(temp_path()));
-
-  // Close the files.
-  backend.reset();
-
-  int64_t dir_size = base::ComputeDirectorySize(temp_path());
-
-  // Ask the delegate to delete them.
-  ASSERT_EQ(delegate().DeleteFiles(Client::kTest, temp_path(), base_name),
-            dir_size);
-
-  // The files should now be gone.
-  ASSERT_TRUE(base::IsDirectoryEmpty(temp_path()));
-}
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    SqliteBackendStorageDelegateParamTest,
+    testing::Combine(testing::Bool(), testing::Bool()),
+    [](const testing::TestParamInfo<
+        SqliteBackendStorageDelegateParamTest::ParamType>& info) {
+      bool single_connection = std::get<0>(info.param);
+      bool journal_mode_wal = std::get<1>(info.param);
+      return base::StrCat(
+          {single_connection ? "SingleConnection" : "MultipleConnections",
+           journal_mode_wal ? "Wal" : "Rollback"});
+    });
 
 }  // namespace
 

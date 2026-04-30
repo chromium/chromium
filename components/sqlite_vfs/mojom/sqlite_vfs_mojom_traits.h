@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/component_export.h"
+#include "build/build_config.h"
 #include "components/sqlite_vfs/mojom/sqlite_vfs.mojom-data-view.h"
 #include "components/sqlite_vfs/pending_file_set.h"
 
@@ -37,6 +38,17 @@ struct COMPONENT_EXPORT(SQLITE_VFS_MOJOM_TRAITS)
     return std::move(pending_file_set.journal_file);
   }
 
+  static base::File wal_file(sqlite_vfs::PendingFileSet& pending_file_set) {
+    CHECK_EQ(pending_file_set.read_write, false);
+    return std::move(pending_file_set.wal_file);
+  }
+
+  static base::File wal_index_file(
+      sqlite_vfs::PendingFileSet& pending_file_set) {
+    CHECK_EQ(pending_file_set.read_write, false);
+    return std::move(pending_file_set.wal_index_file);
+  }
+
   static base::UnsafeSharedMemoryRegion shared_lock(
       sqlite_vfs::PendingFileSet& pending_file_set) {
     CHECK_EQ(pending_file_set.read_write, false);
@@ -45,6 +57,11 @@ struct COMPONENT_EXPORT(SQLITE_VFS_MOJOM_TRAITS)
     // shared lock handle.
     CHECK(pending_file_set.shared_lock.IsValid());
     return std::move(pending_file_set.shared_lock);
+  }
+
+  static bool wal_mode(sqlite_vfs::PendingFileSet& pending_file_set) {
+    CHECK_EQ(pending_file_set.read_write, false);
+    return pending_file_set.wal_mode;
   }
 
   static bool Read(sqlite_vfs::mojom::PendingReadOnlyFileSetDataView data,
@@ -78,10 +95,29 @@ struct COMPONENT_EXPORT(SQLITE_VFS_MOJOM_TRAITS)
     return std::move(pending_file_set.wal_file);
   }
 
+  static base::File wal_index_file(
+      sqlite_vfs::PendingFileSet& pending_file_set) {
+    CHECK_EQ(pending_file_set.read_write, true);
+    return std::move(pending_file_set.wal_index_file);
+  }
+
+#if !BUILDFLAG(IS_WIN)
+  static base::File wal_index_file_read_only(
+      sqlite_vfs::PendingFileSet& pending_file_set) {
+    CHECK_EQ(pending_file_set.read_write, true);
+    return std::move(pending_file_set.wal_index_file_read_only);
+  }
+#endif
+
   static base::UnsafeSharedMemoryRegion shared_lock(
       sqlite_vfs::PendingFileSet& pending_file_set) {
     CHECK_EQ(pending_file_set.read_write, true);
     return std::move(pending_file_set.shared_lock);
+  }
+
+  static bool wal_mode(sqlite_vfs::PendingFileSet& pending_file_set) {
+    CHECK_EQ(pending_file_set.read_write, true);
+    return pending_file_set.wal_mode;
   }
 
   static bool Read(sqlite_vfs::mojom::PendingReadWriteFileSetDataView data,

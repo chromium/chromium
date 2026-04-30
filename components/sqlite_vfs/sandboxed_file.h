@@ -7,10 +7,13 @@
 
 #include <stdint.h>
 
+#include <memory>
 #include <optional>
+#include <vector>
 
 #include "base/component_export.h"
 #include "base/files/file.h"
+#include "base/files/memory_mapped_file.h"
 #include "components/sqlite_vfs/lock_state.h"
 #include "components/sqlite_vfs/shared_locks.h"
 #include "sql/sandboxed_vfs_file.h"
@@ -32,12 +35,15 @@ class COMPONENT_EXPORT(SQLITE_VFS) SandboxedFile
   enum class AccessRights { kReadWrite, kReadOnly };
 
   // `shared_locks` must be specified only for the main database file, and only
-  // when the database supports multiple connections.
+  // when the database supports multiple connections. `wal_index_file` must be
+  // specified only for the main database file, and only when a WAL-mode
+  // database supports multiple connections.
   SandboxedFile(Client client,
                 FileType file_type,
                 base::File file,
                 AccessRights access_rights,
-                std::optional<SharedLocks> shared_locks = std::nullopt);
+                std::optional<SharedLocks> shared_locks = std::nullopt,
+                base::File wal_index_file = {});
   SandboxedFile(SandboxedFile& other) = delete;
   SandboxedFile& operator=(const SandboxedFile& other) = delete;
   SandboxedFile(SandboxedFile&& other) = delete;
@@ -76,6 +82,9 @@ class COMPONENT_EXPORT(SQLITE_VFS) SandboxedFile
   // invalidated upon open/close.
   const base::File& GetFile() const;
   base::File& GetFile();
+
+  // Returns a reference to the instance's WAL-index file handle if valid.
+  const base::File& GetWalIndexFile() const { return wal_index_file_; }
 
   // sqlite3_file implementation.
   int Close() override;
@@ -131,8 +140,16 @@ class COMPONENT_EXPORT(SQLITE_VFS) SandboxedFile
 
   // If valid, the cross-process shared locks by which the SQLite locking
   // protocols are implemented. Otherwise, this file is opened in exclusive mode
-  // so no shared locks are required.
+  // so no shared locks are required. Only used for the main database file.
   std::optional<SharedLocks> shared_locks_;
+
+  // The WAL-index file. Only used for the main database file, and only when
+  // opened for sharing (exclusive locking mode off).
+  base::File wal_index_file_;
+
+  // Mapped pages of the WAL-index file. Only used for the main database file,
+  // and only when opened for sharing (exclusive locking mode off).
+  std::vector<std::unique_ptr<base::MemoryMappedFile>> shm_mappings_;
 };
 
 }  // namespace sqlite_vfs

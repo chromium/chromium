@@ -2,6 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/features.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
+
 component("pending_file_set") {
   public = [ "pending_file_set.h" ]
 
@@ -57,6 +60,14 @@ component("sqlite_vfs") {
   defines = [ "IS_SQLITE_VFS_IMPL" ]
 }
 
+if (use_blink && !is_android) {
+  mojom("test_mojom") {
+    testonly = true
+    sources = [ "multiprocess_test.test-mojom" ]
+    public_deps = [ "//components/sqlite_vfs/mojom" ]
+  }
+}
+
 source_set("unit_tests") {
   testonly = true
 
@@ -75,9 +86,15 @@ source_set("unit_tests") {
       "//base/test:test_support",
       "//components/sqlite_vfs/mojom:unit_tests",
       "//sql",
+      "//sql:test_support",
       "//testing/gmock",
       "//testing/gtest",
       "//third_party/sqlite",
     ]
+
+    if (use_blink && !is_android) {
+      sources += [ "multiprocess_unittest.cc" ]
+      deps += [ ":test_mojom" ]
+    }
   }
 }

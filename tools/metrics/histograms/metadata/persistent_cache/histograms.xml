@@ -34,6 +34,9 @@ chromium-metrics-reviews@google.com.
 <variants name="FileType">
   <variant name="DbFile" summary="database file"/>
   <variant name="JournalFile" summary="journal file"/>
+  <variant name="WalIndexFile" summary="wal-index file"/>
+  <variant name="WalIndexFileReadOnly"
+      summary="wal-index file (read-only handle)"/>
   <variant name="WalJournalFile" summary="write-ahead log file"/>
 </variants>
 

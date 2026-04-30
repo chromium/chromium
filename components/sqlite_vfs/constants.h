@@ -17,6 +17,8 @@ inline constexpr base::FilePath::CharType kJournalFileExtension[] =
     FILE_PATH_LITERAL(".journal");
 inline constexpr base::FilePath::CharType kWalJournalFileExtension[] =
     FILE_PATH_LITERAL(".db-wal");
+inline constexpr base::FilePath::CharType kWalIndexFileExtension[] =
+    FILE_PATH_LITERAL(".db-shm");
 
 }  // namespace sqlite_vfs
 

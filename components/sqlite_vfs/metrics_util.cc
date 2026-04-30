@@ -6,6 +6,7 @@
 
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
+#include "build/build_config.h"
 #include "components/sqlite_vfs/client.h"
 #include "components/sqlite_vfs/file_type.h"
 
@@ -21,6 +22,12 @@ std::string_view FileTypeToTag(FileType file_type) {
       return "JournalFile.";
     case FileType::kWal:
       return "WalJournalFile.";
+    case FileType::kWalIndex:
+      return "WalIndexFile.";
+#if !BUILDFLAG(IS_WIN)
+    case FileType::kWalIndexReadOnly:
+      return "WalIndexFileReadOnly.";
+#endif
     default:
       NOTREACHED();
   }

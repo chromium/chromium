@@ -5,6 +5,13 @@
 #include "components/persistent_cache/persistent_cache.h"
 
 #include <algorithm>
+#include <memory>
+#include <optional>
+#include <string>
+#include <string_view>
+#include <tuple>
+#include <utility>
+#include <vector>
 
 #include "base/auto_reset.h"
 #include "base/containers/heap_array.h"
@@ -34,32 +41,11 @@
 
 namespace persistent_cache {
 
-// The variations of cache options available for creating/testing
-// PersistentCache.
-enum class CacheOption {
-  kMultipleConnections,
-  kSingleConnection,
-  kJournalModeWal,
-};
 
-// A printer for `CacheOption`; used by GoogleTest for more friendly output and
-// to suffix the story name for performance measurements.
-void PrintTo(CacheOption cache_option, std::ostream* os) {
-  switch (cache_option) {
-    case CacheOption::kMultipleConnections:
-      *os << "MultipleConnections";
-      break;
-    case CacheOption::kSingleConnection:
-      *os << "SingleConnection";
-      break;
-    case CacheOption::kJournalModeWal:
-      *os << "JournalModeWal";
-      break;
-  }
-}
 
 // A test harness parameterized on the options for creating a PersistentCache.
-class PersistentCachePerftest : public testing::TestWithParam<CacheOption> {
+class PersistentCachePerftest
+    : public testing::TestWithParam<std::tuple<bool, bool>> {
  protected:
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
@@ -67,19 +53,25 @@ class PersistentCachePerftest : public testing::TestWithParam<CacheOption> {
                              temp_dir_.GetPath());
   }
 
+ public:
+  // Returns a string representing the test parameter for story names.
+  static std::string GetParamName(std::tuple<bool, bool> param) {
+    auto [single_connection, journal_mode_wal] = param;
+    if (single_connection && journal_mode_wal) {
+      return "JournalModeWal";
+    } else if (single_connection && !journal_mode_wal) {
+      return "SingleConnection";
+    } else if (!single_connection && journal_mode_wal) {
+      return "MultipleConnectionsWal";
+    } else {
+      return "MultipleConnections";
+    }
+  }
+
   // Returns a new cache configured according to the test's parameter.
   std::unique_ptr<PersistentCache> MakeCache() {
-    switch (GetParam()) {
-      case CacheOption::kMultipleConnections:
-        return CreateCache(/*single_connection=*/false,
-                           /*journal_mode_wal=*/false);
-      case CacheOption::kSingleConnection:
-        return CreateCache(/*single_connection=*/true,
-                           /*journal_mode_wal=*/false);
-      case CacheOption::kJournalModeWal:
-        return CreateCache(/*single_connection=*/true,
-                           /*journal_mode_wal=*/true);
-    }
+    auto [single_connection, journal_mode_wal] = GetParam();
+    return CreateCache(single_connection, journal_mode_wal);
   }
 
   // Returns a new cache with the given options.
@@ -100,9 +92,11 @@ class PersistentCachePerftest : public testing::TestWithParam<CacheOption> {
 
   // Returns true if caches created in this configuration can be shared across
   // multiple connections.
-  static bool CanShareConnections() {
-    return GetParam() == CacheOption::kMultipleConnections;
-  }
+  static bool CanShareConnections() { return !std::get<0>(GetParam()); }
+
+  // Returns true if caches created in this configuration use the write-ahead
+  // log.
+  static bool IsWalMode() { return std::get<1>(GetParam()); }
 
   std::optional<PendingBackend> ShareReadWriteConnection(
       PersistentCache& cache) {
@@ -119,10 +113,9 @@ class PersistentCachePerftest : public testing::TestWithParam<CacheOption> {
 
     test_body();
 
-    ReportMeasurment(
-        base::StrCat({operation_name, testing::PrintToString(GetParam())}),
-        iteration_count, elapsed_timer.Elapsed(),
-        elapsed_thread_timer.Elapsed());
+    ReportMeasurement(base::StrCat({operation_name, GetParamName(GetParam())}),
+                      iteration_count, elapsed_timer.Elapsed(),
+                      elapsed_thread_timer.Elapsed());
   }
 
   // Pregenerates keys. Use to avoid timing allocation overhead.
@@ -166,10 +159,10 @@ class PersistentCachePerftest : public testing::TestWithParam<CacheOption> {
 #endif
   }
 
-  void ReportMeasurment(std::string operation_name,
-                        int iteration_count,
-                        base::TimeDelta elapsed_time,
-                        base::TimeDelta elapsed_thread_time) {
+  void ReportMeasurement(std::string operation_name,
+                         int iteration_count,
+                         base::TimeDelta elapsed_time,
+                         base::TimeDelta elapsed_thread_time) {
     const std::string reporter_name("PersistentCache");
     perf_test::PerfResultReporter reporter(reporter_name, operation_name);
     reporter.RegisterImportantMetric(".wall_time", "us");
@@ -222,7 +215,7 @@ TEST_P(PersistentCachePerftest, OpenClose) {
 TEST_P(PersistentCachePerftest, Insert) {
   int kIterationCount = 1024;
 
-  if (GetParam() != CacheOption::kJournalModeWal && HasExpensiveCommits()) {
+  if (!IsWalMode() && HasExpensiveCommits()) {
     // Insertions take an egregiously long time when commits are expensive.
     // Scale back the number of iterations in that case.
     kIterationCount /= 4;
@@ -282,7 +275,7 @@ TEST_P(PersistentCachePerftest, Find) {
 }
 
 TEST_P(PersistentCachePerftest, WALPerformance) {
-  if (GetParam() != CacheOption::kJournalModeWal) {
+  if (!IsWalMode()) {
     GTEST_SKIP();
   }
 
@@ -346,17 +339,18 @@ TEST_P(PersistentCachePerftest, WALPerformance) {
   base::TimeDelta db_thread_elapsed = db_thread_timer.Elapsed();
 
   // 7. Report the difference (Mixed - DB = Overhead).
-  ReportMeasurment(
+  ReportMeasurement(
       "WALOverhead", kTotalCount,
       std::max(base::TimeDelta(), mixed_elapsed - db_elapsed),
       std::max(base::TimeDelta(), mixed_thread_elapsed - db_thread_elapsed));
 }
 
-INSTANTIATE_TEST_SUITE_P(,
-                         PersistentCachePerftest,
-                         testing::Values(CacheOption::kMultipleConnections,
-                                         CacheOption::kSingleConnection,
-                                         CacheOption::kJournalModeWal),
-                         testing::PrintToStringParamName());
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    PersistentCachePerftest,
+    testing::Combine(testing::Bool(), testing::Bool()),
+    [](const testing::TestParamInfo<PersistentCachePerftest::ParamType>& info) {
+      return PersistentCachePerftest::GetParamName(info.param);
+    });
 
 }  // namespace persistent_cache
