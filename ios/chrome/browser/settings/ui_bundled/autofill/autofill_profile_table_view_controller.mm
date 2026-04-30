@@ -696,9 +696,11 @@ ItemType ItemTypeForEntitySectionHeader(SectionIdentifier section_identifier) {
       [[TableViewSwitchItem alloc] initWithType:ItemTypeVerificationSwitch];
   switchItem.text =
       l10n_util::GetNSString(IDS_IOS_AUTOFILL_VERIFICATION_INFO_LABEL);
-  switchItem.on = autofill::prefs::IsAutofillAiReauthBeforeFillingEnabled(
-      _browser->GetProfile()->GetPrefs());
-  switchItem.enabled = [_reauthenticationModule canAttemptReauth];
+  BOOL canAttemptReauth = [_reauthenticationModule canAttemptReauth];
+  switchItem.on = canAttemptReauth &&
+                  autofill::prefs::IsAutofillAiReauthBeforeFillingEnabled(
+                      _browser->GetProfile()->GetPrefs());
+  switchItem.enabled = canAttemptReauth;
   switchItem.target = self;
   switchItem.selector = @selector(verificationSwitchChanged:);
   switchItem.accessibilityIdentifier = kAutofillVerificationSwitchTableViewId;
