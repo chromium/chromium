@@ -7,7 +7,12 @@
 
 #import <UIKit/UIKit.h>
 
+#import <set>
+
 #import "ios/chrome/browser/composebox/shared/coordinator/composebox_picker_image_result.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/web/public/web_state.h"
+#import "ios/web/public/web_state_id.h"
 
 @class ComposeboxPickerPresenter;
 
@@ -27,6 +32,13 @@
 - (void)composeboxPickerPresenterDidDissmissCamera:
     (ComposeboxPickerPresenter*)presenter;
 
+// Called when the tab picker finishes picking tabs.
+- (void)composeboxPickerPresenter:(ComposeboxPickerPresenter*)presenter
+    handleSelectedTabsWithWebStateIDs:
+        (std::set<web::WebStateID>)selectedWebStateIDs
+                    cachedWebStateIDs:
+                        (std::set<web::WebStateID>)cachedWebStateIDs;
+
 @end
 
 /// Presents the various composebox pickers.
@@ -36,14 +48,17 @@
 @property(nonatomic, weak) id<ComposeboxPickerPresenterDelegate> delegate;
 
 // Creates a new object of this type.
-- (instancetype)initWithBaseViewController:
-    (UIViewController*)baseViewController;
+- (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
+                                   browser:(Browser*)browser;
 
 // Presents the camera picker.
 - (void)presentCameraPicker;
 
 // Presents the gallery picker.
 - (void)presentGalleryPickerWithLimit:(NSUInteger)limit;
+
+// Presents the tab picker.
+- (void)presentTabPicker;
 
 // Presents the file picker.
 - (void)presentFilePicker;

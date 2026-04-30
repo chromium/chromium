@@ -14,4 +14,9 @@
   return self;
 }
 
+- (BOOL)hasInitialTabIDs {
+  return !self.initialSelectedWebStateIDs.empty() ||
+         !self.initialCachedWebStateIDs.empty();
+}
+
 @end

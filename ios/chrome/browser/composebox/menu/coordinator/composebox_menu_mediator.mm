@@ -51,6 +51,15 @@
   [self.delegate composeboxMenuMediatorDidProduceFocusParams:focusParams];
 }
 
+- (void)processWebStateIDs:(std::set<web::WebStateID>)selectedWebStateIDs
+         cachedWebStateIDs:(std::set<web::WebStateID>)cachedWebStateIDs {
+  ComposeboxFocusParams* focusParams =
+      [[ComposeboxFocusParams alloc] initWithEntrypoint:_entrypoint];
+  focusParams.initialSelectedWebStateIDs = selectedWebStateIDs;
+  focusParams.initialCachedWebStateIDs = cachedWebStateIDs;
+  [self.delegate composeboxMenuMediatorDidProduceFocusParams:focusParams];
+}
+
 - (NSUInteger)remainingNumberOfImagesAllowed {
   // TODO(crbug.com/506956765): Implement.
   return 5;
@@ -91,7 +100,8 @@
       focusParams.initialModelOption = ComposeboxModelOption::kThinking;
       break;
     case ComposeboxMenuItemType::kAttachmentTabs:
-      break;
+      [self.delegate composeboxMenuMediatorDidRequestTabSelection:self];
+      return;
     case ComposeboxMenuItemType::kAttachmentCamera:
       [self.delegate composeboxMenuMediatorDidRequestCameraSelection:self];
       return;

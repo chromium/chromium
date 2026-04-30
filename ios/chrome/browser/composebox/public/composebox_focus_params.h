@@ -33,7 +33,12 @@
 @property(nonatomic, copy) NSArray<NSURL*>* initialFiles;
 
 /// Initial tab identifiers to attach.
-@property(nonatomic, assign) std::set<web::WebStateID> initialTabIDs;
+@property(nonatomic, assign) std::set<web::WebStateID>
+    initialSelectedWebStateIDs;
+@property(nonatomic, assign) std::set<web::WebStateID> initialCachedWebStateIDs;
+
+// Whether there are initial tab IDs set.
+@property(nonatomic, readonly) BOOL hasInitialTabIDs;
 
 /// The initial model option to force the composebox into.
 @property(nonatomic, assign) ComposeboxModelOption initialModelOption;

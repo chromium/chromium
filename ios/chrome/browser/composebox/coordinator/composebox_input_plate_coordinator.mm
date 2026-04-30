@@ -178,7 +178,8 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
       [[ComposeboxInputPlateViewController alloc] initWithTheme:_theme];
   _viewController.delegate = self;
   _pickerPresenter = [[ComposeboxPickerPresenter alloc]
-      initWithBaseViewController:_viewController];
+      initWithBaseViewController:_viewController
+                         browser:self.browser];
   _pickerPresenter.delegate = self;
 
   if (_entrypoint == ComposeboxEntrypoint::kNTPAIMButton) {
@@ -377,9 +378,10 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
                    completion:stopAccessScopedResourcesIfNeeded];
   }
 
-  if (!params.initialTabIDs.empty()) {
-    [_mediator attachSelectedTabsWithWebStateIDs:params.initialTabIDs
-                               cachedWebStateIDs:{}];
+  if (params.hasInitialTabIDs) {
+    [_mediator
+        attachSelectedTabsWithWebStateIDs:params.initialSelectedWebStateIDs
+                        cachedWebStateIDs:params.initialCachedWebStateIDs];
   }
 }
 
@@ -881,6 +883,14 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
 - (void)composeboxPickerPresenterDidDissmissCamera:
     (ComposeboxPickerPresenter*)presenter {
   [self focusComposebox];
+}
+
+- (void)composeboxPickerPresenter:(ComposeboxPickerPresenter*)presenter
+    handleSelectedTabsWithWebStateIDs:
+        (std::set<web::WebStateID>)selectedWebStateIDs
+                    cachedWebStateIDs:
+                        (std::set<web::WebStateID>)cachedWebStateIDs {
+  // TODO: Implement.
 }
 
 @end

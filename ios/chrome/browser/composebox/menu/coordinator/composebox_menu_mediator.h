@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/composebox/public/composebox_entrypoint.h"
 #import "ios/chrome/browser/composebox/public/composebox_focus_params.h"
 #import "ios/chrome/browser/composebox/shared/coordinator/composebox_picker_image_result.h"
+#import "ios/web/public/web_state_id.h"
 
 @class ComposeboxMenuMediator;
 @class ComposeboxUIInputState;
@@ -36,6 +37,10 @@
 - (void)composeboxMenuMediatorDidRequestFileSelection:
     (ComposeboxMenuMediator*)mediator;
 
+// Called when the tab selection is requested.
+- (void)composeboxMenuMediatorDidRequestTabSelection:
+    (ComposeboxMenuMediator*)mediator;
+
 @end
 
 // Mediator for the composebox menu.
@@ -56,6 +61,10 @@
 
 /// Processes the given `urls`.
 - (void)processFileURLs:(NSArray<NSURL*>*)urls;
+
+/// Processes the given web state IDs.
+- (void)processWebStateIDs:(std::set<web::WebStateID>)selectedWebStateIDs
+         cachedWebStateIDs:(std::set<web::WebStateID>)cachedWebStateIDs;
 
 /// Returns whether more attachments can be added.
 - (BOOL)canAddMoreAttachments;

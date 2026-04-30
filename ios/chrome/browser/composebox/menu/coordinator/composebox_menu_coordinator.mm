@@ -141,7 +141,8 @@ NSString* const kCustomFittingDetentIdentifier = @"kFittingDetentIdentifier";
                                       completion:nil];
 
   _pickerPresenter = [[ComposeboxPickerPresenter alloc]
-      initWithBaseViewController:_viewController];
+      initWithBaseViewController:_viewController
+                         browser:self.browser];
   _pickerPresenter.delegate = self;
 }
 
@@ -169,7 +170,7 @@ NSString* const kCustomFittingDetentIdentifier = @"kFittingDetentIdentifier";
   __weak id<BrowserCoordinatorCommands> commands = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
 
-  [_viewController
+  [self.baseViewController
       dismissViewControllerAnimated:YES
                          completion:^{
                            [commands showComposeboxWithParams:focusParams];
@@ -212,6 +213,17 @@ NSString* const kCustomFittingDetentIdentifier = @"kFittingDetentIdentifier";
   [_pickerPresenter presentFilePicker];
 }
 
+- (void)composeboxMenuMediatorDidRequestTabSelection:
+    (ComposeboxMenuMediator*)mediator {
+  // TODO(crbug.com/506955766): Unify metrics recording and record this action.
+
+  if (![_mediator canAddMoreAttachments]) {
+    [self showMaxAttachmentSnackbarError];
+    return;
+  }
+  [_pickerPresenter presentTabPicker];
+}
+
 #pragma mark - ComposeboxPickerPresenterDelegate
 
 - (void)composeboxPickerPresenter:(ComposeboxPickerPresenter*)presenter
@@ -228,6 +240,15 @@ NSString* const kCustomFittingDetentIdentifier = @"kFittingDetentIdentifier";
 - (void)composeboxPickerPresenter:(ComposeboxPickerPresenter*)presenter
              didPickFilesWithURLs:(NSArray<NSURL*>*)urls {
   [_mediator processFileURLs:urls];
+}
+
+- (void)composeboxPickerPresenter:(ComposeboxPickerPresenter*)presenter
+    handleSelectedTabsWithWebStateIDs:
+        (std::set<web::WebStateID>)selectedWebStateIDs
+                    cachedWebStateIDs:
+                        (std::set<web::WebStateID>)cachedWebStateIDs {
+  [_mediator processWebStateIDs:selectedWebStateIDs
+              cachedWebStateIDs:cachedWebStateIDs];
 }
 
 #pragma mark - Private
