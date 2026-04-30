@@ -32,7 +32,17 @@ TEST_F(AccessibilitySyncPrefsTest, NoBatchesEnabledReturnsEmpty) {
   {
     scoped_feature_list_.Reset();
     auto prefs = GetAccessibilityPrefBatchesWithSyncEnabled();
-    EXPECT_TRUE(prefs.empty());
+
+    // If at least one of the batches is enabled by default, then |prefs| should
+    // be non-empty.
+    bool enabled = base::FeatureList::IsEnabled(
+        features::kOsSyncAccessibilitySettingsBatch1);
+    enabled |= base::FeatureList::IsEnabled(
+        features::kOsSyncAccessibilitySettingsBatch2);
+    enabled |= base::FeatureList::IsEnabled(
+        features::kOsSyncAccessibilitySettingsBatch3);
+
+    EXPECT_EQ(prefs.empty(), !enabled);
   }
 }
 

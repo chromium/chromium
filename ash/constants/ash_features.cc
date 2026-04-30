@@ -1331,7 +1331,7 @@ BASE_FEATURE(kOsSyncAccessibilitySettingsBatch1,
 // animations and caption styling) so the rollout can proceed in small,
 // reversible stages.
 BASE_FEATURE(kOsSyncAccessibilitySettingsBatch2,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Gates syncing of the third batch of accessibility settings (screen + docked
 // magnifiers and select-to-speak toggles) so rollout can proceed incrementally.
