@@ -596,6 +596,7 @@ void GlicInstanceImpl::RegisterConversation(
 
   conversation_info_ = std::move(info);
   NotifyConversationTitleChanged();
+  conversation_info_changed_callback_list_.Notify(*conversation_info_);
 
   std::move(callback).Run(std::nullopt);
 }
@@ -867,6 +868,12 @@ base::CallbackListSubscription GlicInstanceImpl::RegisterStateChange(
 base::CallbackListSubscription GlicInstanceImpl::RegisterWillBeDestroyed(
     DestructionCallback callback) {
   return will_be_destroyed_callbacks_.Add(std::move(callback));
+}
+
+base::CallbackListSubscription
+GlicInstanceImpl::AddConversationInfoChangedCallback(
+    base::RepeatingCallback<void(const mojom::ConversationInfo&)> callback) {
+  return conversation_info_changed_callback_list_.Add(std::move(callback));
 }
 
 void GlicInstanceImpl::BindTabForTesting(tabs::TabInterface* tab) {

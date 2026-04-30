@@ -182,6 +182,8 @@ class GlicInstanceImpl : public GlicInstance,
   std::string conversation_title() const override;
   base::CallbackListSubscription RegisterStateChange(
       StateChangeCallback callback) override;
+  base::CallbackListSubscription AddConversationInfoChangedCallback(
+      base::RepeatingCallback<void(const mojom::ConversationInfo&)> callback);
   void BindTabForTesting(tabs::TabInterface* tab) override;
 
   // Called exactly once, right before the instance is destroyed.
@@ -398,6 +400,10 @@ class GlicInstanceImpl : public GlicInstance,
 
   using StateChangeCallbackList = base::RepeatingCallbackList<void(bool)>;
   StateChangeCallbackList state_change_callback_list_;
+
+  using ConversationInfoChangedCallbackList =
+      base::RepeatingCallbackList<void(const mojom::ConversationInfo&)>;
+  ConversationInfoChangedCallbackList conversation_info_changed_callback_list_;
 
   base::ObserverList<PanelStateObserver> state_observers_;
 
