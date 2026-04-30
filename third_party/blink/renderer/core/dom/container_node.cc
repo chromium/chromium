@@ -326,6 +326,21 @@ bool ContainerNode::EnsurePreInsertionValidity(
         return false;
       }
     }
+
+    // Node::ConvertNodeUnionsIntoNodes behaves differently depending on
+    // whether there is one node or more than one, since it simulates
+    // insertion into a DocumentFragment for the latter case.  If it handled
+    // more than one node, then it already removed the children from their old
+    // parent.  Check here that those removals didn't do anything bad.  (We
+    // could potentially make this faster by using a DOMMutationDetector in
+    // ConvertNodeUnionsIntoNodes and storing whether we need to do this.)
+    if (new_children->size() != 1u &&
+        RuntimeEnabledFeatures::
+            RecheckParentDuringNodeVectorInsertionEnabled() &&
+        !RecheckNodeInsertionStructuralPrereq(*new_children, next,
+                                              exception_state)) {
+      return false;
+    }
   } else if (auto* child_fragment = DynamicTo<DocumentFragment>(new_child)) {
     for (Node* node = child_fragment->firstChild(); node;
          node = node->nextSibling()) {
@@ -348,7 +363,7 @@ bool ContainerNode::EnsurePreInsertionValidity(
 bool ContainerNode::RecheckNodeInsertionStructuralPrereq(
     const NodeVector& new_children,
     const Node* next,
-    ExceptionState& exception_state) {
+    ExceptionState& exception_state) const {
   for (const auto& child : new_children) {
     if (child->parentNode()) {
       // A new child was added to another parent before adding to this
