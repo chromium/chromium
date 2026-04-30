@@ -30,6 +30,7 @@ import androidx.core.view.WindowInsetsAnimationCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import org.chromium.base.Callback;
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.Log;
 import org.chromium.base.MathUtils;
 import org.chromium.base.ObserverList;
@@ -55,6 +56,7 @@ import org.chromium.ui.insets.InsetObserver.WindowInsetObserver;
 import org.chromium.ui.insets.InsetObserver.WindowInsetsAnimationListener;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.util.ColorUtils;
+import org.chromium.ui.util.TokenHolder;
 
 import java.util.List;
 import java.util.function.Supplier;
@@ -130,8 +132,11 @@ class BottomSheet extends FrameLayout
     /** The view that contains the sheet background color. */
     private View mSheetBackground;
 
-    /** Whether the keyboard was visible in the previous layout pass. */
-    private boolean mWasKeyboardVisible;
+    /** TokenHolder for tracking keyboard visibility. */
+    private final TokenHolder mKeyboardTokenHolder = new TokenHolder(CallbackUtils.emptyRunnable());
+
+    /** The token for the keyboard visibility. */
+    private int mKeyboardToken = TokenHolder.INVALID_TOKEN;
 
     /** The state of the sheet before the keyboard was shown. */
     private @SheetState int mStateBeforeKeyboardShown = SheetState.NONE;
@@ -568,15 +573,19 @@ class BottomSheet extends FrameLayout
 
         boolean keyboardVisible = isKeyboardShowing();
         if (!keyboardVisible
-                && mWasKeyboardVisible
+                && mKeyboardToken != TokenHolder.INVALID_TOKEN
                 && mStateBeforeKeyboardShown != SheetState.NONE
                 && isFullHeightResizeContent()) {
+            assert mKeyboardTokenHolder.hasTokens();
             setInternalCurrentState(SheetState.NONE, StateChangeReason.NONE);
             setSheetState(mStateBeforeKeyboardShown, /* animate= */ false);
             mStateBeforeKeyboardShown = SheetState.NONE;
+
+            mKeyboardTokenHolder.releaseToken(mKeyboardToken);
+            mKeyboardToken = TokenHolder.INVALID_TOKEN;
         }
 
-        mWasKeyboardVisible = keyboardVisible;
+
         mPreviousScreenHeight = decorHeight;
     }
 
@@ -586,9 +595,13 @@ class BottomSheet extends FrameLayout
 
     private void maybeCacheStateOnKeyboardShown() {
         if (isKeyboardShowing() && mStateBeforeKeyboardShown == SheetState.NONE) {
+            assert mKeyboardToken == TokenHolder.INVALID_TOKEN;
+            assert !mKeyboardTokenHolder.hasTokens();
+
             // The bottom sheet state will not have been updated yet at this point, so
             // store for later use.
             mStateBeforeKeyboardShown = mCurrentState;
+            mKeyboardToken = mKeyboardTokenHolder.acquireToken();
         }
     }
 
