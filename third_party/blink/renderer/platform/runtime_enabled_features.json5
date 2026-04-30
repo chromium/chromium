@@ -2159,6 +2159,10 @@
       status: "test",
     },
     {
+      name: "DesktopPWAsAdditionalWindowingControlsOnMove",
+      status: "experimental",
+    },
+    {
       name: "DeviceAttributes",
       status: {
         "ChromeOS": "stable",

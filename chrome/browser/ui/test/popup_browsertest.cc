@@ -208,7 +208,7 @@ IN_PROC_BROWSER_TEST_F(PopupTest, NoopenerPositioning) {
 class PopupTest_AdditionalWindowingControls : public PopupTest {
  private:
   base::test::ScopedFeatureList feature_list{
-      blink::features::kDesktopPWAsAdditionalWindowingControls};
+      blink::features::kDesktopPWAsAdditionalWindowingControlsOnMove};
 };
 
 // Ensure that moving a popup by moveTo/moveBy generates a `move` event.

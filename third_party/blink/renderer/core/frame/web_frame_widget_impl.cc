@@ -4902,7 +4902,7 @@ bool WebFrameWidgetImpl::UpdateScreenRects(
 
 void WebFrameWidgetImpl::EnqueueMoveEvent() {
   if (!RuntimeEnabledFeatures::
-          DesktopPWAsAdditionalWindowingControlsEnabled()) {
+          DesktopPWAsAdditionalWindowingControlsOnMoveEnabled()) {
     return;
   }
 

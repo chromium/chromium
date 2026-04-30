@@ -2217,6 +2217,7 @@ class WebAppFrameToolbarBrowserTest_AdditionalWindowingControls
   WebAppFrameToolbarBrowserTest_AdditionalWindowingControls() {
     scoped_feature_list_.InitWithFeatures(
         {blink::features::kDesktopPWAsAdditionalWindowingControls,
+         blink::features::kDesktopPWAsAdditionalWindowingControlsOnMove,
          blink::features::kDesktopPWAsTabStrip},
         {});
   }
