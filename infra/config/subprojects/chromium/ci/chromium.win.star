@@ -237,10 +237,6 @@ ci.builder(
                 # https://crbug.com/861730
                 experiment_percentage = 100,
             ),
-            "extensions_browsertests": targets.mixin(
-                # https://crbug.com/876615
-                experiment_percentage = 100,
-            ),
             "interactive_ui_tests": targets.mixin(
                 # temporary, https://crbug.com/818832
                 experiment_percentage = 100,

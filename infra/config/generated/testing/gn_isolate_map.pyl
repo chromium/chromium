@@ -1075,11 +1075,6 @@
     "type": "windowed_test_launcher",
     "module_scheme": "gtest",
   },
-  "extensions_browsertests": {
-    "label": "//extensions:extensions_browsertests",
-    "type": "windowed_test_launcher",
-    "module_scheme": "gtest",
-  },
   "extensions_unittests": {
     "label": "//extensions:extensions_unittests",
     "type": "windowed_test_launcher",

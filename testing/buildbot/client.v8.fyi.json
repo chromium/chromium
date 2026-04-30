@@ -372,7 +372,6 @@
   },
   "Linux ASAN Builder": {
     "additional_compile_targets": [
-      "extensions_browsertests",
       "net_unittests",
       "unit_tests"
     ]
@@ -4005,7 +4004,6 @@
       "device_unittests",
       "display_unittests",
       "events_unittests",
-      "extensions_browsertests",
       "extensions_unittests",
       "gcm_unit_tests",
       "gfx_unittests",

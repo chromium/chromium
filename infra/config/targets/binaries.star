@@ -1127,12 +1127,6 @@ targets.binaries.windowed_test_launcher(
 )
 
 targets.binaries.windowed_test_launcher(
-    name = "extensions_browsertests",
-    label = "//extensions:extensions_browsertests",
-    module_scheme = "gtest",
-)
-
-targets.binaries.windowed_test_launcher(
     name = "extensions_unittests",
     label = "//extensions:extensions_unittests",
     module_scheme = "gtest",

@@ -1162,18 +1162,6 @@ targets.tests.gpu_telemetry_test(
 )
 
 targets.tests.gtest_test(
-    name = "extensions_browsertests",
-)
-
-targets.tests.gtest_test(
-    name = "extensions_browsertests_network_sandbox",
-    args = [
-        "--enable-features=NetworkServiceSandbox",
-    ],
-    binary = "extensions_browsertests",
-)
-
-targets.tests.gtest_test(
     name = "extensions_unittests",
 )
 

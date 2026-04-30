@@ -6189,7 +6189,6 @@ targets.bundle(
         "browser_tests",
         "chrome_app_unittests",
         "chromedriver_unittests",
-        "extensions_browsertests",
         "extensions_unittests",
         "filesystem_service_unittests",
         "interactive_ui_tests",

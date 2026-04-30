@@ -796,7 +796,6 @@
       'content_browsertests': {},
       'content_unittests': {},
       'device_unittests': {},
-      'extensions_browsertests': {},
       'extensions_unittests': {},
       'gcm_unit_tests': {},
       'gin_unittests': {},
@@ -2091,7 +2090,6 @@
       },
       'chrome_app_unittests': {},
       'chromedriver_unittests': {},
-      'extensions_browsertests': {},
       'extensions_unittests': {},
       'filesystem_service_unittests': {},
       'interactive_ui_tests': {

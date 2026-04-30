@@ -1629,15 +1629,6 @@ coverage_builder(
                     shards = 2,
                 ),
             ),
-            "extensions_browsertests": targets.mixin(
-                swarming = targets.swarming(
-                    dimensions = {
-                        "pool": "chromium.tests.coverage",
-                        "ssd": "1",
-                    },
-                    shards = 2,
-                ),
-            ),
             "interactive_ui_tests": targets.mixin(
                 swarming = targets.swarming(
                     dimensions = {
