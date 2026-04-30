@@ -6,8 +6,8 @@ package org.chromium.chrome.browser.ntp_customization.most_visited_tiles;
 
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.BACK_PRESS_HANDLER;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.IS_MVT_SWITCH_CHECKED;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.MVT_SWITCH_CONTENT_DESCRIPTION_RES_ID;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.MVT_SWITCH_ON_CHECKED_CHANGE_LISTENER;
-import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.SET_MVT_SWITCH_CONTENT_DESCRIPTION_RES_ID;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -40,7 +40,7 @@ public class MvtSettingsMediator {
                 MVT_SWITCH_ON_CHECKED_CHANGE_LISTENER,
                 (compoundButton, isChecked) -> onMvtSwitchToggled(isChecked));
         mBottomSheetPropertyModel.set(
-                SET_MVT_SWITCH_CONTENT_DESCRIPTION_RES_ID,
+                MVT_SWITCH_CONTENT_DESCRIPTION_RES_ID,
                 R.string.ntp_customization_turn_on_mvt_settings);
     }
 

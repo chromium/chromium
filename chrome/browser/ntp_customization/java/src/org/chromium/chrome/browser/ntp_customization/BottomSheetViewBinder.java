@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ntp_customization;
 
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.BACK_PRESS_HANDLER;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.IS_MVT_SWITCH_CHECKED;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.MVT_SWITCH_CONTENT_DESCRIPTION_RES_ID;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.MVT_SWITCH_ON_CHECKED_CHANGE_LISTENER;
 
 import android.view.View;
@@ -48,6 +49,10 @@ public class BottomSheetViewBinder {
             mvtSwitch.setChecked(model.get(IS_MVT_SWITCH_CHECKED));
         } else if (propertyKey == MVT_SWITCH_ON_CHECKED_CHANGE_LISTENER) {
             mvtSwitch.setOnCheckedChangeListener(model.get(MVT_SWITCH_ON_CHECKED_CHANGE_LISTENER));
+        } else if (propertyKey == MVT_SWITCH_CONTENT_DESCRIPTION_RES_ID) {
+            mvtSwitch.setTextContentDescription(
+                    view.getResources()
+                            .getString(model.get(MVT_SWITCH_CONTENT_DESCRIPTION_RES_ID)));
         }
     }
 }
