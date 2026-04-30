@@ -181,3 +181,8 @@ virtual/prevent-svg-filter-paint/http/tests/inspector-protocol/issues/deprecatio
 virtual/prevent-svg-filter-paint/wpt_internal/svg/svg-filter-render.sub.https.html [ Skip ]
 virtual/prevent-svg-filter-paint/wpt_internal/svg/use-count-svg-filter-nested-iframe.sub.https.html [ Skip ]
 virtual/prevent-svg-filter-paint/wpt_internal/svg/use-count-svg-filter-remote-iframe.sub.https.html [ Skip ]
+
+# crbug.com/508030814: SVG use-count tests fail with --disable-site-isolation-trials
+[ Linux ] wpt_internal/svg/use-count-svg-filter-nested-iframe.sub.https.html [ Failure ]
+[ Linux ] wpt_internal/svg/use-count-svg-filter-remote-iframe.sub.https.html [ Failure ]
+[ Linux ] wpt_internal/svg/use-count-svg-filter-will-change.sub.https.html [ Failure ]
