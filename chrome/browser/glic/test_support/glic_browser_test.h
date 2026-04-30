@@ -48,6 +48,7 @@
 #endif
 
 #if defined(TOOLKIT_VIEWS)
+#include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "ui/views/test/mock_activation_controller.h"
 #endif
 
@@ -150,6 +151,9 @@ class GlicBrowserTestMixin : public T {
 #if defined(USE_MOCK_ACTIVATION_CONTROLLER)
     activation_controller_ =
         std::make_unique<views::test::MockActivationController>();
+#endif
+#if defined(TOOLKIT_VIEWS)
+    SidePanelCoordinator::From(GetBrowser())->DisableAnimationsForTesting();
 #endif
 
     CHECK(glic_test_environment_.SetupEmbeddedTestServers(
