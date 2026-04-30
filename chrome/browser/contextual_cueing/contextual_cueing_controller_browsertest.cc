@@ -450,6 +450,10 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest, ShowCueAndClick) {
   EXPECT_EQ("Prompt",
             std::get<GlicCueActionData>(cue_target_->click_data).prompt);
   EXPECT_FALSE(observer.GetCurrentPageActionState().showing);
+
+  histogram_tester.ExpectUniqueSample("ContextualCueing.V2.CueInteraction",
+                                      ContextualCueingInteraction::kCueClicked,
+                                      1);
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,

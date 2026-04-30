@@ -68,6 +68,16 @@ enum class ContextualCueingDecision {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/contextual_cueing/enums.xml:ContextualCueingDecision)
 
+// LINT.IfChange(ContextualCueingInteraction)
+enum class ContextualCueingInteraction {
+  kCueClicked = 0,
+  kCueDismissed = 1,
+  kCueEditPrompt = 2,
+  kCueSuggestionsSettings = 3,
+  kMaxValue = kCueSuggestionsSettings,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/contextual_cueing/enums.xml:ContextualCueingInteraction)
+
 }  // namespace contextual_cueing
 
 #endif  // CHROME_BROWSER_CONTEXTUAL_CUEING_CONTEXTUAL_CUEING_ENUMS_H_

@@ -124,6 +124,23 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/contextual_cueing/contextual_cueing_enums.h:ContextualCueingDecision) -->
 
+<!-- LINT.IfChange(ContextualCueingInteraction) -->
+
+<enum name="ContextualCueingInteraction">
+  <int value="0" label="Clicked">The user clicked on the cue.</int>
+  <int value="1" label="Dismissed">
+    The user clicked into the menu and dismissed the cue.
+  </int>
+  <int value="2" label="EditPrompt">
+    The user clicked into the menu and clicked the edit prompt option.
+  </int>
+  <int value="3" label="SuggestionsSettings">
+    The user clicked into the menu and clicked the suggestions settings option.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/contextual_cueing/contextual_cueing_enums.h:ContextualCueingInteraction) -->
+
 <!-- LINT.IfChange(NudgeDecision) -->
 
 <enum name="ContextualCueingNudgeDecision">

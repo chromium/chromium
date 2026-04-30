@@ -18,6 +18,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_enums.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_menu_model.h"
+#include "chrome/browser/contextual_cueing/contextual_cueing_metrics.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service_factory.h"
 #include "chrome/browser/contextual_cueing/cueing_log.h"
@@ -517,6 +518,8 @@ void ContextualCueingController::OnCueClicked(
     target->OnClick(std::move(data));
   }
   contextual_cueing_service_->OnCueClicked(cue_type);
+
+  RecordContextualCueingInteraction(ContextualCueingInteraction::kCueClicked);
 
   HideCue();
 }

@@ -36,6 +36,8 @@ source_set("impl") {
     "contextual_cueing_controller.cc",
     "contextual_cueing_menu_model.cc",
     "contextual_cueing_menu_model.h",
+    "contextual_cueing_metrics.cc",
+    "contextual_cueing_metrics.h",
     "contextual_cueing_service.cc",
     "contextual_cueing_service_factory.cc",
     "contextual_cueing_web_contents_observer.cc",

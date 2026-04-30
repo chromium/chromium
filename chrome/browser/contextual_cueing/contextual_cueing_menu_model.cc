@@ -6,6 +6,8 @@
 
 #include "base/logging.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_controller.h"
+#include "chrome/browser/contextual_cueing/contextual_cueing_enums.h"
+#include "chrome/browser/contextual_cueing/contextual_cueing_metrics.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service_factory.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -64,12 +66,18 @@ void ContextualCueingMenuModel::ExecuteCommand(int command_id,
                                                int event_flags) {
   switch (command_id) {
     case kContextualCueingDismissCommand:
+      RecordContextualCueingInteraction(
+          ContextualCueingInteraction::kCueDismissed);
       contextual_cueing_service_->OnCueDismissed(cue_type_);
       break;
     case kContextualCueingEditPromptCommand:
+      RecordContextualCueingInteraction(
+          ContextualCueingInteraction::kCueEditPrompt);
       // TODO: b/497228854 - Implement edit prompt behavior based on cue type.
       break;
     case kContextualCueingOpenSettingsCommand: {
+      RecordContextualCueingInteraction(
+          ContextualCueingInteraction::kCueSuggestionsSettings);
 #if !BUILDFLAG(IS_ANDROID)
       chrome::ScopedTabbedBrowserDisplayer browser_displayer(profile_);
       // TODO: b/502761784 - Navigate this to exact settings page once
