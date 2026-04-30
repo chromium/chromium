@@ -20,8 +20,6 @@
 #include "ash/webui/annotator/test/mock_annotator_client.h"
 #include "ash/webui/boca_ui/boca_util.h"
 #include "ash/webui/boca_ui/mojom/boca.mojom.h"
-#include "ash/webui/boca_ui/webview_auth_delegate.h"
-#include "ash/webui/boca_ui/webview_auth_handler.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -96,7 +94,6 @@ namespace ash::boca {
 namespace {
 constexpr GaiaId::Literal kGaiaId("123");
 constexpr char kUserEmail[] = "cat@gmail.com";
-constexpr char kWebviewHostName[] = "boca";
 constexpr char kTestDefaultUrl[] = "https://test";
 constexpr char kTestUrlBase[] = "https://test";
 constexpr char kBocaSpotlightViewStudentScreenErrorCodeUmaPath[] =
@@ -352,20 +349,6 @@ class MockSpotlightService : public SpotlightService {
               (override));
 };
 
-class MockWebviewAuthHandler : public WebviewAuthHandler {
- public:
-  MockWebviewAuthHandler(content::BrowserContext* context,
-                         const std::string& webview_host_name)
-      : WebviewAuthHandler(std::make_unique<WebviewAuthDelegate>(),
-                           context,
-                           webview_host_name) {}
-  MockWebviewAuthHandler(const MockWebviewAuthHandler&) = delete;
-  MockWebviewAuthHandler& operator=(const WebviewAuthHandler&) = delete;
-  ~MockWebviewAuthHandler() override {}
-
-  MOCK_METHOD1(AuthenticateWebview, void(AuthenticateWebviewCallback));
-};
-
 class MockStudentScreenPresenter : public StudentScreenPresenter {
  public:
   MockStudentScreenPresenter() = default;
@@ -608,8 +591,6 @@ class BocaAppPageHandlerTest : public testing::Test {
         // TODO(crbug.com/359929870): Setting nullptr for other dependencies for
         // now. Adding test case for classroom and tab info.
         page_pending_receiver.InitWithNewPipeAndPassRemote(), web_ui_.get(),
-        std::make_unique<MockWebviewAuthHandler>(browser_context_,
-                                                 kWebviewHostName),
         /*classroom_client_impl=*/nullptr,
         /*content_settings_handler=*/nullptr,
         /*system_web_app_manager=*/nullptr, &session_client_impl_, is_producer);
@@ -689,10 +670,6 @@ class BocaAppPageHandlerTest : public testing::Test {
   MockSessionManager* session_manager() { return session_manager_.get(); }
   BocaAppHandler* boca_app_handler() { return boca_app_handler_.get(); }
   MockSpotlightService* spotlight_service() { return &spotlight_service_; }
-  MockWebviewAuthHandler* webview_auth_handler() {
-    return static_cast<MockWebviewAuthHandler*>(
-        boca_app_handler_.get()->GetWebviewAuthHandlerForTesting());
-  }
   FakePage* fake_page() { return fake_page_.get(); }
   sync_preferences::TestingPrefServiceSyncable* pref_service() {
     return &pref_service_;
@@ -2674,30 +2651,6 @@ TEST_F(BocaAppPageHandlerProducerTest, ViewScreenFailed) {
   histogram_tester.ExpectBucketCount(
       kBocaSpotlightViewStudentScreenErrorCodeUmaPath,
       google_apis::ApiErrorCode::HTTP_FORBIDDEN, 1);
-}
-
-TEST_F(BocaAppPageHandlerProducerTest, AuthenticateWebviewSuccess) {
-  EXPECT_CALL(*webview_auth_handler(), AuthenticateWebview(testing::_))
-      .WillOnce(base::test::RunOnceCallback<0>(/*is_success=*/true));
-  base::RunLoop run_loop;
-  boca_app_handler()->AuthenticateWebview(
-      base::BindLambdaForTesting([&](bool success) -> void {
-        EXPECT_TRUE(success);
-        run_loop.Quit();
-      }));
-  run_loop.Run();
-}
-
-TEST_F(BocaAppPageHandlerProducerTest, AuthenticateWebviewFailure) {
-  EXPECT_CALL(*webview_auth_handler(), AuthenticateWebview(testing::_))
-      .WillOnce(base::test::RunOnceCallback<0>(/*is_success=*/false));
-  base::RunLoop run_loop;
-  boca_app_handler()->AuthenticateWebview(
-      base::BindLambdaForTesting([&](bool success) -> void {
-        EXPECT_FALSE(success);
-        run_loop.Quit();
-      }));
-  run_loop.Run();
 }
 
 TEST_F(BocaAppPageHandlerProducerTest, TestPrefGetter) {

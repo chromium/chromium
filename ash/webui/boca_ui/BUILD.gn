@@ -27,10 +27,6 @@ static_library("boca_ui") {
     "provider/network_info_provider.h",
     "provider/tab_info_collector.cc",
     "provider/tab_info_collector.h",
-    "webview_auth_delegate.cc",
-    "webview_auth_delegate.h",
-    "webview_auth_handler.cc",
-    "webview_auth_handler.h",
   ]
 
   deps = [
@@ -96,7 +92,6 @@ source_set("unit_tests") {
     "boca_app_page_handler_unittest.cc",
     "provider/classroom_page_handler_impl_unittest.cc",
     "provider/network_info_provider_unittest.cc",
-    "webview_auth_handler_unittest.cc",
   ]
 
   deps = [

@@ -329,8 +329,7 @@ enum CrdConnectionState {
 
 // Implemented by browser process for page chrome-untrusted://boca-app/
 interface PageHandler {
-  // Performs authentication and sets the credential in the webview.
-  AuthenticateWebview() => (bool success);
+
   // Fetches a list of browser windows and tabs in it. Windows are ordered using
   // non-increasing order for most recent tab's last access timestamp.
   GetWindowsTabsList() => (array<Window> window_list);

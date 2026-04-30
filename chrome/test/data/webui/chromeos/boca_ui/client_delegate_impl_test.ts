@@ -325,9 +325,6 @@ class MockRemoteHandler extends PageHandlerRemote {
     id;
     return Promise.resolve({error: null});
   }
-  override authenticateWebview() {
-    return Promise.resolve({success: true});
-  }
   override getUserPref(pref: BocaValidPref): Promise<{value: Value}> {
     pref;
     return Promise.resolve({value: {stringValue: 'value'}});
@@ -829,13 +826,7 @@ suite('ClientDelegateTest', function() {
         assertTrue(result);
       });
 
-  test(
-      'client delegate should respond correctly for authenticateWebview',
-      async () => {
-        const result =
-            await clientDelegateImpl.getInstance().authenticateWebview();
-        assertTrue(result);
-      });
+
 
   test(
       'client delegate should respond correctly for retrieve user pref',

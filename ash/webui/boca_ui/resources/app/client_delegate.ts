@@ -139,9 +139,6 @@ export class ClientDelegateFactory {
   private clientDelegateImpl: ClientApiDelegate;
   constructor(pageHandler: PageHandlerRemote) {
     this.clientDelegateImpl = {
-      authenticateWebview: async () => {
-        return (await pageHandler.authenticateWebview()).success;
-      },
       getWindowsTabsList: async () => {
         const result = await pageHandler.getWindowsTabsList();
         return result.windowList.map((window: Window) => {
