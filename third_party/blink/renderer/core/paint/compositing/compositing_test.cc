@@ -1128,6 +1128,37 @@ TEST_P(CompositingTest, MergeStickyLayers) {
   histograms.ExpectUniqueSample("Blink.Compositor.MergedStickyLayerCount", 2,
                                 1);
 }
+
+TEST_P(CompositingTest, DontCompositedStickyAlongNonScrollableAxis) {
+  InitializeWithHTML(*WebView()->MainFrameImpl()->GetFrame(), R"HTML(
+    <style>
+      .scroll { width: 100px; height: 100px; overflow: scroll; }
+      .sticky { position: sticky; width: 20px; height: 20px; }
+    </style>
+    <!-- Not scrollable. -->
+    <div class="scroll">
+      <div id="a1" class="sticky" style="top: 0; left: 0"></div>
+    </div>
+    <!-- Horizontally scrollable only. -->
+    <div class="scroll">
+      <div id="b1" class="sticky" style="top: 0"></div>
+      <div id="b2" class="sticky" style="left: 0"></div>
+      <div style="width: 200px"></div>
+    </div>
+    <!-- Vertically scrollable only. -->
+    <div class="scroll">
+      <div id="c1" class="sticky" style="left: 0"></div>
+      <div id="c2" class="sticky" style="top: 0"></div>
+      <div style="height: 200px"></div>
+    </div>
+  )HTML");
+  EXPECT_FALSE(CcLayerByDOMElementId("a1"));
+  EXPECT_FALSE(CcLayerByDOMElementId("b1"));
+  EXPECT_TRUE(CcLayerByDOMElementId("b2"));
+  EXPECT_FALSE(CcLayerByDOMElementId("c1"));
+  EXPECT_TRUE(CcLayerByDOMElementId("c2"));
+}
+
 class ScrollingContentsCullRectTest : public CompositingTest {
  protected:
   void SetUp() override {

@@ -165,9 +165,18 @@ bool StickyPositionScrollingConstraints::HasScrollDependentOffset() const {
         axis_data->is_fixed_to_view) {
       return false;
     }
-    const auto* layer = axis_data->containing_scroll_container_layer.Get();
-    return layer && layer->GetScrollableArea() &&
-           layer->GetScrollableArea()->HasOverflow();
+    if (const auto* layer =
+            axis_data->containing_scroll_container_layer.Get()) {
+      if (const auto* scrollable_area = layer->GetScrollableArea()) {
+        if (RuntimeEnabledFeatures::StickyPositionHasOverflowPerAxisEnabled()) {
+          return axis_data->axis == PhysicalAxis::kHorizontal
+                     ? scrollable_area->HasHorizontalOverflow()
+                     : scrollable_area->HasVerticalOverflow();
+        }
+        return scrollable_area->HasOverflow();
+      }
+    }
+    return false;
   };
 
   return is_axis_scroll_dependent(x_data_) || is_axis_scroll_dependent(y_data_);

@@ -5570,6 +5570,11 @@
       origin_trial_allows_third_party: true,
     },
     {
+      // Killswitch M149.
+      name: "StickyPositionHasOverflowPerAxis",
+      status: "stable",
+    },
+    {
       // Preserves the sticky user activation state after a page navigates to
       // another same-origin page. https://crbug.com/433729626
       name: "StickyUserActivationAcrossSameOriginNavigation",
