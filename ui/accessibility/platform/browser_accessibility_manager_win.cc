@@ -681,6 +681,12 @@ void BrowserAccessibilityManagerWin::FireGeneratedEvent(
     case AXEventGenerator::Event::TEXT_ATTRIBUTE_CHANGED:
       FireWinAccessibilityEvent(IA2_EVENT_TEXT_ATTRIBUTE_CHANGED, wrapper);
       break;
+    case AXEventGenerator::Event::TEXT_SELECTION_CHANGED:
+      if (delegate() && !delegate()->AccessibilityIsWebContentSource()) {
+        FireWinAccessibilityEvent(IA2_EVENT_TEXT_CARET_MOVED, wrapper);
+        EnqueueSelectionChangedEvent(*wrapper);
+      }
+      break;
     case AXEventGenerator::Event::SPELLING_MARKER_CHANGED:
       FireUiaChangesEvent(wrapper, AnnotationType_SpellingError);
       break;
@@ -722,7 +728,6 @@ void BrowserAccessibilityManagerWin::FireGeneratedEvent(
     case AXEventGenerator::Event::RELATED_NODE_CHANGED:
     case AXEventGenerator::Event::ROW_COUNT_CHANGED:
     case AXEventGenerator::Event::STATE_CHANGED:
-    case AXEventGenerator::Event::TEXT_SELECTION_CHANGED:
       break;
   }
 }

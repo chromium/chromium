@@ -380,6 +380,13 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
       [native_node childrenChanged];
       return;
 
+    case AXEventGenerator::Event::TEXT_SELECTION_CHANGED:
+      if (delegate() && !delegate()->AccessibilityIsWebContentSource()) {
+        mac_notification = NSAccessibilitySelectedTextChangedNotification;
+        break;
+      }
+      return;
+
     // Currently unused events on this platform.
     case AXEventGenerator::Event::NONE:
     case AXEventGenerator::Event::ACCESS_KEY_CHANGED:
@@ -437,7 +444,6 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
     case AXEventGenerator::Event::STATE_CHANGED:
     case AXEventGenerator::Event::SUBTREE_CREATED:
     case AXEventGenerator::Event::TEXT_ATTRIBUTE_CHANGED:
-    case AXEventGenerator::Event::TEXT_SELECTION_CHANGED:
     case AXEventGenerator::Event::VALUE_IN_SPIN_BUTTON_DECREMENTED:
     case AXEventGenerator::Event::VALUE_IN_SPIN_BUTTON_INCREMENTED:
     case AXEventGenerator::Event::WIN_IACCESSIBLE_STATE_CHANGED:

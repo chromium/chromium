@@ -169,6 +169,10 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityManager
   // Return whether or not we are currently able to fire events.
   bool CanFireEvents() const override;
 
+  // Returns false for generated events that should not be exposed for this
+  // accessibility tree source.
+  bool ShouldFireGeneratedEvent(AXEventGenerator::Event event_type) const;
+
   // Return a pointer to the root of the tree.
   BrowserAccessibility* GetBrowserAccessibilityRoot() const;
 

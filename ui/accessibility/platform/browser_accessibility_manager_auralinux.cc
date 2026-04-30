@@ -364,6 +364,11 @@ void BrowserAccessibilityManagerAuraLinux::FireGeneratedEvent(
     case AXEventGenerator::Event::TEXT_ATTRIBUTE_CHANGED:
       FireTextAttributesChangedEvent(wrapper);
       break;
+    case AXEventGenerator::Event::TEXT_SELECTION_CHANGED:
+      if (delegate() && !delegate()->AccessibilityIsWebContentSource()) {
+        FireEvent(wrapper, ax::mojom::Event::kTextSelectionChanged);
+      }
+      break;
     case AXEventGenerator::Event::VALUE_IN_TEXT_FIELD_CHANGED:
     case AXEventGenerator::Event::VALUE_IN_SPIN_BUTTON_DECREMENTED:
     case AXEventGenerator::Event::VALUE_IN_SPIN_BUTTON_INCREMENTED:
@@ -422,7 +427,6 @@ void BrowserAccessibilityManagerAuraLinux::FireGeneratedEvent(
     case AXEventGenerator::Event::SET_SIZE_CHANGED:
     case AXEventGenerator::Event::SPELLING_MARKER_CHANGED:
     case AXEventGenerator::Event::STATE_CHANGED:
-    case AXEventGenerator::Event::TEXT_SELECTION_CHANGED:
     case AXEventGenerator::Event::WIN_IACCESSIBLE_STATE_CHANGED:
       break;
   }

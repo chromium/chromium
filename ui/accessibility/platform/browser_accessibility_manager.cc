@@ -256,6 +256,15 @@ bool BrowserAccessibilityManager::CanFireEvents() const {
   return delegate_->CanFireAccessibilityEvents();
 }
 
+bool BrowserAccessibilityManager::ShouldFireGeneratedEvent(
+    AXEventGenerator::Event event_type) const {
+  if (delegate_ && !delegate_->AccessibilityIsWebContentSource() &&
+      event_type == AXEventGenerator::Event::DOCUMENT_SELECTION_CHANGED) {
+    return false;
+  }
+  return true;
+}
+
 void BrowserAccessibilityManager::FireGeneratedEvent(
     AXEventGenerator::Event event_type,
     const AXNode* node) {
@@ -591,6 +600,10 @@ bool BrowserAccessibilityManager::OnAccessibilityEvents(
   BrowserAccessibility* focus = GetFocus();
   std::vector<AXEventGenerator::TargetedEvent> deferred_events;
   for (const auto& targeted_event : event_generator()) {
+    if (!ShouldFireGeneratedEvent(targeted_event.event_params->event)) {
+      continue;
+    }
+
     BrowserAccessibility* event_target = GetFromID(targeted_event.node_id);
     DCHECK(event_target) << "No event target for " << targeted_event.node_id;
 
@@ -615,19 +628,23 @@ bool BrowserAccessibilityManager::OnAccessibilityEvents(
   // before firing any other events on that node. No focus event will be fired
   // if the window itself isn't focused or if focus hasn't changed.
   //
-  // We need to fire focus events specifically from the root frame manager,
-  // since we need the top document's delegate to check if its view has focus.
-  //
-  // If this manager is disconnected from the top document, then
-  // root_frame_manager will be a null pointer and this code will not be
-  // reached. It's also possible for this manager to be null if it is not
-  // sourced from web content.
-  if (root_frame_manager) {
-    root_frame_manager->FireFocusEventsIfNeeded();
+  // Web content fires focus events from the root frame manager, since the top
+  // document's delegate checks whether the view has focus. Views-sourced
+  // managers are not frame managers, so they fire from this manager.
+  BrowserAccessibilityManager* focus_manager = root_frame_manager;
+  if (delegate_ && !delegate_->AccessibilityIsWebContentSource()) {
+    focus_manager = this;
+  }
+  if (focus_manager) {
+    focus_manager->FireFocusEventsIfNeeded();
   }
 
   // Now fire all of the rest of the generated events we previously deferred.
   for (const auto& targeted_event : deferred_events) {
+    if (!ShouldFireGeneratedEvent(targeted_event.event_params->event)) {
+      continue;
+    }
+
     BrowserAccessibility* event_target = GetFromID(targeted_event.node_id);
     DCHECK(event_target) << "No event target for " << targeted_event.node_id;
 

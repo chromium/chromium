@@ -7,15 +7,21 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/ax_event_generator.h"
+#include "ui/accessibility/ax_tree_manager.h"
 #include "ui/accessibility/platform/ax_platform_for_test.h"
 #include "ui/accessibility/platform/browser_accessibility.h"
+#include "ui/accessibility/platform/browser_accessibility_manager.h"
 #include "ui/views/accessibility/ax_virtual_view.h"
 #include "ui/views/accessibility/tree/widget_ax_manager_test_api.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -1115,6 +1121,73 @@ TEST_F(WidgetAXManagerTest, TextSelection_NotPopulatedWhenNoSelAttributes) {
       EXPECT_EQ(update.tree_data.sel_focus_object_id, ui::kInvalidAXNodeID);
     }
   }
+}
+
+TEST_F(WidgetAXManagerTest,
+       TextSelection_FiresTextfieldSelectionEventForViews) {
+  enum class FiredEvent {
+    kFocus,
+    kDocumentSelectionChanged,
+    kTextSelectionChanged,
+  };
+
+  WidgetAXManagerTestApi api(manager());
+  api.Enable();
+
+  auto* v = widget()->GetRootView()->AddChildView(std::make_unique<View>());
+  v->SetFocusBehavior(View::FocusBehavior::ALWAYS);
+  v->GetViewAccessibility().SetRole(ax::mojom::Role::kTextField);
+  v->GetViewAccessibility().SetName(u"Selection text field");
+  v->GetViewAccessibility().SetTextSelStart(0);
+  v->GetViewAccessibility().SetTextSelEnd(0);
+  api.WaitForNextSerialization();
+
+  std::vector<FiredEvent> fired_events;
+  ui::AXTreeManager::SetFocusChangeCallbackForTesting(base::BindRepeating(
+      [](std::vector<FiredEvent>* fired_events) {
+        fired_events->push_back(FiredEvent::kFocus);
+      },
+      &fired_events));
+  base::ScopedClosureRunner reset_focus_callback(base::BindOnce(
+      []() { ui::AXTreeManager::SetFocusChangeCallbackForTesting({}); }));
+
+  api.ax_tree_manager()->SetGeneratedEventCallbackForTesting(
+      base::BindRepeating(
+          [](std::vector<FiredEvent>* fired_events,
+             ui::BrowserAccessibilityManager*,
+             ui::AXEventGenerator::Event event_type, ui::AXNodeID) {
+            if (event_type ==
+                ui::AXEventGenerator::Event::DOCUMENT_SELECTION_CHANGED) {
+              fired_events->push_back(FiredEvent::kDocumentSelectionChanged);
+            } else if (event_type ==
+                       ui::AXEventGenerator::Event::TEXT_SELECTION_CHANGED) {
+              fired_events->push_back(FiredEvent::kTextSelectionChanged);
+            }
+          },
+          &fired_events));
+
+  widget()->Show();
+  v->RequestFocus();
+  api.WaitForNextSerialization();
+  EXPECT_EQ(fired_events,
+            (std::vector<FiredEvent>{FiredEvent::kFocus,
+                                     FiredEvent::kTextSelectionChanged}));
+
+  fired_events.clear();
+  v->GetViewAccessibility().SetTextSelStart(2);
+  v->GetViewAccessibility().SetTextSelEnd(5);
+  api.WaitForNextSerialization();
+  EXPECT_EQ(fired_events,
+            (std::vector<FiredEvent>{FiredEvent::kTextSelectionChanged}));
+
+  widget()->GetFocusManager()->ClearFocus();
+  api.WaitForNextSerialization();
+
+  fired_events.clear();
+  v->GetViewAccessibility().SetTextSelStart(1);
+  v->GetViewAccessibility().SetTextSelEnd(1);
+  api.WaitForNextSerialization();
+  EXPECT_TRUE(fired_events.empty());
 }
 
 }  // namespace views::test
