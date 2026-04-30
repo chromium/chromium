@@ -56,8 +56,11 @@ import org.chromium.url.GURL;
 /**
  * Root component for the tab switcher button on the toolbar. Intended to own the {@link
  * ToggleTabStackButton}, but currently it only manages some signals around the tab switcher button.
- * TODO(crbug.com/40588354): Finish converting HomeButton to MVC and move more logic into this
- * class.
+ *
+ * <p>If you modify this class, you should also modify the {@link TabSwitcherActionProvider} to
+ * ensure the logic is consistent.
+ *
+ * <p>TODO(crbug.com/493273525): Deprecate this class in favor of {@link TabSwitcherActionProvider}.
  */
 @NullMarked
 public class ToggleTabStackButtonCoordinator extends ToolbarChildButton {
@@ -171,6 +174,7 @@ public class ToggleTabStackButtonCoordinator extends ToolbarChildButton {
         }
 
         TabModelSelector tabModelSelector = assertNonNull(mTabModelSelectorSupplier.get());
+        // LINT.IfChange(onTabStateInitialized)
         TabModelUtils.runOnTabStateInitialized(
                 tabModelSelector,
                 mCallbackController.makeCancelable(
@@ -180,6 +184,7 @@ public class ToggleTabStackButtonCoordinator extends ToolbarChildButton {
         if (tabModelSelector.isTabStateInitialized()) {
             handleTabRestoreCompleted();
         }
+        // LINT.ThenChange(//chrome/browser/ui/android/actions/java/src/org/chromium/chrome/browser/ui/actions/tabswitcher/TabSwitcherActionProvider.java:onTabStateInitialized)
     }
 
     /** Cleans up callbacks and observers. */
@@ -303,6 +308,7 @@ public class ToggleTabStackButtonCoordinator extends ToolbarChildButton {
         mLayoutStateProvider = layoutStateProvider;
         // Make button un-clickable during browser layout transition. Re-enable once transition
         // completes.
+        // LINT.IfChange(setLayoutStateProvider)
         mLayoutStateObserver =
                 new LayoutStateObserver() {
 
@@ -336,6 +342,7 @@ public class ToggleTabStackButtonCoordinator extends ToolbarChildButton {
                         }
                     }
                 };
+        // LINT.ThenChange(//chrome/browser/ui/android/actions/java/src/org/chromium/chrome/browser/ui/actions/tabswitcher/TabSwitcherActionProvider.java:setLayoutStateProvider)
         mLayoutStateProvider.addObserver(mLayoutStateObserver);
     }
 
@@ -345,6 +352,7 @@ public class ToggleTabStackButtonCoordinator extends ToolbarChildButton {
 
     @VisibleForTesting
     void handlePageLoadFinished() {
+        // LINT.IfChange(handlePageLoadFinished)
         if (!mToggleTabStackButton.isShown()) return;
 
         Profile profile =
@@ -403,6 +411,7 @@ public class ToggleTabStackButtonCoordinator extends ToolbarChildButton {
                             .setHighlightParams(params)
                             .build());
         }
+        // LINT.ThenChange(//chrome/browser/ui/android/actions/java/src/org/chromium/chrome/browser/ui/actions/tabswitcher/TabSwitcherActionProvider.java:handlePageLoadFinished)
     }
 
     /**
@@ -436,6 +445,7 @@ public class ToggleTabStackButtonCoordinator extends ToolbarChildButton {
     }
 
     private void onUpdateNotificationDot(TabModelDotInfo tabModelDotInfo) {
+        // LINT.IfChange(onUpdateNotificationDot)
         mToggleTabStackButton.onUpdateNotificationDot(tabModelDotInfo);
         if (tabModelDotInfo.showDot && mUserEducationHelper != null) {
             String tabGroupTitle = tabModelDotInfo.tabGroupTitle;
@@ -451,9 +461,11 @@ public class ToggleTabStackButtonCoordinator extends ToolbarChildButton {
                             .setHighlightParams(new HighlightParams(HighlightShape.CIRCLE))
                             .build());
         }
+        // LINT.ThenChange(//chrome/browser/ui/android/actions/java/src/org/chromium/chrome/browser/ui/actions/tabswitcher/TabSwitcherActionProvider.java:onNotificationDotChanged)
     }
 
     private void maybeShowDeclutterIph(int tabCount) {
+        // LINT.IfChange(maybeShowDeclutterIph)
         if (mIncognitoStateProvider.isIncognitoSelected()) return;
         if (mAlreadyRequestedDeclutterIph) return;
         if (tabCount == 0) return;
@@ -474,9 +486,11 @@ public class ToggleTabStackButtonCoordinator extends ToolbarChildButton {
                         .setOnShowCallback(mArchivedTabsIphShownCallback)
                         .setOnDismissCallback(mArchivedTabsIphDismissedCallback)
                         .build());
+        // LINT.ThenChange(//chrome/browser/ui/android/actions/java/src/org/chromium/chrome/browser/ui/actions/tabswitcher/TabSwitcherActionProvider.java:maybeShowDeclutterIph)
     }
 
     private void maybeShowXrIph(int tabCount) {
+        // LINT.IfChange(maybeShowXrIph)
         if (!DeviceInfo.isXr()) return;
         if (tabCount < IPH_TAB_SWITCHER_XR_MIN_TABS) return;
         if (mUserEducationHelper == null) return;
@@ -491,5 +505,6 @@ public class ToggleTabStackButtonCoordinator extends ToolbarChildButton {
                         .setAutoDismissTimeout(IPH_TAB_SWITCHER_XR_WAIT_TIME_MS)
                         .setEnableSnoozeMode(true)
                         .build());
+        // LINT.ThenChange(//chrome/browser/ui/android/actions/java/src/org/chromium/chrome/browser/ui/actions/tabswitcher/TabSwitcherActionProvider.java:maybeTriggerXrIph)
     }
 }

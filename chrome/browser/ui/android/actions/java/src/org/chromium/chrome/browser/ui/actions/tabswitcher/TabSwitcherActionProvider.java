@@ -141,6 +141,7 @@ public class TabSwitcherActionProvider implements Destroyable {
                 mCallbackController.makeCancelable(this::setLayoutStateProvider));
 
         // Tab restoration
+        // LINT.IfChange(onTabStateInitialized)
         TabModelUtils.runOnTabStateInitialized(
                 mTabModelSelector,
                 mCallbackController.makeCancelable(
@@ -151,6 +152,7 @@ public class TabSwitcherActionProvider implements Destroyable {
         if (mTabModelSelector.isTabStateInitialized()) {
             mIsTabStateInitialized = true;
         }
+        // LINT.ThenChange(//chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/top/ToggleTabStackButtonCoordinator.java:onTabStateInitialized)
 
         // Observe page loads for IPH triggers.
         mPageLoadObserver =
@@ -183,6 +185,7 @@ public class TabSwitcherActionProvider implements Destroyable {
     }
 
     private void onNotificationDotChanged(TabModelDotInfo dotInfo) {
+        // LINT.IfChange(onNotificationDotChanged)
         boolean showDot = dotInfo.showDot;
         mShowDot = showDot;
         mModel.set(TabSwitcherActionProperties.HAS_NOTIFICATION_DOT, showDot);
@@ -192,9 +195,11 @@ public class TabSwitcherActionProvider implements Destroyable {
                     TabSwitcherActionUtils.getUpdateNotificationIphIntent(dotInfo));
         }
         updateDependentProperties();
+        // LINT.ThenChange(//chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/top/ToggleTabStackButtonCoordinator.java:onUpdateNotificationDot)
     }
 
     private void setLayoutStateProvider(LayoutStateProvider layoutStateProvider) {
+        // LINT.IfChange(setLayoutStateProvider)
         mLayoutStateProvider = layoutStateProvider;
         mLayoutStateObserver =
                 new LayoutStateProvider.LayoutStateObserver() {
@@ -231,9 +236,11 @@ public class TabSwitcherActionProvider implements Destroyable {
                     }
                 };
         mLayoutStateProvider.addObserver(mLayoutStateObserver);
+        // LINT.ThenChange(//chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/top/ToggleTabStackButtonCoordinator.java:setLayoutStateProvider)
     }
 
     private void maybeShowDeclutterIph(int tabCount) {
+        // LINT.IfChange(maybeShowDeclutterIph)
         if (mDeclutterIphSignaled || mIsIncognito || tabCount == 0) return;
 
         if (mArchivedTabsIphShownCallback != null && mArchivedTabsIphDismissedCallback != null) {
@@ -243,10 +250,12 @@ public class TabSwitcherActionProvider implements Destroyable {
                     TabSwitcherActionUtils.getDeclutterIphIntent(
                             mArchivedTabsIphShownCallback, mArchivedTabsIphDismissedCallback));
         }
+        // LINT.ThenChange(//chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/top/ToggleTabStackButtonCoordinator.java:maybeShowDeclutterIph)
     }
 
     @VisibleForTesting
     void handlePageLoadFinished() {
+        // LINT.IfChange(handlePageLoadFinished)
         if (!mIsTabStateInitialized) return;
 
         Profile profile = mTabModelSelector.getCurrentModel().getProfile();
@@ -277,12 +286,15 @@ public class TabSwitcherActionProvider implements Destroyable {
         if (iphIntent != null) {
             mModel.set(ActionProperties.IPH_INTENT, iphIntent);
         }
+        // LINT.ThenChange(//chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/top/ToggleTabStackButtonCoordinator.java:handlePageLoadFinished)
     }
 
     private void maybeTriggerXrIph(int tabCount) {
+        // LINT.IfChange(maybeTriggerXrIph)
         if (DeviceInfo.isXr() && tabCount >= XR_TAB_COUNT_IPH_TRIGGER) {
             mModel.set(ActionProperties.IPH_INTENT, TabSwitcherActionUtils.getXrIphIntent());
         }
+        // LINT.ThenChange(//chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/top/ToggleTabStackButtonCoordinator.java:maybeShowXrIph)
     }
 
     private void updateDependentProperties() {
