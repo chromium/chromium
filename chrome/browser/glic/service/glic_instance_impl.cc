@@ -576,10 +576,9 @@ GlicSharingManager& GlicInstanceImpl::sharing_manager() {
 }
 
 void GlicInstanceImpl::CloseInstanceAndShutdown() {
-  for (auto& observer : state_observers_) {
-    observer.OnInstanceDestroyed();
-  }
   VLOG(1) << "Glic [InstanceImpl] CloseInstanceAndShutdown, id=" << id_.value();
+  will_be_destroyed_callbacks_.Notify(this);
+
   if (actor_task_manager_) {
     // We have to do this here before the ActorKeyedService is shutdown.
     actor_task_manager_->CancelTask();
@@ -866,6 +865,11 @@ void GlicInstanceImpl::SetIdForRestoration(InstanceId id) {
 base::CallbackListSubscription GlicInstanceImpl::RegisterStateChange(
     StateChangeCallback callback) {
   return state_change_callback_list_.Add(std::move(callback));
+}
+
+base::CallbackListSubscription GlicInstanceImpl::RegisterWillBeDestroyed(
+    DestructionCallback callback) {
+  return will_be_destroyed_callbacks_.Add(std::move(callback));
 }
 
 void GlicInstanceImpl::BindTabForTesting(tabs::TabInterface* tab) {

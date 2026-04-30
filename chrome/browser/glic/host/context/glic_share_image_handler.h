@@ -44,8 +44,7 @@ class GlicKeyedService;
 
 // Manages the capturing of context images (i.e., images for which the user has
 // opened the context menu), and sending to the web client as additional data.
-class GlicShareImageHandler : public content::WebContentsObserver,
-                              public PanelStateObserver {
+class GlicShareImageHandler : public content::WebContentsObserver {
  public:
   explicit GlicShareImageHandler(GlicKeyedService& service);
   ~GlicShareImageHandler() override;
@@ -55,12 +54,10 @@ class GlicShareImageHandler : public content::WebContentsObserver,
                          content::RenderFrameHost* render_frame_host,
                          const GURL& src_url);
 
-  // PanelStateObserver implementation:
-  void PanelStateChanged(const mojom::PanelState& panel_state) override;
-  void OnInstanceDestroyed() override;
-
  private:
   friend class GlicShareImageHandlerTest;
+
+  void OnInstanceWillBeDestroyed(GlicInstance* instance);
 
   // content::WebContentsObserver.
   void DidFinishNavigation(
@@ -156,8 +153,7 @@ class GlicShareImageHandler : public content::WebContentsObserver,
   std::vector<uint8_t> thumbnail_data_;
   base::CallbackListSubscription will_discard_web_contents_subscription_;
   base::CallbackListSubscription will_detach_subscription_;
-  base::ScopedObservation<GlicInstance, PanelStateObserver>
-      instance_observation_{this};
+  base::CallbackListSubscription instance_destruction_subscription_;
   InstanceId instance_id_ = InstanceId::CreateNullId();
   bool instance_change_permitted_ = true;
 

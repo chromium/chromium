@@ -127,12 +127,6 @@ GlicInvokeHandler::GlicInvokeHandler(
       options_(std::move(options)),
       auto_submit_passkey_(auto_submit_passkey),
       completion_callback_(std::move(completion_callback)) {
-  if (tab_ && GlicInstanceHelper::From(tab_)) {
-    tab_destruction_subscription_ =
-        GlicInstanceHelper::From(tab_)->SubscribeToDestruction(
-            base::BindRepeating(&GlicInvokeHandler::OnTabClosed,
-                                weak_ptr_factory_.GetWeakPtr()));
-  }
   if (resolved_target.is_new && tab_ && tab_->GetContents() &&
       tab_->GetContents()->HasUncommittedNavigationInPrimaryMainFrame()) {
     // NOTE: This simple check won't do the right thing for chained navigations
@@ -140,6 +134,17 @@ GlicInvokeHandler::GlicInvokeHandler(
     // proceed, but then another navigation will start.
     should_wait_for_load_ = true;
   }
+
+  CHECK(tab_);
+
+  // As the handler holds a raw_ptr to GlicInstanceImpl and TabInterface, it
+  // must listen to destruction of both.
+  tab_destruction_subscription_ = tab_->RegisterWillDetach(base::BindRepeating(
+      &GlicInvokeHandler::OnTabWillDetach, weak_ptr_factory_.GetWeakPtr()));
+
+  instance_destruction_subscription_ = instance_->RegisterWillBeDestroyed(
+      base::BindOnce(&GlicInvokeHandler::OnInstanceWillBeDestroyed,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 GlicInvokeHandler::~GlicInvokeHandler() = default;
@@ -149,11 +154,6 @@ void GlicInvokeHandler::Invoke() {
                        base::BindOnce(&GlicInvokeHandler::OnError,
                                       weak_ptr_factory_.GetWeakPtr(),
                                       GlicInvokeError::kTimeout));
-
-  if (!tab_destruction_subscription_ || !tab_) {
-    OnError(GlicInvokeError::kInvalidTab);
-    return;
-  }
 
   if (!options_.tab_sharing.tabs_to_pin.empty()) {
     CHECK(options_.tab_sharing.pin_trigger != GlicPinTrigger::kUnknown);
@@ -172,17 +172,7 @@ void GlicInvokeHandler::Invoke() {
       *tab_, GlicPinTrigger::kInstanceCreation, options_.invocation_source);
 
   if (options_.fre_override != mojom::FreOverride::kUnspecified) {
-    if (RequiresOverrideIncompatibleFre()) {
-      OnError(GlicInvokeError::kInvalidConfiguration);
-      return;
-    }
-
     show_options.fre_override = options_.fre_override;
-  }
-
-  if (auto_submit_passkey_ && RequiresAutoSubmitIncompatibleFre()) {
-    OnError(GlicInvokeError::kInvalidConfiguration);
-    return;
   }
 
   tasks.push_back(
@@ -236,19 +226,16 @@ void GlicInvokeHandler::Invoke() {
                                    weak_ptr_factory_.GetWeakPtr()));
 }
 
-bool GlicInvokeHandler::RequiresAutoSubmitIncompatibleFre() const {
-  return false;
+void GlicInvokeHandler::OnTabWillDetach(
+    tabs::TabInterface* tab,
+    tabs::TabInterface::DetachReason reason) {
+  if (reason == tabs::TabInterface::DetachReason::kDelete) {
+    OnError(GlicInvokeError::kTabClosed);
+  }
 }
 
-bool GlicInvokeHandler::RequiresOverrideIncompatibleFre() const {
-  return false;
-}
-
-
-
-void GlicInvokeHandler::OnTabClosed(tabs::TabInterface* tab) {
-  tab_ = nullptr;
-  OnError(GlicInvokeError::kTabClosed);
+void GlicInvokeHandler::OnInstanceWillBeDestroyed(GlicInstance* instance) {
+  OnError(GlicInvokeError::kInstanceDestroyed);
 }
 
 void GlicInvokeHandler::OnSuccess() {
@@ -258,7 +245,8 @@ void GlicInvokeHandler::OnSuccess() {
   }
 
   if (options_.on_success) {
-    std::move(options_.on_success).Run();
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(options_.on_success));
   }
   if (completion_callback_) {
     std::move(completion_callback_).Run(&*instance_, this);
@@ -272,11 +260,12 @@ void GlicInvokeHandler::OnError(GlicInvokeError error) {
   }
 
   if (options_.on_error) {
-    std::move(options_.on_error).Run(error);
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(options_.on_error), error));
   }
-  if (completion_callback_) {
-    std::move(completion_callback_).Run(&*instance_, this);
-  }
+
+  // The completion callback deletes `this`.
+  std::move(completion_callback_).Run(&*instance_, this);
 }
 
 mojom::InvokeOptionsPtr GlicInvokeHandler::CreateMojoOptions() {

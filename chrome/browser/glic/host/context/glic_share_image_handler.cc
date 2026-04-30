@@ -169,14 +169,10 @@ void GlicShareImageHandler::DidFinishNavigation(
   }
 }
 
-void GlicShareImageHandler::PanelStateChanged(
-    const mojom::PanelState& panel_state) {}
-
-void GlicShareImageHandler::OnInstanceDestroyed() {
+void GlicShareImageHandler::OnInstanceWillBeDestroyed(GlicInstance* instance) {
   if (!instance_change_permitted_) {
     ShareComplete(ShareImageResult::kFailedLostInstance);
   }
-  instance_observation_.Reset();
 }
 
 void GlicShareImageHandler::OnWillDiscardContents(
@@ -510,11 +506,11 @@ std::optional<GlicInstance*> GlicShareImageHandler::GetAndVerifyInstance(
       return std::nullopt;
     }
     instance_id_ = id;
-    if (instance_observation_.GetSource() != instance) {
-      instance_observation_.Reset();
-      if (instance) {
-        instance_observation_.Observe(instance);
-      }
+    instance_destruction_subscription_ = {};
+    if (instance) {
+      instance_destruction_subscription_ = instance->RegisterWillBeDestroyed(
+          base::BindOnce(&GlicShareImageHandler::OnInstanceWillBeDestroyed,
+                         base::Unretained(this)));
     }
   }
   return instance;
@@ -588,7 +584,7 @@ void GlicShareImageHandler::Reset() {
   thumbnail_data_.clear();
   mime_type_ = "";
   StopObservingNavigation();
-  instance_observation_.Reset();
+  instance_destruction_subscription_ = {};
   instance_id_ = InstanceId::CreateNullId();
   instance_change_permitted_ = true;
   onboarding_timeout_timer_.Stop();

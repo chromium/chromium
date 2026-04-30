@@ -35,6 +35,10 @@ class MockGlicInstance : public GlicInstance {
               RegisterStateChange,
               (StateChangeCallback),
               (override));
+  MOCK_METHOD(base::CallbackListSubscription,
+              RegisterWillBeDestroyed,
+              (DestructionCallback),
+              (override));
   MOCK_METHOD(bool, IsShowing, (), (const, override));
   MOCK_METHOD(gfx::Size, GetPanelSize, (), (override));
   MOCK_METHOD(const InstanceId&, id, (), (const, override));

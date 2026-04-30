@@ -216,6 +216,7 @@ struct GlicInvokeOptions {
   bool wait_for_panel_open = false;
 
   // Browser-specific callback for when the invocation successfully completes.
+  // This is called asynchronously.
   base::OnceClosure on_success;
 
   // Browser-specific callback for when the web client connects (i.e., the
@@ -223,6 +224,7 @@ struct GlicInvokeOptions {
   base::OnceCallback<void(GlicInstance*)> on_client_connected;
 
   // Browser-specific callback for when the invocation fails.
+  // This is called asynchronously.
   base::OnceCallback<void(GlicInvokeError)> on_error;
 };
 

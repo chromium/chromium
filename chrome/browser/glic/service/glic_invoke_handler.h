@@ -19,13 +19,10 @@
 #include "chrome/browser/glic/public/glic_instance.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_passkeys.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents_observer.h"
 
 class Profile;
-
-namespace tabs {
-class TabInterface;
-}
 
 namespace glic {
 
@@ -49,6 +46,9 @@ class GlicInvokeHandler {
   static ResolvedTarget ResolveTargetSurface(Profile* profile,
                                              const Target& target);
 
+  // `tab` must be non-nullptr.
+  // `completion_callback` should be called exactly once and results in
+  // destruction of `this`.
   GlicInvokeHandler(
       GlicInstanceImpl& instance,
       ResolvedTarget resolved_target,
@@ -63,26 +63,30 @@ class GlicInvokeHandler {
   // Kicks off the invocation process.
   void Invoke();
 
-  // Ends the invocation process with the given error.
-  // May delete this.
-  void OnError(GlicInvokeError error);
 
  private:
   mojom::InvokeOptionsPtr CreateMojoOptions();
-  bool RequiresAutoSubmitIncompatibleFre() const;
-  bool RequiresOverrideIncompatibleFre() const;
 
-  // May delete this.
+  // Deletes `this`. Exactly one of these methods will be called.
   void OnSuccess();
-  void OnTabClosed(tabs::TabInterface* tab);
+  void OnError(GlicInvokeError error);
 
+  void OnTabWillDetach(tabs::TabInterface* tab,
+                       tabs::TabInterface::DetachReason reason);
+  void OnInstanceWillBeDestroyed(GlicInstance* instance);
+
+  // This class listens to destruction of both GlicInstanceImpl and TabInterface
+  // and is guaranteed to destroy itself first.
   const base::raw_ref<GlicInstanceImpl> instance_;
   raw_ptr<tabs::TabInterface> tab_;
   GlicInvokeOptions options_;
   std::optional<InvokeWithAutoSubmitPasskey> auto_submit_passkey_;
+
+  // Calling this synchronously destroys `this`.
   CompletionCallback completion_callback_;
 
   bool should_wait_for_load_ = false;
+  base::CallbackListSubscription instance_destruction_subscription_;
   base::CallbackListSubscription tab_destruction_subscription_;
   base::OneShotTimer timeout_timer_;
 

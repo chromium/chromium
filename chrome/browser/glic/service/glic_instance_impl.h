@@ -184,6 +184,11 @@ class GlicInstanceImpl : public GlicInstance,
       StateChangeCallback callback) override;
   void BindTabForTesting(tabs::TabInterface* tab) override;
 
+  // Called exactly once, right before the instance is destroyed.
+  using DestructionCallback = base::OnceCallback<void(GlicInstance*)>;
+  base::CallbackListSubscription RegisterWillBeDestroyed(
+      DestructionCallback callback) override;
+
   // Host::InstanceDelegate:
   // TODO: Currently, both GlicInstanceImpl and GlicKeyedService implement
   // Host::InstanceDelegate. The CreateTab function here should only return the
@@ -395,6 +400,8 @@ class GlicInstanceImpl : public GlicInstance,
   StateChangeCallbackList state_change_callback_list_;
 
   base::ObserverList<PanelStateObserver> state_observers_;
+
+  base::OnceCallbackList<void(GlicInstance*)> will_be_destroyed_callbacks_;
 
   raw_ptr<Profile> profile_;
   raw_ptr<GlicKeyedService> service_;

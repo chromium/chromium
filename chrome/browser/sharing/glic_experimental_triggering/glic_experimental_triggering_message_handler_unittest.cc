@@ -56,6 +56,10 @@ class FakeGlicInstance : public glic::GlicInstance {
       StateChangeCallback callback) override {
     return {};
   }
+  base::CallbackListSubscription RegisterWillBeDestroyed(
+      DestructionCallback callback) override {
+    return {};
+  }
   glic::Host& host() override { return *host_; }
   gfx::Size GetPanelSize() override { return {}; }
   const glic::InstanceId& id() const override { return id_; }

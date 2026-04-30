@@ -1332,7 +1332,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
 
   // The error should be either kInstanceDestroyed or kTabClosed, depending on
   // the order of destruction. The user expects it to cause instance deletion.
-  EXPECT_EQ(error_future.Get(), GlicInvokeError::kInstanceDestroyed);
+  EXPECT_EQ(error_future.Get(), GlicInvokeError::kTabClosed);
 }
 
 class GlicInstanceCoordinatorNonConnectingBrowserTest

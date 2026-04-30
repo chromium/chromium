@@ -56,7 +56,6 @@ struct ConversationInfo {
 class PanelStateObserver : public base::CheckedObserver {
  public:
   virtual void PanelStateChanged(const mojom::PanelState& panel_state) = 0;
-  virtual void OnInstanceDestroyed() {}
 };
 
 // Public interface for one instance of the glic web client.
@@ -81,6 +80,12 @@ class GlicInstance {
   using StateChangeCallback = base::RepeatingCallback<void(bool)>;
   virtual base::CallbackListSubscription RegisterStateChange(
       StateChangeCallback callback) = 0;
+
+  // TODO(b/501233062): Remove from the public interface once the existing
+  // user has migrated away from the API.
+  using DestructionCallback = base::OnceCallback<void(GlicInstance*)>;
+  virtual base::CallbackListSubscription RegisterWillBeDestroyed(
+      DestructionCallback callback) = 0;
 
   // Get this instance's Host which manages the chrome://glic WebContents.
   virtual Host& host() = 0;

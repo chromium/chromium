@@ -119,14 +119,9 @@ GlicInstanceCoordinatorImpl::GlicInstanceCoordinatorImpl(
 }
 
 GlicInstanceCoordinatorImpl::~GlicInstanceCoordinatorImpl() {
-  // Delete all open invoke handlers, first triggering error handling.
-  auto handlers = std::exchange(invoke_handlers_, {});
-  for (auto& [instance, handler] : handlers) {
-    // Will result in erase from invoke_handlers_, which is safe because we
-    // exchanged.
-    handler->OnError(GlicInvokeError::kInstanceDestroyed);
+  for (auto& [id, instance] : instances_) {
+    instance->CloseInstanceAndShutdown();
   }
-  handlers.clear();
 
   // Delete all instances before destruction. Destroying web contents can result
   // in various calls to dependencies.
@@ -691,12 +686,6 @@ void GlicInstanceCoordinatorImpl::ToggleSidePanel(
 }
 
 void GlicInstanceCoordinatorImpl::RemoveInstance(GlicInstanceImpl* instance) {
-  if (invoke_handlers_.contains(instance)) {
-    // OnError will trigger the completion callback which will remove the invoke
-    // handler from the map.
-    invoke_handlers_[instance]->OnError(GlicInvokeError::kInstanceDestroyed);
-  }
-
   if (!instances_.contains(instance->id())) {
     // This instance has already been removed, so there's no work to do.
     return;
@@ -707,11 +696,11 @@ void GlicInstanceCoordinatorImpl::RemoveInstance(GlicInstanceImpl* instance) {
   // not return the instance being deleted while it's being deleted.
   InstanceId id = instance->id();
   instance->CloseInstanceAndShutdown();
-  auto instance_value = std::exchange(instances_[id], {});
-  instances_.erase(id);
   if (instance == last_active_instance_) {
     last_active_instance_ = nullptr;
   }
+  auto instance_value = std::exchange(instances_[id], {});
+  instances_.erase(id);
 }
 
 void GlicInstanceCoordinatorImpl::SwitchConversation(
