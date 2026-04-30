@@ -55,6 +55,7 @@ void DisplayUtil::DisplayToScreenInfo(ScreenInfo* screen_info,
   screen_info->is_primary =
       screen && (screen->GetPrimaryDisplay().id() == display.id());
   screen_info->is_internal = display.IsInternal();
+  screen_info->display_frequency = display.display_frequency();
   screen_info->display_id = display.id();
   screen_info->label = display.label();
 }

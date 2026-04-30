@@ -67,7 +67,8 @@ void RecyclableCompositorMac::UpdateSurface(
     const gfx::Size& size_pixels,
     float scale_factor,
     const gfx::DisplayColorSpaces& display_color_spaces,
-    int64_t display_id) {
+    int64_t display_id,
+    bool refresh_rate_changed_on_same_display) {
   if (size_pixels != size_pixels_ || scale_factor != scale_factor_) {
     size_pixels_ = size_pixels;
     scale_factor_ = scale_factor;
@@ -79,6 +80,9 @@ void RecyclableCompositorMac::UpdateSurface(
   }
   compositor()->SetDisplayColorSpaces(display_color_spaces);
   compositor()->SetVSyncDisplayID(display_id);
+  if (refresh_rate_changed_on_same_display) {
+    compositor()->RefreshRateChangedOnSameDisplay();
+  }
 }
 
 void RecyclableCompositorMac::InvalidateSurface() {

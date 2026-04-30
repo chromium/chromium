@@ -181,8 +181,13 @@ DisplayMac BuildDisplayForScreen(NSScreen* screen) {
   }
   display.set_is_monochrome(CGDisplayUsesForceToGray());
 
-  // Query the display's refresh rate.
-  display.set_display_frequency(screen.maximumFramesPerSecond);
+  // Query the display's refresh rate. To get a float number such as 59.95Hz,
+  // use 1.0/screen.minimumRefreshInterval instead of
+  // screen.maximumFramesPerSecond, which is an integer.
+  float refresh_rate = (screen.minimumRefreshInterval > 0)
+                           ? (1.0 / screen.minimumRefreshInterval)
+                           : screen.maximumFramesPerSecond;
+  display.set_display_frequency(refresh_rate);
 
   // CGDisplayRotation returns a double. Display::SetRotationAsDegree will
   // handle the unexpected situations were the angle is not a multiple of 90.

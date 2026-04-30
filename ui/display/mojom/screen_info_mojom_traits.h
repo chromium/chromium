@@ -67,6 +67,10 @@ struct COMPONENT_EXPORT(DISPLAY_SHARED_MOJOM_TRAITS)
     return r.label;
   }
 
+  static float display_frequency(const display::ScreenInfo& r) {
+    return r.display_frequency;
+  }
+
   static int64_t display_id(const display::ScreenInfo& r) {
     return r.display_id;
   }

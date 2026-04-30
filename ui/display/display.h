@@ -69,6 +69,8 @@ class DISPLAY_EXPORT Display final {
     UNAVAILABLE,
   };
 
+  static constexpr float kRefreshRateEpsilon = 0.01f;
+
   // Creates a display with kInvalidDisplayId as default.
   Display();
   explicit Display(int64_t id);

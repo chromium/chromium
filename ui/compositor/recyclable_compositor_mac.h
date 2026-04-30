@@ -50,7 +50,8 @@ class COMPOSITOR_EXPORT RecyclableCompositorMac
   void UpdateSurface(const gfx::Size& size_pixels,
                      float scale_factor,
                      const gfx::DisplayColorSpaces& display_color_spaces,
-                     int64_t display_id);
+                     int64_t display_id,
+                     bool refresh_rate_changed_on_same_display);
 
  private:
   // Invalidate the compositor's surface information.

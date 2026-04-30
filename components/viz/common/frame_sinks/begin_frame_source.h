@@ -241,6 +241,9 @@ class VIZ_COMMON_EXPORT BeginFrameSource {
   // The browser initiates this call whenever a display is either added or
   // removed.
   virtual void UpdateVSyncDisplay() {}
+
+  // Notifies the display that the refresh rate has changed on the same display.
+  virtual void RefreshRateChangedOnSameDisplay() {}
 #endif
 
   virtual void SetUpdateVSyncParametersCallback(

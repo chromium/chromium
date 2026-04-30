@@ -587,6 +587,13 @@ void Compositor::SetVSyncDisplayID(const int64_t display_id) {
 int64_t Compositor::display_id() const {
   return display_id_;
 }
+
+void Compositor::RefreshRateChangedOnSameDisplay() {
+  if (display_private_) {
+    display_private_->RefreshRateChangedOnSameDisplay();
+  }
+}
+
 #endif
 
 void Compositor::SetDisplayTransformHint(gfx::OverlayTransform hint) {

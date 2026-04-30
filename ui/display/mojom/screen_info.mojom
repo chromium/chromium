@@ -64,6 +64,9 @@ struct ScreenInfo {
   // A user-friendly label for the screen, determined by the platform.
   string label;
 
+  // The display's refresh rate.
+  float display_frequency;
+
   // Not web-exposed; the display::Display::id(), for internal tracking only.
   int64 display_id;
 };

@@ -39,9 +39,10 @@ ScreenInfo& ScreenInfo::operator=(const ScreenInfo& other) = default;
 
 std::string ScreenInfo::ToString() const {
   return base::StringPrintf(
-      "ScreenInfo[%" PRId64 "] \"%s\" bounds=[%s] avail=[%s] scale=%g %s %s %s",
+      "ScreenInfo[%" PRId64
+      "] \"%s\" bounds=[%s] avail=[%s] scale=%g freq=%g %s %s %s",
       display_id, label.c_str(), rect.ToString().c_str(),
-      available_rect.ToString().c_str(), device_scale_factor,
+      available_rect.ToString().c_str(), device_scale_factor, display_frequency,
       ToOrientationString(orientation_type),
       is_internal ? "internal" : "external",
       is_primary ? "primary" : "secondary");

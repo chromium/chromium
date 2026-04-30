@@ -24,6 +24,7 @@
 #include "base/mac/mac_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/numerics/ranges.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -934,10 +935,21 @@ void RenderWidgetHostViewMac::UpdateScreenInfo() {
   // Update with the latest display list from the remote process if needed.
   bool current_display_changed = false;
   bool any_display_changed = false;
+  bool refresh_rate_changed_on_same_display = false;
   if (new_screen_infos_from_shim_.has_value()) {
     current_display_changed =
         new_screen_infos_from_shim_->current() != screen_infos_.current();
     any_display_changed = new_screen_infos_from_shim_.value() != screen_infos_;
+
+    if (new_screen_infos_from_shim_->current().display_id ==
+            screen_infos_.current().display_id &&
+        screen_infos_.current().display_frequency != 0 &&
+        !base::IsApproximatelyEqual(
+            new_screen_infos_from_shim_->current().display_frequency,
+            screen_infos_.current().display_frequency,
+            display::Display::kRefreshRateEpsilon)) {
+      refresh_rate_changed_on_same_display = true;
+    }
 
     screen_infos_ = new_screen_infos_from_shim_.value();
     original_screen_infos_ = screen_infos_;
@@ -951,9 +963,11 @@ void RenderWidgetHostViewMac::UpdateScreenInfo() {
   bool dip_size_changed = view_bounds_in_window_dip_.size() !=
                           browser_compositor_->GetRendererSize();
 
-  if (dip_size_changed || current_display_changed) {
+  if (dip_size_changed || current_display_changed ||
+      refresh_rate_changed_on_same_display) {
     browser_compositor_->UpdateSurfaceFromNSView(
-        view_bounds_in_window_dip_.size());
+        view_bounds_in_window_dip_.size(),
+        refresh_rate_changed_on_same_display);
   }
 
   // TODO(crbug.com/40165361): Unify display info caching and change detection.

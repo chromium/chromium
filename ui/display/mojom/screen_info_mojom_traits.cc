@@ -28,6 +28,7 @@ bool StructTraits<display::mojom::ScreenInfoDataView, display::ScreenInfo>::
   out->is_extended = data.is_extended();
   out->is_primary = data.is_primary();
   out->is_internal = data.is_internal();
+  out->display_frequency = data.display_frequency();
   out->display_id = data.display_id();
   return true;
 }

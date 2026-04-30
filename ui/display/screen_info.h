@@ -82,6 +82,9 @@ struct DISPLAY_EXPORT ScreenInfo {
   // A user-friendly label for the screen, determined by the platform.
   std::string label;
 
+  // The display's refresh rate.
+  float display_frequency = 0.f;
+
   // Not web-exposed; the display::Display::id(), for internal tracking only.
   int64_t display_id = kDefaultDisplayId;
 

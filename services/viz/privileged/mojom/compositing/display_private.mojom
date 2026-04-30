@@ -56,6 +56,10 @@ interface DisplayPrivate {
   [EnableIf=is_mac]
   SetVSyncDisplayID(int64 display_id);
 
+  // Notifies the display that the refresh rate has changed on the same display.
+  [EnableIf=is_mac]
+  RefreshRateChangedOnSameDisplay();
+
   // Updates vsync parameters used to generate BeginFrames for this display.
   // This will do nothing if the display is using an external BeginFrame source.
   SetDisplayVSyncParameters(

@@ -8,6 +8,7 @@
 
 #include <algorithm>
 
+#include "base/numerics/ranges.h"
 #include "base/observer_list.h"
 #include "build/buildflag.h"
 #include "ui/display/display.h"
@@ -76,6 +77,14 @@ void DisplayChangeNotifier::NotifyDisplaysChanged(
     if (new_it->GetColorSpaces() != old_it->GetColorSpaces()) {
       metrics |= DisplayObserver::DISPLAY_METRIC_COLOR_SPACE;
     }
+
+#if BUILDFLAG(IS_MAC)
+    if (!base::IsApproximatelyEqual(new_it->display_frequency(),
+                                    old_it->display_frequency(),
+                                    Display::kRefreshRateEpsilon)) {
+      metrics |= DisplayObserver::DISPLAY_METRIC_REFRESH_RATE;
+    }
+#endif
 
     if (metrics != DisplayObserver::DISPLAY_METRIC_NONE) {
       observer_list_.Notify(&DisplayObserver::OnDisplayMetricsChanged, *new_it,
