@@ -791,8 +791,15 @@ void GPMEnclaveController::OnKeysStored() {
     return;
   }
 
+  if (enclave_manager_->IsReady()) {
+    // This can happen if some other process made the enclave ready while the
+    // recovery screen was being shown. We have to start again as we don't know
+    // if we need to create a PIN or not.
+    RefreshStateAndRepeatOperation();
+    return;
+  }
+
   CHECK(enclave_manager_->has_pending_keys());
-  CHECK(!enclave_manager_->IsReady());
   store_keys_lock_.reset();
 
   if ((pin_metadata_.has_value() && pin_metadata_->usable_pin_metadata) ||
