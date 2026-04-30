@@ -439,9 +439,7 @@ bool ImeAdapterAndroid::InsertMediaFromBytes(
 
   input_handler->PasteFromImageBytes(
       std::move(big_buffer),
-      base::android::ConvertJavaStringToUTF8(env, extension),
-      base::BindOnce(&ImeAdapterAndroid::OnPasteFromImageBytesCompleted,
-                     weak_factory_.GetWeakPtr()));
+      base::android::ConvertJavaStringToUTF8(env, extension));
   return true;
 }
 
@@ -725,14 +723,6 @@ void ImeAdapterAndroid::ClearAllAutocorrectUnderlineSpans(JNIEnv* env) {
   input_handler->ClearImeTextSpansByType(0,
                                          std::numeric_limits<uint32_t>::max(),
                                          ui::ImeTextSpan::Type::kAutocorrect);
-}
-
-void ImeAdapterAndroid::OnPasteFromImageBytesCompleted(bool success) {
-  JNIEnv* env = AttachCurrentThread();
-  base::android::ScopedJavaLocalRef<jobject> obj = GetJavaObject(env);
-  if (!obj.is_null()) {
-    Java_ImeAdapterImpl_onCommitContentResult(env, obj, success);
-  }
 }
 
 }  // namespace content

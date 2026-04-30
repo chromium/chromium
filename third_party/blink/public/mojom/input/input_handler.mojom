@@ -376,7 +376,7 @@ interface FrameWidgetInputHandler {
   // Dispatches a paste event with the given image bytes and file extension to
   // the currently focused frame. |image_bytes| should be non-empty.
   PasteFromImageBytes(mojo_base.mojom.BigBuffer image_bytes,
-                      string media_format) => (bool success);
+                      string media_format);
 
   Delete();
 

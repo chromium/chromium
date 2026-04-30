@@ -269,9 +269,6 @@
       <message name="IDS_DATE_PICKER_DIALOG_CLEAR" desc="Label for 'clear' button in date picker dialog and time picker dialog, used to replace the contents of a field with the empty string [CHAR_LIMIT=12]">
         Clear
       </message>
-      <message name="IDS_RICH_CONTENT_COMMIT_FAILURE_MESSAGE" desc="Toast message shown when rich content insertion into a text field (e.g., through a keyboard) fails.">
-        Couldn’t insert image
-      </message>
       <message name="IDS_SPEECH_RECOGNITION_SERVICE_NOT_FOUND" desc="Toast message notifying Google speech service can't be found.">
         Google speech engine can't be found
       </message>

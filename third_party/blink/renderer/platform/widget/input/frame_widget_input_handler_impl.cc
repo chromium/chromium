@@ -267,36 +267,18 @@ void FrameWidgetInputHandlerImpl::PasteAndMatchStyle() {
 
 void FrameWidgetInputHandlerImpl::PasteFromImageBytes(
     mojo_base::BigBuffer image_bytes,
-    const String& media_format,
-    PasteFromImageBytesCallback callback) {
-  // If the mojom channel is registered with compositor thread, we have to run
-  // the callback on compositor thread. Otherwise run it on main thread. Mojom
-  // requires the callback runs on the same thread.
-  if (ThreadedCompositingEnabled()) {
-    callback = base::BindOnce(
-        [](scoped_refptr<base::SingleThreadTaskRunner> callback_task_runner,
-           PasteFromImageBytesCallback callback, bool success) {
-          callback_task_runner->PostTask(
-              FROM_HERE, base::BindOnce(std::move(callback), success));
-        },
-        base::SingleThreadTaskRunner::GetCurrentDefault(), std::move(callback));
-  }
-
+    const String& media_format) {
   RunOnMainThread(base::BindOnce(
       [](base::WeakPtr<WidgetBase> widget,
          base::WeakPtr<mojom::blink::FrameWidgetInputHandler> handler,
-         mojo_base::BigBuffer image_bytes, const String& media_format,
-         PasteFromImageBytesCallback callback) {
+         mojo_base::BigBuffer image_bytes, const String& media_format) {
         if (handler) {
           HandlingState handling_state(widget, UpdateState::kIsPasting);
-          handler->PasteFromImageBytes(std::move(image_bytes), media_format,
-                                       std::move(callback));
-        } else {
-          std::move(callback).Run(false);
+          handler->PasteFromImageBytes(std::move(image_bytes), media_format);
         }
       },
       widget_, main_thread_frame_widget_input_handler_, std::move(image_bytes),
-      media_format, std::move(callback)));
+      media_format));
 }
 
 void FrameWidgetInputHandlerImpl::Replace(const String& word) {

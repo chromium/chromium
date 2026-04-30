@@ -147,7 +147,6 @@ class CONTENT_EXPORT ImeAdapterAndroid : public RenderWidgetHostConnector {
       const base::android::JavaRef<jobject>& obj,
       const base::android::JavaRef<jobject>& text,
       const std::u16string& text16);
-  void OnPasteFromImageBytesCompleted(bool success);
 
   gfx::SizeF old_viewport_size_;
 

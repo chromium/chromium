@@ -25,11 +25,9 @@ import android.text.style.SuggestionSpan;
 import android.view.KeyEvent;
 import android.view.ViewGroup;
 import android.view.inputmethod.CorrectionInfo;
-import android.widget.TextView;
 
 import androidx.test.core.app.ApplicationProvider;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -40,15 +38,12 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.stubbing.Answer;
-import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowToast;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.blink.mojom.EventType;
 import org.chromium.blink_public.web.WebInputEventModifier;
-import org.chromium.content.R;
 import org.chromium.content.browser.webcontents.WebContentsImpl;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.ImeEventObserver;
@@ -60,7 +55,6 @@ import org.chromium.ui.test.util.TestViewAndroidDelegate;
 
 /** Unit tests for {@link ImeAdapterImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(shadows = {ShadowToast.class})
 @DisableFeatures({
     ContentFeatures.ANDROID_PK_AUTOCORRECT_UNDERLINE,
     ContentFeatures.ANDROID_PK_AUTOCORRECT_UNDERLINE_V2,
@@ -95,11 +89,6 @@ public class ImeAdapterImplUnitTest {
                 .thenReturn(ApplicationProvider.getApplicationContext().getResources());
         when(mWebContentsImpl.getViewAndroidDelegate())
                 .thenReturn(new TestViewAndroidDelegate(mContainerView));
-    }
-
-    @After
-    public void tearDown() {
-        ShadowToast.reset();
     }
 
     @Test
@@ -281,62 +270,27 @@ public class ImeAdapterImplUnitTest {
     }
 
     @Test
-    public void testCommitContentSuccessfully() {
+    public void testCommitContent() {
         when(mImeAdapterImplJni.insertMediaFromBytes(anyLong(), any(), any())).thenReturn(true);
 
         ImeAdapterImpl adapter = new ImeAdapterImpl(mWebContentsImpl);
         adapter.onConnectedToRenderProcess();
 
-        adapter.commitContent(/* bytes= */ new byte[] {1, 2, 3}, /* extension= */ "png");
+        Assert.assertTrue(
+                adapter.commitContent(/* bytes= */ new byte[] {1, 2, 3}, /* extension= */ "png"));
 
         verify(mImeAdapterImplJni)
                 .insertMediaFromBytes(anyLong(), eq(new byte[] {1, 2, 3}), eq("png"));
-        Assert.assertNull(ShadowToast.getLatestToast());
     }
 
     @Test
-    public void testCommitContent_FailureShowsToast() {
+    public void testCommitContent_Failure() {
         when(mImeAdapterImplJni.insertMediaFromBytes(anyLong(), any(), any())).thenReturn(false);
 
         ImeAdapterImpl adapter = new ImeAdapterImpl(mWebContentsImpl);
         adapter.onConnectedToRenderProcess();
 
-        ShadowToast.reset();
         Assert.assertFalse(adapter.commitContent(new byte[] {1, 2, 3}, "png"));
-
-        Assert.assertNotNull(ShadowToast.getLatestToast());
-        TextView textView = (TextView) ShadowToast.getLatestToast().getView();
-        Assert.assertEquals(
-                ApplicationProvider.getApplicationContext()
-                        .getString(R.string.rich_content_commit_failure_message),
-                textView.getText().toString());
-    }
-
-    @Test
-    public void testOnCommitContentResult_SuccessNoToast() {
-        ImeAdapterImpl adapter = new ImeAdapterImpl(mWebContentsImpl);
-        adapter.onConnectedToRenderProcess();
-
-        ShadowToast.reset();
-        adapter.onCommitContentResult(true);
-
-        Assert.assertNull(ShadowToast.getLatestToast());
-    }
-
-    @Test
-    public void testOnCommitContentResult_FailureShowsToast() {
-        ImeAdapterImpl adapter = new ImeAdapterImpl(mWebContentsImpl);
-        adapter.onConnectedToRenderProcess();
-
-        ShadowToast.reset();
-        adapter.onCommitContentResult(false);
-
-        Assert.assertNotNull(ShadowToast.getLatestToast());
-        TextView textView = (TextView) ShadowToast.getLatestToast().getView();
-        Assert.assertEquals(
-                ApplicationProvider.getApplicationContext()
-                        .getString(R.string.rich_content_commit_failure_message),
-                textView.getText().toString());
     }
 
     @Test
