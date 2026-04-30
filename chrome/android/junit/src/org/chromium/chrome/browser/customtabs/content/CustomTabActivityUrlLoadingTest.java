@@ -70,8 +70,8 @@ public class CustomTabActivityUrlLoadingTest {
         UserPrefsJni.setInstanceForTesting(mMockUserPrefsJni);
         doReturn(mock(PrefService.class)).when(mMockUserPrefsJni).get(any());
 
-        doReturn(true).when(mIntentHandlerNativeMock).validateUrl(eq(new GURL(INITIAL_URL)));
-        doReturn(true).when(mIntentHandlerNativeMock).validateUrl(eq(new GURL(OTHER_URL)));
+        doReturn(true).when(mIntentHandlerNativeMock).validateLaunchUrl(eq(new GURL(INITIAL_URL)));
+        doReturn(true).when(mIntentHandlerNativeMock).validateLaunchUrl(eq(new GURL(OTHER_URL)));
         IntentHandlerJni.setInstanceForTesting(mIntentHandlerNativeMock);
 
         // Ensure the test can read the Autofill pref. Assume it's turned off by default.

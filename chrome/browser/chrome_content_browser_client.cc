@@ -7100,7 +7100,7 @@ bool ChromeContentBrowserClient::HandleExternalProtocol(
   // This avoids launching a new browser instance via the OS handler.
   if (std::optional<GURL> new_url =
           startup::ExtractGoogleChromeSchemeInnerUrl(url)) {
-    if (startup::ValidateUrl(*new_url)) {
+    if (startup::ValidateLaunchUrl(*new_url)) {
       auto* web_contents = web_contents_getter.Run();
       if (web_contents) {
         content::OpenURLParams params(

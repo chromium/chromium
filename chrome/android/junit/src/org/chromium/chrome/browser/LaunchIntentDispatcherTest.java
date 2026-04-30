@@ -55,7 +55,7 @@ public class LaunchIntentDispatcherTest {
     public void setUp() {
         doReturn(true)
                 .when(mIntentHandlerNativeMock)
-                .validateUrl(eq(new GURL("https://example.com")));
+                .validateLaunchUrl(eq(new GURL("https://example.com")));
         IntentHandlerJni.setInstanceForTesting(mIntentHandlerNativeMock);
 
         mActivity = Robolectric.buildActivity(Activity.class).get();

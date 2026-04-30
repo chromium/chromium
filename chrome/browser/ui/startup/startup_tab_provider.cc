@@ -338,7 +338,7 @@ StartupTabProviderImpl::ParseTabFromCommandLineArg(
       url = url_formatter::FixupRelativeFile(cur_dir, arg_path);
     }
 
-    if (startup::ValidateUrl(url)) {
+    if (startup::ValidateLaunchUrl(url)) {
       return {CommandLineTabsPresent::kYes, std::move(url)};
     }
   }

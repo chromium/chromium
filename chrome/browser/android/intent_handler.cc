@@ -23,9 +23,9 @@ static bool JNI_IntentHandler_IsCorsSafelistedHeader(
   return network::cors::IsCorsSafelistedHeader(header_name, header_value);
 }
 
-static bool JNI_IntentHandler_ValidateUrl(JNIEnv* env,
-                                          const JavaRef<jobject>& url) {
-  return startup::ValidateUrl(url::GURLAndroid::ToNativeGURL(env, url));
+static bool JNI_IntentHandler_ValidateLaunchUrl(JNIEnv* env,
+                                                const JavaRef<jobject>& url) {
+  return startup::ValidateLaunchUrl(url::GURLAndroid::ToNativeGURL(env, url));
 }
 
 }  // namespace android

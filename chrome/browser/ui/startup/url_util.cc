@@ -19,7 +19,7 @@
 
 namespace startup {
 
-bool ValidateUrl(const GURL& url) {
+bool ValidateLaunchUrl(const GURL& url) {
   if (!url.is_valid()) {
     return false;
   }

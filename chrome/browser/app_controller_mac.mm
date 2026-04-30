@@ -456,7 +456,7 @@ void OpenUrlsInBrowser(std::vector<GURL> urls) {
                   continue;
                 }
                 bool is_shortcut_url_valid =
-                    startup::ValidateUrl(shortcut->target_url());
+                    startup::ValidateLaunchUrl(shortcut->target_url());
         // Do not allow chrome sensitive urls to be launched from a .crwebloc
         // file.
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -1994,7 +1994,7 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
     base::FilePath::StringViewType urlStringView = urlString;
     if (startup::StripGoogleChromeScheme(urlStringView)) {
       GURL gurl(urlStringView);
-      if (startup::ValidateUrl(gurl)) {
+      if (startup::ValidateLaunchUrl(gurl)) {
         gurlVector.push_back(gurl);
       }
     } else {

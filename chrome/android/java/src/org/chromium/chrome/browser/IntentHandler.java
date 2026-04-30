@@ -1077,9 +1077,9 @@ public class IntentHandler {
                         || intent.hasCategory(Intent.CATEGORY_DEFAULT)
                         || intent.getCategories() == null)) {
             // The native library may be uninitialized at this point. Ensure it's initialized before
-            // calling a native function validateUrl().
+            // calling a native function validateLaunchUrl().
             LibraryLoader.getInstance().ensureInitialized();
-            if (!IntentHandlerJni.get().validateUrl(new GURL(url))) {
+            if (!IntentHandlerJni.get().validateLaunchUrl(new GURL(url))) {
                 // Allow certain "safe" internal URLs to be launched by external
                 // applications.
                 assumeNonNull(url);
@@ -1944,6 +1944,6 @@ public class IntentHandler {
                 @JniType("std::string") String name,
                 @JniType("std::string") @Nullable String value);
 
-        boolean validateUrl(GURL rul);
+        boolean validateLaunchUrl(GURL rul);
     }
 }

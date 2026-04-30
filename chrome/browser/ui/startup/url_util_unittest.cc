@@ -10,29 +10,31 @@
 
 namespace startup {
 
-TEST(UrlUtilTest, ValidateUrl) {
-  EXPECT_TRUE(ValidateUrl(GURL("http://google.com")));
-  EXPECT_TRUE(ValidateUrl(GURL("https://google.com")));
-  EXPECT_TRUE(ValidateUrl(GURL("file:///tmp/test")));
-  EXPECT_TRUE(ValidateUrl(GURL("about:blank")));
+TEST(UrlUtilTest, ValidateLaunchUrl) {
+  EXPECT_TRUE(ValidateLaunchUrl(GURL("http://google.com")));
+  EXPECT_TRUE(ValidateLaunchUrl(GURL("https://google.com")));
+  EXPECT_TRUE(ValidateLaunchUrl(GURL("file:///tmp/test")));
+  EXPECT_TRUE(ValidateLaunchUrl(GURL("about:blank")));
 
   // chrome:// settings
 #if BUILDFLAG(IS_CHROMEOS)
-  EXPECT_TRUE(ValidateUrl(GURL("chrome://settings")));
+  EXPECT_TRUE(ValidateLaunchUrl(GURL("chrome://settings")));
 #else
-  EXPECT_FALSE(ValidateUrl(GURL("chrome://settings")));
+  EXPECT_FALSE(ValidateLaunchUrl(GURL("chrome://settings")));
 #endif
 
   // javascript
-  EXPECT_FALSE(ValidateUrl(GURL("javascript:alert(1)")));
+  EXPECT_FALSE(ValidateLaunchUrl(GURL("javascript:alert(1)")));
 
   // Invalid GURL
-  EXPECT_FALSE(ValidateUrl(GURL("")));
+  EXPECT_FALSE(ValidateLaunchUrl(GURL("")));
 
 #if BUILDFLAG(IS_ANDROID)
-  EXPECT_TRUE(ValidateUrl(GURL("content://packagename.providername/path")));
+  EXPECT_TRUE(
+      ValidateLaunchUrl(GURL("content://packagename.providername/path")));
 #else
-  EXPECT_FALSE(ValidateUrl(GURL("content://packagename.providername/path")));
+  EXPECT_FALSE(
+      ValidateLaunchUrl(GURL("content://packagename.providername/path")));
 #endif
 }
 

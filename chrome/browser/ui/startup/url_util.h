@@ -12,7 +12,7 @@ namespace startup {
 // Validates the URL whether it is allowed to be opened at launching.
 // Dangerous schemes are excluded to prevent untrusted external applications
 // from opening them.
-bool ValidateUrl(const GURL& url);
+bool ValidateLaunchUrl(const GURL& url);
 
 }  // namespace startup
 

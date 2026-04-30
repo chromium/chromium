@@ -240,7 +240,7 @@ public class IntentHandlerRobolectricTest {
         // To allow use of Origin.
         LibraryLoader.getInstance().ensureMainDexInitialized();
 
-        lenient().doReturn(true).when(mNativeMock).validateUrl(eq(new GURL(GOOGLE_URL)));
+        lenient().doReturn(true).when(mNativeMock).validateLaunchUrl(eq(new GURL(GOOGLE_URL)));
         IntentHandlerJni.setInstanceForTesting(mNativeMock);
 
         IntentHandler.setTestIntentsEnabled(false);
