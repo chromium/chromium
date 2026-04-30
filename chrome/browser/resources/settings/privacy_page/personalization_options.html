@@ -68,26 +68,30 @@
 <if expr="_google_chrome">
 <if expr="is_chromeos">
     <!-- Ash Browser settings show a link to the OS settings instead. -->
-    <cr-link-row id="metricsReportingLink" class="hr"
-        label="$i18n{enablePersonalizationLogging}"
-        sub-label="$i18n{enablePersonalizationLoggingDesc}"
-        on-click="onMetricsReportingLinkClick_" external>
-    </cr-link-row>
+    <template is="dom-if" if="[[!shouldUseMetricsConsentRestructure_]]">
+      <cr-link-row id="metricsReportingLink" class="hr"
+          label="$i18n{enablePersonalizationLogging}"
+          sub-label="$i18n{enablePersonalizationLoggingDesc}"
+          on-click="onMetricsReportingLinkClick_" external>
+      </cr-link-row>
+    </template>
 </if><!-- chromeos -->
 <if expr="not is_chromeos">
-    <settings-toggle-button id="metricsReportingControl"
-        class="hr"
-        pref="[[metricsReportingPref_]]"
-        label="$i18n{enablePersonalizationLogging}"
-        sub-label="$i18n{enablePersonalizationLoggingDesc}" no-set-pref
-        on-settings-boolean-control-change="onMetricsReportingChange_">
-      <template is="dom-if" if="[[showRestart_]]" restamp>
-        <cr-button on-click="onRestartClick_" id="restart"
-            slot="more-actions">
-          $i18n{restart}
-        </cr-button>
-      </template>
-    </settings-toggle-button>
+    <template is="dom-if" if="[[!shouldUseMetricsConsentRestructure_]]">
+      <settings-toggle-button id="metricsReportingControl"
+          class="hr"
+          pref="[[metricsReportingPref_]]"
+          label="$i18n{enablePersonalizationLogging}"
+          sub-label="$i18n{enablePersonalizationLoggingDesc}" no-set-pref
+          on-settings-boolean-control-change="onMetricsReportingChange_">
+        <template is="dom-if" if="[[showRestart_]]" restamp>
+          <cr-button on-click="onRestartClick_" id="restart"
+              slot="more-actions">
+            $i18n{restart}
+          </cr-button>
+        </template>
+      </settings-toggle-button>
+    </template>
 </if><!-- not chromeos -->
 </if><!-- _google_chrome -->
     <settings-toggle-button id="urlCollectionToggle"

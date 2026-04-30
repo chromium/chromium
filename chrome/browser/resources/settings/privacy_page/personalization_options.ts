@@ -29,7 +29,6 @@ import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 // </if>
 // </if>
 
-import type {CrLinkRowElement} from '//resources/cr_elements/cr_link_row/cr_link_row.js';
 import type {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
 import {WebUiListenerMixin} from '//resources/cr_elements/web_ui_listener_mixin.js';
 import {assert} from '//resources/js/assert.js';
@@ -55,8 +54,6 @@ export interface SettingsPersonalizationOptionsElement {
   $: {
     toast: CrToastElement,
     signinAllowedToggle: SettingsToggleButtonElement,
-    metricsReportingControl: SettingsToggleButtonElement,
-    metricsReportingLink: CrLinkRowElement,
     urlCollectionToggle: SettingsToggleButtonElement,
     chromeSigninUserChoiceSelection: HTMLSelectElement,
     chromeSigninUserChoiceToast: CrToastElement,
@@ -119,6 +116,12 @@ export class SettingsPersonalizationOptionsElement extends
 
       showSignoutDialog_: Boolean,
 
+      shouldUseMetricsConsentRestructure_: {
+        type: Boolean,
+        value: () =>
+            loadTimeData.getBoolean('shouldUseMetricsConsentRestructure'),
+      },
+
       syncFirstSetupInProgress_: {
         type: Boolean,
         value: false,
@@ -159,6 +162,7 @@ export class SettingsPersonalizationOptionsElement extends
 
   declare private showSignoutDialog_: boolean;
   declare private syncFirstSetupInProgress_: boolean;
+  declare private shouldUseMetricsConsentRestructure_: boolean;
 
   // <if expr="not is_chromeos">
   declare private signinAvailable_: boolean;
@@ -237,7 +241,9 @@ export class SettingsPersonalizationOptionsElement extends
 
   // <if expr="_google_chrome and not is_chromeos">
   private onMetricsReportingChange_() {
-    const enabled = this.$.metricsReportingControl.checked;
+    const control = this.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+        '#metricsReportingControl');
+    const enabled = control?.checked ?? false;
     this.browserProxy_.setMetricsReportingEnabled(enabled);
   }
 

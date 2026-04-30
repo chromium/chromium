@@ -115,6 +115,7 @@
 #include "components/contextual_tasks/public/features.h"
 #include "components/favicon_base/favicon_url_parser.h"
 #include "components/history/core/browser/features.h"
+#include "components/metrics/metrics_reporting_choice_service.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/performance_manager/public/features.h"
@@ -301,6 +302,12 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   html_source->AddBoolean("signinAllowed", !profile->IsGuestSession() &&
                                                profile->GetPrefs()->GetBoolean(
                                                    prefs::kSigninAllowed));
+
+  html_source->AddBoolean(
+      "shouldUseMetricsConsentRestructure",
+      metrics::MetricsReportingChoiceService::
+          ShouldUseMetricsConsentRestructure(g_browser_process->local_state()));
+
   ProfileAttributesEntry* entry =
       g_browser_process->profile_manager()
           ->GetProfileAttributesStorage()

@@ -329,7 +329,13 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, MAYBE_SettingsMain) {
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(SettingsTest, MetricsReporting) {
-  RunTest("settings/metrics_reporting_test.js", "mocha.run()");
+  RunTest("settings/metrics_reporting_test.js",
+          "runMochaSuite('MetricsReporting')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsTest, MetricsConsentRestructureDisabled) {
+  RunTest("settings/metrics_reporting_test.js",
+          "runMochaSuite('MetricsConsentRestructureDisabled')");
 }
 #endif
 

@@ -7,25 +7,51 @@ import 'chrome://settings/lazy_load.js';
 
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import type {SettingsPersonalizationOptionsElement} from 'chrome://settings/lazy_load.js';
-import {PrivacyPageBrowserProxyImpl} from 'chrome://settings/settings.js';
+import type {SettingsPersonalizationOptionsElement, SettingsToggleButtonElement} from 'chrome://settings/lazy_load.js';
+import {loadTimeData, PrivacyPageBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {isChildVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestPrivacyPageBrowserProxy} from './test_privacy_page_browser_proxy.js';
 
 // clang-format on
 
-suite('metrics reporting', function() {
+suite('MetricsReporting', function() {
   let testBrowserProxy: TestPrivacyPageBrowserProxy;
   let page: SettingsPersonalizationOptionsElement;
 
   setup(function() {
+    loadTimeData.overrideValues({shouldUseMetricsConsentRestructure: true});
     testBrowserProxy = new TestPrivacyPageBrowserProxy();
     PrivacyPageBrowserProxyImpl.setInstance(testBrowserProxy);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     page = document.createElement('settings-personalization-options');
     document.body.appendChild(page);
+  });
+
+  teardown(function() {
+    page.remove();
+  });
+
+  test('hidden when metrics consent restructure is enabled', async function() {
+    await flushTasks();
+    assertFalse(isChildVisible(page, '#metricsReportingControl'));
+  });
+});
+
+suite('MetricsConsentRestructureDisabled', function() {
+  let testBrowserProxy: TestPrivacyPageBrowserProxy;
+  let page: SettingsPersonalizationOptionsElement;
+
+  setup(async function() {
+    loadTimeData.overrideValues({shouldUseMetricsConsentRestructure: false});
+    testBrowserProxy = new TestPrivacyPageBrowserProxy();
+    PrivacyPageBrowserProxyImpl.setInstance(testBrowserProxy);
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    page = document.createElement('settings-personalization-options');
+    document.body.appendChild(page);
+    await flushTasks();
   });
 
   teardown(function() {
@@ -38,7 +64,10 @@ suite('metrics reporting', function() {
         await testBrowserProxy.whenCalled('getMetricsReporting');
         await flushTasks();
 
-        const control = page.$.metricsReportingControl;
+        const control =
+            page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+                '#metricsReportingControl');
+        assertTrue(!!control);
         assertEquals(
             testBrowserProxy.metricsReporting.enabled, control.checked);
         assertEquals(
