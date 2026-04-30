@@ -5,9 +5,14 @@
 #include "chrome/browser/metrics/perf/windowed_incognito_observer.h"
 
 #include "base/test/bind.h"
-#include "chrome/test/base/test_browser_window.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/global_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
+#include "chrome/browser/ui/browser_window/test/fake_global_browser_collection.h"
+#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace metrics {
@@ -46,13 +51,41 @@ class TestWindowedIncognitoMonitor : public WindowedIncognitoMonitor {
 
 }  // namespace
 
+class GlobalFeaturesFake : public GlobalFeatures {
+ public:
+  GlobalFeaturesFake() = default;
+
+ protected:
+  std::unique_ptr<GlobalBrowserCollection> CreateGlobalBrowserCollection()
+      override {
+    return std::make_unique<FakeGlobalBrowserCollection>();
+  }
+};
+
+std::unique_ptr<GlobalFeatures> CreateGlobalFeatures() {
+  return std::make_unique<GlobalFeaturesFake>();
+}
+
 class WindowedIncognitoMonitorTest : public testing::Test {
  public:
-  WindowedIncognitoMonitorTest() = default;
+  WindowedIncognitoMonitorTest() {
+    GlobalFeatures::ReplaceGlobalFeaturesForTesting(
+        base::BindRepeating(&CreateGlobalFeatures));
+  }
+
+  ~WindowedIncognitoMonitorTest() override {
+    GlobalFeatures::ReplaceGlobalFeaturesForTesting(
+        GlobalFeatures::GlobalFeaturesFactory());
+  }
 
   WindowedIncognitoMonitorTest(const WindowedIncognitoMonitorTest&) = delete;
   WindowedIncognitoMonitorTest& operator=(const WindowedIncognitoMonitorTest&) =
       delete;
+
+  FakeGlobalBrowserCollection* GetFakeCollection() {
+    return static_cast<FakeGlobalBrowserCollection*>(
+        g_browser_process->GetFeatures()->global_browser_collection());
+  }
 
   void SetUp() override {
     // Instantiate a testing profile.
@@ -67,17 +100,20 @@ class WindowedIncognitoMonitorTest : public testing::Test {
   }
 
   size_t OpenBrowserWindow(bool incognito) {
-    auto browser_window = std::make_unique<TestBrowserWindow>();
+    auto browser_window =
+        std::make_unique<testing::NiceMock<MockBrowserWindowInterface>>();
     Profile* browser_profile =
         incognito ? profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true)
                   : profile_.get();
-    Browser::CreateParams params(browser_profile, true);
-    params.type = Browser::TYPE_NORMAL;
-    params.window = browser_window.release();
-    auto browser = Browser::DeprecatedCreateOwnedForTesting(params);
+
+    ON_CALL(*browser_window, GetProfile())
+        .WillByDefault(testing::Return(browser_profile));
+
+    // Simulate browser creation event directly.
+    GetFakeCollection()->SimulateBrowserCreated(browser_window.get());
 
     size_t handle = next_browser_id++;
-    open_browsers_[handle] = std::move(browser);
+    open_browsers_[handle] = std::move(browser_window);
     return handle;
   }
 
@@ -85,6 +121,10 @@ class WindowedIncognitoMonitorTest : public testing::Test {
   void CloseBrowserWindow(size_t handle) {
     auto it = open_browsers_.find(handle);
     ASSERT_FALSE(it == open_browsers_.end());
+
+    // Simulate browser closed event directly.
+    GetFakeCollection()->SimulateBrowserClosed(it->second.get());
+
     open_browsers_.erase(it);
   }
 
@@ -95,7 +135,10 @@ class WindowedIncognitoMonitorTest : public testing::Test {
   std::unique_ptr<TestingProfile> profile_;
 
   // Keep track of the open browsers.
-  std::unordered_map<size_t, std::unique_ptr<Browser>> open_browsers_;
+  std::unordered_map<
+      size_t,
+      std::unique_ptr<testing::NiceMock<MockBrowserWindowInterface>>>
+      open_browsers_;
   static size_t next_browser_id;
 
   std::unique_ptr<TestWindowedIncognitoMonitor> incognito_monitor_;
