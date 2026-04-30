@@ -3209,6 +3209,9 @@ ci.builder(
         ],
         per_test_modifications = {
             "android_browsertests": targets.mixin(
+                # TODO Re-enable on CQ once the high
+                # pending time is gone
+                ci_only = True,
                 swarming = targets.swarming(
                     shards = 7,
                 ),
