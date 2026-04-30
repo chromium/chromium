@@ -5,7 +5,9 @@
 #include "components/history/core/browser/url_row.h"
 
 #include <algorithm>
+#include <string_view>
 
+#include "base/containers/span.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/memory_usage_estimator.h"
@@ -51,8 +53,8 @@ VisitContentModelAnnotations::Category::Category() = default;
 
 // static
 std::optional<VisitContentModelAnnotations::Category>
-VisitContentModelAnnotations::Category::FromStringVector(
-    const std::vector<std::string>& vector) {
+VisitContentModelAnnotations::Category::FromStringViewVector(
+    base::span<const std::string_view> vector) {
   if (vector.size() != 2)
     return std::nullopt;
 

@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/logging.h"
@@ -1488,14 +1489,15 @@ VisitAnnotationsDatabase::GetCategoriesFromStringColumn(
     std::string_view column_value) {
   std::vector<VisitContentModelAnnotations::Category> categories;
 
-  std::vector<std::string> category_strings = base::SplitString(
+  std::vector<std::string_view> category_strings = base::SplitStringPiece(
       column_value, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  for (const auto& category_string : category_strings) {
-    std::vector<std::string> category_parts = base::SplitString(
+  for (std::string_view category_string : category_strings) {
+    std::vector<std::string_view> category_parts = base::SplitStringPiece(
         category_string, ":", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
-    auto category = VisitContentModelAnnotations::Category::FromStringVector(
-        category_parts);
+    auto category =
+        VisitContentModelAnnotations::Category::FromStringViewVector(
+            category_parts);
     if (category) {
       categories.emplace_back(*category);
     }

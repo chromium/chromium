@@ -9,8 +9,10 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/memory/raw_ref.h"
 #include "base/time/time.h"
 #include "components/query_parser/snippet.h"
@@ -187,8 +189,8 @@ struct VisitContentModelAnnotations {
     Category(const std::string& id, int weight);
     // |vector| is expected to be of size 2 with the first entry being an ID of
     // string or int type and the second entry indicating an integer weight.
-    static std::optional<Category> FromStringVector(
-        const std::vector<std::string>& vector);
+    static std::optional<Category> FromStringViewVector(
+        base::span<const std::string_view> vector);
     std::string ToString() const;
     friend bool operator==(const Category&, const Category&) = default;
 
