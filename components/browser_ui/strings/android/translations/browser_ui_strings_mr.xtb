@@ -81,7 +81,6 @@
 <translation id="1781533683087883868">वाचन मोड लिंक बंद करा</translation>
 <translation id="1785415724048343560">सर्वोत्तम अनुभवासाठी शिफारस केलेले</translation>
 <translation id="1796588414813960292">साउंडची आवश्यकता असलेली वैशिष्ट्ये काम करणार नाहीत</translation>
-<translation id="1799920918471566157">Chrome शी संबंधित टिपा</translation>
 <translation id="1816835383954230954">सुरू असताना, Chrome अधिक जलद रन होते आणि JavaScript वापरणारी वैशिष्ट्ये डिझाइन केल्यानुसार कार्य करतात. बंद असताना, हे परफॉर्मन्स कमी करते, पण हल्ल्यांविरुद्ध V8 ला अधिक रोधक बनवते.</translation>
 <translation id="1818308510395330587"><ph name="APP_NAME" /> ला AR वापरू देण्यासाठी, <ph name="BEGIN_LINK" />Android सेटिंग्ज<ph name="END_LINK" />मध्ये कॅमेरादेखील सुरू करा.</translation>
 <translation id="1822318649925991542">तुमचा ब्राउझिंगचा अनुभव कस्टमाइझ करण्यासाठी जागा स्विच करा</translation>
@@ -166,6 +165,7 @@
 <translation id="257931822824936280">विस्‍तृत केले - संकुचित करण्‍यासाठी क्‍लिक करा.</translation>
 <translation id="2586657967955657006">क्लिपबोर्ड</translation>
 <translation id="2588271083332682494">टॅब गटांसह टॅब नीटनेटके ठेवा</translation>
+<translation id="2592917252160773942">साइट तुमच्या कॅमेराची परवानगी मागू शकतात</translation>
 <translation id="2597457036804169544">साइटवर गडद थीम लागू करू नका</translation>
 <translation id="2606760465469169465">ऑटो पडताळणी</translation>
 <translation id="2621115761605608342">विशिष्ट साइटसाठी JavaScript ला अनुमती द्या.</translation>
@@ -362,6 +362,7 @@
 <translation id="4635969503923889910">साइटना NFC डिव्हाइस वापरण्याची अनुमती देऊ नका</translation>
 <translation id="4644713492825682049">हटवा आणि रीसेट करा</translation>
 <translation id="4645575059429386691">आपल्या पालकांद्वारे व्यवस्थापित करण्यात आले</translation>
+<translation id="4651224148644053314">आणखी रंग आणि पर्याय</translation>
 <translation id="4652266463001779298">अनुमती नाही</translation>
 <translation id="4655846733459137112">तुम्ही पुढील वेळी साइन इन कराल, तेव्हा हा पासवर्ड सहजपणे वापरण्यासाठी होय वर टॅप करा</translation>
 <translation id="4663373278480897665">कॅमेऱ्याला अनुमती आहे</translation>

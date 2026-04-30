@@ -721,6 +721,7 @@
 <translation id="3565012355885596568">Não foi possível carregar as imagens</translation>
 <translation id="3565930036634619844">Guia. <ph name="TAB_INDEX" /> de <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">Salvar de outra forma</translation>
+<translation id="3571703298474554279">Uma maneira mais rápida de usar o app</translation>
 <translation id="3572503683475187385">A guia atual é compartilhada com o Gemini quando você inicia uma nova conversa. O conteúdo e o URL das guias que você compartilha com o Gemini são enviados ao Google. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">Na Conta do Google</translation>
 <translation id="3575234738189584619">Pesquisar com o Lens</translation>
@@ -1078,7 +1079,7 @@
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} e mais 1}one{{domain} e mais {count} outra}other{{domain} e mais {count} outras}}</translation>
 <translation id="4826588772550366629">a câmera e o microfone</translation>
 <translation id="4828431027673677473">Produtos com base nos seus interesses</translation>
-<translation id="4829420936835028285">Editar Grupo de Guias.</translation>
+<translation id="4829420936835028285">Editar grupo de guias</translation>
 <translation id="4833786495304741580">Envia automaticamente estatísticas de uso e relatórios de erros para o Google.</translation>
 <translation id="483689884442613745">Salvar…</translation>
 <translation id="4840495572919996524">Seus favoritos, histórico, senhas e outras configurações não serão mais sincronizados com sua Conta do Google.</translation>
@@ -1576,6 +1577,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="6476800141292307438">Tradução da página para <ph name="LANGUAGE" />. Opções disponíveis na parte inferior da tela.</translation>
 <translation id="647867789226964031">Mudar suas senhas</translation>
 <translation id="6480363549849064919">Autenticação do cliente</translation>
+<translation id="6489174933860678546">Abra as guias em modo anônimo para navegar com mais privacidade.</translation>
 <translation id="6494931198667773526">Fim</translation>
 <translation id="6503077044568424649">Mais visitados</translation>
 <translation id="6503763061813913607">Notificações da Confirmação de segurança</translation>
@@ -1633,6 +1635,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="6640268266988685324">Abrir guia</translation>
 <translation id="6641465290890659327">Compartilhe uma cópia da sua senha</translation>
 <translation id="6642362222295953972">Mudar para guia existente</translation>
+<translation id="6643016212128521049">Limpar</translation>
 <translation id="6645899968535965230">QR code: <ph name="PAGE_TITLE" /></translation>
 <translation id="6657585470893396449">Senha</translation>
 <translation id="6659660757330712663">Você pode deslizar a barra de ferramentas para trocar de guia.</translation>
@@ -1699,6 +1702,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="6871397658902960384">Começar a navegar</translation>
 <translation id="6874328931822449112">{COUNT,plural, =1{Salvar senha na conta}one{Salvar senha na conta}other{Salvar senhas na conta}}</translation>
 <translation id="6875166646976836138">Também é possível consultar e gerenciar esses itens nos seus favoritos, na lista de leitura ou no gerenciador de senhas.</translation>
+<translation id="6878052248816456143">Acesse os arquivos no seu Google Drive quando quiser.</translation>
 <translation id="6882836635272038266">Proteção padrão contra sites, downloads e extensões perigosos.</translation>
 <translation id="6884135917113737984">{COUNT,plural, =1{Salvar {COUNT} senha na sua Conta do Google}one{Salvar {COUNT} senha na sua Conta do Google}other{Salvar {COUNT} senhas na sua Conta do Google}}</translation>
 <translation id="6888009575607455378">Tem certeza de que quer descartar suas alterações?</translation>
@@ -1812,6 +1816,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="7345061034321640811">Importação não permitida</translation>
 <translation id="7347998088283246662">Importe senhas, histórico, favoritos e muito mais</translation>
 <translation id="7352651011704765696">Algo deu errado</translation>
+<translation id="7363497636543208734">Agora é mais fácil navegar pelo app.</translation>
 <translation id="7364796246159120393">Escolher arquivo</translation>
 <translation id="736564850024123010">Mude a posição da barra de endereço para personalizar sua experiência.</translation>
 <translation id="7366909168761621528">Dados de navegação</translation>
@@ -2295,6 +2300,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="8915916167043355778">Fechar todas</translation>
 <translation id="892185197271200809">Todos vão perder imediatamente o acesso ao grupo de guias "<ph name="GROUP_NAME" />", e ele será excluído de todos os dispositivos</translation>
 <translation id="8923178205567790913">Senhas</translation>
+<translation id="8926498511977337209">Utilize a navegação anônima</translation>
 <translation id="892776311701544612">Saiba mais…</translation>
 <translation id="8928133177108699615">Computador</translation>
 <translation id="8928426232677696166"><ph name="EMAIL" />, gerenciado pela sua organização, selecionada atualmente. Escolha uma conta.</translation>

@@ -124,6 +124,7 @@
 <translation id="5076161749301278626">هل تريد الاطّلاع على مراجعات المتجر؟</translation>
 <translation id="5161254044473106830">العنوان مطلوب</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{‏يغلق متصفّح Chrome تلقائيًا أي علامات تبويب ومجموعاتها بعد شهر واحد (<ph name="AUTO_DELETE_DELAY_ONE" />) من كونها غير نشطة. ويمكنك تغيير ذلك في الإعدادات.}zero{‏يغلق Chrome تلقائيًا أي علامات تبويب ومجموعاتها بعد <ph name="AUTO_DELETE_DELAY_MANY" /> شهر من كونها غير نشطة. ويمكنك تغيير ذلك في الإعدادات.}two{‏يغلق Chrome تلقائيًا أي علامات تبويب ومجموعاتها بعد شهرين (<ph name="AUTO_DELETE_DELAY_MANY" />) من كونها غير نشطة. ويمكنك تغيير ذلك في الإعدادات.}few{‏يغلق Chrome تلقائيًا أي علامات تبويب ومجموعاتها بعد <ph name="AUTO_DELETE_DELAY_MANY" /> أشهر من كونها غير نشطة. ويمكنك تغيير ذلك في الإعدادات.}many{‏يغلق Chrome تلقائيًا أي علامات تبويب ومجموعاتها بعد <ph name="AUTO_DELETE_DELAY_MANY" /> شهرًا من كونها غير نشطة. ويمكنك تغيير ذلك في الإعدادات.}other{‏يغلق Chrome تلقائيًا أي علامات تبويب ومجموعاتها بعد <ph name="AUTO_DELETE_DELAY_MANY" /> شهر من كونها غير نشطة. ويمكنك تغيير ذلك في الإعدادات.}}</translation>
+<translation id="5254233580564156835">استخدام الذاكرة: <ph name="MEMORY_USAGE" /></translation>
 <translation id="5339733443032484186">علامة التبويب الأخيرة</translation>
 <translation id="5380159289133845234">أرشفة علامات التبويب المكرّرة</translation>
 <translation id="5446043142172831860">إزالة علامة التبويب ومغادرة المجموعة</translation>

@@ -124,6 +124,7 @@
 <translation id="5076161749301278626">സ്റ്റോർ റിവ്യൂകൾ കാണണോ?</translation>
 <translation id="5161254044473106830">പേര് ആവശ്യമാണ്</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{<ph name="AUTO_DELETE_DELAY_ONE" /> മാസത്തിന് ശേഷം, നിഷ്‌ക്രിയ ടാബുകളും ടാബ് ഗ്രൂപ്പുകളും Chrome സ്വയമേവ അടയ്‌ക്കുന്നു. ക്രമീകരണത്തിൽ നിങ്ങൾക്ക് ഇത് മാറ്റാനാകും.}other{<ph name="AUTO_DELETE_DELAY_MANY" /> മാസത്തിന് ശേഷം, നിഷ്‌ക്രിയ ടാബുകളും ടാബ് ഗ്രൂപ്പുകളും Chrome സ്വയമേവ അടയ്‌ക്കുന്നു. ക്രമീകരണത്തിൽ നിങ്ങൾക്ക് ഇത് മാറ്റാനാകും.}}</translation>
+<translation id="5254233580564156835">മെമ്മറി ഉപയോഗം: <ph name="MEMORY_USAGE" /></translation>
 <translation id="5339733443032484186">നിങ്ങളുടെ അവസാന ടാബ്</translation>
 <translation id="5380159289133845234">ഡ്യൂപ്ലിക്കേറ്റ് ടാബുകൾ ആർക്കൈവ് ചെയ്യുക</translation>
 <translation id="5446043142172831860">ടാബ് നീക്കം ചെയ്ത് ഗ്രൂപ്പ് വിടുക</translation>

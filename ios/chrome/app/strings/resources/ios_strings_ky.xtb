@@ -1078,7 +1078,7 @@
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} жана дагы 1}other{{domain} жана дагы {count}}}</translation>
 <translation id="4826588772550366629">камера менен микрофонду</translation>
 <translation id="4828431027673677473">Кызыкчылыктарыңызга негизделген товарлар</translation>
-<translation id="4829420936835028285">Өтмөктөр тобун түзөтүү</translation>
+<translation id="4829420936835028285">Өтмөктөр тобун оңдоо</translation>
 <translation id="4833786495304741580">Колдонуу статистикасын жана каталар жөнүндө кабарларды Google'га автоматтык түрдө жөнөтүп турат.</translation>
 <translation id="483689884442613745">Сактоо…</translation>
 <translation id="4840495572919996524">Кыстармаларыңыз, таржымалыңыз, сырсөздөрүңүз жана башкалар мындан ары Google аккаунтуңузга шайкештирилбейт.</translation>
@@ -1576,6 +1576,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="6476800141292307438">Барак <ph name="LANGUAGE" /> тилине которулууда. Параметрлер экрандын төмөн жагында жеткиликтүү.</translation>
 <translation id="647867789226964031">Сырсөздөрүңүздү өзгөртүңүз</translation>
 <translation id="6480363549849064919">Кардардын аныктыгын текшерүү</translation>
+<translation id="6489174933860678546">Интернетти купуя серептөө үчүн жашыруун өтмөктөрдү ачыңыз.</translation>
 <translation id="6494931198667773526">Качан бүтөт</translation>
 <translation id="6503077044568424649">Көп көрүлгөн</translation>
 <translation id="6503763061813913607">Коопсуздукту текшерүү функциясынын билдирмелери</translation>
@@ -1633,6 +1634,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="6640268266988685324">Ачык өтмөк</translation>
 <translation id="6641465290890659327">Сырсөзүңүздүн көчүрмөсүн бөлүшүңүз</translation>
 <translation id="6642362222295953972">Учурдагы өтмөккө которулуу</translation>
+<translation id="6643016212128521049">Тазалоо</translation>
 <translation id="6645899968535965230">QR код: <ph name="PAGE_TITLE" /></translation>
 <translation id="6657585470893396449">Сырсөз</translation>
 <translation id="6659660757330712663">Өтмөктөрдүн арасында которулуу үчүн куралдар тилкесин сүрүп коюңуз.</translation>
@@ -2295,6 +2297,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="8915916167043355778">Баарын жабуу</translation>
 <translation id="892185197271200809">Бардык колдонуучулар "<ph name="GROUP_NAME" />" өтмөктөр тобуна кирүү мүмкүнчүлүгүнөн дароо ажырап, ал бардык түзмөктөрдөн өчүрүлөт</translation>
 <translation id="8923178205567790913">Сырсөздөр</translation>
+<translation id="8926498511977337209">Жашыруун режимде карап чыгуу</translation>
 <translation id="892776311701544612">Көбүрөөк билүү…</translation>
 <translation id="8928133177108699615">Иш такта</translation>
 <translation id="8928426232677696166"><ph name="EMAIL" /> аккаунтун учурда уюмуңуз тескейт. Аккаунт тандаңыз.</translation>

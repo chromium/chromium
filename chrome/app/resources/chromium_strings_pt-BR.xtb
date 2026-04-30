@@ -54,7 +54,6 @@
 <translation id="1594928384848033697">O Chromium quer excluir seus dados do Gerenciador de senhas. Digite sua senha do Windows para conceder essa permissão.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Seu administrador exige que você reinicie o Chromium para que uma atualização seja feita.}=1{Seu administrador exige que você reinicie o Chromium para que uma atualização seja feita. Sua janela anônima não será aberta novamente.}one{Seu administrador exige que você reinicie o Chromium para que uma atualização seja feita. Sua janela anônima não será aberta novamente.}other{Seu administrador exige que você reinicie o Chromium para que uma atualização seja feita. Suas # janelas anônimas não serão abertas novamente.}}</translation>
 <translation id="1625909126243026060">Revise os principais controles de privacidade e segurança no Chromium</translation>
-<translation id="1639380494700489405">Para perguntar ao Modo IA sobre sua guia sem sair da página, faça login no Chromium. Você também terá acesso a senhas e muito mais em todos os seus dispositivos.</translation>
 <translation id="1640672724030957280">Fazendo download...</translation>
 <translation id="1680687534629375545">Pergunte à pesquisa por imagens sobre esta página</translation>
 <translation id="1708414395296835197">Você pode usar o Chromium sempre que clicar em links contidos em mensagens, documentos e outros apps. Ele também será fixado na barra de tarefas.</translation>
@@ -217,6 +216,7 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="3185330573522821672">Personalize seu novo perfil do Chromium</translation>
+<translation id="3189205223539394158">Você pode continuar conversando com o Modo IA sem trocar de guia. Para começar, faça login no Chromium. Você também terá acesso a senhas e muito mais em todos os seus dispositivos.</translation>
 <translation id="3224847870593914902">Para remover sua Conta do Google do Chromium, saia dela na página "Configurações"</translation>
 <translation id="3234316605225071811">Mais tarde, o Chromium pode perguntar se você quer usar as informações salvas para preencher formulários automaticamente</translation>
 <translation id="3258596308407688501">O Chromium não pode ler e gravar neste diretório de dados: <ph name="USER_DATA_DIRECTORY" /></translation>

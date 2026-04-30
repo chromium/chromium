@@ -6295,7 +6295,6 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5337926771328966926">Il nome attuale del dispositivo è <ph name="DEVICE_NAME" /></translation>
 <translation id="5338338064218053691">Puoi navigare in privato usando una finestra Incognito</translation>
 <translation id="5338503421962489998">Archiviazione locale</translation>
-<translation id="5340620183031438925">Per chiedere in AI Mode informazioni sulla tua scheda senza uscire dalla pagina, verifica la tua identità. Potrai anche usare le password e altri dati su tutti i tuoi dispositivi.</translation>
 <translation id="5340787663756381836">&amp;Trova e modifica</translation>
 <translation id="5340900621595888432">Invia dati diagnostici e sull'utilizzo</translation>
 <translation id="5341793073192892252">I seguenti cookie sono stati bloccati (i cookie di terze parti vengono bloccati senza eccezioni)</translation>
@@ -6556,6 +6555,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5519766046604311137">Apri sempre i link <ph name="PROTOCOL_SCHEME" /> in questa app</translation>
 <translation id="5520605865175417976">Rimuovi azione <ph name="ACTION_TO_REMOVE" /></translation>
 <translation id="5521078259930077036">È la pagina iniziale prevista?</translation>
+<translation id="5521348028713515143">Aggiungi collegamento sul desktop</translation>
 <translation id="5522156646677899028">Questa estensione contiene una grave vulnerabilità di sicurezza.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Il tuo amministratore ha installato un'estensione}other{Il tuo amministratore ha installato # estensioni}}</translation>
 <translation id="5523203511530504754">Apri i link <ph name="PROTOCOL_SCHEME" /> in <ph name="APP_NAME" /></translation>
@@ -9264,7 +9264,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7434969625063495310">Impossibile aggiungere il server di stampa. Controlla la configurazione del server e riprova.</translation>
 <translation id="7436921188514130341">Uffa! Si è verificato un errore durante la ridenominazione.</translation>
 <translation id="7439519621174723623">Per continuare, aggiungi un nome per il dispositivo</translation>
-<translation id="743982235360757672">Mantieni l'AI Mode a portata di mano mentre navighi</translation>
 <translation id="7441736532026945583">Seleziona "Nascondi gruppo" per rimuovere il gruppo dalla tabstrip</translation>
 <translation id="7441736921018636843">Per modificare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincronizzazione<ph name="END_LINK" /> per rimuovere la passphrase di sincronizzazione.</translation>
 <translation id="7441830548568730290">Altri utenti</translation>

@@ -81,7 +81,6 @@
 <translation id="1781533683087883868">Inaktivera länkar i läsläget</translation>
 <translation id="1785415724048343560">Rekommenderas för bästa upplevelse</translation>
 <translation id="1796588414813960292">Funktioner som kräver ljud slutar fungera</translation>
-<translation id="1799920918471566157">Chrome-tips</translation>
 <translation id="1816835383954230954">När den är aktiverad körs Chrome snabbare och funktioner som använder JavaScript bör fungera som de ska. När den är inaktiverad sänks prestandan men V8 blir mer motståndskraftig mot attacker.</translation>
 <translation id="1818308510395330587">Om du vill att <ph name="APP_NAME" /> ska använda AR måste du även aktivera kameran i <ph name="BEGIN_LINK" />Android-inställningarna<ph name="END_LINK" />.</translation>
 <translation id="1822318649925991542">Ändra positionen för att anpassa surfupplevelsen</translation>
@@ -165,6 +164,7 @@
 <translation id="257931822824936280">Vyn har expanderats. Komprimera den genom att klicka.</translation>
 <translation id="2586657967955657006">Urklipp</translation>
 <translation id="2588271083332682494">Få mer ordning med flikgrupper</translation>
+<translation id="2592917252160773942">Webbplatser får begära åtkomst till kameran</translation>
 <translation id="2597457036804169544">Använd inte mörkt tema på webbplatser</translation>
 <translation id="2606760465469169465">Verifiera automatiskt</translation>
 <translation id="2621115761605608342">Tillåt JavaScript på en specifik webbplats.</translation>
@@ -361,6 +361,7 @@
 <translation id="4635969503923889910">Tillåt inte att webbplatser använder NFC-enheter</translation>
 <translation id="4644713492825682049">Radera och återställ</translation>
 <translation id="4645575059429386691">Hanteras av din förälder</translation>
+<translation id="4651224148644053314">Fler färger och alternativ</translation>
 <translation id="4652266463001779298">Tillåts inte</translation>
 <translation id="4655846733459137112">Tryck på Ja om du vill använda det här lösenordet nästa gång du loggar in</translation>
 <translation id="4663373278480897665">Kamera är tillåten</translation>

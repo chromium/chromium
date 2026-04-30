@@ -124,6 +124,7 @@
 <translation id="5076161749301278626">ເບິ່ງຄຳຕິຊົມຮ້ານຄ້າບໍ?</translation>
 <translation id="5161254044473106830">ຈຳ​ເປັນ​ຕ້ອງ​ມີ​ຫົວ​ຂໍ້</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome ຈະປິດແຖບ ແລະ ກຸ່ມແຖບທີ່ບໍ່ໄດ້ນຳໃຊ້ໂດຍອັດຕະໂນມັດຫຼັງຈາກຜ່ານໄປ <ph name="AUTO_DELETE_DELAY_ONE" /> ເດືອນ. ທ່ານສາມາດປ່ຽນຄ່ານີ້ໄດ້ໃນການຕັ້ງຄ່າ.}other{Chrome ຈະປິດແຖບ ແລະ ກຸ່ມແຖບທີ່ບໍ່ໄດ້ນຳໃຊ້ໂດຍອັດຕະໂນມັດຫຼັງຈາກຜ່ານໄປ <ph name="AUTO_DELETE_DELAY_MANY" /> ເດືອນ. ທ່ານສາມາດປ່ຽນຄ່ານີ້ໄດ້ໃນການຕັ້ງຄ່າ.}}</translation>
+<translation id="5254233580564156835">ການໃຊ້ໜ່ວຍຄວາມຈຳ: <ph name="MEMORY_USAGE" /></translation>
 <translation id="5339733443032484186">ແຖບສຸດທ້າຍຂອງທ່ານ</translation>
 <translation id="5380159289133845234">ເກັບແຖບທີ່ຊ້ຳກັນໄວ້ໃນແຟ້ມ</translation>
 <translation id="5446043142172831860">ລຶບແຖບອອກ ແລະ ອອກຈາກກຸ່ມ</translation>

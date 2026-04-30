@@ -1576,6 +1576,7 @@
 <translation id="6476800141292307438">પેજનો અનુવાદ <ph name="LANGUAGE" />માં કરી રહ્યા છે. વિકલ્પો સ્ક્રીનની નીચેની બાજુએ ઉપલબ્ધ રહે છે.</translation>
 <translation id="647867789226964031">તમારા પાસવર્ડ બદલો</translation>
 <translation id="6480363549849064919">ક્લાયન્ટનું પ્રમાણીકરણ</translation>
+<translation id="6489174933860678546">વેબને વધુ ખાનગી રીતે બ્રાઉઝ કરવા માટે છૂપા ટૅબ ખોલો.</translation>
 <translation id="6494931198667773526">સમાપ્તિ તારીખ</translation>
 <translation id="6503077044568424649">સૌથી વધુ જોવાયેલ</translation>
 <translation id="6503763061813913607">સલામતી માટે તપાસ સંબંધિત નોટિફિકેશન</translation>
@@ -1633,6 +1634,7 @@
 <translation id="6640268266988685324">ટૅબ ખોલો</translation>
 <translation id="6641465290890659327">તમારા પાસવર્ડની કોઈ કૉપિ શેર કરો</translation>
 <translation id="6642362222295953972">હાલના ટૅબ પર સ્વિચ કરો</translation>
+<translation id="6643016212128521049">સાફ કરો</translation>
 <translation id="6645899968535965230">QR કોડ: <ph name="PAGE_TITLE" /></translation>
 <translation id="6657585470893396449">પાસવર્ડ</translation>
 <translation id="6659660757330712663">એક ટૅબ પરથી બીજા પર સ્વિચ કરવા માટે, તમે ટૂલબાર સ્વાઇપ કરી શકો છો.</translation>
@@ -2295,6 +2297,7 @@
 <translation id="8915916167043355778">બધા બંધ કરો</translation>
 <translation id="892185197271200809">ટૅબના ગ્રૂપ “<ph name="GROUP_NAME" />”નો ઍક્સેસ દરેક વ્યક્તિ તરત જ ગુમાવશે અને તેને બધા ડિવાઇસમાંથી ડિલીટ કરવામાં આવશે</translation>
 <translation id="8923178205567790913">પાસવર્ડ</translation>
+<translation id="8926498511977337209">છૂપા મોડમાં બ્રાઉઝ કરો</translation>
 <translation id="892776311701544612">વધુ જાણો…</translation>
 <translation id="8928133177108699615">ડેસ્કટૉપ</translation>
 <translation id="8928426232677696166"><ph name="EMAIL" />, 'તમારી સંસ્થા દ્વારા મેનેજ કરવામાં આવે છે' હાલમાં પસંદ કર્યું છે. એકાઉન્ટ પસંદ કરો.</translation>

@@ -5649,6 +5649,7 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="4881685975363383806">Bir daha hatırlatma</translation>
 <translation id="4881695831933465202">Aç</translation>
 <translation id="4882312758060467256">Bu siteye erişimi var</translation>
+<translation id="4882805770036405108">Kısayol kullanarak okuma modunu daha hızlı açın. Okuma modunu açmak veya kapatmak için ⌥ + ⌘ + R tuşlarına basın.</translation>
 <translation id="4882848900607400156">Tam konumunuzu paylaştığınızda Gemini sorularınızı daha doğru yanıtlayabilir. Verileriniz, üretken yapay zeka modellerini daha iyi hale getirmek için kullanılmaz.</translation>
 <translation id="4882919381756638075">Görüntülü sohbet gibi iletişim özellikleri için siteler genellikle mikrofonunuzu kullanır</translation>
 <translation id="4883436287898674711">Tüm <ph name="WEBSITE_1" /> siteleri</translation>
@@ -6291,7 +6292,6 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="5337926771328966926">Geçerli cihazının adı: <ph name="DEVICE_NAME" /></translation>
 <translation id="5338338064218053691">Gizli pencere kullanarak İnternette gizli olarak dolaşabilirsiniz</translation>
 <translation id="5338503421962489998">Yerel depolama</translation>
-<translation id="5340620183031438925">Sayfadan ayrılmadan AI Modu'na sekmenizle ilgili soru sormak için kimliğinizi doğrulayın. Ayrıca, şifrelerinize ve diğer öğelerinize tüm cihazlarınızdan erişebilirsiniz.</translation>
 <translation id="5340787663756381836">&amp;Bul ve düzenle</translation>
 <translation id="5340900621595888432">Teşhis ve kullanım verilerini gönderin</translation>
 <translation id="5341793073192892252">Aşağıdaki çerezler engellendi (üçüncü taraf çerezleri istisnasız engelleniyor)</translation>
@@ -6552,6 +6552,7 @@ Bu işleme birden fazla anahtar atayabilirsiniz.</translation>
 <translation id="5519766046604311137"><ph name="PROTOCOL_SCHEME" /> bağlantılarını her zaman bu uygulamada aç</translation>
 <translation id="5520605865175417976"><ph name="ACTION_TO_REMOVE" /> eylemini kaldır</translation>
 <translation id="5521078259930077036">Bu beklediğiniz ana sayfa mı?</translation>
+<translation id="5521348028713515143">Masaüstü kısayolu ekle</translation>
 <translation id="5522156646677899028">Bu uzantı önemli bir güvenlik açığı içeriyor.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Yöneticiniz tarafından bir uzantı yüklendi}other{Yöneticiniz tarafından # uzantı yüklendi}}</translation>
 <translation id="5523203511530504754"><ph name="PROTOCOL_SCHEME" /> bağlantılarını <ph name="APP_NAME" /> uygulamasında aç</translation>
@@ -8890,6 +8891,7 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="7186903260115204164">Yeni Çizim aracıyla el yazısıyla çizimler, imzalar ve vurgular ekleyin</translation>
 <translation id="7186935534137027449">Uygulama Komutu</translation>
 <translation id="7188508872042490670">Cihaz üzerindeki site verileri</translation>
+<translation id="7188755083797868960">Kısayol kullanarak okuma modunu daha hızlı açın. Okuma modunu açıp kapatmak için Alt + üst karakter + R tuşlarına basın.</translation>
 <translation id="7189234443051076392">Cihazınızda yeterli alan bulunduğundan emin olun</translation>
 <translation id="7189451821249468368">Bu cihazı kaydetmek için yeterli yükseltmeye sahip değilsiniz. Daha fazla yazılım satın almak için lütfen satış birimiyle bağlantı kurun. Bu mesajın yanlışlıkla görüntülendiğini düşünüyorsanız lütfen destekle bağlantı kurun.</translation>
 <translation id="7189558282078169397">Diğer Cihazlardan Sekmeler</translation>
@@ -9262,7 +9264,6 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="7434969625063495310">Yazdırma sunucusu eklenemedi. Lütfen sunucunun yapılandırmasını kontrol edip tekrar deneyin.</translation>
 <translation id="7436921188514130341">Hay aksi! Yeniden adlandırma sırasında bir hata oluştu.</translation>
 <translation id="7439519621174723623">Devam etmek için bir cihaz adı ekleyin</translation>
-<translation id="743982235360757672">İnternette gezinirken AI Modu'nu yakınınızda bulundurun</translation>
 <translation id="7441736532026945583">Grubu sekme şeridinizden kaldırmak için "Grubu Gizle"yi seçin</translation>
 <translation id="7441736921018636843">Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlayarak<ph name="END_LINK" /> senkronizasyon parolanızı kaldırın</translation>
 <translation id="7441830548568730290">Diğer kullanıcılar</translation>

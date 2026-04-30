@@ -1576,6 +1576,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6476800141292307438">Translating the page to <ph name="LANGUAGE" />. Options available near bottom of the screen.</translation>
 <translation id="647867789226964031">Change your passwords</translation>
 <translation id="6480363549849064919">Client authentication</translation>
+<translation id="6489174933860678546">Open Incognito tabs to browse the web more privately.</translation>
 <translation id="6494931198667773526">Ends</translation>
 <translation id="6503077044568424649">Most visited</translation>
 <translation id="6503763061813913607">Safety Check notifications</translation>
@@ -1633,6 +1634,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6640268266988685324">Open tab</translation>
 <translation id="6641465290890659327">Share a copy of your password</translation>
 <translation id="6642362222295953972">Switch to existing tab</translation>
+<translation id="6643016212128521049">Clear</translation>
 <translation id="6645899968535965230">QR code: <ph name="PAGE_TITLE" /></translation>
 <translation id="6657585470893396449">Password</translation>
 <translation id="6659660757330712663">You can swipe the toolbar to switch between tabs.</translation>
@@ -2295,6 +2297,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="8915916167043355778">Close all</translation>
 <translation id="892185197271200809">Everyone will immediately lose access to the '<ph name="GROUP_NAME" />' tab group, and it will be deleted from all devices</translation>
 <translation id="8923178205567790913">Passwords</translation>
+<translation id="8926498511977337209">Browse in Incognito</translation>
 <translation id="892776311701544612">Learn more…</translation>
 <translation id="8928133177108699615">Desktop</translation>
 <translation id="8928426232677696166"><ph name="EMAIL" />, managed by your organisation, currently selected. Choose an account.</translation>

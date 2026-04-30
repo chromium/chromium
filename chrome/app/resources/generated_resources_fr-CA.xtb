@@ -6298,7 +6298,6 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5337926771328966926">Le nom actuel de l'appareil est <ph name="DEVICE_NAME" /></translation>
 <translation id="5338338064218053691">Vous pouvez naviguer de manière anonyme à l'aide d'une fenêtre de navigation privée</translation>
 <translation id="5338503421962489998">Stockage local</translation>
-<translation id="5340620183031438925">Pour poser des questions au mode IA sur votre onglet sans quitter la page, confirmez votre identité. Vous obtiendrez également vos mots de passe et bien plus encore sur tous vos appareils.</translation>
 <translation id="5340787663756381836">et Rechercher et modifier</translation>
 <translation id="5340900621595888432">Envoyer des données d'utilisation et de diagnostic</translation>
 <translation id="5341793073192892252">Les témoins suivants ont été bloqués (tous les témoins de tiers sont bloqués, sans exception)</translation>
@@ -6559,6 +6558,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="5519766046604311137">Toujours ouvrir les liens <ph name="PROTOCOL_SCHEME" /> dans cette appli</translation>
 <translation id="5520605865175417976">Retirer l'action <ph name="ACTION_TO_REMOVE" /></translation>
 <translation id="5521078259930077036">Est-ce bien la page d'accueil à laquelle vous vous attendiez?</translation>
+<translation id="5521348028713515143">Ajouter un raccourci sur le bureau</translation>
 <translation id="5522156646677899028">Cette extension contient une faille de sécurité grave.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Votre administrateur a installé une extension}one{Votre administrateur a installé # extension}other{Votre administrateur a installé # extensions}}</translation>
 <translation id="5523203511530504754">Ouvrir les liens <ph name="PROTOCOL_SCHEME" /> dans <ph name="APP_NAME" /></translation>
@@ -9271,7 +9271,6 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7434969625063495310">Impossible d'ajouter le serveur d'impression. Veuillez vérifier la configuration du serveur, puis réessayer.</translation>
 <translation id="7436921188514130341">Oups… Une erreur s'est produite lors du changement de nom.</translation>
 <translation id="7439519621174723623">Pour continuer, donnez un nom à l'appareil</translation>
-<translation id="743982235360757672">Gardez le mode IA à proximité pendant que vous naviguez</translation>
 <translation id="7441736532026945583">Sélectionnez « Masquer le groupe » pour retirer le groupe de votre bande d'onglets</translation>
 <translation id="7441736921018636843">Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchronisation<ph name="END_LINK" /> afin de supprimer votre phrase de passe de synchronisation</translation>
 <translation id="7441830548568730290">Autres utilisateurs</translation>

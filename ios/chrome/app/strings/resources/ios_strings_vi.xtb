@@ -1576,6 +1576,7 @@
 <translation id="6476800141292307438">Đang dịch trang sang <ph name="LANGUAGE" />. Các tùy chọn nằm ở gần cuối màn hình.</translation>
 <translation id="647867789226964031">Thay đổi mật khẩu của bạn</translation>
 <translation id="6480363549849064919">Xác thực ứng dụng</translation>
+<translation id="6489174933860678546">Mở thẻ ẩn danh để duyệt web theo cách riêng tư hơn.</translation>
 <translation id="6494931198667773526">Kết thúc</translation>
 <translation id="6503077044568424649">Truy cập nhiều nhất</translation>
 <translation id="6503763061813913607">Thông báo của tính năng Kiểm tra an toàn</translation>
@@ -1633,6 +1634,7 @@
 <translation id="6640268266988685324">Thẻ đang mở</translation>
 <translation id="6641465290890659327">Chia sẻ một bản sao mật khẩu của bạn</translation>
 <translation id="6642362222295953972">Chuyển sang thẻ đang mở</translation>
+<translation id="6643016212128521049">Xóa</translation>
 <translation id="6645899968535965230">Mã QR: <ph name="PAGE_TITLE" /></translation>
 <translation id="6657585470893396449">Mật khẩu</translation>
 <translation id="6659660757330712663">Bạn có thể vuốt thanh công cụ để chuyển đổi giữa các thẻ.</translation>
@@ -2295,6 +2297,7 @@
 <translation id="8915916167043355778">Đóng tất cả</translation>
 <translation id="892185197271200809">Mọi người sẽ mất ngay quyền truy cập vào nhóm thẻ "<ph name="GROUP_NAME" />" và nhóm thẻ này sẽ bị xoá khỏi mọi thiết bị</translation>
 <translation id="8923178205567790913">Mật khẩu</translation>
+<translation id="8926498511977337209">Duyệt web ở chế độ ẩn danh</translation>
 <translation id="892776311701544612">Tìm hiểu thêm…</translation>
 <translation id="8928133177108699615">Máy tính</translation>
 <translation id="8928426232677696166"><ph name="EMAIL" />, do tổ chức của bạn quản lý, hiện đang được chọn. Chọn một tài khoản.</translation>

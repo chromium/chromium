@@ -124,6 +124,7 @@
 <translation id="5076161749301278626">Winkelreviews bekijken?</translation>
 <translation id="5161254044473106830">Titel is vereist</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome sluit inactieve tabbladen en tabbladgroepen automatisch na <ph name="AUTO_DELETE_DELAY_ONE" /> maand. Je kunt dit wijzigen in de instellingen.}other{Chrome sluit inactieve tabbladen en tabbladgroepen automatisch na <ph name="AUTO_DELETE_DELAY_MANY" /> maanden. Je kunt dit wijzigen in de instellingen.}}</translation>
+<translation id="5254233580564156835">Geheugengebruik: <ph name="MEMORY_USAGE" /></translation>
 <translation id="5339733443032484186">Je laatste tabblad</translation>
 <translation id="5380159289133845234">Dubbele tabbladen archiveren</translation>
 <translation id="5446043142172831860">Tabblad verwijderen en groep verlaten</translation>

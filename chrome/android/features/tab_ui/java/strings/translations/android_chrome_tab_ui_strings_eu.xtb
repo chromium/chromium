@@ -124,6 +124,7 @@
 <translation id="5076161749301278626">Dendari buruzko iritziak ikusi nahi dituzu?</translation>
 <translation id="5161254044473106830">Izena behar da</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome-k <ph name="AUTO_DELETE_DELAY_ONE" /> hilabeteren buruan ixten ditu automatikoki fitxa eta fitxa talde inaktiboak. Hori aldatzeko, joan Ezarpenak atalera.}other{Chrome-k <ph name="AUTO_DELETE_DELAY_MANY" /> hilabeteren buruan ixten ditu automatikoki fitxa eta fitxa talde inaktiboak. Hori aldatzeko, joan Ezarpenak atalera.}}</translation>
+<translation id="5254233580564156835">Memoriaren erabilera: <ph name="MEMORY_USAGE" /></translation>
 <translation id="5339733443032484186">Azken fitxa</translation>
 <translation id="5380159289133845234">Artxibatu fitxa bikoiztuak</translation>
 <translation id="5446043142172831860">Kendu fitxa eta irten taldetik</translation>

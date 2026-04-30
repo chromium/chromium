@@ -124,6 +124,7 @@
 <translation id="5076161749301278626">ดูรีวิวร้านค้าไหม</translation>
 <translation id="5161254044473106830">ต้องระบุชื่อ</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome จะปิดแท็บและกลุ่มแท็บที่ไม่ได้ใช้งานโดยอัตโนมัติหลังจากผ่านไป <ph name="AUTO_DELETE_DELAY_ONE" /> เดือน คุณเปลี่ยนค่านี้ได้ในการตั้งค่า}other{Chrome จะปิดแท็บและกลุ่มแท็บที่ไม่ได้ใช้งานโดยอัตโนมัติหลังจากผ่านไป <ph name="AUTO_DELETE_DELAY_MANY" /> เดือน คุณเปลี่ยนค่านี้ได้ในการตั้งค่า}}</translation>
+<translation id="5254233580564156835">การใช้งานหน่วยความจำ: <ph name="MEMORY_USAGE" /></translation>
 <translation id="5339733443032484186">แท็บสุดท้าย</translation>
 <translation id="5380159289133845234">เก็บแท็บที่ซ้ำกัน</translation>
 <translation id="5446043142172831860">นำแท็บออกและออกจากกลุ่ม</translation>

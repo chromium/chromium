@@ -6292,7 +6292,6 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5337926771328966926">Emri i pajisjes aktuale është <ph name="DEVICE_NAME" /></translation>
 <translation id="5338338064218053691">Mund të shfletosh në mënyrë private duke përdorur një dritare "të fshehtë"</translation>
 <translation id="5338503421962489998">Hapësira ruajtëse lokale</translation>
-<translation id="5340620183031438925">Për t'i kërkuar "Modalitetit të IA-së" për skedën tënde pa u larguar nga faqja, verifiko që je ti. Do të marrësh gjithashtu fjalëkalimet dhe më shumë në të gjitha pajisjet e tua.</translation>
 <translation id="5340787663756381836">&amp;Gjej dhe modifiko</translation>
 <translation id="5340900621595888432">Dërgo të dhënat e përdorimit dhe të dhënat diagnostikuese</translation>
 <translation id="5341793073192892252">Kukit e mëposhtme u bllokuan (kukit e palëve të treta po bllokohen pa përjashtim)</translation>
@@ -6553,6 +6552,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="5519766046604311137">Hapi gjithmonë lidhjet <ph name="PROTOCOL_SCHEME" /> në këtë aplikacion</translation>
 <translation id="5520605865175417976">Hiq veprimin "<ph name="ACTION_TO_REMOVE" />"</translation>
 <translation id="5521078259930077036">A është kjo faqja kryesore që prisje?</translation>
+<translation id="5521348028713515143">Shto shkurtore të desktopit</translation>
 <translation id="5522156646677899028">Kjo shtesë përmban një dobësi serioze sigurie.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Një shtesë është instaluar nga administratori yt}other{# shtesa janë instaluar nga administratori yt}}</translation>
 <translation id="5523203511530504754">Hap lidhjet <ph name="PROTOCOL_SCHEME" /> në <ph name="APP_NAME" /></translation>
@@ -9263,7 +9263,6 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7434969625063495310">Serveri i printimit nuk mund të shtohej. Kontrollo konfigurimin e serverit dhe provo përsëri.</translation>
 <translation id="7436921188514130341">Mos! Pati një gabim gjatë riemërtimit.</translation>
 <translation id="7439519621174723623">Shto një pajisje për të vazhduar</translation>
-<translation id="743982235360757672">Mbaje "Modalitetin e IA-së" në afërsi ndërkohë që shfleton</translation>
 <translation id="7441736532026945583">Zgjidh "Fshih grupin" për ta hequr grupin nga shiriti i skedave</translation>
 <translation id="7441736921018636843">Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizimin<ph name="END_LINK" /> për të hequr frazën e kalimit për sinkronizimin</translation>
 <translation id="7441830548568730290">Përdoruesit e tjerë</translation>

@@ -124,6 +124,7 @@
 <translation id="5076161749301278626">See store reviews?</translation>
 <translation id="5161254044473106830">Title required</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome automatically closes inactive tabs and tab groups after <ph name="AUTO_DELETE_DELAY_ONE" /> month. You can change this in settings.}other{Chrome automatically closes inactive tabs and tab groups after <ph name="AUTO_DELETE_DELAY_MANY" /> months. You can change this in settings.}}</translation>
+<translation id="5254233580564156835">Memory usage: <ph name="MEMORY_USAGE" /></translation>
 <translation id="5339733443032484186">Your last tab</translation>
 <translation id="5380159289133845234">Archive duplicate tabs</translation>
 <translation id="5446043142172831860">Remove tab and leave group</translation>

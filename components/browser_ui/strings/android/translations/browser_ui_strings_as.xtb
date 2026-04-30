@@ -81,7 +81,6 @@
 <translation id="1781533683087883868">ৰীডিং ম’ডৰ লিংক অফ কৰক</translation>
 <translation id="1785415724048343560">শ্ৰেষ্ঠ অভিজ্ঞতাৰ বাবে চুপাৰিছ কৰা হয়</translation>
 <translation id="1796588414813960292">ধ্বনিৰ আৱশ্যক হোৱা সুবিধাসমূহে কাম নকৰিব</translation>
-<translation id="1799920918471566157">Chromeৰ কিটিপ</translation>
 <translation id="1816835383954230954">অন থাকিলে, Chrome অধিক দ্ৰুততাৰে চলে আৰু JavaScript ব্যৱহাৰ কৰা সুবিধাসমূহে ডিজাইন কৰা অনুসৰি কাম কৰিব লাগে। অফ থাকিলে, ই কাৰ্যদক্ষতা কম কৰে কিন্তু V8ক আক্ৰমণৰ বাবে অধিক প্ৰতিৰোধী কৰে।</translation>
 <translation id="1818308510395330587"><ph name="APP_NAME" />ক AR ব্যৱহাৰ কৰিবলৈ দিবলৈ <ph name="BEGIN_LINK" />Android ছেটিংসমূহ<ph name="END_LINK" />তো কেমেৰা অন কৰক।</translation>
 <translation id="1822318649925991542">আপোনাৰ ব্ৰাউজিঙৰ অভিজ্ঞতা কাষ্টমাইজ কৰিবলৈ স্থান সলনি কৰক</translation>
@@ -166,6 +165,7 @@
 <translation id="257931822824936280">বিস্তাৰ কৰা আছে - সংকোচন কৰিবলৈ ক্লিক কৰক।</translation>
 <translation id="2586657967955657006">ক্লিপব'ৰ্ড</translation>
 <translation id="2588271083332682494">টেবৰ গোটসমূহেৰে সংগঠিত কৰক</translation>
+<translation id="2592917252160773942">ছাইটসমূহে আপোনাৰ কেমেৰা বিচাৰিব পাৰে</translation>
 <translation id="2597457036804169544">ছাইটত গাঢ় ৰঙৰ থীম প্ৰয়োগ নকৰিব</translation>
 <translation id="2606760465469169465">স্বয়ংক্ৰিয় সত্যাপন</translation>
 <translation id="2621115761605608342">নিৰ্দিষ্ট ছাইটৰ বাবে JavaScriptক অনুমতি দিয়ক।</translation>
@@ -362,6 +362,7 @@
 <translation id="4635969503923889910">ছাইটসমূহক NFC ডিভাইচ ব্যৱহাৰ কৰাৰ অনুমতি নিদিব</translation>
 <translation id="4644713492825682049">মচক আৰু ৰিছেট কৰক</translation>
 <translation id="4645575059429386691">আপোনাৰ অভিভাৱকৰ দ্বাৰা পৰিচালিত</translation>
+<translation id="4651224148644053314">অধিক ৰং আৰু বিকল্প</translation>
 <translation id="4652266463001779298">অনুমতি নাই</translation>
 <translation id="4655846733459137112">পৰৱৰ্তী সময়ত আপুনি ছাইন ইন কৰোঁতে এই পাছৱৰ্ডটো সহজে ব্যৱহাৰ কৰিবলৈ হয়ত টিপক</translation>
 <translation id="4663373278480897665">কেমেৰা ব্যৱহাৰৰ অনুমতি দিয়া হৈছে</translation>

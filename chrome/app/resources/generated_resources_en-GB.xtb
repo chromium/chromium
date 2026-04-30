@@ -6314,7 +6314,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5337926771328966926">Current device name is <ph name="DEVICE_NAME" /></translation>
 <translation id="5338338064218053691">You can browse privately using an Incognito window</translation>
 <translation id="5338503421962489998">Local storage</translation>
-<translation id="5340620183031438925">To ask AI Mode about your tab without leaving the page, verify that it's you. You'll also get your passwords and more on all your devices.</translation>
 <translation id="5340787663756381836">&amp;Find and edit</translation>
 <translation id="5340900621595888432">Send diagnostic and usage data</translation>
 <translation id="5341793073192892252">The following cookies were blocked (third-party cookies are being blocked without exception)</translation>
@@ -6575,6 +6574,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5519766046604311137">Always open <ph name="PROTOCOL_SCHEME" /> links in this app</translation>
 <translation id="5520605865175417976">Remove action <ph name="ACTION_TO_REMOVE" /></translation>
 <translation id="5521078259930077036">Is this the home page that you were expecting?</translation>
+<translation id="5521348028713515143">Add desktop shortcut</translation>
 <translation id="5522156646677899028">This extension contains a serious security vulnerability.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{An extension has been installed by your administrator}other{# extensions have been installed by your administrator}}</translation>
 <translation id="5523203511530504754">Open <ph name="PROTOCOL_SCHEME" /> links in <ph name="APP_NAME" /></translation>
@@ -8570,6 +8570,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6927200998271693557">To quickly get back to sites that you've visited, sync your history and tabs to <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6928650056523249512">Automatically remove permissions from unused sites</translation>
 <translation id="6929126689972602640">Parental controls are not supported for school accounts. To add a school account to access Google Classroom and other websites for schoolwork at home, sign in with the child's personal account first. You can add the school account later in setup.</translation>
+<translation id="6929639755025587400">Installing app…</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{An extension has been rejected}other{# extensions have been rejected}}</translation>
 <translation id="6930337524857202955">New download available</translation>
 <translation id="6930477763029357444">Permissions that you allow for <ph name="APP_NAME" /> will also be allowed for <ph name="PARENT_APP_NAME" /> and its installed apps.</translation>
@@ -8735,6 +8736,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7038632520572155338">Switch Access</translation>
 <translation id="7038710352229712897">Add another Google Account for <ph name="USER_NAME" /></translation>
 <translation id="7039326228527141150">Access USB devices from <ph name="VENDOR_NAME" /></translation>
+<translation id="7039697949826432881">Can't upload. File exceeds maximum supported size of <ph name="MAX_FILE_SIZE" /> MB.</translation>
 <translation id="7039912931802252762">Microsoft Smart Card Logon</translation>
 <translation id="7039951224110875196">Create a Google Account for a child</translation>
 <translation id="7042116641003232070">Allowed to save data to your device</translation>
@@ -9292,7 +9294,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7434969625063495310">Couldn't add the print server. Please check the server's configuration and try again.</translation>
 <translation id="7436921188514130341">Oh no! There was an error during renaming.</translation>
 <translation id="7439519621174723623">Add a device name to continue</translation>
-<translation id="743982235360757672">Keep AI Mode nearby while you browse</translation>
 <translation id="7441736532026945583">Select 'Hide group' to remove the group from your tab strip</translation>
 <translation id="7441736921018636843">To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" /> to remove your sync passphrase</translation>
 <translation id="7441830548568730290">Other users</translation>
@@ -10780,6 +10781,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8460448946170646641">Review key privacy and security controls</translation>
 <translation id="8460490661223303637">To save memory, Chrome removed some content</translation>
 <translation id="8460932807646981183">Manage search engines and site search</translation>
+<translation id="8461572080432076264">Listen to this page</translation>
 <translation id="8461914792118322307">Proxy</translation>
 <translation id="8461973047386722744">No passwords found</translation>
 <translation id="846205103980293931">{NUM_TABS,plural, =1{List box with 1 item}other{List box with {NUM_TABS} items}}</translation>

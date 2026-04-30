@@ -1574,6 +1574,7 @@
 <translation id="6476800141292307438">ترجمة صفحة إلى <ph name="LANGUAGE" />. وتتوفّر الخيارات بالقرب من أسفل الشاشة.</translation>
 <translation id="647867789226964031">تغيير كلمات المرور</translation>
 <translation id="6480363549849064919">مصادقة البرنامج</translation>
+<translation id="6489174933860678546">يمكنك تصفُّح الويب بخصوصية تامة من خلال فتح علامات التبويب في وضع التصفّح المتخفي.</translation>
 <translation id="6494931198667773526">الانتهاء</translation>
 <translation id="6503077044568424649">الأكثر زيارة</translation>
 <translation id="6503763061813913607">إشعارات ميزة "التحقّق من الأمان"</translation>
@@ -1631,6 +1632,7 @@
 <translation id="6640268266988685324">فتح علامة التبويب</translation>
 <translation id="6641465290890659327">شارِك نسخة من كلمة مرورك</translation>
 <translation id="6642362222295953972">التبديل إلى علامة تبويب حالية</translation>
+<translation id="6643016212128521049">محو</translation>
 <translation id="6645899968535965230">رمز الاستجابة السريعة: <ph name="PAGE_TITLE" /></translation>
 <translation id="6657585470893396449">كلمة المرور</translation>
 <translation id="6659660757330712663">يمكنك تمرير شريط الأدوات سريعًا للتبديل بين علامات التبويب.</translation>
@@ -2294,6 +2296,7 @@
 <translation id="8915916167043355778">إغلاق الكل</translation>
 <translation id="892185197271200809">سيفقد جميع المستخدمين على الفور إمكانية الوصول إلى مجموعة علامات التبويب "<ph name="GROUP_NAME" />"، وسيتم حذفها من جميع الأجهزة</translation>
 <translation id="8923178205567790913">كلمات المرور</translation>
+<translation id="8926498511977337209">استخدام وضع التصفّح المتخفّي</translation>
 <translation id="892776311701544612">مزيد من المعلومات…</translation>
 <translation id="8928133177108699615">لأجهزة الكمبيوتر</translation>
 <translation id="8928426232677696166">حساب <ph name="EMAIL" /> الذي تديره مؤسستك هو الذي تم اختياره حاليًا. يُرجى اختيار حساب.</translation>

@@ -81,7 +81,6 @@
 <translation id="1781533683087883868">Tắt các đường liên kết ở Chế độ đọc</translation>
 <translation id="1785415724048343560">Nên chọn để có trải nghiệm tốt nhất</translation>
 <translation id="1796588414813960292">Các tính năng cần dùng âm thanh sẽ không hoạt động</translation>
-<translation id="1799920918471566157">Mẹo dùng Chrome</translation>
 <translation id="1816835383954230954">Khi bạn bật công cụ này, Chrome sẽ hoạt động nhanh hơn và các tính năng sử dụng JavaScript sẽ hoạt động như dự kiến. Khi bạn tắt công cụ này, hiệu suất sẽ giảm nhưng V8 có thể chống lại các cuộc tấn công tốt hơn.</translation>
 <translation id="1818308510395330587">Để cho phép <ph name="APP_NAME" /> sử dụng công nghệ thực tế tăng cường (AR), hãy bật cả máy ảnh trong phần <ph name="BEGIN_LINK" />Cài đặt Android<ph name="END_LINK" />.</translation>
 <translation id="1822318649925991542">Di chuyển để tuỳ chỉnh trải nghiệm duyệt web của bạn</translation>
@@ -165,6 +164,7 @@
 <translation id="257931822824936280">Đã mở rộng - nhấp để thu gọn.</translation>
 <translation id="2586657967955657006">Bảng nhớ tạm</translation>
 <translation id="2588271083332682494">Sắp xếp gọn gàng nhờ các nhóm thẻ</translation>
+<translation id="2592917252160773942">Các trang web có thể yêu cầu sử dụng camera của bạn</translation>
 <translation id="2597457036804169544">Không áp dụng giao diện tối cho các trang web</translation>
 <translation id="2606760465469169465">Tự động xác minh</translation>
 <translation id="2621115761605608342">Cho phép JavaScript cho trang web cụ thể.</translation>
@@ -361,6 +361,7 @@
 <translation id="4635969503923889910">Không cho phép các trang web sử dụng thiết bị NFC</translation>
 <translation id="4644713492825682049">Xoá và đặt lại</translation>
 <translation id="4645575059429386691">Do cha mẹ của bạn quản lý</translation>
+<translation id="4651224148644053314">Màu sắc và tuỳ chọn khác</translation>
 <translation id="4652266463001779298">Không được phép</translation>
 <translation id="4655846733459137112">Nhấn vào Có để dễ dàng sử dụng mật khẩu này vào lần đăng nhập tới</translation>
 <translation id="4663373278480897665">Cho phép máy ảnh</translation>

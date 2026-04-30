@@ -152,6 +152,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="1228893227497259893">Số nhận dạng tổ chức không đúng</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (tự động phát hiện)</translation>
 <translation id="1232569758102978740">Không tên</translation>
+<translation id="1234539281285007945">Bạn phải điền vào <ph name="FIELD_1" /></translation>
 <translation id="1236081509407217141">Cho phép môi trường Thực tế ảo?</translation>
 <translation id="1236689197410206751">AfterPay</translation>
 <translation id="1240347957665416060">Tên thiết bị của bạn</translation>
@@ -472,6 +473,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="1721424275792716183">Trường * là bắt buộc</translation>
 <translation id="1723636263173393300">Chính sách này không được chứa nhiều hơn <ph name="MAX_ITEMS_LIMIT" /> lối tắt.</translation>
 <translation id="1725591448053514783">Phong bì You 6</translation>
+<translation id="172754119609519423">Bạn phải điền vào <ph name="FIELD_1" />, <ph name="FIELD_2" /> hoặc <ph name="FIELD_3" /></translation>
 <translation id="1727613060316725209">Chứng chỉ hợp lệ</translation>
 <translation id="1728677426644403582">Bạn đang xem nguồn của trang web</translation>
 <translation id="173080396488393970">Loại thẻ này không được hỗ trợ</translation>
@@ -1432,6 +1434,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3220264767789936523">Quần áo trang trọng</translation>
 <translation id="3223287115535306850">Biểu tượng đang tải ứng dụng</translation>
 <translation id="3223425961342298674">Không cho phép truy cập thông tin vị trí</translation>
+<translation id="3225277284238802910">Bạn phải điền vào <ph name="FIELD_1" /> hoặc <ph name="FIELD_2" /></translation>
 <translation id="3225319735946384299">Ký Mã</translation>
 <translation id="3225919329040284222">Máy chủ đưa ra chứng chỉ không khớp với kỳ vọng được tích hợp sẵn. Các kỳ vọng này có trong một số trang web nhất định, có tính bảo mật cao với mục đích bảo vệ bạn.</translation>
 <translation id="3226128629678568754">Nhấn nút tải lại để gửi lại các dữ liệu cần thiết để tải trang.</translation>

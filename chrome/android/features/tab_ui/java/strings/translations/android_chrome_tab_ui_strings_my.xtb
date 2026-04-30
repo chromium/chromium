@@ -124,6 +124,7 @@
 <translation id="5076161749301278626">ဆိုင်အကြောင်း သုံးသပ်ချက်များ ကြည့်မလား။</translation>
 <translation id="5161254044473106830">ခေါင်းစီးလိုအပ်သည်</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome သည် အသုံးမပြုသော တဘ်နှင့် တဘ်အုပ်စုများကို <ph name="AUTO_DELETE_DELAY_ONE" /> လအကြာတွင် အလိုအလျောက် ပိတ်သည်။ ၎င်းကို ဆက်တင်များတွင် ပြောင်းနိုင်သည်။}other{Chrome သည် အသုံးမပြုသော တဘ်နှင့် တဘ်အုပ်စုများကို <ph name="AUTO_DELETE_DELAY_MANY" /> လအကြာတွင် အလိုအလျောက် ပိတ်သည်။ ၎င်းကို ဆက်တင်များတွင် ပြောင်းနိုင်သည်။}}</translation>
+<translation id="5254233580564156835">မှတ်ဉာဏ် အသုံးပြုမှု- <ph name="MEMORY_USAGE" /></translation>
 <translation id="5339733443032484186">သင့်နောက်ဆုံးတဘ်</translation>
 <translation id="5380159289133845234">မိတ္တူပွားတဘ်များ သိမ်းဆည်းခြင်း</translation>
 <translation id="5446043142172831860">တဘ်ဖယ်ရှားပြီး အဖွဲ့မှထွက်ရန်</translation>

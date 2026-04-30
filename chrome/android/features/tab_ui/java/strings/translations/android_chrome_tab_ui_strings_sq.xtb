@@ -124,6 +124,7 @@
 <translation id="5076161749301278626">Të shihen komentet e dyqanit?</translation>
 <translation id="5161254044473106830">Kërkohet titulli</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome mbyll automatikisht skedat dhe grupet e skedave joaktive pas <ph name="AUTO_DELETE_DELAY_ONE" /> muaji. Mund ta ndryshosh këtë te cilësimet.}other{Chrome mbyll automatikisht skedat dhe grupet e skedave joaktive pas <ph name="AUTO_DELETE_DELAY_MANY" /> muajsh. Mund ta ndryshosh këtë te cilësimet.}}</translation>
+<translation id="5254233580564156835">Përdorimi i memories: <ph name="MEMORY_USAGE" /></translation>
 <translation id="5339733443032484186">Skeda jote e fundit</translation>
 <translation id="5380159289133845234">Arkivo skedat dublikata</translation>
 <translation id="5446043142172831860">Hiq skeda dhe largohu nga grupi</translation>

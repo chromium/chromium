@@ -124,6 +124,7 @@
 <translation id="5076161749301278626">स्टोरसम्बन्धी समीक्षाहरू हेर्ने हो?</translation>
 <translation id="5161254044473106830">शीर्षक आवश्यक छ</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome ले <ph name="AUTO_DELETE_DELAY_ONE" /> महिनापछि निष्क्रिय ट्याब र ट्याब समूहहरू स्वतः बन्द गर्ने छ। तपाईं सेटिङमा गई यो कुरा बदल्न सक्नुहुन्छ।}other{Chrome ले <ph name="AUTO_DELETE_DELAY_MANY" /> महिनापछि निष्क्रिय ट्याब र ट्याब समूहहरू स्वतः बन्द गर्ने छ। तपाईं सेटिङमा गई यो कुरा बदल्न सक्नुहुन्छ।}}</translation>
+<translation id="5254233580564156835">प्रयोग गरिएको मेमोरी: <ph name="MEMORY_USAGE" /></translation>
 <translation id="5339733443032484186">तपाईंको अन्तिम ट्याब</translation>
 <translation id="5380159289133845234">दोहोरिएका ट्याबहरू अर्काइभमा राख्नुहोस्</translation>
 <translation id="5446043142172831860">ट्याब हटाउनुहोस् र समूह छाड्नुहोस्</translation>

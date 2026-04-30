@@ -5650,6 +5650,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="4881685975363383806">No recordármelo la próxima vez</translation>
 <translation id="4881695831933465202">Abrir</translation>
 <translation id="4882312758060467256">Tiene acceso a este sitio</translation>
+<translation id="4882805770036405108">Abre el modo de lectura más rápido con una combinación de teclas. Presiona ⌥ + ⌘ + R para activar o desactivar el modo de lectura.</translation>
 <translation id="4882848900607400156">Cuando compartes tu ubicación precisa, Gemini puede responder tus preguntas con mayor precisión. Tus datos no se usarán para mejorar modelos de IA generativa.</translation>
 <translation id="4882919381756638075">Por lo general, los sitios utilizan el micrófono para habilitar funciones de comunicación, como videochat.</translation>
 <translation id="4883436287898674711">Todos los sitios de <ph name="WEBSITE_1" /></translation>
@@ -6293,7 +6294,6 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5337926771328966926">El nombre actual del dispositivo es <ph name="DEVICE_NAME" /></translation>
 <translation id="5338338064218053691">Puedes navegar de forma privada con una ventana de incógnito</translation>
 <translation id="5338503421962489998">Almacenamiento local</translation>
-<translation id="5340620183031438925">Para preguntarle al Modo IA sobre tu pestaña sin salir de la página, verifica tu identidad. También obtendrás tus contraseñas y más en todos tus dispositivos.</translation>
 <translation id="5340787663756381836">&amp;Buscar y editar</translation>
 <translation id="5340900621595888432">Enviar datos de uso y diagnóstico</translation>
 <translation id="5341793073192892252">Se bloquearon las siguientes cookies (las cookies de terceros se bloquean sin excepción)</translation>
@@ -6554,6 +6554,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5519766046604311137">Abrir siempre los vínculos de <ph name="PROTOCOL_SCHEME" /> en esta app</translation>
 <translation id="5520605865175417976">Quitar la acción <ph name="ACTION_TO_REMOVE" /></translation>
 <translation id="5521078259930077036">¿Esta es la página principal que esperabas ver?</translation>
+<translation id="5521348028713515143">Agregar acceso directo de escritorio</translation>
 <translation id="5522156646677899028">Esta extensión contiene una vulnerabilidad de seguridad grave.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{El administrador instaló una extensión}other{El administrador instaló # extensiones}}</translation>
 <translation id="5523203511530504754">Abrir vínculos de <ph name="PROTOCOL_SCHEME" /> en <ph name="APP_NAME" /></translation>
@@ -6582,7 +6583,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5545335608717746497">{NUM_TABS,plural, =1{Agregar pestaña al grupo}other{Agregar pestañas al grupo}}</translation>
 <translation id="554535686826424776">Buscar cupones</translation>
 <translation id="5546865291508181392">Buscar</translation>
-<translation id="5547868626772433490">Preguntarle a Gemini</translation>
+<translation id="5547868626772433490">Pregúntale a Gemini</translation>
 <translation id="5548075230008247516">Se anuló la selección de todos los elementos; se salió del modo de selección.</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" y 1 pestaña más}other{"<ph name="TAB_TITLE" />" y # pestañas más}}</translation>
 <translation id="5548644592758170183">Mostrar a la izquierda</translation>
@@ -8891,6 +8892,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7186903260115204164">Agrega dibujos a mano alzada, firmas y texto destacado con la nueva herramienta de dibujo</translation>
 <translation id="7186935534137027449">Comando de la app</translation>
 <translation id="7188508872042490670">Datos de sitios en el dispositivo</translation>
+<translation id="7188755083797868960">Abre el modo de lectura más rápido con una combinación de teclas. Presiona Alt + Mayúsculas + R para activar o desactivar el modo de lectura.</translation>
 <translation id="7189234443051076392">Asegúrate de que haya espacio suficiente en tu dispositivo</translation>
 <translation id="7189451821249468368">No tienes suficientes actualizaciones para inscribir este dispositivo; comunícate con el vendedor para adquirir más. Si crees que recibiste este mensaje por error, comunícate con el servicio de asistencia.</translation>
 <translation id="7189558282078169397">Pestañas de otros dispositivos</translation>
@@ -9264,7 +9266,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7434969625063495310">No se pudo agregar el servidor de impresión. Revisa la configuración del servidor y vuelve a intentarlo.</translation>
 <translation id="7436921188514130341">Se produjo un error al cambiar el nombre.</translation>
 <translation id="7439519621174723623">Agregar un nombre de dispositivo para continuar</translation>
-<translation id="743982235360757672">Mantén el Modo IA cerca mientras navegas</translation>
 <translation id="7441736532026945583">Selecciona "Ocultar grupo" para quitar el grupo de la barra de pestañas</translation>
 <translation id="7441736921018636843">A fin de cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincronización<ph name="END_LINK" /> para quitar la frase de contraseña de sincronización</translation>
 <translation id="7441830548568730290">Otros usuarios</translation>

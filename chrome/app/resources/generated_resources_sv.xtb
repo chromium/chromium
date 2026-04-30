@@ -6310,7 +6310,6 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5337926771328966926">Enhetens nuvarande namn är <ph name="DEVICE_NAME" /></translation>
 <translation id="5338338064218053691">Du kan surfa privat med ett inkognitofönster</translation>
 <translation id="5338503421962489998">Lokal lagring</translation>
-<translation id="5340620183031438925">Verifiera din identitet om du vill fråga AI-läget om fliken utan att lämna sidan. Du får även dina lösenord med mera på alla dina enheter.</translation>
 <translation id="5340787663756381836">Hitta och redigera</translation>
 <translation id="5340900621595888432">Skicka diagnostik- och användningsdata</translation>
 <translation id="5341793073192892252">Följande cookies har blockerats (cookies från tredje part blockeras alltid)</translation>
@@ -6571,6 +6570,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5519766046604311137">Öppna alltid <ph name="PROTOCOL_SCHEME" />-länkar i den här appen</translation>
 <translation id="5520605865175417976">Ta bort åtgärd <ph name="ACTION_TO_REMOVE" /></translation>
 <translation id="5521078259930077036">Är det här den startsida du väntade dig?</translation>
+<translation id="5521348028713515143">Lägg till genväg på skrivbordet</translation>
 <translation id="5522156646677899028">Det förekommer en allvarlig säkerhetsbrist i det här tillägget.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Ett tillägg har installerats av administratören}other{# tillägg har installerats av administratören}}</translation>
 <translation id="5523203511530504754">Öppna <ph name="PROTOCOL_SCHEME" />-länkar i <ph name="APP_NAME" /></translation>
@@ -8560,6 +8560,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6927200998271693557">Synkronisera flikar och historik med <ph name="USER_EMAIL_ADDRESS" /> för att snabbt återgå till webbplatser du har besökt</translation>
 <translation id="6928650056523249512">Ta automatiskt bort behörigheter för webbplatser som inte används</translation>
 <translation id="6929126689972602640">Föräldrakontroller stöds inte för skolkonton. Om du vill lägga till ett skolkonto för Google Classroom och andra webbplatser för skolarbete hemifrån behöver du först logga in med barnets personliga konto. Du kan lägga till skolkontot i ett senare steg.</translation>
+<translation id="6929639755025587400">Installerar appen …</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{Ett tillägg har avvisats}other{# tillägg har avvisats}}</translation>
 <translation id="6930337524857202955">Ny nedladdning tillgänglig</translation>
 <translation id="6930477763029357444">Behörigheter som du tillåter för <ph name="APP_NAME" /> tillåts även för <ph name="PARENT_APP_NAME" /> och dess installerade appar.</translation>
@@ -8725,6 +8726,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7038632520572155338">Brytarstyrning</translation>
 <translation id="7038710352229712897">Lägg till ett Google-konto för <ph name="USER_NAME" /></translation>
 <translation id="7039326228527141150">Komma åt USB-enheter från <ph name="VENDOR_NAME" /></translation>
+<translation id="7039697949826432881">Kan inte laddas upp. Filen överskrider den maximala storleken på <ph name="MAX_FILE_SIZE" /> MB.</translation>
 <translation id="7039912931802252762">Microsofts Logga in med smartkort</translation>
 <translation id="7039951224110875196">Skapa ett Google-konto åt ett barn</translation>
 <translation id="7042116641003232070">Får spara data på enheten</translation>
@@ -9282,7 +9284,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7434969625063495310">Det gick inte att lägga till utskriftsservern. Kontrollera serverns konfiguration och försök igen.</translation>
 <translation id="7436921188514130341">Ett fel uppstod när namnet skulle bytas.</translation>
 <translation id="7439519621174723623">Lägg till ett enhetsnamn om du vill fortsätta</translation>
-<translation id="743982235360757672">Ha AI-läget nära till hands när du surfar</translation>
 <translation id="7441736532026945583">Välj Dölj grupp om du vill ta bort gruppen från flikhuvudet</translation>
 <translation id="7441736921018636843"><ph name="BEGIN_LINK" />Återställ synkroniseringen<ph name="END_LINK" /> så att lösenfrasen för synkronisering tas bort om du vill ändra den här inställningen</translation>
 <translation id="7441830548568730290">Andra användare</translation>
@@ -10769,6 +10770,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8460448946170646641">Granska viktiga säkerhets- och integritetskontroller</translation>
 <translation id="8460490661223303637">För att spara minne har en del innehåll i Chrome tagits bort</translation>
 <translation id="8460932807646981183">Hantera sökmotorer och webbplatssökning</translation>
+<translation id="8461572080432076264">Lyssna på sidan</translation>
 <translation id="8461914792118322307">Proxy</translation>
 <translation id="8461973047386722744">Inga lösenord hittades</translation>
 <translation id="846205103980293931">{NUM_TABS,plural, =1{Listruta med 1 objekt}other{Listruta med {NUM_TABS} objekt}}</translation>

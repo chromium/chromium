@@ -6292,7 +6292,6 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="5337926771328966926"><ph name="DEVICE_NAME" /> da gailuaren izena</translation>
 <translation id="5338338064218053691">Sarea modu pribatuan araka dezakezu ezkutuko moduko leihoak erabilita</translation>
 <translation id="5338503421962489998">Tokiko biltegia</translation>
-<translation id="5340620183031438925">AA moduari fitxari buruzko galderak egiteko orritik irten gabe, egiaztatu zeu zarela. Pasahitzak eta beste ere izango dituzu gailu guztietan.</translation>
 <translation id="5340787663756381836">&amp;Aurkitu eta editatu</translation>
 <translation id="5340900621595888432">Bidali diagnostiko- eta erabilera-datuak</translation>
 <translation id="5341793073192892252">Cookie hauek blokeatu egin dira (hirugarrenen cookieak blokeatzen ari dira, salbuespenik gabe):</translation>
@@ -6553,6 +6552,7 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="5519766046604311137">Ireki <ph name="PROTOCOL_SCHEME" /> duten estekak aplikazio honekin beti</translation>
 <translation id="5520605865175417976">Kendu <ph name="ACTION_TO_REMOVE" /> ekintza</translation>
 <translation id="5521078259930077036">Hau al da espero zenuen orri nagusia?</translation>
+<translation id="5521348028713515143">Gehitu mahaigainerako lasterbidea</translation>
 <translation id="5522156646677899028">Luzapen honek segurtasun-ahulgune larria du.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Administratzaileak luzapen bat instalatu du}other{Administratzaileak # luzapen instalatu ditu}}</translation>
 <translation id="5523203511530504754">Ireki <ph name="PROTOCOL_SCHEME" /> duten estekak <ph name="APP_NAME" /> aplikazioan</translation>
@@ -9259,7 +9259,6 @@ Arriskuan dauden # pasahitz gehiago dauzkazu. Google-ren Pasahitz-kudeatzailea z
 <translation id="7434969625063495310">Ezin izan da gehitu inprimatze-zerbitzaria. Egiaztatu ongi konfiguratuta dagoela eta saiatu berriro.</translation>
 <translation id="7436921188514130341">Errore bat gertatu da izena aldatzean.</translation>
 <translation id="7439519621174723623">Idatzi gailu-izen bat aurrera egiteko</translation>
-<translation id="743982235360757672">Izan AA modua eskura arakatzen duzun bitartean</translation>
 <translation id="7441736532026945583">Taldea fitxen zintatik kentzeko, hautatu "Ezkutatu taldea"</translation>
 <translation id="7441736921018636843">Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="END_LINK" /> sinkronizazio-pasaesaldia kentzeko</translation>
 <translation id="7441830548568730290">Beste erabiltzaile batzuk</translation>

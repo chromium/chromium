@@ -124,6 +124,7 @@
 <translation id="5076161749301278626">Skoða umsagnir um verslun?</translation>
 <translation id="5161254044473106830">Titil vantar</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome lokar óvirkum flipum og flipahópum sjálfkrafa eftir <ph name="AUTO_DELETE_DELAY_ONE" /> mánuð. Þú getur breytt þessu í stillingum.}one{Chrome lokar óvirkum flipum og flipahópum sjálfkrafa eftir <ph name="AUTO_DELETE_DELAY_MANY" /> mánuð. Þú getur breytt þessu í stillingum.}other{Chrome lokar óvirkum flipum og flipahópum sjálfkrafa eftir <ph name="AUTO_DELETE_DELAY_MANY" /> mánuði. Þú getur breytt þessu í stillingum.}}</translation>
+<translation id="5254233580564156835">Minnisnotkun: <ph name="MEMORY_USAGE" /></translation>
 <translation id="5339733443032484186">Síðasti flipi</translation>
 <translation id="5380159289133845234">Setja tvítekna flipa í geymslu</translation>
 <translation id="5446043142172831860">Fjarlægja flipa og yfirgefa hóp</translation>

@@ -124,6 +124,7 @@
 <translation id="5076161749301278626">Doʻkon sharhlari ochilsinmi?</translation>
 <translation id="5161254044473106830">Sarlavha kiriting</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome nofaol varaqlar va varaqlar guruhini <ph name="AUTO_DELETE_DELAY_ONE" /> oydan keyin avtomatik yopadi. Buni sozlamalardan oʻzgartirish mumkin.}other{Chrome nofaol varaqlar va varaqlar guruhini <ph name="AUTO_DELETE_DELAY_MANY" /> oydan keyin avtomatik yopadi. Buni sozlamalardan oʻzgartirish mumkin.}}</translation>
+<translation id="5254233580564156835">Xotira sarfi: <ph name="MEMORY_USAGE" /></translation>
 <translation id="5339733443032484186">Oxirgi varaq</translation>
 <translation id="5380159289133845234">Takroriy varaqlarni arxivlash</translation>
 <translation id="5446043142172831860">Varaqni olib tashlash va guruhni tark etish</translation>

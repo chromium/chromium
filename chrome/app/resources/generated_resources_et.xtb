@@ -6301,7 +6301,6 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="5337926771328966926">Seadme praegune nimi on <ph name="DEVICE_NAME" /></translation>
 <translation id="5338338064218053691">Inkognito aknas saab privaatselt sirvida</translation>
 <translation id="5338503421962489998">Kohalik talletusruum</translation>
-<translation id="5340620183031438925">Kui soovite AI-režiimilt vahelehe kohta küsida ilma lehelt lahkumata, kinnitage oma isik. Lisaks saate kõigis oma seadmetes oma paroole ja muud kasutada.</translation>
 <translation id="5340787663756381836">&amp;Leia ja muuda</translation>
 <translation id="5340900621595888432">Saada diagnostika- ja kasutusandmeid</translation>
 <translation id="5341793073192892252">Blokeeriti järgmised küpsisefailid (kolmandate osapoolte küpsised blokeeriti ühegi erandita)</translation>
@@ -6562,6 +6561,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="5519766046604311137">Ava protokolli <ph name="PROTOCOL_SCHEME" /> lingid alati selles rakenduses.</translation>
 <translation id="5520605865175417976">Toimingu <ph name="ACTION_TO_REMOVE" /> eemaldamine</translation>
 <translation id="5521078259930077036">Kas see on avaleht, mida ootasite?</translation>
+<translation id="5521348028713515143">Lisa töölaua otsetee</translation>
 <translation id="5522156646677899028">See laiendus sisaldab tõsist turvaauku.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Administraator installis laienduse}other{Administraator installis # laiendust}}</translation>
 <translation id="5523203511530504754">Avage protokolli <ph name="PROTOCOL_SCHEME" /> lingid rakenduses <ph name="APP_NAME" /></translation>
@@ -9273,7 +9273,6 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7434969625063495310">Prindiserverit ei õnnestunud lisada. Kontrollige serveri seadistust ja proovige uuesti.</translation>
 <translation id="7436921188514130341">Ups, ebaõnn! Ümbernimetamisel ilmnes viga.</translation>
 <translation id="7439519621174723623">Jätkamiseks lisage seadme nimi</translation>
-<translation id="743982235360757672">Kasutage AI-režiimi sirvimise ajal</translation>
 <translation id="7441736532026945583">Tehke valik „Peida grupp“, et eemaldada grupp oma vahelehtede ribalt</translation>
 <translation id="7441736921018636843">Seade muutmiseks <ph name="BEGIN_LINK" />lähtestage sünkroonimine<ph name="END_LINK" />, et sünkroonimisparool eemaldada</translation>
 <translation id="7441830548568730290">Teised kasutajad</translation>

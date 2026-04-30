@@ -124,6 +124,7 @@
 <translation id="5076161749301278626">স্টোরের রিভিউ দেখতে চান?</translation>
 <translation id="5161254044473106830">শিরোনাম প্রয়োজন</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome অটোমেটিক <ph name="AUTO_DELETE_DELAY_ONE" /> মাস পরে চালু না থাকা ট্যাব ও ট্যাব গ্রুপ বন্ধ করে দেয়। আপনি সেটিংস থেকে এটি পরিবর্তন করতে পারবেন।}one{Chrome অটোমেটিক <ph name="AUTO_DELETE_DELAY_MANY" /> মাস পরে চালু না থাকা ট্যাব ও ট্যাব গ্রুপ বন্ধ করে দেয়। আপনি সেটিংস থেকে এটি পরিবর্তন করতে পারবেন।}other{Chrome অটোমেটিক <ph name="AUTO_DELETE_DELAY_MANY" /> মাস পরে চালু না থাকা ট্যাব ও ট্যাব গ্রুপ বন্ধ করে দেয়। আপনি সেটিংস থেকে এটি পরিবর্তন করতে পারবেন।}}</translation>
+<translation id="5254233580564156835">মেমরির ব্যবহার: <ph name="MEMORY_USAGE" /></translation>
 <translation id="5339733443032484186">আপনার শেষ ট্যাব</translation>
 <translation id="5380159289133845234">ডুপ্লিকেট ট্যাব আর্কাইভ করুন</translation>
 <translation id="5446043142172831860">ট্যাব সরান এবং গ্রুপ থেকে বেরিয়ে আসুন</translation>

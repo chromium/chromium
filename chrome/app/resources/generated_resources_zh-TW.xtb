@@ -6288,7 +6288,6 @@
 <translation id="5337926771328966926">目前的裝置名稱為「<ph name="DEVICE_NAME" />」</translation>
 <translation id="5338338064218053691">使用無痕視窗，安心進行私密瀏覽</translation>
 <translation id="5338503421962489998">本機儲存空間</translation>
-<translation id="5340620183031438925">完成身分驗證後，不必離開頁面就能用 AI 模式查詢分頁，並在所有裝置上同步密碼與其他資料。</translation>
 <translation id="5340787663756381836">尋找並編輯(&amp;F)</translation>
 <translation id="5340900621595888432">傳送診斷和使用資料</translation>
 <translation id="5341793073192892252">已封鎖下列 Cookie (所有第三方 Cookie 都會遭到封鎖)</translation>
@@ -6549,6 +6548,7 @@
 <translation id="5519766046604311137">一律使用這個應用程式開啟 <ph name="PROTOCOL_SCHEME" /> 連結</translation>
 <translation id="5520605865175417976">移除<ph name="ACTION_TO_REMOVE" />的動作</translation>
 <translation id="5521078259930077036">這是你想要的首頁嗎？</translation>
+<translation id="5521348028713515143">新增桌面捷徑</translation>
 <translation id="5522156646677899028">這個擴充功能內含嚴重安全性漏洞。</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{你的系統管理員已安裝擴充功能}other{你的系統管理員已安裝 # 個擴充功能}}</translation>
 <translation id="5523203511530504754">使用「<ph name="APP_NAME" />」開啟 <ph name="PROTOCOL_SCHEME" /> 連結</translation>
@@ -9255,7 +9255,6 @@
 <translation id="7434969625063495310">無法新增印表機伺服器。請檢查伺服器設定，然後再試一次。</translation>
 <translation id="7436921188514130341">糟糕！重新命名過程中發生錯誤。</translation>
 <translation id="7439519621174723623">新增裝置名稱即可繼續</translation>
-<translation id="743982235360757672">AI 模式陪你瀏覽</translation>
 <translation id="7441736532026945583">選取「隱藏群組」即可從分頁列中移除群組</translation>
 <translation id="7441736921018636843">如要變更這項設定，請<ph name="BEGIN_LINK" />重設同步處理功能<ph name="END_LINK" />以移除同步處理通關密語</translation>
 <translation id="7441830548568730290">其他使用者</translation>

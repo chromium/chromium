@@ -124,6 +124,7 @@
 <translation id="5076161749301278626">Zobrazit recenze obchodu?</translation>
 <translation id="5161254044473106830">Je požadován název</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Neaktivní karty a skupiny karet Chrome po <ph name="AUTO_DELETE_DELAY_ONE" /> měsíci automaticky zavírá. Můžete to změnit v nastavení.}few{Neaktivní karty a skupiny karet Chrome po <ph name="AUTO_DELETE_DELAY_MANY" /> měsících automaticky zavírá. Můžete to změnit v nastavení.}many{Neaktivní karty a skupiny karet Chrome po <ph name="AUTO_DELETE_DELAY_MANY" /> měsíce automaticky zavírá. Můžete to změnit v nastavení.}other{Neaktivní karty a skupiny karet Chrome po <ph name="AUTO_DELETE_DELAY_MANY" /> měsících automaticky zavírá. Můžete to změnit v nastavení.}}</translation>
+<translation id="5254233580564156835">Využití paměti: <ph name="MEMORY_USAGE" /></translation>
 <translation id="5339733443032484186">Vaše poslední karta</translation>
 <translation id="5380159289133845234">Aktivní duplicitní karty</translation>
 <translation id="5446043142172831860">Odstranit kartu a opustit skupinu</translation>

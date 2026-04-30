@@ -6296,7 +6296,6 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="5337926771328966926">Pašreizējais ierīces nosaukums: <ph name="DEVICE_NAME" /></translation>
 <translation id="5338338064218053691">Varat pārlūkot tīmekli privāti, izmantojot inkognito režīma logu.</translation>
 <translation id="5338503421962489998">Vietējā krātuve</translation>
-<translation id="5340620183031438925">Lai MI režīmā uzdotu jautājumus par savu cilni, nepametot lapu, verificējiet savu identitāti. Jūs arī varēsiet piekļūt parolēm un citiem datiem visās savās ierīcēs.</translation>
 <translation id="5340787663756381836">&amp;Atrast un rediģēt</translation>
 <translation id="5340900621595888432">Sūtīt diagnostikas un lietojuma datus</translation>
 <translation id="5341793073192892252">Tālāk norādītie sīkfaili tika bloķēti (trešo pušu sīkfaili tiek bloķēti bez izņēmumiem).</translation>
@@ -6557,6 +6556,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="5519766046604311137">Vienmēr atvērt “<ph name="PROTOCOL_SCHEME" />” saites šajā lietotnē</translation>
 <translation id="5520605865175417976">Noņemt darbību <ph name="ACTION_TO_REMOVE" /></translation>
 <translation id="5521078259930077036">Vai šī ir lapa “Sākums”, ko bijāt gaidījis?</translation>
+<translation id="5521348028713515143">Pievienot darbvirsmas saīsni</translation>
 <translation id="5522156646677899028">Šis paplašinājums nopietni apdraud drošību.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Administrators instalēja paplašinājumu}zero{Administrators instalēja # paplašinājumus}one{Administrators instalēja # paplašinājumu}other{Administrators instalēja # paplašinājumus}}</translation>
 <translation id="5523203511530504754">“<ph name="PROTOCOL_SCHEME" />” saišu atvēršana lietotnē <ph name="APP_NAME" /></translation>
@@ -9269,7 +9269,6 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="7434969625063495310">Nevarēja pievienot drukas serveri. Lūdzu, pārbaudiet servera konfigurāciju un mēģiniet vēlreiz.</translation>
 <translation id="7436921188514130341">Diemžēl pārdēvēšanas laikā radās kļūda.</translation>
 <translation id="7439519621174723623">Lai turpinātu, pievienojiet ierīces nosaukumu</translation>
-<translation id="743982235360757672">Pārlūkošanas laikā ērti pieejams MI režīms</translation>
 <translation id="7441736532026945583">Atlasiet vienumu “Paslēpt grupu”, lai noņemtu grupu no ciļņu joslas</translation>
 <translation id="7441736921018636843">Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />atiestatiet sinhronizāciju<ph name="END_LINK" />, lai noņemtu sinhronizācijas ieejas frāzi.</translation>
 <translation id="7441830548568730290">Citi lietotāji</translation>

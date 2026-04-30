@@ -5666,6 +5666,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="4881685975363383806">Không nhắc tôi vào lần tới</translation>
 <translation id="4881695831933465202">Mở</translation>
 <translation id="4882312758060467256">Có quyền truy cập vào trang web này</translation>
+<translation id="4882805770036405108">Sử dụng lối tắt để mở chế độ đọc nhanh hơn. Nhấn tổ hợp phím ⌥ + ⌘ + R để bật/tắt chế độ đọc.</translation>
 <translation id="4882848900607400156">Khi bạn chia sẻ vị trí chính xác của mình, Gemini có thể trả lời câu hỏi của bạn chính xác hơn. Dữ liệu của bạn không được dùng để cải thiện các mô hình AI tạo sinh.</translation>
 <translation id="4882919381756638075">Các trang web thường sử dụng micrô cho các tính năng giao tiếp như trò chuyện video</translation>
 <translation id="4883436287898674711">Tất cả trang web <ph name="WEBSITE_1" /></translation>
@@ -6309,7 +6310,6 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="5337926771328966926">Thiết bị hiện có tên là <ph name="DEVICE_NAME" /></translation>
 <translation id="5338338064218053691">Bạn có thể duyệt web ở chế độ riêng tư qua một cửa sổ Ẩn danh</translation>
 <translation id="5338503421962489998">Bộ nhớ cục bộ</translation>
-<translation id="5340620183031438925">Để hỏi Chế độ AI về thẻ của bạn mà không cần rời khỏi trang, hãy xác minh danh tính của bạn. Bạn cũng có thể truy cập mật khẩu và nhiều dữ liệu khác trên mọi thiết bị của mình.</translation>
 <translation id="5340787663756381836">&amp;Tìm và chỉnh sửa</translation>
 <translation id="5340900621595888432">Gửi dữ liệu chẩn đoán và dữ liệu sử dụng</translation>
 <translation id="5341793073192892252">Các cookie sau đã bị chặn (các cookie của bên thứ ba đang bị chặn mà không có ngoại lệ)</translation>
@@ -6570,6 +6570,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5519766046604311137">Luôn mở đường liên kết <ph name="PROTOCOL_SCHEME" /> trong ứng dụng này</translation>
 <translation id="5520605865175417976">Xoá hành động <ph name="ACTION_TO_REMOVE" /></translation>
 <translation id="5521078259930077036">Đây có phải là trang chủ bạn muốn không?</translation>
+<translation id="5521348028713515143">Thêm lối tắt trên màn hình</translation>
 <translation id="5522156646677899028">Tiện ích này chứa lỗ hổng bảo mật nghiêm trọng.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Quản trị viên của bạn đã cài đặt 1 tiện ích}other{Quản trị viên của bạn đã cài đặt # tiện ích}}</translation>
 <translation id="5523203511530504754">Mở đường liên kết <ph name="PROTOCOL_SCHEME" /> trong <ph name="APP_NAME" /></translation>
@@ -8561,6 +8562,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="6927200998271693557">Để nhanh chóng quay lại các trang web bạn đã truy cập, hãy đồng bộ hoá nhật ký và thẻ của bạn với <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6928650056523249512">Tự động loại bỏ quyền của các trang web bạn không dùng đến</translation>
 <translation id="6929126689972602640">Tài khoản trường học không hỗ trợ các quyền kiểm soát của cha mẹ. Nếu bạn muốn thêm một tài khoản trường học để truy cập vào Google Lớp học và các trang web khác để làm bài tập ở nhà, trước tiên, hãy đăng nhập bằng tài khoản cá nhân của trẻ. Bạn có thể thêm tài khoản trường học sau này trong phần cài đặt.</translation>
+<translation id="6929639755025587400">Đang cài đặt ứng dụng…</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{1 tiện ích đã bị từ chối}other{# tiện ích đã bị từ chối}}</translation>
 <translation id="6930337524857202955">Có sẵn nội dung tải xuống mới</translation>
 <translation id="6930477763029357444">Các quyền bạn cấp cho <ph name="APP_NAME" /> cũng sẽ được cấp cho <ph name="PARENT_APP_NAME" /> và những ứng dụng mà ứng dụng này đã cài đặt.</translation>
@@ -8726,6 +8728,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7038632520572155338">Tiếp cận bằng công tắc</translation>
 <translation id="7038710352229712897">Thêm một Tài khoản Google khác của <ph name="USER_NAME" /></translation>
 <translation id="7039326228527141150">Truy cập thiết bị USB từ <ph name="VENDOR_NAME" /></translation>
+<translation id="7039697949826432881">Không tải lên được. Tệp vượt quá kích thước tối đa được hỗ trợ là <ph name="MAX_FILE_SIZE" /> MB.</translation>
 <translation id="7039912931802252762">Đăng nhập Thẻ Thông minh của Microsoft</translation>
 <translation id="7039951224110875196">Tạo Tài khoản Google cho trẻ</translation>
 <translation id="7042116641003232070">Được phép lưu dữ liệu vào thiết bị của bạn</translation>
@@ -8909,6 +8912,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7186903260115204164">Thêm hình vẽ tự do, chữ ký và điểm nhấn bằng công cụ Vẽ mới</translation>
 <translation id="7186935534137027449">Lệnh từ ứng dụng</translation>
 <translation id="7188508872042490670">Dữ liệu trang web trên máy</translation>
+<translation id="7188755083797868960">Sử dụng lối tắt để mở chế độ đọc nhanh hơn. Nhấn tổ hợp phím Alt + Shift + R để bật/tắt chế độ đọc.</translation>
 <translation id="7189234443051076392">Hãy đảm bảo thiết bị của bạn có đủ dung lượng</translation>
 <translation id="7189451821249468368">Bạn không có đủ bản nâng cấp để đăng ký thiết bị này. Vui lòng liên hệ với bộ phận bán hàng để mua thêm. Nếu bạn nhận được thư này do nhầm lẫn, vui lòng liên hệ với nhóm hỗ trợ.</translation>
 <translation id="7189558282078169397">Thẻ từ các thiết bị khác</translation>
@@ -9282,7 +9286,6 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7434969625063495310">Không thể thêm máy chủ máy in. Vui lòng kiểm tra cấu hình của máy chủ rồi thử lại.</translation>
 <translation id="7436921188514130341">Ôi, hỏng! Đã xảy ra lỗi trong khi đổi tên.</translation>
 <translation id="7439519621174723623">Hãy thêm tên thiết bị để tiếp tục</translation>
-<translation id="743982235360757672">Giữ Chế độ AI bên cạnh khi bạn duyệt web</translation>
 <translation id="7441736532026945583">Chọn "Ẩn nhóm" để xoá nhóm khỏi dải thẻ của bạn</translation>
 <translation id="7441736921018636843">Để thay đổi mục cài đặt này, hãy <ph name="BEGIN_LINK" />đặt lại tính năng đồng bộ hóa<ph name="END_LINK" /> để xóa cụm mật khẩu đồng bộ hóa của bạn</translation>
 <translation id="7441830548568730290">Người dùng khác</translation>
@@ -10769,6 +10772,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8460448946170646641">Xem xét các chế độ kiểm soát quan trọng đối với quyền riêng tư và bảo mật</translation>
 <translation id="8460490661223303637">Chrome đã xóa một số nội dung để tiết kiệm bộ nhớ</translation>
 <translation id="8460932807646981183">Quản lý các công cụ tìm kiếm và tính năng tìm kiếm trong trang web</translation>
+<translation id="8461572080432076264">Nghe trang này</translation>
 <translation id="8461914792118322307">Proxy</translation>
 <translation id="8461973047386722744">Không tìm thấy mật khẩu nào</translation>
 <translation id="846205103980293931">{NUM_TABS,plural, =1{Hộp danh sách có 1 thẻ}other{Hộp danh sách có {NUM_TABS} thẻ}}</translation>

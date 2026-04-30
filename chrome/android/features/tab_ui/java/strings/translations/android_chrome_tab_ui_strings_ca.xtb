@@ -124,6 +124,7 @@
 <translation id="5076161749301278626">Vols veure les ressenyes de la botiga?</translation>
 <translation id="5161254044473106830">Cal indicar un títol</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome tanca automàticament les pestanyes i els grups de pestanyes inactius al cap d’<ph name="AUTO_DELETE_DELAY_ONE" /> mes. Pots canviar-ho a Configuració.}other{Chrome tanca automàticament les pestanyes i els grups de pestanyes inactius al cap de <ph name="AUTO_DELETE_DELAY_MANY" /> mesos. Pots canviar-ho a Configuració.}}</translation>
+<translation id="5254233580564156835">Ús de memòria: <ph name="MEMORY_USAGE" /></translation>
 <translation id="5339733443032484186">La teva darrera pestanya</translation>
 <translation id="5380159289133845234">Arxiva les pestanyes duplicades</translation>
 <translation id="5446043142172831860">Suprimeix la pestanya i surt del grup</translation>

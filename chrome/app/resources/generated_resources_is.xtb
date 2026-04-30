@@ -6311,7 +6311,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5337926771328966926">Núverandi heiti tækis er <ph name="DEVICE_NAME" /></translation>
 <translation id="5338338064218053691">Þú getur vafrað í leyni með því að nota huliðsglugga</translation>
 <translation id="5338503421962489998">Staðbundin vistun</translation>
-<translation id="5340620183031438925">Til að spyrja gervigreindarstillingu um flipann þinn án þess að yfirgefa síðuna skaltu staðfesta að þetta sért þú. Þú færð einnig aðgangsorðin þín og fleira í öllum tækjunum þínum.</translation>
 <translation id="5340787663756381836">&amp;Finna og breyta</translation>
 <translation id="5340900621595888432">Senda notkunar- og greiningargögn</translation>
 <translation id="5341793073192892252">Eftirfarandi fótspor voru útilokuð (fótspor þriðja aðila eru útilokuð án undantekninga)</translation>
@@ -6356,7 +6355,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5377367976106153749">Viltu kveikja á aðgangi að myndavél?</translation>
 <translation id="5379140238605961210">Halda áfram að loka á aðgang að hljóðnema</translation>
 <translation id="5382591305415226340">Vinna með studda tengla</translation>
-<translation id="5384401776498845256">Hver getur deilt með þér</translation>
+<translation id="5384401776498845256">Hver geta deilt með þér</translation>
 <translation id="5385628342687007304">Þetta aðgangsorð er aðeins vistað í þessu tæki. Til að nota það í öðrum tækjum skaltu vista það á Google-reikningnum þínum.</translation>
 <translation id="5387116558048951800">Breyta <ph name="CREDENTIAL_TYPE" /></translation>
 <translation id="538822246583124912">Fyrirtækjareglu var breytt. Tilraunahnapp var bætt við tækjastiku. Smelltu á hnappinn til að opna svarglugga og virkja tilraunir.</translation>
@@ -6572,6 +6571,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5519766046604311137">Opna alltaf <ph name="PROTOCOL_SCHEME" />-tengla í þessu forriti</translation>
 <translation id="5520605865175417976">Fjarlægja aðgerð <ph name="ACTION_TO_REMOVE" /></translation>
 <translation id="5521078259930077036">Er þetta heimasíðan sem þú bjóst við?</translation>
+<translation id="5521348028713515143">Bæta við flýtileið á skjáborði</translation>
 <translation id="5522156646677899028">Þessi viðbót inniheldur alvarlegan öryggisgalla.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Viðbót var sett upp af stjórnanda}one{# viðbót var sett upp af stjórnanda}other{# viðbætur voru settar upp af stjórnanda}}</translation>
 <translation id="5523203511530504754">Opna <ph name="PROTOCOL_SCHEME" />-tengla í <ph name="APP_NAME" /></translation>
@@ -9284,7 +9284,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7434969625063495310">Ekki var hægt að bæta við prentþjóni. Athugaðu stillingar þjónsins og reyndu aftur.</translation>
 <translation id="7436921188514130341">Úbbs! Villa kom upp við að breyta heiti.</translation>
 <translation id="7439519621174723623">Bættu við heiti tækis til að halda áfram</translation>
-<translation id="743982235360757672">Hafðu gervigreindarstillingu nálægt þegar þú vafrar</translation>
 <translation id="7441736532026945583">Veldu „Fela hóp“ til að fjarlægja hópinn af fliparæmunni</translation>
 <translation id="7441736921018636843">Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />endurstilla samstillingu<ph name="END_LINK" /> til að fjarlægja aðgangsorð samstillingar</translation>
 <translation id="7441830548568730290">Aðrir notendur</translation>

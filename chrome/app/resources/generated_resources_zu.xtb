@@ -6309,7 +6309,6 @@ Sebenzisa u-Ctrl + Alt + Brightness down ukuze uhlehlise isithombe.</translation
 <translation id="5337926771328966926">Igama ledivayisi lamanje lingu-<ph name="DEVICE_NAME" /></translation>
 <translation id="5338338064218053691">Ungaphequlula ngokwemfihlo usebenzisa iwindi le-incognito</translation>
 <translation id="5338503421962489998">Ukulondoloza kwasendaweni</translation>
-<translation id="5340620183031438925">Ukuze ubuze Imodi ye-AI mayelana nethebhu yakho ngaphandle kokushiya ikhasi, qinisekisa ukuthi nguwe. Uzophinde uthole namaphasiwedi akho nokuningi kuwo wonke amadivayisi akho.</translation>
 <translation id="5340787663756381836">&amp;Thola futhi uhlele</translation>
 <translation id="5340900621595888432">Thumela idatha yokuxilonga neyokusetshenziswa</translation>
 <translation id="5341793073192892252">Amakhukhi alandelayo aye wavinjwa (amakhukhi wenkampani yangaphandle aye wavinjelwa ngaphandle kokukhishiwe)</translation>
@@ -6570,6 +6569,7 @@ Ungabela amaswishi amaningi kulesi senzo.</translation>
 <translation id="5519766046604311137">Vula amalinki e-<ph name="PROTOCOL_SCHEME" /> njalo kule app</translation>
 <translation id="5520605865175417976">Susa isenzo se-<ph name="ACTION_TO_REMOVE" /></translation>
 <translation id="5521078259930077036">Ingabe leli yikhasi lasekhaya obukade ulilindele?</translation>
+<translation id="5521348028713515143">Engeza isinqamuleli sedeskithophu</translation>
 <translation id="5522156646677899028">Lesi sandiso siqukethe ukuba sengozini esibucayi sokuvikela.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Isandiso sesifakiwe ngumlawuli wakho}one{# izandiso ezifakwe umlawuli wakho}other{# izandiso ezifakwe umlawuli wakho}}</translation>
 <translation id="5523203511530504754">Vula amalinki e-<ph name="PROTOCOL_SCHEME" /> ku-<ph name="APP_NAME" /></translation>
@@ -9283,7 +9283,6 @@ Unamaphasiwedi onakalisiwe angu-# ngokwengeziwe. Umphathi Wephasiwedi Ye-Google 
 <translation id="7434969625063495310">Ayikwazanga ukungeza iseva yokuphrinta. Sicela uhlole ukulungiswa kweseva bese uyazama futhi.</translation>
 <translation id="7436921188514130341">Hawu, iphutha! Kube nephutha ngesikhathi sokuqamba kabusha.</translation>
 <translation id="7439519621174723623">Engeza igama ledivayisi ukuze uqhubeke</translation>
-<translation id="743982235360757672">Gcina Imodi ye-AI iseduze ngenkathi ubhrawuza</translation>
 <translation id="7441736532026945583">Khetha okuthi "Fihla Iqembu" ukuze ususe iqembu emugqeni wamathebhu akho</translation>
 <translation id="7441736921018636843">Ukuze ushintshe lesi silungiselelo, <ph name="BEGIN_LINK" />setha kabusha ukuvumelanisa<ph name="END_LINK" /> ukuze ususe umshwana wakho wokuvumelanisa</translation>
 <translation id="7441830548568730290">Abanye abasebenzisi</translation>

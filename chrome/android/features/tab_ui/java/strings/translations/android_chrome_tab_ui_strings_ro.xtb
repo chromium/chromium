@@ -124,6 +124,7 @@
 <translation id="5076161749301278626">Vezi recenziile magazinului?</translation>
 <translation id="5161254044473106830">Titlul este obligatoriu</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome închide automat filele și grupurile de file inactive după <ph name="AUTO_DELETE_DELAY_ONE" /> lună. Poți modifica această opțiune din setări.}few{Chrome închide automat filele și grupurile de file inactive după <ph name="AUTO_DELETE_DELAY_MANY" /> luni. Poți modifica această opțiune din setări.}other{Chrome închide automat filele și grupurile de file inactive după <ph name="AUTO_DELETE_DELAY_MANY" /> de luni. Poți modifica această opțiune din setări.}}</translation>
+<translation id="5254233580564156835">Utilizarea memoriei: <ph name="MEMORY_USAGE" /></translation>
 <translation id="5339733443032484186">Ultima filă</translation>
 <translation id="5380159289133845234">Arhivează filele dublură</translation>
 <translation id="5446043142172831860">Elimină fila și părăsește grupul</translation>

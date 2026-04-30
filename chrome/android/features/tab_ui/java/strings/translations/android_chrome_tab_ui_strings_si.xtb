@@ -124,6 +124,7 @@
 <translation id="5076161749301278626">වෙළඳසැල් සමාලෝචන බලන්නද?</translation>
 <translation id="5161254044473106830">මාතෘකාව අවශ්‍යයි</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome ස්වයංක්‍රීය වී <ph name="AUTO_DELETE_DELAY_ONE" /> මාසයකට පසු අක්‍රිය පටිති සහ පටිති සමූහ වසා දමයි. ඔබට මෙය සැකසීම් තුළ වෙනස් කළ හැක.}one{Chrome ස්වයංක්‍රීය වී මාස <ph name="AUTO_DELETE_DELAY_MANY" />කට පසු අක්‍රිය පටිති සහ පටිති සමූහ වසා දමයි. ඔබට මෙය සැකසීම් තුළ වෙනස් කළ හැක.}other{Chrome ස්වයංක්‍රීය වී මාස <ph name="AUTO_DELETE_DELAY_MANY" />කට පසු අක්‍රිය පටිති සහ පටිති සමූහ වසා දමයි. ඔබට මෙය සැකසීම් තුළ වෙනස් කළ හැක.}}</translation>
+<translation id="5254233580564156835">මතකය භාවිතය: <ph name="MEMORY_USAGE" /></translation>
 <translation id="5339733443032484186">ඔබේ අවසන් පටිත්ත</translation>
 <translation id="5380159289133845234">අනුපත් පටිති ලේඛනාරක්ෂණය කරන්න</translation>
 <translation id="5446043142172831860">පටිත්ත ඉවත් කර සමූහය හැර යන්න</translation>

@@ -124,6 +124,7 @@
 <translation id="5076161749301278626">Sien winkelresensies?</translation>
 <translation id="5161254044473106830">Titel word vereis</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome maak onaktiewe oortjies en oortjiegroepe outomaties ná <ph name="AUTO_DELETE_DELAY_ONE" /> maand toe. Jy kan dit in instellings verander.}other{Chrome maak onaktiewe oortjies en oortjiegroepe outomaties ná <ph name="AUTO_DELETE_DELAY_MANY" /> maande toe. Jy kan dit in instellings verander.}}</translation>
+<translation id="5254233580564156835">Geheuegebruik: <ph name="MEMORY_USAGE" /></translation>
 <translation id="5339733443032484186">Jou jongste oortjie</translation>
 <translation id="5380159289133845234">Argiveer duplikaatoortjies</translation>
 <translation id="5446043142172831860">Verwyder oortjie en verlaat groep</translation>

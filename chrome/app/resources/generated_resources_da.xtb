@@ -6312,7 +6312,6 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5337926771328966926">Navnet på den aktuelle enhed er <ph name="DEVICE_NAME" /></translation>
 <translation id="5338338064218053691">Du kan bruge nettet privat ved hjælp af et inkognitovindue</translation>
 <translation id="5338503421962489998">Lokalt lager</translation>
-<translation id="5340620183031438925">Hvis du vil spørge AI-tilstand om din fane uden at forlade siden, skal du verificere din identitet. Du kan også se dine adgangskoder m.m. på alle dine enheder.</translation>
 <translation id="5340787663756381836">&amp;Find og rediger</translation>
 <translation id="5340900621595888432">Send diagnostik- og brugsdata</translation>
 <translation id="5341793073192892252">Følgende cookies blev blokeret (cookies fra tredjeparter blokeres uden undtagelse)</translation>
@@ -6573,6 +6572,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5519766046604311137">Åbn altid <ph name="PROTOCOL_SCHEME" />-links i denne app</translation>
 <translation id="5520605865175417976">Fjern handlingen <ph name="ACTION_TO_REMOVE" /></translation>
 <translation id="5521078259930077036">Var det den startside, du forventede?</translation>
+<translation id="5521348028713515143">Tilføj skrivebordsgenvej</translation>
 <translation id="5522156646677899028">Denne udvidelse indeholder en alvorlig sikkerhedsbrist.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{En udvidelse blev installeret af din administrator}one{# udvidelse blev installeret af din administrator}other{# udvidelser blev installeret af din administrator}}</translation>
 <translation id="5523203511530504754">Åbn <ph name="PROTOCOL_SCHEME" />-links i <ph name="APP_NAME" /></translation>
@@ -9286,7 +9286,6 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="7434969625063495310">Der kunne ikke tilføjes en printerserver. Tjek serverens konfiguration, og prøv igen.</translation>
 <translation id="7436921188514130341">Øv, surt! Der opstod en fejl under omdøbningen.</translation>
 <translation id="7439519621174723623">Tilføj en enhed for at fortsætte</translation>
-<translation id="743982235360757672">Hav AI-tilstand ved hånden, mens du browser</translation>
 <translation id="7441736532026945583">Vælg "Skjul gruppe" for at fjerne gruppen fra din fanelinje</translation>
 <translation id="7441736921018636843">Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille synkronisering<ph name="END_LINK" /> for at fjerne din adgangssætning for synkronisering</translation>
 <translation id="7441830548568730290">Andre brugere</translation>

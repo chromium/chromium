@@ -1577,6 +1577,7 @@
 <translation id="6476800141292307438">পৃষ্ঠাটি <ph name="LANGUAGE" /> ভাষাতে অনুবাদ হচ্ছে। স্ক্রিনের নিচের দিকে বিকল্পগুলি দেওয়া আছে।</translation>
 <translation id="647867789226964031">আপনার পাসওয়ার্ড পরিবর্তন করুন</translation>
 <translation id="6480363549849064919">ক্লায়েন্ট যাচাইকরণ</translation>
+<translation id="6489174933860678546">আরও গোপনীয়তার সাথে ওয়েবে ব্রাউজ করতে, ছদ্মবেশী ট্যাব খুলুন।</translation>
 <translation id="6494931198667773526">শেষ হবে</translation>
 <translation id="6503077044568424649">সর্বাধিক দেখা</translation>
 <translation id="6503763061813913607">নিরাপত্তা সংক্রান্ত পরীক্ষার বিজ্ঞপ্তি</translation>
@@ -1634,6 +1635,7 @@
 <translation id="6640268266988685324">ট্যাব খুলুন</translation>
 <translation id="6641465290890659327">আপনার পাসওয়ার্ডের একটি কপি শেয়ার করুন</translation>
 <translation id="6642362222295953972">আগে থেকে থাকা ট্যাবে পাল্টান</translation>
+<translation id="6643016212128521049">সাফ করুন</translation>
 <translation id="6645899968535965230">QR কোড: <ph name="PAGE_TITLE" /></translation>
 <translation id="6657585470893396449">পাসওয়ার্ড</translation>
 <translation id="6659660757330712663">টুলবার সোয়াইপ করে আপনি একটি ট্যাব থেকে আরেকটি ট্যাবে পরিবর্তন করে নিতে পারবেন।</translation>
@@ -2296,6 +2298,7 @@
 <translation id="8915916167043355778">সবকটি বন্ধ করুন</translation>
 <translation id="892185197271200809">প্রত্যেকে অবিলম্বে "<ph name="GROUP_NAME" />" ট্যাব গ্রুপে অ্যাক্সেস হারাবেন এবং সব ডিভাইস থেকে এটি মুছে দেওয়া হবে</translation>
 <translation id="8923178205567790913">পাসওয়ার্ড</translation>
+<translation id="8926498511977337209">ছদ্মবেশী মোডে ব্রাউজ করুন</translation>
 <translation id="892776311701544612">আরো জানুন…</translation>
 <translation id="8928133177108699615">ডেস্কটপ</translation>
 <translation id="8928426232677696166"><ph name="EMAIL" />, আপনার সংস্থা ম্যানেজ করে যা বর্তমানে বেছে নেওয়া হয়েছে। একটি অ্যাকাউন্ট বেছে নিন।</translation>

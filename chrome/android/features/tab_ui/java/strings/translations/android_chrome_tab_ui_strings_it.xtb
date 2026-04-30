@@ -124,6 +124,7 @@
 <translation id="5076161749301278626">Vuoi visualizzare le recensioni sul negozio?</translation>
 <translation id="5161254044473106830">Titolo obbligatorio</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome chiude automaticamente le schede e i gruppi di schede inattivi dopo <ph name="AUTO_DELETE_DELAY_ONE" /> mese. Puoi modificare questa opzione nelle Impostazioni.}other{Chrome chiude automaticamente le schede e i gruppi di schede inattivi dopo <ph name="AUTO_DELETE_DELAY_MANY" /> mesi. Puoi modificare questa opzione nelle Impostazioni.}}</translation>
+<translation id="5254233580564156835">Memoria utilizzata: <ph name="MEMORY_USAGE" /></translation>
 <translation id="5339733443032484186">Ultima scheda</translation>
 <translation id="5380159289133845234">Archivia le schede duplicate</translation>
 <translation id="5446043142172831860">Rimuovi scheda e esci dal gruppo</translation>

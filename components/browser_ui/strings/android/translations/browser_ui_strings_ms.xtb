@@ -81,7 +81,6 @@
 <translation id="1781533683087883868">Matikan pautan Mod Membaca</translation>
 <translation id="1785415724048343560">Disyorkan untuk pengalaman terbaik</translation>
 <translation id="1796588414813960292">Ciri yang memerlukan bunyi tidak akan berfungsi</translation>
-<translation id="1799920918471566157">Petua Chrome</translation>
 <translation id="1816835383954230954">Apabila dihidupkan, Chrome berfungsi dengan lebih pantas dan ciri yang menggunakan JavaScript sepatutnya berfungsi seperti spesifikasinya. Apabila dimatikan, prestasi akan berkurang tetapi menjadikan V8 lebih tahan terhadap serangan.</translation>
 <translation id="1818308510395330587">Untuk membolehkan <ph name="APP_NAME" /> menggunakan AR, hidupkan juga kamera dalam <ph name="BEGIN_LINK" />Tetapan Android<ph name="END_LINK" />.</translation>
 <translation id="1822318649925991542">Tukar kedudukan untuk menyesuaikan pengalaman penyemakan imbas anda</translation>
@@ -166,6 +165,7 @@
 <translation id="257931822824936280">Dikembangkan - klik untuk meruntuhkan.</translation>
 <translation id="2586657967955657006">Papan Keratan</translation>
 <translation id="2588271083332682494">Berkemas dengan kumpulan tab</translation>
+<translation id="2592917252160773942">Laman boleh meminta untuk menggunakan kamera anda</translation>
 <translation id="2597457036804169544">Jangan gunakan tema gelap pada laman</translation>
 <translation id="2606760465469169465">Sahkan secara automatik</translation>
 <translation id="2621115761605608342">Benarkan JavaScript untuk tapak tertentu.</translation>
@@ -362,6 +362,7 @@
 <translation id="4635969503923889910">Jangan benarkan laman menggunakan peranti NFC</translation>
 <translation id="4644713492825682049">Padam &amp; tetapkan semula</translation>
 <translation id="4645575059429386691">Diurus oleh ibu bapa anda</translation>
+<translation id="4651224148644053314">Lebih banyak warna &amp; pilihan</translation>
 <translation id="4652266463001779298">Tidak dibenarkan</translation>
 <translation id="4655846733459137112">Ketik Ya untuk menggunakan kata laluan ini dengan mudah apabila anda log masuk selepas ini</translation>
 <translation id="4663373278480897665">Kamera dibenarkan</translation>

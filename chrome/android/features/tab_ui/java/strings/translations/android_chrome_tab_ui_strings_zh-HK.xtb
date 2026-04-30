@@ -124,6 +124,7 @@
 <translation id="5076161749301278626">要查看商店評論嗎？</translation>
 <translation id="5161254044473106830">必須提供標題</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome 會在 <ph name="AUTO_DELETE_DELAY_ONE" /> 個月後自動關閉閒置的分頁和分頁群組。你可在設定中變更這項設定。}other{Chrome 會在 <ph name="AUTO_DELETE_DELAY_MANY" /> 個月後自動關閉閒置的分頁和分頁群組。你可在設定中變更這項設定。}}</translation>
+<translation id="5254233580564156835">記憶體用量：<ph name="MEMORY_USAGE" /></translation>
 <translation id="5339733443032484186">最後一個分頁</translation>
 <translation id="5380159289133845234">封存重複的分頁</translation>
 <translation id="5446043142172831860">移除分頁並離開群組</translation>

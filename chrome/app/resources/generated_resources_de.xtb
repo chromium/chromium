@@ -6290,7 +6290,6 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5337926771328966926">Der aktuelle Gerätename ist <ph name="DEVICE_NAME" /></translation>
 <translation id="5338338064218053691">In einem Inkognitofenster kannst du privat surfen</translation>
 <translation id="5338503421962489998">Lokaler Speicher</translation>
-<translation id="5340620183031438925">Wenn du im KI-Modus Fragen zu Inhalten auf deinem Tab stellen möchtest, ohne die Seite zu verlassen, bestätige deine Identität. Du kannst dann auch auf allen deinen Geräten auf deine Passwörter und weitere Daten zugreifen.</translation>
 <translation id="5340787663756381836">&amp;Suchen und bearbeiten</translation>
 <translation id="5340900621595888432">Diagnose- und Nutzungsdaten senden</translation>
 <translation id="5341793073192892252">Die folgenden Cookies wurden blockiert (Cookies von Drittanbietern werden ausnahmslos blockiert)</translation>
@@ -6551,6 +6550,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5519766046604311137">„<ph name="PROTOCOL_SCHEME" />“-Links immer in dieser App öffnen</translation>
 <translation id="5520605865175417976">Aktion „<ph name="ACTION_TO_REMOVE" />“ entfernen</translation>
 <translation id="5521078259930077036">Ist das deine erwartete Startseite?</translation>
+<translation id="5521348028713515143">Desktopverknüpfung hinzufügen</translation>
 <translation id="5522156646677899028">Diese Erweiterung enthält eine schwere Sicherheitslücke.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Eine Erweiterung wurde von deinem Administrator installiert}other{# Erweiterungen wurden von deinem Administrator installiert}}</translation>
 <translation id="5523203511530504754">„<ph name="PROTOCOL_SCHEME" />“-Links in <ph name="APP_NAME" /> öffnen</translation>
@@ -9259,7 +9259,6 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7434969625063495310">Der Druckserver konnte nicht hinzugefügt werden. Prüfe die Konfiguration des Servers und versuche es noch einmal.</translation>
 <translation id="7436921188514130341">Oh nein! Beim Umbenennen ist ein Fehler aufgetreten.</translation>
 <translation id="7439519621174723623">Gib einen Gerätenamen ein, um fortzufahren</translation>
-<translation id="743982235360757672">KI-Modus beim Surfen im Web immer bereithalten</translation>
 <translation id="7441736532026945583">Wähle „Gruppe ausblenden“ aus, um die Gruppe von deiner Tableiste zu entfernen</translation>
 <translation id="7441736921018636843">Wenn du diese Einstellung ändern möchtest, musst du die <ph name="BEGIN_LINK" />Synchronisierung zurücksetzen<ph name="END_LINK" />, um die Synchronisierungspassphrase zu entfernen</translation>
 <translation id="7441830548568730290">Andere Nutzer</translation>

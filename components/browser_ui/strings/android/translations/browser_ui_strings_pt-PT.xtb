@@ -81,7 +81,6 @@
 <translation id="1781533683087883868">Desativar links do Modo de leitura</translation>
 <translation id="1785415724048343560">Recomendado para obter a melhor experiência</translation>
 <translation id="1796588414813960292">As funcionalidades que necessitam de som não funcionarão</translation>
-<translation id="1799920918471566157">Sugestões do Chrome</translation>
 <translation id="1816835383954230954">Quando está ativado, o Chrome é executado mais rapidamente e as funcionalidades que usam o JavaScript devem funcionar conforme previsto. Quando está desativado, reduz o desempenho, mas torna o V8 mais resistente a ataques.</translation>
 <translation id="1818308510395330587">Para permitir que a app <ph name="APP_NAME" /> utilize a realidade aumentada, ative também a câmara nas <ph name="BEGIN_LINK" />Definições do Android<ph name="END_LINK" />.</translation>
 <translation id="1822318649925991542">Mude a posição para personalizar a sua experiência de navegação</translation>
@@ -165,6 +164,7 @@
 <translation id="257931822824936280">Expandido. Clique para reduzir.</translation>
 <translation id="2586657967955657006">Área de transferência</translation>
 <translation id="2588271083332682494">Organize-se com os grupos de separadores</translation>
+<translation id="2592917252160773942">Os sites podem pedir acesso à sua câmara</translation>
 <translation id="2597457036804169544">Não aplique o tema escuro aos sites</translation>
 <translation id="2606760465469169465">Validação automática</translation>
 <translation id="2621115761605608342">Permitir JavaScript num site específico.</translation>
@@ -361,6 +361,7 @@
 <translation id="4635969503923889910">Não permitir que os sites usem dispositivos NFC</translation>
 <translation id="4644713492825682049">Eliminar e repor</translation>
 <translation id="4645575059429386691">Gerido pelos teus pais</translation>
+<translation id="4651224148644053314">Mais cores e opções</translation>
 <translation id="4652266463001779298">Não permitida</translation>
 <translation id="4655846733459137112">Toque em Sim para usar facilmente esta palavra-passe na próxima vez que iniciar sessão</translation>
 <translation id="4663373278480897665">Câmara permitida</translation>

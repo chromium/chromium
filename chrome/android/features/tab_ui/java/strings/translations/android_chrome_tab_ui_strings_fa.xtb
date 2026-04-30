@@ -124,6 +124,7 @@
 <translation id="5076161749301278626">می‌خواهید مرورهای فروشگاه را ببینید؟</translation>
 <translation id="5161254044473106830">عنوان مورد نیاز است</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{‏‫Chrome زبانه‌ها و گروه‌های زبانه غیرفعال را به‌طور خودکار پس‌از <ph name="AUTO_DELETE_DELAY_ONE" /> ماه می‌بندد. می‌توانید این قابلیت را در تنظیمات تغییر دهید.}one{‏‫Chrome زبانه‌ها و گروه‌های زبانه غیرفعال را به‌طور خودکار پس‌از <ph name="AUTO_DELETE_DELAY_MANY" /> ماه می‌بندد. می‌توانید این قابلیت را در تنظیمات تغییر دهید.}other{‏‫Chrome زبانه‌ها و گروه‌های زبانه غیرفعال را به‌طور خودکار پس‌از <ph name="AUTO_DELETE_DELAY_MANY" /> ماه می‌بندد. می‌توانید این قابلیت را در تنظیمات تغییر دهید.}}</translation>
+<translation id="5254233580564156835">استفاده از حافظه: <ph name="MEMORY_USAGE" /></translation>
 <translation id="5339733443032484186">آخرین زبانه شما</translation>
 <translation id="5380159289133845234">بایگانی کردن برگه‌های تکراری</translation>
 <translation id="5446043142172831860">برداشتن زبانه و ترک کردن گروه</translation>

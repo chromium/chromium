@@ -124,6 +124,7 @@
 <translation id="5076161749301278626">Vill du visa butiksrecensioner?</translation>
 <translation id="5161254044473106830">Titel krävs</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome stänger automatiskt inaktiva flikar och flikgrupper efter <ph name="AUTO_DELETE_DELAY_ONE" /> månad. Du kan ändra det här i inställningarna.}other{Chrome stänger automatiskt inaktiva flikar och flikgrupper efter <ph name="AUTO_DELETE_DELAY_MANY" /> månader. Du kan ändra det här i inställningarna.}}</translation>
+<translation id="5254233580564156835">Minnesanvändning: <ph name="MEMORY_USAGE" /></translation>
 <translation id="5339733443032484186">Din senaste flik</translation>
 <translation id="5380159289133845234">Arkivera flikdubbletter</translation>
 <translation id="5446043142172831860">Ta bort fliken och lämna gruppen</translation>

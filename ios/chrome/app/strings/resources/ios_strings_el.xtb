@@ -1577,6 +1577,7 @@
 <translation id="6476800141292307438">Μετάφραση της σελίδας σε <ph name="LANGUAGE" />. Οι επιλογές είναι διαθέσιμες κοντά στο κάτω μέρος της οθόνης.</translation>
 <translation id="647867789226964031">Αλλαγή κωδικών πρόσβασης</translation>
 <translation id="6480363549849064919">Έλεγχος ταυτότητας εφαρμογής πελάτης</translation>
+<translation id="6489174933860678546">Ανοίξτε καρτέλες ανώνυμης περιήγησης για να περιηγηθείτε στον ιστό πιο ιδιωτικά.</translation>
 <translation id="6494931198667773526">Λήξη</translation>
 <translation id="6503077044568424649">Πιο δημοφιλή</translation>
 <translation id="6503763061813913607">Ειδοποιήσεις Ελέγχου ασφαλείας</translation>
@@ -1634,6 +1635,7 @@
 <translation id="6640268266988685324">Άνοιγμα καρτέλας</translation>
 <translation id="6641465290890659327">Κοινοποίηση αντιγράφου του κωδικού πρόσβασής σας</translation>
 <translation id="6642362222295953972">Εναλλαγή στην υπάρχουσα καρτέλα</translation>
+<translation id="6643016212128521049">Διαγραφή</translation>
 <translation id="6645899968535965230">Κωδικός QR: <ph name="PAGE_TITLE" /></translation>
 <translation id="6657585470893396449">Κωδικός πρόσβασης</translation>
 <translation id="6659660757330712663">Μπορείτε να σύρετε τη γραμμή εργαλείων για εναλλαγή μεταξύ των καρτελών.</translation>
@@ -2296,6 +2298,7 @@
 <translation id="8915916167043355778">Κλείσιμο όλων</translation>
 <translation id="892185197271200809">Όλοι θα χάσουν αμέσως την πρόσβαση στην ομάδα καρτελών <ph name="GROUP_NAME" /> και θα διαγραφεί από όλες τις συσκευές</translation>
 <translation id="8923178205567790913">Κωδικοί πρόσβασης</translation>
+<translation id="8926498511977337209">Ανώνυμη περιήγηση</translation>
 <translation id="892776311701544612">Μάθετε περισσότερα…</translation>
 <translation id="8928133177108699615">Για υπολογιστή</translation>
 <translation id="8928426232677696166">Τρέχουσα επιλογή: <ph name="EMAIL" />, υπό τη διαχείριση του οργανισμού σας. Επιλέξτε λογαριασμό.</translation>

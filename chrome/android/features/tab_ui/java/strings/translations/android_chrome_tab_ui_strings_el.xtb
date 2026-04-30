@@ -124,6 +124,7 @@
 <translation id="5076161749301278626">Εμφάνιση αξιολογήσεων καταστήματος;</translation>
 <translation id="5161254044473106830">Απαιτείται τίτλος</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Το Chrome κλείνει αυτόματα τις ανενεργές καρτέλες και τις ομάδες καρτελών μετά από <ph name="AUTO_DELETE_DELAY_ONE" /> μήνα. Μπορείτε να αλλάξετε αυτή την επιλογή στις ρυθμίσεις.}other{Το Chrome κλείνει αυτόματα τις ανενεργές καρτέλες και τις ομάδες καρτελών μετά από <ph name="AUTO_DELETE_DELAY_MANY" /> μήνες. Μπορείτε να αλλάξετε αυτή την επιλογή στις ρυθμίσεις.}}</translation>
+<translation id="5254233580564156835">Χρήση μνήμης: <ph name="MEMORY_USAGE" /></translation>
 <translation id="5339733443032484186">Η τελευταία καρτέλα σας</translation>
 <translation id="5380159289133845234">Αρχειοθέτηση διπλότυπων καρτελών</translation>
 <translation id="5446043142172831860">Κατάργηση καρτέλας και αποχώρηση από την ομάδα</translation>

@@ -54,7 +54,6 @@
 <translation id="1594928384848033697">Chromium anmoder om tilladelse til at slette dine data i Adgangskodeadministrator. Angiv din Windows-adgangskode for at tillade dette.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Din administrator kræver, at du genstarter Chromium for at anvende en opdatering}=1{Din administrator kræver, at du genstarter Chromium for at anvende en opdatering. Dit inkognitovindue åbnes ikke igen.}one{Din administrator kræver, at du genstarter Chromium for at anvende en opdatering. # inkognitovindue åbnes ikke igen.}other{Din administrator kræver, at du genstarter Chromium for at anvende en opdatering. Dine # inkognitovinduer åbnes ikke igen.}}</translation>
 <translation id="1625909126243026060">Gennemgå vigtige privatlivs- og sikkerhedsindstillinger i Chromium</translation>
-<translation id="1639380494700489405">Hvis du vil spørge AI-tilstand om din fane uden at forlade siden, skal du logge ind i Chromium. Du kan også se dine adgangskoder m.m. på alle dine enheder.</translation>
 <translation id="1640672724030957280">Downloader...</translation>
 <translation id="1680687534629375545">Stil Billedsøgning spørgsmål om denne side</translation>
 <translation id="1708414395296835197">Du kan bruge Chromium, hver gang du klikker på links i beskeder, dokumenter og andre apps. Den fastgøres også til proceslinjen.</translation>

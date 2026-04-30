@@ -6294,7 +6294,6 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="5337926771328966926">Aktuální název zařízení je <ph name="DEVICE_NAME" /></translation>
 <translation id="5338338064218053691">V anonymním okně můžete web procházet v soukromí</translation>
 <translation id="5338503421962489998">Místní úložiště</translation>
-<translation id="5340620183031438925">Pokud se chcete režimu AI ptát ohledně karty bez opuštění stránky, ověřte svou totožnost. Na všech svých zařízeních budete mít k dispozici i svá hesla a další informace.</translation>
 <translation id="5340787663756381836">&amp;Najít a upravit</translation>
 <translation id="5340900621595888432">Odesílat diagnostické údaje a údaje o využití</translation>
 <translation id="5341793073192892252">Následující soubory cookie byly zablokovány (soubory cookie třetí strany jsou blokovány bez výjimky)</translation>
@@ -6555,6 +6554,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="5519766046604311137">Odkazy <ph name="PROTOCOL_SCHEME" /> vždy otevírat v této aplikaci</translation>
 <translation id="5520605865175417976">Odstranit akci <ph name="ACTION_TO_REMOVE" /></translation>
 <translation id="5521078259930077036">Je toto domovská stránka, kterou jste očekávali?</translation>
+<translation id="5521348028713515143">Přidat zástupce na plochu</translation>
 <translation id="5522156646677899028">Toto rozšíření představuje závažné bezpečnostní riziko.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Administrátor nainstaloval rozšíření}few{Administrátor nainstaloval # rozšíření}many{Administrátor nainstaloval # rozšíření}other{Administrátor nainstaloval # rozšíření}}</translation>
 <translation id="5523203511530504754">Odkazy <ph name="PROTOCOL_SCHEME" /> otevírat v aplikaci <ph name="APP_NAME" /></translation>
@@ -8545,6 +8545,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="6927200998271693557">Pokud se chcete rychle vracet na navštívené weby, synchronizujte historii a karty do účtu <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6928650056523249512">Automaticky odebírat oprávnění nepoužívaným webům</translation>
 <translation id="6929126689972602640">U školních účtů není rodičovská kontrola podporována. Pokud chcete přidat školní účet pro přístup k Učebně Google a dalším webům, které dítě potřebuje k práci do školy, nejdříve se přihlaste pomocí osobního účtu dítěte. Školní účet budete moci přidat později.</translation>
+<translation id="6929639755025587400">Instalování aplikace…</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{Rozšíření bylo zamítnuto}few{# rozšíření byla zamítnuta}many{# rozšíření bylo zamítnuto}other{# rozšíření bylo zamítnuto}}</translation>
 <translation id="6930337524857202955">Je k dispozici nový stažený soubor</translation>
 <translation id="6930477763029357444">Oprávnění, která povolíte pro aplikaci <ph name="APP_NAME" />, budou povolena i pro aplikaci <ph name="PARENT_APP_NAME" /> a její nainstalované aplikace.</translation>
@@ -8710,6 +8711,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7038632520572155338">Ovládání přepínači</translation>
 <translation id="7038710352229712897">Přidejte další účet Google pro uživatele <ph name="USER_NAME" /></translation>
 <translation id="7039326228527141150">Přistupovat k zařízením USB od dodavatele <ph name="VENDOR_NAME" /></translation>
+<translation id="7039697949826432881">Soubor nelze nahrát. Soubor překračuje maximální podporovanou velikost <ph name="MAX_FILE_SIZE" /> MB.</translation>
 <translation id="7039912931802252762">Přihlášení pomocí karty SmartCard Microsoft</translation>
 <translation id="7039951224110875196">Vytvořit účet Google pro dítě</translation>
 <translation id="7042116641003232070">Má povoleno ukládat data do zařízení</translation>
@@ -9266,7 +9268,6 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7434969625063495310">Přidání tiskového serveru se nezdařilo. Zkontrolujte konfiguraci serveru a zkuste to znovu.</translation>
 <translation id="7436921188514130341">Aj, chyba! Při přejmenovávání došlo k chybě.</translation>
 <translation id="7439519621174723623">Pokud chcete pokračovat, přidejte název zařízení</translation>
-<translation id="743982235360757672">Mějte při procházení po ruce režim AI</translation>
 <translation id="7441736532026945583">Výběrem možnosti Skrýt skupinu odstraňte skupinu z lišty karet</translation>
 <translation id="7441736921018636843">Chcete-li toto nastavení změnit, <ph name="BEGIN_LINK" />resetováním synchronizace<ph name="END_LINK" /> odstraňte svou heslovou frázi pro synchronizaci</translation>
 <translation id="7441830548568730290">Ostatní uživatelé</translation>
@@ -10753,6 +10754,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8460448946170646641">Zkontrolujte klíčové ovládací prvky ochrany soukromí a zabezpečení</translation>
 <translation id="8460490661223303637">Chrome odstranil část obsahu, aby mohl uložit vzpomínky</translation>
 <translation id="8460932807646981183">Spravovat vyhledávače a vyhledávání na webu</translation>
+<translation id="8461572080432076264">Poslechnout si tuto stránku</translation>
 <translation id="8461914792118322307">Proxy server</translation>
 <translation id="8461973047386722744">Nebyla nalezena žádná hesla</translation>
 <translation id="846205103980293931">{NUM_TABS,plural, =1{Výběrový seznam s 1 položkou}few{Výběrový seznam se {NUM_TABS} položkami}many{Výběrový seznam s {NUM_TABS} položky}other{Výběrový seznam s {NUM_TABS} položkami}}</translation>

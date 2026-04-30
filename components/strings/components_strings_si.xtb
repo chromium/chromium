@@ -152,6 +152,7 @@
 <translation id="1228893227497259893">වැරදි ස්ථීති හඳුන්වනය</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (ස්වයංව අනාවරණය වූ)</translation>
 <translation id="1232569758102978740">මාතෘකා නොමැති</translation>
+<translation id="1234539281285007945"><ph name="FIELD_1" /> අවශ්‍යය වේ</translation>
 <translation id="1236081509407217141">VR ඉඩ දෙන්නද?</translation>
 <translation id="1236689197410206751">AfterPay</translation>
 <translation id="1240347957665416060">ඔබේ උපාංගයේ නම</translation>
@@ -472,6 +473,7 @@
 <translation id="1721424275792716183">* ක්ෂේත්‍රය අවශ්‍යයි</translation>
 <translation id="1723636263173393300">මෙම ප්‍රතිපත්තියට කෙටිමං <ph name="MAX_ITEMS_LIMIT" />කට වඩා නොතිබිය යුතු ය.</translation>
 <translation id="1725591448053514783">ලියුම් කවරය ඔබ 6</translation>
+<translation id="172754119609519423"><ph name="FIELD_1" />, <ph name="FIELD_2" /> හෝ <ph name="FIELD_3" /> අවශ්‍ය වේ</translation>
 <translation id="1727613060316725209">සහතිකය වලංගුය</translation>
 <translation id="1728677426644403582">ඔබ වෙබ් පිටුවක මූලාශ්‍රය බලමින් සිටී</translation>
 <translation id="173080396488393970">මෙම කාඩ්පත් වර්ගය සහාය නොදක්වයි</translation>
@@ -1432,6 +1434,7 @@
 <translation id="3220264767789936523">විධිමත් ඇඳුම්</translation>
 <translation id="3223287115535306850">යෙදුම දියත් කිරීමේ තෙරපුම</translation>
 <translation id="3223425961342298674">ස්ථානයට ඉඩ දී නැත</translation>
+<translation id="3225277284238802910"><ph name="FIELD_1" /> හෝ <ph name="FIELD_2" /> අවශ්‍ය වේ</translation>
 <translation id="3225319735946384299">කේත අත්සන් කිරීම</translation>
 <translation id="3225919329040284222">සේවාදායකය සහතිකයක් ඉදිරිපත් කළ නමුත් එය තිළැලි පොරොත්තු සමඟ නොගැලපේ. ඔබේ ආරක්ෂාව සඳහා එම පොරොත්තු ඇතුළත් කර ඇත්තේ නිශ්චිත අධි-ආරක්ෂිත අඩවි පමණි.</translation>
 <translation id="3226128629678568754">පිටුව ප්‍රවේශනය කිරීමට අවශ්‍ය දත්ත යළි ඉදිරිපත් කිරීමට යළි ප්‍රවේශනය කරන බොත්තම ඔබන්න.</translation>

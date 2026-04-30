@@ -81,7 +81,6 @@
 <translation id="1781533683087883868">Vypnout odkazy v režimu čtení</translation>
 <translation id="1785415724048343560">Doporučeno pro nejlepší zážitek</translation>
 <translation id="1796588414813960292">Funkce vyžadující zvuk nebudou k dispozici</translation>
-<translation id="1799920918471566157">Tipy Chrome</translation>
 <translation id="1816835383954230954">Když je tento přepínač zapnutý, běží Chrome rychleji a funkce využívající JavaScript by měly fungovat tak, jak byly navrženy. Když je vypnutý, je Chrome pomalejší, ale V8 je odolnější proti útokům.</translation>
 <translation id="1818308510395330587">Pokud aplikaci <ph name="APP_NAME" /> chcete povolit používání rozšířené reality, zapněte také v <ph name="BEGIN_LINK" />Nastavení Android<ph name="END_LINK" /> fotoaparát.</translation>
 <translation id="1822318649925991542">Přepnutím pozice si můžete přizpůsobit prostředí při procházení</translation>
@@ -165,6 +164,7 @@
 <translation id="257931822824936280">Rozbaleno – kliknutím sbalíte</translation>
 <translation id="2586657967955657006">Schránka</translation>
 <translation id="2588271083332682494">Udělejte si pořádek se skupinami karet</translation>
+<translation id="2592917252160773942">Weby můžou žádat o přístup ke kameře</translation>
 <translation id="2597457036804169544">Nepoužívat pro weby tmavý motiv</translation>
 <translation id="2606760465469169465">Automatické ověření</translation>
 <translation id="2621115761605608342">Povolit JavaScript pro konkrétní web.</translation>
@@ -361,6 +361,7 @@
 <translation id="4635969503923889910">Nepovolovat webům používat zařízení NFC</translation>
 <translation id="4644713492825682049">Vymazat a resetovat</translation>
 <translation id="4645575059429386691">Spravováno vaším rodičem</translation>
+<translation id="4651224148644053314">Další barvy a možnosti</translation>
 <translation id="4652266463001779298">Není povoleno</translation>
 <translation id="4655846733459137112">Když kliknete na Ano, budete mít heslo při příštím přihlášení snadno k dispozici</translation>
 <translation id="4663373278480897665">Kamera je povolena</translation>

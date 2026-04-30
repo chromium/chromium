@@ -1576,6 +1576,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="6476800141292307438">A traduzir a página para <ph name="LANGUAGE" />. Estão disponíveis opções junto à parte inferior do ecrã.</translation>
 <translation id="647867789226964031">Altere as suas palavras-passe</translation>
 <translation id="6480363549849064919">Autenticação do cliente</translation>
+<translation id="6489174933860678546">Abra separadores de navegação anónima para navegar na Web com mais privacidade.</translation>
 <translation id="6494931198667773526">Fim</translation>
 <translation id="6503077044568424649">Mais visitadas</translation>
 <translation id="6503763061813913607">Notificações da verificação de segurança</translation>
@@ -1633,6 +1634,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="6640268266988685324">Separador aberto</translation>
 <translation id="6641465290890659327">Partilhe uma cópia da sua palavra-passe</translation>
 <translation id="6642362222295953972">Mudar para um separador existente</translation>
+<translation id="6643016212128521049">Limpar</translation>
 <translation id="6645899968535965230">Código QR: <ph name="PAGE_TITLE" /></translation>
 <translation id="6657585470893396449">Palavra-passe</translation>
 <translation id="6659660757330712663">Pode deslizar rapidamente a barra de ferramentas para alternar entre separadores.</translation>
@@ -2295,6 +2297,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="8915916167043355778">Fechar tudo</translation>
 <translation id="892185197271200809">Todas as pessoas vão perder imediatamente o acesso ao grupo de separadores "<ph name="GROUP_NAME" />", e este vai ser eliminado de todos os dispositivos</translation>
 <translation id="8923178205567790913">Palavras-passe</translation>
+<translation id="8926498511977337209">Use a navegação anónima</translation>
 <translation id="892776311701544612">Saiba mais…</translation>
 <translation id="8928133177108699615">Computador</translation>
 <translation id="8928426232677696166"><ph name="EMAIL" />, gerida pela sua organização, atualmente selecionada. Selecione uma conta.</translation>

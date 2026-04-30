@@ -124,6 +124,7 @@
 <translation id="5076161749301278626">Kas kuvada poe arvustused?</translation>
 <translation id="5161254044473106830">Pealkiri on kohustuslik</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome sulgeb inaktiivsed vahelehed ja vahelehegrupid <ph name="AUTO_DELETE_DELAY_ONE" /> kuu pärast automaatselt. Saate seda seadetes muuta.}other{Chrome sulgeb inaktiivsed vahelehed ja vahelehegrupid <ph name="AUTO_DELETE_DELAY_MANY" /> kuu pärast automaatselt. Saate seda seadetes muuta.}}</translation>
+<translation id="5254233580564156835">Mälukasutus: <ph name="MEMORY_USAGE" /></translation>
 <translation id="5339733443032484186">Viimane vaheleht</translation>
 <translation id="5380159289133845234">Vahelehtede duplikaatide arhiivimine</translation>
 <translation id="5446043142172831860">Eemaldage vahekaart ja lahkuge grupist</translation>

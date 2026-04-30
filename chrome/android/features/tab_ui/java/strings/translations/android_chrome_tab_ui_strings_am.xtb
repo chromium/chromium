@@ -124,6 +124,7 @@
 <translation id="5076161749301278626">የመደብር ግምገማዎችን ይመለከታሉ?</translation>
 <translation id="5161254044473106830">ርዕስ ያስፈልጋል</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome ከ<ph name="AUTO_DELETE_DELAY_ONE" /> ወር በኋላ ገቢር ያልሆኑ ትሮች እና የትር ቡድኖችን በራስ-ሰር ይዘጋል። ይህን በቅንብሮች ውስጥ መለወጥ ይችላሉ።}one{Chrome ከ<ph name="AUTO_DELETE_DELAY_MANY" /> ወር በኋላ ገቢር ያልሆኑ ትሮች እና የትር ቡድኖችን በራስ-ሰር ይዘጋል። ይህን በቅንብሮች ውስጥ መለወጥ ይችላሉ።}other{Chrome ከ<ph name="AUTO_DELETE_DELAY_MANY" /> ወራት በኋላ ገቢር ያልሆኑ ትሮች እና የትር ቡድኖችን በራስ-ሰር ይዘጋል። ይህን በቅንብሮች ውስጥ መለወጥ ይችላሉ።}}</translation>
+<translation id="5254233580564156835">የማህደረ ትውስታ አጠቃቀም፦ <ph name="MEMORY_USAGE" /></translation>
 <translation id="5339733443032484186">የእርስዎ የመጨረሻ ትር</translation>
 <translation id="5380159289133845234">የተባዙ ትሮችን በማህደር ያስቀምጡ</translation>
 <translation id="5446043142172831860">ትርን ያስወግዱ እና ከቡድን ይውጡ</translation>

@@ -124,6 +124,7 @@
 <translation id="5076161749301278626">매장 리뷰를 확인하시겠습니까?</translation>
 <translation id="5161254044473106830">제목이 필요합니다.</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome에서는 <ph name="AUTO_DELETE_DELAY_ONE" />개월이 지난 비활성 탭과 탭 그룹을 자동으로 닫습니다. 설정에서 변경할 수 있습니다.}other{Chrome에서는 <ph name="AUTO_DELETE_DELAY_MANY" />개월이 지난 비활성 탭과 탭 그룹을 자동으로 닫습니다. 설정에서 변경할 수 있습니다.}}</translation>
+<translation id="5254233580564156835">메모리 사용량: <ph name="MEMORY_USAGE" /></translation>
 <translation id="5339733443032484186">마지막 탭</translation>
 <translation id="5380159289133845234">중복 탭 보관처리</translation>
 <translation id="5446043142172831860">탭 삭제 및 그룹 나가기</translation>

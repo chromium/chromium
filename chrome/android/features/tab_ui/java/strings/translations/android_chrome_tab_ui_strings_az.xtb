@@ -124,6 +124,7 @@
 <translation id="5076161749301278626">Mağaza rəyləri göstərilsin?</translation>
 <translation id="5161254044473106830">Başlıq tələb olunur</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome <ph name="AUTO_DELETE_DELAY_ONE" /> aydan sonra qeyri-aktiv tab və tab qruplarını avtomatik bağlayır. Bunu ayarlarda dəyişə bilərsiniz.}other{Chrome <ph name="AUTO_DELETE_DELAY_MANY" /> aydan sonra qeyri-aktiv tab və tab qruplarını avtomatik bağlayır. Bunu ayarlarda dəyişə bilərsiniz.}}</translation>
+<translation id="5254233580564156835">Yaddaş istifadəsi: <ph name="MEMORY_USAGE" /></translation>
 <translation id="5339733443032484186">Son tab</translation>
 <translation id="5380159289133845234">Dublikat tabları arxivləyin</translation>
 <translation id="5446043142172831860">Tabı silin və qrupu tərk edin</translation>

@@ -721,6 +721,7 @@
 <translation id="3565012355885596568">Rasmlar yuklanmadi</translation>
 <translation id="3565930036634619844">Varaq. <ph name="TAB_INDEX" /> / <ph name="NUMBER_OF_TABS" /></translation>
 <translation id="3567168891086460374">Boshqa usulda saqlang</translation>
+<translation id="3571703298474554279">Ilovadan foydalanishning tezkor usuli</translation>
 <translation id="3572503683475187385">Yangi chat boshlaganingizda joriy varaq Gemini bilan ulashiladi. Varaq Gemini bilan ulashilganda uning kontenti va URL manzili Googlega yuboriladi. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">Google hisobingizda</translation>
 <translation id="3575234738189584619">Lens orqali qidirish</translation>
@@ -1576,6 +1577,7 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="6476800141292307438">Sahifa <ph name="LANGUAGE" /> tiliga tarjima qilinmoqda. Parametrlar ekranning pastiga yaqin joyda joylashgan.</translation>
 <translation id="647867789226964031">Parollaringizni oʻzgartiring</translation>
 <translation id="6480363549849064919">Mijoz autentifikatsiyasi</translation>
+<translation id="6489174933860678546">Internetni yanada maxfiyroq kezish uchun Inkognito varaqlardan foydalaning.</translation>
 <translation id="6494931198667773526">Tugashi</translation>
 <translation id="6503077044568424649">Eng ko‘p ochilgan saytlar</translation>
 <translation id="6503763061813913607">Xavfsizlik tekshiruvi bildirishnomalari</translation>
@@ -1633,6 +1635,7 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="6640268266988685324">Varaqni ochish</translation>
 <translation id="6641465290890659327">Parolingiz nusxasini ulashing</translation>
 <translation id="6642362222295953972">Oldin ochilgan varaqqa oʻtish</translation>
+<translation id="6643016212128521049">Tozalash</translation>
 <translation id="6645899968535965230">QR-kod: <ph name="PAGE_TITLE" /></translation>
 <translation id="6657585470893396449">Parol</translation>
 <translation id="6659660757330712663">Varaqlarni almashtirish uchun asboblar panelini yonga suring.</translation>
@@ -1699,6 +1702,7 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="6871397658902960384">Kezishni boshlang</translation>
 <translation id="6874328931822449112">{COUNT,plural, =1{Parolni hisobga saqlash}other{Parollarni hisobga saqlash}}</translation>
 <translation id="6875166646976836138">Shuningdek, siz bukmarklar, saqlangan sahifalar va parollar menejeriga saqlangan maʼlumotlarni koʻrishingiz va boshqarishingiz mumkin.</translation>
+<translation id="6878052248816456143">Google Drive omboridagi fayllaringizdan istalganda foydalaning.</translation>
 <translation id="6882836635272038266">Zararli deb hisoblangan sayt, yuklanma va kengaytmalarga qarshi standart himoya</translation>
 <translation id="6884135917113737984">{COUNT,plural, =1{{COUNT} ta parolni Google hisobingizga saqlang}other{{COUNT} ta parolni Google hisobingizga saqlang}}</translation>
 <translation id="6888009575607455378">Haqiqatan ham oʻzgarishlarni bekor qilmoqchimisiz?</translation>
@@ -1812,6 +1816,7 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="7345061034321640811">Import qilish mumkin emas</translation>
 <translation id="7347998088283246662">Parollar, tarix, bukmarklar va boshqalarni import qiling</translation>
 <translation id="7352651011704765696">Xatolik yuz berdi.</translation>
+<translation id="7363497636543208734">Endi ilovadan foydalanish yanada oson.</translation>
 <translation id="7364796246159120393">Fayl tanlang</translation>
 <translation id="736564850024123010">Manzillar qatori joylashuvini oʻzingizga moslang</translation>
 <translation id="7366909168761621528">Brauzer tarixi</translation>
@@ -2295,6 +2300,7 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="8915916167043355778">Hammasini yopish</translation>
 <translation id="892185197271200809">“<ph name="GROUP_NAME" />” varaqlar guruhi hammada ishlamay qoladi va barcha qurilmalardan oʻchiriladi</translation>
 <translation id="8923178205567790913">Parollar</translation>
+<translation id="8926498511977337209">Inkognito rejimida kezish</translation>
 <translation id="892776311701544612">Batafsil…</translation>
 <translation id="8928133177108699615">Ish stoli</translation>
 <translation id="8928426232677696166">Joriy tanlangan <ph name="EMAIL" /> hisobi tashkilot boshqaruvida. Hisobni tanlang.</translation>

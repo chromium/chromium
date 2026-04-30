@@ -152,6 +152,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1228893227497259893">El identificador de la entidad es incorrecto.</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (detectado automáticamente)</translation>
 <translation id="1232569758102978740">Sin título</translation>
+<translation id="1234539281285007945">Debes completar el campo <ph name="FIELD_1" /></translation>
 <translation id="1236081509407217141">¿Quieres permitir la RV?</translation>
 <translation id="1236689197410206751">Afterpay</translation>
 <translation id="1240347957665416060">Tu nombre de dispositivo</translation>
@@ -472,6 +473,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1721424275792716183">* El campo es obligatorio</translation>
 <translation id="1723636263173393300">Esta política no debe tener más de <ph name="MAX_ITEMS_LIMIT" /> accesos directos.</translation>
 <translation id="1725591448053514783">Sobre You 6</translation>
+<translation id="172754119609519423">Debes completar el campo <ph name="FIELD_1" />, <ph name="FIELD_2" /> o <ph name="FIELD_3" /></translation>
 <translation id="1727613060316725209">El certificado es válido</translation>
 <translation id="1728677426644403582">Estás viendo la fuente de una página web</translation>
 <translation id="173080396488393970">No se acepta este tipo de tarjeta</translation>
@@ -1433,6 +1435,7 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="3220264767789936523">Indumentaria formal</translation>
 <translation id="3223287115535306850">Ícono de carga para el inicio de la app</translation>
 <translation id="3223425961342298674">No se permite la ubicación</translation>
+<translation id="3225277284238802910">Debes completar el campo <ph name="FIELD_1" /> o <ph name="FIELD_2" /></translation>
 <translation id="3225319735946384299">Firma de código</translation>
 <translation id="3225919329040284222">El servidor mostró un certificado que no coincide con lo esperado. Estas expectativas se incluyen en determinados sitios web con un alto nivel de seguridad para garantizar tu protección.</translation>
 <translation id="3226128629678568754">Presiona el botón para volver a cargar y, de ese modo, enviar nuevamente los datos necesarios para cargar la página.</translation>

@@ -6313,7 +6313,6 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5337926771328966926">Dabartinis įrenginio pavadinimas yra „<ph name="DEVICE_NAME" />“</translation>
 <translation id="5338338064218053691">Galite naršyti privačiai naudodami inkognito langą</translation>
 <translation id="5338503421962489998">Vietinė atmintinė</translation>
-<translation id="5340620183031438925">Jei norite paklausti DI režimo apie skirtuką neišeidami iš puslapio, patvirtinkite savo tapatybę. Be to, slaptažodžius ir kitas funkcijas pasieksite visuose įrenginiuose.</translation>
 <translation id="5340787663756381836">&amp;Rasti ir redaguoti</translation>
 <translation id="5340900621595888432">Siųsti diagnostikos ir naudojimo duomenis</translation>
 <translation id="5341793073192892252">Užblokuoti toliau nurodyti slapukai (trečiųjų šalių slapukai blokuojami be išimčių)</translation>
@@ -6574,6 +6573,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5519766046604311137">Visada atidaryti <ph name="PROTOCOL_SCHEME" /> nuorodas šioje programoje</translation>
 <translation id="5520605865175417976">Pašalinti veiksmą: <ph name="ACTION_TO_REMOVE" /></translation>
 <translation id="5521078259930077036">Ar tai pagrindinis puslapis, kurį tikėjotės išvysti?</translation>
+<translation id="5521348028713515143">Pridėti darbalaukio šaukinį</translation>
 <translation id="5522156646677899028">Šiame plėtinyje aptiktas rimtas saugos pažeidžiamumas.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Administratorius įdiegė plėtinį}one{Administratorius įdiegė # plėtinį}few{Administratorius įdiegė # plėtinius}many{Administratorius įdiegė # plėtinio}other{Administratorius įdiegė # plėtinių}}</translation>
 <translation id="5523203511530504754">Atidaryti <ph name="PROTOCOL_SCHEME" /> nuorodas programoje „<ph name="APP_NAME" />“</translation>
@@ -9292,7 +9292,6 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7434969625063495310">Nepavyko pridėti spausdinimo serverio. Patikrinkite serverio konfigūraciją ir bandykite dar kartą.</translation>
 <translation id="7436921188514130341">Oi, pervardijant įvyko klaida.</translation>
 <translation id="7439519621174723623">Jei norite tęsti, pridėkite įrenginio pavadinimą</translation>
-<translation id="743982235360757672">Naršykite ir patogiai pasiekite DI režimą</translation>
 <translation id="7441736532026945583">Pasirinkite „Slėpti grupę“, kad pašalintumėte grupę iš skirtuko juostelės</translation>
 <translation id="7441736921018636843">Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />nustatykite sinchronizavimą iš naujo<ph name="END_LINK" />, kad pašalintumėte sinchronizavimo slaptafrazę</translation>
 <translation id="7441830548568730290">Kiti naudotojai</translation>

@@ -81,7 +81,6 @@
 <translation id="1781533683087883868">Desativar links no Modo de Leitura</translation>
 <translation id="1785415724048343560">Recomendado para melhorar a experiência</translation>
 <translation id="1796588414813960292">Os recursos que precisam de som não funcionarão</translation>
-<translation id="1799920918471566157">Dicas do Chrome</translation>
 <translation id="1816835383954230954">Quando a opção está ativada, o Chrome fica mais rápido, e os recursos que usam JavaScript funcionam conforme o esperado. Quando desativada, isso reduz o desempenho, mas torna o V8 mais resistente a ataques.</translation>
 <translation id="1818308510395330587">Para permitir que o app <ph name="APP_NAME" /> use RA, também é necessário ativar a câmera nas <ph name="BEGIN_LINK" />configurações do Android<ph name="END_LINK" />.</translation>
 <translation id="1822318649925991542">Mude a posição para personalizar sua experiência de navegação</translation>
@@ -166,6 +165,7 @@
 <translation id="257931822824936280">Visualização expandida. Clique para recolher</translation>
 <translation id="2586657967955657006">Área de transferência</translation>
 <translation id="2588271083332682494">Aproveite os grupos de guias</translation>
+<translation id="2592917252160773942">Os sites podem pedir acesso à câmera</translation>
 <translation id="2597457036804169544">Não aplicar o tema escuro para sites</translation>
 <translation id="2606760465469169465">Verificação automática</translation>
 <translation id="2621115761605608342">Permitir JavaScript para um site específico.</translation>
@@ -362,6 +362,7 @@
 <translation id="4635969503923889910">Não permitir que os sites usem dispositivos NFC</translation>
 <translation id="4644713492825682049">Excluir e redefinir</translation>
 <translation id="4645575059429386691">Gerenciado pelos seus pais</translation>
+<translation id="4651224148644053314">Mais cores e opções</translation>
 <translation id="4652266463001779298">Sem permissão</translation>
 <translation id="4655846733459137112">Toque em Sim para facilitar o uso dessa senha na próxima vez que você fizer login</translation>
 <translation id="4663373278480897665">Câmera permitida</translation>

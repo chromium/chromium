@@ -6312,7 +6312,6 @@
 <translation id="5337926771328966926">सध्याच्या डिव्हाइसचे नाव <ph name="DEVICE_NAME" /> आहे</translation>
 <translation id="5338338064218053691">तुम्ही गुप्त विंडो वापरून खाजगीरीत्या ब्राउझ करू शकता</translation>
 <translation id="5338503421962489998">स्‍थानिक स्टोरेज</translation>
-<translation id="5340620183031438925">पेजमधून बाहेर न पडता AI मोड ला तुमच्या टॅबबद्दल विचारण्यासाठी हे तुम्हीच असल्याची पडताळणी करा. तुम्हाला तुमच्या सर्व डिव्हाइसवर तुमचे पासवर्ड आणि आणखी बरेच काही मिळेल.</translation>
 <translation id="5340787663756381836">&amp;शोधा आणि संपादित करा</translation>
 <translation id="5340900621595888432">निदान आणि वापर डेटा पाठवा</translation>
 <translation id="5341793073192892252">पुढील कुकी ब्लॉक केल्या होत्‍या (तृतीय पक्षाच्या कुकी कोणत्याही एक्सेप्शनाशिवाय ब्लॉक केलेल्या आहेत)</translation>
@@ -6573,6 +6572,7 @@
 <translation id="5519766046604311137"><ph name="PROTOCOL_SCHEME" /> लिंक नेहमी या अ‍ॅपमध्ये उघडा</translation>
 <translation id="5520605865175417976"><ph name="ACTION_TO_REMOVE" /> ही कृती काढून टाका</translation>
 <translation id="5521078259930077036">तुम्ही अपेक्षा करत होता हे तेच होमपेज आहे?</translation>
+<translation id="5521348028713515143">डेस्कटॉप शॉर्टकट जोडा</translation>
 <translation id="5522156646677899028">या विस्‍तारामध्‍ये एक गंभीर सुरक्षा भेद्यता आहे.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{तुमच्या अ‍ॅडमिनिस्ट्रेटरने एक्स्टेंशन इंस्टॉल केले आहे}other{तुमच्या अ‍ॅडमिनिस्ट्रेटरने # एक्स्टेंशन इंस्टॉल केली आहेत}}</translation>
 <translation id="5523203511530504754"><ph name="PROTOCOL_SCHEME" /> लिंक <ph name="APP_NAME" /> मध्ये उघडा</translation>
@@ -8571,6 +8571,7 @@ I feel - विटांची इमारत</translation>
 <translation id="6927200998271693557">तुम्ही भेट दिलेल्या साइटवर झटपट परत जाण्यासाठी तुमचा इतिहास आणि टॅब<ph name="USER_EMAIL_ADDRESS" /> याच्याशी सिंक करा</translation>
 <translation id="6928650056523249512">न वापरलेल्या साइटवरून परवानग्या आपोआप काढून टाका</translation>
 <translation id="6929126689972602640">पालक नियंत्रणे शाळेच्या खात्यांना सपोर्ट करत नाहीत. घरी शाळेच्या कामासाठी Google Classroom आणि इतर वेबसाइट अ‍ॅक्सेस करण्याकरिता शाळेचे खाते जोडण्यासाठी सर्वप्रथम लहान मुलाचे वैयक्तिक खाते वापरून साइन इन करा. तुम्ही नंतर सेटअपमध्ये शाळेचे खाते जोडू शकता.</translation>
+<translation id="6929639755025587400">अ‍ॅप इंस्टॉल करत आहे…</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{एक्स्टेंशन नाकारण्यात आले आहे}other{# एक्स्टेंशन नाकारण्यात आली आहेत}}</translation>
 <translation id="6930337524857202955">नवीन डाउनलोड उपलब्ध आहे</translation>
 <translation id="6930477763029357444">तुम्ही <ph name="APP_NAME" /> साठी ज्या परवानग्यांना अनुमती देता, त्यांना <ph name="PARENT_APP_NAME" /> आणि त्याच्या इंस्टॉल केलेल्या ॲप्ससाठीदेखील अनुमती दिली जाईल.</translation>
@@ -8736,6 +8737,7 @@ I feel - विटांची इमारत</translation>
 <translation id="7038632520572155338">स्विच ॲक्सेस</translation>
 <translation id="7038710352229712897"><ph name="USER_NAME" /> साठी दुसरे Google खाते जोडा</translation>
 <translation id="7039326228527141150"><ph name="VENDOR_NAME" /> कडील USB डिव्हाइस ॲक्सेस करा</translation>
+<translation id="7039697949826432881">अपलोड करू शकत नाही. फाइलने सपोर्ट केलेल्या कमाल आकाराची <ph name="MAX_FILE_SIZE" /> MB ची मर्यादा ओलांडली आहे.</translation>
 <translation id="7039912931802252762">Microsoft Smart Card Logon</translation>
 <translation id="7039951224110875196">लहान मुलासाठी Google खाते तयार करा</translation>
 <translation id="7042116641003232070">तुमच्या डिव्हाइसवर डेटा सेव्ह करण्याची अनुमती द्या</translation>
@@ -9293,7 +9295,6 @@ I feel - विटांची इमारत</translation>
 <translation id="7434969625063495310">प्रिंट सर्व्हर जोडता आला नाही. कृपया सर्व्हरचे कॉन्फिगरेशन तपासा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="7436921188514130341">ओहो! नाव बदलताना एक एरर आली होती.</translation>
 <translation id="7439519621174723623">पुढे सुरू ठेवण्यासाठी डिव्हाइसचे नाव जोडा</translation>
-<translation id="743982235360757672">तुम्ही ब्राउझ करत असताना AI मोड जवळपास ठेवा</translation>
 <translation id="7441736532026945583">तुमच्या टॅब स्ट्रिपमधून गट काढून टाकण्यासाठी "गट लपवा" हे निवडा</translation>
 <translation id="7441736921018636843">हे सेटिंग बदलण्यासाठी, तुमची सिंक पासफ्रेझ काढून टाकण्यासाठी <ph name="BEGIN_LINK" />सिंक रीसेट करा<ph name="END_LINK" /></translation>
 <translation id="7441830548568730290">इतर वापरकर्ते</translation>
@@ -10781,6 +10782,7 @@ I feel - विटांची इमारत</translation>
 <translation id="8460448946170646641">महत्त्वाच्या गोपनीयता आणि सुरक्षा नियंत्रणांचे पुनरावलोकन करा</translation>
 <translation id="8460490661223303637">आठवण सेव्ह करण्यासाठी, Chrome ने काही आशय काढून टाकला</translation>
 <translation id="8460932807646981183">शोध इंजीन आणि साइट शोध व्यवस्थापित करा</translation>
+<translation id="8461572080432076264">हे पेज ऐका</translation>
 <translation id="8461914792118322307">प्रॉक्सी</translation>
 <translation id="8461973047386722744">कोणतेही पासवर्ड आढळले नाहीत</translation>
 <translation id="846205103980293931">{NUM_TABS,plural, =1{१ आयटम असलेला सूची बॉक्स}other{{NUM_TABS} आयटम असलेला सूची बॉक्स}}</translation>

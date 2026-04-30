@@ -6297,7 +6297,6 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="5337926771328966926">Trenutačni je naziv uređaja <ph name="DEVICE_NAME" /></translation>
 <translation id="5338338064218053691">Možete pregledavati privatno u anonimnom prozoru</translation>
 <translation id="5338503421962489998">Lokalna pohrana</translation>
-<translation id="5340620183031438925">Da biste postavili pitanje AI načinu o svojoj kartici bez napuštanja stranice, potvrdite svoj identitet. Također ćete moći pristupati svojim zaporkama i drugim podacima na svim svojim uređajima.</translation>
 <translation id="5340787663756381836">&amp;Traži i uredi</translation>
 <translation id="5340900621595888432">Pošaljite dijagnostičke podatke i podatke o upotrebi</translation>
 <translation id="5341793073192892252">Blokirani su sljedeći kolačići (kolačići treće strane blokiraju se bez iznimke)</translation>
@@ -6558,6 +6557,7 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5519766046604311137">Uvijek otvaraj veze protokola <ph name="PROTOCOL_SCHEME" /> u ovoj aplikaciji</translation>
 <translation id="5520605865175417976">Uklonite radnju <ph name="ACTION_TO_REMOVE" /></translation>
 <translation id="5521078259930077036">Je li to početna stranica koju ste očekivali?</translation>
+<translation id="5521348028713515143">Dodaj prečac na radnoj površini</translation>
 <translation id="5522156646677899028">To proširenje sadrži ozbiljni sigurnosni propust.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Vaš administrator instalirao je proširenje}one{Vaš administrator instalirao je # proširenje}few{Vaš administrator instalirao je # proširenja}other{Vaš administrator instalirao je # proširenja}}</translation>
 <translation id="5523203511530504754">Otvaranje veza protokola <ph name="PROTOCOL_SCHEME" /> u aplikaciji <ph name="APP_NAME" /></translation>
@@ -9270,7 +9270,6 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="7434969625063495310">Dodavanje poslužitelja za ispis nije uspjelo. Provjerite konfiguraciju poslužitelja i pokušajte ponovo.</translation>
 <translation id="7436921188514130341">O, ne! Došlo je do pogreške prilikom preimenovanja.</translation>
 <translation id="7439519621174723623">Dodajte naziv uređaja za nastavak</translation>
-<translation id="743982235360757672">Pregledavajte uz AI način nadohvat ruke</translation>
 <translation id="7441736532026945583">Odaberite Sakrij grupu da biste uklonili grupu s vrpce kartica</translation>
 <translation id="7441736921018636843">Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizaciju<ph name="END_LINK" /> radi uklanjanja vaše šifre za sinkronizaciju</translation>
 <translation id="7441830548568730290">Ostali korisnici</translation>

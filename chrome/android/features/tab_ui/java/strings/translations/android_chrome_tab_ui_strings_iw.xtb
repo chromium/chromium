@@ -124,6 +124,7 @@
 <translation id="5076161749301278626">להציג ביקורות נוספות על החנות?</translation>
 <translation id="5161254044473106830">יש להזין כותרת</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{‏‫Chrome סוגר באופן אוטומטי כרטיסיות וקבוצות של כרטיסיות לא פעילות אחרי חודש אחד (<ph name="AUTO_DELETE_DELAY_ONE" />). אפשר לשנות את זה בהגדרות.}one{‏‫Chrome סוגר באופן אוטומטי כרטיסיות וקבוצות של כרטיסיות לא פעילות אחרי <ph name="AUTO_DELETE_DELAY_MANY" /> חודשים. אפשר לשנות את זה בהגדרות.}two{‏‫Chrome סוגר באופן אוטומטי כרטיסיות וקבוצות של כרטיסיות לא פעילות אחרי חודשיים (<ph name="AUTO_DELETE_DELAY_MANY" />). אפשר לשנות את זה בהגדרות.}other{‏‫Chrome סוגר באופן אוטומטי כרטיסיות וקבוצות של כרטיסיות לא פעילות אחרי <ph name="AUTO_DELETE_DELAY_MANY" /> חודשים. אפשר לשנות את זה בהגדרות.}}</translation>
+<translation id="5254233580564156835">השימוש בזיכרון: <ph name="MEMORY_USAGE" /></translation>
 <translation id="5339733443032484186">הכרטיסייה האחרונה שלך</translation>
 <translation id="5380159289133845234">העברת כרטיסיות כפולות לארכיון</translation>
 <translation id="5446043142172831860">הסרת הכרטיסייה ויציאה מהקבוצה</translation>

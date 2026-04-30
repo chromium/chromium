@@ -1576,6 +1576,7 @@
 <translation id="6476800141292307438">పేజీని <ph name="LANGUAGE" />లోకి అనువదిస్తోంది. స్క్రీన్ దిగువ భాగానికి దగ్గర్లో ఎంపికలు అందుబాటులో ఉంటాయి.</translation>
 <translation id="647867789226964031">మీ పాస్‌వర్డ్‌లను మార్చండి</translation>
 <translation id="6480363549849064919">క్లయింట్ ప్రామాణీకరణ</translation>
+<translation id="6489174933860678546">వెబ్‌ను మరింత ప్రైవేట్‌గా బ్రౌజ్ చేయడానికి అజ్ఞాత ట్యాబ్‌లను తెరవండి.</translation>
 <translation id="6494931198667773526">ఈవెంట్ ముగింపు సమయం</translation>
 <translation id="6503077044568424649">ఎక్కువగా సందర్శించేవి</translation>
 <translation id="6503763061813913607">సేఫ్టీ చెక్ నోటిఫికేషన్‌లు</translation>
@@ -1633,6 +1634,7 @@
 <translation id="6640268266988685324">తెరిచి ఉన్న ట్యాబ్</translation>
 <translation id="6641465290890659327">మీ పాస్‌వర్డ్ కాపీని షేర్ చేయండి</translation>
 <translation id="6642362222295953972">ప్రస్తుత ట్యాబ్‌కు మారు</translation>
+<translation id="6643016212128521049">క్లియర్ చేయండి</translation>
 <translation id="6645899968535965230">QR కోడ్: <ph name="PAGE_TITLE" /></translation>
 <translation id="6657585470893396449">పాస్‌వర్డ్</translation>
 <translation id="6659660757330712663">మీరు ట్యాబ్‌ల మధ్య స్విచ్ అవ్వడానికి టూల్‌బార్‌ను స్వైప్ చేయవచ్చు.</translation>
@@ -2295,6 +2297,7 @@
 <translation id="8915916167043355778">అన్నింటినీ మూసివేయండి</translation>
 <translation id="892185197271200809">అందరూ వెంటనే "<ph name="GROUP_NAME" />" ట్యాబ్ గ్రూప్‌నకు యాక్సెస్‌ను కోల్పోతారు, అది మీ పరికరాలన్నింటి నుండి తొలగించబడుతుంది</translation>
 <translation id="8923178205567790913">పాస్‌వర్డ్‌లు</translation>
+<translation id="8926498511977337209">అజ్ఞాతంలో బ్రౌజ్ చేయండి</translation>
 <translation id="892776311701544612">మరింత తెలుసుకోండి…</translation>
 <translation id="8928133177108699615">డెస్క్‌టాప్</translation>
 <translation id="8928426232677696166">ప్రస్తుతం <ph name="EMAIL" />, ప్రస్తుతంఎంపిక చేయబడింది, ఇది మీ సంస్థ ద్వారా మేనేజ్ చేయబడుతోంది. ఒక ఖాతాను ఎంచుకోండి.</translation>

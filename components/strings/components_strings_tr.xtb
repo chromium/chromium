@@ -152,6 +152,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1228893227497259893">Yanlış varlık tanımlayıcı</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (autootomatik algılandı)</translation>
 <translation id="1232569758102978740">Adsız</translation>
+<translation id="1234539281285007945"><ph name="FIELD_1" /> zorunludur</translation>
 <translation id="1236081509407217141">VR'ye izin verilsin mi?</translation>
 <translation id="1236689197410206751">AfterPay</translation>
 <translation id="1240347957665416060">Cihazınızın adı</translation>
@@ -472,6 +473,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1721424275792716183">* Zorunlu alan</translation>
 <translation id="1723636263173393300">Bu politikada en çok <ph name="MAX_ITEMS_LIMIT" /> giriş olabilir.</translation>
 <translation id="1725591448053514783">Zarf You 6</translation>
+<translation id="172754119609519423"><ph name="FIELD_1" />, <ph name="FIELD_2" /> veya <ph name="FIELD_3" /> zorunludur</translation>
 <translation id="1727613060316725209">Sertifika geçerli</translation>
 <translation id="1728677426644403582">Bir web sayfasının kaynak kodunu görüntülüyorsunuz</translation>
 <translation id="173080396488393970">Bu kart türü desteklenmiyor</translation>
@@ -1432,6 +1434,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="3220264767789936523">Resmi Giyim</translation>
 <translation id="3223287115535306850">Uygulama yükleme simgesi</translation>
 <translation id="3223425961342298674">Konuma izin verilmiyor</translation>
+<translation id="3225277284238802910"><ph name="FIELD_1" /> veya <ph name="FIELD_2" /> zorunludur</translation>
 <translation id="3225319735946384299">Kod İmzalama</translation>
 <translation id="3225919329040284222">Sunucu, yerleşik beklentilerle eşleşmeyen bir sertifika sundu. Bu beklentiler sizi korumak amacıyla bazı yüksek güvenlikli web sitelerinde bulunur.</translation>
 <translation id="3226128629678568754">Sayfayı yüklemek üzere gereken verileri tekrar göndermek için yeniden yükle düğmesine basın.</translation>

@@ -124,6 +124,7 @@
 <translation id="5076161749301278626">Peržiūrėti parduotuvės apžvalgas?</translation>
 <translation id="5161254044473106830">Būtina nurodyti pavadinimą</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{„Chrome“ automatiškai uždaro neaktyvius skirtukus ir skirtukų grupes po <ph name="AUTO_DELETE_DELAY_ONE" /> mėnesio. Tai galite keisti nustatymų skiltyje.}one{„Chrome“ automatiškai uždaro neaktyvius skirtukus ir skirtukų grupes po <ph name="AUTO_DELETE_DELAY_MANY" /> mėnesio. Tai galite keisti nustatymų skiltyje.}few{„Chrome“ automatiškai uždaro neaktyvius skirtukus ir skirtukų grupes po <ph name="AUTO_DELETE_DELAY_MANY" /> mėnesių. Tai galite keisti nustatymų skiltyje.}many{„Chrome“ automatiškai uždaro neaktyvius skirtukus ir skirtukų grupes po <ph name="AUTO_DELETE_DELAY_MANY" /> mėnesio. Tai galite keisti nustatymų skiltyje.}other{„Chrome“ automatiškai uždaro neaktyvius skirtukus ir skirtukų grupes po <ph name="AUTO_DELETE_DELAY_MANY" /> mėnesių. Tai galite keisti nustatymų skiltyje.}}</translation>
+<translation id="5254233580564156835">Atminties sąnaudos: <ph name="MEMORY_USAGE" /></translation>
 <translation id="5339733443032484186">Jūsų paskutinis skirtukas</translation>
 <translation id="5380159289133845234">Archyvuoti tikslias skirtukų kopijas</translation>
 <translation id="5446043142172831860">Pašalinti skirtuką ir išeiti iš grupės</translation>

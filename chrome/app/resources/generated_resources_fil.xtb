@@ -6315,7 +6315,6 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="5337926771328966926">Ang <ph name="DEVICE_NAME" /> ang kasalukuyang device</translation>
 <translation id="5338338064218053691">Maaari kang mag-browse nang pribado gamit ang isang Incognito window</translation>
 <translation id="5338503421962489998">Lokal na storage</translation>
-<translation id="5340620183031438925">Para tanungin ang AI Mode tungkol sa iyong tab nang hindi umaalis sa page, i-verify na ikaw ito. Makukuha mo rin ang iyong mga password at higit pa sa lahat ng device mo.</translation>
 <translation id="5340787663756381836">&amp;Hanapin at i-edit</translation>
 <translation id="5340900621595888432">Ipadala ang data ng diagnostic at paggamit</translation>
 <translation id="5341793073192892252">Na-block ang sumusunod na cookies (bina-block ang third-party na cookies nang walang pagbubukod)</translation>
@@ -6576,6 +6575,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="5519766046604311137">Laging buksan ang mga link ng <ph name="PROTOCOL_SCHEME" /> sa app na ito</translation>
 <translation id="5520605865175417976">Alisin ang aksyong <ph name="ACTION_TO_REMOVE" /></translation>
 <translation id="5521078259930077036">Ito ba ang inaasahan mong home page?</translation>
+<translation id="5521348028713515143">Magdagdag ng desktop shortcut</translation>
 <translation id="5522156646677899028">Naglalaman ang extension na ito ng isang malubhang kahinaan sa seguridad.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Isang extension ang na-install ng iyong administrator}one{# extension ang na-install ng iyong administrator}other{# na extension ang na-install ng iyong administrator}}</translation>
 <translation id="5523203511530504754">Buksan ang mga link ng <ph name="PROTOCOL_SCHEME" /> sa <ph name="APP_NAME" /></translation>
@@ -8573,6 +8573,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="6927200998271693557">Para mabilis na makabalik sa mga site na binisita mo, i-sync ang iyong history at mga tab sa <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6928650056523249512">Awtomatikong alisin ang mga pahintulot sa mga hindi ginagamit na site</translation>
 <translation id="6929126689972602640">Hindi sinusuportahan ang parental controls para sa mga pampaaralang account. Para magdagdag ng pampaaralang account para ma-access ang Google Classroom at iba pang website para sa gawain sa paaralan sa bahay, mag-sign in muna gamit ang personal na account ng bata. Puwede mong idagdag ang pampaaralang account sa ibang pagkakataon sa pag-set up.</translation>
+<translation id="6929639755025587400">Nag-i-install ng app…</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{May tinanggihang extension}one{# extension ang tinanggihan}other{# na extension ang tinanggihan}}</translation>
 <translation id="6930337524857202955">Bagong download na available</translation>
 <translation id="6930477763029357444">Ang mga pahintulot na pinapayagan mo para sa <ph name="APP_NAME" /> ay papayagan din para sa <ph name="PARENT_APP_NAME" /> at mga naka-install na app nito.</translation>
@@ -8738,6 +8739,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7038632520572155338">Switch access</translation>
 <translation id="7038710352229712897">Magdagdag ng isa pang Google Account para kay <ph name="USER_NAME" /></translation>
 <translation id="7039326228527141150">Mag-access ng mga USB device mula sa <ph name="VENDOR_NAME" /></translation>
+<translation id="7039697949826432881">Hindi ma-upload. Lumampas ang file sa maximum na sinusuportahang laki na <ph name="MAX_FILE_SIZE" /> MB.</translation>
 <translation id="7039912931802252762">Microsoft Smart Card Logon</translation>
 <translation id="7039951224110875196">Gumawa ng Google Account para sa isang bata</translation>
 <translation id="7042116641003232070">Pinapayagang i-save ang data sa iyong device</translation>
@@ -9295,7 +9297,6 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7434969625063495310">Hindi maidagdag ang server sa pag-print. Pakisuri ang configuration ng server at subukan ulit.</translation>
 <translation id="7436921188514130341">Naku! Nagka-error habang pinapalitan ang pangalan.</translation>
 <translation id="7439519621174723623">Magdagdag ng pangalan ng device para magpatuloy</translation>
-<translation id="743982235360757672">Panatilihing malapit ang AI Mode habang nagba-browse ka</translation>
 <translation id="7441736532026945583">Piliin ang "I-hide ang Grupo" para alisin ang grupo sa iyong tab strip</translation>
 <translation id="7441736921018636843">Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph name="END_LINK" /> para alisin ang iyong passphrase sa pag-sync</translation>
 <translation id="7441830548568730290">Iba pang mga user</translation>
@@ -10784,6 +10785,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8460448946170646641">Suriin ang mga pangunahing kontrol sa privacy at seguridad</translation>
 <translation id="8460490661223303637">Para makatipid ng memory, nag-alis ang Chrome ng ilang content</translation>
 <translation id="8460932807646981183">Pamahalaan ang mga search engine at paghahanap sa site</translation>
+<translation id="8461572080432076264">Makinig sa Page na Ito</translation>
 <translation id="8461914792118322307">Proxy</translation>
 <translation id="8461973047386722744">Walang nakitang password</translation>
 <translation id="846205103980293931">{NUM_TABS,plural, =1{List box na may 1 item}one{List box na may {NUM_TABS} item}other{List box na may {NUM_TABS} na item}}</translation>

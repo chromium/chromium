@@ -124,6 +124,7 @@
 <translation id="5076161749301278626">स्टोर की समीक्षाएं देखें?</translation>
 <translation id="5161254044473106830">टाइटल आवश्‍यक</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome, इनऐक्टिव टैब और टैब ग्रुप को <ph name="AUTO_DELETE_DELAY_ONE" /> महीने के बाद अपने-आप बंद कर देता है. सेटिंग में जाकर इसे बदला जा सकता है.}one{Chrome, इनऐक्टिव टैब और टैब ग्रुप को <ph name="AUTO_DELETE_DELAY_MANY" /> महीने के बाद अपने-आप बंद कर देता है. सेटिंग में जाकर इसे बदला जा सकता है.}other{Chrome, इनऐक्टिव टैब और टैब ग्रुप को <ph name="AUTO_DELETE_DELAY_MANY" /> महीनों के बाद अपने-आप बंद कर देता है. सेटिंग में जाकर इसे बदला जा सकता है.}}</translation>
+<translation id="5254233580564156835">मेमोरी का इस्तेमाल: <ph name="MEMORY_USAGE" /></translation>
 <translation id="5339733443032484186">आपका आखिरी टैब</translation>
 <translation id="5380159289133845234">डुप्लीकेट टैब संग्रहित करें</translation>
 <translation id="5446043142172831860">टैब हटाएं और ग्रुप छोड़ें</translation>

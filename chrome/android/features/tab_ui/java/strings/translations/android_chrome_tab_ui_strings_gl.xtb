@@ -124,6 +124,7 @@
 <translation id="5076161749301278626">Queres ver recensións da tenda?</translation>
 <translation id="5161254044473106830">Título obrigatorio</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome pecha automaticamente as pestanas e os grupos de pestanas inactivos despois de <ph name="AUTO_DELETE_DELAY_ONE" /> mes. Podes cambiar esta opción na configuración.}other{Chrome pecha automaticamente as pestanas e os grupos de pestanas inactivos despois de <ph name="AUTO_DELETE_DELAY_MANY" /> meses. Podes cambiar esta opción na configuración.}}</translation>
+<translation id="5254233580564156835">Uso da memoria: <ph name="MEMORY_USAGE" /></translation>
 <translation id="5339733443032484186">A túa última pestana</translation>
 <translation id="5380159289133845234">Arquivar pestanas duplicadas</translation>
 <translation id="5446043142172831860">Quitar pestana e saír do grupo</translation>

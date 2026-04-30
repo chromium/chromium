@@ -6297,7 +6297,6 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="5337926771328966926">Aktuálny názov zariadenia: <ph name="DEVICE_NAME" /></translation>
 <translation id="5338338064218053691">Prehliadať v súkromí môžete v okne inkognito</translation>
 <translation id="5338503421962489998">Miestny ukladací priestor</translation>
-<translation id="5340620183031438925">Ak sa chcete režimu AI spýtať na svoju kartu bez opustenia stránky, absolvujte overenie totožnosti. Navyše budete mať k dispozícii heslá a ďalší obsah vo všetkých svojich zariadeniach.</translation>
 <translation id="5340787663756381836">&amp;Nájsť a upraviť</translation>
 <translation id="5340900621595888432">Odosielať diagnostiku a údaje o využití</translation>
 <translation id="5341793073192892252">Nasledujúce súbory cookie boli zablokované (súbory cookie tretej strany sú blokované bez výnimky):</translation>
@@ -6558,6 +6557,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="5519766046604311137">Vždy otvárať odkazy <ph name="PROTOCOL_SCHEME" /> v tejto aplikácii</translation>
 <translation id="5520605865175417976">Odstrániť akciu <ph name="ACTION_TO_REMOVE" /></translation>
 <translation id="5521078259930077036">Je toto domovská stránka, ktorú ste čakali?</translation>
+<translation id="5521348028713515143">Pridať odkaz na pracovnú plochu</translation>
 <translation id="5522156646677899028">Toto rozšírenie obsahuje vážnu chybu zabezpečenia.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Váš správca nainštaloval rozšírenie}few{Váš správca nainštaloval # rozšírenia}many{# extensions have been installed by your administrator}other{Váš správca nainštaloval # rozšírení}}</translation>
 <translation id="5523203511530504754">Otvárať odkazy <ph name="PROTOCOL_SCHEME" /> v aplikácii <ph name="APP_NAME" /></translation>
@@ -9272,7 +9272,6 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="7434969625063495310">Tlačový server sa nepodarilo pridať. Skontrolujte jeho konfiguráciu a skúste to znova.</translation>
 <translation id="7436921188514130341">Ojoj! Pri premenovaní sa vyskytla chyba.</translation>
 <translation id="7439519621174723623">Ak chcete pokračovať, pridajte názov zariadenia</translation>
-<translation id="743982235360757672">Majte pri prehliadaní poruke režim AI</translation>
 <translation id="7441736532026945583">Ak chcete skupinu odstrániť z panela kariet, vyberte Skryť skupinu</translation>
 <translation id="7441736921018636843">Ak chcete zmeniť toto nastavenie, <ph name="BEGIN_LINK" />resetujte synchronizáciu<ph name="END_LINK" /> a odstráňte tak prístupovú frázu synchronizácie</translation>
 <translation id="7441830548568730290">Ostatní používatelia</translation>
@@ -10290,7 +10289,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8137711267692884979">{NUM_EXTENSIONS,plural, =1{Skontrolujte 1 rozšírenie, ktoré môže byť nebezpečné}few{Skontrolujte {NUM_EXTENSIONS} rozšírenia, ktoré môžu byť nebezpečné}many{Review {NUM_EXTENSIONS} extensions that may be unsafe}other{Skontrolujte {NUM_EXTENSIONS} rozšírení, ktoré môžu byť nebezpečné}}</translation>
 <translation id="8138217203226449454">Chcete zmeniť svojho poskytovateľa vyhľadávania?</translation>
 <translation id="8138997515734480534">Stav virtuálneho počítača <ph name="VM_NAME" /></translation>
-<translation id="8139440916039659819">Zrýchliť kurzor</translation>
+<translation id="8139440916039659819">Zrýchlenie pohybu kurzorom</translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>
 <translation id="8140108728130537923"><ph name="BEGIN_LINK" />Prehliadač je spravovaný<ph name="END_LINK" /> doménou <ph name="BROWSER_DOMAIN" /> a váš <ph name="BEGIN_LINK" />profil<ph name="END_LINK" /> doménou <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="8140869601171867148">Váš účet Google je účet, ktorý používate s Gmailom, službou YouTube, Chromom a ďalšími službami Googlu.

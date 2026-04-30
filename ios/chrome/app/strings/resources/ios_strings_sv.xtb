@@ -1576,6 +1576,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="6476800141292307438">Översätter sidan till <ph name="LANGUAGE" />. Alternativ finns längst ned på skärmen.</translation>
 <translation id="647867789226964031">Ändra dina lösenord</translation>
 <translation id="6480363549849064919">Klientautentisering</translation>
+<translation id="6489174933860678546">Öppna inkognitoflikar om du vill surfa mer privat på webben.</translation>
 <translation id="6494931198667773526">Slutar</translation>
 <translation id="6503077044568424649">Mest besökta</translation>
 <translation id="6503763061813913607">Aviseringar från säkerhetskontroll</translation>
@@ -1633,6 +1634,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="6640268266988685324">Öppna flik</translation>
 <translation id="6641465290890659327">Dela en kopia av ditt lösenord</translation>
 <translation id="6642362222295953972">Byt till befintlig flik</translation>
+<translation id="6643016212128521049">Rensa</translation>
 <translation id="6645899968535965230">QR-kod: <ph name="PAGE_TITLE" /></translation>
 <translation id="6657585470893396449">Lösenord</translation>
 <translation id="6659660757330712663">Du kan svepa i verktygsfältet för att byta mellan flikar.</translation>
@@ -2295,6 +2297,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="8915916167043355778">Stäng alla</translation>
 <translation id="892185197271200809">Alla förlorar omedelbart åtkomst till flikgruppen <ph name="GROUP_NAME" /> och den raderas från alla enheter</translation>
 <translation id="8923178205567790913">Lösenord</translation>
+<translation id="8926498511977337209">Surfa i inkognitoläge</translation>
 <translation id="892776311701544612">Läs mer …</translation>
 <translation id="8928133177108699615">Dator</translation>
 <translation id="8928426232677696166"><ph name="EMAIL" />, som hanteras av organisationen, är valt just nu. Välj ett konto.</translation>

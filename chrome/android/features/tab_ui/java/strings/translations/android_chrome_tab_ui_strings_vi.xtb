@@ -124,6 +124,7 @@
 <translation id="5076161749301278626">Xem đánh giá về cửa hàng?</translation>
 <translation id="5161254044473106830">Cần có tiêu đề</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome tự động đóng các thẻ và nhóm thẻ không hoạt động sau <ph name="AUTO_DELETE_DELAY_ONE" /> tháng. Bạn có thể thay đổi tuỳ chọn này trong phần cài đặt.}other{Chrome tự động đóng các thẻ và nhóm thẻ không hoạt động sau <ph name="AUTO_DELETE_DELAY_MANY" /> tháng. Bạn có thể thay đổi tuỳ chọn này trong phần cài đặt.}}</translation>
+<translation id="5254233580564156835">Mức sử dụng bộ nhớ: <ph name="MEMORY_USAGE" /></translation>
 <translation id="5339733443032484186">Thẻ bạn truy cập gần đây nhất</translation>
 <translation id="5380159289133845234">Lưu trữ các thẻ trùng lặp</translation>
 <translation id="5446043142172831860">Loại bỏ thẻ và rời khỏi nhóm</translation>

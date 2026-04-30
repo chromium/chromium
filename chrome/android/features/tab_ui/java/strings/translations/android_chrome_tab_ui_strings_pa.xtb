@@ -124,6 +124,7 @@
 <translation id="5076161749301278626">ਕੀ ਸਟੋਰ ਦੀਆਂ ਸਮੀਖਿਆਵਾਂ ਦੇਖਣੀਆਂ ਹਨ?</translation>
 <translation id="5161254044473106830">ਸਿਰਲੇਖ ਲਾਜ਼ਮੀ</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਅਕਿਰਿਆਸ਼ੀਲ ਟੈਬਾਂ ਅਤੇ ਟੈਬ ਗਰੁੱਪਾਂ ਨੂੰ <ph name="AUTO_DELETE_DELAY_ONE" /> ਮਹੀਨੇ ਬਾਅਦ ਬੰਦ ਕਰ ਦਿੰਦਾ ਹੈ। ਤੁਸੀਂ ਇਸਨੂੰ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਜਾ ਕੇ ਬਦਲ ਸਕਦੇ ਹੋ।}one{Chrome ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਅਕਿਰਿਆਸ਼ੀਲ ਟੈਬਾਂ ਅਤੇ ਟੈਬ ਗਰੁੱਪਾਂ ਨੂੰ <ph name="AUTO_DELETE_DELAY_MANY" /> ਮਹੀਨੇ ਬਾਅਦ ਬੰਦ ਕਰ ਦਿੰਦਾ ਹੈ। ਤੁਸੀਂ ਇਸਨੂੰ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਜਾ ਕੇ ਬਦਲ ਸਕਦੇ ਹੋ।}other{Chrome ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਅਕਿਰਿਆਸ਼ੀਲ ਟੈਬਾਂ ਅਤੇ ਟੈਬ ਗਰੁੱਪਾਂ ਨੂੰ <ph name="AUTO_DELETE_DELAY_MANY" /> ਮਹੀਨਿਆਂ ਬਾਅਦ ਬੰਦ ਕਰ ਦਿੰਦਾ ਹੈ। ਤੁਸੀਂ ਇਸਨੂੰ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਜਾ ਕੇ ਬਦਲ ਸਕਦੇ ਹੋ।}}</translation>
+<translation id="5254233580564156835">ਮੈਮੋਰੀ ਵਰਤੋਂ: <ph name="MEMORY_USAGE" /></translation>
 <translation id="5339733443032484186">ਤੁਹਾਡੀ ਪਿਛਲੀ ਟੈਬ</translation>
 <translation id="5380159289133845234">ਡੁਪਲੀਕੇਟ ਟੈਬਾਂ ਪੁਰਾਲੇਖਬੱਧ ਕਰੋ</translation>
 <translation id="5446043142172831860">ਟੈਬ ਹਟਾਓ ਅਤੇ ਗਰੁੱਪ ਛੱਡੋ</translation>

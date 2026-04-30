@@ -6298,7 +6298,6 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5337926771328966926">O nome do dispositivo atual é <ph name="DEVICE_NAME" />.</translation>
 <translation id="5338338064218053691">Pode navegar em privado com uma janela de navegação anónima</translation>
 <translation id="5338503421962489998">Armazenamento local</translation>
-<translation id="5340620183031438925">Para pedir ao Modo IA informações sobre o seu separador sem sair da página, valide a sua identidade. Também tem acesso às suas palavras-passe e muito mais em todos os seus dispositivos.</translation>
 <translation id="5340787663756381836">&amp;Localizar e editar</translation>
 <translation id="5340900621595888432">Enviar dados de diagnóstico e utilização</translation>
 <translation id="5341793073192892252">Os seguintes cookies foram bloqueados (os cookies de terceiros estão a ser bloqueados sem excepção)</translation>
@@ -6559,6 +6558,7 @@ Pode atribuir vários interruptores a esta ação.</translation>
 <translation id="5519766046604311137">Abrir sempre links <ph name="PROTOCOL_SCHEME" /> nesta app</translation>
 <translation id="5520605865175417976">Remover ação <ph name="ACTION_TO_REMOVE" /></translation>
 <translation id="5521078259930077036">É esta a página inicial de que estava à espera?</translation>
+<translation id="5521348028713515143">Adicionar atalho no ambiente de trabalho</translation>
 <translation id="5522156646677899028">Esta extensão contém uma vulnerabilidade de segurança grave.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Uma extensão foi instalada pelo seu administrador}other{# extensões foram instaladas pelo seu administrador}}</translation>
 <translation id="5523203511530504754">Abra links <ph name="PROTOCOL_SCHEME" /> na app <ph name="APP_NAME" /></translation>
@@ -8549,6 +8549,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="6927200998271693557">Para voltar rapidamente aos sites que visitou, sincronize o histórico e os separadores com a conta <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6928650056523249512">Remover automaticamente as autorizações de sites não usados</translation>
 <translation id="6929126689972602640">O controlo parental não é suportado para contas escolares. Para adicionar uma conta escolar para aceder ao Google Classroom e outros Websites para fazer os trabalhos de casa, inicie sessão com a conta pessoal da criança primeiro. Pode adicionar a conta escolar posteriormente nas definições.</translation>
+<translation id="6929639755025587400">A instalar a app…</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{Uma extensão foi rejeitada}other{# extensões foram rejeitadas}}</translation>
 <translation id="6930337524857202955">Nova transferência disponível</translation>
 <translation id="6930477763029357444">As autorizações que concede à app <ph name="APP_NAME" /> também são concedidas à app <ph name="PARENT_APP_NAME" /> e às respetivas apps instaladas.</translation>
@@ -8714,6 +8715,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7038632520572155338">Acesso por interruptor</translation>
 <translation id="7038710352229712897">Adicione outra Conta Google para <ph name="USER_NAME" /></translation>
 <translation id="7039326228527141150">Aceder a dispositivos USB de <ph name="VENDOR_NAME" /></translation>
+<translation id="7039697949826432881">Não é possível carregar. O ficheiro excede o tamanho máximo aceite de <ph name="MAX_FILE_SIZE" /> MB.</translation>
 <translation id="7039912931802252762">Início de sessão de smart card Microsoft</translation>
 <translation id="7039951224110875196">Criar uma Conta Google para uma criança</translation>
 <translation id="7042116641003232070">Com autorização para guardar dados no seu dispositivo</translation>
@@ -9271,7 +9273,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7434969625063495310">Não foi possível adicionar o servidor de impressão. Verifique a configuração do servidor e tente novamente.</translation>
 <translation id="7436921188514130341">Ah, bolas! Ocorreu um erro durante a mudança de nome.</translation>
 <translation id="7439519621174723623">Adicione um nome de dispositivo para continuar.</translation>
-<translation id="743982235360757672">Mantenha o Modo IA pronto enquanto navega</translation>
 <translation id="7441736532026945583">Selecione "Ocultar grupo" para remover o grupo da Faixa de separadores</translation>
 <translation id="7441736921018636843">Para alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização<ph name="END_LINK" /> para remover a sua frase de acesso de sincronização</translation>
 <translation id="7441830548568730290">Outros utilizadores</translation>
@@ -10758,6 +10759,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8460448946170646641">Reveja os principais controlos de privacidade e segurança</translation>
 <translation id="8460490661223303637">Para poupar memória, o Chrome removeu algum conteúdo</translation>
 <translation id="8460932807646981183">Gerir motores de pesquisa e a pesquisa de sites</translation>
+<translation id="8461572080432076264">Ouvir esta página</translation>
 <translation id="8461914792118322307">Proxy</translation>
 <translation id="8461973047386722744">Nenhuma palavra-passe encontrada</translation>
 <translation id="846205103980293931">{NUM_TABS,plural, =1{Caixa de lista com 1 item}other{Caixa de lista com {NUM_TABS} itens}}</translation>
@@ -11406,7 +11408,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="8893928184421379330">Lamentamos, não foi possível reconhecer o aparelho <ph name="DEVICE_LABEL" />.</translation>
 <translation id="8894761918470382415">Proteção do acesso aos dados para periféricos</translation>
 <translation id="8895454554629927345">Lista de marcadores</translation>
-<translation id="8896830132794747524">Movimentos mais rápidos com o rato movem o cursor mais longe</translation>
+<translation id="8896830132794747524">Movimentos mais rápidos com o rato movem o cursor para mais longe</translation>
 <translation id="8897537894864195436">Leia este código QR com a câmara do dispositivo que tem a sua chave de acesso para <ph name="APP_NAME" /></translation>
 <translation id="8898786835233784856">Selecionar separador seguinte</translation>
 <translation id="8898790559170352647">Adicionar conta Microsoft</translation>

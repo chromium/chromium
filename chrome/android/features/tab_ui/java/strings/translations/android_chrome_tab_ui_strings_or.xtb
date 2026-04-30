@@ -124,6 +124,7 @@
 <translation id="5076161749301278626">ଷ୍ଟୋର ସମୀକ୍ଷାଗୁଡ଼ିକୁ ଦେଖିବେ?</translation>
 <translation id="5161254044473106830">ଟାଇଟେଲ୍ ଆବଶ୍ୟକ</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{<ph name="AUTO_DELETE_DELAY_ONE" /> ମାସ ପରେ Chrome ସ୍ୱତଃ ନିଷ୍କ୍ରିୟ ଟାବ ଏବଂ ଟାବ ଗ୍ରୁପଗୁଡ଼ିକୁ ବନ୍ଦ କରିଦିଏ। ଆପଣ ଏହାକୁ ସେଟିଂସରେ ପରିବର୍ତ୍ତନ କରିପାରିବେ।}other{<ph name="AUTO_DELETE_DELAY_MANY" /> ମାସ ପରେ Chrome ସ୍ୱତଃ ନିଷ୍କ୍ରିୟ ଟାବ ଏବଂ ଟାବ ଗ୍ରୁପଗୁଡ଼ିକୁ ବନ୍ଦ କରିଦିଏ। ଆପଣ ଏହାକୁ ସେଟିଂସରେ ପରିବର୍ତ୍ତନ କରିପାରିବେ।}}</translation>
+<translation id="5254233580564156835">ମେମୋରୀ ବ୍ୟବହାର: <ph name="MEMORY_USAGE" /></translation>
 <translation id="5339733443032484186">ଆପଣଙ୍କ ଗତ ଟାବ</translation>
 <translation id="5380159289133845234">ନକଲି ଟାବଗୁଡ଼ିକୁ ଆର୍କାଇଭ କରନ୍ତୁ</translation>
 <translation id="5446043142172831860">ଟାବକୁ କାଢ଼ି ଦେଇ ଗୋଷ୍ଠୀରୁ ବାହାରି ଯାଆନ୍ତୁ</translation>

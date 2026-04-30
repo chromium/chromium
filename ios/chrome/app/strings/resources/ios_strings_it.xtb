@@ -241,7 +241,7 @@
 <translation id="1810976980198522421">Annulla</translation>
 <translation id="1815941218935345331">Passcode</translation>
 <translation id="1818687879307252150">{count,plural, =0{Nessuna password compromessa}=1{{count} password compromessa}other{{count} password compromesse}}</translation>
-<translation id="1819374301217551116">Monitoraggio dei prezzi e approfondimenti</translation>
+<translation id="1819374301217551116">Monitoraggio dei prezzi e insight</translation>
 <translation id="1820195936249950412">Accedi con un account valido</translation>
 <translation id="1820259098641718022">Aggiunta all'elenco di lettura</translation>
 <translation id="1823768272150895732">Carattere</translation>
@@ -1633,6 +1633,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="6640268266988685324">Scheda aperta</translation>
 <translation id="6641465290890659327">Condividi una copia della password</translation>
 <translation id="6642362222295953972">Passa alla scheda esistente</translation>
+<translation id="6643016212128521049">Cancella</translation>
 <translation id="6645899968535965230">Codice QR: <ph name="PAGE_TITLE" /></translation>
 <translation id="6657585470893396449">Password</translation>
 <translation id="6659660757330712663">Puoi far scorrere la barra degli strumenti per passare da una scheda all'altra.</translation>

@@ -55,7 +55,6 @@
 <translation id="1594928384848033697">Chromium에서 비밀번호 관리자 데이터를 삭제하려고 합니다. 허용하려면 Windows 비밀번호를 입력하세요.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{관리자의 요구에 따라 업데이트를 적용하려면 Chromium을 다시 실행해야 합니다.}=1{관리자의 요구에 따라 업데이트를 적용하려면 Chromium을 다시 실행해야 합니다. 시크릿 창이 다시 열리지 않습니다.}other{관리자의 요구에 따라 업데이트를 적용하려면 Chromium을 다시 실행해야 합니다. 시크릿 창 #개가 다시 열리지 않습니다.}}</translation>
 <translation id="1625909126243026060">Chromium의 주요 개인 정보 보호 및 보안 제어 기능을 검토합니다.</translation>
-<translation id="1639380494700489405">페이지를 나가지 않고 탭에 관해 AI 모드에게 물어보려면 Chromium에 로그인하세요. 이렇게 하면 이용 중인 모든 기기에서 비밀번호 등도 사용할 수 있습니다.</translation>
 <translation id="1640672724030957280">다운로드 중...</translation>
 <translation id="1680687534629375545">이미지 검색에 이 페이지에 관해 질문하기</translation>
 <translation id="1708414395296835197">언제든지 메시지, 문서, 기타 앱에서 링크를 클릭하여 Chromium을 사용할 수 있습니다. 작업 표시줄에도 고정됩니다.</translation>

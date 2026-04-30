@@ -124,6 +124,7 @@
 <translation id="5076161749301278626">Möchtest du dir Händlerrezensionen ansehen?</translation>
 <translation id="5161254044473106830">Titel erforderlich</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Inaktive Tabs und Tabgruppen in Chrome werden nach <ph name="AUTO_DELETE_DELAY_ONE" /> Monat automatisch geschlossen. Du kannst das in den Einstellungen ändern.}other{Inaktive Tabs und Tabgruppen in Chrome werden nach <ph name="AUTO_DELETE_DELAY_MANY" /> Monaten automatisch geschlossen. Du kannst das in den Einstellungen ändern.}}</translation>
+<translation id="5254233580564156835">Arbeitsspeichernutzung: <ph name="MEMORY_USAGE" /></translation>
 <translation id="5339733443032484186">Dein letzter Tab</translation>
 <translation id="5380159289133845234">Tab-Duplikate archivieren</translation>
 <translation id="5446043142172831860">Tab entfernen und Gruppe verlassen</translation>

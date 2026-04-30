@@ -1576,6 +1576,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="6476800141292307438">Isinasalin ang page sa <ph name="LANGUAGE" />. May mga opsyon malapit sa ibaba ng screen.</translation>
 <translation id="647867789226964031">Palitan ang iyong mga password</translation>
 <translation id="6480363549849064919">Pag-authenticate ng Client</translation>
+<translation id="6489174933860678546">Magbukas ng mga tab na Incognito para mag-browse sa web nang mas pribado.</translation>
 <translation id="6494931198667773526">Matatapos sa</translation>
 <translation id="6503077044568424649">Pinaka-nabisita</translation>
 <translation id="6503763061813913607">Mga Notification sa Pag-check sa Kaligtasan</translation>
@@ -1633,6 +1634,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="6640268266988685324">Bukas na Tab</translation>
 <translation id="6641465290890659327">Mag-share ng kopya ng iyong password</translation>
 <translation id="6642362222295953972">Lumipat sa kasalukuyang tab</translation>
+<translation id="6643016212128521049">I-clear</translation>
 <translation id="6645899968535965230">QR Code: <ph name="PAGE_TITLE" /></translation>
 <translation id="6657585470893396449">Password</translation>
 <translation id="6659660757330712663">Puwede mong i-swipe ang toolbar para magpalipat-lipat sa mga tab.</translation>
@@ -2296,6 +2298,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="8915916167043355778">Isara lahat</translation>
 <translation id="892185197271200809">Mawawalan kaagad ng access ang lahat sa grupo ng tab na “<ph name="GROUP_NAME" />," at made-delete ito sa lahat ng device</translation>
 <translation id="8923178205567790913">Mga Password</translation>
+<translation id="8926498511977337209">Mag-browse sa Incognito</translation>
 <translation id="892776311701544612">Matuto pa…</translation>
 <translation id="8928133177108699615">Desktop</translation>
 <translation id="8928426232677696166"><ph name="EMAIL" />, pinapamahalaan ng iyong organisasyon, kasalukuyang pinili. Pumili ng account.</translation>

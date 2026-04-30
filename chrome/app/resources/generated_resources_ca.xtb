@@ -6293,7 +6293,6 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir el zoom.</translation>
 <translation id="5337926771328966926">El nom actual del dispositiu és <ph name="DEVICE_NAME" /></translation>
 <translation id="5338338064218053691">Pots navegar de manera privada utilitzant una finestra d'incògnit</translation>
 <translation id="5338503421962489998">Emmagatzematge local</translation>
-<translation id="5340620183031438925">Per fer preguntes al mode IA sobre la pestanya sense sortir de la pàgina, verifica la teva identitat. També obtindràs les contrasenyes i altres dades en tots els teus dispositius.</translation>
 <translation id="5340787663756381836">&amp;Cerca i edita</translation>
 <translation id="5340900621595888432">Envia dades de diagnòstic i d'ús</translation>
 <translation id="5341793073192892252">S'han bloquejat les galetes següents (totes les galetes de tercers es bloquegen sempre)</translation>
@@ -6554,6 +6553,7 @@ Pots assignar diferents interruptors a aquesta acció.</translation>
 <translation id="5519766046604311137">Obre sempre els enllaços de <ph name="PROTOCOL_SCHEME" /> en aquesta aplicació</translation>
 <translation id="5520605865175417976">Suprimeix l'acció <ph name="ACTION_TO_REMOVE" /></translation>
 <translation id="5521078259930077036">Aquesta pàgina d'inici és la que esperàveu?</translation>
+<translation id="5521348028713515143">Afegeix una drecera de l'escriptori</translation>
 <translation id="5522156646677899028">Aquesta extensió conté una vulnerabilitat de seguretat greu.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{L'administrador ha instal·lat una extensió}other{L'administrador ha instal·lat # extensions}}</translation>
 <translation id="5523203511530504754">Obre els enllaços de <ph name="PROTOCOL_SCHEME" /> a <ph name="APP_NAME" /></translation>
@@ -9263,7 +9263,6 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7434969625063495310">No s'ha pogut afegir el servidor d'impressió. Comprova'n la configuració i torna-ho a provar.</translation>
 <translation id="7436921188514130341">S'ha produït un error durant el canvi de nom.</translation>
 <translation id="7439519621174723623">Afegeix el nom d'un dispositiu per continuar</translation>
-<translation id="743982235360757672">Tingues el mode IA a prop mentre navegues</translation>
 <translation id="7441736532026945583">Per suprimir el grup de la barra de pestanyes, selecciona Amaga el grup</translation>
 <translation id="7441736921018636843">Si vols canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronització<ph name="END_LINK" /> perquè se suprimeixi la frase de contrasenya de sincronització</translation>
 <translation id="7441830548568730290">Altres usuaris</translation>

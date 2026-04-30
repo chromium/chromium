@@ -124,6 +124,7 @@
 <translation id="5076161749301278626">ষ্ট'ৰৰ পর্যালোচনা চাবনে?</translation>
 <translation id="5161254044473106830">শিৰোনাম বাধ্যতামূলক</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chromeএ <ph name="AUTO_DELETE_DELAY_ONE" /> মাহৰ পাছত স্বয়ংক্ৰিয়ভাৱে নিষ্ক্ৰিয় টেবসমূহ আৰু টেবৰ গোটসমূহ বন্ধ কৰে। আপুনি এইটো ছেটিঙত সলনি কৰিব পাৰে।}one{Chromeএ <ph name="AUTO_DELETE_DELAY_MANY" /> মাহৰ পাছত স্বয়ংক্ৰিয়ভাৱে নিষ্ক্ৰিয় টেবসমূহ আৰু টেবৰ গোটসমূহ বন্ধ কৰে। আপুনি এইটো ছেটিঙত সলনি কৰিব পাৰে।}other{Chromeএ <ph name="AUTO_DELETE_DELAY_MANY" /> মাহৰ পাছত স্বয়ংক্ৰিয়ভাৱে নিষ্ক্ৰিয় টেবসমূহ আৰু টেবৰ গোটসমূহ বন্ধ কৰে। আপুনি এইটো ছেটিঙত সলনি কৰিব পাৰে।}}</translation>
+<translation id="5254233580564156835">মেম’ৰীৰ ব্যৱহাৰ: <ph name="MEMORY_USAGE" /></translation>
 <translation id="5339733443032484186">আপোনাৰ অন্তিম টেব</translation>
 <translation id="5380159289133845234">ডুপ্লিকেট টেব আৰ্কাইভ কৰক</translation>
 <translation id="5446043142172831860">টেব আঁতৰাওক আৰু গোটৰ পৰা বাহিৰ হওক</translation>

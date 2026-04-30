@@ -124,6 +124,7 @@
 <translation id="5076161749301278626">Сакате да видите рецензии за продавницата?</translation>
 <translation id="5161254044473106830">Потребен е наслов</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome автоматски ги затвора неактивните картички и групи картички по <ph name="AUTO_DELETE_DELAY_ONE" /> месец. Ова може да го промените во поставките.}one{Chrome автоматски ги затвора неактивните картички и групи картички по <ph name="AUTO_DELETE_DELAY_MANY" /> месец. Ова може да го промените во поставките.}other{Chrome автоматски ги затвора неактивните картички и групи картички по <ph name="AUTO_DELETE_DELAY_MANY" /> месеци. Ова може да го промените во поставките.}}</translation>
+<translation id="5254233580564156835">Искористена меморија: <ph name="MEMORY_USAGE" /></translation>
 <translation id="5339733443032484186">Вашата последна картичка</translation>
 <translation id="5380159289133845234">Архивирање на дупликат картичките</translation>
 <translation id="5446043142172831860">Отстранете ја картичката и напуштете ја групата</translation>

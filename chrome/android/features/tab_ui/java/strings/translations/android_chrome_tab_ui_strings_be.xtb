@@ -124,6 +124,7 @@
 <translation id="5076161749301278626">Паказаць водгукі аб краме?</translation>
 <translation id="5161254044473106830">Патрабуецца назва</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome аўтаматычна закрые неактыўныя ўкладкі і групы ўкладак праз <ph name="AUTO_DELETE_DELAY_ONE" /> месяц. Гэту функцыю можна змяніць у наладах.}one{Chrome аўтаматычна закрые неактыўныя ўкладкі і групы ўкладак праз <ph name="AUTO_DELETE_DELAY_MANY" /> месяц. Гэту функцыю можна змяніць у наладах.}few{Chrome аўтаматычна закрые неактыўныя ўкладкі і групы ўкладак праз <ph name="AUTO_DELETE_DELAY_MANY" /> месяцы. Гэту функцыю можна змяніць у наладах.}many{Chrome аўтаматычна закрые неактыўныя ўкладкі і групы ўкладак праз <ph name="AUTO_DELETE_DELAY_MANY" /> месяцаў. Гэту функцыю можна змяніць у наладах.}other{Chrome аўтаматычна закрые неактыўныя ўкладкі і групы ўкладак праз <ph name="AUTO_DELETE_DELAY_MANY" /> месяца. Гэту функцыю можна змяніць у наладах.}}</translation>
+<translation id="5254233580564156835">Выкарыстанне памяці: <ph name="MEMORY_USAGE" /></translation>
 <translation id="5339733443032484186">Ваша апошняя ўкладка</translation>
 <translation id="5380159289133845234">Архіваваць паўторныя ўкладкі</translation>
 <translation id="5446043142172831860">Выдаліць укладку і выйсці з групы</translation>

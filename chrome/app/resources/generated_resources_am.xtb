@@ -6304,7 +6304,6 @@
 <translation id="5337926771328966926">አሁን ያለው የመሣሪያ ስም <ph name="DEVICE_NAME" /> ነው</translation>
 <translation id="5338338064218053691">ማንነት የማያሳውቅ መስኮት ተጠቅመው በግል ማሰስ ይችላሉ</translation>
 <translation id="5338503421962489998">አካባቢያዊ ማከማቻ</translation>
-<translation id="5340620183031438925">ገጹን ለቅቀው ሳይወጡ ስለ ትርዎ የሰው ሠራሽ አስተውሎት ሁነታን ለመጠየቅ እርስዎ መሆንዎን ያረጋግጡ። እንዲሁም የይለፍ ቃላትዎን እና ሌሎችንም በሁሉም መሣሪያዎችዎ ላይ ያገኛሉ።</translation>
 <translation id="5340787663756381836">አግኝ እና አርትዕ</translation>
 <translation id="5340900621595888432">የምርመራ እና የአጠቃቀም ውሂብ ላክ</translation>
 <translation id="5341793073192892252">የሚከተሉት ኩኪዎች ታግደዋል (የሦስተኛ ወገን ኩኪዎች ሳይገለግሉ እየታገዱ ናቸው)</translation>
@@ -6565,6 +6564,7 @@
 <translation id="5519766046604311137">ሁልጊዜ <ph name="PROTOCOL_SCHEME" /> አገናኞችን በዚህ መተግበሪያ ውስጥ ይክፈቱ</translation>
 <translation id="5520605865175417976">እርምጃ አስወግድ <ph name="ACTION_TO_REMOVE" /></translation>
 <translation id="5521078259930077036">የጠበቁት የመነሻ ገፅ ይሄ ነው?</translation>
+<translation id="5521348028713515143">የዴስክቶፕ አቋራጭ አክል</translation>
 <translation id="5522156646677899028">ይህ ቅጥያ ከባድ የደህንነት ተጋላጭነት ያካትታል።</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{አንድ ቅጥያ በአስተዳዳሪዎ ተጭኗል}one{# ቅጥያዎች በአስተዳዳሪዎ ተጭነዋል}other{# ቅጥያዎች በአስተዳዳሪዎ ተጭነዋል}}</translation>
 <translation id="5523203511530504754"><ph name="PROTOCOL_SCHEME" /> <ph name="APP_NAME" /> ውስጥ አገናኞችን ይክፈቱ</translation>
@@ -9278,7 +9278,6 @@
 <translation id="7434969625063495310">የህትመት አገልጋዩን ማከል አልተቻለም። እባክዎ የአገልጋዩን ውቅረት ይፈትሹና እንደገና ይሞክሩ።</translation>
 <translation id="7436921188514130341">ኧረ ቴች! ዳግም በሚሰየምበት ጊዜ የሆነ ስህተት ነበር።</translation>
 <translation id="7439519621174723623">ለመቀጠል የመሣሪያ ስም ያክሉ</translation>
-<translation id="743982235360757672">በሚያስሱበት ጊዜ የሰው ሠራሽ አስተውሎት ሁነታን በአቅራቢያ ያቆዩ</translation>
 <translation id="7441736532026945583">ቡድኑን ከትር ድርድርዎ ለማስወገድ «ቡድን ደብቅ» የሚለውን ይምረጡ</translation>
 <translation id="7441736921018636843">ይህን ቅንብር ለመቀየር፣ የእርስዎን የስምረት ይለፍ ሐረግ ለማስወገድ <ph name="BEGIN_LINK" />ስምረትን ዳግም ያቀናብሩ<ph name="END_LINK" /></translation>
 <translation id="7441830548568730290">ሌሎች ተጠቃሚዎች</translation>

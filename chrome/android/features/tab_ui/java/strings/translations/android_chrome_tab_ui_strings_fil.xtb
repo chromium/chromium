@@ -124,6 +124,7 @@
 <translation id="5076161749301278626">Tingnan ang mga review ng store?</translation>
 <translation id="5161254044473106830">Kailangan ng pamagat</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Awtomatikong isinasara ng Chrome ang mga hindi aktibong tab at grupo ng tab pagkalipas ng <ph name="AUTO_DELETE_DELAY_ONE" /> buwan. Mababago mo ito sa mga setting.}one{Awtomatikong isinasara ng Chrome ang mga hindi aktibong tab at grupo ng tab pagkalipas ng <ph name="AUTO_DELETE_DELAY_MANY" /> buwan. Mababago mo ito sa mga setting.}other{Awtomatikong isinasara ng Chrome ang mga hindi aktibong tab at grupo ng tab pagkalipas ng <ph name="AUTO_DELETE_DELAY_MANY" /> na buwan. Mababago mo ito sa mga setting.}}</translation>
+<translation id="5254233580564156835">Paggamit ng memory: <ph name="MEMORY_USAGE" /></translation>
 <translation id="5339733443032484186">Ang iyong huling tab</translation>
 <translation id="5380159289133845234">Mag-archive ng mga duplicate na tab</translation>
 <translation id="5446043142172831860">Alisin ang tab at umalis sa grupo</translation>

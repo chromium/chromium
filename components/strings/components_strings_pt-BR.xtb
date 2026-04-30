@@ -152,6 +152,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1228893227497259893">Identificador de entidade incorreto</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (detectado automaticamente)</translation>
 <translation id="1232569758102978740">Sem título</translation>
+<translation id="1234539281285007945">O campo <ph name="FIELD_1" /> é obrigatório</translation>
 <translation id="1236081509407217141">Permitir RV?</translation>
 <translation id="1236689197410206751">Afterpay</translation>
 <translation id="1240347957665416060">O nome do seu dispositivo</translation>
@@ -472,6 +473,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1721424275792716183">* Campo obrigatório</translation>
 <translation id="1723636263173393300">Essa política não pode ter mais que <ph name="MAX_ITEMS_LIMIT" /> atalhos.</translation>
 <translation id="1725591448053514783">Envelope You 6</translation>
+<translation id="172754119609519423"><ph name="FIELD_1" />, <ph name="FIELD_2" /> ou <ph name="FIELD_3" /> é obrigatório</translation>
 <translation id="1727613060316725209">O certificado é válido</translation>
 <translation id="1728677426644403582">Você está vendo o código-fonte de uma página da Web.</translation>
 <translation id="173080396488393970">Esse tipo de cartão não é aceito</translation>
@@ -1433,6 +1435,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="3220264767789936523">Roupas para ocasiões formais</translation>
 <translation id="3223287115535306850">Throbber de abertura do app</translation>
 <translation id="3223425961342298674">Acesso à localização não permitido</translation>
+<translation id="3225277284238802910"><ph name="FIELD_1" /> ou <ph name="FIELD_2" /> é obrigatório</translation>
 <translation id="3225319735946384299">Assinatura do código</translation>
 <translation id="3225919329040284222">O servidor apresentou um certificado que não coincide com as expectativas incorporadas. Estas expectativas são incluídas para determinados websites de alta segurança com a finalidade de oferecer proteção a você.</translation>
 <translation id="3226128629678568754">Pressione o botão "Atualizar" para reenviar os dados necessários para carregar a página.</translation>
@@ -2973,6 +2976,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="5600044805561809264">Faça perguntas sobre as guias que você está compartilhando durante a navegação.</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> ou <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">Gerenciamento não suportado</translation>
+<translation id="5604254791550001355">Editar comando</translation>
 <translation id="560431066250575003">{HOURS,plural, =1{Ativo há 1 hora}one{Ativo há # hora}other{Ativo há # horas}}</translation>
 <translation id="5605249000617390290">Saiba mais sobre o monitoramento de preços</translation>
 <translation id="5605670050355397069">Tabloide</translation>
@@ -3404,6 +3408,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
 <translation id="629730747756840877">Conta</translation>
+<translation id="6299098428775578517">Configurações de sugestões</translation>
 <translation id="6300452962057769623">{0,plural, =0{Seu dispositivo será reiniciado agora}=1{Seu dispositivo será reiniciado em 1 segundo}one{Seu dispositivo será reiniciado em # segundo}other{Seu dispositivo será reiniciado em # segundos}}</translation>
 <translation id="6301104306974789820">Receber notificações de monitoramento de preço</translation>
 <translation id="6302546952464230349">Mostrar detalhes da permissão de <ph name="PERMISSION_NAME" /></translation>
@@ -3600,7 +3605,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="6579858392010591435">Feriados e eventos sazonais</translation>
 <translation id="6581831440014388355">Remoção de pelos indesejados no corpo e rosto</translation>
 <translation id="658230438113661756">Invasores no site que você tentou acessar podem instalar softwares nocivos que roubam ou excluem itens como senhas, fotos, mensagens ou números de cartões de crédito. O Chrome recomenda voltar a uma página segura. <ph name="BEGIN_LEARN_MORE_LINK" />Saiba mais sobre este aviso<ph name="END_LEARN_MORE_LINK" /></translation>
-<translation id="6583309742916093092">Armazenado na Carteira do Google.</translation>
+<translation id="6583309742916093092">Armazenado na Carteira do Google</translation>
 <translation id="6587893660316489419">Envelope B5</translation>
 <translation id="6587923378399804057">Link que você copiou</translation>
 <translation id="6591833882275308647">Seu <ph name="DEVICE_TYPE" /> não é gerenciado</translation>

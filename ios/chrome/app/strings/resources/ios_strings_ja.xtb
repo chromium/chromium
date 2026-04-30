@@ -1576,6 +1576,7 @@
 <translation id="6476800141292307438">ページを<ph name="LANGUAGE" />に翻訳しています。画面の下の方にオプションがあります。</translation>
 <translation id="647867789226964031">パスワードを変更してください</translation>
 <translation id="6480363549849064919">クライアント認証</translation>
+<translation id="6489174933860678546">シークレット タブを開くと、プライバシーを守りながらウェブをブラウジングできます。</translation>
 <translation id="6494931198667773526">終了</translation>
 <translation id="6503077044568424649">よくアクセスするページ</translation>
 <translation id="6503763061813913607">安全チェックの通知</translation>
@@ -1633,6 +1634,7 @@
 <translation id="6640268266988685324">開いているタブ</translation>
 <translation id="6641465290890659327">パスワードを共有する</translation>
 <translation id="6642362222295953972">既存のタブに切り替え</translation>
+<translation id="6643016212128521049">削除</translation>
 <translation id="6645899968535965230">QR コード: <ph name="PAGE_TITLE" /></translation>
 <translation id="6657585470893396449">パスワード</translation>
 <translation id="6659660757330712663">ツールバーをスワイプして、タブを切り替えることができます。</translation>
@@ -2295,6 +2297,7 @@
 <translation id="8915916167043355778">すべて閉じる</translation>
 <translation id="892185197271200809">全員が「<ph name="GROUP_NAME" />」タブグループに直ちにアクセスできなくなり、すべてのデバイスから削除されます</translation>
 <translation id="8923178205567790913">パスワード</translation>
+<translation id="8926498511977337209">シークレット モードでブラウジング</translation>
 <translation id="892776311701544612">詳細…</translation>
 <translation id="8928133177108699615">デスクトップ</translation>
 <translation id="8928426232677696166"><ph name="EMAIL" />、組織によって管理されており、現在選択されています。アカウントを選択してください。</translation>

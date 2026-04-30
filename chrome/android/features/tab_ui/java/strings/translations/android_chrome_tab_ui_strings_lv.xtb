@@ -124,6 +124,7 @@
 <translation id="5076161749301278626">Vai skatīt atsauksmes par veikalu?</translation>
 <translation id="5161254044473106830">Jānorāda nosaukums</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Pārlūkā Chrome tiek automātiski aizvērtas neaktīvās cilnes un ciļņu grupas pēc <ph name="AUTO_DELETE_DELAY_ONE" /> mēneša. Varat to mainīt iestatījumos.}zero{Pārlūkā Chrome tiek automātiski aizvērtas neaktīvās cilnes un ciļņu grupas pēc <ph name="AUTO_DELETE_DELAY_MANY" /> mēnešiem. Varat to mainīt iestatījumos.}one{Pārlūkā Chrome tiek automātiski aizvērtas neaktīvās cilnes un ciļņu grupas pēc <ph name="AUTO_DELETE_DELAY_MANY" /> mēneša. Varat to mainīt iestatījumos.}other{Pārlūkā Chrome tiek automātiski aizvērtas neaktīvās cilnes un ciļņu grupas pēc <ph name="AUTO_DELETE_DELAY_MANY" /> mēnešiem. Varat to mainīt iestatījumos.}}</translation>
+<translation id="5254233580564156835">Atmiņas lietojums: <ph name="MEMORY_USAGE" /></translation>
 <translation id="5339733443032484186">Jūsu pēdējā izmantotā cilne</translation>
 <translation id="5380159289133845234">Ciļņu dublikātu arhivēšana</translation>
 <translation id="5446043142172831860">Noņemt cilni un pamest grupu</translation>

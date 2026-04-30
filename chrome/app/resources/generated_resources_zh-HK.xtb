@@ -6305,7 +6305,6 @@
 <translation id="5337926771328966926">目前嘅裝置名稱係 <ph name="DEVICE_NAME" /></translation>
 <translation id="5338338064218053691">使用無痕式視窗，即可私密瀏覽</translation>
 <translation id="5338503421962489998">本機儲存空間</translation>
-<translation id="5340620183031438925">如想問「AI 模式」有關分頁的問題而不離開頁面，請驗證你的身分。你也可在你的所有裝置上取得密碼和其他資料。</translation>
 <translation id="5340787663756381836">尋找並編輯(&amp;F)</translation>
 <translation id="5340900621595888432">傳送診斷和使用情況資料</translation>
 <translation id="5341793073192892252">已封鎖下列 Cookie (所有第三方 Cookie 都會被封鎖)</translation>
@@ -6566,6 +6565,7 @@
 <translation id="5519766046604311137">一律以此應用程式開啟「<ph name="PROTOCOL_SCHEME" />」連結</translation>
 <translation id="5520605865175417976">移除<ph name="ACTION_TO_REMOVE" />嘅操作</translation>
 <translation id="5521078259930077036">這是您想要的首頁嗎？</translation>
+<translation id="5521348028713515143">新增桌面捷徑</translation>
 <translation id="5522156646677899028">這個擴充功能內含嚴重安全性漏洞。</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{管理員已安裝 1 個擴充程式}other{管理員已安裝 # 個擴充程式}}</translation>
 <translation id="5523203511530504754">在 <ph name="APP_NAME" /> 開啟「<ph name="PROTOCOL_SCHEME" />」連結</translation>
@@ -9273,7 +9273,6 @@
 <translation id="7434969625063495310">無法新增列印伺服器。請檢查伺服器設定，然後再試一次。</translation>
 <translation id="7436921188514130341">很抱歉！重新命名過程中發生錯誤。</translation>
 <translation id="7439519621174723623">新增裝置名稱以繼續</translation>
-<translation id="743982235360757672">瀏覽時隨時使用 AI 模式</translation>
 <translation id="7441736532026945583">選取「隱藏群組」，即可從分頁列中移除群組</translation>
 <translation id="7441736921018636843">如要變更此設定，請<ph name="BEGIN_LINK" />重設同步功能<ph name="END_LINK" />以移除同步密碼短語</translation>
 <translation id="7441830548568730290">其他使用者</translation>

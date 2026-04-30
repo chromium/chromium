@@ -1576,6 +1576,7 @@
 <translation id="6476800141292307438">এই পৃষ্ঠাটো <ph name="LANGUAGE" />লৈ অনুবাদ কৰি থকা হৈছে। বিকল্পসমূহ স্ক্রীণখনৰ একেবাৰে তলৰ কাষত আছে।</translation>
 <translation id="647867789226964031">আপোনাৰ পাছৱৰ্ড সলনি কৰক</translation>
 <translation id="6480363549849064919">ক্লায়েণ্টৰ বিশ্বাসযোগ্যতা প্ৰমাণীকৰণ</translation>
+<translation id="6489174933860678546">ৱেব অধিক ব্যক্তিগতভাৱে ব্ৰাউজ কৰিবলৈ ইনক’গনিট’ টেব খোলক।</translation>
 <translation id="6494931198667773526">সমাপ্তিৰ সময়</translation>
 <translation id="6503077044568424649">সকলোতকৈ বেছিকৈ চোৱা</translation>
 <translation id="6503763061813913607">সুৰক্ষা পৰীক্ষা সম্পৰ্কীয় জাননী</translation>
@@ -1633,6 +1634,7 @@
 <translation id="6640268266988685324">খোলা টেব</translation>
 <translation id="6641465290890659327">আপোনাৰ পাছৱৰ্ডৰ এটা প্ৰতিলিপি শ্বেয়াৰ কৰক</translation>
 <translation id="6642362222295953972">ইতিমধ্যে থকা টেবলৈ যাওক</translation>
+<translation id="6643016212128521049">মচক</translation>
 <translation id="6645899968535965230">QR ক’ড: <ph name="PAGE_TITLE" /></translation>
 <translation id="6657585470893396449">পাছৱৰ্ড</translation>
 <translation id="6659660757330712663">আপুনি টেবসমূহৰ মাজত সালসলনি কৰিবলৈ টুলবাৰ ছোৱাইপ কৰিব পাৰে।</translation>
@@ -2301,6 +2303,7 @@
 <translation id="8915916167043355778">আটাইবোৰ বন্ধ কৰক</translation>
 <translation id="892185197271200809">সকলোৱে লগে লগে "<ph name="GROUP_NAME" />" টেবৰ গোটৰ এক্সেছ হেৰুৱাব আৰু আটাইবোৰ ডিভাইচৰ পৰা এইটো মচা হ’ব</translation>
 <translation id="8923178205567790913">পাছৱৰ্ড</translation>
+<translation id="8926498511977337209">ইনক’গনিট’ত ব্ৰাউজ কৰক</translation>
 <translation id="892776311701544612">অধিক জানক…</translation>
 <translation id="8928133177108699615">ডেস্কটপ</translation>
 <translation id="8928426232677696166">আপোনাৰ প্ৰতিষ্ঠানে পৰিচালনা কৰা <ph name="EMAIL" />ক বৰ্তমান বাছনি কৰা হৈছে। এটা একাউণ্ট বাছনি কৰক।</translation>

@@ -40,7 +40,7 @@ Se la policy non viene configurata, il relativo comportamento viene determinato 
 
 Le funzionalità di AI generativa di <ph name="CHROME_DEVTOOLS_NAME" /> includono:
 
-- Approfondimenti sulla console: spiega i messaggi della console e offre suggerimenti su come correggere gli errori.
+- Insight sulla console: spiega i messaggi della console e offre suggerimenti su come correggere gli errori.
 
 - Assistenza AI: ricevi aiuto per comprendere gli stili CSS (dalla versione 131), le richieste di rete, il rendimento e i file (tutto dalla versione 132).
 

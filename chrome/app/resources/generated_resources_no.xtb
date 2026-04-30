@@ -6300,7 +6300,6 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5337926771328966926">Det nåværende enhetsnavnet er <ph name="DEVICE_NAME" /></translation>
 <translation id="5338338064218053691">Med et inkognitovindu kan du surfe privat på nettet</translation>
 <translation id="5338503421962489998">Lokal lagring</translation>
-<translation id="5340620183031438925">For å spørre AI-modusen om fanen din uten å forlate siden, bekreft at det er deg. Du får også passordene dine med mer på alle enhetene dine.</translation>
 <translation id="5340787663756381836">&amp;Finn og rediger</translation>
 <translation id="5340900621595888432">Send diagnostikk og bruksdata</translation>
 <translation id="5341793073192892252">Følgende informasjonskapsler er blokkert (informasjonskapsler fra tredjeparter blokkeres uten unntak)</translation>
@@ -6560,6 +6559,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5519766046604311137">Åpne alltid <ph name="PROTOCOL_SCHEME" />-linker i denne appen</translation>
 <translation id="5520605865175417976">Fjern handlingen <ph name="ACTION_TO_REMOVE" /></translation>
 <translation id="5521078259930077036">Er dette startsiden du forventet?</translation>
+<translation id="5521348028713515143">Legg til skrivebordsnarvei</translation>
 <translation id="5522156646677899028">Denne utvidelsen inneholder et alvorlig sikkerhetsproblem.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Administratoren har installert en utvidelse}other{Administratoren har installert # utvidelser}}</translation>
 <translation id="5523203511530504754">Åpne <ph name="PROTOCOL_SCHEME" /> linker i <ph name="APP_NAME" /></translation>
@@ -9273,7 +9273,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7434969625063495310">Kunne ikke legge til utskriftstjeneren. Kontroller tjenerens konfigurasjon, og prøv på nytt.</translation>
 <translation id="7436921188514130341">Æsj! Det oppsto en feil under navneendringen.</translation>
 <translation id="7439519621174723623">Legg til et enhetsnavn for å fortsette</translation>
-<translation id="743982235360757672">Ha AI-modusen i nærheten mens du surfer</translation>
 <translation id="7441736532026945583">Velg «Skjul gruppen» for å fjerne gruppen fra faneraden</translation>
 <translation id="7441736921018636843">For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkronisering<ph name="END_LINK" /> for å fjerne passordfrasen din for synkronisering</translation>
 <translation id="7441830548568730290">Andre brukere</translation>

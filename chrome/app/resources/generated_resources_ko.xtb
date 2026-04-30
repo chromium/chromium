@@ -6310,7 +6310,6 @@
 <translation id="5337926771328966926">현재 기기 이름: <ph name="DEVICE_NAME" /></translation>
 <translation id="5338338064218053691">시크릿 창을 사용하면 비공개로 탐색할 수 있습니다.</translation>
 <translation id="5338503421962489998">로컬 저장소</translation>
-<translation id="5340620183031438925">페이지를 나가지 않고 탭에 관해 AI 모드에게 물어보려면 본인 인증을 진행하세요. 이렇게 하면 이용 중인 모든 기기에서 비밀번호 등도 사용할 수 있습니다.</translation>
 <translation id="5340787663756381836">찾기 및 수정하기(&amp;F)</translation>
 <translation id="5340900621595888432">진단 및 사용 데이터 전송</translation>
 <translation id="5341793073192892252">다음 쿠키가 차단됨(타사 쿠키는 예외 없이 차단됨)</translation>
@@ -6571,6 +6570,7 @@
 <translation id="5519766046604311137">항상 이 앱에서 <ph name="PROTOCOL_SCHEME" /> 링크 열기</translation>
 <translation id="5520605865175417976"><ph name="ACTION_TO_REMOVE" /> 작업을 삭제하시겠습니까?</translation>
 <translation id="5521078259930077036">설정한 홈페이지가 맞습니까?</translation>
+<translation id="5521348028713515143">바탕화면 바로가기 추가</translation>
 <translation id="5522156646677899028">이 확장 프로그램에는 보안이 심각하게 취약한 요소가 있습니다.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{관리자가 확장 프로그램 1개를 설치함}other{관리자가 확장 프로그램 #개를 설치함}}</translation>
 <translation id="5523203511530504754"><ph name="APP_NAME" />에서 <ph name="PROTOCOL_SCHEME" /> 링크 열기</translation>
@@ -9281,7 +9281,6 @@
 <translation id="7434969625063495310">인쇄 서버를 추가할 수 없습니다. 서버 설정을 확인하고 다시 시도해 보세요.</translation>
 <translation id="7436921188514130341">이름 변경 중에 오류가 발생했습니다.</translation>
 <translation id="7439519621174723623">계속하려면 기기 이름을 추가하세요.</translation>
-<translation id="743982235360757672">탐색할 때 AI 모드에 언제나 손쉽게 액세스하세요</translation>
 <translation id="7441736532026945583">'그룹 숨기기'를 선택하여 탭 표시줄에서 그룹을 삭제합니다.</translation>
 <translation id="7441736921018636843">이 설정을 변경하려면 <ph name="BEGIN_LINK" />동기화를 재설정<ph name="END_LINK" />하여 동기화 암호를 삭제하세요.</translation>
 <translation id="7441830548568730290">다른 사용자</translation>

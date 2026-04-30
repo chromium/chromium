@@ -127,7 +127,7 @@
 <translation id="1429187656584513419">Abre Contraseñas</translation>
 <translation id="1430915738399379752">Imprimir</translation>
 <translation id="1433478348197382180">Modo Lectura</translation>
-<translation id="1435271730600332883">Abrir Autorrelleno y contraseñas</translation>
+<translation id="1435271730600332883">Abrir Autocompletado y contraseñas</translation>
 <translation id="1436671784520050284">Continuar con la configuración</translation>
 <translation id="143681031165817424">Dirección guardada solo en este dispositivo</translation>
 <translation id="1445276840641906250">Todas tus pestañas en un solo navegador</translation>
@@ -1576,6 +1576,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="6476800141292307438">La página se está traduciendo al <ph name="LANGUAGE" />. Encontrarás opciones disponibles cerca de la parte inferior de la pantalla.</translation>
 <translation id="647867789226964031">Cambia tus contraseñas</translation>
 <translation id="6480363549849064919">Autenticación de cliente</translation>
+<translation id="6489174933860678546">Abre pestañas de Incógnito para navegar por la Web de forma más privada.</translation>
 <translation id="6494931198667773526">A</translation>
 <translation id="6503077044568424649">Más visitado</translation>
 <translation id="6503763061813913607">Notificaciones de Comprobación de tu estado</translation>
@@ -1633,6 +1634,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="6640268266988685324">Pestaña abierta</translation>
 <translation id="6641465290890659327">Comparte una copia de tu contraseña</translation>
 <translation id="6642362222295953972">Cambiar a la pestaña existente</translation>
+<translation id="6643016212128521049">Borrar</translation>
 <translation id="6645899968535965230">Código QR: <ph name="PAGE_TITLE" /></translation>
 <translation id="6657585470893396449">Contraseña</translation>
 <translation id="6659660757330712663">Puedes deslizar la barra de herramientas para cambiar de una pestaña a otra.</translation>
@@ -2295,6 +2297,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="8915916167043355778">Cerrar todo</translation>
 <translation id="892185197271200809">Todos los usuarios perderán inmediatamente el acceso al grupo de pestañas <ph name="GROUP_NAME" /> y se eliminará de todos los dispositivos</translation>
 <translation id="8923178205567790913">Contraseñas</translation>
+<translation id="8926498511977337209">Navegar en Incógnito</translation>
 <translation id="892776311701544612">Más información…</translation>
 <translation id="8928133177108699615">Ordenador</translation>
 <translation id="8928426232677696166"><ph name="EMAIL" />, gestionado por tu organización, está seleccionado. Elige una cuenta.</translation>

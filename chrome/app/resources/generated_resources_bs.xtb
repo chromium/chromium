@@ -6309,7 +6309,6 @@ Koristite Ctrl + Alt + Smanjivanje osvjetljenja da umanjite.</translation>
 <translation id="5337926771328966926">Trenutni naziv uređaja je <ph name="DEVICE_NAME" /></translation>
 <translation id="5338338064218053691">Možete pregledati privatno koristeći anonimni prozor</translation>
 <translation id="5338503421962489998">Lokalna pohrana</translation>
-<translation id="5340620183031438925">Da pitate AI način rada o kartici bez napuštanja stranice, potvrdite identitet. Također ćete dobiti svoje lozinke i druge stavke na svim svojim uređajima.</translation>
 <translation id="5340787663756381836">&amp;Pronađi i uredi</translation>
 <translation id="5340900621595888432">Pošaljite dijagnostiku i podatke o korištenju</translation>
 <translation id="5341793073192892252">Sljedeći kolačići su blokirani (kolačići treće strane se blokiraju bez izuzetka)</translation>
@@ -6570,6 +6569,7 @@ Ovoj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5519766046604311137">Uvijek otvori linkove protokola <ph name="PROTOCOL_SCHEME" /> u ovoj aplikaciji</translation>
 <translation id="5520605865175417976">Uklanjanje radnje <ph name="ACTION_TO_REMOVE" /></translation>
 <translation id="5521078259930077036">Je li ovo početna stranica koju ste očekivali?</translation>
+<translation id="5521348028713515143">Dodaj prečac na radnoj površini</translation>
 <translation id="5522156646677899028">Ova ekstenzija sadrži opasan sugurnosni propust.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Vaš administrator je instalirao ekstenziju}one{Vaš administrator je instalirao # ekstenziju}few{Vaš administrator je instalirao # ekstenzije}other{Vaš administrator je instalirao # ekstenzija}}</translation>
 <translation id="5523203511530504754">Otvorite linkove protokola <ph name="PROTOCOL_SCHEME" /> u aplikaciji <ph name="APP_NAME" /></translation>
@@ -9285,7 +9285,6 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="7434969625063495310">Dodavanje servera za štampanje nije uspjelo. Provjerite konfiguraciju servera i pokušajte ponovo.</translation>
 <translation id="7436921188514130341">O, ne! Došlo je do greške prilikom promjene naziva.</translation>
 <translation id="7439519621174723623">Dodajte naziv uređaja da nastavite</translation>
-<translation id="743982235360757672">Neka vam AI način rada bude nadohvat ruke dok pregledate</translation>
 <translation id="7441736532026945583">Odaberite "Sakrij grupu" da uklonite grupu iz trake kartice</translation>
 <translation id="7441736921018636843">Za promjenu ove postavke <ph name="BEGIN_LINK" />poništite sinhronizaciju<ph name="END_LINK" /> da uklonite pristupni izraz sinhronizacije</translation>
 <translation id="7441830548568730290">Drugi korisnici</translation>

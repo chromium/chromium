@@ -124,6 +124,7 @@
 <translation id="5076161749301278626">¿Quieres ver las opiniones de la tienda?</translation>
 <translation id="5161254044473106830">Se requiere un título</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome cierra automáticamente las pestañas y los grupos de pestañas inactivos después de <ph name="AUTO_DELETE_DELAY_ONE" /> mes. Puedes cambiarlo en la configuración.}other{Chrome cierra automáticamente las pestañas y los grupos de pestañas inactivos después de <ph name="AUTO_DELETE_DELAY_MANY" /> meses. Puedes cambiarlo en la configuración.}}</translation>
+<translation id="5254233580564156835">Uso de memoria: <ph name="MEMORY_USAGE" /></translation>
 <translation id="5339733443032484186">Tu pestaña más reciente</translation>
 <translation id="5380159289133845234">Archivar pestañas duplicadas</translation>
 <translation id="5446043142172831860">Quitar pestaña y abandonar grupo</translation>

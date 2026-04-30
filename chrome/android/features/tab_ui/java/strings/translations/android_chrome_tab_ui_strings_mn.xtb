@@ -124,6 +124,7 @@
 <translation id="5076161749301278626">Дэлгүүрийн шүүмжүүдийг харах уу?</translation>
 <translation id="5161254044473106830">Гарчиг шаардлагатай</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome <ph name="AUTO_DELETE_DELAY_ONE" /> сарын дараа идэвхгүй таб болон табын бүлгийг автоматаар хаана. Та үүнийг тохиргооноос өөрчилж болно.}other{Chrome <ph name="AUTO_DELETE_DELAY_MANY" /> сарын дараа идэвхгүй таб болон табын бүлгийг автоматаар хаана. Та үүнийг тохиргооноос өөрчилж болно.}}</translation>
+<translation id="5254233580564156835">Санах ойн ашиглалт: <ph name="MEMORY_USAGE" /></translation>
 <translation id="5339733443032484186">Таны сүүлийн таб</translation>
 <translation id="5380159289133845234">Давхардсан табуудыг архивлах</translation>
 <translation id="5446043142172831860">Табыг хасаж, бүлгээс гарах</translation>

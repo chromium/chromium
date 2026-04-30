@@ -10,6 +10,7 @@
 <translation id="19426210786412737">As configurações atuais do Chrome foram atualizadas para permitir que os sites acessem cookies de terceiros. Você pode mudar essa opção a qualquer momento.</translation>
 <translation id="1954777269544683286">O Google exige que as empresas declarem publicamente que não vão usar esses dados para rastrear você em outros sites. As empresas são responsáveis por informar como usam seus dados. <ph name="BEGIN_LINK" />Saiba mais na nossa Política de Privacidade<ph name="END_LINK" />.</translation>
 <translation id="2004697686368036666">É possível que os recursos de alguns sites não funcionem</translation>
+<translation id="2183376768278472507">Se um site não funcionar como o esperado, tente permitir o uso de cookies de terceiros apenas para ele.</translation>
 <translation id="2235344399760031203">Os cookies de terceiros foram bloqueados</translation>
 <translation id="235832722106476745">O Chrome exclui automaticamente temas de anúncios com mais de quatro semanas</translation>
 <translation id="2496115946829713659">Os sites podem usar cookies de terceiros para personalizar conteúdos e anúncios e saber o que você faz em outros sites.</translation>
@@ -39,7 +40,6 @@
 <translation id="4616029578858572059">O Chromium registra temas do seu interesse com base no seu histórico de navegação recente. Por exemplo, assuntos como Esportes, Vestuário e muito mais</translation>
 <translation id="4692439979815346597">Você pode ver os temas de anúncios nas configurações do Chrome e bloquear os que não quer compartilhar com sites</translation>
 <translation id="4711259472133554310">Você pode criar exceções nas Configurações para sempre permitir que sites específicos usem cookies de terceiros</translation>
-<translation id="4894490899128180322">Se um site não funciona como esperado, tente permitir o uso de cookies de terceiros apenas para ele</translation>
 <translation id="5055880590417889642">Sua atividade é uma das muitas coisas que um site pode usar para sugerir anúncios. Quando os anúncios sugeridos por sites estão desativados, eles ainda podem mostrar anúncios, mas podem ser menos personalizados. Saiba mais sobre</translation>
 <translation id="5117284457376555514">Os sites não podem usar cookies de terceiros para personalizar conteúdos e anúncios nem saber o que você faz em outros sites, a menos que você permita que sites relacionados acessem esses dados. Alguns recursos de sites podem não funcionar como esperado.</translation>
 <translation id="544199055391706031">Sua atividade é uma das muitas coisas que um site pode usar para sugerir anúncios. Quando os anúncios sugeridos por sites estão desativados, eles ainda podem mostrar anúncios, mas podem ser menos personalizados. Saiba mais sobre <ph name="BEGIN_LINK" />anúncios sugeridos por sites<ph name="END_LINK" />.</translation>

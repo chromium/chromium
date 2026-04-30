@@ -6316,7 +6316,6 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="5337926771328966926">Trenutno ime naprave je <ph name="DEVICE_NAME" /></translation>
 <translation id="5338338064218053691">Z anonimnim oknom lahko zasebno brskate.</translation>
 <translation id="5338503421962489998">Lokalna shramba</translation>
-<translation id="5340620183031438925">Če želite v načinu umetne inteligence postaviti vprašanje o zavihku, ne da bi zapustili stran, preverite svojo identiteto. V vseh svojih napravah boste imeli na voljo tudi gesla in drugo.</translation>
 <translation id="5340787663756381836">&amp;Iskanje in urejanje</translation>
 <translation id="5340900621595888432">Pošiljanje diagnostičnih podatkov in podatkov o uporabi</translation>
 <translation id="5341793073192892252">Ti piškotki so bili blokirani (piškotki tretjih oseb se blokirajo brez izjeme)</translation>
@@ -6577,6 +6576,7 @@ Temu dejanju lahko dodelite več stikal.</translation>
 <translation id="5519766046604311137">Povezave <ph name="PROTOCOL_SCHEME" /> vedno odpri v tej aplikaciji</translation>
 <translation id="5520605865175417976">Odstranjevanje dejanja <ph name="ACTION_TO_REMOVE" /></translation>
 <translation id="5521078259930077036">Ali je to domača stran, ki ste jo pričakovali?</translation>
+<translation id="5521348028713515143">Dodaj bližnjico na namizju</translation>
 <translation id="5522156646677899028">Ta razširitev vsebuje veliko varnostno ranljivost.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Skrbnik je namestil razširitev}one{Skrbnik je namestil # razširitev}two{Skrbnik je namestil # razširitvi}few{Skrbnik je namestil # razširitve}other{Skrbnik je namestil # razširitev}}</translation>
 <translation id="5523203511530504754">Odpiranje povezav <ph name="PROTOCOL_SCHEME" /> v aplikaciji <ph name="APP_NAME" /></translation>
@@ -9301,7 +9301,6 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7434969625063495310">Tiskalnega strežnika ni bilo mogoče dodati. Preverite konfiguracijo strežnika in poskusite znova.</translation>
 <translation id="7436921188514130341">Ti šment! Napaka med preimenovanjem.</translation>
 <translation id="7439519621174723623">Dodajte ime naprave, če želite nadaljevati.</translation>
-<translation id="743982235360757672">Med brskanjem imejte način umetne inteligence pri roki</translation>
 <translation id="7441736532026945583">Če želite skupino odstraniti s traku z zavihki, izberite možnost »Skrij skupino«</translation>
 <translation id="7441736921018636843">Če želite spremeniti to nastavitev, <ph name="BEGIN_LINK" />ponastavite sinhronizacijo<ph name="END_LINK" />, da odstranite geslo za sinhronizacijo</translation>
 <translation id="7441830548568730290">Drugi uporabniki</translation>

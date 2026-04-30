@@ -56,7 +56,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="1594928384848033697">Chromium wants to delete your Password Manager data. Type in your Windows password to allow this.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Your administrator requires that you relaunch Chromium to apply an update}=1{Your administrator requires that you relaunch Chromium to apply an update. Your Incognito window won't reopen.}other{Your administrator requires that you relaunch Chromium to apply an update. Your # Incognito windows won't reopen.}}</translation>
 <translation id="1625909126243026060">Review key privacy and security controls in Chromium</translation>
-<translation id="1639380494700489405">To ask AI Mode about your tab without leaving the page, sign in to Chromium. You'll also get your passwords and more on all your devices.</translation>
 <translation id="1640672724030957280">Downloading ...</translation>
 <translation id="1680687534629375545">Ask image search about this page</translation>
 <translation id="1708414395296835197">You can use Chromium any time that you click links in messages, documents and other apps. It will also be pinned to your taskbar.</translation>
