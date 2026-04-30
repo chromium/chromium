@@ -133,6 +133,7 @@ export class ToolbarAppElement extends CrLitElement {
     locationBarState: {
       omniboxViewState: {
         textPieces: [],
+        inlineAutocompletion: '',
         selection: null,
         textIsUrl: false,
       },

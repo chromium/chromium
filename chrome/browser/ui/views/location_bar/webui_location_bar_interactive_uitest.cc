@@ -4,6 +4,7 @@
 
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
@@ -18,11 +19,15 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
 #include "chrome/browser/ui/waap/initial_web_ui_manager.h"
+#include "chrome/browser/ui/webui/searchbox/searchbox_interactive_test_mixin.h"
 #include "chrome/browser/ui/webui/test_support/webui_interactive_test_mixin.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "components/history/core/browser/history_service.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/webui/tracked_element/interaction_test_util_web_ui.h"
@@ -36,27 +41,40 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebUIToolbarId);
 const WebContentsInteractionTestUtil::DeepQuery kOmniboxInputDeepQuery = {
     "toolbar-app", "location-bar", "readonly-omnibox", "#textInput"};
 
+const WebContentsInteractionTestUtil::DeepQuery kClassicMatchText0 = {
+    "omnibox-popup-app", "cr-searchbox-dropdown",
+    "cr-searchbox-match[match-index=\"0\"]", "#suggestion"};
+const WebContentsInteractionTestUtil::DeepQuery kClassicMatchText1 = {
+    "omnibox-popup-app", "cr-searchbox-dropdown",
+    "cr-searchbox-match[match-index=\"1\"]", "#suggestion"};
+const WebContentsInteractionTestUtil::DeepQuery kClassicMatchText2 = {
+    "omnibox-popup-app", "cr-searchbox-dropdown",
+    "cr-searchbox-match[match-index=\"2\"]", "#suggestion"};
+
 }  // namespace
 
-class WebUILocationBarInteractiveUiTest
-    : public WebUiInteractiveTestMixin<InteractiveBrowserTest> {
+using TestBase = SearchboxInteractiveTestMixin<
+    WebUiInteractiveTestMixin<InteractiveBrowserTest>>;
+
+class WebUILocationBarInteractiveUiTest : public TestBase {
  public:
   WebUILocationBarInteractiveUiTest() {
     feature_list_.InitWithFeatures(
         {features::kInitialWebUI, features::kWebUIReloadButton,
          features::kWebUILocationBar},
         {});
-    // EnablePixelOutput();
   }
   ~WebUILocationBarInteractiveUiTest() override = default;
 
   void SetUpOnMainThread() override {
-    InteractiveBrowserTest::SetUpOnMainThread();
+    TestBase::SetUpOnMainThread();
     test_util().AddSimulator(
         std::make_unique<ui::InteractionTestUtilSimulatorWebUI>());
 
     // Insert an interceptor for network requests, so autocomplete doesn't
-    // go off searching google.com.
+    // go off searching google.com, and to provide some things for tests
+    // to use. We first must destroy the searchbox mixin's one, however.
+    TearDownUrlLoaderInterceptor();
     url_loader_interceptor_ = std::make_unique<content::URLLoaderInterceptor>(
         base::BindRepeating(&WebUILocationBarInteractiveUiTest::HandleRequest));
 
@@ -70,8 +88,8 @@ class WebUILocationBarInteractiveUiTest
   }
 
   void TearDownOnMainThread() override {
+    TestBase::TearDownOnMainThread();
     url_loader_interceptor_.reset();
-    InteractiveBrowserTest::TearDownOnMainThread();
   }
 
   views::WebView* GetToolbarWebView() {
@@ -110,15 +128,95 @@ class WebUILocationBarInteractiveUiTest
                      OmniboxPopupPresenterBase::kRoundedResultsFrame)));
   }
 
+  auto FakeKeyDownAt(ui::ElementIdentifier webcontents_id,
+                     const WebContentsInteractionTestUtil::DeepQuery& where,
+                     std::string_view key) {
+    const char kTemplate[] = R"(
+      (el) => {
+        const ev = new KeyboardEvent('keydown', {
+          key: $1
+        });
+        el.dispatchEvent(ev);
+      }
+    )";
+    return ExecuteJsAt(webcontents_id, where,
+                       content::JsReplace(kTemplate, key));
+  }
+
+  auto WaitTillOmniboxViewText(std::string_view expected_text) {
+    DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kTextOK);
+    const char kTemplate[] = R"(
+      (el) => {
+        return el.value === $1;
+      }
+    )";
+
+    WebContentsInteractionTestUtil::StateChange text_matches;
+    text_matches.event = kTextOK;
+    text_matches.where = kOmniboxInputDeepQuery;
+    text_matches.test_function = content::JsReplace(kTemplate, expected_text);
+    return WaitForStateChange(kWebUIToolbarId, text_matches);
+  }
+
+  auto WaitTillInlineComplete(std::string_view expected_text,
+                              std::string_view expected_completion) {
+    // Inline completion is expected to be rendered as selection after the
+    // expected text.
+    DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kInlineCompleteOK);
+    const char kTemplate[] = R"(
+      (el) => {
+        const expectedText = $1;
+        const expectedCompletion = $2;
+        const combined = expectedText + expectedCompletion;
+        if (el.value !== combined) {
+          return false;
+        }
+
+        return el.selectionStart === expectedText.length &&
+               el.selectionEnd === combined.length;
+      }
+    )";
+    WebContentsInteractionTestUtil::StateChange text_matches;
+    text_matches.event = kInlineCompleteOK;
+    text_matches.where = kOmniboxInputDeepQuery;
+    text_matches.test_function =
+        content::JsReplace(kTemplate, expected_text, expected_completion);
+    return WaitForStateChange(kWebUIToolbarId, text_matches);
+  }
+
  private:
   static bool HandleRequest(
       content::URLLoaderInterceptor::RequestParams* params) {
-    constexpr std::string_view headers =
-        "HTTP/1.1 404 Not found\nContent-Type: application/json\n\n";
+    if (params->url_request.url.host() == "www.google.com" &&
+        params->url_request.url.path() == "/complete/search") {
+      constexpr std::string_view headers =
+          "HTTP/1.1 200 OK\nContent-Type: application/json\n\n";
+      constexpr std::string_view body =
+          R"()]}'\n["input", [
+            "https://local.test/input/",
+            "https://developer.mozilla.org/en-US/docs/Web/API/InputEvent"],
+            [],
+            [],
+            {"google:suggesttype":[
+                "NAVIGATION",
+                "NAVIGATION",
+              ],
+              "google:suggestrelevance": [
+                 1010,
+                 1000,
+              ],
+            }
+        ])";
+      content::URLLoaderInterceptor::WriteResponse(headers, body,
+                                                   params->client.get());
+    } else {
+      constexpr std::string_view headers =
+          "HTTP/1.1 404 Not found\nContent-Type: application/json\n\n";
 
-    content::URLLoaderInterceptor::WriteResponse(headers, "",
-                                                 params->client.get());
-    return false;
+      content::URLLoaderInterceptor::WriteResponse(headers, "",
+                                                   params->client.get());
+    }
+    return true;
   }
 
   base::test::ScopedFeatureList feature_list_;
@@ -139,6 +237,104 @@ IN_PROC_BROWSER_TEST_F(WebUILocationBarInteractiveUiTest, ShowHidePopup) {
           EnsureNotPresent(OmniboxPopupPresenterBase::kRoundedResultsFrame)),
       // Type some text, it should show up.
       EnterText(kOmniboxElementId, u"input"), WaitForClassicPopupReady(),
+      // Removing the focus should hide the popup.
+      RemoveFocusFromPopup());
+}
+
+// Use arrow keys to select between various suggestions.
+IN_PROC_BROWSER_TEST_F(WebUILocationBarInteractiveUiTest, NavigateSuggestions) {
+  RunTestSequence(
+      InstrumentTab(kTabId), WaitForWebContentsReady(kTabId),
+      InstrumentNonTabWebView(kWebUIToolbarId, GetToolbarWebView()),
+      InAnyContext(
+          EnsureNotPresent(OmniboxPopupPresenterBase::kRoundedResultsFrame)),
+      FocusWebContents(kWebUIToolbarId),
+      ExecuteJsAt(kWebUIToolbarId, kOmniboxInputDeepQuery, "el => el.focus()"),
+      // Shouldn't have a popup visible yet.
+      InAnyContext(
+          EnsureNotPresent(OmniboxPopupPresenterBase::kRoundedResultsFrame)),
+      // Type some text, it should show up.
+      EnterText(kOmniboxElementId, u"input"), WaitForClassicPopupReady(),
+      // Should have an entry for just searching for "input", as well as the
+      // two suggestions from our interceptor. Note that the https://
+      // gets dropped for pretty-printing by the popup.
+      WaitForVerbatimMatch(kClassicPopupWebViewId, kClassicMatchText0, "input"),
+      WaitForMatch(kClassicPopupWebViewId, kClassicMatchText1,
+                   "local.test/input/"),
+      WaitForMatch(kClassicPopupWebViewId, kClassicMatchText2,
+                   "developer.mozilla.org/en-US/docs/Web/API/InputEvent"),
+
+      // Press keydown to select the next suggestion.
+      FakeKeyDownAt(kWebUIToolbarId, kOmniboxInputDeepQuery, "ArrowDown"),
+      WaitTillOmniboxViewText("https://local.test/input/"),
+
+      // And again.
+      FakeKeyDownAt(kWebUIToolbarId, kOmniboxInputDeepQuery, "ArrowDown"),
+      WaitTillOmniboxViewText(
+          "https://developer.mozilla.org/en-US/docs/Web/API/InputEvent"),
+
+      // Now go up.
+      FakeKeyDownAt(kWebUIToolbarId, kOmniboxInputDeepQuery, "ArrowUp"),
+      WaitTillOmniboxViewText("https://local.test/input/"),
+
+      // Escape resets to the default suggestion.
+      FakeKeyDownAt(kWebUIToolbarId, kOmniboxInputDeepQuery, "Escape"),
+      WaitTillOmniboxViewText("input"),
+
+      // Now down again to local.test.
+      FakeKeyDownAt(kWebUIToolbarId, kOmniboxInputDeepQuery, "ArrowDown"),
+      WaitTillOmniboxViewText("https://local.test/input/"),
+
+      // And press enter to accept.
+      FakeKeyDownAt(kWebUIToolbarId, kOmniboxInputDeepQuery, "Enter"),
+
+      // This should navigate to the page (or rather the 404 added by our
+      // interceptor).
+      WaitForWebContentsNavigation(kTabId, GURL("https://local.test/input/")),
+
+      // Removing the focus should hide the popup.
+      RemoveFocusFromPopup());
+}
+
+// Use an inline suggestion. Since we can't actually fake keyboard input, this
+// is limited to things which the JS impl directly does in response to events
+// and not things done as normal <input> interactions.
+IN_PROC_BROWSER_TEST_F(WebUILocationBarInteractiveUiTest, InlineSuggestion) {
+  history::HistoryService* history_service =
+      HistoryServiceFactory::GetForProfile(this->browser()->profile(),
+                                           ServiceAccessType::EXPLICIT_ACCESS);
+  GURL url("https://local.test/");
+  history_service->AddPage(url, base::Time::Now(), history::SOURCE_BROWSED);
+  ui_test_utils::WaitForHistoryToLoad(history_service);
+
+  RunTestSequence(
+      InstrumentTab(kTabId), WaitForWebContentsReady(kTabId),
+      InstrumentNonTabWebView(kWebUIToolbarId, GetToolbarWebView()),
+      InAnyContext(
+          EnsureNotPresent(OmniboxPopupPresenterBase::kRoundedResultsFrame)),
+      FocusWebContents(kWebUIToolbarId),
+      ExecuteJsAt(kWebUIToolbarId, kOmniboxInputDeepQuery, "el => el.focus()"),
+      // Shouldn't have a popup visible yet.
+      InAnyContext(
+          EnsureNotPresent(OmniboxPopupPresenterBase::kRoundedResultsFrame)),
+      // Type some text, it should show up.
+      EnterText(kOmniboxElementId, u"https://local"),
+      WaitForClassicPopupReady(),
+      WaitTillInlineComplete("https://local", ".test"),
+
+      // Enter . to advance completion.
+      FakeKeyDownAt(kWebUIToolbarId, kOmniboxInputDeepQuery, "."),
+      WaitTillInlineComplete("https://local.", "test"),
+
+      // Likewise for t.
+      FakeKeyDownAt(kWebUIToolbarId, kOmniboxInputDeepQuery, "t"),
+      WaitTillInlineComplete("https://local.t", "est"),
+
+      // Accept it.
+      FakeKeyDownAt(kWebUIToolbarId, kOmniboxInputDeepQuery, "Enter"),
+      WaitForWebContentsNavigation(kTabId, GURL("https://local.test")),
+      WaitTillOmniboxViewText("local.test"),
+
       // Removing the focus should hide the popup.
       RemoveFocusFromPopup());
 }

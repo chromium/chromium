@@ -5,12 +5,24 @@
 import 'chrome://webui-toolbar.top-chrome/app.js';
 
 import {assertEquals, assertGE, assertLE, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
-import {OmniboxTextColor} from 'chrome://webui-toolbar.top-chrome/app.js';
-import type {ReadonlyOmniboxElement} from 'chrome://webui-toolbar.top-chrome/app.js';
+import {BrowserProxyImpl, OmniboxTextColor} from 'chrome://webui-toolbar.top-chrome/app.js';
+import type {OmniboxAction, ReadonlyOmniboxElement} from 'chrome://webui-toolbar.top-chrome/app.js';
+
+class MockToolbarUiHandler extends TestBrowserProxy {
+  constructor() {
+    super(['onOmniboxAction']);
+  }
+
+  onOmniboxAction(action: OmniboxAction) {
+    this.methodCalled('onOmniboxAction', action);
+  }
+}
 
 suite('ReadonlyOmnibox', function() {
   let omnibox: ReadonlyOmniboxElement;
+  let uiHandler: MockToolbarUiHandler;
 
   function getTextPieces(): NodeListOf<HTMLElement> {
     return omnibox.shadowRoot.querySelectorAll<HTMLElement>(
@@ -29,7 +41,24 @@ suite('ReadonlyOmnibox', function() {
     assertEquals(expectColor, style.get('color')?.toString());
   }
 
+  function getTextInput(): HTMLInputElement {
+    return omnibox.$.textInput;
+  }
+
+  function getStringSelection(): string {
+    const inp = getTextInput();
+    return inp.value.substring(inp.selectionStart || 0, inp.selectionEnd || 0);
+  }
+
+  function fakeKeyDown(key: string) {
+    const ev = new KeyboardEvent('keydown', {key});
+    getTextInput().dispatchEvent(ev);
+  }
+
   setup(() => {
+    uiHandler = new MockToolbarUiHandler();
+    BrowserProxyImpl.setInstance({toolbarUIHandler: uiHandler} as any);
+
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     omnibox = document.createElement('readonly-omnibox');
 
@@ -51,6 +80,7 @@ suite('ReadonlyOmnibox', function() {
           color: OmniboxTextColor.kOmniboxText,
         },
       ],
+      inlineAutocompletion: '',
       selection: null,
       textIsUrl: false,
     };
@@ -61,6 +91,7 @@ suite('ReadonlyOmnibox', function() {
     // Now set to blank
     omnibox.omniboxViewState = {
       textPieces: [],
+      inlineAutocompletion: '',
       selection: null,
       textIsUrl: false,
     };
@@ -83,6 +114,7 @@ suite('ReadonlyOmnibox', function() {
           color: OmniboxTextColor.kOmniboxText,
         },
       ],
+      inlineAutocompletion: '',
       selection: null,
       textIsUrl: false,
     };
@@ -135,6 +167,7 @@ suite('ReadonlyOmnibox', function() {
           color: OmniboxTextColor.kOmniboxSecurityChipDangerous,
         },
       ],
+      inlineAutocompletion: '',
       selection: null,
       textIsUrl: false,
     };
@@ -168,6 +201,7 @@ suite('ReadonlyOmnibox', function() {
           color: OmniboxTextColor.kOmniboxTextDimmed,
         },
       ],
+      inlineAutocompletion: '',
       selection: null,
       textIsUrl: true,
     };
@@ -192,5 +226,78 @@ suite('ReadonlyOmnibox', function() {
     // And since the box should be RTL, the URL should be vaguely right aligned.
     assertGE(spanBound1.x, omniboxBounds.x + omniboxBounds.width * 0.6);
     assertGE(spanBound2.x, omniboxBounds.x + omniboxBounds.width * 0.6);
+  });
+
+  test('Inline completion', async () => {
+    omnibox.omniboxViewState = {
+      textPieces: [
+        {
+          text: 'example.com',
+          strikethrough: false,
+          color: OmniboxTextColor.kOmniboxText,
+        },
+        {
+          text: '/artic',
+          strikethrough: false,
+          color: OmniboxTextColor.kOmniboxTextDimmed,
+        },
+      ],
+      inlineAutocompletion: 'les/1/',
+      selection: {start: 1, end: 2},
+      textIsUrl: true,
+    };
+    await microtasksFinished();
+
+    // The inline autocompletion gets rendered as selected text in the input,
+    // overriding the selection field.
+    assertEquals('example.com/artic', omnibox.$.textContainer.textContent);
+    assertEquals('example.com/articles/1/', omnibox.$.textInput.value);
+    assertEquals('les/1/', getStringSelection());
+
+    // Typing 'l' should accept one character from inline completion, and
+    // send a textInput event over mojo.
+    fakeKeyDown('l');
+    await microtasksFinished();
+    assertEquals(1, uiHandler.getCallCount('onOmniboxAction'));
+    let args = uiHandler.getArgs('onOmniboxAction');
+    assertTrue(!!args[0].textInput);
+    const kExpectedInput1 = 'example.com/articl';
+    assertEquals(kExpectedInput1, args[0].textInput.text);
+    assertEquals(kExpectedInput1.length, args[0].textInput.selection.start);
+    assertEquals(kExpectedInput1.length, args[0].textInput.selection.end);
+    assertEquals('es/1/', args[0].textInput.inlineAutocompletion);
+
+    // The <input> got its selection shifted, and the readonly view got updated
+    // with new character.
+    assertEquals('example.com/articl', omnibox.$.textContainer.textContent);
+    assertEquals('example.com/articles/1/', omnibox.$.textInput.value);
+    assertEquals('es/1/', getStringSelection());
+
+    // Now a mismatching one should be handled as any key press.
+    fakeKeyDown('o');
+    await microtasksFinished();
+    assertEquals(2, uiHandler.getCallCount('onOmniboxAction'));
+    args = uiHandler.getArgs('onOmniboxAction');
+    assertTrue(!!args[1].key);
+    assertEquals('o', args[1].key.key);
+
+    // Since it's a fake key, the <input> doesn't actually update, so we
+    // have to simulate it.
+    const input = getTextInput();
+    input.value = kExpectedInput1 + 'o';
+    input.selectionStart = kExpectedInput1.length + 1;
+    input.selectionEnd = kExpectedInput1.length + 1;
+    input.dispatchEvent(new InputEvent('input'));
+    await microtasksFinished();
+    assertEquals(3, uiHandler.getCallCount('onOmniboxAction'));
+    args = uiHandler.getArgs('onOmniboxAction');
+    assertTrue(!!args[2].textInput);
+    assertEquals(kExpectedInput1 + 'o', args[2].textInput.text);
+    assertEquals(kExpectedInput1.length + 1, args[2].textInput.selection.start);
+    assertEquals(kExpectedInput1.length + 1, args[2].textInput.selection.end);
+    assertEquals('', args[2].textInput.inlineAutocompletion);
+    assertEquals('example.com/articlo', omnibox.$.textContainer.textContent);
+    assertEquals('example.com/articlo', omnibox.$.textInput.value);
+    assertEquals('', getStringSelection());
   });
 });

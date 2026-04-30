@@ -164,7 +164,11 @@ void WebUILocationBar::OnOmniboxFocusChange(
 
 void WebUILocationBar::OnOmniboxTextInput(
     const toolbar_ui_api::mojom::OmniboxActionTextInput& text_input) {
-  omnibox_view_->SetUserText(text_input.text);
+  omnibox_view_->OnBeforePossibleChange();
+  omnibox_view_->SetTextAndSelectedRange(text_input.text,
+                                         text_input.inline_autocompletion,
+                                         gfx::Range(text_input.text.size()));
+  omnibox_view_->OnAfterPossibleChange(/*allow_keyword_ui_change=*/true);
 }
 
 void WebUILocationBar::OnOmniboxKey(

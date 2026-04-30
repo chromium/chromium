@@ -45,9 +45,14 @@ export class ReadonlyOmniboxElement extends CrLitElement {
 
   accessor omniboxViewState: OmniboxViewState = {
     textPieces: [],
+    inlineAutocompletion: '',
     selection: null,
     textIsUrl: false,
   };
+
+  // The portion of the text that the user entered or accepted (rather than
+  // what's being merely suggested by inline autocompletion).
+  private userText: string = '';
 
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
 
@@ -68,13 +73,28 @@ export class ReadonlyOmniboxElement extends CrLitElement {
       this.$.textContainer.classList.toggle(
           'force-ltr', this.omniboxViewState.textIsUrl);
 
-      const allText = this.$.textContainer.textContent;
+      this.userText = this.$.textContainer.textContent;
+      let selection = this.omniboxViewState.selection;
+
+      // If there is an inline autocompletion, render it as selected text
+      // after the input.
+      // TODO(crbug.com/500653057): We will likely need to do something
+      // different when IME is popped up.
+      if (this.omniboxViewState.inlineAutocompletion.length > 0) {
+        selection = {
+          start: this.userText.length,
+          end: this.userText.length +
+              this.omniboxViewState.inlineAutocompletion.length,
+        };
+      }
+
+      const allText =
+          this.userText + this.omniboxViewState.inlineAutocompletion;
       if (this.$.textInput.value !== allText) {
         this.$.textInput.value = allText;
       }
 
-      if (this.omniboxViewState.selection) {
-        let selection = this.omniboxViewState.selection;
+      if (selection) {
         let selectionDirection: SelectionDirection = 'forward';
         if (selection.start > selection.end) {
           selection = {start: selection.end, end: selection.start};
@@ -102,8 +122,6 @@ export class ReadonlyOmniboxElement extends CrLitElement {
     // Make the read-only view visible.
     this.$.textContainer.style.zIndex = '1';
 
-    // TODO(crbug.com/500653057): sync up the readonly view to avoid roundtrip/
-    // flicker.
     this.browserProxy_.toolbarUIHandler.onOmniboxAction({
       focusChange: {
         hasFocus: false,
@@ -127,10 +145,29 @@ export class ReadonlyOmniboxElement extends CrLitElement {
     });
   }
 
+  // Sync ups the textPieces to be an unhighlighted version of `userText`.
+  private updateTextPiecesFromUserText() {
+    this.omniboxViewState.textPieces = [{
+      text: this.userText,
+      strikethrough: false,
+      color: OmniboxTextColor.kOmniboxText,
+    }];
+    this.requestUpdate();  // Since our changes were deep.
+  }
+
   private onInputInput(): void {
+    // If we got here (rather than blocking things in onInputKeyDown),
+    // there is no longer any inline completion.
+    this.userText = this.$.textInput.value;
+
+    // Sync up the read-only view to have the right text.
+    this.omniboxViewState.inlineAutocompletion = '';
+    this.updateTextPiecesFromUserText();
+
     this.browserProxy_.toolbarUIHandler.onOmniboxAction({
       textInput: {
         text: this.$.textInput.value,
+        inlineAutocompletion: '',
         selection: this.getSelection(),
       },
     });
@@ -140,6 +177,44 @@ export class ReadonlyOmniboxElement extends CrLitElement {
     // TODO(crbug.com/500653057): shouldn't do this if shift is down.
     if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
       event.preventDefault();
+    }
+
+    const inlineAutocompletion = this.omniboxViewState.inlineAutocompletion;
+    if (inlineAutocompletion.length > 0) {
+      // If the current input state (its value and selection) matches its last
+      // state (text and inline autocompletion) and the user types the next
+      // character in the inline autocompletion, stop the keydown event. Just
+      // move the selection. This is needed to avoid flicker. (Shamelessly
+      // adapted from searchbox_input.ts).
+      const inputValue = this.$.textInput.value;
+      let textPortionLength = this.$.textInput.selectionStart!;
+      const inputSelection = inputValue.substring(
+          textPortionLength, this.$.textInput.selectionEnd!);
+      if (inlineAutocompletion[0]!.toLocaleLowerCase() ===
+              event.key.toLocaleLowerCase() &&
+          inputSelection === inlineAutocompletion &&
+          inputValue === (this.userText + inlineAutocompletion)) {
+        ++textPortionLength;
+        this.$.textInput.selectionStart = textPortionLength;
+        this.userText = inputValue.substr(0, textPortionLength);
+        this.omniboxViewState.inlineAutocompletion =
+            inlineAutocompletion.substr(1);
+        this.updateTextPiecesFromUserText();
+
+        this.browserProxy_.toolbarUIHandler.onOmniboxAction({
+          textInput: {
+            text: this.userText,
+            inlineAutocompletion: this.omniboxViewState.inlineAutocompletion,
+            selection: {
+              start: textPortionLength,
+              end: textPortionLength,
+            },
+          },
+        });
+
+        event.preventDefault();
+        return;
+      }
     }
 
     this.browserProxy_.toolbarUIHandler.onOmniboxAction({

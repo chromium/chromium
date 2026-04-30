@@ -58,6 +58,7 @@ suite('ReadOnlyOmniboxFocus', function() {
           color: OmniboxTextColor.kOmniboxText,
         },
       ],
+      inlineAutocompletion: '',
       selection: {start: 1, end: 5},
       textIsUrl: false,
     };
@@ -83,6 +84,7 @@ suite('ReadOnlyOmniboxFocus', function() {
           color: OmniboxTextColor.kOmniboxText,
         },
       ],
+      inlineAutocompletion: '',
       selection: {start: 1, end: 5},
       textIsUrl: false,
     };
@@ -105,6 +107,7 @@ suite('ReadOnlyOmniboxFocus', function() {
           color: OmniboxTextColor.kOmniboxText,
         },
       ],
+      inlineAutocompletion: '',
       selection: {start: 1, end: 5},
       textIsUrl: false,
     };
@@ -133,6 +136,7 @@ suite('ReadOnlyOmniboxFocus', function() {
           color: OmniboxTextColor.kOmniboxText,
         },
       ],
+      inlineAutocompletion: '',
       selection: {start: 1, end: 5},
       textIsUrl: false,
     };
@@ -182,6 +186,7 @@ suite('ReadOnlyOmniboxFocus', function() {
     assertEquals(3, args[2].textInput.selection.start);
     assertEquals(2, args[2].textInput.selection.end);
     assertEquals('abcdefgh', args[2].textInput.text);
+    assertEquals('', args[2].textInput.inlineAutocompletion);
 
     // Now blur.
     other.focus();

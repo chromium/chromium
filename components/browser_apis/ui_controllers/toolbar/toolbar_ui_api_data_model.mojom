@@ -81,6 +81,12 @@ struct OmniboxActionTextInput {
   // The entire user-entered text (not including any displayed inline
   // autocompletion). Should be considered untrusted.
   mojo_base.mojom.String16 text;
+
+  // The unaccepted portion of inline autocompletion. (May be a suffix of
+  // what the model suggested if the user typed some of the expected
+  // characters).
+  mojo_base.mojom.String16 inline_autocompletion;
+
   gfx.mojom.Range selection;
 };
 
@@ -231,6 +237,10 @@ struct OmniboxTextPortion {
 struct OmniboxViewState {
   // Text to display in the omnibox view.
   array<OmniboxTextPortion> text_pieces;
+
+  // Inline autocompletion to display. If not empty, this may override
+  // `selection`.
+  mojo_base.mojom.String16 inline_autocompletion;
 
   // Selection or caret (if start == end) to set on the omnibox view, if any.
   gfx.mojom.Range? selection;
