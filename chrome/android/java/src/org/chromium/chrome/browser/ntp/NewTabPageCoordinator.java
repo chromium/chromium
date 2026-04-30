@@ -341,7 +341,8 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
                         mIsTablet,
                         lifecycleDispatcher,
                         mProfile.isOffTheRecord(),
-                        mWindowAndroid);
+                        mWindowAndroid,
+                        mManager);
         mModel.set(NewTabPageLayoutProperties.SEARCH_BOX_VIEW, mSearchBoxCoordinator.getView());
 
         updateSearchBoxTwoSideMargin();
@@ -356,8 +357,6 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
         setSearchBoxTextAppearance();
 
         initializeSearchBoxTextView();
-        initializeVoiceSearchButton();
-        initializeLensButton();
 
         initializeComposeplateFlags(mProfile);
         mSearchBoxCoordinator.setIsFuseboxEligible(Boolean.TRUE.equals(mIsComposeplateEnabled));
@@ -430,20 +429,6 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
         TraceEvent.begin(TAG + ".initializeSearchBoxTextView()");
 
         assumeNonNull(mSearchBoxCoordinator);
-        mSearchBoxCoordinator.setSearchBoxClickListener(
-                v ->
-                        mManager.focusSearchBox(
-                                /* beginVoiceSearch= */ false,
-                                AutocompleteRequestType.SEARCH,
-                                /* showFuseboxPopup= */ false,
-                                /* pastedText= */ null));
-        mSearchBoxCoordinator.setPlusButtonClickListener(
-                v ->
-                        mManager.focusSearchBox(
-                                /* beginVoiceSearch= */ false,
-                                AutocompleteRequestType.SEARCH,
-                                /* showFuseboxPopup= */ true,
-                                /* pastedText= */ null));
 
         // @TODO(crbug.com/41492572): Add test case for search box OnDragListener.
         mSearchBoxCoordinator.setSearchBoxDragListener(
@@ -500,28 +485,6 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
             mSearchBoxCoordinator.setSearchBoxTextAppearance(
                     R.style.TextAppearance_FakeSearchBoxTextMedium);
         }
-    }
-
-    private void initializeVoiceSearchButton() {
-        TraceEvent.begin(TAG + ".initializeVoiceSearchButton()");
-        View.OnClickListener voiceSearchButtonClickListener =
-                v -> mManager.focusSearchBox(true, AutocompleteRequestType.SEARCH, false, null);
-        assumeNonNull(mSearchBoxCoordinator)
-                .addVoiceSearchButtonClickListener(voiceSearchButtonClickListener);
-        TraceEvent.end(TAG + ".initializeVoiceSearchButton()");
-    }
-
-    private void initializeLensButton() {
-        TraceEvent.begin(TAG + ".initializeLensButton()");
-        View.OnClickListener lensButtonClickListener =
-                v -> {
-                    if (mSearchBoxCoordinator == null) return;
-
-                    LensMetrics.recordClicked(LensEntryPoint.NEW_TAB_PAGE);
-                    mSearchBoxCoordinator.startLens(LensEntryPoint.NEW_TAB_PAGE);
-                };
-        assumeNonNull(mSearchBoxCoordinator).addLensButtonClickListener(lensButtonClickListener);
-        TraceEvent.end(TAG + ".initializeLensButton()");
     }
 
     private void initializeComposeplateFlags(Profile profile) {

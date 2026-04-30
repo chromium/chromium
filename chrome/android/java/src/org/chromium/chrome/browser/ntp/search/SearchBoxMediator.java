@@ -9,7 +9,6 @@ import android.content.res.ColorStateList;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.View.OnDragListener;
 import android.view.ViewGroup;
 
@@ -26,19 +25,20 @@ import org.chromium.chrome.browser.feed.FeedSurfaceScrollDelegate;
 import org.chromium.chrome.browser.lens.LensController;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
 import org.chromium.chrome.browser.lens.LensIntentParams;
+import org.chromium.chrome.browser.lens.LensMetrics;
 import org.chromium.chrome.browser.lens.LensQueryParams;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
+import org.chromium.chrome.browser.ntp.NewTabPageManager;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
+import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Supplier;
 
 @NullMarked
@@ -46,8 +46,9 @@ class SearchBoxMediator implements DestroyObserver {
     private final Context mContext;
     private final PropertyModel mModel;
     private final ViewGroup mView;
-    private final List<OnClickListener> mVoiceSearchClickListeners = new ArrayList<>();
-    private final List<OnClickListener> mLensClickListeners = new ArrayList<>();
+    private final NewTabPageManager mNewTabPageManager;
+    private final boolean mIsIncognito;
+    private final WindowAndroid mWindowAndroid;
     private NonNullObservableSupplier<@FuseboxState Integer> mFuseboxStateSupplier =
             ObservableSuppliers.createNonNull(FuseboxState.DISABLED);
     private final Callback<@FuseboxState Integer> mOnFuseboxStateChanged =
@@ -62,10 +63,16 @@ class SearchBoxMediator implements DestroyObserver {
             PropertyModel model,
             ViewGroup view,
             boolean isTablet,
-            ActivityLifecycleDispatcher activityLifecycleDispatcher) {
+            ActivityLifecycleDispatcher activityLifecycleDispatcher,
+            NewTabPageManager newTabPageManager,
+            boolean isIncognito,
+            WindowAndroid windowAndroid) {
         mContext = context;
         mModel = model;
         mView = view;
+        mNewTabPageManager = newTabPageManager;
+        mIsIncognito = isIncognito;
+        mWindowAndroid = windowAndroid;
         PropertyModelChangeProcessor.create(mModel, mView, new SearchBoxViewBinder());
 
         mTransitionEndOffset =
@@ -76,6 +83,11 @@ class SearchBoxMediator implements DestroyObserver {
 
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
         mActivityLifecycleDispatcher.register(this);
+
+        mModel.set(SearchBoxProperties.SEARCH_BOX_CLICK_CALLBACK, this::onSearchBoxClick);
+        mModel.set(SearchBoxProperties.VOICE_SEARCH_CLICK_CALLBACK, this::onVoiceSearchClick);
+        mModel.set(SearchBoxProperties.PLUS_BUTTON_CLICK_CALLBACK, this::onPlusButtonClick);
+        mModel.set(SearchBoxProperties.LENS_CLICK_CALLBACK, this::onLensClick);
     }
 
     @Override
@@ -90,15 +102,38 @@ class SearchBoxMediator implements DestroyObserver {
         mModel.set(SearchBoxProperties.SEARCH_BOX_TEXT_WATCHER, null);
         mModel.set(SearchBoxProperties.DSE_ICON_DRAWABLE, null);
 
-        mLensClickListeners.clear();
-        mVoiceSearchClickListeners.clear();
-
         mFuseboxStateSupplier.removeObserver(mOnFuseboxStateChanged);
     }
 
-    /** Called to set a click listener for the search box. */
-    void setSearchBoxClickListener(OnClickListener listener) {
-        mModel.set(SearchBoxProperties.SEARCH_BOX_CLICK_CALLBACK, v -> listener.onClick(v));
+    private void onSearchBoxClick(View v) {
+        mNewTabPageManager.focusSearchBox(
+                /* beginVoiceSearch= */ false,
+                AutocompleteRequestType.SEARCH,
+                /* showFuseboxPopup= */ false,
+                /* pastedText= */ null);
+    }
+
+    private void onVoiceSearchClick(View v) {
+        mNewTabPageManager.focusSearchBox(
+                /* beginVoiceSearch= */ true,
+                AutocompleteRequestType.SEARCH,
+                /* showFuseboxPopup= */ false,
+                /* pastedText= */ null);
+    }
+
+    private void onPlusButtonClick(View v) {
+        mNewTabPageManager.focusSearchBox(
+                /* beginVoiceSearch= */ false,
+                AutocompleteRequestType.SEARCH,
+                /* showFuseboxPopup= */ true,
+                /* pastedText= */ null);
+    }
+
+    private void onLensClick(View v) {
+        LensMetrics.recordClicked(LensEntryPoint.NEW_TAB_PAGE);
+        LensIntentParams lensIntentParams =
+                new LensIntentParams.Builder(LensEntryPoint.NEW_TAB_PAGE, mIsIncognito).build();
+        LensController.getInstance().startLens(mWindowAndroid, lensIntentParams);
     }
 
     void setSearchEngineIcon(@Nullable StatusIconResource newIcon) {
@@ -148,38 +183,6 @@ class SearchBoxMediator implements DestroyObserver {
         mModel.set(SearchBoxProperties.SEARCH_BOX_DRAG_CALLBACK, listener);
     }
 
-    /** Called to add a click listener for the voice search button. */
-    void addVoiceSearchButtonClickListener(OnClickListener listener) {
-        boolean hasExistingListeners = !mVoiceSearchClickListeners.isEmpty();
-        mVoiceSearchClickListeners.add(listener);
-        if (hasExistingListeners) return;
-        mModel.set(
-                SearchBoxProperties.VOICE_SEARCH_CLICK_CALLBACK,
-                v -> {
-                    for (OnClickListener clickListener : mVoiceSearchClickListeners) {
-                        clickListener.onClick(v);
-                    }
-                });
-    }
-
-    /** Called to add a click listener for the voice search button. */
-    void addLensButtonClickListener(OnClickListener listener) {
-        boolean hasExistingListeners = !mLensClickListeners.isEmpty();
-        mLensClickListeners.add(listener);
-        if (hasExistingListeners) return;
-        mModel.set(
-                SearchBoxProperties.LENS_CLICK_CALLBACK,
-                v -> {
-                    for (OnClickListener clickListener : mLensClickListeners) {
-                        clickListener.onClick(v);
-                    }
-                });
-    }
-
-    void setPlusButtonClickListener(OnClickListener listener) {
-        mModel.set(SearchBoxProperties.PLUS_BUTTON_CLICK_CALLBACK, listener);
-    }
-
     void setIsFuseboxEligible(boolean isEligible) {
         mIsFuseboxEligible = isEligible;
         updateStartIcon();
@@ -192,22 +195,8 @@ class SearchBoxMediator implements DestroyObserver {
     }
 
     /**
-     * Launch the Lens app.
-     *
-     * @param lensEntryPoint A {@link LensEntryPoint}.
-     * @param windowAndroid A {@link WindowAndroid} instance.
-     * @param isIncognito Whether the request is from a Incognito tab.
-     */
-    void startLens(
-            @LensEntryPoint int lensEntryPoint, WindowAndroid windowAndroid, boolean isIncognito) {
-        LensController.getInstance()
-                .startLens(
-                        windowAndroid,
-                        new LensIntentParams.Builder(lensEntryPoint, isIncognito).build());
-    }
-
-    /**
      * Check whether the Lens is enabled for an entry point.
+     *
      * @param lensEntryPoint A {@link LensEntryPoint}.
      * @param isIncognito Whether the request is from a Incognito tab.
      * @param isTablet Whether the request is from a tablet.

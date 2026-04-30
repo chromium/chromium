@@ -9,7 +9,6 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.text.TextWatcher;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.View.OnDragListener;
 import android.view.ViewGroup;
 
@@ -23,6 +22,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feed.FeedSurfaceScrollDelegate;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.ntp.NewTabPageManager;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
@@ -49,12 +49,20 @@ public class SearchBoxCoordinator implements NtpSearchBox {
             boolean isTablet,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             boolean isIncognito,
-            WindowAndroid windowAndroid) {
+            WindowAndroid windowAndroid,
+            NewTabPageManager newTabPageManager) {
         mModel = new PropertyModel(SearchBoxProperties.ALL_KEYS);
         mView = parent.findViewById(R.id.search_box);
         mMediator =
                 new SearchBoxMediator(
-                        context, mModel, mView, isTablet, activityLifecycleDispatcher);
+                        context,
+                        mModel,
+                        mView,
+                        isTablet,
+                        activityLifecycleDispatcher,
+                        newTabPageManager,
+                        isIncognito,
+                        windowAndroid);
         mIsIncognito = isIncognito;
         mWindowAndroid = windowAndroid;
     }
@@ -85,11 +93,6 @@ public class SearchBoxCoordinator implements NtpSearchBox {
     }
 
     @Override
-    public void setSearchBoxClickListener(OnClickListener listener) {
-        mMediator.setSearchBoxClickListener(listener);
-    }
-
-    @Override
     public void setSearchBoxDragListener(OnDragListener listener) {
         mMediator.setSearchBoxDragListener(listener);
     }
@@ -102,16 +105,6 @@ public class SearchBoxCoordinator implements NtpSearchBox {
     @Override
     public void setVoiceSearchButtonVisibility(boolean visible) {
         mModel.set(SearchBoxProperties.VOICE_SEARCH_VISIBILITY, visible);
-    }
-
-    @Override
-    public void addVoiceSearchButtonClickListener(OnClickListener listener) {
-        mMediator.addVoiceSearchButtonClickListener(listener);
-    }
-
-    @Override
-    public void setPlusButtonClickListener(OnClickListener listener) {
-        mMediator.setPlusButtonClickListener(listener);
     }
 
     @Override
@@ -130,19 +123,9 @@ public class SearchBoxCoordinator implements NtpSearchBox {
     }
 
     @Override
-    public void addLensButtonClickListener(OnClickListener listener) {
-        mMediator.addLensButtonClickListener(listener);
-    }
-
-    @Override
     public boolean isLensEnabled(@LensEntryPoint int lensEntryPoint) {
         return mMediator.isLensEnabled(
                 lensEntryPoint, mIsIncognito, DeviceFormFactor.isWindowOnTablet(mWindowAndroid));
-    }
-
-    @Override
-    public void startLens(@LensEntryPoint int lensEntryPoint) {
-        mMediator.startLens(lensEntryPoint, mWindowAndroid, mIsIncognito);
     }
 
     @Override

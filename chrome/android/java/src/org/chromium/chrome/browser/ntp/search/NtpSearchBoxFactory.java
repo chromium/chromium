@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.ntp.NewTabPageManager;
 import org.chromium.ui.base.WindowAndroid;
 
 /** Factory for creating {@link NtpSearchBox} instances. */
@@ -20,8 +21,15 @@ public class NtpSearchBoxFactory {
             boolean isTablet,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             boolean isIncognito,
-            WindowAndroid windowAndroid) {
+            WindowAndroid windowAndroid,
+            NewTabPageManager newTabPageManager) {
         return new SearchBoxCoordinator(
-                context, parent, isTablet, activityLifecycleDispatcher, isIncognito, windowAndroid);
+                context,
+                parent,
+                isTablet,
+                activityLifecycleDispatcher,
+                isIncognito,
+                windowAndroid,
+                newTabPageManager);
     }
 }

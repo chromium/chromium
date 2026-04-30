@@ -8,7 +8,6 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.text.TextWatcher;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.View.OnDragListener;
 
 import androidx.annotation.Px;
@@ -34,23 +33,15 @@ public interface NtpSearchBox {
 
     void setSearchText(String text);
 
-    void setSearchBoxClickListener(OnClickListener listener);
-
     void setSearchBoxDragListener(OnDragListener listener);
 
     void setSearchBoxTextWatcher(TextWatcher textWatcher);
 
     void setVoiceSearchButtonVisibility(boolean visible);
 
-    void addVoiceSearchButtonClickListener(OnClickListener listener);
-
     void setLensButtonVisibility(boolean visible);
 
-    void addLensButtonClickListener(OnClickListener listener);
-
     boolean isLensEnabled(@LensEntryPoint int lensEntryPoint);
-
-    void startLens(@LensEntryPoint int lensEntryPoint);
 
     void setHeight(@Px int height);
 
@@ -70,9 +61,6 @@ public interface NtpSearchBox {
 
     /* Provides state updates for the fusebox. */
     void setFuseboxStateSupplier(NonNullObservableSupplier<Integer> fuseboxStateSupplier);
-
-    /* Sets the plus button click listener. */
-    void setPlusButtonClickListener(OnClickListener listener);
 
     /* Sets whether the fusebox is eligible. */
     void setIsFuseboxEligible(boolean isEligible);
