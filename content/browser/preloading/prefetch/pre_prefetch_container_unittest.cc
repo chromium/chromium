@@ -46,7 +46,7 @@ class PrePrefetchContainerTest : public testing::Test {
             browser_context_weak_, url,
             PrefetchType(PreloadingTriggerType::kEmbedder,
                          /*use_prefetch_proxy=*/false),
-            test::kPreloadingEmbedderHistgramSuffixForTesting,
+            test::kPreloadingEmbedderHistogramSuffixForTesting,
             blink::mojom::Referrer(),
             /*javascript_enabled=*/true,
             /*referring_origin=*/std::nullopt,

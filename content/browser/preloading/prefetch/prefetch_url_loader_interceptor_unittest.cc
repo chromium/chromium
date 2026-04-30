@@ -363,7 +363,7 @@ class PrefetchURLLoaderInterceptorTestBase : public PrefetchingMetricsTestBase {
       const std::optional<url::Origin> referring_origin = std::nullopt) {
     auto prefetch_request = PrefetchRequest::CreateBrowserInitiated(
         *web_contents(), prefetch_url, std::move(prefetch_type),
-        test::kPreloadingEmbedderHistgramSuffixForTesting,
+        test::kPreloadingEmbedderHistogramSuffixForTesting,
         blink::mojom::Referrer(), std::move(referring_origin),
         /*no_vary_search_hint=*/std::nullopt,
         /*priority=*/std::nullopt,

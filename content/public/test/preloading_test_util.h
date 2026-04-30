@@ -29,7 +29,7 @@ extern const std::vector<std::string> kPreloadingAttemptUkmMetrics;
 extern const std::vector<std::string> kPreloadingPredictionUkmMetrics;
 
 // Used for generating histogram names recorded per trigger.
-inline constexpr char kPreloadingEmbedderHistgramSuffixForTesting[] =
+inline constexpr char kPreloadingEmbedderHistogramSuffixForTesting[] =
     "EmbedderHistogramSuffixForTesting";
 
 // Utility class to make building expected

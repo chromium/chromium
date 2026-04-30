@@ -736,7 +736,7 @@ IN_PROC_BROWSER_TEST_F(PrePrefetchBrowserTest, PrePrefetchConsumption) {
           [](PrePrefetchService* service_ptr, const GURL& url) {
             base::ScopedAllowBaseSyncPrimitivesForTesting allow_blocking;
             return service_ptr->StartPrePrefetchRequest(
-                url, test::kPreloadingEmbedderHistgramSuffixForTesting,
+                url, test::kPreloadingEmbedderHistogramSuffixForTesting,
                 /*javascript_enabled=*/true,
                 /*no_vary_search_hint=*/std::nullopt,
                 /*priority=*/content::PrefetchPriority::kHighest,

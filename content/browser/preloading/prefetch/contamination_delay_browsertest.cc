@@ -253,7 +253,7 @@ IN_PROC_BROWSER_TEST_F(ContaminationDelayBrowserTest,
   auto test_prefetch_watcher = std::make_unique<test::TestPrefetchWatcher>();
   auto handle = shell()->web_contents()->StartPrefetch(
       prefetch_url, /*use_prefetch_proxy=*/false,
-      test::kPreloadingEmbedderHistgramSuffixForTesting,
+      test::kPreloadingEmbedderHistogramSuffixForTesting,
       blink::mojom::Referrer(), referring_origin,
       /*no_vary_search_hint=*/std::nullopt,
       /*priority=*/std::nullopt,

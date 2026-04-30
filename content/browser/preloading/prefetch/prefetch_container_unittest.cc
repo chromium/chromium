@@ -106,7 +106,7 @@ class PrefetchContainerTestBase : public PrefetchingMetricsTestBase,
     return PrefetchRequest::CreateBrowserInitiated(
         *web_contents(), prefetch_url,
         PrefetchType(PreloadingTriggerType::kEmbedder, use_prefetch_proxy),
-        test::kPreloadingEmbedderHistgramSuffixForTesting,
+        test::kPreloadingEmbedderHistogramSuffixForTesting,
         blink::mojom::Referrer(), std::move(referring_origin),
         /*no_vary_search_hint=*/std::nullopt, /*priority=*/std::nullopt,
         PreloadPipelineInfo::Create(
@@ -132,7 +132,7 @@ class PrefetchContainerTestBase : public PrefetchingMetricsTestBase,
                           test_fixture->browser_context()->GetWeakPtr(), url,
                           PrefetchType(PreloadingTriggerType::kEmbedder,
                                        /*use_prefetch_proxy=*/true),
-                          test::kPreloadingEmbedderHistgramSuffixForTesting,
+                          test::kPreloadingEmbedderHistogramSuffixForTesting,
                           blink::mojom::Referrer(),
                           /*javascript_enabled=*/true,
                           /*referring_origin=*/std::nullopt,
@@ -174,7 +174,7 @@ class PrefetchContainerTestBase : public PrefetchingMetricsTestBase,
         browser_context(), prefetch_url,
         PrefetchType(PreloadingTriggerType::kEmbedder,
                      /*use_prefetch_proxy=*/true),
-        test::kPreloadingEmbedderHistgramSuffixForTesting,
+        test::kPreloadingEmbedderHistogramSuffixForTesting,
         blink::mojom::Referrer(),
         /*javascript_enabled=*/true,
         /*referring_origin=*/std::nullopt,
@@ -1144,42 +1144,42 @@ TEST_P(PrefetchContainerTest, BlockUntilHeadHistograms) {
   histogram_tester.ExpectUniqueSample(
       base::StrCat({"Prefetch.PrefetchMatchingBlockedNavigation."
                     "PerMatchingCandidate.Embedder_",
-                    test::kPreloadingEmbedderHistgramSuffixForTesting}),
+                    test::kPreloadingEmbedderHistogramSuffixForTesting}),
       true, 1);
   histogram_tester.ExpectTotalCount(
       base::StrCat({"Prefetch.PrefetchMatchingBlockedNavigation."
                     "PerMatchingCandidate.Prerender.Embedder_",
-                    test::kPreloadingEmbedderHistgramSuffixForTesting}),
+                    test::kPreloadingEmbedderHistogramSuffixForTesting}),
       0);
   histogram_tester.ExpectTotalCount(
       base::StrCat({"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate."
                     "Served.Embedder_",
-                    test::kPreloadingEmbedderHistgramSuffixForTesting}),
+                    test::kPreloadingEmbedderHistogramSuffixForTesting}),
       0);
   histogram_tester.ExpectUniqueTimeSample(
       base::StrCat({"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate."
                     "NotServed.Embedder_",
-                    test::kPreloadingEmbedderHistgramSuffixForTesting}),
+                    test::kPreloadingEmbedderHistogramSuffixForTesting}),
       base::Milliseconds(20), 1);
   histogram_tester.ExpectTotalCount(
       base::StrCat({"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate."
                     "NonPrerender.Served.Embedder_",
-                    test::kPreloadingEmbedderHistgramSuffixForTesting}),
+                    test::kPreloadingEmbedderHistogramSuffixForTesting}),
       0);
   histogram_tester.ExpectUniqueTimeSample(
       base::StrCat({"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate."
                     "NonPrerender.NotServed.Embedder_",
-                    test::kPreloadingEmbedderHistgramSuffixForTesting}),
+                    test::kPreloadingEmbedderHistogramSuffixForTesting}),
       base::Milliseconds(20), 1);
   histogram_tester.ExpectTotalCount(
       base::StrCat({"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate."
                     "Prerender.Served.Embedder_",
-                    test::kPreloadingEmbedderHistgramSuffixForTesting}),
+                    test::kPreloadingEmbedderHistogramSuffixForTesting}),
       0);
   histogram_tester.ExpectTotalCount(
       base::StrCat({"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate."
                     "Prerender.NotServed.Embedder_",
-                    test::kPreloadingEmbedderHistgramSuffixForTesting}),
+                    test::kPreloadingEmbedderHistogramSuffixForTesting}),
       0);
 }
 

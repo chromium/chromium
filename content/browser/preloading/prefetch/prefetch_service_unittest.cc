@@ -505,7 +505,7 @@ class PrefetchServiceTestBase : public PrefetchingMetricsTestBase {
 
     auto prefetch_request = PrefetchRequest::CreateBrowserInitiated(
         *web_contents(), prefetch_url, prefetch_type,
-        test::kPreloadingEmbedderHistgramSuffixForTesting, referrer,
+        test::kPreloadingEmbedderHistogramSuffixForTesting, referrer,
         std::move(referring_origin),
         /*no_vary_search_hint=*/std::nullopt,
         /*priority=*/std::nullopt,
@@ -525,7 +525,7 @@ class PrefetchServiceTestBase : public PrefetchingMetricsTestBase {
       base::TimeDelta ttl = base::Seconds(/* 10 minutes */ 60 * 10),
       bool should_disable_block_until_head_timeout = false) {
     return browser_context()->StartBrowserPrefetchRequest(
-        url, test::kPreloadingEmbedderHistgramSuffixForTesting, true,
+        url, test::kPreloadingEmbedderHistogramSuffixForTesting, true,
         no_vary_search_data, PrefetchPriority::kHighest,
         PreloadPipelineInfo::Create(
             /*planned_max_preloading_type=*/PreloadingType::kPrefetch),
@@ -1277,7 +1277,7 @@ class PrefetchServicePrePrefetchTest : public PrefetchServiceTest {
             [](PrePrefetchService* service_ptr, const GURL& url) {
               base::ScopedAllowBaseSyncPrimitivesForTesting allow_blocking;
               return service_ptr->StartPrePrefetchRequest(
-                  url, test::kPreloadingEmbedderHistgramSuffixForTesting,
+                  url, test::kPreloadingEmbedderHistogramSuffixForTesting,
                   /*javascript_enabled=*/true,
                   /*no_vary_search_hint=*/std::nullopt,
                   /*priority=*/PrefetchPriority::kHighest,
@@ -1414,7 +1414,7 @@ TEST_P(PrefetchServiceTest, SuccessCase_Browser) {
            GetMetricsSuffixTriggerTypeAndEagerness(
                PrefetchType(PreloadingTriggerType::kEmbedder,
                             /*use_prefetch_proxy=*/false),
-               test::kPreloadingEmbedderHistgramSuffixForTesting)}),
+               test::kPreloadingEmbedderHistogramSuffixForTesting)}),
       false, 1);
 
   histogram_tester.ExpectUniqueSample(
@@ -1423,7 +1423,7 @@ TEST_P(PrefetchServiceTest, SuccessCase_Browser) {
                     GetMetricsSuffixTriggerTypeAndEagerness(
                         PrefetchType(PreloadingTriggerType::kEmbedder,
                                      /*use_prefetch_proxy=*/false),
-                        test::kPreloadingEmbedderHistgramSuffixForTesting)}),
+                        test::kPreloadingEmbedderHistogramSuffixForTesting)}),
       PrefetchPotentialCandidateServingResult::kServed, 1);
 }
 
@@ -1745,7 +1745,7 @@ TEST_P(PrefetchServiceTest, SuccessCase_Embedder) {
           {"Prefetch.PrefetchMatchingBlockedNavigation.PerMatchingCandidate.",
            GetMetricsSuffixTriggerTypeAndEagerness(
                prefetch_type,
-               test::kPreloadingEmbedderHistgramSuffixForTesting)}),
+               test::kPreloadingEmbedderHistogramSuffixForTesting)}),
       false, 1);
 
   histogram_tester.ExpectUniqueSample(
@@ -1753,7 +1753,7 @@ TEST_P(PrefetchServiceTest, SuccessCase_Embedder) {
                     "PerMatchingCandidate.",
                     GetMetricsSuffixTriggerTypeAndEagerness(
                         prefetch_type,
-                        test::kPreloadingEmbedderHistgramSuffixForTesting)}),
+                        test::kPreloadingEmbedderHistogramSuffixForTesting)}),
       PrefetchPotentialCandidateServingResult::kServed, 1);
 }
 
@@ -1846,7 +1846,7 @@ TEST_P(PrefetchServicePrePrefetchTest, SuccessCase_Embedder_PrePrefetch) {
           {"Prefetch.PrefetchMatchingBlockedNavigation.PerMatchingCandidate.",
            GetMetricsSuffixTriggerTypeAndEagerness(
                prefetch_type,
-               test::kPreloadingEmbedderHistgramSuffixForTesting)}),
+               test::kPreloadingEmbedderHistogramSuffixForTesting)}),
       false, 1);
 
   histogram_tester.ExpectUniqueSample(
@@ -1854,7 +1854,7 @@ TEST_P(PrefetchServicePrePrefetchTest, SuccessCase_Embedder_PrePrefetch) {
                     "PerMatchingCandidate.",
                     GetMetricsSuffixTriggerTypeAndEagerness(
                         prefetch_type,
-                        test::kPreloadingEmbedderHistgramSuffixForTesting)}),
+                        test::kPreloadingEmbedderHistogramSuffixForTesting)}),
       PrefetchPotentialCandidateServingResult::kServed, 1);
 }
 
@@ -5342,7 +5342,7 @@ TEST_P(PrefetchServiceDisableBlockUntilHeadTimeoutTest,
   auto metrics_suffix = GetMetricsSuffixTriggerTypeAndEagerness(
       PrefetchType(PreloadingTriggerType::kEmbedder,
                    /*use_prefetch_proxy=*/false),
-      test::kPreloadingEmbedderHistgramSuffixForTesting);
+      test::kPreloadingEmbedderHistogramSuffixForTesting);
   histogram_tester.ExpectUniqueSample(
       base::StrCat(
           {"Prefetch.PrefetchMatchingBlockedNavigation.PerMatchingCandidate.",
@@ -5402,7 +5402,7 @@ TEST_P(PrefetchServiceDisableBlockUntilHeadTimeoutTest,
   auto metrics_suffix = GetMetricsSuffixTriggerTypeAndEagerness(
       PrefetchType(PreloadingTriggerType::kEmbedder,
                    /*use_prefetch_proxy=*/false),
-      test::kPreloadingEmbedderHistgramSuffixForTesting);
+      test::kPreloadingEmbedderHistogramSuffixForTesting);
   histogram_tester.ExpectUniqueSample(
       base::StrCat(
           {"Prefetch.PrefetchMatchingBlockedNavigation.PerMatchingCandidate.",
@@ -8647,48 +8647,48 @@ TEST_P(PrefetchServiceTest,
   histogram_tester.ExpectUniqueSample(
       base::StrCat(
           {"Prefetch.PrefetchContainer.AddedToInitialEligibility.Embedder_",
-           test::kPreloadingEmbedderHistgramSuffixForTesting}),
+           test::kPreloadingEmbedderHistogramSuffixForTesting}),
       0, 1);
   histogram_tester.ExpectUniqueSample(
       base::StrCat(
           {"Prefetch.PrefetchContainer.AddedToPrefetchStarted.Embedder_",
-           test::kPreloadingEmbedderHistgramSuffixForTesting}),
+           test::kPreloadingEmbedderHistogramSuffixForTesting}),
       0, 1);
   histogram_tester.ExpectUniqueSample(
       base::StrCat(
           {"Prefetch.PrefetchContainer.AddedToURLRequestStarted.Embedder_",
-           test::kPreloadingEmbedderHistgramSuffixForTesting}),
+           test::kPreloadingEmbedderHistogramSuffixForTesting}),
       kAddedToURLRequestStartLatency, 1);
   histogram_tester.ExpectUniqueSample(
       base::StrCat(
           {"Prefetch.PrefetchContainer.AddedToDomainLookupStarted.Embedder_",
-           test::kPreloadingEmbedderHistgramSuffixForTesting}),
+           test::kPreloadingEmbedderHistogramSuffixForTesting}),
       kAddedToURLRequestStartLatency +
           url_request_to_domain_lookup.InMilliseconds(),
       1);
   histogram_tester.ExpectUniqueSample(
       base::StrCat({"Prefetch.PrefetchContainer.CreateStreamDelay.Embedder_",
-                    test::kPreloadingEmbedderHistgramSuffixForTesting}),
+                    test::kPreloadingEmbedderHistogramSuffixForTesting}),
       create_stream_delay.InMilliseconds(), 1);
   histogram_tester.ExpectUniqueSample(
       base::StrCat(
           {"Prefetch.Prefetchcontainer.ConnectedCallbackDelay.Embedder_",
-           test::kPreloadingEmbedderHistgramSuffixForTesting}),
+           test::kPreloadingEmbedderHistogramSuffixForTesting}),
       connected_callback_delay.InMilliseconds(), 1);
   histogram_tester.ExpectUniqueSample(
       base::StrCat(
           {"Prefetch.Prefetchcontainer.InitializeStreamDelay.Embedder_",
-           test::kPreloadingEmbedderHistgramSuffixForTesting}),
+           test::kPreloadingEmbedderHistogramSuffixForTesting}),
       initialize_stream_delay.InMilliseconds(), 1);
   histogram_tester.ExpectUniqueSample(
       base::StrCat({"Prefetch.PrefetchContainer."
                     "AddedToHeaderDeterminedSuccessfully.Embedder_",
-                    test::kPreloadingEmbedderHistgramSuffixForTesting}),
+                    test::kPreloadingEmbedderHistogramSuffixForTesting}),
       kAddedToURLRequestStartLatency + kHeaderLatency, 1);
   histogram_tester.ExpectUniqueSample(
       base::StrCat({"Prefetch.PrefetchContainer."
                     "AddedToPrefetchCompletedSuccessfully.Embedder_",
-                    test::kPreloadingEmbedderHistgramSuffixForTesting}),
+                    test::kPreloadingEmbedderHistogramSuffixForTesting}),
       kAddedToURLRequestStartLatency + kHeaderLatency, 1);
 }
 
@@ -8714,27 +8714,27 @@ TEST_P(PrefetchServiceTest,
   histogram_tester.ExpectUniqueSample(
       base::StrCat(
           {"Prefetch.PrefetchContainer.AddedToInitialEligibility.Embedder_",
-           test::kPreloadingEmbedderHistgramSuffixForTesting}),
+           test::kPreloadingEmbedderHistogramSuffixForTesting}),
       0, 1);
   histogram_tester.ExpectUniqueSample(
       base::StrCat(
           {"Prefetch.PrefetchContainer.AddedToPrefetchStarted.Embedder_",
-           test::kPreloadingEmbedderHistgramSuffixForTesting}),
+           test::kPreloadingEmbedderHistogramSuffixForTesting}),
       0, 1);
   histogram_tester.ExpectTotalCount(
       base::StrCat(
           {"Prefetch.PrefetchContainer.AddedToURLRequestStarted.Embedder_",
-           test::kPreloadingEmbedderHistgramSuffixForTesting}),
+           test::kPreloadingEmbedderHistogramSuffixForTesting}),
       0);
   histogram_tester.ExpectTotalCount(
       base::StrCat({"Prefetch.PrefetchContainer."
                     "AddedToHeaderDeterminedSuccesfully.Embedder_",
-                    test::kPreloadingEmbedderHistgramSuffixForTesting}),
+                    test::kPreloadingEmbedderHistogramSuffixForTesting}),
       0);
   histogram_tester.ExpectTotalCount(
       base::StrCat({"Prefetch.PrefetchContainer."
                     "AddedToPrefetchCompletedSuccessfully.Embedder_",
-                    test::kPreloadingEmbedderHistgramSuffixForTesting}),
+                    test::kPreloadingEmbedderHistogramSuffixForTesting}),
       0);
 }
 

@@ -108,7 +108,7 @@ TEST_F(PrePrefetchServiceImplTest, StartPrePrefetchRequestFromNonUIThread) {
           [](PrePrefetchService* service_ptr, const GURL& url) {
             base::ScopedAllowBaseSyncPrimitivesForTesting allow_blocking;
             return service_ptr->StartPrePrefetchRequest(
-                url, test::kPreloadingEmbedderHistgramSuffixForTesting,
+                url, test::kPreloadingEmbedderHistogramSuffixForTesting,
                 /*javascript_enabled=*/true,
                 /*no_vary_search_hint=*/std::nullopt,
                 /*priority=*/content::PrefetchPriority::kHighest,
@@ -159,7 +159,7 @@ TEST_F(PrePrefetchServiceImplTest,
           [](PrePrefetchService* service_ptr, const GURL& url) {
             base::ScopedAllowBaseSyncPrimitivesForTesting allow_blocking;
             return service_ptr->StartPrePrefetchRequest(
-                url, test::kPreloadingEmbedderHistgramSuffixForTesting,
+                url, test::kPreloadingEmbedderHistogramSuffixForTesting,
                 /*javascript_enabled=*/true,
                 /*no_vary_search_hint=*/std::nullopt,
                 /*priority=*/content::PrefetchPriority::kHighest,
@@ -216,7 +216,7 @@ TEST_F(PrePrefetchServiceImplTest,
           [](PrePrefetchService* service_ptr, const GURL& url) {
             base::ScopedAllowBaseSyncPrimitivesForTesting allow_blocking;
             return service_ptr->StartPrePrefetchRequest(
-                url, test::kPreloadingEmbedderHistgramSuffixForTesting,
+                url, test::kPreloadingEmbedderHistogramSuffixForTesting,
                 /*javascript_enabled=*/true,
                 /*no_vary_search_hint=*/std::nullopt,
                 /*priority=*/content::PrefetchPriority::kHighest,
