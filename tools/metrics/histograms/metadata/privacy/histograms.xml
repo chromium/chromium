@@ -1113,25 +1113,9 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
   </summary>
 </histogram>
 
-<histogram name="PrivacySandbox.Notice.CloseDialogCallbackState"
-    enum="PrivacySandboxDialogCallbackState" expires_after="2026-05-07">
-  <owner>chrstne@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>Records the the callback state when a notice is closed.</summary>
-</histogram>
-
-<histogram
-    name="PrivacySandbox.Notice.DurationSinceLastRegisteredAction.{PSNotice}"
-    units="ms" expires_after="2026-05-07">
-  <owner>aashnas@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>Records the time between clicks on all notices.</summary>
-  <token key="PSNotice" variants="PSNotice"/>
-</histogram>
-
 <histogram
     name="PrivacySandbox.Notice.FirstShownToInteractedDuration.{PSNotice}_{PSNoticeAction}"
-    units="ms" expires_after="2026-05-07">
+    units="ms" expires_after="2026-08-07">
   <owner>chrstne@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
@@ -1144,7 +1128,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 
 <histogram
     name="PrivacySandbox.Notice.LastShownToInteractedDuration.{PSNotice}_{PSNoticeAction}"
-    units="ms" expires_after="2026-05-07">
+    units="ms" expires_after="2026-08-07">
   <owner>chrstne@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
@@ -1168,7 +1152,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 </histogram>
 
 <histogram name="PrivacySandbox.Notice.NoticeActionTakenBehavior.{PSNotice}"
-    enum="PrivacySandboxNoticeActionBehavior" expires_after="2026-05-07">
+    enum="PrivacySandboxNoticeActionBehavior" expires_after="2026-08-07">
   <owner>chrstne@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
@@ -1239,25 +1223,6 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
     Records whether or not the variation service is ready for profiles. This
     histogram will be used to determine if the variation service not being ready
     leads to an increased spike of Privacy Sandbox notice APIs being disabled.
-  </summary>
-</histogram>
-
-<histogram name="PrivacySandbox.PrivacyPolicy.FailedLoadErrorCode"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-12-14">
-  <owner>jacobstanley@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Records the error code if the Privacy Policy page failed to load.
-  </summary>
-</histogram>
-
-<histogram name="PrivacySandbox.PrivacyPolicy.LoadingTime" units="ms"
-    expires_after="2026-02-09">
-  <owner>chrstne@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Records the load time of the privacy policy page once the privacy policy
-    link is clicked on the Topics Consent Notice.
   </summary>
 </histogram>
 

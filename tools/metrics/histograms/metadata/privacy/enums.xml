@@ -254,16 +254,6 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Downloaded"/>
 </enum>
 
-<!-- LINT.IfChange(PrivacySandboxDialogCallbackState) -->
-
-<enum name="PrivacySandboxDialogCallbackState">
-  <int value="0" label="SingleActionCallbackDNE"/>
-  <int value="1" label="MultiActionCallbackDNE"/>
-  <int value="2" label="CallbackUnknownBeforeShown"/>
-</enum>
-
-<!-- LINT.ThenChange(//chrome/browser/ui/webui/privacy_sandbox/privacy_sandbox_dialog_handler.h:PrivacySandboxDialogCallbackState) -->
-
 <!-- LINT.IfChange(PrivacySandboxNoticeAction) -->
 
 <enum name="PrivacySandboxNoticeAction">
