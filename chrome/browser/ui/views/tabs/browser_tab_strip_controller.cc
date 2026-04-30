@@ -652,7 +652,7 @@ std::u16string BrowserTabStripController::GetAccessibleTabName(
     return std::u16string();
   }
 
-  return tabs::GetAccessibleTabLabel(tab->tab_handle().Get(),
+  return tabs::GetAccessibleTabLabel(interface,
                                      /*is_for_tab=*/true);
 }
 
