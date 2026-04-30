@@ -114,10 +114,13 @@ dependencies {
 
     // ChromeXR dependencies should be left at a fixed version
     // to prevent breakages.
-    compile 'androidx.xr.arcore:arcore:1.0.0-alpha10'
-    compile 'androidx.xr.arcore:arcore-openxr:1.0.0-alpha10'
-    compile 'androidx.xr.runtime:runtime:1.0.0-alpha10'
-    compile('androidx.xr.scenecore:scenecore:1.0.0-alpha11') {
+    String xrRuntimeVersion = '1.0.0-alpha10'
+    String xrScenecoreVersion = '1.0.0-alpha11'
+    compile "androidx.xr.arcore:arcore:${xrRuntimeVersion}"
+    compile "androidx.xr.arcore:arcore-openxr:${xrRuntimeVersion}"
+    compile "androidx.xr.runtime:runtime:${xrRuntimeVersion}"
+    compile "androidx.xr.scenecore:scenecore-runtime:${xrScenecoreVersion}"
+    compile("androidx.xr.scenecore:scenecore:${xrScenecoreVersion}") {
         // The target 'androidx_xr_scenecore_spatial_core_java' was
         // generating a dep on':androidx_test_rules_java' which causes
         // breakages.
@@ -182,6 +185,7 @@ dependencies {
     androidTestCompile 'androidx.test.ext:junit:1.1.1'
     androidTestCompile 'androidx.test.services:storage:1.4.1'
     androidTestCompileLatest 'androidx.test.uiautomator:uiautomator:+'
+    androidTestCompile "androidx.xr.scenecore:scenecore-testing:${xrScenecoreVersion}"
 
     // accessibility-test-framework (dependancy of anroidx.espresso) somehow
     // pulls in files from these dependencies without actually depending on
