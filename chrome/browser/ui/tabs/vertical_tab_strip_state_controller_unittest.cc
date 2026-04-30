@@ -107,6 +107,7 @@ TEST_F(VerticalTabStripStateControllerTest, VerticalTabsEnabled) {
   EXPECT_FALSE(pref_service()->GetBoolean(prefs::kVerticalTabsEnabled));
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(VerticalTabStripStateControllerTest, FeatureDisabled) {
   base::test::ScopedFeatureList local_feature_list;
   local_feature_list.InitAndDisableFeature(tabs::kVerticalTabs);
@@ -117,6 +118,7 @@ TEST_F(VerticalTabStripStateControllerTest, FeatureDisabled) {
   // is disabled.
   EXPECT_FALSE(controller()->ShouldDisplayVerticalTabs());
 }
+#endif
 
 TEST_F(VerticalTabStripStateControllerTest, VerticalTabsEnabledFirstTime) {
   base::UserActionTester user_action_tester;
