@@ -136,10 +136,6 @@ source_set("browser_tests") {
     sources += [ "extensions_zero_state/zero_state_promo_browsertest.cc" ]
   }
 
-  if (enable_webui_tab_strip) {
-    sources += [ "tab_strip/tab_strip_browsertest.cc" ]
-  }
-
   if (enable_print_preview && !is_chromeos) {
     sources += [ "print_preview/print_preview_browsertest.cc" ]
   }
@@ -364,10 +360,6 @@ source_set("interactive_ui_tests") {
     ]
 
     deps += [ "//chrome/test/data/webui:composebox_pixel_test_support" ]
-  }
-
-  if (enable_webui_tab_strip) {
-    sources += [ "tab_strip/tab_strip_focus_test.cc" ]
   }
 
   if (enable_extensions_core) {
@@ -718,11 +710,6 @@ generate_grd("build_grd") {
   if (chrome_root_store_cert_management_ui) {
     deps += [ "certificate_manager:build_grdp" ]
     grdp_files += [ "$target_gen_dir/certificate_manager/resources.grdp" ]
-  }
-
-  if (enable_webui_tab_strip) {
-    deps += [ "tab_strip:build_grdp" ]
-    grdp_files += [ "$target_gen_dir/tab_strip/resources.grdp" ]
   }
 
   if (enable_pdf) {

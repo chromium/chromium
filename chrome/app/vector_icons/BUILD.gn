@@ -263,10 +263,6 @@ aggregate_vector_icons("chrome_vector_icons") {
   if (is_chromeos) {
     sources += [ "notification_google.icon" ]
   }
-
-  if (enable_webui_tab_strip) {
-    sources += [ "new_tab_toolbar_button.icon" ]
-  }
 }
 
 source_set("vector_icons") {

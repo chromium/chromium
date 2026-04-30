@@ -165,10 +165,6 @@ group("resources") {
     ]
   }
 
-  if (enable_webui_tab_strip) {
-    public_deps += [ "tab_strip:resources" ]
-  }
-
   if (enable_extensions_core) {
     public_deps += [ "extensions:resources" ]
   }

@@ -6189,9 +6189,6 @@ if (!is_android) {
           [ "../browser/ui/screen_capture_notification_ui_browsertest.cc" ]
     }
 
-    if (enable_webui_tab_strip) {
-      sources += [ "../browser/ui/webui/tab_strip/tab_strip_ui_browsertest.cc" ]
-    }
     if (enable_session_service) {
       deps += [ "//chrome/browser/ui/webui/tab_strip_internals:browser_tests" ]
     }
@@ -6924,13 +6921,6 @@ test("unit_tests") {
 
   if (enable_webui_certificate_viewer) {
     sources += [ "../common/net/x509_certificate_model_unittest.cc" ]
-  }
-
-  if (enable_webui_tab_strip) {
-    sources += [
-      "../browser/ui/webui/tab_strip/tab_strip_page_handler_unittest.cc",
-      "../browser/ui/webui/tab_strip/tab_strip_ui_layout_unittest.cc",
-    ]
   }
 
   if (enable_devtools_frontend) {

@@ -72,7 +72,6 @@ browser_exposed_mojom_targets = [
   "//chrome/browser/ui/webui/subresource_filter:mojo_bindings",
   "//chrome/browser/ui/webui/suggest_internals:mojo_bindings",
   "//chrome/browser/ui/webui/tab_search:mojo_bindings",
-  "//chrome/browser/ui/webui/tab_strip:mojo_bindings",
   "//chrome/browser/ui/webui/tab_strip_internals:mojo_bindings",
   "//chrome/browser/ui/webui/updater:mojo_bindings",
   "//chrome/browser/ui/webui/usb_internals:mojo_bindings",

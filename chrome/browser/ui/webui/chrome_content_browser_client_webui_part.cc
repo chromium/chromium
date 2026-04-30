@@ -73,15 +73,6 @@ void ChromeContentBrowserClientWebUiPart::OverrideWebPreferences(
   blink::web_pref::WebPreferences default_prefs;
   CopyFontPrefs(/*source=*/default_prefs, /*destination=*/web_prefs);
 
-#if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
-  // Set some non-font prefs for webui tabstrip. The tabstrip renderer is never
-  // navigated to or from, so we don't need to replicate this logic in
-  // OverrideWebPreferencesAfterNavigation.
-  if (url.host() == chrome::kChromeUITabStripHost) {
-    web_prefs->touch_drag_drop_enabled = true;
-    web_prefs->touch_dragend_context_menu = true;
-  }
-#endif
 }
 
 bool ChromeContentBrowserClientWebUiPart::OverrideWebPreferencesAfterNavigation(

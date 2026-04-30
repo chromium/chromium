@@ -194,7 +194,6 @@ class ToolbarView : public views::AccessiblePaneView,
     return toolbar_controller_.get();
   }
 
-  views::View* new_tab_button_for_testing() { return new_tab_button_; }
   WebUIToolbarWebView* detached_toolbar_webview_for_testing() {
     return detached_toolbar_webview_.get();
   }
@@ -395,7 +394,6 @@ class ToolbarView : public views::AccessiblePaneView,
   raw_ptr<AvatarToolbarButton> avatar_ = nullptr;
   raw_ptr<MediaToolbarButtonView> media_button_ = nullptr;
   raw_ptr<BrowserAppMenuButton> app_menu_button_ = nullptr;
-  raw_ptr<views::View> new_tab_button_ = nullptr;
   raw_ptr<PinnedActionToolbarButton> tab_search_button_ = nullptr;
 
   // The button currently holding the lock to be shown/hidden.

@@ -5624,24 +5624,6 @@ static_library("ui") {
     ]
   }
 
-  if (enable_webui_tab_strip) {
-    sources += [
-      "webui/tab_strip/tab_before_unload_tracker.cc",
-      "webui/tab_strip/tab_before_unload_tracker.h",
-      "webui/tab_strip/tab_strip_page_handler.cc",
-      "webui/tab_strip/tab_strip_page_handler.h",
-      "webui/tab_strip/tab_strip_ui.cc",
-      "webui/tab_strip/tab_strip_ui.h",
-      "webui/tab_strip/tab_strip_ui_embedder.h",
-      "webui/tab_strip/tab_strip_ui_layout.cc",
-      "webui/tab_strip/tab_strip_ui_layout.h",
-      "webui/tab_strip/tab_strip_ui_util.cc",
-      "webui/tab_strip/tab_strip_ui_util.h",
-    ]
-
-    deps += [ "//chrome/browser/ui/tabs/tab_strip_api" ]
-  }
-
   if (enable_compose) {
     sources += [
       "webui/compose/compose_untrusted_ui.cc",

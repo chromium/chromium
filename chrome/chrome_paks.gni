@@ -567,11 +567,6 @@ template("chrome_extra_paks") {
       }
     }
 
-    if (enable_webui_tab_strip) {
-      sources += [ "$root_gen_dir/chrome/tab_strip_resources.pak" ]
-      deps += [ "//chrome/browser/resources/tab_strip:resources" ]
-    }
-
     if (enable_webui_certificate_viewer) {
       sources += [ "$root_gen_dir/chrome/certificate_viewer_resources.pak" ]
       deps += [ "//chrome/browser/resources/certificate_viewer:resources" ]

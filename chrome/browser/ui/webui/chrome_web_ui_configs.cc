@@ -70,10 +70,6 @@
 #include "chrome/browser/ui/webui/certificate_viewer/certificate_viewer_ui.h"
 #endif
 
-#if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
-#include "chrome/browser/ui/webui/tab_strip/tab_strip_ui.h"
-#endif
-
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/actor/ui/actor_overlay_ui.h"
 #include "chrome/browser/ui/tabs/tab_group_home/tab_group_home_ui.h"
@@ -307,10 +303,6 @@ void RegisterChromeWebUIConfigs() {
 
 #if BUILDFLAG(ENABLE_WEBUI_CERTIFICATE_VIEWER)
   map.AddWebUIConfig(std::make_unique<CertificateViewerUIConfig>());
-#endif
-
-#if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
-  map.AddWebUIConfig(std::make_unique<TabStripUIConfig>());
 #endif
 
 #if BUILDFLAG(IS_ANDROID)

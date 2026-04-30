@@ -46,11 +46,6 @@
 #include "components/guest_view/browser/slim_web_view/slim_web_view.mojom.h"  // nogncheck
 #endif
 
-#if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
-#include "chrome/browser/ui/webui/tab_strip/tab_strip.mojom.h"
-#include "chrome/browser/ui/webui/tab_strip/tab_strip_ui.h"
-#include "components/browser_apis/tab_strip/tab_strip_api.mojom.h"
-#endif
 
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
 #include "chrome/browser/ui/webui/tab_strip_internals/tab_strip_internals_ui.h"
@@ -126,12 +121,6 @@ void PopulateChromeWebUIFrameBindersPartsFeatures(
   }
 #endif
 
-#if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
-  RegisterWebUIControllerInterfaceBinder<tab_strip::mojom::PageHandlerFactory,
-                                         TabStripUI>(map);
-  RegisterWebUIControllerInterfaceBinder<tabs_api::mojom::TabStripService,
-                                         TabStripUI>(map);
-#endif
 
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
   RegisterWebUIControllerInterfaceBinder<

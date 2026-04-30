@@ -63,7 +63,6 @@
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/webui/chrome_web_contents_handler.h"
-#include "chrome/browser/ui/webui/tab_strip/tab_strip_ui_util.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
@@ -282,45 +281,7 @@ void ChromeNewWindowClient::NewWindowForDetachingTab(
     aura::Window* source_window,
     const ui::OSExchangeData& drop_data,
     NewWindowForDetachingTabCallback closure) {
-  BrowserView* source_view = BrowserView::GetBrowserViewForNativeWindow(
-      source_window->GetToplevelWindow());
-  if (!source_view) {
-    std::move(closure).Run(/*new_window=*/nullptr);
-    return;
-  }
-
-  Browser::CreateParams params = source_view->browser()->create_params();
-  params.user_gesture = true;
-  params.initial_show_state = ui::mojom::WindowShowState::kDefault;
-  Browser* browser = Browser::Create(params);
-  if (!browser) {
-    std::move(closure).Run(/*new_window=*/nullptr);
-    return;
-  }
-
-  if (!tab_strip_ui::DropTabsInNewBrowser(browser, drop_data)) {
-    browser->window()->Close();
-    std::move(closure).Run(/*new_window=*/nullptr);
-    return;
-  }
-
-  // TODO(crbug.com/40126106): evaluate whether the above
-  // failures can happen in valid states, and if so whether we need to
-  // reflect failure in UX.
-
-  // TODO(crbug.com/1225667): Loosen restriction for SplitViewController to be
-  // able to snap a window without calling Show(). It will simplify the logic
-  // without having to set and clear ash::kIsDraggingTabsKey by calling Show()
-  // after snapping the window to the right place.
-
-  // We need to mark the newly created window with |ash::kIsDraggingTabsKey|
-  // and clear it afterwards in order to prevent
-  // SplitViewController::AutoSnapController from snapping it on Show().
-  aura::Window* window = browser->window()->GetNativeWindow();
-  window->SetProperty(ash::kIsDraggingTabsKey, true);
-  browser->window()->Show();
-  window->ClearProperty(ash::kIsDraggingTabsKey);
-  std::move(closure).Run(window);
+  std::move(closure).Run(/*new_window=*/nullptr);
 }
 
 namespace {

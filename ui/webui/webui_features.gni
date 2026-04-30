@@ -12,9 +12,6 @@ declare_args() {
   # speed benefits at runtime (so we skip in debug builds).
   optimize_webui = !is_debug
 
-  # Enable the WebUI version of the browser's tab strip.
-  enable_webui_tab_strip = is_chromeos || is_linux || is_win
-
   # Whether to inline source maps during build. Cannot be enabled when
   # `optimize_webui=true`.
   enable_webui_inline_sourcemaps = use_javascript_coverage

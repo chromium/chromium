@@ -300,11 +300,7 @@ ToolbarController::GetDefaultResponsiveElements(Browser* browser) {
        ToolbarController::ResponsiveElementInfo(
            ToolbarController::ElementIdInfo(kToolbarNewTabButtonElementId,
                                             IDS_OVERFLOW_MENU_ITEM_TEXT_NEW_TAB,
-#if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
-                                            &kNewTabToolbarButtonIcon,
-#else
                                             nullptr,
-#endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
                                             kToolbarNewTabButtonElementId),
            /*is_section_end=*/true),
        ToolbarController::ResponsiveElementInfo(

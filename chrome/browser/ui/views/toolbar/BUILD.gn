@@ -97,10 +97,6 @@ source_set("toolbar") {
     "//url",
   ]
 
-  if (enable_webui_tab_strip) {
-    public += [ "webui_tab_counter_button.h" ]
-  }
-
   if (is_chromeos) {
     public_deps += [ "//chromeos/ash/experiences/arc/intent_helper" ]
   }
@@ -266,10 +262,6 @@ source_set("impl") {
     "//ui/views/controls/webview",
   ]
 
-  if (enable_webui_tab_strip) {
-    sources += [ "webui_tab_counter_button.cc" ]
-  }
-
   if (use_aura) {
     deps += [ "//ui/aura" ]
   }
@@ -355,10 +347,6 @@ if (!is_android) {
       ]
 
       deps += [ "//chrome/browser/ui/webui:webui_util" ]
-    }
-
-    if (enable_webui_tab_strip) {
-      sources += [ "webui_tab_counter_button_browsertest.cc" ]
     }
   }
 }

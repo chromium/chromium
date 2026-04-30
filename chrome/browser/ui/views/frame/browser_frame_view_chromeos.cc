@@ -1034,15 +1034,6 @@ bool BrowserFrameViewChromeOS::GetShowProfileIndicatorIcon() const {
     return false;
   }
 
-#if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
-  // TODO(http://crbug.com/40121645): This check shouldn't be necessary. Provide
-  // an appropriate affordance for the profile icon with the webUI tabstrip and
-  // remove this block.
-  if (!GetBrowserView()->GetTabStripVisible()) {
-    return false;
-  }
-#endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
-
   return ShouldShowAvatar(GetBrowserView()->GetNativeWindow());
 }
 
