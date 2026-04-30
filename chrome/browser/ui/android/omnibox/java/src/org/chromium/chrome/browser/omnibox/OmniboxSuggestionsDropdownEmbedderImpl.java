@@ -366,7 +366,25 @@ class OmniboxSuggestionsDropdownEmbedderImpl
                         : contentView.getMeasuredHeight() - keyboardHeight;
         int height;
         if (controlsPosition == ControlsPosition.BOTTOM) {
-            height = Math.min(windowSpace, contentSpace) - mAnchorView.getMeasuredHeight();
+            // When the keyboard is visible and toolbar is at the bottom, the keyboard height
+            // from DeferredIMEWindowInsetApplicationCallback excludes the navigation bar
+            // height (imeInsets.bottom - systemBarInsets.bottom), but both windowHeight
+            // (from getDisplayHeight()) and contentView height include the navigation bar
+            // area. Subtract the navigation bar height to avoid the suggestion list being
+            // too tall and overlapping the address bar.
+            int navBarHeight = 0;
+            if (keyboardHeight > 0
+                    && contentView != null
+                    && contentView.getRootWindowInsets() != null) {
+                navBarHeight =
+                        WindowInsetsCompat.toWindowInsetsCompat(contentView.getRootWindowInsets())
+                                .getInsets(WindowInsetsCompat.Type.navigationBars())
+                                .bottom;
+            }
+            height =
+                    Math.min(windowSpace, contentSpace)
+                            - mAnchorView.getMeasuredHeight()
+                            - navBarHeight;
         } else {
             height = Math.min(windowSpace, contentSpace) - top;
         }

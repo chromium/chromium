@@ -15,9 +15,12 @@ import static org.mockito.Mockito.verify;
 
 import android.content.Context;
 import android.content.res.Configuration;
+import android.graphics.Insets;
+import android.os.Build;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.view.WindowInsets;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -340,6 +343,115 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
         assertEquals(
                 new OmniboxAlignment(
                         0, 0, ANCHOR_WIDTH, getExpectedHeight(0) - ANCHOR_HEIGHT, 0, 0, 0, 0),
+                alignment);
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.R)
+    public void testRecalculateOmniboxAlignment_bottomControlsWithKeyboardSubtractsNavBarHeight() {
+        int navBarHeight = 100;
+        int keyboardHeight = 500;
+        mControlsPosition = ControlsPosition.BOTTOM;
+
+        WindowInsets windowInsets =
+                new WindowInsets.Builder()
+                        .setInsets(
+                                WindowInsets.Type.navigationBars(),
+                                Insets.of(0, 0, 0, navBarHeight))
+                        .build();
+        doReturn(windowInsets).when(mContentView).getRootWindowInsets();
+
+        doReturn(mAnchorView).when(mHorizontalAlignmentView).getParent();
+        doReturn(60).when(mHorizontalAlignmentView).getTop();
+
+        OmniboxSuggestionsDropdownEmbedderImpl impl =
+                new OmniboxSuggestionsDropdownEmbedderImpl(
+                        mWindowAndroid,
+                        mAnchorView,
+                        mHorizontalAlignmentView,
+                        false,
+                        mContentView,
+                        () -> mControlsPosition,
+                        () -> keyboardHeight,
+                        () -> mBottomWindowPadding,
+                        mFuseboxStateSupplier,
+                        mLocationBarDataProvider,
+                        mTopInsetProvider);
+
+        impl.recalculateOmniboxAlignment();
+        OmniboxAlignment alignment = impl.getCurrentAlignment();
+
+        int windowHeight = (int) (getConfiguration().screenHeightDp * DIP_SCALE);
+        int minSpaceAboveWindowBottom =
+                mContextWeakRef
+                        .get()
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.omnibox_min_space_above_window_bottom);
+        int windowSpace =
+                Math.min(windowHeight - keyboardHeight, windowHeight - minSpaceAboveWindowBottom);
+        int contentSpace = Integer.MAX_VALUE - keyboardHeight;
+        int expectedHeight = Math.min(windowSpace, contentSpace) - ANCHOR_HEIGHT - navBarHeight;
+
+        assertEquals(
+                new OmniboxAlignment(0, 0, ANCHOR_WIDTH, expectedHeight, 0, 0, 0, 0), alignment);
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.R)
+    public void testRecalculateOmniboxAlignment_bottomControlsNoKeyboardDoesNotSubtractNavBar() {
+        // When keyboard is hidden (keyboardHeight == 0), nav bar should NOT be subtracted.
+        int navBarHeight = 100;
+        mControlsPosition = ControlsPosition.BOTTOM;
+
+        WindowInsets windowInsets =
+                new WindowInsets.Builder()
+                        .setInsets(
+                                WindowInsets.Type.navigationBars(),
+                                Insets.of(0, 0, 0, navBarHeight))
+                        .build();
+        doReturn(windowInsets).when(mContentView).getRootWindowInsets();
+
+        doReturn(mAnchorView).when(mHorizontalAlignmentView).getParent();
+        doReturn(60).when(mHorizontalAlignmentView).getTop();
+
+        mImpl.recalculateOmniboxAlignment();
+        OmniboxAlignment alignment = mImpl.getCurrentAlignment();
+        // No navBarHeight subtracted since keyboardHeight == 0.
+        assertEquals(
+                new OmniboxAlignment(
+                        0, 0, ANCHOR_WIDTH, getExpectedHeight(0) - ANCHOR_HEIGHT, 0, 0, 0, 0),
+                alignment);
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.R)
+    public void testRecalculateOmniboxAlignment_topControlsDoesNotSubtractNavBarHeight() {
+        int navBarHeight = 100;
+        mControlsPosition = ControlsPosition.TOP;
+
+        WindowInsets windowInsets =
+                new WindowInsets.Builder()
+                        .setInsets(
+                                WindowInsets.Type.navigationBars(),
+                                Insets.of(0, 0, 0, navBarHeight))
+                        .build();
+        doReturn(windowInsets).when(mContentView).getRootWindowInsets();
+
+        doReturn(mAnchorView).when(mHorizontalAlignmentView).getParent();
+        doReturn(60).when(mHorizontalAlignmentView).getTop();
+
+        mImpl.recalculateOmniboxAlignment();
+        OmniboxAlignment alignment = mImpl.getCurrentAlignment();
+        assertEquals(
+                new OmniboxAlignment(
+                        0,
+                        ANCHOR_HEIGHT + ANCHOR_TOP,
+                        ANCHOR_WIDTH,
+                        getExpectedHeight(ANCHOR_HEIGHT + ANCHOR_TOP),
+                        0,
+                        0,
+                        0,
+                        0),
                 alignment);
     }
 
