@@ -97,7 +97,7 @@ TEST_F(AutocompleteControllerAndroidTest, OnOmniboxFocused_NTP) {
                   Property(&AutocompleteInput::focus_type,
                            Eq(OFT::INTERACTION_FOCUS)))));
 
-  controller()->OnOmniboxFocused(env, u"", url, page_classification,
+  controller()->OnOmniboxFocused(env, nullptr, u"", url, page_classification,
                                  omnibox::TOOL_MODE_UNSPECIFIED, u"title");
 }
 
@@ -118,7 +118,8 @@ TEST_F(AutocompleteControllerAndroidTest, OnOmniboxFocused_OTHER) {
                   Property(&AutocompleteInput::focus_type,
                            Eq(OFT::INTERACTION_FOCUS)))));
 
-  controller()->OnOmniboxFocused(env, u"text", url, page_classification,
+  controller()->OnOmniboxFocused(env, nullptr, u"text", url,
+                                 page_classification,
                                  omnibox::TOOL_MODE_UNSPECIFIED, u"title");
 }
 

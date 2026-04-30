@@ -322,9 +322,9 @@ public class SearchActivityTest {
         // Set some text in the search box, then continue startup.
         mOmnibox.requestFocus();
 
-        verify(mAutocompleteController, never()).start(any(), anyInt(), anyBoolean());
+        verify(mAutocompleteController, never()).start(any(), any(), anyInt(), anyBoolean());
         verify(mAutocompleteController, never()).startPrefetch(any(), any());
-        verify(mAutocompleteController, never()).startZeroSuggest(any());
+        verify(mAutocompleteController, never()).startZeroSuggest(any(), any());
 
         ThreadUtils.runOnUiThreadBlocking(mTestDelegate.onSearchEngineFinalizedCallback.bind(true));
 
@@ -336,7 +336,7 @@ public class SearchActivityTest {
 
         // Omnibox suggestions should be requested now.
         var captor = ArgumentCaptor.forClass(AutocompleteInput.class);
-        verify(mAutocompleteController).startZeroSuggest(captor.capture());
+        verify(mAutocompleteController).startZeroSuggest(any(), captor.capture());
         Assert.assertEquals("", captor.getValue().getUserText());
         Assert.assertEquals(
                 PageClassification.ANDROID_SEARCH_WIDGET_VALUE,

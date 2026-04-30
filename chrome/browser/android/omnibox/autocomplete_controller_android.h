@@ -41,6 +41,7 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer,
   // Methods that forward to AutocompleteController:
   void Start(
       JNIEnv* env,
+      content::WebContents* web_contents,
       const std::u16string& text,
       int32_t cursor_pos,
       const std::string& desired_tld,
@@ -53,14 +54,15 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer,
       bool want_asynchronous_matches);
   void StartPrefetch(
       JNIEnv* env,
+      content::WebContents* web_contents,
       const GURL& current_url,
-      ::metrics::OmniboxEventProto::PageClassification page_classification,
-      content::WebContents* web_contents);
+      ::metrics::OmniboxEventProto::PageClassification page_classification);
   base::android::ScopedJavaLocalRef<jobject> Classify(
       JNIEnv* env,
       const std::u16string& text);
   void OnOmniboxFocused(
       JNIEnv* env,
+      content::WebContents* web_contents,
       const std::u16string& omnibox_text,
       const GURL& current_url,
       ::metrics::OmniboxEventProto::PageClassification page_classification,
@@ -72,6 +74,7 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer,
 
   void OnSuggestionSelected(
       JNIEnv* env,
+      content::WebContents* web_contents,
       uintptr_t match_ptr,
       int suggestion_line,
       const int32_t j_window_open_disposition,
@@ -79,12 +82,11 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer,
       ::metrics::OmniboxEventProto::PageClassification page_classification,
       int64_t elapsed_time_since_first_modified,
       int32_t completed_length,
-      content::WebContents* web_contents,
       int64_t omnibox_action_ptr);
   bool OnSuggestionTouchDown(JNIEnv* env,
+                             content::WebContents* web_contents,
                              uintptr_t match_ptr,
-                             int match_index,
-                             content::WebContents* web_contents);
+                             int match_index);
   void DeleteMatch(JNIEnv* env, uintptr_t match_ptr);
   void DeleteMatchElement(JNIEnv* env,
                           uintptr_t match_ptr,

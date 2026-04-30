@@ -152,6 +152,7 @@ AutocompleteControllerAndroid::AutocompleteControllerAndroid(
 
 void AutocompleteControllerAndroid::Start(
     JNIEnv* env,
+    content::WebContents* web_contents,
     const std::u16string& text,
     int32_t cursor_pos,
     const std::string& desired_tld,
@@ -194,9 +195,9 @@ void AutocompleteControllerAndroid::Start(
 
 void AutocompleteControllerAndroid::StartPrefetch(
     JNIEnv* env,
+    content::WebContents* web_contents,
     const GURL& current_url,
-    ::metrics::OmniboxEventProto::PageClassification page_classification,
-    content::WebContents* web_contents) {
+    ::metrics::OmniboxEventProto::PageClassification page_classification) {
   std::u16string auto_complete_text =
       omnibox::IsNTPPage(page_classification)
           ? u""
@@ -216,7 +217,7 @@ ScopedJavaLocalRef<jobject> AutocompleteControllerAndroid::Classify(
   autocomplete_controller_->result().DestroyJavaObject();
 
   inside_synchronous_start_ = true;
-  Start(env, text, -1, "", GURL(), ::metrics::OmniboxEventProto::OTHER,
+  Start(env, nullptr, text, -1, "", GURL(), ::metrics::OmniboxEventProto::OTHER,
         omnibox::TOOL_MODE_UNSPECIFIED, false, false, false, false);
   inside_synchronous_start_ = false;
   DCHECK(autocomplete_controller_->done());
@@ -231,6 +232,7 @@ ScopedJavaLocalRef<jobject> AutocompleteControllerAndroid::Classify(
 
 void AutocompleteControllerAndroid::OnOmniboxFocused(
     JNIEnv* env,
+    content::WebContents* web_contents,
     const std::u16string& omnibox_text_in,
     const GURL& current_url,
     ::metrics::OmniboxEventProto::PageClassification page_classification,
@@ -328,6 +330,7 @@ void AutocompleteControllerAndroid::StartPrewarm(
 
 void AutocompleteControllerAndroid::OnSuggestionSelected(
     JNIEnv* env,
+    content::WebContents* web_contents,
     uintptr_t match_ptr,
     int suggestion_line,
     const int32_t j_window_open_disposition,
@@ -335,7 +338,6 @@ void AutocompleteControllerAndroid::OnSuggestionSelected(
     ::metrics::OmniboxEventProto::PageClassification page_classification,
     int64_t elapsed_time_since_first_modified,
     int32_t completed_length,
-    content::WebContents* web_contents,
     int64_t omnibox_action_ptr) {
   TRACE_EVENT("omnibox", "AutocompleteControllerAndroid::OnSuggestionSelected");
   const base::TimeTicks& now(base::TimeTicks::Now());
@@ -440,9 +442,9 @@ void AutocompleteControllerAndroid::OnSuggestionSelected(
 
 bool AutocompleteControllerAndroid::OnSuggestionTouchDown(
     JNIEnv* env,
+    content::WebContents* web_contents,
     uintptr_t match_ptr,
-    int match_index,
-    content::WebContents* web_contents) {
+    int match_index) {
   const auto& match = *reinterpret_cast<AutocompleteMatch*>(match_ptr);
 
   if (SearchPrefetchService* search_prefetch_service =

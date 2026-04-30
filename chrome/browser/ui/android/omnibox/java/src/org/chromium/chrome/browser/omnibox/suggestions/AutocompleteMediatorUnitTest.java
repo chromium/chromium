@@ -257,7 +257,7 @@ public class AutocompleteMediatorUnitTest {
                 .readFromCache(anyInt());
         lenient().doReturn(true).when(mAutocompleteDelegate).isKeyboardActive();
         lenient()
-                .when(mAutocompleteController.onSuggestionTouchDown(any(), anyInt(), any()))
+                .when(mAutocompleteController.onSuggestionTouchDown(any(), any(), anyInt()))
                 .thenReturn(true);
         setUpLocationBarDataProvider(
                 JUnitTestGURLs.NTP_URL,
@@ -594,8 +594,8 @@ public class AutocompleteMediatorUnitTest {
             GURL url, int pageClass, String userText, int cursorPos, boolean preventAutocomplete) {
         var captor = ArgumentCaptor.forClass(AutocompleteInput.class);
         verify(mAutocompleteController)
-                .start(captor.capture(), eq(cursorPos), eq(preventAutocomplete));
-        verify(mAutocompleteController, times(1)).start(any(), anyInt(), anyBoolean());
+                .start(any(), captor.capture(), eq(cursorPos), eq(preventAutocomplete));
+        verify(mAutocompleteController, times(1)).start(any(), any(), anyInt(), anyBoolean());
 
         AutocompleteInput input = captor.getValue();
         assertEquals(pageClass, input.getPageClassification());
@@ -608,8 +608,8 @@ public class AutocompleteMediatorUnitTest {
     public void verifyAutocompleteStartZeroSuggest(
             String userText, GURL url, int pageClass, String pageTitle) {
         var captor = ArgumentCaptor.forClass(AutocompleteInput.class);
-        verify(mAutocompleteController).startZeroSuggest(captor.capture());
-        verify(mAutocompleteController, times(1)).startZeroSuggest(any());
+        verify(mAutocompleteController).startZeroSuggest(any(), captor.capture());
+        verify(mAutocompleteController, times(1)).startZeroSuggest(any(), any());
 
         AutocompleteInput input = captor.getValue();
         assertEquals(pageClass, input.getPageClassification());
@@ -737,11 +737,11 @@ public class AutocompleteMediatorUnitTest {
         mMediator.beginInput(session);
         mMediator.endInput();
         RobolectricUtil.runAllBackgroundAndUi();
-        verify(mAutocompleteController, never()).startZeroSuggest(any());
+        verify(mAutocompleteController, never()).startZeroSuggest(any(), any());
 
         // Simulate native being inititalized. Make sure no suggest requests are sent.
         RobolectricUtil.runAllBackgroundAndUi();
-        verify(mAutocompleteController, never()).start(any(), anyInt(), anyBoolean());
+        verify(mAutocompleteController, never()).start(any(), any(), anyInt(), anyBoolean());
     }
 
     @Test
@@ -1172,7 +1172,7 @@ public class AutocompleteMediatorUnitTest {
 
         // Ensure that no extra signals are sent to native.
         verify(mAutocompleteController, times(1))
-                .onSuggestionTouchDown(mSuggestionsList.get(0), 0, null);
+                .onSuggestionTouchDown(null, mSuggestionsList.get(0), 0);
 
         // Simulate a navigation to the suggestion that was prefetched. This causes metrics about
         // prefetch to be recorded.
@@ -1208,7 +1208,7 @@ public class AutocompleteMediatorUnitTest {
 
         // Ensure that no extra signals are sent to native.
         verify(mAutocompleteController, times(1))
-                .onSuggestionTouchDown(mSuggestionsList.get(0), 0, null);
+                .onSuggestionTouchDown(null, mSuggestionsList.get(0), 0);
 
         // Simulate a navigation to a suggestion that was not prefetched. This causes metrics about
         // prefetch to be recorded.
@@ -1240,7 +1240,7 @@ public class AutocompleteMediatorUnitTest {
         mMediator.onSuggestionsReceived(mAutocompleteResult, /* isFinal= */ true);
 
         // This will simulate the touch down trigger not starting a prefetch.
-        when(mAutocompleteController.onSuggestionTouchDown(any(), anyInt(), any()))
+        when(mAutocompleteController.onSuggestionTouchDown(any(), any(), anyInt()))
                 .thenReturn(false);
 
         // Simulate a suggestion being touched down.
@@ -1248,7 +1248,7 @@ public class AutocompleteMediatorUnitTest {
 
         // Ensure that no extra signals are sent to native.
         verify(mAutocompleteController, times(1))
-                .onSuggestionTouchDown(mSuggestionsList.get(0), 0, null);
+                .onSuggestionTouchDown(null, mSuggestionsList.get(0), 0);
 
         // Simulate a navigation to the suggestion that was not prefetched. This causes metrics
         // about prefetch to be recorded.
@@ -1291,7 +1291,7 @@ public class AutocompleteMediatorUnitTest {
         verify(
                         mAutocompleteController,
                         times(OmniboxFeatures.DEFAULT_MAX_PREFETCHES_PER_OMNIBOX_SESSION))
-                .onSuggestionTouchDown(any(), anyInt(), any());
+                .onSuggestionTouchDown(any(), any(), anyInt());
 
         // Ends the omnibox session to reset state of touch down prefetch, and record metrics.
         mMediator.endInput();
@@ -1303,7 +1303,7 @@ public class AutocompleteMediatorUnitTest {
         verify(
                         mAutocompleteController,
                         times(OmniboxFeatures.DEFAULT_MAX_PREFETCHES_PER_OMNIBOX_SESSION + 1))
-                .onSuggestionTouchDown(any(), anyInt(), any());
+                .onSuggestionTouchDown(any(), any(), anyInt());
         mMediator.endInput();
 
         histogramWatcher.assertExpected();
@@ -1327,7 +1327,7 @@ public class AutocompleteMediatorUnitTest {
 
         mMediator.onTopResumedActivityChanged(false);
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
-        verify(mAutocompleteController, never()).start(any(), anyInt(), anyBoolean());
+        verify(mAutocompleteController, never()).start(any(), any(), anyInt(), anyBoolean());
 
         session.getAutocompleteInput().setUserText("test");
 
@@ -1348,7 +1348,7 @@ public class AutocompleteMediatorUnitTest {
         verifyAutocompleteStartZeroSuggest("", url, pageClassification, title);
 
         mMediator.onTopResumedActivityChanged(false);
-        verify(mAutocompleteController, never()).startZeroSuggest(any());
+        verify(mAutocompleteController, never()).startZeroSuggest(any(), any());
 
         mMediator.onTopResumedActivityChanged(true);
         verifyAutocompleteStartZeroSuggest("", url, pageClassification, title);
@@ -1877,7 +1877,7 @@ public class AutocompleteMediatorUnitTest {
         mMediator.onTopResumedActivityChanged(true);
         verify(mAutocompleteController).addOnSuggestionsReceivedListener(mMediator);
         // This will trigger startZeroSuggest because it's a new tab page in setup.
-        verify(mAutocompleteController).startZeroSuggest(any());
+        verify(mAutocompleteController).startZeroSuggest(any(), any());
     }
 
     @Test
