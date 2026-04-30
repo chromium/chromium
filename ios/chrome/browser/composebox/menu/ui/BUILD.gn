@@ -6,6 +6,7 @@ source_set("ui") {
   sources = [
     "composebox_menu_attachment_view.h",
     "composebox_menu_attachment_view.mm",
+    "composebox_menu_consumer.h",
     "composebox_menu_item.h",
     "composebox_menu_item.mm",
     "composebox_menu_item_type.h",
@@ -19,6 +20,10 @@ source_set("ui") {
     "//base",
     "//base:i18n",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/composebox/public:attachment_options",
+    "//ios/chrome/browser/composebox/public:composebox_mode",
+    "//ios/chrome/browser/composebox/public:model_options",
+    "//ios/chrome/browser/composebox/ui:state",
     "//ios/chrome/browser/composebox/ui:ui_util",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/common/ui/colors",

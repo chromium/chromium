@@ -4,9 +4,15 @@
 
 #import "ios/chrome/browser/composebox/menu/ui/composebox_menu_view_controller.h"
 
+#import <optional>
+
 #import "ios/chrome/browser/composebox/menu/ui/composebox_menu_attachment_view.h"
 #import "ios/chrome/browser/composebox/menu/ui/composebox_menu_item.h"
 #import "ios/chrome/browser/composebox/menu/ui/composebox_menu_section.h"
+#import "ios/chrome/browser/composebox/public/composebox_mode.h"
+#import "ios/chrome/browser/composebox/public/composebox_model_option.h"
+#import "ios/chrome/browser/composebox/ui/composebox_strings.h"
+#import "ios/chrome/browser/composebox/ui/composebox_ui_input_state.h"
 #import "ios/chrome/browser/composebox/ui/composebox_ui_util.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -47,6 +53,89 @@ enum class ComposeboxMenuSectionIdentifier {
   kModels,
 };
 
+// Maps a menu item type to its corresponding attachment option.
+std::optional<ComposeboxAttachmentOption> AttachmentOptionForMenuItemType(
+    ComposeboxMenuItemType type) {
+  switch (type) {
+    case ComposeboxMenuItemType::kAttachmentTabs:
+      return ComposeboxAttachmentOption::kTab;
+    case ComposeboxMenuItemType::kAttachmentCamera:
+      return ComposeboxAttachmentOption::kCamera;
+    case ComposeboxMenuItemType::kAttachmentGallery:
+      return ComposeboxAttachmentOption::kGallery;
+    case ComposeboxMenuItemType::kAttachmentFiles:
+      return ComposeboxAttachmentOption::kFile;
+    default:
+      return std::nullopt;
+  }
+}
+
+// Maps a tool mode to its corresponding menu item type.
+ComposeboxMenuItemType MenuItemTypeForTool(ComposeboxMode mode) {
+  switch (mode) {
+    case ComposeboxMode::kAIM:
+      return ComposeboxMenuItemType::kAIM;
+    case ComposeboxMode::kImageGeneration:
+      return ComposeboxMenuItemType::kCreateImage;
+    case ComposeboxMode::kDeepSearch:
+      return ComposeboxMenuItemType::kDeepSearch;
+    case ComposeboxMode::kCanvas:
+      return ComposeboxMenuItemType::kCanvas;
+    case ComposeboxMode::kRegularSearch:
+      return ComposeboxMenuItemType::kUnknown;
+  }
+}
+
+// Maps a tool mode to its corresponding icon.
+UIImage* IconForTool(ComposeboxMode mode) {
+  switch (mode) {
+    case ComposeboxMode::kAIM:
+      return CustomSymbolWithPointSize(kMagnifyingglassSparkSymbol,
+                                       kSymbolActionPointSize);
+    case ComposeboxMode::kImageGeneration:
+      return GetBananaIcon(kSymbolActionPointSize);
+    case ComposeboxMode::kDeepSearch:
+      return CustomSymbolWithPointSize(kDeepSearchSymbol,
+                                       kSymbolActionPointSize);
+    case ComposeboxMode::kCanvas:
+      return CustomSymbolWithPointSize(kDocumentBadgeSpark,
+                                       kSymbolActionPointSize);
+    case ComposeboxMode::kRegularSearch:
+      return nil;
+  }
+}
+
+// Maps a model option to its corresponding menu item type.
+ComposeboxMenuItemType MenuItemTypeForModel(ComposeboxModelOption option) {
+  switch (option) {
+    case ComposeboxModelOption::kRegular:
+      return ComposeboxMenuItemType::kModelRegular;
+    case ComposeboxModelOption::kAuto:
+      return ComposeboxMenuItemType::kModelAuto;
+    case ComposeboxModelOption::kThinking:
+    case ComposeboxModelOption::kThinkingNoGenUI:
+      return ComposeboxMenuItemType::kModelThinking;
+    case ComposeboxModelOption::kNone:
+      return ComposeboxMenuItemType::kUnknown;
+  }
+}
+
+// Maps a model option to its corresponding icon.
+UIImage* IconForModel(ComposeboxModelOption option) {
+  switch (option) {
+    case ComposeboxModelOption::kRegular:
+      return DefaultSymbolWithPointSize(kBoltSymbol, kSymbolActionPointSize);
+    case ComposeboxModelOption::kAuto:
+      return DefaultSymbolWithPointSize(
+          kArrowTrianglehead2ClockwiseRotate90Symbol, kSymbolActionPointSize);
+    case ComposeboxModelOption::kThinking:
+    case ComposeboxModelOption::kThinkingNoGenUI:
+      return DefaultSymbolWithPointSize(kClockSymbol, kSymbolActionPointSize);
+    case ComposeboxModelOption::kNone:
+      return nil;
+  }
+}
+
 }  // namespace
 
 @interface ComposeboxMenuViewController () <UICollectionViewDelegate>
@@ -60,6 +149,8 @@ enum class ComposeboxMenuSectionIdentifier {
       _dataSource;
   // The sections to display in the collection view.
   NSArray<ComposeboxMenuSection*>* _sections;
+  // The UI input state for the composebox.
+  ComposeboxUIInputState* _inputState;
 }
 
 - (void)viewDidLoad {
@@ -67,10 +158,9 @@ enum class ComposeboxMenuSectionIdentifier {
   [self setAdditionalSafeAreaInsets:kSafeAreaInsets];
   self.view.backgroundColor = [UIColor colorNamed:kGrey100Color];
 
-  [self setUpSections];
   [self setUpCollectionView];
   [self setUpDataSource];
-  [self applyInitialSnapshot];
+  [self applySnapshot];
 }
 
 - (CGSize)preferredContentSize {
@@ -82,66 +172,83 @@ enum class ComposeboxMenuSectionIdentifier {
   return size;
 }
 
-- (void)setUpSections {
-  ComposeboxMenuSection* attachmentsSection = [[ComposeboxMenuSection alloc]
-      initWithTitle:nil
-              items:[self availableAttachmentItems]];
+- (void)computeSections {
+  CHECK(_inputState);
+  NSMutableArray<ComposeboxMenuSection*>* sections =
+      [[NSMutableArray alloc] init];
 
-  ComposeboxMenuItem* aimItem = [[ComposeboxMenuItem alloc]
-      initWithTitle:l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_AIM_ACTION)
-              image:CustomSymbolWithPointSize(kMagnifyingglassSparkSymbol,
-                                              kSymbolActionPointSize)
-               type:ComposeboxMenuItemType::kAIM];
-  ComposeboxMenuItem* createImageItem = [[ComposeboxMenuItem alloc]
-      initWithTitle:l10n_util::GetNSString(
-                        IDS_IOS_COMPOSEBOX_CREATE_IMAGE_ACTION)
-              image:GetBananaIcon(kSymbolActionPointSize)
-               type:ComposeboxMenuItemType::kCreateImage];
-  ComposeboxMenuItem* deepSearchItem = [[ComposeboxMenuItem alloc]
-      initWithTitle:l10n_util::GetNSString(
-                        IDS_IOS_COMPOSEBOX_DEEP_SEARCH_ACTION)
-              image:CustomSymbolWithPointSize(kDeepSearchSymbol,
-                                              kSymbolActionPointSize)
-               type:ComposeboxMenuItemType::kDeepSearch];
-  ComposeboxMenuItem* canvasItem = [[ComposeboxMenuItem alloc]
-      initWithTitle:l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_CANVAS_ACTION)
-              image:CustomSymbolWithPointSize(kDocumentBadgeSpark,
-                                              kSymbolActionPointSize)
-               type:ComposeboxMenuItemType::kCanvas];
+  // Attachments Section
+  NSMutableArray<ComposeboxMenuItem*>* attachmentsItems =
+      [[NSMutableArray alloc] init];
+  NSArray<ComposeboxMenuItem*>* allAttachments =
+      [self availableAttachmentItems];
 
-  // TODO(crbug.com/506070697): Integrate with server side strings.
-  ComposeboxMenuItem* regularModelItem = [[ComposeboxMenuItem alloc]
-      initWithTitle:l10n_util::GetNSString(
-                        IDS_IOS_COMPOSEBOX_MODEL_SELECTOR_OPTION_AUTO)
-              image:DefaultSymbolWithPointSize(kBoltSymbol,
-                                               kSymbolActionPointSize)
-               type:ComposeboxMenuItemType::kModelRegular];
+  for (ComposeboxMenuItem* item in allAttachments) {
+    std::optional<ComposeboxAttachmentOption> option =
+        AttachmentOptionForMenuItemType(item.type);
+    if (option && ![_inputState isAttachmentHidden:*option]) {
+      [attachmentsItems addObject:item];
+    }
+  }
 
-  ComposeboxMenuItem* autoItem = [[ComposeboxMenuItem alloc]
-      initWithTitle:l10n_util::GetNSString(
-                        IDS_IOS_COMPOSEBOX_MODEL_SELECTOR_OPTION_AUTO)
-              image:DefaultSymbolWithPointSize(
-                        kArrowTrianglehead2ClockwiseRotate90Symbol,
-                        kSymbolActionPointSize)
-               type:ComposeboxMenuItemType::kModelAuto];
-  ComposeboxMenuItem* thinkingItem = [[ComposeboxMenuItem alloc]
-      initWithTitle:l10n_util::GetNSString(
-                        IDS_IOS_COMPOSEBOX_MODEL_SELECTOR_OPTION_THINKING)
-              image:DefaultSymbolWithPointSize(kClockSymbol,
-                                               kSymbolActionPointSize)
-               type:ComposeboxMenuItemType::kModelThinking];
+  if (attachmentsItems.count > 0) {
+    ComposeboxMenuSection* attachmentsSection =
+        [[ComposeboxMenuSection alloc] initWithTitle:nil
+                                               items:attachmentsItems];
+    [sections addObject:attachmentsSection];
+  }
 
-  ComposeboxMenuSection* toolsSection = [[ComposeboxMenuSection alloc]
-      initWithTitle:l10n_util::GetNSString(
-                        IDS_IOS_COMPOSEBOX_MENU_TOOLS_SECTION_TITLE)
-              items:@[ aimItem, createImageItem, deepSearchItem, canvasItem ]];
+  ComposeboxStrings* strings = _inputState.strings;
 
-  ComposeboxMenuSection* modelsSection = [[ComposeboxMenuSection alloc]
-      initWithTitle:l10n_util::GetNSStringF(
-                        IDS_IOS_COMPOSEBOX_MODEL_SELECTOR_TITLE, u"3")
-              items:@[ regularModelItem, autoItem, thinkingItem ]];
+  // Tools Section
+  NSMutableArray<ComposeboxMenuItem*>* toolsItems =
+      [[NSMutableArray alloc] init];
 
-  _sections = @[ attachmentsSection, toolsSection, modelsSection ];
+  for (ComposeboxMode mode : ComposeboxModeSet::All()) {
+    if (mode == ComposeboxMode::kRegularSearch) {
+      continue;
+    }
+    if (![_inputState isToolHidden:mode]) {
+      [toolsItems addObject:[[ComposeboxMenuItem alloc]
+                                initWithTitle:[strings menuLabelForTool:mode]
+                                        image:IconForTool(mode)
+                                         type:MenuItemTypeForTool(mode)]];
+    }
+  }
+
+  if (toolsItems.count > 0) {
+    ComposeboxMenuSection* toolsSection =
+        [[ComposeboxMenuSection alloc] initWithTitle:strings.toolsSectionHeader
+                                               items:toolsItems];
+    [sections addObject:toolsSection];
+  }
+
+  // Models Section
+  NSMutableArray<ComposeboxMenuItem*>* modelsItems =
+      [[NSMutableArray alloc] init];
+
+  for (ComposeboxModelOption option : ComposeboxModelOptionSet::All()) {
+    if (option == ComposeboxModelOption::kNone) {
+      continue;
+    }
+
+    if (![_inputState isModelHidden:option]) {
+      [modelsItems
+          addObject:[[ComposeboxMenuItem alloc]
+                        initWithTitle:[strings menuLabelForModel:option]
+                                image:IconForModel(option)
+                                 type:MenuItemTypeForModel(option)]];
+    }
+  }
+
+  if (modelsItems.count > 0) {
+    ComposeboxMenuSection* modelsSection =
+        [[ComposeboxMenuSection alloc] initWithTitle:strings.modelSectionHeader
+                                               items:modelsItems];
+    [sections addObject:modelsSection];
+  }
+
+  _sections = sections;
 }
 
 - (void)setUpCollectionView {
@@ -335,7 +442,7 @@ enum class ComposeboxMenuSectionIdentifier {
   };
 }
 
-- (void)applyInitialSnapshot {
+- (void)applySnapshot {
   NSDiffableDataSourceSnapshot<NSNumber*, ComposeboxMenuItem*>* snapshot =
       [[NSDiffableDataSourceSnapshot alloc] init];
 
@@ -367,6 +474,13 @@ enum class ComposeboxMenuSectionIdentifier {
   }
 
   [_dataSource applySnapshot:snapshot animatingDifferences:NO];
+}
+
+#pragma mark - ComposeboxMenuConsumer
+
+- (void)setUIInputState:(ComposeboxUIInputState*)state {
+  _inputState = state;
+  [self computeSections];
 }
 
 #pragma mark - Private Configuration Helpers

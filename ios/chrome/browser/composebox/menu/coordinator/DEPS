@@ -1,0 +1,5 @@
+include_rules = [
+  "+components/contextual_search",
+  "+ios/chrome/browser/aim/model",
+  "+ios/chrome/browser/signin/model",
+]

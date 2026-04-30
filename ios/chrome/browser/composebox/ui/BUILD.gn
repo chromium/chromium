@@ -27,14 +27,11 @@ source_set("ui") {
     "composebox_present_animator.mm",
     "composebox_snackbar_presenter.h",
     "composebox_snackbar_presenter.mm",
-    "composebox_strings.h",
-    "composebox_strings.mm",
-    "composebox_ui_input_state.h",
-    "composebox_ui_input_state.mm",
     "composebox_view_controller.h",
     "composebox_view_controller.mm",
   ]
   deps = [
+    ":state",
     ":ui_constants",
     ":ui_util",
     "//base",
@@ -89,6 +86,23 @@ source_set("ui_util") {
   frameworks = [ "UIKit.framework" ]
 }
 
+source_set("state") {
+  sources = [
+    "composebox_strings.h",
+    "composebox_strings.mm",
+    "composebox_ui_input_state.h",
+    "composebox_ui_input_state.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/composebox/coordinator:constants",
+    "//ios/chrome/browser/composebox/public:attachment_options",
+    "//ios/chrome/browser/composebox/public:model_options",
+    "//ui/base",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
@@ -96,6 +110,7 @@ source_set("unit_tests") {
     "composebox_strings_unittest.mm",
   ]
   deps = [
+    ":state",
     ":ui",
     "//base/test:test_support",
     "//ios/chrome/app/strings",

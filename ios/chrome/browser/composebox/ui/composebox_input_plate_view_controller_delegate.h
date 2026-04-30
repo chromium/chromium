@@ -11,6 +11,7 @@ enum class AiModeActivationSource;
 enum class ComposeboxDragAndDropType;
 @class ComposeboxInputPlateViewController;
 enum class ComposeboxMode;
+@class ComposeboxUIInputState;
 enum class FuseboxAttachmentButtonType;
 
 /// Delegate for the composebox input plate view controller.
@@ -84,7 +85,8 @@ enum class FuseboxAttachmentButtonType;
 
 /// Informs the delegate that a user did tap on the plus button.
 - (void)composeboxViewControllerDidTapPlusButton:
-    (ComposeboxInputPlateViewController*)composeboxViewController;
+            (ComposeboxInputPlateViewController*)composeboxViewController
+                                withUIInputState:(ComposeboxUIInputState*)state;
 
 /// Informs the delegate that a user did tap on the lens button.
 - (void)composeboxViewController:

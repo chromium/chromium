@@ -480,12 +480,15 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
 }
 
 - (void)composeboxViewControllerDidTapPlusButton:
-    (ComposeboxInputPlateViewController*)composeboxViewController {
+            (ComposeboxInputPlateViewController*)composeboxViewController
+                                withUIInputState:
+                                    (ComposeboxUIInputState*)state {
   if (IsComposeboxPlusButtonBottomSheet()) {
     _menuCoorinator = [[ComposeboxMenuCoordinator alloc]
         initWithBaseViewController:_viewController
                            browser:self.browser
-                        entrypoint:_entrypoint];
+                        entrypoint:_entrypoint
+                        inputState:state];
     // TODO(crbug.com/504900698): Pass the UIInputState and the delegate to
     // handle actions.
     [_menuCoorinator start];

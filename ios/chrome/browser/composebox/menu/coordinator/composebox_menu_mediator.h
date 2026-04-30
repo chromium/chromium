@@ -13,6 +13,8 @@
 #import "ios/chrome/browser/composebox/shared/coordinator/composebox_picker_image_result.h"
 
 @class ComposeboxMenuMediator;
+@class ComposeboxUIInputState;
+@protocol ComposeboxMenuConsumer;
 
 // Delegate for the menu mediator.
 @protocol ComposeboxMenuMediatorDelegate <NSObject>
@@ -42,8 +44,12 @@
 // Delegate for this mediator.
 @property(nonatomic, weak) id<ComposeboxMenuMediatorDelegate> delegate;
 
-// Creates a new instance with an entrypoint.
-- (instancetype)initWithEntrypoint:(ComposeboxEntrypoint)entrypoint;
+// Consumer for this mediator.
+@property(nonatomic, weak) id<ComposeboxMenuConsumer> consumer;
+
+// Creates a new instance with an entrypoint and the initial UI state.
+- (instancetype)initWithEntrypoint:(ComposeboxEntrypoint)entrypoint
+                        inputState:(ComposeboxUIInputState*)inputState;
 
 /// Processes the given `imageItems`.
 - (void)processImageItems:(NSArray<ComposeboxPickerImageResult*>*)imageItems;

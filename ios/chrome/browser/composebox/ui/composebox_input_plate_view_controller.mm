@@ -664,7 +664,8 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
 }
 
 - (void)plusButtonTapped {
-  [self.delegate composeboxViewControllerDidTapPlusButton:self];
+  [self.delegate composeboxViewControllerDidTapPlusButton:self
+                                         withUIInputState:_state];
   [self plusButtonDidOpenMenu];
 }
 

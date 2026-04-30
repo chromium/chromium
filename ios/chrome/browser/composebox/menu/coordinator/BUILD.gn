@@ -10,12 +10,26 @@ source_set("coordinator") {
     "composebox_menu_mediator.mm",
   ]
   deps = [
+    "//components/contextual_search:public",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/aim/model:aim_availability",
+    "//ios/chrome/browser/composebox/coordinator:input_state_manager",
+    "//ios/chrome/browser/composebox/coordinator:mode_holder",
     "//ios/chrome/browser/composebox/menu/ui",
+    "//ios/chrome/browser/composebox/model",
     "//ios/chrome/browser/composebox/public:focus_params",
     "//ios/chrome/browser/composebox/shared/coordinator",
+    "//ios/chrome/browser/composebox/ui:state",
+    "//ios/chrome/browser/composebox/ui:ui_util",
+    "//ios/chrome/browser/search_engines/model:template_url_service_factory",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/signin/model",
+    "//ios/web/public",
   ]
   public_deps = [ "//ios/chrome/browser/composebox/public:entrypoint" ]
 }
