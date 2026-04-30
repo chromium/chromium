@@ -8,6 +8,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
 
 import android.app.Activity;
+import android.app.ActivityManager.AppTask;
 import android.content.Intent;
 import android.content.pm.ResolveInfo;
 import android.graphics.Rect;
@@ -17,6 +18,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.CallbackUtils;
+import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.blink.mojom.DisplayMode;
@@ -56,6 +58,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.ExclusiveAccessManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
+import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
@@ -280,6 +283,28 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
         @Override
         protected void bringActivityToForeground() {
             assert mActivity != null;
+
+            if (ChromeFeatureList.sUseAppTaskForCustomTabActivation.isEnabled()) {
+                AppTask appTask =
+                        AndroidTaskUtils.getAppTaskFromId(mActivity, mActivity.getTaskId());
+                if (appTask != null) {
+                    // Clone the original intent to preserve WebappExtras and SessionHolder.
+                    // If we use a generic intent, CustomTabIntentHandler.onNewIntent() will
+                    // treat it as an invalid cross-session launch and crash.
+                    Intent newIntent = new Intent(mActivity.getIntent());
+                    newIntent.removeFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+                    try {
+                        appTask.startActivity(mActivity, newIntent, null);
+                        return;
+                    } catch (IllegalArgumentException | SecurityException e) {
+                        Log.e(TAG, "Failed to start activity via AppTask", e);
+                    }
+                }
+            }
+
+            // Fallback for when the flag is disabled, AppTask is not found, or the startActivity
+            // call fails.
             ApiCompatibilityUtils.moveTaskToFront(mActivity, mActivity.getTaskId(), 0);
         }
 

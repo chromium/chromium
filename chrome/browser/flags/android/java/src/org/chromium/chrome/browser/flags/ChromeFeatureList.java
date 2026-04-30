@@ -704,6 +704,8 @@ public abstract class ChromeFeatureList {
             "UseActivityManagerForTabActivation";
     public static final String USE_ALTERNATE_HISTORY_SYNC_ILLUSTRATION =
             "UseAlternateHistorySyncIllustration";
+    public static final String USE_APP_TASK_FOR_CUSTOM_TAB_ACTIVATION =
+            "UseAppTaskForCustomTabActivation";
     public static final String USE_CHIME_ANDROID_SDK = "UseChimeAndroidSdk";
     public static final String USE_INITIAL_NETWORK_STATE_AT_STARTUP =
             "UseInitialNetworkStateAtStartup";
@@ -1200,6 +1202,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(UNPARCEL_INTENT_FILE_DESCRIPTORS, /* defaultValue= */ true);
     public static final CachedFlag sUseActivityManagerForTabActivation =
             newCachedFlag(USE_ACTIVITY_MANAGER_FOR_TAB_ACTIVATION, true);
+    public static final CachedFlag sUseAppTaskForCustomTabActivation =
+            newCachedFlag(USE_APP_TASK_FOR_CUSTOM_TAB_ACTIVATION, false);
     public static final CachedFlag sUseChimeAndroidSdk =
             newCachedFlag(USE_CHIME_ANDROID_SDK, false);
     public static final CachedFlag sUseInitialNetworkStateAtStartup =
@@ -1386,6 +1390,7 @@ public abstract class ChromeFeatureList {
                     sTouchToSearchCallout,
                     sUnparcelIntentFileDescriptors,
                     sUseActivityManagerForTabActivation,
+                    sUseAppTaskForCustomTabActivation,
                     sUseChimeAndroidSdk,
                     sUseInitialNetworkStateAtStartup,
                     sUseLibunwindstackNativeUnwinderAndroid,
