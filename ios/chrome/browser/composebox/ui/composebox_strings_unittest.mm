@@ -80,7 +80,8 @@ TEST_F(ComposeboxStringsTest, TestServerStringsMapping) {
       [[ComposeboxStrings alloc] initWithToolMapping:tool_mapping
                                         modelMapping:{}
                                   modelSectionHeader:@"Server Model Header"
-                                  toolsSectionHeader:@"Server Tools Header"];
+                                  toolsSectionHeader:@"Server Tools Header"
+                               regularSearchHintText:nil];
 
   EXPECT_NSEQ([strings menuLabelForTool:ComposeboxMode::kImageGeneration],
               @"Server Menu Image");

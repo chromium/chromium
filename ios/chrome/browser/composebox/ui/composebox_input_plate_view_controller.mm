@@ -987,12 +987,8 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
 /// Updates the placeholder text based on the current operating mode of the
 /// composebox.
 - (void)updatePlaceholderText {
-  if (_state.activeTool == ComposeboxMode::kRegularSearch) {
-    [_editView setCustomPlaceholderText:nil];
-  } else {
-    [_editView setCustomPlaceholderText:[_state.strings
-                                            hintTextForTool:_state.activeTool]];
-  }
+  [_editView setCustomPlaceholderText:[_state.strings
+                                          hintTextForTool:_state.activeTool]];
 }
 
 /// Adds and constraints the 'X' mark indicator to the given button.

@@ -19,6 +19,7 @@
 #import "components/search_engines/template_url_service.h"
 #import "components/search_engines/util.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_constants.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_mode_holder.h"
 #import "ios/chrome/browser/composebox/public/features.h"
@@ -30,8 +31,10 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
+#import "ios/chrome/common/NSString+Chromium.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_id.h"
+#import "ui/base/l10n/l10n_util.h"
 
 namespace {
 
@@ -109,9 +112,29 @@ omnibox::ToolMode ToolModeForComposeboxMode(ComposeboxMode mode,
   }
 }
 
+// Returns the placeholder text for regular search.
+NSString* CustomRegularSearchHintText(BOOL isFuseboxEligible,
+                                      TemplateURLService* templateURLService) {
+  if (!IsAIOmniboxAskPlaceholderEnabled() || !templateURLService ||
+      !isFuseboxEligible) {
+    // No custom placeholder text.
+    return nil;
+  }
+  const TemplateURL* defaultSearchProvider =
+      templateURLService->GetDefaultSearchProvider();
+  if (!defaultSearchProvider) {
+    return nil;
+  }
+
+  return l10n_util::GetNSStringF(
+      IDS_OMNIBOX_EMPTY_ASK_HINT_WITH_DSE_NAME,
+      defaultSearchProvider->AdjustedShortNameForLocaleDirection());
+}
+
 // Returns the server strings object from a given input state.
 ComposeboxStrings* ServerStringsFromInputState(
-    const contextual_search::InputState& input_state) {
+    const contextual_search::InputState& input_state,
+    NSString* customRegularSearchHintText) {
   std::unordered_map<ComposeboxMode, ComposeboxStringBundle*> tool_mapping;
   for (const omnibox::ToolConfig& tool_config : input_state.tool_configs) {
     NSString* menuLabel = base::SysUTF8ToNSString(tool_config.menu_label());
@@ -150,10 +173,12 @@ ComposeboxStrings* ServerStringsFromInputState(
         base::SysUTF8ToNSString(input_state.tools_section_config->header());
   }
 
-  return [[ComposeboxStrings alloc] initWithToolMapping:tool_mapping
-                                           modelMapping:model_mapping
-                                     modelSectionHeader:modelSectionHeader
-                                     toolsSectionHeader:toolsSectionHeader];
+  return [[ComposeboxStrings alloc]
+        initWithToolMapping:tool_mapping
+               modelMapping:model_mapping
+         modelSectionHeader:modelSectionHeader
+         toolsSectionHeader:toolsSectionHeader
+      regularSearchHintText:customRegularSearchHintText];
 }
 
 }  // namespace
@@ -266,6 +291,15 @@ ComposeboxStrings* ServerStringsFromInputState(
   // `Initialize` is synchronous and immediately notifies observers, updating
   // the state.
   _inputStateModel->Initialize();
+
+  // iOS doesn't rely on the active hint text from `_inputState`, strings only
+  // changes when `searchboxConfig` is updated.
+  NSString* customRegularSearchHintText =
+      CustomRegularSearchHintText([self isEligibleToAIM], _templateURLService);
+  _cachedStrings = ServerStringsFromInputState(
+      _inputStateModel->GetInputState(), customRegularSearchHintText);
+
+  [self.delegate inputStateManagerDidUpdateUIState:self];
 }
 
 - (ComposeboxModelOption)activeModel {
@@ -815,7 +849,6 @@ ComposeboxStrings* ServerStringsFromInputState(
 // Notifies the delegate of state updates.
 - (void)didUpdateInputState:(const contextual_search::InputState&)inputState {
   _inputState = inputState;
-  _cachedStrings = ServerStringsFromInputState(inputState);
 
   [self reconcileToolModeWithInputState];
   [self reconcileModelWithInputState];

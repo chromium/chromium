@@ -296,6 +296,7 @@ source_set("input_state_manager") {
     "//components/search",
     "//components/search_engines",
     "//components/signin/public/identity_manager",
+    "//components/strings",
     "//ios/chrome/browser/composebox/coordinator:constants",
     "//ios/chrome/browser/composebox/coordinator:mode_holder",
     "//ios/chrome/browser/composebox/public:attachment_options",
@@ -309,6 +310,7 @@ source_set("input_state_manager") {
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/public/features:system_flags",
+    "//ios/chrome/common:string_conversions",
     "//ios/web/public",
   ]
 }
