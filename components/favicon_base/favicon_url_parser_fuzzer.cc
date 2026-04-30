@@ -12,14 +12,13 @@
 #include "base/at_exit.h"
 #include "base/compiler_specific.h"
 #include "base/i18n/icu_util.h"
+#include "base/no_destructor.h"
 
 struct IcuEnvironment {
   IcuEnvironment() { CHECK(base::i18n::InitializeICU()); }
   // used by ICU integration.
   base::AtExitManager at_exit_manager;
 };
-
-IcuEnvironment* env = new IcuEnvironment();
 
 chrome::FaviconUrlFormat GetFaviconUrlFormatFromUint8(uint8_t value) {
   // Dummy switch to detect changes to the enum definition.
@@ -34,6 +33,7 @@ chrome::FaviconUrlFormat GetFaviconUrlFormatFromUint8(uint8_t value) {
 }
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
+  static const base::NoDestructor<IcuEnvironment> env;
   if (size < 2)
     return 0;
 
