@@ -140,7 +140,17 @@ String16Vector String16VectorFromString16(
   if (word_starts)
     word_starts->clear();
 
+  // Typical URLs/titles yield ~1 word per 6-7 chars; reserve to avoid reallocs.
+  // Inputs are already capped to 1024 chars by CleanUpUrlForMatching /
+  // CleanUpTitleForMatching, but cap the reserve defensively.
+  const size_t kMaxEstimatedWords = 256;
+  const size_t estimated_words =
+      std::min((cleaned_uni_string.size() / 7) + 1, kMaxEstimatedWords);
   String16Vector words;
+  words.reserve(estimated_words);
+  if (word_starts) {
+    word_starts->reserve(estimated_words);
+  }
   TailoredWordBreakIterator iter(cleaned_uni_string);
   if (!iter.Init())
     return words;
