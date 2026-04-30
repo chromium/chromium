@@ -213,6 +213,11 @@ struct NavigateParams {
   // accordance with |add_types|. The default allows the TabHandler to decide.
   int tabstrip_index = -1;
 
+  // A bitmask of values defined in TabStripModel::AddTabTypes. Helps
+  // determine where to insert a new tab and whether or not it should be
+  // selected, among other properties.
+  int tabstrip_add_types = AddTabTypes::ADD_ACTIVE;
+
   // If non-empty, the new tab is an app tab.
   std::string app_id;
 
@@ -293,11 +298,6 @@ struct NavigateParams {
   // ping-pong issue. They will still be allowed to load locally like a normal
   // navigation.
   bool navigation_initiated_from_sync = false;
-
-  // A bitmask of values defined in TabStripModel::AddTabTypes. Helps
-  // determine where to insert a new tab and whether or not it should be
-  // selected, among other properties.
-  int tabstrip_add_types = AddTabTypes::ADD_ACTIVE;
 #endif
 
   // The profile that is initiating the navigation. If there is a non-NULL

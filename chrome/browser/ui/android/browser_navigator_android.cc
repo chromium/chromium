@@ -77,6 +77,21 @@ bool AdjustNavigateParams(NavigateParams* params) {
     params->disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
   }
 
+  // Adjust tabstrip_add_types based on the finalized disposition.
+  if (params->disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB) {
+    params->tabstrip_add_types &= ~AddTabTypes::ADD_ACTIVE;
+  }
+
+  if (params->disposition == WindowOpenDisposition::NEW_FOREGROUND_TAB ||
+      params->disposition == WindowOpenDisposition::NEW_WINDOW ||
+      params->disposition == WindowOpenDisposition::NEW_POPUP) {
+    params->tabstrip_add_types |= AddTabTypes::ADD_ACTIVE;
+  }
+
+  if (params->tabstrip_index != -1) {
+    params->tabstrip_add_types |= AddTabTypes::ADD_FORCE_INDEX;
+  }
+
   // Pre-fill navigated_or_inserted_contents. This is used as a flag
   // downstream to determine if contents_to_insert was provided.
   if (params->contents_to_insert) {
@@ -281,9 +296,13 @@ tabs::TabInterface* CreateNewTab(NavigateParams* params) {
   // Parent tab is set to nullptr to avoid adjacency overrides when
   // launching from the Omnibox (where we always append to the end).
   TabAndroid* parent = nullptr;
+  bool should_inherit_opener =
+      (params->tabstrip_add_types & AddTabTypes::ADD_INHERIT_OPENER) ||
+      params->user_gesture;
 
   if (params->source_contents &&
-      launch_type != TabModel::TabLaunchType::FROM_OMNIBOX) {
+      launch_type != TabModel::TabLaunchType::FROM_OMNIBOX &&
+      should_inherit_opener) {
     parent = TabAndroid::FromWebContents(params->source_contents);
   }
 
@@ -298,9 +317,10 @@ tabs::TabInterface* CreateNewTab(NavigateParams* params) {
   }
 
   // Create a new tab.
-  tabs::TabInterface* new_tab = tab_model->CreateTab(
-      parent, std::move(web_contents), params->tabstrip_index, launch_type,
-      /*should_pin=*/false);
+  bool should_pin = (params->tabstrip_add_types & AddTabTypes::ADD_PINNED) != 0;
+  tabs::TabInterface* new_tab =
+      tab_model->CreateTab(parent, std::move(web_contents),
+                           params->tabstrip_index, launch_type, should_pin);
 
   // Early out if Java tab creation failed.
   if (!new_tab || !new_tab->GetContents()) {
@@ -308,7 +328,7 @@ tabs::TabInterface* CreateNewTab(NavigateParams* params) {
   }
 
   // Bring the new tab to the foreground if necessary.
-  if (params->disposition != WindowOpenDisposition::NEW_BACKGROUND_TAB) {
+  if (params->tabstrip_add_types & AddTabTypes::ADD_ACTIVE) {
     tab_model->ActivateTab(new_tab->GetHandle());
   }
 

@@ -7,6 +7,7 @@
 #include "base/base_switches.h"
 #include "base/strings/string_util.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
@@ -1939,4 +1940,84 @@ IN_PROC_BROWSER_TEST_F(
   tabs::TabInterface* new_tab = incognito_tab_list->GetTab(1);
   EXPECT_EQ(url2, new_tab->GetContents()->GetLastCommittedURL());
   EXPECT_EQ(1, incognito_tab_list->GetActiveIndex());
+}
+
+IN_PROC_BROWSER_TEST_F(NavigateAndroidBrowserTest, TabStripAddTypes_AddActive) {
+  const GURL url1 = StartAtURL("/title1.html");
+
+  const GURL url2 = embedded_test_server()->GetURL("/title2.html");
+  NavigateParams params1(browser_window_, url2, ui::PAGE_TRANSITION_LINK);
+  params1.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+
+  base::WeakPtr<content::NavigationHandle> handle1 = Navigate(&params1);
+  ASSERT_TRUE(handle1);
+
+  EXPECT_TRUE(params1.tabstrip_add_types & AddTabTypes::ADD_ACTIVE);
+  EXPECT_EQ(params1.navigated_or_inserted_contents,
+            tab_list_->GetActiveTab()->GetContents());
+
+  const GURL url3 = embedded_test_server()->GetURL("/title3.html");
+  NavigateParams params2(browser_window_, url3, ui::PAGE_TRANSITION_LINK);
+  params2.disposition = WindowOpenDisposition::NEW_BACKGROUND_TAB;
+  params2.tabstrip_add_types |= AddTabTypes::ADD_ACTIVE;
+
+  base::WeakPtr<content::NavigationHandle> handle2 = Navigate(&params2);
+  ASSERT_TRUE(handle2);
+
+  EXPECT_FALSE(params2.tabstrip_add_types & AddTabTypes::ADD_ACTIVE);
+  EXPECT_NE(params2.navigated_or_inserted_contents,
+            tab_list_->GetActiveTab()->GetContents());
+}
+
+IN_PROC_BROWSER_TEST_F(NavigateAndroidBrowserTest, TabStripAddTypes_AddPinned) {
+  const GURL url1 = StartAtURL("/title1.html");
+
+  const GURL url2 = embedded_test_server()->GetURL("/title2.html");
+  NavigateParams params(browser_window_, url2, ui::PAGE_TRANSITION_LINK);
+  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  params.tabstrip_add_types |= AddTabTypes::ADD_PINNED;
+
+  base::WeakPtr<content::NavigationHandle> handle = Navigate(&params);
+  ASSERT_TRUE(handle);
+
+  tabs::TabInterface* new_tab = tabs::TabInterface::MaybeGetFromContents(
+      params.navigated_or_inserted_contents);
+  ASSERT_TRUE(new_tab);
+  EXPECT_TRUE(new_tab->IsPinned());
+}
+
+IN_PROC_BROWSER_TEST_F(NavigateAndroidBrowserTest,
+                       TabStripAddTypes_InheritOpener) {
+  const GURL url1 = StartAtURL("/title1.html");
+
+  const GURL url2 = embedded_test_server()->GetURL("/title2.html");
+  NavigateParams params1(browser_window_, url2, ui::PAGE_TRANSITION_LINK);
+  params1.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  params1.source_contents = web_contents_;
+  params1.tabstrip_add_types &= ~AddTabTypes::ADD_INHERIT_OPENER;
+  params1.user_gesture = false;
+
+  base::WeakPtr<content::NavigationHandle> handle1 = Navigate(&params1);
+  ASSERT_TRUE(handle1);
+
+  TabAndroid* new_tab1_android =
+      TabAndroid::FromWebContents(params1.navigated_or_inserted_contents);
+  ASSERT_TRUE(new_tab1_android);
+  EXPECT_EQ(-1, new_tab1_android->GetParentId());
+
+  const GURL url3 = embedded_test_server()->GetURL("/title3.html");
+  NavigateParams params2(browser_window_, url3, ui::PAGE_TRANSITION_LINK);
+  params2.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  params2.source_contents = web_contents_;
+  params2.tabstrip_add_types |= AddTabTypes::ADD_INHERIT_OPENER;
+
+  base::WeakPtr<content::NavigationHandle> handle2 = Navigate(&params2);
+  ASSERT_TRUE(handle2);
+
+  TabAndroid* source_tab_android = TabAndroid::FromWebContents(web_contents_);
+  TabAndroid* new_tab2_android =
+      TabAndroid::FromWebContents(params2.navigated_or_inserted_contents);
+  ASSERT_TRUE(new_tab2_android);
+  EXPECT_EQ(source_tab_android->GetAndroidId(),
+            new_tab2_android->GetParentId());
 }
