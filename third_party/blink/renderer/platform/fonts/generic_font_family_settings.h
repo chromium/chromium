@@ -43,8 +43,6 @@
 
 namespace blink {
 
-PLATFORM_EXPORT BASE_DECLARE_FEATURE(kGenericFontSettingCache);
-
 class PLATFORM_EXPORT GenericFontFamilySettings {
   DISALLOW_NEW();
 
