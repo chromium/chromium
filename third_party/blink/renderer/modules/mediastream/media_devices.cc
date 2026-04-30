@@ -689,14 +689,13 @@ ScriptPromise<IDLSequence<MediaStream>> MediaDevices::getAllScreensMedia(
   auto tracer = std::make_unique<ScopedMediaStreamTracer>(
       "MediaDevices.GetAllScreensMedia");
 
-  // This timeout of base::Seconds(6) is an initial value and based on the data
-  // in Media.MediaDevices.GetAllScreensMedia.Latency, it should be iterated
-  // upon.
-  // Records the `Media.MediaDevices.GetAllScreensMedia.Result2` histogram.
+  // This timeout of base::Seconds(6) is an initial value.
+  // Records the `Media.MediaDevices.GetAllScreensMedia.Result3` histogram.
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolverWithTracker<
       UserMediaRequestResult, IDLSequence<MediaStream>>>(
       script_state, "Media.MediaDevices.GetAllScreensMedia", base::Seconds(6));
   resolver->SetResultSuffix("Result3");
+  resolver->SuppressLatencyRecording();
   auto promise = resolver->Promise();
 
   ExecutionContext* const context = GetExecutionContext();

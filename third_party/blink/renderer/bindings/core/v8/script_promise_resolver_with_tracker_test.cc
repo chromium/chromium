@@ -220,4 +220,17 @@ TEST_F(ScriptPromiseResolverWithTrackerTest, SetLatencySuffix) {
   CheckLatencyHistogram(/*expected_count=*/1, "NewLatencySuffix");
 }
 
+TEST_F(ScriptPromiseResolverWithTrackerTest, SuppressLatencyRecording) {
+  String on_fulfilled, on_rejected;
+  auto* result_tracker = CreateResultTracker(on_fulfilled, on_rejected);
+  result_tracker->SuppressLatencyRecording();
+  result_tracker->Resolve(/*value=*/"hello", /*result=*/TestEnum::kOk);
+  PerformMicrotaskCheckpoint();
+
+  EXPECT_EQ("hello", on_fulfilled);
+  EXPECT_EQ(String(), on_rejected);
+  CheckResultHistogram(/*expected_count=*/1);
+  CheckLatencyHistogram(/*expected_count=*/0);
+}
+
 }  // namespace blink

@@ -102,6 +102,8 @@ class CORE_EXPORT ScriptPromiseResolverWithTracker
     latency_suffix_ = std::move(latency_suffix);
   }
 
+  void SuppressLatencyRecording() { should_record_latency_ = false; }
+
   void RecordAndThrowDOMException(ExceptionState& exception_state,
                                   DOMExceptionCode exception_code,
                                   const String& message,
@@ -141,8 +143,9 @@ class CORE_EXPORT ScriptPromiseResolverWithTracker
   }
 
   void RecordLatency() {
-    if (is_latency_recorded_)
+    if (is_latency_recorded_ || !should_record_latency_) {
       return;
+    }
 
     is_latency_recorded_ = true;
     const base::TimeDelta elapsed = base::TimeTicks::Now() - start_time_;
@@ -173,6 +176,7 @@ class CORE_EXPORT ScriptPromiseResolverWithTracker
   String latency_suffix_ = "Latency";  // Mutable through SetLatencySuffix().
   bool is_latency_recorded_ = false;
   bool is_result_recorded_ = false;
+  bool should_record_latency_ = true;
 };
 
 }  // namespace blink
