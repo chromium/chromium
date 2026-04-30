@@ -160,6 +160,13 @@ void MockPermissionRequest::PermissionDecided(
     if (decision.overall_decision == PermissionDecision::kNone) {
       request_state_->cancelled = true;
     }
+
+    if (std::holds_alternative<GeolocationPromptOptions>(
+            decision.prompt_options)) {
+      request_state_->selected_accuracy =
+          std::get<GeolocationPromptOptions>(decision.prompt_options)
+              .selected_accuracy;
+    }
   }
   if (on_permission_decided_) {
     std::move(on_permission_decided_).Run();

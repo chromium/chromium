@@ -286,6 +286,33 @@ TEST_F(PermissionRequestManagerTest, SingleRequest) {
   EXPECT_TRUE(request1_state.granted);
 }
 
+TEST_F(PermissionRequestManagerTest, EmptyOptionsForGeolocation) {
+  base::test::ScopedFeatureList enable_approximate_location{
+      content_settings::features::kApproximateGeolocationPermission};
+
+  MockPermissionRequest::MockPermissionRequestState request_state;
+  std::unique_ptr<MockPermissionRequest> request =
+      std::make_unique<MockPermissionRequest>(
+          RequestType::kGeolocation, PermissionRequestGestureType::GESTURE,
+          request_state.GetWeakPtr());
+
+  base::RunLoop run_loop;
+  request->RegisterOnPermissionDecidedCallback(run_loop.QuitClosure());
+
+  manager_->AddRequest(web_contents()->GetPrimaryMainFrame(),
+                       std::move(request));
+  WaitForBubbleToBeShown();
+
+  EXPECT_TRUE(prompt_factory_->is_visible());
+  ASSERT_EQ(prompt_factory_->request_count(), 1);
+
+  manager_->Accept(std::monostate());
+  run_loop.Run();
+
+  EXPECT_TRUE(request_state.granted);
+  EXPECT_FALSE(request_state.selected_accuracy.has_value());
+}
+
 TEST_F(PermissionRequestManagerTest, SequentialRequests) {
   MockPermissionRequest::MockPermissionRequestState request1_state;
   manager_->AddRequest(web_contents()->GetPrimaryMainFrame(),

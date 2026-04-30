@@ -29,6 +29,7 @@ class MockPermissionRequest : public PermissionRequest {
     bool cancelled;
     bool finished;
     RequestType request_type;
+    std::optional<GeolocationAccuracy> selected_accuracy;
 
    private:
     base::WeakPtrFactory<MockPermissionRequestState> weak_factory_{this};

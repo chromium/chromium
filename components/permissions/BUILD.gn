@@ -290,6 +290,8 @@ source_set("test_support") {
     "test/fake_permissions_aivx_modelhandlers.h",
     "test/mock_permission_prompt.cc",
     "test/mock_permission_prompt.h",
+    "test/mock_permission_prompt_delegate.cc",
+    "test/mock_permission_prompt_delegate.h",
     "test/mock_permission_prompt_factory.cc",
     "test/mock_permission_prompt_factory.h",
     "test/mock_permission_request.cc",
