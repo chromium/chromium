@@ -9,7 +9,7 @@
 #include "base/notimplemented.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_controller.h"
-#include "chrome/browser/contextual_cueing/model_execution_log.h"
+#include "chrome/browser/contextual_cueing/cueing_log.h"
 #include "chrome/browser/glic/browser_ui/glic_vector_icon_manager.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
@@ -92,7 +92,7 @@ void GlicCueTarget::OnClick(contextual_cueing::CueActionData data) {
     glic_data.tabs_to_share.push_back(active_handle);
   }
 
-  MODEL_EXECUTION_LOG(
+  CUEING_LOG(
       base::StringPrintf("Sharing %d tabs", glic_data.tabs_to_share.size()));
   options.tab_sharing = TabSharingOptions(std::move(glic_data.tabs_to_share),
                                           GlicPinTrigger::kContextualCue);
@@ -119,7 +119,7 @@ contextual_cueing::CueActionData GlicCueTarget::CueActionDataFromResponse(
     const optimization_guide::proto::ContextualCueingResponse& response) const {
   contextual_cueing::GlicCueActionData data;
   if (!response.has_gemini_in_chrome_surface()) {
-    MODEL_EXECUTION_LOG("Missing Gemini surface data.");
+    CUEING_LOG("Missing Gemini surface data.");
     return data;
   }
   data.prompt = response.gemini_in_chrome_surface().prompt();
@@ -140,7 +140,7 @@ contextual_cueing::CueActionData GlicCueTarget::CueActionDataFromResponse(
     }
   }
 
-  MODEL_EXECUTION_LOG(
+  CUEING_LOG(
       base::StringPrintf("%d tabs in response.", data.tabs_to_share.size()));
   return data;
 }
