@@ -316,7 +316,10 @@ void PointerEventManager::HandlePseudoElementRemoval(PseudoElement& pseudo) {
     if (entry.value && entry.value->IsPseudoElement() &&
         pseudo.IsShadowIncludingInclusiveAncestorOf(*entry.value)) {
       entry.value = parent;
-      original_element_under_pointer_removed_.insert(entry.key);
+      if (RuntimeEnabledFeatures::
+              BoundaryEventDispatchTracksNodeRemovalEnabled()) {
+        original_element_under_pointer_removed_.insert(entry.key);
+      }
     }
   }
 

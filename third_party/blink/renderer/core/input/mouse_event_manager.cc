@@ -484,7 +484,10 @@ void MouseEventManager::HandlePseudoElementRemoval(PseudoElement& pseudo) {
   if (element_under_mouse_ && element_under_mouse_->IsPseudoElement() &&
       pseudo.IsShadowIncludingInclusiveAncestorOf(*element_under_mouse_)) {
     element_under_mouse_ = parent;
-    original_element_under_mouse_removed_ = true;
+    if (RuntimeEnabledFeatures::
+            BoundaryEventDispatchTracksNodeRemovalEnabled()) {
+      original_element_under_mouse_removed_ = true;
+    }
   }
 }
 
