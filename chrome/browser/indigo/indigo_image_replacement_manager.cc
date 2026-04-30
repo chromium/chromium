@@ -5,8 +5,10 @@
 #include "chrome/browser/indigo/indigo_image_replacement_manager.h"
 
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "chrome/browser/indigo/api_client.h"
+#include "chrome/browser/indigo/indigo_image_replacement.h"
 #include "chrome/browser/indigo/indigo_page_action_controller.h"
 #include "chrome/browser/indigo/indigo_service.h"
 #include "chrome/browser/indigo/indigo_service_factory.h"
@@ -41,7 +43,20 @@ void IndigoImageReplacementManager::RegisterImageReplacement(
   mojo::PendingRemote<blink::mojom::ImageReplacementHost> host_remote;
   auto host_receiver = host_remote.InitWithNewPipeAndPassReceiver();
   remote->StartReplacement(std::move(host_remote));
-  receivers_.Add(this, std::move(host_receiver), std::move(remote));
+  receivers_.Add(this, std::move(host_receiver),
+                 IndigoImageReplacement(std::move(remote)));
+}
+
+IndigoImageReplacement*
+IndigoImageReplacementManager::GetImageReplacementForFrame(
+    const content::RenderFrameHost& rfh) {
+  content::FrameTreeNodeId frame_tree_node_id = rfh.GetFrameTreeNodeId();
+  for (const auto& [receiver_id, context] : receivers_.GetAllContexts()) {
+    if (context->frame_tree_node_id() == frame_tree_node_id) {
+      return context;
+    }
+  }
+  return nullptr;
 }
 
 void IndigoImageReplacementManager::ReplacementFrameAttached(
@@ -66,20 +81,26 @@ void IndigoImageReplacementManager::ReplacementFrameAttached(
     return;
   }
 
+  auto& image_replacement = receivers_.current_context();
+  if (image_replacement.frame_tree_node_id()) {
+    receivers_.ReportBadMessage("Replacement frame already attached!");
+    return;
+  }
+  content::FrameTreeNodeId frame_tree_node_id =
+      image_replacement_subframe->GetFrameTreeNodeId();
+  image_replacement.ReplacementFrameAttached(frame_tree_node_id);
+
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(&page().GetMainDocument());
+
   content::NavigationController::LoadURLParams params{
       extensions::Extension::GetResourceURL(
           extensions::Extension::GetBaseURLFromExtensionId(
               extension_misc::kIndigoExtensionId),
           "index.html")};
-  params.frame_tree_node_id = image_replacement_subframe->GetFrameTreeNodeId();
+  params.frame_tree_node_id = frame_tree_node_id;
   params.should_replace_current_entry = true;
   web_contents->GetController().LoadURLWithParams(std::move(params));
-
-  // TODO(b/489468738): We should wait for the extension to finish loading
-  // before calling RenderReplacement.
-  receivers_.current_context()->RenderReplacement();
 
   gfx::QuadF scaled_quad = quad;
   if (content::RenderWidgetHostView* view =

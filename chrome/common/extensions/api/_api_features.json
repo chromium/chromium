@@ -638,6 +638,13 @@
     "dependencies": ["permission:idltest"],
     "contexts": ["privileged_extension"]
   },
+  "indigoPrivate": {
+    "dependencies": ["permission:indigoPrivate"],
+    "contexts": [
+      "privileged_extension"
+    ],
+    "disallow_for_service_workers": true
+  },
   "imageLoaderPrivate": {
     "dependencies": ["permission:imageLoaderPrivate"],
     "contexts": ["privileged_extension"]

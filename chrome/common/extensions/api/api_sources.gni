@@ -83,6 +83,7 @@ if (enable_extensions) {
     "experimental_actor.idl",
     "experimental_ai_data.idl",
     "image_writer_private.idl",
+    "indigo_private.webidl",
     "language_settings_private.idl",
     "passwords_private.idl",
     "proxy_override_rules_private.json",

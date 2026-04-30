@@ -34,6 +34,13 @@ namespace indigo {
 
 namespace {
 
+GURL GetComponentExtensionUrl() {
+  return extensions::Extension::GetResourceURL(
+      extensions::Extension::GetBaseURLFromExtensionId(
+          extension_misc::kIndigoExtensionId),
+      "index.html");
+}
+
 class MockImageReplacement : public blink::mojom::ImageReplacement {
  public:
   explicit MockImageReplacement(content::WebContents* web_contents)
@@ -52,21 +59,34 @@ class MockImageReplacement : public blink::mojom::ImageReplacement {
     // Find the subframe RFH.
     // Note: ExecJs uses a frame associated interface, so it is guaranteed that
     // frame creation will happen before it returns.
-    content::RenderFrameHostWrapper subframe(
-        content::ChildFrameAt(web_contents_->GetPrimaryMainFrame(), 0));
-    ASSERT_TRUE(subframe.get());
+    content::RenderFrameHost* raw_subframe =
+        content::ChildFrameAt(web_contents_->GetPrimaryMainFrame(), 0);
+    ASSERT_TRUE(raw_subframe);
+    frame_tree_node_id_ = raw_subframe->GetFrameTreeNodeId();
 
     auto image_data = blink::mojom::ImageData::New();
     image_data->webp_bytes =
         mojo_base::BigBuffer(std::vector<uint8_t>{1, 2, 3});
     host_remote_->ReplacementFrameAttached(
-        subframe->GetFrameToken(),
+        raw_subframe->GetFrameToken(),
         gfx::QuadF(gfx::RectF(0.f, 0.f, 100.f, 100.f)), std::move(image_data));
 
     start_replacement_future_.SetValue();
   }
 
-  void RenderReplacement() override { render_replacement_future_.SetValue(); }
+  void RenderReplacement() override {
+    content::RenderFrameHost* rfh =
+        web_contents_->UnsafeFindFrameByFrameTreeNodeId(frame_tree_node_id_);
+    ASSERT_TRUE(rfh);
+
+    // Ensure that the subframe has finished loading the component extension
+    // before calling RenderReplacement().
+    GURL component_extension_url = GetComponentExtensionUrl();
+    EXPECT_EQ(rfh->GetLastCommittedURL(), component_extension_url);
+    EXPECT_EQ("complete", content::EvalJs(rfh, "document.readyState"));
+
+    render_replacement_future_.SetValue();
+  }
 
   void WaitForStartReplacement() {
     EXPECT_TRUE(start_replacement_future_.Wait());
@@ -81,6 +101,7 @@ class MockImageReplacement : public blink::mojom::ImageReplacement {
   mojo::Remote<blink::mojom::ImageReplacementHost> host_remote_;
   base::test::TestFuture<void> start_replacement_future_;
   base::test::TestFuture<void> render_replacement_future_;
+  content::FrameTreeNodeId frame_tree_node_id_;
 };
 
 }  // namespace
@@ -139,10 +160,7 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
   manager->RegisterImageReplacement(receiver.BindNewPipeAndPassRemote());
   mock_replacement.WaitForStartReplacement();
 
-  GURL component_extension_url = extensions::Extension::GetResourceURL(
-      extensions::Extension::GetBaseURLFromExtensionId(
-          extension_misc::kIndigoExtensionId),
-      "index.html");
+  GURL component_extension_url = GetComponentExtensionUrl();
   // Setup observer for the subframe navigation to the Indigo Component
   // Extension URL.
   content::TestNavigationObserver navigation_observer(component_extension_url);
@@ -189,6 +207,7 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
 
   manager->RegisterImageReplacement(receiver.BindNewPipeAndPassRemote());
   mock_replacement.WaitForStartReplacement();
+  mock_replacement.WaitForRenderReplacement();
 
   fake_api_.WaitForGenerateRequest();
   EXPECT_TRUE(
@@ -196,8 +215,6 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
   fake_api_.SendSuccessResponse(GURL(
       "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAD"
       "UlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="));
-
-  mock_replacement.WaitForRenderReplacement();
 }
 
 }  // namespace indigo

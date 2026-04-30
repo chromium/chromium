@@ -2899,6 +2899,7 @@ Called by update_extension_histograms.py.-->
   <int value="1961" label="GLICPRIVATE_GETSTATE"/>
   <int value="1962" label="ACCESSIBILITY_PRIVATE_INSTALLTENJI"/>
   <int value="1963" label="GLICPRIVATE_INVOKE"/>
+  <int value="1964" label="INDIGOPRIVATE_READYTORENDER"/>
 </enum>
 
 <!-- LINT.ThenChange(//extensions/browser/extension_function_histogram_value.h:HistogramValue) -->
@@ -3291,6 +3292,7 @@ Called by update_extension_permission.py.-->
   <int value="264" label="kProxyOverrideRulesPrivate"/>
   <int value="265" label="kGlicPrivate"/>
   <int value="266" label="kGlicPrivateInvoke"/>
+  <int value="267" label="kIndigoPrivate"/>
 </enum>
 
 <enum name="ExtensionPolicyReinstallReason">

@@ -39,12 +39,14 @@ export class IndigoImageReplacementAppElement extends CrLitElement {
   private exitTimeout_: number|null = null;
 
   override firstUpdated() {
-    this.showOverlay_ = true;
-    this.overlayAnimationState_ = 'entry';
-
-    this.exitTimeout_ = window.setTimeout(() => {
-      this.overlayAnimationState_ = 'exit';
-    }, EXIT_ANIMATION_DELAY_MS);
+    requestAnimationFrame(async () => {
+      await chrome.indigoPrivate.readyToRender();
+      this.showOverlay_ = true;
+      this.overlayAnimationState_ = 'entry';
+      this.exitTimeout_ = window.setTimeout(() => {
+        this.overlayAnimationState_ = 'exit';
+      }, EXIT_ANIMATION_DELAY_MS);
+    });
   }
 
   protected onMotionComplete_() {

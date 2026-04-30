@@ -31,5 +31,9 @@ build_webui("build") {
     "text_overlay.ts",
   ]
 
+  ts_definitions = [
+    "//tools/typescript/definitions/chrome_event.d.ts",
+    "//tools/typescript/definitions/indigo_private.d.ts",
+  ]
   ts_deps = [ "//third_party/lit/v3_0:build_ts" ]
 }

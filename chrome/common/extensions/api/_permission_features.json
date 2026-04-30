@@ -493,6 +493,12 @@
     "channel": "trunk",
     "extension_types": ["extension"]
   },
+  "indigoPrivate": {
+    "channel": "stable",
+    "extension_types": ["extension"],
+    "allowlist": ["632DD33AD22AD33ED4197BB6F191F3841C52A9D6"],
+    "location": "component"
+  },
   "input": {
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app"],

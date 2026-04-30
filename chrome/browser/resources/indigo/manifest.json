@@ -10,5 +10,8 @@
   },
   "host_permissions": [
     "chrome://resources/"
+  ],
+  "permissions": [
+    "indigoPrivate"
   ]
 }

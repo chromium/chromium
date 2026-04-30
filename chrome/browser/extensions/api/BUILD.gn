@@ -109,6 +109,10 @@ group("api_implementations") {
       ]
     }
   }  # if (enable_extensions)
+
+  if (!is_android) {
+    public_deps += [ "//chrome/browser/extensions/api/indigo_private" ]
+  }
 }
 
 # The step necessary to generate the code to register the corresponding
