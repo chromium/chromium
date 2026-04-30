@@ -15,13 +15,16 @@
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
+#include "services/on_device_model/public/cpp/features.h"
 
 namespace optimization_guide {
 
 namespace {
 
 DeviceCategory GetDeviceCategory(const PerformanceClassifier& classifier) {
-  if (!classifier.IsDeviceGPUCapable()) {
+  if (base::FeatureList::IsEnabled(
+          on_device_model::features::kOnDeviceModelForceCpuBackend) ||
+      !classifier.IsDeviceGPUCapable()) {
     return DeviceCategory::kCpu;
   }
   if (classifier.IsLowTierDevice()) {
