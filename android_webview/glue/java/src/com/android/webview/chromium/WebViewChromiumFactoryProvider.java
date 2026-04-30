@@ -438,6 +438,7 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
                             ? controller.queryActions(ctx, webViewPackageName)
                             : new HashSet<>();
 
+            long startCachedFlagInit = SystemClock.uptimeMillis();
             try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
                 // Since N, getSharedPreferences creates the preference dir if it doesn't exist,
                 // causing a disk write.
@@ -448,6 +449,9 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
                     WebViewCachedFlags.init(mWebViewPrefs);
                 }
             }
+            RecordHistogram.recordTimesHistogram(
+                    "Android.WebView.Startup.CachedFlagInitTime",
+                    SystemClock.uptimeMillis() - startCachedFlagInit);
 
             if (WebViewCachedFlags.get()
                     .isCachedFeatureEnabled(AwFeatures.WEBVIEW_EARLY_STARTUP_TRACING)) {

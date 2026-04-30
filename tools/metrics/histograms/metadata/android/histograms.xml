@@ -8667,6 +8667,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.Startup.CachedFlagInitTime" units="ms"
+    expires_after="2026-10-29">
+  <owner>abhijithnair@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    Measures the time taken to initialize shared preferences and cached flags in
+    WebViewChromiumFactoryProvider.initialize().
+
+    Only measured in Android WebView.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.Startup.CheckNeedsPost.CalledOnUiThread"
     enum="Boolean" expires_after="2026-06-01">
   <owner>abhijithnair@chromium.org</owner>
