@@ -7142,6 +7142,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.Session.Pause" enum="MediaSessionActionSource"
+    expires_after="2027-04-28">
+  <owner>philyan@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    The number of times the user paused playback of a media session using other
+    means than the pause button on the page.
+  </summary>
+</histogram>
+
 <histogram name="Media.Session.PictureInPicture.TotalTimeForSession" units="ms"
     expires_after="2026-08-23">
   <owner>bkeen@google.com</owner>
@@ -7176,7 +7186,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Session.Play" enum="MediaSessionActionSource"
-    expires_after="2024-05-05">
+    expires_after="2027-04-28">
   <owner>steimel@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
