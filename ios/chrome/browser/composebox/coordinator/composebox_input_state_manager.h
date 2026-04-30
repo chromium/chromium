@@ -69,9 +69,6 @@ class WebStateID;
 // The delegate to be notified of state updates.
 @property(nonatomic, weak) id<ComposeboxInputStateManagerDelegate> delegate;
 
-// The current active tool mode.
-@property(nonatomic, assign) omnibox::ToolMode activeTool;
-
 // The current active model option. Use `setActiveModel:explicitUserAction:` to
 // set the model.
 @property(nonatomic, readonly) ComposeboxModelOption activeModel;
@@ -113,6 +110,9 @@ class WebStateID;
 
 // Notifies the model that the context has changed.
 - (void)onContextChanged;
+
+// Notifies the manager that items have been updated.
+- (void)onItemsUpdated;
 
 // Records the active modes when a submission occurs.
 - (void)recordInputStateOnSubmission;

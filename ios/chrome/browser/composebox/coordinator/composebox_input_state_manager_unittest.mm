@@ -248,7 +248,8 @@ TEST_F(ComposeboxInputStateManagerTest, PreselectionRestricted) {
 
   // User selects Canvas.
   mode_holder_.mode = ComposeboxMode::kCanvas;
-  EXPECT_EQ(manager_.activeTool, omnibox::ToolMode::TOOL_MODE_CANVAS);
+  EXPECT_EQ(manager_.inputState->active_tool,
+            omnibox::ToolMode::TOOL_MODE_CANVAS);
   delegate.didUpdateUIStateCalled = NO;  // Reset flag
 
   // Load new config where Canvas is NOT allowed.
@@ -345,6 +346,59 @@ TEST_F(ComposeboxInputStateManagerTest, ImageToolDisabled_HasTabOrFile) {
   manager_.items = collection;
 
   EXPECT_TRUE([manager_ isToolDisabled:ComposeboxMode::kImageGeneration]);
+}
+
+// Tests that onItemsUpdated correctly updates the tool mode in image generation
+// mode.
+TEST_F(ComposeboxInputStateManagerTest, OnItemsUpdated_ImageGenerationMode) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kComposeboxAdditionalAdvancedTools);
+
+  EXPECT_CALL(*mock_aim_service_, IsFuseboxEligible())
+      .WillRepeatedly(testing::Return(true));
+
+  omnibox::SearchboxConfig config;
+  config.mutable_rule_set()->add_allowed_tools(
+      omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
+  omnibox::ToolConfig* tool_config = config.add_tool_configs();
+  tool_config->set_tool(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
+  [manager_ setSearchboxConfig:config];
+
+  // Set active mode to image generation.
+  mode_holder_.mode = ComposeboxMode::kImageGeneration;
+
+  // Initially no items, should be TOOL_MODE_IMAGE_GEN.
+  EXPECT_EQ(manager_.inputState->active_tool,
+            omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
+
+  // Add an image to the collection.
+  ComposeboxInputItemCollection* collection =
+      [[ComposeboxInputItemCollection alloc] init];
+  [collection
+      addItem:[[ComposeboxInputItem alloc]
+                  initWithComposeboxInputItemType:
+                      ComposeboxInputItemType::kComposeboxInputItemTypeImage]];
+
+  manager_.items = collection;
+
+  // Notify items updated.
+  [manager_ onItemsUpdated];
+
+  // Should now be TOOL_MODE_IMAGE_GEN_UPLOAD.
+  EXPECT_EQ(manager_.inputState->active_tool,
+            omnibox::ToolMode::TOOL_MODE_IMAGE_GEN_UPLOAD);
+
+  // Remove items.
+  ComposeboxInputItemCollection* emptyCollection =
+      [[ComposeboxInputItemCollection alloc] init];
+  manager_.items = emptyCollection;
+
+  // Notify items updated.
+  [manager_ onItemsUpdated];
+
+  // Should fallback to TOOL_MODE_IMAGE_GEN.
+  EXPECT_EQ(manager_.inputState->active_tool,
+            omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
 }
 
 // Tests that tab attachments are disabled in local fallback mode when the

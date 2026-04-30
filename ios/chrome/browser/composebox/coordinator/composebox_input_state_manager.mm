@@ -302,13 +302,6 @@ ComposeboxStrings* ServerStringsFromInputState(
   [self.delegate inputStateManagerDidUpdateUIState:self];
 }
 
-- (omnibox::ToolMode)activeTool {
-  if (_inputStateModel) {
-    return _inputStateModel->GetInputState().active_tool;
-  }
-  return omnibox::TOOL_MODE_UNSPECIFIED;
-}
-
 - (ComposeboxModelOption)activeModel {
   if ([self activeMode] == ComposeboxMode::kRegularSearch ||
       !_inputStateModel) {
@@ -318,18 +311,22 @@ ComposeboxStrings* ServerStringsFromInputState(
       _inputStateModel->GetInputState().active_model);
 }
 
-- (void)setActiveTool:(omnibox::ToolMode)activeTool {
+/// Sets the `activeTool` mode in the input state model.
+- (void)setActiveToolInInputState:(omnibox::ToolMode)activeTool {
   if (!_inputStateModel) {
     return;
   }
 
-  if (_inputStateModel->GetInputState().active_tool != activeTool) {
-    contextual_search::ContextualSearchMetricsRecorder* recorder =
-        _sessionHandle ? _sessionHandle->GetMetricsRecorder() : nullptr;
-    if (recorder) {
-      recorder->RecordToolMode(activeTool);
-    }
+  if (_inputStateModel->GetInputState().active_tool == activeTool) {
+    return;
   }
+
+  contextual_search::ContextualSearchMetricsRecorder* recorder =
+      _sessionHandle ? _sessionHandle->GetMetricsRecorder() : nullptr;
+  if (recorder) {
+    recorder->RecordToolMode(activeTool);
+  }
+
   _inputStateModel->setActiveTool(activeTool);
 }
 
@@ -375,6 +372,16 @@ ComposeboxStrings* ServerStringsFromInputState(
 - (void)onContextChanged {
   if (_inputStateModel) {
     _inputStateModel->OnContextChanged();
+  }
+}
+
+- (void)onItemsUpdated {
+  // Tool Mode has a different value depending on `items.hasImage`. Update if
+  // needed.
+  ComposeboxMode activeMode = [self activeMode];
+  if (activeMode == ComposeboxMode::kImageGeneration) {
+    [self setActiveToolInInputState:ToolModeForComposeboxMode(
+                                        activeMode, self.items.hasImage)];
   }
 }
 
@@ -763,7 +770,7 @@ ComposeboxStrings* ServerStringsFromInputState(
   // Set active tool mode triggers input state update.
   omnibox::ToolMode toolMode =
       ToolModeForComposeboxMode(mode, self.items.hasImage);
-  [self setActiveTool:toolMode];
+  [self setActiveToolInInputState:toolMode];
 
   [self updateModelOnModeChange];
 
@@ -894,7 +901,7 @@ ComposeboxStrings* ServerStringsFromInputState(
   BOOL localOptionValid = [self canSelectTool:currentMode];
   if (localOptionValid) {
     // Local is valid, update inputStateModel.
-    [self setActiveTool:targetToolMode];
+    [self setActiveToolInInputState:targetToolMode];
   } else {
     // Local is not valid, reset to default.
     _modeHolder.mode = [self defaultTool];

@@ -1091,28 +1091,6 @@ std::vector<lens::MimeType> MimeTypesFromCollection(
   [self.URLLoader prepareLoadWithClientToAimMessage:message];
 }
 
-// Updates the tool mode when in image generation mode.
-- (void)updateImageGenerationToolMode {
-  if (_modeHolder.mode != ComposeboxMode::kImageGeneration) {
-    return;
-  }
-
-  std::optional<contextual_search::InputState> inputState =
-      _stateManager.inputState;
-  if (!inputState.has_value()) {
-    return;
-  }
-
-  BOOL imageGenUploadMode = _items.count > 0;
-
-  omnibox::ToolMode toolMode =
-      imageGenUploadMode ? omnibox::ToolMode::TOOL_MODE_IMAGE_GEN_UPLOAD
-                         : omnibox::ToolMode::TOOL_MODE_IMAGE_GEN;
-  if (inputState->active_tool != toolMode) {
-    [self setActiveTool:toolMode];
-  }
-}
-
 // Informs the model of a context change (e.g.; attachment added or deleted).
 - (void)notifyContextChanged {
   [_stateManager onContextChanged];
@@ -1913,10 +1891,6 @@ std::vector<lens::MimeType> MimeTypesFromCollection(
   _isUpdatingCompactMode = NO;
 }
 
-- (void)setActiveTool:(omnibox::ToolMode)activeTool {
-  [_stateManager setActiveTool:activeTool];
-}
-
 #pragma mark - ComposeboxInputStateManagerDelegate
 
 - (void)inputStateManager:(ComposeboxInputStateManager*)manager
@@ -1984,7 +1958,7 @@ std::vector<lens::MimeType> MimeTypesFromCollection(
     (ComposeboxInputItemCollection*)composeboxInputItemCollection {
   [self updateConsumerItems];
   [self commitUIUpdates];
-  [self updateImageGenerationToolMode];
+  [_stateManager onItemsUpdated];
 }
 
 #pragma mark - VoiceSearchDelegate
