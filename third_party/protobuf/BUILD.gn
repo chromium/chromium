@@ -484,7 +484,14 @@ if (enable_js_protobuf) {
   }
 }
 
+proto_library("google_protobuf_duration_lite_proto") {
+  sources = [ "src/google/protobuf/duration.proto" ]
+  proto_in_dir = "src"
+  cc_generator_options = "lite=true:"
+}
+
 proto_library("google_protobuf_timestamp_lite_proto") {
   sources = [ "src/google/protobuf/timestamp.proto" ]
+  proto_in_dir = "src"
   cc_generator_options = "lite=true:"
 }
