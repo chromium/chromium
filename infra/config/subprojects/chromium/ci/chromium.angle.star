@@ -390,6 +390,7 @@ ci.thin_tester(
     targets = targets.bundle(
         targets = [
             "gpu_common_gtests_passthrough",
+            "gpu_fyi_and_optional_non_linux_gtests",
             "gpu_angle_mac_telemetry_tests",
         ],
         mixins = [
@@ -433,6 +434,7 @@ ci.thin_tester(
     targets = targets.bundle(
         targets = [
             "gpu_common_gtests_passthrough",
+            "gpu_fyi_and_optional_non_linux_gtests",
             "gpu_angle_mac_telemetry_tests",
         ],
         mixins = [
@@ -640,6 +642,7 @@ ci.thin_tester(
     ),
     targets = targets.bundle(
         targets = [
+            "gpu_fyi_and_optional_non_linux_gtests",
             "gpu_angle_win_intel_nvidia_telemetry_tests",
         ],
         mixins = [
@@ -686,6 +689,7 @@ ci.thin_tester(
     ),
     targets = targets.bundle(
         targets = [
+            "gpu_fyi_and_optional_non_linux_gtests",
             "gpu_angle_win_intel_nvidia_telemetry_tests",
         ],
         mixins = [
