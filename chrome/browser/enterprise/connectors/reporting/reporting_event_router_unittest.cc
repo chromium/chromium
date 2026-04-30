@@ -776,6 +776,8 @@ INSTANTIATE_TEST_SUITE_P(,
                          ::testing::Bool());
 
 TEST_P(ReportingEventRouterFileEventTest, TestOnUnscannedFileEvent_Allowed) {
+  EnableEnhancedFieldsForSecOps();
+
   test::SetOnSecurityEventReporting(
       profile_->GetPrefs(), /*enabled=*/true,
       /*enabled_event_names=*/{kKeyUnscannedFileEvent},
@@ -786,37 +788,43 @@ TEST_P(ReportingEventRouterFileEventTest, TestOnUnscannedFileEvent_Allowed) {
   validator.SetDoneClosure(run_loop.QuitClosure());
   chrome::cros::reporting::proto::UnscannedFileEvent expected_event;
 
-    expected_event.set_url("about:blank");
-    expected_event.set_tab_url("tab:about:blank");
-    expected_event.set_source("exampleSource");
-    expected_event.set_destination("exampleDestination");
-    expected_event.set_file_name("encrypted.zip");
-    expected_event.set_download_digest_sha_256("DEADBEEF");
-    expected_event.set_content_type("application/zip");
-    expected_event.set_scan_id("123");
-    expected_event.set_content_size(12345);
+  expected_event.set_url("about:blank");
+  expected_event.set_tab_url("tab:about:blank");
+  expected_event.set_source("exampleSource");
+  expected_event.set_destination("exampleDestination");
+  expected_event.set_file_name("encrypted.zip");
+  expected_event.set_download_digest_sha_256("DEADBEEF");
+  expected_event.set_content_type("application/zip");
+  expected_event.set_scan_id("123");
+  expected_event.set_content_size(12345);
 
-    expected_event.set_unscanned_reason(
-        chrome::cros::reporting::proto::UnscannedFileEvent::
-            FILE_PASSWORD_PROTECTED);
-    expected_event.set_trigger(
-        chrome::cros::reporting::proto::DataTransferEventTrigger::FILE_UPLOAD);
-    expected_event.set_event_result(
-        chrome::cros::reporting::proto::EventResult::EVENT_RESULT_ALLOWED);
-    expected_event.set_clicked_through(false);
-    expected_event.set_content_transfer_method(
-        chrome::cros::reporting::proto::CONTENT_TRANSFER_METHOD_DRAG_AND_DROP);
+  expected_event.set_unscanned_reason(
+      chrome::cros::reporting::proto::UnscannedFileEvent::
+          FILE_PASSWORD_PROTECTED);
+  expected_event.set_trigger(
+      chrome::cros::reporting::proto::DataTransferEventTrigger::FILE_UPLOAD);
+  expected_event.set_event_result(
+      chrome::cros::reporting::proto::EventResult::EVENT_RESULT_ALLOWED);
+  expected_event.set_clicked_through(false);
+  expected_event.set_content_transfer_method(
+      chrome::cros::reporting::proto::CONTENT_TRANSFER_METHOD_DRAG_AND_DROP);
 
-    expected_event.set_profile_identifier(GetProfileIdentifier());
-    expected_event.set_profile_user_name(profile_->GetProfileUserName());
+  *expected_event.add_referrers() = test::MakeUrlInfoReferrer();
 
-    validator.ExpectUnscannedFileEvent(std::move(expected_event));
+  expected_event.set_profile_identifier(GetProfileIdentifier());
+  expected_event.set_profile_user_name(profile_->GetProfileUserName());
+
+  validator.ExpectUnscannedFileEvent(std::move(expected_event));
+
+  ReferrerChain referrer_chain;
+  referrer_chain.Add(test::MakeReferrerChainEntry());
 
   reporting_event_router_->OnUnscannedFileEvent(
       GURL("about:blank"), GURL("tab:about:blank"), "exampleSource",
       "exampleDestination", "encrypted.zip", GetHashCallbackVariant("DEADBEEF"),
       "application/zip", "FILE_UPLOAD", "123", "FILE_PASSWORD_PROTECTED",
-      "CONTENT_TRANSFER_METHOD_DRAG_AND_DROP", 12345, EventResult::ALLOWED);
+      "CONTENT_TRANSFER_METHOD_DRAG_AND_DROP", 12345, referrer_chain,
+      EventResult::ALLOWED);
   RunUntilHashObtained();
   run_loop.Run();
 }
@@ -853,18 +861,25 @@ TEST_P(ReportingEventRouterFileEventTest, TestOnUnscannedFileEvent_Cancelled) {
   expected_event.set_profile_identifier(GetProfileIdentifier());
   expected_event.set_profile_user_name(profile_->GetProfileUserName());
 
+  *expected_event.add_referrers() = test::MakeUrlInfoReferrer();
+
   validator.ExpectUnscannedFileEvent(std::move(expected_event));
+
+  ReferrerChain referrer_chain;
+  referrer_chain.Add(test::MakeReferrerChainEntry());
 
   reporting_event_router_->OnUnscannedFileEvent(
       GURL("about:blank"), GURL("tab:about:blank"), "exampleSource",
       "exampleDestination", "encrypted.zip", GetHashCallbackVariant("DEADBEEF"),
       "application/zip", "FILE_DOWNLOAD", "123", "FILE_PASSWORD_PROTECTED", "",
-      12345, EventResult::CANCELLED);
+      12345, referrer_chain, EventResult::CANCELLED);
   RunUntilHashObtained();
   run_loop.Run();
 }
 
 TEST_P(ReportingEventRouterFileEventTest, TestOnUnscannedFileEvent_Blocked) {
+  EnableEnhancedFieldsForSecOps();
+
   test::SetOnSecurityEventReporting(
       profile_->GetPrefs(), /*enabled=*/true,
       /*enabled_event_names=*/{kKeyUnscannedFileEvent},
@@ -875,34 +890,39 @@ TEST_P(ReportingEventRouterFileEventTest, TestOnUnscannedFileEvent_Blocked) {
   validator.SetDoneClosure(run_loop.QuitClosure());
   chrome::cros::reporting::proto::UnscannedFileEvent expected_event;
 
-    expected_event.set_url("about:blank");
-    expected_event.set_tab_url("tab:about:blank");
-    expected_event.set_source("exampleSource");
-    expected_event.set_destination("exampleDestination");
-    expected_event.set_file_name("encrypted.zip");
-    expected_event.set_download_digest_sha_256("DEADBEEF");
-    expected_event.set_content_type("application/zip");
-    expected_event.set_content_size(12345);
-    expected_event.set_scan_id("123");
+  expected_event.set_url("about:blank");
+  expected_event.set_tab_url("tab:about:blank");
+  expected_event.set_source("exampleSource");
+  expected_event.set_destination("exampleDestination");
+  expected_event.set_file_name("encrypted.zip");
+  expected_event.set_download_digest_sha_256("DEADBEEF");
+  expected_event.set_content_type("application/zip");
+  expected_event.set_content_size(12345);
+  expected_event.set_scan_id("123");
 
-    expected_event.set_unscanned_reason(
-        chrome::cros::reporting::proto::UnscannedFileEvent::
-            FILE_PASSWORD_PROTECTED);
-    expected_event.set_trigger(chrome::cros::reporting::proto::
-                                   DataTransferEventTrigger::FILE_DOWNLOAD);
-    expected_event.set_event_result(
-        chrome::cros::reporting::proto::EventResult::EVENT_RESULT_BLOCKED);
-    expected_event.set_clicked_through(false);
-    expected_event.set_profile_identifier(GetProfileIdentifier());
-    expected_event.set_profile_user_name(profile_->GetProfileUserName());
+  expected_event.set_unscanned_reason(
+      chrome::cros::reporting::proto::UnscannedFileEvent::
+          FILE_PASSWORD_PROTECTED);
+  expected_event.set_trigger(
+      chrome::cros::reporting::proto::DataTransferEventTrigger::FILE_DOWNLOAD);
+  expected_event.set_event_result(
+      chrome::cros::reporting::proto::EventResult::EVENT_RESULT_BLOCKED);
+  expected_event.set_clicked_through(false);
+  expected_event.set_profile_identifier(GetProfileIdentifier());
+  expected_event.set_profile_user_name(profile_->GetProfileUserName());
 
-    validator.ExpectUnscannedFileEvent(std::move(expected_event));
+  *expected_event.add_referrers() = test::MakeUrlInfoReferrer();
+
+  validator.ExpectUnscannedFileEvent(std::move(expected_event));
+
+  ReferrerChain referrer_chain;
+  referrer_chain.Add(test::MakeReferrerChainEntry());
 
   reporting_event_router_->OnUnscannedFileEvent(
       GURL("about:blank"), GURL("tab:about:blank"), "exampleSource",
       "exampleDestination", "encrypted.zip", GetHashCallbackVariant("DEADBEEF"),
       "application/zip", "FILE_DOWNLOAD", "123", "FILE_PASSWORD_PROTECTED", "",
-      12345, EventResult::BLOCKED);
+      12345, referrer_chain, EventResult::BLOCKED);
   RunUntilHashObtained();
   run_loop.Run();
 }

@@ -177,7 +177,8 @@ chrome::cros::reporting::proto::UnscannedFileEvent CreateUnscannedFileEvent(
     const std::string& content_type,
     size_t content_size,
     chrome::cros::reporting::proto::UnscannedFileEvent::UnscannedReason reason,
-    chrome::cros::reporting::proto::EventResult event_result) {
+    chrome::cros::reporting::proto::EventResult event_result,
+    bool include_referrer = true) {
   chrome::cros::reporting::proto::UnscannedFileEvent event;
 
   event.set_url("https://example.com/download.exe");
@@ -204,6 +205,13 @@ chrome::cros::reporting::proto::UnscannedFileEvent CreateUnscannedFileEvent(
   event.set_content_size(content_size);
   event.set_unscanned_reason(reason);
   event.set_event_result(event_result);
+
+  if (include_referrer &&
+      base::FeatureList::IsEnabled(safe_browsing::kEnhancedFieldsForSecOps)) {
+    auto* referrer = event.add_referrers();
+    referrer->set_url("https://example.com/download.exe");
+    referrer->set_ip("example.com");
+  }
 
   return event;
 }
@@ -2180,7 +2188,8 @@ TEST_P(DeepScanningReportingSourceTypeTest, MultipleFiles) {
         /*reason=*/
         chrome::cros::reporting::proto::UnscannedFileEvent::MALWARE_SCAN_FAILED,
         /*event_result=*/
-        chrome::cros::reporting::proto::EventResult::EVENT_RESULT_ALLOWED);
+        chrome::cros::reporting::proto::EventResult::EVENT_RESULT_ALLOWED,
+        /*include_referrer=*/GetParam() == MetadataSourceType::kDownloadItem);
     expected_event.set_scan_id(kScanId + std::string("0"));
 
     validator.ExpectUnscannedFileEvent(std::move(expected_event));
@@ -2534,7 +2543,8 @@ TEST_P(DeepScanningReportingSourceTypeTest, Timeout) {
       /*reason=*/
       chrome::cros::reporting::proto::UnscannedFileEvent::TIMEOUT,
       /*event_result=*/
-      chrome::cros::reporting::proto::EventResult::EVENT_RESULT_ALLOWED);
+      chrome::cros::reporting::proto::EventResult::EVENT_RESULT_ALLOWED,
+      /*include_referrer=*/GetParam() == MetadataSourceType::kDownloadItem);
 
   validator.ExpectUnscannedFileEvent(std::move(expected_event));
 

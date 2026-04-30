@@ -100,6 +100,7 @@ void ReportCancellationsOnUIThread(
     std::string content_transfer_method,
     GURL url,
     GURL tab_url,
+    safe_browsing::ReferrerChain referrer_chain,
     std::vector<UnreportedFileInfo> unreported_files) {
   Profile* profile = profile_weak.get();
   if (!profile) {
@@ -117,7 +118,7 @@ void ReportCancellationsOnUIThread(
         unreported.file_info.sha256_or_cb, unreported.file_info.mime_type,
         access_point_trigger, /*scan_id=*/"",
         enterprise_connectors::kUserCancelledUnscannedReason,
-        content_transfer_method, unreported.file_info.size,
+        content_transfer_method, unreported.file_info.size, referrer_chain,
         EventResult::CANCELLED);
   }
 }
@@ -250,7 +251,8 @@ void FilesRequestHandler::MaybeCancelAndReport() {
                      AccessPointToTriggerString(handler_->access_point()),
                      handler_->content_transfer_method(),
                      GURL(handler_->content_analysis_info()->url()),
-                     handler_->content_analysis_info()->tab_url()));
+                     handler_->content_analysis_info()->tab_url(),
+                     handler_->content_analysis_info()->referrer_chain()));
 }
 
 void FilesRequestHandler::ReportWarningBypass(
