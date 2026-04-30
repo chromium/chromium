@@ -83,6 +83,12 @@ class TreeViewDumpAccessibilityEventsTest
 };
 
 IN_PROC_BROWSER_TEST_P(TreeViewDumpAccessibilityEventsTest, ExpandNode) {
+#if BUILDFLAG(IS_LINUX)
+  if (IsViewsAXEnabled()) {
+    GTEST_SKIP() << "crbug.com/40672441";
+  }
+#endif
+
   ui::TreeModelNode* child1 = model_->GetRoot()->children()[0].get();
   BEGIN_RECORDING_EVENTS_OR_SKIP("tree-expand-node");
   tree_view_->Expand(child1);
