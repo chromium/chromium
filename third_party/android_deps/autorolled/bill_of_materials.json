@@ -1095,6 +1095,11 @@
         "version": "1.3.0"
     },
     {
+        "name": "truth",
+        "group": "androidx.test.ext",
+        "version": "1.7.0"
+    },
+    {
         "name": "storage",
         "group": "androidx.test.services",
         "version": "1.6.0"
@@ -1265,12 +1270,22 @@
         "version": "1.0.0-alpha10"
     },
     {
+        "name": "arcore-testing",
+        "group": "androidx.xr.arcore",
+        "version": "1.0.0-alpha10"
+    },
+    {
         "name": "runtime",
         "group": "androidx.xr.runtime",
         "version": "1.0.0-alpha10"
     },
     {
         "name": "runtime-manifest",
+        "group": "androidx.xr.runtime",
+        "version": "1.0.0-alpha10"
+    },
+    {
+        "name": "runtime-testing",
         "group": "androidx.xr.runtime",
         "version": "1.0.0-alpha10"
     },
@@ -1291,6 +1306,11 @@
     },
     {
         "name": "scenecore-spatial-rendering",
+        "group": "androidx.xr.scenecore",
+        "version": "1.0.0-alpha11"
+    },
+    {
+        "name": "scenecore-testing",
         "group": "androidx.xr.scenecore",
         "version": "1.0.0-alpha11"
     },
@@ -1633,6 +1653,11 @@
         "name": "test-parameter-injector",
         "group": "com.google.testparameterinjector",
         "version": "1.18"
+    },
+    {
+        "name": "truth",
+        "group": "com.google.truth",
+        "version": "1.4.2"
     },
     {
         "name": "diffutils",

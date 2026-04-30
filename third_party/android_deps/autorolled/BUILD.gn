@@ -30,6 +30,7 @@ template("define_autorolled_targets") {
   java_prebuilt("org_ow2_asm_asm_java") {
     jar_path = "autorolled/cipd/libs/org_ow2_asm_asm/asm.jar"
     output_name = "org_ow2_asm_asm"
+    supports_android = true
     enable_bytecode_checks = false
   }
 
@@ -1245,7 +1246,8 @@ template("define_autorolled_targets") {
     java_prebuilt("com_google_auto_value_auto_value_annotations_java") {
       jar_path = "autorolled/cipd/libs/com_google_auto_value_auto_value_annotations/auto-value-annotations.jar"
       output_name = "com_google_auto_value_auto_value_annotations"
-      requires_robolectric = true
+      supports_android = true
+      requires_android = true
       enable_bytecode_checks = false
 
       # To remove visibility constraint, add this dependency to
