@@ -103,6 +103,7 @@ Credential PasswordFormToCredential(
   credential.username = form.username_value;
   credential.source_site_or_app =
       actor_login::ActorLoginFormFinder::GetSourceSiteOrAppFromUrl(form.url);
+  credential.signon_realm = form.signon_realm;
   credential.request_origin = request_origin;
   // NOTE: Actor logins are only allowed in secure contexts, so omitting the
   // scheme for display is permissible.

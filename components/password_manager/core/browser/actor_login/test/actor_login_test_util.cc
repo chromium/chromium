@@ -83,6 +83,7 @@ Credential CreateTestCredential(const std::u16string& username,
   Credential credential;
   credential.username = username;
   credential.source_site_or_app = base::UTF8ToUTF16(url.spec());
+  credential.signon_realm = password_manager_util::GetSignonRealm(url);
   credential.request_origin = request_origin;
   credential.type = CredentialType::kPassword;
   return credential;

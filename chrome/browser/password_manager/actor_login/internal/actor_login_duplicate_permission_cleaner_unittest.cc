@@ -156,6 +156,7 @@ TEST_F(ActorLoginDuplicatePermissionCleanerTest,
   credential.request_origin = kOrigin;
   credential.username = kExcludeUser;
   credential.type = CredentialType::kPassword;
+  credential.signon_realm = kSignonRealm;
 
   EXPECT_CALL(*permission_service(),
               DeletePermission(kOrigin, Eq(base::UTF16ToUTF8(kExcludeUser)), _))
@@ -169,7 +170,7 @@ TEST_F(ActorLoginDuplicatePermissionCleanerTest,
 
   base::test::TestFuture<void> future;
 
-  cleaning_service()->ClearConflictingPermissions(credential, kSignonRealm,
+  cleaning_service()->ClearConflictingPermissions(credential,
                                                   future.GetCallback());
   EXPECT_TRUE(future.Wait());
 
@@ -277,7 +278,7 @@ TEST_F(ActorLoginDuplicatePermissionCleanerTest,
       });
 
   base::test::TestFuture<void> future;
-  cleaning_service()->ClearConflictingPermissions(credential, std::nullopt,
+  cleaning_service()->ClearConflictingPermissions(credential,
                                                   future.GetCallback());
   EXPECT_TRUE(future.Wait());
 
@@ -354,7 +355,7 @@ TEST_F(ActorLoginDuplicatePermissionCleanerTest,
       });
 
   base::test::TestFuture<void> future;
-  cleaning_service()->ClearConflictingPermissions(credential, std::nullopt,
+  cleaning_service()->ClearConflictingPermissions(credential,
                                                   future.GetCallback());
   EXPECT_TRUE(future.Wait());
 
@@ -411,10 +412,11 @@ TEST_F(ActorLoginDuplicatePermissionCleanerTest,
   credential.request_origin = kOrigin;
   credential.username = kExcludeUser;
   credential.type = CredentialType::kPassword;
+  credential.signon_realm = kExcludedSignonRealm;
 
   base::test::TestFuture<void> future;
-  cleaning_service()->ClearConflictingPermissions(
-      credential, kExcludedSignonRealm, future.GetCallback());
+  cleaning_service()->ClearConflictingPermissions(credential,
+                                                  future.GetCallback());
   EXPECT_TRUE(future.Wait());
 
   EXPECT_TRUE(GetAllLoginsSync(store())
@@ -470,9 +472,10 @@ TEST_F(ActorLoginDuplicatePermissionCleanerTest,
   credential.request_origin = kOrigin;
   credential.username = u"user1";
   credential.type = CredentialType::kPassword;
+  credential.signon_realm = kSignonRealm;
 
   base::test::TestFuture<void> future;
-  cleaning_service()->ClearConflictingPermissions(credential, kSignonRealm,
+  cleaning_service()->ClearConflictingPermissions(credential,
                                                   future.GetCallback());
   EXPECT_TRUE(future.Wait());
 

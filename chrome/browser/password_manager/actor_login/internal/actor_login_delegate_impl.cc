@@ -280,7 +280,7 @@ void ActorLoginDelegateImpl::OnLoginSuccessful(const PasswordForm& form) {
   }
 
   if (ShouldCleanUpConflictingPermissions(form)) {
-    ClearConflictingPermissions(form.signon_realm);
+    ClearConflictingPermissions();
   }
 
   ResetState();
@@ -393,7 +393,7 @@ void ActorLoginDelegateImpl::ProcessFederatedResult(
       result.value() == LoginStatusResult::kSuccessFederated &&
       found_conflicting_permissions_ &&
       siwg_controller_->should_store_permission()) {
-    ClearConflictingPermissions(std::nullopt);
+    ClearConflictingPermissions();
   }
   // This is the end of the federated login flow, so reset the state.
   ResetState();
@@ -439,7 +439,7 @@ void ActorLoginDelegateImpl::OnActionSequenceEnded(bool success) {
     return;
   }
   if (success && found_conflicting_permissions_ && should_store_permission) {
-    ClearConflictingPermissions(std::nullopt);
+    ClearConflictingPermissions();
   }
   found_conflicting_permissions_ = false;
   last_attempted_credential_.reset();
@@ -468,24 +468,20 @@ bool ActorLoginDelegateImpl::ShouldCleanUpConflictingPermissions(
   // If the signal we got doesn't correspond to the latest attempted credential
   // or if the logged in credential didn't contain a new permission, don't
   // perform a cleanup.
-  // TODO(crbug.com/494551592): Replace url comparison with signon_realm
-  // comparison.
   if (!form.actor_login_approved ||
       form.username_value != last_attempted_credential_->username ||
-      ActorLoginFormFinder::GetSourceSiteOrAppFromUrl(form.url) !=
-          last_attempted_credential_->source_site_or_app) {
+      form.signon_realm != last_attempted_credential_->signon_realm) {
     return false;
   }
   return true;
 }
 
-void ActorLoginDelegateImpl::ClearConflictingPermissions(
-    std::optional<std::string> signon_realm) {
+void ActorLoginDelegateImpl::ClearConflictingPermissions() {
   auto* cleaning_service =
       ActorLoginPermissionCleaningServiceFactory::GetForProfile(
           Profile::FromBrowserContext(GetWebContents().GetBrowserContext()));
-  cleaning_service->ClearConflictingPermissions(
-      *last_attempted_credential_, signon_realm, base::DoNothing());
+  cleaning_service->ClearConflictingPermissions(*last_attempted_credential_,
+                                                base::DoNothing());
 }
 
 void ActorLoginDelegateImpl::ResetState() {

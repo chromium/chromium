@@ -138,7 +138,6 @@ class MockActorLoginPermissionCleaningService
   MOCK_METHOD(void,
               ClearConflictingPermissions,
               (const Credential& credential,
-               std::optional<std::string> signon_realm,
                base::OnceClosure done_callback),
               (override));
 };
@@ -957,8 +956,7 @@ TEST_F(ActorLoginDelegateImplTest,
                   })));
 
   EXPECT_CALL(*cleaning_service,
-              ClearConflictingPermissions(Eq(credential),
-                                          Optional(form.signon_realm), _));
+              ClearConflictingPermissions(Eq(credential), _));
   delegate_->OnLoginSuccessful(form);
 }
 
@@ -1504,7 +1502,7 @@ TEST_F(ActorLoginDelegateImplTest,
   ASSERT_TRUE(captured_callback);
 
   EXPECT_CALL(*mock_cleaning_service,
-              ClearConflictingPermissions(Eq(credential), Eq(std::nullopt), _));
+              ClearConflictingPermissions(Eq(credential), _));
 
   std::move(captured_callback).Run(/*success=*/true);
 }

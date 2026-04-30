@@ -25,7 +25,6 @@ class ActorLoginDuplicatePermissionCleaner
  public:
   ActorLoginDuplicatePermissionCleaner(
       const Credential& credential,
-      std::optional<std::string> signon_realm,
       scoped_refptr<password_manager::PasswordStoreInterface> profile_store,
       scoped_refptr<password_manager::PasswordStoreInterface> account_store,
       ActorLoginPermissionService* permission_service);
@@ -47,10 +46,6 @@ class ActorLoginDuplicatePermissionCleaner
   // Credential for which the new permission was saved. Its permission
   // should not be removed.
   Credential credential_;
-
-  // TODO(crbug.com/494551592): Remove once the credential contains the field.
-  // Set if the `credential_` is of type password.
-  std::optional<std::string> signon_realm_;
 
   scoped_refptr<password_manager::PasswordStoreInterface> profile_store_;
   scoped_refptr<password_manager::PasswordStoreInterface> account_store_;

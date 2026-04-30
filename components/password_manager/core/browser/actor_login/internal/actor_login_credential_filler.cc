@@ -315,8 +315,7 @@ const PasswordForm* ActorLoginCredentialFiller::GetMatchingStoredCredential(
       continue;
     }
     if (stored_credential_form.username_value == credential_.username &&
-        ActorLoginFormFinder::GetSourceSiteOrAppFromUrl(
-            stored_credential_form.url) == credential_.source_site_or_app) {
+        stored_credential_form.signon_realm == credential_.signon_realm) {
       matching_stored_credential = &stored_credential_form;
       break;
     }

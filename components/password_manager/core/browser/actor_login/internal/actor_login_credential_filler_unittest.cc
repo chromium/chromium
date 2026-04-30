@@ -518,6 +518,47 @@ TEST_P(ActorLoginCredentialFillerTest, DontFillGroupedMatch) {
   EXPECT_EQ(future.Get().value(), LoginStatusResult::kErrorInvalidCredential);
 }
 
+TEST_P(ActorLoginCredentialFillerTest, FillsAndroidAppCredentialMatch) {
+  const url::Origin origin =
+      url::Origin::Create(GURL("https://example.com/login"));
+  Credential credential = CreateTestCredential(kTestUsername, GURL(), origin);
+  credential.signon_realm = "android://hash@com.example.android";
+
+  const FormData form_data = CreateSigninFormData(origin.GetURL());
+
+  std::vector<password_manager::PasswordForm> saved_forms;
+  PasswordForm form = CreateSavedPasswordForm(GURL(), kTestUsername);
+  form.signon_realm = "android://hash@com.example.android";
+  saved_forms.push_back(std::move(form));
+  form_fetcher_.SetBestMatches(saved_forms);
+
+  std::vector<std::unique_ptr<PasswordFormManager>> form_managers;
+  form_managers.push_back(CreateFormManagerWithParsedForm(origin, form_data));
+  const PasswordForm* parsed_form = form_managers[0]->GetParsedObservedForm();
+
+  base::test::TestFuture<LoginStatusResultOrError> future;
+  ActorLoginCredentialFiller filler(
+      origin, credential, should_store_permission(), &mock_client_,
+      mqls_logger(), base::TimeTicks::Now(), mock_is_task_in_focus_.Get(),
+      future.GetCallback());
+
+  EXPECT_CALL(mock_form_cache_, GetFormManagers)
+      .WillRepeatedly(Return(base::span(form_managers)));
+
+  EXPECT_CALL(mock_driver_,
+              FillField(parsed_form->username_element_renderer_id, _, _, _))
+      .WillOnce(RunOnceCallback<3>(true));
+  EXPECT_CALL(mock_driver_,
+              FillField(parsed_form->password_element_renderer_id, _, _, _))
+      .WillOnce(RunOnceCallback<3>(true));
+
+  filler.AttemptLogin(&mock_password_manager_);
+  const LoginStatusResultOrError& result = future.Get();
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result.value(),
+            LoginStatusResult::kSuccessUsernameAndPasswordFilled);
+}
+
 TEST_P(ActorLoginCredentialFillerTest,
        InvalidCredential_SuppliedCredentialRequestOriginDiffers) {
   const url::Origin main_frame_origin =

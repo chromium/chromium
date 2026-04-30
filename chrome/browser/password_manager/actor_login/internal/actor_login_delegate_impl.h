@@ -120,7 +120,7 @@ class ActorLoginDelegateImpl
   // If the login attempt was performed with a password credential,
   // `signon_realm`, is used to identify it, so that we don't clean the
   // permission granted after disambiguation.
-  void ClearConflictingPermissions(std::optional<std::string> signon_realm);
+  void ClearConflictingPermissions();
 
   // Reset any pending state from a previous invocation. Most fields are reset
   // when the corresponding request finishes, or the login succeeds or failed.

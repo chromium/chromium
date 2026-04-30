@@ -35,11 +35,9 @@ void ActorLoginPermissionCleaningServiceImpl::Shutdown() {
 
 void ActorLoginPermissionCleaningServiceImpl::ClearConflictingPermissions(
     const Credential& credential,
-    std::optional<std::string> signon_realm,
     base::OnceClosure done_callback) {
   auto cleaner = std::make_unique<ActorLoginDuplicatePermissionCleaner>(
-      credential, signon_realm, profile_store_, account_store_,
-      permission_service_);
+      credential, profile_store_, account_store_, permission_service_);
 
   ActorLoginDuplicatePermissionCleaner* raw_cleaner = cleaner.get();
 
