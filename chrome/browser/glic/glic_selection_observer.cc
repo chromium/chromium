@@ -336,6 +336,10 @@ void GlicSelectionObserver::OnTextSelectionChanged(
     return;
   }
 
+  if (web_contents()->IsFocusedElementEditable()) {
+    selected_text = std::u16string_view();
+  }
+
   if (is_key_selection_) {
     pending_selection_text_ = std::u16string();
     UpdateSelectionState(std::u16string());
