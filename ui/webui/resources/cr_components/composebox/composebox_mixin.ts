@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {GlowAnimationState} from '//resources/cr_components/search/constants.js';
+import {ComposeboxContextAddedMethod, GlowAnimationState} from '//resources/cr_components/search/constants.js';
 import {getInstance as getAnnouncerInstance} from '//resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import type {I18nMixinLitInterface} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {assert, assertNotReached} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {hasKeyModifiers} from '//resources/js/util.js';
-import type {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
-import type {AutocompleteMatch, AutocompleteResult, PageHandlerRemote as SearchboxPageHandlerRemote, SelectedFileInfo, TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {CrLitElement, PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
+import type {AutocompleteMatch, AutocompleteResult, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, SelectedFileInfo, TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {BigBuffer} from '//resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
-import {ComposeboxFile, ComposeboxFileValidationError, ContextType, ContextualSearchInputStateDeletionType, FILE_VALIDATION_ERRORS_MAP, getLoadTimeBoolean, isContextUploadStatusTerminal, ProcessFilesError, recordBoolean, recordContextualElementClickedMetric, recordEnumerationValue, recordInputTypeShown, recordModelModeSelection, recordModelModeShown, recordToolModeSelection, recordToolModeShown, recordUserAction} from './common.js';
+import {ComposeboxFile, ComposeboxFileValidationError, ContextType, ContextualSearchInputStateDeletionType, FILE_VALIDATION_ERRORS_MAP, getLoadTimeBoolean, isContextUploadStatusTerminal, ProcessFilesError, recordBoolean, recordContextAdditionMethod, recordContextualElementClickedMetric, recordEnumerationValue, recordInputTypeShown, recordModelModeSelection, recordModelModeShown, recordToolModeSelection, recordToolModeShown, recordUserAction} from './common.js';
 import type {ComposeboxState, TabUpload, TabUploadOrigin} from './common.js';
 import type {PageHandlerRemote} from './composebox.mojom-webui.js';
 import type {ComposeboxDropdownElement} from './composebox_dropdown.js';
@@ -48,6 +48,15 @@ export const ComposeboxEmbedderMixin =
             disableVoiceSearchAnimation: {type: Boolean},
             searchboxLayoutMode: {
               type: String,
+              reflect: true,
+            },
+            /**
+             * Generic flag indicating a "Next" searchbox (Realbox Next, Omnibox
+             * Next, etc.). Used for all styling and behavior shared across
+             * 'Next' searchbox implementations.
+             */
+            searchboxNextEnabled: {
+              type: Boolean,
               reflect: true,
             },
             isDraggingFile: {
@@ -128,9 +137,13 @@ export const ComposeboxEmbedderMixin =
           };
         }
 
+        automaticActiveTab: ComposeboxFile|null = null;
+        searchboxListenerIds: number[] = [];
+
         accessor animationState: GlowAnimationState = GlowAnimationState.NONE;
         accessor disableVoiceSearchAnimation: boolean = false;
         accessor searchboxLayoutMode: string = '';
+        accessor searchboxNextEnabled: boolean = false;
         accessor addedTabsIds: Map<number, UnguessableToken> = new Map();
         accessor isDraggingFile: boolean = false;
         accessor enableImageContextualSuggestions: boolean =
@@ -242,6 +255,159 @@ export const ComposeboxEmbedderMixin =
             _tabUpload: TabUpload,
             _replaceAutoActiveTabToken: boolean = false): Promise<void> {
           assertNotReached();
+        }
+
+        getSearchboxCallbackRouter(): SearchboxPageCallbackRouter {
+          assertNotReached();
+        }
+
+        override connectedCallback() {
+          super.connectedCallback();
+
+          this.searchboxListenerIds = [
+            this.getSearchboxCallbackRouter()
+                .autocompleteResultChanged.addListener(
+                    this.onAutocompleteResultChanged.bind(this)),
+            this.getSearchboxCallbackRouter()
+                .onContextualInputStatusChanged.addListener(
+                    this.onContextualInputStatusChanged.bind(this)),
+            this.getSearchboxCallbackRouter().onTabStripChanged.addListener(
+                this.refreshTabSuggestions.bind(this)),
+            this.getSearchboxCallbackRouter().addFileContext.addListener(
+                this.addFileContextFromBrowser.bind(this)),
+            this.getSearchboxCallbackRouter().onInputStateChanged.addListener(
+                this.onInputStateChanged.bind(this)),
+          ];
+
+          this.getSearchboxHandler().notifySessionStarted();
+
+          this.initializeInitialState_();
+
+          // For "next" searchboxes (Realbox Next, Omnibox Next, etc.), the zps
+          // autocomplete query is triggered after the state has been initialized.
+          if (this.queryZpsOnLoad && !this.searchboxNextEnabled) {
+            this.queryAutocomplete(/* clearMatches= */ false);
+          }
+        }
+
+        private async initializeInitialState_() {
+          const inputStateResponse =
+              await this.getSearchboxHandler().getInputState();
+          if (inputStateResponse) {
+            this.inputState = inputStateResponse.state;
+          }
+        }
+
+        override disconnectedCallback() {
+          super.disconnectedCallback();
+
+          this.getSearchboxHandler().notifySessionAbandoned();
+
+          this.searchboxListenerIds.forEach(
+              id =>
+                  assert(this.getSearchboxCallbackRouter().removeListener(id)));
+          this.searchboxListenerIds = [];
+        }
+
+        override willUpdate(changedProperties: PropertyValues<this>) {
+          super.willUpdate(changedProperties);
+
+          const changedPrivateProperties =
+              changedProperties as Map<PropertyKey, unknown>;
+          // When the result initially gets set check if dropdown should show.
+          if (changedPrivateProperties.has('input') ||
+              changedPrivateProperties.has('result') ||
+              changedPrivateProperties.has('files') ||
+              changedPrivateProperties.has('errorMessage')) {
+            this.showFileCarousel = this.files.size > 0;
+            this.showDropdown = this.computeShowDropdown();
+          }
+
+          if (changedPrivateProperties.has('input') ||
+              changedPrivateProperties.has('selectedMatchIndex') ||
+              changedPrivateProperties.has('inputState') ||
+              changedPrivateProperties.has('isFollowupQuery') ||
+              changedPrivateProperties.has('files') ||
+              changedPrivateProperties.has('submitEnabled') ||
+              changedPrivateProperties.has('fileUploadsComplete')) {
+            this.submitEnabled = this.computeSubmitEnabled();
+            this.uploadButtonDisabled = !this.fileUploadsComplete;
+            // `canSubmitFilesAndInput` checks if there is a valid query rather
+            // than if submit is enabled, as `submitEnabled` only defines if the
+            // submit button should be shown rather than its actual active
+            // state.
+            this.canSubmitFilesAndInput =
+                this.hasValidQuery() && this.fileUploadsComplete;
+          }
+
+          if (changedPrivateProperties.has('canSubmitFilesAndInput')) {
+            this.fire('can-submit-files-and-input-changed', {
+              canSubmitFilesAndInput: this.canSubmitFilesAndInput,
+            });
+          }
+
+          if (changedPrivateProperties.has('inputState') && this.inputState) {
+            this.hasAllowedInputs =
+                (this.inputState.allowedModels.length > 0 ||
+                 this.inputState.allowedTools.length > 0 ||
+                 this.inputState.allowedInputTypes.length > 0);
+            this.inToolMode =
+                this.inputState.activeTool !== ToolMode.kUnspecified;
+            this.dispatchEvent(new CustomEvent('input-state-changed', {
+              detail: {inputState: this.inputState},
+            }));
+          }
+
+          if (changedPrivateProperties.has('inputPlaceholderOverride') ||
+              changedPrivateProperties.has('files') ||
+              changedPrivateProperties.has('enableFileHint') ||
+              changedPrivateProperties.has('inputState') ||
+              changedPrivateProperties.has('inputState.activeTool')) {
+            this.updateInputPlaceholder();
+          }
+        }
+
+        override updated(changedProperties: PropertyValues<this>) {
+          super.updated(changedProperties);
+
+          if (changedProperties.has('inputState')) {
+            const oldInputState =
+                changedProperties.get('inputState') as InputState | undefined;
+            if (oldInputState &&
+                this.inputState?.activeTool !== oldInputState.activeTool) {
+              this.focusInput();
+              this.queryAutocomplete(/* clearMatches= */ true);
+            }
+          }
+
+          const changedPrivateProperties =
+              changedProperties as Map<PropertyKey, unknown>;
+          if (changedPrivateProperties.has('selectedMatchIndex')) {
+            if (this.selectedMatch) {
+              // Update the input.
+              const text = this.selectedMatch.fillIntoEdit;
+              this.input = text;
+            } else if (!this.lastQueriedInput) {
+              // This is for cases when focus leaves the matches/input.
+              // If there was already text in the input do not clear it.
+              this.clearInput();
+            } else {
+              // For typed queries reset the input back to typed value when
+              // focus leaves the match.
+              this.input = this.lastQueriedInput;
+            }
+          }
+
+          if (changedPrivateProperties.has('smartComposeInlineHint')) {
+            if (this.smartComposeInlineHint) {
+              // TODO(crbug.com/452619068): Investigate why screenreader is
+              // inconsistent.
+              const announcer = getAnnouncerInstance();
+              announcer.announce(
+                  this.smartComposeInlineHint + ', ' +
+                  this.i18n('composeboxSmartComposeTitle'));
+            }
+          }
         }
 
         // =====================================================================
@@ -1035,6 +1201,13 @@ export const ComposeboxEmbedderMixin =
           this.onFileContextAdded(attachment);
         }
 
+        addDroppedFiles(files: FileList|null) {
+          this.processFiles(files);
+          recordContextAdditionMethod(
+              ComposeboxContextAddedMethod.DRAG_AND_DROP,
+              this.composeboxSource);
+        }
+
         processFiles(files: FileList|null) {
           if (!files || files.length === 0) {
             return;
@@ -1320,6 +1493,56 @@ export const ComposeboxEmbedderMixin =
                   !this.searchboxLayoutMode) &&
               this.shouldShowVoiceSearch();
         }
+
+        computeShowDropdown() {
+          // Don't show dropdown if there's multiple files.
+          if (this.files.size > 1) {
+            return false;
+          }
+
+          // Don't show dropdown if there's no results.
+          if (!this.result?.matches.length) {
+            return false;
+          }
+
+          // Don't show dropdown if there's only verbatim match.
+          if (this.result?.matches.length === 1 &&
+              this.result?.matches[0]?.allowedToBeDefaultMatch) {
+            return false;
+          }
+
+          // Do not show dropdown if there's an error scrim.
+          if (this.errorMessage !== '') {
+            return false;
+          }
+
+          // Do not show dropdown if there's an image and contextual image
+          // suggestions are disabled.
+          if (!this.enableImageContextualSuggestions && this.hasImageFiles()) {
+            return false;
+          }
+
+          if (this.showTypedSuggest && this.lastQueriedInput.trim()) {
+            // If context is present, but not enabled, continue to avoid showing
+            // the dropdown.
+            if (!this.showTypedSuggestWithContext && this.files.size > 0) {
+              return false;
+            }
+            // Do not show the dropdown for multiline input or if only the
+            // verbatim match is present (we always expect a verbatim match for
+            // typed suggest, so we ensure the length of the matches is >1).
+            if (this.getInputElement().inputElement.scrollHeight <= 48 &&
+                this.result?.matches.length > 1) {
+              return true;
+            }
+          }
+
+          // lastQueriedInput is used here since the input changes based on
+          // the selected match. If typed suggest is not enabled and input is
+          // used, the dropdown will hide if the user keys down over zps
+          // matches.
+          return this.showZps && !this.lastQueriedInput;
+        }
       }
 
       return ComposeboxEmbedderMixin;
@@ -1331,6 +1554,7 @@ export interface ComposeboxEmbedderMixinInterface extends
   animationState: GlowAnimationState;
   disableVoiceSearchAnimation: boolean;
   searchboxLayoutMode: string;
+  searchboxNextEnabled: boolean;
   isDraggingFile: boolean;
   enableImageContextualSuggestions: boolean;
   smartComposeEnabled: boolean;
@@ -1386,6 +1610,8 @@ export interface ComposeboxEmbedderMixinInterface extends
   lastQueriedInput: string;
   haveReceivedAutcompleteResponse: boolean;
   lensSendRawFileMediaTypesEnabled: boolean;
+  automaticActiveTab: ComposeboxFile|null;
+  searchboxListenerIds: number[];
 
   // Embedder-provided methods for DOM and Mojo access
   updateInputPlaceholder(): void;
@@ -1399,6 +1625,7 @@ export interface ComposeboxEmbedderMixinInterface extends
   getActiveElement(): Element|null;
   getPageHandler(): PageHandlerRemote;
   getSearchboxHandler(): SearchboxPageHandlerRemote;
+  getSearchboxCallbackRouter(): SearchboxPageCallbackRouter;
   addTabContextHandleCallback(
       tabUpload: TabUpload, replaceAutoActiveTabToken?: boolean): Promise<void>;
 
@@ -1475,6 +1702,7 @@ export interface ComposeboxEmbedderMixinInterface extends
   addFileContext(files: File[]): Promise<void>;
   addFileContextFromBrowser(uuid: UnguessableToken, fileInfo: SelectedFileInfo):
       void;
+  addDroppedFiles(files: FileList|null): void;
   processFiles(files: FileList|null): void;
   updateFileStatus(
       token: UnguessableToken, status: ContextUploadStatus,
@@ -1485,4 +1713,5 @@ export interface ComposeboxEmbedderMixinInterface extends
     tabId: number,
     onPreviewFetched: (previewDataUrl: string) => void,
   }>): Promise<void>;
+  computeShowDropdown(): boolean;
 }
