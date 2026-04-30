@@ -192,33 +192,34 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
     }
 
     @Test
-    public void testGlicPressedState_GlicUiShowHide() {
+    public void testGlicHighlightedState_GlicUiShowHide() {
         assertNotNull("Glic button should be created.", mGlicButton);
 
         ArgumentCaptor<GlobalShowHideObserver> observerCaptor =
                 ArgumentCaptor.forClass(GlobalShowHideObserver.class);
         Mockito.verify(mGlicKeyedService).addGlobalShowHideObserver(observerCaptor.capture());
 
-        // Verify initial state: button is not pressed.
-        assertFalse("Glic button should not be pressed initially.", mGlicButton.isPressed());
+        // Verify initial state: button is not highlighted.
+        assertFalse(
+                "Glic button should not be highlighted initially.", mGlicButton.isHighlighted());
 
         // Simulate Glic UI opening event.
         when(mGlicKeyedService.isPanelShowingForBrowser(mBwiPtr)).thenReturn(true);
         observerCaptor.getValue().onGlobalShowHide();
 
-        // Verify button is in pressed state.
+        // Verify button is in highlighted state.
         assertTrue(
-                "Glic button should be pressed when UI is shown globally.",
-                mGlicButton.isPressed());
+                "Glic button should be highlighted when UI is shown globally.",
+                mGlicButton.isHighlighted());
 
         // Simulate Glic UI hiding event.
         when(mGlicKeyedService.isPanelShowingForBrowser(mBwiPtr)).thenReturn(false);
         observerCaptor.getValue().onGlobalShowHide();
 
-        // Verify button returns to non-pressed state.
+        // Verify button returns to non-highlighted state.
         assertFalse(
-                "Glic button should not be pressed when UI is hidden globally.",
-                mGlicButton.isPressed());
+                "Glic button should not be highlighted when UI is hidden globally.",
+                mGlicButton.isHighlighted());
     }
 
     @Test

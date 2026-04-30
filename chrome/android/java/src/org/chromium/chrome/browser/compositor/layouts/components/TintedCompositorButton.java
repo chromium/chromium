@@ -20,6 +20,8 @@ public class TintedCompositorButton extends CompositorButton {
     //  through the presence/absence of the handler.
     private final boolean mHasLongClickAction;
 
+    private boolean mIsHighlighted;
+
     private @ColorInt int mBackgroundTint;
     private @ColorInt int mTint;
 
@@ -93,6 +95,22 @@ public class TintedCompositorButton extends CompositorButton {
     }
 
     /**
+     * Sets whether the button has an active/highlighted state independent of touch gestures.
+     *
+     * @param isHighlighted The highlight state.
+     */
+    public void setHighlighted(boolean isHighlighted) {
+        mIsHighlighted = isHighlighted;
+    }
+
+    /**
+     * Returns whether the button is in an active/highlighted state independent of touch gestures.
+     */
+    public boolean isHighlighted() {
+        return mIsHighlighted;
+    }
+
+    /**
      * @param tint The tint.
      */
     public void setTint(@ColorInt int tint) {
@@ -131,6 +149,7 @@ public class TintedCompositorButton extends CompositorButton {
      *     of the button.
      */
     public @ColorInt int getBackgroundTint() {
+        if (isHighlighted()) return mBackgroundTouchPressedTint;
         if (isHovered()) return mBackgroundHoverTint;
         if (isPressed()) {
             return isPressedFromMouse()

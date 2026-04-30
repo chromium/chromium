@@ -345,7 +345,7 @@ public class StripLayoutTrailingButtonsCoordinator {
 
         mIsGlicUiVisible = isOpened;
         if (mGlicButton != null) {
-            mGlicButton.setPressed(isOpened);
+            mGlicButton.setHighlighted(isOpened);
             mRenderHost.requestRender();
         }
     }
