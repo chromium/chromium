@@ -44,6 +44,7 @@ public class StubTabModelUnitTest {
                             "getMostRecentClosureTime",
                             "isTabMultiSelected",
                             "getMultiSelectedTabsCount",
+                            "getOrderedMultiSelectedTabs",
                             "findFirstNonPinnedTabIndex",
                             "getPinnedTabsCount",
                             "getNativeSessionIdForTesting",

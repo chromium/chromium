@@ -71,6 +71,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -303,7 +304,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
             new SettableLookAheadObservableSupplier<>();
     private final SettableNonNullObservableSupplier<Integer> mTabCountSupplier =
             ObservableSuppliers.createNonNull(0);
-    private final Set<Integer> mMultiSelectedTabs = new HashSet<>();
+    private final Set<Integer> mMultiSelectedTabs = new LinkedHashSet<>();
     private final Set<Token> mHidingTabGroups = new HashSet<>();
 
     // Efficient lookup of tabs by id rather than index (stored in C++). Also ensures the Java Tab
@@ -766,6 +767,19 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
         // If no other tabs are in multi-selection, this returns 1, as the active tab is always
         // considered selected.
         return mMultiSelectedTabs.isEmpty() ? 1 : mMultiSelectedTabs.size();
+    }
+
+    @Override
+    public List<Tab> getOrderedMultiSelectedTabs() {
+        assertOnUiThread();
+        List<Tab> orderedTabs = new ArrayList<>(mMultiSelectedTabs.size());
+        for (Integer id : mMultiSelectedTabs) {
+            Tab tab = getTabById(id);
+            if (tab != null) {
+                orderedTabs.add(tab);
+            }
+        }
+        return orderedTabs;
     }
 
     @Override

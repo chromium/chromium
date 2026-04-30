@@ -265,6 +265,13 @@ public interface TabModel extends TabGroupModelFilter, TabList {
     int getMultiSelectedTabsCount();
 
     /**
+     * Gets the list of multi-selected tabs in the order they were selected.
+     *
+     * @return The list of ordered selected tabs.
+     */
+    List<Tab> getOrderedMultiSelectedTabs();
+
+    /**
      * Returns the index of the first non-pinned tab in the model.
      *
      * @return The index of the first non-pinned tab, or the model count if all tabs are pinned.

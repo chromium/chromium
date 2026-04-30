@@ -44,7 +44,7 @@ import org.chromium.url.Origin;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
@@ -551,7 +551,7 @@ public abstract class TabModelJniBridge implements TabModelInternal {
             @JniType("std::vector<TabAndroid*>") List<Tab> tabs) {
         assert !tabs.isEmpty() : "The provided tab list cannot be empty.";
         assert tabToActivate != null : "tabToActivate cannot be null";
-        Set<Integer> tabIds = new HashSet<>();
+        Set<Integer> tabIds = new LinkedHashSet<>();
         for (Tab tab : tabs) tabIds.add(tab.getId());
         assert tabIds.contains(tabToActivate.getId()) : "tabToActivate not found in tab list";
         clearMultiSelection(/* notifyObservers= */ false);
