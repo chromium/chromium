@@ -13084,6 +13084,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnergyEffectAnimationDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(ntp_features::kEnergyEffectAnimation)},
 
+    {"bundled-security-settings-ask-before-http",
+     flag_descriptions::kBundledSecuritySettingsAskBeforeHttpName,
+     flag_descriptions::kBundledSecuritySettingsAskBeforeHttpDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(safe_browsing::kBundledSecuritySettingsAskBeforeHttp)},
+
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

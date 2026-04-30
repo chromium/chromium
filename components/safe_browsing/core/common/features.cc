@@ -58,6 +58,9 @@ constexpr base::FeatureParam<int>
 
 BASE_FEATURE(kBundledSecuritySettings, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kBundledSecuritySettingsAskBeforeHttp,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kBundledSecuritySettingsSecureDnsV2,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -457,6 +460,7 @@ base::ListValue GetFeatureStatusList() {
       // keep-sorted start
       &kAutoRevokeSuspiciousNotification,
       &kBundledSecuritySettings,
+      &kBundledSecuritySettingsAskBeforeHttp,
       &kClientSideDetectionClipboardCopyApi,
       &kClientSideDetectionForcedLlamaRedirectChainKillswitch,
       &kClientSideDetectionImageEmbeddingMatch,

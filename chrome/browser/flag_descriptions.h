@@ -328,6 +328,12 @@ inline constexpr char kBundledSecuritySettingsDescription[] =
     "standard bundle which should simplify the security settings page and also "
     "help simplify the user's decision.";
 
+inline constexpr char kBundledSecuritySettingsAskBeforeHttpName[] =
+    "Ask-Before-HTTP in Bundled Security Settings";
+inline constexpr char kBundledSecuritySettingsAskBeforeHttpDescription[] =
+    "Includes Ask-Before-HTTP (HTTPS-First Mode) in the Enhanced security "
+    "bundle.";
+
 inline constexpr char kBundledSecuritySettingsSecureDnsV2Name[] =
     "Bundled Security Settings Secure Dns V2";
 inline constexpr char kBundledSecuritySettingsSecureDnsV2Description[] =

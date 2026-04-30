@@ -14772,6 +14772,7 @@ from previous Chrome versions.
   <int value="217833978" label="GMSCoreEmoji:enabled"/>
   <int value="218119644" label="PrivateNetworkAccessPermissionPrompt:enabled"/>
   <int value="218317796" label="CastStreamingVp9:enabled"/>
+  <int value="218441366" label="BundledSecuritySettingsAskBeforeHttp:disabled"/>
   <int value="218890378" label="ManualSaving:disabled"/>
   <int value="219117936" label="AllowReaderForAccessibility:enabled"/>
   <int value="219129954"
@@ -19722,6 +19723,7 @@ from previous Chrome versions.
   <int value="1837462117"
       label="DawnSIRepsUseClientProvidedInternalUsages:enabled"/>
   <int value="1837847580" label="MutingCompromisedCredentials:disabled"/>
+  <int value="1838065671" label="BundledSecuritySettingsAskBeforeHttp:enabled"/>
   <int value="1838110766" label="PrivateNetworkAccessSendPreflights:disabled"/>
   <int value="1838369942" label="EnableGetDebugdLogsInParallel:disabled"/>
   <int value="1838872079" label="AndroidHistoryClustering:enabled"/>

@@ -53,6 +53,10 @@ extern const base::FeatureParam<int>
 // Enables Bundled Security Settings UI on chrome://settings/security.
 BASE_DECLARE_FEATURE(kBundledSecuritySettings);
 
+// Enables Ask-Before-HTTP / HTTPS-First Mode integration into the Enhanced
+// Security settings bundle.
+BASE_DECLARE_FEATURE(kBundledSecuritySettingsAskBeforeHttp);
+
 // Enables new Secure DNS V2 UI in Bundled Security Settings UI on the
 // chrome://settings/security page. Requires that kBundledSecuritySettings is
 // also enabled.
