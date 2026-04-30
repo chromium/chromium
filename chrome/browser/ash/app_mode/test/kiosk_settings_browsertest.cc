@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -92,6 +93,18 @@ GURL NextCommittedUrl(Browser& browser) {
                                   /*expected_number_of_navigations=*/1)
       .Wait();
   return web_contents.GetLastCommittedURL();
+}
+
+// Navigates within the page, and waits for it to take effect.
+void NavigateInPage(Browser& browser, const GURL& url) {
+  auto& web_contents = ActiveWebContents(browser);
+  content::TestNavigationObserver observer(&web_contents, 1);
+
+  ASSERT_TRUE(content::ExecJs(
+      &web_contents,
+      content::JsReplace("window.history.pushState({}, '', $1)", url.path())));
+
+  observer.Wait();
 }
 
 // Helper for tests to override the list of settings pages.
@@ -213,6 +226,41 @@ IN_PROC_BROWSER_TEST_P(KioskSettingsTest, CannotNavigateToDisallowedSubUrl) {
   EXPECT_EQ(committed_url, settings_url);
 }
 
+IN_PROC_BROWSER_TEST_P(KioskSettingsTest, CannotNavigateInPageToDisallowedUrl) {
+  const GURL settings_url("chrome://os-settings/manageAccessibility");
+  const GURL invalid_url("chrome://os-settings/invalid-page");
+
+  ASSERT_TRUE(OpenPopup(settings_url));
+
+  auto& session = GetKioskSystemSession();
+  Browser& settings = CHECK_DEREF(session.GetSettingsBrowserForTesting());
+  ASSERT_EQ(NextCommittedUrl(settings), settings_url);
+
+  ui_test_utils::BrowserDestroyedObserver observer(&settings);
+
+  NavigateInPage(settings, invalid_url);
+
+  // Navigating to this unsupported page should result in closing the browser.
+  observer.Wait();
+  EXPECT_EQ(session.GetSettingsBrowserForTesting(), nullptr);
+}
+
+IN_PROC_BROWSER_TEST_P(KioskSettingsTest, CanNavigateInPageToAllowedSubUrl) {
+  const GURL settings_url("chrome://os-settings/manageAccessibility");
+  const GURL settings_suburl("chrome://os-settings/manageAccessibility/tts");
+
+  ASSERT_TRUE(OpenPopup(settings_url));
+
+  auto& session = GetKioskSystemSession();
+  Browser& settings = CHECK_DEREF(session.GetSettingsBrowserForTesting());
+  ASSERT_EQ(NextCommittedUrl(settings), settings_url);
+
+  NavigateInPage(settings, settings_suburl);
+
+  EXPECT_NE(session.GetSettingsBrowserForTesting(), nullptr);
+  EXPECT_EQ(ActiveWebContents(settings).GetLastCommittedURL(), settings_suburl);
+}
+
 IN_PROC_BROWSER_TEST_P(KioskSettingsTest, DoesNotOpenTwoSettingsBrowsers) {
   const GURL settings_url_1("https://settings-one.com/");
   const GURL settings_url_2("https://settings-two.com/");
@@ -280,10 +328,7 @@ IN_PROC_BROWSER_TEST_P(KioskSettingsTest,
 
 // Covers crbug.com/245088137, the settings could not reopen after losing focus.
 IN_PROC_BROWSER_TEST_P(KioskSettingsTest, CanRefocusSettings) {
-  const auto& pages = KioskSettingsNavigationThrottle::DefaultSettingsPages();
-  ASSERT_GT(pages.size(), 1UL);
-
-  ASSERT_TRUE(OpenPopup(GURL(pages[0].url)));
+  ASSERT_TRUE(OpenPopup(GURL("chrome://os-settings/manageAccessibility")));
 
   auto& session = GetKioskSystemSession();
   Browser& settings = CHECK_DEREF(session.GetSettingsBrowserForTesting());
@@ -295,9 +340,10 @@ IN_PROC_BROWSER_TEST_P(KioskSettingsTest, CanRefocusSettings) {
   settings.window()->Deactivate();
   EXPECT_FALSE(settings.window()->IsActive());
 
-  // Verify focus can switch to any other settings page.
-  for (size_t i = 1; i < pages.size(); i++) {
-    const GURL other_settings_page(pages[i].url);
+  // Verify focus can switch to another settings page.
+  {
+    const GURL other_settings_page(
+        "chrome-extension://klbcgckkldhdhonijdbnhhaiedfkllef/");
 
     // Open another settings browser and expect navigation in the old window.
     auto& web_contents = ActiveWebContents(settings);
