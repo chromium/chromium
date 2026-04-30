@@ -54,8 +54,8 @@
 #include "ui/menus/simple_menu_model.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/page_actions/page_action_controller.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
-#include "chrome/browser/ui/views/page_action/page_action_controller.h"
 #endif
 
 namespace contextual_cueing {

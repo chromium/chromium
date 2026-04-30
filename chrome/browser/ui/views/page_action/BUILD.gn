@@ -13,32 +13,17 @@ source_set("page_action") {
   ]
 
   public = [
-    "action_ids.h",
     "anchored_message_view.h",
     "page_action_container_view.h",
-    "page_action_controller.h",
     "page_action_icon_container.h",
     "page_action_icon_controller.h",
     "page_action_icon_loading_indicator_view.h",
     "page_action_icon_params.h",
     "page_action_icon_view.h",
     "page_action_icon_view_observer.h",
-    "page_action_observer.h",
-    "page_action_pass_key.h",
-    "page_action_properties_provider.h",
-    "page_action_triggers.h",
     "page_action_view.h",
     "page_action_view_params.h",
     "zoom_view.h",
-  ]
-
-  sources = [
-    "chip_selector.h",
-    "page_action_enums.h",
-    "page_action_metrics_recorder.h",
-    "page_action_metrics_recorder_interface.h",
-    "page_action_model.h",
-    "page_action_model_observer.h",
   ]
 
   public_deps = [
@@ -48,6 +33,7 @@ source_set("page_action") {
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui/actions:actions_headers",
     "//chrome/browser/ui/page_action:icon_type",
+    "//chrome/browser/ui/page_actions",
     "//chrome/browser/ui/tabs",
     "//chrome/browser/ui/toolbar",
     "//chrome/browser/ui/toolbar/pinned_toolbar",
@@ -70,19 +56,12 @@ source_set("page_action") {
 source_set("impl") {
   sources = [
     "anchored_message_view.cc",
-    "chip_selector.cc",
     "page_action_container_view.cc",
-    "page_action_controller.cc",
     "page_action_icon_container.cc",
     "page_action_icon_controller.cc",
     "page_action_icon_loading_indicator_view.cc",
     "page_action_icon_params.cc",
     "page_action_icon_view.cc",
-    "page_action_metrics_recorder.cc",
-    "page_action_model.cc",
-    "page_action_observer.cc",
-    "page_action_properties_provider.cc",
-    "page_action_triggers.cc",
     "page_action_view.cc",
     "zoom_view.cc",
   ]
@@ -101,6 +80,7 @@ source_set("impl") {
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/lens",
+    "//chrome/browser/ui/page_actions:page_actions_impl",
     "//chrome/browser/ui/search",
     "//chrome/browser/ui/tabs/saved_tab_groups",
     "//chrome/browser/ui/user_education",
@@ -136,22 +116,16 @@ source_set("test_support") {
   testonly = true
 
   sources = [
-    "test_support/fake_tab_interface.cc",
-    "test_support/fake_tab_interface.h",
     "test_support/mock_anchored_message_delegate.cc",
     "test_support/mock_anchored_message_delegate.h",
-    "test_support/mock_page_action_controller.cc",
-    "test_support/mock_page_action_controller.h",
-    "test_support/mock_page_action_model.cc",
-    "test_support/mock_page_action_model.h",
-    "test_support/noop_page_action_metrics_recorder.cc",
-    "test_support/noop_page_action_metrics_recorder.h",
-    "test_support/test_page_action_properties_provider.cc",
-    "test_support/test_page_action_properties_provider.h",
+  ]
+
+  public_deps = [
+    ":page_action",
+    "//chrome/browser/ui/page_actions:test_support",
   ]
 
   deps = [
-    ":page_action",
     "//chrome/test:test_support",
     "//components/tabs:test_support",
     "//testing/gmock",
@@ -164,13 +138,8 @@ source_set("unit_tests") {
 
   sources = [
     "anchored_message_view_unittest.cc",
-    "chip_selector_unittest.cc",
     "page_action_container_view_unittest.cc",
-    "page_action_controller_unittest.cc",
     "page_action_icon_view_unittest.cc",
-    "page_action_metrics_recorder_unittest.cc",
-    "page_action_model_unittest.cc",
-    "page_action_observer_unittest.cc",
     "page_action_view_unittest.cc",
   ]
 
@@ -178,6 +147,7 @@ source_set("unit_tests") {
     ":page_action",
     ":test_support",
     "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/page_actions:unit_tests",
     "//chrome/browser/ui/toolbar/pinned_toolbar",
     "//chrome/browser/ui/views/location_bar",
     "//chrome/test:test_support",

@@ -14,7 +14,7 @@
 #include "chrome/browser/ui/commerce/commerce_ui_tab_helper.h"
 #include "chrome/browser/ui/commerce/discounts_page_action_controller.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
-#include "chrome/browser/ui/views/page_action/page_action_controller.h"
+#include "chrome/browser/ui/page_actions/page_action_controller.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/metrics/discounts_metric_collector.h"
 #include "components/tabs/public/tab_interface.h"

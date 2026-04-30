@@ -10,8 +10,8 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/test/scoped_run_loop_timeout.h"
+#include "chrome/browser/ui/page_actions/test_support/mock_page_action_model.h"
 #include "chrome/browser/ui/views/page_action/test_support/mock_anchored_message_delegate.h"
-#include "chrome/browser/ui/views/page_action/test_support/mock_page_action_model.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/vector_icons/vector_icons.h"
 #include "testing/gmock/include/gmock/gmock.h"

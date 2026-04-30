@@ -7,8 +7,8 @@
 
 #include "base/callback_list.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/ui/page_actions/page_action_observer.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
-#include "chrome/browser/ui/views/page_action/page_action_observer.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/translate/content/browser/content_translate_driver.h"
 #include "content/public/browser/web_contents.h"
