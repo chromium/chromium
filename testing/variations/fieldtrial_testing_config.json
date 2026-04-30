@@ -25519,6 +25519,21 @@
             ]
         }
     ],
+    "WebSigninLoadingDialog": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20260430",
+                    "enable_features": [
+                        "EnableWebSigninLoadingDialog"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebUIBundledCodeCache": [
         {
             "platforms": [
