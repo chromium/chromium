@@ -3041,11 +3041,54 @@ void View::DragInfo::PossibleDrag(const gfx::Point& p) {
 
 // Painting --------------------------------------------------------------------
 
+void View::AddPaintLock() {
+  paint_lock_count_++;
+}
+
+void View::RemovePaintLock() {
+  CHECK_GT(paint_lock_count_, 0);
+  paint_lock_count_--;
+  if (paint_lock_count_ == 0) {
+    UnlockPaint();
+  }
+}
+
+bool View::IsPaintLocked() const {
+  if (paint_lock_count_ > 0) {
+    return true;
+  }
+
+  return parent_ ? parent_->IsPaintLocked() : false;
+}
+
+void View::UnlockPaint() {
+  if (IsPaintLocked()) {
+    return;
+  }
+
+  if (paint_pending_while_locked_) {
+    paint_pending_while_locked_ = false;
+    SchedulePaint();
+  }
+
+  for (View* child : children_) {
+    if (child->paint_lock_count_ == 0) {
+      child->UnlockPaint();
+    }
+  }
+}
+
 void View::SchedulePaintInRectImpl(const gfx::Rect& rect) {
   OnDidSchedulePaint(rect);
   if (!visible_) {
     return;
   }
+
+  if (IsPaintLocked()) {
+    paint_pending_while_locked_ = true;
+    return;
+  }
+
   if (layer()) {
     layer()->SchedulePaint(rect);
   } else if (parent_) {
@@ -3085,7 +3128,7 @@ void View::SchedulePaintOnParent() {
 }
 
 bool View::ShouldPaint() const {
-  return visible_ && !size().IsEmpty();
+  return visible_ && !size().IsEmpty() && !IsPaintLocked();
 }
 
 void View::SetUpTransformRecorderForPainting(

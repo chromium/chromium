@@ -23,6 +23,9 @@ class VIEWS_EXPORT ViewTestApi {
 
   void ClearNeedsPaint() { view_->needs_paint_ = false; }
   bool needs_paint() const { return view_->needs_paint_; }
+  bool paint_pending_while_locked() const {
+    return view_->paint_pending_while_locked_;
+  }
 
  private:
   raw_ptr<View> view_;
