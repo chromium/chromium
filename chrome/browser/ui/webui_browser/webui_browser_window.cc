@@ -44,6 +44,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/mojom/page/draggable_region.mojom.h"
+#include "ui/base/hit_test.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/content_accelerators/accelerator_util.h"
 #include "ui/views/controls/webview/webview.h"
@@ -102,6 +103,9 @@ class WebUIBrowserWindow::WidgetDelegate : public views::WidgetDelegate {
 
   views::ClientView* CreateClientView(views::Widget* widget) override;
   std::u16string GetWindowTitle() const override;
+  bool ShouldDescendIntoChildForEventHandling(
+      gfx::NativeView child,
+      const gfx::Point& location) override;
 
  private:
   raw_ptr<WebUIBrowserWindow> browser_window_;
@@ -122,6 +126,9 @@ WebUIBrowserWindow::WebUIBrowserWindow(Browser* browser) : browser_(browser) {
   params.bounds = gfx::Rect(0, 0, 800, 600);
   params.delegate = widget_delegate_.get();
   params.native_widget = CreateNativeWidget();
+#if BUILDFLAG(IS_CHROMEOS)
+  params.remove_standard_frame = true;
+#endif
   widget_->Init(std::move(params));
   widget_->SetNativeWindowProperty(kWebUIBrowserWindowKey, this);
   widget_->MakeCloseSynchronous(base::BindOnce(
@@ -1165,6 +1172,27 @@ std::u16string WebUIBrowserWindow::WidgetDelegate::GetWindowTitle() const {
   // on Mac.
   return browser_window_->browser()->GetWindowTitleForCurrentTab(
       true /* include_app_name */);
+}
+
+bool WebUIBrowserWindow::WidgetDelegate::ShouldDescendIntoChildForEventHandling(
+    gfx::NativeView child,
+    const gfx::Point& location) {
+#if BUILDFLAG(IS_CHROMEOS)
+  // The titlebar has `app-region: drag;` set, so we shouldn't descend into it
+  // for event handling on ChromeOS.
+  if (GetWidget() &&
+      GetWidget()->GetNonClientComponent(location) == HTCAPTION) {
+    return false;
+  }
+  return true;
+#else
+  // Other platforms such as Windows do hit testing (WM_NCHITTEST) before
+  // sending pointer events. That happens before aura::Window has a chance to
+  // call ShouldDescendIntoChildForEventHandling(), so use the default
+  // implementation instead.
+  return views::WidgetDelegate::ShouldDescendIntoChildForEventHandling(
+      child, location);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 WebUIBrowserUI* WebUIBrowserWindow::GetWebUIBrowserUI() const {

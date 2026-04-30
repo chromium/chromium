@@ -96,6 +96,7 @@ cr-searchbox[dropdown-is-visible] {
 
 .titlebarDiv {
   app-region: drag;
+  -webkit-app-region: drag;
   display: flex;
   /* The tab strip is by default mostly inactive content, so give it the
    * inactive background color. */
@@ -104,6 +105,7 @@ cr-searchbox[dropdown-is-visible] {
 
 .tabstripDiv {
   app-region: no-drag;
+  -webkit-app-region: no-drag;
   float: left;
   overflow: hidden;
   text-align: left;
@@ -118,6 +120,7 @@ cr-searchbox[dropdown-is-visible] {
 
 .captionButtonsDiv cr-button {
   app-region: no-drag;
+  -webkit-app-region: no-drag;
 }
 
 #addressBox {
