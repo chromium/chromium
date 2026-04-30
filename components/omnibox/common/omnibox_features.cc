@@ -364,6 +364,9 @@ BASE_FEATURE(kComposeboxDriveContextMenuOption, DISABLED);
 // zero-suggest.
 BASE_FEATURE(kComposeboxVerbatimMatchZeroSuggest, ENABLED);
 
+// Whether to disable warmup requests for the composebox.
+BASE_FEATURE(kDisableComposeboxWarmupRequests, DISABLED);
+
 // Enables passthrough params to be sent to the AIM eligibility service.
 BASE_FEATURE(kAimUrlInterceptPassthrough, DISABLED);
 

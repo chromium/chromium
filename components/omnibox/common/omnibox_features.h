@@ -166,6 +166,9 @@ BASE_DECLARE_FEATURE(kComposeboxDriveContextMenuOption);
 // zero-suggest.
 BASE_DECLARE_FEATURE(kComposeboxVerbatimMatchZeroSuggest);
 
+// Whether to disable warmup requests for the composebox.
+BASE_DECLARE_FEATURE(kDisableComposeboxWarmupRequests);
+
 // A flag that allows params from experiment configs to be passed through to
 // the AIM eligibility service to control aspects of URL interception.
 BASE_DECLARE_FEATURE(kAimUrlInterceptPassthrough);
