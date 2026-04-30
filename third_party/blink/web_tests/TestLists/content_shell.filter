@@ -796,9 +796,6 @@ external/wpt/webxr/xr_viewport_scale.https.html
 external/wpt/workers/baseurl/alpha/sharedworker-in-worker.html
 external/wpt/workers/postMessage_block.https.html
 
-# TODO(crbug.com/495568057) Stop using content shell for these
-virtual/prevent-svg-filter-paint/external/wpt/svg/styling/*
-
 # TODO(crbug.com/421119389): This is a crash test that (currently) crashes on
 # content_shell but doesn't run properly on headless. It either gives "Tried to
 # run in a non-testharness window without a call to set_test_context" if written
@@ -979,3 +976,9 @@ virtual/webnn-service-on-cpu/*
 virtual/webnn-service-on-npu/*
 virtual/webnn-service-with-gpu/*
 virtual/lna-webrtc/wpt_internal/*
+
+# See crbug.com/476646486:
+# > Requires content plugin:
+virtual/prevent-svg-filter-paint/external/wpt/svg/styling/svg-filter-render-web-plugin.tentative.https.html
+# > Requires site isolation:
+virtual/prevent-svg-filter-paint/external/wpt/svg/styling/svg-filter-render-remote-frame.tentative.sub.https.html

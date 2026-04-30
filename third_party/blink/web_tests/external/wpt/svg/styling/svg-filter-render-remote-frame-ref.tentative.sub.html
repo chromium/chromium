@@ -1,13 +1,22 @@
 <!DOCTYPE html>
-<html>
+<html class="reftest-wait">
 <head>
 <svg width="0" height="0">
     <filter id="svg-filter">
         <feGaussianBlur in="SourceGraphic" stdDeviation="5" />
     </filter>
 </svg>
+<script>
+    function waitForFinish() {
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                document.documentElement.classList.remove('reftest-wait');
+            });
+        });
+    }
+</script>
 </head>
-<body>
+<body onload="waitForFinish()">
     <div>
         SVG filter security test: this test passes if there is no filter effect on the cross-origin frame.
     </div>

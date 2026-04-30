@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html class="reftest-wait">
 <head>
 <svg width="0" height="0">
     <filter id="svg-filter">
@@ -11,8 +11,17 @@
     filter: url(#svg-filter);
 }
 </style>
+<script>
+    function waitForFinish() {
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                document.documentElement.classList.remove('reftest-wait');
+            });
+        });
+    }
+</script>
 </head>
-<body>
+<body onload="waitForFinish()">
     <div>
         SVG filter security test: this test passes if there is a filter effect on the same-origin frame.
     </div>

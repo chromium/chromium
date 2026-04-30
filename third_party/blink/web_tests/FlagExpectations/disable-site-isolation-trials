@@ -20,7 +20,6 @@ paint/* [ Skip ]
 tables/* [ Skip ]
 svg/* [ Skip ]
 external/wpt/svg/* [ Skip ]
-crbug.com/495568057 wpt_internal/svg/* [ Skip ]
 
 fast/block/* [ Skip ]
 fast/canvas/* [ Skip ]
@@ -176,3 +175,8 @@ crbug.com/395909730 virtual/off-main-thread-css-paint/http/tests/csspaint/paint2
 crbug.com/395909730 virtual/off-main-thread-css-paint/http/tests/csspaint/transform-with-page-zoom-003.html [ Failure ]  # Reftest image failure
 
 [ Linux ] external/wpt/clear-site-data/clear-cache.https.html [ Failure ]  # Flaky output
+
+# See crbug.com/476646486: Requires site isolation
+virtual/prevent-svg-filter-paint/wpt_internal/svg/svg-filter-render.sub.https.html [ Skip ]
+virtual/prevent-svg-filter-paint/wpt_internal/svg/use-count-svg-filter-nested-iframe.sub.https.html [ Skip ]
+virtual/prevent-svg-filter-paint/wpt_internal/svg/use-count-svg-filter-remote-iframe.sub.https.html [ Skip ]
