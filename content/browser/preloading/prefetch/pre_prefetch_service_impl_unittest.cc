@@ -233,6 +233,10 @@ TEST_F(PrePrefetchServiceImplTest,
 
   // PrePrefetch fails.
   EXPECT_EQ(handle, nullptr);
+
+  histogram_tester().ExpectUniqueSample(
+      "Preloading.Prefetch.PrePrefetch.StartResult",
+      PrePrefetchStartResult::kFailedURLLoaderFactoryDisconnected, 1);
 }
 
 }  // namespace content
