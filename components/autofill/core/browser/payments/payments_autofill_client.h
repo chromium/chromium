@@ -64,6 +64,12 @@ struct VirtualCardEnrollmentFields;
 class VirtualCardEnrollmentManager;
 enum class WebauthnDialogCallbackType;
 
+namespace autofill_metrics {
+enum class SaveCardPromptOffer;
+}
+
+using SaveCardPromptOffer = autofill_metrics::SaveCardPromptOffer;
+
 namespace payments {
 
 struct BnplIssuerContext;
@@ -211,6 +217,12 @@ class PaymentsAutofillClient : public RiskDataLoader {
       return *this;
     }
 
+    SaveCreditCardOptions& with_save_card_prompt_offer_decision(
+        SaveCardPromptOffer decision) {
+      save_card_prompt_offer_decision = decision;
+      return *this;
+    }
+
     bool should_request_name_from_user = false;
     bool should_request_expiration_date_from_user = false;
     bool show_prompt = false;
@@ -220,6 +232,7 @@ class PaymentsAutofillClient : public RiskDataLoader {
     std::optional<int> num_strikes;
     CardSaveType card_save_type = CardSaveType::kCardSaveOnly;
     SourceFeature source_feature = SourceFeature::kOfferSaveAfterFormSubmit;
+    std::optional<SaveCardPromptOffer> save_card_prompt_offer_decision;
   };
 
   enum class SaveCardOfferUserDecision {

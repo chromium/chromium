@@ -391,8 +391,7 @@ class CreditCardSaveManager {
 
   // std::nullopt until data is retrieved from the StrikeSystem, at which point
   // it will be populated with the eventual metric to be logged for a card save,
-  // whether that is `kShown` or a specific `kNotShown[ForReason]` value. Not
-  // needed for the CVC path as it can log immediately instead of eventually.
+  // whether that is `kShown` or a specific `kNotShown[ForReason]` value.
   std::optional<SaveCardPromptOffer> save_card_prompt_offer_decision_;
 
   // |true| if the card being offered for upload is already a local card on the

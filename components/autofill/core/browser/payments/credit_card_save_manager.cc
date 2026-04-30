@@ -290,7 +290,9 @@ bool CreditCardSaveManager::AttemptToOfferCardLocalSave(
 bool CreditCardSaveManager::AttemptToOfferCvcLocalSave(const CreditCard& card) {
   card_save_candidate_ = card;
   show_save_prompt_.reset();
+  save_card_prompt_offer_decision_.reset();
 
+  // This function also sets up the value of `save_card_prompt_offer_decision_`.
   show_save_prompt_ = !DetermineAndLogCvcSaveStrikeDatabaseBlockDecision();
   OfferCvcLocalSave();
   return show_save_prompt_.value();
@@ -639,18 +641,25 @@ void CreditCardSaveManager::AttemptToOfferCvcUploadSave(
     const CreditCard& card) {
   card_save_candidate_ = card;
   show_save_prompt_.reset();
+  save_card_prompt_offer_decision_.reset();
 
+  // This function also sets up the value of `save_card_prompt_offer_decision_`.
   show_save_prompt_ = !DetermineAndLogCvcSaveStrikeDatabaseBlockDecision();
 
   if (!is_ios || show_save_prompt_.value_or(true)) {
-    // TODO(crbug.com/40931101): Refactor ShowSaveCreditCardToCloud to change
-    // legal_message_lines_ to optional.
-    payments_autofill_client().ShowSaveCreditCardToCloud(
-        card_save_candidate_, legal_message_lines_,
+    payments::PaymentsAutofillClient::SaveCreditCardOptions options =
         payments::PaymentsAutofillClient::SaveCreditCardOptions()
             .with_show_prompt(show_save_prompt_.value())
             .with_card_save_type(
-                payments::PaymentsAutofillClient::CardSaveType::kCvcSaveOnly),
+                payments::PaymentsAutofillClient::CardSaveType::kCvcSaveOnly);
+    if (save_card_prompt_offer_decision_.has_value()) {
+      options = options.with_save_card_prompt_offer_decision(
+          save_card_prompt_offer_decision_.value());
+    }
+    // TODO(crbug.com/40931101): Refactor ShowSaveCreditCardToCloud to change
+    // legal_message_lines_ to optional.
+    payments_autofill_client().ShowSaveCreditCardToCloud(
+        card_save_candidate_, legal_message_lines_, options,
         base::BindOnce(&CreditCardSaveManager::OnUserDidDecideOnCvcUploadSave,
                        weak_ptr_factory_.GetWeakPtr()));
   }
@@ -800,16 +809,30 @@ bool CreditCardSaveManager::
 
   switch (decision) {
     case CvcStorageStrikeDatabase::kDoNotBlock:
+      if (base::FeatureList::IsEnabled(
+              features::kAutofillUpstreamEnforceStrikeDelay)) {
+        save_card_prompt_offer_decision_ = SaveCardPromptOffer::kShown;
+      }
       return false;
     case CvcStorageStrikeDatabase::kMaxStrikeLimitReached:
       autofill_metrics::LogSaveCvcPromptOfferMetric(
           SaveCardPromptOffer::kNotShownMaxStrikesReached, is_upload_save,
           /*is_reshow=*/false);
+      if (base::FeatureList::IsEnabled(
+              features::kAutofillUpstreamEnforceStrikeDelay)) {
+        save_card_prompt_offer_decision_ =
+            SaveCardPromptOffer::kNotShownMaxStrikesReached;
+      }
       return true;
     case CvcStorageStrikeDatabase::kRequiredDelayNotPassed:
       autofill_metrics::LogSaveCvcPromptOfferMetric(
           SaveCardPromptOffer::kNotShownRequiredDelay, is_upload_save,
           /*is_reshow=*/false);
+      if (base::FeatureList::IsEnabled(
+              features::kAutofillUpstreamEnforceStrikeDelay)) {
+        save_card_prompt_offer_decision_ =
+            SaveCardPromptOffer::kNotShownRequiredDelay;
+      }
       return true;
   }
 }
@@ -910,6 +933,10 @@ void CreditCardSaveManager::OfferCardLocalSave() {
           .with_num_strikes(GetCreditCardSaveStrikeDatabase()->GetStrikes(
               base::UTF16ToUTF8(card_save_candidate_.LastFourDigits())))
           .with_card_save_type(card_save_type);
+  if (save_card_prompt_offer_decision_.has_value()) {
+    options = options.with_save_card_prompt_offer_decision(
+        save_card_prompt_offer_decision_.value());
+  }
 
   // If `show_save_prompt_` is false: 1) desktop builds will still offer save in
   // the omnibox but won't pop up the bubble, and 2) mobile builds will not show
@@ -949,12 +976,17 @@ void CreditCardSaveManager::OfferCardLocalSave() {
 
 void CreditCardSaveManager::OfferCvcLocalSave() {
   if (!is_ios || show_save_prompt_.value_or(true)) {
-    payments_autofill_client().ShowSaveCreditCardLocally(
-        card_save_candidate_,
+    payments::PaymentsAutofillClient::SaveCreditCardOptions options =
         payments::PaymentsAutofillClient::SaveCreditCardOptions()
             .with_show_prompt(show_save_prompt_.value_or(false))
             .with_card_save_type(
-                payments::PaymentsAutofillClient::CardSaveType::kCvcSaveOnly),
+                payments::PaymentsAutofillClient::CardSaveType::kCvcSaveOnly);
+    if (save_card_prompt_offer_decision_.has_value()) {
+      options = options.with_save_card_prompt_offer_decision(
+          save_card_prompt_offer_decision_.value());
+    }
+    payments_autofill_client().ShowSaveCreditCardLocally(
+        card_save_candidate_, options,
         base::BindOnce(&CreditCardSaveManager::OnUserDidDecideOnCvcLocalSave,
                        weak_ptr_factory_.GetWeakPtr()));
   }
@@ -999,6 +1031,10 @@ void CreditCardSaveManager::OfferCardUploadSave(ukm::SourceId ukm_source_id) {
           .with_num_strikes(GetCreditCardSaveStrikeDatabase()->GetStrikes(
               base::UTF16ToUTF8(upload_request_.card.LastFourDigits())))
           .with_card_save_type(card_save_type);
+  if (save_card_prompt_offer_decision_.has_value()) {
+    options = options.with_save_card_prompt_offer_decision(
+        save_card_prompt_offer_decision_.value());
+  }
 
   // If |show_save_prompt_|'s value is false, desktop builds will still offer
   // save in the omnibox without popping-up the bubble. Mobile builds, however,

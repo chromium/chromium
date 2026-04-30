@@ -938,18 +938,24 @@ void SaveCardBubbleControllerImpl::ShowIconOnly() {
     case PaymentsBubbleType::kLocalSave:
       if (!is_reshow_) {
         autofill_metrics::LogSaveCreditCardPromptOfferMetricDesktop(
-            autofill_metrics::SaveCardPromptOffer::kNotShownMaxStrikesReached,
+            options_.save_card_prompt_offer_decision.value_or(
+                autofill_metrics::SaveCardPromptOffer::
+                    kNotShownMaxStrikesReached),
             is_upload_save_, /*save_credit_card_options=*/options_);
       }
       autofill_metrics::LogSaveCardPromptOfferMetric(
-          autofill_metrics::SaveCardPromptOffer::kNotShownMaxStrikesReached,
+          options_.save_card_prompt_offer_decision.value_or(
+              autofill_metrics::SaveCardPromptOffer::
+                  kNotShownMaxStrikesReached),
           is_upload_save_, is_reshow_, options_,
           payments_data_manager_->GetPaymentsSigninStateForMetrics());
       break;
     case PaymentsBubbleType::kUploadCvcSave:
     case PaymentsBubbleType::kLocalCvcSave:
       autofill_metrics::LogSaveCvcPromptOfferMetric(
-          autofill_metrics::SaveCardPromptOffer::kNotShownMaxStrikesReached,
+          options_.save_card_prompt_offer_decision.value_or(
+              autofill_metrics::SaveCardPromptOffer::
+                  kNotShownMaxStrikesReached),
           is_upload_save_, is_reshow_);
       break;
     case PaymentsBubbleType::kUploadInProgress:
