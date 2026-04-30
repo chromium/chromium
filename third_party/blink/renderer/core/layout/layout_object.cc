@@ -4217,16 +4217,36 @@ Node* LayoutObject::NodeForHitTest() const {
   if (Node* node = GetNode())
     return node;
 
-  // If we hit the anonymous layoutObjects inside generated content we should
+  const LayoutObject* parent = Parent();
+  if (!parent) {
+    return nullptr;
+  }
+
+  // If we hit the anonymous layout-objects within generated content we should
   // actually hit the generated content so walk up to the PseudoElement.
-  if (const LayoutObject* parent = Parent()) {
-    if (parent->IsBeforeOrAfterContent() || parent->IsMarkerContent() ||
-        parent->IsScrollButtonOrMarkerContent() ||
-        parent->IsInterestButtonContent() ||
-        parent->StyleRef().StyleType() == kPseudoIdFirstLetter) {
-      for (; parent; parent = parent->Parent()) {
-        if (Node* node = parent->GetNode())
-          return node;
+  const bool use_parent_node = ([&]() {
+    switch (parent->StyleRef().StyleType()) {
+      case kPseudoIdAfter:
+      case kPseudoIdBefore:
+      case kPseudoIdFirstLetter:
+      case kPseudoIdInterestButton:
+      case kPseudoIdMarker:
+      case kPseudoIdScrollButton:
+      case kPseudoIdScrollButtonBlockStart:
+      case kPseudoIdScrollButtonInlineStart:
+      case kPseudoIdScrollButtonInlineEnd:
+      case kPseudoIdScrollButtonBlockEnd:
+      case kPseudoIdScrollMarker:
+        return true;
+      default:
+        return false;
+    }
+  })();
+
+  if (use_parent_node) {
+    for (; parent; parent = parent->Parent()) {
+      if (Node* node = parent->GetNode()) {
+        return node;
       }
     }
   }
