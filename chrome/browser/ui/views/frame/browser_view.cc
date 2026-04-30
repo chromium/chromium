@@ -2496,6 +2496,9 @@ void BrowserView::OnLockedForOnTaskUpdated(bool locked_for_on_task) {
   // Use immersive mode for tabbed PWA.
   if (browser()->CanSupportWindowFeature(
           Browser::WindowFeature::kFeatureTabStrip)) {
+    CHECK_NE(
+        GetNativeWindow()->GetProperty(chromeos::kUseImmersiveInTrustedPinned),
+        locked_for_on_task);
     GetNativeWindow()->SetProperty(chromeos::kUseImmersiveInTrustedPinned,
                                    locked_for_on_task);
   }

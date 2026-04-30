@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chromeos/ash/components/boca/boca_role_util.h"
 #include "chromeos/ash/components/boca/boca_window_observer.h"
@@ -38,6 +39,7 @@
 #include "chromeos/ash/components/boca/on_task/on_task_notifications_manager.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -181,22 +183,18 @@ void LockedSessionWindowTracker::OnPauseModeChanged(bool paused) {
     on_task_pod_controller_->OnPauseModeChanged(paused);
   }
 
-  // Immersive mode needs to be disabled when in pause mode to ensure users
-  // cannot switch tabs. Since there is a possibility that it can be re-enabled
-  // in certain scenarios (like switching to tablet mode), we monitor the
-  // browsing instance for such anomalies.
-  auto* const immersive_mode_controller =
-      ImmersiveModeController::From(&browser_->GetBrowser());
+  // Immersive mode is disabled when in pause mode to ensure users cannot switch
+  // tabs.
   if (paused) {
-    immersive_mode_controller->SetEnabled(false);
-    immersive_mode_controller_observation_.Reset();
-    immersive_mode_controller_observation_.Observe(immersive_mode_controller);
+    browser_->GetBrowser().GetWindow()->GetNativeWindow()->SetProperty(
+        chromeos::kUseImmersiveInTrustedPinned, false);
   } else {
-    immersive_mode_controller_observation_.Reset();
     bool enable_immersive_mode =
         platform_util::IsBrowserLockedFullscreen(&browser_->GetBrowser());
-    immersive_mode_controller->SetEnabled(enable_immersive_mode);
+    browser_->GetBrowser().GetWindow()->GetNativeWindow()->SetProperty(
+        chromeos::kUseImmersiveInTrustedPinned, enable_immersive_mode);
   }
+  browser_->GetBrowser().GetBrowserView().FullscreenStateChanged();
 }
 
 void LockedSessionWindowTracker::set_can_start_navigation_throttle(
@@ -225,7 +223,6 @@ void LockedSessionWindowTracker::CleanupWindowTracker() {
     on_task_blocklist_->CleanupBlocklist();
   }
   on_task_pod_controller_.reset();
-  immersive_mode_controller_observation_.Reset();
 
   browser_ = nullptr;
   can_open_new_popup_ = true;
@@ -437,18 +434,6 @@ void LockedSessionWindowTracker::DidFinishNavigation(
         base::BindOnce(&LockedSessionWindowTracker::MaybeCloseWebContents,
                        weak_pointer_factory_.GetWeakPtr(), tab->GetWeakPtr()));
   }
-}
-
-void LockedSessionWindowTracker::OnImmersiveRevealStarted() {
-  // Disable immersive mode when in pause mode to ensure the toolbar is not
-  // accessible as it allows for exiting this mode.
-  auto* const immersive_mode_controller =
-      immersive_mode_controller_observation_.GetSource();
-  immersive_mode_controller->SetEnabled(false);
-}
-
-void LockedSessionWindowTracker::OnImmersiveModeControllerDestroyed() {
-  immersive_mode_controller_observation_.Reset();
 }
 
 void LockedSessionWindowTracker::EnsureMaybeCloseBrowserTaskPosted(
