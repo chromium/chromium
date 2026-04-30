@@ -11,6 +11,7 @@ import type {ZoomAction} from './glic.mojom-webui.js';
 import {PanelStateKind, PrepareForClientResult, ProfileReadyState, WebUiState} from './glic.mojom-webui.js';
 import type {ApiHostEmbedder} from './glic_api_impl/host/glic_api_host.js';
 import {WebClientState} from './glic_api_impl/host/glic_api_host.js';
+import {isFullWebView} from './shared/web_view_type.js';
 import type {PageType, WebviewDelegate} from './webview.js';
 import {WebviewController, WebviewPersistentState} from './webview.js';
 
@@ -688,6 +689,18 @@ export class GlicAppController implements WebviewDelegate, ApiHostEmbedder {
       this.cancelTimeout();
       this.setState(WebUiState.kHoldLoading);
     }
+  }
+
+  getZoom(): Promise<number> {
+    return new Promise((resolve) => {
+      if (!this.webview || !isFullWebView(this.webview.webview)) {
+        resolve(1.0);
+        return;
+      }
+      this.webview.webview.getZoom((currentZoom: number) => {
+        resolve(currentZoom);
+      });
+    });
   }
 
   webClientWarmed(): void {

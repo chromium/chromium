@@ -671,6 +671,12 @@ export declare type HostRequestTypes = ValidateRequestMap<{
     },
     backgroundAllowed: true,
   },
+  glicBrowserSubscribeToZoomLevel: {
+    backgroundAllowed: true,
+  },
+  glicBrowserUnsubscribeFromZoomLevel: {
+    backgroundAllowed: true,
+  },
 }>;
 
 // Types of requests to the GlicWebClient.
@@ -937,6 +943,12 @@ export declare type WebClientRequestTypes = ValidateRequestMap<{
     },
     backgroundAllowed: true,
   },
+  glicWebClientNotifyZoomLevelChanged: {
+    request: {
+      zoomFactor: number,
+    },
+    backgroundAllowed: true,
+  },
 }>;
 
 // Each host request needs to be added to either UnreportedRequests or
@@ -1055,6 +1067,8 @@ const RECORDED_REQUEST_IDS = {
   SubscribeToTabFavicon: 94,
   ShowBrowseSkillsUi: 95,
   OnExperimentalTriggeringUpdate: 96,
+  SubscribeToZoomLevel: 97,
+  UnsubscribeFromZoomLevel: 98,
 } as const satisfies HostRequestEnumNamesType;
 // LINT.ThenChange(
 //  //tools/metrics/histograms/metadata/glic/histograms.xml:ApiRequestType,

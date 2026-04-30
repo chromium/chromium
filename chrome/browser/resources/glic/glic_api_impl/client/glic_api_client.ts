@@ -217,6 +217,10 @@ class WebClientMessageHandler implements WebClientMessageHandlerInterface {
     this.host.getFocusedTabStateV2().assignAndSignal(focusedTabData);
   }
 
+  glicWebClientNotifyZoomLevelChanged(payload: {zoomFactor: number}) {
+    this.host.getZoomLevel().assignAndSignal(payload.zoomFactor);
+  }
+
   glicWebClientNotifyPanelActiveChanged(payload: {panelActive: boolean}): void {
     this.host.panelActiveValue.assignAndSignal(payload.panelActive);
   }
@@ -610,6 +614,16 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
   private panelState = ObservableValueImpl.withNoValue<PanelState>();
   canAttachPanelValue = ObservableValueImpl.withNoValue<boolean>();
   private focusedTabStateV2 = ObservableValueImpl.withNoValue<FocusedTabData>();
+  private zoomLevel =
+      ObservableValueImpl.withNoValue<number>(async (isActive: boolean) => {
+        if (isActive) {
+          await this.sender.requestWithResponse(
+              'glicBrowserSubscribeToZoomLevel', undefined);
+        } else {
+          this.sender.requestNoResponse(
+              'glicBrowserUnsubscribeFromZoomLevel', undefined);
+        }
+      });
   private permissionStateMicrophone =
       ObservableValueImpl.withNoValue<boolean>();
   private permissionStateLocation = ObservableValueImpl.withNoValue<boolean>();
@@ -1169,6 +1183,10 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
 
   getFocusedTabStateV2(): ObservableValueImpl<FocusedTabData> {
     return this.focusedTabStateV2;
+  }
+
+  getZoomLevel(): ObservableValueImpl<number> {
+    return this.zoomLevel;
   }
 
   getMicrophonePermissionState(): ObservableValueImpl<boolean> {

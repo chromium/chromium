@@ -46,4 +46,7 @@ export class FakeApiHostEmbedder implements ApiHostEmbedder {
   enableDragResize(_enabled: boolean) {}
   webClientReady() {}
   webClientWarmed() {}
+  getZoom(): Promise<number> {
+    return Promise.resolve(1.0);
+  }
 }
