@@ -20,14 +20,6 @@ namespace blink {
 
 namespace {
 
-inline float GetAscent(const ComputedStyle& style, const Font* font_override) {
-  const Font* font = font_override ? font_override : style.GetFont();
-  if (const SimpleFontData* primary_font = font->PrimaryFont()) {
-    return primary_font->GetFontMetrics().FloatAscent();
-  }
-  return 0.f;
-}
-
 static ResolvedUnderlinePosition ResolveUnderlinePosition(
     const ComputedStyle& style) {
   const TextUnderlinePosition position = style.GetTextUnderlinePosition();
@@ -140,7 +132,6 @@ TextDecorationInfo::TextDecorationInfo(
     const TextDecorationLine selection_decoration_line,
     const Color selection_decoration_color,
     const AppliedTextDecoration* decoration_override,
-    const Font* font_override,
     IsSvgText is_svg_text,
     float svg_resource_scaling_factor)
     : target_style_(target_style),
@@ -149,19 +140,15 @@ TextDecorationInfo::TextDecorationInfo(
       selection_decoration_line_(selection_decoration_line),
       selection_decoration_color_(selection_decoration_color),
       decoration_override_(decoration_override),
-      font_override_(font_override && font_override != target_style.GetFont()
-                         ? font_override
-                         : nullptr),
       local_origin_(local_origin),
       width_(width),
-      target_ascent_(GetAscent(target_style, font_override)),
+      target_ascent_(target_font.FloatAscent()),
       svg_resource_scaling_factor_(svg_resource_scaling_factor),
-      // NOTE: The use of font_override_ here is probably problematic.
+      // NOTE: The use of is_svg_text here is probably problematic.
       // See LayoutSVGInlineText::ComputeNewScaledFontForStyle() for
       // a workaround that is needed due to that.
       use_decorating_box_(inline_context && !decoration_override_ &&
-                          !font_override_ &&
-                          ShouldUseDecoratingBox(target_style)),
+                          !is_svg_text && ShouldUseDecoratingBox(target_style)),
       is_svg_text_(is_svg_text) {
   for (wtf_size_t i = 0; i < AppliedDecorationCount(); ++i) {
     const auto& decoration = AppliedDecoration(i);
@@ -251,8 +238,9 @@ const ResolvedDecoration TextDecorationInfo::ResolveDecorationAt(
   decoration.is_flipped_underline_and_overline = flip_underline_and_overline_;
 
   // Compute the |Font| and its properties.
-  const Font* font =
-      font_override_ ? font_override_ : decorating_box_style_->GetFont();
+  const Font* font = (is_svg_text_ || !decorating_box)
+                         ? &target_used_font_.GetFont()
+                         : decorating_box_style_->GetFont();
   DCHECK(font);
   const SimpleFontData* font_data = font->PrimaryFont();
   decoration.font_data = font_data;

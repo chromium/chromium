@@ -83,7 +83,7 @@ void TextDecorationPainter::UpdateDecorationInfo(
         LineRelativeOffset{decoration_rect_.offset.line_left, top},
         decoration_rect_.InlineSize(), style, UsedFont(*scaled_font, 1.0f),
         inline_context_, effective_selection_decoration_lines,
-        effective_selection_decoration_color, decoration_override, scaled_font,
+        effective_selection_decoration_color, decoration_override,
         IsSvgText(true), text_item.SvgScalingFactor() / scaling_factor);
   } else {
     LineRelativeRect decoration_rect =
@@ -92,7 +92,7 @@ void TextDecorationPainter::UpdateDecorationInfo(
                    text_item.GetUsedFont(), inline_context_,
                    effective_selection_decoration_lines,
                    effective_selection_decoration_color, decoration_override,
-                   &text_item.ScaledFont(), IsSvgText(text_item.IsSvgText()));
+                   IsSvgText(text_item.IsSvgText()));
   }
 }
 

@@ -673,8 +673,7 @@ LogicalRect InkOverflow::ComputeAppliedDecorationOverflow(
   TextDecorationInfo decoration_info(
       LineRelativeOffset::CreateFromBoxOrigin(offset_in_container),
       ink_overflow.size.inline_size, style, used_font, inline_context,
-      TextDecorationLine::kNone, Color(), decoration_override,
-      &used_font.GetFont(), is_svg_text);
+      TextDecorationLine::kNone, Color(), decoration_override, is_svg_text);
   TextDecorationOffset decoration_offset(style);
   gfx::RectF accumulated_bound;
   for (wtf_size_t i = 0; i < decoration_info.AppliedDecorationCount(); i++) {

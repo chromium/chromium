@@ -29,7 +29,6 @@ namespace blink {
 
 class ComputedStyle;
 class DecoratingBox;
-class Font;
 class InlinePaintContext;
 class SimpleFontData;
 class TextDecorationOffset;
@@ -99,7 +98,6 @@ class CORE_EXPORT TextDecorationInfo {
                      const TextDecorationLine selection_decoration_line,
                      const Color selection_decoration_color,
                      const AppliedTextDecoration* decoration_override = nullptr,
-                     const Font* font_override = nullptr,
                      IsSvgText is_svg_text = IsSvgText(false),
                      float svg_resource_scaling_factor = 1.0f);
 
@@ -180,7 +178,6 @@ class CORE_EXPORT TextDecorationInfo {
   // of the one from the decorating box. Note that using them means that the
   // [decorating box] is not supported.
   const AppliedTextDecoration* const decoration_override_ = nullptr;
-  const Font* const font_override_ = nullptr;
 
   // Geometry of the target text/box.
   const LineRelativeOffset local_origin_;
