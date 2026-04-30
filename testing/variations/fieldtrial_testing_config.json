@@ -14353,6 +14353,7 @@
                     "enable_features": [
                         "ImmersiveReadAnything",
                         "ReadAnythingImagesViaAlgorithm",
+                        "ReadAnythingReadabilitySelectText",
                         "ReadAnythingWithReadability",
                         "ReadAnythingWithReadabilityAllowLinks"
                     ]
