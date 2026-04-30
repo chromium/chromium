@@ -239,7 +239,7 @@ class TimeallTest(unittest.TestCase):
         mock_run_benchmarks.assert_called_once()
         _, kwargs = mock_run_benchmarks.call_args
         benchmark_options = kwargs['benchmark_options']
-        self.assertEqual(len(benchmark_options), 40)
+        self.assertEqual(len(benchmark_options), 48)
 
         # Spot check the first and last generated options
         first_options = benchmark_options[0]
@@ -251,7 +251,7 @@ class TimeallTest(unittest.TestCase):
         self.assertFalse(first_options.s)
 
         last_options = benchmark_options[-1]
-        self.assertEqual(last_options.benchmark, 'cta_test_sig')
+        self.assertEqual(last_options.benchmark, 'al_cc')
         self.assertEqual(last_options.r, 3)
         self.assertEqual(last_options.e,
                          'android_31_google_apis_x64_local.textpb')

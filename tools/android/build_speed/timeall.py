@@ -76,6 +76,8 @@ def _run_benchmark(options: _Options):
     elif 'chrome_junit_' in options.benchmark:
         target = "chrome_junit_tests"
     else:
+        # Note: chrome_apk is preferred over chrome_public_apk for future
+        # notice.
         target = "chrome_apk"
     cmd = [
         "tools/android/build_speed/benchmark.py",
@@ -119,6 +121,7 @@ def run(debug: bool):
         "chrome_nosig",
         "base_sig",
         "cta_test_sig",
+        "al_cc",
     ]
 
     if debug:
