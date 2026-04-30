@@ -333,6 +333,9 @@ GlicInstanceImpl::CreateWebUIContentsContainer() {
 }
 
 bool GlicInstanceImpl::IsShowing() const {
+  if (HasActiveEmbedder()) {
+    return true;
+  }
   for (const auto& [key, entry] : embedders_) {
     if (entry.embedder && entry.embedder->IsShowing()) {
       return true;
