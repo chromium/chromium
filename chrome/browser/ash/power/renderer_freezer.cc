@@ -32,11 +32,12 @@ RendererFreezer::RendererFreezer(
 }
 
 RendererFreezer::~RendererFreezer() {
-  for (int rph_id : gcm_extension_processes_) {
+  for (content::ChildProcessId rph_id : gcm_extension_processes_) {
     content::RenderProcessHost* host =
         content::RenderProcessHost::FromID(rph_id);
-    if (host)
+    if (host) {
       host->RemoveObserver(this);
+    }
   }
 }
 
@@ -58,9 +59,9 @@ void RendererFreezer::OnRenderProcessLaunched(content::RenderProcessHost* rph) {
     return;
   }
 
-  const int rph_id = rph->GetDeprecatedID();
+  const content::ChildProcessId rph_id = rph->GetID();
 
-  if (gcm_extension_processes_.find(rph_id) != gcm_extension_processes_.end()) {
+  if (gcm_extension_processes_.contains(rph_id)) {
     LOG(ERROR) << "Received duplicate notifications about the creation of a "
                << "RenderProcessHost with id " << rph_id;
     return;
@@ -78,10 +79,9 @@ void RendererFreezer::OnRenderProcessLaunched(content::RenderProcessHost* rph) {
   // iterate over all the extensions in the newly created process and take the
   // appropriate action based on whether we find an extension using GCM.
   content::BrowserContext* context = rph->GetBrowserContext();
-  // TODO(crbug.com/379869738) Remove FromUnsafeValue.
   if (const extensions::Extension* extension =
           extensions::ProcessMap::Get(context)->GetEnabledExtensionByProcessID(
-              content::ChildProcessId::FromUnsafeValue(rph_id))) {
+              rph_id)) {
     if (extension->permissions_data()->HasAPIPermission(
             extensions::mojom::APIPermissionID::kGcm)) {
       // This renderer has an extension that is using GCM.  Make sure it is not
@@ -104,12 +104,10 @@ void RendererFreezer::OnRenderProcessLaunched(content::RenderProcessHost* rph) {
 void RendererFreezer::RenderProcessExited(
     content::RenderProcessHost* host,
     const content::ChildProcessTerminationInfo& info) {
-  auto it = gcm_extension_processes_.find(host->GetDeprecatedID());
-  if (it == gcm_extension_processes_.end()) {
+  if (gcm_extension_processes_.erase(host->GetID()) == 0) {
     LOG(ERROR) << "Received unrequested RenderProcessExited message";
     return;
   }
-  gcm_extension_processes_.erase(it);
 
   // When this function is called, the renderer process has died but the
   // RenderProcessHost will not be destroyed.  If a new renderer process is
@@ -121,13 +119,9 @@ void RendererFreezer::RenderProcessExited(
 
 void RendererFreezer::RenderProcessHostDestroyed(
     content::RenderProcessHost* host) {
-  auto it = gcm_extension_processes_.find(host->GetDeprecatedID());
-  if (it == gcm_extension_processes_.end()) {
+  if (gcm_extension_processes_.erase(host->GetID()) == 0) {
     LOG(ERROR) << "Received unrequested RenderProcessHostDestroyed message";
-    return;
   }
-
-  gcm_extension_processes_.erase(it);
 }
 
 void RendererFreezer::OnCheckCanFreezeRenderersComplete(bool can_freeze) {

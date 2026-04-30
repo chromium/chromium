@@ -15,6 +15,7 @@
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "content/public/browser/render_process_host_creation_observer.h"
 #include "content/public/browser/render_process_host_observer.h"
+#include "content/public/common/child_process_id.h"
 
 namespace content {
 class RenderProcessHost;
@@ -96,7 +97,7 @@ class RendererFreezer
 
   // Set that keeps track of the RenderProcessHosts for processes that are
   // hosting GCM extensions.
-  std::set<int> gcm_extension_processes_;
+  std::set<content::ChildProcessId> gcm_extension_processes_;
 
   base::WeakPtrFactory<RendererFreezer> weak_factory_{this};
 };
