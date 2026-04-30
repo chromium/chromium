@@ -446,6 +446,7 @@ std::unique_ptr<content::WebContents> TabModel::DiscardContents(
       std::move(contents_owned_);
   contents_owned_ = std::move(contents);
   contents_ = contents_owned_.get();
+  WebContentsObserver::Observe(contents_);
 
   const SessionID session_id = sessions::SessionTabHelper::IdForTab(contents_);
   CHECK(session_id.is_valid());
