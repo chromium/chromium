@@ -89,7 +89,7 @@ class AlarmManager : public BrowserContextKeyedAPI,
 
   ~AlarmManager() override;
 
-  // Override the default delegate. Callee assumes onwership. Used for testing.
+  // Override the default delegate. Callee assumes ownership. Used for testing.
   void set_delegate(std::unique_ptr<Delegate> delegate) {
     delegate_ = std::move(delegate);
   }
