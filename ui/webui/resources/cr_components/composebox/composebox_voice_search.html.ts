@@ -25,7 +25,7 @@ export function getHtml(this: ComposeboxVoiceSearchElement) {
         </a>
       </div>
       <textarea id="input"
-          .value="${this.finalResult_ + (this.interimResult_ || '')}"
+          .value="${this.transcript_}"
           placeholder="${this.listeningPlaceholder_}"
           ?hidden="${this.shouldShowErrorScrim_()}" disabled>
       </textarea>

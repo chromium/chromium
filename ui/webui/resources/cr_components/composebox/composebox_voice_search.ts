@@ -336,12 +336,14 @@ export class ComposeboxVoiceSearchElement extends
     this.state_ = State.RESULT_RECEIVED;
     this.interimResult_ = '';
     this.finalResult_ = '';
+    this.transcript_ = '';
 
     const speechResult = results[e.resultIndex];
     assert(speechResult);
     // Process final results if is fully final.
     if (!!speechResult && speechResult.isFinal) {
       this.finalResult_ = speechResult[0]!.transcript;
+      this.transcript_ = this.finalResult_;
       this.onFinalResult_(this.finalResult_);
       return;
     }
