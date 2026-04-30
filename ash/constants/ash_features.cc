@@ -1195,8 +1195,7 @@ BASE_FEATURE(kFeatureManagementLobster, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enabling this flag allows password complexity checks when setting a local pin
 // or password.
-BASE_FEATURE(kLocalFactorsPasswordComplexity,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kLocalFactorsPasswordComplexity, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables local authentication controller with PIN support.
 BASE_FEATURE(kLocalAuthenticationWithPin, base::FEATURE_ENABLED_BY_DEFAULT);
@@ -1224,7 +1223,7 @@ BASE_FEATURE(kMacAddressRandomization, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enabling this flag allows the managed local pin and password related changes
 // to be applied.
-BASE_FEATURE(kManagedLocalPinAndPassword, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kManagedLocalPinAndPassword, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables policy management for USB printers.
 BASE_FEATURE(kManagedUsbPrinters, base::FEATURE_ENABLED_BY_DEFAULT);
@@ -1602,7 +1601,7 @@ BASE_FEATURE(kQuickUnlockPinAutosubmitBackfill,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables reordering of screens in the recovery flow.
-BASE_FEATURE(kRecoveryFlowReorder, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kRecoveryFlowReorder, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables or disables Release Notes notifications on non-stable ChromeOS
 // channels. Used for testing.
