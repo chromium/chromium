@@ -75,6 +75,7 @@ import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxFocusReason;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.ui.base.ActivityKeyboardVisibilityDelegate;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -604,22 +605,14 @@ public class LocationBarTest {
     @CommandLineFlags.Add({
         "disable-features=" + ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2
     })
+    @DisableFeatures(SigninFeatures.PROFILE_DISC_ON_ALL_PAGES)
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
-    public void testFocusLogic_buttonVisibilityTablet() {
-        testFocusLogic_buttonVisibilityTablet(/* expectDesktopMode= */ true);
-    }
-
-    @Test
-    @MediumTest
-    @CommandLineFlags.Add({
-        "disable-features=" + ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2
-    })
-    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
-    public void testFocusLogic_buttonVisibilityTabletWithDesktopModeDisabled() {
+    public void testFocusLogic_buttonVisibilityTablet_ProfileDiscDisabled_DesktopDisabled() {
         OmniboxFeatures.setHasDesktopExperienceForTesting(false);
         DeviceInput.setSupportsAlphabeticKeyboardForTesting(false);
         DeviceInput.setSupportsPrecisionPointerForTesting(false);
-        testFocusLogic_buttonVisibilityTablet(/* expectDesktopMode= */ false);
+        testFocusLogic_buttonVisibilityTablet(
+                /* expectDesktopMode= */ false, /* profileDiscEnabled= */ false);
     }
 
     @Test
@@ -627,15 +620,54 @@ public class LocationBarTest {
     @CommandLineFlags.Add({
         "disable-features=" + ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2
     })
+    @EnableFeatures({
+        SigninFeatures.PROFILE_DISC_ON_ALL_PAGES,
+        SigninFeatures.SIGNIN_LEVEL_UP_BUTTON
+    })
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
-    public void testFocusLogic_buttonVisibilityTabletWithDesktopModeEnabled() {
+    public void testFocusLogic_buttonVisibilityTablet_ProfileDiscEnabled_DesktopDisabled() {
+        OmniboxFeatures.setHasDesktopExperienceForTesting(false);
+        DeviceInput.setSupportsAlphabeticKeyboardForTesting(false);
+        DeviceInput.setSupportsPrecisionPointerForTesting(false);
+        testFocusLogic_buttonVisibilityTablet(
+                /* expectDesktopMode= */ false, /* profileDiscEnabled= */ true);
+    }
+
+    @Test
+    @MediumTest
+    @CommandLineFlags.Add({
+        "disable-features=" + ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2
+    })
+    @DisableFeatures(SigninFeatures.PROFILE_DISC_ON_ALL_PAGES)
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
+    public void testFocusLogic_buttonVisibilityTablet_ProfileDiscDisabled_DesktopEnabled() {
         OmniboxFeatures.setHasDesktopExperienceForTesting(true);
         DeviceInput.setSupportsAlphabeticKeyboardForTesting(true);
         DeviceInput.setSupportsPrecisionPointerForTesting(true);
-        testFocusLogic_buttonVisibilityTablet(/* expectDesktopMode= */ true);
+        testFocusLogic_buttonVisibilityTablet(
+                /* expectDesktopMode= */ true, /* profileDiscEnabled= */ false);
     }
 
-    private void testFocusLogic_buttonVisibilityTablet(boolean expectDesktopMode) {
+    @Test
+    @MediumTest
+    @CommandLineFlags.Add({
+        "disable-features=" + ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2
+    })
+    @EnableFeatures({
+        SigninFeatures.PROFILE_DISC_ON_ALL_PAGES,
+        SigninFeatures.SIGNIN_LEVEL_UP_BUTTON
+    })
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
+    public void testFocusLogic_buttonVisibilityTablet_ProfileDiscEnabled_DesktopEnabled() {
+        OmniboxFeatures.setHasDesktopExperienceForTesting(true);
+        DeviceInput.setSupportsAlphabeticKeyboardForTesting(true);
+        DeviceInput.setSupportsPrecisionPointerForTesting(true);
+        testFocusLogic_buttonVisibilityTablet(
+                /* expectDesktopMode= */ true, /* profileDiscEnabled= */ true);
+    }
+
+    private void testFocusLogic_buttonVisibilityTablet(
+            boolean expectDesktopMode, boolean profileDiscEnabled) {
         OmniboxFeatures.setHasDesktopExperienceForTesting(expectDesktopMode);
         startActivityNormally();
 
@@ -671,7 +703,8 @@ public class LocationBarTest {
         } else {
             onView(withId(R.id.mic_button))
                     .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
-            onView(withId(R.id.lens_camera_button))
+            // With profileDiscEnabled a Signin button appears with priority over the lens button.
+            onView(withId(profileDiscEnabled ? R.id.signin_button : R.id.lens_camera_button))
                     .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
             onView(withId(R.id.delete_button))
                     .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));

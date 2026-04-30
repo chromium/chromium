@@ -19473,6 +19473,21 @@
             ]
         }
     ],
+    "ProfileDiscOnAllPages": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ProfileDiscOnAllPages"
+                    ]
+                }
+            ]
+        }
+    ],
     "ProfileExperimentsM0": [
         {
             "platforms": [
