@@ -17,7 +17,7 @@ const workerRegisterAndClaimPromise = function() {
           const channel = new MessageChannel();
           // Wait for ServiceWorker to claim itself.
           channel.port1.onmessage = function(e) {
-            if (e.data == 'clients claimed') {
+            if (e.data === 'clients claimed') {
               resolve(registration);
             } else {
               reject(`Claim failure: ${e.data}`);
@@ -53,7 +53,7 @@ const fetchWithControlledPagePromise = function() {
           return response.text();
         })
         .then(function(text) {
-          if (text != 'SW served data') {
+          if (text !== 'SW served data') {
             reject(`Fetch() result error[2]: ${text}`);
           }
           resolve();
@@ -73,8 +73,8 @@ const test = function() {
         return response.text();
       })
       .then(function(text) {
-        if (text != 'original data\n') {
-          throw `Fetch() result error[1]: ${text}`;
+        if (text !== 'original data\n') {
+          throw new Error(`Fetch() result error[1]: ${text}`);
         }
         return workerRegisterAndClaimPromise();
       })

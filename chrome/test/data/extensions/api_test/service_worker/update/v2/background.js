@@ -24,6 +24,6 @@ controllerChangePromise
       serviceWorker.postMessage('ping', [channel.port2]);
     })
     .catch(function(err) {
-      console.log(err);
+      console.info(err);
       chrome.test.sendMessage('FAILURE_V2');
     });

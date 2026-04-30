@@ -43,7 +43,7 @@ const testSerial = function() {
         break;
       case 2: {
         const bitrate = 57600;
-        console.log(
+        console.info(
             `Connecting to serial device ${serialPort} at ${bitrate} bps.`);
         serial.connect(serialPort, {bitrate: bitrate}, onConnect);
         break;
@@ -84,7 +84,7 @@ const testSerial = function() {
         break;
       case 11: {
         const bitrate = 115200;
-        console.log(
+        console.info(
             `Reconnecting to serial device ${serialPort} at ${bitrate} bps.`);
         serial.connect(serialPort, {bitrate: bitrate}, onConnect);
         break;
@@ -140,7 +140,7 @@ const testSerial = function() {
     for (let i = 0; i < data.length; i++) {
       receiveBufferUint8View[i + receiveBufferIndex] = data[i];
     }
-    if (bytesToReceive == 0) {
+    if (bytesToReceive === 0) {
       chrome.test.assertEq(
           sendBufferUint8View, receiveBufferUint8View,
           'Buffer received was not equal to buffer sent.');
@@ -162,7 +162,7 @@ const testSerial = function() {
       return;
     }
     hasReadError = true;
-    if (errorInfo.error == 'parity_error') {
+    if (errorInfo.error === 'parity_error') {
       serial.getInfo(connectionId, onGetInfoToReconnect);
     } else {
       chrome.test.fail(`Failed to receive serial data: ${errorInfo.error}`);
@@ -180,7 +180,7 @@ const testSerial = function() {
   };
 
   const onGetInfoAfterReconnect = function(connectionInfo) {
-    if (connectionInfo.paused != false) {
+    if (connectionInfo.paused !== false) {
       chrome.test.fail('Failed to reconnect on read error.');
     }
     hasReadError = false;

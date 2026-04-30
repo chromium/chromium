@@ -4,7 +4,7 @@
 
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   chrome.test.sendMessage(
-      msg == 'tab->worker' ? 'WORKER_RECEIVED_MESSAGE' : 'FAILURE');
+      msg === 'tab->worker' ? 'WORKER_RECEIVED_MESSAGE' : 'FAILURE');
 });
 
 chrome.test.sendMessage('WORKER_RUNNING');

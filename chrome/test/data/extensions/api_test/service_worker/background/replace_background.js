@@ -13,7 +13,7 @@ const backgroundJS =
 
 self.onfetch = function(e) {
   const requestUrl = new URL(e.request.url);
-  if (requestUrl.pathname == '/background.js') {
+  if (requestUrl.pathname === '/background.js') {
     e.respondWith(new Response(backgroundJS));
   }
 };

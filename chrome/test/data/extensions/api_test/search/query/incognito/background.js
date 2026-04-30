@@ -42,7 +42,7 @@ const testHelper = (tabs, queryInfo) => {
 
 const addTabListener = (tabIdExpected) => {
   chrome.tabs.onUpdated.addListener(function listener(tabId, changeInfo, tab) {
-    if (tabId != tabIdExpected || changeInfo.status !== 'complete') {
+    if (tabId !== tabIdExpected || changeInfo.status !== 'complete') {
       return;  // Not our tab.
     }
     // Note: make sure to stop listening to future events, so that this

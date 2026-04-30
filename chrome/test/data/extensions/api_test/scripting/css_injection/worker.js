@@ -102,7 +102,7 @@ chrome.test.runTests([
       chrome.webNavigation.getAllFrames({tabId: tab.id}, resolve);
     });
     const bComFrame = frames.find(frame => {
-      return (new URL(frame.url)).hostname == 'b.com';
+      return (new URL(frame.url)).hostname === 'b.com';
     });
     chrome.test.assertTrue(!!bComFrame);
 

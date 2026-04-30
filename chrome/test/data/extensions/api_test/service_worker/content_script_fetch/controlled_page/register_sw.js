@@ -13,7 +13,7 @@ function register() {
         const channel = new MessageChannel();
         const sawMessage = new Promise(function(resolve, reject) {
           channel.port1.onmessage = function(e) {
-            if (e.data == 'clients claimed') {
+            if (e.data === 'clients claimed') {
               resolve();
             } else {
               reject(e.data);

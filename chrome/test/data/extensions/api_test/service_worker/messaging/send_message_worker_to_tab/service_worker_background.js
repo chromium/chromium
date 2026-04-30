@@ -10,7 +10,7 @@ chrome.test.getConfig((config) => {
     function createTab() {
       let testComplete = false;
       chrome.tabs.onUpdated.addListener(function listener(tabId, changeInfo) {
-        if (!createdTabId || tabId != createdTabId ||
+        if (!createdTabId || tabId !== createdTabId ||
             changeInfo.status !== 'complete') {
           return;
         }
@@ -31,7 +31,7 @@ chrome.test.getConfig((config) => {
     },
     function testExternalMessage() {
       chrome.tabs.sendMessage(createdTabId, 'worker->tab', function(response) {
-        console.log(`response = ${response}`);
+        console.info(`response = ${response}`);
         chrome.test.assertEq('worker->tab->worker', response);
         chrome.test.succeed();
       });

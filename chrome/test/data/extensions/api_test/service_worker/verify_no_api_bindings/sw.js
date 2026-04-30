@@ -6,12 +6,12 @@ const expectedKeys = ['csi', 'loadTimes', 'runtime'];
 
 self.onmessage = function(e) {
   let message = 'SUCCESS';
-  if (e.data != 'checkBindingsTest') {
+  if (e.data !== 'checkBindingsTest') {
     message = 'FAILURE';
   } else {
     for (const key in chrome) {
       if (!expectedKeys.includes(key)) {
-        console.log(`Unexpected key: ${key}`);
+        console.info(`Unexpected key: ${key}`);
         message = 'FAILURE';
         break;
       }

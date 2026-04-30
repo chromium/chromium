@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 window.onmessage = function(e) {
-  if (e.data == 'ping') {
+  if (e.data === 'ping') {
     e.source.postMessage('FROM_EXTENSION_RESOURCE', '*');
   }
 };

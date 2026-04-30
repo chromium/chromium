@@ -191,7 +191,7 @@ chrome.test.runTests([
     const tab = await getSingleTab(query);
     const frames = await getFramesInTab(tab.id);
     const deniedFrame = frames.find((frame) => {
-      return (new URL(frame.url)).hostname == 'c.com';
+      return (new URL(frame.url)).hostname === 'c.com';
     });
     const frameIds = [
       findFrameIdWithHostname(frames, 'b.com'),

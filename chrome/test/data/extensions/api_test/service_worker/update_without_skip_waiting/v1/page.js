@@ -11,7 +11,7 @@ const serviceWorkerPromise = new Promise(function(resolve, reject) {
         const sw = registration.active;
         const channel = new MessageChannel();
         channel.port1.onmessage = function(e) {
-          if (e.data == 'Pong from version 1') {
+          if (e.data === 'Pong from version 1') {
             resolve(e.data);
           } else {
             reject(e.data);  // Fail fast.

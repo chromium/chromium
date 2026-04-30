@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
-  if (msg != 'tab->worker') {
+  if (msg !== 'tab->worker') {
     chrome.test.sendMessage('FAILURE');
     return;
   }

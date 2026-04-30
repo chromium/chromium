@@ -10,5 +10,5 @@ if (!isInstanceOfServiceWorkerGlobalScope) {
   chrome.test.sendMessage('FAIL');
 } else {
   chrome.test.onMessage.addListener(
-      args => chrome.test.sendMessage(args.data == 'hello' ? 'PASS' : 'FAIL'));
+      args => chrome.test.sendMessage(args.data === 'hello' ? 'PASS' : 'FAIL'));
 }

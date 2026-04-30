@@ -11,7 +11,7 @@ this.onmessage = function(e) {
     case 'checknotification':
       const permission = Notification.permission;
       respond(
-          permission == 'granted' ?
+          permission === 'granted' ?
               'OK' :
               (`Unexpected Notification.permission: ${permission}`));
       break;

@@ -7,8 +7,8 @@ fetch(chrome.runtime.getURL('data_for_content_script'))
       return res.text();
     })
     .then(function(txt) {
-      if (txt != 'original data\n') {
-        throw `Fetch() result error: ${txt}`;
+      if (txt !== 'original data\n') {
+        throw new Error(`Fetch() result error: ${txt}`);
       }
       return new Promise(function(resolve) {
         const xhr = new XMLHttpRequest();
@@ -20,8 +20,8 @@ fetch(chrome.runtime.getURL('data_for_content_script'))
       });
     })
     .then(function(txt) {
-      if (txt != 'original data\n') {
-        throw `XMLHttpRequest result error: ${txt}`;
+      if (txt !== 'original data\n') {
+        throw new Error(`XMLHttpRequest result error: ${txt}`);
       }
       chrome.runtime.connect().postMessage('Success');
     })

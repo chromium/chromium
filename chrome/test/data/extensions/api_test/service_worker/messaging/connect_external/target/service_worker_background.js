@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 chrome.runtime.onConnectExternal.addListener(port => {
-  console.log('{worker} target got port connection');
+  console.info('{worker} target got port connection');
   port.onMessage.addListener(msg => {
-    console.log('target {worker}: got message: ' + msg);
+    console.info('target {worker}: got message: ' + msg);
     chrome.test.assertEq('initiator->target', msg);
     port.postMessage('initiator->target->initiator');
   });

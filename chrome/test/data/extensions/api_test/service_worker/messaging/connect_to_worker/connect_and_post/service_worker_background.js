@@ -11,7 +11,7 @@ chrome.runtime.onConnect.addListener(port => {
     messageCount++;
     // Messages are sent every 100ms.
     // This means the service worker is alive for at least 2 seconds.
-    if (messageCount == 20) {
+    if (messageCount === 20) {
       chrome.test.succeed();
     }
   });

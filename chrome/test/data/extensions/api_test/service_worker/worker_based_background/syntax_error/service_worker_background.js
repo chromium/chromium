@@ -8,5 +8,6 @@ chrome.test.sendMessage('ready', () => {
 
 const syntaxError = function() {
   // Intentional syntax error.
+  // eslint-disable-next-line no-console
   console.lg('test');
 };

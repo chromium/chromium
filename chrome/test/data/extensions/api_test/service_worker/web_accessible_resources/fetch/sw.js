@@ -4,7 +4,7 @@
 
 self.onfetch = function(e) {
   const url = new URL(e.request.url);
-  if (url.pathname == '/data_for_extension') {
+  if (url.pathname === '/data_for_extension') {
     e.respondWith(new Response('SW served data'));
   }
 };

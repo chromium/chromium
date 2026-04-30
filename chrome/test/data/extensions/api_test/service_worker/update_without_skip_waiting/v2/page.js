@@ -5,7 +5,7 @@
 let expectUpdate = false;
 
 const registerServiceWorkerPromise = new Promise(function(resolve, reject) {
-  expectUpdate = window.location.hash == '#expect_update';
+  expectUpdate = window.location.hash === '#expect_update';
   let serviceWorkerRegistration;
   navigator.serviceWorker.register('sw.js')
       .then(function() {
@@ -31,7 +31,7 @@ const registerServiceWorkerPromise = new Promise(function(resolve, reject) {
           // If there's an installing worker, wait for waiting worker to exist
           // first.
           installingWorker.onstatechange = function(e) {
-            if (installingWorker.state == 'installed') {
+            if (installingWorker.state === 'installed') {
               chrome.test.assertTrue(!!serviceWorkerRegistration.waiting);
               resolve(serviceWorkerRegistration.active);
             }

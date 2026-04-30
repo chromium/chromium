@@ -8,7 +8,7 @@ chrome.test.runTests([
     const testUrl =
         `http://b.com:${config.testServer.port}/extensions/test_file.html`;
     chrome.tabs.onCreated.addListener((tab) => {
-      if (tab.pendingUrl == testUrl) {
+      if (tab.pendingUrl === testUrl) {
         chrome.test.succeed();
       }
     });

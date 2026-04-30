@@ -4,7 +4,7 @@
 
 const testGetDevices = function() {
   const onGetDevices = function(devices) {
-    chrome.test.assertTrue(devices.length == 2);
+    chrome.test.assertTrue(devices.length === 2);
     const array = ['/dev/fakeserialmojo', '\\\\COM800\\'];
     chrome.test.assertTrue(array.indexOf(devices[0].path) >= 0);
     chrome.test.assertTrue(array.indexOf(devices[1].path) >= 0);

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 chrome.runtime.sendMessage('tab->worker', response => {
-  if (response != 'tab->worker->tab') {
+  if (response !== 'tab->worker->tab') {
     chrome.test.sendMessage('FAILURE');
     return;
   }

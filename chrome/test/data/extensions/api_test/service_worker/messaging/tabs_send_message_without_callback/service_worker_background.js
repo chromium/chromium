@@ -12,7 +12,7 @@ chrome.test.getConfig((config) => {
       // stable in extension Service Workers.
       let testComplete = false;
       chrome.tabs.onUpdated.addListener(function listener(tabId, changeInfo) {
-        if (!createdTabId || tabId != createdTabId ||
+        if (!createdTabId || tabId !== createdTabId ||
             changeInfo.status !== 'complete') {
           return;
         }

@@ -6,6 +6,6 @@
 // this worker.  //content API (StopServiceWorkerForScope) used for shutdown
 // DCHECKs if the worker hasn't finished installation.
 this.addEventListener('activate', function(e) {
-  console.log('activate');
+  console.info('activate');
   chrome.test.sendMessage('WORKER_ACTIVATED');
 });

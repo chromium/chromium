@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 self.addEventListener('fetch', event => {
-  if (event.request.url.indexOf('fallthrough') != -1) {
+  if (event.request.url.indexOf('fallthrough') !== -1) {
     return;
   }
-  if (event.request.url.indexOf('respondWithFetch') != -1) {
+  if (event.request.url.indexOf('respondWithFetch') !== -1) {
     event.respondWith(fetch(event.request));
     return;
   }

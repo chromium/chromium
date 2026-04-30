@@ -7,13 +7,13 @@ self.onmessage = function(e) {
   const fail = function() {
     e.ports[0].postMessage('FAILURE');
   };
-  if (e.data == 'sendMessageTest') {
+  if (e.data === 'sendMessageTest') {
     try {
       chrome.test.sendMessage('CHECK_REF_COUNT', function(reply) {
         ++numMessagesReceived;
         // We expect two 'sendMessageTest' messages in the worker, reply to the
         // browser when we have received both.
-        if (numMessagesReceived == 2) {
+        if (numMessagesReceived === 2) {
           chrome.test.sendMessage('SUCCESS_FROM_WORKER');
         }
         e.ports[0].postMessage(`Worker reply: ${reply}`);
@@ -21,7 +21,7 @@ self.onmessage = function(e) {
     } catch (e) {
       fail();
     }
-  } else if (e.data == 'roundtrip-request') {
+  } else if (e.data === 'roundtrip-request') {
     e.ports[0].postMessage('roundtrip-response');
   } else {
     fail();

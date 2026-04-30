@@ -8,7 +8,8 @@ const kTargetExtensionId = 'pkplfbidichfdicaijlchgnapepdginl';
 chrome.test.runTests([function testSendMessageExternal() {
   chrome.runtime.sendMessage(
       kTargetExtensionId, 'initiator->target', function(response) {
-        console.log('Extension got response from other extension: ' + response);
+        console.info(
+            'Extension got response from other extension: ' + response);
         chrome.test.assertEq('initiator->target->initiator', response);
         chrome.test.succeed();
       });

@@ -30,9 +30,9 @@ const startServiceWorker = function() {
 
 window.runServiceWorker = function() {
   const sendMessage = function(str, optExtraLogStr) {
-    console.log(str);
+    console.info(str);
     if (optExtraLogStr) {
-      console.log(optExtraLogStr);
+      console.info(optExtraLogStr);
     }
     chrome.test.sendMessage(str);
   };
@@ -43,7 +43,7 @@ window.runServiceWorker = function() {
         serviceWorker.postMessage('waitForPushMessaging', [mc.port2]);
         mc.port1.onmessage = function(e) {
           sendMessage(
-              e.data == 'testdata' ? 'OK' : 'FAIL', `message: ${e.data}`);
+              e.data === 'testdata' ? 'OK' : 'FAIL', `message: ${e.data}`);
         };
         sendMessage('SERVICE_WORKER_READY');
       })

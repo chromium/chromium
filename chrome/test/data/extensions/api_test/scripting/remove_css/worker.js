@@ -112,7 +112,7 @@ async function createTab(url) {
     // Wait for `url` to finish loading.
     chrome.tabs.onUpdated.addListener(
         async function listener(updatedTabId, {status}) {
-          if (status != 'complete') {
+          if (status !== 'complete') {
             return;
           }
           chrome.tabs.onUpdated.removeListener(listener);

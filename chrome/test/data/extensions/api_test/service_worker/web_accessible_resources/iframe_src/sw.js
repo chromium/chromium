@@ -15,17 +15,17 @@ const swIframeJSResponse = `window.onmessage = function(e) {
 
 self.onfetch = function(e) {
   const url = new URL(e.request.url);
-  if (url.pathname == '/iframe.html') {
+  if (url.pathname === '/iframe.html') {
     e.respondWith(new Response(swIframeHTMLResponse, {
       headers: {'Content-Type': 'text/html'},
     }));
-  } else if (url.pathname == '/iframe_non_existent.html') {
+  } else if (url.pathname === '/iframe_non_existent.html') {
     e.respondWith(new Response(swIframeNonExistentHTMLResponse, {
       headers: {'Content-Type': 'text/html'},
     }));
   } else if (
-      url.pathname == '/iframe_sw.js' ||
-      url.pathname == '/iframe_non_existent.js') {
+      url.pathname === '/iframe_sw.js' ||
+      url.pathname === '/iframe_non_existent.js') {
     e.respondWith(new Response(swIframeJSResponse));
   }
 };

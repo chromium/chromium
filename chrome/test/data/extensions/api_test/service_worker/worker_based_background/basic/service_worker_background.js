@@ -7,15 +7,15 @@ const isInstanceOfServiceWorkerGlobalScope =
     (self instanceof ServiceWorkerGlobalScope);
 
 chrome.tabs.onCreated.addListener(tab => {
-  console.log('onCreated');
-  console.log(tab.pendingUrl);
+  console.info('onCreated');
+  console.info(tab.pendingUrl);
   const url = new URL(tab.pendingUrl);
-  const isAboutBlank = url.href == 'about:blank';
+  const isAboutBlank = url.href === 'about:blank';
 
   // Note: Ignore 'about:blank' navigations.
-  if (url.pathname == '/extensions/test_file.html') {
+  if (url.pathname === '/extensions/test_file.html') {
     chrome.test.sendMessage('CREATED');
-  } else if (url.href != 'about:blank') {
+  } else if (url.href !== 'about:blank') {
     chrome.test.sendMessage('CREATE_FAILED');
   }
 });

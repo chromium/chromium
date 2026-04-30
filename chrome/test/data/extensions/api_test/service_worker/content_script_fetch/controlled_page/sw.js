@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 self.addEventListener('fetch', function(event) {
-  if (event.request.url.indexOf('sw_controlled_check') != -1) {
+  if (event.request.url.indexOf('sw_controlled_check') !== -1) {
     event.respondWith(new Response('SW controlled'));
-  } else if (event.request.url.indexOf('data_for_content_script') != -1) {
+  } else if (event.request.url.indexOf('data_for_content_script') !== -1) {
     event.respondWith(new Response('SW served data'));
   }
 });

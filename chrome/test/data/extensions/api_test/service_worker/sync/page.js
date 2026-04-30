@@ -30,12 +30,12 @@ window.runServiceWorker = function() {
         // Called when ServiceWorker.onsync fires.
         return new Promise(resolve => {
           mc.port1.onmessage = function(e) {
-            if (e.data == 'connected') {
+            if (e.data === 'connected') {
               resolve('SERVICE_WORKER_READY');
               return;
             }
-            if (e.data != 'SYNC: send-chats') {
-              console.log(`SW returned incorrect data: ${e.data}`);
+            if (e.data !== 'SYNC: send-chats') {
+              console.info(`SW returned incorrect data: ${e.data}`);
               chrome.test.sendMessage('FAIL');  // Fails the test fast.
               return;
             }

@@ -8,7 +8,8 @@ self.addEventListener('fetch', function(event) {
     const foundClients =
         await clients.matchAll({includeUncontrolled: true, type: 'window'});
     const background = foundClients.find((client) => {
-      return new URL(client.url).pathname == '/_generated_background_page.html';
+      return new URL(client.url).pathname ===
+          '/_generated_background_page.html';
     });
     // Ensure that the "seenUrls" list in the background page is updated
     // before the response is served.

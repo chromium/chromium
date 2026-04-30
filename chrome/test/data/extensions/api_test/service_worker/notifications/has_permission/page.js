@@ -24,7 +24,7 @@ const test = function(messageToSend) {
         .then(function(serviceWorker) {
           const mc = new MessageChannel();
           mc.port1.onmessage = function(e) {
-            if (e.data == 'OK') {
+            if (e.data === 'OK') {
               resolve();
             } else {
               reject(`Received bad response from ServiceWorker: ${e.data}`);

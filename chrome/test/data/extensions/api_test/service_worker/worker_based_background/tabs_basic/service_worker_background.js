@@ -162,7 +162,7 @@ chrome.test.runTests([
   function testTabReload() {
     chrome.tabs.onUpdated.addListener(
         function localListener(tabId, changeInfo, tab) {
-          if (changeInfo.status == 'complete') {
+          if (changeInfo.status === 'complete') {
             chrome.tabs.onUpdated.removeListener(localListener);
             chrome.test.assertEq(tabProps[0].id, tabId);
             chrome.test.assertEq(tabProps[0].url, tab.url);

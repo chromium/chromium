@@ -138,7 +138,7 @@ function waitForTab(tabIdExpected, expectedHostname) {
   return new Promise((resolve) => {
     chrome.tabs.onUpdated.addListener(
         function listener(tabId, changeInfo, tab) {
-          if ((tabIdExpected != -1 && tabId != tabIdExpected) ||
+          if ((tabIdExpected !== -1 && tabId !== tabIdExpected) ||
               changeInfo.status !== 'complete') {
             return;  // Not our tab or not fully loaded.
           }

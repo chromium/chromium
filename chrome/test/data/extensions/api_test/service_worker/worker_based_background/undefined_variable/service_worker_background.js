@@ -8,5 +8,5 @@ chrome.test.sendMessage('ready', () => {
 
 const undefinedVariableError = function() {
   // Intentional undefined variable
-  console.log(undefined_variable);
+  console.info(undefined_variable);
 };
