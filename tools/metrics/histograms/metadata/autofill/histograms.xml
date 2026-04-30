@@ -5653,6 +5653,17 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.OneTimeTokens.Backend.Gmail.QueueLatency" units="ms"
+    expires_after="2027-05-01">
+  <owner>koerber@google.com</owner>
+  <owner>src/components/one_time_tokens/OWNERS</owner>
+  <summary>
+    Records the duration a Gmail OTP notification spent in the pending queue
+    before being processed. Recorded when a notification is popped from the
+    pending queue to be processed.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.OneTimeTokens.Backend.Gmail.QueueSize" units="count"
     expires_after="2027-05-01">
   <owner>koerber@google.com</owner>

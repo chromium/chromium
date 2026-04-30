@@ -5,6 +5,7 @@
 #include "components/one_time_tokens/core/browser/email_one_time_token_fetch_coordinator.h"
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -25,6 +26,8 @@ class EmailOneTimeTokenFetchCoordinatorTest : public testing::Test {
   EmailOneTimeTokenFetchCoordinatorTest() : coordinator_(mock_delegate_) {}
 
  protected:
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   MockDelegate mock_delegate_;
   EmailOneTimeTokenFetchCoordinator coordinator_;
   base::HistogramTester histogram_tester_;
@@ -198,6 +201,49 @@ TEST_F(EmailOneTimeTokenFetchCoordinatorTest, DeDuplicatesPendingRequests) {
               OnCanSendNetworkRequest(OneTimeTokenNotificationMatches("ref4")))
       .Times(1);
   coordinator_.InformOfNetworkRequestFinished(notification1);
+}
+
+// Tests that the coordinator correctly records the queue latency.
+TEST_F(EmailOneTimeTokenFetchCoordinatorTest, RecordsQueueLatency) {
+  const OneTimeTokenBackendNotification notification1(
+      EncryptedMessageReference("ref1"));
+  const OneTimeTokenBackendNotification notification2(
+      EncryptedMessageReference("ref2"));
+  const OneTimeTokenBackendNotification notification3(
+      EncryptedMessageReference("ref3"));
+  const OneTimeTokenBackendNotification notification4(
+      EncryptedMessageReference("ref4"));
+
+  // Max concurrent requests is 3. The first 3 should be dispatched immediately.
+  EXPECT_CALL(mock_delegate_,
+              OnCanSendNetworkRequest(OneTimeTokenNotificationMatches("ref1")));
+  EXPECT_CALL(mock_delegate_,
+              OnCanSendNetworkRequest(OneTimeTokenNotificationMatches("ref2")));
+  EXPECT_CALL(mock_delegate_,
+              OnCanSendNetworkRequest(OneTimeTokenNotificationMatches("ref3")));
+
+  coordinator_.SignalNetworkRequestNeeded(notification1);
+  coordinator_.SignalNetworkRequestNeeded(notification2);
+  coordinator_.SignalNetworkRequestNeeded(notification3);
+
+  // The 4th notification is queued.
+  coordinator_.SignalNetworkRequestNeeded(notification4);
+
+  // Fast-forward time by 500ms to simulate the notification waiting in the
+  // queue.
+  task_environment_.FastForwardBy(base::Milliseconds(500));
+
+  // Finish the first request to free up a slot for the 4th.
+  EXPECT_CALL(mock_delegate_,
+              OnCanSendNetworkRequest(OneTimeTokenNotificationMatches("ref4")));
+  coordinator_.InformOfNetworkRequestFinished(notification1);
+
+  // Validate the histogram is recorded with the exact latency.
+  histogram_tester_.ExpectTimeBucketCount(
+      "Autofill.OneTimeTokens.Backend.Gmail.QueueLatency",
+      base::Milliseconds(500), 1);
+  histogram_tester_.ExpectTotalCount(
+      "Autofill.OneTimeTokens.Backend.Gmail.QueueLatency", 4);
 }
 
 }  // namespace
