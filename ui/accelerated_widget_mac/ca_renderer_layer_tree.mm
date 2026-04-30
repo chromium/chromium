@@ -1121,6 +1121,10 @@ void CARendererLayerTree::ContentLayer::CommitToCA(
     update_ca_edge_aa_mask = old_layer_->ca_edge_aa_mask_ != ca_edge_aa_mask_;
     update_opacity = old_layer_->opacity_ != opacity_;
     update_ca_filter = old_layer_->ca_filter_ != ca_filter_;
+    if (type_ == CALayerType::kVideo) {
+      av_layer_.preventsCapture =
+          protected_video_type_ != gfx::ProtectedVideoType::kClear;
+    }
   } else {
     switch (type_) {
       case CALayerType::kHDRCopier:

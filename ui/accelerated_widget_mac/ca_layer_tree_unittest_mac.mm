@@ -52,6 +52,8 @@ struct CALayerProperties {
   gfx::ScopedIOSurface io_surface;
   gfx::ColorSpace color_space;
   base::apple::ScopedCFTypeRef<CVPixelBufferRef> cv_pixel_buffer;
+  gfx::ProtectedVideoType protected_video_type =
+      gfx::ProtectedVideoType::kClear;
 
   bool allow_av_layers = true;
   bool allow_solid_color_layers = true;
@@ -79,7 +81,7 @@ bool ScheduleCALayer(ui::CARendererLayerTree* tree,
       properties->transform, io_surface, io_surface_color_space,
       properties->contents_rect, properties->rect, properties->background_color,
       properties->edge_aa_mask, properties->opacity, properties->filter,
-      gfx::HDRMetadata(), gfx::ProtectedVideoType::kClear, false));
+      gfx::HDRMetadata(), properties->protected_video_type, false));
 }
 
 void UpdateCALayerTree(std::unique_ptr<ui::CARendererLayerTree>& ca_layer_tree,
@@ -922,6 +924,61 @@ TEST_F(CALayerTreeTest, AVLayerBlocklist) {
     EXPECT_FALSE([content_layer2
         isKindOfClass:NSClassFromString(@"AVSampleBufferDisplayLayer")]);
     EXPECT_NE(content_layer1, content_layer2);
+  }
+}
+
+// Ensure that preventsCapture is updated when recycling
+// AVSampleBufferDisplayLayer. Regression test for crbug.com/505192638.
+TEST_F(CALayerTreeTest, AVLayerPreventsCapture) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures({ui::kFullscreenLowPowerBackdropMac}, {});
+
+  CALayerProperties properties;
+  properties.io_surface =
+      gfx::CreateIOSurface(gfx::Size(256, 256), viz::MultiPlaneFormat::kNV12);
+
+  std::unique_ptr<ui::CARendererLayerTree> ca_layer_tree;
+  AVSampleBufferDisplayLayer* av_layer_old = nil;
+  AVSampleBufferDisplayLayer* av_layer_new = nil;
+
+  // Initially, video is clear, so preventsCapture should be NO.
+  {
+    properties.protected_video_type = gfx::ProtectedVideoType::kClear;
+    UpdateCALayerTree(ca_layer_tree, &properties, superlayer_);
+    CALayer* content_layer = GetOnlyContentLayer();
+    EXPECT_TRUE([content_layer
+        isKindOfClass:NSClassFromString(@"AVSampleBufferDisplayLayer")]);
+    av_layer_new = (AVSampleBufferDisplayLayer*)content_layer;
+    EXPECT_FALSE(av_layer_new.preventsCapture);
+  }
+  av_layer_old = av_layer_new;
+
+  // Change to protected video. The layer should be recycled and preventsCapture
+  // should be updated to YES.
+  {
+    properties.protected_video_type =
+        gfx::ProtectedVideoType::kHardwareProtected;
+    UpdateCALayerTree(ca_layer_tree, &properties, superlayer_);
+    CALayer* content_layer = GetOnlyContentLayer();
+    EXPECT_TRUE([content_layer
+        isKindOfClass:NSClassFromString(@"AVSampleBufferDisplayLayer")]);
+    av_layer_new = (AVSampleBufferDisplayLayer*)content_layer;
+    EXPECT_EQ(av_layer_new, av_layer_old);
+    EXPECT_TRUE(av_layer_new.preventsCapture);
+  }
+  av_layer_old = av_layer_new;
+
+  // Change back to clear video. The layer should be recycled and
+  // preventsCapture should be updated to NO.
+  {
+    properties.protected_video_type = gfx::ProtectedVideoType::kClear;
+    UpdateCALayerTree(ca_layer_tree, &properties, superlayer_);
+    CALayer* content_layer = GetOnlyContentLayer();
+    EXPECT_TRUE([content_layer
+        isKindOfClass:NSClassFromString(@"AVSampleBufferDisplayLayer")]);
+    av_layer_new = (AVSampleBufferDisplayLayer*)content_layer;
+    EXPECT_EQ(av_layer_new, av_layer_old);
+    EXPECT_FALSE(av_layer_new.preventsCapture);
   }
 }
 
