@@ -31,6 +31,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/mac_util.h"
+#endif
+
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
@@ -236,6 +240,14 @@ TEST_F(CWSInfoServiceTest, IgnoresNonCWSExtensions) {
 }
 
 TEST_F(CWSInfoServiceTest, HandlesNetworkErrorAndBadServerResponse) {
+#if BUILDFLAG(IS_MAC)
+  // TODO(crbug.com/434660312): Re-enable on macOS 26 once issues with
+  // unexpected test timeout failures are resolved.
+  if (base::mac::MacOSMajorVersion() == 26) {
+    GTEST_SKIP() << "Disabled on macOS Tahoe.";
+  }
+#endif
+
   base::HistogramTester histogram_tester;
   scoped_refptr<const Extension> test1 =
       AddExtension("test1", /* updates_from_cws= */ true);
@@ -380,6 +392,13 @@ TEST_F(CWSInfoServiceTest, HandlesMultipleRequestsPerInfoCheck) {
 }
 
 TEST_F(CWSInfoServiceTest, SchedulesStartupAndPeriodicInfoChecks) {
+#if BUILDFLAG(IS_MAC)
+  // TODO(crbug.com/434660312): Re-enable on macOS 26 once issues with
+  // unexpected test timeout failures are resolved.
+  if (base::mac::MacOSMajorVersion() == 26) {
+    GTEST_SKIP() << "Disabled on macOS Tahoe.";
+  }
+#endif
   // Add an extension to cause queries to CWS.
   scoped_refptr<const Extension> test1 =
       AddExtension("test1", /*updates_from_cws=*/true);
@@ -439,6 +458,13 @@ TEST_F(CWSInfoServiceTest, SchedulesStartupAndPeriodicInfoChecks) {
 // If there are no new extensions installed, CWS Info is only
 // requested after a fetch interval has elapsed.
 TEST_F(CWSInfoServiceTest, UpdatesExistingInfoAtUpdateIntervals) {
+#if BUILDFLAG(IS_MAC)
+  // TODO(crbug.com/434660312): Re-enable on macOS 26 once issues with
+  // unexpected test timeout failures are resolved.
+  if (base::mac::MacOSMajorVersion() == 26) {
+    GTEST_SKIP() << "Disabled on macOS Tahoe.";
+  }
+#endif
   // Add an extension to cause queries to CWS.
   scoped_refptr<const Extension> test1 =
       AddExtension("test1", /*updates_from_cws=*/true);
