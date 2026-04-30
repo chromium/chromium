@@ -149,14 +149,14 @@ TEST_F(TabStripModelAdapterImplTest, MoveTab) {
   tabs::TabHandle handle0 = model_->GetTabAtIndex(0)->GetHandle();
 
   // Move t0 to Index 2 (unpinned)
-  adapter_->MoveTab(handle0, Position(2));
+  ASSERT_TRUE(adapter_->MoveTab(handle0, Position(2)).has_value());
   EXPECT_EQ(model_->GetIndexOfTab(handle0.Get()), 2);
 
   // Pin t0 by moving to pinned
   Path pinned_path =
       adapter_->GetPathForCollection(model_->GetPinnedTabsCollectionHandle(
           TabStripModelAdapterImpl::PassKeyForTesting()));
-  adapter_->MoveTab(handle0, Position(0, pinned_path));
+  ASSERT_TRUE(adapter_->MoveTab(handle0, Position(0, pinned_path)).has_value());
   EXPECT_TRUE(handle0.Get()->IsPinned());
   EXPECT_EQ(model_->GetIndexOfTab(handle0.Get()), 0);
 
@@ -167,7 +167,7 @@ TEST_F(TabStripModelAdapterImplTest, MoveTab) {
 
   // Move t2 into group1
   tabs::TabHandle handle2 = model_->GetTabAtIndex(2)->GetHandle();
-  adapter_->MoveTab(handle2, Position(1, group_path));
+  ASSERT_TRUE(adapter_->MoveTab(handle2, Position(1, group_path)).has_value());
   EXPECT_EQ(model_->GetTabGroupForTab(2), group_id);
 }
 
@@ -180,7 +180,7 @@ TEST_F(TabStripModelAdapterImplTest, MoveCollection) {
   NodeId group_node = NodeId::FromTabCollectionHandle(group_handle);
 
   // Move group to index 1 (after t2)
-  adapter_->MoveCollection(group_node, Position(1));
+  ASSERT_TRUE(adapter_->MoveCollection(group_node, Position(1)).has_value());
   // Tab order should be: [t2] [g:{t0, t1}]
   // So t2 is at index 0, and group starts at index 1.
   EXPECT_EQ(model_->GetTabGroupForTab(1), group_id);

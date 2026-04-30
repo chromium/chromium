@@ -50,17 +50,20 @@ void ToyTabStripModelAdapter::ActivateTab(size_t idx) {
   tab_strip_->ActivateTab(tab);
 }
 
-void ToyTabStripModelAdapter::MoveTab(tabs::TabHandle handle,
-                                      const Position& position) {
+base::expected<void, mojo_base::mojom::ErrorPtr>
+ToyTabStripModelAdapter::MoveTab(tabs::TabHandle handle,
+                                 const Position& position) {
   tab_strip_->MoveTab(handle, position.index());
+  return base::ok();
 }
 
-void ToyTabStripModelAdapter::MoveCollection(const NodeId& id,
-                                             const Position& position) {
+base::expected<void, mojo_base::mojom::ErrorPtr>
+ToyTabStripModelAdapter::MoveCollection(const NodeId& id,
+                                        const Position& position) {
   // TODO(crbug.com/412709271): Integrate with the toy tabstrip to move a
   // collection.
   NOTIMPLEMENTED();
-  return;
+  return base::ok();
 }
 
 mojom::ContainerPtr ToyTabStripModelAdapter::GetTabStripTopology(

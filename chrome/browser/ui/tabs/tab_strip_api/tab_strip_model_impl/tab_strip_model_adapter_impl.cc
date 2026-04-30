@@ -93,8 +93,9 @@ void TabStripModelAdapterImpl::ActivateTab(size_t index) {
   tab_strip_model_->ActivateTabAt(index);
 }
 
-void TabStripModelAdapterImpl::MoveTab(tabs::TabHandle tab,
-                                       const Position& position) {
+base::expected<void, mojo_base::mojom::ErrorPtr>
+TabStripModelAdapterImpl::MoveTab(tabs::TabHandle tab,
+                                  const Position& position) {
   auto maybe_index = GetIndexForHandle(tab);
   CHECK(maybe_index.has_value());
   auto index = maybe_index.value();
@@ -146,15 +147,18 @@ void TabStripModelAdapterImpl::MoveTab(tabs::TabHandle tab,
     case tabs::TabCollection::Type::TABSTRIP:
     case tabs::TabCollection::Type::SPLIT:
       NOTIMPLEMENTED();
-      return;
+      return base::unexpected(mojo_base::mojom::Error::New(
+          mojo_base::mojom::Code::kInvalidArgument, "unsupported move target"));
   }
 
   tab_strip_model_->MoveWebContentsAt(index, to_position,
                                       /*select_after_move=*/false, to_group);
+  return base::ok();
 }
 
-void TabStripModelAdapterImpl::MoveCollection(const NodeId& id,
-                                              const Position& position) {
+base::expected<void, mojo_base::mojom::ErrorPtr>
+TabStripModelAdapterImpl::MoveCollection(const NodeId& id,
+                                         const Position& position) {
   std::optional<tabs::TabCollectionHandle> collection_handle =
       id.ToTabCollectionHandle();
   CHECK(collection_handle.has_value());
@@ -190,8 +194,11 @@ void TabStripModelAdapterImpl::MoveCollection(const NodeId& id,
     case tabs::TabCollection::Type::UNPINNED:
     case tabs::TabCollection::Type::TABSTRIP:
       NOTIMPLEMENTED();
-      return;
+      return base::unexpected(
+          mojo_base::mojom::Error::New(mojo_base::mojom::Code::kInvalidArgument,
+                                       "unsupported collection move"));
   }
+  return base::ok();
 }
 
 tabs_api::mojom::ContainerPtr TabStripModelAdapterImpl::GetTabStripTopology(

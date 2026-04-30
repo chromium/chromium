@@ -10,8 +10,10 @@
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service_impl.h"
 #include "chrome/test/base/android/android_browser_test.h"
+#include "components/tabs/public/pinned_tab_collection.h"
 #include "components/tabs/public/tab_group_tab_collection.h"
 #include "components/tabs/public/tab_strip_collection.h"
+#include "components/tabs/public/unpinned_tab_collection.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -206,6 +208,148 @@ IN_PROC_BROWSER_TEST_F(AndroidTabStripApiBrowserTest, CloseGroup) {
   ASSERT_TRUE(result.has_value());
   ASSERT_EQ(1, model_->GetTabCount());
   ASSERT_EQ(tab0, model_->GetTab(0));
+}
+
+IN_PROC_BROWSER_TEST_F(AndroidTabStripApiBrowserTest, MoveTab) {
+  model_->DuplicateTab(model_->GetTab(0)->GetHandle());
+  model_->DuplicateTab(model_->GetTab(0)->GetHandle());
+  ASSERT_EQ(3, model_->GetTabCount());
+
+  // Order is Tab0, Tab1, Tab2
+  auto handle0 = model_->GetTab(0)->GetHandle();
+  auto handle1 = model_->GetTab(1)->GetHandle();
+  auto handle2 = model_->GetTab(2)->GetHandle();
+
+  // Move Tab0 to the end (index 2 in the unpinned collection)
+  auto* tab_strip_collection = model_->GetTabStripCollection(GetPassKey());
+  tabs_api::Path path(
+      {NodeId::FromWindowId(base::NumberToString(model_->GetSessionId().id())),
+       NodeId::FromTabCollectionHandle(tab_strip_collection->GetHandle()),
+       NodeId::FromTabCollectionHandle(
+           tab_strip_collection->unpinned_collection()->GetHandle())});
+  tabs_api::Position pos(2, path);
+
+  auto result = service_->MoveNode(NodeId::FromTabHandle(handle0), pos);
+  ASSERT_TRUE(result.has_value());
+
+  // New order should be Tab1, Tab2, Tab0
+  ASSERT_EQ(handle1, model_->GetTab(0)->GetHandle());
+  ASSERT_EQ(handle2, model_->GetTab(1)->GetHandle());
+  ASSERT_EQ(handle0, model_->GetTab(2)->GetHandle());
+}
+
+IN_PROC_BROWSER_TEST_F(AndroidTabStripApiBrowserTest, MoveTabIntoGroup) {
+  model_->DuplicateTab(model_->GetTab(0)->GetHandle());
+  model_->DuplicateTab(model_->GetTab(0)->GetHandle());
+  ASSERT_EQ(3, model_->GetTabCount());
+
+  auto handle0 = model_->GetTab(0)->GetHandle();
+  auto handle1 = model_->GetTab(1)->GetHandle();
+  auto handle2 = model_->GetTab(2)->GetHandle();
+
+  auto group_id = model_->CreateTabGroup({handle1}).value();
+  auto* group_collection = model_->GetTabStripCollection(GetPassKey())
+                               ->GetTabGroupCollection(group_id);
+
+  // Move Tab0 into the group at index 1
+  tabs_api::Path path(
+      {NodeId::FromWindowId(base::NumberToString(model_->GetSessionId().id())),
+       NodeId::FromTabCollectionHandle(
+           model_->GetTabStripCollection(GetPassKey())->GetHandle()),
+       NodeId::FromTabCollectionHandle(group_collection->GetHandle())});
+  tabs_api::Position pos(1, path);
+
+  auto result = service_->MoveNode(NodeId::FromTabHandle(handle0), pos);
+  ASSERT_TRUE(result.has_value());
+
+  // New order should be [ (G: H0, H1), H2 ]
+  ASSERT_EQ(group_id, handle0.Get()->GetGroup());
+  ASSERT_EQ(group_id, handle1.Get()->GetGroup());
+  ASSERT_EQ(handle1, model_->GetTab(0)->GetHandle());
+  ASSERT_EQ(handle0, model_->GetTab(1)->GetHandle());
+  ASSERT_EQ(handle2, model_->GetTab(2)->GetHandle());
+
+  // Now move H0 out of the group.
+  tabs_api::Position move_out_pos(1);
+
+  auto move_out_result =
+      service_->MoveNode(NodeId::FromTabHandle(handle0), move_out_pos);
+  ASSERT_TRUE(move_out_result.has_value());
+
+  ASSERT_FALSE(handle0.Get()->GetGroup().has_value());
+}
+
+IN_PROC_BROWSER_TEST_F(AndroidTabStripApiBrowserTest, PinUnpinTab) {
+  auto handle0 = model_->GetTab(0)->GetHandle();
+  ASSERT_FALSE(handle0.Get()->IsPinned());
+
+  auto* tab_strip_collection = model_->GetTabStripCollection(GetPassKey());
+  auto* pinned_collection = tab_strip_collection->pinned_collection();
+  auto* unpinned_collection = tab_strip_collection->unpinned_collection();
+
+  // Pin the tab by moving it to the pinned collection.
+  tabs_api::Path pin_path(
+      {NodeId::FromWindowId(base::NumberToString(model_->GetSessionId().id())),
+       NodeId::FromTabCollectionHandle(tab_strip_collection->GetHandle()),
+       NodeId::FromTabCollectionHandle(pinned_collection->GetHandle())});
+  tabs_api::Position pin_pos(0, pin_path);
+
+  auto pin_result = service_->MoveNode(NodeId::FromTabHandle(handle0), pin_pos);
+  ASSERT_TRUE(pin_result.has_value());
+  ASSERT_TRUE(handle0.Get()->IsPinned());
+
+  // Unpin the tab by moving it to the unpinned collection.
+  tabs_api::Path unpin_path(
+      {NodeId::FromWindowId(base::NumberToString(model_->GetSessionId().id())),
+       NodeId::FromTabCollectionHandle(tab_strip_collection->GetHandle()),
+       NodeId::FromTabCollectionHandle(unpinned_collection->GetHandle())});
+  tabs_api::Position unpin_pos(0, unpin_path);
+
+  auto unpin_result =
+      service_->MoveNode(NodeId::FromTabHandle(handle0), unpin_pos);
+  ASSERT_TRUE(unpin_result.has_value());
+  ASSERT_FALSE(handle0.Get()->IsPinned());
+}
+
+IN_PROC_BROWSER_TEST_F(AndroidTabStripApiBrowserTest, MoveGroup) {
+  model_->DuplicateTab(model_->GetTab(0)->GetHandle());
+  model_->DuplicateTab(model_->GetTab(0)->GetHandle());
+  ASSERT_EQ(3, model_->GetTabCount());
+
+  auto handle0 = model_->GetTab(0)->GetHandle();
+  auto handle1 = model_->GetTab(1)->GetHandle();
+  auto handle2 = model_->GetTab(2)->GetHandle();
+
+  auto group_id = model_->CreateTabGroup({handle0, handle1}).value();
+  auto* group_collection = model_->GetTabStripCollection(GetPassKey())
+                               ->GetTabGroupCollection(group_id);
+
+  // Initial order: [ (G: H0, H1), H2 ]
+  ASSERT_EQ(group_id, model_->GetTab(0)->GetGroup());
+  ASSERT_EQ(group_id, model_->GetTab(1)->GetGroup());
+  ASSERT_EQ(handle2, model_->GetTab(2)->GetHandle());
+
+  // Move the group after H2 (index 1 in the unpinned collection)
+  auto* tab_strip_collection = model_->GetTabStripCollection(GetPassKey());
+  tabs_api::Path path(
+      {NodeId::FromWindowId(base::NumberToString(model_->GetSessionId().id())),
+       NodeId::FromTabCollectionHandle(tab_strip_collection->GetHandle()),
+       NodeId::FromTabCollectionHandle(
+           tab_strip_collection->unpinned_collection()->GetHandle())});
+  tabs_api::Position pos(1, path);
+
+  auto result = service_->MoveNode(
+      NodeId::FromTabCollectionHandle(group_collection->GetHandle()), pos);
+  ASSERT_TRUE(result.has_value());
+
+  // New order should be [ H2, (G: H0, H1) ]
+  ASSERT_EQ(handle2, model_->GetTab(0)->GetHandle());
+  ASSERT_EQ(handle0, model_->GetTab(1)->GetHandle());
+  ASSERT_EQ(handle1, model_->GetTab(2)->GetHandle());
+
+  ASSERT_FALSE(handle2.Get()->GetGroup().has_value());
+  ASSERT_EQ(group_id, handle0.Get()->GetGroup());
+  ASSERT_EQ(group_id, handle1.Get()->GetGroup());
 }
 
 }  // namespace tabs_api

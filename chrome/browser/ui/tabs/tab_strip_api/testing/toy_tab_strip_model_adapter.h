@@ -30,8 +30,12 @@ class ToyTabStripModelAdapter : public TabStripModelAdapter {
   std::optional<int> GetIndexForHandle(
       tabs::TabHandle tab_handle) const override;
   void ActivateTab(size_t index) override;
-  void MoveTab(tabs::TabHandle handle, const Position& position) override;
-  void MoveCollection(const NodeId& id, const Position& position) override;
+  base::expected<void, mojo_base::mojom::ErrorPtr> MoveTab(
+      tabs::TabHandle handle,
+      const Position& position) override;
+  base::expected<void, mojo_base::mojom::ErrorPtr> MoveCollection(
+      const NodeId& id,
+      const Position& position) override;
   mojom::ContainerPtr GetTabStripTopology(
       tabs::TabCollection::Handle root) const override;
   std::optional<const tab_groups::TabGroupId> FindGroupIdFor(

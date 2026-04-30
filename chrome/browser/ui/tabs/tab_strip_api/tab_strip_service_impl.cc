@@ -324,11 +324,12 @@ mojom::TabStripService::MoveNodeResult TabStripServiceImpl::MoveNode(
       }
       // TODO(crbug.com/409086859): Add error handling for cases where a
       // position's parent id is impossible to be moved to.
-      tab_strip_model_adapter().MoveTab(tab_handle.value(), position);
+      RETURN_IF_ERROR(
+          tab_strip_model_adapter().MoveTab(tab_handle.value(), position));
       break;
     }
     case tabs_api::NodeId::Type::kCollection: {
-      tab_strip_model_adapter().MoveCollection(id, position);
+      RETURN_IF_ERROR(tab_strip_model_adapter().MoveCollection(id, position));
       break;
     }
     default:

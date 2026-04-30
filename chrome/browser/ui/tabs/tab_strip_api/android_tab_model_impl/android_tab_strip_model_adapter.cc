@@ -7,9 +7,12 @@
 #include "base/check_deref.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
+#include "components/tabs/public/pinned_tab_collection.h"
 #include "components/tabs/public/tab_collection.h"
 #include "components/tabs/public/tab_group_tab_collection.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/tabs/public/tab_strip_collection.h"
+#include "components/tabs/public/unpinned_tab_collection.h"
 
 namespace tabs_api {
 
@@ -80,14 +83,123 @@ void AndroidTabStripModelAdapter::ActivateTab(size_t index) {
   model_->ActivateTab(handles.at(index));
 }
 
-void AndroidTabStripModelAdapter::MoveTab(tabs::TabHandle handle,
-                                          const Position& position) {
-  NOTREACHED() << "not implemented";
+base::expected<void, mojo_base::mojom::ErrorPtr>
+AndroidTabStripModelAdapter::MoveTab(tabs::TabHandle handle,
+                                     const Position& position) {
+  auto maybe_index = GetIndexForHandle(handle);
+  CHECK(maybe_index.has_value());
+
+  NodeId parent_id;
+  if (position.path().components().empty()) {
+    parent_id = NodeId::FromTabCollectionHandle(
+        root_->unpinned_collection()->GetHandle());
+  } else {
+    parent_id = position.path().components().back();
+  }
+
+  std::optional<tabs::TabCollectionHandle> collection_handle =
+      parent_id.ToTabCollectionHandle();
+  CHECK(collection_handle.has_value());
+  const tabs::TabCollection* collection = collection_handle.value().Get();
+
+  const bool to_pinned =
+      (collection->type() == tabs::TabCollection::Type::PINNED);
+  if (to_pinned != handle.Get()->IsPinned()) {
+    if (to_pinned) {
+      model_->PinTab(handle);
+    } else {
+      model_->UnpinTab(handle);
+    }
+  }
+
+  int to_position = 0;
+  std::optional<tab_groups::TabGroupId> to_group;
+  switch (collection->type()) {
+    case tabs::TabCollection::Type::PINNED:
+      to_position = position.index();
+      break;
+
+    case tabs::TabCollection::Type::GROUP: {
+      to_group = FindGroupIdFor(collection_handle.value());
+      CHECK(to_group.has_value());
+      to_position = model_->GetTabGroupTabIndices(to_group.value()).start() +
+                    position.index();
+      break;
+    }
+    case tabs::TabCollection::Type::UNPINNED:
+      to_position = root_->IndexOfFirstNonPinnedTab() + position.index();
+      break;
+    case tabs::TabCollection::Type::TABSTRIP:
+    case tabs::TabCollection::Type::SPLIT:
+      return base::unexpected(mojo_base::mojom::Error::New(
+          mojo_base::mojom::Code::kInvalidArgument, "unsupported move target"));
+  }
+
+  model_->MoveTab(handle, to_position);
+
+  if (to_group.has_value()) {
+    model_->AddTabsToGroup(to_group, {handle});
+  } else if (handle.Get()->GetGroup().has_value()) {
+    model_->Ungroup({handle});
+  }
+
+  return base::ok();
 }
 
-void AndroidTabStripModelAdapter::MoveCollection(const NodeId& id,
-                                                 const Position& position) {
-  NOTREACHED() << "not implemented";
+base::expected<void, mojo_base::mojom::ErrorPtr>
+AndroidTabStripModelAdapter::MoveCollection(const NodeId& id,
+                                            const Position& position) {
+  std::optional<tabs::TabCollectionHandle> collection_handle =
+      id.ToTabCollectionHandle();
+  CHECK(collection_handle.has_value());
+
+  const tabs::TabCollection* collection = collection_handle.value().Get();
+  CHECK(collection);
+
+  switch (collection->type()) {
+    case tabs::TabCollection::Type::GROUP: {
+      std::optional<const tab_groups::TabGroupId> group_id =
+          FindGroupIdFor(collection_handle.value());
+      CHECK(group_id.has_value());
+
+      NodeId parent_id;
+      if (position.path().components().empty()) {
+        parent_id = NodeId::FromTabCollectionHandle(
+            root_->unpinned_collection()->GetHandle());
+      } else {
+        parent_id = position.path().components().back();
+      }
+
+      std::optional<tabs::TabCollectionHandle> parent_handle =
+          parent_id.ToTabCollectionHandle();
+      CHECK(parent_handle.has_value());
+      const tabs::TabCollection* parent_collection =
+          parent_handle.value().Get();
+
+      int to_position = 0;
+      if (parent_collection->type() == tabs::TabCollection::Type::UNPINNED) {
+        to_position = root_->IndexOfFirstNonPinnedTab() + position.index();
+      } else if (parent_collection->type() ==
+                 tabs::TabCollection::Type::GROUP) {
+        return base::unexpected(mojo_base::mojom::Error::New(
+            mojo_base::mojom::Code::kInvalidArgument,
+            "nested tab groups are not supported on Android"));
+      } else {
+        return base::unexpected(mojo_base::mojom::Error::New(
+            mojo_base::mojom::Code::kInvalidArgument,
+            "Unsupported parent collection type for MoveCollection"));
+      }
+
+      model_->MoveGroupTo(group_id.value(), to_position);
+      break;
+    }
+    default:
+      return base::unexpected(mojo_base::mojom::Error::New(
+          mojo_base::mojom::Code::kInvalidArgument,
+          "Unsupported collection type for MoveCollection"));
+  }
+
+  return base::ok();
 }
 
 mojom::ContainerPtr AndroidTabStripModelAdapter::GetTabStripTopology(
