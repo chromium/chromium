@@ -331,7 +331,7 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
         var userDataHost = tab.getUserDataHost();
         FuseboxSessionState state = userDataHost.getUserData(FuseboxSessionState.class);
         if (state == null) {
-            state = new FuseboxSessionState();
+            state = new FuseboxSessionState(tab.getWebContents());
             userDataHost.setUserData(FuseboxSessionState.class, state);
         }
         return state;

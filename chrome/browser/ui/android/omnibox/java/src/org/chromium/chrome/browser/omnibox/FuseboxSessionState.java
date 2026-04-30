@@ -99,21 +99,13 @@ public class FuseboxSessionState implements UserData {
         return state;
     }
 
-    /** Constructs a new, empty FuseboxSessionState. */
-    public FuseboxSessionState() {
-        mContextualTasksWebContents = null;
-        if (OmniboxFeatures.sShowModelPicker.getValue()) {
-            mAutocompleteInput.getRequestTypeSupplier().addSyncObserver(mOnRequestTypeChanged);
-        }
-    }
-
     /**
      * Constructs a new, empty FuseboxSessionState with the given contextual tasks WebUI
      * WebContents.
      *
      * @param contextualTasksWebContents The WebContents of the contextual tasks WebUI.
      */
-    public FuseboxSessionState(WebContents contextualTasksWebContents) {
+    public FuseboxSessionState(@Nullable WebContents contextualTasksWebContents) {
         mContextualTasksWebContents = contextualTasksWebContents;
         if (OmniboxFeatures.sShowModelPicker.getValue()) {
             mAutocompleteInput.getRequestTypeSupplier().addSyncObserver(mOnRequestTypeChanged);

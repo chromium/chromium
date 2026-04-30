@@ -29,7 +29,8 @@ import org.chromium.url.GURL;
 class SearchBoxDataProvider implements LocationBarDataProvider {
     private final NonNullObservableSupplier<@ControlsPosition Integer> mToolbarPosition =
             ObservableSuppliers.createNonNull(ControlsPosition.TOP);
-    private final FuseboxSessionState mFuseboxSessionState = new FuseboxSessionState();
+    private final FuseboxSessionState mFuseboxSessionState =
+            new FuseboxSessionState(/* contextualTasksWebContents= */ null);
 
     private /* PageClassification */ int mPageClassification;
     private @ColorInt int mPrimaryColor;
