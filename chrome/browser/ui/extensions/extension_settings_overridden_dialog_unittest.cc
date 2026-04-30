@@ -30,7 +30,7 @@ ExtensionSettingsOverriddenDialog::Params CreateTestDialogParams(
     const extensions::ExtensionId& controlling_id) {
   SettingsOverriddenDialogController::ShowParams show_params(
       u"Test Dialog Title", u"Test Dialog Body", nullptr);
-  return {controlling_id, kTestAcknowledgedPreference,
+  return {controlling_id, "Test Extension", kTestAcknowledgedPreference,
           kTestDialogResultHistogramName, std::move(show_params)};
 }
 

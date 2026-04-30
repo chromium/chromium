@@ -6,10 +6,12 @@
 #define CHROME_BROWSER_UI_EXTENSIONS_EXTENSION_SETTINGS_OVERRIDDEN_DIALOG_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/raw_ref.h"
+#include "base/time/time.h"
 #include "chrome/browser/ui/extensions/settings_overridden_dialog_controller.h"
 #include "extensions/common/extension_id.h"
 
@@ -42,6 +44,7 @@ class ExtensionSettingsOverriddenDialog
     // Chromium style requires an explicit ctor - which means we need more than
     // one : (
     Params(extensions::ExtensionId controlling_extension_id,
+           std::string extension_name,
            const char* extension_acknowledged_preference_name,
            const char* dialog_result_histogram_name,
            ShowParams show_params);
@@ -51,6 +54,8 @@ class ExtensionSettingsOverriddenDialog
 
     // The ID of the extension controlling the associated setting.
     extensions::ExtensionId controlling_extension_id;
+    // The name of the extension controlling the associated setting.
+    std::string extension_name;
     // The name of the preference to use to mark an extension as
     // acknowledged by the user.
     std::string extension_acknowledged_preference_name;
@@ -60,6 +65,10 @@ class ExtensionSettingsOverriddenDialog
 
     // The text and similar content required for the dialog.
     ShowParams content;
+
+    // The HaTS survey trigger to use, if any. If specified, will attempt to
+    // show a survey for the specified trigger.
+    std::optional<std::string> hats_survey_trigger;
 
     // If set, the dialog will be shown repeatedly, until a choice is made.
     // Otherwise, it will be shown only once per user session.
@@ -98,8 +107,31 @@ class ExtensionSettingsOverriddenDialog
   void HandleDialogResult(DialogResult result) override;
 
   // Sets a callback to be invoked when the dialog result is handled.
-  using DialogResultCallback = base::OnceCallback<void(DialogResult)>;
+  using DialogResultCallback = base::OnceCallback<void(DialogResult result)>;
   void SetDialogResultCallback(DialogResultCallback callback);
+
+  // Potentially triggers a HaTS survey, for the trigger value supplied in
+  // dialog parameters.
+  static void MaybeShowHatsSurvey(Profile* profile,
+                                  const std::string& survey_trigger,
+                                  DialogResult result,
+                                  base::TimeDelta duration,
+                                  const std::string& extension_name,
+                                  const std::string& extension_id);
+
+  // Constants for HaTS survey PSD keys and values.
+  static constexpr char kHatsPsdChannel[] = "Channel";
+  static constexpr char kHatsPsdUserChoice[] = "User choice";
+  static constexpr char kHatsPsdTimeDialogVisible[] =
+      "Duration dialog was visible";
+  static constexpr char kHatsPsdNewExtensionName[] = "New extension name";
+  static constexpr char kHatsPsdNewExtensionId[] = "New extension ID";
+
+  static constexpr char kHatsUserChoiceNewProvider[] = "New provider";
+  static constexpr char kHatsUserChoicePreviousProvider[] = "Previous provider";
+  static constexpr char kHatsUserChoiceDismissed[] = "Dismissed";
+  static constexpr char kHatsUserChoiceClosedWithoutUserAction[] =
+      "Closed without user action";
 
  private:
   // Disables the extension that controls the setting.
@@ -115,6 +147,9 @@ class ExtensionSettingsOverriddenDialog
   const raw_ref<Profile> profile_;
 
   DialogResultCallback dialog_result_callback_;
+
+  // Time the dialog was shown.
+  base::TimeTicks show_time_;
 };
 
 #endif  // CHROME_BROWSER_UI_EXTENSIONS_EXTENSION_SETTINGS_OVERRIDDEN_DIALOG_H_

@@ -2791,20 +2791,6 @@ void OmniboxEditModel::OnDefaultSearchExtensionDialogDone(
   } else {
     CHECK_EQ(proceed, OmniboxClient::ExtensionControlledDialogResult::kCancel);
   }
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-  if (base::FeatureList::IsEnabled(
-          features::kHappinessTrackingSurveysForDesktopSEHijacking) &&
-      base::FeatureList::IsEnabled(
-          extensions_features::kSearchEngineExplicitChoiceDialog)) {
-    HatsService* hats_service = HatsServiceFactory::GetForProfile(
-        static_cast<ChromeOmniboxClient*>(controller_->client())->profile(),
-        /*create_if_necessary=*/true);
-    if (hats_service) {
-      hats_service->LaunchDelayedSurvey(kHatsSurveyTriggerSEHijacking, 5000);
-    }
-  }
-#endif
 }
 
 void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,

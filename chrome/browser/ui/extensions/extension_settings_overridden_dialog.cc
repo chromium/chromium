@@ -9,14 +9,21 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/supports_user_data.h"
 #include "base/time/time.h"
+#include "base/types/to_address.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/extensions/extensions_overrides/simple_overrides.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "chrome/browser/ui/hats/survey_config.h"
+#include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
 #include "components/pref_registry/pref_registry_syncable.h"
+#include "components/version_info/channel.h"
+#include "components/version_info/version_info.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registrar.h"
@@ -26,6 +33,8 @@
 #include "extensions/browser/management_policy.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
+#include "services/metrics/public/cpp/metrics_utils.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 
 namespace {
 
@@ -62,10 +71,12 @@ void MarkShownFor(Profile& profile, const ExtensionId& id) {
 
 ExtensionSettingsOverriddenDialog::Params::Params(
     extensions::ExtensionId controlling_extension_id,
+    std::string extension_name,
     const char* extension_acknowledged_preference_name,
     const char* dialog_result_histogram_name,
     ShowParams show_params)
     : controlling_extension_id(std::move(controlling_extension_id)),
+      extension_name(std::move(extension_name)),
       extension_acknowledged_preference_name(
           extension_acknowledged_preference_name),
       dialog_result_histogram_name(dialog_result_histogram_name),
@@ -199,6 +210,7 @@ ExtensionSettingsOverriddenDialog::GetShowParams() {
 
 void ExtensionSettingsOverriddenDialog::OnDialogShown() {
   DCHECK(ShouldShow());
+  show_time_ = base::TimeTicks::Now();
 
   if (!params_.unlimited_shows) {
     MarkShownFor(*profile_, params_.controlling_extension_id);
@@ -243,16 +255,59 @@ void ExtensionSettingsOverriddenDialog::HandleDialogResult(
     std::move(dialog_result_callback_).Run(result);
   }
 
-  if (base::FeatureList::IsEnabled(
-          features::kHappinessTrackingSurveysForDesktopSEHijacking) &&
-      !base::FeatureList::IsEnabled(
-          extensions_features::kSearchEngineExplicitChoiceDialog)) {
-    HatsService* hats_service = HatsServiceFactory::GetForProfile(
-        base::to_address(profile_), /*create_if_necessary=*/true);
-    if (hats_service) {
-      hats_service->LaunchDelayedSurvey(kHatsSurveyTriggerSEHijacking, 5000);
-    }
+  if (params_.hats_survey_trigger) {
+    base::TimeDelta duration = show_time_.is_null()
+                                   ? base::TimeDelta()
+                                   : base::TimeTicks::Now() - show_time_;
+    MaybeShowHatsSurvey(
+        base::to_address(profile_), *params_.hats_survey_trigger, result,
+        duration, params_.extension_name, params_.controlling_extension_id);
   }
+}
+
+// static
+void ExtensionSettingsOverriddenDialog::MaybeShowHatsSurvey(
+    Profile* profile,
+    const std::string& survey_trigger,
+    DialogResult result,
+    base::TimeDelta duration,
+    const std::string& extension_name,
+    const std::string& extension_id) {
+  HatsService* hats_service =
+      HatsServiceFactory::GetForProfile(profile, /*create_if_necessary=*/true);
+  if (!hats_service) {
+    return;
+  }
+
+  SurveyStringData data_map;
+  data_map[kHatsPsdChannel] =
+      std::string(version_info::GetChannelString(chrome::GetChannel()));
+
+  std::string user_choice;
+  switch (result) {
+    case DialogResult::kChangeSettingsBack:
+      user_choice = kHatsUserChoicePreviousProvider;
+      break;
+    case DialogResult::kKeepNewSettings:
+      user_choice = kHatsUserChoiceNewProvider;
+      break;
+    case DialogResult::kDialogDismissed:
+      user_choice = kHatsUserChoiceDismissed;
+      break;
+    case DialogResult::kDialogClosedWithoutUserAction:
+      user_choice = kHatsUserChoiceClosedWithoutUserAction;
+      break;
+    default:
+      NOTREACHED();
+  }
+  data_map[kHatsPsdUserChoice] = user_choice;
+
+  data_map[kHatsPsdTimeDialogVisible] = base::NumberToString(
+      ukm::GetExponentialBucketMinForUserTiming(duration.InSeconds()));
+  data_map[kHatsPsdNewExtensionName] = extension_name;
+
+  hats_service->LaunchDelayedSurvey(survey_trigger, /*timeout_ms=*/5000, {},
+                                    data_map);
 }
 
 void ExtensionSettingsOverriddenDialog::SetDialogResultCallback(

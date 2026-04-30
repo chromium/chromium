@@ -30,7 +30,7 @@ class DefaultSearchExtensionControlledController {
       BrowserWindowInterface* browser);
 
   using ConfirmationCallback = base::OnceCallback<void(
-      SettingsOverriddenDialogController::DialogResult proceed)>;
+      SettingsOverriddenDialogController::DialogResult result)>;
 
   explicit DefaultSearchExtensionControlledController(
       BrowserWindowInterface& browser_window_interface,

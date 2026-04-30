@@ -18,6 +18,7 @@ DECLARE_ELEMENT_IDENTIFIER_VALUE(
     kSettingsOverriddenDialogPreviousSettingButtonId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kSettingsOverriddenDialogNewSettingButtonId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kSettingsOverriddenDialogSaveButtonId);
+DECLARE_ELEMENT_IDENTIFIER_VALUE(kSettingsOverriddenDialogKeepItButtonId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kSettingsOverriddenDialogParagraphId);
 
 #endif  // CHROME_BROWSER_UI_EXTENSIONS_DIALOGS_SETTINGS_OVERRIDDEN_DIALOG_H_

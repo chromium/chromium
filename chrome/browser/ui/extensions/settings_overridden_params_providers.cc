@@ -26,6 +26,8 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/extensions/controlled_home_dialog_controller.h"
 #include "chrome/browser/ui/extensions/settings_api_bubble_helpers.h"
+#include "chrome/browser/ui/hats/survey_config.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/manifest_handlers/settings_overrides_handler.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
@@ -467,7 +469,8 @@ std::optional<ExtensionSettingsOverriddenDialog::Params> GetNtpOverriddenParams(
   SettingsOverriddenDialogController::ShowParams show_params(
       std::move(dialog_title), std::move(dialog_message), icon);
   return ExtensionSettingsOverriddenDialog::Params(
-      extension->id(), preference_name, histogram_name, std::move(show_params));
+      extension->id(), extension->name(), preference_name, histogram_name,
+      std::move(show_params));
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
@@ -571,8 +574,12 @@ void GetSearchOverriddenParamsThenRun(
     SettingsOverriddenDialogController::ShowParams show_params(
         std::move(dialog_title), std::move(dialog_message), /*icon=*/nullptr);
     auto params = std::make_unique<ExtensionSettingsOverriddenDialog::Params>(
-        extension->id(), preference_name, histogram_name,
+        extension->id(), extension->name(), preference_name, histogram_name,
         std::move(show_params));
+    if (base::FeatureList::IsEnabled(
+            features::kHappinessTrackingSurveysForDesktopSEHijacking)) {
+      params->hats_survey_trigger = kHatsSurveyTriggerSEHijacking;
+    }
     // The explicit choice dialog needs to be shown until a choice is made,
     // so suppress the mechanism that limits the number of times the dialog is
     // shown.
@@ -652,7 +659,12 @@ void GetSearchOverriddenParamsThenRun(
   SettingsOverriddenDialogController::ShowParams show_params(
       std::move(dialog_title), std::move(dialog_message), icon);
   auto params = std::make_unique<ExtensionSettingsOverriddenDialog::Params>(
-      extension->id(), preference_name, histogram_name, std::move(show_params));
+      extension->id(), extension->name(), preference_name, histogram_name,
+      std::move(show_params));
+  if (base::FeatureList::IsEnabled(
+          features::kHappinessTrackingSurveysForDesktopSEHijacking)) {
+    params->hats_survey_trigger = kHatsSurveyTriggerSEHijacking;
+  }
 
   // There are no async operations needed for the non-explicit-choice dialog,
   // so trigger the callback immediately.

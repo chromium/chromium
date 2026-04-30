@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "survey_config.h"
+#include "chrome/browser/ui/hats/survey_config.h"
 
 #include <optional>
 #include <vector>
@@ -13,6 +13,7 @@
 #include "base/strings/string_util.h"
 #include "chrome/browser/metrics/variations/google_groups_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/extensions/extension_settings_overridden_dialog.h"
 #include "chrome/common/chrome_features.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/lens/lens_features.h"
@@ -316,7 +317,12 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       base::FeatureList::IsEnabled(
           extensions_features::kSearchEngineExplicitChoiceDialog)
           ? "e4BYNZZ5u0ugnJ3q1cK0Q9A3oP6L"
-          : "9yoU8xqnq0ugnJ3q1cK0WjmeXHFn");
+          : "9yoU8xqnq0ugnJ3q1cK0WjmeXHFn",
+      /*product_specific_bits_data_fields=*/std::vector<std::string>{},
+      /*product_specific_string_data_fields=*/
+      std::vector<std::string>{"Channel", "User choice",
+                               "Duration dialog was visible",
+                               "New extension name"});
 
   // NTP modules survey.
   survey_configs.emplace_back(

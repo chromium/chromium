@@ -33,6 +33,7 @@ DEFINE_ELEMENT_IDENTIFIER_VALUE(
     kSettingsOverriddenDialogPreviousSettingButtonId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kSettingsOverriddenDialogNewSettingButtonId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kSettingsOverriddenDialogSaveButtonId);
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kSettingsOverriddenDialogKeepItButtonId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kSettingsOverriddenDialogParagraphId);
 
 // Model delegate that notifies the `controller_` when a click event occurs in
@@ -108,18 +109,23 @@ void BuildSettingsOverriddenDialog(
     const SettingsOverriddenDialogController::ShowParams& show_params,
     SettingsOverriddenDialogDelegate* dialog_delegate) {
   dialog_builder.SetInternalName(kExtensionSettingsOverriddenDialogName)
+      .SetElementIdentifier(kSettingsOverriddenDialogId)
       .SetTitle(show_params.dialog_title)
       .AddParagraph(ui::DialogModelLabel(show_params.message))
       .AddOkButton(
           base::BindOnce(&SettingsOverriddenDialogDelegate::OnDialogAccepted,
                          base::Unretained(dialog_delegate)),
-          ui::DialogModel::Button::Params().SetLabel(l10n_util::GetStringUTF16(
-              IDS_EXTENSION_SETTINGS_OVERRIDDEN_DIALOG_CHANGE_IT_BACK)))
+          ui::DialogModel::Button::Params()
+              .SetLabel(l10n_util::GetStringUTF16(
+                  IDS_EXTENSION_SETTINGS_OVERRIDDEN_DIALOG_CHANGE_IT_BACK))
+              .SetId(kSettingsOverriddenDialogSaveButtonId))
       .AddCancelButton(
           base::BindOnce(&SettingsOverriddenDialogDelegate::OnDialogCancelled,
                          base::Unretained(dialog_delegate)),
-          ui::DialogModel::Button::Params().SetLabel(l10n_util::GetStringUTF16(
-              IDS_EXTENSION_SETTINGS_OVERRIDDEN_DIALOG_KEEP_IT)))
+          ui::DialogModel::Button::Params()
+              .SetLabel(l10n_util::GetStringUTF16(
+                  IDS_EXTENSION_SETTINGS_OVERRIDDEN_DIALOG_KEEP_IT))
+              .SetId(kSettingsOverriddenDialogKeepItButtonId))
       .SetCloseActionCallback(
           base::BindOnce(&SettingsOverriddenDialogDelegate::OnDialogClosed,
                          base::Unretained(dialog_delegate)))

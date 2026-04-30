@@ -339,8 +339,8 @@ TEST_F(DefaultSearchExtensionControlledControllerTest,
   InstallExtensionControlledDse(profile_, *template_url_service_, *extension);
 
   ExtensionSettingsOverriddenDialog::Params params(
-      extension->id(), ControlledHomeDialogController::kAcknowledgedPreference,
-      "Test.Histogram",
+      extension->id(), extension->name(),
+      ControlledHomeDialogController::kAcknowledgedPreference, "Test.Histogram",
       ExtensionSettingsOverriddenDialog::ShowParams(u"Title", u"Body",
                                                     nullptr));
   ExtensionSettingsOverriddenDialog dialog(std::move(params), profile_);

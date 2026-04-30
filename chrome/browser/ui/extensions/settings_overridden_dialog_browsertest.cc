@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// NOTE: For new tests, consider adding them to
+// chrome/browser/ui/extensions/settings_overridden_dialog_interactive_uitest.cc
+// which supports more complex interaction and explicit-choice dialogs.
+
 #include "chrome/browser/ui/extensions/settings_overridden_dialog.h"
 
 #include <algorithm>
