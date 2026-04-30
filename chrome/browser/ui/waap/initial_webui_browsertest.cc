@@ -11,8 +11,8 @@
 #include "build/build_config.h"
 #include "chrome/browser/page_load_metrics/page_load_metrics_initialize.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/waap/initial_webui_window_metrics_manager.h"
 #include "chrome/browser/ui/waap/waap_utils.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
@@ -326,12 +326,13 @@ IN_PROC_BROWSER_TEST_F(InitialWebUINavigationBrowserTest,
   // windows. Evaluate the actual state to avoid hardcoding test assumptions on
   // platforms where the default browser might not match desktop norms
   // perfectly.
-  const std::string expected_metric =
-      base::StrCat({"InitialWebUI.NewWindow.AllSources.",
-                    chrome::GetBrowserCount(browser()->profile()) > 0
-                        ? "WithExistingWindow"
-                        : "WithoutExistingWindow",
-                    ".BrowserWindowToReloadButton.FirstPaintGap"});
+  const std::string expected_metric = base::StrCat(
+      {"InitialWebUI.NewWindow.AllSources.",
+       ProfileBrowserCollection::GetForProfile(browser()->profile())
+                   ->GetSize() > 0
+           ? "WithExistingWindow"
+           : "WithoutExistingWindow",
+       ".BrowserWindowToReloadButton.FirstPaintGap"});
   base::StatisticsRecorder::HistogramWaiter waiter(expected_metric);
 
   // Create a new browser window without actively showing/painting it yet.

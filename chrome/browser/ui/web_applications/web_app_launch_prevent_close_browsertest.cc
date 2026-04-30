@@ -5,7 +5,7 @@
 #include "ash/constants/web_app_id_constants.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_constants.h"
@@ -79,7 +79,8 @@ IN_PROC_BROWSER_TEST_F(PreventCloseControllerBrowserTest,
   absl::Cleanup policy_cleanup = [this] { ClearPolicySettings(); };
 
   // Arrange with non-closable PWA and start it a first time
-  size_t expected_browser_count = chrome::GetBrowserCount(profile());
+  size_t expected_browser_count =
+      ProfileBrowserCollection::GetForProfile(profile())->GetSize();
 
   const GURL url(kCalculatorAppUrl);
   ForceInstallWebApp(ash::kCalculatorAppId, url);
@@ -88,7 +89,8 @@ IN_PROC_BROWSER_TEST_F(PreventCloseControllerBrowserTest,
   ++expected_browser_count;
 
   ASSERT_TRUE(browser);
-  EXPECT_EQ(expected_browser_count, chrome::GetBrowserCount(profile()));
+  EXPECT_EQ(expected_browser_count,
+            ProfileBrowserCollection::GetForProfile(profile())->GetSize());
 
   ConfigurePreventClose(url, /*prevent_close=*/true);
 
@@ -101,14 +103,16 @@ IN_PROC_BROWSER_TEST_F(PreventCloseControllerBrowserTest,
                   ->registrar_unsafe()
                   .IsPreventCloseEnabled(ash::kCalculatorAppId));
   EXPECT_EQ(browser, second_browser);
-  EXPECT_EQ(expected_browser_count, chrome::GetBrowserCount(profile()));
+  EXPECT_EQ(expected_browser_count,
+            ProfileBrowserCollection::GetForProfile(profile())->GetSize());
 #else
   // On other platforms, the prevent close should not be enabled.
   EXPECT_FALSE(WebAppProvider::GetForTest(profile())
                    ->registrar_unsafe()
                    .IsPreventCloseEnabled(ash::kCalculatorAppId));
   EXPECT_NE(browser, second_browser);
-  EXPECT_EQ(expected_browser_count + 1, chrome::GetBrowserCount(profile()));
+  EXPECT_EQ(expected_browser_count + 1,
+            ProfileBrowserCollection::GetForProfile(profile())->GetSize());
 #endif
 }
 
@@ -116,7 +120,8 @@ IN_PROC_BROWSER_TEST_F(PreventCloseControllerBrowserTest,
                        ClosablePWALaunchesAdditionalWindow) {
   absl::Cleanup policy_cleanup = [this] { ClearPolicySettings(); };
 
-  size_t expected_browser_count = chrome::GetBrowserCount(profile());
+  size_t expected_browser_count =
+      ProfileBrowserCollection::GetForProfile(profile())->GetSize();
 
   const GURL url(kCalculatorAppUrl);
   ForceInstallWebApp(ash::kCalculatorAppId, url);
@@ -125,7 +130,8 @@ IN_PROC_BROWSER_TEST_F(PreventCloseControllerBrowserTest,
   ++expected_browser_count;
 
   ASSERT_TRUE(browser);
-  EXPECT_EQ(expected_browser_count, chrome::GetBrowserCount(profile()));
+  EXPECT_EQ(expected_browser_count,
+            ProfileBrowserCollection::GetForProfile(profile())->GetSize());
 
   ConfigurePreventClose(url, /*prevent_close=*/false);
 
@@ -135,7 +141,8 @@ IN_PROC_BROWSER_TEST_F(PreventCloseControllerBrowserTest,
 
   // Assert that the PWA only has one existing window
   EXPECT_NE(browser, second_browser);
-  EXPECT_EQ(expected_browser_count, chrome::GetBrowserCount(profile()));
+  EXPECT_EQ(expected_browser_count,
+            ProfileBrowserCollection::GetForProfile(profile())->GetSize());
 }
 
 }  // namespace web_app

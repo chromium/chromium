@@ -66,6 +66,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/hid/hid_chooser_controller.h"
 #include "chrome/browser/ui/login/login_handler.h"
@@ -8192,12 +8193,16 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksWebViewTest, OpenLinkInNewTab) {
   // Click on open link in new window menu item and verify a new window is
   // created.
   {
-    int browser_count = chrome::GetBrowserCount(browser()->profile());
+    int browser_count =
+        ProfileBrowserCollection::GetForProfile(browser()->profile())
+            ->GetSize();
     ContextMenuWaiter waiter(IDC_CONTENT_CONTEXT_OPENLINKNEWWINDOW);
     OpenContextMenu(guest_view2->GetGuestMainFrame());
     waiter.WaitForMenuOpenAndClose();
     EXPECT_TRUE(waiter.IsCommandExecuted().value());
-    EXPECT_EQ(browser_count + 1, chrome::GetBrowserCount(browser()->profile()));
+    EXPECT_EQ(browser_count + 1,
+              ProfileBrowserCollection::GetForProfile(browser()->profile())
+                  ->GetSize());
   }
 
   // Click on open link in incognito windown and verify a new incognito window

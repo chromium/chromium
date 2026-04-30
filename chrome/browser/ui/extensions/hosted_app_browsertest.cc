@@ -36,6 +36,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
@@ -330,7 +331,8 @@ class HostedOrWebAppTest : public extensions::ExtensionBrowserTest,
     WaitUntilBrowserBecomeLastActive(app_browser_);
     ExpectBrowserBecomesActiveOrLastActive(app_browser_);
 
-    size_t num_browsers = chrome::GetBrowserCount(profile());
+    size_t num_browsers =
+        ProfileBrowserCollection::GetForProfile(profile())->GetSize();
     int num_tabs = browser()->tab_strip_model()->count();
     content::WebContents* initial_tab =
         browser()->tab_strip_model()->GetActiveWebContents();
@@ -340,7 +342,8 @@ class HostedOrWebAppTest : public extensions::ExtensionBrowserTest,
     // Wait until the main browser becomes active.
     WaitUntilBrowserBecomeLastActive(browser());
 
-    EXPECT_EQ(num_browsers, chrome::GetBrowserCount(profile()));
+    EXPECT_EQ(num_browsers,
+              ProfileBrowserCollection::GetForProfile(profile())->GetSize());
     ExpectBrowserBecomesActiveOrLastActive(browser());
     EXPECT_EQ(++num_tabs, browser()->tab_strip_model()->count());
 

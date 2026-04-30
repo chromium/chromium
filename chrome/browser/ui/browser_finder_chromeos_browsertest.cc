@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
@@ -60,7 +61,9 @@ IN_PROC_BROWSER_TEST_F(BrowserFinderWithDesksTest, FindAnyBrowser) {
   CloseBrowserSynchronously(browser());
   SetBrowser(browser_1);
   auto* window_1 = browser_1->GetWindow()->GetNativeWindow();
-  EXPECT_EQ(1u, chrome::GetBrowserCount(browser()->profile()));
+  EXPECT_EQ(
+      1u,
+      ProfileBrowserCollection::GetForProfile(browser()->profile())->GetSize());
   EXPECT_TRUE(desk_1->is_active());
   EXPECT_TRUE(desks_controller->BelongsToActiveDesk(window_1));
   EXPECT_EQ(browser_1, ui_test_utils::FindAnyBrowser(browser()->profile()));
@@ -70,7 +73,9 @@ IN_PROC_BROWSER_TEST_F(BrowserFinderWithDesksTest, FindAnyBrowser) {
   EXPECT_TRUE(desk_2->is_active());
   Browser* browser_2 = CreateTestBrowser();
   auto* window_2 = browser_2->window()->GetNativeWindow();
-  EXPECT_EQ(2u, chrome::GetBrowserCount(browser()->profile()));
+  EXPECT_EQ(
+      2u,
+      ProfileBrowserCollection::GetForProfile(browser()->profile())->GetSize());
   EXPECT_FALSE(desks_controller->BelongsToActiveDesk(window_1));
   EXPECT_TRUE(desks_controller->BelongsToActiveDesk(window_2));
 
@@ -112,7 +117,9 @@ IN_PROC_BROWSER_TEST_F(BrowserFinderWithDesksTest, FindTabbedBrowser) {
   CloseBrowserSynchronously(browser());
   SetBrowser(browser_1);
   auto* window_1 = browser_1->GetWindow()->GetNativeWindow();
-  EXPECT_EQ(1u, chrome::GetBrowserCount(browser()->profile()));
+  EXPECT_EQ(
+      1u,
+      ProfileBrowserCollection::GetForProfile(browser()->profile())->GetSize());
   EXPECT_TRUE(desk_1->is_active());
   EXPECT_TRUE(desks_controller->BelongsToActiveDesk(window_1));
   EXPECT_EQ(browser_1, chrome::FindTabbedBrowser(browser()->profile(), true));

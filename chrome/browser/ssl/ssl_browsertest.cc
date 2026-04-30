@@ -647,7 +647,8 @@ class SSLUITestBase : public InProcessBrowserTest,
       const GURL& app_url) {
     Profile* profile = browser()->profile();
 
-    size_t num_browsers = chrome::GetBrowserCount(profile);
+    size_t num_browsers =
+        ProfileBrowserCollection::GetForProfile(profile)->GetSize();
     EXPECT_TRUE(ui_test_utils::IsBrowserActive(app_browser));
     int num_tabs = browser()->tab_strip_model()->count();
 
@@ -655,7 +656,8 @@ class SSLUITestBase : public InProcessBrowserTest,
         app_browser->tab_strip_model()->GetActiveWebContents());
     ui_test_utils::WaitUntilBrowserBecomeActive(browser());
 
-    EXPECT_EQ(--num_browsers, chrome::GetBrowserCount(profile));
+    EXPECT_EQ(--num_browsers,
+              ProfileBrowserCollection::GetForProfile(profile)->GetSize());
     EXPECT_TRUE(ui_test_utils::IsBrowserActive(browser()));
     EXPECT_EQ(++num_tabs, browser()->tab_strip_model()->count());
 
@@ -2348,7 +2350,8 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestUnsafeContents) {
     // The state is expected to be authenticated.
     ssl_test_util::CheckAuthenticatedState(tab, AuthState::NONE);
     // The iframe should be able to open a popup.
-    EXPECT_EQ(2u, chrome::GetBrowserCount(browser()->profile()));
+    EXPECT_EQ(2u, ProfileBrowserCollection::GetForProfile(browser()->profile())
+                      ->GetSize());
     // In order to check that the image was loaded, check its width.
     // The actual image (Google logo) is 276 pixels wide.
     EXPECT_EQ(276, content::EvalJs(tab, "ImageWidth();"));
@@ -2369,7 +2372,8 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestUnsafeContents) {
     ssl_test_util::CheckAuthenticatedState(tab, AuthState::NONE);
     // The iframe attempts to open a popup window, but it shouldn't be able to.
     // Previous popup is still open.
-    EXPECT_EQ(2u, chrome::GetBrowserCount(browser()->profile()));
+    EXPECT_EQ(2u, ProfileBrowserCollection::GetForProfile(browser()->profile())
+                      ->GetSize());
     // The broken image width is zero.
     EXPECT_EQ(16, content::EvalJs(tab, "ImageWidth();"));
     // Check that variable |foo| is not set.
@@ -2632,10 +2636,14 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, MAYBE_TestCloseTabWithUnsafePopup) {
   content::TestNavigationObserver nav_observer(
       https_server_expired_.GetURL("/ssl/bad_iframe.html"));
   nav_observer.StartWatchingNewWebContents();
-  ASSERT_EQ(1u, chrome::GetBrowserCount(browser()->profile()));
+  ASSERT_EQ(
+      1u,
+      ProfileBrowserCollection::GetForProfile(browser()->profile())->GetSize());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL(replacement_path)));
-  ASSERT_EQ(2u, chrome::GetBrowserCount(browser()->profile()));
+  ASSERT_EQ(
+      2u,
+      ProfileBrowserCollection::GetForProfile(browser()->profile())->GetSize());
 
   // Last activated browser should be the popup.
   BrowserWindowInterface* popup_browser =
