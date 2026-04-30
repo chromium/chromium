@@ -150,6 +150,22 @@ def status_class(status):
   return status
 
 
+def get_test_sort_key(name):
+  """Returns a sort key for a gtest name to order PRE_ tests logically."""
+  parts = name.rsplit('.', 1)
+  if len(parts) < 2:
+    return (name, 0)
+  suite, test = parts
+
+  pre_count = 0
+  while test.startswith('PRE_'):
+    pre_count += 1
+    test = test[4:]
+
+  base_name = '%s.%s' % (suite, test)
+  return (base_name, -pre_count)
+
+
 def create_test_table(results_dict, cs_base_url, suite_name, bucket):
   """Format test data for injecting into HTML table."""
 
@@ -162,7 +178,8 @@ def create_test_table(results_dict, cs_base_url, suite_name, bucket):
   ]
 
   test_row_blocks = []
-  for test_name, test_results in results_dict.items():
+  for test_name, test_results in sorted(results_dict.items(),
+                                        key=lambda x: get_test_sort_key(x[0])):
     test_runs = []
     for index, result in enumerate(test_results):
       if index == 0:
