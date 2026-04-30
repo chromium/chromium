@@ -853,8 +853,7 @@ TEST_F(CrostiniExportImportTest, TestExportCustomVmContainerSuccess) {
   EXPECT_TRUE(base::PathExists(tarball_));
 }
 
-// TODO(crbug.com/440792198): Disabled for flakiness.
-TEST_F(CrostiniExportImportTest, DISABLED_TestExportFail) {
+TEST_F(CrostiniExportImportTest, TestExportFail) {
   crostini_export_import_->FillOperationData(ExportImportType::EXPORT);
   crostini_export_import_->FileSelected(ui::SelectedFileInfo(tarball_), 0);
   task_environment_.RunUntilIdle();
@@ -892,9 +891,7 @@ TEST_F(CrostiniExportImportTest, DISABLED_TestExportFail) {
   EXPECT_FALSE(base::PathExists(tarball_));
 }
 
-// TODO(crbug.com/441657411): Disabled as flaky since the replacement of
-// RunUntilIdle.
-TEST_F(CrostiniExportImportTest, DISABLED_TestExportCancelled) {
+TEST_F(CrostiniExportImportTest, TestExportCancelled) {
   crostini_export_import_->FillOperationData(ExportImportType::EXPORT,
                                              custom_container_id_);
   crostini_export_import_->FileSelected(ui::SelectedFileInfo(tarball_), 0);
@@ -965,8 +962,7 @@ TEST_F(CrostiniExportImportTest, DISABLED_TestExportCancelled) {
   EXPECT_FALSE(base::PathExists(tarball_));
 }
 
-// TODO(crbug.com/440792198): Disabled for flakiness.
-TEST_F(CrostiniExportImportTest, DISABLED_TestExportDoneBeforeCancelled) {
+TEST_F(CrostiniExportImportTest, TestExportDoneBeforeCancelled) {
   crostini_export_import_->FillOperationData(ExportImportType::EXPORT);
   crostini_export_import_->FileSelected(ui::SelectedFileInfo(tarball_), 0);
   task_environment_.RunUntilIdle();
