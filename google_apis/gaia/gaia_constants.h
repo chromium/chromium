@@ -63,6 +63,10 @@ inline constexpr char kSupportContentOAuth2Scope[] =
 inline constexpr char kSecureConnectOAuth2Scope[] =
     "https://www.googleapis.com/auth/bce.secureconnect";
 
+// OAuth2 scope for access to the Secure Gateway API.
+inline constexpr char kSecureGatewayOAuth2Scope[] =
+    "https://www.googleapis.com/auth/cloud-secure-gateway-users.access";
+
 // Used to build ClientOAuth requests.  These are the names of keys used when
 // building base::DictionaryValue that represent the json data that makes up
 // the ClientOAuth endpoint protocol.  The comment above each constant explains

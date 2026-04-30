@@ -209,6 +209,7 @@ constexpr char kYouTubeMusicOAuth2Scope[] =
 // keep-sorted end
 
 constexpr char kSyncName[] = "sync";
+constexpr char kSecureGatewayServiceName[] = "secure_gateway_service";
 constexpr char kWallpaperGooglePhotosFetcherName[] =
     "wallpaper_google_photos_fetcher";
 constexpr char kWallpaperFetcherDelegateName[] = "wallpaper_fetcher_delegate";
@@ -767,6 +768,10 @@ OAuthConsumer OAuthConsumerRegistry::GetOAuthConsumerFromId(
           /*scopes=*/{kSiteAutomationIndexOAuth2Scope});
     case OAuthConsumerId::kGlicInvokeApi:
       return GetOAuthConsumerForGlicInvokeApi();
+    case OAuthConsumerId::kSecureGatewayService:
+      return OAuthConsumer(
+          /*name=*/kSecureGatewayServiceName,
+          /*scopes=*/{GaiaConstants::kSecureGatewayOAuth2Scope});
   }
 }
 

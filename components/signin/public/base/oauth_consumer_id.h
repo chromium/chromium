@@ -118,7 +118,8 @@ enum class OAuthConsumerId {
   kMultistepFilter = 95,
   kIndigo = 96,
   kGlicInvokeApi = 97,
-  kMaxValue = kGlicInvokeApi,
+  kSecureGatewayService = 98,
+  kMaxValue = kSecureGatewayService,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:OAuthConsumerId)
 
