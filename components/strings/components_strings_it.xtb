@@ -2962,7 +2962,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="5654927323611874862">ID del report sugli arresti anomali caricato:</translation>
 <translation id="5654965123204121933">L'URL non include la stringa sostitutiva richiesta <ph name="SEARCH_TERMS_REPLACEMENT" />: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">Email</translation>
-<translation id="5660122698869360728">Una nuova cartella intelligente che ti consente di salvare tutte le tue pagine di shopping in un unico posto, monitorare automaticamente i prezzi, ottenere approfondimenti sul prezzo e altro ancora.</translation>
+<translation id="5660122698869360728">Una nuova cartella intelligente che ti consente di salvare tutte le tue pagine di shopping in un unico posto, monitorare automaticamente i prezzi, ottenere insight sul prezzo e altro ancora.</translation>
 <translation id="5663955426505430495">L'amministratore di questo dispositivo ha installato estensioni relative a funzioni aggiuntive. Le estensioni hanno accesso ad alcuni tuoi dati.</translation>
 <translation id="5667827081946850877">Audiolibri</translation>
 <translation id="5674082555327905359">Può chiedere di connettersi a qualsiasi dispositivo sulla rete locale</translation>
@@ -3182,7 +3182,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="6035491133925068289">Atletica leggera</translation>
 <translation id="6039846035001940113">Se il problema persiste, contatta il proprietario del sito.</translation>
 <translation id="6040143037577758943">Chiudi</translation>
-<translation id="6040539895181423374">Approfondimenti sul prezzo</translation>
+<translation id="6040539895181423374">Insight sul prezzo</translation>
 <translation id="604124094241169006">Automatico</translation>
 <translation id="6041777658117377052">Temperatura della camera</translation>
 <translation id="6042308850641462728">Altro</translation>
@@ -3970,7 +3970,7 @@ Ulteriori dettagli:
 <translation id="7256634549594854023">Vassoio posteriore</translation>
 <translation id="7257453341537973799">Pianificazione carriera e risorse</translation>
 <translation id="725866823122871198">Impossibile stabilire una connessione privata con il sito <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> perché data e ora del computer (<ph name="DATE_AND_TIME" />) sono sbagliate.</translation>
-<translation id="7260075294900977274">Una nuova cartella intelligente che ti consente di salvare tutte le tue pagine di shopping in un unico posto, monitorare automaticamente i prezzi, ottenere approfondimenti sul prezzo e altro ancora</translation>
+<translation id="7260075294900977274">Una nuova cartella intelligente che ti consente di salvare tutte le tue pagine di shopping in un unico posto, monitorare automaticamente i prezzi, ottenere insight sul prezzo e altro ancora</translation>
 <translation id="7264942008235065057">Questo sito rimarrà bloccato perché è attivo il programma di protezione avanzata di Google. <ph name="LEARN_MORE" /></translation>
 <translation id="7265608370113700582">L'indirizzo è disponibile solo su questo dispositivo</translation>
 <translation id="7266094331715305887">app sul dispositivo</translation>

@@ -6721,7 +6721,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5545335608717746497">{NUM_TABS,plural, =1{Agregar pestaña al grupo}other{Agregar pestañas al grupo}}</translation>
 <translation id="554535686826424776">Buscar cupones</translation>
 <translation id="5546865291508181392">Buscar</translation>
-<translation id="5547868626772433490">Preguntarle a Gemini</translation>
+<translation id="5547868626772433490">Pregúntale a Gemini</translation>
 <translation id="5548075230008247516">Se anuló la selección de todos los elementos; se salió del modo de selección.</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" y 1 pestaña más}other{"<ph name="TAB_TITLE" />" y # pestañas más}}</translation>
 <translation id="5548644592758170183">Mostrar a la izquierda</translation>

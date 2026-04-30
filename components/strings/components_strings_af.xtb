@@ -320,7 +320,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="1482372785911828880">Ekstra dun</translation>
 <translation id="1482879811280872320">Fietsry</translation>
 <translation id="1483493594462132177">Stuur</translation>
-<translation id="1484449009683144042">Dit is ’n eksperimentele AI-skryfhulp en sal dit nie altyd regkry nie.
+<translation id="1484449009683144042">Dit is ’n eksperimentele KI-skryfhulp en sal dit nie altyd regkry nie.
     <ph name="BEGIN_LINK" />Meer inligting<ph name="END_LINK" /></translation>
 <translation id="1486096554574027028">Deursoek wagwoorde</translation>
 <translation id="1492194039220927094">Deurstuur van beleide:</translation>
@@ -421,7 +421,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="1650602712345345441">Bestuur jou Chrome-instellings</translation>
 <translation id="1652415888492971589">JIS B8</translation>
 <translation id="1652862280638399816">Herbegin Chromium en laat Keychain-toegang toe om Wagwoordbestuurder met macOS Keychain te gebruik. Jou oortjies sal weer oopmaak nadat jy herbegin het.</translation>
-<translation id="1652887625750064647">AI se beste passing</translation>
+<translation id="1652887625750064647">KI se beste passing</translation>
 <translation id="1653465303147789530">Betaal met <ph name="PAYMENT_METHOD" /> sonder om apps te wissel</translation>
 <translation id="1655159794885649984">Dit word nie toegelaat om inhoud op hierdie werf te sleep nie</translation>
 <translation id="1656024727720460136">Chrome het hierdie bladsy vereenvoudig om dit makliker te maak om te lees. Chrome het die oorspronklike bladsy oor 'n veilige verbinding gaan haal.</translation>
@@ -583,7 +583,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="192095259937375524">Knoppie om hierdie oortjie te deel; aktiveer om hierdie oortjie te deel deur die skakel te deel, ’n QR-kode te skep, uit te saai, en meer</translation>
 <translation id="1924727005275031552">Nuut</translation>
 <translation id="1927439846988093361">Haarsorg</translation>
-<translation id="1935353813610900265">Stuur terugvoer vir geskiedenissoektog aangedryf deur AI</translation>
+<translation id="1935353813610900265">Stuur terugvoer vir geskiedenissoektog aangedryf deur KI</translation>
 <translation id="1935995810530254458">Kopieer in elk geval</translation>
 <translation id="1938580037092872316">Voeg nuwe inligting by ’n gestoorde adres</translation>
 <translation id="1938812296371201896">Kan nie video stoor nie</translation>
@@ -1332,7 +1332,7 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="3111155154146792758">Kaggels en oonde</translation>
 <translation id="3112892588078695695">Foonnommer: <ph name="PHONE" /></translation>
 <translation id="3113284927548439113">Derde skof</translation>
-<translation id="3113930177999394798">Tik @geskiedenis om jou blaaigeskiedenis te deur soek, aangedryf deur AI</translation>
+<translation id="3113930177999394798">Tik @geskiedenis om jou blaaigeskiedenis te deur soek, aangedryf deur KI</translation>
 <translation id="3114040155724590991">Dateer tans Android-stelsel op
     Dit kan langer as gewoonlik neem om jou app te begin.</translation>
 <translation id="3114197119223448048">nuwe aktiwiteit</translation>
@@ -1553,7 +1553,7 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="3461824795358126837">Kleurmerker</translation>
 <translation id="3462200631372590220">Versteek gevorderd</translation>
 <translation id="3462288464915106745"><ph name="CONTEXTUAL_SEARCH_OPEN_LENS_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk Enter om vir Google oor hierdie bladsy te vra</translation>
-<translation id="3465972433695735758">Hierdie PDF is ontoeganklik. Teks is onttrek, aangedryf deur Google AI</translation>
+<translation id="3465972433695735758">Hierdie PDF is ontoeganklik. Teks is onttrek, aangedryf deur Google KI</translation>
 <translation id="346601286295919445">Chemie</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" />, tans oop, druk oortjie en dan Enter om na die oop oortjie toe te wissel</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />; druk Tab en dan Enter om alle Incognito-vensters wat tans oop is, toe te maak</translation>
@@ -2026,7 +2026,7 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="4178863275556660738">Betaal met betaalmetodes wat nie ’n kaart behels nie</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Stop prysnasporing</translation>
-<translation id="4190446002599583608">Geskiedenissoektog, aangedryf deur AI</translation>
+<translation id="4190446002599583608">Geskiedenissoektog, aangedryf deur KI</translation>
 <translation id="4191334393248735295">Lengte</translation>
 <translation id="4195459680867822611">Knoppie om Chrome-wenke te sien; aktiveer om meer oor Chrome-kenmerke te wete te kom</translation>
 <translation id="4195643157523330669">Maak in nuwe oortjie oop</translation>
@@ -2641,7 +2641,7 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="5161506081086828129">Stapelaar 9</translation>
 <translation id="5164537320435517152">Vee lêers oor <ph name="MINUTES" /> min. uit</translation>
 <translation id="5164798890604758545">Teks is ingetik</translation>
-<translation id="5164928537947209380">Hierdie eksperimentele AI-nutsding sal nie altyd reg wees nie. Jou inhoud word na Google gestuur om dit te verbeter.
+<translation id="5164928537947209380">Hierdie eksperimentele KI-nutsding sal nie altyd reg wees nie. Jou inhoud word na Google gestuur om dit te verbeter.
     <ph name="BEGIN_LINK" />Meer inligting<ph name="END_LINK" /></translation>
 <translation id="5169827969064885044">Jy kan toegang tot jou organisasie se rekening verloor of identiteitdiefstal ervaar. Chrome beveel aan dat jy jou wagwoord nou verander.</translation>
 <translation id="5171045022955879922">Soek of tik URL in</translation>
@@ -5111,7 +5111,7 @@ Bykomende besonderhede:
 <translation id="9089260154716455634">Nauurse beleid:</translation>
 <translation id="9090218457905363312">Reggae- en Karibiese musiek</translation>
 <translation id="9090243919347147717">Aanhegsels</translation>
-<translation id="9090548458280093580">Soek jou geskiedenis, aangedryf deur AI</translation>
+<translation id="9090548458280093580">Soek jou geskiedenis, aangedryf deur KI</translation>
 <translation id="9090993752571911635">Internetdiensverskaffers</translation>
 <translation id="9092305980625216393">Word dikwels vir die weer, plaaslike nuus en meer gebruik</translation>
 <translation id="9093723786115107672">Slaapdrag</translation>
@@ -5172,7 +5172,7 @@ Bykomende besonderhede:
 <translation id="9173995187295789444">Soek tans na Bluetooth-toestelle …</translation>
 <translation id="917450738466192189">Bedienersertifikaat is ongeldig.</translation>
 <translation id="9174917557437862841">Oortjiewisselingknoppie, druk Enter om na hierdie oortjie toe te wissel</translation>
-<translation id="9177283544810807743">Hierdie PDF is ontoeganklik. Onttrek tans teks, aangedryf deur Google AI</translation>
+<translation id="9177283544810807743">Hierdie PDF is ontoeganklik. Onttrek tans teks, aangedryf deur Google KI</translation>
 <translation id="9179703756951298733">Bestuur jou betalings en kredietkaartinligting in Chrome-instellings</translation>
 <translation id="9179766227052716237">Jou organisasie sê: “<ph name="CUSTOM_MESSAGE" />”</translation>
 <translation id="9179907736442194268">Kry e-poskennisgewings as die prys op enige werf daal</translation>

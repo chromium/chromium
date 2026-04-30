@@ -94,7 +94,7 @@
 <translation id="1348657754632799065">Opnamebalk</translation>
 <translation id="1350909945461913813">Maak seker om enige werk te stoor</translation>
 <translation id="1367951781824006909">Kies 'n lêer</translation>
-<translation id="1371650399987522809">Terugvoer vir muurpapier wat deur Google AI aangedryf is</translation>
+<translation id="1371650399987522809">Terugvoer vir muurpapier wat deur Google KI aangedryf is</translation>
 <translation id="1374385338586507108">Definieer</translation>
 <translation id="1376064675713230088">t-rex</translation>
 <translation id="1383876407941801731">Soek</translation>
@@ -368,7 +368,7 @@
 <translation id="2448312741937722512">Soort</translation>
 <translation id="2448857983905133469">Klasnutsgoed</translation>
 <translation id="2468124392950503650">Kies porboodskap om te skep of sien die <ph name="BEGIN_LINK_PROMPTING_GUIDE" />porboodskapgids<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
-<translation id="2472215337771558851">Gebruik Help my skryf om ’n konsep te skep of om bestaande werk af te rond, aangedryf deur Google AI</translation>
+<translation id="2472215337771558851">Gebruik Help my skryf om ’n konsep te skep of om bestaande werk af te rond, aangedryf deur Google KI</translation>
 <translation id="2475982808118771221">'n Fout het voorgekom</translation>
 <translation id="2480572840229215612">krappe</translation>
 <translation id="248546197012830854">Toestel is vanlyn. Koppel aan wi-fi-netwerk om hulpinhoud te sien.</translation>
@@ -429,7 +429,7 @@
 <translation id="2749164457515831917">Voorstelle is geskommel</translation>
 <translation id="2751739896257479635">EAP se fase 2-stawing</translation>
 <translation id="2754757901767760034">lamp</translation>
-<translation id="2780756493585863768">Onlangse agtergronde aangedryf deur Google AI</translation>
+<translation id="2780756493585863768">Onlangse agtergronde aangedryf deur Google KI</translation>
 <translation id="2783010256799387990">GESLAAG</translation>
 <translation id="2786429550992142861">linne</translation>
 <translation id="2787237339470862294">Hierdie taal word nie tans gesteun nie</translation>
@@ -448,7 +448,7 @@
 <translation id="2878126681324394319">Laai model vir opsomming en titelskepping af</translation>
 <translation id="2878387241690264070">Het <ph name="RATE" /> ontlaai binne <ph name="NUM_SECONDS" /> sekondes.</translation>
 <translation id="2880569433548999039">Wolkvloeisluimerskerm</translation>
-<translation id="2882230315487799269">Pasmaak AI-porteks</translation>
+<translation id="2882230315487799269">Pasmaak KI-porteks</translation>
 <translation id="2888298276507578975">Voer porteks soos “skryf ’n dankienota” in</translation>
 <translation id="2890557891229184386">tropiese eiland</translation>
 <translation id="2895772081848316509">donker</translation>
@@ -760,7 +760,7 @@
 <translation id="4300272766492248925">Maak app oop</translation>
 <translation id="430786093962686457">chiffon</translation>
 <translation id="4309762678330556039">Skep outomaties transkripsies en soek deur oudio. Jy kan opnames skep selfs wanneer jy nie aan die internet gekoppel is nie.</translation>
-<translation id="4310735698903592804">Onlangse muurpapiere aangedryf deur Google AI</translation>
+<translation id="4310735698903592804">Onlangse muurpapiere aangedryf deur Google KI</translation>
 <translation id="4320904097188876154">neonpienk</translation>
 <translation id="432961742358282111">Regsklik of druk en hou om definisies, vertalings en eenheidomskakelings te kry. Gebruik links- of regspylsleutels om hierdie kenmerk te bestuur.</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" />-sleutel is gedruk</translation>
@@ -779,7 +779,7 @@
 <translation id="4394049700291259645">Deaktiveer</translation>
 <translation id="439429847087949098">Herbegin tans <ph name="DEVICE_NAME" /></translation>
 <translation id="4395835743215824109">sleutelbord pasmaak</translation>
-<translation id="439946595190720558">Hierdie muurpapier is met AI geskep deur die volgende teks te gebruik: “<ph name="PROMPT" />.”</translation>
+<translation id="439946595190720558">Hierdie muurpapier is met KI geskep deur die volgende teks te gebruik: “<ph name="PROMPT" />.”</translation>
 <translation id="4415951057168511744">Huidige Avatar</translation>
 <translation id="4417830657741848074">Jou admin het sommige apps opgestel om outomaties te begin. Sommige van hierdie apps kan nie toegemaak word nie.</translation>
 <translation id="4422041425070339732">pyl af</translation>
@@ -1123,7 +1123,7 @@
 <translation id="5946538341867151940">Jy is nog nie gekoppel nie. As jou selfoondiensverskaffer ’n gepasmaakte APN aanbeveel, kan jy “+ Nuwe APN” kies om die APN-inligting in te voer.</translation>
 <translation id="5947266287934282605">As die laaste dag van die maand voor hierdie dag is, sal die data op die laaste dag van die maand teruggestel word</translation>
 <translation id="5948460390109837040">honde</translation>
-<translation id="594989847980441553">Kies "Skep" om ’n prent met AI te skep.
+<translation id="594989847980441553">Kies "Skep" om ’n prent met KI te skep.
         Alle prente wat geskep word, sal outomaties hier wys.</translation>
 <translation id="5972388717451707488">Opdateringenjin</translation>
 <translation id="5972801171078377748">Moenie weer wys nie</translation>
@@ -1155,7 +1155,7 @@
 <translation id="6104112872696127344">Skandering is gekanselleer.</translation>
 <translation id="6106186594183574873">Voer jou ou wagwoord in om dit te voltooi</translation>
 <translation id="6108689792487843350">Kan nie deurgang bereik nie</translation>
-<translation id="6108952804512516814">Skep met AI</translation>
+<translation id="6108952804512516814">Skep met KI</translation>
 <translation id="6112878310391905610">Jou administrateurs bestuur hierdie instelling</translation>
 <translation id="6113701710518389813">Oppyl</translation>
 <translation id="6116005346231504406">Skep eerste kontrole</translation>
@@ -1206,7 +1206,7 @@
 <translation id="6321407676395378991">Skakel sluimerskerm aan</translation>
 <translation id="6324916366299863871">Wysig kortpad</translation>
 <translation id="6325525973963619867">Misluk</translation>
-<translation id="6327262166342360252">Hierdie muurpapier is met AI geskep deur die volgende teks te gebruik: “<ph name="PROMPT" />.”</translation>
+<translation id="6327262166342360252">Hierdie muurpapier is met KI geskep deur die volgende teks te gebruik: “<ph name="PROMPT" />.”</translation>
 <translation id="6331191339300272798">Outomatiese donkertema</translation>
 <translation id="6340526405444716530">Personalisering</translation>
 <translation id="6348252528297699679">Jy kan ligging afskakel in Instellings &gt; Privaatheid en sekuriteit &gt; Privaatheidkontroles &gt; Liggingtoegang. <ph name="LINK_BEGIN" />Meer inligting<ph name="LINK_END" /></translation>
@@ -1333,7 +1333,7 @@
 <translation id="6889786074662672253">Moenie hierdie eksterne toestel uitprop of jou rekenaar afskakel terwyl dit herbegin het. Jy kan hierdie venster klein maak. Dit kan 'n paar minute neem, en jou eksterne toestel sal dalk nie in hierdie tyd werk nie.</translation>
 <translation id="6899460405678814458">Wys opsomming</translation>
 <translation id="6900701049656042631">Hierdie album het nie enige foto’s nie. Gaan na <ph name="LINK" /> om foto’s by te voeg</translation>
-<translation id="6902359863093437070">Skep agtergrond met AI</translation>
+<translation id="6902359863093437070">Skep agtergrond met KI</translation>
 <translation id="6905163627763043954">Probeer dit</translation>
 <translation id="6905275015682612674">’n foto met lang beligtingtyd van ’n bioluminessensiestrand teen sonsondergang met sterre in die lug, pragtige pastelkleure, 4k</translation>
 <translation id="6905724422583748843">Terug na <ph name="PAGE_NAME" /></translation>
@@ -1446,10 +1446,10 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7321055305895875150">groen en blougroen</translation>
 <translation id="7328475450575141167">paradysvoël</translation>
-<translation id="7331297744262591636">Jy moet ten minste 18 jaar oud wees en instem dat jou gebruik van AI-muurpapiere onderworpe is aan <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Google se diensbepalings<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> en <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />Bykomende diensbepalings vir Generatiewe AI<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />.
+<translation id="7331297744262591636">Jy moet ten minste 18 jaar oud wees en instem dat jou gebruik van KI-muurpapiere onderworpe is aan <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Google se diensbepalings<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> en <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />Bykomende diensbepalings vir generatiewe KI<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />.
           <ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
-          Jy kan net muurpapiere met AI vir persoonlike en niekommersiële gebruik skep. Wanneer jy muurpapierhulp kry, word teks na Google AI-bedieners gestuur om muurpapiervoorstelle te genereer, onderworpe aan <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google se privaatheidsbeleid<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. <ph name="BEGIN_LINK_LEARN_MORE" />Meer inligting<ph name="END_LINK_LEARN_MORE" /></translation>
+          Jy kan net muurpapiere met KI vir persoonlike en niekommersiële gebruik skep. Wanneer jy muurpapierhulp kry, word teks na Google KI-bedieners gestuur om muurpapiervoorstelle te genereer, onderworpe aan <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google se privaatheidsbeleid<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. <ph name="BEGIN_LINK_LEARN_MORE" />Meer inligting<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Druk Search plus spasiebalk om resultaat in Google Search te sien.</translation>
 <translation id="7343649194310845056">Netwerktoestelle</translation>
 <translation id="7344788170842919262">aards</translation>
@@ -1559,7 +1559,7 @@ Laai die transkripsiemodel (tot 100 MB) af om hierdie transkripsies te kry.</tr
 <translation id="7849030488395653706">noorderligte</translation>
 <translation id="7849737607196682401">kant</translation>
 <translation id="7850320739366109486">Moenie Steur Nie</translation>
-<translation id="7850847810298646851">Muurpapier aangedryf deur Google AI</translation>
+<translation id="7850847810298646851">Muurpapier aangedryf deur Google KI</translation>
 <translation id="785170686607360576">tulp</translation>
 <translation id="7856267634822906833">Bluetooth-raakskerm</translation>
 <translation id="7859006200041800233">kaktusblom</translation>
@@ -1634,11 +1634,11 @@ Laai die transkripsiemodel (tot 100 MB) af om hierdie transkripsies te kry.</tr
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="8156233298086717232">magies</translation>
 <translation id="8162776280680283326">jakkalse</translation>
-<translation id="8167413449582155132">Agtergrond aangedryf deur Google AI</translation>
-<translation id="8171020708598805594">Skep outomaties transkripsies, kry opnameopsommings met behulp van Google AI, en soek deur oudio. Skep opnames selfs wanneer jy nie aan die internet gekoppel is nie.</translation>
+<translation id="8167413449582155132">Agtergrond aangedryf deur Google KI</translation>
+<translation id="8171020708598805594">Skep outomaties transkripsies, kry opnameopsommings met behulp van Google KI, en soek deur oudio. Skep opnames selfs wanneer jy nie aan die internet gekoppel is nie.</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">strand</translation>
-<translation id="819278132617411009">Gebruik Google AI om meer produktief te wees</translation>
+<translation id="819278132617411009">Gebruik Google KI om meer produktief te wees</translation>
 <translation id="8200772114523450471">Hervat</translation>
 <translation id="8206859287963243715">Sellulêr</translation>
 <translation id="8208861521865154048">Byvoordele</translation>
@@ -1693,7 +1693,7 @@ Laai die transkripsiemodel (tot 100 MB) af om hierdie transkripsies te kry.</tr
 <translation id="8433186206711564395">Netwerkinstellings</translation>
 <translation id="843568408673868420">Internetkonnektiwiteit</translation>
 <translation id="844521431886043384">DNS is nie opgestel nie</translation>
-<translation id="8456200178779628126">Gebruik Google AI om hulp met lees en skryf te kry</translation>
+<translation id="8456200178779628126">Gebruik Google KI om hulp met lees en skryf te kry</translation>
 <translation id="8456761643544401578">Outomatiese donkermodus</translation>
 <translation id="8461329675984532579">Tuisverskaffernaam</translation>
 <translation id="8475690821716466388">Wi-fi-netwerk is met swak protokol WEP PSK beveilig</translation>
@@ -1717,7 +1717,7 @@ Laai die transkripsiemodel (tot 100 MB) af om hierdie transkripsies te kry.</tr
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">teehuis</translation>
 <translation id="8531692079895415839">mistig</translation>
-<translation id="8538236298648811558">Aangedryf deur Google AI</translation>
+<translation id="8538236298648811558">Aangedryf deur Google KI</translation>
 <translation id="8550364285433943656">Plaas kontroles op speletjie-aksies om met sleutelbordsleutels te speel</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8558521694042102707">Generatiewe KI kan foute maak, insluitend oor mense, so jy moet dit dubbelkontroleer.</translation>
