@@ -1562,8 +1562,14 @@ void FFmpegDemuxer::LogMetadata(AVFormatContext* avctx,
       video_tracks.push_back(stream->video_decoder_config());
     }
   }
-  media_log_->SetProperty<MediaLogProperty::kAudioTracks>(audio_tracks);
-  media_log_->SetProperty<MediaLogProperty::kVideoTracks>(video_tracks);
+
+  if (!audio_tracks.empty()) {
+    media_log_->SetProperty<MediaLogProperty::kAudioTracks>(audio_tracks);
+  }
+  if (!video_tracks.empty()) {
+    media_log_->SetProperty<MediaLogProperty::kVideoTracks>(video_tracks);
+  }
+
   media_log_->SetProperty<MediaLogProperty::kMaxDuration>(max_duration);
   media_log_->SetProperty<MediaLogProperty::kStartTime>(start_time_);
   media_log_->SetProperty<MediaLogProperty::kBitrate>(bitrate_);

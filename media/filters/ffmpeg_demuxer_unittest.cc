@@ -1211,9 +1211,10 @@ TEST_F(FFmpegDemuxerTest, Mp3WithVideoStreamID3TagData) {
 
   EXPECT_MEDIA_LOG_PROPERTY(kBitrate, 1421305);
   EXPECT_MEDIA_LOG_PROPERTY(kStartTime, 0.0f);
-  EXPECT_MEDIA_LOG_PROPERTY(kVideoTracks, std::vector<VideoDecoderConfig>{});
   EXPECT_MEDIA_LOG_PROPERTY_ANY_VALUE(kMaxDuration);
   EXPECT_MEDIA_LOG_PROPERTY_ANY_VALUE(kAudioTracks);
+  // We do not expect kVideoTracks to be set since this is an audio-only file.
+  // Using a StrictMock<MockMediaLog> verifies this.
   EXPECT_MEDIA_LOG(SimpleCreatedFFmpegDemuxerStream("audio"));
   EXPECT_MEDIA_LOG(FailedToCreateValidDecoderConfigFromStream("video"));
 
@@ -1235,9 +1236,10 @@ TEST_F(FFmpegDemuxerTest, UnsupportedAudioSupportedVideoDemux) {
 
   EXPECT_MEDIA_LOG_PROPERTY(kBitrate, 373182);
   EXPECT_MEDIA_LOG_PROPERTY(kStartTime, 0.0f);
-  EXPECT_MEDIA_LOG_PROPERTY(kAudioTracks, std::vector<AudioDecoderConfig>{});
   EXPECT_MEDIA_LOG_PROPERTY_ANY_VALUE(kVideoTracks);
   EXPECT_MEDIA_LOG_PROPERTY_ANY_VALUE(kMaxDuration);
+  // We do not expect kAudioTracks to be set since the audio track is disabled.
+  // Using a StrictMock<MockMediaLog> verifies this.
   EXPECT_MEDIA_LOG(SimpleCreatedFFmpegDemuxerStream("video"));
 
   // TODO(wolenetz): Use a matcher that verifies more of the event parameters
