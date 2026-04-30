@@ -41,9 +41,6 @@ class GPU_IPC_SERVICE_EXPORT SharedImageStub {
  public:
   ~SharedImageStub();
 
-  using SharedImageDestructionCallback =
-      base::OnceCallback<void(const gpu::SyncToken&)>;
-
   static std::unique_ptr<SharedImageStub> Create(GpuChannel* channel,
                                                  int32_t route_id);
 
@@ -61,18 +58,6 @@ class GPU_IPC_SERVICE_EXPORT SharedImageStub {
   }
   const scoped_refptr<gpu::GpuChannelSharedImageInterface>&
   shared_image_interface();
-
-  SharedImageDestructionCallback GetSharedImageDestructionCallback(
-      const Mailbox& mailbox);
-
-  bool CreateSharedImage(
-      const Mailbox& mailbox,
-      const SharedImageInfo& info,
-      gfx::GpuMemoryBufferHandle handle,
-      std::optional<SharedImagePoolId> pool_id = std::nullopt);
-
-  bool UpdateSharedImage(const Mailbox& mailbox,
-                         gfx::GpuFenceHandle in_fence_handle);
 
 #if BUILDFLAG(IS_WIN)
   void CopyToGpuMemoryBufferAsync(const Mailbox& mailbox,
@@ -101,8 +86,17 @@ class GPU_IPC_SERVICE_EXPORT SharedImageStub {
       mojom::CreateSharedImageWithDataParamsPtr params);
   void OnCreateSharedImageWithBuffer(
       mojom::CreateSharedImageWithBufferParamsPtr params);
+  bool CreateSharedImage(
+      const Mailbox& mailbox,
+      const SharedImageInfo& info,
+      gfx::GpuMemoryBufferHandle handle,
+      std::optional<SharedImagePoolId> pool_id = std::nullopt);
+
   void OnUpdateSharedImage(const Mailbox& mailbox,
                            gfx::GpuFenceHandle in_fence_handle);
+  bool UpdateSharedImage(const Mailbox& mailbox,
+                         gfx::GpuFenceHandle in_fence_handle);
+
   void OnAddReference(const Mailbox& mailbox);
 
   void OnDestroySharedImage(const Mailbox& mailbox);
@@ -124,9 +118,6 @@ class GPU_IPC_SERVICE_EXPORT SharedImageStub {
 
   ContextResult Initialize();
   void OnError();
-
-  // Wait on the sync token if any and destroy the shared image.
-  void DestroySharedImage(const Mailbox& mailbox, const SyncToken& sync_token);
 
   std::string GetLabel(const std::string& debug_label) const;
 

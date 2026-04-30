@@ -176,79 +176,9 @@ void SharedImageStub::ExecuteDeferredRequest(
   }
 }
 
-bool SharedImageStub::CreateSharedImage(
-    const Mailbox& mailbox,
-    const SharedImageInfo& info,
-    gfx::GpuMemoryBufferHandle handle,
-    std::optional<SharedImagePoolId> pool_id) {
-  TRACE_EVENT2("gpu", "SharedImageStub::CreateSharedImage", "width",
-               info.size.width(), "height", info.size.height());
-#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN)
-  if (info.format.PrefersExternalSampler()) {
-    LOG(ERROR) << "SharedImageStub: Incompatible format.";
-    OnError();
-    return false;
-  }
-#endif
-
-  bool needs_gl = HasGLES2ReadOrWriteUsage(info.usage);
-  if (!MakeContextCurrent(needs_gl)) {
-    OnError();
-    return false;
-  }
-
-  if (!factory_->CreateSharedImage(mailbox, info, std::move(handle),
-                                   std::move(pool_id))) {
-    LOG(ERROR) << kSICreationFailureError;
-    OnError();
-    return false;
-  }
-  return true;
-}
-
-bool SharedImageStub::UpdateSharedImage(const Mailbox& mailbox,
-                                        gfx::GpuFenceHandle in_fence_handle) {
-  TRACE_EVENT0("gpu", "SharedImageStub::UpdateSharedImage");
-  std::unique_ptr<gfx::GpuFence> in_fence;
-  if (!in_fence_handle.is_null())
-    in_fence = std::make_unique<gfx::GpuFence>(std::move(in_fence_handle));
-  if (!MakeContextCurrent()) {
-    OnError();
-    return false;
-  }
-  if (!factory_->UpdateSharedImage(mailbox, std::move(in_fence))) {
-    LOG(ERROR) << "SharedImageStub: Unable to update shared image";
-    OnError();
-    return false;
-  }
-  return true;
-}
-
 void SharedImageStub::SetGpuExtraInfo(const gfx::GpuExtraInfo& gpu_extra_info) {
   CHECK(factory_);
   factory_->SetGpuExtraInfo(gpu_extra_info);
-}
-
-void SharedImageStub::OnCreateSharedImage(
-    mojom::CreateSharedImageParamsPtr params) {
-  TRACE_EVENT2("gpu", "SharedImageStub::OnCreateSharedImage", "width",
-               params->si_info->meta.size.width(), "height",
-               params->si_info->meta.size.height());
-  bool needs_gl = HasGLES2ReadOrWriteUsage(params->si_info->meta.usage);
-  if (!MakeContextCurrent(needs_gl)) {
-    OnError();
-    return;
-  }
-
-  if (!factory_->CreateSharedImage(
-          params->mailbox,
-          SharedImageInfo(params->si_info->meta,
-                          GetLabel(params->si_info->debug_label)),
-          gpu::kNullSurfaceHandle, std::move(params->pool_id))) {
-    LOG(ERROR) << kSICreationFailureError;
-    OnError();
-    return;
-  }
 }
 
 void SharedImageStub::OnCreateSharedImagePool(
@@ -271,6 +201,28 @@ void SharedImageStub::OnDestroySharedImagePool(
 
   if (!factory_->DestroySharedImagePool(params->pool_id)) {
     LOG(ERROR) << "Unable to destroy SharedImagePool.";
+    OnError();
+    return;
+  }
+}
+
+void SharedImageStub::OnCreateSharedImage(
+    mojom::CreateSharedImageParamsPtr params) {
+  TRACE_EVENT2("gpu", "SharedImageStub::OnCreateSharedImage", "width",
+               params->si_info->meta.size.width(), "height",
+               params->si_info->meta.size.height());
+  bool needs_gl = HasGLES2ReadOrWriteUsage(params->si_info->meta.usage);
+  if (!MakeContextCurrent(needs_gl)) {
+    OnError();
+    return;
+  }
+
+  if (!factory_->CreateSharedImage(
+          params->mailbox,
+          SharedImageInfo(params->si_info->meta,
+                          GetLabel(params->si_info->debug_label)),
+          gpu::kNullSurfaceHandle, std::move(params->pool_id))) {
+    LOG(ERROR) << kSICreationFailureError;
     OnError();
     return;
   }
@@ -377,12 +329,61 @@ void SharedImageStub::OnCreateSharedImageWithBuffer(
   }
 }
 
+bool SharedImageStub::CreateSharedImage(
+    const Mailbox& mailbox,
+    const SharedImageInfo& info,
+    gfx::GpuMemoryBufferHandle handle,
+    std::optional<SharedImagePoolId> pool_id) {
+  TRACE_EVENT2("gpu", "SharedImageStub::CreateSharedImage", "width",
+               info.size.width(), "height", info.size.height());
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN)
+  if (info.format.PrefersExternalSampler()) {
+    LOG(ERROR) << "SharedImageStub: Incompatible format.";
+    OnError();
+    return false;
+  }
+#endif
+
+  bool needs_gl = HasGLES2ReadOrWriteUsage(info.usage);
+  if (!MakeContextCurrent(needs_gl)) {
+    OnError();
+    return false;
+  }
+
+  if (!factory_->CreateSharedImage(mailbox, info, std::move(handle),
+                                   std::move(pool_id))) {
+    LOG(ERROR) << kSICreationFailureError;
+    OnError();
+    return false;
+  }
+  return true;
+}
+
 void SharedImageStub::OnUpdateSharedImage(const Mailbox& mailbox,
                                           gfx::GpuFenceHandle in_fence_handle) {
   TRACE_EVENT0("gpu", "SharedImageStub::OnUpdateSharedImage");
 
   if (!UpdateSharedImage(mailbox, std::move(in_fence_handle)))
     return;
+}
+
+bool SharedImageStub::UpdateSharedImage(const Mailbox& mailbox,
+                                        gfx::GpuFenceHandle in_fence_handle) {
+  TRACE_EVENT0("gpu", "SharedImageStub::UpdateSharedImage");
+  std::unique_ptr<gfx::GpuFence> in_fence;
+  if (!in_fence_handle.is_null()) {
+    in_fence = std::make_unique<gfx::GpuFence>(std::move(in_fence_handle));
+  }
+  if (!MakeContextCurrent()) {
+    OnError();
+    return false;
+  }
+  if (!factory_->UpdateSharedImage(mailbox, std::move(in_fence))) {
+    LOG(ERROR) << "SharedImageStub: Unable to update shared image";
+    OnError();
+    return false;
+  }
+  return true;
 }
 
 void SharedImageStub::OnAddReference(const Mailbox& mailbox) {
@@ -619,29 +620,8 @@ void SharedImageStub::OnError() {
   channel_->Stop();
 }
 
-SharedImageStub::SharedImageDestructionCallback
-SharedImageStub::GetSharedImageDestructionCallback(const Mailbox& mailbox) {
-  return base::BindOnce(&SharedImageStub::DestroySharedImage,
-                        weak_factory_.GetWeakPtr(), mailbox);
-}
-
 uint64_t SharedImageStub::GetSize() const {
   return memory_tracker_->GetSize();
-}
-
-void SharedImageStub::DestroySharedImage(const Mailbox& mailbox,
-                                         const SyncToken& sync_token) {
-  // If there is no sync token, we don't need to wait.
-  if (!sync_token.HasData()) {
-    OnDestroySharedImage(mailbox);
-    return;
-  }
-
-  auto done_cb = base::BindOnce(&SharedImageStub::OnDestroySharedImage,
-                                weak_factory_.GetWeakPtr(), mailbox);
-  channel_->scheduler()->ScheduleTask(
-      gpu::Scheduler::Task(sequence_, std::move(done_cb),
-                           std::vector<gpu::SyncToken>({sync_token})));
 }
 
 std::string SharedImageStub::GetLabel(const std::string& debug_label) const {
