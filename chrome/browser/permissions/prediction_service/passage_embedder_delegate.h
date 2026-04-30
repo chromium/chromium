@@ -28,7 +28,7 @@ class PassageEmbedderDelegate {
   // A callback that is run when the passage embedding has been successfully
   // computed.
   using PassageEmbeddingsComputedCallback =
-      base::OnceCallback<void(passage_embeddings::Embedding passage_embedding)>;
+      base::OnceCallback<void(std::vector<float> passage_embedding)>;
 
   // Computes passage embeddings from the given `text`.
   // The `text` is split into `passage_count` chunks, each of size

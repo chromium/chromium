@@ -236,7 +236,7 @@ class ContentAnnotatorServiceTest : public content::RenderViewHostTestHarness {
             Return(std::vector<page_content_annotations::PassageEmbedding>{
                 {{"Test Title",
                   page_content_annotations::EmbeddingPassageType::kTitle},
-                 passage_embeddings::Embedding({1.0f, 2.0f, 3.0f})}}));
+                 passage_embeddings::Embedding({1.0f, 0.0f, 0.0f})}}));
     service_->OnPageEmbeddingsAvailable(web_contents->GetPrimaryPage());
   }
 
@@ -302,7 +302,8 @@ TEST_F(ContentAnnotatorServiceTest, TestMaybeAnnotate_TwoUrlsOnlyOneCompletes) {
                         testing::Eq(apc2)),
                   Field(&ContentClassificationInput::page_title_embedding,
                         Optional(EmbeddingDataEq(
-                            std::vector<float>{1.0f, 2.0f, 3.0f}))))))
+                            std::vector<float>{1.0f, 0.0f, 0.0f}))))))
+
       .WillOnce(Return(ContentClassificationResult()));
 
   // URL 1 shouldn't trigger classification because it's incomplete.
@@ -339,7 +340,7 @@ TEST_F(ContentAnnotatorServiceTest, TestMaybeAnnotate_TwoUrlsOnlyOneCompletes) {
               GetEmbeddings(testing::Ref(web_contents2->GetPrimaryPage())))
       .WillOnce(Return(std::vector<page_content_annotations::PassageEmbedding>{
           {{"Title 2", page_content_annotations::EmbeddingPassageType::kTitle},
-           passage_embeddings::Embedding({1.0f, 2.0f, 3.0f})}}));
+           passage_embeddings::Embedding({1.0f, 0.0f, 0.0f})}}));
   service_->OnPageEmbeddingsAvailable(web_contents2->GetPrimaryPage());
 }
 

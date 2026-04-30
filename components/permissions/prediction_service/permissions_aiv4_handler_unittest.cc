@@ -78,10 +78,10 @@ PermissionsAiv4ModelMetadata BuildMetadataFromValues(
   return metadata;
 }
 
-passage_embeddings::Embedding GetDummyEmbeddings(
-    int input_size = kTestTextInputSize) {
-  std::vector<float> data(input_size, 42.f);
-  return passage_embeddings::Embedding(data);
+std::vector<float> GetDummyEmbeddings(int input_size = kTestTextInputSize) {
+  std::vector<float> data(input_size, 0.0f);
+  data[0] = 1.0f;
+  return data;
 }
 
 class PermissionsAiv4ExecutorFake : public PermissionsAiv4Executor {
@@ -487,8 +487,9 @@ TEST_F(Aiv4HandlerTest, TextEmbeddingGetsCopiedToTensor) {
             tflite::task::core::PopulateVector<float>(input_tensors[0], &data)
                 .ok());
         EXPECT_THAT(data, SizeIs(kTestTextInputSize));
-        for (int i = 0; i < kTestTextInputSize; i++) {
-          EXPECT_FLOAT_EQ(data[i], 42.f);
+        EXPECT_FLOAT_EQ(data[0], 1.0f);
+        for (int i = 1; i < kTestTextInputSize; i++) {
+          EXPECT_FLOAT_EQ(data[i], 0.0f);
         }
         flag = true;
       }));

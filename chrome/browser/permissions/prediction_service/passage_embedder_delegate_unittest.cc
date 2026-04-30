@@ -66,18 +66,17 @@ class PassageEmbedderDelegateTest : public ChromeRenderViewHostTestHarness {
   }
 
   // Helper to execute and wait for callback
-  std::optional<passage_embeddings::Embedding> RunEmbedder(std::string text,
-                                                           int passage_count) {
-    std::optional<passage_embeddings::Embedding> result;
+  std::optional<std::vector<float>> RunEmbedder(std::string text,
+                                                int passage_count) {
+    std::optional<std::vector<float>> result;
     base::RunLoop run_loop;
 
     delegate_->CreatePassageEmbeddingsFromRenderedText(
         text, passage_count,
-        base::BindLambdaForTesting(
-            [&](passage_embeddings::Embedding embedding) {
-              result = embedding;
-              run_loop.Quit();
-            }),
+        base::BindLambdaForTesting([&](std::vector<float> embedding) {
+          result = std::move(embedding);
+          run_loop.Quit();
+        }),
         base::BindLambdaForTesting([&]() { run_loop.Quit(); }));
 
     run_loop.Run();
@@ -177,9 +176,9 @@ TEST_F(PassageEmbedderDelegateTest, AveragesEmbeddings) {
   auto e_avg = RunEmbedder(combined, /*passage_count=*/2);
   ASSERT_TRUE(e_avg.has_value());
 
-  std::vector<float> v1 = e1->GetData();
-  std::vector<float> v2 = e2->GetData();
-  std::vector<float> v_avg = e_avg->GetData();
+  const std::vector<float>& v1 = *e1;
+  const std::vector<float>& v2 = *e2;
+  const std::vector<float>& v_avg = *e_avg;
 
   ASSERT_EQ(v1.size(), v_avg.size());
   ASSERT_EQ(v2.size(), v_avg.size());
@@ -198,7 +197,7 @@ TEST_F(PassageEmbedderDelegateTest, ReturnsFallbackWhenEmbedderFails) {
 
   delegate_->CreatePassageEmbeddingsFromRenderedText(
       "text", /*passage_count=*/1,
-      base::BindLambdaForTesting([&](passage_embeddings::Embedding embedding) {
+      base::BindLambdaForTesting([&](std::vector<float> embedding) {
         FAIL() << "Should not be called";
       }),
       base::BindLambdaForTesting([&]() {
@@ -217,7 +216,7 @@ TEST_F(PassageEmbedderDelegateTest, ReturnsFallbackWhenEmbedderNotReady) {
 
   delegate_->CreatePassageEmbeddingsFromRenderedText(
       "text", /*passage_count=*/1,
-      base::BindLambdaForTesting([&](passage_embeddings::Embedding embedding) {
+      base::BindLambdaForTesting([&](std::vector<float> embedding) {
         FAIL() << "Should not be called";
       }),
       base::BindLambdaForTesting([&]() {

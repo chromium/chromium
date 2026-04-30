@@ -80,9 +80,7 @@ class ContentAnnotatorSemanticMatchClassifierTest : public testing::Test {
               for (const auto& passage : passages) {
                 auto it = keyword_to_embedding.find(passage);
                 CHECK(it != keyword_to_embedding.end());
-                Embedding embedding(it->second);
-                embedding.Normalize();
-                embeddings.push_back(std::move(embedding));
+                embeddings.emplace_back(it->second);
               }
               std::move(callback).Run(
                   passages, std::move(embeddings), kTaskId,
@@ -145,7 +143,7 @@ TEST_F(ContentAnnotatorSemanticMatchClassifierTest, Classify) {
   ASSERT_TRUE(classifier);
 
   // Strong match for category1.
-  Embedding cat_embedding(std::vector<float>{1.0f, 0.01f});
+  Embedding cat_embedding(std::vector<float>{1.0f, 0.0f});
   auto cat_result = classifier->Classify(cat_embedding);
   EXPECT_THAT(captured_passages, testing::UnorderedElementsAre("cat", "dog"));
   ASSERT_TRUE(cat_result.has_value());
@@ -153,14 +151,15 @@ TEST_F(ContentAnnotatorSemanticMatchClassifierTest, Classify) {
   EXPECT_EQ(cat_result->score, 1.0f);
 
   // Strong match for category2.
-  Embedding dog_embedding(std::vector<float>{0.01f, 1.0f});
+  Embedding dog_embedding(std::vector<float>{0.0f, 1.0f});
   auto dog_result = classifier->Classify(dog_embedding);
   ASSERT_TRUE(dog_result.has_value());
   EXPECT_EQ(dog_result->category, "category2");
   EXPECT_EQ(dog_result->score, 1.0f);
 
   // Equidistant, should pick one.
-  Embedding equidistant_embedding(std::vector<float>{1.0f, 1.0f});
+  float inv_sqrt2 = 1.0f / std::sqrt(2.0f);
+  Embedding equidistant_embedding(std::vector<float>{inv_sqrt2, inv_sqrt2});
   // The exact result depends on iteration order, but it should be one of them.
   auto equidistant_result = classifier->Classify(equidistant_embedding);
   ASSERT_TRUE(equidistant_result.has_value());
@@ -175,18 +174,6 @@ TEST_F(ContentAnnotatorSemanticMatchClassifierTest, ClassifyWithNoMatch) {
 
   Embedding non_matching_embedding(std::vector<float>{0.0f, 1.0f, 0.0f});
   EXPECT_FALSE(classifier->Classify(non_matching_embedding).has_value());
-}
-
-TEST_F(ContentAnnotatorSemanticMatchClassifierTest, ClassifyWithZeroMagnitude) {
-  const char kRules[] = R"JSON({ "category1": ["keyword1"] })JSON";
-  // Rule embedding has 3 dimensions.
-  MockEmbedderResponse({{"keyword1", {1.0f, 0.0f, 0.0f}}});
-  auto classifier = CreateClassifier(kRules);
-  ASSERT_TRUE(classifier);
-
-  // Input embedding has 3 dimensions but zero magnitude.
-  Embedding zero_magnitude_embedding(std::vector<float>{0.0f, 0.0f, 0.0f});
-  EXPECT_FALSE(classifier->Classify(zero_magnitude_embedding).has_value());
 }
 
 }  // namespace accessibility_annotator

@@ -118,6 +118,7 @@ class EmbedderMetadataProvider {
 //
 // Invariants for Embeddings produced by passage_embeddings::Embedder:
 // * Embeddings always have non-zero lengths.
+// * Embeddings are always normalized to unit length (magnitude 1.0).
 // * Embeddings produced in the same run of Chrome will have consistent lengths.
 // * Embeddings produced in different runs of Chrome can have different lengths
 //   only if the embeddings model version was changed.
@@ -129,12 +130,6 @@ class Embedding {
   Embedding& operator=(const Embedding&);
   Embedding(Embedding&&);
   Embedding& operator=(Embedding&&);
-
-  // The length of the vector.
-  float Magnitude() const;
-
-  // Scale the vector to unit length.
-  void Normalize();
 
   // Compares one embedding with another and returns a similarity measure.
   //
@@ -152,6 +147,10 @@ class Embedding {
   // - Alternatively, whenever possible, instead of relying on the absolute
   //   value of similarity score - consider using it for sorting (ranking).
   float ScoreWith(const Embedding& other_embedding) const;
+
+  // Scale the vector to unit length. Returns nullopt if the vector has
+  // near-zero magnitude and cannot be normalized.
+  static std::optional<std::vector<float>> Normalize(std::vector<float> data);
 
   // Const accessor used for storage.
   const std::vector<float>& GetData() const { return data_; }
@@ -175,6 +174,7 @@ class Embedder {
   //
   // Requirements on the implementation of this interface:
   // * Embeddings must always have non-zero lengths.
+  // * Embeddings must be normalized to unit length (magnitude 1.0).
   // * Embeddings produced in the same run of Chrome must have consistent
   //   lengths.
   // * Embeddings produced in different runs of Chrome can have different

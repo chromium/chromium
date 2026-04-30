@@ -840,7 +840,7 @@ void PermissionsAiUiSelector::ExecuteOnDeviceAivXModel(
 void PermissionsAiUiSelector::OnPassageEmbeddingsComputed(
     ModelExecutionData model_data,
     ModelExecutionCallback model_execution_callback,
-    passage_embeddings::Embedding embedding) {
+    std::vector<float> embedding) {
   VLOG(1) << "[PermissionsAIv4] OnPassageEmbeddingsComputed";
   model_data.inner_text_embedding = std::move(embedding);
   std::move(model_execution_callback).Run(std::move(model_data));

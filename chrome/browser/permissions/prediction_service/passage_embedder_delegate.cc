@@ -174,7 +174,7 @@ void PassageEmbedderDelegate::OnPassageEmbeddingsComputed(
   }
 
   if (embeddings.size() == 1) {
-    std::move(on_passage_embeddings_computed_).Run(std::move(embeddings[0]));
+    std::move(on_passage_embeddings_computed_).Run(embeddings[0].GetData());
     return;
   }
 
@@ -195,8 +195,7 @@ void PassageEmbedderDelegate::OnPassageEmbeddingsComputed(
     val /= embeddings.size();
   }
 
-  std::move(on_passage_embeddings_computed_)
-      .Run(passage_embeddings::Embedding(std::move(averaged_data)));
+  std::move(on_passage_embeddings_computed_).Run(std::move(averaged_data));
 }
 
 }  // namespace permissions

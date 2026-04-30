@@ -80,13 +80,13 @@ TEST_F(LiveTabContextSearchTest, RankPassagesBySemanticSimilarity) {
   page_embeddings.emplace_back(
       std::make_pair("semantic passage similar",
                      page_content_annotations::kPageContent),
-      passage_embeddings::Embedding({0.9f, 0.1f, 0.0f}));
+      passage_embeddings::Embedding({0.9f, 0.43588989f, 0.0f}));
 
   // Create page embedding further from query embedding.
   page_embeddings.emplace_back(
       std::make_pair("semantic passage less similar",
                      page_content_annotations::kPageContent),
-      passage_embeddings::Embedding({0.8f, 0.2f, 0.0f}));
+      passage_embeddings::Embedding({0.8f, 0.6f, 0.0f}));
 
   // Run semantic similarity as usual.
   std::vector<ScoredPassage> results =
@@ -101,8 +101,8 @@ TEST_F(LiveTabContextSearchTest, RankPassagesBySemanticSimilarity) {
 
 // Tests that semantic similarity truncates results.
 TEST_F(LiveTabContextSearchTest, RankPassagesBySemanticSimilarity_Truncation) {
-  // Create query embedding [1, 1, 1]
-  passage_embeddings::Embedding query_embedding({1.0f, 1.0f, 1.0f});
+  // Create query embedding [1, 0, 0]
+  passage_embeddings::Embedding query_embedding({1.0f, 0.0f, 0.0f});
   std::vector<page_content_annotations::PassageEmbedding> page_embeddings;
 
   // Create enough page embeddings to truncate.
@@ -111,7 +111,7 @@ TEST_F(LiveTabContextSearchTest, RankPassagesBySemanticSimilarity_Truncation) {
     page_embeddings.emplace_back(
         std::make_pair("passage " + base::NumberToString(i),
                        page_content_annotations::kPageContent),
-        passage_embeddings::Embedding({1.0f, 1.0f, 1.0f}));
+        passage_embeddings::Embedding({1.0f, 0.0f, 0.0f}));
   }
 
   // Don't return more than max search results.
@@ -131,7 +131,7 @@ TEST_F(LiveTabContextSearchTest, RankPassagesBySemanticSimilarity_TieBreaker) {
     page_embeddings.emplace_back(
         std::make_pair("passage " + base::NumberToString(i),
                        page_content_annotations::kPageContent),
-        passage_embeddings::Embedding({0.5f, 0.0f, 0.0f}));
+        passage_embeddings::Embedding({1.0f, 0.0f, 0.0f}));
   }
 
   std::vector<ScoredPassage> results =

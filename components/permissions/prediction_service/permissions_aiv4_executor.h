@@ -23,14 +23,13 @@
 namespace permissions {
 
 struct PermissionsAiv4ExecutorInput {
-  PermissionsAiv4ExecutorInput(
-      SkBitmap snapshot,
-      passage_embeddings::Embedding rendered_text_embedding);
+  PermissionsAiv4ExecutorInput(SkBitmap snapshot,
+                               std::vector<float> inner_text_embedding);
   ~PermissionsAiv4ExecutorInput();
   PermissionsAiv4ExecutorInput(const PermissionsAiv4ExecutorInput&);
   PermissionsAiv4ExecutorInput(PermissionsAiv4ExecutorInput&&);
   SkBitmap snapshot;
-  passage_embeddings::Embedding inner_text_embedding;
+  std::vector<float> inner_text_embedding;
   std::optional<PermissionsAiv4ModelMetadata> metadata;
 };
 

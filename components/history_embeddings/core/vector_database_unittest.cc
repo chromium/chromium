@@ -30,18 +30,22 @@ namespace {
 
 PassageEmbedding RandomEmbedding() {
   std::vector<float> random_vector(3, 0.0f);
+  float sum_sq = 0.0f;
   for (float& v : random_vector) {
     v = base::RandFloat();
+    sum_sq += v * v;
   }
-  Embedding embedding(std::move(random_vector));
-  embedding.Normalize();
-  return {.embedding = std::move(embedding), .word_count = 10};
+  float magnitude = std::sqrt(sum_sq);
+  for (float& v : random_vector) {
+    v /= magnitude;
+  }
+  return {.embedding = Embedding(std::move(random_vector)), .word_count = 10};
 }
 
 PassageEmbedding DeterministicEmbedding(float value) {
-  Embedding embedding({1.0f, value, 0.0f});
-  embedding.Normalize();
-  return {.embedding = std::move(embedding), .word_count = 10};
+  return {
+      .embedding = Embedding(Embedding::Normalize({1.0f, value, 0.0f}).value()),
+      .word_count = 10};
 }
 
 }  // namespace
@@ -85,13 +89,8 @@ TEST(HistoryEmbeddingsVectorDatabaseTest, EraseNonAsciiCharacters) {
 }
 
 TEST(HistoryEmbeddingsVectorDatabaseTest, EmbeddingOperations) {
-  Embedding a({1, 1, 1});
-  EXPECT_FLOAT_EQ(a.Magnitude(), std::sqrt(3));
-  a.Normalize();
-  EXPECT_FLOAT_EQ(a.Magnitude(), 1.0f);
-
-  Embedding b({2, 2, 2});
-  b.Normalize();
+  Embedding a({1, 0, 0});
+  Embedding b({1, 0, 0});
   EXPECT_FLOAT_EQ(a.ScoreWith(b), 1.0f);
 
   // Verify more similar embeddings have higher scores.

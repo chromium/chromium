@@ -45,7 +45,7 @@ TEST(ContentClassificationInputTest, IsComplete) {
       "Test Title");
   complete_input.annotated_page_content = std::move(annotated_page_content);
   complete_input.page_title_embedding =
-      passage_embeddings::Embedding({-1.0f, -1.0f, -1.0f});
+      passage_embeddings::Embedding({1.0f, 0.0f, 0.0f});
   EXPECT_TRUE(complete_input.IsComplete());
 
   {
@@ -148,7 +148,7 @@ class ContentClassifierTest : public testing::Test {
     input.adopted_language = "en";
     input.sensitivity_score = 0.1f;
     input.page_title_embedding =
-        passage_embeddings::Embedding({-1.0f, -1.0f, -1.0f});
+        passage_embeddings::Embedding({1.0f, 0.0f, 0.0f});
     return input;
   }
 
@@ -210,7 +210,7 @@ TEST_F(ContentClassifierTest, Classify_AllClassifiersMatch) {
   input.url = GURL("https://example.com/rule_1");
   input.page_title = "This is example 1";
   input.page_title_embedding =
-      passage_embeddings::Embedding({1.0f, 1.0f, 1.0f});
+      passage_embeddings::Embedding({1.0f, 0.0f, 0.0f});
 
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return classifier->IsSemanticClassifierReadyForTesting(); }));
@@ -305,6 +305,8 @@ TEST_F(ContentClassifierTest, Classify_NoMatch) {
     ContentClassificationInput input = CreateDefaultInput();
     input.url = GURL("https://example.com/blog");
     input.page_title = "My latest thoughts";
+    input.page_title_embedding =
+        passage_embeddings::Embedding({0.0f, 1.0f, 0.0f});
 
     ContentClassificationResult result = classifier->Classify(input);
 
@@ -330,6 +332,8 @@ TEST_F(ContentClassifierTest, Classify_NoMatch) {
   {
     ContentClassificationInput input = CreateDefaultInput();
     input.url = GURL("https://example.com/blog");
+    input.page_title_embedding =
+        passage_embeddings::Embedding({0.0f, 1.0f, 0.0f});
 
     ContentClassificationResult result = classifier->Classify(input);
 
@@ -626,7 +630,7 @@ TEST_F(ContentClassifierTest, Classify_OnEmbedderModelChanged) {
 
   // 4. Classify again - should now succeed for semantic.
   input.page_title_embedding =
-      passage_embeddings::Embedding({1.0f, 1.0f, 1.0f});
+      passage_embeddings::Embedding({1.0f, 0.0f, 0.0f});
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return classifier->IsSemanticClassifierReadyForTesting(); }));
   result = classifier->Classify(input);

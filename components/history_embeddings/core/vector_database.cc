@@ -22,12 +22,6 @@ uint32_t HashString(std::string_view str) {
   return util::Fingerprint32(str);
 }
 
-// Standard normalized magnitude for all embeddings.
-constexpr float kUnitLength = 1.0f;
-
-// Close enough to be considered near zero.
-constexpr float kEpsilon = 0.01f;
-
 // These delimiters separate queries and passages into tokens.
 constexpr char kTokenDelimiters[] = " .,;";
 
@@ -259,9 +253,6 @@ SearchInfo VectorDatabase::FindNearest(
   // Dimensions are always equal.
   DCHECK_EQ(query_embedding.GetData().size(), GetEmbeddingDimensions());
 
-  // Magnitudes are also assumed equal; they are provided normalized by design.
-  CHECK_LT(std::abs(query_embedding.Magnitude() - kUnitLength), kEpsilon);
-
   // Embeddings must have source passages with at least this many words in order
   // to be considered during the search. Insufficient word count embeddings
   // will score zero against the query_embedding.
@@ -378,9 +369,6 @@ bool VectorDatabaseInMemory::AddUrlData(UrlData url_data) {
       // All embeddings in the database must have equal dimensions.
       CHECK_EQ(passage_embedding->embedding.GetData().size(),
                GetEmbeddingDimensions());
-      // All embeddings in the database are expected to be normalized.
-      CHECK_LT(std::abs(passage_embedding->embedding.Magnitude() - kUnitLength),
-               kEpsilon);
     }
   }
 

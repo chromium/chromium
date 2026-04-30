@@ -97,11 +97,6 @@ ContentAnnotatorSemanticMatchClassifier::Classify(
     return std::nullopt;
   }
 
-  // Ensure the input embedding has a non-zero magnitude.
-  if (embedding.Magnitude() < std::numeric_limits<float>::epsilon()) {
-    return std::nullopt;
-  }
-
   std::string_view best_category;
   double best_similarity = -1.0;
 

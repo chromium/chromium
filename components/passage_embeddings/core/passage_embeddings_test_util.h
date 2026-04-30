@@ -21,10 +21,6 @@ inline constexpr int64_t kEmbeddingsModelVersion = 1l;
 // Returns a model info builder preloaded with valid model info.
 optimization_guide::TestModelInfoBuilder GetBuilderWithValidModelInfo();
 
-// Returns valid Embeddings for the given passages.
-std::vector<Embedding> ComputeEmbeddingsForPassages(
-    const std::vector<std::string>& passages);
-
 ////////////////////////////////////////////////////////////////////////////////
 
 // An Embedder that generates Embeddings asynchronously.

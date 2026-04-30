@@ -283,8 +283,10 @@ void SchedulingEmbedder::OnEmbeddingsComputed(
     ComputeEmbeddingsStatus status) {
   std::vector<Embedding> embeddings;
   for (auto& result : results) {
-    embeddings.emplace_back(result->embeddings);
-    embeddings.back().Normalize();
+    std::optional<std::vector<float>> normalized =
+        Embedding::Normalize(std::move(result->embeddings));
+    DCHECK(normalized);
+    embeddings.emplace_back(std::move(normalized.value()));
   }
 
   VLOG(3) << embeddings.size() << " embeddings computed with status "

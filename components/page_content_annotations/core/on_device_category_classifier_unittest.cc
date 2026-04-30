@@ -121,7 +121,9 @@ TEST_F(OnDeviceCategoryClassifierTest, SkipsIfEmbedderVersionMissing) {
   TestObserver observer;
   classifier_->AddObserver(&observer);
 
-  passage_embeddings::Embedding embedding(std::vector<float>(768, 0.1f));
+  std::vector<float> data(768, 0.0f);
+  data[0] = 1.0f;
+  passage_embeddings::Embedding embedding(std::move(data));
   classifier_->OnPageEmbeddingAvailable(GURL("https://example.com"),
                                         /*source_id=*/0, embedding, {});
 
@@ -161,7 +163,9 @@ TEST_F(OnDeviceCategoryClassifierTest, ExecutesIfVersionsMatch) {
   TestObserver observer;
   classifier_->AddObserver(&observer);
 
-  passage_embeddings::Embedding embedding(std::vector<float>(768, 0.1f));
+  std::vector<float> data(768, 0.0f);
+  data[0] = 1.0f;
+  passage_embeddings::Embedding embedding(std::move(data));
   classifier_->OnPageEmbeddingAvailable(GURL("https://example.com"),
                                         /*source_id=*/0, embedding, {});
 
@@ -247,7 +251,9 @@ TEST_F(OnDeviceCategoryClassifierTest, SkipsIfVersionsMismatch) {
   TestObserver observer;
   classifier_->AddObserver(&observer);
 
-  passage_embeddings::Embedding embedding(std::vector<float>(768, 0.1f));
+  std::vector<float> data(768, 0.0f);
+  data[0] = 1.0f;
+  passage_embeddings::Embedding embedding(std::move(data));
   classifier_->OnPageEmbeddingAvailable(GURL("https://example.com"),
                                         /*source_id=*/0, embedding, {});
 
@@ -273,7 +279,9 @@ TEST_F(OnDeviceCategoryClassifierTest, SkipsIfModelMetadataMissing) {
   TestObserver observer;
   classifier_->AddObserver(&observer);
 
-  passage_embeddings::Embedding embedding(std::vector<float>(768, 0.1f));
+  std::vector<float> data(768, 0.0f);
+  data[0] = 1.0f;
+  passage_embeddings::Embedding embedding(std::move(data));
   classifier_->OnPageEmbeddingAvailable(GURL("https://example.com"),
                                         /*source_id=*/0, embedding, {});
 

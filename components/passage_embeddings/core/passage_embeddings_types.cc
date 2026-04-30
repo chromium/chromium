@@ -5,14 +5,28 @@
 #include "components/passage_embeddings/core/passage_embeddings_types.h"
 
 #include <algorithm>
+#include <cmath>
 
 #include "base/check.h"
 #include "base/not_fatal_until.h"
 
 namespace passage_embeddings {
 
+namespace {
+
+float GetMagnitude(const std::vector<float>& data) {
+  float sum = 0.0f;
+  for (float s : data) {
+    sum += s * s;
+  }
+  return std::sqrt(sum);
+}
+
+}  // namespace
+
 Embedding::Embedding(std::vector<float> data) : data_(std::move(data)) {
   CHECK(!data_.empty(), base::NotFatalUntil::M152);
+  DCHECK_LT(std::abs(GetMagnitude(data_) - 1.0f), 0.0001f);
 }
 
 Embedding::~Embedding() = default;
@@ -21,22 +35,17 @@ Embedding& Embedding::operator=(const Embedding&) = default;
 Embedding::Embedding(Embedding&&) = default;
 Embedding& Embedding::operator=(Embedding&&) = default;
 
-float Embedding::Magnitude() const {
-  float sum = 0.0f;
-  for (float s : data_) {
-    sum += s * s;
+// static
+std::optional<std::vector<float>> Embedding::Normalize(
+    std::vector<float> data) {
+  float magnitude = GetMagnitude(data);
+  if (magnitude <= std::numeric_limits<float>::epsilon()) {
+    return std::nullopt;
   }
-  return std::sqrt(sum);
-}
-
-void Embedding::Normalize() {
-  float magnitude = Magnitude();
-  if (std::abs(magnitude - 1) > 0.0001f) {
-    CHECK_GT(magnitude, std::numeric_limits<float>::epsilon());
-    for (float& s : data_) {
-      s /= magnitude;
-    }
+  for (float& v : data) {
+    v /= magnitude;
   }
+  return data;
 }
 
 float Embedding::ScoreWith(const Embedding& other_embedding) const {

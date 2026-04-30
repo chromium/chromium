@@ -54,7 +54,7 @@ class PermissionsAiUiSelector : public permissions::PermissionUiSelector {
     permissions::PredictionModelType model_type;
     std::optional<std::string> inner_text;
     std::optional<SkBitmap> snapshot;
-    std::optional<passage_embeddings::Embedding> inner_text_embedding;
+    std::optional<std::vector<float>> inner_text_embedding;
 
     ModelExecutionData(permissions::PredictionRequestFeatures features,
                        PredictionRequestMetadata request_metadata,
@@ -238,7 +238,7 @@ class PermissionsAiUiSelector : public permissions::PermissionUiSelector {
   void OnPassageEmbeddingsComputed(
       ModelExecutionData model_data,
       ModelExecutionCallback model_execution_callback,
-      passage_embeddings::Embedding embedding);
+      std::vector<float> embedding);
 
   raw_ptr<Profile> profile_;
   std::unique_ptr<PredictionServiceRequest> request_;

@@ -98,9 +98,16 @@ class FakeEmbedder : public passage_embeddings::TestEmbedder {
         base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
             FROM_HERE,
             base::BindOnce(
-                std::move(callback), passages,
-                passage_embeddings::ComputeEmbeddingsForPassages(passages), 0,
-                status_),
+                [](ComputePassagesEmbeddingsCallback callback,
+                   std::vector<std::string> passages,
+                   passage_embeddings::ComputeEmbeddingsStatus status) {
+                  std::vector<passage_embeddings::Embedding> embeddings(
+                      passages.size(),
+                      passage_embeddings::Embedding({1.0f, 0.0f, 0.0f}));
+                  std::move(callback).Run(std::move(passages),
+                                          std::move(embeddings), 0, status);
+                },
+                std::move(callback), std::move(passages), status_),
             *timeout_);
         return 0;
       }

@@ -15,12 +15,6 @@ namespace {
 
 inline constexpr uint32_t kEmbeddingsModelInputWindowSize = 256u;
 
-Embedding ComputeEmbeddingForPassage() {
-  Embedding embedding({1.0f, 0.0f, 0.0f});
-  embedding.Normalize();
-  return embedding;
-}
-
 EmbedderMetadata GetValidEmbedderMetadata() {
   return EmbedderMetadata(kEmbeddingsModelVersion, 3ul);
 }
@@ -56,11 +50,6 @@ optimization_guide::TestModelInfoBuilder GetBuilderWithValidModelInfo() {
   return builder;
 }
 
-std::vector<Embedding> ComputeEmbeddingsForPassages(
-    const std::vector<std::string>& passages) {
-  return std::vector<Embedding>(passages.size(), ComputeEmbeddingForPassage());
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 
 Embedder::TaskId TestEmbedder::ComputePassagesEmbeddings(
@@ -71,8 +60,10 @@ Embedder::TaskId TestEmbedder::ComputePassagesEmbeddings(
       FROM_HERE, base::BindOnce(
                      [](std::vector<std::string> passages,
                         ComputePassagesEmbeddingsCallback callback) {
+                       std::vector<Embedding> embeddings(
+                           passages.size(), Embedding({1.0f, 0.0f, 0.0f}));
                        std::move(callback).Run(
-                           passages, ComputeEmbeddingsForPassages(passages),
+                           passages, std::move(embeddings),
                            /*task_id=*/0, ComputeEmbeddingsStatus::kSuccess);
                      },
                      passages, std::move(callback)));
