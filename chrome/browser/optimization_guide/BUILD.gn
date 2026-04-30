@@ -82,7 +82,6 @@ source_set("impl") {
     "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/signin",
     "//chrome/browser/sync",
-    "//chrome/browser/ui",
     "//components/metrics_services_manager",
     "//components/no_state_prefetch/browser",
     "//components/user_prefs",
@@ -94,6 +93,7 @@ source_set("impl") {
     deps += [
       "//base",
       "//chrome/browser/optimization_guide/android:jni_headers",
+      "//chrome/browser/optimization_guide/android:native",
     ]
   } else {
     sources += [ "private_ai_model_execution_fetcher.cc" ]

@@ -8123,6 +8123,7 @@ test("unit_tests") {
       "//chrome/browser/lookalikes:unit_tests",
       "//chrome/browser/memory:unit_tests",
       "//chrome/browser/notifications",
+      "//chrome/browser/optimization_guide/android:native",
       "//chrome/browser/optimization_guide/android:native_j_unittests_jni_headers",
       "//chrome/browser/optimization_guide/android:native_java_unittests",
       "//chrome/browser/page_image_service/android:unit_tests",

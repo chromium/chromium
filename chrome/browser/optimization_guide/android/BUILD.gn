@@ -12,6 +12,32 @@ generate_jni("jni_headers") {
   ]
 }
 
+source_set("native") {
+  public = [
+    "optimization_guide_bridge.h",
+    "optimization_guide_tab_url_provider_android.h",
+  ]
+  sources = [
+    "optimization_guide_bridge.cc",
+    "optimization_guide_tab_url_provider_android.cc",
+  ]
+  public_deps = [
+    ":jni_headers",
+    "//base",
+    "//components/optimization_guide/core",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//third_party/jni_zero",
+    "//url",
+  ]
+  deps = [
+    "//chrome/browser/android:tabs_public",
+    "//chrome/browser/optimization_guide",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/android/tab_model",
+    "//content/public/browser",
+  ]
+}
+
 android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/optimization_guide/OptimizationGuideBridge.java",

@@ -348,6 +348,7 @@ static_library("ui") {
     "//chrome/browser/obsolete_system",
     "//chrome/browser/omnibox",
     "//chrome/browser/optimization_guide",
+    "//chrome/browser/optimization_guide:impl",
     "//chrome/browser/page_content_annotations",
     "//chrome/browser/page_content_annotations:fetcher",
     "//chrome/browser/page_image_service",
@@ -823,6 +824,10 @@ static_library("ui") {
     # split out yet (e.g. tab_sharing/tab_sharing_ui.h, browser.h,
     # tabs/tab_strip_model.h, recently_audible_helper.h).
     "//chrome/browser/media:impl",
+
+    # optimization_guide:impl includes headers from //chrome/browser/ui
+    # that can't be split out yet.
+    "//chrome/browser/optimization_guide:impl",
     "//chrome/browser/ui/autofill/payments",
     "//chrome/browser/ui/autofill/payments:impl",
 
