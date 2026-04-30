@@ -65,9 +65,6 @@ public interface NtpSearchBox {
     /* Sets whether the fusebox is eligible. */
     void setIsFuseboxEligible(boolean isEligible);
 
-    /* Sets if the DSE is Google. */
-    void setIsSearchProviderGoogle(boolean isGoogle);
-
     /**
      * Calculates the percentage (between 0 and 1) of the transition from the search box to the
      * omnibox at the top of the New Tab Page, which is determined by the amount of scrolling and

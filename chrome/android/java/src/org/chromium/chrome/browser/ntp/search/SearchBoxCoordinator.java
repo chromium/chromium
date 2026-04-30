@@ -24,6 +24,7 @@ import org.chromium.chrome.browser.lens.LensEntryPoint;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.ntp.NewTabPageManager;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -50,7 +51,8 @@ public class SearchBoxCoordinator implements NtpSearchBox {
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             boolean isIncognito,
             WindowAndroid windowAndroid,
-            NewTabPageManager newTabPageManager) {
+            NewTabPageManager newTabPageManager,
+            Profile profile) {
         mModel = new PropertyModel(SearchBoxProperties.ALL_KEYS);
         mView = (SearchBoxContainerView) parent.findViewById(R.id.search_box);
         mMediator =
@@ -62,7 +64,8 @@ public class SearchBoxCoordinator implements NtpSearchBox {
                         activityLifecycleDispatcher,
                         newTabPageManager,
                         isIncognito,
-                        windowAndroid);
+                        windowAndroid,
+                        profile);
         mIsIncognito = isIncognito;
         mWindowAndroid = windowAndroid;
     }
@@ -110,11 +113,6 @@ public class SearchBoxCoordinator implements NtpSearchBox {
     @Override
     public void setIsFuseboxEligible(boolean isEligible) {
         mMediator.setIsFuseboxEligible(isEligible);
-    }
-
-    @Override
-    public void setIsSearchProviderGoogle(boolean isGoogle) {
-        mMediator.setIsSearchProviderGoogle(isGoogle);
     }
 
     @Override

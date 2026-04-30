@@ -32,8 +32,12 @@ import org.chromium.chrome.browser.ntp.NewTabPageManager;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxFeatures;
+import org.chromium.components.search_engines.TemplateUrlService;
+import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -48,14 +52,17 @@ class SearchBoxMediator implements DestroyObserver {
     private final NewTabPageManager mNewTabPageManager;
     private final boolean mIsIncognito;
     private final WindowAndroid mWindowAndroid;
+    private final TemplateUrlService mTemplateUrlService;
+    private final float mTransitionEndOffset;
+    private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private NonNullObservableSupplier<@FuseboxState Integer> mFuseboxStateSupplier =
             ObservableSuppliers.createNonNull(FuseboxState.DISABLED);
     private final Callback<@FuseboxState Integer> mOnFuseboxStateChanged =
             this::onFuseboxStateChanged;
+    private final TemplateUrlServiceObserver mTemplateUrlServiceObserver =
+            this::onTemplateURLServiceChanged;
+
     private boolean mIsFuseboxEligible;
-    private boolean mIsSearchProviderGoogle;
-    private final float mTransitionEndOffset;
-    private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
 
     SearchBoxMediator(
             Context context,
@@ -65,13 +72,16 @@ class SearchBoxMediator implements DestroyObserver {
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             NewTabPageManager newTabPageManager,
             boolean isIncognito,
-            WindowAndroid windowAndroid) {
+            WindowAndroid windowAndroid,
+            Profile profile) {
         mContext = context;
         mModel = model;
         mView = view;
         mNewTabPageManager = newTabPageManager;
         mIsIncognito = isIncognito;
         mWindowAndroid = windowAndroid;
+        mTemplateUrlService = TemplateUrlServiceFactory.getForProfile(profile);
+        mTemplateUrlService.addObserver(mTemplateUrlServiceObserver);
         PropertyModelChangeProcessor.create(mModel, mView, new SearchBoxViewBinder());
 
         mTransitionEndOffset =
@@ -87,6 +97,8 @@ class SearchBoxMediator implements DestroyObserver {
         mModel.set(SearchBoxProperties.VOICE_SEARCH_CLICK_CALLBACK, this::onVoiceSearchClick);
         mModel.set(SearchBoxProperties.PLUS_BUTTON_CLICK_CALLBACK, this::onPlusButtonClick);
         mModel.set(SearchBoxProperties.LENS_CLICK_CALLBACK, this::onLensClick);
+
+        updateStartIcon();
     }
 
     @Override
@@ -102,6 +114,7 @@ class SearchBoxMediator implements DestroyObserver {
         mModel.set(SearchBoxProperties.DSE_ICON_DRAWABLE, null);
 
         mFuseboxStateSupplier.removeObserver(mOnFuseboxStateChanged);
+        mTemplateUrlService.removeObserver(mTemplateUrlServiceObserver);
     }
 
     private void onSearchBoxClick(View v) {
@@ -165,11 +178,10 @@ class SearchBoxMediator implements DestroyObserver {
                 isMultimodalInputEnabled
                         && mIsFuseboxEligible
                         && isFuseboxSupportedDeviceType
-                        && mIsSearchProviderGoogle);
+                        && mTemplateUrlService.isDefaultSearchEngineGoogle());
     }
 
-    void setIsSearchProviderGoogle(boolean isGoogle) {
-        mIsSearchProviderGoogle = isGoogle;
+    private void onTemplateURLServiceChanged() {
         updateStartIcon();
     }
 

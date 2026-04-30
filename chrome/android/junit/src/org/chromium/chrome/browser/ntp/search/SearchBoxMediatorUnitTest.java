@@ -11,7 +11,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -37,6 +36,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -54,8 +55,12 @@ import org.chromium.chrome.browser.lens.LensIntentParams;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.ntp.NewTabPageManager;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxFeatureList;
+import org.chromium.components.search_engines.TemplateUrlService;
+import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -70,11 +75,17 @@ public class SearchBoxMediatorUnitTest {
     @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     @Mock private OnClickListener mLensClickListener;
     @Mock private OnClickListener mVoiceSearchClickListener;
+    @Mock private OnClickListener mSearchBoxClickListener;
+    @Mock private View.OnDragListener mSearchBoxDragListener;
+    @Mock private TextWatcher mSearchBoxTextWatcher;
     @Mock private FeedSurfaceScrollDelegate mScrollDelegate;
     @Mock private Supplier<Integer> mTabStripHeightSupplier;
     @Mock private NewTabPageManager mNewTabPageManager;
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private LensController mLensController;
+    @Mock private Profile mProfile;
+    @Mock private TemplateUrlService mTemplateUrlService;
+    @Captor private ArgumentCaptor<TemplateUrlServiceObserver> mTemplateUrlServiceObserverCaptor;
 
     private Context mContext;
     private SearchBoxContainerView mView;
@@ -94,6 +105,9 @@ public class SearchBoxMediatorUnitTest {
 
         mPropertyModel = new PropertyModel.Builder(SearchBoxProperties.ALL_KEYS).build();
         LensController.setInstanceForTesting(mLensController);
+        TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
+        when(mTemplateUrlService.isDefaultSearchEngineGoogle()).thenReturn(true);
+
         mMediator =
                 new SearchBoxMediator(
                         mContext,
@@ -103,19 +117,21 @@ public class SearchBoxMediatorUnitTest {
                         mActivityLifecycleDispatcher,
                         mNewTabPageManager,
                         /* isIncognito= */ false,
-                        mWindowAndroid);
+                        mWindowAndroid,
+                        mProfile);
     }
 
     @Test
     public void testOnDestroy() {
+        verify(mTemplateUrlService).addObserver(mTemplateUrlServiceObserverCaptor.capture());
+        TemplateUrlServiceObserver observer = mTemplateUrlServiceObserverCaptor.getValue();
+
         mPropertyModel.set(SearchBoxProperties.LENS_CLICK_CALLBACK, mLensClickListener);
         mPropertyModel.set(
                 SearchBoxProperties.VOICE_SEARCH_CLICK_CALLBACK, mVoiceSearchClickListener);
-        mPropertyModel.set(
-                SearchBoxProperties.SEARCH_BOX_CLICK_CALLBACK, mock(OnClickListener.class));
-        mPropertyModel.set(
-                SearchBoxProperties.SEARCH_BOX_DRAG_CALLBACK, mock(View.OnDragListener.class));
-        mPropertyModel.set(SearchBoxProperties.SEARCH_BOX_TEXT_WATCHER, mock(TextWatcher.class));
+        mPropertyModel.set(SearchBoxProperties.SEARCH_BOX_CLICK_CALLBACK, mSearchBoxClickListener);
+        mPropertyModel.set(SearchBoxProperties.SEARCH_BOX_DRAG_CALLBACK, mSearchBoxDragListener);
+        mPropertyModel.set(SearchBoxProperties.SEARCH_BOX_TEXT_WATCHER, mSearchBoxTextWatcher);
         mPropertyModel.set(SearchBoxProperties.DSE_ICON_DRAWABLE, new ColorDrawable(Color.RED));
 
         assertNotNull(mPropertyModel.get(SearchBoxProperties.LENS_CLICK_CALLBACK));
@@ -128,6 +144,7 @@ public class SearchBoxMediatorUnitTest {
         mMediator.onDestroy();
 
         verify(mActivityLifecycleDispatcher).unregister(mMediator);
+        verify(mTemplateUrlService).removeObserver(observer);
         assertNull(mPropertyModel.get(SearchBoxProperties.LENS_CLICK_CALLBACK));
         assertNull(mPropertyModel.get(SearchBoxProperties.VOICE_SEARCH_CLICK_CALLBACK));
         assertNull(mPropertyModel.get(SearchBoxProperties.SEARCH_BOX_CLICK_CALLBACK));
@@ -161,7 +178,6 @@ public class SearchBoxMediatorUnitTest {
     @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
     public void testUpdateStartIcon_AllConditionsMet() {
         mMediator.setIsFuseboxEligible(true);
-        mMediator.setIsSearchProviderGoogle(true);
 
         assertTrue(mPropertyModel.get(SearchBoxProperties.PLUS_BUTTON_VISIBILITY));
     }
@@ -170,7 +186,6 @@ public class SearchBoxMediatorUnitTest {
     @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
     public void testUpdateStartIcon_NotEligible() {
         mMediator.setIsFuseboxEligible(false);
-        mMediator.setIsSearchProviderGoogle(true);
 
         assertFalse(mPropertyModel.get(SearchBoxProperties.PLUS_BUTTON_VISIBILITY));
     }
@@ -178,8 +193,11 @@ public class SearchBoxMediatorUnitTest {
     @Test
     @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
     public void testUpdateStartIcon_NotGoogle() {
+        when(mTemplateUrlService.isDefaultSearchEngineGoogle()).thenReturn(false);
         mMediator.setIsFuseboxEligible(true);
-        mMediator.setIsSearchProviderGoogle(false);
+
+        verify(mTemplateUrlService).addObserver(mTemplateUrlServiceObserverCaptor.capture());
+        mTemplateUrlServiceObserverCaptor.getValue().onTemplateURLServiceChanged();
 
         assertFalse(mPropertyModel.get(SearchBoxProperties.PLUS_BUTTON_VISIBILITY));
     }
@@ -188,7 +206,6 @@ public class SearchBoxMediatorUnitTest {
     @DisableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
     public void testUpdateStartIcon_FeatureDisabled() {
         mMediator.setIsFuseboxEligible(true);
-        mMediator.setIsSearchProviderGoogle(true);
 
         assertFalse(mPropertyModel.get(SearchBoxProperties.PLUS_BUTTON_VISIBILITY));
     }
@@ -390,7 +407,8 @@ public class SearchBoxMediatorUnitTest {
                         mActivityLifecycleDispatcher,
                         mNewTabPageManager,
                         /* isIncognito= */ false,
-                        mWindowAndroid);
+                        mWindowAndroid,
+                        mProfile);
         int searchBoxTop = 100;
         int searchBoxPaddingTop = 10;
         int transitionStartOffset = 50;

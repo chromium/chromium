@@ -342,7 +342,8 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
                         lifecycleDispatcher,
                         mProfile.isOffTheRecord(),
                         mWindowAndroid,
-                        mManager);
+                        mManager,
+                        mProfile);
         mModel.set(NewTabPageLayoutProperties.SEARCH_BOX_VIEW, mSearchBoxCoordinator.getView());
 
         updateSearchBoxTwoSideMargin();
@@ -733,9 +734,6 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
         boolean isSearchProviderIsGoogleChanged = mSearchProviderIsGoogle != isGoogle;
         mSearchProviderHasLogo = hasLogo;
         mSearchProviderIsGoogle = isGoogle;
-        if (mSearchBoxCoordinator != null) {
-            mSearchBoxCoordinator.setIsSearchProviderGoogle(isGoogle);
-        }
 
         if (!mSearchProviderIsGoogle) {
             mShowingNonStandardGoogleLogo = false;
