@@ -96,10 +96,6 @@
   // Resolve layout guide.
   GuideName* guideName = kSecondaryToolbarGuide;
   LayoutGuideCenter* center = LayoutGuideCenterForBrowser(self.browser);
-  if (IsChromeNextIaEnabled()) {
-    guideName = kAppBarGuide;
-    center = LayoutGuideCenterForBrowser(nil);
-  }
   _containerViewController.anchorView = [center referencedViewUnderName:guideName];
 
   if ([_delegate respondsToSelector:@selector(assistantContainer:
