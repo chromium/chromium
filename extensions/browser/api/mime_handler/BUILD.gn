@@ -1,0 +1,29 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//extensions/buildflags/buildflags.gni")
+
+assert(enable_extensions,
+       "Cannot depend on extensions because enable_extensions=false.")
+
+source_set("mime_handler") {
+  sources = [
+    "mime_handler_api.cc",
+    "mime_handler_api.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//extensions/browser:browser_sources",
+    "//extensions/common",
+    "//extensions/common/api",
+  ]
+
+  deps = [
+    "//content/public/browser",
+    "//extensions/browser/mime_handler",
+    "//extensions/browser/mime_handler:stream_container",
+    "//net",
+  ]
+}

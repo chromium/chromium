@@ -76,6 +76,7 @@ if (enable_extensions) {
     "feedback_private.webidl",
     "file_system.idl",
     "hid.idl",
+    "mime_handler.webidl",
     "mime_handler_private.idl",
     "mime_handler_view_guest_internal.json",
     "mojo_private.webidl",

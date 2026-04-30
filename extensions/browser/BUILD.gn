@@ -1211,8 +1211,12 @@ source_set("unit_tests") {
     ]
 
     if (!is_android) {
+      sources += [ "api/mime_handler/mime_handler_api_unittest.cc" ]
       deps += [
+        "//extensions/browser/api/mime_handler",
+        "//extensions/browser/mime_handler",
         "//extensions/browser/mime_handler:stream_container",
+        "//extensions/browser/mime_handler:test_helpers",
         "//extensions/browser/mime_handler:unit_tests",
       ]
     }

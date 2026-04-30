@@ -2900,6 +2900,7 @@ Called by update_extension_histograms.py.-->
   <int value="1962" label="ACCESSIBILITY_PRIVATE_INSTALLTENJI"/>
   <int value="1963" label="GLICPRIVATE_INVOKE"/>
   <int value="1964" label="INDIGOPRIVATE_READYTORENDER"/>
+  <int value="1965" label="MIMEHANDLER_GETSTREAMINFO"/>
 </enum>
 
 <!-- LINT.ThenChange(//extensions/browser/extension_function_histogram_value.h:HistogramValue) -->

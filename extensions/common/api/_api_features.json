@@ -491,6 +491,13 @@
       "chrome-untrusted://demo-mode-app/*"
     ]
   },
+  "mimeHandler": {
+    "dependencies": ["manifest:mime_types_handler"],
+    "contexts": ["privileged_extension"],
+    // "desktop_android" is not supported.
+    "platforms": ["chromeos", "linux", "mac", "win"],
+    "feature_flag": "ApiMimeHandler"
+  },
   "mimeHandlerPrivate": {
     "dependencies": ["manifest:mime_types_handler"],
     "contexts": ["privileged_extension"],
