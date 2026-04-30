@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>OTP Verification Page</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; }
+    .form-section { margin-bottom: 30px; padding: 15px; border: 1px solid #ccc; border-radius: 5px; }
+    .digit-group input {
+      width: 30px;
+      height: 30px;
+      text-align: center;
+      font-size: 18px;
+      margin-right: 5px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Enter Verification Code</h1>
+
+  <!-- Single Field OTP Form -->
+  <div class="form-section">
+    <h2>Single Field OTP</h2>
+    <form id="single-otp-form" action="simple.html">
+      <div>
+        <label for="otp">One-Time Password:</label>
+        <input type="text" id="otp" name="otp" aria-label="One-Time Password" autocomplete="one-time-code" inputmode="numeric" maxlength="6">
+      </div>
+      <button type="submit" id="single-submit-button">Verify</button>
+    </form>
+  </div>
+
+  <!-- Multi-Field OTP Form. No guarantees it would be filled successfully by Autofill. -->
+  <div class="form-section">
+    <h2>Multi-Field OTP (4 Digits)</h2>
+    <form id="multi-otp-form" action="simple.html">
+      <div class="digit-group">
+        <label>Enter 4-digit code:</label><br><br>
+        <input type="text" id="otp_digit_1" name="otp_1" autocomplete="one-time-code" inputmode="numeric" maxlength="1">
+        <input type="text" id="otp_digit_2" name="otp_2" autocomplete="one-time-code" inputmode="numeric" maxlength="1">
+        <input type="text" id="otp_digit_3" name="otp_3" autocomplete="one-time-code" inputmode="numeric" maxlength="1">
+        <input type="text" id="otp_digit_4" name="otp_4" autocomplete="one-time-code" inputmode="numeric" maxlength="1">
+      </div>
+      <br>
+      <button type="submit" id="multi-submit-button">Verify</button>
+    </form>
+  </div>
+</body>
+</html>

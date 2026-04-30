@@ -7,8 +7,10 @@
 
 #include <iosfwd>
 #include <string_view>
+#include <vector>
 
 #include "chrome/browser/actor/tools/tool_request.h"
+#include "components/actor/core/shared_types.h"
 
 namespace actor {
 
@@ -20,8 +22,9 @@ class AttemptOtpFillingToolRequest : public TabToolRequest {
  public:
   static constexpr char kName[] = "AttemptOtpFilling";
 
-  // TODO(b/500265255): Take a trigger field too.
-  explicit AttemptOtpFillingToolRequest(tabs::TabHandle tab_handle);
+  AttemptOtpFillingToolRequest(tabs::TabHandle tab_handle,
+                               std::vector<PageTarget> trigger_fields,
+                               bool for_signin);
   AttemptOtpFillingToolRequest(const AttemptOtpFillingToolRequest&);
   AttemptOtpFillingToolRequest& operator=(const AttemptOtpFillingToolRequest&);
 
@@ -34,6 +37,10 @@ class AttemptOtpFillingToolRequest : public TabToolRequest {
   std::string_view Name() const override;
 
   void Apply(ToolRequestVisitorFunctor& f) const override;
+
+ private:
+  std::vector<PageTarget> trigger_fields_;
+  bool for_signin_;
 };
 
 }  // namespace actor

@@ -4,27 +4,198 @@
 
 #include "chrome/browser/actor/tools/attempt_otp_filling_tool.h"
 
+#include <memory>
+#include <optional>
+#include <string>
+#include <utility>
+#include <vector>
+
+#include "base/memory/raw_ptr.h"
+#include "base/strings/strcat.h"
+#include "base/test/gmock_expected_support.h"
+#include "base/types/expected_macros.h"
+#include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_test_util.h"
+#include "chrome/browser/actor/aggregated_journal.h"
 #include "chrome/browser/actor/tools/attempt_otp_filling_tool_request.h"
 #include "chrome/browser/actor/tools/tools_test_util.h"
+#include "components/actor/core/shared_types.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 
 namespace actor {
 
 namespace {
 
-class AttemptOtpFillingToolBrowserTest : public ActorToolsTest {};
+// The Journal only keeps the last 20 entries in the its buffer. If we want to
+// use the journal entries for assertions, we need to observe and store them as
+// they happen.
+class TestJournalObserver : public AggregatedJournal::Observer {
+ public:
+  explicit TestJournalObserver(AggregatedJournal* journal) : journal_(journal) {
+    journal->AddObserver(this);
+  }
 
-// The tool can be created and returns OK.
+  ~TestJournalObserver() override { journal_->RemoveObserver(this); }
+
+  void WillAddJournalEntry(const AggregatedJournal::Entry& entry) override {
+    // We copy the data from the entry, because we don't own the entry.
+    std::string s = base::StrCat({"Event: ", entry.data->event, ";"});
+
+    for (const auto& details_entry : entry.data->details) {
+      base::StrAppend(&s, {details_entry->key, "=", details_entry->value, ";"});
+    }
+    entries_.push_back(std::move(s));
+  }
+
+  const std::vector<std::string>& Entries() const { return entries_; }
+
+ private:
+  raw_ptr<AggregatedJournal> journal_;
+  std::vector<std::string> entries_;
+};
+
+class AttemptOtpFillingToolBrowserTest : public ActorToolsTest {
+ protected:
+  void SetUpOnMainThread() override {
+    ActorToolsTest::SetUpOnMainThread();
+
+    observer_ = std::make_unique<TestJournalObserver>(
+        &actor_keyed_service().GetJournal());
+
+    embedded_https_test_server().ServeFilesFromSourceDirectory(
+        "chrome/test/data");
+    ASSERT_TRUE(embedded_https_test_server().Start());
+  }
+
+  void TearDownOnMainThread() override {
+    observer_.reset();
+
+    ActorToolsTest::TearDownOnMainThread();
+  }
+
+  const std::vector<std::string>& JournalEntries() const {
+    return observer_->Entries();
+  }
+
+ private:
+  std::unique_ptr<TestJournalObserver> observer_ = nullptr;
+};
+
+// Gets the dom node or returns nullopt when the node id or document token
+// cannot be retrieved.
+std::optional<DomNode> GetDomNodeOnPage(content::RenderFrameHost& rfh,
+                                        std::string_view query_selector) {
+  ASSIGN_OR_RETURN(int node_id, GetDOMNodeId(rfh, query_selector));
+  ASSIGN_OR_RETURN(
+      std::string document_identifier,
+      optimization_guide::DocumentIdentifierUserData::GetDocumentIdentifier(
+          rfh.GetGlobalFrameToken()));
+  return DomNode{.node_id = node_id,
+                 .document_identifier = std::move(document_identifier)};
+}
+
+// The tool can be created with one field and the task returns OK.
 IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
-                       ToolGetsCreatedAndReturnsOk) {
+                       ToolGetsCreatedWithOneFieldAndTaskReturnsOk) {
+  // Just navigating to the page might not be enough, if we want to convert
+  // PageTargets back to OneTimeToken services's input later on (in the tool or
+  // actor service). Something like
+  // AttemptFormFillingToolTest::WaitForTabObservation might be needed.
+  const GURL url = embedded_https_test_server().GetURL("example.com",
+                                                       "/actor/otp_page.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+  ASSERT_OK_AND_ASSIGN(DomNode otp_field,
+                       GetDomNodeOnPage(*main_frame(), "#otp"));
   std::unique_ptr<ToolRequest> request =
-      std::make_unique<AttemptOtpFillingToolRequest>(active_tab()->GetHandle());
+      std::make_unique<AttemptOtpFillingToolRequest>(
+          active_tab()->GetHandle(), std::vector<PageTarget>{otp_field},
+          /*for_signin=*/true);
 
   ActResultFuture result;
   actor_task().Act(ToRequestList(std::move(request)), result.GetCallback());
 
   ExpectOkResult(result);
+  EXPECT_THAT(JournalEntries(),
+              testing::Contains(testing::ContainsRegex(
+                  "AttemptOtpFillingTool::Invoke;.*for_signin=true")));
+  EXPECT_THAT(JournalEntries(),
+              testing::Contains(testing::ContainsRegex(
+                  "AttemptOtpFillingTool::Invoke;.*trigger_fields_count=1")));
+}
+
+// The tool can be created with multiple fields (one per digit) and the
+// task returns OK.
+IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
+                       ToolGetsCreatedWithMultipleFieldsAndTaskReturnsOk) {
+  // Just navigating to the page might not be enough, if we want to convert
+  // PageTargets back to OneTimeToken services's input later on (in the tool or
+  // actor service). Something like
+  // AttemptFormFillingToolTest::WaitForTabObservation might be needed.
+  const GURL url = embedded_https_test_server().GetURL("example.com",
+                                                       "/actor/otp_page.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+  ASSERT_OK_AND_ASSIGN(DomNode otp_field_1,
+                       GetDomNodeOnPage(*main_frame(), "#otp_digit_1"));
+  ASSERT_OK_AND_ASSIGN(DomNode otp_field_2,
+                       GetDomNodeOnPage(*main_frame(), "#otp_digit_2"));
+  ASSERT_OK_AND_ASSIGN(DomNode otp_field_3,
+                       GetDomNodeOnPage(*main_frame(), "#otp_digit_3"));
+  ASSERT_OK_AND_ASSIGN(DomNode otp_field_4,
+                       GetDomNodeOnPage(*main_frame(), "#otp_digit_4"));
+  std::vector<PageTarget> trigger_fields = {otp_field_1, otp_field_2,
+                                            otp_field_3, otp_field_4};
+  std::unique_ptr<ToolRequest> request =
+      std::make_unique<AttemptOtpFillingToolRequest>(active_tab()->GetHandle(),
+                                                     trigger_fields,
+                                                     /*for_signin=*/true);
+
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(std::move(request)), result.GetCallback());
+
+  ExpectOkResult(result);
+  EXPECT_THAT(JournalEntries(),
+              testing::Contains(testing::ContainsRegex(
+                  "AttemptOtpFillingTool::Invoke;.*trigger_fields_count=4")));
+}
+
+// The tool can be created with for_signin set to false.
+IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
+                       ToolGetsCreatedWithForSigninFalseAndTaskReturnsOk) {
+  const GURL url = embedded_https_test_server().GetURL("example.com",
+                                                       "/actor/otp_page.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+  ASSERT_OK_AND_ASSIGN(DomNode otp_field,
+                       GetDomNodeOnPage(*main_frame(), "#otp"));
+  std::unique_ptr<ToolRequest> request =
+      std::make_unique<AttemptOtpFillingToolRequest>(
+          active_tab()->GetHandle(), std::vector<PageTarget>{otp_field},
+          /*for_signin=*/false);
+
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(std::move(request)), result.GetCallback());
+
+  ExpectOkResult(result);
+  EXPECT_THAT(JournalEntries(),
+              testing::Contains(testing::ContainsRegex(
+                  "AttemptOtpFillingTool::Invoke;.*for_signin=false")));
+}
+
+// The tool fails validation if there are 0 trigger fields passed.
+IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
+                       ToolValidationFailsWithoutTriggerFields) {
+  const GURL url = embedded_https_test_server().GetURL("example.com",
+                                                       "/actor/otp_page.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+  std::unique_ptr<ToolRequest> request =
+      std::make_unique<AttemptOtpFillingToolRequest>(active_tab()->GetHandle(),
+                                                     std::vector<PageTarget>{},
+                                                     /*for_signin=*/true);
+
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(std::move(request)), result.GetCallback());
+
+  ExpectErrorResult(result, mojom::ActionResultCode::kArgumentsInvalid);
 }
 
 }  // namespace

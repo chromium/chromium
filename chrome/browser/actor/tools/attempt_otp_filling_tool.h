@@ -5,28 +5,51 @@
 #ifndef CHROME_BROWSER_ACTOR_TOOLS_ATTEMPT_OTP_FILLING_TOOL_H_
 #define CHROME_BROWSER_ACTOR_TOOLS_ATTEMPT_OTP_FILLING_TOOL_H_
 
+#include <memory>
+#include <string>
+#include <vector>
+
 #include "chrome/browser/actor/tools/tool.h"
 #include "chrome/browser/actor/tools/tool_delegate.h"
+#include "chrome/common/actor.mojom-forward.h"
 #include "chrome/common/actor/task_id.h"
+#include "components/actor/core/shared_types.h"
 
 namespace actor {
 
-// A tool that attempts to retrieve a one-time password (OTP) and fill it into a
-// specified field (or fields) on the page.
+// A tool that attempts to retrieve a one-time password (OTP) and fill it into
+// the specified fields on the page. (One field or many smaller ones.)
+// If this is part of a sign-in flow, set `for_signin` to true.
 class AttemptOtpFillingTool : public Tool {
  public:
-  AttemptOtpFillingTool(TaskId task_id, ToolDelegate& tool_delegate);
+  AttemptOtpFillingTool(TaskId task_id,
+                        ToolDelegate& tool_delegate,
+                        tabs::TabHandle tab_handle,
+                        std::vector<PageTarget> trigger_fields,
+                        bool for_signin);
   ~AttemptOtpFillingTool() override;
 
   // Tool:
   void Validate(ToolCallback callback) override;
+  mojom::ActionResultPtr TimeOfUseValidation(
+      const optimization_guide::proto::AnnotatedPageContent* last_observation)
+      override;
   void Invoke(ToolCallback callback) override;
+
+  void UpdateTaskBeforeInvoke(ActorTask& task,
+                              ToolCallback callback) const override;
+
   std::string DebugString() const override;
   std::string JournalEvent() const override;
   std::unique_ptr<ObservationDelayController> GetObservationDelayer(
       ObservationDelayController::PageStabilityConfig page_stability_config)
       override;
   tabs::TabHandle GetTargetTab() const override;
+
+ private:
+  tabs::TabHandle tab_handle_;
+  std::vector<PageTarget> trigger_fields_;
+  bool for_signin_;
 };
 
 }  // namespace actor
