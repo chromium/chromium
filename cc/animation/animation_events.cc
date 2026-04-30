@@ -84,13 +84,16 @@ bool AnimationPlaybackEvent::ShouldDispatchToKeyframeEffectAndModel() const {
   return type != Type::kTimeUpdated && !is_impl_only;
 }
 
-AnimationTriggerEvent::AnimationTriggerEvent(int trigger_id, Type type)
-    : trigger_id(trigger_id), type(type) {}
+AnimationTriggerEvent::AnimationTriggerEvent(int trigger_id,
+                                             Type type,
+                                             base::TimeTicks time)
+    : trigger_id(trigger_id), type(type), time(time) {}
 
 AnimationTriggerEvent::AnimationTriggerEvent(
     const AnimationTriggerEvent& other) {
   type = other.type;
   trigger_id = other.trigger_id;
+  time = other.time;
 }
 
 }  // namespace cc

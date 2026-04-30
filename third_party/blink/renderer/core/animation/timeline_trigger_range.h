@@ -91,6 +91,7 @@ class CORE_EXPORT TimelineTriggerRange : public ScriptWrappable {
   std::optional<CcBoundaries> ComputeCcBoundaries(
       cc::AnimationTimeline* cc_timeline);
 
+  void SetState(State state) { state_ = state; }
   std::optional<State> UpdateState();
   std::optional<State> ComputeState();
   void SetRangeBoundariesForTest(Boundary* activation_start,
@@ -118,7 +119,7 @@ class CORE_EXPORT TimelineTriggerRange : public ScriptWrappable {
   // TimelineTriggerRange track its state and have TimelineTrigger read its
   // state from this range. When we support multiple TimelineTriggerRanges, we
   // might want to have only the TimelineTrigger tracking state.
-  State last_snapshot_state_;
+  State state_;
 };
 
 }  // namespace blink

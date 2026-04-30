@@ -82,11 +82,24 @@ class CORE_EXPORT AnimationTrigger : public ScriptWrappable,
  protected:
   FRIEND_TEST_ALL_PREFIXES(ScriptedTimelineTriggerTest,
                            ForbidScriptDuringActivation);
-
-  void PerformActivate();
-  void PerformDeactivate();
+  // |async_activate_time| and |async_deactivate_time| are the timestamps
+  // at which the impl thread observed activation and deactivation respectively.
+  // If the event (activation/deactivation) was observed on the main thread
+  // (i.e. compositor_trigger_ is null) and not the impl thread, these times are
+  // not set.
+  //
+  // When these times are set, if the animation is composited, it has already
+  // been acted on by the impl thread and these functions work to synchronize
+  // the animation to that time. If the animation is not composited, these
+  // functions trigger the animation newly from the main thread, similar to
+  // observing activation/deactivation on the main thread.
+  void PerformActivate(
+      std::optional<base::TimeDelta> async_activate_time = std::nullopt);
+  void PerformDeactivate(
+      std::optional<base::TimeDelta> async_deactivate_time = std::nullopt);
   static void PerformBehavior(Animation& animation,
                               Behavior behavior,
+                              std::optional<base::TimeDelta> async_event_time,
                               ExceptionState& exception_state);
 
   // Gets the document associated with this AnimationTrigger. For a timeline

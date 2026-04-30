@@ -128,7 +128,7 @@ void TimelineTrigger::HandlePostTripAdd(Animation* animation,
     base::AutoReset<bool> is_activating_or_deactivating(
         &is_activating_or_deactivating_, true);
     PerformBehavior(*animation, *new_behavior_for_current_state,
-                    exception_state);
+                    /*async_event_time=*/std::nullopt, exception_state);
     animation->UpdateIfNecessary();
   }
 }
@@ -210,14 +210,28 @@ void TimelineTrigger::CreateCompositorTrigger() {
       static_cast<scoped_refptr<cc::AnimationTrigger>>(cc_trigger);
 }
 
-void TimelineTrigger::NotifyActivated() {
+void TimelineTrigger::NotifyActivated(base::TimeTicks activate_time) {
   state_ = State::kPrimary;
-  PerformActivate();
+  DCHECK(GetRange());
+  // The trigger typically gets its state from the underlying trigger ranges,
+  // so the trigger's state reflects the state of its underlying ranges.
+  // However, when triggering from the comppositor, the compositor determines
+  // the state of the trigger. So when updating to the compositor trigger state,
+  // the underlying ranges should also be kept in sync by having their state
+  // updated.
+  // Note that we only support a single range currently, so we only need to
+  // update the state for that single range.
+  GetRange()->SetState(state_);
+
+  PerformActivate(activate_time - base::TimeTicks());
 }
 
-void TimelineTrigger::NotifyDeactivated() {
+void TimelineTrigger::NotifyDeactivated(base::TimeTicks deactivate_time) {
   state_ = State::kInverse;
-  PerformDeactivate();
+  DCHECK(GetRange());
+  GetRange()->SetState(state_);
+
+  PerformDeactivate(deactivate_time - base::TimeTicks());
 }
 
 }  // namespace blink

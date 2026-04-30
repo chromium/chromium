@@ -12,8 +12,8 @@ namespace cc {
 // cc AnimationTriggers.
 class CC_ANIMATION_EXPORT AnimationTriggerDelegate {
  public:
-  virtual void NotifyActivated() = 0;
-  virtual void NotifyDeactivated() = 0;
+  virtual void NotifyActivated(base::TimeTicks monotonic_time) = 0;
+  virtual void NotifyDeactivated(base::TimeTicks monotonic_time) = 0;
 
  protected:
   ~AnimationTriggerDelegate() = default;

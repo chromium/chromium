@@ -102,8 +102,9 @@ class CC_ANIMATION_EXPORT AnimationTrigger
 
   // Perform the relevant actions for the associated animations based on the
   // trigger's state.
-  void PerformActivate(AnimationEvents* events);
-  void PerformDeactivate(AnimationEvents* events);
+  void PerformActivate(AnimationEvents* events, base::TimeTicks monotonic_time);
+  void PerformDeactivate(AnimationEvents* events,
+                         base::TimeTicks monotonic_time);
 
   void SetAnimationTriggerDelegate(AnimationTriggerDelegate* delegate);
 

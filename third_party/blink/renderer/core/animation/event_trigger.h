@@ -39,8 +39,8 @@ class CORE_EXPORT EventTrigger : public AnimationTrigger {
 
  private:
   // cc::AnimationTriggerDelegate implementation.
-  void NotifyActivated() override {}
-  void NotifyDeactivated() override {}
+  void NotifyActivated(base::TimeTicks monotonic_time) override {}
+  void NotifyDeactivated(base::TimeTicks monotonic_time) override {}
 
   void DidAddAnimation() override;
   void DidRemoveAnimation(Animation* animation) override;

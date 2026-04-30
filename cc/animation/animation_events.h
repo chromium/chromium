@@ -68,11 +68,12 @@ struct CC_ANIMATION_EXPORT AnimationTriggerEvent {
     kDeactivate,
   };
 
-  AnimationTriggerEvent(int trigger_id, Type type);
+  AnimationTriggerEvent(int trigger_id, Type type, base::TimeTicks time);
   AnimationTriggerEvent(const AnimationTriggerEvent& other);
 
   int trigger_id;
   Type type;
+  base::TimeTicks time;
 };
 
 class CC_ANIMATION_EXPORT AnimationEvents : public MutatorEvents {

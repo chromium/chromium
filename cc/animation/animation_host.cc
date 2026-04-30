@@ -654,6 +654,13 @@ bool AnimationHost::TickAnimations(base::TimeTicks monotonic_time,
                                    const ScrollTree& scroll_tree,
                                    bool is_active_tree,
                                    MutatorEvents* mutator_events) {
+  if (is_active_tree) {
+    // We update triggers first since they affect whether an animation is in
+    // effect or not.
+    auto* animation_events = static_cast<AnimationEvents*>(mutator_events);
+    UpdateTriggers(scroll_tree, animation_events, monotonic_time);
+  }
+
   TRACE_EVENT0("cc", "AnimationHost::TickAnimations");
   // We tick animations in the following order:
   // 1. regular animations 2. mutator 3. worklet animations
@@ -669,13 +676,6 @@ bool AnimationHost::TickAnimations(base::TimeTicks monotonic_time,
   }
 
   TRACE_EVENT_INSTANT("cc", "NeedsTickAnimations");
-
-  if (is_active_tree) {
-    // We update triggers first since they affect whether an animation is in
-    // effect or not.
-    auto* animation_events = static_cast<AnimationEvents*>(mutator_events);
-    UpdateTriggers(scroll_tree, animation_events);
-  }
 
   bool animated = false;
 
@@ -1075,12 +1075,14 @@ bool AnimationHost::HasScrollLinkedAnimation(ElementId for_scroller) const {
 }
 
 void AnimationHost::UpdateTriggers(const ScrollTree& scroll_tree,
-                                   AnimationEvents* events) const {
+                                   AnimationEvents* events,
+                                   base::TimeTicks monotonic_time) const {
   for (const auto& kv : id_to_trigger_map_.Read(*this)) {
     AnimationTrigger* trigger = kv.second.get();
     // NOTE(crbug.com/451238244): Only timeline triggers are supported for now.
     DCHECK(trigger->IsTimelineTrigger());
-    static_cast<TimelineTrigger*>(trigger)->Update(scroll_tree, events);
+    static_cast<TimelineTrigger*>(trigger)->Update(scroll_tree, events,
+                                                   monotonic_time);
   }
 }
 

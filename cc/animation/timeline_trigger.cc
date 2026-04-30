@@ -59,7 +59,8 @@ AnimationTrigger::State TimelineTrigger::ComputeState(base::TimeTicks time) {
 }
 
 void TimelineTrigger::Update(const ScrollTree& scroll_tree,
-                             AnimationEvents* events) {
+                             AnimationEvents* events,
+                             base::TimeTicks monotonic_time) {
   ScrollTimeline* scroll_timeline =
       reinterpret_cast<ScrollTimeline*>(timeline_.Read(*this).get());
   DCHECK(scroll_timeline);
@@ -90,10 +91,10 @@ void TimelineTrigger::Update(const ScrollTree& scroll_tree,
 
   switch (state_) {
     case State::kPrimary:
-      PerformActivate(events);
+      PerformActivate(events, monotonic_time);
       break;
     case State::kInverse:
-      PerformDeactivate(events);
+      PerformDeactivate(events, monotonic_time);
       break;
     default:
       NOTREACHED();

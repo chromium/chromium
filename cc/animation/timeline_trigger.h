@@ -39,7 +39,9 @@ class CC_ANIMATION_EXPORT TimelineTrigger : public AnimationTrigger {
 
   // Update the state of the trigger based on the current time of the timeline,
   // queueing up trigger events and triggering animations if necessary.
-  void Update(const ScrollTree& scroll_tree, AnimationEvents* events);
+  void Update(const ScrollTree& scroll_tree,
+              AnimationEvents* events,
+              base::TimeTicks monotonic_time);
 
  protected:
   explicit TimelineTrigger(int id,

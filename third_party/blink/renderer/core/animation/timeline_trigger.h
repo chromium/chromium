@@ -118,8 +118,8 @@ class CORE_EXPORT TimelineTrigger : public AnimationTrigger {
 
   // These functions are called when the cc::AnimationTrigger associated with
   // this trigger observes the related conditions on the compositor thread.
-  void NotifyActivated() override;
-  void NotifyDeactivated() override;
+  void NotifyActivated(base::TimeTicks activate_time) override;
+  void NotifyDeactivated(base::TimeTicks deactivate_time) override;
 
   void HandlePostTripAdd(Animation* animation,
                          Behavior activate_behavior,

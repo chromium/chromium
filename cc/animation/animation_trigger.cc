@@ -79,17 +79,19 @@ void AnimationTrigger::SetAnimationData(std::vector<AnimationData>& data) {
   }
 }
 
-void AnimationTrigger::PerformActivate(AnimationEvents* events) {
+void AnimationTrigger::PerformActivate(AnimationEvents* events,
+                                       base::TimeTicks monotonic_time) {
   DCHECK(events);
-  events->events().emplace_back(
-      AnimationTriggerEvent(id(), AnimationTriggerEvent::Type::kActivate));
+  events->events().emplace_back(AnimationTriggerEvent(
+      id(), AnimationTriggerEvent::Type::kActivate, monotonic_time));
   // TODO(crbug.com/451238244): Trigger animations.
 }
 
-void AnimationTrigger::PerformDeactivate(AnimationEvents* events) {
+void AnimationTrigger::PerformDeactivate(AnimationEvents* events,
+                                         base::TimeTicks monotonic_time) {
   DCHECK(events);
-  events->events().emplace_back(
-      AnimationTriggerEvent(id(), AnimationTriggerEvent::Type::kDeactivate));
+  events->events().emplace_back(AnimationTriggerEvent(
+      id(), AnimationTriggerEvent::Type::kDeactivate, monotonic_time));
   // TODO(crbug.com/451238244): Trigger animations.
 }
 
@@ -103,10 +105,10 @@ void AnimationTrigger::DispatchAnimationTriggerEvent(
   if (animation_trigger_delegate_) {
     switch (event.type) {
       case AnimationTriggerEvent::Type::kActivate:
-        animation_trigger_delegate_->NotifyActivated();
+        animation_trigger_delegate_->NotifyActivated(event.time);
         break;
       case AnimationTriggerEvent::Type::kDeactivate:
-        animation_trigger_delegate_->NotifyDeactivated();
+        animation_trigger_delegate_->NotifyDeactivated(event.time);
     }
   }
 }

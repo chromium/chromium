@@ -5125,9 +5125,9 @@ void LayerTreeHostImpl::UpdateAnimationState(bool start_ready_animations) {
 
   if (has_active_animations) {
     SetNeedsOneBeginImplFrame();
-    if (!mutator_events_->IsEmpty()) {
-      SetNeedsCommit();
-    }
+  }
+  if (!mutator_events_->IsEmpty()) {
+    SetNeedsCommit();
   }
 }
 
@@ -5141,9 +5141,9 @@ void LayerTreeHostImpl::ActivateAnimations() {
     active_tree()->set_needs_update_draw_properties();
     // Request another frame to run the next tick of the animation.
     SetNeedsOneBeginImplFrame();
-    if (!mutator_events_->IsEmpty()) {
-      SetNeedsCommit();
-    }
+  }
+  if (!mutator_events_->IsEmpty()) {
+    SetNeedsCommit();
   }
 }
 

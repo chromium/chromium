@@ -293,7 +293,8 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
   // Update animation triggers[1].
   // [1] https://drafts.csswg.org/web-animations/#animation-triggers
   void UpdateTriggers(const ScrollTree& scroll_tree,
-                      AnimationEvents* events) const;
+                      AnimationEvents* events,
+                      base::TimeTicks monotonic_time) const;
 
   // Return the state representing all ticking worklet animations.
   std::unique_ptr<MutatorInputState> CollectWorkletAnimationsState(
