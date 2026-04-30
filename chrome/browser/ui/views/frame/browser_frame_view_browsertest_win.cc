@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
+#include "base/win/windows_version.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
@@ -481,15 +482,26 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserFrameViewWinWindowControlsOverlayTest,
 
   ToggleWindowControlsOverlayEnabledAndWait();
 
-  // Verify tooltip text has been updated.
+  // Verify tooltip text has been updated. On Windows 11+, maximize/restore
+  // buttons don't show tooltips because Windows shows Snap Layouts instead.
+  const bool is_win11_or_greater =
+      base::win::GetVersion() >= base::win::Version::WIN11;
   EXPECT_EQ(minimize_button->GetTooltipText(),
             minimize_button->GetViewAccessibility().GetCachedName());
-  EXPECT_EQ(maximize_button->GetTooltipText(),
-            maximize_button->GetViewAccessibility().GetCachedName());
-  EXPECT_EQ(restore_button->GetTooltipText(),
-            restore_button->GetViewAccessibility().GetCachedName());
   EXPECT_EQ(close_button->GetTooltipText(),
             close_button->GetViewAccessibility().GetCachedName());
+
+  if (is_win11_or_greater) {
+    // On Windows 11+, no tooltips for maximize/restore (Snap Layouts instead).
+    EXPECT_EQ(maximize_button->GetTooltipText(), u"");
+    EXPECT_EQ(restore_button->GetTooltipText(), u"");
+  } else {
+    // On older Windows, tooltips are shown for accessibility.
+    EXPECT_EQ(maximize_button->GetTooltipText(),
+              maximize_button->GetViewAccessibility().GetCachedName());
+    EXPECT_EQ(restore_button->GetTooltipText(),
+              restore_button->GetViewAccessibility().GetCachedName());
+  }
 
   ToggleWindowControlsOverlayEnabledAndWait();
 
@@ -515,6 +527,25 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserFrameViewWinWindowControlsOverlayTest,
 
   // Verify the component updates on toggle.
   EXPECT_EQ(frame_view_->NonClientHitTest(kPoint), HTCLIENT);
+
+  // Get maximize button center point.
+  auto* caption_button_container =
+      frame_view_->caption_button_container_for_testing();
+  auto* maximize_button = static_cast<const WindowsCaptionButton*>(
+      caption_button_container->GetViewByID(VIEW_ID_MAXIMIZE_BUTTON));
+  gfx::Point maximize_center =
+      maximize_button->GetBoundsInScreen().CenterPoint();
+  views::View::ConvertPointFromScreen(frame_view_, &maximize_center);
+  const bool is_win11_or_greater =
+      base::win::GetVersion() >= base::win::Version::WIN11;
+
+  if (is_win11_or_greater) {
+    // Windows 11+: maximize button returns HTMAXBUTTON to enable Snap Layouts.
+    EXPECT_EQ(frame_view_->NonClientHitTest(maximize_center), HTMAXBUTTON);
+  } else {
+    // Older Windows: maximize button returns HTCLIENT.
+    EXPECT_EQ(frame_view_->NonClientHitTest(maximize_center), HTCLIENT);
+  }
 
   ToggleWindowControlsOverlayEnabledAndWait();
 

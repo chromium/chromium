@@ -648,6 +648,14 @@ LRESULT LegacyRenderWidgetHostHWND::OnNCHitTest(UINT message,
     // return HTCLIENT.
     return HTCLIENT;
   }
+  if (hit_test == HTMAXBUTTON) {
+    // If the legacy HWND geometrically overlaps the caption buttons, which
+    // happens when the client area extends to the top of the window (e.g. PWAs
+    // with Window Controls Overlay enabled), return HTTRANSPARENT so
+    // Windows passes messages through to the parent HWND, enabling proper hover
+    // highlighting on the maximize/restore buttons with Win11 snap layouts.
+    return HTTRANSPARENT;
+  }
   return hit_test;
 }
 

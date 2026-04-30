@@ -8,6 +8,7 @@
 
 #include <memory>
 
+#include "base/win/windows_version.h"
 #include "chrome/browser/ui/frame/window_frame_util.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view_win.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -94,30 +95,45 @@ int BrowserCaptionButtonContainer::NonClientHitTest(
     const gfx::Point& point) const {
   DCHECK(HitTestPoint(point))
       << "should only be called with a point inside this view's bounds";
+
+  // | WCO | Win11 | Caption Button    | Output                |
+  // |-----+-------+-------------------+-----------------------|
+  // | No  | -     | All               | Original mapped value |
+  // | Yes | No    | All               | HTCLIENT              |
+  // | Yes | Yes   | Minimize, Close   | HTCLIENT              |
+  // | Yes | Yes   | Maximize, Restore | HTMAXBUTTON           |
+
+  // For views without Window Controls Overlay (WCO) enabled, the original hit
+  // test result is returned as-is.
+
   // BrowserView covers the frame view when Window Controls Overlay is enabled.
   // The native window that encompasses Web Contents gets the mouse events meant
-  // for the caption buttons, so returning HTClient allows these buttons to be
-  // highlighted on hover.
-  if (frame_view_->GetBrowserView()->IsWindowControlsOverlayEnabled() &&
-      (HitTestCaptionButton(minimize_button_, point) ||
-       HitTestCaptionButton(maximize_button_, point) ||
-       HitTestCaptionButton(restore_button_, point) ||
-       HitTestCaptionButton(close_button_, point))) {
-    return HTCLIENT;
-  }
+  // for the caption buttons, so returning HTCLIENT allows these buttons to be
+  // highlighted on hover. However, on Windows 11 the maximize and restore
+  // buttons must return HTMAXBUTTON so that Windows can show the Snap Layouts
+  // popup when the user hovers over the maximize/restore button.
+
+  int hit_test_result = HTCAPTION;
   if (HitTestCaptionButton(minimize_button_, point)) {
-    return HTMINBUTTON;
+    hit_test_result = HTMINBUTTON;
+  } else if (HitTestCaptionButton(maximize_button_, point) ||
+             HitTestCaptionButton(restore_button_, point)) {
+    hit_test_result = HTMAXBUTTON;
+  } else if (HitTestCaptionButton(close_button_, point)) {
+    hit_test_result = HTCLOSE;
   }
-  if (HitTestCaptionButton(maximize_button_, point)) {
-    return HTMAXBUTTON;
+
+  // Return the base component if no button was hit or WCO is disabled.
+  if (hit_test_result == HTCAPTION ||
+      !frame_view_->GetBrowserView()->IsWindowControlsOverlayEnabled()) {
+    return hit_test_result;
   }
-  if (HitTestCaptionButton(restore_button_, point)) {
-    return HTMAXBUTTON;
-  }
-  if (HitTestCaptionButton(close_button_, point)) {
-    return HTCLOSE;
-  }
-  return HTCAPTION;
+
+  const bool is_win11_maximize =
+      (hit_test_result == HTMAXBUTTON) &&
+      (base::win::GetVersion() >= base::win::Version::WIN11);
+
+  return is_win11_maximize ? HTMAXBUTTON : HTCLIENT;
 }
 
 void BrowserCaptionButtonContainer::OnWindowControlsOverlayEnabledChanged() {
@@ -210,12 +226,22 @@ void BrowserCaptionButtonContainer::
   if (frame_view_->GetBrowserView()->IsWindowControlsOverlayEnabled()) {
     minimize_button_->SetTooltipText(
         minimize_button_->GetViewAccessibility().GetCachedName());
-    maximize_button_->SetTooltipText(
-        maximize_button_->GetViewAccessibility().GetCachedName());
-    restore_button_->SetTooltipText(
-        restore_button_->GetViewAccessibility().GetCachedName());
     close_button_->SetTooltipText(
         close_button_->GetViewAccessibility().GetCachedName());
+    // Windows 11 displays the Snap Layouts popup when hovering over maximize/
+    // restore buttons, making tooltips redundant and potentially interfering
+    // with the Snap Layouts UI. On older Windows versions, tooltips provide
+    // necessary accessibility information since Snap Layouts are not available.
+    const bool is_win11_or_greater =
+        base::win::GetVersion() >= base::win::Version::WIN11;
+    maximize_button_->SetTooltipText(
+        is_win11_or_greater
+            ? u""
+            : maximize_button_->GetViewAccessibility().GetCachedName());
+    restore_button_->SetTooltipText(
+        is_win11_or_greater
+            ? u""
+            : restore_button_->GetViewAccessibility().GetCachedName());
   } else {
     minimize_button_->SetTooltipText(u"");
     maximize_button_->SetTooltipText(u"");
