@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_ENTERPRISE_BROWSER_REPORTING_USER_SECURITY_SIGNALS_SERVICE_H_
 #define COMPONENTS_ENTERPRISE_BROWSER_REPORTING_USER_SECURITY_SIGNALS_SERVICE_H_
 
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/wall_clock_timer.h"
@@ -68,6 +69,7 @@ class UserSecuritySignalsService : public SecuritySignalsService,
 
  private:
   friend class UserSecuritySignalsServiceTest;
+  FRIEND_TEST_ALL_PREFIXES(UserSecuritySignalsServiceTest, ObserverSafety);
 
   // Initializes the listener watching cookie changes.
   void InitCookieListener();
