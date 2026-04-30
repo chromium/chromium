@@ -74,6 +74,10 @@ typedef NS_ENUM(NSInteger, ConsistencyPromoSigninMediatorError) {
 - (void)consistencyPromoSigninMediatorSignInCancelled:
     (ConsistencyPromoSigninMediator*)mediator;
 
+// Called if the sign-in is cancelled and the user wants to stay signed out.
+- (void)consistencyPromoSigninMediatorDidCancelToStaySignedOut:
+    (ConsistencyPromoSigninMediator*)mediator;
+
 // Called if there is sign-in error.
 - (void)consistencyPromoSigninMediator:(ConsistencyPromoSigninMediator*)mediator
                         errorDidHappen:

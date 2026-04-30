@@ -648,6 +648,17 @@
   [self.defaultAccountCoordinator stopSigninSpinner];
 }
 
+- (void)consistencyPromoSigninMediatorDidCancelToStaySignedOut:
+    (ConsistencyPromoSigninMediator*)mediator {
+  __weak __typeof(self) weakSelf = self;
+  [self dismissViewControllerAnimated:YES
+                           completion:^{
+                             [weakSelf runCompletionWithSigninResult:
+                                           SigninCoordinatorResultCanceledByUser
+                                                  completionIdentity:nil];
+                           }];
+}
+
 - (void)consistencyPromoSigninMediator:(ConsistencyPromoSigninMediator*)mediator
                         errorDidHappen:
                             (ConsistencyPromoSigninMediatorError)error

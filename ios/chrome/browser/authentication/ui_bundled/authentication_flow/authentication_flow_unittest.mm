@@ -200,6 +200,9 @@ class AuthenticationFlowTest : public PlatformTest {
               signin_result_ = signin::Tribool::kTrue;
               break;
             case signin_ui::CancelationReason::kUserCanceled:
+            case signin_ui::CancelationReason::kAgeMismatchCanceled:
+            case signin_ui::CancelationReason::
+                kAgeMismatchCanceledStaySignedOut:
             case signin_ui::CancelationReason::kFailed:
               signin_result_ = signin::Tribool::kFalse;
               break;

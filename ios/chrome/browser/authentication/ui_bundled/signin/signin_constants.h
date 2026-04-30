@@ -44,6 +44,10 @@ enum class CancelationReason {
   kUserCanceled,
   // Canceled, but not by the user.
   kFailed,
+  // Canceled due to age mismatch.
+  kAgeMismatchCanceled,
+  // Canceled due to age mismatch, user wants to stay signed out.
+  kAgeMismatchCanceledStaySignedOut,
 };
 
 }  // namespace signin_ui

@@ -242,6 +242,8 @@
       break;
     }
     case signin_ui::CancelationReason::kUserCanceled:
+    case signin_ui::CancelationReason::kAgeMismatchCanceled:
+    case signin_ui::CancelationReason::kAgeMismatchCanceledStaySignedOut:
       [self runCompletionWithSigninResult:SigninCoordinatorResultCanceledByUser
                        completionIdentity:nil];
       break;

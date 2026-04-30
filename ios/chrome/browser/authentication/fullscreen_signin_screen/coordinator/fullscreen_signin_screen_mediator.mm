@@ -332,12 +332,20 @@ enum class SigninScreenState {
                                                                  identity {
   self.signinInProgress = NO;
   [self.consumer setUIEnabled:YES];
-  if (cancelationReason != signin_ui::CancelationReason::kNotCanceled) {
-    return;
+  switch (cancelationReason) {
+    case signin_ui::CancelationReason::kAgeMismatchCanceledStaySignedOut:
+      [self.delegate fullscreenSigninScreenMediatorWantsToBeDismissed:self];
+      return;
+    case signin_ui::CancelationReason::kNotCanceled:
+      [self.logger logSigninCompletedWithResult:SigninCoordinatorResultSuccess
+                                   addedAccount:self.addedAccount];
+      [self.delegate fullscreenSigninScreenMediatorDidFinishSignin:self];
+      return;
+    case signin_ui::CancelationReason::kUserCanceled:
+    case signin_ui::CancelationReason::kFailed:
+    case signin_ui::CancelationReason::kAgeMismatchCanceled:
+      return;
   }
-  [self.logger logSigninCompletedWithResult:SigninCoordinatorResultSuccess
-                               addedAccount:self.addedAccount];
-  [self.delegate fullscreenSigninScreenMediatorDidFinishSignin:self];
 }
 
 - (void)authenticationFlowWillSwitchProfileWithReadyCompletion:
