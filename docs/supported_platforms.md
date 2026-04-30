@@ -162,7 +162,7 @@ supported OS version for Android Automotive is Android R.
 
 ### ChromeOS
 
-Chrome for ChromeOS supports both x86-64 and ARM architectures. For
+Chrome for ChromeOS supports both x86-64 and ARM64 architectures. For
 development and testing, the linux-chromeos build serves as an emulator,
 providing a functional ChromeOS environment on Linux.
 
@@ -183,7 +183,7 @@ policy](https://support.google.com/chrome/a/answer/6220366).
 [This page](https://support.google.com/chrome/a/answer/7100626) details
 minimum operating system and hardware requirements.
 
-As of March 2026, official support on ARM is
+As of March 2026, official support on ARM64 is
 [upcoming](https://blog.chromium.org/2026/03/bringing-chrome-to-arm64-linux-devices.html).
 
 Many more platforms/distributions are community-supported (per the definition
