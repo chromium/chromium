@@ -1033,4 +1033,88 @@ TEST_F(WidgetAXManagerTest, FocusTracking_FocusIdUpdatesOnFocusChange) {
   EXPECT_TRUE(found_v2);
 }
 
+TEST_F(WidgetAXManagerTest, TextSelection_PopulatesTreeData) {
+  WidgetAXManagerTestApi api(manager());
+  api.Enable();
+
+  auto* v = widget()->GetRootView()->AddChildView(std::make_unique<View>());
+  v->SetFocusBehavior(View::FocusBehavior::ALWAYS);
+  v->GetViewAccessibility().SetRole(ax::mojom::Role::kTextField);
+  v->GetViewAccessibility().SetTextSelStart(2);
+  v->GetViewAccessibility().SetTextSelEnd(5);
+  api.WaitForNextSerialization();
+
+  widget()->Show();
+  v->RequestFocus();
+  api.WaitForNextSerialization();
+
+  const ui::AXNodeID v_id =
+      static_cast<ui::AXNodeID>(v->GetViewAccessibility().GetUniqueId());
+  bool found_selection = false;
+  for (const auto& update : api.last_serialization().updates) {
+    if (update.has_tree_data &&
+        update.tree_data.sel_anchor_object_id == v_id &&
+        update.tree_data.sel_focus_object_id == v_id &&
+        !update.tree_data.sel_is_backward &&
+        update.tree_data.sel_anchor_offset == 2 &&
+        update.tree_data.sel_focus_offset == 5) {
+      found_selection = true;
+      break;
+    }
+  }
+  EXPECT_TRUE(found_selection);
+}
+
+TEST_F(WidgetAXManagerTest, TextSelection_PopulatesBackwardTreeData) {
+  WidgetAXManagerTestApi api(manager());
+  api.Enable();
+
+  auto* v = widget()->GetRootView()->AddChildView(std::make_unique<View>());
+  v->SetFocusBehavior(View::FocusBehavior::ALWAYS);
+  v->GetViewAccessibility().SetRole(ax::mojom::Role::kTextField);
+  v->GetViewAccessibility().SetName(u"Selection text field");
+  v->GetViewAccessibility().SetTextSelStart(5);
+  v->GetViewAccessibility().SetTextSelEnd(2);
+  api.WaitForNextSerialization();
+
+  widget()->Show();
+  v->RequestFocus();
+  api.WaitForNextSerialization();
+
+  const ui::AXNodeID v_id =
+      static_cast<ui::AXNodeID>(v->GetViewAccessibility().GetUniqueId());
+  bool found_selection = false;
+  for (const auto& update : api.last_serialization().updates) {
+    if (update.has_tree_data && update.tree_data.sel_anchor_object_id == v_id &&
+        update.tree_data.sel_focus_object_id == v_id &&
+        update.tree_data.sel_is_backward &&
+        update.tree_data.sel_anchor_offset == 5 &&
+        update.tree_data.sel_focus_offset == 2) {
+      found_selection = true;
+      break;
+    }
+  }
+  EXPECT_TRUE(found_selection);
+}
+
+TEST_F(WidgetAXManagerTest, TextSelection_NotPopulatedWhenNoSelAttributes) {
+  WidgetAXManagerTestApi api(manager());
+  api.Enable();
+
+  auto* v = widget()->GetRootView()->AddChildView(std::make_unique<View>());
+  v->SetFocusBehavior(View::FocusBehavior::ALWAYS);
+  api.WaitForNextSerialization();
+
+  widget()->Show();
+  v->RequestFocus();
+  api.WaitForNextSerialization();
+
+  for (const auto& update : api.last_serialization().updates) {
+    if (update.has_tree_data) {
+      EXPECT_EQ(update.tree_data.sel_anchor_object_id, ui::kInvalidAXNodeID);
+      EXPECT_EQ(update.tree_data.sel_focus_object_id, ui::kInvalidAXNodeID);
+    }
+  }
+}
+
 }  // namespace views::test
