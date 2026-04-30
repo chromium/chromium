@@ -1939,7 +1939,6 @@ void AutocompleteController::UpdateKeywordDescriptions(
 #endif
 
   std::u16string last_keyword;
-  bool last_contextual = false;
   for (auto i(result->begin()); i != result->end(); ++i) {
     if (AutocompleteMatch::IsSearchType(i->type)) {
       if (i->HasCustomDescription() || IsUnscopedExtensionMatch(*i)) {
@@ -1956,7 +1955,7 @@ void AutocompleteController::UpdateKeywordDescriptions(
       i->description_class.clear();
       DCHECK(!i->keyword.empty());
       bool is_contextual = i->IsContextualSearchSuggestion();
-      if (i->keyword != last_keyword || is_contextual != last_contextual) {
+      if (i->keyword != last_keyword || is_contextual) {
         const TemplateURL* template_url =
             i->GetTemplateURL(template_url_service_);
         if (template_url) {
@@ -1966,8 +1965,12 @@ void AutocompleteController::UpdateKeywordDescriptions(
           //   alternative UX because they're opened in the side panel.
           i->description = template_url->AdjustedShortNameForLocaleDirection();
           if (is_contextual) {
-            i->description = l10n_util::GetStringUTF16(
-                IDS_AUTOCOMPLETE_SEARCH_IN_SIDE_PANEL_DESCRIPTION);
+            if (!i->IsStaticContextualSearchSuggestion()) {
+              i->description = l10n_util::GetStringUTF16(
+                  IDS_CONTEXTUAL_SEARCH_OPEN_LENS_ACTION_LABEL);
+            } else {
+              i->description.clear();
+            }
           } else if (template_url->is_ask_type()) {
             i->description = l10n_util::GetStringFUTF16(
                 IDS_AUTOCOMPLETE_ASK_DESCRIPTION, i->description);
@@ -1981,7 +1984,6 @@ void AutocompleteController::UpdateKeywordDescriptions(
         }
 
         last_keyword = i->keyword;
-        last_contextual = is_contextual;
       }
     } else {
       last_keyword.clear();

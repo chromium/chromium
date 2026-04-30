@@ -237,6 +237,16 @@
   font-size: .875em;
 }
 
+:host([is-contextual-suggestion_]) #description,
+:host([is-contextual-suggestion_]) #separator {
+  display: none;
+}
+
+:host([is-contextual-suggestion_]) .container:not(.actions):hover #description,
+:host([is-contextual-suggestion_]) .container:not(.actions):hover #separator {
+  display: inline;
+}
+
 .match {
   font-weight: var(--cr-searchbox-match-font-weight, 600);
 }

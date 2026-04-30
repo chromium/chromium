@@ -904,6 +904,8 @@ SearchboxHandler::CreateAutocompleteMatch(
   mojom_match->is_noncanned_aim_suggestion =
       match.suggestion_group_id == omnibox::GROUP_MIA_RECOMMENDATIONS;
 
+  mojom_match->is_contextual_suggestion = match.IsContextualSearchSuggestion();
+
   return mojom_match;
 }
 

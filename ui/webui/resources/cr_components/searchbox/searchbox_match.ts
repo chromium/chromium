@@ -144,6 +144,11 @@ export class SearchboxMatchElement extends CrLitElement {
       // Private properties
       //========================================================================
 
+      isContextualSuggestion_: {
+        type: Boolean,
+        reflect: true,
+      },
+
       isTopChromeSearchbox_: {
         type: Boolean,
         reflect: true,
@@ -192,6 +197,7 @@ export class SearchboxMatchElement extends CrLitElement {
   accessor sideType: SideType = SideType.kDefaultPrimary;
   accessor showThumbnail: boolean = false;
   accessor showEllipsis: boolean = false;
+  private accessor isContextualSuggestion_: boolean = false;
   private accessor isTopChromeSearchbox_: boolean =
       loadTimeData.getBoolean('isTopChromeSearchbox');
   private accessor isLensSearchbox_: boolean =
@@ -227,6 +233,7 @@ export class SearchboxMatchElement extends CrLitElement {
       this.hasAction = this.computeHasAction_();
       this.hasKeyword = this.computeHasKeyword_();
       this.hasImage = this.computeHasImage_();
+      this.isContextualSuggestion_ = this.computeIsContextualSuggestion_();
       this.isEntitySuggestion = this.computeIsEntitySuggestion_();
       this.isRichSuggestion = this.computeIsRichSuggestion_();
       this.removeButtonAriaLabel_ = this.computeRemoveButtonAriaLabel_();
@@ -398,6 +405,10 @@ export class SearchboxMatchElement extends CrLitElement {
 
   private computeHasImage_(): boolean {
     return this.match && !!this.match.imageUrl;
+  }
+
+  private computeIsContextualSuggestion_(): boolean {
+    return this.match.isContextualSuggestion;
   }
 
   private computeIsEntitySuggestion_(): boolean {

@@ -1742,6 +1742,11 @@ bool AutocompleteMatch::IsContextualSearchSuggestion() const {
   return subtypes.contains(omnibox::SuggestSubtype::SUBTYPE_CONTEXTUAL_SEARCH);
 }
 
+bool AutocompleteMatch::IsStaticContextualSearchSuggestion() const {
+  return subtypes.contains(
+      omnibox::SuggestSubtype::SUBTYPE_CONTEXTUAL_SEARCH_STATIC);
+}
+
 bool AutocompleteMatch::IsThreadsHistorySuggestion() const {
   return subtypes.contains(
       omnibox::SuggestSubtype::SUBTYPE_AI_MODE_MORE_THREADS_ENTRYPOINT);

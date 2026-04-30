@@ -33,6 +33,7 @@ export function createAutocompleteMatch(
     isNoncannedAimSuggestion: false,
     removeButtonA11yLabel: '',
     type: '',
+    isContextualSuggestion: false,
     isRichSuggestion: false,
     isWeatherAnswerSuggestion: null,
     answer: null,
