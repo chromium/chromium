@@ -5,7 +5,9 @@
 #import "ios/chrome/browser/cobrowse/model/cobrowse_tab_helper.h"
 
 #import "base/test/scoped_feature_list.h"
+#import "components/omnibox/browser/mock_aim_eligibility_service.h"
 #import "components/search_engines/template_url_service.h"
+#import "ios/chrome/browser/aim/model/ios_chrome_aim_eligibility_service_factory.h"
 #import "ios/chrome/browser/cobrowse/model/cobrowse_browser_agent.h"
 #import "ios/chrome/browser/cobrowse/model/cobrowse_context.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
@@ -18,6 +20,7 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -35,6 +38,21 @@ class CobrowseTabHelperTest : public PlatformTest {
     builder.AddTestingFactory(
         ios::TemplateURLServiceFactory::GetInstance(),
         ios::TemplateURLServiceFactory::GetDefaultFactory());
+    builder.AddTestingFactory(
+        IOSChromeAimEligibilityServiceFactory::GetInstance(),
+        base::BindRepeating([](ProfileIOS* profile)
+                                -> std::unique_ptr<KeyedService> {
+          auto service =
+              std::make_unique<testing::NiceMock<MockAimEligibilityService>>(
+                  *profile->GetPrefs(),
+                  ios::TemplateURLServiceFactory::GetForProfile(profile),
+                  nullptr, IdentityManagerFactory::GetForProfile(profile));
+          ON_CALL(*service, IsFuseboxEligible())
+              .WillByDefault(testing::Return(true));
+          ON_CALL(*service, IsCobrowseEligible())
+              .WillByDefault(testing::Return(true));
+          return service;
+        }));
     profile_ = std::move(builder).Build();
 
     TemplateURLService* template_url_service =

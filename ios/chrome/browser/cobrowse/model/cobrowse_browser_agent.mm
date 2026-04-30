@@ -4,7 +4,9 @@
 
 #import "ios/chrome/browser/cobrowse/model/cobrowse_browser_agent.h"
 
+#import "components/omnibox/browser/aim_eligibility_service.h"
 #import "components/search_engines/util.h"
+#import "ios/chrome/browser/aim/model/ios_chrome_aim_eligibility_service_factory.h"
 #import "ios/chrome/browser/cobrowse/model/cobrowse_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -39,6 +41,14 @@ void CobrowseBrowserAgent::SetUIStateProvider(UIStateProvider* provider) {
 
 bool CobrowseBrowserAgent::CanShowAssistantForWebState(
     web::WebState* web_state) {
+  AimEligibilityService* aim_eligibility_service =
+      IOSChromeAimEligibilityServiceFactory::GetForProfile(
+          browser_->GetProfile());
+  if (!aim_eligibility_service ||
+      !aim_eligibility_service->IsFuseboxEligible() ||
+      !aim_eligibility_service->IsCobrowseEligible()) {
+    return false;
+  }
   // A WebState is loaded when it becomes the active WebState while the Tab
   // Grid is visible, which triggers DidStartNavigation. To avoid UI conflicts
   // or crashes, do not show the assistant if the Tab Grid is currently
