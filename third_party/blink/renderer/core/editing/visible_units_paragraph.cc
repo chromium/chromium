@@ -31,8 +31,11 @@
 #include "third_party/blink/renderer/core/editing/visible_units.h"
 
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
+#include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/position_units.h"
 #include "third_party/blink/renderer/core/editing/visible_position.h"
+#include "third_party/blink/renderer/core/layout/layout_text.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -127,17 +130,8 @@ VisiblePosition StartOfNextParagraph(const VisiblePosition& visible_position) {
   DCHECK(visible_position.DeepEquivalent() < paragraph_end ||
          visible_position.DeepEquivalent() == paragraph_end &&
              paragraph_end.IsAfterAnchor());
-  // Since new position based overload of NextPositionOf() method gives the next
-  // position based on the grapheme cluster. We call out the
-  // NextVisuallyDistinctCandidate and adjust the position for now.
-
-  // TODO(editing-dev): We should consider to remove the explicit
-  // NextVisuallyDistinctCandidate call and rewrite the StartOfNextParagraph.
-  Position next_candidate =
-      NextVisuallyDistinctCandidate(paragraph_end, kCannotCrossEditingBoundary);
   VisiblePosition after_paragraph_end = CreateVisiblePosition(
-      AdjustForwardPositionToAvoidCrossingEditingBoundaries(
-          PositionWithAffinity(next_candidate), paragraph_end));
+      NextPositionOf(paragraph_end, kCannotCrossEditingBoundary));
   // It may happen that an element's next visually equivalent candidate is set
   // to such element when creating the VisualPosition. This may cause infinite
   // loops when we are iterating over parapgrahs.

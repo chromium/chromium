@@ -107,9 +107,6 @@ CORE_EXPORT UChar32 CharacterBefore(const VisiblePosition&);
 CORE_EXPORT UChar32 CharacterBefore(const VisiblePositionInFlatTree&);
 
 CORE_EXPORT VisiblePosition
-NextPositionOf(const Position&,
-               EditingBoundaryCrossingRule = kCanCrossEditingBoundary);
-CORE_EXPORT VisiblePosition
 NextPositionOf(const VisiblePosition&,
                EditingBoundaryCrossingRule = kCanCrossEditingBoundary);
 CORE_EXPORT VisiblePositionInFlatTree

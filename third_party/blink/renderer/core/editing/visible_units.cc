@@ -1153,34 +1153,6 @@ bool IsVisuallyEquivalentCandidate(const PositionInFlatTree& position) {
 }
 
 template <typename Strategy>
-static PositionTemplate<Strategy> SkipToEndOfEditingBoundary(
-    const PositionTemplate<Strategy>& pos,
-    const PositionTemplate<Strategy>& anchor) {
-  if (pos.IsNull())
-    return pos;
-
-  ContainerNode* highest_root = HighestEditableRoot(anchor);
-  ContainerNode* highest_root_of_pos = HighestEditableRoot(pos);
-
-  // Return |pos| itself if the two are from the very same editable region,
-  // or both are non-editable.
-  if (highest_root_of_pos == highest_root)
-    return pos;
-
-  // If this is not editable but |pos| has an editable root, skip to the end
-  if (!highest_root && highest_root_of_pos) {
-    return PositionTemplate<Strategy>(highest_root_of_pos,
-                                      PositionAnchorType::kAfterAnchor)
-        .ParentAnchoredEquivalent();
-  }
-
-  // That must mean that |pos| is not editable. Return the next position after
-  // |pos| that is in the same editable region as this position
-  DCHECK(highest_root);
-  return FirstEditablePositionAfterPositionInRoot(pos, *highest_root);
-}
-
-template <typename Strategy>
 static UChar32 CharacterAfterAlgorithm(
     const VisiblePositionTemplate<Strategy>& visible_position) {
   DCHECK(visible_position.IsValid()) << visible_position;
@@ -1247,13 +1219,6 @@ static VisiblePositionTemplate<Strategy> NextPositionOfAlgorithm(
   NOTREACHED();
 }
 
-VisiblePosition NextPositionOf(const Position& position,
-                               EditingBoundaryCrossingRule rule) {
-  DCHECK(position.IsValidFor(*position.GetDocument())) << position;
-  return NextPositionOfAlgorithm<EditingStrategy>(
-      PositionWithAffinityTemplate<EditingStrategy>(position), rule);
-}
-
 VisiblePosition NextPositionOf(const VisiblePosition& visible_position,
                                EditingBoundaryCrossingRule rule) {
   DCHECK(visible_position.IsValid()) << visible_position;
@@ -1267,35 +1232,6 @@ VisiblePositionInFlatTree NextPositionOf(
   DCHECK(visible_position.IsValid()) << visible_position;
   return NextPositionOfAlgorithm<EditingInFlatTreeStrategy>(
       visible_position.ToPositionWithAffinity(), rule);
-}
-
-template <typename Strategy>
-static PositionTemplate<Strategy> SkipToStartOfEditingBoundary(
-    const PositionTemplate<Strategy>& pos,
-    const PositionTemplate<Strategy>& anchor) {
-  if (pos.IsNull())
-    return pos;
-
-  ContainerNode* highest_root = HighestEditableRoot(anchor);
-  ContainerNode* highest_root_of_pos = HighestEditableRoot(pos);
-
-  // Return |pos| itself if the two are from the very same editable region, or
-  // both are non-editable.
-  if (highest_root_of_pos == highest_root)
-    return pos;
-
-  // If this is not editable but |pos| has an editable root, skip to the start
-  if (!highest_root && highest_root_of_pos) {
-    return PreviousVisuallyDistinctCandidate(
-        PositionTemplate<Strategy>(highest_root_of_pos,
-                                   PositionAnchorType::kBeforeAnchor)
-            .ParentAnchoredEquivalent());
-  }
-
-  // That must mean that |pos| is not editable. Return the last position
-  // before |pos| that is in the same editable region as this position
-  DCHECK(highest_root);
-  return LastEditablePositionBeforePositionInRoot(pos, *highest_root);
 }
 
 template <typename Strategy>
