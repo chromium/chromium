@@ -3189,7 +3189,7 @@ Called by update_extension_permission.py.-->
   <int value="160" label="kWebrtcAudioPrivate"/>
   <int value="161" label="kWebrtcDesktopCapturePrivate"/>
   <int value="162" label="kWebrtcLoggingPrivate"/>
-  <int value="163" label="kWebstorePrivate"/>
+  <int value="163" label="kDeleted_WebstorePrivate"/>
   <int value="164" label="kDeleted_WebstoreWidgetPrivate"/>
   <int value="165" label="kWebView"/>
   <int value="166" label="kWindowShape"/>

@@ -1158,13 +1158,6 @@
       "81986D4F846CEDDDB962643FA501D1780DD441BB"   // http://crbug.com/40546373
     ]
   },
-  "webstorePrivate": {
-    "channel": "stable",
-    "extension_types": ["extension", "legacy_packaged_app", "hosted_app"],
-    "allowlist": [
-      "B44D08FD98F1523ED5837D78D0A606EA9D6206E5"  // Web Store
-    ]
-  },
   "wmDesksPrivate": {
     "channel": "stable",
     "extension_types": ["extension", "platform_app"],

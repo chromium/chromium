@@ -96,7 +96,16 @@ IN_PROC_BROWSER_TEST_P(WebstoreDomainBrowserTest, ExpectedAvailability) {
   ASSERT_TRUE(NavigateToURL(web_contents, webstore_url));
   EXPECT_EQ(web_contents->GetPrimaryMainFrame()->GetLastCommittedURL(),
             webstore_url);
-  EXPECT_TRUE(is_api_available("webstorePrivate"));
+
+  // The webstorePrivate API is only available on the new webstore domain. The
+  // old site gained access to it via the hosted app, which is no longer
+  // allowed to access webstorePrivate (since the hosted app isn't used).
+  bool expect_webstore_private = GetParam() == GURL(kNewWebstoreURL) ||
+                                 GetParam() == GURL(kWebstoreOverrideURL);
+
+  EXPECT_EQ(expect_webstore_private, is_api_available("webstorePrivate"));
+  // TODO(https://crbug.com/328494022): We should also remove access to the
+  // management API (and the entire hosted app).
   EXPECT_TRUE(is_api_available("management"));
   EXPECT_TRUE(is_api_available("runtime"));
 

@@ -586,8 +586,16 @@ IN_PROC_BROWSER_TEST_P(ChromeWebStoreInIsolatedOriginTest,
 
   // Double-check that the page has access to the restricted APIs we expect to
   // be available to the Webstore.
-  EXPECT_EQ(true, content::EvalJs(web_contents,
-                                  "!!chrome && !!chrome.webstorePrivate"));
+
+  // We only expect the API to be available to the new (or overridden) URLs.
+  // The old URL was granted access via the component hosted app, which is no
+  // longer supported.
+  bool expect_private_api =
+      GetParam() == kNewWebstoreURL || GetParam() == kWebstoreURLOverride;
+
+  EXPECT_EQ(
+      expect_private_api,
+      content::EvalJs(web_contents, "!!chrome && !!chrome.webstorePrivate"));
 
   // Verify that we have the Webstore hosted app loaded into the Web Contents if
   // this is for the old Webstore URL. Note: The new Webstore and the Webstore

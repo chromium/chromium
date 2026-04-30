@@ -202,8 +202,6 @@ constexpr APIPermissionInfo::InitInfo permissions_to_register[] = {
     {APIPermissionID::kWebrtcLoggingPrivateAudioDebug,
      "webrtcLoggingPrivate.audioDebug",
      APIPermissionInfo::kFlagCannotBeOptional},
-    {APIPermissionID::kWebstorePrivate, "webstorePrivate",
-     APIPermissionInfo::kFlagCannotBeOptional},
 
     // Full url access permissions.
     {APIPermissionID::kDebugger, "debugger",

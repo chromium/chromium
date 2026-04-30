@@ -1091,12 +1091,6 @@
     ]
   },
   "webstorePrivate": [{
-    "dependencies": ["permission:webstorePrivate"],
-    // NOTE: even though this is only used by the webstore hosted app, which
-    // normally would mean privileged_web_page, component hosted apps are
-    // actually given the privileged_extension denomination. Confusing.
-    "contexts": ["privileged_extension"]
-  }, {
     "channel": "stable",
     "contexts": ["web_page"],
     "matches": ["https://chromewebstore.google.com/*"]
