@@ -96,6 +96,12 @@ message UrlInfo {
   // If unset, it’s equivalent to the count of the UrlInfo before it + 1,
   // or 0 if it’s the first UrlInfo.
   int32 previous_url_count = 2;
+
+  // The truncation status of the URL, if it exceeded the size limit on client.
+  // If status is not NOT_TRUNCATED, some or all of LookupInfo fields will be
+  // filled with a placeholder value rather than KUS result for an incomplete
+  // URL component. See TruncationStatus enum for details.
+  TruncationStatus truncation_status = 10;
 }
 
 // Next tag: 4
