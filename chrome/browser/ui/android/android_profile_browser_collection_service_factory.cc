@@ -38,3 +38,13 @@ std::unique_ptr<KeyedService> AndroidProfileBrowserCollectionServiceFactory::
   return std::make_unique<AndroidProfileBrowserCollectionService>(
       Profile::FromBrowserContext(context));
 }
+
+content::BrowserContext*
+AndroidProfileBrowserCollectionServiceFactory::GetBrowserContextToUse(
+    content::BrowserContext* context) const {
+  // Only instantiate the service for Profiles that support Browser instances.
+  if (!Profile::FromBrowserContext(context)->AllowsBrowserWindows()) {
+    return nullptr;
+  }
+  return context;
+}

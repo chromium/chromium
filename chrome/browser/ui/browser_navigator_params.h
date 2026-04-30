@@ -186,6 +186,13 @@ struct NavigateParams {
   // If disposition is one of NEW_WINDOW, NEW_POPUP, NEW_FOREGROUND_TAB or
   // SINGLETON_TAB, then AddTabTypes::ADD_ACTIVE is automatically added to
   // |tabstrip_add_types|.
+  //
+  // On Android there are 2 additional coercions that may occur if an app
+  // browser requests a new tab but there is no suitable fallback browser:
+  //
+  // [in]:                Condition:                        [out]:
+  // NEW_BACKGROUND_TAB   target browser is an app browser  NEW_WINDOW
+  // NEW_FOREGROUND_TAB   target browser is an app browser  NEW_WINDOW
   WindowOpenDisposition disposition = WindowOpenDisposition::CURRENT_TAB;
 
   // Allows setting the opener for the case when new WebContents are created

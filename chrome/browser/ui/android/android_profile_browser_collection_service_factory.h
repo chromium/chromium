@@ -37,6 +37,8 @@ class AndroidProfileBrowserCollectionServiceFactory
   // BrowserContextKeyedServiceFactory:
   std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
+  content::BrowserContext* GetBrowserContextToUse(
+      content::BrowserContext* context) const override;
 };
 
 #endif  // CHROME_BROWSER_UI_ANDROID_ANDROID_PROFILE_BROWSER_COLLECTION_SERVICE_FACTORY_H_
