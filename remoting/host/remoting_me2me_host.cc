@@ -124,7 +124,6 @@
 #include "remoting/signaling/corp_signal_strategy.h"
 #include "remoting/signaling/ftl_host_device_id_provider.h"
 #include "remoting/signaling/ftl_signal_strategy.h"
-#include "remoting/signaling/session_config.h"
 #include "remoting/signaling/signal_strategy.h"
 #include "remoting/signaling/signaling_id_util.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
@@ -1981,13 +1980,6 @@ void HostProcess::StartHost() {
     corp_session_manager = std::make_unique<protocol::JingleSessionManager>(
         corp_signal_strategy_.get());
   }
-
-  auto protocol_config = CandidateSessionConfig::CreateDefault();
-  protocol_config->set_webrtc_supported(true);
-  if (corp_session_manager) {
-    corp_session_manager->set_protocol_config(protocol_config->Clone());
-  }
-  session_manager->set_protocol_config(std::move(protocol_config));
 
   if (is_corp_host_) {
     // Enabling this policy means that a local user sitting at a host would not

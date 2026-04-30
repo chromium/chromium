@@ -281,22 +281,18 @@ TEST(JingleMessageXmlConverterTest, SessionInfo_Generic_RoundTrip) {
 }
 
 TEST(JingleMessageXmlConverterTest, ContentDescription_RoundTrip) {
-  std::unique_ptr<CandidateSessionConfig> config =
-      CandidateSessionConfig::CreateDefault();
-
   JingleAuthentication auth;
   auth.id = "auth_id";
 
-  ContentDescription description(std::move(config), auth);
+  ContentDescription description(auth);
 
   std::unique_ptr<XmlElement> xml = ContentDescriptionToXml(description);
   ASSERT_TRUE(xml);
 
   std::unique_ptr<ContentDescription> parsed =
-      ContentDescriptionFromXml(xml.get(), true);
+      ContentDescriptionFromXml(xml.get());
   ASSERT_TRUE(parsed);
 
-  EXPECT_TRUE(parsed->config()->webrtc_supported());
   EXPECT_EQ(parsed->authentication().id, "auth_id");
 }
 

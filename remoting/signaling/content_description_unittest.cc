@@ -16,15 +16,12 @@
 namespace remoting {
 
 TEST(ContentDescriptionTest, FormatAndParse) {
-  std::unique_ptr<CandidateSessionConfig> config =
-      CandidateSessionConfig::CreateDefault();
-  ContentDescription description(std::move(config), JingleAuthentication());
+  ContentDescription description{JingleAuthentication()};
   std::unique_ptr<jingle_xmpp::XmlElement> xml(
       ContentDescriptionToXml(description));
   std::unique_ptr<ContentDescription> parsed(
-      ContentDescriptionFromXml(xml.get(), true));
+      ContentDescriptionFromXml(xml.get()));
   ASSERT_TRUE(parsed.get());
-  EXPECT_TRUE(parsed->config()->webrtc_supported());
 }
 
 }  // namespace remoting

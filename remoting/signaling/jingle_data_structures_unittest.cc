@@ -143,7 +143,6 @@ TEST(JingleMessageTest, SessionInitiateWebrtc) {
   ParseFormatAndCompare(kTestSessionInitiateMessage, &message);
 
   EXPECT_EQ(message.action(), ActionType::kSessionInitiate);
-  EXPECT_TRUE(message.description->config()->webrtc_supported());
 }
 
 // Session-accept message for WebRTC-based protocol.
@@ -173,7 +172,6 @@ TEST(JingleMessageTest, SessionAcceptWebrtc) {
   ParseFormatAndCompare(kTestSessionAcceptMessage, &message);
 
   EXPECT_EQ(message.action(), ActionType::kSessionAccept);
-  EXPECT_TRUE(message.description->config()->webrtc_supported());
 }
 
 TEST(JingleMessageTest, SessionTerminate) {
@@ -567,8 +565,8 @@ TEST(JingleMessageTest, ActionHelpers) {
 TEST(JingleMessageTest, CopyAndAssign) {
   JingleMessage message;
   message.sid = "test_sid";
-  message.description = std::make_unique<ContentDescription>(
-      CandidateSessionConfig::CreateEmpty(), JingleAuthentication());
+  message.description =
+      std::make_unique<ContentDescription>(JingleAuthentication());
 
   JingleMessage copy(message);
   EXPECT_EQ(copy.sid, "test_sid");

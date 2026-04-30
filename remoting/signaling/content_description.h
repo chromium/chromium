@@ -9,7 +9,6 @@
 #include <string>
 
 #include "remoting/signaling/jingle_data_structures.h"
-#include "remoting/signaling/session_config.h"
 
 namespace remoting {
 
@@ -17,8 +16,7 @@ class ContentDescription {
  public:
   static const char kChromotingContentName[];
 
-  ContentDescription(std::unique_ptr<CandidateSessionConfig> config,
-                     const JingleAuthentication& authentication);
+  explicit ContentDescription(const JingleAuthentication& authentication);
 
   ContentDescription(const ContentDescription&);
   ContentDescription& operator=(const ContentDescription&) = delete;
@@ -27,14 +25,9 @@ class ContentDescription {
 
   std::unique_ptr<ContentDescription> Clone() const;
 
-  const CandidateSessionConfig* config() const {
-    return candidate_config_.get();
-  }
-
   const JingleAuthentication& authentication() const { return authentication_; }
 
  private:
-  std::unique_ptr<const CandidateSessionConfig> candidate_config_;
   JingleAuthentication authentication_;
 };
 

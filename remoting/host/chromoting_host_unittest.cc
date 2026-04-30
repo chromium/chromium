@@ -46,7 +46,6 @@
 #include "remoting/protocol/session_manager.h"
 #include "remoting/protocol/transport.h"
 #include "remoting/protocol/transport_context.h"
-#include "remoting/signaling/session_config.h"
 #include "remoting/signaling/signaling_id_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -107,9 +106,7 @@ class ChromotingHostTest : public testing::Test {
     session2_ = new MockSession();
     session_unowned1_ = std::make_unique<MockSession>();
     session_unowned2_ = std::make_unique<MockSession>();
-    session_config1_ = SessionConfig::ForTest();
     session_jid1_ = "user@domain/rest-of-jid";
-    session_config2_ = SessionConfig::ForTest();
     session_jid2_ = "user@domain/rest-of-jid-2";
     session_unowned_jid1_ = "user3@doman/rest-of-jid";
     session_unowned_jid2_ = "user4@doman/rest-of-jid";
@@ -126,14 +123,6 @@ class ChromotingHostTest : public testing::Test {
     EXPECT_CALL(*session_unowned2_, SetEventHandler(_))
         .Times(AnyNumber())
         .WillRepeatedly(SaveArg<0>(&session_unowned2_event_handler_));
-    EXPECT_CALL(*session1_, config())
-        .WillRepeatedly(ReturnRef(*session_config1_));
-    EXPECT_CALL(*session2_, config())
-        .WillRepeatedly(ReturnRef(*session_config2_));
-    EXPECT_CALL(*session_unowned1_, config())
-        .WillRepeatedly(ReturnRef(*session_config1_));
-    EXPECT_CALL(*session_unowned2_, config())
-        .WillRepeatedly(ReturnRef(*session_config2_));
 
     connection1_ = std::make_unique<protocol::FakeConnectionToClient>(
         base::WrapUnique(session1_.get()));
@@ -297,14 +286,12 @@ class ChromotingHostTest : public testing::Test {
   raw_ptr<ClientSession> client1_;  // Owned by |host_|.
   std::string session_jid1_;
   raw_ptr<MockSession> session1_;  // Owned by |connection1_|.
-  std::unique_ptr<SessionConfig> session_config1_;
   MockClientStub client_stub1_;
   MockHostStub host_stub1_;
   std::unique_ptr<protocol::FakeConnectionToClient> connection2_;
   raw_ptr<ClientSession> client2_;  // Owned by |host_|.
   std::string session_jid2_;
   raw_ptr<MockSession> session2_;  // Owned by |connection2_|.
-  std::unique_ptr<SessionConfig> session_config2_;
   MockClientStub client_stub2_;
   MockHostStub host_stub2_;
   std::unique_ptr<MockSession> session_unowned1_;  // Not owned by a connection.
@@ -484,8 +471,6 @@ TEST_F(ChromotingHostTest, LoginBackOffTriggersIfClientsDoNotAuthenticate) {
     // Set expectations and responses for the new session.
     auto session = std::make_unique<MockSession>();
     EXPECT_CALL(*session, jid()).WillRepeatedly(ReturnRef(session_jid1_));
-    EXPECT_CALL(*session, config())
-        .WillRepeatedly(ReturnRef(*session_config1_));
     EXPECT_CALL(*session, SetEventHandler(_))
         .Times(AnyNumber())
         .WillRepeatedly(SaveArg<0>(&session_event_handler));
@@ -531,8 +516,6 @@ TEST_F(ChromotingHostTest, LoginBackOffResetsIfClientsAuthenticate) {
     // Set expectations and responses for the new session.
     auto session = std::make_unique<MockSession>();
     EXPECT_CALL(*session, jid()).WillRepeatedly(ReturnRef(session_jid1_));
-    EXPECT_CALL(*session, config())
-        .WillRepeatedly(ReturnRef(*session_config1_));
     EXPECT_CALL(*session, SetEventHandler(_))
         .Times(AnyNumber())
         .WillRepeatedly(SaveArg<0>(&session_event_handler));
@@ -562,7 +545,6 @@ TEST_F(ChromotingHostTest, LoginBackOffResetsIfClientsAuthenticate) {
   auto session = std::make_unique<MockSession>();
   protocol::Session::EventHandler* session_event_handler;
   EXPECT_CALL(*session, jid()).WillRepeatedly(ReturnRef(session_jid1_));
-  EXPECT_CALL(*session, config()).WillRepeatedly(ReturnRef(*session_config1_));
   EXPECT_CALL(*session, SetEventHandler(_))
       .Times(AnyNumber())
       .WillRepeatedly(SaveArg<0>(&session_event_handler));

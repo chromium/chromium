@@ -91,7 +91,6 @@ class FakeVideoRenderer : public VideoRenderer {
   // VideoRenderer interface.
   bool Initialize(const ClientContext& client_context,
                   protocol::FrameStatsConsumer* stats_consumer) override;
-  void OnSessionConfig(const SessionConfig& config) override;
   FakeVideoStub* GetVideoStub() override;
   FakeFrameConsumer* GetFrameConsumer() override;
   FakeFrameStatsConsumer* GetFrameStatsConsumer() override;

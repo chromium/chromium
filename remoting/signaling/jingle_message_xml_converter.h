@@ -76,8 +76,7 @@ bool SessionInfoFromXml(const jingle_xmpp::XmlElement* jingle_element,
 std::unique_ptr<jingle_xmpp::XmlElement> ContentDescriptionToXml(
     const ContentDescription& description);
 std::unique_ptr<ContentDescription> ContentDescriptionFromXml(
-    const jingle_xmpp::XmlElement* element,
-    bool webrtc_transport);
+    const jingle_xmpp::XmlElement* element);
 
 }  // namespace remoting
 

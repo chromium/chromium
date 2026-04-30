@@ -47,8 +47,6 @@ static_library("signaling") {
     "message_tracker.cc",
     "message_tracker.h",
     "registration_manager.h",
-    "session_config.cc",
-    "session_config.h",
     "signal_strategy.cc",
     "signal_strategy.h",
     "signaling_address.cc",
@@ -129,7 +127,6 @@ source_set("unit_tests") {
     "jingle_message_struct_converter_unittest.cc",
     "jingle_message_xml_converter_unittest.cc",
     "message_tracker_unittest.cc",
-    "session_config_unittest.cc",
     "signaling_address_unittest.cc",
     "signaling_id_util_unittest.cc",
   ]

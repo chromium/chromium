@@ -465,27 +465,6 @@ TEST_F(JingleSessionTest, ConnectWithBadMultistepAuth) {
                      true);
 }
 
-// Verify that incompatible protocol configuration is handled properly.
-TEST_F(JingleSessionTest, TestIncompatibleProtocol) {
-  CreateSessionManagers(FakeAuthenticator::Config(FakeAuthenticator::ACCEPT));
-
-  EXPECT_CALL(host_server_listener_, OnIncomingSession(_, _, _, _)).Times(0);
-
-  EXPECT_CALL(client_session_event_handler_,
-              OnSessionStateChange(Session::FAILED))
-      .Times(1);
-
-  std::unique_ptr<CandidateSessionConfig> config =
-      CandidateSessionConfig::CreateDefault();
-  // Disable WebRTC so the host will reject connection.
-  config->set_webrtc_supported(false);
-  client_server_->set_protocol_config(std::move(config));
-  ConnectClient(FakeAuthenticator::Config(FakeAuthenticator::ACCEPT));
-
-  EXPECT_EQ(client_session_->error(), ErrorCode::INCOMPATIBLE_PROTOCOL);
-  EXPECT_FALSE(host_session_);
-}
-
 TEST_F(JingleSessionTest, DeleteSessionOnIncomingConnection) {
   const int kAuthRoundtrips = 3;
   FakeAuthenticator::Config auth_config(kAuthRoundtrips,

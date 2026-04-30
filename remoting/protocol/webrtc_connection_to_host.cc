@@ -61,10 +61,6 @@ void WebrtcConnectionToHost::ApplyNetworkSettings(
   transport_->ApplyNetworkSettings(settings);
 }
 
-const SessionConfig& WebrtcConnectionToHost::config() {
-  return session_->config();
-}
-
 ClipboardStub* WebrtcConnectionToHost::clipboard_forwarder() {
   return &clipboard_forwarder_;
 }

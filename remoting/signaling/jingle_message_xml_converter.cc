@@ -262,13 +262,16 @@ bool ParseInitiateOrAccept(const XmlElement* jingle_tag,
     return false;
   }
 
+  if (!tags.webrtc_transport) {
+    *error = "WebRTC transport is missing";
+    return false;
+  }
+
   std::optional<JingleTransportInfo> transport_info;
-  if (tags.webrtc_transport) {
-    transport_info.emplace();
-    if (!JingleTransportInfoFromXml(tags.webrtc_transport, &*transport_info)) {
-      *error = "Failed to parse JingleTransportInfo from XML (WebRTC)";
-      return false;
-    }
+  transport_info.emplace();
+  if (!JingleTransportInfoFromXml(tags.webrtc_transport, &*transport_info)) {
+    *error = "Failed to parse JingleTransportInfo from XML (WebRTC)";
+    return false;
   }
 
   const XmlElement* description_tag =
@@ -278,8 +281,7 @@ bool ParseInitiateOrAccept(const XmlElement* jingle_tag,
     return false;
   }
 
-  message->description = ContentDescriptionFromXml(
-      description_tag, tags.webrtc_transport != nullptr);
+  message->description = ContentDescriptionFromXml(description_tag);
   if (!message->description) {
     *error = "Failed to parse content description";
     return false;
@@ -652,8 +654,7 @@ std::unique_ptr<jingle_xmpp::XmlElement> JingleMessageToXml(
     if (transport_info) {
       content_tag->AddElement(
           JingleTransportInfoToXml(*transport_info).release());
-    } else if (message.description &&
-               message.description->config()->webrtc_supported()) {
+    } else if (message.description) {
       content_tag->AddElement(new XmlElement(kQNameWebrtcTransport));
     }
     jingle_tag->AddElement(content_tag.release());
@@ -1125,16 +1126,11 @@ std::unique_ptr<jingle_xmpp::XmlElement> ContentDescriptionToXml(
 }
 
 std::unique_ptr<ContentDescription> ContentDescriptionFromXml(
-    const jingle_xmpp::XmlElement* element,
-    bool webrtc_transport) {
+    const jingle_xmpp::XmlElement* element) {
   if (element->Name() != kQNameDescription) {
     LOG(ERROR) << "Invalid description: " << element->Str();
     return nullptr;
   }
-  std::unique_ptr<CandidateSessionConfig> config(
-      CandidateSessionConfig::CreateEmpty());
-
-  config->set_webrtc_supported(webrtc_transport);
 
   JingleAuthentication authentication;
   const XmlElement* child = FindAuthenticatorMessage(element);
@@ -1142,8 +1138,7 @@ std::unique_ptr<ContentDescription> ContentDescriptionFromXml(
     JingleAuthenticationFromXml(child, &authentication);
   }
 
-  return std::make_unique<ContentDescription>(std::move(config),
-                                              authentication);
+  return std::make_unique<ContentDescription>(authentication);
 }
 
 }  // namespace remoting

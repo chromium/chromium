@@ -42,8 +42,6 @@ class JingleSessionManager : public SessionManager,
   // SessionManager interface.
   void AcceptIncoming(
       const IncomingSessionCallback& incoming_session_callback) override;
-  void set_protocol_config(
-      std::unique_ptr<CandidateSessionConfig> config) override;
   std::unique_ptr<Session> Connect(
       const SignalingAddress& peer_address,
       std::unique_ptr<Authenticator> authenticator) override;
@@ -75,7 +73,6 @@ class JingleSessionManager : public SessionManager,
 
   raw_ptr<SignalStrategy> signal_strategy_ = nullptr;
   IncomingSessionCallback incoming_session_callback_;
-  std::unique_ptr<CandidateSessionConfig> protocol_config_;
 
   std::unique_ptr<AuthenticatorFactory> authenticator_factory_;
   std::unique_ptr<IqSender> iq_sender_;

@@ -34,21 +34,8 @@
 // sessions). The SignalStrategy must outlive the SessionManager.
 //
 // PROTOCOL VERSION NEGOTIATION
-// When client connects to a host it sends a session-initiate stanza with list
-// of supported configurations for each channel. If the host decides to accept
-// session, then it selects configuration that is supported by both sides
-// and then replies with the session-accept stanza that contans selected
-// configuration. The configuration specified in the session-accept is used
-// for the session.
-//
-// The CandidateSessionConfig class represents list of configurations
-// supported by an endpoint. The |candidate_config| argument in the Connect()
-// specifies configuration supported on the client side. When the host receives
-// session-initiate stanza, the IncomingSessionCallback is called. The
-// configuration sent in the session-intiate staza is available via
-// ChromotocolConnection::candidate_config(). If an incoming session is
-// being accepted then the IncomingSessionCallback callback function must
-// select session configuration and then set it with Session::set_config().
+// When client connects to a host it sends a session-initiate stanza. If the
+// host decides to accept session, it replies with a session-accept stanza.
 
 #ifndef REMOTING_PROTOCOL_SESSION_MANAGER_H_
 #define REMOTING_PROTOCOL_SESSION_MANAGER_H_
@@ -109,11 +96,6 @@ class SessionManager {
   // Starts accepting incoming connections.
   virtual void AcceptIncoming(
       const IncomingSessionCallback& incoming_session_callback) = 0;
-
-  // Sets local protocol configuration to be used when negotiating outgoing and
-  // incoming connections.
-  virtual void set_protocol_config(
-      std::unique_ptr<CandidateSessionConfig> config) = 0;
 
   // Creates a new outgoing session.
   //

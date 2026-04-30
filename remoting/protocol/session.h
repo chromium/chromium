@@ -12,7 +12,6 @@
 #include "remoting/base/source_location.h"
 #include "remoting/protocol/errors.h"
 #include "remoting/protocol/transport.h"
-#include "remoting/signaling/session_config.h"
 
 namespace remoting::protocol {
 
@@ -78,10 +77,6 @@ class Session {
 
   // JID of the other side.
   virtual const std::string& jid() = 0;
-
-  // Protocol configuration. Can be called only after session has been accepted.
-  // Returned pointer is valid until connection is closed.
-  virtual const SessionConfig& config() = 0;
 
   virtual const Authenticator& authenticator() const = 0;
 

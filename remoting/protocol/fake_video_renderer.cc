@@ -92,8 +92,6 @@ bool FakeVideoRenderer::Initialize(
   return true;
 }
 
-void FakeVideoRenderer::OnSessionConfig(const SessionConfig& config) {}
-
 FakeVideoStub* FakeVideoRenderer::GetVideoStub() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   return &video_stub_;

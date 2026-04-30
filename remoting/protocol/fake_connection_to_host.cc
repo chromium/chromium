@@ -10,8 +10,7 @@
 
 namespace remoting::test {
 
-FakeConnectionToHost::FakeConnectionToHost()
-    : session_config_(SessionConfig::ForTest()) {}
+FakeConnectionToHost::FakeConnectionToHost() = default;
 FakeConnectionToHost::~FakeConnectionToHost() = default;
 
 void FakeConnectionToHost::set_client_stub(protocol::ClientStub* client_stub) {}
@@ -74,10 +73,6 @@ void FakeConnectionToHost::SignalConnectionReady(bool ready) {
   DCHECK(event_callback_);
 
   event_callback_->OnConnectionReady(ready);
-}
-
-const SessionConfig& FakeConnectionToHost::config() {
-  return *session_config_;
 }
 
 protocol::ClipboardStub* FakeConnectionToHost::clipboard_forwarder() {

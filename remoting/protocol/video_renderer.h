@@ -8,7 +8,6 @@
 namespace remoting {
 
 class ClientContext;
-class SessionConfig;
 
 namespace protocol {
 
@@ -35,10 +34,6 @@ class VideoRenderer {
   // |perf_tracker| must outlive the renderer.
   virtual bool Initialize(const ClientContext& client_context,
                           protocol::FrameStatsConsumer* stats_consumer) = 0;
-
-  // Configures the renderer with the supplied |config|. This must be called
-  // exactly once before video data is supplied to the renderer.
-  virtual void OnSessionConfig(const SessionConfig& config) = 0;
 
   // Returns the VideoStub interface of this renderer.
   virtual VideoStub* GetVideoStub() = 0;

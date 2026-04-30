@@ -88,7 +88,6 @@
 #include "remoting/protocol/session.h"
 #include "remoting/protocol/transport.h"
 #include "remoting/protocol/webrtc_video_stream.h"
-#include "remoting/signaling/session_config.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor.h"

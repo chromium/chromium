@@ -35,7 +35,6 @@
 #include "remoting/signaling/iq_sender.h"
 #include "remoting/signaling/jingle_data_structures.h"
 #include "remoting/signaling/jingle_message_xml_converter.h"
-#include "remoting/signaling/session_config.h"
 #include "third_party/webrtc/api/candidate.h"
 
 namespace remoting::protocol {
@@ -277,25 +276,10 @@ void JingleSession::InitializeIncomingConnection(
   message_queue_->SetInitialId(initiate_message.message_id);
 
   SetState(ACCEPTING);
-
-  config_ =
-      SessionConfig::SelectCommon(initiate_message.description->config(),
-                                  session_manager_->protocol_config_.get());
-  if (!config_) {
-    Close(ErrorCode::INCOMPATIBLE_PROTOCOL,
-          base::StringPrintf("Rejecting connection from %s because no "
-                             "compatible configuration has "
-                             "been found.",
-                             peer_address_.id()),
-          FROM_HERE);
-    return;
-  }
 }
 
 void JingleSession::AcceptIncomingConnection(
     const JingleMessage& initiate_message) {
-  DCHECK(config_);
-
   ProcessIncomingPluginMessage(initiate_message);
   // Process the first authentication message.
   const JingleAuthentication& first_auth_message =
@@ -334,8 +318,7 @@ void JingleSession::ContinueAcceptIncomingConnection() {
     auth_message = authenticator_->GetNextMessage();
   }
 
-  message->description = std::make_unique<ContentDescription>(
-      CandidateSessionConfig::CreateDefault(), auth_message);
+  message->description = std::make_unique<ContentDescription>(auth_message);
   SendMessage(std::move(message));
 
   // Update state.
@@ -354,11 +337,6 @@ void JingleSession::ContinueAcceptIncomingConnection() {
 const std::string& JingleSession::jid() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   return peer_address_.id();
-}
-
-const SessionConfig& JingleSession::config() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  return *config_;
 }
 
 const Authenticator& JingleSession::authenticator() const {
@@ -780,16 +758,6 @@ bool JingleSession::InitializeConfigFromDescription(
     std::string& error_details,
     base::Location& error_location) {
   DCHECK(description);
-  config_ = SessionConfig::GetFinalConfig(description->config());
-  if (!config_) {
-    error_code = ErrorCode::INVALID_ARGUMENT;
-    error_details =
-        "Received session-accept message does not specify the session "
-        "configuration.";
-    error_location = FROM_HERE;
-    return false;
-  }
-
   return true;
 }
 
@@ -911,8 +879,7 @@ void JingleSession::SendSessionInitiateMessage() {
     auth_message = authenticator_->GetNextMessage();
   }
 
-  message->description = std::make_unique<ContentDescription>(
-      session_manager_->protocol_config_->Clone(), auth_message);
+  message->description = std::make_unique<ContentDescription>(auth_message);
   SendMessage(std::move(message));
 }
 

@@ -21,8 +21,7 @@ namespace remoting::protocol {
 const char kTestJid[] = "host1@gmail.com/chromoting123";
 const char kTestAuthKey[] = "test_auth_key";
 
-FakeSession::FakeSession()
-    : config_(SessionConfig::ForTest()), jid_(kTestJid) {}
+FakeSession::FakeSession() : jid_(kTestJid) {}
 FakeSession::~FakeSession() = default;
 
 void FakeSession::SimulateConnection(FakeSession* peer) {
@@ -66,10 +65,6 @@ ErrorCode FakeSession::error() const {
 
 const std::string& FakeSession::jid() {
   return jid_;
-}
-
-const SessionConfig& FakeSession::config() {
-  return *config_;
 }
 
 const Authenticator& FakeSession::authenticator() const {

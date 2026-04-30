@@ -25,7 +25,6 @@ namespace remoting::protocol {
 
 JingleSessionManager::JingleSessionManager(SignalStrategy* signal_strategy)
     : signal_strategy_(signal_strategy),
-      protocol_config_(CandidateSessionConfig::CreateDefault()),
       iq_sender_(new IqSender(signal_strategy_)) {
   signal_strategy_->AddListener(this);
 }
@@ -38,11 +37,6 @@ JingleSessionManager::~JingleSessionManager() {
 void JingleSessionManager::AcceptIncoming(
     const IncomingSessionCallback& incoming_session_callback) {
   incoming_session_callback_ = incoming_session_callback;
-}
-
-void JingleSessionManager::set_protocol_config(
-    std::unique_ptr<CandidateSessionConfig> config) {
-  protocol_config_ = std::move(config);
 }
 
 std::unique_ptr<Session> JingleSessionManager::Connect(
