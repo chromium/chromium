@@ -6,7 +6,6 @@ _include_dir = "src/google/protobuf"
 
 protobuf_headers = [
   "$_include_dir/any.h",
-  "$_include_dir/any.pb.h",
   "$_include_dir/arena.h",
   "$_include_dir/arena_align.h",
   "$_include_dir/arena_allocation_policy.h",
@@ -130,7 +129,6 @@ protobuf_lite_sources = [
 
 protobuf_sources = [
   "$_include_dir/any.cc",
-  "$_include_dir/any.pb.cc",
   "$_include_dir/compiler/importer.cc",
   "$_include_dir/compiler/parser.cc",
   "$_include_dir/cpp_features.pb.cc",
