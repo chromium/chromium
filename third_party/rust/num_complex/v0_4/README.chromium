@@ -1,0 +1,11 @@
+Name: num-complex
+URL: https://crates.io/crates/num-complex
+Version: 0.4.6
+Revision: 91fdc06356c0c868cb88b5a180859023c57e6e50
+Update Mechanism: Manual (https://crbug.com/449898466)
+License: Apache-2.0
+License File: //third_party/rust/chromium_crates_io/vendor/num-complex-v0_4/LICENSE-APACHE
+Shipped: yes
+Security Critical: yes
+
+Description: Complex numbers implementation for Rust

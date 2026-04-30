@@ -1,0 +1,19 @@
+[package]
+name = "strength_reduce"
+version = "0.2.4"
+authors = ["Elliott Mahler <join.together@gmail.com>"]
+
+description = "Faster integer division and modulus operations"
+
+license = "MIT OR Apache-2.0"
+
+repository = "http://github.com/ejmahler/strength_reduce"
+documentation = "http://docs.rs/strength_reduce"
+keywords = ["arithmetic", "strength", "reduction", "division", "modulus"]
+categories = ["algorithms", "data-structures"]
+readme = "README.md"
+
+[dev-dependencies]
+proptest = "1.0.0"
+num-bigint = "0.4"
+rand = "0.8"

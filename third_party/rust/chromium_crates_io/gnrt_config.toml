@@ -587,6 +587,9 @@ extra_kv = { allow_unsafe = true }
 [crate.num-bigint.extra_kv]
 allow_unsafe = true
 
+[crate.num-complex]
+extra_kv = { allow_unsafe = true }
+
 [crate.num-derive]
 extra_kv = { allow_unsafe = false }
 
@@ -638,6 +641,9 @@ configs_to_add = ['//build/config/compiler:optimize']
 [crate.potential_utf.extra_kv]
 allow_unsafe = true
 
+[crate.primal-check]
+extra_kv = { allow_unsafe = false }
+
 [crate.proc-macro-error-attr2]
 extra_kv = { allow_unsafe = false }
 
@@ -684,6 +690,9 @@ allow_unsafe = false
 [crate.rustc-demangle-capi]
 extra_kv = { allow_unsafe = true }
 shipped = false
+
+[crate.rustfft]
+extra_kv = { allow_unsafe = true }
 
 [crate.rustversion]
 build_script_outputs = [ "version.expr" ]
@@ -737,6 +746,9 @@ allow_unsafe = false
 
 [crate.strck.extra_kv]
 allow_unsafe = true
+
+[crate.strength_reduce]
+extra_kv = { allow_unsafe = false }
 
 [crate.strsim.extra_kv]
 allow_unsafe = false
@@ -806,6 +818,9 @@ allow_unsafe = true
 
 [crate.toktrie.extra_kv]
 allow_unsafe = true
+
+[crate.transpose]
+extra_kv = { allow_unsafe = true }
 
 [crate.typed-arena]
 extra_kv = { allow_unsafe = true }

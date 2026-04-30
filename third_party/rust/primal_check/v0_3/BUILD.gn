@@ -9,34 +9,28 @@
 import("//build/rust/cargo_crate.gni")
 
 cargo_crate("lib") {
-  crate_name = "num_integer"
-  epoch = "0.1"
+  crate_name = "primal_check"
+  epoch = "0.3"
   crate_type = "rlib"
-  crate_root =
-      "//third_party/rust/chromium_crates_io/vendor/num-integer-v0_1/src/lib.rs"
+  crate_root = "//third_party/rust/chromium_crates_io/vendor/primal-check-v0_3/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/num-integer-v0_1/src/average.rs",
-    "//third_party/rust/chromium_crates_io/vendor/num-integer-v0_1/src/lib.rs",
-    "//third_party/rust/chromium_crates_io/vendor/num-integer-v0_1/src/roots.rs",
+    "//third_party/rust/chromium_crates_io/vendor/primal-check-v0_3/src/is_prime.rs",
+    "//third_party/rust/chromium_crates_io/vendor/primal-check-v0_3/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/primal-check-v0_3/src/perfect_power.rs",
   ]
   inputs = []
 
   build_native_rust_unit_tests = false
   edition = "2018"
-  cargo_pkg_authors = "The Rust Project Developers"
-  cargo_pkg_name = "num-integer"
-  cargo_pkg_description = "Integer traits and functions"
-  cargo_pkg_repository = "https://github.com/rust-num/num-integer"
-  cargo_pkg_version = "0.1.46"
+  cargo_pkg_authors = "Huon Wilson <dbau.pp@gmail.com>"
+  cargo_pkg_name = "primal-check"
+  cargo_pkg_description = "Fast standalone primality testing."
+  cargo_pkg_repository = "https://github.com/huonw/primal"
+  cargo_pkg_version = "0.3.4"
 
   allow_unsafe = false
 
-  deps = [ "//third_party/rust/num_traits/v0_2:lib" ]
-  features = [
-    "default",
-    "i128",
-    "std",
-  ]
+  deps = [ "//third_party/rust/num_integer/v0_1:lib" ]
 
   # Only for usage from third-party crates. Add the crate to
   # //third_party/rust/chromium_crates_io/Cargo.toml to use

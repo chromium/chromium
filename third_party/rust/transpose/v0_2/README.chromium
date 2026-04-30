@@ -1,0 +1,11 @@
+Name: transpose
+URL: https://crates.io/crates/transpose
+Version: 0.2.3
+Revision: 134293e7f7f8e13d342ae625e479e6097b5525db
+Update Mechanism: Manual (https://crbug.com/449898466)
+License: Apache-2.0
+License File: //third_party/rust/chromium_crates_io/vendor/transpose-v0_2/LICENSE-APACHE
+Shipped: yes
+Security Critical: yes
+
+Description: Utility for transposing multi-dimensional data

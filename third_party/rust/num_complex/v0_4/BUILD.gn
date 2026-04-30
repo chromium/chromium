@@ -9,32 +9,33 @@
 import("//build/rust/cargo_crate.gni")
 
 cargo_crate("lib") {
-  crate_name = "num_integer"
-  epoch = "0.1"
+  crate_name = "num_complex"
+  epoch = "0.4"
   crate_type = "rlib"
   crate_root =
-      "//third_party/rust/chromium_crates_io/vendor/num-integer-v0_1/src/lib.rs"
+      "//third_party/rust/chromium_crates_io/vendor/num-complex-v0_4/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/num-integer-v0_1/src/average.rs",
-    "//third_party/rust/chromium_crates_io/vendor/num-integer-v0_1/src/lib.rs",
-    "//third_party/rust/chromium_crates_io/vendor/num-integer-v0_1/src/roots.rs",
+    "//third_party/rust/chromium_crates_io/vendor/num-complex-v0_4/src/cast.rs",
+    "//third_party/rust/chromium_crates_io/vendor/num-complex-v0_4/src/complex_float.rs",
+    "//third_party/rust/chromium_crates_io/vendor/num-complex-v0_4/src/crand.rs",
+    "//third_party/rust/chromium_crates_io/vendor/num-complex-v0_4/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/num-complex-v0_4/src/pow.rs",
   ]
   inputs = []
 
   build_native_rust_unit_tests = false
-  edition = "2018"
+  edition = "2021"
   cargo_pkg_authors = "The Rust Project Developers"
-  cargo_pkg_name = "num-integer"
-  cargo_pkg_description = "Integer traits and functions"
-  cargo_pkg_repository = "https://github.com/rust-num/num-integer"
-  cargo_pkg_version = "0.1.46"
+  cargo_pkg_name = "num-complex"
+  cargo_pkg_description = "Complex numbers implementation for Rust"
+  cargo_pkg_repository = "https://github.com/rust-num/num-complex"
+  cargo_pkg_version = "0.4.6"
 
-  allow_unsafe = false
+  allow_unsafe = true
 
   deps = [ "//third_party/rust/num_traits/v0_2:lib" ]
   features = [
     "default",
-    "i128",
     "std",
   ]
 

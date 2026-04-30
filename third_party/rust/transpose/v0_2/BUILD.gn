@@ -9,33 +9,31 @@
 import("//build/rust/cargo_crate.gni")
 
 cargo_crate("lib") {
-  crate_name = "num_integer"
-  epoch = "0.1"
+  crate_name = "transpose"
+  epoch = "0.2"
   crate_type = "rlib"
   crate_root =
-      "//third_party/rust/chromium_crates_io/vendor/num-integer-v0_1/src/lib.rs"
+      "//third_party/rust/chromium_crates_io/vendor/transpose-v0_2/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/num-integer-v0_1/src/average.rs",
-    "//third_party/rust/chromium_crates_io/vendor/num-integer-v0_1/src/lib.rs",
-    "//third_party/rust/chromium_crates_io/vendor/num-integer-v0_1/src/roots.rs",
+    "//third_party/rust/chromium_crates_io/vendor/transpose-v0_2/src/in_place.rs",
+    "//third_party/rust/chromium_crates_io/vendor/transpose-v0_2/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/transpose-v0_2/src/out_of_place.rs",
   ]
   inputs = []
 
   build_native_rust_unit_tests = false
-  edition = "2018"
-  cargo_pkg_authors = "The Rust Project Developers"
-  cargo_pkg_name = "num-integer"
-  cargo_pkg_description = "Integer traits and functions"
-  cargo_pkg_repository = "https://github.com/rust-num/num-integer"
-  cargo_pkg_version = "0.1.46"
+  edition = "2015"
+  cargo_pkg_authors = "Elliott Mahler <join.together@gmail.com>"
+  cargo_pkg_name = "transpose"
+  cargo_pkg_description = "Utility for transposing multi-dimensional data"
+  cargo_pkg_repository = "https://github.com/ejmahler/transpose"
+  cargo_pkg_version = "0.2.3"
 
-  allow_unsafe = false
+  allow_unsafe = true
 
-  deps = [ "//third_party/rust/num_traits/v0_2:lib" ]
-  features = [
-    "default",
-    "i128",
-    "std",
+  deps = [
+    "//third_party/rust/num_integer/v0_1:lib",
+    "//third_party/rust/strength_reduce/v0_2:lib",
   ]
 
   # Only for usage from third-party crates. Add the crate to

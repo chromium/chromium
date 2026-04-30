@@ -1,0 +1,11 @@
+Name: strength_reduce
+URL: https://crates.io/crates/strength_reduce
+Version: 0.2.4
+Revision: 5b0a43d9d672ee2ac4e471f201fb13417a0a0c71
+Update Mechanism: Manual (https://crbug.com/449898466)
+License: Apache-2.0
+License File: //third_party/rust/chromium_crates_io/vendor/strength_reduce-v0_2/LICENSE-APACHE
+Shipped: yes
+Security Critical: yes
+
+Description: Faster integer division and modulus operations

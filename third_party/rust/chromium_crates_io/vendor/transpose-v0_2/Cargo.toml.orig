@@ -1,0 +1,28 @@
+[package]
+name = "transpose"
+version = "0.2.3"
+authors = ["Elliott Mahler <join.together@gmail.com>"]
+
+description = "Utility for transposing multi-dimensional data"
+
+license = "MIT OR Apache-2.0"
+
+repository = "https://github.com/ejmahler/transpose"
+documentation = "https://docs.rs/transpose"
+keywords = ["array", "transpose", "2d"]
+categories = ["algorithms", "data structures", "no-std"]
+readme = "README.md"
+
+[dependencies]
+strength_reduce = "^0.2.1"
+
+[dependencies.num-integer]
+version = "0.1"
+default-features = false
+
+[dev-dependencies]
+criterion = "0.3"
+
+[[bench]]
+name = "transpose_benchmarks"
+harness = false

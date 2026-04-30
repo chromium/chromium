@@ -1,0 +1,12 @@
+Name: primal-check
+URL: https://crates.io/crates/primal-check
+Version: 0.3.4
+Revision: 1a06fdf87b5aad2ec119dad631cd7985667b022d
+Update Mechanism: Manual (https://crbug.com/449898466)
+License: Apache-2.0
+License File: //third_party/rust/chromium_crates_io/vendor/primal-check-v0_3/LICENSE-APACHE
+Shipped: yes
+Security Critical: yes
+
+Description: Fast standalone primality testing.
+

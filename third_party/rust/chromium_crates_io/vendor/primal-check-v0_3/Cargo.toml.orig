@@ -1,0 +1,24 @@
+[package]
+name = "primal-check"
+version = "0.3.4"
+authors = ["Huon Wilson <dbau.pp@gmail.com>"]
+edition = "2018"
+
+homepage = "https://github.com/huonw/primal"
+repository = "https://github.com/huonw/primal"
+documentation = "https://docs.rs/primal-check/"
+license = "MIT OR Apache-2.0"
+keywords = ["math", "mathematics", "primes", "number-theory"]
+
+description = """
+Fast standalone primality testing.
+"""
+
+[dependencies]
+num-integer = "0.1"
+
+[dev-dependencies]
+primal = { path = "..", version = "0.3" }
+
+[features]
+unstable = []

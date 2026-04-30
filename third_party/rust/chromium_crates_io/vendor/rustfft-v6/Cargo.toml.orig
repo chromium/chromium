@@ -1,0 +1,61 @@
+[package]
+
+name = "rustfft"
+version = "6.4.1"
+authors = ["Allen Welkie <allen.welkie at gmail>", "Elliott Mahler <join.together at gmail>"]
+edition = "2021"
+rust-version = "1.61"
+
+description = "High-performance FFT library written in pure Rust."
+documentation = "https://docs.rs/rustfft/"
+repository = "https://github.com/ejmahler/RustFFT"
+keywords = ["fft", "dft", "discrete", "fourier", "transform"]
+categories = ["algorithms", "compression", "multimedia::encoding", "science"]
+license = "MIT OR Apache-2.0"
+
+[features]
+default = ["avx", "sse", "neon"]
+
+# On x86_64, the "avx" feature enables compilation of AVX-acclerated code. 
+# Similarly, the "sse" feature enables compilation of SSE-accelerated code. 
+# Enabling these improves performance if the client CPU supports AVX or SSE, while disabling them reduces compile time and binary size.
+# If both are enabled, RustFFT will use AVX if the CPU supports it. If not, it will check for SSE4.1.
+# If neither instruction set is available, it will fall back to the scalar code.  
+#
+# On AArch64, the "neon" feature enables compilation of Neon-accelerated code.
+#
+# On wasm32, the "wasm_simd" feature enables compilation of Wasm SIMD accelerated code.
+#
+# For all of the above features, on every platform other than the intended platform for the feature, these features do nothing, and RustFFT will behave like they are not set.
+avx = []
+sse = []
+neon = []
+wasm_simd = []
+
+
+[dependencies]
+num-complex = "0.4"
+num-traits = "0.2"
+num-integer = "^0.1.40"
+strength_reduce = "0.2.4"
+transpose = "0.2"
+primal-check = "0.3.3"
+
+[dev-dependencies]
+rand = "0.8"
+paste = "1.0.9"
+getrandom = {version = "^0.2", features = ["js"]}
+wasm-bindgen-test = "^0.3.36"
+
+# we don't need bumpalo directly, but a dependency does, and version 3.15.x requires rustc 1.73+
+# it probably isn't wise to stay on an old version for a long time, but we'll have to upgrade MSRV to upgrade
+bumpalo = "=3.14.0"
+
+# we don't need libc directly, but a dependency does, and version 0.2.164+ requires rustc 1.63+
+# it probably isn't wise to stay on an old version for a long time, but we'll have to upgrade MSRV to upgrade
+libc = "=0.2.163"
+
+# we don't need once_cell directly, but a dependency does, and version 1.21+ requires rustc 1.66+
+# it probably isn't wise to stay on an old version for a long time, but we'll have to upgrade MSRV to upgrade
+once_cell = "=1.20.2"
+

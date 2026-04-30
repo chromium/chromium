@@ -132,6 +132,9 @@ default-features = false
 version = "0.39.2"
 features = ["agl"]
 
+[dependencies.rustfft]
+version = "6.4.1"
+
 # Temporarily inform our cargo tooling that we care about
 # the new version of serde_json_lenient. We are in the midst
 # of CLs that move from the older to the newer.
