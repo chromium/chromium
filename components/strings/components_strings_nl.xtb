@@ -2897,7 +2897,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5624120631404540903">Wachtwoorden beheren</translation>
 <translation id="5628060911499153873">Sla je informatie op om sneller dingen te doen in Google-producten. Je informatie wordt opgeslagen in <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> voor <ph name="ACCOUNT" />.</translation>
 <translation id="5629630648637658800">Laden van beleidsinstellingen is mislukt</translation>
-<translation id="5630981295558454585">Knop Google vragen over deze pagina, activeer deze om Google vragen te stellen over deze pagina</translation>
+<translation id="5630981295558454585">Knop Vraag Google iets over deze pagina, activeer deze om Google vragen te stellen over deze pagina</translation>
 <translation id="5631439013527180824">Ongeldige token voor apparaatbeheer</translation>
 <translation id="5632485077360054581">Laten zien</translation>
 <translation id="563324245173044180">Misleidende content geblokkeerd.</translation>
@@ -4136,7 +4136,7 @@ Aanvullende informatie:
 <translation id="7598391785903975535">Minder dan <ph name="UPPER_ESTIMATE" /></translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" /> kan dit verzoek momenteel niet verwerken.</translation>
 <translation id="7599089013883397081">Time-out bij downloaden</translation>
-<translation id="7602868996817972616">Google vragen over deze pagina</translation>
+<translation id="7602868996817972616">Vraag Google iets over deze pagina</translation>
 <translation id="7606123685356405076">Gemini 3-modellen</translation>
 <translation id="7610193165460212391">Waarde <ph name="VALUE" /> is buiten bereik.</translation>
 <translation id="761261689936461781">Dik</translation>

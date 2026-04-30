@@ -162,7 +162,7 @@
 <translation id="1505542291183484463">Прозорец за променување големина со плочки надолу</translation>
 <translation id="1510238584712386396">Стартер</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Прикажи ги поставките за известувања. Известувањата се исклучени за една апликација}one{Прикажи ги поставките за известувања. Известувањата се исклучени за # апликација}other{Прикажи ги поставките за известувања. Известувањата се исклучени за # апликации}}</translation>
-<translation id="1521655867290435174">Табели на Google</translation>
+<translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1523032696246003">Батерија: <ph name="BATTERY_PERCENTAGE" /> % | <ph name="TIME" /> до полна батерија</translation>
 <translation id="1525508553941733066">ОТФРЛИ</translation>
 <translation id="1526448108126799339">Отвора нова картичка во нов прозорец</translation>

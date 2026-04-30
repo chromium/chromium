@@ -104,7 +104,7 @@
 <translation id="1384704387250346179">Traduci l'immagine con Google Lens <ph name="BEGIN_NEW" />Novità<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">Attivo <ph name="LAST_UPDATED" /> giorni fa</translation>
 <translation id="1390418506739274310">Potresti vedere la cronologia di altre app che aprono link in Chrome. Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione all'indirizzo <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
-<translation id="139752016751285248">Riquadro inferiore di approfondimenti sul prezzo aperto a schermo intero</translation>
+<translation id="139752016751285248">Riquadro inferiore di insight sul prezzo aperto a schermo intero</translation>
 <translation id="1397811292916898096">Cerca con <ph name="PRODUCT_NAME" /></translation>
 <translation id="1398057416966591719">Puoi <ph name="BEGIN_LINK1" />gestire quali dati di Chrome salvare<ph name="END_LINK1" /> nel tuo Account Google.
 
@@ -208,7 +208,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="1883903952484604915">I miei file</translation>
 <translation id="1889626070177134359"><ph name="SUGGESTIONS_COUNT" /> elementi suggeriti nell'elenco sopra.</translation>
 <translation id="189358972401248634">Altre lingue</translation>
-<translation id="1899175549411605574">Riquadro inferiore di approfondimenti sul prezzo</translation>
+<translation id="1899175549411605574">Riquadro inferiore di insight sul prezzo</translation>
 <translation id="1900260903084164610">Se continui, accetti i <ph name="BEGIN_TOS_LINK" />Termini di servizio<ph name="END_TOS_LINK" />.</translation>
 <translation id="1904580727789512086">Gli URL che visiti vengono salvati nel tuo Account Google</translation>
 <translation id="1910950723001426294">L'elenco di opzioni di condivisione è chiuso.</translation>
@@ -595,7 +595,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="3577558748185201054">Gestisci i tuoi interessi e le tue preferenze</translation>
 <translation id="3587482841069643663">Tutti</translation>
 <translation id="3602290021589620013">Anteprima</translation>
-<translation id="3614126103057878858">Approfondimenti sul prezzo</translation>
+<translation id="3614126103057878858">Insight sul prezzo</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3619255692378312441">Gestisci accesso</translation>
 <translation id="3622349720008044802">Gestisci finestre</translation>
@@ -609,7 +609,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3674208116086565128">Vai alla home page dell'app Google</translation>
 <translation id="368329460027487650">Account disconnesso. Consente di aprire le opzioni per accedere.</translation>
-<translation id="3684540848053703310">Riquadro inferiore di approfondimenti sul prezzo chiuso</translation>
+<translation id="3684540848053703310">Riquadro inferiore di insight sul prezzo chiuso</translation>
 <translation id="3687645719033307815">È visualizzata un'anteprima di questa pagina</translation>
 <translation id="368978924030580338">{BOOKMARKS_COUNT,plural, =1{1 preferito è stato salvato solo su questo dispositivo. Per usarlo sugli altri dispositivi, salvalo nel tuo Account Google.}other{# preferiti sono stati salvati solo su questo dispositivo. Per usarli sugli altri dispositivi, salvali nel tuo Account Google.}}</translation>
 <translation id="3692944402865947621">Download di <ph name="FILE_NAME" /> non riuscito perché non è possibile trovare il percorso di archiviazione.</translation>
