@@ -7443,6 +7443,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Android.WebView.FilteredClassLoader.FindClassReturnedAllowedClass"
+    enum="Boolean" expires_after="2026-10-29">
+  <owner>abhijithnair@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records whether `FilteredClassLoader.findClass` returned an allowed class.
+    Logged when `findClass` is called. This histogram is used to measure how
+    often an exception would be thrown if class filtering restriction is
+    enforced.
+
+    Only logged for Android WebView.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.ForceDarkBehavior"
     enum="WebViewForceDarkBehavior" expires_after="2023-06-01">
   <owner>peter@chromium.org</owner>
