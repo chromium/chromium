@@ -45,6 +45,6 @@ public class TabSwitcherActionPropertiesUnitTest {
         assertTrue(keys.contains(TabSwitcherActionProperties.SHOW_TAB_SWITCHER_TRIGGER));
         assertTrue(keys.contains(TabSwitcherActionProperties.IS_INCOGNITO));
 
-        assertEquals(11, keys.size());
+        assertEquals(12, keys.size());
     }
 }

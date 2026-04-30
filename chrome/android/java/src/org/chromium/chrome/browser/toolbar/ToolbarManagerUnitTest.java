@@ -295,6 +295,8 @@ public class ToolbarManagerUnitTest {
         when(mTabModel.getProfile()).thenReturn(mProfile);
         when(mTabModelSelector.getCurrentModelTabCountSupplier())
                 .thenReturn(ObservableSuppliers.createNonNull(0));
+        when(mTabModelSelector.getCurrentTabSupplier())
+                .thenReturn(ObservableSuppliers.createNullable(mTab));
         SettableMonotonicObservableSupplier<TabModel> currentTabModelSupplier =
                 ObservableSuppliers.createMonotonic();
         currentTabModelSupplier.set(mTabModel);

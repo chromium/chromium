@@ -4,11 +4,9 @@
 
 package org.chromium.chrome.browser.ui.actions.tabswitcher;
 
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import android.content.Context;
 import android.view.View;
 
 import androidx.test.filters.SmallTest;
@@ -17,12 +15,13 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.tab_ui.TabSwitcherButtonView;
 import org.chromium.chrome.browser.ui.actions.ActionProperties;
+import org.chromium.chrome.browser.ui.android.bars_common.TabSwitcherButtonView;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -32,13 +31,12 @@ public class TabSwitcherActionButtonBinderUnitTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    private TestTabSwitcherButtonView mView;
+    @Mock private TabSwitcherButtonView mView;
 
     private PropertyModel mModel;
 
     @Before
     public void setUp() {
-        mView = mock(TestTabSwitcherButtonView.class);
         mModel = new PropertyModel.Builder(TabSwitcherActionProperties.ALL_KEYS).build();
         PropertyModelChangeProcessor.create(
                 mModel,
@@ -100,21 +98,5 @@ public class TabSwitcherActionButtonBinderUnitTest {
     public void testFallbackToActionButtonBinder() {
         mModel.set(ActionProperties.CONTENT_DESCRIPTION_RESOLVER, context -> "Tab Switcher");
         verify(mView).setContentDescription("Tab Switcher");
-    }
-
-    private static class TestTabSwitcherButtonView extends View implements TabSwitcherButtonView {
-        @SuppressWarnings("UnusedMethod")
-        public TestTabSwitcherButtonView(Context context) {
-            super(context);
-        }
-
-        @Override
-        public void setTabCount(int count, boolean incognito) {}
-
-        @Override
-        public void setNotificationDotVisible(boolean visible) {}
-
-        @Override
-        public void endRippleAnimation() {}
     }
 }

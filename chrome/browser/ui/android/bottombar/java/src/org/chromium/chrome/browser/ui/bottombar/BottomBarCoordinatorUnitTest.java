@@ -68,6 +68,8 @@ public class BottomBarCoordinatorUnitTest {
             ObservableSuppliers.createNullable();
     private final SettableNullableObservableSupplier<PropertyModel> mMenuActionSupplier =
             ObservableSuppliers.createNullable();
+    private final SettableNullableObservableSupplier<PropertyModel> mTabSwitcherActionSupplier =
+            ObservableSuppliers.createNullable();
 
     private Activity mActivity;
     private FrameLayout mParent;
@@ -79,6 +81,7 @@ public class BottomBarCoordinatorUnitTest {
         when(mActionRegistry.get(ActionId.NEW_TAB)).thenReturn(mActionSupplier);
         when(mActionRegistry.get(ActionId.HOME_BUTTON)).thenReturn(mHomeActionSupplier);
         when(mActionRegistry.get(ActionId.APP_MENU)).thenReturn(mMenuActionSupplier);
+        when(mActionRegistry.get(ActionId.TAB_SWITCHER)).thenReturn(mTabSwitcherActionSupplier);
 
         mActivityScenarioRule.getScenario().onActivity(this::onActivity);
     }
@@ -101,6 +104,7 @@ public class BottomBarCoordinatorUnitTest {
     public void testInitialization_bindsAction() {
         assertNotNull(mCoordinator);
         verify(mActionRegistry, times(2)).get(ActionId.NEW_TAB);
+        verify(mActionRegistry, times(2)).get(ActionId.TAB_SWITCHER);
     }
 
     @Test

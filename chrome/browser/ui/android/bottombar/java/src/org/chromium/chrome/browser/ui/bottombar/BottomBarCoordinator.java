@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.ui.actions.ActionRegistry;
 import org.chromium.chrome.browser.ui.actions.ActionViewBinding;
 import org.chromium.chrome.browser.ui.actions.AppMenuActionButtonBinder;
 import org.chromium.chrome.browser.ui.actions.HomeActionButtonBinder;
+import org.chromium.chrome.browser.ui.actions.tabswitcher.TabSwitcherActionButtonBinder;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarHostManager.Host;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -80,6 +81,13 @@ public class BottomBarCoordinator implements BottomBar {
         View newTabButton = mView.findViewById(R.id.new_tab_button);
         mRegisteredActionIds.add(ActionId.NEW_TAB);
         mBindings.add(new ActionViewBinding(actionRegistry.get(ActionId.NEW_TAB), newTabButton));
+
+        mRegisteredActionIds.add(ActionId.TAB_SWITCHER);
+        mBindings.add(
+                new ActionViewBinding(
+                        actionRegistry.get(ActionId.TAB_SWITCHER),
+                        mView.findViewById(R.id.tab_switcher_button),
+                        TabSwitcherActionButtonBinder::bind));
 
         if (shouldIncludeHomeButton) {
             BottomBarButtonContainer homeContainer = mView.findViewById(R.id.home_button_container);

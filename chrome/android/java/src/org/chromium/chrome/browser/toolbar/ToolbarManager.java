@@ -197,6 +197,7 @@ import org.chromium.chrome.browser.toolbar.top.tab_strip.TabStripTransitionCoord
 import org.chromium.chrome.browser.ui.actions.ActionId;
 import org.chromium.chrome.browser.ui.actions.ActionProperties;
 import org.chromium.chrome.browser.ui.actions.ActionRegistry;
+import org.chromium.chrome.browser.ui.actions.tabswitcher.TabSwitcherActionProvider;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuDelegate;
 import org.chromium.chrome.browser.ui.appmenu.MenuButtonDelegate;
@@ -391,6 +392,7 @@ public class ToolbarManager
 
     private @MonotonicNonNull HomeButtonCoordinator mHomeButtonCoordinator;
     private @MonotonicNonNull ToggleTabStackButtonCoordinator mTabSwitcherButtonCoordinator;
+    private @MonotonicNonNull TabSwitcherActionProvider mTabSwitcherActionProvider;
     private @MonotonicNonNull BackButtonCoordinator mBackButtonCoordinator;
     private @MonotonicNonNull ForwardButtonCoordinator mForwardButtonCoordinator;
     private @Nullable ExtensionsToolbarCoordinator mExtensionsToolbarCoordinator;
@@ -2554,13 +2556,8 @@ public class ToolbarManager
         // Must be initialized before Toolbar attempts to use it.
         mLocationBarModel.initializeWithNative();
         if (mTabSwitcherButtonCoordinator != null) {
-            assert openGridTabSwitcherHandler != null;
-
             OnLongClickListener tabSwitcherLongClickListener =
-                    TabSwitcherActionMenuCoordinator.createOnLongClickListener(
-                            menuItemId -> mAppMenuDelegate.onOptionsItemSelected(menuItemId, null),
-                            profile,
-                            mTabModelSelectorSupplier);
+                    createTabSwitcherLongClickListener(profile, openGridTabSwitcherHandler);
             mTabSwitcherButtonCoordinator.initializeWithNative(
                     v -> openGridTabSwitcherHandler.run(),
                     tabSwitcherLongClickListener,
@@ -2569,6 +2566,27 @@ public class ToolbarManager
                     tabModelNotificationDotSupplier,
                     () -> TabArchiveSettings.setIphShownThisSession(true),
                     () -> TabArchiveSettings.setIphShownThisSession(false));
+        }
+
+        if (mActionRegistry != null) {
+            OnLongClickListener tabSwitcherLongClickListener =
+                    createTabSwitcherLongClickListener(profile, openGridTabSwitcherHandler);
+
+            mTabSwitcherActionProvider =
+                    new TabSwitcherActionProvider(
+                            mActionRegistry,
+                            mUserEducationHelper,
+                            assumeNonNull(mTabModelSelectorSupplier.get()),
+                            mIncognitoStateProvider,
+                            mOverridableTabCount,
+                            tabModelNotificationDotSupplier,
+                            mPromoShownOneshotSupplier,
+                            archivedTabCountSupplier,
+                            mLayoutStateProviderSupplier,
+                            () -> openGridTabSwitcherHandler.run(),
+                            v -> tabSwitcherLongClickListener.onLongClick(v),
+                            () -> TabArchiveSettings.setIphShownThisSession(true),
+                            () -> TabArchiveSettings.setIphShownThisSession(false));
         }
 
         if (BrowserControlsUtils.isTopControlsRefactorOffsetEnabled()
@@ -2880,6 +2898,11 @@ public class ToolbarManager
         if (mTabSwitcherButtonCoordinator != null) {
             mTabSwitcherButtonCoordinator.destroy();
             mTabSwitcherButtonCoordinator = null;
+        }
+
+        if (mTabSwitcherActionProvider != null) {
+            mTabSwitcherActionProvider.destroy();
+            mTabSwitcherActionProvider = null;
         }
 
         if (mExtensionsToolbarCoordinator != null) {
@@ -3711,5 +3734,14 @@ public class ToolbarManager
      */
     private ThemeColorProvider getBrowsingModeThemeColorProviderWithAdjustableTint() {
         return mIsTablet ? mAppThemeColorProvider : getAdjustedTopUiThemeColorProvider();
+    }
+
+    private OnLongClickListener createTabSwitcherLongClickListener(
+            Profile profile, Runnable openGridTabSwitcherHandler) {
+        assert openGridTabSwitcherHandler != null;
+        return TabSwitcherActionMenuCoordinator.createOnLongClickListener(
+                menuItemId -> mAppMenuDelegate.onOptionsItemSelected(menuItemId, null),
+                profile,
+                mTabModelSelectorSupplier);
     }
 }

@@ -69,6 +69,7 @@ public class ActionProperties {
      */
     public static final PropertyKey[] BASE_KEYS_WITH_BUTTON_STATE_AND_NO_ICON =
             new PropertyKey[] {
+                ICON_TINT,
                 BUTTON_STATE,
                 CONTENT_DESCRIPTION_RESOLVER,
                 TOOLTIP_TEXT_RESOLVER,
@@ -81,6 +82,6 @@ public class ActionProperties {
     /** All properties for action buttons. */
     public static final PropertyKey[] ALL_KEYS =
             PropertyModel.concatKeys(
-                    new PropertyKey[] {ICON_ID, ICON_DRAWABLE, ICON_TINT},
+                    new PropertyKey[] {ICON_ID, ICON_DRAWABLE},
                     BASE_KEYS_WITH_BUTTON_STATE_AND_NO_ICON);
 }

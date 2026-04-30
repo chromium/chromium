@@ -21,6 +21,7 @@ android_resources("java_resources") {
 android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/ui/android/bars_common/IphIntent.java",
+    "java/src/org/chromium/chrome/browser/ui/android/bars_common/TabSwitcherButtonView.java",
     "java/src/org/chromium/chrome/browser/ui/android/bars_common/TabSwitcherDrawable.java",
     "java/src/org/chromium/chrome/browser/ui/android/bars_common/TabSwitcherIphIntentUtils.java",
   ]

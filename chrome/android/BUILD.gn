@@ -535,6 +535,7 @@ if (_is_default_toolchain) {
       "//chrome/browser/touch_to_fill/common/android:java",
       "//chrome/browser/translate/android:java",
       "//chrome/browser/ui/android/actions:java",
+      "//chrome/browser/ui/android/actions:tabswitcher_java",
       "//chrome/browser/ui/android/app_rating:java",
       "//chrome/browser/ui/android/appmenu:factory_java",
       "//chrome/browser/ui/android/appmenu:java",

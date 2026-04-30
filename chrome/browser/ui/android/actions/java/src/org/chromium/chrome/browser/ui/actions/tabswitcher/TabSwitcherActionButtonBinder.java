@@ -7,8 +7,8 @@ package org.chromium.chrome.browser.ui.actions.tabswitcher;
 import android.view.View;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.tab_ui.TabSwitcherButtonView;
 import org.chromium.chrome.browser.ui.actions.ActionButtonBinder;
+import org.chromium.chrome.browser.ui.android.bars_common.TabSwitcherButtonView;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
