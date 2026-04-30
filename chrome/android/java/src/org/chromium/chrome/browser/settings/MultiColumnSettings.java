@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.settings.search.EmptyFragment;
 import org.chromium.chrome.browser.settings.search.SettingsSearchCoordinator;
 import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
+import org.chromium.ui.KeyboardVisibilityDelegate;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -199,6 +200,51 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
             }
             transaction.commit();
             getSlidingPaneLayout().open();
+
+            // When navigating in Single Activity mode, the new fragment's view might not be
+            // laid out yet when it requests focus. If it requests focus while it has zero
+            // size, the keyboard might not show up. Wait for the layout pass and then
+            // ensure focus and keyboard are shown.
+            final Fragment fragment = processed.fragment;
+            getSlidingPaneLayout()
+                    .post(
+                            () -> {
+                                View detailView = fragment.getView();
+                                if (detailView == null) return;
+
+                                // Only proceed if the fragment contains an EditText that might
+                                // need the keyboard.
+                                if (findEditText(detailView) == null) return;
+
+                                // Check if it's already laid out. If so, act immediately.
+                                if (detailView.getWidth() > 0 && detailView.getHeight() > 0) {
+                                    ensureFocusAndKeyboard(detailView);
+                                    return;
+                                }
+
+                                // Otherwise, wait for the first layout pass.
+                                detailView.addOnLayoutChangeListener(
+                                        new View.OnLayoutChangeListener() {
+                                            @Override
+                                            public void onLayoutChange(
+                                                    View v,
+                                                    int l,
+                                                    int t,
+                                                    int r,
+                                                    int b,
+                                                    int ol,
+                                                    int ot,
+                                                    int or,
+                                                    int ob) {
+                                                int width = r - l;
+                                                int height = b - t;
+                                                if (width > 0 && height > 0) {
+                                                    detailView.removeOnLayoutChangeListener(this);
+                                                    ensureFocusAndKeyboard(detailView);
+                                                }
+                                            }
+                                        });
+                            });
         }
 
         super.onResume();
@@ -207,6 +253,31 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
                 instanceof MainSettings mainSettings) {
             mainSettings.addObserver(mOnBackPressedCallback);
         }
+    }
+
+    private void ensureFocusAndKeyboard(View detailView) {
+        View focusable = detailView.findFocus();
+        if (focusable == null) {
+            focusable = findEditText(detailView);
+        }
+        if (focusable != null) {
+            focusable.requestFocus();
+            KeyboardVisibilityDelegate.getInstance().showKeyboard(focusable);
+        }
+    }
+
+    private @Nullable View findEditText(View view) {
+        if (view instanceof android.widget.EditText) {
+            return view;
+        }
+        if (view instanceof ViewGroup group) {
+            for (int i = 0; i < group.getChildCount(); i++) {
+                View child = group.getChildAt(i);
+                View result = findEditText(child);
+                if (result != null) return result;
+            }
+        }
+        return null;
     }
 
     @Override
