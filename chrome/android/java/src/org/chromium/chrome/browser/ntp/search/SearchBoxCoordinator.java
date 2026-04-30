@@ -38,7 +38,7 @@ import java.util.function.Supplier;
 @NullMarked
 public class SearchBoxCoordinator implements NtpSearchBox {
     private final PropertyModel mModel;
-    private final ViewGroup mView;
+    private final SearchBoxContainerView mView;
     private final SearchBoxMediator mMediator;
     private final boolean mIsIncognito;
     private final WindowAndroid mWindowAndroid;
@@ -52,7 +52,7 @@ public class SearchBoxCoordinator implements NtpSearchBox {
             WindowAndroid windowAndroid,
             NewTabPageManager newTabPageManager) {
         mModel = new PropertyModel(SearchBoxProperties.ALL_KEYS);
-        mView = parent.findViewById(R.id.search_box);
+        mView = (SearchBoxContainerView) parent.findViewById(R.id.search_box);
         mMediator =
                 new SearchBoxMediator(
                         context,

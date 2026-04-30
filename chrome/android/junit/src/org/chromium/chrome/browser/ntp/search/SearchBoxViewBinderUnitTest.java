@@ -4,18 +4,32 @@
 
 package org.chromium.chrome.browser.ntp.search;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.clearInvocations;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
+import android.content.Context;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.view.ContextThemeWrapper;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.TextView;
+import android.view.View.OnClickListener;
+
+import androidx.annotation.ColorInt;
+import androidx.annotation.Px;
+import androidx.annotation.StyleRes;
+import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -37,107 +51,104 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 public class SearchBoxViewBinderUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private SearchBoxContainerView mSearchBoxLayout;
-    @Mock private View mSearchBoxContainer;
-    @Mock private TextView mSearchBoxTextView;
+    @Mock private TextWatcher mTextWatcher;
+    @Mock private OnClickListener mOnClickListener;
 
+    private Context mContext;
+    private SearchBoxContainerView mSearchBoxLayout;
     private PropertyModel mPropertyModel;
 
     @Before
     public void setup() {
+        mContext =
+                new ContextThemeWrapper(
+                        ApplicationProvider.getApplicationContext(),
+                        R.style.Theme_BrowserUI_DayNight);
+        mSearchBoxLayout =
+                (SearchBoxContainerView)
+                        LayoutInflater.from(mContext)
+                                .inflate(R.layout.fake_search_box_layout, null);
         mPropertyModel = new PropertyModel.Builder(SearchBoxProperties.ALL_KEYS).build();
         PropertyModelChangeProcessor.create(
                 mPropertyModel, mSearchBoxLayout, new SearchBoxViewBinder());
-        when(mSearchBoxLayout.findViewById(R.id.search_box_container))
-                .thenReturn(mSearchBoxContainer);
-        when(mSearchBoxLayout.findViewById(R.id.search_box_text)).thenReturn(mSearchBoxTextView);
     }
 
     @Test
     public void testSetSearchBoxEndPadding() {
-        int padding = 20;
-        when(mSearchBoxContainer.getPaddingLeft()).thenReturn(10);
-        when(mSearchBoxContainer.getPaddingTop()).thenReturn(10);
-        when(mSearchBoxContainer.getPaddingBottom()).thenReturn(10);
+        @Px int padding = 20;
         mPropertyModel.set(SearchBoxProperties.SEARCH_BOX_END_PADDING, padding);
-        verify(mSearchBoxContainer).setPadding(10, 10, padding, 10);
+        assertEquals(padding, mSearchBoxLayout.mSearchBoxContainer.getPaddingRight());
     }
 
     @Test
     public void testSetSearchBoxTextStyle() {
-        int resId = 123;
+        @StyleRes int resId = R.style.TextAppearance_TextLarge_Secondary;
+        @ColorInt int previousTextColor = mSearchBoxLayout.mHintTextView.getCurrentTextColor();
         mPropertyModel.set(SearchBoxProperties.SEARCH_BOX_TEXT_STYLE_RES_ID, resId);
-        verify(mSearchBoxTextView).setTextAppearance(eq(resId));
+        assertNotEquals(previousTextColor, mSearchBoxLayout.mHintTextView.getCurrentTextColor());
     }
 
     @Test
     public void testEnableSearchBoxEditText() {
         mPropertyModel.set(SearchBoxProperties.ENABLE_SEARCH_BOX_EDIT_TEXT, true);
-        verify(mSearchBoxTextView).setEnabled(eq(true));
+        assertTrue(mSearchBoxLayout.mHintTextView.isEnabled());
 
         mPropertyModel.set(SearchBoxProperties.ENABLE_SEARCH_BOX_EDIT_TEXT, false);
-        verify(mSearchBoxTextView).setEnabled(eq(false));
+        assertFalse(mSearchBoxLayout.mHintTextView.isEnabled());
     }
 
     @Test
     public void testSetSearchBoxHintText() {
         String hintText = "new hint";
         mPropertyModel.set(SearchBoxProperties.SEARCH_BOX_HINT_TEXT, hintText);
-        verify(mSearchBoxTextView).setHint(eq(hintText));
+        assertEquals(hintText, mSearchBoxLayout.mHintTextView.getHint().toString());
     }
 
     @Test
     public void testApplyWhiteBackground() {
         mPropertyModel.set(SearchBoxProperties.APPLY_WHITE_BACKGROUND, true);
-        verify(mSearchBoxLayout).applyWhiteBackground(eq(true));
-
-        mPropertyModel.set(SearchBoxProperties.APPLY_WHITE_BACKGROUND, false);
-        verify(mSearchBoxLayout).applyWhiteBackground(eq(false));
+        Drawable background = mSearchBoxLayout.mSearchBoxContainer.getBackground();
+        assertTrue(background instanceof GradientDrawable);
+        assertEquals(Color.WHITE, ((GradientDrawable) background).getColor().getDefaultColor());
     }
 
     @Test
     public void testSetDseIconDrawable() {
-        Drawable drawable = mock(Drawable.class);
+        Drawable drawable = mContext.getDrawable(R.drawable.ic_search_24dp);
         mPropertyModel.set(SearchBoxProperties.DSE_ICON_DRAWABLE, drawable);
-        verify(mSearchBoxLayout).setDseIconDrawable(eq(drawable));
+        assertEquals(drawable, mSearchBoxLayout.mDseIconView.getDrawable());
     }
 
     @Test
     public void testSetTextWatcher() {
-        TextWatcher textWatcher = mock(TextWatcher.class);
-        mPropertyModel.set(SearchBoxProperties.SEARCH_BOX_TEXT_WATCHER, textWatcher);
-        verify(mSearchBoxTextView).addTextChangedListener(eq(textWatcher));
+        mPropertyModel.set(SearchBoxProperties.SEARCH_BOX_TEXT_WATCHER, mTextWatcher);
 
-        clearInvocations(mSearchBoxTextView);
-        when(mSearchBoxTextView.getTag(R.id.ntp_search_box_text_watcher_tag))
-                .thenReturn(textWatcher);
+        mSearchBoxLayout.mHintTextView.setText("test");
+        verify(mTextWatcher)
+                .onTextChanged(
+                        argThat(s -> TextUtils.equals("test", s)), anyInt(), anyInt(), anyInt());
+
         mPropertyModel.set(SearchBoxProperties.SEARCH_BOX_TEXT_WATCHER, null);
-        verify(mSearchBoxTextView).removeTextChangedListener(eq(textWatcher));
-        verify(mSearchBoxTextView, never()).addTextChangedListener(any(TextWatcher.class));
+        clearInvocations(mTextWatcher);
+        mSearchBoxLayout.mHintTextView.setText("test2");
+        verify(mTextWatcher, never()).onTextChanged(any(), anyInt(), anyInt(), anyInt());
     }
 
     @Test
     public void testSetPlusButtonVisibility() {
-        View plusButton = mock(View.class);
-        View engineIcon = mock(View.class);
-        when(mSearchBoxLayout.findViewById(org.chromium.chrome.R.id.search_box_plus_button))
-                .thenReturn(plusButton);
-        when(mSearchBoxLayout.findViewById(org.chromium.chrome.R.id.search_box_engine_icon))
-                .thenReturn(engineIcon);
-
         mPropertyModel.set(SearchBoxProperties.PLUS_BUTTON_VISIBILITY, true);
-        verify(plusButton).setVisibility(eq(View.VISIBLE));
-        verify(engineIcon).setVisibility(eq(View.GONE));
+        assertEquals(View.VISIBLE, mSearchBoxLayout.mPlusButton.getVisibility());
+        assertEquals(View.GONE, mSearchBoxLayout.mDseIconView.getVisibility());
 
         mPropertyModel.set(SearchBoxProperties.PLUS_BUTTON_VISIBILITY, false);
-        verify(plusButton).setVisibility(eq(View.GONE));
-        verify(engineIcon).setVisibility(eq(View.VISIBLE));
+        assertEquals(View.GONE, mSearchBoxLayout.mPlusButton.getVisibility());
+        assertEquals(View.VISIBLE, mSearchBoxLayout.mDseIconView.getVisibility());
     }
 
     @Test
     public void testSetPlusButtonClickListener() {
-        View.OnClickListener listener = mock(View.OnClickListener.class);
-        mPropertyModel.set(SearchBoxProperties.PLUS_BUTTON_CLICK_CALLBACK, listener);
-        verify(mSearchBoxLayout).setPlusButtonClickListener(eq(listener));
+        mPropertyModel.set(SearchBoxProperties.PLUS_BUTTON_CLICK_CALLBACK, mOnClickListener);
+        mSearchBoxLayout.mPlusButton.performClick();
+        verify(mOnClickListener).onClick(mSearchBoxLayout.mPlusButton);
     }
 }

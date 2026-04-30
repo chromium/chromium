@@ -78,7 +78,7 @@ public class SearchBoxMediatorUnitTest {
     @Mock private LensController mLensController;
 
     private Context mContext;
-    private ViewGroup mView;
+    private SearchBoxContainerView mView;
     private PropertyModel mPropertyModel;
     private SearchBoxMediator mMediator;
 
@@ -90,7 +90,7 @@ public class SearchBoxMediatorUnitTest {
                         R.style.Theme_BrowserUI_DayNight);
         mView =
                 spy(
-                        (ViewGroup)
+                        (SearchBoxContainerView)
                                 LayoutInflater.from(mContext)
                                         .inflate(R.layout.fake_search_box_layout, null));
 

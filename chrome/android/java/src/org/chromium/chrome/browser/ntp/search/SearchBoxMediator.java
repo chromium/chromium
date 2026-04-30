@@ -10,7 +10,6 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.view.View;
 import android.view.View.OnDragListener;
-import android.view.ViewGroup;
 
 import androidx.annotation.StyleRes;
 
@@ -45,7 +44,7 @@ import java.util.function.Supplier;
 class SearchBoxMediator implements DestroyObserver {
     private final Context mContext;
     private final PropertyModel mModel;
-    private final ViewGroup mView;
+    private final SearchBoxContainerView mView;
     private final NewTabPageManager mNewTabPageManager;
     private final boolean mIsIncognito;
     private final WindowAndroid mWindowAndroid;
@@ -61,7 +60,7 @@ class SearchBoxMediator implements DestroyObserver {
     SearchBoxMediator(
             Context context,
             PropertyModel model,
-            ViewGroup view,
+            SearchBoxContainerView view,
             boolean isTablet,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             NewTabPageManager newTabPageManager,
