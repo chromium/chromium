@@ -252,16 +252,18 @@ public class ActivityLifecycleDispatcherImpl implements ActivityLifecycleDispatc
 
         // Drain observers to prevent possible memory leaks.
         mInflationObservers.clear();
+        mNativeInitObservers.clear();
         mPauseResumeObservers.clear();
         mStartStopObservers.clear();
-        mNativeInitObservers.clear();
+        mDestroyables.clear();
         mSaveInstanceStateObservers.clear();
         mWindowFocusChangesObservers.clear();
         mActivityResultWithNativeObservers.clear();
         mConfigurationChangedListeners.clear();
-        mDestroyables.clear();
         mRecreateObservers.clear();
+        mOnUserLeaveHintObservers.clear();
         mTopResumedActivityChangedObservers.clear();
+        mTopResumedActivityChangedWithNativeObservers.clear();
     }
 
     void dispatchOnSaveInstanceState(Bundle outBundle) {
