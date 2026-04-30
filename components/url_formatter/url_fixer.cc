@@ -551,7 +551,7 @@ std::string SegmentURL(std::string_view text, url::Parsed* parts) {
   return SegmentURLInternal(&mutable_text, parts);
 }
 
-std::u16string SegmentURL(const std::u16string& text, url::Parsed* parts) {
+std::u16string SegmentURL(std::u16string_view text, url::Parsed* parts) {
   std::string text_utf8 = base::UTF16ToUTF8(text);
   url::Parsed parts_utf8;
   std::string scheme_utf8 = SegmentURL(text_utf8, &parts_utf8);

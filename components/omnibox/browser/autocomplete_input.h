@@ -89,7 +89,7 @@ class AutocompleteInput {
   // canonicalized URL is stored in |canonicalized_url|; however, this URL is
   // not guaranteed to be valid, especially if the parsed type is, e.g., QUERY.
   static metrics::OmniboxInputType Parse(
-      const std::u16string& text,
+      std::u16string_view text,
       const std::string& desired_tld,
       const AutocompleteSchemeClassifier& scheme_classifier,
       url::Parsed* parts,
@@ -101,7 +101,7 @@ class AutocompleteInput {
   // is view-source, this function returns the positions of scheme and host
   // in the URL qualified by "view-source:" prefix.
   static void ParseForEmphasizeComponents(
-      const std::u16string& text,
+      std::u16string_view text,
       const AutocompleteSchemeClassifier& scheme_classifier,
       url::Component* scheme,
       url::Component* host);
@@ -178,7 +178,7 @@ class AutocompleteInput {
   // If |trim_leading_whitespace| is true then leading whitespace in
   // replacement string will be trimmed.
   static std::u16string SplitReplacementStringFromInput(
-      const std::u16string& input,
+      std::u16string_view input,
       bool trim_leading_whitespace);
 
   // Removes any unnecessary characters from a user input keyword, returning
@@ -198,7 +198,7 @@ class AutocompleteInput {
   // the first intervening whitespace).
   // If |trim_leading_whitespace| is true then leading whitespace in
   // |*remaining_input| will be trimmed.
-  static std::u16string SplitKeywordFromInput(const std::u16string& input,
+  static std::u16string SplitKeywordFromInput(std::u16string_view input,
                                               bool trim_leading_whitespace,
                                               std::u16string* remaining_input);
 
@@ -207,7 +207,7 @@ class AutocompleteInput {
   static const char16_t kInvalidChars[];
 
   // Removes invalid characters from `text`.
-  static std::u16string SanitizeString(const std::u16string& text,
+  static std::u16string SanitizeString(std::u16string_view text,
                                        bool trim_whitespace = true);
 
   // User-provided text to be completed.

@@ -60,24 +60,24 @@ void AdjustCursorPositionIfNecessary(size_t num_leading_chars_removed,
 // one more character and puts the text after the prefix in
 // |terms_prefixed_by_http_or_https|.
 void PopulateTermsPrefixedByHttpOrHttps(
-    const std::u16string& text,
+    std::u16string_view text,
     std::vector<std::u16string>* terms_prefixed_by_http_or_https) {
   // Split on whitespace rather than use ICU's word iterator because, for
   // example, ICU's iterator may break on punctuation (such as ://) or decide
   // to split a single term in a hostname (if it seems to think that the
   // hostname is multiple words).  Neither of these behaviors is desirable.
-  const std::string separator(url::kStandardSchemeSeparator);
-  for (const auto& term : base::SplitString(text, u" ", base::TRIM_WHITESPACE,
-                                            base::SPLIT_WANT_ALL)) {
+  std::string_view separator = url::kStandardSchemeSeparator;
+  for (std::u16string_view term : base::SplitStringPiece(
+           text, u" ", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL)) {
     const std::string term_utf8(base::UTF16ToUTF8(term));
     static const char* kSchemes[2] = {url::kHttpScheme, url::kHttpsScheme};
     for (const char* scheme : kSchemes) {
-      const std::string prefix(scheme + separator);
+      const std::string prefix = base::StrCat({scheme, separator});
       // Doing an ASCII comparison is okay because prefix is ASCII.
       if (base::StartsWith(term_utf8, prefix,
                            base::CompareCase::INSENSITIVE_ASCII) &&
           (term_utf8.length() > prefix.length())) {
-        terms_prefixed_by_http_or_https->push_back(
+        terms_prefixed_by_http_or_https->emplace_back(
             term.substr(prefix.length()));
       }
     }
@@ -194,8 +194,8 @@ void AutocompleteInput::Init(
   DCHECK(!added_default_scheme_to_typed_url_);
   typed_url_had_http_scheme_ =
       base::StartsWith(text,
-                       base::ASCIIToUTF16(base::StrCat(
-                           {url::kHttpScheme, url::kStandardSchemeSeparator})),
+                       base::StrCat({url::kHttpScheme16,
+                                     url::kStandardSchemeSeparator16}),
                        base::CompareCase::INSENSITIVE_ASCII) &&
       canonicalized_url.SchemeIs(url::kHttpScheme);
   GURL upgraded_url;
@@ -218,7 +218,7 @@ void AutocompleteInput::Init(
       canonicalized_url.is_valid() &&
       (!canonicalized_url.IsStandard() || canonicalized_url.SchemeIsFile() ||
        canonicalized_url.SchemeIsFileSystem() ||
-       !canonicalized_url.GetHost().empty())) {
+       !canonicalized_url.host().empty())) {
     canonicalized_url_ = canonicalized_url;
   }
 }
@@ -248,7 +248,7 @@ std::string AutocompleteInput::TypeToString(metrics::OmniboxInputType type) {
 
 // static
 metrics::OmniboxInputType AutocompleteInput::Parse(
-    const std::u16string& text,
+    std::u16string_view text,
     const std::string& desired_tld,
     const AutocompleteSchemeClassifier& scheme_classifier,
     url::Parsed* parts,
@@ -329,9 +329,10 @@ metrics::OmniboxInputType AutocompleteInput::Parse(
     // We don't know about this scheme.  It might be that the user typed a
     // URL of the form "username:password@foo.com", or a custom query, such as
     // "site:socialmedia.com @tagname".
-    const std::u16string http_scheme_prefix = base::ASCIIToUTF16(
-        std::string(url::kHttpScheme) + url::kStandardSchemeSeparator);
-    const std::u16string tentative_url_candidate = http_scheme_prefix + text;
+    const std::u16string http_scheme_prefix =
+        base::StrCat({url::kHttpScheme16, url::kStandardSchemeSeparator16});
+    const std::u16string tentative_url_candidate =
+        base::StrCat({http_scheme_prefix, text});
     url::Parsed http_parts;
     std::u16string http_scheme;
     GURL http_canonicalized_url;
@@ -574,7 +575,7 @@ metrics::OmniboxInputType AutocompleteInput::Parse(
 
 // static
 void AutocompleteInput::ParseForEmphasizeComponents(
-    const std::u16string& text,
+    std::u16string_view text,
     const AutocompleteSchemeClassifier& scheme_classifier,
     url::Component* scheme,
     url::Component* host) {
@@ -592,7 +593,7 @@ void AutocompleteInput::ParseForEmphasizeComponents(
        base::EqualsCaseInsensitiveASCII(scheme_str, url::kBlobScheme)) &&
       (static_cast<int>(text.length()) > after_scheme_and_colon)) {
     // Obtain the URL prefixed by view-source or blob and parse it.
-    std::u16string real_url(text.substr(after_scheme_and_colon));
+    std::u16string_view real_url = text.substr(after_scheme_and_colon);
     url::Parsed real_parts;
     AutocompleteInput::Parse(real_url, std::string(), scheme_classifier,
                              &real_parts, nullptr, nullptr);
@@ -625,8 +626,8 @@ bool AutocompleteInput::ShouldUpgradeToHttps(
     int https_port_for_testing,
     bool use_fake_https_for_https_upgrade_testing,
     GURL* upgraded_url) {
-  if (url::HostIsIPAddress(url.GetHost()) ||
-      net::IsHostnameNonUnique(url.GetHost())) {
+  if (url::HostIsIPAddress(url.host()) ||
+      net::IsHostnameNonUnique(url.host())) {
 #if !BUILDFLAG(IS_IOS)
     // Never upgrade IP addresses or non-unique hostnames on non-iOS builds.
     return false;
@@ -639,10 +640,10 @@ bool AutocompleteInput::ShouldUpgradeToHttps(
 #endif
   }
 
-  if (url.GetScheme() == url::kHttpScheme &&
-      !base::StartsWith(text, base::ASCIIToUTF16(url.GetScheme()),
+  if (url.scheme() == url::kHttpScheme &&
+      !base::StartsWith(text, url::kHttpScheme16,
                         base::CompareCase::INSENSITIVE_ASCII) &&
-      (url.GetPort().empty() || https_port_for_testing)) {
+      (url.port().empty() || https_port_for_testing)) {
     // Use HTTPS as the default scheme for URLs that are typed without a scheme.
     // Inputs of type UNKNOWN can still be valid URLs, but these will be mainly
     // intranet hosts which we don't to upgrade to HTTPS so we only check the
@@ -655,7 +656,7 @@ bool AutocompleteInput::ShouldUpgradeToHttps(
     //   simply change the scheme to HTTPS and assume that these will load over
     //   HTTPS. URLs with HTTP port 80 get their port dropped so they will be
     //   upgraded (e.g. example.com:80 will load https://example.com).
-    DCHECK_EQ(url::kHttpScheme, url.GetScheme());
+    DCHECK_EQ(url::kHttpScheme, url.scheme());
     GURL::Replacements replacements;
 #if !BUILDFLAG(IS_IOS)
     // We sometimes use a fake HTTPS server on iOS as we can't serve good HTTPS
@@ -684,7 +685,7 @@ bool AutocompleteInput::ShouldUpgradeToHttps(
 #else
       // On other platforms, tests should always have a non-default port on the
       // input text.
-      DCHECK(!url.GetPort().empty());
+      DCHECK(!url.port().empty());
 #endif
       replacements.SetPortStr(port_str);
     }
@@ -823,11 +824,11 @@ bool AutocompleteInput::ExtractKeywordFromInput(
 
 // static
 std::u16string AutocompleteInput::SplitReplacementStringFromInput(
-    const std::u16string& input,
+    std::u16string_view input,
     bool trim_leading_whitespace) {
   // The input may contain leading whitespace, strip it.
-  std::u16string trimmed_input;
-  base::TrimWhitespace(input, base::TRIM_LEADING, &trimmed_input);
+  std::u16string_view trimmed_input =
+      base::TrimWhitespace(input, base::TRIM_LEADING);
 
   // And extract the replacement string.
   std::u16string remaining_input;
@@ -874,10 +875,10 @@ std::u16string AutocompleteInput::CleanUserInputKeyword(
   // The 'www.' stripping is done directly here instead of calling
   // url_formatter::StripWWW because we're not assuming that the keyword is a
   // hostname.
-  constexpr std::u16string_view kWww(u"www.");
-  result = base::StartsWith(result, kWww, base::CompareCase::SENSITIVE)
-               ? result.substr(kWww.length())
-               : std::move(result);
+  static constexpr std::u16string_view kWww(u"www.");
+  if (base::StartsWith(result, kWww, base::CompareCase::SENSITIVE)) {
+    result.erase(0, kWww.length());
+  }
   if (template_url_service->GetTemplateURLForKeyword(result) != nullptr) {
     return result;
   }
@@ -891,7 +892,7 @@ std::u16string AutocompleteInput::CleanUserInputKeyword(
 
 // static
 std::u16string AutocompleteInput::SplitKeywordFromInput(
-    const std::u16string& input,
+    std::u16string_view input,
     bool trim_leading_whitespace,
     std::u16string* remaining_input) {
   // Find end of first token.  The AutocompleteController has trimmed leading
@@ -899,7 +900,7 @@ std::u16string AutocompleteInput::SplitKeywordFromInput(
   const size_t first_white(input.find_first_of(base::kWhitespaceUTF16));
   DCHECK_NE(0U, first_white);
   if (first_white == std::u16string::npos) {
-    return input;  // Only one token provided.
+    return std::u16string(input);  // Only one token provided.
   }
 
   // Set |remaining_input| to everything after the first token.
@@ -915,21 +916,19 @@ std::u16string AutocompleteInput::SplitKeywordFromInput(
   }
 
   // Return first token as keyword.
-  return input.substr(0, first_white);
+  return std::u16string(input.substr(0, first_white));
 }
 
 // static
-std::u16string AutocompleteInput::SanitizeString(const std::u16string& text,
+std::u16string AutocompleteInput::SanitizeString(std::u16string_view text,
                                                  bool trim_whitespace) {
   // NOTE: This logic is mirrored by `sanitizeString()` in
   // omnibox_custom_bindings.js.
   std::u16string result;
   if (trim_whitespace) {
-    base::TrimWhitespace(text, base::TRIM_ALL, &result);
-  } else {
-    result = text;
+    text = base::TrimWhitespace(text, base::TRIM_ALL);
   }
-  base::RemoveChars(result, kInvalidChars, &result);
+  base::RemoveChars(text, kInvalidChars, &result);
   return result;
 }
 void AutocompleteInput::UpdateText(const std::u16string& text,
