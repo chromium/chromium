@@ -13,6 +13,7 @@
 
 #include "base/at_exit.h"
 #include "base/i18n/icu_util.h"
+#include "base/no_destructor.h"
 #include "components/subresource_filter/core/common/constants.h"
 #include "components/subresource_filter/core/common/first_party_origin.h"
 #include "components/subresource_filter/core/common/unindexed_ruleset.h"
@@ -26,9 +27,8 @@ struct TestCase {
   base::AtExitManager at_exit_manager;
 };
 
-TestCase* test_case = new TestCase();
-
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
+  static const base::NoDestructor<TestCase> test_case;
   FuzzedDataProvider fuzzed_data(data, size);
 
   // Split the input into two sections, the URL to check, and the ruleset
