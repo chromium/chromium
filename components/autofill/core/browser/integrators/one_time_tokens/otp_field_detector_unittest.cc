@@ -4,18 +4,23 @@
 
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_field_detector.h"
 
+#include <optional>
+
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/foundations/test_autofill_driver.h"
 #include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/foundations/with_test_autofill_client_driver_manager.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/origin.h"
 
 namespace autofill {
 
@@ -139,10 +144,13 @@ TEST_F(OtpFieldDetectorTest, IsOtpFieldPresent) {
 
 // Tests that the AutofillManager::Observer notifications work as expected.
 class OtpFieldDetectorAutofillManagerObserverTest
-    : public testing::Test,
+    : public testing::TestWithParam<bool>,
       public WithTestAutofillClientDriverManager<> {
  public:
-  OtpFieldDetectorAutofillManagerObserverTest() = default;
+  OtpFieldDetectorAutofillManagerObserverTest() {
+    scoped_feature_list_.InitWithFeatureState(
+        features::kAutofillRestrictOtpToSameTldPlusOne, GetParam());
+  }
   ~OtpFieldDetectorAutofillManagerObserverTest() override = default;
 
   void SetUp() override {
@@ -162,12 +170,18 @@ class OtpFieldDetectorAutofillManagerObserverTest
         AutofillDriver::LifecycleState::kPendingDeletion);
   }
 
-  FormData CreateSimpleOtp(bool is_focusable = true) {
+  FormData CreateSimpleOtp(
+      bool is_focusable = true,
+      const GURL& url = GURL("https://www.foo.com"),
+      std::optional<url::Origin> main_frame_origin = std::nullopt) {
     FormData form;
-    form.set_url(GURL("https://www.foo.com"));
+    form.set_url(url);
+    form.set_main_frame_origin(
+        main_frame_origin.value_or(url::Origin::Create(url)));
     form.set_renderer_id(autofill::test::MakeFormRendererId());
     FormFieldData field = {autofill::test::CreateTestFormField(
         "some_label", "some_name", "some_value", FormControlType::kInputText)};
+    field.set_origin(url::Origin::Create(url));
     field.set_is_focusable(is_focusable);
     form.set_fields({field});
     return form;
@@ -202,6 +216,7 @@ class OtpFieldDetectorAutofillManagerObserverTest
   OtpFieldDetector& otp_field_detector() { return otp_field_detector_; }
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   autofill::test::AutofillUnitTestEnvironment autofill_environment_;
@@ -215,7 +230,7 @@ class OtpFieldDetectorAutofillManagerObserverTest
 };
 
 // Verify that IsOtpFieldPresent works as expected.
-TEST_F(OtpFieldDetectorAutofillManagerObserverTest, IsOtpFieldPresent) {
+TEST_P(OtpFieldDetectorAutofillManagerObserverTest, IsOtpFieldPresent) {
   base::HistogramTester histogram_tester;
   EXPECT_FALSE(otp_field_detector().IsOtpFieldPresent());
   EXPECT_THAT(histogram_tester.GetAllSamples(kOtpPresentInMainTabHistogram),
@@ -237,7 +252,7 @@ TEST_F(OtpFieldDetectorAutofillManagerObserverTest, IsOtpFieldPresent) {
 
 // Verify that the OtpFieldsDetectedCallback is triggered when an OTP form is
 // detected.
-TEST_F(OtpFieldDetectorAutofillManagerObserverTest, DiscoverOTPs) {
+TEST_P(OtpFieldDetectorAutofillManagerObserverTest, DiscoverOTPs) {
   base::MockRepeatingCallback<void()> otp_detected_callback;
   MockFunction<void(std::string_view)> check;
   {
@@ -259,7 +274,7 @@ TEST_F(OtpFieldDetectorAutofillManagerObserverTest, DiscoverOTPs) {
 
 // Verify that an OTP form that is parsed but has non-focusable fields does
 // not trigger the OTP detected callback.
-TEST_F(OtpFieldDetectorAutofillManagerObserverTest,
+TEST_P(OtpFieldDetectorAutofillManagerObserverTest,
        DiscoverOTPs_IgnoreNonfocusableOtpFields) {
   base::MockRepeatingCallback<void()> otp_detected_callback;
   base::CallbackListSubscription subscription =
@@ -271,7 +286,7 @@ TEST_F(OtpFieldDetectorAutofillManagerObserverTest,
 }
 
 // Verify that a navigation which drops all forms is recognized.
-TEST_F(OtpFieldDetectorAutofillManagerObserverTest,
+TEST_P(OtpFieldDetectorAutofillManagerObserverTest,
        CallbackInvokedAfterNavigationClearsOtps) {
   AddOtpToThePage(CreateSimpleOtp());
 
@@ -294,7 +309,7 @@ TEST_F(OtpFieldDetectorAutofillManagerObserverTest,
 }
 
 // Verify that removing an OTP form from the DOM is detected.
-TEST_F(OtpFieldDetectorAutofillManagerObserverTest,
+TEST_P(OtpFieldDetectorAutofillManagerObserverTest,
        CallbackInvokedFromFormRemoval) {
   FormData form = CreateSimpleOtp();
   AddOtpToThePage(form);
@@ -324,7 +339,7 @@ TEST_F(OtpFieldDetectorAutofillManagerObserverTest,
 }
 
 // Verify that submitting an OTP form is detected.
-TEST_F(OtpFieldDetectorAutofillManagerObserverTest,
+TEST_P(OtpFieldDetectorAutofillManagerObserverTest,
        CallbackInvokedFromFormSubmission) {
   FormData form = CreateSimpleOtp();
   AddOtpToThePage(form);
@@ -354,5 +369,54 @@ TEST_F(OtpFieldDetectorAutofillManagerObserverTest,
   // though it stayed in the DOM).
   SimulateNavigation();
 }
+
+// Verify that OTP fields in the main frame trigger detection callbacks.
+TEST_P(OtpFieldDetectorAutofillManagerObserverTest, AllowsMainFrame) {
+  base::MockRepeatingCallback<void()> otp_detected_callback;
+  base::CallbackListSubscription subscription =
+      otp_field_detector().RegisterOtpFieldsDetectedCallback(
+          otp_detected_callback.Get());
+
+  EXPECT_CALL(otp_detected_callback, Run()).Times(1);
+  AddOtpToThePage(CreateSimpleOtp());
+}
+
+// Verify that OTP fields in iframes with the same TLD+1 trigger detection
+// callbacks.
+TEST_P(OtpFieldDetectorAutofillManagerObserverTest,
+       AllowsSameTldPlusOneIframe) {
+  url::Origin top_frame_origin =
+      url::Origin::Create(GURL("https://example.com"));
+
+  base::MockRepeatingCallback<void()> otp_detected_callback;
+  base::CallbackListSubscription subscription =
+      otp_field_detector().RegisterOtpFieldsDetectedCallback(
+          otp_detected_callback.Get());
+
+  EXPECT_CALL(otp_detected_callback, Run()).Times(1);
+  AddOtpToThePage(
+      CreateSimpleOtp(true, GURL("https://sub.example.com"), top_frame_origin));
+}
+
+// Verify that OTP fields in cross-origin iframes with mismatched TLD+1 are
+// ignored and do not trigger detection callbacks.
+TEST_P(OtpFieldDetectorAutofillManagerObserverTest, IgnoreCrossOriginIframe) {
+  // Set up mismatched TLD+1 origins.
+  url::Origin top_frame_origin =
+      url::Origin::Create(GURL("https://example.com"));
+
+  base::MockRepeatingCallback<void()> otp_detected_callback;
+  base::CallbackListSubscription subscription =
+      otp_field_detector().RegisterOtpFieldsDetectedCallback(
+          otp_detected_callback.Get());
+
+  EXPECT_CALL(otp_detected_callback, Run()).Times(GetParam() ? 0 : 1);
+  AddOtpToThePage(
+      CreateSimpleOtp(true, GURL("https://attacker.com"), top_frame_origin));
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         OtpFieldDetectorAutofillManagerObserverTest,
+                         testing::Bool());
 
 }  // namespace autofill

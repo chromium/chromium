@@ -375,7 +375,7 @@ class PasswordChangeBrowserTest : public PasswordManagerBrowserTestBase {
     autofill::FormFieldData field = {autofill::test::CreateTestFormField(
         "some_label", "some_name", "some_value",
         autofill::FormControlType::kInputText)};
-
+    field.set_origin(url::Origin::Create(form.url()));
     form.set_fields({field});
     return autofill::test::CreateFormDataForFrame(form, frame_token);
   }
