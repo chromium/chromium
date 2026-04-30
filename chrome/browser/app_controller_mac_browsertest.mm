@@ -769,11 +769,8 @@ IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest, OpenInRegularBrowser) {
 // Tests that, even if only an incognito browser is currently opened, a GURL
 // is opened in a regular (non-incognito) browser.
 // Regression test for https://crbug.com/40536115, https://crbug.com/40912038
-// TODO(https://crbug.com/502501857): Re-enable this test once the failure is
-// fixed.
-IN_PROC_BROWSER_TEST_F(
-    AppControllerBrowserTest,
-    DISABLED_OpenInRegularBrowserWhenOnlyIncognitoBrowserIsOpened) {
+IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest,
+                       OpenInRegularBrowserWhenOnlyIncognitoBrowserIsOpened) {
   ASSERT_TRUE(embedded_test_server()->Start());
   // Ensure the AppController is the NSApp delegate.
   std::ignore = AppController.sharedController;
