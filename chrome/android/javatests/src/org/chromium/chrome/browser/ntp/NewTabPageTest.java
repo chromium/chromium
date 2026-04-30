@@ -13,7 +13,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -50,8 +49,6 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.MemoryPressureListener;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.memory.MemoryPressureCallback;
-import org.chromium.base.supplier.NonNullObservableSupplier;
-import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
@@ -77,7 +74,6 @@ import org.chromium.chrome.browser.logo.LogoBridgeJni;
 import org.chromium.chrome.browser.logo.LogoCoordinator;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
-import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
@@ -184,7 +180,6 @@ public class NewTabPageTest {
     private EmbeddedTestServer mTestServer;
     private List<SiteSuggestion> mSiteSuggestions;
     private OmniboxTestUtils mOmnibox;
-    private NonNullObservableSupplier<Integer> mFuseboxStateSupplier;
 
     @Before
     public void setUp() throws Exception {
@@ -198,12 +193,6 @@ public class NewTabPageTest {
                                         ProfileManager.getLastUsedRegularProfile()));
         mTemplateUrlService = Mockito.spy(originalService);
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        mFuseboxStateSupplier =
-                                ObservableSuppliers.createNonNull(FuseboxState.DISABLED));
-        doReturn(mFuseboxStateSupplier).when(mOmniboxStub).getFuseboxStateSupplier();
 
         mOmnibox = new OmniboxTestUtils(mActivityTestRule.getActivity());
 

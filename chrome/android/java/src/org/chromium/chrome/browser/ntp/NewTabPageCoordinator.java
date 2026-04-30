@@ -25,7 +25,6 @@ import org.chromium.base.CallbackController;
 import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
-import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
@@ -801,13 +800,6 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
      */
     boolean urlFocusAnimationsDisabled() {
         return mDisableUrlFocusChangeAnimations;
-    }
-
-    /** Sets the supplier for the fusebox state. */
-    public void setFuseboxStateSupplier(NonNullObservableSupplier<Integer> fuseboxStateSupplier) {
-        if (mSearchBoxCoordinator != null) {
-            mSearchBoxCoordinator.setFuseboxStateSupplier(fuseboxStateSupplier);
-        }
     }
 
     /**

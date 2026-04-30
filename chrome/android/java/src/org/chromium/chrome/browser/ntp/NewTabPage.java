@@ -917,7 +917,6 @@ public class NewTabPage
             // state from the location bar when we get a reference to it as a workaround.
             mNewTabPageCoordinator.setUrlFocusChangeAnimationPercent(
                     omniboxStub.isUrlBarFocused() ? 1f : 0f);
-            mNewTabPageCoordinator.setFuseboxStateSupplier(omniboxStub.getFuseboxStateSupplier());
 
             FeedReliabilityLogger feedReliabilityLogger =
                     mFeedSurfaceProvider.getReliabilityLogger();

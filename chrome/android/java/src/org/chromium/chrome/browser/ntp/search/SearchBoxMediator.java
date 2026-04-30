@@ -13,10 +13,7 @@ import android.view.View.OnDragListener;
 
 import androidx.annotation.StyleRes;
 
-import org.chromium.base.Callback;
 import org.chromium.base.MathUtils;
-import org.chromium.base.supplier.NonNullObservableSupplier;
-import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.composeplate.ComposeplateUtils;
@@ -30,7 +27,6 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.ntp.NewTabPageManager;
 import org.chromium.chrome.browser.omnibox.R;
-import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
@@ -55,10 +51,6 @@ class SearchBoxMediator implements DestroyObserver {
     private final TemplateUrlService mTemplateUrlService;
     private final float mTransitionEndOffset;
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
-    private NonNullObservableSupplier<@FuseboxState Integer> mFuseboxStateSupplier =
-            ObservableSuppliers.createNonNull(FuseboxState.DISABLED);
-    private final Callback<@FuseboxState Integer> mOnFuseboxStateChanged =
-            this::onFuseboxStateChanged;
     private final TemplateUrlServiceObserver mTemplateUrlServiceObserver =
             this::onTemplateURLServiceChanged;
 
@@ -113,7 +105,6 @@ class SearchBoxMediator implements DestroyObserver {
         mModel.set(SearchBoxProperties.SEARCH_BOX_TEXT_WATCHER, null);
         mModel.set(SearchBoxProperties.DSE_ICON_DRAWABLE, null);
 
-        mFuseboxStateSupplier.removeObserver(mOnFuseboxStateChanged);
         mTemplateUrlService.removeObserver(mTemplateUrlServiceObserver);
     }
 
@@ -185,10 +176,6 @@ class SearchBoxMediator implements DestroyObserver {
         updateStartIcon();
     }
 
-    private void onFuseboxStateChanged(@FuseboxState Integer state) {
-        updateStartIcon();
-    }
-
     /** Called to set a drag listener for the search box. */
     void setSearchBoxDragListener(OnDragListener listener) {
         mModel.set(SearchBoxProperties.SEARCH_BOX_DRAG_CALLBACK, listener);
@@ -197,12 +184,6 @@ class SearchBoxMediator implements DestroyObserver {
     void setIsFuseboxEligible(boolean isEligible) {
         mIsFuseboxEligible = isEligible;
         updateStartIcon();
-    }
-
-    void setFuseboxStateSupplier(NonNullObservableSupplier<Integer> fuseboxStateSupplier) {
-        mFuseboxStateSupplier.removeObserver(mOnFuseboxStateChanged);
-        mFuseboxStateSupplier = fuseboxStateSupplier;
-        mFuseboxStateSupplier.addSyncObserverAndPostIfNonNull(mOnFuseboxStateChanged);
     }
 
     /**

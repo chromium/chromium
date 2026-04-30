@@ -2257,11 +2257,6 @@ class LocationBarMediator
     }
 
     @Override
-    public NonNullObservableSupplier<Integer> getFuseboxStateSupplier() {
-        return mFuseboxCoordinator.getFuseboxStateSupplier();
-    }
-
-    @Override
     public @Nullable VoiceRecognitionHandler getVoiceRecognitionHandler() {
         return mVoiceRecognitionHandler;
     }

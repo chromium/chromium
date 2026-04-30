@@ -13,7 +13,6 @@ import android.view.View.OnDragListener;
 import androidx.annotation.Px;
 import androidx.annotation.StyleRes;
 
-import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feed.FeedSurfaceScrollDelegate;
@@ -58,9 +57,6 @@ public interface NtpSearchBox {
     void setSearchEngineIcon(@Nullable StatusIconResource icon);
 
     void applyWhiteBackground(boolean apply);
-
-    /* Provides state updates for the fusebox. */
-    void setFuseboxStateSupplier(NonNullObservableSupplier<Integer> fuseboxStateSupplier);
 
     /* Sets whether the fusebox is eligible. */
     void setIsFuseboxEligible(boolean isEligible);
