@@ -185,7 +185,11 @@
   }
 
   if (_fullscreenController) {
-    _fullscreenController->ExitFullscreen(trigger);
+    if (_fullscreenController->IsForceFullscreenMode()) {
+      _fullscreenController->ExitForceFullscreenMode(trigger);
+    } else {
+      _fullscreenController->ExitFullscreen(trigger);
+    }
   }
 }
 
