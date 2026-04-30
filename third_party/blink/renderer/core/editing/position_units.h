@@ -80,6 +80,32 @@ CORE_EXPORT PositionInFlatTree EndOfEditableContent(const PositionInFlatTree&);
 CORE_EXPORT bool IsEndOfEditableOrNonEditableContent(const Position&);
 CORE_EXPORT bool IsEndOfEditableOrNonEditableContent(const PositionInFlatTree&);
 
+// ----- paragraphs -----
+// Definitions are in position_units_paragraph.cc.
+CORE_EXPORT Position
+StartOfParagraph(const Position&,
+                 EditingBoundaryCrossingRule = kCannotCrossEditingBoundary);
+CORE_EXPORT PositionInFlatTree
+StartOfParagraph(const PositionInFlatTree&,
+                 EditingBoundaryCrossingRule = kCannotCrossEditingBoundary);
+CORE_EXPORT Position
+EndOfParagraph(const Position&,
+               EditingBoundaryCrossingRule = kCannotCrossEditingBoundary);
+CORE_EXPORT PositionInFlatTree
+EndOfParagraph(const PositionInFlatTree&,
+               EditingBoundaryCrossingRule = kCannotCrossEditingBoundary);
+CORE_EXPORT bool IsStartOfParagraph(
+    const Position&,
+    EditingBoundaryCrossingRule = kCannotCrossEditingBoundary);
+CORE_EXPORT bool IsEndOfParagraph(
+    const Position&,
+    EditingBoundaryCrossingRule = kCannotCrossEditingBoundary);
+CORE_EXPORT bool InSameParagraph(
+    const Position&,
+    const Position&,
+    EditingBoundaryCrossingRule = kCannotCrossEditingBoundary);
+CORE_EXPORT EphemeralRange ExpandToParagraphBoundary(const EphemeralRange&);
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_POSITION_UNITS_H_

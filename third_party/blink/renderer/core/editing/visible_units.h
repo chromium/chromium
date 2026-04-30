@@ -208,7 +208,7 @@ CORE_EXPORT bool IsEndOfParagraph(const VisiblePositionInFlatTree&);
 bool InSameParagraph(const VisiblePosition&,
                      const VisiblePosition&,
                      EditingBoundaryCrossingRule = kCannotCrossEditingBoundary);
-EphemeralRange ExpandToParagraphBoundary(const EphemeralRange&);
+CORE_EXPORT EphemeralRange ExpandToParagraphBoundary(const EphemeralRange&);
 
 // document
 CORE_EXPORT VisiblePosition EndOfDocument(const VisiblePosition&);
