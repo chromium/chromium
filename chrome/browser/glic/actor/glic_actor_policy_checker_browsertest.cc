@@ -234,6 +234,22 @@ class GlicActorPolicyCheckerBrowserTestBase : public NonInteractiveGlicTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+IN_PROC_BROWSER_TEST_F(GlicActorPolicyCheckerBrowserTestBase,
+                       IsEnterpriseAccountCheck_NonEnterprise) {
+  // Signed in with a non-enterprise account.
+  SimulatePrimaryAccountChangedSignIn(&kNonEnterpriseAccount);
+  EXPECT_FALSE(GlicActorPolicyChecker::IsEnterpriseAccount(
+      *GetProfile(), GetActorService().GetJournal()));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicActorPolicyCheckerBrowserTestBase,
+                       IsEnterpriseAccountCheck_Enterprise) {
+  // Signed in with an enterprise account.
+  SimulatePrimaryAccountChangedSignIn(&kEnterpriseAccount);
+  EXPECT_TRUE(GlicActorPolicyChecker::IsEnterpriseAccount(
+      *GetProfile(), GetActorService().GetJournal()));
+}
+
 // Tests that exercise the policy checker for non managed browser
 // (!browser_management_service->IsManaged()).
 class GlicActorPolicyCheckerBrowserTestNonManagedBrowser
@@ -321,6 +337,11 @@ IN_PROC_BROWSER_TEST_P(GlicActorPolicyCheckerBrowserTestNonManagedBrowser,
               TestHasChromeBenefits()
                   ? CannotActReason::kAccountMissingChromeBenefits
                   : CannotActReason::kNone);
+}
+
+IN_PROC_BROWSER_TEST_P(GlicActorPolicyCheckerBrowserTestNonManagedBrowser,
+                       IsBrowserManagedCheck) {
+  EXPECT_FALSE(GlicActorPolicyChecker::IsBrowserManaged(*GetProfile()));
 }
 
 INSTANTIATE_TEST_SUITE_P(/* no prefix */,
@@ -464,6 +485,11 @@ class GlicActorPolicyCheckerBrowserTestManagedBrowser
       scoped_management_service_override_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
+
+IN_PROC_BROWSER_TEST_F(GlicActorPolicyCheckerBrowserTestManagedBrowser,
+                       IsBrowserManagedCheck) {
+  EXPECT_TRUE(GlicActorPolicyChecker::IsBrowserManaged(*GetProfile()));
+}
 
 IN_PROC_BROWSER_TEST_F(GlicActorPolicyCheckerBrowserTestManagedBrowser,
                        TasksDroppedWhenActuationCapabilityIsDisabled) {
