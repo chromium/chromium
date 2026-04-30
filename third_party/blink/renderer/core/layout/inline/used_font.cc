@@ -6,11 +6,4 @@
 
 namespace blink {
 
-float UsedFont::FloatAscent() const {
-  if (const auto* font_data = PrimaryFont()) {
-    return font_data->GetFontMetrics().FloatAscent() * text_fit_scaling_factor_;
-  }
-  return 0.0f;
-}
-
 }  // namespace blink

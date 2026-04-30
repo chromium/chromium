@@ -32,7 +32,13 @@ class UsedFont {
   const Font& GetFont() const { return *font_; }
   const SimpleFontData* PrimaryFont() const { return font_->PrimaryFont(); }
   // Returns ascent of this font, scaled by `text_fit_scaling_factor_`.
-  float FloatAscent() const;
+  float FloatAscent() const {
+    if (const auto* font_data = PrimaryFont()) [[likely]] {
+      return font_data->GetFontMetrics().FloatAscent() *
+             text_fit_scaling_factor_;
+    }
+    return 0.0f;
+  }
   // Returns ascent of this font, scaled by `text_fit_scaling_factor_`.
   LayoutUnit FixedAscent() const { return LayoutUnit(FloatAscent()); }
 
