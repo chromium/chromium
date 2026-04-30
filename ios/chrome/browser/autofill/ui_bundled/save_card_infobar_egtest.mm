@@ -252,12 +252,12 @@ void FillAndSubmitXframeCreditCardForm() {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
 
-  if ([self isRunningTest:@selector(testOfferLocalSave_WithInfobar)]) {
+  if ([self isRunningTest:@selector(DISABLED_testOfferLocalSave_WithInfobar)]) {
     // This test needs the badge.
     config.features_disabled.push_back(kAutofillBadgeRemoval);
   }
 
-  if ([self isRunningTest:@selector(testStickySavePromptJourney)]) {
+  if ([self isRunningTest:@selector(DISABLED_testStickySavePromptJourney)]) {
     config.features_enabled.push_back(kAutofillStickyInfobarIos);
   }
   if ([self isRunningTest:@selector
@@ -609,7 +609,9 @@ void FillAndSubmitXframeCreditCardForm() {
 
 // Ensures that UMA metrics are correctly logged when the user declines upload
 // on a bottomsheet and an infobar.
-- (void)testUMA_Upstream_UserDeclinesBottomSheetAndInfobar {
+// TODO(crbug.com/507579591): Improve StrikeDatabase test infra and re-enable
+//                            this test.
+- (void)DISABLED_testUMA_Upstream_UserDeclinesBottomSheetAndInfobar {
   // Form submitted with full credit card data and no previous strikes offers
   // upstream save in a bottomsheet.
   [self fillAndSubmitFormWithID:kFillFullFormId
@@ -685,7 +687,9 @@ void FillAndSubmitXframeCreditCardForm() {
 // Ensures that UMA metrics are correctly logged when the user declines upload
 // on a bottomsheet and accepts when offered infobar. On accept, ensures that an
 // UploadCardRequest RPC is sent to Google Payments Server.
-- (void)testUMA_Upstream_UserDeclinesBottomSheetAcceptsInfobar {
+// TODO(crbug.com/507579591): Improve StrikeDatabase test infra and re-enable
+//                            this test.
+- (void)DISABLED_testUMA_Upstream_UserDeclinesBottomSheetAcceptsInfobar {
   // Form submitted with full credit card data and no previous strikes offers
   // card upload in a bottomsheet.
   [self fillAndSubmitFormWithID:kFillFullFormId
@@ -999,7 +1003,9 @@ void FillAndSubmitXframeCreditCardForm() {
 // Ensures that submitting the form should query Google Payments; but the
 // fallback local save prompt should not appear if the maximum
 // StrikeDatabase strike limit is reached.
-- (void)testNotOfferLocalSave_MaxStrikesReached {
+// TODO(crbug.com/507579591): Improve StrikeDatabase test infra and re-enable
+//                            this test.
+- (void)DISABLED_testNotOfferLocalSave_MaxStrikesReached {
   // Incur the maximum number of strikes by showing and declining save
   // bottomsheet and infobar.
 
@@ -1056,7 +1062,9 @@ void FillAndSubmitXframeCreditCardForm() {
 // when navigating without an explicit user gesture, and then the prompt is
 // dismissed when navigating with a user gesture. Test with the credit card save
 // prompt but the type of credit card prompt doesn't matter in this test case.
-- (void)testStickySavePromptJourney {
+// TODO(crbug.com/507579591): Improve StrikeDatabase test infra and re-enable
+//                            this test.
+- (void)DISABLED_testStickySavePromptJourney {
   const GURL testPageURL = self.testServer->GetURL(kCreditCardUploadForm);
 
   [ChromeEarlGrey loadURL:testPageURL];
@@ -1240,7 +1248,9 @@ void FillAndSubmitXframeCreditCardForm() {
 
 // Test infobar is offered for card with non zero strike and card is saved to
 // Chrome if user accepts the infobar.
-- (void)testOfferLocalSave_WithInfobar {
+// TODO(crbug.com/507579591): Improve StrikeDatabase test infra and re-enable
+//                            this test.
+- (void)DISABLED_testOfferLocalSave_WithInfobar {
   // Ensure there are no saved credit cards.
   GREYAssertEqual(0U, [AutofillAppInterface localCreditCount],
                   @"There should be no saved credit card.");
@@ -1357,7 +1367,9 @@ void FillAndSubmitXframeCreditCardForm() {
 
 // Tests CVC validation with short invalid input in the credit card upload save
 // modal.
-- (void)testUpstreamCVCValidation_WithShortInvalidInput {
+// TODO(crbug.com/507579591): Improve StrikeDatabase test infra and re-enable
+//                            this test.
+- (void)DISABLED_testUpstreamCVCValidation_WithShortInvalidInput {
   // Action: Trigger the upstream save modal to be displayed.
   [self triggerCreditCardSaveModal];
 
@@ -1375,7 +1387,9 @@ void FillAndSubmitXframeCreditCardForm() {
 
 // Tests CVC validation with long invalid input in the credit card upload save
 // modal.
-- (void)testUpstreamCVCValidation_WithLongInvalidInput {
+// TODO(crbug.com/507579591): Improve StrikeDatabase test infra and re-enable
+//                            this test.
+- (void)DISABLED_testUpstreamCVCValidation_WithLongInvalidInput {
   // Trigger the upstream save modal to be displayed.
   [self triggerCreditCardSaveModal];
 
@@ -1393,7 +1407,9 @@ void FillAndSubmitXframeCreditCardForm() {
 
 // Tests CVC validation with non-digit invalid input in the credit card upload
 // save modal.
-- (void)testUpstreamCVCValidation_WithNonDigitInput {
+// TODO(crbug.com/507579591): Improve StrikeDatabase test infra and re-enable
+//                            this test.
+- (void)DISABLED_testUpstreamCVCValidation_WithNonDigitInput {
   // Trigger the upstream save modal to be displayed.
   [self triggerCreditCardSaveModal];
 
@@ -1411,7 +1427,9 @@ void FillAndSubmitXframeCreditCardForm() {
 
 // Tests CVC validation with 4 digits valid input in the credit card upload save
 // modal.
-- (void)testUpstreamCVCValidation_WithValidInput {
+// TODO(crbug.com/507579591): Improve StrikeDatabase test infra and re-enable
+//                            this test.
+- (void)DISABLED_testUpstreamCVCValidation_WithValidInput {
   // Trigger the upstream save modal to be displayed.
   [self triggerCreditCardSaveModal];
 
