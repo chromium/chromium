@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
@@ -25,6 +26,7 @@
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "remoting/base/errors.h"
+#include "remoting/base/logging.h"
 #include "remoting/host/action_executor.h"
 #include "remoting/host/active_display_monitor.h"
 #include "remoting/host/audio_capturer.h"
@@ -133,6 +135,20 @@ IpcDesktopEnvironment::CreateRemoteWebAuthnStateChangeNotifier() {
   return desktop_session_proxy_->CreateRemoteWebAuthnStateChangeNotifier();
 }
 
+IpcDesktopEnvironmentFactory::DesktopConnection::DesktopConnection(
+    DesktopSessionProxy* desktop_session_proxy,
+    std::string_view client_id)
+    : desktop_session_proxy(desktop_session_proxy), client_id(client_id) {}
+
+IpcDesktopEnvironmentFactory::DesktopConnection::~DesktopConnection() = default;
+
+IpcDesktopEnvironmentFactory::DesktopConnection::DesktopConnection(
+    DesktopConnection&&) = default;
+
+IpcDesktopEnvironmentFactory::DesktopConnection&
+IpcDesktopEnvironmentFactory::DesktopConnection::operator=(
+    DesktopConnection&&) = default;
+
 IpcDesktopEnvironmentFactory::IpcDesktopEnvironmentFactory(
     scoped_refptr<base::SingleThreadTaskRunner> audio_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> network_task_runner,
@@ -208,7 +224,14 @@ void IpcDesktopEnvironmentFactory::ConnectTerminal(
       int id = it->first;
       VLOG(1) << "Network: reconnecting desktop session " << id;
       it->second.desktop_session_proxy = desktop_session_proxy;
-      desktop_session_manager_->ReconnectDesktopSession(id, std::move(options));
+      if (it->second.pending_desktop_pipe.is_valid()) {
+        VLOG(1) << "Network: using buffered desktop pipe for session " << id;
+        desktop_session_proxy->AttachToDesktop(
+            std::move(it->second.pending_desktop_pipe));
+      } else {
+        desktop_session_manager_->ReconnectDesktopSession(id,
+                                                          std::move(options));
+      }
       return;
     }
   }
@@ -299,12 +322,15 @@ void IpcDesktopEnvironmentFactory::OnDesktopSessionAgentAttached(
     return;
   }
 
+  VLOG(1) << "IpcDesktopEnvironmentFactory::OnDesktopSessionAgentAttached() "
+          << "terminal_id=" << terminal_id;
+
   auto it = connections_.find(terminal_id);
   if (it != connections_.end()) {
     DesktopSessionProxy* proxy = it->second.desktop_session_proxy;
     if (!proxy) {
-      LOG(ERROR) << "DesktopSessionAgent attached when the client is not "
-                 << "connected to the desktop session";
+      VLOG(1) << "Network: buffering desktop pipe for session " << terminal_id;
+      it->second.pending_desktop_pipe = std::move(desktop_pipe);
       return;
     }
     proxy->DetachFromDesktop();

@@ -23,6 +23,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
+#include "base/test/run_until.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
@@ -256,6 +257,10 @@ class IpcDesktopEnvironmentTest : public testing::Test {
 
   // Returns the number of active desktop sessions
   size_t ActiveDesktopSessionsCount() const;
+
+  // Returns the desktop connection for `terminal_id`, or nullptr if not found.
+  const IpcDesktopEnvironmentFactory::DesktopConnection* GetConnection(
+      int terminal_id) const;
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::UI};
@@ -602,6 +607,15 @@ size_t IpcDesktopEnvironmentTest::ActiveDesktopSessionsCount() const {
   return desktop_environment_factory_->connections_.size();
 }
 
+const IpcDesktopEnvironmentFactory::DesktopConnection*
+IpcDesktopEnvironmentTest::GetConnection(int terminal_id) const {
+  auto it = desktop_environment_factory_->connections_.find(terminal_id);
+  if (it == desktop_environment_factory_->connections_.end()) {
+    return nullptr;
+  }
+  return &it->second;
+}
+
 // Runs until the desktop is attached and exits immediately after that.
 TEST_F(IpcDesktopEnvironmentTest, BasicEphemeralDesktopSessions) {
   SetPersistentDesktopSessions(false);
@@ -744,6 +758,68 @@ TEST_F(IpcDesktopEnvironmentTest, Reattach) {
 
   // Stop the test.
   DeleteDesktopEnvironment();
+}
+
+// Tests that a desktop pipe received while the client is disconnected is
+// buffered and used upon reconnection.
+TEST_F(IpcDesktopEnvironmentTest, BufferedDesktopPipeReconnection) {
+  SetPersistentDesktopSessions(true);
+
+  // 1. Initial connection.
+  setup_run_loop_->Run();
+  ASSERT_EQ(ActiveDesktopSessionsCount(), 1u);
+  int id = terminal_id_;
+
+  // 2. Client disconnects.
+  DeleteDesktopEnvironment();
+
+  // Ensure DisconnectTerminal is called and proxy is cleared.
+  // Since DeleteSoon was called on the same task runner, we can post a task
+  // to wait for it.
+  base::test::TestFuture<void> future;
+  task_runner_->PostTask(FROM_HERE, future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+
+  ASSERT_EQ(ActiveDesktopSessionsCount(), 1u);
+  auto* connection = GetConnection(id);
+  ASSERT_NE(connection, nullptr);
+  ASSERT_EQ(connection->desktop_session_proxy, nullptr);
+
+  // 3. Simulate desktop process restart while client is disconnected.
+  DestroyDesktopProcess();
+  ResetRemoteUrlForwarderConfigurator();
+  CreateDesktopProcess();
+
+  // We need to wait for the pipe to be received and buffered.
+  // The pipe is sent by the DesktopProcess and received by `desktop_listener_`.
+  // We can wait for it by checking if it's buffered.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    auto* conn = GetConnection(id);
+    return conn && conn->pending_desktop_pipe.is_valid();
+  }));
+
+  // 4. Client reconnects.
+  // We expect ReconnectDesktopSession NOT to be called because we have a
+  // buffered pipe.
+  EXPECT_CALL(mock_desktop_session_manager_, ReconnectDesktopSession(id, _))
+      .Times(0);
+
+  setup_run_loop_ = std::make_unique<base::RunLoop>();
+  CreateDesktopEnvironment();
+
+  // If the buffered pipe is used, the session should successfully attach.
+  setup_run_loop_->Run();
+
+  ASSERT_EQ(ActiveDesktopSessionsCount(), 1u);
+  connection = GetConnection(id);
+  ASSERT_NE(connection, nullptr);
+  ASSERT_TRUE(connection->desktop_session_proxy);
+  ASSERT_FALSE(connection->pending_desktop_pipe.is_valid());
+
+  // Cleanup to avoid hanging in TearDown.
+  DeleteDesktopEnvironment();
+  DestroyDesktopProcess();
+  desktop_environment_factory_.reset();
 }
 
 // Tests injection of clipboard events.
