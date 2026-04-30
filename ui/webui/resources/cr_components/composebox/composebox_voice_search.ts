@@ -258,11 +258,15 @@ export class ComposeboxVoiceSearchElement extends
         VoiceSearchAction.MAX_VALUE + 1);
   }
 
-  stop() {
+  protected onStopClick_(e: Event) {
+    e.preventDefault();
+    e.stopPropagation();
+    this.fire('recording-stopped', this.transcript_);
     this.recordMetric_(
         VoiceSearchMetricType.ACTION, VoiceSearchAction.STOP_BUTTON_CLICKED,
         VoiceSearchAction.MAX_VALUE + 1);
     this.voiceRecognition_.stop();
+    this.voiceModeEndCleanup_();
   }
 
   private resetIdleTimer_() {

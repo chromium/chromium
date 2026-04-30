@@ -38,7 +38,9 @@ export function getHtml(this: ComposeboxVoiceSearchElement) {
         <div id="bottomActions" ?hidden="${this.shouldShowErrorScrim_()}">
           <cr-icon-button id="stopButton"
               iron-icon="composebox:stop"
-              title="Stop">
+              title="Stop"
+              @click="${this.onStopClick_}"
+              >
           </cr-icon-button>
           <cr-composebox-submit id="submitButton"
               exportparts="submit"
