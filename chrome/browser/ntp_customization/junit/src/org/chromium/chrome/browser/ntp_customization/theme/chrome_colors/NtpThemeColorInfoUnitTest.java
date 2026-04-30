@@ -51,6 +51,14 @@ public class NtpThemeColorInfoUnitTest {
     }
 
     @Test
+    public void testNtpThemeColorInfo_default() {
+        NtpThemeColorInfo info = new NtpThemeColorInfo(mContext, NtpThemeColorId.DEFAULT);
+
+        assertEquals(NtpThemeColorId.DEFAULT, info.id);
+        assertNotNull(info.iconDrawable);
+    }
+
+    @Test
     public void testNtpThemeColorFromHexInfo() {
         @ColorInt int backgroundColor = ContextCompat.getColor(mContext, R.color.default_red);
         @ColorInt int primaryColor = ContextCompat.getColor(mContext, R.color.default_green);

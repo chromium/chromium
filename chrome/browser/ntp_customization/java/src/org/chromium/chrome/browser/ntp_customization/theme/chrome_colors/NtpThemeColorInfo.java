@@ -79,6 +79,16 @@ public class NtpThemeColorInfo {
      */
     public NtpThemeColorInfo(Context context, @NtpThemeColorId int id) {
         this.id = id;
+        if (id == NtpThemeColorId.DEFAULT) {
+            iconDrawable =
+                    NtpThemeColorUtils.createColoredCircle(
+                            context,
+                            /* topColor= */ null,
+                            /* bottomLeftColor= */ null,
+                            /* bottomRightColor= */ null);
+            return;
+        }
+
         this.primaryColorResId = NtpThemeColorUtils.getNtpThemePrimaryColorResId(id);
         this.colorStringResId = NtpThemeColorUtils.getNtpColorThemeStringResId(id);
 

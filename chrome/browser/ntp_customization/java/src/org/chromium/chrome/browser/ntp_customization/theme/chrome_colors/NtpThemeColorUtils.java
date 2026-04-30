@@ -39,7 +39,7 @@ public class NtpThemeColorUtils {
      */
     public static @Nullable NtpThemeColorInfo createNtpThemeColorInfo(
             Context context, @NtpThemeColorId int colorId) {
-        if (colorId < NtpThemeColorId.NTP_COLORS_BLUE || colorId >= NtpThemeColorId.NUM_ENTRIES) {
+        if (colorId < NtpThemeColorId.DEFAULT || colorId >= NtpThemeColorId.NUM_ENTRIES) {
             return null;
         }
 
@@ -245,8 +245,11 @@ public class NtpThemeColorUtils {
     }
 
     /** Creates a colored circle drawable based on provides three colors. */
-    static LayerDrawable createColoredCircle(
-            Context context, int topColor, int bottomLeftColor, int bottomRightColor) {
+    public static LayerDrawable createColoredCircle(
+            Context context,
+            @Nullable @ColorInt Integer topColor,
+            @Nullable @ColorInt Integer bottomLeftColor,
+            @Nullable @ColorInt Integer bottomRightColor) {
         // 1. Loads each drawable layer.
         Drawable iconTopHalf =
                 assumeNonNull(context.getDrawable(R.drawable.chrome_color_icon_top_half));
@@ -262,9 +265,15 @@ public class NtpThemeColorUtils {
         Drawable tintedIconBottomRight = DrawableCompat.wrap(iconBottomRight).mutate();
 
         // 3. Applies the specific colors (tints).
-        DrawableCompat.setTint(tintedIconTopHalf, topColor);
-        DrawableCompat.setTint(tintedIconBottomLeft, bottomLeftColor);
-        DrawableCompat.setTint(tintedIconBottomRight, bottomRightColor);
+        if (topColor != null) {
+            DrawableCompat.setTint(tintedIconTopHalf, topColor);
+        }
+        if (bottomLeftColor != null) {
+            DrawableCompat.setTint(tintedIconBottomLeft, bottomLeftColor);
+        }
+        if (bottomRightColor != null) {
+            DrawableCompat.setTint(tintedIconBottomRight, bottomRightColor);
+        }
 
         // 4. Combines them into a LayerDrawable.
         Drawable[] layers =

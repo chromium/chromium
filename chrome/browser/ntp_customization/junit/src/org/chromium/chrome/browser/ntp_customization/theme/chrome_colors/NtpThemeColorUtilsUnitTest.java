@@ -149,6 +149,18 @@ public class NtpThemeColorUtilsUnitTest {
     }
 
     @Test
+    public void testCreateColoredCircle_default() {
+        LayerDrawable drawable =
+                NtpThemeColorUtils.createColoredCircle(
+                        mContext,
+                        /* topColor= */ null,
+                        /* bottomLeftColor= */ null,
+                        /* bottomRightColor= */ null);
+        assertNotNull(drawable);
+        assertEquals(3, drawable.getNumberOfLayers());
+    }
+
+    @Test
     public void testGetNtpThemePrimaryColorFromPreBuiltColors() {
         @ColorRes
         int aquaPrimaryColorResId =
