@@ -1406,6 +1406,12 @@ void LocalFrameView::DynamicViewportUnitsChanged() {
     GetFrame().GetDocument()->DynamicViewportUnitsChanged();
 }
 
+void LocalFrameView::LargeViewportUnitsChanged() {
+  if (Document* document = GetFrame().GetDocument()) {
+    document->MarkViewportUnitsDirty();
+  }
+}
+
 bool LocalFrameView::ShouldSetCursor() const {
   Page* page = GetFrame().GetPage();
   return page && page->IsPageVisible() &&

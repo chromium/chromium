@@ -1323,12 +1323,18 @@ void WebViewImpl::ResizeViewWhileAnchored(
     const gfx::Size& visible_viewport_size) {
   DCHECK(MainFrameImpl());
 
-  bool old_viewport_shrink = GetBrowserControls().ShrinkViewport();
+  const bool old_viewport_shrink = GetBrowserControls().ShrinkViewport();
+  const float old_controls_height = GetBrowserControls().TotalHeight();
 
   GetBrowserControls().SetParams(params);
 
-  if (old_viewport_shrink != GetBrowserControls().ShrinkViewport())
+  if (old_viewport_shrink != GetBrowserControls().ShrinkViewport()) {
     MainFrameImpl()->GetFrameView()->DynamicViewportUnitsChanged();
+  }
+  if (!GetBrowserControls().ShrinkViewport() &&
+      old_controls_height != GetBrowserControls().TotalHeight()) {
+    MainFrameImpl()->GetFrameView()->LargeViewportUnitsChanged();
+  }
 
   if (GetPage()->GetSettings().GetDynamicSafeAreaInsetsEnabled()) {
     GetPage()->UpdateSafeAreaInsetWithBrowserControls(GetBrowserControls(),
