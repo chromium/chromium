@@ -613,8 +613,10 @@ void ReadAnythingAppController::AccessibilityEventReceived(
     const std::vector<ui::AXTreeUpdate>& updates,
     const std::vector<ui::AXEvent>& events) {
   model_.PrepareForAXTreeUpdates(tree_id);
-  if (model_.should_apply_accessibility_updates_for_readability_links()) {
-    ApplyAccessibilityUpdatesForReadabilityLinks(tree_id, updates, events);
+  // We need to keep the accessibility tree in sync with the page content
+  // for Readability features like text selection and links.
+  if (model_.should_apply_accessibility_updates_for_readability()) {
+    ApplyAccessibilityUpdatesForReadability(tree_id, updates, events);
   } else {
     // Remove the const-ness of the data here so that subsequent methods can
     // move the data.
@@ -760,6 +762,9 @@ void ReadAnythingAppController::SetDistillationState(
   if (state == read_anything::mojom::ReadAnythingDistillationState::
                    kDistillationInProgress) {
     model_.set_should_extract_anchors_from_tree_for_readability(false);
+    if (IsReadabilitySelectTextEnabled()) {
+      model_.set_should_map_rendered_text_to_tree_for_readability(false);
+    }
     model_.ResetAXTreeAnchors();
   }
 }
@@ -2985,8 +2990,10 @@ void ReadAnythingAppController::UpdateContent(const std::string& title,
       ReadAnythingAppModel::DistillationMethod::kReadability);
 
   if (IsReadabilitySelectTextEnabled()) {
-    // Reset text blocks when content is updated.
+    // Reset text blocks when content is updated and reset should map flag to
+    // not trigger a false positive when rendered text is not ready.
     model_.set_readability_text_blocks({});
+    model_.set_should_map_rendered_text_to_tree_for_readability(false);
   }
   ExecuteJavaScript("chrome.readingMode.updateContent();");
 
@@ -3012,19 +3019,23 @@ void ReadAnythingAppController::OnReadabilityDistillationStateChanged(
   SetDistillationState(new_state);
 }
 
-void ReadAnythingAppController::ApplyAccessibilityUpdatesForReadabilityLinks(
+void ReadAnythingAppController::ApplyAccessibilityUpdatesForReadability(
     const ui::AXTreeID& tree_id,
     const std::vector<ui::AXTreeUpdate>& updates,
     const std::vector<ui::AXEvent>& events) {
   model_.ApplyAccessibilityUpdates(
       tree_id, const_cast<std::vector<ui::AXTreeUpdate>&>(updates),
       const_cast<std::vector<ui::AXEvent>&>(events));
-  // If the tree is not ready, ProcessAXTreeAnchors will do an early return
-  // and wait for the next update until it is able to process the tree.
+  // If the tree is not ready, ProcessAXTreeAnchors and MapRenderedTextToTree
+  // will do an early return and wait for the next update until they are able to
+  // process the tree.
   bool didProcessAnchors = model_.ProcessAXTreeAnchors();
   if (didProcessAnchors) {
     ExecuteJavaScript("chrome.readingMode.onAnchorsReadyForReadability();");
   }
+
+  // Check if we should perform text mapping for readability text selection.
+  MaybeMapRenderedTextToTree();
 }
 
 void ReadAnythingAppController::OnRenderedTextBlocksAvailable(
@@ -3033,8 +3044,26 @@ void ReadAnythingAppController::OnRenderedTextBlocksAvailable(
     return;
   }
   model_.set_readability_text_blocks(blocks);
-  // TODO(crbug.com/507447796): Notify frontend that readability text has been
-  // mapped to create readability nodestore.
+  model_.set_should_map_rendered_text_to_tree_for_readability(true);
+
+  // Check if we should perform text mapping for readability text selection.
+  MaybeMapRenderedTextToTree();
+}
+
+void ReadAnythingAppController::MaybeMapRenderedTextToTree() {
+  if (!IsReadabilitySelectTextEnabled()) {
+    return;
+  }
+
+  // Only attempt mapping if we have text blocks from the WebUI.
+  if (model_.readability_text_blocks().empty()) {
+    return;
+  }
+
+  if (model_.MapRenderedTextToTree(model_.readability_text_blocks())) {
+    // TODO(crbug.com/507447796): Notify frontend that readability text has been
+    // mapped to create readability nodestore.
+  }
 }
 
 bool ReadAnythingAppController::IsHidden() const {

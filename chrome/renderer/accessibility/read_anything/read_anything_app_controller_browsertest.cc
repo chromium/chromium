@@ -5173,3 +5173,86 @@ TEST_F(ReadAnythingAppControllerReadabilitySelectTextTest,
   // Verify the model now holds the correct data.
   EXPECT_EQ(model().readability_text_blocks(), blocks);
 }
+
+TEST_F(ReadAnythingAppControllerReadabilitySelectTextTest,
+       UpdateContent_ResetsReadabilitySelectTextState) {
+  // Dirty the model state with data from a previous distillation.
+  model().set_readability_text_blocks({"stale block 1", "stale block 2"});
+  model().set_should_map_rendered_text_to_tree_for_readability(true);
+
+  // 3. Call UpdateContent
+  controller().UpdateContent("New Title", "New Content");
+
+  // 4. Verify that the state was properly reset.
+  EXPECT_TRUE(model().readability_text_blocks().empty());
+  EXPECT_FALSE(model().should_map_rendered_text_to_tree_for_readability());
+}
+
+TEST_F(ReadAnythingAppControllerReadabilitySelectTextTest,
+       MappingTriggered_OnTreeUpdate_IfBlocksAlreadyAvailable) {
+  // Setup a new tree ID to simulate a navigation/new distillation pass.
+  ui::AXTreeID new_tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  controller().OnActiveAXTreeIDChanged(new_tree_id, ukm::kInvalidSourceId,
+                                       false);
+
+  // Simulate the WebUI finishing "rendering".
+  EXPECT_CALL(page_handler_,
+              OnDistillationStateChanged(
+                  read_anything::mojom::ReadAnythingDistillationState::
+                      kDistillationWithContent))
+      .Times(1);
+  controller().OnReadabilityDistillationStateChanged(
+      read_anything::mojom::ReadAnythingDistillationState::
+          kDistillationWithContent);
+  controller().OnRenderedTextBlocksAvailable({"block1", "block2"});
+
+  // Verify that the flag is set to true (waiting for the tree).
+  // The mapping couldn't run because the tree is missing.
+  EXPECT_TRUE(model().should_map_rendered_text_to_tree_for_readability());
+
+  // Simulate the AXTree update arriving and triggering an AX event.
+  ui::AXTreeUpdate update;
+  test::SetUpdateTreeID(&update, new_tree_id);
+  update.root_id = 1;
+  ui::AXNodeData root;
+  root.id = 1;
+  update.nodes = {std::move(root)};
+  AccessibilityEventReceived({update});
+
+  // Verify that the mapping was triggered and the flag was reset.
+  EXPECT_FALSE(model().should_map_rendered_text_to_tree_for_readability());
+}
+
+TEST_F(ReadAnythingAppControllerReadabilitySelectTextTest,
+       MappingTriggered_OnBlocksAvailable_IfTreeAlreadyReady) {
+  // Setup a new tree ID and make it active.
+  ui::AXTreeID new_tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  controller().OnActiveAXTreeIDChanged(new_tree_id, ukm::kInvalidSourceId,
+                                       false);
+
+  // Simulate the AXTree update arriving first and triggering an AX event
+  ui::AXTreeUpdate update;
+  test::SetUpdateTreeID(&update, new_tree_id);
+  update.root_id = 1;
+  ui::AXNodeData root;
+  root.id = 1;
+  update.nodes = {std::move(root)};
+  AccessibilityEventReceived({update});
+
+  // Verify that the flag is still false because blocks haven't arrived.
+  EXPECT_FALSE(model().should_map_rendered_text_to_tree_for_readability());
+
+  // Simulate the WebUI finishing "rendering".
+  EXPECT_CALL(page_handler_,
+              OnDistillationStateChanged(
+                  read_anything::mojom::ReadAnythingDistillationState::
+                      kDistillationWithContent))
+      .Times(1);
+  controller().OnReadabilityDistillationStateChanged(
+      read_anything::mojom::ReadAnythingDistillationState::
+          kDistillationWithContent);
+  controller().OnRenderedTextBlocksAvailable({"block1", "block2"});
+
+  // Verify that the mapping was triggered and the flag was reset to false.
+  EXPECT_FALSE(model().should_map_rendered_text_to_tree_for_readability());
+}

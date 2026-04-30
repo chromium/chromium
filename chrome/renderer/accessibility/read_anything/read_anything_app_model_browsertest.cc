@@ -2499,3 +2499,17 @@ TEST_F(ReadAnythingAppModelTest,
 
   EXPECT_FALSE(model().requires_distillation());
 }
+
+TEST_F(ReadAnythingAppModelTest, MapRenderedTextToTree_ResetsMappingState) {
+  model().set_should_map_rendered_text_to_tree_for_readability(true);
+
+  // Trigger the mapping with some dummy blocks.
+  model().MapRenderedTextToTree({"block1", "block2"});
+
+  // Verify that the trigger flag was set to false.
+  EXPECT_FALSE(model().should_map_rendered_text_to_tree_for_readability());
+
+  // Verify that the internal mapping storage was cleared/initialized.
+  EXPECT_TRUE(model().text_to_ax_map().empty());
+  EXPECT_TRUE(model().text_to_ax_map_index().empty());
+}

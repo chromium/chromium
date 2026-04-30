@@ -1261,18 +1261,27 @@ bool ReadAnythingAppModel::ProcessAXTreeAnchors() {
     return false;
   }
 
-  if (active_tree_id_ == ui::AXTreeIDUnknown() || !ContainsActiveTree()) {
-    return false;
-  }
-
-  ui::AXSerializableTree* tree = GetActiveTree();
-  if (!tree || !tree->root()) {
+  ui::AXSerializableTree* tree = GetValidActiveTree();
+  if (!tree) {
     return false;
   }
 
   should_extract_anchors_from_tree_for_readability_ = false;
   ax_tree_anchors_ = CollectAnchorsFromAXTree(tree);
   return true;
+}
+
+ui::AXSerializableTree* ReadAnythingAppModel::GetValidActiveTree() const {
+  if (active_tree_id_ == ui::AXTreeIDUnknown() || !ContainsActiveTree()) {
+    return nullptr;
+  }
+
+  ui::AXSerializableTree* tree = GetActiveTree();
+  if (!tree || !tree->root()) {
+    return nullptr;
+  }
+
+  return tree;
 }
 
 std::map<std::string, std::vector<ReadAnythingAppModel::AnchorData>>
@@ -1380,4 +1389,36 @@ ReadAnythingAppModel::CollectAnchorsFromAXTree(ui::AXSerializableTree* tree) {
 
 void ReadAnythingAppModel::ResetAXTreeAnchors() {
   ax_tree_anchors_.clear();
+}
+
+bool ReadAnythingAppModel::MapRenderedTextToTree(
+    const std::vector<std::string>& blocks) {
+  if (!should_map_rendered_text_to_tree_for_readability()) {
+    return false;
+  }
+
+  ui::AXSerializableTree* tree = GetValidActiveTree();
+  if (!tree) {
+    return false;
+  }
+
+  text_to_ax_map_.clear();
+  text_to_ax_map_index_.clear();
+  should_map_rendered_text_to_tree_for_readability_ = false;
+
+  // TODO: crbug.com/507448617 - Implement mapping algorithm
+  // The mapping algorithm results are populated into |text_to_ax_map_|, where
+  // each block string maps to a vector of its occurrences in the page.
+  // |text_to_ax_map_index_| tracks sequential consumption by the WebUI,
+  // ensuring that identical strings (e.g., multiple "Read More" links) are
+  // linked to their respective AXNodes in the order they appear in the
+  // distilled DOM.
+  return true;
+}
+
+std::vector<ReadAnythingAppModel::MappingSegment>
+ReadAnythingAppModel::GetAXMappingForText(const std::string& text) const {
+  // TODO: crbug.com/507447796 - 10. Implement getter for frontend to receive
+  // mapped segments from a block.
+  return {};
 }
