@@ -12,6 +12,10 @@ namespace enterprise_reporting {
 // Controls whether SaaS usage reporting is enabled.
 BASE_DECLARE_FEATURE(kSaasUsageReporting);
 
+// Controls whether Gemini in Chrome usage is reported in the SaaS usage
+// report.
+BASE_DECLARE_FEATURE(kGeminiInChromeUsageReporting);
+
 // Controls whether the browser should report launch-related metadata,
 // such as the exact command line switches used at startup.
 BASE_DECLARE_FEATURE(kBrowserLaunchMetadataReporting);

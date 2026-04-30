@@ -10,11 +10,16 @@
 #include "base/check_deref.h"
 #include "components/enterprise/browser/reporting/common_pref_names.h"
 #include "components/enterprise/browser/reporting/pref_url_list_matcher.h"
+#include "components/enterprise/browser/reporting/reporting_features.h"
 #include "components/enterprise/browser/reporting/saas_usage/saas_usage_aggregation_utils.h"
 #include "components/prefs/pref_service.h"
 #include "url/gurl.h"
 
 namespace enterprise_reporting {
+
+namespace {
+constexpr char kGeminiInChromeUsageUrl[] = "https://gemini-in-chrome/";
+}  // namespace
 
 SaasUsageReportingController::SaasUsageReportingController(
     PrefService* local_state_pref_service,
@@ -33,8 +38,18 @@ SaasUsageReportingController::~SaasUsageReportingController() = default;
 
 void SaasUsageReportingController::RecordNavigation(
     const NavigationDataDelegate& delegate) const {
-  GURL url = delegate.GetUrl();
-  std::string encryption_protocol = delegate.GetEncryptionProtocol();
+  RecordUsage(delegate.GetUrl(), delegate.GetEncryptionProtocol());
+}
+
+void SaasUsageReportingController::RecordGeminiInChromeUsage() const {
+  if (base::FeatureList::IsEnabled(kGeminiInChromeUsageReporting)) {
+    RecordUsage(GURL(kGeminiInChromeUsageUrl), /*encryption_protocol=*/"");
+  }
+}
+
+void SaasUsageReportingController::RecordUsage(
+    const GURL& url,
+    std::string_view encryption_protocol) const {
   std::optional<std::string> profile_matched_domain =
       profile_matcher_->GetMatchedURL(url);
   if (profile_matched_domain) {

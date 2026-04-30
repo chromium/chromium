@@ -35,7 +35,14 @@ class SaasUsageReportingController : public KeyedService {
 
   virtual void RecordNavigation(const NavigationDataDelegate& delegate) const;
 
+  // Records a single usage of a "Gemini in Chrome" feature.
+  // This method is intended for tracking usage of Gemini integrated directly
+  // into the browser, not the Gemini web application.
+  virtual void RecordGeminiInChromeUsage() const;
+
  private:
+  void RecordUsage(const GURL& url, std::string_view encryption_protocol) const;
+
   const raw_ref<PrefService> local_state_pref_service_;
   const raw_ref<PrefService> profile_pref_service_;
   std::unique_ptr<PrefURLListMatcher> browser_matcher_;

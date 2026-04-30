@@ -9,9 +9,11 @@
 #include <utility>
 #include <vector>
 
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "components/enterprise/browser/reporting/common_pref_names.h"
 #include "components/enterprise/browser/reporting/pref_url_list_matcher.h"
+#include "components/enterprise/browser/reporting/reporting_features.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -173,6 +175,21 @@ TEST_F(SaasUsageReportingControllerTest, MultipleNavigations) {
 
   VerifyReportEntry(GetBrowserReport(), "example.com", 2,
                     {"TLS 1.3", "TLS 1.2"});
+}
+
+TEST_F(SaasUsageReportingControllerTest, RecordGeminiInChromeUsage) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kGeminiInChromeUsageReporting);
+
+  SetBrowserUrls({"gemini-in-chrome"});
+  SetProfileUrls({"gemini-in-chrome"});
+
+  controller_->RecordGeminiInChromeUsage();
+
+  // The virtual domain "gemini-in-chrome" should be matched and recorded
+  // with an empty encryption protocol.
+  VerifyReportEntry(GetBrowserReport(), "gemini-in-chrome", 1, {});
+  VerifyReportEntry(GetProfileReport(), "gemini-in-chrome", 1, {});
 }
 
 }  // namespace enterprise_reporting
