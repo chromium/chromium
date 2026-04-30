@@ -11,6 +11,7 @@
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/metrics/metrics_pref_names.h"
+#import "components/metrics/metrics_reporting_choice_service.h"
 #import "components/password_manager/core/browser/ui/affiliated_group.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/consent_level.h"
@@ -152,8 +153,8 @@
     (void (^)(webauthn::SharedKeyList))completion {
   CHECK(completion);
   bool metricsReportingEnabled =
-      GetApplicationContext()->GetLocalState()->GetBoolean(
-          metrics::prefs::kMetricsReportingEnabled);
+      metrics::MetricsReportingChoiceService::IsBasicMetricsReportingEnabled(
+          GetApplicationContext()->GetLocalState());
   _passkeyKeychainProviderBridge = [[PasskeyKeychainProviderBridge alloc]
         initWithEnableLogging:metricsReportingEnabled
       navigationItemTitleView:password_manager::CreatePasswordManagerTitleView(

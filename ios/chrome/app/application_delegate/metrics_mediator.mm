@@ -21,6 +21,7 @@
 #import "build/branding_buildflags.h"
 #import "components/crash/core/common/crash_keys.h"
 #import "components/metrics/metrics_pref_names.h"
+#import "components/metrics/metrics_reporting_choice_service.h"
 #import "components/metrics/metrics_service.h"
 #import "components/metrics/metrics_switches.h"
 #import "components/prefs/pref_service.h"
@@ -635,8 +636,9 @@ BOOL _credentialExtensionWasUsed = NO;
 // If this if-def changes, it needs to be changed in
 // IOSChromeMainParts::IsMetricsReportingEnabled and settings_egtest.mm.
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  BOOL optIn = GetApplicationContext()->GetLocalState()->GetBoolean(
-      metrics::prefs::kMetricsReportingEnabled);
+  BOOL optIn =
+      metrics::MetricsReportingChoiceService::IsBasicMetricsReportingEnabled(
+          GetApplicationContext()->GetLocalState());
 #else
   // If a startup crash has been requested, then pretend that metrics have been
   // enabled, so that the app will go into recovery mode.

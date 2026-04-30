@@ -12,6 +12,7 @@ source_set("coordinator") {
   ]
   deps = [
     "//base",
+    "//components/metrics",
     "//components/metrics:metrics_pref_names",
     "//components/prefs",
     "//components/signin/public/base",
