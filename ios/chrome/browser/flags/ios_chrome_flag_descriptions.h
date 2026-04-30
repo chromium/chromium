@@ -35,9 +35,6 @@ extern const char kAIMEligibilityServiceStartWithProfileDescription[];
 extern const char kAIMNTPEntrypointTabletName[];
 extern const char kAIMNTPEntrypointTabletDescription[];
 
-extern const char kAIOmniboxAskPlaceholderName[];
-extern const char kAIOmniboxAskPlaceholderDescription[];
-
 extern const char kAimCobrowseHeaderName[];
 extern const char kAimCobrowseHeaderDescription[];
 

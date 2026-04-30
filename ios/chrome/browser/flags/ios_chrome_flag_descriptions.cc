@@ -33,11 +33,6 @@ const char kAIMNTPEntrypointTabletName[] = "AIMNTPEntrypointTablet";
 const char kAIMNTPEntrypointTabletDescription[] =
     "Enables the AIMNTPEntrypointTablet feature.";
 
-const char kAIOmniboxAskPlaceholderName[] = "AI Omnibox Ask Placeholder";
-const char kAIOmniboxAskPlaceholderDescription[] =
-    "Enables the placeholder text to be 'Ask...' instead of 'Search...' when "
-    "AI Omnibox is available.";
-
 const char kAimCobrowseHeaderName[] = "AimCobrowseHeader";
 const char kAimCobrowseHeaderDescription[] =
     "Changes the design of the AIM cobrowse header.";
