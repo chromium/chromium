@@ -14,8 +14,8 @@ class Browser;
 // Test double for BrowserProvider implementors. All properties are writable,
 // and have nil, nullptr, or NO as default values.
 @interface StubBrowserProvider : NSObject <BrowserProvider>
-@property(nonatomic, readwrite) UIViewController* viewController;
 @property(nonatomic, readwrite) Browser* browser;
+- (UIViewController*)viewController:(BrowserProviderPassKey)key;
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_COORDINATOR_SCENE_TEST_STUB_BROWSER_PROVIDER_H_

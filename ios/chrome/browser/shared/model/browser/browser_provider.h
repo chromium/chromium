@@ -7,7 +7,15 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/types/pass_key.h"
+
 class Browser;
+
+// Used to limit access to the UIViewController from the BrowserProvider
+// to the FirstRunProfileAgent. Will be removed when the code has been
+// refactored to no longer access this method (crbug.com/40606165).
+class FirstRunProfileAgentHelper;
+using BrowserProviderPassKey = base::PassKey<FirstRunProfileAgentHelper>;
 
 // A BrowserProvider is an abstraction that exposes an interface to the Chrome
 // user interface (and related model objects) to the application layer. Each
@@ -21,14 +29,8 @@ class Browser;
 // completed, i.e. after the ProfileState has passed ProfileInitStage::kUIReady.
 @property(nonatomic, readonly) Browser* browser;
 
-/*
- Properties that should be removed.
-  TODO(crbug.com/40606165): The long-term goal is to reduce the size of this
-  interface; this protocol allows for easy encapsulation of that process.
- */
-
-// Only used by the FirstRunSceneAgent.
-@property(nonatomic, readonly) UIViewController* viewController;
+// TODO(crbug.com/40606165): Used by FirstRunProfileAgent. Should be removed.
+- (UIViewController*)viewController:(BrowserProviderPassKey)key;
 
 @end
 

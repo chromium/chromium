@@ -44,8 +44,14 @@
 #import "ios/chrome/browser/synced_set_up/public/synced_set_up_metrics.h"
 #import "ios/chrome/browser/synced_set_up/utils/utils.h"
 
-namespace first_run {
+// Used to create PassKey to access the UIViewController through the
+// BrowserProvider interface (crbug.com/40606165).
+class FirstRunProfileAgentHelper {
+ public:
+  static BrowserProviderPassKey CreateKey() { return BrowserProviderPassKey{}; }
+};
 
+namespace first_run {
 // Helper class used to access the passkey needed to call
 // MetricsService::StartOutOfBandUploadIfPossible().
 class FirstRunProfileAgentMetricsHelper final {
@@ -389,8 +395,8 @@ const char kGuidedTourStepDidFinishHistogram[] = "IOS.GuidedTour.DidFinishStep";
   FirstRunScreenProvider* provider =
       [[FirstRunScreenProvider alloc] initForProfile:profile];
   UIViewController* baseViewController =
-      _presentingSceneState.browserProviderInterface.currentBrowserProvider
-          .viewController;
+      [_presentingSceneState.browserProviderInterface.currentBrowserProvider
+          viewController:FirstRunProfileAgentHelper::CreateKey()];
   Browser* mainBrowser = _presentingSceneState.browserProviderInterface
                              .mainBrowserProvider.browser;
   _firstRunCoordinator =
@@ -447,7 +453,9 @@ const char kGuidedTourStepDidFinishHistogram[] = "IOS.GuidedTour.DidFinishStep";
       _presentingSceneState.browserProviderInterface.currentBrowserProvider;
   Browser* browser = presentingInterface.browser;
   _guidedTourPromoCoordinator = [[GuidedTourPromoCoordinator alloc]
-      initWithBaseViewController:presentingInterface.viewController
+      initWithBaseViewController:
+          [presentingInterface
+              viewController:FirstRunProfileAgentHelper::CreateKey()]
                          browser:browser];
   _guidedTourPromoCoordinator.delegate = self;
   [_guidedTourPromoCoordinator start];
@@ -464,7 +472,9 @@ const char kGuidedTourStepDidFinishHistogram[] = "IOS.GuidedTour.DidFinishStep";
       _presentingSceneState.browserProviderInterface.currentBrowserProvider;
   _guidedTourCoordinator = [[GuidedTourCoordinator alloc]
             initWithStep:GuidedTourStep::kNTP
-      baseViewController:presentingInterface.viewController
+      baseViewController:
+          [presentingInterface
+              viewController:FirstRunProfileAgentHelper::CreateKey()]
                  browser:presentingInterface.browser
                 delegate:self];
   [_guidedTourCoordinator start];
