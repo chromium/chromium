@@ -34,30 +34,35 @@
   NSString* _modelSectionHeader;
   // The server-provided header for the tools section.
   NSString* _toolsSectionHeader;
+  // Regular search hint text. Only set when Fusebox is available.
+  NSString* _regularSearchHintText;
 }
 
 + (instancetype)localFallbackStrings {
   return [[ComposeboxStrings alloc] initWithToolMapping:{}
                                            modelMapping:{}
                                      modelSectionHeader:nil
-                                     toolsSectionHeader:nil];
+                                     toolsSectionHeader:nil
+                                  regularSearchHintText:nil];
 }
 
 - (instancetype)
-    initWithToolMapping:
-        (std::unordered_map<ComposeboxMode, ComposeboxStringBundle*>)
-            controlMapping
-           modelMapping:
-               (std::unordered_map<ComposeboxModelOption,
-                                   ComposeboxStringBundle*>)modelMapping
-     modelSectionHeader:(NSString*)modelSectionHeader
-     toolsSectionHeader:(NSString*)toolsSectionHeader {
+      initWithToolMapping:
+          (std::unordered_map<ComposeboxMode, ComposeboxStringBundle*>)
+              controlMapping
+             modelMapping:
+                 (std::unordered_map<ComposeboxModelOption,
+                                     ComposeboxStringBundle*>)modelMapping
+       modelSectionHeader:(NSString*)modelSectionHeader
+       toolsSectionHeader:(NSString*)toolsSectionHeader
+    regularSearchHintText:(NSString*)regularSearchHintText {
   self = [super init];
   if (self) {
     _controlMapping = controlMapping;
     _modelMapping = modelMapping;
     _modelSectionHeader = [modelSectionHeader copy];
     _toolsSectionHeader = [toolsSectionHeader copy];
+    _regularSearchHintText = [regularSearchHintText copy];
   }
 
   return self;
@@ -137,6 +142,10 @@
 
 // Returns the server strings for the given tool, if available.
 - (ComposeboxStringBundle*)stringsForTool:(ComposeboxMode)tool {
+  if (tool == ComposeboxMode::kRegularSearch) {
+    // Don't use server strings for regular search.
+    return nil;
+  }
   auto it = _controlMapping.find(tool);
   if (it != _controlMapping.end()) {
     return it->second;
@@ -176,7 +185,7 @@
                     : l10n_util::GetNSString(
                           IDS_IOS_COMPOSEBOX_DEEP_SEARCH_ACTION);
     case kRegularSearch:
-      return nil;
+      return isHint ? _regularSearchHintText : nil;
   }
 }
 

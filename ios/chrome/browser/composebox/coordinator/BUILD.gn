@@ -92,6 +92,7 @@ source_set("input_plate") {
     "//components/feature_engagement/public",
     "//components/prefs",
     "//components/security_state/ios",
+    "//components/strings",
     "//ios/chrome/app:tests_hook",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/autocomplete/model",
