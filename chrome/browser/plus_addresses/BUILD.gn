@@ -18,7 +18,6 @@ source_set("plus_addresses") {
     "//components/affiliations/core/browser:affiliations",
     "//components/autofill/core/common:features",
     "//components/plus_addresses/core/browser",
-    "//components/plus_addresses/core/browser:hats_utils",
     "//components/plus_addresses/core/browser/settings",
     "//components/plus_addresses/core/common:features",
     "//components/signin/public/identity_manager",

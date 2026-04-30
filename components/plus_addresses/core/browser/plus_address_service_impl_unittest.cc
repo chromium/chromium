@@ -44,7 +44,6 @@
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/os_crypt/async/browser/test_utils.h"
 #include "components/plus_addresses/core/browser/grit/plus_addresses_strings.h"
-#include "components/plus_addresses/core/browser/plus_address_hats_utils.h"
 #include "components/plus_addresses/core/browser/plus_address_http_client_impl.h"
 #include "components/plus_addresses/core/browser/plus_address_preallocator.h"
 #include "components/plus_addresses/core/browser/plus_address_test_environment.h"
@@ -578,40 +577,6 @@ TEST_F(PlusAddressServiceRequestsTest, OngoingRequestsCancelledOnSignout) {
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
-// Tests that `GetPlusAddressHatsData` returns default values when the
-// relevant prefs are not set.
-TEST_F(PlusAddressServiceRequestsTest, GetPlusAddressHatsData_PrefsNotSet) {
-  std::map<std::string, std::string> hats_data =
-      service().GetPlusAddressHatsData();
-  EXPECT_THAT(hats_data,
-              UnorderedElementsAre(
-                  Pair(hats::kPlusAddressesCount, std::string("0")),
-                  Pair(hats::kFirstPlusAddressCreationTime, std::string("-1")),
-                  Pair(hats::kLastPlusAddressFillingTime, std::string("-1"))));
-}
-
-// Tests that `GetPlusAddressHatsData` returns the correct data when the
-// relevant prefs are set.
-TEST_F(PlusAddressServiceRequestsTest, GetPlusAddressHatsData_PrefsSet) {
-  const PlusProfile profile1 = test::CreatePlusProfile();
-  const PlusProfile profile2 = test::CreatePlusProfile2();
-  service().SavePlusProfile(profile1);
-  service().SavePlusProfile(profile2);
-
-  pref_service().SetTime(prefs::kFirstPlusAddressCreationTime,
-                         base::Time::Now());
-  pref_service().SetTime(prefs::kLastPlusAddressFillingTime, base::Time::Now());
-
-  task_environment().FastForwardBy(base::Seconds(100));
-
-  std::map<std::string, std::string> hats_data =
-      service().GetPlusAddressHatsData();
-  EXPECT_THAT(hats_data,
-              UnorderedElementsAre(
-                  Pair(hats::kPlusAddressesCount, std::string("2")),
-                  Pair(hats::kFirstPlusAddressCreationTime, std::string("100")),
-                  Pair(hats::kLastPlusAddressFillingTime, std::string("100"))));
-}
 
 class PlusAddressServicePreAllocationTest
     : public PlusAddressServiceRequestsTest {

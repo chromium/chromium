@@ -29,10 +29,6 @@ if (is_android) {
   }
 }
 
-source_set("hats_utils") {
-  sources = [ "plus_address_hats_utils.h" ]
-}
-
 source_set("parsing") {
   sources = [
     "plus_address_parsing_utils.cc",
@@ -70,7 +66,6 @@ source_set("browser") {
     "plus_address_ui_utils.h",
   ]
   deps = [
-    ":hats_utils",
     ":parsing",
     "//components/affiliations/core/browser:affiliations",
     "//components/feature_engagement/public",
@@ -121,7 +116,6 @@ source_set("unit_tests") {
 
   deps = [
     ":browser",
-    ":hats_utils",
     ":parsing",
     ":test_support",
     "//base/test:test_support",
@@ -159,7 +153,6 @@ static_library("test_support") {
     "plus_address_test_utils.h",
   ]
   deps = [
-    ":hats_utils",
     "//base",
     "//base/test:test_support",
     "//components/affiliations/core/browser:test_support",

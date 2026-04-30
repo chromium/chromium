@@ -45,7 +45,6 @@ source_set("plus_addresses") {
       "//base",
       "//components/autofill/core/browser",
       "//components/autofill/core/common",
-      "//components/plus_addresses/core/browser:hats_utils",
       "//components/plus_addresses/core/browser:plus_address_java_enums",
       "//ui/gfx",
     ]

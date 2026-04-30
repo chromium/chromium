@@ -33,7 +33,6 @@ class FakePlusAddressService : public PlusAddressService {
   bool MatchesPlusAddressFormat(const std::u16string& value) const override;
   bool IsPlusAddressFillingEnabled(const url::Origin& origin) const override;
   size_t GetPlusAddressesCount() override;
-  std::map<std::string, std::string> GetPlusAddressHatsData() const override;
   void DidFillPlusAddress() override;
   bool IsFieldEligibleForPlusAddress(
       const autofill::AutofillField& field) const;

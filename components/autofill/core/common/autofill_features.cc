@@ -1068,48 +1068,6 @@ BASE_FEATURE(kManageTravelPerceptionSurvey, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kManageYourSavedInfoPerceptionSurvey,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, a HaTS survey is shown after the successful first time creation
-// flow.
-// TODO: crbug.com/348139343 - Move back to components/plus_addresses.
-BASE_FEATURE(kPlusAddressAcceptedFirstTimeCreateSurvey,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// When enabled, a HaTS survey is shown after the declined the first plus
-// address creation flow.
-// TODO: crbug.com/348139343 - Move back to components/plus_addresses.
-BASE_FEATURE(kPlusAddressDeclinedFirstTimeCreateSurvey,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// When enabled, a HaTS survey is shown after the user fills a plus address
-// after triggering autofill manually.
-// TODO: crbug.com/348139343 - Move back to components/plus_addresses.
-BASE_FEATURE(kPlusAddressFilledPlusAddressViaManualFallbackSurvey,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// When enabled, a HaTS survey is shown after the user creates a 3rd+ plus
-// address.
-// TODO: crbug.com/348139343 - Move back to components/plus_addresses.
-BASE_FEATURE(kPlusAddressUserCreatedMultiplePlusAddressesSurvey,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// When enabled, a HaTS survey is shown after the user creates a plus address
-// triggering the popup via the Chrome context menu on Desktop or via the
-// Keyboard Accessory on Android.
-// TODO: crbug.com/348139343 - Move back to components/plus_addresses.
-BASE_FEATURE(kPlusAddressUserCreatedPlusAddressViaManualFallbackSurvey,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// When enabled, a HaTS survey is shown after the user chooses to fill an email
-// when a plus address suggestion is also offered in the Autofill popup.
-// TODO: crbug.com/348139343 - Move back to components/plus_addresses.
-BASE_FEATURE(kPlusAddressUserDidChooseEmailOverPlusAddressSurvey,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// When enabled, a HaTS survey is shown after the user chooses to fill a plus
-// address when an email suggestion is also offered in the Autofill popup.
-// TODO: crbug.com/348139343 - Move back to components/plus_addresses.
-BASE_FEATURE(kPlusAddressUserDidChoosePlusAddressOverEmailSurvey,
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Kill switch: if enabled, suggestions are shown for fields with unrecognized
 // autocomplete attribute if they are already autofilled.

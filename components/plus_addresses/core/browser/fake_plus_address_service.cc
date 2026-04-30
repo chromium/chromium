@@ -20,7 +20,6 @@
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/plus_addresses/core/browser/grit/plus_addresses_strings.h"
 #include "components/plus_addresses/core/browser/mock_plus_address_http_client.h"
-#include "components/plus_addresses/core/browser/plus_address_hats_utils.h"
 #include "components/plus_addresses/core/browser/plus_address_test_utils.h"
 #include "components/plus_addresses/core/browser/plus_address_types.h"
 #include "components/plus_addresses/core/common/features.h"
@@ -55,12 +54,6 @@ size_t FakePlusAddressService::GetPlusAddressesCount() {
   return plus_profiles_.size();
 }
 
-std::map<std::string, std::string>
-FakePlusAddressService::GetPlusAddressHatsData() const {
-  return {{hats::kPlusAddressesCount, base::ToString(GetPlusProfiles().size())},
-          {hats::kFirstPlusAddressCreationTime, "-1"},
-          {hats::kLastPlusAddressFillingTime, "-1"}};
-}
 
 bool FakePlusAddressService::IsPlusAddressFillingEnabled(
     const url::Origin& origin) const {

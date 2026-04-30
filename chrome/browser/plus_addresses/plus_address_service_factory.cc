@@ -18,7 +18,6 @@
 #include "components/affiliations/core/browser/affiliation_service.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/plus_addresses/core/browser/affiliations/plus_address_affiliation_source_adapter.h"
-#include "components/plus_addresses/core/browser/plus_address_hats_utils.h"
 #include "components/plus_addresses/core/browser/plus_address_http_client_impl.h"
 #include "components/plus_addresses/core/browser/plus_address_service_impl.h"
 #include "components/plus_addresses/core/common/features.h"

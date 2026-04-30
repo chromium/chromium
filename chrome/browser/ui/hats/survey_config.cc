@@ -20,7 +20,6 @@
 #include "components/page_info/core/features.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_hats_trigger_helper.h"
-#include "components/plus_addresses/core/browser/plus_address_hats_utils.h"
 #include "components/plus_addresses/core/common/features.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -198,24 +197,6 @@ constexpr char kHatsNextSurveyTriggerIDTesting[] =
     "HLpeYy5Av0ugnJ3q1cK0XzzA8UHv";
 
 constexpr char kHatsSurveyTriggerPermissionsPrompt[] = "permissions-prompt";
-constexpr char kHatsSurveyTriggerPlusAddressAcceptedFirstTimeCreate[] =
-    "plus-address-accepted-first-time-create";
-constexpr char kHatsSurveyTriggerPlusAddressCreatedMultiplePlusAddresses[] =
-    "plus-address-created-multiple-plus_addresses";
-constexpr char
-    kHatsSurveyTriggerPlusAddressCreatedPlusAddressViaManualFallback[] =
-        "plus-address-created-plus-address-via-manual-fallback";
-constexpr char kHatsSurveyTriggerPlusAddressDeclinedFirstTimeCreate[] =
-    "plus-address-declined-first-time-create";
-constexpr char
-    kHatsSurveyTriggerPlusAddressDidChooseEmailOverPlusAddressSurvey[] =
-        "plus-address-did-choose-email-over-plus-address";
-constexpr char
-    kHatsSurveyTriggerPlusAddressDidChoosePlusAddressOverEmailSurvey[] =
-        "plus-address-did-choose-plus-address-over-email";
-constexpr char
-    kHatsSurveyTriggerPlusAddressFilledPlusAddressViaManualFallback[] =
-        "plus-address-filled-plus-address-via-manual-fallback";
 constexpr char kHatsSurveyTriggerOnFocusZpsSuggestionsHappiness[] =
     "omnibox-on-focus-happiness";
 constexpr char kHatsSurveyTriggerOnFocusZpsSuggestionsUtility[] =
@@ -858,123 +839,6 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
 
 #endif  // #if !BUILDFLAG(IS_ANDROID)
 
-  survey_configs.emplace_back(
-      &autofill::features::kPlusAddressAcceptedFirstTimeCreateSurvey,
-      kHatsSurveyTriggerPlusAddressAcceptedFirstTimeCreate,
-      /*presupplied_trigger_id=*/std::nullopt,
-      /*product_specific_bits_data_fields=*/std::vector<std::string>{},
-      /*product_specific_string_data_fields=*/
-      std::vector<std::string>{
-          plus_addresses::hats::kPlusAddressesCount,
-          plus_addresses::hats::kFirstPlusAddressCreationTime,
-          plus_addresses::hats::kLastPlusAddressFillingTime});
-  survey_configs.back().SetCooldownPeriodOverride(base::Days(
-      base::FeatureParam<int>(
-          &autofill::features::kPlusAddressAcceptedFirstTimeCreateSurvey,
-          plus_addresses::hats::kCooldownOverrideDays, 0)
-          .Get()));
-
-  survey_configs.emplace_back(
-      &autofill::features::kPlusAddressDeclinedFirstTimeCreateSurvey,
-      kHatsSurveyTriggerPlusAddressDeclinedFirstTimeCreate,
-      /*presupplied_trigger_id=*/std::nullopt,
-      /*product_specific_bits_data_fields=*/std::vector<std::string>{},
-      /*product_specific_string_data_fields=*/
-      std::vector<std::string>{
-          plus_addresses::hats::kPlusAddressesCount,
-          plus_addresses::hats::kFirstPlusAddressCreationTime,
-          plus_addresses::hats::kLastPlusAddressFillingTime});
-  survey_configs.back().SetCooldownPeriodOverride(base::Days(
-      base::FeatureParam<int>(
-          &autofill::features::kPlusAddressDeclinedFirstTimeCreateSurvey,
-          plus_addresses::hats::kCooldownOverrideDays, 0)
-          .Get()));
-
-  survey_configs.emplace_back(
-      &autofill::features::kPlusAddressUserCreatedMultiplePlusAddressesSurvey,
-      kHatsSurveyTriggerPlusAddressCreatedMultiplePlusAddresses,
-      /*presupplied_trigger_id=*/std::nullopt,
-      /*product_specific_bits_data_fields=*/std::vector<std::string>{},
-      /*product_specific_string_data_fields=*/
-      std::vector<std::string>{
-          plus_addresses::hats::kPlusAddressesCount,
-          plus_addresses::hats::kFirstPlusAddressCreationTime,
-          plus_addresses::hats::kLastPlusAddressFillingTime});
-  survey_configs.back().SetCooldownPeriodOverride(
-      base::Days(base::FeatureParam<int>(
-                     &autofill::features::
-                         kPlusAddressUserCreatedMultiplePlusAddressesSurvey,
-                     plus_addresses::hats::kCooldownOverrideDays, 0)
-                     .Get()));
-
-  survey_configs.emplace_back(
-      &autofill::features::
-          kPlusAddressUserCreatedPlusAddressViaManualFallbackSurvey,
-      kHatsSurveyTriggerPlusAddressCreatedPlusAddressViaManualFallback,
-      /*presupplied_trigger_id=*/std::nullopt,
-      /*product_specific_bits_data_fields=*/std::vector<std::string>{},
-      /*product_specific_string_data_fields=*/
-      std::vector<std::string>{
-          plus_addresses::hats::kPlusAddressesCount,
-          plus_addresses::hats::kFirstPlusAddressCreationTime,
-          plus_addresses::hats::kLastPlusAddressFillingTime});
-  survey_configs.back().SetCooldownPeriodOverride(base::Days(
-      base::FeatureParam<int>(
-          &autofill::features::
-              kPlusAddressUserCreatedPlusAddressViaManualFallbackSurvey,
-          plus_addresses::hats::kCooldownOverrideDays, 0)
-          .Get()));
-
-  survey_configs.emplace_back(
-      &autofill::features::kPlusAddressUserDidChoosePlusAddressOverEmailSurvey,
-      kHatsSurveyTriggerPlusAddressDidChoosePlusAddressOverEmailSurvey,
-      /*presupplied_trigger_id=*/std::nullopt,
-      /*product_specific_bits_data_fields=*/std::vector<std::string>{},
-      /*product_specific_string_data_fields=*/
-      std::vector<std::string>{
-          plus_addresses::hats::kPlusAddressesCount,
-          plus_addresses::hats::kFirstPlusAddressCreationTime,
-          plus_addresses::hats::kLastPlusAddressFillingTime});
-  survey_configs.back().SetCooldownPeriodOverride(
-      base::Days(base::FeatureParam<int>(
-                     &autofill::features::
-                         kPlusAddressUserDidChoosePlusAddressOverEmailSurvey,
-                     plus_addresses::hats::kCooldownOverrideDays, 0)
-                     .Get()));
-
-  survey_configs.emplace_back(
-      &autofill::features::kPlusAddressUserDidChooseEmailOverPlusAddressSurvey,
-      kHatsSurveyTriggerPlusAddressDidChooseEmailOverPlusAddressSurvey,
-      /*presupplied_trigger_id=*/std::nullopt,
-      /*product_specific_bits_data_fields=*/std::vector<std::string>{},
-      /*product_specific_string_data_fields=*/
-      std::vector<std::string>{
-          plus_addresses::hats::kPlusAddressesCount,
-          plus_addresses::hats::kFirstPlusAddressCreationTime,
-          plus_addresses::hats::kLastPlusAddressFillingTime});
-  survey_configs.back().SetCooldownPeriodOverride(
-      base::Days(base::FeatureParam<int>(
-                     &autofill::features::
-                         kPlusAddressUserDidChooseEmailOverPlusAddressSurvey,
-                     plus_addresses::hats::kCooldownOverrideDays, 0)
-                     .Get()));
-
-  survey_configs.emplace_back(
-      &autofill::features::kPlusAddressFilledPlusAddressViaManualFallbackSurvey,
-      kHatsSurveyTriggerPlusAddressFilledPlusAddressViaManualFallback,
-      /*presupplied_trigger_id=*/std::nullopt,
-      /*product_specific_bits_data_fields=*/std::vector<std::string>{},
-      /*product_specific_string_data_fields=*/
-      std::vector<std::string>{
-          plus_addresses::hats::kPlusAddressesCount,
-          plus_addresses::hats::kFirstPlusAddressCreationTime,
-          plus_addresses::hats::kLastPlusAddressFillingTime});
-  survey_configs.back().SetCooldownPeriodOverride(
-      base::Days(base::FeatureParam<int>(
-                     &autofill::features::
-                         kPlusAddressFilledPlusAddressViaManualFallbackSurvey,
-                     plus_addresses::hats::kCooldownOverrideDays, 0)
-                     .Get()));
 
   survey_configs.emplace_back(
       &omnibox_feature_configs::HappinessTrackingSurveyForOmniboxOnFocusZps::
@@ -1090,13 +954,6 @@ std::optional<uint64_t> SurveyConfig::ValidateHatsSurveyUkmId(
   return hats_survey_ukm_id.has_value() && hats_survey_ukm_id.value() > 0
              ? hats_survey_ukm_id
              : std::nullopt;
-}
-
-void SurveyConfig::SetCooldownPeriodOverride(
-    const base::TimeDelta& cooldown_period_override) {
-  if (!cooldown_period_override.is_zero()) {
-    cooldown_period_override_ = cooldown_period_override;
-  }
 }
 
 std::optional<base::TimeDelta> SurveyConfig::GetCooldownPeriodOverride(

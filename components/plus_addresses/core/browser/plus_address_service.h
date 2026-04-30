@@ -122,9 +122,6 @@ class PlusAddressService : public KeyedService {
   // current profile.
   virtual size_t GetPlusAddressesCount() = 0;
 
-  // Returns survey specific data for plus address HaTS surveys. Subsequent
-  // calls can return different data.
-  virtual std::map<std::string, std::string> GetPlusAddressHatsData() const = 0;
 
   // Called when a plus address was filled into a web input field.
   virtual void DidFillPlusAddress() = 0;
