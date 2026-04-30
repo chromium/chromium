@@ -21,6 +21,12 @@ VSyncProviderMac::VSyncProviderMac()
 
 VSyncProviderMac::~VSyncProviderMac() = default;
 
+VSyncProviderMac::DisplayState::DisplayState() = default;
+VSyncProviderMac::DisplayState::~DisplayState() = default;
+VSyncProviderMac::DisplayState::DisplayState(DisplayState&& other) = default;
+VSyncProviderMac::DisplayState& VSyncProviderMac::DisplayState::operator=(
+    DisplayState&& other) = default;
+
 void VSyncProviderMac::SetSupportedDisplayLinkId(int64_t display_id,
                                                  bool is_supported) {
   if (is_supported) {
@@ -34,14 +40,9 @@ void VSyncProviderMac::AddSupportedDisplayLinkId(int64_t display_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(vsync_sequence_checker_);
 
   base::AutoLock lock(id_lock_);
-  auto found = callback_lists_.find(display_id);
-  if (found == callback_lists_.end()) {
-    std::list<VSyncCallbackMac::Callback> callbacks;
-    // Insert an empty callback list
-    auto result = callback_lists_.insert(
-        std::make_pair(display_id, std::move(callbacks)));
-    bool inserted = result.second;
-    DCHECK(inserted);
+  auto found = display_states_.find(display_id);
+  if (found == display_states_.end()) {
+    display_states_.emplace(display_id, DisplayState());
   }
 }
 
@@ -49,10 +50,7 @@ void VSyncProviderMac::RemoveSupportedDisplayLinkId(int64_t display_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(vsync_sequence_checker_);
 
   base::AutoLock lock(id_lock_);
-  auto found = callback_lists_.find(display_id);
-  if (found != callback_lists_.end()) {
-    callback_lists_.erase(display_id);
-  }
+  display_states_.erase(display_id);
 }
 
 void VSyncProviderMac::RegisterCallback(VSyncCallbackMac::Callback callback,
@@ -65,15 +63,15 @@ void VSyncProviderMac::RegisterCallback(VSyncCallbackMac::Callback callback,
     return;
   }
 
-  auto found = callback_lists_.find(display_id);
-  if (found == callback_lists_.end()) {
+  auto found = display_states_.find(display_id);
+  if (found == display_states_.end()) {
     return;
   }
 
-  std::list<VSyncCallbackMac::Callback>& callbacks = found->second;
-  bool should_request_begin_frame = callbacks.empty();
+  DisplayState& display_state = found->second;
+  bool should_request_begin_frame = display_state.callbacks.empty();
 
-  callbacks.push_back(std::move(callback));
+  display_state.callbacks.push_back(std::move(callback));
 
   // Request BeginFrame in browser via IPC.
   if (should_request_begin_frame) {
@@ -92,19 +90,15 @@ void VSyncProviderMac::UnregisterCallback(VSyncCallbackMac::Callback callback,
     return;
   }
 
-  auto found = callback_lists_.find(display_id);
-  if (found == callback_lists_.end()) {
+  auto found = display_states_.find(display_id);
+  if (found == display_states_.end()) {
     return;
   }
 
-  std::list<VSyncCallbackMac::Callback>& callbacks = found->second;
-  callbacks.remove(callback);
+  found->second.callbacks.remove(callback);
 
-  // Stop BeginFrame in browser via IPC.
-  if (callbacks.empty()) {
-    needs_begin_frame_callback_.Run(display_id,
-                                    /*needs_begin_frames=*/false);
-  }
+  // Do not request stopping BeginFrame in browser via IPC at this stage. VSyncs
+  // will be stopped in OnVSync() if needed.
 }
 
 void VSyncProviderMac::OnVSync(const VSyncParamsMac& params,
@@ -112,21 +106,42 @@ void VSyncProviderMac::OnVSync(const VSyncParamsMac& params,
   DCHECK_CALLED_ON_VALID_SEQUENCE(vsync_sequence_checker_);
   TRACE_EVENT0("gpu", "VSyncProviderMac::OnVSync");
 
-  // DisplayLink entry might no longer exist.
-  auto found = callback_lists_.find(display_id);
-  if (found == callback_lists_.end()) {
+  // DisplayLink entry might no longer exist after display removal.
+  auto found = display_states_.find(display_id);
+  if (found == display_states_.end()) {
     return;
   }
 
+  DisplayState& display_state = found->second;
+
   // Unregister() might be called inside the loop and
-  // |callback_lists_.[display_id]| size changes while callbacks are called. Get
+  // |display_state.callbacks| size changes while callbacks are called. Get
   // a local copy here.
-  std::list<VSyncCallbackMac::Callback> local_callbacks = found->second;
+  std::list<VSyncCallbackMac::Callback> local_callbacks =
+      display_state.callbacks;
 
   // Run callbacks
   for (auto& cb : local_callbacks) {
     cb.Run(params);
   }
+
+  // Defer stopping VSync after the last client unregisters.
+  if (!display_state.callbacks.empty()) {
+    display_state.consecutive_vsyncs_with_no_callbacks = 0;
+    return;
+  }
+
+  // Keep VSync alive for a short period.
+  display_state.consecutive_vsyncs_with_no_callbacks++;
+  if (display_state.consecutive_vsyncs_with_no_callbacks <
+      kMaxExtraVSyncCallbacks) {
+    return;
+  }
+
+  // Now stop BeginFrame in the Browser via IPC.
+  display_state.consecutive_vsyncs_with_no_callbacks = 0;
+  needs_begin_frame_callback_.Run(display_id,
+                                  /*needs_begin_frames=*/false);
 }
 
 void VSyncProviderMac::SetCallbackForRemoteNeedsBeginFrame(
@@ -140,10 +155,10 @@ bool VSyncProviderMac::IsDisplayLinkSupported(int64_t display_id) {
     return false;
   }
 
-  // |callback_lists_| is updated on Viz thread. A lock is needed when this
+  // |display_states_| is updated on Viz thread. A lock is needed when this
   // function is called on CrGpuMain or CompositorGpuThread (DrDC).
   base::AutoLock lock(id_lock_);
-  return callback_lists_.find(display_id) != callback_lists_.end();
+  return display_states_.find(display_id) != display_states_.end();
 }
 
 bool VSyncProviderMac::BelongsToCurrentThread() {
