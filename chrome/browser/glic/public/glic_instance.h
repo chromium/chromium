@@ -88,6 +88,7 @@ class GlicInstance {
       DestructionCallback callback) = 0;
 
   // Get this instance's Host which manages the chrome://glic WebContents.
+  // DEPRECATED - Use specific GlicInstance methods instead.
   virtual Host& host() = 0;
 
   // Gets the window size of the active embedder.
