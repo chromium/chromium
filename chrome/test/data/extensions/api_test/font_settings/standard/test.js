@@ -122,7 +122,7 @@ chrome.test.runTests([
     const message = 'getFontList should return an array of objects with ' +
         'fontId and displayName properties.';
     const getPlatformInfo = new Promise((resolve) => {
-      chrome.runtime.getPlatformInfo(info => resolve(info.os == 'android'));
+      chrome.runtime.getPlatformInfo(info => resolve(info.os === 'android'));
     });
     fs.getFontList(chrome.test.callbackPass(function(value) {
       getPlatformInfo.then(isAndroid => {

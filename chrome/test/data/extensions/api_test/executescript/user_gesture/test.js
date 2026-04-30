@@ -6,7 +6,7 @@ chrome.test.getConfig(function(config) {
   const relativePath = '/extensions/api_test/executescript/run_at/test.html';
   const testUrl = `http://b.com:${config.testServer.port}${relativePath}`;
   chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
-    if (changeInfo.status != 'complete') {
+    if (changeInfo.status !== 'complete') {
       return;
     }
     chrome.tabs.onUpdated.removeListener(arguments.callee);

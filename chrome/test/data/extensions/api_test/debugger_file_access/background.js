@@ -45,7 +45,7 @@ async function runNotAllowedTest(method, params, expectAllowed) {
   function testAttachWithFileUrl(url) {
     chrome.tabs.onUpdated.addListener(
         function listener(tabId, changeInfo, tab) {
-          if (tab.status == 'complete' && tab.url == url) {
+          if (tab.status === 'complete' && tab.url === url) {
             chrome.tabs.onUpdated.removeListener(listener);
             chrome.debugger.attach({tabId: tabId}, '1.1', function() {
               if (expectFileAccess) {

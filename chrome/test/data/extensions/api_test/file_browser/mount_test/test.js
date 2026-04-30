@@ -169,7 +169,7 @@ function validateObject(received, expected, name) {
       if (!validateObject(received[key], expected[key], `${name}.${key}`)) {
         return false;
       }
-    } else if (received[key] != expected[key]) {
+    } else if (received[key] !== expected[key]) {
       console.warn(
           `Expected '${key}' ${name} property to be: ` +
           `'${expected[key]}', but got: '${received[key]}' instead.`);

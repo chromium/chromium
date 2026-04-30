@@ -472,7 +472,7 @@ export class TestFileSystemProvider {
       return this.root;
     }
     let path = pathString.split('/');
-    if (path[0] != '') {
+    if (path[0] !== '') {
       // Must start with "/"
       return null;
     }
@@ -980,7 +980,7 @@ export class TestFileSystemProvider {
       return;
     }
 
-    if (filePath == `/${TestFileSystemProvider.FILE_BIG}`) {
+    if (filePath === `/${TestFileSystemProvider.FILE_BIG}`) {
       // This file is not intended to be read below the max 32-bit unsigned
       // value, so fail immediately.
       if (options.offset <= 2 ** 32 - 1) {

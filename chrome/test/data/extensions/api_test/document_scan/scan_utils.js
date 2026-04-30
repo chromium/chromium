@@ -35,7 +35,7 @@ async function getScannerId() {
     secure: true,
   };
   const response = await getScannerList(filter);
-  if (response.result != OperationResult.SUCCESS) {
+  if (response.result !== OperationResult.SUCCESS) {
     return null;
   }
   if (response.scanners.length < 1) {
@@ -59,7 +59,7 @@ async function startScan(scannerHandle, maxReadSize) {
     const options = {
       format: 'format',
     };
-    if (maxReadSize != undefined) {
+    if (maxReadSize !== undefined) {
       options.maxReadSize = maxReadSize;
     }
     chrome.documentScan.startScan(scannerHandle, options, resolve);

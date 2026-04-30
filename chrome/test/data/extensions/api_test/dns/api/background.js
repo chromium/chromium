@@ -27,7 +27,7 @@ const testNonexistentHostnameResolution = function() {
     // INTERNET_DISCONNECTED if we additionally don't have any network
     // connection at all.
     chrome.test.assertTrue(
-        resolveInfo.resultCode == -106 || resolveInfo.resultCode == -105);
+        resolveInfo.resultCode === -106 || resolveInfo.resultCode === -105);
     chrome.test.succeed('hostname correctly failed to resolve');
   };
   chrome.dns.resolve('this.hostname.is.bogus.test', callback);

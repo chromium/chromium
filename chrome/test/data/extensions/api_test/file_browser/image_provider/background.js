@@ -87,7 +87,7 @@ const METADATA_FIELD_NAMES = [
 const requestIdToFileEntry = new Map();
 
 function trace(...args) {
-  console.log(...args);
+  console.info(...args);
 }
 
 function mountFileSystem() {
@@ -113,7 +113,7 @@ function findEntry(entryPath, onError, options, operation) {
   trace(operation, entryPath, JSON.stringify(options));
   const entry = ENTRY_PATHS[entryPath];
   if (!entry) {
-    console.log(
+    console.info(
         `Request for '${entryPath}': NOT_FOUND. ${JSON.stringify(options)}`);
     onError('NOT_FOUND');
   }

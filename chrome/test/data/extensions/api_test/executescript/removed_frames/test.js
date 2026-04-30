@@ -9,13 +9,13 @@ function ResponseCounter() {
   this.responsesReceived = 0;
   this.expectedResponses = -1;
   const listenerFunction = function(request, sender, sendResponse) {
-    if (request == 'fail') {
+    if (request === 'fail') {
       chrome.test.fail('Received bad message');
     } else {
       chrome.test.assertEq('complete', request);
       ++this.responsesReceived;
       chrome.test.assertTrue(this.responsesReceived <= this.expectedResponses);
-      if (this.responsesReceived == this.expectedResponses &&
+      if (this.responsesReceived === this.expectedResponses &&
           this.doneCallback) {
         this.removeListener();
         this.doneCallback();
@@ -32,7 +32,7 @@ const waitForCommittedAndRun = function(functionToRun, numCommits, url) {
   let committedCount = 0;
   const counter = new ResponseCounter();  // Every test gets a counter.
   const onCommitted = function(details) {
-    if (++committedCount == numCommits) {
+    if (++committedCount === numCommits) {
       functionToRun(counter, details.tabId);
       chrome.webNavigation.onCommitted.removeListener(onCommitted);
     }

@@ -9,7 +9,7 @@ chrome.test.runTests([
           if (email.length > 0) {
             // If we actually have an e-mail address returned, do a simple
             // sanity check on it.
-            chrome.test.assertTrue(email.indexOf('@') != -1);
+            chrome.test.assertTrue(email.indexOf('@') !== -1);
           }
         }));
   },

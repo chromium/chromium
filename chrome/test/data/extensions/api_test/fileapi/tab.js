@@ -20,11 +20,11 @@ function successEntryCallback(entry) {
 }
 
 chrome.test.runTests([function tab() {
-  console.log('Requesting a filesystem...');
+  console.info('Requesting a filesystem...');
   webkitRequestFileSystem(window.TEMPORARY, 100, function(fs) {
     fileSystem = fs;
     // See if we get the same filesystem image.
-    console.log(`DONE requesting filesystem: ${fileSystem.name}`);
+    console.info(`DONE requesting filesystem: ${fileSystem.name}`);
     fileSystem.root.getFile(
         'dir/file', {create: false}, successEntryCallback, errorCallback);
   }, errorCallback);

@@ -238,7 +238,7 @@ function maybeSkipPluginTest() {
     }
   }
   const kMessage = `Plugin not found for ${kPluginMimeType}, skipping test.`;
-  console.log(kMessage);
+  console.info(kMessage);
   chrome.test.log(kMessage);
   chrome.test.succeed();
   return true;

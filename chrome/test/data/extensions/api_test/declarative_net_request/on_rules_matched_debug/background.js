@@ -5,7 +5,7 @@
 // Navigates to |url| and invokes |callback| when the navigation is complete.
 function navigateTab(url, expectedTabUrl, callback) {
   chrome.tabs.onUpdated.addListener(function updateCallback(_, info, tab) {
-    if (info.status == 'complete' && tab.url == expectedTabUrl) {
+    if (info.status === 'complete' && tab.url === expectedTabUrl) {
       chrome.tabs.onUpdated.removeListener(updateCallback);
       callback(tab);
     }

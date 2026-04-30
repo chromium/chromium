@@ -99,7 +99,7 @@ function run() {
       return;
     }
     const tasks = resultingTasks.tasks;
-    if (tasks.length != 1) {
+    if (tasks.length !== 1) {
       onError(`Got invalid number of tasks for '${entry.fullPath}': ${
           tasks.length}`);
     }
@@ -134,7 +134,7 @@ function run() {
     }
     const tasks = resultingTasks.tasks;
 
-    if (tasks.length != 1) {
+    if (tasks.length !== 1) {
       onError(`Got invalid number of tasks for '${entry.fullPath}': ${
           tasks.length}`);
     }
@@ -146,7 +146,7 @@ function run() {
 
     foundTasks.push({descriptor: tasks[0].descriptor, entry: entry});
 
-    if (foundTasks.length == TEST_PATHS.length) {
+    if (foundTasks.length === TEST_PATHS.length) {
       foundTasks.forEach(function(task) {
         chrome.fileManagerPrivate.executeTask(
             task.descriptor, [task.entry],
@@ -168,7 +168,7 @@ function run() {
     chrome.fileManagerPrivate.resolveIsolatedEntries(
         [isolatedEntry], function(externalEntries) {
           resolvedEntries.push(externalEntries[0]);
-          if (resolvedEntries.length == TEST_PATHS.length) {
+          if (resolvedEntries.length === TEST_PATHS.length) {
             resolvedEntries.forEach(function(entry) {
               chrome.fileManagerPrivate.getFileTasks(
                   [entry], [''], onGotNonDefaultTasks.bind(null, entry));
@@ -185,7 +185,7 @@ function run() {
    * @param {string} volumeType Type of the volume.
    */
   function onGotFileSystem(fileSystem, volumeType) {
-    const isOnDrive = volumeType == 'drive';
+    const isOnDrive = volumeType === 'drive';
     TEST_PATHS.forEach(function(filePath) {
       fileSystem.root.getFile(
           `${isOnDrive ? 'root/' : ''}${filePath}`, {}, onGotEntry.bind(null),
@@ -199,13 +199,13 @@ function run() {
     const sortedVolumeMetadataList =
         volumeMetadataList
             .filter(function(volume) {
-              return possibleVolumeTypes.indexOf(volume.volumeType) != -1;
+              return possibleVolumeTypes.indexOf(volume.volumeType) !== -1;
             })
             .sort(function(volumeA, volumeB) {
               return possibleVolumeTypes.indexOf(volumeA.volumeType) -
                   possibleVolumeTypes.indexOf(volumeB.volumeType);
             });
-    if (sortedVolumeMetadataList.length == 0) {
+    if (sortedVolumeMetadataList.length === 0) {
       onError('No volumes available, which could be used for testing.');
       return;
     }

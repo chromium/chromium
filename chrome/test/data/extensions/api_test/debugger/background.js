@@ -75,7 +75,7 @@ chrome.test.getConfig(config => chrome.test.runTests([
   function sendCommand() {
     function onResponse() {
       if (chrome.runtime.lastError &&
-          chrome.runtime.lastError.message.indexOf('invalidMethod') != -1) {
+          chrome.runtime.lastError.message.indexOf('invalidMethod') !== -1) {
         chrome.test.succeed();
       } else {
         chrome.test.fail();
@@ -237,7 +237,7 @@ chrome.test.getConfig(config => chrome.test.runTests([
   function discoverOwnBackgroundPageWithNoSilentFlag() {
     chrome.debugger.getTargets(function(targets) {
       const target = targets.filter(function(target) {
-        return target.type == 'background_page';
+        return target.type === 'background_page';
       })[0];
       if (target) {
         chrome.debugger.attach(
@@ -259,7 +259,8 @@ chrome.test.getConfig(config => chrome.test.runTests([
     const tab = await openTab(chrome.runtime.getURL('inspected.html'));
     chrome.debugger.getTargets(function(targets) {
       const page = targets.filter(function(t) {
-        return t.type == 'page' && t.tabId == tab.id && t.title == 'Test page';
+        return t.type === 'page' && t.tabId === tab.id &&
+            t.title === 'Test page';
       })[0];
       if (page) {
         chrome.debugger.attach({targetId: page.id}, protocolVersion, pass());
@@ -274,7 +275,7 @@ chrome.test.getConfig(config => chrome.test.runTests([
     workerPort.onmessage = function() {
       chrome.debugger.getTargets(function(targets) {
         const page = targets.filter(function(t) {
-          return t.type == 'worker';
+          return t.type === 'worker';
         })[0];
         if (page) {
           debuggee = {targetId: page.id};

@@ -12,8 +12,8 @@ chrome.test.runTests([
       chrome.fileSystem.getDisplayPath(
           entry, chrome.test.callbackPass(function(path) {
             chrome.test.assertTrue(
-                path.indexOf('~/') == 0 ||  // POSIX
-                path.indexOf('~\\') == 0);  // Windows
+                path.indexOf('~/') === 0 ||  // POSIX
+                path.indexOf('~\\') === 0);  // Windows
             chrome.test.assertTrue(path.indexOf('gold.txt') >= 0);
           }));
     }));

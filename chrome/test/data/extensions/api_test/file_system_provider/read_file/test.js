@@ -242,7 +242,9 @@ function runTests() {
     // there is at most as many opened files at once as permitted per limit.
     function readFileWithOpenedFilesLimitSuccess() {
       setUpFileSystem(2 /* two files */, chrome.test.callbackPass(function() {
-        let initAllReadsPromise;
+        // Disable eslint. It doesn't recognize that this variable is declared
+        // here and assigned below.
+        let initAllReadsPromise;  // eslint-disable-line prefer-const
 
         // Set a breakpoint on reading a file, and continue once another file
         // is queued.

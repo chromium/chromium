@@ -10,19 +10,19 @@ let webPage2 = `${server}${RELATIVE_PATH}web_page2.html`;
 let extensionPageOpened = false;
 
 const listener = function(tabId, changeInfo, tab) {
-  if (changeInfo.status != 'complete') {
+  if (changeInfo.status !== 'complete') {
     return;
   }
 
   // web_page1 loaded, open extension page to inject script
-  if (!extensionPageOpened && tab.url == webPage1) {
+  if (!extensionPageOpened && tab.url === webPage1) {
     chrome.tabs.create({ url: extensionPage });
     extensionPageOpened = true;
     return;
   }
 
-  if (tab.url == webPage2) {
-    console.log('webPage1 navigated to webPage1. Yeah!');
+  if (tab.url === webPage2) {
+    console.info('webPage1 navigated to webPage1. Yeah!');
     chrome.tabs.onUpdated.removeListener(listener);
     chrome.test.notifyPass();
   }

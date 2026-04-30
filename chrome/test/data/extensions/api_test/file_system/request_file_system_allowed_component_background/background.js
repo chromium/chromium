@@ -17,7 +17,7 @@ chrome.test.runTests([
                       checkEntry(entry, 'open_existing.txt', false, false);
                     }),
                     function(err) {
-                      console.log(err.message);
+                      console.info(err.message);
                     });
               }));
         }));

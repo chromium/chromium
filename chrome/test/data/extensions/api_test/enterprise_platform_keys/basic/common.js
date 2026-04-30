@@ -200,13 +200,13 @@ const DATA = new Uint8Array([0, 1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 6]);
  * callbackPass.
  */
 function runAsyncSequence(funcs) {
-  if (funcs.length == 0) {
+  if (funcs.length === 0) {
     return;
   }
   function go(i) {
     const current = funcs[i];
-    console.log(`#${i + 1} of ${funcs.length}`);
-    if (i == funcs.length - 1) {
+    console.info(`#${i + 1} of ${funcs.length}`);
+    if (i === funcs.length - 1) {
       current(callbackPass());
     } else {
       current(callbackPass(go.bind(undefined, i + 1)));
@@ -259,7 +259,7 @@ function assertCertsStored(token, expectedCerts, callback) {
         assertEq(
             expectedCerts.length, actualCerts.length,
             'Number of stored certs not as expected');
-        if (expectedCerts.length == actualCerts.length) {
+        if (expectedCerts.length === actualCerts.length) {
           actualCerts = actualCerts.map(function(buffer) {
             return new Uint8Array(buffer);
           });
@@ -267,7 +267,7 @@ function assertCertsStored(token, expectedCerts, callback) {
           expectedCerts = sortCerts(expectedCerts);
           for (let i = 0; i < expectedCerts.length; i++) {
             assertTrue(
-                compareArrays(expectedCerts[i], actualCerts[i]) == 0,
+                compareArrays(expectedCerts[i], actualCerts[i]) === 0,
                 `Certs at index ${i} differ`);
           }
         }
@@ -287,9 +287,9 @@ function getTokens(callback) {
     let userToken = null;
     let systemToken = null;
     for (let i = 0; i < tokens.length; i++) {
-      if (tokens[i].id == 'user') {
+      if (tokens[i].id === 'user') {
         userToken = tokens[i];
-      } else if (tokens[i].id == 'system') {
+      } else if (tokens[i].id === 'system') {
         systemToken = tokens[i];
       }
     }
@@ -456,7 +456,7 @@ async function verifyRsaKeySign(
   }
 
   assertTrue(!!signature, `${debugMessage}: No signature.`);
-  assertTrue(signature.length != 0, `${debugMessage}: Signature is empty.`);
+  assertTrue(signature.length !== 0, `${debugMessage}: Signature is empty.`);
 
   let webCryptoPublicKey;
   try {
@@ -502,7 +502,7 @@ async function verifyEcKeySign(
   }
 
   assertTrue(!!signature, `${debugMessage}: No signature.`);
-  assertTrue(signature.length != 0, `${debugMessage}: Signature is empty.`);
+  assertTrue(signature.length !== 0, `${debugMessage}: Signature is empty.`);
 
   let webCryptoPublicKey;
   try {

@@ -6,7 +6,7 @@ chrome.test.getConfig(function(config) {
   const testUrl = `http://b.com:${config.testServer.port}` +
       '/extensions/api_test/executescript/css_origin/test.html';
   chrome.tabs.onUpdated.addListener(function listener(tabId, changeInfo, tab) {
-    if (changeInfo.status != 'complete') {
+    if (changeInfo.status !== 'complete') {
       return;
     }
     chrome.tabs.onUpdated.removeListener(listener);

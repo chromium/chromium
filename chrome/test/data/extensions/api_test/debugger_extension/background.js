@@ -72,9 +72,9 @@ chrome.test.runTests([
     }
     chrome.debugger.getTargets(function(targets) {
       const target = targets.filter(function(t) {
-        return t.type == 'background_page' &&
-            t.extensionId == debuggee.extensionId &&
-            t.title == 'Extension Debugger';
+        return t.type === 'background_page' &&
+            t.extensionId === debuggee.extensionId &&
+            t.title === 'Extension Debugger';
       })[0];
       if (target) {
         chrome.debugger.attach({targetId: target.id}, protocolVersion, pass());
@@ -89,7 +89,7 @@ chrome.test.runTests([
     workerPort.onmessage = function() {
       chrome.debugger.getTargets(function(targets) {
         const page = targets.filter(function(t) {
-          return t.type == 'worker';
+          return t.type === 'worker';
         })[0];
         if (page) {
           chrome.debugger.attach({targetId: page.id}, protocolVersion, pass());

@@ -11,7 +11,7 @@ const debug = 0;
 if (debug) {
   testUrl = 'http://www.google.com/';
   chrome.test.log = function(msg) {
-    console.log(msg);
+    console.info(msg);
   };
   chrome.test.runTests = function(tests) {
     for (const i in tests) {
@@ -19,10 +19,10 @@ if (debug) {
     }
   };
   chrome.test.succeed = function() {
-    console.log('succeed');
+    console.info('succeed');
   };
   chrome.test.fail = function() {
-    console.log('fail');
+    console.info('fail');
   };
 }
 
@@ -51,9 +51,9 @@ function runTests() {
     function test1() {
       chrome.runtime.onMessage.addListener(function(req, sender) {
         chrome.test.log(`got request: ${JSON.stringify(req)}`);
-        if (req == 'content_script') {
+        if (req === 'content_script') {
           navigateToFragment(sender.tab, doExecute);
-        } else if (req == 'execute_script') {
+        } else if (req === 'execute_script') {
           succeeded = true;
           chrome.test.succeed();
         }

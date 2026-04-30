@@ -70,7 +70,7 @@ function getDirectory(
     volumeId, entry, path, shouldCreate, expectSuccess, callback) {
   const messagePrefix = shouldCreate ? 'Creating ' : 'Getting ';
   const message = `${messagePrefix}directory: '${path}'.`;
-  const isOnDrive = volumeId == 'drive:drive-user';
+  const isOnDrive = volumeId === 'drive:drive-user';
 
   entry.getDirectory(
       getPath(path, isOnDrive), {create: shouldCreate},
@@ -83,7 +83,7 @@ function getDirectory(
 function getFile(volumeId, entry, path, shouldCreate, expectSuccess, callback) {
   const messagePrefix = shouldCreate ? 'Creating ' : 'Getting ';
   const message = `${messagePrefix}file: '${path}'.`;
-  const isOnDrive = volumeId == 'drive:drive-user';
+  const isOnDrive = volumeId === 'drive:drive-user';
 
   entry.getFile(
       getPath(path, isOnDrive), {create: shouldCreate},
@@ -302,9 +302,9 @@ function deleteDirectoryRecursively(
  * @returns {Array<function()>} The list of tests that should be run.
  */
 function collectTestsForVolumeId(volumeId, fileSystem) {
-  console.log(volumeId);
-  const isReadOnly = volumeId == 'testing:restricted';
-  const isOnDrive = volumeId == 'drive:drive-user';
+  console.info(volumeId);
+  const isReadOnly = volumeId === 'testing:restricted';
+  const isOnDrive = volumeId === 'drive:drive-user';
 
   const testsToRun = [];
 
@@ -536,14 +536,14 @@ function initTests(callback) {
     const sortedVolumeMetadataList =
         volumeMetadataList
             .filter(function(volume) {
-              return possibleVolumeTypes.indexOf(volume.volumeType) != -1;
+              return possibleVolumeTypes.indexOf(volume.volumeType) !== -1;
             })
             .sort(function(volumeA, volumeB) {
               return possibleVolumeTypes.indexOf(volumeA.volumeType) -
                   possibleVolumeTypes.indexOf(volumeB.volumeType);
             });
 
-    if (sortedVolumeMetadataList.length == 0) {
+    if (sortedVolumeMetadataList.length === 0) {
       callback(null, 'No volumes available, which could be used for testing.');
       return;
     }

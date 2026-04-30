@@ -38,9 +38,9 @@ function onPickerResult(audioTrackNum, id, options) {
 // on whether USE_CRAS is on or not, thus we disable the check here. We cannot
 // support audio on other platforms.
 let expectedAudioTracksForScreenShare = 0;
-if (navigator.appVersion.indexOf('Windows') != -1) {
+if (navigator.appVersion.indexOf('Windows') !== -1) {
   expectedAudioTracksForScreenShare = 1;
-} else if (navigator.appVersion.indexOf('CrOS') != -1) {
+} else if (navigator.appVersion.indexOf('CrOS') !== -1) {
   expectedAudioTracksForScreenShare = null;
 }
 
@@ -57,7 +57,7 @@ chrome.test.runTests([
     chrome.desktopCapture.chooseDesktopMedia(
         ['screen', 'window'], chrome.test.callbackPass(function(id) {
           chrome.test.assertEq('string', typeof id);
-          chrome.test.assertTrue(id == '');
+          chrome.test.assertTrue(id === '');
         }));
   },
 

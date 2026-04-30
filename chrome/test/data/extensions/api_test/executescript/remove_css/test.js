@@ -72,7 +72,7 @@ chrome.test.getConfig(config => {
   const testUrl = 'http://example.com:' + config.testServer.port +
       '/extensions/api_test/executescript/remove_css/test.html';
   chrome.tabs.onUpdated.addListener(function listener(tabId, {status}) {
-    if (status != 'complete') {
+    if (status !== 'complete') {
       return;
     }
     chrome.tabs.onUpdated.removeListener(listener);

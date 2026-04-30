@@ -21,7 +21,7 @@ function navigateAndWaitForUrlMatch(navigatePath, waitPath) {
   return new Promise(resolve => {
     expectedCallback = info => {
       matchedRuleInfos.push(info);
-      if (info.request.url == waitUrl) {
+      if (info.request.url === waitUrl) {
         resolve();
       }
     };

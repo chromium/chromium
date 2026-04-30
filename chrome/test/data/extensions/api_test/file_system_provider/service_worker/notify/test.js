@@ -14,7 +14,7 @@ import {TestFileSystemProvider} from '/_test_resources/api_test/file_system_prov
 async function toExternalEntry(entry) {
   const entries = await promisifyWithLastError(
       chrome.fileManagerPrivate.resolveIsolatedEntries, [entry]);
-  if (!entries || entries.length == 0) {
+  if (!entries || entries.length === 0) {
     throw new Error('Failed to convert th entry to external entry.');
   }
   return entries[0];

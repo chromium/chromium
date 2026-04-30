@@ -138,14 +138,13 @@ async function main() {
     // result in a gracefully terminated writing operation.
     async function abortWritingSuccess() {
       await remoteProvider.resetState();
-      let writePromise;
       // A write to this file will be stuck forever.
       const fileEntry = await fileSystem.getFileEntry(
           TestFileSystemProvider.FILE_BLOCK_IO,
           {create: false, exclusive: false});
       const fileWriter = await createWriter(fileEntry);
       // Start a write request, wait for it to reach the provider.
-      writePromise = writeTextToFile(fileWriter, 'A lot of cherries.');
+      const writePromise = writeTextToFile(fileWriter, 'A lot of cherries.');
       await remoteProvider.waitForEvent('onWriteFileRequested');
 
       // Abort the operation after it's started.

@@ -104,7 +104,7 @@ class TestEventListener {
       if (this.done_) {
         return;
       }
-      console.log('*** Checking queued events');
+      console.info('*** Checking queued events');
       this.verifyReceivedEvent_(event);
     }.bind(this));
   }
@@ -159,7 +159,7 @@ class TestEventListener {
     if (this.receivedEntry_) {
       this.verifyReceivedEvent_(event);
     } else {
-      console.log(`*** Queued event for ${event.entry.toURL()}`);
+      console.info(`*** Queued event for ${event.entry.toURL()}`);
       this.eventQueue_.push(event);
     }
   }
@@ -180,10 +180,10 @@ class TestEventListener {
     const entryURL = event.entry.toURL();
     const expectedEvent = this.expectedEvents_[entryURL];
 
-    console.log(`${this.id} verifyReceivedEvent_: ${event.eventType} ${
+    console.info(`${this.id} verifyReceivedEvent_: ${event.eventType} ${
         event.entry.path}`);
     const state = JSON.stringify(this.expectedEvents_[entryURL]);
-    console.log(`${this.id} verifyReceivedEvent_: state ${entryURL} ${state}`);
+    console.info(`${this.id} verifyReceivedEvent_: state ${entryURL} ${state}`);
 
     if (!expectedEvent) {
       this.onError(
@@ -192,12 +192,12 @@ class TestEventListener {
       return;
     }
 
-    console.log(
+    console.info(
         `${this.id} verifyReceivedEvent_: delete expectedEvents_ ${entryURL}`);
     delete this.expectedEvents_[entryURL];
 
     if (expectedEvent.eventType !== event.eventType) {
-      console.log(`Marking ${this.id} as error`);
+      console.info(`Marking ${this.id} as error`);
       this.onError(
           `Unexpected event type for entryURL: ${entryURL}\n` +
           ` Expected type: ${expectedEvent.eventType}\n` +
@@ -205,8 +205,8 @@ class TestEventListener {
       return;
     }
 
-    if (Object.keys(this.expectedEvents_).length == 0) {
-      console.log(`Marking ${this.id} as success`);
+    if (Object.keys(this.expectedEvents_).length === 0) {
+      console.info(`Marking ${this.id} as success`);
       this.onSuccess_();
     }
   }
@@ -260,14 +260,14 @@ function initTests(callback) {
     const sortedVolumeMetadataList =
         volumeMetadataList
             .filter(function(volume) {
-              return possibleVolumeTypes.indexOf(volume.volumeType) != -1;
+              return possibleVolumeTypes.indexOf(volume.volumeType) !== -1;
             })
             .sort(function(volumeA, volumeB) {
               return possibleVolumeTypes.indexOf(volumeA.volumeType) -
                   possibleVolumeTypes.indexOf(volumeB.volumeType);
             });
 
-    if (sortedVolumeMetadataList.length == 0) {
+    if (sortedVolumeMetadataList.length === 0) {
       callback(
           testParams, 'No volumes available, which could be used for testing.');
       return;
@@ -283,7 +283,7 @@ function initTests(callback) {
 
           testParams.fileSystem = fileSystem;
           testParams.isOnDrive =
-              sortedVolumeMetadataList[0].volumeType == 'drive';
+              sortedVolumeMetadataList[0].volumeType === 'drive';
 
           const testWatchEntries = [
             {
@@ -307,7 +307,7 @@ function initTests(callback) {
           const getNextEntry = function() {
             // If the list is empty, the test has been successfully
             // initialized, so call callback.
-            if (testWatchEntries.length == 0) {
+            if (testWatchEntries.length === 0) {
               testParams.valid = true;
               callback(testParams, 'Success.');
               return;
@@ -316,7 +316,7 @@ function initTests(callback) {
             const testEntry = testWatchEntries.shift();
 
             let getFunction = null;
-            if (testEntry.type == 'file') {
+            if (testEntry.type === 'file') {
               getFunction = fileSystem.root.getFile.bind(fileSystem.root);
             } else {
               getFunction = fileSystem.root.getDirectory.bind(fileSystem.root);

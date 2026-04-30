@@ -59,11 +59,11 @@ function verifyDirectory(entry, successCallback) {
  * @return {function(Entry, successCallback)}
  */
 function getEntryVerifier(type) {
-  if (type == 'file') {
+  if (type === 'file') {
     return verifyFile;
   }
 
-  if (type == 'dir') {
+  if (type === 'dir') {
     return verifyDirectory;
   }
 
@@ -146,7 +146,7 @@ chrome.test.runTests([
       chrome.test.assertEq(expectedResults.length, entries.length);
 
       function verifySearchResultAt(resultIndex) {
-        if (resultIndex == expectedResults.length) {
+        if (resultIndex === expectedResults.length) {
           chrome.test.succeed();
           return;
         }

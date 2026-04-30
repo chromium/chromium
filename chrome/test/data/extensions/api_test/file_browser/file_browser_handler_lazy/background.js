@@ -146,9 +146,9 @@ function writeTest(entry, expectSuccess) {
  * handler is received.
  */
 function executeListener(id, details) {
-  if (id == 'ReadWrite') {
+  if (id === 'ReadWrite') {
     const fileEntries = details.entries;
-    if (!fileEntries || fileEntries.length != 1) {
+    if (!fileEntries || fileEntries.length !== 1) {
       chrome.test.notifyFail('Unexpected file entries size.');
       return;
     }
@@ -167,7 +167,7 @@ function executeListener(id, details) {
         writeTest(entry, true);
       },
     ]);
-  } else if (id != 'ReadOnly') {
+  } else if (id !== 'ReadOnly') {
     chrome.test.notifyFail(`Unexpected action id: ${id}`);
     return;
   }

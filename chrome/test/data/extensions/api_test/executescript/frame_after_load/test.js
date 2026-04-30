@@ -6,7 +6,7 @@ let baseUrl =
     'http://a.com:PORT/extensions/api_test/executescript/frame_after_load/';
 
 chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
-  if (changeInfo.status != 'complete') {
+  if (changeInfo.status !== 'complete') {
     return;
   }
 
@@ -24,9 +24,9 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
 
       chrome.runtime.onConnect.addListener(function(port) {
         port.onMessage.addListener(function(data) {
-          if (data == 'loaded') {
+          if (data === 'loaded') {
             chrome.tabs.executeScript(tabId, {code: postFrameCode});
-          } else if (data == 'done') {
+          } else if (data === 'done') {
             chrome.test.succeed();
           }
         });

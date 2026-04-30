@@ -5,7 +5,7 @@
 // Navigates to |url| and invokes |callback| when the navigation is complete.
 function navigateTab(url, callback) {
   chrome.tabs.onUpdated.addListener(function updateCallback(_, info, tab) {
-    if (info.status == 'complete' && tab.url == url) {
+    if (info.status === 'complete' && tab.url === url) {
       chrome.tabs.onUpdated.removeListener(updateCallback);
       callback(tab);
     }
@@ -25,14 +25,14 @@ function getServerURL(path) {
 
 // Returns whether |headerName| is present in |headers|.
 function checkHasHeader(headers, headerName) {
-  return !!headers.find(header => header.name.toLowerCase() == headerName);
+  return !!headers.find(header => header.name.toLowerCase() === headerName);
 }
 
 // Adds or updates the given header name/value to |headers|.
 function addOrUpdateHeader(headers, headerName, headerValue) {
   const index =
-      headers.findIndex(header => header.name.toLowerCase() == headerName);
-  if (index != -1) {
+      headers.findIndex(header => header.name.toLowerCase() === headerName);
+  if (index !== -1) {
     headers[index].value = headerValue;
   } else {
     headers.push({name: headerName, value: headerValue});

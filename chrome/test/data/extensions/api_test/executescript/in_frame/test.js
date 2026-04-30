@@ -13,7 +13,7 @@ const RELATIVE_PATH =
 let testUrl = '';
 
 chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
-  if (changeInfo.status != 'complete') {
+  if (changeInfo.status !== 'complete') {
     return;
   }
 
@@ -40,7 +40,7 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
           counter++;
           assertTrue(counter <= 5);
           totalTitles += data.message;
-          if (counter == 5) {
+          if (counter === 5) {
             verifyAndFinish();
           }
         });
@@ -66,7 +66,7 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
         port.onMessage.addListener(function(data) {
           counter++;
           newStyle += data.message;
-          if (counter == 4) {
+          if (counter === 4) {
             verifyAndFinish();
           }
         });

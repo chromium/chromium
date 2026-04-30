@@ -18,7 +18,7 @@ chrome.test.getConfig(function(config) {
       `http://b.com:${config.testServer.port}${RELATIVE_PATH}`;
 
   chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
-    if (changeInfo.status != 'complete') {
+    if (changeInfo.status !== 'complete') {
       return;
     }
     if (!firstEnter) {
@@ -95,8 +95,8 @@ chrome.test.getConfig(function(config) {
         chrome.tabs.update(tabId, {url: testFailureUrl});
 
         function onUpdated(updatedTabId, changeInfo, tab) {
-          if (updatedTabId !== tabId || tab.status != 'complete' ||
-              tab.url != testFailureUrl) {
+          if (updatedTabId !== tabId || tab.status !== 'complete' ||
+              tab.url !== testFailureUrl) {
             return;
           }
           const scriptFile = {};

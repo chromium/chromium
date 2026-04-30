@@ -182,18 +182,18 @@ function onExecuteListener(id, details) {
   }
 
   const fileEntries = details.entries;
-  if (!fileEntries || fileEntries.length != 1) {
+  if (!fileEntries || fileEntries.length !== 1) {
     onError('Unexpected file entries size.');
     return;
   }
 
-  if ((id == 'ReadOnly' && testPreRunStatus.gotReadOnlyAction) ||
-      (id == 'ReadWrite' && testPreRunStatus.gotReadWriteAction)) {
+  if ((id === 'ReadOnly' && testPreRunStatus.gotReadOnlyAction) ||
+      (id === 'ReadWrite' && testPreRunStatus.gotReadWriteAction)) {
     onError(`Action '${id}' executed more than once.`);
     return;
   }
 
-  if (id == 'ReadOnly') {
+  if (id === 'ReadOnly') {
     const entry = fileEntries[0];
 
     // Add tests for read-only handler.
@@ -208,7 +208,7 @@ function onExecuteListener(id, details) {
     });
 
     testPreRunStatus.gotReadOnlyAction = true;
-  } else if (id == 'ReadWrite') {
+  } else if (id === 'ReadWrite') {
     const entry = fileEntries[0];
 
     // Add tests for read-write handler.

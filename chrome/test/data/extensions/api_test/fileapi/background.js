@@ -4,26 +4,26 @@
 
 let fileSystem = null;
 
-console.log('Requesting a filesystem...');
+console.info('Requesting a filesystem...');
 webkitRequestFileSystem(window.TEMPORARY, 100, getFileSystem, errorCallback);
 
 function getFileSystem(fs) {
   fileSystem = fs;
-  console.log(`DONE requesting filesystem: ${fileSystem.name}`);
+  console.info(`DONE requesting filesystem: ${fileSystem.name}`);
   fileSystem.root.getDirectory(
       'dir', {create: true}, directoryCallback, errorCallback);
 }
 
 function directoryCallback(directory) {
-  console.log(`DONE creating directory: ${directory.path}`);
+  console.info(`DONE creating directory: ${directory.path}`);
   directory.getFile('file', {create: true}, fileCallback, errorCallback);
 }
 
 function fileCallback(file) {
-  console.log(`DONE creating file: ${file.path}`);
+  console.info(`DONE creating file: ${file.path}`);
 
   // See if we get the same filesystem space in the tab.
-  console.log('Opening tab...');
+  console.info('Opening tab...');
   chrome.tabs.create({
     url: 'tab.html',
   });

@@ -32,7 +32,7 @@ let activeTabId;
 function navigateAndWait(url, callback) {
   const done =
       chrome.test.listenForever(chrome.tabs.onUpdated, function(_, info, tab) {
-        if (tab.id == activeTabId && info.status == 'complete') {
+        if (tab.id === activeTabId && info.status === 'complete') {
           if (callback) {
             callback(tab);
           }

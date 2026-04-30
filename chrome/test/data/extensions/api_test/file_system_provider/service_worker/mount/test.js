@@ -205,8 +205,8 @@ async function main() {
           await promisifyWithLastError(chrome.fileManagerPrivate.getProviders);
       // Filter out native providers.
       providers = providers.filter(
-          provider =>
-              provider.providerId.length == 0 || provider.providerId[0] != '@');
+          provider => provider.providerId.length === 0 ||
+              provider.providerId[0] !== '@');
       chrome.test.assertEq(providers.length, 1);
       chrome.test.assertEq(chrome.runtime.id, providers[0].providerId);
       chrome.test.assertEq(

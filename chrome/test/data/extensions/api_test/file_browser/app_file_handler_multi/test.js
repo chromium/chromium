@@ -20,7 +20,7 @@ const volumeListPromise = new Promise(function(fulfill, reject) {
 function getFileSystem(volumeType) {
   return volumeListPromise.then(function(list) {
     for (let i = 0; i < list.length; i++) {
-      if (list[i].volumeType == volumeType) {
+      if (list[i].volumeType === volumeType) {
         return new Promise(function(fulfill) {
           chrome.fileSystem.requestFileSystem(
               {volumeId: list[i].volumeId, writable: true}, fulfill);
