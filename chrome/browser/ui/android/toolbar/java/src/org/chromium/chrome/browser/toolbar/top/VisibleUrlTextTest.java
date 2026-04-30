@@ -4,7 +4,9 @@
 
 package org.chromium.chrome.browser.toolbar.top;
 
-import org.junit.Assert;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -15,19 +17,19 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 public class VisibleUrlTextTest {
     @Test
     public void testIsValidVisibleTextPrefixHint() {
-        Assert.assertFalse(VisibleUrlText.isValidVisibleTextPrefixHint(null, null));
-        Assert.assertFalse(VisibleUrlText.isValidVisibleTextPrefixHint("foo", null));
-        Assert.assertFalse(VisibleUrlText.isValidVisibleTextPrefixHint(null, "foo"));
+        assertFalse(VisibleUrlText.isValidVisibleTextPrefixHint(null, null));
+        assertFalse(VisibleUrlText.isValidVisibleTextPrefixHint("foo", null));
+        assertFalse(VisibleUrlText.isValidVisibleTextPrefixHint(null, "foo"));
 
-        Assert.assertFalse(VisibleUrlText.isValidVisibleTextPrefixHint("", ""));
-        Assert.assertFalse(VisibleUrlText.isValidVisibleTextPrefixHint("foo", ""));
+        assertFalse(VisibleUrlText.isValidVisibleTextPrefixHint("", ""));
+        assertFalse(VisibleUrlText.isValidVisibleTextPrefixHint("foo", ""));
 
-        Assert.assertFalse(VisibleUrlText.isValidVisibleTextPrefixHint("foo", "fooo"));
-        Assert.assertFalse(VisibleUrlText.isValidVisibleTextPrefixHint("foo", "foo/"));
-        Assert.assertFalse(VisibleUrlText.isValidVisibleTextPrefixHint("foo", "o/"));
-        Assert.assertFalse(VisibleUrlText.isValidVisibleTextPrefixHint("foo", "oo"));
+        assertFalse(VisibleUrlText.isValidVisibleTextPrefixHint("foo", "fooo"));
+        assertFalse(VisibleUrlText.isValidVisibleTextPrefixHint("foo", "foo/"));
+        assertFalse(VisibleUrlText.isValidVisibleTextPrefixHint("foo", "o/"));
+        assertFalse(VisibleUrlText.isValidVisibleTextPrefixHint("foo", "oo"));
 
-        Assert.assertTrue(VisibleUrlText.isValidVisibleTextPrefixHint("foo.com", "foo"));
-        Assert.assertTrue(VisibleUrlText.isValidVisibleTextPrefixHint("foo.com", "foo.com"));
+        assertTrue(VisibleUrlText.isValidVisibleTextPrefixHint("foo.com", "foo"));
+        assertTrue(VisibleUrlText.isValidVisibleTextPrefixHint("foo.com", "foo.com"));
     }
 }

@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -85,7 +86,7 @@ public class ExtensionAccessControlButtonMediatorTest {
 
         Resources resources = mock(Resources.class);
         when(mContext.getResources()).thenReturn(resources);
-        when(resources.getDimensionPixelSize(org.mockito.ArgumentMatchers.anyInt())).thenReturn(10);
+        when(resources.getDimensionPixelSize(anyInt())).thenReturn(10);
         WindowManager windowManager = mock(WindowManager.class);
         when(mContext.getSystemService(Context.WINDOW_SERVICE)).thenReturn(windowManager);
         Display display = mock(Display.class);

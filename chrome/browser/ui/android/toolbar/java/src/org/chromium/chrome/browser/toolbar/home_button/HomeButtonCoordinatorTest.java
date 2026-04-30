@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.toolbar.home_button;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -22,7 +23,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
@@ -59,7 +59,7 @@ public class HomeButtonCoordinatorTest {
 
     @Before
     public void setUp() {
-        when(mHomeButton.getRootView()).thenReturn(Mockito.mock(View.class));
+        when(mHomeButton.getRootView()).thenReturn(mock(View.class));
         when(mHomeButton.getResources()).thenReturn(mResources);
         when(mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE))
                 .thenReturn(LayoutInflater.from(ContextUtils.getApplicationContext()));

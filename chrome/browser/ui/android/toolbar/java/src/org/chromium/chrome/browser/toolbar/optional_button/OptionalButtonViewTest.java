@@ -9,8 +9,10 @@ import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -43,13 +45,11 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.widget.ImageViewCompat;
 
 import org.hamcrest.Matchers;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
-import org.mockito.Mockito;
 import org.robolectric.Robolectric;
 import org.robolectric.shadows.ShadowLooper;
 
@@ -89,7 +89,7 @@ public class OptionalButtonViewTest {
                 new ContextThemeWrapper(
                         Robolectric.setupActivity(Activity.class),
                         R.style.Theme_BrowserUI_DayNight);
-        mMockAnimationChecker = Mockito.mock(BooleanSupplier.class);
+        mMockAnimationChecker = mock(BooleanSupplier.class);
         when(mMockAnimationChecker.getAsBoolean()).thenReturn(true);
 
         mOptionalButtonView =
@@ -103,7 +103,7 @@ public class OptionalButtonViewTest {
 
         mMockBeginDelayedTransition = MockitoHelper.mockCallback();
 
-        mMockTransitionRoot = Mockito.mock(ViewGroup.class);
+        mMockTransitionRoot = mock(ViewGroup.class);
         when(mMockTransitionRoot.isLaidOut()).thenReturn(true);
         mOptionalButtonView.setTransitionRoot(mMockTransitionRoot);
 
@@ -237,7 +237,7 @@ public class OptionalButtonViewTest {
                         AdaptiveToolbarButtonVariant.SHARE,
                         R.string.adaptive_toolbar_button_preference_share);
         mOptionalButtonView.updateButtonWithAnimation(buttonData);
-        Assert.assertEquals(
+        assertEquals(
                 "Tooltip text for share button is not as expected",
                 mButton.getTooltipText(),
                 mActivity
@@ -250,7 +250,7 @@ public class OptionalButtonViewTest {
                         AdaptiveToolbarButtonVariant.VOICE,
                         R.string.adaptive_toolbar_button_preference_voice_search);
         mOptionalButtonView.updateButtonWithAnimation(buttonData);
-        Assert.assertEquals(
+        assertEquals(
                 "Tooltip text for voice search button is not as expected",
                 mButton.getTooltipText(),
                 mActivity
@@ -262,7 +262,7 @@ public class OptionalButtonViewTest {
                 getDataForTestingTooltipText(
                         AdaptiveToolbarButtonVariant.NEW_TAB, R.string.button_new_tab);
         mOptionalButtonView.updateButtonWithAnimation(buttonData);
-        Assert.assertEquals(
+        assertEquals(
                 "Tooltip text for new tab button is not as expected",
                 mButton.getTooltipText(),
                 mActivity.getResources().getString(R.string.button_new_tab));
@@ -270,7 +270,7 @@ public class OptionalButtonViewTest {
         // Test whether reader mode tooltip Text is null.
         buttonData = getDataForTestingTooltipText(AdaptiveToolbarButtonVariant.READER_MODE, 0);
         mOptionalButtonView.updateButtonWithAnimation(buttonData);
-        Assert.assertEquals(
+        assertEquals(
                 "Tooltip text for reader mode button is not as expected",
                 mButton.getTooltipText(),
                 null);
@@ -622,9 +622,9 @@ public class OptionalButtonViewTest {
 
         ColorFilter filterAfterCollapse = mButtonBackground.getColorFilter();
 
-        Assert.assertNotNull(filterAfterCollapse);
-        Assert.assertNotNull(filterAfterExpansion);
-        Assert.assertNotEquals(filterAfterCollapse, filterAfterExpansion);
+        assertNotNull(filterAfterCollapse);
+        assertNotNull(filterAfterExpansion);
+        assertNotEquals(filterAfterCollapse, filterAfterExpansion);
     }
 
     @Test
@@ -673,7 +673,7 @@ public class OptionalButtonViewTest {
         mOptionalButtonView.setOnBeforeHideTransitionCallback(beforeHideTransitionCallback);
 
         InOrder inOrder =
-                Mockito.inOrder(
+                inOrder(
                         beforeDelayedTransitionCallback,
                         beforeShowTransitionCallback,
                         beforeHideTransitionCallback,
@@ -755,7 +755,7 @@ public class OptionalButtonViewTest {
         mOptionalButtonView.setOnBeforeHideTransitionCallback(beforeHideTransitionCallback);
 
         InOrder inOrder =
-                Mockito.inOrder(
+                inOrder(
                         beforeDelayedTransitionCallback,
                         beforeShowTransitionCallback,
                         beforeHideTransitionCallback,
@@ -1145,6 +1145,6 @@ public class OptionalButtonViewTest {
         assertEquals(View.GONE, mButtonBackground.getVisibility());
 
         mOptionalButtonView.setSuppressBackground(false);
-        Assert.assertNotNull(mButton.getBackground());
+        assertNotNull(mButton.getBackground());
     }
 }

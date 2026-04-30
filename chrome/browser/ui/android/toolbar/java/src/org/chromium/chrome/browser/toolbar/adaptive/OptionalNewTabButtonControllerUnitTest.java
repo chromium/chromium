@@ -11,7 +11,9 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -25,7 +27,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
@@ -134,7 +135,7 @@ public final class OptionalNewTabButtonControllerUnitTest {
                         FeatureConstants
                                 .ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_NEW_TAB_FEATURE);
 
-        View view = Mockito.mock(View.class);
+        View view = mock(View.class);
         mOptionalNewTabButtonController
                 .get(mTab)
                 .getButtonSpec()
@@ -183,7 +184,7 @@ public final class OptionalNewTabButtonControllerUnitTest {
         assertTrue(buttonData.canShow());
         verify(mButtonDataObserver).buttonDataChanged(eq(true));
 
-        Mockito.clearInvocations(mButtonDataObserver);
+        clearInvocations(mButtonDataObserver);
 
         // Show the tab strip.
         mTabStripVisibilitySupplier.set(StripVisibilityState.VISIBLE);

@@ -4,6 +4,12 @@
 
 package org.chromium.chrome.browser.toolbar.adaptive;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
@@ -29,7 +35,6 @@ import android.view.Window;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -135,7 +140,7 @@ public class AdaptiveToolbarButtonControllerTest {
         mProfileSupplier.set(mProfile);
 
         verify(observer).buttonDataChanged(true);
-        Assert.assertEquals(
+        assertEquals(
                 mNewTabButtonController,
                 adaptiveToolbarButtonController.getSingleProviderForTesting());
     }
@@ -157,21 +162,21 @@ public class AdaptiveToolbarButtonControllerTest {
         mProfileSupplier.set(mProfile);
 
         verify(observer).buttonDataChanged(true);
-        Assert.assertEquals(
+        assertEquals(
                 mNewTabButtonController,
                 adaptiveToolbarButtonController.getSingleProviderForTesting());
 
         adaptiveToolbarButtonController.addButtonVariant(
                 AdaptiveToolbarButtonVariant.READER_MODE, mReaderModeButtonController);
         adaptiveToolbarButtonController.showDynamicAction(AdaptiveToolbarButtonVariant.READER_MODE);
-        Assert.assertEquals(
+        assertEquals(
                 mReaderModeButtonController,
                 adaptiveToolbarButtonController.getSingleProviderForTesting());
 
         // Simulate the case the reader mode dynamic action times out. This should flip the button
         // back to the static new tab button.
         adaptiveToolbarButtonController.buttonDataChanged(false);
-        Assert.assertEquals(
+        assertEquals(
                 mNewTabButtonController,
                 adaptiveToolbarButtonController.getSingleProviderForTesting());
     }
@@ -193,7 +198,7 @@ public class AdaptiveToolbarButtonControllerTest {
         mProfileSupplier.set(mProfile);
 
         verify(observer).buttonDataChanged(true);
-        Assert.assertEquals(
+        assertEquals(
                 mShareButtonController,
                 adaptiveToolbarButtonController.getSingleProviderForTesting());
     }
@@ -215,7 +220,7 @@ public class AdaptiveToolbarButtonControllerTest {
         mProfileSupplier.set(mProfile);
 
         verify(observer).buttonDataChanged(true);
-        Assert.assertEquals(
+        assertEquals(
                 mVoiceToolbarButtonController,
                 adaptiveToolbarButtonController.getSingleProviderForTesting());
     }
@@ -237,7 +242,7 @@ public class AdaptiveToolbarButtonControllerTest {
         mProfileSupplier.set(mProfile);
 
         verify(observer).buttonDataChanged(true);
-        Assert.assertEquals(
+        assertEquals(
                 mVoiceToolbarButtonController,
                 adaptiveToolbarButtonController.getSingleProviderForTesting());
 
@@ -247,7 +252,7 @@ public class AdaptiveToolbarButtonControllerTest {
                         AdaptiveToolbarButtonVariant.NEW_TAB);
 
         verify(observer, times(2)).buttonDataChanged(true);
-        Assert.assertEquals(
+        assertEquals(
                 mNewTabButtonController,
                 adaptiveToolbarButtonController.getSingleProviderForTesting());
     }
@@ -321,7 +326,7 @@ public class AdaptiveToolbarButtonControllerTest {
                         new OnLongClickListener() {
                             @Override
                             public boolean onLongClick(View view) {
-                                Assert.fail("This long click listener shouldn't be invoked.");
+                                fail("This long click listener shouldn't be invoked.");
                                 return false;
                             }
                         })
@@ -354,16 +359,15 @@ public class AdaptiveToolbarButtonControllerTest {
         // Button data should have change twice, first on native initialization and then after
         // showing the dynamic action.
         verify(observer, times(2)).buttonDataChanged(true);
-        Assert.assertEquals(
+        assertEquals(
                 mPriceTrackingButtonController,
                 adaptiveToolbarButtonController.getSingleProviderForTesting());
 
         ButtonSpec buttonSpec = adaptiveToolbarButtonController.get(mTab).getButtonSpec();
-        Assert.assertEquals(
-                AdaptiveToolbarButtonVariant.PRICE_TRACKING, buttonSpec.getButtonVariant());
-        Assert.assertTrue(buttonSpec.isDynamicAction());
+        assertEquals(AdaptiveToolbarButtonVariant.PRICE_TRACKING, buttonSpec.getButtonVariant());
+        assertTrue(buttonSpec.isDynamicAction());
         // Dynamic actions should have no long click handlers.
-        Assert.assertNull(buttonSpec.getOnLongClickListener());
+        assertNull(buttonSpec.getOnLongClickListener());
         adaptiveToolbarButtonController.destroy();
     }
 
@@ -420,7 +424,7 @@ public class AdaptiveToolbarButtonControllerTest {
         // Force the controller to use Glic as the single provider first.
         adaptiveToolbarButtonController.showDynamicAction(AdaptiveToolbarButtonVariant.GLIC);
 
-        Assert.assertEquals(
+        assertEquals(
                 mockGlicProvider, adaptiveToolbarButtonController.getSingleProviderForTesting());
 
         // Now try to show a CPA action (PRICE_TRACKING).
@@ -428,7 +432,7 @@ public class AdaptiveToolbarButtonControllerTest {
                 AdaptiveToolbarButtonVariant.PRICE_TRACKING);
 
         // It should STILL be Glic provider because it suppressed CPA!
-        Assert.assertEquals(
+        assertEquals(
                 mockGlicProvider, adaptiveToolbarButtonController.getSingleProviderForTesting());
         activity.finish();
         adaptiveToolbarButtonController.destroy();
@@ -455,11 +459,11 @@ public class AdaptiveToolbarButtonControllerTest {
         mProfileSupplier.set(mProfile);
 
         verify(observer).buttonDataChanged(true);
-        Assert.assertEquals(
+        assertEquals(
                 mVoiceToolbarButtonController,
                 adaptiveToolbarButtonController.getSingleProviderForTesting());
 
-        Assert.assertTrue(adaptiveToolbarButtonController.get(mTab).canShow());
+        assertTrue(adaptiveToolbarButtonController.get(mTab).canShow());
     }
 
     @Test
@@ -483,11 +487,11 @@ public class AdaptiveToolbarButtonControllerTest {
         mProfileSupplier.set(mProfile);
 
         verify(observer).buttonDataChanged(true);
-        Assert.assertEquals(
+        assertEquals(
                 mVoiceToolbarButtonController,
                 adaptiveToolbarButtonController.getSingleProviderForTesting());
 
-        Assert.assertFalse(adaptiveToolbarButtonController.get(mTab).canShow());
+        assertFalse(adaptiveToolbarButtonController.get(mTab).canShow());
     }
 
     @Test
@@ -512,11 +516,11 @@ public class AdaptiveToolbarButtonControllerTest {
         mProfileSupplier.set(mProfile);
 
         verify(observer).buttonDataChanged(true);
-        Assert.assertEquals(
+        assertEquals(
                 mVoiceToolbarButtonController,
                 adaptiveToolbarButtonController.getSingleProviderForTesting());
 
-        Assert.assertFalse(adaptiveToolbarButtonController.get(mTab).canShow());
+        assertFalse(adaptiveToolbarButtonController.get(mTab).canShow());
 
         // New screen configuration is wider, button should be visible.
         mConfiguration.screenWidthDp = 450;
@@ -524,7 +528,7 @@ public class AdaptiveToolbarButtonControllerTest {
         adaptiveToolbarButtonController.onConfigurationChanged(mConfiguration);
 
         verify(observer, times(2)).buttonDataChanged(true);
-        Assert.assertTrue(adaptiveToolbarButtonController.get(mTab).canShow());
+        assertTrue(adaptiveToolbarButtonController.get(mTab).canShow());
     }
 
     @Test
@@ -549,20 +553,20 @@ public class AdaptiveToolbarButtonControllerTest {
         mProfileSupplier.set(mProfile);
 
         verify(observer).buttonDataChanged(true);
-        Assert.assertEquals(
+        assertEquals(
                 mVoiceToolbarButtonController,
                 adaptiveToolbarButtonController.getSingleProviderForTesting());
 
-        Assert.assertFalse(adaptiveToolbarButtonController.get(mTab).canShow());
+        assertFalse(adaptiveToolbarButtonController.get(mTab).canShow());
 
         // New screen configuration is wider, button should be visible.
         mConfiguration.screenWidthDp = 450;
 
-        Assert.assertNotNull("LayoutChangeListener should be registered", mLayoutChangeListener);
+        assertNotNull("LayoutChangeListener should be registered", mLayoutChangeListener);
         mLayoutChangeListener.onLayoutChange(null, 0, 0, 450, 0, 0, 0, 320, 0);
 
         verify(observer, times(2)).buttonDataChanged(true);
-        Assert.assertTrue(adaptiveToolbarButtonController.get(mTab).canShow());
+        assertTrue(adaptiveToolbarButtonController.get(mTab).canShow());
     }
 
     @Test

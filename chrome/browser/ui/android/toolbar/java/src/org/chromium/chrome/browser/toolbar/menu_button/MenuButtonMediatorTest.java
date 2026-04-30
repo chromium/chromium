@@ -10,6 +10,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
@@ -24,7 +25,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
@@ -295,7 +295,7 @@ public class MenuButtonMediatorTest {
 
     @Test
     public void testVisibilityDelegate() {
-        mVisibilityDelegate = Mockito.mock(MenuButtonCoordinator.VisibilityDelegate.class);
+        mVisibilityDelegate = mock(MenuButtonCoordinator.VisibilityDelegate.class);
         initMenuButtonMediator(mVisibilityDelegate);
 
         mMenuButtonMediator.setVisibility(false);

@@ -14,6 +14,7 @@ import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -352,7 +353,7 @@ public class ExtensionsMenuMediatorTest {
         mBridgeCaptor.getValue().onActionIconUpdated(entryIndexB);
 
         // Verify icon in site permissions page is unchanged.
-        verify(mSitePermissionsPropertyModel, org.mockito.Mockito.never())
+        verify(mSitePermissionsPropertyModel, never())
                 .set(eq(SitePermissionsPageProperties.EXTENSION_ICON), any());
     }
 
@@ -591,7 +592,7 @@ public class ExtensionsMenuMediatorTest {
         mBridgeCaptor.getValue().onActionUpdated(1);
 
         // Verify name in site permissions page is unchanged.
-        verify(mSitePermissionsPropertyModel, org.mockito.Mockito.never())
+        verify(mSitePermissionsPropertyModel, never())
                 .set(eq(SitePermissionsPageProperties.EXTENSION_NAME), any());
     }
 
@@ -731,7 +732,7 @@ public class ExtensionsMenuMediatorTest {
 
         mMenuMediator.onHostAccessRequestAdded("id1");
 
-        verify(mMenuPropertyModel, org.mockito.Mockito.never())
+        verify(mMenuPropertyModel, never())
                 .set(eq(ExtensionsMenuProperties.HOST_ACCESS_REQUESTS), any());
     }
 

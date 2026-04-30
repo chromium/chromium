@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.toolbar.adaptive.settings;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
@@ -21,7 +24,6 @@ import androidx.fragment.app.testing.FragmentScenario;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -118,28 +120,28 @@ public class AdaptiveToolbarSettingsFragmentTest {
                                             AdaptiveToolbarSettingsFragment
                                                     .PREF_ADAPTIVE_RADIO_GROUP);
 
-                    Assert.assertFalse(
+                    assertFalse(
                             ChromeSharedPreferences.getInstance()
                                     .contains(ADAPTIVE_TOOLBAR_CUSTOMIZATION_ENABLED));
-                    Assert.assertTrue(AdaptiveToolbarPrefs.isCustomizationPreferenceEnabled());
+                    assertTrue(AdaptiveToolbarPrefs.isCustomizationPreferenceEnabled());
 
                     mSwitchPreference.performClick();
-                    Assert.assertFalse(AdaptiveToolbarPrefs.isCustomizationPreferenceEnabled());
-                    Assert.assertTrue(
+                    assertFalse(AdaptiveToolbarPrefs.isCustomizationPreferenceEnabled());
+                    assertTrue(
                             ChromeSharedPreferences.getInstance()
                                     .contains(ADAPTIVE_TOOLBAR_CUSTOMIZATION_ENABLED));
-                    Assert.assertFalse(
+                    assertFalse(
                             ChromeSharedPreferences.getInstance()
                                     .readBoolean(ADAPTIVE_TOOLBAR_CUSTOMIZATION_ENABLED, false));
 
                     mSwitchPreference.performClick();
-                    Assert.assertTrue(AdaptiveToolbarPrefs.isCustomizationPreferenceEnabled());
-                    Assert.assertTrue(
+                    assertTrue(AdaptiveToolbarPrefs.isCustomizationPreferenceEnabled());
+                    assertTrue(
                             ChromeSharedPreferences.getInstance()
                                     .readBoolean(ADAPTIVE_TOOLBAR_CUSTOMIZATION_ENABLED, false));
 
                     int expectedDefaultShortcut = AdaptiveToolbarButtonVariant.AUTO;
-                    Assert.assertEquals(
+                    assertEquals(
                             "Incorrect default setting.",
                             expectedDefaultShortcut,
                             AdaptiveToolbarPrefs.getCustomizationSetting());
@@ -148,61 +150,61 @@ public class AdaptiveToolbarSettingsFragmentTest {
                             expectedDefaultShortcut);
 
                     // Select Based on your usage
-                    Assert.assertEquals(
+                    assertEquals(
                             R.id.adaptive_option_based_on_usage,
                             getButton(AdaptiveToolbarButtonVariant.AUTO).getId());
                     selectButton(AdaptiveToolbarButtonVariant.AUTO);
                     assertButtonCheckedCorrectly(
                             R.string.adaptive_toolbar_button_preference_based_on_your_usage,
                             AdaptiveToolbarButtonVariant.AUTO);
-                    Assert.assertEquals(
+                    assertEquals(
                             AdaptiveToolbarButtonVariant.AUTO, mRadioPreference.getSelection());
-                    Assert.assertEquals(
+                    assertEquals(
                             AdaptiveToolbarButtonVariant.AUTO,
                             ChromeSharedPreferences.getInstance()
                                     .readInt(ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS));
 
                     // Select New tab
-                    Assert.assertEquals(
+                    assertEquals(
                             R.id.adaptive_option_new_tab,
                             getButton(AdaptiveToolbarButtonVariant.NEW_TAB).getId());
                     selectButton(AdaptiveToolbarButtonVariant.NEW_TAB);
                     assertButtonCheckedCorrectly(
                             R.string.adaptive_toolbar_button_preference_new_tab,
                             AdaptiveToolbarButtonVariant.NEW_TAB);
-                    Assert.assertEquals(
+                    assertEquals(
                             AdaptiveToolbarButtonVariant.NEW_TAB, mRadioPreference.getSelection());
-                    Assert.assertEquals(
+                    assertEquals(
                             AdaptiveToolbarButtonVariant.NEW_TAB,
                             ChromeSharedPreferences.getInstance()
                                     .readInt(ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS));
 
                     // Select Share
-                    Assert.assertEquals(
+                    assertEquals(
                             R.id.adaptive_option_share,
                             getButton(AdaptiveToolbarButtonVariant.SHARE).getId());
                     selectButton(AdaptiveToolbarButtonVariant.SHARE);
                     assertButtonCheckedCorrectly(
                             R.string.adaptive_toolbar_button_preference_share,
                             AdaptiveToolbarButtonVariant.SHARE);
-                    Assert.assertEquals(
+                    assertEquals(
                             AdaptiveToolbarButtonVariant.SHARE, mRadioPreference.getSelection());
-                    Assert.assertEquals(
+                    assertEquals(
                             AdaptiveToolbarButtonVariant.SHARE,
                             ChromeSharedPreferences.getInstance()
                                     .readInt(ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS));
 
                     // Select Voice search
-                    Assert.assertEquals(
+                    assertEquals(
                             R.id.adaptive_option_voice_search,
                             getButton(AdaptiveToolbarButtonVariant.VOICE).getId());
                     selectButton(AdaptiveToolbarButtonVariant.VOICE);
                     assertButtonCheckedCorrectly(
                             R.string.adaptive_toolbar_button_preference_voice_search,
                             AdaptiveToolbarButtonVariant.VOICE);
-                    Assert.assertEquals(
+                    assertEquals(
                             AdaptiveToolbarButtonVariant.VOICE, mRadioPreference.getSelection());
-                    Assert.assertEquals(
+                    assertEquals(
                             AdaptiveToolbarButtonVariant.VOICE,
                             ChromeSharedPreferences.getInstance()
                                     .readInt(ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS));
@@ -222,17 +224,17 @@ public class AdaptiveToolbarSettingsFragmentTest {
                                                     .PREF_ADAPTIVE_RADIO_GROUP);
 
                     // Select Read Aloud.
-                    Assert.assertEquals(
+                    assertEquals(
                             R.id.adaptive_option_read_aloud,
                             getButton(AdaptiveToolbarButtonVariant.READ_ALOUD).getId());
                     selectButton(AdaptiveToolbarButtonVariant.READ_ALOUD);
                     assertButtonCheckedCorrectly(
                             R.string.adaptive_toolbar_button_preference_read_aloud,
                             AdaptiveToolbarButtonVariant.READ_ALOUD);
-                    Assert.assertEquals(
+                    assertEquals(
                             AdaptiveToolbarButtonVariant.READ_ALOUD,
                             mRadioPreference.getSelection());
-                    Assert.assertEquals(
+                    assertEquals(
                             AdaptiveToolbarButtonVariant.READ_ALOUD,
                             ChromeSharedPreferences.getInstance()
                                     .readInt(ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS));
@@ -253,16 +255,16 @@ public class AdaptiveToolbarSettingsFragmentTest {
                                                     .PREF_ADAPTIVE_RADIO_GROUP);
 
                     // Select Glic.
-                    Assert.assertEquals(
+                    assertEquals(
                             R.id.adaptive_option_glic,
                             getButton(AdaptiveToolbarButtonVariant.GLIC).getId());
                     selectButton(AdaptiveToolbarButtonVariant.GLIC);
                     assertButtonCheckedCorrectly(
                             R.string.glic_button_entrypoint_label,
                             AdaptiveToolbarButtonVariant.GLIC);
-                    Assert.assertEquals(
+                    assertEquals(
                             AdaptiveToolbarButtonVariant.GLIC, mRadioPreference.getSelection());
-                    Assert.assertEquals(
+                    assertEquals(
                             AdaptiveToolbarButtonVariant.GLIC,
                             ChromeSharedPreferences.getInstance()
                                     .readInt(ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS));
@@ -283,10 +285,10 @@ public class AdaptiveToolbarSettingsFragmentTest {
                                                     .PREF_ADAPTIVE_RADIO_GROUP);
 
                     // New tab button and Glic button should be gone.
-                    Assert.assertEquals(
+                    assertEquals(
                             View.GONE,
                             getButton(AdaptiveToolbarButtonVariant.NEW_TAB).getVisibility());
-                    Assert.assertEquals(
+                    assertEquals(
                             View.GONE,
                             getButton(AdaptiveToolbarButtonVariant.GLIC).getVisibility());
                 });
@@ -308,7 +310,7 @@ public class AdaptiveToolbarSettingsFragmentTest {
                                                     .PREF_ADAPTIVE_RADIO_GROUP);
 
                     // Translate button should be gone.
-                    Assert.assertEquals(
+                    assertEquals(
                             View.GONE,
                             getButton(AdaptiveToolbarButtonVariant.TRANSLATE).getVisibility());
                 });
@@ -335,10 +337,11 @@ public class AdaptiveToolbarSettingsFragmentTest {
         return true;
     }
 
-    private void assertButtonCheckedCorrectly(int titleRes, @AdaptiveToolbarButtonVariant int type) {
+    private void assertButtonCheckedCorrectly(
+            int titleRes, @AdaptiveToolbarButtonVariant int type) {
         String buttonTitle = mRadioPreference.getContext().getString(titleRes);
-        Assert.assertTrue(buttonTitle + " button should be checked.", getButton(type).isChecked());
-        Assert.assertTrue(
+        assertTrue(buttonTitle + " button should be checked.", getButton(type).isChecked());
+        assertTrue(
                 "Buttons except " + buttonTitle + " should be unchecked.", isRestUnchecked(type));
     }
 

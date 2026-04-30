@@ -20,7 +20,6 @@ import android.view.View.OnLongClickListener;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -193,10 +192,10 @@ public class ToggleTabStackButtonCoordinatorTest {
     public void testOverviewBehaviorAvailableDuringConstruction() {
         mLayoutSateProviderOneshotSupplier.set(mLayoutStateProvider);
         RobolectricUtil.runAllBackgroundAndUi();
-        Assert.assertEquals("Should have 1 overview observer", 1, mLayoutStateObserverSet.size());
+        assertEquals("Should have 1 overview observer", 1, mLayoutStateObserverSet.size());
 
         mCoordinator.destroy();
-        Assert.assertTrue("Should have no overview observers", mLayoutStateObserverSet.isEmpty());
+        assertTrue("Should have no overview observers", mLayoutStateObserverSet.isEmpty());
     }
 
     @Test
@@ -204,7 +203,7 @@ public class ToggleTabStackButtonCoordinatorTest {
         mCoordinator.destroy();
 
         mLayoutSateProviderOneshotSupplier.set(mLayoutStateProvider);
-        Assert.assertTrue("Should have no overview observers", mLayoutStateObserverSet.isEmpty());
+        assertTrue("Should have no overview observers", mLayoutStateObserverSet.isEmpty());
     }
 
     @Test
@@ -217,10 +216,10 @@ public class ToggleTabStackButtonCoordinatorTest {
         IphCommand iphCommand = verifyIphShown();
 
         iphCommand.onShowCallback.run();
-        Assert.assertEquals("Should have 1 overview observer", 1, mLayoutStateObserverSet.size());
+        assertEquals("Should have 1 overview observer", 1, mLayoutStateObserverSet.size());
 
         mCoordinator.destroy();
-        Assert.assertTrue("Should have no overview observers", mLayoutStateObserverSet.isEmpty());
+        assertTrue("Should have no overview observers", mLayoutStateObserverSet.isEmpty());
     }
 
     @Test

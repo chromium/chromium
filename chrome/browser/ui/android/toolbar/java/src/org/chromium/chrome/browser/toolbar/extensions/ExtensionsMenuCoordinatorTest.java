@@ -10,8 +10,15 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.isNull;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -29,7 +36,6 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
@@ -102,8 +108,7 @@ public class ExtensionsMenuCoordinatorTest {
     public void setUp() {
         TrackerFactory.setTrackerForTests(mTracker);
         ExtensionsMenuBridgeJni.setInstanceForTesting(mExtensionsMenuBridgeJniMock);
-        when(mExtensionsMenuBridgeJniMock.init(Mockito.any(), Mockito.anyLong(), Mockito.anyLong()))
-                .thenReturn(1L);
+        when(mExtensionsMenuBridgeJniMock.init(any(), anyLong(), anyLong())).thenReturn(1L);
 
         AppCompatActivity activity =
                 Robolectric.buildActivity(AppCompatActivity.class).setup().get();
@@ -155,7 +160,7 @@ public class ExtensionsMenuCoordinatorTest {
                         mMenuButtonPinningDelegate);
 
         // Clear invocations from initialization to ensure tests start fresh.
-        Mockito.clearInvocations(mExtensionsMenuBridgeJniMock);
+        clearInvocations(mExtensionsMenuBridgeJniMock);
     }
 
     @After
@@ -170,7 +175,7 @@ public class ExtensionsMenuCoordinatorTest {
     @Test
     public void testShowMenu() {
         ListMenuHost.PopupMenuShownListener shownListener =
-                Mockito.mock(ListMenuHost.PopupMenuShownListener.class);
+                mock(ListMenuHost.PopupMenuShownListener.class);
         mExtensionsMenuButton.addPopupListener(shownListener);
 
         // Click on the button. The menu should not be shown yet, but the mediator should be
@@ -192,7 +197,7 @@ public class ExtensionsMenuCoordinatorTest {
     public void testCloseMenu() {
         // Show the menu.
         ListMenuHost.PopupMenuShownListener shownListener =
-                Mockito.mock(ListMenuHost.PopupMenuShownListener.class);
+                mock(ListMenuHost.PopupMenuShownListener.class);
         mExtensionsMenuButton.addPopupListener(shownListener);
         mExtensionsMenuButton.performClick();
         triggerOnMediatorReady();
@@ -211,7 +216,7 @@ public class ExtensionsMenuCoordinatorTest {
     public void testManageExtensions() {
         // Show the menu.
         ListMenuHost.PopupMenuShownListener shownListener =
-                Mockito.mock(ListMenuHost.PopupMenuShownListener.class);
+                mock(ListMenuHost.PopupMenuShownListener.class);
         mExtensionsMenuButton.addPopupListener(shownListener);
         mExtensionsMenuButton.performClick();
         triggerOnMediatorReady();
@@ -227,9 +232,7 @@ public class ExtensionsMenuCoordinatorTest {
         verify(shownListener).onPopupMenuDismissed();
         verify(mTabCreator)
                 .createNewTab(
-                        mLoadUrlParamsCaptor.capture(),
-                        Mockito.eq(TabLaunchType.FROM_CHROME_UI),
-                        Mockito.isNull());
+                        mLoadUrlParamsCaptor.capture(), eq(TabLaunchType.FROM_CHROME_UI), isNull());
         assertEquals(UrlConstants.CHROME_EXTENSIONS_URL, mLoadUrlParamsCaptor.getValue().getUrl());
     }
 
@@ -238,7 +241,7 @@ public class ExtensionsMenuCoordinatorTest {
     public void testDiscoverExtensions() {
         // Show the menu.
         ListMenuHost.PopupMenuShownListener shownListener =
-                Mockito.mock(ListMenuHost.PopupMenuShownListener.class);
+                mock(ListMenuHost.PopupMenuShownListener.class);
         mExtensionsMenuButton.addPopupListener(shownListener);
         mExtensionsMenuButton.performClick();
         triggerOnMediatorReady();
@@ -254,9 +257,7 @@ public class ExtensionsMenuCoordinatorTest {
         verify(shownListener).onPopupMenuDismissed();
         verify(mTabCreator)
                 .createNewTab(
-                        mLoadUrlParamsCaptor.capture(),
-                        Mockito.eq(TabLaunchType.FROM_CHROME_UI),
-                        Mockito.isNull());
+                        mLoadUrlParamsCaptor.capture(), eq(TabLaunchType.FROM_CHROME_UI), isNull());
         assertEquals(UrlConstants.CHROME_WEBSTORE_URL, mLoadUrlParamsCaptor.getValue().getUrl());
     }
 
@@ -271,7 +272,7 @@ public class ExtensionsMenuCoordinatorTest {
 
         // Open the menu.
         ListMenuHost.PopupMenuShownListener shownListener =
-                Mockito.mock(ListMenuHost.PopupMenuShownListener.class);
+                mock(ListMenuHost.PopupMenuShownListener.class);
         mExtensionsMenuButton.addPopupListener(shownListener);
         mExtensionsMenuButton.performClick();
         triggerOnMediatorReady();
@@ -362,13 +363,13 @@ public class ExtensionsMenuCoordinatorTest {
 
         // Click to toggle from checked (default) to unchecked.
         container.performClick();
-        verify(mExtensionsMenuBridgeJniMock, Mockito.times(1))
-                .onSiteSettingsToggleChanged(Mockito.anyLong(), Mockito.eq(false));
+        verify(mExtensionsMenuBridgeJniMock, times(1))
+                .onSiteSettingsToggleChanged(anyLong(), eq(false));
 
         // Click again to toggle back to checked.
         container.performClick();
-        verify(mExtensionsMenuBridgeJniMock, Mockito.times(1))
-                .onSiteSettingsToggleChanged(Mockito.anyLong(), Mockito.eq(true));
+        verify(mExtensionsMenuBridgeJniMock, times(1))
+                .onSiteSettingsToggleChanged(anyLong(), eq(true));
     }
 
     /** Tests that calling {@code closeExtensionsMenuIfOpen()} successfully dismisses the menu. */
@@ -376,7 +377,7 @@ public class ExtensionsMenuCoordinatorTest {
     public void testCloseExtensionsMenuIfOpen() {
         // Show the menu.
         ListMenuHost.PopupMenuShownListener shownListener =
-                Mockito.mock(ListMenuHost.PopupMenuShownListener.class);
+                mock(ListMenuHost.PopupMenuShownListener.class);
         mExtensionsMenuButton.addPopupListener(shownListener);
         mExtensionsMenuButton.performClick();
         triggerOnMediatorReady();

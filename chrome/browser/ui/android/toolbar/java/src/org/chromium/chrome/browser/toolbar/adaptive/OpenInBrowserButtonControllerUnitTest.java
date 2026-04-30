@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -21,7 +22,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
@@ -106,7 +106,7 @@ public final class OpenInBrowserButtonControllerUnitTest {
                         .ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_OPEN_IN_BROWSER_FEATURE;
         doReturn(true).when(mTracker).shouldTriggerHelpUi(feature);
 
-        View view = Mockito.mock(View.class);
+        View view = mock(View.class);
         mOpenInBrowserButtonController.get(mTab).getButtonSpec().getOnClickListener().onClick(view);
 
         verify(mTracker, times(1))

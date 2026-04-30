@@ -4,13 +4,16 @@
 
 package org.chromium.chrome.browser.toolbar.adaptive;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.graphics.drawable.Drawable;
 
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -77,9 +80,9 @@ public class TranslateToolbarButtonControllerUnitTest {
                         () -> mTab, mDrawable, "Translate button description", () -> mTracker);
         ButtonData buttonData = translateToolbarButtonController.get(mTab);
 
-        Assert.assertTrue(buttonData.canShow());
-        Assert.assertTrue(buttonData.isEnabled());
-        Assert.assertNotNull(buttonData.getButtonSpec());
+        assertTrue(buttonData.canShow());
+        assertTrue(buttonData.isEnabled());
+        assertNotNull(buttonData.getButtonSpec());
     }
 
     @Test
@@ -89,7 +92,7 @@ public class TranslateToolbarButtonControllerUnitTest {
                         () -> mTab, mDrawable, "Translate button description", () -> mTracker);
         translateToolbarButtonController.onClick(null);
 
-        Assert.assertEquals(1, mActionTester.getActionCount("MobileTopToolbarTranslateButton"));
+        assertEquals(1, mActionTester.getActionCount("MobileTopToolbarTranslateButton"));
         verify(mTracker)
                 .notifyEvent(EventConstants.ADAPTIVE_TOOLBAR_CUSTOMIZATION_TRANSLATE_OPENED);
         verify(mMockTranslateBridge).manualTranslateWhenReady(mWebContents);
@@ -103,9 +106,9 @@ public class TranslateToolbarButtonControllerUnitTest {
                         () -> mTab, mDrawable, "Translate button description", () -> mTracker);
         ButtonData buttonData = translateToolbarButtonController.get(mTab);
 
-        Assert.assertFalse(buttonData.canShow());
-        Assert.assertTrue(buttonData.isEnabled());
-        Assert.assertNotNull(buttonData.getButtonSpec());
+        assertFalse(buttonData.canShow());
+        assertTrue(buttonData.isEnabled());
+        assertNotNull(buttonData.getButtonSpec());
     }
 
     @Test
@@ -119,9 +122,9 @@ public class TranslateToolbarButtonControllerUnitTest {
                         () -> mTab, mDrawable, "Translate button description", () -> mTracker);
         ButtonData buttonData = translateToolbarButtonController.get(mTab);
 
-        Assert.assertFalse(buttonData.canShow());
-        Assert.assertTrue(buttonData.isEnabled());
-        Assert.assertNotNull(buttonData.getButtonSpec());
+        assertFalse(buttonData.canShow());
+        assertTrue(buttonData.isEnabled());
+        assertNotNull(buttonData.getButtonSpec());
     }
 
     @Test
@@ -132,6 +135,6 @@ public class TranslateToolbarButtonControllerUnitTest {
                         () -> mTab, mDrawable, "Translate button description", () -> mTracker);
         ButtonData buttonData = translateToolbarButtonController.get(mTab);
 
-        Assert.assertFalse(buttonData.canShow());
+        assertFalse(buttonData.canShow());
     }
 }

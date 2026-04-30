@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.toolbar.menu_button;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -19,7 +20,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
@@ -114,7 +114,7 @@ public class MenuButtonCoordinatorTest {
 
     @Test
     public void testVisibilityDelegate_isVisible() {
-        mVisibilityDelegate = Mockito.mock(MenuButtonCoordinator.VisibilityDelegate.class);
+        mVisibilityDelegate = mock(MenuButtonCoordinator.VisibilityDelegate.class);
         initMenuButtonCoordinator(mVisibilityDelegate);
 
         when(mVisibilityDelegate.isMenuButtonVisible()).thenReturn(true);
@@ -130,7 +130,7 @@ public class MenuButtonCoordinatorTest {
 
     @Test
     public void testVisibilityDelegate_disable() {
-        mVisibilityDelegate = Mockito.mock(MenuButtonCoordinator.VisibilityDelegate.class);
+        mVisibilityDelegate = mock(MenuButtonCoordinator.VisibilityDelegate.class);
         initMenuButtonCoordinator(mVisibilityDelegate);
 
         mMenuButtonCoordinator.disableMenuButton();

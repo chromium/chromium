@@ -22,6 +22,7 @@ import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import static org.chromium.ui.test.util.ViewUtils.VIEW_GONE;
@@ -709,8 +710,7 @@ public class ExtensionsToolbarTest {
         ExtensionTestUtils.setWithholdHostPermissions(mProfile, extensionId, true);
 
         // Verify extension has no site access before
-        org.junit.Assert.assertFalse(
-                ExtensionTestUtils.hasGrantedHostPermission(mProfile, extensionId, url));
+        assertFalse(ExtensionTestUtils.hasGrantedHostPermission(mProfile, extensionId, url));
 
         // Navigate to the site where the extension requests access.
         mPage = mPage.loadWebPageProgrammatically(url);
@@ -747,8 +747,7 @@ public class ExtensionsToolbarTest {
                 });
 
         // Verify site access is granted after
-        org.junit.Assert.assertTrue(
-                ExtensionTestUtils.hasGrantedHostPermission(mProfile, extensionId, url));
+        assertTrue(ExtensionTestUtils.hasGrantedHostPermission(mProfile, extensionId, url));
     }
 
     @Test

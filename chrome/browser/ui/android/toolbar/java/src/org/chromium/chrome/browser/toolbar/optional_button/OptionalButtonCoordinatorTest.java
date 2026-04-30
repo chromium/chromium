@@ -27,7 +27,6 @@ import android.view.ViewGroup;
 
 import androidx.test.core.app.ApplicationProvider;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -35,7 +34,6 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
@@ -231,7 +229,7 @@ public class OptionalButtonCoordinatorTest {
                         .build();
         ButtonData buttonData = new ButtonDataImpl(/* canShow= */ true, isEnabled, buttonSpec);
 
-        View backgroundView = Mockito.mock(View.class);
+        View backgroundView = mock(View.class);
         doReturn(View.VISIBLE).when(backgroundView).getVisibility();
         doReturn(backgroundView).when(mMockOptionalButtonView).getBackgroundView();
 
@@ -264,7 +262,7 @@ public class OptionalButtonCoordinatorTest {
                         .build();
         ButtonData buttonData = new ButtonDataImpl(/* canShow= */ true, isEnabled, buttonSpec);
 
-        View backgroundView = Mockito.mock(View.class);
+        View backgroundView = mock(View.class);
         doReturn(View.GONE).when(backgroundView).getVisibility();
         doReturn(backgroundView).when(mMockOptionalButtonView).getBackgroundView();
 
@@ -344,8 +342,7 @@ public class OptionalButtonCoordinatorTest {
         mOptionalButtonCoordinator.updateButton(buttonData, /* isIncognito= */ false);
 
         verify(mMockOptionalButtonView).updateButtonWithAnimation(buttonData);
-        Assert.assertEquals(
-                Resources.ID_NULL, buttonData.getButtonSpec().getActionChipLabelResId());
+        assertEquals(Resources.ID_NULL, buttonData.getButtonSpec().getActionChipLabelResId());
     }
 
     @Test
@@ -382,8 +379,7 @@ public class OptionalButtonCoordinatorTest {
         mOptionalButtonCoordinator.updateButton(buttonData, /* isIncognito= */ false);
 
         verify(mMockOptionalButtonView).updateButtonWithAnimation(buttonData);
-        Assert.assertEquals(
-                Resources.ID_NULL, buttonData.getButtonSpec().getActionChipLabelResId());
+        assertEquals(Resources.ID_NULL, buttonData.getButtonSpec().getActionChipLabelResId());
     }
 
     @Test
@@ -420,8 +416,7 @@ public class OptionalButtonCoordinatorTest {
         mOptionalButtonCoordinator.updateButton(buttonData, /* isIncognito= */ false);
 
         verify(mMockOptionalButtonView).updateButtonWithAnimation(buttonData);
-        Assert.assertEquals(
-                actionChipResourceId, buttonData.getButtonSpec().getActionChipLabelResId());
+        assertEquals(actionChipResourceId, buttonData.getButtonSpec().getActionChipLabelResId());
     }
 
     @Test
@@ -458,8 +453,7 @@ public class OptionalButtonCoordinatorTest {
         mOptionalButtonCoordinator.updateButton(buttonData, /* isIncognito= */ false);
 
         verify(mMockOptionalButtonView).updateButtonWithAnimation(buttonData);
-        Assert.assertEquals(
-                actionChipResourceId, buttonData.getButtonSpec().getActionChipLabelResId());
+        assertEquals(actionChipResourceId, buttonData.getButtonSpec().getActionChipLabelResId());
     }
 
     @Test
