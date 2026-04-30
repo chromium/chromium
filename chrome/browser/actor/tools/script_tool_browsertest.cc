@@ -677,6 +677,29 @@ IN_PROC_BROWSER_TEST_P(ActorToolsTestScriptTool, NavigationFailedLoad) {
                     mojom::ActionResultCode::kScriptToolNavigationFailedLoad);
 }
 
+IN_PROC_BROWSER_TEST_P(ActorToolsTestScriptTool, NavigationBlockedByCSP) {
+  const GURL url = embedded_test_server()->GetURL(
+      "/actor/declarative_script_tool_cross_document.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  // Inject a CSP meta tag to block form submission.
+  ASSERT_TRUE(content::ExecJs(web_contents(), R"(
+    var meta = document.createElement('meta');
+    meta.httpEquiv = 'Content-Security-Policy';
+    meta.content = "form-action 'none'";
+    document.getElementsByTagName('head')[0].appendChild(meta);
+  )"));
+
+  const std::string declarative_input = R"JSON({"echo": "hello world"})JSON";
+  auto action = MakeScriptToolRequest(*main_frame(), "declarative_tool",
+                                      declarative_input);
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+
+  ExpectErrorResult(result,
+                    mojom::ActionResultCode::kScriptToolNavigationDidNotCommit);
+}
+
 IN_PROC_BROWSER_TEST_P(ActorToolsTestScriptTool,
                        OtherFrameNavigationDoesNotCancelTool) {
   const GURL url =
