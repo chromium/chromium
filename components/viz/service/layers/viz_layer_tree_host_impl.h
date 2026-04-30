@@ -33,6 +33,26 @@ class VizLayerTreeHostImpl : public cc::LayerTreeHostImpl {
       cc::LayerTreeHostSchedulingClient* scheduling_client);
   using LayerTreeHostImpl::LayerTreeHostImpl;
   ~VizLayerTreeHostImpl() override;
+
+  void set_current_local_surface_id_from_client(
+      const LocalSurfaceId& local_surface_id_from_client) {
+    current_local_surface_id_from_client_ = local_surface_id_from_client;
+  }
+
+  void set_next_frame_token_from_client(uint32_t frame_token);
+
+  void CreateUIResourceFromImportedResource(cc::UIResourceId uid,
+                                            ResourceId resource_id,
+                                            const gfx::Size& size,
+                                            bool is_opaque);
+
+  void set_send_frame_token_to_embedder(bool send_frame_token_to_embedder) {
+    send_frame_token_to_embedder_ = send_frame_token_to_embedder;
+  }
+
+  void set_is_handling_interaction_from_client(bool is_handling_interaction) {
+    is_handling_interaction_from_client_ = is_handling_interaction;
+  }
 };
 
 }  // namespace viz

@@ -558,7 +558,6 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   ImageDecodeCache* GetImageDecodeCache() const;
 
   uint32_t next_frame_token() const;
-  void set_next_frame_token_from_client(uint32_t frame_token);
 
   // Buffers `callback` until a relevant presentation feedback arrives, at which
   // point the callback will be posted to run on the main thread. A presentation
@@ -607,11 +606,6 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   }
   const viz::LocalSurfaceId& target_local_surface_id() const {
     return target_local_surface_id_;
-  }
-  void set_current_local_surface_id_from_client(
-      const viz::LocalSurfaceId& local_surface_id_from_client) {
-    DCHECK(settings().trees_in_viz_in_viz_process);
-    current_local_surface_id_from_client_ = local_surface_id_from_client;
   }
 
   LayerTreeImpl* active_tree() { return active_tree_.get(); }
@@ -703,11 +697,6 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
 
   virtual void CreateUIResource(UIResourceId uid,
                                 const UIResourceBitmap& bitmap);
-  virtual void CreateUIResourceFromImportedResource(UIResourceId uid,
-                                                    viz::ResourceId resource_id,
-                                                    const gfx::Size& size,
-                                                    bool is_opaque);
-
   // Deletes a UI resource.  May safely be called more than once.
   virtual void DeleteUIResource(UIResourceId uid);
   // Evict all UI resources. This differs from ClearUIResources in that this
@@ -873,15 +862,8 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
 
   void ElasticOverscrollAnimationFinished(ElementId finished_id);
 
-  void set_send_frame_token_to_embedder(bool send_frame_token_to_embedder) {
-    send_frame_token_to_embedder_ = send_frame_token_to_embedder;
-  }
   bool send_frame_token_to_embedder() const {
     return send_frame_token_to_embedder_;
-  }
-  void set_is_handling_interaction_from_client(bool is_handling_interaction) {
-    DCHECK(settings().trees_in_viz_in_viz_process);
-    is_handling_interaction_from_client_ = is_handling_interaction;
   }
 
  protected:

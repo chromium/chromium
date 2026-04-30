@@ -10749,7 +10749,9 @@ TEST_P(CompositorFrameProducingLayerTreeHostImplTest,
           AnimationHost::CreateForTesting(ThreadInstance::kImpl), nullptr, 0,
           nullptr, nullptr);
   if (layer_tree_host_impl->settings().trees_in_viz_in_viz_process) {
-    layer_tree_host_impl->set_next_frame_token_from_client(1u);
+    // TODO(496580137): Move this to VizLayerTreeHostImpl specific tests.
+    static_cast<TestVizLayerTreeHostImpl*>(layer_tree_host_impl.get())
+        ->set_next_frame_token_from_client(1u);
   }
   layer_tree_host_impl->SetVisible(true);
   layer_tree_host_impl->InitializeFrameSink(layer_tree_frame_sink.get());

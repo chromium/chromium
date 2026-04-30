@@ -530,7 +530,7 @@ LayerTreeHostImpl::LayerTreeHostImpl(
     // TreesInViz server side usually has frame tokens set by the client.
     // Initialize a default value here, which is expected in many tree
     // tests.
-    set_next_frame_token_from_client(1u);
+    next_frame_token_from_client_ = 1u;
   } else {
     compositor_frame_reporting_controller_ =
         std::make_unique<CompositorFrameReportingController>(
@@ -3346,11 +3346,6 @@ uint32_t LayerTreeHostImpl::next_frame_token() const {
   return *next_frame_token_;
 }
 
-void LayerTreeHostImpl::set_next_frame_token_from_client(uint32_t frame_token) {
-  DCHECK(settings().trees_in_viz_in_viz_process);
-  next_frame_token_from_client_ = frame_token;
-}
-
 void LayerTreeHostImpl::RegisterMainThreadPresentationTimeCallbackForTesting(
     uint32_t frame_token,
     PresentationTimeCallbackBuffer::Callback callback) {
@@ -5566,46 +5561,6 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
   data.shared_image = std::move(client_shared_image);
   data.resource_id_for_export = id;
   data.size = upload_size;
-  ui_resource_map_[uid] = std::move(data);
-
-  MarkUIResourceNotEvicted(uid);
-
-  if (settings_.TreesInVizInClientProcess()) {
-    auto [change_it, success] =
-        ui_resource_changes_.try_emplace(uid, UIResourceChange());
-    // Mark that a resource was created in this change set.
-    change_it->second.resource_created = true;
-  }
-}
-
-void LayerTreeHostImpl::CreateUIResourceFromImportedResource(
-    UIResourceId uid,
-    viz::ResourceId resource_id,
-    const gfx::Size& size,
-    bool is_opaque) {
-  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
-               "LayerTreeHostImpl::CreateUIResourceFromResource");
-  // We expect only CreateUIResource to be used for
-  // non-trees_in_viz_in_viz_process mode.
-  DCHECK(settings_.trees_in_viz_in_viz_process);
-  DCHECK_GT(uid, 0);
-
-  // Allow for multiple creation requests with the same UIResourceId.  The
-  // previous resource is simply deleted.
-  viz::ResourceId id = ResourceIdForUIResource(uid);
-  if (id) {
-    DeleteUIResource(uid);
-  }
-
-  if (!has_valid_layer_tree_frame_sink_) {
-    evicted_ui_resources_.insert(uid);
-    return;
-  }
-
-  UIResourceData data;
-  data.opaque = is_opaque;
-  data.resource_id_for_export = resource_id;
-  data.size = size;
   ui_resource_map_[uid] = std::move(data);
 
   MarkUIResourceNotEvicted(uid);

@@ -4,6 +4,7 @@
 
 #include "components/viz/service/layers/viz_layer_tree_host_impl.h"
 
+#include "base/trace_event/trace_event.h"
 #include "cc/trees/layer_tree_settings.h"
 
 namespace viz {
@@ -27,5 +28,38 @@ std::unique_ptr<VizLayerTreeHostImpl> VizLayerTreeHostImpl::Create(
 }
 
 VizLayerTreeHostImpl::~VizLayerTreeHostImpl() = default;
+
+void VizLayerTreeHostImpl::set_next_frame_token_from_client(
+    uint32_t frame_token) {
+  next_frame_token_from_client_ = frame_token;
+}
+
+void VizLayerTreeHostImpl::CreateUIResourceFromImportedResource(
+    cc::UIResourceId uid,
+    ResourceId resource_id,
+    const gfx::Size& size,
+    bool is_opaque) {
+  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
+               "LayerTreeHostImpl::CreateUIResourceFromResource");
+  DCHECK_GT(uid, 0);
+
+  // Allow for multiple creation requests with the same UIResourceId.  The
+  // previous resource is simply deleted.
+  ResourceId id = ResourceIdForUIResource(uid);
+  if (id) {
+    DeleteUIResource(uid);
+  }
+
+  if (!has_valid_layer_tree_frame_sink_) {
+    EvictAllUIResources();
+    return;
+  }
+
+  UIResourceData data;
+  data.resource_id_for_export = resource_id;
+  data.opaque = is_opaque;
+  data.size = size;
+  ui_resource_map_[uid] = std::move(data);
+}
 
 }  // namespace viz

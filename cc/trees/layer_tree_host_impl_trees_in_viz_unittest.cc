@@ -57,7 +57,9 @@ TEST_P(TreesInVizServerLayerTreeHostImplTest,
   host_impl_->WillBeginImplFrame(args);
   // This would be set by LayerContextImpl as part of UpdateDisplayTree, set
   // manually to avoid DCHECK failure.
-  host_impl_->set_next_frame_token_from_client(frame.frame_token + 1);
+  // TODO(496580137): Move this to VizLayerTreeHostImpl specific tests.
+  static_cast<TestVizLayerTreeHostImpl*>(host_impl_.get())
+      ->set_next_frame_token_from_client(frame.frame_token + 1);
   EXPECT_EQ(DrawResult::kSuccess, host_impl_->PrepareToDraw(&frame));
 
   // This function sets the metadata timestamps from FrameData.
@@ -103,8 +105,10 @@ TEST_P(TreesInVizServerLayerTreeHostImplTest,
   viz::ResourceId resource_id = host_impl_->resource_provider()->ImportResource(
       transfer_resource, base::DoNothing());
 
-  host_impl_->CreateUIResourceFromImportedResource(ui_resource_id, resource_id,
-                                                   size, true);
+  // TODO(496580137): Move this to VizLayerTreeHostImpl specific tests.
+  static_cast<TestVizLayerTreeHostImpl*>(host_impl_.get())
+      ->CreateUIResourceFromImportedResource(ui_resource_id, resource_id, size,
+                                             true);
 
   EXPECT_EQ(resource_id, host_impl_->ResourceIdForUIResource(ui_resource_id));
   EXPECT_EQ(size, host_impl_->GetUIResourceSize(ui_resource_id));
