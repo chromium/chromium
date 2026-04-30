@@ -522,15 +522,10 @@ void RemoveAttachmentWithTitle(NSString* title) {
 
 // Tests that multiple tabs selected from the tab picker are displayed in the
 // carousel, the attachment limit is respected, and the AIM button is visible.
-// TODO(crbug.com/500271202): Re-enable the test on simulators.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testAttachMultipleTabsAndLimit \
-  DISABLED_testAttachMultipleTabsAndLimit
-#else
-#define MAYBE_testAttachMultipleTabsAndLimit testAttachMultipleTabsAndLimit
-#endif
-- (void)MAYBE_testAttachMultipleTabsAndLimit {
+
+- (void)testAttachMultipleTabsAndLimit {
   [ComposeboxAppInterface setFuseboxEligible:YES];
+  [ComposeboxAppInterface setTabUploadAutoSucceed:YES];
   std::vector<GURL> URLS;
   NSUInteger totalNumberOfTabs = kAttachmentLimit + 1;
   [ChromeEarlGrey closeAllNormalTabs];

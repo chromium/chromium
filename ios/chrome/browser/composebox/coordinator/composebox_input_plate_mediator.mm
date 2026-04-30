@@ -110,6 +110,9 @@
 
 namespace {
 
+// The timeout for Page Context execution.
+constexpr base::TimeDelta kPageContextTimeout = base::Seconds(10);
+
 // Reads data from a file URL. Runs on a background thread.
 NSData* ReadDataFromURL(GURL url) {
   NSURL* ns_url = net::NSURLWithGURL(url);
@@ -834,7 +837,10 @@ std::vector<lens::MimeType> MimeTypesFromCollection(
 
   pageContextWrapper.shouldGetAnnotatedPageContent = YES;
   pageContextWrapper.shouldGetSnapshot = YES;
-  [pageContextWrapper populatePageContextFieldsAsync];
+  // The Page Context execution can take more than the default 1 second on slow
+  // devices or bots.
+  [pageContextWrapper
+      populatePageContextFieldsAsyncWithTimeout:kPageContextTimeout];
 
   _pageContextWrappers[webState->GetUniqueIdentifier()] = pageContextWrapper;
 }
@@ -1003,6 +1009,7 @@ std::vector<lens::MimeType> MimeTypesFromCollection(
                                    errorType {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   ComposeboxInputItem* item = [_items itemForServerToken:contextToken];
+
   if (!item) {
     return;
   }
