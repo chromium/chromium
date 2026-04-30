@@ -431,6 +431,33 @@ TEST(ExtensionCSPValidator, IsSecure) {
       InsecureValueWarning("script-src",
                            "'sha1-eYyYGmKWdhpUewohaXk9o8IaLSw='")));
 
+  // Verify that CSP Level 3 directives are sanitized. They are grouped with
+  // script-src, so only the first one seen will emit warnings.
+  // See crbug.com/500528267.
+  EXPECT_TRUE(
+      CheckCSP(SanitizeCSP("script-src-elem 'unsafe-inline' http://evil.com; "
+                           "script-src-attr 'unsafe-inline'",
+                           OPTIONS_ALLOW_UNSAFE_EVAL),
+               "script-src-elem; script-src-attr; object-src 'self';",
+               std::vector<std::string>{
+                   InsecureValueWarning("script-src-elem", "'unsafe-inline'"),
+                   InsecureValueWarning("script-src-elem", "http://evil.com"),
+                   missing_secure_src_warning("object-src")}));
+
+  EXPECT_TRUE(CheckCSP(
+      SanitizeCSP("worker-src http://evil.com", OPTIONS_ALLOW_UNSAFE_EVAL),
+      "worker-src; object-src 'self';",
+      std::vector<std::string>{
+          InsecureValueWarning("worker-src", "http://evil.com"),
+          missing_secure_src_warning("object-src")}));
+
+  EXPECT_TRUE(CheckCSP(
+      SanitizeCSP("child-src http://evil.com", OPTIONS_ALLOW_UNSAFE_EVAL),
+      "child-src; object-src 'self';",
+      std::vector<std::string>{
+          InsecureValueWarning("child-src", "http://evil.com"),
+          missing_secure_src_warning("object-src")}));
+
   EXPECT_TRUE(CheckCSP(
       SanitizeCSP("default-src; script-src "
                   "'sha256-hndjYvzUzy2Ykuad81Cwsl1FOXX/qYs/aDVyUyNZ"
@@ -552,6 +579,25 @@ TEST(ExtensionCSPValidator, EffectiveSandboxedPageCSP) {
       "child-src 'self'; script-src 'none';",
       insecure_value_warning("child-src", "http://bar.com"),
       insecure_value_warning("child-src", "http://foo.com")));
+
+  // Verify that CSP Level 3 directives are sanitized for sandboxed pages.
+  // See crbug.com/500528267.
+  EXPECT_TRUE(
+      CheckCSP(SanitizeSandboxPageCSP("script-src-elem 'unsafe-inline' "
+                                      "http://evil.com"),
+               "script-src-elem 'unsafe-inline' 'self'; child-src 'self';",
+               insecure_value_warning("script-src-elem", "http://evil.com")));
+
+  EXPECT_TRUE(
+      CheckCSP(SanitizeSandboxPageCSP("script-src-attr 'unsafe-inline' "
+                                      "http://evil.com"),
+               "script-src-attr 'unsafe-inline' 'self'; child-src 'self';",
+               insecure_value_warning("script-src-attr", "http://evil.com")));
+
+  EXPECT_TRUE(
+      CheckCSP(SanitizeSandboxPageCSP("worker-src http://evil.com"),
+               "worker-src 'self'; child-src 'self';",
+               insecure_value_warning("worker-src", "http://evil.com")));
 }
 
 namespace extensions {
