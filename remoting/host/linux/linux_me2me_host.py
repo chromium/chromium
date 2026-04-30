@@ -105,7 +105,7 @@ SYSTEM_PRE_SESSION_FILE_PATH = "/etc/chrome-remote-desktop-pre-session"
 
 DEBIAN_XSESSION_PATH = "/etc/X11/Xsession"
 
-X_LOCK_FILE_TEMPLATE = "/tmp/.X%d-lock"
+X_SOCKET_FILE_TEMPLATE = "/tmp/.X11-unix/X%d"
 FIRST_X_DISPLAY_NUMBER = 20
 
 # Amount of time to wait between relaunching processes.
@@ -1515,9 +1515,9 @@ class XDesktop(Desktop):
   @staticmethod
   def get_unused_display_number():
     """Return a candidate display number for which there is currently no
-    X Server lock file"""
+    X Server domain socket"""
     display = FIRST_X_DISPLAY_NUMBER
-    while os.path.exists(X_LOCK_FILE_TEMPLATE % display):
+    while os.path.exists(X_SOCKET_FILE_TEMPLATE % display):
       display += 1
     return display
 
