@@ -12,16 +12,18 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "services/device/usb/usb_service.h"
 
 namespace device {
 
 class UsbDeviceAndroid;
 
-// USB service implementation for Android. This is a stub implementation that
-// does not return any devices.
+// USB service implementation for Android.
 class UsbServiceAndroid final : public UsbService {
  public:
+  class JniDelegate;
+
   UsbServiceAndroid();
   ~UsbServiceAndroid() override;
 
@@ -43,10 +45,19 @@ class UsbServiceAndroid final : public UsbService {
  private:
   void AddDevice(scoped_refptr<UsbDeviceAndroid> device);
 
+  // Methods executed on the sequenced |task_runner_|.
+  void DeviceAttachedInternal(
+      const base::android::ScopedJavaGlobalRef<jobject>& usb_device);
+  void DeviceDetachedInternal(int32_t device_id);
+  void DevicePermissionRequestCompleteInternal(int32_t device_id, bool granted);
+
   std::unordered_map<int32_t, scoped_refptr<UsbDeviceAndroid>> devices_by_id_;
 
   // Java object org.chromium.device.usb.ChromeUsbService.
   base::android::ScopedJavaGlobalRef<jobject> j_object_;
+
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  scoped_refptr<JniDelegate> jni_delegate_;
 
   base::WeakPtrFactory<UsbServiceAndroid> weak_factory_{this};
 };
