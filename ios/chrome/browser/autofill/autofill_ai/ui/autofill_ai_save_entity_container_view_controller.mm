@@ -11,11 +11,11 @@
 #import "ios/chrome/browser/autofill/autofill_ai/ui/autofill_ai_save_entity_mutator.h"
 #import "ios/chrome/browser/autofill/autofill_ai/ui/autofill_ai_save_entity_table_view_controller.h"
 #import "ios/chrome/browser/autofill/autofill_ai/ui/autofill_ai_save_entity_table_view_controller_delegate.h"
-#import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/elements/branded_navigation_item_title_view.h"
 #import "ios/chrome/common/ui/util/chrome_button.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -91,20 +91,19 @@ constexpr CGFloat kButtonStackVerticalMargin = 16;
         forControlEvents:UIControlEventTouchUpInside];
   [_buttonStack addArrangedSubview:_saveButton];
 
-  [self.view addSubview:_buttonStack];
-
   UIView* tableView = _tableViewController.view;
   tableView.translatesAutoresizingMaskIntoConstraints = NO;
 
   [self addChildViewController:_tableViewController];
+  // The subviews must be added in this order to have a scroll edge effect.
   [self.view addSubview:tableView];
+  [self.view addSubview:_buttonStack];
   [_tableViewController didMoveToParentViewController:self];
 
   // Layout: Table view on top, button stack pinned to the bottom safe area.
   [NSLayoutConstraint activateConstraints:@[
     [tableView.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor],
-    [tableView.topAnchor
-        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor],
+    [tableView.topAnchor constraintEqualToAnchor:self.view.topAnchor],
     [tableView.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor],
 
     // Pin bottom of the table view to the top of the button stack.
@@ -164,7 +163,7 @@ constexpr CGFloat kButtonStackVerticalMargin = 16;
   _saveButton.enabled = NO;
   _saveButtonEnabled = NO;
 
-  _saveButton.title = @"";
+  [_saveButton setTitle:@"" forState:UIControlStateNormal];
   _saveButton.tunedDownStyle = YES;
   _saveButton.primaryButtonImage = PrimaryButtonImageSpinner;
 
@@ -176,11 +175,30 @@ constexpr CGFloat kButtonStackVerticalMargin = 16;
   self.modalInPresentation = YES;
 }
 
+- (void)showConfirmationState {
+  _saveButton.primaryButtonImage = PrimaryButtonImageCheckmark;
+
+  [_saveButton setTitle:@"" forState:UIControlStateNormal];
+
+  _saveButton.enabled = NO;
+  _saveButtonEnabled = NO;
+
+  _saveButton.accessibilityLabel = l10n_util::GetNSString(
+      IDS_IOS_AUTOFILL_AI_INFO_SAVED_TO_WALLET_ACCESSIBILITY_LABEL);
+
+  UIAccessibilityPostNotification(
+      UIAccessibilityAnnouncementNotification,
+      l10n_util::GetNSString(
+          IDS_IOS_AUTOFILL_AI_INFO_SAVED_TO_WALLET_ACCESSIBILITY_LABEL));
+
+  self.navigationItem.leftBarButtonItem.enabled = YES;
+  self.modalInPresentation = NO;
+}
+
 #pragma mark - Actions
 
 - (void)handleCancelButton {
   [self.mutator cancelSaving];
-  [self.autofillHandler dismissSaveEntityDialog];
 }
 
 - (void)saveButtonWasPressed:(UIButton*)sender {
@@ -189,12 +207,6 @@ constexpr CGFloat kButtonStackVerticalMargin = 16;
     return;
   }
   [self.mutator acceptSaving];
-  // Only dismiss immediately if it's a synchronous local save.
-  // Otherwise, the UI stays open to show the loading state. Once the async call
-  // is completed, the UI is informed and the loading state is dismissed.
-  if (_saveIsSynchronous) {
-    [self.autofillHandler dismissSaveEntityDialog];
-  }
 }
 
 #pragma mark - AutofillAISaveEntityTableViewControllerDelegate

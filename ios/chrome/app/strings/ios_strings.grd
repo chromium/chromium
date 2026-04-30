@@ -598,6 +598,9 @@
       <message name="IDS_IOS_AUTOFILL_AI_FOOTER_SAVE_TO_WALLET" desc="Footer text in the save/update dialog explaining the benefits of saving to Google Wallet. [iOS only]">
       Save your info and get things done faster, like filling forms across Google products. You can manage your info in Google Wallet for <ph name="USER_EMAIL">$1<ex>janedoe@google.com</ex></ph>.
       </message>
+      <message name="IDS_IOS_AUTOFILL_AI_INFO_SAVED_TO_WALLET_ACCESSIBILITY_LABEL" desc="Accessible label announced by the screenreader for a checkmark shown on autofill ai entity form for when the ai entity has been saved or updated to wallet successfully.">
+          Info saved to Google Wallet
+     </message>
       <message name="IDS_IOS_AUTOFILL_AI_OTHER_TITLE" desc="Title for the other section in Addresses and more page for entities that are not identity docs, nor travel docs. [iOS only]">
         Other
       </message>

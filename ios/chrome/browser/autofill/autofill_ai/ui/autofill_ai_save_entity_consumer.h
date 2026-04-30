@@ -25,6 +25,9 @@
 // state.
 - (void)showLoadingState;
 
+// Updates the UI to show the confirmation state after successful save/update.
+- (void)showConfirmationState;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_AUTOFILL_AI_UI_AUTOFILL_AI_SAVE_ENTITY_CONSUMER_H_

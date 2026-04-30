@@ -9,7 +9,6 @@
 
 #import "ios/chrome/browser/autofill/autofill_ai/ui/autofill_ai_save_entity_consumer.h"
 
-@protocol AutofillCommands;
 @protocol AutofillAISaveEntityMutator;
 @class CrURL;
 
@@ -30,9 +29,6 @@
 @property(nonatomic, weak)
     id<AutofillAISaveEntityContainerViewControllerDelegate>
         delegate;
-
-// Autofill commands handler to dismiss the dialog.
-@property(nonatomic, weak) id<AutofillCommands> autofillHandler;
 
 // Mutator for sending user actions (save/cancel) to the mediator.
 @property(nonatomic, weak) id<AutofillAISaveEntityMutator> mutator;

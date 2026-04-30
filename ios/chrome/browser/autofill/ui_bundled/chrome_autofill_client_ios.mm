@@ -94,6 +94,11 @@
 
 namespace autofill {
 
+// Delay before allowing dismissal of the Save/Update dialog for Autofill AI
+// forms. This allows enough time to show the confirmation checkmark that the
+// user has saved their entity data to Google Wallet.
+const base::TimeDelta kConfirmationDelay = base::Milliseconds(500);
+
 ChromeAutofillClientIOS::ChromeAutofillClientIOS(
     ProfileIOS* profile,
     web::WebState* web_state,
@@ -639,7 +644,14 @@ void ChromeAutofillClientIOS::ShowEntityImportBubble(
 
 void ChromeAutofillClientIOS::CloseEntityImportBubble() {
   // This should be a no-op if the entity import bubble is already closed.
-  [commands_handler_ dismissSaveEntityDialog];
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](__weak id<AutofillCommands> handler) {
+            [handler dismissSaveEntityDialog];
+          },
+          commands_handler_),
+      kConfirmationDelay);
 }
 
 void ChromeAutofillClientIOS::ShowAutofillAiLocalSaveNotification() {
