@@ -50,4 +50,18 @@ public class BottomBarUtils {
         int disabledColor = ColorUtils.setAlphaComponentWithFloat(onSurface, disabledAlpha);
         return new ColorStateList(DISABLED_AND_NORMAL_STATES, new int[] {disabledColor, onSurface});
     }
+
+    /**
+     * Returns the bright surface color for bottom bar elements (e.g. the new tab button
+     * background).
+     *
+     * @param context The context used to resolve the color.
+     * @param brandedColorScheme The branded color scheme for the bottom bar.
+     * @return The bright surface color int.
+     */
+    public static @ColorInt int getColorSurfaceBright(
+            Context context, @BrandedColorScheme int brandedColorScheme) {
+        boolean isIncognito = brandedColorScheme == BrandedColorScheme.INCOGNITO;
+        return IncognitoColors.getColorSurfaceBright(context, isIncognito);
+    }
 }

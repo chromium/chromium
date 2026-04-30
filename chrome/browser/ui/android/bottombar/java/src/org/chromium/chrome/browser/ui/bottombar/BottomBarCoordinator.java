@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.ui.actions.ActionRegistry;
 import org.chromium.chrome.browser.ui.actions.ActionViewBinding;
 import org.chromium.chrome.browser.ui.actions.HomeActionButtonBinder;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarHostManager.Host;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -35,8 +36,8 @@ import java.util.List;
 public class BottomBarCoordinator implements BottomBar {
     private final PropertyModel mModel;
     private final BottomBarMediator mMediator;
-    private final View mView;
-    private final PropertyModelChangeProcessor<PropertyModel, View, PropertyKey> mMcp;
+    private final BottomBarView mView;
+    private final PropertyModelChangeProcessor<PropertyModel, BottomBarView, PropertyKey> mMcp;
     private final List<ActionViewBinding> mBindings = new ArrayList<>();
     private final List<Integer> mRegisteredActionIds = new ArrayList<>();
     private final ActionRegistry mActionRegistry;
@@ -57,8 +58,9 @@ public class BottomBarCoordinator implements BottomBar {
             BottomBarMediator.VisibilityDelegate visibilityDelegate) {
         mActionRegistry = actionRegistry;
         mView =
-                LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.bottom_bar_layout, parent, false);
+                (BottomBarView)
+                        LayoutInflater.from(parent.getContext())
+                                .inflate(R.layout.bottom_bar_layout, parent, false);
 
         boolean shouldIncludeHomeButton = BottomBarConfigUtils.shouldIncludeHomeButtonIfEnabled();
 
@@ -135,7 +137,7 @@ public class BottomBarCoordinator implements BottomBar {
     }
 
     private void updateIconColors() {
-        int brandedColorScheme = mModel.get(BottomBarProperties.COLOR_SCHEME);
+        @BrandedColorScheme int brandedColorScheme = mModel.get(BottomBarProperties.COLOR_SCHEME);
         ColorStateList tint =
                 BottomBarUtils.getIconColorStateList(mView.getContext(), brandedColorScheme);
         for (int actionId : mRegisteredActionIds) {

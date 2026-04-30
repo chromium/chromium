@@ -13,7 +13,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 /** View binder for the bottom bar. */
 @NullMarked
 public class BottomBarViewBinder {
-    public static void bind(PropertyModel model, View view, PropertyKey propertyKey) {
+    public static void bind(PropertyModel model, BottomBarView view, PropertyKey propertyKey) {
         if (BottomBarProperties.IS_VISIBLE == propertyKey) {
             // TODO(crbug.com/469429568): Remove if not used after implementation is done.
             view.setVisibility(
@@ -21,17 +21,12 @@ public class BottomBarViewBinder {
         } else if (BottomBarProperties.COLOR_SCHEME == propertyKey) {
             // This property is also used to also applies updates to the action buttons via another
             // binder in BottomBarCoordinator.
-            view.setBackgroundColor(
-                    BottomBarUtils.getBottomBarBackgroundColor(
-                            view.getContext(), model.get(BottomBarProperties.COLOR_SCHEME)));
+            view.setColorScheme(model.get(BottomBarProperties.COLOR_SCHEME));
         } else if (BottomBarProperties.IS_HOME_BUTTON_VISIBLE == propertyKey) {
-            View homeContainer = view.findViewById(R.id.home_button_container);
-            if (homeContainer != null) {
-                homeContainer.setVisibility(
-                        model.get(BottomBarProperties.IS_HOME_BUTTON_VISIBLE)
-                                ? View.VISIBLE
-                                : View.GONE);
-            }
+            view.setHomeButtonVisible(model.get(BottomBarProperties.IS_HOME_BUTTON_VISIBLE));
+        } else if (BottomBarProperties.IS_NEW_TAB_BACKGROUND_VISIBLE == propertyKey) {
+            view.setNewTabBackgroundVisible(
+                    model.get(BottomBarProperties.IS_NEW_TAB_BACKGROUND_VISIBLE));
         }
     }
 }

@@ -7,9 +7,11 @@ import("//build/config/android/rules.gni")
 
 android_resources("java_resources") {
   sources = [
+    "java/res/drawable/bottom_bar_new_tab_background.xml",
     "java/res/layout/bottom_bar_generic_template.xml",
     "java/res/layout/bottom_bar_layout.xml",
     "java/res/layout/bottom_bar_list_menu_template.xml",
+    "java/res/values/dimens.xml",
   ]
   deps = [
     "//chrome/browser/ui/android/toolbar:java_resources",
@@ -35,6 +37,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarMediator.java",
     "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarProperties.java",
     "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarUtils.java",
+    "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarView.java",
     "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarViewBinder.java",
   ]
   deps = [
@@ -49,6 +52,7 @@ android_library("java") {
     "//components/browser_ui/styles/android:java",
     "//components/embedder_support/android:util_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
     "//ui/android:ui_no_recycler_view_java",
     "//url:url_java",
   ]
@@ -64,6 +68,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarCoordinatorUnitTest.java",
     "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarHostManagerUnitTest.java",
     "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarMediatorUnitTest.java",
+    "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarViewBinderUnitTest.java",
   ]
   deps = [
     ":java",

@@ -78,6 +78,8 @@ public class BottomBarMediator implements ThemeColorProvider.TintObserver {
         onTabChanged(mTabSupplier.addSyncObserver(mTabSupplierObserver));
         if (mShouldIncludeHomeButton) {
             mHomepageEnabledSupplier.addSyncObserverAndCallIfNonNull(mHomepageEnabledObserver);
+        } else {
+            updateNewTabButtonBackground();
         }
     }
 
@@ -108,6 +110,15 @@ public class BottomBarMediator implements ThemeColorProvider.TintObserver {
 
     private void onHomepageEnabledChanged(boolean isEnabled) {
         mModel.set(BottomBarProperties.IS_HOME_BUTTON_VISIBLE, isEnabled);
+        updateNewTabButtonBackground();
+    }
+
+    private void updateNewTabButtonBackground() {
+        // TODO(crbug.com/483096892): Come up with a more scalable solution for this.
+        boolean isHomeButtonVisible = mModel.get(BottomBarProperties.IS_HOME_BUTTON_VISIBLE);
+        int visibleLeft = isHomeButtonVisible ? 1 : 0;
+        int visibleRight = 1 + (BottomBarConfigUtils.shouldIncludeAppMenuButton() ? 1 : 0);
+        mModel.set(BottomBarProperties.IS_NEW_TAB_BACKGROUND_VISIBLE, visibleLeft == visibleRight);
     }
 
     /** Remove observers. */

@@ -385,4 +385,46 @@ public class BottomBarMediatorUnitTest {
         mMediator.onTintChanged(null, null, BrandedColorScheme.INCOGNITO);
         assertTrue(mModel.get(BottomBarProperties.COLOR_SCHEME) == BrandedColorScheme.INCOGNITO);
     }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.ANDROID_BOTTOM_BAR,
+        ChromeFeatureList.ANDROID_BOTTOM_BAR + ":keep_app_menu_in_toolbar/false"
+    })
+    public void testNewTabBackgroundVisibility_Asymmetric() {
+        mHomepageEnabledSupplier.set(true);
+        mMediator =
+                new BottomBarMediator(
+                        mModel,
+                        mThemeColorProvider,
+                        mTabSupplier,
+                        mHomepageEnabledSupplier,
+                        mVisibilityDelegate,
+                        true);
+
+        // When home button is visible and app menu is included, visibleLeft = 1, visibleRight = 2,
+        // so background should be hidden.
+        assertFalse(mModel.get(BottomBarProperties.IS_NEW_TAB_BACKGROUND_VISIBLE));
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.ANDROID_BOTTOM_BAR,
+        ChromeFeatureList.ANDROID_BOTTOM_BAR + ":keep_app_menu_in_toolbar/true"
+    })
+    public void testNewTabBackgroundVisibility_Symmetric() {
+        mHomepageEnabledSupplier.set(true);
+        mMediator =
+                new BottomBarMediator(
+                        mModel,
+                        mThemeColorProvider,
+                        mTabSupplier,
+                        mHomepageEnabledSupplier,
+                        mVisibilityDelegate,
+                        true);
+
+        // When home button is visible and app menu is NOT included, visibleLeft = 1, visibleRight =
+        // 1, so background should be visible.
+        assertTrue(mModel.get(BottomBarProperties.IS_NEW_TAB_BACKGROUND_VISIBLE));
+    }
 }
