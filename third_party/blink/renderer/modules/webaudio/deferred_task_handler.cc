@@ -405,7 +405,7 @@ void DeferredTaskHandler::RequestToDeleteHandlersOnMainThread() {
   // `DeleteHandlersOnMainThread()` so we don't accidentally return early when
   // there are handlers that could be deleted.
   if (rendering_orphan_handlers_.empty() &&
-      finished_tail_processing_handlers_.size() == 0) {
+      finished_tail_processing_handlers_.empty()) {
     return;
   }
 
@@ -494,7 +494,7 @@ void DeferredTaskHandler::FinishTailProcessing() {
   // case, the handler is added to `finished_tail_processing_handlers_`.  So, we
   // need to loop around until these vectors are completely empty.
   do {
-    while (tail_processing_handlers_.size() > 0) {
+    while (!tail_processing_handlers_.empty()) {
       // `DisableOutputs()` can modify `tail_processing_handlers_`, so
       // swap it out before processing it.  And keep running this until
       // nothing gets added to `tail_processing_handlers_`.

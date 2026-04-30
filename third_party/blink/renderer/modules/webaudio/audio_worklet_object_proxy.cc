@@ -53,7 +53,7 @@ void AudioWorkletObjectProxy::SynchronizeProcessorInfoList() {
       processor_info_list =
           global_scope_->WorkletProcessorInfoListForSynchronization();
 
-  if (processor_info_list->size() == 0) {
+  if (processor_info_list->empty()) {
     return;
   }
 
