@@ -155,7 +155,10 @@ class DeviceInfoSyncClient : public syncer::DeviceInfoSyncClient {
   }
 
   // syncer::DeviceInfoSyncClient:
-  bool GetGlicExperimentalTriggeringOptedIn() const override { return false; }
+  syncer::DeviceInfo::GlicExperimentalTriggeringState
+  GetGlicExperimentalTriggeringState() const override {
+    return syncer::DeviceInfo::GlicExperimentalTriggeringState::kUnavailable;
+  }
 
  private:
   const raw_ptr<PrefService> prefs_;

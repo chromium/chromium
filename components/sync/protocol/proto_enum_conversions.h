@@ -131,6 +131,9 @@ const char* ProtoEnumToString(sync_pb::SyncEnums::PasswordState state);
 const char* ProtoEnumToString(sync_pb::UserConsentTypes::ConsentStatus status);
 
 const char* ProtoEnumToString(
+    sync_pb::SyncEnums::GlicExperimentalTriggeringState state);
+
+const char* ProtoEnumToString(
     sync_pb::GaiaPasswordReuse::PasswordReuseDetected::SafeBrowsingStatus::
         ReportingPopulation safe_browsing_reporting_population);
 

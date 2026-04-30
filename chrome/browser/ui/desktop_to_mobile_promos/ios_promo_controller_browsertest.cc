@@ -78,7 +78,8 @@ std::unique_ptr<syncer::DeviceInfo> CreateDeviceInfo(
       /*auto_sign_out_last_signin_timestamp=*/std::nullopt,
       desktop_to_ios_promo_receiving_enabled,
       desktop_to_ios_promo_receiving_types,
-      /*glic_experimental_triggering_opted_in=*/false);
+      /*glic_experimental_triggering_state=*/
+      syncer::DeviceInfo::GlicExperimentalTriggeringState::kUnavailable);
   return device_info;
 }
 

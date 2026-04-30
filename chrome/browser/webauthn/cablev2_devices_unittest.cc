@@ -95,7 +95,8 @@ syncer::DeviceInfo TestDeviceInfo(const TestDeviceInfoConfig& config) {
       /*desktop_to_ios_promo_receiving_enabled=*/false,
       /*desktop_to_ios_promo_receiving_types=*/
       MobilePromoOnDesktopPromoTypeSet{},
-      /*glic_experimental_triggering_opted_in=*/false);
+      /*glic_experimental_triggering_state=*/
+      syncer::DeviceInfo::GlicExperimentalTriggeringState::kUnavailable);
 }
 
 TEST(CableV2FromSyncInfoTest, Basic) {

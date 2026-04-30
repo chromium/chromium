@@ -8,6 +8,7 @@
 
 #include "base/trace_event/trace_event.h"
 #include "components/sync/base/sync_util.h"
+#include "components/sync_device_info/device_info_proto_enum_util.h"
 #include "components/sync_device_info/device_info_sync_client.h"
 #include "components/sync_device_info/device_info_util.h"
 #include "components/sync_device_info/local_device_info_util.h"
@@ -41,8 +42,8 @@ const DeviceInfo* LocalDeviceInfoProviderImpl::GetLocalDeviceInfo() const {
   // Pull new values for settings that aren't automatically updated.
   local_device_info_->set_send_tab_to_self_receiving_enabled(
       sync_client_->GetSendTabToSelfReceivingEnabled());
-  local_device_info_->set_glic_experimental_triggering_opted_in(
-      sync_client_->GetGlicExperimentalTriggeringOptedIn());
+  local_device_info_->set_glic_experimental_triggering_state(
+      sync_client_->GetGlicExperimentalTriggeringState());
   local_device_info_->set_send_tab_to_self_receiving_type(
       sync_client_->GetSendTabToSelfReceivingType());
   local_device_info_->set_sharing_info(sync_client_->GetLocalSharingInfo());
@@ -155,7 +156,7 @@ void LocalDeviceInfoProviderImpl::Initialize(
       auto_sign_out_last_signin_timestamp,
       sync_client_->GetDesktopToIOSPromoReceivingEnabled(),
       sync_client_->GetDesktopToIOSPromoReceivingTypes(),
-      sync_client_->GetGlicExperimentalTriggeringOptedIn());
+      sync_client_->GetGlicExperimentalTriggeringState());
 
   full_hardware_class_ = full_hardware_class;
 

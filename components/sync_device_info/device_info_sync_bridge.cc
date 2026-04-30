@@ -174,6 +174,16 @@ bool IsChromeClient(const DeviceInfoSpecifics& specifics) {
   return specifics.has_chrome_version_info() || specifics.has_chrome_version();
 }
 
+DeviceInfo::GlicExperimentalTriggeringState
+SpecificsToGlicExperimentalTriggeringState(
+    const DeviceInfoSpecifics& specifics) {
+  if (specifics.feature_fields().has_glic_experimental_triggering_state()) {
+    return ToDeviceInfoGlicExperimentalTriggeringState(
+        specifics.feature_fields().glic_experimental_triggering_state());
+  }
+  return DeviceInfo::GlicExperimentalTriggeringState::kUnavailable;
+}
+
 // Converts DeviceInfoSpecifics into DeviceInfo.
 DeviceInfo SpecificsToModel(const DeviceInfoSpecifics& specifics) {
   const DeviceInfo::FormFactor device_form_factor =
@@ -205,7 +215,7 @@ DeviceInfo SpecificsToModel(const DeviceInfoSpecifics& specifics) {
       SpecificsToAutoSignOutLastSigninTimestamp(specifics),
       specifics.feature_fields().desktop_to_ios_promo_receiving_enabled(),
       SpecificsToDesktopToIOSPromoReceivingTypes(specifics),
-      specifics.feature_fields().glic_experimental_triggering_opted_in());
+      SpecificsToGlicExperimentalTriggeringState(specifics));
 }
 
 // Allocate a EntityData and copies |specifics| into it.
@@ -289,8 +299,9 @@ std::unique_ptr<DeviceInfoSpecifics> MakeLocalDeviceSpecifics(
                 .ToDeltaSinceWindowsEpoch()
                 .InMicroseconds());
   }
-  feature_fields->set_glic_experimental_triggering_opted_in(
-      info.glic_experimental_triggering_opted_in());
+  feature_fields->set_glic_experimental_triggering_state(
+      ToGlicExperimentalTriggeringStateProto(
+          info.glic_experimental_triggering_state()));
   const std::optional<DeviceInfo::SharingInfo>& sharing_info =
       info.sharing_info();
   if (sharing_info) {
@@ -371,8 +382,8 @@ bool StoredDeviceInfoStillAccurate(const DeviceInfo* stored,
          current->interested_data_types() == stored->interested_data_types() &&
          current->auto_sign_out_last_signin_timestamp() ==
              stored->auto_sign_out_last_signin_timestamp() &&
-         current->glic_experimental_triggering_opted_in() ==
-             stored->glic_experimental_triggering_opted_in();
+         current->glic_experimental_triggering_state() ==
+             stored->glic_experimental_triggering_state();
 }
 
 int CalculateMaxConcurrentEvents(const std::multimap<base::Time, int>& events) {

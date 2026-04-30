@@ -59,7 +59,8 @@ std::unique_ptr<DeviceInfo> CreateDeviceInfo(
       /*desktop_to_ios_promo_receiving_enabled=*/false,
       /*desktop_to_ios_promo_receiving_types=*/
       MobilePromoOnDesktopPromoTypeSet{},
-      /*glic_experimental_triggering_opted_in=*/false);
+      /*glic_experimental_triggering_state=*/
+      syncer::DeviceInfo::GlicExperimentalTriggeringState::kUnavailable);
 }
 
 class MockFieldTrialRegister : public FieldTrialRegister {

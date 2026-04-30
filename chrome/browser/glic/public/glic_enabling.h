@@ -20,6 +20,7 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/subscription_eligibility/subscription_eligibility_service.h"
+#include "components/sync_device_info/device_info.h"
 #include "content/public/browser/web_contents.h"
 
 class Profile;
@@ -347,10 +348,9 @@ class GlicEnabling : public signin::IdentityManager::Observer,
   // Sets whether experimental triggering is enabled.
   void SetExperimentalTriggeringEnabled(bool enabled);
 
-  // Returns true if the user has all the opt ins required for experimental
-  // triggering. This requires that all of GLIC / Actuation / Experimental
-  // Triggering are enabled.
-  bool IsExperimentalTriggeringFullyOptedIn() const;
+  // Returns the state of experimental triggering.
+  syncer::DeviceInfo::GlicExperimentalTriggeringState
+  GetExperimentalTriggeringState() const;
 
   // Checks if startup metrics have already been recorded, and if not, records
   // them.

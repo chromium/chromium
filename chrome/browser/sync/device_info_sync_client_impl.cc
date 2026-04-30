@@ -20,6 +20,7 @@
 #include "components/sharing_message/sharing_sync_preference.h"
 #include "components/sync/invalidations/sync_invalidations_service.h"
 #include "components/sync/service/sync_prefs.h"
+#include "components/sync_device_info/device_info_proto_enum_util.h"
 #include "device/fido/public/features.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -109,12 +110,13 @@ DeviceInfoSyncClientImpl::GetDesktopToIOSPromoReceivingTypes() const {
   return {};
 }
 
-bool DeviceInfoSyncClientImpl::GetGlicExperimentalTriggeringOptedIn() const {
+syncer::DeviceInfo::GlicExperimentalTriggeringState
+DeviceInfoSyncClientImpl::GetGlicExperimentalTriggeringState() const {
   auto* service = glic::GlicKeyedService::Get(profile_);
   if (!service) {
-    return false;
+    return syncer::DeviceInfo::GlicExperimentalTriggeringState::kUnavailable;
   }
-  return service->enabling().IsExperimentalTriggeringFullyOptedIn();
+  return service->enabling().GetExperimentalTriggeringState();
 }
 
 }  // namespace browser_sync

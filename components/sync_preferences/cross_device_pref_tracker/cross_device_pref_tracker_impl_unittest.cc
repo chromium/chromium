@@ -296,7 +296,8 @@ class CrossDevicePrefTrackerTest : public testing::Test {
         /*desktop_to_ios_promo_receiving_enabled=*/false,
         /*desktop_to_ios_promo_receiving_types=*/
         MobilePromoOnDesktopPromoTypeSet{},
-        /*glic_experimental_triggering_opted_in=*/false);
+        /*glic_experimental_triggering_state=*/
+        syncer::DeviceInfo::GlicExperimentalTriggeringState::kUnavailable);
   }
 
   // Helper to create a fake `DeviceInfo` for testing filters.

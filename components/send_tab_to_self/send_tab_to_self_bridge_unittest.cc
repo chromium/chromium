@@ -113,7 +113,8 @@ std::unique_ptr<syncer::DeviceInfo> CreateDevice(
       /*desktop_to_ios_promo_receiving_enabled=*/false,
       /*desktop_to_ios_promo_receiving_types=*/
       MobilePromoOnDesktopPromoTypeSet{},
-      /*glic_experimental_triggering_opted_in=*/false);
+      /*glic_experimental_triggering_state=*/
+      syncer::DeviceInfo::GlicExperimentalTriggeringState::kUnavailable);
 }
 
 sync_pb::DataTypeState StateWithEncryption(
@@ -1314,7 +1315,8 @@ TEST_F(SendTabToSelfBridgeTest,
           /*desktop_to_ios_promo_receiving_enabled=*/false,
           /*desktop_to_ios_promo_receiving_types=*/
           MobilePromoOnDesktopPromoTypeSet{},
-          /*glic_experimental_triggering_opted_in=*/false);
+          /*glic_experimental_triggering_state=*/
+          syncer::DeviceInfo::GlicExperimentalTriggeringState::kUnavailable);
   syncer::DeviceDisplayNames names1 =
       syncer::GetDeviceDisplayNames(device1.get());
   ASSERT_EQ("Manufacturer Phone model1", names1.full_name);
@@ -1338,7 +1340,8 @@ TEST_F(SendTabToSelfBridgeTest,
           /*desktop_to_ios_promo_receiving_enabled=*/false,
           /*desktop_to_ios_promo_receiving_types=*/
           MobilePromoOnDesktopPromoTypeSet{},
-          /*glic_experimental_triggering_opted_in=*/false);
+          /*glic_experimental_triggering_state=*/
+          syncer::DeviceInfo::GlicExperimentalTriggeringState::kUnavailable);
   syncer::DeviceDisplayNames names2 =
       syncer::GetDeviceDisplayNames(device2.get());
   ASSERT_EQ("Manufacturer Phone model2", names2.full_name);
@@ -1493,7 +1496,8 @@ TEST_F(SendTabToSelfBridgeTest, GetTargetDeviceInfoSortedList_FormFactors) {
           /*desktop_to_ios_promo_receiving_enabled=*/false,
           /*desktop_to_ios_promo_receiving_types=*/
           MobilePromoOnDesktopPromoTypeSet{},
-          /*glic_experimental_triggering_opted_in=*/false);
+          /*glic_experimental_triggering_state=*/
+          syncer::DeviceInfo::GlicExperimentalTriggeringState::kUnavailable);
 
   std::unique_ptr<syncer::DeviceInfo> phone =
       std::make_unique<syncer::DeviceInfo>(
@@ -1512,7 +1516,8 @@ TEST_F(SendTabToSelfBridgeTest, GetTargetDeviceInfoSortedList_FormFactors) {
           /*desktop_to_ios_promo_receiving_enabled=*/false,
           /*desktop_to_ios_promo_receiving_types=*/
           MobilePromoOnDesktopPromoTypeSet{},
-          /*glic_experimental_triggering_opted_in=*/false);
+          /*glic_experimental_triggering_state=*/
+          syncer::DeviceInfo::GlicExperimentalTriggeringState::kUnavailable);
 
   AddTestDevice(desktop.get());
   AddTestDevice(phone.get());

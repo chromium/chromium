@@ -39,7 +39,8 @@ FakeLocalDeviceInfoProvider::FakeLocalDeviceInfoProvider()
                    /*desktop_to_ios_promo_receiving_enabled=*/false,
                    /*desktop_to_ios_promo_receiving_types=*/
                    MobilePromoOnDesktopPromoTypeSet{},
-                   /*glic_experimental_triggering_opted_in=*/false) {}
+                   /*glic_experimental_triggering_state=*/
+                   DeviceInfo::GlicExperimentalTriggeringState::kUnavailable) {}
 
 FakeLocalDeviceInfoProvider::~FakeLocalDeviceInfoProvider() = default;
 

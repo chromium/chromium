@@ -297,6 +297,18 @@ const char* ProtoEnumToString(sync_pb::SharedTabGroup::Color color) {
   NOTREACHED();
 }
 
+const char* ProtoEnumToString(
+    sync_pb::SyncEnums::GlicExperimentalTriggeringState state) {
+  ASSERT_ENUM_BOUNDS(sync_pb::SyncEnums, GlicExperimentalTriggeringState,
+                     UNAVAILABLE, READY);
+  switch (state) {
+    ENUM_CASE(sync_pb::SyncEnums, UNAVAILABLE);
+    ENUM_CASE(sync_pb::SyncEnums, NEEDS_OPT_IN);
+    ENUM_CASE(sync_pb::SyncEnums, READY);
+  }
+  NOTREACHED();
+}
+
 const char* ProtoEnumToString(sync_pb::SyncEnums::BrowserType browser_type) {
   ASSERT_ENUM_BOUNDS(sync_pb::SyncEnums, BrowserType, BROWSER_TYPE_UNKNOWN,
                      TYPE_AUTH_TAB);

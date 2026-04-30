@@ -256,4 +256,12 @@ message SyncEnums {
     PROMO_TYPE_PRICE_TRACKING = 5;
   }
   // LINT.ThenChange(/components/desktop_to_mobile_promos/features.h:MobilePromoOnDesktopPromoType)
+
+  // LINT.IfChange(GlicExperimentalTriggeringState)
+  enum GlicExperimentalTriggeringState {
+    UNAVAILABLE = 0;
+    NEEDS_OPT_IN = 1;
+    READY = 2;
+  }
+  // LINT.ThenChange(/components/sync_device_info/device_info.h:GlicExperimentalTriggeringState)
 }

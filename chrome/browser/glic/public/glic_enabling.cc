@@ -807,9 +807,16 @@ bool GlicEnabling::GetExperimentalTriggeringEnabled() const {
       prefs::kGlicExperimentalTriggeringEnabled);
 }
 
-bool GlicEnabling::IsExperimentalTriggeringFullyOptedIn() const {
-  return HasConsented() && GetUserEnabledActuationOnWeb() &&
-         GetExperimentalTriggeringEnabled();
+syncer::DeviceInfo::GlicExperimentalTriggeringState
+GlicEnabling::GetExperimentalTriggeringState() const {
+  if (!base::FeatureList::IsEnabled(features::kGlicExperimentalTriggering)) {
+    return syncer::DeviceInfo::GlicExperimentalTriggeringState::kUnavailable;
+  }
+  if (HasConsented() && GetUserEnabledActuationOnWeb() &&
+      GetExperimentalTriggeringEnabled()) {
+    return syncer::DeviceInfo::GlicExperimentalTriggeringState::kReady;
+  }
+  return syncer::DeviceInfo::GlicExperimentalTriggeringState::kNeedsOptIn;
 }
 
 void GlicEnabling::SetExperimentalTriggeringEnabled(bool enabled) {

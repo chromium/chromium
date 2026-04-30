@@ -129,7 +129,8 @@ std::unique_ptr<syncer::DeviceInfo> CreateDeviceInfo(
       /*desktop_to_ios_promo_receiving_enabled=*/false,
       /*desktop_to_ios_promo_receiving_types=*/
       MobilePromoOnDesktopPromoTypeSet{},
-      /*glic_experimental_triggering_opted_in=*/false);
+      /*glic_experimental_triggering_state=*/
+      syncer::DeviceInfo::GlicExperimentalTriggeringState::kUnavailable);
 }
 
 }  // namespace tab_groups::test

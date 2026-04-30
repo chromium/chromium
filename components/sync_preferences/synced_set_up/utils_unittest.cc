@@ -154,7 +154,8 @@ class SyncedSetUpUtilsTest : public PlatformTest {
         /*desktop_to_ios_promo_receiving_enabled=*/false,
         /*desktop_to_ios_promo_receiving_types=*/
         MobilePromoOnDesktopPromoTypeSet{},
-        /*experimental_triggering_opted_in=*/false);
+        /*glic_experimental_triggering_state=*/
+        syncer::DeviceInfo::GlicExperimentalTriggeringState::kUnavailable);
   }
 
   // Helper for configuring a TimestampedPrefValue.

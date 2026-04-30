@@ -213,6 +213,34 @@ sync_pb::SyncEnums_SendTabReceivingType ToSendTabReceivingTypeProto(
   NOTREACHED();
 }
 
+DeviceInfo::GlicExperimentalTriggeringState
+ToDeviceInfoGlicExperimentalTriggeringState(
+    sync_pb::SyncEnums::GlicExperimentalTriggeringState state) {
+  switch (state) {
+    case sync_pb::SyncEnums::UNAVAILABLE:
+      return DeviceInfo::GlicExperimentalTriggeringState::kUnavailable;
+    case sync_pb::SyncEnums::NEEDS_OPT_IN:
+      return DeviceInfo::GlicExperimentalTriggeringState::kNeedsOptIn;
+    case sync_pb::SyncEnums::READY:
+      return DeviceInfo::GlicExperimentalTriggeringState::kReady;
+  }
+  NOTREACHED();
+}
+
+sync_pb::SyncEnums::GlicExperimentalTriggeringState
+ToGlicExperimentalTriggeringStateProto(
+    DeviceInfo::GlicExperimentalTriggeringState state) {
+  switch (state) {
+    case DeviceInfo::GlicExperimentalTriggeringState::kUnavailable:
+      return sync_pb::SyncEnums::UNAVAILABLE;
+    case DeviceInfo::GlicExperimentalTriggeringState::kNeedsOptIn:
+      return sync_pb::SyncEnums::NEEDS_OPT_IN;
+    case DeviceInfo::GlicExperimentalTriggeringState::kReady:
+      return sync_pb::SyncEnums::READY;
+  }
+  NOTREACHED();
+}
+
 DeviceInfo::SharingFeature ToDeviceInfoSharingFeature(
     sync_pb::SharingSpecificFields_EnabledFeatures feature) {
   switch (feature) {
