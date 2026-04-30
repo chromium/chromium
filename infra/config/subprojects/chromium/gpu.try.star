@@ -456,6 +456,16 @@ gpu_mac_builder(
 )
 
 gpu_mac_builder(
+    name = "gpu-fyi-try-mac-arm64-apple-m2-asan",
+    description_html = "Runs release GPU tests with ASan enabled on stable Mac/M2 Macbook Pro configs",
+    mirrors = [
+        "ci/GPU FYI Mac arm64 Builder (asan)",
+        "ci/Mac FYI Retina Release ASAN (Apple M2)",
+    ],
+    gn_args = "ci/GPU FYI Mac arm64 Builder (asan)",
+)
+
+gpu_mac_builder(
     name = "gpu-fyi-try-mac-arm64-apple-m2-exp",
     description_html = "Runs standard GPU tests on experimental M2 configs",
     mirrors = [
