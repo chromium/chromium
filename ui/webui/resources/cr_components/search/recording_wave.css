@@ -1,0 +1,92 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+* #type=style-lit
+* #scheme=relative
+* #css_wrapper_metadata_end */
+
+:host {
+  --bar-max-height: 40px;
+  --color-recording-wave: #8ab4f8;
+  align-items: flex-start;
+  block-size: 100%;
+  display: flex;
+  inline-size: 100%;
+  justify-content: flex-start;
+  max-inline-size: 100%;
+  min-inline-size: 100%;
+  mask-image: linear-gradient(to right, transparent 0%,
+                                black 20%, black 90%,
+                                transparent 100%);
+  overflow: visible;
+  padding-block-start: 10px;
+  position: relative;
+}
+
+.wave-wrapper {
+  align-items: center;
+  display: flex;
+  flex-shrink: 0;
+  inline-size: calc(100% + 100px);
+  justify-content: flex-end;
+  min-block-size: var(--bar-max-height);
+  min-inline-size: 100%;
+  position: relative;
+  /* Translate it so can see the initial empty flat volume bars before they
+   * jump up. This 'run-way' should always be 100px to ensure that there are
+   * only 7 bars off screen rendered at once to create the "to left slide in"
+   * effect.
+   */
+  transform: translateX(-100px);
+}
+
+#barsContainer {
+  align-items: center;
+  display: flex;
+  flex-direction: row-reverse;
+  inline-size: 100%;
+  min-block-size: var(--bar-max-height);
+  min-inline-size: 100%;
+  will-change: transform;
+}
+
+.bar-pill {
+  background-color: var(--color-recording-wave);
+  border-radius: 1000px;
+  flex-shrink: 0;
+  inline-size: var(--bar-width, 12px);
+  min-block-size: 4px;
+  transform-origin: center;
+}
+
+/* If the size of the bar pill were changed when the bar pill is
+ * initialized with a volume value, there would be major layout
+ * recalculations that would cause lag. Having a larger bar pill just
+ * become visible again instead of grow is to ensure that
+ * that major layout recalculation does not occur. */
+.bar-pill.is-unspawned {
+  background: transparent;
+  block-size: 4px;
+  box-shadow: none;
+  min-block-size: 0;
+  transform: none;
+  transform-origin: center;
+  position: relative;
+}
+
+/* The uninitialized spheres that actually
+ * show in the UI.
+ */
+.bar-pill.is-unspawned::before {
+  border-radius: 50%;
+  background: var(--color-recording-wave);
+  block-size: 4px;
+  content: '';
+  inline-size: 4px;
+  inset-block-start: 50%;
+  inset-inline-start: 50%;
+  transform: translate(-50%, -50%);
+  position: absolute;
+}

@@ -10,6 +10,7 @@ assert((!is_android && !is_ios) || enable_webui_ntp)
 build_webui("build") {
   grd_prefix = "cr_components_search"
   ts_files = [
+    "audio_processor.service.ts",
     "animated_glow.html.ts",
     "animated_glow.ts",
     "audio_wave.html.ts",
@@ -17,10 +18,13 @@ build_webui("build") {
     "constants.ts",
     "drag_drop_handler.ts",
     "drag_drop_host.ts",
+    "recording_wave.html.ts",
+    "recording_wave.ts",
   ]
   css_files = [
     "animated_glow.css",
     "audio_wave.css",
+    "recording_wave.css",
   ]
   static_files = [ "images/eclipse_wave_blurred_rect.png" ]
   ts_out_dir = "$root_gen_dir/ui/webui/resources/tsc/cr_components/search"
