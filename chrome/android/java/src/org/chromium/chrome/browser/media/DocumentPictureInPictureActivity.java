@@ -705,6 +705,13 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
             mAppThemeColorProvider = null;
         }
 
+        // Destroy method is only available on API 30+, current min API is 29.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM
+                && mAppHeaderCoordinator != null) {
+            mAppHeaderCoordinator.destroy();
+            mAppHeaderCoordinator = null;
+        }
+
         super.onDestroy();
     }
 
