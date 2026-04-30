@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "base/command_line.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -16,6 +17,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/background/background_contents.h"
 #include "chrome/browser/background/background_contents_service_factory.h"
+#include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/extension_test_util.h"
 #include "chrome/common/pref_names.h"
@@ -23,6 +25,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/prefs/pref_service.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/common/extension.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -81,6 +84,12 @@ class BackgroundContentsServiceTest : public testing::Test {
         TestingBrowserProcess::GetGlobal()->SetUpGlobalFeaturesForTesting(
             /*profile_manager=*/true);
     profile_ = profile_manager_->CreateTestingProfile("default");
+
+    extensions::TestExtensionSystem* system =
+        static_cast<extensions::TestExtensionSystem*>(
+            extensions::ExtensionSystem::Get(profile_));
+    system->CreateExtensionService(base::CommandLine::ForCurrentProcess(),
+                                   base::FilePath(), false);
   }
 
   void TearDown() override {
@@ -243,4 +252,31 @@ TEST_F(BackgroundContentsServiceTest, RestartForceInstalledExtensionOnCrash) {
   task_environment_.FastForwardBy(base::Seconds(3));
 
   // No crash.
+}
+
+// Test that ensures that background contents are correctly restored from
+// preferences, specifically checking that the URL and frame name are not
+// swapped. Regression test for crbug.com/499051898.
+TEST_F(BackgroundContentsServiceTest, RestoreFromPrefs) {
+  BackgroundContentsService service(profile_);
+
+  // Manually set up the preference.
+  const std::string appid = "appid";
+  const GURL expected_url("http://www.google.com/test");
+
+  {
+    ScopedDictPrefUpdate update(profile_->GetPrefs(),
+                                prefs::kRegisteredBackgroundContents);
+    base::DictValue dict;
+    dict.Set("url", expected_url.spec());
+    dict.Set("name", "test_frame");
+    update->Set(appid, std::move(dict));
+  }
+
+  // Load the background contents for the extension.
+  service.LoadBackgroundContentsForExtension(appid);
+
+  BackgroundContents* contents = service.GetAppBackgroundContents(appid);
+  ASSERT_TRUE(contents);
+  EXPECT_EQ(expected_url, contents->GetInitialURLForTesting());
 }

@@ -97,6 +97,8 @@ class BackgroundContents : public extensions::DeferredStartRenderHost,
       base::TerminationStatus status) override;
   void PrimaryPageChanged(content::Page& page) override;
 
+  const GURL& GetInitialURLForTesting() const { return initial_url_; }
+
  protected:
   // Exposed for testing.
   BackgroundContents();

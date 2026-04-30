@@ -511,8 +511,8 @@ void BackgroundContentsService::LoadBackgroundContentsFromDictionary(
   if (!dict)
     return;
 
-  const std::string* maybe_frame_name = dict->FindString(kUrlKey);
-  const std::string* maybe_url = dict->FindString(kFrameNameKey);
+  const std::string* maybe_url = dict->FindString(kUrlKey);
+  const std::string* maybe_frame_name = dict->FindString(kFrameNameKey);
   std::string frame_name = maybe_frame_name ? *maybe_frame_name : std::string();
   std::string url = maybe_url ? *maybe_url : std::string();
 

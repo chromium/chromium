@@ -3733,9 +3733,16 @@ BackgroundContents* Browser::CreateBackgroundContents(
 
   // When a separate process is used, the original renderer cannot access the
   // new window later, thus we need to navigate the window now.
-  contents->web_contents()->GetController().LoadURL(
-      target_url, content::Referrer(), ui::PAGE_TRANSITION_LINK,
-      std::string());  // No extra headers.
+  content::NavigationController::LoadURLParams params(target_url);
+  params.is_renderer_initiated = true;
+  if (opener) {
+    params.initiator_origin = opener->GetLastCommittedOrigin();
+    params.initiator_process_id = opener->GetProcess()->GetDeprecatedID();
+  } else {
+    params.initiator_origin = url::Origin::Create(opener_url);
+  }
+  params.source_site_instance = source_site_instance;
+  contents->web_contents()->GetController().LoadURLWithParams(params);
 
   return contents;
 }
