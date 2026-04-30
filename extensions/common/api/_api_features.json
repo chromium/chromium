@@ -281,7 +281,6 @@
         "webui_untrusted"
       ],
       "matches": [
-        "chrome-untrusted://boca-app/*",
         "chrome-untrusted://lens/*"
       ],
       // "desktop_android" is not supported.
@@ -929,7 +928,6 @@
       "webui_untrusted"
     ],
     "matches": [
-      "chrome-untrusted://boca-app/*",
       "chrome-untrusted://lens/*"
     ]
   }, {
@@ -975,7 +973,6 @@
       "webui_untrusted"
     ],
     "matches": [
-      "chrome-untrusted://boca-app/*",
       "chrome-untrusted://lens/*"
     ]
   }, {
@@ -1015,7 +1012,6 @@
       "webui_untrusted"
     ],
     "matches": [
-      "chrome-untrusted://boca-app/*",
       "chrome-untrusted://lens/*"
     ]
   }]

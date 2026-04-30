@@ -251,7 +251,6 @@
       "webui_untrusted"
     ],
     "matches": [
-      "chrome-untrusted://boca-app/*",
       "chrome-untrusted://lens/*"
     ]
   }],
@@ -274,7 +273,6 @@
       "webui_untrusted"
     ],
     "matches": [
-      "chrome-untrusted://boca-app/*",
       "chrome-untrusted://lens/*"
     ]
   }, {
