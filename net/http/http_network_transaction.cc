@@ -2113,6 +2113,8 @@ int HttpNetworkTransaction::HandleIOError(int error) {
         // By yielding (PostTask) at DEFAULT priority after several attempts, we
         // restore FIFO ordering relative to the cleanup tasks, allowing the
         // pool to be scrubbed before the next retry.
+        //
+        // TODO(crbug.com/482074640): Write unit tests to reproduce this issue.
         if (base::FeatureList::IsEnabled(
                 features::kAsyncRetryOnTooManyConnectionErrors) &&
             // For performance reasons, we initially retry synchronously.
@@ -2122,9 +2124,11 @@ int HttpNetworkTransaction::HandleIOError(int error) {
             // as described above.
             retry_attempts_on_connection_errors_ >=
                 kMaxRetryAttemptsOnConnectionErrors / 2) {
+          // Use WeakPtr to prevent a potential dangling pointer crash. See
+          // http://crbug.com/506964502 for more details.
           base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
               FROM_HERE, base::BindOnce(&HttpNetworkTransaction::OnIOComplete,
-                                        base::Unretained(this), OK));
+                                        weak_ptr_factory_.GetWeakPtr(), OK));
           return ERR_IO_PENDING;
         }
         return OK;
