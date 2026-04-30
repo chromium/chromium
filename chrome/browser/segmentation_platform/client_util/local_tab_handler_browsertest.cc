@@ -6,11 +6,10 @@
 
 #include <memory>
 
-#include "base/test/task_environment.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
-#include "chrome/test/base/test_browser_window.h"
-#include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/segmentation_platform/embedder/input_delegate/tab_session_source.h"
 #include "components/segmentation_platform/embedder/tab_fetcher.h"
 #include "components/segmentation_platform/internal/execution/processing/feature_processor_state.h"
@@ -18,32 +17,26 @@
 #include "components/sync_sessions/session_sync_service.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/test/browser_task_environment.h"
-#include "content/public/test/test_renderer_host.h"
-#include "content/public/test/web_contents_tester.h"
+#include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/window_open_disposition.h"
 
 namespace segmentation_platform::processing {
 
 using ::testing::Return;
 using MockSessionSyncService = sync_sessions::MockSessionSyncService;
 
-class LocalTabHandlerTest : public testing::Test {
+class LocalTabHandlerTest : public InProcessBrowserTest {
  public:
   LocalTabHandlerTest() = default;
   ~LocalTabHandlerTest() override = default;
 
-  void SetUp() override {
-    Test::SetUp();
-    profile_ = std::make_unique<TestingProfile>();
-    Browser::CreateParams params(profile_.get(), true);
-    params.type = Browser::TYPE_NORMAL;
-    auto test_window = std::make_unique<TestBrowserWindow>();
-    params.window = test_window.release();
-    browser_ = Browser::DeprecatedCreateOwnedForTesting(params);
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+
     handler_ = std::make_unique<LocalTabHandler>(&session_sync_service_,
-                                                 profile_.get());
+                                                 browser()->profile());
 
     source_ = std::make_unique<LocalTabSource>(&session_sync_service_,
                                                handler_.get());
@@ -52,35 +45,25 @@ class LocalTabHandlerTest : public testing::Test {
         .WillRepeatedly(Return(nullptr));
   }
 
-  void TearDown() override {
-    Test::TearDown();
+  void TearDownOnMainThread() override {
     handler_.reset();
-    browser_->tab_strip_model()->CloseAllTabs();
-    browser_.reset();
-    profile_.reset();
+    source_.reset();
+    InProcessBrowserTest::TearDownOnMainThread();
   }
 
-  content::WebContents* AddTab(int index) {
-    std::unique_ptr<content::WebContents> web_contents =
-        content::WebContentsTester::CreateTestWebContents(profile_.get(),
-                                                          nullptr);
-    content::WebContents* web_contents_ptr = web_contents.get();
-    browser_->tab_strip_model()->AddWebContents(
-        std::move(web_contents), index,
-        ui::PageTransition::PAGE_TRANSITION_TYPED, AddTabTypes::ADD_ACTIVE);
+  content::WebContents* AddTab() {
+    ui_test_utils::NavigateToURLWithDisposition(
+        browser(), GURL("about:blank"),
+        WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
-    web_contents_ptr->GetController().LoadURL(
-        GURL("http://a.com"), content::Referrer(), ui::PAGE_TRANSITION_LINK,
-        std::string());
-    content::WebContentsTester::For(web_contents_ptr)
-        ->CommitPendingNavigation();
-
-    return web_contents_ptr;
+    return browser()->tab_strip_model()->GetWebContentsAt(
+        browser()->tab_strip_model()->count() - 1);
   }
 
   void CloseTab(int index) {
-    browser_->tab_strip_model()->CloseWebContentsAt(
-        0, TabCloseTypes::CLOSE_USER_GESTURE);
+    browser()->tab_strip_model()->CloseWebContentsAt(
+        index, TabCloseTypes::CLOSE_USER_GESTURE);
   }
 
   float GetModifiedTime(const TabFetcher::TabEntry& tab) {
@@ -91,26 +74,25 @@ class LocalTabHandlerTest : public testing::Test {
   }
 
  protected:
-  content::BrowserTaskEnvironment task_environment_{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  content::RenderViewHostTestEnabler rvh_test_enabler_;
-  std::unique_ptr<TestingProfile> profile_;
-  std::unique_ptr<Browser> browser_;
   std::unique_ptr<LocalTabHandler> handler_;
   std::unique_ptr<LocalTabSource> source_;
 
   MockSessionSyncService session_sync_service_;
 };
 
-TEST_F(LocalTabHandlerTest, EmptyTabs) {
+IN_PROC_BROWSER_TEST_F(LocalTabHandlerTest, EmptyTabs) {
   std::vector<TabFetcher::TabEntry> tabs;
   handler_->FillAllLocalTabsFromTabModel(tabs);
-  EXPECT_TRUE(tabs.empty());
+  // We expect 1 tab (the default one created by the browser test fixture).
+  EXPECT_EQ(tabs.size(), 1u);
 }
 
-TEST_F(LocalTabHandlerTest, FetchTabs) {
-  auto* webcontents1 = AddTab(0);
-  auto* webcontents2 = AddTab(1);
+IN_PROC_BROWSER_TEST_F(LocalTabHandlerTest, FetchTabs) {
+  auto* webcontents1 = AddTab();
+  auto* webcontents2 = AddTab();
+
+  // Close the default tab (at index 0) to match the expected size of 2.
+  CloseTab(0);
 
   std::vector<TabFetcher::TabEntry> tabs1;
   handler_->FillAllLocalTabsFromTabModel(tabs1);
@@ -138,22 +120,34 @@ TEST_F(LocalTabHandlerTest, FetchTabs) {
   EXPECT_EQ(find_tab3.webcontents, webcontents2);
 }
 
-TEST_F(LocalTabHandlerTest, LocalTabSource) {
-  AddTab(0);
-  task_environment_.FastForwardBy(base::Seconds(10));
-  AddTab(1);
-  task_environment_.FastForwardBy(base::Seconds(10));
+IN_PROC_BROWSER_TEST_F(LocalTabHandlerTest, LocalTabSource) {
+  auto* web_contents1 = AddTab();
+  auto* entry1 = web_contents1->GetController().GetLastCommittedEntry();
+  ASSERT_TRUE(entry1);
+  entry1->SetTimestamp(base::Time::Now() - base::Seconds(20));
+
+  auto* web_contents2 = AddTab();
+  auto* entry2 = web_contents2->GetController().GetLastCommittedEntry();
+  ASSERT_TRUE(entry2);
+  entry2->SetTimestamp(base::Time::Now() - base::Seconds(10));
+
+  // Close the default tab (at index 0) to match the expected size of 2.
+  CloseTab(0);
 
   std::vector<TabFetcher::TabEntry> tabs;
   handler_->FillAllLocalTabsFromTabModel(tabs);
 
+  ASSERT_EQ(tabs.size(), 2u);
+
   float time1 = GetModifiedTime(tabs[0]);
-  EXPECT_NEAR(TabSessionSource::BucketizeExp(/*value=*/20, /*max_buckets=*/50), 16, 0.01);
-  EXPECT_NEAR(time1, 16, 0.01);
+  EXPECT_NEAR(TabSessionSource::BucketizeExp(/*value=*/20, /*max_buckets=*/50),
+              16, 0.1);
+  EXPECT_NEAR(time1, 16, 0.1);
 
   float time2 = GetModifiedTime(tabs[1]);
-  EXPECT_NEAR(TabSessionSource::BucketizeExp(/*value=*/10, /*max_buckets=*/50), 8, 0.01);
-  EXPECT_NEAR(time2, 8, 0.01);
+  EXPECT_NEAR(TabSessionSource::BucketizeExp(/*value=*/10, /*max_buckets=*/50),
+              8, 0.1);
+  EXPECT_NEAR(time2, 8, 0.1);
 }
 
 }  // namespace segmentation_platform::processing

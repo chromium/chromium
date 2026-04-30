@@ -156,10 +156,6 @@ source_set("unit_tests") {
     "segmentation_platform_service_factory_unittest.cc",
   ]
 
-  if (!is_android) {
-    sources += [ "client_util/local_tab_handler_unittest.cc" ]
-  }
-
   deps = [
     ":impl",
     ":test_utils",
@@ -189,6 +185,10 @@ source_set("browser_tests") {
 
   sources = [ "service_browsertest.cc" ]
 
+  if (!is_android) {
+    sources += [ "client_util/local_tab_handler_browsertest.cc" ]
+  }
+
   deps = [
     ":impl",
     ":test_utils",
@@ -198,6 +198,7 @@ source_set("browser_tests") {
     "//chrome/browser/optimization_guide",
     "//chrome/test:test_support",
     "//components/optimization_guide/core:test_support",
+    "//components/segmentation_platform/embedder",
     "//components/segmentation_platform/embedder/default_model",
     "//components/segmentation_platform/internal",
     "//components/segmentation_platform/internal:test_support",
