@@ -53,6 +53,14 @@ luci.bucket(
             ] if p != None],
         ),
     ],
+    bindings = [
+        luci.binding(
+            roles = "role/logdog.prefixDeleter",
+            users = [
+                "iannucci@google.com",
+            ],
+        ),
+    ],
 )
 
 # Shadow bucket of `try`, for led builds.
