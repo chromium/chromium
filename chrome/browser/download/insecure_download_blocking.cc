@@ -218,12 +218,16 @@ struct InsecureDownloadData {
     auto download_source = item->GetDownloadSource();
     auto transition_type = item->GetTransitionType();
     if (download_source == DownloadSource::RETRY ||
-        (transition_type & ui::PAGE_TRANSITION_RELOAD) ||
-        (transition_type & ui::PAGE_TRANSITION_TYPED) ||
+        ui::PageTransitionCoreTypeIs(transition_type,
+                                     ui::PAGE_TRANSITION_RELOAD) ||
+        ui::PageTransitionCoreTypeIs(transition_type,
+                                     ui::PAGE_TRANSITION_TYPED) ||
         (transition_type & ui::PAGE_TRANSITION_FROM_ADDRESS_BAR) ||
         (transition_type & ui::PAGE_TRANSITION_FORWARD_BACK) ||
-        (transition_type & ui::PAGE_TRANSITION_AUTO_TOPLEVEL) ||
-        (transition_type & ui::PAGE_TRANSITION_AUTO_BOOKMARK) ||
+        ui::PageTransitionCoreTypeIs(transition_type,
+                                     ui::PAGE_TRANSITION_AUTO_TOPLEVEL) ||
+        ui::PageTransitionCoreTypeIs(transition_type,
+                                     ui::PAGE_TRANSITION_AUTO_BOOKMARK) ||
         (transition_type & ui::PAGE_TRANSITION_FROM_API) ||
         download_source == DownloadSource::OFFLINE_PAGE ||
         download_source == DownloadSource::INTERNAL_API ||
@@ -254,7 +258,8 @@ struct InsecureDownloadData {
     // downloads. For example, downloads are blocked even if they're initiated
     // from the omnibox.
     if (download_source == DownloadSource::RETRY ||
-        (transition_type & ui::PAGE_TRANSITION_RELOAD) ||
+        ui::PageTransitionCoreTypeIs(transition_type,
+                                     ui::PAGE_TRANSITION_RELOAD) ||
         (transition_type & ui::PAGE_TRANSITION_FROM_API) ||
         download_source == DownloadSource::OFFLINE_PAGE ||
         download_source == DownloadSource::INTERNAL_API ||

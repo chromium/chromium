@@ -1591,6 +1591,39 @@ TEST_F(ChromeDownloadManagerDelegateTest, InsecureDownloadsBlocked) {
   }
 }
 
+// Regression test for crbug.com/497394061. PageTransition core values are
+// sequential integers, not bitmasks. This test ensures that transition types
+// like AUTO_SUBFRAME and FORM_SUBMIT are not incorrectly flagged as TYPED or
+// RELOAD due to bitwise logic errors, which would cause a security downgrade
+// for mixed-content downloads.
+TEST_F(ChromeDownloadManagerDelegateTest, InsecureDownloadsBlocked_Regression) {
+  const GURL kInsecureFile("http://example.com/foo");
+  const auto kSecureOrigin = Origin::Create(GURL("https://example.org"));
+
+  // Regression test for bitwise logic error in PageTransition core types.
+  // PAGE_TRANSITION_AUTO_SUBFRAME (3) and PAGE_TRANSITION_FORM_SUBMIT (7)
+  // should not be incorrectly flagged as TYPED (1) or RELOAD (8).
+  const ui::PageTransition kTransitionTypes[] = {
+      ui::PAGE_TRANSITION_AUTO_SUBFRAME,
+      ui::PAGE_TRANSITION_FORM_SUBMIT,
+  };
+
+  for (auto transition_type : kTransitionTypes) {
+    std::unique_ptr<download::MockDownloadItem> download_item =
+        PrepareDownloadItemForInsecureBlocking(kInsecureFile, kSecureOrigin,
+                                               std::nullopt);
+    ON_CALL(*download_item, GetTransitionType())
+        .WillByDefault(::testing::Return(transition_type));
+
+    download::DownloadTargetInfo target_info =
+        DetermineDownloadTarget(download_item.get());
+
+    EXPECT_EQ(download::DownloadItem::InsecureDownloadStatus::SILENT_BLOCK,
+              target_info.insecure_download_status)
+        << "Failed for transition type: " << transition_type;
+  }
+}
+
 // Verify that insecure downloads not blocked normally are blocked when
 // HTTPS-First mode is enabled.
 TEST_F(ChromeDownloadManagerDelegateTest,
