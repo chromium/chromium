@@ -168,10 +168,12 @@ class MetricsService {
   // Called when the application is going into background mode.
   // If |keep_recording_in_background| is true, UMA is still recorded and
   // reported while in the background.
-  void OnAppEnterBackground(bool keep_recording_in_background = false);
+  void OnAppEnterBackground(bool keep_recording_in_background = false,
+                            bool emit_uma_action = true);
 
   // Called when the application is coming out of background mode.
-  void OnAppEnterForeground(bool force_open_new_log = false);
+  void OnAppEnterForeground(bool force_open_new_log = false,
+                            bool emit_uma_action = true);
 
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 

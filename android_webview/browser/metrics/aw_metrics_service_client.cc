@@ -628,8 +628,8 @@ bool AwMetricsServiceClient::ShouldStartUpFast() const {
   return fast_startup_for_testing_;
 }
 
-metrics::MetricsLogStore::StorageLimits AwMetricsServiceClient::GetStorageLimits()
-    const {
+metrics::MetricsLogStore::StorageLimits
+AwMetricsServiceClient::GetStorageLimits() const {
   return GetStorageLimitsImpl();
 }
 
@@ -844,17 +844,19 @@ void AwMetricsServiceClient::OnAppStateChanged(
 
   bool foreground = state == WebViewAppStateObserver::State::kForeground;
 
-  if (foreground == app_in_foreground_)
+  if (foreground == app_in_foreground_) {
     return;
+  }
 
   app_in_foreground_ = foreground;
   if (app_in_foreground_) {
-    GetMetricsService()->OnAppEnterForeground();
+    GetMetricsService()->OnAppEnterForeground(
+        /*force_open_new_log=*/false, /*emit_uma_action=*/false);
   } else {
     // TODO(crbug.com/40118864): Turn on the background recording.
     // Not recording in background, this matches Chrome's behavior.
     GetMetricsService()->OnAppEnterBackground(
-        /* keep_recording_in_background = false */);
+        /*keep_recording_in_background=*/false, /*emit_uma_action=*/false);
   }
 }
 
