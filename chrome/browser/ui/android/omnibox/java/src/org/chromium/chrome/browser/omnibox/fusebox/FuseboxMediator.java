@@ -365,9 +365,7 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
         }
     }
 
-    /** Activate Search as the Next Request fulfillment type. */
-    @VisibleForTesting
-    void activateSearchMode() {
+    private void activateSearchMode() {
         if (trySetRequestType(AutocompleteRequestType.SEARCH)) {
             assert mModelList != null;
             mModelList.clear();
@@ -382,9 +380,7 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
         }
     }
 
-    /** Activate AI Mode if no other custom mode is already active. */
-    @VisibleForTesting
-    void maybeActivateAiMode(@AiModeActivationSource int activationReason) {
+    private void maybeActivateAiMode(@AiModeActivationSource int activationReason) {
         if (!isInInputSession()) return;
 
         hidePopup();
@@ -392,9 +388,7 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
         activateAiMode(activationReason);
     }
 
-    /** Activate AI Mode as the Next Request fulfillment type. */
-    @VisibleForTesting
-    void activateAiMode(@AiModeActivationSource int activationReason) {
+    private void activateAiMode(@AiModeActivationSource int activationReason) {
         if (activationReason == AiModeActivationSource.TOOL_MENU) {
             FuseboxMetrics.notifyToolButtonSelected(ToolMode.TOOL_MODE_UNSPECIFIED_VALUE);
         }
@@ -403,9 +397,7 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
         }
     }
 
-    /** Activate image generation as the Next Request fulfillment type. */
-    @VisibleForTesting
-    void activateImageGeneration() {
+    private void activateImageGeneration() {
         FuseboxMetrics.notifyToolButtonSelected(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE);
         trySetRequestType(AutocompleteRequestType.IMAGE_GENERATION);
     }

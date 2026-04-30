@@ -69,7 +69,6 @@ import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentRecyclerViewAdapter.FuseboxAttachmentType;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxLayoutMode;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
-import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.AiModeActivationSource;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.FuseboxAttachmentButtonType;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxProperties.PopupButtonData;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxProperties.PopupState;
@@ -603,16 +602,13 @@ public class FuseboxMediatorUnitTest {
     }
 
     @Test
-    public void activateSearchMode_clearsAttachmentsAndAbandonsSession() {
+    public void dedicatedButton_clearsAttachmentsAndAbandonsSession() {
         addAttachment("title", "token1", FuseboxAttachmentType.ATTACHMENT_TAB);
-
-        mMediator.activateAiMode(AiModeActivationSource.DEDICATED_BUTTON);
-        mModel.set(FuseboxProperties.ATTACHMENTS_VISIBLE, true);
         assertEquals(
                 AutocompleteRequestType.AI_MODE,
                 (int) mModel.get(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE));
 
-        mMediator.activateSearchMode();
+        mModel.get(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE_CLICKED).run();
         assertEquals(
                 AutocompleteRequestType.SEARCH,
                 (int) mModel.get(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE));
@@ -620,8 +616,8 @@ public class FuseboxMediatorUnitTest {
     }
 
     @Test
-    public void activateAiMode_startsSession() {
-        mMediator.activateAiMode(AiModeActivationSource.DEDICATED_BUTTON);
+    public void dedicatedButton_startsSession() {
+        mModel.get(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE_CLICKED).run();
         verify(mComposeboxQueryControllerBridge, never()).notifySessionStarted();
         assertEquals(
                 AutocompleteRequestType.AI_MODE,
@@ -634,7 +630,7 @@ public class FuseboxMediatorUnitTest {
                 HistogramWatcher.newSingleRecordWatcher(
                         "Omnibox.MobileFusebox.ToolButtonSelected",
                         ToolMode.TOOL_MODE_UNSPECIFIED_VALUE);
-        mMediator.activateAiMode(AiModeActivationSource.TOOL_MENU);
+        mModel.get(FuseboxProperties.POPUP_TOOL_AI_MODE_CLICKED).run();
         histogramWatcher.assertExpected();
     }
 
@@ -644,7 +640,7 @@ public class FuseboxMediatorUnitTest {
                 HistogramWatcher.newSingleRecordWatcher(
                         "Omnibox.MobileFusebox.ToolButtonSelected",
                         ToolMode.TOOL_MODE_IMAGE_GEN_VALUE);
-        mMediator.activateImageGeneration();
+        mModel.get(FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_CLICKED).run();
         verify(mComposeboxQueryControllerBridge, never()).notifySessionStarted();
         assertEquals(
                 AutocompleteRequestType.IMAGE_GENERATION,
@@ -684,9 +680,9 @@ public class FuseboxMediatorUnitTest {
     }
 
     @Test
-    public void maybeActivateAiMode_takesEffectInSearchMode() {
+    public void addAttachment_takesEffectInSearchMode() {
         mInput.setRequestType(AutocompleteRequestType.SEARCH);
-        mMediator.maybeActivateAiMode(AiModeActivationSource.DEDICATED_BUTTON);
+        addAttachment("title1", "token1", FuseboxAttachmentType.ATTACHMENT_IMAGE);
         assertEquals(
                 AutocompleteRequestType.AI_MODE,
                 (int) mModel.get(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE));
@@ -694,9 +690,9 @@ public class FuseboxMediatorUnitTest {
     }
 
     @Test
-    public void maybeActivateAiMode_doesNotAlterCurrentCustomMode() {
+    public void addAttachment_doesNotAlterCurrentCustomMode() {
         mInput.setRequestType(AutocompleteRequestType.IMAGE_GENERATION);
-        mMediator.maybeActivateAiMode(AiModeActivationSource.DEDICATED_BUTTON);
+        addAttachment("title1", "token1", FuseboxAttachmentType.ATTACHMENT_IMAGE);
         assertEquals(
                 AutocompleteRequestType.IMAGE_GENERATION,
                 (int) mModel.get(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE));
@@ -1735,7 +1731,7 @@ public class FuseboxMediatorUnitTest {
     @Test
     public void testReconcileSuggestedTabs() {
         mMediator.beginInput(createSession());
-        mMediator.activateAiMode(AiModeActivationSource.DEDICATED_BUTTON);
+        mModel.get(FuseboxProperties.POPUP_TOOL_AI_MODE_CLICKED).run();
 
         SuggestedTabInfo info =
                 new SuggestedTabInfo(1, "Title", new GURL("https://google.com"), 12345L);
