@@ -86,7 +86,7 @@ POST_PROCESS_OPERATION = {
         Mapper("License", ['MIT', 'BSD-3-Clause', 'OpenSSL', 'ISC', 'SSLeay'],
                ["BSD"]),
         # TODO(b/360316861): Fix upstream by setting an explicit version to boringssl.
-        Mapper("Version", "git", None)),
+        Mapper("Version", "N/A", None)),
     "net/third_party/quiche/METADATA":
     create_license_post_processing(
         # TODO(b/360316861): Fix upstream by setting an explicit version to QUICHE.
