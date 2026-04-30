@@ -10,7 +10,6 @@
 #include "base/check.h"
 #include "cc/metrics/scroll_jank_v4_decider.h"
 #include "cc/metrics/scroll_jank_v4_frame.h"
-#include "cc/metrics/scroll_jank_v4_frame_stage.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace cc {
@@ -19,7 +18,7 @@ namespace {
 
 using ScrollDamage = ScrollJankV4Frame::ScrollDamage;
 using DamagingFrame = ScrollJankV4Frame::DamagingFrame;
-using ScrollUpdates = ScrollJankV4FrameStage::ScrollUpdates;
+using ScrollUpdates = ScrollJankV4Frame::Stage::ScrollUpdates;
 
 }  // namespace
 
@@ -87,7 +86,7 @@ void ScrollJankV4DecisionQueue::OnScrollEnded() {
 }
 
 bool ScrollJankV4DecisionQueue::AcceptFrameIfValidAndChronological(
-    const ScrollJankV4FrameStage::ScrollUpdates& updates,
+    const ScrollJankV4Frame::Stage::ScrollUpdates& updates,
     const ScrollJankV4Frame::ScrollDamage& damage,
     const ScrollJankV4Frame::BeginFrameArgsForScrollJank& args) {
   // Check that the frame is valid and that it came after the most recently

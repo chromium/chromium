@@ -14,7 +14,7 @@
 #include "cc/metrics/event_metrics.h"
 #include "cc/metrics/scroll_jank_v4_decision_queue.h"
 #include "cc/metrics/scroll_jank_v4_frame.h"
-#include "cc/metrics/scroll_jank_v4_frame_stage.h"
+#include "cc/metrics/scroll_jank_v4_frame_timeline_calculator.h"
 #include "cc/metrics/scroll_jank_v4_histogram_emitter.h"
 #include "cc/metrics/scroll_jank_v4_result.h"
 #include "cc/metrics/scroll_jank_v4_tracing_recorder.h"
@@ -28,7 +28,7 @@ namespace {
 class ProcessorResultConsumer
     : public ScrollJankV4DecisionQueue::ResultConsumer {
  public:
-  void OnFrameResult(const ScrollJankV4FrameStage::ScrollUpdates& updates,
+  void OnFrameResult(const ScrollJankV4Frame::Stage::ScrollUpdates& updates,
                      const ScrollJankV4Frame::ScrollDamage& damage,
                      const ScrollJankV4Frame::BeginFrameArgsForScrollJank& args,
                      const ScrollJankV4Result& result) override {
@@ -63,7 +63,7 @@ void ScrollJankV4Processor::ProcessEventsMetricsForPresentedFrame(
     return;
   }
 
-  ScrollJankV4Frame::Timeline timeline = ScrollJankV4Frame::CalculateTimeline(
+  ScrollJankV4Frame::Timeline timeline = timeline_calculator_.CalculateTimeline(
       events_metrics, args, presentation_ts);
   for (auto& frame : timeline) {
     HandleFrame(frame.stages, frame.damage, frame.args);
@@ -71,15 +71,15 @@ void ScrollJankV4Processor::ProcessEventsMetricsForPresentedFrame(
 }
 
 void ScrollJankV4Processor::HandleFrame(
-    const ScrollJankV4FrameStage::List& stages,
+    const ScrollJankV4Frame::StageList& stages,
     const ScrollJankV4Frame::ScrollDamage& damage,
     const ScrollJankV4Frame::BeginFrameArgsForScrollJank& args) {
-  for (const ScrollJankV4FrameStage& stage : stages) {
+  for (const ScrollJankV4Frame::Stage& stage : stages) {
     std::visit(absl::Overload{
-                   [&](const ScrollJankV4FrameStage::ScrollStart& end) {
+                   [&](const ScrollJankV4Frame::Stage::ScrollStart& end) {
                      decision_queue_.OnScrollStarted();
                    },
-                   [&](const ScrollJankV4FrameStage::ScrollUpdates& updates) {
+                   [&](const ScrollJankV4Frame::Stage::ScrollUpdates& updates) {
                      if (!decision_queue_.ProcessFrameWithScrollUpdates(
                              updates, damage, args)) {
                        TRACE_EVENT(
@@ -87,7 +87,7 @@ void ScrollJankV4Processor::HandleFrame(
                            "ScrollJankV4Processor::HandleFrame: Invalid frame");
                      }
                    },
-                   [&](const ScrollJankV4FrameStage::ScrollEnd& end) {
+                   [&](const ScrollJankV4Frame::Stage::ScrollEnd& end) {
                      decision_queue_.OnScrollEnded();
                    },
                },

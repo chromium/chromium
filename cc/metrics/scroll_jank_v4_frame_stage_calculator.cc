@@ -1,8 +1,8 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "cc/metrics/scroll_jank_v4_frame_stage.h"
+#include "cc/metrics/scroll_jank_v4_frame_stage_calculator.h"
 
 #include <algorithm>
 #include <cmath>
@@ -22,10 +22,10 @@ namespace cc {
 namespace {
 
 template <typename EventMetricsPtr>
-ScrollJankV4FrameStage::List CalculateStagesImpl(
+ScrollJankV4Frame::StageList CalculateStagesImpl(
     std::vector<EventMetricsPtr>& events_metrics,
     uint64_t result_id) {
-  ScrollJankV4FrameStage::List stages;
+  ScrollJankV4Frame::StageList stages;
 
   // Any scroll updates (real or synthetic).
   //
@@ -191,7 +191,7 @@ ScrollJankV4FrameStage::List CalculateStagesImpl(
                   "CalculateStages: Scroll end followed by scroll updates "
                   "without a scroll start (unexpected)");
     }
-    stages.emplace_back(ScrollJankV4FrameStage::ScrollEnd{});
+    stages.emplace_back(ScrollJankV4Frame::Stage::ScrollEnd{});
   }
 
   if (is_scroll_start) {
@@ -201,16 +201,16 @@ ScrollJankV4FrameStage::List CalculateStagesImpl(
                   "CalculateStages: First scroll starts after another "
                   "scroll update in a single frame (unexpected)");
     }
-    stages.emplace_back(ScrollJankV4FrameStage::ScrollStart{});
+    stages.emplace_back(ScrollJankV4Frame::Stage::ScrollStart{});
   }
 
   if (!had_gesture_scroll) {
     return stages;
   }
 
-  std::optional<ScrollJankV4FrameStage::ScrollUpdates::Real> real_updates =
+  std::optional<ScrollJankV4Frame::Stage::ScrollUpdates::Real> real_updates =
       had_real_input
-          ? std::make_optional(ScrollJankV4FrameStage::ScrollUpdates::Real{
+          ? std::make_optional(ScrollJankV4Frame::Stage::ScrollUpdates::Real{
                 .first_input_generation_ts = first_real_input_generation_ts,
                 .last_input_generation_ts = last_real_input_generation_ts,
                 .has_inertial_input = has_real_inertial_input,
@@ -221,11 +221,11 @@ ScrollJankV4FrameStage::List CalculateStagesImpl(
                 .first_input_trace_id = first_real_input_trace_id,
             })
           : std::nullopt;
-  std::optional<ScrollJankV4FrameStage::ScrollUpdates::Synthetic>
+  std::optional<ScrollJankV4Frame::Stage::ScrollUpdates::Synthetic>
       synthetic_updates =
           had_synthetic_input
               ? std::make_optional(
-                    ScrollJankV4FrameStage::ScrollUpdates::Synthetic{
+                    ScrollJankV4Frame::Stage::ScrollUpdates::Synthetic{
                         .first_input_begin_frame_ts =
                             first_synthetic_input_begin_frame_ts,
                         .has_inertial_input = has_synthetic_inertial_input,
@@ -234,7 +234,7 @@ ScrollJankV4FrameStage::List CalculateStagesImpl(
               : std::nullopt;
 
   stages.emplace_back(
-      ScrollJankV4FrameStage::ScrollUpdates(real_updates, synthetic_updates));
+      ScrollJankV4Frame::Stage::ScrollUpdates(real_updates, synthetic_updates));
 
   // If the scroll END arrived to the renderer compositor after at least one
   // scroll UPDATE, then we assume that the scroll end belongs to the CURRENT
@@ -257,7 +257,7 @@ ScrollJankV4FrameStage::List CalculateStagesImpl(
                   "CalculateStages: Scroll end between two scroll "
                   "updates in a single frame (unexpected)");
     }
-    stages.emplace_back(ScrollJankV4FrameStage::ScrollEnd{});
+    stages.emplace_back(ScrollJankV4Frame::Stage::ScrollEnd{});
   }
 
   return stages;
@@ -265,33 +265,13 @@ ScrollJankV4FrameStage::List CalculateStagesImpl(
 
 }  // namespace
 
-ScrollJankV4FrameStage::ScrollUpdates::ScrollUpdates(
-    std::optional<Real> real,
-    std::optional<Synthetic> synthetic)
-    : real_(std::move(real)), synthetic_(std::move(synthetic)) {
-  CHECK(real_.has_value() || synthetic_.has_value());
-}
-
-ScrollJankV4FrameStage::ScrollJankV4FrameStage(
-    std::variant<ScrollJankV4FrameStage::ScrollStart,
-                 ScrollJankV4FrameStage::ScrollUpdates,
-                 ScrollJankV4FrameStage::ScrollEnd> stage)
-    : stage(stage) {}
-
-ScrollJankV4FrameStage::ScrollJankV4FrameStage(
-    const ScrollJankV4FrameStage& stage) = default;
-
-ScrollJankV4FrameStage::~ScrollJankV4FrameStage() = default;
-
-// static
-ScrollJankV4FrameStage::List ScrollJankV4FrameStage::CalculateStages(
+ScrollJankV4Frame::StageList ScrollJankV4FrameStageCalculator::CalculateStages(
     EventMetrics::List& events_metrics,
     uint64_t result_id) {
   return CalculateStagesImpl(events_metrics, result_id);
 }
 
-// static
-ScrollJankV4FrameStage::List ScrollJankV4FrameStage::CalculateStages(
+ScrollJankV4Frame::StageList ScrollJankV4FrameStageCalculator::CalculateStages(
     std::vector<ScrollEventMetrics*>& events_metrics,
     uint64_t result_id) {
   return CalculateStagesImpl(events_metrics, result_id);

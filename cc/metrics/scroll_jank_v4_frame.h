@@ -5,12 +5,13 @@
 #ifndef CC_METRICS_SCROLL_JANK_V4_FRAME_H_
 #define CC_METRICS_SCROLL_JANK_V4_FRAME_H_
 
+#include <concepts>
 #include <ostream>
+#include <variant>
 
 #include "base/time/time.h"
 #include "cc/cc_export.h"
 #include "cc/metrics/event_metrics.h"
-#include "cc/metrics/scroll_jank_v4_frame_stage.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 
@@ -75,11 +76,86 @@ struct CC_EXPORT ScrollJankV4Frame {
 
     bool operator==(const BeginFrameArgsForScrollJank&) const = default;
   };
+
+  // A stage of a single frame for the purposes of reporting the scroll jank v4
+  // metric. Depending on the `EventMetrics` associated with a frame, there
+  // might be one or more scroll updates (`ScrollUpdates`) and/or a scroll end
+  // in the frame (`ScrollEnd`) in either order.
+  struct CC_EXPORT Stage {
+    // A stage that corresponds to the beginning of a scroll (triggered by
+    // `kFirstGestureScrollUpdate`).
+    struct CC_EXPORT ScrollStart {
+      bool operator==(const ScrollStart&) const = default;
+    };
+
+    // A stage that corresponds to one or more scroll updates that were first
+    // presented in a frame (one or more `EventType::kFirstGestureScrollUpdate`,
+    // `EventType::kGestureScrollUpdate`(s) and/or
+    // `EventType::kInertialGestureScrollUpdate`(s)).
+    class CC_EXPORT ScrollUpdates {
+     public:
+      // Real scroll updates which originated from hardware/OS.
+      struct CC_EXPORT Real {
+        base::TimeTicks first_input_generation_ts;
+        base::TimeTicks last_input_generation_ts;
+        bool has_inertial_input;
+        float abs_total_raw_delta_pixels;
+        float max_abs_inertial_raw_delta_pixels;
+        std::optional<EventMetrics::TraceId> first_input_trace_id;
+
+        bool operator==(const Real&) const = default;
+      };
+
+      // Synthetic scroll updates which were predicted by Chrome.
+      struct CC_EXPORT Synthetic {
+        base::TimeTicks first_input_begin_frame_ts;
+        bool has_inertial_input = false;
+        std::optional<EventMetrics::TraceId> first_input_trace_id;
+
+        bool operator==(const Synthetic&) const = default;
+      };
+
+      ScrollUpdates(std::optional<Real> real,
+                    std::optional<Synthetic> synthetic);
+
+      bool operator==(const ScrollUpdates&) const = default;
+
+      const std::optional<Real>& real() const { return real_; }
+      const std::optional<Synthetic>& synthetic() const { return synthetic_; }
+
+     private:
+      const std::optional<Real> real_;
+      const std::optional<Synthetic> synthetic_;
+    };
+
+    // A stage that corresponds to a single scroll end event
+    // (`kGestureScrollEnd` or `kInertialGestureScrollEnd`).
+    struct CC_EXPORT ScrollEnd {
+      bool operator==(const ScrollEnd&) const = default;
+    };
+
+    std::variant<ScrollStart, ScrollUpdates, ScrollEnd> stage;
+
+    explicit Stage(std::variant<ScrollStart, ScrollUpdates, ScrollEnd> stage);
+    Stage(const Stage& stage);
+    ~Stage();
+
+    bool operator==(const Stage&) const = default;
+  };
+
+  // A chronologically ordered list of stages. For example, if the list contains
+  // a `ScrollEnd`, a `ScrollStart` and a `ScrollUpdates` (in this order), then
+  // the `ScrollEnd` corresponds to the end of the previous scroll,
+  // `ScrollStart` corresponds to the start of the new scroll and
+  // `ScrollUpdates` are the first scroll updates in the new scroll. The list
+  // can contain at most one of each stage, so its length will be at most 3.
+  using StageList = absl::InlinedVector<Stage, 3>;
+
   BeginFrameArgsForScrollJank args;
 
   ScrollDamage damage;
 
-  ScrollJankV4FrameStage::List stages;
+  StageList stages;
 
   // A chronological timeline of frames (both damaging and non-damaging) which
   // contains at least one scroll update or scroll end. The timeline can
@@ -89,101 +165,11 @@ struct CC_EXPORT ScrollJankV4Frame {
 
   ScrollJankV4Frame(BeginFrameArgsForScrollJank args,
                     ScrollDamage damage,
-                    ScrollJankV4FrameStage::List stages);
+                    StageList stages);
   ScrollJankV4Frame(const ScrollJankV4Frame& frame);
   ~ScrollJankV4Frame();
 
   bool operator==(const ScrollJankV4Frame&) const = default;
-
-  // Calculates the frame timeline (for the purposes of evaluating scroll jank)
-  // based on `events_metrics` which were first presented at `presentation_ts`
-  // in a frame with `presented_args`.
-  //
-  // This method groups scroll updates and ends into frames as follows:
-  //
-  //   * If there's at least one damaging scroll update/end in `events_metrics`:
-  //
-  //       1. This method finds the minimum begin frame ID
-  //          (`scroll_event.begin_frame_args().frame_id`) over all damaging
-  //          scroll events.
-  //       2. It associates all scroll events whose begin frame ID is greater
-  //          than or equal to the minimum damaging begin frame ID with the
-  //          presented frame (`presented_args`). It marks the presented frame
-  //          as damaging.
-  //       3. It associates all scroll events whose begin frame ID is less than
-  //          the minimum damaging begin frame ID with their original frame
-  //          (`scroll_event.begin_frame_args()`). It marks each of the original
-  //          frames as non-damaging.
-  //
-  //   * If there are no damaging scroll updates/ends in `events_metrics`, this
-  //     method assigns all scroll events to their original frames
-  //     (`scroll_event.begin_frame_args()`). It marks each of the original
-  //     frames as non-damaging. Note that, if any of the scroll events'
-  //     original frame is the presented frame (i.e.
-  //     `scroll_event.begin_frame_args().frame_id == presented_args.frame_id`),
-  //     this method will mark the presented frame as non-damaging as well.
-  //
-  // This method returns a timeline of frames sorted in ascending order of begin
-  // frame ID (`frame.args->frame_id`). Each frame in the returned timeline is
-  // guaranteed to have different begin frame arguments. This method assumes
-  // that the presented frame's begin frame ID is greater than or equal to the
-  // begin frame IDs of all scroll events in `events_metrics` (i.e.
-  // `presented_frame.frame_id >= scroll_event.begin_frame_args().frame_id`).
-  // Given this assumption, all frames in the returned timeline will be
-  // non-damaging EXCEPT the last frame, which can be either damaging or
-  // non-damaging. In other words, the timeline matches the informal regular
-  // expression "(non-damaging-frame)*(damaging-frame)?". If the last frame is
-  // damaging, its begin frame arguments will be `presented_args`. If
-  // `events_metrics` doesn't contain any scroll updates/ends, this method will
-  // return an empty timeline.
-  //
-  // For example, given the following events (not necessarily provided in this
-  // order):
-  //
-  //    1. Non-damaging GSB for BFA1
-  //    2. Non-damaging GSU for BFA1
-  //    3. Non-damaging GSU for BFA1
-  //    4. Non-damaging GSE for BFA2
-  //    5. Non-damaging GSU for BFA3
-  //    6. Damaging GSU for BFA3
-  //    7. Non-damaging GSU for BFA4
-  //    8. Non-damaging GSU for BFA4
-  //    9. Damaging GSU for BFA5
-  //   10. Non-damaging GSU for BFA5
-  //
-  // and presented begin frame arguments BFA6 where:
-  //
-  //   * GSB is a scroll start (`ScrollEventMetrics` of type
-  //     `kGestureScrollBegin`).
-  //   * GSU is a scroll update (`ScrollUpdateEventMetrics` of type
-  //     `kFirstGestureScrollUpdate`, `kGestureScrollUpdate` or
-  //     `kInertialGestureScrollUpdate`)
-  //   * GSE is a scroll end (`ScrollEventMetrics` of type `kGestureScrollEnd`
-  //     or `kInertialGestureScrollEnd`).
-  //   * BFA1-BFA6 are `viz::BeginFrameArgs` sorted by
-  //     `viz::BeginFrameArgs::frame_id` in ascending/chronological order.
-  //
-  // this method will return three frames (in this order):
-  //
-  //   a. Non-damaging frame with BFA1 and events 2-3.
-  //   b. Non-damaging frame with BFA2 and event 4.
-  //   c. Damaging frame with BFA6 and events 5-10.
-  //
-  // Note that, since event 5 is damaging, BFA3-BFA5 are damaging, so this
-  // method associates events that were originally associated with BFA3 (5-6),
-  // BFA4 (7-8) and BFA5 (9-10) with the presented frame (BFA6). The method only
-  // cares about GSUs and GSEs, so it will ignore the initial GSB (1).
-  //
-  // This method assigns a unique result ID to each frame in the returned
-  // timeline (`ScrollJankV4Frame::BeginFrameArgsForScrollJank::result_id`) and
-  // sets `ScrollEventMetrics::scroll_jank_v4_result_id()` to `result_id` for
-  // all scroll updates and ends which this method uses to calculate the frame's
-  // stages. Otherwise doesn't modify `event_metrics` This method does NOT
-  // require that `events_metrics` is sorted.
-  static ScrollJankV4Frame::Timeline CalculateTimeline(
-      EventMetrics::List& events_metrics,
-      const viz::BeginFrameArgs& presented_args,
-      base::TimeTicks presentation_ts);
 };
 
 inline std::ostream& operator<<(
@@ -212,6 +198,74 @@ inline std::ostream& operator<<(std::ostream& os,
   os << "ScrollDamage{";
   std::visit([&os](const auto& value) { os << value; }, damage);
   return os << "}";
+}
+
+template <typename T, typename... Ts>
+concept IsOneOf = (std::same_as<T, Ts> || ...);
+
+template <typename T>
+  requires IsOneOf<T,
+                   ScrollJankV4Frame::Stage::ScrollUpdates::Real,
+                   ScrollJankV4Frame::Stage::ScrollUpdates::Synthetic,
+                   EventMetrics::TraceId>
+inline std::ostream& operator<<(std::ostream& os,
+                                const std::optional<T>& value) {
+  if (value.has_value()) {
+    return os << *value;
+  }
+  return os << "empty";
+}
+
+inline std::ostream& operator<<(
+    std::ostream& os,
+    const ScrollJankV4Frame::Stage::ScrollUpdates::Real& real_updates) {
+  return os << "Real{first_input_generation_ts: "
+            << real_updates.first_input_generation_ts
+            << ", last_input_generation_ts: "
+            << real_updates.last_input_generation_ts
+            << ", has_inertial_input: " << real_updates.has_inertial_input
+            << ", abs_total_raw_delta_pixels: "
+            << real_updates.abs_total_raw_delta_pixels
+            << ", max_abs_inertial_raw_delta_pixels: "
+            << real_updates.max_abs_inertial_raw_delta_pixels
+            << ", first_input_trace_id: " << real_updates.first_input_trace_id
+            << "}";
+}
+
+inline std::ostream& operator<<(
+    std::ostream& os,
+    const ScrollJankV4Frame::Stage::ScrollUpdates::Synthetic&
+        synthetic_updates) {
+  return os << "Synthetic{first_input_begin_frame_ts: "
+            << synthetic_updates.first_input_begin_frame_ts
+            << ", has_inertial_input: " << synthetic_updates.has_inertial_input
+            << ", first_input_trace_id: "
+            << synthetic_updates.first_input_trace_id << "}";
+}
+
+inline std::ostream& operator<<(
+    std::ostream& os,
+    const ScrollJankV4Frame::Stage::ScrollUpdates& updates) {
+  return os << "ScrollUpdates{real: " << updates.real()
+            << ", synthetic: " << updates.synthetic() << "}";
+}
+
+inline std::ostream& operator<<(
+    std::ostream& os,
+    const ScrollJankV4Frame::Stage::ScrollStart& start) {
+  return os << "ScrollStart{}";
+}
+
+inline std::ostream& operator<<(
+    std::ostream& os,
+    const ScrollJankV4Frame::Stage::ScrollEnd& end) {
+  return os << "ScrollEnd{}";
+}
+
+inline std::ostream& operator<<(std::ostream& os,
+                                const ScrollJankV4Frame::Stage& stage) {
+  return std::visit([&os](const auto& s) -> std::ostream& { return os << s; },
+                    stage.stage);
 }
 
 inline std::ostream& operator<<(std::ostream& os,

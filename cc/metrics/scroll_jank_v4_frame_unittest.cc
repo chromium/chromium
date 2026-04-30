@@ -4,96 +4,36 @@
 
 #include "cc/metrics/scroll_jank_v4_frame.h"
 
-#include <algorithm>
-#include <cstdint>
-#include <iterator>
-#include <memory>
-#include <set>
 #include <sstream>
-#include <vector>
 
 #include "base/time/time.h"
-#include "cc/metrics/event_metrics.h"
-#include "cc/metrics/scroll_jank_v4_frame_stage.h"
-#include "cc/test/event_metrics_test_creator.h"
-#include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/functional/overload.h"
-#include "ui/events/types/event_type.h"
 
 namespace cc {
-
 namespace {
 
-using DispatchBeginFrameArgs = ScrollEventMetrics::DispatchBeginFrameArgs;
 using BeginFrameArgsForScrollJank =
     ScrollJankV4Frame::BeginFrameArgsForScrollJank;
 using ScrollDamage = ScrollJankV4Frame::ScrollDamage;
 using DamagingFrame = ScrollJankV4Frame::DamagingFrame;
 using NonDamagingFrame = ScrollJankV4Frame::NonDamagingFrame;
-using ScrollUpdates = ScrollJankV4FrameStage::ScrollUpdates;
-using ScrollStart = ScrollJankV4FrameStage::ScrollStart;
-using ScrollEnd = ScrollJankV4FrameStage::ScrollEnd;
-using Real = ScrollUpdates::Real;
-using ::testing::ElementsAre;
-using ::testing::IsEmpty;
 
-constexpr uint64_t kSourceId = 999;
+constexpr base::TimeTicks MillisecondsTicks(int ms) {
+  return base::TimeTicks() + base::Milliseconds(ms);
+}
+
 constexpr base::TimeDelta kVsyncInterval = base::Milliseconds(16);
 
 }  // namespace
 
-class ScrollJankV4FrameTest : public testing::Test {
- public:
-  ScrollJankV4FrameTest() = default;
-  ~ScrollJankV4FrameTest() override = default;
-
- protected:
-  static base::TimeTicks MillisecondsTicks(int ms) {
-    return base::TimeTicks() + base::Milliseconds(ms);
-  }
-
-  static viz::BeginFrameArgs CreateBeginFrameArgs(int sequence_id,
-                                                  base::TimeTicks frame_time) {
-    return viz::BeginFrameArgs::Create(
-        BEGINFRAME_FROM_HERE, kSourceId, sequence_id, frame_time,
-        /* deadline= */ frame_time + kVsyncInterval / 3,
-        /* interval= */ kVsyncInterval,
-        viz::BeginFrameArgs::BeginFrameArgsType::NORMAL);
-  }
-
-  static DispatchBeginFrameArgs CreateDispatchBeginFrameArgs(
-      int sequence_id,
-      base::TimeTicks frame_time) {
-    return {
-        .frame_time = frame_time,
-        .interval = kVsyncInterval,
-        .frame_id = viz::BeginFrameId(kSourceId, sequence_id),
-    };
-  }
-
-  static std::vector<uint64_t> GetResultIds(
-      const ScrollJankV4Frame::Timeline& timeline) {
-    std::vector<uint64_t> result_ids;
-    std::transform(timeline.begin(), timeline.end(),
-                   std::back_inserter(result_ids),
-                   [](const auto& frame) { return frame.args.result_id; });
-    return result_ids;
-  }
-
-  static void ExpectResultIdsAreAllUnique(
-      const std::vector<uint64_t>& result_ids) {
-    EXPECT_THAT(result_ids,
-                ::testing::UnorderedElementsAreArray(
-                    std::set<uint64_t>(result_ids.begin(), result_ids.end())));
-  }
-
-  EventMetricsTestCreator metrics_creator_;
-};
-
-TEST_F(ScrollJankV4FrameTest, BeginFrameArgsForScrollJankFromBeginFrameArgs) {
-  viz::BeginFrameArgs args = CreateBeginFrameArgs(42, MillisecondsTicks(123));
+TEST(ScrollJankV4FrameTest, BeginFrameArgsForScrollJankFromBeginFrameArgs) {
+  viz::BeginFrameArgs args = viz::BeginFrameArgs::Create(
+      BEGINFRAME_FROM_HERE, /* source_id= */ 999, /* sequence_number= */ 42,
+      /* frame_time= */ MillisecondsTicks(123),
+      /* deadline= */ MillisecondsTicks(123) + kVsyncInterval / 3,
+      /* interval= */ kVsyncInterval,
+      viz::BeginFrameArgs::BeginFrameArgsType::NORMAL);
   BeginFrameArgsForScrollJank args_for_scroll_jank =
       BeginFrameArgsForScrollJank::From(args, 456);
   EXPECT_EQ(args_for_scroll_jank, (BeginFrameArgsForScrollJank{
@@ -103,10 +43,10 @@ TEST_F(ScrollJankV4FrameTest, BeginFrameArgsForScrollJankFromBeginFrameArgs) {
                                   }));
 }
 
-TEST_F(ScrollJankV4FrameTest,
-       BeginFrameArgsForScrollJankFromDispatchBeginFrameArgs) {
-  DispatchBeginFrameArgs args = {.frame_time = MillisecondsTicks(123),
-                                 .interval = kVsyncInterval};
+TEST(ScrollJankV4FrameTest,
+     BeginFrameArgsForScrollJankFromDispatchBeginFrameArgs) {
+  ScrollEventMetrics::DispatchBeginFrameArgs args = {
+      .frame_time = MillisecondsTicks(123), .interval = kVsyncInterval};
   BeginFrameArgsForScrollJank args_for_scroll_jank =
       BeginFrameArgsForScrollJank::From(args, 456);
   EXPECT_EQ(args_for_scroll_jank, (BeginFrameArgsForScrollJank{
@@ -116,481 +56,91 @@ TEST_F(ScrollJankV4FrameTest,
                                   }));
 }
 
-TEST_F(ScrollJankV4FrameTest, NoFrames) {
-  EventMetrics::List events_metrics;
-  viz::BeginFrameArgs presented_args =
-      CreateBeginFrameArgs(42, MillisecondsTicks(666));
-  auto timeline = ScrollJankV4Frame::CalculateTimeline(
-      events_metrics, presented_args,
-      /* presentation_ts= */ MillisecondsTicks(777));
-  EXPECT_THAT(timeline, IsEmpty());
+TEST(ScrollJankV4FrameTest, EmptyRealScrollUpdatesToOstream) {
+  std::optional<ScrollJankV4Frame::Stage::ScrollUpdates::Real> updates =
+      std::nullopt;
+
+  std::ostringstream out;
+  auto& result = out << updates;
+  EXPECT_EQ(out.str(), "empty");
+  EXPECT_EQ(&result, &out);
 }
 
-TEST_F(ScrollJankV4FrameTest, IgnoreNonScrollEvents) {
-  EventMetrics::List events_metrics;
-  events_metrics.push_back(
-      metrics_creator_.CreateEventBuilder(ui::EventType::kTouchMoved)
-          .SetTimestamp(MillisecondsTicks(10))
-          .SetCausedFrameUpdate(false)
-          .Build());
-  events_metrics.push_back(
-      metrics_creator_.CreateEventBuilder(ui::EventType::kTouchReleased)
-          .SetTimestamp(MillisecondsTicks(11))
-          .SetCausedFrameUpdate(true)
-          .Build());
-  viz::BeginFrameArgs presented_args =
-      CreateBeginFrameArgs(42, MillisecondsTicks(666));
-  auto timeline = ScrollJankV4Frame::CalculateTimeline(
-      events_metrics, presented_args,
-      /* presentation_ts= */ MillisecondsTicks(777));
-  EXPECT_THAT(timeline, IsEmpty());
+TEST(ScrollJankV4FrameTest, NonEmptyRealScrollUpdatesToOstream) {
+  std::optional<ScrollJankV4Frame::Stage::ScrollUpdates::Real> updates =
+      ScrollJankV4Frame::Stage::ScrollUpdates::Real{
+          .last_input_generation_ts = MillisecondsTicks(3),
+          .has_inertial_input = false,
+          .abs_total_raw_delta_pixels = 10,
+          .max_abs_inertial_raw_delta_pixels = 0,
+      };
+
+  std::ostringstream out;
+  auto& result = out << updates;
+  EXPECT_THAT(out.str(), ::testing::MatchesRegex(R"(Real\{.+\})"));
+  EXPECT_EQ(&result, &out);
 }
 
-TEST_F(ScrollJankV4FrameTest, OneNonDamagingFrame) {
-  DispatchBeginFrameArgs dispatch_args =
-      CreateDispatchBeginFrameArgs(31, MillisecondsTicks(111));
-  EventMetrics::List events_metrics;
-  events_metrics.push_back(metrics_creator_.InertialGestureScrollUpdateBuilder()
-                               .SetTimestamp(MillisecondsTicks(10))
-                               .SetDelta(1.0f)
-                               .SetCausedFrameUpdate(false)
-                               .SetDidScroll(false)
-                               .SetDispatchArgs(dispatch_args)
-                               .Build());
-  events_metrics.push_back(metrics_creator_.InertialGestureScrollUpdateBuilder()
-                               .SetTimestamp(MillisecondsTicks(11))
-                               .SetDelta(2.0f)
-                               .SetCausedFrameUpdate(true)
-                               .SetDidScroll(false)
-                               .SetDispatchArgs(dispatch_args)
-                               .Build());
-  events_metrics.push_back(metrics_creator_.InertialGestureScrollUpdateBuilder()
-                               .SetTimestamp(MillisecondsTicks(12))
-                               .SetDelta(3.0f)
-                               .SetCausedFrameUpdate(false)
-                               .SetDidScroll(true)
-                               .SetDispatchArgs(dispatch_args)
-                               .Build());
-  events_metrics.push_back(metrics_creator_.InertialGestureScrollUpdateBuilder()
-                               .SetTimestamp(MillisecondsTicks(13))
-                               .SetDelta(4.0f)
-                               .SetCausedFrameUpdate(false)
-                               .SetDidScroll(false)
-                               .SetDispatchArgs(dispatch_args)
-                               .Build());
-  viz::BeginFrameArgs presented_args =
-      CreateBeginFrameArgs(42, MillisecondsTicks(666));
-  auto timeline = ScrollJankV4Frame::CalculateTimeline(
-      events_metrics, presented_args,
-      /* presentation_ts= */ MillisecondsTicks(777));
-  EXPECT_EQ(timeline.size(), 1u);
-  std::vector<uint64_t> result_ids = GetResultIds(timeline);
-  ExpectResultIdsAreAllUnique(result_ids);
-  EXPECT_THAT(
-      timeline,
-      ElementsAre(ScrollJankV4Frame(
-          BeginFrameArgsForScrollJank{.frame_time = MillisecondsTicks(111),
-                                      .interval = kVsyncInterval,
-                                      .result_id = result_ids[0]},
-          NonDamagingFrame{},
-          {ScrollJankV4FrameStage{ScrollUpdates(
-              Real{
-                  .first_input_generation_ts = MillisecondsTicks(10),
-                  .last_input_generation_ts = MillisecondsTicks(13),
-                  .has_inertial_input = true,
-                  .abs_total_raw_delta_pixels = 10.0f,
-                  .max_abs_inertial_raw_delta_pixels = 4.0f,
-              },
-              /* synthetic= */ std::nullopt)}})));
+TEST(ScrollJankV4FrameTest, EmptySyntheticScrollUpdatesToOstream) {
+  std::optional<ScrollJankV4Frame::Stage::ScrollUpdates::Synthetic> updates =
+      std::nullopt;
 
-  // Check that all GSUs were assigned to the single non-damaging frame.
-  for (const auto& event : events_metrics) {
-    EXPECT_EQ(event->AsScroll()->scroll_jank_v4_result_id(), result_ids[0]);
-  }
+  std::ostringstream out;
+  auto& result = out << updates;
+  EXPECT_EQ(out.str(), "empty");
+  EXPECT_EQ(&result, &out);
 }
 
-TEST_F(ScrollJankV4FrameTest, MultipleNonDamagingFrames) {
-  DispatchBeginFrameArgs args1 =
-      CreateDispatchBeginFrameArgs(31, MillisecondsTicks(111));
-  DispatchBeginFrameArgs args2 =
-      CreateDispatchBeginFrameArgs(32, MillisecondsTicks(222));
-  DispatchBeginFrameArgs args3 =
-      CreateDispatchBeginFrameArgs(33, MillisecondsTicks(333));
-  EventMetrics::List events_metrics;
+TEST(ScrollJankV4FrameTest, NonEmptySyntheticScrollUpdatesToOstream) {
+  std::optional<ScrollJankV4Frame::Stage::ScrollUpdates::Synthetic> updates =
+      ScrollJankV4Frame::Stage::ScrollUpdates::Synthetic{
+          .first_input_begin_frame_ts = MillisecondsTicks(42),
+          .has_inertial_input = false,
+      };
 
-  events_metrics.push_back(metrics_creator_.FirstGestureScrollUpdateBuilder()
-                               .SetTimestamp(MillisecondsTicks(10))
-                               .SetDelta(1.0f)
-                               .SetCausedFrameUpdate(false)
-                               .SetDidScroll(false)
-                               .SetDispatchArgs(args1)
-                               .Build());
-  events_metrics.push_back(metrics_creator_.GestureScrollUpdateBuilder()
-                               .SetTimestamp(MillisecondsTicks(11))
-                               .SetDelta(2.0f)
-                               .SetCausedFrameUpdate(false)
-                               .SetDidScroll(false)
-                               .SetDispatchArgs(args1)
-                               .Build());
-
-  events_metrics.push_back(metrics_creator_.GestureScrollUpdateBuilder()
-                               .SetTimestamp(MillisecondsTicks(12))
-                               .SetDelta(10.0f)
-                               .SetCausedFrameUpdate(false)
-                               .SetDidScroll(true)
-                               .SetDispatchArgs(args2)
-                               .Build());
-  events_metrics.push_back(metrics_creator_.GestureScrollUpdateBuilder()
-                               .SetTimestamp(MillisecondsTicks(13))
-                               .SetDelta(20.0f)
-                               .SetCausedFrameUpdate(false)
-                               .SetDidScroll(true)
-                               .SetDispatchArgs(args2)
-                               .Build());
-
-  events_metrics.push_back(metrics_creator_.InertialGestureScrollUpdateBuilder()
-                               .SetTimestamp(MillisecondsTicks(14))
-                               .SetDelta(100.0f)
-                               .SetCausedFrameUpdate(true)
-                               .SetDidScroll(false)
-                               .SetDispatchArgs(args3)
-                               .Build());
-  events_metrics.push_back(metrics_creator_.InertialGestureScrollUpdateBuilder()
-                               .SetTimestamp(MillisecondsTicks(15))
-                               .SetDelta(200.0f)
-                               .SetCausedFrameUpdate(true)
-                               .SetDidScroll(false)
-                               .SetDispatchArgs(args3)
-                               .Build());
-
-  viz::BeginFrameArgs presented_args =
-      CreateBeginFrameArgs(42, MillisecondsTicks(666));
-  auto timeline = ScrollJankV4Frame::CalculateTimeline(
-      events_metrics, presented_args,
-      /* presentation_ts= */ MillisecondsTicks(777));
-  EXPECT_EQ(timeline.size(), 3u);
-  std::vector<uint64_t> result_ids = GetResultIds(timeline);
-  ExpectResultIdsAreAllUnique(result_ids);
-  EXPECT_THAT(
-      timeline,
-      ElementsAre(
-          ScrollJankV4Frame(
-              BeginFrameArgsForScrollJank{.frame_time = MillisecondsTicks(111),
-                                          .interval = kVsyncInterval,
-                                          .result_id = result_ids[0]},
-              NonDamagingFrame{},
-              {ScrollJankV4FrameStage{ScrollStart{}},
-               ScrollJankV4FrameStage{ScrollUpdates(
-                   Real{
-                       .first_input_generation_ts = MillisecondsTicks(10),
-                       .last_input_generation_ts = MillisecondsTicks(11),
-                       .has_inertial_input = false,
-                       .abs_total_raw_delta_pixels = 3.0f,
-                       .max_abs_inertial_raw_delta_pixels = 0.0f,
-                   },
-                   /* synthetic= */ std::nullopt)}}),
-          ScrollJankV4Frame(
-              BeginFrameArgsForScrollJank{.frame_time = MillisecondsTicks(222),
-                                          .interval = kVsyncInterval,
-                                          .result_id = result_ids[1]},
-              NonDamagingFrame{},
-              {ScrollJankV4FrameStage{ScrollUpdates(
-                  Real{
-                      .first_input_generation_ts = MillisecondsTicks(12),
-                      .last_input_generation_ts = MillisecondsTicks(13),
-                      .has_inertial_input = false,
-                      .abs_total_raw_delta_pixels = 30.0f,
-                      .max_abs_inertial_raw_delta_pixels = 0.0f,
-                  },
-                  /* synthetic= */ std::nullopt)}}),
-          ScrollJankV4Frame(
-              BeginFrameArgsForScrollJank{.frame_time = MillisecondsTicks(333),
-                                          .interval = kVsyncInterval,
-                                          .result_id = result_ids[2]},
-              NonDamagingFrame{},
-              {ScrollJankV4FrameStage{ScrollUpdates(
-                  Real{
-                      .first_input_generation_ts = MillisecondsTicks(14),
-                      .last_input_generation_ts = MillisecondsTicks(15),
-                      .has_inertial_input = true,
-                      .abs_total_raw_delta_pixels = 300.0f,
-                      .max_abs_inertial_raw_delta_pixels = 200.0f,
-                  },
-                  /* synthetic= */ std::nullopt)}})));
-
-  // Check that each GSU was assigned to the correct non-damaging frame.
-  EXPECT_EQ(events_metrics[0]->AsScroll()->scroll_jank_v4_result_id(),
-            result_ids[0]);
-  EXPECT_EQ(events_metrics[1]->AsScroll()->scroll_jank_v4_result_id(),
-            result_ids[0]);
-  EXPECT_EQ(events_metrics[2]->AsScroll()->scroll_jank_v4_result_id(),
-            result_ids[1]);
-  EXPECT_EQ(events_metrics[3]->AsScroll()->scroll_jank_v4_result_id(),
-            result_ids[1]);
-  EXPECT_EQ(events_metrics[4]->AsScroll()->scroll_jank_v4_result_id(),
-            result_ids[2]);
-  EXPECT_EQ(events_metrics[5]->AsScroll()->scroll_jank_v4_result_id(),
-            result_ids[2]);
+  std::ostringstream out;
+  auto& result = out << updates;
+  EXPECT_THAT(out.str(), ::testing::MatchesRegex(R"(Synthetic\{.+\})"));
+  EXPECT_EQ(&result, &out);
 }
 
-TEST_F(ScrollJankV4FrameTest, OneDamagingFrame) {
-  DispatchBeginFrameArgs args1 =
-      CreateDispatchBeginFrameArgs(31, MillisecondsTicks(111));
-  DispatchBeginFrameArgs args2 =
-      CreateDispatchBeginFrameArgs(32, MillisecondsTicks(222));
-  DispatchBeginFrameArgs args3 =
-      CreateDispatchBeginFrameArgs(33, MillisecondsTicks(333));
-  EventMetrics::List events_metrics;
+TEST(ScrollJankV4FrameTest, ScrollUpdatesToOstream) {
+  auto stage = ScrollJankV4Frame::Stage{ScrollJankV4Frame::Stage::ScrollUpdates(
+      ScrollJankV4Frame::Stage::ScrollUpdates::Real{
+          .first_input_generation_ts = MillisecondsTicks(1),
+          .last_input_generation_ts = MillisecondsTicks(3),
+          .has_inertial_input = false,
+          .abs_total_raw_delta_pixels = 10,
+          .max_abs_inertial_raw_delta_pixels = 0,
+      },
+      /* synthetic= */ std::nullopt)};
 
-  events_metrics.push_back(metrics_creator_.FirstGestureScrollUpdateBuilder()
-                               .SetTimestamp(MillisecondsTicks(10))
-                               .SetDelta(1.0f)
-                               .SetCausedFrameUpdate(false)
-                               .SetDidScroll(false)
-                               .SetDispatchArgs(args1)
-                               .Build());
-  // events_metrics[1] below is the single damaging input which causes all
-  // events to be associated with the presented frame.
-  events_metrics.push_back(metrics_creator_.GestureScrollUpdateBuilder()
-                               .SetTimestamp(MillisecondsTicks(11))
-                               .SetDelta(2.0f)
-                               .SetCausedFrameUpdate(true)
-                               .SetDidScroll(true)
-                               .SetDispatchArgs(args1)
-                               .Build());
-
-  events_metrics.push_back(metrics_creator_.GestureScrollUpdateBuilder()
-                               .SetTimestamp(MillisecondsTicks(12))
-                               .SetDelta(10.0f)
-                               .SetCausedFrameUpdate(false)
-                               .SetDidScroll(true)
-                               .SetDispatchArgs(args2)
-                               .Build());
-  events_metrics.push_back(metrics_creator_.GestureScrollUpdateBuilder()
-                               .SetTimestamp(MillisecondsTicks(13))
-                               .SetDelta(20.0f)
-                               .SetCausedFrameUpdate(false)
-                               .SetDidScroll(true)
-                               .SetDispatchArgs(args2)
-                               .Build());
-
-  events_metrics.push_back(metrics_creator_.InertialGestureScrollUpdateBuilder()
-                               .SetTimestamp(MillisecondsTicks(14))
-                               .SetDelta(100.0f)
-                               .SetCausedFrameUpdate(true)
-                               .SetDidScroll(false)
-                               .SetDispatchArgs(args3)
-                               .Build());
-  events_metrics.push_back(metrics_creator_.InertialGestureScrollUpdateBuilder()
-                               .SetTimestamp(MillisecondsTicks(15))
-                               .SetDelta(200.0f)
-                               .SetCausedFrameUpdate(true)
-                               .SetDidScroll(false)
-                               .SetDispatchArgs(args3)
-                               .Build());
-
-  viz::BeginFrameArgs presented_args =
-      CreateBeginFrameArgs(42, MillisecondsTicks(666));
-  auto timeline = ScrollJankV4Frame::CalculateTimeline(
-      events_metrics, presented_args,
-      /* presentation_ts= */ MillisecondsTicks(777));
-  EXPECT_EQ(timeline.size(), 1u);
-  std::vector<uint64_t> result_ids = GetResultIds(timeline);
-  ExpectResultIdsAreAllUnique(result_ids);
-  EXPECT_THAT(
-      timeline,
-      ElementsAre(ScrollJankV4Frame(
-          BeginFrameArgsForScrollJank{.frame_time = MillisecondsTicks(666),
-                                      .interval = kVsyncInterval,
-                                      .result_id = result_ids[0]},
-
-          DamagingFrame{.presentation_ts = MillisecondsTicks(777)},
-          {ScrollJankV4FrameStage{ScrollStart{}},
-           ScrollJankV4FrameStage{ScrollUpdates(
-               Real{
-                   .first_input_generation_ts = MillisecondsTicks(10),
-                   .last_input_generation_ts = MillisecondsTicks(15),
-                   .has_inertial_input = true,
-                   .abs_total_raw_delta_pixels = 333.0f,
-                   .max_abs_inertial_raw_delta_pixels = 200.0f,
-               },
-               /* synthetic= */ std::nullopt)}})));
-
-  // Check that all GSUs were assigned to the single damaging frame.
-  for (const auto& event : events_metrics) {
-    EXPECT_EQ(event->AsScroll()->scroll_jank_v4_result_id(), result_ids[0]);
-  }
+  std::ostringstream out;
+  auto& result = out << stage;
+  EXPECT_THAT(out.str(), ::testing::MatchesRegex(R"(ScrollUpdates\{.+\})"));
+  EXPECT_EQ(&result, &out);
 }
 
-// Example from `ScrollJankV4Frame::Timeline CalculateTimeline()`'s
-// documentation.
-TEST_F(ScrollJankV4FrameTest, MultipleNonDamagingFramesAndOneDamagingFrame) {
-  DispatchBeginFrameArgs args1 =
-      CreateDispatchBeginFrameArgs(31, MillisecondsTicks(111));
-  DispatchBeginFrameArgs args2 =
-      CreateDispatchBeginFrameArgs(32, MillisecondsTicks(222));
-  DispatchBeginFrameArgs args3 =
-      CreateDispatchBeginFrameArgs(33, MillisecondsTicks(333));
-  DispatchBeginFrameArgs args4 =
-      CreateDispatchBeginFrameArgs(34, MillisecondsTicks(444));
-  DispatchBeginFrameArgs args5 =
-      CreateDispatchBeginFrameArgs(35, MillisecondsTicks(555));
-  EventMetrics::List events_metrics;
+TEST(ScrollJankV4FrameTest, ScrollStartToOstream) {
+  auto stage =
+      ScrollJankV4Frame::Stage{ScrollJankV4Frame::Stage::ScrollStart{}};
 
-  // 1. Non-damaging GSB for BFA1
-  // 2. Non-damaging GSU for BFA1
-  // 3. Non-damaging GSU for BFA1
-  events_metrics.push_back(metrics_creator_.GestureScrollBeginBuilder()
-                               .SetTimestamp(MillisecondsTicks(10))
-                               .SetCausedFrameUpdate(false)
-                               .SetDispatchArgs(args1)
-                               .Build());
-  events_metrics.push_back(metrics_creator_.FirstGestureScrollUpdateBuilder()
-                               .SetTimestamp(MillisecondsTicks(11))
-                               .SetDelta(1.0f)
-                               .SetCausedFrameUpdate(false)
-                               .SetDidScroll(false)
-                               .SetDispatchArgs(args1)
-                               .Build());
-  events_metrics.push_back(metrics_creator_.GestureScrollUpdateBuilder()
-                               .SetTimestamp(MillisecondsTicks(12))
-                               .SetDelta(2.0f)
-                               .SetCausedFrameUpdate(false)
-                               .SetDidScroll(false)
-                               .SetDispatchArgs(args1)
-                               .Build());
-
-  // 4. Non-damaging GSE for BFA2
-  events_metrics.push_back(metrics_creator_.GestureScrollEndBuilder()
-                               .SetTimestamp(MillisecondsTicks(13))
-                               .SetCausedFrameUpdate(false)
-                               .SetDispatchArgs(args2)
-                               .Build());
-
-  // 5. Non-damaging GSU for BFA3
-  // 6. Damaging GSU for BFA3
-  events_metrics.push_back(metrics_creator_.GestureScrollUpdateBuilder()
-                               .SetTimestamp(MillisecondsTicks(14))
-                               .SetDelta(10.0f)
-                               .SetCausedFrameUpdate(false)
-                               .SetDidScroll(false)
-                               .SetDispatchArgs(args3)
-                               .Build());
-  events_metrics.push_back(metrics_creator_.GestureScrollUpdateBuilder()
-                               .SetTimestamp(MillisecondsTicks(15))
-                               .SetDelta(20.0f)
-                               .SetCausedFrameUpdate(true)
-                               .SetDidScroll(true)
-                               .SetDispatchArgs(args3)
-                               .Build());
-
-  // 7. Non-damaging GSU for BFA4
-  // 8. Non-damaging GSU for BFA4
-  events_metrics.push_back(metrics_creator_.InertialGestureScrollUpdateBuilder()
-                               .SetTimestamp(MillisecondsTicks(16))
-                               .SetDelta(100.0f)
-                               .SetCausedFrameUpdate(false)
-                               .SetDidScroll(false)
-                               .SetDispatchArgs(args4)
-                               .Build());
-  events_metrics.push_back(metrics_creator_.InertialGestureScrollUpdateBuilder()
-                               .SetTimestamp(MillisecondsTicks(17))
-                               .SetDelta(200.0f)
-                               .SetCausedFrameUpdate(false)
-                               .SetDidScroll(false)
-                               .SetDispatchArgs(args4)
-                               .Build());
-
-  // 9. Damaging GSU for BFA5
-  // 10. Non-damaging GSU for BFA5
-  events_metrics.push_back(metrics_creator_.InertialGestureScrollUpdateBuilder()
-                               .SetTimestamp(MillisecondsTicks(18))
-                               .SetDelta(1000.0f)
-                               .SetCausedFrameUpdate(true)
-                               .SetDidScroll(true)
-                               .SetDispatchArgs(args5)
-                               .Build());
-  events_metrics.push_back(metrics_creator_.InertialGestureScrollUpdateBuilder()
-                               .SetTimestamp(MillisecondsTicks(19))
-                               .SetDelta(2000.0f)
-                               .SetCausedFrameUpdate(false)
-                               .SetDidScroll(false)
-                               .SetDispatchArgs(args5)
-                               .Build());
-
-  viz::BeginFrameArgs presented_args =
-      CreateBeginFrameArgs(42, MillisecondsTicks(666));
-  auto timeline = ScrollJankV4Frame::CalculateTimeline(
-      events_metrics, presented_args,
-      /* presentation_ts= */ MillisecondsTicks(777));
-  EXPECT_EQ(timeline.size(), 3u);
-  std::vector<uint64_t> result_ids = GetResultIds(timeline);
-  ExpectResultIdsAreAllUnique(result_ids);
-  EXPECT_THAT(
-      timeline,
-      ElementsAre(
-          ScrollJankV4Frame(
-              BeginFrameArgsForScrollJank{.frame_time = MillisecondsTicks(111),
-                                          .interval = kVsyncInterval,
-                                          .result_id = result_ids[0]},
-              NonDamagingFrame{},
-              {ScrollJankV4FrameStage{ScrollStart{}},
-               ScrollJankV4FrameStage{ScrollUpdates(
-                   Real{
-                       .first_input_generation_ts = MillisecondsTicks(11),
-                       .last_input_generation_ts = MillisecondsTicks(12),
-                       .has_inertial_input = false,
-                       .abs_total_raw_delta_pixels = 3.0f,
-                       .max_abs_inertial_raw_delta_pixels = 0.0f,
-                   },
-                   /* synthetic= */ std::nullopt)}}),
-          ScrollJankV4Frame(
-              BeginFrameArgsForScrollJank{.frame_time = MillisecondsTicks(222),
-                                          .interval = kVsyncInterval,
-                                          .result_id = result_ids[1]},
-              NonDamagingFrame{}, {ScrollJankV4FrameStage{ScrollEnd{}}}),
-          ScrollJankV4Frame(
-              BeginFrameArgsForScrollJank{.frame_time = MillisecondsTicks(666),
-                                          .interval = kVsyncInterval,
-                                          .result_id = result_ids[2]},
-
-              DamagingFrame{.presentation_ts = MillisecondsTicks(777)},
-              {ScrollJankV4FrameStage{ScrollUpdates(
-                  Real{
-                      .first_input_generation_ts = MillisecondsTicks(14),
-                      .last_input_generation_ts = MillisecondsTicks(19),
-                      .has_inertial_input = true,
-                      .abs_total_raw_delta_pixels = 3330.0f,
-                      .max_abs_inertial_raw_delta_pixels = 2000.0f,
-                  },
-                  /* synthetic= */ std::nullopt)}})));
-
-  // GSB should NOT have a result ID.
-  EXPECT_FALSE(
-      events_metrics[0]->AsScroll()->scroll_jank_v4_result_id().has_value());
-
-  // Check that all GSUs and GSEs were assigned to the correct frame.
-  EXPECT_EQ(events_metrics[1]->AsScroll()->scroll_jank_v4_result_id(),
-            result_ids[0]);
-  EXPECT_EQ(events_metrics[2]->AsScroll()->scroll_jank_v4_result_id(),
-            result_ids[0]);
-  EXPECT_EQ(events_metrics[3]->AsScroll()->scroll_jank_v4_result_id(),
-            result_ids[1]);
-  EXPECT_EQ(events_metrics[4]->AsScroll()->scroll_jank_v4_result_id(),
-            result_ids[2]);
-  EXPECT_EQ(events_metrics[5]->AsScroll()->scroll_jank_v4_result_id(),
-            result_ids[2]);
-  EXPECT_EQ(events_metrics[6]->AsScroll()->scroll_jank_v4_result_id(),
-            result_ids[2]);
-  EXPECT_EQ(events_metrics[7]->AsScroll()->scroll_jank_v4_result_id(),
-            result_ids[2]);
-  EXPECT_EQ(events_metrics[8]->AsScroll()->scroll_jank_v4_result_id(),
-            result_ids[2]);
-  EXPECT_EQ(events_metrics[9]->AsScroll()->scroll_jank_v4_result_id(),
-            result_ids[2]);
+  std::ostringstream out;
+  auto& result = out << stage;
+  EXPECT_EQ(out.str(), "ScrollStart{}");
+  EXPECT_EQ(&result, &out);
 }
 
-TEST_F(ScrollJankV4FrameTest, BeginFrameArgsForScrollJankToOstream) {
+TEST(ScrollJankV4FrameTest, ScrollEndToOstream) {
+  auto stage = ScrollJankV4Frame::Stage{ScrollJankV4Frame::Stage::ScrollEnd{}};
+
+  std::ostringstream out;
+  auto& result = out << stage;
+  EXPECT_EQ(out.str(), "ScrollEnd{}");
+  EXPECT_EQ(&result, &out);
+}
+
+TEST(ScrollJankV4FrameTest, BeginFrameArgsForScrollJankToOstream) {
   std::ostringstream out;
   auto& result =
       out << BeginFrameArgsForScrollJank{.frame_time = MillisecondsTicks(123),
@@ -601,7 +151,7 @@ TEST_F(ScrollJankV4FrameTest, BeginFrameArgsForScrollJankToOstream) {
   EXPECT_EQ(&result, &out);
 }
 
-TEST_F(ScrollJankV4FrameTest, DamagingFrameToOstream) {
+TEST(ScrollJankV4FrameTest, DamagingFrameToOstream) {
   std::ostringstream out;
   auto& result =
       out << DamagingFrame{.presentation_ts = MillisecondsTicks(777)};
@@ -609,21 +159,21 @@ TEST_F(ScrollJankV4FrameTest, DamagingFrameToOstream) {
   EXPECT_EQ(&result, &out);
 }
 
-TEST_F(ScrollJankV4FrameTest, NonDamagingFrameToOstream) {
+TEST(ScrollJankV4FrameTest, NonDamagingFrameToOstream) {
   std::ostringstream out;
   auto& result = out << NonDamagingFrame{};
   EXPECT_EQ(out.str(), "NonDamagingFrame{}");
   EXPECT_EQ(&result, &out);
 }
 
-TEST_F(ScrollJankV4FrameTest, ScrollDamageToOstream) {
+TEST(ScrollJankV4FrameTest, ScrollDamageToOstream) {
   std::ostringstream out;
   auto& result = out << ScrollDamage{NonDamagingFrame{}};
   EXPECT_THAT(out.str(), ::testing::MatchesRegex(R"(ScrollDamage\{.+\})"));
   EXPECT_EQ(&result, &out);
 }
 
-TEST_F(ScrollJankV4FrameTest, ScrollJankV4FrameToOstream) {
+TEST(ScrollJankV4FrameTest, ScrollJankV4FrameToOstream) {
   auto frame = ScrollJankV4Frame(
       BeginFrameArgsForScrollJank{
           .frame_time = MillisecondsTicks(123),
@@ -631,8 +181,9 @@ TEST_F(ScrollJankV4FrameTest, ScrollJankV4FrameToOstream) {
           .result_id = 456,
       },
       DamagingFrame{.presentation_ts = MillisecondsTicks(777)},
-      {ScrollJankV4FrameStage{ScrollEnd{}}, ScrollJankV4FrameStage{ScrollEnd{}},
-       ScrollJankV4FrameStage{ScrollEnd{}}});
+      {ScrollJankV4Frame::Stage{ScrollJankV4Frame::Stage::ScrollEnd{}},
+       ScrollJankV4Frame::Stage{ScrollJankV4Frame::Stage::ScrollEnd{}},
+       ScrollJankV4Frame::Stage{ScrollJankV4Frame::Stage::ScrollEnd{}}});
 
   std::ostringstream out;
   auto& result = out << frame;

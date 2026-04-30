@@ -15,7 +15,6 @@
 #include "base/time/time.h"
 #include "cc/base/features.h"
 #include "cc/metrics/scroll_jank_v4_frame.h"
-#include "cc/metrics/scroll_jank_v4_frame_stage.h"
 #include "cc/metrics/scroll_jank_v4_result.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 
@@ -25,12 +24,12 @@ namespace {
 
 using ScrollDamage = ScrollJankV4Frame::ScrollDamage;
 using DamagingFrame = ScrollJankV4Frame::DamagingFrame;
-using ScrollUpdates = ScrollJankV4FrameStage::ScrollUpdates;
+using ScrollUpdates = ScrollJankV4Frame::Stage::ScrollUpdates;
 
 }  // namespace
 
 ScrollJankV4Result ScrollJankV4Decider::DecideJankForFrameWithRealScrollUpdates(
-    const ScrollJankV4FrameStage::ScrollUpdates& updates,
+    const ScrollJankV4Frame::Stage::ScrollUpdates& updates,
     const ScrollJankV4Frame::ScrollDamage& damage,
     const ScrollJankV4Frame::BeginFrameArgsForScrollJank& args) {
   CHECK(updates.real().has_value());
@@ -41,7 +40,7 @@ ScrollJankV4Result ScrollJankV4Decider::DecideJankForFrameWithRealScrollUpdates(
 
 ScrollJankV4Result
 ScrollJankV4Decider::DecideJankForFrameWithSyntheticScrollUpdatesOnly(
-    const ScrollJankV4FrameStage::ScrollUpdates& updates,
+    const ScrollJankV4Frame::Stage::ScrollUpdates& updates,
     const ScrollJankV4Frame::ScrollDamage& damage,
     const ScrollJankV4Frame::BeginFrameArgsForScrollJank& args,
     bool future_real_frame_is_fast_scroll_or_sufficiently_fast_fling) {
@@ -198,7 +197,7 @@ ScrollJankV4Result ScrollJankV4Decider::DecideJankForFrameWithScrollUpdates(
 
 // static
 bool ScrollJankV4Decider::IsValidFrame(
-    const ScrollJankV4FrameStage::ScrollUpdates& updates,
+    const ScrollJankV4Frame::Stage::ScrollUpdates& updates,
     const ScrollJankV4Frame::ScrollDamage& damage,
     const ScrollJankV4Frame::BeginFrameArgsForScrollJank& args) {
   if (!args.interval.is_positive()) {

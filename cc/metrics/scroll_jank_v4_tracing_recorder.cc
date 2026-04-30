@@ -11,7 +11,6 @@
 #include "base/trace_event/typed_macros.h"
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "cc/metrics/scroll_jank_v4_frame.h"
-#include "cc/metrics/scroll_jank_v4_frame_stage.h"
 #include "cc/metrics/scroll_jank_v4_result.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
@@ -19,7 +18,7 @@
 namespace cc {
 namespace {
 
-using ScrollUpdates = ScrollJankV4FrameStage::ScrollUpdates;
+using ScrollUpdates = ScrollJankV4Frame::Stage::ScrollUpdates;
 using ScrollDamage = ScrollJankV4Frame::ScrollDamage;
 using DamagingFrame = ScrollJankV4Frame::DamagingFrame;
 using NonDamagingFrame = ScrollJankV4Frame::NonDamagingFrame;

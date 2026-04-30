@@ -8,8 +8,7 @@
 #include "cc/cc_export.h"
 #include "cc/metrics/event_metrics.h"
 #include "cc/metrics/scroll_jank_v4_decision_queue.h"
-#include "cc/metrics/scroll_jank_v4_frame.h"
-#include "cc/metrics/scroll_jank_v4_frame_stage.h"
+#include "cc/metrics/scroll_jank_v4_frame_timeline_calculator.h"
 
 namespace cc {
 
@@ -30,10 +29,11 @@ class CC_EXPORT ScrollJankV4Processor {
                                              const viz::BeginFrameArgs& args);
 
  private:
-  void HandleFrame(const ScrollJankV4FrameStage::List& stages,
+  void HandleFrame(const ScrollJankV4Frame::StageList& stages,
                    const ScrollJankV4Frame::ScrollDamage& damage,
                    const ScrollJankV4Frame::BeginFrameArgsForScrollJank& args);
 
+  ScrollJankV4FrameTimelineCalculator timeline_calculator_;
   ScrollJankV4DecisionQueue decision_queue_;
 };
 

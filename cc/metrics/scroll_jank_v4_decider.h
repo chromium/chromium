@@ -11,7 +11,6 @@
 #include "base/time/time.h"
 #include "cc/cc_export.h"
 #include "cc/metrics/scroll_jank_v4_frame.h"
-#include "cc/metrics/scroll_jank_v4_frame_stage.h"
 #include "cc/metrics/scroll_jank_v4_result.h"
 
 namespace cc {
@@ -70,7 +69,7 @@ class CC_EXPORT ScrollJankV4Decider {
   //
   // `args2.frame_time` must be strictly greater than `args1.frame_time`.
   ScrollJankV4Result DecideJankForFrameWithRealScrollUpdates(
-      const ScrollJankV4FrameStage::ScrollUpdates& updates,
+      const ScrollJankV4Frame::Stage::ScrollUpdates& updates,
       const ScrollJankV4Frame::ScrollDamage& damage,
       const ScrollJankV4Frame::BeginFrameArgsForScrollJank& args);
 
@@ -95,7 +94,7 @@ class CC_EXPORT ScrollJankV4Decider {
   // frame. `ScrollJankV4DecisionQueue` takes care of this "look-ahead"
   // dependency and presents a simpler callback-based API.
   ScrollJankV4Result DecideJankForFrameWithSyntheticScrollUpdatesOnly(
-      const ScrollJankV4FrameStage::ScrollUpdates& updates,
+      const ScrollJankV4Frame::Stage::ScrollUpdates& updates,
       const ScrollJankV4Frame::ScrollDamage& damage,
       const ScrollJankV4Frame::BeginFrameArgsForScrollJank& args,
       bool future_real_frame_is_fast_scroll_or_sufficiently_fast_fling);
@@ -104,13 +103,13 @@ class CC_EXPORT ScrollJankV4Decider {
   void OnScrollEnded();
 
   static bool IsValidFrame(
-      const ScrollJankV4FrameStage::ScrollUpdates& updates,
+      const ScrollJankV4Frame::Stage::ScrollUpdates& updates,
       const ScrollJankV4Frame::ScrollDamage& damage,
       const ScrollJankV4Frame::BeginFrameArgsForScrollJank& args);
   static bool IsFastScroll(
-      const ScrollJankV4FrameStage::ScrollUpdates::Real& real_updates);
+      const ScrollJankV4Frame::Stage::ScrollUpdates::Real& real_updates);
   static bool IsSufficientlyFastFling(
-      const ScrollJankV4FrameStage::ScrollUpdates::Real& real_updates);
+      const ScrollJankV4Frame::Stage::ScrollUpdates::Real& real_updates);
 
  private:
   // Information about the previous frame, for which the decider has most
@@ -252,7 +251,7 @@ class CC_EXPORT ScrollJankV4Decider {
   };
 
   ScrollJankV4Result DecideJankForFrameWithScrollUpdates(
-      const ScrollJankV4FrameStage::ScrollUpdates& updates,
+      const ScrollJankV4Frame::Stage::ScrollUpdates& updates,
       const ScrollJankV4Frame::ScrollDamage& damage,
       const ScrollJankV4Frame::BeginFrameArgsForScrollJank& args,
       bool treat_as_fast_scroll,
@@ -261,7 +260,7 @@ class CC_EXPORT ScrollJankV4Decider {
   JankReasonArray<int> CalculateMissedVsyncsPerReason(
       int vsyncs_since_previous_frame,
       std::optional<base::TimeTicks> earliest_input_generation_ts,
-      const ScrollJankV4FrameStage::ScrollUpdates& updates,
+      const ScrollJankV4Frame::Stage::ScrollUpdates& updates,
       const ScrollJankV4Frame::ScrollDamage& damage,
       const ScrollJankV4Frame::BeginFrameArgsForScrollJank& args,
       bool treat_as_fast_scroll,
@@ -271,7 +270,7 @@ class CC_EXPORT ScrollJankV4Decider {
   std::optional<base::TimeDelta> CalculateRunningDeliveryCutoff(
       int vsyncs_since_previous_frame,
       bool is_janky,
-      const ScrollJankV4FrameStage::ScrollUpdates& updates,
+      const ScrollJankV4Frame::Stage::ScrollUpdates& updates,
       const ScrollJankV4Frame::ScrollDamage& damage,
       const ScrollJankV4Frame::BeginFrameArgsForScrollJank& args,
       ScrollJankV4Result& result) const;
@@ -289,7 +288,7 @@ class CC_EXPORT ScrollJankV4Decider {
   // presented real frame (similarly to
   // `PreviousFrameData::last_input_generation_ts`).
   ScrollJankV4Result::FirstScrollUpdate GetFirstScrollUpdate(
-      const ScrollJankV4FrameStage::ScrollUpdates& updates) const;
+      const ScrollJankV4Frame::Stage::ScrollUpdates& updates) const;
 
   // Information about the previous frame, for which the decider has most
   // recently decided whether it's janky or not.

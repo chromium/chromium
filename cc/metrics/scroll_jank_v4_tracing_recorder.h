@@ -7,7 +7,6 @@
 
 #include "cc/cc_export.h"
 #include "cc/metrics/scroll_jank_v4_frame.h"
-#include "cc/metrics/scroll_jank_v4_frame_stage.h"
 #include "cc/metrics/scroll_jank_v4_result.h"
 
 namespace cc {
@@ -16,7 +15,7 @@ namespace cc {
 class CC_EXPORT ScrollJankV4TracingRecorder {
  public:
   static void RecordTraceEvents(
-      const ScrollJankV4FrameStage::ScrollUpdates& updates,
+      const ScrollJankV4Frame::Stage::ScrollUpdates& updates,
       const ScrollJankV4Frame::ScrollDamage& damage,
       const ScrollJankV4Frame::BeginFrameArgsForScrollJank& args,
       const ScrollJankV4Result& result);

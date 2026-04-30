@@ -10,7 +10,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "cc/metrics/scroll_jank_v4_frame.h"
-#include "cc/metrics/scroll_jank_v4_frame_stage.h"
 #include "cc/metrics/scroll_jank_v4_result.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -25,7 +24,7 @@ constexpr base::TimeTicks MillisSinceEpoch(int64_t millis) {
 }
 
 using DamagingFrame = ScrollJankV4Frame::DamagingFrame;
-using ScrollUpdates = ScrollJankV4FrameStage::ScrollUpdates;
+using ScrollUpdates = ScrollJankV4Frame::Stage::ScrollUpdates;
 using Real = ScrollUpdates::Real;
 using Synthetic = ScrollUpdates::Synthetic;
 using ScrollDamage = ScrollJankV4Frame::ScrollDamage;

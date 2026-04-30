@@ -32,7 +32,7 @@ constexpr base::TimeTicks MicrosSinceEpoch(int64_t micros) {
 using ScrollDamage = ScrollJankV4Frame::ScrollDamage;
 using DamagingFrame = ScrollJankV4Frame::DamagingFrame;
 using NonDamagingFrame = ScrollJankV4Frame::NonDamagingFrame;
-using ScrollUpdates = ScrollJankV4FrameStage::ScrollUpdates;
+using ScrollUpdates = ScrollJankV4Frame::Stage::ScrollUpdates;
 using Real = ScrollUpdates::Real;
 using Synthetic = ScrollUpdates::Synthetic;
 

@@ -12,7 +12,6 @@
 #include "base/time/time.h"
 #include "cc/metrics/event_metrics.h"
 #include "cc/metrics/scroll_jank_v4_frame.h"
-#include "cc/metrics/scroll_jank_v4_frame_stage.h"
 #include "cc/metrics/scroll_jank_v4_result.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -23,7 +22,7 @@ namespace {
 using ScrollDamage = ScrollJankV4Frame::ScrollDamage;
 using DamagingFrame = ScrollJankV4Frame::DamagingFrame;
 using NonDamagingFrame = ScrollJankV4Frame::NonDamagingFrame;
-using ScrollUpdates = ScrollJankV4FrameStage::ScrollUpdates;
+using ScrollUpdates = ScrollJankV4Frame::Stage::ScrollUpdates;
 using Real = ScrollUpdates::Real;
 using Synthetic = ScrollUpdates::Synthetic;
 using BeginFrameArgsForScrollJank =
