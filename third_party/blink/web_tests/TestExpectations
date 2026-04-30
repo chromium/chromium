@@ -9747,3 +9747,6 @@ crbug.com/452662753 [ Linux Release ] external/wpt/webdriver/tests/bidi/network/
 
 # Gardener 2026-04-28
 crbug.com/40268242 [ Mac12-arm64 ] webaudio/internals/audioworkletprocessor-gc.https.html [ Failure Pass ]
+
+# Gardener 2026-04-30
+crbug.com/508089939 [ Linux ] external/wpt/navigation-api/navigate-event/intercept-cross-origin-focus-without-user-activation.html [ Failure ]
