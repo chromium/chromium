@@ -588,7 +588,7 @@ static BasicShapeCenterCoordinate ConvertToCenterCoordinate(
     const StyleResolverState& state,
     const CSSValue* value) {
   BasicShapeCenterCoordinate::Direction direction;
-  Length offset = Length::Fixed(0);
+  std::optional<Length> offset;
 
   CSSValueID keyword = CSSValueID::kTop;
   if (!value) {
@@ -620,7 +620,18 @@ static BasicShapeCenterCoordinate ConvertToCenterCoordinate(
       NOTREACHED();
   }
 
-  return BasicShapeCenterCoordinate(direction, offset);
+  if (RuntimeEnabledFeatures::
+          CSSShapeEllipseCirclePositionSerializationEnabled()) {
+    offset = offset.value_or(Length::Percent(0));
+    if (direction == BasicShapeCenterCoordinate::kBottomRight) {
+      offset = offset->SubtractFromOneHundredPercent();
+      direction = BasicShapeCenterCoordinate::kTopLeft;
+    }
+  } else {
+    offset = offset.value_or(Length::Fixed(0));
+  }
+
+  return BasicShapeCenterCoordinate(direction, *offset);
 }
 
 static BasicShapeRadius CssValueToBasicShapeRadius(

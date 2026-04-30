@@ -41,7 +41,7 @@ function negativeTest(property, value) {
 }
 
 // absolute lengths - number serialization, units
-testInner("-webkit-clip-path", "circle(0 at 0 0)", "circle(0px at 0% 0%)");
+testInner("-webkit-clip-path", "circle(0 at 0 0)", "circle(0px at 0px 0px)");
 testInner("-webkit-clip-path", "circle(1px at -1px +1px)", "circle(1px at -1px 1px)");
 testInner("-webkit-clip-path", "circle(1.5px at -1.5px +1.5px)", "circle(1.5px at -1.5px 1.5px)");
 testInner("-webkit-clip-path", "circle(.5px at -.5px +.5px)", "circle(0.5px at -0.5px 0.5px)");

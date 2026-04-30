@@ -2,7 +2,7 @@ Test that basic shapes accept different length units
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-PASS getStyleValue("shape-outside", "circle(0 at 0 0)") is "circle(0px at 0% 0%)"
+PASS getStyleValue("shape-outside", "circle(0 at 0 0)") is "circle(0px at 0px 0px)"
 PASS getStyleValue("shape-outside", "circle(1px at +1px -1px)") is "circle(1px at 1px -1px)"
 PASS getStyleValue("shape-outside", "circle(1.5px at -1.5px +1.5px)") is "circle(1.5px at -1.5px 1.5px)"
 PASS getStyleValue("shape-outside", "circle(.5px at -.5px +.5px)") is "circle(0.5px at -0.5px 0.5px)"

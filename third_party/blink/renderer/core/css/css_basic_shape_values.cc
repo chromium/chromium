@@ -103,6 +103,29 @@ const CSSValuePair* BuildSerializablePositionOffset(const CSSValue& offset,
                                             CSSValuePair::kKeepIdenticalValues);
 }
 
+// 8.3.2. Serializing <position>
+// When serializing the specified value of a <position>:
+//
+// => If only one component is specified:
+//    * The implied center keyword is added, and a 2-component value is
+//      serialized.
+//
+// => If two components are specified:
+//    * Keywords are serialized as keywords.
+//
+//    * <length-percentage>s are serialized as <length-percentage>s.
+//
+//    * Components are serialized horizontal first, then vertical.
+//
+// => If four components are specified:
+//    * Keywords and offsets are both serialized.
+//
+//    * Components are serialized horizontal first, then vertical.
+//
+// (https://drafts.csswg.org/css-values-4/#position-serialization)
+//
+// This should match our canonical representation, so we can just call
+// CssText() on the two components making up the <position>.
 void SerializePosition(const CSSValue& center_x,
                        const CSSValue& center_y,
                        bool needs_separator,
@@ -110,14 +133,21 @@ void SerializePosition(const CSSValue& center_x,
   if (needs_separator) {
     result.Append(' ');
   }
-  const CSSValuePair* normalized_cx =
-      BuildSerializablePositionOffset(center_x, CSSValueID::kLeft);
-  const CSSValuePair* normalized_cy =
-      BuildSerializablePositionOffset(center_y, CSSValueID::kTop);
   result.Append("at ");
-  result.Append(SerializePositionOffset(*normalized_cx, *normalized_cy));
-  result.Append(' ');
-  result.Append(SerializePositionOffset(*normalized_cy, *normalized_cx));
+  if (RuntimeEnabledFeatures::
+          CSSShapeEllipseCirclePositionSerializationEnabled()) {
+    result.Append(center_x.CssText());
+    result.Append(' ');
+    result.Append(center_y.CssText());
+  } else {
+    const CSSValuePair* normalized_cx =
+        BuildSerializablePositionOffset(center_x, CSSValueID::kLeft);
+    const CSSValuePair* normalized_cy =
+        BuildSerializablePositionOffset(center_y, CSSValueID::kTop);
+    result.Append(SerializePositionOffset(*normalized_cx, *normalized_cy));
+    result.Append(' ');
+    result.Append(SerializePositionOffset(*normalized_cy, *normalized_cx));
+  }
 }
 
 }  // namespace

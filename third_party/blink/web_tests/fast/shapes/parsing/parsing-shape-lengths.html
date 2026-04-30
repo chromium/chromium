@@ -36,7 +36,7 @@ function testInvalidValue(property, value) {
 }
 
 // absolute lengths - number serialization, units
-testStyleValue("circle(0 at 0 0)", "circle(0px at 0% 0%)");
+testStyleValue("circle(0 at 0 0)", "circle(0px at 0px 0px)");
 testStyleValue("circle(1px at +1px -1px)", "circle(1px at 1px -1px)");
 testStyleValue("circle(1.5px at -1.5px +1.5px)", "circle(1.5px at -1.5px 1.5px)");
 testStyleValue("circle(.5px at -.5px +.5px)", "circle(0.5px at -0.5px 0.5px)");
