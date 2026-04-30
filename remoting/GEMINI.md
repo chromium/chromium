@@ -20,8 +20,8 @@ these documents:**
 *   **Native Client:** See `client/GEMINI.md` if you are working on the native
     client code (ChromeOS/Boca).
 
-*   **D-Bus Interface Generation:** See `host/linux/dbus_interfaces/GEMINI.md` if
-    you need to generate missing D-Bus headers for Linux.
+*   **D-Bus Interface Generation:** See `host/linux/dbus_interfaces/GEMINI.md`
+    if you need to generate missing D-Bus headers for Linux.
 
 *   **Linux Host Implementation Details:** See `host/linux/GEMINI.md` for
     information about Linux-specific libraries like GVariant and D-Bus
@@ -89,9 +89,10 @@ Our team strongly prefers small, easily reviewable CLs (Changelists).
 
 ## Automated Sub-Agent Review
 
-Before finalizing any task or uploading a CL in `//remoting`, you **MUST** trigger
-an automated self-review to catch common CRD-specific errors.
-*   **Pre-checks:** Before invoking the generalist sub-agent, you MUST run the following
+Before finalizing any task or uploading a CL in `//remoting`, you **MUST**
+trigger an automated self-review to catch common CRD-specific errors.
+*   **Pre-checks:** Before invoking the generalist sub-agent, you MUST run the
+  following
     commands and gather their output to include in the prompt below:
     1.  `git cl presubmit -u --force` (Linting and presubmit checks).
     2.  `gn check {OUT_DIR} //remoting/*` (Headers and dependencies).
@@ -101,18 +102,21 @@ an automated self-review to catch common CRD-specific errors.
     > changes [include diff or describe changes]. I have also run the presubmit
     > and gn check commands. Here is their output: [include output].
     > Your MOST IMPORTANT task is to identify any unintended changes, logical
-    > mistakes, or typos. After verifying the core correctness, specifically check for:
-    > 1. Memory safety in high-privilege processes, particularly preventing Use-After-Free
-    >    (UAF) errors.
+    > mistakes, or typos. After verifying the core correctness, specifically check
+    > for:
+    > 1. Memory safety in high-privilege processes, particularly preventing
+    >    Use-After-Free (UAF) errors.
     > 2. Platform-specific logic bugs or missing `#if BUILDFLAG(...)` guards.
-    > 3. Adherence to the 'Small CLs' mandate. Suggest a reasonable split point if the CL is
-    >    large and a split point is apparent.
-    > 4. Consider all directives in remoting/GEMINI.md and ensure the CL adheres to them.
-    >    [include contents of remoting/GEMINI.md]
+    > 3. Adherence to the 'Small CLs' mandate. Suggest a reasonable split point
+    >    if the CL is large and a split point is apparent.
+    > 4. Consider all directives in remoting/GEMINI.md and ensure the CL adheres
+    >    to them. [include contents of remoting/GEMINI.md]
     >
-    > IMPORTANT: You are the reviewing sub-agent. Do NOT trigger any further sub-agent reviews."
+    > IMPORTANT: You are the reviewing sub-agent. Do NOT trigger any further
+    > sub-agent reviews."
 *   **Feedback Loop:** If the sub-agent identifies issues, you must address them
-    and re-run the relevant validation steps before considering the task complete.
+    and re-run the relevant validation steps before considering the task
+    complete.
 
 ## Workflow Efficiency (Optimizing for Wall-Clock Time)
 
@@ -121,12 +125,13 @@ just the fastest individual command execution. Every shell command requires
 human approval via the CLI, which causes expensive context switches for the
 developer.
 
-*   **MAGI Protocol:** For highly complex, high-stakes, or ambiguous architectural
+*   **MAGI Protocol:** For highly complex, high-stakes, or ambiguous
+  architectural
     problems, suggest invoking the `magi-mode` skill. This triggers a
     multi-agent debate to explore security, performance, and maintainability
-    trade-offs before implementation. It features an iterative "Rumination Cycle"
-    with dynamic topology routing (Star to Roundtable) and human escalation for
-    deadlocks.
+    trade-offs before implementation. It features an iterative "Rumination
+    Cycle" with dynamic topology routing (Star to Roundtable) and human
+    escalation for deadlocks.
 *   **Batch Commands:** Combine related shell commands using `&&` whenever
     logical. For example, instead of running a build and then asking to run a
     test, combine them:
