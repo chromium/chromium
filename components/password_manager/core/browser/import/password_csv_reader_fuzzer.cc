@@ -9,6 +9,7 @@
 
 #include "base/at_exit.h"
 #include "base/i18n/icu_util.h"
+#include "base/no_destructor.h"
 #include "components/password_manager/core/browser/import/csv_password_sequence.h"
 
 namespace password_manager {
@@ -33,9 +34,8 @@ struct IcuEnvironment {
   base::AtExitManager at_exit_manager;
 };
 
-IcuEnvironment* env = new IcuEnvironment();
-
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
+  static const base::NoDestructor<IcuEnvironment> env;
   CSVPasswordSequence seq(
       std::string(reinterpret_cast<const char*>(data), size));
   CHECK(IsValid(seq.result()))
