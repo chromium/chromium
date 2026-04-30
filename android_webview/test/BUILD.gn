@@ -274,6 +274,7 @@ shared_library_with_jni("libstandalonelibwebviewchromium") {
   ldflags = [ "-Wl,-shared,-Bsymbolic" ]
   deps = [
     ":draw_fn_impl_jni_headers",
+    ":test_support",
     ":webview_instrumentation_test_native_jni_impl",
     "//android_webview",
     "//android_webview/browser/gfx",
@@ -774,6 +775,16 @@ repack("android_webview_unittests_pak") {
   deps = [ "//components/metrics:server_urls_grd" ]
 
   output = "$root_out_dir/android_webview_unittests_resources.pak"
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "../browser/gfx/test/fake_hwui_gl_context.cc",
+    "../browser/gfx/test/fake_hwui_gl_context.h",
+  ]
+
+  deps = [ "//base" ]
 }
 
 test("android_webview_unittests") {
