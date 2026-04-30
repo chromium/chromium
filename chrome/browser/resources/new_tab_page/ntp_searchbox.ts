@@ -529,6 +529,10 @@ export class NtpSearchboxElement extends NtpSearchboxElementBase implements
     this.onVoiceSearchClick_();
   }
 
+  protected onOpenDriveUpload_() {
+    this.pageHandler().onDriveUploadClicked();
+  }
+
   protected onContextMenuEntrypointClick_() {
     this.pageHandler().activateMetricsFunnel('PlusButton');
   }

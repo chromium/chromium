@@ -414,6 +414,10 @@ interface PageHandler {
   // Informs the browser that the user accepted the AIM x Drive disclaimer.
   OnDriveDisclaimerAccepted();
 
+  // Called when the user clicks the drive upload button.
+  // TODO(crbug.com/504758597): Add a callback to return the drive files selected.
+  OnDriveUploadClicked();
+
   // Gets the page classification for the current context.
   GetPageClassification() => (string metricSource);
 };

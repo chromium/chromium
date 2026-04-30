@@ -753,6 +753,12 @@ export const ComposeboxEmbedderMixin =
               this.composeboxSource, 'AimPopup', ContextType.FILE);
         }
 
+        onOpenDriveUpload() {
+          recordContextualElementClickedMetric(
+              this.composeboxSource, 'AimPopup', ContextType.DRIVE);
+          this.getSearchboxHandler().onDriveUploadClicked();
+        }
+
         onSmartTabSharingActiveChanged(e: CustomEvent<{active: boolean}>) {
           this.smartTabSharingActive = e.detail.active;
           this.getPageHandler().setSmartTabSharingActive(e.detail.active);
@@ -1673,6 +1679,7 @@ export interface ComposeboxEmbedderMixinInterface extends
   onModelClick(e: CustomEvent<{model: ModelMode}>): void;
   onOpenImageUpload(): void;
   onOpenFileUpload(): void;
+  onOpenDriveUpload(): void;
   onSmartTabSharingActiveChanged(e: CustomEvent<{active: boolean}>): void;
 
   // Common helper methods

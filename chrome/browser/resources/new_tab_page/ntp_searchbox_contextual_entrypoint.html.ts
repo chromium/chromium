@@ -24,6 +24,7 @@ export function getHtml(this: NtpSearchboxElement) {
         @context-menu-entrypoint-click="${this.onContextMenuEntrypointClick_}"
         @context-menu-closed="${this.onContextMenuClosed_}"
         @context-menu-opened="${this.onContextMenuOpened_}"
+        @open-drive-upload="${this.onOpenDriveUpload_}"
         .inputState="${this.inputState_}"
         .searchboxLayoutMode="${this.searchboxLayoutMode}"
         .tabSuggestions="${this.tabSuggestions_}"

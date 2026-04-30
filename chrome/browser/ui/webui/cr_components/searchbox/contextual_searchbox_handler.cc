@@ -590,6 +590,10 @@ void ContextualSearchboxHandler::AddDriveContext(
       context_token, drive_id, resource_key, mime_type_string);
 }
 
+void ContextualSearchboxHandler::OnDriveUploadClicked() {
+  // TODO(crbug.com/504744908): Open the drive picker here once implemented.
+}
+
 std::vector<base::UnguessableToken>
 ContextualSearchboxHandler::GetUploadedContextTokens() {
   auto* contextual_session_handle = GetContextualSessionHandle();
