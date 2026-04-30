@@ -5,8 +5,11 @@
 package org.chromium.chrome.browser.toolbar.bottom;
 
 import android.annotation.SuppressLint;
+import android.content.res.Resources;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.annotation.DimenRes;
 
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
@@ -106,6 +109,7 @@ public class BottomControlsCoordinator implements BackPressHandler {
             MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
             ScrollingBottomViewResourceFrameLayout root,
             @LayerType int layerType,
+            @DimenRes int heightResId,
             OneshotSupplier<BottomControlsContentDelegate> contentDelegateSupplier,
             TabObscuringHandler tabObscuringHandler,
             NonNullObservableSupplier<Boolean> overlayPanelVisibilitySupplier,
@@ -123,14 +127,12 @@ public class BottomControlsCoordinator implements BackPressHandler {
         layoutManager.createCompositorMCPWithExclusions(
                 model, mSceneLayer, BottomControlsViewBinder::bindCompositorMCP, exclusions);
 
-        int bottomControlsHeightId = R.dimen.bottom_controls_height;
-
         View container = root.findViewById(R.id.bottom_container_slot);
         ViewGroup.LayoutParams params = container.getLayoutParams();
 
-        int bottomControlsHeightRes =
-                root.getResources().getDimensionPixelOffset(bottomControlsHeightId);
-        params.height = bottomControlsHeightRes;
+        Resources res = root.getResources();
+        int bottomControlsHeight = res.getDimensionPixelOffset(heightResId);
+        params.height = bottomControlsHeight;
 
         mMediator =
                 new BottomControlsMediator(
@@ -142,7 +144,7 @@ public class BottomControlsCoordinator implements BackPressHandler {
                         layerType,
                         contentDelegateSupplier,
                         tabObscuringHandler,
-                        bottomControlsHeightRes,
+                        bottomControlsHeight,
                         root.getTopShadowHeight(),
                         overlayPanelVisibilitySupplier,
                         edgeToEdgeControllerSupplier,
@@ -152,8 +154,7 @@ public class BottomControlsCoordinator implements BackPressHandler {
                 .registerResource(root.getId(), root.getResourceAdapter());
 
         mContentDelegateSupplier = contentDelegateSupplier;
-        Toast.setGlobalExtraYOffset(
-                root.getResources().getDimensionPixelSize(bottomControlsHeightId));
+        Toast.setGlobalExtraYOffset(res.getDimensionPixelSize(heightResId));
 
         // Set the visibility of BottomControls to false by default. Components within
         // BottomControls should update the visibility explicitly if needed.

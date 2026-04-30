@@ -42,8 +42,11 @@ found in the LICENSE file.
 
     <dimen name="menu_badge_translation_y">6dp</dimen>
 
-    <!-- Bottom controls dimensions -->
-    <dimen name="bottom_controls_height">@dimen/min_touch_target_size</dimen>
+    <!-- Tab group UI dimensions -->
+    <dimen name="tab_group_ui_height">@dimen/min_touch_target_size</dimen>
+
+    <!-- Bottom bar dimensions -->
+    <dimen name="bottom_bar_height">60dp</dimen>
 
     <!-- Custom Menu dimensions -->
     <dimen name="tab_switcher_menu_width">256dp</dimen>
