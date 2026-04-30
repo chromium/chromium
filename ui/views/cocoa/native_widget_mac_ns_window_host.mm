@@ -1096,6 +1096,9 @@ void NativeWidgetMacNSWindowHost::OnApplicationHostDestroying(
 // remote_cocoa::mojom::NativeWidgetNSWindowHost:
 
 void NativeWidgetMacNSWindowHost::OnVisibilityChanged(bool window_visible) {
+  if (is_visible_ == window_visible) {
+    return;
+  }
   const bool was_visible_on_screen = IsVisibleOnScreen();
   is_visible_ = window_visible;
   if (compositor_) {
@@ -1122,11 +1125,17 @@ void NativeWidgetMacNSWindowHost::OnVisibilityChanged(bool window_visible) {
 
 void NativeWidgetMacNSWindowHost::OnSpaceActivationChanged(
     bool is_on_active_space) {
+  if (is_on_active_space_ == is_on_active_space) {
+    return;
+  }
   const bool was_visible_on_screen = IsVisibleOnScreen();
   is_on_active_space_ = is_on_active_space;
+  const bool is_visible_on_screen = IsVisibleOnScreen();
 
-  if (was_visible_on_screen != IsVisibleOnScreen() && GetWidget()) {
-    GetWidget()->OnNativeWidgetVisibilityOnScreenChanged(IsVisibleOnScreen());
+  if (Widget* widget = GetWidget()) {
+    if (was_visible_on_screen != is_visible_on_screen) {
+      widget->OnNativeWidgetVisibilityOnScreenChanged(is_visible_on_screen);
+    }
   }
 }
 
@@ -1443,6 +1452,9 @@ void NativeWidgetMacNSWindowHost::OnWindowFullscreenTransitionComplete(
 
 void NativeWidgetMacNSWindowHost::OnWindowMiniaturizedChanged(
     bool miniaturized) {
+  if (is_miniaturized_ == miniaturized) {
+    return;
+  }
   is_miniaturized_ = miniaturized;
   if (Widget* widget = GetWidget()) {
     widget->OnNativeWidgetWindowShowStateChanged();
@@ -1450,6 +1462,9 @@ void NativeWidgetMacNSWindowHost::OnWindowMiniaturizedChanged(
 }
 
 void NativeWidgetMacNSWindowHost::OnWindowZoomedChanged(bool zoomed) {
+  if (is_zoomed_ == zoomed) {
+    return;
+  }
   is_zoomed_ = zoomed;
   if (Widget* widget = GetWidget()) {
     widget->OnNativeWidgetWindowShowStateChanged();

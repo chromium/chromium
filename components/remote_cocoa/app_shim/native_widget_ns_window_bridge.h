@@ -468,17 +468,6 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
   // changes.
   bool window_visible_ = false;
 
-  // Stores the value last read from -[NSWindow isOnActiveSpace].
-  bool window_on_active_space_ = false;
-
-  // Stores the value last read from -[NSWindow isZoomed], to detect zoomed
-  // state changes.
-  bool window_zoomed_ = false;
-
-  // Stores the value last read from -[NSWindow collectionBehavior], to detect
-  // "visible on all spaces" state changes.
-  bool visible_on_all_spaces_ = false;
-
   // If true, the window is either visible, or wants to be visible but is
   // currently hidden due to having a hidden parent.
   bool wants_to_be_visible_ = false;

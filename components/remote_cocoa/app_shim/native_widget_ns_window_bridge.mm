@@ -1437,12 +1437,7 @@ void NativeWidgetNSWindowBridge::OnVisibilityChanged() {
 }
 
 void NativeWidgetNSWindowBridge::OnSpaceActivationMayHaveChanged() {
-  const bool window_on_active_space = window_.onActiveSpace;
-  if (window_on_active_space_ == window_on_active_space) {
-    return;
-  }
-  window_on_active_space_ = window_on_active_space;
-  host_->OnSpaceActivationChanged(window_on_active_space);
+  host_->OnSpaceActivationChanged(window_.onActiveSpace);
 }
 
 void NativeWidgetNSWindowBridge::OnSystemColorsChanged() {
@@ -2033,28 +2028,15 @@ void NativeWidgetNSWindowBridge::RemoveOrDestroyChildren() {
 }
 
 void NativeWidgetNSWindowBridge::CheckAndNotifyZoomedStateChanged() {
-  const bool window_zoomed = [window_ isZoomed];
-  if (window_zoomed_ == window_zoomed)
-    return;
-
-  window_zoomed_ = window_zoomed;
-
-  // Notify that the window's zoomed state has changed.
-  host_->OnWindowZoomedChanged(window_zoomed_);
+  host_->OnWindowZoomedChanged(window_.isZoomed);
 }
 
 void NativeWidgetNSWindowBridge::CheckAndNotifyAllWorkspacesStateChanged() {
   const bool visible_on_all_spaces =
       ([window_ collectionBehavior] &
        NSWindowCollectionBehaviorCanJoinAllSpaces) != 0;
-  if (visible_on_all_spaces_ == visible_on_all_spaces) {
-    return;
-  }
-
-  visible_on_all_spaces_ = visible_on_all_spaces;
-
   // Notify that the window's "visible on all spaces" state has changed.
-  host_->OnVisibleOnAllWorkspacesChanged(visible_on_all_spaces_);
+  host_->OnVisibleOnAllWorkspacesChanged(visible_on_all_spaces);
 }
 
 void NativeWidgetNSWindowBridge::NotifyVisibilityChangeDown() {
