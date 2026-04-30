@@ -168,6 +168,7 @@ const CGFloat kBackgroundRGBComponents[] = {0.75f, 0.74f, 0.76f};
   switch (self.webViewResizingType) {
     case WebViewResizingType::kContentInset:
       [_webView setMinimumViewportInset:minInset maximumViewportInset:maxInset];
+      [_webView setNeedsLayout];
       break;
     case WebViewResizingType::kFrame:
       // Do not set the min/max viewport insets if we are resizing frame. Since
