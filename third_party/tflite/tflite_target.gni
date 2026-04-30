@@ -45,6 +45,7 @@ if (build_with_chromium) {
 # Set of variables that are forwarded to the actual target.
 minimal_vars_to_forward_to_target = [
   "cflags",
+  "check_includes",
   "configs",
   "defines",
   "deps",

@@ -15,13 +15,19 @@ import("//third_party/tflite/features.gni")
 import("//third_party/tflite/tf_version.gni")
 import("//third_party/tflite/tflite_target.gni")
 
+proto_library("tflite_xla_proto") {
+  proto_in_dir = "src"
+  sources = [ "src/third_party/xla/xla/tsl/protobuf/coordination_config.proto" ]
+  cc_generator_options = "lite=true:"
+}
+
 proto_library("tflite_proto") {
+  deps = [ ":tflite_xla_proto" ]
   proto_in_dir = "src"
   sources = [
     "src/tensorflow/lite/acceleration/configuration/configuration.proto",
     "src/tensorflow/lite/profiling/proto/model_runtime_info.proto",
     "src/tensorflow/lite/profiling/proto/profiling_info.proto",
-    "src/third_party/xla/xla/tsl/protobuf/coordination_config.proto",
   ]
   cc_generator_options = "lite=true:"
 }
@@ -381,7 +387,10 @@ source_set("fft2d_deps") {
   ]
 
   deps = [ "//third_party/fft2d" ]
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/litert:*",
+  ]
 }
 
 source_set("tflite_kernel_internals") {

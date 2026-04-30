@@ -11,6 +11,9 @@ import("//third_party/cpuinfo/cpuinfo.gni")
 import("//third_party/flatbuffers/flatbuffer.gni")
 import("//third_party/litert/features.gni")
 import("//third_party/protobuf/proto_library.gni")
+import("//third_party/tflite/features.gni")
+import("//third_party/tflite/tf_version.gni")
+import("//third_party/tflite/tflite_target.gni")
 
 buildflag_header("buildflags") {
   header = "buildflags.h"
@@ -53,11 +56,6 @@ group("litert") {
     ":litert_runtime",
     ":litert_runtime_accelerators",
   ]
-
-  # Restrict this group's visibility to the WebNN service for now.
-  # TODO(crbug.com/463784134): Convert litert to a shared library and
-  # expand visibility to other components that depend on it.
-  visibility = [ "//services/webnn/*" ]
 }
 
 config("litert_config") {
@@ -82,6 +80,102 @@ config("litert_config") {
   visibility = [ ":*" ]
 }
 
+config("tflite_config") {
+  include_dirs = [
+    "$root_gen_dir/third_party/litert/src",
+    "$root_gen_dir/third_party/tflite/src",
+    "//third_party/tflite/shims",
+    "src",
+    "//third_party/tflite/src",
+    "//third_party/tflite/src/third_party/xla",
+    "//third_party/tflite/src/third_party/xla/third_party/tsl",
+    "//third_party/pthreadpool/src/include",
+  ]
+  defines = [
+    "TFL_STATIC_LIBRARY_BUILD",
+    "TF_MAJOR_VERSION=" + tf_version_major,
+    "TF_MINOR_VERSION=" + tf_version_minor,
+    "TF_PATCH_VERSION=" + tf_version_patch,
+    "TF_VERSION_SUFFIX=",
+  ]
+
+  if (is_win) {
+    cflags = [ "-Wno-sign-compare" ]
+  }
+
+  if (is_android) {
+    libs = [ "log" ]
+  }
+}
+
+# The config `tflite_config_no_undef` is used when compiling WebRTC outside the
+# Chromium environment.
+config("tflite_config_no_undef") {
+  cflags = [ "-Wno-undef" ]
+}
+
+config("tflite_flags") {
+  cflags = [
+    "-Wno-c99-extensions",
+    "-Wno-comment",
+    "-Wno-extern-c-compat",
+    "-Wno-gnu-inline-cpp-without-extern",
+    "-Wno-loop-analysis",
+    "-Wno-shadow",
+    "-Wno-deprecated-anon-enum-enum-conversion",
+    "-Wno-unused-function",
+    "-Wno-unreachable-code-return",
+
+    # TODO(crbug.com/1147556): Try to clean/remove no-sign-compare if possible.
+    "-Wno-sign-compare",
+
+    "-Wno-unused-but-set-variable",
+
+    # This flag is needed to enable the strip error strings flag since a handful
+    # of variables are only used in error logs, which are no-op'd in a macro
+    # when the strings are stripped. Overall, removing the error strings saves
+    # 90kb of binary size so having a few dangling variables is well worth it,
+    # in addition to keeping the updating process simple.
+    "-Wno-unused-variable",
+  ]
+
+  defines = [
+    "FARMHASH_NO_CXX_STRING",
+    "NEON2SSE_DISABLE_PERFORMANCE_WARNING",
+    "TFL_STATIC_LIBRARY_BUILD",
+  ]
+  if (!is_debug) {
+    defines += [ "TF_LITE_STRIP_ERROR_STRINGS" ]
+  }
+
+  if (build_tflite_with_xnnpack) {
+    defines += [
+      "TFLITE_BUILD_WITH_XNNPACK_DELEGATE",
+      "XNNPACK_DELEGATE_ENABLE_QS8",
+      "XNNPACK_DELEGATE_ENABLE_QU8",
+      "XNNPACK_DELEGATE_USE_LATEST_OPS",
+      "TFLITE_KERNEL_USE_XNNPACK",
+    ]
+  } else {
+    defines += [ "TFLITE_WITHOUT_XNNPACK" ]
+  }
+
+  if (is_win) {
+    cflags += [
+      "/DTFL_COMPILE_LIBRARY",
+      "/wd4018",
+    ]
+
+    defines += [ "TFLITE_MMAP_DISABLED" ]
+  }
+
+  if (build_tflite_with_ruy) {
+    defines += [ "TFLITE_WITH_RUY" ]
+  } else if (is_linux) {
+    defines += [ "GEMMLOWP_ALLOW_SLOW_SCALAR_FALLBACK" ]
+  }
+}
+
 flatbuffer("mutable_schema_litert_tflite_path") {
   sources = [ "src/tflite/converter/schema/schema.fbs" ]
   flatc_out_dir = "src/tflite/schema/mutable"
@@ -89,11 +183,24 @@ flatbuffer("mutable_schema_litert_tflite_path") {
   mutable = true
 }
 
+flatbuffer("weight_cache_schema_litert") {
+  sources = [ "src/tflite/delegates/xnnpack/weight_cache_schema.fbs" ]
+  flatc_out_dir = "src/tflite/delegates/xnnpack"
+  args = [ "--gen-object-api" ]
+  visibility = [
+    ":*",
+    "//components/optimization_guide/internal/*",
+  ]
+}
+
 source_set("mutable_tflite_schema") {
+  check_includes = false
   public_deps = [ ":mutable_schema_litert_tflite_path" ]
+  visibility = [ ":*" ]
 }
 
 source_set("litert_headers") {
+  check_includes = false
   public = [
     "src/litert/c/internal/litert_accelerator.h",
     "src/litert/c/internal/litert_accelerator_registration.h",
@@ -228,6 +335,7 @@ source_set("litert_headers") {
     ":litert_build_config",
     ":mutable_tflite_schema",
   ]
+
   visibility = [
     ":litert",
     ":litert_c",
@@ -245,6 +353,7 @@ copy("litert_build_config") {
 }
 
 static_library("litert_c") {
+  check_includes = false
   sources = [
     "src/litert/c/internal/litert_accelerator.cc",
     "src/litert/c/internal/litert_accelerator_registration.cc",
@@ -288,6 +397,7 @@ static_library("litert_c") {
 }
 
 static_library("litert_cc") {
+  check_includes = false
   sources = [
     "src/litert/cc/internal/litert_op_options.cc",
     "src/litert/cc/internal/litert_runtime_builtin.cc",
@@ -323,6 +433,7 @@ static_library("litert_cc") {
 }
 
 static_library("litert_compiler") {
+  check_includes = false
   sources = [
     "src/litert/compiler/plugin/algo.cc",
     "src/litert/compiler/plugin/compiler_plugin.cc",
@@ -340,6 +451,7 @@ static_library("litert_compiler") {
 }
 
 static_library("litert_runtime_accelerators") {
+  check_includes = false
   sources = [ "src/litert/runtime/accelerators/auto_registration.cc" ]
 
   if (build_litert_with_xnnpack) {
@@ -354,6 +466,7 @@ static_library("litert_runtime_accelerators") {
 }
 
 static_library("litert_core") {
+  check_includes = false
   sources = [
     "src/litert/core/buffer_error_reporter.cc",
     "src/litert/core/build_stamp.cc",
@@ -386,6 +499,7 @@ static_library("litert_core") {
 }
 
 static_library("litert_runtime") {
+  check_includes = false
   sources = [
     "src/litert/runtime/accelerator_registry.cc",
     "src/litert/runtime/compiled_model.cc",
@@ -418,6 +532,7 @@ static_library("litert_runtime") {
     ]
   }
   deps = [ ":litert_headers" ]
+
   if (build_litert_with_xnnpack) {
     deps += [ "//third_party/xnnpack" ]
   }
@@ -427,4 +542,912 @@ static_library("litert_runtime") {
     "//build/config/compiler:rtti",
   ]
   visibility = [ ":*" ]
+}
+
+proto_library("tflite_proto") {
+  proto_in_dir = "src"
+  sources = [
+    "src/tflite/acceleration/configuration/configuration.proto",
+    "src/tflite/profiling/proto/model_runtime_info.proto",
+    "src/tflite/profiling/proto/profiling_info.proto",
+  ]
+  cc_generator_options = "lite=true:"
+  deps = [ "//third_party/tflite:tflite_xla_proto" ]
+}
+
+proto_library("benchmark_result_proto") {
+  proto_in_dir = "src"
+  sources = [ "src/tflite/tools/benchmark/proto/benchmark_result.proto" ]
+  cc_generator_options = "lite=true:"
+  visibility = [ ":*" ]
+}
+
+static_library("tflite_builtin_op_resolver_internals") {
+  check_includes = false
+  sources = [
+    "src/tflite/kernels/internal/mfcc.cc",
+    "src/tflite/kernels/internal/mfcc_dct.cc",
+    "src/tflite/kernels/internal/mfcc_mel_filterbank.cc",
+  ]
+
+  deps = [
+    "//third_party/abseil-cpp:absl",
+    "//third_party/gemmlowp",
+    "//third_party/neon_2_sse",
+  ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    "//third_party/eigen3:eigen_includes",
+    ":tflite_flags",
+  ]
+
+  public_configs = [ ":tflite_config" ]
+
+  visibility = [ ":*" ]
+}
+
+tflite_static_library("tflite_builtin_op_resolver") {
+  check_includes = false
+  sources = [
+    "src/tflite/c/c_api_opaque_internal.cc",
+    "src/tflite/c/c_api_opaque_internal.h",
+    "src/tflite/core/c/c_api.cc",
+    "src/tflite/core/c/c_api.h",
+    "src/tflite/core/c/c_api_opaque.cc",
+    "src/tflite/core/c/c_api_opaque.h",
+    "src/tflite/core/c/operator.cc",
+    "src/tflite/core/c/operator.h",
+    "src/tflite/core/create_op_resolver.h",
+    "src/tflite/core/create_op_resolver_with_builtin_ops.cc",
+    "src/tflite/core/kernels/register.cc",
+    "src/tflite/core/kernels/register.h",
+    "src/tflite/kernels/atan2.cc",
+    "src/tflite/kernels/atan2_custom.cc",
+    "src/tflite/kernels/audio_spectrogram.cc",
+    "src/tflite/kernels/bitcast.cc",
+    "src/tflite/kernels/bitwise_xor.cc",
+    "src/tflite/kernels/broadcast_args.cc",
+    "src/tflite/kernels/bucketize.cc",
+    "src/tflite/kernels/call_once.cc",
+    "src/tflite/kernels/complex_support.cc",
+    "src/tflite/kernels/conv3d.cc",
+    "src/tflite/kernels/conv3d_transpose.cc",
+    "src/tflite/kernels/detection_postprocess.cc",
+    "src/tflite/kernels/dilate.cc",
+    "src/tflite/kernels/dynamic_update_slice.cc",
+    "src/tflite/kernels/hashtable.cc",
+    "src/tflite/kernels/hashtable_find.cc",
+    "src/tflite/kernels/hashtable_import.cc",
+    "src/tflite/kernels/hashtable_size.cc",
+    "src/tflite/kernels/kernel_util.h",
+    "src/tflite/kernels/mfcc.cc",
+    "src/tflite/kernels/multinomial.cc",
+    "src/tflite/kernels/random_standard_normal_custom.cc",
+    "src/tflite/kernels/random_uniform_custom.cc",
+    "src/tflite/kernels/register_ref.cc",
+    "src/tflite/kernels/right_shift.cc",
+    "src/tflite/kernels/sign.cc",
+    "src/tflite/kernels/sign_custom.cc",
+    "src/tflite/kernels/stablehlo_add.cc",
+    "src/tflite/kernels/stablehlo_and.cc",
+    "src/tflite/kernels/stablehlo_case.cc",
+    "src/tflite/kernels/stablehlo_composite.cc",
+    "src/tflite/kernels/stablehlo_elementwise.cc",
+    "src/tflite/kernels/stablehlo_min_max.cc",
+    "src/tflite/kernels/stablehlo_multiply.cc",
+    "src/tflite/kernels/stablehlo_pad.cc",
+    "src/tflite/kernels/stablehlo_reduce_window.cc",
+    "src/tflite/kernels/stablehlo_shift_left.cc",
+    "src/tflite/kernels/unsorted_segment.cc",
+    "src/tflite/kernels/var_handle.cc",
+  ]
+
+  deps = [
+    ":tflite_builtin_op_resolver_internals",
+    "//third_party/abseil-cpp:absl",
+    "//third_party/flatbuffers",
+    "//third_party/gemmlowp",
+    "//third_party/neon_2_sse",
+    "//third_party/ruy",
+    "//third_party/tflite:tflite_op_resolver_proto",
+  ]
+
+  configs_to_remove = [ "//build/config/compiler:chromium_code" ]
+  configs_to_add = [
+    "//build/config/compiler:no_chromium_code",
+    "//third_party/eigen3:eigen_includes",
+    ":tflite_flags",
+  ]
+
+  public_configs = [ ":tflite_config" ]
+
+  visibility = [
+    "//components/*",
+    "//modules/*",
+    "//services/webnn/*",
+    "//third_party/litert:*",
+    "//third_party/mediapipe/*",
+    "//third_party/webrtc/modules/*",
+  ]
+
+  conditional_deps = [ ":tflite" ]
+}
+
+source_set("tflite_public_headers") {
+  check_includes = false
+  public = [
+    "//third_party/tflite/shims/tensorflow/lite/types/fp16.h",
+    "src/tflite/allocation.h",
+    "src/tflite/arena_planner.h",
+    "src/tflite/array.h",
+    "src/tflite/builtin_ops.h",
+    "src/tflite/c/builtin_op_data.h",
+    "src/tflite/context.h",
+    "src/tflite/context_util.h",
+    "src/tflite/converter/schema/schema_generated.h",
+    "src/tflite/converter/schema/schema_utils.h",
+    "src/tflite/core/c/c_api_types.h",
+    "src/tflite/core/c/common.h",
+    "src/tflite/core/interpreter.h",
+    "src/tflite/core/interpreter_builder.h",
+    "src/tflite/core/macros.h",
+    "src/tflite/core/model_builder.h",
+    "src/tflite/core/subgraph.h",
+    "src/tflite/error_reporter.h",
+    "src/tflite/graph_info.h",
+    "src/tflite/logger.h",
+    "src/tflite/minimal_logging.h",
+    "src/tflite/model.h",
+    "src/tflite/mutable_op_resolver.h",
+    "src/tflite/op_resolver.h",
+    "src/tflite/optional_debug_tools.h",
+    "src/tflite/signature_runner.h",
+    "src/tflite/stderr_reporter.h",
+    "src/tflite/string_type.h",
+    "src/tflite/string_util.h",
+    "src/tflite/util.h",
+  ]
+
+  deps = [ "//third_party/fp16" ]
+
+  # The shims files need to access USE_LITERT_TFLITE before completely
+  # switching to use LiteRT.
+  public_deps = [ "//third_party/tflite:buildflags" ]
+  configs += [ ":tflite_flags" ]
+}
+
+source_set("tflite_kernel_common_headers") {
+  check_includes = false
+  public = [
+    "src/tflite/core/kernels/register.h",
+    "src/tflite/experimental/resource/resource_base.h",
+    "src/tflite/experimental/resource/resource_variable.h",
+    "src/tflite/external_cpu_backend_context.h",
+    "src/tflite/kernels/cpu_backend_context.h",
+    "src/tflite/kernels/cpu_backend_gemm.h",
+    "src/tflite/kernels/cpu_backend_gemm_params.h",
+    "src/tflite/kernels/cpu_backend_threadpool.h",
+    "src/tflite/kernels/internal/compatibility.h",
+    "src/tflite/kernels/internal/runtime_shape.h",
+    "src/tflite/kernels/internal/tensor_ctypes.h",
+    "src/tflite/kernels/kernel_util.h",
+    "src/tflite/kernels/op_macros.h",
+    "src/tflite/kernels/register_ref.h",
+    "src/tflite/kernels/stablehlo_elementwise.h",
+    "src/tflite/type_to_tflitetype.h",
+  ]
+
+  public_deps = [ "//third_party/abseil-cpp:absl" ]
+
+  configs += [ ":tflite_flags" ]
+
+  visibility = [ ":*" ]
+}
+
+tflite_source_set("tflite_litert") {
+  check_includes = false
+  sources = [
+    "src/tflite/experimental/genai/external_kvcache.cc",
+    "src/tflite/experimental/genai/genai_ops.cc",
+    "src/tflite/experimental/genai/genai_ops.h",
+    "src/tflite/experimental/genai/kvcache.cc",
+    "src/tflite/experimental/genai/sdpa.cc",
+    "src/tflite/experimental/resource/cache_buffer.cc",
+    "src/tflite/experimental/resource/cache_buffer.h",
+  ]
+
+  deps = [
+    ":tflite_kernel_common_headers",
+    ":tflite_kernel_internals",
+    ":tflite_public_headers",
+    "//third_party/flatbuffers",
+  ]
+
+  conditional_deps = [ ":tflite_logging" ]
+
+  configs_to_add = [
+    ":tflite_config",
+    ":tflite_flags",
+  ]
+
+  visibility = [
+    ":*",
+    "//components/optimization_guide/internal/*",
+  ]
+}
+
+source_set("tflite_kernel_internals") {
+  check_includes = false
+  sources = [
+    "src/tflite/kernels/internal/common.cc",
+    "src/tflite/kernels/internal/common.h",
+    "src/tflite/kernels/internal/cppmath.h",
+    "src/tflite/kernels/internal/kernel_utils.cc",
+    "src/tflite/kernels/internal/kernel_utils.h",
+    "src/tflite/kernels/internal/max.h",
+    "src/tflite/kernels/internal/min.h",
+    "src/tflite/kernels/internal/optimized/4bit/fully_connected_reference.cc",
+    "src/tflite/kernels/internal/optimized/4bit/fully_connected_reference.h",
+    "src/tflite/kernels/internal/optimized/4bit/fully_connected_reference_impl.h",
+    "src/tflite/kernels/internal/optimized/cpu_check.cc",
+    "src/tflite/kernels/internal/optimized/cpu_check.h",
+    "src/tflite/kernels/internal/optimized/depthwiseconv_3x3_filter_common.h",
+    "src/tflite/kernels/internal/optimized/depthwiseconv_float.h",
+    "src/tflite/kernels/internal/optimized/depthwiseconv_multithread.h",
+    "src/tflite/kernels/internal/optimized/depthwiseconv_uint8.h",
+    "src/tflite/kernels/internal/optimized/depthwiseconv_uint8_3x3_filter.h",
+    "src/tflite/kernels/internal/optimized/eigen_spatial_convolutions.h",
+    "src/tflite/kernels/internal/optimized/im2col_utils.h",
+    "src/tflite/kernels/internal/optimized/integer_ops/add.h",
+    "src/tflite/kernels/internal/optimized/integer_ops/conv.h",
+    "src/tflite/kernels/internal/optimized/integer_ops/depthwise_conv.h",
+    "src/tflite/kernels/internal/optimized/integer_ops/depthwise_conv_3x3_filter.h",
+    "src/tflite/kernels/internal/optimized/integer_ops/depthwise_conv_hybrid.h",
+    "src/tflite/kernels/internal/optimized/integer_ops/depthwise_conv_hybrid_3x3_filter.h",
+    "src/tflite/kernels/internal/optimized/integer_ops/fully_connected.h",
+    "src/tflite/kernels/internal/optimized/integer_ops/mean.h",
+    "src/tflite/kernels/internal/optimized/integer_ops/mul.h",
+    "src/tflite/kernels/internal/optimized/integer_ops/pooling.h",
+    "src/tflite/kernels/internal/optimized/integer_ops/transpose_conv.h",
+    "src/tflite/kernels/internal/optimized/multithreaded_conv.h",
+    "src/tflite/kernels/internal/optimized/neon_check.h",
+    "src/tflite/kernels/internal/optimized/neon_tensor_utils.cc",
+    "src/tflite/kernels/internal/optimized/neon_tensor_utils_impl.h",
+    "src/tflite/kernels/internal/optimized/optimized_ops.h",
+    "src/tflite/kernels/internal/optimized/sparse_ops/fully_connected.h",
+    "src/tflite/kernels/internal/optimized/sse_tensor_utils.cc",
+    "src/tflite/kernels/internal/optimized/sse_tensor_utils_impl.h",
+    "src/tflite/kernels/internal/quantization_util.cc",
+    "src/tflite/kernels/internal/quantization_util.h",
+    "src/tflite/kernels/internal/reference/add.h",
+    "src/tflite/kernels/internal/reference/arg_min_max.h",
+    "src/tflite/kernels/internal/reference/batch_matmul.h",
+    "src/tflite/kernels/internal/reference/binary_function.h",
+    "src/tflite/kernels/internal/reference/ceil.h",
+    "src/tflite/kernels/internal/reference/comparisons.cc",
+    "src/tflite/kernels/internal/reference/comparisons.h",
+    "src/tflite/kernels/internal/reference/concatenation.h",
+    "src/tflite/kernels/internal/reference/conv.h",
+    "src/tflite/kernels/internal/reference/densify.h",
+    "src/tflite/kernels/internal/reference/depthwiseconv_float.h",
+    "src/tflite/kernels/internal/reference/depthwiseconv_uint8.h",
+    "src/tflite/kernels/internal/reference/dequantize.h",
+    "src/tflite/kernels/internal/reference/floor.h",
+    "src/tflite/kernels/internal/reference/fully_connected.h",
+    "src/tflite/kernels/internal/reference/integer_ops/add.h",
+    "src/tflite/kernels/internal/reference/integer_ops/conv.h",
+    "src/tflite/kernels/internal/reference/integer_ops/depthwise_conv.h",
+    "src/tflite/kernels/internal/reference/integer_ops/dequantize.h",
+    "src/tflite/kernels/internal/reference/integer_ops/fully_connected.h",
+    "src/tflite/kernels/internal/reference/integer_ops/l2normalization.h",
+    "src/tflite/kernels/internal/reference/integer_ops/log_softmax.h",
+    "src/tflite/kernels/internal/reference/integer_ops/logistic.h",
+    "src/tflite/kernels/internal/reference/integer_ops/mean.h",
+    "src/tflite/kernels/internal/reference/integer_ops/mul.h",
+    "src/tflite/kernels/internal/reference/integer_ops/pooling.h",
+    "src/tflite/kernels/internal/reference/integer_ops/tanh.h",
+    "src/tflite/kernels/internal/reference/integer_ops/transpose_conv.h",
+    "src/tflite/kernels/internal/reference/l2normalization.h",
+    "src/tflite/kernels/internal/reference/logistic.h",
+    "src/tflite/kernels/internal/reference/maximum_minimum.h",
+    "src/tflite/kernels/internal/reference/mul.h",
+    "src/tflite/kernels/internal/reference/neg.h",
+    "src/tflite/kernels/internal/reference/non_max_suppression.h",
+    "src/tflite/kernels/internal/reference/pad.h",
+    "src/tflite/kernels/internal/reference/pooling.h",
+    "src/tflite/kernels/internal/reference/portable_tensor_utils.cc",
+    "src/tflite/kernels/internal/reference/portable_tensor_utils.h",
+    "src/tflite/kernels/internal/reference/portable_tensor_utils_impl.h",
+    "src/tflite/kernels/internal/reference/prelu.h",
+    "src/tflite/kernels/internal/reference/process_broadcast_shapes.h",
+    "src/tflite/kernels/internal/reference/quantize.h",
+    "src/tflite/kernels/internal/reference/reduce.h",
+    "src/tflite/kernels/internal/reference/reference_ops.h",
+    "src/tflite/kernels/internal/reference/requantize.h",
+    "src/tflite/kernels/internal/reference/resize_nearest_neighbor.h",
+    "src/tflite/kernels/internal/reference/round.h",
+    "src/tflite/kernels/internal/reference/softmax.h",
+    "src/tflite/kernels/internal/reference/sparse_ops/fully_connected.h",
+    "src/tflite/kernels/internal/reference/strided_slice.h",
+    "src/tflite/kernels/internal/reference/sub.h",
+    "src/tflite/kernels/internal/reference/svdf.h",
+    "src/tflite/kernels/internal/reference/tanh.h",
+    "src/tflite/kernels/internal/runtime_shape.cc",
+    "src/tflite/kernels/internal/runtime_shape.h",
+    "src/tflite/kernels/internal/spectrogram.cc",
+    "src/tflite/kernels/internal/spectrogram.h",
+    "src/tflite/kernels/internal/strided_slice_logic.h",
+    "src/tflite/kernels/internal/tensor.h",
+    "src/tflite/kernels/internal/tensor_ctypes.cc",
+    "src/tflite/kernels/internal/tensor_ctypes.h",
+    "src/tflite/kernels/internal/tensor_utils.cc",
+    "src/tflite/kernels/internal/tensor_utils.h",
+    "src/tflite/kernels/internal/transpose_utils.cc",
+    "src/tflite/kernels/internal/transpose_utils.h",
+    "src/tflite/kernels/internal/types.h",
+    "src/tflite/kernels/internal/utils/sparsity_format_converter.cc",
+    "src/tflite/kernels/internal/utils/sparsity_format_converter.h",
+  ]
+
+  public_deps = [
+    "//third_party/gemmlowp",
+    "//third_party/neon_2_sse",
+    "//third_party/ruy",
+  ]
+
+  deps = [
+    ":tflite_kernel_common_headers",
+    ":tflite_public_headers",
+    "//third_party/abseil-cpp:absl",
+    "//third_party/farmhash",
+    "//third_party/flatbuffers",
+    "//third_party/fp16",
+    "//third_party/tflite:fft2d_deps",
+  ]
+
+  configs += [
+    ":tflite_config",
+    ":tflite_flags",
+    "//third_party/eigen3:eigen_includes",
+  ]
+
+  public_configs = [ "//third_party/eigen3:eigen_public_includes" ]
+  visibility = [ ":*" ]
+}
+
+tflite_static_library("tflite_kernels") {
+  check_includes = false
+  sources = [
+    "src/tflite/kernels/activations.cc",
+    "src/tflite/kernels/add.cc",
+    "src/tflite/kernels/add_n.cc",
+    "src/tflite/kernels/arg_min_max.cc",
+    "src/tflite/kernels/assign_variable.cc",
+    "src/tflite/kernels/basic_rnn.cc",
+    "src/tflite/kernels/batch_matmul.cc",
+    "src/tflite/kernels/batch_to_space_nd.cc",
+    "src/tflite/kernels/bidirectional_sequence_lstm.cc",
+    "src/tflite/kernels/bidirectional_sequence_rnn.cc",
+    "src/tflite/kernels/broadcast_to.cc",
+    "src/tflite/kernels/builtin_op_kernels.h",
+    "src/tflite/kernels/cast.cc",
+    "src/tflite/kernels/ceil.cc",
+    "src/tflite/kernels/comparisons.cc",
+    "src/tflite/kernels/concatenation.cc",
+    "src/tflite/kernels/control_flow_common.cc",
+    "src/tflite/kernels/conv.cc",
+    "src/tflite/kernels/cpu_backend_context.cc",
+    "src/tflite/kernels/cpu_backend_gemm_custom_gemv.h",
+    "src/tflite/kernels/cpu_backend_gemm_eigen.cc",
+    "src/tflite/kernels/cpu_backend_gemm_eigen.h",
+    "src/tflite/kernels/cpu_backend_gemm_ruy.h",
+    "src/tflite/kernels/cumsum.cc",
+    "src/tflite/kernels/densify.cc",
+    "src/tflite/kernels/depth_to_space.cc",
+    "src/tflite/kernels/depthwise_conv.cc",
+    "src/tflite/kernels/dequantize.cc",
+    "src/tflite/kernels/dequantize.h",
+    "src/tflite/kernels/div.cc",
+    "src/tflite/kernels/eigen_support.cc",
+    "src/tflite/kernels/eigen_support.h",
+    "src/tflite/kernels/elementwise.cc",
+    "src/tflite/kernels/embedding_lookup.cc",
+    "src/tflite/kernels/embedding_lookup_sparse.cc",
+    "src/tflite/kernels/exp.cc",
+    "src/tflite/kernels/expand_dims.cc",
+    "src/tflite/kernels/fake_quant.cc",
+    "src/tflite/kernels/fill.cc",
+    "src/tflite/kernels/floor.cc",
+    "src/tflite/kernels/floor_div.cc",
+    "src/tflite/kernels/floor_mod.cc",
+    "src/tflite/kernels/fully_connected.cc",
+    "src/tflite/kernels/gather.cc",
+    "src/tflite/kernels/gather_nd.cc",
+    "src/tflite/kernels/hadamard_rotation.cc",
+    "src/tflite/kernels/hashtable_lookup.cc",
+    "src/tflite/kernels/if.cc",
+    "src/tflite/kernels/kernel_util.cc",
+    "src/tflite/kernels/l2norm.cc",
+    "src/tflite/kernels/local_response_norm.cc",
+    "src/tflite/kernels/logical.cc",
+    "src/tflite/kernels/lsh_projection.cc",
+    "src/tflite/kernels/lstm.cc",
+    "src/tflite/kernels/lstm_eval.cc",
+    "src/tflite/kernels/lstm_eval.h",
+    "src/tflite/kernels/lstm_shared.h",
+    "src/tflite/kernels/matrix_diag.cc",
+    "src/tflite/kernels/matrix_set_diag.cc",
+    "src/tflite/kernels/maximum_minimum.cc",
+    "src/tflite/kernels/mirror_pad.cc",
+    "src/tflite/kernels/mul.cc",
+    "src/tflite/kernels/neg.cc",
+    "src/tflite/kernels/non_max_suppression.cc",
+    "src/tflite/kernels/numeric_verify.cc",
+    "src/tflite/kernels/one_hot.cc",
+    "src/tflite/kernels/pack.cc",
+    "src/tflite/kernels/pad.cc",
+    "src/tflite/kernels/padding.h",
+    "src/tflite/kernels/pooling.cc",
+    "src/tflite/kernels/pow.cc",
+    "src/tflite/kernels/quantize.cc",
+    "src/tflite/kernels/random_ops.cc",
+    "src/tflite/kernels/range.cc",
+    "src/tflite/kernels/rank.cc",
+    "src/tflite/kernels/read_variable.cc",
+    "src/tflite/kernels/reduce.cc",
+    "src/tflite/kernels/reshape.cc",
+    "src/tflite/kernels/resize_bilinear.cc",
+    "src/tflite/kernels/resize_nearest_neighbor.cc",
+    "src/tflite/kernels/reverse.cc",
+    "src/tflite/kernels/reverse_sequence.cc",
+    "src/tflite/kernels/rfft2d.cc",
+    "src/tflite/kernels/rng_bit_generator.cc",
+    "src/tflite/kernels/rng_util.cc",
+    "src/tflite/kernels/round.cc",
+    "src/tflite/kernels/scatter_nd.cc",
+    "src/tflite/kernels/segment_sum.cc",
+    "src/tflite/kernels/select.cc",
+    "src/tflite/kernels/shape.cc",
+    "src/tflite/kernels/skip_gram.cc",
+    "src/tflite/kernels/slice.cc",
+    "src/tflite/kernels/space_to_batch_nd.cc",
+    "src/tflite/kernels/space_to_depth.cc",
+    "src/tflite/kernels/sparse_to_dense.cc",
+    "src/tflite/kernels/split.cc",
+    "src/tflite/kernels/split_v.cc",
+    "src/tflite/kernels/squared_difference.cc",
+    "src/tflite/kernels/squeeze.cc",
+    "src/tflite/kernels/stablehlo_gather.cc",
+    "src/tflite/kernels/stablehlo_scatter.cc",
+    "src/tflite/kernels/strided_slice.cc",
+    "src/tflite/kernels/sub.cc",
+    "src/tflite/kernels/svdf.cc",
+    "src/tflite/kernels/tensor_slice_util.cc",
+    "src/tflite/kernels/tensor_slice_util.h",
+    "src/tflite/kernels/tile.cc",
+    "src/tflite/kernels/topk_v2.cc",
+    "src/tflite/kernels/transpose.cc",
+    "src/tflite/kernels/transpose_conv.cc",
+    "src/tflite/kernels/unidirectional_sequence_lstm.cc",
+    "src/tflite/kernels/unidirectional_sequence_rnn.cc",
+    "src/tflite/kernels/unique.cc",
+    "src/tflite/kernels/unpack.cc",
+    "src/tflite/kernels/where.cc",
+    "src/tflite/kernels/while.cc",
+    "src/tflite/kernels/zeros_like.cc",
+  ]
+
+  if (!build_tflite_with_ruy) {
+    sources += [ "src/tflite/kernels/cpu_backend_gemm_gemmlowp.h" ]
+  }
+
+  deps = [
+    ":tflite_kernel_common_headers",
+    ":tflite_kernel_internals",
+    ":tflite_public_headers",
+    "//third_party/abseil-cpp:absl",
+    "//third_party/farmhash",
+    "//third_party/flatbuffers",
+    "//third_party/fp16",
+    "//third_party/gemmlowp",
+    "//third_party/neon_2_sse",
+    "//third_party/ruy",
+    "//third_party/tflite:fft2d_deps",
+  ]
+
+  conditional_deps = [ "//third_party/pthreadpool" ]
+
+  if (use_cpuinfo) {
+    defines = [ "TFLITE_HAVE_CPUINFO" ]
+    deps += [ "//third_party/cpuinfo" ]
+    include_dirs = [ "//third_party/cpuinfo/src" ]
+  }
+
+  if (build_tflite_with_xnnpack) {
+    conditional_deps += [ "//third_party/xnnpack" ]
+  }
+
+  configs_to_add = [
+    ":tflite_config",
+    ":tflite_flags",
+    "//third_party/eigen3:eigen_includes",
+  ]
+  visibility = [ ":*" ]
+}
+
+if (!is_fuchsia) {
+  tflite_static_library("tflite_op_shim") {
+    check_includes = false
+    sources = [
+      "src/tflite/kernels/shim/shape.cc",
+      "src/tflite/kernels/shim/tflite_op_shim.cc",
+      "src/tflite/kernels/shim/tflite_tensor_view.cc",
+    ]
+
+    if (is_win) {
+      sources += [ "//third_party/tflite/src/third_party/xla/xla/tsl/platform/windows/env_time.cc" ]
+    } else {
+      sources += [ "//third_party/tflite/src/third_party/xla/xla/tsl/platform/default/env_time.cc" ]
+    }
+
+    deps = [
+      ":tflite_kernel_common_headers",
+      ":tflite_public_headers",
+      "//third_party/abseil-cpp:absl",
+      "//third_party/flatbuffers",
+    ]
+
+    configs_to_add = [
+      ":tflite_config",
+      ":tflite_flags",
+      "//third_party/eigen3:eigen_includes",
+      "//third_party/ml_dtypes:ml_dtypes-includes",
+    ]
+    visibility = [ ":*" ]
+  }
+}
+
+# The two below TFLite logging targets are separate since the Chromium one
+# requires //base, which is not allowed to be embedded by non-libchrome shared
+# libraries.
+if (build_with_chromium) {
+  source_set("tflite_logging") {
+    check_includes = false
+    sources = [ "//third_party/tflite/shims/minimal_logging_chromium.cc" ]
+    deps = [
+      ":tflite_public_headers",
+      "//base",
+    ]
+
+    configs += [
+      ":tflite_config",
+      ":tflite_flags",
+    ]
+
+    visibility = [ ":*" ]
+  }
+}
+
+# This target is used in conditional_deps in the ":tflite" target, which
+# requires both a "target" and companion "target_standalone" source set.
+source_set("tflite_logging_standalone") {
+  check_includes = false
+  if (is_ios) {
+    sources = [ "src/tflite/minimal_logging_ios.cc" ]
+  } else if (is_android) {
+    sources = [ "src/tflite/minimal_logging_android.cc" ]
+  } else {
+    sources = [ "src/tflite/minimal_logging_default.cc" ]
+  }
+  deps = [ ":tflite_public_headers" ]
+
+  configs += [
+    ":tflite_config",
+    ":tflite_flags",
+  ]
+
+  visibility = [ ":*" ]
+}
+
+source_set("tflite_compiler_utils") {
+  check_includes = false
+  sources = [
+    "src/tflite/converter/core/api/flatbuffer_conversions.cc",
+    "src/tflite/converter/core/api/flatbuffer_conversions.h",
+    "src/tflite/converter/tools/versioning/op_signature.cc",
+    "src/tflite/converter/tools/versioning/op_signature.h",
+  ]
+
+  configs += [
+    ":tflite_config",
+    ":tflite_flags",
+  ]
+
+  public_deps = [
+    ":tflite_kernel_common_headers",
+    ":tflite_kernel_internals",
+    ":tflite_public_headers",
+    "//third_party/abseil-cpp:absl",
+    "//third_party/flatbuffers",
+    "//third_party/gemmlowp",
+  ]
+  visibility = [ ":*" ]
+}
+
+tflite_static_library("tflite") {
+  check_includes = false
+  sources = [
+    "//third_party/tflite/src/third_party/xla/xla/tsl/util/stats_calculator.cc",
+    "//third_party/tflite/src/third_party/xla/xla/tsl/util/stats_calculator.h",
+    "src/tflite/acceleration/configuration/flatbuffer_to_proto.cc",
+    "src/tflite/acceleration/configuration/flatbuffer_to_proto.h",
+    "src/tflite/acceleration/configuration/proto_to_flatbuffer.cc",
+    "src/tflite/acceleration/configuration/proto_to_flatbuffer.h",
+    "src/tflite/arena_planner.cc",
+    "src/tflite/array.cc",
+    "src/tflite/c/common_internal.cc",
+    "src/tflite/c/common_internal.h",
+    "src/tflite/converter/allocation.cc",
+    "src/tflite/converter/allocation.h",
+    "src/tflite/converter/core/api/error_reporter.cc",
+    "src/tflite/converter/core/api/error_reporter.h",
+    "src/tflite/converter/core/model_builder_base.cc",
+    "src/tflite/converter/core/model_builder_base.h",
+    "src/tflite/converter/experimental/remat/metadata_util.cc",
+    "src/tflite/converter/experimental/remat/metadata_util.h",
+    "src/tflite/converter/schema/schema_utils.cc",
+    "src/tflite/converter/utils/string_utils.cc",
+    "src/tflite/core/acceleration/configuration/delegate_registry.cc",
+    "src/tflite/core/acceleration/configuration/delegate_registry.h",
+    "src/tflite/core/api/flatbuffer_conversions.cc",
+    "src/tflite/core/api/flatbuffer_conversions.h",
+    "src/tflite/core/api/op_resolver.cc",
+    "src/tflite/core/api/profiler.h",
+    "src/tflite/core/api/tensor_utils.cc",
+    "src/tflite/core/api/tensor_utils.h",
+    "src/tflite/core/async/async_kernel_internal.h",
+    "src/tflite/core/async/async_signature_runner.cc",
+    "src/tflite/core/async/async_signature_runner.h",
+    "src/tflite/core/async/async_subgraph.cc",
+    "src/tflite/core/async/async_subgraph.h",
+    "src/tflite/core/async/task_internal.cc",
+    "src/tflite/core/async/task_internal.h",
+    "src/tflite/core/c/common.cc",
+    "src/tflite/core/interpreter.cc",
+    "src/tflite/core/interpreter_builder.cc",
+    "src/tflite/core/interpreter_experimental.cc",
+    "src/tflite/core/signature_runner.cc",
+    "src/tflite/core/signature_runner.h",
+    "src/tflite/core/subgraph.cc",
+    "src/tflite/core/tools/verifier.cc",
+    "src/tflite/core/tools/verifier_internal.cc",
+    "src/tflite/core/tools/verifier_internal.h",
+    "src/tflite/delegates/interpreter_utils.cc",
+    "src/tflite/delegates/interpreter_utils.h",
+    "src/tflite/delegates/nnapi/nnapi_delegate.h",
+    "src/tflite/delegates/nnapi/nnapi_delegate_disabled.cc",
+    "src/tflite/delegates/serialization.cc",
+    "src/tflite/delegates/serialization.h",
+    "src/tflite/delegates/utils.cc",
+    "src/tflite/delegates/utils.h",
+    "src/tflite/experimental/acceleration/mini_benchmark/mini_benchmark.cc",
+    "src/tflite/experimental/acceleration/mini_benchmark/mini_benchmark.h",
+    "src/tflite/experimental/resource/initialization_status.cc",
+    "src/tflite/experimental/resource/initialization_status.h",
+    "src/tflite/experimental/resource/lookup_interfaces.h",
+    "src/tflite/experimental/resource/lookup_util.h",
+    "src/tflite/experimental/resource/resource_variable.cc",
+    "src/tflite/experimental/resource/static_hashtable.cc",
+    "src/tflite/experimental/resource/static_hashtable.h",
+    "src/tflite/external_cpu_backend_context.cc",
+    "src/tflite/graph_info.cc",
+    "src/tflite/kernels/internal/portable_tensor_utils.cc",
+    "src/tflite/logger.cc",
+    "src/tflite/memory_planner.h",
+    "src/tflite/minimal_logging.cc",
+    "src/tflite/mutable_op_resolver.cc",
+    "src/tflite/nnapi/NeuralNetworksTypes.h",
+    "src/tflite/nnapi/nnapi_implementation.h",
+    "src/tflite/optional_debug_tools.cc",
+    "src/tflite/profiling/memory_info.cc",
+    "src/tflite/profiling/memory_info.h",
+    "src/tflite/profiling/memory_latency_logger.cc",
+    "src/tflite/profiling/memory_latency_logger.h",
+    "src/tflite/profiling/memory_usage_monitor.cc",
+    "src/tflite/profiling/memory_usage_monitor.h",
+    "src/tflite/profiling/model_runtime_info.cc",
+    "src/tflite/profiling/model_runtime_info.h",
+    "src/tflite/profiling/platform_profiler.cc",
+    "src/tflite/profiling/platform_profiler.h",
+    "src/tflite/profiling/profile_buffer.cc",
+    "src/tflite/profiling/profile_buffer.h",
+    "src/tflite/profiling/profile_summarizer.cc",
+    "src/tflite/profiling/profile_summarizer.h",
+    "src/tflite/profiling/profile_summary_formatter.cc",
+    "src/tflite/profiling/profile_summary_formatter.h",
+    "src/tflite/profiling/root_profiler.cc",
+    "src/tflite/profiling/root_profiler.h",
+    "src/tflite/profiling/telemetry/profiler.cc",
+    "src/tflite/profiling/telemetry/profiler.h",
+    "src/tflite/profiling/telemetry/telemetry.cc",
+    "src/tflite/profiling/telemetry/telemetry.h",
+    "src/tflite/profiling/time.cc",
+    "src/tflite/profiling/time.h",
+    "src/tflite/simple_memory_arena.cc",
+    "src/tflite/simple_memory_arena.h",
+    "src/tflite/stderr_reporter.cc",
+    "src/tflite/string_util.cc",
+    "src/tflite/tflite_with_xnnpack_optional.cc",
+    "src/tflite/tflite_with_xnnpack_optional.h",
+    "src/tflite/tools/command_line_flags.h",
+    "src/tflite/tools/delegates/delegate_provider.h",
+    "src/tflite/tools/logging.h",
+    "src/tflite/tools/tool_params.h",
+    "src/tflite/tools/versioning/gpu_compatibility.cc",
+    "src/tflite/tools/versioning/gpu_compatibility.h",
+    "src/tflite/tools/versioning/op_signature.cc",
+    "src/tflite/tools/versioning/op_signature.h",
+    "src/tflite/util.cc",
+    "src/tflite/version.h",
+  ]
+
+  if (build_tflite_with_xnnpack) {
+    sources += [
+      "src/tflite/delegates/xnnpack/file_util.cc",
+      "src/tflite/delegates/xnnpack/file_util.h",
+      "src/tflite/delegates/xnnpack/mmap_handle.cc",
+      "src/tflite/delegates/xnnpack/mmap_handle.h",
+      "src/tflite/delegates/xnnpack/quantization_util.cc",
+      "src/tflite/delegates/xnnpack/quantization_util.h",
+      "src/tflite/delegates/xnnpack/weight_cache.cc",
+      "src/tflite/delegates/xnnpack/weight_cache.h",
+      "src/tflite/delegates/xnnpack/windows_util.cc",
+      "src/tflite/delegates/xnnpack/windows_util.h",
+      "src/tflite/delegates/xnnpack/xnnpack_delegate.cc",
+      "src/tflite/delegates/xnnpack/xnnpack_delegate.h",
+    ]
+  }
+
+  if (is_win) {
+    sources += [ "src/tflite/converter/mmap_allocation_disabled.cc" ]
+  } else {
+    sources += [ "src/tflite/converter/mmap_allocation.cc" ]
+  }
+
+  if (is_ios) {
+    sources += [
+      "src/tflite/profiling/signpost_profiler.h",
+      "src/tflite/profiling/signpost_profiler.mm",
+    ]
+  } else if (is_android) {
+    sources += [
+      "src/tflite/profiling/atrace_profiler.cc",
+      "src/tflite/profiling/atrace_profiler.h",
+    ]
+  }
+
+  deps = [
+    "//third_party/abseil-cpp:absl",
+    "//third_party/farmhash",
+    "//third_party/fft2d",
+    "//third_party/fp16",
+    "//third_party/neon_2_sse",
+  ]
+
+  conditional_deps = [
+    ":tflite_logging",
+    "//third_party/pthreadpool",
+  ]
+
+  if (build_tflite_with_xnnpack) {
+    deps += [
+      ":weight_cache_schema_litert",
+      "//third_party/cpuinfo",
+    ]
+    conditional_deps += [ "//third_party/xnnpack" ]
+  }
+
+  conditional_public_deps = [
+    ":tflite_kernels",
+    ":tflite_litert",
+  ]
+  if (!is_fuchsia) {
+    # absl::Cord::CopyToArray is not available on fuchsia but is required by
+    # this library.
+    conditional_public_deps += [ ":tflite_op_shim" ]
+  }
+
+  public_deps = [
+    ":mutable_tflite_schema",
+    ":tflite_compiler_utils",
+    ":tflite_kernel_common_headers",
+    ":tflite_kernel_internals",
+    ":tflite_proto",
+    ":tflite_public_headers",
+    "//third_party/flatbuffers",
+    "//third_party/gemmlowp",
+    "//third_party/ruy",
+  ]
+
+  configs_to_remove = [ "//build/config/compiler:chromium_code" ]
+  configs_to_add = [
+    "//build/config/compiler:no_chromium_code",
+    "//build/config/compiler:rtti",
+    "//third_party/eigen3:eigen_includes",
+    ":tflite_flags",
+  ]
+
+  if (is_apple) {
+    # Do not compile with ARC because TFLite code is not compatible with
+    # being compiled with ARC.
+    configs_to_remove += [ "//build/config/compiler:enable_arc" ]
+  }
+
+  public_configs = [ ":tflite_config" ]
+
+  # In some configs "neon_check.h" includes "NEON_2_SSE.h" with no path.
+  # "NEON_2_SSE.h" comes from neon_2_sse. The target neon_2_sse has a config
+  # that adds to the "include_dirs". This means any file including
+  # "neon_check.h" needs the config, so that neon_2_sse should be in
+  # public_deps. Unfortunately neon_2_sse also adds some compiler flags we do
+  # not want propagated. For the time being, allow this in the standalone
+  # target (which is assumed to be for third_party code that is OK to have
+  # these switches).
+  public_deps_for_standalone = [ "//third_party/neon_2_sse" ]
+}
+
+if (build_with_chromium) {
+  executable("litert_benchmark") {
+    check_includes = false
+    sources = [
+      "src/tflite/tools/benchmark/benchmark_main.cc",
+      "src/tflite/tools/benchmark/benchmark_model.cc",
+      "src/tflite/tools/benchmark/benchmark_model.h",
+      "src/tflite/tools/benchmark/benchmark_tflite_model.cc",
+      "src/tflite/tools/benchmark/benchmark_tflite_model.h",
+      "src/tflite/tools/benchmark/benchmark_utils.cc",
+      "src/tflite/tools/benchmark/benchmark_utils.h",
+      "src/tflite/tools/benchmark/profiling_listener.cc",
+      "src/tflite/tools/benchmark/profiling_listener.h",
+      "src/tflite/tools/command_line_flags.cc",
+      "src/tflite/tools/command_line_flags.h",
+      "src/tflite/tools/delegates/delegate_provider.cc",
+      "src/tflite/tools/delegates/delegate_provider.h",
+      "src/tflite/tools/model_loader.cc",
+      "src/tflite/tools/model_loader.h",
+      "src/tflite/tools/tool_params.cc",
+      "src/tflite/tools/tool_params.h",
+      "src/tflite/tools/utils.cc",
+      "src/tflite/tools/utils.h",
+    ]
+    deps = [
+      ":benchmark_result_proto",
+      ":tflite",
+      ":tflite_builtin_op_resolver",
+      "//third_party/abseil-cpp:absl",
+      "//third_party/fp16",
+      "//third_party/ruy",
+      "//third_party/tflite:tflite_tools_proto",
+    ]
+
+    public_configs = [ ":tflite_config" ]
+
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [
+      "//build/config/compiler:no_chromium_code",
+      "//third_party/eigen3:eigen_includes",
+      ":tflite_flags",
+    ]
+
+    if (is_clang) {
+      cflags_cc = [
+        "-Wno-ignored-qualifiers",
+        "-Wno-defaulted-function-deleted",
+      ]
+    }
+
+    visibility = [ "*" ]
+  }
 }
