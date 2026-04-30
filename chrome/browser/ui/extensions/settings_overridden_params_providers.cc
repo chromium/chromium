@@ -568,7 +568,7 @@ void GetSearchOverriddenParamsThenRun(
             extension->name());
     std::u16string dialog_message = l10n_util::GetStringFUTF16(
         IDS_EXTENSION_SEARCH_OVERRIDDEN_DIALOG_BODY_EXPLICIT_CHOICE,
-        extension_name_for_ui, search_name);
+        extension_name_for_ui);
 
     // On the 'explicit choice' dialog, there is no icon at the title level.
     SettingsOverriddenDialogController::ShowParams show_params(
@@ -607,9 +607,8 @@ void GetSearchOverriddenParamsThenRun(
     SettingsOverriddenDialogController::SettingOption& new_setting =
         params->content.new_setting.emplace();
     new_setting.text = search_name;
-    new_setting.description = l10n_util::GetStringFUTF16(
-        IDS_EXTENSION_SEARCH_OVERRIDDEN_DIALOG_RECENT_CHANGE,
-        extension_name_for_ui);
+    new_setting.description = l10n_util::GetStringUTF16(
+        IDS_EXTENSION_SEARCH_OVERRIDDEN_DIALOG_RECENT_CHANGE);
 
     if (is_prepopulated) {
       icon_lookups.emplace_back(default_search->favicon_url(),

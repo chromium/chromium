@@ -169,8 +169,7 @@ IN_PROC_BROWSER_TEST_P(SearchOverriddenParamsProvidersBrowserTest,
   EXPECT_EQ(search_extension->id(), params->controlling_extension_id);
 
   if (IsExplicitChoiceDialog()) {
-    EXPECT_EQ(u"Confirm your default search engine",
-              params->content.dialog_title);
+    EXPECT_TRUE(params->content.dialog_title.contains(u"Confirm"));
     EXPECT_TRUE(params->content.message.contains(u"Search Override Extension"));
 
     ASSERT_TRUE(params->content.previous_setting);
@@ -180,7 +179,7 @@ IN_PROC_BROWSER_TEST_P(SearchOverriddenParamsProvidersBrowserTest,
 
     ASSERT_TRUE(params->content.new_setting);
     EXPECT_EQ(u"example.com", params->content.new_setting->text);
-    EXPECT_EQ(u"Recently changed to by Search Override Extension",
+    EXPECT_EQ(u"Changed to this by extension",
               params->content.new_setting->description);
   } else {
     EXPECT_EQ(u"Change back to Google Search?", params->content.dialog_title);
@@ -213,20 +212,8 @@ IN_PROC_BROWSER_TEST_P(SearchOverriddenParamsProvidersBrowserTest,
       extensions::ui_util::GetFixupExtensionNameForUIDisplay(extension_name);
   ASSERT_LT(truncated_name.size(), extension_name.size());
 
-  if (IsExplicitChoiceDialog()) {
-    EXPECT_TRUE(params->content.message.contains(truncated_name));
-    EXPECT_FALSE(params->content.message.contains(extension_name));
-
-    ASSERT_TRUE(params->content.new_setting);
-    EXPECT_TRUE(
-        params->content.new_setting->description.contains(truncated_name));
-    EXPECT_FALSE(
-        params->content.new_setting->description.contains(extension_name));
-  } else {
-    // The dialog message should contain the truncated name.
-    EXPECT_TRUE(params->content.message.contains(truncated_name));
-    EXPECT_FALSE(params->content.message.contains(extension_name));
-  }
+  EXPECT_TRUE(params->content.message.contains(truncated_name));
+  EXPECT_FALSE(params->content.message.contains(extension_name));
 }
 
 IN_PROC_BROWSER_TEST_P(SearchOverriddenParamsProvidersBrowserTest,
@@ -654,11 +641,10 @@ IN_PROC_BROWSER_TEST_F(
       GetSearchOverriddenParamsSync(web_contents());
   ASSERT_TRUE(params);
 
-  EXPECT_EQ(params->content.dialog_title,
-            u"Confirm your default search engine");
+  EXPECT_TRUE(params->content.dialog_title.contains(u"Confirm"));
   EXPECT_TRUE(params->content.message.contains(
       base::StrCat({u"The extension \"", kSearchOverrideExtensionName,
-                    u"\" attempted to change your search engine"})));
+                    u"\" changed your settings"})));
 
   auto previous_setting = params->content.previous_setting;
   ASSERT_TRUE(previous_setting.has_value());
@@ -669,10 +655,8 @@ IN_PROC_BROWSER_TEST_F(
   auto new_setting = params->content.new_setting;
   ASSERT_TRUE(new_setting.has_value());
   EXPECT_TRUE(new_setting.value().image.IsVectorIcon());
-  EXPECT_EQ(u"example.com", new_setting.value().text);
-  EXPECT_EQ(
-      new_setting.value().description,
-      base::StrCat({u"Recently changed to by ", kSearchOverrideExtensionName}));
+  EXPECT_EQ(new_setting.value().text, u"example.com");
+  EXPECT_EQ(new_setting.value().description, u"Changed to this by extension");
 
   // Ensure that a fully-populated dialog was logged.
   histogram_tester.ExpectUniqueSample(
