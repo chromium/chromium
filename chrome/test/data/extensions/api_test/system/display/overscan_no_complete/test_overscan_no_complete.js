@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // system.display.overscan* api test
-// extensions_browsertests \
+// browser_tests \
 //   --gtest_filter=SystemDisplayApiTest.OverscanCalibrationAppNoComplete
 
 chrome.test.runTests([

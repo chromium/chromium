@@ -26,10 +26,10 @@ anything that requires both a renderer and a browser (such as an extension
 process running and the browser process handling its input).
 
 ### Browser Tests
-Browser tests in Chromium (such as the `browser_tests` and
-`extensions_browsertests` targets) are multi-process, and instantiate a "real"
-browser.  That is, the majority of the environment is set up, and it much more
-closely resembles an environment that the Chrome browser normally operates in.
+Browser tests in Chromium (such as the `browser_tests` target) are
+multi-process, and instantiate a "real" browser.  That is, the majority of the
+environment is set up, and it much more closely resembles an environment that
+the Chrome browser normally operates in.
 
 Browser tests are useful when a test needs multi-process integration.  This is
 typically “browser + renderer”, such as when you need to exercise the behavior

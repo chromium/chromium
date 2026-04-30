@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // system.storage api test
-// extensions_browsertests --gtest_filter=SystemStorageApiTest.Storage
+// browser_tests --gtest_filter=SystemStorageApiTest.Storage
 
 // Testing data should be the same as |kTestingData| in
 // system_storage_apitest.cc.
