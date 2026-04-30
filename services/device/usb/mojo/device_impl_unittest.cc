@@ -27,11 +27,13 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
+#include "services/device/public/cpp/device_features.h"
 #include "services/device/usb/mock_usb_device.h"
 #include "services/device/usb/mock_usb_device_handle.h"
 #include "services/device/usb/usb_descriptors.h"
@@ -814,7 +816,7 @@ TEST_F(USBDeviceImplTest, ClaimProtectedInterface) {
 
   // The second interface implements a class which has been blocked above.
   AddMockConfig(
-      ConfigBuilder(/*value=*/1)
+      ConfigBuilder(/*configuration_value=*/1)
           .AddInterface(/*interface_number=*/0, /*alternate_setting=*/0,
                         /*class_code=*/1, /*subclass_code=*/0,
                         /*protocol_code=*/0)
@@ -969,6 +971,187 @@ TEST_F(USBDeviceImplTest, ControlTransfer) {
         std::move(params), fake_data, 0,
         base::BindOnce(&ExpectTransferStatusAndThen,
                        mojom::UsbTransferStatus::COMPLETED,
+                       loop.QuitClosure()));
+    loop.Run();
+  }
+
+  EXPECT_CALL(mock_handle(), Close());
+}
+
+// Test control transfers to an interface with a protected class only work for
+// STANDARD type, not VENDOR or CLASS.
+TEST_F(USBDeviceImplTest, ControlTransferProtectedClassBlock) {
+  // Block interface class 2.
+  mojo::Remote<mojom::UsbDevice> device =
+      GetMockDeviceProxyWithBlockedInterfaces(base::span_from_ref(uint8_t{2}));
+
+  EXPECT_CALL(mock_device(), OpenInternal(_));
+
+  {
+    base::test::TestFuture<mojom::UsbOpenDeviceResultPtr> future;
+    device->Open(future.GetCallback());
+    EXPECT_TRUE(future.Get()->is_success());
+  }
+
+  // Interface 7 has class 2 (blocked).
+  AddMockConfig(ConfigBuilder(/*configuration_value=*/1)
+                    .AddInterface(/*interface_number=*/7,
+                                  /*alternate_setting=*/0,
+                                  /*class_code=*/2, /*subclass_code=*/0,
+                                  /*protocol_code=*/0)
+                    .Build());
+
+  EXPECT_CALL(mock_handle(), SetConfigurationInternal(1, _));
+
+  {
+    base::RunLoop loop;
+    device->SetConfiguration(
+        1, base::BindOnce(&ExpectResultAndThen, true, loop.QuitClosure()));
+    loop.Run();
+  }
+
+  {
+    // A VENDOR request to the DEVICE with index 7 (targeting the blocked
+    // interface) should be blocked.
+    auto params = mojom::UsbControlTransferParams::New();
+    params->type = UsbControlTransferType::VENDOR;
+    params->recipient = UsbControlTransferRecipient::DEVICE;
+    params->request = 5;
+    params->value = 6;
+    params->index = 7;
+    base::RunLoop loop;
+    device->ControlTransferIn(
+        std::move(params), 8, 0,
+        base::BindOnce(&ExpectTransferInAndThen,
+                       mojom::UsbTransferStatus::PERMISSION_DENIED,
+                       std::vector<uint8_t>(), loop.QuitClosure()));
+    loop.Run();
+  }
+
+  {
+    // A CLASS request to the DEVICE with index 7 (targeting the blocked
+    // interface) should be blocked.
+    auto params = mojom::UsbControlTransferParams::New();
+    params->type = UsbControlTransferType::CLASS;
+    params->recipient = UsbControlTransferRecipient::DEVICE;
+    params->request = 5;
+    params->value = 6;
+    params->index = 7;
+    base::RunLoop loop;
+    device->ControlTransferIn(
+        std::move(params), 8, 0,
+        base::BindOnce(&ExpectTransferInAndThen,
+                       mojom::UsbTransferStatus::PERMISSION_DENIED,
+                       std::vector<uint8_t>(), loop.QuitClosure()));
+    loop.Run();
+  }
+
+  {
+    // A STANDARD request to the DEVICE with index 7 should still be allowed
+    // even if index 7 matches a blocked interface.
+    std::vector<uint8_t> fake_data = {1, 2, 3};
+    AddMockInboundData(fake_data);
+
+    EXPECT_CALL(mock_handle(),
+                ControlTransferInternal(UsbTransferDirection::INBOUND,
+                                        UsbControlTransferType::STANDARD,
+                                        UsbControlTransferRecipient::DEVICE, 5,
+                                        6, 7, _, 0, _));
+
+    auto params = mojom::UsbControlTransferParams::New();
+    params->type = UsbControlTransferType::STANDARD;
+    params->recipient = UsbControlTransferRecipient::DEVICE;
+    params->request = 5;
+    params->value = 6;
+    params->index = 7;
+    base::RunLoop loop;
+    device->ControlTransferIn(
+        std::move(params), static_cast<uint32_t>(fake_data.size()), 0,
+        base::BindOnce(&ExpectTransferInAndThen,
+                       mojom::UsbTransferStatus::COMPLETED, fake_data,
+                       loop.QuitClosure()));
+    loop.Run();
+  }
+
+  {
+    // A STANDARD request to the INTERFACE with index 7 (targeting the blocked
+    // interface) should be blocked.
+    auto params = mojom::UsbControlTransferParams::New();
+    params->type = UsbControlTransferType::STANDARD;
+    params->recipient = UsbControlTransferRecipient::INTERFACE;
+    params->request = 5;
+    params->value = 6;
+    params->index = 7;
+    base::RunLoop loop;
+    device->ControlTransferIn(
+        std::move(params), 8, 0,
+        base::BindOnce(&ExpectTransferInAndThen,
+                       mojom::UsbTransferStatus::PERMISSION_DENIED,
+                       std::vector<uint8_t>(), loop.QuitClosure()));
+    loop.Run();
+  }
+
+  EXPECT_CALL(mock_handle(), Close());
+}
+
+TEST_F(USBDeviceImplTest, ControlTransferProtectedClassBlockDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kWebUsbProtectedClassControlTransferBlock);
+
+  // Block interface class 2.
+  mojo::Remote<mojom::UsbDevice> device =
+      GetMockDeviceProxyWithBlockedInterfaces(base::span_from_ref(uint8_t{2}));
+
+  EXPECT_CALL(mock_device(), OpenInternal(_));
+
+  {
+    base::test::TestFuture<mojom::UsbOpenDeviceResultPtr> future;
+    device->Open(future.GetCallback());
+    EXPECT_TRUE(future.Get()->is_success());
+  }
+
+  // Interface 7 has class 2 (blocked).
+  AddMockConfig(ConfigBuilder(/*configuration_value=*/1)
+                    .AddInterface(/*interface_number=*/7,
+                                  /*alternate_setting=*/0,
+                                  /*class_code=*/2, /*subclass_code=*/0,
+                                  /*protocol_code=*/0)
+                    .Build());
+
+  EXPECT_CALL(mock_handle(), SetConfigurationInternal(1, _));
+
+  {
+    base::RunLoop loop;
+    device->SetConfiguration(
+        1, base::BindOnce(&ExpectResultAndThen, true, loop.QuitClosure()));
+    loop.Run();
+  }
+
+  {
+    // A VENDOR request to the DEVICE with index 7 targeting the blocked
+    // interface should be ALLOWED because
+    // `kWebUsbProtectedClassControlTransferBlock` is disabled.
+    std::vector<uint8_t> fake_data = {1, 2, 3};
+    AddMockInboundData(fake_data);
+
+    EXPECT_CALL(mock_handle(),
+                ControlTransferInternal(UsbTransferDirection::INBOUND,
+                                        UsbControlTransferType::VENDOR,
+                                        UsbControlTransferRecipient::DEVICE, 5,
+                                        6, 7, _, 0, _));
+
+    auto params = mojom::UsbControlTransferParams::New();
+    params->type = UsbControlTransferType::VENDOR;
+    params->recipient = UsbControlTransferRecipient::DEVICE;
+    params->request = 5;
+    params->value = 6;
+    params->index = 7;
+    base::RunLoop loop;
+    device->ControlTransferIn(
+        std::move(params), static_cast<uint32_t>(fake_data.size()), 0,
+        base::BindOnce(&ExpectTransferInAndThen,
+                       mojom::UsbTransferStatus::COMPLETED, fake_data,
                        loop.QuitClosure()));
     loop.Run();
   }
