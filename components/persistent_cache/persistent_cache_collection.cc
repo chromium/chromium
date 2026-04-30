@@ -13,6 +13,8 @@
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/map_util.h"
+#include "base/feature.h"
+#include "base/feature_list.h"
 #include "base/strings/string_util.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
@@ -24,6 +26,14 @@
 #include "components/persistent_cache/transaction_error.h"
 
 namespace persistent_cache {
+
+namespace {
+
+// Enables WAL-mode for databases created in a PersistentCacheCollection.
+BASE_FEATURE(kPersistentCacheCollectionWalMode,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+}  // namespace
 
 PersistentCacheCollection::PersistentCacheCollection(
     base::FilePath top_directory,
@@ -232,8 +242,10 @@ PersistentCache* PersistentCacheCollection::GetOrCreateCache(
 
   ASSIGN_OR_RETURN(
       auto backend,
-      backend_storage_.MakeBackend(base_name, /*single_connection=*/false,
-                                   /*journal_mode_wal=*/false),
+      backend_storage_.MakeBackend(
+          base_name, /*single_connection=*/false,
+          /*journal_mode_wal=*/
+          base::FeatureList::IsEnabled(kPersistentCacheCollectionWalMode)),
       [this, &base_name](TransactionError error) {
         DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
