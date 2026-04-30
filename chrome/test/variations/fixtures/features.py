@@ -3,6 +3,9 @@
 # found in the LICENSE file.
 
 import dataclasses
+import json
+import os
+import pathlib
 import pytest
 
 from selenium import webdriver
@@ -23,11 +26,15 @@ AddFeatures = Callable[[Features], None]
 
 @pytest.fixture
 def add_features(test_options: test_options.TestOptions,
-                 add_tag: result_sink.AddTag) -> AddFeatures:
+                 add_tag: result_sink.AddTag,
+                 add_artifact: result_sink.AddArtifact,
+                 tmp_path: pathlib.Path) -> AddFeatures:
   """Logs features for the current test."""
+
   def _add_features_fn(features: Features):
-    for feature in features.enabled:
-      add_tag('enabled_feature', feature)
-    for feature in features.disabled:
-      add_tag('disabled_feature', feature)
+    features_file = os.path.join(tmp_path, 'features.json')
+    with open(features_file, 'w') as f:
+      f.write(json.dumps(dataclasses.asdict(features)))
+    add_artifact('features.json', features_file)
+
   return _add_features_fn
