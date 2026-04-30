@@ -44,6 +44,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
@@ -875,6 +876,7 @@ public class TabsTest {
     @Test
     @MediumTest
     @Feature({"Android-TabSwitcher"})
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/471243722
     public void testIncognitoTabsNotRestoredAfterSwipe() throws Exception {
         mActivityTestRule.loadUrl(getUrl(TEST_PAGE_FILE_PATH));
 
