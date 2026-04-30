@@ -12,17 +12,14 @@
 
 namespace tabs_api {
 class PlatformAdaptersProvider;
-class ExperimentalPlatformAdaptersProvider;
 }  // namespace tabs_api
 
 // Public interface for retrieving the tab strip service, either through mojo
 // or the native interface.
 class TabStripServiceFeature {
  public:
-  TabStripServiceFeature(
-      std::unique_ptr<tabs_api::PlatformAdaptersProvider> provider,
-      std::unique_ptr<tabs_api::ExperimentalPlatformAdaptersProvider>
-          experimental_provider);
+  explicit TabStripServiceFeature(
+      std::unique_ptr<tabs_api::PlatformAdaptersProvider> provider);
   ~TabStripServiceFeature();
 
   void Accept(mojo::PendingReceiver<tabs_api::mojom::TabStripService> client);

@@ -6,7 +6,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service_impl.h"
-#include "chrome/browser/ui/tabs/tab_strip_api/testing/experimental_injector.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/testing/injector.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/testing/toy_tab_strip.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/testing/toy_tab_strip_browser_adapter.h"
@@ -32,8 +31,7 @@ class TabStripExperimentServiceImplTest : public ::testing::Test {
   void SetUp() override {
     tab_strip_ = std::make_unique<testing::ToyTabStrip>();
     service_ = std::make_unique<TabStripServiceImpl>(
-        std::make_unique<testing::Injector>(*tab_strip_),
-        std::make_unique<testing::ExperimentalInjector>());
+        std::make_unique<testing::Injector>(*tab_strip_));
   }
 
   std::unique_ptr<testing::ToyTabStrip> tab_strip_;
@@ -47,15 +45,6 @@ TEST_F(TabStripExperimentServiceImplTest, ReplaceTabInSplit_InvalidTabs) {
   auto result = service_->ReplaceTabInSplit(split_id, insert_id);
   ASSERT_FALSE(result.has_value());
   ASSERT_EQ(result.error()->code, mojo_base::mojom::Code::kInvalidArgument);
-}
-
-TEST_F(TabStripExperimentServiceImplTest, ShowTabContextMenu) {
-  tab_strip_->AddTab({tabs::TabHandle(123), GURL("title")});
-  tabs_api::NodeId tab_id(NodeId::Type::kContent, "123");
-
-  auto result = service_->ShowTabContextMenu(tab_id, gfx::Point(100, 100));
-  ASSERT_FALSE(result.has_value());
-  ASSERT_EQ(result.error()->code, mojo_base::mojom::Code::kUnimplemented);
 }
 
 TEST_F(TabStripExperimentServiceImplTest, GetAllTabsForProfile_Empty) {

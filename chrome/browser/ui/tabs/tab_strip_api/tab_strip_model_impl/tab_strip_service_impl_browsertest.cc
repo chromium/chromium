@@ -18,7 +18,8 @@
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/adapters/browser_adapter.h"
-#include "chrome/browser/ui/tabs/tab_strip_api/adapters/experimental_platform_adapters_provider.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/controllers/tab_strip_ui_controller_impl.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/controllers/tab_strip_ui_controller_injector_impl.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/observation/tab_strip_api_batched_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_model_impl/browser_adapter_impl.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_model_impl/tab_strip_model_adapter_impl.h"
@@ -29,6 +30,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/browser_apis/tab_strip/tab_strip_api.mojom.h"
 #include "components/browser_apis/tab_strip/tab_strip_experiment_api.mojom.h"
+#include "components/browser_apis/tab_strip/tab_strip_ui_controller.mojom.h"
 #include "components/tabs/public/tab_group.h"
 #include "content/public/test/browser_test.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -144,13 +146,14 @@ class TabStripServiceImplBrowserTest : public InProcessBrowserTest {
     InProcessBrowserTest::SetUpOnMainThread();
     tab_strip_service_ = std::make_unique<tabs_api::TabStripServiceImpl>(
         std::make_unique<tabs_api::tab_strip_model::TabStripModelInjector>(
-            browser(), browser()->tab_strip_model()),
-        std::make_unique<
-            tabs_api::tab_strip_model::TabStripModelExperimentalInjector>(
+            browser(), browser()->tab_strip_model()));
+    ui_controller_ = std::make_unique<tabs_api::TabStripUIControllerImpl>(
+        std::make_unique<tabs_api::TabStripUIControllerInjectorImpl>(
             browser(), browser()->tab_strip_model()));
   }
 
   void TearDownOnMainThread() override {
+    ui_controller_.reset();
     tab_strip_service_.reset();
     InProcessBrowserTest::TearDownOnMainThread();
   }
@@ -294,6 +297,7 @@ class TabStripServiceImplBrowserTest : public InProcessBrowserTest {
   }
 
   std::unique_ptr<tabs_api::TabStripServiceImpl> tab_strip_service_;
+  std::unique_ptr<tabs_api::TabStripUIControllerImpl> ui_controller_;
 };
 
 IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, SynchronousObserver) {
@@ -899,10 +903,9 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, UpdateTabGroupData) {
 // TODO(crbug.com/470136275): verifies that the context menu is actually shown.
 IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, ShowTabContextMenu) {
   mojo::Remote<TabStripService> remote;
-  mojo::Remote<TabStripExperimentService> experiment_remote;
+  mojo::Remote<tabs_api::mojom::TabStripUIController> ui_remote;
   tab_strip_service_->Accept(remote.BindNewPipeAndPassReceiver());
-  tab_strip_service_->AcceptExperimental(
-      experiment_remote.BindNewPipeAndPassReceiver());
+  ui_controller_->Bind(ui_remote.BindNewPipeAndPassReceiver());
 
   tabs_api::NodeId created_id;
   auto tab =
@@ -910,10 +913,11 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, ShowTabContextMenu) {
   created_id = tab->id;
 
   base::RunLoop run_loop;
-  experiment_remote->ShowTabContextMenu(
+  ui_remote->ShowTabContextMenu(
       created_id, gfx::Point(100, 100),
       base::BindLambdaForTesting(
-          [&](TabStripExperimentService::ShowTabContextMenuResult result) {
+          [&](tabs_api::mojom::TabStripUIController::ShowTabContextMenuResult
+                  result) {
             EXPECT_TRUE(result.has_value());
             run_loop.Quit();
           }));

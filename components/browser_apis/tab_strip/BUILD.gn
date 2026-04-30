@@ -38,6 +38,7 @@ mojom("mojom_ui_controller") {
   webui_module_path = "/"
   visibility = [
     "//chrome/browser/ui/tabs/tab_strip_api/controllers",
+    "//chrome/browser/ui/tabs/tab_strip_api/tab_strip_model_impl:browser_tests",
     "//chrome/browser/ui/webui_browser",
     "//components/browser_apis/tab_strip/resources",
   ]

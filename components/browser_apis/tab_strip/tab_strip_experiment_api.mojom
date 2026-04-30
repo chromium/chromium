@@ -22,9 +22,6 @@ interface TabStripExperimentService {
   ReplaceTabInSplit(NodeId tab_to_replace, NodeId tab_to_insert)
       => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
 
-  ShowTabContextMenu(NodeId tab_id, gfx.mojom.Point location)
-      => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
-
   // Returns all tabs for the profile, organized by window.
   GetAllTabsForProfile()
       => result<map<string, Container>, mojo_base.mojom.Error>;

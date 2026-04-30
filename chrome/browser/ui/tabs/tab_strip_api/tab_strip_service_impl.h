@@ -26,7 +26,6 @@ class TabStripEventRecorder;
 }  // namespace events
 
 class PlatformAdaptersProvider;
-class ExperimentalPlatformAdaptersProvider;
 
 // To prevent re-entrancy, we use a session recorder to queue up all events
 // received during a subroutine. Once subroutine completes, we notify all
@@ -37,10 +36,8 @@ class TabStripServiceImpl
     : public TabStripService,
       public tabs_api::observation::TabStripApiBatchedObserver {
  public:
-  TabStripServiceImpl(
-      std::unique_ptr<PlatformAdaptersProvider> adapters_provider,
-      std::unique_ptr<ExperimentalPlatformAdaptersProvider>
-          experimental_adapters_provider);
+  explicit TabStripServiceImpl(
+      std::unique_ptr<PlatformAdaptersProvider> adapters_provider);
   TabStripServiceImpl(const TabStripServiceImpl&) = delete;
   TabStripServiceImpl operator=(const TabStripServiceImpl&&) = delete;
   ~TabStripServiceImpl() override;
@@ -82,9 +79,6 @@ class TabStripServiceImpl
       const tabs_api::NodeId& tab_to_replace,
       const tabs_api::NodeId& tab_to_insert) override;
 
-  mojom::TabStripExperimentService::ShowTabContextMenuResult ShowTabContextMenu(
-      const tabs_api::NodeId& tab_id,
-      const gfx::Point& location) override;
   mojom::TabStripExperimentService::GetAllTabsForProfileResult
   GetAllTabsForProfile() override;
 
@@ -117,7 +111,6 @@ class TabStripServiceImpl
   TabStripModelAdapter& tab_strip_model_adapter();
   TranslationAdapter& translation_adapter();
   BrowserAdapter& browser_adapter();
-  ContextMenuAdapter* context_menu_adapter();
 
   void BroadcastEvents(
       const std::vector<tabs_api::events::Event>& events) const;
@@ -131,8 +124,6 @@ class TabStripServiceImpl
       const std::optional<std::vector<std::string>>& update_mask);
 
   std::unique_ptr<PlatformAdaptersProvider> adapters_provider_;
-  std::unique_ptr<ExperimentalPlatformAdaptersProvider>
-      experimental_adapters_provider_;
   std::unique_ptr<events::TabStripEventRecorder> recorder_;
 
   std::unique_ptr<SessionController> session_controller_;

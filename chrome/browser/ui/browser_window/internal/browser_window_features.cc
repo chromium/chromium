@@ -403,9 +403,6 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
 
   tab_strip_service_feature_ = std::make_unique<TabStripServiceFeature>(
       std::make_unique<tabs_api::tab_strip_model::TabStripModelInjector>(
-          browser, tab_strip_model_),
-      std::make_unique<
-          tabs_api::tab_strip_model::TabStripModelExperimentalInjector>(
           browser, tab_strip_model_));
 
   tab_strip_ui_controller_ =

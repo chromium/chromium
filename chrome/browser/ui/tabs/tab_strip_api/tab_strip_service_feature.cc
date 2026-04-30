@@ -4,17 +4,13 @@
 
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service_feature.h"
 
-#include "chrome/browser/ui/tabs/tab_strip_api/adapters/experimental_platform_adapters_provider.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/adapters/platform_adapters_provider.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service_impl.h"
 
 TabStripServiceFeature::TabStripServiceFeature(
-    std::unique_ptr<tabs_api::PlatformAdaptersProvider> provider,
-    std::unique_ptr<tabs_api::ExperimentalPlatformAdaptersProvider>
-        experimental_provider)
+    std::unique_ptr<tabs_api::PlatformAdaptersProvider> provider)
     : tab_strip_service_(std::make_unique<tabs_api::TabStripServiceImpl>(
-          std::move(provider),
-          std::move(experimental_provider))) {}
+          std::move(provider))) {}
 TabStripServiceFeature::~TabStripServiceFeature() = default;
 
 void TabStripServiceFeature::Accept(

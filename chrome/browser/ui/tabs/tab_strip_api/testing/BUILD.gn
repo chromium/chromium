@@ -6,8 +6,6 @@ source_set("testing") {
   testonly = true
 
   sources = [
-    "experimental_injector.cc",
-    "experimental_injector.h",
     "injector.cc",
     "injector.h",
     "toy_tab_context_menu_adapter.cc",
