@@ -5,7 +5,9 @@
 package org.chromium.components.browser_ui.bottomsheet;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.robolectric.Robolectric.buildActivity;
 
@@ -18,11 +20,16 @@ import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.widget.FrameLayout;
 
+import androidx.core.graphics.Insets;
+import androidx.core.view.WindowInsetsCompat;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -50,6 +57,10 @@ public class BottomSheetUnitTest {
     @Mock private BottomSheetContent mSheetContent;
     @Mock private TouchRestrictingFrameLayout mToolbarHolder;
     @Mock private InsetObserver mInsetObserver;
+
+    @Captor
+    private ArgumentCaptor<InsetObserver.WindowInsetsAnimationListener>
+            mInsetsAnimationListenerCaptor;
 
     private BottomSheet mBottomSheet;
     private ViewGroup mSheetContainer;
@@ -391,5 +402,51 @@ public class BottomSheetUnitTest {
         int defaultSize =
                 mActivity.getResources().getDimensionPixelSize(R.dimen.bottom_sheet_shadow_length);
         verify(mShadowLayerView).setShadowLength(defaultSize);
+    }
+
+    @Test
+    public void testWindowInsetsAnimationListener() {
+        verify(mInsetObserver)
+                .addWindowInsetsAnimationListener(mInsetsAnimationListenerCaptor.capture());
+        InsetObserver.WindowInsetsAnimationListener listener =
+                mInsetsAnimationListenerCaptor.getValue();
+
+        BottomSheet.setSmallScreenForTesting(false);
+        doReturn((float) HeightMode.RESIZE_CONTENT).when(mSheetContent).getFullHeightRatio();
+        doReturn(0.5f).when(mSheetContent).getHalfHeightRatio();
+        doReturn(HeightMode.DEFAULT).when(mSheetContent).getPeekHeight();
+        doReturn(new View(mActivity)).when(mSheetContent).getContentView();
+        mBottomSheet.showContent(mSheetContent);
+
+        mActivity.getWindow().getDecorView().layout(0, 0, 1080, 200);
+
+        View contentContainer = mBottomSheet.findViewById(R.id.bottom_sheet_content);
+
+        WindowInsetsCompat insets = mock(WindowInsetsCompat.class);
+        doReturn(insets).when(mInsetObserver).getLastRawWindowInsets();
+
+        // Full viewport.
+        doReturn(Insets.of(0, 0, 0, 0)).when(insets).getInsets(anyInt());
+
+        mBottomSheet.setSheetOffsetFromBottom(150.0f, BottomSheetController.StateChangeReason.NONE);
+        assertEquals(150, contentContainer.getLayoutParams().height);
+
+        // Simulate keyboard showing up, shrinking viewport to 100.
+        doReturn(Insets.of(0, 0, 0, 100)).when(insets).getInsets(anyInt());
+
+        listener.onStart(null, null);
+        assertEquals(100, contentContainer.getLayoutParams().height);
+
+        // Viewport shrinks to 50.
+        doReturn(Insets.of(0, 0, 0, 150)).when(insets).getInsets(anyInt());
+
+        listener.onProgress(null, null);
+        assertEquals(50, contentContainer.getLayoutParams().height);
+
+        // Viewport shrinks to 20.
+        doReturn(Insets.of(0, 0, 0, 180)).when(insets).getInsets(anyInt());
+
+        listener.onEnd(null);
+        assertEquals(20, contentContainer.getLayoutParams().height);
     }
 }

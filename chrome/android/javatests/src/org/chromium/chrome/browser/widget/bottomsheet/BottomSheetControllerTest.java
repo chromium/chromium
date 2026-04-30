@@ -55,6 +55,7 @@ import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.browser.edge_to_edge.TestEdgeToEdgeController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.HeightMode;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
@@ -241,6 +242,67 @@ public class BottomSheetControllerTest {
                                         .findViewById(R.id.bottom_sheet_content)
                                         .getPaddingBottom(),
                                 Matchers.equalTo(bottomInsets)));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"BottomSheetController"})
+    @DisabledTest(message = "Flaky, http://crbug.com/397476647")
+    public void testShowWithBottomInset_resizeContent() {
+        mEdgeToEdgeController.bottomInset = 500;
+        mNonPeekableContent.setFullHeightRatio(HeightMode.RESIZE_CONTENT);
+        requestContentInSheet(mNonPeekableContent, true);
+
+        View bottomSheet = mActivity.findViewById(R.id.bottom_sheet);
+        View bottomSheetContent = bottomSheet.findViewById(R.id.bottom_sheet_content);
+        int heightWithoutBottomInset = bottomSheetContent.getHeight();
+        float transYWithBottomInset = bottomSheet.getTranslationY();
+
+        CriteriaHelper.pollUiThread(
+                () ->
+                        Criteria.checkThat(
+                                "The transition should be non-negative.",
+                                transYWithBottomInset,
+                                Matchers.greaterThanOrEqualTo(0.f)));
+
+        int bottomInsets = ViewUtils.dpToPx(mActivity, mEdgeToEdgeController.bottomInset);
+        CriteriaHelper.pollUiThread(
+                () ->
+                        Criteria.checkThat(
+                                "The height of the sheet should decrease by the bottom insets.",
+                                bottomSheetContent.getHeight(),
+                                Matchers.equalTo(
+                                        Math.max(0, heightWithoutBottomInset - bottomInsets))));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"BottomSheetController"})
+    public void testShowWithBottomInset_resizeContent_LargeBottomInsets() {
+        mEdgeToEdgeController.bottomInset = 2000;
+        mNonPeekableContent.setFullHeightRatio(HeightMode.RESIZE_CONTENT);
+        requestContentInSheet(mNonPeekableContent, true);
+
+        View bottomSheet = mActivity.findViewById(R.id.bottom_sheet);
+        View bottomSheetContent = bottomSheet.findViewById(R.id.bottom_sheet_content);
+        int heightWithoutBottomInset = bottomSheetContent.getHeight();
+        float transYWithBottomInset = bottomSheet.getTranslationY();
+
+        CriteriaHelper.pollUiThread(
+                () ->
+                        Criteria.checkThat(
+                                "The transition should be non-negative.",
+                                transYWithBottomInset,
+                                Matchers.greaterThanOrEqualTo(0.f)));
+
+        int bottomInsets = ViewUtils.dpToPx(mActivity, mEdgeToEdgeController.bottomInset);
+        CriteriaHelper.pollUiThread(
+                () ->
+                        Criteria.checkThat(
+                                "The height of the sheet should decrease by the bottom insets.",
+                                bottomSheetContent.getHeight(),
+                                Matchers.equalTo(
+                                        Math.max(0, heightWithoutBottomInset - bottomInsets))));
     }
 
     @Test
