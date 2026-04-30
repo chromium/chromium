@@ -2,43 +2,29 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.ui.actions.tabswitcher;
+package org.chromium.chrome.browser.ui.android.bars_common;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.tab_ui.TabModelDotInfo;
-import org.chromium.chrome.browser.toolbar.R;
-import org.chromium.chrome.browser.ui.actions.IphIntent;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
 import org.chromium.components.feature_engagement.FeatureConstants;
 
-/** Helper utility methods for the Tab Switcher action. */
+/** Iph intents for the tab switcher button. */
 @NullMarked
-public class TabSwitcherActionUtils {
-
+public class TabSwitcherIphIntentUtils {
     private static final long XR_AUTO_DISMISS_TIMEOUT_MS = 5000;
 
-    private TabSwitcherActionUtils() {}
-
-    /**
-     * Returns whether the data sharing feature is enabled. This method is needed because {@link
-     * TabUiUtils#isDataSharingFunctionalityEnabled()} breaks dependency rules.
-     */
-    public static boolean isDataSharingEnabled() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING)
-                || ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING_JOIN_ONLY);
-    }
+    private TabSwitcherIphIntentUtils() {}
 
     /**
      * Returns an {@link IphIntent} for the update notification IPH.
      *
      * @param dotInfo Information about the tab model dot to use for formatting the IPH message.
      */
-    public static IphIntent getUpdateNotificationIphIntent(TabModelDotInfo dotInfo) {
+    public static IphIntent getUpdateNotificationIphIntent(String tabGroupTitle) {
         return new IphIntent.Builder(FeatureConstants.TAB_GROUP_SHARE_UPDATE_FEATURE)
                 .setStringResId(R.string.tab_group_update_iph_text)
                 .setAccessibilityResId(R.string.tab_group_update_iph_text)
-                .setStringArgs(dotInfo.tabGroupTitle)
+                .setStringArgs(tabGroupTitle)
                 .setHighlightConfig(new IphIntent.HighlightConfig(HighlightShape.CIRCLE, false))
                 .build();
     }

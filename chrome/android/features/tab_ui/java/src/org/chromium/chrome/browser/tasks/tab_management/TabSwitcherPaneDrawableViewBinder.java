@@ -8,7 +8,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabSwitcherPaneDr
 import static org.chromium.chrome.browser.tasks.tab_management.TabSwitcherPaneDrawableProperties.TAB_COUNT;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.toolbar.TabSwitcherDrawable;
+import org.chromium.chrome.browser.ui.android.bars_common.TabSwitcherDrawable;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 

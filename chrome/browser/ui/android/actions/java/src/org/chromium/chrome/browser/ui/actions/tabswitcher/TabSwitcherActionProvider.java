@@ -36,9 +36,11 @@ import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.ui.actions.ActionId;
 import org.chromium.chrome.browser.ui.actions.ActionProperties;
 import org.chromium.chrome.browser.ui.actions.ActionRegistry;
-import org.chromium.chrome.browser.ui.actions.IphIntent;
+import org.chromium.chrome.browser.ui.actions.ActionUtils;
 import org.chromium.chrome.browser.ui.actions.ResourceTextResolver;
 import org.chromium.chrome.browser.ui.actions.button.ButtonState;
+import org.chromium.chrome.browser.ui.android.bars_common.IphIntent;
+import org.chromium.chrome.browser.ui.android.bars_common.TabSwitcherIphIntentUtils;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
@@ -192,7 +194,8 @@ public class TabSwitcherActionProvider implements Destroyable {
         if (showDot) {
             mModel.set(
                     ActionProperties.IPH_INTENT,
-                    TabSwitcherActionUtils.getUpdateNotificationIphIntent(dotInfo));
+                    TabSwitcherIphIntentUtils.getUpdateNotificationIphIntent(
+                            dotInfo.tabGroupTitle));
         }
         updateDependentProperties();
         // LINT.ThenChange(//chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/top/ToggleTabStackButtonCoordinator.java:onUpdateNotificationDot)
@@ -247,7 +250,7 @@ public class TabSwitcherActionProvider implements Destroyable {
             mDeclutterIphSignaled = true;
             mModel.set(
                     ActionProperties.IPH_INTENT,
-                    TabSwitcherActionUtils.getDeclutterIphIntent(
+                    TabSwitcherIphIntentUtils.getDeclutterIphIntent(
                             mArchivedTabsIphShownCallback, mArchivedTabsIphDismissedCallback));
         }
         // LINT.ThenChange(//chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/top/ToggleTabStackButtonCoordinator.java:maybeShowDeclutterIph)
@@ -263,23 +266,23 @@ public class TabSwitcherActionProvider implements Destroyable {
             if (VersionUpdateIphHandler.shouldShowVersioningIph(profile, true)) {
                 mModel.set(
                         ActionProperties.IPH_INTENT,
-                        TabSwitcherActionUtils.getVersioningIphIntent());
+                        TabSwitcherIphIntentUtils.getVersioningIphIntent());
             }
         }
 
         IphIntent iphIntent = null;
         if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
             if (mTabModelSelector.getCurrentModel().isIncognitoBranded()) {
-                iphIntent = TabSwitcherActionUtils.getSwitchOutOfIncognitoIphIntent();
+                iphIntent = TabSwitcherIphIntentUtils.getSwitchOutOfIncognitoIphIntent();
             } else if (mTabModelSelector.getModel(true).getCount() > 0) {
-                iphIntent = TabSwitcherActionUtils.getSwitchIntoIncognitoIphIntent();
+                iphIntent = TabSwitcherIphIntentUtils.getSwitchIntoIncognitoIphIntent();
             }
         }
 
         if (iphIntent == null && !mIsIncognito) {
             Boolean promoShown = mPromoShownOneshotSupplier.get();
             if (promoShown != null && !promoShown) {
-                iphIntent = TabSwitcherActionUtils.getTabSwitcherButtonIphIntent();
+                iphIntent = TabSwitcherIphIntentUtils.getTabSwitcherButtonIphIntent();
             }
         }
 
@@ -292,7 +295,7 @@ public class TabSwitcherActionProvider implements Destroyable {
     private void maybeTriggerXrIph(int tabCount) {
         // LINT.IfChange(maybeTriggerXrIph)
         if (DeviceInfo.isXr() && tabCount >= XR_TAB_COUNT_IPH_TRIGGER) {
-            mModel.set(ActionProperties.IPH_INTENT, TabSwitcherActionUtils.getXrIphIntent());
+            mModel.set(ActionProperties.IPH_INTENT, TabSwitcherIphIntentUtils.getXrIphIntent());
         }
         // LINT.ThenChange(//chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/top/ToggleTabStackButtonCoordinator.java:maybeShowXrIph)
     }
@@ -302,7 +305,7 @@ public class TabSwitcherActionProvider implements Destroyable {
 
         @PluralsRes
         int contentDescriptionRes =
-                mShowDot && TabSwitcherActionUtils.isDataSharingEnabled()
+                mShowDot && ActionUtils.isDataSharingEnabled()
                         ? R.plurals
                                 .accessibility_toolbar_btn_tabswitcher_toggle_default_with_notification
                         : R.plurals.accessibility_toolbar_btn_tabswitcher_toggle_default;

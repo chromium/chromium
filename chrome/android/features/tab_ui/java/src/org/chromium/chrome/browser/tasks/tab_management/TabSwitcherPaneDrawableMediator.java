@@ -16,7 +16,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab_ui.TabModelDotInfo;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
-import org.chromium.chrome.browser.toolbar.TabSwitcherDrawable;
+import org.chromium.chrome.browser.ui.android.bars_common.TabSwitcherDrawable;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Mediator for the {@link TabSwitcherDrawable} for the {@link TabSwitcherPane}. */

@@ -9,7 +9,8 @@ import android.content.res.ColorStateList;
 import android.util.AttributeSet;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.toolbar.TabSwitcherDrawable.TabSwitcherDrawableLocation;
+import org.chromium.chrome.browser.ui.android.bars_common.TabSwitcherDrawable;
+import org.chromium.chrome.browser.ui.android.bars_common.TabSwitcherDrawable.TabSwitcherDrawableLocation;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.ui.listmenu.ListMenuButton;
 

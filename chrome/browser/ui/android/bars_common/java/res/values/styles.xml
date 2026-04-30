@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<resources>
+    <style name="BottomToolbarButton">
+        <item name="android:background">?attr/selectableItemBackground</item>
+        <item name="android:layout_width">@dimen/toolbar_button_width</item>
+        <item name="android:layout_height">48dp</item>
+        <item name="android:scaleType">center</item>
+        <item name="android:layout_gravity">center</item>
+    </style>
+</resources>

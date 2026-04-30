@@ -15,6 +15,7 @@ import androidx.core.widget.ImageViewCompat;
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ui.actions.button.ButtonState;
+import org.chromium.chrome.browser.ui.android.bars_common.IphIntent;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.util.TextResolver;
 import org.chromium.ui.modelutil.PropertyKey;

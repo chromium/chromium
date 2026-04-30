@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<resources>
+    <!-- Bottom bar dimensions -->
+    <dimen name="bottom_bar_height">60dp</dimen>
+
+    <!-- Button dimensions -->
+    <dimen name="toolbar_button_width">48dp</dimen>
+
+    <!-- Tab switcher icon dimensions  -->
+    <dimen name="toolbar_tab_count_text_size_1_digit">11dp</dimen>
+    <dimen name="toolbar_tab_count_text_size_2_digit">9dp</dimen>
+</resources>

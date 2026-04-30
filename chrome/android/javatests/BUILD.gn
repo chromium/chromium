@@ -517,7 +517,10 @@ android_library("chrome_test_java_org.chromium.chrome.browser") {
     "src/org/chromium/chrome/browser/WarmupManagerTest.java",
   ]
 
-  deps = [ ":chrome_test_java_helper" ]
+  deps = [
+    ":chrome_test_java_helper",
+    "//chrome/browser/ui/android/bars_common:java",
+  ]
 }
 
 android_library("chrome_test_java_org.chromium.chrome.browser.app") {
@@ -1560,6 +1563,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.toolbar") {
 
   deps = [
     ":chrome_test_java_helper",
+    "//chrome/browser/ui/android/bars_common:java",
     "//chrome/browser/ui/android/toolbar:optional_button_java",
     "//chrome/browser/user_education:java",
   ]

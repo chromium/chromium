@@ -148,6 +148,7 @@ android_library("unit_device_javatests") {
     "//chrome/browser/flags:java",
     "//chrome/browser/hub:java",
     "//chrome/browser/ui/android/actions:java",
+    "//chrome/browser/ui/android/bars_common:java",
     "//chrome/browser/ui/android/bottombar:java",
     "//chrome/browser/ui/android/layouts:java",
     "//chrome/browser/ui/android/night_mode:night_mode_java_test_support",

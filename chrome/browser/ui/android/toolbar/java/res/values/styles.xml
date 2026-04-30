@@ -57,10 +57,7 @@ found in the LICENSE file.
         <item name="android:paddingEnd">@dimen/button_end_padding</item>
         <item name="android:background">@drawable/toolbar_menu_button_ripple</item>
     </style>
-    <style name="BottomToolbarButton" parent="ToolbarButton">
-        <item name="android:layout_height">48dp</item>
-        <item name="android:layout_gravity">center</item>
-    </style>
+
     <style name="SplitToolbarButton" parent="BottomToolbarButton">
         <item name="android:layout_height">@dimen/split_toolbar_button_height</item>
         <item name="android:layout_width">@dimen/split_toolbar_button_width</item>

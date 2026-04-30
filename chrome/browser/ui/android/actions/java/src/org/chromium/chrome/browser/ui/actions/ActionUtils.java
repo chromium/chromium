@@ -11,6 +11,7 @@ import androidx.annotation.DrawableRes;
 import androidx.annotation.StringRes;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.actions.button.ButtonState;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -21,6 +22,12 @@ public class ActionUtils {
 
     // Avoid instantiation.
     private ActionUtils() {}
+
+    /** Returns whether the data sharing feature is enabled. */
+    public static boolean isDataSharingEnabled() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING)
+                || ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING_JOIN_ONLY);
+    }
 
     /**
      * Applies the given {@link ButtonState} to the view. This is currently unrelated to the view's

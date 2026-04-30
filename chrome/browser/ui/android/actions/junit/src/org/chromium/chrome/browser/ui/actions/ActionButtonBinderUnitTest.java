@@ -44,6 +44,7 @@ import org.chromium.base.MathUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.chrome.browser.ui.actions.button.ButtonState;
+import org.chromium.chrome.browser.ui.android.bars_common.IphIntent;
 import org.chromium.chrome.browser.user_education.IphCommand;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.ui.modelutil.PropertyModel;
