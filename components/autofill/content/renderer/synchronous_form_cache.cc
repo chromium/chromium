@@ -50,16 +50,11 @@ std::optional<FormData> SynchronousFormCache::GetOrExtractForm(
       // failed, meaning that it would fail again if we do it now.
       return cached_form->CopyAsOptional();
     }
-#if !BUILDFLAG(IS_ANDROID)
     // This codepath should not be reached, as it would mean that we populated
     // the cache with wrong forms before passing it around methods. We do not
     // crash the renderer because this wouldn't break anything since we can
     // always re-extract.
-    // TODO(crbug.com/40947729): This is currently disabled on Android because
-    // of pending work in order to minimize renderer logic at suggestion time.
-    // Add this back when the work is done.
     base::debug::DumpWithoutCrashing(FROM_HERE);
-#endif  // !BUILDFLAG(IS_ANDROID)
   }
   return form_util::ExtractFormData(document, form_element, field_data_manager,
                                     timer_state, button_titles_cache);
