@@ -151,6 +151,8 @@ enum class ComposeboxMenuSectionIdentifier {
   _collectionView.translatesAutoresizingMaskIntoConstraints = NO;
   _collectionView.delegate = self;
   _collectionView.backgroundColor = [UIColor colorNamed:kGrey100Color];
+  _collectionView.showsVerticalScrollIndicator = NO;
+  _collectionView.showsHorizontalScrollIndicator = NO;
 
   [self.view addSubview:_collectionView];
   AddSameConstraints(_collectionView, self.view);
