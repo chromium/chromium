@@ -4939,5 +4939,33 @@ TEST_F(LayerContextImplTest, DoUpdateDisplayTreeEarlyReturnUAF) {
                   ->needs_update_draw_properties());
 }
 
+TEST_F(LayerContextImplTest, InvalidViewportConfiguration) {
+  {
+    auto update = CreateDefaultUpdate();
+    // Inner scroll but no outer scroll.
+    int inner_scroll_id = AddScrollNode(update.get(), cc::kRootPropertyNodeId);
+    update->inner_scroll = inner_scroll_id;
+    update->outer_scroll = cc::kInvalidPropertyNodeId;
+
+    auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+    ASSERT_FALSE(result.has_value());
+    EXPECT_EQ(result.error(), "Must set outer_scroll if inner_scroll is set");
+  }
+
+  {
+    auto update = CreateDefaultUpdate();
+    // Outer scroll but no inner scroll.
+    int outer_scroll_id = AddScrollNode(update.get(), cc::kRootPropertyNodeId);
+    update->inner_scroll = cc::kInvalidPropertyNodeId;
+    update->outer_scroll = outer_scroll_id;
+
+    auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+    ASSERT_FALSE(result.has_value());
+    EXPECT_EQ(
+        result.error(),
+        "Cannot set outer_clip or outer_scroll without valid inner_scroll");
+  }
+}
+
 }  // namespace
 }  // namespace viz
