@@ -182,6 +182,16 @@ VisiblePosition EndOfBlock(
 bool IsStartOfBlock(const VisiblePosition&);
 bool IsEndOfBlock(const VisiblePosition&);
 
+// Position-based block overloads (no VisiblePosition dependency).
+CORE_EXPORT Position StartOfBlock(
+    const Position&,
+    EditingBoundaryCrossingRule = kCannotCrossEditingBoundary);
+CORE_EXPORT Position EndOfBlock(
+    const Position&,
+    EditingBoundaryCrossingRule = kCannotCrossEditingBoundary);
+CORE_EXPORT bool IsStartOfBlock(const Position&);
+CORE_EXPORT bool IsEndOfBlock(const Position&);
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_COMMANDS_EDITING_COMMANDS_UTILITIES_H_

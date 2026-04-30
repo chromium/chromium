@@ -755,4 +755,40 @@ bool IsEndOfBlock(const VisiblePosition& pos) {
              EndOfBlock(pos, kCanCrossEditingBoundary).DeepEquivalent();
 }
 
+// Position-based block overloads.
+
+Position StartOfBlock(const Position& position,
+                      EditingBoundaryCrossingRule rule) {
+  if (position.IsNull())
+    return Position();
+  Element* start_block =
+      position.ComputeContainerNode()
+          ? EnclosingBlock(position.ComputeContainerNode(), rule)
+          : nullptr;
+  return start_block ? Position::FirstPositionInNode(*start_block) : Position();
+}
+
+Position EndOfBlock(const Position& position,
+                    EditingBoundaryCrossingRule rule) {
+  if (position.IsNull())
+    return Position();
+  Element* end_block =
+      position.ComputeContainerNode()
+          ? EnclosingBlock(position.ComputeContainerNode(), rule)
+          : nullptr;
+  return end_block ? Position::LastPositionInNode(*end_block) : Position();
+}
+
+bool IsStartOfBlock(const Position& pos) {
+  if (pos.IsNull())
+    return false;
+  return pos == StartOfBlock(pos, kCanCrossEditingBoundary);
+}
+
+bool IsEndOfBlock(const Position& pos) {
+  if (pos.IsNull())
+    return false;
+  return pos == EndOfBlock(pos, kCanCrossEditingBoundary);
+}
+
 }  // namespace blink
