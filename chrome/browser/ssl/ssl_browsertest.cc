@@ -6954,7 +6954,7 @@ class SSLUIDynamicInterstitialTest : public CertVerifierBrowserTest {
   static std::string MakeSha256String(uint8_t i) {
     net::SHA256HashValue value;
     value.fill(i);
-    return net::HashValue(value).ToString();
+    return net::HashValue(net::HASH_VALUE_SHA256, value).ToString();
   }
 
   // Adds a dynamic interstitial to |config_proto|. All of the dynamic
