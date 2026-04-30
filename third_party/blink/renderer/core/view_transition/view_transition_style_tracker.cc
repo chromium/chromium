@@ -1503,6 +1503,16 @@ bool ViewTransitionStyleTracker::RunPostPrePaintSteps() {
     return false;
   }
 
+  // If we haven't captured the snapshot root size yet, we can't compute the
+  // max capture size. This can happen if RunPostPrePaintSteps is called before
+  // Capture (e.g., by forcing layout early).
+  // In this case, we should only proceed if we are still in the idle state
+  // (i.e. before capture has even started). If we are past the idle state but
+  // don't have the size, we should abort the transition.
+  if (!snapshot_root_layout_size_at_capture_.has_value()) {
+    return state_ == State::kIdle;
+  }
+
   const int max_capture_size_in_layout = ComputeMaxCaptureSize(
       *document_,
       document_->GetPage()->GetChromeClient().GetMaxRenderBufferBounds(
