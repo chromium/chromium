@@ -4,6 +4,13 @@
 
 #include "chrome/browser/glic/host/context/glic_page_context_fetcher.h"
 
+#include <stdint.h>
+
+#include <utility>
+#include <variant>
+#include <vector>
+
+#include "base/check.h"
 #include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
@@ -163,12 +170,17 @@ void HandleFetchPageResult(
   }
 
   if (page_context.pdf_result) {
-    auto pdf_document_data = mojom::PdfDocumentData::New();
-    pdf_document_data->origin = page_context.pdf_result->origin;
-    pdf_document_data->size_limit_exceeded =
-        page_context.pdf_result->size_exceeded;
-    pdf_document_data->pdf_data = std::move(page_context.pdf_result->bytes);
-    tab_context->pdf_document_data = std::move(pdf_document_data);
+    // Glic requests PDF bytes exclusively. It does not request PDF text. Only
+    // populate `pdf_document_data` if the `pdf_result` holds PDF bytes.
+    if (auto* pdf_data =
+            std::get_if<std::vector<uint8_t>>(&page_context.pdf_result->data)) {
+      auto pdf_document_data = mojom::PdfDocumentData::New();
+      pdf_document_data->origin = page_context.pdf_result->origin;
+      pdf_document_data->size_limit_exceeded =
+          page_context.pdf_result->size_exceeded;
+      pdf_document_data->pdf_data = std::move(*pdf_data);
+      tab_context->pdf_document_data = std::move(pdf_document_data);
+    }
   }
 
   if (page_context.annotated_page_content_result.has_value()) {

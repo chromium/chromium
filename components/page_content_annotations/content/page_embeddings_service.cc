@@ -10,7 +10,10 @@
 #include <utility>
 #include <variant>
 
+#include "base/check.h"
+#include "base/notimplemented.h"
 #include "components/page_content_annotations/content/embeddings_candidate_generator.h"
+#include "components/page_content_annotations/content/page_content_extraction_service.h"
 #include "components/passage_embeddings/core/passage_embeddings_features.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/web_contents.h"
@@ -260,10 +263,20 @@ PageEmbeddingsService::GetEmbedderMetadataProvider() {
   return embedder_metadata_provider_;
 }
 
-void PageEmbeddingsService::OnPageContentExtracted(
-    content::Page& page,
-    scoped_refptr<const RefCountedAnnotatedPageContent> page_content) {
-  CHECK(page_content);
+void PageEmbeddingsService::OnPageContentExtracted(content::Page& page,
+                                                   PageContent page_content) {
+  if (std::holds_alternative<RefCountedPDFTextPtr>(page_content)) {
+    // TODO(b/487632737): Support embeddings generation from PDF text.
+    NOTIMPLEMENTED();
+    return;
+  }
+
+  RefCountedAnnotatedPageContentPtr* annotated_page_content_ptr =
+      std::get_if<RefCountedAnnotatedPageContentPtr>(&page_content);
+  if (!annotated_page_content_ptr || !(*annotated_page_content_ptr)) {
+    return;
+  }
+
   auto* const web_contents =
       content::WebContents::FromRenderFrameHost(&page.GetMainDocument());
 
@@ -282,7 +295,7 @@ void PageEmbeddingsService::OnPageContentExtracted(
   state.page = page.GetWeakPtr();
 
   std::vector<std::pair<std::string, EmbeddingPassageType>> pending_passages =
-      candidates_generator_.Run(page_content->data,
+      candidates_generator_.Run((*annotated_page_content_ptr)->data,
                                 passage_embeddings::kMaxPassagesPerPage.Get());
 
   if (!pending_passages.empty()) {

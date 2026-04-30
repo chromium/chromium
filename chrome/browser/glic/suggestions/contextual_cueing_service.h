@@ -122,9 +122,7 @@ class ContextualCueingService
   // page_content_annotations::PageContentExtractionService::Observer:
   void OnPageContentExtracted(
       content::Page& page,
-      scoped_refptr<
-          const page_content_annotations::RefCountedAnnotatedPageContent>
-          page_content) override;
+      page_content_annotations::PageContent page_content) override;
 
   // Returns true if nudge should not be shown due to the backoff rule.
   bool IsNudgeBlockedByBackoffRule() const;

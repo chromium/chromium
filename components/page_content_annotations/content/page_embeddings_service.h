@@ -136,10 +136,8 @@ class PageEmbeddingsService : public KeyedService,
   passage_embeddings::EmbedderMetadataProvider* GetEmbedderMetadataProvider();
 
   // PageContentExtractionService:
-  void OnPageContentExtracted(
-      content::Page& page,
-      scoped_refptr<const RefCountedAnnotatedPageContent> page_content)
-      override;
+  void OnPageContentExtracted(content::Page& page,
+                              PageContent page_content) override;
 
  private:
   class WebContentsEventsObserver;

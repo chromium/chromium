@@ -4,6 +4,7 @@
 
 #include "chrome/browser/glic/suggestions/zero_state_suggestions_page_data.h"
 
+#include "base/check.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros_local.h"
 #include "base/strings/stringprintf.h"
@@ -54,10 +55,8 @@ bool IsEligibleForContextualSuggestions(
 void GetEligibilityAndRunCallback(
     const GURL& url,
     optimization_guide::PageContextEligibility* page_context_eligibility,
-    base::OnceCallback<
-        void(scoped_refptr<
-             const page_content_annotations::RefCountedAnnotatedPageContent>)>
-        callback,
+    base::OnceCallback<void(
+        page_content_annotations::RefCountedAnnotatedPageContentPtr)> callback,
     optimization_guide::AIPageContentResultOrError content) {
   bool is_eligible =
       content.has_value() &&
@@ -281,9 +280,7 @@ void ZeroStateSuggestionsPageData::GetPageContext(
 }
 
 void ZeroStateSuggestionsPageData::OnReceivedAnnotatedPageContent(
-    scoped_refptr<
-        const page_content_annotations::RefCountedAnnotatedPageContent>
-        content) {
+    page_content_annotations::RefCountedAnnotatedPageContentPtr content) {
   if (annotated_page_content_done_) {
     return;
   }

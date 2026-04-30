@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <set>
+#include <variant>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
@@ -45,6 +46,13 @@ namespace page_content_annotations {
 
 using RefCountedAnnotatedPageContent =
     base::RefCountedData<optimization_guide::proto::AnnotatedPageContent>;
+using RefCountedPDFText = base::RefCountedData<std::string>;
+using RefCountedAnnotatedPageContentPtr =
+    scoped_refptr<const RefCountedAnnotatedPageContent>;
+using RefCountedPDFTextPtr = scoped_refptr<const RefCountedPDFText>;
+
+using PageContent =
+    std::variant<RefCountedAnnotatedPageContentPtr, RefCountedPDFTextPtr>;
 
 class AnnotatedPageContentRequest;
 struct ExtractedPageContentResult;
@@ -62,10 +70,11 @@ class PageContentExtractionService : public KeyedService,
   class Observer : public base::CheckedObserver {
    public:
     // Invoked when `page_content` is extracted for `page`. The extraction is
-    // triggered for every page once the page has sufficiently loaded.
-    virtual void OnPageContentExtracted(
-        content::Page& page,
-        scoped_refptr<const RefCountedAnnotatedPageContent> page_content) {}
+    // triggered for every page once the page has sufficiently loaded. The
+    // `page_content` holds either the APC for a non-PDF page; or the PDF text
+    // for a PDF page.
+    virtual void OnPageContentExtracted(content::Page& page,
+                                        PageContent page_content) {}
   };
 
 #if BUILDFLAG(IS_ANDROID)
@@ -159,11 +168,12 @@ class PageContentExtractionService : public KeyedService,
   friend class AnnotatedPageContentRequest;
 
   // Invoked when `page_content` is extracted for `page`, to notify the
-  // observers. `tab_id` for the tab where page is loaded, if available.
+  // observers. The `page_content` holds either the APC for a non-PDF page; or
+  // the PDF text for a PDF page. `tab_id` for the tab where page is loaded, if
+  // available.
   virtual void OnPageContentExtracted(
       content::Page& page,
-      scoped_refptr<const RefCountedAnnotatedPageContent>
-          annotated_page_content,
+      PageContent page_content,
       const std::vector<uint8_t>& screenshot_data,
       std::optional<int> tab_id);
 

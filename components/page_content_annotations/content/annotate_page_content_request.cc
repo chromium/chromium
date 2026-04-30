@@ -6,6 +6,7 @@
 
 #include <optional>
 #include <utility>
+#include <variant>
 
 #include "base/check.h"
 #include "base/command_line.h"
@@ -25,6 +26,7 @@
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/content/browser/page_context_eligibility.h"
 #include "components/page_content_annotations/content/page_content_extraction_service.h"
+#include "components/page_content_annotations/content/page_context_fetcher.h"
 #include "components/page_content_annotations/core/page_content_annotations_features.h"
 #include "components/page_content_annotations/core/page_content_annotations_switches.h"
 #include "components/page_content_annotations/core/page_content_extraction_types.h"
@@ -61,6 +63,46 @@ void RecordPdfPageCountMetrics(
       .Record(ukm::UkmRecorder::Get());
 }
 #endif  // BUILDFLAG(ENABLE_PDF)
+
+bool ContainsAnnotatedPageContent(const FetchPageContextResult& result) {
+  return result.annotated_page_content_result.has_value();
+}
+
+bool ContainsPDFText(const FetchPageContextResult& result) {
+  return result.pdf_result.has_value() &&
+         std::holds_alternative<std::string>(result.pdf_result->data);
+}
+
+std::optional<PageContent> TakePageContent(FetchPageContextResult result) {
+  if (base::FeatureList::IsEnabled(
+          features::kAnnotatedPageContentPDFTextExtraction)) {
+    // Handling PDF text from the result.
+    if (ContainsPDFText(result)) {
+      // The `FetchPageContextResult` cannot contain both AnnotatedPageContent
+      // and PDF text at the same time.
+      CHECK(!ContainsAnnotatedPageContent(result));
+
+      return base::MakeRefCounted<RefCountedPDFText>(
+          std::get<std::string>(std::move(result.pdf_result->data)));
+    }
+  }
+
+  // Handling APC from the result.
+  if (ContainsAnnotatedPageContent(result)) {
+    // The `FetchPageContextResult` cannot contain both AnnotatedPageContent
+    // and PDF text at the same time.
+    CHECK(!ContainsPDFText(result));
+    base::expected<PageContentResultWithEndTime, std::string>
+        annotated_page_content_result =
+            std::move(result.annotated_page_content_result);
+
+    return base::MakeRefCounted<RefCountedAnnotatedPageContent>(
+        std::move(annotated_page_content_result->proto));
+  }
+
+  // Neither APC nor PDF text is available.
+  return std::nullopt;
+}
 
 std::optional<ExtractedPageContentResult>
 RecordAndReturnOnDemandExtractionResult(
@@ -259,6 +301,7 @@ void AnnotatedPageContentRequest::StartExtraction() {
   lifecycle_ = Lifecycle::kRunning;
   if (IsPdf()) {
 #if BUILDFLAG(ENABLE_PDF)
+    // TODO(b/487632737): Implement PDF text extraction.
     RequestPdfPageCount();
 #endif  // BUILDFLAG(ENABLE_PDF)
   } else {
@@ -353,39 +396,70 @@ void AnnotatedPageContentRequest::OnPageContextFetched(
     FetchPageContextResultCallbackArg result) {
   lifecycle_ = Lifecycle::kExtracted;
 
-  if (!result.has_value() || !result.value() ||
-      !result.value()->annotated_page_content_result.has_value()) {
+  // The page context result is null.
+  if (!result.has_value() || !result.value()) {
     ResolveAllCallbacksWith(std::nullopt);
     return;
   }
+
   base::Time extraction_time = base::Time::Now();
+  FetchPageContextResult& page_content_result = *result.value();
+
+  // Retrieve screenshot data. Screenshot data must be retrieved before
+  // `TakePageContent` to avoid use-after-move.
   std::vector<uint8_t> screenshot_data;
-  if (result.value()->screenshot_result.has_value()) {
-    screenshot_data =
-        std::move(result.value()->screenshot_result.value().screenshot_data);
+  if (page_content_result.screenshot_result.has_value()) {
+    screenshot_data = std::move(
+        page_content_result.screenshot_result.value().screenshot_data);
   }
 
-  auto page_content_result =
-      std::move(result.value()->annotated_page_content_result);
-  auto ref_counted_content =
-      base::MakeRefCounted<RefCountedAnnotatedPageContent>(
-          std::move(page_content_result->proto));
+  // Calculate server upload eligibility. Note this applies to the result if and
+  // only if it holds an APC. Eligibility must be calculated before
+  // `TakePageContent` to avoid use-after-move.
+  bool is_eligible_for_server_upload = false;
+  if (ContainsAnnotatedPageContent(page_content_result)) {
+    GURL url = web_contents()->GetLastCommittedURL();
+    is_eligible_for_server_upload =
+        !page_context_eligibility_ ||
+        optimization_guide::IsPageContextEligible(
+            url.GetHost(), url.GetPath(),
+            optimization_guide::GetFrameMetadataFromPageContent(
+                page_content_result.annotated_page_content_result.value()),
+            page_context_eligibility_);
+  }
 
+  // Take either the APC or PDF text from the result.
+  std::optional<PageContent> page_content =
+      TakePageContent(std::move(page_content_result));
+
+  // Cannot find APC or PDF text in page context result.
+  if (!page_content) {
+    ResolveAllCallbacksWith(/*result=*/std::nullopt);
+    return;
+  }
+
+  // Notify page content extraction service with `page_content`, which holds
+  // either the APC for a non-PDF page; or the PDF text for a PDF page.
   page_content_extraction_service_->OnPageContentExtracted(
-      web_contents()->GetPrimaryPage(), ref_counted_content, screenshot_data,
+      web_contents()->GetPrimaryPage(), page_content.value(), screenshot_data,
       get_tab_id_callback_.Run(web_contents()));
 
-  GURL url = web_contents()->GetLastCommittedURL();
-  bool is_eligible_for_server_upload =
-      !page_context_eligibility_ ||
-      optimization_guide::IsPageContextEligible(
-          url.GetHost(), url.GetPath(),
-          optimization_guide::GetFrameMetadataFromPageContent(
-              *page_content_result),
-          page_context_eligibility_);
-  cached_content_ = ExtractedPageContentResult(
-      std::move(ref_counted_content), extraction_time,
-      is_eligible_for_server_upload, std::move(screenshot_data));
+  if (std::holds_alternative<RefCountedPDFTextPtr>(page_content.value())) {
+    // Note: Unlike APC result, PDF text result is not stored to the
+    // `cached_content_` below, which is used for supporting on-demand APC
+    // fetching.
+    // TODO(b/487632737): Investigate the support for on-demand PDF text
+    // extraction, which may require storing the result to `cached_content_`.
+    ResolveAllCallbacksWith(/*result=*/std::nullopt);
+    return;
+  }
+
+  // Move APC into the cache.
+  cached_content_ =
+      ExtractedPageContentResult(std::get<RefCountedAnnotatedPageContentPtr>(
+                                     std::move(page_content.value())),
+                                 extraction_time, is_eligible_for_server_upload,
+                                 std::move(screenshot_data));
 
   ResolveAllCallbacksWith(cached_content_);
 }

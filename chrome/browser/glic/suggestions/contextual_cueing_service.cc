@@ -5,7 +5,9 @@
 #include "chrome/browser/glic/suggestions/contextual_cueing_service.h"
 
 #include <cmath>
+#include <variant>
 
+#include "base/check.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/browser_process.h"
@@ -494,17 +496,21 @@ void ContextualCueingService::OnPinnedTabsSuggestionsReceived(
 
 void ContextualCueingService::OnPageContentExtracted(
     content::Page& page,
-    scoped_refptr<
-        const page_content_annotations::RefCountedAnnotatedPageContent>
-        page_content) {
+    page_content_annotations::PageContent page_content) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(page_content);
+
+  auto* annotated_page_content_ptr =
+      std::get_if<page_content_annotations::RefCountedAnnotatedPageContentPtr>(
+          &page_content);
+  if (!annotated_page_content_ptr || !(*annotated_page_content_ptr)) {
+    return;
+  }
 
   auto* cueing_page_data = ContextualCueingPageData::GetForPage(page);
   if (!cueing_page_data) {
     return;
   }
-  cueing_page_data->OnPageContentExtracted(page_content->data);
+  cueing_page_data->OnPageContentExtracted((*annotated_page_content_ptr)->data);
 }
 
 }  // namespace glic

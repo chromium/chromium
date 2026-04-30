@@ -9,6 +9,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "base/feature_list.h"
@@ -171,17 +172,33 @@ struct FetchPageContextOptions {
   uint32_t pdf_size_limit = 0;
 };
 
+// TODO(b/504577535): Support PDF bookmark extraction.
+// TODO(b/504577256): Support PDF accessibility info extraction.
 struct PdfResult {
   explicit PdfResult(url::Origin origin);
   PdfResult(url::Origin origin, std::vector<uint8_t> bytes);
+  PdfResult(url::Origin origin, std::string text);
+  PdfResult(const PdfResult&) = delete;
+  PdfResult& operator=(const PdfResult&) = delete;
+  PdfResult(PdfResult&&);
+  PdfResult& operator=(PdfResult&&);
   ~PdfResult();
+
   url::Origin origin;
-  std::vector<uint8_t> bytes;
+
+  // The PDF extraction result can be either bytes or string, depending on which
+  // extraction option is selected.
+  std::variant<std::vector<uint8_t>, std::string> data;
+
   bool size_exceeded = false;
 };
 
 struct ScreenshotResult {
   explicit ScreenshotResult(gfx::Size dimensions);
+  ScreenshotResult(const ScreenshotResult&) = delete;
+  ScreenshotResult& operator=(const ScreenshotResult&) = delete;
+  ScreenshotResult(ScreenshotResult&&);
+  ScreenshotResult& operator=(ScreenshotResult&&);
   ~ScreenshotResult();
   std::vector<uint8_t> screenshot_data;
   std::string mime_type;
@@ -207,6 +224,10 @@ struct PageContentResultWithEndTime
 
 struct FetchPageContextResult {
   FetchPageContextResult();
+  FetchPageContextResult(const FetchPageContextResult&) = delete;
+  FetchPageContextResult& operator=(const FetchPageContextResult&) = delete;
+  FetchPageContextResult(FetchPageContextResult&&);
+  FetchPageContextResult& operator=(FetchPageContextResult&&);
   ~FetchPageContextResult();
   base::expected<ScreenshotResult, std::string> screenshot_result;
   std::optional<InnerTextResultWithTruncation> inner_text_result;

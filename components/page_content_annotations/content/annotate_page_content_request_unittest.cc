@@ -9,6 +9,7 @@
 #include <optional>
 #include <string>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/files/file_path.h"
@@ -28,6 +29,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/page.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/mock_navigation_handle.h"
@@ -36,6 +38,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace page_content_annotations {
 
@@ -49,15 +52,20 @@ class TestPageContentExtractionService : public PageContentExtractionService {
                                      &mock_tracker_) {}
   ~TestPageContentExtractionService() override = default;
 
-  void OnPageContentExtracted(
-      content::Page& page,
-      scoped_refptr<const RefCountedAnnotatedPageContent>
-          annotated_page_content,
-      const std::vector<uint8_t>& screenshot_data,
-      std::optional<int> tab_id) override {
-    last_extracted_content_ = ExtractedPageContentResult(
-        std::move(annotated_page_content), base::Time::Now(), false, screenshot_data);
+  void OnPageContentExtracted(content::Page& page,
+                              PageContent page_content,
+                              const std::vector<uint8_t>& screenshot_data,
+                              std::optional<int> tab_id) override {
     extraction_count_++;
+    if (std::holds_alternative<RefCountedPDFTextPtr>(page_content)) {
+      last_extracted_pdf_text_ =
+          std::get<RefCountedPDFTextPtr>(std::move(page_content))->data;
+    } else {
+      last_extracted_content_ = ExtractedPageContentResult(
+          std::get<RefCountedAnnotatedPageContentPtr>(std::move(page_content)),
+          base::Time::Now(), false, screenshot_data);
+    }
+
     if (quit_closure_) {
       std::move(quit_closure_).Run();
     }
@@ -68,6 +76,9 @@ class TestPageContentExtractionService : public PageContentExtractionService {
       const {
     return last_extracted_content_;
   }
+  const std::optional<std::string>& last_extracted_pdf_text() const {
+    return last_extracted_pdf_text_;
+  }
 
   void SetQuitClosure(base::OnceClosure quit_closure) {
     quit_closure_ = std::move(quit_closure);
@@ -76,6 +87,7 @@ class TestPageContentExtractionService : public PageContentExtractionService {
  private:
   int extraction_count_ = 0;
   std::optional<ExtractedPageContentResult> last_extracted_content_;
+  std::optional<std::string> last_extracted_pdf_text_;
   feature_engagement::test::MockTracker mock_tracker_;
   base::OnceClosure quit_closure_;
 };
@@ -777,6 +789,59 @@ TEST_F(AnnotatePageContentRequestTest, GetAsync_OnPdfPages) {
 
   EXPECT_TRUE(eligibility_future.IsReady());
   EXPECT_FALSE(eligibility_future.Get().has_value());
+}
+
+// TODO(b/487632737): Implement PDF text extraction and update this test.
+TEST_F(AnnotatePageContentRequestTest, OnPageContextFetchedPDFTextExtraction) {
+  // This test simulates a PDF text extraction. The actual PDF text extraction
+  // has not been implemented.
+  SetTriggeringMode("on_load");
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAnnotatedPageContentPDFTextExtraction);
+
+  // Create a request for PDF. The request simulates a reception of PDF text
+  // extraction result.
+  request_ = nullptr;
+  web_contents()->RemoveUserData(AnnotatedPageContentRequest::UserDataKey());
+
+  AnnotatedPageContentRequest::CreateForWebContents(
+      web_contents(), extraction_service(),
+      base::BindRepeating([](content::WebContents&,
+                             const FetchPageContextOptions&,
+                             std::unique_ptr<FetchPageProgressListener>,
+                             FetchPageContextResultCallback callback) {
+        auto result = std::make_unique<FetchPageContextResult>();
+        PdfResult pdf_result{
+            /*origin=*/url::Origin::Create(GURL("https://example.com")),
+            /*text=*/"Sample PDF text"};
+        result->pdf_result = std::move(pdf_result);
+        std::move(callback).Run(std::move(result));
+      }),
+      base::BindRepeating([](content::WebContents* web_contents) {
+        return std::make_optional(reinterpret_cast<int64_t>(web_contents));
+      }));
+
+  request_ = AnnotatedPageContentRequest::FromWebContents(web_contents());
+
+  SimulatePageLoad();
+
+  // Trigger the callback that directly notifies
+  // `AnnotatedPageContentRequest::OnPageContextFetched` with a `PdfResult`.
+  // TODO(b/487632737): Once PDF extraction is implemented, this method should
+  // not trigger PDF text extraction. This should be replaced by a navigation to
+  // a PDF document, which triggers the extraction.
+  base::test::TestFuture<std::optional<ExtractedPageContentResult>>
+      refresh_future;
+  request_->RefreshExtractedPageContentAndEligibilityForPage(
+      refresh_future.GetCallback());
+
+  std::optional<ExtractedPageContentResult> result = refresh_future.Get();
+  EXPECT_FALSE(result.has_value());
+
+  EXPECT_EQ(extraction_service().extraction_count(), 1);
+  EXPECT_EQ(extraction_service().last_extracted_pdf_text(), "Sample PDF text");
 }
 
 }  // namespace page_content_annotations

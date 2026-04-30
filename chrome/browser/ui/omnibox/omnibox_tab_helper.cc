@@ -7,7 +7,9 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <variant>
 
+#include "base/check.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
 #include "base/strings/strcat.h"
@@ -143,10 +145,14 @@ std::optional<bool> OmniboxTabHelper::IsPagePaywalled() {
 
 void OmniboxTabHelper::OnPageContentExtracted(
     content::Page& page,
-    scoped_refptr<
-        const page_content_annotations::RefCountedAnnotatedPageContent>
-        page_content) {
-  CHECK(page_content);
+    page_content_annotations::PageContent page_content) {
+  page_content_annotations::RefCountedAnnotatedPageContentPtr*
+      annotated_page_content_ptr = std::get_if<
+          page_content_annotations::RefCountedAnnotatedPageContentPtr>(
+          &page_content);
+  if (!annotated_page_content_ptr || !(*annotated_page_content_ptr)) {
+    return;
+  }
 
   // Ignore if the APC does not belong to the primary page of this tabs web
   // contents.
@@ -154,9 +160,12 @@ void OmniboxTabHelper::OnPageContentExtracted(
     return;
   }
   page_has_apc_paywall_signal_ =
-      page_content->data.has_main_frame_data() &&
-      page_content->data.main_frame_data().has_paid_content_metadata() &&
-      page_content->data.main_frame_data()
+      (*annotated_page_content_ptr)->data.has_main_frame_data() &&
+      (*annotated_page_content_ptr)
+          ->data.main_frame_data()
+          .has_paid_content_metadata() &&
+      (*annotated_page_content_ptr)
+          ->data.main_frame_data()
           .paid_content_metadata()
           .contains_paid_content();
 }

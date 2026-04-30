@@ -91,9 +91,7 @@ class OmniboxTabHelper
   // page_content_annotations::PageContentExtractionService::Observer
   void OnPageContentExtracted(
       content::Page& page,
-      scoped_refptr<
-          const page_content_annotations::RefCountedAnnotatedPageContent>
-          page_content) override;
+      page_content_annotations::PageContent page_content) override;
 
   // content::WebContentsObserver
   void PrimaryPageChanged(content::Page& page) override;

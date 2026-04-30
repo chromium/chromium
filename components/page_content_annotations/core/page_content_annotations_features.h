@@ -30,6 +30,11 @@ BASE_DECLARE_FEATURE(kAnnotatedPageContentExtraction);
 COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
 BASE_DECLARE_FEATURE(kAnnotatedPageContentNonSalientFiltering);
 
+// Enables PDF text extraction for local consumers such as page embeddings
+// service.
+COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
+BASE_DECLARE_FEATURE(kAnnotatedPageContentPDFTextExtraction);
+
 // Whether non-salient content filtering should exclude ad-related content.
 COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
 extern const base::FeatureParam<bool>

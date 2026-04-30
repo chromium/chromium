@@ -7,9 +7,11 @@
 #include <memory>
 #include <optional>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/base64.h"
+#include "base/check.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/strings/utf_string_conversions.h"
@@ -124,14 +126,25 @@ bool PageContentExtractionService::ShouldEnablePageContentExtraction() const {
 
 void PageContentExtractionService::OnPageContentExtracted(
     content::Page& page,
-    scoped_refptr<const RefCountedAnnotatedPageContent> annotated_page_content,
+    PageContent page_content,
     const std::vector<uint8_t>& screenshot_data,
     std::optional<int> tab_id) {
   for (auto& observer : observers_) {
-    observer.OnPageContentExtracted(page, annotated_page_content);
+    observer.OnPageContentExtracted(page, page_content);
   }
 
   if (!is_page_content_cache_enabled_) {
+    return;
+  }
+
+  // Note: Unlike APC result, PDF text result is not stored to the cache. The
+  // below cache handling logic does not apply to it.
+  // TODO(b/487632737): Investigate the support for on-demand PDF text
+  // extraction, which may require `page_content_cache_handler_` to interact
+  // with the PDF text result.
+  RefCountedAnnotatedPageContentPtr* annotated_page_content_ptr =
+      std::get_if<RefCountedAnnotatedPageContentPtr>(&page_content);
+  if (!annotated_page_content_ptr || !(*annotated_page_content_ptr)) {
     return;
   }
 
@@ -143,7 +156,7 @@ void PageContentExtractionService::OnPageContentExtracted(
 
   page_content_cache_handler_->ProcessPageContentExtraction(
       tab_id, ToWebStateWrapper(web_contents),
-      ToPageContext(annotated_page_content->data, web_contents,
+      ToPageContext((*annotated_page_content_ptr)->data, web_contents,
                     screenshot_data),
       base::Time::Now());
 }

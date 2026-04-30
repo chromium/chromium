@@ -118,6 +118,9 @@ BASE_FEATURE(kAnnotatedPageContentExtraction,
 BASE_FEATURE(kAnnotatedPageContentNonSalientFiltering,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kAnnotatedPageContentPDFTextExtraction,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 const base::FeatureParam<bool> kAnnotatedPageContentExcludeAdRelatedParam{
     &kAnnotatedPageContentNonSalientFiltering, "exclude_ad_related", false};
 

@@ -1124,4 +1124,22 @@ TEST_F(PageEmbeddingsServiceTest, NewPageWithNoPassagesClearsOldEmbeddings) {
                   .empty());
 }
 
+// Verify that the PDF text received by page embeddings service is ignored.
+// TODO(b/487632737): Support embeddings generation from PDF text.
+TEST_F(PageEmbeddingsServiceTest, ReceivedPDFTextIgnored) {
+  std::unique_ptr<content::WebContents> web_contents =
+      CreateTestWebContentsWithVisibility(content::Visibility::HIDDEN);
+
+  EXPECT_CALL(embedder_mock(), ComputePassagesEmbeddings).Times(0);
+
+  page_embeddings_service().OnPageContentExtracted(
+      web_contents->GetPrimaryPage(),
+      /*page_content=*/base::MakeRefCounted<RefCountedPDFText>(
+          "pdf text content"));
+
+  EXPECT_THAT(
+      page_embeddings_service().GetEmbeddings(web_contents->GetPrimaryPage()),
+      IsEmpty());
+}
+
 }  // namespace page_content_annotations

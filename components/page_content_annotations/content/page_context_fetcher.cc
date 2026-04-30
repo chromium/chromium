@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/check.h"
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -851,18 +852,32 @@ FetchPageContextResult::FetchPageContextResult()
     : screenshot_result(base::unexpected("Uninitialized")),
       annotated_page_content_result(base::unexpected("Uninitialized")) {}
 
+FetchPageContextResult::FetchPageContextResult(FetchPageContextResult&&) =
+    default;
+FetchPageContextResult& FetchPageContextResult::operator=(
+    FetchPageContextResult&&) = default;
+
 FetchPageContextResult::~FetchPageContextResult() = default;
 
 PdfResult::PdfResult(url::Origin origin, std::vector<uint8_t> bytes)
-    : origin(std::move(origin)), bytes(std::move(bytes)) {}
+    : origin(std::move(origin)), data(std::move(bytes)) {}
+
+PdfResult::PdfResult(url::Origin origin, std::string text)
+    : origin(std::move(origin)), data(std::move(text)) {}
 
 PdfResult::PdfResult(url::Origin origin)
     : origin(std::move(origin)), size_exceeded(true) {}
+
+PdfResult::PdfResult(PdfResult&&) = default;
+PdfResult& PdfResult::operator=(PdfResult&&) = default;
 
 PdfResult::~PdfResult() = default;
 
 ScreenshotResult::ScreenshotResult(gfx::Size dimensions)
     : dimensions(std::move(dimensions)) {}
+
+ScreenshotResult::ScreenshotResult(ScreenshotResult&&) = default;
+ScreenshotResult& ScreenshotResult::operator=(ScreenshotResult&&) = default;
 
 ScreenshotResult::~ScreenshotResult() = default;
 
