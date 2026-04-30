@@ -157,8 +157,6 @@ class ClearKeyCdm : public cdm::ContentDecryptionModule_10,
   void ReportVerifyCdmHostTestResult();
   void StartStorageIdTest();
 
-  int host_interface_version_ = 0;
-
   std::unique_ptr<CdmHostProxy> cdm_host_proxy_;
   scoped_refptr<ContentDecryptionModule> cdm_;
 

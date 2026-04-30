@@ -342,8 +342,7 @@ class CdmVideoFrameAdapter : public cdm::VideoFrame_2 {
 
 template <typename HostInterface>
 ClearKeyCdm::ClearKeyCdm(HostInterface* host, const std::string& key_system)
-    : host_interface_version_(HostInterface::kVersion),
-      cdm_host_proxy_(std::make_unique<CdmHostProxyImpl<HostInterface>>(host)),
+    : cdm_host_proxy_(std::make_unique<CdmHostProxyImpl<HostInterface>>(host)),
       cdm_(base::MakeRefCounted<ClearKeyPersistentSessionCdm>(
           cdm_host_proxy_.get(),
           base::BindRepeating(&ClearKeyCdm::OnSessionMessage,
@@ -494,10 +493,8 @@ void ClearKeyCdm::OnUpdateSuccess(uint32_t promise_id,
       ScheduleNextTimer();
     }
 
-    // Also send an individualization request if never sent before. Only
-    // supported on Host_10 and later.
-    if (host_interface_version_ >= cdm::Host_10::kVersion &&
-        !has_sent_individualization_request_) {
+    // Also send an individualization request if never sent before.
+    if (!has_sent_individualization_request_) {
       has_sent_individualization_request_ = true;
       const std::string request = kDummyIndividualizationRequest;
       cdm_host_proxy_->OnSessionMessage(session_id.data(), session_id.length(),
