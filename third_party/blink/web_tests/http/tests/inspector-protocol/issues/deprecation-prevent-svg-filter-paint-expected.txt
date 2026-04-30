@@ -1,0 +1,20 @@
+Tests that deprecation issues are reported for svg filters on restricted content
+Inspector issue: {
+    issue : {
+        code : DeprecationIssue
+        details : {
+            deprecationIssueDetails : {
+                affectedFrame : {
+                    frameId : <string>
+                }
+                sourceCodeLocation : {
+                    columnNumber : 0
+                    lineNumber : -1
+                    url : https://devtools.test:8443/inspector-protocol/issues/resources/svg-sandbox-iframe.html
+                }
+                type : PreventSvgFilterPaint
+            }
+        }
+    }
+}
+

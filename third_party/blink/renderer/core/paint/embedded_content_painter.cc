@@ -170,6 +170,8 @@ EmbeddedContentPainter::RemoveSvgFilterPaint(
   }
 
   // Finally we emplace the (revised) scoped properties.
+  layout_embedded_content.GetDocument().CountDeprecation(
+      mojom::blink::WebFeature::kPreventSvgFilterPaint);
   return std::optional<ScopedPaintChunkProperties>{
       std::in_place, paint_info.context.GetPaintController(), *candidate_effect,
       layout_embedded_content, display_item_type};

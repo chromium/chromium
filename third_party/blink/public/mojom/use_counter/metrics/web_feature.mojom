@@ -5198,6 +5198,7 @@ enum WebFeature {
   kCSSURLRequestModifierCrossOrigin = 5881,
   kCSSURLRequestModifierIntegrity = 5882,
   kCSSURLRequestModifierReferrerPolicy = 5883,
+  kPreventSvgFilterPaint = 5884,
 
   // Add new features immediately above this line. Don't change the existing
   // numbers of any item, and don't reuse removed slots. Also don't add extra

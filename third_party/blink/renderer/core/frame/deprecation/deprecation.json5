@@ -522,6 +522,15 @@
       ],
     },
     {
+      name: "PreventSvgFilterPaint",
+      message: "SVG filters cannot be applied to cross-origin iframes, restricted iframes (e.g., sandboxed), or plugins.",
+      translation_note: "Warning displayed to developers when an SVG filter is applied to a disallowed content type.",
+      web_features: [
+        "kPreventSvgFilterPaint",
+      ],
+      chrome_status_feature: 5117170452398080,
+    },
+    {
       name: "RangeExpand",
       message: "Range.expand() is deprecated. Please use Selection.modify() instead.",
       translation_note: "Standard message when one web API is deprecated in favor of another.",
