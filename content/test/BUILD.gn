@@ -2707,6 +2707,7 @@ test("content_unittests") {
     "../browser/gpu/gpu_data_manager_impl_private_unittest.cc",
     "../browser/handwriting/handwriting_recognition_service_impl_unittest.cc",
     "../browser/idle/idle_manager_unittest.cc",
+    "../browser/image_capture/image_capture_impl_unittest.cc",
     "../browser/installedapp/installed_app_provider_impl_unittest.cc",
     "../browser/interest_group/ad_auction_headers_util_unittest.cc",
     "../browser/interest_group/ad_auction_service_impl_unittest.cc",

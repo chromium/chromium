@@ -6,18 +6,20 @@
 #define CONTENT_BROWSER_IMAGE_CAPTURE_IMAGE_CAPTURE_IMPL_H_
 
 #include "base/memory/weak_ptr.h"
+#include "content/common/content_export.h"
 #include "content/public/browser/document_service.h"
 #include "media/capture/mojom/image_capture.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
 namespace content {
 
-class ImageCaptureImpl final
+class CONTENT_EXPORT ImageCaptureImpl final
     : public content::DocumentService<media::mojom::ImageCapture> {
  public:
   static void Create(
       RenderFrameHost* render_frame_host,
-      mojo::PendingReceiver<media::mojom::ImageCapture> receiver);
+      mojo::PendingReceiver<media::mojom::ImageCapture> receiver,
+      bool skip_connecting_to_media_stream_manager_for_testing = false);
 
   ImageCaptureImpl(const ImageCaptureImpl&) = delete;
   ImageCaptureImpl& operator=(const ImageCaptureImpl&) = delete;
@@ -33,14 +35,18 @@ class ImageCaptureImpl final
                  TakePhotoCallback callback) override;
 
  private:
-  ImageCaptureImpl(RenderFrameHost& render_frame_host,
-                   mojo::PendingReceiver<media::mojom::ImageCapture> receiver);
+  ImageCaptureImpl(
+      RenderFrameHost& render_frame_host,
+      mojo::PendingReceiver<media::mojom::ImageCapture> receiver,
+      bool skip_connecting_to_media_stream_manager_for_testing = false);
   ~ImageCaptureImpl() override;
 
   void OnGetPhotoState(GetPhotoStateCallback callback,
                        media::mojom::PhotoStatePtr);
 
   bool HasPanTiltZoomPermissionGranted();
+
+  bool skip_connecting_to_media_stream_manager_for_testing_ = false;
 
   base::WeakPtrFactory<ImageCaptureImpl> weak_factory_{this};
 };

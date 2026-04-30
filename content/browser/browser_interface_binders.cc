@@ -730,6 +730,12 @@ void BindSocketManager(
 }
 #endif  // BUILDFLAG(IS_P2P_ENABLED)
 
+void BindImageCaptureImpl(
+    RenderFrameHost* frame_host,
+    mojo::PendingReceiver<media::mojom::ImageCapture> receiver) {
+  ImageCaptureImpl::Create(frame_host, std::move(receiver));
+}
+
 void BindDevicePostureProvider(
     RenderFrameHost* frame_host,
     mojo::PendingReceiver<blink::mojom::DevicePostureProvider> receiver) {
@@ -1038,7 +1044,7 @@ void PopulateBinderMapWithContext(
       &BindRenderFrameHostImpl<
           &RenderFrameHostImpl::CreateAudioOutputStreamFactory>);
 
-  map->Add<media::mojom::ImageCapture>(&ImageCaptureImpl::Create);
+  map->Add<media::mojom::ImageCapture>(&BindImageCaptureImpl);
 
   map->Add<media::mojom::InterfaceFactory>(
       &BindRenderFrameHostImpl<
