@@ -432,6 +432,29 @@ ci.builder(
     },
 )
 
+packager_builder(
+    name = "rts-model-packager",
+    description_html = "Builds and packages the Regression Test Selection (RTS) model daily.",
+    executable = "recipe:chromium_rts/create_model",
+    schedule = "0 9 * * *",  # at 1AM or 2AM PT (depending on DST), once a day.
+    triggered_by = [],
+    builderless = False,
+    cores = None,
+    console_view_entry = consoles.console_view_entry(
+        category = "packager|rts",
+        short_name = "create-model",
+    ),
+    contact_team_email = "chrome-test-infra-mx@google.com",
+    execution_timeout = 10 * time.hour,
+    notifies = [
+        luci.notifier(
+            name = "rts-model-packager-notifier",
+            notify_emails = ["chrome-test-infra-mx+alerts@google.com"],
+            on_occurrence = ["FAILURE", "INFRA_FAILURE"],
+        ),
+    ],
+)
+
 ci.builder(
     name = "rts-suite-analysis",
     executable = "recipe:chromium_rts/rts_analyze",
