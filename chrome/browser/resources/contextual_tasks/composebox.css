@@ -194,7 +194,7 @@
 }
 
 :host([energy-effect-enabled_]) #composebox::part(composebox) {
-  box-shadow: var(--cr-elevation-2);
+  box-shadow: 0 4px 18px -2px rgba(60, 64, 67, 0.12);
 }
 
 #composebox::part(thumbnail) {
