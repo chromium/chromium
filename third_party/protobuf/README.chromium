@@ -58,7 +58,13 @@ Steps used to create the current version (or roll a newer one):
 
    Probably worth committing locally here too.
 
-4. Generate descriptor_pb2.py using the script "gen_extra_chromium_files.py" in
+4. Remove generated .pb.h/.pb.cc files for Well Known Types. Due to the fact
+   that they are generated for protobuf full, and Chromium uses protobuf lite
+   too, they can cause issues during build that are not easy to spot.
+
+   $ rm src/google/protobuf/{any,api,duration,empty,field_mask,source_context,struct,timestamp,type,wrappers}.pb.{cc,h}
+
+5. Generate descriptor_pb2.py using the script "gen_extra_chromium_files.py" in
    the same directory as this file.
 
    $ ./gen_extra_chromium_files.py -C ../../out/Default
@@ -71,7 +77,7 @@ Steps used to create the current version (or roll a newer one):
    $ git add -f python/google/protobuf/descriptor_pb2.py \
      python/google/protobuf/compiler/plugin_pb2.py
 
-5. This step requires `bazel`, and not the one from depot_tools, and it is not
+6. This step requires `bazel`, and not the one from depot_tools, and it is not
    part of build/install-build-deps.sh in Chromium, so you need to manually
    install it:
 
@@ -86,12 +92,12 @@ Steps used to create the current version (or roll a newer one):
 
    TODO: generalize this and add it to gen_extra_chromium_files.py
 
-6. Update Version, CPEPrefix and Revision in this file.
+7. Update Version, CPEPrefix and Revision in this file.
 
    The revision should be set to the SHA1 of the commit that the release tag
    points to at the time of the roll.
 
-7. Address breakages.
+8. Address breakages.
 
    The CQ will help you identify problems that need fixing.
 
