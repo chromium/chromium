@@ -260,6 +260,53 @@ TEST_F(ExtensionWebRequestTest, BrowserContextShutdown) {
   EXPECT_FALSE(event_router->HasAnyExtraHeadersListenerForTesting(&profile_));
 }
 
+// Simulates the state caused by polluted prefs (multiple filters under one
+// `sub_event_name` key): when `LoadFilteredLazyListeners` spawns N lazy
+// listeners that share an (extension_id, sub_event_name), the lazy path of
+// `WebRequestEventRouter::AddEventListener` must collapse them into a single
+// inactive listener so that subsequent activations don't violate the
+// `DCHECK_LE(erased, 1u)` assertion in the active path.
+// Regression test for crbug.com/502402731.
+TEST_F(ExtensionWebRequestTest, PollutedPrefsActivationConverges) {
+  const std::string kExtensionId("abcdefghijklmnopabcdefghijklmnop");
+  const std::string kEventName(web_request::OnBeforeRequest::kEventName);
+  const std::string kSubEventName = kEventName + "/s1";
+  WebRequestEventRouter* const event_router =
+      WebRequestEventRouter::Get(&profile_);
+  ASSERT_TRUE(event_router);
+
+  // Simulate `LoadFilteredLazyListeners` loading two lazy listeners under
+  // the same `sub_event_name` from prefs that accumulated duplicate filters.
+  EXPECT_TRUE(event_router->AddEventListener(
+      &profile_, kExtensionId, kExtensionId, kEventName, kSubEventName,
+      WebRequestEventRouter::RequestFilter(), 0, /*render_process_id=*/0,
+      /*web_view_instance_id=*/0, extensions::kMainThreadId,
+      blink::mojom::kInvalidServiceWorkerVersionId, /*is_lazy=*/true));
+  EXPECT_TRUE(event_router->AddEventListener(
+      &profile_, kExtensionId, kExtensionId, kEventName, kSubEventName,
+      WebRequestEventRouter::RequestFilter(), 0, /*render_process_id=*/0,
+      /*web_view_instance_id=*/0, extensions::kMainThreadId,
+      blink::mojom::kInvalidServiceWorkerVersionId, /*is_lazy=*/true));
+
+  // The defensive cleanup in the lazy path should collapse the duplicates into
+  // a single inactive listener.
+  EXPECT_EQ(1u, event_router->GetInactiveListenerCountForTesting(&profile_,
+                                                                 kEventName));
+
+  // Activate the listener (as it happens when the service worker spins up).
+  // `DCHECK_LE(erased, 1u)` holds and activation should succeed.
+  EXPECT_TRUE(event_router->AddEventListener(
+      &profile_, kExtensionId, kExtensionId, kEventName, kSubEventName,
+      WebRequestEventRouter::RequestFilter(), 0, /*render_process_id=*/1,
+      /*web_view_instance_id=*/0, /*worker_thread_id=*/100,
+      /*service_worker_version_id=*/10, /*is_lazy=*/false));
+  EXPECT_EQ(1u,
+            event_router->GetListenerCountForTesting(&profile_, kEventName));
+  // The inactive entry should have been consumed by activation.
+  EXPECT_EQ(0u, event_router->GetInactiveListenerCountForTesting(&profile_,
+                                                                 kEventName));
+}
+
 namespace {
 
 void TestInitFromValue(content::BrowserContext* browser_context,

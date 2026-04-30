@@ -1934,7 +1934,20 @@ bool WebRequestEventRouter::AddEventListener(
   listener->filter = std::move(filter);
   listener->extra_info_spec = extra_info_spec;
 
+  auto matches_sub_event = [browser_context, &extension_id, &sub_event_name](
+                               const std::unique_ptr<EventListener>& existing) {
+    return existing->id.browser_context == browser_context &&
+           existing->id.extension_id == extension_id &&
+           existing->id.sub_event_name == sub_event_name;
+  };
+
   if (is_lazy) {
+    // Replace any inactive listener that already exists for this sub-event
+    // name. This handles the case where prefs accumulated multiple filters
+    // under one sub-event-name in older builds. Each `AddEventListener` call
+    // collapses the duplicates to a single entry. See crbug.com/502402731.
+    auto& inactive = data_[browser_context_id].inactive_listeners[event_name];
+    std::erase_if(inactive, matches_sub_event);
     AddLazyListener(browser_context, event_name, std::move(listener));
     return true;
   }
@@ -1958,13 +1971,7 @@ bool WebRequestEventRouter::AddEventListener(
     // the *same order* in the extension. In practice, this should pretty much
     // always be the case, because we require listeners to be set up
     // synchronously.
-    size_t erased = std::erase_if(
-        listeners, [browser_context, extension_id, sub_event_name](
-                       const std::unique_ptr<EventListener>& listener) {
-          return listener->id.browser_context == browser_context &&
-                 listener->id.extension_id == extension_id &&
-                 listener->id.sub_event_name == sub_event_name;
-        });
+    size_t erased = std::erase_if(listeners, matches_sub_event);
     // Only a single listener should ever match. It's possible no listener will
     // match if this is a new listener in a worker context.
     DCHECK_LE(erased, 1u);

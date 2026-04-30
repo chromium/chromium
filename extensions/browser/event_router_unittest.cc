@@ -789,6 +789,63 @@ TEST_P(EventRouterFilterTest, AddFilteredLazyListenerForUnloadedExtension) {
   EXPECT_TRUE(ContainsFilter(kExtensionId, kEventName, filter));
 }
 
+// Re-registering a sub-event-named listener with a different filter must
+// replace the persisted filter rather than append, so that prefs do not
+// accumulate stale filters across service-worker invocations.
+// Regression test for crbug.com/502402731.
+TEST_P(EventRouterFilterTest, SubEventNamedListenerReplacesPersistedFilter) {
+  const std::string kEventName = "webRequest.onBeforeRequest/s0";
+  const std::string kExtensionId = "mbflcebpggnecokmikipoihdbecnjfoj";
+  auto param = mojom::EventListenerOwner::NewExtensionId(kExtensionId);
+
+  std::unique_ptr<mojom::ServiceWorkerContext> worker_context;
+  if (is_for_service_worker()) {
+    worker_context = std::make_unique<mojom::ServiceWorkerContext>(
+        Extension::GetBaseURLFromExtensionId(kExtensionId),
+        99,    // Placeholder version_id.
+        199);  // Placeholder thread_id.
+  }
+
+  // Register a listener for "foo.com".
+  const base::DictValue filter_foo = CreateHostSuffixFilter("foo.com");
+  event_router()->AddFilteredEventListener(
+      kEventName, render_process_host(), param.Clone(), worker_context.get(),
+      filter_foo, /*add_lazy_listener=*/true);
+
+  // Verify that the filter was stored correctly: there should be exactly one
+  // filtered event entry containing the "foo.com" filter.
+  {
+    const base::DictValue* filtered_events = GetFilteredEvents(kExtensionId);
+    ASSERT_TRUE(filtered_events);
+    ASSERT_EQ(1u, filtered_events->size());
+    const auto iter = filtered_events->begin();
+    ASSERT_EQ(kEventName, iter->first);
+    ASSERT_TRUE(iter->second.is_list());
+    ASSERT_EQ(1u, iter->second.GetList().size());
+    EXPECT_TRUE(ContainsFilter(kExtensionId, kEventName, filter_foo));
+  }
+
+  // Re-register the exact same event name but with "bar.com".
+  // This simulates a Service Worker waking up and updating its listeners.
+  const base::DictValue filter_bar = CreateHostSuffixFilter("bar.com");
+  event_router()->AddFilteredEventListener(
+      kEventName, render_process_host(), param.Clone(), worker_context.get(),
+      filter_bar, /*add_lazy_listener=*/true);
+
+  // Retrieve the stored events again. We expect the EventRouter to have
+  // swapped "foo.com" for "bar.com" rather than having a list of two filters.
+  const base::DictValue* filtered_events = GetFilteredEvents(kExtensionId);
+  ASSERT_TRUE(filtered_events);
+  ASSERT_EQ(1u, filtered_events->size());
+  const auto iter = filtered_events->begin();
+  ASSERT_EQ(kEventName, iter->first);
+  ASSERT_TRUE(iter->second.is_list());
+  // "foo.com" should be gone, and "bar.com" should be present.
+  ASSERT_EQ(1u, iter->second.GetList().size());
+  EXPECT_FALSE(ContainsFilter(kExtensionId, kEventName, filter_foo));
+  EXPECT_TRUE(ContainsFilter(kExtensionId, kEventName, filter_bar));
+}
+
 // TODO(crbug.com/40281129): test is flaky across platforms.
 TEST_P(EventRouterFilterTest, DISABLED_URLBasedFilteredEventListener) {
   const std::string kEventName = "windows.onRemoved";

@@ -141,6 +141,12 @@ base::debug::CrashKeyString* GetEventNameCrashKey() {
   return crash_key;
 }
 
+bool IsSubEventName(std::string_view event) {
+  return (event.starts_with("webRequest.") ||
+          event.starts_with("webViewInternal.")) &&
+         event.contains("/");
+}
+
 }  // namespace
 
 namespace debug {
@@ -1462,6 +1468,18 @@ void EventRouter::AddFilterToEvent(const std::string& event_name,
       is_for_service_worker ? kFilteredServiceWorkerEvents : kFilteredEvents);
   auto filtered_events = update.Create();
 
+  // Sub-event-named listeners (e.g. "webRequest.onBeforeRequest/s0") encode
+  // listener identity in the name itself, so each key should hold at most one
+  // filter. Overwrite to keep stale filters from accumulating when a service
+  // worker re-registers with a different filter across SW invocations.
+  // See crbug.com/502402731.
+  if (IsSubEventName(event_name)) {
+    base::ListValue replacement;
+    replacement.Append(filter.Clone());
+    filtered_events->SetKey(event_name, base::Value(std::move(replacement)));
+    return;
+  }
+
   base::ListValue* filter_list = nullptr;
   if (!filtered_events->GetListWithoutPathExpansion(event_name, &filter_list)) {
     filtered_events->SetKey(event_name, base::Value(base::ListValue()));
@@ -1488,11 +1506,7 @@ void EventRouter::RemoveOrphanedWebRequestEvents(
   // they are stored as filtered listeners, we need to clean up the old,
   // orphaned unfiltered listener entries from preferences to prevent duplicate
   // listener entries.
-  size_t removed_count = std::erase_if(events, [](const std::string& event) {
-    return (event.starts_with("webRequest.") ||
-            event.starts_with("webViewInternal.")) &&
-           event.contains("/");
-  });
+  size_t removed_count = std::erase_if(events, IsSubEventName);
 
   if (removed_count > 0) {
     SetRegisteredEvents(extension_id, events, type);
