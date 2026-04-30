@@ -1403,6 +1403,9 @@ ci.builder(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.interactive_ui_tests_mutter.filter",
                 ],
+                swarming = targets.swarming(
+                    shards = 5,
+                ),
             ),
         },
     ),
