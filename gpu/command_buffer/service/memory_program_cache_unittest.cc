@@ -15,10 +15,13 @@
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/memory_pressure_listener_registry.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_span.h"
 #include "base/memory_coordinator/memory_coordinator_features.h"
+#include "base/memory_coordinator/test_memory_consumer_registry.h"
+#include "base/memory_coordinator/utils.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -230,6 +233,7 @@ class MemoryProgramCacheTest : public GpuServiceTest, public DecoderClient {
                 .WillOnce(SetArgPointee<2>(GL_FALSE));
   }
 
+  base::TestMemoryConsumerRegistry test_memory_consumer_registry_;
   GpuProcessShmCount use_shader_cache_shm_count_;
   std::unique_ptr<MemoryProgramCache> cache_;
   ShaderManager shader_manager_;
@@ -239,12 +243,24 @@ class MemoryProgramCacheTest : public GpuServiceTest, public DecoderClient {
   int32_t shader_cache_count_;
   std::string shader_cache_shader_;
   std::vector<std::string> varyings_;
-  base::MemoryPressureListenerRegistry memory_pressure_listener_registry_;
-
   void SimulateMemoryPressure(base::MemoryPressureLevel level) {
+    int percentage = 100;
+    switch (level) {
+      case base::MEMORY_PRESSURE_LEVEL_NONE:
+        percentage = 100;
+        break;
+      case base::MEMORY_PRESSURE_LEVEL_MODERATE:
+        percentage = base::kModerateMemoryPressureThreshold;
+        break;
+      case base::MEMORY_PRESSURE_LEVEL_CRITICAL:
+        percentage = base::kCriticalMemoryPressureThreshold;
+        break;
+    }
     base::RunLoop run_loop;
-    base::MemoryPressureListener::SimulatePressureNotificationAsync(
-        level, run_loop.QuitClosure());
+    test_memory_consumer_registry_.NotifyUpdateMemoryLimitAsync(
+        percentage, base::DoNothing());
+    test_memory_consumer_registry_.NotifyReleaseMemoryAsync(
+        run_loop.QuitClosure());
     run_loop.Run();
   }
 
@@ -733,6 +749,50 @@ TEST_F(MemoryProgramCacheTest, MemoryPressure) {
   CheckProgramStatus("shader7", ProgramCache::LINK_SUCCEEDED);
   CheckProgramStatus("shader8", ProgramCache::LINK_SUCCEEDED);
   CheckProgramStatus("shader9", ProgramCache::LINK_SUCCEEDED);
+}
+
+TEST_F(MemoryProgramCacheTest, MemoryPressureStateful) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(base::kStatefulMemoryPressure);
+
+  const int kCacheCapacity = 4;
+  const int kBlobLength = kCacheSizeBytes / kCacheCapacity;
+
+  // Fill the cache.
+  for (int i = 0; i < kCacheCapacity; i++) {
+    std::vector<char> binary(kBlobLength, static_cast<char>(i));
+    SaveProgram(10 + i, "shader" + base::NumberToString(i), binary);
+  }
+
+  CheckProgramStatus("shader0", ProgramCache::LINK_SUCCEEDED);
+  CheckProgramStatus("shader1", ProgramCache::LINK_SUCCEEDED);
+  CheckProgramStatus("shader2", ProgramCache::LINK_SUCCEEDED);
+  CheckProgramStatus("shader3", ProgramCache::LINK_SUCCEEDED);
+
+  // Moderate pressure (50%).
+  base::RunLoop run_loop;
+  test_memory_consumer_registry_.NotifyUpdateMemoryLimitAsync(
+      base::kModerateMemoryPressureThreshold, run_loop.QuitClosure());
+  run_loop.Run();
+
+  // Verify that NO memory is released yet!
+  CheckProgramStatus("shader0", ProgramCache::LINK_SUCCEEDED);
+  CheckProgramStatus("shader1", ProgramCache::LINK_SUCCEEDED);
+  CheckProgramStatus("shader2", ProgramCache::LINK_SUCCEEDED);
+  CheckProgramStatus("shader3", ProgramCache::LINK_SUCCEEDED);
+
+  // Now release memory.
+  base::RunLoop run_loop2;
+  test_memory_consumer_registry_.NotifyReleaseMemoryAsync(
+      run_loop2.QuitClosure());
+  run_loop2.Run();
+
+  // Now memory should be released!
+  // At 50% limit, size should be 1/4 (1 item).
+  CheckProgramStatus("shader0", ProgramCache::LINK_UNKNOWN);
+  CheckProgramStatus("shader1", ProgramCache::LINK_UNKNOWN);
+  CheckProgramStatus("shader2", ProgramCache::LINK_UNKNOWN);
+  CheckProgramStatus("shader3", ProgramCache::LINK_SUCCEEDED);
 }
 
 }  // namespace gles2

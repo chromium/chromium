@@ -12,8 +12,11 @@
 
 #include "base/base64.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/memory_pressure_listener_registry.h"
 #include "base/memory_coordinator/memory_coordinator_features.h"
+#include "base/memory_coordinator/test_memory_consumer_registry.h"
+#include "base/memory_coordinator/utils.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "gpu/command_buffer/common/gles2_cmd_format.h"
@@ -96,13 +99,28 @@ class PassthroughProgramCacheTest : public GpuServiceTest,
   }
 
   void SimulateMemoryPressure(base::MemoryPressureLevel level) {
+    int percentage = 100;
+    switch (level) {
+      case base::MEMORY_PRESSURE_LEVEL_NONE:
+        percentage = 100;
+        break;
+      case base::MEMORY_PRESSURE_LEVEL_MODERATE:
+        percentage = base::kModerateMemoryPressureThreshold;
+        break;
+      case base::MEMORY_PRESSURE_LEVEL_CRITICAL:
+        percentage = base::kCriticalMemoryPressureThreshold;
+        break;
+    }
     base::RunLoop run_loop;
-    base::MemoryPressureListener::SimulatePressureNotificationAsync(
-        level, run_loop.QuitClosure());
+    test_memory_consumer_registry_.NotifyUpdateMemoryLimitAsync(
+        percentage, base::DoNothing());
+    test_memory_consumer_registry_.NotifyReleaseMemoryAsync(
+        run_loop.QuitClosure());
     run_loop.Run();
   }
 
   base::MemoryPressureListenerRegistry memory_pressure_listener_registry_;
+  base::TestMemoryConsumerRegistry test_memory_consumer_registry_;
   PassthroughProgramCache cache_;
   int32_t blob_count_;
 };
@@ -326,6 +344,53 @@ TEST_F(PassthroughProgramCacheTest, MemoryPressure) {
   EXPECT_NE("", Get(MakeKey(kKeyLength, 7)));
   EXPECT_NE("", Get(MakeKey(kKeyLength, 8)));
   EXPECT_NE("", Get(MakeKey(kKeyLength, 9)));
+}
+
+TEST_F(PassthroughProgramCacheTest, MemoryPressureStateful) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(base::kStatefulMemoryPressure);
+
+  const int kKeyLength = 10;
+  // Compute a blob length giving us a capacity of 4 entries.
+  const int kCacheCapacity = 4;
+  const int kBlobLength = kCacheSizeBytes / kCacheCapacity;
+
+  // Fill the cache.
+  for (int i = 0; i < kCacheCapacity; i++) {
+    std::string binary_key = MakeKey(kKeyLength, i);
+    std::string binary_blob = MakeBlob(kBlobLength, i);
+    Set(binary_key, binary_blob);
+  }
+
+  EXPECT_NE("", Get(MakeKey(kKeyLength, 0)));
+  EXPECT_NE("", Get(MakeKey(kKeyLength, 1)));
+  EXPECT_NE("", Get(MakeKey(kKeyLength, 2)));
+  EXPECT_NE("", Get(MakeKey(kKeyLength, 3)));
+
+  // Moderate pressure (50%).
+  base::RunLoop run_loop;
+  test_memory_consumer_registry_.NotifyUpdateMemoryLimitAsync(
+      base::kModerateMemoryPressureThreshold, run_loop.QuitClosure());
+  run_loop.Run();
+
+  // Verify that NO memory is released yet!
+  EXPECT_NE("", Get(MakeKey(kKeyLength, 0)));
+  EXPECT_NE("", Get(MakeKey(kKeyLength, 1)));
+  EXPECT_NE("", Get(MakeKey(kKeyLength, 2)));
+  EXPECT_NE("", Get(MakeKey(kKeyLength, 3)));
+
+  // Now release memory.
+  base::RunLoop run_loop2;
+  test_memory_consumer_registry_.NotifyReleaseMemoryAsync(
+      run_loop2.QuitClosure());
+  run_loop2.Run();
+
+  // Now memory should be released!
+  // At 50% limit, size should be 1/4 (1 item).
+  EXPECT_EQ("", Get(MakeKey(kKeyLength, 0)));
+  EXPECT_EQ("", Get(MakeKey(kKeyLength, 1)));
+  EXPECT_EQ("", Get(MakeKey(kKeyLength, 2)));
+  EXPECT_NE("", Get(MakeKey(kKeyLength, 3)));
 }
 
 }  // namespace gles2

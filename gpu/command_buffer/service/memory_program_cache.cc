@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <array>
 #include <cmath>
 
@@ -17,6 +18,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory_coordinator/memory_coordinator_features.h"
+#include "base/memory_coordinator/utils.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/checked_math.h"
 #include "base/strings/string_number_conversions.h"
@@ -272,10 +274,14 @@ MemoryProgramCache::MemoryProgramCache(
       curr_size_bytes_(0),
       store_(ProgramLRUCache::NO_AUTO_EVICT),
       use_shader_cache_shm_count_(use_shader_cache_shm_count),
-      memory_pressure_listener_registration_(
-          FROM_HERE,
-          base::MemoryPressureListenerTag::kProgramCache,
-          this) {}
+      memory_consumer_registration_(
+          "MemoryProgramCache",
+          std::nullopt,  // TODO(crbug.com/489671163): Add traits.
+          this,
+          base::AsyncMemoryConsumerRegistration::CheckUnregister::kEnabled,
+          base::AsyncMemoryConsumerRegistration::CheckRegistryExists::
+              kDisabled),
+      current_max_size_bytes_(max_cache_size_bytes) {}
 
 MemoryProgramCache::~MemoryProgramCache() = default;
 
@@ -286,10 +292,7 @@ void MemoryProgramCache::ClearBackend() {
 
 size_t MemoryProgramCache::GetCurrentMaxSizeBytes() const {
   if (base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
-    double memory_limit_ratio = GetMemoryLimitRatio();
-    CHECK_LE(memory_limit_ratio, 1.0);
-    // To match previous behavior, the size must be 1/4 at 50% memory limit.
-    return max_size_bytes() * std::pow(memory_limit_ratio, 2.0);
+    return current_max_size_bytes_;
   }
   return max_size_bytes();
 }
@@ -571,17 +574,31 @@ size_t MemoryProgramCache::Trim(size_t limit) {
   return initial_size - curr_size_bytes_;
 }
 
-void MemoryProgramCache::OnMemoryPressure(
-    base::MemoryPressureLevel memory_pressure_level) {
+void MemoryProgramCache::OnUpdateMemoryLimit() {
+  if (!base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
+    return;
+  }
+  // To match previous behavior, the size must be 1/4 at 50% memory limit.
+  double ratio = std::clamp(memory_limit_ratio(), 0.0, 1.0);
+  size_t target_size = max_size_bytes() * std::pow(ratio, 2.0);
+  current_max_size_bytes_ = std::max(curr_size_bytes_, target_size);
+}
+
+void MemoryProgramCache::OnReleaseMemory() {
   if (base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
-    Trim(GetCurrentMaxSizeBytes());
+    // To match previous behavior, the size must be 1/4 at 50% memory limit.
+    double ratio = std::clamp(memory_limit_ratio(), 0.0, 1.0);
+    size_t target_size = max_size_bytes() * std::pow(ratio, 2.0);
+    current_max_size_bytes_ = target_size;
+    Trim(current_max_size_bytes_);
     return;
   }
 
-  if (memory_pressure_level == base::MEMORY_PRESSURE_LEVEL_MODERATE) {
-    Trim(max_size_bytes() / 4);
-  } else if (memory_pressure_level == base::MEMORY_PRESSURE_LEVEL_CRITICAL) {
+  int limit = memory_limit();
+  if (limit <= base::kCriticalMemoryPressureThreshold) {
     Trim(0);
+  } else if (limit <= base::kModerateMemoryPressureThreshold) {
+    Trim(max_size_bytes() / 4);
   }
 }
 

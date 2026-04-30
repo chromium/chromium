@@ -13,9 +13,10 @@
 #include <string>
 
 #include "base/containers/lru_cache.h"
-#include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory_coordinator/async_memory_consumer_registration.h"
+#include "base/memory_coordinator/memory_consumer.h"
 #include "gpu/command_buffer/service/decoder_client.h"
 #include "gpu/command_buffer/service/program_cache.h"
 #include "gpu/command_buffer/service/shader_translator.h"
@@ -27,9 +28,8 @@ class GpuProcessShmCount;
 namespace gles2 {
 
 // Program cache that stores binaries completely in-memory
-class GPU_GLES2_EXPORT MemoryProgramCache
-    : public ProgramCache,
-      public base::MemoryPressureListener {
+class GPU_GLES2_EXPORT MemoryProgramCache : public ProgramCache,
+                                            public base::MemoryConsumer {
  public:
   MemoryProgramCache(size_t max_cache_size_bytes,
                      bool disable_gpu_shader_disk_cache,
@@ -62,9 +62,9 @@ class GPU_GLES2_EXPORT MemoryProgramCache
 
   size_t Trim(size_t limit) override;
 
-  // base::MemoryPressureListener:
-  void OnMemoryPressure(
-      base::MemoryPressureLevel memory_pressure_level) override;
+  // base::MemoryConsumer:
+  void OnUpdateMemoryLimit() override;
+  void OnReleaseMemory() override;
 
  private:
   void ClearBackend() override;
@@ -188,8 +188,8 @@ class GPU_GLES2_EXPORT MemoryProgramCache
   ProgramLRUCache store_;
   raw_ptr<GpuProcessShmCount> use_shader_cache_shm_count_;
 
-  base::AsyncMemoryPressureListenerRegistration
-      memory_pressure_listener_registration_;
+  base::AsyncMemoryConsumerRegistration memory_consumer_registration_;
+  size_t current_max_size_bytes_;
 };
 
 }  // namespace gles2

@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <cmath>
 #include <string_view>
 #include <utility>
@@ -14,6 +15,7 @@
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/memory_coordinator/memory_coordinator_features.h"
+#include "base/memory_coordinator/utils.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_view_util.h"
@@ -49,10 +51,14 @@ PassthroughProgramCache::PassthroughProgramCache(
       disable_gpu_shader_disk_cache_(disable_gpu_shader_disk_cache),
       curr_size_bytes_(0),
       store_(ProgramLRUCache::NO_AUTO_EVICT),
-      memory_pressure_listener_registration_(
-          FROM_HERE,
-          base::MemoryPressureListenerTag::kProgramCache,
-          this) {
+      memory_consumer_registration_(
+          "PassthroughProgramCache",
+          std::nullopt,  // TODO(crbug.com/489671163): Add traits.
+          this,
+          base::AsyncMemoryConsumerRegistration::CheckUnregister::kDisabled,
+          base::AsyncMemoryConsumerRegistration::CheckRegistryExists::
+              kDisabled),
+      current_max_size_bytes_(max_cache_size_bytes) {
   gl::GLDisplayEGL* gl_display = gl::GLSurfaceEGL::GetGLDisplayEGL();
   EGLDisplay egl_display = gl_display->GetDisplay();
 
@@ -127,19 +133,33 @@ size_t PassthroughProgramCache::Trim(size_t limit) {
   return TrimLocked(limit);
 }
 
-void PassthroughProgramCache::OnMemoryPressure(
-    base::MemoryPressureLevel memory_pressure_level) {
+void PassthroughProgramCache::OnUpdateMemoryLimit() {
+  base::AutoLock auto_lock(lock_);
+  if (!base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
+    return;
+  }
+  // To match previous behavior, the size must be 1/4 at 50% memory limit.
+  double ratio = std::clamp(memory_limit_ratio(), 0.0, 1.0);
+  size_t target_size = max_size_bytes() * std::pow(ratio, 2.0);
+  current_max_size_bytes_ = std::max(curr_size_bytes_, target_size);
+}
+
+void PassthroughProgramCache::OnReleaseMemory() {
   base::AutoLock auto_lock(lock_);
   if (base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
-    memory_limit_ratio_ = GetMemoryLimitRatio();
-    TrimLocked(GetCurrentMaxSizeBytes());
+    // To match previous behavior, the size must be 1/4 at 50% memory limit.
+    double ratio = std::clamp(memory_limit_ratio(), 0.0, 1.0);
+    size_t target_size = max_size_bytes() * std::pow(ratio, 2.0);
+    current_max_size_bytes_ = target_size;
+    TrimLocked(current_max_size_bytes_);
     return;
   }
 
-  if (memory_pressure_level == base::MEMORY_PRESSURE_LEVEL_MODERATE) {
-    TrimLocked(max_size_bytes() / 4);
-  } else if (memory_pressure_level == base::MEMORY_PRESSURE_LEVEL_CRITICAL) {
+  int limit = memory_limit();
+  if (limit <= base::kCriticalMemoryPressureThreshold) {
     TrimLocked(0);
+  } else if (limit <= base::kModerateMemoryPressureThreshold) {
+    TrimLocked(max_size_bytes() / 4);
   }
 }
 
@@ -257,9 +277,7 @@ size_t PassthroughProgramCache::TrimLocked(size_t limit) {
 
 size_t PassthroughProgramCache::GetCurrentMaxSizeBytes() const {
   if (base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
-    CHECK_LE(memory_limit_ratio_, 1.0);
-    // To match previous behavior, the size must be 1/4 at 50% memory limit.
-    return max_size_bytes() * std::pow(memory_limit_ratio_, 2.0);
+    return current_max_size_bytes_;
   }
   return max_size_bytes();
 }
