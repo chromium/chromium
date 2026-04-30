@@ -23,6 +23,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_dev_install_manager.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
@@ -114,7 +115,7 @@ base::expected<FileHandlers, protocol::Response> GetFileHandlersFromApp(
 base::expected<std::string, protocol::Response> GetTargetIdFromLaunch(
     const std::string& in_manifest_id,
     const std::optional<GURL>& url,
-    base::WeakPtr<Browser> browser,
+    base::WeakPtr<BrowserWindowInterface> browser,
     base::WeakPtr<content::WebContents> web_contents,
     apps::LaunchContainer container) {
   // The callback will always be provided with a valid Browser
@@ -521,7 +522,7 @@ void PWAHandler::Launch(const std::string& in_manifest_id,
       base::BindOnce(
           [](const std::string& in_manifest_id, const std::optional<GURL>& url,
              std::unique_ptr<LaunchCallback> callback,
-             base::WeakPtr<Browser> browser,
+             base::WeakPtr<BrowserWindowInterface> browser,
              base::WeakPtr<content::WebContents> web_contents,
              apps::LaunchContainer container) {
             auto result = GetTargetIdFromLaunch(in_manifest_id, url, browser,
@@ -583,7 +584,7 @@ void PWAHandler::LaunchFilesInApp(
             [](const std::string& in_manifest_id,
                base::OnceCallback<void(
                    base::expected<std::string, protocol::Response>)> callback,
-               base::WeakPtr<Browser> browser,
+               base::WeakPtr<BrowserWindowInterface> browser,
                base::WeakPtr<content::WebContents> web_contents,
                apps::LaunchContainer container) {
               std::move(callback).Run(

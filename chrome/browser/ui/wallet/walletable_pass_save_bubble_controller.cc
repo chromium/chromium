@@ -8,9 +8,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/wallet/walletable_pass_bubble_view_factory.h"
 #include "chrome/browser/ui/wallet/walletable_pass_save_bubble_view.h"
@@ -87,7 +86,8 @@ WalletablePassSaveBubbleController::
 
 void WalletablePassSaveBubbleController::OnGoToWalletClicked() {
   if (BrowserWindowInterface* browser =
-          chrome::FindBrowserWithTab(web_contents())) {
+          GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+              web_contents())) {
     SetReshowOnActivation(true);
     ShowSingletonTab(browser, GURL(chrome::kWalletPassesPageURL));
   }

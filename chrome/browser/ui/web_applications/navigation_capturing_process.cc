@@ -256,7 +256,7 @@ ReparentIfPossibleOrInitiateIsolatedWebAppLaunch(
   if (registrar.AppMatches(app_id, WebAppFilter::IsIsolatedApp() |
                                        WebAppFilter::IsIsolatedSubApp())) {
     LaunchWebAppCallback callback =
-        base::IgnoreArgs<base::WeakPtr<Browser>,
+        base::IgnoreArgs<base::WeakPtr<BrowserWindowInterface>,
                          base::WeakPtr<content::WebContents>,
                          apps::LaunchContainer>(base::BindOnce(
             &content::WebContents::Close, old_web_contents->GetWeakPtr()));

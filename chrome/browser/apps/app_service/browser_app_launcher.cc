@@ -14,6 +14,7 @@
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/extensions/app_launch_params.h"
 #include "chrome/browser/ui/extensions/application_launch.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
@@ -45,7 +46,7 @@ void OnLaunchCompleteReportRestoreMetrics(
     Profile* profile,
     int restore_id,
     apps::AppLaunchParams params_for_restore,
-    base::WeakPtr<Browser> browser,
+    base::WeakPtr<BrowserWindowInterface> browser,
     base::WeakPtr<content::WebContents> web_contents,
     apps::LaunchContainer launch_container) {
 #if BUILDFLAG(IS_CHROMEOS)

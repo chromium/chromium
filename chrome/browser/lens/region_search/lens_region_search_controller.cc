@@ -10,8 +10,8 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/image_editor/screenshot_flow.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -33,7 +33,7 @@
 namespace {
 
 views::Widget* OpenLensRegionSearchInstructions(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     base::OnceClosure close_callback,
     base::OnceClosure escape_callback,
     int text_message_id) {
@@ -86,8 +86,9 @@ void LensRegionSearchController::Start(
   is_multi_capture_ = false;
   bounds_callback_.Reset();
   region_selection_flow_closed_callback_ = base::DoNothing();
-  StartCaptureInternal(chrome::FindBrowserWithTab(web_contents),
-                       use_fullscreen_capture);
+  StartCaptureInternal(
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(web_contents),
+      use_fullscreen_capture);
 }
 
 void LensRegionSearchController::StartForRegionSelection(
@@ -117,7 +118,7 @@ void LensRegionSearchController::StartForRegionSelection(
 #if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
   // Create user education bubble anchored to the toolbar container.
   bubble_widget_ = OpenLensRegionSearchInstructions(
-      chrome::FindBrowserWithTab(web_contents),
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(web_contents),
       base::BindOnce(&LensRegionSearchController::Close,
                      base::Unretained(this)),
       base::BindOnce(&LensRegionSearchController::Escape,
@@ -208,10 +209,10 @@ void LensRegionSearchController::RecordRegionSizeRelatedMetrics(
 }
 
 void LensRegionSearchController::StartCaptureInternal(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     bool use_fullscreen_capture) {
   content::WebContents* web_contents =
-      browser->tab_strip_model()->GetActiveWebContents();
+      browser->GetTabStripModel()->GetActiveWebContents();
   // Return early if web contents/browser don't exist and if capture mode is
   // already active.
   if (!web_contents || in_capture_mode_) {

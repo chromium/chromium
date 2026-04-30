@@ -318,7 +318,7 @@ class StartupWebAppCreator
     }
   }
 
-  void OnAppLaunched(base::WeakPtr<Browser> browser,
+  void OnAppLaunched(base::WeakPtr<BrowserWindowInterface> browser,
                      base::WeakPtr<content::WebContents> web_contents,
                      apps::LaunchContainer container) {
     // The finalization step should only occur for the first app launch.

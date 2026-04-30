@@ -10,6 +10,7 @@
 #include "base/functional/concurrent_closures.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
@@ -37,7 +38,7 @@ LaunchWebAppCommand::LaunchWebAppCommand(
     LaunchWebAppWindowSetting launch_setting,
     LaunchWebAppCallback callback)
     : WebAppCommand<AppLock,
-                    base::WeakPtr<Browser>,
+                    base::WeakPtr<BrowserWindowInterface>,
                     base::WeakPtr<content::WebContents>,
                     apps::LaunchContainer>(
           "LaunchWebAppCommand",
@@ -141,7 +142,7 @@ void LaunchWebAppCommand::DoLaunch() {
 // Note: `params_` is no longer valid in this method, as it was std::move'd in
 // `DoLaunch()`.
 void LaunchWebAppCommand::OnAppLaunched(
-    base::WeakPtr<Browser> browser,
+    base::WeakPtr<BrowserWindowInterface> browser,
     base::WeakPtr<content::WebContents> web_contents,
     apps::LaunchContainer container,
     base::Value debug_value) {

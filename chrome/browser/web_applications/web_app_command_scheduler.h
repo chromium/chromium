@@ -49,7 +49,7 @@
 
 class GURL;
 class Profile;
-class Browser;
+class BrowserWindowInterface;
 
 namespace content {
 class StoragePartitionConfig;
@@ -140,11 +140,11 @@ class WebAppCommandScheduler {
   using UninstallCallback =
       base::OnceCallback<void(webapps::UninstallResultCode)>;
   using LaunchWebAppCallback =
-      base::OnceCallback<void(base::WeakPtr<Browser> browser,
+      base::OnceCallback<void(base::WeakPtr<BrowserWindowInterface> browser,
                               base::WeakPtr<content::WebContents> web_contents,
                               apps::LaunchContainer container)>;
   using LaunchWebAppDebugValueCallback =
-      base::OnceCallback<void(base::WeakPtr<Browser> browser,
+      base::OnceCallback<void(base::WeakPtr<BrowserWindowInterface> browser,
                               base::WeakPtr<content::WebContents> web_contents,
                               apps::LaunchContainer container,
                               base::Value debug_value)>;

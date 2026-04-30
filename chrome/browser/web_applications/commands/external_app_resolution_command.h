@@ -31,7 +31,7 @@
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/uninstall_result_code.h"
 
-class Browser;
+class BrowserWindowInterface;
 class Profile;
 
 namespace content {
@@ -132,7 +132,7 @@ class ExternalAppResolutionCommand
   void OnPlaceholderUninstalledMaybeRelaunch(
       webapps::UninstallResultCode result);
 
-  void OnLaunch(base::WeakPtr<Browser> browser,
+  void OnLaunch(base::WeakPtr<BrowserWindowInterface> browser,
                 base::WeakPtr<content::WebContents> web_contents,
                 apps::LaunchContainer container,
                 base::Value debug_value);

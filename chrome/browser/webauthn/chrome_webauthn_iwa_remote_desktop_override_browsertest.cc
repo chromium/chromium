@@ -166,7 +166,7 @@ class WebAuthnIWARemoteDesktopOverrideBrowserTest :
     base::test::TestFuture<content::WebContents*> future;
     provider->scheduler().LaunchApp(
         app_id, url,
-        base::BindOnce([](base::WeakPtr<Browser>,
+        base::BindOnce([](base::WeakPtr<BrowserWindowInterface>,
                           base::WeakPtr<content::WebContents> web_contents,
                           apps::LaunchContainer) {
           return web_contents.get();

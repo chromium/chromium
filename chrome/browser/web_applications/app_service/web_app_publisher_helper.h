@@ -48,7 +48,7 @@
 #include "chrome/browser/notifications/notification_display_service.h"
 #endif
 
-class Browser;
+class BrowserWindowInterface;
 class ContentSettingsPattern;
 class ContentSettingsTypeSet;
 class Profile;
@@ -422,7 +422,7 @@ class WebAppPublisherHelper : public WebAppRegistrarObserver,
       bool is_system_web_app,
       std::optional<GURL> override_url,
       base::OnceCallback<void(content::WebContents*)> on_complete,
-      base::WeakPtr<Browser> browser,
+      base::WeakPtr<BrowserWindowInterface> browser,
       base::WeakPtr<content::WebContents> web_contents,
       apps::LaunchContainer container);
 

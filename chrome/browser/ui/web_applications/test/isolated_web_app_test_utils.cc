@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/install_isolated_web_app_command.h"
@@ -272,7 +273,7 @@ content::RenderFrameHost* OpenIsolatedWebApp(
   base::test::TestFuture<content::WebContents*> future;
   provider->scheduler().LaunchApp(
       app_id, url,
-      base::BindOnce([](base::WeakPtr<Browser>,
+      base::BindOnce([](base::WeakPtr<BrowserWindowInterface>,
                         base::WeakPtr<content::WebContents> web_contents,
                         apps::LaunchContainer) {
         return web_contents.get();

@@ -17,6 +17,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
@@ -142,11 +143,11 @@ class LaunchWebAppCommandTest : public WebAppBrowserTestBase {
     return *web_app::WebAppProvider::GetForTest(profile());
   }
 
-  std::tuple<base::WeakPtr<Browser>,
+  std::tuple<base::WeakPtr<BrowserWindowInterface>,
              base::WeakPtr<content::WebContents>,
              apps::LaunchContainer>
   DoLaunch(apps::AppLaunchParams params) {
-    base::test::TestFuture<base::WeakPtr<Browser>,
+    base::test::TestFuture<base::WeakPtr<BrowserWindowInterface>,
                            base::WeakPtr<content::WebContents>,
                            apps::LaunchContainer>
         future;
@@ -186,7 +187,7 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAppCommandTest, TabbedLaunchCurrentBrowser) {
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
       apps::LaunchSource::kFromCommandLine, {}, std::nullopt);
 
-  base::WeakPtr<Browser> launch_browser;
+  base::WeakPtr<BrowserWindowInterface> launch_browser;
   base::WeakPtr<content::WebContents> web_contents;
   apps::LaunchContainer launch_container;
   std::tie(launch_browser, web_contents, launch_container) =
@@ -194,7 +195,7 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAppCommandTest, TabbedLaunchCurrentBrowser) {
 
   EXPECT_FALSE(AppBrowserController::IsWebApp(launch_browser.get()));
   EXPECT_EQ(launch_browser.get(), browser());
-  EXPECT_EQ(launch_browser->tab_strip_model()->count(), 2);
+  EXPECT_EQ(launch_browser->GetTabStripModel()->count(), 2);
   EXPECT_EQ(web_contents->GetVisibleURL(), kAppStartUrl);
 }
 
@@ -204,7 +205,7 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAppCommandTest, StandaloneLaunch) {
       WindowOpenDisposition::CURRENT_TAB, apps::LaunchSource::kFromCommandLine,
       {}, std::nullopt);
 
-  base::WeakPtr<Browser> launch_browser;
+  base::WeakPtr<BrowserWindowInterface> launch_browser;
   base::WeakPtr<content::WebContents> web_contents;
   apps::LaunchContainer launch_container;
   std::tie(launch_browser, web_contents, launch_container) =
@@ -213,15 +214,15 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAppCommandTest, StandaloneLaunch) {
   EXPECT_TRUE(AppBrowserController::IsWebApp(launch_browser.get()));
   EXPECT_NE(launch_browser.get(), browser());
   EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 2ul);
-  EXPECT_EQ(launch_browser->tab_strip_model()->count(), 1);
+  EXPECT_EQ(launch_browser->GetTabStripModel()->count(), 1);
   EXPECT_EQ(web_contents->GetVisibleURL(), kAppStartUrl);
 }
 
 IN_PROC_BROWSER_TEST_F(LaunchWebAppCommandTest, StandaloneLaunchAppConfig) {
-  base::WeakPtr<Browser> launch_browser;
+  base::WeakPtr<BrowserWindowInterface> launch_browser;
   base::WeakPtr<content::WebContents> web_contents;
   apps::LaunchContainer launch_container;
-  base::test::TestFuture<base::WeakPtr<Browser>,
+  base::test::TestFuture<base::WeakPtr<BrowserWindowInterface>,
                          base::WeakPtr<content::WebContents>,
                          apps::LaunchContainer>
       launch_future;
@@ -234,7 +235,7 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAppCommandTest, StandaloneLaunchAppConfig) {
   EXPECT_TRUE(AppBrowserController::IsWebApp(launch_browser.get()));
   EXPECT_NE(launch_browser.get(), browser());
   EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 2ul);
-  EXPECT_EQ(launch_browser->tab_strip_model()->count(), 1);
+  EXPECT_EQ(launch_browser->GetTabStripModel()->count(), 1);
   EXPECT_EQ(web_contents->GetVisibleURL(), kAppStartUrl);
 }
 
@@ -270,7 +271,7 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAppCommandTest, AppLaunchNoIntegration) {
   EXPECT_EQ(provider().registrar_unsafe().GetInstallState(app_id),
             proto::INSTALLED_WITHOUT_OS_INTEGRATION);
 
-  base::test::TestFuture<base::WeakPtr<Browser>,
+  base::test::TestFuture<base::WeakPtr<BrowserWindowInterface>,
                          base::WeakPtr<content::WebContents>,
                          apps::LaunchContainer>
       launch_future;
@@ -282,7 +283,7 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAppCommandTest, AppLaunchNoIntegration) {
 
   // Check the state is correct.
   EXPECT_TRUE(AppBrowserController::IsWebApp(
-      launch_future.Get<base::WeakPtr<Browser>>().get()));
+      launch_future.Get<base::WeakPtr<BrowserWindowInterface>>().get()));
   EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 2ul);
   EXPECT_EQ(
       launch_future.Get<base::WeakPtr<content::WebContents>>()->GetVisibleURL(),
@@ -335,14 +336,14 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAppCommandTest,
             proto::SUGGESTED_FROM_MIGRATION);
 
   // No app has been launched.
-  base::test::TestFuture<base::WeakPtr<Browser>,
+  base::test::TestFuture<base::WeakPtr<BrowserWindowInterface>,
                          base::WeakPtr<content::WebContents>,
                          apps::LaunchContainer>
       launch_future;
   provider().scheduler().LaunchApp(app_id, std::nullopt,
                                    launch_future.GetCallback());
   ASSERT_TRUE(launch_future.Wait());
-  EXPECT_THAT(launch_future.Get<base::WeakPtr<Browser>>().get(),
+  EXPECT_THAT(launch_future.Get<base::WeakPtr<BrowserWindowInterface>>().get(),
               testing::IsNull());
 }
 
@@ -356,7 +357,7 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAppCommandTest,
                          apps::LaunchSource::kFromTest, {}, std::nullopt);
   launch_params.override_url = GURL("chrome://settings");
 
-  base::WeakPtr<Browser> launch_browser;
+  base::WeakPtr<BrowserWindowInterface> launch_browser;
   base::WeakPtr<content::WebContents> web_contents;
   apps::LaunchContainer launch_container;
   std::tie(launch_browser, web_contents, launch_container) =

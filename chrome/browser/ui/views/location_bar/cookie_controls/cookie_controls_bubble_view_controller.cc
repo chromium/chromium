@@ -12,8 +12,8 @@
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/feedback/show_feedback_page.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/url_identity.h"
 #include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -253,7 +253,8 @@ void CookieControlsBubbleViewController::OnToggleButtonPressed(
 
 void CookieControlsBubbleViewController::OnFeedbackButtonPressed() {
   chrome::ShowFeedbackPage(
-      chrome::FindBrowserWithTab(web_contents_.get()),
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+          web_contents_.get()),
       feedback::kFeedbackSourceCookieControls,
       /*description_template=*/std::string(),
       l10n_util::GetStringUTF8(

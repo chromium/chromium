@@ -349,7 +349,7 @@ void ApplyManifestMigrationCommand::AppUninstalledCompleteMigration(
 }
 
 void ApplyManifestMigrationCommand::OnAppLaunched(
-    base::WeakPtr<Browser> browser,
+    base::WeakPtr<BrowserWindowInterface> browser,
     base::WeakPtr<content::WebContents> web_contents,
     apps::LaunchContainer container,
     base::Value debug_value) {

@@ -14,7 +14,7 @@
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/webapps/common/web_app_id.h"
 
-class Browser;
+class BrowserWindowInterface;
 
 namespace content {
 class WebContents;
@@ -47,7 +47,7 @@ class LaunchOrReparentWebContentsIntoAppCommand
   base::WeakPtr<content::WebContents> web_contents_;
   std::unique_ptr<AppLock> lock_;
 
-  void OnAppLaunched(base::WeakPtr<Browser> browser,
+  void OnAppLaunched(base::WeakPtr<BrowserWindowInterface> browser,
                      base::WeakPtr<content::WebContents> web_contents,
                      apps::LaunchContainer container,
                      base::Value debug_value);

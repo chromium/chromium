@@ -9,8 +9,8 @@
 #include <string_view>
 
 #include "base/strings/sys_string_conversions.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/find_in_page/find_tab_helper.h"
@@ -63,11 +63,13 @@ class FindBarPlatformHelperMac : public FindBarPlatformHelper {
   void UpdateFindBarControllerFromPasteboard() {
     content::WebContents* active_web_contents =
         find_bar_controller_->web_contents();
-    Browser* browser = active_web_contents
-                           ? chrome::FindBrowserWithTab(active_web_contents)
-                           : nullptr;
+    BrowserWindowInterface* browser =
+        active_web_contents
+            ? GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+                  active_web_contents)
+            : nullptr;
     if (browser) {
-      TabStripModel* tab_strip_model = browser->tab_strip_model();
+      TabStripModel* tab_strip_model = browser->GetTabStripModel();
 
       for (int i = 0; i < tab_strip_model->count(); ++i) {
         content::WebContents* web_contents =

@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/values_equivalent.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -34,7 +35,8 @@ void LaunchAppAndMaybeTriggerIPH(base::WeakPtr<Profile> profile,
       app_id, url,
       base::BindOnce(
           [](const webapps::AppId& app_id, base::WeakPtr<Profile> profile,
-             base::OnceClosure callback, base::WeakPtr<Browser> browser,
+             base::OnceClosure callback,
+             base::WeakPtr<BrowserWindowInterface> browser,
              base::WeakPtr<content::WebContents> web_contents,
              apps::LaunchContainer container) {
             if (!profile) {

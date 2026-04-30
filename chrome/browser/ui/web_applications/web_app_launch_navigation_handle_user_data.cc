@@ -5,8 +5,8 @@
 #include "chrome/browser/ui/web_applications/web_app_launch_navigation_handle_user_data.h"
 
 #include "base/time/time.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/web_applications/navigation_capturing_metrics.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
@@ -58,7 +58,9 @@ void WebAppLaunchNavigationHandleUserData::
   if (!force_iph_off_) {
     // TODO(crbug.com/371237535): Avoid reliance on FindBrowserWithTab and
     // instead pass in the Browser instance earlier.
-    BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents);
+    BrowserWindowInterface* browser =
+        GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+            web_contents);
     MaybeShowNavigationCaptureIph(
         app_id, browser->GetProfile(),
         browser->GetBrowserForMigrationOnly());

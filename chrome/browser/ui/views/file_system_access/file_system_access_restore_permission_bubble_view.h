@@ -6,12 +6,13 @@
 #define CHROME_BROWSER_UI_VIEWS_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_RESTORE_PERMISSION_BUBBLE_VIEW_H_
 
 #include "chrome/browser/file_system_access/file_system_access_permission_request_manager.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
 #include "components/permissions/permission_util.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+
+class BrowserWindowInterface;
 
 // TODO(crbug.com/40101962): Re-define this temporary value in layout provider
 // once the spec is ready. Make the style GM3-compatible.
@@ -61,7 +62,7 @@ class FileSystemAccessRestorePermissionBubbleView
   };
   void OnButtonPressed(RestorePermissionButton button_type);
   void OnPromptDismissed();
-  void UpdateAnchor(Browser* browser);
+  void UpdateAnchor(BrowserWindowInterface* browser);
 
  private:
   const std::u16string window_title_;

@@ -12,6 +12,7 @@
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 class Browser;
+class BrowserWindowInterface;
 
 namespace bubble_anchor_util {
 
@@ -29,7 +30,7 @@ struct AnchorConfiguration {
 // Returns the anchor configuration for bubbles that are aligned to the page
 // info bubble.
 AnchorConfiguration GetPageInfoAnchorConfiguration(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     Anchor = Anchor::kLocationBar);
 
 // Returns the anchor configuration for the permission bubble.

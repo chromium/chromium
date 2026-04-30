@@ -16,7 +16,7 @@
 #include "components/services/app_service/public/cpp/app_launch_params.h"
 #include "components/webapps/common/web_app_id.h"
 
-class Browser;
+class BrowserWindowInterface;
 class Profile;
 
 namespace content {
@@ -32,7 +32,7 @@ class WebAppProvider;
 // launching.
 class LaunchWebAppCommand
     : public WebAppCommand<AppLock,
-                           base::WeakPtr<Browser>,
+                           base::WeakPtr<BrowserWindowInterface>,
                            base::WeakPtr<content::WebContents>,
                            apps::LaunchContainer> {
  public:
@@ -49,7 +49,7 @@ class LaunchWebAppCommand
  private:
   void OnOsIntegrationSynchronized();
   void DoLaunch();
-  void OnAppLaunched(base::WeakPtr<Browser> browser,
+  void OnAppLaunched(base::WeakPtr<BrowserWindowInterface> browser,
                      base::WeakPtr<content::WebContents> web_contents,
                      apps::LaunchContainer container,
                      base::Value debug_value);

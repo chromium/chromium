@@ -296,7 +296,7 @@ IN_PROC_BROWSER_TEST_P(WebAppTabStripBrowserTest,
   // Trigger the launch but do not wait for the web contents to load.
   web_app::WebAppProvider* provider =
       web_app::WebAppProvider::GetForLocalAppsUnchecked(profile());
-  base::test::TestFuture<base::WeakPtr<Browser>,
+  base::test::TestFuture<base::WeakPtr<BrowserWindowInterface>,
                          base::WeakPtr<content::WebContents>,
                          apps::LaunchContainer>
       future;

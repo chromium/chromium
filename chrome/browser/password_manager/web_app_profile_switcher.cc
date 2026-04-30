@@ -187,7 +187,7 @@ void WebAppProfileSwitcher::LaunchAppWithId(
           /*current_directory=*/base::FilePath(),
           /*protocol_handler_launch_url=*/std::nullopt,
           /*file_launch_url=*/std::nullopt, /*launch_files=*/{},
-          base::IgnoreArgs<base::WeakPtr<Browser>,
+          base::IgnoreArgs<base::WeakPtr<BrowserWindowInterface>,
                            base::WeakPtr<content::WebContents>,
                            apps::LaunchContainer>(
               base::BindOnce(&WebAppProfileSwitcher::RunCompletionCallback,

@@ -35,7 +35,7 @@ void LaunchExtensionOrWebApp(
       std::move(params),
       base::BindOnce(
           [](base::OnceCallback<void(content::WebContents*)> callback,
-             base::WeakPtr<Browser> browser,
+             base::WeakPtr<BrowserWindowInterface> browser,
              base::WeakPtr<content::WebContents> web_contents,
              apps::LaunchContainer launch_container) {
             std::move(callback).Run(web_contents.get());

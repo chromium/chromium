@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ui/wallet/walletable_pass_consent_bubble_controller.h"
 
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/wallet/walletable_pass_bubble_view_factory.h"
 #include "chrome/browser/ui/wallet/walletable_pass_consent_bubble_view.h"
@@ -62,7 +62,9 @@ WalletablePassConsentBubbleController::GetWeakPtr() {
 }
 
 void WalletablePassConsentBubbleController::OnLearnMoreClicked() {
-  if (BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents())) {
+  if (BrowserWindowInterface* browser =
+          GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+              web_contents())) {
     SetReshowOnActivation(true);
     chrome::ShowSettingsSubPage(browser, chrome::kAutofillAiSubPage);
   }

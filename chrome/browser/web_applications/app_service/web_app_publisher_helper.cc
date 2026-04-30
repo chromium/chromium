@@ -2117,7 +2117,7 @@ void WebAppPublisherHelper::OnProtocolHandlerDialogCompleted(
   }
   provider_->scheduler().LaunchAppWithCustomParams(
       std::move(params),
-      base::BindOnce([](base::WeakPtr<Browser>,
+      base::BindOnce([](base::WeakPtr<BrowserWindowInterface>,
                         base::WeakPtr<content::WebContents> web_contents,
                         apps::LaunchContainer) {
         return web_contents.get();
@@ -2129,7 +2129,7 @@ void WebAppPublisherHelper::OnLaunchCompleted(
     bool is_system_web_app,
     std::optional<GURL> override_url,
     base::OnceCallback<void(content::WebContents*)> on_complete,
-    base::WeakPtr<Browser> browser,
+    base::WeakPtr<BrowserWindowInterface> browser,
     base::WeakPtr<content::WebContents> web_contents,
     apps::LaunchContainer container) {
 #if BUILDFLAG(IS_CHROMEOS)

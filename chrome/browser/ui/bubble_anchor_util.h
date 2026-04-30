@@ -12,7 +12,7 @@ namespace gfx {
 class Rect;
 }
 
-class Browser;
+class BrowserWindowInterface;
 
 namespace bubble_anchor_util {
 
@@ -34,7 +34,7 @@ inline constexpr int kNoToolbarLeftOffset = 40;
 // when the platform-specific GetPageInfoAnchorView() is unable to return an
 // actual View. This function has separate implementations for Views- and Cocoa-
 // based browsers. The anchor rect is in screen coordinates.
-gfx::Rect GetPageInfoAnchorRect(Browser* browser);
+gfx::Rect GetPageInfoAnchorRect(BrowserWindowInterface* browser);
 
 }  // namespace bubble_anchor_util
 

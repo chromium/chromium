@@ -632,10 +632,11 @@ void ExternalAppResolutionCommand::OnPlaceholderUninstalledMaybeRelaunch(
       *all_apps_lock_);
 }
 
-void ExternalAppResolutionCommand::OnLaunch(base::WeakPtr<Browser>,
-                                            base::WeakPtr<content::WebContents>,
-                                            apps::LaunchContainer,
-                                            base::Value debug_value) {
+void ExternalAppResolutionCommand::OnLaunch(
+    base::WeakPtr<BrowserWindowInterface>,
+    base::WeakPtr<content::WebContents>,
+    apps::LaunchContainer,
+    base::Value debug_value) {
   GetMutableDebugValue().Set("launch", std::move(debug_value));
   provider().ui_manager().NotifyAppRelaunchState(
       *installed_placeholder_app_id_, app_id_, web_app_info_->title.value(),

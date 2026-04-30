@@ -18,7 +18,7 @@ class WebContents;
 enum class Visibility;
 }  // namespace content
 
-class Browser;
+class BrowserWindowInterface;
 
 namespace views {
 class Widget;
@@ -94,7 +94,8 @@ class LensRegionSearchController : public content::WebContentsObserver {
 
  private:
   // Helper methods for starting and handling the capture flow.
-  void StartCaptureInternal(Browser* browser, bool use_fullscreen_capture);
+  void StartCaptureInternal(BrowserWindowInterface* browser,
+                            bool use_fullscreen_capture);
   void OnRegionSelectionCompleted(
       const image_editor::RegionSelectionResult& result);
   void HandleCaptureSuccessForSearch(const gfx::Image& image,

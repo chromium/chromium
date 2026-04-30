@@ -988,7 +988,7 @@ class NavCaptureParameterizedBrowserTest
 
   content::WebContents* LaunchStartPageAsApp(const webapps::AppId& app_id,
                                              const GURL& url) {
-    base::test::TestFuture<base::WeakPtr<Browser>,
+    base::test::TestFuture<base::WeakPtr<BrowserWindowInterface>,
                            base::WeakPtr<content::WebContents>,
                            apps::LaunchContainer>
         launch_future;
@@ -2522,7 +2522,7 @@ class NavCaptureTestWithAppBLaunched
         WebAppProvider::GetForTest(profile())
             ->registrar_unsafe()
             .GetAppLaunchUrl(app_b));
-    base::test::TestFuture<base::WeakPtr<Browser>,
+    base::test::TestFuture<base::WeakPtr<BrowserWindowInterface>,
                            base::WeakPtr<content::WebContents>,
                            apps::LaunchContainer>
         launch_future;
@@ -2682,7 +2682,7 @@ class NavCaptureTestWithBLaunchedAndBrowserTab
         WebAppProvider::GetForTest(profile())
             ->registrar_unsafe()
             .GetAppLaunchUrl(app_b));
-    base::test::TestFuture<base::WeakPtr<Browser>,
+    base::test::TestFuture<base::WeakPtr<BrowserWindowInterface>,
                            base::WeakPtr<content::WebContents>,
                            apps::LaunchContainer>
         launch_future;

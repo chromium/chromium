@@ -24,8 +24,9 @@
 
 namespace bubble_anchor_util {
 
-AnchorConfiguration GetPageInfoAnchorConfiguration(Browser* browser,
-                                                   Anchor anchor) {
+AnchorConfiguration GetPageInfoAnchorConfiguration(
+    BrowserWindowInterface* browser,
+    Anchor anchor) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
   auto* location_bar_view =
       browser_view ? browser_view->GetLocationBarView() : nullptr;
@@ -50,7 +51,10 @@ AnchorConfiguration GetPageInfoAnchorConfiguration(Browser* browser,
               views::BubbleBorder::TOP_LEFT};
     }
   } else {
-    auto chip_anchor = browser->window()->GetLocationBar()->GetChipAnchor();
+    auto chip_anchor = browser->GetBrowserForMigrationOnly()
+                           ->window()
+                           ->GetLocationBar()
+                           ->GetChipAnchor();
     if (anchor == Anchor::kLocationBar && chip_anchor) {
       return *chip_anchor;
     }
@@ -127,7 +131,7 @@ AnchorConfiguration GetAppMenuAnchorConfiguration(Browser* browser) {
   return GetPageInfoAnchorConfiguration(browser, Anchor::kAppMenuButton);
 }
 
-gfx::Rect GetPageInfoAnchorRect(Browser* browser) {
+gfx::Rect GetPageInfoAnchorRect(BrowserWindowInterface* browser) {
   // GetPageInfoAnchorConfiguration()'s anchor should be preferred if
   // available.
   DCHECK(GetPageInfoAnchorConfiguration(browser).anchor.IsNull());
