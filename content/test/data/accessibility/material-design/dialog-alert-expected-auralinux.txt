@@ -6,7 +6,7 @@
 ++++++++++[static] name='Alert Dialog'
 ++++++[section]
 ++++++++[section]
-++++++++[section]
+++++++++[form]
 ++++++++++[paragraph]
 ++++++++++++[static] name='Alert Ready'
 ++++++++[section]

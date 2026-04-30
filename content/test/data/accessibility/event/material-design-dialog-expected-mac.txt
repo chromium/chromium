@@ -13,7 +13,7 @@ AXWebArea AXTitle='Material Web Dialog Events'
 ++++++++++AXStaticText AXValue='Test'
 ++++++AXGroup
 ++++++++AXGroup
-++++++++AXGroup
+++++++++AXGroup AXSubrole=AXLandmarkForm
 ++++++++++AXGroup
 ++++++++++++AXStaticText AXValue='Test'
 ++++++++AXGroup

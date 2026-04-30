@@ -10,7 +10,7 @@ rootWebArea htmlTag='#document' name='Material Web Dialog Events'
 ++++++++++++++genericContainer ignored invisible
 ++++++++++++++++genericContainer ignored invisible
 ++++++++++++++++++staticText ignored invisible
-++++++++++++sectionWithoutName ignored invisible
+++++++++++++form ignored invisible
 ++++++++++++genericContainer ignored invisible
 ++++++++++++++genericContainer ignored invisible
 ++++++++++++++genericContainer ignored invisible
@@ -34,7 +34,7 @@ rootWebArea htmlTag='#document' name='Material Web Dialog Events'
 ++++++++genericContainer ignored <<<<<< CHANGED
 ++++++++++genericContainer className='content' htmlTag='div' <<<<<< CHANGED
 ++++++++++++genericContainer className='top anchor' htmlTag='div' <<<<<< CHANGED
-++++++++++++sectionWithoutName htmlTag='form' <<<<<< CHANGED
+++++++++++++form htmlTag='form' <<<<<< CHANGED
 ++++++++++++++paragraph htmlTag='p' <<<<<< CHANGED
 ++++++++++++++++staticText name='Test' <<<<<< CHANGED
 ++++++++++++++++++inlineTextBox name='Test' <<<<<< CHANGED

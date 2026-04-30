@@ -1,12 +1,12 @@
 AXWebArea
-++AXGroup
+++AXGroup AXSubrole=AXLandmarkForm
 ++++AXRadioButton AXLinkedUIElements=[:3] AXValue=0
 ++++AXStaticText AXValue='Radio1'
 ++++AXRadioButton AXLinkedUIElements=[:5] AXValue=0
 ++++AXStaticText AXValue='Radio2'
-++AXGroup
+++AXGroup AXSubrole=AXLandmarkForm
 ++++AXRadioButton AXLinkedUIElements=[:8, :9] AXTitle='Radio3' AXValue=0
 ++++AXRadioButton AXLinkedUIElements=[:8, :9] AXTitle='Radio4' AXValue=1
-++AXGroup
+++AXGroup AXSubrole=AXLandmarkForm
 ++++AXRadioButton AXLinkedUIElements=[:11] AXTitle='Radio5' AXValue=0
 ++++AXRadioButton AXLinkedUIElements=[:12] AXTitle='Radio6' AXValue=1

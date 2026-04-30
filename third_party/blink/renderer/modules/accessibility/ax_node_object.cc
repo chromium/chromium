@@ -2700,11 +2700,9 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
   }
 
   if (IsA<HTMLFormElement>(*GetNode())) {
-    // Only treat <form> as role="form" when it has an accessible name, which
-    // can only occur when the name is assigned by the author via aria-label,
-    // aria-labelledby, or title. Otherwise, treat as a <section>.
-    return IsNameFromAuthorAttribute() ? ax::mojom::blink::Role::kForm
-                                       : ax::mojom::blink::Role::kSection;
+    // Always return kForm for <form> elements. Each platform decides how to
+    // expose named vs unnamed forms per Core AAM and HTML AAM specifications.
+    return ax::mojom::blink::Role::kForm;
   }
 
   if (GetNode()->HasTagName(html_names::kAbbrTag))

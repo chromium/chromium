@@ -1,13 +1,13 @@
 [document web]
-++[section]
+++[form]
 ++++[radio button] checkable:true
 ++++[static] name='Radio1'
 ++++[static] name='<newline>'
 ++++[radio button] checkable:true
 ++++[static] name='Radio2'
-++[section]
+++[form]
 ++++[radio button] name='Radio3' checkable:true
 ++++[radio button] name='Radio4' checked checkable:true
-++[section]
+++[form]
 ++++[radio button] name='Radio5' checkable:true
 ++++[radio button] name='Radio6' checked checkable:true

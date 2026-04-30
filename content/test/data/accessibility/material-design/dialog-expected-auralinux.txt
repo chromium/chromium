@@ -7,7 +7,7 @@
 ++++++[section]
 ++++++++[section]
 ++++++++++[section]
-++++++++++[section]
+++++++++++[form]
 ++++++++++++[paragraph]
 ++++++++++++++[static] name='This is line 1 to ensure overflow.'
 ++++++++++++[paragraph]

@@ -2746,10 +2746,8 @@ AtkRole AXPlatformNodeAuraLinux::GetAtkRole() const {
       return ATK_ROLE_EMBEDDED;
     case ax::mojom::Role::kForm:
       // Per Core AAM, named forms should be exposed as landmarks.
-      // TODO(crbug.com/468317749): Blink currently maps unnamed <form> to
-      // kSection instead of kForm. Once fixed, platforms will handle the
-      // mapping. For now, explicit role="form" without a name still reaches
-      // here and should remain ATK_ROLE_FORM.
+      // Per HTML AAM, unnamed forms should be exposed as ATK_ROLE_FORM.
+      // Per Core AAM, only named forms should be landmarks.
       if (HasStringAttribute(ax::mojom::StringAttribute::kName)) {
         return ATK_ROLE_LANDMARK;
       }

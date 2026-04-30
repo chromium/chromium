@@ -16,7 +16,7 @@ STATE-CHANGE:FOCUSED:TRUE role=ROLE_PUSH_BUTTON name='OK' ENABLED,FOCUSABLE,FOCU
 ++++++++++[static] name='Test'
 ++++++[section]
 ++++++++[section]
-++++++++[section]
+++++++++[form]
 ++++++++++[paragraph]
 ++++++++++++[static] name='Test'
 ++++++++[section]

@@ -1,7 +1,7 @@
 rootWebArea
 ++genericContainer ignored
 ++++genericContainer ignored
-++++++sectionWithoutName
+++++++form
 ++++++++group name='Browser Engines:'
 ++++++++++legend
 ++++++++++++staticText name='Browser Engines:'

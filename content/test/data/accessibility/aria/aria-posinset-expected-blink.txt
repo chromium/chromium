@@ -21,7 +21,7 @@ rootWebArea
 ++++++++listBoxOption name='Item 2' setSize=2 posInSet=2 selected=false
 ++++++++++staticText name='Item 2'
 ++++++++++++inlineTextBox name='Item 2'
-++++++sectionWithoutName
+++++++form
 ++++++++radioButton setSize=4 posInSet=3 checkedState=false
 ++++++++staticText name='1'
 ++++++++++inlineTextBox name='1'
@@ -50,7 +50,7 @@ rootWebArea
 ++++++++labelText ignored
 ++++++++++radioButton name='Chocolate cakes' setSize=2 posInSet=2 checkedState=false
 ++++++++++staticText ignored
-++++++sectionWithoutName
+++++++form
 ++++++++paragraph
 ++++++++++button name='changedFromRadio' nameFrom=value
 ++++++++++++staticText name='changedFromRadio'

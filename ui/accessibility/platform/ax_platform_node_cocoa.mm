@@ -2311,6 +2311,12 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
 - (NSString*)AXSubrole {
   ax::mojom::Role role = _node->GetRole();
   switch (role) {
+    case ax::mojom::Role::kForm:
+      // Per Core AAM, unnamed forms should not be exposed as landmarks.
+      if (!_node->HasStringAttribute(ax::mojom::StringAttribute::kName)) {
+        return nil;
+      }
+      break;
     case ax::mojom::Role::kTextField:
       if (_node->HasState(ax::mojom::State::kProtected))
         return NSAccessibilitySecureTextFieldSubrole;
