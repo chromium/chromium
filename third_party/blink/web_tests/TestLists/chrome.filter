@@ -31,6 +31,9 @@ external/wpt/ai/translator/*
 external/wpt/storage-access-api/*
 external/wpt/fedcm/fedcm-storage-access-api-autogrant.tentative.https.sub.html
 
+# Top-Level Storage Access API is implemented in the `//chrome` layer.
+external/wpt/top-level-storage-access-api/*
+
 # Device Bound Session Credentials relies on the `//chrome` layer.
 external/wpt/device-bound-session-credentials/*
 

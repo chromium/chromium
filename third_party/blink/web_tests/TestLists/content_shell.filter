@@ -716,7 +716,6 @@ external/wpt/svg/text/reftests/textpath-letter-spacing-01.svg
 external/wpt/svg/text/scripted/getcharnumatposition.html
 external/wpt/svg/text/scripted/getcharnumatposition-slr.tentative.html
 external/wpt/svg/text/scripted/getstartpositionofchar.html
-external/wpt/top-level-storage-access-api/requestStorageAccessFor.sub.https.window.html
 external/wpt/trusted-types/trusted-types-navigation.html
 external/wpt/uievents/interface/keyboard-accesskey-click-event.html
 external/wpt/upgrade-insecure-requests/gen/iframe-blank-inherit.meta/upgrade/websocket.https.html
