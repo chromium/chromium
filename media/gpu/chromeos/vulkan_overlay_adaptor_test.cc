@@ -22,6 +22,7 @@
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/client/test_shared_image_interface.h"
 #include "gpu/command_buffer/common/mailbox.h"
+#include "gpu/command_buffer/common/shared_image_info.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
@@ -743,9 +744,11 @@ scoped_refptr<VideoFrame> VulkanOverlayAdaptorTest::CreateVideoFrame(
       viz::SharedImageFormat::ChannelFormat::k8);
   format_nv12.SetPrefersExternalSampler();
   shared_image_factory_->CreateSharedImage(
-      mailbox, format_nv12, frame->coded_size(), gfx::ColorSpace::CreateSRGB(),
-      kTopLeft_GrSurfaceOrigin, kOpaque_SkAlphaType,
-      gpu::SharedImageUsage::SHARED_IMAGE_USAGE_DISPLAY_READ, "TestLabel",
+      mailbox,
+      gpu::SharedImageInfo(
+          format_nv12, frame->coded_size(), gfx::ColorSpace::CreateSRGB(),
+          kTopLeft_GrSurfaceOrigin, kOpaque_SkAlphaType,
+          gpu::SharedImageUsage::SHARED_IMAGE_USAGE_DISPLAY_READ, "TestLabel"),
       std::move(gmb));
 
   return mapped_frame;
@@ -764,15 +767,17 @@ scoped_refptr<VideoFrame> VulkanOverlayAdaptorTest::CreateFramebuffer(
       gfx::BufferUsage::SCANOUT_CPU_READ_WRITE, test_sii_.get());
 
   auto gmb = CreateGpuMemoryBufferHandle(frame.get());
+  auto si_format = is_10bit ? viz::SinglePlaneFormat::kBGRA_1010102
+                            : viz::SinglePlaneFormat::kBGRA_8888;
   shared_image_factory_->CreateSharedImage(
       mailbox,
-      is_10bit ? viz::SinglePlaneFormat::kBGRA_1010102
-               : viz::SinglePlaneFormat::kBGRA_8888,
-      coded_size, gfx::ColorSpace::CreateSRGB(), kTopLeft_GrSurfaceOrigin,
-      kUnpremul_SkAlphaType,
-      gpu::SharedImageUsage::SHARED_IMAGE_USAGE_DISPLAY_WRITE |
-          gpu::SharedImageUsage::SHARED_IMAGE_USAGE_SCANOUT,
-      "TestLabel", std::move(gmb));
+      gpu::SharedImageInfo(
+          si_format, coded_size, gfx::ColorSpace::CreateSRGB(),
+          kTopLeft_GrSurfaceOrigin, kUnpremul_SkAlphaType,
+          gpu::SharedImageUsage::SHARED_IMAGE_USAGE_DISPLAY_WRITE |
+              gpu::SharedImageUsage::SHARED_IMAGE_USAGE_SCANOUT,
+          "TestLabel"),
+      std::move(gmb));
 
   std::unique_ptr<VideoFrameMapper> frame_mapper =
       VideoFrameMapperFactory::CreateMapper(
