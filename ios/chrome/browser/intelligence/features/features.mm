@@ -4,7 +4,10 @@
 
 #import "ios/chrome/browser/intelligence/features/features.h"
 
+#import <algorithm>
+#import <array>
 #import <optional>
+#import <string_view>
 
 #import "base/check.h"
 #import "base/metrics/field_trial_params.h"
@@ -33,29 +36,50 @@ BASE_FEATURE(kPageActionMenu, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGeminiKillSwitch, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Default enabled countries and locales for PageActionMenu, matching Bluebird
+// in chrome/browser/glic/public/glic_enabling.cc. All locales have been
+// converted to lower case with '-' where it's applicable.
+constexpr std::array<std::string_view, 4> kDefaultEnabledCountries = {
+    "us", "ca", "nz", "in"};
+
+constexpr std::array<std::string_view, 51> kDefaultEnabledLocales = {
+    "af", "am",     "bg",    "bn",    "ca",    "cs",    "da",    "de", "el",
+    "es", "es-419", "et",    "fi",    "fil",   "fr",    "gu",    "hi", "hr",
+    "hu", "id",     "it",    "ja",    "kn",    "ko",    "lt",    "lv", "ml",
+    "mr", "ms",     "nl",    "no",    "pl",    "pt-br", "pt-pt", "ro", "ru",
+    "sk", "sl",     "sr",    "sv",    "sw",    "ta",    "te",    "th", "tr",
+    "uk", "vi",     "zh-cn", "zh-tw", "en-gb", "en-us"};
+
 const char kPageActionMenuDirectEntryPointParam[] =
     "PageActionMenuDirectEntryPoint";
 
 bool IsPageActionMenuEnabled() {
   // Checks the killswtich, allowing to disable the feature for any user
   // including those in launched locales.
-  bool is_killswitch_enabled = base::FeatureList::IsEnabled(kGeminiKillSwitch);
-  if (is_killswitch_enabled) {
+  if (base::FeatureList::IsEnabled(kGeminiKillSwitch)) {
     return false;
   }
 
-  // Launched in en-US. Checks for the country (US) and locale (en-US).
+  // Checks if enabled for country and locale.
   variations::VariationsService* variations_service =
       GetApplicationContext()->GetVariationsService();
-  bool is_launched_country =
-      variations_service &&
-      base::ToLowerASCII(variations_service->GetStoredPermanentCountry()) ==
-          "us";
+  std::string country =
+      variations_service
+          ? base::ToLowerASCII(variations_service->GetStoredPermanentCountry())
+          : "";
 
   ApplicationLocaleStorage* locale_storage =
       GetApplicationContext()->GetApplicationLocaleStorage();
+  std::string locale =
+      locale_storage ? base::ToLowerASCII(locale_storage->Get()) : "";
+
+  std::string normalized_locale;
+  base::ReplaceChars(locale, "_", "-", &normalized_locale);
+
+  bool is_launched_country =
+      std::ranges::contains(kDefaultEnabledCountries, country);
   bool is_launched_locale =
-      locale_storage && base::ToLowerASCII(locale_storage->Get()) == "en-us";
+      std::ranges::contains(kDefaultEnabledLocales, normalized_locale);
 
   if (is_launched_country && is_launched_locale) {
     return true;
