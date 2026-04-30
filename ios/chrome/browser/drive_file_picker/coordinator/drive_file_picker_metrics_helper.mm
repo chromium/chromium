@@ -10,6 +10,8 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/notreached.h"
 #import "base/task/thread_pool.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
+#import "ios/chrome/browser/drive_file_picker/coordinator/drive_file_picker_metrics_constants.h"
 #import "ios/chrome/browser/web/model/choose_file/choose_file_event.h"
 #import "ios/chrome/browser/web/model/choose_file/choose_file_util.h"
 
@@ -143,6 +145,35 @@ enum class FilePickerFilterChange {
       "IOS.FilePicker.Drive.AccountSelection",
       (success) ? FilePickerIdentityChange::kAddAccountSuccess
                 : FilePickerIdentityChange::kAddAccountFailure);
+}
+
+- (void)reportDriveSignInStatus:(BOOL)signedIn
+             hasAccountOnDevice:(BOOL)hasAccountOnDevice {
+  if (signedIn) {
+    base::UmaHistogramEnumeration("IOS.FilePicker.Drive.SignIn.Status",
+                                  FilePickerDriveSignInStatus::kSignedIn);
+  } else if (hasAccountOnDevice) {
+    base::UmaHistogramEnumeration(
+        "IOS.FilePicker.Drive.SignIn.Status",
+        FilePickerDriveSignInStatus::kSignedOutWithAccountOnDevice);
+  } else {
+    base::UmaHistogramEnumeration(
+        "IOS.FilePicker.Drive.SignIn.Status",
+        FilePickerDriveSignInStatus::kSignedOutWithoutAccountOnDevice);
+  }
+}
+
+- (void)reportDriveSignInResult:(SigninCoordinatorResult)result {
+  if (result == SigninCoordinatorResultSuccess) {
+    base::UmaHistogramEnumeration("IOS.FilePicker.Drive.SignIn.Result",
+                                  FilePickerDriveSignInResult::kSignInSuccess);
+  } else if (result == SigninCoordinatorResultCanceledByUser) {
+    base::UmaHistogramEnumeration("IOS.FilePicker.Drive.SignIn.Result",
+                                  FilePickerDriveSignInResult::kSignInCanceled);
+  } else {
+    base::UmaHistogramEnumeration("IOS.FilePicker.Drive.SignIn.Result",
+                                  FilePickerDriveSignInResult::kSignInFailed);
+  }
 }
 
 #pragma mark - Private

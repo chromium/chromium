@@ -116,12 +116,18 @@
   _mediator.accountManagerService =
       ChromeAccountManagerServiceFactory::GetForProfile(profile);
   _mediator.imageFetcher = _imageFetcher.get();
+  _metricsHelper = [[DriveFilePickerMetricsHelper alloc] init];
   if (base::FeatureList::IsEnabled(kIOSChooseFromDriveSignedOut)) {
     signin::IdentityManager* identity_manager =
         IdentityManagerFactory::GetForProfile(
             self.profile->GetOriginalProfile());
     bool signedIn = (identity_manager && identity_manager->HasPrimaryAccount(
                                              signin::ConsentLevel::kSignin));
+    BOOL hasIdentitiesOnDevice =
+        [signin::GetIdentitiesOnDevice(
+            identity_manager, _mediator.accountManagerService) count] > 0;
+    [_metricsHelper reportDriveSignInStatus:signedIn
+                         hasAccountOnDevice:hasIdentitiesOnDevice];
     if (!signedIn) {
       [self showSignIn];
       return;
@@ -315,7 +321,6 @@
   [_mediator
       setCollection:DriveFilePickerCollection::GetRoot(_currentIdentity)];
   _mediator.consumer = _viewController;
-  _metricsHelper = [[DriveFilePickerMetricsHelper alloc] init];
   _mediator.metricsHelper = _metricsHelper;
 
   // Add tap gesture recognizer to window, to handle tap-to-dismiss.
@@ -412,6 +417,7 @@
                   identity:(id<SystemIdentity>)identity {
   [_signinCoordinator stop];
   _signinCoordinator = nil;
+  [_metricsHelper reportDriveSignInResult:result];
   if (result == SigninCoordinatorResultSuccess) {
     [self startRootFilePicker];
     return;

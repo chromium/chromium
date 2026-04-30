@@ -7,8 +7,10 @@
 #import "ios/chrome/browser/authentication/test/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/authentication/test/signin_matchers.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
+#import "ios/chrome/browser/drive_file_picker/coordinator/drive_file_picker_metrics_constants.h"
 #import "ios/chrome/browser/drive_file_picker/test/drive_file_picker_app_interface.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_constants.h"
+#import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -86,11 +88,19 @@ id<GREYMatcher> SigninPromoPrimaryButton() {
 
 @implementation DriveFilePickerTestCase
 
+- (void)setUp {
+  [super setUp];
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface setupHistogramTester]);
+}
+
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   config.features_enabled.push_back(kIOSChooseFromDrive);
 
-  if ([self isRunningTest:@selector(testFileSelectionSignedOut)]) {
+  if ([self isRunningTest:@selector(testMultifileSelection)] ||
+      [self isRunningTest:@selector(testFileSelectionSignedOut)] ||
+      [self isRunningTest:@selector(testSignedOutNoAccountMetrics)]) {
     config.features_enabled.push_back(kIOSChooseFromDriveSignedOut);
   }
 
@@ -353,6 +363,16 @@ id<GREYMatcher> SigninPromoPrimaryButton() {
   // Tap the "Confirm" button.
   [[EarlGrey selectElementWithMatcher:ConfirmButtonMatcher(/* enabled= */ YES)]
       performAction:grey_tap()];
+
+  // Check that the sign-in status histogram records kSignedIn.
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectUniqueSampleWithCount:1
+                            forBucket:
+                                static_cast<int>(
+                                    FilePickerDriveSignInStatus::kSignedIn)
+                         forHistogram:@("IOS.FilePicker.Drive.SignIn.Status")],
+      @"Unexpected histogram error for sign in status.");
 }
 
 // Tests that a single file can be selected and submitted to the page when not
@@ -396,6 +416,43 @@ id<GREYMatcher> SigninPromoPrimaryButton() {
   // Tap the "Confirm" button.
   [[EarlGrey selectElementWithMatcher:ConfirmButtonMatcher(/* enabled= */ YES)]
       performAction:grey_tap()];
+
+  // Check that the sign-in status histogram records
+  // kSignedOutWithAccountOnDevice.
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectUniqueSampleWithCount:1
+                            forBucket:static_cast<int>(
+                                          FilePickerDriveSignInStatus::
+                                              kSignedOutWithAccountOnDevice)
+                         forHistogram:@("IOS.FilePicker.Drive.SignIn.Status")],
+      @"Unexpected histogram error for sign in status.");
+  // Check that the sign-in result histogram records kSignInSuccess.
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectUniqueSampleWithCount:1
+                            forBucket:
+                                static_cast<int>(
+                                    FilePickerDriveSignInResult::kSignInSuccess)
+                         forHistogram:@("IOS.FilePicker.Drive.SignIn.Result")],
+      @"Unexpected histogram error for sign in result.");
+}
+
+// Tests that the sign-in status histogram records
+// kSignedOutWithoutAccountOnDevice when the user is not signed in and no
+// accounts are available on the device.
+- (void)testSignedOutNoAccountMetrics {
+  [DriveFilePickerAppInterface startChoosingMultipleFilesInCurrentWebState];
+  [DriveFilePickerAppInterface showDriveFilePicker];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:SigninPromo()];
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectUniqueSampleWithCount:1
+                            forBucket:static_cast<int>(
+                                          FilePickerDriveSignInStatus::
+                                              kSignedOutWithoutAccountOnDevice)
+                         forHistogram:@("IOS.FilePicker.Drive.SignIn.Status")],
+      @"Unexpected histogram error for sign in status.");
 }
 
 @end

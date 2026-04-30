@@ -22,6 +22,7 @@ source_set("coordinator") {
     "root_drive_file_picker_coordinator.mm",
   ]
   deps = [
+    ":metrics_constants",
     "//base",
     "//components/image_fetcher/core",
     "//components/signin/public/identity_manager/objc",
@@ -55,6 +56,10 @@ source_set("coordinator") {
     "//ios/web/public",
     "//ios/web/public/js_image_transcoder",
   ]
+}
+
+source_set("metrics_constants") {
+  sources = [ "drive_file_picker_metrics_constants.h" ]
 }
 
 source_set("unit_tests") {

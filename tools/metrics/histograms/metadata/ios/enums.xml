@@ -664,6 +664,26 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Cancel after triggering search"/>
 </enum>
 
+<!-- LINT.IfChange(IOSFilePickerDriveSignInResult) -->
+
+<enum name="IOSFilePickerDriveSignInResult">
+  <int value="0" label="Sign in success"/>
+  <int value="1" label="Sign in cancelled"/>
+  <int value="2" label="Sign in failed"/>
+</enum>
+
+<!-- LINT.ThenChange(//ios/chrome/browser/drive_file_picker/coordinator/drive_file_picker_metrics_constants.h:IOSFilePickerDriveSignInResult) -->
+
+<!-- LINT.IfChange(IOSFilePickerDriveSignInStatus) -->
+
+<enum name="IOSFilePickerDriveSignInStatus">
+  <int value="0" label="Signed in"/>
+  <int value="1" label="Signed out without account on device"/>
+  <int value="2" label="Signed out with account on device"/>
+</enum>
+
+<!-- LINT.ThenChange(//ios/chrome/browser/drive_file_picker/coordinator/drive_file_picker_metrics_constants.h:IOSFilePickerDriveSignInStatus) -->
+
 <enum name="IOSFilePickerDriveSorting">
   <int value="0" label="Sorted by name ascending"/>
   <int value="1" label="Sorted by name descending"/>

@@ -1950,6 +1950,29 @@ chromium-metrics-reviews@google.com.
   <summary>Report the outcome of searching once per file picker flow.</summary>
 </histogram>
 
+<histogram name="IOS.FilePicker.Drive.SignIn.Result"
+    enum="IOSFilePickerDriveSignInResult" expires_after="2027-04-17">
+  <owner>qpubert@google.com</owner>
+  <owner>josephlanza@google.com</owner>
+  <owner>bling-squid-squad@google.com</owner>
+  <summary>
+    Logged when the sign-in coordinator for the Drive File Picker returns the
+    result of the sign in attempt.
+  </summary>
+</histogram>
+
+<histogram name="IOS.FilePicker.Drive.SignIn.Status"
+    enum="IOSFilePickerDriveSignInStatus" expires_after="2027-04-17">
+  <owner>qpubert@google.com</owner>
+  <owner>josephlanza@google.com</owner>
+  <owner>bling-squid-squad@google.com</owner>
+  <summary>
+    Logged when the user attempts to access the Drive File Picker, indicating
+    the sign-in status of the user e.g. signed-in, signed-out without account,
+    signed-out with account on device.
+  </summary>
+</histogram>
+
 <histogram name="IOS.FilePicker.Drive.Sorting" enum="IOSFilePickerDriveSorting"
     expires_after="2026-09-04">
   <owner>qpubert@google.com</owner>

@@ -12,6 +12,8 @@
 
 struct ChooseFileEvent;
 
+typedef NS_ENUM(NSUInteger, SigninCoordinatorResult);
+
 // The different state of search.
 enum class DriveFilePickerSearchState {
   kNotSearching,
@@ -67,6 +69,13 @@ enum class DriveFilePickerSearchState {
 // identity.
 - (void)reportAccountChangeWithSuccess:(BOOL)success
                           isAccountNew:(BOOL)isAccountNew;
+
+// Reports the sign-in status at the start of the flow.
+- (void)reportDriveSignInStatus:(BOOL)signedIn
+             hasAccountOnDevice:(BOOL)hasAccountOnDevice;
+
+// Reports the sign-in result after the sign-in flow completes.
+- (void)reportDriveSignInResult:(SigninCoordinatorResult)result;
 
 @end
 
