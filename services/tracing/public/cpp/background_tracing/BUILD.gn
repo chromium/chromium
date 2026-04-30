@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/features.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
 component("background_tracing") {
@@ -10,6 +11,16 @@ component("background_tracing") {
     "background_tracing_agent_impl.h",
     "background_tracing_agent_provider_impl.cc",
     "background_tracing_agent_provider_impl.h",
+    "background_tracing_rule.cc",
+    "background_tracing_rule.h",
+    "trace_report_database.cc",
+    "trace_report_database.h",
+    "tracing_agent_observer_manager.cc",
+    "tracing_agent_observer_manager.h",
+    "tracing_scenario.cc",
+    "tracing_scenario.h",
+    "triggers_data_source.cc",
+    "triggers_data_source.h",
   ]
 
   defines = [ "IS_BACKGROUND_TRACING_CPP_IMPL" ]
@@ -18,17 +29,44 @@ component("background_tracing") {
   deps = [
     "//base",
     "//services/tracing/public/cpp",
+    "//sql",
+    "//third_party/perfetto:libperfetto",
   ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "background_tracing_agent_impl_unittest.cc" ]
+  sources = [
+    "background_tracing_agent_impl_unittest.cc",
+    "background_tracing_rule_unittest.cc",
+    "fake_tracing_manager.cc",
+    "fake_tracing_manager.h",
+    "trace_report_database_unittest.cc",
+  ]
+
+  if (!is_ios) {
+    sources += [ "tracing_scenario_unittest.cc" ]
+  }
   deps = [
     ":background_tracing",
     "//base",
+    "//base/test:proto_test_support",
     "//base/test:test_support",
     "//mojo/public/cpp/bindings",
+    "//sql",
+    "//sql:test_support",
     "//testing/gtest",
+    "//third_party/perfetto:libperfetto",
   ]
+
+  if (!is_ios) {
+    deps += [
+      "//services/tracing:lib",
+      "//services/tracing:test_utils",
+    ]
+  }
+  data_deps = [
+    "//third_party/perfetto/protos/perfetto/config/chrome:scenario_descriptor",
+  ]
+  data = [ "$root_gen_dir/third_party/perfetto/protos/perfetto/config/chrome/scenario_config.descriptor" ]
 }

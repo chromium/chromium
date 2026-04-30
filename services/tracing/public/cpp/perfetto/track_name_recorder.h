@@ -58,6 +58,10 @@ class COMPONENT_EXPORT(TRACING_CPP) TrackNameRecorder
 
   static void SetRecordHostAppPackageName(bool record_host_app_package_name);
 
+  // Starts and stops recording process and thread names.
+  void StartRecording();
+  void StopRecording();
+
  private:
   friend class base::NoDestructor<TrackNameRecorder>;
   FRIEND_TEST_ALL_PREFIXES(TrackNameRecorderTest,
@@ -94,8 +98,11 @@ class COMPONENT_EXPORT(TRACING_CPP) TrackNameRecorder
   // This lock protects `process_labels_` member accesses from arbitrary
   // threads.
   mutable base::Lock lock_;
+  bool is_recording_ = false;
   int next_process_label_id_ GUARDED_BY(lock_) = 0;
   absl::flat_hash_map<int, std::string> process_labels_ GUARDED_BY(lock_);
+
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace tracing

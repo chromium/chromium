@@ -28,6 +28,9 @@
 namespace content {
 
 using testing::_;
+using tracing::ClientTraceReport;
+using tracing::ReportUploadState;
+using tracing::SkipUploadReason;
 
 perfetto::protos::gen::TraceConfig ParseTraceConfigFromText(
     const std::string& proto_text) {

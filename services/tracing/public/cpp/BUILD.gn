@@ -54,6 +54,8 @@ target("component", "cpp") {
     "system_metrics_sampler.h",
     "trace_startup_config.cc",
     "trace_startup_config.h",
+    "tracing_features.cc",
+    "tracing_features.h",
   ]
 
   if (use_blink) {
@@ -106,8 +108,6 @@ target("component", "cpp") {
       "trace_startup.h",
       "traced_process_impl.cc",
       "traced_process_impl.h",
-      "tracing_features.cc",
-      "tracing_features.h",
     ]
 
     if (is_android) {

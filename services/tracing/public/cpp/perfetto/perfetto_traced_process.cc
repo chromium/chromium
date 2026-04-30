@@ -22,6 +22,7 @@
 #include "services/tracing/public/cpp/perfetto/common_data_sources.h"
 #include "services/tracing/public/cpp/perfetto/custom_event_recorder.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_tracing_backend.h"
+#include "services/tracing/public/cpp/perfetto/track_name_recorder.h"
 #include "services/tracing/public/cpp/trace_startup.h"
 #include "services/tracing/public/cpp/traced_process_impl.h"
 #include "services/tracing/public/cpp/tracing_features.h"
@@ -279,9 +280,12 @@ void PerfettoTracedProcess::SetupForTesting(
   SetupClientLibrary(/*enable_consumer=*/true, ShouldSetupSystemTracing());
   // Disassociate the PerfettoTracedProcess from any prior task runner.
   DETACH_FROM_SEQUENCE(sequence_checker_);
+
+  TrackNameRecorder::GetInstance()->StartRecording();
 }
 
 void PerfettoTracedProcess::ResetForTesting() {
+  TrackNameRecorder::GetInstance()->StopRecording();
   base::WaitableEvent on_reset_done;
   // The tracing backend is used internally in Perfetto on the |task_runner_|
   // sequence. Reset and destroy the backend on the task runner to avoid racing

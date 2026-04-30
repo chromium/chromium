@@ -2,25 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_TRACING_TRACING_SCENARIO_H_
-#define CONTENT_BROWSER_TRACING_TRACING_SCENARIO_H_
+#ifndef SERVICES_TRACING_PUBLIC_CPP_BACKGROUND_TRACING_TRACING_SCENARIO_H_
+#define SERVICES_TRACING_PUBLIC_CPP_BACKGROUND_TRACING_TRACING_SCENARIO_H_
 
 #include "base/cancelable_callback.h"
+#include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/token.h"
 #include "base/trace_event/trace_config.h"
 #include "base/unguessable_token.h"
-#include "content/browser/tracing/background_tracing_rule.h"
-#include "content/common/content_export.h"
+#include "services/tracing/public/cpp/background_tracing/background_tracing_rule.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_config.h"
 #include "third_party/perfetto/include/perfetto/tracing/tracing.h"
 #include "third_party/perfetto/protos/perfetto/config/chrome/scenario_config.gen.h"
 
-namespace content {
+namespace tracing {
 
-class CONTENT_EXPORT TracingScenarioBase {
+class COMPONENT_EXPORT(BACKGROUND_TRACING_CPP) TracingScenarioBase {
  public:
   virtual ~TracingScenarioBase();
 
@@ -53,7 +53,8 @@ class CONTENT_EXPORT TracingScenarioBase {
 // NestedTracingScenario manages triggers for a single nested tracing
 // scenario. Unlike TracingScenario below, it doesn't manage a tracing
 // session, but inherits from the parent's session instead.
-class CONTENT_EXPORT NestedTracingScenario : public TracingScenarioBase {
+class COMPONENT_EXPORT(BACKGROUND_TRACING_CPP) NestedTracingScenario
+    : public TracingScenarioBase {
  public:
   enum class State {
     // The scenario is disabled and no rule is installed.
@@ -125,8 +126,9 @@ class CONTENT_EXPORT NestedTracingScenario : public TracingScenarioBase {
 // BackgroundTracingActiveScenario.
 // TODO(crbug.com/40257548): Update the comment above once
 // BackgroundTracingActiveScenario is deleted.
-class CONTENT_EXPORT TracingScenario : public TracingScenarioBase,
-                                       public NestedTracingScenario::Delegate {
+class COMPONENT_EXPORT(BACKGROUND_TRACING_CPP) TracingScenario
+    : public TracingScenarioBase,
+      public NestedTracingScenario::Delegate {
  public:
   enum class State {
     // The scenario is disabled and no rule is installed.
@@ -286,6 +288,6 @@ class CONTENT_EXPORT TracingScenario : public TracingScenarioBase,
   base::WeakPtrFactory<TracingScenario> weak_ptr_factory_{this};
 };
 
-}  // namespace content
+}  // namespace tracing
 
-#endif  // CONTENT_BROWSER_TRACING_TRACING_SCENARIO_H_
+#endif  // SERVICES_TRACING_PUBLIC_CPP_BACKGROUND_TRACING_TRACING_SCENARIO_H_

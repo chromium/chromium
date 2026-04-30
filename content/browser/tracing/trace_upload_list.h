@@ -13,8 +13,8 @@
 #include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "base/token.h"
-#include "content/browser/tracing/trace_report_database.h"
 #include "content/common/content_export.h"
+#include "services/tracing/public/cpp/background_tracing/trace_report_database.h"
 
 namespace content {
 
@@ -24,7 +24,7 @@ class TraceUploadList {
  public:
   using FinishedProcessingCallback = base::OnceCallback<void(bool success)>;
   using GetReportsCallback =
-      base::OnceCallback<void(std::vector<ClientTraceReport> result)>;
+      base::OnceCallback<void(std::vector<tracing::ClientTraceReport> result)>;
   using GetProtoCallback =
       base::OnceCallback<void(std::optional<base::span<const char>> result)>;
 

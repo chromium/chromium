@@ -1,0 +1,12 @@
+specific_include_rules = {
+  'trace_report_database.cc': [
+    "+sql/database.h",
+    "+sql/meta_table.h",
+    "+sql/statement.h",
+  ],
+  'trace_report_database.h': [
+    "+sql/database.h",
+    "+sql/statement.h",
+    "+sql/transaction.h",
+  ],
+}

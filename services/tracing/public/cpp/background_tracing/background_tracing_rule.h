@@ -2,21 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_TRACING_BACKGROUND_TRACING_RULE_H_
-#define CONTENT_BROWSER_TRACING_BACKGROUND_TRACING_RULE_H_
+#ifndef SERVICES_TRACING_PUBLIC_CPP_BACKGROUND_TRACING_BACKGROUND_TRACING_RULE_H_
+#define SERVICES_TRACING_PUBLIC_CPP_BACKGROUND_TRACING_BACKGROUND_TRACING_RULE_H_
 
 #include <memory>
 #include <optional>
 
+#include "base/component_export.h"
 #include "base/observer_list_types.h"
 #include "base/timer/timer.h"
-#include "content/common/content_export.h"
+#include "base/trace_event/named_trigger.h"
 #include "third_party/perfetto/protos/perfetto/config/chrome/scenario_config.gen.h"
 #include "third_party/perfetto/protos/perfetto/trace/chrome/chrome_metadata.pbzero.h"
 
-namespace content {
+namespace tracing {
 
-class CONTENT_EXPORT BackgroundTracingRule : public base::CheckedObserver {
+class COMPONENT_EXPORT(BACKGROUND_TRACING_CPP) BackgroundTracingRule
+    : public base::trace_event::NamedTriggerManager::Observer {
  public:
   using MetadataProto =
       perfetto::protos::pbzero::BackgroundTracingMetadata::TriggerRule;
@@ -53,6 +55,7 @@ class CONTENT_EXPORT BackgroundTracingRule : public base::CheckedObserver {
 
   bool is_crash() const { return is_crash_; }
 
+  bool OnNamedTrigger(std::optional<int32_t> value, uint64_t flow_id) override;
   bool OnRuleTriggered(std::optional<int32_t> value, uint64_t flow_id);
 
  protected:
@@ -79,6 +82,6 @@ class CONTENT_EXPORT BackgroundTracingRule : public base::CheckedObserver {
   bool is_crash_ = false;
 };
 
-}  // namespace content
+}  // namespace tracing
 
-#endif  // CONTENT_BROWSER_TRACING_BACKGROUND_TRACING_RULE_H_
+#endif  // SERVICES_TRACING_PUBLIC_CPP_BACKGROUND_TRACING_BACKGROUND_TRACING_RULE_H_

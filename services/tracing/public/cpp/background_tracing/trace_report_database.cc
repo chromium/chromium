@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/tracing/trace_report_database.h"
+#include "services/tracing/public/cpp/background_tracing/trace_report_database.h"
 
 #include <optional>
 #include <string>
@@ -16,7 +16,7 @@
 #include "sql/meta_table.h"
 #include "sql/statement.h"
 
-namespace content {
+namespace tracing {
 
 namespace {
 
@@ -652,4 +652,4 @@ bool TraceReportDatabase::EnsureTableCreated() {
   return initialized_ && transaction.Commit();
 }
 
-}  // namespace content
+}  // namespace tracing

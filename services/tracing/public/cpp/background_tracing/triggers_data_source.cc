@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/tracing/triggers_data_source.h"
+#include "services/tracing/public/cpp/background_tracing/triggers_data_source.h"
 
 #include "base/metrics/metrics_hashes.h"
 #include "base/trace_event/trace_event.h"
@@ -10,7 +10,7 @@
 #include "third_party/perfetto/protos/perfetto/common/data_source_descriptor.gen.h"
 #include "third_party/perfetto/protos/perfetto/trace/chrome/chrome_trigger.pbzero.h"
 
-namespace content {
+namespace tracing {
 
 void TriggersDataSource::Register() {
   perfetto::DataSourceDescriptor desc;
@@ -19,7 +19,7 @@ void TriggersDataSource::Register() {
 }
 
 void TriggersDataSource::EmitTrigger(
-    const BackgroundTracingRule* triggered_rule) {
+    const tracing::BackgroundTracingRule* triggered_rule) {
   Trace([triggered_rule](TraceContext ctx) {
     auto packet = ctx.NewTracePacket();
     packet->set_timestamp(
@@ -36,8 +36,8 @@ void TriggersDataSource::EmitTrigger(
 void TriggersDataSource::OnStart(const StartArgs&) {}
 void TriggersDataSource::OnStop(const StopArgs&) {}
 
-}  // namespace content
+}  // namespace tracing
 
 PERFETTO_DEFINE_DATA_SOURCE_STATIC_MEMBERS_WITH_ATTRS(
-    CONTENT_EXPORT,
-    content::TriggersDataSource);
+    COMPONENT_EXPORT(BACKGROUND_TRACING_CPP),
+    tracing::TriggersDataSource);

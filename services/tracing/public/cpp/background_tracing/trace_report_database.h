@@ -2,23 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_TRACING_TRACE_REPORT_DATABASE_H_
-#define CONTENT_BROWSER_TRACING_TRACE_REPORT_DATABASE_H_
+#ifndef SERVICES_TRACING_PUBLIC_CPP_BACKGROUND_TRACING_TRACE_REPORT_DATABASE_H_
+#define SERVICES_TRACING_PUBLIC_CPP_BACKGROUND_TRACING_TRACE_REPORT_DATABASE_H_
 
 #include <optional>
 #include <string>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/token.h"
-#include "content/common/content_export.h"
 #include "sql/database.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
 
-namespace content {
+namespace tracing {
 
 enum class ReportUploadState {
   kNotUploaded = 0,
@@ -38,7 +38,7 @@ enum class SkipUploadReason {
 
 // BaseTraceReport contains common data used to create and display a trace
 // report.
-struct CONTENT_EXPORT BaseTraceReport {
+struct COMPONENT_EXPORT(BACKGROUND_TRACING_CPP) BaseTraceReport {
   BaseTraceReport();
   BaseTraceReport(const BaseTraceReport& other);
   ~BaseTraceReport();
@@ -69,7 +69,8 @@ struct CONTENT_EXPORT BaseTraceReport {
 
 // NewTraceReport represents the metadata needed to create and add a new
 // report into the TraceReportDatabase.
-struct CONTENT_EXPORT NewTraceReport : BaseTraceReport {
+struct COMPONENT_EXPORT(BACKGROUND_TRACING_CPP) NewTraceReport
+    : BaseTraceReport {
   NewTraceReport();
   // NOLINTNEXTLINE(google-explicit-constructor)
   NewTraceReport(const BaseTraceReport& report) : BaseTraceReport(report) {}
@@ -92,7 +93,8 @@ struct CONTENT_EXPORT NewTraceReport : BaseTraceReport {
 // to user. Proto member is not included here since it can be of significant
 // size. Therefore, if proto is needed it can be obtained through
 // GetProtoValue().
-struct CONTENT_EXPORT ClientTraceReport : BaseTraceReport {
+struct COMPONENT_EXPORT(BACKGROUND_TRACING_CPP) ClientTraceReport
+    : BaseTraceReport {
   ClientTraceReport();
   ~ClientTraceReport();
 
@@ -107,7 +109,7 @@ struct CONTENT_EXPORT ClientTraceReport : BaseTraceReport {
   bool has_trace_content = false;
 };
 
-class CONTENT_EXPORT TraceReportDatabase {
+class COMPONENT_EXPORT(BACKGROUND_TRACING_CPP) TraceReportDatabase {
  public:
   TraceReportDatabase();
   ~TraceReportDatabase() = default;
@@ -184,6 +186,6 @@ class CONTENT_EXPORT TraceReportDatabase {
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
-}  // namespace content
+}  // namespace tracing
 
-#endif  // CONTENT_BROWSER_TRACING_TRACE_REPORT_DATABASE_H_
+#endif  // SERVICES_TRACING_PUBLIC_CPP_BACKGROUND_TRACING_TRACE_REPORT_DATABASE_H_

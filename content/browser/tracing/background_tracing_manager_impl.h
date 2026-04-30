@@ -20,13 +20,14 @@
 #include "base/timer/timer.h"
 #include "base/token.h"
 #include "base/trace_event/named_trigger.h"
-#include "content/browser/tracing/trace_report_database.h"
 #include "content/browser/tracing/trace_upload_list.h"
 #include "content/browser/tracing/traces_internals/traces_internals.mojom.h"
-#include "content/browser/tracing/tracing_scenario.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/background_tracing_manager.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/tracing/public/cpp/background_tracing/trace_report_database.h"
+#include "services/tracing/public/cpp/background_tracing/tracing_agent_observer_manager.h"
+#include "services/tracing/public/cpp/background_tracing/tracing_scenario.h"
 #include "services/tracing/public/mojom/background_tracing_agent.mojom.h"
 
 namespace tracing::mojom {
@@ -44,16 +45,9 @@ class BackgroundTracingManagerImpl
     : public BackgroundTracingManager,
       public base::trace_event::NamedTriggerManager,
       public TraceUploadList,
-      public TracingScenario::Delegate {
+      public tracing::TracingScenario::Delegate,
+      public tracing::TracingAgentObserverManager {
  public:
-  class AgentObserver {
-   public:
-    virtual void OnAgentAdded(
-        tracing::mojom::BackgroundTracingAgent* agent) = 0;
-    virtual void OnAgentRemoved(
-        tracing::mojom::BackgroundTracingAgent* agent) = 0;
-  };
-
   // Delegate to store and read application preferences for startup tracing, to
   // isolate the feature for testing.
   class PreferenceManager {
@@ -124,22 +118,17 @@ class BackgroundTracingManagerImpl
   bool HasActiveScenario() override;
   void DeleteTracesInDateRange(base::Time start, base::Time end) override;
 
-  // TracingScenario::Delegate:
-  bool OnScenarioActive(TracingScenario* scenario) override;
-  bool OnScenarioIdle(TracingScenario* scenario) override;
-  void OnScenarioError(TracingScenario* scenario,
+  // tracing::TracingScenario::Delegate:
+  bool OnScenarioActive(tracing::TracingScenario* scenario) override;
+  bool OnScenarioIdle(tracing::TracingScenario* scenario) override;
+  void OnScenarioError(tracing::TracingScenario* scenario,
                        perfetto::TracingError error) override;
-  bool OnScenarioCloned(TracingScenario* scenario) override;
-  void OnScenarioRecording(TracingScenario* scenario) override;
-  void SaveTrace(TracingScenario* scenario,
+  bool OnScenarioCloned(tracing::TracingScenario* scenario) override;
+  void OnScenarioRecording(tracing::TracingScenario* scenario) override;
+  void SaveTrace(tracing::TracingScenario* scenario,
                  base::Token trace_uuid,
-                 const BackgroundTracingRule* triggered_rule,
+                 const tracing::BackgroundTracingRule* triggered_rule,
                  std::string&& serialized_trace) override;
-
-  void AddNamedTriggerObserver(const std::string& trigger_name,
-                               BackgroundTracingRule* observer);
-  void RemoveNamedTriggerObserver(const std::string& trigger_name,
-                                  BackgroundTracingRule* observer);
 
   // Returns the list of scenario hashes and names that were saved,
   // whether or not enabled.
@@ -183,8 +172,10 @@ class BackgroundTracingManagerImpl
   // Add/remove Agent{Observer}.
   void AddAgent(tracing::mojom::BackgroundTracingAgent* agent);
   void RemoveAgent(tracing::mojom::BackgroundTracingAgent* agent);
-  void AddAgentObserver(AgentObserver* observer);
-  void RemoveAgentObserver(AgentObserver* observer);
+  void AddAgentObserver(
+      tracing::TracingAgentObserverManager::AgentObserver* observer) override;
+  void RemoveAgentObserver(
+      tracing::TracingAgentObserverManager::AgentObserver* observer) override;
 
   void OnStartTracingDone();
   void OnProtoDataComplete(std::string&& serialized_trace,
@@ -242,30 +233,30 @@ class BackgroundTracingManagerImpl
           provider);
   static void ClearPendingAgent(int child_process_id);
   void MaybeConstructPendingAgents();
-  void OnFinalizeComplete(std::optional<BaseTraceReport> trace_to_upload,
-                          bool success);
-  void OnTraceDatabaseCreated(ScenarioCountMap scenario_saved_counts,
-                              std::optional<BaseTraceReport> trace_to_upload,
-                              bool success);
+  void OnFinalizeComplete(
+      std::optional<tracing::BaseTraceReport> trace_to_upload,
+      bool success);
+  void OnTraceDatabaseCreated(
+      ScenarioCountMap scenario_saved_counts,
+      std::optional<tracing::BaseTraceReport> trace_to_upload,
+      bool success);
   void OnTraceDatabaseUpdated(ScenarioCountMap scenario_saved_counts);
   void OnTraceSaved(const std::string& scenario_name,
-                    std::optional<BaseTraceReport> trace_to_upload,
+                    std::optional<tracing::BaseTraceReport> trace_to_upload,
                     bool success);
   void CleanDatabase();
 
   raw_ptr<TracingDelegate> delegate_;
   std::unique_ptr<tracing::BackgroundTracingStateManager> state_manager_;
-  std::vector<std::unique_ptr<TracingScenario>> field_scenarios_;
-  base::flat_map<std::string, std::unique_ptr<TracingScenario>>
+  std::vector<std::unique_ptr<tracing::TracingScenario>> field_scenarios_;
+  base::flat_map<std::string, std::unique_ptr<tracing::TracingScenario>>
       preset_scenarios_;
-  std::vector<raw_ptr<TracingScenario>> enabled_scenarios_;
-  raw_ptr<TracingScenario> active_scenario_{nullptr};
+  std::vector<raw_ptr<tracing::TracingScenario>> enabled_scenarios_;
+  raw_ptr<tracing::TracingScenario> active_scenario_{nullptr};
   base::TimeTicks scenario_start_time_;
-  std::vector<std::unique_ptr<BackgroundTracingRule>> trigger_rules_;
+  std::vector<std::unique_ptr<tracing::BackgroundTracingRule>> trigger_rules_;
   ReceiveCallback receive_callback_;
 
-  std::map<std::string, base::ObserverList<BackgroundTracingRule>>
-      named_trigger_observers_;
 
   // Note, these sets are not mutated during iteration so it is okay to not use
   // base::ObserverList.
@@ -273,7 +264,9 @@ class BackgroundTracingManagerImpl
       background_tracing_observers_;
   std::set<raw_ptr<tracing::mojom::BackgroundTracingAgent, SetExperimental>>
       agents_;
-  std::set<raw_ptr<AgentObserver, SetExperimental>> agent_observers_;
+  std::set<raw_ptr<tracing::TracingAgentObserverManager::AgentObserver,
+                   SetExperimental>>
+      agent_observers_;
 
   std::unique_ptr<PreferenceManager> preferences_;
 
@@ -286,10 +279,10 @@ class BackgroundTracingManagerImpl
   scoped_refptr<base::SequencedTaskRunner> database_task_runner_;
 
   // This contains all the traces saved locally.
-  std::unique_ptr<TraceReportDatabase, base::OnTaskRunnerDeleter>
+  std::unique_ptr<tracing::TraceReportDatabase, base::OnTaskRunnerDeleter>
       trace_database_;
 
-  std::optional<BaseTraceReport> trace_report_to_upload_;
+  std::optional<tracing::BaseTraceReport> trace_report_to_upload_;
 
   // Timer to delete traces older than 2 weeks.
   base::RepeatingTimer clean_database_timer_;

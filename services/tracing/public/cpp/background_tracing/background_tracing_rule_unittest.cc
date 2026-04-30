@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/tracing/background_tracing_rule.h"
+#include "services/tracing/public/cpp/background_tracing/background_tracing_rule.h"
 
 #include <memory>
 
@@ -12,17 +12,17 @@
 #include "base/run_loop.h"
 #include "base/system/sys_info.h"
 #include "base/test/bind.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_proto_loader.h"
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
 #include "base/trace_event/named_trigger.h"
 #include "build/build_config.h"
-#include "content/public/browser/background_tracing_manager.h"
-#include "content/public/test/browser_task_environment.h"
+#include "services/tracing/public/cpp/background_tracing/fake_tracing_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/perfetto/protos/perfetto/config/chrome/scenario_config.gen.h"
 
-namespace content {
+namespace tracing {
 
 namespace {
 
@@ -48,13 +48,10 @@ class BackgroundTracingRuleTest : public testing::Test {
   BackgroundTracingRuleTest() = default;
 
  protected:
-  BrowserTaskEnvironment task_environment_{
+  base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-
-  content::TracingDelegate tracing_delegate;
-  std::unique_ptr<content::BackgroundTracingManager>
-      background_tracing_manager =
-          content::BackgroundTracingManager::CreateInstance(&tracing_delegate);
+  FakeTracingAgentObserverManager tracing_manager_delegate_;
+  FakeNamedTriggerManager named_trigger_manager_;
 };
 
 TEST_F(BackgroundTracingRuleTest, HistogramRuleFromValidProto) {
@@ -337,4 +334,4 @@ TEST_F(BackgroundTracingRuleTest, RepeatingIntervalRuleTriggersRandomized) {
   rule->Uninstall();
 }
 
-}  // namespace content
+}  // namespace tracing

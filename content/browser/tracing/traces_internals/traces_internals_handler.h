@@ -84,8 +84,9 @@ class CONTENT_EXPORT TracesInternalsHandler
   virtual std::unique_ptr<perfetto::TracingSession> CreateTracingSession();
 
  private:
-  void OnGetAllReportsTaskComplete(GetAllTraceReportsCallback callback,
-                                   std::vector<ClientTraceReport> results);
+  void OnGetAllReportsTaskComplete(
+      GetAllTraceReportsCallback callback,
+      std::vector<tracing::ClientTraceReport> results);
   bool SetScenariosConfig(
       const perfetto::protos::gen::ChromeFieldTracingConfig& config);
   void MaybeSetupPresetTracingFromFieldTrial();

@@ -14,7 +14,6 @@
 #include "components/tracing/common/background_tracing_state_manager.h"
 #include "components/tracing/common/tracing_scenarios_config.h"
 #include "content/browser/tracing/background_tracing_manager_impl.h"
-#include "content/browser/tracing/trace_report_database.h"
 #include "content/browser/tracing/trace_upload_list.h"
 #include "content/browser/tracing/tracing_controller_impl.h"
 #include "content/public/browser/background_tracing_manager.h"
@@ -23,6 +22,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/tracing/public/cpp/background_tracing/trace_report_database.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_session.h"
 #include "third_party/perfetto/protos/perfetto/config/trace_config.gen.h"
 #include "third_party/snappy/src/snappy.h"
@@ -360,7 +360,7 @@ void TracesInternalsHandler::GetAllTraceReports(
 
 void TracesInternalsHandler::OnGetAllReportsTaskComplete(
     GetAllTraceReportsCallback callback,
-    std::vector<ClientTraceReport> results) {
+    std::vector<tracing::ClientTraceReport> results) {
   std::vector<traces_internals::mojom::ClientTraceReportPtr> reports;
   for (const auto& report : results) {
     reports.push_back(traces_internals::mojom::ClientTraceReport::New(

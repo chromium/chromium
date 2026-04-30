@@ -2,23 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/tracing/tracing_scenario.h"
+#include "services/tracing/public/cpp/background_tracing/tracing_scenario.h"
 
 #include <memory>
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ref.h"
 #include "base/notimplemented.h"
 #include "base/path_service.h"
 #include "base/task/thread_pool.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_proto_loader.h"
 #include "base/token.h"
 #include "base/trace_event/named_trigger.h"
 #include "build/build_config.h"
-#include "content/public/browser/background_tracing_manager.h"
-#include "content/public/browser/tracing_delegate.h"
-#include "content/public/test/browser_task_environment.h"
 #include "services/tracing/perfetto/test_utils.h"
+#include "services/tracing/public/cpp/background_tracing/fake_tracing_manager.h"
+#include "services/tracing/public/cpp/background_tracing/tracing_agent_observer_manager.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_traced_process.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -33,7 +35,7 @@
 #include "services/tracing/tracing_service.h"
 #endif  // BUILDFLAG(IS_POSIX)
 
-namespace content {
+namespace tracing {
 namespace {
 
 const char* kDefaultNestedConfig = R"pb(
@@ -300,35 +302,34 @@ perfetto::protos::gen::NestedScenarioConfig ParseNestedScenarioConfigFromText(
 
 class TracingScenarioTest : public testing::Test {
  public:
-  TracingScenarioTest()
-      : background_tracing_manager_(
-            content::BackgroundTracingManager::CreateInstance(
-                &tracing_delegate_)) {}
+  TracingScenarioTest() {
+    traced_process = std::make_unique<tracing::TracedProcessForTesting>(
+        base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}));
+  }
+
+  void TearDown() override {
+    base::ThreadPoolInstance::Get()->FlushForTesting();
+    traced_process.reset();
+  }
 
  protected:
-  BrowserTaskEnvironment task_environment;
-  tracing::TracedProcessForTesting traced_process{
-      base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})};
+  base::test::TaskEnvironment task_environment;
+  std::unique_ptr<tracing::TracedProcessForTesting> traced_process;
   TestTracingScenarioDelegate delegate;
   TestNestedTracingScenarioDelegate nested_delegate;
-  content::TracingDelegate tracing_delegate_;
-  std::unique_ptr<content::BackgroundTracingManager>
-      background_tracing_manager_;
+  FakeTracingAgentObserverManager tracing_manager_delegate_;
+  FakeNamedTriggerManager named_trigger_manager_;
 };
 
 class NestedTracingScenarioTest : public testing::Test {
  public:
-  NestedTracingScenarioTest()
-      : background_tracing_manager_(
-            content::BackgroundTracingManager::CreateInstance(
-                &tracing_delegate_)) {}
+  NestedTracingScenarioTest() = default;
 
  protected:
-  BrowserTaskEnvironment task_environment;
+  base::test::TaskEnvironment task_environment;
   TestNestedTracingScenarioDelegate delegate;
-  content::TracingDelegate tracing_delegate_;
-  std::unique_ptr<content::BackgroundTracingManager>
-      background_tracing_manager_;
+  FakeTracingAgentObserverManager tracing_manager_delegate_;
+  FakeNamedTriggerManager named_trigger_manager_;
 };
 
 }  // namespace
@@ -909,12 +910,17 @@ class TracingScenarioSystemBackendTest : public testing::Test {
   static constexpr char kPerfettoProducerSockName[] =
       "PERFETTO_PRODUCER_SOCK_NAME";
   TracingScenarioSystemBackendTest()
-      : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP) {}
+      : task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {}
 
   void TearDown() override {
     system_producer_ = nullptr;
     system_service_ = nullptr;
+
+    base::ThreadPoolInstance::Get()->FlushForTesting();
+
     traced_process_ = nullptr;
+
+    scoped_feature_list_.Reset();
 
     // Restore env variables after shutdown of the above to data races with the
     // muxer thread.
@@ -957,8 +963,6 @@ class TracingScenarioSystemBackendTest : public testing::Test {
 
     traced_process_ = std::make_unique<tracing::TracedProcessForTesting>(
         base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}));
-    background_tracing_manager_ =
-        content::BackgroundTracingManager::CreateInstance(&tracing_delegate_);
 
     // Connect the producer to the tracing service.
     system_producer_ = std::make_unique<tracing::MockProducer>();
@@ -986,12 +990,12 @@ class TracingScenarioSystemBackendTest : public testing::Test {
  protected:
   // Not inheriting from TracingScenarioTest because initialization of
   // |traced_process_| depends on feature flags and environment variables.
-  BrowserTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
   std::unique_ptr<tracing::TracedProcessForTesting> traced_process_;
   TestTracingScenarioDelegate delegate;
-  content::TracingDelegate tracing_delegate_;
-  std::unique_ptr<content::BackgroundTracingManager>
-      background_tracing_manager_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+  FakeTracingAgentObserverManager tracing_manager_delegate_;
+  FakeNamedTriggerManager named_trigger_manager_;
 
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<tracing::MockSystemService> system_service_;
@@ -1011,8 +1015,7 @@ class TracingScenarioSystemBackendTest : public testing::Test {
 // use the system backend and check from the producer that a trace session is
 // started and stopped through the system backend.
 TEST_F(TracingScenarioSystemBackendTest, StartStop) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
+  scoped_feature_list_.InitWithFeatures(
       /*enabled_features=*/{features::kEnablePerfettoSystemTracing,
                             features::kEnablePerfettoSystemBackgroundTracing},
       /*disabled_features=*/{});
@@ -1077,8 +1080,7 @@ TEST_F(TracingScenarioSystemBackendTest, StartStop) {
 
 // Test that system consumer connections are denied.
 TEST_F(TracingScenarioSystemBackendTest, SystemConsumerNotAllowedByCallback) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
+  scoped_feature_list_.InitWithFeatures(
       /*enabled_features=*/{features::kEnablePerfettoSystemTracing,
                             features::kEnablePerfettoSystemBackgroundTracing},
       /*disabled_features=*/{});
@@ -1128,8 +1130,7 @@ TEST_F(TracingScenarioSystemBackendTest, SystemConsumerNotAllowedByCallback) {
 // system backend is unavailable (feature
 // "EnablePerfettoSystemBackgroundTracing" isn't enabled).
 TEST_F(TracingScenarioSystemBackendTest, FeatureNotEnabled_1) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
+  scoped_feature_list_.InitWithFeatures(
       /*enabled_features=*/{features::kEnablePerfettoSystemTracing},
       /*disabled_features=*/{features::kEnablePerfettoSystemBackgroundTracing});
   InitTracing();
@@ -1161,8 +1162,7 @@ TEST_F(TracingScenarioSystemBackendTest, FeatureNotEnabled_1) {
 // system backend is unavailable (feature "EnablePerfettoSystemTracing" isn't
 // enabled).
 TEST_F(TracingScenarioSystemBackendTest, FeatureNotEnabled_2) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
+  scoped_feature_list_.InitWithFeatures(
       /*enabled_features=*/{features::kEnablePerfettoSystemBackgroundTracing},
       /*disabled_features=*/{features::kEnablePerfettoSystemTracing});
 
@@ -1198,8 +1198,7 @@ const char* kScenarioConfigWithoutSystemBackend = R"pb(
 // The custom backend is used on a platform that has system background tracing
 // enabled if the scenario doesn't specify the system backend
 TEST_F(TracingScenarioSystemBackendTest, ScenarioConfigWithoutSystemBackend) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
+  scoped_feature_list_.InitWithFeatures(
       /*enabled_features=*/{features::kEnablePerfettoSystemTracing,
                             features::kEnablePerfettoSystemBackgroundTracing},
       /*disabled_features=*/{});
@@ -1231,4 +1230,4 @@ TEST_F(TracingScenarioSystemBackendTest, ScenarioConfigWithoutSystemBackend) {
 
 #endif  //  BUILDFLAG(IS_POSIX)
 
-}  // namespace content
+}  // namespace tracing

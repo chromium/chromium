@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "base/hash/hash.h"
 #include "base/strings/strcat.h"
+#include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_id_helper.h"
 
 namespace base::trace_event {
@@ -31,6 +32,46 @@ bool EmitNamedTrigger(const std::string& trigger_name,
 void NamedTriggerManager::SetInstance(NamedTriggerManager* manager) {
   DCHECK(g_named_trigger_manager == nullptr || manager == nullptr);
   g_named_trigger_manager = manager;
+}
+
+NamedTriggerManager::NamedTriggerManager() = default;
+NamedTriggerManager::~NamedTriggerManager() = default;
+
+// static
+NamedTriggerManager* NamedTriggerManager::GetInstance() {
+  return g_named_trigger_manager;
+}
+
+void NamedTriggerManager::AddObserver(const std::string& name,
+                                      Observer* observer) {
+  observers_[name].AddObserver(observer);
+}
+
+void NamedTriggerManager::RemoveObserver(const std::string& name,
+                                         Observer* observer) {
+  observers_[name].RemoveObserver(observer);
+}
+
+void NamedTriggerManager::ClearObserversForTesting() {
+  observers_.clear();
+}
+
+bool NamedTriggerManager::NotifyObservers(const std::string& trigger_name,
+                                          std::optional<int32_t> value,
+                                          uint64_t flow_id) {
+  auto it = observers_.find(trigger_name);
+  if (it == observers_.end()) {
+    return false;
+  }
+  bool triggered = false;
+  for (Observer& obs : it->second) {
+    triggered |= obs.OnNamedTrigger(value, flow_id);
+  }
+  if (triggered) {
+    TRACE_EVENT_INSTANT("tracing.background", "NamedTrigger",
+                        perfetto::Flow::Global(flow_id));
+  }
+  return triggered;
 }
 
 }  // namespace base::trace_event

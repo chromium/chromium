@@ -5,9 +5,9 @@
 #ifndef CONTENT_BROWSER_TRACING_TRACES_INTERNALS_TRACES_INTERNALS_MOJOM_TRAITS_H_
 #define CONTENT_BROWSER_TRACING_TRACES_INTERNALS_TRACES_INTERNALS_MOJOM_TRAITS_H_
 
-#include "content/browser/tracing/trace_report_database.h"
 #include "content/browser/tracing/traces_internals/traces_internals.mojom.h"
-#include "content/browser/tracing/tracing_scenario.h"
+#include "services/tracing/public/cpp/background_tracing/trace_report_database.h"
+#include "services/tracing/public/cpp/background_tracing/tracing_scenario.h"
 
 namespace mojo {
 
@@ -16,21 +16,21 @@ using SkipUploadReason = traces_internals::mojom::SkipUploadReason;
 using TracingScenarioState = traces_internals::mojom::TracingScenarioState;
 
 template <>
-struct EnumTraits<ReportUploadState, content::ReportUploadState> {
-  static ReportUploadState ToMojom(content::ReportUploadState input);
-  static content::ReportUploadState FromMojom(ReportUploadState input);
+struct EnumTraits<ReportUploadState, tracing::ReportUploadState> {
+  static ReportUploadState ToMojom(tracing::ReportUploadState input);
+  static tracing::ReportUploadState FromMojom(ReportUploadState input);
 };
 
 template <>
-struct EnumTraits<SkipUploadReason, content::SkipUploadReason> {
-  static SkipUploadReason ToMojom(content::SkipUploadReason input);
-  static content::SkipUploadReason FromMojom(SkipUploadReason input);
+struct EnumTraits<SkipUploadReason, tracing::SkipUploadReason> {
+  static SkipUploadReason ToMojom(tracing::SkipUploadReason input);
+  static tracing::SkipUploadReason FromMojom(SkipUploadReason input);
 };
 
 template <>
-struct EnumTraits<TracingScenarioState, content::TracingScenario::State> {
-  static TracingScenarioState ToMojom(content::TracingScenario::State input);
-  static content::TracingScenario::State FromMojom(TracingScenarioState input);
+struct EnumTraits<TracingScenarioState, tracing::TracingScenario::State> {
+  static TracingScenarioState ToMojom(tracing::TracingScenario::State input);
+  static tracing::TracingScenario::State FromMojom(TracingScenarioState input);
 };
 
 }  // namespace mojo

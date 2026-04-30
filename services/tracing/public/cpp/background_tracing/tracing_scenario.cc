@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/tracing/tracing_scenario.h"
+#include "services/tracing/public/cpp/background_tracing/tracing_scenario.h"
 
 #include <memory>
 #include <utility>
@@ -10,21 +10,20 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/metrics_hashes.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/token.h"
+#include "base/trace_event/trace_event.h"
 #include "base/tracing/trace_time.h"
-#include "components/variations/hashing.h"
-#include "content/browser/tracing/background_tracing_manager_impl.h"
-#include "content/browser/tracing/triggers_data_source.h"
-#include "content/public/browser/browser_task_traits.h"
-#include "content/public/browser/browser_thread.h"
+#include "services/tracing/public/cpp/background_tracing/tracing_agent_observer_manager.h"
+#include "services/tracing/public/cpp/background_tracing/triggers_data_source.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_config.h"
-#include "services/tracing/public/cpp/perfetto/perfetto_traced_process.h"
 #include "services/tracing/public/cpp/tracing_features.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "third_party/perfetto/protos/perfetto/config/track_event/track_event_config.gen.h"
 
-namespace content {
+namespace tracing {
 
 namespace {
 
@@ -85,8 +84,6 @@ class TracingScenario::TraceReader
   ~TraceReader() = default;
 };
 
-using Metrics = BackgroundTracingManagerImpl::Metrics;
-
 TracingScenarioBase::~TracingScenarioBase() = default;
 
 void TracingScenarioBase::Disable() {
@@ -112,7 +109,7 @@ void TracingScenarioBase::Enable() {
 
 uint32_t TracingScenarioBase::TriggerNameHash(
     const BackgroundTracingRule* triggered_rule) const {
-  return variations::HashName(
+  return base::HashFieldTrialName(
       base::StrCat({scenario_name(), ".", triggered_rule->rule_name()}));
 }
 
@@ -262,8 +259,7 @@ bool TracingScenario::Initialize(
       use_system_backend_ && tracing::SystemBackgroundTracingEnabled();
   if (!tracing::AdaptPerfettoConfigForChrome(
           &trace_config_, privacy_filtering_enabled_,
-          enable_package_name_filter,
-          enable_system_backend)) {
+          enable_package_name_filter, enable_system_backend)) {
     return false;
   }
   for (const auto& nested_config : config.nested_scenarios()) {
@@ -314,7 +310,7 @@ void TracingScenario::GenerateMetadataProto(
   auto* background_tracing_metadata =
       metadata->set_background_tracing_metadata();
 
-  uint32_t scenario_name_hash = variations::HashName(scenario_name());
+  uint32_t scenario_name_hash = base::HashFieldTrialName(scenario_name());
   background_tracing_metadata->set_scenario_name_hash(scenario_name_hash);
 
   if (triggered_rule_) {
@@ -727,4 +723,4 @@ base::WeakPtr<TracingScenario> TracingScenario::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-}  // namespace content
+}  // namespace tracing

@@ -148,6 +148,7 @@ source_set("unit_tests") {
     "//base/test:proto_test_support",
     "//components/metrics",
     "//components/prefs:test_support",
+    "//sql:test_support",
   ]
 
   if (!is_ios) {
@@ -155,6 +156,8 @@ source_set("unit_tests") {
       ":background_tracing_utils",
       "//content/public/browser",
       "//content/test:test_support",
+      "//services/tracing:lib",
+      "//services/tracing:test_utils",
     ]
   }
 }

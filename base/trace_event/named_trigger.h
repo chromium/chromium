@@ -7,10 +7,13 @@
 
 #include <stdint.h>
 
+#include <map>
 #include <optional>
 #include <string>
 
 #include "base/base_export.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 
 namespace base::trace_event {
 
@@ -25,15 +28,40 @@ BASE_EXPORT bool EmitNamedTrigger(
     std::optional<int32_t> value = std::nullopt,
     std::optional<uint64_t> flow_id = std::nullopt);
 
-class NamedTriggerManager {
+class BASE_EXPORT NamedTriggerManager {
  public:
+  NamedTriggerManager();
+  virtual ~NamedTriggerManager();
+
+  class Observer : public base::CheckedObserver {
+   public:
+    virtual bool OnNamedTrigger(std::optional<int32_t> value,
+                                uint64_t flow_id) = 0;
+
+   protected:
+    ~Observer() override = default;
+  };
+
+  static NamedTriggerManager* GetInstance();
+
   virtual bool DoEmitNamedTrigger(const std::string& trigger_name,
                                   std::optional<int32_t> value,
                                   uint64_t flow_id) = 0;
 
+  void AddObserver(const std::string& name, Observer* observer);
+  void RemoveObserver(const std::string& name, Observer* observer);
+  void ClearObserversForTesting();
+
  protected:
+  bool NotifyObservers(const std::string& trigger_name,
+                       std::optional<int32_t> value,
+                       uint64_t flow_id);
+
   // Sets the instance returns by GetInstance() globally to |manager|.
-  BASE_EXPORT static void SetInstance(NamedTriggerManager* manager);
+  static void SetInstance(NamedTriggerManager* manager);
+
+ private:
+  std::map<std::string, base::ObserverList<Observer>> observers_;
 };
 
 }  // namespace base::trace_event

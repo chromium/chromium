@@ -5,12 +5,19 @@ include_rules = [
   "+crypto",
   "+third_party/metrics_proto",
   "+third_party/perfetto/include",
+  "+sql",
+  "+components/variations",
   "+third_party/perfetto/protos",
   "+content/public/browser/background_tracing_manager.h",
   "+content/public/browser/tracing_delegate.h",
   "+content/public/browser/browser_thread.h",
   "+third_party/snappy",
   "+services/tracing/public/cpp",
+  "+services/tracing/public/mojom",
+  "+services/tracing/public/mojom/background_tracing_agent.mojom.h",
+  "+services/tracing/tracing_service.h",
+  "+services/tracing/perfetto/test_utils.h",
+  "+services/tracing/perfetto/system_test_utils.h",
 ]
 
 specific_include_rules = {

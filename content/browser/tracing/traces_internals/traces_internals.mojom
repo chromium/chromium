@@ -11,7 +11,7 @@ import "mojo/public/mojom/base/token.mojom";
 import "url/mojom/url.mojom";
 
 // Keep in sync with ReportUploadState from
-// content/browser/tracing/trace_report_database.h
+// services/tracing/public/cpp/background_tracing/trace_report_database.h
 enum ReportUploadState {
   kNotUploaded = 0,
   kPending = 1,
@@ -20,7 +20,7 @@ enum ReportUploadState {
 };
 
 // Keep in sync with SkipUploadReason from
-// content/browser/tracing/trace_report_database.h
+// services/tracing/public/cpp/background_tracing/trace_report_database.h
 enum SkipUploadReason {
   kNoSkip = 0,
   kSizeLimitExceeded = 1,
@@ -66,8 +66,8 @@ struct ClientTraceReport {
   bool has_trace_content;
 };
 
-// Keep in sync with TracingScenario::State from
-// content/browser/tracing/tracing_scenario.h
+// Keep in sync with tracing::TracingScenario::State from
+// services/tracing/public/cpp/background_tracing/tracing_scenario.h
 enum TracingScenarioState {
   kDisabled = 0,
   kEnabled = 1,

@@ -35,6 +35,7 @@ test("services_unittests") {
     "//services/network:tests",
     "//services/network/public/cpp:tests",
     "//services/test:run_all_unittests",
+    "//services/tracing:tests",
   ]
 
   fuzztests = [
@@ -68,7 +69,6 @@ test("services_unittests") {
       "//services/proxy_resolver:tests",
       "//services/resource_coordinator:tests",
       "//services/shape_detection:tests",
-      "//services/tracing:tests",
       "//services/viz/privileged/mojom:unit_tests",
       "//services/viz/public/cpp/compositing:tests",
       "//services/viz/public/cpp/gpu:tests",
@@ -77,10 +77,6 @@ test("services_unittests") {
       "//services/webnn/public/cpp:tests",
       "//services/webnn/public/mojom:tests",
     ]
-    if (is_ios) {
-      bundle_deps =
-          [ "//services/tracing:services_tracing_perfetto_bundle_data" ]
-    }
     if (is_android) {
       deps += [
         # The java target is added explicitly because the unit tests below
@@ -97,6 +93,10 @@ test("services_unittests") {
 
   if (is_android && (current_cpu == "arm" || current_cpu == "arm64")) {
     deps += [ "//base:base_profiler_test_support_library" ]
+  }
+
+  if (is_ios) {
+    bundle_deps = [ "//services/tracing:services_tracing_perfetto_bundle_data" ]
   }
 
   if (is_linux) {

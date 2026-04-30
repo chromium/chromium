@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/tracing/trace_report_database.h"
+#include "services/tracing/public/cpp/background_tracing/trace_report_database.h"
 
 #include <optional>
 #include <string>
@@ -15,7 +15,7 @@
 #include "base/token.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace content {
+namespace tracing {
 namespace {
 
 NewTraceReport MakeNewTraceReport(base::Time now = base::Time::Now()) {
@@ -407,4 +407,4 @@ TEST_F(TraceReportDatabaseTest, GetScenarioCounts) {
   EXPECT_EQ(1U, scenario_counts["test_scenario"]);
 }
 
-}  // namespace content
+}  // namespace tracing

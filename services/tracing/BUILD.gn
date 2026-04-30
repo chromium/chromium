@@ -7,6 +7,7 @@
 # Others modules should only need the public targets.
 
 import("//build/config/compiler/compiler.gni")
+import("//build/config/features.gni")
 import("//services/tracing/public/cpp/stack_sampling/loader_lock_sampling.gni")
 
 if (is_android) {
@@ -14,33 +15,35 @@ if (is_android) {
   import("//third_party/jni_zero/jni_zero.gni")
 }
 
-source_set("lib") {
-  sources = [
-    "perfetto/consumer_host.cc",
-    "perfetto/consumer_host.h",
-    "perfetto/perfetto_service.cc",
-    "perfetto/perfetto_service.h",
-    "perfetto/producer_host.cc",
-    "perfetto/producer_host.h",
-    "tracing_service.cc",
-    "tracing_service.h",
-  ]
+if (use_blink) {
+  source_set("lib") {
+    sources = [
+      "perfetto/consumer_host.cc",
+      "perfetto/consumer_host.h",
+      "perfetto/perfetto_service.cc",
+      "perfetto/perfetto_service.h",
+      "perfetto/producer_host.cc",
+      "perfetto/producer_host.h",
+      "tracing_service.cc",
+      "tracing_service.h",
+    ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+    configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
-  public_deps = [
-    ":privacy_check",
-    "//base",
-    "//build:blink_buildflags",
-    "//mojo/public/cpp/bindings",
-    "//services/tracing/public/cpp",
-    "//services/tracing/public/mojom",
-    "//third_party/perfetto:libperfetto",
-    "//third_party/perfetto/include/perfetto/ext/trace_processor:export_json",
-    "//third_party/perfetto/include/perfetto/trace_processor:basic_types",
-    "//third_party/perfetto/include/perfetto/trace_processor:storage",
-    "//third_party/perfetto/protos/perfetto/config:lite",
-  ]
+    public_deps = [
+      ":privacy_check",
+      "//base",
+      "//build:blink_buildflags",
+      "//mojo/public/cpp/bindings",
+      "//services/tracing/public/cpp",
+      "//services/tracing/public/mojom",
+      "//third_party/perfetto:libperfetto",
+      "//third_party/perfetto/include/perfetto/ext/trace_processor:export_json",
+      "//third_party/perfetto/include/perfetto/trace_processor:basic_types",
+      "//third_party/perfetto/include/perfetto/trace_processor:storage",
+      "//third_party/perfetto/protos/perfetto/config:lite",
+    ]
+  }
 }
 
 source_set("privacy_check") {
@@ -56,59 +59,63 @@ source_set("privacy_check") {
   ]
 }
 
-source_set("test_utils") {
-  testonly = true
+if (use_blink) {
+  source_set("test_utils") {
+    testonly = true
 
-  sources = [
-    "perfetto/test_utils.cc",
-    "perfetto/test_utils.h",
-    "public/cpp/perfetto/producer_test_utils.cc",
-    "public/cpp/perfetto/producer_test_utils.h",
-  ]
-
-  deps = [
-    ":lib",
-    "//base",
-    "//base/test:test_support",
-    "//testing/gtest",
-    "//third_party/perfetto/protos/perfetto/common:lite",
-    "//third_party/perfetto/protos/perfetto/trace:lite",
-    "//third_party/perfetto/protos/perfetto/trace/chrome:lite",
-  ]
-
-  if (is_posix) {
-    sources += [
-      "perfetto/system_test_utils.cc",
-      "perfetto/system_test_utils.h",
+    sources = [
+      "perfetto/test_utils.cc",
+      "perfetto/test_utils.h",
+      "public/cpp/perfetto/producer_test_utils.cc",
+      "public/cpp/perfetto/producer_test_utils.h",
     ]
+
+    deps = [
+      ":lib",
+      "//base",
+      "//base/test:test_support",
+      "//testing/gtest",
+      "//third_party/perfetto/protos/perfetto/common:lite",
+      "//third_party/perfetto/protos/perfetto/trace:lite",
+      "//third_party/perfetto/protos/perfetto/trace/chrome:lite",
+    ]
+
+    if (is_posix) {
+      sources += [
+        "perfetto/system_test_utils.cc",
+        "perfetto/system_test_utils.h",
+      ]
+    }
   }
 }
 
 source_set("tests") {
   testonly = true
 
-  sources = [
-    "perfetto/consumer_host_unittest.cc",
-    "perfetto/privacy_filtering_check_unittest.cc",
-    "public/cpp/perfetto/metadata_data_source_unittest.cc",
-    "public/cpp/perfetto/perfetto_config_unittest.cc",
-    "public/cpp/perfetto/trace_packet_tokenizer_unittest.cc",
-    "public/cpp/perfetto/traced_value_proto_writer_unittest.cc",
-    "public/cpp/perfetto/track_name_recorder_unittest.cc",
-    "public/cpp/stack_sampling/tracing_sampler_profiler_unittest.cc",
-    "public/cpp/trace_startup_shared_memory_unittest.cc",
-  ]
+  sources = [ "perfetto/privacy_filtering_check_unittest.cc" ]
+
+  if (use_blink) {
+    sources += [
+      "perfetto/consumer_host_unittest.cc",
+      "public/cpp/perfetto/metadata_data_source_unittest.cc",
+      "public/cpp/perfetto/perfetto_config_unittest.cc",
+      "public/cpp/perfetto/trace_packet_tokenizer_unittest.cc",
+      "public/cpp/perfetto/traced_value_proto_writer_unittest.cc",
+      "public/cpp/perfetto/track_name_recorder_unittest.cc",
+      "public/cpp/stack_sampling/tracing_sampler_profiler_unittest.cc",
+      "public/cpp/trace_startup_shared_memory_unittest.cc",
+    ]
+  }
 
   deps = [
-    ":lib",
     ":privacy_check",
-    ":test_utils",
     "//base",
     "//base:base_stack_sampling_profiler_test_util",
     "//base/test:proto_test_support",
     "//base/test:test_support",
     "//base/tracing/protos:chrome_track_event_zero",
     "//mojo/public/cpp/bindings",
+    "//services/tracing/public/cpp",
     "//services/tracing/public/cpp:buildflags",
     "//services/tracing/public/cpp/background_tracing:unit_tests",
     "//services/tracing/public/mojom",
@@ -123,6 +130,13 @@ source_set("tests") {
     "//third_party/perfetto/protos/perfetto/trace/track_event:lite",
   ]
 
+  if (use_blink) {
+    deps += [
+      ":lib",
+      ":test_utils",
+    ]
+  }
+
   if (is_android) {
     sources += [
       "public/cpp/perfetto/java_heap_profiler/hprof_buffer_android_unittest.cc",
@@ -130,11 +144,12 @@ source_set("tests") {
     ]
   }
 
+  if (!is_android && use_blink) {
+    sources += [ "tracing_service_unittest.cc" ]
+  }
+
   if (!is_android) {
-    sources += [
-      "public/cpp/trace_startup_config_unittest.cc",
-      "tracing_service_unittest.cc",
-    ]
+    sources += [ "public/cpp/trace_startup_config_unittest.cc" ]
   }
 
   if (is_fuchsia) {
@@ -206,13 +221,26 @@ if (enable_loader_lock_sampling) {
 }
 
 if (is_ios) {
-  bundle_data("services_tracing_perfetto_bundle_data") {
+  bundle_data("services_tracing_perfetto_config_descriptor_bundle_data") {
     testonly = true
-    _relative_path = "third_party/perfetto/protos/perfetto/config"
     public_deps =
         [ "//third_party/perfetto/protos/perfetto/config:descriptor_gen" ]
-    sources = [ "$root_gen_dir/$_relative_path/config.descriptor" ]
-    outputs =
-        [ "{{bundle_resources_dir}}/gen/$_relative_path/{{source_file_part}}" ]
+    sources = [ "$root_gen_dir/third_party/perfetto/protos/perfetto/config/config.descriptor" ]
+    outputs = [ "{{bundle_resources_dir}}/gen/third_party/perfetto/protos/perfetto/config/{{source_file_part}}" ]
+  }
+
+  bundle_data("services_tracing_perfetto_scenario_descriptor_bundle_data") {
+    testonly = true
+    public_deps = [ "//third_party/perfetto/protos/perfetto/config/chrome:scenario_descriptor_gen" ]
+    sources = [ "$root_gen_dir/third_party/perfetto/protos/perfetto/config/chrome/scenario_config.descriptor" ]
+    outputs = [ "{{bundle_resources_dir}}/gen/third_party/perfetto/protos/perfetto/config/chrome/{{source_file_part}}" ]
+  }
+
+  group("services_tracing_perfetto_bundle_data") {
+    testonly = true
+    public_deps = [
+      ":services_tracing_perfetto_config_descriptor_bundle_data",
+      ":services_tracing_perfetto_scenario_descriptor_bundle_data",
+    ]
   }
 }

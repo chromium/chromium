@@ -4,6 +4,7 @@
 
 #include "services/tracing/public/cpp/perfetto/track_name_recorder.h"
 
+#include "base/check.h"
 #include "base/debug/crash_logging.h"
 #include "base/no_destructor.h"
 #include "base/process/current_process.h"
@@ -164,11 +165,8 @@ TrackNameRecorder::GenerateProcessTrackDescriptor(
 TrackNameRecorder::TrackNameRecorder()
     : process_start_timestamp_(
           TRACE_TIME_TICKS_NOW().since_origin().InNanoseconds()) {
-  CHECK(perfetto::Tracing::IsInitialized());
-  base::ThreadIdNameManager::GetInstance()->AddObserver(this);
-  base::CurrentProcess::GetInstance().SetDelegate(this, {});
-  base::TrackEvent::AddSessionObserver(this);
-  SetThreadTrackDescriptors();
+  DETACH_FROM_SEQUENCE(sequence_checker_);
+  StartRecording();
 }
 
 TrackNameRecorder::~TrackNameRecorder() = default;
@@ -222,6 +220,29 @@ void TrackNameRecorder::SetProcessTrackDescriptor() {
   std::string process_name = base::CurrentProcess::GetInstance().GetName({});
   auto process_type = base::CurrentProcess::GetInstance().GetType({});
   SetProcessTrackDescriptor(process_name, process_type);
+}
+
+void TrackNameRecorder::StartRecording() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!perfetto::Tracing::IsInitialized() || is_recording_) {
+    return;
+  }
+  is_recording_ = true;
+  base::ThreadIdNameManager::GetInstance()->AddObserver(this);
+  base::CurrentProcess::GetInstance().SetDelegate(this, {});
+  base::TrackEvent::AddSessionObserver(this);
+  SetThreadTrackDescriptors();
+}
+
+void TrackNameRecorder::StopRecording() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!is_recording_) {
+    return;
+  }
+  is_recording_ = false;
+  base::ThreadIdNameManager::GetInstance()->RemoveObserver(this);
+  base::CurrentProcess::GetInstance().SetDelegate(nullptr, {});
+  base::TrackEvent::RemoveSessionObserver(this);
 }
 
 // static

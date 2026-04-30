@@ -1,7 +1,7 @@
 // Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-#include "content/browser/tracing/background_tracing_rule.h"
+#include "services/tracing/public/cpp/background_tracing/background_tracing_rule.h"
 
 #include <limits>
 #include <optional>
@@ -22,15 +22,12 @@
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_id_helper.h"
 #include "base/unguessable_token.h"
-#include "components/variations/hashing.h"
-#include "content/browser/tracing/background_tracing_manager_impl.h"
-#include "content/public/browser/browser_task_traits.h"
-#include "content/public/browser/browser_thread.h"
+#include "services/tracing/public/cpp/background_tracing/tracing_agent_observer_manager.h"
 #include "services/tracing/public/cpp/perfetto/macros.h"
 #include "services/tracing/public/mojom/background_tracing_agent.mojom.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_histogram_sample.pbzero.h"
 
-namespace content {
+namespace tracing {
 
 BackgroundTracingRule::BackgroundTracingRule() = default;
 
@@ -62,6 +59,11 @@ void BackgroundTracingRule::Uninstall() {
   DoUninstall();
 }
 
+bool BackgroundTracingRule::OnNamedTrigger(std::optional<int32_t> value,
+                                           uint64_t flow_id) {
+  return OnRuleTriggered(value, flow_id);
+}
+
 bool BackgroundTracingRule::OnRuleTriggered(std::optional<int32_t> value,
                                             uint64_t flow_id) {
   if (!installed()) {
@@ -87,7 +89,8 @@ std::string BackgroundTracingRule::GetDefaultRuleName() const {
   return "trigger";
 }
 
-perfetto::protos::gen::TriggerRule BackgroundTracingRule::ToProtoForTesting()
+perfetto::protos::gen::TriggerRule
+BackgroundTracingRule::ToProtoForTesting()  // IN-TEST
     const {
   perfetto::protos::gen::TriggerRule config;
   if (trigger_chance_ < 1.0) {
@@ -105,7 +108,7 @@ perfetto::protos::gen::TriggerRule BackgroundTracingRule::ToProtoForTesting()
 
 void BackgroundTracingRule::GenerateMetadataProto(
     BackgroundTracingRule::MetadataProto* out) const {
-  uint32_t name_hash = variations::HashName(rule_name());
+  uint32_t name_hash = base::HashFieldTrialName(rule_name());
   out->set_name_hash(name_hash);
 }
 
@@ -146,18 +149,19 @@ class NamedTriggerRule : public BackgroundTracingRule {
   }
 
   void DoInstall() override {
-    BackgroundTracingManagerImpl::GetInstance().AddNamedTriggerObserver(
+    base::trace_event::NamedTriggerManager::GetInstance()->AddObserver(
         named_event_, this);
   }
 
   void DoUninstall() override {
-    BackgroundTracingManagerImpl::GetInstance().RemoveNamedTriggerObserver(
+    base::trace_event::NamedTriggerManager::GetInstance()->RemoveObserver(
         named_event_, this);
   }
 
-  perfetto::protos::gen::TriggerRule ToProtoForTesting() const override {
+  perfetto::protos::gen::TriggerRule ToProtoForTesting()  // IN-TEST
+      const override {
     perfetto::protos::gen::TriggerRule config =
-        BackgroundTracingRule::ToProtoForTesting();
+        BackgroundTracingRule::ToProtoForTesting();  // IN-TEST
     config.set_manual_trigger_name(named_event_);
     return config;
   }
@@ -177,7 +181,7 @@ class NamedTriggerRule : public BackgroundTracingRule {
 };
 
 class HistogramRule : public BackgroundTracingRule,
-                      public BackgroundTracingManagerImpl::AgentObserver {
+                      public TracingAgentObserverManager::AgentObserver {
  private:
   HistogramRule(const std::string& histogram_name,
                 int histogram_lower_value,
@@ -221,21 +225,22 @@ class HistogramRule : public BackgroundTracingRule,
         base::BindRepeating(&HistogramRule::OnHistogramChangedCallback,
                             base::Unretained(this), histogram_lower_value_,
                             histogram_upper_value_));
-    BackgroundTracingManagerImpl::GetInstance().AddNamedTriggerObserver(
-        rule_id_, this);
-    BackgroundTracingManagerImpl::GetInstance().AddAgentObserver(this);
+    base::trace_event::NamedTriggerManager::GetInstance()->AddObserver(rule_id_,
+                                                                       this);
+    TracingAgentObserverManager::GetInstance()->AddAgentObserver(this);
   }
 
   void DoUninstall() override {
     histogram_sample_callback_.reset();
-    BackgroundTracingManagerImpl::GetInstance().RemoveAgentObserver(this);
-    BackgroundTracingManagerImpl::GetInstance().RemoveNamedTriggerObserver(
+    TracingAgentObserverManager::GetInstance()->RemoveAgentObserver(this);
+    base::trace_event::NamedTriggerManager::GetInstance()->RemoveObserver(
         rule_id_, this);
   }
 
-  perfetto::protos::gen::TriggerRule ToProtoForTesting() const override {
+  perfetto::protos::gen::TriggerRule ToProtoForTesting()  // IN-TEST
+      const override {
     perfetto::protos::gen::TriggerRule config =
-        BackgroundTracingRule::ToProtoForTesting();
+        BackgroundTracingRule::ToProtoForTesting();  // IN-TEST
     auto* histogram = config.mutable_histogram();
     histogram->set_histogram_name(histogram_name_);
     histogram->set_min_value(histogram_lower_value_);
@@ -255,7 +260,7 @@ class HistogramRule : public BackgroundTracingRule,
     rule->set_histogram_max_trigger(histogram_upper_value_);
   }
 
-  // BackgroundTracingManagerImpl::AgentObserver implementation
+  // TracingAgentObserverManager::AgentObserver implementation
   void OnAgentAdded(tracing::mojom::BackgroundTracingAgent* agent) override {
     agent->SetUMACallback(tracing::mojom::BackgroundTracingRule::New(rule_id_),
                           histogram_name_, histogram_lower_value_,
@@ -358,9 +363,10 @@ class RepeatingIntervalRule : public BackgroundTracingRule {
   void DoInstall() override { ScheduleNextTick(); }
   void DoUninstall() override { timer_.Stop(); }
 
-  perfetto::protos::gen::TriggerRule ToProtoForTesting() const override {
+  perfetto::protos::gen::TriggerRule ToProtoForTesting()  // IN-TEST
+      const override {
     perfetto::protos::gen::TriggerRule config =
-        BackgroundTracingRule::ToProtoForTesting();
+        BackgroundTracingRule::ToProtoForTesting();  // IN-TEST
     auto* histogram = config.mutable_repeating_interval();
     histogram->set_period_ms(period_.InMilliseconds());
     histogram->set_randomized(randomized_);
@@ -471,4 +477,4 @@ bool BackgroundTracingRule::Append(
   return true;
 }
 
-}  // namespace content
+}  // namespace tracing
