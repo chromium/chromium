@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import './composebox_submit.js';
 
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {assert} from '//resources/js/assert.js';
@@ -10,6 +11,7 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PageHandlerRemote as SearchboxPageHandlerRemote} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 
+import {SubmitButtonIconType} from './composebox.js';
 import type {PageHandlerRemote} from './composebox.mojom-webui.js';
 import {ComposeboxProxyImpl} from './composebox_proxy.js';
 import {getCss} from './composebox_voice_search.css.js';
@@ -179,6 +181,8 @@ export class ComposeboxVoiceSearchElement extends
       detailsUrl_: {type: String},
       detailedError_: {type: Number},
       hasErrorTimer: {type: Boolean},
+      voiceSearchCoherenceComposeboxesEnabled_: {type: Boolean},
+      submitButtonIconType: {type: String},
     };
   }
 
@@ -189,6 +193,8 @@ export class ComposeboxVoiceSearchElement extends
   protected accessor interimResult_: string = '';
   protected accessor error_: VoiceSearchError|null = null;
   protected accessor errorMessage_: string = '';
+  protected accessor voiceSearchCoherenceComposeboxesEnabled_: boolean =
+      loadTimeData.getBoolean('voiceSearchCoherenceComposeboxesEnabled');
   accessor detailedError_: VoiceSearchError|null = null;
   protected accessor detailsUrl_: string =
       `https://support.google.com/chrome/?p=ui_voice_search&hl=${
@@ -203,6 +209,8 @@ export class ComposeboxVoiceSearchElement extends
   private searchboxHandler_: SearchboxPageHandlerRemote =
       ComposeboxProxyImpl.getInstance().searchboxHandler;
   accessor hasErrorTimer: boolean = false;
+  accessor submitButtonIconType: SubmitButtonIconType =
+      SubmitButtonIconType.FORWARD;
 
   constructor() {
     super();

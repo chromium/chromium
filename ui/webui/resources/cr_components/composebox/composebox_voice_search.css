@@ -83,3 +83,33 @@
    */
   transition: var(--submit-enabled-transition, 255ms);
 }
+
+#bottomActions {
+  align-items: center;
+  bottom: 12px;
+  display: flex;
+  gap: 8px;
+  inset-inline-end: 12px;
+  position: absolute;
+}
+
+#stopButton {
+  --cr-icon-button-fill-color: var(--color-sys-on-surface);
+  --cr-icon-button-icon-size: 12px;
+  --cr-icon-button-size: 36px;
+  background-color: var(--color-sys-neutral-container);
+  border-radius: 50%;
+  margin: 0;
+  transition: var(--submit-enabled-transition, 255ms);
+}
+
+#submitButton::part(submit) {
+  --cr-composebox-submit-icon-size: 16px;
+  bottom: auto;
+  inset-inline-end: auto;
+  position: relative;
+}
+
+:host-context([in-voice-search-mode]) #submitButton::part(submit) {
+  opacity: 1;
+}

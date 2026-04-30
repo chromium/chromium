@@ -33,6 +33,22 @@ export function getHtml(this: ComposeboxVoiceSearchElement) {
           part="voice-close-button"
           title="${this.i18n('voiceClose')}" @click="${this.onCloseClick_}">
       </cr-icon-button>
+      ${
+      this.voiceSearchCoherenceComposeboxesEnabled_ ? html`
+        <div id="bottomActions" ?hidden="${this.shouldShowErrorScrim_()}">
+          <cr-icon-button id="stopButton"
+              iron-icon="composebox:stop"
+              title="Stop">
+          </cr-icon-button>
+          <cr-composebox-submit id="submitButton"
+              exportparts="submit"
+              .iconType="${this.submitButtonIconType}"
+              .submitButtonTitle="${this.i18n('composeboxSubmitButtonTitle')}"
+              ?disabled="${!(this.finalResult_ || this.interimResult_)}">
+          </cr-composebox-submit>
+        </div>
+      ` :
+                                                      ''}
     </div>
   `;
 }

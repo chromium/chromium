@@ -62,6 +62,9 @@ div.innerHTML = getTrustedHTML`
       <g id="threadsHistory" viewBox="0 -960 960 960">
         <path d="M740-40q-1 0-8-6-16-61-60.5-105.5T566-212q-2-1-6-8 0-2 6-8 61-16 105.5-60.5T732-394q1-2 8-6 2 0 8 6 17 61 61 105.5T914-228q2 0 6 8 0 1-6 8-61 16-105.5 60.5T748-46q0 2-8 6ZM120-280v-80h360v80H120Zm0-200v-80h720v80H120Zm0-200v-80h720v80H120Z" fill="currentColor"/>
       </g>
+      <g id="stop" viewBox="0 0 12 12">
+        <path d="M0 12V0H12V12H0Z" fill="currentColor"/>
+      </g>
   </defs>
   </svg>
 </cr-iconset>

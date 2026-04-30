@@ -368,6 +368,9 @@ base::DictValue SearchboxHandler::GetWebUIDataSourceDict(
   dict.Set("forceHideEllipsis", false);
   dict.Set("enableThumbnailSizingTweaks", false);
   dict.Set("enableCsbMotionTweaks", false);
+  dict.Set("voiceSearchCoherenceComposeboxesEnabled",
+           base::FeatureList::IsEnabled(
+               SearchboxHandler::kVoiceSearchCoherenceComposeboxes));
 
   static constexpr webui::LocalizedString kStrings[] = {
       {"lensSearchButtonLabel", IDS_TOOLTIP_LENS_SEARCH},

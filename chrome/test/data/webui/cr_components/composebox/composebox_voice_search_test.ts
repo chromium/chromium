@@ -20,7 +20,7 @@ import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://w
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
-import {$$, microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {$$, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {assertStyle, installMock} from './composebox_test_utils.js';
 
@@ -355,6 +355,64 @@ suite('ComposeboxVoiceSearch', () => {
     const voiceSearchButton = getVoiceSearchButton(composeboxElement);
     assertTrue(!!voiceSearchButton);
   });
+
+  test(
+      'stop and submit buttons show when coherence flag is enabled',
+      async () => {
+        // Enable flag and recreate element to apply new loadTimeData values.
+        loadTimeData.overrideValues({
+          voiceSearchCoherenceComposeboxesEnabled: true,
+        });
+        document.body.innerHTML = window.trustedTypes!.emptyHTML;
+        composeboxElement = document.createElement('cr-composebox');
+        document.body.appendChild(composeboxElement);
+        await microtasksFinished();
+        const voiceSearchButton = getVoiceSearchButton(composeboxElement);
+        assertTrue(!!voiceSearchButton, 'Mic button should exist');
+        voiceSearchButton.click();
+        await microtasksFinished();
+
+        const voiceSearchElement = getVoiceSearchElement(composeboxElement);
+
+        const stopButton =
+            voiceSearchElement.shadowRoot.querySelector('#stopButton');
+        const submitButton =
+            voiceSearchElement.shadowRoot.querySelector('#submitButton');
+
+        assertTrue(
+            isVisible(stopButton),
+            'Stop button should be visible when flag is enabled');
+        assertTrue(
+            (!!submitButton),
+            'Submit button should exist when flag is enabled');
+      });
+
+  test(
+      'stop and submit buttons hide when coherence flag is disabled',
+      async () => {
+        // Disable flag and recreate element to apply new loadTimeData values.
+        loadTimeData.overrideValues({
+          voiceSearchCoherenceComposeboxesEnabled: false,
+        });
+        document.body.innerHTML = window.trustedTypes!.emptyHTML;
+        composeboxElement = document.createElement('cr-composebox');
+        document.body.appendChild(composeboxElement);
+        await microtasksFinished();
+
+        const voiceSearchElement = getVoiceSearchElement(composeboxElement);
+
+        const stopButton =
+            voiceSearchElement.shadowRoot.querySelector('#stopButton');
+        const submitButton =
+            voiceSearchElement.shadowRoot.querySelector('#submitButton');
+
+        assertFalse(
+            isVisible(stopButton),
+            'Stop button should be hidden when flag is disabled');
+        assertFalse(
+            isVisible(submitButton),
+            'Submit button should be hidden when flag is disabled');
+      });
 
   test(
       'clicking voice search starts speech recognition and hides the composebox',
