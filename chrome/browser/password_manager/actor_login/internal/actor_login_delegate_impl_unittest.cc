@@ -1396,7 +1396,7 @@ TEST_F(ActorLoginDelegateImplTest, RemovedOnUserTakeover) {
 }
 
 TEST_F(ActorLoginDelegateImplTest,
-       SuccessfulFederatedLoginClearsConflictingPermissions) {
+       SuccessfulContinuationClearsConflictingPermissions) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/
@@ -1480,11 +1480,9 @@ TEST_F(ActorLoginDelegateImplTest,
 
   MockActionSequenceDelegate mock_action_delegate;
   base::WeakPtrFactory<ActionSequenceDelegate> factory(&mock_action_delegate);
-  base::OnceCallback<void(bool)> captured_callback;
 
   EXPECT_CALL(mock_action_delegate, RegisterActionSequenceEnded)
       .WillOnce([&](base::OnceCallback<void(bool)> callback) {
-        captured_callback = std::move(callback);
         return base::CallbackListSubscription();
       });
 
@@ -1499,12 +1497,17 @@ TEST_F(ActorLoginDelegateImplTest,
   EXPECT_EQ(attempt_login_future.Get().value(),
             LoginStatusResult::kRequiresButtonClick);
 
-  ASSERT_TRUE(captured_callback);
+  auto* request = content::webid::FederatedEmbedderLoginRequest::Get(
+      delegate_->web_contents());
+  ASSERT_TRUE(request);
+  request->OnFederatedResultReceived(
+      content::webid::FederatedLoginResult::kContinuation);
 
   EXPECT_CALL(*mock_cleaning_service,
               ClearConflictingPermissions(Eq(credential), _));
 
-  std::move(captured_callback).Run(/*success=*/true);
+  static_cast<content::WebContentsObserver*>(delegate_->siwg_controller())
+      ->OnFedCmFederatedLogin(true);
 }
 
 TEST_F(ActorLoginDelegateImplTest, FailedFederatedLoginDoesntClearPermissions) {

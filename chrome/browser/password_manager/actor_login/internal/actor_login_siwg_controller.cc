@@ -89,6 +89,33 @@ LoginStatusResult FromFederatedLoginResult(
 
 }  // namespace
 
+// Observer for the nested pop-up window during a federated login attempt.
+//
+// It's possible the continuation pop-up window is opened from another pop-up
+// (nested pop-up windows). The pop-up's parent will be notified about the login
+// status.
+// In the case where the continuation pop-up is opened from the main frame,
+// `ActorLoginSiwgController` observes the main frame `WebContents` for the
+// same `OnFedCmFederatedLogin` events.
+class ActorLoginSiwgController::PopupObserver
+    : public content::WebContentsObserver {
+ public:
+  PopupObserver(content::WebContents* popup,
+                ActorLoginSiwgController* controller)
+      : content::WebContentsObserver(popup), controller_(controller) {}
+
+  void OnFedCmFederatedLogin(bool success) override {
+    controller_->OnFedCmFederatedLogin(success);
+  }
+
+  void WebContentsDestroyed() override {
+    controller_->OnFedCmFederatedLogin(false);
+  }
+
+ private:
+  raw_ptr<ActorLoginSiwgController> controller_ = nullptr;
+};
+
 ActorLoginSiwgController::ActorLoginSiwgController(
     content::WebContents* web_contents,
     const Credential& credential,
@@ -97,7 +124,8 @@ ActorLoginSiwgController::ActorLoginSiwgController(
     LoginStatusResultOrErrorReply on_finished_callback,
     base::WeakPtr<ActionSequenceDelegate> action_sequence_delegate,
     base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger,
-    base::TimeTicks attempt_login_tool_start_time)
+    base::TimeTicks attempt_login_tool_start_time,
+    ContinuationFlowEndedCallback continuation_flow_ended_callback)
     : ActorLoginSiwgController(
           web_contents,
           credential,
@@ -107,7 +135,8 @@ ActorLoginSiwgController::ActorLoginSiwgController(
           std::move(on_finished_callback),
           std::move(action_sequence_delegate),
           std::move(mqls_logger),
-          attempt_login_tool_start_time) {}
+          attempt_login_tool_start_time,
+          std::move(continuation_flow_ended_callback)) {}
 
 ActorLoginSiwgController::ActorLoginSiwgController(
     content::WebContents* web_contents,
@@ -118,7 +147,8 @@ ActorLoginSiwgController::ActorLoginSiwgController(
     LoginStatusResultOrErrorReply on_finished_callback,
     base::WeakPtr<ActionSequenceDelegate> action_sequence_delegate,
     base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger,
-    base::TimeTicks attempt_login_tool_start_time)
+    base::TimeTicks attempt_login_tool_start_time,
+    ContinuationFlowEndedCallback continuation_flow_ended_callback)
     : content::WebContentsObserver(web_contents),
       get_page_content_provider_(std::move(get_page_content_provider)),
       on_finished_callback_(std::move(on_finished_callback)),
@@ -127,7 +157,9 @@ ActorLoginSiwgController::ActorLoginSiwgController(
       should_store_permission_(should_store_permission),
       permission_service_(permission_service),
       mqls_logger_(std::move(mqls_logger)),
-      attempt_login_tool_start_time_(attempt_login_tool_start_time) {}
+      attempt_login_tool_start_time_(attempt_login_tool_start_time),
+      continuation_flow_ended_callback_(
+          std::move(continuation_flow_ended_callback)) {}
 
 ActorLoginSiwgController::~ActorLoginSiwgController() = default;
 
@@ -173,18 +205,9 @@ void ActorLoginSiwgController::OnFederatedLoginResultReceived(
 
   if (result == content::webid::FederatedLoginResult::kSuccess &&
       should_store_permission_) {
-    FederatedPermission permission;
-    permission.idp_origin = credential_.federation_detail->idp_origin;
-    permission.rp_embedder_origin = credential_.request_origin;
-    // Assuming identical to rp_embedder_origin since cross-origin iframes
-    // aren't supported.
-    permission.rp_requester_origin = permission.rp_embedder_origin;
-    permission.chosen_account_id = credential_.federation_detail->account_id;
-    permission.chosen_account_email = base::UTF16ToUTF8(credential_.username);
-
-    // `DoNothing()` for the response callback because there is nothing we can
-    // do with failed requests.
-    permission_service_->GrantPermission(permission, base::DoNothing());
+    GrantPermission();
+  } else if (result == content::webid::FederatedLoginResult::kContinuation) {
+    waiting_for_continuation_success_ = true;
   }
 
   LogFederatedLoginResult(result);
@@ -195,6 +218,32 @@ void ActorLoginSiwgController::OnFederatedLoginResultReceived(
   if (on_finished_callback_) {
     std::move(on_finished_callback_).Run(status);
   }
+}
+
+void ActorLoginSiwgController::DidOpenRequestedURL(
+    content::WebContents* new_contents,
+    content::RenderFrameHost* source_render_frame_host,
+    const GURL& url,
+    const content::Referrer& referrer,
+    WindowOpenDisposition disposition,
+    ui::PageTransition transition,
+    bool started_from_context_menu,
+    bool renderer_initiated) {
+  if (disposition == WindowOpenDisposition::NEW_POPUP) {
+    popup_observer_ = std::make_unique<PopupObserver>(new_contents, this);
+  }
+}
+
+void ActorLoginSiwgController::OnFedCmFederatedLogin(bool success) {
+  if (!waiting_for_continuation_success_) {
+    return;
+  }
+
+  if (success && should_store_permission_) {
+    GrantPermission();
+  }
+  waiting_for_continuation_success_ = false;
+  std::move(continuation_flow_ended_callback_).Run(success);
 }
 
 void ActorLoginSiwgController::OnButtonClickCompleted(bool success) {
@@ -213,6 +262,26 @@ void ActorLoginSiwgController::LogFederatedLoginResult(
       (base::TimeTicks::Now() - attempt_login_tool_start_time_)
           .InMilliseconds());
   mqls_logger_->AddAttemptLoginDetails(federated_attempt_login_details_);
+}
+
+void ActorLoginSiwgController::GrantPermission() {
+  FederatedPermission permission;
+  permission.idp_origin = credential_.federation_detail->idp_origin;
+  permission.rp_embedder_origin = credential_.request_origin;
+  // Assuming identical to rp_embedder_origin since cross-origin iframes
+  // aren't supported.
+  permission.rp_requester_origin = permission.rp_embedder_origin;
+  permission.chosen_account_id = credential_.federation_detail->account_id;
+  permission.chosen_account_email = base::UTF16ToUTF8(credential_.username);
+
+  // `DoNothing()` for the response callback because there is nothing we can
+  // do with failed requests.
+  permission_service_->GrantPermission(permission, base::DoNothing());
+}
+
+void ActorLoginSiwgController::SimulateContinuationInPopupForTesting(
+    bool success) {
+  popup_observer_->OnFedCmFederatedLogin(success);
 }
 
 }  // namespace actor_login

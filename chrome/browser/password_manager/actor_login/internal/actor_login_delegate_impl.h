@@ -76,6 +76,11 @@ class ActorLoginDelegateImpl
   void WebContentsDestroyed() override;
   void PrimaryPageChanged(content::Page& page) override;
 
+#if defined(UNIT_TEST)
+  // TODO(crbug.com/508169237): Utilize `WebContentsTester` instead.
+  ActorLoginSiwgController* siwg_controller() { return siwg_controller_.get(); }
+#endif
+
  private:
   friend class content::WebContentsUserData<ActorLoginDelegateImpl>;
 
@@ -98,6 +103,8 @@ class ActorLoginDelegateImpl
                                  bool conflicting_permissions);
   void OnAttemptLoginCompleted(
       base::expected<LoginStatusResult, ActorLoginError> result);
+
+  void OnContinuationFlowEnded(bool success);
 
   // Called when `OnAttemptLoginCompleted` is invoked with a result for
   // a federated credential login.

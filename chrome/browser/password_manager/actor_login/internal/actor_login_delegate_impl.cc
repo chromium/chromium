@@ -252,7 +252,10 @@ void ActorLoginDelegateImpl::AttemptLogin(
         base::BindPostTaskToCurrentDefault(
             base::BindOnce(&ActorLoginDelegateImpl::OnAttemptLoginCompleted,
                            weak_ptr_factory_.GetWeakPtr())),
-        action_sequence_delegate_, mqls_logger, attempt_login_tool_start_time);
+        action_sequence_delegate_, mqls_logger, attempt_login_tool_start_time,
+        base::BindPostTaskToCurrentDefault(
+            base::BindOnce(&ActorLoginDelegateImpl::OnContinuationFlowEnded,
+                           weak_ptr_factory_.GetWeakPtr())));
     siwg_controller_->StartFederatedLogin(std::move(metrics_helper_));
     return;
   }
@@ -299,6 +302,23 @@ void ActorLoginDelegateImpl::PrimaryPageChanged(content::Page& page) {
   if (credential_filler_) {
     OnAttemptLoginCompleted(LoginStatusResult::kErrorPageChangedDuringFilling);
   }
+}
+
+void ActorLoginDelegateImpl::OnContinuationFlowEnded(bool success) {
+  if (last_attempted_credential_->type != CredentialType::kFederated) {
+    // The last login attempt wasn't a federated login, so this result
+    // doesn't correspond to the `last_attempted_credential_`.
+    return;
+  }
+  if (success && found_conflicting_permissions_ &&
+      siwg_controller_->should_store_permission()) {
+    ClearConflictingPermissions();
+  }
+
+  found_conflicting_permissions_ = false;
+  last_attempted_credential_.reset();
+  siwg_controller_.reset();
+  ResetState();
 }
 
 bool ActorLoginDelegateImpl::IsTaskInFocus() {
@@ -386,6 +406,14 @@ void ActorLoginDelegateImpl::ProcessFederatedResult(
     return;
   }
 
+  // While the continuation flow is an error for the model, we are still
+  // expecting the success/failure status once the user resolves the
+  // continuation prompt. So we do not reset the state here.
+  if (result.has_value() &&
+      result.value() == LoginStatusResult::kErrorFederatedContinuation) {
+    return;
+  }
+
   // If the federated login doesn't require a button click, there is no
   // action sequence to wait for, so we can clean up the controller and
   // clean up conflicting permissions if needed.
@@ -395,7 +423,8 @@ void ActorLoginDelegateImpl::ProcessFederatedResult(
       siwg_controller_->should_store_permission()) {
     ClearConflictingPermissions();
   }
-  // This is the end of the federated login flow, so reset the state.
+  // This is the end of the non-continuation federated login flow, so reset the
+  // state. Continuation flow ends in `OnContinuationFlowEnded`.
   ResetState();
   siwg_controller_.reset();
 }
@@ -429,20 +458,8 @@ void ActorLoginDelegateImpl::ProcessPasswordResult(
 }
 
 void ActorLoginDelegateImpl::OnActionSequenceEnded(bool success) {
-  bool should_store_permission = siwg_controller_->should_store_permission();
   siwg_controller_->OnButtonClickCompleted(success);
-  siwg_controller_.reset();
   action_sequence_subscription_ = {};
-  if (last_attempted_credential_->type != CredentialType::kFederated) {
-    // The last login attempt wasn't a federated login, so this result
-    // doesn't correspond to the `last_attempted_credential_`.
-    return;
-  }
-  if (success && found_conflicting_permissions_ && should_store_permission) {
-    ClearConflictingPermissions();
-  }
-  found_conflicting_permissions_ = false;
-  last_attempted_credential_.reset();
 }
 
 void ActorLoginDelegateImpl::OnActorTaskStateChanged(actor::ActorTask& task) {
