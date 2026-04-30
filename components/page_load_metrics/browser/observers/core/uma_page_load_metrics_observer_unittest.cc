@@ -1421,6 +1421,7 @@ TEST_F(UmaPageLoadMetricsObserverTest, TestTracingLargestContentfulPaint) {
   timing.paint_timing->largest_contentful_paint->largest_text_paint =
       base::Milliseconds(990);
   timing.paint_timing->largest_contentful_paint->largest_text_paint_size = 100;
+  timing.parse_timing->parse_start = base::Milliseconds(100);
   PopulateRequiredTimingFields(&timing);
 
   GURL url(kDefaultTestUrl);
@@ -1433,6 +1434,51 @@ TEST_F(UmaPageLoadMetricsObserverTest, TestTracingLargestContentfulPaint) {
 
   absl::Status status = ttp.StopAndParseTrace();
   ASSERT_TRUE(status.ok()) << status.message();
+  std::string query = R"(
+    SELECT
+      EXTRACT_ARG(arg_set_id, 'page_load.navigation_id')
+        AS navigation_id
+    FROM slice
+    WHERE name = 'PageLoadMetrics.NavigationToLargestContentfulPaint'
+  )";
+  auto result = ttp.RunQuery(query);
+  ASSERT_TRUE(result.has_value()) << result.error();
+  EXPECT_THAT(result.value(),
+              ::testing::ElementsAre(std::vector<std::string>{"navigation_id"},
+                                     std::vector<std::string>{
+                                         base::NumberToString(navigation_id)}));
+}
+
+TEST_F(UmaPageLoadMetricsObserverTest,
+       TestTracingLargestContentfulPaintActionable) {
+  base::test::TestTraceProcessor ttp;
+  ttp.StartTrace("loading,interactions");
+
+  page_load_metrics::mojom::PageLoadTiming timing;
+  page_load_metrics::InitPageLoadTimingForTest(&timing);
+  timing.navigation_start = base::Time::FromSecondsSinceUnixEpoch(1);
+  timing.paint_timing->first_contentful_paint = base::Milliseconds(200);
+  timing.paint_timing->largest_contentful_paint->largest_image_paint =
+      base::Milliseconds(4780);
+  timing.paint_timing->largest_contentful_paint->largest_image_paint_size = 100;
+  timing.parse_timing->parse_start = base::Milliseconds(100);
+  PopulateRequiredTimingFields(&timing);
+
+  GURL url(kDefaultTestUrl);
+  NavigateAndCommit(url);
+  tester()->SimulateTimingUpdate(timing);
+  int64_t navigation_id = last_navigation_id_;
+
+  // Now simulate an input update that should close the LCP slice.
+  timing.paint_timing->first_input_or_scroll_notified_timestamp =
+      base::Milliseconds(5000);
+  tester()->SimulateTimingUpdate(timing);
+
+  // Stop tracing and parse before navigating away!
+  absl::Status status = ttp.StopAndParseTrace();
+  ASSERT_TRUE(status.ok()) << status.message();
+
+  // Check for the LCP slice.
   std::string query = R"(
     SELECT
       EXTRACT_ARG(arg_set_id, 'page_load.navigation_id')

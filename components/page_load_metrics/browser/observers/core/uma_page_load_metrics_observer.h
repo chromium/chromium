@@ -155,6 +155,9 @@ class UmaPageLoadMetricsObserver
 
   ~UmaPageLoadMetricsObserver() override;
 
+  void WriteIntoTrace(
+      perfetto::TracedProto<perfetto::protos::pbzero::PageLoad> proto) const;
+
   // page_load_metrics::PageLoadMetricsObserver:
   const char* GetObserverName() const override;
   ObservePolicy OnStart(content::NavigationHandle* navigation_handle,
@@ -168,6 +171,9 @@ class UmaPageLoadMetricsObserver
   ObservePolicy OnRedirect(
       content::NavigationHandle* navigation_handle) override;
   ObservePolicy OnCommit(content::NavigationHandle* navigation_handle) override;
+  void OnTimingUpdate(
+      content::RenderFrameHost* subframe_rfh,
+      const page_load_metrics::mojom::PageLoadTiming& timing) override;
   void OnDomContentLoadedEventStart(
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
   void OnLoadEventStart(
@@ -227,27 +233,26 @@ class UmaPageLoadMetricsObserver
       base::TimeTicks app_background_time);
   void RecordNormalizedResponsivenessMetrics();
 
-  void EmitFCPTraceEvent(base::TimeDelta first_contentful_paint_timing);
-
-  void EmitLCPTraceEvent(base::TimeDelta largest_contentful_paint_timing);
+  void EmitFCPTraceEvent(
+      const page_load_metrics::mojom::PageLoadTiming& timing);
+  void EmitLCPTraceEventBegin(base::TimeDelta lcp_time);
+  void EmitLCPTraceEventEnd(base::TimeDelta lcp_time, bool in_foreground);
 
   void EmitInstantTraceEvent(base::TimeDelta duration, const char event_name[]);
 
-  perfetto::NamedTrack GetTracingTrack(const char* track_name) const;
+  void CloseIncompleteTimelineTraceEvents(
+      const page_load_metrics::mojom::PageLoadTiming& main_frame_timing);
+
+  perfetto::NamedTrack GetTracingTrack(const char* track_name,
+                                       const char* event_name = nullptr) const;
 
   void EmitPageLoadTimelineTraceEventBegin(const char* name,
                                            base::TimeTicks begin);
 
   void EmitPageLoadTimelineTraceEventEnd(
-      const char* name,
       base::TimeTicks end,
       std::optional<base::TimeDelta> before_unload_dialog_duration =
           std::nullopt);
-
-  void EmitPageLoadTimelineTraceEventsAfterParseStart(
-      const page_load_metrics::mojom::PageLoadTiming& main_frame_timing,
-      const page_load_metrics::ContentfulPaintTimingInfo&
-          all_frames_largest_contentful_paint);
 
   content::NavigationHandleTiming navigation_handle_timing_;
 
@@ -277,6 +282,9 @@ class UmaPageLoadMetricsObserver
 
   std::optional<perfetto::NamedTrack> timeline_track_;
   std::optional<TraceBeginEvent> trace_begin_event_;
+
+  bool lcp_trace_ended_ = false;
+  std::optional<base::TimeDelta> last_emitted_lcp_;
 };
 
 #endif  // COMPONENTS_PAGE_LOAD_METRICS_BROWSER_OBSERVERS_CORE_UMA_PAGE_LOAD_METRICS_OBSERVER_H_
