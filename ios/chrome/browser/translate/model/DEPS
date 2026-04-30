@@ -5,5 +5,6 @@ include_rules = [
   "+ios/chrome/browser/language/model",
   "+ios/chrome/browser/language_detection/model",
   "+ios/chrome/browser/optimization_guide/model",
+  "+ios/chrome/browser/tabs/model/tabs_dependency_installer.h",
   # keep-sorted end
 ]

@@ -66,6 +66,7 @@ source_set("model") {
     "//ios/chrome/browser/tabs/model",
     "//ios/chrome/browser/tabs/model:dependency_installer",
     "//ios/chrome/browser/toolbar/legacy/ui_bundled/fullscreen",
+    "//ios/chrome/browser/translate/model",
     "//ios/chrome/browser/url_loading/model",
     "//ios/chrome/browser/view_source/model",
     "//ios/chrome/browser/web/model",

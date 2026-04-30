@@ -7562,6 +7562,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.Translate.PDF.OpenedFromTranslatedPage"
+    enum="BooleanAvailable" expires_after="2026-12-10">
+  <owner>erahmaoui@google.com</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    Logs whether a PDF was opened from an already translated page. Emitted at
+    each navigation.
+  </summary>
+</histogram>
+
 <histogram name="IOS.TrendingQueries" enum="TrendingQueryIndex"
     expires_after="2023-07-24">
   <owner>thegreenfrog@chromium.org</owner>
