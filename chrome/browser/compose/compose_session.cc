@@ -1153,9 +1153,9 @@ void ComposeSession::UpdateInnerTextAndContinueComposeIfNecessary(
   }
 
   if (node_offset.has_value()) {
-    page_metadata_->set_page_inner_text_offset(node_offset.value());
+    page_metadata_->set_page_inner_text_offset(*node_offset);
   }
-  page_metadata_->set_trimmed_page_inner_text(trimmed_inner_text);
+  page_metadata_->set_trimmed_page_inner_text(std::move(trimmed_inner_text));
 
   page_metadata_->set_page_inner_text(std::move(inner_text));
 
