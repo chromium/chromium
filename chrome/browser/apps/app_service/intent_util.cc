@@ -415,7 +415,7 @@ apps::IntentFilters CreateIntentFiltersForExtension(
     return filters;
   }
 
-  FileBrowserHandler::List* handler_list =
+  const FileBrowserHandler::List* handler_list =
       FileBrowserHandler::GetHandlers(extension);
   if (!handler_list) {
     return {};

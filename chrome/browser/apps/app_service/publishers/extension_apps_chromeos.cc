@@ -871,12 +871,11 @@ bool ExtensionAppsChromeOs::Accepts(const extensions::Extension* extension) {
     }
 
     // Only accept extensions with file_browser_handlers.
-    FileBrowserHandler::List* handler_list =
-        FileBrowserHandler::GetHandlers(extension);
-    if (!handler_list) {
-      return false;
+    if (FileBrowserHandler::GetHandlers(extension)) {
+      return true;
     }
-    return true;
+
+    return false;
   }
 
   if (!extension->is_app() || IsBlocklisted(extension->id())) {
