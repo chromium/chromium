@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/platform/graphics/image_frame_generator.h"
 
 #include <memory>
+
 #include "base/features.h"
 #include "base/location.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -39,8 +40,10 @@
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
+#include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -411,6 +414,67 @@ TEST_F(ImageFrameGeneratorTest, clearMultiFrameDecoder) {
   EXPECT_EQ(3, decode_request_count_);
   EXPECT_EQ(0, decoders_destroyed_);
   EXPECT_EQ(kNotFound, requested_clear_except_frame_);
+}
+
+// This is a regression test for https://crbug.com/496282147.
+//
+// This is a more realistic, product-like, almost-end-to-end version of the
+// `AnimatedPNGTests.ClearingPartiallyDecodedFrame` unit test.
+TEST_F(ImageFrameGeneratorTest, ClearingPartiallyDecodedFrame) {
+  StringBuilder file_path;
+  file_path.Append(test::BlinkWebTestsDir());
+  file_path.Append(
+      "/images/resources/png-animated-three-independent-frames.png");
+  std::optional<Vector<char>> full_data_vec =
+      test::ReadFromFile(file_path.ToString());
+  ASSERT_TRUE(full_data_vec);
+  base::span<const uint8_t> full_data = base::as_byte_span(*full_data_vec);
+  SkISize size(50, 50);
+
+  // Can't reuse `generator_` from `SetUp`, because it sets `is_multi_frame` to
+  // `false`.  Can't use `SetFrameCount`, because this test needs to use a real
+  // `SkiaImageDecoderBase` decoder, rather than `UseMockImageDecoderFactory`.
+  constexpr bool kIsMultiframe = true;
+  const Vector<SkISize> kSupportedSizes = {};
+  generator_ =
+      ImageFrameGenerator::Create(size, kIsMultiframe, ColorBehavior::kTag,
+                                  cc::AuxImage::kDefault, kSupportedSizes);
+
+  // Partially decode frame 1.
+  //
+  // `fcTL` chunk starts at offset 180.  `fdAT` at 218.
+  // Let's provide 240 bytes - in the middle of `fdAT` chunk.
+  //
+  // After this step `SkiaImageDecoderBase::already_started_frame_` is `1`.
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(size.width(), size.height());
+  cc::PaintImage::GeneratorClientId client_id =
+      cc::PaintImage::GetNextGeneratorClientId();
+  auto partial_data = SharedBuffer::Create(full_data.first(240u));
+  auto segment_reader = SegmentReader::CreateFromSharedBuffer(partial_data);
+  bool success = generator_->DecodeAndScale(segment_reader.get(),
+                                            /*all_data_received=*/false, 1,
+                                            bitmap.pixmap(), client_id);
+  EXPECT_TRUE(success);
+
+  // Decode an out-of-bounds frame to clear the cache and transitively call
+  // `ImageFrame::ClearPixelData`.
+  success = generator_->DecodeAndScale(segment_reader.get(),
+                                       /*all_data_received=*/false, 1000,
+                                       bitmap.pixmap(), client_id);
+  EXPECT_FALSE(success);
+
+  // Resume decoding of frame 1.  Despite starting with
+  // `SkiaImageDecoderBase::already_started_frame_` set to `1` this operation
+  // needs to call `SkCodec::startIncrementalDecode` because the old buffer has
+  // been freed in the previous step.
+  auto full_shared_buffer = SharedBuffer::Create(full_data);
+  auto full_segment_reader =
+      SegmentReader::CreateFromSharedBuffer(full_shared_buffer);
+  success = generator_->DecodeAndScale(full_segment_reader.get(),
+                                       /*all_data_received=*/true, 1,
+                                       bitmap.pixmap(), client_id);
+  EXPECT_TRUE(success);
 }
 
 }  // namespace blink

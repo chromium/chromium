@@ -879,6 +879,53 @@ TEST(AnimatedPNGTests, IncrementalDecodeOfDifferentFrame) {
   EXPECT_EQ(frame1->GetStatus(), ImageFrame::kFrameComplete);
 }
 
+// This is a regression test for https://crbug.com/496282147.
+//
+// This test uses `blink::ImageDecoder` and `blink::ImageFrame` APIs in a way
+// that doesn't necessarily reflect how they would actually be used in the
+// product (e.g. calling `ClearPixelData` and/or calling `Append` instead of
+// `SetData`).  This nevertheless seems like a valid test, because:
+//
+// * Supporting all usage patterns allowed by the public APIs (and the type
+//   system) seems more robust then 1) adding extra requirements on the caller
+//   of these APIs (such as never clearing a partially decoded frame), and/or 2)
+//   discovering the callers that may violate such requirements.
+// * A separate `ImageFrameGeneratorTest.ClearingPartiallyDecodedFrame` test
+//   shows how a similr usage pattern is indeed reachable via web-exposed APIs.
+TEST(AnimatedPNGTests, ClearingPartiallyDecodedFrame) {
+  Vector<char> full_data = ReadFile(
+      "/images/resources/"
+      "png-animated-idat-part-of-animation.png");
+  ASSERT_FALSE(full_data.empty());
+  auto decoder = CreatePNGDecoder();
+
+  // Provide only enough data for the first frame to be partial.
+  const size_t kPartialDataSize = 160;
+  scoped_refptr<SharedBuffer> data =
+      SharedBuffer::Create(base::span(full_data).first(kPartialDataSize));
+  decoder->SetData(data.get(), false);
+
+  // Partially decode frame 0.
+  ImageFrame* frame0 = decoder->DecodeFrameBufferAtIndex(0);
+  ASSERT_TRUE(frame0);
+  EXPECT_EQ(frame0->GetStatus(), ImageFrame::kFramePartial);
+
+  // Manually clear frame 0 pixel data.
+  frame0->ClearPixelData();
+
+  // Provide more data by appending to the same `SharedBuffer`.
+  // This avoids clobbering the decoder state with a new `SetData` call.
+  data->Append(base::span(full_data).subspan(kPartialDataSize));
+
+  // Try to decode frame 0 again.  This verifies that
+  // `SkCodec::startIncrementalDecode` has been called to reinitialize decoding
+  // state - avoiding writing to the memory buffer that has been freed by
+  // `ClearPixelData` above.
+  frame0 = decoder->DecodeFrameBufferAtIndex(0);
+  ASSERT_TRUE(frame0);
+  EXPECT_EQ(frame0->GetStatus(), ImageFrame::kFrameComplete);
+}
+
 // Verify that a malformatted PNG, where the IEND appears before any frame data
 // (IDAT), invalidates the decoder.
 TEST(AnimatedPNGTests, VerifyIENDBeforeIDATInvalidatesDecoder) {
