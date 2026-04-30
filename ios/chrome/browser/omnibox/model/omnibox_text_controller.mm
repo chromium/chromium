@@ -400,7 +400,13 @@ const char kOmniboxFocusResultedInNavigation[] =
 
 - (void)removePreEditText {
   if (self.textInput.isPreEditing) {
-    [self.textInput setText:@""];
+    // Use replaceRange:withText: instead of setText:@"" to be more
+    // IME-friendly and avoid breaking active composition when exiting
+    // pre-edit state by typing. crbug.com/507828507
+    UITextRange* allTextRange =
+        [self.textInput textRangeFromPosition:self.textInput.beginningOfDocument
+                                   toPosition:self.textInput.endOfDocument];
+    [self.textInput replaceRange:allTextRange withText:@""];
     [self setUserText:u""];
     [self onTextChanged];
     // Ensure the pre-edit state is exited after the text is cleared, preventing
