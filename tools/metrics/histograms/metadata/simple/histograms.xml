@@ -47,7 +47,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SimpleGeolocation.Provider.QueryGeolocationCommandRequestInterval"
-    units="hours" expires_after="2026-06-07">
+    units="hours" expires_after="2026-12-07">
   <owner>poromov@chromium.org</owner>
   <owner>alvinji@chromium.org</owner>
   <owner>deviceapi-team@google.com</owner>
