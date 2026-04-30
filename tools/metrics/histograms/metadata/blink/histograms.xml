@@ -3944,7 +3944,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.LCPP.PreconnectPredictionCount" units="count"
-    expires_after="2026-05-09">
+    expires_after="2027-04-01">
   <owner>chikamune@chromium.org</owner>
   <owner>yoichio@chromium.org</owner>
   <owner>
@@ -3959,7 +3959,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.LCPP.PreconnectPredictionMatchCount" units="count"
-    expires_after="2026-05-09">
+    expires_after="2027-04-01">
   <owner>chikamune@chromium.org</owner>
   <owner>yoichio@chromium.org</owner>
   <owner>
@@ -3977,7 +3977,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.LCPP.PreconnectPredictionMatchPercent" units="%"
-    expires_after="2026-05-09">
+    expires_after="2027-04-01">
   <owner>chikamune@chromium.org</owner>
   <owner>yoichio@chromium.org</owner>
   <owner>
