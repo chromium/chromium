@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/shared/public/commands/mini_map_commands.h"
 #import "ios/public/provider/chrome/browser/mini_map/mini_map_api.h"
 #import "net/base/apple/url_conversions.h"
+#import "url/gurl.h"
 
 MiniMapTabHelper::MiniMapTabHelper(web::WebState* web_state)
     : web::WebStatePolicyDecider(web_state) {
@@ -20,7 +21,11 @@ MiniMapTabHelper::MiniMapTabHelper(web::WebState* web_state)
   mini_map_service_ = MiniMapServiceFactory::GetForProfile(profile);
 }
 
-MiniMapTabHelper::~MiniMapTabHelper() {}
+MiniMapTabHelper::~MiniMapTabHelper() {
+  if (policy_callback_) {
+    std::move(policy_callback_).Run(PolicyDecision::Cancel());
+  }
+}
 
 void MiniMapTabHelper::SetMiniMapCommands(
     id<MiniMapCommands> mini_map_handler) {
@@ -45,11 +50,30 @@ void MiniMapTabHelper::WebStateDestroyed(web::WebState* web_state) {
 void MiniMapTabHelper::ShouldAllowRequest(NSURLRequest* request,
                                           RequestInfo request_info,
                                           PolicyDecisionCallback callback) {
-  if (!ShouldInterceptRequest(request.URL, request_info.transition_type)) {
-    std::move(callback).Run(PolicyDecision::Allow());
+  if (ShouldInterceptRequest(request.URL, request_info.transition_type)) {
+    // If there is already a pending decision, allow it to proceed before
+    // storing the new one.
+    if (policy_callback_) {
+      std::move(policy_callback_).Run(PolicyDecision::Allow());
+    }
+
+    // Defer the decision until we know if the UI was shown successfully.
+    policy_callback_ = std::move(callback);
     return;
   }
-  std::move(callback).Run(PolicyDecision::Cancel());
+  std::move(callback).Run(PolicyDecision::Allow());
+}
+
+void MiniMapTabHelper::OnMiniMapSuccess() {
+  if (policy_callback_) {
+    std::move(policy_callback_).Run(PolicyDecision::Cancel());
+  }
+}
+
+void MiniMapTabHelper::OnMiniMapFailure() {
+  if (policy_callback_) {
+    std::move(policy_callback_).Run(PolicyDecision::Allow());
+  }
 }
 
 void MiniMapTabHelper::WebStateDestroyed() {
@@ -61,6 +85,7 @@ void MiniMapTabHelper::WebStateDestroyed() {
 bool MiniMapTabHelper::ShouldInterceptRequest(
     NSURL* url,
     ui::PageTransition page_transition) {
+  GURL target_url = net::GURLWithNSURL(url);
   if (!mini_map_service_->IsMiniMapEnabled()) {
     // Only intercept request when the feature is enabled.
     return false;
@@ -81,7 +106,6 @@ bool MiniMapTabHelper::ShouldInterceptRequest(
   }
 
   // Only consider URLS like maps.google.com/maps/...
-  GURL target_url = net::GURLWithNSURL(url);
   if (!google_util::IsGoogleDomainUrl(
           target_url, google_util::ALLOW_SUBDOMAIN,
           google_util::DISALLOW_NON_STANDARD_PORTS)) {

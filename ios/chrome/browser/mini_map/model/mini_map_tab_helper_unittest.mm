@@ -114,12 +114,12 @@ class MiniMapTabHelperTest : public PlatformTest {
     PlatformTest::TearDown();
   }
 
-  [[nodiscard]] bool TestShouldAllowRequest(
-      NSString* web_state_url_string,
-      NSString* url_string,
-      bool feature_enabled,
-      bool google_maps_installed,
-      ui::PageTransition transition_type) {
+  [[nodiscard]] bool TestShouldAllowRequest(NSString* web_state_url_string,
+                                            NSString* url_string,
+                                            bool feature_enabled,
+                                            bool google_maps_installed,
+                                            ui::PageTransition transition_type,
+                                            bool simulate_success = true) {
     NSURL* web_state_url = [NSURL URLWithString:web_state_url_string];
     NSURL* url = [NSURL URLWithString:url_string];
     web_state_.SetCurrentURL(net::GURLWithNSURL(web_state_url));
@@ -148,6 +148,16 @@ class MiniMapTabHelperTest : public PlatformTest {
         }).Then(run_loop.QuitClosure());
     tab_helper_->ShouldAllowRequest([NSURLRequest requestWithURL:url],
                                     request_info, std::move(callback));
+
+    if (!callback_called) {
+      // The request was intercepted and the callback deferred.
+      if (simulate_success) {
+        tab_helper_->OnMiniMapSuccess();
+      } else {
+        tab_helper_->OnMiniMapFailure();
+      }
+    }
+
     run_loop.Run();
     EXPECT_TRUE(callback_called);
     return policy_decision.ShouldAllowNavigation();
@@ -218,5 +228,95 @@ TEST_F(MiniMapTabHelperTest, TestGoogleMapsURL) {
 
   // Navigation should be blocked (returns false).
   EXPECT_FALSE(res);
+  EXPECT_OCMOCK_VERIFY(mini_map_commands_handler_);
+}
+
+// Test that if the Native Preview fails to show, navigation is allowed.
+TEST_F(MiniMapTabHelperTest, TestNativePreviewFailure) {
+  NSString* const kGoogleMapsLink =
+      @"https://www.google.com/maps/foo?valid=true";
+
+  OCMExpect([mini_map_commands_handler_
+      presentMiniMapNativePreviewForURL:[NSURL URLWithString:kGoogleMapsLink]]);
+
+  // Pass false to simulate failure
+  bool res = TestShouldAllowRequest(kGoogleSRPPage, kGoogleMapsLink,
+                                    /*feature_enabled=*/true,
+                                    /*google_maps_installed=*/false,
+                                    ui::PageTransition::PAGE_TRANSITION_LINK,
+                                    /*simulate_success=*/false);
+
+  // Navigation should be ALLOWED (returns true) because UI failed.
+  EXPECT_TRUE(res);
+  EXPECT_OCMOCK_VERIFY(mini_map_commands_handler_);
+}
+
+// Test that a new request allows the previous deferred request to proceed.
+TEST_F(MiniMapTabHelperTest, TestReentrancy) {
+  NSString* const kGoogleMapsLink1 =
+      @"https://www.google.com/maps/foo?valid=true";
+  NSString* const kGoogleMapsLink2 =
+      @"https://www.google.com/maps/bar?valid=true";
+
+  OCMExpect([mini_map_commands_handler_
+      presentMiniMapNativePreviewForURL:[NSURL
+                                            URLWithString:kGoogleMapsLink1]]);
+  OCMExpect([mini_map_commands_handler_
+      presentMiniMapNativePreviewForURL:[NSURL
+                                            URLWithString:kGoogleMapsLink2]]);
+
+  web_state_.SetCurrentURL(
+      net::GURLWithNSURL([NSURL URLWithString:kGoogleSRPPage]));
+  web_state_.OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
+  profile_->GetSyncablePrefs()->SetBoolean(prefs::kIosMiniMapShowNativeMap,
+                                           true);
+  google_maps_installed_ = false;
+
+  const web::WebStatePolicyDecider::RequestInfo request_info(
+      ui::PageTransition::PAGE_TRANSITION_LINK, /*target_frame_is_main*/ true,
+      /*target_frame_is_cross_origin*/ false,
+      /*target_window_is_cross_origin*/ false, /*user_initiated*/ true,
+      /*user_tapped_recently*/ true);
+
+  __block bool callback1_called = false;
+  __block web::WebStatePolicyDecider::PolicyDecision decision1 =
+      web::WebStatePolicyDecider::PolicyDecision::Allow();
+  auto callback1 =
+      base::BindOnce(^(web::WebStatePolicyDecider::PolicyDecision decision) {
+        decision1 = decision;
+        callback1_called = true;
+      });
+
+  tab_helper_->ShouldAllowRequest(
+      [NSURLRequest requestWithURL:[NSURL URLWithString:kGoogleMapsLink1]],
+      request_info, std::move(callback1));
+
+  EXPECT_FALSE(callback1_called);
+
+  __block bool callback2_called = false;
+  __block web::WebStatePolicyDecider::PolicyDecision decision2 =
+      web::WebStatePolicyDecider::PolicyDecision::Allow();
+  auto callback2 =
+      base::BindOnce(^(web::WebStatePolicyDecider::PolicyDecision decision) {
+        decision2 = decision;
+        callback2_called = true;
+      });
+
+  tab_helper_->ShouldAllowRequest(
+      [NSURLRequest requestWithURL:[NSURL URLWithString:kGoogleMapsLink2]],
+      request_info, std::move(callback2));
+
+  // The first callback should be called with ALLOW because it was overwritten!
+  EXPECT_TRUE(callback1_called);
+  EXPECT_TRUE(decision1.ShouldAllowNavigation());
+
+  // The second callback should NOT be called yet (deferred).
+  EXPECT_FALSE(callback2_called);
+
+  // Now resolve the second one
+  tab_helper_->OnMiniMapSuccess();
+  EXPECT_TRUE(callback2_called);
+  EXPECT_FALSE(decision2.ShouldAllowNavigation());
+
   EXPECT_OCMOCK_VERIFY(mini_map_commands_handler_);
 }

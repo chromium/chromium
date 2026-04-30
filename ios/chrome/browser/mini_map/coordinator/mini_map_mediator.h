@@ -61,6 +61,9 @@ enum class MiniMapQueryType {
 // User opened a query from the MiniMap.
 - (void)userOpenedQueryFromMiniMap;
 
+// The MiniMap failed to show and fallback to open the URL.
+- (void)miniMapFallbackToURL;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_MINI_MAP_COORDINATOR_MINI_MAP_MEDIATOR_H_

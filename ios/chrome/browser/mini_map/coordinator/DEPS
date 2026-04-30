@@ -1,5 +1,6 @@
 include_rules = [
   # keep-sorted start
+  "+ios/chrome/browser/mini_map/model",
   "+ios/chrome/browser/search_engines/model",
   "+ios/chrome/browser/web/model/annotations/annotations_util.h",
   # keep-sorted end

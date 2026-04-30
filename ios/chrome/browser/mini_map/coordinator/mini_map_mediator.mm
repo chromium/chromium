@@ -39,7 +39,8 @@ enum class MiniMapOutcome {
   kOpenedQuery = 4,
   kUserDisabled = 5,
   kUserDisabledThenSettings = 6,
-  kMaxValue = kUserDisabledThenSettings,
+  kFallbackToURL = 7,
+  kMaxValue = kFallbackToURL,
 };
 
 // Returns the histogram name for the consent outcome based on the query type.
@@ -138,6 +139,11 @@ std::string_view MiniMapOutcomeHistogram(MiniMapQueryType type) {
 - (void)userOpenedQueryFromMiniMap {
   base::UmaHistogramEnumeration(MiniMapOutcomeHistogram(_type),
                                 MiniMapOutcome::kOpenedQuery);
+}
+
+- (void)miniMapFallbackToURL {
+  base::UmaHistogramEnumeration(MiniMapOutcomeHistogram(_type),
+                                MiniMapOutcome::kFallbackToURL);
 }
 
 - (void)userDisabledOneTapSettingFromMiniMap {

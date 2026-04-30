@@ -410,6 +410,7 @@ TEST_F(MiniMapCoordinatorTest, TestPresentNativePreview) {
   OCMExpect([mini_map_controller configureCompletion:[OCMArg any]]);
   OCMExpect(
       [mini_map_controller configureCompletionWithSearchQuery:[OCMArg any]]);
+  OCMExpect([mini_map_controller configureFailureCompletion:[OCMArg any]]);
 
   OCMExpect([mini_map_controller
       presentMapsNativePreviewWithPresentingViewController:[OCMArg any]]);

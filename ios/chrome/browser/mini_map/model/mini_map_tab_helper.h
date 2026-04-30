@@ -24,6 +24,12 @@ class MiniMapTabHelper : public web::WebStateUserData<MiniMapTabHelper>,
   // Sets the MiniMapCommands that can display mini maps.
   void SetMiniMapCommands(id<MiniMapCommands> mini_map_handler);
 
+  // Called when the mini map UI was shown successfully.
+  void OnMiniMapSuccess();
+
+  // Called when the mini map UI failed to show.
+  void OnMiniMapFailure();
+
   // WebStateObserver overrides:
   void PageLoaded(
       web::WebState* web_state,
@@ -48,6 +54,9 @@ class MiniMapTabHelper : public web::WebStateUserData<MiniMapTabHelper>,
 
   // Service to observe Profile scoped prefs.
   raw_ptr<MiniMapService> mini_map_service_;
+
+  // Callback to resolve the policy decision for the intercepted request.
+  PolicyDecisionCallback policy_callback_;
 };
 
 #endif  // IOS_CHROME_BROWSER_MINI_MAP_MODEL_MINI_MAP_TAB_HELPER_H_

@@ -14,6 +14,7 @@ source_set("coordinator") {
     "//components/prefs",
     "//components/search_engines",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/mini_map/model",
     "//ios/chrome/browser/search_engines/model:template_url_service_factory",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
