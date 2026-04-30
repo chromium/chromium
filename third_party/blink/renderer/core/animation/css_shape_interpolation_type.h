@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/core/animation/css_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/non_interpolable_value.h"
+#include "third_party/blink/renderer/core/style/computed_style_constants.h"
 
 namespace blink {
 
@@ -29,6 +30,24 @@ class CSSShapeInterpolationType : public CSSInterpolationType {
   static CORE_EXPORT BasicShape* CreateShape(const InterpolableValue&,
                                              const NonInterpolableValue*,
                                              const CSSToLengthConversionData&);
+
+  static InterpolationValue MaybeConvertCSSValue(const CSSValue& value,
+                                                 const CSSProperty& property,
+                                                 GeometryBox geometry_box,
+                                                 CoordBox coord_box);
+  static InterpolationValue MaybeConvertBasicShape(const BasicShape* shape,
+                                                   const CSSProperty& property,
+                                                   double zoom,
+                                                   GeometryBox geometry_box,
+                                                   CoordBox coord_box);
+  static bool ShapesAreCompatible(const NonInterpolableValue& a,
+                                  const NonInterpolableValue& b);
+  static InterpolableValue* CreateNeutralValue(
+      const NonInterpolableValue& non_interpolable);
+  static NonInterpolableValue::Type ShapeNonInterpolableValueType();
+  static std::optional<GeometryBox> GetGeometryBox(
+      const NonInterpolableValue& value);
+  static std::optional<CoordBox> GetCoordBox(const NonInterpolableValue& value);
 
  protected:
   InterpolationValue MaybeConvertNeutral(const InterpolationValue& underlying,

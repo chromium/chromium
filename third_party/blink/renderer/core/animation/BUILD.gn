@@ -282,6 +282,8 @@ blink_core_sources("animation") {
     "scroll_timeline.h",
     "scroll_timeline_util.cc",
     "scroll_timeline_util.h",
+    "shape_interpolation_functions.cc",
+    "shape_interpolation_functions.h",
     "side_index.h",
     "size_interpolation_functions.cc",
     "size_interpolation_functions.h",

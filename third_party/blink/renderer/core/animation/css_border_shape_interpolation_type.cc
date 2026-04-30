@@ -4,8 +4,8 @@
 
 #include "third_party/blink/renderer/core/animation/css_border_shape_interpolation_type.h"
 
-#include "third_party/blink/renderer/core/animation/basic_shape_interpolation_functions.h"
 #include "third_party/blink/renderer/core/animation/list_interpolation_functions.h"
+#include "third_party/blink/renderer/core/animation/shape_interpolation_functions.h"
 #include "third_party/blink/renderer/core/animation/underlying_value_owner.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value_mappings.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
@@ -31,7 +31,7 @@ InterpolationValue ConvertBorderShape(const StyleBorderShape* border_shape,
                                              : border_shape->InnerShape();
         GeometryBox box =
             index == 0 ? border_shape->OuterBox() : border_shape->InnerBox();
-        return basic_shape_interpolation_functions::MaybeConvertBasicShape(
+        return shape_interpolation_functions::MaybeConvertBasicShape(
             &shape, property, zoom, box, CoordBox::kBorderBox);
       });
 }
@@ -83,8 +83,7 @@ class BorderShapeUnderlyingCompatibilityChecker
           if (!a || !b) {
             return false;
           }
-          return basic_shape_interpolation_functions::ShapesAreCompatible(*a,
-                                                                          *b);
+          return shape_interpolation_functions::ShapesAreCompatible(*a, *b);
         };
 
     return ListInterpolationFunctions::EqualValues(
@@ -123,8 +122,8 @@ GeometryBox GeometryBoxForNonInterpolableValue(
   if (!non_interpolable) {
     return GeometryBox::kHalfBorderBox;
   }
-  return basic_shape_interpolation_functions::GetGeometryBox(*non_interpolable,
-                                                             default_box);
+  return shape_interpolation_functions::GetGeometryBox(*non_interpolable,
+                                                       default_box);
 }
 
 }  // namespace
@@ -150,9 +149,8 @@ InterpolationValue CSSBorderShapeInterpolationType::MaybeConvertNeutral(
     const NonInterpolableValue* non_interpolable =
         non_interpolable_list->Get(i);
     CHECK(non_interpolable);
-    neutral_list->Set(i,
-                      basic_shape_interpolation_functions::CreateNeutralValue(
-                          *non_interpolable));
+    neutral_list->Set(i, shape_interpolation_functions::CreateNeutralValue(
+                             *non_interpolable));
   }
 
   conversion_checkers.push_back(
@@ -211,7 +209,7 @@ InterpolationValue CSSBorderShapeInterpolationType::MaybeConvertValue(
 
   return ListInterpolationFunctions::CreateList(
       entries.size(), [this, &entries](wtf_size_t index) {
-        return basic_shape_interpolation_functions::MaybeConvertCSSValue(
+        return shape_interpolation_functions::MaybeConvertCSSValue(
             *entries[index].shape_value, CssProperty(), entries[index].box,
             CoordBox::kBorderBox);
       });
@@ -236,8 +234,8 @@ PairwiseInterpolationValue CSSBorderShapeInterpolationType::MaybeMergeSingles(
         if (!start_non || !end_non) {
           return PairwiseInterpolationValue(nullptr);
         }
-        if (!basic_shape_interpolation_functions::ShapesAreCompatible(
-                *start_non, *end_non)) {
+        if (!shape_interpolation_functions::ShapesAreCompatible(*start_non,
+                                                                *end_non)) {
           return PairwiseInterpolationValue(nullptr);
         }
         return PairwiseInterpolationValue(
@@ -276,7 +274,7 @@ void CSSBorderShapeInterpolationType::Composite(
         if (!a || !b) {
           return false;
         }
-        return basic_shape_interpolation_functions::ShapesAreCompatible(*a, *b);
+        return shape_interpolation_functions::ShapesAreCompatible(*a, *b);
       };
 
   ListInterpolationFunctions::Composite(
@@ -308,14 +306,12 @@ void CSSBorderShapeInterpolationType::ApplyStandardPropertyValue(
   CHECK(non_interpolable_list);
   CHECK_EQ(non_interpolable_list->length(), length);
 
-  BasicShape* outer_shape =
-      basic_shape_interpolation_functions::CreateBasicShape(
-          *interpolable_list.Get(0), *non_interpolable_list->Get(0),
-          state.CssToLengthConversionData());
-  BasicShape* inner_shape =
-      basic_shape_interpolation_functions::CreateBasicShape(
-          *interpolable_list.Get(1), *non_interpolable_list->Get(1),
-          state.CssToLengthConversionData());
+  BasicShape* outer_shape = shape_interpolation_functions::CreateBasicShape(
+      *interpolable_list.Get(0), *non_interpolable_list->Get(0),
+      state.CssToLengthConversionData());
+  BasicShape* inner_shape = shape_interpolation_functions::CreateBasicShape(
+      *interpolable_list.Get(1), *non_interpolable_list->Get(1),
+      state.CssToLengthConversionData());
 
   if (!outer_shape || !inner_shape) {
     state.StyleBuilder().SetBorderShape(nullptr);
