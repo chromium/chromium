@@ -542,4 +542,8 @@ void SkiaOutputDeviceBufferQueue::SetVSyncDisplayID(int64_t display_id) {
   presenter_->SetVSyncDisplayID(display_id);
 }
 
+void SkiaOutputDeviceBufferQueue::RefreshRateChangedOnSameDisplay() {
+  presenter_->RefreshRateChangedOnSameDisplay();
+}
+
 }  // namespace viz

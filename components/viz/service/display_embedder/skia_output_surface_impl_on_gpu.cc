@@ -1893,6 +1893,10 @@ void SkiaOutputSurfaceImplOnGpu::SetVSyncDisplayID(int64_t display_id) {
   output_device_->SetVSyncDisplayID(display_id);
 }
 
+void SkiaOutputSurfaceImplOnGpu::RefreshRateChangedOnSameDisplay() {
+  output_device_->RefreshRateChangedOnSameDisplay();
+}
+
 #if BUILDFLAG(IS_ANDROID)
 void SkiaOutputSurfaceImplOnGpu::SetFrameRate(
     gfx::SurfaceControlFrameRate frame_rate) {

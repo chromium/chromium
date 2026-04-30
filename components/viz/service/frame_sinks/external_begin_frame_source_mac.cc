@@ -216,9 +216,9 @@ void ExternalBeginFrameSourceMac::SetVSyncDisplayID(int64_t display_id,
 
 void ExternalBeginFrameSourceMac::RefreshRateChangedOnSameDisplay() {
   // Forward the notification to output surface for frame presentation.
-  // output_surface_->RefreshRateChangedOnSameDisplay();
+  output_surface_->RefreshRateChangedOnSameDisplay();
 
-  // TODO: For CADisplayLink only. Notify DisplayLink and recreate a new
+  // TODO: For CADisplayLink only. Notify DisplayLinkMac and recreate a new
   // displayLink if needed.
 }
 

@@ -71,8 +71,9 @@ class ImageTransportSurfaceOverlayMacEGL : public gl::Presenter,
   void SetMaxPendingSwaps(int max_pending_swaps) override;
 
 #if BUILDFLAG(IS_MAC)
-  // GLSurface override
+  // gl::Presenter
   void SetVSyncDisplayID(int64_t display_id) override;
+  void RefreshRateChangedOnSameDisplay() override;
 
   void OnVSyncPresentation(ui::VSyncParamsMac params);
 #endif

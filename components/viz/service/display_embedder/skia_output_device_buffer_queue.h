@@ -61,6 +61,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputDeviceBufferQueue : public SkiaOutputDevice {
 
   // SkiaOutputDevice override
   void SetVSyncDisplayID(int64_t display_id) override;
+  void RefreshRateChangedOnSameDisplay() override;
 
   base::OneShotTimer& OverlaysReclaimTimerForTesting() {
     return reclaim_overlays_timer_;

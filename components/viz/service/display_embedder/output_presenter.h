@@ -42,6 +42,7 @@ class VIZ_SERVICE_EXPORT OutputPresenter {
       ScopedOverlayAccess* access) = 0;
 
   virtual void SetVSyncDisplayID(int64_t display_id) {}
+  virtual void RefreshRateChangedOnSameDisplay() {}
 
 #if BUILDFLAG(IS_APPLE)
   virtual void SetMaxPendingSwaps(int max_pending_swaps) {}

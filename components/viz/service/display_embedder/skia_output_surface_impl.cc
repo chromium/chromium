@@ -496,6 +496,13 @@ void SkiaOutputSurfaceImpl::SetVSyncDisplayID(int64_t display_id) {
   gpu_task_scheduler_->ScheduleOrRetainGpuTask(std::move(task), {});
 }
 
+void SkiaOutputSurfaceImpl::RefreshRateChangedOnSameDisplay() {
+  auto task = base::BindOnce(
+      &SkiaOutputSurfaceImplOnGpu::RefreshRateChangedOnSameDisplay,
+      base::Unretained(impl_on_gpu_.get()));
+  gpu_task_scheduler_->ScheduleOrRetainGpuTask(std::move(task), {});
+}
+
 void SkiaOutputSurfaceImpl::SetDisplayTransformHint(
     gfx::OverlayTransform transform) {
   display_transform_ = transform;

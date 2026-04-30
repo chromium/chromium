@@ -35,6 +35,7 @@ class VIZ_SERVICE_EXPORT OutputPresenterGL : public OutputPresenter {
       const OutputPresenter::OverlayPlaneCandidate& overlay_plane_candidate,
       ScopedOverlayAccess* access) final;
   void SetVSyncDisplayID(int64_t display_id) final;
+  void RefreshRateChangedOnSameDisplay() final;
 
 #if BUILDFLAG(IS_APPLE)
   void SetMaxPendingSwaps(int max_pending_swaps) final;

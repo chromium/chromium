@@ -340,6 +340,11 @@ void ImageTransportSurfaceOverlayMacEGL::SetVSyncDisplayID(int64_t display_id) {
   display_id_ = display_id;
 }
 
+void ImageTransportSurfaceOverlayMacEGL::RefreshRateChangedOnSameDisplay() {
+  // TODO(crbug.com/345275139): For CADisplayLink only. Notify DisplayLinkMac
+  // and re-create a new displayLink if needed.
+}
+
 base::TimeTicks ImageTransportSurfaceOverlayMacEGL::GetDisplaytime(
     base::TimeTicks latch_time) {
   // From the CVDisplayLink params dump:
