@@ -580,11 +580,10 @@ TEST_P(CardMetadataLatencyMetricsTest, LogMetrics) {
 // TODO(crbug.com/346399130): Reduce the amount of '_ONCE' metric tests.
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 // Params:
-// 1. Whether card benefit feature flag is enabled.
-// 2. Benefit source of the card with a benefit available.
+// 1. Benefit source of the card with a benefit available.
 class CardBenefitFormEventMetricsTest
     : public AutofillMetricsBaseTest,
-      public testing::TestWithParam<std::tuple<bool, std::string_view>> {
+      public testing::TestWithParam<std::string_view> {
  public:
   CardBenefitFormEventMetricsTest() = default;
   ~CardBenefitFormEventMetricsTest() override = default;
@@ -676,24 +675,14 @@ class CardBenefitFormEventMetricsTest
     card_.set_benefit_source(benefit_source());
     test_paydm().AddServerCreditCard(card_);
 
-    // Initialize features based on test params.
-    scoped_feature_list_.InitWithFeatureStates(
-        /*feature_states=*/
-        {{features::kAutofillEnableCardBenefitsSync, true},
-         {features::kAutofillEnableCardBenefitsForAmericanExpress,
-          card_benefits_are_enabled()},
-         {features::kAutofillEnableCardBenefitsForBmo,
-          card_benefits_are_enabled()},
-         {features::kAutofillEnableFlatRateCardBenefitsFromCurinos,
-          card_benefits_are_enabled()}});
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kAutofillEnableCardBenefitsSync);
   }
 
   void TearDown() override { TearDownHelper(); }
 
-  // Return whether the benefit feature flag is enabled.
-  bool card_benefits_are_enabled() const { return std::get<0>(GetParam()); }
   // Return the benefit source of the card saved on the client.
-  std::string_view benefit_source() const { return std::get<1>(GetParam()); }
+  std::string_view benefit_source() const { return GetParam(); }
 
   const FormData& form() const { return form_; }
   CreditCard& card() { return card_; }
@@ -720,15 +709,9 @@ class CardBenefitFormEventMetricsTest
 INSTANTIATE_TEST_SUITE_P(
     /*no prefix*/,
     CardBenefitFormEventMetricsTest,
-    testing::Combine(testing::Bool(),
-                     testing::Values(kAmexCardBenefitSource,
-                                     kBmoCardBenefitSource,
-                                     kCurinosCardBenefitSource)),
-    [](auto& info) {
-      return base::StrCat({std::get<0>(info.param) ? "BenefitFeatureEnabled_"
-                                                   : "BenefitFeatureDisabled_",
-                           std::get<1>(info.param)});
-    });
+    testing::Values(kAmexCardBenefitSource,
+                    kBmoCardBenefitSource,
+                    kCurinosCardBenefitSource));
 
 // =============================
 //    Benefits metrics: Shown
@@ -1565,14 +1548,8 @@ class CardBenefitFormEventMetricsInvalidBenefitSourceTest
                            .action = ""});
     credit_card_number_field_index_ = 1;
 
-    // Initialize features.
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/
-        {features::kAutofillEnableCardBenefitsSync,
-         features::kAutofillEnableCardBenefitsForAmericanExpress,
-         features::kAutofillEnableCardBenefitsForBmo,
-         features::kAutofillEnableFlatRateCardBenefitsFromCurinos},
-        /*disabled_features=*/{});
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kAutofillEnableCardBenefitsSync);
   }
 
   void TearDown() override { TearDownHelper(); }

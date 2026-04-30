@@ -109,9 +109,6 @@ import java.util.concurrent.TimeoutException;
 /** Instrumentation tests for AutofillPaymentMethodsFragment. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @DisableFeatures({
-    ChromeFeatureList.AUTOFILL_ENABLE_CARD_BENEFITS_FOR_AMERICAN_EXPRESS,
-    ChromeFeatureList.AUTOFILL_ENABLE_CARD_BENEFITS_FOR_BMO,
-    ChromeFeatureList.AUTOFILL_ENABLE_FLAT_RATE_CARD_BENEFITS_FROM_CURINOS,
     ChromeFeatureList.AUTOFILL_ENABLE_WALLET_BRANDING,
 })
 @Batch(Batch.PER_CLASS)
@@ -342,8 +339,9 @@ public class AutofillPaymentMethodsFragmentTest {
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
 
         // Verify that the preferences on the initial screen map to Save and Fill toggle + CVC
-        // storage toggle + 2 Cards + Add Card button + Payment Apps + Loyalty cards.
-        assertEquals(7, getPreferenceScreen(activity).getPreferenceCount());
+        // storage toggle + Card benefits toggle + 2 Cards + Add Card button + Payment Apps +
+        // Loyalty cards.
+        assertEquals(8, getPreferenceScreen(activity).getPreferenceCount());
     }
 
     @Test
@@ -900,8 +898,9 @@ public class AutofillPaymentMethodsFragmentTest {
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
 
         // Verify that the preference on the initial screen map is only Save and Fill toggle +
-        // Reauth toggle + CVC storage toggle + Add Card button + Payment Apps + Loyalty cards.
-        assertEquals(6, getPreferenceScreen(activity).getPreferenceCount());
+        // Reauth toggle + CVC storage toggle + Card benefits toggle + Add Card button + Payment
+        // Apps + Loyalty cards.
+        assertEquals(7, getPreferenceScreen(activity).getPreferenceCount());
 
         ChromeSwitchPreference saveCvcToggle =
                 findPreferenceByKey(activity, AutofillPaymentMethodsFragment.PREF_SAVE_CVC);
@@ -1234,9 +1233,9 @@ public class AutofillPaymentMethodsFragmentTest {
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
 
         // Verify that the preference on the initial screen map is only Save and Fill toggle +
-        // Mandatory Reauth toggle + CVC storage toggle + Add Card button + Add IBAN button +
-        // Payment Apps + Loyalty cards.
-        assertEquals(7, getPreferenceScreen(activity).getPreferenceCount());
+        // Mandatory Reauth toggle + CVC storage toggle + Card benefits toggle + Add Card button +
+        // Add IBAN button + Payment Apps + Loyalty cards.
+        assertEquals(8, getPreferenceScreen(activity).getPreferenceCount());
     }
 
     @Test
@@ -2109,11 +2108,15 @@ public class AutofillPaymentMethodsFragmentTest {
     private static Preference getFirstPaymentMethodPreference(SettingsActivity activity) {
         boolean mandatoryReauthToggleShown = !DeviceInfo.isAutomotive();
         boolean saveCvcToggleShown = true;
+        boolean cardBenefitsShown = true;
         // The first payment method will come after the general settings for enabling
         // autofill, enabling mandatory re-auth (if available), and enabling CVC storage (if
-        // available).
+        // available), and enabling card benefits (if available).
         int firstPaymentMethodIndex =
-                1 + (mandatoryReauthToggleShown ? 1 : 0) + (saveCvcToggleShown ? 1 : 0);
+                1
+                        + (mandatoryReauthToggleShown ? 1 : 0)
+                        + (saveCvcToggleShown ? 1 : 0)
+                        + (cardBenefitsShown ? 1 : 0);
         return getPreferenceScreen(activity).getPreference(firstPaymentMethodIndex);
     }
 

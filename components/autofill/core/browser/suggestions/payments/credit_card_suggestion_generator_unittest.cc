@@ -386,10 +386,7 @@ class AutofillCreditCardBenefitsLabelTest
     PaymentsSuggestionGeneratorTest::SetUp();
 
     scoped_feature_list_.InitWithFeatureStates(
-        {{features::kAutofillEnableCardBenefitsForAmericanExpress, true},
-         {features::kAutofillEnableCardBenefitsForBmo, true},
-         {features::kAutofillEnableFlatRateCardBenefitsFromCurinos, true},
-         {features::kAutofillEnableFlatRateCardBenefitsBlocklist, true}});
+        {{features::kAutofillEnableFlatRateCardBenefitsBlocklist, true}});
 
     std::u16string benefit_description;
     int64_t instrument_id;
@@ -619,20 +616,6 @@ TEST_P(AutofillCreditCardBenefitsLabelTest,
 // instrument id of the credit card is marked in the MetadataLoggingContext.
 TEST_P(AutofillCreditCardBenefitsLabelTest,
        BenefitSuggestionLabel_MetadataLoggingContext) {
-  DoBenefitSuggestionLabel_MetadataLoggingContextTest();
-}
-
-// Checks that for credit card suggestions with eligible benefits, the
-// instrument id of the credit card is marked in the MetadataLoggingContext. The
-// instrument ids should also be available when the benefit flags are disabled.
-TEST_P(AutofillCreditCardBenefitsLabelTest,
-       BenefitSuggestionLabel_MetadataLoggingContext_FlagsDisabled) {
-  base::test::ScopedFeatureList disable_benefits;
-  disable_benefits.InitWithFeatures(
-      /*enabled_features=*/{}, /*disabled_features=*/{
-          features::kAutofillEnableCardBenefitsForAmericanExpress,
-          features::kAutofillEnableCardBenefitsForBmo,
-          features::kAutofillEnableFlatRateCardBenefitsFromCurinos});
   DoBenefitSuggestionLabel_MetadataLoggingContextTest();
 }
 

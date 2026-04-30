@@ -254,10 +254,10 @@ PaymentsDataManager::PaymentsDataManager(
     if (IsAutofillPaymentMethodsEnabled()) {
       autofill_metrics::LogIsAutofillPaymentsCvcStorageEnabledAtStartup(
           IsPaymentCvcStorageEnabled());
-      if (IsCardBenefitsFeatureEnabled()) {
-        autofill_metrics::LogIsCreditCardBenefitsEnabledAtStartup(
-            prefs::IsPaymentCardBenefitsEnabled(pref_service_));
-      }
+#if !BUILDFLAG(IS_IOS)
+      autofill_metrics::LogIsCreditCardBenefitsEnabledAtStartup(
+          prefs::IsPaymentCardBenefitsEnabled(pref_service_));
+#endif  // !BUILDFLAG(IS_IOS)
     } else {
       autofill_metrics::LogAutofillPaymentMethodsDisabledReasonAtStartup(
           *pref_service_);
@@ -1021,27 +1021,16 @@ void PaymentsDataManager::NotifyObservers() {
 
 bool PaymentsDataManager::IsCardEligibleForBenefits(
     const CreditCard& card) const {
-  return (card.benefit_source() == kAmexCardBenefitSource &&
-          base::FeatureList::IsEnabled(
-              features::kAutofillEnableCardBenefitsForAmericanExpress)) ||
-         (card.benefit_source() == kBmoCardBenefitSource &&
-          base::FeatureList::IsEnabled(
-              features::kAutofillEnableCardBenefitsForBmo)) ||
+#if !BUILDFLAG(IS_IOS)
+  return card.benefit_source() == kAmexCardBenefitSource ||
+         card.benefit_source() == kBmoCardBenefitSource ||
          (card.benefit_source() == kCurinosCardBenefitSource &&
           GetFlatRateBenefitByInstrumentId(
               CreditCardBenefitBase::LinkedCardInstrumentId(
-                  card.instrument_id())) &&
-          base::FeatureList::IsEnabled(
-              features::kAutofillEnableFlatRateCardBenefitsFromCurinos));
-}
-
-bool PaymentsDataManager::IsCardBenefitsFeatureEnabled() {
-  return base::FeatureList::IsEnabled(
-             features::kAutofillEnableCardBenefitsForAmericanExpress) ||
-         base::FeatureList::IsEnabled(
-             features::kAutofillEnableCardBenefitsForBmo) ||
-         base::FeatureList::IsEnabled(
-             features::kAutofillEnableFlatRateCardBenefitsFromCurinos);
+                  card.instrument_id())));
+#else
+  return false;
+#endif  // !BUILDFLAG(IS_IOS)
 }
 
 bool PaymentsDataManager::ShouldBlockCardBenefitSuggestionLabels() const {

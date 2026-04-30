@@ -957,26 +957,6 @@ inline constexpr char kIPHAutofillCreditCardBenefitFeatureDescription[] =
     "Enables In-Product-Help that appears when at least one autofill credit "
     "card suggestion includes card benefits.";
 
-inline constexpr char kAutofillEnableCardBenefitsForAmericanExpressName[] =
-    "Enable showing card benefits for American Express cards";
-inline constexpr char
-    kAutofillEnableCardBenefitsForAmericanExpressDescription[] =
-        "When enabled, card benefits offered by American Express will be shown "
-        "in "
-        "Autofill suggestions.";
-
-inline constexpr char kAutofillEnableCardBenefitsForBmoName[] =
-    "Enable showing card benefits for BMO cards";
-inline constexpr char kAutofillEnableCardBenefitsForBmoDescription[] =
-    "When enabled, card benefits offered by BMO will be shown in Autofill "
-    "suggestions.";
-
-inline constexpr char kAutofillEnableCardBenefitsSyncName[] =
-    "Enable syncing card benefits";
-inline constexpr char kAutofillEnableCardBenefitsSyncDescription[] =
-    "When enabled, card benefits offered by issuers will be synced from the "
-    "Payments server.";
-
 inline constexpr char kAutofillEnableCardInfoRuntimeRetrievalName[] =
     "Enable retrieval of card info(with CVC) from issuer for enrolled cards";
 inline constexpr char kAutofillEnableCardInfoRuntimeRetrievalDescription[] =
@@ -988,14 +968,6 @@ inline constexpr char kAutofillEnableDownstreamCardAwarenessIphName[] =
 inline constexpr char kAutofillEnableDownstreamCardAwarenessIphDescription[] =
     "When enabled, in-product help UI will be shown the first time a card "
     "added outside of Chrome appears in Autofill card suggestions.";
-
-inline constexpr char kAutofillEnableFlatRateCardBenefitsFromCurinosName[] =
-    "Enable showing flat rate card benefits sourced from Curinos";
-inline constexpr char
-    kAutofillEnableFlatRateCardBenefitsFromCurinosDescription[] =
-        "When enabled, flat rate card benefits sourced from Curinos will be "
-        "shown "
-        "in Autofill suggestions.";
 
 inline constexpr char kAutofillEnableKeyboardAccessoryChipRedesignName[] =
     "Enable 2 line chips in the Chrome Keyboard Accessory";

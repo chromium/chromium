@@ -57,11 +57,6 @@ import java.util.concurrent.TimeoutException;
 /** Instrumentation tests for AutofillCardBenefitsFragment. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
-@EnableFeatures({
-    ChromeFeatureList.AUTOFILL_ENABLE_CARD_BENEFITS_FOR_AMERICAN_EXPRESS,
-    ChromeFeatureList.AUTOFILL_ENABLE_CARD_BENEFITS_FOR_BMO,
-    ChromeFeatureList.AUTOFILL_ENABLE_FLAT_RATE_CARD_BENEFITS_FROM_CURINOS
-})
 public class AutofillCardBenefitsFragmentTest {
     @Rule public final AutofillTestRule mRule = new AutofillTestRule();
 
@@ -353,41 +348,6 @@ public class AutofillCardBenefitsFragmentTest {
         assertEquals(2, getPreferenceCountWithKey(activity, PREF_KEY_CARD_BENEFIT_TERM));
     }
 
-    // Test to verify terms for different cards with benefits are listed only if the card's
-    // respective benefit feature flag is enabled.
-    @Test
-    @MediumTest
-    @DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_CARD_BENEFITS_FOR_BMO})
-    public void testCardBenefitsPreferenceScreen_withOneBenefitFlagOn() throws Exception {
-        mAutofillTestHelper.addServerCreditCard(SAMPLE_CARD_AMERICAN_EXPRESS_WITH_BENEFIT);
-        mAutofillTestHelper.addServerCreditCard(SAMPLE_CARD_BMO_WITH_BENEFIT);
-
-        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
-
-        assertEquals(1, getPreferenceCountWithKey(activity, PREF_KEY_CARD_BENEFIT_TERM));
-        assertTrue(
-                doesPreferenceTitleExist(
-                        activity,
-                        SAMPLE_CARD_AMERICAN_EXPRESS_WITH_BENEFIT.getProductDescription()));
-    }
-
-    // Test to verify terms for different card with benefits are not listed if the card's respective
-    // benefit feature flag is disabled.
-    @Test
-    @MediumTest
-    @DisableFeatures({
-        ChromeFeatureList.AUTOFILL_ENABLE_CARD_BENEFITS_FOR_AMERICAN_EXPRESS,
-        ChromeFeatureList.AUTOFILL_ENABLE_CARD_BENEFITS_FOR_BMO
-    })
-    public void testCardBenefitsPreferenceScreen_withBenefitFlagsOff() throws Exception {
-        mAutofillTestHelper.addServerCreditCard(SAMPLE_CARD_AMERICAN_EXPRESS_WITH_BENEFIT);
-        mAutofillTestHelper.addServerCreditCard(SAMPLE_CARD_BMO_WITH_BENEFIT);
-
-        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
-
-        assertEquals(0, getPreferenceCountWithKey(activity, PREF_KEY_CARD_BENEFIT_TERM));
-    }
-
     // Test to verify terms for card with the same product (same product description and same
     // benefit source) is only displayed once.
     @Test
@@ -556,18 +516,6 @@ public class AutofillCardBenefitsFragmentTest {
             }
         }
         return matchingPreferenceCount;
-    }
-
-    private boolean doesPreferenceTitleExist(SettingsActivity activity, String title) {
-        for (int preferenceIndex = 0;
-                preferenceIndex < getPreferenceScreen(activity).getPreferenceCount();
-                preferenceIndex++) {
-            Preference preference = getPreferenceScreen(activity).getPreference(preferenceIndex);
-            if (preference.getTitle() != null && preference.getTitle().equals(title)) {
-                return true;
-            }
-        }
-        return false;
     }
 
     private static PreferenceScreen getPreferenceScreen(SettingsActivity activity) {

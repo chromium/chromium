@@ -1732,9 +1732,6 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
 
   html_source->AddBoolean("cvcStorageAvailable", true);
 
-  html_source->AddBoolean("autofillCardBenefitsAvailable",
-                          payments_data.IsCardBenefitsFeatureEnabled());
-
   bool is_mandatory_reauth_feature_flag_enabled = false;
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)

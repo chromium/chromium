@@ -359,10 +359,6 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // id.
   bool IsCardEligibleForBenefits(const CreditCard& card) const;
 
-  // Checks if the user is in an experiment for seeing credit card benefits in
-  // Autofill suggestions.
-  bool IsCardBenefitsFeatureEnabled();
-
   // Returns the value of the PaymentsCardBenefits pref.
   // `IsCardBenefitsPrefEnabled() == false` indicates the user does not see card
   // benefits and will not have card benefit metrics logged.

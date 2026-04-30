@@ -846,15 +846,7 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
     private static boolean shouldShowCardBenefitsPref(
             PersonalDataManager manager, Profile profile) {
         return !disabledSettingsInThirdPartyMode(profile)
-                && manager.isAutofillPaymentMethodsEnabled()
-                && (ChromeFeatureList.isEnabled(
-                                ChromeFeatureList
-                                        .AUTOFILL_ENABLE_CARD_BENEFITS_FOR_AMERICAN_EXPRESS)
-                        || ChromeFeatureList.isEnabled(
-                                ChromeFeatureList.AUTOFILL_ENABLE_CARD_BENEFITS_FOR_BMO)
-                        || ChromeFeatureList.isEnabled(
-                                ChromeFeatureList
-                                        .AUTOFILL_ENABLE_FLAT_RATE_CARD_BENEFITS_FROM_CURINOS));
+                && manager.isAutofillPaymentMethodsEnabled();
     }
 
     private static boolean shouldShowBnplPref(PersonalDataManager manager, Profile profile) {

@@ -191,35 +191,11 @@ const char kAutofillEnableBottomSheetScanCardAndFillDescription[] =
     "When enabled, offers a card scanning BottomSheet and allows users to "
     "save and autofill credit cards in autofill forms.";
 
-const char kAutofillEnableCardBenefitsForAmericanExpressName[] =
-    "Enable showing American Express card benefits";
-const char kAutofillEnableCardBenefitsForAmericanExpressDescription[] =
-    "When enabled, card benefits offered by American Express will be shown in "
-    "Autofill suggestions.";
-
-const char kAutofillEnableCardBenefitsForBmoName[] =
-    "Enable showing BMO card benefits";
-const char kAutofillEnableCardBenefitsForBmoDescription[] =
-    "When enabled, card benefits offered by BMO will be shown in Autofill "
-    "suggestions.";
-
-const char kAutofillEnableCardBenefitsSyncName[] =
-    "Enable syncing card benefits from the server";
-const char kAutofillEnableCardBenefitsSyncDescription[] =
-    "When enabled, card benefits offered by issuers will be synced from "
-    "the Payments server.";
-
 const char kAutofillEnableCardInfoRuntimeRetrievalName[] =
     "Enable retrieval of card info(with CVC) from issuer for enrolled cards";
 const char kAutofillEnableCardInfoRuntimeRetrievalDescription[] =
     "When enabled, runtime retrieval of CVC along with card number and expiry "
     "from issuer for enrolled cards will be enabled during form fill.";
-
-const char kAutofillEnableFlatRateCardBenefitsFromCurinosName[] =
-    "Enable showing flat rate card benefits sourced from Curinos";
-const char kAutofillEnableFlatRateCardBenefitsFromCurinosDescription[] =
-    "When enabled, flat rate card benefits sourced from Curinos will be shown "
-    "in Autofill suggestions.";
 
 const char kAutofillEnablePrefetchingRiskDataForRetrievalName[] =
     "Enable prefetching of risk data during payments autofill retrieval";

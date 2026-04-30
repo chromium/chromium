@@ -189,16 +189,6 @@ export class SettingsPaymentsSectionElement extends
       },
 
       /**
-       * Checks if a card benefits feature flag is enabled.
-       */
-      cardBenefitsFlagEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('autofillCardBenefitsAvailable');
-        },
-      },
-
-      /**
        * Sublabel for the card benefits toggle. The sublabel text also includes
        * a link to learn about the card benefits.
        */
@@ -275,7 +265,6 @@ export class SettingsPaymentsSectionElement extends
   private paymentsManager_: PaymentsManagerProxy =
       PaymentsManagerImpl.getInstance();
   private setPersonalDataListener_: PersonalDataChangedListener|null = null;
-  declare private cardBenefitsFlagEnabled_: boolean;
   declare private cardBenefitsSublabel_: string;
   declare private shouldShowPayOverTimeSettings_: boolean;
   declare private payOverTimeSublabel_: string;

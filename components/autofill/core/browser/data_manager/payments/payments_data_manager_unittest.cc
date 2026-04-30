@@ -2912,50 +2912,26 @@ TEST_F(PaymentsDataManagerTest, ProcessCardArtUrlChanges) {
   test_api(payments_data_manager()).AddServerCreditCard(card);
   wait_for_fetch_images_for_url();
 }
-#endif
 
 // Params:
 // 1. Whether the benefits toggle is turned on or off.
-// 2. Whether the American Express benefits flag is enabled.
-// 3. Whether the BMO benefits flag is enabled.
-// 4. Whether the Curinos flat rate benefits flag is enabled.
 class PaymentsDataManagerStartupBenefitsTest
     : public PaymentsDataManagerHelper,
       public testing::Test,
-      public testing::WithParamInterface<std::tuple<bool, bool, bool, bool>> {
+      public testing::WithParamInterface<bool> {
  public:
   PaymentsDataManagerStartupBenefitsTest() {
-    feature_list_.InitWithFeatureStates(
-        /*feature_states=*/
-        {{features::kAutofillEnableCardBenefitsForAmericanExpress,
-          AreAmericanExpressBenefitsEnabled()},
-         {features::kAutofillEnableCardBenefitsForBmo, AreBmoBenefitsEnabled()},
-         {features::kAutofillEnableFlatRateCardBenefitsFromCurinos,
-          AreCurinosFlatRateBenefitsEnabled()}});
     SetUpTest();
   }
 
   ~PaymentsDataManagerStartupBenefitsTest() override = default;
 
-  bool IsBenefitsPrefTurnedOn() const { return std::get<0>(GetParam()); }
-  bool AreAmericanExpressBenefitsEnabled() const {
-    return std::get<1>(GetParam());
-  }
-  bool AreBmoBenefitsEnabled() const { return std::get<2>(GetParam()); }
-  bool AreCurinosFlatRateBenefitsEnabled() const {
-    return std::get<3>(GetParam());
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
+  bool IsBenefitsPrefTurnedOn() const { return GetParam(); }
 };
 
 INSTANTIATE_TEST_SUITE_P(,
                          PaymentsDataManagerStartupBenefitsTest,
-                         testing::Combine(testing::Bool(),
-                                          testing::Bool(),
-                                          testing::Bool(),
-                                          testing::Bool()));
+                         testing::Bool());
 
 // Tests that on startup we log the value of the card benefits pref.
 TEST_P(PaymentsDataManagerStartupBenefitsTest,
@@ -2964,16 +2940,11 @@ TEST_P(PaymentsDataManagerStartupBenefitsTest,
   prefs::SetPaymentCardBenefits(prefs_.get(), IsBenefitsPrefTurnedOn());
   base::HistogramTester histogram_tester;
   ResetPaymentsDataManager();
-  if (!AreAmericanExpressBenefitsEnabled() && !AreBmoBenefitsEnabled() &&
-      !AreCurinosFlatRateBenefitsEnabled()) {
-    histogram_tester.ExpectTotalCount(
-        "Autofill.PaymentMethods.CardBenefitsIsEnabled.Startup", 0);
-  } else {
     histogram_tester.ExpectUniqueSample(
         "Autofill.PaymentMethods.CardBenefitsIsEnabled.Startup",
         IsBenefitsPrefTurnedOn(), 1);
-  }
 }
+#endif  // !BUILDFLAG(IS_IOS)
 
 // Tests that on startup if payment methods are disabled we don't log if
 // benefits are enabled/disabled.

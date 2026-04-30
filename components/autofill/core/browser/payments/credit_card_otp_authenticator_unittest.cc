@@ -1025,24 +1025,15 @@ TEST_P(CreditCardOtpAuthenticatorCardMetadataTest, MetadataSignal) {
 // Params:
 // 1. Function reference to call which creates the appropriate credit card
 // benefit for the unittest.
-// 2. Whether the flag to render benefits is enabled.
-// 3. Benefit source which is set for the credit card with benefits.
+// 2. Benefit source which is set for the credit card with benefits.
 class CreditCardOtpAuthenticatorCardBenefitsTest
     : public CreditCardOtpAuthenticatorTestBase,
       public ::testing::WithParamInterface<
           std::tuple<base::FunctionRef<CreditCardBenefit()>,
-                     bool,
                      std::string>> {
  public:
   void SetUp() override {
     CreditCardOtpAuthenticatorTestBase::SetUp();
-    scoped_feature_list_.InitWithFeatureStates(
-        {{features::kAutofillEnableCardBenefitsForAmericanExpress,
-          IsCreditCardBenefitsEnabled()},
-         {features::kAutofillEnableCardBenefitsForBmo,
-          IsCreditCardBenefitsEnabled()},
-         {features::kAutofillEnableFlatRateCardBenefitsFromCurinos,
-          IsCreditCardBenefitsEnabled()}});
     CreateSelectedOtpChallengeOption(CardUnmaskChallengeOptionType::kSmsOtp);
     card_ = test::GetVirtualCard();
     autofill_client().set_last_committed_primary_main_frame_url(
@@ -1055,26 +1046,26 @@ class CreditCardOtpAuthenticatorCardBenefitsTest
 
   CreditCardBenefit GetBenefit() const { return std::get<0>(GetParam())(); }
 
-  bool IsCreditCardBenefitsEnabled() const { return std::get<1>(GetParam()); }
-
   const std::string& GetBenefitSource() const {
-    return std::get<2>(GetParam());
+    return std::get<1>(GetParam());
   }
 
   bool ShouldShowCardBenefits() const {
+#if !BUILDFLAG(IS_IOS)
     // Benefits sourced from Curinos currently only supports flat rate benefits.
     if (GetBenefitSource() == "curinos") {
-      return IsCreditCardBenefitsEnabled() &&
-             std::holds_alternative<CreditCardFlatRateBenefit>(GetBenefit());
+      return std::holds_alternative<CreditCardFlatRateBenefit>(GetBenefit());
     }
-    return IsCreditCardBenefitsEnabled();
+    return true;
+#else
+    return false;
+#endif  // !BUILDFLAG(IS_IOS)
   }
 
   const CreditCard& card() { return card_; }
 
  private:
   CreditCard card_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -1084,7 +1075,6 @@ INSTANTIATE_TEST_SUITE_P(
         ::testing::Values(&test::GetActiveCreditCardFlatRateBenefit,
                           &test::GetActiveCreditCardCategoryBenefit,
                           &test::GetActiveCreditCardMerchantBenefit),
-        ::testing::Bool(),
         ::testing::Values("amex", "bmo", "curinos")));
 
 // Checks that ClientBehaviorConstants::kShowingCardBenefits is populated as a

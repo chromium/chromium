@@ -901,21 +901,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "autofill-enable-card-benefits-for-american-express",
-    "owners": [ "viplavkadam@google.com", "payments-autofill-team@google.com"],
-    "expiry_milestone": 145
-  },
-  {
-    "name": "autofill-enable-card-benefits-for-bmo",
-    "owners": [ "ferny@google.com", "payments-autofill-team@google.com"],
-    "expiry_milestone": 155
-  },
-  {
-    "name": "autofill-enable-card-benefits-sync",
-    "owners": [ "yishuil@google.com", "payments-autofill-team@google.com" ],
-    "expiry_milestone": 135
-  },
-  {
     "name": "autofill-enable-card-info-runtime-retrieval",
     "owners": [ "hvs@google.com", "payments-autofill-team@google.com"],
     "expiry_milestone": 145
@@ -932,11 +917,6 @@
     "name": "autofill-enable-downstream-card-awareness-iph",
     "owners": [ "averina@google.com", "payments-autofill-team@google.com"],
     "expiry_milestone": 150
-  },
-  {
-    "name": "autofill-enable-flat-rate-card-benefits-from-curinos",
-    "owners": [ "ferny@google.com", "payments-autofill-team@google.com"],
-    "expiry_milestone": 155
   },
   {
     "name": "autofill-enable-fpan-risk-based-authentication",

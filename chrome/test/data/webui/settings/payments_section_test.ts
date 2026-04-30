@@ -710,21 +710,6 @@ suite('PaymentsSection', function() {
   });
 
   test(
-      'verifyCardBenefitsToggleIsNotShownWhenCardBenefitsFlagIsOff',
-      async function() {
-        loadTimeData.overrideValues({
-          autofillCardBenefitsAvailable: false,
-        });
-
-        const section = await createPaymentsSection(
-            /*creditCards=*/[], /*ibans=*/[], /*payOverTimeIssuers=*/[], {
-              credit_card_enabled: {value: true},
-            });
-
-        assertFalse(!!section.shadowRoot!.querySelector('#cardBenefitsToggle'));
-      });
-
-  test(
       'verifyCardBenefitsToggleIsDisabledWhenCreditCardEnabledIsOff',
       async function() {
         loadTimeData.overrideValues({
