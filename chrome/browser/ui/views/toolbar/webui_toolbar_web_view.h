@@ -131,6 +131,7 @@ class WebUIToolbarWebView
   void SetDidFirstNonEmptyPaintCallbackForTesting(base::OnceClosure callback);
   void SetTickClockForTesting(const base::TickClock* clock);
   views::WebView* GetWebViewForTesting();
+  WebUIHomeControl* GetHomeControlForTesting() { return &home_control_; }
   bool IsPendingForTesting() const {
     return initialization_state_ == InitializationState::kPending;
   }

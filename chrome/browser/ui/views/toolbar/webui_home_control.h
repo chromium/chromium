@@ -45,6 +45,8 @@ class WebUIHomeControl {
   // and displays the undo bubble.
   void OnHomeButtonDropUrl(const GURL& url);
 
+  ui::MenuModel* GetMenuModelForTesting() { return &home_menu_; }
+
  private:
   FRIEND_TEST_ALL_PREFIXES(WebUIToolbarWebViewPixelBrowserTest,
                            CheckHomeButtonColor);
