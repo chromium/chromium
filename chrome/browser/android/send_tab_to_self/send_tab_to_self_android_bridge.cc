@@ -17,8 +17,6 @@
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_page_handler.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "components/send_tab_to_self/entry_point_display_reason.h"
-#include "components/send_tab_to_self/page_context.h"
-#include "components/send_tab_to_self/send_tab_to_self_entry.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #include "components/send_tab_to_self/target_device_info.h"
@@ -63,12 +61,17 @@ JNI_SendTabToSelfAndroidBridge_GetAllTargetDeviceInfos(JNIEnv* env,
 
 static void JNI_SendTabToSelfAndroidBridge_SendTabToDevice(
     JNIEnv* env,
-    Profile* profile,
     const JavaRef<jobject>& j_web_contents,
     const JavaRef<jstring>& j_target_device_sync_cache_guid,
     const JavaRef<jstring>& j_url,
     const JavaRef<jstring>& j_title,
     const JavaRef<jobject>& j_callback) {
+  content::WebContents* web_contents =
+      content::WebContents::FromJavaWebContents(j_web_contents);
+  if (!web_contents) {
+    return;
+  }
+
   const std::string target_device_sync_cache_guid =
       ConvertJavaStringToUTF8(env, j_target_device_sync_cache_guid);
   const std::string url = ConvertJavaStringToUTF8(env, j_url);
@@ -89,25 +92,9 @@ static void JNI_SendTabToSelfAndroidBridge_SendTabToDevice(
         base::android::ScopedJavaGlobalRef<jobject>(j_callback));
   }
 
-  content::WebContents* web_contents =
-      content::WebContents::FromJavaWebContents(j_web_contents);
-  if (web_contents) {
-    SendTabToSelfPageHandler::GetOrCreateForWebContents(web_contents)
-        ->SendTabToDevice(target_device_sync_cache_guid, GURL(url), title,
-                          std::move(commit_confirmation));
-    return;
-  }
-
-  // WebContents is not available (the caller may not have a tab, e.g.
-  // right-click on a link to share). Send the entry without page context
-  // (scroll position, form fields, navigation history).
-  SendTabToSelfModel* model =
-      SendTabToSelfSyncServiceFactory::GetForProfile(profile)
-          ->GetSendTabToSelfModel();
-  CHECK(model);
-  model->AddEntry(GURL(url), title, target_device_sync_cache_guid,
-                  PageContext(), NavigationHistory(),
-                  std::move(commit_confirmation));
+  SendTabToSelfPageHandler::GetOrCreateForWebContents(web_contents)
+      ->SendTabToDevice(target_device_sync_cache_guid, GURL(url), title,
+                        std::move(commit_confirmation));
 }
 
 // Marks the entry with the associated GUID as opened.

@@ -403,10 +403,9 @@ TEST_F(SendTabToSelfPageHandlerTest,
   TestFuture<SendTabToSelfResult> result_future;
   handler->SendTabToDevice(device_id, url, title, result_future.GetCallback());
 
-  // Verify the callback is invoked immediately with
-  // kFailureNotTrackingMetadata, bypassing the entire generation flow.
-  EXPECT_EQ(SendTabToSelfResult::kFailureNotTrackingMetadata,
-            result_future.Get());
+  // Verify the callback is invoked immediately with kFailureModelNotReady,
+  // bypassing the entire generation flow.
+  EXPECT_EQ(SendTabToSelfResult::kFailureModelNotReady, result_future.Get());
 }
 
 TEST_F(SendTabToSelfPageHandlerTest, ShouldInvokeCallbackOnSuccess) {
