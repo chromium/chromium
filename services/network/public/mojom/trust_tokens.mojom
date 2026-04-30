@@ -140,13 +140,6 @@ struct TrustTokenParams {
   // redeem a new token, evicting the RR currently stored.
   TrustTokenRefreshPolicy refresh_policy = kUseCached;
 
-  // "custom_key_commitment" stores a custom key commitment that should be
-  // used for this operation if set.
-  string? custom_key_commitment;
-
-  // "custom_issuer" specifies what issuer to use for this operation if set.
-  url.mojom.Origin? custom_issuer;
-
   // The remaining members are used only when "operation" is "kSigning": these
   // parameters specify the manner in which the outgoing request should be
   // signed, including optionally specifying additional data to add in
