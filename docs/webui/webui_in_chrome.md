@@ -612,6 +612,15 @@ autoninja -C out/Default/ chrome/browser/resources/settings:build_ts
 **Step 4:** Refresh the WebUI page. **It should use the latest contents.**
 
 You can now repeat steps 3-4 to quickly iterate, as many times as needed.
+Moreover you can run the helper `build_webui_watcher.js` script to monitor for
+changes and automatically rebuild for a given target as follows:
+
+```sh
+# Example Linux invocation (adjust NodeJS path according to platform)
+./third_party/node/linux/node-linux-x64/bin/node \
+  ./ui/webui/resources/tools/build_webui_watcher.js \
+   -C out/Default --folder chrome/browser/resources/settings/
+```
 
 Notes:
 
