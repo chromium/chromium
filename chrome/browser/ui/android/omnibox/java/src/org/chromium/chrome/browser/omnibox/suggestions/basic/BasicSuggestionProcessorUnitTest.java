@@ -60,6 +60,7 @@ import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.SuggestTemplateInfoProto.SuggestTemplateInfo;
 import org.chromium.components.omnibox.action.ActionPresentationMode;
 import org.chromium.components.omnibox.action.OmniboxActionDelegate;
+import org.chromium.components.search_engines.StarterPackId;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.MockitoHelper;
 import org.chromium.url.GURL;
@@ -500,6 +501,52 @@ public class BasicSuggestionProcessorUnitTest {
         UrlBarData.setShouldShowUrlForTesting(false);
         createUrlSuggestion(OmniboxSuggestionType.URL_WHAT_YOU_TYPED, "", JUnitTestGURLs.URL_1);
         assertNull(mModel.get(SuggestionViewProperties.TEXT_LINE_2_TEXT));
+    }
+
+    @Test
+    @SmallTest
+    public void starterPackSuggestions_fallbackIcons() {
+        mProcessor.onNativeInitialized();
+
+        mSuggestion =
+                createSuggestionBuilder(OmniboxSuggestionType.STARTER_PACK, "")
+                        .setIsSearch(false)
+                        .setStarterPackId(StarterPackId.BOOKMARKS)
+                        .build();
+        mModel = mProcessor.createModel();
+        mProcessor.populateModel(mInput, mSuggestion, mModel, 0);
+        OmniboxDrawableState icon1 = mModel.get(BaseSuggestionViewProperties.ICON);
+        assertEquals(R.drawable.ic_star_24dp, shadowOf(icon1.drawable).getCreatedFromResId());
+
+        mSuggestion =
+                createSuggestionBuilder(OmniboxSuggestionType.STARTER_PACK, "")
+                        .setIsSearch(false)
+                        .setStarterPackId(StarterPackId.HISTORY)
+                        .build();
+        mModel = mProcessor.createModel();
+        mProcessor.populateModel(mInput, mSuggestion, mModel, 0);
+        OmniboxDrawableState icon2 = mModel.get(BaseSuggestionViewProperties.ICON);
+        assertEquals(R.drawable.ic_history_24dp, shadowOf(icon2.drawable).getCreatedFromResId());
+
+        mSuggestion =
+                createSuggestionBuilder(OmniboxSuggestionType.STARTER_PACK, "")
+                        .setIsSearch(false)
+                        .setStarterPackId(StarterPackId.TABS)
+                        .build();
+        mModel = mProcessor.createModel();
+        mProcessor.populateModel(mInput, mSuggestion, mModel, 0);
+        OmniboxDrawableState icon3 = mModel.get(BaseSuggestionViewProperties.ICON);
+        assertEquals(R.drawable.switch_to_tab, shadowOf(icon3.drawable).getCreatedFromResId());
+
+        mSuggestion =
+                createSuggestionBuilder(OmniboxSuggestionType.STARTER_PACK, "")
+                        .setIsSearch(false)
+                        .setStarterPackId(StarterPackId.GEMINI)
+                        .build();
+        mModel = mProcessor.createModel();
+        mProcessor.populateModel(mInput, mSuggestion, mModel, 0);
+        OmniboxDrawableState icon4 = mModel.get(BaseSuggestionViewProperties.ICON);
+        assertEquals(R.drawable.ic_spark_4c_16dp, shadowOf(icon4.drawable).getCreatedFromResId());
     }
 
     @Test

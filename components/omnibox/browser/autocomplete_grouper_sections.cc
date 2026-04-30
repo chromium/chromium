@@ -187,6 +187,7 @@ AndroidNonZPSSection::AndroidNonZPSSection(
                         {
                             {omnibox::GROUP_SEARCH, 1},
                             {omnibox::GROUP_OTHER_NAVS, 1},
+                            {omnibox::GROUP_STARTER_PACK, 1},
                         },
                         /*is_zps=*/false),
                   // Top Group / above the keyboard.
@@ -194,6 +195,8 @@ AndroidNonZPSSection::AndroidNonZPSSection(
                         {
                             {omnibox::GROUP_SEARCH, 14},
                             {omnibox::GROUP_OTHER_NAVS,
+                             show_only_search_suggestions ? 0 : 14},
+                            {omnibox::GROUP_STARTER_PACK,
                              show_only_search_suggestions ? 0 : 14},
                         },
                         /*is_zps=*/false),
@@ -208,6 +211,8 @@ AndroidNonZPSSection::AndroidNonZPSSection(
                         {
                             {omnibox::GROUP_SEARCH, 14},
                             {omnibox::GROUP_OTHER_NAVS,
+                             show_only_search_suggestions ? 0 : 14},
+                            {omnibox::GROUP_STARTER_PACK,
                              show_only_search_suggestions ? 0 : 14},
                         },
                         /*is_zps=*/false),

@@ -77,7 +77,8 @@ int AutocompleteClassifier::DefaultOmniboxProviders(bool is_low_memory_device) {
            : 0) |
       // Keyword search for Android.
       (base::FeatureList::IsEnabled(omnibox::kOmniboxSiteSearch)
-           ? AutocompleteProvider::TYPE_KEYWORD
+           ? AutocompleteProvider::TYPE_KEYWORD |
+                 AutocompleteProvider::TYPE_FEATURED_SEARCH
            : 0) |
 #endif
 #if !BUILDFLAG(IS_IOS)

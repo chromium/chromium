@@ -26,6 +26,7 @@ import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.SuggestTemplateInfoProto.SuggestTemplateInfo;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
+import org.chromium.components.search_engines.StarterPackId;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
@@ -139,15 +140,29 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
     @Override
     protected OmniboxDrawableState getFallbackIcon(AutocompleteMatch suggestion) {
         @DrawableRes int icon = 0;
-        if (suggestion.isSearchSuggestion()) {
+        if (suggestion.getType() == OmniboxSuggestionType.STARTER_PACK) {
+            int starterPackId = suggestion.getStarterPackId();
+            if (starterPackId == StarterPackId.BOOKMARKS) {
+                icon = R.drawable.ic_star_24dp;
+            } else if (starterPackId == StarterPackId.HISTORY) {
+                icon = R.drawable.ic_history_24dp;
+            } else if (starterPackId == StarterPackId.TABS) {
+                icon = R.drawable.switch_to_tab;
+            } else if (starterPackId == StarterPackId.GEMINI) {
+                icon = R.drawable.ic_spark_4c_16dp;
+            }
+        }
+
+        if (icon == 0 && suggestion.isSearchSuggestion()) {
             icon = getFallbackIconFromIconType(suggestion.getIconType());
             if (icon == 0) {
                 icon =
                         getFallbackIconFromMatchTypeAndSubtypes(
                                 suggestion.getType(), suggestion.getSubtypes());
             }
-        } else if (
-        /* !isSearchSuggestion && */ mBookmarkState.isBookmarked(suggestion.getUrl())) {
+        }
+
+        if (icon == 0 && mBookmarkState.isBookmarked(suggestion.getUrl())) {
             icon = R.drawable.ic_star_24dp;
         }
 
@@ -169,6 +184,7 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
 
         if (!isSearchSuggestion) {
             if (!suggestion.getUrl().isEmpty()
+                    && suggestion.getType() != OmniboxSuggestionType.STARTER_PACK
                     && UrlBarData.shouldShowUrl(suggestion.getUrl(), false)) {
                 SuggestionSpannable str = new SuggestionSpannable(suggestion.getDisplayText());
                 urlHighlighted =

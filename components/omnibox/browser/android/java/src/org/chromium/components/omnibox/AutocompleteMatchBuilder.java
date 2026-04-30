@@ -40,6 +40,7 @@ public class AutocompleteMatchBuilder {
     private String mImageDominantColor;
     private int mTransition;
     private boolean mIsDeletable;
+    private int mStarterPackId;
     private String mPostContentType;
     private byte[] mPostData;
     private int mGroupId;
@@ -93,6 +94,7 @@ public class AutocompleteMatchBuilder {
         mImageDominantColor = null;
         mTransition = 0;
         mIsDeletable = false;
+        mStarterPackId = 0;
         mPostContentType = null;
         mPostData = null;
         mGroupId = AutocompleteMatch.INVALID_GROUP;
@@ -136,6 +138,7 @@ public class AutocompleteMatchBuilder {
                 mImageUrl,
                 mImageDominantColor,
                 mIsDeletable,
+                mStarterPackId,
                 mPostContentType,
                 mPostData,
                 mGroupId,
@@ -309,6 +312,15 @@ public class AutocompleteMatchBuilder {
      */
     public AutocompleteMatchBuilder setDeletable(boolean isDeletable) {
         mIsDeletable = isDeletable;
+        return this;
+    }
+
+    /**
+     * @param starterPackId The starter pack engine id.
+     * @return Omnibox suggestion builder.
+     */
+    public AutocompleteMatchBuilder setStarterPackId(int starterPackId) {
+        mStarterPackId = starterPackId;
         return this;
     }
 

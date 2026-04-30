@@ -264,7 +264,7 @@ BASE_FEATURE(kOmniboxTouchDownTriggerForPrefetch, enable_if(IS_ANDROID));
 BASE_FEATURE(kOmniboxSiteSearch, DISABLED);
 
 // Enables additional site search providers for the Site search Starter Pack.
-BASE_FEATURE(kStarterPackExpansion, enable_if(!IS_ANDROID && !IS_IOS));
+BASE_FEATURE(kStarterPackExpansion, enable_if(!IS_IOS));
 
 // Enables an informational IPH message at the bottom of the Omnibox directing
 // users to certain starter pack engines.

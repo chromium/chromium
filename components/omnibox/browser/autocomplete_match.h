@@ -907,6 +907,9 @@ struct AutocompleteMatch {
   // Used for document suggestions to show the mime-corresponding icons.
   DocumentType document_type = DocumentType::NONE;
 
+  // The id of the starter pack engine, if this is a starter pack match.
+  int starter_pack_id = 0;
+
   // Used for enterprise search aggregator suggestions for grouping.
   EnterpriseSearchAggregatorType enterprise_search_aggregator_type =
       EnterpriseSearchAggregatorType::NONE;

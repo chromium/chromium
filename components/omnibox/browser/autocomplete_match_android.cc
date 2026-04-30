@@ -112,7 +112,7 @@ ScopedJavaLocalRef<jobject> AutocompleteMatch::GetOrCreateJavaObject(
           contents_class_offsets, contents_class_styles, description,
           description_class_offsets, description_class_styles,
           j_answer_template, answer_type, fill_into_edit, destination_url,
-          image_url, image_dominant_color, SupportsDeletion(),
+          image_url, image_dominant_color, SupportsDeletion(), starter_pack_id,
           post_content_type, j_post_data,
           suggestion_group_id.value_or(omnibox::GROUP_INVALID),
           j_clipboard_image_data, has_tab_match.value_or(false), actions_list,
