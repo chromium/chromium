@@ -215,6 +215,21 @@ TEST_F(AudioRendererMixerInputTest, SwitchOutputDevice) {
   mixer_input_->Stop();
 }
 
+TEST_F(AudioRendererMixerInputTest, StopDuringSwitchOutputDevice) {
+  mixer_input_->Initialize(audio_parameters_, fake_callback_.get());
+  mixer_input_->Start();
+  const std::string kDeviceId("mock-device-id");
+  EXPECT_CALL(*this,
+              SwitchCallbackCalled(media::OUTPUT_DEVICE_STATUS_ERROR_INTERNAL));
+  base::RunLoop run_loop;
+  mixer_input_->SwitchOutputDevice(
+      kDeviceId,
+      blink::BindOnce(&AudioRendererMixerInputTest::SwitchCallback,
+                      Unretained(this), blink::Unretained(&run_loop)));
+  mixer_input_->Stop();
+  run_loop.Run();
+}
+
 // Test SwitchOutputDevice() to the same device as the current (default) device
 TEST_F(AudioRendererMixerInputTest, SwitchOutputDeviceToSameDevice) {
   mixer_input_->Initialize(audio_parameters_, fake_callback_.get());
