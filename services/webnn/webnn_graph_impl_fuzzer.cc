@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <array>
+#include <cmath>
 #include <cstdint>
 #include <limits>
 #include <memory>
@@ -192,6 +193,15 @@ struct Conv2dParams {
   bool is_filter_constant;
   OptionalOperandKind bias_kind;
   bool is_depthwise;
+};
+
+struct ExpandParams {
+  OperandDataType data_type;
+  uint32_t input_rank;
+  uint32_t output_rank;
+  std::array<uint32_t, 8> input_dims;
+  std::array<uint32_t, 8> output_dims;
+  bool is_input_constant;
 };
 
 struct GatherNDParams {
@@ -384,35 +394,47 @@ auto AnyLstmWeightLayout() {
       {mojom::LstmWeightLayout::kIofg, mojom::LstmWeightLayout::kIfgo});
 }
 
-// Use fuzztest::OneOf to split the range into multiple sub-domains each with
-// equal probability, biasing generation toward small values that are more
-// likely to pass validation while keeping the large values to cover edge cases.
+// Generates values in [min_val, max_val] with log-uniform distribution,
+// strongly biasing toward small values. ~50% of values fall below
+// sqrt(max_val), making small dimensions much more likely while keeping the
+// full range reachable for edge case coverage.
+// Note: `SmallBiasedInRange` doesn't support seeds.
+auto SmallBiasedInRange(uint32_t min_val, uint32_t max_val) {
+  CHECK_LT(min_val, max_val);
+  const double log_min = std::log(static_cast<double>(std::max(min_val, 1u)));
+  const double log_max = std::log(static_cast<double>(max_val));
+  const double log_range = log_max - log_min;
+  const double range = static_cast<double>(max_val - min_val);
+  return fuzztest::Map(
+      [min_val, max_val, log_min, log_range, range](uint32_t raw) -> uint32_t {
+        // Preserve exact boundary values.
+        if (raw == min_val) {
+          return min_val;
+        }
+        if (raw == max_val) {
+          return max_val;
+        }
+        double t = static_cast<double>(raw - min_val) / range;
+        double result = std::exp(log_min + t * log_range);
+        result = std::clamp(result, static_cast<double>(min_val),
+                            static_cast<double>(max_val));
+        return static_cast<uint32_t>(result);
+      },
+      fuzztest::InRange<uint32_t>(min_val, max_val));
+}
+
 auto AnyDimSize() {
   return fuzztest::OneOf(
-      fuzztest::InRange<uint32_t>(1, std::numeric_limits<int8_t>::max()),
-      fuzztest::InRange<uint32_t>(1, std::numeric_limits<int16_t>::max()),
-      fuzztest::InRange<uint32_t>(1, std::numeric_limits<int32_t>::max()),
-      fuzztest::ElementOf<uint32_t>({1, 2, 3,
-                                     std::numeric_limits<int16_t>::max() - 1,
-                                     std::numeric_limits<int16_t>::max(),
-                                     std::numeric_limits<uint16_t>::max() - 1,
-                                     std::numeric_limits<uint16_t>::max(),
-                                     std::numeric_limits<int32_t>::max() - 1,
-                                     std::numeric_limits<int32_t>::max()}));
+      // This range is used for supporting seeds.
+      fuzztest::InRange<uint32_t>(1, 224),
+      SmallBiasedInRange(1, std::numeric_limits<uint16_t>::max()));
 }
 
 auto AnyDimSizeOrZero() {
   return fuzztest::OneOf(
-      fuzztest::InRange<uint32_t>(0, std::numeric_limits<int8_t>::max()),
-      fuzztest::InRange<uint32_t>(0, std::numeric_limits<int16_t>::max()),
-      fuzztest::InRange<uint32_t>(0, std::numeric_limits<int32_t>::max()),
-      fuzztest::ElementOf<uint32_t>({0, 1, 2, 3,
-                                     std::numeric_limits<int16_t>::max() - 1,
-                                     std::numeric_limits<int16_t>::max(),
-                                     std::numeric_limits<uint16_t>::max() - 1,
-                                     std::numeric_limits<uint16_t>::max(),
-                                     std::numeric_limits<int32_t>::max() - 1,
-                                     std::numeric_limits<int32_t>::max()}));
+      // This range is used for supporting seeds.
+      fuzztest::InRange<uint32_t>(0, 224),
+      SmallBiasedInRange(0, std::numeric_limits<uint16_t>::max()));
 }
 
 auto AnySize2d() {
@@ -496,6 +518,16 @@ auto AnyQuantizedDataType() {
       {OperandDataType::kInt8, OperandDataType::kUint8});
 }
 
+auto AnyTensorRank() {
+  return fuzztest::OneOf(fuzztest::InRange<uint32_t>(1, 8),
+                         fuzztest::InRange<uint32_t>(1, 2));
+}
+
+auto AnyTensorRankIncludeZero() {
+  return fuzztest::OneOf(fuzztest::InRange<uint32_t>(0, 8),
+                         fuzztest::InRange<uint32_t>(0, 2));
+}
+
 // Returns a domain of OperandDataType values filtered by the given
 // SupportedDataTypes.
 auto AnyOperandDataTypeFor(SupportedDataTypes supported) {
@@ -539,14 +571,28 @@ auto AnyConv2dParams() {
   );
 }
 
+auto AnyExpandParams() {
+  const auto& limits = GetContextPropertiesForTesting().data_type_limits;
+  // Bias input dims toward 1 which is broadcastable.
+  auto any_input_dim = fuzztest::OneOf(fuzztest::Just(1u), AnyDimSize());
+  return fuzztest::StructOf<ExpandParams>(
+      AnyOperandDataTypeFor(limits.expand_input.data_types),
+      AnyTensorRankIncludeZero(),           // input_rank
+      AnyTensorRankIncludeZero(),           // output_rank
+      fuzztest::ArrayOf<8>(any_input_dim),  // input_dims
+      fuzztest::ArrayOf<8>(AnyDimSize()),   // output_dims
+      fuzztest::Arbitrary<bool>()           // is_input_constant
+  );
+}
+
 auto AnyGatherNDParams() {
   const auto& limits = GetContextPropertiesForTesting().data_type_limits;
   return fuzztest::StructOf<GatherNDParams>(
       AnyOperandDataTypeFor(limits.gather_nd_input.data_types),
       AnyOperandDataTypeFor(limits.gather_nd_indices.data_types),
-      fuzztest::InRange<uint32_t>(1, 8),   // input_rank
+      AnyTensorRank(),                     // input_rank
       fuzztest::ArrayOf<8>(AnyDimSize()),  // input_dims
-      fuzztest::InRange<uint32_t>(1, 8),   // indices_rank
+      AnyTensorRank(),                     // indices_rank
       fuzztest::ArrayOf<8>(AnyDimSize()),  // indices_dims
       fuzztest::OneOf(fuzztest::InRange<int64_t>(-10, 10),
                       fuzztest::Arbitrary<int64_t>()),  // indices_fill_value
@@ -1339,6 +1385,7 @@ class WebNNGraphImplFuzzerImpl
  public:
   void SingleOpConcat(ConcatParams params, uint8_t seed_for_data);
   void SingleOpConv2d(Conv2dParams params, uint8_t seed_for_data);
+  void SingleOpExpand(ExpandParams params, uint8_t seed_for_data);
   void SingleOpGatherND(GatherNDParams params, uint8_t seed_for_data);
   void SingleOpGemm(GemmParams params, uint8_t seed_for_data);
   void SingleOpLstm(LstmParams params, uint8_t seed_for_data);
@@ -1521,6 +1568,68 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::SingleOpConv2d(
 }
 
 template <typename BaseFixture>
+void WebNNGraphImplFuzzerImpl<BaseFixture>::SingleOpExpand(
+    ExpandParams params,
+    uint8_t seed_for_data) {
+  // Ensure output_rank >= input_rank for unidirectional broadcast.
+  if (params.output_rank < params.input_rank) {
+    params.output_rank = params.input_rank;
+  }
+
+  std::vector<uint32_t> input_dims(
+      params.input_dims.begin(), params.input_dims.begin() + params.input_rank);
+  std::vector<uint32_t> output_dims(
+      params.output_dims.begin(),
+      params.output_dims.begin() + params.output_rank);
+
+  // Fix up output dims to be broadcastable from input dims.
+  for (size_t i = 0; i < params.input_rank; ++i) {
+    size_t input_idx = params.input_rank - 1 - i;
+    size_t output_idx = params.output_rank - 1 - i;
+    if (input_dims[input_idx] != 1) {
+      output_dims[output_idx] = input_dims[input_idx];
+    }
+  }
+
+  ASSIGN_OR_RETURN_VOID(auto input_desc, OperandDescriptor::Create(
+                                             this->context_properties(),
+                                             params.data_type, input_dims, ""));
+  ASSIGN_OR_RETURN_VOID(auto output_desc, ValidateExpandAndInferOutput(
+                                              this->context_properties(),
+                                              input_desc, output_dims, ""));
+
+  mojo::AssociatedRemote<mojom::WebNNGraphBuilder> remote =
+      this->BindNewGraphBuilderRemote();
+  GraphInfoBuilder builder(remote);
+
+  std::vector<uint8_t> input_data(input_desc.PackedByteLength(), seed_for_data);
+
+  OperandId input_id;
+  base::flat_map<std::string, base::span<const uint8_t>> named_inputs;
+  if (params.is_input_constant) {
+    input_id = builder.BuildConstant(input_desc.shape(), input_desc.data_type(),
+                                     input_data);
+  } else {
+    input_id =
+        builder.BuildInput("input", input_desc.shape(), input_desc.data_type());
+    named_inputs.insert({"input", input_data});
+  }
+
+  OperandId output_id = builder.BuildOutput("output", output_desc.shape(),
+                                            output_desc.data_type());
+
+  builder.BuildExpand(input_id, output_id);
+
+  if (!builder.IsValidGraphForTesting(this->context_properties())) {
+    return;
+  }
+  BuildAndCompute(this->context_, std::move(remote), builder.TakeGraphInfo(),
+                  std::move(named_inputs));
+
+  GetGlobalFuzzEnvironment().GetWebNNTestEnvironment().RunUntilIdle();
+}
+
+template <typename BaseFixture>
 void WebNNGraphImplFuzzerImpl<BaseFixture>::SingleOpGatherND(
     GatherNDParams params,
     uint8_t seed_for_data) {
@@ -1541,13 +1650,9 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::SingleOpGatherND(
       auto indices_desc,
       OperandDescriptor::Create(this->context_properties(),
                                 params.indices_data_type, indices_dims, ""));
-
-  auto output_desc_result = ValidateGatherNDAndInferOutput(
-      this->context_properties(), input_desc, indices_desc, "");
-  if (!output_desc_result.has_value()) {
-    return;
-  }
-  auto& output_desc = output_desc_result.value();
+  ASSIGN_OR_RETURN_VOID(auto output_desc, ValidateGatherNDAndInferOutput(
+                                              this->context_properties(),
+                                              input_desc, indices_desc, ""));
 
   mojo::AssociatedRemote<mojom::WebNNGraphBuilder> remote =
       this->BindNewGraphBuilderRemote();
@@ -3020,6 +3125,19 @@ WEBNN_FUZZ_TEST_F(SingleOpConv2d,
                                        /*is_filter_constant=*/true,
                                        /*bias_kind=*/OptionalOperandKind::kNone,
                                        /*is_depthwise=*/false,
+                                   },
+                                   /*seed_for_data=*/1}}));
+
+WEBNN_FUZZ_TEST_F(SingleOpExpand,
+                  .WithDomains(AnyExpandParams(),
+                               fuzztest::Arbitrary<uint8_t>())
+                      .WithSeeds({{ExpandParams{
+                                       /*data_type=*/OperandDataType::kFloat32,
+                                       /*input_rank=*/2,
+                                       /*output_rank=*/3,
+                                       /*input_dims=*/{1, 4, 1, 1, 1, 1, 1, 1},
+                                       /*output_dims=*/{2, 3, 4, 1, 1, 1, 1, 1},
+                                       /*is_input_constant=*/false,
                                    },
                                    /*seed_for_data=*/1}}));
 
