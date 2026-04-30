@@ -24,7 +24,10 @@ component("local_auth_factors") {
     "//components/prefs",
   ]
 
-  deps = [ "//ash/constants" ]
+  deps = [
+    "//ash/constants",
+    "//third_party/icu",
+  ]
 }
 
 source_set("unit_tests") {

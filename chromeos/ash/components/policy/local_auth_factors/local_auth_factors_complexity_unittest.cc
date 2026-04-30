@@ -102,6 +102,15 @@ TEST(LocalAuthFactorsComplexityCheckerTest, PasswordComplexity) {
       {"MediumSymbolLowerBoundaryPass", "]^_`abcd", Complexity::kMedium, true},
       {"MediumSymbolLowerBoundaryPass", "]^_`abcde", Complexity::kMedium,
        false},
+
+      // Unicode characters (counting code points).
+      {"UnicodeLowShort", "aa👋", Complexity::kLow, false},
+      {"UnicodeLowJustEnough", "aaaaa👋", Complexity::kLow, true},
+      {"UnicodeMediumShort", "👋👋👋👋👋👋a", Complexity::kMedium, false},
+      {"UnicodeMediumPass", "👋👋👋👋aa11", Complexity::kMedium, true},
+      {"UnicodeMediumSequence", "👋👋👋👋👋aa1", Complexity::kMedium, false},
+      {"UnicodeNonLatin", "čćšđžaA1!", Complexity::kHigh, false},
+      {"UnicodeNonLatinPass", "čćšđžaaAA11!!", Complexity::kHigh, true},
   };
 
   for (const auto& t : kTestData) {
