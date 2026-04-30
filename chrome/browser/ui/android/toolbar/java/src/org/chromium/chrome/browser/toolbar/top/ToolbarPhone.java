@@ -1691,14 +1691,18 @@ public class ToolbarPhone extends ToolbarLayout
         }
 
         // Draw the tab stack button and associated text if necessary.
-        if (getTabSwitcherButtonCoordinator() != null && mUrlExpansionFraction != 1f) {
+        ToggleTabStackButtonCoordinator tabSwitcherButtonCoordinator =
+                getTabSwitcherButtonCoordinator();
+        if (tabSwitcherButtonCoordinator != null
+                && tabSwitcherButtonCoordinator.isVisible()
+                && mUrlExpansionFraction != 1f) {
             // Draw the tab stack button image.
-            getTabSwitcherButtonCoordinator().draw(mToolbarButtonsContainer, canvas);
+            tabSwitcherButtonCoordinator.draw(mToolbarButtonsContainer, canvas);
         }
 
         // Draw the menu button if necessary.
         final MenuButtonCoordinator menuButtonCoordinator = getMenuButtonCoordinator();
-        if (menuButtonCoordinator != null) {
+        if (menuButtonCoordinator != null && menuButtonCoordinator.isVisible()) {
             menuButtonCoordinator.drawTabSwitcherAnimationOverlay(
                     mToolbarButtonsContainer, canvas, rgbAlpha);
         }

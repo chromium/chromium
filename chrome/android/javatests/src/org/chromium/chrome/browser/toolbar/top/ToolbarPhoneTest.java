@@ -174,6 +174,7 @@ public class ToolbarPhoneTest {
         mMenuButton = Mockito.spy(mToolbar.findViewById(R.id.menu_button_wrapper));
         mToolbar.setMenuButtonCoordinatorForTesting(mMenuButtonCoordinator);
         doReturn(mMenuButton).when(mMenuButtonCoordinator).getMenuButton();
+        doReturn(true).when(mMenuButtonCoordinator).isVisible();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
