@@ -49,14 +49,17 @@ void EmailOneTimeTokenFetcher::StartAccessTokenFetch() {
       std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
           signin::OAuthConsumerId::kOneTimeTokenService, &*identity_manager_,
           base::BindOnce(&EmailOneTimeTokenFetcher::OnAccessTokenFetched,
-                         weakptr_factory_.GetWeakPtr()),
+                         weakptr_factory_.GetWeakPtr(), base::TimeTicks::Now()),
           signin::PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable,
           signin::ConsentLevel::kSignin);
 }
 
 void EmailOneTimeTokenFetcher::OnAccessTokenFetched(
+    base::TimeTicks auth_start_time,
     GoogleServiceAuthError error,
     signin::AccessTokenInfo info) {
+  base::UmaHistogramTimes("Autofill.OneTimeTokens.Backend.Gmail.AuthLatency",
+                          base::TimeTicks::Now() - auth_start_time);
   access_token_fetcher_.reset();
   if (error.state() == GoogleServiceAuthError::NONE) {
     StartOneTimeTokenServiceCall(std::move(info));

@@ -5631,6 +5631,16 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.OneTimeTokens.Backend.Gmail.AuthLatency" units="ms"
+    expires_after="2027-05-01">
+  <owner>koerber@google.com</owner>
+  <owner>src/components/one_time_tokens/OWNERS</owner>
+  <summary>
+    Records the duration of the OAuth token fetch for the Gmail OTP backend.
+    Recorded when the access token fetch completes.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.OneTimeTokens.Backend.Gmail.HasActiveSubscription"
     enum="Boolean" expires_after="2027-05-01">
   <owner>koerber@google.com</owner>

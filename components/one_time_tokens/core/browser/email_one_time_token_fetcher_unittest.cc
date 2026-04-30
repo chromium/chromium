@@ -91,7 +91,8 @@ class EmailOneTimeTokenFetcherTest : public testing::Test {
         .spec();
   }
 
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::HistogramTester histogram_tester_;
   std::unique_ptr<network::TestURLLoaderFactory> test_url_loader_factory_;
   std::unique_ptr<signin::IdentityTestEnvironment> identity_test_env_;
@@ -105,6 +106,7 @@ TEST_F(EmailOneTimeTokenFetcherTest, Success) {
       future;
 
   fetcher->Start(future.GetCallback());
+  task_environment_.FastForwardBy(base::Milliseconds(123));
   WaitForAccessTokenRequestAndRespondWithSuccess();
 
   const network::ResourceRequest* pending_request =
@@ -132,6 +134,9 @@ TEST_F(EmailOneTimeTokenFetcherTest, Success) {
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result->value(), kOneTimeToken);
   EXPECT_EQ(result->type(), OneTimeTokenType::kGmail);
+  histogram_tester_.ExpectUniqueTimeSample(
+      "Autofill.OneTimeTokens.Backend.Gmail.AuthLatency",
+      base::Milliseconds(123), 1);
 }
 
 // Tests that an error is returned when user authentication fails.
@@ -142,6 +147,7 @@ TEST_F(EmailOneTimeTokenFetcherTest, AccessTokenError) {
       future;
 
   fetcher->Start(future.GetCallback());
+  task_environment_.FastForwardBy(base::Milliseconds(456));
   WaitForAccessTokenRequestAndRespondWithError();
 
   const base::expected<OneTimeToken, OneTimeTokenRetrievalError>& result =
@@ -149,6 +155,9 @@ TEST_F(EmailOneTimeTokenFetcherTest, AccessTokenError) {
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error(),
             OneTimeTokenRetrievalError::kGmailOtpBackendAuthError);
+  histogram_tester_.ExpectUniqueTimeSample(
+      "Autofill.OneTimeTokens.Backend.Gmail.AuthLatency",
+      base::Milliseconds(456), 1);
 }
 
 // Tests that an error is returned when the network request to the Gmail OTP

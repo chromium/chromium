@@ -57,7 +57,8 @@ class EmailOneTimeTokenFetcher {
   void StartAccessTokenFetch();
 
   // Callback for when the access token fetch completes.
-  void OnAccessTokenFetched(GoogleServiceAuthError error,
+  void OnAccessTokenFetched(base::TimeTicks auth_start_time,
+                            GoogleServiceAuthError error,
                             signin::AccessTokenInfo info);
 
   // Starts the network request to the Gmail OTP endpoint.
