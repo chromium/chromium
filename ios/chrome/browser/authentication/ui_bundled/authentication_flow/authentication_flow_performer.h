@@ -62,6 +62,14 @@ class SyncService;
 - (void)fetchManagedStatus:(ProfileIOS*)profile
                forIdentity:(id<SystemIdentity>)identity;
 
+// Fetches the can_sign_in_to_chrome capability before sign-in.
+- (void)fetchCanSigninToChromeCapability:(id<SystemIdentity>)identity;
+
+// Shows the Age Mismatch dialog.
+- (void)showAgeMismatchDialogForIdentity:(id<SystemIdentity>)identity
+                          viewController:(UIViewController*)viewController
+                                 browser:(Browser*)browser;
+
 // Fetches the profile separation policies for the account linked to `identity`.
 - (void)fetchProfileSeparationPolicies:(ProfileIOS*)profile
                            forIdentity:(id<SystemIdentity>)identity;

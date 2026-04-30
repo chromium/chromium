@@ -22,6 +22,7 @@
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/base/gaia_id_hash.h"
 #import "components/signin/public/base/signin_pref_names.h"
+#import "components/signin/public/base/signin_switches.h"
 #import "components/signin/public/identity_manager/tribool.h"
 #import "components/sync/base/account_pref_utils.h"
 #import "components/sync/service/sync_service.h"
@@ -69,11 +70,16 @@ namespace {
 // The states of the sign-in flow state machine.
 enum class AuthenticationState {
   kBegin,
+  // Fetch "CanSignInToChrome" capability before sign-in to check for age
+  // restrictions.
+  kFetchCanSigninToChromeCapability,
   // Check if there are unsynced data with the primary account, in the current
   // profile.
   kCheckUnsyncedData,
+  // Show Age Mismatch dialog if needed.
+  kShowAgeMismatchDialogIfNeeded,
   // Display confirmation dialog when the user is already signed in, based on
-  // unsynced data and if the primary account is a managed account.
+  // the CanSigninToChrome capability.
   kShowLeavingPrimaryAccountConfirmationIfNeeded,
   kFetchManagedStatus,
   kFetchProfileSeparationPoliciesIfNeeded,
@@ -275,6 +281,10 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
 
   // The actions to perform following account sign-in.
   PostSignInActionSet _postSignInActions;
+
+  // YES if the user can sign in to Chrome (determined by the
+  // can_signin_to_chrome capability). YES by default.
+  BOOL _canSignInToChrome;
 }
 
 @synthesize handlingError = _handlingError;
@@ -308,6 +318,7 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
     _anchorRect = anchorRect;
     _state = AuthenticationState::kBegin;
     _cancelationReason = signin_ui::CancelationReason::kNotCanceled;
+    _canSignInToChrome = YES;
     _profileSeparationDataMigrationCloudSettings =
         policy::ProfileSeparationDataMigrationSettings::USER_OPT_IN;
 
@@ -375,6 +386,8 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
     case AuthenticationState::kBegin:
     case AuthenticationState::kCheckUnsyncedData:
     case AuthenticationState::kShowLeavingPrimaryAccountConfirmationIfNeeded:
+    case AuthenticationState::kFetchCanSigninToChromeCapability:
+    case AuthenticationState::kShowAgeMismatchDialogIfNeeded:
     case AuthenticationState::kFetchManagedStatus:
     case AuthenticationState::kFetchProfileSeparationPoliciesIfNeeded:
     case AuthenticationState::kShowManagedConfirmationIfNeeded:
@@ -397,8 +410,12 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
   DCHECK(![self canceled]);
   switch (_state) {
     case AuthenticationState::kBegin:
+      return AuthenticationState::kFetchCanSigninToChromeCapability;
+    case AuthenticationState::kFetchCanSigninToChromeCapability:
       return AuthenticationState::kCheckUnsyncedData;
     case AuthenticationState::kCheckUnsyncedData:
+      return AuthenticationState::kShowAgeMismatchDialogIfNeeded;
+    case AuthenticationState::kShowAgeMismatchDialogIfNeeded:
       return AuthenticationState::
           kShowLeavingPrimaryAccountConfirmationIfNeeded;
     case AuthenticationState::kShowLeavingPrimaryAccountConfirmationIfNeeded:
@@ -437,8 +454,16 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
     case AuthenticationState::kBegin:
       NOTREACHED();
 
+    case AuthenticationState::kFetchCanSigninToChromeCapability:
+      [self fetchCanSigninToChromeCapabilityStep];
+      return;
+
     case AuthenticationState::kCheckUnsyncedData:
       [self checkUnsyncedDataStep];
+      return;
+
+    case AuthenticationState::kShowAgeMismatchDialogIfNeeded:
+      [self showAgeMismatchDialogIfNeededStep];
       return;
 
     case AuthenticationState::kShowLeavingPrimaryAccountConfirmationIfNeeded:
@@ -534,6 +559,25 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
                                                     signedInUserState
                                                        anchorView:_anchorView
                                                        anchorRect:_anchorRect];
+}
+
+- (void)fetchCanSigninToChromeCapabilityStep {
+  if (base::FeatureList::IsEnabled(switches::kBuildExternalPrivacyContext)) {
+    [_performer fetchCanSigninToChromeCapability:_identityToSignIn];
+  } else {
+    [self continueFlow];
+  }
+}
+
+- (void)showAgeMismatchDialogIfNeededStep {
+  if (base::FeatureList::IsEnabled(switches::kBuildExternalPrivacyContext) &&
+      !_canSignInToChrome) {
+    [_performer showAgeMismatchDialogForIdentity:_identityToSignIn
+                                  viewController:_presentingViewController
+                                         browser:_browser];
+  } else {
+    [self continueFlow];
+  }
 }
 
 // Fetches ManagedAccountsSigninRestriction policy, if needed.
@@ -828,6 +872,22 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
                      (authenticationFlowDidFetchHostedDomain:)]) {
     [self.delegate authenticationFlowDidFetchHostedDomain:hostedDomain];
   }
+  [self continueFlow];
+}
+
+- (void)didFetchCanSigninToChromeCapability:
+    (SystemIdentityCapabilityResult)result {
+  CHECK_EQ(AuthenticationState::kFetchCanSigninToChromeCapability, _state);
+  if (result == SystemIdentityManager::CapabilityResult::kFalse) {
+    _canSignInToChrome = NO;
+  }
+  [self continueFlow];
+}
+
+- (void)didDismissAgeMismatchDialogWithCancelationReason:
+    (signin_ui::CancelationReason)reason {
+  CHECK_EQ(AuthenticationState::kShowAgeMismatchDialogIfNeeded, _state);
+  _cancelationReason = reason;
   [self continueFlow];
 }
 
