@@ -9,10 +9,21 @@
 #import "base/files/file_util.h"
 #import "base/functional/bind.h"
 #import "base/task/thread_pool.h"
+#import "components/enterprise/common/proto/connectors.pb.h"
+#import "components/enterprise/connectors/core/analysis_settings.h"
+#import "components/enterprise/connectors/core/cloud_content_scanning/files_request_handler_base.h"
+#import "components/enterprise/connectors/core/common.h"
 #import "ios/chrome/browser/drive/model/drive_file_uploader.h"
 #import "ios/chrome/browser/drive/model/drive_service.h"
 #import "ios/chrome/browser/drive/model/drive_service_factory.h"
 #import "ios/chrome/browser/drive/model/drive_upload_task.h"
+#import "ios/chrome/browser/enterprise/cloud_content_scanning/model/files_request_handler_ios.h"
+#import "ios/chrome/browser/enterprise/cloud_content_scanning/model/ios_cloud_binary_upload_service.h"
+#import "ios/chrome/browser/enterprise/cloud_content_scanning/model/ios_cloud_binary_upload_service_factory.h"
+#import "ios/chrome/browser/enterprise/cloud_content_scanning/model/scan_decision_helper.h"
+#import "ios/chrome/browser/enterprise/connectors/analysis/content_analysis_info.h"
+#import "ios/chrome/browser/enterprise/connectors/connectors_service.h"
+#import "ios/chrome/browser/enterprise/connectors/connectors_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 
@@ -45,10 +56,7 @@ UploadTask* DriveTabHelper::GetUploadTaskForDownload(
 void DriveTabHelper::OnDownloadUpdated(web::DownloadTask* task) {
   switch (task->GetState()) {
     case web::DownloadTask::State::kComplete:
-      upload_task_->SetFileToUpload(task->GetResponsePath(),
-                                    task->GenerateFileName(),
-                                    task->GetMimeType(), task->GetTotalBytes());
-      upload_task_->Start();
+      ProcessCompleteDownloadTask(task);
       break;
     case web::DownloadTask::State::kCancelled:
     case web::DownloadTask::State::kInProgress:
@@ -90,6 +98,8 @@ void DriveTabHelper::ResetSaveToDriveData(web::DownloadTask* task,
   upload_task_.reset();
   download_task_observation_.Reset();
   upload_task_observation_.Reset();
+  files_request_handler_.reset();
+  content_analysis_info_.reset();
   if (!task || !identity) {
     return;
   }
@@ -119,4 +129,65 @@ void DriveTabHelper::RemoveIfFileExists(base::FilePath task_path,
 
 void DriveTabHelper::RemoveComplete(bool remove_completed) {
   DCHECK(remove_completed);
+}
+
+void DriveTabHelper::ProcessCompleteDownloadTask(web::DownloadTask* task) {
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
+  const GURL& url = task->GetRedirectedUrl();
+  std::optional<enterprise_connectors::AnalysisSettings> settings =
+      std::nullopt;
+  enterprise_connectors::ConnectorsService* connectors_service =
+      enterprise_connectors::ConnectorsServiceFactory::GetForProfile(profile);
+  if (connectors_service) {
+    settings = connectors_service->GetAnalysisSettings(
+        url, enterprise_connectors::AnalysisConnector::FILE_DOWNLOADED);
+  }
+
+  content_analysis_info_ =
+      std::make_unique<enterprise_connectors::ContentAnalysisInfo>(
+          url,
+          std::move(settings).value_or(
+              enterprise_connectors::AnalysisSettings()),
+          enterprise_connectors::ContentAnalysisRequest::NORMAL_DOWNLOAD,
+          *web_state_);
+
+  auto files_request_handler_delegate =
+      std::make_unique<enterprise_connectors::FilesRequestHandlerIOS>(
+          profile, task->GetResponsePath(),
+          base::BindOnce(
+              &enterprise_connectors::HandleScanDecision,
+              web_state_->GetWeakPtr(),
+              enterprise_connectors::TriggerType::kSavePrompt,
+              base::BindOnce(&DriveTabHelper::MaybeUploadDownloadToDrive,
+                             weak_ptr_factory_.GetWeakPtr(), task)));
+
+  // Send the download file for enterprise DLP download content scanning.
+  files_request_handler_ = std::make_unique<
+      enterprise_connectors::FilesRequestHandlerBase>(
+      content_analysis_info_.get(),
+      enterprise_connectors::IOSCloudBinaryUploadServiceFactory::GetForProfile(
+          profile),
+      url, "", enterprise_connectors::DeepScanAccessPoint::DOWNLOAD,
+      std::move(files_request_handler_delegate));
+  files_request_handler_->UploadData();
+}
+
+void DriveTabHelper::MaybeUploadDownloadToDrive(web::DownloadTask* task,
+                                                bool shouldProceed) {
+  if (!shouldProceed) {
+    task->Cancel();
+    ResetSaveToDriveData(nullptr, nil);
+    return;
+  }
+
+  upload_task_->SetFileToUpload(task->GetResponsePath(),
+                                task->GenerateFileName(), task->GetMimeType(),
+                                task->GetTotalBytes());
+  upload_task_->Start();
+
+  // Ensure the handler and content_analysis_info_ are destroyed as soon as they
+  // are no longer necessary.
+  files_request_handler_.reset();
+  content_analysis_info_.reset();
 }

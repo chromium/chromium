@@ -1,9 +1,17 @@
 include_rules = [
   # keep-sorted start
   "+ios/chrome/browser/download/model/download_mimetype_util.h",
+  "+ios/chrome/browser/enterprise/cloud_content_scanning/model/files_request_handler_ios.h",
+  "+ios/chrome/browser/enterprise/cloud_content_scanning/model/ios_cloud_binary_upload_service.h",
+  "+ios/chrome/browser/enterprise/cloud_content_scanning/model/ios_cloud_binary_upload_service_factory.h",
+  "+ios/chrome/browser/enterprise/cloud_content_scanning/model/scan_decision_helper.h",
+  "+ios/chrome/browser/enterprise/connectors/analysis/content_analysis_info.h",
+  "+ios/chrome/browser/enterprise/connectors/connectors_service.h",
+  "+ios/chrome/browser/enterprise/connectors/connectors_service_factory.h",
   "+ios/chrome/browser/signin/model/authentication_service.h",
   "+ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h",
   "+ios/chrome/browser/signin/model/identity_manager_factory.h",
   "+ios/chrome/browser/signin/model/system_identity.h",
+  "+ios/components/enterprise/analysis/features.h",
   # keep-sorted end
 ]
