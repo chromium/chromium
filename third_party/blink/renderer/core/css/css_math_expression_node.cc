@@ -698,6 +698,9 @@ bool CheckProgressFunctionTypes(
 }
 
 bool CanEagerlySimplify(const CSSMathExpressionNode* operand) {
+  if (operand->InvolvesLayout()) {
+    return false;
+  }
   if (operand->IsOperation()) {
     return false;
   }
