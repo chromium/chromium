@@ -35,7 +35,10 @@ source_set("libprotobuf-mutator") {
 
   # Allow users of LPM to use protobuf reflection and other features from
   # protobuf_full.
-  public_deps = [ "//third_party/protobuf:protobuf_full" ]
+  public_deps = [
+    "//third_party/protobuf:google_protobuf_any_full_proto",
+    "//third_party/protobuf:protobuf_full",
+  ]
 
   # Let ClusterFuzz builders know to not build targets that depend on
   # libprotobuf-mutator for Chrome OS.
