@@ -3865,6 +3865,17 @@ inline constexpr char kSkyVaultMigrationScheduledStartTime[] =
 inline constexpr char kSkyVaultMigrationStartTime[] =
     "skyvault.migration_start_time";
 
+//-----------------------------------------------------------------------------
+// OEM customization related Prefs
+//-----------------------------------------------------------------------------
+
+// Customized wallpaper URL, which is already downloaded and scaled.
+// The URL from this preference must never be fetched. It is compared to the
+// URL from customization document to check if wallpaper URL has changed
+// since wallpaper was cached.
+inline constexpr char kCustomizationDefaultWallpaperURL[] =
+    "customization.default_wallpaper_url";
+
 // NOTE: New prefs should start with the "ash." prefix. Existing prefs moved
 // into this file should not be renamed, since they may be synced.
 

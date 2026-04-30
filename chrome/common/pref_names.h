@@ -2320,13 +2320,6 @@ inline constexpr char kDeviceRefreshTokenAnyApiIsV3Used[] =
 // after recovery.
 inline constexpr char kServerBackedDeviceState[] = "server_backed_device_state";
 
-// Customized wallpaper URL, which is already downloaded and scaled.
-// The URL from this preference must never be fetched. It is compared to the
-// URL from customization document to check if wallpaper URL has changed
-// since wallpaper was cached.
-inline constexpr char kCustomizationDefaultWallpaperURL[] =
-    "customization.default_wallpaper_url";
-
 // A boolean preference controlling Android status reporting.
 inline constexpr char kReportArcStatusEnabled[] =
     "arc.status_reporting_enabled";

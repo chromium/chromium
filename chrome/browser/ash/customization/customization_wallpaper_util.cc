@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/customization/customization_wallpaper_util.h"
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller.h"
 #include "base/check_deref.h"
 #include "base/files/file_util.h"
@@ -14,7 +15,6 @@
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/customization/customization_document.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_loader.h"
-#include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_image/user_image.h"
 #include "content/public/browser/browser_thread.h"
@@ -86,7 +86,7 @@ void OnCustomizedDefaultWallpaperResizedAndSaved(
   }
 
   CHECK_DEREF(local_state)
-      .SetString(prefs::kCustomizationDefaultWallpaperURL,
+      .SetString(ash::prefs::kCustomizationDefaultWallpaperURL,
                  wallpaper_url.spec());
   ash::WallpaperController::Get()->SetCustomizedDefaultWallpaperPaths(
       resized_small_path, resized_large_path);
@@ -137,7 +137,7 @@ void SetCustomizedDefaultWallpaperAfterCheck(
     bool both_sizes_exist) {
   const std::string current_url =
       CHECK_DEREF(local_state)
-          .GetString(prefs::kCustomizationDefaultWallpaperURL);
+          .GetString(ash::prefs::kCustomizationDefaultWallpaperURL);
   if (both_sizes_exist && current_url == wallpaper_url.spec()) {
     ash::WallpaperController::Get()->SetCustomizedDefaultWallpaperPaths(
         resized_small_path, resized_small_path);
@@ -214,7 +214,8 @@ bool GetCustomizedDefaultWallpaperPaths(base::FilePath* small_path_out,
 }
 
 bool ShouldUseCustomizedDefaultWallpaper(PrefService& local_state) {
-  return !local_state.FindPreference(prefs::kCustomizationDefaultWallpaperURL)
+  return !local_state
+              .FindPreference(ash::prefs::kCustomizationDefaultWallpaperURL)
               ->IsDefaultValue();
 }
 
