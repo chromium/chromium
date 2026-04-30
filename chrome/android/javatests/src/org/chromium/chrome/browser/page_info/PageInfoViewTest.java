@@ -154,8 +154,6 @@ public class PageInfoViewTest {
     private static final String sSimpleHtml = "/chrome/test/data/android/simple.html";
     private static final String sSiteDataHtml = "/content/test/data/browsing_data/site_data.html";
 
-    private static final int DAYS_UNTIL_EXPIRATION = 33;
-
     private static final String[] sCookieDataTypes = {
         "Cookie", "LocalStorage", "ServiceWorker", "CacheStorage", "IndexedDb", "FileSystem"
     };
@@ -279,13 +277,6 @@ public class PageInfoViewTest {
         View view = controller.getPageInfoView();
         assertNotNull(view);
         return view;
-    }
-
-    private void enableTrackingProtectionFixedExpiration(int days) {
-        PageInfoController controller = PageInfoController.getLastPageInfoController();
-        assertNotNull(controller);
-        var tpController = controller.getCookiesController();
-        tpController.setDaysUntilExpirationForTesting(days);
     }
 
     private RwsCookieInfo getRwsCookieInfo(String url) {
@@ -765,7 +756,6 @@ public class PageInfoViewTest {
     public void testShowCookiesSubpageUserBypassOn() throws IOException {
         setThirdPartyCookieBlocking(CookieControlsMode.BLOCK_THIRD_PARTY);
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
-        enableTrackingProtectionFixedExpiration(42);
         onView(withId(R.id.page_info_cookies_row)).perform(click());
 
         onViewWaiting(
@@ -889,7 +879,6 @@ public class PageInfoViewTest {
         expectHasCookies(true);
         // Go to cookies subpage.
         openPageInfo(PageInfoController.NO_HIGHLIGHTED_PERMISSION);
-        enableTrackingProtectionFixedExpiration(/* days= */ DAYS_UNTIL_EXPIRATION);
         onView(withId(R.id.page_info_cookies_row)).perform(click());
         // Check that cookies usage is displayed.
         onViewWaiting(allOf(withText(containsString("stored data")), isDisplayed()));
@@ -899,17 +888,16 @@ public class PageInfoViewTest {
                         withText(R.string.page_info_tracking_protection_toggle_blocked),
                         isDisplayed()));
         // Verify the a11y live region.
-        onView(
-                        withText(
-                                R.string
-                                        .page_info_cookies_site_not_working_description_tracking_protection))
+        onView(withText(R.string.page_info_cookies_site_not_working_description))
                 .check(matches(hasAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE)));
         // Click on the toggle for the content to change.
         onView(withText(R.string.page_info_tracking_protection_toggle_blocked)).perform(click());
         // Verify the a11y live region.
         Context context = ApplicationProvider.getApplicationContext();
         String description =
-                context.getString(R.string.page_info_cookies_send_feedback_description)
+                context.getString(
+                                R.string
+                                        .page_info_cookies_tracking_protection_permanent_allowed_description)
                         .replaceAll("<link>|</link>", "");
         onView(withText(description))
                 .check(matches(hasAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE)));

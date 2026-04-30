@@ -778,7 +778,7 @@ class CookieSettingsTestUserBypass : public CookieSettingsTest {
 
 // UserBypass is a desktop and android-only feature
 #if !BUILDFLAG(IS_IOS)
-TEST_F(CookieSettingsTestUserBypass, UserBypassTemporaryExceptions) {
+TEST_F(CookieSettingsTestUserBypass, UserBypassExceptions) {
   // Bypass shouldn't be enabled.
   EXPECT_FALSE(IsUserBypassEnabled(kFirstPartySite));
   EXPECT_FALSE(IsUserBypassEnabled(kBlockedSite));
@@ -789,21 +789,10 @@ TEST_F(CookieSettingsTestUserBypass, UserBypassTemporaryExceptions) {
   // site(s) unaffected.
   EXPECT_TRUE(IsUserBypassEnabled(kFirstPartySite));
   EXPECT_FALSE(IsUserBypassEnabled(kBlockedSite));
-
-  base::TimeDelta expiration =
-      content_settings::features::kUserBypassUIExceptionExpiration.Get();
-  ASSERT_FALSE(expiration.is_zero());
-
-  FastForwardTime(expiration + base::Seconds(1));
-  // Passing the expiry of the user bypass entries should disable user bypass
-  // for |kFirstPartySite| leaving non-bypassed site(s) unaffected.
-  EXPECT_FALSE(IsUserBypassEnabled(kFirstPartySite));
-  EXPECT_FALSE(IsUserBypassEnabled(kBlockedSite));
 }
 #endif
 
-TEST_F(CookieSettingsTestUserBypass,
-       UserBypassThirdPartyCookiesTemporaryExceptions) {
+TEST_F(CookieSettingsTestUserBypass, UserBypassThirdPartyCookiesExceptions) {
   GURL first_party_url = kFirstPartySiteForCookies.RepresentativeUrl();
   GURL same_site_url = kSameSiteSite;
   SettingInfo info;
@@ -821,9 +810,7 @@ TEST_F(CookieSettingsTestUserBypass,
   cookie_settings_->SetCookieSettingForUserBypass(first_party_url);
   EXPECT_TRUE(
       cookie_settings_->IsThirdPartyAccessAllowed(first_party_url, &info));
-  base::TimeDelta expiration_delta =
-      content_settings::features::kUserBypassUIExceptionExpiration.Get();
-  EXPECT_EQ(info.metadata.expiration(), base::Time::Now() + expiration_delta);
+  EXPECT_EQ(info.metadata.expiration(), base::Time());
   SettingInfo exception_info;
   // Verify that the correct exception is created.
   EXPECT_EQ(settings_map_->GetContentSetting(GURL(), first_party_url,

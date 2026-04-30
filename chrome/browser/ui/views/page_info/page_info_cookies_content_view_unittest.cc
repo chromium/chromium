@@ -199,10 +199,9 @@ TEST_F(PageInfoCookiesContentViewTest, ThirdPartyCookiesBlocked) {
   EXPECT_EQ(
       third_party_cookies_title()->GetText(),
       l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_SITE_NOT_WORKING_TITLE));
-  EXPECT_EQ(
-      third_party_cookies_description()->GetText(),
-      l10n_util::GetStringUTF16(
-          IDS_PAGE_INFO_TRACKING_PROTECTION_SITE_NOT_WORKING_DESCRIPTION_TEMPORARY));
+  EXPECT_EQ(third_party_cookies_description()->GetText(),
+            l10n_util::GetStringUTF16(
+                IDS_PAGE_INFO_COOKIES_SITE_NOT_WORKING_DESCRIPTION_PERMANENT));
   EXPECT_TRUE(third_party_cookies_label_wrapper()->GetVisible());
   EXPECT_EQ(third_party_cookies_row()->GetIconForTesting(),
             GetImageModel(views::kEyeCrossedRefreshIcon));

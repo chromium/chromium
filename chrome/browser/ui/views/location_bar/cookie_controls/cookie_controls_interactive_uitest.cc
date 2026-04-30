@@ -135,17 +135,16 @@ class CookieControlsInteractiveTestBase : public InteractiveFeaturePromoTest {
     return builder;
   }
 
-  auto CheckStateForTemporaryException() {
+  auto CheckStateForException() {
     return Steps(
         CheckViewProperty(
             CookieControlsContentView::kTitle, &views::Label::GetText,
-            l10n_util::GetPluralStringFUTF16(
-                IDS_TRACKING_PROTECTION_BUBBLE_BLOCKING_RESTART_TITLE,
-                ExceptionDurationInDays())),
+            l10n_util::GetStringUTF16(
+                IDS_TRACKING_PROTECTION_BUBBLE_PERMANENT_ALLOWED_TITLE)),
         CheckViewProperty(
             CookieControlsContentView::kDescription, &views::Label::GetText,
             l10n_util::GetStringUTF16(
-                IDS_TRACKING_PROTECTION_BUBBLE_BLOCKING_RESTART_DESCRIPTION)),
+                IDS_TRACKING_PROTECTION_BUBBLE_PERMANENT_ALLOWED_DESCRIPTION)),
         CheckViewProperty(CookieControlsContentView::kToggleButton,
                           &views::ToggleButton::GetIsOn, true),
         CheckIcon(RichControlsContainerView::kIcon, views::kEyeRefreshIcon));
@@ -162,7 +161,7 @@ class CookieControlsInteractiveTestBase : public InteractiveFeaturePromoTest {
         CheckViewProperty(
             CookieControlsContentView::kDescription, &views::Label::GetText,
             l10n_util::GetStringUTF16(
-                IDS_TRACKING_PROTECTION_BUBBLE_SITE_NOT_WORKING_DESCRIPTION)),
+                IDS_COOKIE_CONTROLS_BUBBLE_SITE_NOT_WORKING_DESCRIPTION)),
         CheckIcon(RichControlsContainerView::kIcon,
                   views::kEyeCrossedRefreshIcon));
   }
@@ -174,11 +173,6 @@ class CookieControlsInteractiveTestBase : public InteractiveFeaturePromoTest {
       return Steps(
           EnsureNotPresent(CookieControlsContentView::kFeedbackButton));
     }
-  }
-
-  int ExceptionDurationInDays() {
-    return content_settings::features::kUserBypassUIExceptionExpiration.Get()
-        .InDays();
   }
 
   void BlockThirdPartyCookies() {
@@ -255,7 +249,7 @@ IN_PROC_BROWSER_TEST_F(CookieControlsUiTest, BubbleOpensWhenIconPressed) {
       CheckFeedbackButtonVisible(false));
 }
 
-IN_PROC_BROWSER_TEST_F(CookieControlsUiTest, CreateExceptionPre3pcd) {
+IN_PROC_BROWSER_TEST_F(CookieControlsUiTest, CreateException) {
   // Open the bubble while 3PC are blocked, re-enable them for the site, and
   // confirm the appropriate exception is created.
   BlockThirdPartyCookies();
@@ -268,11 +262,11 @@ IN_PROC_BROWSER_TEST_F(CookieControlsUiTest, CreateExceptionPre3pcd) {
       CheckViewProperty(CookieControlsContentView::kToggleButton,
                         &views::ToggleButton::GetIsOn, false),
       PressButton(CookieControlsContentView::kToggleButton),
-      CheckFeedbackButtonVisible(true), CheckStateForTemporaryException());
+      CheckStateForException());
 }
 
 IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiNoFeedbackTest,
-                       CreateExceptionFeedbackDisabledPre3pcd) {
+                       CreateExceptionFeedbackDisabled) {
   // Open the bubble while 3PC are blocked, re-enable them for the site, and
   // confirm the appropriate exception is created.
   BlockThirdPartyCookies();
@@ -285,7 +279,7 @@ IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiNoFeedbackTest,
       CheckViewProperty(CookieControlsContentView::kToggleButton,
                         &views::ToggleButton::GetIsOn, false),
       PressButton(CookieControlsContentView::kToggleButton),
-      CheckFeedbackButtonVisible(false), CheckStateForTemporaryException());
+      CheckFeedbackButtonVisible(false), CheckStateForException());
 }
 
 IN_PROC_BROWSER_TEST_F(CookieControlsUiTest, RemoveExceptionPre3pcd) {
@@ -300,7 +294,7 @@ IN_PROC_BROWSER_TEST_F(CookieControlsUiTest, RemoveExceptionPre3pcd) {
       NavigateWebContents(kWebContentsElementId, third_party_cookie_page_url()),
       PressButton(kCookieControlsIconElementId),
       InAnyContext(WaitForShow(CookieControlsContentView::kToggleButton)),
-      CheckStateForTemporaryException(),
+      CheckStateForException(),
       PressButton(CookieControlsContentView::kToggleButton),
       CheckFeedbackButtonVisible(false),
       CheckViewProperty(kCookieControlsIconElementId,
@@ -319,117 +313,6 @@ IN_PROC_BROWSER_TEST_F(CookieControlsUiTest,
       CheckViewProperty(kCookieControlsIconElementId,
                         &IconLabelBubbleView::is_animating_label, true));
 }
-
-// Need a separate fixture to override the enabled feature list.
-class CookieControlsWithIphUiTest : public CookieControlsInteractiveTestBase {
- public:
-  CookieControlsWithIphUiTest()
-      : CookieControlsInteractiveTestBase(
-            {feature_engagement::kIPHCookieControlsFeature}) {}
-  ~CookieControlsWithIphUiTest() override = default;
-};
-
-// TODO(crbug.com/409272227): IPH tests are flaky on Linux and Win asan bots
-#if (BUILDFLAG(IS_LINUX) && defined(NDEBUG)) || \
-    (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
-#define MAYBE_ShowAndDismissIphOnHighSiteEngagement \
-  DISABLED_ShowAndDismissIphOnHighSiteEngagement
-#else
-#define MAYBE_ShowAndDismissIphOnHighSiteEngagement \
-  ShowAndDismissIphOnHighSiteEngagement
-#endif
-IN_PROC_BROWSER_TEST_F(CookieControlsWithIphUiTest,
-                       MAYBE_ShowAndDismissIphOnHighSiteEngagement) {
-  BlockThirdPartyCookies();
-  SetHighSiteEngagement();
-  RunTestSequence(
-      InstrumentTab(kWebContentsElementId),
-      NavigateWebContents(kWebContentsElementId, third_party_cookie_page_url()),
-      // Check that label doesn't animate.
-      CheckViewProperty(kCookieControlsIconElementId,
-                        &IconLabelBubbleView::is_animating_label, false),
-      // Check that IPH shows, then dismiss it.
-      InAnyContext(WaitForShow(
-          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting)),
-      ActivateSurface(kCookieControlsIconElementId),
-      PressButton(
-          user_education::HelpBubbleView::kFirstNonDefaultButtonIdForTesting),
-      // IPH should hide and cookie controls bubble should not open.
-      WaitForHide(
-          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
-      EnsureNotPresent(CookieControlsBubbleView::kCookieControlsBubble));
-}
-
-// TODO(crbug.com/409272227): Flaky on linux-rel and win-asan.
-#if (BUILDFLAG(IS_LINUX) && defined(NDEBUG)) || \
-    (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
-#define MAYBE_OpenUserBypassViaIph DISABLED_OpenUserBypassViaIph
-#else
-#define MAYBE_OpenUserBypassViaIph OpenUserBypassViaIph
-#endif
-IN_PROC_BROWSER_TEST_F(CookieControlsWithIphUiTest,
-                       MAYBE_OpenUserBypassViaIph) {
-  BlockThirdPartyCookies();
-  SetHighSiteEngagement();
-  RunTestSequence(
-      InstrumentTab(kWebContentsElementId),
-      NavigateWebContents(kWebContentsElementId, third_party_cookie_page_url()),
-      // Check that IPH shows, then open cookie controls bubble via IPH button.
-      InAnyContext(WaitForShow(
-          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting)),
-      ActivateSurface(kCookieControlsIconElementId),
-      PressButton(user_education::HelpBubbleView::kDefaultButtonIdForTesting),
-      // Cookie controls bubble should show and IPH should close.
-      InAnyContext(
-          WaitForShow(CookieControlsBubbleView::kCookieControlsBubble)),
-      EnsureNotPresent(
-          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting));
-}
-
-// TODO(crbug.com/409272227): Flaky on linux-rel and win-asan.
-#if (BUILDFLAG(IS_LINUX) && defined(NDEBUG)) || \
-    (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
-#define MAYBE_OpenUserBypassViaIconWhenIphVisible \
-  DISABLED_OpenUserBypassViaIconWhenIphVisible
-#else
-#define MAYBE_OpenUserBypassViaIconWhenIphVisible \
-  OpenUserBypassViaIconWhenIphVisible
-#endif
-IN_PROC_BROWSER_TEST_F(CookieControlsWithIphUiTest,
-                       MAYBE_OpenUserBypassViaIconWhenIphVisible) {
-  BlockThirdPartyCookies();
-  SetHighSiteEngagement();
-  RunTestSequence(
-      InstrumentTab(kWebContentsElementId),
-      NavigateWebContents(kWebContentsElementId, third_party_cookie_page_url()),
-      // Check that IPH shows, then open cookie controls bubble via icon.
-      InAnyContext(WaitForShow(
-          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting)),
-      ActivateSurface(kCookieControlsIconElementId),
-      PressButton(kCookieControlsIconElementId),
-      // Cookie controls bubble should show and IPH should close.
-      InAnyContext(
-          WaitForShow(CookieControlsBubbleView::kCookieControlsBubble)),
-      EnsureNotPresent(
-          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting));
-}
-
-// Opening the feedback dialog on CrOS open a system level dialog, which cannot
-// be easily tested here.
-#if !BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_F(CookieControlsUiTest, FeedbackOpens) {
-  BlockThirdPartyCookies();
-  cookie_settings()->SetCookieSettingForUserBypass(
-      third_party_cookie_page_url());
-  RunTestSequence(
-      InstrumentTab(kWebContentsElementId),
-      NavigateWebContents(kWebContentsElementId, third_party_cookie_page_url()),
-      PressButton(kCookieControlsIconElementId),
-      PressButton(CookieControlsContentView::kFeedbackButton),
-      InAnyContext(WaitForShow(FeedbackDialog::kFeedbackDialogForTesting)));
-  EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleSendFeedback), 1);
-}
-#endif
 
 IN_PROC_BROWSER_TEST_F(CookieControlsUiTest, ReloadView) {
   // Test that opening the bubble, then closing it after making a change,

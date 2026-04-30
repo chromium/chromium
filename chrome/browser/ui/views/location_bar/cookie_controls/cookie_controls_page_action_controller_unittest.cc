@@ -229,23 +229,6 @@ TEST_F(CookieControlsPageActionControllerTest, IconVisibleWhenBubbleShowing) {
       /*should_highlight=*/false);
 }
 
-// Verifies the suggestion chip is not shown when the bubble is open.
-TEST_F(CookieControlsPageActionControllerTest, ChipNotShownWhenBubbleShowing) {
-  EXPECT_CALL(*fake_bubble_delegate(), HasBubble()).WillOnce(Return(true));
-
-  // The chip should NOT be shown because the bubble is already visible.
-  EXPECT_CALL(page_action_controller(),
-              ShowSuggestionChip(kActionShowCookieControls, _))
-      .Times(0);
-  EXPECT_CALL(page_action_controller(), Show(kActionShowCookieControls))
-      .Times(1);
-
-  // Call with should_highlight=true, which should be ignored for the chip.
-  controller().OnCookieControlsIconStatusChanged(
-      /*icon_visible=*/true, CookieControlsState::kBlocked3pc,
-      /*should_highlight=*/true);
-}
-
 TEST_F(CookieControlsPageActionControllerTest,
        IconDoesNotAnimateWhenShouldHighlightIsFalse) {
   EXPECT_CALL(page_action_controller(), Show(kActionShowCookieControls))
@@ -289,37 +272,6 @@ TEST_F(CookieControlsPageActionControllerTest,
 
   // The label for the chip should be the "Blocked" label.
   EXPECT_EQ(page_action_controller().last_text(), BlockedLabel());
-}
-
-TEST_F(CookieControlsPageActionControllerTest, ShowChipOnIPHFailure) {
-  EXPECT_CALL(user_education(), MaybeShowFeaturePromo)
-      .WillOnce([](user_education::FeaturePromoParams params) {
-        std::move(params.show_promo_result_callback)
-            .Run(user_education::FeaturePromoResult::kError);
-        return false;
-      });
-  EXPECT_CALL(page_action_controller(),
-              ShowSuggestionChip(kActionShowCookieControls, _))
-      .Times(1);
-  controller().OnCookieControlsIconStatusChanged(
-      /*icon_visible=*/true, CookieControlsState::kBlocked3pc,
-      /*should_highlight=*/true);
-}
-
-TEST_F(CookieControlsPageActionControllerTest, SetActivityOnIPHShown) {
-  EXPECT_CALL(user_education(), MaybeShowFeaturePromo)
-      .WillOnce([](user_education::FeaturePromoParams params) {
-        std::move(params.show_promo_result_callback)
-            .Run(user_education::FeaturePromoResult::Success());
-        return true;
-      });
-  EXPECT_CALL(page_action_controller(), AddActivity(kActionShowCookieControls))
-      .Times(1)
-      .WillOnce(Return(page_actions::ScopedPageActionActivity(
-          page_action_controller(), kActionShowCookieControls)));
-  controller().OnCookieControlsIconStatusChanged(
-      /*icon_visible=*/true, CookieControlsState::kBlocked3pc,
-      /*should_highlight=*/true);
 }
 
 TEST_F(CookieControlsPageActionControllerTest, WebContentsChangeUpdatesIcon) {
