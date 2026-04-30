@@ -31,7 +31,7 @@
 #include "base/timer/timer.h"
 #include "base/uuid.h"
 #include "components/services/storage/public/mojom/service_worker_storage_control.mojom.h"
-#include "content/browser/renderer_host/back_forward_cache_metrics.h"
+#include "content/browser/back_forward_cache/back_forward_cache_metrics.h"
 #include "content/browser/renderer_host/policy_container_host.h"
 #include "content/browser/service_worker/embedded_worker_instance.h"
 #include "content/browser/service_worker/service_worker_client_utils.h"

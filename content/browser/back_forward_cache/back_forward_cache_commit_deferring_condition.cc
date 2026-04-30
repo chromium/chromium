@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/renderer_host/back_forward_cache_commit_deferring_condition.h"
+#include "content/browser/back_forward_cache/back_forward_cache_commit_deferring_condition.h"
 
 #include "base/memory/ptr_util.h"
-#include "content/browser/renderer_host/back_forward_cache_impl.h"
+#include "content/browser/back_forward_cache/back_forward_cache_impl.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/navigator.h"
@@ -16,8 +16,9 @@ namespace content {
 std::unique_ptr<CommitDeferringCondition>
 BackForwardCacheCommitDeferringCondition::MaybeCreate(
     NavigationRequest& navigation_request) {
-  if (!navigation_request.IsServedFromBackForwardCache())
+  if (!navigation_request.IsServedFromBackForwardCache()) {
     return nullptr;
+  }
 
   // Currently only navigations in the primary main frame can restore pages
   // from BFCache.

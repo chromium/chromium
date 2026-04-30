@@ -11,7 +11,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "content/browser/renderer_host/back_forward_cache_disable.h"
+#include "content/browser/back_forward_cache/back_forward_cache_disable.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/renderer.mojom.h"
 #include "content/public/browser/browser_context.h"

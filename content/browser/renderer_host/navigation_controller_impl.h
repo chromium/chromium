@@ -21,7 +21,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "content/browser/renderer_host/back_forward_cache_impl.h"
+#include "content/browser/back_forward_cache/back_forward_cache_impl.h"
 #include "content/browser/renderer_host/navigation_controller_delegate.h"
 #include "content/browser/renderer_host/navigation_entry_impl.h"
 #include "content/browser/renderer_host/navigation_type.h"

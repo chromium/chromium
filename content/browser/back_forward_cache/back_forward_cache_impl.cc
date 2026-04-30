@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/renderer_host/back_forward_cache_impl.h"
+#include "content/browser/back_forward_cache/back_forward_cache_impl.h"
 
 #include <algorithm>
 #include <list>
@@ -26,9 +26,9 @@
 #include "base/trace_event/typed_macros.h"
 #include "base/types/expected.h"
 #include "build/build_config.h"
+#include "content/browser/back_forward_cache/back_forward_cache_can_store_document_result.h"
+#include "content/browser/back_forward_cache/back_forward_cache_metrics.h"
 #include "content/browser/bad_message.h"
-#include "content/browser/renderer_host/back_forward_cache_can_store_document_result.h"
-#include "content/browser/renderer_host/back_forward_cache_metrics.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"

@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/renderer_host/back_forward_cache_disable.h"
+#include "content/browser/back_forward_cache/back_forward_cache_disable.h"
+
 #include "content/public/browser/back_forward_cache.h"
 
 namespace content {

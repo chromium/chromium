@@ -7,7 +7,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "components/ukm/test_ukm_recorder.h"
-#include "content/browser/renderer_host/back_forward_cache_impl.h"
+#include "content/browser/back_forward_cache/back_forward_cache_impl.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -194,7 +194,8 @@ TEST_F(BackForwardCacheMetricsTest, TimeRecordedAtStart) {
 
 // TODO(crbug.com/40200059): Flaky under TSan.
 #if BUILDFLAG(USING_SANITIZER)
-#define MAYBE_TimeRecordedWhenRendererIsKilled DISABLED_TimeRecordedWhenRendererIsKilled
+#define MAYBE_TimeRecordedWhenRendererIsKilled \
+  DISABLED_TimeRecordedWhenRendererIsKilled
 #else
 #define MAYBE_TimeRecordedWhenRendererIsKilled TimeRecordedWhenRendererIsKilled
 #endif

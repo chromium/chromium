@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/renderer_host/back_forward_cache_impl.h"
+#include "content/browser/back_forward_cache/back_forward_cache_impl.h"
 
 #include "base/memory/memory_pressure_listener_registry.h"
 #include "base/run_loop.h"

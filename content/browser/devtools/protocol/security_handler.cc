@@ -10,8 +10,8 @@
 #include <vector>
 
 #include "base/strings/string_number_conversions.h"
+#include "content/browser/back_forward_cache/back_forward_cache_disable.h"
 #include "content/browser/devtools/devtools_agent_host_impl.h"
-#include "content/browser/renderer_host/back_forward_cache_disable.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/navigation_controller.h"

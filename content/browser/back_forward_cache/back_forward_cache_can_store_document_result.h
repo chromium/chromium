@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_RENDERER_HOST_BACK_FORWARD_CACHE_CAN_STORE_DOCUMENT_RESULT_H_
-#define CONTENT_BROWSER_RENDERER_HOST_BACK_FORWARD_CACHE_CAN_STORE_DOCUMENT_RESULT_H_
+#ifndef CONTENT_BROWSER_BACK_FORWARD_CACHE_BACK_FORWARD_CACHE_CAN_STORE_DOCUMENT_RESULT_H_
+#define CONTENT_BROWSER_BACK_FORWARD_CACHE_BACK_FORWARD_CACHE_CAN_STORE_DOCUMENT_RESULT_H_
 
 #include <bitset>
 #include <cstdint>
@@ -12,7 +12,7 @@
 
 #include "base/containers/enum_set.h"
 #include "base/trace_event/typed_macros.h"
-#include "content/browser/renderer_host/back_forward_cache_metrics.h"
+#include "content/browser/back_forward_cache/back_forward_cache_metrics.h"
 #include "content/browser/renderer_host/should_swap_browsing_instance.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/back_forward_cache.h"
@@ -145,4 +145,4 @@ class CONTENT_EXPORT BackForwardCacheCanStoreDocumentResult {
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_RENDERER_HOST_BACK_FORWARD_CACHE_CAN_STORE_DOCUMENT_RESULT_H_
+#endif  // CONTENT_BROWSER_BACK_FORWARD_CACHE_BACK_FORWARD_CACHE_CAN_STORE_DOCUMENT_RESULT_H_

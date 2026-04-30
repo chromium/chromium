@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/renderer_host/back_forward_cache_metrics.h"
+#include "content/browser/back_forward_cache/back_forward_cache_metrics.h"
 
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
@@ -12,7 +12,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "components/ukm/test_ukm_recorder.h"
-#include "content/browser/renderer_host/back_forward_cache_impl.h"
+#include "content/browser/back_forward_cache/back_forward_cache_impl.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/content_navigation_policy.h"
@@ -781,8 +781,9 @@ IN_PROC_BROWSER_TEST_F(RecordBackForwardCacheMetricsWithoutEnabling,
 
 IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest,
                        RecordReloadsAfterHistoryNavigation) {
-  if (!IsBackForwardCacheEnabled())
+  if (!IsBackForwardCacheEnabled()) {
     return;
+  }
   base::HistogramTester histogram_tester;
 
   GURL url1(embedded_test_server()->GetURL("a.com", "/title1.html"));
@@ -829,8 +830,9 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest,
                        RestoreNavigationToNextPaint) {
-  if (!IsBackForwardCacheEnabled())
+  if (!IsBackForwardCacheEnabled()) {
     return;
+  }
   base::HistogramTester histogram_tester;
   const char kRestoreNavigationToNextPaintTimeHistogram[] =
       "BackForwardCache.Restore.NavigationToFirstPaint";

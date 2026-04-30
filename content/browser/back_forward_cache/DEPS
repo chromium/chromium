@@ -1,0 +1,6 @@
+specific_include_rules = {
+  "back_forward_cache_metrics.cc": [
+    # For using DisabledReasonId.
+    "+components/back_forward_cache/disabled_reason_id.h",
+  ],
+}

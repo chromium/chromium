@@ -28,10 +28,6 @@ specific_include_rules = {
     "+content/app_shim_remote_cocoa",
     "+components/remote_cocoa",
   ],
-  "back_forward_cache_metrics.cc": [
-    # For using DisabledReasonId.
-    "+components/back_forward_cache/disabled_reason_id.h",
-  ],
   "frame_token_message_queue.cc": [
     "+components/viz/common/quads/compositor_frame_metadata.h",
   ],

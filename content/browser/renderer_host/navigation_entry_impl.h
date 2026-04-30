@@ -19,7 +19,7 @@
 #include "base/memory/safety_checks.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "content/browser/renderer_host/back_forward_cache_metrics.h"
+#include "content/browser/back_forward_cache/back_forward_cache_metrics.h"
 #include "content/browser/renderer_host/frame_navigation_entry.h"
 #include "content/browser/renderer_host/navigation_transitions/navigation_transition_data.h"
 #include "content/browser/site_instance_impl.h"

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/renderer_host/back_forward_cache_metrics.h"
+#include "content/browser/back_forward_cache/back_forward_cache_metrics.h"
 
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
@@ -12,8 +12,8 @@
 #include "base/metrics/sparse_histogram.h"
 #include "base/strings/stringprintf.h"
 #include "components/back_forward_cache/disabled_reason_id.h"
+#include "content/browser/back_forward_cache/back_forward_cache_impl.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
-#include "content/browser/renderer_host/back_forward_cache_impl.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_entry_impl.h"
 #include "content/browser/renderer_host/navigation_request.h"
@@ -52,19 +52,23 @@ base::TickClock* g_mock_time_clock_for_testing = nullptr;
 
 // Reduce the resolution of the longer intervals due to privacy considerations.
 base::TimeDelta ClampTime(base::TimeDelta time) {
-  if (time < base::Seconds(5))
+  if (time < base::Seconds(5)) {
     return base::Milliseconds(time.InMilliseconds());
-  if (time < base::Minutes(3))
+  }
+  if (time < base::Minutes(3)) {
     return base::Seconds(time.InSeconds());
-  if (time < base::Hours(3))
+  }
+  if (time < base::Hours(3)) {
     return base::Minutes(time.InMinutes());
+  }
   return base::Hours(time.InHours());
 }
 
 base::TimeTicks Now() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (g_mock_time_clock_for_testing)
+  if (g_mock_time_clock_for_testing) {
     return g_mock_time_clock_for_testing->NowTicks();
+  }
   return base::TimeTicks::Now();
 }
 
@@ -138,8 +142,9 @@ BackForwardCacheMetrics::BackForwardCacheMetrics(
 BackForwardCacheMetrics::~BackForwardCacheMetrics() = default;
 
 void BackForwardCacheMetrics::MainFrameDidStartNavigationToDocument() {
-  if (!started_navigation_timestamp_)
+  if (!started_navigation_timestamp_) {
     started_navigation_timestamp_ = Now();
+  }
 }
 
 void BackForwardCacheMetrics::DidCommitNavigation(
@@ -770,8 +775,9 @@ void BackForwardCacheMetrics::SetRelatedActiveContentsInfo(
 }
 
 bool BackForwardCacheMetrics::DidSwapBrowsingInstance() const {
-  if (!browsing_instance_swap_result_)
+  if (!browsing_instance_swap_result_) {
     return true;
+  }
 
   switch (browsing_instance_swap_result_.value()) {
     case ShouldSwapBrowsingInstance::kNo_ProactiveSwapDisabled:

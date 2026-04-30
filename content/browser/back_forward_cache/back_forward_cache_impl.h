@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_RENDERER_HOST_BACK_FORWARD_CACHE_IMPL_H_
-#define CONTENT_BROWSER_RENDERER_HOST_BACK_FORWARD_CACHE_IMPL_H_
+#ifndef CONTENT_BROWSER_BACK_FORWARD_CACHE_BACK_FORWARD_CACHE_IMPL_H_
+#define CONTENT_BROWSER_BACK_FORWARD_CACHE_BACK_FORWARD_CACHE_IMPL_H_
 
 #include <list>
 #include <memory>
@@ -19,8 +19,8 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
-#include "content/browser/renderer_host/back_forward_cache_can_store_document_result.h"
-#include "content/browser/renderer_host/back_forward_cache_metrics.h"
+#include "content/browser/back_forward_cache/back_forward_cache_can_store_document_result.h"
+#include "content/browser/back_forward_cache/back_forward_cache_metrics.h"
 #include "content/browser/renderer_host/page_impl.h"
 #include "content/browser/renderer_host/render_process_host_internal_observer.h"
 #include "content/browser/renderer_host/stored_page.h"
@@ -898,4 +898,4 @@ class CONTENT_EXPORT BackForwardCacheCanStoreTreeResult {
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_RENDERER_HOST_BACK_FORWARD_CACHE_IMPL_H_
+#endif  // CONTENT_BROWSER_BACK_FORWARD_CACHE_BACK_FORWARD_CACHE_IMPL_H_

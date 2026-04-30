@@ -44,7 +44,7 @@
 #include "components/webauthn/core/browser/common_utils.h"
 #include "components/webauthn/core/browser/remote_validation.h"
 #include "components/webauthn/json/value_conversions.h"
-#include "content/browser/renderer_host/back_forward_cache_disable.h"
+#include "content/browser/back_forward_cache/back_forward_cache_disable.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/webauth/authenticator_environment.h"
 #include "content/browser/webauth/authenticator_impl.h"

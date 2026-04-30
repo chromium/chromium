@@ -10,7 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/strings/utf_string_conversions.h"
-#include "content/browser/renderer_host/back_forward_cache_disable.h"
+#include "content/browser/back_forward_cache/back_forward_cache_disable.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/content_browser_client.h"
