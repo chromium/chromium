@@ -7668,78 +7668,18 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "probability": "0.05"
+                    },
                     "enable_features": [
                         "ClearBrowsingHistoryJourney",
                         "CriticalUserJourneyService",
+                        "HappinessTrackingSurveysForClearBrowsingHistory",
+                        "HappinessTrackingSurveysForDownloadJourney",
+                        "HappinessTrackingSurveysForPinExtensionJourney",
                         "PinExtensionJourney",
                         "ViewDownloadedFileFromAppMenuJourney",
                         "ViewDownloadedFileJourney"
-                    ]
-                }
-            ]
-        }
-    ],
-    "CriticalUserJourneyService_ClearBrowsingHistory": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "en_site_id": "uAmt8ZyqJ0ugnJ3q1cK0PAWUdnZB",
-                        "probability": "0.05"
-                    },
-                    "enable_features": [
-                        "HappinessTrackingSurveysForClearBrowsingHistory"
-                    ]
-                }
-            ]
-        }
-    ],
-    "CriticalUserJourneyService_DownloadJourney": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "en_site_id": "Y2We4jMf70ugnJ3q1cK0QFVzpBEr",
-                        "probability": "0.05"
-                    },
-                    "enable_features": [
-                        "HappinessTrackingSurveysForDownloadJourney"
-                    ]
-                }
-            ]
-        }
-    ],
-    "CriticalUserJourneyService_PinExtensionJourney": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "en_site_id": "ZPGYEfdNz0ugnJ3q1cK0WdJNwYC3",
-                        "probability": "0.05"
-                    },
-                    "enable_features": [
-                        "HappinessTrackingSurveysForPinExtensionJourney"
                     ]
                 }
             ]
