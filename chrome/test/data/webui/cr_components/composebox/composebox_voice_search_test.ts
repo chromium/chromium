@@ -494,6 +494,42 @@ suite('ComposeboxVoiceSearch', () => {
             composeboxElement.animationState, GlowAnimationState.LISTENING);
       });
 
+  test('updates input correctly when voice search is stopped', async () => {
+    // Set initial input.
+    composeboxElement.input = 'original text';
+
+    // Open voice search.
+    const voiceSearchButton =
+        composeboxElement.shadowRoot.querySelector<HTMLElement>(
+            '#voiceSearchButton');
+    assertTrue(!!voiceSearchButton);
+    voiceSearchButton.click();
+    await microtasksFinished();
+
+    const voiceSearchElement = composeboxElement.shadowRoot.querySelector(
+        'cr-composebox-voice-search');
+    assertTrue(!!voiceSearchElement);
+
+    // Case 1: Empty transcript should keep existing input.
+    voiceSearchElement.dispatchEvent(
+        new CustomEvent('recording-stopped', {detail: ''}));
+    await microtasksFinished();
+
+    assertEquals('original text', composeboxElement.input);
+    assertFalse(composeboxElement.inVoiceSearchMode);
+
+    // Case 2: Non-empty transcript should clobber existing input.
+    voiceSearchButton.click();
+    await microtasksFinished();
+
+    voiceSearchElement.dispatchEvent(new CustomEvent(
+        'recording-stopped', {detail: 'new voice search query'}));
+    await microtasksFinished();
+
+    assertEquals('new voice search query', composeboxElement.input);
+    assertFalse(composeboxElement.inVoiceSearchMode);
+  });
+
   test(
       'Records QUERY_SUBMITTED action and fires event on submit click',
       async () => {

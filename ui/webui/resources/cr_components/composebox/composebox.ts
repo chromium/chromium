@@ -741,8 +741,10 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
   }
 
   protected onRecordingStopped_(e: CustomEvent<string>) {
-    const voiceTranscript = e.detail;
-    this.input = voiceTranscript;
+    const newTranscript = e.detail;
+    if (newTranscript && newTranscript.trim().length > 0) {
+      this.input = newTranscript;
+    }
     this.voiceSearchEndCleanup();
   }
 
