@@ -812,7 +812,11 @@ FocusgroupControllerUtils::NextFocusgroupItemInSegmentInDirection(
     // We already know that the item is a descendant of owner, and is not opted
     // out nor in a nested focusgroup scope so we don't need to check that
     // again, all that matters is that it is focusable. If so, return it.
-    if (element->IsKeyboardFocusableSlow()) {
+    // Also yield focused non-keyboard-focusable items (e.g., tabindex=-1
+    // focused via mouse) so that GetEntryElementForFocusgroupSegmentFromFirst
+    // can see them via its IsFocusedElementInDocument() check.
+    if (element->IsKeyboardFocusableSlow() ||
+        element->IsFocusedElementInDocument()) {
       return element;
     }
     element = traversal_context.NextInDirection(element, direction,
