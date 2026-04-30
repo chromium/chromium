@@ -70,6 +70,9 @@
 #include "chromeos/constants/chromeos_features.h"
 #endif
 
+static_assert(!BUILDFLAG(IS_ANDROID),
+              "This file should not be included in Android build");
+
 using content::DevToolsAgentHost;
 
 const char ChromeDevToolsManagerDelegate::kTypeApp[] = "app";
@@ -364,16 +367,14 @@ bool ChromeDevToolsManagerDelegate::AllowInspectingRenderFrameHost(
 
 bool ChromeDevToolsManagerDelegate::AllowInspectingTarget(
     content::DevToolsAgentHost* agent_host) {
-#if BUILDFLAG(IS_ANDROID)
-  return true;
-#else
+  // For Android, we have the same implementation
+  // in DevToolsManagerDelegateAndroid.
   Profile* profile =
       Profile::FromBrowserContext(agent_host->GetBrowserContext());
   if (!profile) {
     return true;
   }
   return IsInspectionAllowed(profile, agent_host);
-#endif
 }
 
 void ChromeDevToolsManagerDelegate::ClientAttached(

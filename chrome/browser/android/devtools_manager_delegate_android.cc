@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/devtools/chrome_devtools_session_android.h"
+#include "chrome/browser/devtools/devtools_availability_checker.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
@@ -278,6 +279,18 @@ DevToolsAgentHost::List DevToolsManagerDelegateAndroid::RemoteDebuggingTargets(
 
 bool DevToolsManagerDelegateAndroid::IsBrowserTargetDiscoverable() {
   return true;
+}
+
+bool DevToolsManagerDelegateAndroid::AllowInspectingTarget(
+    content::DevToolsAgentHost* agent_host) {
+  // For non-Android desktop platforms, we have the same implementation
+  // in ChromeDevToolsManagerDelegate.
+  Profile* profile =
+      Profile::FromBrowserContext(agent_host->GetBrowserContext());
+  if (!profile) {
+    return true;
+  }
+  return IsInspectionAllowed(profile, agent_host);
 }
 
 void DevToolsManagerDelegateAndroid::HandleCommand(
