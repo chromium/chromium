@@ -14,6 +14,7 @@
 #include "base/command_line.h"
 #include "base/i18n/icu_util.h"
 #include "base/json/json_reader.h"
+#include "base/no_destructor.h"
 #include "components/payments/content/utility/payment_manifest_parser.h"
 #include "components/payments/core/error_logger.h"
 #include "url/gurl.h"
@@ -25,9 +26,8 @@ struct IcuEnvironment {
   base::AtExitManager at_exit_manager;
 };
 
-IcuEnvironment* env = new IcuEnvironment();
-
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
+  static const base::NoDestructor<IcuEnvironment> env;
   std::vector<GURL> web_app_manifest_urls;
   std::vector<url::Origin> supported_origins;
 
