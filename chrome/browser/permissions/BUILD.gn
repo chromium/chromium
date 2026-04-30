@@ -100,6 +100,7 @@ source_set("permissions") {
     "//chrome/browser/tab_contents",
     "//chrome/browser/top_level_storage_access_api:permissions",
     "//chrome/browser/translate",
+    "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/hats",
     "//chrome/browser/ui/page_info",
     "//chrome/browser/ui/safety_hub",

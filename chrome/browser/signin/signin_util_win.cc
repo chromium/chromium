@@ -31,7 +31,7 @@
 #include "chrome/browser/signin/about_signin_internals_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/webui/signin/history_sync_optin_service.h"
 #include "chrome/browser/ui/webui/signin/history_sync_optin_service_factory.h"
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
@@ -148,7 +148,7 @@ void FinishImportCredentialsFromProvider(const CoreAccountId& account_id,
 void RunOnBrowserReady(Profile* profile,
                        base::OnceCallback<void(Browser*)> callback) {
   BrowserWindowInterface* current_browser =
-      chrome::FindLastActiveWithProfile(profile);
+      ProfileBrowserCollection::GetForProfile(profile)->GetLastActiveBrowser();
   Browser* browser =
       current_browser ? current_browser->GetBrowserForMigrationOnly() : nullptr;
   if (browser) {

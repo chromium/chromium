@@ -28,9 +28,9 @@
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/startup/first_run_service.h"
 #include "chrome/browser/ui/startup/startup_types.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -266,7 +266,7 @@ IN_PROC_BROWSER_TEST_P(SigninUtilWinBrowserTestWithParams, Run) {
   ASSERT_EQ(ProfileManager::GetInitialProfileDir(), profile->GetBaseName());
 
   BrowserWindowInterface* const browser =
-      chrome::FindLastActiveWithProfile(profile);
+      ProfileBrowserCollection::GetForProfile(profile)->GetLastActiveBrowser();
   ASSERT_NE(nullptr, browser);
 
   AssertSigninStarted(GetParam().expect_is_started, profile);
@@ -490,7 +490,9 @@ IN_PROC_BROWSER_TEST_F(SigninUtilWinNoStartingWindowBrowserTest,
 
   Profile* profile = profile_manager->GetLastUsedProfile();
   ASSERT_EQ(ProfileManager::GetInitialProfileDir(), profile->GetBaseName());
-  ASSERT_EQ(nullptr, chrome::FindLastActiveWithProfile(profile));
+  ASSERT_EQ(
+      nullptr,
+      ProfileBrowserCollection::GetForProfile(profile)->GetLastActiveBrowser());
 
   // FRE completion is not set yet since no attempt to open a browser was done
   // yet.
@@ -511,7 +513,7 @@ IN_PROC_BROWSER_TEST_F(SigninUtilWinNoStartingWindowBrowserTest,
       profile, chrome::startup::IsProcessStartup::kYes,
       chrome::startup::IsFirstRun::kYes, /*always_create=*/true);
   BrowserWindowInterface* const first_browser =
-      chrome::FindLastActiveWithProfile(profile);
+      ProfileBrowserCollection::GetForProfile(profile)->GetLastActiveBrowser();
   EXPECT_TRUE(first_browser);
 
   // FRE should be marked as completed because it was bypassed by the already

@@ -22,10 +22,10 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/sessions/exit_type_service.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
@@ -224,7 +224,8 @@ void HatsServiceDesktop::LaunchSurvey(
     return;
   }
   BrowserWindowInterface* const browser =
-      chrome::FindLastActiveWithProfile(profile());
+      ProfileBrowserCollection::GetForProfile(profile())
+          ->GetLastActiveBrowser();
   LaunchSurveyForBrowser(
       browser ? browser->GetBrowserForMigrationOnly() : nullptr, trigger,
       std::move(success_callback), std::move(failure_callback),

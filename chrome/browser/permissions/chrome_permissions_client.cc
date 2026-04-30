@@ -39,7 +39,7 @@
 #include "chrome/browser/serial/serial_chooser_context.h"
 #include "chrome/browser/serial/serial_chooser_context_factory.h"
 #include "chrome/browser/subresource_filter/subresource_filter_profile_context_factory.h"
-#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/survey_config.h"
@@ -452,7 +452,7 @@ ChromePermissionsClient::DetermineIgnoreReason(
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   BrowserWindowInterface* const browser =
-      chrome::FindLastActiveWithProfile(profile);
+      ProfileBrowserCollection::GetForProfile(profile)->GetLastActiveBrowser();
   if (browser) {
     if (browser->GetTabStripModel()->empty()) {
       return permissions::PermissionIgnoredReason::WINDOW_CLOSED;

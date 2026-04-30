@@ -58,9 +58,9 @@
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #else
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
@@ -278,7 +278,7 @@ void ChromeRuntimeAPIDelegate::OpenURL(const GURL& uninstall_url) {
   Profile* profile = Profile::FromBrowserContext(browser_context_);
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   BrowserWindowInterface* current_browser =
-      chrome::FindLastActiveWithProfile(profile);
+      ProfileBrowserCollection::GetForProfile(profile)->GetLastActiveBrowser();
   if (!current_browser) {
     current_browser = Browser::Create(Browser::CreateParams(profile, false));
   }

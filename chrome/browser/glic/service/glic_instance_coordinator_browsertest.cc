@@ -35,9 +35,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/common/chrome_features.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
@@ -1400,7 +1400,9 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
       browser()->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
 
   // Initially there should be no browsers for incognito profile.
-  EXPECT_EQ(chrome::FindLastActiveWithProfile(incognito_profile), nullptr);
+  EXPECT_EQ(ProfileBrowserCollection::GetForProfile(incognito_profile)
+                ->GetLastActiveBrowser(),
+            nullptr);
 
   BrowserWindowInterface* new_browser = nullptr;
   {
@@ -1412,7 +1414,8 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
     ASSERT_TRUE(resolved.tab);
 
     // Verify it created an incognito browser.
-    new_browser = chrome::FindLastActiveWithProfile(incognito_profile);
+    new_browser = ProfileBrowserCollection::GetForProfile(incognito_profile)
+                      ->GetLastActiveBrowser();
     ASSERT_TRUE(new_browser);
     EXPECT_TRUE(new_browser->GetProfile()->IsOffTheRecord());
   }

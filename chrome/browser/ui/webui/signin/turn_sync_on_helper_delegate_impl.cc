@@ -21,11 +21,11 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/profiles/profile_colors_util.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"
@@ -56,7 +56,8 @@ BrowserWindowInterface* EnsureBrowser(BrowserWindowInterface* browser,
     // The user just created a new profile or has closed the browser that
     // we used previously. Grab an existing browser for the profile or else
     // create a new one.
-    browser = chrome::FindLastActiveWithProfile(profile);
+    browser = ProfileBrowserCollection::GetForProfile(profile)
+                  ->GetLastActiveBrowser();
     if (!browser) {
       Browser* new_browser =
           Browser::Create(Browser::CreateParams(profile, true));

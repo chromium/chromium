@@ -210,7 +210,7 @@ void PriceTrackingHandler::ShowBookmarkEditorForCurrentUrl() {
 
   auto* profile = Profile::FromWebUI(web_ui_);
   BrowserWindowInterface* const browser =
-      chrome::FindLastActiveWithProfile(profile);
+      ProfileBrowserCollection::GetForProfile(profile)->GetLastActiveBrowser();
   if (!browser) {
     return;
   }
@@ -346,7 +346,8 @@ ukm::SourceId PriceTrackingHandler::GetCurrentTabUkmSourceId() {
 const bookmarks::BookmarkNode*
 PriceTrackingHandler::GetOrAddBookmarkForCurrentUrl() {
   BrowserWindowInterface* const browser =
-      chrome::FindLastActiveWithProfile(Profile::FromWebUI(web_ui_));
+      ProfileBrowserCollection::GetForProfile(Profile::FromWebUI(web_ui_))
+          ->GetLastActiveBrowser();
   if (!browser) {
     return nullptr;
   }

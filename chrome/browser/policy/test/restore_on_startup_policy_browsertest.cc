@@ -221,7 +221,8 @@ IN_PROC_BROWSER_TEST_P(RestoreOnStartupPolicyTest, RunTest) {
     ASSERT_EQ(2u, ProfileBrowserCollection::GetForProfile(browser()->profile())
                       ->GetSize());
     BrowserWindowInterface* const pref_urls_opened_browser =
-        chrome::FindLastActiveWithProfile(browser()->profile());
+        ProfileBrowserCollection::GetForProfile(browser()->profile())
+            ->GetLastActiveBrowser();
     ASSERT_TRUE(pref_urls_opened_browser);
     TabStripModel* model = pref_urls_opened_browser->GetTabStripModel();
     int size = static_cast<int>(expected_urls_in_new_window_.size());
