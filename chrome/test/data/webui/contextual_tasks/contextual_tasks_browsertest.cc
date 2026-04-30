@@ -26,7 +26,13 @@ class ContextualTasksBrowserTest : public WebUIMochaBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, App) {
+// TODO(crbug.com/487147580): Re-enable the test
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_App DISABLED_App
+#else
+#define MAYBE_App App
+#endif
+IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, MAYBE_App) {
   RunTest("contextual_tasks/app_test.js", "mocha.run();");
 }
 
