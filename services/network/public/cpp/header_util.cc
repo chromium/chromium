@@ -135,6 +135,11 @@ bool ContainsForbiddenSecurityHeader(net::HttpRequestHeaders& headers) {
     if (base::EqualsCaseInsensitiveASCII(name, "Sec-Purpose")) {
       return value.size() < 256;
     }
+    // Sec-GPC is allowed with value "1".
+    // https://w3c.github.io/gpc/#the-sec-gpc-header-field-for-http-requests
+    if (base::EqualsCaseInsensitiveASCII(name, "Sec-GPC")) {
+      return value == "1";
+    }
     // Browsing Topics API headers contain structured interest tokens.
     if (base::EqualsCaseInsensitiveASCII(name, "Sec-Browsing-Topics")) {
       return value.size() < 1024;

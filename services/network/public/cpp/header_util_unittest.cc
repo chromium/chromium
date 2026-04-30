@@ -203,6 +203,17 @@ TEST(HeaderUtilTest, ContainsForbiddenSecurityHeader) {
   // Forbidden Sec- header
   headers.SetHeader("Sec-Invalid", "value");
   EXPECT_TRUE(ContainsForbiddenSecurityHeader(headers));
+
+  // Sec-GPC cases
+  net::HttpRequestHeaders gpc_headers;
+  gpc_headers.SetHeader("Sec-GPC", "1");
+  EXPECT_FALSE(ContainsForbiddenSecurityHeader(gpc_headers));
+
+  gpc_headers.SetHeader("Sec-GPC", "0");
+  EXPECT_TRUE(ContainsForbiddenSecurityHeader(gpc_headers));
+
+  gpc_headers.SetHeader("Sec-GPC", "2");
+  EXPECT_TRUE(ContainsForbiddenSecurityHeader(gpc_headers));
 }
 
 TEST(HeaderUtilTest,
