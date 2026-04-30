@@ -1615,14 +1615,12 @@ void OutOfFlowLayoutPart::LayoutFragmentainerDescendants(
         node_to_layout.offset_info.original_offset =
             node_to_layout.offset_info.offset;
 
-        DCHECK(node_to_layout.offset_info.block_estimate);
-
         // Determine in which fragmentainer this OOF element will start its
         // layout and adjust the offset to be relative to that fragmentainer.
         wtf_size_t start_index = 0;
         ComputeStartFragmentIndexAndRelativeOffset(
             node_info.default_writing_direction.GetWritingMode(),
-            *node_to_layout.offset_info.block_estimate,
+            node_to_layout.offset_info.node_dimensions.size.block_size,
             node_info.containing_block.ClippedContainerBlockOffset(),
             &start_index, &node_to_layout.offset_info.offset);
         if (start_index >= descendants_to_layout.size())
@@ -2551,7 +2549,6 @@ OutOfFlowLayoutPart::TryCalculateOffset(
     }
   }
 
-  offset_info.block_estimate = node_dimensions.size.block_size;
   offset_info.container_content_size =
       ToLogicalSize(container_physical_content_size,
                     candidate_writing_direction.GetWritingMode());
@@ -2756,22 +2753,13 @@ const LayoutResult* OutOfFlowLayoutPart::GenerateFragment(
   const auto& style = node.Style();
   const LayoutUnit block_offset = offset_info.offset.block_offset;
 
-  LayoutUnit inline_size = offset_info.node_dimensions.size.inline_size;
-  LayoutUnit block_size = offset_info.block_estimate.value_or(
-      offset_info.container_content_size.block_size);
-  LogicalSize logical_size(inline_size, block_size);
   // Convert from logical size in the writing mode of the child to the logical
   // size in the writing mode of the container. That's what the constraint space
   // builder expects.
-  PhysicalSize physical_size =
-      ToPhysicalSize(logical_size, style.GetWritingMode());
-  LogicalSize available_size =
+  const PhysicalSize physical_size =
+      ToPhysicalSize(offset_info.node_dimensions.size, style.GetWritingMode());
+  const LogicalSize available_size =
       ToLogicalSize(physical_size, GetConstraintSpace().GetWritingMode());
-  bool is_repeatable = false;
-  bool is_in_block_fragmentation =
-      (RuntimeEnabledFeatures::FragmentedOofInCbEnabled() &&
-       GetConstraintSpace().HasBlockFragmentation()) ||
-      fragmentainer_constraint_space;
 
   ConstraintSpaceBuilder builder(GetConstraintSpace(),
                                  style.GetWritingDirection(),
@@ -2782,16 +2770,21 @@ const LayoutResult* OutOfFlowLayoutPart::GenerateFragment(
   builder.SetIsHiddenForPaint(
       node_info.base_container_info.is_hidden_for_paint);
 
+  const bool is_in_block_fragmentation =
+      (RuntimeEnabledFeatures::FragmentedOofInCbEnabled() &&
+       GetConstraintSpace().HasBlockFragmentation()) ||
+      fragmentainer_constraint_space;
+
   // In some cases we will need the fragment size in order to calculate the
   // offset. We may have to lay out to get the fragment size. For block
   // fragmentation, we *need* to know the block-offset before layout. In other
   // words, in that case, we may have to lay out, calculate the offset, and then
   // lay out again at the correct block-offset.
-  if (offset_info.block_estimate.has_value() &&
-      (!is_in_block_fragmentation || !offset_info.initial_layout_result)) {
+  if (!is_in_block_fragmentation || !offset_info.initial_layout_result) {
     builder.SetIsFixedBlockSize(true);
   }
 
+  bool is_repeatable = false;
   if (is_in_block_fragmentation) {
     if (container_builder_->Node().IsPaginatedRoot() &&
         style.GetPosition() == EPosition::kFixed &&
