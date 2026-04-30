@@ -6930,6 +6930,24 @@
             ]
         }
     ],
+    "ContentBindingVersioningEnabled": [
+        {
+            "platforms": [
+                "android",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ContentBindingVersioningEnabled"
+                    ]
+                }
+            ]
+        }
+    ],
     "ContentSchemeIsLocal": [
         {
             "platforms": [
