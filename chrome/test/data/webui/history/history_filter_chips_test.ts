@@ -121,14 +121,28 @@ suite('HistoryFilterChipsTest', function() {
     assertEquals('HistoryPage_ShowUserOnlyEnabled', action);
     browserService.resetResolver('recordAction');
     assertTrue(userChip.hasAttribute('selected'));
+    assertFalse(actorChip.hasAttribute('selected'));
 
-    // Clicking Actor Chip while User Only is active should return to All.
+    // Clicking Actor Chip while User Only is active should switch to Actor
+    // visits only.
     actorChip.click();
     const action2 = await browserService.whenCalled('recordAction');
-    assertEquals('HistoryPage_ShowAllEnabled', action2);
+    assertEquals('HistoryPage_ShowActorOnlyEnabled', action2);
+    browserService.resetResolver('recordAction');
     await microtasksFinished();
 
     assertFalse(userChip.hasAttribute('selected'));
+    assertTrue(actorChip.hasAttribute('selected'));
+
+    // Clicking User Chip while Actor Only is active should switch to User
+    // visits only.
+    userChip.click();
+    const action3 = await browserService.whenCalled('recordAction');
+    assertEquals('HistoryPage_ShowUserOnlyEnabled', action3);
+    browserService.resetResolver('recordAction');
+    await microtasksFinished();
+
+    assertTrue(userChip.hasAttribute('selected'));
     assertFalse(actorChip.hasAttribute('selected'));
   });
 });

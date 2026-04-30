@@ -32,6 +32,8 @@ export class HistoryFilterChipsElement extends CrLitElement {
     };
   }
 
+  // These values are used to filter the history query; true indicates that
+  // results for the respective value should be included.
   private accessor userVisits: boolean = true;
   private accessor actorVisits: boolean = true;
 
@@ -44,26 +46,16 @@ export class HistoryFilterChipsElement extends CrLitElement {
   }
 
   protected onUserVisitsClick_() {
-    // Toggle logic: If both are on, clicking one turns off the other.
-    if (this.userVisits && this.actorVisits) {
-      this.actorVisits = false;
-    } else {
-      this.userVisits = true;
-      this.actorVisits = true;
-    }
+    this.userVisits = true;
+    this.actorVisits = !this.actorVisits;
 
     this.recordMetrics_(this.userVisits, this.actorVisits);
     this.fireChange_(this.userVisits, this.actorVisits);
   }
 
   protected onActorVisitsClick_() {
-    // Toggle logic: If both are on, clicking one turns off the other.
-    if (this.userVisits && this.actorVisits) {
-      this.userVisits = false;
-    } else {
-      this.userVisits = true;
-      this.actorVisits = true;
-    }
+    this.actorVisits = true;
+    this.userVisits = !this.userVisits;
 
     this.recordMetrics_(this.userVisits, this.actorVisits);
     this.fireChange_(this.userVisits, this.actorVisits);
