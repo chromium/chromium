@@ -22335,6 +22335,51 @@
             ]
         }
     ],
+    "SmartRestart": [
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Delay_1min",
+                    "params": {
+                        "restart_delay": "1m"
+                    },
+                    "enable_features": [
+                        "SmartRestart"
+                    ]
+                },
+                {
+                    "name": "Delay_2min",
+                    "params": {
+                        "restart_delay": "2m"
+                    },
+                    "enable_features": [
+                        "SmartRestart"
+                    ]
+                },
+                {
+                    "name": "Delay_5min",
+                    "params": {
+                        "restart_delay": "5m"
+                    },
+                    "enable_features": [
+                        "SmartRestart"
+                    ]
+                },
+                {
+                    "name": "Delay_15min",
+                    "params": {
+                        "restart_delay": "15m"
+                    },
+                    "enable_features": [
+                        "SmartRestart"
+                    ]
+                }
+            ]
+        }
+    ],
     "SmartZoom": [
         {
             "platforms": [
