@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <map>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -20,6 +21,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "content/public/common/child_process_id.h"
 #include "extensions/browser/api/declarative_webrequest/request_stage.h"
 #include "extensions/browser/api/web_request/web_request_api_helpers.h"
 #include "extensions/browser/extension_event_histogram_value.h"
@@ -372,6 +374,8 @@ class WebRequestEventRouter : public KeyedService {
     return HasAnyExtraHeadersListenerImpl(browser_context);
   }
 
+  // Updates active listeners in tests that do not need process-specific
+  // matching.
   void UpdateActiveListenerForTesting(content::BrowserContext* browser_context,
                                       ListenerUpdateType update_type,
                                       const ExtensionId& extension_id,
@@ -379,7 +383,21 @@ class WebRequestEventRouter : public KeyedService {
                                       int worker_thread_id,
                                       int64_t service_worker_version_id) {
     UpdateActiveListener(browser_context, update_type, extension_id,
-                         sub_event_name, worker_thread_id,
+                         sub_event_name, std::nullopt, worker_thread_id,
+                         service_worker_version_id);
+  }
+
+  // Updates only the active listener in tests whose render process matches
+  // `render_process_id`.
+  void UpdateActiveListenerForTesting(content::BrowserContext* browser_context,
+                                      ListenerUpdateType update_type,
+                                      const ExtensionId& extension_id,
+                                      const std::string& sub_event_name,
+                                      content::ChildProcessId render_process_id,
+                                      int worker_thread_id,
+                                      int64_t service_worker_version_id) {
+    UpdateActiveListener(browser_context, update_type, extension_id,
+                         sub_event_name, render_process_id, worker_thread_id,
                          service_worker_version_id);
   }
 
@@ -569,12 +587,14 @@ class WebRequestEventRouter : public KeyedService {
   // Updates the active listener registration indicated by the given criteria.
   // `update_type` indicates whether the listener is fully removed or if it's
   // a lazy listener that had its context shut down.
-  void UpdateActiveListener(content::BrowserContext* browser_context,
-                            ListenerUpdateType update_type,
-                            const ExtensionId& extension_id,
-                            const std::string& sub_event_name,
-                            int worker_thread_id,
-                            int64_t service_worker_version_id);
+  void UpdateActiveListener(
+      content::BrowserContext* browser_context,
+      ListenerUpdateType update_type,
+      const ExtensionId& extension_id,
+      const std::string& sub_event_name,
+      std::optional<content::ChildProcessId> render_process_id,
+      int worker_thread_id,
+      int64_t service_worker_version_id);
 
   // Adds a listener to the inactive (lazy) listeners list for the specified
   // context and event. Updates global listener counts (like extra headers and
@@ -611,6 +631,7 @@ class WebRequestEventRouter : public KeyedService {
       Listeners& listeners,
       const ExtensionId& extension_id,
       const std::string& sub_event_name,
+      std::optional<content::ChildProcessId> render_process_id,
       std::optional<int> worker_thread_id,
       std::optional<int64_t> service_worker_version_id,
       BrowserContextID browser_context_id);

@@ -184,6 +184,61 @@ TEST_F(ExtensionWebRequestTest, AddAndRemoveListeners) {
             event_router->GetListenerCountForTesting(&profile_, kEventName));
 }
 
+// Tests that removing an active listener only removes listeners with the same
+// render process ID, even if extension ID and sub-event name match.
+TEST_F(ExtensionWebRequestTest, RemoveActiveListenerMatchesRenderProcessId) {
+  std::string kExtensionId("abcdefghijklmnopabcdefghijklmnop");
+  const std::string kEventName(web_request::OnBeforeRequest::kEventName);
+  const std::string kSubEventName = kEventName + "/s1";
+  WebRequestEventRouter* const event_router =
+      WebRequestEventRouter::Get(&profile_);
+
+  // Register two identical listeners that differ ONLY by their
+  // render_process_id (process 1 and process 2).
+  event_router->AddEventListener(
+      &profile_, kExtensionId, kExtensionId, kEventName, kSubEventName,
+      WebRequestEventRouter::RequestFilter(), 0, /*render_process_id=*/1, 0,
+      extensions::kMainThreadId, blink::mojom::kInvalidServiceWorkerVersionId,
+      /*is_lazy=*/false);
+  event_router->AddEventListener(
+      &profile_, kExtensionId, kExtensionId, kEventName, kSubEventName,
+      WebRequestEventRouter::RequestFilter(), 0, /*render_process_id=*/2, 0,
+      extensions::kMainThreadId, blink::mojom::kInvalidServiceWorkerVersionId,
+      /*is_lazy=*/false);
+  // Verify that both listeners were successfully added.
+  EXPECT_EQ(2u,
+            event_router->GetListenerCountForTesting(&profile_, kEventName));
+
+  // Remove the listener specifically tied to render_process_id = 1.
+  event_router->UpdateActiveListenerForTesting(
+      &profile_, WebRequestEventRouter::ListenerUpdateType::kRemove,
+      kExtensionId, kSubEventName, content::ChildProcessId(1),
+      extensions::kMainThreadId, blink::mojom::kInvalidServiceWorkerVersionId);
+  // Verify that the listener count dropped by exactly one. The listener
+  // for process 2 should remain untouched because the IDs did not match.
+  EXPECT_EQ(1u,
+            event_router->GetListenerCountForTesting(&profile_, kEventName));
+
+  // Attempt to remove the listener for render_process_id = 1 again.
+  event_router->UpdateActiveListenerForTesting(
+      &profile_, WebRequestEventRouter::ListenerUpdateType::kRemove,
+      kExtensionId, kSubEventName, content::ChildProcessId(1),
+      extensions::kMainThreadId, blink::mojom::kInvalidServiceWorkerVersionId);
+  // Verify this was a no-op. The count should still be 1 because process 1's
+  // listener is already gone, and it correctly ignores process 2's listener.
+  EXPECT_EQ(1u,
+            event_router->GetListenerCountForTesting(&profile_, kEventName));
+
+  // Remove the remaining listener tied to render_process_id = 2.
+  event_router->UpdateActiveListenerForTesting(
+      &profile_, WebRequestEventRouter::ListenerUpdateType::kRemove,
+      kExtensionId, kSubEventName, content::ChildProcessId(2),
+      extensions::kMainThreadId, blink::mojom::kInvalidServiceWorkerVersionId);
+  // Verify that all listeners have now been cleared.
+  EXPECT_EQ(0u,
+            event_router->GetListenerCountForTesting(&profile_, kEventName));
+}
+
 // Tests that when a browser_context shuts down, all data keyed to that
 // context is removed.
 TEST_F(ExtensionWebRequestTest, BrowserContextShutdown) {
