@@ -105,6 +105,8 @@ const KeyboardCodeKeyDownEntry kKeyboardCodeKeyDownEntries[] = {
 #if BUILDFLAG(IS_ANDROID)
     {VKEY_LEFT, kAltKey, "MoveToBeginningOfLine"},
     {VKEY_RIGHT, kAltKey, "MoveToEndOfLine"},
+    {VKEY_LEFT, kAltKey | kShiftKey, "MoveToBeginningOfLineAndModifySelection"},
+    {VKEY_RIGHT, kAltKey | kShiftKey, "MoveToEndOfLineAndModifySelection"},
 #endif
     {VKEY_UP, 0, "MoveUp"},
     {VKEY_UP, kShiftKey, "MoveUpAndModifySelection"},
