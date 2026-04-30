@@ -847,6 +847,8 @@ bool TemplateURLRef::ParseParameter(size_t start,
   } else if (parameter == "google:suggestAPIKeyParameter") {
     url->insert(start,
                 base::EscapeQueryParamValue(google_apis::GetAPIKey(), false));
+  } else if (parameter == "google:suggestPath") {
+    replacements->push_back(Replacement(GOOGLE_SUGGEST_PATH, start));
   } else if (parameter == "google:suggestClient") {
     replacements->push_back(Replacement(GOOGLE_SUGGEST_CLIENT, start));
   } else if (parameter == "google:suggestRid") {
@@ -1494,6 +1496,17 @@ std::string TemplateURLRef::HandleReplacements(
             break;
         }
         break;
+
+      case GOOGLE_SUGGEST_PATH: {
+        bool use_short_path =
+            base::FeatureList::IsEnabled(omnibox::kUseShortSuggestPathV1);
+        const std::string path = use_short_path ? "s" : "search";
+        HandleReplacement(std::string(), path, replacement, &url);
+        base::UmaHistogramBoolean(
+            "Omnibox.SuggestionShown.SuggestionResultType",
+            use_short_path);
+        break;
+      }
 
       case GOOGLE_SUGGEST_REQUEST_ID:
         switch (search_terms_args.request_source) {

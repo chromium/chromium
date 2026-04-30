@@ -3789,6 +3789,13 @@ Keep consistent with active providers. Doesn't need to include every provider in
   <token key="OmniboxPageContext" variants="OmniboxPageContext"/>
 </histogram>
 
+<histogram name="Omnibox.SuggestionShown.SuggestionResultType"
+    enum="SuggestionResultType" expires_after="2027-03-25">
+  <owner>mahmadi@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>Records which suggestion URL was selected.</summary>
+</histogram>
+
 <histogram
     name="Omnibox.SuggestionShown.{OmniboxZeroPrefixState}.ClientSummarizedResultType"
     enum="ClientSummarizedResultType" expires_after="2026-11-12">

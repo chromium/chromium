@@ -26100,6 +26100,11 @@ Called by update_net_error_codes.py.-->
   <int value="3" label="Superseded by other suggestion"/>
 </enum>
 
+<enum name="SuggestionResultType">
+  <int value="0" label="kStandard"/>
+  <int value="1" label="kShort"/>
+</enum>
+
 <enum name="SuggestTileType">
   <int value="0" label="Other"/>
   <int value="1" label="URL"/>

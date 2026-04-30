@@ -2561,6 +2561,32 @@ TEST_F(TemplateURLTest, GenerateSearchURL) {
   }
 }
 
+TEST_F(TemplateURLTest, GenerateURL_WithSuggestPath) {
+  TemplateURLData data;
+  data.suggestions_url = "https://foo/{google:suggestPath}?q={searchTerms}";
+
+  SearchTermsData search_terms_data;
+  TemplateURLRef::SearchTermsArgs search_terms_args(u"user query");
+
+  {
+    base::test::ScopedFeatureList features;
+    features.InitAndDisableFeature(omnibox::kUseShortSuggestPathV1);
+    TemplateURL turl(data);
+    std::string result_url = turl.suggestions_url_ref().ReplaceSearchTerms(
+        search_terms_args, search_terms_data);
+    EXPECT_EQ("https://foo/search?q=user+query", result_url);
+  }
+
+  {
+    base::test::ScopedFeatureList features;
+    features.InitAndEnableFeature(omnibox::kUseShortSuggestPathV1);
+    TemplateURL turl(data);
+    std::string result_url = turl.suggestions_url_ref().ReplaceSearchTerms(
+        search_terms_args, search_terms_data);
+    EXPECT_EQ("https://foo/s?q=user+query", result_url);
+  }
+}
+
 TEST_F(TemplateURLTest, GenerateURL_NoRegulatoryExtensions) {
   TemplateURLData data;
   data.SetURL("https://search?q={searchTerms}");
