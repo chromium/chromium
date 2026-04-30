@@ -283,7 +283,8 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   // children, clear their children and set needs to update children on them.
   // In addition, ChildrenChanged() on an included ancestor that might contain
   // this child, if one exists.
-  void ChildrenChangedOnAncestorOf(AXObject*);
+  void ChildrenChangedOnAncestorOf(AXObject*,
+                                   bool allow_immediate_update = true);
 
   const Element* RootAXEditableElement(const Node*) override;
 
@@ -1205,8 +1206,8 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   // Helper method to notify a parent node that its children have changed.
   // The notify method depends on the phase we are in. Please see
   // `processing_deferred_events_` for more details.
-  void NotifyParentChildrenChanged(AXObject* parent);
-
+  void NotifyParentChildrenChanged(AXObject* parent,
+                                   bool allow_immediate_update = true);
 
   void IncrementGenerationalCacheId() { ++generational_cache_id_; }
 
