@@ -4696,7 +4696,6 @@ static_library("browser") {
       # ... get modularized.
       "//chrome/browser/ui/extensions:impl",
     ]
-
   }
 
   # TODO(https://crbug.com/356905053): Add more dependencies here and merge this
@@ -5452,6 +5451,7 @@ static_library("test_support") {
   sources = [
     "download/download_test_file_activity_observer.cc",
     "download/download_test_file_activity_observer.h",
+    "global_features_test_support.h",
     "history/history_test_utils.cc",
     "history/history_test_utils.h",
     "media/mock_media_engagement_service.cc",

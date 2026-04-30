@@ -7,6 +7,7 @@
 #include "base/test/bind.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/global_features.h"
+#include "chrome/browser/global_features_test_support.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/browser_window/test/fake_global_browser_collection.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
@@ -68,15 +69,10 @@ std::unique_ptr<GlobalFeatures> CreateGlobalFeatures() {
 
 class WindowedIncognitoMonitorTest : public testing::Test {
  public:
-  WindowedIncognitoMonitorTest() {
-    GlobalFeatures::ReplaceGlobalFeaturesForTesting(
-        base::BindRepeating(&CreateGlobalFeatures));
-  }
+  WindowedIncognitoMonitorTest()
+      : features_override_(base::BindRepeating(&CreateGlobalFeatures)) {}
 
-  ~WindowedIncognitoMonitorTest() override {
-    GlobalFeatures::ReplaceGlobalFeaturesForTesting(
-        GlobalFeatures::GlobalFeaturesFactory());
-  }
+  ~WindowedIncognitoMonitorTest() override = default;
 
   WindowedIncognitoMonitorTest(const WindowedIncognitoMonitorTest&) = delete;
   WindowedIncognitoMonitorTest& operator=(const WindowedIncognitoMonitorTest&) =
@@ -142,6 +138,9 @@ class WindowedIncognitoMonitorTest : public testing::Test {
   static size_t next_browser_id;
 
   std::unique_ptr<TestWindowedIncognitoMonitor> incognito_monitor_;
+
+ private:
+  test::ScopedGlobalFeaturesOverride features_override_;
 };
 
 size_t WindowedIncognitoMonitorTest::next_browser_id = 1;

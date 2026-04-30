@@ -9270,6 +9270,7 @@ test("unit_tests") {
       "//chrome/browser/ui/ash/system",
       "//chrome/browser/ui/ash/wallpaper",
       "//chrome/browser/ui/ash/wallpaper:test_support",
+      "//chrome/browser/ui/browser_window/test:test_support",
       "//chrome/browser/ui/views/crostini",
       "//chrome/browser/ui/views/mahi",
       "//chrome/browser/ui/webui/about:unit_tests",

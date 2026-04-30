@@ -92,6 +92,7 @@ static_library("test_support") {
   sources = [
     "browser_event_waiter.cc",
     "browser_event_waiter.h",
+    "fake_global_browser_collection.h",
   ]
   deps = [
     "//base",
