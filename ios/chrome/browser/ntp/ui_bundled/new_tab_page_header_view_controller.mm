@@ -1264,7 +1264,7 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
 
 // Returns the omnibox placeholder text.
 - (NSString*)placeholderText {
-  if ([self.headerView shouldShowPlusButton]) {
+  if (IsAIOmniboxAskPlaceholderEnabled() && _isAIMAllowed && _fuseboxEligible) {
     return l10n_util::GetNSStringF(IDS_OMNIBOX_EMPTY_ASK_HINT_WITH_DSE_NAME,
                                    self.defaultSearchEngineName.cr_UTF16String);
   } else {
