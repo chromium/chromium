@@ -5104,6 +5104,7 @@ TEST_F(ReadAnythingAppControllerTest, ProcessModelUpdates_ResetsPdfDebouncer) {
   controller().Draw(/* recompute_display_nodes= */ true);
   EXPECT_TRUE(model().display_node_ids().contains(kId));
 }
+
 class ReadAnythingAppControllerReadabilitySelectTextTest
     : public ReadAnythingAppControllerTest {
  public:
@@ -5159,4 +5160,16 @@ TEST_F(ReadAnythingAppControllerReadabilitySelectTextTest,
 
   // Verification: The selection request was processed and cleared.
   EXPECT_FALSE(model().requires_post_process_selection());
+}
+
+TEST_F(ReadAnythingAppControllerReadabilitySelectTextTest,
+       OnRenderedTextBlocksAvailable_UpdatesModel) {
+  std::vector<std::string> blocks = {"The quick brown fox", "jumps over",
+                                     "the lazy dog"};
+
+  // Simulate the call from the WebUI.
+  controller().OnRenderedTextBlocksAvailable(blocks);
+
+  // Verify the model now holds the correct data.
+  EXPECT_EQ(model().readability_text_blocks(), blocks);
 }

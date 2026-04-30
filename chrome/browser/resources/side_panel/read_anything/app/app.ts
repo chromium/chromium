@@ -400,6 +400,11 @@ export class AppElement extends AppElementBase implements SpeechListener,
     if (newRoot) {
       this.$.container.appendChild(newRoot);
     }
+
+    // Send rendered text blocks to the controller so that it can
+    // map the rendered text to the AXTree.
+    this.onRenderedTextBlocksAvailable_();
+
     const wordCountContainer =
         isDistilledByReadability() ? this.$.container : newRoot;
     if (!this.willDrawAgainSoon_) {
@@ -429,6 +434,10 @@ export class AppElement extends AppElementBase implements SpeechListener,
 
   private updateImages_() {
     this.contentController_.updateImages(this.shadowRoot);
+  }
+
+  private onRenderedTextBlocksAvailable_() {
+    this.contentController_.onRenderedTextBlocksAvailable(this.$.container);
   }
 
   protected onDocsLoadMoreButtonClick_() {

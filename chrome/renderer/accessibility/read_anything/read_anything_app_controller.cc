@@ -1357,6 +1357,8 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
                    &ReadAnythingAppController::IsImprovedReadAloudEnabled)
       .SetProperty("isReadabilityEnabled",
                    &ReadAnythingAppController::IsReadabilityEnabled)
+      .SetProperty("isReadabilitySelectTextEnabled",
+                   &ReadAnythingAppController::IsReadabilitySelectTextEnabled)
       .SetProperty("activeDistillationMethod",
                    &ReadAnythingAppController::GetDistillationMethod)
       .SetProperty("isLineFocusEnabled",
@@ -1511,7 +1513,9 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetMethod("onSpeechEngineFirstStall",
                  &ReadAnythingAppController::OnSpeechEngineFirstStall)
       .SetMethod("onSpeechEngineStalled",
-                 &ReadAnythingAppController::OnSpeechEngineStalled);
+                 &ReadAnythingAppController::OnSpeechEngineStalled)
+      .SetMethod("onRenderedTextBlocksAvailable",
+                 &ReadAnythingAppController::OnRenderedTextBlocksAvailable);
 }
 
 ui::AXNodeID ReadAnythingAppController::RootId() const {
@@ -2001,6 +2005,10 @@ bool ReadAnythingAppController::IsImprovedReadAloudEnabled() const {
 bool ReadAnythingAppController::IsReadabilityEnabled() const {
   return features::IsReadAnythingWithReadabilityEnabled() &&
          !features::IsReadAnythingReadAloudPhraseHighlightingEnabled();
+}
+
+bool ReadAnythingAppController::IsReadabilitySelectTextEnabled() const {
+  return features::IsReadAnythingReadabilitySelectTextEnabled();
 }
 
 bool ReadAnythingAppController::IsLineFocusEnabled() const {
@@ -2975,10 +2983,15 @@ void ReadAnythingAppController::UpdateContent(const std::string& title,
       ReadAnythingAppModel::DistillationMethod::kReadability);
   model_.set_current_content_distillation_method(
       ReadAnythingAppModel::DistillationMethod::kReadability);
+
+  if (IsReadabilitySelectTextEnabled()) {
+    // Reset text blocks when content is updated.
+    model_.set_readability_text_blocks({});
+  }
   ExecuteJavaScript("chrome.readingMode.updateContent();");
 
-  if (features::IsReadAnythingReadabilitySelectTextEnabled() &&
-      !IsUpdateProcessingPaused() && model_.ContainsActiveTree()) {
+  if (IsReadabilitySelectTextEnabled() && !IsUpdateProcessingPaused() &&
+      model_.ContainsActiveTree()) {
     PostProcessSelection();
   }
 
@@ -3012,6 +3025,16 @@ void ReadAnythingAppController::ApplyAccessibilityUpdatesForReadabilityLinks(
   if (didProcessAnchors) {
     ExecuteJavaScript("chrome.readingMode.onAnchorsReadyForReadability();");
   }
+}
+
+void ReadAnythingAppController::OnRenderedTextBlocksAvailable(
+    const std::vector<std::string>& blocks) {
+  if (!IsReadabilitySelectTextEnabled()) {
+    return;
+  }
+  model_.set_readability_text_blocks(blocks);
+  // TODO(crbug.com/507447796): Notify frontend that readability text has been
+  // mapped to create readability nodestore.
 }
 
 bool ReadAnythingAppController::IsHidden() const {

@@ -121,6 +121,9 @@ declare namespace chrome {
     // Whether Readability.js is used as the primary distillation method.
     let isReadabilityEnabled: boolean;
 
+    // Whether select text for readability distillation is enabled.
+    let isReadabilitySelectTextEnabled: boolean;
+
     // Whether the phrase highlighting feature flag is enabled.
     let isPhraseHighlightingEnabled: boolean;
 
@@ -325,6 +328,10 @@ declare namespace chrome {
 
     // Called when distillation completes with the word count.
     function onDistilled(wordCount: number): void;
+
+    // Called by the Read Anything app to provide the rendered text blocks from
+    // the distilled content for AXTree mapping.
+    function onRenderedTextBlocksAvailable(blocks: string[]): void;
 
     // Called when the number of words seen by a reading mode user changes.
     function updateWordsSeen(wordsSeen: number): void;

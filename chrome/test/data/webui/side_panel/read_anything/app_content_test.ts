@@ -427,6 +427,20 @@ suite('AppContent', () => {
               1, callCount,
               'updateContentForReadability() should have been called');
         });
+
+    test('calls contentController to send rendered blocks', async () => {
+      chrome.readingMode.isReadabilitySelectTextEnabled = true;
+      let blocksCalled = false;
+      contentController.onRenderedTextBlocksAvailable = (container) => {
+        assertEquals(app.$.container, container);
+        blocksCalled = true;
+      };
+
+      app.updateContent();
+      await microtasksFinished();
+
+      assertTrue(blocksCalled);
+    });
   });
 
   suite('on links toggle', () => {

@@ -9,7 +9,7 @@ import {previousReadHighlightClass} from '../read_aloud/movement.js';
 import {getReadAloudModel} from '../read_aloud/read_aloud_model_browser_proxy.js';
 import {ReadAloudNode} from '../read_aloud/read_aloud_types.js';
 import {SpeechController} from '../read_aloud/speech_controller.js';
-import {isDistilledByReadability, LOG_EMPTY_DELAY_MS} from '../shared/common.js';
+import {getReadingModeTextNodes, isDistilledByReadability, LOG_EMPTY_DELAY_MS} from '../shared/common.js';
 import {LinkStatus, ReadAnythingLogger} from '../shared/read_anything_logger.js';
 
 import {NodeStore} from './node_store.js';
@@ -659,6 +659,20 @@ export class ContentController {
       context.drawImage(bitmap, 0, 0);
       this.listeners_.forEach(l => l.onContentChange());
     }
+  }
+
+  onRenderedTextBlocksAvailable(container: HTMLElement) {
+    if (!isDistilledByReadability() ||
+        !chrome.readingMode.isReadabilitySelectTextEnabled) {
+      return;
+    }
+
+    const nodes = getReadingModeTextNodes(container);
+
+    // Extract the raw text content from each node.
+    const blocks = nodes.map(n => n.textContent || '');
+
+    chrome.readingMode.onRenderedTextBlocksAvailable(blocks);
   }
 
   updateImages(shadowRoot?: ShadowRoot) {

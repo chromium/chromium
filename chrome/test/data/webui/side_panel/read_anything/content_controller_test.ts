@@ -1196,6 +1196,51 @@ suite('ContentController', () => {
     });
   });
 
+  suite('onRenderedTextBlocksAvailable', () => {
+    let sentBlocks: string[][];
+
+    setup(() => {
+      sentBlocks = [];
+      readingMode.onRenderedTextBlocksAvailable = (blocks) => {
+        sentBlocks.push(blocks);
+      };
+      chrome.readingMode.activeDistillationMethod =
+          chrome.readingMode.distillationTypeReadability;
+      chrome.readingMode.isReadabilitySelectTextEnabled = true;
+    });
+
+    test('extracts text blocks from container', () => {
+      const container = document.createElement('div');
+      const text1 = 'Hello ';
+      const text2 = 'world';
+      container.appendChild(document.createTextNode(text1));
+      const span = document.createElement('span');
+      span.appendChild(document.createTextNode(text2));
+      container.appendChild(span);
+      document.body.appendChild(container);
+
+      contentController.onRenderedTextBlocksAvailable(container);
+
+      assertEquals(1, sentBlocks.length);
+      assertEquals(2, sentBlocks[0]!.length);
+      assertEquals(text1, sentBlocks[0]![0]);
+      assertEquals(text2, sentBlocks[0]![1]);
+    });
+
+    test('does nothing for screen2x', () => {
+      chrome.readingMode.activeDistillationMethod =
+          chrome.readingMode.distillationTypeScreen2x;
+      chrome.readingMode.isReadabilitySelectTextEnabled = false;
+      const container = document.createElement('div');
+      container.appendChild(document.createTextNode('Hello'));
+      document.body.appendChild(container);
+
+      contentController.onRenderedTextBlocksAvailable(container);
+
+      assertEquals(0, sentBlocks.length);
+    });
+  });
+
   suite('updateAnchorsForReadability', () => {
     let container: HTMLElement;
     let anchor: HTMLAnchorElement;

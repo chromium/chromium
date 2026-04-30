@@ -388,6 +388,13 @@ class ReadAnythingAppModel {
     return ax_tree_anchors_;
   }
 
+  const std::vector<std::string>& readability_text_blocks() const {
+    return readability_text_blocks_;
+  }
+  void set_readability_text_blocks(std::vector<std::string> blocks) {
+    readability_text_blocks_ = std::move(blocks);
+  }
+
   bool page_finished_loading() const { return page_finished_loading_; }
   void set_page_finished_loading(bool page_finished_loading) {
     page_finished_loading_ = page_finished_loading;
@@ -743,6 +750,13 @@ class ReadAnythingAppModel {
   // Holds a map of an URL string with all the AX Tree Nodes that are related
   // to that specific URL.
   std::map<std::string, std::vector<AnchorData>> ax_tree_anchors_;
+
+  // Holds the text blocks extracted from the current rendered distillation. A
+  // "block" represents the textContent of a non-whitespace DOM text node from
+  // the WebUI. Blocks are used as one of the inputs along with the AXTree for
+  // the select text mapping algorithm. This algorithm maps these rendered
+  // blocks back to their source AXNodes.
+  std::vector<std::string> readability_text_blocks_;
 
   // The distillation method that will be used for the next content update.
   DistillationMethod next_distillation_method_;
