@@ -441,7 +441,8 @@ class SSLErrorAssistantProtoTest : public content::RenderViewHostTestHarness {
     config_proto->add_captive_portal_cert()->set_sha256_hash(
         "sha256/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
     config_proto->add_captive_portal_cert()->set_sha256_hash(
-        net::HashValue(ssl_info().public_key_hashes[0]).ToString());
+        net::HashValue(net::HASH_VALUE_SHA256, ssl_info().public_key_hashes[0])
+            .ToString());
     config_proto->add_captive_portal_cert()->set_sha256_hash(
         "sha256/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb");
     SSLErrorHandler::SetErrorAssistantProto(std::move(config_proto));
