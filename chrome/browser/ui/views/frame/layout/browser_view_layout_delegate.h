@@ -24,7 +24,12 @@ class BrowserViewLayoutDelegate {
 
   // The state the window is in. We do not lay out when minimized/hidden, so
   // that isn't included here.
-  enum class WindowState { kNormal, kMaximized, kFullscreen };
+  enum class WindowState {
+    kNormal,
+    kMaximized,
+    kFullscreen,
+    kFullscreenWithToolbar
+  };
 
   virtual bool ShouldDrawTabStrip() const = 0;
   virtual bool ShouldDrawVerticalTabStrip() const = 0;

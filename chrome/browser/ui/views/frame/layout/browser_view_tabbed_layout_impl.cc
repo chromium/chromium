@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/animations/side_panel_animations.h"
 #include "chrome/browser/ui/views/animations/tab_strip_animations.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
 #include "chrome/browser/ui/views/frame/custom_corners_background.h"
@@ -124,24 +125,15 @@ BrowserViewTabbedLayoutImpl::GetTopSeparatorType() const {
 
   // In immersive mode, when the top container is visually separate, the
   // separator goes with the container to the overlay.
-  bool top_container_is_visually_separate =
-      delegate().GetBrowserWindowState() == WindowState::kFullscreen;
-#if BUILDFLAG(IS_MAC)
-  // On Mac, when in full browser fullscreen (but not content fullscreen), the
-  // entire top container is always visible and does not look like an
-  // immersive mode overlay, so in this case the top container isn't visually
-  // separate from the browser.
-  if (top_container_is_visually_separate &&
-      fullscreen_utils::IsAlwaysShowToolbarEnabled(browser()) &&
-      !fullscreen_utils::IsInContentFullscreen(browser())) {
-    // If there is a shadow box, it serves as a separator, so none is needed.
-    if (ShadowOverlayVisible()) {
+  if (const WindowState window_state = delegate().GetBrowserWindowState();
+      is_fullscreen(window_state)) {
+    // If the top container is always visible, then the top container still
+    // needs a separator to visually distinguish it from the content, unless
+    // there's also a shadow box.
+    if (window_state == WindowState::kFullscreenWithToolbar &&
+        ShadowOverlayVisible()) {
       return TopSeparatorType::kNone;
     }
-    top_container_is_visually_separate = false;
-  }
-#endif
-  if (top_container_is_visually_separate) {
     return TopSeparatorType::kTopContainer;
   }
 
@@ -370,7 +362,8 @@ BrowserViewTabbedLayoutImpl::CalculateHorizontalLayout(
 
 BrowserViewTabbedLayoutImpl::VerticalTabStripAnimation
 BrowserViewTabbedLayoutImpl::CalculateVerticalTabStripAnimation(
-    const BrowserLayoutParams& params) const {
+    const BrowserLayoutParams& params,
+    WindowState window_state) const {
   int leading_exclusion_height =
       GetCollapsedVerticalTabStripRelativeTop(params);
   VerticalTabStripAnimation animation;
@@ -380,15 +373,32 @@ BrowserViewTabbedLayoutImpl::CalculateVerticalTabStripAnimation(
       controller->GetCurrentMotion(TabStripAnimations::kVerticalTabStrip);
 
   double top_corner_collapsed_state = 1.0;
+  double top_corner_expanded_state = 1.0;
+  const auto* const toolbar_height_side_panel =
+      views().toolbar_height_side_panel.get();
   if (leading_exclusion_height > 0) {
     const bool bookmarks_visible = delegate().IsBookmarkBarVisible();
-    const auto* const toolbar_height_side_panel =
-        views().toolbar_height_side_panel.get();
     const bool has_leading_side_panel =
         toolbar_height_side_panel && toolbar_height_side_panel->GetVisible() &&
         toolbar_height_side_panel->IsRightAligned() == base::i18n::IsRTL();
     top_corner_collapsed_state =
         has_leading_side_panel || bookmarks_visible ? -1.0 : 0.0;
+  }
+
+  // If the toolbar is in a separate widget but still visible, the top of the
+  // collapsed tab strip needs to be square or it looks wrong.
+  if (window_state == WindowState::kFullscreenWithToolbar) {
+    // Round the corner in with the opening of the toolbar height side panel.
+    const double open_amount =
+        controller
+            ->GetCurrentValue(SidePanelAnimations::kToolbarHeightSidePanel,
+                              SidePanelAnimations::kPanelWidth)
+            .value_or(toolbar_height_side_panel &&
+                              toolbar_height_side_panel->GetVisible()
+                          ? 1.0
+                          : 0.0);
+    top_corner_collapsed_state = -open_amount;
+    top_corner_expanded_state = -open_amount;
   }
 
   // Default is to display the top outside corner.
@@ -397,8 +407,9 @@ BrowserViewTabbedLayoutImpl::CalculateVerticalTabStripAnimation(
   const bool is_collapsed = delegate().IsVerticalTabStripCollapsed();
   animation.top_offset = is_collapsed ? leading_exclusion_height : 0;
   animation.expand_on_hover = hovering ? 1.0 : 0.0;
-  animation.top_corner =
-      hovering ? -1.0 : (is_collapsed ? top_corner_collapsed_state : 1.0);
+  animation.top_corner = hovering ? -1.0
+                                  : (is_collapsed ? top_corner_collapsed_state
+                                                  : top_corner_expanded_state);
   animation.bottom_corner = hovering ? -1.0 : 1.0;
 
   if (animation.current_motion) {
@@ -409,7 +420,8 @@ BrowserViewTabbedLayoutImpl::CalculateVerticalTabStripAnimation(
       // For expand and collapse, the target is an outside corner, so don't dip
       // below the minimum.
       animation.top_corner =
-          std::max(animation.top_corner, top_corner_collapsed_state);
+          std::clamp(animation.top_corner, top_corner_collapsed_state,
+                     top_corner_expanded_state);
     } else {
       // For hover expand and collapse, the target is an inside corner, so don't
       // bump above the maximum.
@@ -651,10 +663,12 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
   int collapsed_vertical_tab_strip_adjustment = 0;
   VerticalTabStripAnimation vertical_tab_strip_animation;
   gfx::Rect vertical_tab_strip_bounds;
+  const WindowState window_state = delegate().GetBrowserWindowState();
   if (IsParentedTo(views().vertical_tab_strip_region_view,
                    views().browser_view)) {
     if (tab_strip_type == TabStripType::kVertical) {
-      vertical_tab_strip_animation = CalculateVerticalTabStripAnimation(params);
+      vertical_tab_strip_animation =
+          CalculateVerticalTabStripAnimation(params, window_state);
       if (vertical_tab_strip_animation.top_offset > 0) {
         collapsed_vertical_tab_strip_adjustment =
             horizontal_layout.vertical_tab_strip_width;
@@ -676,12 +690,12 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
             views().vertical_tab_strip_region_view->uncollapsed_width();
         if (last_vertical_tab_strip_width_ > target_width) {
           vertical_tab_strip_width =
-              std::max(target_width, std::min(vertical_tab_strip_width,
-                                              last_vertical_tab_strip_width_));
+              std::clamp(vertical_tab_strip_width, target_width,
+                         last_vertical_tab_strip_width_);
         } else {
           vertical_tab_strip_width =
-              std::min(target_width, std::max(vertical_tab_strip_width,
-                                              last_vertical_tab_strip_width_));
+              std::clamp(vertical_tab_strip_width,
+                         last_vertical_tab_strip_width_, target_width);
         }
       } else {
         last_vertical_tab_strip_width_ = vertical_tab_strip_width;
@@ -696,7 +710,7 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
                         vertical_tab_strip_animation.top_offset);
       // In vertical tabs mode, extra space is allocated next to the top element
       // to serve as a grab handle, on whatever side the caption buttons are.
-      if (delegate().GetBrowserWindowState() != WindowState::kFullscreen) {
+      if (!is_fullscreen(window_state)) {
         IncreasePaddingToMinimum(params, GetMinimumGrabHandlePadding());
       }
       int inset_amount = horizontal_layout.vertical_tab_strip_width;
@@ -1224,7 +1238,7 @@ void BrowserViewTabbedLayoutImpl::ConfigureTopContainerBackground(
   // The top container always draws an opaque background in tabbed browser mode
   // to avoid cracking between visual elements.
   background->SetVisible(true);
-  if (delegate().GetBrowserWindowState() == WindowState::kFullscreen &&
+  if (is_fullscreen(delegate().GetBrowserWindowState()) &&
       GetTabStripType() == TabStripType::kHorizontal) {
     background->SetPrimaryColor(ui::kColorFrameActive);
   } else {
@@ -1261,7 +1275,7 @@ void BrowserViewTabbedLayoutImpl::DoPostLayoutVisualAdjustments(
     // Vertical tabstrip goes all the way to the top of the window if it is not
     // collapsed or there are no caption buttons on the leading edge.
     const VerticalTabStripAnimation animation =
-        CalculateVerticalTabStripAnimation(params);
+        CalculateVerticalTabStripAnimation(params, window_state);
     auto* const vertical_tabs_background =
         static_cast<CustomCornersBackground*>(
             views().vertical_tab_strip_region_view->background());
@@ -1384,7 +1398,7 @@ void BrowserViewTabbedLayoutImpl::DoPostLayoutVisualAdjustments(
       break;
     }
     case TabStripType::kVertical: {
-      if (window_state != WindowState::kFullscreen) {
+      if (!is_fullscreen(window_state)) {
         // Curve trailing corner when it goes all the way to the edge of the
         // browser.
         if (params.trailing_exclusion.IsEmpty()) {
@@ -1410,7 +1424,7 @@ void BrowserViewTabbedLayoutImpl::DoPostLayoutVisualAdjustments(
     // Frame-colored corners are shown at the top in horizontal tabstrip mode.
     // This doesn't apply in fullscreen, as the tabstrip is not in the window.
     if (tab_strip_type == TabStripType::kHorizontal &&
-        window_state != WindowState::kFullscreen) {
+        !is_fullscreen(window_state)) {
       // If (due to narrow width) the top container is not laid out in the main
       // area, it also doesn't get rounded corners.
       if (views().main_background_region->y() <= views().top_container->y()) {

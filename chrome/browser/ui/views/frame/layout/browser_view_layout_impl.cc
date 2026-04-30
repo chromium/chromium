@@ -281,7 +281,7 @@ void BrowserViewLayoutImpl::Layout(views::View* host) {
 void BrowserViewLayoutImpl::ConfigureTopContainerBackground(
     const BrowserLayoutParams& params,
     CustomCornersBackground* background) {
-  if (delegate().GetBrowserWindowState() == WindowState::kFullscreen) {
+  if (is_fullscreen(delegate().GetBrowserWindowState())) {
     // When in immersive mode, top container is painted with the frame color.
     // The color matches the active frame, allowing the tabstrip to paint
     // correctly.

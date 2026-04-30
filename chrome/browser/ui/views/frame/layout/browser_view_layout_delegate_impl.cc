@@ -24,6 +24,10 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/view.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "chrome/browser/ui/fullscreen_util_mac.h"
+#endif
+
 BrowserViewLayoutDelegateImpl::BrowserViewLayoutDelegateImpl(
     BrowserView& browser_view)
     : browser_view_(browser_view) {}
@@ -80,6 +84,13 @@ BrowserLayoutParams BrowserViewLayoutDelegateImpl::GetBrowserLayoutParams(
 BrowserViewLayoutDelegateImpl::WindowState
 BrowserViewLayoutDelegateImpl::GetBrowserWindowState() const {
   if (browser_view_->IsFullscreen()) {
+#if BUILDFLAG(IS_MAC)
+    if (fullscreen_utils::IsAlwaysShowToolbarEnabled(
+            browser_view_->browser()) &&
+        !fullscreen_utils::IsInContentFullscreen(browser_view_->browser())) {
+      return WindowState::kFullscreenWithToolbar;
+    }
+#endif
     return WindowState::kFullscreen;
   }
   if (browser_view_->IsMaximized()) {

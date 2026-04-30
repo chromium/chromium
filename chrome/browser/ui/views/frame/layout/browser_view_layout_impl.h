@@ -33,6 +33,10 @@ class BrowserViewLayoutImpl : public BrowserViewLayout {
 
  protected:
   using WindowState = BrowserViewLayoutDelegate::WindowState;
+  static bool is_fullscreen(WindowState window_state) {
+    return window_state == WindowState::kFullscreen ||
+           window_state == WindowState::kFullscreenWithToolbar;
+  }
 
   // The overlap between a constrained dialog and the toolbar.
   static constexpr int kDialogToolbarOverlap = 3;

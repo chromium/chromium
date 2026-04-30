@@ -114,7 +114,8 @@ class BrowserViewTabbedLayoutImpl : public BrowserViewLayoutImpl {
     double expand_on_hover = 0.0;
   };
   VerticalTabStripAnimation CalculateVerticalTabStripAnimation(
-      const BrowserLayoutParams& params) const;
+      const BrowserLayoutParams& params,
+      WindowState window_state) const;
 
   // Returns the type of tabstrip present.
   enum class TabStripType { kNone, kVertical, kHorizontal };
