@@ -19,9 +19,7 @@
 #include "third_party/icu/source/common/unicode/locid.h"
 #include "third_party/icu/source/common/unicode/utypes.h"
 #include "third_party/icu/source/i18n/unicode/datefmt.h"
-#include "third_party/icu/source/i18n/unicode/dtitvfmt.h"
 #include "third_party/icu/source/i18n/unicode/dtptngen.h"
-#include "third_party/icu/source/i18n/unicode/fmtable.h"
 #include "third_party/icu/source/i18n/unicode/measfmt.h"
 #include "third_party/icu/source/i18n/unicode/smpdtfmt.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
@@ -99,16 +97,6 @@ UMeasureFormatWidth DurationWidthToMeasureWidth(DurationFormatWidth width) {
   NOTREACHED();
 }
 
-const char* DateFormatToString(DateFormat format) {
-  switch (format) {
-    case DATE_FORMAT_YEAR_MONTH:
-      return UDAT_YEAR_MONTH;
-    case DATE_FORMAT_MONTH_WEEKDAY_DAY:
-      return UDAT_MONTH_WEEKDAY_DAY;
-  }
-  NOTREACHED();
-}
-
 }  // namespace
 
 std::u16string TimeFormatTimeOfDay(const Time& time) {
@@ -170,17 +158,14 @@ std::u16string TimeFormatShortDateAndTimeWithTimeZone(const Time& time) {
 std::u16string TimeFormatMonthAndYearForTimeZone(
     const Time& time,
     const icu::TimeZone* time_zone) {
-  icu::SimpleDateFormat formatter =
-      CreateSimpleDateFormatter(DateFormatToString(DATE_FORMAT_YEAR_MONTH));
+  icu::SimpleDateFormat formatter = CreateSimpleDateFormatter(UDAT_YEAR_MONTH);
   formatter.setTimeZone(*time_zone);
   return TimeFormat(formatter, time);
 }
 #endif
 
 std::u16string TimeFormatMonthAndYear(const Time& time) {
-  return TimeFormat(
-      CreateSimpleDateFormatter(DateFormatToString(DATE_FORMAT_YEAR_MONTH)),
-      time);
+  return TimeFormat(CreateSimpleDateFormatter(UDAT_YEAR_MONTH), time);
 }
 
 std::u16string TimeFormatFriendlyDateAndTime(const Time& time) {
@@ -357,24 +342,6 @@ bool TimeDurationCompactFormatWithSeconds(TimeDelta time,
   }
   *out = i18n::UnicodeStringToString16(formatted);
   return U_SUCCESS(status);
-}
-
-std::u16string DateIntervalFormat(const Time& begin_time,
-                                  const Time& end_time,
-                                  DateFormat format) {
-  UErrorCode status = U_ZERO_ERROR;
-
-  std::unique_ptr<icu::DateIntervalFormat> formatter(
-      icu::DateIntervalFormat::createInstance(DateFormatToString(format),
-                                              status));
-
-  icu::FieldPosition pos = 0;
-  UDate start_date = ToUDate(begin_time);
-  UDate end_date = ToUDate(end_time);
-  icu::DateInterval interval(start_date, end_date);
-  icu::UnicodeString formatted;
-  formatter->format(&interval, formatted, pos, status);
-  return i18n::UnicodeStringToString16(formatted);
 }
 
 HourClockType GetHourClockType() {

@@ -570,45 +570,5 @@ TEST(TimeFormattingTest, TimeDurationCompactFormatWithSeconds) {
                             delta, DURATION_WIDTH_NUMERIC));
 }
 
-TEST(TimeFormattingTest, TimeIntervalFormat) {
-  test::ScopedRestoreICUDefaultLocale restore_locale;
-  i18n::SetICUDefaultLocale("en_US");
-  test::ScopedRestoreDefaultTimezone la_time("America/Los_Angeles");
-
-  const Time::Exploded kTestIntervalEndTimeExploded = {
-      2011, 5,  6, 28,  // Sat, May 28, 2012
-      22,   42, 7, 0    // 22:42:07.000
-  };
-
-  Time begin_time;
-  EXPECT_TRUE(Time::FromUTCExploded(kTestDateTimeExploded, &begin_time));
-  Time end_time;
-  EXPECT_TRUE(Time::FromUTCExploded(kTestIntervalEndTimeExploded, &end_time));
-
-  EXPECT_EQ(
-      u"Saturday, April 30\u2009–\u2009Saturday, May 28",
-      DateIntervalFormat(begin_time, end_time, DATE_FORMAT_MONTH_WEEKDAY_DAY));
-
-  const Time::Exploded kTestIntervalBeginTimeExploded = {
-      2011, 5,  1, 16,  // Mon, May 16, 2012
-      22,   42, 7, 0    // 22:42:07.000
-  };
-  EXPECT_TRUE(
-      Time::FromUTCExploded(kTestIntervalBeginTimeExploded, &begin_time));
-  EXPECT_EQ(
-      u"Monday, May 16\u2009–\u2009Saturday, May 28",
-      DateIntervalFormat(begin_time, end_time, DATE_FORMAT_MONTH_WEEKDAY_DAY));
-
-  i18n::SetICUDefaultLocale("en_GB");
-  EXPECT_EQ(
-      u"Monday 16 May\u2009–\u2009Saturday 28 May",
-      DateIntervalFormat(begin_time, end_time, DATE_FORMAT_MONTH_WEEKDAY_DAY));
-
-  i18n::SetICUDefaultLocale("ja");
-  EXPECT_EQ(
-      u"5月16日(月曜日)～28日(土曜日)",
-      DateIntervalFormat(begin_time, end_time, DATE_FORMAT_MONTH_WEEKDAY_DAY));
-}
-
 }  // namespace
 }  // namespace base
