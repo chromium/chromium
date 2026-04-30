@@ -187,6 +187,7 @@ if (is_android) {
       "//chrome/browser/flags:java",
       "//chrome/browser/glic/android:jni_headers_java",
       "//chrome/browser/profiles/android:java",
+      "//chrome/browser/tab:java",
       "//chrome/browser/ui/browser_window/public/android:java",
       "//components/cached_flags:java",
       "//third_party/jni_zero:jni_zero_java",

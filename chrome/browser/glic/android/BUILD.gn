@@ -144,6 +144,7 @@ source_set("android") {
     ":jni_headers",
     "//base",
     "//chrome/browser/affiliations",
+    "//chrome/browser/android:tabs_public",
     "//chrome/browser/glic",
     "//chrome/browser/glic:mojo_bindings",
     "//chrome/browser/password_manager/actor_login:factories",

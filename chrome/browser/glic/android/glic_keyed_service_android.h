@@ -5,12 +5,15 @@
 #ifndef CHROME_BROWSER_GLIC_ANDROID_GLIC_KEYED_SERVICE_ANDROID_H_
 #define CHROME_BROWSER_GLIC_ANDROID_GLIC_KEYED_SERVICE_ANDROID_H_
 
+#include <string>
+
 #include "base/android/scoped_java_ref.h"
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/supports_user_data.h"
 
 class Profile;
+class TabAndroid;
 
 namespace glic {
 
@@ -38,6 +41,11 @@ class GlicKeyedServiceAndroid : public base::SupportsUserData::Data {
                 bool prevent_close,
                 Profile* profile,
                 int32_t source);
+
+  bool InvokeWithAutoSubmit(JNIEnv* env,
+                            TabAndroid* tab,
+                            std::string text,
+                            int32_t source);
 
   bool IsPanelShowingForBrowser(JNIEnv* env, int64_t browser_window_ptr);
 

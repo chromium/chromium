@@ -4,13 +4,17 @@
 
 #include "chrome/browser/glic/android/glic_keyed_service_android.h"
 
+#include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/public/glic_passkeys.h"
 #include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/tab_list/tab_list_interface.h"
 #include "content/public/browser/android/browser_context_handle.h"
 #include "third_party/jni_zero/jni_zero.h"
 
@@ -27,6 +31,14 @@ namespace glic {
 namespace {
 const char kGlicKeyedServiceAndroidKey[] = "glic_keyed_service_android";
 }  // namespace
+
+template <mojom::InvocationSource Source>
+class AndroidAutoSubmitPasskeyHelper {
+ public:
+  static InvokeWithAutoSubmitPasskey GetPassKey() {
+    return InvokeWithAutoSubmitPasskeyProvider::GetPassKey();
+  }
+};
 
 // static
 ScopedJavaLocalRef<jobject> GlicKeyedService::GetJavaObject(
@@ -78,6 +90,31 @@ void GlicKeyedServiceAndroid::ToggleUI(JNIEnv* env,
 
   service_->ToggleUI(window, prevent_close,
                      static_cast<mojom::InvocationSource>(source));
+}
+
+bool GlicKeyedServiceAndroid::InvokeWithAutoSubmit(JNIEnv* env,
+                                                   TabAndroid* tab,
+                                                   std::string text,
+                                                   int32_t source) {
+  if (!tab) {
+    return false;
+  }
+
+  auto invocation_source = static_cast<mojom::InvocationSource>(source);
+  GlicInvokeOptions options(Target(tab), invocation_source);
+  options.prompts.push_back(std::move(text));
+
+  switch (invocation_source) {
+    case mojom::InvocationSource::kUniversalCart:
+      service_->InvokeWithAutoSubmit(
+          AndroidAutoSubmitPasskeyHelper<
+              mojom::InvocationSource::kUniversalCart>::GetPassKey(),
+          std::move(options));
+      return true;
+    default:
+      // Handle unauthorized source
+      return false;
+  }
 }
 
 bool GlicKeyedServiceAndroid::IsPanelShowingForBrowser(

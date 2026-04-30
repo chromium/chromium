@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_GLIC_PUBLIC_GLIC_PASSKEYS_H_
 
 #include "base/types/pass_key.h"
+#include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/glic_context_menu_invocation_helper.h"
 
 class GlicExperimentalTriggeringMessageHandler;
@@ -28,6 +29,9 @@ class AiOverlayTools;
 namespace glic {
 
 class GlicInternalsPageHandler;
+
+template <mojom::InvocationSource Source>
+class AndroidAutoSubmitPasskeyHelper;
 
 // Passkey for invoking glic with auto submit. Reach out to OWNERS before
 // adding new callers.
@@ -54,6 +58,8 @@ class InvokeWithAutoSubmitPasskeyProvider {
   friend class ::GlicExperimentalTriggeringMessageHandler;
   friend class GlicCueTarget;
   friend class ::ttc::AiOverlayTools;
+  friend class AndroidAutoSubmitPasskeyHelper<
+      mojom::InvocationSource::kUniversalCart>;
 };
 
 using InvokeWithAutoSubmitPasskey =
