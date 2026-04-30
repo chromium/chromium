@@ -49,9 +49,9 @@ void VideoCaptureDeviceFactoryWebRtc::FinishGetDevicesInfo() {
 
     if (info) {
       for (uint32_t i = 0; i < info->NumberOfDevices(); ++i) {
-        char device_name[webrtc::kVideoCaptureDeviceNameLength];
-        char unique_name[webrtc::kVideoCaptureUniqueNameLength];
-        char product_id[webrtc::kVideoCaptureProductIdLength];
+        char device_name[webrtc::kVideoCaptureDeviceNameLength] = {};
+        char unique_name[webrtc::kVideoCaptureUniqueNameLength] = {};
+        char product_id[webrtc::kVideoCaptureProductIdLength] = {};
 
         if (info->GetDeviceName(
                 i, device_name, webrtc::kVideoCaptureDeviceNameLength,
