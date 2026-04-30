@@ -6,6 +6,24 @@
 
 namespace chrome_pdf {
 
+InkTextBoxAttributes::InkTextBoxAttributes(gfx::RectF rect,
+                                           SkColor color,
+                                           float css_font_size,
+                                           TextTypeface typeface,
+                                           TextAlignment alignment,
+                                           int orientation,
+                                           bool is_bold,
+                                           bool is_italic)
+    : rect(rect),
+      color(color),
+      css_font_size(css_font_size),
+      typeface(typeface),
+      alignment(alignment),
+      orientation(orientation),
+      is_bold(is_bold),
+      is_italic(is_italic) {}
+InkTextBoxAttributes::~InkTextBoxAttributes() = default;
+
 InkTextInfo::InkTextInfo(FontId font_id,
                          std::vector<uint32_t> glyphs,
                          std::vector<gfx::Vector2dF> glyph_positions,

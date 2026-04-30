@@ -3080,9 +3080,15 @@ TEST_P(PDFiumEngineInkDrawTextTest, DrawText) {
           /*location=*/gfx::RectF(0.0f, 0.0f, 100.0f, 20.0f),
           /*is_horizontal=*/true)},
       /*pdf_zoom=*/1.0,
-      InkTextBoxAttributes{.rect = gfx::RectF(20.0f, 20.0f, 100.0f, 100.0f),
-                           .color = SK_ColorBLACK,
-                           .css_font_size = 10.0f});
+      InkTextBoxAttributes(
+          /*rect=*/gfx::RectF(20.0f, 20.0f, 100.0f, 100.0f),
+          /*color=*/SK_ColorBLACK,
+          /*css_font_size=*/10.0f,
+          /*typeface=*/TextTypeface::kSansSerif,
+          /*alignment=*/TextAlignment::kLeft,
+          /*orientation=*/0,
+          /*is_bold=*/false,
+          /*is_italic=*/false));
 
   // Verify the rendering of text for in-memory PDF.
   const gfx::Size& kPageSizeInPoints = kBlankPageSizeInPoints;
@@ -3117,9 +3123,15 @@ TEST_P(PDFiumEngineInkDrawTextTest, DrawOrangeText) {
           /*location=*/gfx::RectF(0.0f, 0.0f, 100.0f, 20.0f),
           /*is_horizontal=*/true)},
       /*pdf_zoom=*/1.0,
-      InkTextBoxAttributes{.rect = gfx::RectF(20.0f, 20.0f, 100.0f, 100.0f),
-                           .color = SkColorSetRGB(0xFF, 0x63, 0x0C),
-                           .css_font_size = 10.0f});
+      InkTextBoxAttributes(
+          /*rect=*/gfx::RectF(20.0f, 20.0f, 100.0f, 100.0f),
+          /*color=*/SkColorSetRGB(0xFF, 0x63, 0x0C),
+          /*css_font_size=*/10.0f,
+          /*typeface=*/TextTypeface::kSansSerif,
+          /*alignment=*/TextAlignment::kLeft,
+          /*orientation=*/0,
+          /*is_bold=*/false,
+          /*is_italic=*/false));
 
   // Verify the rendering of orange text for in-memory PDF.
   const gfx::Size& kPageSizeInPoints = kBlankPageSizeInPoints;

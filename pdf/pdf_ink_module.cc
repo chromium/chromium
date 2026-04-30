@@ -153,12 +153,39 @@ InkTextBoxAttributes GetTextBoxAttributesFromDict(const base::DictValue& data) {
   const base::DictValue& text_attributes = *data.FindDict("textAttributes");
   const float css_font_size = text_attributes.FindDouble("size").value();
 
-  // TODO(crbug.com/409021827): Add more attributes.
-  return InkTextBoxAttributes{
-      .rect = textbox,
-      .color = GetColorFromDict(text_attributes),
-      .css_font_size = css_font_size,
-  };
+  const std::string& typeface_str = *text_attributes.FindString("typeface");
+  TextTypeface typeface;
+  if (typeface_str == "sans-serif") {
+    typeface = TextTypeface::kSansSerif;
+  } else if (typeface_str == "serif") {
+    typeface = TextTypeface::kSerif;
+  } else {
+    CHECK_EQ(typeface_str, "monospace");
+    typeface = TextTypeface::kMonospace;
+  }
+
+  const std::string& alignment_str = *text_attributes.FindString("alignment");
+  TextAlignment alignment;
+  if (alignment_str == "left") {
+    alignment = TextAlignment::kLeft;
+  } else if (alignment_str == "center") {
+    alignment = TextAlignment::kCenter;
+  } else {
+    CHECK_EQ(alignment_str, "right");
+    alignment = TextAlignment::kRight;
+  }
+
+  const int orientation = data.FindInt("textOrientation").value();
+  CHECK_GE(orientation, 0);
+  CHECK_LE(orientation, 3);
+
+  const base::DictValue& styles = *text_attributes.FindDict("styles");
+  bool is_bold = styles.FindBool("bold").value();
+  bool is_italic = styles.FindBool("italic").value();
+
+  return InkTextBoxAttributes(textbox, GetColorFromDict(text_attributes),
+                              css_font_size, typeface, alignment, orientation,
+                              /*is_bold=*/is_bold, /*is_italic=*/is_italic);
 }
 
 ink::Rect GetEraserRect(const gfx::PointF& center) {

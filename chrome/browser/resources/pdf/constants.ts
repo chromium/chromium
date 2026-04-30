@@ -58,13 +58,11 @@ export enum TextAlignment {
   RIGHT = 'right',
 }
 
-// Note that this is not used by the backend.
 export enum TextStyle {
   BOLD = 'bold',
   ITALIC = 'italic',
 }
 
-// Note that this is not used by the backend.
 export enum TextTypeface {
   SANS_SERIF = 'sans-serif',
   SERIF = 'serif',

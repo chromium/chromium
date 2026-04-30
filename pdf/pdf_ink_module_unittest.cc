@@ -236,13 +236,20 @@ MATCHER_P5(InkTextInfoEq,
          arg.is_horizontal == is_horizontal;
 }
 
-MATCHER_P3(InkTextBoxAttributesEq,
+MATCHER_P8(InkTextBoxAttributesEq,
            rect,
            color,
            css_font_size,
+           typeface,
+           alignment,
+           orientation,
+           is_bold,
+           is_italic,
            "matches InkTextBoxAttributes") {
   return arg.rect == rect && arg.color == color &&
-         arg.css_font_size == css_font_size;
+         arg.css_font_size == css_font_size && arg.typeface == typeface &&
+         arg.alignment == alignment && arg.orientation == orientation &&
+         arg.is_bold == is_bold && arg.is_italic == is_italic;
 }
 
 base::DictValue CreateGetAnnotationBrushMessage(const std::string& brush_type) {
@@ -952,6 +959,10 @@ class PdfInkModuleTextTest : public testing::Test {
     text_attributes.Set(
         "color", base::DictValue().Set("r", 255).Set("g", 111).Set("b", 99));
     text_attributes.Set("size", 12.0f);
+    text_attributes.Set("typeface", "serif");
+    text_attributes.Set("alignment", "center");
+    text_attributes.Set(
+        "styles", base::DictValue().Set("bold", true).Set("italic", true));
     return text_attributes;
   }
 
@@ -970,7 +981,12 @@ class PdfInkModuleTextTest : public testing::Test {
     return InkTextBoxAttributesEq(
         /*rect=*/gfx::RectF(10.0f, 20.0f, 100.0f, 15.0f),
         /*color=*/SkColorSetRGB(255, 111, 99),
-        /*css_font_size=*/12.0f);
+        /*css_font_size=*/12.0f,
+        /*typeface=*/TextTypeface::kSerif,
+        /*alignment=*/TextAlignment::kCenter,
+        /*orientation=*/1,
+        /*is_bold=*/true,
+        /*is_italic=*/true);
   }
 
   static base::BlobStorage SampleInkTextInfoBlob(FontId typeface_id) {
@@ -1026,6 +1042,7 @@ TEST_F(PdfInkModuleTextTest, HandleFinishTextAnnotationMessage) {
   data.Set("pageIndex", kPageIndex);
   data.Set("pdfZoom", 2.0f);
   data.Set("textAttributes", SampleTextAttributesDict());
+  data.Set("textOrientation", 1);
   data.Set("textBoxRect", SampleTextBoxRectDict());
   data.Set("mojoTextInfo", SampleInkTextInfoBlob(kFontId));
 

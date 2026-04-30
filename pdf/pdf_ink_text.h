@@ -18,11 +18,43 @@ using SkColor = uint32_t;
 
 namespace chrome_pdf {
 
+// These values are persisted in PDFs as integers. Do not change the assigned
+// integer values to maintain backward compatibility.
+enum class TextTypeface {
+  kSansSerif = 0,
+  kSerif = 1,
+  kMonospace = 2,
+};
+
+// These values are persisted in PDFs as integers. Do not change the assigned
+// integer values to maintain backward compatibility.
+enum class TextAlignment {
+  kLeft = 0,
+  kCenter = 1,
+  kRight = 2,
+};
+
 struct InkTextBoxAttributes {
+  InkTextBoxAttributes(gfx::RectF rect,
+                       SkColor color,
+                       float css_font_size,
+                       TextTypeface typeface,
+                       TextAlignment alignment,
+                       int orientation,
+                       bool is_bold,
+                       bool is_italic);
+  ~InkTextBoxAttributes();
+
   // `rect` is in CSS screen coordinates.
   gfx::RectF rect;
   SkColor color;
   float css_font_size;
+  TextTypeface typeface;
+  TextAlignment alignment;
+  // `orientation` is in 90-degree units clockwise.
+  int orientation;
+  bool is_bold;
+  bool is_italic;
 };
 
 struct InkTextInfo {
