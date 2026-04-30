@@ -57,6 +57,18 @@ std::optional<PdfRect> GetPageObjectBounds(FPDF_PAGEOBJECT page_object);
 // Returns the name of `mark`, or an empty string on failure.
 std::u16string GetPageObjectMarkName(FPDF_PAGEOBJECTMARK mark);
 
+// Wrapper around FPDFPageObjMark_GetParamIntValue().
+// Returns the value of the parameter with `key` in `mark`, or std::nullopt on
+// failure.
+std::optional<int> GetPageObjectMarkIntParam(FPDF_PAGEOBJECTMARK mark,
+                                             const std::string& key);
+
+// Wrapper around FPDFPageObjMark_GetParamFloatValue().
+// Returns the value of the parameter with `key` in `mark`, or std::nullopt on
+// failure.
+std::optional<float> GetPageObjectMarkFloatParam(FPDF_PAGEOBJECTMARK mark,
+                                                 const std::string& key);
+
 // Wrapper around FPDFText_GetCharBox(). Returns the bounds for text at `index`
 // in `text_page`, or std::nullopt on failure.
 std::optional<PdfRect> GetTextCharBox(FPDF_TEXTPAGE text_page, int index);

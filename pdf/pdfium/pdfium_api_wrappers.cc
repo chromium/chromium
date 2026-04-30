@@ -177,7 +177,6 @@ std::optional<PdfRect> GetPageObjectBounds(FPDF_PAGEOBJECT page_object) {
 std::u16string GetPageObjectMarkName(FPDF_PAGEOBJECTMARK mark) {
   // FPDFPageObjMark_GetName() naturally handles null `mark` inputs, so no
   // explicit check.
-
   std::u16string name;
   // NOLINT used below because this is required by the PDFium API interaction.
   unsigned long buflen_bytes = 0;  // NOLINT(runtime/int)
@@ -203,6 +202,24 @@ std::u16string GetPageObjectMarkName(FPDF_PAGEOBJECTMARK mark) {
   CHECK_EQ(actual_buflen_bytes, buflen_bytes);
   adapter.Close(expected_size);
   return name;
+}
+
+std::optional<int> GetPageObjectMarkIntParam(FPDF_PAGEOBJECTMARK mark,
+                                             const std::string& key) {
+  int value;
+  if (!FPDFPageObjMark_GetParamIntValue(mark, key.c_str(), &value)) {
+    return std::nullopt;
+  }
+  return value;
+}
+
+std::optional<float> GetPageObjectMarkFloatParam(FPDF_PAGEOBJECTMARK mark,
+                                                 const std::string& key) {
+  float value;
+  if (!FPDFPageObjMark_GetParamFloatValue(mark, key.c_str(), &value)) {
+    return std::nullopt;
+  }
+  return value;
 }
 
 std::optional<PdfRect> GetTextCharBox(FPDF_TEXTPAGE text_page, int index) {

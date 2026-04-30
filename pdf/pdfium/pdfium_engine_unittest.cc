@@ -34,6 +34,7 @@
 #include "pdf/document_metadata.h"
 #include "pdf/page_character_index.h"
 #include "pdf/pdf_features.h"
+#include "pdf/pdfium/pdfium_api_wrappers.h"
 #include "pdf/pdfium/pdfium_draw_selection_test_base.h"
 #include "pdf/pdfium/pdfium_engine_client.h"
 #include "pdf/pdfium/pdfium_page.h"
@@ -3138,6 +3139,100 @@ TEST_P(PDFiumEngineInkDrawTextTest, DrawOrangeText) {
   const base::FilePath kAppliedTextFilePath(GetInkTestDataFilePath(
       GetTestDataPathWithPlatformSuffix("applied_text_orange.png")));
   CheckPdfRendering(page.GetPage(), kPageSizeInPoints, kAppliedTextFilePath);
+}
+
+TEST_P(PDFiumEngineInkDrawTextTest, DrawTextSavesMetadata) {
+  TestClient client(/*use_skia_renderer=*/GetParam());
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("blank.pdf"));
+  ASSERT_TRUE(engine);
+  int page_count = FPDF_GetPageCount(engine->doc());
+  ASSERT_EQ(page_count, 1);
+
+  constexpr int kPageIndex = 0;
+  PDFiumPage& page = GetPDFiumPage(*engine, kPageIndex);
+  CheckPdfRenderingIsBlank200x200(page.GetPage());
+
+  FontId font_id = AddDefaultFont(engine.get());
+  std::vector<uint32_t> glyphs1 = GetGlyphsForText("Hello");
+  std::vector<uint32_t> glyphs2 = GetGlyphsForText("!");
+  ASSERT_FALSE(glyphs1.empty());
+  ASSERT_FALSE(glyphs2.empty());
+
+  // Draw some text with two runs to force multiple text objects.
+  engine->DrawText(kPageIndex,
+                   {InkTextInfo(font_id, glyphs1,
+                                std::vector<gfx::Vector2dF>(glyphs1.size()),
+                                gfx::RectF(0.0f, 0.0f, 80.0f, 20.0f), true),
+                    InkTextInfo(font_id, glyphs2,
+                                std::vector<gfx::Vector2dF>(glyphs2.size()),
+                                gfx::RectF(80.0f, 0.0f, 20.0f, 20.0f), true)},
+                   /*pdf_zoom=*/1.0,
+                   InkTextBoxAttributes(
+                       /*rect=*/gfx::RectF(20.0f, 20.0f, 100.0f, 100.0f),
+                       /*color=*/SK_ColorBLACK,
+                       /*css_font_size=*/10.0f,
+                       /*typeface=*/TextTypeface::kSansSerif,
+                       /*alignment=*/TextAlignment::kLeft,
+                       /*orientation=*/0,
+                       /*is_bold=*/true,
+                       /*is_italic=*/false));
+
+  FPDF_PAGE pdf_page = page.GetPage();
+  int obj_count = FPDFPage_CountObjects(pdf_page);
+  ASSERT_EQ(2, obj_count);
+
+  // Verify all text objects have a mark with the same textbox ID.
+  std::string textbox_id;
+  for (int i = 0; i < obj_count; ++i) {
+    FPDF_PAGEOBJECT obj = FPDFPage_GetObject(pdf_page, i);
+    ASSERT_EQ(1, FPDFPageObj_CountMarks(obj));
+
+    FPDF_PAGEOBJECTMARK mark = FPDFPageObj_GetMark(obj, 0);
+    EXPECT_EQ(kInkTextAnnotationIdentifierKey,
+              base::UTF16ToUTF8(GetPageObjectMarkName(mark)));
+    EXPECT_THAT(GetPageObjectMarkIntParam(mark, "TextboxId"),
+                testing::Optional(0));
+
+    if (i == 0) {
+      // Verify the first text object contains the full textbox metadata.
+      EXPECT_THAT(GetPageObjectMarkIntParam(mark, "Version"),
+                  testing::Optional(kInkTextAnnotationVersion));
+      EXPECT_THAT(GetPageObjectMarkFloatParam(mark, "BoundsX"),
+                  testing::Optional(20.0f));
+      EXPECT_THAT(GetPageObjectMarkFloatParam(mark, "BoundsY"),
+                  testing::Optional(20.0f));
+      EXPECT_THAT(GetPageObjectMarkFloatParam(mark, "BoundsWidth"),
+                  testing::Optional(100.0f));
+      EXPECT_THAT(GetPageObjectMarkFloatParam(mark, "BoundsHeight"),
+                  testing::Optional(100.0f));
+      EXPECT_THAT(
+          GetPageObjectMarkIntParam(mark, "Typeface"),
+          testing::Optional(static_cast<int>(TextTypeface::kSansSerif)));
+      EXPECT_THAT(GetPageObjectMarkIntParam(mark, "Alignment"),
+                  testing::Optional(static_cast<int>(TextAlignment::kLeft)));
+      EXPECT_THAT(GetPageObjectMarkIntParam(mark, "Orientation"),
+                  testing::Optional(0));
+      EXPECT_THAT(GetPageObjectMarkIntParam(mark, "IsBold"),
+                  testing::Optional(1));
+      EXPECT_THAT(GetPageObjectMarkIntParam(mark, "IsItalic"),
+                  testing::Optional(0));
+    } else {
+      // Verify the remaining text objects do not have the full metadata.
+      EXPECT_FALSE(GetPageObjectMarkIntParam(mark, "Version").has_value());
+      EXPECT_FALSE(GetPageObjectMarkFloatParam(mark, "BoundsX").has_value());
+      EXPECT_FALSE(GetPageObjectMarkFloatParam(mark, "BoundsY").has_value());
+      EXPECT_FALSE(
+          GetPageObjectMarkFloatParam(mark, "BoundsWidth").has_value());
+      EXPECT_FALSE(
+          GetPageObjectMarkFloatParam(mark, "BoundsHeight").has_value());
+      EXPECT_FALSE(GetPageObjectMarkIntParam(mark, "Typeface").has_value());
+      EXPECT_FALSE(GetPageObjectMarkIntParam(mark, "Alignment").has_value());
+      EXPECT_FALSE(GetPageObjectMarkIntParam(mark, "Orientation").has_value());
+      EXPECT_FALSE(GetPageObjectMarkIntParam(mark, "IsBold").has_value());
+      EXPECT_FALSE(GetPageObjectMarkIntParam(mark, "IsItalic").has_value());
+    }
+  }
 }
 
 // Don't be concerned about any slight rendering differences in AGG vs. Skia,

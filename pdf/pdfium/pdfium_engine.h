@@ -1423,6 +1423,10 @@ class PDFiumEngine : public DocumentLoader::Client,
   // Key: ID to identify the font.
   // Value: The associated PDFium font objects.
   std::map<FontId, ScopedFPDFFont> font_map_;
+
+  // The next available ID for a textbox for writing into the PDF.
+  // TODO(crbug.com/408926609): Implement ID collision avoidance.
+  int next_textbox_id_ = 0;
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
 
   base::WeakPtrFactory<PDFiumEngine> weak_factory_{this};

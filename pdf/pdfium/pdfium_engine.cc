@@ -54,6 +54,7 @@
 #include "pdf/pdf_accessibility_constants.h"
 #include "pdf/pdf_caret.h"
 #include "pdf/pdf_features.h"
+#include "pdf/pdf_ink_constants.h"
 #include "pdf/pdf_transform.h"
 #include "pdf/pdf_utils/text_util.h"
 #include "pdf/pdfium/pdfium_api_string_buffer_adapter.h"
@@ -156,6 +157,37 @@ constexpr int32_t kFormHighlightAlpha = 100;
 constexpr int kMaxPasswordTries = 3;
 
 constexpr base::TimeDelta kTouchLongPressTimeout = base::Milliseconds(300);
+
+// Saves the provided `attributes` as parameters on the `mark` of the
+// `text_object`. Used to reload text objects in future PDF sessions.
+void AddMetadataToTextObject(FPDF_DOCUMENT doc,
+                             FPDF_PAGEOBJECT text_object,
+                             FPDF_PAGEOBJECTMARK mark,
+                             const InkTextBoxAttributes& attributes) {
+  CHECK(FPDFPageObjMark_SetIntParam(doc, text_object, mark, "Version",
+                                    kInkTextAnnotationVersion));
+
+  CHECK(FPDFPageObjMark_SetFloatParam(doc, text_object, mark, "BoundsX",
+                                      attributes.rect.x()));
+  CHECK(FPDFPageObjMark_SetFloatParam(doc, text_object, mark, "BoundsY",
+                                      attributes.rect.y()));
+  CHECK(FPDFPageObjMark_SetFloatParam(doc, text_object, mark, "BoundsWidth",
+                                      attributes.rect.width()));
+  CHECK(FPDFPageObjMark_SetFloatParam(doc, text_object, mark, "BoundsHeight",
+                                      attributes.rect.height()));
+
+  CHECK(FPDFPageObjMark_SetIntParam(doc, text_object, mark, "Typeface",
+                                    static_cast<int>(attributes.typeface)));
+  CHECK(FPDFPageObjMark_SetIntParam(doc, text_object, mark, "Alignment",
+                                    static_cast<int>(attributes.alignment)));
+  CHECK(FPDFPageObjMark_SetIntParam(doc, text_object, mark, "Orientation",
+                                    attributes.orientation));
+
+  CHECK(FPDFPageObjMark_SetIntParam(doc, text_object, mark, "IsBold",
+                                    attributes.is_bold));
+  CHECK(FPDFPageObjMark_SetIntParam(doc, text_object, mark, "IsItalic",
+                                    attributes.is_italic));
+}
 
 // Windows has native panning capabilities. No need to use our own.
 #if BUILDFLAG(IS_WIN)
@@ -5092,6 +5124,7 @@ void PDFiumEngine::DrawText(int page_index,
   const SkColor color = attributes.color;
   const float pdf_font_size =
       CSSFontSizeToPdfFontSize(attributes.css_font_size);
+  const int textbox_id = next_textbox_id_++;
 
   for (const InkTextInfo& item : text_info) {
     FPDF_FONT font = GetAddedFont(item.font_id);
@@ -5119,6 +5152,19 @@ void PDFiumEngine::DrawText(int page_index,
                                 item.glyphs.size()));
     FS_MATRIX matrix{1, 0, 0, 1, run_rect.x(), run_rect.y()};
     CHECK(FPDFPageObj_TransformF(text_object.get(), &matrix));
+
+    FPDF_PAGEOBJECTMARK mark =
+        FPDFPageObj_AddMark(text_object.get(), kInkTextAnnotationIdentifierKey);
+    CHECK(mark);
+    CHECK(FPDFPageObjMark_SetIntParam(doc(), text_object.get(), mark,
+                                      "TextboxId", textbox_id));
+
+    if (&item == &text_info.front()) {
+      // Only apply metadata to the first text object in the textbox. Other
+      // text objects in the textbox can be identified by the TextboxId.
+      AddMetadataToTextObject(doc(), text_object.get(), mark, attributes);
+    }
+
     CHECK(FPDFPage_InsertObject(page, text_object.release()));
   }
 

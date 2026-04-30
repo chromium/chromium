@@ -12,6 +12,12 @@ namespace chrome_pdf {
 // Signature for "V2" PDF page objects. Do not change.
 inline constexpr char kInkAnnotationIdentifierKeyV2[] = "GOOG:INKIsInker";
 
+// Signature for text annotations. Do not change.
+inline constexpr char kInkTextAnnotationIdentifierKey[] = "GOOG:CrText";
+
+// The current version of text annotations.
+inline constexpr int kInkTextAnnotationVersion = 1;
+
 // Since PDFium does not support UserUnit, this is the maximum possible PDF
 // dimension.
 // TODO(crbug.com/42271703): If the bug gets fixed, update the code that assumes
