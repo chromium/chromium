@@ -64,7 +64,9 @@ TEST_F(FilterExtractorTest, ExtractAnnotationFromUrl_Success) {
   FilterAnnotation annotation(id, kTestTask, kTestDomain, base::Time::Now(),
                               attributes);
 
-  EXPECT_CALL(mock_client(), ExtractFilterAnnotation(test_url, _))
+  EXPECT_CALL(mock_client(),
+              ExtractFilterAnnotation(test_url, _, kTestNavigationId))
+
       .WillOnce(base::test::RunOnceCallback<1>(annotation));
   EXPECT_CALL(filter_store(), StoreAnnotation(_, _))
       .WillOnce(base::test::RunOnceCallback<1>(true));
@@ -87,7 +89,9 @@ TEST_F(FilterExtractorTest, ExtractAnnotationFromUrl_StoreFailed) {
   FilterAnnotation annotation(id, kTestTask, kTestDomain, base::Time::Now(),
                               attributes);
 
-  EXPECT_CALL(mock_client(), ExtractFilterAnnotation(test_url, _))
+  EXPECT_CALL(mock_client(),
+              ExtractFilterAnnotation(test_url, _, kTestNavigationId))
+
       .WillOnce(base::test::RunOnceCallback<1>(annotation));
   EXPECT_CALL(filter_store(), StoreAnnotation(_, _))
       .WillOnce(base::test::RunOnceCallback<1>(false));
@@ -105,7 +109,9 @@ TEST_F(FilterExtractorTest, ExtractAnnotationFromUrl_StoreFailed) {
 TEST_F(FilterExtractorTest, ExtractAnnotationFromUrl_EmptyResult) {
   GURL test_url(kTestUrl);
 
-  EXPECT_CALL(mock_client(), ExtractFilterAnnotation(test_url, _))
+  EXPECT_CALL(mock_client(),
+              ExtractFilterAnnotation(test_url, _, kTestNavigationId))
+
       .WillOnce(base::test::RunOnceCallback<1>(std::nullopt));
 
   base::test::TestFuture<std::optional<base::Uuid>> extract_future;

@@ -16,6 +16,8 @@ static_library("annotation_index") {
     "//components/google/core/common",
     "//components/multistep_filter/core:features",
     "//components/multistep_filter/core:switches",
+    "//components/multistep_filter/core:util",
+    "//components/multistep_filter/core/logging",
     "//components/signin/public/base",
     "//components/signin/public/identity_manager",
     "//google_apis",

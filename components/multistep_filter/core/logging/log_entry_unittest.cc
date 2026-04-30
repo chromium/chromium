@@ -39,6 +39,8 @@ TEST(LogEntryTest, AllEventTypes) {
       {LogEventType::kUiShown, "UiShown"},
       {LogEventType::kUiAccepted, "UiAccepted"},
       {LogEventType::kUiDismissed, "UiDismissed"},
+      {LogEventType::kServerRequestFailed, "ServerRequestFailed"},
+      {LogEventType::kServerResponseMalformed, "ServerResponseMalformed"},
   };
 
   for (const auto& test_case : test_cases) {

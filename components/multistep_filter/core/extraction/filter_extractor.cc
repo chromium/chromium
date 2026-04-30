@@ -68,9 +68,11 @@ void FilterExtractor::ExtractAnnotationFromUrl(
     int64_t navigation_id,
     std::string_view domain) {
   annotation_index_client_->ExtractFilterAnnotation(
-      url, base::BindOnce(&FilterExtractor::OnAnnotationExtracted,
-                          weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                          navigation_id, std::string(domain)));
+      url,
+      base::BindOnce(&FilterExtractor::OnAnnotationExtracted,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     navigation_id, std::string(domain)),
+      navigation_id);
 }
 
 void FilterExtractor::OnAnnotationExtracted(

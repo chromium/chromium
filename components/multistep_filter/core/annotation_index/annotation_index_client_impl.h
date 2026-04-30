@@ -34,6 +34,7 @@ struct AccessTokenInfo;
 
 namespace multistep_filter {
 
+class MultistepFilterLogRouter;
 struct FilterAnnotation;
 struct FilterSuggestionCandidate;
 
@@ -41,7 +42,8 @@ class AnnotationIndexClientImpl : public AnnotationIndexClient {
  public:
   AnnotationIndexClientImpl(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      signin::IdentityManager* identity_manager);
+      signin::IdentityManager* identity_manager,
+      MultistepFilterLogRouter* log_router);
   ~AnnotationIndexClientImpl() override;
 
   // AnnotationIndexClient overrides:
@@ -49,18 +51,19 @@ class AnnotationIndexClientImpl : public AnnotationIndexClient {
       const GURL& url,
       base::span<const FilterAnnotation> filter_annotations,
       base::OnceCallback<
-          void(std::optional<std::vector<FilterSuggestionCandidate>>)> callback)
-      override;
+          void(std::optional<std::vector<FilterSuggestionCandidate>>)> callback,
+      int64_t navigation_id) override;
 
   void GetSupportedTaskTypesForDomain(
       std::string_view domain,
       base::OnceCallback<void(std::optional<std::vector<std::string>>)>
-          callback) override;
+          callback,
+      int64_t navigation_id) override;
 
   void ExtractFilterAnnotation(
       const GURL& url,
-      base::OnceCallback<void(std::optional<FilterAnnotation>)> callback)
-      override;
+      base::OnceCallback<void(std::optional<FilterAnnotation>)> callback,
+      int64_t navigation_id) override;
 
  private:
   friend class AnnotationIndexClientImplTestApi;
@@ -74,13 +77,17 @@ class AnnotationIndexClientImpl : public AnnotationIndexClient {
   void ExecuteRequest(
       std::unique_ptr<network::ResourceRequest> request,
       std::string request_body,
-      base::OnceCallback<void(std::optional<std::string>)> callback);
+      base::OnceCallback<void(std::optional<std::string>, int)> callback,
+      int64_t navigation_id,
+      std::string_view domain);
 
   // Invoked when `SimpleURLLoader` finishes. Cleans up the specific loader
   // from `active_url_loaders_` and forwards the raw response to the parser.
   void OnSimpleURLLoaderComplete(
       SimpleURLLoaderList::iterator loader_it,
-      base::OnceCallback<void(std::optional<std::string>)> callback,
+      base::OnceCallback<void(std::optional<std::string>, int)> callback,
+      int64_t navigation_id,
+      std::string_view domain,
       std::optional<std::string> response_body);
 
   // Returns the base URL for the `SiteAutomationIndexServer` server APIs.
@@ -91,15 +98,19 @@ class AnnotationIndexClientImpl : public AnnotationIndexClient {
       base::UnguessableToken fetcher_id,
       std::unique_ptr<network::ResourceRequest> request,
       std::string request_body,
-      base::OnceCallback<void(std::optional<std::string>)> callback,
+      base::OnceCallback<void(std::optional<std::string>, int)> callback,
       GoogleServiceAuthError error,
-      signin::AccessTokenInfo access_token_info);
+      signin::AccessTokenInfo access_token_info,
+      int64_t navigation_id,
+      std::string_view domain);
 
   // Starts the URL loader to perform the network request.
   void StartLoader(
       std::unique_ptr<network::ResourceRequest> request,
       std::string request_body,
-      base::OnceCallback<void(std::optional<std::string>)> callback);
+      base::OnceCallback<void(std::optional<std::string>, int)> callback,
+      int64_t navigation_id,
+      std::string_view domain);
 
   // The factory used to instantiate network requests.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
@@ -114,6 +125,9 @@ class AnnotationIndexClientImpl : public AnnotationIndexClient {
   // Holds all currently active access token fetchers.
   std::map<base::UnguessableToken, std::unique_ptr<signin::AccessTokenFetcher>>
       active_fetchers_;
+
+  // Log router for the internals page.
+  raw_ptr<MultistepFilterLogRouter> log_router_;
 
   // This should be kept at the end so that it is the first member to be
   // destroyed.

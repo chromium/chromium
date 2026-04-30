@@ -26,6 +26,7 @@ class IdentityManager;
 
 namespace multistep_filter {
 
+class MultistepFilterLogRouter;
 struct FilterAnnotation;
 struct FilterSuggestionCandidate;
 
@@ -49,7 +50,8 @@ class AnnotationIndexClient {
   // Creates a default instance of `AnnotationIndexClient`.
   static std::unique_ptr<AnnotationIndexClient> Create(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      signin::IdentityManager* identity_manager);
+      signin::IdentityManager* identity_manager,
+      MultistepFilterLogRouter* log_router);
 
   virtual ~AnnotationIndexClient() = default;
 
@@ -59,21 +61,24 @@ class AnnotationIndexClient {
   virtual void GetFilterSuggestionCandidates(
       const GURL& url,
       base::span<const FilterAnnotation> filter_annotations,
-      base::OnceCallback<void(
-          std::optional<std::vector<FilterSuggestionCandidate>>)> callback) = 0;
+      base::OnceCallback<
+          void(std::optional<std::vector<FilterSuggestionCandidate>>)> callback,
+      int64_t navigation_id) = 0;
 
   // Retrieves the supported task types for a specific domain. If the domain is
   // not supported, invokes `callback` with `std::nullopt`.
   virtual void GetSupportedTaskTypesForDomain(
       std::string_view domain,
       base::OnceCallback<void(std::optional<std::vector<std::string>>)>
-          callback) = 0;
+          callback,
+      int64_t navigation_id) = 0;
 
   // Parses a raw URL to identify and extract a `FilterAnnotation`. If no
   // annotation is present, invokes `callback` with `std::nullopt`.
   virtual void ExtractFilterAnnotation(
       const GURL& url,
-      base::OnceCallback<void(std::optional<FilterAnnotation>)> callback) = 0;
+      base::OnceCallback<void(std::optional<FilterAnnotation>)> callback,
+      int64_t navigation_id) = 0;
 };
 
 }  // namespace multistep_filter

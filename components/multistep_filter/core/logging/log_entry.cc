@@ -48,6 +48,10 @@ constexpr std::string_view LogEventTypeToString(LogEventType type) {
       return "UiAccepted";
     case LogEventType::kUiDismissed:
       return "UiDismissed";
+    case LogEventType::kServerRequestFailed:
+      return "ServerRequestFailed";
+    case LogEventType::kServerResponseMalformed:
+      return "ServerResponseMalformed";
   }
   NOTREACHED();
 }

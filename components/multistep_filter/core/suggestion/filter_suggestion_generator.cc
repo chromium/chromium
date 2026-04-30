@@ -108,7 +108,8 @@ void FilterSuggestionGenerator::GenerateSuggestion(
       base::BindOnce(
           &FilterSuggestionGenerator::OnSupportedTaskTypesFetched,
           weak_ptr_factory_.GetWeakPtr(), url, std::move(split_callback.second),
-          std::move(failure_callback), navigation_id, std::string(domain)));
+          std::move(failure_callback), navigation_id, std::string(domain)),
+      navigation_id);
 }
 
 void FilterSuggestionGenerator::OnSupportedTaskTypesFetched(
@@ -187,7 +188,8 @@ void FilterSuggestionGenerator::OnAllAnnotationsFetched(
           &FilterSuggestionGenerator::OnFilterSuggestionCandidatesFetched,
           weak_ptr_factory_.GetWeakPtr(), std::move(success_callback),
           std::move(failure_callback), std::move(all_annotations),
-          navigation_id, std::string(domain)));
+          navigation_id, std::string(domain)),
+      navigation_id);
 }
 
 void FilterSuggestionGenerator::OnFilterSuggestionCandidatesFetched(

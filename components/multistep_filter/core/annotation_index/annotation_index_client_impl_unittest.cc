@@ -45,6 +45,7 @@ constexpr char kTestApiUrl[] = "https://api.googleapis.com/test/";
 
 constexpr char kTestSwitchApiUrl[] = "https://switch.example.com/api/";
 constexpr char kTestInvalidUrl[] = "invalid_url";
+constexpr int64_t kTestNavigationId = 12345;
 
 constexpr char kTestUrl[] = "https://example.com/test";
 constexpr char kTestExtractUrl[] = "https://example.com/path?q=1";
@@ -106,7 +107,8 @@ class AnnotationIndexClientImplTest : public testing::Test {
         "user@gmail.com", signin::ConsentLevel::kSignin);
     identity_test_env_.SetAutomaticIssueOfAccessTokens(true);
     client_ = std::make_unique<AnnotationIndexClientImpl>(
-        test_shared_loader_factory_, identity_test_env_.identity_manager());
+        test_shared_loader_factory_, identity_test_env_.identity_manager(),
+        /*log_router=*/nullptr);
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         kMultistepFilter,
         {{kMultistepFilterIndexServerApiBaseUrl.name, kTestApiUrl}});
@@ -176,8 +178,8 @@ TEST_F(AnnotationIndexClientImplTest,
       future;
   std::vector<FilterAnnotation> annotations;
 
-  client_->GetFilterSuggestionCandidates(GURL(kTestUrl), annotations,
-                                         future.GetCallback());
+  client_->GetFilterSuggestionCandidates(
+      GURL(kTestUrl), annotations, future.GetCallback(), kTestNavigationId);
 
   ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
   network::TestURLLoaderFactory::PendingRequest* pending_request =
@@ -204,8 +206,8 @@ TEST_F(AnnotationIndexClientImplTest,
       future;
   std::vector<FilterAnnotation> annotations;
 
-  client_->GetFilterSuggestionCandidates(GURL(kTestUrl), annotations,
-                                         future.GetCallback());
+  client_->GetFilterSuggestionCandidates(
+      GURL(kTestUrl), annotations, future.GetCallback(), kTestNavigationId);
 
   ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
   SimulateHttpError(test_url_loader_factory_.GetPendingRequest(0),
@@ -219,8 +221,8 @@ TEST_F(AnnotationIndexClientImplTest,
       future;
   std::vector<FilterAnnotation> annotations;
 
-  client_->GetFilterSuggestionCandidates(GURL(kTestUrl), annotations,
-                                         future.GetCallback());
+  client_->GetFilterSuggestionCandidates(
+      GURL(kTestUrl), annotations, future.GetCallback(), kTestNavigationId);
 
   ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
   SimulateNetworkError(test_url_loader_factory_.GetPendingRequest(0));
@@ -233,8 +235,8 @@ TEST_F(AnnotationIndexClientImplTest,
       future;
   std::vector<FilterAnnotation> annotations;
 
-  client_->GetFilterSuggestionCandidates(GURL(kTestUrl), annotations,
-                                         future.GetCallback());
+  client_->GetFilterSuggestionCandidates(
+      GURL(kTestUrl), annotations, future.GetCallback(), kTestNavigationId);
 
   ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
   SimulateInvalidResponse(test_url_loader_factory_.GetPendingRequest(0));
@@ -247,8 +249,8 @@ TEST_F(AnnotationIndexClientImplTest,
       future;
   std::vector<FilterAnnotation> annotations;
 
-  client_->GetFilterSuggestionCandidates(GURL(kTestUrl), annotations,
-                                         future.GetCallback());
+  client_->GetFilterSuggestionCandidates(
+      GURL(kTestUrl), annotations, future.GetCallback(), kTestNavigationId);
 
   ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
   SimulateEmptyResponse(test_url_loader_factory_.GetPendingRequest(0));
@@ -263,8 +265,8 @@ TEST_F(AnnotationIndexClientImplTest,
       future;
   std::vector<FilterAnnotation> annotations;
 
-  client_->GetFilterSuggestionCandidates(GURL(kTestUrl), annotations,
-                                         future.GetCallback());
+  client_->GetFilterSuggestionCandidates(
+      GURL(kTestUrl), annotations, future.GetCallback(), kTestNavigationId);
 
   ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
   SimulateTimeout(test_url_loader_factory_.GetPendingRequest(0));
@@ -277,7 +279,8 @@ TEST_F(AnnotationIndexClientImplTest,
       CreateSupportedTasksResponse({kTask1, kTask2});
   base::test::TestFuture<std::optional<std::vector<std::string>>> future;
 
-  client_->GetSupportedTaskTypesForDomain(kTestDomain, future.GetCallback());
+  client_->GetSupportedTaskTypesForDomain(kTestDomain, future.GetCallback(),
+                                          kTestNavigationId);
 
   ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
   network::TestURLLoaderFactory::PendingRequest* pending_request =
@@ -301,7 +304,8 @@ TEST_F(AnnotationIndexClientImplTest,
        GetSupportedTaskTypesForDomain_HttpError_ReturnsNullopt) {
   base::test::TestFuture<std::optional<std::vector<std::string>>> future;
 
-  client_->GetSupportedTaskTypesForDomain(kTestDomain, future.GetCallback());
+  client_->GetSupportedTaskTypesForDomain(kTestDomain, future.GetCallback(),
+                                          kTestNavigationId);
 
   ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
   SimulateHttpError(test_url_loader_factory_.GetPendingRequest(0),
@@ -313,7 +317,8 @@ TEST_F(AnnotationIndexClientImplTest,
        GetSupportedTaskTypesForDomain_NetworkError_ReturnsNullopt) {
   base::test::TestFuture<std::optional<std::vector<std::string>>> future;
 
-  client_->GetSupportedTaskTypesForDomain(kTestDomain, future.GetCallback());
+  client_->GetSupportedTaskTypesForDomain(kTestDomain, future.GetCallback(),
+                                          kTestNavigationId);
 
   ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
   SimulateNetworkError(test_url_loader_factory_.GetPendingRequest(0));
@@ -324,7 +329,8 @@ TEST_F(AnnotationIndexClientImplTest,
        GetSupportedTaskTypesForDomain_InvalidResponse_ReturnsNullopt) {
   base::test::TestFuture<std::optional<std::vector<std::string>>> future;
 
-  client_->GetSupportedTaskTypesForDomain(kTestDomain, future.GetCallback());
+  client_->GetSupportedTaskTypesForDomain(kTestDomain, future.GetCallback(),
+                                          kTestNavigationId);
 
   ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
   SimulateInvalidResponse(test_url_loader_factory_.GetPendingRequest(0));
@@ -335,7 +341,8 @@ TEST_F(AnnotationIndexClientImplTest,
        GetSupportedTaskTypesForDomain_EmptyResponse_ReturnsEmptyVector) {
   base::test::TestFuture<std::optional<std::vector<std::string>>> future;
 
-  client_->GetSupportedTaskTypesForDomain(kTestDomain, future.GetCallback());
+  client_->GetSupportedTaskTypesForDomain(kTestDomain, future.GetCallback(),
+                                          kTestNavigationId);
 
   ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
   SimulateEmptyResponse(test_url_loader_factory_.GetPendingRequest(0));
@@ -348,7 +355,8 @@ TEST_F(AnnotationIndexClientImplTest,
        GetSupportedTaskTypesForDomain_Timeout_ReturnsNullopt) {
   base::test::TestFuture<std::optional<std::vector<std::string>>> future;
 
-  client_->GetSupportedTaskTypesForDomain(kTestDomain, future.GetCallback());
+  client_->GetSupportedTaskTypesForDomain(kTestDomain, future.GetCallback(),
+                                          kTestNavigationId);
 
   ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
   SimulateTimeout(test_url_loader_factory_.GetPendingRequest(0));
@@ -363,7 +371,8 @@ TEST_F(AnnotationIndexClientImplTest,
           {{kTestAttributeKey, kTestAttributeValue}});
   base::test::TestFuture<std::optional<FilterAnnotation>> future;
 
-  client_->ExtractFilterAnnotation(GURL(kTestExtractUrl), future.GetCallback());
+  client_->ExtractFilterAnnotation(GURL(kTestExtractUrl), future.GetCallback(),
+                                   kTestNavigationId);
 
   ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
   network::TestURLLoaderFactory::PendingRequest* pending_request =
@@ -389,7 +398,8 @@ TEST_F(AnnotationIndexClientImplTest,
        ExtractFilterAnnotation_HttpError_ReturnsNullopt) {
   base::test::TestFuture<std::optional<FilterAnnotation>> future;
 
-  client_->ExtractFilterAnnotation(GURL(kTestExtractUrl), future.GetCallback());
+  client_->ExtractFilterAnnotation(GURL(kTestExtractUrl), future.GetCallback(),
+                                   kTestNavigationId);
 
   ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
   SimulateHttpError(test_url_loader_factory_.GetPendingRequest(0),
@@ -401,7 +411,8 @@ TEST_F(AnnotationIndexClientImplTest,
        ExtractFilterAnnotation_NetworkError_ReturnsNullopt) {
   base::test::TestFuture<std::optional<FilterAnnotation>> future;
 
-  client_->ExtractFilterAnnotation(GURL(kTestExtractUrl), future.GetCallback());
+  client_->ExtractFilterAnnotation(GURL(kTestExtractUrl), future.GetCallback(),
+                                   kTestNavigationId);
 
   ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
   SimulateNetworkError(test_url_loader_factory_.GetPendingRequest(0));
@@ -412,7 +423,8 @@ TEST_F(AnnotationIndexClientImplTest,
        ExtractFilterAnnotation_InvalidResponse_ReturnsNullopt) {
   base::test::TestFuture<std::optional<FilterAnnotation>> future;
 
-  client_->ExtractFilterAnnotation(GURL(kTestExtractUrl), future.GetCallback());
+  client_->ExtractFilterAnnotation(GURL(kTestExtractUrl), future.GetCallback(),
+                                   kTestNavigationId);
 
   ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
   SimulateInvalidResponse(test_url_loader_factory_.GetPendingRequest(0));
@@ -423,7 +435,8 @@ TEST_F(AnnotationIndexClientImplTest,
        ExtractFilterAnnotation_EmptyResponse_ReturnsNullopt) {
   base::test::TestFuture<std::optional<FilterAnnotation>> future;
 
-  client_->ExtractFilterAnnotation(GURL(kTestExtractUrl), future.GetCallback());
+  client_->ExtractFilterAnnotation(GURL(kTestExtractUrl), future.GetCallback(),
+                                   kTestNavigationId);
 
   ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
   SimulateEmptyResponse(test_url_loader_factory_.GetPendingRequest(0));
@@ -434,7 +447,8 @@ TEST_F(AnnotationIndexClientImplTest,
        ExtractFilterAnnotation_Timeout_ReturnsNullopt) {
   base::test::TestFuture<std::optional<FilterAnnotation>> future;
 
-  client_->ExtractFilterAnnotation(GURL(kTestExtractUrl), future.GetCallback());
+  client_->ExtractFilterAnnotation(GURL(kTestExtractUrl), future.GetCallback(),
+                                   kTestNavigationId);
 
   ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
   SimulateTimeout(test_url_loader_factory_.GetPendingRequest(0));
@@ -445,7 +459,8 @@ TEST_F(AnnotationIndexClientImplTest, BaseUrlOverriddenBySwitch) {
   OverrideBaseUrlWithSwitch(kTestSwitchApiUrl);
   base::test::TestFuture<std::optional<std::vector<std::string>>> future;
 
-  client_->GetSupportedTaskTypesForDomain(kTestDomain, future.GetCallback());
+  client_->GetSupportedTaskTypesForDomain(kTestDomain, future.GetCallback(),
+                                          kTestNavigationId);
 
   ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
   network::TestURLLoaderFactory::PendingRequest* pending_request =
@@ -458,7 +473,8 @@ TEST_F(AnnotationIndexClientImplTest, InvalidBaseUrlFailsQuickly) {
   OverrideBaseUrlWithSwitch(kTestInvalidUrl);
   base::test::TestFuture<std::optional<std::vector<std::string>>> future;
 
-  client_->GetSupportedTaskTypesForDomain(kTestDomain, future.GetCallback());
+  client_->GetSupportedTaskTypesForDomain(kTestDomain, future.GetCallback(),
+                                          kTestNavigationId);
 
   EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
   EXPECT_FALSE(future.Take().has_value());
@@ -472,8 +488,10 @@ TEST_F(AnnotationIndexClientImplTest, HandlesConcurrentRequests) {
   base::test::TestFuture<std::optional<std::vector<std::string>>> future1;
   base::test::TestFuture<std::optional<std::vector<std::string>>> future2;
 
-  client_->GetSupportedTaskTypesForDomain(kTestDomain1, future1.GetCallback());
-  client_->GetSupportedTaskTypesForDomain(kTestDomain2, future2.GetCallback());
+  client_->GetSupportedTaskTypesForDomain(kTestDomain1, future1.GetCallback(),
+                                          kTestNavigationId);
+  client_->GetSupportedTaskTypesForDomain(kTestDomain2, future2.GetCallback(),
+                                          kTestNavigationId);
 
   EXPECT_EQ(test_url_loader_factory_.NumPending(), 2);
   test_url_loader_factory_.SimulateResponseWithoutRemovingFromPendingList(
@@ -495,7 +513,8 @@ TEST_F(AnnotationIndexClientImplTest, HandlesConcurrentRequests) {
 TEST_F(AnnotationIndexClientImplTest, LoaderCleanedUpAfterCompletion) {
   base::test::TestFuture<std::optional<std::vector<std::string>>> future;
 
-  client_->GetSupportedTaskTypesForDomain(kTestDomain, future.GetCallback());
+  client_->GetSupportedTaskTypesForDomain(kTestDomain, future.GetCallback(),
+                                          kTestNavigationId);
 
   ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
   SimulateEmptyResponse(test_url_loader_factory_.GetPendingRequest(0));
@@ -506,13 +525,19 @@ TEST_F(AnnotationIndexClientImplTest, ExecuteRequest_OAuthSuccess) {
   identity_test_env_.SetAutomaticIssueOfAccessTokens(false);
 
   auto client = std::make_unique<AnnotationIndexClientImpl>(
-      test_shared_loader_factory_, identity_test_env_.identity_manager());
+      test_shared_loader_factory_, identity_test_env_.identity_manager(),
+      nullptr);
 
   base::test::TestFuture<std::optional<std::string>> future;
 
-  test_api(*client).ExecuteRequest(CreateRequest(kTestApiUrl),
-                                   std::string(kTestApiBody),
-                                   future.GetCallback());
+  test_api(*client).ExecuteRequest(
+      CreateRequest(kTestApiUrl), std::string(kTestApiBody),
+      base::BindOnce(
+          [](base::OnceCallback<void(std::optional<std::string>)> cb,
+             std::optional<std::string> body,
+             int response_code) { std::move(cb).Run(std::move(body)); },
+          future.GetCallback()),
+      kTestNavigationId, kTestDomain);
 
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       "access_token", base::Time::Max());
@@ -541,13 +566,19 @@ TEST_F(AnnotationIndexClientImplTest, ExecuteRequest_SignedOutFails) {
   signin::IdentityTestEnvironment identity_test_env;
 
   auto client = std::make_unique<AnnotationIndexClientImpl>(
-      test_shared_loader_factory_, identity_test_env.identity_manager());
+      test_shared_loader_factory_, identity_test_env.identity_manager(),
+      nullptr);
 
   base::test::TestFuture<std::optional<std::string>> future;
 
-  test_api(*client).ExecuteRequest(CreateRequest(kTestApiUrl),
-                                   std::string(kTestApiBody),
-                                   future.GetCallback());
+  test_api(*client).ExecuteRequest(
+      CreateRequest(kTestApiUrl), std::string(kTestApiBody),
+      base::BindOnce(
+          [](base::OnceCallback<void(std::optional<std::string>)> cb,
+             std::optional<std::string> body,
+             int response_code) { std::move(cb).Run(std::move(body)); },
+          future.GetCallback()),
+      kTestNavigationId, kTestDomain);
 
   // Should fail immediately without sending request.
   EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
@@ -558,13 +589,19 @@ TEST_F(AnnotationIndexClientImplTest, ExecuteRequest_OAuthFailure) {
   identity_test_env_.SetAutomaticIssueOfAccessTokens(false);
 
   auto client = std::make_unique<AnnotationIndexClientImpl>(
-      test_shared_loader_factory_, identity_test_env_.identity_manager());
+      test_shared_loader_factory_, identity_test_env_.identity_manager(),
+      nullptr);
 
   base::test::TestFuture<std::optional<std::string>> future;
 
-  test_api(*client).ExecuteRequest(CreateRequest(kTestApiUrl),
-                                   std::string(kTestApiBody),
-                                   future.GetCallback());
+  test_api(*client).ExecuteRequest(
+      CreateRequest(kTestApiUrl), std::string(kTestApiBody),
+      base::BindOnce(
+          [](base::OnceCallback<void(std::optional<std::string>)> cb,
+             std::optional<std::string> body,
+             int response_code) { std::move(cb).Run(std::move(body)); },
+          future.GetCallback()),
+      kTestNavigationId, kTestDomain);
 
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
       GoogleServiceAuthError(GoogleServiceAuthError::CONNECTION_FAILED));
@@ -580,7 +617,13 @@ TEST_F(AnnotationIndexClientImplTest, ExecuteRequest_NonGoogleDomainNoToken) {
 
   test_api(*client_).ExecuteRequest(
       CreateRequest("https://non-google.com/api/test"),
-      std::string(kTestApiBody), future.GetCallback());
+      std::string(kTestApiBody),
+      base::BindOnce(
+          [](base::OnceCallback<void(std::optional<std::string>)> cb,
+             std::optional<std::string> body,
+             int response_code) { std::move(cb).Run(std::move(body)); },
+          future.GetCallback()),
+      kTestNavigationId, "non-google.com");
 
   ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
   network::TestURLLoaderFactory::PendingRequest* request =

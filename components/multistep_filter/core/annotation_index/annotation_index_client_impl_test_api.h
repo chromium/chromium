@@ -29,9 +29,12 @@ class AnnotationIndexClientImplTestApi {
   void ExecuteRequest(
       std::unique_ptr<network::ResourceRequest> request,
       std::string request_body,
-      base::OnceCallback<void(std::optional<std::string>)> callback) {
+      base::OnceCallback<void(std::optional<std::string>, int)> callback,
+      int64_t navigation_id,
+      std::string domain) {
     client_->ExecuteRequest(std::move(request), std::move(request_body),
-                            std::move(callback));
+                            std::move(callback), navigation_id,
+                            std::move(domain));
   }
 
  private:

@@ -59,7 +59,7 @@ MultistepFilterServiceFactory::BuildServiceInstanceForBrowserContext(
       AnnotationIndexClient::Create(
           context->GetDefaultStoragePartition()
               ->GetURLLoaderFactoryForBrowserProcess(),
-          identity_manager);
+          identity_manager, log_router);
 
   return std::make_unique<MultistepFilterService>(
       std::move(annotation_index_client), std::make_unique<FilterStore>(),

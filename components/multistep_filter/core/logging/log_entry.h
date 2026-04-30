@@ -31,6 +31,8 @@ enum class LogEventType {
   kUiShown,
   kUiAccepted,
   kUiDismissed,
+  kServerRequestFailed,
+  kServerResponseMalformed,
 };
 
 // Represents a single log entry for the Multistep Filter feature.

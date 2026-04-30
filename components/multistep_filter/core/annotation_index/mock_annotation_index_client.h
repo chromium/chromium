@@ -30,21 +30,24 @@ class MockAnnotationIndexClient : public AnnotationIndexClient {
       (const GURL& url,
        base::span<const FilterAnnotation> filter_annotations,
        base::OnceCallback<void(
-           std::optional<std::vector<FilterSuggestionCandidate>>)> callback),
+           std::optional<std::vector<FilterSuggestionCandidate>>)> callback,
+       int64_t navigation_id),
       (override));
 
   MOCK_METHOD(void,
               GetSupportedTaskTypesForDomain,
               (std::string_view domain,
                base::OnceCallback<void(std::optional<std::vector<std::string>>)>
-                   callback),
+                   callback,
+               int64_t navigation_id),
               (override));
 
   MOCK_METHOD(
       void,
       ExtractFilterAnnotation,
       (const GURL& url,
-       base::OnceCallback<void(std::optional<FilterAnnotation>)> callback),
+       base::OnceCallback<void(std::optional<FilterAnnotation>)> callback,
+       int64_t navigation_id),
       (override));
 };
 
