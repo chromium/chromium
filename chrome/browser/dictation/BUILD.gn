@@ -1,0 +1,32 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("dictation") {
+  sources = [
+    "session_controller.cc",
+    "session_controller.h",
+    "session_controller_delegate.h",
+    "stream_provider.h",
+    "target.h",
+    "ui.h",
+  ]
+
+  deps = [ "//base" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "session_controller_unittest.cc",
+    "test_util.cc",
+    "test_util.h",
+  ]
+
+  deps = [
+    ":dictation",
+    "//base",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

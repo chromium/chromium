@@ -1,0 +1,58 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/dictation/session_controller.h"
+
+#include <memory>
+
+#include "chrome/browser/dictation/stream_provider.h"
+#include "chrome/browser/dictation/ui.h"
+
+namespace dictation {
+
+SessionController::SessionController(SessionControllerDelegate& delegate)
+    : delegate_(delegate),
+      mode_change_subscription_(delegate_->RegisterModeChangeCallback(
+          base::BindRepeating(&SessionController::ModeDidChange,
+                              base::Unretained(this)))),
+      ui_(delegate_->CreateUi(*this)) {}
+
+SessionController::~SessionController() = default;
+
+void SessionController::StartDictationStream(Target& target) {
+  CHECK_EQ(state_, State::kInactive);
+
+  std::unique_ptr<StreamProvider> stream_provider =
+      delegate_->CreateStreamProvider(*this);
+  stream_provider->BindToTarget(target);
+  attached_stream_provider_ = std::move(stream_provider);
+
+  MoveToState(State::kInitializing);
+}
+
+void SessionController::EndDictationStream() {
+  CHECK_NE(state_, State::kInactive);
+  attached_stream_provider_->Stop();
+  attached_stream_provider_.reset();
+  MoveToState(State::kInactive);
+}
+
+void SessionController::MoveToState(State new_state) {
+  // TODO(bokan): use base::StateTransitions
+  state_ = new_state;
+}
+
+void SessionController::ModeDidChange(Mode new_mode) {
+  switch (new_mode) {
+    case Mode::kDisabled:
+      if (state_ != State::kInactive) {
+        EndDictationStream();
+      }
+      break;
+    case Mode::kEnabled:
+      break;
+  }
+}
+
+}  // namespace dictation
