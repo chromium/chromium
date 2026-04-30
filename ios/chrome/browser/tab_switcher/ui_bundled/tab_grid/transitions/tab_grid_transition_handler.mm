@@ -245,6 +245,11 @@ enum class TabGridTransitionType {
                                               toView:rootViewController.view];
   [rootViewController addChildViewController:browserLayout];
   [rootViewController.view insertSubview:browserLayout.view atIndex:0];
+  if (IsFullscreenRefactoringEnabled()) {
+    // Running a layout here ensures that the toolbar frames are correct for
+    // the snapshots.
+    [browserLayout.view layoutIfNeeded];
+  }
   [self takeToolbarSnapshots];
   browserLayout.view.frame = browserLayoutOriginalFrame;
 
