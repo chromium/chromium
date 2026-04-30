@@ -51,6 +51,10 @@ TabStripSceneLayer::TabStripSceneLayer(JNIEnv* env,
       glic_dismiss_nudge_button_keyboard_focus_ring_(
           cc::slim::UIResourceLayer::Create()),
       glic_button_keyboard_focus_ring_(cc::slim::UIResourceLayer::Create()),
+      glic_actor_button_(cc::slim::UIResourceLayer::Create()),
+      glic_actor_button_background_(cc::slim::SolidColorLayer::Create()),
+      glic_actor_button_keyboard_focus_ring_(
+          cc::slim::UIResourceLayer::Create()),
       model_selector_button_(cc::slim::UIResourceLayer::Create()),
       model_selector_button_background_(cc::slim::UIResourceLayer::Create()),
       model_selector_button_keyboard_focus_ring_(
@@ -63,6 +67,8 @@ TabStripSceneLayer::TabStripSceneLayer(JNIEnv* env,
   glic_button_background_->SetIsDrawable(true);
   glic_button_text_->SetIsDrawable(true);
   glic_dismiss_nudge_button_->SetIsDrawable(true);
+  glic_actor_button_->SetIsDrawable(true);
+  glic_actor_button_background_->SetIsDrawable(true);
   model_selector_button_->SetIsDrawable(true);
   model_selector_button_background_->SetIsDrawable(true);
 
@@ -128,6 +134,9 @@ TabStripSceneLayer::TabStripSceneLayer(JNIEnv* env,
   tab_strip_layer_->AddChild(glic_button_keyboard_focus_ring_);
   tab_strip_layer_->AddChild(glic_dismiss_nudge_button_);
   tab_strip_layer_->AddChild(glic_dismiss_nudge_button_keyboard_focus_ring_);
+  tab_strip_layer_->AddChild(glic_actor_button_background_);
+  tab_strip_layer_->AddChild(glic_actor_button_);
+  tab_strip_layer_->AddChild(glic_actor_button_keyboard_focus_ring_);
   tab_strip_layer_->AddChild(model_selector_button_background_);
   tab_strip_layer_->AddChild(model_selector_button_);
   tab_strip_layer_->AddChild(model_selector_button_keyboard_focus_ring_);
@@ -350,7 +359,8 @@ void TabStripSceneLayer::UpdateGlicButton(
     int32_t text_texture_id,
     float button_start_padding,
     float icon_text_padding,
-    float corner_radius,
+    float corner_radius_outer,
+    float corner_radius_inner,
     int32_t dismiss_resource_id,
     float dismiss_x,
     float dismiss_y,
@@ -360,94 +370,16 @@ void TabStripSceneLayer::UpdateGlicButton(
     int32_t dismiss_keyboard_focus_ring_resource_id,
     int32_t dismiss_keyboard_focus_ring_color) {
   DCHECK(resource_manager_);
-  ui::Resource* icon_resource;
-  if (should_tint) {
-    icon_resource =
-        resource_manager_->GetStaticResourceWithTint(resource_id, tint);
-  } else {
-    icon_resource = resource_manager_->GetResource(
-        ui::ANDROID_RESOURCE_TYPE_STATIC, resource_id);
-  }
-  ui::Resource* text_resource = resource_manager_->GetResource(
-      ui::ANDROID_RESOURCE_TYPE_DYNAMIC, text_texture_id);
-  ui::Resource* keyboard_focus_ring_drawable =
-      resource_manager_->GetStaticResourceWithTint(
-          keyboard_focus_ring_resource_id, keyboard_focus_ring_color, true);
 
-  gfx::Size background_size(std::round(button_width),
-                            std::round(button_height));
-  gfx::Size icon_size = icon_resource->size();
-  gfx::Size text_size = text_resource ? text_resource->size() : gfx::Size();
-  gfx::Size ring_size = keyboard_focus_ring_drawable->size();
+  UpdateGlicButtonInternal(
+      glic_button_background_, glic_button_, glic_button_text_,
+      glic_button_keyboard_focus_ring_, resource_id, x, y, button_width,
+      button_height, visible, tint, should_tint, background_tint, button_alpha,
+      is_keyboard_focused, keyboard_focus_ring_resource_id,
+      keyboard_focus_ring_color, text_texture_id, button_start_padding,
+      icon_text_padding, corner_radius_outer, corner_radius_inner);
 
-  // 1. Background
-  glic_button_background_->SetBackgroundColor(
-      SkColor4f::FromColor(background_tint));
-  glic_button_background_->SetBounds(background_size);
-  glic_button_background_->SetPosition(
-      gfx::PointF(std::round(x), std::round(y)));
-  glic_button_background_->SetHideLayerAndSubtree(!visible);
-  glic_button_background_->SetOpacity(button_alpha);
-  glic_button_background_->SetRoundedCorner(
-      gfx::RoundedCornersF(corner_radius));
-
-  // 2. Icon
-  float icon_x_pos;
-  float icon_y_offset = (background_size.height() - icon_size.height()) / 2;
-
-  bool has_text = text_resource && !text_size.IsEmpty();
-  if (has_text) {
-    icon_x_pos =
-        l10n_util::IsLayoutRtl()
-            ? (x + button_width - button_start_padding - icon_size.width())
-            : (x + button_start_padding);
-  } else {
-    icon_x_pos = x + (button_width - icon_size.width()) / 2;
-  }
-
-  glic_button_->SetUIResourceId(icon_resource->ui_resource()->id());
-  glic_button_->SetBounds(icon_size);
-  glic_button_->SetPosition(
-      gfx::PointF(std::round(icon_x_pos), std::round(y + icon_y_offset)));
-  glic_button_->SetHideLayerAndSubtree(!visible);
-  glic_button_->SetOpacity(button_alpha);
-
-  // 3. Text
-  if (has_text) {
-    glic_button_text_->SetUIResourceId(text_resource->ui_resource()->id());
-    glic_button_text_->SetBounds(text_size);
-
-    float text_y_offset = (background_size.height() - text_size.height()) / 2;
-    float text_x_pos = l10n_util::IsLayoutRtl()
-                           ? (x + button_width - button_start_padding -
-                              icon_text_padding - text_size.width())
-                           : (x + button_start_padding + icon_size.width() +
-                              icon_text_padding);
-
-    glic_button_text_->SetPosition(
-        gfx::PointF(std::round(text_x_pos), std::round(y + text_y_offset)));
-    glic_button_text_->SetHideLayerAndSubtree(!visible);
-    glic_button_text_->SetOpacity(button_alpha);
-  } else {
-    glic_button_text_->SetHideLayerAndSubtree(true);
-  }
-
-  // 4. Focus Ring
-  if (is_keyboard_focused) {
-    glic_button_keyboard_focus_ring_->SetIsDrawable(true);
-    glic_button_keyboard_focus_ring_->SetUIResourceId(
-        keyboard_focus_ring_drawable->ui_resource()->id());
-
-    float ring_x_offset = (background_size.width() - ring_size.width()) / 2;
-    float ring_y_offset = (background_size.height() - ring_size.height()) / 2;
-    glic_button_keyboard_focus_ring_->SetPosition(gfx::PointF(
-        std::round(x + ring_x_offset), std::round(y + ring_y_offset)));
-    glic_button_keyboard_focus_ring_->SetBounds(ring_size);
-  } else {
-    glic_button_keyboard_focus_ring_->SetIsDrawable(false);
-  }
-
-  // 5. Dismiss Button
+  // Dismiss Button
   ui::Resource* dismiss_icon_resource =
       resource_manager_->GetStaticResourceWithTint(dismiss_resource_id,
                                                    dismiss_tint);
@@ -493,6 +425,160 @@ void TabStripSceneLayer::UpdateModelSelectorButton(
                          should_apply_hover_highlight, button_alpha,
                          model_selector_button_keyboard_focus_ring_,
                          is_keyboard_focused, keyboard_focus_ring_drawable);
+}
+
+void TabStripSceneLayer::UpdateGlicActorButton(
+    JNIEnv* env,
+    int32_t resource_id,
+    float x,
+    float y,
+    float button_width,
+    float button_height,
+    bool visible,
+    bool should_apply_hover_highlight,
+    int32_t tint,
+    bool should_tint,
+    int32_t background_tint,
+    float button_alpha,
+    bool is_keyboard_focused,
+    int32_t keyboard_focus_ring_resource_id,
+    int32_t keyboard_focus_ring_color,
+    int32_t text_texture_id,
+    float button_start_padding,
+    float icon_text_padding,
+    float corner_radius_outer,
+    float corner_radius_inner) {
+  UpdateGlicButtonInternal(
+      glic_actor_button_background_, glic_actor_button_, nullptr,
+      glic_actor_button_keyboard_focus_ring_, resource_id, x, y, button_width,
+      button_height, visible, tint, should_tint, background_tint, button_alpha,
+      is_keyboard_focused, keyboard_focus_ring_resource_id,
+      keyboard_focus_ring_color, text_texture_id, button_start_padding,
+      icon_text_padding, corner_radius_outer, corner_radius_inner);
+}
+
+void TabStripSceneLayer::UpdateGlicButtonInternal(
+    scoped_refptr<cc::slim::SolidColorLayer> background_layer,
+    scoped_refptr<cc::slim::UIResourceLayer> icon_layer,
+    scoped_refptr<cc::slim::UIResourceLayer> text_layer,
+    scoped_refptr<cc::slim::UIResourceLayer> focus_ring_layer,
+    int32_t resource_id,
+    float x,
+    float y,
+    float button_width,
+    float button_height,
+    bool visible,
+    int32_t tint,
+    bool should_tint,
+    int32_t background_tint,
+    float button_alpha,
+    bool is_keyboard_focused,
+    int32_t keyboard_focus_ring_resource_id,
+    int32_t keyboard_focus_ring_color,
+    int32_t text_texture_id,
+    float button_start_padding,
+    float icon_text_padding,
+    float corner_radius_outer,
+    float corner_radius_inner) {
+  DCHECK(resource_manager_);
+  ui::Resource* icon_resource;
+  if (should_tint) {
+    icon_resource =
+        resource_manager_->GetStaticResourceWithTint(resource_id, tint);
+  } else {
+    icon_resource = resource_manager_->GetResource(
+        ui::ANDROID_RESOURCE_TYPE_STATIC, resource_id);
+  }
+
+  ui::Resource* keyboard_focus_ring_drawable =
+      resource_manager_->GetStaticResourceWithTint(
+          keyboard_focus_ring_resource_id, keyboard_focus_ring_color, true);
+
+  gfx::Size background_size(std::round(button_width),
+                            std::round(button_height));
+  gfx::Size icon_size = icon_resource->size();
+  gfx::Size ring_size = keyboard_focus_ring_drawable->size();
+
+  // 1. Background
+  background_layer->SetBackgroundColor(SkColor4f::FromColor(background_tint));
+  background_layer->SetBounds(background_size);
+  background_layer->SetPosition(gfx::PointF(std::round(x), std::round(y)));
+  background_layer->SetHideLayerAndSubtree(!visible);
+  background_layer->SetOpacity(button_alpha);
+
+  float computed_corner_radius_l =
+      l10n_util::IsLayoutRtl() ? corner_radius_inner : corner_radius_outer;
+  float computed_corner_radius_r =
+      l10n_util::IsLayoutRtl() ? corner_radius_outer : corner_radius_inner;
+
+  background_layer->SetRoundedCorner(
+      gfx::RoundedCornersF(computed_corner_radius_l, computed_corner_radius_r,
+                           computed_corner_radius_r, computed_corner_radius_l));
+
+  // 2. Icon
+  float icon_x_pos;
+  float icon_y_offset = (background_size.height() - icon_size.height()) / 2;
+
+  ui::Resource* text_resource = nullptr;
+  if (text_texture_id != 0 && text_layer) {
+    text_resource = resource_manager_->GetResource(
+        ui::ANDROID_RESOURCE_TYPE_DYNAMIC, text_texture_id);
+  }
+  gfx::Size text_size = text_resource ? text_resource->size() : gfx::Size();
+  bool has_text = text_resource && !text_size.IsEmpty();
+
+  if (has_text) {
+    icon_x_pos =
+        l10n_util::IsLayoutRtl()
+            ? (x + button_width - button_start_padding - icon_size.width())
+            : (x + button_start_padding);
+  } else {
+    icon_x_pos = x + (button_width - icon_size.width()) / 2;
+  }
+
+  icon_layer->SetUIResourceId(icon_resource->ui_resource()->id());
+  icon_layer->SetBounds(icon_size);
+  icon_layer->SetPosition(
+      gfx::PointF(std::round(icon_x_pos), std::round(y + icon_y_offset)));
+  icon_layer->SetHideLayerAndSubtree(!visible);
+  icon_layer->SetOpacity(button_alpha);
+
+  // 3. Text
+  if (text_layer) {
+    if (has_text) {
+      text_layer->SetUIResourceId(text_resource->ui_resource()->id());
+      text_layer->SetBounds(text_size);
+
+      float text_y_offset = (background_size.height() - text_size.height()) / 2;
+      float text_x_pos = l10n_util::IsLayoutRtl()
+                             ? (x + button_width - button_start_padding -
+                                icon_text_padding - text_size.width())
+                             : (x + button_start_padding + icon_size.width() +
+                                icon_text_padding);
+
+      text_layer->SetPosition(
+          gfx::PointF(std::round(text_x_pos), std::round(y + text_y_offset)));
+      text_layer->SetHideLayerAndSubtree(!visible);
+      text_layer->SetOpacity(button_alpha);
+    } else {
+      text_layer->SetHideLayerAndSubtree(true);
+    }
+  }
+
+  // 4. Focus Ring
+  if (is_keyboard_focused) {
+    focus_ring_layer->SetIsDrawable(true);
+    focus_ring_layer->SetUIResourceId(
+        keyboard_focus_ring_drawable->ui_resource()->id());
+
+    float ring_x_offset = (background_size.width() - ring_size.width()) / 2;
+    float ring_y_offset = (background_size.height() - ring_size.height()) / 2;
+    focus_ring_layer->SetPosition(gfx::PointF(std::round(x + ring_x_offset),
+                                              std::round(y + ring_y_offset)));
+    focus_ring_layer->SetBounds(ring_size);
+  } else {
+    focus_ring_layer->SetIsDrawable(false);
+  }
 }
 
 void TabStripSceneLayer::UpdateCompositorButton(

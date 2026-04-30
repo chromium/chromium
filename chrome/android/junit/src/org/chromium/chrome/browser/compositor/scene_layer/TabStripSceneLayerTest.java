@@ -713,6 +713,7 @@ public class TabStripSceneLayerTest {
                         anyFloat(),
                         anyFloat(),
                         anyFloat(),
+                        anyFloat(),
                         anyInt(),
                         anyFloat(),
                         anyFloat(),
@@ -721,6 +722,45 @@ public class TabStripSceneLayerTest {
                         anyBoolean(),
                         anyInt(),
                         anyInt());
+    }
+
+    @Test
+    public void testUpdateGlicActorButton() {
+        when(mTrailingButtonsCoordinator.getGlicActorButton()).thenReturn(mGlicButton);
+        mGlicButton.setKeyboardFocused(true);
+        mTabStripSceneLayer.pushButtonsAndBackground(
+                mStripLayoutHelperManager,
+                mTrailingButtonsCoordinator,
+                0,
+                0,
+                0.0f,
+                0.0f,
+                0.0f,
+                0.0f);
+        verify(mTabStripSceneMock, times(1))
+                .updateGlicActorButton(
+                        eq(1L),
+                        anyInt(),
+                        anyFloat(),
+                        anyFloat(),
+                        anyFloat(),
+                        anyFloat(),
+                        anyBoolean(),
+                        anyBoolean(),
+                        anyInt(),
+                        anyBoolean(),
+                        anyInt(),
+                        anyFloat(),
+                        eq(true),
+                        eq(R.drawable.circular_button_keyfocus),
+                        eq(
+                                MaterialColors.getColor(
+                                        mContext, R.attr.colorPrimary, /* defaultValue= */ 0)),
+                        anyInt(),
+                        anyFloat(),
+                        anyFloat(),
+                        anyFloat(),
+                        anyFloat());
     }
 
     @Test

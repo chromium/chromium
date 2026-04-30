@@ -46,7 +46,8 @@ public class CompositorButton extends StripLayoutView {
         ButtonType.INCOGNITO_SWITCHER,
         ButtonType.TAB_CLOSE,
         ButtonType.GLIC,
-        ButtonType.GLIC_DISMISS_NUDGE
+        ButtonType.GLIC_DISMISS_NUDGE,
+        ButtonType.GLIC_ACTOR
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface ButtonType {
@@ -55,6 +56,7 @@ public class CompositorButton extends StripLayoutView {
         int TAB_CLOSE = 2;
         int GLIC = 3;
         int GLIC_DISMISS_NUDGE = 4;
+        int GLIC_ACTOR = 5;
     }
 
     public interface TooltipHandler {

@@ -1812,21 +1812,27 @@ public class StripLayoutHelperManager
         // Use helper methods to calculate new visibility of strip buttons.
         boolean newGlicVisibility =
                 mTrailingButtonsCoordinator.shouldGlicBeVisible(mIsIncognito, mTabModelSelector);
+        boolean newGlicActorVisibility =
+                mTrailingButtonsCoordinator.shouldGlicActorBeVisible(
+                        mIsIncognito, mTabModelSelector);
         boolean newMsbVisibility = shouldMsbBeVisible();
 
         // Update model selector button properties.
         updateModelSelectorButtonProperties();
 
-        // Early exit if visibility of both buttons hasn't changed.
+        // Early exit if visibility of buttons hasn't changed.
         boolean glicChanged =
                 mTrailingButtonsCoordinator.isGlicButtonVisible() != newGlicVisibility;
+        boolean actorChanged =
+                mTrailingButtonsCoordinator.isGlicActorButtonVisible() != newGlicActorVisibility;
         boolean msbChanged =
                 mModelSelectorButton != null
                         && mModelSelectorButton.isVisible() != newMsbVisibility;
-        if (!glicChanged && !msbChanged) return;
+        if (!glicChanged && !actorChanged && !msbChanged) return;
 
-        // Set updated visibilities (of both buttons for simplicity).
+        // Set updated visibilities (of all buttons for simplicity).
         mTrailingButtonsCoordinator.setGlicButtonVisible(newGlicVisibility);
+        mTrailingButtonsCoordinator.setGlicActorButtonVisible(newGlicActorVisibility);
         if (mModelSelectorButton != null) mModelSelectorButton.setVisible(newMsbVisibility);
 
         // The Glic button position depends on the MSB's visibility.
@@ -1838,16 +1844,18 @@ public class StripLayoutHelperManager
     }
 
     private void updateButtonMargins() {
-        boolean isTrailingButtonsVisible = mTrailingButtonsCoordinator.isGlicButtonVisible();
+        boolean isTrailingButtonsVisible =
+                mTrailingButtonsCoordinator.isGlicButtonVisible()
+                        || mTrailingButtonsCoordinator.isGlicActorButtonVisible();
         boolean isMsbVisible = mModelSelectorButton != null && mModelSelectorButton.isVisible();
 
         // Calculate layout sizes and update margins. We use (width + end padding + start spacing)
         // to create a larger gap between buttons to meet touch target size requirements.
         float trailingButtonsTouchTargetSize =
                 isTrailingButtonsVisible
-                        ? (mTrailingButtonsCoordinator.getGlicButtonWidthWithEndPadding()
+                        ? (mTrailingButtonsCoordinator.getTrailingButtonsWidthWithEndPadding()
                                 + mTrailingButtonsCoordinator
-                                        .getGlicButtonStartPaddingForTouchTarget())
+                                        .getTrailingButtonsStartPaddingForTouchTarget())
                         : 0.0f;
         float msbTouchTargetSize =
                 isMsbVisible
