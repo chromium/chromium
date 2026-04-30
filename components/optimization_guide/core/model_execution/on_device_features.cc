@@ -173,7 +173,7 @@ std::string ToUseCaseName(mojom::OnDeviceFeature feature) {
     case mojom::OnDeviceFeature::kPermissionsAi:
       return "permissions_ai";
     case mojom::OnDeviceFeature::kWritingAssistanceApi:
-      return "writer_assistance_api";
+      return "writing_assistance_api";
     case mojom::OnDeviceFeature::kProofreaderApi:
       return "proofreader_api";
     case mojom::OnDeviceFeature::kOnDeviceSpeechRecognition:
