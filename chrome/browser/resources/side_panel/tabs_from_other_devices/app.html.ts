@@ -7,6 +7,9 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {TabInfo, TabsFromOtherDevicesAppElement} from './app.js';
 
+// TODO(crbug.com/488242420): Implement pixel tests to cover this UI, including
+// "no screenshots", "screenshots", "screenshot but load failed" cases.
+
 export function getHtml(this: TabsFromOtherDevicesAppElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
@@ -41,26 +44,42 @@ export function getHtml(this: TabsFromOtherDevicesAppElement) {
     </div>
   ` : ''}
 
-  <div id="tabs">
+  <div id="tabs" class="${this.showScreenshots_ ? 'grid' : ''}">
     ${this.getFilteredTabs_().map((tab: TabInfo) => html`
-      <div class="tab" @click="${this.onTabClick_}"
+      <div class="tab ${this.showScreenshots_ ? 'grid' : ''}"
+          @click="${this.onTabClick_}"
           @auxclick="${this.onTabAuxclick_}"
           data-session-tag="${tab.sessionTag}"
           data-tab-id="${tab.sessionId}">
-        <div class="tab-favicon-container">
-          <div class="tab-favicon"
-                style="background-image:
-                      ${getFaviconForPageURL(tab.url, true)}">
+        <div class="tab-header">
+          <div class="tab-favicon-container">
+            <div class="tab-favicon"
+                  style="background-image:
+                        ${getFaviconForPageURL(tab.url, true)}">
+            </div>
+          </div>
+          <div class="tab-info">
+            <span class="tab-title">${tab.title}</span>
+            ${!this.showScreenshots_ ? html`
+              <div class="tab-details">
+                <span class="tab-url">${this.getHostname_(tab.url)}</span>
+                <span class="tab-timestamp-separator">&bull;</span>
+                <span class="tab-timestamp">${tab.timestampDisplayStr}</span>
+              </div>
+            ` : ''}
           </div>
         </div>
-        <div class="tab-info">
-          <span class="tab-title">${tab.title}</span>
-          <div class="tab-details">
-            <span class="tab-url">${this.getHostname_(tab.url)}</span>
-            <span class="tab-timestamp-separator">&bull;</span>
-            <span class="tab-timestamp">${tab.timestampDisplayStr}</span>
-          </div>
-        </div>
+        ${this.showScreenshots_ ? html`
+          ${tab.screenshotUrl &&
+              !this.screenshotLoadFailed_(tab.sessionTag, tab.sessionId) ? html`
+            <img class="tab-screenshot" src="${tab.screenshotUrl}"
+                @error="${this.onScreenshotError_}"
+                data-session-tag="${tab.sessionTag}"
+                data-tab-id="${tab.sessionId}">
+          ` : html`
+            <div class="tab-screenshot fallback"></div>
+          `}
+        ` : ''}
       </div>
     `)}
   </div>

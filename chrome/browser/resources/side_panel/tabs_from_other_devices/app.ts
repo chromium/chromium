@@ -14,13 +14,17 @@ import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_
 import type {ForeignSession, ForeignSessionPageHandlerRemote, ForeignSessionTab} from 'chrome://resources/cr_components/history/foreign_sessions.mojom-webui.js';
 import {ForeignSessionPageCallbackRouter, ForeignSessionPageHandler} from 'chrome://resources/cr_components/history/foreign_sessions.mojom-webui.js';
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {ClickModifiers} from 'chrome://resources/mojo/ui/base/mojom/window_open_disposition.mojom-webui.js';
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 
-export type TabInfo = ForeignSessionTab&{sessionTag: string};
+export type TabInfo = ForeignSessionTab&{
+  sessionTag: string,
+  screenshotUrl?: string,
+};
 
 const TabsFromOtherDevicesAppElementBase = CrLitElement;
 
@@ -43,12 +47,17 @@ export class TabsFromOtherDevicesAppElement extends
       syncedDevices_: {type: Array},
       searchQuery_: {type: String},
       selectedDeviceTag_: {type: String},
+      failedScreenshots_: {type: Object},
+      showScreenshots_: {type: Boolean},
     };
   }
 
   protected accessor syncedDevices_: ForeignSession[] = [];
   protected accessor searchQuery_: string = '';
   protected accessor selectedDeviceTag_: string|null = null;
+  protected accessor failedScreenshots_: Set<string> = new Set();
+  protected accessor showScreenshots_: boolean =
+      loadTimeData.getBoolean('showScreenshots');
 
   private foreignSessionHandler: ForeignSessionPageHandlerRemote =
       ForeignSessionPageHandler.getRemote();
@@ -81,6 +90,9 @@ export class TabsFromOtherDevicesAppElement extends
     if (!this.selectedDeviceTag_ && sessions.length > 0) {
       this.selectedDeviceTag_ = sessions[0]!.tag;
     }
+    // Also re-try fetching any screenshots that previously failed - it's
+    // possible they are now available.
+    this.failedScreenshots_ = new Set();
   }
 
   protected onDeviceSelectClick_(e: MouseEvent) {
@@ -139,6 +151,16 @@ export class TabsFromOtherDevicesAppElement extends
     this.searchQuery_ = e.detail;
   }
 
+  private createTabInfo_(tab: ForeignSessionTab, sessionTag: string): TabInfo {
+    return {
+      ...tab,
+      sessionTag,
+      screenshotUrl: this.showScreenshots_ ?
+          `chrome://synced-screenshot/${sessionTag}/${tab.sessionId}` :
+          undefined,
+    };
+  }
+
   // Returns the tabs that match the current user selection: If there is a
   // search query, this returns all tabs from all devices that match the search
   // query. Otherwise, returns all tabs for the selected device tag.
@@ -154,10 +176,7 @@ export class TabsFromOtherDevicesAppElement extends
           for (const tab of window.tabs) {
             if (tab.title.toLowerCase().includes(query) ||
                 tab.url.toLowerCase().includes(query)) {
-              tabs.push({
-                ...tab,
-                sessionTag: device.tag,
-              });
+              tabs.push(this.createTabInfo_(tab, device.tag));
             }
           }
         }
@@ -169,15 +188,27 @@ export class TabsFromOtherDevicesAppElement extends
       if (device) {
         for (const window of device.windows) {
           for (const tab of window.tabs) {
-            tabs.push({
-              ...tab,
-              sessionTag: device.tag,
-            });
+            tabs.push(this.createTabInfo_(tab, device.tag));
           }
         }
       }
     }
     return tabs;
+  }
+
+  protected screenshotLoadFailed_(sessionTag: string, tabId: number): boolean {
+    return this.failedScreenshots_.has(`${sessionTag}_${tabId}`);
+  }
+
+  protected onScreenshotError_(e: Event) {
+    const target = e.currentTarget as HTMLElement;
+    const sessionTag = target.dataset['sessionTag']!;
+    const tabId = target.dataset['tabId']!;
+    const key = `${sessionTag}_${tabId}`;
+    // Note: Need to recreate the set to make Lit react to the change.
+    const newFailed = new Set(this.failedScreenshots_);
+    newFailed.add(key);
+    this.failedScreenshots_ = newFailed;
   }
 }
 
