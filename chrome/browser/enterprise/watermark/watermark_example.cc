@@ -75,7 +75,8 @@ void WatermarkExample::CreateExampleView(views::View* container) {
   watermark_container->AddChildView(std::make_unique<GradientView>());
   watermark_container->SetPaintToLayer();
   watermark_view_ = watermark_container->AddChildView(
-      std::make_unique<enterprise_watermark::DataProtectionOverlayView>());
+      std::make_unique<
+          enterprise_data_protection::DataProtectionOverlayView>());
   watermark_view_->SetString("Private! Confidential", kDefaultExampleFillColor,
                              kDefaultExampleOutlineColor,
                              kDefaultExampleFontSize);
@@ -210,7 +211,7 @@ WatermarkExample::~WatermarkExample() = default;
 
 // WatermarkTextArea
 WatermarkTextArea::WatermarkTextArea(
-    enterprise_watermark::DataProtectionOverlayView* view)
+    enterprise_data_protection::DataProtectionOverlayView* view)
     : watermark_view_(view) {}
 
 void WatermarkTextArea::OnTextChanged() {

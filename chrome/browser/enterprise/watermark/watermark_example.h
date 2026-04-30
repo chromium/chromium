@@ -19,9 +19,9 @@ class Checkbox;
 class Label;
 }  // namespace views
 
-namespace enterprise_watermark {
+namespace enterprise_data_protection {
 class DataProtectionOverlayView;
-}  // namespace enterprise_watermark
+}  // namespace enterprise_data_protection
 
 struct SliderInfo {
   std::string label;
@@ -59,7 +59,8 @@ class VIEWS_EXAMPLES_EXPORT WatermarkExample
       std::vector<views::Slider*>& sliders,
       std::vector<views::Label*>& labels);
 
-  raw_ptr<enterprise_watermark::DataProtectionOverlayView> watermark_view_;
+  raw_ptr<enterprise_data_protection::DataProtectionOverlayView>
+      watermark_view_;
   std::vector<views::Slider*> rotation_sliders_;
   std::vector<views::Label*> rotation_slider_labels_;
   std::vector<views::Slider*> translate_sliders_;
@@ -71,13 +72,14 @@ class WatermarkTextArea : public views::Textarea {
   METADATA_HEADER(WatermarkTextArea, views::Textarea)
  public:
   explicit WatermarkTextArea(
-      enterprise_watermark::DataProtectionOverlayView* view);
+      enterprise_data_protection::DataProtectionOverlayView* view);
 
   // views::Textfield
   void OnTextChanged() override;
 
  private:
-  raw_ptr<enterprise_watermark::DataProtectionOverlayView> watermark_view_;
+  raw_ptr<enterprise_data_protection::DataProtectionOverlayView>
+      watermark_view_;
 };
 
 #endif  // CHROME_BROWSER_ENTERPRISE_WATERMARK_WATERMARK_EXAMPLE_H_

@@ -10,7 +10,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/views/accessibility/view_accessibility.h"
 
-namespace enterprise_watermark {
+namespace enterprise_data_protection {
 
 TEST(DataProtectionOverlayViewTest, InvisibleToAccessibility) {
   {
@@ -64,4 +64,4 @@ TEST(DataProtectionOverlayViewTest,
   view.SetString("", new_color, new_color, font_size);
 }
 
-}  // namespace enterprise_watermark
+}  // namespace enterprise_data_protection

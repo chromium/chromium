@@ -41,9 +41,9 @@ namespace views {
 class WebView;
 }  // namespace views
 
-namespace enterprise_watermark {
+namespace enterprise_data_protection {
 class DataProtectionOverlayView;
-}  // namespace enterprise_watermark
+}  // namespace enterprise_data_protection
 
 // ContentsContainerView holds the ContentsWebView and the outlines and
 // minitoolbar when in split view.
@@ -92,7 +92,7 @@ class ContentsContainerView : public views::View,
   ContentsCaptureBorderView* capture_contents_border_view() {
     return capture_contents_border_view_;
   }
-  enterprise_watermark::DataProtectionOverlayView*
+  enterprise_data_protection::DataProtectionOverlayView*
   data_protection_overlay_view() {
     return data_protection_overlay_view_;
   }
@@ -186,7 +186,7 @@ class ContentsContainerView : public views::View,
   raw_ptr<views::View> new_tab_footer_view_separator_ = nullptr;
 
   // The view that overlays the contents container.
-  raw_ptr<enterprise_watermark::DataProtectionOverlayView>
+  raw_ptr<enterprise_data_protection::DataProtectionOverlayView>
       data_protection_overlay_view_ = nullptr;
 
   // The overlay dialog view that is displayed on top of the web contents.

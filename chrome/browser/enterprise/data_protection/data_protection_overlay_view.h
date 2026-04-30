@@ -14,7 +14,7 @@ class Canvas;
 class RenderText;
 }  // namespace gfx
 
-namespace enterprise_watermark {
+namespace enterprise_data_protection {
 
 // DataProtectionOverlayView represents a view that can add an overlay on top
 // of other views. The view should be appropriately sized using its parent's
@@ -86,9 +86,9 @@ class DataProtectionOverlayView : public views::View {
   // than repeated calls to `RenderText::Draw()`, which need to do additional
   // work such as loading font configs, shaping text, calculating line height,
   // etc. This only needs to be updated when the watermark text changes.
-  WatermarkBlock watermark_block_;
+  enterprise_watermark::WatermarkBlock watermark_block_;
 };
 
-}  // namespace enterprise_watermark
+}  // namespace enterprise_data_protection
 
 #endif  // CHROME_BROWSER_ENTERPRISE_DATA_PROTECTION_DATA_PROTECTION_OVERLAY_VIEW_H_

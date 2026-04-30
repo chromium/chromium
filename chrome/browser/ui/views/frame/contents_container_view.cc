@@ -98,8 +98,9 @@ ContentsContainerView::ContentsContainerView(BrowserView* browser_view)
     new_tab_footer_view_->SetVisible(false);
   }
 
-  data_protection_overlay_view_ = AddChildView(
-      std::make_unique<enterprise_watermark::DataProtectionOverlayView>());
+  data_protection_overlay_view_ =
+      AddChildView(std::make_unique<
+                   enterprise_data_protection::DataProtectionOverlayView>());
 
   // `indigo_toolbar_view_` dynamically adds itself after
   // `data_protection_overlay_view_`.
