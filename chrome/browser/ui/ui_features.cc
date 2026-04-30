@@ -339,6 +339,9 @@ BASE_FEATURE(kByDateHistoryInSidePanel, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTabsFromOtherDevicesSidePanel, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kTabsFromOtherDevicesSidePanelPinnedByDefault,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kNonMilestoneUpdateToast, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kBookmarkTabGroupConversion, base::FEATURE_DISABLED_BY_DEFAULT);

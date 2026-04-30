@@ -296,6 +296,9 @@ BASE_DECLARE_FEATURE(kByDateHistoryInSidePanel);
 // If enabled, the "Tabs from other devices" side panel will be available.
 BASE_DECLARE_FEATURE(kTabsFromOtherDevicesSidePanel);
 
+// If enabled, the "Tabs from other devices" toolbar button will be pinned by
+// default.
+BASE_DECLARE_FEATURE(kTabsFromOtherDevicesSidePanelPinnedByDefault);
 
 #if !BUILDFLAG(IS_ANDROID)
 // Controls whether to add new tabs to active tab group or to the end of the
