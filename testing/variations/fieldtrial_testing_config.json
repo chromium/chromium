@@ -1292,12 +1292,25 @@
     "AndroidPkAutocorrectUnderline": [
         {
             "platforms": [
-                "android"
+                "android",
+                "android_webview"
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "EnabledV1",
                     "enable_features": [
+                        "AndroidPkAutocorrectUnderline"
+                    ],
+                    "disable_features": [
+                        "AndroidPkAutocorrectUnderlineV2"
+                    ]
+                },
+                {
+                    "name": "EnabledV2",
+                    "enable_features": [
+                        "AndroidPkAutocorrectUnderlineV2"
+                    ],
+                    "disable_features": [
                         "AndroidPkAutocorrectUnderline"
                     ]
                 }
