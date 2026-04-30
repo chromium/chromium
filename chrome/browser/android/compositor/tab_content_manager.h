@@ -16,12 +16,17 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/thumbnail/cc/thumbnail_cache.h"
+#include "components/sessions/core/session_id.h"
 #include "content/public/browser/render_widget_host_view.h"
 
 class TabAndroid;
 
 namespace cc::slim {
 class Layer;
+}
+
+namespace sync_sessions {
+class SessionSyncService;
 }
 
 namespace ui {
@@ -104,6 +109,10 @@ class TabContentManager : public thumbnail::ThumbnailCacheObserver {
   void OnThumbnailAddedToCache(thumbnail::TabId tab_id) override;
   void OnFinishedThumbnailRead(thumbnail::TabId tab_id) override;
 
+  static void CompressScreenshotForSyncForTesting(
+      const SkBitmap& bitmap,
+      base::OnceCallback<void(std::string)> callback);
+
  private:
   class TabReadbackRequest;
   // TODO(crbug.com/41314695) check sizes and consider using base::flat_map if
@@ -132,6 +141,10 @@ class TabContentManager : public thumbnail::ThumbnailCacheObserver {
                            bool need_downsampling,
                            bool result,
                            const SkBitmap& bitmap);
+
+  sync_sessions::SessionSyncService* GetSessionSyncService(int tab_id);
+
+  void AddTabScreenshotToSync(int tab_id, std::string compressed_data);
 
   absl::flat_hash_map<thumbnail::TabId,
                       base::WeakPtr<thumbnail::ThumbnailCaptureTracker>>
