@@ -79,7 +79,8 @@ static inline Node* GetShadowRootParent(const ShadowRoot& shadow_root,
   if (&shadow_root != target.ContainingShadowRoot() &&
       (!source || &shadow_root != source->ContainingShadowRoot())) {
     return &shadow_root.host();
-  } else if (source && source->GetTreeScope() != shadow_root &&
+  } else if (!shadow_root.IsUserAgent() && source &&
+             source->GetTreeScope() != shadow_root &&
              source->GetTreeScope().IsInclusiveAncestorOf(shadow_root)) {
     return &source->GetTreeScope().Retarget(target);
   } else {

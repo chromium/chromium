@@ -43,6 +43,7 @@ class ToggleEvent final : public Event {
   const String& oldState() const;
   const String& newState() const;
   Element* source() const;
+  Element* SourceElement() const override { return source_; }
 
   const AtomicString& InterfaceName() const override;
 
