@@ -1,57 +1,59 @@
+# tags: [ mac win linux ]
+# tags: [ mac15-arm64 mac15 mac14-arm64 mac14 ]
+# tags: [ x86_64 arm64 ]
+# tags: [ release debug ]
 # results: [ Timeout Crash Pass Failure Skip ]
 
 # An Optimization Guide internal script (run_chrome_ai_wpt_tests.py) uses these
 # expectations instead of the typical TestExpectations file, in order to test
 # Built-In AI APIs in Branded Chrome builds with side-loaded models & configs.
 
-# Temporarily disable flaky Language Detector tests to unblock model validation testing.
-# Disables tests on all platforms, since disabling these tests on Mac only is not supported.
-crbug.com/414403946 external/wpt/ai/language_detection/detector-iframe.https.html [ Skip ]
-crbug.com/414403946 external/wpt/ai/language_detection/detector-locale.https.window.html [ Skip ]
-
-#Temporarily disable classifier classify test until a model is available to download.
+# Temporarily disable classifier classify test until a model is available to download.
 crbug.com/502312847 external/wpt/ai/classifier/classifier-classify.tentative.https.window.html [ Skip ]
 
 # These tests fail a 'downloadable' availability precondition, per sideloading.
-crbug.com/390246212 external/wpt/ai/rewriter/rewriter-create-user-activation.tentative.https.window.html [ Failure Pass ]
-crbug.com/390246212 external/wpt/ai/summarizer/summarizer-create-user-activation.tentative.https.window.html [ Failure Pass ]
-crbug.com/390246212 external/wpt/ai/writer/writer-create-user-activation.tentative.https.window.html [ Failure Pass ]
-crbug.com/390246212 wpt_internal/ai/language-model-api-create-user-activation.https.window.html [ Failure Pass ]
+# NOTE: They unexpectedly pass on retry; perhaps due to crbug.com/429183223.
+crbug.com/390246212 external/wpt/ai/language_detection/detector.https.window.html [ Skip ]
+crbug.com/390246212 external/wpt/ai/language-model/language-model-create-user-activation.tentative.https.window.html [ Skip ]
+crbug.com/390246212 external/wpt/ai/rewriter/rewriter-create-user-activation.tentative.https.window.html [ Skip ]
+crbug.com/390246212 external/wpt/ai/summarizer/summarizer-create-user-activation.tentative.https.window.html [ Skip ]
+crbug.com/390246212 external/wpt/ai/writer/writer-create-user-activation.tentative.https.window.html [ Skip ]
 
-# These tests fail flakily with `Unhandled rejection with value: object "Error: element click intercepted error"`
+# These tests fail flakily with `Unhandled rejection with value: object "Error: element click intercepted error"`.
+crbug.com/407988949 external/wpt/ai/language_detection/detector-iframe.https.html [ Failure Pass ]
+crbug.com/407988949 external/wpt/ai/language-model/language-model-iframe.tentative.https.html [ Failure Pass ]
 crbug.com/407988949 external/wpt/ai/rewriter/rewriter-iframe.tentative.https.html [ Failure Pass ]
 crbug.com/407988949 external/wpt/ai/summarizer/summarizer-iframe.tentative.https.html [ Failure Pass ]
 crbug.com/407988949 external/wpt/ai/writer/writer-iframe.tentative.https.html [ Failure Pass ]
-crbug.com/407988949 wpt_internal/ai/language-model-api-iframe.tentative.https.html [ Failure Pass ]
 
-# Temporarily disable this test because it is currently flaky (timing out or failing with ChromeML GPU Validation error).
+# Temporarily skip these tests while the underlying model is in migration.
+crbug.com/446717936 external/wpt/ai/proofreader/proofreader-abort.tentative.https.window.html [ Skip ]
 crbug.com/446717936 external/wpt/ai/proofreader/proofreader-proofread.tentative.https.window.html [ Skip ]
 
-# These tests fail audio input availability preconditions on Mac x64 bots.
-# Disables tests on all platforms, since disabling these tests on Mac x64 only is not supported.
-crbug.com/460555196 external/wpt/ai/language-model/language-model-availability-available-multimodal.tentative.https.window.html [ Failure Pass ]
-crbug.com/460555196 external/wpt/ai/language-model/language-model-create-multimodal.tentative.https.window.html [ Failure Pass ]
-crbug.com/460555196 external/wpt/ai/language-model/language-model-prompt-multimodal-audio.tentative.https.window.html [ Failure Pass ]
+# These tests fail audio input availability preconditions on mac-x64.
+crbug.com/460555196 [ mac x86_64 ] external/wpt/ai/language-model/language-model-availability-available-multimodal.tentative.https.window.html [ Failure ]
+crbug.com/460555196 [ mac x86_64 ] external/wpt/ai/language-model/language-model-create-multimodal.tentative.https.window.html [ Failure Pass ]
+crbug.com/460555196 [ mac x86_64 ] external/wpt/ai/language-model/language-model-prompt-multimodal-audio.tentative.https.window.html [ Failure Pass ]
 
-# These tests frequently time out on Mac platforms.
-# Disables tests on all platforms, since disabling these tests on Mac only is not supported.
-crbug.com/460799715 external/wpt/ai/language-model/language-model-clone.tentative.https.window.html [ Timeout Pass ]
-crbug.com/460799715 external/wpt/ai/language-model/language-model-iframe.tentative.https.html [ Timeout Pass ]
-crbug.com/460799715 external/wpt/ai/language-model/language-model-prompt-empty-input.tentative.https.window.html [ Timeout Pass ]
-crbug.com/459864801 external/wpt/ai/language-model/language-model-prompt-multimodal-image.tentative.https.window.html [ Timeout Pass ]
-crbug.com/459864801 external/wpt/ai/language-model/language-model-prompt-multimodal-video.tentative.https.window.html [ Timeout Pass ]
-crbug.com/460555196 external/wpt/ai/language-model/language-model-prompt-multimodal.tentative.https.window.html [ Timeout Pass ]
-crbug.com/460799715 external/wpt/ai/language-model/language-model-prompt.tentative.https.window.html [ Timeout Pass ]
-crbug.com/460799715 external/wpt/ai/language-model/language-model-quota-exceeded.tentative.https.window.html [ Timeout Pass ]
-crbug.com/460799715 external/wpt/ai/language-model/language-model-response-json-schema.tentative.https.window.html [ Timeout Pass ]
-crbug.com/460799715 external/wpt/ai/rewriter/rewriter-abort.tentative.https.window.html [ Timeout Pass ]
-crbug.com/460799715 external/wpt/ai/summarizer/summarizer-abort.tentative.https.window.html [ Timeout Pass ]
-crbug.com/460799715 external/wpt/ai/summarizer/summarizer-create-available.tentative.https.window.html [ Timeout Pass ]
-crbug.com/460799715 external/wpt/ai/summarizer/summarizer-summarize-streaming.tentative.https.window.html [ Timeout Pass ]
-crbug.com/460799715 external/wpt/ai/writer/writer-abort.tentative.https.window.html [ Timeout Pass ]
-crbug.com/460799715 external/wpt/ai/writer/writer-create-available.tentative.https.window.html [ Timeout Pass ]
-crbug.com/460799715 external/wpt/ai/writer/writer-write-streaming.tentative.https.window.html [ Timeout Pass ]
+# These tests frequently time out or fail flakily on mac-x64 and mac-arm64.
+crbug.com/459864801 [ mac ] external/wpt/ai/language-model/language-model-prompt-multimodal-image.tentative.https.window.html [ Timeout Pass Failure ]
+crbug.com/459864801 [ mac ] external/wpt/ai/language-model/language-model-prompt-streaming.tentative.https.window.html [ Timeout Pass ]
+crbug.com/459864801 [ mac ] external/wpt/ai/language-model/language-model-prompt.tentative.https.window.html [ Timeout Pass ]
 
+# These tests frequently time out on mac-x64.
+crbug.com/460799715 [ mac x86_64 ] external/wpt/ai/language-model/language-model-clone.tentative.https.window.html [ Timeout Pass ]
+crbug.com/460799715 [ mac x86_64 ] external/wpt/ai/language-model/language-model-prompt-empty-input.tentative.https.window.html [ Timeout Pass ]
+crbug.com/460799715 [ mac x86_64 ] external/wpt/ai/language-model/language-model-prompt-multimodal-video.tentative.https.window.html [ Timeout Pass ]
+crbug.com/460799715 [ mac x86_64 ] external/wpt/ai/language-model/language-model-prompt-multimodal.tentative.https.window.html [ Timeout Pass ]
+crbug.com/460799715 [ mac x86_64 ] external/wpt/ai/language-model/language-model-quota-exceeded.tentative.https.window.html [ Timeout Pass ]
+crbug.com/460799715 [ mac x86_64 ] external/wpt/ai/language-model/language-model-call-response-json-schema.tentative.https.window.html [ Timeout Pass ]
+crbug.com/460799715 [ mac x86_64 ] external/wpt/ai/rewriter/rewriter-abort.tentative.https.window.html [ Timeout Pass ]
+crbug.com/460799715 [ mac x86_64 ] external/wpt/ai/summarizer/summarizer-abort.tentative.https.window.html [ Timeout Pass ]
+crbug.com/460799715 [ mac x86_64 ] external/wpt/ai/summarizer/summarizer-create-available.tentative.https.window.html [ Timeout Pass ]
+crbug.com/460799715 [ mac x86_64 ] external/wpt/ai/summarizer/summarizer-summarize-streaming.tentative.https.window.html [ Timeout Pass ]
+crbug.com/460799715 [ mac x86_64 ] external/wpt/ai/writer/writer-abort.tentative.https.window.html [ Timeout Pass ]
+crbug.com/460799715 [ mac x86_64 ] external/wpt/ai/writer/writer-create-available.tentative.https.window.html [ Timeout Pass ]
+crbug.com/460799715 [ mac x86_64 ] external/wpt/ai/writer/writer-write-streaming.tentative.https.window.html [ Timeout Pass ]
 
 ### virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/
 crbug.com/505425447 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/cast.https.any.html?gpu [ Failure Crash ]
