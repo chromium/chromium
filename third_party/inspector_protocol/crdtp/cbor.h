@@ -315,6 +315,13 @@ CRDTP_EXPORT Status AppendString8EntryToCBORMap(span<uint8_t> string8_key,
                                                 span<uint8_t> string8_value,
                                                 std::vector<uint8_t>* cbor);
 
+// Safely extracts the value for |string8_key| from a CBOR encoded map wrapped
+// in an envelope. This is a shallow parser that skips unknown keys and
+// complex values. If the key is not found or the value is not a STRING8,
+// returns an empty span.
+CRDTP_EXPORT span<uint8_t> GetString8ValueFromMap(span<uint8_t> message,
+                                                  span<uint8_t> string8_key);
+
 namespace internals {  // Exposed only for writing tests.
 CRDTP_EXPORT size_t ReadTokenStart(span<uint8_t> bytes,
                                    cbor::MajorType* type,

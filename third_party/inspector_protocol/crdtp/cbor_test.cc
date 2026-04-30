@@ -1445,5 +1445,111 @@ TEST(AppendString8EntryToMapTest, InvalidEnvelope_Error) {
     EXPECT_THAT(status, StatusIs(Error::CBOR_INVALID_ENVELOPE, 0));
   }
 }
+
+// =============================================================================
+// cbor::GetString8ValueFromMap
+// =============================================================================
+
+TEST(GetString8ValueFromMapTest, HandlesEmptyStringKey) {
+  std::vector<uint8_t> encoded = {
+      0xd8, 0x5a, 0, 0, 0, 2, EncodeIndefiniteLengthMapStart(), EncodeStop()};
+  EXPECT_THAT(AppendString8EntryToCBORMap(SpanFrom(""), SpanFrom("value1"),
+                                          &encoded),
+              StatusIsOk());
+  EXPECT_THAT(AppendString8EntryToCBORMap(SpanFrom("key2"), SpanFrom("value2"),
+                                          &encoded),
+              StatusIsOk());
+
+  span<uint8_t> result1 =
+      GetString8ValueFromMap(SpanFrom(encoded), SpanFrom(""));
+  EXPECT_EQ("value1", std::string(result1.begin(), result1.end()));
+
+  span<uint8_t> result2 =
+      GetString8ValueFromMap(SpanFrom(encoded), SpanFrom("key2"));
+  EXPECT_EQ("value2", std::string(result2.begin(), result2.end()));
+}
+
+TEST(GetString8ValueFromMapTest, ExtractsValueSuccessfully) {
+  std::vector<uint8_t> encoded = {
+      0xd8, 0x5a, 0, 0, 0, 2, EncodeIndefiniteLengthMapStart(), EncodeStop()};
+  EXPECT_THAT(AppendString8EntryToCBORMap(SpanFrom("key1"), SpanFrom("value1"),
+                                          &encoded),
+              StatusIsOk());
+  EXPECT_THAT(AppendString8EntryToCBORMap(SpanFrom("key2"), SpanFrom("value2"),
+                                          &encoded),
+              StatusIsOk());
+
+  span<uint8_t> result1 =
+      GetString8ValueFromMap(SpanFrom(encoded), SpanFrom("key1"));
+  EXPECT_EQ("value1", std::string(result1.begin(), result1.end()));
+
+  span<uint8_t> result2 =
+      GetString8ValueFromMap(SpanFrom(encoded), SpanFrom("key2"));
+  EXPECT_EQ("value2", std::string(result2.begin(), result2.end()));
+}
+
+TEST(GetString8ValueFromMapTest, HandlesMissingKey) {
+  std::vector<uint8_t> encoded = {
+      0xd8, 0x5a, 0, 0, 0, 2, EncodeIndefiniteLengthMapStart(), EncodeStop()};
+  EXPECT_THAT(AppendString8EntryToCBORMap(SpanFrom("key1"), SpanFrom("value1"),
+                                          &encoded),
+              StatusIsOk());
+
+  span<uint8_t> result =
+      GetString8ValueFromMap(SpanFrom(encoded), SpanFrom("missing_key"));
+  EXPECT_TRUE(result.empty());
+}
+
+TEST(GetString8ValueFromMapTest, HandlesNonStringValuesGracefully) {
+  std::vector<uint8_t> encoded;
+  EnvelopeEncoder envelope;
+  envelope.EncodeStart(&encoded);
+  encoded.push_back(EncodeIndefiniteLengthMapStart());
+
+  EncodeString8(SpanFrom("int_key"), &encoded);
+  EncodeInt32(42, &encoded);
+
+  EncodeString8(SpanFrom("string_key"), &encoded);
+  EncodeString8(SpanFrom("string_value"), &encoded);
+
+  encoded.push_back(EncodeStop());
+  envelope.EncodeStop(&encoded);
+
+  span<uint8_t> result1 =
+      GetString8ValueFromMap(SpanFrom(encoded), SpanFrom("int_key"));
+  EXPECT_TRUE(result1.empty());
+
+  span<uint8_t> result2 =
+      GetString8ValueFromMap(SpanFrom(encoded), SpanFrom("string_key"));
+  EXPECT_EQ("string_value", std::string(result2.begin(), result2.end()));
+}
+
+TEST(GetString8ValueFromMapTest, HandlesErrorValue) {
+  // Envelope with 2 bytes of content:
+  // [Map Start (0xbf), String Start length 1 (0x61)].
+  // The string key is truncated (missing its data byte), which triggers
+  // CBORTokenTag::ERROR_VALUE.
+  std::vector<uint8_t> encoded = {
+      0xd8, 0x5a, 0, 0, 0, 2,
+      EncodeIndefiniteLengthMapStart(),
+      0x61 /* major type 3 (string), additional info 1 (length 1) */
+  };
+
+  // Without the fix for the infinite loop, this call would never return.
+  span<uint8_t> result =
+      GetString8ValueFromMap(SpanFrom(encoded), SpanFrom("key"));
+
+  EXPECT_TRUE(result.empty());
+}
+
+
+TEST(GetString8ValueFromMapTest, InvalidMessage) {
+  std::vector<uint8_t> msg = {
+      0xd8, 0x5a, 0, 0, 0, 2, EncodeIndefiniteLengthMapStart(), 42};
+  span<uint8_t> result =
+      GetString8ValueFromMap(SpanFrom(msg), SpanFrom("key"));
+  EXPECT_TRUE(result.empty());
+}
+
 }  // namespace cbor
 }  // namespace crdtp

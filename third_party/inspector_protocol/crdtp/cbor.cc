@@ -1074,5 +1074,47 @@ Status AppendString8EntryToCBORMap(span<uint8_t> string8_key,
   *(out) = new_envelope_size & 0xff;
   return Status();
 }
+
+span<uint8_t> GetString8ValueFromMap(span<uint8_t> message,
+                                     span<uint8_t> string8_key) {
+  CBORTokenizer tokenizer(message);
+  if (tokenizer.TokenTag() != CBORTokenTag::ENVELOPE) {
+    return {};
+  }
+  tokenizer.EnterEnvelope();
+  if (tokenizer.TokenTag() != CBORTokenTag::MAP_START) {
+    return {};
+  }
+  tokenizer.Next();
+  bool is_key = true;
+  bool is_string_key = false;
+  span<uint8_t> key;
+  while (tokenizer.TokenTag() != CBORTokenTag::STOP &&
+         tokenizer.TokenTag() != CBORTokenTag::DONE &&
+         tokenizer.TokenTag() != CBORTokenTag::ERROR_VALUE) {
+    if (is_key) {
+      if (tokenizer.TokenTag() == CBORTokenTag::STRING8) {
+        key = tokenizer.GetString8();
+        is_string_key = true;
+      } else {
+        is_string_key = false;
+      }
+    } else {
+      if (is_string_key && SpanEquals(key, string8_key)) {
+        return tokenizer.TokenTag() == CBORTokenTag::STRING8
+                   ? tokenizer.GetString8()
+                   : span<uint8_t>();
+      }
+    }
+
+    if (tokenizer.TokenTag() == CBORTokenTag::MAP_START ||
+        tokenizer.TokenTag() == CBORTokenTag::ARRAY_START) {
+      return {};
+    }
+    tokenizer.Next();
+    is_key = !is_key;
+  }
+  return {};
+}
 }  // namespace cbor
 }  // namespace crdtp
