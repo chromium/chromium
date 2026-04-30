@@ -89,7 +89,8 @@ class FilterNavigationObserverTest : public content::RenderViewHostTestHarness {
     delegate_ = delegate.get();
 
     filter_navigation_observer_ = std::make_unique<FilterNavigationObserver>(
-        web_contents(), mock_service_.get(), std::move(delegate));
+        web_contents(), mock_service_.get(), /*log_router=*/nullptr,
+        std::move(delegate));
   }
 
   void TearDown() override {
@@ -109,7 +110,8 @@ class FilterNavigationObserverTest : public content::RenderViewHostTestHarness {
     auto delegate = std::make_unique<testing::NiceMock<MockUiDelegate>>();
     delegate_ = delegate.get();
     filter_navigation_observer_ = std::make_unique<FilterNavigationObserver>(
-        web_contents(), nullptr, std::move(delegate));
+        web_contents(), /*service=*/nullptr, /*log_router=*/nullptr,
+        std::move(delegate));
   }
 
  private:

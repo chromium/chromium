@@ -8,6 +8,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ref.h"
+#include "chrome/browser/multistep_filter/core/multistep_filter_log_router_factory.h"
 #include "chrome/browser/multistep_filter/core/multistep_filter_service_factory.h"
 #include "chrome/browser/multistep_filter/multistep_filter_ui_delegate_impl.h"
 #include "chrome/browser/multistep_filter/ui/filter_ui_controller.h"
@@ -56,6 +57,7 @@ void ChromeFilterNavigationObserver::UpdateObserver(
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   observer_ = std::make_unique<FilterNavigationObserver>(
       web_contents, MultistepFilterServiceFactory::GetForProfile(profile),
+      MultistepFilterLogRouterFactory::GetForProfile(profile),
       std::make_unique<MultistepFilterUiDelegateImpl>(tab()));
 }
 

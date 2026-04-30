@@ -19,6 +19,7 @@ class WebContents;
 
 namespace multistep_filter {
 
+class MultistepFilterLogRouter;
 class MultistepFilterService;
 class MultistepFilterUiDelegate;
 
@@ -30,6 +31,7 @@ class FilterNavigationObserver : public content::WebContentsObserver {
  public:
   FilterNavigationObserver(content::WebContents* web_contents,
                            MultistepFilterService* service,
+                           MultistepFilterLogRouter* log_router,
                            std::unique_ptr<MultistepFilterUiDelegate> delegate);
 
   FilterNavigationObserver(const FilterNavigationObserver&) = delete;
@@ -49,6 +51,9 @@ class FilterNavigationObserver : public content::WebContentsObserver {
   // TODO (crbug.com/498901792): Use raw_ref for service when the feature is
   // completely launched.
   raw_ptr<MultistepFilterService> service_;
+
+  // Log router for tracing navigation decisions.
+  raw_ptr<MultistepFilterLogRouter> log_router_;
 
   // Delegate to provide contextual information and interact with the UI.
   std::unique_ptr<MultistepFilterUiDelegate> delegate_;

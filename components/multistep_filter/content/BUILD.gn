@@ -13,6 +13,7 @@ source_set("content") {
   deps = [
     "//base",
     "//components/multistep_filter/core",
+    "//components/multistep_filter/core/logging",
     "//content/public/browser",
     "//url",
   ]
