@@ -93,7 +93,7 @@ const Element* ColdModeSpellCheckRequester::QualifyingEditable() const {
   // https://explainers-by-googlers.github.io/user-dictionary-leaks/
   const Element* focused_element = window_->document()->FocusedElement();
   bool skip_due_to_selection =
-      focused_element && !focused_element->WasLastFocusFromUserGesture() &&
+      (!focused_element || !focused_element->WasLastFocusFromUserGesture()) &&
       !base::FeatureList::IsEnabled(
           features::kUnrestrictSpellingAndGrammarForTesting);
   base::UmaHistogramBoolean(

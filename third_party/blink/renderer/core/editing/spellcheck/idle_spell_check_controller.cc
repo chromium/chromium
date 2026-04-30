@@ -125,7 +125,7 @@ void IdleSpellCheckController::RespondToChangedSelection() {
   // For more see:
   // https://explainers-by-googlers.github.io/user-dictionary-leaks/
   const Element* focused_element = GetDocument().FocusedElement();
-  if (focused_element && !focused_element->WasLastFocusFromUserGesture() &&
+  if ((!focused_element || !focused_element->WasLastFocusFromUserGesture()) &&
       !base::FeatureList::IsEnabled(
           features::kUnrestrictSpellingAndGrammarForTesting)) {
     Deactivate();
