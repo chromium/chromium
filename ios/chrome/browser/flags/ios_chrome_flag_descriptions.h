@@ -502,6 +502,9 @@ extern const char kGeminiResponseViewDynamicResizingDescription[];
 extern const char kGeminiRichAPCExtractionName[];
 extern const char kGeminiRichAPCExtractionDescription[];
 
+extern const char kGeminiScreenContextMigrationName[];
+extern const char kGeminiScreenContextMigrationDescription[];
+
 extern const char kGeminiUnaryMigrationName[];
 extern const char kGeminiUnaryMigrationDescription[];
 

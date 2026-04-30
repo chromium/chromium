@@ -781,6 +781,15 @@ bool IsGeminiMultiTabContextEnabled() {
   return base::FeatureList::IsEnabled(kGeminiMultiTabContext);
 }
 
+BASE_FEATURE(kGeminiScreenContextMigration, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsGeminiScreenContextMigrationEnabled() {
+  if (!IsPageActionMenuEnabled()) {
+    return false;
+  }
+  return base::FeatureList::IsEnabled(kGeminiScreenContextMigration);
+}
+
 BASE_FEATURE(kAppStoreInAppEvents, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsAppStoreInAppEventsEnabled() {

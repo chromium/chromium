@@ -813,6 +813,11 @@ const char kGeminiRichAPCExtractionName[] = "Gemini Rich APC Extraction";
 const char kGeminiRichAPCExtractionDescription[] =
     "Enables rich APC extraction for Gemini.";
 
+const char kGeminiScreenContextMigrationName[] =
+    "Gemini Screen Context Migration";
+const char kGeminiScreenContextMigrationDescription[] =
+    "Enables migration from Gemini Page Context to Screen Context.";
+
 const char kGeminiUnaryMigrationName[] = "Gemini Unary Migration";
 const char kGeminiUnaryMigrationDescription[] =
     "Enables the unary network migration for Gemini.";
