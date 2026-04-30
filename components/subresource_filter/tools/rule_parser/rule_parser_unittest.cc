@@ -331,16 +331,6 @@ TEST(RuleParserTest, ParseStyleRules) {
 
   expected_rule.is_allowlist = true;
   ParseAndExpectStyleRule(kTestDomain + "#@#" + kCssSelector, expected_rule);
-
-  expected_rule.is_allowlist = false;
-  expected_rule.domains.push_back("~" + kTestSubDomain);
-  ParseAndExpectStyleRule(
-      kTestDomain + ",~" + kTestSubDomain + "##" + kCssSelector, expected_rule);
-
-  expected_rule.is_allowlist = true;
-  ParseAndExpectStyleRule(
-      kTestDomain + ",~" + kTestSubDomain + "#@#" + kCssSelector,
-      expected_rule);
 }
 
 TEST(RuleParserTest, ParseErrors) {
@@ -368,6 +358,10 @@ TEST(RuleParserTest, ParseErrors) {
       {"#@!", RuleParser::ParseError::WRONG_CSS_RULE_DELIM, 2},
       {"#@#", RuleParser::ParseError::EMPTY_CSS_SELECTOR, 3},
       {"example.com##", RuleParser::ParseError::EMPTY_CSS_SELECTOR, 13},
+      {"example.com,~however.example.com##div.blocked_class",
+       RuleParser::ParseError::UNSUPPORTED_FEATURE, 12},
+      {"example.com,~however.example.com#@#div.blocked_class",
+       RuleParser::ParseError::UNSUPPORTED_FEATURE, 12},
   };
 
   for (const auto& rule_and_expectation : kRulesAndExpectations) {

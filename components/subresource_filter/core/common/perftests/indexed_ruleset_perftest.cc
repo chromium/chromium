@@ -2,12 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/subresource_filter/core/common/indexed_ruleset.h"
+
 #include <algorithm>
 #include <fstream>
 #include <memory>
 #include <sstream>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/files/file.h"
 #include "base/files/file_path.h"
@@ -16,9 +19,11 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "components/subresource_filter/core/common/memory_mapped_ruleset.h"
+#include "components/subresource_filter/core/common/test_ruleset_utils.h"
 #include "components/subresource_filter/tools/filter_tool.h"
 #include "components/subresource_filter/tools/indexing_tool.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -28,12 +33,15 @@ namespace subresource_filter {
 
 namespace {
 
+namespace proto = url_pattern_index::proto;
+
 static constexpr char kMetricIndexAndWriteTimeUs[] = "index_and_write_time";
+static constexpr char kMetricIndexingTimeUs[] = "indexing_time";
 static constexpr char kMetricMedianMatchTimeUs[] = "median_match_time";
 
 }  // namespace
 
-class IndexedRulesetPerftest : public testing::Test {
+class IndexedRulesetPerftest : public ::testing::Test {
  public:
   IndexedRulesetPerftest() = default;
 
@@ -80,6 +88,7 @@ class IndexedRulesetPerftest : public testing::Test {
   perf_test::PerfResultReporter SetUpReporter(const std::string& story_name) {
     perf_test::PerfResultReporter reporter("IndexedRuleset.", story_name);
     reporter.RegisterImportantMetric(kMetricIndexAndWriteTimeUs, "us");
+    reporter.RegisterImportantMetric(kMetricIndexingTimeUs, "us");
     reporter.RegisterImportantMetric(kMetricMedianMatchTimeUs, "us");
     return reporter;
   }
@@ -110,13 +119,53 @@ TEST_F(IndexedRulesetPerftest, IndexRuleset) {
                      static_cast<size_t>(timer.Elapsed().InMicroseconds()));
 }
 
+TEST_F(IndexedRulesetPerftest, Indexing) {
+  base::ElapsedTimer timer;
+  RulesetIndexer indexer(0x12345678);
+  // Generic ID hiding (realistic count: ~4k)
+  for (int i = 0; i < 5000; ++i) {
+    std::string id = "id-" + base::NumberToString(i);
+    indexer.AddStyleRuleFromProto(
+        testing::CreateStyleRule("#" + id, {}, false, {}, {id}));
+  }
+  // Generic class hiding (realistic count: ~9k)
+  for (int i = 0; i < 12000; ++i) {
+    std::string cls = "class-" + base::NumberToString(i);
+    indexer.AddStyleRuleFromProto(
+        testing::CreateStyleRule("." + cls, {}, false, {cls}, {}));
+  }
+  // Domain-specific hiding (realistic count: ~10k)
+  for (int i = 0; i < 10000; ++i) {
+    indexer.AddStyleRuleFromProto(testing::CreateStyleRule(
+        ".rule-" + base::NumberToString(i),
+        {"example" + base::NumberToString(i % 100) + ".com"}));
+  }
+  // Complex rules (nested)
+  for (int i = 0; i < 2000; ++i) {
+    std::string cls = "c-" + base::NumberToString(i);
+    indexer.AddStyleRuleFromProto(
+        testing::CreateStyleRule(".a .b ." + cls, {}, false, {cls}, {}));
+  }
+  // Exception rules (realistic count: ~5k)
+  for (int i = 0; i < 5000; ++i) {
+    std::string cls = "exception-" + base::NumberToString(i);
+    indexer.AddStyleRuleFromProto(testing::CreateStyleRule(
+        "." + cls, {"example" + base::NumberToString(i % 100) + ".com"},
+        /*is_exclusion=*/true, {cls}, {}));
+  }
+  indexer.Finish();
+  perf_test::PerfResultReporter reporter = SetUpReporter("Indexing");
+  reporter.AddResult(kMetricIndexingTimeUs,
+                     static_cast<size_t>(timer.Elapsed().InMicroseconds()));
+}
+
 TEST_F(IndexedRulesetPerftest, MatchAll) {
   std::vector<int64_t> results;
   for (int i = 0; i < 5; ++i) {
     base::ElapsedTimer timer;
     std::istringstream request_stream(requests());
     filter_tool()->MatchBatch(&request_stream);
-    results.push_back(timer.Elapsed().InMicroseconds());
+    results.emplace_back(timer.Elapsed().InMicroseconds());
   }
   std::sort(results.begin(), results.end());
   perf_test::PerfResultReporter reporter = SetUpReporter("MatchAll");

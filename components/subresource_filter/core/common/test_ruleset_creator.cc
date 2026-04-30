@@ -51,7 +51,7 @@ std::vector<uint8_t> SerializeUnindexedRulesetWithMultipleRules(
 
 std::vector<uint8_t> SerializeIndexedRulesetWithMultipleRules(
     const std::vector<proto::UrlRule>& rules) {
-  RulesetIndexer indexer;
+  RulesetIndexer indexer(0);
   for (const auto& rule : rules) {
     EXPECT_TRUE(indexer.AddUrlRule(rule));
   }

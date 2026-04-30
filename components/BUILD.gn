@@ -1404,6 +1404,7 @@ if (use_blink) {
       "//components/omnibox/browser",
       "//components/omnibox/browser:test_support",
       "//components/subresource_filter/core/common",
+      "//components/subresource_filter/core/common:test_support",
       "//components/subresource_filter/tools:tools_lib",
       "//components/test:test_support",
       "//components/visitedlink/browser",

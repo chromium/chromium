@@ -4,6 +4,7 @@
 
 #include "components/subresource_filter/tools/ruleset_converter/rule_stream.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
@@ -190,6 +191,16 @@ class ProtobufRuleOutputStream : public RuleOutputStream {
   }
 
   bool Finish() override {
+    // Move generic rules (rules that apply to all domains) to the front.
+    // This ensures that the indexer processes them before site-specific rules
+    // for the same selector, which maximizes the use of space-efficient
+    // implicit rules and avoids redundant entries in the index.
+    auto* style_rules = all_rules_.mutable_style_rules();
+    std::stable_partition(style_rules->begin(), style_rules->end(),
+                          [](const url_pattern_index::proto::StyleRule& rule) {
+                            return rule.domains().empty();
+                          });
+
     std::string buffer;
     if (!all_rules_.SerializeToString(&buffer)) {
       return false;

@@ -4,13 +4,23 @@
 
 #include "components/subresource_filter/core/common/indexed_ruleset.h"
 
+#include <algorithm>
+#include <memory>
+#include <vector>
+
 #include "base/check.h"
+#include "base/command_line.h"
+#include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/hash/hash.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/numerics/safe_conversions.h"
+#include "base/rand_util.h"
 #include "base/strings/strcat.h"
 #include "base/trace_event/trace_event.h"
 #include "components/subresource_filter/core/common/first_party_origin.h"
+#include "components/url_pattern_index/url_pattern_index.h"
+#include "third_party/rapidhash/rapidhash.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -53,9 +63,23 @@ VerifyStatus GetVerifyStatus(base::span<const uint8_t> buffer,
 
 }  // namespace
 
+uint32_t GetStyleRuleHash(std::string_view name) {
+  // Use a hash compatible with Blink's AtomicString to avoid re-hashing in the
+  // renderer for ASCII names. Matches StringHasher::MaskTop8Bits with
+  // kFlagCount = 8.
+  uint64_t result =
+      rapidhash(reinterpret_cast<const uint8_t*>(name.data()), name.size());
+  uint32_t hash = static_cast<uint32_t>(result);
+  hash &= (1U << 24) - 1;
+  if (!hash) {
+    hash = 0x800000;
+  }
+  return hash;
+}
+
 // RulesetIndexer --------------------------------------------------------------
 
-const int RulesetIndexer::kIndexedFormatVersion = 37;
+const int RulesetIndexer::kIndexedFormatVersion = 38;
 
 // This static assert is meant to catch cases where
 // url_pattern_index::kUrlPatternIndexFormatVersion is incremented without
@@ -64,8 +88,12 @@ static_assert(url_pattern_index::kUrlPatternIndexFormatVersion == 16,
               "kUrlPatternIndexFormatVersion has changed, make sure you've "
               "also updated RulesetIndexer::kIndexedFormatVersion above.");
 
-RulesetIndexer::RulesetIndexer()
-    : blocklist_(&builder_), allowlist_(&builder_), deactivation_(&builder_) {}
+RulesetIndexer::RulesetIndexer(uint64_t ruleset_id)
+    : blocklist_(&builder_),
+      allowlist_(&builder_),
+      deactivation_(&builder_),
+      style_rule_indexer_(&builder_),
+      ruleset_id_(ruleset_id) {}
 
 RulesetIndexer::~RulesetIndexer() = default;
 
@@ -94,13 +122,20 @@ bool RulesetIndexer::AddUrlRule(const proto::UrlRule& rule) {
   return true;
 }
 
+bool RulesetIndexer::AddStyleRuleFromProto(const proto::StyleRule& rule) {
+  return style_rule_indexer_.AddStyleRuleFromProto(rule);
+}
+
 void RulesetIndexer::Finish() {
   auto blocklist_offset = blocklist_.Finish();
   auto allowlist_offset = allowlist_.Finish();
   auto deactivation_offset = deactivation_.Finish();
 
+  auto style_rule_index_offset = style_rule_indexer_.Finish();
+
   auto url_rules_index_offset = flat::CreateIndexedRuleset(
-      builder_, blocklist_offset, allowlist_offset, deactivation_offset);
+      builder_, blocklist_offset, allowlist_offset, deactivation_offset,
+      style_rule_index_offset, ruleset_id_);
   builder_.Finish(url_rules_index_offset);
 }
 
@@ -133,6 +168,8 @@ IndexedRulesetMatcher::IndexedRulesetMatcher(base::span<const uint8_t> buffer)
       blocklist_(root_->blocklist_index()),
       allowlist_(root_->allowlist_index()),
       deactivation_(root_->deactivation_index()) {}
+
+IndexedRulesetMatcher::~IndexedRulesetMatcher() = default;
 
 bool IndexedRulesetMatcher::ShouldDisableFilteringForDocument(
     const GURL& document_url,

@@ -56,6 +56,15 @@ url_pattern_index::proto::UrlRule CreateAllowlistRuleForDocument(
         url_pattern_index::proto::ACTIVATION_TYPE_DOCUMENT,
     std::vector<std::string> initiator_domains = std::vector<std::string>());
 
+// Creates a StyleRule with the given |selector|, |domains|, |is_exclusion|,
+// |classes|, and |ids|.
+url_pattern_index::proto::StyleRule CreateStyleRule(
+    std::string_view selector,
+    const std::vector<std::string>& domains = {},
+    bool is_exclusion = false,
+    const std::vector<std::string>& classes = {},
+    const std::vector<std::string>& ids = {});
+
 }  // namespace testing
 }  // namespace subresource_filter
 

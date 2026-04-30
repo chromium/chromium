@@ -105,7 +105,7 @@ TEST_F(IndexingToolTest, VerifyOutput) {
 
   // Convert the unindexed data to indexed data, and write the result to
   // indexed_path.
-  EXPECT_TRUE(IndexAndWriteRuleset(unindexed_path, indexed_path));
+  EXPECT_TRUE(IndexAndWriteRuleset(unindexed_path, indexed_path, nullptr, 0));
 
   // Verify that the output equals the test indexed data.
   std::vector<uint8_t> indexed_data = ReadFileContents(indexed_path);
@@ -123,7 +123,7 @@ TEST_F(IndexingToolTest, VersionMetadata) {
   // Convert the unindexed data to indexed data, and write the result to
   // indexed_path.
   int checksum = 0;
-  EXPECT_TRUE(IndexAndWriteRuleset(unindexed_path, indexed_path, &checksum));
+  EXPECT_TRUE(IndexAndWriteRuleset(unindexed_path, indexed_path, &checksum, 0));
   EXPECT_NE(0, checksum);
   WriteVersionMetadata(version_path, "1.2.3", checksum);
   std::string version_json;

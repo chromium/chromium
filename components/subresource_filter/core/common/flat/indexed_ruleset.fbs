@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 include "components/url_pattern_index/flat/url_pattern_index.fbs";
+include "components/subresource_filter/core/common/flat/style_rule_index.fbs";
 
 namespace subresource_filter.flat;
 
@@ -16,6 +17,12 @@ table IndexedRuleset {
 
   // The index of all allowlist URL rules with activation options.
   deactivation_index : url_pattern_index.flat.UrlPatternIndex;
+
+  // The index of all style rules (which includes blocklist rules).
+  style_rule_index : StyleRuleIndex;
+
+  // A unique ID for this indexed ruleset, generated when indexing.
+  ruleset_id : uint64;
 }
 
 root_type IndexedRuleset;
