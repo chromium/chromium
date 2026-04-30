@@ -11,6 +11,7 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/i18n/case_conversion.h"
@@ -119,13 +120,13 @@ double FuzzyTokenizedStringMatch::TokenSortRatio(const TokenizedString& query,
   return SequenceMatcher(query_sorted, text_sorted).Ratio();
 }
 
-double FuzzyTokenizedStringMatch::PartialRatio(const std::u16string& query,
-                                               const std::u16string& text) {
+double FuzzyTokenizedStringMatch::PartialRatio(std::u16string_view query,
+                                               std::u16string_view text) {
   if (query.empty() || text.empty()) {
     return kMinScore;
   }
-  std::u16string shorter = query;
-  std::u16string longer = text;
+  std::u16string_view shorter = query;
+  std::u16string_view longer = text;
 
   if (shorter.size() > longer.size()) {
     shorter = text;

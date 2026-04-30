@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_STRING_MATCHING_FUZZY_TOKENIZED_STRING_MATCH_H_
 #define CHROMEOS_ASH_COMPONENTS_STRING_MATCHING_FUZZY_TOKENIZED_STRING_MATCH_H_
 
+#include <string_view>
 #include <vector>
 
 #include "chromeos/ash/components/string_matching/tokenized_string.h"
@@ -60,8 +61,8 @@ class FuzzyTokenizedStringMatch {
   // Finds the best ratio of shorter text with a part of longer text.
   // This function assumes that TokenizedString is already normalized (converted
   // to lower case). The return score is in range of [0, 1].
-  static double PartialRatio(const std::u16string& query,
-                             const std::u16string& text);
+  static double PartialRatio(std::u16string_view query,
+                             std::u16string_view text);
 
   // Combines scores from different ratio functions. This function assumes that
   // TokenizedString is already normalized (converted to lower cases).

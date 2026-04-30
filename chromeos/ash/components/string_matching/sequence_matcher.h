@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_STRING_MATCHING_SEQUENCE_MATCHER_H_
 
 #include <string>
+#include <string_view>
 #include <unordered_map>
 #include <vector>
 
@@ -46,8 +47,8 @@ class SequenceMatcher {
   // matching blocks. Value equal to 0 means no penalty. Values greater than 0
   // means heavier penalty will be applied to larger number of blocks.
   SequenceMatcher(
-      const std::u16string& first_string,
-      const std::u16string& second_string,
+      std::u16string_view first_string,
+      std::u16string_view second_string,
       double num_matching_blocks_penalty = kNumMatchingBlocksPenalty);
 
   SequenceMatcher(const SequenceMatcher&) = delete;

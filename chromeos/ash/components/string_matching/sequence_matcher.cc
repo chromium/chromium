@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <cmath>
 #include <queue>
+#include <string_view>
 
 #include "base/check_op.h"
 
@@ -34,8 +35,8 @@ SequenceMatcher::Match::Match(int pos_first, int pos_second, int len)
   DCHECK_GE(length, 0);
 }
 
-SequenceMatcher::SequenceMatcher(const std::u16string& first_string,
-                                 const std::u16string& second_string,
+SequenceMatcher::SequenceMatcher(std::u16string_view first_string,
+                                 std::u16string_view second_string,
                                  double num_matching_blocks_penalty)
     : first_string_(first_string),
       second_string_(second_string),
