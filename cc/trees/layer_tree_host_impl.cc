@@ -988,10 +988,10 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame,
     if (active_tree_->RootRenderSurface()) {
       gfx::Rect viz_damage_rect =
           active_tree_->RootRenderSurface()->GetDamageRect();
-      // Add a 1px margin to the viz damage rect to filter out precision issues
+      // Add a 2px margin to the viz damage rect to filter out precision issues
       // with transforms.  This will be re-added once the larger damage
       // discrepancies are fixed.
-      viz_damage_rect.Outset(1);
+      viz_damage_rect.Outset(2);
       // If Viz has MORE damage than the client expected, it's safe for
       // rendering (just potentially wasteful). If Viz has LESS damage, we might
       // miss redrawing some areas.
@@ -1024,6 +1024,18 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame,
                 : "null");
         SCOPED_CRASH_KEY_NUMBER("cc", "surface_count",
                                 frame->render_surface_list->size());
+        SCOPED_CRASH_KEY_STRING32(
+            "cc", "top_controls",
+            base::NumberToString(active_tree_->CurrentTopControlsShownRatio()));
+        SCOPED_CRASH_KEY_STRING32(
+            "cc", "bottom_controls",
+            base::NumberToString(
+                active_tree_->CurrentBottomControlsShownRatio()));
+        SCOPED_CRASH_KEY_STRING32(
+            "cc", "page_scale",
+            base::NumberToString(active_tree_->page_scale_factor_for_scroll()));
+        SCOPED_CRASH_KEY_STRING64("cc", "device_viewport",
+                                  active_tree_->GetDeviceViewport().ToString());
 
         DUMP_WILL_BE_CHECK(viz_damage_rect.Contains(root_layer_damage_rect_))
             << "crbug.com/454680865: Viz damage does not contain client "
