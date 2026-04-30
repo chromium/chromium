@@ -17,6 +17,7 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -1197,7 +1198,7 @@ public class NFCTest {
     /** Test that Nfc.push() fails if NFC operations are already suspended. */
     @Test
     @Feature({"NFCTest"})
-    public void testPushWhenOperationsAreSuspended() {
+    public void testPushWhenOperationsAreSuspended() throws IOException, FormatException {
         TestNfcImpl nfc = new TestNfcImpl(mContext, mDelegate);
         nfc.suspendNfcOperations();
         mDelegate.invokeCallback();
@@ -1208,6 +1209,10 @@ public class NFCTest {
         verify(mockCallback).call(mErrorCaptor.capture());
         assertNotNull(mErrorCaptor.getValue());
         assertEquals(NdefErrorType.OPERATION_CANCELLED, mErrorCaptor.getValue().errorType);
+
+        // Check that push is not triggered when NFC tag is in proximity.
+        nfc.processPendingOperationsForTesting(mNfcTagHandler);
+        verify(mNfcTagHandler, never()).write(any(android.nfc.NdefMessage.class));
     }
 
     /** Test that Nfc.suspendNfcOperations() cancels pending push operation. */
@@ -1257,7 +1262,7 @@ public class NFCTest {
     /** Test that Nfc.makeReadOnly() fails if NFC operations are already suspended. */
     @Test
     @Feature({"NFCTest"})
-    public void testMakeReadOnlyWhenOperationsAreSuspended() {
+    public void testMakeReadOnlyWhenOperationsAreSuspended() throws IOException {
         TestNfcImpl nfc = new TestNfcImpl(mContext, mDelegate);
         nfc.suspendNfcOperations();
         mDelegate.invokeCallback();
@@ -1268,6 +1273,10 @@ public class NFCTest {
         verify(mockCallback).call(mErrorCaptor.capture());
         assertNotNull(mErrorCaptor.getValue());
         assertEquals(NdefErrorType.OPERATION_CANCELLED, mErrorCaptor.getValue().errorType);
+
+        // Check that makeReadOnly is not triggered when NFC tag is in proximity.
+        nfc.processPendingOperationsForTesting(mNfcTagHandler);
+        verify(mNfcTagHandler, never()).makeReadOnly();
     }
 
     /** Test that Nfc.suspendNfcOperations() cancels pending makeReadOnly operation. */

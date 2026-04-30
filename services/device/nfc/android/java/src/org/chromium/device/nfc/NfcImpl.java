@@ -210,6 +210,7 @@ public class NfcImpl implements Nfc {
                     createError(
                             NdefErrorType.OPERATION_CANCELLED,
                             "Cannot push the message because NFC operations are suspended."));
+            return;
         }
 
         if (!NdefMessageValidator.isValid(message)) {
@@ -259,6 +260,7 @@ public class NfcImpl implements Nfc {
                     createError(
                             NdefErrorType.OPERATION_CANCELLED,
                             "Cannot make read-only because NFC operations are suspended."));
+            return;
         }
 
         // If previous pending make read-only operation is not completed, cancel it.
@@ -525,7 +527,7 @@ public class NfcImpl implements Nfc {
      * exception calls pendingPushOperationCompleted() with appropriate error object.
      */
     private void processPendingPushOperation() {
-        if (mTagHandler == null || mPendingPushOperation == null) return;
+        if (mTagHandler == null || mPendingPushOperation == null || mOperationsSuspended) return;
 
         if (mTagHandler.isTagOutOfRange()) {
             mTagHandler = null;
@@ -591,7 +593,9 @@ public class NfcImpl implements Nfc {
      * of exception calls pendingMakeReadOnlyOperationCompleted() with appropriate error object.
      */
     private void processPendingMakeReadOnlyOperation() {
-        if (mTagHandler == null || mPendingMakeReadOnlyOperation == null) return;
+        if (mTagHandler == null || mPendingMakeReadOnlyOperation == null || mOperationsSuspended) {
+            return;
+        }
 
         if (mTagHandler.isTagOutOfRange()) {
             mTagHandler = null;
