@@ -773,6 +773,8 @@ ComposeboxSuggestionLimit::ComposeboxSuggestionLimit() {
           .Get();
 }
 
+// Feature to enable embedded permission prompts (user-pull model) to be used in
+// cobrowsing (full window and side panel), new tab page, and omnibox.
 BASE_FEATURE(kEmbeddedPermissionEnabled,
              "EmbeddedPermissionEnabled",
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -304,16 +304,44 @@ BASE_FEATURE(kDropMismatchedSelections, base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace
 
 // static
-// Enables a unified voice search system and metric tracking system in new tab
-// page, co-browsing, and omnibox composebox.
-BASE_FEATURE(SearchboxHandler::kVoiceSearchCoherence,
-             "VoiceSearchCoherence",
+// Kill switch - Enables voice search coherence across composeboxes in NTP,
+// cobrowsing, omnibox:
+//  - Submit and stop buttons in voice search mode.
+//  - New voice recording animation.
+//  - New metrics for voice search across composeboxes.
+//  - No live transcription below the new recording animation.
+BASE_FEATURE(SearchboxHandler::kVoiceSearchCoherenceComposeboxes,
+             "VoiceSearchCoherenceComposeboxes",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// static
+// Enables voice search live experiment for NTP searchbox, (arm 1):
+//  - Submit and stop buttons in voice search mode.
+//  - New voice recording animation.
+//  - New metrics for voice search across searchbox.
+//  - NO live transcription below the new recording animation.
+BASE_FEATURE(SearchboxHandler::kVoiceSearchCoherenceSearchbox,
+             "VoiceSearchNewAnimationNoLiveTranscription",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables a new recording animation that matches across all surfaces.
-const base::FeatureParam<bool> SearchboxHandler::kVoiceSearchRecordingAnimation{
-    &SearchboxHandler::kVoiceSearchCoherence, "VoiceSearchRecordingAnimation",
-    false};
+// static
+// Enables voice search live experiment for NTP searchbox, (arm 2):
+//  - Submit and stop buttons in voice search mode.
+//  - New voice recording animation.
+//  - New metrics for voice search for NTP searchbox.
+//  - DIFF: adds live transcription below the new recording animation.
+const base::FeatureParam<bool>
+    SearchboxHandler::kVoiceSearchCoherenceSearchboxWithLiveTranscription(
+        &SearchboxHandler::kVoiceSearchCoherenceSearchbox,
+        "VoiceSearchCoherenceSearchboxWithLiveTranscription",
+        false);
+
+// static
+bool SearchboxHandler::IsVoiceSearchCoherenceSearchboxEnabled() {
+  return base::FeatureList::IsEnabled(
+      SearchboxHandler::kVoiceSearchCoherenceSearchbox) ||
+      SearchboxHandler::kVoiceSearchCoherenceSearchboxWithLiveTranscription.Get();
+}
 
 // static
 base::DictValue SearchboxHandler::GetWebUIDataSourceDict(Profile* profile) {

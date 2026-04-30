@@ -166,8 +166,12 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
   // receive calls. Runs `callback` immediately if the remote is already bound.
   void set_page_is_bound_callback_for_testing(base::OnceClosure callback);
 
-  DECLARE_FEATURE(kVoiceSearchCoherence);
-  static const base::FeatureParam<bool> kVoiceSearchRecordingAnimation;
+  DECLARE_FEATURE(kVoiceSearchCoherenceComposeboxes);
+  DECLARE_FEATURE(kVoiceSearchCoherenceSearchbox);
+  static const base::FeatureParam<bool>
+      kVoiceSearchCoherenceSearchboxWithLiveTranscription;
+
+  static bool IsVoiceSearchCoherenceSearchboxEnabled();
 
  protected:
   FRIEND_TEST_ALL_PREFIXES(RealboxHandlerTest, AutocompleteController_Start);
