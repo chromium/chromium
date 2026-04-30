@@ -34,6 +34,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/lens/ui_bundled:lens_entrypoint",
     "//ios/chrome/browser/menu/ui_bundled",
     "//ios/chrome/browser/policy/model:policy_util",
+    "//ios/chrome/browser/search_engines/model",
     "//ios/chrome/browser/search_engines/model:search_engines_util",
     "//ios/chrome/browser/search_engines/model:template_url_service_factory",
     "//ios/chrome/browser/shared/coordinator/layout_guide",
