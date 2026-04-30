@@ -7,6 +7,8 @@
 #import <Foundation/Foundation.h>
 
 #import "base/memory/raw_ptr.h"
+#import "base/test/bind.h"
+#import "base/test/run_until.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/safe_browsing/core/common/features.h"
 #import "components/safe_browsing/ios/browser/safe_browsing_url_allow_list.h"
@@ -367,9 +369,32 @@ TEST_P(SafeBrowsingTabHelperTest, RequestAndResponseWithOnlyMatchingHost) {
   EXPECT_TRUE(ShouldAllowRequestUrl(request_url).ShouldAllowNavigation());
   RunSyncCallbacksThenAsyncCallbacks();
 
-  web::WebStatePolicyDecider::PolicyDecision response_decision =
-      ShouldAllowResponseUrl(response_url);
-  EXPECT_TRUE(response_decision.ShouldAllowNavigation());
+  // We cannot use `ShouldAllowResponseUrl` directly because the verification
+  // check now begins during ShouldAllowResponse, requiring manual invocation of
+  // test callbacks to fulfill it.
+  NSURLResponse* response =
+      [[NSURLResponse alloc] initWithURL:net::NSURLWithGURL(response_url)
+                                MIMEType:@"text/html"
+                   expectedContentLength:0
+                        textEncodingName:nil];
+  bool callback_called = false;
+  web::WebStatePolicyDecider::PolicyDecision policy_decision =
+      web::WebStatePolicyDecider::PolicyDecision::Allow();
+  auto callback = base::BindLambdaForTesting(
+      [&](web::WebStatePolicyDecider::PolicyDecision decision) {
+        policy_decision = decision;
+        callback_called = true;
+      });
+  web::WebStatePolicyDecider::ResponseInfo response_info(
+      /*for_main_frame=*/true);
+  web_state_.ShouldAllowResponse(response, response_info, std::move(callback));
+
+  // Fulfill the queued on-demand Safe Browsing check for response_url.
+  client_.run_sync_callbacks();
+  client_.run_async_callbacks();
+  ASSERT_TRUE(base::test::RunUntil([&] { return callback_called; }));
+
+  EXPECT_TRUE(policy_decision.ShouldAllowNavigation());
 }
 
 // Tests the case of a single sub frame navigation request and response, for a
@@ -789,13 +814,82 @@ TEST_P(SafeBrowsingTabHelperTest, RedirectWithMissingShouldAllowRequest) {
   RunSyncCallbacksThenAsyncCallbacks();
 
   SimulateMainFrameRedirect();
-  if (SafeBrowsingDecisionArrivesBeforeResponse()) {
-    base::RunLoop().RunUntilIdle();
-  }
 
-  web::WebStatePolicyDecider::PolicyDecision response_decision =
-      ShouldAllowResponseUrl(url2);
-  EXPECT_TRUE(response_decision.ShouldAllowNavigation());
+  // We cannot use `ShouldAllowResponseUrl` directly because the verification
+  // check now begins during ShouldAllowResponse, requiring manual invocation of
+  // test callbacks to fulfill it.
+  NSURLResponse* response =
+      [[NSURLResponse alloc] initWithURL:net::NSURLWithGURL(url2)
+                                MIMEType:@"text/html"
+                   expectedContentLength:0
+                        textEncodingName:nil];
+  bool callback_called = false;
+  web::WebStatePolicyDecider::PolicyDecision policy_decision =
+      web::WebStatePolicyDecider::PolicyDecision::Allow();
+  auto callback = base::BindLambdaForTesting(
+      [&](web::WebStatePolicyDecider::PolicyDecision decision) {
+        policy_decision = decision;
+        callback_called = true;
+      });
+  web::WebStatePolicyDecider::ResponseInfo response_info(
+      /*for_main_frame=*/true);
+  web_state_.ShouldAllowResponse(response, response_info, std::move(callback));
+
+  // Fulfill the queued on-demand Safe Browsing check for url2.
+  client_.run_sync_callbacks();
+  client_.run_async_callbacks();
+  ASSERT_TRUE(base::test::RunUntil([&] { return callback_called; }));
+
+  EXPECT_TRUE(callback_called);
+  EXPECT_TRUE(policy_decision.ShouldAllowNavigation());
+}
+
+// Tests the case of a redirection where ShouldAllowRequest is skipped for an
+// unsafe target URL, ensuring that Safe Browsing identifies the mismatch and
+// blocks it.
+TEST_P(SafeBrowsingTabHelperTest, RedirectWithMissingShouldAllowRequestUnsafe) {
+  GURL url1("http://chromium1.test/page1.html");
+  GURL url2("http://" + FakeSafeBrowsingService::kUnsafeHost);
+  EXPECT_TRUE(ShouldAllowRequestUrl(url1).ShouldAllowNavigation());
+  RunSyncCallbacksThenAsyncCallbacks();
+
+  // Simulate quirk: ShouldAllowRequest is called on source again instead of
+  // target.
+  EXPECT_TRUE(ShouldAllowRequestUrl(url1).ShouldAllowNavigation());
+  RunSyncCallbacksThenAsyncCallbacks();
+
+  SimulateMainFrameRedirect();
+
+  // We cannot use `ShouldAllowResponseUrl` directly because it expects
+  // completion. In this edge case, the check begins during ShouldAllowResponse.
+  NSURLResponse* response =
+      [[NSURLResponse alloc] initWithURL:net::NSURLWithGURL(url2)
+                                MIMEType:@"text/html"
+                   expectedContentLength:0
+                        textEncodingName:nil];
+  bool callback_called = false;
+  web::WebStatePolicyDecider::PolicyDecision policy_decision =
+      web::WebStatePolicyDecider::PolicyDecision::Allow();
+  auto callback = base::BindLambdaForTesting(
+      [&](web::WebStatePolicyDecider::PolicyDecision decision) {
+        policy_decision = decision;
+        callback_called = true;
+      });
+  web::WebStatePolicyDecider::ResponseInfo response_info(
+      /*for_main_frame=*/true);
+  web_state_.ShouldAllowResponse(response, response_info, std::move(callback));
+
+  // Verify callback was NOT called yet, as the on-demand check was just queued.
+  EXPECT_FALSE(callback_called);
+
+  // Run the queued Safe Browsing checks.
+  client_.run_sync_callbacks();
+  client_.run_async_callbacks();
+  ASSERT_TRUE(base::test::RunUntil([&] { return callback_called; }));
+
+  EXPECT_TRUE(callback_called);
+  EXPECT_TRUE(policy_decision.ShouldCancelNavigation());
+  EXPECT_TRUE(policy_decision.ShouldDisplayError());
 }
 
 // Tests that client is notified when URL loaded in the main frame is unsafe.

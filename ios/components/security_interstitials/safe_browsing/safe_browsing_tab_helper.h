@@ -140,12 +140,14 @@ class SafeBrowsingTabHelper
     // is known, and tracks if the async or sync check for the respective query
     // is complete.
     struct MainFrameUrlQuery {
-      explicit MainFrameUrlQuery(const GURL& url);
+      explicit MainFrameUrlQuery(const GURL& url,
+                                 const std::string& http_method);
       MainFrameUrlQuery(MainFrameUrlQuery&& query);
       MainFrameUrlQuery& operator=(MainFrameUrlQuery&& other);
       ~MainFrameUrlQuery();
 
       GURL url;
+      std::string http_method;
       std::optional<web::WebStatePolicyDecider::PolicyDecision> decision;
       web::WebStatePolicyDecider::PolicyDecisionCallback response_callback;
       bool sync_check_complete = false;

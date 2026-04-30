@@ -365,7 +365,8 @@ void SafeBrowsingTabHelper::PolicyDecider::ShouldAllowRequest(
     previous_main_frame_query_ = std::move(pending_main_frame_query_);
   }
 
-  pending_main_frame_query_ = MainFrameUrlQuery(request_url);
+  pending_main_frame_query_ = MainFrameUrlQuery(
+      request_url, base::SysNSStringToUTF8([request HTTPMethod]));
 
   // If there is a pre-existing main frame unsafe resource for `request_url`
   // that haven't yet resulted in an error page, this resource can be used to
@@ -423,12 +424,28 @@ void SafeBrowsingTabHelper::PolicyDecider::ShouldAllowResponse(
 
   // When there's a server redirect, a ShouldAllowRequest call sometimes
   // doesn't happen for the target of the redirection. This seems to be fixed
-  // in trunk WebKit.
-  if (!pending_main_frame_redirect_chain_.empty()) {
+  // in trunk WebKit. If a mismatch is detected, initiate an on-demand check
+  // for the actual response URL.
+  if (pending_main_frame_query_->url != response_url) {
     bool matching_hosts =
         pending_main_frame_query_->url.GetHost() == response_url.GetHost();
     UMA_HISTOGRAM_BOOLEAN(
         "IOS.SafeBrowsing.RedirectedRequestResponseHostsMatch", matching_hosts);
+
+    std::string method = pending_main_frame_query_->http_method;
+    previous_main_frame_query_ = std::move(pending_main_frame_query_);
+    UpdateForMainFrameServerRedirect();
+
+    pending_main_frame_query_ = MainFrameUrlQuery(response_url, method);
+
+    SafeBrowsingQueryManager* query_manager =
+        SafeBrowsingQueryManager::FromWebState(web_state_);
+    CHECK(query_manager);
+    query_manager->StartQuery(
+        SafeBrowsingQueryManager::Query(response_url, method));
+  } else if (!pending_main_frame_redirect_chain_.empty()) {
+    UMA_HISTOGRAM_BOOLEAN(
+        "IOS.SafeBrowsing.RedirectedRequestResponseHostsMatch", true);
   }
   // If the previous query wasn't added to a pending redirect chain, the
   // pending chain is no longer active, since DidRedirectNavigation() is
@@ -833,8 +850,9 @@ void SafeBrowsingTabHelper::PolicyDecider::UpdateToBeCommittedRedirectChain() {
 #pragma mark SafeBrowsingTabHelper::PolicyDecider::MainFrameUrlQuery
 
 SafeBrowsingTabHelper::PolicyDecider::MainFrameUrlQuery::MainFrameUrlQuery(
-    const GURL& url)
-    : url(url) {}
+    const GURL& url,
+    const std::string& http_method)
+    : url(url), http_method(http_method) {}
 
 SafeBrowsingTabHelper::PolicyDecider::MainFrameUrlQuery::MainFrameUrlQuery(
     MainFrameUrlQuery&& query) = default;
