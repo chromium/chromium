@@ -111,7 +111,8 @@ if (!crashpad_is_ios) {
     ]
 
     if (crashpad_is_win) {
-      cflags = [ "/wd4201" ]  # nonstandard extension used : nameless struct/union
+      cflags =
+          [ "/wd4201" ]  # nonstandard extension used : nameless struct/union
     }
   }
 
@@ -230,11 +231,12 @@ if (crashpad_is_android) {
       # libunwind. The coverage wrapper similarly requires an unwinder, as
       # well as a few other bits from libc++abi. There are some issues with pgo
       # as well.
+      import("//build/config/compiler/compiler.gni")
       import("//build/config/compiler/pgo/pgo.gni")
       import("//build/config/coverage/coverage.gni")
       import("//build/config/sanitizers/sanitizers.gni")
-      no_default_deps =
-          !use_clang_coverage && !using_sanitizer && chrome_pgo_phase != 1
+      no_default_deps = !use_clang_coverage && !using_sanitizer &&
+                        chrome_pgo_phase != 1 && !use_mold
       remove_configs =
           [ "//build/config/android:default_orderfile_instrumentation" ]
     }

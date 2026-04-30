@@ -20,7 +20,7 @@ config("compiler") {
   # will be available. Raise to 8M which matches e.g. macOS.
   ldflags = [ "-Wl,-z,stack-size=0x800000" ]
 
-  if (optimize_for_size) {
+  if (optimize_for_size && use_lld) {
     # Enable LLD's balanced partitioning for ordering function sections.
     # The flag has a significant reduction on binary size (roughly 5MB on 50MB
     # compressed webengine.far), but also slows down the runtime performance

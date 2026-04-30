@@ -40,13 +40,29 @@ if (!defined(experimental_linker_path) || !is_a_target_toolchain) {
   experimental_linker_path = ""
 }
 
+if (!is_win && !is_mac && !is_ios) {
+  declare_args() {
+    # Link using mold instead of lld.
+    use_mold = false
+  }
+}
+
+if (!defined(use_mold)) {
+  use_mold = false
+  linker_path = ""
+} else if (use_mold) {
+  linker_path = "//buildtools/third_party/mold/cipd/bin/mold"
+} else {
+  linker_path = experimental_linker_path
+}
+
 declare_args() {
   # Set to true to use lld, the LLVM linker.
   # In late bring-up on macOS (see docs/mac_lld.md).
   # Tentatively used on iOS, except in arm64e mode (not yet supported by lld).
   # The default linker everywhere else.
-  use_lld = is_clang && current_os != "zos" && experimental_linker_path == "" &&
-            !(is_ios && current_cpu == "arm64e")
+  use_lld = is_clang && current_os != "zos" && linker_path == "" &&
+            !(is_ios && current_cpu == "arm64e") && !use_mold
 
   # If true, optimize for size.
   # Default to favoring speed over size for platforms not listed below.
