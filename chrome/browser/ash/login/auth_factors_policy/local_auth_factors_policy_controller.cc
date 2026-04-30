@@ -240,38 +240,42 @@ void LocalAuthFactorsPolicyController::OnFactorChanged(AuthFactor factor) {
   const int enforced_complexity =
       prefs().GetInteger(ash::prefs::kLocalAuthFactorsComplexity);
 
+  // A secret was updated successfully. The new secret naturally complies
+  // with the currently enforced policy, so we can mark the factor as verified.
   switch (factor) {
     case AuthFactor::kPrefBasedPin:
     case AuthFactor::kCryptohomePin:
     case AuthFactor::kCryptohomePinV2:
-    case AuthFactor::kLocalPassword:
-      // A secret was updated successfully. The new secret naturally complies
-      // with the currently enforced policy, so we can mark the current policy
-      // as verified.
-      // TODO: b/445628211 - Separate verified complexity for PIN and password.
-      prefs().SetInteger(ash::prefs::kLocalAuthFactorsVerifiedComplexity,
+      prefs().SetInteger(ash::prefs::kLocalPinVerifiedComplexity,
                          enforced_complexity);
-      DismissComplexityUpdateNotification();
+      break;
+    case AuthFactor::kLocalPassword:
+      prefs().SetInteger(ash::prefs::kLocalPasswordVerifiedComplexity,
+                         enforced_complexity);
       break;
     case AuthFactor::kRecovery:
     case AuthFactor::kGaiaPassword:
-      break;
+      return;
   }
+
+  // After a factor has changed, re-evaluate if the notification should be
+  // shown.
+  OnComplexityPrefUpdated();
 }
 
 void LocalAuthFactorsPolicyController::OnComplexityPrefUpdated() {
   const int enforced_complexity =
       prefs().GetInteger(ash::prefs::kLocalAuthFactorsComplexity);
-  const int verified_complexity =
-      prefs().GetInteger(ash::prefs::kLocalAuthFactorsVerifiedComplexity);
 
-  // If the policy requires a higher complexity than the user has verified,
-  // trigger the notification.
-  if (enforced_complexity > verified_complexity) {
-    ShowComplexityUpdateNotification();
-  } else {
+  if (enforced_complexity ==
+      static_cast<int>(ash::LocalAuthFactorsComplexity::kNone)) {
     DismissComplexityUpdateNotification();
+    return;
   }
+
+  // If the policy requires a certain complexity, trigger the re-evaluation of
+  // the notification.
+  ShowComplexityUpdateNotification();
 }
 
 void LocalAuthFactorsPolicyController::ShowComplexityUpdateNotification() {
@@ -305,6 +309,23 @@ void LocalAuthFactorsPolicyController::OnShowComplexityUpdateNotification(
   if (!has_password && !has_pin) {
     LOG(WARNING) << "Complexity update required but no local password or PIN "
                     "found for user.";
+    DismissComplexityUpdateNotification();
+    return;
+  }
+
+  const int enforced_complexity =
+      prefs().GetInteger(ash::prefs::kLocalAuthFactorsComplexity);
+  const int password_verified =
+      prefs().GetInteger(ash::prefs::kLocalPasswordVerifiedComplexity);
+  const int pin_verified =
+      prefs().GetInteger(ash::prefs::kLocalPinVerifiedComplexity);
+
+  const bool password_needs_update =
+      has_password && enforced_complexity > password_verified;
+  const bool pin_needs_update = has_pin && enforced_complexity > pin_verified;
+
+  if (!password_needs_update && !pin_needs_update) {
+    DismissComplexityUpdateNotification();
     return;
   }
 
@@ -313,12 +334,12 @@ void LocalAuthFactorsPolicyController::OnShowComplexityUpdateNotification(
       IDS_LOCAL_AUTH_FACTORS_POLICY_COMPLEXITY_UPDATE_MESSAGE);
   std::u16string button_title;
 
-  if (has_password && has_pin) {
+  if (password_needs_update && pin_needs_update) {
     title = l10n_util::GetStringUTF16(
         IDS_LOCAL_AUTH_FACTORS_POLICY_COMPLEXITY_UPDATE_TITLE_BOTH);
     button_title = l10n_util::GetStringUTF16(
         IDS_LOCAL_AUTH_FACTORS_POLICY_COMPLEXITY_UPDATE_BUTTON_BOTH);
-  } else if (has_password) {
+  } else if (password_needs_update) {
     title = l10n_util::GetStringUTF16(
         IDS_LOCAL_AUTH_FACTORS_POLICY_COMPLEXITY_UPDATE_TITLE_PASSWORD);
     button_title = l10n_util::GetStringUTF16(

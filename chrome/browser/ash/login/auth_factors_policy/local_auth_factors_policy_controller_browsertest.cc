@@ -44,6 +44,9 @@ namespace {
 
 using test::UserAuthConfig;
 
+constexpr char kComplexityUpdateNotificationId[] =
+    "local_auth_factors_policy_controller.complexity_update";
+
 }  // namespace
 
 class LocalAuthFactorsPolicyControllerTest : public LoginManagerTest {
@@ -80,6 +83,11 @@ class LocalAuthFactorsPolicyControllerTest : public LoginManagerTest {
   void WaitForNotificationShownCallback() {
     ASSERT_TRUE(on_notification_shown_future_.WaitAndClear())
         << "Failed waiting for complexity update notification shown callback";
+  }
+
+  void WaitForNotificationClosedCallback() {
+    ASSERT_TRUE(on_notification_closed_future_.WaitAndClear())
+        << "Failed waiting for complexity update notification closed callback";
   }
 
   void ClearPendingPrefProcessedCallback() {
@@ -180,6 +188,7 @@ class LocalAuthFactorsPolicyControllerTest : public LoginManagerTest {
 
   base::test::TestFuture<void> on_pref_processed_future_;
   base::test::TestFuture<void> on_notification_shown_future_;
+  base::test::TestFuture<void> on_notification_closed_future_;
   CryptohomeMixin cryptohome_{&mixin_host_};
   FakeGaiaMixin fake_gaia_{&mixin_host_};
   LoginManagerMixin login_mixin_{
@@ -325,26 +334,48 @@ IN_PROC_BROWSER_TEST_F(LocalAuthFactorsPolicyControllerTest,
 }
 
 IN_PROC_BROWSER_TEST_F(LocalAuthFactorsPolicyControllerTest,
-                       NotificationDismissedOnFactorChanged) {
+                       NotificationPersistsUntilAllFactorsUpdated) {
   const AccountId& account_id = local_password_and_pin_user_.account_id;
   LoginUser(account_id);
   Profile* profile = GetProfile(account_id);
   NotificationDisplayServiceTester tester(profile);
+  tester.SetNotificationClosedClosure(
+      on_notification_closed_future_.GetRepeatingCallback());
 
   // Set complexity policy to Low to trigger notification.
   SetComplexityPolicy(LocalAuthFactorsComplexity::kLow);
 
   WaitForNotificationShownCallback();
 
-  const std::string notification_id =
-      "local_auth_factors_policy_controller.complexity_update";
-  EXPECT_TRUE(tester.GetNotification(notification_id).has_value());
+  {
+    std::optional<message_center::Notification> notification =
+        tester.GetNotification(kComplexityUpdateNotificationId);
+    ASSERT_TRUE(notification.has_value());
+    EXPECT_EQ(notification->title(), u"Change your PIN and password");
+  }
 
-  // Simulate factor update.
+  // Simulate updating only the password.
   OnFactorChanged(account_id, ash::auth::mojom::AuthFactor::kLocalPassword);
 
-  // Notification should be dismissed.
-  EXPECT_FALSE(tester.GetNotification(notification_id).has_value());
+  // The notification should still be shown because PIN also needs update.
+  WaitForNotificationShownCallback();
+  {
+    std::optional<message_center::Notification> notification =
+        tester.GetNotification(kComplexityUpdateNotificationId);
+    ASSERT_TRUE(notification.has_value());
+    // Title should have updated to only mention PIN.
+    EXPECT_EQ(notification->title(), u"Change your PIN");
+  }
+
+  // Simulate updating the PIN.
+  OnFactorChanged(account_id, ash::auth::mojom::AuthFactor::kCryptohomePin);
+
+  // Wait for the notification to be asynchronously dismissed.
+  WaitForNotificationClosedCallback();
+
+  // Notification should finally be dismissed.
+  EXPECT_FALSE(
+      tester.GetNotification(kComplexityUpdateNotificationId).has_value());
 }
 
 IN_PROC_BROWSER_TEST_F(LocalAuthFactorsPolicyControllerTest,

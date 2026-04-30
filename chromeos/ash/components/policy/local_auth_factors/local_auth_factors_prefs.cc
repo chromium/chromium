@@ -19,7 +19,11 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
       static_cast<int>(ash::LocalAuthFactorsComplexity::kNone));
 
   registry->RegisterIntegerPref(
-      ash::prefs::kLocalAuthFactorsVerifiedComplexity,
+      ash::prefs::kLocalPasswordVerifiedComplexity,
+      static_cast<int>(ash::LocalAuthFactorsComplexity::kNone));
+
+  registry->RegisterIntegerPref(
+      ash::prefs::kLocalPinVerifiedComplexity,
       static_cast<int>(ash::LocalAuthFactorsComplexity::kNone));
 
   registry->RegisterListPref(ash::prefs::kAllowedLocalAuthFactors,
