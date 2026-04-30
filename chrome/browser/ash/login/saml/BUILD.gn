@@ -60,6 +60,7 @@ static_library("saml") {
     "//chrome/common:chrome_features",
     "//chromeos/ash/components/install_attributes",
     "//chromeos/ash/components/login/auth/public:authpublic",
+    "//chromeos/ash/components/osauth/impl",
     "//chromeos/ash/components/settings",
     "//chromeos/strings",
     "//components/prefs",

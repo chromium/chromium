@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/session/session_controller.h"
 #include "base/check.h"
 #include "base/check_deref.h"
@@ -238,9 +239,26 @@ void InSessionPasswordChangeManager::ResetForTesting() {
 void InSessionPasswordChangeManager::MaybeShowExpiryNotification() {
   // We are checking password expiry now, and this function will decide if we
   // want to check again in the future, so for now, make sure there are no other
-  // pending tasks to check aggain.
+  // pending tasks to check again.
   recheck_task_.CancelPendingRecheck();
 
+  if (ash::features::IsManagedLocalPinAndPasswordEnabled()) {
+    auth_factor_helper_.CheckHasOnlinePasswordAndContinue(
+        primary_user_->GetAccountId(),
+        /*on_has_online_password=*/
+        base::BindOnce(&InSessionPasswordChangeManager::
+                           MaybeShowExpiryNotificationInternal,
+                       weak_ptr_factory_.GetWeakPtr()),
+        /*on_no_online_password=*/
+        base::BindOnce(
+            &InSessionPasswordChangeManager::DismissExpiryNotification,
+            weak_ptr_factory_.GetWeakPtr()));
+  } else {
+    MaybeShowExpiryNotificationInternal();
+  }
+}
+
+void InSessionPasswordChangeManager::MaybeShowExpiryNotificationInternal() {
   PrefService* prefs = primary_profile_->GetPrefs();
   if (!prefs->GetBoolean(prefs::kSamlInSessionPasswordChangeEnabled)) {
     DismissExpiryNotification();

@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/saml/password_sync_token_fetcher.h"
 #include "chromeos/ash/components/login/auth/password_update_flow.h"
+#include "chromeos/ash/components/osauth/impl/auth_factor_configuration_helper.h"
 
 class PrefService;
 class Profile;
@@ -128,6 +129,8 @@ class InSessionPasswordChangeManager
   // Checks if the primary user's password has expired or will soon expire, and
   // shows a notification if needed. If the password will expire in the distant
   // future, posts a task to check again in the distant future.
+  // This function first checks if the user has an online password configured,
+  // and only shows the notification if they do.
   void MaybeShowExpiryNotification();
 
   // Shows a password expiry notification. If `time_until_expiry` is zero or
@@ -193,12 +196,15 @@ class InSessionPasswordChangeManager
                                AuthenticationError error);
   void OnPasswordUpdateSuccess(std::unique_ptr<UserContext> user_context);
 
+  void MaybeShowExpiryNotificationInternal();
+
   const raw_ref<PrefService> local_state_;
   raw_ptr<Profile, DanglingUntriaged> primary_profile_;
   raw_ptr<const user_manager::User, DanglingUntriaged> primary_user_;
   base::ObserverList<Observer> observer_list_;
   RecheckPasswordExpiryTask recheck_task_;
   PasswordUpdateFlow password_update_flow_;
+  AuthFactorConfigurationHelper auth_factor_helper_;
   int urgent_warning_days_;
   bool renotify_on_unlock_ = false;
   PasswordSource password_source_ = PasswordSource::PASSWORDS_SCRAPED;
@@ -207,6 +213,7 @@ class InSessionPasswordChangeManager
   base::WeakPtrFactory<InSessionPasswordChangeManager> weak_ptr_factory_{this};
 
   friend class InSessionPasswordChangeManagerTest;
+  friend class InSessionPasswordChangeManagerTestBase;
 };
 
 }  // namespace ash
