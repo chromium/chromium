@@ -34,6 +34,10 @@ namespace tabs {
 class TabInterface;
 }
 
+namespace enterprise_reporting {
+class SaasUsageReportingController;
+}
+
 namespace base {
 class TimeTicks;
 class TimeDelta;
@@ -158,6 +162,8 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   GlicInstanceMetrics(
       const metrics::ProfileMetricsService* profile_metrics_service,
       GlicSharingManager* sharing_manager,
+      enterprise_reporting::SaasUsageReportingController*
+          saas_usage_reporting_controller,
       PrefService* pref_service = nullptr);
   ~GlicInstanceMetrics() override;
 
@@ -404,9 +410,12 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   base::CallbackListSubscription tab_pinning_status_subscription_;
   const raw_ref<const metrics::ProfileMetricsService> profile_metrics_service_;
   raw_ptr<GlicSharingManager> sharing_manager_ = nullptr;
+  raw_ptr<enterprise_reporting::SaasUsageReportingController>
+      saas_usage_reporting_controller_ = nullptr;
   raw_ptr<PrefService> pref_service_ = nullptr;
 
   bool first_side_panel_close_recorded_ = false;
+  bool saas_usage_recorded_ = false;
 
   // The following variables are used for recording scroll related metrics.
   //

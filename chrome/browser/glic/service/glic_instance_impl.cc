@@ -18,6 +18,9 @@
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
 #include "chrome/browser/background/glic/glic_launcher_configuration.h"
 #include "chrome/browser/browser_process.h"
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#include "chrome/browser/enterprise/reporting/saas_usage/saas_usage_reporting_controller_factory.h"
+#endif
 #include "chrome/browser/glic/common/future_browser_features.h"
 #include "chrome/browser/glic/fre/glic_fre_controller.h"
 #include "chrome/browser/glic/glic_metrics.h"
@@ -126,6 +129,15 @@ EmbedderKey CreateSidePanelEmbedderKey(tabs::TabInterface* tab) {
   return EmbedderKey(tab);
 }
 
+enterprise_reporting::SaasUsageReportingController*
+GetSaasUsageReportingController(Profile* profile) {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  return enterprise_reporting::SaasUsageReportingControllerFactory::
+      GetForProfile(profile);
+#else
+  return nullptr;
+#endif
+}
 }  // namespace
 
 // Web Contents Observer for the tab bound with its respective glic
@@ -259,6 +271,7 @@ GlicInstanceImpl::GlicInstanceImpl(
       sharing_manager_coordinator_(profile, this, metrics),
       instance_metrics_(ProfileMetricsServiceFactory::GetForProfile(profile),
                         &sharing_manager_coordinator_.GetActiveSharingManager(),
+                        GetSaasUsageReportingController(profile),
                         profile->GetPrefs()),
       zero_state_suggestions_manager_(
           std::make_unique<GlicZeroStateSuggestionsManager>(

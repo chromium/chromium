@@ -39,6 +39,8 @@
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/common/chrome_features.h"
+#include "components/enterprise/browser/reporting/common_pref_names.h"
+#include "components/enterprise/browser/reporting/reporting_features.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/prefs/pref_service.h"
@@ -201,6 +203,7 @@ class GlicInstanceCoordinatorBrowserTest
                  {features::kGlicWebContentsWarmingDelay.name, "2s"},
              }},
             {features::kGlicTabRestoration, {}},
+            {enterprise_reporting::kGeminiInChromeUsageReporting, {}},
         },
         /*disabled_features=*/{features::kGlicDefaultToLastActiveConversation});
   }
@@ -1863,5 +1866,45 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorActuationBrowserTest,
   EXPECT_TRUE(handler_completion_future.Wait());
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
+                       SaasUsageReportingOnOpen) {
+  // Set the policy to include the GiC virtual domain.
+  base::ListValue urls_list;
+  urls_list.Append("gemini-in-chrome");
+  GetProfile()->GetPrefs()->SetList(
+      enterprise_reporting::kSaasUsageDomainUrlsForProfile,
+      std::move(urls_list));
+
+  // Opening Glic should trigger the reporting.
+  ASSERT_OK(OpenGlicForActiveTab());
+
+  const base::DictValue& report =
+      GetProfile()->GetPrefs()->GetDict(enterprise_reporting::kSaasUsageReport);
+  EXPECT_TRUE(report.contains("gemini-in-chrome"));
+  EXPECT_EQ(report.FindDict("gemini-in-chrome")->FindInt("navigation_count"),
+            1);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
+                       SaasUsageReportingOnOpenAndDetach) {
+  // Set the policy to include the GiC virtual domain.
+  base::ListValue urls_list;
+  urls_list.Append("gemini-in-chrome");
+  GetProfile()->GetPrefs()->SetList(
+      enterprise_reporting::kSaasUsageDomainUrlsForProfile,
+      std::move(urls_list));
+
+  // Opening Glic and detaching should trigger the reporting once.
+  ASSERT_OK(OpenGlicForActiveTabAndDetach());
+
+  const base::DictValue& report =
+      GetProfile()->GetPrefs()->GetDict(enterprise_reporting::kSaasUsageReport);
+  EXPECT_TRUE(report.contains("gemini-in-chrome"));
+  EXPECT_EQ(report.FindDict("gemini-in-chrome")->FindInt("navigation_count"),
+            1);
+}
+#endif
 
 }  // namespace glic

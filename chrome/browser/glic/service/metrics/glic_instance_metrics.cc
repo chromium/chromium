@@ -28,6 +28,7 @@
 #include "chrome/browser/glic/service/metrics/glic_metrics_session_manager.h"
 #include "chrome/browser/glic/service/metrics/metrics_types.h"
 #include "chrome/common/chrome_features.h"
+#include "components/enterprise/browser/reporting/saas_usage/saas_usage_reporting_controller.h"
 #include "components/metrics/profile_metrics_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/skills/public/skills_metrics.h"
@@ -76,6 +77,7 @@ GlicInstanceMetrics::GlicInstanceMetrics(
     : creation_time_(base::TimeTicks::Now()),
       session_manager_(this),
       profile_metrics_service_(CHECK_DEREF(profile_metrics_service)),
+      saas_usage_reporting_controller_(nullptr),
       pref_service_(nullptr) {
   // Used in the unit tests.
   base::RecordAction(base::UserMetricsAction("Glic.Instance.Created"));
@@ -89,6 +91,8 @@ GlicInstanceMetrics::GlicInstanceMetrics(
 GlicInstanceMetrics::GlicInstanceMetrics(
     const metrics::ProfileMetricsService* profile_metrics_service,
     GlicSharingManager* sharing_manager,
+    enterprise_reporting::SaasUsageReportingController*
+        saas_usage_reporting_controller,
     PrefService* pref_service)
     : creation_time_(base::TimeTicks::Now()),
       session_manager_(this),
@@ -102,6 +106,7 @@ GlicInstanceMetrics::GlicInstanceMetrics(
               base::Unretained(this)))),
       profile_metrics_service_(CHECK_DEREF(profile_metrics_service)),
       sharing_manager_(sharing_manager),
+      saas_usage_reporting_controller_(saas_usage_reporting_controller),
       pref_service_(pref_service) {
   base::RecordAction(base::UserMetricsAction("Glic.Instance.Created"));
   activity_tracker_ = std::make_unique<GlicStateTracker>(
@@ -567,6 +572,11 @@ void GlicInstanceMetrics::OnOpen(glic::mojom::InvocationSource source,
   if (pref_service_) {
     base::UmaHistogramSparse("Glic.ZoomLevel.OnOpen",
                              pref_service_->GetInteger(prefs::kGlicZoomLevel));
+  }
+
+  if (saas_usage_reporting_controller_ && !saas_usage_recorded_) {
+    saas_usage_reporting_controller_->RecordGeminiInChromeUsage();
+    saas_usage_recorded_ = true;
   }
 }
 
