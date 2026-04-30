@@ -153,11 +153,11 @@ export class PrintPreviewAdvancedSettingsItemElement extends
   protected getCapabilityPlaceholder_(): string {
     if (this.capability.type === VendorCapabilityType.TYPED_VALUE &&
         this.capability.typed_value_cap.default !== undefined) {
-      return this.capability.typed_value_cap.default.toString() || '';
+      return this.capability.typed_value_cap.default || '';
     }
     if (this.capability.type === VendorCapabilityType.RANGE &&
         this.capability.range_cap.default !== undefined) {
-      return this.capability.range_cap.default.toString() || '';
+      return this.capability.range_cap.default || '';
     }
     return '';
   }

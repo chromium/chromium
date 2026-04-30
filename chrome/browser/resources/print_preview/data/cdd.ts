@@ -41,12 +41,12 @@ interface SelectCapability {
 }
 
 interface TypedValueCapability {
-  default?: number|string|boolean;
+  default?: string;
   value_type?: VendorCapabilityValueType;
 }
 
 interface RangeCapability {
-  default: number;
+  default: string;
 }
 
 export enum VendorCapabilityType {

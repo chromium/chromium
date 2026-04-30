@@ -172,7 +172,7 @@ export class PrintPreviewAdvancedSettingsDialogElement extends
   }
 
   protected onApplyButtonClick_() {
-    const settingsValues: {[settingName: string]: any} = {};
+    const settingsValues: Record<string, string> = {};
     const itemList = this.shadowRoot.querySelectorAll(
         'print-preview-advanced-settings-item');
     itemList.forEach(item => {

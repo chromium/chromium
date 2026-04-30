@@ -41,7 +41,7 @@ export interface Setting<T> {
   // The property is set to false otherwise.
   setByGlobalPolicy: boolean;
   setFromUi: boolean;
-  key: string;
+  key: keyof SerializedSettings|'';
   updatesPreview: boolean;
   policyDefaultValue?: T;
 }
@@ -97,28 +97,29 @@ export interface SerializedSettings {
   vendorOptions?: object;
 }
 
-export interface PolicyEntry {
-  value: any;
+export interface PolicyEntry<T> {
+  value: T;
   managed: boolean;
   applyOnDestinationUpdate: boolean;
 }
 
 export interface PolicyObjectEntry {
-  defaultMode?: any;
-  allowedMode?: any;
+  defaultMode?: unknown;
+  allowedMode?: unknown;
   value?: number;
 }
 
 export interface PolicySettings {
-  headerFooter?: PolicyEntry;
-  cssBackground?: PolicyEntry;
-  mediaSize?: PolicyEntry;
-  color?: PolicyEntry;
-  duplex?: PolicyEntry;
-  pin?: PolicyEntry;
-  printPdfAsImageAvailability?: PolicyEntry;
-  printPdfAsImage?: PolicyEntry;
+  headerFooter?: PolicyEntry<boolean>;
+  cssBackground?: PolicyEntry<boolean>;
+  mediaSize?: PolicyEntry<{width: number, height: number}>;
+  color?: PolicyEntry<boolean>;
+  duplex?: PolicyEntry<boolean>;
+  printPdfAsImageAvailability?: PolicyEntry<boolean>;
+  printPdfAsImage?: PolicyEntry<boolean>;
 }
+
+type IndexablePolicySettings = Indexable<PolicySettings>;
 
 interface CloudJobTicketPrint {
   page_orientation?: {type: string};
@@ -594,7 +595,7 @@ export class PrintPreviewModelElement extends CrLitElement {
    * event if the modification results in a change to the value returned by
    * getSettingValue().
    */
-  private setSettingPath_(settingPath: string, value: any) {
+  private setSettingPath_(settingPath: string, value: unknown) {
     const parts = settingPath.split('.');
     assert(parts.length >= 2);
     const settingName = parts[0] as keyof Settings;
@@ -960,7 +961,7 @@ export class PrintPreviewModelElement extends CrLitElement {
     }
 
     if (this.settings_.vendorItems.available) {
-      const vendorSettings: {[key: string]: any} = {};
+      const vendorSettings: Record<string, string> = {};
       for (const item of caps.vendor_capability!) {
         let defaultValue = null;
         if (item.type === VendorCapabilityType.SELECT &&
@@ -1069,31 +1070,31 @@ export class PrintPreviewModelElement extends CrLitElement {
    * @param applyOnDestinationUpdate Flag showing whether policy
    *     should be applied on every destination update.
    */
-  private setPolicySetting_(
-      settingName: string, value: any, managed: boolean,
-      applyOnDestinationUpdate: boolean) {
+  private setPolicySetting_<K extends keyof PolicySettings>(
+      settingName: K, value: NonNullable<PolicySettings[K]>['value'],
+      managed: boolean, applyOnDestinationUpdate: boolean) {
     if (!this.policySettings_) {
       this.policySettings_ = {};
     }
-    (this.policySettings_ as {[key: string]: PolicyEntry})[settingName] = {
+    (this.policySettings_ as IndexablePolicySettings)[settingName] = {
       value: value,
       managed: managed,
       applyOnDestinationUpdate: applyOnDestinationUpdate,
-    };
+    } as unknown as IndexablePolicySettings[K];
   }
 
   /**
    * Helper function for setPolicySettings(). Calculates value and managed flag
    * of the setting according to allowed and default modes.
    */
-  private configurePolicySetting_(
-      settingName: string, allowedMode: any, defaultMode: any) {
+  private configurePolicySetting_<K extends keyof PolicySettings>(
+      settingName: K, allowedMode: unknown, defaultMode: unknown) {
     switch (settingName) {
       case 'headerFooter': {
         const value = allowedMode !== undefined ? allowedMode : defaultMode;
         if (value !== undefined) {
           this.setPolicySetting_(
-              settingName, value, allowedMode !== undefined,
+              settingName, value as boolean, allowedMode !== undefined,
               /*applyOnDestinationUpdate=*/ false);
         }
         break;
@@ -1110,7 +1111,8 @@ export class PrintPreviewModelElement extends CrLitElement {
       case 'mediaSize': {
         if (defaultMode !== undefined) {
           this.setPolicySetting_(
-              settingName, defaultMode, /*managed=*/ false,
+              settingName, defaultMode as {width: number, height: number},
+              /*managed=*/ false,
               /*applyOnDestinationUpdate=*/ true);
         }
         break;
@@ -1120,7 +1122,7 @@ export class PrintPreviewModelElement extends CrLitElement {
         const value = allowedMode !== undefined ? allowedMode : defaultMode;
         if (value !== undefined) {
           this.setPolicySetting_(
-              settingName, value, /*managed=*/ false,
+              settingName, value as boolean, /*managed=*/ false,
               /*applyOnDestinationUpdate=*/ false);
         }
         break;
@@ -1129,7 +1131,7 @@ export class PrintPreviewModelElement extends CrLitElement {
       case 'printPdfAsImage': {
         if (defaultMode !== undefined) {
           this.setPolicySetting_(
-              settingName, defaultMode, /*managed=*/ false,
+              settingName, defaultMode as boolean, /*managed=*/ false,
               /*applyOnDestinationUpdate=*/ false);
         }
         break;
@@ -1148,7 +1150,9 @@ export class PrintPreviewModelElement extends CrLitElement {
       return;
     }
     const policiesObject = policies as {[key: string]: PolicyObjectEntry};
-    ['headerFooter', 'cssBackground', 'mediaSize'].forEach(settingName => {
+    const keys: Array<keyof PolicySettings> =
+        ['headerFooter', 'cssBackground', 'mediaSize'];
+    keys.forEach(settingName => {
       if (!policiesObject[settingName]) {
         return;
       }
@@ -1173,9 +1177,11 @@ export class PrintPreviewModelElement extends CrLitElement {
   applyStickySettings() {
     if (this.stickySettings_) {
       STICKY_SETTING_NAMES.forEach(settingName => {
-        const stickySettingsKey = this.getSetting(settingName).key;
+        const stickySettingsKey =
+            this.getSetting(settingName).key as keyof SerializedSettings;
         const value =
-            (this.stickySettings_ as {[key: string]: any})[stickySettingsKey];
+            (this.stickySettings_ as
+             Indexable<SerializedSettings>)[stickySettingsKey];
         if (value !== undefined) {
           if (settingName === 'scalingTypePdf') {
             // If the flag "alignPdfDefaultPrintSettingsWithHTML" is off,
@@ -1235,7 +1241,7 @@ export class PrintPreviewModelElement extends CrLitElement {
     if (this.policySettings_) {
       for (const [settingName, policy] of Object.entries(
                this.policySettings_)) {
-        const policyEntry = policy as PolicyEntry;
+        const policyEntry = policy as PolicyEntry<unknown>;
         // <if expr="is_win or is_macosx">
         if (settingName === 'printPdfAsImageAvailability') {
           this.updateRasterizeAvailable_();
@@ -1248,7 +1254,8 @@ export class PrintPreviewModelElement extends CrLitElement {
         // </if>
         if (settingName === 'printPdfAsImage') {
           if (policyEntry.value) {
-            this.setSetting('rasterize', policyEntry.value, true);
+            this.setSetting(
+                'rasterize', (policyEntry as PolicyEntry<boolean>).value, true);
           }
           continue;
         }
@@ -1374,7 +1381,7 @@ export class PrintPreviewModelElement extends CrLitElement {
   }
 
   private getStickySettings_(): string {
-    const serialization: {[key: string]: any} = {};
+    const serialization: {[key: string]: unknown} = {};
     serialization['version'] = 2;
 
     STICKY_SETTING_NAMES.forEach(settingName => {
