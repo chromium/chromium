@@ -292,9 +292,16 @@ LayoutUnit GridLanesLayoutAlgorithm::CalculateItemInlineContribution(
   CHECK_NE(sizing_constraint, SizingConstraint::kLayout);
   // We need to compute the available space for the item if we are using it
   // to compute min/max content sizes.
+  //
+  // TODO(almaher): `SubgriddedItemData` should incorporate the parent
+  // subgrid's info.
+  //
+  // TODO(almaher): Plumb the parent grid's `GridLayoutData` here instead of
+  // passing nullptr.
   const ConstraintSpace space_for_measure = CreateConstraintSpaceForMeasure(
-      grid_lanes_item, /*opt_fixed_inline_size=*/std::nullopt,
-      &track_collection);
+      SubgriddedItemData(grid_lanes_item, /*parent_layout_data=*/nullptr,
+                         GetConstraintSpace().GetWritingMode()),
+      /*opt_fixed_inline_size=*/std::nullopt, &track_collection);
   const MinMaxSizes sizes = ComputeMinAndMaxContentContributionForSelf(
                                 grid_lanes_item.node, space_for_measure)
                                 .sizes;
@@ -539,8 +546,11 @@ void GridLanesLayoutAlgorithm::RunGridLanesPlacementPhase(
     // sizing, so they can be skipped.
     std::optional<LayoutUnit> opt_fixed_inline_size;
     if (is_for_layout && !is_subgrid) {
+      // TODO(almaher): `SubgriddedItemData` should incorporate the parent
+      // subgrid's info.
       const ConstraintSpace space_for_measure =
-          CreateConstraintSpaceForMeasure(grid_lanes_item);
+          CreateConstraintSpaceForMeasure(SubgriddedItemData(
+              grid_lanes_item, &layout_data, container_writing_mode));
       if (space_for_measure.AvailableSize().inline_size == kIndefiniteSize) {
         const MinMaxSizes sizes = ComputeMinAndMaxContentContributionForSelf(
                                       grid_lanes_item.node, space_for_measure)
@@ -567,7 +577,8 @@ void GridLanesLayoutAlgorithm::RunGridLanesPlacementPhase(
                   /*opt_child_block_offset=*/std::nullopt,
                   opt_fixed_inline_size)
             : CreateConstraintSpaceForMeasure(
-                  grid_lanes_item,
+                  SubgriddedItemData(grid_lanes_item, &layout_data,
+                                     container_writing_mode),
                   CalculateItemInlineContribution(
                       grid_lanes_item, track_collection, *sizing_constraint),
                   &track_collection,
@@ -859,7 +870,14 @@ LayoutUnit GridLanesLayoutAlgorithm::ComputeSharedBaselineForGroup(
       continue;
     }
 
-    const auto space_for_measure = CreateConstraintSpaceForMeasure(*group_item);
+    // TODO(almaher): `SubgriddedItemData` should incorporate the parent
+    // subgrid's info.
+    //
+    // TODO(almaher): Plumb the parent grid's `GridLayoutData` here instead of
+    // passing nullptr.
+    const auto space_for_measure = CreateConstraintSpaceForMeasure(
+        SubgriddedItemData(*group_item, /*parent_layout_data=*/nullptr,
+                           GetConstraintSpace().GetWritingMode()));
     const BoxStrut margins = ComputeMarginsFor(
         space_for_measure, group_item->node.Style(), GetConstraintSpace());
     const LayoutUnit extra_margin =
@@ -965,7 +983,14 @@ GridItems* GridLanesLayoutAlgorithm::BuildVirtualGridLanesItems(
           item_data.IsBaselineSpecified(grid_axis_direction);
 
       const BlockNode& item_node = item_data.node;
-      const auto space = CreateConstraintSpaceForMeasure(item_data);
+      // TODO(almaher): `SubgriddedItemData` should incorporate the parent
+      // subgrid's info.
+      //
+      // TODO(almaher): Plumb the parent grid's `GridLayoutData` here instead
+      // of passing nullptr.
+      const auto space = CreateConstraintSpaceForMeasure(
+          SubgriddedItemData(item_data, /*parent_layout_data=*/nullptr,
+                             GetConstraintSpace().GetWritingMode()));
       const ComputedStyle& item_style = item_node.Style();
 
       const bool use_item_inline_contribution =
@@ -1305,10 +1330,17 @@ const LayoutResult* GridLanesLayoutAlgorithm::LayoutItemForMeasureWithFallback(
       grid_lanes_item->is_sizing_dependent_on_block_size = true;
     }
     const MinMaxSizes sizes = min_max_sizes_result.sizes;
+    // TODO(almaher): `SubgriddedItemData` should incorporate the parent
+    // subgrid's info.
+    //
+    // TODO(almaher): Plumb the parent grid's `GridLayoutData` here instead of
+    // passing nullptr.
     const auto fallback_space = CreateConstraintSpaceForMeasure(
-        *grid_lanes_item, /*opt_fixed_inline_size=*/sizes.max_size);
+        SubgriddedItemData(*grid_lanes_item, /*parent_layout_data=*/nullptr,
+                           GetConstraintSpace().GetWritingMode()),
+        /*opt_fixed_inline_size=*/sizes.max_size);
     return LayoutGridItemForMeasure(*grid_lanes_item, fallback_space,
-                                    sizing_constraint);
+                                         sizing_constraint);
   }
   return LayoutGridItemForMeasure(*grid_lanes_item, space_for_measure,
                                   sizing_constraint);
@@ -2060,7 +2092,7 @@ ConstraintSpace GridLanesLayoutAlgorithm::CreateConstraintSpaceForLayout(
 }
 
 ConstraintSpace GridLanesLayoutAlgorithm::CreateConstraintSpaceForMeasure(
-    const GridItemData& grid_lanes_item,
+    const SubgriddedItemData& subgridded_item,
     std::optional<LayoutUnit> opt_fixed_inline_size,
     const GridLayoutTrackCollection* track_collection,
     bool is_for_min_max_sizing) const {
@@ -2068,7 +2100,7 @@ ConstraintSpace GridLanesLayoutAlgorithm::CreateConstraintSpaceForMeasure(
   const auto writing_mode = GetConstraintSpace().GetWritingMode();
   const auto grid_axis_direction = Style().GridLanesTrackSizingDirection();
   const bool is_parallel_with_root_grid =
-      grid_lanes_item.is_parallel_with_root_grid;
+      subgridded_item->is_parallel_with_root_grid;
 
   // Check against columns, as opposed to whether the item is parallel, because
   // the ConstraintSpaceBuilder takes care of handling orthogonal items.
@@ -2081,7 +2113,7 @@ ConstraintSpace GridLanesLayoutAlgorithm::CreateConstraintSpaceForMeasure(
     // a measure pass.
     if (track_collection && !is_parallel_with_root_grid) {
       LayoutUnit start_offset;
-      containing_size.inline_size = grid_lanes_item.CalculateAvailableSize(
+      containing_size.inline_size = subgridded_item->CalculateAvailableSize(
           *track_collection, &start_offset);
     }
   } else {
@@ -2098,18 +2130,33 @@ ConstraintSpace GridLanesLayoutAlgorithm::CreateConstraintSpaceForMeasure(
     // inline constraint should always be indefinite in a measure pass.
     if (track_collection && is_parallel_with_root_grid) {
       LayoutUnit start_offset;
-      containing_size.block_size = grid_lanes_item.CalculateAvailableSize(
+      containing_size.block_size = subgridded_item->CalculateAvailableSize(
           *track_collection, &start_offset);
     }
   }
 
-  // TODO(almaher): Do we need to do something special here for subgrid like
-  // GridLayoutAlgorithm::CreateConstraintSpaceForMeasure()?
+  // TODO(almaher): For the standalone axis of a subgrid, we should also
+  // derive `containing_size` from the parent subgrid's track collection
+  // (rather than the grid-lanes' own available size) so subgridded
+  // descendants are measured against the correct subgrid-relative
+  // containing block. See `GridLayoutAlgorithm::CreateConstraintSpaceFor*`
+  // for the analogous handling in regular grid.
   LogicalSize fixed_available_size = kIndefiniteLogicalSize;
+  if (subgridded_item.IsSubgrid()) {
+    const auto subgrid_margins = ComputeMarginsFor(
+        subgridded_item->node.Style(), containing_size.inline_size,
+        GetConstraintSpace().GetWritingDirection());
+    const auto fixed_size = ShrinkLogicalSize(containing_size, subgrid_margins);
+    if (subgridded_item->has_subgridded_columns) {
+      fixed_available_size.inline_size = fixed_size.inline_size;
+    } else if (subgridded_item->has_subgridded_rows) {
+      fixed_available_size.block_size = fixed_size.block_size;
+    }
+  }
 
   if (opt_fixed_inline_size) {
     const auto item_writing_mode =
-        grid_lanes_item.node.Style().GetWritingMode();
+        subgridded_item->node.Style().GetWritingMode();
     if (IsParallelWritingMode(item_writing_mode, writing_mode)) {
       DCHECK_EQ(fixed_available_size.inline_size, kIndefiniteSize);
       fixed_available_size.inline_size = *opt_fixed_inline_size;
@@ -2119,7 +2166,7 @@ ConstraintSpace GridLanesLayoutAlgorithm::CreateConstraintSpaceForMeasure(
     }
   }
 
-  return CreateConstraintSpace(grid_lanes_item, containing_size,
+  return CreateConstraintSpace(*subgridded_item, containing_size,
                                fixed_available_size,
                                LayoutResultCacheSlot::kMeasure);
 }

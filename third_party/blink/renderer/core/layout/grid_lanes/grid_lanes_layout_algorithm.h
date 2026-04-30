@@ -265,7 +265,7 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
       SizingConstraint sizing_constraint);
 
   ConstraintSpace CreateConstraintSpaceForMeasure(
-      const GridItemData& grid_lanes_item,
+      const SubgriddedItemData& subgridded_item,
       std::optional<LayoutUnit> opt_fixed_inline_size = std::nullopt,
       const GridLayoutTrackCollection* track_collection = nullptr,
       bool is_for_min_max_sizing = false) const;
