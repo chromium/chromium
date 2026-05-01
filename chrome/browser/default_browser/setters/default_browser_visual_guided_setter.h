@@ -5,7 +5,10 @@
 #ifndef CHROME_BROWSER_DEFAULT_BROWSER_SETTERS_DEFAULT_BROWSER_VISUAL_GUIDED_SETTER_H_
 #define CHROME_BROWSER_DEFAULT_BROWSER_SETTERS_DEFAULT_BROWSER_VISUAL_GUIDED_SETTER_H_
 
+#include "base/memory/raw_ref.h"
 #include "chrome/browser/default_browser/default_browser_setter.h"
+
+class Profile;
 
 namespace default_browser {
 
@@ -13,7 +16,7 @@ namespace default_browser {
 // user in setting Chrome as the default browser on Windows.
 class DefaultBrowserVisualGuidedSetter : public DefaultBrowserSetter {
  public:
-  DefaultBrowserVisualGuidedSetter();
+  explicit DefaultBrowserVisualGuidedSetter(Profile& profile);
 
   DefaultBrowserVisualGuidedSetter(const DefaultBrowserVisualGuidedSetter&) =
       delete;
@@ -25,6 +28,9 @@ class DefaultBrowserVisualGuidedSetter : public DefaultBrowserSetter {
   // DefaultBrowserSetter:
   DefaultBrowserSetterType GetType() const override;
   void Execute(DefaultBrowserSetterCompletionCallback on_complete) override;
+
+ private:
+  const raw_ref<Profile> profile_;
 };
 
 }  // namespace default_browser

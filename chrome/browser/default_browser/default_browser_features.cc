@@ -5,9 +5,11 @@
 #include "chrome/browser/default_browser/default_browser_features.h"
 
 #include <array>
+#include <string>
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "url/gurl.h"
 
 namespace default_browser {
 
@@ -37,6 +39,16 @@ DefaultBrowserSetterType GetDefaultBrowserSetterType() {
   }
 
   return kDefaultBrowserSetterParam.Get();
+}
+
+GURL GetDefaultBrowserVisualGuideURL() {
+  if (!base::FeatureList::IsEnabled(kDefaultBrowserSetterSelection)) {
+    // TODO(https://crbugs.com/454597786): Replace this with the const webui
+    // url.
+    GURL("chrome://default-browser/");
+  }
+
+  return GURL(kDefaultBrowserVisualGuideUrlParam.Get());
 }
 
 BASE_FEATURE(kDefaultBrowserFramework, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -79,5 +91,12 @@ BASE_FEATURE_ENUM_PARAM(DefaultBrowserSetterType,
                         "setter_option",
                         DefaultBrowserSetterType::kShellIntegration,
                         kDefaultBrowserSetterSelectionOption);
+
+// TODO(https://crbugs.com/454597786): Replace this with the const webui url.
+BASE_FEATURE_PARAM(std::string,
+                   kDefaultBrowserVisualGuideUrlParam,
+                   &kDefaultBrowserSetterSelection,
+                   "url",
+                   "chrome://default-browser/");
 
 }  // namespace default_browser

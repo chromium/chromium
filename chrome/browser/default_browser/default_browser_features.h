@@ -5,9 +5,12 @@
 #ifndef CHROME_BROWSER_DEFAULT_BROWSER_DEFAULT_BROWSER_FEATURES_H_
 #define CHROME_BROWSER_DEFAULT_BROWSER_DEFAULT_BROWSER_FEATURES_H_
 
+#include <string>
+
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "chrome/browser/default_browser/default_browser_setter.h"
+#include "url/gurl.h"
 
 namespace default_browser {
 
@@ -36,6 +39,9 @@ DefaultBrowserPromptSurface GetDefaultBrowserPromptSurface();
 // will default to `kShellIntegration` when the feature is disabled.
 DefaultBrowserSetterType GetDefaultBrowserSetterType();
 
+// Returns the URL for the visual guided setter.
+GURL GetDefaultBrowserVisualGuideURL();
+
 BASE_DECLARE_FEATURE(kDefaultBrowserFramework);
 
 // Enables the default browser prompt surfaces (e.g. invalidation, reprompt).
@@ -61,6 +67,9 @@ BASE_DECLARE_FEATURE(kDefaultBrowserSetterSelection);
 // given setter (e.g. shell_integration, visual_guide).
 BASE_DECLARE_FEATURE_PARAM(DefaultBrowserSetterType,
                            kDefaultBrowserSetterParam);
+
+// Parameter for the URL used by the visual guided setter.
+BASE_DECLARE_FEATURE_PARAM(std::string, kDefaultBrowserVisualGuideUrlParam);
 
 }  // namespace default_browser
 

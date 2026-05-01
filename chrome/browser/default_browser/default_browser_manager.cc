@@ -197,7 +197,8 @@ DefaultBrowserManager::CreateControllerFor(
       setter = std::make_unique<ShellIntegrationDefaultBrowserSetter>();
       break;
     case DefaultBrowserSetterType::kVisualGuide:
-      setter = std::make_unique<DefaultBrowserVisualGuidedSetter>();
+      setter = std::make_unique<DefaultBrowserVisualGuidedSetter>(
+          DefaultBrowserManager::From(g_browser_process)->GetProfile());
       break;
     default:
       NOTREACHED();

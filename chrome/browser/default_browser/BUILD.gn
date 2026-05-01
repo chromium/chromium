@@ -45,6 +45,7 @@ source_set("default_browser") {
     "//chrome/browser:shell_integration",
     "//chrome/browser/notifications",
     "//chrome/browser/notifications:system_notification_helper",
+    "//chrome/browser/ui/navigator",
     "//ui/base",
     "//ui/base/unowned_user_data",
     "//ui/message_center/public/cpp",
@@ -109,7 +110,10 @@ source_set("browser_tests") {
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-  sources = [ "default_browser_manager_browsertest.cc" ]
+  sources = [
+    "default_browser_manager_browsertest.cc",
+    "setters/default_browser_visual_guided_setter_browsertest.cc",
+  ]
 
   deps = [
     ":default_browser",
