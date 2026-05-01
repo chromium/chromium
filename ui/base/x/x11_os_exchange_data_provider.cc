@@ -92,6 +92,11 @@ SelectionFormatMap XOSExchangeDataProvider::GetFormatMap() const {
 std::unique_ptr<OSExchangeDataProvider> XOSExchangeDataProvider::Clone() const {
   std::unique_ptr<XOSExchangeDataProvider> ret(new XOSExchangeDataProvider());
   ret->set_format_map(format_map());
+  ret->SetDragImage(GetDragImage(), GetDragImageOffset());
+  ret->set_file_contents_name(file_contents_name());
+  if (IsFromPrivileged()) {
+    ret->MarkAsFromPrivileged();
+  }
   return std::move(ret);
 }
 

@@ -11,7 +11,10 @@
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
+#include "ui/gfx/geometry/vector2d.h"
+#include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
 
 namespace ui {
@@ -84,6 +87,22 @@ TEST(OSExchangeDataProviderNonBackedTest, CloneTest) {
   EXPECT_TRUE(data_endpoint);
   EXPECT_TRUE(data_endpoint->IsUrlType());
   EXPECT_EQ(url, *data_endpoint->GetURL());
+}
+
+TEST(OSExchangeDataProviderNonBackedTest, DragImageCloneTest) {
+  OSExchangeDataProviderNonBacked original;
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(10, 10);
+  bitmap.eraseColor(SK_ColorRED);
+  gfx::ImageSkia image = gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
+  gfx::Vector2d offset(5, 5);
+  original.SetDragImage(image, offset);
+
+  std::unique_ptr<OSExchangeDataProvider> copy = original.Clone();
+  EXPECT_FALSE(copy->GetDragImage().isNull());
+  EXPECT_EQ(copy->GetDragImage().width(), 10);
+  EXPECT_EQ(copy->GetDragImage().height(), 10);
+  EXPECT_EQ(copy->GetDragImageOffset(), offset);
 }
 
 TEST(OSExchangeDataProviderNonBackedTest, FileNameCloneTest) {

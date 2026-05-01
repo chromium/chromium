@@ -307,6 +307,8 @@ void OSExchangeDataProviderNonBacked::CopyData(
               : nullptr;
   provider->tainted_by_renderer_origin_ = tainted_by_renderer_origin_;
   provider->is_from_privileged_ = is_from_privileged_;
+  provider->drag_image_ = drag_image_;
+  provider->drag_image_offset_ = drag_image_offset_;
 }
 
 }  // namespace ui
