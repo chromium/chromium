@@ -30,10 +30,6 @@ HashValue::HashValue(const SHA256HashValue& hash) : tag_(HASH_VALUE_SHA256) {
   fingerprint.sha256 = hash;
 }
 
-HashValue::HashValue(base::span<const uint8_t> hash) : tag_(HASH_VALUE_SHA256) {
-  base::span(fingerprint.sha256).copy_from(hash);
-}
-
 HashValue::HashValue(HashValueTag tag, base::span<const uint8_t> hash)
     : tag_(tag) {
   CHECK_EQ(tag_, HASH_VALUE_SHA256);
@@ -53,7 +49,7 @@ std::optional<HashValue> HashValue::FromString(std::string_view value) {
     return std::nullopt;
   }
 
-  return HashValue(*decoded);
+  return HashValue(HASH_VALUE_SHA256, *decoded);
 }
 
 std::string HashValue::ToString() const {
