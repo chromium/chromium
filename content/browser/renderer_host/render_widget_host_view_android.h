@@ -38,6 +38,7 @@
 #include "content/browser/renderer_host/text_input_manager.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/visibility.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/common/page/content_to_visible_time_request.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom-forward.h"
@@ -213,6 +214,8 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
       blink::mojom::StylusWritingFocusResultPtr focus_result) override;
   void RenderProcessGone() override;
   void ShowWithVisibility(PageVisibilityState page_visibility) final;
+  void WasOccluded() override;
+  void WasUnOccluded() override;
   void Destroy() override;
   void UpdateTooltipUnderCursor(const std::u16string& tooltip_text) override;
   void UpdateTooltip(const std::u16string& tooltip_text) override;
@@ -618,6 +621,8 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
 
   void ShowInternal();
   void HideInternal();
+  void UpdateVisibility();
+  void SetViewVisibility(Visibility visibility);
   void AttachLayers();
   void RemoveLayers();
 
@@ -669,13 +674,12 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   void ComputeDisplayFeature();
   void SetDisplayFeatureBoundsForTesting(const gfx::Rect& bounds);
 
-  bool is_showing_;
-
   // Window-specific bits that affect widget visibility.
   bool is_window_visible_;
   bool is_window_activity_started_;
 
   PageVisibilityState page_visibility_ = PageVisibilityState::kHidden;
+  Visibility view_visibility_ = Visibility::HIDDEN;
 
   // Specifies whether touch selection handles are hidden due to the dropdown
   // menu.
