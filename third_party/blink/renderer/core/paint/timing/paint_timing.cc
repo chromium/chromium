@@ -480,8 +480,6 @@ void PaintTiming::Trace(Visitor* visitor) const {
 
 PaintTiming::PaintTiming(Document& document)
     : Supplement<Document>(document),
-      text_element_timing_(
-          MakeGarbageCollected<TextElementTiming>(*document.domWindow())),
       fmp_detector_(MakeGarbageCollected<FirstMeaningfulPaintDetector>(this)),
       clock_(base::DefaultTickClock::GetInstance()) {
   // `window` will be null if `document` has already been shut down (frame
