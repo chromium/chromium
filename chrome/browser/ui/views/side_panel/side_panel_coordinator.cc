@@ -75,7 +75,7 @@ void SidePanelCoordinator::Toggle(SidePanelEntryKey key,
   // should be closed.
   SidePanelEntry* const entry = GetEntryForKey(key);
   if (entry && IsSidePanelEntryShowing(key) &&
-      !browser_view_->toolbar_height_side_panel()->IsClosing()) {
+      !browser_view_->side_panel()->IsClosing()) {
     Close();
     return;
   }
@@ -98,7 +98,7 @@ void SidePanelCoordinator::Toggle(SidePanelEntryKey key,
 void SidePanelCoordinator::ShowFrom(
     SidePanelEntryKey entry_key,
     gfx::Rect starting_bounds_in_browser_coordinates) {
-  SidePanel* side_panel = browser_view_->toolbar_height_side_panel();
+  SidePanel* side_panel = browser_view_->side_panel();
   side_panel->set_animation_starting_bounds_for_content(
       starting_bounds_in_browser_coordinates);
   SidePanelUI::Show(entry_key);
@@ -119,8 +119,7 @@ content::WebContents* SidePanelCoordinator::GetWebContentsForTest(
 }
 
 void SidePanelCoordinator::DisableAnimationsForTesting() {
-  browser_view_->toolbar_height_side_panel()
-      ->DisableAnimationsForTesting();  // IN-TEST
+  browser_view_->side_panel()->DisableAnimationsForTesting();  // IN-TEST
 }
 
 SidePanelEntry* SidePanelCoordinator::GetLoadingEntryForTesting() const {
@@ -164,7 +163,7 @@ void SidePanelCoordinator::Show(
   if (IsSidePanelShowing() && *current_key() == input) {
     waiter()->ResetLoadingEntryIfNecessary();
 
-    SidePanel* side_panel = browser_view_->toolbar_height_side_panel();
+    SidePanel* side_panel = browser_view_->side_panel();
     CHECK(side_panel);
     // If the side panel is in the process of closing, show it instead.
     if (side_panel->state() == SidePanel::State::kClosing) {
@@ -206,7 +205,7 @@ void SidePanelCoordinator::Show(
 //   mechanism, this method is not called.
 void SidePanelCoordinator::Close(SidePanelEntryHideReason reason,
                                  bool suppress_animations) {
-  SidePanel* const side_panel = browser_view_->toolbar_height_side_panel();
+  SidePanel* const side_panel = browser_view_->side_panel();
   if (!IsSidePanelShowing() ||
       (!suppress_animations && side_panel->IsClosing())) {
     return;
@@ -244,7 +243,7 @@ void SidePanelCoordinator::PopulateSidePanel(
     std::optional<SidePanelOpenTrigger> open_trigger,
     SidePanelEntry* entry,
     std::optional<SidePanelNativeView> content_view) {
-  SidePanel* side_panel = browser_view_->toolbar_height_side_panel();
+  SidePanel* side_panel = browser_view_->side_panel();
   CHECK(side_panel);
 
   side_panel->SetCurrentEntryType(entry->type());
@@ -345,7 +344,7 @@ void SidePanelCoordinator::ClearCachedEntryViews() {
 void SidePanelCoordinator::MaybeShowEntryOnTabStripModelChanged(
     SidePanelRegistry* old_contextual_registry,
     SidePanelRegistry* new_contextual_registry) {
-  SidePanel* side_panel = browser_view_->toolbar_height_side_panel();
+  SidePanel* side_panel = browser_view_->side_panel();
   CHECK(side_panel);
   // Show an entry in the following fallback order: new contextual registry's
   // active entry > active global entry > none (close the side panel).

@@ -37,7 +37,7 @@ class View;
 // different points with different tween curves in a single overall animation
 // timeline.
 //
-// Group: Toolbar Height Side Panel
+// Group: Side Panel
 //  Motion: Expand
 //   0 @ 0 ms | panel width (swoop) ----| 1 @ 350 ms
 //         0 @ 200 ms | shadow box inset (swoop) ------| 1 @ 700 ms

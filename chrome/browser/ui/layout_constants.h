@@ -199,7 +199,7 @@ enum class LayoutConstant {
 
   // The padding between the bottom of the tab strip and top of the toolbar
   // height side panel.
-  kToolbarHeightSidePanelInset,
+  kSidePanelInset,
 
   // The corner radius used for borders, fill, and hover targets with vertical
   // tabs.

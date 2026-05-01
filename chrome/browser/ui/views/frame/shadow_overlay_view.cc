@@ -196,7 +196,7 @@ ShadowOverlayView::ShadowOverlayView(BrowserView& browser_view)
   animation_subscription_ =
       BrowserAnimationController::From(browser_view_->browser())
           ->Subscribe(
-              SidePanelAnimations::kToolbarHeightSidePanel,
+              SidePanelAnimations::kSidePanel,
               base::BindRepeating(&ShadowOverlayView::OnAnimationProgressed,
                                   base::Unretained(this)));
 }
@@ -273,12 +273,12 @@ double ShadowOverlayView::GetShadowValue() const {
   // Get the current animation value (if any).
   const auto animation_value =
       BrowserAnimationController::From(browser_view_->browser())
-          ->GetCurrentValue(SidePanelAnimations::kToolbarHeightSidePanel,
+          ->GetCurrentValue(SidePanelAnimations::kSidePanel,
                             SidePanelAnimations::kMainAreaShadow);
   if (animation_value) {
     return *animation_value;
   }
-  if (const auto* panel = browser_view_->toolbar_height_side_panel()) {
+  if (const auto* panel = browser_view_->side_panel()) {
     return panel->state() == SidePanel::State::kOpen ? 1.0 : 0.0;
   }
   return 0.0;

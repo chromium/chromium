@@ -97,8 +97,8 @@ class ReadAnythingControllerBrowserTest : public InProcessBrowserTest {
   }
 
   content::WebContents* GetSidePanelWebContents() {
-    auto* side_panel = BrowserView::GetBrowserViewForBrowser(browser())
-                           ->toolbar_height_side_panel();
+    auto* side_panel =
+        BrowserView::GetBrowserViewForBrowser(browser())->side_panel();
     auto* content_wrapper = side_panel->GetContentParentView();
     if (content_wrapper->children().empty()) {
       return nullptr;

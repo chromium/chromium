@@ -267,7 +267,7 @@ class BrowserView : public BrowserWindow,
 
   views::View* main_shadow_overlay() { return main_shadow_overlay_; }
 
-  SidePanel* toolbar_height_side_panel() { return toolbar_height_side_panel_; }
+  SidePanel* side_panel() { return side_panel_; }
 
   MultiContentsView* multi_contents_view() { return multi_contents_view_; }
 
@@ -1148,11 +1148,11 @@ class BrowserView : public BrowserWindow,
   // |  |  MultiContentsView (multi_contents_view_)                        |  |
   // |  --------------------------------------------------------------------  |
   // |------------------------------------------------------------------------|
-  // | ToolbarHeightSidePanel (toolbar_height_side_panel_)                    |
+  // | SidePanel (side_panel_)                                                |
   // |------------------------------------------------------------------------|
 
   // The view that draws the background the main_container and
-  // toolbar_height_side_panel are displayed on.
+  // side_panel are displayed on.
   raw_ptr<views::View> main_background_region_ = nullptr;
 
   // The view that contains the primary UI (Toolbar, BookmarksBar, InfoBar,
@@ -1272,7 +1272,7 @@ class BrowserView : public BrowserWindow,
   // aligned to the left or the right side of the browser window depending on
   // the kSidePanelHorizontalAlignment pref's value. Conceptually this member
   // should exist if and only if the side_panel_coordinator is created.
-  raw_ptr<SidePanel> toolbar_height_side_panel_ = nullptr;
+  raw_ptr<SidePanel> side_panel_ = nullptr;
 
   // The handler responsible for showing autofill bubbles.
   std::unique_ptr<autofill::AutofillBubbleHandler> autofill_bubble_handler_;

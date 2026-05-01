@@ -287,7 +287,7 @@ class ExtensionSidePanelBrowserTest : public ExtensionBrowserTest {
 
   void WaitForSidePanelClose() {
     ASSERT_TRUE(base::test::RunUntil([&]() {
-      return browser()->GetBrowserView().toolbar_height_side_panel()->state() ==
+      return browser()->GetBrowserView().side_panel()->state() ==
              SidePanel::State::kClosed;
     }));
   }

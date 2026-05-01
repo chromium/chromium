@@ -189,7 +189,7 @@ class SidePanelCoordinatorTest : public InProcessBrowserTest {
     if (!browser) {
       browser = this->browser();
     }
-    return browser->GetBrowserView().toolbar_height_side_panel();
+    return browser->GetBrowserView().side_panel();
   }
 
   SidePanelHeader* GetHeader() {
@@ -588,10 +588,10 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest, ChangeSidePanelWidthMaxMin) {
 
   // the web contents width will either be it's min width or 1/3 the browser
   // width minus the side panel separator width.
-  const int web_contents_width = std::max(
-      BrowserViewLayout::kContentsContainerMinimumWidth,
-      (browser_width - two_thirds_browser_width -
-       GetLayoutConstant(LayoutConstant::kToolbarHeightSidePanelInset)));
+  const int web_contents_width =
+      std::max(BrowserViewLayout::kContentsContainerMinimumWidth,
+               (browser_width - two_thirds_browser_width -
+                GetLayoutConstant(LayoutConstant::kSidePanelInset)));
   EXPECT_EQ(browser()->GetBrowserView().contents_web_view()->width(),
             web_contents_width);
 }
@@ -670,31 +670,11 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest, ChangeSidePanelAlignment) {
   EXPECT_TRUE(GetSidePanel()->IsRightAligned());
   EXPECT_EQ(GetSidePanel()->horizontal_alignment(),
             SidePanel::HorizontalAlignment::kRight);
-  // Toolbar height side panel should have the same alignment.
-  EXPECT_TRUE(browser()
-                  ->GetBrowserView()
-                  .toolbar_height_side_panel()
-                  ->IsRightAligned());
-  EXPECT_EQ(browser()
-                ->GetBrowserView()
-                .toolbar_height_side_panel()
-                ->horizontal_alignment(),
-            SidePanel::HorizontalAlignment::kRight);
 
   browser()->GetBrowserView().GetProfile()->GetPrefs()->SetBoolean(
       prefs::kSidePanelHorizontalAlignment, false);
   EXPECT_FALSE(GetSidePanel()->IsRightAligned());
   EXPECT_EQ(GetSidePanel()->horizontal_alignment(),
-            SidePanel::HorizontalAlignment::kLeft);
-  // Toolbar height side panel should have the same alignment.
-  EXPECT_FALSE(browser()
-                   ->GetBrowserView()
-                   .toolbar_height_side_panel()
-                   ->IsRightAligned());
-  EXPECT_EQ(browser()
-                ->GetBrowserView()
-                .toolbar_height_side_panel()
-                ->horizontal_alignment(),
             SidePanel::HorizontalAlignment::kLeft);
 }
 
@@ -709,31 +689,11 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest, ChangeSidePanelAlignmentRTL) {
   EXPECT_TRUE(GetSidePanel()->IsRightAligned());
   EXPECT_EQ(GetSidePanel()->horizontal_alignment(),
             SidePanel::HorizontalAlignment::kRight);
-  // Toolbar height side panel should have the same alignment.
-  EXPECT_TRUE(browser()
-                  ->GetBrowserView()
-                  .toolbar_height_side_panel()
-                  ->IsRightAligned());
-  EXPECT_EQ(browser()
-                ->GetBrowserView()
-                .toolbar_height_side_panel()
-                ->horizontal_alignment(),
-            SidePanel::HorizontalAlignment::kRight);
 
   browser()->GetBrowserView().GetProfile()->GetPrefs()->SetBoolean(
       prefs::kSidePanelHorizontalAlignment, false);
   EXPECT_FALSE(GetSidePanel()->IsRightAligned());
   EXPECT_EQ(GetSidePanel()->horizontal_alignment(),
-            SidePanel::HorizontalAlignment::kLeft);
-  // Toolbar height side panel should have the same alignment.
-  EXPECT_FALSE(browser()
-                   ->GetBrowserView()
-                   .toolbar_height_side_panel()
-                   ->IsRightAligned());
-  EXPECT_EQ(browser()
-                ->GetBrowserView()
-                .toolbar_height_side_panel()
-                ->horizontal_alignment(),
             SidePanel::HorizontalAlignment::kLeft);
 }
 
@@ -2334,14 +2294,13 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
   registry->Register(std::move(entry));
   coordinator()->SetNoDelaysForTesting(true);
 
-  auto* toolbar_height_side_panel =
-      browser()->GetBrowserView().toolbar_height_side_panel();
+  auto* side_panel = browser()->GetBrowserView().side_panel();
 
   // Set a custom container to control the animation time.
   auto* animation_coordinator = BrowserAnimationController::From(browser());
   auto container = base::MakeRefCounted<gfx::AnimationContainer>();
   animation_coordinator->SetAnimationContainerForTesting(
-      SidePanelAnimations::kToolbarHeightSidePanel, container.get());
+      SidePanelAnimations::kSidePanel, container.get());
   gfx::AnimationContainerTestApi test_api(container.get());
 
   coordinator()->ShowFrom(SidePanelEntryKey(SidePanelEntryId::kAboutThisSite),
@@ -2354,8 +2313,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
                 .GetBrowserViewLayoutForTesting()
                 ->side_panel_animation_content(),
             nullptr);
-  ASSERT_EQ(
-      toolbar_height_side_panel->GetContentParentView()->children().size(), 0);
+  ASSERT_EQ(side_panel->GetContentParentView()->children().size(), 0);
 
   // Advance the animation to its end, at this point the contents view should be
   // reparented to the side panel's ContentParentView.
@@ -2365,20 +2323,16 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
                 .GetBrowserViewLayoutForTesting()
                 ->side_panel_animation_content(),
             nullptr);
-  ASSERT_EQ(
-      toolbar_height_side_panel->GetContentParentView()->children().size(), 1);
+  ASSERT_EQ(side_panel->GetContentParentView()->children().size(), 1);
 }
 
 IN_PROC_BROWSER_TEST_F(
     SidePanelCoordinatorTest,
     ShowFromAnimationAnimatesContentViewInTheCorrectDirection_RightAligned) {
-  // Set the toolbar height side panel to be right aligned.
+  // Set the side panel to be right aligned.
   browser()->GetBrowserView().GetProfile()->GetPrefs()->SetBoolean(
       prefs::kSidePanelHorizontalAlignment, true);
-  ASSERT_TRUE(browser()
-                  ->GetBrowserView()
-                  .toolbar_height_side_panel()
-                  ->IsRightAligned());
+  ASSERT_TRUE(browser()->GetBrowserView().side_panel()->IsRightAligned());
   // Deregister and reregister kAboutThisSite side panel with kToolbar
   // SidePanelType.
   global_registry()->Deregister(
@@ -2401,7 +2355,7 @@ IN_PROC_BROWSER_TEST_F(
   auto* animation_coordinator = BrowserAnimationController::From(browser());
   auto container = base::MakeRefCounted<gfx::AnimationContainer>();
   animation_coordinator->SetAnimationContainerForTesting(
-      SidePanelAnimations::kToolbarHeightSidePanel, container.get());
+      SidePanelAnimations::kSidePanel, container.get());
   gfx::AnimationContainerTestApi test_api(container.get());
 
   gfx::Rect browser_view_bounds = browser()->GetBrowserView().bounds();
@@ -2444,13 +2398,10 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     SidePanelCoordinatorTest,
     ShowFromAnimationAnimatesContentViewInTheCorrectDirection_LeftAligned) {
-  // Set the toolbar height side panel to be left aligned.
+  // Set the side panel to be left aligned.
   browser()->GetBrowserView().GetProfile()->GetPrefs()->SetBoolean(
       prefs::kSidePanelHorizontalAlignment, false);
-  ASSERT_FALSE(browser()
-                   ->GetBrowserView()
-                   .toolbar_height_side_panel()
-                   ->IsRightAligned());
+  ASSERT_FALSE(browser()->GetBrowserView().side_panel()->IsRightAligned());
   // Deregister and reregister kAboutThisSite side panel with kToolbar
   // SidePanelType.
   global_registry()->Deregister(
@@ -2473,7 +2424,7 @@ IN_PROC_BROWSER_TEST_F(
   auto* animation_coordinator = BrowserAnimationController::From(browser());
   auto container = base::MakeRefCounted<gfx::AnimationContainer>();
   animation_coordinator->SetAnimationContainerForTesting(
-      SidePanelAnimations::kToolbarHeightSidePanel, container.get());
+      SidePanelAnimations::kSidePanel, container.get());
   gfx::AnimationContainerTestApi test_api(container.get());
 
   gfx::Rect browser_view_bounds = browser()->GetBrowserView().bounds();
@@ -2537,14 +2488,13 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
   registry->Register(std::move(entry));
   coordinator()->SetNoDelaysForTesting(true);
 
-  auto* toolbar_height_side_panel =
-      browser()->GetBrowserView().toolbar_height_side_panel();
+  auto* side_panel = browser()->GetBrowserView().side_panel();
 
   // Set a custom container to control the animation time.
   auto* animation_coordinator = BrowserAnimationController::From(browser());
   auto container = base::MakeRefCounted<gfx::AnimationContainer>();
   animation_coordinator->SetAnimationContainerForTesting(
-      SidePanelAnimations::kToolbarHeightSidePanel, container.get());
+      SidePanelAnimations::kSidePanel, container.get());
   gfx::AnimationContainerTestApi test_api(container.get());
 
   coordinator()->ShowFrom(SidePanelEntryKey(SidePanelEntryId::kAboutThisSite),
@@ -2557,8 +2507,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
                 .GetBrowserViewLayoutForTesting()
                 ->side_panel_animation_content(),
             nullptr);
-  ASSERT_EQ(
-      toolbar_height_side_panel->GetContentParentView()->children().size(), 0);
+  ASSERT_EQ(side_panel->GetContentParentView()->children().size(), 0);
 
   // Trigger the side panel to close, at this point the contents view should be
   // reparented to the side panel's ContentParentView.
@@ -2569,8 +2518,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
                 .GetBrowserViewLayoutForTesting()
                 ->side_panel_animation_content(),
             nullptr);
-  ASSERT_EQ(
-      toolbar_height_side_panel->GetContentParentView()->children().size(), 1);
+  ASSERT_EQ(side_panel->GetContentParentView()->children().size(), 1);
 }
 #endif
 
@@ -2612,14 +2560,13 @@ IN_PROC_BROWSER_TEST_F(
   registry->Register(std::move(shopping_entry));
   coordinator()->SetNoDelaysForTesting(true);
 
-  auto* toolbar_height_side_panel =
-      browser()->GetBrowserView().toolbar_height_side_panel();
+  auto* side_panel = browser()->GetBrowserView().side_panel();
 
   // Set a custom container to control the animation time.
   auto* animation_coordinator = BrowserAnimationController::From(browser());
   auto container = base::MakeRefCounted<gfx::AnimationContainer>();
   animation_coordinator->SetAnimationContainerForTesting(
-      SidePanelAnimations::kToolbarHeightSidePanel, container.get());
+      SidePanelAnimations::kSidePanel, container.get());
   gfx::AnimationContainerTestApi test_api(container.get());
 
   coordinator()->ShowFrom(SidePanelEntryKey(SidePanelEntryId::kAboutThisSite),
@@ -2632,8 +2579,7 @@ IN_PROC_BROWSER_TEST_F(
                 .GetBrowserViewLayoutForTesting()
                 ->side_panel_animation_content(),
             nullptr);
-  ASSERT_EQ(
-      toolbar_height_side_panel->GetContentParentView()->children().size(), 0);
+  ASSERT_EQ(side_panel->GetContentParentView()->children().size(), 0);
 
   // Show the kShoppingInsights side panel mid content transition animation and
   // verify the content is correctly reparented.
@@ -2643,8 +2589,7 @@ IN_PROC_BROWSER_TEST_F(
                 .GetBrowserViewLayoutForTesting()
                 ->side_panel_animation_content(),
             nullptr);
-  ASSERT_EQ(
-      toolbar_height_side_panel->GetContentParentView()->children().size(), 1);
+  ASSERT_EQ(side_panel->GetContentParentView()->children().size(), 1);
 }
 
 IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
@@ -2670,7 +2615,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
   coordinator()->DisableAnimationsForTesting();
   views::test::RunScheduledLayout(browser_view);
 
-  auto* side_panel = browser_view->toolbar_height_side_panel();
+  auto* side_panel = browser_view->side_panel();
   ASSERT_TRUE(side_panel->GetVisible());
 
   // Set the browser window to a specific width.

@@ -54,8 +54,8 @@ class BrowserViewTabbedLayoutImpl : public BrowserViewLayoutImpl {
   // Gets the amount of padding to place between
   int GetMinimumGrabHandlePadding() const;
 
-  // Returns the minimum size of all toolbar-height content except the toolbar-
-  // height side panel.
+  // Returns the minimum size of all toolbar-height content except the side
+  // panel.
   gfx::Size GetMinimumMainAreaSize(const BrowserLayoutParams& params) const;
 
   // Returns the size of the vertical and horizontal tabstrips, as a pair.
@@ -77,26 +77,20 @@ class BrowserViewTabbedLayoutImpl : public BrowserViewLayoutImpl {
     VerticalTabStripCollapsedState vertical_tab_strip_collapsed_state =
         VerticalTabStripCollapsedState::kExpanded;
     int vertical_tab_strip_width = 0;
-    int toolbar_height_side_panel_width = 0;
-    int content_height_side_panel_width = 0;
+    int side_panel_width = 0;
     int min_content_width = 0;
 
-    // The padding placed around a number of UI elements when the toolbar-height
-    // side panel is present.
+    // The padding placed around a number of UI elements when the side panel is
+    // present.
     int side_panel_padding = 0;
 
-    // In some cases, even when there is a toolbar-height side panel, the top
-    // container (containing the toolbar, etc.) are laid out at the top of the
-    // screen, above the side panels - this is usually due to other layout
+    // In some cases, even when there is a side panel, the top container
+    // (containing the toolbar, etc.) are laid out at the top of the screen,
+    // above the side panels - this is usually due to other layout
     // constraints.
     bool force_top_container_to_top = false;
 
-    bool has_toolbar_height_side_panel() const {
-      return toolbar_height_side_panel_width > 0;
-    }
-    bool has_content_height_side_panel() const {
-      return content_height_side_panel_width > 0;
-    }
+    bool has_side_panel() const { return side_panel_width > 0; }
   };
   HorizontalLayout CalculateHorizontalLayout(BrowserLayoutParams& params) const;
 

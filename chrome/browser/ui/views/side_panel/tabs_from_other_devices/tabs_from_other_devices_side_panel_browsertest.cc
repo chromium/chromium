@@ -30,9 +30,7 @@ class TabsFromOtherDevicesSidePanelBrowserTest : public InProcessBrowserTest {
     return SidePanelCoordinator::From(browser());
   }
 
-  SidePanel* GetSidePanel() {
-    return browser()->GetBrowserView().toolbar_height_side_panel();
-  }
+  SidePanel* GetSidePanel() { return browser()->GetBrowserView().side_panel(); }
 
  private:
   base::test::ScopedFeatureList features_;

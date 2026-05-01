@@ -726,9 +726,7 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
         kActiveContentsWebViewRetrievalId);
   }
 
-  SidePanel* GetSidePanel() {
-    return browser()->GetBrowserView().toolbar_height_side_panel();
-  }
+  SidePanel* GetSidePanel() { return browser()->GetBrowserView().side_panel(); }
 
   virtual void SetupFeatureList() {
     feature_list_.InitWithFeaturesAndParameters(

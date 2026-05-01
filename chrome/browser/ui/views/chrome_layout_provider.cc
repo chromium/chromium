@@ -154,7 +154,7 @@ int ChromeLayoutProvider::GetDistanceMetric(int metric) const {
       return 20;
     case DISTANCE_SIDE_PANEL_HEADER_INTERIOR_MARGIN_HORIZONTAL:
       return 4;
-    case DISTANCE_TOOLBAR_HEIGHT_SIDE_PANEL_CONTENT_RADIUS:
+    case DISTANCE_SIDE_PANEL_CONTENT_RADIUS:
       return 8;
     case DISTANCE_HORIZONTAL_SEPARATOR_PADDING_PAGE_INFO_VIEW:
       return 20;

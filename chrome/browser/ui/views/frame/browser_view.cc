@@ -945,7 +945,7 @@ BrowserView::BrowserView(Browser* browser)
       views::kElementIdentifierKey,
       BrowserViewLayoutViews::kShadowOverlayElementId);
 
-  toolbar_height_side_panel_ = AddChildView(std::make_unique<SidePanel>(this));
+  side_panel_ = AddChildView(std::make_unique<SidePanel>(this));
 
   // Tabstrip comes basically last because it should be before toolbar in the
   // focus order but also needs to paint on top of everything.
@@ -1114,7 +1114,7 @@ BrowserView::~BrowserView() {
   vertical_tab_strip_top_corner_ = nullptr;
   vertical_tab_strip_bottom_corner_ = nullptr;
   projects_panel_container_ = nullptr;
-  toolbar_height_side_panel_ = nullptr;
+  side_panel_ = nullptr;
 
   // Child views maintain PrefMember attributes that point to
   // OffTheRecordProfile's PrefService which gets deleted by ~Browser.
@@ -4520,8 +4520,8 @@ void BrowserView::GetAccessiblePanes(std::vector<views::View*>* panes) {
   if (infobar_container_) {
     panes->push_back(infobar_container_);
   }
-  if (toolbar_height_side_panel_) {
-    panes->push_back(toolbar_height_side_panel_);
+  if (side_panel_) {
+    panes->push_back(side_panel_);
   }
   for (views::View* pane : multi_contents_view_->GetAccessiblePanes()) {
     panes->push_back(pane);
@@ -4940,7 +4940,7 @@ void BrowserView::AddedToWidget() {
   // the ToolbarView does not create a button for them. This specifically seems
   // to hit web apps. See https://crbug.com/40803038.
   auto* const side_panel_coordinator = SidePanelCoordinator::From(browser_);
-  toolbar_height_side_panel_->AddObserver(side_panel_coordinator);
+  side_panel_->AddObserver(side_panel_coordinator);
 
 #if BUILDFLAG(IS_CHROMEOS)
   // TopControlsSlideController must be initialized here in AddedToWidget()
@@ -5011,7 +5011,7 @@ void BrowserView::AddedToWidget() {
   layout_views.infobar_container = infobar_container_;
   layout_views.contents_container = contents_container_;
   layout_views.multi_contents_view = multi_contents_view_;
-  layout_views.toolbar_height_side_panel = toolbar_height_side_panel_;
+  layout_views.side_panel = side_panel_;
   layout_views.top_container_separator = top_container_separator_;
   // LINT.ThenChange(//chrome/browser/ui/views/frame/layout/browser_view_layout.h:BrowserViewLayoutViews)
 

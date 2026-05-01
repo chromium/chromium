@@ -9,8 +9,7 @@
 #include "ui/base/identifier/unique_identifier.h"
 #include "ui/gfx/animation/tween.h"
 
-DEFINE_CLASS_BROWSER_ANIMATION_GROUP(SidePanelAnimations,
-                                     kToolbarHeightSidePanel);
+DEFINE_CLASS_BROWSER_ANIMATION_GROUP(SidePanelAnimations, kSidePanel);
 DEFINE_CLASS_BROWSER_ANIMATION_MOTION(SidePanelAnimations, kOpen);
 DEFINE_CLASS_BROWSER_ANIMATION_MOTION(SidePanelAnimations,
                                       kOpenWithContentTransition);
@@ -27,9 +26,9 @@ SidePanelAnimations::GroupInfos SidePanelAnimations::GenerateAnimations()
     const {
   const int kDefaultAnimationMs = features::kSidePanelFlyoverDurationMs.Get();
   const bool use_flyover = features::UseSidePanelFlyoverAnimation();
-  const gfx::Tween::Type toolbar_height_tween =
-      use_flyover ? gfx::Tween::Type::ACCEL_30_DECEL_20_85
-                  : gfx::Tween::Type::ACCEL_45_DECEL_88;
+  const gfx::Tween::Type tween = use_flyover
+                                     ? gfx::Tween::Type::ACCEL_30_DECEL_20_85
+                                     : gfx::Tween::Type::ACCEL_45_DECEL_88;
   const gfx::Tween::Type content_transition_tween =
       gfx::Tween::Type::ACCEL_45_DECEL_88;
 
@@ -40,26 +39,22 @@ SidePanelAnimations::GroupInfos SidePanelAnimations::GenerateAnimations()
       Sequence(kMainAreaShadow, StartingValue(1.0),
                Segment(StartMs(0), LengthMs(100), ToValue(0.0)));
 
-  return Groups(
-      Group(kToolbarHeightSidePanel,
-            Motion(kOpen, TotalDurationMs(kDefaultAnimationMs),
-                   toolbar_height_tween,
-                   Animate(kPanelWidth, FromValue(0.0), ToValue(1.0)),
-                   show_shadow_sequence),
-            Motion(
-                kOpenWithContentTransition,
-                TotalDurationMs(kDefaultAnimationMs), content_transition_tween,
-                Snap(kPanelWidth, FromValue(0.0), ToValue(1.0), AtPercent(0.0)),
-                Snap(kContentTop, FromValue(0.0), ToValue(1.0), AtPercent(0.0)),
-                Snap(kContentBottom, FromValue(0.0), ToValue(1.0),
-                     AtPercent(0.0)),
-                Animate(kContentLeft, FromValue(0.0), ToValue(1.0)),
-                Sequence(kContentWidth, StartingValue(0.0),
-                         Segment(StartMs(0), LengthMs(200), ToValue(1.0),
-                                 content_transition_tween)),
-                show_shadow_sequence),
-            Motion(kClose, TotalDurationMs(kDefaultAnimationMs),
-                   toolbar_height_tween,
-                   Animate(kPanelWidth, FromValue(1.0), ToValue(0.0)),
-                   hide_shadow_sequence)));
+  return Groups(Group(
+      kSidePanel,
+      Motion(kOpen, TotalDurationMs(kDefaultAnimationMs), tween,
+             Animate(kPanelWidth, FromValue(0.0), ToValue(1.0)),
+             show_shadow_sequence),
+      Motion(kOpenWithContentTransition, TotalDurationMs(kDefaultAnimationMs),
+             content_transition_tween,
+             Snap(kPanelWidth, FromValue(0.0), ToValue(1.0), AtPercent(0.0)),
+             Snap(kContentTop, FromValue(0.0), ToValue(1.0), AtPercent(0.0)),
+             Snap(kContentBottom, FromValue(0.0), ToValue(1.0), AtPercent(0.0)),
+             Animate(kContentLeft, FromValue(0.0), ToValue(1.0)),
+             Sequence(kContentWidth, StartingValue(0.0),
+                      Segment(StartMs(0), LengthMs(200), ToValue(1.0),
+                              content_transition_tween)),
+             show_shadow_sequence),
+      Motion(kClose, TotalDurationMs(kDefaultAnimationMs), tween,
+             Animate(kPanelWidth, FromValue(1.0), ToValue(0.0)),
+             hide_shadow_sequence)));
 }

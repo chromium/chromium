@@ -191,7 +191,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelInteractiveTest, SidePanelNotShownOnPwa) {
   // App does not show side panel.
   EXPECT_FALSE(BrowserView::GetBrowserViewForBrowser(
                    app_browser->GetBrowserForMigrationOnly())
-                   ->toolbar_height_side_panel()
+                   ->side_panel()
                    ->GetVisible());
 }
 

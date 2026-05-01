@@ -17,7 +17,7 @@ class BrowserView;
 class ShadowFrameView;
 
 // This view is responsible for framing the primary elements of the UI when
-// toolbar height side panel is showing, providing a nice drop shadow.
+// side panel is showing, providing a nice drop shadow.
 class ShadowOverlayView : public views::View, public views::LayoutDelegate {
   METADATA_HEADER(ShadowOverlayView, views::View)
 

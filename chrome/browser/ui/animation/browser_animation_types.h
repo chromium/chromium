@@ -9,7 +9,7 @@
 #include "ui/base/identifier/unique_identifier.h"
 
 // Represents a group of animations, such as "Vertical Tabstrip Animations" or
-// "Toolbar Height Side Panel Animations".
+// "Side Panel Animations".
 DECLARE_UNIQUE_IDENTIFIER_TYPE(BrowserAnimationGroup);
 
 // Represents a single motion within an animation group, such as "Expand" or

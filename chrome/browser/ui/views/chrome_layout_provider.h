@@ -95,8 +95,8 @@ enum ChromeDistanceMetric {
   DISTANCE_SIDE_PANEL_HEADER_BUTTON_MINIMUM_SIZE,
   // Horizontal spacing for separating side panel header border from controls.
   DISTANCE_SIDE_PANEL_HEADER_INTERIOR_MARGIN_HORIZONTAL,
-  // The corner radius for the toolbar height side panel content.
-  DISTANCE_TOOLBAR_HEIGHT_SIDE_PANEL_CONTENT_RADIUS,
+  // The corner radius for the side panel content.
+  DISTANCE_SIDE_PANEL_CONTENT_RADIUS,
   // Horizontal padding between separator in the page info view.
   DISTANCE_HORIZONTAL_SEPARATOR_PADDING_PAGE_INFO_VIEW,
   // Horizontal padding applied between the icon and label in the infobar.

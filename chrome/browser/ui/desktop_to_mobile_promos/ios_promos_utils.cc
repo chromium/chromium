@@ -107,7 +107,7 @@ void ShowIOSDesktopPromoBubble(PromoType promo_type,
           profile, PromoType::kEnhancedBrowsing, bubble_type);
       break;
     case PromoType::kLens: {
-      SidePanel* side_panel = browser_view->toolbar_height_side_panel();
+      SidePanel* side_panel = browser_view->side_panel();
       IOSPromoBubble::Anchor anchor = {views::BubbleAnchor(side_panel)};
       if (side_panel) {
         anchor.arrow = side_panel->IsRightAligned()
