@@ -11,6 +11,7 @@
 
 #import <BrowserEngineKit/BrowserEngineKit.h>
 
+#include <atomic>
 #include <list>
 
 #include "base/apple/mach_port_rendezvous_ios.h"
@@ -158,12 +159,18 @@ class ProcessStorage : public ProcessStorageBase {
 
   ~ProcessStorage() override { [grant_ invalidate]; }
 
-  void ReleaseProcess() override { process_ = nullptr; }
+  void ReleaseProcess() override {
+    terminated_ = true;
+    process_ = nullptr;
+  }
 
   NSObject* Process() { return process_; }
 
+  bool IsTerminated() const { return terminated_; }
+
  private:
   NSObject* process_;
+  std::atomic<bool> terminated_ = false;
   [[maybe_unused]] xpc_connection_t ipc_channel_;
   id<BEProcessCapabilityGrant> grant_;
 };
@@ -464,8 +471,8 @@ ChildProcessTerminationInfo ChildProcessLauncherHelper::GetTerminationInfo(
   ChildProcessTerminationInfo info;
   if (!process_storage_) {
     info.status = base::TERMINATION_STATUS_LAUNCH_FAILED;
-  } else if (static_cast<ProcessStorage*>(process_storage_.get())->Process() ==
-             nullptr) {
+  } else if (static_cast<ProcessStorage*>(process_storage_.get())
+                 ->IsTerminated()) {
     if (exit_code_.has_value()) {
       if (exit_code_.value() == RESULT_CODE_NORMAL_EXIT) {
         info.status = base::TERMINATION_STATUS_NORMAL_TERMINATION;
