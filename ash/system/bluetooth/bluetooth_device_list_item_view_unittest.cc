@@ -122,8 +122,6 @@ class BluetoothDeviceListItemViewTest : public AshTestBase {
     widget_ = CreateFramelessTestWidget();
     widget_->SetFullscreen(true);
     widget_->SetContentsView(bluetooth_device_list_item.release());
-
-    base::RunLoop().RunUntilIdle();
   }
 
   void TearDown() override {
