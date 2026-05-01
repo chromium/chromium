@@ -38,6 +38,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -206,6 +207,7 @@ public class MostVisitedTilesTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/508677323")
     public void keyboardNavigation_highlightingNextTileUpdatesUrlBarText()
             throws InterruptedException {
         // Skip past the 'what-you-typed' suggestion.
@@ -226,6 +228,7 @@ public class MostVisitedTilesTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/508677323")
     public void keyboardNavigation_highlightingPreviousTileUpdatesUrlBarText()
             throws InterruptedException {
         // Skip past the 'what-you-typed' suggestion.
