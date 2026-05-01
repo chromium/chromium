@@ -178,6 +178,13 @@ chromium-metrics-reviews@google.com.
   <variant name="WriteEntryDataAndMetadata"/>
 </variants>
 
+<variants name="SqlSharedCacheIndexDatabaseMethod">
+  <variant name="DeleteByDbId"/>
+  <variant name="GetDbIdByNetworkIsolationKey"/>
+  <variant name="GetIsolationKeyStringByDbId"/>
+  <variant name="Initialize"/>
+</variants>
+
 <!-- LINT.IfChange(StreamSocketCloseReason) -->
 
 <variants name="StreamSocketCloseReason">
@@ -8500,6 +8507,32 @@ chromium-metrics-reviews@google.com.
     indicates it was queued for asynchronous processing. This metric will be
     emitted every time a cache entry write happens.
   </summary>
+</histogram>
+
+<histogram name="Net.SqlSharedCacheIndexDatabase.{Method}.Result"
+    enum="SqlSharedCacheIndexDatabaseResult" expires_after="2026-10-20">
+  <owner>horo@chromium.org</owner>
+  <owner>net-dev@chromium.org</owner>
+  <summary>The result of {Method} in SqlSharedCacheIndexDatabase.</summary>
+  <token key="Method" variants="SqlSharedCacheIndexDatabaseMethod"/>
+</histogram>
+
+<histogram name="Net.SqlSharedCacheIndexDatabase.{Method}.{TimeType}"
+    units="microseconds" expires_after="2026-10-20">
+  <owner>horo@chromium.org</owner>
+  <owner>net-dev@chromium.org</owner>
+  <summary>
+    The processing time of {Method} in SqlSharedCacheIndexDatabase. Recorded on
+    {TimeType}.
+
+    The histogram is not reported on Windows machines without high resolution
+    clocks.
+  </summary>
+  <token key="Method" variants="SqlSharedCacheIndexDatabaseMethod"/>
+  <token key="TimeType">
+    <variant name="FailureTime" summary="failure"/>
+    <variant name="SuccessTime" summary="success"/>
+  </token>
 </histogram>
 
 <histogram name="Net.SSL.ECHResult" enum="SSLECHResult"

@@ -3136,6 +3136,26 @@ Called by update_net_trust_anchors.py.-->
 
 <!-- LINT.ThenChange(//net/disk_cache/sql/sql_persistent_store.h:SqlDiskCacheStoreError) -->
 
+<!-- LINT.IfChange(SqlSharedCacheIndexDatabaseResult) -->
+
+<enum name="SqlSharedCacheIndexDatabaseResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="NotFound"/>
+  <int value="2" label="FailedForTesting"/>
+  <int value="3" label="FailedToOpenDatabase"/>
+  <int value="4" label="FailedToRazeIncompatibleDatabase"/>
+  <int value="5" label="FailedToStartTransaction"/>
+  <int value="6" label="FailedToInitializeMetaTable"/>
+  <int value="7" label="FailedToCommitTransaction"/>
+  <int value="8" label="FailedToExecute"/>
+  <int value="9" label="InvalidNetworkIsolationKey"/>
+  <int value="10" label="FailedToCreateDirectory"/>
+  <int value="11" label="FailedToCreateStoragesTable"/>
+  <int value="12" label="FailedToCreateUniqueIndex"/>
+</enum>
+
+<!-- LINT.ThenChange(//net/disk_cache/sql/sql_shared_cache_index_database.h:SqlSharedCacheIndexDatabaseResult) -->
+
 <enum name="SSLECHResult">
   <summary>The result of a TLS connection that offered ECH</summary>
   <int value="0" label="The connection succeeded on the initial connection"/>

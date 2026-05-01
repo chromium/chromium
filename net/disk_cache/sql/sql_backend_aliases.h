@@ -21,6 +21,10 @@ using SqlPersistentStoreResId =
 using SqlPersistentStoreShardId =
     base::StrongAlias<class SqlPersistentStoreShardIdTag, uint8_t>;
 
+// The unique identifier for a shared cache in the SqlSharedCacheIndexDatabase.
+using SqlSharedCacheDbId =
+    base::StrongAlias<class SqlSharedCacheDbIdTag, int64_t>;
+
 // The hash value used in the CacheEntryKey.
 using CacheEntryKeyHash =
     base::StrongAlias<class CacheEntryKeyHashTag, int32_t>;

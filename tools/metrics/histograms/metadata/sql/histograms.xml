@@ -87,6 +87,7 @@ chromium-metrics-reviews@google.com.
   <variant name="SessionStorage" summary="SessionStorage, on-disk"/>
   <variant name="SessionStorageEphemeral" summary="SessionStorage, in-memory"/>
   <variant name="ShaderCache"/>
+  <variant name="SharedCacheIndex" summary="SharedCacheIndex"/>
   <variant name="SharedDictionary" summary="SharedDictionary"/>
   <variant name="SharedStorage" summary="SharedStorage"/>
   <variant name="Shortcuts" summary="Shortcuts"/>

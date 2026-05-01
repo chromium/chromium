@@ -121,6 +121,10 @@ inline constexpr base::TimeDelta kSqlBackendPostInitializationTasksDelay =
 inline constexpr std::string_view kSqlDiskCacheBackendHistogramPrefix =
     "Net.SqlDiskCache.Backend.";
 
+// The name of the shared cache index database file.
+inline constexpr base::FilePath::CharType
+    kSqlBackendSharedCacheIndexFileName[] = FILE_PATH_LITERAL("shared_index");
+
 }  // namespace disk_cache
 
 #endif  // NET_DISK_CACHE_SQL_SQL_BACKEND_CONSTANTS_H_
