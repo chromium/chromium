@@ -63,6 +63,9 @@
   <message name="IDS_SKILLS_PAGE_ALL_CATEGORY" desc="Text for the all category filter in the chrome://skills/browse-skills page.">
     All
   </message>
+  <message name="IDS_SKILLS_CURATED_PREFIX" desc="Prefix text indicating the curator of the skill.">
+    By
+  </message>
 
   <!-- chrome://skills/user-skills page-->
   <message name="IDS_SKILL_PAGE_EMPTY_STATE_TITLE" desc="Text for the zero state title in the chrome://skills page.">

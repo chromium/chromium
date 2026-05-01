@@ -25,7 +25,8 @@ export function getHtml(this: SkillCardElement) {
       <div id="name">${this.skill.name}</div>
     </div>
     ${this.isDiscoverCard_() ? html
-      `<div id="curatedLabel">By ${this.skill.curatedBy}</div>`
+    `<div id="curatedLabel">$i18n{curatedByPrefix} ${this.skill.curatedBy}
+    </div>`
       : html``}
     <!-- Only show the menu button for user-created skills. -->
     ${this.isDiscoverCard_() ? html`` : html`

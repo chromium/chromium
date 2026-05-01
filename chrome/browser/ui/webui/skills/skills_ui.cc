@@ -67,6 +67,7 @@ SkillsUI::SkillsUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
       {"delete", IDS_SKILL_PAGE_USER_SKILLS_DELETE},
       {"add", IDS_ADD},
       {"all", IDS_SKILLS_PAGE_ALL_CATEGORY},
+      {"curatedByPrefix", IDS_SKILLS_CURATED_PREFIX},
       {"browseSkillsTitle", IDS_SKILL_PAGE_BROWSE_SKILLS_TITLE},
       // TODO(b/503394871): Remove this string.
       {"topPicksTitle", IDS_SKILL_PAGE_BROWSE_SKILLS_TOP_PICKS_TITLE},
