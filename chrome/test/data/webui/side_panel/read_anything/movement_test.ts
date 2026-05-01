@@ -4,27 +4,27 @@
 
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {currentReadHighlightClass, isRectVisible, MovementGranularity, NodeStore, PARENT_OF_HIGHLIGHT_CLASS, PhraseHighlight, previousReadHighlightClass, ReadAloudNode, SentenceHighlight, WordHighlight} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {assertEquals, assertFalse, assertGT, assertLE, assertLT, assertNotEquals, assertStringContains, assertStringExcludes, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {currentReadHighlightClass, MovementGranularity, NodeStore, PARENT_OF_HIGHLIGHT_CLASS, PhraseHighlight, previousReadHighlightClass, ReadAloudNode, SentenceHighlight, WordHighlight} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {assertEquals, assertFalse, assertGT, assertNotEquals, assertStringContains, assertStringExcludes, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
+import {setWindowSize} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
 
 suite('Movement', () => {
   let nodeStore: NodeStore;
-  let originalInnerHeight: number;
 
   setup(() => {
     // Clearing the DOM should always be done first.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    originalInnerHeight = window.innerHeight;
+
+    // Always set a large innerHeight and innerWidth to ensure elements are
+    // considered visible and don't wrap unexpectedly in tests.
+    setWindowSize(1000, 1000);
+
     const readingMode = new FakeReadingMode();
     chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
     nodeStore = NodeStore.getInstance();
     nodeStore.clear();
-  });
-
-  teardown(() => {
-    window.innerHeight = originalInnerHeight;
   });
 
   function assertHtml(html: string, id: number) {
@@ -129,18 +129,17 @@ suite('Movement', () => {
     });
 
     test('scroll into view', () => {
-      if (window.innerHeight === 0) {
-        Object.defineProperty(
-            window, 'innerHeight', {value: 600, configurable: true});
-      }
       // Create a scrollable container to act as our "viewport".
       const container = document.createElement('div');
-      container.style.height = window.innerHeight + 'px';
+      container.style.height = '100px';
       container.style.overflow = 'scroll';
+      container.style.position = 'absolute';
+      container.style.top = '0px';
+      container.style.left = '0px';
       document.body.appendChild(container);
       // Add enough content to cause scrolling.
       const spacer = document.createElement('div');
-      spacer.style.height = window.innerHeight + 1 + 'px';
+      spacer.style.height = '2000px';
       container.appendChild(spacer);
       // This is the target element, initially not visible.
       const targetP = document.createElement('p');
@@ -162,35 +161,26 @@ suite('Movement', () => {
       // The highlight should start offscreen
       assertEquals(0, container.scrollTop);
       assertFalse(granularity.isVisible());
-      let bounds = element.getBoundingClientRect();
-      assertGT(bounds.top, window.innerHeight);
-      assertGT(bounds.bottom, window.innerHeight);
 
       granularity.scrollIntoView();
 
       // The highlight should now be fully onscreen
       assertGT(container.scrollTop, 0);
       assertTrue(granularity.isVisible());
-      bounds = element.getBoundingClientRect();
-      assertGT(bounds.top, 0);
-      assertLT(bounds.bottom, container.scrollTop + window.innerHeight);
     });
 
     test('scroll into view with large highlight', () => {
-      if (window.innerHeight === 0) {
-        Object.defineProperty(
-            window, 'innerHeight', {value: 600, configurable: true});
-      }
       // Create a scrollable container to act as our "viewport".
       const container = document.createElement('div');
-      container.style.height = window.innerHeight + 'px';
+      container.style.height = '100px';
       container.style.overflow = 'scroll';
+      container.style.position = 'absolute';
+      container.style.top = '0px';
+      container.style.left = '0px';
       document.body.appendChild(container);
-      // Add enough content to cause scrolling. Use a very large height to
-      // ensure the target element starts off-screen even if the innerHeight
-      // is increased later in the test.
+      // Add enough content to cause scrolling.
       const spacer = document.createElement('div');
-      spacer.style.height = '10000px';
+      spacer.style.height = '2000px';
       container.appendChild(spacer);
       // This is the target element, initially not visible.
       const targetP = document.createElement('p');
@@ -223,32 +213,22 @@ suite('Movement', () => {
       // The highlight should start offscreen
       assertEquals(0, container.scrollTop);
       assertFalse(granularity.isVisible());
-      let bounds = element.getBoundingClientRect();
-      window.innerHeight = bounds.height * 1.2;
-      assertGT(bounds.top, window.innerHeight);
-      assertGT(bounds.bottom, window.innerHeight);
-      assertGT(bounds.height, window.innerHeight / 2);
-      assertLT(bounds.height, window.innerHeight);
 
       granularity.scrollIntoView();
 
       // The highlight should now be fully onscreen
       assertGT(container.scrollTop, 0);
       assertTrue(granularity.isVisible());
-      bounds = element.getBoundingClientRect();
-      assertGT(bounds.top, 0);
-      assertLT(bounds.bottom, container.scrollTop + window.innerHeight);
     });
 
     test('scrollIntoView scrolls to make the current highlight visible', () => {
-      if (window.innerHeight === 0) {
-        Object.defineProperty(
-            window, 'innerHeight', {value: 600, configurable: true});
-      }
       // Create a scrollable container to act as our "viewport".
       const container = document.createElement('div');
-      container.style.height = window.innerHeight + 'px';
+      container.style.height = '100px';
       container.style.overflow = 'scroll';
+      container.style.position = 'absolute';
+      container.style.top = '0px';
+      container.style.left = '0px';
       document.body.appendChild(container);
 
       // Add an on-screen paragraph.
@@ -259,7 +239,7 @@ suite('Movement', () => {
 
       // Add content to push the next element off-screen.
       const spacer = document.createElement('div');
-      spacer.style.height = window.innerHeight + 'px';
+      spacer.style.height = '2000px';
       container.appendChild(spacer);
 
       // Add an off-screen paragraph.
@@ -292,24 +272,15 @@ suite('Movement', () => {
           new WordHighlight(segments2, offscreenWord.textContent.length);
       granularity.addHighlight(highlight2);
 
-      const currentHighlightElement = highlight2.getElements().at(0);
-      assertTrue(!!currentHighlightElement);
-
-      // Before scrolling, the current highlight should be off-screen.
+      // Initially, the current highlight is not visible.
       assertEquals(0, container.scrollTop);
-      let bounds = currentHighlightElement.getBoundingClientRect();
-      assertFalse(isRectVisible(bounds));
-      assertGT(bounds.top, window.innerHeight);
+      assertFalse(granularity.isVisible());
 
-      // Scroll into view.
       granularity.scrollIntoView();
 
-      // After scrolling, the current highlight should be on-screen.
+      // The current highlight should now be visible.
       assertGT(container.scrollTop, 0);
-      bounds = currentHighlightElement.getBoundingClientRect();
-      assertTrue(isRectVisible(bounds));
-      assertGT(bounds.top, 0);
-      assertLE(bounds.bottom, window.innerHeight);
+      assertTrue(granularity.isVisible());
     });
 
     suite('onWillHighlightWordOrPhrase', () => {

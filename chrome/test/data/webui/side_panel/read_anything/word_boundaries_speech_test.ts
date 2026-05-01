@@ -6,6 +6,7 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js'
 import type {AppElement, WordBoundaryState} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {ContentController, SpeechBrowserProxyImpl, SpeechController, ToolbarEvent, VoiceLanguageController, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {createApp, createSpeechSynthesisVoice, emitEvent, setupBasicSpeech} from './common.js';
 import {TestSpeechBrowserProxy} from './test_speech_browser_proxy.js';
@@ -128,23 +129,31 @@ suite('WordBoundariesUsedForSpeech', () => {
       assertEquals(9, state.speechUtteranceLength);
     });
 
-    test('word boundaries correct after multiple pause / play toggles', () => {
-      emitEvent(app, ToolbarEvent.PLAY_PAUSE);
-      emitEvent(app, ToolbarEvent.PLAY_PAUSE);
-      wordBoundaries.updateBoundary(3, 9);
-      emitEvent(app, ToolbarEvent.PLAY_PAUSE);
-      emitEvent(app, ToolbarEvent.PLAY_PAUSE);
-      wordBoundaries.updateBoundary(7);
-      emitEvent(app, ToolbarEvent.PLAY_PAUSE);
-      emitEvent(app, ToolbarEvent.PLAY_PAUSE);
-      wordBoundaries.updateBoundary(1, 15);
+    test(
+        'word boundaries correct after multiple pause / play toggles',
+        async () => {
+          emitEvent(app, ToolbarEvent.PLAY_PAUSE);
+          await microtasksFinished();
+          emitEvent(app, ToolbarEvent.PLAY_PAUSE);
+          await microtasksFinished();
+          wordBoundaries.updateBoundary(3, 9);
+          emitEvent(app, ToolbarEvent.PLAY_PAUSE);
+          await microtasksFinished();
+          emitEvent(app, ToolbarEvent.PLAY_PAUSE);
+          await microtasksFinished();
+          wordBoundaries.updateBoundary(7);
+          emitEvent(app, ToolbarEvent.PLAY_PAUSE);
+          await microtasksFinished();
+          emitEvent(app, ToolbarEvent.PLAY_PAUSE);
+          await microtasksFinished();
+          wordBoundaries.updateBoundary(1, 15);
 
-      const state: WordBoundaryState = wordBoundaries.state;
-      assertTrue(wordBoundaries.hasBoundaries());
-      assertEquals(1, state.previouslySpokenIndex);
-      assertEquals(20, state.speechUtteranceStartIndex);
-      assertEquals(15, state.speechUtteranceLength);
-    });
+          const state: WordBoundaryState = wordBoundaries.state;
+          assertTrue(wordBoundaries.hasBoundaries());
+          assertEquals(1, state.previouslySpokenIndex);
+          assertEquals(20, state.speechUtteranceStartIndex);
+          assertEquals(15, state.speechUtteranceLength);
+        });
   });
 
   test(

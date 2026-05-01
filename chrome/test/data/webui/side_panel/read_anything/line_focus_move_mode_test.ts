@@ -59,6 +59,9 @@ suite('LineFocusMoveMode', () => {
     // Clearing the DOM should always be done first.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     const readingMode = new FakeReadingMode();
+    // Initialize font size so that the threshold for merging text bounds
+    // is correctly calculated and not zero.
+    readingMode.fontSize = 20;
     chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
     model = new LineFocusModel();
     styleMode = new LineFocusLineStyleMode(LineFocusStyle.UNDERLINE, model);

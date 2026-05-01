@@ -8,6 +8,7 @@ import {BrowserProxy, ESTIMATED_WORDS_PER_MS, getWordCount, MIN_MS_TO_READ, Node
 import {assertArrayEquals, assertEquals, assertFalse, assertGT, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
 
+import {setWindowSize} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
 
@@ -40,12 +41,9 @@ suite('NodeStore', () => {
     // Clearing the DOM should always be done first.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
-    if (window.innerHeight === 0) {
-      Object.defineProperty(window, 'innerHeight', {
-        value: 600,
-        configurable: true,
-      });
-    }
+    // Always set a large innerHeight and innerWidth to ensure elements are
+    // considered visible and don't wrap unexpectedly in tests.
+    setWindowSize(10000, 10000);
 
     BrowserProxy.setInstance(new TestColorUpdaterBrowserProxy());
     readingMode = new FakeReadingMode();

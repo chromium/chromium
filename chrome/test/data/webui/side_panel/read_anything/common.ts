@@ -165,3 +165,20 @@ export function setContent(
 export function assertTestSettingsAreNotDefaultSettings() {
   assertNotDeepEquals(DEFAULT_SETTINGS, TEST_RANDOM_VALUE_SETTINGS);
 }
+
+export function setWindowSize(height: number, width: number) {
+  if (Object.getOwnPropertyDescriptor(window, 'innerHeight')?.configurable !==
+      false) {
+    Object.defineProperty(window, 'innerHeight', {
+      value: height,
+      configurable: true,
+    });
+  }
+  if (Object.getOwnPropertyDescriptor(window, 'innerWidth')?.configurable !==
+      false) {
+    Object.defineProperty(window, 'innerWidth', {
+      value: width,
+      configurable: true,
+    });
+  }
+}
