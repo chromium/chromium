@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/metrics/field_trial.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -21,6 +22,7 @@
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/regional_capabilities/regional_capabilities_service_factory.h"
+#include "chrome/browser/safe_browsing/extension_telemetry/search_hijacking_detector.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/search_engines/ui_thread_search_terms_data.h"
@@ -365,11 +367,40 @@ base::DictValue SearchEnginesHandler::CreateDictionaryForEngine(
   return dict;
 }
 
+void SearchEnginesHandler::RecordSearchHijackingHeuristicMetric() {
+  if (has_recorded_hijacking_metric_) {
+    return;
+  }
+
+  auto status = safe_browsing::SearchHijackingDetector::GetPriorHeuristicResult(
+      profile_->GetPrefs());
+
+  bool available =
+      (status !=
+       safe_browsing::SearchHijackingDetector::HeuristicResult::kUnknown);
+
+  base::UmaHistogramBoolean(
+      "Settings.SearchEngines.SearchHijackingDetector.HeuristicAvailable",
+      available);
+
+  if (available) {
+    base::UmaHistogramBoolean(
+        "Settings.SearchEngines.SearchHijackingDetector.HeuristicMatch",
+        status ==
+            safe_browsing::SearchHijackingDetector::HeuristicResult::kMatch);
+  }
+
+  has_recorded_hijacking_metric_ = true;
+}
+
 void SearchEnginesHandler::HandleGetCategorizedTemplateUrls(
     const base::ListValue& args) {
   CHECK_EQ(1U, args.size());
   const base::Value& callback_id = args[0];
   AllowJavascript();
+
+  RecordSearchHijackingHeuristicMetric();
+
   ResolveJavascriptCallback(callback_id, GetCategorizedTemplateUrls());
 }
 
@@ -378,6 +409,9 @@ void SearchEnginesHandler::HandleGetSearchEnginesList(
   CHECK_EQ(1U, args.size());
   const base::Value& callback_id = args[0];
   AllowJavascript();
+
+  RecordSearchHijackingHeuristicMetric();
+
   ResolveJavascriptCallback(callback_id, GetSearchEnginesList());
 }
 

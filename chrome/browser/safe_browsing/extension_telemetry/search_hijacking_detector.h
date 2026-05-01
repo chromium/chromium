@@ -29,6 +29,15 @@ class SearchHijackingDetector {
   SearchHijackingDetector(const SearchHijackingDetector&) = delete;
   SearchHijackingDetector& operator=(const SearchHijackingDetector&) = delete;
 
+  enum class HeuristicResult {
+    kUnknown = 0,
+    kNoMatch = 1,
+    kMatch = 2,
+  };
+
+  // Returns the prior heuristic result based on stored prefs.
+  static HeuristicResult GetPriorHeuristicResult(PrefService* pref_service);
+
   // Records an omnibox search event associated with
   // the default search engine (DSE)
   void OnOmniboxSearch(const AutocompleteMatch& match);

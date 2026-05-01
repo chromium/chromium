@@ -1379,6 +1379,32 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
   </summary>
 </histogram>
 
+<histogram
+    name="Settings.SearchEngines.SearchHijackingDetector.HeuristicAvailable"
+    enum="Boolean" expires_after="2027-01-01">
+  <owner>bcl@google.com</owner>
+  <owner>chrome-omnibox-team@google.com</owner>
+  <summary>
+    Records whether the Safe Browsing traffic-based search hijacking heuristic
+    had been calculated whenever a user visits chrome://settings/search. As of
+    M149, this only expected to be true for Enhanced Safe Browsing users who run
+    extension telemetry, and may still be false for ESB users if the detector
+    hasn't yet had opportunity and sufficent data to run. Recorded once each
+    time chrome://settings/search is loaded.
+  </summary>
+</histogram>
+
+<histogram name="Settings.SearchEngines.SearchHijackingDetector.HeuristicMatch"
+    enum="Boolean" expires_after="2027-01-01">
+  <owner>bcl@google.com</owner>
+  <owner>chrome-omnibox-team@google.com</owner>
+  <summary>
+    Records whether the Safe Browsing traffic-based search hijacking heuristic
+    matched. Recorded once each time chrome://settings/search page is loaded, if
+    and only if the heuristic is available.
+  </summary>
+</histogram>
+
 <histogram name="Settings.SessionDuration" units="ms"
     expires_after="2026-10-25">
   <owner>adelm@google.com</owner>

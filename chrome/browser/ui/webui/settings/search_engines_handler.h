@@ -104,12 +104,17 @@ class SearchEnginesHandler : public SettingsPageUIHandler,
   // Returns a dictionary to pass to WebUI representing the given search engine.
   base::DictValue CreateDictionaryForEngine(TemplateURL* template_url);
 
+  // Records the search hijacking heuristic metric if not already recorded.
+  void RecordSearchHijackingHeuristicMetric();
+
   const raw_ptr<Profile> profile_;
 
   KeywordEditorController list_controller_;
   std::unique_ptr<EditSearchEngineController> edit_controller_;
   base::ScopedObservation<TemplateURLService, TemplateURLServiceObserver>
       scoped_url_service_observation_{this};
+
+  bool has_recorded_hijacking_metric_ = false;
 };
 
 }  // namespace settings

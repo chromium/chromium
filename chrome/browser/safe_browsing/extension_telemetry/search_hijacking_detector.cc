@@ -65,6 +65,29 @@ SearchHijackingDetector::SearchHijackingDetector(
 
 SearchHijackingDetector::~SearchHijackingDetector() = default;
 
+// static
+SearchHijackingDetector::HeuristicResult
+SearchHijackingDetector::GetPriorHeuristicResult(PrefService* pref_service) {
+  // The detector saves signal data into prefs if and only if there was a
+  // heuristic match, so checking for presence is sufficient to infer the
+  // heuristic had matched in a prior invocation of the detector.
+  if (pref_service->HasPrefPath(
+          prefs::kExtensionTelemetrySearchHijackingSignalData)) {
+    const base::DictValue& signal_data = pref_service->GetDict(
+        prefs::kExtensionTelemetrySearchHijackingSignalData);
+    if (!signal_data.empty()) {
+      return HeuristicResult::kMatch;
+    }
+  }
+
+  if (pref_service->HasPrefPath(
+          prefs::kExtensionTelemetrySearchHijackingLastCheckTime)) {
+    return HeuristicResult::kNoMatch;
+  }
+
+  return HeuristicResult::kUnknown;
+}
+
 void SearchHijackingDetector::OnOmniboxSearch(const AutocompleteMatch& match) {
   if (template_url_service_ &&
       template_url_service_->IsSearchResultsPageFromDefaultSearchProvider(

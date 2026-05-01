@@ -10,6 +10,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/regional_capabilities/regional_capabilities_service_factory.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
@@ -19,6 +20,7 @@
 #include "components/country_codes/country_codes.h"
 #include "components/regional_capabilities/regional_capabilities_service.h"
 #include "components/regional_capabilities/regional_capabilities_switches.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #include "components/search_engines/search_engine_type.h"
@@ -414,6 +416,81 @@ TEST_F(SearchEnginesHandlerTest, UpdateSavedGuestSearch_NonEEA) {
   // `saveGuestChoice` was somehow enabled.
   EXPECT_EQ(std::nullopt,
             choice_service->GetSavedSearchEngineBetweenGuestSessions());
+}
+
+TEST_F(SearchEnginesHandlerTest, TrafficHijackingHeuristic_Unknown) {
+  ConfigureTestWithRegularProfile();
+
+  base::ListValue args;
+  args.Append("callback_id_1");
+  web_ui()->HandleReceivedMessage("getSearchEnginesList", args);
+
+  histogram_tester().ExpectBucketCount(
+      "Settings.SearchEngines.SearchHijackingDetector.HeuristicAvailable",
+      false, 1);
+  histogram_tester().ExpectBucketCount(
+      "Settings.SearchEngines.SearchHijackingDetector.HeuristicAvailable", true,
+      0);
+  histogram_tester().ExpectTotalCount(
+      "Settings.SearchEngines.SearchHijackingDetector.HeuristicMatch", 0);
+
+  base::ListValue args2;
+  args2.Append("callback_id_2");
+  web_ui()->HandleReceivedMessage("getSearchEnginesList", args2);
+
+  histogram_tester().ExpectTotalCount(
+      "Settings.SearchEngines.SearchHijackingDetector.HeuristicAvailable", 1);
+}
+
+TEST_F(SearchEnginesHandlerTest, TrafficHijackingHeuristic_NoMatch) {
+  ConfigureTestWithRegularProfile();
+  PrefService* pref_service = profile()->GetPrefs();
+
+  pref_service->SetTime(prefs::kExtensionTelemetrySearchHijackingLastCheckTime,
+                        base::Time::Now());
+  base::ListValue args;
+  args.Append("callback_id");
+  web_ui()->HandleReceivedMessage("getSearchEnginesList", args);
+
+  histogram_tester().ExpectBucketCount(
+      "Settings.SearchEngines.SearchHijackingDetector.HeuristicAvailable", true,
+      1);
+  histogram_tester().ExpectBucketCount(
+      "Settings.SearchEngines.SearchHijackingDetector.HeuristicAvailable",
+      false, 0);
+  histogram_tester().ExpectBucketCount(
+      "Settings.SearchEngines.SearchHijackingDetector.HeuristicMatch", false,
+      1);
+  histogram_tester().ExpectBucketCount(
+      "Settings.SearchEngines.SearchHijackingDetector.HeuristicMatch", true, 0);
+}
+
+TEST_F(SearchEnginesHandlerTest, TrafficHijackingHeuristic_Match) {
+  ConfigureTestWithRegularProfile();
+  PrefService* pref_service = profile()->GetPrefs();
+
+  pref_service->SetTime(prefs::kExtensionTelemetrySearchHijackingLastCheckTime,
+                        base::Time::Now());
+  base::DictValue signal_data;
+  signal_data.Set("dummy", "data");
+  pref_service->SetDict(prefs::kExtensionTelemetrySearchHijackingSignalData,
+                        std::move(signal_data));
+
+  base::ListValue args;
+  args.Append("callback_id");
+  web_ui()->HandleReceivedMessage("getSearchEnginesList", args);
+
+  histogram_tester().ExpectBucketCount(
+      "Settings.SearchEngines.SearchHijackingDetector.HeuristicAvailable", true,
+      1);
+  histogram_tester().ExpectBucketCount(
+      "Settings.SearchEngines.SearchHijackingDetector.HeuristicAvailable",
+      false, 0);
+  histogram_tester().ExpectBucketCount(
+      "Settings.SearchEngines.SearchHijackingDetector.HeuristicMatch", true, 1);
+  histogram_tester().ExpectBucketCount(
+      "Settings.SearchEngines.SearchHijackingDetector.HeuristicMatch", false,
+      0);
 }
 
 }  // namespace settings
