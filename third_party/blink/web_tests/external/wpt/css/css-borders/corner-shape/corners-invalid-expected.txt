@@ -1,0 +1,21 @@
+This is a testharness.js-based test.
+[FAIL] e.style['corners'] = "round 30%" should not set the property value
+  assert_equals: expected "" but got "30% round"
+[FAIL] e.style['corners'] = "10px bevel" should not set the property value
+  assert_equals: expected "" but got "10px bevel"
+[FAIL] e.style['corners'] = "round 10% / 2rem squircle" should not set the property value
+  assert_equals: expected "" but got "10% round / 2rem squircle"
+[FAIL] e.style['corners'] = "notch 10px / squircle 30% 10px / 1rem bevel / 2px round" should not set the property value
+  assert_equals: expected "" but got "10px notch / 30% 10px squircle / 1rem bevel / 2px round"
+[FAIL] e.style['corners'] = "normal" should not set the property value
+  assert_equals: expected "" but got "normal"
+[FAIL] e.style['corners'] = "4px 2% round" should not set the property value
+  assert_equals: expected "" but got "4px 2% round"
+[FAIL] e.style['corners'] = "4px 2% round / bevel 1em / normal" should not set the property value
+  assert_equals: expected "" but got "4px 2% round / 1em bevel / normal"
+[FAIL] e.style['corners'] = "normal / 1px round / normal / 3% squircle" should not set the property value
+  assert_equals: expected "" but got "normal / 1px round / normal / 3% squircle"
+[FAIL] e.style['corners'] = "normal / superellipse(-0.5) 30% 10px / 10px 1rem notch" should not set the property value
+  assert_equals: expected "" but got "normal / 30% 10px superellipse(-0.5) / 10px 1rem notch"
+Harness: the test ran to completion.
+

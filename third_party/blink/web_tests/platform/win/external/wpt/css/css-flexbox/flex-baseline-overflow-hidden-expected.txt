@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] inline-flex with overflow:hidden does not inflate line box from overflowing content
+  assert_equals: container height should be inline-flex height plus strut descent expected 42 but got 41
+Harness: the test ran to completion.
+

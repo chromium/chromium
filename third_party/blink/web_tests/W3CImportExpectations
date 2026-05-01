@@ -174,7 +174,6 @@ external/wpt/html/semantics/document-metadata/the-style-element/style-error-01.h
 # Manual tests that fail as TIMEOUT or NOTRUN. Consider adding wpt_automation.
 external/wpt/FileAPI/BlobURL/test2-manual.html [ Skip ]
 external/wpt/FileAPI/FileReader/test_errors-manual.html [ Skip ]
-external/wpt/FileAPI/filelist-section/filelist_multiple_selected_files-manual.html [ Skip ]
 external/wpt/FileAPI/filelist-section/filelist_selected_file-manual.html [ Skip ]
 external/wpt/FileAPI/idlharness-manual.html [ Skip ]
 external/wpt/FileAPI/progress-manual.html [ Skip ]
