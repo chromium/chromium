@@ -89,6 +89,7 @@
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/voice_search/voice_search_api.h"
+#import "ios/web/public/js_image_transcoder/java_script_image_transcoder.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/navigation/referrer.h"
@@ -227,6 +228,8 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
   raw_ptr<image_fetcher::ImageFetcherService> _imageFetcherService;
   raw_ptr<UserUploadedImageManager, DanglingUntriaged>
       _userUploadedImageManager;
+  // Transcoder used to decode images.
+  std::unique_ptr<web::JavaScriptImageTranscoder> _imageTranscoder;
   // Observer to keep track of the syncing status.
   std::unique_ptr<SyncObserverBridge> _syncObserver;
   raw_ptr<signin::IdentityManager> _identityManager;
@@ -315,6 +318,7 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     _backgroundCustomizationService = backgroundCustomizationService;
     _backgroundImageCacheService = backgroundImageCacheService;
     _imageFetcherService = imageFetcherService;
+    _imageTranscoder = std::make_unique<web::JavaScriptImageTranscoder>();
     _userUploadedImageManager = userUploadedImageManager;
     _signedInIdentity = _authService->GetPrimaryIdentity();
     _tracker = tracker;
@@ -833,6 +837,29 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
                                 HomeCustomizationBackgroundStyle::kDefault);
 }
 
+// Sanitizes and decodes downloaded image data in a sandboxed process before
+// applying it as the custom background.
+- (void)processDownloadedImageData:(const std::string&)imageData
+                          metadata:
+                              (const image_fetcher::RequestMetadata&)metadata
+                        background:(sync_pb::NtpCustomBackground)background
+                             cache:(BOOL)cache {
+  if (imageData.empty()) {
+    return;
+  }
+
+  __weak __typeof(self) weakSelf = self;
+  _imageTranscoder->TranscodeImage(
+      [NSData dataWithBytes:imageData.data() length:imageData.length()],
+      base::SysUTF8ToNSString(metadata.mime_type), nil, nil, nil,
+      base::BindOnce(^(NSData* safeData, NSError* error) {
+        UIImage* image = [UIImage imageWithData:safeData];
+        if (image) {
+          [weakSelf setCustomBackground:background image:image cache:cache];
+        }
+      }));
+}
+
 // Fetches and applies a custom background image.
 - (void)fetchCustomBackground:(sync_pb::NtpCustomBackground)background {
   GURL imageURL = GURL(background.url());
@@ -871,17 +898,14 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
       const std::string&, const image_fetcher::RequestMetadata&)>>(
       base::BindOnce(^(const std::string& image_data,
                        const image_fetcher::RequestMetadata& metadata) {
-        if (!image_data.empty()) {
-          NSData* data = [NSData dataWithBytes:image_data.data()
-                                        length:image_data.length()];
-          UIImage* image = [UIImage imageWithData:data];
-          if (image) {
-            // Temporarily sets the thumbnail as the background until the
-            // high-resolution image is loaded.
-            [weakSelf setCustomBackground:background image:image cache:NO];
-          }
+        __typeof(self) strongSelf = weakSelf;
+        if (!strongSelf) {
           return;
         }
+        [strongSelf processDownloadedImageData:image_data
+                                      metadata:metadata
+                                    background:background
+                                         cache:NO];
       }));
 
   _imageCallback = std::make_unique<base::CancelableOnceCallback<void(
@@ -905,18 +929,16 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
           strongSelf->_thumbnailCallback.reset();
         }
 
-        if (!image_data.empty()) {
-          NSData* data = [NSData dataWithBytes:image_data.data()
-                                        length:image_data.length()];
-          UIImage* image = [UIImage imageWithData:data];
-          if (image) {
-            [strongSelf setCustomBackground:background image:image cache:YES];
-          }
-        } else {
+        if (image_data.empty()) {
           base::UmaHistogramSparse(
               "IOS.HomeCustomization.Background.Ntp.ImageDownloadErrorCode",
               metadata.http_response_code);
         }
+
+        [strongSelf processDownloadedImageData:image_data
+                                      metadata:metadata
+                                    background:background
+                                         cache:YES];
 
         // Clear state.
         strongSelf->_pendingBackgroundURL = GURL();
