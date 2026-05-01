@@ -34,6 +34,10 @@ code or summarize state itself. It delegates to three auxiliary personas:
 3.  **The Scribe:** Maintains the State Block across rounds, explicitly checking
     for "flip-flopping" or stalled progress.
 
+**MANDATE:** Every sub-agent invoked in the MAGI protocol MUST call the
+`update_topic` tool as its first action to identify its role in the UI (e.g.,
+`title="MAGI Persona: Recruiter"`).
+
 ## Workflow
 
 ### 1. Preparation & Persona Selection (The Recruiter)
@@ -62,7 +66,8 @@ Invoke the selected expert sub-agents in parallel (`wait_for_previous: false`).
 Instruct each to implement the stubbed internals from the Base Scaffold.
 *Note: Sub-agents are permitted to change scaffolded signatures if their
 priority
-requires it.*
+requires it. Their first action must be to call `update_topic` to identify
+their specific persona.*
 
 ### 4. The Funnel Synthesis
 Once the ideation agents finish:
@@ -82,7 +87,11 @@ Once the ideation agents finish:
     panel MUST include the core ideators PLUS 3-6 specialized reviewer personas
     (e.g., **Test Expert**, **Readability Expert**, **Cross-Platform Expert**).
     **Prompt Template:**
-    > "Role Details: Read your mandate from `[persona_file_path]`.
+    > "**IMPORTANT:** Your very first action MUST be to call the `update_topic`
+    > tool with the `title` set to your assigned MAGI Persona name (e.g.,
+    > 'MAGI Persona: WebRTC Expert') and a `summary` of your immediate goal.
+    >
+    > Role Details: Read your mandate from `[persona_file_path]`.
     > Priority: [Priority].
     > Task: Review Draft [filename].
     > Output ONLY: `Verdict: [ACCEPT/REJECT]` and `Reasoning: [Bullet points]`."
