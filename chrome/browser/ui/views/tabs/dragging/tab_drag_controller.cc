@@ -2590,13 +2590,6 @@ Browser* TabDragController::CreateBrowserForDrag(TabDragContext* source,
                 /* user_gesture=*/true)
           : from_browser->create_params();
 
-  if (auto* controller =
-          tabs::VerticalTabStripStateController::From(from_browser)) {
-    create_params.vertical_tab_strip_collapsed = controller->IsCollapsed();
-    create_params.vertical_tab_strip_uncollapsed_width =
-        controller->GetUncollapsedWidth();
-  }
-
   // Web app windows have their own initial size independent of the source
   // browser window.
   if (!open_as_web_app) {

@@ -56,9 +56,9 @@
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/dragging/tab_drag_controller.h"
 #include "chrome/browser/ui/views/tabs/dragging/tab_drag_controller_interactive_test_mixin.h"
+#include "chrome/browser/ui/views/tabs/dragging/window_finder.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
-#include "chrome/browser/ui/views/tabs/dragging/window_finder.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/model/display_override.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
@@ -3434,6 +3434,9 @@ IN_PROC_BROWSER_TEST_P(VerticalTabsFullscreenDragTest,
   EXPECT_FALSE(browser()->window()->IsFullscreen());
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
 }
+
+// TODO(crbug.com/508647866): Create a Tab Dragging Test Case to Verify that
+// Vertical Tabs Detach Preserves State.
 
 INSTANTIATE_TEST_SUITE_P(
     TabDragging,

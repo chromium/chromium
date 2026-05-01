@@ -83,6 +83,12 @@ VerticalTabStripStateController::VerticalTabStripStateController(
 
   UpdateCollapseActionItem();
 
+  // Observe active browser to update most recently used vertical tabs pref
+  // accordingly.
+  did_become_active_subscription_ = browser_window_->RegisterDidBecomeActive(
+      base::BindRepeating(&VerticalTabStripStateController::OnDidBecomeActive,
+                          base::Unretained(this)));
+
   if (session_service_) {
     session_service_->AddObserver(this);
 
@@ -379,6 +385,11 @@ void VerticalTabStripStateController::UpdateCollapseActionItem() {
     collapse_action->SetTooltipText(BrowserActions::GetCleanTitleAndTooltipText(
         l10n_util::GetStringUTF16(text)));
   }
+}
+
+void VerticalTabStripStateController::OnDidBecomeActive(
+    BrowserWindowInterface* browser) {
+  UpdatePrefService();
 }
 
 void VerticalTabStripStateController::OnDestroying(

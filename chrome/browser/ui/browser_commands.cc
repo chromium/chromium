@@ -463,11 +463,6 @@ void MoveTabsToWindowImpl(BrowserWindowInterface* source,
 
 Browser* CreateNewBrowser(Browser* browser, bool user_gesture) {
   auto params = Browser::CreateParams(browser->profile(), user_gesture);
-  if (auto* controller = tabs::VerticalTabStripStateController::From(browser)) {
-    params.vertical_tab_strip_collapsed = controller->IsCollapsed();
-    params.vertical_tab_strip_uncollapsed_width =
-        controller->GetUncollapsedWidth();
-  }
   return Browser::Create(params);
 }
 
@@ -763,20 +758,6 @@ BrowserWindowInterface* OpenEmptyWindow(Profile* profile,
   Browser::CreateParams params =
       Browser::CreateParams(Browser::TYPE_NORMAL, profile, true);
   params.should_trigger_session_restore = should_trigger_session_restore;
-
-  if (tabs::IsVerticalTabsFeatureEnabled()) {
-    BrowserWindowInterface* const last_active_browser =
-        ProfileBrowserCollection::GetForProfile(profile)
-            ->GetLastActiveBrowser();
-    if (last_active_browser) {
-      if (auto* controller = tabs::VerticalTabStripStateController::From(
-              last_active_browser)) {
-        params.vertical_tab_strip_collapsed = controller->IsCollapsed();
-        params.vertical_tab_strip_uncollapsed_width =
-            controller->GetUncollapsedWidth();
-      }
-    }
-  }
 
   base::TimeTicks now = base::TimeTicks::Now();
   Browser* browser = Browser::Create(params);

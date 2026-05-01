@@ -155,6 +155,8 @@ class VerticalTabStripStateController : public SessionServiceBaseObserver,
   // BrowserCollectionObserver:
   void OnBrowserCreated(BrowserWindowInterface* browser) override;
 
+  void OnDidBecomeActive(BrowserWindowInterface* browser);
+
   void MaybeShowExpandOnHoverIPH();
 
   void OnLockCreated();
@@ -185,6 +187,7 @@ class VerticalTabStripStateController : public SessionServiceBaseObserver,
       browser_collection_observation_{this};
   ui::ScopedUnownedUserData<VerticalTabStripStateController>
       scoped_unowned_user_data_;
+  base::CallbackListSubscription did_become_active_subscription_;
 
   bool is_vertical_tabs_enabled_ = false;
   int enable_state_lock_count_ = 0;

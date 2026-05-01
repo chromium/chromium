@@ -9,11 +9,13 @@
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/animation/browser_animation_controller.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_actions.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
@@ -32,6 +34,7 @@
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_top_container.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_unpinned_tab_container_view.h"
 #include "chrome/browser/ui/views/test/vertical_tabs_browser_test_mixin.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -1241,6 +1244,126 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
 
   ASSERT_TRUE(
       base::test::RunUntil([&]() { return !view->is_expanded_on_hover(); }));
+}
+
+IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
+                       NewWindowInheritsActiveWindowVerticalTabsState) {
+  // Setup Window 1
+  state_controller()->RequestCollapse(true);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return !BrowserAnimationController::From(browser())->IsAnimating(
+        TabStripAnimations::kVerticalTabStrip);
+  }));
+  state_controller()->SetUncollapsedWidth(100);
+
+  // Setup Window 2
+  Browser* browser2 = CreateBrowser(browser()->profile());
+  ASSERT_TRUE(browser2);
+  auto* controller2 = tabs::VerticalTabStripStateController::From(browser2);
+  ASSERT_TRUE(controller2);
+
+  EXPECT_TRUE(controller2->ShouldDisplayVerticalTabs());
+
+  controller2->RequestCollapse(false);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return !BrowserAnimationController::From(browser2)->IsAnimating(
+        TabStripAnimations::kVerticalTabStrip);
+  }));
+  controller2->SetUncollapsedWidth(200);
+
+  // Simulate window activation by manually updating preferences.
+  browser()->profile()->GetPrefs()->SetBoolean(
+      prefs::kVerticalTabsCollapsedState, state_controller()->IsCollapsed());
+  browser()->profile()->GetPrefs()->SetInteger(
+      prefs::kVerticalTabsUncollapsedWidth,
+      state_controller()->GetUncollapsedWidth());
+
+  ui_test_utils::BrowserCreatedObserver observer1;
+  chrome::ExecuteCommand(browser(), IDC_NEW_WINDOW);
+  Browser* browser3 = observer1.Wait();
+  ASSERT_TRUE(browser3);
+
+  auto* controller3 = tabs::VerticalTabStripStateController::From(browser3);
+  ASSERT_TRUE(controller3);
+  EXPECT_TRUE(controller3->IsCollapsed());
+  EXPECT_EQ(controller3->GetUncollapsedWidth(), 100);
+
+  // Simulate window activation by manually updating preferences.
+  browser2->profile()->GetPrefs()->SetBoolean(
+      prefs::kVerticalTabsCollapsedState, controller2->IsCollapsed());
+  browser2->profile()->GetPrefs()->SetInteger(
+      prefs::kVerticalTabsUncollapsedWidth, controller2->GetUncollapsedWidth());
+
+  ui_test_utils::BrowserCreatedObserver observer2;
+  chrome::ExecuteCommand(browser2, IDC_NEW_WINDOW);
+  Browser* browser4 = observer2.Wait();
+  ASSERT_TRUE(browser4);
+
+  auto* controller4 = tabs::VerticalTabStripStateController::From(browser4);
+  ASSERT_TRUE(controller4);
+  EXPECT_FALSE(controller4->IsCollapsed());
+  EXPECT_EQ(controller4->GetUncollapsedWidth(), 200);
+}
+
+IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
+                       MoveTabToNewWindowPreservesVerticalTabsState) {
+  AppendTab();
+  ASSERT_EQ(2, tab_strip_model()->count());
+
+  state_controller()->RequestCollapse(true);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return !BrowserAnimationController::From(browser())->IsAnimating(
+        TabStripAnimations::kVerticalTabStrip);
+  }));
+  state_controller()->SetUncollapsedWidth(100);
+
+  browser()->profile()->GetPrefs()->SetBoolean(
+      prefs::kVerticalTabsCollapsedState, true);
+  browser()->profile()->GetPrefs()->SetInteger(
+      prefs::kVerticalTabsUncollapsedWidth, 100);
+
+  ui_test_utils::BrowserCreatedObserver observer;
+  chrome::ExecuteCommand(browser(), IDC_MOVE_TAB_TO_NEW_WINDOW);
+  Browser* new_browser = observer.Wait();
+  ASSERT_TRUE(new_browser);
+
+  auto* new_controller =
+      tabs::VerticalTabStripStateController::From(new_browser);
+  ASSERT_TRUE(new_controller);
+  EXPECT_TRUE(new_controller->IsCollapsed());
+  EXPECT_EQ(new_controller->GetUncollapsedWidth(), 100);
+}
+
+IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
+                       MoveGroupToNewWindowPreservesVerticalTabsState) {
+  AppendTab();
+  AppendTab();
+  ASSERT_EQ(3, tab_strip_model()->count());
+
+  tab_groups::TabGroupId group_id = tab_strip_model()->AddToNewGroup({1, 2});
+
+  state_controller()->RequestCollapse(true);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return !BrowserAnimationController::From(browser())->IsAnimating(
+        TabStripAnimations::kVerticalTabStrip);
+  }));
+  state_controller()->SetUncollapsedWidth(100);
+
+  browser()->profile()->GetPrefs()->SetBoolean(
+      prefs::kVerticalTabsCollapsedState, true);
+  browser()->profile()->GetPrefs()->SetInteger(
+      prefs::kVerticalTabsUncollapsedWidth, 100);
+
+  ui_test_utils::BrowserCreatedObserver observer;
+  chrome::MoveGroupToNewWindow(browser(), group_id);
+  Browser* new_browser = observer.Wait();
+  ASSERT_TRUE(new_browser);
+
+  auto* new_controller =
+      tabs::VerticalTabStripStateController::From(new_browser);
+  ASSERT_TRUE(new_controller);
+  EXPECT_TRUE(new_controller->IsCollapsed());
+  EXPECT_EQ(new_controller->GetUncollapsedWidth(), 100);
 }
 
 IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
