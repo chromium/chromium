@@ -164,6 +164,10 @@ suite('LocationIconTest', function() {
         LhsChipIdentifier.kLocationIcon,
         toolbarUiHandler.getArgs('onLhsChipMousePressed')[0]);
 
+    // Simulate right click pointerdown
+    container.dispatchEvent(new PointerEvent('pointerdown', {button: 2}));
+    assertEquals(2, toolbarUiHandler.getCallCount('onLhsChipMousePressed'));
+
     container.click();
     assertEquals(1, toolbarUiHandler.getCallCount('onLhsChipClicked'));
     assertEquals(
