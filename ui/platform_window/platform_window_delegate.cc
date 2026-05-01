@@ -114,6 +114,11 @@ gfx::Rect PlatformWindowDelegate::ConvertRectToDIP(
   return rect_in_pixels;
 }
 
+gfx::Point PlatformWindowDelegate::ConvertPointToPixels(
+    const gfx::Point& point_in_dip) const {
+  return point_in_dip;
+}
+
 gfx::PointF PlatformWindowDelegate::ConvertScreenPointToLocalDIP(
     const gfx::Point& screen_in_pixels) const {
   return gfx::PointF(screen_in_pixels);

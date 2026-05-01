@@ -1141,6 +1141,13 @@ gfx::Rect DesktopWindowTreeHostPlatform::ConvertRectToDIP(
   return ToDIPRect(rect_in_pixels);
 }
 
+gfx::Point DesktopWindowTreeHostPlatform::ConvertPointToPixels(
+    const gfx::Point& point_in_dip) const {
+  gfx::Point point_in_pixels(point_in_dip);
+  ConvertDIPToPixels(&point_in_pixels);
+  return point_in_pixels;
+}
+
 gfx::PointF DesktopWindowTreeHostPlatform::ConvertScreenPointToLocalDIP(
     const gfx::Point& screen_in_pixels) const {
   // TODO(crbug.com/40222832): DIP should use gfx::PointF. Fix this as

@@ -783,11 +783,15 @@ void X11Window::Restore() {
   }
 }
 
-void X11Window::ShowWindowControlsMenu(const gfx::Point& point) {
+void X11Window::ShowWindowControlsMenu(const gfx::Point& point_in_dip) {
+  const gfx::Point point_in_pixels =
+      platform_window_delegate_->ConvertPointToPixels(point_in_dip);
+  const uint32_t x = static_cast<uint32_t>(point_in_pixels.x());
+  const uint32_t y = static_cast<uint32_t>(point_in_pixels.y());
+
   SendClientMessage(xwindow_, x_root_window_,
                     x11::GetAtom("_GTK_SHOW_WINDOW_MENU"),
-                    {/*device_id=*/0, base::bit_cast<uint32_t>(point.x()),
-                     base::bit_cast<uint32_t>(point.y()), 0, 0});
+                    {/*device_id=*/0, x, y, 0, 0});
 }
 
 PlatformWindowState X11Window::GetPlatformWindowState() const {

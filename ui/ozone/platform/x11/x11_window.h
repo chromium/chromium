@@ -99,7 +99,7 @@ class X11Window : public PlatformWindow,
   void Maximize() override;
   void Minimize() override;
   void Restore() override;
-  void ShowWindowControlsMenu(const gfx::Point& point) override;
+  void ShowWindowControlsMenu(const gfx::Point& point_in_dip) override;
   PlatformWindowState GetPlatformWindowState() const override;
   void Activate() override;
   void Deactivate() override;

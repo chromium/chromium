@@ -225,6 +225,9 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowDelegate {
   virtual gfx::Rect ConvertRectToPixels(const gfx::Rect& rect_in_dp) const;
   virtual gfx::Rect ConvertRectToDIP(const gfx::Rect& rect_in_pixels) const;
 
+  // Converts gfx::Point in DIP to pixels.
+  virtual gfx::Point ConvertPointToPixels(const gfx::Point& point_in_dip) const;
+
   // Converts gfx::Point in screen pixels to dip in the window's local
   // coordinate.
   virtual gfx::PointF ConvertScreenPointToLocalDIP(
