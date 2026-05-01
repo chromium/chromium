@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.actor.ui;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -44,6 +45,9 @@ import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetManager;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.ChromeImageButton;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /** Tests for {@link ActorControlCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
@@ -52,6 +56,7 @@ public class ActorControlCoordinatorTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private static final int TASK_ID = 123;
+    private static final int TAB_ID = 456;
     private static final String CONVERSATION_ID_1 = "conversation_1";
     private static final String CONVERSATION_ID_2 = "conversation_2";
     private static final String TASK_TITLE = "Test Task Title";
@@ -65,6 +70,7 @@ public class ActorControlCoordinatorTest {
     @Mock private GlicInstanceHelper.Natives mGlicInstanceHelperNatives;
     @Mock private Tab mTab;
     @Mock private ActorTask mActorTask;
+    @Mock private ActorControlCoordinator.TabSelectionDelegate mTabSelectionDelegate;
 
     private Activity mActivity;
     private ActorControlCoordinator mCoordinator;
@@ -87,7 +93,11 @@ public class ActorControlCoordinatorTest {
 
         mCoordinator =
                 new ActorControlCoordinator(
-                        mActivity, mTabBottomSheetManager, mProfileSupplier, mTabSupplier);
+                        mActivity,
+                        mTabBottomSheetManager,
+                        mProfileSupplier,
+                        mTabSupplier,
+                        mTabSelectionDelegate);
 
         mModel = mCoordinator.getModelForTesting();
         mMediator = mCoordinator.getMediatorForTesting();
@@ -512,6 +522,43 @@ public class ActorControlCoordinatorTest {
         assertEquals(CONVERSATION_TITLE_1, mModel.get(ActorControlProperties.TASK_TITLE));
         assertEquals(
                 PeekViewUiState.DEFAULT, mModel.get(ActorControlProperties.PEEK_VIEW_UI_STATE));
+    }
+
+    @Test
+    public void testOnActorControlClick_noActiveTask_waitingState_triggersCallback() {
+        setUpProfileSupplier();
+        expectValidActorTask();
+
+        Set<Integer> tabIds = new HashSet<>();
+        tabIds.add(TAB_ID);
+        when(mActorTask.getLastActedTabs()).thenReturn(tabIds);
+
+        mCoordinator.onTaskStateChanged(TASK_ID, ActorTaskState.ACTING);
+
+        when(mActorKeyedService.getCurrentActiveTask()).thenReturn(null);
+        mCoordinator.onTaskStateChanged(TASK_ID, ActorTaskState.FINISHED);
+
+        assertEquals(
+                PeekViewUiState.WAITING, mModel.get(ActorControlProperties.PEEK_VIEW_UI_STATE));
+        performActorControlClick();
+
+        verify(mTabSelectionDelegate).switchToTab(TAB_ID);
+    }
+
+    @Test
+    public void testOnActorControlClick_noTabs_doesNotTriggerCallback() {
+        setUpProfileSupplier();
+        expectValidActorTask();
+
+        when(mActorTask.getLastActedTabs()).thenReturn(new HashSet<>());
+        when(mActorTask.getTabs()).thenReturn(new HashSet<>());
+        mCoordinator.onTaskStateChanged(TASK_ID, ActorTaskState.ACTING);
+
+        when(mActorKeyedService.getCurrentActiveTask()).thenReturn(null);
+        mCoordinator.onTaskStateChanged(TASK_ID, ActorTaskState.FINISHED);
+        performActorControlClick();
+
+        verify(mTabSelectionDelegate, never()).switchToTab(anyInt());
     }
 
     @Test

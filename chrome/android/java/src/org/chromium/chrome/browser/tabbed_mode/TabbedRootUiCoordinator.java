@@ -175,6 +175,7 @@ import org.chromium.chrome.browser.tab.RequestDesktopUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabAssociatedApp;
 import org.chromium.chrome.browser.tab.TabFavicon;
+import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_bottom_sheet.CoBrowseViewFactory;
 import org.chromium.chrome.browser.tab_bottom_sheet.CoBrowseViewsZoomControl;
 import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetManager;
@@ -1245,7 +1246,13 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             mActivity,
                             mTabBottomSheetManager,
                             mProfileSupplier,
-                            mActivityTabProvider.asObservable());
+                            mActivityTabProvider.asObservable(),
+                            (tabId) -> {
+                                TabModelUtils.selectTabById(
+                                        mTabModelSelectorSupplier.asNonNull().get(),
+                                        tabId,
+                                        TabSelectionType.FROM_USER);
+                            });
 
             ViewStub stub = mActivity.findViewById(R.id.actor_overlay_stub);
             mActorOverlayCoordinator =

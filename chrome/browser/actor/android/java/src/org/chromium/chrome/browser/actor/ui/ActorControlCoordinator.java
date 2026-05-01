@@ -28,10 +28,19 @@ import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetManager;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
+import java.util.Set;
+
 /** The Coordinator for the Actor Control component. */
 @NullMarked
 public class ActorControlCoordinator
         implements ActorKeyedService.Observer, GlicInstanceHelper.Observer {
+
+    /** Delegate for handling tab selection. */
+    @FunctionalInterface
+    public interface TabSelectionDelegate {
+        void switchToTab(int tabId);
+    }
+
     private static final String TAG = "ActorControlCoordin";
 
     private final ActorControlMediator mMediator;
@@ -43,6 +52,7 @@ public class ActorControlCoordinator
     private final TabBottomSheetManager mTabBottomSheetManager;
     private final MonotonicObservableSupplier<Profile> mProfileSupplier;
     private final TabSupplierObserver mTabObserver;
+    private final TabSelectionDelegate mTabSelectionDelegate;
 
     private @Nullable ActorKeyedService mActorKeyedService;
     private @Nullable GlicInstanceHelper mGlicInstanceHelper;
@@ -57,6 +67,10 @@ public class ActorControlCoordinator
     // whether the active task is associated with the current conversation or not.
     private String mTaskGlicConversationId = "";
 
+    // The ID of the tab that Actor was last acting on. This is used to switch to the actuating tab
+    // when the user clicks the actor control button in the WAITING state.
+    private int mActuatedTabId = Tab.INVALID_TAB_ID;
+
     /**
      * Constructs a new {@link ActorControlCoordinator}.
      *
@@ -66,16 +80,19 @@ public class ActorControlCoordinator
      * @param tabSupplier The {@link NullableObservableSupplier<Tab>} for the tab. This supplies the
      *     currently active tab in the current activity. It provides the active tab regardless of
      *     mode (regular or incognito), updating when the user switches modes or tabs.
+     * @param tabSelectionDelegate The delegate to handle tab selection.
      */
     // TODO(crbug.com/491895203): Add render test for peek view.
     public ActorControlCoordinator(
             Context context,
             TabBottomSheetManager tabBottomSheetManager,
             MonotonicObservableSupplier<Profile> profileSupplier,
-            NullableObservableSupplier<Tab> tabSupplier) {
+            NullableObservableSupplier<Tab> tabSupplier,
+            TabSelectionDelegate tabSelectionDelegate) {
         mContext = context;
         mTabBottomSheetManager = tabBottomSheetManager;
         mProfileSupplier = profileSupplier;
+        mTabSelectionDelegate = tabSelectionDelegate;
 
         mModel =
                 new PropertyModel.Builder(ActorControlProperties.ALL_KEYS)
@@ -181,11 +198,15 @@ public class ActorControlCoordinator
                     TextUtils.isEmpty(mTaskGlicConversationId)
                             ? mActiveGlicConversationId
                             : mTaskGlicConversationId;
+
+            Set<Integer> tabs = activeTask.getLastActedTabs();
+            mActuatedTabId = tabs.isEmpty() ? Tab.INVALID_TAB_ID : tabs.iterator().next();
         } else if (!isTaskCompleted(newState)) {
             // If the active task is null but the task has not been completed, we are in an invalid
             // state. Clear PeekView content and reset task-related variables.
             mActiveTaskTitle = "";
             mTaskGlicConversationId = "";
+            mActuatedTabId = Tab.INVALID_TAB_ID;
             Log.w(
                     TAG,
                     "Active task is null but task has not been completed. newState: %d",
@@ -286,8 +307,10 @@ public class ActorControlCoordinator
             if (PeekViewUiState.WAITING.equals(
                     mModel.get(ActorControlProperties.PEEK_VIEW_UI_STATE))) {
                 // In the WAITING state, the actor control button is the "View" button.
-                // TODO(crbug.com/507568604): Pressing the "View" button should open the actuating
-                // tab.
+                if (mActuatedTabId != Tab.INVALID_TAB_ID) {
+                    mTabSelectionDelegate.switchToTab(mActuatedTabId);
+                    mActuatedTabId = Tab.INVALID_TAB_ID;
+                }
                 mTabBottomSheetManager.setSheetExpanded(true);
                 setPeekViewContent(mConversationTitle, PeekViewUiState.DEFAULT);
             } else {
