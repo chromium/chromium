@@ -103,7 +103,8 @@ class ModelBrokerAndroidTest : public testing::Test {
  public:
   ModelBrokerAndroidTest() {
     java_helper_.SetMockAiCoreFactory();
-    java_helper_.SetDefaultStatusCheckResult(ModelStatus::kAvailable);
+    java_helper_.settings().SetDefaultStatusCheckResult(
+        ModelStatus::kAvailable);
   }
   ~ModelBrokerAndroidTest() override = default;
 
@@ -391,7 +392,8 @@ class ModelBrokerAndroidStatusCheckTest : public ModelBrokerAndroidTest {
 // Verify that when model status is unavailable, the subscriber gets
 // kNotSupported and the session future resolves to nullptr.
 TEST_F(ModelBrokerAndroidStatusCheckTest, ModelStatusUnavailable) {
-  java_helper_.SetDefaultStatusCheckResult(ModelStatus::kUnavailable);
+  java_helper_.settings().SetDefaultStatusCheckResult(
+      ModelStatus::kUnavailable);
   InstallTestFeatureConfig();
   ModelBrokerClient client(BindAndPassRemote(), nullptr);
 
@@ -409,7 +411,8 @@ TEST_F(ModelBrokerAndroidStatusCheckTest, ModelStatusUnavailable) {
 // Verify that when model status is downloading, the subscriber gets
 // kPendingAssets.
 TEST_F(ModelBrokerAndroidStatusCheckTest, ModelStatusDownloading) {
-  java_helper_.SetDefaultStatusCheckResult(ModelStatus::kDownloading);
+  java_helper_.settings().SetDefaultStatusCheckResult(
+      ModelStatus::kDownloading);
   InstallTestFeatureConfig();
   ModelBrokerClient client(BindAndPassRemote(), nullptr);
 
@@ -427,7 +430,8 @@ TEST_F(ModelBrokerAndroidStatusCheckTest, ModelStatusDownloading) {
 // Verify that when model status is downloadable, the subscriber gets
 // kPendingUsage.
 TEST_F(ModelBrokerAndroidStatusCheckTest, ModelStatusDownloadable) {
-  java_helper_.SetDefaultStatusCheckResult(ModelStatus::kDownloadable);
+  java_helper_.settings().SetDefaultStatusCheckResult(
+      ModelStatus::kDownloadable);
   InstallTestFeatureConfig();
   ModelBrokerClient client(BindAndPassRemote(), nullptr);
 
@@ -447,7 +451,8 @@ TEST_F(ModelBrokerAndroidStatusCheckTest, ModelStatusDownloadable) {
 // subscriber should reach kPendingAssets since the model adaptation may still
 // need to be downloaded.
 TEST_F(ModelBrokerAndroidStatusCheckTest, ModelStatusApiNotAvailable) {
-  java_helper_.SetDefaultStatusCheckResult(ModelStatus::kApiNotAvailable);
+  java_helper_.settings().SetDefaultStatusCheckResult(
+      ModelStatus::kApiNotAvailable);
   InstallTestFeatureConfig();
   ModelBrokerClient client(BindAndPassRemote(), nullptr);
 
@@ -466,7 +471,7 @@ TEST_F(ModelBrokerAndroidStatusCheckTest, ModelStatusApiNotAvailable) {
 // checks complete (BarrierClosure).
 TEST_F(ModelBrokerAndroidStatusCheckTest, BarrierWaitsForAllStatusChecks) {
   // Clear auto-respond so status checks wait for explicit triggering.
-  java_helper_.ClearDefaultStatusCheckResult();
+  java_helper_.settings().SetDefaultStatusCheckResult(std::nullopt);
   InstallTestFeatureConfig();
   ModelBrokerClient client(BindAndPassRemote(), nullptr);
 

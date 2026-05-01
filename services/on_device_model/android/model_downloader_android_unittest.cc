@@ -126,7 +126,7 @@ TEST_F(ModelDownloaderAndroidTest, DownloadAvailableOnDifferentThread) {
       future;
   auto downloader = std::make_unique<ModelDownloaderAndroid>(
       kFeature, MakeDownloaderParams(/*require_persistent_mode=*/false));
-  java_helper_.SetDownloaderCallbackOnDifferentThread();
+  java_helper_.settings().SetDownloaderCallbackOnDifferentThread(true);
 
   downloader->StartDownload(future.GetCallback(), base::DoNothing());
   java_helper_.TriggerDownloaderOnAvailable("test_model", "123");
@@ -146,7 +146,7 @@ TEST_F(ModelDownloaderAndroidTest, DownloadUnavailableOnDifferentThread) {
       future;
   auto downloader = std::make_unique<ModelDownloaderAndroid>(
       kFeature, MakeDownloaderParams(/*require_persistent_mode=*/false));
-  java_helper_.SetDownloaderCallbackOnDifferentThread();
+  java_helper_.settings().SetDownloaderCallbackOnDifferentThread(true);
 
   downloader->StartDownload(future.GetCallback(), base::DoNothing());
   java_helper_.TriggerDownloaderOnUnavailable(
@@ -196,7 +196,7 @@ TEST_F(ModelDownloaderAndroidTest, DownloadProgressOnDifferentThread) {
 
   auto downloader = std::make_unique<ModelDownloaderAndroid>(
       kFeature, MakeDownloaderParams(/*require_persistent_mode=*/false));
-  java_helper_.SetDownloaderCallbackOnDifferentThread();
+  java_helper_.settings().SetDownloaderCallbackOnDifferentThread(true);
 
   base::test::TestFuture<int64_t, int64_t> progress_future;
   downloader->StartDownload(
@@ -222,7 +222,7 @@ TEST_F(ModelDownloaderAndroidTest, CheckStatusAllModelStatusEnums) {
       ModelStatus::kAvailable};
 
   for (ModelStatus expected_status_enum : model_status_enums) {
-    java_helper_.SetDefaultStatusCheckResult(expected_status_enum);
+    java_helper_.settings().SetDefaultStatusCheckResult(expected_status_enum);
     base::test::TestFuture<ModelStatus> future;
     auto downloader = std::make_unique<ModelDownloaderAndroid>(
         kFeature, MakeDownloaderParams(/*require_persistent_mode=*/false));
@@ -238,7 +238,7 @@ TEST_F(ModelDownloaderAndroidTest, CheckStatusOnDifferentThread) {
   base::test::TestFuture<ModelStatus> future;
   auto downloader = std::make_unique<ModelDownloaderAndroid>(
       kFeature, MakeDownloaderParams(/*require_persistent_mode=*/false));
-  java_helper_.SetDownloaderCallbackOnDifferentThread();
+  java_helper_.settings().SetDownloaderCallbackOnDifferentThread(true);
 
   downloader->CheckStatus(future.GetCallback());
   java_helper_.TriggerDownloaderOnStatusCheckResult(ModelStatus::kAvailable);

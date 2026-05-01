@@ -5,6 +5,8 @@
 #ifndef SERVICES_ON_DEVICE_MODEL_ANDROID_ON_DEVICE_MODEL_BRIDGE_NATIVE_UNITTEST_HELPER_H_
 #define SERVICES_ON_DEVICE_MODEL_ANDROID_ON_DEVICE_MODEL_BRIDGE_NATIVE_UNITTEST_HELPER_H_
 
+#include <optional>
+
 #include "base/android/scoped_java_ref.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
 #include "services/on_device_model/android/backend_session_impl_android.h"
@@ -19,6 +21,13 @@ class OnDeviceModelBridgeNativeUnitTestSettings {
 
   void Init(base::android::ScopedJavaGlobalRef<jobject>* java_helper);
   void SetGenerateResult(BackendSessionImplAndroid::GenerateResult result);
+  void SetCompleteAsync(bool complete_async);
+  void SetSessionCallbackOnDifferentThread(
+      bool session_callback_on_different_thread);
+  void SetDownloaderCallbackOnDifferentThread(
+      bool downloader_callback_on_different_thread);
+  void SetDefaultStatusCheckResult(
+      std::optional<ModelDownloaderAndroid::ModelStatus> status);
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> java_settings_;
@@ -49,13 +58,7 @@ class OnDeviceModelBridgeNativeUnitTestHelper {
 
   OnDeviceModelBridgeNativeUnitTestSettings& settings() { return settings_; }
 
-  void SetCompleteAsync();
-  void SetCallbackOnDifferentThread();
   void ResumeOnCompleteCallback();
-  void SetDownloaderCallbackOnDifferentThread();
-
-  void SetDefaultStatusCheckResult(ModelDownloaderAndroid::ModelStatus status);
-  void ClearDefaultStatusCheckResult();
 
   void VerifyDownloaderParams(
       optimization_guide::proto::ModelExecutionFeature feature,

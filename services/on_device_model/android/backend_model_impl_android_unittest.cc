@@ -226,7 +226,7 @@ TEST_F(BackendModelImplAndroidTest, GenerateCallbacksOnDifferentThread) {
                     /*on_complete=*/base::DoNothing());
   }
 
-  java_helper_.SetCallbackOnDifferentThread();
+  java_helper_.settings().SetSessionCallbackOnDifferentThread(true);
 
   TestResponseHolder response_holder;
   session->Generate(MakeGenerateOptions(/*max_output_tokens=*/100),
@@ -246,7 +246,7 @@ TEST_F(BackendModelImplAndroidTest, NativeSessionDeletionIsSafe) {
       /*adaptation=*/nullptr,
       MakeSessionParams(/*top_k=*/3, /*temperature=*/1.0f));
 
-  java_helper_.SetCompleteAsync();
+  java_helper_.settings().SetCompleteAsync(true);
 
   TestResponseHolder response_holder;
   session->Generate(MakeGenerateOptions(/*max_output_tokens=*/100),
@@ -364,7 +364,7 @@ TEST_F(BackendModelImplAndroidTest, SizeInTokensCallbackOnDifferentThread) {
       /*adaptation=*/nullptr,
       MakeSessionParams(/*top_k=*/3, /*temperature=*/1.0f));
 
-  java_helper_.SetCallbackOnDifferentThread();
+  java_helper_.settings().SetSessionCallbackOnDifferentThread(true);
 
   std::vector<ml::InputPiece> pieces;
   pieces.push_back("test input on different thread");
