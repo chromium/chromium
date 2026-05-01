@@ -7,18 +7,11 @@ Instructions for working in `//remoting/protocol`.
 The `protocol` directory handles session authentication, establishment, and data
 transfer (audio, video, input, and control channels).
 
-### Transport (WebRTC vs Chromotocol)
+### Transport
 
-*   **Current Implementation (WebRTC):** Chrome Remote Desktop actively uses
-    WebRTC for all data transport (P2P connections).
-    *   `WebrtcConnectionToClient` / `WebrtcConnectionToHost`
-    *   `WebrtcTransport`
-*   **Obsolete / Legacy (Chromotocol):** Many classes in this directory
-    represent the legacy, non-WebRTC protocol ("Chromotocol") which is
-    obsolete and scheduled for deletion.
-    *   Examples of legacy classes include `IceConnectionToClient`,
-        `IceConnectionToHost`, and other `IceTransport*` classes that bypass
-        WebRTC. Do not use these for new development.
+Chrome Remote Desktop uses WebRTC for all data transport (P2P connections).
+*   `WebrtcConnectionToClient` / `WebrtcConnectionToHost`
+*   `WebrtcTransport`
 
 ### Authentication
 

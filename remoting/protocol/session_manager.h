@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// The purpose of SessionManager is to facilitate creation of chromotocol
-// sessions. Both host and client use it to establish chromotocol
-// sessions. JingleChromotocolServer implements this inteface using
-// libjingle.
+// The purpose of SessionManager is to facilitate creation of sessions. Both
+// host and client use it to establish sessions. JingleSessionManager
+// implements this interface using Jingle signaling.
 //
 // OUTGOING SESSIONS
 // Connect() must be used to create new session to a remote host. The
@@ -33,7 +32,7 @@
 // created by a SessionManager (except rejected
 // sessions). The SignalStrategy must outlive the SessionManager.
 //
-// PROTOCOL VERSION NEGOTIATION
+// SESSION ACCEPTANCE
 // When client connects to a host it sends a session-initiate stanza. If the
 // host decides to accept session, it replies with a session-accept stanza.
 
@@ -75,11 +74,8 @@ class SessionManager {
 
   // Callback used to accept incoming connections. If the host decides to accept
   // the session it should set the |response| to ACCEPT. Otherwise it should set
-  // it to DECLINE, or INCOMPATIBLE. INCOMPATIBLE indicates that the session has
-  // incompatible configuration, and cannot be accepted. If the callback accepts
-  // the |session| then it must also set configuration for the |session| using
-  // Session::set_config(). The callback must take ownership of the |session| if
-  // it ACCEPTs it.
+  // it to DECLINE, or OVERLOAD. If the callback accepts the |session| it must
+  // take ownership of the |session|.
   typedef base::RepeatingCallback<void(Session* session,
                                        IncomingSessionResponse* response,
                                        std::string* rejection_reason,

@@ -128,7 +128,7 @@ struct IceTransportInfo {
   ~IceTransportInfo();
 
   // Represents an ICE candidate with an optional name and SDP m-line index.
-  // TODO: joedow - Replace this with webrtc::IceCandidate post-chromotocol.
+  // TODO: joedow - Replace this with webrtc::IceCandidate.
   struct NamedCandidate {
     NamedCandidate();
     NamedCandidate(const std::string& name,
