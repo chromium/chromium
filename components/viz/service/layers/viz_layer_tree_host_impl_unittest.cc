@@ -1,16 +1,16 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/viz/service/layers/viz_layer_tree_host_impl.h"
+
 #include "base/functional/callback_helpers.h"
+#include "base/threading/thread.h"
+#include "cc/animation/animation_host.h"
 #include "cc/layers/solid_color_layer_impl.h"
 #include "cc/test/fake_layer_tree_frame_sink.h"
-#include "cc/test/layer_test_common.h"
-#include "cc/trees/layer_tree_host_impl.h"
 #include "cc/trees/layer_tree_host_impl_test_base.h"
 #include "components/viz/client/client_resource_provider.h"
-#include "components/viz/common/frame_sinks/begin_frame_args.h"
-#include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/common/resources/transferable_resource.h"
 #include "components/viz/test/begin_frame_args_test.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
@@ -19,22 +19,44 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace cc {
+namespace {
 
-class TreesInVizServerLayerTreeHostImplTest : public LayerTreeHostImplTest {
+class VizLayerTreeHostImplTest : public LayerTreeHostImplTest {
  public:
   LayerTreeSettings DefaultSettings() override {
     LayerTreeSettings settings = LayerTreeHostImplTest::DefaultSettings();
     settings.trees_in_viz_in_viz_process = true;
     return settings;
   }
+
+  bool CreateHostImpl(
+      const LayerTreeSettings& settings,
+      std::unique_ptr<LayerTreeFrameSink> layer_tree_frame_sink) override {
+    if (host_impl_) {
+      host_impl_->ReleaseLayerTreeFrameSink();
+    }
+    host_impl_.reset();
+    InitializeImageWorker(settings);
+    host_impl_ = viz::VizLayerTreeHostImpl::Create(
+        settings, this, &task_runner_provider_, &stats_instrumentation_,
+        &task_graph_runner_,
+        AnimationHost::CreateForTesting(ThreadInstance::kImpl), nullptr, 0,
+        image_worker_ ? image_worker_->task_runner() : nullptr, nullptr);
+    InputHandler::Create(static_cast<CompositorDelegateForInput&>(*host_impl_));
+    layer_tree_frame_sink_ = std::move(layer_tree_frame_sink);
+    host_impl_->SetVisible(true);
+    bool init = host_impl_->InitializeFrameSink(layer_tree_frame_sink_.get());
+    host_impl_->active_tree()->SetDeviceViewportRect(gfx::Rect(10, 10));
+    host_impl_->active_tree()->PushPageScaleFromMainThread(1, 1, 1);
+    host_impl_->active_tree()->SetLocalSurfaceIdFromParent(viz::LocalSurfaceId(
+        1, base::UnguessableToken::CreateForTesting(2u, 3u)));
+    return init;
+  }
 };
 
-INSTANTIATE_COMMIT_TO_TREE_TEST_P(TreesInVizServerLayerTreeHostImplTest);
+INSTANTIATE_COMMIT_TO_TREE_TEST_P(VizLayerTreeHostImplTest);
 
-// [TreesInViz] Tests that frame data timestamps get to CompositorFrameMetadata,
-// this behaviour is only valid when layer tree steps occur in Viz.
-TEST_P(TreesInVizServerLayerTreeHostImplTest,
-       FrameDataTimestampsGetSetInCFMetadata) {
+TEST_P(VizLayerTreeHostImplTest, FrameDataTimestampsGetSetInCFMetadata) {
   auto* root = SetupRootLayer<DidDrawCheckLayer>(host_impl_->active_tree(),
                                                  gfx::Size(10, 10));
 
@@ -57,8 +79,7 @@ TEST_P(TreesInVizServerLayerTreeHostImplTest,
   host_impl_->WillBeginImplFrame(args);
   // This would be set by LayerContextImpl as part of UpdateDisplayTree, set
   // manually to avoid DCHECK failure.
-  // TODO(496580137): Move this to VizLayerTreeHostImpl specific tests.
-  static_cast<TestVizLayerTreeHostImpl*>(host_impl_.get())
+  static_cast<viz::VizLayerTreeHostImpl*>(host_impl_.get())
       ->set_next_frame_token_from_client(frame.frame_token + 1);
   EXPECT_EQ(DrawResult::kSuccess, host_impl_->PrepareToDraw(&frame));
 
@@ -83,8 +104,7 @@ TEST_P(TreesInVizServerLayerTreeHostImplTest,
             metadata.trees_in_viz_timing_details.submit_compositor_frame);
 }
 
-TEST_P(TreesInVizServerLayerTreeHostImplTest,
-       CreateUIResourceFromImportedResource) {
+TEST_P(VizLayerTreeHostImplTest, CreateUIResourceFromImportedResource) {
   const UIResourceId ui_resource_id = 1;
   const gfx::Size size(100, 200);
 
@@ -105,8 +125,7 @@ TEST_P(TreesInVizServerLayerTreeHostImplTest,
   viz::ResourceId resource_id = host_impl_->resource_provider()->ImportResource(
       transfer_resource, base::DoNothing());
 
-  // TODO(496580137): Move this to VizLayerTreeHostImpl specific tests.
-  static_cast<TestVizLayerTreeHostImpl*>(host_impl_.get())
+  static_cast<viz::VizLayerTreeHostImpl*>(host_impl_.get())
       ->CreateUIResourceFromImportedResource(ui_resource_id, resource_id, size,
                                              true);
 
@@ -117,4 +136,5 @@ TEST_P(TreesInVizServerLayerTreeHostImplTest,
   host_impl_->DeleteUIResource(ui_resource_id);
 }
 
+}  // namespace
 }  // namespace cc

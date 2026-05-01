@@ -6,6 +6,7 @@
 #define COMPONENTS_VIZ_SERVICE_LAYERS_VIZ_LAYER_TREE_HOST_IMPL_H_
 
 #include "cc/trees/layer_tree_host_impl.h"
+#include "components/viz/service/viz_service_export.h"
 
 namespace cc {
 class TaskRunnerProvider;
@@ -18,7 +19,7 @@ class LayerTreeSettings;
 
 namespace viz {
 
-class VizLayerTreeHostImpl : public cc::LayerTreeHostImpl {
+class VIZ_SERVICE_EXPORT VizLayerTreeHostImpl : public cc::LayerTreeHostImpl {
  public:
   static std::unique_ptr<VizLayerTreeHostImpl> Create(
       const cc::LayerTreeSettings& settings,

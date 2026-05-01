@@ -922,7 +922,6 @@ cc_test("cc_unittests") {
     "trees/frame_data_unittest.cc",
     "trees/image_animation_controller_unittest.cc",
     "trees/layer_tree_frame_sink_unittest.cc",
-    "trees/layer_tree_host_impl_trees_in_viz_unittest.cc",
     "trees/layer_tree_host_impl_unittest.cc",
     "trees/layer_tree_host_pixeltest_blending.cc",
     "trees/layer_tree_host_pixeltest_filters.cc",
