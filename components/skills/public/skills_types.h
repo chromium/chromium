@@ -25,9 +25,9 @@ struct FirstPartySkillData {
 
   // List of first party skill protos.
   SkillProtoList skills_list;
-  // List of special topics on the chrome://skills page. (ie TopPicks,
-  // PartnerPicks).
-  std::vector<std::string> topics_list;
+
+  // List of special topics on the chrome://skills/browse page.
+  std::vector<skills::proto::TopicInfo> topics_info_list;
 };
 
 // Map of Skill categories to a vector of Skill structs.

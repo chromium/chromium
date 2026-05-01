@@ -16,10 +16,17 @@ mojom("mojo_bindings") {
           mojom = "skills.mojom.Skill"
           cpp = "::skills::Skill"
         },
+        {
+          mojom = "skills.mojom.TopicInfo"
+          cpp = "::skills::proto::TopicInfo"
+        },
       ]
       traits_headers = [ "skills_mojom_traits.h" ]
       traits_sources = [ "skills_mojom_traits.cc" ]
-      traits_public_deps = [ ":skill" ]
+      traits_public_deps = [
+        ":skill",
+        "//components/skills/proto",
+      ]
     },
   ]
   public_deps = [

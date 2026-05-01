@@ -9,7 +9,7 @@ import {CrRouter} from 'chrome://resources/js/cr_router.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import type {DiscoverSkillsPageElement} from 'chrome://skills/discover_skills_page.js';
-import type {Skill} from 'chrome://skills/skill.mojom-webui.js';
+import type {Skill, TopicInfo} from 'chrome://skills/skill.mojom-webui.js';
 import {SkillSource} from 'chrome://skills/skill.mojom-webui.js';
 import {SkillsManagementAction, SkillsManagementPage} from 'chrome://skills/skill_metrics.mojom-webui.js';
 import {SkillsPageBrowserProxy} from 'chrome://skills/skills_page_browser_proxy.js';
@@ -56,12 +56,17 @@ suite('DiscoverSkillsPage', function() {
   async function setFirstPartySkills(
       data: Record<string, Array<Partial<Skill>>>) {
     const fullSkillsMap: Record<string, Skill[]> = {};
+    const topicsInfoList: TopicInfo[] = [];
 
     for (const [category, skills] of Object.entries(data)) {
       fullSkillsMap[category] = skills.map(createSkill);
+      topicsInfoList.push({categoryName: category, displayName: category});
     }
 
-    browserProxy.callbackRouterRemote.update1PMap(fullSkillsMap);
+    browserProxy.callbackRouterRemote.update1PSkills({
+      skillMap: fullSkillsMap,
+      topicsInfoList: topicsInfoList,
+    });
     await microtasksFinished();
   }
 

@@ -50,4 +50,18 @@ bool StructTraits<skills::mojom::SkillDataView, skills::Skill>::Read(
   return true;
 }
 
+// static
+bool StructTraits<skills::mojom::TopicInfoDataView, skills::proto::TopicInfo>::
+    Read(skills::mojom::TopicInfoDataView data, skills::proto::TopicInfo* out) {
+  std::string category_name;
+  std::string display_name;
+  if (!data.ReadCategoryName(&category_name) ||
+      !data.ReadDisplayName(&display_name)) {
+    return false;
+  }
+  out->set_category_name(category_name);
+  out->set_display_name(display_name);
+  return true;
+}
+
 }  // namespace mojo

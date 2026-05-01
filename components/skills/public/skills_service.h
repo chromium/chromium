@@ -164,8 +164,9 @@ class SkillsService : public KeyedService {
   // in a kReady state since these skills are loaded from a SCS file.
   virtual const SkillProtoList& Get1PSkills() const = 0;
 
-  // Returns a const reference to the currently loaded 1p topics.
-  virtual const std::vector<std::string>& Get1PTopics() const = 0;
+  // Returns a const reference to the currently loaded 1p topics info.
+  virtual const std::vector<skills::proto::TopicInfo>& Get1PTopicsInfo()
+      const = 0;
 
   // Registers an observer for the service notifications.
   virtual void AddObserver(Observer* observer) = 0;

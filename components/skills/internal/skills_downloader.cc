@@ -150,9 +150,11 @@ void SkillsDownloader::OnUrlDownloadComplete(
       first_party_skill_data->skills_list.end(),
       std::make_move_iterator(skills_list->mutable_skills()->begin()),
       std::make_move_iterator(skills_list->mutable_skills()->end()));
-  for (auto& topic : *skills_list->mutable_topics_list()) {
-    first_party_skill_data->topics_list.push_back(std::move(topic));
-  }
+
+  first_party_skill_data->topics_info_list.insert(
+      first_party_skill_data->topics_info_list.end(),
+      std::make_move_iterator(skills_list->mutable_topics_info_list()->begin()),
+      std::make_move_iterator(skills_list->mutable_topics_info_list()->end()));
 
   std::move(callback).Run(std::move(first_party_skill_data));
 }

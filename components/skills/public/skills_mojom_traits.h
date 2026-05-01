@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/notreached.h"
+#include "components/skills/proto/skill.pb.h"
 #include "components/skills/public/skill.h"
 #include "components/skills/public/skill.mojom-shared.h"
 #include "components/sync/protocol/skill_specifics.pb.h"
@@ -88,6 +89,22 @@ struct StructTraits<skills::mojom::SkillDataView, skills::Skill> {
   }
 
   static bool Read(skills::mojom::SkillDataView data, skills::Skill* out);
+};
+
+template <>
+struct StructTraits<skills::mojom::TopicInfoDataView,
+                    skills::proto::TopicInfo> {
+  static const std::string& category_name(
+      const skills::proto::TopicInfo& topic) {
+    return topic.category_name();
+  }
+  static const std::string& display_name(
+      const skills::proto::TopicInfo& topic) {
+    return topic.display_name();
+  }
+
+  static bool Read(skills::mojom::TopicInfoDataView data,
+                   skills::proto::TopicInfo* out);
 };
 
 }  // namespace mojo

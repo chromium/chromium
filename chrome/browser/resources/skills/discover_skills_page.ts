@@ -20,6 +20,7 @@ import {getHtml} from './discover_skills_page.html.js';
 import type {Skill} from './skill.mojom-webui.js';
 import {SkillsDialogType} from './skill.mojom-webui.js';
 import {SkillsManagementAction, SkillsManagementPage} from './skill_metrics.mojom-webui.js';
+import type {BrowseSkillsInitialState} from './skills.mojom-webui.js';
 import {SkillsPageBrowserProxy} from './skills_page_browser_proxy.js';
 
 
@@ -72,12 +73,12 @@ export class DiscoverSkillsPageElement extends CrLitElement {
 
   override connectedCallback() {
     super.connectedCallback();
-    this.proxy_.handler.getInitial1PSkills().then(({skillMap}) => {
-      this.update1PMap_(skillMap);
+    this.proxy_.handler.getInitial1PSkills().then(({initialState}) => {
+      this.update1PSkills_(initialState);
     });
     this.listenerIds_ = [
-      this.proxy_.callbackRouter.update1PMap.addListener(
-          this.update1PMap_.bind(this)),
+      this.proxy_.callbackRouter.update1PSkills.addListener(
+          this.update1PSkills_.bind(this)),
     ];
     // Listen for save button clicks.
     this.eventTracker_.add(
@@ -115,11 +116,11 @@ export class DiscoverSkillsPageElement extends CrLitElement {
     return this.is1PSkillSaving_ || this.skillsPendingRemoval_.has(skill.id);
   }
 
-  protected update1PMap_(skillMap: {[key: string]: Skill[]}) {
+  protected update1PSkills_(state: BrowseSkillsInitialState) {
     // Getting a new set of 1p skills, so we can remove any prior skills that
     // were pending removal.
     this.skillsPendingRemoval_ = new Set();
-    this.skills_ = new Map(Object.entries(skillMap));
+    this.skills_ = new Map(Object.entries(state.skillMap));
     const otherCategories = this.getOtherCategories_();
     this.selectedCategory_ =
         otherCategories.length > 0 ? otherCategories[0]! : '';

@@ -188,8 +188,9 @@ const SkillProtoList& SkillsServiceImpl::Get1PSkills() const {
   return first_party_data_.skills_list;
 }
 
-const std::vector<std::string>& SkillsServiceImpl::Get1PTopics() const {
-  return first_party_data_.topics_list;
+const std::vector<skills::proto::TopicInfo>&
+SkillsServiceImpl::Get1PTopicsInfo() const {
+  return first_party_data_.topics_info_list;
 }
 
 void SkillsServiceImpl::LoadInitialSkills(

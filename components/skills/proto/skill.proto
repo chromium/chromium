@@ -37,6 +37,14 @@ message Skill {
   optional string curated_by = 9;
 }
 
+// Contains special topics information for the chrome://skills/browse page.
+message TopicInfo {
+  // The actual category name, such as "PartnerPicks".
+  optional string category_name = 1;
+  // The title for the special topic, such as "Partner Spotlight".
+  optional string display_name = 2;
+}
+
 // Contains a list of Skills received from the server.
 //
 // This is used as the metadata associated with the SKILLS Optimization type.
@@ -45,6 +53,9 @@ message SkillsList {
   // List of first party skills.
   repeated Skill skills = 1;
   // List of special topics on the chrome://skills page (ie TopPicks,
-  // PartnerPicks).
-  repeated string topics_list = 2;
+  // PartnerPicks). DEPRECATED in favor of topics_info_list.
+  repeated string topics_list = 2 [deprecated = true];
+
+  // List of topics to be displayed on chrome://skills/browse.
+  repeated TopicInfo topics_info_list = 3;
 }

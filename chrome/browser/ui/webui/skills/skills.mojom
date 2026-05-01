@@ -30,6 +30,14 @@ interface PageHandlerFactory {
   CreateDialogHandler(pending_receiver<DialogHandler> handler);
 };
 
+// Holds the initial data for the browse skills page.
+struct BrowseSkillsInitialState {
+  // Map of skill category to a list of skills.
+  map<string, array<skills.mojom.Skill>> skill_map;
+  // Special list of topics to be displayed on chrome://skills/browse.
+  array<TopicInfo> topics_info_list;
+};
+
 // Called from TS side of chrome://skills (Renderer -> Browser)
 interface PageHandler {
   // Called when the user wants to either add or edit a skill.
@@ -49,8 +57,7 @@ interface PageHandler {
 
   // Gets the initial list of 1P skills, called whenever the
   // browse skills page is inserted into the DOM.
-  // `skill_map` is keyed by category name.
-  GetInitial1PSkills() => (map<string, array<skills.mojom.Skill>> skill_map);
+  GetInitial1PSkills() => (BrowseSkillsInitialState initial_state);
 
   // Called whenever the user navigates to chrome://skills/browse-skills.
   // Requests a new download of 1P skills from the skills service.
@@ -79,9 +86,8 @@ interface SkillsPage {
   // This may be extended to support multiple skill deletions in the future.
   RemoveSkill(string skill_id);
 
-  // Notifies the UI that there is an updated map of 1P skills.
-  // `skill_map` is keyed by category name.
-  Update1PMap(map<string, array<Skill>> skill_map);
+  // Notifies the UI that there is an updated state of 1P skills.
+  Update1PSkills(BrowseSkillsInitialState state);
 };
 
 // Called from TS side of chrome://skills/dialog (Renderer -> Browser)

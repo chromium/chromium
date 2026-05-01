@@ -217,10 +217,13 @@ void SkillsPageHandler::Request1PSkills() {
 void SkillsPageHandler::GetInitial1PSkills(
     GetInitial1PSkillsCallback callback) {
   auto scoped_callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-      std::move(callback), SkillCategoryToSkillMap());
+      std::move(callback), mojom::BrowseSkillsInitialState::New());
   auto* service =
       SkillsServiceFactory::GetForProfile(base::to_address(profile_));
-  std::move(scoped_callback).Run(Translate1PSkills(service->Get1PSkills()));
+  auto state = mojom::BrowseSkillsInitialState::New();
+  state->topics_info_list = service->Get1PTopicsInfo();
+  state->skill_map = Translate1PSkills(service->Get1PSkills());
+  std::move(scoped_callback).Run(std::move(state));
 }
 
 void SkillsPageHandler::OnDiscoverySkillsUpdated(
@@ -245,8 +248,10 @@ void SkillsPageHandler::OnDiscoverySkillsUpdated(
 
   // If the data exists that means we have an updated list of skills.
   if (first_party_skill_data) {
-    page_->Update1PMap(Translate1PSkills(first_party_skill_data->skills_list));
-    // TODO (crbug.com/503394871): Notify the UI about the topics list.
+    auto state = mojom::BrowseSkillsInitialState::New();
+    state->topics_info_list = first_party_skill_data->topics_info_list;
+    state->skill_map = Translate1PSkills(first_party_skill_data->skills_list);
+    page_->Update1PSkills(std::move(state));
   }
 }
 

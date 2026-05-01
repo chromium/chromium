@@ -65,6 +65,14 @@ struct Skill {
 // LINT.ThenChange(//components/skills/public/skill.h:Skill, //chrome/browser/glic/host/glic.mojom:Skill)
 // clang-format on
 
+// Represents special topics on the chrome://skills/browse page.
+struct TopicInfo {
+  // The actual category name, such as "PartnerPicks".
+  string category_name;
+  // The title for the special topic, such as "Partner Spotlight".
+  string display_name;
+};
+
 // The type of skills dialog to open.
 enum SkillsDialogType {
   // Add dialog.

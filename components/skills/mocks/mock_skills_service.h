@@ -25,8 +25,8 @@ class MockSkillsService : public SkillsService {
               (),
               (const));
   MOCK_METHOD(const SkillProtoList&, Get1PSkills, (), (const, override));
-  MOCK_METHOD(const std::vector<std::string>&,
-              Get1PTopics,
+  MOCK_METHOD(const std::vector<skills::proto::TopicInfo>&,
+              Get1PTopicsInfo,
               (),
               (const, override));
   MOCK_METHOD(const Skill*,

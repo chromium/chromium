@@ -51,11 +51,10 @@ class MockSkillsPage : public skills::mojom::SkillsPage {
               ((const std::vector<skills::Skill>&)),
               (override));
   MOCK_METHOD(void, RemoveSkill, (const std::string& skill_id), (override));
-  MOCK_METHOD(
-      void,
-      Update1PMap,
-      ((const base::flat_map<std::string, std::vector<skills::Skill>>&)),
-      (override));
+  MOCK_METHOD(void,
+              Update1PSkills,
+              (mojom::BrowseSkillsInitialStatePtr),
+              (override));
 
   mojo::Receiver<skills::mojom::SkillsPage> receiver_{this};
 };
@@ -105,14 +104,17 @@ TEST_F(SkillsPageHandlerTest, OnDiscoverySkillsUpdated) {
 
   first_party_skill_data->skills_list.push_back(skill_proto);
 
+  skills::proto::TopicInfo topic_info;
+  topic_info.set_category_name("Category");
+  topic_info.set_display_name("Display Name");
+  first_party_skill_data->topics_info_list.push_back(topic_info);
+
   base::RunLoop run_loop;
-  EXPECT_CALL(mock_page_, Update1PMap(_))
-      .WillOnce([&run_loop](
-                    const base::flat_map</*category=*/std::string,
-                                         std::vector<skills::Skill>>& map) {
-        ASSERT_EQ(1u, map.size());
-        ASSERT_TRUE(map.contains("Category"));
-        const auto& skills = map.at("Category");
+  EXPECT_CALL(mock_page_, Update1PSkills(_))
+      .WillOnce([&run_loop](mojom::BrowseSkillsInitialStatePtr state) {
+        ASSERT_EQ(1u, state->skill_map.size());
+        ASSERT_TRUE(state->skill_map.contains("Category"));
+        const auto& skills = state->skill_map.at("Category");
         ASSERT_EQ(1u, skills.size());
         const auto& skill = skills[0];
         EXPECT_EQ("skill_id", skill.id);
@@ -122,6 +124,11 @@ TEST_F(SkillsPageHandlerTest, OnDiscoverySkillsUpdated) {
         EXPECT_EQ("Skill description", skill.description);
         EXPECT_EQ("https://example.com/image.png", skill.image_url);
         EXPECT_EQ(sync_pb::SkillSource::SKILL_SOURCE_FIRST_PARTY, skill.source);
+
+        ASSERT_EQ(1u, state->topics_info_list.size());
+        EXPECT_EQ("Category", state->topics_info_list[0].category_name());
+        EXPECT_EQ("Display Name", state->topics_info_list[0].display_name());
+
         run_loop.Quit();
       });
 

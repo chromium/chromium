@@ -33,7 +33,9 @@ std::string CreateValidSkillsListString() {
   skill->set_id("test-id");
   skill->set_image_url("https://example.com/some-image.png");
 
-  skills_list.add_topics_list("test-topic");
+  auto* topic_info = skills_list.add_topics_info_list();
+  topic_info->set_category_name("test-topic");
+  topic_info->set_display_name("Test Topic");
 
   return skills_list.SerializeAsString();
 }
@@ -97,8 +99,9 @@ TEST_F(SkillsDownloaderTest, ReturnsValidSkills) {
   EXPECT_EQ(skill.image_url(), "https://example.com/some-image.png");
   EXPECT_EQ(skill.curated_by(), "Chrome");
 
-  ASSERT_EQ(result->topics_list.size(), 1u);
-  EXPECT_EQ(result->topics_list[0], "test-topic");
+  ASSERT_EQ(result->topics_info_list.size(), 1u);
+  EXPECT_EQ(result->topics_info_list[0].category_name(), "test-topic");
+  EXPECT_EQ(result->topics_info_list[0].display_name(), "Test Topic");
 
   histogram_tester_.ExpectUniqueSample(
       "Skills.Downloader.FirstParty.FetchResult", SkillsFetchResult::kSuccess,

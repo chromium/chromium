@@ -83,7 +83,7 @@ class SkillsServiceImpl : public SkillsService {
   void Handle1pSkills(
       std::unique_ptr<FirstPartySkillData> first_party_skill_data) override;
   const SkillProtoList& Get1PSkills() const override;
-  const std::vector<std::string>& Get1PTopics() const override;
+  const std::vector<skills::proto::TopicInfo>& Get1PTopicsInfo() const override;
   const std::vector<std::unique_ptr<Skill>>& GetSkills() const override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
