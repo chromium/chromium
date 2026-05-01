@@ -60,6 +60,7 @@ class Document;
 class DocumentLoader;
 enum class FrameDetachType;
 class InspectedFrames;
+class InspectorInjectedScriptManager;
 class InspectorResourceContentLoader;
 class LocalFrame;
 class ClassicScript;
@@ -336,15 +337,12 @@ class CORE_EXPORT InspectorPageAgent final
   InspectorAgentState::Boolean screencast_enabled_;
   InspectorAgentState::Boolean lifecycle_events_enabled_;
   InspectorAgentState::Boolean bypass_csp_enabled_;
-  InspectorAgentState::StringMap scripts_to_evaluate_on_load_;
-  InspectorAgentState::StringMap worlds_to_evaluate_on_load_;
-  InspectorAgentState::BooleanMap
-      include_command_line_api_for_scripts_to_evaluate_on_load_;
   InspectorAgentState::Integer standard_font_size_;
   InspectorAgentState::Integer fixed_font_size_;
   InspectorAgentState::Bytes script_font_families_cbor_;
   String script_injection_on_load_once_;
   String pending_script_injection_on_load_;
+  Member<InspectorInjectedScriptManager> injected_script_manager_;
 };
 
 }  // namespace blink
