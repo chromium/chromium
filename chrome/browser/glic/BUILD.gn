@@ -299,6 +299,8 @@ source_set("impl") {
     "suggestions/caching_zero_state_suggestions_manager.h",
     "widget/browser_conditions.cc",
     "widget/browser_conditions.h",
+    "widget/conversions.cc",
+    "widget/conversions.h",
   ]
 
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
@@ -742,6 +744,11 @@ source_set("browser_tests") {
   if (is_android) {
     deps += [ "//chrome/test:test_support_ui_android" ]
   }
+
+  if (is_android && !is_desktop_android) {
+    sources += [ "service/glic_android_peek_browsertest.cc" ]
+  }
+
   if (use_ozone) {
     deps += [ "//ui/ozone" ]
   }

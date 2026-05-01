@@ -74,6 +74,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/glic/host/context/glic_empty_pinned_tab_manager.h"
+#include "chrome/browser/glic/widget/conversions.h"
 #include "chrome/browser/glic/widget/glic_floating_ui_android.h"
 #include "chrome/browser/glic/widget/glic_inactive_floating_ui_android.h"
 #include "chrome/browser/glic/widget/glic_inactive_side_panel_ui_android.h"
@@ -124,6 +125,14 @@ BASE_FEATURE(kGlicUnbindOnClose, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 namespace {
+
+bool ShouldShowInactiveSidePanel(const SidePanelShowOptions& options) {
+  auto* coordinator = GlicSidePanelCoordinator::GetForTab(&options.tab.get());
+  bool supports_peek = coordinator && coordinator->SupportsPeek();
+  bool is_activated = options.tab->IsActivated();
+  return !is_activated || (options.prefer_peek && supports_peek);
+}
+
 EmbedderKey CreateSidePanelEmbedderKey(tabs::TabInterface* tab) {
   CHECK(tab);
   return EmbedderKey(tab);
@@ -219,6 +228,7 @@ void GlicInstanceImpl::MaybeDaisyChainToTab(tabs::TabInterface* source_tab,
     SidePanelShowOptions side_panel_options{*target_tab};
     side_panel_options.suppress_opening_animation = true;
     side_panel_options.pin_trigger = GlicPinTrigger::kDaisyChain;
+    side_panel_options.prefer_peek = true;
     auto show_options = ShowOptions{side_panel_options};
     instance_metrics().OnDaisyChain(DaisyChainSource::kTabContents,
                                     /*success=*/true, target_tab, source_tab);
@@ -391,9 +401,11 @@ void GlicInstanceImpl::Show(const ShowOptions& options) {
                       perfetto::Flow::FromPointer(this));
   if (const auto* side_panel_options =
           std::get_if<SidePanelShowOptions>(&options.embedder_options);
-      side_panel_options && !side_panel_options->tab->IsActivated()) {
-    ShowInactiveSidePanelEmbedderFor(*side_panel_options);
-    return;
+      side_panel_options) {
+    if (ShouldShowInactiveSidePanel(*side_panel_options)) {
+      ShowInactiveSidePanelEmbedderFor(*side_panel_options);
+      return;
+    }
   }
 
   EmbedderKey new_key = GetEmbedderKey(options);
@@ -667,6 +679,7 @@ tabs::TabInterface* GlicInstanceImpl::CreateTab(
   } else {
     SidePanelShowOptions side_panel_options{*created_tab};
     side_panel_options.suppress_opening_animation = true;
+    side_panel_options.prefer_peek = true;
     auto show_options = ShowOptions{side_panel_options};
     Show(show_options);
   }
@@ -985,7 +998,12 @@ void GlicInstanceImpl::OnBrowserActivated(BrowserWindowInterface* browser) {
   }
   auto* embedder = GetEmbedderForTab(active_tab);
   if (embedder && embedder->IsShowing()) {
-    Show(ShowOptions::ForSidePanel(*active_tab));
+    SidePanelShowOptions side_panel_options{*active_tab};
+    if (auto* coordinator = GlicSidePanelCoordinator::GetForTab(active_tab)) {
+      side_panel_options.prefer_peek =
+          coordinator->state() == GlicSidePanelCoordinator::State::kPeek;
+    }
+    Show(ShowOptions{side_panel_options});
   }
 }
 
@@ -1069,6 +1087,7 @@ void GlicInstanceImpl::ShowInactiveSidePanelEmbedderFor(
       BindTab(&options.tab.get(), options.pin_trigger, options.pin_on_bind);
   entry.embedder = GlicInactiveSidePanelUi::CreateForBackgroundTab(
       options.tab.get().GetWeakPtr(), *this);
+  entry.embedder->Show(ShowOptions(options));
 }
 
 void GlicInstanceImpl::SetActiveEmbedderAndNotifyStateChange(
@@ -1187,7 +1206,9 @@ void GlicInstanceImpl::OnBoundTabActivated(tabs::TabInterface* tab) {
   auto* embedder = GetEmbedderForTab(tab);
   if (embedder && embedder->IsShowingOrBackgrounded()) {
     // Ensure that the side panel in this tab becomes the active embedder.
-    Show(ShowOptions::ForSidePanel(*tab));
+    SidePanelShowOptions side_panel_options{*tab};
+    side_panel_options.prefer_peek = true;
+    Show(ShowOptions{side_panel_options});
   }
 }
 
@@ -1375,10 +1396,14 @@ void GlicInstanceImpl::MaybeActivateForegroundEmbedder() {
   for (auto const& [key, entry] : embedders_) {
     if (tabs::TabInterface* const* tab =
             std::get_if<tabs::TabInterface*>(&key)) {
-      if (entry.embedder && entry.embedder->IsShowing() &&
-          (*tab)->IsActivated()) {
-        Show(ShowOptions::ForSidePanel(**tab));
-        return;
+      if (entry.embedder && (*tab)->IsActivated()) {
+        auto* coordinator = GlicSidePanelCoordinator::GetForTab(*tab);
+        if (coordinator &&
+            coordinator->state() == GlicSidePanelCoordinator::State::kShown) {
+          // Note that this will only happen for full show, not peek.
+          Show(ShowOptions::ForSidePanel(**tab));
+          return;
+        }
       }
     }
   }

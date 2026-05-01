@@ -36,7 +36,11 @@ bool GlicSidePanelCoordinator::IsGlicSidePanelActive(tabs::TabInterface* tab) {
 // static
 bool GlicSidePanelCoordinator::IsShowing(tabs::TabInterface* tab) {
   auto* coordinator = GetForTab(tab);
-  return coordinator && coordinator->state() == State::kShown;
+  if (!coordinator) {
+    return false;
+  }
+  return coordinator->state() == State::kShown ||
+         coordinator->state() == State::kPeek;
 }
 
 // static

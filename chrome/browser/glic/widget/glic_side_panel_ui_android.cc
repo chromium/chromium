@@ -10,6 +10,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/glic/public/widget/glic_side_panel_coordinator_android.h"
 #include "chrome/browser/glic/service/metrics/glic_instance_metrics.h"
+#include "chrome/browser/glic/widget/conversions.h"
 #include "chrome/browser/glic/widget/glic_inactive_side_panel_ui_android.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -69,12 +70,8 @@ void GlicSidePanelUi::Show(const ShowOptions& options) {
   delegate_->NotifyPanelStateChanged();
   delegate_->host().FloatingPanelCanAttachChanged(false);
 
-  bool suppress_animations = false;
-  if (const auto* side_panel_options =
-          std::get_if<SidePanelShowOptions>(&options.embedder_options)) {
-    suppress_animations = side_panel_options->suppress_opening_animation;
-  }
-  glic_side_panel_coordinator->Show(suppress_animations);
+  glic_side_panel_coordinator->Show(ConvertToCoordinatorShowOptions(
+      options, glic_side_panel_coordinator->SupportsPeek()));
 }
 
 void GlicSidePanelUi::Close(const CloseOptions& options) {

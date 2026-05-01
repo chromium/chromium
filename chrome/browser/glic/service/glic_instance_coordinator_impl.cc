@@ -1038,6 +1038,7 @@ void GlicInstanceCoordinatorImpl::RestoreTab(
       auto side_panel_options = SidePanelShowOptions(*tab);
       side_panel_options.suppress_opening_animation = true;
       side_panel_options.pin_on_bind = false;
+      side_panel_options.prefer_peek = true;
       bound_instance->Show(ShowOptions{side_panel_options});
     } else {
       bound_instance->BindTabWithoutShowing(tab, /*pin_on_bind=*/false);

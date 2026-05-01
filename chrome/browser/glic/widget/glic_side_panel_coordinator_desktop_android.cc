@@ -73,7 +73,7 @@ void GlicSidePanelCoordinatorDesktopAndroid::CreateAndRegisterEntry() {
   side_panel_registry_->Register(std::move(entry));
 }
 
-void GlicSidePanelCoordinatorDesktopAndroid::Show(bool suppress_animations) {
+void GlicSidePanelCoordinatorDesktopAndroid::Show(const ShowOptions& options) {
   auto* window_side_panel_ui = GetWindowSidePanelUI();
   if (!window_side_panel_ui || !entry_) {
     return;
@@ -88,7 +88,8 @@ void GlicSidePanelCoordinatorDesktopAndroid::Show(bool suppress_animations) {
     }
     return;
   }
-  window_side_panel_ui->Show(entry_->key(), std::nullopt, suppress_animations);
+  window_side_panel_ui->Show(entry_->key(), std::nullopt,
+                             options.suppress_animations);
 }
 
 void GlicSidePanelCoordinatorDesktopAndroid::Close(
@@ -116,6 +117,10 @@ bool GlicSidePanelCoordinatorDesktopAndroid::IsShowing() const {
 GlicSidePanelCoordinator::State
 GlicSidePanelCoordinatorDesktopAndroid::state() {
   return state_;
+}
+
+bool GlicSidePanelCoordinatorDesktopAndroid::SupportsPeek() const {
+  return false;
 }
 
 void GlicSidePanelCoordinatorDesktopAndroid::OnEntryHiddenWithReason(

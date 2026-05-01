@@ -53,8 +53,11 @@ class GlicSidePanelCoordinator {
 
   // The current state of the Glic side panel.
   enum class State {
-    // The side panel is showing in the foreground.
+    // The side panel is showing in the foreground and expanded.
     kShown,
+    // The side panel is showing in the foreground but peeked (minimized). No
+    // WebContents are allocated.
+    kPeek,
     // The side panel is in the background, but it will show if its tab becomes
     // active.
     kBackgrounded,
@@ -63,8 +66,13 @@ class GlicSidePanelCoordinator {
   };
 
   // Show the Glic side panel.
-  virtual void Show(bool suppress_animations) = 0;
-  void Show() { Show(false); }
+  struct ShowOptions {
+    bool suppress_animations = false;
+    enum class InitialState { kExpanded, kPeeked };
+    InitialState initial_state = InitialState::kExpanded;
+  };
+  virtual void Show(const ShowOptions& options) = 0;
+  void Show() { Show({}); }
 
   // Close the Glic side panel.
   virtual void Close(const CloseOptions& options) = 0;
@@ -74,6 +82,10 @@ class GlicSidePanelCoordinator {
   virtual bool IsShowing() const = 0;
 
   virtual State state() = 0;
+
+  // Returns true if this coordinator supports the kPeek state (e.g., on Android
+  // bottom sheets).
+  virtual bool SupportsPeek() const = 0;
 
   // Registers `callback` to be called when panel visibility is updated.
   virtual base::CallbackListSubscription AddStateCallback(
@@ -107,6 +119,8 @@ inline std::ostream& operator<<(std::ostream& os,
   switch (state) {
     case GlicSidePanelCoordinator::State::kShown:
       return os << "kShown";
+    case GlicSidePanelCoordinator::State::kPeek:
+      return os << "kPeek";
     case GlicSidePanelCoordinator::State::kBackgrounded:
       return os << "kBackgrounded";
     case GlicSidePanelCoordinator::State::kClosed:

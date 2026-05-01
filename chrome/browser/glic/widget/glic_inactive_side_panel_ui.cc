@@ -7,6 +7,7 @@
 #include "base/notimplemented.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
+#include "chrome/browser/glic/widget/conversions.h"
 #include "chrome/browser/glic/widget/glic_side_panel_ui.h"
 #include "chrome/browser/glic/widget/inactive_view_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
@@ -40,8 +41,6 @@ GlicInactiveSidePanelUi::CreateForBackgroundTab(
   // Using `new` to access a private constructor.
   auto inactive_side_panel =
       base::WrapUnique(new GlicInactiveSidePanelUi(tab, delegate));
-  // Mark the side panel for showing next time the tab becomes active.
-  inactive_side_panel->Show(ShowOptions::ForSidePanel(*tab));
   return inactive_side_panel;
 }
 
@@ -99,12 +98,8 @@ void GlicInactiveSidePanelUi::Show(const ShowOptions& options) {
   if (!glic_side_panel_coordinator) {
     return;
   }
-  bool suppress_animations = false;
-  if (const auto* side_panel_options =
-          std::get_if<SidePanelShowOptions>(&options.embedder_options)) {
-    suppress_animations = side_panel_options->suppress_opening_animation;
-  }
-  glic_side_panel_coordinator->Show(suppress_animations);
+  glic_side_panel_coordinator->Show(ConvertToCoordinatorShowOptions(
+      options, glic_side_panel_coordinator->SupportsPeek()));
 }
 
 void GlicInactiveSidePanelUi::Close(const CloseOptions& options) {

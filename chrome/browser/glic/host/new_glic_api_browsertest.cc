@@ -443,7 +443,9 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testDoNothing) {
 }
 
 // TODO(harringtond): Flaky on windows.
-#if BUILDFLAG(IS_WIN)
+// TODO(b/508340871): Re-enable on Android. Failing because something pops up
+// and suppresses the bottom sheet.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
 #define MAYBE_testInvocationSource DISABLED_testInvocationSource
 #else
 #define MAYBE_testInvocationSource testInvocationSource

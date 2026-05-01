@@ -175,6 +175,26 @@ TestResult<> WaitForActiveEmbedderToMatchTab(GlicInstanceImpl* instance,
       "Timeout waiting for active embedder to match tab");
 }
 
+TestResult<> WaitForEmbedderActivationOrPeek(GlicInstanceImpl* instance,
+                                             tabs::TabInterface* tab) {
+  CHECK(tab);
+  CHECK(instance);
+
+  auto* coordinator = GlicSidePanelCoordinator::GetForTab(tab);
+  bool supports_peek = coordinator && coordinator->SupportsPeek();
+
+  if (supports_peek) {
+    RETURN_IF_ERROR(RunUntilEqual(
+        [&]() { return instance->GetEmbedderForTab(tab) != nullptr; }, true,
+        "Timeout waiting for embedder to bind"));
+    return WaitForSidePanelState(tab, GlicSidePanelCoordinator::State::kPeek);
+  } else {
+    return RunUntilEqual(
+        [&]() { return instance->GetActiveEmbedderTabForTesting(); }, tab,
+        "Timeout waiting for active embedder to match tab");
+  }
+}
+
 }  // namespace
 
 class GlicInstanceCoordinatorBrowserTest
@@ -422,7 +442,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
   auto* tab2_instance = coordinator().GetInstanceImplForTab(tab2);
   EXPECT_TRUE(tab2_instance);
   EXPECT_NE(coordinator().GetInstanceForTab(tab1), tab2_instance);
-  EXPECT_OK(WaitForActiveEmbedderToMatchTab(tab2_instance, tab2));
+  EXPECT_OK(WaitForEmbedderActivationOrPeek(tab2_instance, tab2));
 
   GetProfile()->GetPrefs()->SetBoolean(
       glic::prefs::kGlicKeepSidepanelOpenOnNewTabsEnabled, false);
@@ -472,9 +492,9 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
     EXPECT_OK(WaitForSidePanelState(
         tab2, GlicSidePanelCoordinator::State::kBackgrounded));
 
-    // Activate the background tab and verify state becomes kShown.
+    // Activate the background tab and verify it is shown.
     tab2->GetContents()->GetDelegate()->ActivateContents(tab2->GetContents());
-    ASSERT_OK(WaitForActiveEmbedderToMatchTab(instance, tab2));
+    ASSERT_OK(WaitForEmbedderActivationOrPeek(instance, tab2));
     // Verify focus stays on the page contents, not the side panel.
     EXPECT_FALSE(instance->HasFocus());
   }
@@ -491,7 +511,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
 
     EXPECT_EQ(instance, coordinator().GetInstanceForTab(tab3));
     EXPECT_EQ(TabListInterface::From(new_window)->GetActiveTab(), tab3);
-    ASSERT_OK(WaitForActiveEmbedderToMatchTab(instance, tab3));
+    ASSERT_OK(WaitForEmbedderActivationOrPeek(instance, tab3));
     // Focus should be on the new window's page contents.
     EXPECT_FALSE(instance->HasFocus());
   }
@@ -506,7 +526,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
 
     EXPECT_EQ(instance, coordinator().GetInstanceForTab(tab4));
     EXPECT_EQ(GetTabListInterface()->GetActiveTab(), tab4);
-    ASSERT_OK(WaitForActiveEmbedderToMatchTab(instance, tab4));
+    ASSERT_OK(WaitForEmbedderActivationOrPeek(instance, tab4));
     // Focus should be on the new foreground tab's page contents.
     EXPECT_FALSE(instance->HasFocus());
   }
@@ -593,7 +613,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
     tabs::TabInterface* tab2 = waiter.Wait();
 
     EXPECT_EQ(instance, coordinator().GetInstanceForTab(tab2));
-    EXPECT_TRUE(coordinator().GetInstanceForTab(tab2)->IsShowing());
+    EXPECT_OK(WaitForEmbedderActivationOrPeek(instance, tab2));
     EXPECT_EQ(GetTabListInterface()->GetActiveTab(), tab2);
     // The glic embedder should not have focus when daisy chaining
     EXPECT_FALSE(instance->HasFocus());
@@ -608,7 +628,6 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
     tabs::TabInterface* tab3 = waiter.Wait();
 
     EXPECT_EQ(instance, coordinator().GetInstanceForTab(tab3));
-    EXPECT_TRUE(coordinator().GetInstanceForTab(tab3)->IsShowing());
     // Active tab should still be previously active tab (tab2)
     EXPECT_NE(GetTabListInterface()->GetActiveTab(), tab3);
 
@@ -616,8 +635,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
         tab3, GlicSidePanelCoordinator::State::kBackgrounded));
 
     ActivateTab(tab3);
-    EXPECT_OK(
-        WaitForSidePanelState(tab3, GlicSidePanelCoordinator::State::kShown));
+    EXPECT_OK(WaitForEmbedderActivationOrPeek(instance, tab3));
   }
 }
 
@@ -683,16 +701,15 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
 
   // Switch back to tab 1.
   ActivateTab(tab1);
-  EXPECT_OK(WaitForActiveEmbedderToMatchTab(instance, tab1));
+  EXPECT_OK(WaitForEmbedderActivationOrPeek(instance, tab1));
 
   // Switch to tab 2.
   ActivateTab(tab2);
-  EXPECT_OK(WaitForActiveEmbedderToMatchTab(instance, tab2));
+  EXPECT_OK(WaitForEmbedderActivationOrPeek(instance, tab2));
 
-  // Close tab 2 and verify tab 1 becomes the active embedder.
-  // Note: Closing the active tab usually activates the nearest tab (tab 1).
+  // Tab 1 shows peek or becomes active if tab2 is closed
   tab2->Close();
-  EXPECT_OK(WaitForActiveEmbedderToMatchTab(instance, tab1));
+  EXPECT_OK(WaitForEmbedderActivationOrPeek(instance, tab1));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
@@ -713,7 +730,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
   // Activate Tab 3 (Bound).
   ActivateTab(tab3);
 
-  EXPECT_OK(WaitForActiveEmbedderToMatchTab(instance, tab3));
+  EXPECT_OK(WaitForEmbedderActivationOrPeek(instance, tab3));
 
   base::test::TestFuture<GlicInstance*> future;
   auto subscription =
@@ -774,8 +791,8 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest, TabRestoration) {
     return restored_instance != nullptr;
   }));
 
-  EXPECT_TRUE(restored_instance->IsShowing());
   EXPECT_EQ(restored_instance->id(), instance_id);
+  EXPECT_TRUE(restored_instance->IsShowing());
 }
 
 IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
@@ -838,8 +855,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
   // Should be pinned to Instance 1.
   ASSERT_TRUE(
       instance1->sharing_manager().IsTabPinned(restored_tab->GetHandle()));
-  EXPECT_OK(WaitForSidePanelState(restored_tab,
-                                  GlicSidePanelCoordinator::State::kShown));
+  EXPECT_OK(WaitForEmbedderActivationOrPeek(restored_instance2, restored_tab));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
@@ -874,8 +890,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
 
   // Should have reused the existing instance.
   EXPECT_EQ(bound_instance, instance);
-  EXPECT_OK(WaitForSidePanelState(restored_tab,
-                                  GlicSidePanelCoordinator::State::kShown));
+  EXPECT_OK(WaitForEmbedderActivationOrPeek(instance, restored_tab));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,

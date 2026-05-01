@@ -40,10 +40,11 @@ class GlicSidePanelCoordinatorImpl : public GlicSidePanelCoordinator,
   // GlicSidePanelCoordinator:
   using GlicSidePanelCoordinator::Close;
   using GlicSidePanelCoordinator::Show;
-  void Show(bool suppress_animations) override;
+  void Show(const ShowOptions& options) override;
   void Close(const CloseOptions& options) override;
   bool IsShowing() const override;
   State state() override;
+  bool SupportsPeek() const override;
   base::CallbackListSubscription AddStateCallback(
       base::RepeatingCallback<void(State state)> callback) override;
   void SetContentsView(std::unique_ptr<views::View> contents_view) override;

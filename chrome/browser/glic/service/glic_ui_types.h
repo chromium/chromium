@@ -37,6 +37,7 @@ struct SidePanelShowOptions {
   bool suppress_opening_animation = false;
   bool pin_on_bind = true;
   GlicPinTrigger pin_trigger = GlicPinTrigger::kUnknown;
+  bool prefer_peek = false;
 };
 
 struct FloatingShowOptions {

@@ -45,9 +45,11 @@ class GlicInactiveSidePanelUi : public GlicUiEmbedder {
 
  private:
   GlicSidePanelCoordinator* GetGlicSidePanelCoordinator() const;
+  void OnSidePanelStateChanged(GlicSidePanelCoordinator::State state);
 
   base::WeakPtr<tabs::TabInterface> tab_;
   const raw_ref<GlicUiEmbedder::Delegate> delegate_;
+  base::CallbackListSubscription state_subscription_;
 
   base::WeakPtrFactory<GlicInactiveSidePanelUi> weak_ptr_factory_{this};
 };

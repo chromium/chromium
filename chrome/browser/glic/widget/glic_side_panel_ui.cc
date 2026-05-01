@@ -13,6 +13,7 @@
 #include "chrome/browser/glic/selection/selection_overlay_controller.h"
 #include "chrome/browser/glic/service/glic_ui_embedder.h"
 #include "chrome/browser/glic/service/metrics/glic_instance_metrics.h"
+#include "chrome/browser/glic/widget/conversions.h"
 #include "chrome/browser/glic/widget/glic_inactive_side_panel_ui.h"
 #include "chrome/browser/glic/widget/glic_view.h"
 #include "chrome/browser/glic/widget/glic_widget.h"
@@ -217,12 +218,8 @@ void GlicSidePanelUi::Show(const ShowOptions& options) {
   application_hotkey_manager_->InitializeAccelerators();
   glic_panel_hotkey_manager_->InitializeAccelerators();
 
-  bool suppress_animations = false;
-  if (const auto* side_panel_options =
-          std::get_if<SidePanelShowOptions>(&options.embedder_options)) {
-    suppress_animations = side_panel_options->suppress_opening_animation;
-  }
-  glic_side_panel_coordinator->Show(suppress_animations);
+  glic_side_panel_coordinator->Show(ConvertToCoordinatorShowOptions(
+      options, glic_side_panel_coordinator->SupportsPeek()));
 }
 
 void GlicSidePanelUi::Close(const CloseOptions& options) {

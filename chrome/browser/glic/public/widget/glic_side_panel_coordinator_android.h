@@ -24,11 +24,12 @@ class GlicSidePanelCoordinatorAndroid
 
   // GlicSidePanelCoordinator:
   using GlicSidePanelCoordinator::Show;
-  void Show(bool suppress_animations) override;
+  void Show(const ShowOptions& options) override;
   void SetWebContents(content::WebContents* web_contents) override;
   void Close(const CloseOptions& options) override;
   bool IsShowing() const override;
   State state() override;
+  bool SupportsPeek() const override;
   base::CallbackListSubscription AddStateCallback(
       base::RepeatingCallback<void(State state)> callback) override;
   int GetPreferredWidth() override;
@@ -40,7 +41,6 @@ class GlicSidePanelCoordinatorAndroid
   void OnOpened(bool is_expanded) override;
 
  private:
-  void Show(bool suppress_animations, bool starts_expanded);
   void SetState(State state);
   void OnTabDidActivate(tabs::TabInterface* tab);
   void OnTabWillDeactivate(tabs::TabInterface* tab);
@@ -54,7 +54,6 @@ class GlicSidePanelCoordinatorAndroid
   base::CallbackListSubscription did_activate_subscription_;
   base::CallbackListSubscription will_deactivate_subscription_;
   base::CallbackListSubscription will_detach_subscription_;
-  bool pending_starts_expanded_state_ = true;
   std::unique_ptr<context_sharing::TabBottomSheetBridge> bridge_;
 };
 

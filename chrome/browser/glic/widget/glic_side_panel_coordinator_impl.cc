@@ -79,7 +79,7 @@ void GlicSidePanelCoordinatorImpl::CreateAndRegisterEntry() {
   side_panel_registry_->Register(std::move(entry));
 }
 
-void GlicSidePanelCoordinatorImpl::Show(bool suppress_animations) {
+void GlicSidePanelCoordinatorImpl::Show(const ShowOptions& options) {
   auto* window_side_panel_coordinator = GetWindowSidePanelCoordinator();
   if (!window_side_panel_coordinator || !entry_) {
     return;
@@ -98,7 +98,7 @@ void GlicSidePanelCoordinatorImpl::Show(bool suppress_animations) {
       .tab_handle = tab_->GetHandle(),
       .key = SidePanelEntry::Key(SidePanelEntry::Id::kGlic)};
   window_side_panel_coordinator->Show(unique_key, std::nullopt,
-                                      suppress_animations);
+                                      options.suppress_animations);
 }
 
 void GlicSidePanelCoordinatorImpl::Close(const CloseOptions& options) {
@@ -125,6 +125,10 @@ bool GlicSidePanelCoordinatorImpl::IsShowing() const {
 
 GlicSidePanelCoordinator::State GlicSidePanelCoordinatorImpl::state() {
   return state_;
+}
+
+bool GlicSidePanelCoordinatorImpl::SupportsPeek() const {
+  return false;
 }
 
 void GlicSidePanelCoordinatorImpl::OnEntryWillHide(
