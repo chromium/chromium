@@ -87,7 +87,7 @@ import java.util.function.Supplier;
 
 /** Mediator for the Fusebox component. */
 @NullMarked
-public class FuseboxMediator implements FuseboxAttachmentChangeListener {
+/* package */ class FuseboxMediator implements FuseboxAttachmentChangeListener {
     private final Context mContext;
     private final WindowAndroid mWindowAndroid;
     private final AndroidPermissionDelegate mPermissionDelegate;
@@ -129,7 +129,7 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
                 }
             };
 
-    FuseboxMediator(
+    /* package */ FuseboxMediator(
             Context context,
             WindowAndroid windowAndroid,
             PropertyModel model,
@@ -201,7 +201,7 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
         mModel.set(FuseboxProperties.POPUP_MODEL_HEADER_VISIBLE, false);
     }
 
-    public void destroy() {
+    /* package */ void destroy() {
         endInput();
     }
 
@@ -348,7 +348,7 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
     }
 
     /** Apply a variant of the branded color scheme to Fusebox UI elements */
-    /*package */ void updateVisualsForState(@BrandedColorScheme int brandedColorScheme) {
+    /* package */ void updateVisualsForState(@BrandedColorScheme int brandedColorScheme) {
         mBrandedColorScheme = brandedColorScheme;
         mModel.set(FuseboxProperties.COLOR_SCHEME, brandedColorScheme);
         if (mModelList == null) return;
@@ -414,12 +414,12 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
         trySetRequestType(AutocompleteRequestType.CANVAS);
     }
 
-    void setIsTextWrapping(boolean isTextWrapping) {
+    /* package */ void setIsTextWrapping(boolean isTextWrapping) {
         mIsTextWrapping = isTextWrapping;
         updateFuseboxState();
     }
 
-    void updateFuseboxState() {
+    private void updateFuseboxState() {
         @FuseboxState int targetState;
         if (!isInInputSession()) {
             targetState = FuseboxState.DISABLED;
@@ -437,8 +437,7 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
     }
 
     /** Toggles the visibility of the attachments popup. */
-    @VisibleForTesting
-    void onPlusButtonClicked() {
+    /* package */ void onPlusButtonClicked() {
         if (!isInInputSession()) return;
 
         if (mModel.get(FuseboxProperties.POPUP_STATE) != PopupState.HIDDEN) {
@@ -452,8 +451,7 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
                 mModel.get(FuseboxProperties.POPUP_STATE) != PopupState.HIDDEN, mModel, tracker);
     }
 
-    @VisibleForTesting
-    void showPopup() {
+    private void showPopup() {
         if (!isInInputSession()) return;
         updateModelForCurrentTab();
         mModel.set(FuseboxProperties.POPUP_ATTACH_CLIPBOARD_VISIBLE, mClipboard.hasImage());
@@ -479,10 +477,11 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
         }
     }
 
-    void hidePopup() {
+    /** Hides the popup if currently shown */
+    /* package */ void hidePopup() {
         mModel.set(FuseboxProperties.POPUP_STATE, PopupState.HIDDEN);
         if (mScrimModel != null) {
-            mScrimManager.hideScrim(mScrimModel, true);
+            mScrimManager.hideScrim(mScrimModel, /* animate= */ true);
         }
     }
 
@@ -608,8 +607,7 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
         return imageCount <= 1;
     }
 
-    @VisibleForTesting
-    void onTabPickerClicked() {
+    private void onTabPickerClicked() {
         if (!isInInputSession()) return;
 
         hidePopup();
@@ -637,7 +635,8 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
                 intent, this::onTabPickerResult, R.string.low_memory_error);
     }
 
-    void onTabPickerResult(int resultCode, @Nullable Intent data) {
+    @VisibleForTesting
+    /* package */ void onTabPickerResult(int resultCode, @Nullable Intent data) {
         if (!isInInputSession()) return;
 
         if (resultCode == Activity.RESULT_CANCELED) {
@@ -658,7 +657,8 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
         }
     }
 
-    void onAttachmentUploadFailed() {
+    @VisibleForTesting
+    /* package */ void onAttachmentUploadFailed() {
         mSnackbarManager.showSnackbar(mAttachmentUploadFailedSnackbar);
     }
 
@@ -669,7 +669,7 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
      * @param newlySelectedTabIds The set of Tab IDs (as Integer) that are now selected by the user.
      */
     @VisibleForTesting
-    public void updateCurrentlyAttachedTabs(Set<Integer> newlySelectedTabIds) {
+    /* package */ void updateCurrentlyAttachedTabs(Set<Integer> newlySelectedTabIds) {
         if (!isInInputSession()) return;
         TabModelSelector tabModelSelector = mTabModelSelectorSupplier.get();
         if (tabModelSelector == null) return;
@@ -732,8 +732,7 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
         }
     }
 
-    @VisibleForTesting
-    void onCameraClicked() {
+    private void onCameraClicked() {
         if (!isInInputSession()) return;
 
         hidePopup();
@@ -794,8 +793,7 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
         mModel.set(FuseboxProperties.POPUP_ATTACH_FILE_ENABLED, allowNonImage);
     }
 
-    @VisibleForTesting
-    void launchCamera() {
+    private void launchCamera() {
         // Ask for a small-sized bitmap as a direct reply (passing no `EXTRA_OUTPUT` uri).
         // This should be sufficiently good, offering image of around 200-300px on the long edge.
         var i = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -829,8 +827,7 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
                 R.string.low_memory_error);
     }
 
-    @VisibleForTesting
-    void onImagePickerClicked() {
+    private void onImagePickerClicked() {
         if (!isInInputSession()) return;
 
         hidePopup();
@@ -875,8 +872,7 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
                 R.string.low_memory_error);
     }
 
-    @VisibleForTesting
-    void onFilePickerClicked() {
+    private void onFilePickerClicked() {
         if (!isInInputSession()) return;
 
         hidePopup();
@@ -915,8 +911,7 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
                 /* errorId= */ android.R.string.cancel);
     }
 
-    @VisibleForTesting
-    void onClipboardClicked() {
+    private void onClipboardClicked() {
         if (!isInInputSession()) return;
 
         hidePopup();
@@ -953,7 +948,7 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
     }
 
     @VisibleForTesting
-    void fetchAttachmentDetails(
+    /* package */ void fetchAttachmentDetails(
             Uri uri,
             Callback<FuseboxAttachment> callback,
             @FuseboxAttachmentButtonType int buttonType) {

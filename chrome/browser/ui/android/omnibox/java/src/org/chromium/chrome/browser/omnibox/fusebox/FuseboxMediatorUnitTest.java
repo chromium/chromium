@@ -416,14 +416,14 @@ public class FuseboxMediatorUnitTest {
         var histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Omnibox.MobileFusebox.AttachmentsPopupToggled", true);
-        mMediator.onPlusButtonClicked();
+        mModel.get(FuseboxProperties.BUTTON_ADD_CLICKED).run();
         assertEquals(PopupState.FLOATING, (int) mModel.get(FuseboxProperties.POPUP_STATE));
         histogramWatcher.assertExpected();
 
         var dismissWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Omnibox.MobileFusebox.AttachmentsPopupToggled", false);
-        mMediator.onPlusButtonClicked();
+        mModel.get(FuseboxProperties.BUTTON_ADD_CLICKED).run();
         assertEquals(PopupState.HIDDEN, (int) mModel.get(FuseboxProperties.POPUP_STATE));
         dismissWatcher.assertExpected();
     }
@@ -484,17 +484,19 @@ public class FuseboxMediatorUnitTest {
         doReturn(89L).when(mTab2).getTimestampMillis();
         doReturn(false).when(mPopup).isShowing();
 
-        mMediator.showPopup();
+        mModel.get(FuseboxProperties.BUTTON_ADD_CLICKED).run();
         assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_VISIBLE));
         assertNonNull(mModel.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_FAVICON));
 
         OmniboxFeatures.sAllowCurrentTab.setForTesting(false);
-        mMediator.showPopup();
+        mModel.get(FuseboxProperties.BUTTON_ADD_CLICKED).run();
+        mModel.get(FuseboxProperties.BUTTON_ADD_CLICKED).run();
         assertFalse(mModel.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_VISIBLE));
 
         OmniboxFeatures.sAllowCurrentTab.setForTesting(true);
         doReturn(null).when(mTabFaviconFactory).apply(any());
-        mMediator.showPopup();
+        mModel.get(FuseboxProperties.BUTTON_ADD_CLICKED).run();
+        mModel.get(FuseboxProperties.BUTTON_ADD_CLICKED).run();
         assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_VISIBLE));
         assertNull(mModel.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_FAVICON));
 
@@ -505,7 +507,7 @@ public class FuseboxMediatorUnitTest {
         assertEquals(mBitmap, ((BitmapDrawable) mAttachments.get(0).thumbnail).getBitmap());
 
         doReturn(mTab2).when(mTabModelSelector).getCurrentTab();
-        mMediator.onPlusButtonClicked();
+        mModel.get(FuseboxProperties.BUTTON_ADD_CLICKED).run();
         assertFalse(mModel.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_VISIBLE));
     }
 
@@ -513,7 +515,7 @@ public class FuseboxMediatorUnitTest {
     public void onCameraClicked_permissionGranted_launchesCamera() {
         doReturn(true).when(mWindowAndroid).hasPermission(any());
 
-        mMediator.onCameraClicked();
+        mModel.get(FuseboxProperties.POPUP_ATTACH_CAMERA_CLICKED).run();
 
         verify(mWindowAndroid).showCancelableIntent(any(Intent.class), any(), any());
         verify(mWindowAndroid, never()).requestPermissions(any(), any());
@@ -523,7 +525,7 @@ public class FuseboxMediatorUnitTest {
     public void onCameraClicked_permissionDenied_requestsPermission() {
         doReturn(false).when(mWindowAndroid).hasPermission(any());
 
-        mMediator.onCameraClicked();
+        mModel.get(FuseboxProperties.POPUP_ATTACH_CAMERA_CLICKED).run();
 
         verify(mWindowAndroid, never()).showCancelableIntent(any(Intent.class), any(), any());
         verify(mWindowAndroid).requestPermissions(any(), any());
@@ -713,7 +715,7 @@ public class FuseboxMediatorUnitTest {
         byte[] expectedPng = new byte[] {1, 2, 3};
         doReturn(expectedPng).when(mClipboard).getPng();
 
-        mMediator.onPlusButtonClicked();
+        mModel.get(FuseboxProperties.BUTTON_ADD_CLICKED).run();
 
         assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_CLIPBOARD_VISIBLE));
         assertTrue(mModel.get(FuseboxProperties.POPUP_STATE) != PopupState.HIDDEN);
@@ -727,7 +729,7 @@ public class FuseboxMediatorUnitTest {
     @Test
     public void onPlusButtonClicked_clipboardDoesNotHaveImage_hidesClipboardButton() {
         doReturn(false).when(mClipboard).hasImage();
-        mMediator.onPlusButtonClicked();
+        mModel.get(FuseboxProperties.BUTTON_ADD_CLICKED).run();
         assertFalse(mModel.get(FuseboxProperties.POPUP_ATTACH_CLIPBOARD_VISIBLE));
     }
 
@@ -1220,11 +1222,11 @@ public class FuseboxMediatorUnitTest {
         mMediator.updateCurrentlyAttachedTabs(newlySelectedIds);
         assertEquals(FuseboxAttachmentModelList.getMaxAttachments(), mAttachments.size());
 
-        mMediator.onFilePickerClicked();
-        mMediator.onClipboardClicked();
-        mMediator.onCameraClicked();
-        mMediator.onImagePickerClicked();
-        mMediator.onTabPickerClicked();
+        mModel.get(FuseboxProperties.POPUP_ATTACH_TAB_PICKER_CLICKED).run();
+        mModel.get(FuseboxProperties.POPUP_ATTACH_CLIPBOARD_CLICKED).run();
+        mModel.get(FuseboxProperties.POPUP_ATTACH_CAMERA_CLICKED).run();
+        mModel.get(FuseboxProperties.POPUP_ATTACH_GALLERY_CLICKED).run();
+        mModel.get(FuseboxProperties.POPUP_ATTACH_FILE_CLICKED).run();
 
         verify(mWindowAndroid, never()).showCancelableIntent(any(Intent.class), any(), any());
     }
