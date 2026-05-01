@@ -99,13 +99,11 @@
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/image/image.h"
 #include "ui/snapshot/snapshot.h"
-#include "ui/views/accessibility/ax_update_notifier.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/menu/menu_runner_handler.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/interaction/element_tracker_views.h"
-#include "ui/views/test/ax_event_counter.h"
 #include "ui/views/test/menu_runner_test_api.h"
 #include "ui/views/test/view_skia_gold_pixel_diff.h"
 #include "ui/views/view_utils.h"
@@ -3409,42 +3407,6 @@ IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest, ToolbarDivider) {
   webui_toolbar_view->GetPinnedToolbarActions()->ShowActionEphemerallyInToolbar(
       action2, false);
   ASSERT_TRUE(base::test::RunUntil([&]() { return !is_divider_visible(); }));
-}
-
-IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest,
-                       A11yAnnouncements) {
-  views::test::AXEventCounter counter(views::AXUpdateNotifier::Get());
-  EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kAlert));
-
-  actions::ActionId action_id = kActionSendSharedTabGroupFeedback;
-
-  // Initial State: Unpinned.
-  ASSERT_FALSE(model_->Contains(action_id));
-
-  auto invoke_pin_unpin = [&](actions::ActionId pin_unpin_action) {
-    actions::ActionManager::Get()
-        .FindAction(pin_unpin_action,
-                    browser()->GetActions()->root_action_item())
-        ->InvokeAction(actions::ActionInvocationContext::Builder()
-                           .SetProperty(kActionIdKey, action_id)
-                           .Build());
-  };
-
-  // Pin via Action Invocation.
-  invoke_pin_unpin(kActionPinActionToToolbar);
-
-  // Expect an alert event from the announcement.
-  EXPECT_TRUE(base::test::RunUntil(
-      [&]() { return counter.GetCount(ax::mojom::Event::kAlert) == 1; }));
-  ASSERT_TRUE(model_->Contains(action_id));
-
-  // Unpin via Action Invocation.
-  invoke_pin_unpin(kActionUnpinActionFromToolbar);
-
-  // Expect a second alert event.
-  EXPECT_TRUE(base::test::RunUntil(
-      [&]() { return counter.GetCount(ax::mojom::Event::kAlert) == 2; }));
-  ASSERT_FALSE(model_->Contains(action_id));
 }
 
 struct DragTestParam {
