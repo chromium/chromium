@@ -150,7 +150,6 @@ source_set("android") {
     "//chrome/browser/password_manager/actor_login:factories",
     "//chrome/browser/password_manager/factories",
     "//chrome/browser/sync",
-    "//chrome/browser/ui",
     "//components/password_manager/core/browser/actor_login:permissions_manager_impl",
     "//components/password_manager/core/browser/ui",
     "//skia",

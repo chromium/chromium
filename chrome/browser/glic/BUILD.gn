@@ -69,27 +69,6 @@ source_set("glic") {
     "service/metrics/metrics_types.cc",
     "service/metrics/metrics_types.h",
   ]
-  if (!is_android) {
-    # TODO(b/470059315): Make these work on Android, or move them to the
-    # desktop-only section.
-    sources += [
-      "host/context/glic_focused_tab_manager.h",
-      "public/widget/glic_side_panel_coordinator_impl.h",
-    ]
-
-    # Desktop-only sources
-    sources += [
-      "glic_selection_observer.h",
-      "widget/glic_view.h",
-      "widget/glic_widget.h",
-    ]
-  } else {  # is_android
-    sources += [
-      "public/widget/glic_side_panel_coordinator_android.h",
-      "public/widget/glic_side_panel_coordinator_desktop_android.h",
-      "service/glic_instance_helper_android.cc",
-    ]
-  }
   public_deps = [
     ":enum",
     ":mojo_bindings",
@@ -120,17 +99,6 @@ source_set("glic") {
     "//ui/base/unowned_user_data",
     "//ui/webui",
   ]
-  if (!is_android) {
-    public_deps += [
-      "//chrome/browser/glic/resources:browser_resources",
-      "//chrome/browser/optimization_guide",
-      "//chrome/browser/themes",
-      "//chrome/browser/ui/tabs:tab_strip_model_observer",
-      "//chrome/browser/ui/tabs:tabs_public",
-      "//ui/views",
-      "//ui/views/controls/webview",
-    ]
-  }
 
   deps = [
     "//chrome/browser/ui/side_panel",
@@ -142,11 +110,37 @@ source_set("glic") {
   ]
 
   if (!is_android) {
+    # TODO(b/470059315): Make these work on Android, or move them to the
+    # desktop-only section.
+    sources += [
+      "glic_selection_observer.h",
+      "host/context/glic_focused_tab_manager.h",
+      "public/widget/glic_side_panel_coordinator_impl.h",
+      "widget/glic_view.h",
+      "widget/glic_widget.h",
+    ]
+
+    public_deps += [
+      "//chrome/browser/glic/resources:browser_resources",
+      "//chrome/browser/optimization_guide",
+      "//chrome/browser/themes",
+      "//chrome/browser/ui/tabs:tab_strip_model_observer",
+      "//chrome/browser/ui/tabs:tabs_public",
+      "//ui/views",
+      "//ui/views/controls/webview",
+    ]
+
     deps += [
       "//chrome/browser:primitives",
       "//chrome/browser/actor:types",
     ]
   } else {  # is_android
+    sources += [
+      "public/widget/glic_side_panel_coordinator_android.h",
+      "public/widget/glic_side_panel_coordinator_desktop_android.h",
+      "service/glic_instance_helper_android.cc",
+    ]
+
     deps += [
       ":actor_types_for_migration",
       "//chrome/browser/android:tabs_public",
@@ -307,59 +301,6 @@ source_set("impl") {
     "widget/browser_conditions.h",
   ]
 
-  if (!is_android) {
-    # TODO(b/470059315): Make these work on Android, or move them to the
-    # desktop-only section.
-    sources += [
-      "host/context/glic_screenshot_capturer.cc",
-      "host/context/glic_screenshot_capturer.h",
-    ]
-
-    # Desktop only
-    sources += [
-      "glic_selection_observer.cc",
-      "glic_settings_util_desktop.cc",
-      "host/context/glic_focused_browser_manager_impl.cc",
-      "host/context/glic_focused_browser_manager_impl.h",
-      "host/context/glic_focused_tab_manager.cc",
-      "host/context/glic_focused_tab_manager.h",
-      "host/glic_region_capture_controller.cc",
-      "host/glic_region_capture_controller.h",
-      "widget/glic_floating_ui.cc",
-      "widget/glic_floating_ui.h",
-      "widget/glic_inactive_floating_ui.cc",
-      "widget/glic_inactive_floating_ui.h",
-      "widget/glic_inactive_side_panel_ui.cc",
-      "widget/glic_inactive_side_panel_ui.h",
-      "widget/glic_side_panel_coordinator_impl.cc",
-      "widget/glic_side_panel_ui.cc",
-      "widget/glic_side_panel_ui.h",
-      "widget/glic_view.cc",
-      "widget/glic_widget.cc",
-      "widget/glic_window_animator.cc",
-      "widget/glic_window_animator.h",
-      "widget/glic_window_config.cc",
-      "widget/glic_window_config.h",
-      "widget/glic_window_resize_animation.cc",
-      "widget/glic_window_resize_animation.h",
-      "widget/inactive_view_controller.cc",
-      "widget/inactive_view_controller.h",
-    ]
-  } else {  # is_android
-    sources += [
-      "glic_settings_util_android.cc",
-      "widget/glic_floating_ui_android.cc",
-      "widget/glic_floating_ui_android.h",
-      "widget/glic_inactive_floating_ui_android.cc",
-      "widget/glic_inactive_floating_ui_android.h",
-      "widget/glic_inactive_side_panel_ui_android.cc",
-      "widget/glic_inactive_side_panel_ui_android.h",
-      "widget/glic_side_panel_coordinator_android.cc",
-      "widget/glic_side_panel_coordinator_desktop_android.cc",
-      "widget/glic_side_panel_ui_android.cc",
-      "widget/glic_side_panel_ui_android.h",
-    ]
-  }
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
   deps = [
     ":glic",
@@ -376,6 +317,7 @@ source_set("impl") {
     "//chrome/browser/glic/media",
     "//chrome/browser/glic/suggestions",
     "//chrome/browser/lifetime:termination_notification",
+    "//chrome/browser/media",
     "//chrome/browser/media/webrtc",
     "//chrome/browser/metrics",
     "//chrome/browser/picture_in_picture",
@@ -389,7 +331,6 @@ source_set("impl") {
     "//chrome/browser/skills:ui",
     "//chrome/browser/subscription_eligibility",
     "//chrome/browser/tab_list",
-    "//chrome/browser/ui",
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui:layout_constants",
     "//chrome/browser/ui:tab_search_feature",
@@ -407,6 +348,7 @@ source_set("impl") {
     "//components/feature_engagement/public:feature_constants",
     "//components/feedback",
     "//components/feedback/content",
+    "//components/guest_view/buildflags",
     "//components/language/core/common",
     "//components/metrics",
     "//components/metrics_services_manager",
@@ -429,42 +371,84 @@ source_set("impl") {
     "//ui/webui",
     "//url",
   ]
-  if (is_android) {
-    deps += [ "//chrome/browser/context_sharing/tab_bottom_sheet/android" ]
-  }
+
   if (!is_android) {
-    # Many of these deps will be needed in Android, but are not yet supported.
+    # TODO(b/470059315): Make these work on Android, or move them to the
+    # desktop-only section.
+    sources += [
+      "glic_selection_observer.cc",
+      "glic_settings_util_desktop.cc",
+      "host/context/glic_focused_browser_manager_impl.cc",
+      "host/context/glic_focused_browser_manager_impl.h",
+      "host/context/glic_focused_tab_manager.cc",
+      "host/context/glic_focused_tab_manager.h",
+      "host/context/glic_screenshot_capturer.cc",
+      "host/context/glic_screenshot_capturer.h",
+      "host/glic_region_capture_controller.cc",
+      "host/glic_region_capture_controller.h",
+      "widget/glic_floating_ui.cc",
+      "widget/glic_floating_ui.h",
+      "widget/glic_inactive_floating_ui.cc",
+      "widget/glic_inactive_floating_ui.h",
+      "widget/glic_inactive_side_panel_ui.cc",
+      "widget/glic_inactive_side_panel_ui.h",
+      "widget/glic_side_panel_coordinator_impl.cc",
+      "widget/glic_side_panel_ui.cc",
+      "widget/glic_side_panel_ui.h",
+      "widget/glic_view.cc",
+      "widget/glic_widget.cc",
+      "widget/glic_window_animator.cc",
+      "widget/glic_window_animator.h",
+      "widget/glic_window_config.cc",
+      "widget/glic_window_config.h",
+      "widget/glic_window_resize_animation.cc",
+      "widget/glic_window_resize_animation.h",
+      "widget/inactive_view_controller.cc",
+      "widget/inactive_view_controller.h",
+    ]
+
     deps += [
       "//chrome/browser/actor/ui",
       "//chrome/browser/glic/selection",
       "//chrome/browser/lens/region_search",
       "//chrome/browser/themes",
-      "//chrome/browser/ui/tabs:glic",
-      "//chrome/browser/ui/tabs:tabs_public",
-      "//chrome/browser/ui/views/glic",
-      "//chrome/browser/ui/views/tabs/glic",
-      "//components/password_manager/core/browser/actor_login:common",
-      "//extensions/browser",
-    ]
-
-    # Deps that will not be available on Android soon.
-    deps += [
       "//chrome/browser/ui:browser_tab_strip",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/side_panel",
       "//chrome/browser/ui/side_panel:side_panel_views_dependent",
+      "//chrome/browser/ui/tabs:glic",
       "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/ui/tabs:tabs_public",
       "//chrome/browser/ui/toasts",
       "//chrome/browser/ui/user_education",
       "//chrome/browser/ui/views",
       "//chrome/browser/ui/views/frame/",
+      "//chrome/browser/ui/views/glic",
       "//chrome/browser/ui/views/interaction",
       "//chrome/browser/ui/views/side_panel",
+      "//chrome/browser/ui/views/tabs/glic",
+      "//components/password_manager/core/browser/actor_login:common",
       "//components/web_modal",
+      "//extensions/browser",
     ]
   } else {  # is_android
+    sources += [
+      "glic_settings_util_android.cc",
+      "widget/glic_floating_ui_android.cc",
+      "widget/glic_floating_ui_android.h",
+      "widget/glic_inactive_floating_ui_android.cc",
+      "widget/glic_inactive_floating_ui_android.h",
+      "widget/glic_inactive_side_panel_ui_android.cc",
+      "widget/glic_inactive_side_panel_ui_android.h",
+      "widget/glic_side_panel_coordinator_android.cc",
+      "widget/glic_side_panel_coordinator_desktop_android.cc",
+      "widget/glic_side_panel_ui_android.cc",
+      "widget/glic_side_panel_ui_android.h",
+    ]
+
     deps += [
       ":actor_types_for_migration",
+      "//chrome/browser/context_sharing/tab_bottom_sheet/android",
       "//chrome/browser/glic/android",
       "//chrome/browser/glic/android:jni_bridges",
       "//chrome/browser/ui/side_panel",
@@ -565,6 +549,15 @@ source_set("unit_tests") {
     "host/context/glic_sharing_utils_unittest.cc",
     "service/glic_invoke_task_unittest.cc",
   ]
+  deps = [
+    ":glic",
+    ":impl",
+    "//base/test:test_support",
+    "//chrome/browser/background/glic",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/base/clipboard:clipboard_test_support",
+  ]
   if (!is_android) {
     sources += [
       "common/glic_panel_hotkey_delegate_unittest.cc",
@@ -592,19 +585,7 @@ source_set("unit_tests") {
       "suggestions/caching_zero_state_suggestions_manager_unittest.cc",
       "widget/glic_view_unittest.cc",
     ]
-  } else {
-    sources += [ "common/glic_tab_observer_android_unittest.cc" ]
-  }
-  deps = [
-    ":glic",
-    ":impl",
-    "//base/test:test_support",
-    "//chrome/browser/background/glic",
-    "//testing/gmock",
-    "//testing/gtest",
-    "//ui/base/clipboard:clipboard_test_support",
-  ]
-  if (!is_android) {
+
     deps += [
       "//chrome/browser:global_features",
       "//chrome/browser/background",
@@ -616,7 +597,6 @@ source_set("unit_tests") {
       "//chrome/browser/glic/test_support",
       "//chrome/browser/prefs",
       "//chrome/browser/status_icons",
-      "//chrome/browser/ui",
       "//chrome/browser/ui:ui_features",
       "//chrome/common:chrome_features",
       "//chrome/test:test_support",
@@ -626,6 +606,8 @@ source_set("unit_tests") {
       "//components/tabs:test_support",
     ]
   } else {
+    sources += [ "common/glic_tab_observer_android_unittest.cc" ]
+
     deps += [
       "//chrome/browser/glic/common",
       "//chrome/browser/ui/android/tab_model",
@@ -649,30 +631,6 @@ source_set("browser_tests") {
     "host/new_glic_api_browsertest.cc",
     "service/glic_instance_coordinator_browsertest.cc",
   ]
-  if (!is_android) {
-    sources += [
-      "actor/glic_actor_policy_checker_browsertest.cc",
-      "glic_browsertest.cc",
-      "glic_context_menu_browsertest.cc",
-      "glic_metrics_browsertest.cc",
-      "glic_navigation_throttle_browsertest.cc",
-      "glic_net_log_browsertest.cc",
-      "glic_policy_browsertest.cc",
-      "glic_profile_manager_browsertest.cc",
-      "glic_user_status_browsertest.cc",
-      "glic_zoom_browsertest.cc",
-      "host/context/glic_active_instance_sharing_manager_browsertest.cc",
-      "host/context/glic_active_pinned_focused_tab_manager_browsertest.cc",
-      "host/context/glic_pinned_tab_manager_browsertest.cc",
-      "host/context/glic_tab_data_browsertest.cc",
-      "host/glic_api_browsertest.cc",
-      "host/glic_permission_enforcement_browsertest.cc",
-      "host/guest_util_browsertest.cc",
-      "public/glic_enabling_browsertest.cc",
-      "widget/application_hotkey_delegate_browsertest.cc",
-      "widget/glic_side_panel_coordinator_browsertest.cc",
-    ]
-  }
 
   deps = [
     ":glic",
@@ -700,12 +658,35 @@ source_set("browser_tests") {
     "//third_party/blink/public/common:headers",
     "//ui/gfx/geometry",
   ]
+
   if (!is_android) {
+    sources += [
+      "actor/glic_actor_policy_checker_browsertest.cc",
+      "glic_browsertest.cc",
+      "glic_context_menu_browsertest.cc",
+      "glic_metrics_browsertest.cc",
+      "glic_navigation_throttle_browsertest.cc",
+      "glic_net_log_browsertest.cc",
+      "glic_policy_browsertest.cc",
+      "glic_profile_manager_browsertest.cc",
+      "glic_user_status_browsertest.cc",
+      "glic_zoom_browsertest.cc",
+      "host/context/glic_active_instance_sharing_manager_browsertest.cc",
+      "host/context/glic_active_pinned_focused_tab_manager_browsertest.cc",
+      "host/context/glic_pinned_tab_manager_browsertest.cc",
+      "host/context/glic_tab_data_browsertest.cc",
+      "host/glic_api_browsertest.cc",
+      "host/glic_permission_enforcement_browsertest.cc",
+      "host/guest_util_browsertest.cc",
+      "public/glic_enabling_browsertest.cc",
+      "widget/application_hotkey_delegate_browsertest.cc",
+      "widget/glic_side_panel_coordinator_browsertest.cc",
+    ]
+
     deps += [
       ":glic",
       ":impl",
       "//base/test:test_support",
-      "//chrome/browser",
       "//chrome/browser:browser_process",
       "//chrome/browser:global_features",
       "//chrome/browser/actor",
@@ -725,7 +706,6 @@ source_set("browser_tests") {
       "//chrome/browser/skills",
       "//chrome/browser/skills:ui",
       "//chrome/browser/subscription_eligibility",
-      "//chrome/browser/ui",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/profiles",
       "//chrome/browser/ui/side_panel",
@@ -817,7 +797,6 @@ if (!is_android) {
     deps = [
       ":glic",
       ":impl",
-      "//chrome/browser",
       "//chrome/browser:global_features",
       "//chrome/browser/actor",
       "//chrome/browser/actor:test_support",
@@ -837,7 +816,6 @@ if (!is_android) {
       "//chrome/browser/lifetime",
       "//chrome/browser/optimization_guide",
       "//chrome/browser/permissions:test_support",
-      "//chrome/browser/ui",
       "//chrome/browser/ui/user_education",
       "//chrome/browser/ui/views/glic",
       "//chrome/browser/ui/views/tabs/glic",

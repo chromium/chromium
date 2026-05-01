@@ -31,7 +31,6 @@
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui_provider.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
-#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/common/pref_names.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/history/core/browser/features.h"
@@ -52,11 +51,12 @@
 #include "url/origin.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"  // nogncheck crbug.com/40147906
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/views/glic/glic_button_interface.h"
-#include "ui/views/controls/button/label_button.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
+#include "chrome/browser/ui/views/glic/glic_button_interface.h"  // nogncheck crbug.com/40147906
+#include "ui/views/controls/button/label_button.h"  // nogncheck crbug.com/40147906
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -333,13 +333,13 @@ bool ContextualCueingHelper::IsBrowserBlockingNudges(
     return false;
   }
 
+#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
   auto* user_education_interface =
       BrowserUserEducationInterface::From(browser_window_interface);
   if (!user_education_interface) {
     return false;
   }
 
-#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
   if (user_education_interface->IsFeaturePromoActive(
           feature_engagement::kIPHGlicPromoFeature)) {
     recorder->set_nudge_decision(NudgeDecision::kNudgeNotShownIPH);

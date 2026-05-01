@@ -322,7 +322,9 @@ static_library("ui") {
     "//chrome/browser/first_run:impl",
     "//chrome/browser/gcm",
     "//chrome/browser/glic",
+    "//chrome/browser/glic:impl",
     "//chrome/browser/glic/actor",
+    "//chrome/browser/glic/common",
     "//chrome/browser/glic/fre",
     "//chrome/browser/glic/public:features",
     "//chrome/browser/google",
@@ -840,6 +842,16 @@ static_library("ui") {
     "//chrome/browser/devtools",
     "//chrome/browser/favicon",
     "//chrome/browser/feedback",
+
+    # glic's :impl includes headers from //chrome/browser/ui (e.g. browser.h,
+    # browser_window.h, side_panel/side_panel_ui.h) that can't be split out
+    # yet.
+    "//chrome/browser/glic:impl",
+
+    # glic/common includes headers from //chrome/browser/ui (e.g. browser.h,
+    # browser_navigator.h, tabs/tab_strip_model.h) that can't be split out
+    # yet.
+    "//chrome/browser/glic/common",
     "//chrome/browser/glic/fre",
     "//chrome/browser/safe_browsing",
     "//chrome/browser/profiling_host",

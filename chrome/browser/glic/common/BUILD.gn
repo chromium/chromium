@@ -13,7 +13,7 @@ source_set("common") {
 
   deps = [
     "//base",
-    "//chrome/browser/ui",
+    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/navigator",
     "//components/tabs:public",

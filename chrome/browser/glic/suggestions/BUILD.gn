@@ -11,6 +11,7 @@ source_set("suggestions") {
     "contextual_cueing_features.h",
     "contextual_cueing_helper.h",
     "contextual_cueing_prefs.h",
+    "contextual_cueing_service.h",
     "contextual_cueing_service_factory.h",
     "glic_cue_target.h",
   ]
@@ -19,6 +20,7 @@ source_set("suggestions") {
     "//chrome/browser/contextual_cueing",
     "//chrome/browser/profiles:profile",
     "//components/optimization_guide/core",
+    "//components/page_content_annotations/content",
     "//components/prefs",
     "//content/public/browser",
   ]
@@ -28,9 +30,12 @@ source_set("suggestions") {
 source_set("impl") {
   sources = [
     "contextual_cueing_features.cc",
+    "contextual_cueing_helper.cc",
     "contextual_cueing_page_data.cc",
     "contextual_cueing_page_data.h",
     "contextual_cueing_prefs.cc",
+    "contextual_cueing_service.cc",
+    "contextual_cueing_service_factory.cc",
     "glic_cue_target.cc",
     "zero_state_suggestions_page_data.cc",
     "zero_state_suggestions_page_data.h",
@@ -46,8 +51,13 @@ source_set("impl") {
     "//chrome/browser/glic/browser_ui",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/page_content_annotations:extraction_service",
+    "//chrome/browser/predictors",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/search_engines",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/side_panel:side_panel_ui_provider",
+    "//chrome/browser/ui/side_panel:side_panel_views_dependent",
+    "//chrome/browser/ui/tabs:tabs_public",
     "//components/content_extraction/content/browser",
     "//components/keyed_service/core",
     "//components/optimization_guide/content/browser",
@@ -67,6 +77,8 @@ source_set("impl") {
     deps += [
       "//chrome/browser/contextual_tasks:ui",
       "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/user_education",
+      "//chrome/browser/ui/views/glic",
     ]
   }
   if (enable_pdf) {
