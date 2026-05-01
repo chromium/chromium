@@ -546,7 +546,6 @@ if (_is_default_toolchain) {
       "java/src/org/chromium/android_webview/DefaultVideoPosterRequestHandler.java",
       "java/src/org/chromium/android_webview/DualTraceEvent.java",
       "java/src/org/chromium/android_webview/FileModeConversionHelper.java",
-      "java/src/org/chromium/android_webview/FindAddress.java",
       "java/src/org/chromium/android_webview/FullScreenView.java",
       "java/src/org/chromium/android_webview/HttpAuthDatabase.java",
       "java/src/org/chromium/android_webview/JavaScriptExecutionCallback.java",

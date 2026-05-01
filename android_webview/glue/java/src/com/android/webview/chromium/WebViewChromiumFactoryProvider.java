@@ -186,7 +186,9 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
 
         @Override
         public String findAddress(String addr) {
-            return mSharedStatics.findAddress(addr);
+            // This method is directly handled in the framework since Android P.
+            assert false;
+            return null;
         }
 
         @Override

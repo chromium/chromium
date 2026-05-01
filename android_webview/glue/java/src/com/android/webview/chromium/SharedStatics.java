@@ -99,15 +99,6 @@ public class SharedStatics {
                 "Android.WebView.ApiCall.Static", sample, ApiCall.COUNT);
     }
 
-    public String findAddress(String addr) {
-        mAwInit.triggerAndWaitForChromiumStarted(
-                WebViewChromiumAwInit.CallSite.STATIC_FIND_ADDRESS);
-        try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.FIND_ADDRESS")) {
-            recordStaticApiCall(ApiCall.FIND_ADDRESS);
-            return AwContentsStatics.findAddress(addr);
-        }
-    }
-
     public String getDefaultUserAgent(Context context) {
         if (!mAwInit.isChromiumInitStarted()) {
             mAwInit.maybeSetChromiumUiThread(Looper.getMainLooper());
