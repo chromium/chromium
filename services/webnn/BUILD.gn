@@ -323,71 +323,75 @@ source_set("tests") {
   }
 }
 
-test("webnn_graph_impl_fuzzer") {
-  sources = [
-    "webnn_graph_impl_fuzzer.cc",
-    "webnn_test_utils.cc",
-    "webnn_test_utils.h",
-  ]
+# TODO(crbug.com/500747202): Re-enable in debug builds when timeout issues is
+# fixed.
+if (!is_debug) {
+  test("webnn_graph_impl_fuzzer") {
+    sources = [
+      "webnn_graph_impl_fuzzer.cc",
+      "webnn_test_utils.cc",
+      "webnn_test_utils.h",
+    ]
 
-  fuzztests = [
-    "WebNNGraphImplFuzzer_CPU.SingleOpConcat",
-    "WebNNGraphImplFuzzer_CPU.SingleOpConv2d",
-    "WebNNGraphImplFuzzer_CPU.SingleOpExpand",
-    "WebNNGraphImplFuzzer_CPU.SingleOpGatherND",
-    "WebNNGraphImplFuzzer_CPU.SingleOpGemm",
-    "WebNNGraphImplFuzzer_CPU.SingleOpLstm",
-    "WebNNGraphImplFuzzer_CPU.SingleOpPool2d",
-    "WebNNGraphImplFuzzer_CPU.SingleOpReduce",
-    "WebNNGraphImplFuzzer_CPU.SingleOpScatterElements",
-    "WebNNGraphImplFuzzer_CPU.SubgraphDQConcatQ",
-    "WebNNGraphImplFuzzer_CPU.SubgraphDQConv2dQ",
-    "WebNNGraphImplFuzzer_CPU.SubgraphDQGemmQ",
-    "WebNNGraphImplFuzzer_CPU.SubgraphDQPool2dQ",
-    "WebNNGraphImplFuzzer_CPU.SubgraphDQReduceQ",
-    "WebNNGraphImplFuzzer_GPU.SingleOpConcat",
-    "WebNNGraphImplFuzzer_GPU.SingleOpConv2d",
-    "WebNNGraphImplFuzzer_GPU.SingleOpExpand",
-    "WebNNGraphImplFuzzer_GPU.SingleOpGatherND",
-    "WebNNGraphImplFuzzer_GPU.SingleOpGemm",
-    "WebNNGraphImplFuzzer_GPU.SingleOpLstm",
-    "WebNNGraphImplFuzzer_GPU.SingleOpPool2d",
-    "WebNNGraphImplFuzzer_GPU.SingleOpReduce",
-    "WebNNGraphImplFuzzer_GPU.SingleOpScatterElements",
-    "WebNNGraphImplFuzzer_GPU.SubgraphDQConcatQ",
-    "WebNNGraphImplFuzzer_GPU.SubgraphDQConv2dQ",
-    "WebNNGraphImplFuzzer_GPU.SubgraphDQGemmQ",
-    "WebNNGraphImplFuzzer_GPU.SubgraphDQPool2dQ",
-    "WebNNGraphImplFuzzer_GPU.SubgraphDQReduceQ",
-    "WebNNGraphImplFuzzer_NPU.SingleOpConcat",
-    "WebNNGraphImplFuzzer_NPU.SingleOpConv2d",
-    "WebNNGraphImplFuzzer_NPU.SingleOpExpand",
-    "WebNNGraphImplFuzzer_NPU.SingleOpGatherND",
-    "WebNNGraphImplFuzzer_NPU.SingleOpGemm",
-    "WebNNGraphImplFuzzer_NPU.SingleOpLstm",
-    "WebNNGraphImplFuzzer_NPU.SingleOpPool2d",
-    "WebNNGraphImplFuzzer_NPU.SingleOpReduce",
-    "WebNNGraphImplFuzzer_NPU.SingleOpScatterElements",
-    "WebNNGraphImplFuzzer_NPU.SubgraphDQConcatQ",
-    "WebNNGraphImplFuzzer_NPU.SubgraphDQConv2dQ",
-    "WebNNGraphImplFuzzer_NPU.SubgraphDQGemmQ",
-    "WebNNGraphImplFuzzer_NPU.SubgraphDQPool2dQ",
-    "WebNNGraphImplFuzzer_NPU.SubgraphDQReduceQ",
-  ]
+    fuzztests = [
+      "WebNNGraphImplFuzzer_CPU.SingleOpConcat",
+      "WebNNGraphImplFuzzer_CPU.SingleOpConv2d",
+      "WebNNGraphImplFuzzer_CPU.SingleOpExpand",
+      "WebNNGraphImplFuzzer_CPU.SingleOpGatherND",
+      "WebNNGraphImplFuzzer_CPU.SingleOpGemm",
+      "WebNNGraphImplFuzzer_CPU.SingleOpLstm",
+      "WebNNGraphImplFuzzer_CPU.SingleOpPool2d",
+      "WebNNGraphImplFuzzer_CPU.SingleOpReduce",
+      "WebNNGraphImplFuzzer_CPU.SingleOpScatterElements",
+      "WebNNGraphImplFuzzer_CPU.SubgraphDQConcatQ",
+      "WebNNGraphImplFuzzer_CPU.SubgraphDQConv2dQ",
+      "WebNNGraphImplFuzzer_CPU.SubgraphDQGemmQ",
+      "WebNNGraphImplFuzzer_CPU.SubgraphDQPool2dQ",
+      "WebNNGraphImplFuzzer_CPU.SubgraphDQReduceQ",
+      "WebNNGraphImplFuzzer_GPU.SingleOpConcat",
+      "WebNNGraphImplFuzzer_GPU.SingleOpConv2d",
+      "WebNNGraphImplFuzzer_GPU.SingleOpExpand",
+      "WebNNGraphImplFuzzer_GPU.SingleOpGatherND",
+      "WebNNGraphImplFuzzer_GPU.SingleOpGemm",
+      "WebNNGraphImplFuzzer_GPU.SingleOpLstm",
+      "WebNNGraphImplFuzzer_GPU.SingleOpPool2d",
+      "WebNNGraphImplFuzzer_GPU.SingleOpReduce",
+      "WebNNGraphImplFuzzer_GPU.SingleOpScatterElements",
+      "WebNNGraphImplFuzzer_GPU.SubgraphDQConcatQ",
+      "WebNNGraphImplFuzzer_GPU.SubgraphDQConv2dQ",
+      "WebNNGraphImplFuzzer_GPU.SubgraphDQGemmQ",
+      "WebNNGraphImplFuzzer_GPU.SubgraphDQPool2dQ",
+      "WebNNGraphImplFuzzer_GPU.SubgraphDQReduceQ",
+      "WebNNGraphImplFuzzer_NPU.SingleOpConcat",
+      "WebNNGraphImplFuzzer_NPU.SingleOpConv2d",
+      "WebNNGraphImplFuzzer_NPU.SingleOpExpand",
+      "WebNNGraphImplFuzzer_NPU.SingleOpGatherND",
+      "WebNNGraphImplFuzzer_NPU.SingleOpGemm",
+      "WebNNGraphImplFuzzer_NPU.SingleOpLstm",
+      "WebNNGraphImplFuzzer_NPU.SingleOpPool2d",
+      "WebNNGraphImplFuzzer_NPU.SingleOpReduce",
+      "WebNNGraphImplFuzzer_NPU.SingleOpScatterElements",
+      "WebNNGraphImplFuzzer_NPU.SubgraphDQConcatQ",
+      "WebNNGraphImplFuzzer_NPU.SubgraphDQConv2dQ",
+      "WebNNGraphImplFuzzer_NPU.SubgraphDQGemmQ",
+      "WebNNGraphImplFuzzer_NPU.SubgraphDQPool2dQ",
+      "WebNNGraphImplFuzzer_NPU.SubgraphDQReduceQ",
+    ]
 
-  deps = [
-    ":webnn_service",
-    ":webnn_test_support",
-    "//base",
-    "//base/test:test_support",
-    "//mojo/core/embedder",
-    "//mojo/public/cpp/bindings",
-    "//services/webnn/public/cpp",
-    "//services/webnn/public/mojom",
-    "//testing/gtest",
-    "//third_party/fp16",
-    "//third_party/fuzztest:fuzztest_gtest_main",
-  ]
+    deps = [
+      ":webnn_service",
+      ":webnn_test_support",
+      "//base",
+      "//base/test:test_support",
+      "//mojo/core/embedder",
+      "//mojo/public/cpp/bindings",
+      "//services/webnn/public/cpp",
+      "//services/webnn/public/mojom",
+      "//testing/gtest",
+      "//third_party/fp16",
+      "//third_party/fuzztest:fuzztest_gtest_main",
+    ]
+  }
 }
 
 mojolpm_fuzzer_test("webnn_graph_mojolpm_textproto_fuzzer") {
