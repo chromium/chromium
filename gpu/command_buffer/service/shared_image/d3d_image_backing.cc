@@ -566,10 +566,11 @@ std::unique_ptr<D3DImageBacking> D3DImageBacking::CreateFromD3D12Buffer(
     std::string debug_label,
     Microsoft::WRL::ComPtr<ID3D12Resource> d3d12_buffer,
     Microsoft::WRL::ComPtr<ID3D12Heap> d3d12_heap,
+    std::unique_ptr<void, VirtualAllocAddressDeleter> d3d12_heap_memory,
     bool is_thread_safe) {
   auto backing = base::WrapUnique(new D3DImageBacking(
       mailbox, size, usage, std::move(debug_label), std::move(d3d12_buffer),
-      std::move(d3d12_heap), is_thread_safe));
+      std::move(d3d12_heap), std::move(d3d12_heap_memory), is_thread_safe));
   return backing;
 }
 
@@ -660,6 +661,7 @@ D3DImageBacking::D3DImageBacking(
     std::string debug_label,
     Microsoft::WRL::ComPtr<ID3D12Resource> d3d12_buffer,
     Microsoft::WRL::ComPtr<ID3D12Heap> d3d12_heap,
+    std::unique_ptr<void, VirtualAllocAddressDeleter> d3d12_heap_memory,
     bool is_thread_safe)
     : ClearTrackingSharedImageBacking(mailbox,
                                       viz::SharedImageFormat(),
@@ -671,6 +673,7 @@ D3DImageBacking::D3DImageBacking(
                                       std::move(debug_label),
                                       size.width(),
                                       is_thread_safe),
+      d3d12_heap_memory_(std::move(d3d12_heap_memory)),
       d3d12_heap_(std::move(d3d12_heap)),
       d3d12_buffer_(std::move(d3d12_buffer)),
       texture_target_(0),

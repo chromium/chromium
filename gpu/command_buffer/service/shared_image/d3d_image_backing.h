@@ -14,6 +14,7 @@
 #include <wrl/client.h>
 
 #include <array>
+#include <memory>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -42,6 +43,12 @@ namespace gpu {
 class D3D11ImageSameAdapterCopyStrategy;
 class SharedContextState;
 struct Mailbox;
+
+struct VirtualAllocAddressDeleter {
+  void operator()(void* address) const {
+    ::VirtualFree(address, 0, MEM_RELEASE);
+  }
+};
 
 // Implementation of SharedImageBacking that holds buffer (front buffer/back
 // buffer of swap chain) texture (as gles2::Texture/gles2::TexturePassthrough)
@@ -80,6 +87,7 @@ class GPU_GLES2_EXPORT D3DImageBacking final
       std::string debug_label,
       Microsoft::WRL::ComPtr<ID3D12Resource> d3d12_buffer,
       Microsoft::WRL::ComPtr<ID3D12Heap> d3d12_heap,
+      std::unique_ptr<void, VirtualAllocAddressDeleter> d3d12_heap_memory,
       bool is_thread_safe);
 
   static std::unique_ptr<D3DImageBacking> CreateFromSwapChainBuffers(
@@ -269,13 +277,15 @@ class GPU_GLES2_EXPORT D3DImageBacking final
                   bool is_thread_safe = false,
                   bool share_dxgi_handle_with_other_backings = true);
 
-  D3DImageBacking(const Mailbox& mailbox,
-                  const gfx::Size& size,
-                  gpu::SharedImageUsageSet usage,
-                  std::string debug_label,
-                  Microsoft::WRL::ComPtr<ID3D12Resource> d3d12_buffer,
-                  Microsoft::WRL::ComPtr<ID3D12Heap> d3d12_heap,
-                  bool is_thread_safe);
+  D3DImageBacking(
+      const Mailbox& mailbox,
+      const gfx::Size& size,
+      gpu::SharedImageUsageSet usage,
+      std::string debug_label,
+      Microsoft::WRL::ComPtr<ID3D12Resource> d3d12_buffer,
+      Microsoft::WRL::ComPtr<ID3D12Heap> d3d12_heap,
+      std::unique_ptr<void, VirtualAllocAddressDeleter> d3d12_heap_memory,
+      bool is_thread_safe);
 
   bool use_cross_device_fence_synchronization() const {
     // Fences are needed if we're sharing between devices and there's no keyed
@@ -397,6 +407,11 @@ class GPU_GLES2_EXPORT D3DImageBacking final
 
   // Null unless created via CreateFromSwapBuffers().
   Microsoft::WRL::ComPtr<ID3D11Texture2D> swap_chain_front_buffer_texture_;
+
+  // Backing VirtualAlloc wrapped by `d3d12_heap_` when present.
+  // Must be declared before `d3d12_heap_` to ensure the heap is cleanly
+  // destroyed before the backing memory is freed.
+  std::unique_ptr<void, VirtualAllocAddressDeleter> d3d12_heap_memory_;
 
   // Physical memory allocated for the D3D12 buffer when it exists.
   const Microsoft::WRL::ComPtr<ID3D12Heap> d3d12_heap_;
