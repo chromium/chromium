@@ -1845,6 +1845,7 @@ void PdfInkModule::ApplyUndoRedoDiscards(std::optional<IdType> lowest_discard) {
   // `page_ink_strokes` values in `strokes_` are in sorted order, so all
   // elements in `page_ink_strokes` with the start ID or larger IDs can be
   // discarded.
+  std::vector<int> empty_keys_to_erase;
   for (auto& [page_index, page_ink_strokes] : strokes_) {
     // Find the first element in `page_ink_strokes` whose ID >=
     // `lowest_stroke_id`.
@@ -1856,15 +1857,12 @@ void PdfInkModule::ApplyUndoRedoDiscards(std::optional<IdType> lowest_discard) {
       client_->DiscardStroke(page_index, it->id);
     }
     page_ink_strokes.erase(start, end);
-  }
-
-  // Check the pages with strokes and remove the ones that are now empty.
-  for (auto it = strokes_.begin(); it != strokes_.end();) {
-    if (it->second.empty()) {
-      it = strokes_.erase(it);
-    } else {
-      ++it;
+    if (page_ink_strokes.empty()) {
+      empty_keys_to_erase.push_back(page_index);
     }
+  }
+  for (int page_index : empty_keys_to_erase) {
+    strokes_.erase(page_index);
   }
 
   // Now that some annotations have been discarded, Let the IdGenerator know
