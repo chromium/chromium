@@ -5,11 +5,14 @@
 #include "remoting/host/setup/daemon_controller_delegate_win.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/bind.h"
 #include "base/process/process_info.h"
 #include "base/test/bind.h"
+#include "base/test/file_path_reparse_point_win.h"
 #include "base/values.h"
 #include "base/win/win_util.h"
 #include "remoting/host/config_file_watcher.h"
@@ -55,7 +58,7 @@ TEST_F(DaemonControllerDelegateWinTest, GetConfigReturnsUnprivilegedConfig) {
 
   auto result = delegate_->GetConfig();
   ASSERT_TRUE(result.has_value());
-  const std::string* host_id = result->FindString("host_id");
+  const std::string* host_id = result->FindString(kHostIdConfigPath);
   ASSERT_TRUE(host_id);
   EXPECT_EQ(*host_id, "test_host_id");
 }
@@ -113,6 +116,39 @@ TEST_F(DaemonControllerDelegateWinTest, UpdateConfigSucceedsAndUpdatesFiles) {
       unprivileged_result->FindString(kHostIdConfigPath);
   ASSERT_TRUE(host_id);
   EXPECT_EQ(*host_id, "new_host_id");
+}
+
+TEST_F(DaemonControllerDelegateWinTest,
+       SetConfigFailsIfConfigDirIsReparsePoint) {
+  base::ScopedTempDir target_dir;
+  ASSERT_TRUE(target_dir.CreateUniqueTempDir());
+
+  base::FilePath junction_path =
+      temp_dir_.GetPath().AppendASCII("ConfigDirJunction");
+  ASSERT_TRUE(base::CreateDirectory(junction_path));
+
+  std::optional<base::test::FilePathReparsePoint> reparse_point =
+      base::test::FilePathReparsePoint::Create(junction_path,
+                                               target_dir.GetPath());
+  ASSERT_TRUE(reparse_point.has_value());
+
+  delegate_->set_config_dir_for_testing(junction_path);
+
+  base::DictValue config;
+  config.Set(kHostIdConfigPath, "test_id");
+  config.Set(kHostOwnerConfigPath, "test@google.com");
+  config.Set(kServiceAccountConfigPath, "test_sa@google.com");
+
+  bool callback_called = false;
+  auto callback = base::BindOnce(
+      [](bool* called, DaemonController::AsyncResult result) {
+        *called = true;
+        EXPECT_EQ(DaemonController::RESULT_FAILED, result);
+      },
+      &callback_called);
+
+  delegate_->SetConfigAndStart(std::move(config), false, std::move(callback));
+  EXPECT_TRUE(callback_called);
 }
 
 }  // namespace remoting

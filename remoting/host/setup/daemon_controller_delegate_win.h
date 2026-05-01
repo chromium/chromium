@@ -5,7 +5,10 @@
 #ifndef REMOTING_HOST_SETUP_DAEMON_CONTROLLER_DELEGATE_WIN_H_
 #define REMOTING_HOST_SETUP_DAEMON_CONTROLLER_DELEGATE_WIN_H_
 
+#include <optional>
+
 #include "base/files/file_path.h"
+#include "base/values.h"
 #include "remoting/host/setup/daemon_controller.h"
 
 namespace remoting {
@@ -33,6 +36,10 @@ class DaemonControllerDelegateWin : public DaemonController::Delegate {
   void Stop(DaemonController::CompletionCallback done) override;
   DaemonController::UsageStatsConsent GetUsageStatsConsent() override;
   bool is_privileged() const override;
+
+  void set_config_dir_for_testing(const base::FilePath& config_dir) {
+    config_dir_ = config_dir;
+  }
 
  private:
   base::FilePath config_dir_;

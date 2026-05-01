@@ -101,6 +101,7 @@
 
     <PropertyRef Id="WIX_ACCOUNT_LOCALSYSTEM" />
     <PropertyRef Id="WIX_ACCOUNT_ADMINISTRATORS" />
+    <PropertyRef Id="WIX_ACCOUNT_USERS" />
 
     <!-- Note that Windows10 reports its version as 6.3 rather than 10.0 via
         the VersionNT WXS var for back-compat reasons. -->
@@ -723,6 +724,20 @@
 
     </DirectoryRef>
 
+    <DirectoryRef Id="config_files">
+      <Component Id="config_files_dir" Guid="72f0991d-068a-4db3-bc12-f0896faea886">
+        <CreateFolder>
+          <Permission User="[WIX_ACCOUNT_LOCALSYSTEM]"
+                      GenericAll="yes" />
+          <Permission User="[WIX_ACCOUNT_ADMINISTRATORS]"
+                      GenericAll="yes" />
+          <Permission User="[WIX_ACCOUNT_USERS]"
+                      GenericRead="yes"
+                      GenericExecute="yes" />
+        </CreateFolder>
+      </Component>
+    </DirectoryRef>
+
     <!-- Register with Sawbuck. See http://code.google.com/p/sawbuck/. -->
     <DirectoryRef Id="TARGETDIR">
       <Component Id="sawbuck_provider" Guid="*" Win64="no">
@@ -790,6 +805,7 @@
     <UIRef Id="WixUI_ErrorProgressText" />
 
     <Feature Id="chromoting_host" Level="1" Title="$(var.ChromotingHost)">
+      <ComponentRef Id="config_files_dir"/>
       <ComponentRef Id="credits"/>
       <?if $(var.OfficialBuild) != 0 ?>
         <ComponentRef Id="omaha_registration"/>
