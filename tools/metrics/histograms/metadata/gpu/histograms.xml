@@ -1529,6 +1529,18 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="GPU.PersistentCache.{GpuPersistentCacheType}.VkPipelineCache.LoadedSize"
+    units="KB" expires_after="2027-04-30">
+  <owner>kylechar@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <summary>
+    Records the size of the serialized VkPipelineCache that is loaded from the
+    cache.
+  </summary>
+  <token key="GpuPersistentCacheType" variants="GpuPersistentCacheType"/>
+</histogram>
+
+<histogram
     name="GPU.PersistentCache.{GpuPersistentCacheType}.{LoadStore}.CacheAvailable"
     enum="Boolean" expires_after="2026-09-27">
   <owner>lehoangquyen@chromium.org</owner>

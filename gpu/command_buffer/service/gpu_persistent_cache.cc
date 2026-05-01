@@ -160,6 +160,13 @@ bool TimedWait(base::ConditionVariable& cond_var,
   return true;
 }
 
+#if BUILDFLAG(USE_DAWN) || BUILDFLAG(SKIA_USE_DAWN)
+bool IsVkPipelineCache(std::string_view key_str) {
+  // Dawn/Vulkan appends a suffix to the cache key intentionally.
+  return key_str.ends_with("MonolithicVkPipelineCache");
+}
+#endif
+
 }  // namespace
 
 // AsyncDiskWriteOpts
@@ -472,6 +479,12 @@ size_t GpuPersistentCache::LoadData(const void* key,
     // skewing the metrics by generating two cache hit data points, only record
     // a cache hit when there is no buffer provided.
     RecordCacheLoadResultHistogram(result);
+
+    if (IsVkPipelineCache(key_str)) {
+      base::UmaHistogramMemoryKB(
+          GetHistogramName(cache_prefix_, "VkPipelineCache.LoadedSize"),
+          base::ByteSize(discovered_size));
+    }
   }
 
   return static_cast<GLsizeiptr>(discovered_size);
@@ -655,7 +668,12 @@ void GpuPersistentCache::StoreData(const void* key,
   std::string_view key_str(static_cast<const char*>(key), key_size);
   base::span<const uint8_t> value_span = UNSAFE_BUFFERS(
       base::span(static_cast<const uint8_t*>(value), value_size));
-  StoreImpl(key_str, value_span);
+
+  // Serialized VkPipelineCache entries won't be loaded again until the GPU
+  // process restarts. Storing this entry in the memory cache isn't useful but
+  // does evict otherwise useful data.
+  const bool skip_memory_cache = IsVkPipelineCache(key_str);
+  StoreImpl(key_str, value_span, skip_memory_cache);
 }
 #endif
 
@@ -663,7 +681,7 @@ void GpuPersistentCache::store(const SkData& key, const SkData& data) {
   std::string_view key_str(static_cast<const char*>(key.data()), key.size());
   base::span<const uint8_t> value_span = UNSAFE_BUFFERS(
       base::span(static_cast<const uint8_t*>(data.bytes()), data.size()));
-  StoreImpl(key_str, value_span);
+  StoreImpl(key_str, value_span, /*skip_memory_cache=*/false);
 }
 
 void GpuPersistentCache::GLBlobCacheSet(const void* key,
@@ -676,11 +694,12 @@ void GpuPersistentCache::GLBlobCacheSet(const void* key,
                            static_cast<size_t>(key_size));
   base::span<const uint8_t> value_span = UNSAFE_BUFFERS(base::span(
       static_cast<const uint8_t*>(value), static_cast<size_t>(value_size)));
-  StoreImpl(key_str, value_span);
+  StoreImpl(key_str, value_span, /*skip_memory_cache=*/false);
 }
 
 void GpuPersistentCache::StoreImpl(std::string_view key,
-                                   base::span<const uint8_t> value) {
+                                   base::span<const uint8_t> value,
+                                   bool skip_memory_cache) {
   const bool disk_cache_initialized = disk_cache_initialized_.IsSet();
   TRACE_EVENT1("gpu", "GpuPersistentCache::StoreImpl", "persistent_cache",
                disk_cache_initialized);
@@ -695,7 +714,7 @@ void GpuPersistentCache::StoreImpl(std::string_view key,
   }
 
   scoped_refptr<MemoryCacheEntry> memory_cache_entry;
-  if (memory_cache_) {
+  if (memory_cache_ && !skip_memory_cache) {
     memory_cache_entry = memory_cache_->Store(key, value);
   }
 

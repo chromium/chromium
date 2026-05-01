@@ -32,8 +32,8 @@ static constexpr size_t kDefaultMemoryCacheSizeForTesting = 1 << 16;
 class GpuPersistentCacheTest : public testing::Test {
  public:
   void SetUp() override {
-    cache_ = base::MakeRefCounted<GpuPersistentCache>("Test",
-                                                      MakeDefaultMemoryCache());
+    memory_cache_ = MakeDefaultMemoryCache();
+    cache_ = base::MakeRefCounted<GpuPersistentCache>("Test", memory_cache_);
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     backend_storage_.emplace(persistent_cache::Client::kTest,
                              persistent_cache::BackendType::kSqlite,
@@ -61,6 +61,7 @@ class GpuPersistentCacheTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
   std::optional<persistent_cache::BackendStorage> backend_storage_;
   scoped_refptr<GpuPersistentCache> cache_;
+  scoped_refptr<MemoryCache> memory_cache_;
 };
 
 TEST_F(GpuPersistentCacheTest,
@@ -226,6 +227,18 @@ void GpuPersistentCacheTest::RunStoreAndLoadDataMultiThreaded(int num_threads) {
       EXPECT_EQ(std::string(buffer.begin(), buffer.end()), value);
     }
   }
+}
+
+// Tests that storing Dawn/Vulkan monolithic VkPipelineCache data doesn't store
+// anything in the memory cache.
+TEST_F(GpuPersistentCacheTest, StoreVkPersistentCache) {
+  InitializeCache();
+
+  const std::string key = "my_keyMonolithicVkPipelineCache";
+  const std::string value = "my_value";
+  cache_->StoreData(key.c_str(), key.size(), value.c_str(), value.size());
+
+  EXPECT_FALSE(memory_cache_->Find(key));
 }
 
 // Tests that the cache can be safely written to and read from by multiple

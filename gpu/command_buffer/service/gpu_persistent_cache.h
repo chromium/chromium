@@ -134,7 +134,9 @@ class GPU_GLES2_EXPORT GpuPersistentCache :
 
   CacheLoadResult LoadImpl(std::string_view key,
                            persistent_cache::BufferProvider buffer_provider);
-  void StoreImpl(std::string_view key, base::span<const uint8_t> value);
+  void StoreImpl(std::string_view key,
+                 base::span<const uint8_t> value,
+                 bool skip_memory_cache);
 
   void RecordCacheLoadResultHistogram(CacheLoadResult result);
 
