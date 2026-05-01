@@ -113,6 +113,36 @@ TEST_F(SelectToolTest, Create_ByIdentifiers_Success) {
   EXPECT_TRUE(result.has_value());
 }
 
+TEST_F(SelectToolTest, Create_NodeIdWithoutDocumentIdentifier_Invalid) {
+  optimization_guide::proto::SelectAction action;
+  action.set_tab_id(tab_id_);
+  action.set_value("v1");
+
+  auto* target = action.mutable_target();
+  target->set_content_node_id(1);
+  // Omit document_identifier
+
+  auto result = SelectTool::Create(action, profile());
+  EXPECT_FALSE(result.has_value());
+  EXPECT_EQ(result.error().code(), mojom::ActionResultCode::kArgumentsInvalid);
+}
+
+TEST_F(SelectToolTest, Create_BothTargetingTypes_Invalid) {
+  optimization_guide::proto::SelectAction action;
+  action.set_tab_id(tab_id_);
+  action.set_value("v1");
+
+  auto* target = action.mutable_target();
+  target->mutable_coordinate()->set_x(1);
+  target->mutable_coordinate()->set_y(1);
+  target->set_content_node_id(1);
+  target->mutable_document_identifier()->set_serialized_token("fake_id");
+
+  auto result = SelectTool::Create(action, profile());
+  EXPECT_FALSE(result.has_value());
+  EXPECT_EQ(result.error().code(), mojom::ActionResultCode::kArgumentsInvalid);
+}
+
 TEST_F(SelectToolTest, Execute_WebStateDestroyed_ReturnsError) {
   optimization_guide::proto::SelectAction select_action;
   select_action.set_tab_id(tab_id_);

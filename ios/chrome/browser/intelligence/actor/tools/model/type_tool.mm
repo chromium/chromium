@@ -47,11 +47,19 @@ base::expected<std::unique_ptr<TypeTool>, ToolExecutionResult> TypeTool::Create(
   }
 
   const auto& target = action.target();
+  // Callers must either target by coordinate or (document_identifier, node_id).
+  if (target.has_content_node_id() && !target.has_document_identifier()) {
+    return base::unexpected(
+        ToolExecutionResult(mojom::ActionResultCode::kArgumentsInvalid));
+  }
   bool can_target_by_coordinate = target.has_coordinate();
   bool can_target_by_node_id =
       target.has_content_node_id() && target.has_document_identifier();
-
   if (!can_target_by_coordinate && !can_target_by_node_id) {
+    return base::unexpected(
+        ToolExecutionResult(mojom::ActionResultCode::kArgumentsInvalid));
+  }
+  if (can_target_by_coordinate && can_target_by_node_id) {
     return base::unexpected(
         ToolExecutionResult(mojom::ActionResultCode::kArgumentsInvalid));
   }

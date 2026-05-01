@@ -105,10 +105,10 @@ void ActionTargetJavaScriptFeature::GetTargetFrame(
   if (target.has_document_identifier()) {
     GetTargetFrameByDocumentIdentifier(web_state, target, std::move(callback));
     return;
+  } else if (target.has_coordinate()) {
+    GetTargetFrameByCoordinate(web_state, web_frame, target,
+                               std::move(callback), depth);
   }
-
-  GetTargetFrameByCoordinate(web_state, web_frame, target, std::move(callback),
-                             depth);
 }
 
 ActionTargetJavaScriptFeature::ActionTargetJavaScriptFeature()

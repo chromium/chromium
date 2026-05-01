@@ -42,15 +42,22 @@ ClickTool::Create(const optimization_guide::proto::ClickAction& action,
   }
 
   const auto& target = action.target();
+  // Callers must either target by coordinate or (document_identifier, node_id).
+  if (target.has_content_node_id() && !target.has_document_identifier()) {
+    return base::unexpected(
+        ToolExecutionResult(mojom::ActionResultCode::kArgumentsInvalid));
+  }
   bool can_target_by_coordinate = target.has_coordinate();
   bool can_target_by_node_id =
       target.has_content_node_id() && target.has_document_identifier();
-
   if (!can_target_by_coordinate && !can_target_by_node_id) {
     return base::unexpected(
         ToolExecutionResult(mojom::ActionResultCode::kArgumentsInvalid));
   }
-
+  if (can_target_by_coordinate && can_target_by_node_id) {
+    return base::unexpected(
+        ToolExecutionResult(mojom::ActionResultCode::kArgumentsInvalid));
+  }
   return std::unique_ptr<ClickTool>(
       new ClickTool(action, resolution_result.value().web_state));
 }
