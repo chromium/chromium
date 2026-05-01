@@ -148,6 +148,7 @@
       <entry name="autocapitalize_sentences" value="1 &lt;&lt; 9" />
       <entry name="has_been_password" value="1 &lt;&lt; 10" />
       <entry name="vertical" value="1 &lt;&lt; 11" />
+      <entry name="has_been_custom_password" value="1 &lt;&lt; 12" />
     </enum>
 
     <enum name="learning_mode" since="2">

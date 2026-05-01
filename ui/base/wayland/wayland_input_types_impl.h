@@ -34,7 +34,7 @@
           macro(SPELLCHECK_OFF) macro(AUTOCAPITALIZE_NONE)                 \
               macro(AUTOCAPITALIZE_CHARACTERS) macro(AUTOCAPITALIZE_WORDS) \
                   macro(AUTOCAPITALIZE_SENTENCES) macro(HAS_BEEN_PASSWORD) \
-                      macro(VERTICAL)
+                      macro(VERTICAL) macro(HAS_BEEN_CUSTOM_PASSWORD)
 
 // Note: we assume that the source file including this header implementation
 // already includes either text-input-extension-unstable-v1-server-protocol.h
