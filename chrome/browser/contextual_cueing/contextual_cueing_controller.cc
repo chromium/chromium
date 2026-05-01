@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros_local.h"
+#include "base/metrics/metrics_hashes.h"
 #include "base/notimplemented.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -526,6 +527,9 @@ void ContextualCueingController::ShowCue(
   contextual_cueing_service_->OnCueShown(
       tab->GetContents()->GetLastCommittedURL());
 #endif
+
+  base::UmaHistogramSparse("ContextualCueing.ShownCueCUJ",
+                           base::HashMetricName(response.suggested_cuj()));
 
   RecordContextualCueingDecision(ContextualCueingDecision::kSuccess);
 }

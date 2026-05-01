@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/functional/bind.h"
+#include "base/metrics/metrics_hashes.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
@@ -769,6 +770,38 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
 }
 
 // TODO(crbug.com/503910711): Add a test for hiding on navigation
+
+IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
+                       RecordsShownCueCUJHistogram) {
+  // 1. Navigate to a valid eligible URL
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("https://www.activetab.com/abc"),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
+  base::HistogramTester histogram_tester;
+
+  // 2. Mock the server response and inject a fake CUJ string
+  auto response = MakeCompleteResponse();
+  response.set_suggested_cuj("test_cuj_string");
+  SeedExecutionResult(std::move(response));
+
+  // 3. Trigger the cue execution flow
+  SimulateFilterPassed();
+
+  // 4. Wait for the flow to successfully finish
+  optimization_guide::RetryForHistogramUntilCountReached(
+      &histogram_tester, "ContextualCueing.V2.Decision", 1);
+
+  // 5. Confirm flow was completed successfully
+  histogram_tester.ExpectUniqueSample("ContextualCueing.V2.Decision",
+                                      ContextualCueingDecision::kSuccess, 1);
+
+  // 6. Verify your new histogram!
+  histogram_tester.ExpectUniqueSample("ContextualCueing.ShownCueCUJ",
+                                      base::HashMetricName("test_cuj_string"),
+                                      1);
+}
 
 }  // namespace
 }  // namespace contextual_cueing
