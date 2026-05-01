@@ -70,6 +70,7 @@ public class ToolbarProgressBar extends ClipDrawableProgressBar
     private static final long ANIMATION_START_THRESHOLD = 5000;
 
     private static final long HIDE_DELAY_MS = 100;
+    private static final long HIDE_DELAY_MS_WITH_JUMP_TO_END = 300;
 
     // Android progress bar animation constants
     private static final float THEMED_BACKGROUND_WHITE_FRACTION = 0.2f;
@@ -402,20 +403,33 @@ public class ToolbarProgressBar extends ClipDrawableProgressBar
     public void finish(boolean fadeOut) {
         ThreadUtils.assertOnUiThread();
 
+        // If apb is enabled and we're jumping to the end, whether or not the progress bar fades out
+        // also depends on the feature param, not only the value of fadeOut. When fadeOut is false,
+        // the progress bar should disappear immediately. When fadeOut is true, we will fade if the
+        // feature param with fade is enabled.
+        // Here, we update the progress to 1.0 regardless of the value of fadeOut, so that it jumps
+        // to the end immediately. Afterwards, we check fadeOut and the feature param to fade.
+        boolean apbJumpToCompletionWithFade =
+                ChromeFeatureList.sAndroidApbJumpToCompletionWithFade.getValue();
         if (!MathUtils.areFloatsEqual(getProgress(), 1.0f)) {
-            // If any of the animators are running while this method is called, set the internal
-            // progress and wait for the animation to end.
-            setProgress(1.0f);
-            if (fadeOut
-                    && shouldAnimateCompositedLayer()
-                    && !mProgressBarAnimationBc25.isRunning()
-                    && ChromeFeatureList.sAndroidApb144Patch9.isEnabled()) {
-                mCompositedProgressBarAnimation.cancel();
-                mLastUpdateTimeMs = 0;
-                mProgressBarAnimationBc25.setFloatValues(mAnimatedProgress, 1.0f);
-                mProgressBarAnimationBc25.start();
+            if (apbJumpToCompletionWithFade) {
+                super.setProgress(1.0f);
+            } else {
+                setProgress(1.0f);
+
+                // If any of the animators are running while this method is called, set the internal
+                // progress and wait for the animation to end.
+                if (fadeOut
+                        && shouldAnimateCompositedLayer()
+                        && !mProgressBarAnimationBc25.isRunning()
+                        && ChromeFeatureList.sAndroidApb144Patch9.isEnabled()) {
+                    mCompositedProgressBarAnimation.cancel();
+                    mLastUpdateTimeMs = 0;
+                    mProgressBarAnimationBc25.setFloatValues(mAnimatedProgress, 1.0f);
+                    mProgressBarAnimationBc25.start();
+                }
+                if (areProgressAnimatorsRunning() && fadeOut) return;
             }
-            if (areProgressAnimatorsRunning() && fadeOut) return;
         }
 
         if (shouldAnimateCompositedLayer() && ChromeFeatureList.sAndroidApb144Patch9.isEnabled()) {
@@ -442,7 +456,11 @@ public class ToolbarProgressBar extends ClipDrawableProgressBar
 
         if (fadeOut) {
             removeCallbacks(mHideProgressBarRunnable);
-            postDelayed(mHideProgressBarRunnable, HIDE_DELAY_MS);
+            if (apbJumpToCompletionWithFade) {
+                postDelayed(mHideProgressBarRunnable, HIDE_DELAY_MS_WITH_JUMP_TO_END);
+            } else {
+                postDelayed(mHideProgressBarRunnable, HIDE_DELAY_MS);
+            }
         } else {
             hideProgressBar(false);
         }
@@ -524,10 +542,17 @@ public class ToolbarProgressBar extends ClipDrawableProgressBar
 
     // ClipDrawableProgressBar implementation.
 
+    /**
+     * Sets the target progress of animations. This will change the final position the progress bar
+     * will animate to, but will not immediately update the location of the progress bar. If an
+     * immediate update is needed, call super.setProgress.
+     *
+     * @param targetProgress The new progress the progress bar should animate to.
+     */
     @Override
-    public void setProgress(float progress) {
+    public void setProgress(float targetProgress) {
         ThreadUtils.assertOnUiThread();
-        setProgressInternal(progress);
+        setProgressInternal(targetProgress);
     }
 
     /**

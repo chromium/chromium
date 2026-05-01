@@ -4470,11 +4470,16 @@ const FeatureEntry::FeatureParam kAnimatedProgressBar30FpsCap[] = {
     {"fps_cap", "30"}};
 const FeatureEntry::FeatureParam kAnimatedProgressBar60FpsCap[] = {
     {"fps_cap", "60"}};
+const FeatureEntry::FeatureParam
+    kAnimatedProgressBarJumpToCompletionWithFade[] = {
+        {"jump_to_completion_with_fade", "true"}};
 
 const FeatureEntry::FeatureVariation
     kAndroidAnimatedProgressBarInBrowserVariations[] = {
         {"with 30fps cap", kAnimatedProgressBar30FpsCap, nullptr},
-        {"with 60fsp cap", kAnimatedProgressBar60FpsCap, nullptr}};
+        {"with 60fsp cap", kAnimatedProgressBar60FpsCap, nullptr},
+        {"jump to completion with fade",
+         kAnimatedProgressBarJumpToCompletionWithFade, nullptr}};
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
