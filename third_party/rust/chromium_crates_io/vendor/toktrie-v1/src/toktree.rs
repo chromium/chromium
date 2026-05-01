@@ -116,6 +116,7 @@ pub struct TokTrie {
     nodes: Vec<TrieNode>,
     max_token_len: usize,
     eos_tokens: Vec<TokenId>,
+    sorted_vocab: Vec<u32>,
 }
 
 #[derive(Clone, Copy, Zeroable, Pod)]
@@ -184,14 +185,32 @@ impl TokTrie {
     pub const SPECIAL_TOKEN_MARKER: u8 = 0xff;
 
     pub fn from(info: &TokRxInfo, words: &[Vec<u8>]) -> Self {
-        let mut trie = TrieHash::new(0xff);
-        let mut token_offsets = Vec::new();
-        let mut token_data = Vec::new();
+        let mut trie = TrieBuilder::new(0xff, info.vocab_size);
+        let mut token_offsets = Vec::with_capacity(info.vocab_size as usize);
+
+        // Pre-allocate the exact capacity for token bytes to prevent `extend_from_slice`
+        // from constantly reallocating the massive (~2MB) buffer as it grows.
+        let total_len = words.iter().map(|w| w.len()).sum();
+        let mut token_data = Vec::with_capacity(total_len);
+
         assert!(info.vocab_size == words.len() as u32);
         let mut max_token_len = 0;
-        for (idx, word) in words.iter().enumerate() {
+
+        // Sorting the indices alphabetically before inserting them into the TrieBuilder
+        // guarantees that the nodes are naturally grouped. This allows `serialize_node`
+        // to operate without needing to allocate temporary arrays to sort the children later.
+        let mut indices: Vec<usize> = (0..words.len()).collect();
+        indices.sort_by(|&a, &b| words[a].cmp(&words[b]));
+
+        for &idx in &indices {
+            let word = &words[idx];
             if !word.is_empty() {
                 trie.insert(word, idx as u32);
+            }
+        }
+
+        for word in words.iter() {
+            if !word.is_empty() {
                 max_token_len = std::cmp::max(max_token_len, word.len());
             }
             let desc = TokDesc {
@@ -203,6 +222,12 @@ impl TokTrie {
         }
         let mut nodes = Vec::new();
         trie.serialize(&mut nodes, 0);
+
+        // Cache the sorted alphabetical order of the vocabulary IDs.
+        // We use this inside `filter()` to perform lightning-fast Trie rebuilds
+        // without ever needing to perform an expensive string sort again.
+        let sorted_vocab: Vec<u32> = indices.into_iter().map(|idx| idx as u32).collect();
+
         let r = TokTrie {
             info: *info,
             token_offsets,
@@ -210,23 +235,61 @@ impl TokTrie {
             nodes,
             max_token_len,
             eos_tokens: vec![info.tok_eos],
+            sorted_vocab,
         };
         r.validate();
         r
     }
 
     pub fn filter(&self, filter: &SimpleVob) -> Self {
-        let mut words = vec![];
+        let mut trie = TrieBuilder::new(0xff, self.info.vocab_size);
+        let mut token_offsets = Vec::with_capacity(self.vocab_size());
+        let mut token_data = Vec::with_capacity(self.token_data.len());
+        let mut max_token_len = 0;
+
+        // Because `self.sorted_vocab` is pre-sorted alphabetically, we can iteratively
+        // insert the filtered tokens directly into `TrieBuilder` and it will organically
+        // build the tree with sorted siblings, completely bypassing any `Vec` allocations
+        // or sorting overhead during `filter` or `serialize`.
+        for &n in &self.sorted_vocab {
+            if filter.is_allowed(n) {
+                let b = self.token(n);
+                if !b.is_empty() {
+                    trie.insert(b, n);
+                }
+            }
+        }
+
         for n in 0..(self.vocab_size() as TokenId) {
             let b = if filter.is_allowed(n) {
                 self.token(n)
             } else {
                 &[]
             };
-            words.push(b.to_vec());
+            if !b.is_empty() {
+                max_token_len = std::cmp::max(max_token_len, b.len());
+            }
+            let desc = TokDesc {
+                len: b.len().try_into().unwrap(),
+                off: token_data.len().try_into().unwrap(),
+            };
+            token_offsets.push(desc);
+            token_data.extend_from_slice(b);
         }
-        let mut r = Self::from(self.info(), &words);
-        r.eos_tokens = self.eos_tokens.clone();
+
+        let mut nodes = Vec::new();
+        trie.serialize(&mut nodes, 0);
+
+        let r = TokTrie {
+            info: self.info,
+            token_offsets,
+            token_data,
+            nodes,
+            max_token_len,
+            eos_tokens: self.eos_tokens.clone(),
+            sorted_vocab: self.sorted_vocab.clone(),
+        };
+        r.validate();
         r
     }
 
@@ -1118,82 +1181,172 @@ impl<'a> Iterator for NodeChildren<'a> {
     }
 }
 
-struct TrieHash {
+const NO_NODE: u32 = 0xffff_ffff;
+
+/// A temporary node used to construct the Trie before it is serialized
+/// into the highly-compact `TrieNode` format.
+/// Children are stored as a linked list to avoid nested Vec allocations.
+struct BuilderNode {
+    /// The vocabulary token ID. `NO_TOKEN` if this node doesn't complete a token.
     token_id: u32,
+    /// The byte value of this specific node.
     byte: u8,
-    children: Vec<TrieHash>,
+    /// Index of the first child in the `nodes` arena.
+    first_child: u32,
+    /// Index of the next sibling in the `nodes` arena.
+    next_sibling: u32,
+    /// Index of the last child in the `nodes` arena. Caching this makes appending O(1).
+    last_child: u32,
 }
 
-impl TrieHash {
-    fn new(byte: u8) -> TrieHash {
-        TrieHash {
+/// An arena-allocated builder for the tokenizer Trie.
+/// It uses a flat array `Vec<BuilderNode>` instead of nested `Vec`s to drastically
+/// reduce memory allocations and avoid thread-contention in global allocators.
+struct TrieBuilder {
+    nodes: Vec<BuilderNode>,
+    /// Fast O(1) lookup array for the root node's children.
+    root_children: [u32; 256],
+}
+
+impl TrieBuilder {
+    /// Creates a new arena with a pre-allocated capacity based on the vocabulary size.
+    fn new(root_byte: u8, vocab_size: u32) -> TrieBuilder {
+        let estimated_nodes = (vocab_size as usize).saturating_mul(3).max(1024);
+        let mut builder = TrieBuilder {
+            nodes: Vec::with_capacity(estimated_nodes),
+            root_children: [NO_NODE; 256],
+        };
+        // The root node is always at index 0.
+        builder.nodes.push(BuilderNode {
             token_id: NO_TOKEN,
-            byte,
-            children: Vec::new(),
-        }
+            byte: root_byte,
+            first_child: NO_NODE,
+            next_sibling: NO_NODE,
+            last_child: NO_NODE,
+        });
+        builder
     }
+
+    /// Inserts a word into the Trie.
+    /// Words *must* be inserted in their original ID order to correctly handle
+    /// duplicate tokens (multiple IDs mapping to the exact same byte string).
     fn insert(&mut self, word: &[u8], token_id: u32) {
         if word.is_empty() {
-            // Some tokenizers have duplicate tokens...
-            // we just override
-            assert!(self.token_id == NO_TOKEN);
-            self.token_id = token_id;
-        } else {
-            // if self.children.len() == 0x100 {
-            //     // assert!(self.children[word[0] as usize].byte == word[0]);
-            //     self.children[word[0] as usize].insert(&word[1..], token_id);
-            //     return;
-            // }
+            assert!(self.nodes[0].token_id == NO_TOKEN);
+            self.nodes[0].token_id = token_id;
+            return;
+        }
 
-            for ch in &mut self.children {
-                if ch.byte == word[0] {
-                    if word.len() == 1 && ch.token_id != NO_TOKEN {
-                        // this is duplicate token, proceed with adding a duplicate node
+        let mut curr_node_idx = 0;
+
+        for (i, &byte) in word.iter().enumerate() {
+            let is_last_byte = i == word.len() - 1;
+            let mut found_existing_path = false;
+
+            // Step 1: Find if this byte already exists among the current node's children.
+            if curr_node_idx == 0 {
+                // Fast O(1) path for the root node
+                let root_child_idx = self.root_children[byte as usize];
+                if root_child_idx != NO_NODE {
+                    let child_node = &self.nodes[root_child_idx as usize];
+                    // If we reach the end of a word, and that node already has a token ID,
+                    // we must not overwrite it. We bypass the `found` flag to force the
+                    // creation of a new, duplicate sibling node at the end of the linked list.
+                    if is_last_byte && child_node.token_id != NO_TOKEN {
+                        // This is a duplicate token; fall through to append a new node.
                     } else {
-                        ch.insert(&word[1..], token_id);
-                        return;
+                        curr_node_idx = root_child_idx as usize;
+                        found_existing_path = true;
                     }
+                }
+            } else {
+                // Slower linked-list traversal for deeper nodes
+                let mut child_idx = self.nodes[curr_node_idx].first_child;
+                while child_idx != NO_NODE {
+                    let child_node = &self.nodes[child_idx as usize];
+                    if child_node.byte == byte {
+                        if is_last_byte && child_node.token_id != NO_TOKEN {
+                            // Duplicate token; fall through to append.
+                        } else {
+                            curr_node_idx = child_idx as usize;
+                            found_existing_path = true;
+                            break;
+                        }
+                    }
+                    child_idx = child_node.next_sibling;
                 }
             }
 
-            let mut ch = TrieHash::new(word[0]);
-            ch.insert(&word[1..], token_id);
-            self.children.push(ch);
+            // Step 2: If the byte doesn't exist (or is a duplicate), create a new node.
+            if !found_existing_path {
+                let new_node_idx = self.nodes.len() as u32;
+                self.nodes.push(BuilderNode {
+                    token_id: NO_TOKEN,
+                    byte,
+                    first_child: NO_NODE,
+                    next_sibling: NO_NODE,
+                    last_child: NO_NODE,
+                });
 
-            // if it's getting dense, make it full
-            // for cl100k threshold 60->15 nodes, 50->22, 40->45 30->94
-            // for llama (32k) 50->5, 40->15
-            // TODO remove this?
-            // if self.children.len() > 250 {
-            //     let mut v2 = (0..=255).map(TrieHash::new).collect::<Vec<_>>();
-            //     for ch in self.children.drain(..) {
-            //         let idx = ch.byte as usize;
-            //         v2[idx] = ch;
-            //     }
-            //     self.children = v2;
-            // }
+                // If it's a new unique root child, cache it in the fast lookup array.
+                if curr_node_idx == 0 && self.root_children[byte as usize] == NO_NODE {
+                    self.root_children[byte as usize] = new_node_idx;
+                }
+
+                // Append the new node to the end of the current node's child linked list.
+                // Using `last_child` makes this an O(1) operation.
+                let last_child_idx = self.nodes[curr_node_idx].last_child;
+                if last_child_idx == NO_NODE {
+                    self.nodes[curr_node_idx].first_child = new_node_idx;
+                } else {
+                    self.nodes[last_child_idx as usize].next_sibling = new_node_idx;
+                }
+                self.nodes[curr_node_idx].last_child = new_node_idx;
+
+                curr_node_idx = new_node_idx as usize;
+            }
         }
+
+        // Assign the token ID to the final leaf node.
+        self.nodes[curr_node_idx].token_id = token_id;
     }
 
-    fn serialize(&mut self, data: &mut Vec<TrieNode>, num_parents: usize) {
+    fn serialize_node(&self, node_idx: usize, data: &mut Vec<TrieNode>, num_parents: usize) {
+        let node = &self.nodes[node_idx];
         let idx = data.len();
-        let mut num_ch = self.children.len();
+
+        let mut num_ch = 0;
+        let mut child = node.first_child;
+        while child != NO_NODE {
+            num_ch += 1;
+            child = self.nodes[child as usize].next_sibling;
+        }
+
         data.push(TrieNode::new(
-            self.byte,
-            self.token_id,
+            node.byte,
+            node.token_id,
             if num_parents == 0 { 1 } else { num_parents },
         ));
-        //self.children.reverse();
-        self.children.sort_by_key(|e| e.byte);
-        for entry in &mut self.children {
+
+        let mut child = node.first_child;
+        while child != NO_NODE {
             num_ch -= 1;
-            entry.serialize(data, if num_ch == 0 { num_parents + 1 } else { 1 });
+            self.serialize_node(
+                child as usize,
+                data,
+                if num_ch == 0 { num_parents + 1 } else { 1 },
+            );
+            child = self.nodes[child as usize].next_sibling;
         }
+
         let subtree_size = data.len() - idx;
         data[idx].set_subtree_size(subtree_size);
     }
-}
 
+    fn serialize(&mut self, data: &mut Vec<TrieNode>, num_parents: usize) {
+        self.serialize_node(0, data, num_parents);
+    }
+}
 struct FixedRecognizer {
     bytes: Vec<u8>,
     bytes_ptr: usize,
