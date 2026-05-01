@@ -12,6 +12,6 @@ found in the LICENSE file.
         android:topLeftRadius="?attr/popupBgCornerRadius"
         android:topRightRadius="?attr/popupBgCornerRadius"/>
 
-    <solid android:color="@macro/menu_bg_color"/>
+    <solid android:color="?attr/colorSurface"/>
 
 </shape>
