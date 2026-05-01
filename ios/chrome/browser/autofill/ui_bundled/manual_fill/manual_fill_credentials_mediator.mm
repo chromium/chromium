@@ -231,7 +231,9 @@ std::vector<ManualFillCredentialAndPasswordForm> GetFilteredCredentials(
   NSString* searchText = searchController.searchBar.text;
   if (!searchText.length) {
     NSArray<ManualFillCredentialItem*>* credentialItems =
-        [self createItemsForCredentials:_credentials];
+        [self createItemsForCredentials:_credentials
+                             startIndex:0
+                             totalCount:_credentials.size()];
     [self.consumer presentCredentials:credentialItems];
     return;
   }
@@ -239,7 +241,9 @@ std::vector<ManualFillCredentialAndPasswordForm> GetFilteredCredentials(
   std::vector<ManualFillCredentialAndPasswordForm> filteredCredentials =
       GetFilteredCredentials(_credentials, searchText);
   NSArray<ManualFillCredentialItem*>* credentialItems =
-      [self createItemsForCredentials:filteredCredentials];
+      [self createItemsForCredentials:filteredCredentials
+                           startIndex:0
+                           totalCount:filteredCredentials.size()];
   [self.consumer presentCredentials:credentialItems];
 }
 
@@ -264,13 +268,18 @@ std::vector<ManualFillCredentialAndPasswordForm> GetFilteredCredentials(
     return;
   }
   NSArray<ManualFillCredentialItem*>* credentials =
-      [self createItemsForCredentials:_credentials];
+      [self createItemsForCredentials:_credentials
+                           startIndex:0
+                           totalCount:_credentials.size()];
   [self.consumer presentCredentials:credentials];
 }
 
 // Creates a table view model with the passed credentials.
-- (NSArray<ManualFillCredentialItem*>*)createItemsForCredentials:
-    (const std::vector<ManualFillCredentialAndPasswordForm>&)credentials {
+- (NSArray<ManualFillCredentialItem*>*)
+    createItemsForCredentials:
+        (const std::vector<ManualFillCredentialAndPasswordForm>&)credentials
+                   startIndex:(size_t)startIndex
+                   totalCount:(size_t)totalCount {
   size_t credentialCount = credentials.size();
   NSMutableArray* items =
       [[NSMutableArray alloc] initWithCapacity:credentialCount];
@@ -288,14 +297,14 @@ std::vector<ManualFillCredentialAndPasswordForm> GetFilteredCredentials(
         base::i18n::MessageFormatter::FormatWithNamedArgs(
             l10n_util::GetStringUTF16(
                 IDS_IOS_MANUAL_FALLBACK_PASSWORD_CELL_INDEX),
-            "count", base::checked_cast<int>(credentialCount), "position",
-            base::checked_cast<int>(i + 1)));
+            "count", base::checked_cast<int>(totalCount), "position",
+            base::checked_cast<int>(startIndex + i + 1)));
 
     ManualFillCredentialItem* item = [[ManualFillCredentialItem alloc]
                  initWithCredential:manualFillCredential
                     contentInjector:self
                         menuActions:menuActions
-                          cellIndex:i
+                          cellIndex:startIndex + i
         cellIndexAccessibilityLabel:cellIndexAccessibilityLabel
              showAutofillFormButton:_showAutofillFormButton
             fromAllPasswordsContext:[self isFromAllPasswordsContext]
