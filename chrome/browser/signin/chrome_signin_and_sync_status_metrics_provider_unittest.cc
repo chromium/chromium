@@ -38,8 +38,11 @@ TEST_F(ChromeSigninAndSyncStatusMetricsProviderTest,
   Profile* profile = profile_manager_.CreateGuestProfile(
       std::make_optional<TestingProfile::Builder>(std::move(profile_builder)));
   ASSERT_NE(profile, nullptr);
+
+  // Assert the ProfileBrowserCollection is instantiated even in the case the
+  // profile cannot instantiate any browsers.
   ASSERT_FALSE(profile->AllowsBrowserWindows());
-  ASSERT_EQ(nullptr, ProfileBrowserCollection::GetForProfile(profile));
+  ASSERT_TRUE(ProfileBrowserCollection::GetForProfile(profile));
 
   ChromeSigninAndSyncStatusMetricsProvider provider;
   metrics::ChromeUserMetricsExtension uma_proto;

@@ -40,10 +40,8 @@ BrowserManagerServiceFactory::BuildServiceInstanceForBrowserContext(
 
 content::BrowserContext* BrowserManagerServiceFactory::GetBrowserContextToUse(
     content::BrowserContext* context) const {
-  // Only instantiate the service for Profiles that support Browser instances.
-  if (!Profile::FromBrowserContext(context)->AllowsBrowserWindows()) {
-    return nullptr;
-  }
+  // Create an empty BrowserManagerService even for contexts that don't support
+  // browser windows (this is CHECKed at Browser construction time).
   return context;
 }
 
