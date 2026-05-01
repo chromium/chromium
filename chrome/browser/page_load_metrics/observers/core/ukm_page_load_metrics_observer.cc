@@ -783,24 +783,22 @@ void UkmPageLoadMetricsObserver::RecordSoftNavigationMetrics() {
                 .num_user_interactions()));
   }
 
-  // Since soft navigations require input, and input can only be received in the
-  // foreground, it should be safe to assume that the frame was in the
-  // foreground at least once.
-  CHECK(!last_time_shown_.is_null(), base::NotFatalUntil::M151);
-
-  const std::optional<float> cwv_cls_value =
-      GetCoreWebVitalsSoftNavigationIntervalCLS();
-  if (cwv_cls_value.has_value()) {
-    builder
-        .SetLayoutInstability_MaxCumulativeShiftScore_SessionWindow_Gap1000ms_Max5000ms(
-            page_load_metrics::LayoutShiftUkmValue(*cwv_cls_value));
-    // Report UMA using same binning as all WebVitals.CumulativeLayoutShift
-    // histograms; the binning ensures changes close to zero can accurately
-    // be measured.
-    base::UmaHistogramCustomCounts(
-        "PageLoad.SoftNavigation.CumulativeLayoutShift",
-        page_load_metrics::LayoutShiftUmaValue10000(*cwv_cls_value), 1, 24000,
-        50);
+  // Don't report CLS if we were never in the foreground.
+  if (!last_time_shown_.is_null()) {
+    const std::optional<float> cwv_cls_value =
+        GetCoreWebVitalsSoftNavigationIntervalCLS();
+    if (cwv_cls_value.has_value()) {
+      builder
+          .SetLayoutInstability_MaxCumulativeShiftScore_SessionWindow_Gap1000ms_Max5000ms(
+              page_load_metrics::LayoutShiftUkmValue(*cwv_cls_value));
+      // Report UMA using same binning as all WebVitals.CumulativeLayoutShift
+      // histograms; the binning ensures changes close to zero can accurately
+      // be measured.
+      base::UmaHistogramCustomCounts(
+          "PageLoad.SoftNavigation.CumulativeLayoutShift",
+          page_load_metrics::LayoutShiftUmaValue10000(*cwv_cls_value), 1, 24000,
+          50);
+    }
   }
 
   builder.Record(ukm::UkmRecorder::Get());
