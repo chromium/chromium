@@ -99,6 +99,9 @@ const CGFloat kGoogleWalletLogoHeight = 32.0;
 
   // The save and fill button.
   ChromeButton* _saveButton;
+
+  // Currently focused item.
+  TableViewTextEditItem* _focusedItem;
 }
 
 #pragma mark - Initialization
@@ -122,6 +125,12 @@ const CGFloat kGoogleWalletLogoHeight = 32.0;
   self.tableView.tableHeaderView = [self createHeaderView];
   self.tableView.sectionFooterHeight = UITableViewAutomaticDimension;
   self.tableView.estimatedSectionFooterHeight = kEstimatedFooterHeight;
+
+  UITapGestureRecognizer* tapGesture = [[UITapGestureRecognizer alloc]
+      initWithTarget:self
+              action:@selector(dismissKeyboard)];
+  tapGesture.cancelsTouchesInView = NO;
+  [self.view addGestureRecognizer:tapGesture];
 
   _saveButton = [[ChromeButton alloc] initWithStyle:ChromeButtonStylePrimary];
   _saveButton.title =
@@ -266,6 +275,11 @@ const CGFloat kGoogleWalletLogoHeight = 32.0;
 
 #pragma mark - Actions
 
+// Dismisses the keyboard when tapping outside.
+- (void)dismissKeyboard {
+  [self.view endEditing:YES];
+}
+
 // Triggered when the user taps the save button.
 - (void)didTapSave {
   _saveButton.enabled = NO;
@@ -331,7 +345,15 @@ const CGFloat kGoogleWalletLogoHeight = 32.0;
   }
 
   if (item) {
-    [item setHasValidText:isValid];
+    if (item == _focusedItem || item.textFieldValue.length == 0) {
+      // Do not show error indicators while editing or if the field is empty.
+      item.hasValidText = YES;
+    } else {
+      // When not editing and not empty (e.g. populated by OCR, or after editing
+      // ends), show actual validation status.
+      item.hasValidText = isValid;
+    }
+
     [AutofillSettingsUtil updateAccessibilityLabelForItem:item
                                              isInputValid:isValid
                                              errorMessage:errorMessage];
@@ -394,14 +416,21 @@ const CGFloat kGoogleWalletLogoHeight = 32.0;
 #pragma mark - TableViewTextEditItemDelegate
 
 - (void)tableViewItemDidBeginEditing:(TableViewTextEditItem*)item {
+  _focusedItem = item;
+  // Suppress errors as soon as editing starts.
+  item.hasValidText = YES;
+  [self reconfigureCellsForItems:@[ item ]];
 }
 
 - (void)tableViewItemDidChange:(TableViewTextEditItem*)item {
-  [self validateAndReconfigureItems:@[ item ]];
+  // Pushes changes for button validation, but visual suppression applies.
+  [self pushValueUpdateForItem:item];
 }
 
 - (void)tableViewItemDidEndEditing:(TableViewTextEditItem*)item {
-  [self validateAndReconfigureItems:@[ item ]];
+  _focusedItem = nil;
+  // Triggers real validation state display upon exit.
+  [self pushValueUpdateForItem:item];
 }
 
 - (BOOL)tableView:(UITableView*)tableView

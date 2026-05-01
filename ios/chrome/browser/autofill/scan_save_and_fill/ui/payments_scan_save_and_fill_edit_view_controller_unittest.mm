@@ -385,22 +385,72 @@ TEST_F(PaymentsScanSaveAndFillEditViewControllerTest,
   view_controller_.mutator = fake_mutator_;
 
   TableViewTextEditItem* expItem = GetItem(kSectionIdentifierEnumZero, 1);
-  PaymentsScanSaveAndFillEditViewController* delegate = view_controller_;
+  id<TableViewTextEditItemDelegate> delegate =
+      (id<TableViewTextEditItemDelegate>)view_controller_;
 
-  // Enter invalid data "122"
+  // Initial load: empty, so it must be valid.
+  EXPECT_TRUE(expItem.hasValidText);
+
+  // Focus the field.
+  [delegate tableViewItemDidBeginEditing:expItem];
+  EXPECT_TRUE(expItem.hasValidText);
+
+  // Enter invalid data "122". While editing, errors are visually suppressed.
   expItem.textFieldValue = @"122";
   [delegate tableViewItemDidChange:expItem];
+  EXPECT_TRUE(expItem.hasValidText);
+
+  // End editing: now it should resolve to invalid visual state.
+  [delegate tableViewItemDidEndEditing:expItem];
   EXPECT_FALSE(expItem.hasValidText);
 
-  // Enter overly long invalid data "12/20265"
-  expItem.textFieldValue = @"12/20265";
-  [delegate tableViewItemDidChange:expItem];
-  EXPECT_FALSE(expItem.hasValidText);
+  // Re-focus the field: error should immediately vanish visually again.
+  [delegate tableViewItemDidBeginEditing:expItem];
+  EXPECT_TRUE(expItem.hasValidText);
 
-  // Enter valid data "12/29" should be considered valid.
+  // Correct it while focused. Still valid visually.
   expItem.textFieldValue = @"12/29";
   [delegate tableViewItemDidChange:expItem];
   EXPECT_TRUE(expItem.hasValidText);
+
+  // End editing: truly valid now.
+  [delegate tableViewItemDidEndEditing:expItem];
+  EXPECT_TRUE(expItem.hasValidText);
+}
+
+// Tests the validation timing and focus behavior.
+TEST_F(PaymentsScanSaveAndFillEditViewControllerTest, TestValidationTiming) {
+  CreateController();
+  view_controller_.mutator = fake_mutator_;
+
+  TableViewTextEditItem* numberItem = GetItem(kSectionIdentifierEnumZero, 0);
+  id<TableViewTextEditItemDelegate> delegate =
+      (id<TableViewTextEditItemDelegate>)view_controller_;
+
+  // Initial state: completely empty, must be visually valid (no red
+  // exclamation).
+  EXPECT_TRUE(numberItem.hasValidText);
+
+  // Scenario: POPULATED BY OCR.
+  // Field is filled automatically (NOT focused). Since it's non-empty and
+  // invalid, validation SHOULD be displayed immediately.
+  numberItem.textFieldValue = @"4111";  // Too short
+  [view_controller_ validateAndReconfigureItems:@[ numberItem ]];
+  EXPECT_FALSE(numberItem.hasValidText);
+
+  // Begin editing: The error must IMMEDIATELY disappear when the user taps into
+  // it.
+  [delegate tableViewItemDidBeginEditing:numberItem];
+  EXPECT_TRUE(numberItem.hasValidText);
+
+  // While typing, errors remain hidden.
+  numberItem.textFieldValue = @"411122";
+  [delegate tableViewItemDidChange:numberItem];
+  EXPECT_TRUE(numberItem.hasValidText);
+
+  // End editing: The actual error reappears now that editing finished.
+  [delegate tableViewItemDidEndEditing:numberItem];
+  EXPECT_FALSE(numberItem.hasValidText);
 }
 
 // Tests if the save button's state correctly updates based on validations.
