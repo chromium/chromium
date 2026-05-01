@@ -776,9 +776,29 @@ int SSLClientSocketImpl::Init() {
       SSL_SIGN_RSA_PSS_RSAE_SHA384,    SSL_SIGN_RSA_PKCS1_SHA384,
       SSL_SIGN_RSA_PSS_RSAE_SHA512,    SSL_SIGN_RSA_PKCS1_SHA512,
   };
-  if (!SSL_set_verify_algorithm_prefs(ssl_.get(), kVerifyPrefs,
-                                      std::size(kVerifyPrefs))) {
-    return ERR_UNEXPECTED;
+  static const uint16_t kVerifyPrefsWithMlDsa[] = {
+      SSL_SIGN_ML_DSA_44,
+      SSL_SIGN_ML_DSA_65,
+      SSL_SIGN_ML_DSA_87,
+      SSL_SIGN_ECDSA_SECP256R1_SHA256,
+      SSL_SIGN_RSA_PSS_RSAE_SHA256,
+      SSL_SIGN_RSA_PKCS1_SHA256,
+      SSL_SIGN_ECDSA_SECP384R1_SHA384,
+      SSL_SIGN_RSA_PSS_RSAE_SHA384,
+      SSL_SIGN_RSA_PKCS1_SHA384,
+      SSL_SIGN_RSA_PSS_RSAE_SHA512,
+      SSL_SIGN_RSA_PKCS1_SHA512,
+  };
+  if (base::FeatureList::IsEnabled(features::kTlsMldsaSignatures)) {
+    if (!SSL_set_verify_algorithm_prefs(ssl_.get(), kVerifyPrefsWithMlDsa,
+                                        std::size(kVerifyPrefsWithMlDsa))) {
+      return ERR_UNEXPECTED;
+    }
+  } else {
+    if (!SSL_set_verify_algorithm_prefs(ssl_.get(), kVerifyPrefs,
+                                        std::size(kVerifyPrefs))) {
+      return ERR_UNEXPECTED;
+    }
   }
 
   SSL_set_alps_use_new_codepoint(

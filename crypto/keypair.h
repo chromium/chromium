@@ -51,6 +51,9 @@ class CRYPTO_EXPORT PrivateKey {
   // Generates a fresh, random X25519 key.
   static PrivateKey GenerateX25519();
 
+  // Generates a fresh, random ML-DSA-44 key.
+  static PrivateKey GenerateMldsa44();
+
   // Imports a PKCS#8 PrivateKeyInfo block. Returns nullopt if the passed-in
   // buffer is not a valid PrivateKeyInfo block, or if there is trailing data in
   // it after the PrivateKeyInfo block.
@@ -125,6 +128,7 @@ class CRYPTO_EXPORT PrivateKey {
   bool IsEc() const;
   bool IsEd25519() const;
   bool IsX25519() const;
+  bool IsMldsa44() const;
 
   bool IsEcP256() const;
   bool IsEcP384() const;
@@ -216,6 +220,7 @@ class CRYPTO_EXPORT PublicKey {
   bool IsEc() const;
   bool IsEd25519() const;
   bool IsX25519() const;
+  bool IsMldsa44() const;
 
   bool IsEcP256() const;
   bool IsEcP384() const;

@@ -53,6 +53,7 @@
 #include "third_party/boringssl/src/pki/parse_certificate.h"
 #include "third_party/boringssl/src/pki/parse_values.h"
 #include "third_party/boringssl/src/pki/parser.h"
+#include "third_party/boringssl/src/pki/signature_algorithm.h"
 #include "third_party/boringssl/src/pki/trust_store.h"
 #include "third_party/boringssl/src/pki/verify_signed_data.h"
 #include "url/gurl.h"
@@ -92,6 +93,14 @@ std::string EcdsaWithSha256() {
 std::string EcdsaWithSha1() {
   const uint8_t kDer[] = {0x30, 0x09, 0x06, 0x07, 0x2a, 0x86,
                           0x48, 0xce, 0x3d, 0x04, 0x01};
+  return std::string(std::begin(kDer), std::end(kDer));
+}
+
+std::string Mldsa44() {
+  // ML-DSA-44 OID is 2.16.840.1.101.3.4.3.17.
+  // AlgorithmIdentifier has parameters ABSENT.
+  const uint8_t kDer[] = {0x30, 0x0b, 0x06, 0x09, 0x60, 0x86, 0x48,
+                          0x01, 0x65, 0x03, 0x04, 0x03, 0x11};
   return std::string(std::begin(kDer), std::end(kDer));
 }
 
@@ -289,10 +298,14 @@ std::array<std::unique_ptr<CertBuilder>, 2> CertBuilder::CreateSimpleChain2() {
 // static
 std::optional<bssl::SignatureAlgorithm>
 CertBuilder::DefaultSignatureAlgorithmForKey(EVP_PKEY* key) {
-  if (EVP_PKEY_id(key) == EVP_PKEY_RSA)
-    return bssl::SignatureAlgorithm::kRsaPkcs1Sha256;
-  if (EVP_PKEY_id(key) == EVP_PKEY_EC)
-    return bssl::SignatureAlgorithm::kEcdsaSha256;
+  switch (EVP_PKEY_id(key)) {
+    case EVP_PKEY_RSA:
+      return bssl::SignatureAlgorithm::kRsaPkcs1Sha256;
+    case EVP_PKEY_EC:
+      return bssl::SignatureAlgorithm::kEcdsaSha256;
+    case EVP_PKEY_ML_DSA_44:
+      return bssl::SignatureAlgorithm::kMldsa44;
+  }
   return std::nullopt;
 }
 
@@ -341,6 +354,11 @@ bool CertBuilder::SignData(bssl::SignatureAlgorithm signature_algorithm,
       digest = EVP_sha512();
       break;
 
+    case bssl::SignatureAlgorithm::kMldsa44:
+      expected_pkey_id = EVP_PKEY_ML_DSA_44;
+      digest = nullptr;
+      break;
+
     default:
       // Unsupported algorithms.
       return false;
@@ -381,6 +399,8 @@ std::string CertBuilder::SignatureAlgorithmToDer(
       return EcdsaWithSha1();
     case bssl::SignatureAlgorithm::kEcdsaSha256:
       return EcdsaWithSha256();
+    case bssl::SignatureAlgorithm::kMldsa44:
+      return Mldsa44();
     default:
       ADD_FAILURE();
       return std::string();
@@ -1221,6 +1241,11 @@ void CertBuilder::GenerateECKey() {
 void CertBuilder::GenerateRSAKey() {
   // TODO(https://crbug.com/426228064): Can we just use a hardcoded key here?
   auto private_key = crypto::keypair::PrivateKey::GenerateRsa2048();
+  SetKey(bssl::UpRef(private_key.key()));
+}
+
+void CertBuilder::GenerateMldsa44Key() {
+  auto private_key = crypto::keypair::PrivateKey::GenerateMldsa44();
   SetKey(bssl::UpRef(private_key.key()));
 }
 

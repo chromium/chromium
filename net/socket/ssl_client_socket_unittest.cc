@@ -1657,6 +1657,52 @@ TEST_P(SSLClientSocketReadTest, Read) {
   EXPECT_EQ(0, rv);
 }
 
+TEST_F(SSLClientSocketTest, MldsaSignature) {
+  auto [leaf, root] = CertBuilder::CreateSimpleChain2();
+  leaf->GenerateMldsa44Key();
+
+  EmbeddedTestServer::ServerCertificateConfig cert_config;
+  cert_config.cert_and_key = EmbeddedTestServer::CertAndKey(
+      leaf->DupCertBuffer(), bssl::UpRef(leaf->GetKey()));
+
+  ASSERT_TRUE(StartEmbeddedTestServer(cert_config, SSLServerConfig()));
+
+  cert_verifier_->set_default_result(OK);
+
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(features::kTlsMldsaSignatures);
+
+    TestCompletionCallback callback;
+    auto transport = std::make_unique<TCPClientSocket>(addr(), nullptr, nullptr,
+                                                       nullptr, NetLogSource());
+    EXPECT_THAT(callback.GetResult(transport->Connect(callback.callback())),
+                IsOk());
+
+    std::unique_ptr<SSLClientSocket> sock(CreateSSLClientSocket(
+        std::move(transport), host_port_pair(), SSLConfig()));
+    EXPECT_THAT(callback.GetResult(sock->Connect(callback.callback())), IsOk());
+  }
+
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(features::kTlsMldsaSignatures);
+    // The connection should fail when the client doesn't have ML-DSA support
+    // enabled.
+
+    TestCompletionCallback callback;
+    auto transport = std::make_unique<TCPClientSocket>(addr(), nullptr, nullptr,
+                                                       nullptr, NetLogSource());
+    EXPECT_THAT(callback.GetResult(transport->Connect(callback.callback())),
+                IsOk());
+
+    std::unique_ptr<SSLClientSocket> sock(CreateSSLClientSocket(
+        std::move(transport), host_port_pair(), SSLConfig()));
+    EXPECT_THAT(callback.GetResult(sock->Connect(callback.callback())),
+                IsError(ERR_SSL_VERSION_OR_CIPHER_MISMATCH));
+  }
+}
+
 // Tests that SSLClientSocket properly handles when the underlying transport
 // synchronously fails a transport write in during the handshake.
 TEST_F(SSLClientSocketTest, Connect_WithSynchronousError) {

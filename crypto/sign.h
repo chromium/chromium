@@ -33,6 +33,10 @@ enum SignatureKind {
   // Note: Ed25519 cannot be used in streaming modes and has to be passed the
   // entire message to sign; it does not take a separate hash function.
   ED25519,
+
+  // Note: ML-DSA cannot be used in streaming modes and has to be passed the
+  // entire message to sign; it does not take a separate hash function.
+  MLDSA_44,
 };
 
 // One-shot signature function: produce a signature of `data` using `key`.

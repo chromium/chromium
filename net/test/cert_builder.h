@@ -336,6 +336,10 @@ class CertBuilder {
   // key is specifically needed. If a key was already set, it will be replaced.
   void GenerateRSAKey();
 
+  // Sets the private key for the generated certificate to an ML-DSA-44 key. If
+  // a key was already set, it will be replaced.
+  void GenerateMldsa44Key();
+
   // Loads the private key for the generated certificate from |key_file|.
   bool UseKeyFromFile(const base::FilePath& key_file);
 

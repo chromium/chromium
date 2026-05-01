@@ -43,6 +43,8 @@ bool CanUseKeyForSignatureKind(SignatureKind kind,
       return id == EVP_PKEY_EC;
     case ED25519:
       return id == EVP_PKEY_ED25519 && mode == kOneShot;
+    case MLDSA_44:
+      return id == EVP_PKEY_ML_DSA_44 && mode == kOneShot;
   }
 
   return false;
@@ -66,6 +68,7 @@ const EVP_MD* DigestForSignatureKind(SignatureKind kind) {
     case ECDSA_SHA512:
       return EVP_sha512();
     case ED25519:
+    case MLDSA_44:
       return nullptr;
   }
 }

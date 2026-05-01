@@ -7,6 +7,7 @@
 #include "base/containers/to_vector.h"
 #include "base/logging.h"
 #include "crypto/openssl_util.h"
+#include "third_party/boringssl/src/include/openssl/base.h"
 #include "third_party/boringssl/src/include/openssl/bn.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/curve25519.h"
@@ -51,7 +52,8 @@ bssl::UniquePtr<EVP_PKEY> GenerateEc(int nid) {
 
 bool IsSupportedEvpId(int evp_id) {
   return evp_id == EVP_PKEY_RSA || evp_id == EVP_PKEY_EC ||
-         evp_id == EVP_PKEY_ED25519 || evp_id == EVP_PKEY_X25519;
+         evp_id == EVP_PKEY_ED25519 || evp_id == EVP_PKEY_X25519 ||
+         evp_id == EVP_PKEY_ML_DSA_44;
 }
 
 std::vector<uint8_t> CBBToVector(CBB* cbb) {
@@ -170,6 +172,14 @@ PrivateKey PrivateKey::GenerateX25519() {
   X25519_keypair(unused_pubkey.data(), privkey.data());
 
   return FromX25519PrivateKey(privkey);
+}
+
+// static
+PrivateKey PrivateKey::GenerateMldsa44() {
+  OpenSSLErrStackTracer err_tracer(FROM_HERE);
+
+  return PrivateKey(bssl::UniquePtr<EVP_PKEY>(
+      EVP_PKEY_generate_from_alg(EVP_pkey_ml_dsa_44())));
 }
 
 // static
@@ -338,6 +348,10 @@ bool PrivateKey::IsEd25519() const {
 
 bool PrivateKey::IsX25519() const {
   return EVP_PKEY_id(key_.get()) == EVP_PKEY_X25519;
+}
+
+bool PrivateKey::IsMldsa44() const {
+  return EVP_PKEY_id(key_.get()) == EVP_PKEY_ML_DSA_44;
 }
 
 bool PrivateKey::IsEcP256() const {
@@ -523,6 +537,10 @@ bool PublicKey::IsEd25519() const {
 
 bool PublicKey::IsX25519() const {
   return EVP_PKEY_id(key_.get()) == EVP_PKEY_X25519;
+}
+
+bool PublicKey::IsMldsa44() const {
+  return EVP_PKEY_id(key_.get()) == EVP_PKEY_ML_DSA_44;
 }
 
 bool PublicKey::IsEcP256() const {
