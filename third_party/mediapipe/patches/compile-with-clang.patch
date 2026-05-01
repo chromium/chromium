@@ -44,7 +44,7 @@ index b845f79570135..e8ae164732b58 100644
    NodeBase(const NodeBase&) = delete;
    NodeBase& operator=(const NodeBase&) = delete;
 diff --git a/third_party/mediapipe/src/mediapipe/framework/api3/contract.h b/third_party/mediapipe/src/mediapipe/framework/api3/contract.h
-index f6709fa8d7780..e56d3b21227dc 100644
+index fe0ced29703df..49616e79c2176 100644
 --- a/third_party/mediapipe/src/mediapipe/framework/api3/contract.h
 +++ b/third_party/mediapipe/src/mediapipe/framework/api3/contract.h
 @@ -247,7 +247,7 @@ class Optional;
@@ -54,8 +54,8 @@ index f6709fa8d7780..e56d3b21227dc 100644
 -struct Options;
 +class Options;
  
- // Used in cases when inputs/outputs are provided in alternative ways.
- // (E.g. `Build(Graph<>& graph, Stream<..> input) -> Stream<...>)`)
+ // Repeated / Optional template implementation
+ 
 diff --git a/third_party/mediapipe/src/mediapipe/framework/api3/internal/contract_validator.h b/third_party/mediapipe/src/mediapipe/framework/api3/internal/contract_validator.h
 index 75f6eb48c4913..dd09d0815fd6a 100644
 --- a/third_party/mediapipe/src/mediapipe/framework/api3/internal/contract_validator.h

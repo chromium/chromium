@@ -28,12 +28,22 @@ package(default_visibility = ["//visibility:public"])
 
 # Disabling GPU support is sometimes useful on desktop Linux because SwiftShader can
 # interfere with desktop GL. b/73494271
-config_setting(
+# Also disable GPU on Windows since it's not supported (use pthread).
+selects.config_setting_group(
     name = "disable_gpu",
+    match_any = [
+        ":disable_gpu_flag",
+        # The GPU library here use pthread which is not available on Windows.
+        "@platforms//os:windows",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+config_setting(
+    name = "disable_gpu_flag",
     define_values = {
         "MEDIAPIPE_DISABLE_GPU": "1",
     },
-    visibility = ["//visibility:public"],
 )
 
 cc_library(
@@ -212,6 +222,12 @@ cc_library(
             "-framework AppKit",
         ],
     }),
+    target_compatible_with = select({
+        # This cc_library uses pthread and is not compatible with Windows. Marking it as
+        # incompatible instead of the confusing message "pthread.h" file not found.
+        "@platforms//os:windows": ["//third_party/bazel_platforms:incompatible"],
+        "//conditions:default": [],
+    }),
     visibility = [
         "//visibility:public",
     ],
@@ -298,6 +314,25 @@ cc_library(
         ":gl_base",
         ":gl_context",
         ":gpu_buffer_storage",
+    ],
+)
+
+cc_library(
+    name = "gl_external_texture_view",
+    srcs = select({
+        "//mediapipe:ios": ["gl_external_texture_view_ios.cc"],
+        "//conditions:default": ["gl_external_texture_view_default.cc"],
+    }),
+    hdrs = ["gl_external_texture_view.h"],
+    visibility = ["//visibility:public"],
+    deps = [
+        ":gl_context",
+        ":gl_texture_view",
+        ":gpu_buffer",
+        ":gpu_shared_data_internal",
+        "//mediapipe/framework/port:ret_check",
+        "@com_google_absl//absl/status",
+        "@com_google_absl//absl/status:statusor",
     ],
 )
 

@@ -25,6 +25,7 @@ cc_library(
     srcs = ["base_options.cc"],
     hdrs = ["base_options.h"],
     deps = [
+        ":host_environment",
         ":mediapipe_builtin_op_resolver",
         "//mediapipe/calculators/tensor:inference_calculator_cc_proto",
         "//mediapipe/tasks/cc/core/proto:acceleration_cc_proto",
@@ -35,6 +36,11 @@ cc_library(
         "@org_tensorflow//tensorflow/lite/core/api:op_resolver",
         "@org_tensorflow//tensorflow/lite/kernels:builtin_ops",
     ],
+)
+
+cc_library(
+    name = "host_environment",
+    hdrs = ["host_environment.h"],
 )
 
 cc_test(
@@ -72,10 +78,13 @@ cc_library(
     ],
 )
 
-cc_library(
+cc_library_with_tflite(
     name = "mediapipe_builtin_op_resolver",
     srcs = ["mediapipe_builtin_op_resolver.cc"],
     hdrs = ["mediapipe_builtin_op_resolver.h"],
+    tflite_deps = [
+        "@org_tensorflow//tensorflow/lite/kernels:builtin_ops",
+    ],
     deps = [
         "//mediapipe/tasks/cc/text/custom_ops/ragged:ragged_tensor_to_tensor_tflite",
         "//mediapipe/tasks/cc/text/custom_ops/sentencepiece:sentencepiece_tokenizer_tflite",
@@ -88,7 +97,6 @@ cc_library(
         "//mediapipe/util/tflite/operations:transform_landmarks",
         "//mediapipe/util/tflite/operations:transform_tensor_bilinear",
         "//mediapipe/util/tflite/operations:transpose_conv_bias",
-        "@org_tensorflow//tensorflow/lite/kernels:builtin_ops",
     ],
 )
 
@@ -259,6 +267,7 @@ cc_library_with_tflite(
         ":model_resources_calculator",
     ],
     deps = [
+        ":host_environment",
         "//mediapipe/framework:calculator_cc_proto",
         "//mediapipe/framework:calculator_framework",
         "//mediapipe/framework:executor",
@@ -266,8 +275,13 @@ cc_library_with_tflite(
         "//mediapipe/framework/tool:name_util",
         "//mediapipe/gpu:gpu_shared_data_internal",
         "//mediapipe/tasks/cc:common",
+        "//mediapipe/tasks/cc/core/logging:tasks_dummy_logger",
+        "//mediapipe/tasks/cc/core/logging:tasks_logger",
+        "//mediapipe/tasks/cc/core/logging/factory:logging_factory",
+        "//mediapipe/tasks/cc/core/logging/factory:logging_factory_hdr",
         "@com_google_absl//absl/base:core_headers",
         "@com_google_absl//absl/container:flat_hash_map",
+        "@com_google_absl//absl/log:absl_log",
         "@com_google_absl//absl/memory",
         "@com_google_absl//absl/status",
         "@com_google_absl//absl/status:statusor",

@@ -1,4 +1,4 @@
-// Copyright 2024 The ODML Authors.
+// Copyright 2026 The MediaPipe Authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,19 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-syntax = "proto3";
+#include "mediapipe/tasks/cc/core/logging/factory/logging_factory.h"
 
-package odml.infra.proto;
+#include <memory>
 
-option java_package = "com.google.odml.infra.proto";
-option java_outer_classname = "ModelDataCalculatorOptionsProto";
+#include "mediapipe/tasks/cc/core/logging/tasks_dummy_logger.h"
+#include "mediapipe/tasks/cc/core/logging/tasks_logger.h"
 
-message ModelDataCalculatorOptions {
-  // The path to the base model data.
-  string weight_path = 1;
+namespace mediapipe::tasks::core::logging {
 
-  reserved 2;
-
-  // The path to the SentencePiece model file.
-  string spm_model_file = 3;
+std::unique_ptr<TasksLogger> CreateTasksLogger(
+    const LoggingOptions& /*logging_options*/) {
+  return TasksDummyLogger::Create();
 }
+
+}  // namespace mediapipe::tasks::core::logging

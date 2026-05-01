@@ -16,6 +16,7 @@ limitations under the License.
 #include "mediapipe/tasks/cc/text/text_embedder/text_embedder.h"
 
 #include <memory>
+#include <utility>
 
 #include "absl/status/statusor.h"
 #include "mediapipe/calculators/tensor/inference_calculator.pb.h"
@@ -29,11 +30,13 @@ limitations under the License.
 #include "mediapipe/tasks/cc/core/base_options.h"
 #include "mediapipe/tasks/cc/core/proto/base_options.pb.h"
 #include "mediapipe/tasks/cc/core/task_api_factory.h"
+#include "mediapipe/tasks/cc/core/task_runner.h"
 #include "mediapipe/tasks/cc/text/text_embedder/proto/text_embedder_graph_options.pb.h"
 
 namespace mediapipe::tasks::text::text_embedder {
 namespace {
 
+constexpr char kTaskName[] = "TextEmbedder";
 constexpr char kTextTag[] = "TEXT";
 constexpr char kEmbeddingsTag[] = "EMBEDDINGS";
 constexpr char kTextInStreamName[] = "text_in";
@@ -82,8 +85,15 @@ absl::StatusOr<std::unique_ptr<TextEmbedder>> TextEmbedder::Create(
       ConvertTextEmbedderOptionsToProto(options.get());
   return core::TaskApiFactory::Create<TextEmbedder,
                                       proto::TextEmbedderGraphOptions>(
-      CreateGraphConfig(std::move(options_proto)),
-      std::move(options->base_options.op_resolver));
+      core::TaskRunnerOptions{
+          .config = CreateGraphConfig(std::move(options_proto)),
+          .task_name = kTaskName,
+          .task_running_mode = core::TaskApiFactory::kUnknownRunningMode,
+          .op_resolver = std::move(options->base_options.op_resolver),
+          .host_environment = options->base_options.host_environment,
+          .host_system = options->base_options.host_system,
+          .host_version = options->base_options.host_version,
+          .ca_bundle_path = options->base_options.ca_bundle_path});
 }
 
 absl::StatusOr<TextEmbedderResult> TextEmbedder::Embed(absl::string_view text) {

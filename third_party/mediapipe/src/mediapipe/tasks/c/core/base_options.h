@@ -27,6 +27,25 @@ enum Delegate {
   EDGETPU_NNAPI = 2,
 };
 
+// The environment that MediaPipe runs in.
+enum HostEnvironment {
+  HOST_ENVIRONMENT_UNKNOWN = 0,
+  HOST_ENVIRONMENT_ANDROID = 1,
+  HOST_ENVIRONMENT_IOS = 2,
+  HOST_ENVIRONMENT_PYTHON = 3,
+  HOST_ENVIRONMENT_WEB = 4,
+};
+
+// Host OS on which MediaPipe tasks are running.
+enum HostSystem {
+  HOST_SYSTEM_UNKNOWN = 0,
+  HOST_SYSTEM_LINUX = 1,
+  HOST_SYSTEM_MAC = 2,
+  HOST_SYSTEM_WINDOWS = 3,
+  HOST_SYSTEM_IOS = 4,
+  HOST_SYSTEM_ANDROID = 5,
+};
+
 // Base options for MediaPipe C Tasks.
 struct BaseOptions {
   // The model asset file contents as bytes.
@@ -40,6 +59,18 @@ struct BaseOptions {
 
   // The delegate to use for the MediaPipe graph.
   enum Delegate delegate;
+
+  // The environment on which the task is running.
+  enum HostEnvironment host_environment;
+
+  // The OS on which the task is running.
+  enum HostSystem host_system;
+
+  // The host version, e.g., python version.
+  const char* host_version;
+
+  // The path to CA bundle to use for usage logging.
+  const char* ca_bundle_path;
 };
 
 #ifdef __cplusplus
