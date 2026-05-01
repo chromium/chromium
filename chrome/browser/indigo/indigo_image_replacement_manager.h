@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_INDIGO_INDIGO_IMAGE_REPLACEMENT_MANAGER_H_
 #define CHROME_BROWSER_INDIGO_INDIGO_IMAGE_REPLACEMENT_MANAGER_H_
 
-#include <variant>
-
 #include "chrome/browser/indigo/indigo_image_replacement.h"
 #include "content/public/browser/page_user_data.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

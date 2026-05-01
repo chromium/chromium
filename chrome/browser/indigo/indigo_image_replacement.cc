@@ -16,13 +16,20 @@ IndigoImageReplacement::IndigoImageReplacement(IndigoImageReplacement&&) =
 IndigoImageReplacement::~IndigoImageReplacement() = default;
 
 void IndigoImageReplacement::ReplacementFrameAttached(
-    content::FrameTreeNodeId frame_tree_node_id) {
+    content::FrameTreeNodeId frame_tree_node_id,
+    std::vector<uint8_t> original_image_webp_bytes) {
   CHECK(!frame_tree_node_id_);
+  CHECK(original_image_webp_bytes_.empty());
   frame_tree_node_id_ = frame_tree_node_id;
+  original_image_webp_bytes_ = std::move(original_image_webp_bytes);
 }
 
 void IndigoImageReplacement::OnReadyToRender() {
   remote_->RenderReplacement();
+}
+
+std::vector<uint8_t> IndigoImageReplacement::TakeOriginalImageWebpBytes() {
+  return std::move(original_image_webp_bytes_);
 }
 
 }  // namespace indigo

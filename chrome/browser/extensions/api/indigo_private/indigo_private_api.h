@@ -27,6 +27,24 @@ class IndigoPrivateReadyToRenderFunction : public ExtensionFunction {
   ResponseAction Run() override;
 };
 
+class IndigoPrivateGetOriginalImageFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("indigoPrivate.getOriginalImage",
+                             INDIGOPRIVATE_GETORIGINALIMAGE)
+
+  IndigoPrivateGetOriginalImageFunction();
+  IndigoPrivateGetOriginalImageFunction(
+      const IndigoPrivateGetOriginalImageFunction&) = delete;
+  IndigoPrivateGetOriginalImageFunction& operator=(
+      const IndigoPrivateGetOriginalImageFunction&) = delete;
+
+ protected:
+  ~IndigoPrivateGetOriginalImageFunction() override;
+
+  // Override from ExtensionFunction:
+  ResponseAction Run() override;
+};
+
 }  // namespace extensions
 
 #endif  // CHROME_BROWSER_EXTENSIONS_API_INDIGO_PRIVATE_INDIGO_PRIVATE_API_H_

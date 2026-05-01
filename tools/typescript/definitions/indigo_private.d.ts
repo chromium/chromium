@@ -9,7 +9,11 @@ export {};
 declare global {
   export namespace chrome {
     export namespace indigoPrivate {
+      export interface ImageData {
+        webpBytes: ArrayBuffer;
+      }
       export function readyToRender(): Promise<void>;
+      export function getOriginalImage(): Promise<ImageData>;
     }
   }
 }

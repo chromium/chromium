@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/api/indigo_private/indigo_private_api.h"
 
+#include "base/containers/span.h"
 #include "chrome/browser/indigo/indigo_image_replacement.h"
 #include "chrome/browser/indigo/indigo_image_replacement_manager.h"
 #include "chrome/common/extensions/api/indigo_private.h"
@@ -44,6 +45,30 @@ ExtensionFunction::ResponseAction IndigoPrivateReadyToRenderFunction::Run() {
 
   replacement->OnReadyToRender();
   return RespondNow(NoArguments());
+}
+
+IndigoPrivateGetOriginalImageFunction::IndigoPrivateGetOriginalImageFunction() =
+    default;
+
+IndigoPrivateGetOriginalImageFunction::
+    ~IndigoPrivateGetOriginalImageFunction() = default;
+
+ExtensionFunction::ResponseAction IndigoPrivateGetOriginalImageFunction::Run() {
+  indigo::IndigoImageReplacement* replacement =
+      GetImageReplacement(render_frame_host());
+  if (!replacement) {
+    return RespondNow(Error("No image replacement found"));
+  }
+
+  std::vector<uint8_t> image_bytes = replacement->TakeOriginalImageWebpBytes();
+  if (image_bytes.empty()) {
+    return RespondNow(Error("Original image not available"));
+  }
+
+  api::indigo_private::ImageData result;
+  result.webp_bytes = std::move(image_bytes);
+  return RespondNow(ArgumentList(
+      api::indigo_private::GetOriginalImage::Results::Create(result)));
 }
 
 }  // namespace extensions

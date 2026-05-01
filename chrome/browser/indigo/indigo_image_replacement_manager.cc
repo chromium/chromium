@@ -86,9 +86,15 @@ void IndigoImageReplacementManager::ReplacementFrameAttached(
     receivers_.ReportBadMessage("Replacement frame already attached!");
     return;
   }
+
   content::FrameTreeNodeId frame_tree_node_id =
       image_replacement_subframe->GetFrameTreeNodeId();
-  image_replacement.ReplacementFrameAttached(frame_tree_node_id);
+  std::vector<uint8_t> image_bytes_copy;
+  if (original_image) {
+    image_bytes_copy.assign_range(original_image->webp_bytes);
+  }
+  image_replacement.ReplacementFrameAttached(frame_tree_node_id,
+                                             std::move(image_bytes_copy));
 
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(&page().GetMainDocument());
