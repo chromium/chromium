@@ -453,7 +453,10 @@ const onMessageReply = function(message) {
   } else {
     console.info('Running udp tests');
     chrome.test.runTests([
-      testSocketCreation, testSending, testSetPaused, testPauseAndThenResume
+      testSocketCreation,
+      testSending,
+      testSetPaused,
+      testPauseAndThenResume,
     ]);
   }
 };

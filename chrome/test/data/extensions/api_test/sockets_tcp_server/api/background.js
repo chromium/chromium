@@ -39,7 +39,7 @@ const testSocketListening = function() {
   chrome.sockets.tcpServer.create({}, onServerSocketCreate);
 
   function onServerSocketCreate(socketInfo) {
-    console.log('Server socket created: sd=' + socketInfo.socketId);
+    console.info('Server socket created: sd=' + socketInfo.socketId);
     socketId = socketInfo.socketId;
     chrome.sockets.tcpServer.getInfo(socketId, onGetInfo);
   }
@@ -50,7 +50,7 @@ const testSocketListening = function() {
   }
 
   function onListen(result) {
-    console.log(
+    console.info(
         'Server socket \'listen\' completed: sd=' + socketId +
         ', result=' + result);
     chrome.test.assertEq(0, result, 'Listen failed.');
@@ -60,20 +60,20 @@ const testSocketListening = function() {
 
     // Create a new socket to connect to the TCP server.
     chrome.sockets.tcp.create({}, function(socketInfo) {
-      console.log('Client socket created: sd=' + socketInfo.socketId);
+      console.info('Client socket created: sd=' + socketInfo.socketId);
       tmpSocketId = socketInfo.socketId;
       chrome.sockets.tcp.connect(tmpSocketId, address, port, function(result) {
-        console.log('Client socket connected: sd=' + tmpSocketId);
+        console.info('Client socket connected: sd=' + tmpSocketId);
         chrome.test.assertEq(0, result, 'Connect failed');
 
         // Write.
         string2ArrayBuffer(request, function(buf) {
           chrome.sockets.tcp.send(tmpSocketId, buf, function(sendInfo) {
-            console.log(
+            console.info(
                 'Client socket data sent: sd=' + tmpSocketId +
                 ', result=' + sendInfo.resultCode);
             chrome.sockets.tcp.disconnect(tmpSocketId, function() {
-              console.log('Client socket disconnected: sd=' + tmpSocketId);
+              console.info('Client socket disconnected: sd=' + tmpSocketId);
             });
           });
         });
@@ -84,7 +84,7 @@ const testSocketListening = function() {
   let clientSocketId;
 
   function onServerSocketAccept(acceptInfo) {
-    console.log(
+    console.info(
         'Server socket \'accept\' event: sd=' + acceptInfo.socketId +
         ', client sd=' + acceptInfo.clientSocketId);
     chrome.test.assertEq(socketId, acceptInfo.socketId, 'Wrong server socket.');
@@ -94,12 +94,12 @@ const testSocketListening = function() {
   }
 
   function onReceive(receiveInfo) {
-    console.log(
+    console.info(
         'Client socket \'receive\' event: sd=' + receiveInfo.socketId +
         ', bytes=' + receiveInfo.data.byteLength);
     chrome.test.assertEq(
         clientSocketId, receiveInfo.socketId, 'Received data on wrong socket');
-    if (receiveInfo.data.byteLength == 0) {
+    if (receiveInfo.data.byteLength === 0) {
       return;
     }
     arrayBuffer2String(receiveInfo.data, function(s) {
@@ -118,7 +118,7 @@ const testSocketListening = function() {
   }
 
   function onReceiveError(receiveInfo) {
-    console.log(
+    console.info(
         'Client socket \'receive error\' event: sd=' + receiveInfo.socketId +
         ', result=' + receiveInfo.resultCode);
     // chrome.test.fail("Receive failed.");
@@ -130,10 +130,10 @@ const onMessageReply = function(message) {
   const test_type = parts[0];
   address = parts[1];
   port = parseInt(parts[2]);
-  console.log(
+  console.info(
       'Running tests, protocol ' + test_type + ', echo server ' + address +
       ':' + port);
-  if (test_type == 'tcp_server') {
+  if (test_type === 'tcp_server') {
     chrome.test.runTests([testSocketListening]);
   }
 };

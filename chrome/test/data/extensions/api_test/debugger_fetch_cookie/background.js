@@ -7,7 +7,7 @@ chrome.test.runTests([
     const config = await chrome.test.getConfig();
     const [allowedUrl, restrictedUrl] = config.customArg.split(';');
 
-    console.log(allowedUrl, restrictedUrl);
+    console.info(allowedUrl, restrictedUrl);
 
     const tab = await chrome.tabs.create({url: allowedUrl});
     await new Promise(resolve => {
@@ -21,7 +21,7 @@ chrome.test.runTests([
     const target = {tabId: tab.id};
 
     await chrome.debugger.attach(target, '1.3');
-    console.log('debugger attached');
+    console.info('debugger attached');
 
     // Wait for the request to be intercepted.
     const interceptionPromise = new Promise(resolve => {

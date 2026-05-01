@@ -67,6 +67,8 @@ function setComponentProcessStateUnsettable() {
 
 chrome.test.runTests([
   setComponentProcessStateStartedWithNoInstalledComponent,
-  setAnalyticsComponentLight, setComponentProcessStateStarted,
-  setComponentProcessStateStopped, setComponentProcessStateUnsettable
+  setAnalyticsComponentLight,
+  setComponentProcessStateStarted,
+  setComponentProcessStateStopped,
+  setComponentProcessStateUnsettable,
 ]);

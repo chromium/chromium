@@ -10,11 +10,11 @@ function testAttach(details) {
 }
 
 function ejectCallback(result) {
-  if (result == 'success') {
+  if (result === 'success') {
     chrome.test.sendMessage('eject_ok');
-  } else if (result == 'in_use') {
+  } else if (result === 'in_use') {
     chrome.test.sendMessage('eject_in_use');
-  } else if (result == 'no_such_device') {
+  } else if (result === 'no_such_device') {
     chrome.test.sendMessage('eject_no_such_device');
   } else {
     chrome.test.sendMessage('eject_failure');

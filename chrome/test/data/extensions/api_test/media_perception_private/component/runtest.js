@@ -45,6 +45,7 @@ function setAnalyticsComponentWithProcessRunningSuccess() {
 }
 
 chrome.test.runTests([
-  setAnalyticsComponentLight, setAnalyticsComponentFullExpectFailure,
-  setAnalyticsComponentWithProcessRunningSuccess
+  setAnalyticsComponentLight,
+  setAnalyticsComponentFullExpectFailure,
+  setAnalyticsComponentWithProcessRunningSuccess,
 ]);

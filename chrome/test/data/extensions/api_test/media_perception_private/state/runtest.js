@@ -155,10 +155,15 @@ function setStateStopped() {
 }
 
 chrome.test.runTests([
-  getStateUninitialized, setStateRunning, getStateRunning, setStateUnsettable,
+  getStateUninitialized,
+  setStateRunning,
+  getStateRunning,
+  setStateUnsettable,
   setStateSuspendedButWithDeviceContextFail,
   setStateSuspendedButWithConfigurationFail,
   setStateSuspendedButWithWhiteboardFail,
-  setStateSuspendedButWithVideoStreamParamFail, setStateRestarted,
-  setStateRunningWithoutOptionalParameters, setStateStopped
+  setStateSuspendedButWithVideoStreamParamFail,
+  setStateRestarted,
+  setStateRunningWithoutOptionalParameters,
+  setStateStopped,
 ]);

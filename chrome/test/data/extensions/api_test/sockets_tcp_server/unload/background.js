@@ -5,7 +5,7 @@
 let socketId;
 
 const onListen = function(result) {
-  console.log(
+  console.info(
       'Server socket \'listen\' completed: sd=' + socketId +
       ', result=' + result);
   chrome.test.assertEq(0, result);
@@ -13,7 +13,7 @@ const onListen = function(result) {
 };
 
 const onCreate = function(socketInfo) {
-  console.log('Server socket created: sd=' + socketInfo.socketId);
+  console.info('Server socket created: sd=' + socketInfo.socketId);
   socketId = socketInfo.socketId;
   chrome.sockets.tcpServer.listen(socketId, '0.0.0.0', 1234, onListen);
 };

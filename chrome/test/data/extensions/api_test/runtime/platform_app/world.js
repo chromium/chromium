@@ -3,6 +3,6 @@
 // found in the LICENSE file.
 
 window.onload = function() {
-  console.log('app window opened');
+  console.info('app window opened');
   chrome.test.notifyPass();
 };

@@ -24,7 +24,7 @@ const tests = [
         testTab.id, {
           code: 'window.location.pathname',
           allFrames: true,
-          runAt: 'document_idle'
+          runAt: 'document_idle',
         },
         (result) => {
           // Even though the document has 3 frames (the main frame and two
@@ -46,7 +46,7 @@ const tests = [
         testTab.id, {
           code: 'window.location.pathname',
           allFrames: false,
-          runAt: 'document_idle'
+          runAt: 'document_idle',
         },
         (result) => {
           chrome.test.assertEq(1, result.length);
