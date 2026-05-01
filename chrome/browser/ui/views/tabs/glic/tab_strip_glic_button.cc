@@ -117,15 +117,6 @@ bool TabStripGlicButton::GetIsShowingNudge() const {
   return width_state_ == GlicButton<TabStripNudgeButton>::WidthState::kNudge;
 }
 
-// TODO(crbug.com/501445574): Remove.
-void TabStripGlicButton::SetDropToAttachIndicator(bool indicate) {
-  if (indicate) {
-    SetBackgroundFrameActiveColorId(ui::kColorSysStateHeaderHover);
-  } else {
-    SetBackgroundFrameActiveColorId(kColorNewTabButtonCRBackgroundFrameActive);
-  }
-}
-
 gfx::Rect TabStripGlicButton::GetBoundsWithInset() const {
   gfx::Rect bounds = GetBoundsInScreen();
   bounds.Inset(GetInsets());

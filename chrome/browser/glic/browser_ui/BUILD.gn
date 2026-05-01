@@ -18,7 +18,6 @@ source_set("browser_ui") {
       "glic_selection_widget.h",
       "glic_tab_indicator_helper.h",
       "glic_vector_icon_manager.h",
-      "scoped_glic_button_indicator.h",
     ]
   }
 
@@ -47,7 +46,6 @@ source_set("impl") {
       "glic_selection_widget.cc",
       "glic_tab_indicator_helper.cc",
       "glic_vector_icon_manager.cc",
-      "scoped_glic_button_indicator.cc",
     ]
   }
 

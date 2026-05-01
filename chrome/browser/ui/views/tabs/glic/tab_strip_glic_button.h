@@ -56,8 +56,6 @@ class TabStripGlicButton : public GlicButton<TabStripNudgeButton>,
 
   bool GetIsShowingNudge() const override;
 
-  void SetDropToAttachIndicator(bool indicate);
-
   // GetBoundsInScreen() gives a rect with some padding that extends beyond the
   // visible edges of the button. This function returns a rect without that
   // padding.
