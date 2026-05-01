@@ -36,6 +36,9 @@ class TestToolbarActionViewModel : public ToolbarActionViewModel {
   std::u16string GetTooltip(content::WebContents* web_contents) const override;
   ToolbarActionViewModel::HoverCardState GetHoverCardState(
       content::WebContents* web_contents) const override;
+  HoverCardUiState GetHoverCardUiState(
+      const ToolbarActionViewModel::HoverCardState& state,
+      content::WebContents* web_contents) const override;
   bool IsEnabled(content::WebContents* web_contents) const override;
   bool IsShowingPopup() const override;
   void HidePopup() override;

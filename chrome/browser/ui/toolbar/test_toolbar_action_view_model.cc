@@ -63,6 +63,14 @@ TestToolbarActionViewModel::GetHoverCardState(
   return state;
 }
 
+ToolbarActionViewModel::HoverCardUiState
+TestToolbarActionViewModel::GetHoverCardUiState(
+    const ToolbarActionViewModel::HoverCardState& state,
+    content::WebContents* web_contents) const {
+  ToolbarActionViewModel::HoverCardUiState ui_state;
+  return ui_state;
+}
+
 bool TestToolbarActionViewModel::IsEnabled(
     content::WebContents* web_contents) const {
   return is_enabled_;

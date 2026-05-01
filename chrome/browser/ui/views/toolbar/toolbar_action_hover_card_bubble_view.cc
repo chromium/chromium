@@ -46,76 +46,14 @@ constexpr int kVerticalMargin = 12;
 // Maximum number of lines that a label occupies.
 constexpr int kHoverCardLabelMaxLines = 3;
 
-std::u16string GetSiteAccessTitle(
-    ToolbarActionViewModel::HoverCardState::SiteAccess state) {
-  int title_id = -1;
-  switch (state) {
-    case HoverCardState::SiteAccess::kAllExtensionsAllowed:
-    case HoverCardState::SiteAccess::kExtensionHasAccess:
-      title_id = IDS_EXTENSIONS_TOOLBAR_ACTION_HOVER_CARD_TITLE_HAS_ACCESS;
-      break;
-    case HoverCardState::SiteAccess::kAllExtensionsBlocked:
-      title_id = IDS_EXTENSIONS_TOOLBAR_ACTION_HOVER_CARD_TITLE_BLOCKED_ACCESS;
-      break;
-    case HoverCardState::SiteAccess::kExtensionRequestsAccess:
-      title_id = IDS_EXTENSIONS_TOOLBAR_ACTION_HOVER_CARD_TITLE_REQUESTS_ACCESS;
-      break;
-    case HoverCardState::SiteAccess::kExtensionDoesNotWantAccess:
-      NOTREACHED();
-  }
-  return l10n_util::GetStringUTF16(title_id);
-}
-
-std::u16string GetSiteAccessDescription(HoverCardState::SiteAccess state,
-                                        std::u16string host) {
-  int title_id = -1;
-  switch (state) {
-    case HoverCardState::SiteAccess::kAllExtensionsAllowed:
-      title_id =
-          IDS_EXTENSIONS_TOOLBAR_ACTION_HOVER_CARD_DESCRIPTION_ALL_EXTENSIONS_ALLOWED_ACCESS;
-      break;
-    case HoverCardState::SiteAccess::kAllExtensionsBlocked:
-      title_id =
-          IDS_EXTENSIONS_TOOLBAR_ACTION_HOVER_CARD_DESCRIPTION_ALL_EXTENSIONS_BLOCKED_ACCESS;
-      break;
-    case HoverCardState::SiteAccess::kExtensionHasAccess:
-      title_id =
-          IDS_EXTENSIONS_TOOLBAR_ACTION_HOVER_CARD_DESCRIPTION_EXTENSION_HAS_ACCESS;
-      break;
-    case HoverCardState::SiteAccess::kExtensionRequestsAccess:
-      title_id =
-          IDS_EXTENSIONS_TOOLBAR_ACTION_HOVER_CARD_DESCRIPTION_EXTENSION_REQUESTS_ACCESS;
-      break;
-    case HoverCardState::SiteAccess::kExtensionDoesNotWantAccess:
-      NOTREACHED();
-  }
-  return l10n_util::GetStringFUTF16(title_id, host);
-}
-
-std::u16string GetPolicyText(HoverCardState::AdminPolicy state) {
-  int text_id = -1;
-  switch (state) {
-    case HoverCardState::AdminPolicy::kPinnedByAdmin:
-      text_id =
-          IDS_EXTENSIONS_TOOLBAR_ACTION_HOVER_CARD_POLICY_LABEL_PINNED_TEXT;
-      break;
-    case HoverCardState::AdminPolicy::kInstalledByAdmin:
-      text_id =
-          IDS_EXTENSIONS_TOOLBAR_ACTION_HOVER_CARD_POLICY_LABEL_INSTALLED_TEXT;
-      break;
-    case HoverCardState::AdminPolicy::kNone:
-      NOTREACHED();
-  }
-  return l10n_util::GetStringUTF16(text_id);
-}
-
 }  // namespace
 
 ToolbarActionHoverCardBubbleView::ToolbarActionHoverCardBubbleView(
     ToolbarActionView* action_view)
     : BubbleDialogDelegateView(action_view,
                                views::BubbleBorder::TOP_LEFT,
-                               views::BubbleBorder::STANDARD_SHADOW) {
+                               views::BubbleBorder::STANDARD_SHADOW),
+      action_view_model_(action_view->view_model()) {
   DCHECK(base::FeatureList::IsEnabled(
       extensions_features::kExtensionsMenuAccessControl));
 
@@ -248,28 +186,30 @@ void ToolbarActionHoverCardBubbleView::UpdateCardContent(
     action_title_label_->SetVisible(true);
   }
 
-  bool show_site_access_labels =
-      state.site_access !=
-      HoverCardState::SiteAccess::kExtensionDoesNotWantAccess;
-  bool show_policy_label = state.policy != HoverCardState::AdminPolicy::kNone;
+  ToolbarActionViewModel::HoverCardUiState ui_state =
+      action_view_model_->GetHoverCardUiState(state, web_contents);
+
+  DCHECK(ui_state.site_access_title.has_value() ==
+         ui_state.site_access_description.has_value());
+  bool show_site_access_labels = ui_state.site_access_title.has_value();
+
+  bool show_policy_label = ui_state.policy_text.has_value();
 
   site_access_separator_->SetVisible(show_site_access_labels);
   site_access_title_label_->SetVisible(show_site_access_labels);
   site_access_description_label_->SetVisible(show_site_access_labels);
   if (show_site_access_labels) {
     site_access_title_label_->SetData(
-        {GetSiteAccessTitle(state.site_access), /*is_filename=*/false});
+        {ui_state.site_access_title.value(), /*is_filename=*/false});
     site_access_description_label_->SetData(
-        {GetSiteAccessDescription(
-             state.site_access,
-             extensions::ui_util::GetFormattedHostForDisplay(*web_contents)),
-         /*is_filename=*/false});
+        {ui_state.site_access_description.value(), /*is_filename=*/false});
   }
 
   policy_separator_->SetVisible(show_policy_label);
   policy_label_->SetVisible(show_policy_label);
   if (show_policy_label) {
-    policy_label_->SetData({GetPolicyText(state.policy), false});
+    policy_label_->SetData(
+        {ui_state.policy_text.value(), /*is_filename=*/false});
   }
 }
 

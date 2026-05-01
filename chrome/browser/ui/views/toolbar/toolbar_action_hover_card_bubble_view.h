@@ -69,6 +69,7 @@ class ToolbarActionHoverCardBubbleView
   raw_ptr<FadeLabelView> site_access_description_label_ = nullptr;
   raw_ptr<FadeLabelView> policy_label_ = nullptr;
 
+  raw_ptr<ToolbarActionViewModel> action_view_model_;
   raw_ptr<views::Separator> site_access_separator_;
   raw_ptr<views::Separator> policy_separator_;
 };

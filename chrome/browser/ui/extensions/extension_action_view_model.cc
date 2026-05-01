@@ -19,6 +19,7 @@
 #include "chrome/browser/extensions/commands/command_service.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_context_menu_model.h"
+#include "chrome/browser/extensions/extension_ui_util.h"
 #include "chrome/browser/extensions/extension_view.h"
 #include "chrome/browser/extensions/extension_view_host.h"
 #include "chrome/browser/extensions/extension_view_host_factory.h"
@@ -134,6 +135,81 @@ ExtensionActionViewModel::HoverCardState::AdminPolicy GetHoverCardPolicyState(
   return ExtensionActionViewModel::HoverCardState::AdminPolicy::kNone;
 }
 
+std::u16string GetHoverCardSiteAccessTitle(
+    ToolbarActionViewModel::HoverCardState::SiteAccess state) {
+  int title_id = -1;
+  switch (state) {
+    case ToolbarActionViewModel::HoverCardState::SiteAccess::
+        kAllExtensionsAllowed:
+    case ToolbarActionViewModel::HoverCardState::SiteAccess::
+        kExtensionHasAccess:
+      title_id = IDS_EXTENSIONS_TOOLBAR_ACTION_HOVER_CARD_TITLE_HAS_ACCESS;
+      break;
+    case ToolbarActionViewModel::HoverCardState::SiteAccess::
+        kAllExtensionsBlocked:
+      title_id = IDS_EXTENSIONS_TOOLBAR_ACTION_HOVER_CARD_TITLE_BLOCKED_ACCESS;
+      break;
+    case ToolbarActionViewModel::HoverCardState::SiteAccess::
+        kExtensionRequestsAccess:
+      title_id = IDS_EXTENSIONS_TOOLBAR_ACTION_HOVER_CARD_TITLE_REQUESTS_ACCESS;
+      break;
+    case ToolbarActionViewModel::HoverCardState::SiteAccess::
+        kExtensionDoesNotWantAccess:
+      NOTREACHED();
+  }
+  return l10n_util::GetStringUTF16(title_id);
+}
+
+std::u16string GetHoverCardSiteAccessDescription(
+    ToolbarActionViewModel::HoverCardState::SiteAccess state,
+    std::u16string host) {
+  int description_id = -1;
+  switch (state) {
+    case ToolbarActionViewModel::HoverCardState::SiteAccess::
+        kAllExtensionsAllowed:
+      description_id =
+          IDS_EXTENSIONS_TOOLBAR_ACTION_HOVER_CARD_DESCRIPTION_ALL_EXTENSIONS_ALLOWED_ACCESS;
+      break;
+    case ToolbarActionViewModel::HoverCardState::SiteAccess::
+        kAllExtensionsBlocked:
+      description_id =
+          IDS_EXTENSIONS_TOOLBAR_ACTION_HOVER_CARD_DESCRIPTION_ALL_EXTENSIONS_BLOCKED_ACCESS;
+      break;
+    case ToolbarActionViewModel::HoverCardState::SiteAccess::
+        kExtensionHasAccess:
+      description_id =
+          IDS_EXTENSIONS_TOOLBAR_ACTION_HOVER_CARD_DESCRIPTION_EXTENSION_HAS_ACCESS;
+      break;
+    case ToolbarActionViewModel::HoverCardState::SiteAccess::
+        kExtensionRequestsAccess:
+      description_id =
+          IDS_EXTENSIONS_TOOLBAR_ACTION_HOVER_CARD_DESCRIPTION_EXTENSION_REQUESTS_ACCESS;
+      break;
+    case ToolbarActionViewModel::HoverCardState::SiteAccess::
+        kExtensionDoesNotWantAccess:
+      NOTREACHED();
+  }
+  return l10n_util::GetStringFUTF16(description_id, host);
+}
+
+std::u16string GetHoverCardPolicyText(
+    ToolbarActionViewModel::HoverCardState::AdminPolicy state) {
+  int text_id = -1;
+  switch (state) {
+    case ToolbarActionViewModel::HoverCardState::AdminPolicy::kPinnedByAdmin:
+      text_id =
+          IDS_EXTENSIONS_TOOLBAR_ACTION_HOVER_CARD_POLICY_LABEL_PINNED_TEXT;
+      break;
+    case ToolbarActionViewModel::HoverCardState::AdminPolicy::kInstalledByAdmin:
+      text_id =
+          IDS_EXTENSIONS_TOOLBAR_ACTION_HOVER_CARD_POLICY_LABEL_INSTALLED_TEXT;
+      break;
+    case ToolbarActionViewModel::HoverCardState::AdminPolicy::kNone:
+      NOTREACHED();
+  }
+  return l10n_util::GetStringUTF16(text_id);
+}
+
 }  // namespace
 
 // static
@@ -186,6 +262,14 @@ ExtensionActionViewModel::~ExtensionActionViewModel() {
 #endif
   delegate_->DetachFromModel();
 }
+
+ToolbarActionViewModel::HoverCardUiState::HoverCardUiState() = default;
+ExtensionActionViewModel::HoverCardUiState::HoverCardUiState(
+    HoverCardUiState&&) = default;
+ExtensionActionViewModel::HoverCardUiState&
+ExtensionActionViewModel::HoverCardUiState::operator=(HoverCardUiState&&) =
+    default;
+ExtensionActionViewModel::HoverCardUiState::~HoverCardUiState() = default;
 
 std::string ExtensionActionViewModel::GetId() const {
   return extension_id_;
@@ -582,6 +666,28 @@ ExtensionActionViewModel::GetHoverCardState(
   state.policy = GetHoverCardPolicyState(*profile_, GetId());
 
   return state;
+}
+
+ToolbarActionViewModel::HoverCardUiState
+ExtensionActionViewModel::GetHoverCardUiState(
+    const ToolbarActionViewModel::HoverCardState& state,
+    content::WebContents* web_contents) const {
+  ExtensionActionViewModel::HoverCardUiState ui_state;
+
+  if (state.site_access != ToolbarActionViewModel::HoverCardState::SiteAccess::
+                               kExtensionDoesNotWantAccess) {
+    ui_state.site_access_title = GetHoverCardSiteAccessTitle(state.site_access);
+    ui_state.site_access_description = GetHoverCardSiteAccessDescription(
+        state.site_access,
+        extensions::ui_util::GetFormattedHostForDisplay(*web_contents));
+  }
+
+  if (state.policy !=
+      ToolbarActionViewModel::HoverCardState::AdminPolicy::kNone) {
+    ui_state.policy_text = GetHoverCardPolicyText(state.policy);
+  }
+
+  return ui_state;
 }
 
 bool ExtensionActionViewModel::CanHandleAccelerators() const {
