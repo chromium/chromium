@@ -12,8 +12,10 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
+#include "chrome/browser/ui/read_anything/read_anything_entry_point_controller.h"
 #include "chrome/browser/ui/read_anything/read_anything_enums.h"
 #include "chrome/browser/ui/read_anything/read_anything_omnibox_controller.h"
+#include "chrome/browser/ui/read_anything/read_anything_prefs.h"
 #include "chrome/browser/ui/read_anything/read_anything_service.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
@@ -30,6 +32,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/find_in_page/find_tab_helper.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/web_contents.h"
@@ -462,6 +465,35 @@ void ReadAnythingController::CloseSidePanelUI(ReadAnythingCloseReason reason) {
   }
 }
 
+void ReadAnythingController::ShowInPreferredUI(
+    ReadAnythingOpenTrigger trigger) {
+  if (!tab_ || !tab_->GetBrowserWindowInterface()) {
+    // This is not likely to happen, but if it ever does, default to showing
+    // the UI via ShowImmersiveUI and using any of its error handling.
+    ShowImmersiveUI(trigger);
+    return;
+  }
+
+  PrefService* prefs =
+      tab_->GetBrowserWindowInterface()->GetProfile()->GetPrefs();
+  if (!prefs) {
+    // This is not likely to happen, but if it ever does, default to showing
+    // the UI via ShowImmersiveUI.
+    ShowImmersiveUI(trigger);
+    return;
+  }
+
+  int last_presentation_state = prefs->GetInteger(
+      prefs::kAccessibilityReadAnythingLastOpenedPresentationState);
+  if (last_presentation_state ==
+      static_cast<int>(
+          read_anything::mojom::ReadAnythingPresentationState::kInSidePanel)) {
+    ShowSidePanelUI(read_anything::ReadAnythingToSidePanelOpenTrigger(trigger));
+  } else {
+    ShowImmersiveUI(trigger);
+  }
+}
+
 void ReadAnythingController::ToggleUI(ReadAnythingOpenTrigger trigger) {
   if (trigger == ReadAnythingOpenTrigger::kKeyboardShortcut) {
     if (auto* user_ed = BrowserUserEducationInterface::From(
@@ -483,16 +515,32 @@ void ReadAnythingController::ToggleUI(ReadAnythingOpenTrigger trigger) {
     return;
   }
 
-  ShowImmersiveUI(trigger);
+  ShowInPreferredUI(trigger);
 }
 
-void ReadAnythingController::TogglePresentation() {
+void ReadAnythingController::TogglePresentation(bool is_user_initiated) {
   if (GetPresentationState() == PresentationState::kInImmersiveOverlay) {
+    if (is_user_initiated) {
+      SavePresentationPreference(PresentationState::kInSidePanel);
+    }
     ShowSidePanelUI(
         SidePanelOpenTrigger::kReadAnythingTogglePresentationButton);
   } else if (GetPresentationState() == PresentationState::kInSidePanel) {
+    if (is_user_initiated) {
+      SavePresentationPreference(PresentationState::kInImmersiveOverlay);
+    }
     ShowImmersiveUI(
         ReadAnythingOpenTrigger::kReadAnythingTogglePresentationButton);
+  }
+}
+
+void ReadAnythingController::SavePresentationPreference(
+    PresentationState state) {
+  if (state == PresentationState::kInSidePanel ||
+      state == PresentationState::kInImmersiveOverlay) {
+    tab_->GetBrowserWindowInterface()->GetProfile()->GetPrefs()->SetInteger(
+        prefs::kAccessibilityReadAnythingLastOpenedPresentationState,
+        static_cast<int>(state));
   }
 }
 
@@ -581,7 +629,7 @@ void ReadAnythingController::OnDistillationStateChanged(
         "Accessibility.ReadAnything.SidePanelTriggeredByEmptyState",
         ReadAnythingOpenTrigger::kReadAnythingTogglePresentationButton);
 
-    TogglePresentation();
+    TogglePresentation(/*is_user_initiated=*/false);
   }
   distillation_state_ = new_state;
 }

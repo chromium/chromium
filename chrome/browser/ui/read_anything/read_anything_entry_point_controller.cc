@@ -276,7 +276,7 @@ void ReadAnythingEntryPointController::ShowUI(
     if (tabs::TabInterface* tab = bwi->GetActiveTabInterface()) {
       auto* controller = ReadAnythingController::From(tab);
       CHECK(controller);
-      controller->ShowImmersiveUI(open_trigger);
+      controller->ShowInPreferredUI(open_trigger);
     }
   } else {
     SidePanelOpenTrigger side_panel_open_trigger =
