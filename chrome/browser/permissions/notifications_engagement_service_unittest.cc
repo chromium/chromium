@@ -14,6 +14,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/mac_util.h"
+#endif
+
 namespace permissions {
 constexpr char kEngagementKey[] = "click_count";
 constexpr char kDisplayedKey[] = "display_count";
@@ -338,6 +342,13 @@ TEST_F(NotificationsEngagementServiceTest,
 }
 
 TEST_F(NotificationsEngagementServiceTest, EraseStaleEntries) {
+#if BUILDFLAG(IS_MAC)
+  // TODO(crbug.com/434660312): Re-enable on macOS 26 once issues with
+  // unexpected test timeout failures are resolved.
+  if (base::mac::MacOSMajorVersion() == 26) {
+    GTEST_SKIP() << "Disabled on macOS Tahoe.";
+  }
+#endif
   GURL url("https://www.google.com/");
 
   // Test that only entries older than 30 days are deleted.
