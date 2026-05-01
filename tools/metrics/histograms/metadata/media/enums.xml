@@ -2365,6 +2365,7 @@ chromium-metrics-reviews@google.com.
   <int value="29" label="vaProtectedSessionHwUpdate() (deprecated)"/>
   <int value="30" label="kVAProtectedSessionExecute()"/>
   <int value="31" label="Other VA functions"/>
+  <int value="32" label="vaDeriveImage()"/>
 </enum>
 
 <enum name="VideoCaptureApi">

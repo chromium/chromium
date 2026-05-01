@@ -132,7 +132,7 @@ std::pair<base::ScopedFD, bool> LoadDrmFD(const base::FilePath& dev_path) {
 
 // These values are logged to UMA. Entries should not be renumbered and numeric
 // values should never be reused. Please keep in sync with
-// "VaapiFunctions" in src/tools/metrics/histograms/enums.xml.
+// "VaapiFunctions" in src/tools/metrics/histograms/metadata/media/enums.xml.
 enum class VaapiFunctions {
   kVABeginPicture = 0,
   kVACreateBuffer = 1,
@@ -166,9 +166,11 @@ enum class VaapiFunctions {
   kVADetachProtectedSession = 28,
   kVAProtectedSessionHwUpdate_Deprecated = 29,
   kVAProtectedSessionExecute = 30,
-  // Anything else is captured in this last entry.
+  // Anything else is captured in this entry. It used to be last, but more
+  // library calls have since been added, and we can't change the number.
   kOtherVAFunction = 31,
-  kMaxValue = kOtherVAFunction,
+  kVADeriveImage = 32,
+  kMaxValue = kVADeriveImage,
 };
 
 void ReportVaapiErrorToUMA(const std::string& histogram_name,
@@ -210,7 +212,8 @@ constexpr std::array<const char*,
         "vaDetachProtectedSession",
         "vaProtectedSessionHwUpdate (Deprecated)",
         "vaProtectedSessionExecute",
-        "Other VA function"};
+        "Other VA function",
+        "vaDeriveImage"};
 
 // Translates |function| into a human readable string for logging.
 const char* VaapiFunctionName(VaapiFunctions function) {
@@ -2880,7 +2883,7 @@ bool VaapiWrapper::UploadVideoFrameToSurface(const VideoFrame& frame,
 
   const gfx::Size visible_size = frame.visible_rect().size();
   bool needs_va_put_image = false;
-  VAImage image;
+  VAImage image = {};
   VAStatus va_res = vaDeriveImage(va_display_, va_surface_id, &image);
   if (va_res == VA_STATUS_ERROR_OPERATION_FAILED) {
     DVLOG(4) << "vaDeriveImage failed and fallback to Create_PutImage";
@@ -2893,6 +2896,8 @@ bool VaapiWrapper::UploadVideoFrameToSurface(const VideoFrame& frame,
                            va_surface_size.height(), &image);
     VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVACreateImage, false);
     needs_va_put_image = true;
+  } else {
+    VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVADeriveImage, false);
   }
   absl::Cleanup vaimage_deleter =
       [this, &image]() EXCLUSIVE_LOCKS_REQUIRED(va_lock_.get()) {
