@@ -28,8 +28,8 @@ base::expected<std::unique_ptr<ScrollTool>, ToolExecutionResult>
 ScrollTool::Create(const optimization_guide::proto::ScrollAction& action,
                    ProfileIOS* profile) {
   if (!action.has_tab_id()) {
-    return base::unexpected(ToolExecutionResult(
-        InternalToolErrorCode::kCreationMissingRequiredFields));
+    return base::unexpected(
+        ToolExecutionResult(mojom::ActionResultCode::kArgumentsInvalid));
   }
 
   auto resolution_result = ResolveTab(action.tab_id(), profile);
@@ -38,8 +38,8 @@ ScrollTool::Create(const optimization_guide::proto::ScrollAction& action,
   }
 
   if (!action.has_direction() || !action.has_distance()) {
-    return base::unexpected(ToolExecutionResult(
-        InternalToolErrorCode::kCreationMissingRequiredFields));
+    return base::unexpected(
+        ToolExecutionResult(mojom::ActionResultCode::kArgumentsInvalid));
   }
 
   if (action.has_target()) {
@@ -49,8 +49,8 @@ ScrollTool::Create(const optimization_guide::proto::ScrollAction& action,
         target.has_content_node_id() && target.has_document_identifier();
 
     if (!can_target_by_coordinate && !can_target_by_node_id) {
-      return base::unexpected(ToolExecutionResult(
-          InternalToolErrorCode::kCreationMissingRequiredFields));
+      return base::unexpected(
+          ToolExecutionResult(mojom::ActionResultCode::kArgumentsInvalid));
     }
   }
 
@@ -60,15 +60,15 @@ ScrollTool::Create(const optimization_guide::proto::ScrollAction& action,
 
 void ScrollTool::Execute(ToolExecutionCallback callback) {
   if (!web_state_) {
-    std::move(callback).Run(ToolExecutionResult(
-        InternalToolErrorCode::kExecutionMissingDependencies));
+    std::move(callback).Run(
+        ToolExecutionResult(mojom::ActionResultCode::kTabWentAway));
     return;
   }
   web::WebFramesManager* frames_manager =
       js_feature_->GetWebFramesManager(web_state_.get());
   if (!frames_manager || !frames_manager->GetMainWebFrame()) {
-    std::move(callback).Run(ToolExecutionResult(
-        InternalToolErrorCode::kExecutionMissingDependencies));
+    std::move(callback).Run(
+        ToolExecutionResult(mojom::ActionResultCode::kFrameWentAway));
     return;
   }
 
@@ -118,8 +118,8 @@ void ScrollTool::OnTargetFrameResolved(
       result.value();
   web::WebFrame* target_web_frame = target_frame.frame;
   if (!target_web_frame) {
-    std::move(callback).Run(ToolExecutionResult(
-        InternalToolErrorCode::kExecutionMissingDependencies));
+    std::move(callback).Run(
+        ToolExecutionResult(mojom::ActionResultCode::kFrameWentAway));
     return;
   }
 

@@ -51,8 +51,7 @@ TEST_F(ScrollToToolTest, Create_MissingTabId) {
       ScrollToTool::Create(action.scroll_to(), profile_.get());
 
   EXPECT_FALSE(result.has_value());
-  EXPECT_EQ(InternalToolErrorCode::kCreationMissingRequiredFields,
-            result.error().internal_code().value());
+  EXPECT_EQ(result.error().code(), mojom::ActionResultCode::kArgumentsInvalid);
 }
 
 TEST_F(ScrollToToolTest, Create_NoWebStateForTabId) {
@@ -62,8 +61,7 @@ TEST_F(ScrollToToolTest, Create_NoWebStateForTabId) {
   base::expected<std::unique_ptr<ScrollToTool>, ToolExecutionResult> result =
       ScrollToTool::Create(action.scroll_to(), profile_.get());
   EXPECT_FALSE(result.has_value());
-  EXPECT_EQ(InternalToolErrorCode::kCreationTargetTabNotFound,
-            result.error().internal_code().value());
+  EXPECT_EQ(result.error().code(), mojom::ActionResultCode::kTabWentAway);
 }
 
 TEST_F(ScrollToToolTest, Create_MissingTarget) {
@@ -81,8 +79,7 @@ TEST_F(ScrollToToolTest, Create_MissingTarget) {
       ScrollToTool::Create(action.scroll_to(), profile_.get());
 
   EXPECT_FALSE(result.has_value());
-  EXPECT_EQ(InternalToolErrorCode::kCreationMissingRequiredFields,
-            result.error().internal_code().value());
+  EXPECT_EQ(result.error().code(), mojom::ActionResultCode::kArgumentsInvalid);
 }
 
 TEST_F(ScrollToToolTest, Execute_WebStateDestroyed_ReturnsError) {
@@ -111,8 +108,7 @@ TEST_F(ScrollToToolTest, Execute_WebStateDestroyed_ReturnsError) {
 
   ToolExecutionResult result = future.Get();
   EXPECT_FALSE(result.IsOk());
-  EXPECT_EQ(InternalToolErrorCode::kExecutionMissingDependencies,
-            result.internal_code().value());
+  EXPECT_EQ(result.code(), mojom::ActionResultCode::kTabWentAway);
 }
 
 TEST_F(ScrollToToolTest, Execute_NoWebFramesManager_ReturnsError) {
@@ -143,8 +139,7 @@ TEST_F(ScrollToToolTest, Execute_NoWebFramesManager_ReturnsError) {
 
   ToolExecutionResult result = future.Get();
   EXPECT_FALSE(result.IsOk());
-  EXPECT_EQ(InternalToolErrorCode::kExecutionMissingDependencies,
-            result.internal_code().value());
+  EXPECT_EQ(result.code(), mojom::ActionResultCode::kFrameWentAway);
 }
 
 TEST_F(ScrollToToolTest, Execute_NoMainFrame_ReturnsError) {
@@ -184,8 +179,7 @@ TEST_F(ScrollToToolTest, Execute_NoMainFrame_ReturnsError) {
 
   ToolExecutionResult result = future.Get();
   EXPECT_FALSE(result.IsOk());
-  EXPECT_EQ(InternalToolErrorCode::kExecutionMissingDependencies,
-            result.internal_code().value());
+  EXPECT_EQ(result.code(), mojom::ActionResultCode::kFrameWentAway);
 }
 
 }  // namespace actor

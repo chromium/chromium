@@ -11,6 +11,7 @@
 #import "base/no_destructor.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
+#import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
 #import "ios/web/public/js_messaging/java_script_feature.h"
 
 namespace web {
@@ -18,6 +19,23 @@ class WebFrame;
 }  // namespace web
 
 namespace actor {
+
+// LINT.IfChange(ScrollToolResultCode)
+enum class ScrollToolResultCode {
+  // The function call was successful.
+  kOk = 0,
+  // The coordinates provided to target the element were not in the viewport.
+  kCoordinatesOutOfBounds = 1,
+  // The DOM node id provided to target the element was not in the viewport.
+  kInvalidDomNodeId = 2,
+  // The arguments provided to the tool are invalid.
+  kArgumentsInvalid = 3,
+  // The target is not scrollable.
+  kScrollTargetNotUserScrollable = 4,
+  // The scroll operation did not change the scroll offset.
+  kScrollOffsetDidNotChange = 5,
+};
+// LINT.ThenChange(//ios/chrome/browser/intelligence/actor/tools/model/resources/scroll_tool.ts:ScrollToolResultCode)
 
 // A feature that provides methods to execute a scroll action in the web page.
 class ScrollToolJavaScriptFeature : public web::JavaScriptFeature {

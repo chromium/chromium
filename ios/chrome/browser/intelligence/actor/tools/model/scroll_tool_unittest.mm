@@ -54,8 +54,7 @@ TEST_F(ScrollToolTest, Create_MissingTabId) {
       ScrollTool::Create(action.scroll(), profile_.get());
 
   EXPECT_FALSE(result.has_value());
-  EXPECT_EQ(InternalToolErrorCode::kCreationMissingRequiredFields,
-            result.error().internal_code().value());
+  EXPECT_EQ(result.error().code(), mojom::ActionResultCode::kArgumentsInvalid);
 }
 
 TEST_F(ScrollToolTest, Create_NoWebStateForTabId) {
@@ -68,8 +67,7 @@ TEST_F(ScrollToolTest, Create_NoWebStateForTabId) {
   base::expected<std::unique_ptr<ScrollTool>, ToolExecutionResult> result =
       ScrollTool::Create(action.scroll(), profile_.get());
   EXPECT_FALSE(result.has_value());
-  EXPECT_EQ(InternalToolErrorCode::kCreationTargetTabNotFound,
-            result.error().internal_code().value());
+  EXPECT_EQ(result.error().code(), mojom::ActionResultCode::kTabWentAway);
 }
 
 TEST_F(ScrollToolTest, Create_MissingDirection) {
@@ -89,8 +87,7 @@ TEST_F(ScrollToolTest, Create_MissingDirection) {
       ScrollTool::Create(action.scroll(), profile_.get());
 
   EXPECT_FALSE(result.has_value());
-  EXPECT_EQ(InternalToolErrorCode::kCreationMissingRequiredFields,
-            result.error().internal_code().value());
+  EXPECT_EQ(result.error().code(), mojom::ActionResultCode::kArgumentsInvalid);
 }
 
 TEST_F(ScrollToolTest, Create_MissingDistance) {
@@ -111,8 +108,7 @@ TEST_F(ScrollToolTest, Create_MissingDistance) {
       ScrollTool::Create(action.scroll(), profile_.get());
 
   EXPECT_FALSE(result.has_value());
-  EXPECT_EQ(InternalToolErrorCode::kCreationMissingRequiredFields,
-            result.error().internal_code().value());
+  EXPECT_EQ(result.error().code(), mojom::ActionResultCode::kArgumentsInvalid);
 }
 
 TEST_F(ScrollToolTest, Create_MissingTarget_Supported) {
@@ -163,8 +159,7 @@ TEST_F(ScrollToolTest, Execute_WebStateDestroyed_ReturnsError) {
 
   ToolExecutionResult result = future.Get();
   EXPECT_FALSE(result.IsOk());
-  EXPECT_EQ(InternalToolErrorCode::kExecutionMissingDependencies,
-            result.internal_code().value());
+  EXPECT_EQ(result.code(), mojom::ActionResultCode::kTabWentAway);
 }
 
 TEST_F(ScrollToolTest, Execute_NoWebFramesManager_ReturnsError) {
@@ -197,8 +192,7 @@ TEST_F(ScrollToolTest, Execute_NoWebFramesManager_ReturnsError) {
 
   ToolExecutionResult result = future.Get();
   EXPECT_FALSE(result.IsOk());
-  EXPECT_EQ(InternalToolErrorCode::kExecutionMissingDependencies,
-            result.internal_code().value());
+  EXPECT_EQ(result.code(), mojom::ActionResultCode::kFrameWentAway);
 }
 
 TEST_F(ScrollToolTest, Execute_NoMainFrame_ReturnsError) {
@@ -240,8 +234,7 @@ TEST_F(ScrollToolTest, Execute_NoMainFrame_ReturnsError) {
 
   ToolExecutionResult result = future.Get();
   EXPECT_FALSE(result.IsOk());
-  EXPECT_EQ(InternalToolErrorCode::kExecutionMissingDependencies,
-            result.internal_code().value());
+  EXPECT_EQ(result.code(), mojom::ActionResultCode::kFrameWentAway);
 }
 
 }  // namespace actor

@@ -8,6 +8,7 @@
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
 #import "base/memory/weak_ptr.h"
+#import "base/no_destructor.h"
 #import "base/values.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_java_script_feature_util.h"
@@ -19,6 +20,29 @@ const char kScriptName[] = "scroll_tool";
 }  // namespace
 
 namespace actor {
+
+namespace {
+
+mojom::ActionResultCode ToActionResultCode(int code) {
+  auto result_code = static_cast<ScrollToolResultCode>(code);
+  switch (result_code) {
+    case ScrollToolResultCode::kOk:
+      return mojom::ActionResultCode::kOk;
+    case ScrollToolResultCode::kCoordinatesOutOfBounds:
+      return mojom::ActionResultCode::kCoordinatesOutOfBounds;
+    case ScrollToolResultCode::kInvalidDomNodeId:
+      return mojom::ActionResultCode::kInvalidDomNodeId;
+    case ScrollToolResultCode::kArgumentsInvalid:
+      return mojom::ActionResultCode::kArgumentsInvalid;
+    case ScrollToolResultCode::kScrollTargetNotUserScrollable:
+      return mojom::ActionResultCode::kScrollTargetNotUserScrollable;
+    case ScrollToolResultCode::kScrollOffsetDidNotChange:
+      return mojom::ActionResultCode::kScrollOffsetDidNotChange;
+  }
+  NOTREACHED();
+}
+
+}  // namespace
 
 // static
 ScrollToolJavaScriptFeature* ScrollToolJavaScriptFeature::GetInstance() {
@@ -70,8 +94,8 @@ void ScrollToolJavaScriptFeature::ExecuteScrollAction(
         (target.has_content_node_id() && target.has_document_identifier()));
 
   if (!web_frame) {
-    std::move(callback).Run(ToolExecutionResult(
-        InternalToolErrorCode::kActorTargetWebFrameInvalidated));
+    std::move(callback).Run(
+        ToolExecutionResult(mojom::ActionResultCode::kFrameWentAway));
     return;
   }
 
@@ -96,7 +120,12 @@ void ScrollToolJavaScriptFeature::ExecuteScrollAction(
   auto [cb_for_js, cb_for_error] = base::SplitOnceCallback(std::move(callback));
   bool sent = CallJavaScriptFunction(
       web_frame.get(), function_name, parameters,
-      base::BindOnce(&ParseJavaScriptResult, std::move(cb_for_js)),
+      base::BindOnce(
+          [](ToolExecutionCallback callback, const base::Value* result) {
+            std::move(callback).Run(ParseJavaScriptResultWithResultCode(
+                &ToActionResultCode, result));
+          },
+          std::move(cb_for_js)),
       base::Milliseconds(web::kJavaScriptFunctionCallDefaultTimeout));
 
   if (!sent) {

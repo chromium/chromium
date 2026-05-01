@@ -19,6 +19,7 @@
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_constants.h"
+#import "ios/chrome/browser/intelligence/actor/tools/model/scroll_tool_java_script_feature.h"
 #import "ios/web/common/features.h"
 #import "ios/web/public/test/javascript_test.h"
 #import "ios/web/public/test/js_test_util.h"
@@ -57,11 +58,11 @@ struct ScrollActionFields {
 
 }  // namespace
 
-class ScrollToolJavascriptTest
+class ScrollToolJavaScriptTest
     : public web::JavascriptTest,
       public ::testing::WithParamInterface<CallType> {
  public:
-  ScrollToolJavascriptTest() {
+  ScrollToolJavaScriptTest() {
     scoped_feature_list_.InitAndEnableFeature(
         web::features::kAssertOnJavaScriptErrors);
     web_view().frame = CGRectMake(0.0, 0.0, 400.0, 400.0);
@@ -226,14 +227,15 @@ class ScrollToolJavascriptTest
   net::EmbeddedTestServer test_server_;
 };
 
-TEST_P(ScrollToolJavascriptTest, Scroll_WithDistanceAndDirection_Down_Success) {
+TEST_P(ScrollToolJavaScriptTest, Scroll_WithDistanceAndDirection_Down_Success) {
   float initial_scroll_top = GetDivScrollTop();
   float distance = 100.0;
 
   NSDictionary* result = Scroll(
       "scrollable_div",
       ScrollActionFields{static_cast<int>(ScrollAction::DOWN), distance});
-  EXPECT_TRUE([result[@"success"] boolValue])
+  EXPECT_EQ([result[@"resultCode"] intValue],
+            static_cast<int>(ScrollToolResultCode::kOk))
       << base::SysNSStringToUTF8(result[@"message"]);
 
   EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
@@ -242,7 +244,7 @@ TEST_P(ScrollToolJavascriptTest, Scroll_WithDistanceAndDirection_Down_Success) {
       }));
 }
 
-TEST_P(ScrollToolJavascriptTest,
+TEST_P(ScrollToolJavaScriptTest,
        Scroll_WithDistanceAndDirection_Right_Success) {
   float initial_scroll_left = GetDivScrollLeft();
   float distance = 100.0;
@@ -250,7 +252,8 @@ TEST_P(ScrollToolJavascriptTest,
   NSDictionary* result = Scroll(
       "scrollable_div",
       ScrollActionFields{static_cast<int>(ScrollAction::RIGHT), distance});
-  EXPECT_TRUE([result[@"success"] boolValue])
+  EXPECT_EQ([result[@"resultCode"] intValue],
+            static_cast<int>(ScrollToolResultCode::kOk))
       << base::SysNSStringToUTF8(result[@"message"]);
 
   EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
@@ -259,7 +262,7 @@ TEST_P(ScrollToolJavascriptTest,
       }));
 }
 
-TEST_P(ScrollToolJavascriptTest, Scroll_WithDistanceAndDirection_Up_Success) {
+TEST_P(ScrollToolJavaScriptTest, Scroll_WithDistanceAndDirection_Up_Success) {
   std::string nodeId = "scrollable_div";
   // Scroll down first
   Scroll(nodeId, ScrollActionFields{static_cast<int>(ScrollAction::DOWN), 100});
@@ -273,7 +276,8 @@ TEST_P(ScrollToolJavascriptTest, Scroll_WithDistanceAndDirection_Up_Success) {
   // Scroll up
   NSDictionary* result = Scroll(
       nodeId, ScrollActionFields{static_cast<int>(ScrollAction::UP), distance});
-  EXPECT_TRUE([result[@"success"] boolValue]);
+  EXPECT_EQ([result[@"resultCode"] intValue],
+            static_cast<int>(ScrollToolResultCode::kOk));
 
   EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForUIElementTimeout, ^{
@@ -281,7 +285,7 @@ TEST_P(ScrollToolJavascriptTest, Scroll_WithDistanceAndDirection_Up_Success) {
       }));
 }
 
-TEST_P(ScrollToolJavascriptTest, Scroll_WithDistanceAndDirection_Left_Success) {
+TEST_P(ScrollToolJavaScriptTest, Scroll_WithDistanceAndDirection_Left_Success) {
   std::string nodeId = "scrollable_div";
   // Scroll right first
   Scroll(nodeId,
@@ -297,7 +301,8 @@ TEST_P(ScrollToolJavascriptTest, Scroll_WithDistanceAndDirection_Left_Success) {
   NSDictionary* result = Scroll(
       nodeId,
       ScrollActionFields{static_cast<int>(ScrollAction::LEFT), distance});
-  EXPECT_TRUE([result[@"success"] boolValue]);
+  EXPECT_EQ([result[@"resultCode"] intValue],
+            static_cast<int>(ScrollToolResultCode::kOk));
 
   EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForUIElementTimeout, ^{
@@ -305,7 +310,7 @@ TEST_P(ScrollToolJavascriptTest, Scroll_WithDistanceAndDirection_Left_Success) {
       }));
 }
 
-TEST_P(ScrollToolJavascriptTest, Scroll_WithoutDistanceAndDirection_Success) {
+TEST_P(ScrollToolJavaScriptTest, Scroll_WithoutDistanceAndDirection_Success) {
   std::string node_id = "scrollable_div";
   NSDictionary* rect = GetElementClientRect(node_id);
   int element_x = [rect[@"left"] intValue];
@@ -327,7 +332,8 @@ TEST_P(ScrollToolJavascriptTest, Scroll_WithoutDistanceAndDirection_Success) {
       }));
 
   NSDictionary* result = Scroll(node_id, std::nullopt);
-  EXPECT_TRUE([result[@"success"] boolValue])
+  EXPECT_EQ([result[@"resultCode"] intValue],
+            static_cast<int>(ScrollToolResultCode::kOk))
       << "Scroll failed: " << base::SysNSStringToUTF8(result[@"message"]);
 
   EXPECT_NSEQ(result[@"message"], @"Initiated scrollIntoView.");
@@ -340,7 +346,7 @@ TEST_P(ScrollToolJavascriptTest, Scroll_WithoutDistanceAndDirection_Success) {
       }));
 }
 
-TEST_P(ScrollToolJavascriptTest, Scroll_WithZoom_Success) {
+TEST_P(ScrollToolJavaScriptTest, Scroll_WithZoom_Success) {
   web_view().scrollView.zoomScale = 2.0;
 
   float initial_scroll_top = GetDivScrollTop();
@@ -349,7 +355,8 @@ TEST_P(ScrollToolJavascriptTest, Scroll_WithZoom_Success) {
   NSDictionary* result = Scroll(
       "scrollable_div",
       ScrollActionFields{static_cast<int>(ScrollAction::DOWN), distance});
-  EXPECT_TRUE([result[@"success"] boolValue])
+  EXPECT_EQ([result[@"resultCode"] intValue],
+            static_cast<int>(ScrollToolResultCode::kOk))
       << base::SysNSStringToUTF8(result[@"message"]);
 
   EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
@@ -359,7 +366,7 @@ TEST_P(ScrollToolJavascriptTest, Scroll_WithZoom_Success) {
 }
 
 INSTANTIATE_TEST_SUITE_P(,
-                         ScrollToolJavascriptTest,
+                         ScrollToolJavaScriptTest,
                          ::testing::Values(CallType::kByCoordinate,
                                            CallType::kByNodeId),
                          [](const ::testing::TestParamInfo<CallType>& info) {
@@ -371,42 +378,54 @@ INSTANTIATE_TEST_SUITE_P(,
                            }
                          });
 
-TEST_F(ScrollToolJavascriptTest, Scroll_InvalidDirection_Fails) {
+TEST_F(ScrollToolJavaScriptTest, ScrollByCoordinate_InvalidDirection_Fails) {
   std::string nodeId = "scrollable_div";
-  NSDictionary* result =
-      Scroll(nodeId,
-             ScrollActionFields{
-                 static_cast<int>(ScrollAction::UNKNOWN_SCROLL_DIRECTION), 50});
-  EXPECT_FALSE([result[@"success"] boolValue]);
-  EXPECT_NSEQ(result[@"message"], @"Element is not scrollable.");
+  NSDictionary* rect = GetElementClientRect(nodeId);
+  int x = [rect[@"left"] intValue] + [rect[@"width"] intValue] / 2;
+  int y = [rect[@"top"] intValue] + [rect[@"height"] intValue] / 2;
+  NSDictionary* result = ScrollByCoordinate(
+      x, y, static_cast<int>(Coordinate::PIXEL_TYPE_DIPS),
+      ScrollActionFields{
+          static_cast<int>(ScrollAction::UNKNOWN_SCROLL_DIRECTION), 100});
+
+  EXPECT_EQ(
+      [result[@"resultCode"] intValue],
+      static_cast<int>(ScrollToolResultCode::kScrollTargetNotUserScrollable));
+  EXPECT_NSEQ(result[@"message"], @"Element has no scrollable ancestor.");
 }
 
-TEST_P(ScrollToolJavascriptTest, ScrollByNodeId_NotScrollable_Fails) {
+TEST_P(ScrollToolJavaScriptTest, ScrollByNodeId_NotScrollable_Fails) {
   int node_id = GetNodeId("non_scrollable_div");
   NSDictionary* result = ScrollByNodeId(
       node_id, ScrollActionFields{static_cast<int>(ScrollAction::DOWN), 100});
 
-  EXPECT_FALSE([result[@"success"] boolValue]);
+  EXPECT_EQ(
+      [result[@"resultCode"] intValue],
+      static_cast<int>(ScrollToolResultCode::kScrollTargetNotUserScrollable));
   EXPECT_NSEQ(result[@"message"], @"Element is not scrollable.");
 }
 
-TEST_F(ScrollToolJavascriptTest, Scroll_ByCoordinate_InvalidCoordinates) {
+TEST_F(ScrollToolJavaScriptTest, Scroll_ByCoordinate_InvalidCoordinates) {
   NSDictionary* result = ScrollByCoordinate(
       -10, -10, static_cast<int>(Coordinate::PIXEL_TYPE_DIPS),
       ScrollActionFields{static_cast<int>(ScrollAction::DOWN), 100});
-  EXPECT_FALSE([result[@"success"] boolValue]);
+
+  EXPECT_EQ([result[@"resultCode"] intValue],
+            static_cast<int>(ScrollToolResultCode::kCoordinatesOutOfBounds));
   EXPECT_NSEQ(result[@"message"],
               @"No element found at the target coordinates.");
 }
 
-TEST_F(ScrollToolJavascriptTest, Scroll_ByNodeId_InvalidNode) {
+TEST_F(ScrollToolJavaScriptTest, Scroll_ByNodeId_InvalidNode) {
   NSDictionary* result = ScrollByNodeId(
       -1, ScrollActionFields{static_cast<int>(ScrollAction::DOWN), 100});
-  EXPECT_FALSE([result[@"success"] boolValue]);
+
+  EXPECT_EQ([result[@"resultCode"] intValue],
+            static_cast<int>(ScrollToolResultCode::kInvalidDomNodeId));
   EXPECT_NSEQ(result[@"message"], @"No element found with id -1.");
 }
 
-TEST_F(ScrollToolJavascriptTest, IsScrollable_DocumentScrollableElement) {
+TEST_F(ScrollToolJavaScriptTest, IsScrollable_DocumentScrollableElement) {
   // Ensure that the document is scrollable.
   int client_height =
       [web::test::ExecuteJavaScript(web_view(), base::SysUTF8ToNSString(R"(
@@ -422,7 +441,7 @@ TEST_F(ScrollToolJavascriptTest, IsScrollable_DocumentScrollableElement) {
                            static_cast<int>(ScrollAction::DOWN)));
 }
 
-TEST_F(ScrollToolJavascriptTest, IsScrollable_ScrollableDiv) {
+TEST_F(ScrollToolJavaScriptTest, IsScrollable_ScrollableDiv) {
   // scrollable_div has 'overflow:scroll' by default.
   EXPECT_TRUE(IsScrollable(@"document.getElementById('scrollable_div')",
                            static_cast<int>(ScrollAction::DOWN)));
@@ -452,7 +471,7 @@ TEST_F(ScrollToolJavascriptTest, IsScrollable_ScrollableDiv) {
                            static_cast<int>(ScrollAction::DOWN)));
 }
 
-TEST_F(ScrollToolJavascriptTest, IsScrollable_NonScrollableDiv) {
+TEST_F(ScrollToolJavaScriptTest, IsScrollable_NonScrollableDiv) {
   for (NSString* overflow : @[ @"hidden", @"clip", @"visible" ]) {
     id __unused js_result = web::test::ExecuteJavaScript(
         web_view(),
@@ -471,14 +490,14 @@ TEST_F(ScrollToolJavascriptTest, IsScrollable_NonScrollableDiv) {
   }
 }
 
-TEST_F(ScrollToolJavascriptTest, IsScrollable_NotOverflowingDiv) {
+TEST_F(ScrollToolJavaScriptTest, IsScrollable_NotOverflowingDiv) {
   EXPECT_FALSE(IsScrollable(@"document.getElementById('not_overflowing_div')",
                             static_cast<int>(ScrollAction::DOWN)));
   EXPECT_FALSE(IsScrollable(@"document.getElementById('not_overflowing_div')",
                             static_cast<int>(ScrollAction::RIGHT)));
 }
 
-TEST_F(ScrollToolJavascriptTest,
+TEST_F(ScrollToolJavaScriptTest,
        ScrollByNodeId_kRootElementDomNodeId_ScrollsViewport) {
   // Ensure that the document is scrollable.
   int client_height =
@@ -498,7 +517,8 @@ TEST_F(ScrollToolJavascriptTest,
       kRootElementDomNodeId,
       ScrollActionFields{static_cast<int>(ScrollAction::DOWN), distance});
 
-  EXPECT_TRUE([result[@"success"] boolValue])
+  EXPECT_EQ([result[@"resultCode"] intValue],
+            static_cast<int>(ScrollToolResultCode::kOk))
       << base::SysNSStringToUTF8(result[@"message"]);
   EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForUIElementTimeout, ^{
