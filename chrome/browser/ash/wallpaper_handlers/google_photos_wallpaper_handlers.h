@@ -63,9 +63,6 @@ class GooglePhotosFetcher : public signin::IdentityManager::Observer {
   // structure.
   virtual T ParseResponse(const base::DictValue* response) = 0;
 
-  // Returns the count of results contained within the specified `result`.
-  virtual std::optional<size_t> GetResultCount(const T& result) = 0;
-
   // Contains logic for different HTTP error codes that we receive, as they can
   // carry information on the state of the user's Google Photos library.
   virtual std::optional<base::Value> CreateErrorResponse(int error_code);
@@ -79,15 +76,12 @@ class GooglePhotosFetcher : public signin::IdentityManager::Observer {
   void OnTokenReceived(
       std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher> fetcher,
       const GURL& service_url,
-      base::TimeTicks start_time,
       GoogleServiceAuthError error,
       signin::AccessTokenInfo token_info);
   void OnJsonReceived(std::unique_ptr<network::SimpleURLLoader> loader,
                       const GURL& service_url,
-                      base::TimeTicks start_time,
                       std::optional<std::string> response_body);
   void OnResponseReady(const GURL& service_url,
-                       base::TimeTicks start_time,
                        std::optional<base::Value> response);
 
   // Profile associated with the Google Photos account that will be queried.
@@ -134,15 +128,11 @@ class GooglePhotosAlbumsFetcher
   // GooglePhotosFetcher:
   GooglePhotosAlbumsCbkArgs ParseResponse(
       const base::DictValue* response) override;
-  std::optional<size_t> GetResultCount(
-      const GooglePhotosAlbumsCbkArgs& result) override;
 
  private:
   // Allow delegate to see the constructor.
   friend class WallpaperFetcherDelegateImpl;
   friend class GooglePhotosAlbumsFetcherTest;
-
-  int albums_api_refresh_counter_ = 0;
 };
 
 using GooglePhotosAlbumsCbkArgs =
@@ -170,13 +160,8 @@ class GooglePhotosSharedAlbumsFetcher
   // GooglePhotosFetcher:
   GooglePhotosAlbumsCbkArgs ParseResponse(
       const base::DictValue* response) override;
-  std::optional<size_t> GetResultCount(
-      const GooglePhotosAlbumsCbkArgs& result) override;
-
  private:
   friend class WallpaperFetcherDelegateImpl;
-
-  int shared_albums_api_refresh_counter_ = 0;
 };
 
 using ash::personalization_app::mojom::GooglePhotosEnablementState;
@@ -201,8 +186,6 @@ class GooglePhotosEnabledFetcher
   // GooglePhotosFetcher:
   GooglePhotosEnablementState ParseResponse(
       const base::DictValue* response) override;
-  std::optional<size_t> GetResultCount(
-      const GooglePhotosEnablementState& result) override;
 
  private:
   friend class WallpaperFetcherDelegateImpl;
@@ -237,14 +220,10 @@ class GooglePhotosPhotosFetcher
   std::optional<base::Value> CreateErrorResponse(int error_code) override;
   GooglePhotosPhotosCbkArgs ParseResponse(
       const base::DictValue* response) override;
-  std::optional<size_t> GetResultCount(
-      const GooglePhotosPhotosCbkArgs& result) override;
 
  private:
   friend class WallpaperFetcherDelegateImpl;
   friend class GooglePhotosPhotosFetcherTest;
-
-  int photos_api_refresh_counter_ = 0;
 };
 
 }  // namespace wallpaper_handlers

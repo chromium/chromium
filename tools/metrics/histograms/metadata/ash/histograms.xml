@@ -289,15 +289,6 @@ chromium-metrics-reviews@google.com.
   <variant name="UnsetFps"/>
 </variants>
 
-<variants name="GooglePhotosApi">
-  <variant name="GetAlbum" summary="returns a single album"/>
-  <variant name="GetAlbums" summary="returns all albums"/>
-  <variant name="GetEnabled" summary="returns enablement state"/>
-  <variant name="GetPhoto" summary="returns a single photo"/>
-  <variant name="GetPhotos" summary="returns all photos"/>
-  <variant name="GetSharedAlbums" summary="returns all shared albums"/>
-</variants>
-
 <variants name="HotseatTransitionType">
   <variant name=".TransitionToExtendedHotseat"
       summary="Transition to the extended hotseat"/>
@@ -8970,60 +8961,6 @@ chromium-metrics-reviews@google.com.
     20-40. After this theory is validated, this metric can be removed. It has a
     50 MB maximum.
   </summary>
-</histogram>
-
-<histogram name="Ash.Wallpaper.GooglePhotos.Api.{Api}.RefreshCount"
-    units="count" expires_after="2024-12-08">
-  <owner>thuongphan@google.com</owner>
-  <owner>cowmoo@google.com</owner>
-  <owner>cros-p13n-eng@google.com</owner>
-  <summary>
-    Records the refresh count for the request of the Google Photos API which
-    {Api} with a valid refresh token. The count increases each time a user
-    scrolls down to the end of the page to fetch more photos or albums from the
-    Google Photos API. Emitted only at the end of a session.
-  </summary>
-  <token key="Api" variants="GooglePhotosApi"/>
-</histogram>
-
-<histogram name="Ash.Wallpaper.GooglePhotos.Api.{Api}.ResponseTime.{Result}"
-    units="ms" expires_after="2022-11-15">
-  <owner>xiaohuic@google.com</owner>
-  <owner>cros-p13n-eng@google.com</owner>
-  <summary>
-    Records the response time for the {Result} request to the Google Photos API
-    which {Api}. Emitted only on {Result} parsing of the API response at the
-    moment parsing is completed.
-  </summary>
-  <token key="Api" variants="GooglePhotosApi"/>
-  <token key="Result">
-    <variant name="Failure" summary="failed"/>
-    <variant name="Success" summary="successful"/>
-  </token>
-</histogram>
-
-<histogram name="Ash.Wallpaper.GooglePhotos.Api.{Api}.Result"
-    enum="BooleanSuccess" expires_after="2022-11-15">
-  <owner>xiaohuic@google.com</owner>
-  <owner>cros-p13n-eng@google.com</owner>
-  <summary>
-    Records the result for the request to the Google Photos API which {Api}.
-    Emitted for both failed and successful parsing of the API request at the
-    moment parsing is completed.
-  </summary>
-  <token key="Api" variants="GooglePhotosApi"/>
-</histogram>
-
-<histogram name="Ash.Wallpaper.GooglePhotos.Api.{Api}.Result.Count"
-    units="results" expires_after="2022-11-15">
-  <owner>xiaohuic@google.com</owner>
-  <owner>cros-p13n-eng@google.com</owner>
-  <summary>
-    Records the result count for the response of the Google Photos API which
-    {Api}. Emitted only on successful parsing of the API response at the moment
-    parsing is completed.
-  </summary>
-  <token key="Api" variants="GooglePhotosApi"/>
 </histogram>
 
 <histogram name="Ash.Wallpaper.GooglePhotos.Source2"

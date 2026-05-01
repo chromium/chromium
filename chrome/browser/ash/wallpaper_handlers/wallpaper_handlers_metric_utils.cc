@@ -15,24 +15,6 @@
 namespace wallpaper_handlers {
 namespace {
 
-// NOTE: These strings are persisted to metric logs.
-std::string_view ToHistogramBase(GooglePhotosApi api) {
-  switch (api) {
-    case GooglePhotosApi::kGetAlbum:
-      return "Ash.Wallpaper.GooglePhotos.Api.GetAlbum";
-    case GooglePhotosApi::kGetAlbums:
-      return "Ash.Wallpaper.GooglePhotos.Api.GetAlbums";
-    case GooglePhotosApi::kGetEnabled:
-      return "Ash.Wallpaper.GooglePhotos.Api.GetEnabled";
-    case GooglePhotosApi::kGetPhoto:
-      return "Ash.Wallpaper.GooglePhotos.Api.GetPhoto";
-    case GooglePhotosApi::kGetPhotos:
-      return "Ash.Wallpaper.GooglePhotos.Api.GetPhotos";
-    case GooglePhotosApi::kGetSharedAlbums:
-      return "Ash.Wallpaper.GooglePhotos.Api.GetSharedAlbums";
-  }
-}
-
 // NOTE: These strings are persisted to metric logs and should match
 // SeaPenApiType variants in
 // //tools/metrics/histograms/metadata/ash/histograms.xml.
@@ -51,28 +33,6 @@ std::string ToHistogramString(
 }
 
 }  // namespace
-
-// NOTE: Histogram names are persisted to metric logs.
-void RecordGooglePhotosApiResponseParsed(GooglePhotosApi api,
-                                         base::TimeDelta response_time,
-                                         std::optional<size_t> result_count) {
-  const std::string_view histogram_base = ToHistogramBase(api);
-  const bool success = result_count.has_value();
-  base::UmaHistogramTimes(base::StrCat({histogram_base, ".ResponseTime.",
-                                        success ? "Success" : "Failure"}),
-                          response_time);
-  base::UmaHistogramBoolean(base::StrCat({histogram_base, ".Result"}), success);
-  if (success) {
-    base::UmaHistogramCounts1000(
-        base::StrCat({histogram_base, ".Result.Count"}), result_count.value());
-  }
-}
-
-void RecordGooglePhotosApiRefreshCount(GooglePhotosApi api, int refresh_count) {
-  // Record refresh count.
-  base::UmaHistogramExactLinear(
-      base::StrCat({ToHistogramBase(api), ".RefreshCount"}), refresh_count, 11);
-}
 
 void RecordSeaPenLatency(
     ash::personalization_app::mojom::SeaPenQuery::Tag query_tag,

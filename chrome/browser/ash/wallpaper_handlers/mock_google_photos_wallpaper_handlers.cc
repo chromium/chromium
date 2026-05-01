@@ -103,11 +103,6 @@ MockGooglePhotosAlbumsFetcher::MockGooglePhotosAlbumsFetcher(Profile* profile)
 
 MockGooglePhotosAlbumsFetcher::~MockGooglePhotosAlbumsFetcher() = default;
 
-std::optional<size_t> MockGooglePhotosAlbumsFetcher::GetResultCount(
-    const GooglePhotosAlbumsCbkArgs& result) {
-  return GooglePhotosAlbumsFetcher::GetResultCount(result);
-}
-
 MockGooglePhotosSharedAlbumsFetcher::MockGooglePhotosSharedAlbumsFetcher(
     Profile* profile)
     : GooglePhotosSharedAlbumsFetcher(profile) {
@@ -135,11 +130,6 @@ MockGooglePhotosSharedAlbumsFetcher::MockGooglePhotosSharedAlbumsFetcher(
 MockGooglePhotosSharedAlbumsFetcher::~MockGooglePhotosSharedAlbumsFetcher() =
     default;
 
-std::optional<size_t> MockGooglePhotosSharedAlbumsFetcher::GetResultCount(
-    const GooglePhotosAlbumsCbkArgs& result) {
-  return GooglePhotosSharedAlbumsFetcher::GetResultCount(result);
-}
-
 MockGooglePhotosEnabledFetcher::MockGooglePhotosEnabledFetcher(Profile* profile)
     : GooglePhotosEnabledFetcher(profile) {
   ON_CALL(*this, AddRequestAndStartIfNecessary)
@@ -158,11 +148,6 @@ MockGooglePhotosEnabledFetcher::MockGooglePhotosEnabledFetcher(Profile* profile)
 }
 
 MockGooglePhotosEnabledFetcher::~MockGooglePhotosEnabledFetcher() = default;
-
-std::optional<size_t> MockGooglePhotosEnabledFetcher::GetResultCount(
-    const GooglePhotosEnablementState& result) {
-  return GooglePhotosEnabledFetcher::GetResultCount(result);
-}
 
 MockGooglePhotosPhotosFetcher::MockGooglePhotosPhotosFetcher(Profile* profile)
     : GooglePhotosPhotosFetcher(profile) {
@@ -189,8 +174,4 @@ MockGooglePhotosPhotosFetcher::MockGooglePhotosPhotosFetcher(Profile* profile)
 
 MockGooglePhotosPhotosFetcher::~MockGooglePhotosPhotosFetcher() = default;
 
-std::optional<size_t> MockGooglePhotosPhotosFetcher::GetResultCount(
-    const GooglePhotosPhotosCbkArgs& result) {
-  return GooglePhotosPhotosFetcher::GetResultCount(result);
-}
 }  // namespace wallpaper_handlers

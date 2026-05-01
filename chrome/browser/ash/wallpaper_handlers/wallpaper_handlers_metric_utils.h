@@ -5,36 +5,11 @@
 #ifndef CHROME_BROWSER_ASH_WALLPAPER_HANDLERS_WALLPAPER_HANDLERS_METRIC_UTILS_H_
 #define CHROME_BROWSER_ASH_WALLPAPER_HANDLERS_WALLPAPER_HANDLERS_METRIC_UTILS_H_
 
-#include <optional>
-#include <string>
-
 #include "ash/webui/common/mojom/sea_pen.mojom.h"
 #include "base/time/time.h"
 #include "components/manta/manta_status.h"
 
 namespace wallpaper_handlers {
-
-// Enumeration of Google Photos API endpoints.
-enum class GooglePhotosApi {
-  kGetAlbum,
-  kGetAlbums,
-  kGetEnabled,
-  kGetPhoto,
-  kGetPhotos,
-  kGetSharedAlbums,
-};
-
-// Records the following on Google Photos API response parsing completion:
-// * Ash.Wallpaper.GooglePhotos.Api.{Api}.ResponseTime.[Success|Failure]
-// * Ash.Wallpaper.GooglePhotos.Api.{Api}.Result
-// * Ash.Wallpaper.GooglePhotos.Api.{Api}.Result.Count
-// NOTE: success/failure is assumed by the presence/absence of `result_count`.
-void RecordGooglePhotosApiResponseParsed(GooglePhotosApi api,
-                                         base::TimeDelta response_time,
-                                         std::optional<size_t> result_count);
-
-// Records Ash.Wallpaper.GooglePhotos.Api.{Api}.RefreshCount metric.
-void RecordGooglePhotosApiRefreshCount(GooglePhotosApi api, int refresh_count);
 
 // Used to record metrics for SeaPen initial thumbnails request and SeaPen
 // upscale request. Keep in sync with histograms.xml variant SeaPenApiType.

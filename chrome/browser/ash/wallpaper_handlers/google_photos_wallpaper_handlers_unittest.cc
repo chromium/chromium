@@ -168,11 +168,6 @@ class GooglePhotosEnabledFetcherTest : public GooglePhotosFetcherTestBase {
     return google_photos_enabled_fetcher_->ParseResponse(response);
   }
 
-  std::optional<size_t> GetResultCount(
-      const GooglePhotosEnablementState& result) {
-    return google_photos_enabled_fetcher_->GetResultCount(result);
-  }
-
  protected:
   void SetUp() override {
     GooglePhotosFetcherTestBase::SetUp();
@@ -189,40 +184,30 @@ TEST_F(GooglePhotosEnabledFetcherTest, ParseGooglePhotosEnabled) {
   // Parse an absent response (simulating a fetching error).
   auto result = GooglePhotosEnablementState::kError;
   EXPECT_EQ(ParseResponse(nullptr), result);
-  EXPECT_EQ(GetResultCount(result), std::nullopt);
 
   // Parse a response without an enabled state.
   base::DictValue response;
   EXPECT_EQ(ParseResponse(&response), result);
-  EXPECT_EQ(GetResultCount(result), std::nullopt);
 
   // Parse a response with an unknown enabled state.
   response.SetByDottedPath("status.userState", "UNKNOWN_STATUS_STATE");
   EXPECT_EQ(ParseResponse(&response), result);
-  EXPECT_EQ(GetResultCount(result), std::nullopt);
 
   // Parse a response indicating that the user cannot access Google Photos data.
   response.SetByDottedPath("status.userState", "USER_DASHER_DISABLED");
   result = GooglePhotosEnablementState::kDisabled;
   EXPECT_EQ(ParseResponse(&response), result);
-  EXPECT_EQ(GetResultCount(result), std::make_optional<size_t>(1u));
 
   // Parse a response indicating that the user can access Google Photos data.
   response.SetByDottedPath("status.userState", "USER_PERMITTED");
   result = GooglePhotosEnablementState::kEnabled;
   EXPECT_EQ(ParseResponse(&response), result);
-  EXPECT_EQ(GetResultCount(result), std::make_optional<size_t>(1u));
 }
 
 class GooglePhotosPhotosFetcherTest : public GooglePhotosFetcherTestBase {
  public:
   GooglePhotosPhotosCbkArgs ParseResponse(const base::DictValue* response) {
     return google_photos_photos_fetcher_->ParseResponse(response);
-  }
-
-  std::optional<size_t> GetResultCount(
-      const GooglePhotosPhotosCbkArgs& result) {
-    return google_photos_photos_fetcher_->GetResultCount(result);
   }
 
  protected:
@@ -241,19 +226,16 @@ TEST_F(GooglePhotosPhotosFetcherTest, ParseGooglePhotosPhotosAbsentPhoto) {
   // Parse an absent response (simulating a fetching error).
   auto result = FetchGooglePhotosPhotosResponse::New();
   EXPECT_EQ(ParseResponse(nullptr), result);
-  EXPECT_EQ(GetResultCount(result), std::nullopt);
 
   // Parse a response with no resume token or photos.
   base::DictValue empty_response;
   EXPECT_EQ(ParseResponse(&empty_response), result);
-  EXPECT_EQ(GetResultCount(result), std::nullopt);
 
   // Parse a response with a resume token and no photos.
   auto response = JsonToDict(kGooglePhotosResumeTokenOnlyResponse);
   result = FetchGooglePhotosPhotosResponse::New(std::nullopt,
                                                 kGooglePhotosResumeToken);
   EXPECT_EQ(ParseResponse(&response), result);
-  EXPECT_EQ(GetResultCount(result), std::optional<size_t>());
 }
 
 TEST_F(GooglePhotosPhotosFetcherTest, ParsePhotosInvalidPhoto) {
@@ -267,7 +249,6 @@ TEST_F(GooglePhotosPhotosFetcherTest, ParsePhotosInvalidPhoto) {
     auto* photo = GetPhotoFromGooglePhotosPhotosResponse(&response);
     photo->RemoveByDottedPath(path);
     EXPECT_EQ(ParseResponse(&response), result);
-    EXPECT_EQ(GetResultCount(result), std::make_optional<size_t>(0u));
   }
 
   // Parse one-photo responses where one of the photo's fields has an invalid
@@ -287,7 +268,6 @@ TEST_F(GooglePhotosPhotosFetcherTest, ParsePhotosInvalidPhoto) {
     auto* photo = GetPhotoFromGooglePhotosPhotosResponse(&response);
     photo->SetByDottedPath(kv.first, kv.second);
     EXPECT_EQ(ParseResponse(&response), result);
-    EXPECT_EQ(GetResultCount(result), std::make_optional<size_t>(0u));
   }
 }
 
@@ -305,22 +285,16 @@ TEST_F(GooglePhotosPhotosFetcherTest, ParsePhotosValidPhoto) {
   auto result = FetchGooglePhotosPhotosResponse::New(
       mojo::Clone(valid_photos_vector), kGooglePhotosResumeToken);
   EXPECT_EQ(ParseResponse(&response), result);
-  EXPECT_EQ(GetResultCount(result),
-            std::make_optional<size_t>(valid_photos_vector.size()));
 
   // Parse a response with a valid photo and no resume token.
   response.Remove("resumeToken");
   result = FetchGooglePhotosPhotosResponse::New(
       mojo::Clone(valid_photos_vector), std::nullopt);
   EXPECT_EQ(ParseResponse(&response), result);
-  EXPECT_EQ(GetResultCount(result),
-            std::make_optional<size_t>(valid_photos_vector.size()));
 
   // Parse a response with a single valid photo not in a list.
   response = JsonToDict(kGooglePhotosPhotosSingleItemResponse);
   EXPECT_EQ(ParseResponse(&response), result);
-  EXPECT_EQ(GetResultCount(result),
-            std::make_optional<size_t>(valid_photos_vector.size()));
 
   // Parse a response with a valid photo and no dedup key.
   auto valid_photos_vector_without_dedup_key =
@@ -332,9 +306,6 @@ TEST_F(GooglePhotosPhotosFetcherTest, ParsePhotosValidPhoto) {
   result = FetchGooglePhotosPhotosResponse::New(
       mojo::Clone(valid_photos_vector_without_dedup_key), std::nullopt);
   EXPECT_EQ(result, ParseResponse(&response));
-  EXPECT_EQ(
-      GetResultCount(result),
-      std::make_optional<size_t>(valid_photos_vector_without_dedup_key.size()));
 
   // Parse a response with a valid photo and no location.
   auto valid_photos_vector_without_location =
@@ -348,20 +319,12 @@ TEST_F(GooglePhotosPhotosFetcherTest, ParsePhotosValidPhoto) {
   result = FetchGooglePhotosPhotosResponse::New(
       mojo::Clone(valid_photos_vector_without_location), std::nullopt);
   EXPECT_EQ(result, ParseResponse(&response));
-  EXPECT_EQ(
-      GetResultCount(result),
-      std::make_optional<size_t>(valid_photos_vector_without_location.size()));
 }
 
 class GooglePhotosAlbumsFetcherTest : public GooglePhotosFetcherTestBase {
  public:
   GooglePhotosAlbumsCbkArgs ParseResponse(const base::DictValue* response) {
     return google_photos_albums_fetcher_->ParseResponse(response);
-  }
-
-  std::optional<size_t> GetResultCount(
-      const GooglePhotosAlbumsCbkArgs& result) {
-    return google_photos_albums_fetcher_->GetResultCount(result);
   }
 
  protected:
@@ -380,7 +343,6 @@ TEST_F(GooglePhotosAlbumsFetcherTest, ParseAlbumsAbsentAlbum) {
   // Parse an absent response (simulating a fetching error).
   auto result = FetchGooglePhotosAlbumsResponse::New();
   EXPECT_EQ(ParseResponse(nullptr), result);
-  EXPECT_EQ(GetResultCount(result), std::nullopt);
 
   // Parse a response with no resume token or albums.
   base::DictValue empty_response;
@@ -391,7 +353,6 @@ TEST_F(GooglePhotosAlbumsFetcherTest, ParseAlbumsAbsentAlbum) {
   result = FetchGooglePhotosAlbumsResponse::New(std::nullopt,
                                                 kGooglePhotosResumeToken);
   EXPECT_EQ(ParseResponse(&response), result);
-  EXPECT_EQ(GetResultCount(result), std::nullopt);
 }
 
 TEST_F(GooglePhotosAlbumsFetcherTest, ParseAlbumsInvalidAlbum) {
@@ -405,7 +366,6 @@ TEST_F(GooglePhotosAlbumsFetcherTest, ParseAlbumsInvalidAlbum) {
     auto* album = GetAlbumFromGooglePhotosAlbumsResponse(&response);
     album->RemoveByDottedPath(path);
     EXPECT_EQ(ParseResponse(&response), result);
-    EXPECT_EQ(GetResultCount(result), std::make_optional<size_t>(0u));
   }
 
   // Parse one-album responses where one of the album's fields has an invalid
@@ -420,7 +380,6 @@ TEST_F(GooglePhotosAlbumsFetcherTest, ParseAlbumsInvalidAlbum) {
     auto* album = GetAlbumFromGooglePhotosAlbumsResponse(&response);
     album->SetByDottedPath(kv.first, kv.second);
     EXPECT_EQ(ParseResponse(&response), result);
-    EXPECT_EQ(GetResultCount(result), std::make_optional<size_t>(0u));
   }
 }
 
@@ -437,16 +396,12 @@ TEST_F(GooglePhotosAlbumsFetcherTest, ParseAlbumsValidAlbum) {
   auto result = FetchGooglePhotosAlbumsResponse::New(
       mojo::Clone(valid_albums_vector), kGooglePhotosResumeToken);
   EXPECT_EQ(ParseResponse(&response), result);
-  EXPECT_EQ(GetResultCount(result),
-            std::make_optional<size_t>(valid_albums_vector.size()));
 
   // Parse a response with a valid album and no resume token.
   response.Remove("resumeToken");
   result = FetchGooglePhotosAlbumsResponse::New(
       mojo::Clone(valid_albums_vector), std::nullopt);
   EXPECT_EQ(ParseResponse(&response), result);
-  EXPECT_EQ(GetResultCount(result),
-            std::make_optional<size_t>(valid_albums_vector.size()));
 }
 
 }  // namespace wallpaper_handlers
