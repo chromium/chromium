@@ -605,12 +605,10 @@ fn get_build_targets(
             | BuildTargetId::Benchmark(_)
             | _ => None,
         };
+
         match target_type {
-            None => (),
-            Some(TargetType::Bin) => {
-                if allowed_bin_targets.contains(target.name()) {
-                    bin_targets.push(BinTarget { root, name: target.name().to_string() });
-                }
+            Some(TargetType::Bin) if allowed_bin_targets.contains(target.name()) => {
+                bin_targets.push(BinTarget { root, name: target.name().to_string() });
             }
             Some(TargetType::BuildScript) => {
                 assert_eq!(
@@ -631,6 +629,7 @@ fn get_build_targets(
                 );
                 lib_target = Some(LibTarget { root, lib_type });
             }
+            _ => (),
         }
     }
     Ok(BuildTargets { lib_target, bin_targets, build_script })

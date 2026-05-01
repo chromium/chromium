@@ -18,6 +18,7 @@ use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
 
 use anyhow::{ensure, format_err, Context, Result};
+use rayon::prelude::*;
 
 /// `fn generate` implements handling of the `gnrt gen` CLI command - this
 /// covers the following steps (for either `//build/rust/std` or for
@@ -217,11 +218,10 @@ fn generate_for_std(args: GenCommandArgs, paths: &paths::ChromiumPaths) -> Resul
 fn generate_for_third_party(args: GenCommandArgs, paths: &paths::ChromiumPaths) -> Result<()> {
     let config = config::BuildConfig::from_path(paths.third_party_config_file)?;
 
-    let build_file_template_path =
-        paths.third_party_config_file.parent().unwrap().join(&config.gn_config.build_file_template);
-    let handlebars = init_handlebars_with_template_paths(&[&build_file_template_path])?;
-
-    println!("Generating third-party GN rules from {}", paths.third_party_cargo_root.display());
+    println!(
+        "Generating GN rules from `{}/Cargo.toml` ...",
+        paths.third_party_cargo_root.display(),
+    );
 
     let cargo_extra_options = vec![
         // Use offline to constrain dependency resolution to locally vendored crates.
@@ -242,6 +242,7 @@ fn generate_for_third_party(args: GenCommandArgs, paths: &paths::ChromiumPaths) 
         &config,
     )?;
 
+    println!("Discovering `sources` and `inputs` of crates ...");
     let crate_inputs: HashMap<VendoredCrate, CrateFiles> = dependencies
         .iter()
         .map(|p| {
@@ -312,7 +313,11 @@ fn generate_for_third_party(args: GenCommandArgs, paths: &paths::ChromiumPaths) 
         return Ok(());
     }
 
-    for (dir, build_file) in &all_build_files {
+    println!("Generating `BUILD.gn` files ...");
+    let build_file_template_path =
+        paths.third_party_config_file.parent().unwrap().join(&config.gn_config.build_file_template);
+    let handlebars = init_handlebars_with_template_paths(&[&build_file_template_path])?;
+    all_build_files.into_par_iter().try_for_each(|(dir, build_file)| -> Result<()> {
         let build_file_path = dir.join("BUILD.gn");
         render_handlebars(&handlebars, &build_file_template_path, &build_file, &build_file_path)?;
         if let Err(err) = format_build_file(&build_file_path) {
@@ -321,7 +326,8 @@ fn generate_for_third_party(args: GenCommandArgs, paths: &paths::ChromiumPaths) 
                  Please format the generated file(s) manually."
             );
         }
-    }
+        Ok(())
+    })?;
     Ok(())
 }
 
