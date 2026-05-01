@@ -142,3 +142,29 @@ IN_PROC_BROWSER_TEST_F(NetInternalsSharedDictionaryViewTest,
 IN_PROC_BROWSER_TEST_F(NetInternalsSharedDictionaryViewTest, ClearAll) {
   RunTestCase("ClearAll");
 }
+
+class NetInternalsUtilitiesViewTest : public NetInternalsBrowserTest {
+ protected:
+  void RunTestCase(const std::string& testCase) {
+    RunTestWithoutTestLoader(
+        "net_internals/utilities_view_test.js",
+        base::StringPrintf("runMochaTest('UtilitiesViewTest', '%s');",
+                           testCase.c_str()));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(NetInternalsUtilitiesViewTest, MatchSuccess) {
+  RunTestCase("MatchSuccess");
+}
+
+IN_PROC_BROWSER_TEST_F(NetInternalsUtilitiesViewTest, MatchFailure) {
+  RunTestCase("MatchFailure");
+}
+
+IN_PROC_BROWSER_TEST_F(NetInternalsUtilitiesViewTest, InvalidMatcher) {
+  RunTestCase("InvalidMatcher");
+}
+
+IN_PROC_BROWSER_TEST_F(NetInternalsUtilitiesViewTest, InvalidUrl) {
+  RunTestCase("InvalidUrl");
+}

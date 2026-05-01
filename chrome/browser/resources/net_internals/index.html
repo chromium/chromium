@@ -127,6 +127,27 @@ found in the LICENSE file.
         </div>
       </div>
 
+      <div id="utilities-view-tab-content" class="content-box">
+        <h4>Proxy Matcher Test</h4>
+        <p>Input a URL pattern to test against a sample URL (see <a href="https://chromium.googlesource.com/chromium/src/+/HEAD/net/docs/proxy.md#Proxy-config-URL-patterns" target="_blank">proxy pattern docs</a>):</p>
+        <form id="utilities-view-test-form">
+          <label>
+            Rule Matcher:
+            <input type="text" id="utilities-view-matcher-input"
+                         placeholder="*://*.example.com">
+          </label>
+          <label>
+            Sample URL:
+            <input type="text" id="utilities-view-url-input"
+                         placeholder="https://test.example.com">
+          </label>
+          <input type="submit" value="Test Match"
+           id="utilities-view-test-submit">
+        </form>
+        <div class="output-box" id="utilities-view-test-output">
+        </div>
+      </div>
+
 <if expr="is_chromeos">
       <div id="chromeos-view-tab-content" class="content-box">
         <h4 class="tab-title">Import ONC file</h4>

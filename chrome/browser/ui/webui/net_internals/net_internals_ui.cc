@@ -44,6 +44,7 @@
 #include "net/dns/public/host_resolver_results.h"
 #include "net/dns/public/resolve_error_info.h"
 #include "net/extras/shared_dictionary/shared_dictionary_usage_info.h"
+#include "net/proxy_resolution/proxy_host_matching_rules.h"
 #include "net/shared_dictionary/shared_dictionary_isolation_key.h"
 #include "services/network/public/cpp/request_destination.h"
 #include "services/network/public/mojom/clear_data_filter.mojom.h"
@@ -203,6 +204,7 @@ class NetInternalsMessageHandler : public content::WebUIMessageHandler {
   void OnClearSharedDictionaryCacheForIsolationKey(const base::ListValue& list);
   void OnGetSharedDictionaryUsageInfo(const base::ListValue& list);
   void OnGetSharedDictionaryInfo(const base::ListValue& list);
+  void OnTestProxyConfigurationUrlMatcher(const base::ListValue& list);
 
   void OnClearSharedDictionaryDone(const std::string& callback_id);
   void OnClearSharedDictionaryForIsolationKeyDone(
@@ -281,6 +283,11 @@ void NetInternalsMessageHandler::RegisterMessages() {
       "getSharedDictionaryInfo",
       base::BindRepeating(
           &NetInternalsMessageHandler::OnGetSharedDictionaryInfo,
+          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "testProxyConfigurationUrlMatcher",
+      base::BindRepeating(
+          &NetInternalsMessageHandler::OnTestProxyConfigurationUrlMatcher,
           base::Unretained(this)));
 }
 
@@ -510,6 +517,40 @@ void NetInternalsMessageHandler::OnGetSharedDictionaryInfoDone(
   }
   AllowJavascript();
   ResolveJavascriptCallback(base::Value(callback_id), std::move(dict_list));
+}
+
+void NetInternalsMessageHandler::OnTestProxyConfigurationUrlMatcher(
+    const base::ListValue& list) {
+  const std::string* callback_id = list[0].GetIfString();
+  const std::string* matcher_text = list[1].GetIfString();
+  const std::string* url_text = list[2].GetIfString();
+  CHECK(callback_id && matcher_text && url_text);
+
+  net::ProxyHostMatchingRules rule;
+  bool is_valid = rule.AddRuleFromString(*matcher_text);
+  rule.AddRulesToSubtractImplicit();
+
+  // For user friendliness, prepend "http://" if no scheme is present. This
+  // allows users to enter just a hostname (e.g., "google.com") and have it
+  // parsed as a valid URL by GURL, which requires a scheme. This modified URL
+  // is also returned to the JS side to update the input textbox.
+  std::string final_url = *url_text;
+  if (final_url.find("://") == std::string::npos) {
+    final_url = "http://" + final_url;
+  }
+
+  GURL test_gurl(final_url);
+  bool is_url_valid = test_gurl.is_valid();
+  bool matched = is_url_valid && rule.Matches(test_gurl);
+
+  base::DictValue result;
+  result.Set("matched", matched);
+  result.Set("is_valid", is_valid);
+  result.Set("is_url_valid", is_url_valid);
+  result.Set("final_url", final_url);
+
+  AllowJavascript();
+  ResolveJavascriptCallback(base::Value(*callback_id), std::move(result));
 }
 
 void NetInternalsMessageHandler::OnClearSharedDictionaryDone(

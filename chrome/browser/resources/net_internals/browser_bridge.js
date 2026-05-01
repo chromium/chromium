@@ -76,6 +76,10 @@ export class BrowserBridge {
         'getSharedDictionaryInfo', frame_origin, top_frame_site);
   }
 
+  sendTestProxyConfigurationUrlMatcher(matcher, url) {
+    return sendWithPromise('testProxyConfigurationUrlMatcher', matcher, url);
+  }
+
   static getInstance() {
     return instance || (instance = new BrowserBridge());
   }

@@ -14,6 +14,7 @@ import {SharedDictionaryView} from './shared_dictionary_view.js';
 import {SocketsView} from './sockets_view.js';
 import {TabSwitcherView} from './tab_switcher_view.js';
 import {hasTouchScreen} from './util.js';
+import {UtilitiesView} from './utilities_view.js';
 import {WindowView} from './view.js';
 
 /** @type {?MainView} */
@@ -84,6 +85,7 @@ export class MainView extends WindowView {
     addTab(SocketsView);
     addTab(DomainSecurityPolicyView);
     addTab(SharedDictionaryView);
+    addTab(UtilitiesView);
     // <if expr="is_chromeos">
     addTab(CrosView);
     // </if>

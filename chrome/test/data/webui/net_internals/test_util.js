@@ -12,6 +12,7 @@ import {MainView} from 'chrome://net-internals/main.js';
 import {ProxyView} from 'chrome://net-internals/proxy_view.js';
 import {SharedDictionaryView} from 'chrome://net-internals/shared_dictionary_view.js';
 import {SocketsView} from 'chrome://net-internals/sockets_view.js';
+import {UtilitiesView} from 'chrome://net-internals/utilities_view.js';
 import {assertEquals, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 /**
@@ -82,6 +83,7 @@ function getTab(tabId) {
       sockets: SocketsView.TAB_ID,
       hsts: DomainSecurityPolicyView.TAB_ID,
       sharedDictionary: SharedDictionaryView.TAB_ID,
+      utilities: UtilitiesView.TAB_ID,
       // <if expr="is_chromeos">
       chromeos: CrosView.TAB_ID,
       // </if>

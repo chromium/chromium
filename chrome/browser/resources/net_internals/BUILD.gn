@@ -23,6 +23,7 @@ build_webui("build") {
     "shared_dictionary_view.js",
     "sockets_view.js",
     "tab_switcher_view.js",
+    "utilities_view.js",
     "util.js",
     "view.js",
   ]
