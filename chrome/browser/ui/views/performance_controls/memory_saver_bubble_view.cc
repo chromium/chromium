@@ -147,8 +147,9 @@ views::BubbleDialogModelHost* MemorySaverBubbleView::ShowBubble(
   auto* bubble = bubble_unique.get();
   bubble->SetHighlightedElement(kMemorySaverChipElementId);
 
-  views::Widget* const widget =
-      views::BubbleDialogDelegate::CreateBubble(std::move(bubble_unique));
+  views::Widget* const widget = views::BubbleDialogDelegate::CreateBubble(
+      std::move(bubble_unique),
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
   widget->Show();
   observer->OnBubbleShown();
   return bubble;

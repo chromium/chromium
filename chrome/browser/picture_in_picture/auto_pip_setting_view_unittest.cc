@@ -105,8 +105,9 @@ class AutoPipSettingViewTest : public views::ViewsTestBase,
 };
 
 TEST_F(AutoPipSettingViewTest, TestInitControlViewButton) {
-  views::Widget* widget =
-      views::BubbleDialogDelegate::CreateBubble(std::move(setting_view()));
+  views::Widget* widget = views::BubbleDialogDelegate::CreateBubble(
+      std::move(setting_view()),
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
   widget->Show();
   EXPECT_TRUE(widget->IsVisible());
   const auto* allow_once_button = GetButton(UiResult::kAllowOnce, widget);
@@ -116,8 +117,9 @@ TEST_F(AutoPipSettingViewTest, TestInitControlViewButton) {
 }
 
 TEST_F(AutoPipSettingViewTest, TestShow) {
-  views::Widget* widget =
-      views::BubbleDialogDelegate::CreateBubble(std::move(setting_view()));
+  views::Widget* widget = views::BubbleDialogDelegate::CreateBubble(
+      std::move(setting_view()),
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
   widget->Show();
   EXPECT_TRUE(widget->IsVisible());
 }
@@ -132,8 +134,9 @@ TEST_F(AutoPipSettingViewTest, TestBubbleTitleNoElide) {
   const auto origin_text = setting_view()->get_origin_text_for_testing();
 
   // Create and show bubble.
-  views::Widget* widget =
-      views::BubbleDialogDelegate::CreateBubble(std::move(setting_view()));
+  views::Widget* widget = views::BubbleDialogDelegate::CreateBubble(
+      std::move(setting_view()),
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
   widget->Show();
 
   // Verify that the bubble title contains the origin.
@@ -159,8 +162,9 @@ TEST_F(AutoPipSettingViewTest, TestBubbleTitleElideBehaviorForNonFileURL) {
   const auto origin_text = setting_view->get_origin_text_for_testing();
 
   // Create and show bubble.
-  views::Widget* widget =
-      views::BubbleDialogDelegate::CreateBubble(std::move(setting_view));
+  views::Widget* widget = views::BubbleDialogDelegate::CreateBubble(
+      std::move(setting_view),
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
   widget->Show();
 
   // Ensure that the origin text has been elided at head.
@@ -187,8 +191,9 @@ TEST_F(AutoPipSettingViewTest, TestBubbleTitleElideBehaviorForFileURL) {
   const auto origin_text = setting_view->get_origin_text_for_testing();
 
   // Create and show bubble.
-  views::Widget* widget =
-      views::BubbleDialogDelegate::CreateBubble(std::move(setting_view));
+  views::Widget* widget = views::BubbleDialogDelegate::CreateBubble(
+      std::move(setting_view),
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
   widget->Show();
 
   // Ensure that the origin text has been elided at tail.
@@ -214,8 +219,9 @@ TEST_F(AutoPipSettingViewTest, TestOriginLabelForGURLWithLocalHost) {
   const auto origin_text = setting_view->get_origin_text_for_testing();
 
   // Create and show bubble.
-  views::Widget* widget =
-      views::BubbleDialogDelegate::CreateBubble(std::move(setting_view));
+  views::Widget* widget = views::BubbleDialogDelegate::CreateBubble(
+      std::move(setting_view),
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
   widget->Show();
 
   // Verify that the bubble title contains the URL spec.
@@ -250,8 +256,9 @@ TEST_F(AutoPipSettingViewTest, MAYBE_WidgetIsCenteredWhenArrowIsFloat) {
       anchor_view, views::BubbleBorder::FLOAT);
 
   // Create and show bubble.
-  views::Widget* widget =
-      views::BubbleDialogDelegate::CreateBubble(std::move(setting_view));
+  views::Widget* widget = views::BubbleDialogDelegate::CreateBubble(
+      std::move(setting_view),
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
   widget->Show();
 
   // Get the anchor view and widget bounds.
@@ -281,8 +288,9 @@ INSTANTIATE_TEST_SUITE_P(AllButtonCallbacks,
 
 // Test UiResult callbacks.
 TEST_P(AutoPipSettingViewTest, ButtonCallbackTest) {
-  views::Widget* widget =
-      views::BubbleDialogDelegate::CreateBubble(std::move(setting_view()));
+  views::Widget* widget = views::BubbleDialogDelegate::CreateBubble(
+      std::move(setting_view()),
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
   widget->Show();
 
   const views::MdTextButton* button_to_test =
@@ -306,8 +314,9 @@ INSTANTIATE_TEST_SUITE_P(AllMultipleClicks,
 
 // Verify that multiple clicks on UI button does not crash.
 TEST_P(AutoPipSettingViewTest, MultipleClicksDontCrash) {
-  views::Widget* widget =
-      views::BubbleDialogDelegate::CreateBubble(std::move(setting_view()));
+  views::Widget* widget = views::BubbleDialogDelegate::CreateBubble(
+      std::move(setting_view()),
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
   widget->Show();
 
   const views::MdTextButton* button_to_test =
@@ -332,8 +341,9 @@ INSTANTIATE_TEST_SUITE_P(AllButtonCallbacksHideOverlayBackgroundLayer,
 
 // Verify that the |hide_view_cb_| is executed.
 TEST_P(AutoPipSettingViewTest, OverlayBackgroundLayerIsHidden) {
-  views::Widget* widget =
-      views::BubbleDialogDelegate::CreateBubble(std::move(setting_view()));
+  views::Widget* widget = views::BubbleDialogDelegate::CreateBubble(
+      std::move(setting_view()),
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
   widget->Show();
 
   const views::MdTextButton* button_to_test =

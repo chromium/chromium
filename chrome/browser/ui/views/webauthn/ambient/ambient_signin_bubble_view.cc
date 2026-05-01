@@ -107,7 +107,9 @@ void AmbientSigninBubbleView::ShowCredentials(
 
 void AmbientSigninBubbleView::Show() {
   if (!widget_) {
-    widget_ = views::BubbleDialogDelegate::CreateBubble(this)->GetWeakPtr();
+    widget_ = views::BubbleDialogDelegate::CreateBubble(
+                  this, views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET)
+                  ->GetWeakPtr();
   }
   widget_->Show();
 }

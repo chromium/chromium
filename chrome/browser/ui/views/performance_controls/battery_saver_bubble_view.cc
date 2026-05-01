@@ -56,8 +56,9 @@ views::BubbleDialogModelHost* BatterySaverBubbleView::CreateBubble(
       std::move(dialog_model), anchor_view, anchor_position);
   auto* bubble = bubble_unique.get();
 
-  views::Widget* const widget =
-      views::BubbleDialogDelegate::CreateBubble(std::move(bubble_unique));
+  views::Widget* const widget = views::BubbleDialogDelegate::CreateBubble(
+      std::move(bubble_unique),
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
   widget->Show();
 
   observer->OnBubbleShown();

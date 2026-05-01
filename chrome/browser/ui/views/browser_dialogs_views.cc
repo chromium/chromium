@@ -76,7 +76,9 @@ void ShowBubble(ui::ElementContext element_context,
   // automatically based on the anchor's position relative to its widget.
   auto bubble = std::make_unique<views::BubbleDialogModelHost>(
       std::move(dialog_model), anchor_view, views::BubbleBorder::TOP_RIGHT);
-  views::BubbleDialogDelegate::CreateBubble(std::move(bubble))->Show();
+  views::BubbleDialogDelegate::CreateBubble(
+      std::move(bubble), views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET)
+      ->Show();
 }
 
 }  // namespace chrome

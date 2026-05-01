@@ -1431,8 +1431,9 @@ TEST_F(DragWindowFromShelfControllerTest, DragWindowWithBubbleDialog) {
   auto dialog_host = std::make_unique<CenteredBubbleDialogModelHost>(
       widget.get(), gfx::Size(100, 100), /*close_on_deactivate=*/false);
 
-  auto* bubble_widget =
-      views::BubbleDialogDelegate::CreateBubble(std::move(dialog_host));
+  auto* bubble_widget = views::BubbleDialogDelegate::CreateBubble(
+      std::move(dialog_host),
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
 
   bubble_widget->Show();
 

@@ -35,8 +35,9 @@ class BubbleFrameViewBrowserTest : public DialogBrowserTest {
     auto bubble = std::make_unique<views::BubbleDialogModelHost>(
         std::move(dialog_model), anchor_view, views::BubbleBorder::TOP_RIGHT);
 
-    views::Widget* const widget =
-        views::BubbleDialogDelegate::CreateBubble(std::move(bubble));
+    views::Widget* const widget = views::BubbleDialogDelegate::CreateBubble(
+        std::move(bubble),
+        views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
     widget->Show();
   }
 };

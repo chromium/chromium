@@ -3288,7 +3288,8 @@ TEST_F(SplitViewControllerTest, DoNotObserveTransientIfNotInSplitview) {
   // Create a bubble without anchor so that it is observed by split view
   // divider.
   views::Widget* bubble_widget = views::BubbleDialogDelegateView::CreateBubble(
-      new TestBubbleDialogDelegateView(widget->GetNativeWindow()));
+      new TestBubbleDialogDelegateView(widget->GetNativeWindow()),
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
   aura::Window* bubble_transient = bubble_widget->GetNativeWindow();
   EXPECT_TRUE(::wm::HasTransientAncestor(bubble_transient, parent));
 
@@ -4117,7 +4118,8 @@ TEST_F(SplitViewControllerTest,
                       aura::client::kResizeBehaviorCanResize |
                           aura::client::kResizeBehaviorCanMaximize);
   views::Widget* bubble_widget = views::BubbleDialogDelegateView::CreateBubble(
-      new TestBubbleDialogDelegateView(widget->GetContentsView()));
+      new TestBubbleDialogDelegateView(widget->GetContentsView()),
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
   aura::Window* bubble_transient = bubble_widget->GetNativeWindow();
   EXPECT_TRUE(wm::HasTransientAncestor(bubble_transient, window));
 
@@ -4164,8 +4166,8 @@ TEST_F(SplitViewControllerTest, ResizeChangeOpacityOnTransientChild) {
   host1->set_parent_window(right_window.get());
   host1->set_close_on_deactivate(false);
 
-  auto* bubble_widget1 =
-      views::BubbleDialogDelegate::CreateBubble(std::move(host1));
+  auto* bubble_widget1 = views::BubbleDialogDelegate::CreateBubble(
+      std::move(host1), views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
   bubble_widget1->Show();
 
   SplitViewDivider* divider = split_view_divider();
@@ -4186,8 +4188,8 @@ TEST_F(SplitViewControllerTest, ResizeChangeOpacityOnTransientChild) {
       views::BubbleBorder::Arrow::NONE);
   host2->set_parent_window(left_window.get());
   host2->set_close_on_deactivate(false);
-  auto* bubble_widget2 =
-      views::BubbleDialogDelegate::CreateBubble(std::move(host2));
+  auto* bubble_widget2 = views::BubbleDialogDelegate::CreateBubble(
+      std::move(host2), views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
   bubble_widget2->Show();
   EXPECT_EQ(kExpectedOpacity,
             bubble_widget2->GetNativeWindow()->layer()->GetTargetOpacity());

@@ -217,7 +217,9 @@ void DialogModelExample::ShowDialog() {
       std::move(dialog_model), show_dialog_button_, BubbleBorder::TOP_LEFT);
 
   // Creates and shows the dialog.
-  BubbleDialogDelegate::CreateBubble(std::move(bubble))->Show();
+  BubbleDialogDelegate::CreateBubble(
+      std::move(bubble), Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET)
+      ->Show();
 }
 
 }  // namespace views::examples

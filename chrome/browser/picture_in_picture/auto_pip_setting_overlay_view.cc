@@ -68,7 +68,8 @@ void AutoPipSettingOverlayView::ShowBubble(gfx::NativeView parent) {
   init_.auto_pip_setting_view_->set_parent_window(parent);
   auto_pip_setting_view_ = init_.auto_pip_setting_view_.get();
   widget_ = views::BubbleDialogDelegate::CreateBubble(
-      std::move(init_.auto_pip_setting_view_));
+      std::move(init_.auto_pip_setting_view_),
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
 
   // Delay showing the bubble, for both document and video pip, until after the
   // scrim animation completes.
