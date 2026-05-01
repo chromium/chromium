@@ -125,22 +125,35 @@ void RecordClipboardMetrics(AutocompleteMatchType::Type match_type) {
   }
 }
 
+content::WebContents* GetContextualTaskSpecificWebContents(
+    base::WeakPtr<AutocompleteControllerAndroid> weak_ptr) {
+  if (weak_ptr.MaybeValid()) {
+    return weak_ptr->GetContextualTasksWebContents();
+  }
+
+  return nullptr;
+}
+
 }  // namespace
 
 AutocompleteControllerAndroid::AutocompleteControllerAndroid(
     Profile* profile,
-    std::unique_ptr<ChromeAutocompleteProviderClient> client,
     bool is_low_memory_device)
     : is_low_memory_device_{is_low_memory_device},
       profile_{profile},
       java_controller_{Java_AutocompleteController_Constructor(
           AttachCurrentThread(),
-          reinterpret_cast<intptr_t>(this))},
-      autocomplete_controller_{std::make_unique<AutocompleteController>(
-          std::move(client),
-          AutocompleteControllerConfig{
-              .provider_types = AutocompleteClassifier::DefaultOmniboxProviders(
-                  is_low_memory_device)})} {
+          reinterpret_cast<intptr_t>(this))} {
+  auto autocomplete_provider_client =
+      std::make_unique<ChromeAutocompleteProviderClient>(
+          profile, base::BindRepeating(&GetContextualTaskSpecificWebContents,
+                                       weak_ptr_factory_.GetWeakPtr()));
+
+  autocomplete_controller_ = std::make_unique<AutocompleteController>(
+      std::move(autocomplete_provider_client),
+      AutocompleteControllerConfig{
+          .provider_types = AutocompleteClassifier::DefaultOmniboxProviders(
+              is_low_memory_device)});
   autocomplete_controller_->AddObserver(this);
 
   AutocompleteControllerEmitter* emitter =
@@ -164,6 +177,10 @@ void AutocompleteControllerAndroid::Start(
     bool allow_exact_keyword_match,
     bool want_asynchronous_matches) {
   autocomplete_controller_->result().DestroyJavaObject();
+
+  if (web_contents) {
+    contextual_tasks_web_contents_ = web_contents->GetWeakPtr();
+  }
 
   size_t actual_cursor_pos =
       cursor_pos == -1 ? std::u16string::npos : cursor_pos;
@@ -246,6 +263,10 @@ void AutocompleteControllerAndroid::OnOmniboxFocused(
     return;
   }
 
+  if (web_contents) {
+    contextual_tasks_web_contents_ = web_contents->GetWeakPtr();
+  }
+
   std::u16string url_u16 = base::UTF8ToUTF16(current_url.spec());
   std::u16string omnibox_text = omnibox_text_in;
 
@@ -311,6 +332,10 @@ void AutocompleteControllerAndroid::Stop(JNIEnv* env, bool clear_results) {
   autocomplete_controller_->Stop(clear_results
                                      ? AutocompleteStopReason::kClobbered
                                      : AutocompleteStopReason::kInteraction);
+
+  if (clear_results) {
+    contextual_tasks_web_contents_.reset();
+  }
 }
 
 void AutocompleteControllerAndroid::ResetSession(JNIEnv* env) {
@@ -631,6 +656,14 @@ void AutocompleteControllerAndroid::WarmUpRenderProcess() const {
   content::SpareRenderProcessHostManager::Get().WarmupSpare(profile_);
 }
 
+content::WebContents*
+AutocompleteControllerAndroid::GetContextualTasksWebContents() const {
+  if (contextual_tasks_web_contents_.MaybeValid()) {
+    return contextual_tasks_web_contents_.get();
+  }
+  return nullptr;
+}
+
 // static
 AutocompleteControllerAndroid*
 AutocompleteControllerAndroid::Factory::GetForProfile(Profile* profile) {
@@ -658,9 +691,7 @@ std::unique_ptr<KeyedService>
 AutocompleteControllerAndroid::Factory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   auto* profile = static_cast<Profile*>(context);
-  return std::make_unique<AutocompleteControllerAndroid>(
-      profile, std::make_unique<ChromeAutocompleteProviderClient>(profile),
-      false);
+  return std::make_unique<AutocompleteControllerAndroid>(profile, false);
 }
 
 static ScopedJavaLocalRef<jobject> JNI_AutocompleteController_GetForProfile(

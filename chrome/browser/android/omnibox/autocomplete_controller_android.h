@@ -30,7 +30,6 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer,
  public:
   AutocompleteControllerAndroid(
       Profile* profile,
-      std::unique_ptr<ChromeAutocompleteProviderClient> client,
       bool is_low_memory_device);
 
   AutocompleteControllerAndroid(const AutocompleteControllerAndroid&) = delete;
@@ -169,6 +168,9 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer,
         content::BrowserContext* profile) const override;
   };
 
+  // Returns WebContents associated with the most recent Autocomplete request.
+  content::WebContents* GetContextualTasksWebContents() const;
+
  private:
   // AutocompleteController::Observer implementation.
   void OnResultChanged(AutocompleteController* controller,
@@ -219,6 +221,9 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer,
   // This may and often will be unset.
   base::WeakPtr<ComposeboxQueryControllerBridge>
       composebox_query_controller_bridge_;
+
+  // WebContents associated with the most recent request.
+  base::WeakPtr<content::WebContents> contextual_tasks_web_contents_;
 
   // Factory used to create asynchronously invoked callbacks.
   // Retained throughout the lifetime of the AutocompleteControllerAndroid.
