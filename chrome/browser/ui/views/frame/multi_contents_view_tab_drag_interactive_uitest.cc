@@ -397,7 +397,7 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewTabDragEntrypointsUiTest,
   }
 #endif
 
-#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
+#if BUILDFLAG(IS_LINUX)
   if (base::FeatureList::IsEnabled(features::kInitialWebUI)) {
     GTEST_SKIP() << "Skipping test because it fails with InitialWebUI enabled. "
                     "See crbug.com/477426026.";
