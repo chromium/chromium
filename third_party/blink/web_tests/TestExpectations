@@ -153,7 +153,6 @@ crbug.com/887140 virtual/hdr/video-canvas-alpha.html [ Failure ]
 # parser was enabled. All of these are bugs/issues with the test itself.
 
 # Extra line info appears in the output in some cases.
-crbug.com/1254932 http/tests/preload/meta-csp.html [ Failure ]
 
 # Extra box in the output:
 crbug.com/1254933 [ Linux ] css3/filters/filterRegions.html [ Failure Pass ]

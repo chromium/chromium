@@ -1845,8 +1845,14 @@ bool HTMLDocumentParser::AllowPreloading() {
     }
 
     // Only allows preloads if all seen meta tags have been processed.
-    return static_cast<int>(csp->GetParsedPolicies().size()) ==
-           seen_csp_meta_tags_;
+    int processed_meta_policies = 0;
+    for (const auto& policy : csp->GetParsedPolicies()) {
+      if (policy->header->source ==
+          network::mojom::blink::ContentSecurityPolicySource::kMeta) {
+        ++processed_meta_policies;
+      }
+    }
+    return processed_meta_policies == seen_csp_meta_tags_;
   } else {
     return false;
   }
