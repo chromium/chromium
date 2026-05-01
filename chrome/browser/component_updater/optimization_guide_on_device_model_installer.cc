@@ -8,11 +8,13 @@
 #include <iterator>
 #include <memory>
 #include <optional>
+#include <ranges>
 #include <string>
 #include <vector>
 
 #include "base/byte_count.h"
 #include "base/callback_list.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -385,8 +387,11 @@ class ManifestComponentsInstallerPolicy final
   }
 
   base::FilePath GetRelativeInstallDir() const override {
-    return base::FilePath(FILE_PATH_LITERAL("OptGuideManifestModel"))
-        .AppendASCII(public_key_hex_);
+    // Temporary redirection to avoid re-downloading the legacy model again.
+    return std::ranges::equal(public_key_hash_, base::span(kPublicKeySHA256))
+               ? base::FilePath(kInstallationRelativePath)
+               : base::FilePath(FILE_PATH_LITERAL("OptGuideManifestModel"))
+                     .AppendASCII(public_key_hex_);
   }
 
   void GetHash(std::vector<uint8_t>* hash) const override {
