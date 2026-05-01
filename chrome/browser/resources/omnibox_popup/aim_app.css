@@ -74,6 +74,7 @@ cr-composebox {
   --cr-composebox-submit-border-radius: 100px;
   --cr-composebox-submit-container-top: auto;
   --cr-composebox-submit-height: 32px;
+  --cr-composebox-submit-width: 40px;
   --cr-composebox-submit-icon-offset: 0;
   --cr-composebox-suggestion-activity-bottom: 0;
   --cr-composebox-suggestion-activity-margin-top: 0;

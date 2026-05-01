@@ -223,6 +223,10 @@ cr-button#entrypoint:focus {
   }
 }
 
+cr-icon-button {
+  border-radius: var(--cr-composebox-entrypoint-border-radius, 50%);
+}
+
 #entrypoint {
   --cr-button-disabled-text-color:
       var(--color-composebox-context-entrypoint-text-disabled);
@@ -236,7 +240,6 @@ cr-button#entrypoint:focus {
       --cr-composebox-entrypoint-width, var(--cr-icon-button-size));
   --icon-block-padding-small: 10px;
   border: initial;
-  border-radius: var(--cr-composebox-entrypoint-border-radius, 50%);
   gap: 4px;
   position: relative;
   z-index: 5;
