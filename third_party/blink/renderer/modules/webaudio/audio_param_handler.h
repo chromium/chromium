@@ -541,14 +541,6 @@ class AudioParamHandler final : public ThreadSafeRefCounted<AudioParamHandler>,
       float value,
       unsigned write_index) EXCLUSIVE_LOCKS_REQUIRED(events_lock_);
 
-  // Fill the output vector `values` with the value `default_value`,
-  // starting at `write_index` and continuing up to `end_frame`
-  // (exclusive).  `write_index` is updated with the new index.
-  uint32_t FillWithDefault(float* values,
-                           float default_value,
-                           uint32_t end_frame,
-                           uint32_t write_index);
-
   // When cancelling events, remove the items from `events_` starting
   // at the given index.
   void RemoveCancelledEvents(wtf_size_t first_event_to_remove)
