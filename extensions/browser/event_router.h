@@ -422,6 +422,38 @@ class EventRouter : public KeyedService,
   // Returns true if the extension with the given ID is enabled.
   bool IsExtensionEnabled(const ExtensionId& extension_id) const;
 
+  // Returns true if a renderer-originated listener message should be ignored
+  // because the extension may have unloaded before the renderer shut down.
+  bool ShouldIgnoreListenerMessageForUnloadedExtension(
+      const ExtensionId& extension_id) const;
+
+  // Returns true if `process` may add or remove active main-thread listeners
+  // for `extension_id`, including content and user script processes.
+  bool IsProcessAuthorizedForMainThreadExtensionListener(
+      const ExtensionId& extension_id,
+      content::RenderProcessHost& process) const;
+
+  // Returns true if `process` is an extension process for `extension_id`.
+  bool IsProcessAuthorizedForExtensionProcessListener(
+      const ExtensionId& extension_id,
+      content::RenderProcessHost& process) const;
+
+  // Returns true if `process` is allowed to access data for `url`'s origin.
+  bool CanProcessAccessOrigin(content::RenderProcessHost& process,
+                              const GURL& url) const;
+
+  // Validates a main-thread listener owner from a renderer-originated message.
+  // If `require_extension_process` is true, content and user script processes
+  // are rejected. Returns true if the listener owner is valid and authorized.
+  // Returns false if the message should be ignored (e.g., for an unloaded
+  // extension) or if it is unauthorized (in which case a bad message is
+  // reported).
+  bool ValidateMainThreadListenerOwner(
+      const mojom::EventListenerOwner& listener_owner,
+      content::RenderProcessHost& process,
+      bool require_extension_process,
+      bool is_add);
+
   // Adds an extension as an event listener for `event_name`.
   //
   // Note that multiple extensions can share a process due to process
@@ -457,6 +489,13 @@ class EventRouter : public KeyedService,
   // ProcessManagerObserver:
   void OnStoppedTrackingServiceWorkerInstance(
       const WorkerId& worker_id) override;
+
+  // Adds/removes lazy listeners for trusted browser-internal callers that do
+  // not have a current EventRouter Mojo receiver.
+  void AddLazyListenerForMainThreadImpl(const ExtensionId& extension_id,
+                                        const std::string& event_name);
+  void RemoveLazyListenerForMainThreadImpl(const ExtensionId& extension_id,
+                                           const std::string& event_name);
 
   void AddLazyEventListenerImpl(std::unique_ptr<EventListener> listener,
                                 RegisteredEventType type);

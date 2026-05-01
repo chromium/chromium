@@ -619,7 +619,7 @@ TEST_F(EventRouterTest, AddLazyListenerForUnloadedExtension) {
   EXPECT_FALSE(router->IsExtensionEnabled(kExtensionId));
 
   // === Main Thread ===
-  router->AddLazyListenerForMainThread(kExtensionId, kEventName1);
+  router->AddLazyListenerForMainThreadImpl(kExtensionId, kEventName1);
   // The listener should not be registered.
   EXPECT_FALSE(router->ExtensionHasEventListener(kExtensionId, kEventName1));
   // The listener should be persisted to prefs.
@@ -653,26 +653,26 @@ TEST_F(EventRouterTest, RemovesOrphanedWebRequestEvents) {
   scoped_refptr<const Extension> extension = ExtensionBuilder("Test").Build();
 
   // Manually add orphaned events to prefs.
-  router->AddLazyListenerForMainThread(extension->id(),
-                                       "webRequest.onBeforeRequest/s1");
+  router->AddLazyListenerForMainThreadImpl(extension->id(),
+                                           "webRequest.onBeforeRequest/s1");
   router->AddLazyListenerForServiceWorker(
       extension->id(), Extension::GetBaseURLFromExtensionId(extension->id()),
       "webRequest.onBeforeRequest/s2");
 
-  router->AddLazyListenerForMainThread(extension->id(),
-                                       "webViewInternal.onMessage/s1");
+  router->AddLazyListenerForMainThreadImpl(extension->id(),
+                                           "webViewInternal.onMessage/s1");
   router->AddLazyListenerForServiceWorker(
       extension->id(), Extension::GetBaseURLFromExtensionId(extension->id()),
       "webViewInternal.onMessage/s2");
 
   // Add non-orphaned events to ensure they are kept.
-  router->AddLazyListenerForMainThread(extension->id(), "tabs.onCreated");
+  router->AddLazyListenerForMainThreadImpl(extension->id(), "tabs.onCreated");
   router->AddLazyListenerForServiceWorker(
       extension->id(), Extension::GetBaseURLFromExtensionId(extension->id()),
       "tabs.onRemoved");
 
-  router->AddLazyListenerForMainThread(extension->id(),
-                                       "webRequest.onActionIgnored");
+  router->AddLazyListenerForMainThreadImpl(extension->id(),
+                                           "webRequest.onActionIgnored");
   router->AddLazyListenerForServiceWorker(
       extension->id(), Extension::GetBaseURLFromExtensionId(extension->id()),
       "webRequest.onActionIgnored");
