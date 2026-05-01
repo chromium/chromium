@@ -9,7 +9,7 @@ description: Resolves complex or ambiguous architectural problems in //remoting
 # MAGI Protocol (Multi-Agent Guided Iteration)
 
 This skill implements the MAGI multi-agent debate protocol to resolve complex,
-high-stakes, or ambiguous problems. It utilizes a "Funnel Architecture" of
+high-stakes, or ambiguous problems. It utilizes a "Consensus Loop" of
 specialized sub-agents to explore dimensions, moderate feedback, and synthesize
 code without overwhelming the main Orchestrator.
 
@@ -23,16 +23,19 @@ the defaults for production code, the Orchestrator may swap them for others
 Each persona prompt MUST be anchored with the relevant **Platform** and
 **Language** (e.g., "Windows C++ Security Expert").
 
-## The Auxiliary Personas (The Funnel)
+## The Auxiliary Personas (The Consensus Loop)
 
 To prevent context bloat and semantic drift, the Orchestrator MUST NOT write
-code or summarize state itself. It delegates to three auxiliary personas:
+code or summarize state itself. It delegates to four auxiliary personas:
 1.  **The Synthesizing Architect:** Writes the actual C++ code by combining
-    initial drafts and adhering to constraints provided by the Moderator.
-2.  **The Moderator:** Condenses raw feedback from multiple reviewers into a
+    initial drafts and adhering to constraints provided by the Continuity Analyst.
+2.  **The Review Analyst:** Condenses raw feedback from multiple reviewers into a
     strict list of actionable constraints.
-3.  **The Scribe:** Maintains the State Block across rounds, explicitly checking
-    for "flip-flopping" or stalled progress.
+3.  **The Continuity Analyst:** Maintains the State Block across rounds,
+    explicitly checking for "flip-flopping" or stalled progress, and provides
+    the final constraints to the Architect.
+4.  **The Liaison:** Reports progress to the human via `update_topic` or chat
+    messages at the end of each cycle and at the conclusion of the loop.
 
 **MANDATE:** Every sub-agent invoked in the MAGI protocol MUST call the
 `update_topic` tool as its first action to identify its role in the UI (e.g.,
@@ -69,10 +72,10 @@ priority
 requires it. Their first action must be to call `update_topic` to identify
 their specific persona.*
 
-### 4. The Funnel Synthesis
+### 4. The Synthesis Phase
 Once the ideation agents finish:
-1.  **The Scribe:** Initialize the State Block with the identified trade-offs
-    to prevent context bloat:
+1.  **The Continuity Analyst:** Initialize the State Block with the identified
+    trade-offs to prevent context bloat:
     *   **Iteration:** [N]
     *   **Personas:** [Selected Experts]
     *   **Resolved:** [Addressed critiques]
@@ -82,7 +85,7 @@ Once the ideation agents finish:
 2.  **The Synthesizing Architect:** Pass the `.magi` drafts to this agent to
     synthesize into "Draft A" in the original file.
 
-### 5. The Rumination Cycle (Expanded Review)
+### 5. The Consensus Loop (Expanded Review)
 1.  **Blind Critique:** Push Draft A to an expanded panel of Reviewers. The
     panel MUST include the core ideators PLUS 3-6 specialized reviewer personas
     (e.g., **Test Expert**, **Readability Expert**, **Cross-Platform Expert**).
@@ -95,17 +98,25 @@ Once the ideation agents finish:
     > Priority: [Priority].
     > Task: Review Draft [filename].
     > Output ONLY: `Verdict: [ACCEPT/REJECT]` and `Reasoning: [Bullet points]`."
-2.  **The Moderator:** If any agent rejects, pass all feedback to the Moderator
-    agent to condense into a strict list of 3-5 Actionable Constraints.
-3.  **The Scribe:** Pass the Moderator's constraints to the Scribe. The Scribe
-    updates the State Block and checks for "flip-flopping" (e.g., Constraint 1
-    violates a constraint from Round 1).
-4.  **Convergence & Iteration:** Pass the updated State Block and Draft back to
+2.  **The Review Analyst:** If any agent rejects, pass all feedback to the
+    Review Analyst agent to condense into a strict list of 3-5 Actionable
+    Constraints.
+3.  **The Continuity Analyst:** Pass the Review Analyst's constraints to the
+    Continuity Analyst. The Continuity Analyst updates the State Block and
+    checks for "flip-flopping" (e.g., Constraint 1 violates a constraint from
+    Round 1) and modifies the feedback provided to the Architect if necessary
+    to ensure progress.
+4.  **The Liaison:** Provide a brief status update to the human (e.g., via
+    `update_topic` or chat) detailing what is being considered and the
+    decision process for this cycle.
+5.  **Convergence & Iteration:** Pass the updated State Block and Draft back to
     the Synthesizing Architect to generate Draft B.
-5.  **Executive Tie-Breaker (Handover):** If the Scribe detects a deadlock, the
-    Orchestrator MUST pause and escalate to the human with a structured
-    **Deadlock Report**. Feed the human's decision back to break the tie.
-6.  **CLEANUP:** Immediately execute `rm *.magi.*` once consensus is reached.
+6.  **Executive Tie-Breaker (Handover):** If the Continuity Analyst detects a
+    deadlock, the Orchestrator MUST pause and escalate to the human with a
+    structured **Deadlock Report**. Feed the human's decision back to break the
+    tie.
+7.  **CLEANUP:** Immediately execute `rm *.magi.*` once consensus is reached.
+    The Liaison should report the final conclusion of the work.
 
 ### 6. Specialized Modes
 *   **Paranoia Mode:** For high-stakes security code, use a **Multi-Model
