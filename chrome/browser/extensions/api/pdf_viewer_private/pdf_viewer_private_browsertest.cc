@@ -15,16 +15,6 @@ namespace glic {
 
 namespace {
 
-bool WaitForSidePanelState(tabs::TabInterface* tab,
-                           GlicSidePanelCoordinator::State expected_state) {
-  auto* side_panel_coordinator = GlicSidePanelCoordinator::GetForTab(tab);
-  if (!side_panel_coordinator) {
-    return false;
-  }
-  return base::test::RunUntil(
-      [&]() { return side_panel_coordinator->state() == expected_state; });
-}
-
 class PdfViewerPrivateBrowserTestGlicEnabled : public GlicBrowserTest {
  public:
   PdfViewerPrivateBrowserTestGlicEnabled() = default;
@@ -40,7 +30,8 @@ IN_PROC_BROWSER_TEST_F(PdfViewerPrivateBrowserTestGlicEnabled, GlicSummarize) {
   auto expected = extensions::api_test_utils::RunFunctionAndReturnExpected(
       function.get(), "[]", GetProfile());
   EXPECT_TRUE(expected.has_value());
-  WaitForSidePanelState(tab, GlicSidePanelCoordinator::State::kShown);
+  EXPECT_OK(
+      WaitForSidePanelState(tab, GlicSidePanelCoordinator::State::kShown));
 }
 
 using PdfViewerPrivateBrowserTestGlicDisabled = InProcessBrowserTest;

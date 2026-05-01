@@ -161,18 +161,6 @@ void SimulateLinkClick(tabs::TabInterface* tab, bool ctrl_key, bool shift_key) {
 #endif
 }
 
-TestResult<> WaitForSidePanelState(
-    tabs::TabInterface* tab,
-    GlicSidePanelCoordinator::State expected_state) {
-  auto* side_panel_coordinator = GlicSidePanelCoordinator::GetForTab(tab);
-  if (!side_panel_coordinator) {
-    return base::unexpected("GlicSidePanelCoordinator not found for tab");
-  }
-  return RunUntilEqual([&]() { return side_panel_coordinator->state(); },
-                       expected_state,
-                       "Timeout waiting for side panel state to match");
-}
-
 void ActivateTab(tabs::TabInterface* tab) {
   CHECK(tab);
   tab->GetContents()->GetDelegate()->ActivateContents(tab->GetContents());

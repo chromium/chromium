@@ -27,6 +27,7 @@
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_instance.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
 #include "chrome/browser/glic/service/glic_instance_coordinator_impl.h"
 #include "chrome/browser/glic/service/glic_instance_impl.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
@@ -113,6 +114,18 @@ template <typename Trigger>
   }
   LOG(ERROR) << message;
   return false;
+}
+
+[[nodiscard]] inline TestResult<> WaitForSidePanelState(
+    tabs::TabInterface* tab,
+    GlicSidePanelCoordinator::State expected_state) {
+  auto* side_panel_coordinator = GlicSidePanelCoordinator::GetForTab(tab);
+  if (!side_panel_coordinator) {
+    return base::unexpected("GlicSidePanelCoordinator not found for tab");
+  }
+  return RunUntilEqual([&]() { return side_panel_coordinator->state(); },
+                       expected_state,
+                       "Timeout waiting for side panel state to match");
 }
 
 class GlicInstanceImpl;
