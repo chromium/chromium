@@ -53,6 +53,12 @@ class MockGlicKeyedService : public GlicKeyedService {
               InvokeWithAutoSubmit,
               (InvokeWithAutoSubmitPasskey, GlicInvokeOptions),
               (override));
+  MOCK_METHOD(void,
+              InvokeWithAutoSubmit,
+              (InvokeWithAutoSubmitPasskey,
+               GlicInvokeOptions,
+               GlicInvokeWithAutoSubmitOptions),
+              (override));
 
   bool IsWindowDetached() const override { return detached_; }
   void SetWindowDetached(bool detached) { detached_ = detached; }

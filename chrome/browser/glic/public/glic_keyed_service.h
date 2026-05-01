@@ -112,6 +112,11 @@ class GlicKeyedService : public KeyedService, public base::SupportsUserData {
       InvokeWithAutoSubmitPasskey auto_submit_passkey,
       GlicInvokeOptions options);
 
+  virtual void InvokeWithAutoSubmit(
+      InvokeWithAutoSubmitPasskey auto_submit_passkey,
+      GlicInvokeOptions options,
+      GlicInvokeWithAutoSubmitOptions auto_submit_options);
+
   virtual void Invoke(GlicInvokeOptions options);
 
   virtual void OpenFreDialogInNewTab(BrowserWindowInterface* bwi,

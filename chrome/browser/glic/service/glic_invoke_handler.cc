@@ -120,12 +120,14 @@ GlicInvokeHandler::GlicInvokeHandler(
     GlicInstanceImpl& instance,
     ResolvedTarget resolved_target,
     GlicInvokeOptions options,
+    GlicInvokeWithAutoSubmitOptions auto_submit_options,
     std::optional<InvokeWithAutoSubmitPasskey> auto_submit_passkey,
     CompletionCallback completion_callback)
     : instance_(instance),
       tab_(resolved_target.tab),
       options_(std::move(options)),
       auto_submit_passkey_(auto_submit_passkey),
+      auto_submit_options_(std::move(auto_submit_options)),
       completion_callback_(std::move(completion_callback)) {
   if (resolved_target.is_new && tab_ && tab_->GetContents() &&
       tab_->GetContents()->HasUncommittedNavigationInPrimaryMainFrame()) {
@@ -155,6 +157,16 @@ void GlicInvokeHandler::Invoke() {
                                       weak_ptr_factory_.GetWeakPtr(),
                                       GlicInvokeError::kTimeout));
 
+  if (auto_submit_options_.on_conversation_id_ready) {
+    if (auto conv_id = instance_->conversation_id()) {
+      std::move(auto_submit_options_.on_conversation_id_ready).Run(*conv_id);
+    } else {
+      conversation_subscription_ =
+          instance_->AddConversationInfoChangedCallback(
+              base::BindRepeating(&GlicInvokeHandler::OnConversationInfoChanged,
+                                  weak_ptr_factory_.GetWeakPtr()));
+    }
+  }
   if (!options_.tab_sharing.tabs_to_pin.empty()) {
     CHECK(options_.tab_sharing.pin_trigger != GlicPinTrigger::kUnknown);
     instance_->sharing_manager().PinTabs(options_.tab_sharing.tabs_to_pin,
@@ -236,6 +248,15 @@ void GlicInvokeHandler::OnTabWillDetach(
 
 void GlicInvokeHandler::OnInstanceWillBeDestroyed(GlicInstance* instance) {
   OnError(GlicInvokeError::kInstanceDestroyed);
+}
+
+void GlicInvokeHandler::OnConversationInfoChanged(
+    const mojom::ConversationInfo& info) {
+  if (auto_submit_options_.on_conversation_id_ready) {
+    std::move(auto_submit_options_.on_conversation_id_ready)
+        .Run(info.conversation_id);
+  }
+  conversation_subscription_ = {};
 }
 
 void GlicInvokeHandler::OnSuccess() {

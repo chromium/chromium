@@ -72,4 +72,11 @@ GlicInvokeOptions::GlicInvokeOptions(GlicInvokeOptions&&) = default;
 
 GlicInvokeOptions& GlicInvokeOptions::operator=(GlicInvokeOptions&&) = default;
 
+GlicInvokeWithAutoSubmitOptions::GlicInvokeWithAutoSubmitOptions() = default;
+GlicInvokeWithAutoSubmitOptions::~GlicInvokeWithAutoSubmitOptions() = default;
+GlicInvokeWithAutoSubmitOptions::GlicInvokeWithAutoSubmitOptions(
+    GlicInvokeWithAutoSubmitOptions&&) = default;
+GlicInvokeWithAutoSubmitOptions& GlicInvokeWithAutoSubmitOptions::operator=(
+    GlicInvokeWithAutoSubmitOptions&&) = default;
+
 }  // namespace glic

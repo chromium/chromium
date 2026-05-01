@@ -319,6 +319,14 @@ bool GlicKeyedService::MaybeInvoke(
 void GlicKeyedService::InvokeWithAutoSubmit(
     InvokeWithAutoSubmitPasskey auto_submit_passkey,
     GlicInvokeOptions options) {
+  InvokeWithAutoSubmit(auto_submit_passkey, std::move(options),
+                       GlicInvokeWithAutoSubmitOptions());
+}
+
+void GlicKeyedService::InvokeWithAutoSubmit(
+    InvokeWithAutoSubmitPasskey auto_submit_passkey,
+    GlicInvokeOptions options,
+    GlicInvokeWithAutoSubmitOptions auto_submit_options) {
   CHECK(GlicEnabling::IsEnabledForProfile(profile_));
 
   GlicProfileManager* glic_profile_manager = GlicProfileManager::GetInstance();
@@ -327,7 +335,8 @@ void GlicKeyedService::InvokeWithAutoSubmit(
   }
 
   static_cast<GlicInstanceCoordinatorImpl&>(instance_coordinator())
-      .InvokeWithAutoSubmit(auto_submit_passkey, std::move(options));
+      .InvokeWithAutoSubmit(auto_submit_passkey, std::move(options),
+                            std::move(auto_submit_options));
 }
 
 void GlicKeyedService::Invoke(GlicInvokeOptions options) {

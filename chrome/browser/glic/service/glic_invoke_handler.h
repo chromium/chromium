@@ -53,6 +53,7 @@ class GlicInvokeHandler {
       GlicInstanceImpl& instance,
       ResolvedTarget resolved_target,
       GlicInvokeOptions options,
+      GlicInvokeWithAutoSubmitOptions auto_submit_options,
       std::optional<InvokeWithAutoSubmitPasskey> auto_submit_passkey,
       CompletionCallback completion_callback);
   ~GlicInvokeHandler();
@@ -74,20 +75,19 @@ class GlicInvokeHandler {
   void OnTabWillDetach(tabs::TabInterface* tab,
                        tabs::TabInterface::DetachReason reason);
   void OnInstanceWillBeDestroyed(GlicInstance* instance);
-
-  // This class listens to destruction of both GlicInstanceImpl and TabInterface
-  // and is guaranteed to destroy itself first.
+  void OnConversationInfoChanged(const mojom::ConversationInfo& info);
   const base::raw_ref<GlicInstanceImpl> instance_;
   raw_ptr<tabs::TabInterface> tab_;
   GlicInvokeOptions options_;
   std::optional<InvokeWithAutoSubmitPasskey> auto_submit_passkey_;
-
   // Calling this synchronously destroys `this`.
+  GlicInvokeWithAutoSubmitOptions auto_submit_options_;
   CompletionCallback completion_callback_;
 
   bool should_wait_for_load_ = false;
   base::CallbackListSubscription instance_destruction_subscription_;
   base::CallbackListSubscription tab_destruction_subscription_;
+  base::CallbackListSubscription conversation_subscription_;
   base::OneShotTimer timeout_timer_;
 
   std::unique_ptr<SequentialTaskGroup> main_task_;

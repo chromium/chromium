@@ -144,6 +144,10 @@ class GlicInstanceCoordinatorImpl
   void Invoke(GlicInvokeOptions options);
   void InvokeWithAutoSubmit(InvokeWithAutoSubmitPasskey auto_submit_passkey,
                             GlicInvokeOptions options);
+  void InvokeWithAutoSubmit(
+      InvokeWithAutoSubmitPasskey auto_submit_passkey,
+      GlicInvokeOptions options,
+      GlicInvokeWithAutoSubmitOptions auto_submit_options);
   void GetExperimentalTriggeringUpdates(
       mojo::PendingRemote<mojom::ExperimentalTriggeringUpdatesHandler> handler,
       base::OnceCallback<void(bool)> success_status_callback) override;
@@ -185,7 +189,8 @@ class GlicInstanceCoordinatorImpl
   void RemoveAllInstances();
   void InvokeInternal(
       std::optional<InvokeWithAutoSubmitPasskey> auto_submit_passkey,
-      GlicInvokeOptions options);
+      GlicInvokeOptions options,
+      GlicInvokeWithAutoSubmitOptions auto_submit_options);
 
   void OnTabEvent(const GlicTabEvent& event);
   // Returns a pointer to an instance with the given conversation id or nullptr

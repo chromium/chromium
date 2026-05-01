@@ -229,6 +229,17 @@ struct GlicInvokeOptions {
   base::OnceCallback<void(GlicInvokeError)> on_error;
 };
 
+// Configuration options for invoking Glic with auto-submit.
+struct GlicInvokeWithAutoSubmitOptions {
+  GlicInvokeWithAutoSubmitOptions();
+  ~GlicInvokeWithAutoSubmitOptions();
+  GlicInvokeWithAutoSubmitOptions(GlicInvokeWithAutoSubmitOptions&&);
+  GlicInvokeWithAutoSubmitOptions& operator=(GlicInvokeWithAutoSubmitOptions&&);
+
+  // Callback for when the conversation ID is known.
+  base::OnceCallback<void(std::string)> on_conversation_id_ready;
+};
+
 }  // namespace glic
 
 #endif  // CHROME_BROWSER_GLIC_PUBLIC_GLIC_INVOKE_OPTIONS_H_

@@ -1219,6 +1219,40 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
+                       InvokeCallsOnConversationIdReady) {
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+  base::test::TestFuture<void> success_future;
+  base::test::TestFuture<std::string> conversation_id_future;
+
+  GlicInvokeOptions options(glic::Target(tab),
+                            mojom::InvocationSource::kOsButton);
+  options.on_success = success_future.GetCallback();
+
+  GlicInvokeWithAutoSubmitOptions auto_submit_options;
+  auto_submit_options.on_conversation_id_ready =
+      conversation_id_future.GetCallback();
+
+  // Call invoke with auto-submit.
+  coordinator().InvokeWithAutoSubmit(GetPassKey(), std::move(options),
+                                     std::move(auto_submit_options));
+
+  // Simulate the client registering a conversation.
+  GlicInstanceImpl* instance = coordinator().GetInstanceImplForTab(tab);
+  ASSERT_TRUE(instance);
+
+  const std::string expected_conversation_id = "test_conversation_id";
+  auto info = mojom::ConversationInfo::New();
+  info->conversation_id = expected_conversation_id;
+  instance->RegisterConversation(std::move(info), base::DoNothing());
+
+  // The callback should be called with the correct conversation ID.
+  EXPECT_EQ(conversation_id_future.Get(), expected_conversation_id);
+
+  // The success callback should be called after full completion.
+  EXPECT_TRUE(success_future.Wait());
+}
+
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
                        InvokeWithWaitForPanelOpen) {
   // Create a tab with a loaded page to measure width.
   tabs::TabInterface* tab = CreateAndActivateTab(GetSimpleTestUrl());
@@ -1824,7 +1858,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorActuationBrowserTest,
   base::test::TestFuture<void> handler_completion_future;
   auto handler = std::make_unique<GlicInvokeHandler>(
       *instance, GlicInvokeHandler::ResolvedTarget{active_tab, false},
-      std::move(options), std::nullopt,
+      std::move(options), GlicInvokeWithAutoSubmitOptions(), std::nullopt,
       base::BindLambdaForTesting([&](GlicInstance*, GlicInvokeHandler*) {
         handler_completion_future.SetValue();
       }));
