@@ -384,7 +384,7 @@ ExtensionFunction::ResponseAction GlicPrivateInvokeFunction::Run() {
             extensions::api::glic_private::ErrorCode::kLocalGlicNotEnabled));
       }
       source = glic::mojom::InvocationSource::kUniversalCart;
-      feature_mode = glic::mojom::FeatureMode::kActuation;
+      feature_mode = glic::mojom::FeatureMode::kUniversalCart;
       break;
     default:
       return RespondNow(GetPromptResponseValueAndLog(
