@@ -112,7 +112,11 @@ export class TabWebviewElement extends WebviewElement {
   setActive(active: boolean) {
     if (active) {
       this.classList.add('active');
-      this.getContentElement().focus();
+      const content = this.shadowRoot.querySelector<HTMLElement>('.content');
+      // The .content element might not be available during browser startup.
+      if (content) {
+        content.focus();
+      }
     } else {
       this.classList.remove('active');
     }

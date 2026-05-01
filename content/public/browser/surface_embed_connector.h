@@ -8,6 +8,7 @@
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "content/common/content_export.h"
+#include "third_party/blink/public/mojom/frame/lifecycle.mojom-shared.h"
 
 namespace blink {
 struct FrameVisualProperties;
@@ -64,6 +65,10 @@ class CONTENT_EXPORT SurfaceEmbedConnector {
 
   virtual Delegate* GetDelegate() = 0;
 
+  // Called when the visibility of the parent frame changes.
+  virtual void OnVisibilityChanged(
+      blink::mojom::FrameVisibility visibility) = 0;
+
   // Called by the SecureEmbedHost to synchronize visual properties between the
   // parent and child WebContents.
   virtual void OnSynchronizeVisualProperties(
@@ -71,6 +76,16 @@ class CONTENT_EXPORT SurfaceEmbedConnector {
 
   // Gets the FrameSinkId of the child's view.
   virtual const viz::FrameSinkId& GetFrameSinkId() const = 0;
+
+  // Returns the CSS zoom factor last received from the parent frame.
+  // Exposed for testing to cleanly verify properties without creating flakes
+  // from cross-process EvalJs layout evaluation delays.
+  virtual double GetCssZoomFactorForTesting() = 0;
+
+  // Returns the last received local frame size in physical pixels.
+  // Exposed for testing to cleanly verify properties without creating flakes
+  // from cross-process EvalJs layout evaluation delays.
+  virtual const gfx::Size& GetLocalFrameSizeInPixelsForTesting() = 0;
 };
 
 }  // namespace content

@@ -169,10 +169,11 @@ void SurfaceEmbedHost::SynchronizeVisualProperties(
     const blink::FrameVisualProperties& visual_properties,
     bool is_visible) {
   CHECK(surface_embed_.is_bound());
-  if (!is_visible) {
-    return;
-  }
-  if (auto* connector = GetConnector()) {
+
+  if (content::SurfaceEmbedConnector* connector = GetConnector()) {
+    connector->OnVisibilityChanged(
+        is_visible ? blink::mojom::FrameVisibility::kRenderedInViewport
+                   : blink::mojom::FrameVisibility::kNotRendered);
     connector->OnSynchronizeVisualProperties(visual_properties);
   }
 }

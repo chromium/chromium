@@ -110,6 +110,12 @@ class SurfaceEmbedConnectorImplBrowserTest : public ContentBrowserTest {
 
     return context;
   }
+
+  void SetViewportIntersectionState(
+      SurfaceEmbedConnectorImpl* connector,
+      const blink::mojom::ViewportIntersectionState& intersection_state) {
+    connector->intersection_state_ = intersection_state;
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorImplBrowserTest, BasicConnection) {
@@ -218,9 +224,21 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorImplBrowserTest,
   connector->FirstSurfaceActivation(viz::SurfaceInfo());
   connector->SendIntrinsicSizingInfoToParent(nullptr);
 
+  // We should construct a proper FrameVisualProperties to avoid crashes when
+  // accessing screen_infos.
   blink::FrameVisualProperties visual_properties;
-  visual_properties.screen_infos = display::ScreenInfos(display::ScreenInfo());
+  display::ScreenInfo screen_info;
+  screen_info.device_scale_factor = 2.0f;
+  visual_properties.screen_infos = display::ScreenInfos(screen_info);
+  visual_properties.local_frame_size = gfx::Size(100, 200);
+  visual_properties.rect_in_local_root = gfx::Rect(10, 20, 300, 400);
+  visual_properties.capture_sequence_number = 5u;
+  visual_properties.css_zoom_factor = 1.25;
+  visual_properties.local_surface_id =
+      viz::LocalSurfaceId(1, base::UnguessableToken::CreateForTesting(2, 3));
+
   connector->SynchronizeVisualProperties(visual_properties, false);
+
   connector->UpdateCursor(ui::Cursor());
 
   EXPECT_EQ(connector->HasFocus(),
@@ -237,42 +255,60 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorImplBrowserTest,
 
   EXPECT_TRUE(connector->HasSize());
 
-  // Just check they return valid references/values
-  connector->GetScreenInfos();
-  connector->GetLocalSurfaceId();
+  EXPECT_EQ(connector->GetScreenInfos().current().device_scale_factor, 2.0f);
+  EXPECT_EQ(connector->GetLocalSurfaceId(), visual_properties.local_surface_id);
+
+  // Just check it returns valid reference
   connector->GetIntersectionState();
 
-  EXPECT_EQ(connector->GetCaptureSequenceNumber(), 0u);
+  EXPECT_EQ(connector->GetCaptureSequenceNumber(), 5u);
 
-  connector->GetRectInParentViewInDip();
-  connector->GetLocalFrameSizeInDip();
-  connector->GetLocalFrameSizeInPixels();
+  EXPECT_EQ(connector->GetRectInParentViewInDip(), gfx::Rect(5, 10, 150, 200));
+  EXPECT_EQ(connector->GetLocalFrameSizeInDip(), gfx::Size(50, 100));
+  EXPECT_EQ(connector->GetLocalFrameSizeInPixels(), gfx::Size(100, 200));
 
-  EXPECT_EQ(connector->GetCssZoomFactor(), 1.0);
+  EXPECT_EQ(connector->GetCssZoomFactor(), 1.25);
 
   connector->EnableAutoResize(gfx::Size(), gfx::Size());  // void
   connector->DisableAutoResize();                         // void
 
   EXPECT_FALSE(connector->IsInert());
   EXPECT_EQ(connector->InheritedEffectiveTouchAction(), cc::TouchAction::kAuto);
+
+  // IsHidden() defaults to false initially.
   EXPECT_FALSE(connector->IsHidden());
+
   EXPECT_FALSE(connector->IsThrottled());
   EXPECT_FALSE(connector->IsSubtreeThrottled());
   EXPECT_FALSE(connector->IsDisplayLocked());
 
   connector->DidUpdateVisualProperties(cc::RenderFrameMetadata());  // void
   connector->SetVisibilityForChildViews(true);                      // void
-  connector->SetLocalFrameSize(gfx::Size());                        // void
-  connector->SetRectInParentView(gfx::Rect());                      // void
+
+  // Test updating local frame size separately.
+  connector->SetLocalFrameSize(gfx::Size(400, 400));
+  EXPECT_EQ(connector->GetLocalFrameSizeInPixels(), gfx::Size(400, 400));
+  EXPECT_EQ(connector->GetLocalFrameSizeInDip(), gfx::Size(200, 200));
+
+  // Test updating rect in parent view.
+  connector->SetRectInParentView(gfx::Rect(100, 100, 200, 200));
+  EXPECT_EQ(connector->GetRectInParentViewInDip(), gfx::Rect(50, 50, 100, 100));
+
   connector->OnVisibilityChanged(
-      blink::mojom::FrameVisibility::kRenderedInViewport);  // void
+      blink::mojom::FrameVisibility::kRenderedInViewport);
 
-  // IsVisible() currently returns false here because
-  // GetIntersectionState().viewport_intersection.IsEmpty() is true
-  // by default in this test environment.
+  blink::mojom::ViewportIntersectionState intersection;
+  intersection.viewport_intersection = gfx::Rect(0, 0, 100, 100);
+  SetViewportIntersectionState(connector, intersection);
+
+  EXPECT_TRUE(connector->IsVisible());
+  EXPECT_FALSE(connector->IsHidden());
+
+  connector->OnVisibilityChanged(blink::mojom::FrameVisibility::kNotRendered);
   EXPECT_FALSE(connector->IsVisible());
+  EXPECT_FALSE(connector->IsHidden());
 
-  connector->DelegateWasShown();  // void
+  connector->DelegateWasShown();
 
   EXPECT_EQ(connector->EmbedderVisibility(), Visibility::VISIBLE);
 
@@ -292,7 +328,8 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorImplBrowserTest, SetView) {
 
   context.connector->SetView(context.rwhvcf, false);
 
-  EXPECT_EQ(context.rwhvcf->FrameConnectorForTesting(), context.connector);
+  EXPECT_EQ(context.rwhvcf->FrameConnectorForTesting(),
+            context.connector.get());
 
   context.connector->SetView(nullptr, false);
 

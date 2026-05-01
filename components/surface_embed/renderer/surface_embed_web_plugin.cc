@@ -178,6 +178,8 @@ void SurfaceEmbedWebPlugin::DidFailLoading(const blink::WebURLError& error) {
 }
 
 void SurfaceEmbedWebPlugin::InitializeSurfaceLayer() {
+  parent_local_surface_id_allocator_ =
+      std::make_unique<viz::ParentLocalSurfaceIdAllocator>();
   // We'll be embedding an outside surface layer.
   layer_ = cc::SurfaceLayer::Create();
   layer_->SetIsDrawable(true);
@@ -289,7 +291,15 @@ void SurfaceEmbedWebPlugin::SynchronizeVisualProperties() {
   viz::SurfaceId surface_id(frame_sink_id_,
                             pending_visual_properties.local_surface_id);
   CHECK(surface_id.is_valid());
+  // TODO(crbug.com/493315755): Investigate the flashing blue square observed
+  // on Windows when switching views for navigation (both initial and subsequent
+  // navigation). Note that it may be related to UseDefaultDeadline or to
+  // allow_paint_holding.
   layer_->SetSurfaceId(surface_id, cc::DeadlinePolicy::UseDefaultDeadline());
+  if (container_) {
+    container_->SetCcLayer(layer_.get());
+    container_->ScheduleAnimation();
+  }
 
   if (synchronized_props_changed) {
     host_->SynchronizeVisualProperties(pending_visual_properties,

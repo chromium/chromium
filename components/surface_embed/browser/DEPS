@@ -16,5 +16,6 @@ specific_include_rules = {
   ".*_browsertest\.cc": [
     "+content/public/test",
     "+content/shell/browser",
+    "+net/dns/mock_host_resolver.h",
   ],
 }

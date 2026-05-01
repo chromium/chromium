@@ -17,7 +17,8 @@ body {
     embed.setAttribute('type', 'application/x-chromium-surface-embed');
     embed.style.position = 'absolute';
     embed.style.left = '10px';
-    embed.style.top = '10px';
+    const existingEmbeds = document.querySelectorAll('embed').length;
+    embed.style.top = (10 + existingEmbeds * 110) + 'px';
     embed.style.width = '100px';
     embed.style.height = '100px';
     if (embedId !== undefined) {

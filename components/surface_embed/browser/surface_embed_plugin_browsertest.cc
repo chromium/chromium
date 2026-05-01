@@ -27,6 +27,7 @@
 #include "content/public/test/no_renderer_crashes_assertion.h"
 #include "content/shell/browser/shell.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
+#include "net/dns/mock_host_resolver.h"
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -38,7 +39,7 @@ namespace {
 constexpr std::string_view kAttachHarnessUrl =
     "/surface_embed/attach_harness.html";
 constexpr std::string_view kBlueBoxUrl = "/surface_embed/blue_box.html";
-constexpr std::string_view kEmptyUrl = "/surface_embed/empty.html";
+
 constexpr std::string_view kRedBoxUrl = "/surface_embed/red_box.html";
 constexpr size_t kSingleEmbedCount = 1;
 constexpr float kTestDeviceScaleFactor = 1.5f;
@@ -139,6 +140,7 @@ class SurfaceEmbedBrowserTest : public content::ContentBrowserTest {
 
   void SetUpOnMainThread() override {
     content::ContentBrowserTest::SetUpOnMainThread();
+    host_resolver()->AddRule("*", "127.0.0.1");
     embedded_test_server()->ServeFilesFromSourceDirectory(
         "components/test/data");
     ASSERT_TRUE(embedded_test_server()->Start());
@@ -202,7 +204,7 @@ class SurfaceEmbedBrowserTest : public content::ContentBrowserTest {
 
   // Setup child with harness navigation and load a blank html page.
   std::unique_ptr<content::WebContents> SetupHarnessAndChild() {
-    return SetupHarnessAndChildWithContent(kEmptyUrl);
+    return SetupHarnessAndChildWithContent(kRedBoxUrl);
   }
 
   // Attach a child to an embed element and wait for SurfaceEmbedHost creation.
@@ -249,8 +251,8 @@ class SurfaceEmbedBrowserTest : public content::ContentBrowserTest {
         .bitmap;
   }
 
-  // Check if the given color is rendered.
-  bool CheckHasPixelInColor(SkColor target_color) {
+  // Check if the given color is rendered without waiting.
+  bool HasPixelInColor(SkColor target_color) {
     content::WaitForCopyableViewInWebContents(web_contents());
     auto bitmap = TakeScreenshot(gfx::Rect());
     for (int x = 0; x < bitmap.width(); ++x) {
@@ -261,6 +263,72 @@ class SurfaceEmbedBrowserTest : public content::ContentBrowserTest {
       }
     }
     return false;
+  }
+
+  // Check if the given color is rendered.
+  bool CheckHasPixelInColor(SkColor target_color) {
+    return CheckHasPixelInColorInBitmapBounds(target_color);
+  }
+
+  // Check if the given color is rendered.
+  bool CheckHasPixelInColorInBitmapBounds(
+      SkColor target_color,
+      gfx::Rect check_bitmap_bounds = gfx::Rect(),
+      SkBitmap* out_bitmap = nullptr) {
+    content::WaitForCopyableViewInWebContents(web_contents());
+    // Retry finding the pixel since it might take a moment to propagate.
+    return base::test::RunUntil([&]() {
+      auto bitmap = TakeScreenshot(gfx::Rect());
+      if (check_bitmap_bounds == gfx::Rect()) {
+        check_bitmap_bounds.set_width(bitmap.width());
+        check_bitmap_bounds.set_height(bitmap.height());
+      }
+      if (out_bitmap) {
+        *out_bitmap = bitmap;
+      }
+      const int min_x = std::max(0, check_bitmap_bounds.x());
+      const int max_x = std::min(bitmap.width(), check_bitmap_bounds.right());
+      const int min_y = std::max(0, check_bitmap_bounds.y());
+      const int max_y = std::min(bitmap.height(), check_bitmap_bounds.bottom());
+
+      for (int x = min_x; x < max_x; ++x) {
+        for (int y = min_y; y < max_y; ++y) {
+          if (bitmap.getColor(x, y) == target_color) {
+            return true;
+          }
+        }
+      }
+      return false;
+    });
+  }
+
+  void CalculateBitmapBoundsToCheck(const gfx::Rect embed_bounds,
+                                    gfx::Rect* out_scaled_bounds) {
+    ASSERT_TRUE(out_scaled_bounds);
+
+    content::RenderWidgetHostView* const view =
+        web_contents()->GetRenderWidgetHostView();
+    ASSERT_TRUE(view);
+
+    // On Android forcing device scale factor might not work for tests,
+    // therefore query the actual scale factor from the view. On other
+    // platforms, verify it matches the forced value.
+    const float device_scale_factor = view->GetDeviceScaleFactor();
+#if !BUILDFLAG(IS_ANDROID)
+    ASSERT_FLOAT_EQ(kTestDeviceScaleFactor, device_scale_factor);
+#endif
+
+    *out_scaled_bounds =
+        gfx::ScaleToRoundedRect(embed_bounds, device_scale_factor);
+  }
+
+  void VerifyRedPixelInBounds(const gfx::Rect embed_bounds,
+                              SkBitmap* out_bitmap = nullptr) {
+    gfx::Rect scaled_embed_bounds;
+    CalculateBitmapBoundsToCheck(embed_bounds, &scaled_embed_bounds);
+
+    EXPECT_TRUE(CheckHasPixelInColorInBitmapBounds(
+        SK_ColorRED, scaled_embed_bounds, out_bitmap));
   }
 
  private:
@@ -309,70 +377,14 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest, EmbedPixelTest) {
   SurfaceEmbedHost* host = GetHost(0);
   ASSERT_NE(nullptr, host);
 
-  content::RenderWidgetHostView* const view =
-      web_contents()->GetRenderWidgetHostView();
-  ASSERT_TRUE(view);
-
-  // The embed element is at 10,10 with size 100x100 in embed_tag.html.
+  // The embed element is at 10,10 with size 100x100 in red_box.html.
   const gfx::Rect embed_bounds(10, 10, 100, 100);
 
-  // Capture a snapshot of the view containing the embed and a bit of
-  // surrounding area.
-  const gfx::Rect snapshot_bounds(0, 0, embed_bounds.right() + 10,
-                                  embed_bounds.bottom() + 10);
-
-  // On Android forcing device scale factor might not work for tests, therefore
-  // query the actual scale factor from the view. On other platforms, verify it
-  // matches the forced value.
-  const float device_scale_factor = view->GetDeviceScaleFactor();
-#if !BUILDFLAG(IS_ANDROID)
-  ASSERT_FLOAT_EQ(kTestDeviceScaleFactor, device_scale_factor);
-#endif
-  // Scale the bounds by device scale factor. This is the bounds that we want
-  // for the screenshot output.
-  gfx::Rect scaled_snapshot_bounds =
-      gfx::ScaleToRoundedRect(snapshot_bounds, device_scale_factor);
-  gfx::Rect scaled_embed_bounds =
-      gfx::ScaleToRoundedRect(embed_bounds, device_scale_factor);
-
-  // On Android CopyFromSurface might not apply scale to input src_subrect.
-  // Capture a snapshot and calculate screen capture scale between output and
-  // input bounds and use it to calculate input bounds needed if we want to get
-  // the desired output bounds. On other platforms, verify screen capture output
-  // to input scale factor matches the device scale factor.
-  // Wait for the view to be ready before start taking screenshots.
-  content::WaitForCopyableViewInWebContents(web_contents());
-  const gfx::Rect input_bounds(0, 0, 20, 20);
-  SkBitmap bitmap = TakeScreenshot(input_bounds);
-  const float capture_scale_factor = static_cast<float>(bitmap.width()) /
-                                     static_cast<float>(input_bounds.width());
-  // Verify that capture scale factor is consistent between width and height.
-  ASSERT_FLOAT_EQ(capture_scale_factor,
-                  static_cast<float>(bitmap.height()) /
-                      static_cast<float>(input_bounds.height()));
-#if !BUILDFLAG(IS_ANDROID)
-  ASSERT_FLOAT_EQ(kTestDeviceScaleFactor, capture_scale_factor);
-#endif
-  gfx::Rect screen_shot_input_bounds = gfx::ScaleToRoundedRect(
-      scaled_snapshot_bounds, 1.0f / capture_scale_factor);
-
-  // Verify that we get expected output scaled_snapshot_bounds for the
-  // screenshot.
-  bitmap = TakeScreenshot(screen_shot_input_bounds);
-  EXPECT_EQ(scaled_snapshot_bounds.width(), bitmap.width());
-  EXPECT_EQ(scaled_snapshot_bounds.height(), bitmap.height());
-
-  // Wait for the expected pixels to be rendered in the embed area.
-  EXPECT_TRUE(base::test::RunUntil([&]() {
-    bitmap = TakeScreenshot(screen_shot_input_bounds);
-
-    // Check a pixel inside the embed element.
-    return (bitmap.getColor(scaled_embed_bounds.x() + 1,
-                            scaled_embed_bounds.y() + 1) == SK_ColorRED);
-  }));
+  SkBitmap last_bitmap;
+  VerifyRedPixelInBounds(embed_bounds, &last_bitmap);
 
   // Check a pixel outside the embed element.
-  EXPECT_EQ(bitmap.getColor(1, 1), SK_ColorWHITE);
+  EXPECT_EQ(last_bitmap.getColor(1, 1), SK_ColorWHITE);
 }
 
 IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest,
@@ -382,11 +394,11 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest,
   NavigateToAttachHarness();
 
   auto child_contents1 = CreateChildWebContents();
-  NavigateChildToUrl(child_contents1.get(), kEmptyUrl);
+  NavigateChildToUrl(child_contents1.get(), kRedBoxUrl);
   AttachChildToEmbed(child_contents1.get());
 
   auto child_contents2 = CreateChildWebContents();
-  NavigateChildToUrl(child_contents2.get(), kEmptyUrl);
+  NavigateChildToUrl(child_contents2.get(), kRedBoxUrl);
   AttachChildToEmbed(child_contents2.get());
 
   EXPECT_EQ(kMultipleEmbedCount, CountEmbedElementsInPage());
@@ -399,9 +411,6 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest,
     SurfaceEmbedHost* host = GetHost(i);
     ASSERT_NE(nullptr, host);
   }
-
-  // Expect the stub plugin code to render a red square.
-  EXPECT_TRUE(CheckHasPixelInColor(SK_ColorRED));
 }
 
 IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest, EmbedTagRemovedDestroysHost) {
@@ -443,9 +452,8 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest, Crash) {
   // The crashed frame gets drawn with a gray background, with an image
   // in the middle (which doesn't seem configured for tests). The gray in
   // question is a bit different than SK_ColorGRAY.
-  EXPECT_TRUE(base::test::RunUntil(
-      [&]() { return CheckHasPixelInColor(SK_ColorRED) == false; }));
   EXPECT_TRUE(CheckHasPixelInColor(SkColors::kGray.toSkColor()));
+  EXPECT_FALSE(HasPixelInColor(SK_ColorRED));
 
   // Remove the embed element from the page.
   EXPECT_TRUE(content::ExecJs(web_contents(),
@@ -477,16 +485,14 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest, CrashThenReattach) {
   // The crashed frame gets drawn with a gray background, with an image
   // in the middle (which doesn't seem configured for tests). The gray in
   // question is a bit different than SK_ColorGRAY.
-  EXPECT_TRUE(base::test::RunUntil(
-      [&]() { return CheckHasPixelInColor(SK_ColorRED) == false; }));
   EXPECT_TRUE(CheckHasPixelInColor(SkColors::kGray.toSkColor()));
+  EXPECT_FALSE(HasPixelInColor(SK_ColorRED));
 
   auto child_contents2 = CreateChildWebContents();
   NavigateChildToUrl(child_contents2.get(), kBlueBoxUrl);
   AttachChildToEmbed(child_contents2.get());
 
-  // ...actually should be blue, but that part hasn't landed yet.
-  EXPECT_TRUE(CheckHasPixelInColor(SK_ColorRED));
+  EXPECT_TRUE(CheckHasPixelInColor(SK_ColorBLUE));
 }
 
 // Test case where child process crashed before the attach.
@@ -511,8 +517,114 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest, CrashEarly) {
   EXPECT_TRUE(content::ExecJs(web_contents(), script));
 
   // Should have a gray background.
-  EXPECT_TRUE(base::test::RunUntil(
-      [&]() { return CheckHasPixelInColor(SkColors::kGray.toSkColor()); }));
+  EXPECT_TRUE(CheckHasPixelInColor(SkColors::kGray.toSkColor()));
+}
+
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest, VisualPropertiesSync) {
+  auto child_contents = SetupHarnessAndChild();
+  AttachChildToEmbed(child_contents.get());
+
+  auto* connector = child_contents->GetSurfaceEmbedConnector();
+  ASSERT_NE(nullptr, connector);
+
+  EXPECT_EQ(kSingleEmbedCount, CountEmbedElementsInPage());
+
+  // Wait for the initial size to propagate to the child.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return connector->GetLocalFrameSizeInPixelsForTesting() ==
+               gfx::Size(150, 150) &&
+           connector->GetCssZoomFactorForTesting() == 1.0;
+  }));
+
+  // Change the size of the embed element.
+  EXPECT_TRUE(content::ExecJs(web_contents(),
+                              "let embed = document.querySelector('embed');"
+                              "embed.style.width = '250px';"
+                              "embed.style.height = '150px';"));
+
+  // Wait for the new size to propagate to the child.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return connector->GetLocalFrameSizeInPixelsForTesting() ==
+           gfx::Size(375, 225);
+  }));
+
+  // Change the zoom of the embed element.
+  EXPECT_TRUE(content::ExecJs(web_contents(),
+                              "let embed = document.querySelector('embed');"
+                              "embed.style.zoom = 2.0;"));
+
+  // Wait for the new zoom to propagate to the child's local frame size.
+  // The layout size of 250x150 with zoom 2.0 and dsf 1.5 is 250 * 2.0 * 1.5 =
+  // 750, 150 * 2.0 * 1.5 = 450.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return connector->GetLocalFrameSizeInPixelsForTesting() ==
+           gfx::Size(750, 450);
+  }));
+}
+
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest, ResizeEmbedPixelTest) {
+  auto child_contents = SetupHarnessAndChild();
+  AttachChildToEmbed(child_contents.get());
+
+  EXPECT_EQ(kSingleEmbedCount, CountEmbedElementsInPage());
+
+  // Verify that the host is created.
+  WaitForHostCount(kSingleEmbedCount);
+  ASSERT_EQ(kSingleEmbedCount, GetHostCount());
+  SurfaceEmbedHost* host = GetHost(0);
+  ASSERT_NE(nullptr, host);
+
+  // The embed element is at 10,10 with size 100x100 in red_box.html.
+  const gfx::Rect embed_bounds(10, 10, 100, 100);
+
+  VerifyRedPixelInBounds(embed_bounds);
+
+  // Resize the embed element to 200x200.
+  EXPECT_TRUE(content::ExecJs(web_contents(),
+                              "let embed = document.querySelector('embed');"
+                              "embed.style.width = '200px';"
+                              "embed.style.height = '200px';"));
+
+  // Wait for the new size to propagate to the child's local frame size.
+  // The layout size of 200x200 with dsf 1.5 is 200 * 1.5 = 300.
+  auto* connector = child_contents->GetSurfaceEmbedConnector();
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return connector->GetLocalFrameSizeInPixelsForTesting() ==
+           gfx::Size(300, 300);
+  }));
+
+  // The bounds should eventually be 200x200, so check a pixel that's outside
+  // the original 100x100 but inside 200x200. For example, x=150, y=150.
+  gfx::Rect new_embed_pixel_bounds(150, 150, 10, 10);
+
+  VerifyRedPixelInBounds(new_embed_pixel_bounds);
+}
+
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest,
+                       CrossProcessNavigationPixelTest) {
+  auto child_contents = SetupHarnessAndChild();
+  AttachChildToEmbed(child_contents.get());
+
+  EXPECT_EQ(kSingleEmbedCount, CountEmbedElementsInPage());
+
+  // Verify that the host is created.
+  WaitForHostCount(kSingleEmbedCount);
+  ASSERT_EQ(kSingleEmbedCount, GetHostCount());
+  SurfaceEmbedHost* host = GetHost(0);
+  ASSERT_NE(nullptr, host);
+
+  // The embed element is at 10,10 with size 100x100 in red_box.html.
+  const gfx::Rect embed_bounds(10, 10, 100, 100);
+
+  VerifyRedPixelInBounds(embed_bounds);
+
+  // Navigate the child to a different site to force a cross-process navigation.
+  GURL cross_site_url = embedded_test_server()->GetURL("a.test", kRedBoxUrl);
+  ASSERT_TRUE(content::NavigateToURL(child_contents.get(), cross_site_url));
+  ASSERT_TRUE(content::WaitForLoadStop(child_contents.get()));
+
+  // We can just verify that it still renders the red box.
+  VerifyRedPixelInBounds(embed_bounds);
 }
 
 }  // namespace surface_embed

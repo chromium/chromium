@@ -2342,8 +2342,6 @@ source_set("browser") {
     "storage_partition_impl.h",
     "storage_partition_impl_map.cc",
     "storage_partition_impl_map.h",
-    "surface_embed/dummy_surface_provider.cc",
-    "surface_embed/dummy_surface_provider.h",
     "surface_embed/surface_embed_connector_impl.cc",
     "surface_embed/surface_embed_connector_impl.h",
     "synthetic_trial_syncer.cc",

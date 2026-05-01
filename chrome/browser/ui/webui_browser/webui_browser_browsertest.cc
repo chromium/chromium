@@ -405,6 +405,10 @@ IN_PROC_BROWSER_TEST_F(WebUIBrowserSurfaceEmbedPixelTest,
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return tab_contents->GetSurfaceEmbedConnector() != nullptr; }));
 
+  GURL url = embedded_https_test_server().GetURL("a.com",
+                                                 "/surface_embed/red_box.html");
+  EXPECT_TRUE(content::NavigateToURL(tab_contents, url));
+
   // Attempt to capture pixels from the WebContents until we get the expected
   // output color. The test will timeout if that doesn't happen.
   EXPECT_TRUE(base::test::RunUntil([&]() {

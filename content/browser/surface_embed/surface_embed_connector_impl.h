@@ -30,7 +30,6 @@ class RenderWidgetHostInputEventRouter;
 
 namespace content {
 
-class DummySurfaceProvider;
 class RenderFrameHostImpl;
 class RenderViewHostDelegateView;
 class RenderWidgetHostViewChildFrame;
@@ -62,6 +61,8 @@ class CONTENT_EXPORT SurfaceEmbedConnectorImpl
   void OnSynchronizeVisualProperties(
       const blink::FrameVisualProperties& visual_properties) override;
   const viz::FrameSinkId& GetFrameSinkId() const override;
+  double GetCssZoomFactorForTesting() override;
+  const gfx::Size& GetLocalFrameSizeInPixelsForTesting() override;
 
   // FrameConnector:
   void SetView(RenderWidgetHostViewChildFrame* view,
@@ -155,7 +156,8 @@ class CONTENT_EXPORT SurfaceEmbedConnectorImpl
   base::WeakPtr<WebContents> parent_web_contents_;
   raw_ptr<RenderWidgetHostViewChildFrame> view_ = nullptr;
 
-  std::unique_ptr<DummySurfaceProvider> dummy_surface_provider_;
+  // The last received FrameSinkId from the guest WebContents's view.
+  viz::FrameSinkId frame_sink_id_;
 
   // The last received LocalSurfaceId from the SurfaceEmbed.
   viz::LocalSurfaceId local_surface_id_;
