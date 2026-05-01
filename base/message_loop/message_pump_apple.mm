@@ -15,7 +15,6 @@
 #include <limits>
 #include <memory>
 #include <optional>
-#include <utility>
 
 #include "base/apple/call_with_eh_frame.h"
 #include "base/apple/scoped_cftyperef.h"
@@ -796,8 +795,7 @@ int ScopedPumpMessagesInPrivateModes::GetModeMaskForTest() {
 }
 
 MessagePumpNSApplication::MessagePumpNSApplication()
-    : MessagePumpCFRunLoopBase(kNSApplicationModalSafeModeMask),
-      nested_event_mask_(NSEventMaskAny) {
+    : MessagePumpCFRunLoopBase(kNSApplicationModalSafeModeMask) {
   DCHECK_EQ(nullptr, g_app_pump);
   g_app_pump = this;
 }
@@ -825,7 +823,7 @@ void MessagePumpNSApplication::DoRun(Delegate* delegate) {
     running_own_loop_ = true;
     while (keep_running()) {
       OptionalAutoreleasePool autorelease_pool(this);
-      NSEvent* event = [NSApp nextEventMatchingMask:nested_event_mask_
+      NSEvent* event = [NSApp nextEventMatchingMask:NSEventMaskAny
                                           untilDate:NSDate.distantFuture
                                              inMode:NSDefaultRunLoopMode
                                             dequeue:YES];
@@ -919,19 +917,6 @@ bool MessagePumpCrApplication::ShouldCreateAutoreleasePool() {
     return false;
   }
   return MessagePumpNSApplication::ShouldCreateAutoreleasePool();
-}
-
-ScopedRestrictNSEventMask::ScopedRestrictNSEventMask(uint64_t mask) {
-  // An NSEventTypeApplicationDefined event is used to wake the message pump, so
-  // must always be included.
-  mask |= NSEventMaskApplicationDefined;
-  CHECK(g_app_pump);
-  old_mask_ = std::exchange(g_app_pump->nested_event_mask_, mask);
-}
-
-ScopedRestrictNSEventMask::~ScopedRestrictNSEventMask() {
-  CHECK(g_app_pump);
-  g_app_pump->nested_event_mask_ = old_mask_;
 }
 
 #endif  // BUILDFLAG(IS_IOS)
