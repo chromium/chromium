@@ -105,8 +105,13 @@ void RejectResolver(ScriptPromiseResolverBase* resolver,
 
 // Logs (mojo converted) prompt message metrics.
 void LogPromptMessageMetrics(
+    ExecutionContext* execution_context,
     const Vector<mojom::blink::AILanguageModelPromptPtr>& prompts) {
+  bool has_prefix = false;
   for (const auto& prompt : prompts) {
+    if (prompt->is_prefix) {
+      has_prefix = true;
+    }
     std::string prefix =
         base::StrCat({AIMetrics::GetAIAPIUsageMetricName(
                           AIMetrics::AISessionType::kLanguageModel),
@@ -124,6 +129,10 @@ void LogPromptMessageMetrics(
             static_cast<int>(content->get_text().length()));
       }
     }
+  }
+  if (has_prefix && execution_context) {
+    UseCounter::Count(execution_context,
+                      WebFeature::kLanguageModel_Prompt_Prefix);
   }
 }
 
@@ -293,7 +302,7 @@ class AppendClient : public GarbageCollected<AppendClient>,
           complete_callback,
       base::RepeatingClosure overflow_callback,
       Vector<mojom::blink::AILanguageModelPromptPtr> input) {
-    LogPromptMessageMetrics(input);
+    LogPromptMessageMetrics(ExecutionContext::From(script_state), input);
     MakeGarbageCollected<AppendClient>(
         std::move(script_state), std::move(language_model), std::move(resolver),
         std::move(input), std::move(signal), std::move(complete_callback),
@@ -748,7 +757,12 @@ void LanguageModel::ExecutePrompt(
     mojo::PendingRemote<mojom::blink::ModelStreamingResponder>
         pending_responder,
     Vector<mojom::blink::AILanguageModelPromptPtr> prompts) {
-  LogPromptMessageMetrics(prompts);
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
+  LogPromptMessageMetrics(execution_context, prompts);
+  if (constraint) {
+    UseCounter::Count(execution_context,
+                      WebFeature::kLanguageModel_Prompt_ResponseConstraint);
+  }
   if (!language_model_remote_) {
     if (std::holds_alternative<ScriptPromiseResolverBase*>(
             resolver_or_stream)) {

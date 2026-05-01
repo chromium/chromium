@@ -6526,6 +6526,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5882" label="CSSURLRequestModifierIntegrity"/>
   <int value="5883" label="CSSURLRequestModifierReferrerPolicy"/>
   <int value="5884" label="PreventSvgFilterPaint"/>
+  <int value="5885" label="LanguageModel_Prompt_ResponseConstraint"/>
+  <int value="5886" label="LanguageModel_Prompt_Prefix"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
