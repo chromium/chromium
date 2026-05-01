@@ -68,7 +68,7 @@ void AccumulateBusTo(const media::AudioBus& source,
                      media::AudioBus* destination,
                      int destination_start_frame,
                      int length) {
-  CHECK_EQ(source.channels(), source.channels());
+  CHECK_EQ(source.channels(), destination->channels());
   CHECK_LE(length, source.frames());
   CHECK_LE(destination_start_frame + length, destination->frames());
 
