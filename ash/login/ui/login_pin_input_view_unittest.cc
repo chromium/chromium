@@ -15,6 +15,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/events/test/event_generator.h"
@@ -64,8 +65,9 @@ class LoginPinInputViewTest
 
   void PressKeyHelper(ui::KeyboardCode key) {
     GetEventGenerator()->PressKey(key, ui::EF_NONE);
-    // Wait until the keypress is processed.
-    base::RunLoop().RunUntilIdle();
+    // Run input-method zero-delay callbacks that are already due at the
+    // current mock time.
+    task_environment()->FastForwardBy(base::TimeDelta());
   }
 
   void ExpectAttribute(const std::string& value,
