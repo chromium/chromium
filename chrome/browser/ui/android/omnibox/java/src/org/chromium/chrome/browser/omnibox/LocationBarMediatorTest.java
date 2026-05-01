@@ -1082,6 +1082,35 @@ public class LocationBarMediatorTest {
     }
 
     @Test
+    public void testHandleEscPress_fuseboxPopupShowing() {
+        mMediator.onFinishNativeInitialization();
+        mProfileSupplier.set(mProfile);
+        mMediator.onUrlFocusChange(true);
+
+        AutocompleteInput input = mSessionState.getAutocompleteInput();
+        input.setUserText("some text");
+
+        when(mFuseboxCoordinator.handleHidePopup()).thenReturn(true);
+
+        assertTrue(mMediator.handleEscPress());
+        verify(mFuseboxCoordinator).handleHidePopup();
+        verify(mAutocompleteCoordinator, never()).stopAutocomplete();
+    }
+
+    @Test
+    public void testBackKeyPressed_fuseboxPopupShowing() {
+        mMediator.onFinishNativeInitialization();
+        mProfileSupplier.set(mProfile);
+        mMediator.onUrlFocusChange(true);
+
+        when(mFuseboxCoordinator.handleHidePopup()).thenReturn(true);
+
+        mMediator.backKeyPressed();
+        verify(mFuseboxCoordinator).handleHidePopup();
+        verify(mOverrideBackKeyBehaviorDelegate, never()).handleBackKeyPressed();
+    }
+
+    @Test
     @SuppressWarnings("DirectInvocationOnMock")
     public void testOnKey_right() {
         doReturn(KeyEvent.KEYCODE_DPAD_RIGHT).when(mKeyEvent).getKeyCode();

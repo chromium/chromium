@@ -146,7 +146,7 @@ import java.util.function.Supplier;
         mPermissionDelegate = windowAndroid;
         mModel = model;
         mViewHolder = viewHolder;
-        mViewHolder.popup.addOnDismissListener(this::onPopupDismissed);
+        mViewHolder.popup.addOnDismissListener(this::hidePopup);
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mFuseboxStateSupplier = fuseboxStateSupplier;
         mFuseboxLayoutModeSupplier = fuseboxLayoutModeSupplier;
@@ -485,15 +485,20 @@ import java.util.function.Supplier;
     }
 
     /** Hides the popup if currently shown */
-    /* package */ void hidePopup() {
+    /* package */ boolean handleHidePopup() {
+        if (mModel.get(FuseboxProperties.POPUP_STATE) == PopupState.HIDDEN) {
+            return false;
+        } else {
+            hidePopup();
+            return true;
+        }
+    }
+
+    private void hidePopup() {
         mModel.set(FuseboxProperties.POPUP_STATE, PopupState.HIDDEN);
         if (mScrimModel != null) {
             mScrimManager.hideScrim(mScrimModel, /* animate= */ true);
         }
-    }
-
-    private void onPopupDismissed() {
-        hidePopup();
     }
 
     private void updateModelForCurrentTab() {

@@ -467,6 +467,22 @@ public class FuseboxMediatorUnitTest {
     }
 
     @Test
+    public void handleHidePopup_popupShowing_hidesAndReturnsTrue() {
+        mModel.set(FuseboxProperties.POPUP_STATE, PopupState.FLOATING);
+
+        assertTrue(mMediator.handleHidePopup());
+        assertEquals(PopupState.HIDDEN, (int) mModel.get(FuseboxProperties.POPUP_STATE));
+    }
+
+    @Test
+    public void handleHidePopup_popupHidden_returnsFalse() {
+        mModel.set(FuseboxProperties.POPUP_STATE, PopupState.HIDDEN);
+
+        assertFalse(mMediator.handleHidePopup());
+        assertEquals(PopupState.HIDDEN, (int) mModel.get(FuseboxProperties.POPUP_STATE));
+    }
+
+    @Test
     public void popupAddsTabs() {
         assertFalse(mModel.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_VISIBLE));
         doReturn(mTab1).when(mTabModelSelector).getCurrentTab();

@@ -394,7 +394,7 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
         mViewHolder.addButton.requestFocus();
         mViewHolder.addButton.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
         if (mMediator != null) {
-            mMediator.hidePopup();
+            mMediator.handleHidePopup();
         }
     }
 
@@ -426,6 +426,15 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
         if (mMediator != null) {
             mMediator.onPlusButtonClicked();
         }
+    }
+
+    /**
+     * Hides the popup if it is showing.
+     *
+     * @return Whether the popup was hidden.
+     */
+    public boolean handleHidePopup() {
+        return mMediator != null && mMediator.handleHidePopup();
     }
 
     /**

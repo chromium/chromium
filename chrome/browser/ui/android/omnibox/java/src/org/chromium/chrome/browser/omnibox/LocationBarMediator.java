@@ -2082,6 +2082,10 @@ class LocationBarMediator
         if (mCurrentInput == null) return false;
         if (mAutocompleteCoordinator == null) return false;
 
+        if (mFuseboxCoordinator.handleHidePopup()) {
+            return true;
+        }
+
         if (mAutocompleteCoordinator.isServingSuggestions()) {
             // First ESC keypress should close the suggestions list.
             mAutocompleteCoordinator.stopAutocomplete();
@@ -2317,6 +2321,10 @@ class LocationBarMediator
     // Traditional way to intercept keycode_back, which is deprecated from T.
     @Override
     public void backKeyPressed() {
+        if (mFuseboxCoordinator.handleHidePopup()) {
+            return;
+        }
+
         if (mBackKeyBehavior.handleBackKeyPressed()) {
             return;
         }
