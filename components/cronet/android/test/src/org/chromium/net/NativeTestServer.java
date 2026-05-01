@@ -300,7 +300,7 @@ public final class NativeTestServer implements AutoCloseable {
         return serverCertificateConfig.stapledOCSPConfig;
     }
 
-    @NativeMethods("cronet_tests")
+    @NativeMethods
     interface Natives {
         @JniType("long")
         long create(

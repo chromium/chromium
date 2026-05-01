@@ -288,11 +288,12 @@ class JniObject:
                *,
                from_javap,
                default_namespace=None,
-               javap_unchecked_exceptions=False):
+               javap_unchecked_exceptions=False,
+               module_name=None):
     self.from_javap = from_javap
     self.filename = parsed_file.filename
     self.type_resolver = parsed_file.outer_class.type_resolver
-    self.module_name = parsed_file.module_name
+    self.module_name = module_name
     self.proxy_interface = parsed_file.proxy_interface
     self.proxy_visibility = parsed_file.proxy_visibility
 
@@ -732,8 +733,10 @@ def GenerateFromSource(parser, args, jni_mode):
         for f in args.input_files
     ]
     jni_objs = [
-        JniObject(x, from_javap=False, default_namespace=args.namespace)
-        for x in parsed_files
+        JniObject(x,
+                  from_javap=False,
+                  default_namespace=args.namespace,
+                  module_name=args.module_name) for x in parsed_files
     ]
     _CheckNotEmpty(jni_objs)
     module_name = _CheckSameModule(jni_objs)
@@ -763,7 +766,7 @@ def GenerateFromSource(parser, args, jni_mode):
     if jni_objs_with_proxy_natives:
       gen_jni_class = proxy.get_gen_jni_class(
           short=False,
-          name_prefix=jni_objs_with_proxy_natives[0].module_name,
+          name_prefix=args.module_name,
           package_prefix=args.package_prefix,
           package_prefix_filter=args.package_prefix_filter)
       _CreateSrcJar(args.srcjar_path,
@@ -776,7 +779,7 @@ def GenerateFromSource(parser, args, jni_mode):
       zipfile.ZipFile(args.srcjar_path, 'w').close()
   if args.jni_pickle:
     with common.atomic_output(args.jni_pickle, 'wb') as f:
-      pickle.dump(parsed_files, f)
+      pickle.dump((args.module_name, parsed_files), f)
 
   if args.placeholder_srcjar_path:
     if jni_objs_with_proxy_natives:

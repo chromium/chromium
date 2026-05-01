@@ -164,7 +164,7 @@ public final class TestUploadDataStreamHandler {
         mWaitCheckRead.open();
     }
 
-    @NativeMethods("cronet_tests")
+    @NativeMethods
     interface Natives {
         @NativeClassQualifiedName("TestUploadDataStreamHandler")
         void init(long nativePtr);

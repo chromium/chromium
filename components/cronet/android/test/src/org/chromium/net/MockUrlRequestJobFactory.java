@@ -82,7 +82,7 @@ public final class MockUrlRequestJobFactory {
         return MockUrlRequestJobFactoryJni.get().getMockUrlForHangingRead();
     }
 
-    @NativeMethods("cronet_tests")
+    @NativeMethods
     interface Natives {
         long addUrlInterceptors(long requestContextAdapter);
 

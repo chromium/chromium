@@ -25,8 +25,8 @@ def _add_io_args(parser, *, is_final=False, is_javap=False):
     inputs.add_argument(
         '--java-sources-file',
         required=True,
-        help='Newline-separated file containing paths to .java or .jni.pickle '
-        'files, taken from Java dependency tree.')
+        help='JSON file containing paths to .java or .jni.pickle files '
+        'and their module names, taken from Java dependency tree.')
     inputs.add_argument(
         '--priority-java-sources-file',
         help='Same format as java-sources-file, only used by multiplexing to '
@@ -38,8 +38,8 @@ def _add_io_args(parser, *, is_final=False, is_javap=False):
         'omitting switch_num for unique signatures.')
     inputs.add_argument(
         '--native-sources-file',
-        help='Newline-separated file containing paths to .java or .jni.pickle '
-        'files, taken from Native dependency tree.')
+        help='JSON file containing paths to .java or .jni.pickle files '
+        'and their module names, taken from Native dependency tree.')
   else:
     if is_javap:
       inputs.add_argument(
@@ -97,6 +97,7 @@ def _add_codegen_args(parser, *, is_final=False, is_javap=False):
   mode_group = parser.add_mutually_exclusive_group()
   group.add_argument(
       '--module-name',
+      default='',
       help='Only look at natives annotated with a specific module name.')
   this_dir = posixpath.abspath(posixpath.dirname(__file__))
   root_dir = posixpath.dirname(posixpath.dirname(this_dir))

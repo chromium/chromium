@@ -14,6 +14,7 @@ import collections
 import copy
 import difflib
 import glob
+import json
 import logging
 import os
 import pathlib
@@ -125,6 +126,21 @@ def _MakePrefixes(options):
   if options.module_name:
     module_prefix = f'{options.module_name}_'
   return package_prefix, module_prefix
+
+
+def _WriteMetadataJson(path, sources):
+  modules = collections.defaultdict(list)
+  for src in sources:
+    module = 'module' if 'SampleModule.java' in src else ''
+    modules[module].append(src)
+
+  metadata = []
+  for module, files in modules.items():
+    m = {'java_files': files}
+    if module:
+      m['module_name'] = module
+    metadata.append(m)
+  path.write_text(json.dumps(metadata))
 
 
 class BaseTest(unittest.TestCase):
@@ -262,19 +278,19 @@ class BaseTest(unittest.TestCase):
 
       cmd = options.to_args()
 
-      java_sources_file = pathlib.Path(tdir) / 'java_sources.txt'
-      java_sources_file.write_text('\n'.join(java_sources))
+      java_sources_file = pathlib.Path(tdir) / 'java_sources.json'
+      _WriteMetadataJson(java_sources_file, java_sources)
       cmd += ['--java-sources-file', str(java_sources_file)]
       if native_sources:
-        native_sources_file = pathlib.Path(tdir) / 'native_sources.txt'
-        native_sources_file.write_text('\n'.join(native_sources))
+        native_sources_file = pathlib.Path(tdir) / 'native_sources.json'
+        _WriteMetadataJson(native_sources_file, native_sources)
         cmd += ['--native-sources-file', str(native_sources_file)]
       if priority_java_files:
         priority_java_sources = [
             os.path.join(_JAVA_SRC_DIR, f) for f in priority_java_files
         ]
-        priority_java_file = pathlib.Path(tdir) / 'java_priority_sources.txt'
-        priority_java_file.write_text('\n'.join(priority_java_sources))
+        priority_java_file = pathlib.Path(tdir) / 'java_priority_sources.json'
+        _WriteMetadataJson(priority_java_file, priority_java_sources)
         cmd += ['--priority-java-sources-file', str(priority_java_file)]
       if priority_java_files is not None:
         cmd += ['--never-omit-switch-num']

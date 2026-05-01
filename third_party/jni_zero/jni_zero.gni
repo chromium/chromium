@@ -59,8 +59,8 @@ template("jni_sources_list") {
                                  "walk_keys",
                                ])
     outputs = [ invoker.output ]
-    data_keys = [ "jni_source_files" ]
-    rebase = root_build_dir
+    data_keys = [ "jni_targets" ]
+    output_conversion = "json"
     metadata = {
       # This target is just collecting source files used - this is not a
       # legitimate dependency.
@@ -188,6 +188,7 @@ template("generate_jni_registration") {
             [ get_label_info(java_targets_dep, "label_no_toolchain") ]
       }
     }
+
     args = [
       "generate-final",
       "--srcjar-path",
@@ -395,6 +396,9 @@ template("generate_jni_impl") {
         if (defined(invoker.namespace)) {
           args += [ "--namespace=${invoker.namespace}" ]
         }
+        if (defined(invoker.module_name)) {
+          args += [ "--module-name=${invoker.module_name}" ]
+        }
         if (_enable_definition_macros) {
           args += [ "--enable-definition-macros" ]
         }
@@ -543,7 +547,14 @@ template("generate_jni") {
     metadata = {
       # keep as abspath as this is used by cronet team
       # to convert JNI registration targets from GN to BP (GN2BP).
-      jni_source_files = get_path_info(sources, "abspath")
+      jni_targets = [
+        {
+          java_files = rebase_path(sources, root_build_dir)
+          if (defined(invoker.module_name)) {
+            module_name = invoker.module_name
+          }
+        },
+      ]
     }
   }
 }

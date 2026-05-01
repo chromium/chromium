@@ -1973,7 +1973,8 @@ class JniRegistrationGeneratorSanitizer(BaseActionSanitizer):
         self._update_value_arg('--placeholder-srcjar-path',
                                self._sanitize_filepath, False)
         self._delete_value_arg('--depfile', False)
-        self._set_value_arg('--java-sources-file', '$(genDir)/java.sources')
+        self._set_value_arg('--java-sources-file',
+                            '$(genDir)/java_sources.json')
 
         self._delete_value_arg('--package-prefix', throw_if_absent=False)
         self._delete_value_arg('--package-prefix-filter',
@@ -1989,15 +1990,26 @@ class JniRegistrationGeneratorSanitizer(BaseActionSanitizer):
         # So creating sources file in cmd based on the srcs of this target.
         # Adding ../$(current_dir)/ to the head because jni_registration_generator.py uses the files
         # whose path startswith(..)
+        module_name = ''
+        if '--module-name' in self.target.args:
+            module_name = self.target.args[
+                self.target.args.index('--module-name') + 1]
+
+        lines = [
+            'import json',
+            'import sys',
+            'd = {"java_files": [f"../{sys.argv[1]}/{f}" for f in sys.argv[2:]]}',
+        ]
+        if module_name:
+            lines.append(f'd["module_name"] = "{module_name}"')
+        lines.append('print(json.dumps([d]))')
+
+        python_script = '; '.join(lines)
         base_cmd = ([
             "current_dir=`basename \\`pwd\\``;",
-            "for f in $(in);",
-            "do",
-            "echo \"../$$current_dir/$$f\" >> $(genDir)/java.sources;",
-            "done;",
-        ] +
-                    # jni_registration_generator.py doesn't work with python2
-                    [f"python3 {base_cmd[0]}"] + base_cmd[1:])
+            f"python3 -c '{python_script}' $$current_dir $(in) > $(genDir)/java_sources.json;",
+            f"python3 {base_cmd[0]}"
+        ] + base_cmd[1:])
 
         return self.get_pre_cmd() + base_cmd
 

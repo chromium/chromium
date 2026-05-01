@@ -38,7 +38,7 @@ public class MockCertVerifier {
         return MockCertVerifierJni.get().createFreeForAllMockCertVerifier();
     }
 
-    @NativeMethods("cronet_tests")
+    @NativeMethods
     interface Natives {
         long createMockCertVerifier(String[] certs, boolean knownRoot, String testDataDir);
 

@@ -634,7 +634,7 @@ public class ExperimentalOptionsTest {
         cronetEngine.shutdown();
     }
 
-    @NativeMethods("cronet_tests")
+    @NativeMethods
     interface Natives {
         // Sets a host cache entry with hostname "host-cache-test-host" and an AddressList
         // containing the provided address.

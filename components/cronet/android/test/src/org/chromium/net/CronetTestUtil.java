@@ -118,7 +118,7 @@ public class CronetTestUtil {
                 .isTrue();
     }
 
-    @NativeMethods("cronet_tests")
+    @NativeMethods
     interface Natives {
         boolean canGetTaggedBytes();
 

@@ -84,7 +84,7 @@ public final class QuicTestServer {
         return QuicTestServerJni.get().numSessions();
     }
 
-    @NativeMethods("cronet_tests")
+    @NativeMethods
     interface Natives {
         /*
          * Runs a quic test server synchronously.

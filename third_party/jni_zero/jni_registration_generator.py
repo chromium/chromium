@@ -7,6 +7,7 @@ import collections
 import functools
 import hashlib
 import itertools
+import json
 import multiprocessing
 import os
 import pathlib
@@ -45,11 +46,12 @@ def _LoadJniObjs(paths, namespace, package_prefix, package_prefix_filter, *,
   if all(p.endswith('.jni.pickle') for p in paths):
     for pickle_path in paths:
       with open(pickle_path, 'rb') as f:
-        parsed_files = pickle.load(f)
+        module_name, parsed_files = pickle.load(f)
       ret[pickle_path] = [
           jni_generator.JniObject(pf,
                                   from_javap=False,
-                                  default_namespace=namespace)
+                                  default_namespace=namespace,
+                                  module_name=module_name)
           for pf in parsed_files
       ]
   else:
@@ -66,12 +68,7 @@ def _LoadJniObjs(paths, namespace, package_prefix, package_prefix_filter, *,
   return ret
 
 
-def _FilterJniObjs(jni_objs_by_path, module_name):
-  for jni_objs in jni_objs_by_path.values():
-    # Ignore non-active modules and empty natives lists.
-    jni_objs[:] = [
-        o for o in jni_objs if o.natives and o.module_name == module_name
-    ]
+
 
 
 def _Flatten(jni_objs_by_path, paths):
@@ -118,8 +115,11 @@ def _Generate(args,
         native library must be interchangeable with another that uses
         priority_java_sources (aka, webview).
   """
-  native_sources_set = set(native_sources)
-  java_sources_set = set(java_sources)
+  native_sources_list = native_sources.get(args.module_name, [])
+  java_sources_list = java_sources.get(args.module_name, [])
+
+  native_sources_set = set(native_sources_list)
+  java_sources_set = set(java_sources_list)
 
   jni_objs_by_path = _LoadJniObjs(
       native_sources_set | java_sources_set,
@@ -127,7 +127,6 @@ def _Generate(args,
       args.package_prefix,
       args.package_prefix_filter,
       enable_legacy_natives=args.enable_legacy_natives)
-  _FilterJniObjs(jni_objs_by_path, args.module_name)
 
   present_jni_objs = list(
       _Flatten(jni_objs_by_path, native_sources_set & java_sources_set))
@@ -136,7 +135,9 @@ def _Generate(args,
     self.natives = [n for n in self.natives if not n.is_test_only]
 
   # Can contain path not in present_jni_objs.
-  priority_set = set(priority_java_sources or [])
+  priority_sources_list = priority_java_sources.get(
+      args.module_name, []) if priority_java_sources else []
+  priority_set = set(priority_sources_list)
   # Sort for determinism and to put priority_java_sources first.
   present_jni_objs.sort(
       key=lambda o: (o.filename not in priority_set, o.java_class))
@@ -245,6 +246,12 @@ def _CheckForJavaNativeMismatch(args, jni_objs_by_path, native_sources_set,
                               key=lambda jni_obj: jni_obj.filename)
   native_only_jni_objs = sorted(_Flatten(jni_objs_by_path, native_only),
                                 key=lambda jni_obj: jni_obj.filename)
+
+  # Ignore files that have only @CalledByNatives in them, since they do not
+  # effect GEN_JNI.
+  java_only_jni_objs = [o for o in java_only_jni_objs if o.natives]
+  native_only_jni_objs = [o for o in native_only_jni_objs if o.natives]
+
   failed = False
   if not args.add_stubs_for_missing_native and java_only_jni_objs:
     failed = True
@@ -378,10 +385,15 @@ extern const int64_t kJniZeroHash{module_name}Priority = {priority_hash}LL;
   return sb.to_string()
 
 
-def _ParseSourceList(path):
-  # Path can have duplicates.
+def _ParseMetadataJson(path):
   with open(path) as f:
-    return sorted(set(f.read().splitlines()))
+    data = json.load(f)
+  ret = collections.defaultdict(list)
+  for item in data:
+    module_name = item.get('module_name') or ''
+    for src in item['java_files']:
+      ret[module_name].append(src)
+  return ret
 
 
 def _write_depfile(depfile_path, first_gn_output, inputs):
@@ -422,19 +434,19 @@ def main(parser, args, jni_mode):
       # --priority-java-sources.
       parser.error('--priority-java-sources requires --never-omit-switch-num.')
 
-  java_sources = _ParseSourceList(args.java_sources_file)
+  java_sources = _ParseMetadataJson(args.java_sources_file)
   if args.native_sources_file:
-    native_sources = _ParseSourceList(args.native_sources_file)
+    native_sources = _ParseMetadataJson(args.native_sources_file)
   else:
     if args.add_stubs_for_missing_native:
       # This will create a fully stubbed out GEN_JNI.
-      native_sources = []
+      native_sources = {}
     else:
       # Just treating it like we have perfect alignment between native and java
       # when only looking at java.
       native_sources = java_sources
   if args.priority_java_sources_file:
-    priority_java_sources = _ParseSourceList(args.priority_java_sources_file)
+    priority_java_sources = _ParseMetadataJson(args.priority_java_sources_file)
   else:
     priority_java_sources = None
 
@@ -448,7 +460,10 @@ def main(parser, args, jni_mode):
   if args.depfile:
     # GN does not declare a dep on the sources files to avoid circular
     # dependencies, so they need to be listed here.
-    all_inputs = native_sources + java_sources + [args.java_sources_file]
+    all_inputs = []
+    all_inputs.extend(native_sources.get(args.module_name, []))
+    all_inputs.extend(java_sources.get(args.module_name, []))
+    all_inputs.append(args.java_sources_file)
     if args.native_sources_file:
       all_inputs.append(args.native_sources_file)
     _write_depfile(args.depfile, args.srcjar_path, all_inputs)

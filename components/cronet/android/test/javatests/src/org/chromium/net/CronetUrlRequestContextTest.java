@@ -2610,7 +2610,7 @@ public class CronetUrlRequestContextTest {
         while (engine.getActiveRequestCount() != expectedCount) Thread.sleep(100);
     }
 
-    @NativeMethods("cronet_tests")
+    @NativeMethods
     interface Natives {
         // Verifies that CronetEngine.Builder config from testCronetEngineBuilderConfig() is
         // properly translated to a native UrlRequestContextConfig.

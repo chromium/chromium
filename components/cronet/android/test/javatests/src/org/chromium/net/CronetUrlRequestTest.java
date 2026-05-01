@@ -3350,7 +3350,7 @@ public class CronetUrlRequestTest {
         assertThat(onSucceededRequest.get() == request2).isTrue();
     }
 
-    @NativeMethods("cronet_tests")
+    @NativeMethods
     interface Natives {
         // Return connection migration disable load flag value.
         int getConnectionMigrationDisableLoadFlag();
