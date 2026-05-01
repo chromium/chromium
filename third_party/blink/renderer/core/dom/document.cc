@@ -4250,30 +4250,6 @@ void Document::close() {
   CheckCompleted();
 }
 
-namespace {
-bool NeedsStyleAndLayoutUpdateAtClose(Document& document) {
-  if (!document.HaveRenderBlockingStylesheetsLoaded()) {
-    return false;
-  }
-  if (document.GetFrame()->IsMainFrame()) {
-    return true;
-  }
-  if (!document.Loader()->HasLoadedNonInitialEmptyDocument()) {
-    return false;
-  }
-  if (!RuntimeEnabledFeatures::
-          AvoidForcedLayoutOnInvisibleDocumentCloseEnabled()) {
-    return true;
-  }
-
-  // We don't need to update the style and layout if the subframe is not
-  // visible. This style/layout update is needed mainly for browser features
-  // (like autofill) that rely on a stable layout/style state when a document
-  // finished parsing, however that is irrelevant for invisible subframes.
-  return document.GetFrame()->View()->IsVisible();
-}
-}  // namespace
-
 void Document::DispatchLoadEventAndFinalize() {
   DCHECK(!InStyleRecalc());
 
@@ -4322,8 +4298,11 @@ void Document::DispatchLoadEventAndFinalize() {
   // reaction where inserting iframes without a src to a document causes
   // expensive layout thrashing of the embedding document. Since this is a
   // common scenario, special-casing it here, and avoiding that layout if
-  // this is an initial-empty document in a subframe.
-  if (NeedsStyleAndLayoutUpdateAtClose(*this)) {
+  // this is a subframe that is either initial or hidden.
+  if (HaveRenderBlockingStylesheetsLoaded() &&
+      (GetFrame()->IsMainFrame() ||
+       (Loader()->HasLoadedNonInitialEmptyDocument() &&
+        GetFrame()->View()->IsVisible()))) {
     UpdateStyleAndLayout(DocumentUpdateReason::kUnknown);
   }
 

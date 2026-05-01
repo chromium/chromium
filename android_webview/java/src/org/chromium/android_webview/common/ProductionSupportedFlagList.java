@@ -597,7 +597,6 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature("IncreaseCoookieAccesCacheSize"),
         Flag.baseFeature("AvoidScheduleWorkDuringNativeEventProcessing"),
         Flag.baseFeature("AvoidEntryCreationForNoStore"),
-        Flag.baseFeature("AvoidForcedLayoutOnInvisibleDocumentClose"),
         Flag.baseFeature("ChangeGeneratedCodeCacheSize"),
         Flag.baseFeature("RaiseDisplayCriticalThreadPriority"),
         Flag.baseFeature("BatchNativeEventsInMessagePumpEpoll"),

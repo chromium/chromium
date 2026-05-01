@@ -778,10 +778,6 @@
       status: "experimental",
     },
     {
-      name: "AvoidForcedLayoutOnInvisibleDocumentClose",
-      status: "stable",
-    },
-    {
       // Fix for https://crbug.com/471876082
       name: "AvoidMergingStyledSpanWithSiblings",
       status: "stable",
