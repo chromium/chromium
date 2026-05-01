@@ -365,7 +365,14 @@ class ChannelFuchsia : public Channel,
       zx_handle_t handles[ZX_CHANNEL_MAX_MSG_HANDLES] = {};
       size_t handles_count = outgoing_handles.size();
 
-      DCHECK_LE(handles_count, std::size(handles));
+      // TODO(crbug.com/508116627): In principle messages with too many handles
+      // could be split across multiple writes. In practice we haven't
+      // encountered this situation.
+      if (handles_count > std::size(handles)) {
+        DLOG(ERROR) << "Too many handles to write";
+        return false;
+      }
+
       for (size_t i = 0; i < handles_count; ++i) {
         DCHECK(outgoing_handles[i].handle().is_valid());
         UNSAFE_TODO(handles[i]) =
