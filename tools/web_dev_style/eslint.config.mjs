@@ -136,8 +136,6 @@ export default [
 
       // TODO(https://crbug.com/41446521): Bring these extension test files into
       // conformance.
-      // Temporarily omitted until files are updated.
-      'chrome/test/data/extensions/api_test/*',
       // Temporarily omitted. These files contain scripts that are wrapped on
       // the C++ side in functions, and so they currently have "floating"
       // return statements. This causes eslint to fail in parsing and can't be
