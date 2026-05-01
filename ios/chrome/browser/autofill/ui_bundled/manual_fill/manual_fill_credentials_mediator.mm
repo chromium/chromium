@@ -298,7 +298,8 @@ std::vector<ManualFillCredentialAndPasswordForm> GetFilteredCredentials(
                           cellIndex:i
         cellIndexAccessibilityLabel:cellIndexAccessibilityLabel
              showAutofillFormButton:_showAutofillFormButton
-            fromAllPasswordsContext:[self isFromAllPasswordsContext]];
+            fromAllPasswordsContext:[self isFromAllPasswordsContext]
+                     credentialType:ManualFillCredentialType::kPassword];
     [items addObject:item];
   }
   return items;

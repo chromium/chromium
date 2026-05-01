@@ -64,7 +64,8 @@
                          cellIndex:(NSInteger)cellIndex
        cellIndexAccessibilityLabel:(NSString*)cellIndexAccessibilityLabel
             showAutofillFormButton:(BOOL)showAutofillFormButton
-           fromAllPasswordsContext:(BOOL)fromAllPasswordsContext {
+           fromAllPasswordsContext:(BOOL)fromAllPasswordsContext
+                    credentialType:(ManualFillCredentialType)credentialType {
   self = [super initWithType:kItemTypeEnumZero];
   if (self) {
     _credential = credential;
@@ -74,6 +75,7 @@
     _cellIndexAccessibilityLabel = [cellIndexAccessibilityLabel copy];
     _showAutofillFormButton = showAutofillFormButton;
     _fromAllPasswordsContext = fromAllPasswordsContext;
+    _credentialType = credentialType;
     self.cellClass = [ManualFillPasswordCell class];
   }
   return self;
@@ -88,7 +90,8 @@
                         cellIndex:_cellIndex
       cellIndexAccessibilityLabel:_cellIndexAccessibilityLabel
            showAutofillFormButton:_showAutofillFormButton
-          fromAllPasswordsContext:_fromAllPasswordsContext];
+          fromAllPasswordsContext:_fromAllPasswordsContext
+                   credentialType:self.credentialType];
 }
 
 - (const GURL&)faviconURL {
@@ -222,7 +225,8 @@ void LogAutofillFormButtonTappedMetrics(BOOL from_all_passwords_context,
                       cellIndex:(NSInteger)cellIndex
     cellIndexAccessibilityLabel:(NSString*)cellIndexAccessibilityLabel
          showAutofillFormButton:(BOOL)showAutofillFormButton
-        fromAllPasswordsContext:(BOOL)fromAllPasswordsContext {
+        fromAllPasswordsContext:(BOOL)fromAllPasswordsContext
+                 credentialType:(ManualFillCredentialType)credentialType {
   _cellIndex = cellIndex;
   _fromAllPasswordsContext = fromAllPasswordsContext;
 
@@ -298,7 +302,8 @@ void LogAutofillFormButtonTappedMetrics(BOOL from_all_passwords_context,
   [credentialGroupVerticalLeadChips addObject:self.usernameButton];
 
   // Password chip button.
-  if (credential.password.length) {
+  if (credentialType == ManualFillCredentialType::kPassword &&
+      credential.password.length) {
     [self.passwordButton setTitle:manual_fill::kMaskedPasswordButtonText
                          forState:UIControlStateNormal];
     self.passwordButton.accessibilityLabel = l10n_util::GetNSString(

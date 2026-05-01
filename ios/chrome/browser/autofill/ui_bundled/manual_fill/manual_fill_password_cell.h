@@ -15,6 +15,12 @@ class GURL;
 @protocol ManualFillContentInjector;
 @class ManualFillCredential;
 
+// Type of manual fill credential.
+enum class ManualFillCredentialType {
+  kPassword,
+  kPasskey,
+};
+
 // Wrapper to show password cells in a LegacyChromeTableViewController.
 @interface ManualFillCredentialItem : TableViewItem
 
@@ -26,6 +32,9 @@ class GURL;
 
 // Username associated with this item.
 @property(nonatomic, readonly) NSString* username;
+
+// Indicates the type of credential.
+@property(nonatomic, readonly) ManualFillCredentialType credentialType;
 
 // `cellIndex` indicates the index (0-based) at which the password represented
 // by this item is positioned in the list of passwords to show.
@@ -40,6 +49,7 @@ class GURL;
        cellIndexAccessibilityLabel:(NSString*)cellIndexAccessibilityLabel
             showAutofillFormButton:(BOOL)showAutofillFormButton
            fromAllPasswordsContext:(BOOL)fromAllPasswordsContext
+                    credentialType:(ManualFillCredentialType)credentialType
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithType:(NSInteger)type NS_UNAVAILABLE;
@@ -68,7 +78,8 @@ class GURL;
                       cellIndex:(NSInteger)cellIndex
     cellIndexAccessibilityLabel:(NSString*)cellIndexAccessibilityLabel
          showAutofillFormButton:(BOOL)showAutofillFormButton
-        fromAllPasswordsContext:(BOOL)fromAllPasswordsContext;
+        fromAllPasswordsContext:(BOOL)fromAllPasswordsContext
+                 credentialType:(ManualFillCredentialType)credentialType;
 
 // Returns whether the cell represents a backup credential.
 - (BOOL)isBackupCredential;

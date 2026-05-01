@@ -134,14 +134,15 @@ TEST_P(PasswordViewControllerTest, CheckNoDataItemsMessageRemoved) {
                                   isBackupCredential:NO];
 
   // Add an password data item.
-  ManualFillCredentialItem* password_item =
-      [[ManualFillCredentialItem alloc] initWithCredential:credential
-                                           contentInjector:nil
-                                               menuActions:@[]
-                                                 cellIndex:0
-                               cellIndexAccessibilityLabel:nil
-                                    showAutofillFormButton:NO
-                                   fromAllPasswordsContext:NO];
+  ManualFillCredentialItem* password_item = [[ManualFillCredentialItem alloc]
+               initWithCredential:credential
+                  contentInjector:nil
+                      menuActions:@[]
+                        cellIndex:0
+      cellIndexAccessibilityLabel:nil
+           showAutofillFormButton:NO
+          fromAllPasswordsContext:NO
+                   credentialType:ManualFillCredentialType::kPassword];
   [password_view_controller presentCredentials:@[ password_item ]];
   // Override the type for the test.
   password_item.type = kItemTypeSampleThree;
@@ -200,14 +201,15 @@ TEST_P(PasswordViewControllerTest, PlusAddressInCredentialSection) {
                                                 host:@""
                                                  URL:GURL("https://example.com")
                                   isBackupCredential:NO];
-  ManualFillCredentialItem* password_item =
-      [[ManualFillCredentialItem alloc] initWithCredential:credential
-                                           contentInjector:nil
-                                               menuActions:@[]
-                                                 cellIndex:0
-                               cellIndexAccessibilityLabel:nil
-                                    showAutofillFormButton:NO
-                                   fromAllPasswordsContext:NO];
+  ManualFillCredentialItem* password_item = [[ManualFillCredentialItem alloc]
+               initWithCredential:credential
+                  contentInjector:nil
+                      menuActions:@[]
+                        cellIndex:0
+      cellIndexAccessibilityLabel:nil
+           showAutofillFormButton:NO
+          fromAllPasswordsContext:NO
+                   credentialType:ManualFillCredentialType::kPassword];
   [password_view_controller presentCredentials:@[ password_item ]];
   // Override the type for the test.
   password_item.type = kItemTypeSampleOne;
