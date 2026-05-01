@@ -71,6 +71,9 @@ class WebAppFrameToolbarTestHelper {
   void LaunchWebAppBrowserAndWait(Profile* profile,
                                   const webapps::AppId& app_id);
 
+  void ReparentWebContentsIntoAppBrowserAndWait(content::WebContents* contents,
+                                                const webapps::AppId& app_id);
+
   GURL LoadTestPageWithDataAndGetURL(
       net::test_server::EmbeddedTestServer* embedded_test_server,
       base::ScopedTempDir* temp_dir,

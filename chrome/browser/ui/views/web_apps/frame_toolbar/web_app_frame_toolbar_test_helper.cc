@@ -12,6 +12,7 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view.h"
@@ -21,6 +22,7 @@
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_toolbar_button_container.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
+#include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
@@ -112,6 +114,19 @@ void WebAppFrameToolbarTestHelper::LaunchWebAppBrowserAndWait(
     Profile* profile,
     const webapps::AppId& app_id) {
   SetViews(web_app::LaunchWebAppBrowserAndWait(profile, app_id));
+}
+
+void WebAppFrameToolbarTestHelper::ReparentWebContentsIntoAppBrowserAndWait(
+    content::WebContents* contents,
+    const webapps::AppId& app_id) {
+  base::test::TestFuture<content::WebContents*> future;
+  web_app::ReparentWebContentsIntoAppBrowser(contents, app_id,
+                                             future.GetCallback());
+  content::WebContents* reparented_contents = future.Get();
+  CHECK(reparented_contents);
+  Browser* app_browser = chrome::FindBrowserWithTab(reparented_contents);
+  CHECK(app_browser);
+  SetViews(app_browser);
 }
 
 GURL WebAppFrameToolbarTestHelper::

@@ -549,10 +549,6 @@ BrowserWindowInterface* ReparentWebContentsIntoAppBrowser(
       << tab_helper->window_app_id().value_or("<none>");
 
   auto launch_url = contents->GetLastCommittedURL();
-  UpdateLaunchStats(contents, app_id, launch_url);
-  RecordLaunchMetrics(app_id, apps::LaunchContainer::kLaunchContainerWindow,
-                      apps::LaunchSource::kFromReparenting, launch_url,
-                      contents);
   blink::mojom::DisplayMode display_mode =
       registrar.GetAppEffectiveDisplayMode(app_id);
 
@@ -636,6 +632,12 @@ BrowserWindowInterface* ReparentWebContentsIntoAppBrowser(
   BrowserWindowInterface* reparented_browser =
       ReparentWebContentsIntoAppBrowser(contents, browser, app_id,
                                         as_pinned_home_tab);
+
+  UpdateLaunchStats(contents, app_id, launch_url);
+  RecordLaunchMetrics(app_id, apps::LaunchContainer::kLaunchContainerWindow,
+                      apps::LaunchSource::kFromReparenting, launch_url,
+                      contents);
+
   std::move(completion_callback).Run(contents);
   return reparented_browser;
 }
