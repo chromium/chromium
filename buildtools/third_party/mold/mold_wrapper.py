@@ -9,12 +9,13 @@ import shlex
 import sys
 
 LINKER_PATH_PREFIX = '--linker-path='
-
 # These flags are added by clang, and there seems to be no way to prevent
 # it from adding them.
 TO_STRIP = {
     '--use-android-relr-tags': None,
-    '--pack-dyn-relocs=android+relr': '--pack-dyn-relocs=relr',
+    # Can be changed to =relr when we drop Android Q.
+    '--pack-dyn-relocs=android+relr': '--pack-dyn-relocs=none',
+    '--pack-dyn-relocs=android': '--pack-dyn-relocs=none',
 }
 
 

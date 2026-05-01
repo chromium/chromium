@@ -43,7 +43,13 @@ if (!defined(experimental_linker_path) || !is_a_target_toolchain) {
 if (!is_win && !is_mac && !is_ios) {
   declare_args() {
     # Link using mold instead of lld.
-    use_mold = false
+    use_mold =
+        host_os == "linux" && !is_official_build &&
+        experimental_linker_path == "" && is_a_target_toolchain &&
+        current_cpu == "x64" && is_android
+    # This should be !use_thin_lto, but there's a circular dependency
+    # between use_thin_lto and use_mold.
+    # is_a_target_toolchain restriction due to https://github.com/rui314/mold/issues/1571
   }
 }
 
