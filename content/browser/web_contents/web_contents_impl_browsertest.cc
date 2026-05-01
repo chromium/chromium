@@ -293,13 +293,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
       expected);
 }
 
-// Test is failing on Android b/507114028
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_DidBecomeReadyForInput DISABLED_DidBecomeReadyForInput
-#else
-#define MAYBE_DidBecomeReadyForInput DidBecomeReadyForInput
-#endif
-IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, MAYBE_DidBecomeReadyForInput) {
+IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, DidBecomeReadyForInput) {
   GURL url(
       "data:text/html,"
       "<html><body><script>"

@@ -405,6 +405,9 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   void DidOverscroll(blink::mojom::DidOverscrollParamsPtr params) override;
   void OnInputRouterActive() override;
 
+  // Called when the InputRouter in the Viz process becomes active.
+  void OnVizInputRouterActive();
+
   // Update the stored set of visual properties for the renderer. If 'propagate'
   // is true, the new properties will be sent to the renderer process.
   bool UpdateVisualProperties(bool propagate);
@@ -1242,6 +1245,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
 
   void SetupRenderInputRouter();
   void SetupInputRouter();
+  void MaybeNotifyReadyForInput();
 
   // Start intercepting system keyboard events.
   void LockKeyboard();
@@ -1522,9 +1526,6 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // Indicates whether what the last focus active state that was sent to the
   // renderer.
   bool is_active_ = false;
-
-  // Indicates whether the input router is active.
-  bool input_router_active_ = false;
 
   // This value indicates how long to wait for a new compositor frame from a
   // renderer process before clearing any previously displayed content.

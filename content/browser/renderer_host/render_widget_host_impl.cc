@@ -2103,9 +2103,7 @@ void RenderWidgetHostImpl::InsertVisualStateCallback(
 void RenderWidgetHostImpl::SetReadyForInputCallbackForTesting(  // IN-TEST
     base::OnceClosure callback) {
   ready_for_input_callback_for_testing_ = std::move(callback);
-  if (input_router_active_ && ready_for_input_callback_for_testing_) {
-    std::move(ready_for_input_callback_for_testing_).Run();
-  }
+  MaybeNotifyReadyForInput();
 }
 
 void RenderWidgetHostImpl::SetHungRendererDelay(const base::TimeDelta& delay) {
@@ -3248,8 +3246,27 @@ void RenderWidgetHostImpl::OnUnconfirmedTapConvertedToTap() {
 }
 
 void RenderWidgetHostImpl::OnInputRouterActive() {
-  input_router_active_ = true;
-  if (ready_for_input_callback_for_testing_) {
+  MaybeNotifyReadyForInput();
+}
+
+void RenderWidgetHostImpl::OnVizInputRouterActive() {
+  MaybeNotifyReadyForInput();
+}
+
+void RenderWidgetHostImpl::MaybeNotifyReadyForInput() {
+  if (!ready_for_input_callback_for_testing_) {
+    return;
+  }
+
+  // With InputViz touch and gesture events are routed to the viz process, so
+  // we need to wait for the InputRouter in both browser and viz processes to
+  // be active.
+  const bool ready =
+      input::InputUtils::IsTransferInputToVizSupported()
+          ? input_router()->IsActive() && mojo_rir_delegate()->is_active()
+          : input_router()->IsActive();
+
+  if (ready) {
     std::move(ready_for_input_callback_for_testing_).Run();
   }
 }
