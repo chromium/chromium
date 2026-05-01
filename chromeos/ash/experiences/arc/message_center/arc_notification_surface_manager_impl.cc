@@ -35,9 +35,8 @@ void ArcNotificationSurfaceManagerImpl::RemoveObserver(Observer* observer) {
 
 void ArcNotificationSurfaceManagerImpl::OnNotificationSurfaceAXTreeIdChanged(
     ArcNotificationSurface* surface) {
-  for (auto& observer : observers_) {
-    observer.OnNotificationSurfaceAXTreeIdChanged(surface);
-  }
+  observers_.NotifyAllowReentrancy(
+      &Observer::OnNotificationSurfaceAXTreeIdChanged, surface);
 }
 
 exo::NotificationSurface* ArcNotificationSurfaceManagerImpl::GetSurface(
