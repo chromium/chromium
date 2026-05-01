@@ -12,6 +12,10 @@ macro_rules! debug {
     };
 }
 
+/// Memoization cache for derivative computations.
+///
+/// Stores previously computed derivatives keyed by `(ExprRef, byte)` pairs to
+/// avoid redundant work during DFA construction.
 #[derive(Clone)]
 pub struct DerivCache {
     pub num_deriv: usize,

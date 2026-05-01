@@ -30,6 +30,11 @@ macro_rules! debug {
     };
 }
 
+/// Cache for relevance (language non-emptiness) and containment checks.
+///
+/// Relevance determines whether an expression can still match any string,
+/// and containment checks whether one expression's language is a subset
+/// of another's. Both are used during simplification.
 #[derive(Clone)]
 pub struct RelevanceCache {
     relevance_cache: HashMap<ExprRef, bool>,

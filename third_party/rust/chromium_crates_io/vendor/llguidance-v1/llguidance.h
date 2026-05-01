@@ -819,6 +819,16 @@ int32_t llg_matcher_compute_ff_tokens(struct LlgMatcher *matcher,
  */
 struct LlgMatcher *llg_clone_matcher(const struct LlgMatcher *matcher);
 
+/**
+ * Returns the version string of llguidance and its key dependencies.
+ * This also allows dumping the version of the binary using
+ * `strings libllguidance.so | grep -oE "(llguidance|derivre)@[0-9.]+"`
+ *
+ * The returned pointer is valid for the lifetime of the process and must not
+ * be freed by the caller.
+ */
+const char *llg_get_version(void);
+
 #ifdef __cplusplus
 }  // extern "C"
 #endif  // __cplusplus

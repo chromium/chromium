@@ -15,6 +15,11 @@ use crate::{
     ExprRef, Regex,
 };
 
+/// A builder for constructing [`Regex`] instances from [`RegexAst`] trees.
+///
+/// Use this when you need to combine multiple regex patterns using
+/// intersection, complement, lookahead, or other extended operations that
+/// go beyond a single pattern string.
 #[derive(Clone)]
 pub struct RegexBuilder {
     parser_builder: ParserBuilder,
@@ -22,6 +27,8 @@ pub struct RegexBuilder {
     json_quote_cache: HashMap<ExprRef, ExprRef>,
 }
 
+/// Options controlling how a regex is transformed to match inside a
+/// JSON-quoted string (e.g., converting literal newlines to `\\n`).
 #[derive(Clone, Debug)]
 pub struct JsonQuoteOptions {
     /// Which escapes to allow (after \).
@@ -72,6 +79,11 @@ impl JsonQuoteOptions {
     }
 }
 
+/// An AST node representing a regex pattern for use with [`RegexBuilder`].
+///
+/// This enum supports extended operations such as intersection ([`And`](Self::And)),
+/// complement ([`Not`](Self::Not)), and lookahead ([`LookAhead`](Self::LookAhead))
+/// that are not available in standard regex surface syntax.
 #[derive(Clone)]
 pub enum RegexAst {
     /// Intersection of the regexes

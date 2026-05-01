@@ -1600,3 +1600,21 @@ pub extern "C" fn llg_clone_matcher(matcher: &LlgMatcher) -> *mut LlgMatcher {
         tok_env: matcher.tok_env.clone(),
     }))
 }
+
+/// Returns the version string of llguidance and its key dependencies.
+/// This also allows dumping the version of the binary using
+/// `strings libllguidance.so | grep -oE "(llguidance|derivre)@[0-9.]+"`
+///
+/// The returned pointer is valid for the lifetime of the process and must not
+/// be freed by the caller.
+#[no_mangle]
+pub extern "C" fn llg_get_version() -> *const c_char {
+    // Both version tags are compile-time literals so they're findable via `strings`.
+    static LLG_VERSION: &str = concat!("llguidance@", env!("CARGO_PKG_VERSION"));
+    static VERSION: std::sync::OnceLock<std::ffi::CString> = std::sync::OnceLock::new();
+    VERSION
+        .get_or_init(|| {
+            std::ffi::CString::new(format!("{} {}", LLG_VERSION, derivre::VERSION)).unwrap()
+        })
+        .as_ptr()
+}

@@ -23,6 +23,11 @@ macro_rules! debug {
     };
 }
 
+/// An opaque identifier for a state in the lazily-constructed DFA.
+///
+/// States are created on demand as [`Regex::transition`] is called.
+/// The special constants [`StateID::DEAD`] and [`StateID::MISSING`] represent
+/// the dead (non-accepting) state and a not-yet-computed entry, respectively.
 #[derive(Clone, Copy, PartialEq, Eq, Hash)]
 pub struct StateID(u32);
 
@@ -84,12 +89,21 @@ impl Debug for StateID {
     }
 }
 
+/// Information about the compressed byte alphabet used by a [`Regex`].
+///
+/// When the `compress` feature is enabled, equivalent byte values are mapped
+/// to the same alphabet symbol, reducing the size of the transition table.
 #[derive(Clone)]
 pub struct AlphabetInfo {
     mapping: [u8; 256],
     size: usize,
 }
 
+/// A compiled regular expression backed by a lazily-constructed DFA.
+///
+/// Construct a `Regex` from a pattern string with [`Regex::new`], or build
+/// one programmatically via [`RegexBuilder`](crate::RegexBuilder). Matching
+/// is always anchored at the start of the input.
 #[derive(Clone)]
 pub struct Regex {
     exprs: ExprSet,

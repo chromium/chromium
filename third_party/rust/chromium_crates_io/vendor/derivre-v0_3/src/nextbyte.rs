@@ -2,6 +2,11 @@ use crate::HashMap;
 
 use crate::ast::{Expr, ExprRef, ExprSet, NextByte};
 
+/// Cache for [`NextByte`] analysis results.
+///
+/// Stores the precomputed [`NextByte`] value for each expression, which
+/// indicates whether a state is forced to accept a single byte, is at
+/// end-of-input, or has multiple possible transitions.
 #[derive(Clone)]
 pub struct NextByteCache {
     next_byte_cache: HashMap<ExprRef, NextByte>,

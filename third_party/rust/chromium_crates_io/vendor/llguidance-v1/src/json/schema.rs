@@ -352,7 +352,7 @@ impl Schema {
                     a2.prefix_items.resize_with(len, || a2.items.schema());
                     a1.prefix_items
                         .into_iter()
-                        .zip(a2.prefix_items.into_iter())
+                        .zip(a2.prefix_items)
                         .map(|(item1, item2)| item1.intersect(item2, ctx, stack_level + 1))
                         .collect::<Result<Vec<_>>>()?
                 },
