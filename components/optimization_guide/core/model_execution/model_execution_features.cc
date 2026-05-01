@@ -27,6 +27,8 @@ BASE_FEATURE(kFindsSettingsVisibility, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kPasswordChangeSubmission,
              "PasswordChangeSubmissionSettingsVisibility",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kContextualCueingSettingsVisibility,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<std::string> kPerformanceClassListForHistorySearch(
     &kHistorySearchSettingsVisibility,
@@ -67,6 +69,10 @@ bool IsGraduatedFeature(UserVisibleFeatureKey feature) {
     case UserVisibleFeatureKey::kFinds:
       is_graduated = base::FeatureList::IsEnabled(kFindsGraduated);
       break;
+    case UserVisibleFeatureKey::kContextualCueing:
+      // Contextual cueing is currently planned to always be opt-out.
+      is_graduated = false;
+      break;
   }
   return is_graduated;
 }
@@ -86,6 +92,8 @@ const base::Feature* GetFeatureToUseToCheckSettingsVisibility(
       return &kPasswordChangeSubmission;
     case UserVisibleFeatureKey::kFinds:
       return &kFindsSettingsVisibility;
+    case UserVisibleFeatureKey::kContextualCueing:
+      return &kContextualCueingSettingsVisibility;
   }
 }
 

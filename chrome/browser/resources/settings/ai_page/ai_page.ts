@@ -46,12 +46,18 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
         type: Boolean,
         value: () => loadTimeData.getBoolean('showPasswordChangeControl'),
       },
+
+      showAiSuggestionsControl_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('showAiSuggestionsControl'),
+      },
     };
   }
 
   declare private showComposeControl_: boolean;
   declare private showHistorySearchControl_: boolean;
   declare private showPasswordChangeControl_: boolean;
+  declare private showAiSuggestionsControl_: boolean;
 
   private shouldRecordMetrics_: boolean = true;
   private metricsBrowserProxy_: MetricsBrowserProxy =
@@ -78,6 +84,9 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
     this.metricsBrowserProxy_.recordBooleanHistogram(
         'Settings.AiPage.ElementVisibility.PasswordChange',
         this.showPasswordChangeControl_);
+    this.metricsBrowserProxy_.recordBooleanHistogram(
+        'Settings.AiPage.ElementVisibility.AiSuggestions',
+        this.showAiSuggestionsControl_);
   }
 
   private onHistorySearchRowClick_() {
@@ -106,6 +115,16 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
     OpenWindowProxyImpl.getInstance().openUrl(
         loadTimeData.getString('passwordChangeSettingsUrl'));
   }
+
+  private onAiSuggestionsRowClick_() {
+    this.recordInteractionMetrics_(
+        AiPageInteractions.AI_SUGGESTIONS_CLICK,
+        'Settings.AiPage.AiSuggestionsEntryPointClick');
+
+    const router = Router.getInstance();
+    router.navigateTo(router.getRoutes().AI_SUGGESTIONS);
+  }
+
 
   private recordInteractionMetrics_(
       interaction: AiPageInteractions, action: string) {
@@ -139,6 +158,10 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
       map.set(routes.OFFER_WRITING_HELP.path, '#composeRowV2');
     }
 
+    if (routes.AI_SUGGESTIONS) {
+      map.set(routes.AI_SUGGESTIONS.path, '#aiSuggestionsRow');
+    }
+
     return map;
   }
 
@@ -147,6 +170,7 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
     const ids = [
       'compose',
       'historySearch',
+      'aiSuggestions',
     ];
     assert(ids.includes(childViewId));
 
@@ -159,6 +183,10 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
       case 'historySearch':
         assert(this.showHistorySearchControl_);
         triggerId = 'historySearchRowV2';
+        break;
+      case 'aiSuggestions':
+        assert(this.showAiSuggestionsControl_);
+        triggerId = 'aiSuggestionsRow';
         break;
       default:
         assertNotReached();

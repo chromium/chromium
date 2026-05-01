@@ -130,6 +130,16 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
   </summary>
 </histogram>
 
+<histogram name="Settings.AiPage.AiSuggestions.Interactions"
+    enum="SettingsAiPageAiSuggestionsInteractions" expires_after="2026-10-25">
+  <owner>sophiechang@google.com</owner>
+  <owner>iwells@chromium.org</owner>
+  <summary>
+    Captures the user interaction with all elements in AI Suggestions settings
+    page.
+  </summary>
+</histogram>
+
 <histogram name="Settings.AiPage.Compose.Interactions"
     enum="SettingsAiPageComposeInteractions" expires_after="2026-06-21">
   <owner>zalmashni@google.com</owner>
@@ -155,6 +165,7 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
     <variant name="Compose"/>
     <variant name="HistorySearch"/>
     <variant name="PasswordChange"/>
+    <variant name="Suggestions"/>
   </token>
 </histogram>
 

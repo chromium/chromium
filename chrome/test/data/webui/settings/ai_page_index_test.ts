@@ -41,6 +41,7 @@ suite('AiPageIndex', function() {
       showGlicSettings: true,
       enableAiModeSearchSetting: true,
       actorLoginFederatedLoginSupportEnabled: true,
+      showAiSuggestionsControl: true,
     });
     resetRouterForTesting();
     return createAiPageIndex();
@@ -76,6 +77,10 @@ suite('AiPageIndex', function() {
     Router.getInstance().navigateTo(routes.GEMINI_LOGIN);
     await microtasksFinished();
     assertActiveViews(['geminiLoginPermissions']);
+
+    Router.getInstance().navigateTo(routes.AI_SUGGESTIONS);
+    await microtasksFinished();
+    assertActiveViews(['aiSuggestions']);
   });
 
   test('aiFeaturesSectionVisibility', async function() {
@@ -120,6 +125,7 @@ suite('AiPageIndex', function() {
     const childViewsId = [
       'historySearch',
       'compose',
+      'aiSuggestions',
     ];
     for (const id of childViewsId) {
       assertTrue(!!index.$.viewManager.querySelector(

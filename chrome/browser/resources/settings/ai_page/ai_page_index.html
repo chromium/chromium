@@ -58,4 +58,11 @@
         route-path$="[[routes_.OFFER_WRITING_HELP.path]]">
     </settings-offer-writing-help-page>
   </template>
+
+  <template is="dom-if" if="[[showAiSuggestionsControl_]]">
+    <settings-ai-suggestions-page slot="view" id="aiSuggestions"
+        data-parent-view-id="parent" prefs="{{prefs}}"
+        route-path$="[[routes_.AI_SUGGESTIONS.path]]">
+    </settings-ai-suggestions-page>
+  </template>
 </cr-view-manager>

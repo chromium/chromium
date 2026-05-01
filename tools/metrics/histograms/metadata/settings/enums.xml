@@ -337,6 +337,17 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Restore the last session and open URLs"/>
 </enum>
 
+<!-- LINT.IfChange(SettingsAiPageAiSuggestionsInteractions)-->
+
+<enum name="SettingsAiPageAiSuggestionsInteractions">
+  <int value="0" label="Suggestions enabled"/>
+  <int value="1" label="Suggestions disabled"/>
+  <int value="2" label="Learn more link clicked"/>
+  <int value="3" label="Sync settings link clicked"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/resources/settings/metrics_browser_proxy.ts:AiPageAiSuggestionsInteractions) -->
+
 <!-- LINT.IfChange(SettingsAiPageComposeInteractions) -->
 
 <enum name="SettingsAiPageComposeInteractions">
@@ -368,6 +379,7 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Themes row click (Deprecated 02/2025)"/>
   <int value="5" label="Autofill AI row click"/>
   <int value="6" label="Automated Password Change"/>
+  <int value="7" label="Suggestions row click"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/resources/settings/metrics_browser_proxy.ts:AiPageInteractions) -->

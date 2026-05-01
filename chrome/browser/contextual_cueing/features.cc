@@ -79,4 +79,9 @@ const base::FeatureParam<bool> kUsePrivateAi(
     "ContextualCueingV2UsePrivateAi",
     false);
 
+const base::FeatureParam<std::string> kHelpCenterArticleLink(
+    &kContextualCueingV2,
+    "ContextualCueingV2HelpCenterArticleLink",
+    "https://support.google.com/chrome?p=");
+
 }  // namespace contextual_cueing

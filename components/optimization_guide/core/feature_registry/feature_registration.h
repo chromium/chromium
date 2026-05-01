@@ -32,6 +32,8 @@ COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const char kContextualTasksContextEnterprisePolicyAllowed[];
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const char kFindsEnterprisePolicyAllowed[];
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+extern const char kContextualCueingEnterprisePolicyAllowed[];
 }  // namespace prefs
 
 namespace features {

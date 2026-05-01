@@ -10,4 +10,33 @@
   <message name ="IDS_CONTEXTUAL_CUEING_MENU_SUGGESTION_SETTINGS" desc="Title of a menu item which, on click, takes the user to the suggestions settings page.">
     Suggestion settings
   </message>
+
+  <!-- Contextual Cueing Settings Page -->
+  <message name="IDS_CONTEXTUAL_CUEING_SETTINGS_PAGE_TITLE" desc="Title of the settings page for suggestions, powered by AI.">
+    Suggestions, powered by AI
+  </message>
+  <message name="IDS_CONTEXTUAL_CUEING_SETTINGS_PAGE_SUBLABEL" desc="Sublabel of the settings row leading to the suggestions settings subpage.">
+    Get real-time suggestions that can help you find new ways to browse with AI
+  </message>
+  <message name="IDS_CONTEXTUAL_CUEING_SETTINGS_TOGGLE_LABEL" desc="Label for the toggle that enables/disables suggestions.">
+    Show suggestions
+  </message>
+  <message name="IDS_CONTEXTUAL_CUEING_SETTINGS_TOGGLE_SUBLABEL" desc="Sublabel of the settings row leading to the suggestions settings subpage.">
+    Get real-time suggestions that can help you find new ways to browse with AI.
+  </message>
+  <message name="IDS_CONTEXTUAL_CUEING_SETTINGS_WHEN_ON_1" desc="First point in the 'when on' column on the suggestions settings subpage.">
+    Page titles and URLs of your open tabs are used to give you relevant suggestions
+  </message>
+  <message name="IDS_CONTEXTUAL_CUEING_SETTINGS_WHEN_ON_2" desc="Second point in the 'when on' column on the suggestions settings subpage.">
+    If you select or ignore a suggestion, Chrome will adapt to make sure you only see what’s relevant to you
+  </message>
+  <message name="IDS_CONTEXTUAL_CUEING_SETTINGS_CONSIDER_1" desc="First point in the 'things to consider' column on the suggestions settings subpage.">
+    Chrome processes page titles and URLs on your device or in a private space in the cloud
+  </message>
+  <message name="IDS_CONTEXTUAL_CUEING_SETTINGS_CONSIDER_2" desc="Second point in the 'consider' column on the suggestions settings subpage.">
+    If you turn off suggestions the page title and URLs of your tabs may still be processed for other Chrome features. You can manage browser access to this data in your
+  </message>
+  <message name="IDS_CONTEXTUAL_CUEING_SETTINGS_CONSIDER_2_LINK" desc="Text for the link to the sync settings page in the 'consider' column on the suggestions settings subpage.">
+    sync settings
+  </message>
 </grit-part>

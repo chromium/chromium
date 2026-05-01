@@ -1,0 +1,105 @@
+
+<style include="settings-shared settings-columned-section">
+  .separator {
+    margin: 0 4px;
+  }
+
+  .separator + settings-toggle-button {
+    margin-inline-end: 12px;
+  }
+
+  cr-icon {
+    flex-shrink: 0;
+  }
+
+  cr-policy-pref-indicator {
+    margin-inline-end: 4px;
+  }
+</style>
+<settings-subpage page-title="$i18n{aiSuggestionsLabel}"
+    route-path="[[routePath]]">
+  <div class="settings-row first">
+    <template is="dom-if" if="[[!isDisabledByPolicy_(enterprisePref_)]]"
+        restamp>
+      <cr-link-row label="$i18n{aiSuggestionsToggleLabel}"
+          on-click="onLearnMoreRowClick_" external>
+        <div slot="sub-label">
+          <span>$i18n{aiSuggestionsToggleSublabel}</span>
+          <a href="$i18n{aiSuggestionsHelpCenterArticleLink}"
+              aria-label="$i18n{learnMore}"
+              aria-description="$i18n{opensInNewTab}" id="learnMoreLink"
+              on-click="onLearnMoreClick_" target="_blank">
+            $i18n{learnMore}
+          </a>
+        </div>
+      </cr-link-row>
+      <div class="separator"></div>
+    </template>
+    <template is="dom-if" if="[[isDisabledByPolicy_(enterprisePref_)]]" restamp>
+      <div class="cr-row first">
+        <div class="flex cr-padded-text">
+          <div id="aiSuggestionsLabel">$i18n{aiSuggestionsToggleLabel}</div>
+          <div class="secondary">
+            <span>$i18n{aiSuggestionsToggleSublabel}</span>
+            <a href="$i18n{aiSuggestionsHelpCenterArticleLink}"
+                aria-label="$i18n{learnMore}"
+                aria-description="$i18n{opensInNewTab}" id="learnMoreLink"
+                on-click="onLearnMoreClick_" target="_blank">
+              $i18n{learnMore}
+            </a>
+          </div>
+        </div>
+      </div>
+      <settings-ai-policy-indicator id="policyIndicator"
+            pref="[[enterprisePref_]]">
+      </settings-ai-policy-indicator>
+    </template>
+    <settings-toggle-button
+        id="showSuggestionsToggle"
+        aria-label="$i18n{aiSuggestionsToggleLabel}"
+        pref="{{prefs.optimization_guide.contextual_cueing_setting_state}}"
+        numeric-unchecked-values="[[computeNumericUncheckedValues_()]]"
+        numeric-checked-value="[[featureOptInStateEnum_.ENABLED]]"
+        disabled="[[isDisabledByPolicy_(enterprisePref_)]]"
+        on-settings-boolean-control-change="onSuggestionsToggleChange_">
+    </settings-toggle-button>
+  </div>
+  <div class="settings-columned-section">
+    <div class="column">
+      <h2 class="description-header">$i18n{columnHeadingWhenUsed}</h2>
+      <ul class="icon-bulleted-list">
+        <li>
+          <cr-icon icon="settings20:text-analysis" aria-hidden="true"></cr-icon>
+          <div class="secondary">$i18n{aiSuggestionsWhenOn1}</div>
+        </li>
+        <li>
+          <cr-icon icon="settings20:lightbulb-tips" aria-hidden="true">
+          </cr-icon>
+          <div class="secondary">$i18n{aiSuggestionsWhenOn2}</div>
+        </li>
+      </ul>
+    </div>
+  <div class="column">
+      <h2 class="description-header">$i18n{columnHeadingConsider}</h2>
+      <ul class="icon-bulleted-list">
+        <li>
+          <cr-icon icon="settings20:screensaver-auto"
+              aria-hidden="true"></cr-icon>
+          <div class="secondary">$i18n{aiSuggestionsConsider1}</div>
+        </li>
+        <li>
+          <cr-icon icon="settings20:shield" aria-hidden="true"></cr-icon>
+          <div class="secondary">
+            <span>$i18n{aiSuggestionsConsider2} </span>
+            <a href="chrome://settings/syncSetup"
+                aria-label="$i18n{aiSuggestionsConsider2Link}"
+                aria-description="$i18n{opensInNewTab}" id="syncSettingsLink"
+                on-click="onSyncSettingsClick_" target="_blank">
+              $i18n{aiSuggestionsConsider2Link}
+            </a>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</settings-subpage>

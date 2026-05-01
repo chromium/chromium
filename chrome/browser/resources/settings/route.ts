@@ -211,6 +211,9 @@ function createRoutes(): SettingsRoutes {
         r.GEMINI_LOGIN = r.GEMINI.createChild('/ai/gemini/login');
       }
     }
+    if (loadTimeData.getBoolean('showAiSuggestionsControl')) {
+      r.AI_SUGGESTIONS = r.AI.createChild('/ai/suggestions');
+    }
   }
 
   if (visibility.appearance !== false) {

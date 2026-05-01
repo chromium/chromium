@@ -146,6 +146,9 @@ class ModelQualityLogsUploaderServiceTest : public testing::Test {
       case UserVisibleFeatureKey::kFinds:
         // TODO(crbug.com/493316080): Add user feedback for finds.
         break;
+      case UserVisibleFeatureKey::kContextualCueing:
+        // Not logging.
+        break;
     }
 
     return log_entry;

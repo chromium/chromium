@@ -337,7 +337,8 @@ export enum AiPageInteractions {
   // WALLPAPER_SEARCH_CLICK = 4, // DEPRECATED
   AUTOFILL_AI_CLICK = 5,
   PASSWORD_CHANGE_CLICK = 6,
-  MAX_VALUE = 7,
+  AI_SUGGESTIONS_CLICK = 7,
+  MAX_VALUE = 8,
 }
 // LINT.ThenChange(/tools/metrics/histograms/metadata/settings/enums.xml:SettingsAiPageInteractions)
 
@@ -377,6 +378,25 @@ export enum AiPageComposeInteractions {
   MAX_VALUE = 3,
 }
 // LINT.ThenChange(/tools/metrics/histograms/metadata/settings/enums.xml:SettingsAiPageComposeInteractions)
+
+/**
+ * Contains all recorded interactions in the AI Suggestions settings page.
+ *
+ * These values are persisted to logs. Entries should not be renumbered and
+ * numeric values should never be reused.
+ *
+ * Must be kept in sync with the SettingsAiPageSuggestionsInteractions enum in
+ * histograms/metadata/settings/enums.xml
+ */
+// LINT.IfChange(AiPageSuggestionsInteractions)
+export enum AiPageSuggestionsInteractions {
+  SUGGESTIONS_ENABLED = 0,
+  SUGGESTIONS_DISABLED = 1,
+  LEARN_MORE_LINK_CLICKED = 2,
+  SYNC_SETTINGS_LINK_CLICKED = 3,
+  MAX_VALUE = 4,
+}
+// LINT.ThenChange(/tools/metrics/histograms/metadata/settings/enums.xml:SettingsAiPageSuggestionsInteractions)
 
 /**
  * These values are persisted to logs. Entries should not be renumbered and
@@ -635,6 +655,13 @@ export interface MetricsBrowserProxy {
   recordAiPageComposeInteractions(interaction: AiPageComposeInteractions): void;
 
   /**
+   * Helper function that calls recordHistogram for the
+   * Settings.AiPage.Suggestions.Interactions histogram
+   */
+  recordAiPageSuggestionsInteractions(
+      interaction: AiPageSuggestionsInteractions): void;
+
+  /**
    * Records a referrer to one of Autofill settings pages.
    */
   recordAutofillSettingsReferrer(
@@ -869,6 +896,15 @@ export class MetricsBrowserProxyImpl implements MetricsBrowserProxy {
       'Settings.AiPage.Compose.Interactions',
       interaction,
       AiPageComposeInteractions.MAX_VALUE,
+    ]);
+  }
+
+  recordAiPageSuggestionsInteractions(
+      interaction: AiPageSuggestionsInteractions): void {
+    chrome.send('metricsHandler:recordInHistogram', [
+      'Settings.AiPage.Suggestions.Interactions',
+      interaction,
+      AiPageSuggestionsInteractions.MAX_VALUE,
     ]);
   }
 

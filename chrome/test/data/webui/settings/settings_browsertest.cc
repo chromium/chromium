@@ -255,6 +255,10 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, AiModeSearchPage) {
   RunTest("settings/ai_mode_search_page_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(SettingsTest, AiSuggestionsPage) {
+  RunTest("settings/ai_suggestions_page_test.js", "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(SettingsTest, LoggingInfoBullet) {
   RunTest("settings/ai_logging_info_bullet_test.js", "mocha.run()");
 }

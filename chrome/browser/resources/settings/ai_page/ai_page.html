@@ -27,5 +27,13 @@
         role-description="$i18n{subpageArrowRoleDescription}"
         on-click="onComposeRowClick_">
     </cr-link-row>
+    <cr-link-row id="aiSuggestionsRow" class="hr"
+        hidden="[[!showAiSuggestionsControl_]]"
+        start-icon="settings20:button-auto"
+        label="$i18n{aiSuggestionsLabel}"
+        sub-label="$i18n{aiSuggestionsSublabel}"
+        role-description="$i18n{subpageArrowRoleDescription}"
+        on-click="onAiSuggestionsRowClick_">
+    </cr-link-row>
   </div>
 </settings-section>

@@ -467,7 +467,19 @@ void AddAiStrings(content::WebUIDataSource* html_source) {
        IDS_STS_SETTINGS_OPTION_1_NEVER_SHARE_THESE_SITES},
       {"stsSettingsOption1SitesAddedHereWontBeReferencedV2",
        IDS_STS_SETTINGS_OPTION_1_SITES_ADDED_HERE_WONT_BE_REFERENCED_V2},
-  };
+
+      // Suggestions strings.
+      {"aiSuggestionsLabel", IDS_CONTEXTUAL_CUEING_SETTINGS_PAGE_TITLE},
+      {"aiSuggestionsSublabel", IDS_CONTEXTUAL_CUEING_SETTINGS_PAGE_SUBLABEL},
+      {"aiSuggestionsToggleLabel", IDS_CONTEXTUAL_CUEING_SETTINGS_TOGGLE_LABEL},
+      {"aiSuggestionsToggleSublabel",
+       IDS_CONTEXTUAL_CUEING_SETTINGS_TOGGLE_SUBLABEL},
+      {"aiSuggestionsWhenOn1", IDS_CONTEXTUAL_CUEING_SETTINGS_WHEN_ON_1},
+      {"aiSuggestionsWhenOn2", IDS_CONTEXTUAL_CUEING_SETTINGS_WHEN_ON_2},
+      {"aiSuggestionsConsider1", IDS_CONTEXTUAL_CUEING_SETTINGS_CONSIDER_1},
+      {"aiSuggestionsConsider2", IDS_CONTEXTUAL_CUEING_SETTINGS_CONSIDER_2},
+      {"aiSuggestionsConsider2Link",
+       IDS_CONTEXTUAL_CUEING_SETTINGS_CONSIDER_2_LINK}};
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
   html_source->AddString("aiPageMainManagedLearnMoreUrl",

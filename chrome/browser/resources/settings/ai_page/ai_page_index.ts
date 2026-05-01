@@ -87,6 +87,11 @@ export class SettingsAiPageIndexElement extends SettingsAiPageIndexElementBase
         value: () =>
             loadTimeData.getBoolean('actorLoginFederatedLoginSupportEnabled'),
       },
+
+      showAiSuggestionsControl_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('showAiSuggestionsControl'),
+      },
     };
   }
 
@@ -98,6 +103,7 @@ export class SettingsAiPageIndexElement extends SettingsAiPageIndexElementBase
   declare private showHistorySearchControl_: boolean;
   declare private enableAiModeSearchSetting_: boolean;
   declare private actorLoginFederatedLoginSupportEnabled_: boolean;
+  declare private showAiSuggestionsControl_: boolean;
 
   private showDefaultViews_() {
     const defaultViews: string[] = ['aiInfoCard'];
@@ -158,6 +164,11 @@ export class SettingsAiPageIndexElement extends SettingsAiPageIndexElementBase
           assert(this.actorLoginFederatedLoginSupportEnabled_);
           this.$.viewManager.switchView(
               'geminiLoginPermissions', 'no-animation', 'no-animation');
+          break;
+        case routes.AI_SUGGESTIONS:
+          assert(this.showAiSuggestionsControl_);
+          this.$.viewManager.switchView(
+              'aiSuggestions', 'no-animation', 'no-animation');
           break;
         default:
           // Nothing to do. Other parent elements are responsible for updating

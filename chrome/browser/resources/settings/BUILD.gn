@@ -64,6 +64,7 @@ build_webui("build") {
     "ai_page/ai_page_index.ts",
     "ai_page/ai_policy_indicator.ts",
     "ai_page/ai_site_add_dialog.ts",
+    "ai_page/ai_suggestions_page.ts",
     "ai_page/history_search_page.ts",
     "ai_page/offer_writing_help_page.ts",
     "appearance_page/appearance_fonts_page.ts",

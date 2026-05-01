@@ -23,6 +23,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/compose/compose_enabling.h"
+#include "chrome/browser/contextual_cueing/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/history_embeddings/history_embeddings_utils.h"
@@ -635,7 +636,12 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
        PasswordChangeServiceFactory::GetForProfile(profile) &&
            PasswordChangeServiceFactory::GetForProfile(profile)
                ->UserIsActivePasswordChangeUser()},
+      {"showAiSuggestionsControl",
+       base::FeatureList::IsEnabled(contextual_cueing::kContextualCueingV2)},
   };
+
+  html_source->AddString("aiSuggestionsHelpCenterArticleLink",
+                         contextual_cueing::kHelpCenterArticleLink.Get());
 
   const bool enable_ai_mode_search =
       contextual_tasks::GetIsSmartTabSharingEnabled();

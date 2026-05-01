@@ -65,6 +65,10 @@ const char kGeminiAntiscamProtectionEnterprisePolicyAllowed[] =
 const char kFindsEnterprisePolicyAllowed[] =
     "optimization_guide.model_execution.finds_enterprise_policy_allowed";
 
+const char kContextualCueingEnterprisePolicyAllowed[] =
+    "optimization_guide.model_execution.contextual_cueing_enterprise_policy_"
+    "allowed";
+
 }  // namespace prefs
 
 namespace features {
@@ -335,6 +339,16 @@ void RegisterFinds() {
   MqlsFeatureRegistry::GetInstance().Register(std::move(mqls_metadata));
 }
 
+void RegisterContextualCueing() {
+  const char kContextualCueingName[] = "ContextualCueing";
+
+  auto ui_metadata = std::make_unique<SettingsUiMetadata>(
+      kContextualCueingName, UserVisibleFeatureKey::kContextualCueing,
+      EnterprisePolicyRegistry::GetInstance().Register(
+          prefs::kContextualCueingEnterprisePolicyAllowed));
+  SettingsUiRegistry::GetInstance().Register(std::move(ui_metadata));
+}
+
 }  // anonymous namespace
 
 void RegisterGenAiFeatures(PrefRegistrySimple* pref_registry) {
@@ -358,6 +372,7 @@ void RegisterGenAiFeatures(PrefRegistrySimple* pref_registry) {
     RegisterContextualTasksContext();
     RegisterGeminiAntiscamProtection();
     RegisterFinds();
+    RegisterContextualCueing();
     features_registered = true;
   }
   EnterprisePolicyRegistry::GetInstance().RegisterProfilePrefs(pref_registry);

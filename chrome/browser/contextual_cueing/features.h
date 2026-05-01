@@ -48,6 +48,9 @@ extern const base::FeatureParam<double> kBackoffMultiplierBase;
 // If true, uses private AI to generate cues.
 extern const base::FeatureParam<bool> kUsePrivateAi;
 
+// The help center article link.
+extern const base::FeatureParam<std::string> kHelpCenterArticleLink;
+
 }  // namespace contextual_cueing
 
 #endif  // CHROME_BROWSER_CONTEXTUAL_CUEING_FEATURES_H_

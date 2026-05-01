@@ -19,6 +19,7 @@ build_webui_tests("build") {
     "ai_page_index_test.ts",
     "ai_page_test.ts",
     "ai_policy_indicator_test.ts",
+    "ai_suggestions_page_test.ts",
     "all_sites_test.ts",
     "anti_abuse_page_test.ts",
     "appearance_fonts_page_test.ts",

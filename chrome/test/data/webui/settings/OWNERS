@@ -2,6 +2,7 @@ file://chrome/browser/resources/settings/OWNERS
 
 per-file account_page_test.ts=amelies@google.com
 per-file ai_mode_search_page_test.ts=file://components/contextual_tasks/OWNERS
+per-file ai_suggestions_page_test.ts=file://chrome/browser/contextual_cueing/OWNERS
 per-file *clear_browsing_data_*=zalmashni@google.com,rainhard@chromium.org
 per-file cookies_page_test.ts=fmacintosh@google.com,rainhard@chromium.org
 per-file *language* , translate_* = file://components/language/OWNERS
