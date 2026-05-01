@@ -111,6 +111,7 @@ export const ComposeboxEmbedderMixin =
               type: Boolean,
             },
             dropdownNeeded: {type: Boolean},
+            clearAllInputsWhenSubmittingQuery: {type: Boolean},
             closeOnEscape: {type: Boolean},
             composeboxNoFlickerSuggestionsFix: {type: Boolean},
             showFileCarousel: {
@@ -172,11 +173,10 @@ export const ComposeboxEmbedderMixin =
             loadTimeData.getString('composeboxImageFileTypes').split(',');
         queryZpsOnLoad: boolean =
             getLoadTimeBoolean('queryZpsOnLoad', /*defaultValue=*/ true);
-        clearAllInputsWhenSubmittingQuery: boolean = getLoadTimeBoolean(
-            'clearAllInputsWhenSubmittingQuery', /*defaultValue=*/ false);
         contextMenuOpened: boolean = false;
 
         accessor canSubmitFilesAndInput: boolean = true;
+        accessor clearAllInputsWhenSubmittingQuery: boolean = false;
         accessor closeOnEscape: boolean = true;
         accessor composeboxNoFlickerSuggestionsFix: boolean = false;
         accessor contextMenuEnabled: boolean =

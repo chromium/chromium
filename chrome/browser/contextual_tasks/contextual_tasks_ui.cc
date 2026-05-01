@@ -479,7 +479,6 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
   source->AddBoolean("composeboxShowLensSearchChip", false);
   source->AddBoolean("composeboxShowContextMenuTabPreviews", false);
   source->AddBoolean("composeboxContextMenuEnableMultiTabSelection", true);
-  source->AddBoolean("clearAllInputsWhenSubmittingQuery", true);
   source->AddBoolean("enableGhostLoader",
                      contextual_tasks::GetIsGhostLoaderEnabled());
   source->AddBoolean(

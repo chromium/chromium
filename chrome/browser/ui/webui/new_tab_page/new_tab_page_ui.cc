@@ -708,7 +708,6 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(
 
   source->AddBoolean("enableThreadsRail",
                      ntp_composebox::kEnableThreadsRail.Get());
-  source->AddBoolean("clearAllInputsWhenSubmittingQuery", true);
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   source->AddBoolean("enableThreadsRailLogo",
