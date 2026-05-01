@@ -21,6 +21,9 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ntp_customization.R;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId;
+import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataBase;
+import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataColor;
+import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataCustomizedColor;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 
 import java.util.ArrayList;
@@ -201,22 +204,41 @@ public class NtpThemeColorUtils {
     }
 
     /**
-     * Gets the background color from the given colorInfo. Returns the default background color if
-     * colorInfo is null.
+     * Gets the background color from the given backgroundData. Returns the default background color
+     * if backgroundData is null.
      *
      * @param context Used to get a color's int value based on the theme.
-     * @param colorInfo The NtpThemeColorInfo instance.
+     * @param backgroundData The NtpBackgroundDataBase instance.
      */
-    public static @ColorInt int getBackgroundColorFromColorInfo(
-            Context context, @Nullable NtpThemeColorInfo colorInfo) {
-        if (colorInfo == null) return getDefaultBackgroundColor(context);
+    public static @ColorInt int getBackgroundColorFromNtpBackgroundData(
+            Context context, @Nullable NtpBackgroundDataBase backgroundData) {
+        if (backgroundData == null) return getDefaultBackgroundColor(context);
 
-        if (colorInfo instanceof NtpThemeColorFromHexInfo) {
-            return ((NtpThemeColorFromHexInfo) colorInfo).backgroundColorLight;
+        if (backgroundData
+                instanceof NtpBackgroundDataCustomizedColor ntpBackgroundDataCustomizedColor) {
+            return ntpBackgroundDataCustomizedColor.getNtpThemeColorFromHexInfo()
+                    .backgroundColorLight;
         }
 
         // Use ?attr/colorSurfaceContainerHigh for NTP's background color for color theme.
         return SemanticColorUtils.getColorSurfaceContainerHigh(context);
+    }
+
+    /** Returns the NtpThemeColorInfo instance from a given NtpBackgroundDataBase instance. */
+    public static @Nullable NtpThemeColorInfo getNtpThemeColorInfoFromNtpBackgroundData(
+            @Nullable NtpBackgroundDataBase backgroundData) {
+        if (backgroundData == null) return null;
+
+        if (backgroundData instanceof NtpBackgroundDataColor ntpBackgroundDataColor) {
+            return ntpBackgroundDataColor.getNtpThemeColorInfo();
+        }
+
+        if (backgroundData
+                instanceof NtpBackgroundDataCustomizedColor ntpBackgroundDataCustomizedColor) {
+            return ntpBackgroundDataCustomizedColor.getNtpThemeColorFromHexInfo();
+        }
+
+        return null;
     }
 
     /**

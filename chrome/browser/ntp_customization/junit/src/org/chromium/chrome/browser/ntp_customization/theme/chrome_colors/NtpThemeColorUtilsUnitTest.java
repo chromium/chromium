@@ -30,6 +30,9 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.ntp_customization.R;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId;
+import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataBase;
+import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataColor;
+import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataCustomizedColor;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 
 import java.util.ArrayList;
@@ -253,22 +256,31 @@ public class NtpThemeColorUtilsUnitTest {
     public void testGetBackgroundColorFromColorInfo() {
         assertEquals(
                 NtpThemeColorUtils.getDefaultBackgroundColor(mContext),
-                NtpThemeColorUtils.getBackgroundColorFromColorInfo(mContext, null));
+                NtpThemeColorUtils.getBackgroundColorFromNtpBackgroundData(mContext, null));
 
         NtpThemeColorInfo blueInfo =
                 NtpThemeColorUtils.createNtpThemeColorInfo(
                         mContext, NtpThemeColorId.NTP_COLORS_BLUE);
+        NtpBackgroundDataColor dataColor =
+                new NtpBackgroundDataColor(
+                        NtpBackgroundDataBase.PlatformType.ANDROID_LOCAL,
+                        /* isChromeColorDailyRefreshEnabled= */ false,
+                        blueInfo);
         assertEquals(
                 SemanticColorUtils.getColorSurfaceContainerHigh(mContext),
-                NtpThemeColorUtils.getBackgroundColorFromColorInfo(mContext, blueInfo));
+                NtpThemeColorUtils.getBackgroundColorFromNtpBackgroundData(mContext, dataColor));
 
         @ColorInt int backgroundColor = ContextCompat.getColor(mContext, R.color.green_50);
         NtpThemeColorFromHexInfo customInfo =
                 new NtpThemeColorFromHexInfo(
                         mContext, backgroundColor, NtpThemeColorInfo.COLOR_NOT_SET);
+        NtpBackgroundDataCustomizedColor dataCustomizedColor =
+                new NtpBackgroundDataCustomizedColor(
+                        NtpBackgroundDataBase.PlatformType.ANDROID_LOCAL, customInfo);
         assertEquals(
                 backgroundColor,
-                NtpThemeColorUtils.getBackgroundColorFromColorInfo(mContext, customInfo));
+                NtpThemeColorUtils.getBackgroundColorFromNtpBackgroundData(
+                        mContext, dataCustomizedColor));
     }
 
     @Test

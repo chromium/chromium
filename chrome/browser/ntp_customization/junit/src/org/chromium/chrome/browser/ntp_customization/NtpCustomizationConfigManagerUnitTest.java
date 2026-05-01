@@ -60,6 +60,8 @@ import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThem
 import org.chromium.chrome.browser.ntp_customization.theme.daily_refresh.NtpThemeDailyRefreshManager;
 import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.CustomBackgroundInfo;
 import org.chromium.chrome.browser.ntp_customization.theme.upload_image.BackgroundImageInfo;
+import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataBase;
+import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataColor;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.url.JUnitTestGURLs;
@@ -329,9 +331,15 @@ public class NtpCustomizationConfigManagerUnitTest {
         int colorInfoId = NtpThemeColorInfo.NtpThemeColorId.NTP_COLORS_BLUE;
         NtpThemeColorInfo colorInfo =
                 NtpThemeColorUtils.createNtpThemeColorInfo(mContext, colorInfoId);
+        NtpBackgroundDataColor dataColor =
+                new NtpBackgroundDataColor(
+                        NtpBackgroundDataBase.PlatformType.ANDROID_LOCAL,
+                        /* isChromeColorDailyRefreshEnabled= */ false,
+                        colorInfo);
+
         @ColorInt
         int backgroundColor =
-                NtpThemeColorUtils.getBackgroundColorFromColorInfo(mContext, colorInfo);
+                NtpThemeColorUtils.getBackgroundColorFromNtpBackgroundData(mContext, dataColor);
         @ColorInt
         int defaultColor = ContextCompat.getColor(mContext, R.color.home_surface_background_color);
 

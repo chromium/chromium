@@ -41,9 +41,10 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType;
-import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorUtils;
+import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataBase;
+import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataColor;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
@@ -231,19 +232,22 @@ public class StatusBarColorControllerUnitTest {
     public void testBackgroundColorForNtp() {
         @ColorInt
         int defaultNtpBackground = mActivity.getColor(R.color.home_surface_background_color);
-        NtpThemeColorInfo colorInfo =
-                NtpThemeColorUtils.createNtpThemeColorInfo(
-                        mActivity, NtpThemeColorId.NTP_COLORS_AQUA);
+        NtpBackgroundDataColor dataColor =
+                new NtpBackgroundDataColor(
+                        NtpBackgroundDataBase.PlatformType.ANDROID_LOCAL,
+                        /* isChromeColorDailyRefreshEnabled= */ false,
+                        NtpThemeColorUtils.createNtpThemeColorInfo(
+                                mActivity, NtpThemeColorId.NTP_COLORS_AQUA));
         @ColorInt
         int currentNtpBackground =
-                NtpThemeColorUtils.getBackgroundColorFromColorInfo(mActivity, colorInfo);
+                NtpThemeColorUtils.getBackgroundColorFromNtpBackgroundData(mActivity, dataColor);
 
         NtpCustomizationConfigManager ntpCustomizationConfigManager =
                 new NtpCustomizationConfigManager();
         NtpCustomizationConfigManager.setInstanceForTesting(ntpCustomizationConfigManager);
 
         ntpCustomizationConfigManager.setBackgroundTypeForTesting(NtpBackgroundType.CHROME_COLOR);
-        ntpCustomizationConfigManager.setNtpThemeColorInfoForTesting(colorInfo);
+        ntpCustomizationConfigManager.setNtpBackgroundDataForTesting(dataColor);
 
         // Verifies when customized NTP background isn't supported, the status bar color is set to
         // the default NTP background color.

@@ -49,6 +49,8 @@ import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThem
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorUtils;
 import org.chromium.chrome.browser.ntp_customization.theme.upload_image.BackgroundImageInfo;
+import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataBase;
+import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataColor;
 import org.chromium.content_public.browser.LoadUrlParams;
 
 import java.util.function.Supplier;
@@ -182,9 +184,14 @@ public class LogoCoordinatorUnitTest {
         @NtpThemeColorId int colorInfoId = NtpThemeColorId.NTP_COLORS_BLUE;
         NtpThemeColorInfo colorInfo =
                 NtpThemeColorUtils.createNtpThemeColorInfo(mContext, colorInfoId);
+        NtpBackgroundDataColor dataColor =
+                new NtpBackgroundDataColor(
+                        NtpBackgroundDataBase.PlatformType.ANDROID_LOCAL,
+                        /* isChromeColorDailyRefreshEnabled= */ false,
+                        colorInfo);
         @ColorInt
         int backgroundColor =
-                NtpThemeColorUtils.getBackgroundColorFromColorInfo(mContext, colorInfo);
+                NtpThemeColorUtils.getBackgroundColorFromNtpBackgroundData(mContext, dataColor);
 
         createLogoCoordinator();
         verify(mNtpCustomizationConfigManager)
@@ -217,7 +224,13 @@ public class LogoCoordinatorUnitTest {
 
         colorInfoId = NtpThemeColorId.NTP_COLORS_VIOLET;
         colorInfo = NtpThemeColorUtils.createNtpThemeColorInfo(mContext, colorInfoId);
-        backgroundColor = NtpThemeColorUtils.getBackgroundColorFromColorInfo(mContext, colorInfo);
+        dataColor =
+                new NtpBackgroundDataColor(
+                        NtpBackgroundDataBase.PlatformType.ANDROID_LOCAL,
+                        /* isChromeColorDailyRefreshEnabled= */ false,
+                        colorInfo);
+        backgroundColor =
+                NtpThemeColorUtils.getBackgroundColorFromNtpBackgroundData(mContext, dataColor);
 
         // Test case that the newly selected color doesn't match the old logo color.
         clearInvocations(mLogoMediator);

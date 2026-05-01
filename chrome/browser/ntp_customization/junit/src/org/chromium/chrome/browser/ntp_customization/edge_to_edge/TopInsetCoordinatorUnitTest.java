@@ -56,6 +56,8 @@ import org.chromium.chrome.browser.ntp_customization.R;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorFromHexInfo;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo;
 import org.chromium.chrome.browser.ntp_customization.theme.upload_image.BackgroundImageInfo;
+import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataBase;
+import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataCustomizedColor;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.ui.edge_to_edge.TopInsetProvider;
@@ -305,19 +307,26 @@ public class TopInsetCoordinatorUnitTest {
 
     @Test
     public void testOnBackgroundColorChanged_fromInitialization() {
-        NtpThemeColorFromHexInfo colorInfo =
-                new NtpThemeColorFromHexInfo(mContext, Color.RED, NtpThemeColorInfo.COLOR_NOT_SET);
+        NtpBackgroundDataCustomizedColor dataColor =
+                new NtpBackgroundDataCustomizedColor(
+                        NtpBackgroundDataBase.PlatformType.ANDROID_LOCAL,
+                        new NtpThemeColorFromHexInfo(
+                                mContext, Color.RED, NtpThemeColorInfo.COLOR_NOT_SET));
 
-        mNtpCustomizationConfigManager.setNtpThemeColorInfoForTesting(colorInfo);
+        mNtpCustomizationConfigManager.setNtpBackgroundDataForTesting(dataColor);
         mNtpCustomizationConfigManager.setBackgroundTypeForTesting(NtpBackgroundType.CHROME_COLOR);
         mNtpCustomizationConfigManager.notifyBackgroundColorChanged(
                 mContext, /* fromInitialization= */ true, NtpBackgroundType.DEFAULT);
-        assertEquals(colorInfo, mNtpCustomizationConfigManager.getNtpThemeColorInfo());
+        assertEquals(
+                dataColor.getNtpThemeColorFromHexInfo(),
+                mNtpCustomizationConfigManager.getNtpThemeColorInfo());
         verify(mInsetObserver, never()).retriggerOnApplyWindowInsets();
 
         mNtpCustomizationConfigManager.notifyBackgroundColorChanged(
                 mContext, /* fromInitialization= */ false, NtpBackgroundType.DEFAULT);
-        assertEquals(colorInfo, mNtpCustomizationConfigManager.getNtpThemeColorInfo());
+        assertEquals(
+                dataColor.getNtpThemeColorFromHexInfo(),
+                mNtpCustomizationConfigManager.getNtpThemeColorInfo());
         verify(mInsetObserver).retriggerOnApplyWindowInsets();
     }
 

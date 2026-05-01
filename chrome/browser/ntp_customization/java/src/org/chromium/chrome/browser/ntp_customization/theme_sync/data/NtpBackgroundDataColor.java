@@ -14,7 +14,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId;
@@ -38,7 +37,7 @@ public class NtpBackgroundDataColor extends NtpBackgroundDataBase {
      * @param isChromeColorDailyRefreshEnabled Whether daily refresh of chrome color is enabled.
      * @param ntpThemeColorInfo The corresponding instance of {@link NtpThemeColorInfo}.
      */
-    NtpBackgroundDataColor(
+    public NtpBackgroundDataColor(
             @PlatformType int platformType,
             boolean isChromeColorDailyRefreshEnabled,
             NtpThemeColorInfo ntpThemeColorInfo) {
@@ -75,7 +74,7 @@ public class NtpBackgroundDataColor extends NtpBackgroundDataBase {
     }
 
     /** Returns the {@link NtpThemeColorInfo} instance. */
-    public @Nullable NtpThemeColorInfo getNtpThemeColorInfo() {
+    public NtpThemeColorInfo getNtpThemeColorInfo() {
         return mNtpThemeColorInfo;
     }
 
