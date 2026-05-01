@@ -3599,6 +3599,25 @@ TEST_P(PdfViewWebPluginInkTest, AddFont) {
                                                     kSerializedTypeface);
 }
 
+TEST_P(PdfViewWebPluginInkTest, DrawText) {
+  static constexpr int kPageIndex = 0;
+  static constexpr double kZoom = 1.5;
+
+  EXPECT_CALL(*engine_ptr_, DrawText(kPageIndex, _, kZoom, _));
+
+  const InkTextBoxAttributes text_box_attributes(
+      /*rect=*/gfx::RectF(20.0f, 20.0f, 100.0f, 100.0f),
+      /*color=*/SK_ColorBLACK,
+      /*css_font_size=*/10.0f,
+      /*typeface=*/TextTypeface::kSansSerif,
+      /*alignment=*/TextAlignment::kLeft,
+      /*orientation=*/0,
+      /*is_bold=*/true,
+      /*is_italic=*/false);
+  plugin_->ink_module_client_for_testing()->DrawText(kPageIndex, {}, kZoom,
+                                                     text_box_attributes);
+}
+
 class PdfViewWebPluginInkTextHighlightTest : public PdfViewWebPluginInkTest {
  public:
   static constexpr TestAnnotationBrushMessageParams kLightGreenBrushParams{

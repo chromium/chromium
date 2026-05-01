@@ -408,11 +408,12 @@ class PDFiumEngine : public DocumentLoader::Client,
   // Returns a font that was previously loaded with AddFont().
   FPDF_FONT GetAddedFont(FontId font_id);
 
-  // See method of the same name in PdfInkModuleClient.
-  void DrawText(int page_index,
-                base::span<const InkTextInfo> text_info,
-                double pdf_zoom,
-                const InkTextBoxAttributes& attributes);
+  // See method of the same name in PdfInkModuleClient. Virtual to support
+  // testing.
+  virtual void DrawText(int page_index,
+                        base::span<const InkTextInfo> text_info,
+                        double pdf_zoom,
+                        const InkTextBoxAttributes& attributes);
 
   // Virtual to support testing.
   virtual gfx::Size GetThumbnailSize(int page_index, float device_pixel_ratio);

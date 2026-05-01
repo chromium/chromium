@@ -116,6 +116,12 @@ class TestPDFiumEngine : public PDFiumEngine {
 #if BUILDFLAG(ENABLE_PDF_INK2)
   MOCK_METHOD(void, AddFont, (FontId, base::span<const uint8_t>), (override));
 
+  MOCK_METHOD(
+      void,
+      DrawText,
+      (int, base::span<const InkTextInfo>, double, const InkTextBoxAttributes&),
+      (override));
+
   MOCK_METHOD(gfx::Size, GetThumbnailSize, (int, float), (override));
 
   MOCK_METHOD(void,
