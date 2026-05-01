@@ -780,7 +780,7 @@
 <translation id="1515163294334130951">लॉन्च करें</translation>
 <translation id="1517467582299994451">कोड की मदद से कास्ट करने के लिए, Chrome ब्राउज़र की सिंक सेटिंग चालू करें</translation>
 <translation id="1519090060276706457">विंडो को वापस लाने में उम्मीद से ज़्यादा समय लग रहा है</translation>
-<translation id="1521442365706402292">प्रमाणपत्र प्रबंधित करें</translation>
+<translation id="1521442365706402292">सर्टिफ़िकेट मैनेज करें</translation>
 <translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1521774566618522728">आज सक्रिय है</translation>
 <translation id="1521933835545997395">Android फ़ोन से कनेक्ट किया गया</translation>
@@ -8968,7 +8968,7 @@
 <translation id="7072573590175540692">सुविधा और एक्सटेंशन के लिए उपलब्ध शॉर्टकट</translation>
 <translation id="7074703793383805632"><ph name="SHARED_STATE" /> <ph name="GROUP_NAME" /> ग्रुप - <ph name="OPENED_STATE" /></translation>
 <translation id="7075513071073410194">RSA सुरक्षित करने के तरीके के साथ PKCS #1 MD5</translation>
-<translation id="7075625805486468288">HTTPS/SSL प्रमाणपत्र और सेटिंग प्रबंधित करें</translation>
+<translation id="7075625805486468288">एचटीटीपीएस/एसएसएल सर्टिफ़िकेट और सेटिंग मैनेज करें</translation>
 <translation id="707772989579681711">आपका पिछला विकल्प</translation>
 <translation id="7077751457066325012">कीबोर्ड शॉर्टकट देखें और पसंद के मुताबिक बनाएं</translation>
 <translation id="7077829361966535409">मौजूदा प्रॉक्सी सेटिंग के इस्तेमाल करने से साइन इन पेज लोड नहीं हो सका. कृपया <ph name="GAIA_RELOAD_LINK_START" />फिर साइन इन करने की कोशिश करें<ph name="GAIA_RELOAD_LINK_END" />, या अलग-अलग <ph name="PROXY_SETTINGS_LINK_START" />प्रॉक्सी सेटिंग<ph name="PROXY_SETTINGS_LINK_END" /> का इस्तेमाल करें.</translation>
