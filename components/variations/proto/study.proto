@@ -245,7 +245,10 @@ message Study {
     PLATFORM_ANDROID_WEBVIEW = 6;
     PLATFORM_FUCHSIA = 7;
     PLATFORM_ANDROID_WEBLAYER = 8;
-    PLATFORM_CHROMEOS_LACROS = 9;
+    // PLATFORM_CHROMEOS_LACROS was sunsetted and reserved.
+    // Tracking bug: b/435674999
+    reserved 9;
+    reserved PLATFORM_CHROMEOS_LACROS;
   }
 
   // Possible form factors Chrome is running on.
@@ -316,7 +319,7 @@ message Study {
   // Filtering criteria specifying whether this study is applicable to a given
   // Chrome instance.
   //
-  // Next tag: 26
+  // Next tag: 28
   message Filter {
     // The start date of the study in Unix time format. (Seconds since midnight
     // January 1, 1970 UTC). See: http://en.wikipedia.org/wiki/Unix_time
@@ -501,6 +504,18 @@ message Study {
     // Ex: ["google", "lenovo"]
     // TODO(b/204802666): This is not yet implemented from the client side. WIP
     repeated string exclude_hardware_manufacturer = 25;
+
+    // Specifies that the config should apply only to clients where the browser
+    // or at least one of the signed in users is affiliated with a customer that
+    // is a member of at least one of the specified enterprise groups.
+    // The values are the enterprise group IDs.
+    repeated string enterprise_group = 26;
+
+    // Specifies that the config should apply only to clients where the browser
+    // and all of the signed in users are not affiliated with a customer that is
+    // a member of any of the specified enterprise groups.
+    // The values are the enterprise group IDs.
+    repeated string exclude_enterprise_group = 27;
   }
 
   // Filtering criteria for this study. A study that is filtered out for a given
