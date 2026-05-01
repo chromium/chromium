@@ -102,10 +102,12 @@ public class FuseboxAttachmentViewBinderUnitTest {
                         new byte[0],
                         SystemClock.elapsedRealtime(),
                         FuseboxAttachmentButtonType.FILES);
-        attachment.setUploadIsComplete();
-        mModel.set(FuseboxAttachmentProperties.ATTACHMENT, attachment);
         TextView textView = mView.findViewById(R.id.attachment_title);
-        assertEquals(View.GONE, textView.getVisibility());
+        mModel.set(FuseboxAttachmentProperties.ATTACHMENT, attachment);
+        assertEquals(View.INVISIBLE, textView.getVisibility());
+        attachment.setUploadIsComplete();
+        FuseboxAttachmentViewBinder.bind(mModel, mView, FuseboxAttachmentProperties.ATTACHMENT);
+        assertEquals(View.VISIBLE, textView.getVisibility());
     }
 
     @Test
@@ -122,6 +124,23 @@ public class FuseboxAttachmentViewBinderUnitTest {
         mModel.set(FuseboxAttachmentProperties.ATTACHMENT, attachment);
         TextView textView = mView.findViewById(R.id.attachment_title);
         assertEquals("My Attachment", textView.getText());
+    }
+
+    @Test
+    public void testSetTitle_startsComplete_titleShown() {
+        FuseboxAttachment attachment =
+                FuseboxAttachment.forFile(
+                        mDrawable,
+                        "file name",
+                        "text/plain",
+                        new byte[0],
+                        SystemClock.elapsedRealtime(),
+                        FuseboxAttachmentButtonType.FILES);
+        attachment.setUploadIsComplete();
+        mModel.set(FuseboxAttachmentProperties.ATTACHMENT, attachment);
+        TextView textView = mView.findViewById(R.id.attachment_title);
+        assertEquals("file name", textView.getText());
+        assertEquals(View.VISIBLE, textView.getVisibility());
     }
 
     @Test
@@ -175,9 +194,9 @@ public class FuseboxAttachmentViewBinderUnitTest {
         View spinner = mView.findViewById(R.id.attachment_spinner);
         TextView textView = mView.findViewById(R.id.attachment_title);
 
-        assertEquals(View.GONE, imageView.getVisibility());
+        assertEquals(View.INVISIBLE, imageView.getVisibility());
         assertEquals(View.VISIBLE, spinner.getVisibility());
-        assertEquals(View.GONE, textView.getVisibility());
+        assertEquals(View.INVISIBLE, textView.getVisibility());
 
         attachment.setUploadIsComplete();
         FuseboxAttachmentViewBinder.bind(mModel, mView, FuseboxAttachmentProperties.ATTACHMENT);
@@ -185,6 +204,34 @@ public class FuseboxAttachmentViewBinderUnitTest {
         assertEquals(View.GONE, spinner.getVisibility());
         assertEquals(View.VISIBLE, imageView.getVisibility());
         assertEquals(View.VISIBLE, textView.getVisibility());
+    }
+
+    @Test
+    public void testWidthDoesNotChangeDuringUpload() {
+        FuseboxAttachment attachment =
+                FuseboxAttachment.forFile(
+                        /* thumbnail= */ null,
+                        "A title that should certainly be longer than the max attachment chip title"
+                                + " width",
+                        "text/plain",
+                        new byte[0],
+                        SystemClock.elapsedRealtime(),
+                        FuseboxAttachmentButtonType.FILES);
+        mModel.set(FuseboxAttachmentProperties.ATTACHMENT, attachment);
+
+        mView.setLayoutParams(
+                new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+
+        mView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+        int initialWidth = mView.getMeasuredWidth();
+
+        attachment.setUploadIsComplete();
+        FuseboxAttachmentViewBinder.bind(mModel, mView, FuseboxAttachmentProperties.ATTACHMENT);
+
+        mView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+        int finalWidth = mView.getMeasuredWidth();
+
+        assertEquals(initialWidth, finalWidth);
     }
 
     @Test

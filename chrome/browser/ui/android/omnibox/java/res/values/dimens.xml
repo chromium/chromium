@@ -169,7 +169,6 @@ found in the LICENSE file.
     <dimen name="fusebox_button_corner_radius">8dp</dimen>
     <dimen name="fusebox_button_icon_size">18dp</dimen>
     <dimen name="fusebox_attachment_bg_vertical_inset">4dp</dimen>
-    <dimen name="fusebox_attachment_file_width">132dp</dimen>
     <dimen name="fusebox_attachment_image_width">64dp</dimen>
     <dimen name="fusebox_attachment_item_height">@dimen/min_touch_target_size</dimen>
     <dimen name="fusebox_attachment_item_spacing">1dp</dimen>
@@ -187,6 +186,8 @@ found in the LICENSE file.
     <dimen name="fusebox_attachment_remove_width">@dimen/min_touch_target_size</dimen>
     <dimen name="fusebox_attachment_spinner_size">20dp</dimen>
     <dimen name="fusebox_attachment_visible_height">40dp</dimen>
+    <dimen name="fusebox_attachment_title_min_width">40dp</dimen>
+    <dimen name="fusebox_attachment_title_max_width">50dp</dimen>
     <dimen name="fusebox_vertical_space_above_popup">32dp</dimen>
     <dimen name="fusebox_min_tablet_width">504dp</dimen>
     <dimen name="fusebox_url_bar_translation_y">4dp</dimen>
