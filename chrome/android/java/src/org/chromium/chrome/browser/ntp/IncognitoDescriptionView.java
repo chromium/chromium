@@ -328,20 +328,23 @@ public class IncognitoDescriptionView extends LinearLayout {
 
         for (TextView paragraph : mParagraphs) {
             // If bulletpoints are arranged horizontally, there should be space between them.
-            int rightMarginPx =
+            int marginEndPx =
                     (bulletpointsArrangedHorizontally
                                     && paragraph == mBulletpointsContainer.getChildAt(0))
                             ? dpToPx(getContext(), BULLETPOINTS_HORIZONTAL_SPACING_DP)
                             : 0;
 
-            ((LinearLayout.LayoutParams) paragraph.getLayoutParams())
-                    .setMargins(0, totalSpaceBetweenViews, rightMarginPx, 0);
+            LinearLayout.LayoutParams params =
+                    (LinearLayout.LayoutParams) paragraph.getLayoutParams();
+            params.topMargin = totalSpaceBetweenViews;
+            params.bottomMargin = 0;
+            params.setMarginStart(0);
+            params.setMarginEnd(marginEndPx);
 
             if (bulletpointsArrangedHorizontally && paragraph != mSubtitle) {
-                paragraph.getLayoutParams().width =
-                        dpToPx(getContext(), BULLETPOINTS_HORIZONTAL_WIDTH_DP);
+                params.width = dpToPx(getContext(), BULLETPOINTS_HORIZONTAL_WIDTH_DP);
             }
-            paragraph.setLayoutParams(paragraph.getLayoutParams()); // Apply the new layout.
+            paragraph.setLayoutParams(params); // Apply the new layout.
         }
 
         // The learn more text view has height of min_touch_target_size. Typically the actual text
