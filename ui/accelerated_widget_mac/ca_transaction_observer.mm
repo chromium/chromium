@@ -18,17 +18,6 @@
 #include "ui/accelerated_widget_mac/window_resize_helper_mac.h"
 #include "ui/base/ui_base_features.h"
 
-// When enabled, uses undocumented CATransaction APIs to smooth window resizing.
-//
-// These undocumented APIs have been identified as a potential root cause for
-// the unexpected exits seen in crbug.com/498266556, crbug.com/495700483,
-// crbug.com/487349963, crbug.com/474158974, crbug.com/485292574, etc. This
-// feature will give us a way to toggle the usage of these APIs to determine
-// if they are in fact the cause of the unexpected exits.
-//
-// TODO(bryanoltman): Remove this feature once the investigation is complete.
-BASE_FEATURE(kUseCATransactionCoordinator, base::FEATURE_ENABLED_BY_DEFAULT);
-
 typedef NS_ENUM(unsigned int, CATransactionPhase) {
   kCATransactionPhasePreLayout,
   kCATransactionPhasePreCommit,
@@ -143,10 +132,6 @@ CATransactionCoordinator::CATransactionCoordinator() = default;
 CATransactionCoordinator::~CATransactionCoordinator() = default;
 
 void CATransactionCoordinator::Synchronize() {
-  if (!base::FeatureList::IsEnabled(kUseCATransactionCoordinator)) {
-    return;
-  }
-
   if (disabled_for_testing_)
     return;
   SynchronizeImpl();
