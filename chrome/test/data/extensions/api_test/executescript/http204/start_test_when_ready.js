@@ -38,6 +38,7 @@ function isChildFrameReady() {
     if (frames[0].documentIdle) {
       return true;
     }
-  } catch (e) {}
+  } catch (e) {
+  }
   return false;
 }

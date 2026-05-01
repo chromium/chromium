@@ -33,8 +33,8 @@ chrome.test.getConfig(function(config) {
         scriptFile.code = `document.title = 'executeScript';`;
         chrome.tabs.executeScript(tabId, scriptFile, function() {
           chrome.tabs.get(tabId, pass(function(tab) {
-            assertEq('executeScript', tab.title);
-          }));
+                            assertEq('executeScript', tab.title);
+                          }));
         });
       },
 
@@ -43,8 +43,8 @@ chrome.test.getConfig(function(config) {
         scriptFile.file = 'script1.js';
         chrome.tabs.executeScript(tabId, scriptFile, function() {
           chrome.tabs.get(tabId, pass(function(tab) {
-            assertEq('executeScript1', tab.title);
-          }));
+                            assertEq('executeScript1', tab.title);
+                          }));
         });
       },
 
@@ -56,8 +56,8 @@ chrome.test.getConfig(function(config) {
           scriptFile.file = 'script3.js';
           chrome.tabs.executeScript(tabId, scriptFile, function() {
             chrome.tabs.get(tabId, pass(function(tab) {
-              assertEq('none', tab.title);
-            }));
+                              assertEq('none', tab.title);
+                            }));
           });
         });
       },
@@ -70,8 +70,8 @@ chrome.test.getConfig(function(config) {
           scriptFile.file = 'script2.js';
           chrome.tabs.executeScript(tabId, scriptFile, function() {
             chrome.tabs.get(tabId, pass(function(tab) {
-              assertEq('block', tab.title);
-            }));
+                              assertEq('block', tab.title);
+                            }));
           });
         });
       },
@@ -79,13 +79,12 @@ chrome.test.getConfig(function(config) {
       function insertCSSTextShouldNotAffectDOM() {
         chrome.tabs.insertCSS(tabId, {code: 'p {display: none}'}, function() {
           chrome.tabs.executeScript(
-              tabId,
-              {code: 'document.title = document.styleSheets.length'},
+              tabId, {code: 'document.title = document.styleSheets.length'},
               function() {
                 chrome.tabs.get(tabId, pass(function(tab) {
-                  assertEq('0', tab.title);
-                }));
-             });
+                                  assertEq('0', tab.title);
+                                }));
+              });
         });
       },
 
@@ -132,5 +131,5 @@ chrome.test.getConfig(function(config) {
     ]);
   });
 
-  chrome.tabs.create({ url: testUrl });
+  chrome.tabs.create({url: testUrl});
 });

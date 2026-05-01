@@ -7,7 +7,7 @@ chrome.test.runTests([
     const config = await chrome.test.getConfig();
     const [allowedUrl, restrictedUrl] = config.customArg.split(';');
 
-    console.log(allowedUrl, restrictedUrl)
+    console.log(allowedUrl, restrictedUrl);
 
     const tab = await chrome.tabs.create({url: allowedUrl});
     await new Promise(resolve => {
@@ -24,7 +24,7 @@ chrome.test.runTests([
     console.log('debugger attached');
 
     // Wait for the request to be intercepted.
-    let interceptionPromise = new Promise(resolve => {
+    const interceptionPromise = new Promise(resolve => {
       let seenRestricted = false;
       let seenAllowed = false;
       chrome.debugger.onEvent.addListener(
@@ -88,5 +88,5 @@ chrome.test.runTests([
     await Promise.all([interceptionPromise, evalPromise]);
 
     chrome.test.succeed();
-  }
+  },
 ]);

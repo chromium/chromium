@@ -71,8 +71,7 @@ function injectAndDeleteIframeFromMainFrame(counter, tabId) {
         chrome.runtime.sendMessage('complete');
       }`;
   chrome.tabs.executeScript(
-      tabId,
-      {code: injectFrameCode, allFrames: true, runAt: 'document_idle'});
+      tabId, {code: injectFrameCode, allFrames: true, runAt: 'document_idle'});
 }
 
 function injectAndDeleteIframeFromIframe(counter, tabId) {
@@ -97,9 +96,7 @@ function injectAndDeleteIframeFromIframe(counter, tabId) {
   // We also use two 'executeScript' calls here so that we have a pending script
   // execution on a frame that gets deleted.
   chrome.tabs.executeScript(
-      tabId,
-      {code: injectFrameCode, allFrames: true, runAt: 'document_idle'});
+      tabId, {code: injectFrameCode, allFrames: true, runAt: 'document_idle'});
   chrome.tabs.executeScript(
-      tabId,
-      {code: injectFrameCode, allFrames: true, runAt: 'document_idle'});
+      tabId, {code: injectFrameCode, allFrames: true, runAt: 'document_idle'});
 }

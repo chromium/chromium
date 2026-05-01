@@ -223,8 +223,7 @@ function runTests(config) {
 
     function executeScriptInNestedFrameIncludingAllFrames() {
       chrome.tabs.executeScript(
-          tabId,
-          {frameId: idFrameThird, allFrames: true, code: 'document.URL'},
+          tabId, {frameId: idFrameThird, allFrames: true, code: 'document.URL'},
           pass(function(results) {
             assertEq(1, results.length);
             assertTrue(matchesAny(results, R_FRAME_THIRD));

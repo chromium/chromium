@@ -6,7 +6,7 @@ chrome.app.runtime.onLaunched.addListener(function() {
   chrome.app.window.create('hello.html', {
     'innerBounds': {
       'width': 400,
-      'height': 300
-    }
+      'height': 300,
+    },
   });
 });

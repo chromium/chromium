@@ -19,7 +19,7 @@ function isStateAdvanced(stateA, stateB) {
       case 'activated':
       case 'redundant':
         return true;
-      // No default
+        // No default
     }
   }
 
@@ -29,7 +29,7 @@ function isStateAdvanced(stateA, stateB) {
       case 'activated':
       case 'redundant':
         return true;
-      // No default
+        // No default
     }
   }
 
@@ -38,7 +38,7 @@ function isStateAdvanced(stateA, stateB) {
       case 'activated':
       case 'redundant':
         return true;
-      // No default
+        // No default
     }
   }
 
@@ -46,7 +46,7 @@ function isStateAdvanced(stateA, stateB) {
     switch (stateA) {
       case 'redundant':
         return true;
-      // No default
+        // No default
     }
   }
   return false;

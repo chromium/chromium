@@ -5,9 +5,10 @@
 // document.write is not pretty, but it saves us from having to wait for the
 // DOM to load before adding iframes.  This means one less callback to wait on.
 function addIFrame(host) {
-  document.write(`<iframe src="http://${host}:${location.port}` +
-                 '/extensions/api_test/executescript' +
-                 '/permissions/empty.html"> </iframe>');
+  document.write(
+      `<iframe src="http://${host}:${location.port}` +
+      '/extensions/api_test/executescript' +
+      '/permissions/empty.html"> </iframe>');
 }
 addIFrame('a.com');
 addIFrame('b.com');

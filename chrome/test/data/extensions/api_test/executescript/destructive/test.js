@@ -164,12 +164,14 @@ function startTest() {
   const kBucketIndex = parseInt(testParams.get('bucketindex'));
   const kTestsPerBucket = Math.ceil(allTests.length / kBucketCount);
 
-  chrome.test.assertTrue(kBucketCount * kTestsPerBucket >= allTests.length,
+  chrome.test.assertTrue(
+      kBucketCount * kTestsPerBucket >= allTests.length,
       'To cover all tests, the number of buckets multiplied by the number of ' +
-      'tests per bucket must be at least as big as the number of tests.');
-  chrome.test.assertTrue(0 <= kBucketIndex >= 0 && kBucketIndex < kBucketCount,
+          'tests per bucket must be at least as big as the number of tests.');
+  chrome.test.assertTrue(
+      0 <= kBucketIndex >= 0 && kBucketIndex < kBucketCount,
       'There are only ' + kBucketCount + ' buckets, so the bucket index must ' +
-      'be between 0 and ' + kBucketCount + ', but it was ' + kBucketIndex);
+          'be between 0 and ' + kBucketCount + ', but it was ' + kBucketIndex);
 
   // Every run except for the last run contains |kTestsPerBucket| tests. The
   // last run (i.e. |kBucketIndex| = |kBucketCount| - 1) may contain fewer tests

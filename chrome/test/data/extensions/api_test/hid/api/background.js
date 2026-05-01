@@ -16,7 +16,7 @@ const kReportDescriptorWithIDs = [
 ];
 
 function getDevice(wantReportIds, callback) {
-  chrome.hid.getDevices({}, function (devices) {
+  chrome.hid.getDevices({}, function(devices) {
     chrome.test.assertNoLastError();
     for (const device of devices) {
       chrome.test.assertTrue(device.collections.length > 0);
@@ -36,8 +36,8 @@ function getDevice(wantReportIds, callback) {
 }
 
 function openDevice(wantReportIds, callback) {
-  getDevice(wantReportIds, function (device) {
-    chrome.hid.connect(device.deviceId, function (connection) {
+  getDevice(wantReportIds, function(device) {
+    chrome.hid.connect(device.deviceId, function(connection) {
       chrome.test.assertNoLastError();
       callback(connection.connectionId);
     });
@@ -74,7 +74,7 @@ function assertArrayBufferEqualsListOfBytes(expected, actual) {
 }
 
 function testGetDevicesWithNoOptions() {
-  chrome.hid.getDevices({}, function (devices) {
+  chrome.hid.getDevices({}, function(devices) {
     chrome.test.assertNoLastError();
     chrome.test.assertEq(2, devices.length, 'Expected two enumerated devices.');
     chrome.test.succeed('Device enumeration successful.');
@@ -94,7 +94,7 @@ function testGetDevicesWithLegacyVidAndPid() {
       });
 }
 function testGetDevicesWithNoFilters() {
-  chrome.hid.getDevices({ 'filters': [] }, function (devices) {
+  chrome.hid.getDevices({'filters': []}, function(devices) {
     chrome.test.assertNoLastError();
     chrome.test.assertEq(2, devices.length, 'Expected two enumerated devices.');
     chrome.test.succeed('Device enumeration successful.');
@@ -150,7 +150,7 @@ function testGetDevicesWithUnauthorizedDevice() {
 }
 function testDeviceInfo() {
   let expectedDevices = 2;
-  getDevice(false, function (deviceInfo) {
+  getDevice(false, function(deviceInfo) {
     chrome.test.assertEq(0x18D1, deviceInfo.vendorId);
     chrome.test.assertEq(0x58F0, deviceInfo.productId);
     chrome.test.assertEq('Test Device', deviceInfo.productName);
@@ -159,14 +159,14 @@ function testDeviceInfo() {
     chrome.test.assertEq(0xFF00, deviceInfo.collections[0].usagePage);
     chrome.test.assertEq(0, deviceInfo.collections[0].usage);
     chrome.test.assertEq(0, deviceInfo.collections[0].reportIds.length);
-    assertArrayBufferEqualsListOfBytes(kReportDescriptor,
-                                       deviceInfo.reportDescriptor);
+    assertArrayBufferEqualsListOfBytes(
+        kReportDescriptor, deviceInfo.reportDescriptor);
     if (--expectedDevices === 0) {
       chrome.test.succeed();
     }
   });
 
-  getDevice(true, function (deviceInfo) {
+  getDevice(true, function(deviceInfo) {
     chrome.test.assertEq(0x18D1, deviceInfo.vendorId);
     chrome.test.assertEq(0x58F0, deviceInfo.productId);
     chrome.test.assertEq(1, deviceInfo.collections.length);
@@ -174,8 +174,8 @@ function testDeviceInfo() {
     chrome.test.assertEq(0, deviceInfo.collections[0].usage);
     chrome.test.assertEq(1, deviceInfo.collections[0].reportIds.length);
     chrome.test.assertEq(1, deviceInfo.collections[0].reportIds[0]);
-    assertArrayBufferEqualsListOfBytes(kReportDescriptorWithIDs,
-                                       deviceInfo.reportDescriptor);
+    assertArrayBufferEqualsListOfBytes(
+        kReportDescriptorWithIDs, deviceInfo.reportDescriptor);
     if (--expectedDevices === 0) {
       chrome.test.succeed();
     }
@@ -233,8 +233,8 @@ function testReceiveWithReportId() {
 }
 
 function testReceiveWithoutReportId() {
-  openDeviceWithoutReportId(function (connection) {
-    chrome.hid.receive(connection, function (reportId, data) {
+  openDeviceWithoutReportId(function(connection) {
+    chrome.hid.receive(connection, function(reportId, data) {
       chrome.test.assertNoLastError();
       chrome.test.assertEq(0, reportId, 'Expected report_id === 0.');
       const expected = 'This is a HID input report.';
@@ -266,7 +266,7 @@ function testSendOversizeReport() {
 function testSendWithReportId() {
   openDeviceWithReportId(function(connection) {
     const buffer = stringToArrayBuffer('o-report');
-    chrome.hid.send(connection, 1, buffer, function () {
+    chrome.hid.send(connection, 1, buffer, function() {
       chrome.test.assertNoLastError();
       chrome.hid.disconnect(connection);
       chrome.test.succeed('Send successful.');
@@ -277,7 +277,7 @@ function testSendWithReportId() {
 function testSendWithoutReportId() {
   openDeviceWithoutReportId(function(connection) {
     const buffer = stringToArrayBuffer('o-report');
-    chrome.hid.send(connection, 0, buffer, function () {
+    chrome.hid.send(connection, 0, buffer, function() {
       chrome.test.assertNoLastError();
       chrome.hid.disconnect(connection);
       chrome.test.succeed('Send successful.');
@@ -315,8 +315,8 @@ function testReceiveFeatureReportWithInvalidConnectionId() {
 }
 
 function testReceiveFeatureReportWithReportId() {
-  openDeviceWithReportId(function (connection) {
-    chrome.hid.receiveFeatureReport(connection, 1, function (data) {
+  openDeviceWithReportId(function(connection) {
+    chrome.hid.receiveFeatureReport(connection, 1, function(data) {
       chrome.test.assertNoLastError();
       const expected = '\x01This is a HID feature report.';
       chrome.test.assertEq(expected, arrayBufferToString(data));
@@ -326,8 +326,8 @@ function testReceiveFeatureReportWithReportId() {
 }
 
 function testReceiveFeatureReportWithoutReportId() {
-  openDeviceWithoutReportId(function (connection) {
-    chrome.hid.receiveFeatureReport(connection, 0, function (data) {
+  openDeviceWithoutReportId(function(connection) {
+    chrome.hid.receiveFeatureReport(connection, 0, function(data) {
       chrome.test.assertNoLastError();
       const expected = 'This is a HID feature report.';
       chrome.test.assertEq(expected, arrayBufferToString(data));
@@ -366,7 +366,7 @@ function testSendFeatureReportWithReportId() {
   openDeviceWithReportId(function(connection) {
     const buffer =
         stringToArrayBuffer('The app is setting this HID feature report.');
-    chrome.hid.sendFeatureReport(connection, 1, buffer, function () {
+    chrome.hid.sendFeatureReport(connection, 1, buffer, function() {
       chrome.test.assertNoLastError();
       chrome.hid.disconnect(connection);
       chrome.test.succeed('Send successful.');
@@ -378,7 +378,7 @@ function testSendFeatureReportWithoutReportId() {
   openDeviceWithoutReportId(function(connection) {
     const buffer =
         stringToArrayBuffer('The app is setting this HID feature report.');
-    chrome.hid.sendFeatureReport(connection, 0, buffer, function () {
+    chrome.hid.sendFeatureReport(connection, 0, buffer, function() {
       chrome.test.assertNoLastError();
       chrome.hid.disconnect(connection);
       chrome.test.succeed('Send successful.');

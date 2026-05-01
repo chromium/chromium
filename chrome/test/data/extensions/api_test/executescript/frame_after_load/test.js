@@ -38,5 +38,5 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
 
 chrome.test.getConfig(function(config) {
   baseUrl = baseUrl.replace(/PORT/, config.testServer.port);
-  chrome.tabs.create({ url: `${baseUrl}outer.html` });
+  chrome.tabs.create({url: `${baseUrl}outer.html`});
 });

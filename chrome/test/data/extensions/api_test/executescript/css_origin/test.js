@@ -16,57 +16,62 @@ chrome.test.getConfig(function(config) {
       function authorOriginShouldSucceed() {
         const injectDetails = {};
         injectDetails.code = '#author {' +
-                             ' color: blue !important;' +
-                             ' background-color: white !important;' +
-                             '}';
+            ' color: blue !important;' +
+            ' background-color: white !important;' +
+            '}';
         injectDetails.cssOrigin = 'author';
-        chrome.tabs.insertCSS(tabId, injectDetails,
-                              chrome.test.callbackPass(function() {
-          chrome.tabs.sendMessage(tabId, { id: 'author' },
-                                  chrome.test.callbackPass(function(response) {
-            chrome.test.assertEq('rgb(0, 0, 255)', response.color);
-            // !important rules in author style sheets do not override inline
-            // !important rules.
-            chrome.test.assertEq('rgb(0, 0, 0)', response.backgroundColor);
-          }));
-        }));
+        chrome.tabs.insertCSS(
+            tabId, injectDetails, chrome.test.callbackPass(function() {
+              chrome.tabs.sendMessage(
+                  tabId, {id: 'author'},
+                  chrome.test.callbackPass(function(response) {
+                    chrome.test.assertEq('rgb(0, 0, 255)', response.color);
+                    // !important rules in author style sheets do not override
+                    // inline !important rules.
+                    chrome.test.assertEq(
+                        'rgb(0, 0, 0)', response.backgroundColor);
+                  }));
+            }));
       },
       function userOriginShouldSucceed() {
         const injectDetails = {};
         injectDetails.code = '#user {' +
-                             ' color: blue !important;' +
-                             ' background-color: white !important;' +
-                             '}';
+            ' color: blue !important;' +
+            ' background-color: white !important;' +
+            '}';
         injectDetails.cssOrigin = 'user';
-        chrome.tabs.insertCSS(tabId, injectDetails,
-                              chrome.test.callbackPass(function() {
-          chrome.tabs.sendMessage(tabId, { id: 'user' },
-                                  chrome.test.callbackPass(function(response) {
-            chrome.test.assertEq('rgb(0, 0, 255)', response.color);
-            // !important rules in user style sheets do override inline
-            // !important rules.
-            chrome.test.assertEq('rgb(255, 255, 255)',
-                                 response.backgroundColor);
-          }));
-        }));
+        chrome.tabs.insertCSS(
+            tabId, injectDetails, chrome.test.callbackPass(function() {
+              chrome.tabs.sendMessage(
+                  tabId, {id: 'user'},
+                  chrome.test.callbackPass(function(response) {
+                    chrome.test.assertEq('rgb(0, 0, 255)', response.color);
+                    // !important rules in user style sheets do override inline
+                    // !important rules.
+                    chrome.test.assertEq(
+                        'rgb(255, 255, 255)', response.backgroundColor);
+                  }));
+            }));
       },
       function noneOriginShouldSucceed() {
         // When no CSS origin is specified, it should default to author origin.
         const injectDetails = {};
         injectDetails.code = '#none {' +
-                             ' color: blue !important;' +
-                             ' background-color: white !important;' +
-                             '}';
-        chrome.tabs.insertCSS(tabId, injectDetails,
-                              chrome.test.callbackPass(function() {
-          chrome.tabs.sendMessage(tabId, { id: 'none' },
-                                  chrome.test.callbackPass(function(response) {
-            chrome.test.assertEq('rgb(0, 0, 255)', response.color);
-            // !important rules in author style sheets do not override inline
-            // !important rules.
-            chrome.test.assertEq('rgb(0, 0, 0)', response.backgroundColor);
-          }));
-        }));
+            ' color: blue !important;' +
+            ' background-color: white !important;' +
+            '}';
+        chrome.tabs.insertCSS(
+            tabId, injectDetails, chrome.test.callbackPass(function() {
+              chrome.tabs.sendMessage(
+                  tabId, {id: 'none'},
+                  chrome.test.callbackPass(function(response) {
+                    chrome.test.assertEq('rgb(0, 0, 255)', response.color);
+                    // !important rules in author style sheets do not override
+                    // inline !important rules.
+                    chrome.test.assertEq(
+                        'rgb(0, 0, 0)', response.backgroundColor);
+                  }));
+            }));
       },
       function unknownOriginShouldFail() {
         const injectDetails = {};
@@ -83,11 +88,12 @@ chrome.test.getConfig(function(config) {
         const injectDetails = {};
         injectDetails.code = '(function(){})();';
         injectDetails.cssOrigin = 'author';
-        chrome.tabs.executeScript(tabId, injectDetails,
+        chrome.tabs.executeScript(
+            tabId, injectDetails,
             chrome.test.callbackFail(
                 'CSS origin should be specified only for CSS code.'));
       },
     ]);
   });
-  chrome.tabs.create({ url: testUrl });
+  chrome.tabs.create({url: testUrl});
 });

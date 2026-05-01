@@ -29,6 +29,6 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
 
 chrome.test.getConfig(function(config) {
   const url = `http://a.com:${config.testServer.port}/` +
-              'extensions/api_test/executescript/subframes_on_load/outer.html';
+      'extensions/api_test/executescript/subframes_on_load/outer.html';
   chrome.tabs.create({url: url});
 });

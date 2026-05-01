@@ -84,5 +84,5 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
 
 chrome.test.getConfig(function(config) {
   testUrl = `http://a.com:${config.testServer.port}${RELATIVE_PATH}`;
-  chrome.tabs.create({ url: testUrl });
+  chrome.tabs.create({url: testUrl});
 });

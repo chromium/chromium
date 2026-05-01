@@ -56,81 +56,71 @@ function failOnError() {
 }
 
 function secondStage() {
-  chrome.bluetoothSocket.getSockets(
-    function(result) {
-      failOnError();
-      sockets = result;
+  chrome.bluetoothSocket.getSockets(function(result) {
+    failOnError();
+    sockets = result;
 
-      chrome.bluetoothSocket.disconnect(serverSocketId);
-      chrome.bluetoothSocket.disconnect(clientSocketId);
+    chrome.bluetoothSocket.disconnect(serverSocketId);
+    chrome.bluetoothSocket.disconnect(clientSocketId);
 
-      // Check for error conditions.
-      chrome.bluetoothSocket.listenUsingRfcomm(
-          1234, uuid, function() {
-            expectError('Socket not found');
+    // Check for error conditions.
+    chrome.bluetoothSocket.listenUsingRfcomm(1234, uuid, function() {
+      expectError('Socket not found');
 
-            chrome.bluetoothSocket.create(
-              function(socket) {
-                failOnError();
-                chrome.bluetoothSocket.listenUsingRfcomm(
-                    socket.socketId, 'not a valid uuid', function() {
-                      expectError('Invalid UUID');
+      chrome.bluetoothSocket.create(function(socket) {
+        failOnError();
+        chrome.bluetoothSocket.listenUsingRfcomm(
+            socket.socketId, 'not a valid uuid', function() {
+              expectError('Invalid UUID');
 
-                      chrome.bluetoothSocket.listenUsingRfcomm(
-                          socket.socketId, '1234', function() {
-                            expectError('Permission denied');
+              chrome.bluetoothSocket.listenUsingRfcomm(
+                  socket.socketId, '1234', function() {
+                    expectError('Permission denied');
 
-                            chrome.bluetoothSocket.listenUsingL2cap(
-                                socket.socketId, uuid, {'psm': 1234},
-                                function() {
-                                  expectError('Invalid PSM');
+                    chrome.bluetoothSocket.listenUsingL2cap(
+                        socket.socketId, uuid, {'psm': 1234}, function() {
+                          expectError('Invalid PSM');
 
-                                  chrome.bluetoothSocket.listenUsingL2cap(
-                                      socket.socketId, uuid, {'psm': 4369},
-                                      function() {
-                                        expectError('Invalid PSM');
+                          chrome.bluetoothSocket.listenUsingL2cap(
+                              socket.socketId, uuid, {'psm': 4369}, function() {
+                                expectError('Invalid PSM');
 
-                                        chrome.bluetoothSocket.listenUsingL2cap(
-                                            socket.socketId, uuid, {'psm': 13},
-                                            function() {
-                                              expectError('Invalid PSM');
+                                chrome.bluetoothSocket.listenUsingL2cap(
+                                    socket.socketId, uuid, {'psm': 13},
+                                    function() {
+                                      expectError('Invalid PSM');
 
-                                              chrome.test.sendMessage(
-                                                  'ready', startTests);
-                                            });
-                                      });
-                                });
-                          });
-                    });
-              });
-          });
+                                      chrome.test.sendMessage(
+                                          'ready', startTests);
+                                    });
+                              });
+                        });
+                  });
+            });
+      });
     });
+  });
 }
 
-chrome.bluetoothSocket.create(
-  {'name': 'MyServiceName'},
-  function(socket) {
+chrome.bluetoothSocket.create({'name': 'MyServiceName'}, function(socket) {
+  failOnError();
+
+  serverSocketId = socket.socketId;
+
+  chrome.bluetoothSocket.onAccept.addListener(function(info) {
+    if (info.socketId !== socket.socketId) {
+      return;
+    }
+
+    clientSocketId = info.clientSocketId;
+  });
+  chrome.bluetoothSocket.onAcceptError.addListener(function(error_info) {
+    chrome.test.fail(error_info.errorMessage);
+  });
+
+  chrome.bluetoothSocket.listenUsingRfcomm(socket.socketId, uuid, function() {
     failOnError();
 
-    serverSocketId = socket.socketId;
-
-    chrome.bluetoothSocket.onAccept.addListener(function(info) {
-      if (info.socketId !== socket.socketId) {
-        return;
-      }
-
-      clientSocketId = info.clientSocketId;
-    });
-    chrome.bluetoothSocket.onAcceptError.addListener(
-      function(error_info) {
-        chrome.test.fail(error_info.errorMessage);
-      });
-
-    chrome.bluetoothSocket.listenUsingRfcomm(
-      socket.socketId, uuid,
-      function() {
-        failOnError();
-
-        chrome.test.sendMessage('ready', secondStage);
-      });
+    chrome.test.sendMessage('ready', secondStage);
   });
+});

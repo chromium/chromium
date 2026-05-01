@@ -7,41 +7,41 @@
 
 // Testing data should be the same as |kRemovableStorageData| in
 // test_storage_info_provider.cc.
-var testData = {
-  id: "transient:0004",
-  name: "/media/usb1",
-  type: "removable",
-  capacity: 4098
+const testData = {
+  id: 'transient:0004',
+  name: '/media/usb1',
+  type: 'removable',
+  capacity: 4098,
 };
 
-var device_id;
+let device_id;
 
 chrome.test.runTests([
   function testAttachedEvent() {
     chrome.test.listenOnce(
-      chrome.system.storage.onAttached,
-      function listener(info) {
-        // Record the transient id.
-        device_id = info.id;
-        chrome.test.assertEq(testData.name, info.name);
-        chrome.test.assertEq(testData.type, info.type);
-        chrome.test.assertEq(testData.capacity, info.capacity);
-      }
+        chrome.system.storage.onAttached,
+        function listener(info) {
+          // Record the transient id.
+          device_id = info.id;
+          chrome.test.assertEq(testData.name, info.name);
+          chrome.test.assertEq(testData.type, info.type);
+          chrome.test.assertEq(testData.capacity, info.capacity);
+        },
     );
 
     // Tell browser process to attach a new removable storage.
-    chrome.test.sendMessage("attach");
+    chrome.test.sendMessage('attach');
   },
 
   function testDetachedEvent() {
     chrome.test.listenOnce(
-      chrome.system.storage.onDetached,
-      function listener(id) {
-        chrome.test.assertEq(device_id, id);
-        chrome.test.sendMessage(id);
-      }
+        chrome.system.storage.onDetached,
+        function listener(id) {
+          chrome.test.assertEq(device_id, id);
+          chrome.test.sendMessage(id);
+        },
     );
     // Tell browser process to detach a storage.
-    chrome.test.sendMessage("detach");
-  }
+    chrome.test.sendMessage('detach');
+  },
 ]);

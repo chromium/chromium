@@ -4,8 +4,8 @@
 
 if (top === window) {
   testTop();
-} else if (!parent.location.search.includes('end') ||
-    window.didRunAtDocumentEnd) {
+} else if (
+    !parent.location.search.includes('end') || window.didRunAtDocumentEnd) {
   testChild();
 }
 
@@ -90,6 +90,5 @@ function testChild() {
         doRemove();
       }
     });
-
   }
 }

@@ -16,7 +16,7 @@ const listener = function(tabId, changeInfo, tab) {
 
   // web_page1 loaded, open extension page to inject script
   if (!extensionPageOpened && tab.url === webPage1) {
-    chrome.tabs.create({ url: extensionPage });
+    chrome.tabs.create({url: extensionPage});
     extensionPageOpened = true;
     return;
   }
@@ -32,6 +32,5 @@ chrome.tabs.onUpdated.addListener(listener);
 chrome.test.getConfig(function(config) {
   webPage1 = webPage1.replace(/PORT/, config.testServer.port);
   webPage2 = webPage2.replace(/PORT/, config.testServer.port);
-  chrome.tabs.create({ url: webPage1 });
+  chrome.tabs.create({url: webPage1});
 });
-

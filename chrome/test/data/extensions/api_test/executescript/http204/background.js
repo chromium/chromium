@@ -26,9 +26,9 @@ chrome.test.getConfig(function(testConfig) {
     chrome.webNavigation.onDOMContentLoaded.removeListener(onDOMContentLoaded);
     // Avoid flakiness by excluding all events that are not from our tab.
     DOMContentLoadedEventsInFrame =
-      DOMContentLoadedEventsInFrame.filter(function(details) {
-        return details.tabId === sender.tab.id;
-      });
+        DOMContentLoadedEventsInFrame.filter(function(details) {
+          return details.tabId === sender.tab.id;
+        });
 
     startTest(sender.tab.id);
   });
@@ -64,65 +64,78 @@ function startTest(tabId) {
   chrome.test.runTests([
     function insertCssTopLevelOnly() {
       // Sanity check: insertCSS can change main frame's CSS.
-      chrome.tabs.insertCSS(tabId, {
-        code: 'body { font-family: ' + kExpectedFontFamily + ' !important;}',
-      }, chrome.test.callbackPass());
+      chrome.tabs.insertCSS(
+          tabId, {
+            code:
+                'body { font-family: ' + kExpectedFontFamily + ' !important;}',
+          },
+          chrome.test.callbackPass());
       // The result is verified hereafter, in executeScriptTopLevelOnly.
     },
 
     function executeScriptTopLevelOnly() {
       // Sanity check: insertCSS should really have changed the CSS.
       // Depends on insertCssTopLevelOnly.
-      chrome.tabs.executeScript(tabId, {
-        code: 'getComputedStyle(document.body).fontFamily',
-      }, chrome.test.callbackPass(function(results) {
-        chrome.test.assertEq([kExpectedFontFamily], results);
-      }));
+      chrome.tabs.executeScript(
+          tabId, {
+            code: 'getComputedStyle(document.body).fontFamily',
+          },
+          chrome.test.callbackPass(function(results) {
+            chrome.test.assertEq([kExpectedFontFamily], results);
+          }));
     },
 
     // Now we know that executeScript works in the top-level frame, we will use
     // it to check whether executeScript can execute code in the child frame.
     function verifyManifestContentScriptInjected() {
       // Check whether the content scripts from manifest.json ran in the frame.
-      chrome.tabs.executeScript(tabId, {
-        code: '[' +
-          '[window.documentStart,' +
-          ' window.documentEnd,' +
-          ' window.documentIdle],' +
-          '[frames[0].documentStart,' +
-          ' frames[0].documentEnd,' +
-          ' frames[0].documentIdle],' +
-          '[frames[0].didRunAtDocumentStartUnexpected,' +
-          ' frames[0].didRunAtDocumentEndUnexpected,' +
-          ' frames[0].didRunAtDocumentIdleUnexpected],' +
-          ']',
-      }, chrome.test.callbackPass(function(results) {
-        chrome.test.assertEq([[
-            // Should always run in top frame because of matching match pattern.
-            [1, 1, 1],
+      chrome.tabs.executeScript(
+          tabId, {
+            code: '[' +
+                '[window.documentStart,' +
+                ' window.documentEnd,' +
+                ' window.documentIdle],' +
+                '[frames[0].documentStart,' +
+                ' frames[0].documentEnd,' +
+                ' frames[0].documentIdle],' +
+                '[frames[0].didRunAtDocumentStartUnexpected,' +
+                ' frames[0].didRunAtDocumentEndUnexpected,' +
+                ' frames[0].didRunAtDocumentIdleUnexpected],' +
+                ']',
+          },
+          chrome.test.callbackPass(function(results) {
+            chrome.test.assertEq(
+                [[
+                  // Should always run in top frame because of matching match
+                  // pattern.
+                  [1, 1, 1],
 
-            [
-              // Before the response from the server is received, the frame
-              // displays an empty document. This document has a <html> element,
-              // it can be scripted by the parent frame and its URL as shown to
-              // scripts is about:blank.
-              // Because the content script's match_about_blank flag is set to
-              // true in manifest.json, and its URL pattern matches the parent
-              // frame's URL and, the document_start script should be run.
-              // TODO(robwu): This should be 1 for the reason above, but it is
-              // null because the script is not injected (crbug.com/41188987).
-              null,
-              // Does not run at document_end and document_idle because the
-              // DOMContentLoaded event is not triggered either.
-              null,
-              null,
-            ],
+                  [
+                    // Before the response from the server is received, the
+                    // frame displays an empty document. This document has a
+                    // <html> element, it can be scripted by the parent frame
+                    // and its URL as shown to scripts is about:blank. Because
+                    // the content script's match_about_blank flag is set to
+                    // true in manifest.json, and its URL pattern matches the
+                    // parent frame's URL and, the document_start script should
+                    // be run.
+                    // TODO(robwu): This should be 1 for the reason above, but
+                    // it is null because the script is not injected
+                    // (crbug.com/41188987).
+                    null,
+                    // Does not run at document_end and document_idle because
+                    // the DOMContentLoaded event is not triggered either.
+                    null,
+                    null,
+                  ],
 
-            // Should not run scripts in child frame because the page load was
-            // not committed, and the URL pattern (204 page) doesn't match.
-            [null, null, null],
-        ]], results);
-      }));
+                  // Should not run scripts in child frame because the page load
+                  // was not committed, and the URL pattern (204 page) doesn't
+                  // match.
+                  [null, null, null],
+                ]],
+                results);
+          }));
     },
 
     // document_end and document_idle scripts are not run in the child frame
@@ -137,61 +150,74 @@ function startTest(tabId) {
     function insertCss204NoAbout() {
       // HTTP 204 = stay at previous page, which was a blank page, so insertCSS
       // without matchAboutBlank shouldn't change the frame's CSS.
-      chrome.tabs.insertCSS(tabId, {
-        code: `body { color: ${kExpectedColor}; }`,
-        allFrames: true,
-      }, chrome.test.callbackPass());
+      chrome.tabs.insertCSS(
+          tabId, {
+            code: `body { color: ${kExpectedColor}; }`,
+            allFrames: true,
+          },
+          chrome.test.callbackPass());
       // The result is verified hereafter, in verifyInsertCss204NoAbout.
     },
 
     function verifyInsertCss204NoAbout() {
       // Depends on insertCss204NoAbout.
-      chrome.tabs.executeScript(tabId, {
-        code: 'frames[0].getComputedStyle(frames[0].document.body).color',
-      }, chrome.test.callbackPass(function(results) {
-        // CSS should not be inserted in frame because it's about:blank.
-        chrome.test.assertEq([kDefaultColor], results);
-      }));
+      chrome.tabs.executeScript(
+          tabId, {
+            code: 'frames[0].getComputedStyle(frames[0].document.body).color',
+          },
+          chrome.test.callbackPass(function(results) {
+            // CSS should not be inserted in frame because it's about:blank.
+            chrome.test.assertEq([kDefaultColor], results);
+          }));
     },
 
     function insertCss204Blank() {
-      chrome.tabs.insertCSS(tabId, {
-        code: 'body { color: ' + kExpectedColor + '; }',
-        allFrames: true,
-        matchAboutBlank: true,
-      }, chrome.test.callbackPass());
+      chrome.tabs.insertCSS(
+          tabId, {
+            code: 'body { color: ' + kExpectedColor + '; }',
+            allFrames: true,
+            matchAboutBlank: true,
+          },
+          chrome.test.callbackPass());
       // The result is verified hereafter, in verifyInsertCss204Blank.
     },
 
     function verifyInsertCss204Blank() {
       // Depends on insertCss204Blank.
-      chrome.tabs.executeScript(tabId, {
-        code: 'frames[0].getComputedStyle(frames[0].document.body).color',
-      }, chrome.test.callbackPass(function(results) {
-        // CSS should be inserted in frame because matchAboutBlank was true.
-        chrome.test.assertEq([kExpectedColor], results);
-      }));
+      chrome.tabs.executeScript(
+          tabId, {
+            code: 'frames[0].getComputedStyle(frames[0].document.body).color',
+          },
+          chrome.test.callbackPass(function(results) {
+            // CSS should be inserted in frame because matchAboutBlank was true.
+            chrome.test.assertEq([kExpectedColor], results);
+          }));
     },
 
     function executeScript204NoAbout() {
-      chrome.tabs.executeScript(tabId, {
-        code: 'top === window',
-        allFrames: true,
-      }, chrome.test.callbackPass(function(results) {
-        // Child frame should not be matched because it's about:blank.
-        chrome.test.assertEq([true], results);
-      }));
+      chrome.tabs.executeScript(
+          tabId, {
+            code: 'top === window',
+            allFrames: true,
+          },
+          chrome.test.callbackPass(function(results) {
+            // Child frame should not be matched because it's about:blank.
+            chrome.test.assertEq([true], results);
+          }));
     },
 
     function executeScript204About() {
-      chrome.tabs.executeScript(tabId, {
-        code: 'top === window',
-        allFrames: true,
-        matchAboutBlank: true,
-      }, chrome.test.callbackPass(function(results) {
-        // Child frame should not be matched because matchAboutBlank was true.
-        chrome.test.assertEq([true, false], results);
-      }));
+      chrome.tabs.executeScript(
+          tabId, {
+            code: 'top === window',
+            allFrames: true,
+            matchAboutBlank: true,
+          },
+          chrome.test.callbackPass(function(results) {
+            // Child frame should not be matched because matchAboutBlank was
+            // true.
+            chrome.test.assertEq([true, false], results);
+          }));
     },
 
     // Now we have verified that (programmatic) content script injection works
@@ -250,7 +276,8 @@ function navigateToFrameAndWaitUntil204Loaded(tabId, hostname, hostname204) {
   const doneListening = chrome.test.listenForever(
       chrome.webNavigation.onErrorOccurred, function(details) {
         if (details.tabId === tabId && details.frameId > 0) {
-          chrome.test.assertTrue(details.url.includes('page204.html'),
+          chrome.test.assertTrue(
+              details.url.includes('page204.html'),
               'frame URL should be page204.html, but was ' + details.url);
           doneListening();
         }
@@ -268,39 +295,46 @@ function navigateToFrameAndWaitUntil204Loaded(tabId, hostname, hostname204) {
 // Checks whether the content scripts were run as expected in the frame that
 // just received a failed provisional load (=received 204 reply).
 function checkManifestScriptsAfter204Navigation(tabId) {
-  chrome.tabs.executeScript(tabId, {
-    allFrames: true,
-    code: '[' +
-      '[window.documentStart,' +
-      ' window.documentEnd,' +
-      ' performance.timing.domContentLoadedEventStart > 0],' +
-      '[window.didRunAtDocumentStartUnexpected,' +
-      ' window.didRunAtDocumentEndUnexpected],' +
-      ']',
-  }, chrome.test.callbackPass(function(results) {
-    chrome.test.assertEq(2, results.length);
-    // Main frame. Should not be affected by child frame navigations.
-    chrome.test.assertEq([[1, 1, true], [null, null]], results[0]);
+  chrome.tabs.executeScript(
+      tabId, {
+        allFrames: true,
+        code: '[' +
+            '[window.documentStart,' +
+            ' window.documentEnd,' +
+            ' performance.timing.domContentLoadedEventStart > 0],' +
+            '[window.didRunAtDocumentStartUnexpected,' +
+            ' window.didRunAtDocumentEndUnexpected],' +
+            ']',
+      },
+      chrome.test.callbackPass(function(results) {
+        chrome.test.assertEq(2, results.length);
+        // Main frame. Should not be affected by child frame navigations.
+        chrome.test.assertEq([[1, 1, true], [null, null]], results[0]);
 
-    // Child frame.
-    if (!results[1][0][2]) {  // = if DOMContentLoaded did not run.
-      // If the 204 reply was handled faster than the parsing of the frame
-      // document, then the DOMContentLoaded event won't be triggered.
-      chrome.test.assertEq([
-          // The 204 navigation was triggered by the page, so the document_start
-          // script should have run by then. But since DOMContentLoaded is not
-          // triggered, the document_end script should not run either.
-          [1, null, false],
-          // Should not inject non-matching scripts.
-          [null, null],
-      ], results[1]);
-      return;
-    }
-    chrome.test.assertEq([
-        // Should run the content scripts even after a navigation to 204.
-        [1, 1, true],
-        // Should not inject non-matching scripts.
-        [null, null],
-    ], results[1]);
-  }));
+        // Child frame.
+        if (!results[1][0][2]) {  // = if DOMContentLoaded did not run.
+          // If the 204 reply was handled faster than the parsing of the frame
+          // document, then the DOMContentLoaded event won't be triggered.
+          chrome.test.assertEq(
+              [
+                // The 204 navigation was triggered by the page, so the
+                // document_start script should have run by then. But since
+                // DOMContentLoaded is not triggered, the document_end script
+                // should not run either.
+                [1, null, false],
+                // Should not inject non-matching scripts.
+                [null, null],
+              ],
+              results[1]);
+          return;
+        }
+        chrome.test.assertEq(
+            [
+              // Should run the content scripts even after a navigation to 204.
+              [1, 1, true],
+              // Should not inject non-matching scripts.
+              [null, null],
+            ],
+            results[1]);
+      }));
 }

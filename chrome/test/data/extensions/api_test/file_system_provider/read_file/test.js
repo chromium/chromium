@@ -187,7 +187,8 @@ function setUpFileSystem(openedFilesLimit, callback) {
     options.openedFilesLimit = openedFilesLimit;
   }
   // TODO(mtomasz): Rather than clearing out opened files tests should wait for
-  // all files to be closed before unmounting the file system. crbug.com/40551846
+  // all files to be closed before unmounting the file system.
+  // crbug.com/40551846
   for (const k of Object.keys(testUtil.openedFiles)) {
     delete testUtil.openedFiles[k];
   }

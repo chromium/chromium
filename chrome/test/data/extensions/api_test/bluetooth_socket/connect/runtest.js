@@ -36,15 +36,12 @@ function failOnError() {
 }
 
 function createConnectedSocket(address, uuid, callback) {
-  chrome.bluetoothSocket.create(
-    function(socket) {
-      failOnError();
-      chrome.bluetoothSocket.connect(
-        socket.socketId, address, uuid,
-        function() {
-          callback(socket);
-        });
+  chrome.bluetoothSocket.create(function(socket) {
+    failOnError();
+    chrome.bluetoothSocket.connect(socket.socketId, address, uuid, function() {
+      callback(socket);
     });
+  });
 }
 
 function runSocketErrorTests(callback) {
@@ -67,22 +64,19 @@ function runSocketErrorTests(callback) {
   });
 }
 
-createConnectedSocket(address, uuid,
-  function(socket) {
+createConnectedSocket(address, uuid, function(socket) {
+  failOnError();
+
+  // Make sure that the socket appears in the sockets list.
+  chrome.bluetoothSocket.getSockets(function(result) {
     failOnError();
+    sockets = result;
+    socketId = socket.socketId;
 
-    // Make sure that the socket appears in the sockets list.
-    chrome.bluetoothSocket.getSockets(
-      function(result) {
-        failOnError();
-        sockets = result;
-        socketId = socket.socketId;
-
-        // Run some error checks.
-        runSocketErrorTests(
-          function() {
-            chrome.bluetoothSocket.disconnect(socket.socketId);
-            chrome.test.sendMessage('ready', startTests);
-          });
-      });
+    // Run some error checks.
+    runSocketErrorTests(function() {
+      chrome.bluetoothSocket.disconnect(socket.socketId);
+      chrome.test.sendMessage('ready', startTests);
+    });
   });
+});

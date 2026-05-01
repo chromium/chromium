@@ -22,5 +22,5 @@ chrome.test.getConfig(function(config) {
         }]);
   });
 
-  chrome.tabs.create({ url: testUrl });
+  chrome.tabs.create({url: testUrl});
 });

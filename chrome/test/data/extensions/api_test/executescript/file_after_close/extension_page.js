@@ -8,7 +8,7 @@ window.onload = function() {
       for (let i = 0; i < tabs.length; i++) {
         const tab = tabs[i];
         if (tab.url.indexOf('web_page1') > -1) {
-          chrome.tabs.executeScript(tab.id, { file: 'script.js' });
+          chrome.tabs.executeScript(tab.id, {file: 'script.js'});
           window.close();
           break;
         }

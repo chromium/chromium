@@ -4,7 +4,7 @@
 
 const known_devices = {};
 
-chrome.hid.onDeviceRemoved.addListener(function (deviceId) {
+chrome.hid.onDeviceRemoved.addListener(function(deviceId) {
   if (deviceId in known_devices) {
     chrome.test.sendMessage('success');
   } else {

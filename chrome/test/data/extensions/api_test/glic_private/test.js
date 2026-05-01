@@ -144,7 +144,7 @@ function tests_runInvoke(documentId) {
     await chrome.glicPrivate.invoke({
       promptId: 'TEST_PROMPT_ID',
       invocationSource: chrome.glicPrivate.InvocationSource.UNIVERSAL_CART,
-      documentId
+      documentId,
     });
     chrome.test.succeed();
   }]);
@@ -156,7 +156,7 @@ function tests_runInvokeDisabled(documentId) {
         chrome.glicPrivate.invoke({
           promptId: 'TEST_PROMPT_ID',
           invocationSource: chrome.glicPrivate.InvocationSource.UNIVERSAL_CART,
-          documentId
+          documentId,
         }),
         'Error: local-glic-not-enabled');
     chrome.test.succeed();
@@ -169,7 +169,7 @@ function tests_runInvokeNewTab(documentId) {
       promptId: 'TEST_PROMPT_ID',
       invocationSource: chrome.glicPrivate.InvocationSource.UNIVERSAL_CART,
       inNewTab: true,
-      documentId
+      documentId,
     });
     chrome.test.succeed();
   }]);
@@ -180,7 +180,7 @@ function tests_runInvokeNotReady(documentId) {
     await chrome.glicPrivate.invoke({
       promptId: 'TEST_PROMPT_ID',
       invocationSource: chrome.glicPrivate.InvocationSource.UNIVERSAL_CART,
-      documentId
+      documentId,
     });
     // Invoke should work even if not consented, as it triggers FRE.
     chrome.test.succeed();
@@ -203,7 +203,7 @@ function tests_runInvokeServerError(documentId) {
             promptId: 'http_error',
             invocationSource:
                 chrome.glicPrivate.InvocationSource.UNIVERSAL_CART,
-            documentId
+            documentId,
           }),
           'Error: http-error');
       chrome.test.succeed();

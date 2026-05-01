@@ -109,7 +109,13 @@ chrome.test.getConfig(config => {
         async function removeCSSShouldSucceed() {
           // When no frame ID is specified, the CSS is removed from the top
           // frame.
-          await testRemoveCSS({code}, [originalColor, , , , , ]);
+          await testRemoveCSS({code}, [
+            originalColor,
+            ,
+            ,
+            ,
+            ,
+          ]);
           chrome.test.succeed();
         },
         async function removeCSSWithDifferentCodeShouldDoNothing() {
@@ -131,8 +137,13 @@ chrome.test.getConfig(config => {
         async function removeCSSWithFrameIdShouldSucceed() {
           // When a frame ID is specified, the CSS is removed from the given
           // frame.
-          await testRemoveCSS({code, frameId: frameIds[1]},
-                              [ , originalColor, , , , ]);
+          await testRemoveCSS({code, frameId: frameIds[1]}, [
+            ,
+            originalColor,
+            ,
+            ,
+            ,
+          ]);
           chrome.test.succeed();
         },
         async function removeCSSWithAllFramesShouldSucceed() {
@@ -140,8 +151,13 @@ chrome.test.getConfig(config => {
           // frames that match.
           //
           // By default "about:blank" and "about:srcdoc" frames do not match.
-          await testRemoveCSS({code, allFrames: true},
-                              [ , , originalColor, originalColor, , ]);
+          await testRemoveCSS({code, allFrames: true}, [
+            ,
+            ,
+            originalColor,
+            originalColor,
+            ,
+          ]);
           chrome.test.succeed();
         },
         async function removeCSSWithMatchAboutBlankShouldSucceed() {
@@ -153,14 +169,25 @@ chrome.test.getConfig(config => {
           chrome.test.succeed();
         },
         async function insertCSSWithFileShouldSucceed() {
-          await testInsertCSS({file, allFrames: true},
-            [injectedColor, injectedColor, injectedColor, injectedColor, , ]);
+          await testInsertCSS({file, allFrames: true}, [
+            injectedColor,
+            injectedColor,
+            injectedColor,
+            injectedColor,
+            ,
+          ]);
           chrome.test.succeed();
         },
         async function removeCSSWithFileShouldSucceed() {
           // When no frame ID is specified, the CSS is removed from the top
           // frame.
-          await testRemoveCSS({file}, [originalColor, , , , , ]);
+          await testRemoveCSS({file}, [
+            originalColor,
+            ,
+            ,
+            ,
+            ,
+          ]);
           chrome.test.succeed();
         },
         async function removeCSSWithDifferentFileShouldDoNothing() {
@@ -170,18 +197,62 @@ chrome.test.getConfig(config => {
           chrome.test.succeed();
         },
         async function insertCSSWithDuplicateCodeShouldSucceed() {
-          await testInsertCSS({ code }, [injectedColor, , , , , ])
-          .then(() => testInsertCSS({ code: code.replace('green', 'yellow') },
-                                    [injectedColor2, , , , , ]))
-          .then(() => testInsertCSS({ code }, [injectedColor, , , , , ]));
+          await testInsertCSS(
+              {code},
+              [
+                injectedColor,
+                ,
+                ,
+                ,
+                ,
+              ])
+              .then(
+                  () => testInsertCSS(
+                      {code: code.replace('green', 'yellow')},
+                      [
+                        injectedColor2,
+                        ,
+                        ,
+                        ,
+                        ,
+                      ]))
+              .then(() => testInsertCSS({code}, [
+                      injectedColor,
+                      ,
+                      ,
+                      ,
+                      ,
+                    ]));
           chrome.test.succeed();
         },
         async function removeCSSWithDuplicateCodeShouldSucceed() {
-          await testRemoveCSS({ code }, [injectedColor2, , , , , ])
-          // Only the last CSS that matches is removed.
-          .then(() => testRemoveCSS({ code: code.replace('green', 'yellow') },
-                                    [injectedColor, , , , , ]))
-          .then(() => testRemoveCSS({ code }, [originalColor, , , , , ]));
+          await testRemoveCSS(
+              {code},
+              [
+                injectedColor2,
+                ,
+                ,
+                ,
+                ,
+              ])
+              // Only the last CSS that matches is removed.
+              .then(
+                  () => testRemoveCSS(
+                      {code: code.replace('green', 'yellow')},
+                      [
+                        injectedColor,
+                        ,
+                        ,
+                        ,
+                        ,
+                      ]))
+              .then(() => testRemoveCSS({code}, [
+                      originalColor,
+                      ,
+                      ,
+                      ,
+                      ,
+                    ]));
           chrome.test.succeed();
         },
       ]);

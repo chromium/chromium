@@ -11,7 +11,8 @@
  */
 function assertDeviceMatches(expectedProperties, device) {
   Object.keys(expectedProperties).forEach(function(key) {
-    chrome.test.assertEq(expectedProperties[key], device[key],
+    chrome.test.assertEq(
+        expectedProperties[key], device[key],
         'Property ' + key + ' of device ' + device.id);
   });
 }
@@ -27,8 +28,8 @@ function assertDeviceMatches(expectedProperties, device) {
 function assertDevicesMatch(expectedDevices, devices) {
   const deviceIds = {};
   devices.forEach(function(device) {
-    chrome.test.assertFalse(!!deviceIds[device.id],
-                            'Duplicated device id: \'' + device.id + '\'.');
+    chrome.test.assertFalse(
+        !!deviceIds[device.id], 'Duplicated device id: \'' + device.id + '\'.');
     deviceIds[device.id] = true;
   });
 

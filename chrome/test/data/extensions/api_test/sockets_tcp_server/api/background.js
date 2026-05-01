@@ -7,16 +7,16 @@
 // it isn't an echo server at all.
 //
 // The response is based on the request but obfuscated using a random key.
-const request = "0100000005320000005hello";
+const request = '0100000005320000005hello';
 
-var address;
-var port = -1;
-var socketId = 0;
-var succeeded = false;
+let address;
+let port = -1;
+let socketId = 0;
+let succeeded = false;
 
 function string2ArrayBuffer(string, callback) {
-  var blob = new Blob([string]);
-  var f = new FileReader();
+  const blob = new Blob([string]);
+  const f = new FileReader();
   f.onload = function(e) {
     callback(e.target.result);
   };
@@ -24,8 +24,8 @@ function string2ArrayBuffer(string, callback) {
 }
 
 function arrayBuffer2String(buf, callback) {
-  var blob = new Blob([new Uint8Array(buf)]);
-  var f = new FileReader();
+  const blob = new Blob([new Uint8Array(buf)]);
+  const f = new FileReader();
   f.onload = function(e) {
     callback(e.target.result);
   };
@@ -33,13 +33,13 @@ function arrayBuffer2String(buf, callback) {
 }
 
 // Tests listening on a socket and sending/receiving from accepted sockets.
-var testSocketListening = function() {
-  var tmpSocketId = 0;
+const testSocketListening = function() {
+  let tmpSocketId = 0;
 
   chrome.sockets.tcpServer.create({}, onServerSocketCreate);
 
   function onServerSocketCreate(socketInfo) {
-    console.log("Server socket created: sd=" + socketInfo.socketId);
+    console.log('Server socket created: sd=' + socketInfo.socketId);
     socketId = socketInfo.socketId;
     chrome.sockets.tcpServer.getInfo(socketId, onGetInfo);
   }
@@ -50,57 +50,61 @@ var testSocketListening = function() {
   }
 
   function onListen(result) {
-    console.log("Server socket 'listen' completed: sd=" + socketId +
-        ", result=" + result);
-    chrome.test.assertEq(0, result, "Listen failed.");
+    console.log(
+        'Server socket \'listen\' completed: sd=' + socketId +
+        ', result=' + result);
+    chrome.test.assertEq(0, result, 'Listen failed.');
     chrome.sockets.tcpServer.onAccept.addListener(onServerSocketAccept);
     chrome.sockets.tcp.onReceive.addListener(onReceive);
     chrome.sockets.tcp.onReceiveError.addListener(onReceiveError);
 
     // Create a new socket to connect to the TCP server.
     chrome.sockets.tcp.create({}, function(socketInfo) {
-      console.log("Client socket created: sd=" + socketInfo.socketId);
+      console.log('Client socket created: sd=' + socketInfo.socketId);
       tmpSocketId = socketInfo.socketId;
-      chrome.sockets.tcp.connect(tmpSocketId, address, port,
-        function(result) {
-          console.log("Client socket connected: sd=" + tmpSocketId);
-          chrome.test.assertEq(0, result, "Connect failed");
+      chrome.sockets.tcp.connect(tmpSocketId, address, port, function(result) {
+        console.log('Client socket connected: sd=' + tmpSocketId);
+        chrome.test.assertEq(0, result, 'Connect failed');
 
-          // Write.
-          string2ArrayBuffer(request, function(buf) {
-            chrome.sockets.tcp.send(tmpSocketId, buf, function(sendInfo) {
-              console.log("Client socket data sent: sd=" + tmpSocketId
-                  + ", result=" + sendInfo.resultCode);
-              chrome.sockets.tcp.disconnect(tmpSocketId, function() {
-                console.log("Client socket disconnected: sd=" + tmpSocketId);
-              });
+        // Write.
+        string2ArrayBuffer(request, function(buf) {
+          chrome.sockets.tcp.send(tmpSocketId, buf, function(sendInfo) {
+            console.log(
+                'Client socket data sent: sd=' + tmpSocketId +
+                ', result=' + sendInfo.resultCode);
+            chrome.sockets.tcp.disconnect(tmpSocketId, function() {
+              console.log('Client socket disconnected: sd=' + tmpSocketId);
             });
           });
         });
+      });
     });
   }
 
-  var clientSocketId;
+  let clientSocketId;
 
   function onServerSocketAccept(acceptInfo) {
-    console.log("Server socket 'accept' event: sd=" + acceptInfo.socketId +
-        ", client sd=" + acceptInfo.clientSocketId);
-    chrome.test.assertEq(socketId, acceptInfo.socketId, "Wrong server socket.");
+    console.log(
+        'Server socket \'accept\' event: sd=' + acceptInfo.socketId +
+        ', client sd=' + acceptInfo.clientSocketId);
+    chrome.test.assertEq(socketId, acceptInfo.socketId, 'Wrong server socket.');
     chrome.test.assertTrue(acceptInfo.clientSocketId > 0);
     clientSocketId = acceptInfo.clientSocketId;
     chrome.sockets.tcp.setPaused(clientSocketId, false, function() {});
   }
 
   function onReceive(receiveInfo) {
-    console.log("Client socket 'receive' event: sd=" + receiveInfo.socketId
-        + ", bytes=" + receiveInfo.data.byteLength);
-    chrome.test.assertEq(clientSocketId, receiveInfo.socketId,
-        "Received data on wrong socket");
-    if (receiveInfo.data.byteLength == 0)
+    console.log(
+        'Client socket \'receive\' event: sd=' + receiveInfo.socketId +
+        ', bytes=' + receiveInfo.data.byteLength);
+    chrome.test.assertEq(
+        clientSocketId, receiveInfo.socketId, 'Received data on wrong socket');
+    if (receiveInfo.data.byteLength == 0) {
       return;
+    }
     arrayBuffer2String(receiveInfo.data, function(s) {
-      var match = !!s.match(request);
-      chrome.test.assertTrue(match, "Received data does not match.");
+      const match = !!s.match(request);
+      chrome.test.assertTrue(match, 'Received data does not match.');
       succeeded = true;
       // Test whether socket.getInfo correctly reflects the connection status
       // if the peer has closed the connection.
@@ -114,19 +118,21 @@ var testSocketListening = function() {
   }
 
   function onReceiveError(receiveInfo) {
-    console.log("Client socket 'receive error' event: sd="
-        + receiveInfo.socketId + ", result=" + receiveInfo.resultCode);
-    //chrome.test.fail("Receive failed.");
+    console.log(
+        'Client socket \'receive error\' event: sd=' + receiveInfo.socketId +
+        ', result=' + receiveInfo.resultCode);
+    // chrome.test.fail("Receive failed.");
   }
 };
 
-var onMessageReply = function(message) {
-  var parts = message.split(":");
-  var test_type = parts[0];
+const onMessageReply = function(message) {
+  const parts = message.split(':');
+  const test_type = parts[0];
   address = parts[1];
   port = parseInt(parts[2]);
-  console.log("Running tests, protocol " + test_type + ", echo server " +
-              address + ":" + port);
+  console.log(
+      'Running tests, protocol ' + test_type + ', echo server ' + address +
+      ':' + port);
   if (test_type == 'tcp_server') {
     chrome.test.runTests([testSocketListening]);
   }
@@ -134,4 +140,4 @@ var onMessageReply = function(message) {
 
 // Find out which protocol we're supposed to test, and which echo server we
 // should be using, then kick off the tests.
-chrome.test.sendMessage("info_please", onMessageReply);
+chrome.test.sendMessage('info_please', onMessageReply);

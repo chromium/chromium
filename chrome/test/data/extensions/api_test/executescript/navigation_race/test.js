@@ -4,9 +4,7 @@
 
 function executeCodeInTab(tabId, callback) {
   chrome.tabs.executeScript(
-      tabId,
-      {code: `document.title = \`hi, I'm on \${location};\``},
-      callback);
+      tabId, {code: `document.title = \`hi, I'm on \${location};\``}, callback);
 }
 
 chrome.test.getConfig(function(config) {

@@ -150,8 +150,8 @@ function testMulticast() {
         chrome.test.fail('Received message before joining the group');
       }
     });
-    testSendMessage(kTestMessage, kMulticastAddress); // Meant to be lost.
-    const recvTimeout = setTimeout(function () {
+    testSendMessage(kTestMessage, kMulticastAddress);  // Meant to be lost.
+    const recvTimeout = setTimeout(function() {
       // This is expected to execute.
       canceller();
     }, 2000);

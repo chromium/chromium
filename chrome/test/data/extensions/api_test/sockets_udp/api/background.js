@@ -120,11 +120,11 @@ const testSending = function() {
 
   function onArrayBuffer(arrayBuffer) {
     console.info('sending bytes to echo server: ' + arrayBuffer.byteLength);
-    chrome.sockets.udp.send(localSocketId, arrayBuffer, address, port,
-                            function(sendInfo) {
-      chrome.test.assertEq(0, sendInfo.resultCode);
-      chrome.test.assertEq(sendInfo.bytesSent, arrayBuffer.byteLength);
-    });
+    chrome.sockets.udp.send(
+        localSocketId, arrayBuffer, address, port, function(sendInfo) {
+          chrome.test.assertEq(0, sendInfo.resultCode);
+          chrome.test.assertEq(sendInfo.bytesSent, arrayBuffer.byteLength);
+        });
   }
 
   function onReceiveError(info) {
@@ -139,7 +139,7 @@ const testSending = function() {
       arrayBuffer2String(info.data, function(response) {
         dataAsString = response;  // save this for error reporting
         chrome.test.assertEq(request, response);
-        chrome.sockets.udp.close(localSocketId, function () {
+        chrome.sockets.udp.close(localSocketId, function() {
           chrome.sockets.udp.onReceive.removeListener(onReceive);
           chrome.sockets.udp.onReceiveError.removeListener(onReceiveError);
           succeeded = true;
@@ -187,16 +187,16 @@ const testSetPaused = function() {
 
   function onArrayBuffer(arrayBuffer) {
     console.info('sending bytes to echo server: ' + arrayBuffer.byteLength);
-    chrome.sockets.udp.send(localSocketId, arrayBuffer, address, port,
-                            function(sendInfo) {
-      chrome.test.assertEq(0, sendInfo.resultCode);
-      chrome.test.assertEq(sendInfo.bytesSent, arrayBuffer.byteLength);
-      receiveTimer = setTimeout(waitForReceiveEvents, 1000);
-    });
+    chrome.sockets.udp.send(
+        localSocketId, arrayBuffer, address, port, function(sendInfo) {
+          chrome.test.assertEq(0, sendInfo.resultCode);
+          chrome.test.assertEq(sendInfo.bytesSent, arrayBuffer.byteLength);
+          receiveTimer = setTimeout(waitForReceiveEvents, 1000);
+        });
   }
 
   function waitForReceiveEvents() {
-    chrome.sockets.udp.close(localSocketId, function () {
+    chrome.sockets.udp.close(localSocketId, function() {
       chrome.sockets.udp.onReceive.removeListener(onReceive);
       chrome.sockets.udp.onReceiveError.removeListener(onReceiveError);
       succeeded = true;
@@ -254,7 +254,7 @@ const testPauseAndThenResume = function() {
     sendNumber++;
     console.info(`Issuing send request #${sendNumber}`);
     chrome.sockets.udp.send(
-      socketId, encoder.encode(request), address, port, callback);
+        socketId, encoder.encode(request), address, port, callback);
   }
 
   function onBind(result) {
@@ -415,8 +415,8 @@ const testSendWriteQuota = function() {
     }
 
     string2ArrayBuffer(request, function(arrayBuffer) {
-      chrome.sockets.udp.send(localSocketId, arrayBuffer, address, port,
-                              onSendComplete);
+      chrome.sockets.udp.send(
+          localSocketId, arrayBuffer, address, port, onSendComplete);
     });
   }
 
@@ -446,14 +446,15 @@ const onMessageReply = function(message) {
   console.info('Running tests, echo server ' + address + ':' + port);
   if (test_type === 'multicast') {
     console.info('Running multicast tests');
-    chrome.test.runTests([ testMulticast ]);
+    chrome.test.runTests([testMulticast]);
   } else if (test_type === 'udp_send_write_quota') {
     console.info('Running UDP send write quota tests');
-    chrome.test.runTests([ testSendWriteQuota ]);
+    chrome.test.runTests([testSendWriteQuota]);
   } else {
     console.info('Running udp tests');
-    chrome.test.runTests([testSocketCreation, testSending, testSetPaused,
-      testPauseAndThenResume]);
+    chrome.test.runTests([
+      testSocketCreation, testSending, testSetPaused, testPauseAndThenResume
+    ]);
   }
 };
 

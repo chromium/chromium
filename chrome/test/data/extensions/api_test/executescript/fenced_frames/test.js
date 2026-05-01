@@ -14,17 +14,18 @@ const tests = [
     // We have to wait for the fenced frame to be loaded before we can
     // start the rest of the tests. The fenced frame sends a message once
     // it has been loaded.
-    listenOnce(chrome.runtime.onMessage, function(message, sender) {
-    });
+    listenOnce(chrome.runtime.onMessage, function(message, sender) {});
   },
 
   // Tests that executeScript works in fenced frames.
   function executeScriptInAllFrames() {
     // allFrames == true should execute in fenced frames.
     chrome.tabs.executeScript(
-        testTab.id,
-        {code: 'window.location.pathname', allFrames: true, runAt:
-         'document_idle'},
+        testTab.id, {
+          code: 'window.location.pathname',
+          allFrames: true,
+          runAt: 'document_idle'
+        },
         (result) => {
           // Even though the document has 3 frames (the main frame and two
           // fenced frames), we only expect two frames to be included in the
@@ -42,9 +43,11 @@ const tests = [
   function executeScriptInMainFrame() {
     // allFrames == false should not execute in fenced fenced frames.
     chrome.tabs.executeScript(
-        testTab.id,
-        {code: 'window.location.pathname', allFrames: false, runAt:
-         'document_idle'},
+        testTab.id, {
+          code: 'window.location.pathname',
+          allFrames: false,
+          runAt: 'document_idle'
+        },
         (result) => {
           chrome.test.assertEq(1, result.length);
           chrome.test.assertTrue(result[0].endsWith('main.html'));

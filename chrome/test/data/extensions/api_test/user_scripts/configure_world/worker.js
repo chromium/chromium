@@ -39,8 +39,7 @@ const receiveMessageScript = `chrome.runtime.onMessage.addListener(
        });`;
 
 // Sends a hello message.
-const helloScript =
-    `if (!!chrome.runtime.sendMessage) {
+const helloScript = `if (!!chrome.runtime.sendMessage) {
        chrome.runtime.sendMessage('hello');
      }`;
 

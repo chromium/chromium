@@ -17,8 +17,9 @@ function callbackResult(result) {
   // failure, or a false value, or an empty array.
   if (chrome.runtime.lastError) {
     chrome.test.fail(chrome.runtime.lastError.message);
-  } else if (result === false || result === FAILURE ||
-             Array.isArray(result) && result.length === 0) {
+  } else if (
+      result === false || result === FAILURE ||
+      Array.isArray(result) && result.length === 0) {
     chrome.test.fail(`Failed: ${result}`);
   }
 }

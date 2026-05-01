@@ -100,8 +100,9 @@ chrome.test.runTests([
     function updatedListener(tabId, changeInfo, tab) {
       if (tab.status === 'complete') {
         chrome.tabs.onUpdated.removeListener(updatedListener);
-        chrome.tabs.executeScript(tab.id, {file: 'script.js', allFrames: true},
-                                  executeScriptCallback);
+        chrome.tabs.executeScript(
+            tab.id, {file: 'script.js', allFrames: true},
+            executeScriptCallback);
       }
     }
     chrome.tabs.onUpdated.addListener(updatedListener);
