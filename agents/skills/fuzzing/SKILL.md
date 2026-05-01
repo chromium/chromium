@@ -22,19 +22,19 @@ Add to `*_unittest.cc` alongside existing tests:
 #include "third_party/fuzztest/src/fuzztest/fuzztest.h"
 #include "third_party/googletest/src/googletest/include/gtest/gtest.h"
 
-// 1. Define the property function
-void MyPropertyFunction(int i, const std::string& s) {
+// 1. Define the property function. Use a descriptive name that reflects
+// the property being tested (e.g., "ParseFooDoesNotCrash" or "RoundTripIsLossless").
+void MyPropertyFunctionDoesNotCrash(int i, const std::string& s) {
   // Call code under test. Focus on functions parsing untrusted input, complex
   // state machines, or data processing.
   bool result = MyComponent::DoSomething(i, s);
-
   // Add test assertions about invariants (e.g. "roundtrip equality", "valid
   // output structure"). Sanitizers like ASAN catch crashes.
   EXPECT_TRUE(result);
 }
 
 // 2. Register with FUZZ_TEST macro
-FUZZ_TEST(MyComponentFuzzTest, MyPropertyFunction)
+FUZZ_TEST(MyComponentFuzzTest, MyPropertyFunctionDoesNotCrash)
   .WithDomains(
       fuzztest::InRange(0, 100),
       fuzztest::Arbitrary<std::string>()
@@ -67,7 +67,7 @@ test("my_component_unittests") {
 
   # Format: SuiteName.TestName
   fuzztests = [
-    "MyComponentFuzzTest.MyPropertyFunction",
+    "MyComponentFuzzTest.MyPropertyFunctionDoesNotCrash",
   ]
 
   # No dependency changes are needed here. The build system
@@ -100,24 +100,35 @@ order).
 
 The task is **incomplete** until you successfully execute this sequence:
 
-1. **Build**
+1. **Find the target and Build**
+
+Find the executable `test()` target that contains your test file:
 
 ```bash
-autoninja --quiet -C out/fuzz my_component_unittests
+gn refs out/fuzz //path/to/my_component_unittest.cc --type=executable --all
 ```
+
+Build the identified target (e.g. `unit_tests` or `browser_tests`):
+
+```bash
+autoninja --quiet -C out/fuzz <target_name>
+```
+
+*Note: If the build fails with an `include not allowed by DEPS` error, see the
+Common Issues & Fixes section below.*
 
 2. Verify unit tests pass
 
 ```bash
-./out/fuzz/my_component_unittests \
---gtest_filter="MyComponentFuzzTest.MyPropertyFunction"
+./out/fuzz/<target_name> \
+--gtest_filter="MyComponentFuzzTest.MyPropertyFunctionDoesNotCrash"
 ```
 
 3. Verify fuzzing mode doesn't crash
 
 ```bash
-./out/fuzz/my_component_unittests \
---fuzz="MyComponentFuzzTest.MyPropertyFunction" --fuzz_for=10s
+./out/fuzz/<target_name> \
+--fuzz="MyComponentFuzzTest.MyPropertyFunctionDoesNotCrash" --fuzz_for=10s
 ```
 
 ## Resources
@@ -126,3 +137,22 @@ autoninja --quiet -C out/fuzz my_component_unittests
 - **Macro Usage**: `third_party/fuzztest/src/doc/fuzz-test-macro.md`
 - **Domains**: `third_party/fuzztest/src/doc/domains-reference.md`
 - **Fixtures**: `third_party/fuzztest/src/doc/fixtures.md`
+
+## Common Issues & Fixes
+
+### Build failure: include not allowed by DEPS
+
+**Symptom**: Build fails with an error like:
+`ERROR: include not allowed by DEPS: third_party/fuzztest/...`
+
+**Fix**: You must allow the `fuzztest` include in the nearest `DEPS` file
+(usually in the same directory as your test or a parent directory). Add
+`+third_party/fuzztest` to `specific_include_rules` for your test files:
+
+```python
+specific_include_rules = {
+  ".*_unittest\\.cc": [
+    "+third_party/fuzztest",
+  ],
+}
+```
