@@ -1399,8 +1399,25 @@ class _Command:
       # Adding this argument to the subparser would override the set_defaults()
       # value set by on the parent parser (even if None).
       if not self._from_wrapper_script and not self.is_bundle:
+        path_group = group.add_mutually_exclusive_group(
+            required=self.needs_apk_helper)
+        path_group.add_argument('--apk-path', help='Path to .apk')
+        path_group.add_argument('--bundle-path', help='Path to .aab')
+        group.add_argument('--keystore-path',
+                           default=os.path.join(_DIR_SOURCE_ROOT, 'build',
+                                                'android',
+                                                'chromium-debug.keystore'),
+                           help='Path to keystore for signing bundles.')
+        group.add_argument('--keystore-password',
+                           default='android',
+                           help='Password for the keystore.')
+        group.add_argument('--keystore-alias',
+                           default='androiddebugkey',
+                           help='Alias for the key in the keystore.')
         group.add_argument(
-            '--apk-path', required=self.needs_apk_helper, help='Path to .apk')
+            '--aapt2-path',
+            help=
+            'Path to aapt2 executable. If not specified, will try to find it.')
 
     if self.supports_incremental:
       group.add_argument('--incremental',
@@ -1435,6 +1452,19 @@ class _Command:
     if self.apk_helper is None:
       if args.apk_path:
         self.apk_helper = apk_helper.ToHelper(args.apk_path)
+      elif getattr(args, 'bundle_path', None):
+        aapt2_path = args.aapt2_path or build_tools.GetPath('aapt2')
+        bundle_apks_path = os.path.splitext(args.bundle_path)[0] + '.apks'
+        self.bundle_generation_info = BundleGenerationInfo(
+            bundle_path=args.bundle_path,
+            bundle_apks_path=bundle_apks_path,
+            aapt2_path=aapt2_path,
+            keystore_path=args.keystore_path,
+            keystore_password=args.keystore_password,
+            keystore_alias=args.keystore_alias,
+            system_image_locales=None)
+        _GenerateBundleApks(self.bundle_generation_info)
+        self.apk_helper = apk_helper.ToHelper(bundle_apks_path)
       elif incremental_apk_path:
         self.install_dict = install_dict
         self.apk_helper = apk_helper.ToHelper(incremental_apk_path)
@@ -1523,6 +1553,11 @@ class _Command:
     # always added when not using wrapper scripts.
     args.__dict__.setdefault('apk_path', None)
     args.__dict__.setdefault('incremental_json', None)
+    args.__dict__.setdefault('bundle_path', None)
+    args.__dict__.setdefault('keystore_path', None)
+    args.__dict__.setdefault('keystore_password', None)
+    args.__dict__.setdefault('keystore_alias', None)
+    args.__dict__.setdefault('aapt2_path', None)
 
     self.incremental_apk_path = None
     install_dict = None
