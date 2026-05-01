@@ -1806,7 +1806,7 @@ dependencies = [
 
 [[package]]
 name = "toml_parser"
-version = "1.1.0+spec-1.1.0"
+version = "1.1.2+spec-1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "winnow",

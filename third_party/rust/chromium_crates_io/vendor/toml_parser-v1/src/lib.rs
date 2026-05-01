@@ -6,6 +6,6 @@
 // by `tools/crates/run_gnrt.py vendor`. Do not edit!
 //
 // This is an empty placeholder that has replaced the
-// `toml_parser-1.1.0+spec-1.1.0` crate.
+// `toml_parser-1.1.2+spec-1.1.0` crate.
 //
 // See `//tools/crates/gnrt/removed_crate.md` to learn more.
