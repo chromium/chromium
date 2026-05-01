@@ -15,6 +15,7 @@
 #include "build/branding_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/signin/ash/inline_login_dialog.h"
+#include "chrome/grit/account_manager_resources.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
@@ -105,23 +106,30 @@ AccountMigrationWelcomeUI::AccountMigrationWelcomeUI(content::WebUI* web_ui)
                          ash::external_urls::kAccountManagerLearnMoreURL);
 
   // Add required resources.
-  html_source->AddResourcePath("account_migration_welcome_app.js",
-                               IDR_ACCOUNT_MIGRATION_WELCOME_APP_JS);
-  html_source->AddResourcePath("account_migration_welcome_app.html.js",
-                               IDR_ACCOUNT_MIGRATION_WELCOME_APP_HTML_JS);
-  html_source->AddResourcePath("account_manager_shared.css.js",
-                               IDR_ACCOUNT_MANAGER_SHARED_CSS_JS);
-  html_source->AddResourcePath("account_manager_browser_proxy.js",
-                               IDR_ACCOUNT_MANAGER_BROWSER_PROXY_JS);
+  html_source->AddResourcePath(
+      "account_migration_welcome_app.js",
+      IDR_ACCOUNT_MANAGER_ACCOUNT_MIGRATION_WELCOME_APP_JS);
+  html_source->AddResourcePath(
+      "account_migration_welcome_app.html.js",
+      IDR_ACCOUNT_MANAGER_ACCOUNT_MIGRATION_WELCOME_APP_HTML_JS);
+  html_source->AddResourcePath(
+      "account_manager_shared.css.js",
+      IDR_ACCOUNT_MANAGER_ACCOUNT_MANAGER_SHARED_CSS_JS);
+  html_source->AddResourcePath(
+      "account_manager_browser_proxy.js",
+      IDR_ACCOUNT_MANAGER_ACCOUNT_MANAGER_BROWSER_PROXY_JS);
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  html_source->AddResourcePath("account_manager_welcome_1x.png",
-                               IDR_ACCOUNT_MANAGER_WELCOME_1X_PNG);
-  html_source->AddResourcePath("account_manager_welcome_2x.png",
-                               IDR_ACCOUNT_MANAGER_WELCOME_2X_PNG);
+  html_source->AddResourcePath(
+      "account_manager_welcome_1x.png",
+      IDR_ACCOUNT_MANAGER_ACCOUNT_MANAGER_WELCOME_1X_PNG);
+  html_source->AddResourcePath(
+      "account_manager_welcome_2x.png",
+      IDR_ACCOUNT_MANAGER_ACCOUNT_MANAGER_WELCOME_2X_PNG);
   html_source->AddResourcePath("googleg.svg",
                                IDR_ACCOUNT_MANAGER_WELCOME_GOOGLE_LOGO_SVG);
 #endif
-  html_source->SetDefaultResource(IDR_ACCOUNT_MIGRATION_WELCOME_HTML);
+  html_source->SetDefaultResource(
+      IDR_ACCOUNT_MANAGER_ACCOUNT_MIGRATION_WELCOME_HTML);
 
   web_ui->AddMessageHandler(std::make_unique<MigrationMessageHandler>(
       base::BindRepeating(&WebDialogUI::CloseDialog, weak_factory_.GetWeakPtr(),

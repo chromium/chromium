@@ -116,7 +116,6 @@ js_library("test_util") {
 group("closure_compile") {
   public_deps = [
     ":closure_compile_local",
-    "account_manager:closure_compile",
     "ash_common:closure_compile",
   ]
 }

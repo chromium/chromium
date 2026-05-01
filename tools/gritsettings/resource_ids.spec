@@ -261,6 +261,10 @@
     "META": {"sizes": {"includes": [10]}},
     "includes": [2970],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/account_manager/resources.grd": {
+    "META": {"sizes": {"includes": [30],}},
+    "includes": [2975],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/add_supervision/resources.grd": {
     "META": {"sizes": {"includes": [10],}},
     "includes": [2980],

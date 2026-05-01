@@ -8,6 +8,7 @@
 #include "base/functional/bind.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/grit/account_manager_resources.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -45,16 +46,21 @@ AccountManagerErrorUI::AccountManagerErrorUI(content::WebUI* web_ui)
 #endif
 
   // Add required resources.
-  html_source->AddResourcePath("account_manager_shared.css.js",
-                               IDR_ACCOUNT_MANAGER_SHARED_CSS_JS);
-  html_source->AddResourcePath("account_manager_browser_proxy.js",
-                               IDR_ACCOUNT_MANAGER_BROWSER_PROXY_JS);
-  html_source->AddResourcePath("account_manager_error_app.js",
-                               IDR_ACCOUNT_MANAGER_ERROR_APP_JS);
-  html_source->AddResourcePath("account_manager_error_app.html.js",
-                               IDR_ACCOUNT_MANAGER_ERROR_APP_HTML_JS);
+  html_source->AddResourcePath(
+      "account_manager_shared.css.js",
+      IDR_ACCOUNT_MANAGER_ACCOUNT_MANAGER_SHARED_CSS_JS);
+  html_source->AddResourcePath(
+      "account_manager_browser_proxy.js",
+      IDR_ACCOUNT_MANAGER_ACCOUNT_MANAGER_BROWSER_PROXY_JS);
+  html_source->AddResourcePath(
+      "account_manager_error_app.js",
+      IDR_ACCOUNT_MANAGER_ACCOUNT_MANAGER_ERROR_APP_JS);
+  html_source->AddResourcePath(
+      "account_manager_error_app.html.js",
+      IDR_ACCOUNT_MANAGER_ACCOUNT_MANAGER_ERROR_APP_HTML_JS);
 
-  html_source->SetDefaultResource(IDR_ACCOUNT_MANAGER_ERROR_HTML);
+  html_source->SetDefaultResource(
+      IDR_ACCOUNT_MANAGER_ACCOUNT_MANAGER_ERROR_HTML);
 }
 
 AccountManagerErrorUI::~AccountManagerErrorUI() = default;

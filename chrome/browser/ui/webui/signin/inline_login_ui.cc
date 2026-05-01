@@ -47,6 +47,7 @@
 #include "chrome/browser/ui/webui/ash/edu_coexistence/edu_coexistence_login_handler.h"
 #include "chrome/browser/ui/webui/signin/ash/edu_account_login_handler.h"
 #include "chrome/browser/ui/webui/signin/ash/inline_login_handler_impl.h"
+#include "chrome/grit/account_manager_resources.h"
 #include "chrome/grit/edu_coexistence_resources.h"
 #include "chrome/grit/edu_coexistence_resources_map.h"
 #include "chrome/grit/gaia_action_buttons_resources.h"
@@ -134,7 +135,8 @@ void CreateAndAddWebUIDataSource(Profile* profile) {
 
 #if BUILDFLAG(IS_CHROMEOS)
   static constexpr webui::ResourcePath kResources[] = {
-      {"account_manager_shared.css.js", IDR_ACCOUNT_MANAGER_SHARED_CSS_JS},
+      {"account_manager_shared.css.js",
+       IDR_ACCOUNT_MANAGER_ACCOUNT_MANAGER_SHARED_CSS_JS},
       {"error_screen.html.js",
        IDR_ACCOUNT_MANAGER_COMPONENTS_ERROR_SCREEN_HTML_JS},
       {"error_screen.js", IDR_ACCOUNT_MANAGER_COMPONENTS_ERROR_SCREEN_JS},
@@ -145,8 +147,10 @@ void CreateAndAddWebUIDataSource(Profile* profile) {
        IDS_ACCOUNT_MANAGER_SIGNIN_BLOCKED_BY_POLICY_SVG},
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-      {"account_manager_welcome_1x.png", IDR_ACCOUNT_MANAGER_WELCOME_1X_PNG},
-      {"account_manager_welcome_2x.png", IDR_ACCOUNT_MANAGER_WELCOME_2X_PNG},
+      {"account_manager_welcome_1x.png",
+       IDR_ACCOUNT_MANAGER_ACCOUNT_MANAGER_WELCOME_1X_PNG},
+      {"account_manager_welcome_2x.png",
+       IDR_ACCOUNT_MANAGER_ACCOUNT_MANAGER_WELCOME_2X_PNG},
       {"googleg.svg", IDR_ACCOUNT_MANAGER_WELCOME_GOOGLE_LOGO_SVG},
 #endif
   };

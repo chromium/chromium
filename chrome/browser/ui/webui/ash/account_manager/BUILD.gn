@@ -32,6 +32,7 @@ static_library("account_manager") {
     "//chrome/browser:resources",
     "//chrome/browser:resources_grit",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/resources/chromeos/account_manager:resources",
     "//chrome/browser/ui/webui/signin/ash",
     "//chrome/common:constants",
     "//chromeos/ash/components/account_manager",

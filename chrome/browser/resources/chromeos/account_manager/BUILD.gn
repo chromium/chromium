@@ -2,52 +2,42 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/polymer/css_to_wrapper.gni")
-import("//tools/polymer/html_to_wrapper.gni")
+import("//ui/webui/resources/tools/build_webui.gni")
 
-js_type_check("closure_compile") {
-  is_polymer3 = true
-  deps = [
-    ":account_manager_browser_proxy",
-    ":account_manager_error_app",
-    ":account_migration_welcome_app",
+assert(is_chromeos)
+
+build_webui("build") {
+  grd_prefix = "account_manager"
+
+  static_files = [
+    "account_manager_error.html",
+    "account_migration_welcome.html",
   ]
-}
 
-js_library("account_migration_welcome_app") {
-  deps = [
-    ":account_manager_browser_proxy",
-    "//ash/webui/common/resources:assert",
-    "//ash/webui/common/resources:load_time_data.m",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  if (is_chrome_branded) {
+    static_files += [
+      "account_manager_welcome_1x.png",
+      "account_manager_welcome_2x.png",
+    ]
+  }
+
+  web_component_files = [
+    "account_manager_error_app.js",
+    "account_migration_welcome_app.js",
+    "components/error_screen.js",
   ]
-}
 
-js_library("account_manager_error_app") {
-  deps = [
-    ":account_manager_browser_proxy",
-    "//ash/webui/common/resources:assert",
-    "//ash/webui/common/resources:load_time_data.m",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ts_files = [ "account_manager_browser_proxy.js" ]
+
+  css_files = [ "account_manager_shared.css" ]
+
+  ts_deps = [
+    "//ash/webui/common/resources:build_ts",
+    "//ash/webui/common/resources/cr_elements:build_ts",
+    "//third_party/polymer/v3_0:library",
   ]
-}
 
-js_library("account_manager_browser_proxy") {
-  deps = [ "//ash/webui/common/resources:cr_deprecated" ]
-  externs_list = [ "$externs_path/chrome_send.js" ]
-}
+  ts_composite = true
 
-html_to_wrapper("html_wrapper_files") {
-  in_files = [
-    "account_migration_welcome_app.html",
-    "account_manager_error_app.html",
-  ]
-  template = "polymer"
-  use_js = true
-}
-
-css_to_wrapper("css_wrapper_files") {
-  in_files = [ "account_manager_shared.css" ]
-  use_js = true
+  webui_context_type = "trusted"
 }
