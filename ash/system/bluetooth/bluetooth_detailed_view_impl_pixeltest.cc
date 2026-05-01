@@ -127,7 +127,6 @@ class BluetoothDetailedViewImplPixelTest
         ->bluetooth_config_test_helper()
         ->fake_adapter_state_controller()
         ->SetSystemState(system_state);
-    base::RunLoop().RunUntilIdle();
   }
 
  private:
