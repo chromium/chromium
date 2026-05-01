@@ -9,6 +9,7 @@
 
 #include "base/command_line.h"
 #include "base/logging.h"
+#include "base/threading/thread.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "third_party/khronos/EGL/egl.h"
@@ -40,6 +41,18 @@ using ui::GetLastEGLErrorString;
 namespace gl {
 
 namespace {
+
+bool g_use_per_thread_virtualization_group = false;
+EGLint GetPerThreadVirtualizationGroup() {
+  static thread_local EGLint group = 0;
+  static std::atomic<EGLint> next_group_id =
+      static_cast<EGLint>(AngleContextVirtualizationGroup::kMax) + 1;
+
+  if (!group) {
+    group = next_group_id++;
+  }
+  return group;
+}
 
 // Change the specified attribute in context_attributes. This fails if
 // the attribute is not already present. Returns true on success, false
@@ -77,6 +90,11 @@ bool IsARMSwiftShaderPlatform() {
 }
 
 }  // namespace
+
+// static
+void GLContextEGL::EnablePerThreadVirtualizationGroup() {
+  g_use_per_thread_virtualization_group = true;
+}
 
 GLContextEGL::GLContextEGL(GLShareGroup* share_group)
     : GLContextReal(share_group) {}
@@ -318,9 +336,17 @@ bool GLContextEGL::InitializeImpl(GLSurface* compatible_surface,
   angle_context_virtualization_group_number_ =
       attribs.angle_context_virtualization_group_number;
   if (gl_display_->ext->b_EGL_ANGLE_context_virtualization) {
+    EGLint virtualization_group =
+        static_cast<EGLint>(angle_context_virtualization_group_number_);
+
+    if (angle_context_virtualization_group_number_ ==
+            AngleContextVirtualizationGroup::kDefault &&
+        g_use_per_thread_virtualization_group) {
+      virtualization_group = GetPerThreadVirtualizationGroup();
+    }
+
     context_attributes.push_back(EGL_CONTEXT_VIRTUALIZATION_GROUP_ANGLE);
-    context_attributes.push_back(
-        static_cast<EGLint>(angle_context_virtualization_group_number_));
+    context_attributes.push_back(virtualization_group);
   }
 
   // Append final EGL_NONE to signal the context attributes are finished

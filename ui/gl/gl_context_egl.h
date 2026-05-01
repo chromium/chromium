@@ -24,6 +24,8 @@ class GL_EXPORT GLContextEGL : public GLContextReal {
   GLContextEGL(const GLContextEGL&) = delete;
   GLContextEGL& operator=(const GLContextEGL&) = delete;
 
+  static void EnablePerThreadVirtualizationGroup();
+
   // Implement GLContext.
   bool InitializeImpl(GLSurface* compatible_surface,
                       const GLContextAttribs& attribs) override;

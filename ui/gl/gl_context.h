@@ -78,6 +78,7 @@ enum class AngleContextVirtualizationGroup {
   kWebViewRenderThread = 3,
   kAndroidVideoEncoder = 4,
   kGraphiteDawnSharedContext = 5,
+  kMax = kGraphiteDawnSharedContext,
 };
 
 struct GL_EXPORT GLContextAttribs {
