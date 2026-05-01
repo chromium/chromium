@@ -239,5 +239,39 @@ TEST_F(OnTaskExtensionsManagerImplTest,
   EXPECT_FALSE(extension_registrar->IsExtensionEnabled(extension_id));
 }
 
+TEST_F(OnTaskExtensionsManagerImplTest,
+       ShouldNotClearOtherDisableReasonsOnReEnable) {
+  const Extension* const extension = AddExtension();
+  ExtensionRegistrar* const extension_registrar =
+      ExtensionRegistrar::Get(profile());
+
+  // Allow all extension modifications by policy.
+  TestManagementPolicyProvider provider(
+      TestManagementPolicyProvider::ALLOW_ALL);
+  ManagementPolicy* const policy =
+      extension_environment_.GetExtensionSystem()->management_policy();
+  policy->RegisterProvider(&provider);
+
+  // Disable extensions.
+  OnTaskExtensionsManagerImpl on_task_extensions_manager(profile());
+  on_task_extensions_manager.DisableExtensions();
+  ASSERT_FALSE(extension_registrar->IsExtensionEnabled(extension->id()));
+
+  // Add an additional disable reason to the extension (e.g., permissions
+  // increase).
+  extension_registrar->DisableExtension(
+      extension->id(),
+      {extensions::disable_reason::DISABLE_PERMISSIONS_INCREASE});
+
+  // Re-enable extensions (simulate OnTask session end).
+  on_task_extensions_manager.ReEnableExtensions();
+
+  // Verify the extension remains disabled because of the other reason.
+  EXPECT_FALSE(extension_registrar->IsExtensionEnabled(extension->id()));
+  EXPECT_TRUE(extensions::ExtensionPrefs::Get(profile())->HasDisableReason(
+      extension->id(),
+      extensions::disable_reason::DISABLE_PERMISSIONS_INCREASE));
+}
+
 }  // namespace
 }  // namespace ash::boca

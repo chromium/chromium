@@ -78,7 +78,8 @@ void OnTaskExtensionsManagerImpl::ReEnableExtensions() {
     const Extension* const extension =
         extension_registry->disabled_extensions().GetByID(extension_id);
     if (extension && CanEnableExtension(extension)) {
-      extension_registrar->EnableExtension(extension_id);
+      extension_registrar->RemoveDisableReasonAndMaybeEnable(
+          extension_id, extensions::disable_reason::DISABLE_USER_ACTION);
     }
   }
 
