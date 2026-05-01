@@ -1100,10 +1100,10 @@ def _RunLogcat(device,
                   ' Use --forever to prevent this.')
             return
     except:
-      sys.stderr.write('Failed to process line: ' + line + '\n')
+      sys.stderr.write(f'Failed to process line: {line}\n')
       # Skip stack trace for the common case of the adb server being
       # restarted.
-      if 'unexpected EOF' in line:
+      if line is not None and 'unexpected EOF' in line:
         sys.exit(1)
       raise
 
