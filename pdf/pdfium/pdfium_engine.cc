@@ -769,7 +769,7 @@ PDFiumEngine::~PDFiumEngine() {
   selection_.clear();
 #if BUILDFLAG(ENABLE_PDF_INK2)
   ink_stroke_data_.clear();
-  stroked_pages_unload_preventers_.clear();
+  edited_pages_unload_preventers_.clear();
 #endif
 
   for (auto& page : pages_) {
@@ -5203,8 +5203,8 @@ void PDFiumEngine::ApplyStroke(int page_index,
   // Since there are now page references in `ink_stroke_data_`, ensure that this
   // page has a ScopedUnloadPreventer so that the references do not become stale
   // if PDFiumPage::Unload() gets called.
-  if (!stroked_pages_unload_preventers_.contains(page_index)) {
-    stroked_pages_unload_preventers_.insert(
+  if (!edited_pages_unload_preventers_.contains(page_index)) {
+    edited_pages_unload_preventers_.insert(
         {page_index, PDFiumPage::ScopedUnloadPreventer(pdfium_page)});
   }
 }
@@ -5243,7 +5243,7 @@ void PDFiumEngine::DiscardStroke(int page_index, InkStrokeId id) {
         return it.second.page_index == page_index;
       });
   if (!page_still_has_shapes_or_strokes) {
-    stroked_pages_unload_preventers_.erase(page_index);
+    edited_pages_unload_preventers_.erase(page_index);
   }
 }
 
@@ -5285,16 +5285,16 @@ PDFiumEngine::LoadV2InkPathsForPage(int page_index) {
 
   // Should be unique due to the caller's responsibility to call
   // `LoadV2InkPathsForPage()` at most once per page.
-  CHECK(!stroked_pages_unload_preventers_.contains(page_index));
+  CHECK(!edited_pages_unload_preventers_.contains(page_index));
 
   // Prevent pages with existing Ink paths from unloading. Otherwise, if the
   // page unloads and reloads, then the loaded V2 Ink path will no longer match
   // the PDF object, and any updates to the Ink path will not be visible in the
   // PDF.
   // Also remember the associated page has loaded shapes, so DiscardStroke()
-  // will know not to erase the `stroked_pages_unload_preventers_` entry.
+  // will know not to erase the `edited_pages_unload_preventers_` entry.
   if (!page_shape_map.empty()) {
-    stroked_pages_unload_preventers_.insert(
+    edited_pages_unload_preventers_.insert(
         {page_index, PDFiumPage::ScopedUnloadPreventer(page)});
     pages_with_loaded_v2_ink_shapes_.insert(page_index);
   }

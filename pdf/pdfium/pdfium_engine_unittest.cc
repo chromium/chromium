@@ -2429,7 +2429,7 @@ TEST_P(PDFiumEngineInkTest, LoadV2InkPathsForPage) {
   EXPECT_EQ(1u, ink_shapes_it->second.Meshes().size());
   EXPECT_TRUE(pdf_shapes_it->second);
 
-  EXPECT_TRUE(engine->stroked_pages_unload_preventers_for_testing().contains(
+  EXPECT_TRUE(engine->edited_pages_unload_preventers_for_testing().contains(
       kPageIndex));
 }
 
@@ -2689,7 +2689,7 @@ TEST_P(PDFiumEngineInkDrawTest, StrokeData) {
   const base::FilePath kAppliedStroke2FilePath(
       GetInkTestDataFilePath(FILE_PATH_LITERAL("applied_stroke2.png")));
   CheckPdfRendering(page.GetPage(), kPageSizeInPoints, kAppliedStroke2FilePath);
-  EXPECT_TRUE(engine->stroked_pages_unload_preventers_for_testing().contains(
+  EXPECT_TRUE(engine->edited_pages_unload_preventers_for_testing().contains(
       kPageIndex));
 
   // Getting the save data should now have the new strokes.
@@ -2718,7 +2718,7 @@ TEST_P(PDFiumEngineInkDrawTest, StrokeData) {
   EXPECT_EQ(GetPdfMarkObjCountForTesting(engine->doc(),
                                          kInkAnnotationIdentifierKeyV2),
             1);
-  EXPECT_TRUE(engine->stroked_pages_unload_preventers_for_testing().contains(
+  EXPECT_TRUE(engine->edited_pages_unload_preventers_for_testing().contains(
       kPageIndex));
 
   // Set the highlighter stroke as active again, to perform the equivalent of an
@@ -2733,7 +2733,7 @@ TEST_P(PDFiumEngineInkDrawTest, StrokeData) {
   EXPECT_EQ(GetPdfMarkObjCountForTesting(engine->doc(),
                                          kInkAnnotationIdentifierKeyV2),
             2);
-  EXPECT_TRUE(engine->stroked_pages_unload_preventers_for_testing().contains(
+  EXPECT_TRUE(engine->edited_pages_unload_preventers_for_testing().contains(
       kPageIndex));
 }
 
@@ -2773,7 +2773,7 @@ TEST_P(PDFiumEngineInkDrawTest, StrokeDiscardStroke) {
   const base::FilePath kAppliedStroke1FilePath(
       GetInkTestDataFilePath(FILE_PATH_LITERAL("applied_stroke1.png")));
   CheckPdfRendering(page.GetPage(), kPageSizeInPoints, kAppliedStroke1FilePath);
-  EXPECT_TRUE(engine->stroked_pages_unload_preventers_for_testing().contains(
+  EXPECT_TRUE(engine->edited_pages_unload_preventers_for_testing().contains(
       kPageIndex));
 
   // Set the stroke as inactive, to perform the equivalent of an "undo" action.
@@ -2785,14 +2785,14 @@ TEST_P(PDFiumEngineInkDrawTest, StrokeDiscardStroke) {
                                          kInkAnnotationIdentifierKeyV2),
             0);
   EXPECT_EQ(FPDFPage_CountObjects(page.GetPage()), 1);
-  EXPECT_TRUE(engine->stroked_pages_unload_preventers_for_testing().contains(
+  EXPECT_TRUE(engine->edited_pages_unload_preventers_for_testing().contains(
       kPageIndex));
 
   // Discard the stroke.
   engine->DiscardStroke(kPageIndex, kStrokeId);
 
   EXPECT_EQ(FPDFPage_CountObjects(page.GetPage()), 0);
-  EXPECT_FALSE(engine->stroked_pages_unload_preventers_for_testing().contains(
+  EXPECT_FALSE(engine->edited_pages_unload_preventers_for_testing().contains(
       kPageIndex));
 
   // Draw a new stroke, reusing the same InkStrokeId. This can occur after an
@@ -2811,7 +2811,7 @@ TEST_P(PDFiumEngineInkDrawTest, StrokeDiscardStroke) {
       GetInkTestDataFilePath(FILE_PATH_LITERAL("applied_stroke3.png")));
   CheckPdfRendering(page.GetPage(), kPageSizeInPoints, kAppliedStroke3FilePath);
   EXPECT_EQ(FPDFPage_CountObjects(page.GetPage()), 1);
-  EXPECT_TRUE(engine->stroked_pages_unload_preventers_for_testing().contains(
+  EXPECT_TRUE(engine->edited_pages_unload_preventers_for_testing().contains(
       kPageIndex));
 }
 
@@ -2844,7 +2844,7 @@ TEST_P(PDFiumEngineInkDrawTest, LoadedV2InkPathsAndUpdateShapeActive) {
 
   // Attempt to unload the page before erasing. This would have caught
   // https://crbug.com/402364794.
-  EXPECT_TRUE(engine->stroked_pages_unload_preventers_for_testing().contains(
+  EXPECT_TRUE(engine->edited_pages_unload_preventers_for_testing().contains(
       kPageIndex));
   page.Unload();
 
@@ -2860,7 +2860,7 @@ TEST_P(PDFiumEngineInkDrawTest, LoadedV2InkPathsAndUpdateShapeActive) {
 
   // Attempt to unload the page before undoing. This would have caught
   // https://crbug.com/402454523.
-  EXPECT_TRUE(engine->stroked_pages_unload_preventers_for_testing().contains(
+  EXPECT_TRUE(engine->edited_pages_unload_preventers_for_testing().contains(
       kPageIndex));
   page.Unload();
 
@@ -2891,7 +2891,7 @@ TEST_P(PDFiumEngineInkDrawTest, LoadedV2InkPathsAndApplyAndDiscardStroke) {
   ASSERT_EQ(GetPdfMarkObjCountForTesting(engine->doc(),
                                          kInkAnnotationIdentifierKeyV2),
             1);
-  ASSERT_TRUE(engine->stroked_pages_unload_preventers_for_testing().contains(
+  ASSERT_TRUE(engine->edited_pages_unload_preventers_for_testing().contains(
       kPageIndex));
 
   // Draw a stroke and immediately discard the stroke to undo.
@@ -2910,7 +2910,7 @@ TEST_P(PDFiumEngineInkDrawTest, LoadedV2InkPathsAndApplyAndDiscardStroke) {
 
   // The page at `kPageIndex` should still not be allowed to unload, since
   // `engine` is holding onto page objects within that page.
-  EXPECT_TRUE(engine->stroked_pages_unload_preventers_for_testing().contains(
+  EXPECT_TRUE(engine->edited_pages_unload_preventers_for_testing().contains(
       kPageIndex));
 }
 
