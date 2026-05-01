@@ -29,6 +29,7 @@ class GlicCueTarget : public contextual_cueing::CueTarget {
   // contextual_cueing::CueTarget:
   bool IsEligible() const override;
   void OnClick(contextual_cueing::CueActionData data) override;
+  void OnEditPrompt(contextual_cueing::CueActionData data) override;
   ui::ImageModel GetAnchoredMessageIcon() const override;
   ui::ImageModel GetOmniboxChipIcon() const override;
   contextual_cueing::CueActionData CueActionDataFromResponse(
@@ -38,6 +39,9 @@ class GlicCueTarget : public contextual_cueing::CueTarget {
       const override;
 
  private:
+  void InvokeGlic(contextual_cueing::CueActionData data,
+                  bool should_autosubmit);
+
   tabs::TabHandle GetActiveTabHandle();
 
   // Unowned and guaranteed to outlive this.

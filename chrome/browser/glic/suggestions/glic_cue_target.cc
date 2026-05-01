@@ -73,6 +73,16 @@ bool GlicCueTarget::IsEligible() const {
 }
 
 void GlicCueTarget::OnClick(contextual_cueing::CueActionData data) {
+  InvokeGlic(std::move(data), base::FeatureList::IsEnabled(
+                                  features::kGlicContextualCueingV2AutoSubmit));
+}
+
+void GlicCueTarget::OnEditPrompt(contextual_cueing::CueActionData data) {
+  InvokeGlic(std::move(data), /*should_autosubmit=*/false);
+}
+
+void GlicCueTarget::InvokeGlic(contextual_cueing::CueActionData data,
+                               bool should_autosubmit) {
 #if BUILDFLAG(IS_ANDROID)
   NOTIMPLEMENTED() << "Glic contextual cue not yet implemented for Android.";
 #else
@@ -98,8 +108,7 @@ void GlicCueTarget::OnClick(contextual_cueing::CueActionData data) {
   options.tab_sharing = TabSharingOptions(std::move(glic_data.tabs_to_share),
                                           GlicPinTrigger::kContextualCue);
 
-  if (base::FeatureList::IsEnabled(
-          features::kGlicContextualCueingV2AutoSubmit)) {
+  if (should_autosubmit) {
     glic_keyed_service_->InvokeWithAutoSubmit(
         InvokeWithAutoSubmitPasskeyProvider::GetPassKey(), std::move(options));
   } else {
