@@ -97,6 +97,9 @@ async function fileCopy(
         chrome.fileManagerPrivate.onIOTaskProgressStatus.removeListener(
             onProgress);
         successCallback();
+        break;
+      default:
+        // Uninteresting event state.
     }
   };
 

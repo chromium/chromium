@@ -57,6 +57,8 @@ chrome.test.runTests([
           chrome.test.succeed();
           break;
         }
+        default:
+          // Nothing meaningful we can do. The test already passed.
       }
       iteration++;
     });

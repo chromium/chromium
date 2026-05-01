@@ -8,6 +8,10 @@
 
 // Return true if |stateA| is more advanced than |stateB|.
 function isStateAdvanced(stateA, stateB) {
+  // Note: "No default" is used for eslint'ing. These don't have defaults
+  // because they intentionally fallthrough to the false case at the end of
+  // the function.
+
   if (stateB === 'installing') {
     switch (stateA) {
       case 'installed':
@@ -15,6 +19,7 @@ function isStateAdvanced(stateA, stateB) {
       case 'activated':
       case 'redundant':
         return true;
+      // No default
     }
   }
 
@@ -24,6 +29,7 @@ function isStateAdvanced(stateA, stateB) {
       case 'activated':
       case 'redundant':
         return true;
+      // No default
     }
   }
 
@@ -32,6 +38,7 @@ function isStateAdvanced(stateA, stateB) {
       case 'activated':
       case 'redundant':
         return true;
+      // No default
     }
   }
 
@@ -39,6 +46,7 @@ function isStateAdvanced(stateA, stateB) {
     switch (stateA) {
       case 'redundant':
         return true;
+      // No default
     }
   }
   return false;

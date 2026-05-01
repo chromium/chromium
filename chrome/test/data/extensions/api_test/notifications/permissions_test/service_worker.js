@@ -33,6 +33,8 @@ addEventListener('message', event => {
 
         messagePort.postMessage(permissionState.state);
         break;
+      default:
+        console.error(`Unexpected message: ${messageEvent.data}`);
     }
   };
 

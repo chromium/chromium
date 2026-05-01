@@ -281,6 +281,9 @@ function onStop() {
     case PAUSED_PLAYING:
       stopPlaying();
       break;
+    default:
+      console.error(`Unexpected recording state: ${recordingState}`);
+      break;
   }
   setRecordingState(STOPPED);
 }

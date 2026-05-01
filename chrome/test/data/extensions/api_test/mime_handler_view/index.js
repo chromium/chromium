@@ -217,6 +217,8 @@ const tests = [
             chrome.test.succeed();
           });
           break;
+        default:
+          // Unexpected, but nothing we can do -- the test already passed.
       }
       calls++;
     });
@@ -239,6 +241,8 @@ const tests = [
           chrome.test.assertEq(null, document.webkitFullscreenElement);
           chrome.test.succeed();
           break;
+        default:
+          // Unexpected, but nothing we can do -- the test already passed.
       }
       calls++;
     });

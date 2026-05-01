@@ -39,6 +39,8 @@ function startXHRRequests(
       case XMLHttpRequest.DONE:
         validateResponse();
         break;
+      default:
+        // Uninteresting state.
     }
   };
   chrome.test.sendMessage(`opening ${googlePageUrl}`);
@@ -74,6 +76,8 @@ function startNonGoogleXHRRequests(
       case XMLHttpRequest.DONE:
         validateResponse();
         break;
+      default:
+        // Uninteresting state.
     }
   };
   xhr.open('GET', nonGooglePageUrl, isAsync);
