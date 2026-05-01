@@ -5640,6 +5640,7 @@ if (!is_android) {
         "//chrome/browser/apps/app_discovery_service/recommended_arc_apps",
         "//chrome/browser/apps/app_discovery_service/recommended_arc_apps:test_support",
         "//chrome/browser/apps/app_preload_service:browser_tests",
+        "//chrome/browser/apps/app_service:browser_tests",
         "//chrome/browser/apps/app_service/app_install",
         "//chrome/browser/apps/app_service/app_install:browser_tests",
         "//chrome/browser/apps/app_service/app_install:proto",

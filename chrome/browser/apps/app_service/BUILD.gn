@@ -391,3 +391,24 @@ source_set("app_registry_cache_waiter") {
     "//url",
   ]
 }
+
+if (is_chromeos) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    sources = [ "metrics/app_platform_metrics_service_browsertest.cc" ]
+
+    deps = [
+      ":app_service",
+      ":test_support",
+      "//chrome/browser",
+      "//chrome/browser/sync",
+      "//chrome/test:test_support",
+      "//components/app_constants",
+      "//content/test:test_support",
+      "//testing/gmock",
+      "//testing/gtest",
+    ]
+  }
+}
