@@ -205,6 +205,10 @@ class FuseboxProperties {
     public static final WritableBooleanPropertyKey POPUP_MODEL_HEADER_VISIBLE =
             new WritableBooleanPropertyKey();
 
+    /** The text for the models header in the popup. */
+    public static final WritableObjectPropertyKey<String> POPUP_MODEL_HEADER_TEXT =
+            new WritableObjectPropertyKey<>();
+
     /** The state of the popup. */
     public static final WritableObjectPropertyKey<@PopupState Integer> POPUP_STATE =
             new WritableObjectPropertyKey<>();
@@ -265,6 +269,10 @@ class FuseboxProperties {
     public static final WritableBooleanPropertyKey POPUP_TOOL_HEADER_VISIBLE =
             new WritableBooleanPropertyKey();
 
+    /** The text for the tools header in the popup. */
+    public static final WritableObjectPropertyKey<String> POPUP_TOOL_HEADER_TEXT =
+            new WritableObjectPropertyKey<>();
+
     /** Whether to show the dedicated AIMode button directly in the Fusebox. */
     public static final WritableBooleanPropertyKey SHOW_DEDICATED_MODE_BUTTON =
             new WritableBooleanPropertyKey();
@@ -300,6 +308,7 @@ class FuseboxProperties {
         POPUP_ATTACH_TAB_PICKER_VISIBLE,
         POPUP_MODEL_BUTTON_DATA_LIST,
         POPUP_MODEL_DIVIDER_VISIBLE,
+        POPUP_MODEL_HEADER_TEXT,
         POPUP_MODEL_HEADER_VISIBLE,
         POPUP_STATE,
         POPUP_TOOL_AI_MODE_CLICKED,
@@ -315,6 +324,7 @@ class FuseboxProperties {
         POPUP_TOOL_DEEP_SEARCH_ENABLED,
         POPUP_TOOL_DEEP_SEARCH_VISIBLE,
         POPUP_TOOL_DIVIDER_VISIBLE,
+        POPUP_TOOL_HEADER_TEXT,
         POPUP_TOOL_HEADER_VISIBLE,
         SHOW_DEDICATED_MODE_BUTTON
         // go/keep-sorted end

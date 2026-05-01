@@ -96,6 +96,7 @@ import org.chromium.components.omnibox.InputTypeProto.InputType;
 import org.chromium.components.omnibox.ModelConfigProto.ModelConfig;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxFocusReason;
+import org.chromium.components.omnibox.SectionConfigProto.SectionConfig;
 import org.chromium.components.omnibox.ToolModeProto.ToolMode;
 import org.chromium.content_public.browser.RenderWidgetHostView;
 import org.chromium.content_public.browser.WebContents;
@@ -1728,6 +1729,26 @@ public class FuseboxMediatorUnitTest {
         assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_CAMERA_ENABLED));
         assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_GALLERY_ENABLED));
         assertFalse(mModel.get(FuseboxProperties.POPUP_ATTACH_FILE_ENABLED));
+    }
+
+    @Test
+    public void onInputStateChange_updatesHeaders() {
+        OmniboxFeatures.sShowModelPicker.setForTesting(true);
+        recreateMediator();
+
+        SectionConfig toolsConfig = SectionConfig.newBuilder().setHeader("Tools Header").build();
+        SectionConfig modelConfig = SectionConfig.newBuilder().setHeader("Models Header").build();
+
+        InputState state =
+                new InputState.Builder()
+                        .withToolsSectionConfig(toolsConfig.toByteArray())
+                        .withModelSectionConfig(modelConfig.toByteArray())
+                        .build();
+
+        mInputStateSupplier.set(state);
+
+        assertEquals("Tools Header", mModel.get(FuseboxProperties.POPUP_TOOL_HEADER_TEXT));
+        assertEquals("Models Header", mModel.get(FuseboxProperties.POPUP_MODEL_HEADER_TEXT));
     }
 
     @Test

@@ -1028,6 +1028,9 @@ import java.util.function.Supplier;
         boolean canvasVisible = inputState.isToolVisible(ToolMode.TOOL_MODE_CANVAS_VALUE);
 
         mModel.set(
+                FuseboxProperties.POPUP_TOOL_HEADER_TEXT,
+                inputState.toolsSectionConfig.getHeader());
+        mModel.set(
                 FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_VISIBLE,
                 inputState.isImageGenToolVisible()
                         && (OmniboxFeatures.sShowImageGenerationButtonInIncognito.getValue()
@@ -1076,6 +1079,9 @@ import java.util.function.Supplier;
         boolean showModelPicker = modelButtonDataList.size() >= 2;
         mModel.set(FuseboxProperties.POPUP_MODEL_DIVIDER_VISIBLE, showModelPicker);
         mModel.set(FuseboxProperties.POPUP_MODEL_HEADER_VISIBLE, showModelPicker);
+        mModel.set(
+                FuseboxProperties.POPUP_MODEL_HEADER_TEXT,
+                inputState.modelSectionConfig.getHeader());
         mModel.set(
                 FuseboxProperties.POPUP_MODEL_BUTTON_DATA_LIST,
                 showModelPicker ? modelButtonDataList : List.of());

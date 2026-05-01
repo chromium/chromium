@@ -485,6 +485,15 @@ public class FuseboxViewBinderUnitTest {
     }
 
     @Test
+    public void headersText_setsText() {
+        mModel.set(FuseboxProperties.POPUP_TOOL_HEADER_TEXT, "Custom Tool Header");
+        assertEquals("Custom Tool Header", mPopup.mToolsHeader.getText());
+
+        mModel.set(FuseboxProperties.POPUP_MODEL_HEADER_TEXT, "Custom Model Header");
+        assertEquals("Custom Model Header", mPopup.mModelsHeader.getText());
+    }
+
+    @Test
     public void dividersAndHeadersVisibility_setsVisibility() {
         mModel.set(FuseboxProperties.POPUP_TOOL_DIVIDER_VISIBLE, true);
         assertEquals(View.VISIBLE, mPopup.mToolsDivider.getVisibility());

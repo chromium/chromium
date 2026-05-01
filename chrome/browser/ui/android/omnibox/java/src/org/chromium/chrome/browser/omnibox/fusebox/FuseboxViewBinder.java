@@ -177,6 +177,8 @@ class FuseboxViewBinder {
                     model.get(FuseboxProperties.POPUP_MODEL_DIVIDER_VISIBLE)
                             ? View.VISIBLE
                             : View.GONE);
+        } else if (propertyKey == FuseboxProperties.POPUP_MODEL_HEADER_TEXT) {
+            view.popup.mModelsHeader.setText(model.get(FuseboxProperties.POPUP_MODEL_HEADER_TEXT));
         } else if (propertyKey == FuseboxProperties.POPUP_MODEL_HEADER_VISIBLE) {
             view.popup.mModelsHeader.setVisibility(
                     model.get(FuseboxProperties.POPUP_MODEL_HEADER_VISIBLE)
@@ -231,6 +233,8 @@ class FuseboxViewBinder {
                     model.get(FuseboxProperties.POPUP_TOOL_DIVIDER_VISIBLE)
                             ? View.VISIBLE
                             : View.GONE);
+        } else if (propertyKey == FuseboxProperties.POPUP_TOOL_HEADER_TEXT) {
+            view.popup.mToolsHeader.setText(model.get(FuseboxProperties.POPUP_TOOL_HEADER_TEXT));
         } else if (propertyKey == FuseboxProperties.POPUP_TOOL_HEADER_VISIBLE) {
             view.popup.mToolsHeader.setVisibility(
                     model.get(FuseboxProperties.POPUP_TOOL_HEADER_VISIBLE)
