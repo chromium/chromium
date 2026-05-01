@@ -1153,8 +1153,12 @@ void ContextualTasksUI::OnActiveTabContextStatusChanged() {
   GURL last_committed_url =
       tab ? tab->GetContents()->GetLastCommittedURL() : GURL::EmptyGURL();
 
+  // Since `task_id_` can be set by external callers, capture it locally to
+  // avoid crash caused by change between `has_value()` check here and `value()`
+  // use below.
+  std::optional<base::Uuid> task_id = GetTaskId();
   if (!CanUpdateSuggestedTabContext(tab, last_committed_url) ||
-      !GetTaskId().has_value()) {
+      !task_id.has_value()) {
     // Inform the handler that the current tab cannot be added as an autochip.
     auto_suggestion_manager_->SetCurrentSuggestion(nullptr);
     if (composebox_handler_) {
@@ -1168,7 +1172,7 @@ void ContextualTasksUI::OnActiveTabContextStatusChanged() {
   context_decoration_params->contextual_search_session_handle =
       GetOrCreateContextualSessionHandle()->AsWeakPtr();
   contextual_tasks_service_->GetContextForTask(
-      GetTaskId().value(),
+      task_id.value(),
       {contextual_tasks::ContextualTaskContextSource::kUploadedContextDecorator,
        contextual_tasks::ContextualTaskContextSource::
            kSubmittedContextDecorator},
