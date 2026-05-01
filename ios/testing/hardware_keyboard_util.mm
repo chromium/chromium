@@ -445,7 +445,7 @@ uint32_t GetContextId() {
   for (UIScene* scene in UIApplication.sharedApplication.connectedScenes) {
     UIWindowScene* windowScene = (UIWindowScene*)scene;
     for (UIWindow* window in windowScene.windows) {
-      if (window.isKeyWindow) {
+      if (window.keyWindow) {
         return window._contextId;
       }
     }

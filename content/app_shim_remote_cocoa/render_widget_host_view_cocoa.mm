@@ -1871,8 +1871,9 @@ static NSWindow* __weak _deferredResignKeyWindow;
   [self performDeferredResignKeyWindow];
   if ([_responderDelegate respondsToSelector:@selector(windowDidBecomeKey)])
     [_responderDelegate windowDidBecomeKey];
-  if ([self window].isKeyWindow)
+  if ([self window].keyWindow) {
     _host->OnWindowIsKeyChanged(true);
+  }
 }
 
 - (void)windowDidResignKey:(NSNotification*)notification {

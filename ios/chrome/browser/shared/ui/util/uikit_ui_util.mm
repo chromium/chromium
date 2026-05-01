@@ -352,7 +352,7 @@ UIResponder* GetFirstResponderInWindowScene(UIWindowScene* windowScene) {
   }
 
   for (UIWindow* window in windowScene.windows) {
-    if (window.isKeyWindow) {
+    if (window.keyWindow) {
       continue;
     }
     responder = GetFirstResponderSubview(window);

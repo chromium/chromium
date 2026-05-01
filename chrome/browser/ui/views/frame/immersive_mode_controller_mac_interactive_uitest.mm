@@ -132,11 +132,11 @@ class ImmersiveModeControllerMacInteractiveTest : public InProcessBrowserTest {
     return second_browser_->window()
         ->GetNativeWindow()
         .GetNativeNSWindow()
-        .isOnActiveSpace;
+        .onActiveSpace;
   }
 
   bool WidgetIsVisible() {
-    return widget_->GetNativeWindow().GetNativeNSWindow().isVisible;
+    return widget_->GetNativeWindow().GetNativeNSWindow().visible;
   }
 
   void CleanUp() {
@@ -433,7 +433,7 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerMacInteractiveTest,
   testWindow.releasedWhenClosed = NO;
   testWindow.backgroundColor = NSColor.redColor;
   [testWindow orderFront:nil];
-  EXPECT_TRUE(testWindow.isVisible);
+  EXPECT_TRUE(testWindow.visible);
 
   // Create a popup window and make it a child of the test window.
   NSWindow* popupWindow =
@@ -444,7 +444,7 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerMacInteractiveTest,
   popupWindow.releasedWhenClosed = NO;
   popupWindow.backgroundColor = NSColor.greenColor;
   [testWindow addChildWindow:popupWindow ordered:NSWindowAbove];
-  EXPECT_TRUE(popupWindow.isVisible);
+  EXPECT_TRUE(popupWindow.visible);
 
   // Reset the ordering group rebuilt flag and make sure it get set during
   // `-orderOut:`.
@@ -454,7 +454,7 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerMacInteractiveTest,
 
   // Re-add the popup window as child of the test window.
   [testWindow addChildWindow:popupWindow ordered:NSWindowAbove];
-  EXPECT_TRUE(popupWindow.isVisible);
+  EXPECT_TRUE(popupWindow.visible);
 
   // Reset the ordering group rebuilt flag and make sure it get set during
   // `-close`.
@@ -465,7 +465,7 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerMacInteractiveTest,
   // Re-add the popup window as child of the test window, then ensure that the
   // ordering group is rebuilt when the test window removes the popup window.
   [testWindow addChildWindow:popupWindow ordered:NSWindowAbove];
-  EXPECT_TRUE(popupWindow.isVisible);
+  EXPECT_TRUE(popupWindow.visible);
   testWindow->_orderingGroupRebuilt = NO;
   [testWindow removeChildWindow:popupWindow];
   EXPECT_TRUE(testWindow->_orderingGroupRebuilt);

@@ -382,7 +382,7 @@
   DCHECK(browserWindow);
 
   // If the browser window is already key, there's nothing to do.
-  if (browserWindow.isKeyWindow) {
+  if (browserWindow.keyWindow) {
     return;
   }
 

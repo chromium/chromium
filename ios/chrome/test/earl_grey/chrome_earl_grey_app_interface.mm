@@ -679,7 +679,7 @@ UIViewController* FindBrowserViewController(UIViewController* root) {
         base::apple::ObjCCastStrict<UIWindowScene>(scene);
 
     for (UIWindow* window in windowScene.windows) {
-      if (window.isKeyWindow) {
+      if (window.keyWindow) {
         return window;
       }
     }

@@ -178,8 +178,9 @@ struct NSEdgeAndCornerThicknesses {
 
 @implementation NativeWidgetMacNSWindowTitledFrame
 - (void)mouseDown:(NSEvent*)event {
-  if (self.window.isMovable)
+  if (self.window.movable) {
     [self cr_mouseDownOnFrameView:event];
+  }
   [super mouseDown:event];
 }
 - (BOOL)usesCustomDrawing {
@@ -1058,7 +1059,7 @@ struct NSEdgeAndCornerThicknesses {
   }
 
   // Only remove from groups if this window is not on the active space.
-  if (self.isOnActiveSpace) {
+  if (self.onActiveSpace) {
     return;
   }
 

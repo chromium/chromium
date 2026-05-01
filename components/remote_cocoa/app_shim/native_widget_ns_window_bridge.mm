@@ -1992,8 +1992,9 @@ void NativeWidgetNSWindowBridge::OrderChildren() {
   // Bail here (and call OrderChildren() in a few places) to defer adding
   // children until the window is visible.
   NSWindow* window = window_;
-  if (!window.isVisible || !window.isOnActiveSpace)
+  if (!window.visible || !window.onActiveSpace) {
     return;
+  }
   for (auto* child : child_windows_) {
     if (!child->wants_to_be_visible())
       continue;
@@ -2028,7 +2029,7 @@ void NativeWidgetNSWindowBridge::RemoveOrDestroyChildren() {
 }
 
 void NativeWidgetNSWindowBridge::CheckAndNotifyZoomedStateChanged() {
-  host_->OnWindowZoomedChanged(window_.isZoomed);
+  host_->OnWindowZoomedChanged(window_.zoomed);
 }
 
 void NativeWidgetNSWindowBridge::CheckAndNotifyAllWorkspacesStateChanged() {

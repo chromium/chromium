@@ -18,7 +18,7 @@ UIWindow* GetAnyKeyWindow() {
         base::apple::ObjCCastStrict<UIWindowScene>(scene);
     // Find a key window if it exists.
     for (UIWindow* window in windowScene.windows) {
-      if (window.isKeyWindow) {
+      if (window.keyWindow) {
         return window;
       }
     }

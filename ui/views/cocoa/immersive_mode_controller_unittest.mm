@@ -110,13 +110,13 @@ class CocoaImmersiveModeControllerTest : public ui::CocoaTest {
     overlay_ = CreateNativeWidgetMacOverlayNSWindow(kOverlayViewWidth,
                                                     kOverlayViewHeight);
     [browser_ addChildWindow:overlay_ ordered:NSWindowAbove];
-    EXPECT_EQ(overlay_.isVisible, YES);
+    EXPECT_EQ(overlay_.visible, YES);
 
     // Create a blank tab overlay window as a child of overlay window.
     tab_overlay_ = CreateNativeWidgetMacOverlayNSWindow(kTabOverlayViewWidth,
                                                         kTabOverlayViewHeight);
     [overlay_ addChildWindow:tab_overlay_ ordered:NSWindowAbove];
-    EXPECT_EQ(tab_overlay_.isVisible, YES);
+    EXPECT_EQ(tab_overlay_.visible, YES);
   }
 
   void TearDown() override {

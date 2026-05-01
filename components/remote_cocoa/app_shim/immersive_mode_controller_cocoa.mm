@@ -666,7 +666,7 @@ void ImmersiveModeControllerCocoa::LayoutWindowWithAnchorView(
   // Only move |window| when it is on the active space. If |window| has a child
   // with key an unwanted space switch will occur. See http://crbug.com/1519484
   // and http://crbug.com/1316543.
-  if (!window.isOnActiveSpace) {
+  if (!window.onActiveSpace) {
     return;
   }
 
