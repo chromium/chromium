@@ -419,4 +419,49 @@ TEST_F(WebAppDatabaseTest, DowngradeCorruptionRecovery) {
       profile()->GetPrefs()->GetDict(prefs::kWebAppsDailyMetrics).empty());
 }
 
+class BadWebAppDatabaseFactory : public AbstractWebAppDatabaseFactory {
+ public:
+  syncer::OnceDataTypeStoreFactory GetStoreFactory() override {
+    return base::BindOnce(
+        [](syncer::DataType type,
+           base::OnceCallback<void(const std::optional<syncer::ModelError>&,
+                                   std::unique_ptr<syncer::DataTypeStore>)>
+               callback) {
+          std::move(callback).Run(
+              syncer::ModelError(
+                  FROM_HERE,
+                  syncer::ModelError::Type::kDataTypeStoreBackendDbOpenFailed),
+              nullptr);
+        });
+  }
+  bool IsSyncingApps() override { return true; }
+  FakeWebAppDatabaseFactory* AsFakeWebAppDatabaseFactory() override {
+    return nullptr;
+  }
+};
+
+TEST_F(WebAppDatabaseTest, DatabaseOpenErrorPreventsSubsystemStartup) {
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+      switches::kNoErrorDialogs);
+
+  fake_provider().SetDatabaseFactory(
+      std::make_unique<BadWebAppDatabaseFactory>());
+
+  fake_provider().StartWithSubsystems();
+
+  {
+    base::RunLoop run_loop;
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  EXPECT_FALSE(fake_provider()
+                   .sync_bridge_unsafe()
+                   .GetDatabaseForTesting()
+                   ->is_opened());
+  EXPECT_FALSE(fake_provider().on_registry_ready().is_signaled());
+}
+
 }  // namespace web_app

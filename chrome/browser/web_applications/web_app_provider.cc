@@ -489,17 +489,11 @@ void WebAppProvider::OnSyncBridgeReady(
 
   switch (open_result) {
     case WebAppDatabaseOpenResult::kSuccess:
+      break;
     case WebAppDatabaseOpenResult::kOpenError:
-      // No error handling yet for errors during data store opening, as we have
-      // no access to the database. Likely this doesn't occur in the wild, as
-      // this would cause a variety of crashes.
-      break;
     case WebAppDatabaseOpenResult::kReadError:
-      // TODO(crbug.com/506131577): Handle read error properly here if it is
-      // ever produced by WebAppDatabase again. Note: kReadError is handled in
-      // WebAppDatabase by calling the error callback and returning early, so it
-      // should not reach here.
-      break;
+      // TODO(crbug.com/506131577): Handle read/open errors properly.
+      return;
     case WebAppDatabaseOpenResult::kDowngradeDetected:
       ui_manager_->ShowProfileErrorDialogForCorruptDB();
 
