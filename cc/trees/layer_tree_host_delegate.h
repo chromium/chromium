@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CC_TREES_LAYER_TREE_HOST_CLIENT_H_
-#define CC_TREES_LAYER_TREE_HOST_CLIENT_H_
+#ifndef CC_TREES_LAYER_TREE_HOST_DELEGATE_H_
+#define CC_TREES_LAYER_TREE_HOST_DELEGATE_H_
 
 #include <memory>
 #include <string>
@@ -60,12 +60,12 @@ struct ApplyViewportChangesArgs {
 };
 
 using ManipulationInfo = uint32_t;
-constexpr ManipulationInfo kManipulationInfoNone = 0;
-constexpr ManipulationInfo kManipulationInfoWheel = 1 << 0;
-constexpr ManipulationInfo kManipulationInfoTouch = 1 << 1;
-constexpr ManipulationInfo kManipulationInfoPrecisionTouchPad = 1 << 2;
-constexpr ManipulationInfo kManipulationInfoPinchZoom = 1 << 3;
-constexpr ManipulationInfo kManipulationInfoScrollbar = 1 << 4;
+inline constexpr ManipulationInfo kManipulationInfoNone = 0;
+inline constexpr ManipulationInfo kManipulationInfoWheel = 1 << 0;
+inline constexpr ManipulationInfo kManipulationInfoTouch = 1 << 1;
+inline constexpr ManipulationInfo kManipulationInfoPrecisionTouchPad = 1 << 2;
+inline constexpr ManipulationInfo kManipulationInfoPinchZoom = 1 << 3;
+inline constexpr ManipulationInfo kManipulationInfoScrollbar = 1 << 4;
 
 struct PaintBenchmarkResult {
   double record_time_ms = 0;
@@ -82,25 +82,25 @@ struct PaintBenchmarkResult {
 // useful to add a filter mechanism to limit the effect to specific layers.
 enum class PropertyChangeForcesCommitCriteria { kNone, kTransform, kAny };
 
-// A LayerTreeHost is bound to a LayerTreeHostClient. The main rendering
+// A LayerTreeHost is bound to a LayerTreeHostDelegate. The main rendering
 // loop (in ProxyMain or SingleThreadProxy) calls methods on the
 // LayerTreeHost, which then handles them and also calls into the equivalent
-// methods on its LayerTreeHostClient when applicable.
+// methods on its LayerTreeHostDelegate when applicable.
 //
-// One important example of a LayerTreeHostClient is (via additional
+// One important example of a LayerTreeHostDelegate is (via additional
 // indirections) Blink.
 //
 // Note: Some API callbacks below are tied to a frame. Since LayerTreeHost
 // maintains a pipeline of frames, it can be ambiguous which frame the callback
 // is associated with. We rely on `source_frame_number` to tie the callback to
 // its associated frame. See LayerTreeHost::SourceFrameNumber for details.
-class CC_EXPORT LayerTreeHostClient {
+class CC_EXPORT LayerTreeHostDelegate {
  public:
   virtual void WillBeginMainFrame() = 0;
   // Marks finishing compositing-related tasks on the main thread. In threaded
   // mode, this corresponds to DidCommit().
 
-  // For a LayerTreeHostClient backed by Blink, BeginMainFrame will:
+  // For a LayerTreeHostDelegate backed by Blink, BeginMainFrame will:
   // -Dispatch BeginMainFrame-aligned input events.
   // -Advance frame-synchronized animations and callbacks. These include
   // gesture animations, autoscroll animations, declarative
@@ -144,11 +144,11 @@ class CC_EXPORT LayerTreeHostClient {
   virtual void OnCommitRequested() = 0;
 
   // Visual frame-based updates to the state of the LayerTreeHost are expected
-  // to happen only in calls to LayerTreeHostClient::UpdateLayerTreeHost, which
-  // should mutate/invalidate the layer tree or other page parameters as
+  // to happen only in calls to LayerTreeHostDelegate::UpdateLayerTreeHost,
+  // which should mutate/invalidate the layer tree or other page parameters as
   // appropriate.
   //
-  // For a LayerTreeHostClient backed by Blink, this method will update
+  // For a LayerTreeHostDelegate backed by Blink, this method will update
   // (Blink's notions of) style, layout, paint invalidation and compositing
   // state. (The "compositing state" will result in a mutated layer tree on the
   // LayerTreeHost via additional interface indirections which lead back to
@@ -222,7 +222,7 @@ class CC_EXPORT LayerTreeHostClient {
   virtual void DidReceiveCompositorFrameAckDeprecatedForCompositor() {}
 
  protected:
-  virtual ~LayerTreeHostClient() = default;
+  virtual ~LayerTreeHostDelegate() = default;
 };
 
 // LayerTreeHost->WebThreadScheduler callback interface. Instances of this class
@@ -235,4 +235,4 @@ class LayerTreeHostSchedulingClient {
 
 }  // namespace cc
 
-#endif  // CC_TREES_LAYER_TREE_HOST_CLIENT_H_
+#endif  // CC_TREES_LAYER_TREE_HOST_DELEGATE_H_

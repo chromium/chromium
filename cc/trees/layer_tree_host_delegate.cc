@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "cc/trees/layer_tree_host_client.h"
+#include "cc/trees/layer_tree_host_delegate.h"
 
 namespace cc {
 
-std::string LayerTreeHostClient::GetPausedDebuggerLocalizedMessage() {
+std::string LayerTreeHostDelegate::GetPausedDebuggerLocalizedMessage() {
   return "Debugger paused in another tab, click to switch to that tab.";
 }
 

@@ -2,25 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CC_TEST_STUB_LAYER_TREE_HOST_CLIENT_H_
-#define CC_TEST_STUB_LAYER_TREE_HOST_CLIENT_H_
+#ifndef CC_TEST_STUB_LAYER_TREE_HOST_DELEGATE_H_
+#define CC_TEST_STUB_LAYER_TREE_HOST_DELEGATE_H_
 
 #include <memory>
 #include <vector>
 
 #include "cc/paint/element_id.h"
-#include "cc/trees/layer_tree_host_client.h"
+#include "cc/trees/layer_tree_host_delegate.h"
 #include "cc/trees/paint_holding_reason.h"
 
 namespace cc {
 
 struct CommitState;
 
-class StubLayerTreeHostClient : public LayerTreeHostClient {
+class StubLayerTreeHostDelegate : public LayerTreeHostDelegate {
  public:
-  ~StubLayerTreeHostClient() override;
+  ~StubLayerTreeHostDelegate() override;
 
-  // LayerTreeHostClient implementation.
+  // LayerTreeHostDelegate implementation.
   void WillBeginMainFrame() override {}
   void DidBeginMainFrame() override {}
   void WillUpdateLayers() override {}
@@ -64,4 +64,4 @@ class StubLayerTreeHostClient : public LayerTreeHostClient {
 
 }  // namespace cc
 
-#endif  // CC_TEST_STUB_LAYER_TREE_HOST_CLIENT_H_
+#endif  // CC_TEST_STUB_LAYER_TREE_HOST_DELEGATE_H_

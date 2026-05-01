@@ -17,7 +17,7 @@
 #include "cc/layers/layer.h"
 #include "cc/test/fake_impl_task_runner_provider.h"
 #include "cc/test/fake_layer_tree_frame_sink.h"
-#include "cc/test/fake_layer_tree_host_client.h"
+#include "cc/test/fake_layer_tree_host_delegate.h"
 #include "cc/test/fake_layer_tree_host_impl.h"
 #include "cc/trees/clip_node.h"
 #include "cc/trees/effect_node.h"
@@ -89,12 +89,12 @@ class PaintArtifactCompositorTest : public testing::Test,
     paint_artifact_compositor_->SetLCDTextPreference(
         LCDTextPreference::kStronglyPreferred);
 
-    // Uses a LayerTreeHostClient that will make a LayerTreeFrameSink to allow
+    // Uses a LayerTreeHostDelegate that will make a LayerTreeFrameSink to allow
     // the compositor to run and submit frames.
     layer_tree_ = std::make_unique<LayerTreeHostEmbedder>(
-        &layer_tree_host_client_,
+        &layer_tree_host_delegate_,
         /*single_thread_client=*/nullptr);
-    layer_tree_host_client_.SetLayerTreeHost(layer_tree_->layer_tree_host());
+    layer_tree_host_delegate_.SetLayerTreeHost(layer_tree_->layer_tree_host());
     layer_tree_->layer_tree_host()->SetRootLayer(
         paint_artifact_compositor_->RootLayer());
   }
@@ -103,7 +103,7 @@ class PaintArtifactCompositorTest : public testing::Test,
     // Make sure we remove all child layers to satisfy destructor
     // child layer element id DCHECK.
     WillBeRemovedFromFrame();
-    layer_tree_host_client_.SetLayerTreeHost(nullptr);
+    layer_tree_host_delegate_.SetLayerTreeHost(nullptr);
   }
 
   cc::PropertyTrees& GetPropertyTrees() {
@@ -242,7 +242,7 @@ class PaintArtifactCompositorTest : public testing::Test,
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
   base::SingleThreadTaskRunner::CurrentDefaultHandle
       task_runner_current_default_handle_;
-  cc::FakeLayerTreeHostClient layer_tree_host_client_;
+  cc::FakeLayerTreeHostDelegate layer_tree_host_delegate_;
   std::unique_ptr<LayerTreeHostEmbedder> layer_tree_;
 };
 

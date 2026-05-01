@@ -2,24 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CC_TEST_FAKE_LAYER_TREE_HOST_CLIENT_H_
-#define CC_TEST_FAKE_LAYER_TREE_HOST_CLIENT_H_
+#ifndef CC_TEST_FAKE_LAYER_TREE_HOST_DELEGATE_H_
+#define CC_TEST_FAKE_LAYER_TREE_HOST_DELEGATE_H_
 
 #include "base/memory/raw_ptr.h"
-#include "cc/test/stub_layer_tree_host_client.h"
+#include "cc/test/stub_layer_tree_host_delegate.h"
 
 namespace cc {
 class LayerTreeHost;
 
-class FakeLayerTreeHostClient : public StubLayerTreeHostClient {
+class FakeLayerTreeHostDelegate : public StubLayerTreeHostDelegate {
  public:
-  FakeLayerTreeHostClient();
-  ~FakeLayerTreeHostClient() override;
+  FakeLayerTreeHostDelegate();
+  ~FakeLayerTreeHostDelegate() override;
 
   // Caller responsible for unsetting this and maintaining the host's lifetime.
   void SetLayerTreeHost(LayerTreeHost* host) { host_ = host; }
 
-  // StubLayerTreeHostClient overrides.
+  // StubLayerTreeHostDelegate overrides.
   void RequestNewLayerTreeFrameSink() override;
   void DidFailToInitializeLayerTreeFrameSink() override;
 
@@ -32,4 +32,4 @@ class FakeLayerTreeHostClient : public StubLayerTreeHostClient {
 
 }  // namespace cc
 
-#endif  // CC_TEST_FAKE_LAYER_TREE_HOST_CLIENT_H_
+#endif  // CC_TEST_FAKE_LAYER_TREE_HOST_DELEGATE_H_

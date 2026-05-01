@@ -21,9 +21,9 @@ class LayerTreeHostSingleThreadClient {
   virtual void FrameIntervalUpdated(base::TimeDelta interval) {}
 
   // Called whenever the compositor submits a CompositorFrame. Afterward,
-  // LayerTreeHostClient::DidReceiveCompositorFrameAck() will be called once the
-  // display compositor/ finishes processing the frame. So these functions can
-  // be used to keep track of pending submitted CompositorFrames for rate
+  // LayerTreeHostDelegate::DidReceiveCompositorFrameAck() will be called once
+  // the display compositor/ finishes processing the frame. So these functions
+  // can be used to keep track of pending submitted CompositorFrames for rate
   // limiting.
   virtual void DidSubmitCompositorFrame() = 0;
 

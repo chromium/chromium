@@ -13,14 +13,14 @@ LayerTreeHostEmbedder::LayerTreeHostEmbedder()
                             /*single_thread_client=*/nullptr) {}
 
 LayerTreeHostEmbedder::LayerTreeHostEmbedder(
-    cc::LayerTreeHostClient* client,
+    cc::LayerTreeHostDelegate* client,
     cc::LayerTreeHostSingleThreadClient* single_thread_client) {
   cc::LayerTreeSettings settings;
   settings.single_thread_proxy_scheduler = false;
   settings.use_layer_lists = true;
   animation_host_ = cc::AnimationHost::CreateMainInstance();
   cc::LayerTreeHost::InitParams params;
-  params.client = client ? client : &layer_tree_host_client_;
+  params.client = client ? client : &layer_tree_host_delegate_;
   params.settings = &settings;
   params.main_task_runner = scheduler::GetSingleThreadTaskRunnerForTesting();
   params.task_graph_runner = &task_graph_runner_;

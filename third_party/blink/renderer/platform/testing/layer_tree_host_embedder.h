@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TESTING_LAYER_TREE_HOST_EMBEDDER_H_
 
 #include "cc/animation/animation_host.h"
-#include "cc/test/stub_layer_tree_host_client.h"
+#include "cc/test/stub_layer_tree_host_delegate.h"
 #include "cc/test/stub_layer_tree_host_single_thread_client.h"
 #include "cc/test/test_task_graph_runner.h"
 #include "cc/trees/layer_tree_host.h"
@@ -28,7 +28,7 @@ class LayerTreeHostEmbedder {
   // Constructor to specify the clients, or null to use stubs. Also specify
   // overrides of LayerTreeSettings.
   LayerTreeHostEmbedder(
-      cc::LayerTreeHostClient* client,
+      cc::LayerTreeHostDelegate* client,
       cc::LayerTreeHostSingleThreadClient* single_thread_client);
 
   cc::LayerTreeHost* layer_tree_host() { return layer_tree_host_.get(); }
@@ -36,7 +36,7 @@ class LayerTreeHostEmbedder {
 
  private:
   cc::StubLayerTreeHostSingleThreadClient layer_tree_host_single_thread_client_;
-  cc::StubLayerTreeHostClient layer_tree_host_client_;
+  cc::StubLayerTreeHostDelegate layer_tree_host_delegate_;
   cc::TestTaskGraphRunner task_graph_runner_;
   std::unique_ptr<cc::AnimationHost> animation_host_;
   std::unique_ptr<cc::LayerTreeHost> layer_tree_host_;

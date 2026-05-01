@@ -12,7 +12,7 @@
 
 #include "cc/animation/animation_timeline.h"
 #include "cc/test/fake_layer_tree_host.h"
-#include "cc/test/fake_layer_tree_host_client.h"
+#include "cc/test/fake_layer_tree_host_delegate.h"
 #include "cc/test/layer_test_common.h"
 #include "cc/test/property_tree_test_utils.h"
 #include "cc/test/test_task_graph_runner.h"
@@ -120,7 +120,7 @@ class LayerTreeImplTestBase {
     return ptr;
   }
 
-  FakeLayerTreeHostClient client_;
+  FakeLayerTreeHostDelegate client_;
   TestTaskGraphRunner task_graph_runner_;
   std::unique_ptr<LayerTreeFrameSink> layer_tree_frame_sink_;
   std::unique_ptr<AnimationHost> animation_host_;

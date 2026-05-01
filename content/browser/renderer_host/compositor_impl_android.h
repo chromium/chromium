@@ -19,7 +19,6 @@
 #include "cc/paint/element_id.h"
 #include "cc/slim/layer_tree.h"
 #include "cc/slim/layer_tree_client.h"
-#include "cc/trees/layer_tree_host_client.h"
 #include "cc/trees/layer_tree_host_single_thread_client.h"
 #include "cc/trees/paint_holding_commit_trigger.h"
 #include "cc/trees/paint_holding_reason.h"

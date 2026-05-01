@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/core/paint/paint_property_tree_builder_test.h"
 
 #include "base/compiler_specific.h"
-#include "cc/test/fake_layer_tree_host_client.h"
+#include "cc/test/fake_layer_tree_host_delegate.h"
 #include "cc/trees/effect_node.h"
 #include "cc/trees/scroll_node.h"
 #include "cc/trees/transform_node.h"

@@ -38,7 +38,7 @@ enum class FrameSequenceTrackerType {
   kWheelScroll = 7,
   kScrollbarScroll = 8,
   kCustom = 9,  // Note that the metrics for kCustom are not reported on UMA,
-                // and instead are dispatched back to the LayerTreeHostClient.
+                // and instead are dispatched back to the LayerTreeHostDelegate.
   kCanvasAnimation = 10,
   kJSAnimation = 11,
   kSETMainThreadAnimation = 12,

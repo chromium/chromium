@@ -313,7 +313,7 @@ class OcclusionTrackerTest : public testing::Test {
   }
 
   bool opaque_layers_;
-  FakeLayerTreeHostClient client_;
+  FakeLayerTreeHostDelegate client_;
   TestTaskGraphRunner task_graph_runner_;
   std::unique_ptr<LayerTreeFrameSink> layer_tree_frame_sink_;
   std::unique_ptr<AnimationHost> animation_host_;

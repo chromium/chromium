@@ -14,7 +14,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "cc/input/browser_controls_state.h"
-#include "cc/trees/layer_tree_host_client.h"
+#include "cc/trees/layer_tree_host_delegate.h"
 #include "cc/trees/layer_tree_host_single_thread_client.h"
 #include "cc/trees/paint_holding_reason.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -38,7 +38,7 @@ class WidgetScheduler;
 }  // namespace scheduler
 
 class PLATFORM_EXPORT LayerTreeView
-    : public cc::LayerTreeHostClient,
+    : public cc::LayerTreeHostDelegate,
       public cc::LayerTreeHostSingleThreadClient,
       public cc::LayerTreeHostSchedulingClient {
  public:
@@ -74,7 +74,7 @@ class PLATFORM_EXPORT LayerTreeView
   void SetVisible(bool visible);
   void SetShouldWarmUp();
 
-  // cc::LayerTreeHostClient implementation.
+  // cc::LayerTreeHostDelegate implementation.
   // NOTE: LayerTreeView allows re-attaching itself to a different delegate.
   // Since the compositor is threaded, we could receive callbacks from the host
   // which are tied to content committed by the previous delegate.

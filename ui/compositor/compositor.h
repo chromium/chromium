@@ -28,7 +28,7 @@
 #include "cc/metrics/frame_sequence_tracker.h"
 #include "cc/paint/element_id.h"
 #include "cc/trees/layer_tree_host.h"
-#include "cc/trees/layer_tree_host_client.h"
+#include "cc/trees/layer_tree_host_delegate.h"
 #include "cc/trees/layer_tree_host_single_thread_client.h"
 #include "cc/trees/paint_holding_reason.h"
 #include "cc/trees/property_tree.h"
@@ -153,7 +153,7 @@ class COMPOSITOR_EXPORT ExternalBeginFrameControllerClientFactory {
 // appropriately transformed texture for each transformed view in the widget's
 // view hierarchy.
 class COMPOSITOR_EXPORT Compositor : public base::PowerSuspendObserver,
-                                     public cc::LayerTreeHostClient,
+                                     public cc::LayerTreeHostDelegate,
                                      public cc::LayerTreeHostSingleThreadClient,
                                      public viz::HostFrameSinkClient,
                                      public CompositorMetricsTrackerHost {
@@ -398,7 +398,7 @@ class COMPOSITOR_EXPORT Compositor : public base::PowerSuspendObserver,
   GetScopedEventMetricsMonitor(
       cc::EventsMetricsManager::ScopedMonitor::DoneCallback done_callback);
 
-  // LayerTreeHostClient implementation.
+  // LayerTreeHostDelegate implementation.
   void WillBeginMainFrame() override {}
   void DidBeginMainFrame() override;
   void OnDeferMainFrameUpdatesChanged(bool) override {}

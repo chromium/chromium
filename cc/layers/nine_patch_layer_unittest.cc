@@ -7,7 +7,7 @@
 #include "cc/animation/animation_host.h"
 #include "cc/resources/scoped_ui_resource.h"
 #include "cc/test/fake_layer_tree_host.h"
-#include "cc/test/fake_layer_tree_host_client.h"
+#include "cc/test/fake_layer_tree_host_delegate.h"
 #include "cc/test/fake_output_surface_client.h"
 #include "cc/test/test_task_graph_runner.h"
 #include "cc/trees/layer_tree_host.h"
@@ -36,7 +36,7 @@ class NinePatchLayerTest : public testing::Test {
     Mock::VerifyAndClearExpectations(layer_tree_host_.get());
   }
 
-  FakeLayerTreeHostClient fake_client_;
+  FakeLayerTreeHostDelegate fake_client_;
   TestTaskGraphRunner task_graph_runner_;
   std::unique_ptr<AnimationHost> animation_host_;
   std::unique_ptr<FakeLayerTreeHost> layer_tree_host_;

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ui/android/resources/resource_manager_impl.h"
+
 #include <stddef.h>
 
 #include "base/memory/raw_ptr.h"
@@ -10,17 +12,15 @@
 #include "base/trace_event/process_memory_dump.h"
 #include "cc/resources/ui_resource_bitmap.h"
 #include "cc/resources/ui_resource_manager.h"
-#include "cc/test/stub_layer_tree_host_client.h"
+#include "cc/test/stub_layer_tree_host_delegate.h"
 #include "cc/test/test_task_graph_runner.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
-#include "ui/android/resources/resource_manager_impl.h"
 #include "ui/android/resources/system_ui_resource_type.h"
 #include "ui/android/window_android.h"
 #include "ui/gfx/android/java_bitmap.h"
-
 
 using ::testing::_;
 using ::testing::AtLeast;
@@ -114,7 +114,7 @@ class ResourceManagerTest : public testing::Test {
  protected:
   MockUIResourceManager ui_resource_manager_;
   TestResourceManagerImpl resource_manager_;
-  cc::StubLayerTreeHostClient stub_client_;
+  cc::StubLayerTreeHostDelegate stub_client_;
 };
 
 TEST_F(ResourceManagerTest, GetResource) {

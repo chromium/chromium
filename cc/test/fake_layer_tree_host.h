@@ -11,7 +11,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "cc/benchmarks/micro_benchmark_controller.h"
 #include "cc/test/fake_impl_task_runner_provider.h"
-#include "cc/test/fake_layer_tree_host_client.h"
+#include "cc/test/fake_layer_tree_host_delegate.h"
 #include "cc/test/fake_layer_tree_host_impl.h"
 #include "cc/trees/layer_tree_host.h"
 #include "cc/trees/layer_tree_impl.h"
@@ -41,22 +41,22 @@ class FakeLayerTreeHost : private TaskRunnerProviderHolder,
                           public LayerTreeHost {
  public:
   static std::unique_ptr<FakeLayerTreeHost> Create(
-      FakeLayerTreeHostClient* client,
+      FakeLayerTreeHostDelegate* client,
       TestTaskGraphRunner* task_graph_runner,
       MutatorHost* mutator_host);
   static std::unique_ptr<FakeLayerTreeHost> Create(
-      FakeLayerTreeHostClient* client,
+      FakeLayerTreeHostDelegate* client,
       TestTaskGraphRunner* task_graph_runner,
       MutatorHost* mutator_host,
       const LayerTreeSettings& settings);
   static std::unique_ptr<FakeLayerTreeHost> Create(
-      FakeLayerTreeHostClient* client,
+      FakeLayerTreeHostDelegate* client,
       TestTaskGraphRunner* task_graph_runner,
       MutatorHost* mutator_host,
       const LayerTreeSettings& settings,
       CompositorMode mode);
   static std::unique_ptr<FakeLayerTreeHost> Create(
-      FakeLayerTreeHostClient* client,
+      FakeLayerTreeHostDelegate* client,
       TestTaskGraphRunner* task_graph_runner,
       MutatorHost* mutator_host,
       const LayerTreeSettings& settings,
@@ -124,7 +124,7 @@ class FakeLayerTreeHost : private TaskRunnerProviderHolder,
   bool needs_commit() { return needs_commit_; }
   void reset_needs_commit() { needs_commit_ = false; }
 
-  FakeLayerTreeHost(FakeLayerTreeHostClient* client,
+  FakeLayerTreeHost(FakeLayerTreeHostDelegate* client,
                     LayerTreeHost::InitParams params,
                     CompositorMode mode);
 
@@ -138,7 +138,7 @@ class FakeLayerTreeHost : private TaskRunnerProviderHolder,
   // pointer as that'll always be set to the correct object.
   std::unique_ptr<FakeLayerTreeHostImpl> owned_host_impl_;
 
-  raw_ptr<FakeLayerTreeHostClient> client_ = nullptr;
+  raw_ptr<FakeLayerTreeHostDelegate> client_ = nullptr;
   raw_ptr<FakeLayerTreeHostImpl> host_impl_ = nullptr;
 
   bool needs_commit_ = false;

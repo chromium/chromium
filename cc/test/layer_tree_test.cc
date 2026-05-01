@@ -32,10 +32,10 @@
 #include "cc/raster/raster_buffer_provider.h"
 #include "cc/test/animation_test_common.h"
 #include "cc/test/fake_compositor_frame_reporting_controller.h"
-#include "cc/test/fake_layer_tree_host_client.h"
+#include "cc/test/fake_layer_tree_host_delegate.h"
 #include "cc/test/test_layer_tree_frame_sink.h"
 #include "cc/trees/client_layer_tree_host_impl.h"
-#include "cc/trees/layer_tree_host_client.h"
+#include "cc/trees/layer_tree_host_delegate.h"
 #include "cc/trees/layer_tree_host_impl.h"
 #include "cc/trees/layer_tree_host_single_thread_client.h"
 #include "cc/trees/layer_tree_impl.h"
@@ -426,15 +426,15 @@ class LayerTreeHostImplForTesting : public ClientLayerTreeHostImpl {
 };
 
 // Implementation of LayerTreeHost callback interface.
-class LayerTreeHostClientForTesting : public LayerTreeHostClient,
-                                      public LayerTreeHostSchedulingClient,
-                                      public LayerTreeHostSingleThreadClient {
+class LayerTreeHostDelegateForTesting : public LayerTreeHostDelegate,
+                                        public LayerTreeHostSchedulingClient,
+                                        public LayerTreeHostSingleThreadClient {
  public:
-  static std::unique_ptr<LayerTreeHostClientForTesting> Create(
+  static std::unique_ptr<LayerTreeHostDelegateForTesting> Create(
       TestHooks* test_hooks) {
-    return base::WrapUnique(new LayerTreeHostClientForTesting(test_hooks));
+    return base::WrapUnique(new LayerTreeHostDelegateForTesting(test_hooks));
   }
-  ~LayerTreeHostClientForTesting() override = default;
+  ~LayerTreeHostDelegateForTesting() override = default;
 
   void WillBeginMainFrame() override { test_hooks_->WillBeginMainFrame(); }
 
@@ -523,7 +523,7 @@ class LayerTreeHostClientForTesting : public LayerTreeHostClient,
   }
 
  private:
-  explicit LayerTreeHostClientForTesting(TestHooks* test_hooks)
+  explicit LayerTreeHostDelegateForTesting(TestHooks* test_hooks)
       : test_hooks_(test_hooks) {}
 
   raw_ptr<TestHooks> test_hooks_;
@@ -535,7 +535,7 @@ class LayerTreeHostForTesting : public LayerTreeHost {
   static std::unique_ptr<LayerTreeHostForTesting> Create(
       TestHooks* test_hooks,
       CompositorMode mode,
-      LayerTreeHostClient* client,
+      LayerTreeHostDelegate* client,
       LayerTreeHostSchedulingClient* scheduling_client,
       LayerTreeHostSingleThreadClient* single_thread_client,
       TaskGraphRunner* task_graph_runner,
@@ -960,7 +960,7 @@ void LayerTreeTest::WillBeginTest() {
 }
 
 void LayerTreeTest::DoBeginTest() {
-  client_ = LayerTreeHostClientForTesting::Create(this);
+  client_ = LayerTreeHostDelegateForTesting::Create(this);
 
   DCHECK(!impl_thread_ || impl_thread_->task_runner().get());
 

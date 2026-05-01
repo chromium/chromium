@@ -168,7 +168,7 @@ class TreeSynchronizerTest : public testing::Test {
 
   const FakeLayerTreeHost* const_host() const { return host_.get(); }
 
-  FakeLayerTreeHostClient client_;
+  FakeLayerTreeHostDelegate client_;
   StubLayerTreeHostSingleThreadClient single_thread_client_;
   TestTaskGraphRunner task_graph_runner_;
   std::unique_ptr<AnimationHost> animation_host_;

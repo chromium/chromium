@@ -17,7 +17,7 @@
 
 namespace cc {
 
-FakeLayerTreeHost::FakeLayerTreeHost(FakeLayerTreeHostClient* client,
+FakeLayerTreeHost::FakeLayerTreeHost(FakeLayerTreeHostDelegate* client,
                                      LayerTreeHost::InitParams params,
                                      CompositorMode mode)
     : LayerTreeHost(std::move(params), mode),
@@ -41,7 +41,7 @@ void FakeLayerTreeHost::ClearPendingLayerCommitStates() {
 }
 
 std::unique_ptr<FakeLayerTreeHost> FakeLayerTreeHost::Create(
-    FakeLayerTreeHostClient* client,
+    FakeLayerTreeHostDelegate* client,
     TestTaskGraphRunner* task_graph_runner,
     MutatorHost* mutator_host) {
   LayerTreeSettings settings;
@@ -49,7 +49,7 @@ std::unique_ptr<FakeLayerTreeHost> FakeLayerTreeHost::Create(
 }
 
 std::unique_ptr<FakeLayerTreeHost> FakeLayerTreeHost::Create(
-    FakeLayerTreeHostClient* client,
+    FakeLayerTreeHostDelegate* client,
     TestTaskGraphRunner* task_graph_runner,
     MutatorHost* mutator_host,
     const LayerTreeSettings& settings) {
@@ -58,7 +58,7 @@ std::unique_ptr<FakeLayerTreeHost> FakeLayerTreeHost::Create(
 }
 
 std::unique_ptr<FakeLayerTreeHost> FakeLayerTreeHost::Create(
-    FakeLayerTreeHostClient* client,
+    FakeLayerTreeHostDelegate* client,
     TestTaskGraphRunner* task_graph_runner,
     MutatorHost* mutator_host,
     const LayerTreeSettings& settings,

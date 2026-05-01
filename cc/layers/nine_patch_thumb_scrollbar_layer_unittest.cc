@@ -6,7 +6,7 @@
 
 #include "cc/animation/animation_host.h"
 #include "cc/test/fake_layer_tree_host.h"
-#include "cc/test/fake_layer_tree_host_client.h"
+#include "cc/test/fake_layer_tree_host_delegate.h"
 #include "cc/test/fake_scrollbar.h"
 #include "cc/test/test_task_graph_runner.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -46,7 +46,7 @@ class MockScrollbar : public FakeScrollbar {
 };
 
 TEST(NinePatchThumbScrollbarLayerTest, PaintTickmarks) {
-  FakeLayerTreeHostClient fake_client_;
+  FakeLayerTreeHostDelegate fake_client_;
   TestTaskGraphRunner task_graph_runner_;
 
   auto animation_host = AnimationHost::CreateForTesting(ThreadInstance::kMain);

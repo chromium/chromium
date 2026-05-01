@@ -4,7 +4,7 @@
 
 #include "cc/animation/animation_host.h"
 #include "cc/test/fake_layer_tree_host.h"
-#include "cc/test/fake_layer_tree_host_client.h"
+#include "cc/test/fake_layer_tree_host_delegate.h"
 #include "cc/test/test_task_graph_runner.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -13,7 +13,7 @@ namespace cc {
 namespace {
 
 TEST(LayerTreeHostRecordGpuHistogramTest, SingleThreaded) {
-  FakeLayerTreeHostClient host_client;
+  FakeLayerTreeHostDelegate host_client;
   TestTaskGraphRunner task_graph_runner;
   LayerTreeSettings settings;
   auto animation_host = AnimationHost::CreateForTesting(ThreadInstance::kMain);
@@ -35,7 +35,7 @@ TEST(LayerTreeHostRecordGpuHistogramTest, SingleThreaded) {
 }
 
 TEST(LayerTreeHostRecordGpuHistogramTest, Threaded) {
-  FakeLayerTreeHostClient host_client;
+  FakeLayerTreeHostDelegate host_client;
   TestTaskGraphRunner task_graph_runner;
   LayerTreeSettings settings;
   auto animation_host = AnimationHost::CreateForTesting(ThreadInstance::kMain);

@@ -7,7 +7,7 @@ include_rules = [
   "+cc/layers/deadline_policy.h",
   "+cc/slim",
   "+cc/resources",
-  "+cc/test/stub_layer_tree_host_client.h",
+  "+cc/test/stub_layer_tree_host_delegate.h",
   "+cc/test/test_task_graph_runner.h",
   "+components/cached_flags",
   "+components/input/android/java/src/org/chromium/components/input/InputFeatureMap.java",

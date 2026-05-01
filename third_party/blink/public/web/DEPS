@@ -28,7 +28,7 @@ include_rules = [
     "+cc/paint/paint_flags.h",
     "+cc/paint/paint_worklet_layer_painter.h",
     "+cc/trees/layer_tree_host.h",
-    "+cc/trees/layer_tree_host_client.h",
+    "+cc/trees/layer_tree_host_delegate.h",
     "+cc/trees/viewport_layers.h",
     "+components/viz/common/surfaces/frame_sink_id.h",
     "+components/viz/common/surfaces/surface_id.h",

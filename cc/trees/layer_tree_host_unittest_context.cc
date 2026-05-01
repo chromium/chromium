@@ -22,7 +22,7 @@
 #include "cc/paint/paint_flags.h"
 #include "cc/resources/ui_resource_manager.h"
 #include "cc/test/fake_content_layer_client.h"
-#include "cc/test/fake_layer_tree_host_client.h"
+#include "cc/test/fake_layer_tree_host_delegate.h"
 #include "cc/test/fake_picture_layer.h"
 #include "cc/test/fake_picture_layer_impl.h"
 #include "cc/test/fake_scoped_ui_resource.h"
@@ -383,12 +383,9 @@ class LayerTreeHostContextTestLostContextSucceeds
 // Disabled because of crbug.com/736392
 // SINGLE_AND_MULTI_THREAD_TEST_F(LayerTreeHostContextTestLostContextSucceeds);
 
-class LayerTreeHostClientNotVisibleDoesNotCreateLayerTreeFrameSink
+class LayerTreeHostDelegateNotVisibleDoesNotCreateLayerTreeFrameSink
     : public LayerTreeHostContextTest {
  public:
-  LayerTreeHostClientNotVisibleDoesNotCreateLayerTreeFrameSink()
-      : LayerTreeHostContextTest() {}
-
   void WillBeginTest() override {
     // Override to not become visible.
     DCHECK(!layer_tree_host()->IsVisible());
@@ -407,7 +404,7 @@ class LayerTreeHostClientNotVisibleDoesNotCreateLayerTreeFrameSink
 };
 
 SINGLE_AND_MULTI_THREAD_TEST_F(
-    LayerTreeHostClientNotVisibleDoesNotCreateLayerTreeFrameSink);
+    LayerTreeHostDelegateNotVisibleDoesNotCreateLayerTreeFrameSink);
 
 // This tests the LayerTreeFrameSink release logic in the following sequence.
 // SetUp LTH and create and init LayerTreeFrameSink.
@@ -416,18 +413,23 @@ SINGLE_AND_MULTI_THREAD_TEST_F(
 // ...
 // LTH::SetVisible(true);
 // Create and init new LayerTreeFrameSink
-class LayerTreeHostClientTakeAwayLayerTreeFrameSink
+class LayerTreeHostDelegateTakeAwayLayerTreeFrameSink
     : public LayerTreeHostContextTest {
  public:
-  LayerTreeHostClientTakeAwayLayerTreeFrameSink()
-      : LayerTreeHostContextTest(), setos_counter_(0) {}
+  LayerTreeHostDelegateTakeAwayLayerTreeFrameSink() : setos_counter_(0) {}
 
-  void BeginTest() override { PostSetNeedsCommitToMainThread(); }
+  void BeginTest() override {
+    // Defer main frame updates to prevent non-blocking commits from racing with
+    // ReleaseLayerTreeFrameSink.
+    defer_main_frame_update_ = layer_tree_host()->DeferMainFrameUpdate();
+  }
 
   void RequestNewLayerTreeFrameSink() override {
     if (layer_tree_host()->IsVisible()) {
       setos_counter_++;
       LayerTreeHostContextTest::RequestNewLayerTreeFrameSink();
+    } else {
+      request_buffered_ = true;
     }
   }
 
@@ -443,7 +445,7 @@ class LayerTreeHostClientTakeAwayLayerTreeFrameSink
     MainThreadTaskRunner()->PostTask(
         FROM_HERE,
         base::BindOnce(
-            &LayerTreeHostClientTakeAwayLayerTreeFrameSink::MakeVisible,
+            &LayerTreeHostDelegateTakeAwayLayerTreeFrameSink::MakeVisible,
             base::Unretained(this)));
   }
 
@@ -452,7 +454,7 @@ class LayerTreeHostClientTakeAwayLayerTreeFrameSink
     if (setos_counter_ == 1) {
       MainThreadTaskRunner()->PostTask(
           FROM_HERE,
-          base::BindOnce(&LayerTreeHostClientTakeAwayLayerTreeFrameSink::
+          base::BindOnce(&LayerTreeHostDelegateTakeAwayLayerTreeFrameSink::
                              HideAndReleaseLayerTreeFrameSink,
                          base::Unretained(this)));
     } else {
@@ -463,12 +465,25 @@ class LayerTreeHostClientTakeAwayLayerTreeFrameSink
   void MakeVisible() {
     EXPECT_TRUE(layer_tree_host()->GetTaskRunnerProvider()->IsMainThread());
     layer_tree_host()->SetVisible(true);
+    if (request_buffered_) {
+      request_buffered_ = false;
+      layer_tree_host()->DidFailToInitializeLayerTreeFrameSink();
+    }
+  }
+
+  void DidFailToInitializeLayerTreeFrameSink() override {
+    // Expected failure if the request was buffered due to visibility.
+    // We intentionally don't call the base class so `times_create_failed_`
+    // doesn't increment and fail the test in TearDown().
+    CHECK(request_buffered_);
   }
 
   int setos_counter_;
+  bool request_buffered_ = false;
+  std::unique_ptr<ScopedDeferMainFrameUpdate> defer_main_frame_update_;
 };
 
-SINGLE_AND_MULTI_THREAD_TEST_F(LayerTreeHostClientTakeAwayLayerTreeFrameSink);
+SINGLE_AND_MULTI_THREAD_TEST_F(LayerTreeHostDelegateTakeAwayLayerTreeFrameSink);
 
 class MultipleCompositeDoesNotCreateLayerTreeFrameSink
     : public LayerTreeHostContextTest {

@@ -243,7 +243,7 @@ class CC_EXPORT SingleThreadProxy : public Proxy,
   bool inside_synchronous_composite_;
   bool needs_impl_frame_;
 
-  // True if a request to the LayerTreeHostClient to create an output surface
+  // True if a request to the LayerTreeHostDelegate to create an output surface
   // is still outstanding.
   bool layer_tree_frame_sink_creation_requested_;
   // When output surface is lost, is set to true until a new output surface is

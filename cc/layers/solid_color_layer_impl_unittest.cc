@@ -183,7 +183,7 @@ TEST_F(SolidColorLayerImplTest, VerifyNeedsBlending) {
   scoped_refptr<Layer> root = Layer::Create();
   root->AddChild(layer);
 
-  FakeLayerTreeHostClient client;
+  FakeLayerTreeHostDelegate client;
   TestTaskGraphRunner task_graph_runner;
   auto animation_host = AnimationHost::CreateForTesting(ThreadInstance::kMain);
   std::unique_ptr<FakeLayerTreeHost> host = FakeLayerTreeHost::Create(

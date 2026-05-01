@@ -2,15 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "cc/layers/mirror_layer.h"
+
 #include <memory>
 #include <utility>
 
 #include "cc/animation/animation_host.h"
-#include "cc/layers/mirror_layer.h"
 #include "cc/layers/mirror_layer_impl.h"
 #include "cc/test/fake_impl_task_runner_provider.h"
 #include "cc/test/fake_layer_tree_host.h"
-#include "cc/test/fake_layer_tree_host_client.h"
+#include "cc/test/fake_layer_tree_host_delegate.h"
 #include "cc/test/fake_layer_tree_host_impl.h"
 #include "cc/test/test_task_graph_runner.h"
 #include "cc/trees/tree_synchronizer.h"
@@ -47,7 +48,7 @@ class MirrorLayerTest : public testing::Test {
     layer_tree_host_ = nullptr;
   }
 
-  FakeLayerTreeHostClient fake_client_;
+  FakeLayerTreeHostDelegate fake_client_;
   FakeImplTaskRunnerProvider task_runner_provider_;
   TestTaskGraphRunner task_graph_runner_;
   std::unique_ptr<AnimationHost> animation_host_;

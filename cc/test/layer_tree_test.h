@@ -52,11 +52,11 @@ class Proxy;
 class TestLayerTreeFrameSink;
 class TestTaskGraphRunner;
 
-class LayerTreeHostClientForTesting;
+class LayerTreeHostDelegateForTesting;
 
 // The LayerTreeTests runs with the main loop running. It instantiates a single
 // LayerTreeHostForTesting and associated LayerTreeHostImplForTesting and
-// LayerTreeHostClientForTesting.
+// LayerTreeHostDelegateForTesting.
 //
 // BeginTest() is called once the main message loop is running and the layer
 // tree host is initialized.
@@ -272,7 +272,7 @@ class LayerTreeTest : public testing::Test, public TestHooks {
 
   CompositorMode mode_;
 
-  std::unique_ptr<LayerTreeHostClientForTesting> client_;
+  std::unique_ptr<LayerTreeHostDelegateForTesting> client_;
   std::unique_ptr<LayerTreeHost> layer_tree_host_;
   std::unique_ptr<AnimationHost> animation_host_;
   raw_ptr<PropertyTreeDelegate> property_tree_delegate_ = nullptr;

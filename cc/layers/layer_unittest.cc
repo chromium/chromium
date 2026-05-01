@@ -22,7 +22,7 @@
 #include "cc/test/fake_content_layer_client.h"
 #include "cc/test/fake_impl_task_runner_provider.h"
 #include "cc/test/fake_layer_tree_host.h"
-#include "cc/test/fake_layer_tree_host_client.h"
+#include "cc/test/fake_layer_tree_host_delegate.h"
 #include "cc/test/fake_layer_tree_host_impl.h"
 #include "cc/test/layer_test_common.h"
 #include "cc/test/stub_layer_tree_host_single_thread_client.h"
@@ -307,7 +307,7 @@ class LayerTest : public testing::Test {
   FakeLayerTreeHostImpl host_impl_;
 
   StubLayerTreeHostSingleThreadClient single_thread_client_;
-  FakeLayerTreeHostClient fake_client_;
+  FakeLayerTreeHostDelegate fake_client_;
   std::unique_ptr<FakeLayerTreeHost> layer_tree_host_;
   std::unique_ptr<AnimationHost> animation_host_;
   scoped_refptr<Layer> parent_;
@@ -1216,7 +1216,7 @@ class LayerTreeHostFactory {
   }
 
  private:
-  FakeLayerTreeHostClient client_;
+  FakeLayerTreeHostDelegate client_;
   StubLayerTreeHostSingleThreadClient single_thread_client_;
   TestTaskGraphRunner task_graph_runner_;
 };

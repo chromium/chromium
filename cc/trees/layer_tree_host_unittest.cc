@@ -44,7 +44,7 @@
 #include "cc/resources/ui_resource_manager.h"
 #include "cc/test/fake_content_layer_client.h"
 #include "cc/test/fake_frame_info.h"
-#include "cc/test/fake_layer_tree_host_client.h"
+#include "cc/test/fake_layer_tree_host_delegate.h"
 #include "cc/test/fake_paint_image_generator.h"
 #include "cc/test/fake_picture_layer.h"
 #include "cc/test/fake_picture_layer_impl.h"
@@ -9355,7 +9355,7 @@ MULTI_THREAD_TEST_F(LayerTreeHostTopControlsDeltaTriggersViewportUpdate);
 
 #if BUILDFLAG(IS_CHROMEOS)
 // Tests that custom sequence metrics tracking result is reported to
-// LayerTreeHostClient.
+// LayerTreeHostDelegate.
 constexpr MutatorHost::TrackedAnimationSequenceId kSequenceId = 1u;
 class LayerTreeHostCustomMetricsTrackerTest : public LayerTreeHostTest {
  public:

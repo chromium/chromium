@@ -8,7 +8,7 @@
 
 #include "cc/animation/animation_host.h"
 #include "cc/test/fake_layer_tree_host.h"
-#include "cc/test/fake_layer_tree_host_client.h"
+#include "cc/test/fake_layer_tree_host_delegate.h"
 #include "cc/test/fake_scrollbar.h"
 #include "cc/test/fake_scrollbar_layer.h"
 #include "cc/test/layer_test_common.h"
@@ -30,7 +30,7 @@ class PaintedScrollbarLayerTest : public testing::Test {
         &fake_client_, &task_graph_runner_, animation_host_.get());
   }
 
-  FakeLayerTreeHostClient fake_client_;
+  FakeLayerTreeHostDelegate fake_client_;
   TestTaskGraphRunner task_graph_runner_;
   std::unique_ptr<AnimationHost> animation_host_;
   std::unique_ptr<FakeLayerTreeHost> layer_tree_host_;

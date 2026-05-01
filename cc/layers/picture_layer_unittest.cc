@@ -42,7 +42,7 @@ TEST(PictureLayerTest, NoTilesIfEmptyBounds) {
   scoped_refptr<PictureLayer> layer = PictureLayer::Create(&client);
   layer->SetBounds(gfx::Size(10, 10));
 
-  FakeLayerTreeHostClient host_client;
+  FakeLayerTreeHostDelegate host_client;
   TestTaskGraphRunner task_graph_runner;
   auto animation_host = AnimationHost::CreateForTesting(ThreadInstance::kMain);
   std::unique_ptr<FakeLayerTreeHost> host = FakeLayerTreeHost::Create(
@@ -92,7 +92,7 @@ TEST(PictureLayerTest, InvalidateRasterAfterUpdate) {
   scoped_refptr<PictureLayer> layer = PictureLayer::Create(&client);
   layer->SetBounds(gfx::Size(50, 50));
 
-  FakeLayerTreeHostClient host_client;
+  FakeLayerTreeHostDelegate host_client;
   TestTaskGraphRunner task_graph_runner;
   auto animation_host = AnimationHost::CreateForTesting(ThreadInstance::kMain);
   std::unique_ptr<FakeLayerTreeHost> host = FakeLayerTreeHost::Create(
@@ -136,7 +136,7 @@ TEST(PictureLayerTest, InvalidateRasterWithoutUpdate) {
   scoped_refptr<PictureLayer> layer = PictureLayer::Create(&client);
   layer->SetBounds(gfx::Size(50, 50));
 
-  FakeLayerTreeHostClient host_client;
+  FakeLayerTreeHostDelegate host_client;
   TestTaskGraphRunner task_graph_runner;
   auto animation_host = AnimationHost::CreateForTesting(ThreadInstance::kMain);
   std::unique_ptr<FakeLayerTreeHost> host = FakeLayerTreeHost::Create(
@@ -176,7 +176,7 @@ TEST(PictureLayerTest, ClearVisibleRectWhenNoTiling) {
   scoped_refptr<PictureLayer> layer = PictureLayer::Create(&client);
   layer->SetBounds(gfx::Size(10, 10));
 
-  FakeLayerTreeHostClient host_client;
+  FakeLayerTreeHostDelegate host_client;
   TestTaskGraphRunner task_graph_runner;
   auto animation_host = AnimationHost::CreateForTesting(ThreadInstance::kMain);
   std::unique_ptr<FakeLayerTreeHost> host = FakeLayerTreeHost::Create(
@@ -264,8 +264,8 @@ TEST(PictureLayerTest, NonMonotonicSourceFrameNumber) {
   settings.use_zero_copy = true;
 
   StubLayerTreeHostSingleThreadClient single_thread_client;
-  FakeLayerTreeHostClient host_client1;
-  FakeLayerTreeHostClient host_client2;
+  FakeLayerTreeHostDelegate host_client1;
+  FakeLayerTreeHostDelegate host_client2;
   TestTaskGraphRunner task_graph_runner;
 
   FakeContentLayerClient client;
@@ -339,8 +339,8 @@ TEST(PictureLayerTest, ChangingHostsWithCollidingFrames) {
   settings.single_thread_proxy_scheduler = false;
 
   StubLayerTreeHostSingleThreadClient single_thread_client;
-  FakeLayerTreeHostClient host_client1;
-  FakeLayerTreeHostClient host_client2;
+  FakeLayerTreeHostDelegate host_client1;
+  FakeLayerTreeHostDelegate host_client2;
   TestTaskGraphRunner task_graph_runner;
 
   FakeContentLayerClient client;
@@ -435,7 +435,7 @@ TEST(PictureLayerTest, RecordingScaleIsCorrectlySet) {
   scoped_refptr<FakePictureLayer> layer = FakePictureLayer::Create(&client);
   layer->SetBounds(layer_bounds);
 
-  FakeLayerTreeHostClient host_client;
+  FakeLayerTreeHostDelegate host_client;
   TestTaskGraphRunner task_graph_runner;
   auto animation_host = AnimationHost::CreateForTesting(ThreadInstance::kMain);
   std::unique_ptr<FakeLayerTreeHost> host = FakeLayerTreeHost::Create(

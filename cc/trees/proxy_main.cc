@@ -313,7 +313,7 @@ void ProxyMain::BeginMainFrame(
 
   layer_tree_host_->WillBeginMainFrame();
 
-  // See LayerTreeHostClient::BeginMainFrame for more documentation on
+  // See LayerTreeHostDelegate::BeginMainFrame for more documentation on
   // what this does.
   layer_tree_host_->BeginMainFrame(frame_args);
 
@@ -332,7 +332,7 @@ void ProxyMain::BeginMainFrame(
   if (begin_main_frame_state->evicted_ui_resources)
     layer_tree_host_->GetUIResourceManager()->RecreateUIResources();
 
-  // See LayerTreeHostClient::MainFrameUpdate for more documentation on
+  // See LayerTreeHostDelegate::MainFrameUpdate for more documentation on
   // what this does.
   layer_tree_host_->RequestMainFrameUpdate(true /* report_cc_metrics */);
 
