@@ -48,12 +48,14 @@ std::string TransformModuleIDToSymbolServerFormat(std::string_view module_id) {
   if (mangled_id.size() < 32) {
     mangled_id.resize(32, '0');
   }
+  std::string_view mangled_id_view = mangled_id;
 
-  mangled_id = base::StrCat({mangled_id.substr(6, 2), mangled_id.substr(4, 2),
-                             mangled_id.substr(2, 2), mangled_id.substr(0, 2),
-                             mangled_id.substr(10, 2), mangled_id.substr(8, 2),
-                             mangled_id.substr(14, 2), mangled_id.substr(12, 2),
-                             mangled_id.substr(16, 16), "0"});
+  mangled_id = base::StrCat(
+      {mangled_id_view.substr(6, 2), mangled_id_view.substr(4, 2),
+       mangled_id_view.substr(2, 2), mangled_id_view.substr(0, 2),
+       mangled_id_view.substr(10, 2), mangled_id_view.substr(8, 2),
+       mangled_id_view.substr(14, 2), mangled_id_view.substr(12, 2),
+       mangled_id_view.substr(16, 16), "0"});
 #endif
   return mangled_id;
 }
