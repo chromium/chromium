@@ -37,10 +37,9 @@ namespace base {
 
 namespace internal {
 
-void ConfigureBoringSSLBackedRandBytesFieldTrial();
-
 // Returns a random double in range [0, 1). For use in allocator shim to avoid
-// infinite recursion. Thread-safe.
+// infinite recursion. Thread-safe. This call is generally a lot slower than
+// performing a memory allocation, it must be heavily throttled in the field.
 BASE_EXPORT double RandDoubleAvoidAllocation();
 
 }  // namespace internal
