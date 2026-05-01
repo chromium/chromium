@@ -9,7 +9,6 @@
 #include "chrome/grit/drive_picker_host_resources.h"
 #include "chrome/grit/drive_picker_host_resources_map.h"
 #include "components/omnibox/common/omnibox_features.h"
-#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/webui/webui_util.h"
 
@@ -33,6 +32,15 @@ DrivePickerHostUI::DrivePickerHostUI(content::WebUI* web_ui)
 }
 
 DrivePickerHostUI::~DrivePickerHostUI() = default;
+
+void DrivePickerHostUI::TriggerDrivePickerHost(
+    mojo::PendingRemote<drive_picker_host::mojom::DrivePickerResultHandler>
+        result_handler) {
+  result_remote_.reset();
+  result_remote_.Bind(std::move(result_handler));
+
+  // TODO: crbug.com/497937568 - Trigger the picker UI in the WebUI.
+}
 
 void DrivePickerHostUI::BindInterface(
     mojo::PendingReceiver<drive_picker_host::mojom::DrivePickerHostHandler>

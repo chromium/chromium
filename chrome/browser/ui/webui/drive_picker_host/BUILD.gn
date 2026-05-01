@@ -20,6 +20,7 @@ source_set("drive_picker_host") {
   public_deps = [
     ":mojo_bindings",
     "untrusted",
+    "//chrome/browser/ui/views/drive_picker_host:mojo_bindings",
     "//chrome/browser/ui/webui/top_chrome",
     "//content/public/browser",
   ]
@@ -27,6 +28,7 @@ source_set("drive_picker_host") {
   deps = [
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/drive_picker_host:resources",
+    "//chrome/browser/ui/browser_window",
     "//chrome/common",
     "//components/omnibox/common",
     "//ui/webui",

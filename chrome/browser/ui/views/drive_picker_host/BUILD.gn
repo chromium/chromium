@@ -1,0 +1,61 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+assert(!is_android)
+
+mojom("mojo_bindings") {
+  sources = [ "drive_picker_result_handler.mojom" ]
+}
+
+source_set("drive_picker_host") {
+  sources = [
+    "drive_picker_host_controller.cc",
+    "drive_picker_host_controller.h",
+    "drive_picker_host_view.cc",
+    "drive_picker_host_view.h",
+  ]
+
+  public_deps = [
+    ":mojo_bindings",
+    "//ui/views",
+  ]
+  deps = [
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/webui/drive_picker_host",
+    "//chrome/browser/ui/webui/drive_picker_host:mojo_bindings",
+    "//chrome/common",
+    "//components/constrained_window",
+    "//content/public/browser",
+    "//skia",
+    "//ui/base",
+    "//ui/base/metadata",
+    "//ui/gfx",
+    "//ui/views/controls/webview",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "drive_picker_host_controller_unittest.cc",
+    "drive_picker_host_view_unittest.cc",
+  ]
+  deps = [
+    ":drive_picker_host",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/browser_window/test:test_support",
+    "//chrome/browser/ui/views:test_support",
+    "//chrome/browser/ui/webui/drive_picker_host",
+    "//chrome/common",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+    "//testing/gtest",
+    "//ui/views:test_support",
+  ]
+}

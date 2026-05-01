@@ -969,6 +969,7 @@ static_library("ui") {
     deps += [
       "//chrome/browser/accessibility/phrase_segmentation",
       "//chrome/browser/profile_resetter",
+      "//chrome/browser/ui/views/drive_picker_host",
       "//chrome/browser/ui/web_modal:browser_window_modal_dialog_delegate",
       "//chrome/browser/ui/zoom:browser_window_zoom_observer",
     ]
