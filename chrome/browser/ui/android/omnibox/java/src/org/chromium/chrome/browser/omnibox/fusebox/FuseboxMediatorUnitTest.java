@@ -1515,28 +1515,13 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void testPopupCreateImageButtonVisible() {
-        OmniboxFeatures.sShowImageGenerationButtonInIncognito.setForTesting(true);
         doReturn(true).when(mComposeboxQueryControllerBridge).isCreateImagesEligible();
-        doReturn(false).when(mProfile).isIncognitoBranded();
         recreateMediator();
         assertTrue(mModel.get(FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_VISIBLE));
 
         doReturn(false).when(mComposeboxQueryControllerBridge).isCreateImagesEligible();
         recreateMediator();
         assertFalse(mModel.get(FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_VISIBLE));
-    }
-
-    @Test
-    public void testPopupCreateImageButtonVisible_incognitoBranded() {
-        OmniboxFeatures.sShowImageGenerationButtonInIncognito.setForTesting(false);
-        doReturn(true).when(mComposeboxQueryControllerBridge).isCreateImagesEligible();
-        doReturn(true).when(mProfile).isIncognitoBranded();
-        recreateMediator();
-        assertFalse(mModel.get(FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_VISIBLE));
-
-        OmniboxFeatures.sShowImageGenerationButtonInIncognito.setForTesting(true);
-        recreateMediator();
-        assertTrue(mModel.get(FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_VISIBLE));
     }
 
     @Test

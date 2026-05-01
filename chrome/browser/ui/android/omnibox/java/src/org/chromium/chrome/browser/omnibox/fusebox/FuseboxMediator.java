@@ -250,9 +250,7 @@ import java.util.function.Supplier;
         if (!OmniboxFeatures.sShowModelPicker.getValue() && mProfile != null) {
             mModel.set(
                     FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_VISIBLE,
-                    mComposeboxQueryControllerBridge.isCreateImagesEligible()
-                            && (OmniboxFeatures.sShowImageGenerationButtonInIncognito.getValue()
-                                    || !mProfile.isIncognitoBranded()));
+                    mComposeboxQueryControllerBridge.isCreateImagesEligible());
         }
     }
 
@@ -1037,9 +1035,7 @@ import java.util.function.Supplier;
                 inputState.toolsSectionConfig.getHeader());
         mModel.set(
                 FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_VISIBLE,
-                inputState.isImageGenToolVisible()
-                        && (OmniboxFeatures.sShowImageGenerationButtonInIncognito.getValue()
-                                || !(mProfile != null && mProfile.isIncognitoBranded())));
+                inputState.isImageGenToolVisible());
         mModel.set(
                 FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_ENABLED,
                 inputState.isImageGenToolEnabled());
