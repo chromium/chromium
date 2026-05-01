@@ -1290,6 +1290,17 @@ void SourceBufferStream::PrepareRangesForNextAppend(
   // Finally do the deletion of overlap.
   RemoveInternal(buffers_start_timestamp, buffers_end_timestamp, exclude_start,
                  deleted_buffers);
+  if (range_for_next_append_ != ranges_.end()) {
+    base::TimeDelta group_start_pts =
+        new_coded_frame_group_ ? coded_frame_group_start_pts_ : kNoTimestamp;
+    if (!(*range_for_next_append_)
+             ->CanAppendBuffersToEnd(new_buffers, group_start_pts)) {
+      DVLOG(1) << __func__ << " " << GetStreamTypeName()
+               << ": Resetting range_for_next_append_ since it cannot accept "
+                  "new buffers after overlap removal.";
+      range_for_next_append_ = ranges_.end();
+    }
+  }
 }
 
 // static
