@@ -654,9 +654,7 @@ bool ExternalVkImageBacking::CheckSupportForAccessStream(
     SharedImageAccessStream stream,
     viz::SharedImageFormat format,
     const AccessParams& params) {
-  if (base::FeatureList::IsEnabled(
-          features::kUseCompoundImageBackingAsDefault) &&
-      base::FeatureList::IsEnabled(features::kUseDynamicBackingAllocations) &&
+  if (base::FeatureList::IsEnabled(features::kUseDynamicBackingAllocations) &&
       params.context_state &&
       UseSeparateGLTexture(params.context_state.get(), format)) {
     if (stream == SharedImageAccessStream::kGL) {
@@ -956,9 +954,7 @@ std::unique_ptr<GLTextureImageRepresentation>
 ExternalVkImageBacking::ProduceGLTexture(SharedImageManager* manager,
                                          MemoryTypeTracker* tracker) {
   CHECK(
-      !(base::FeatureList::IsEnabled(
-            features::kUseCompoundImageBackingAsDefault) &&
-        base::FeatureList::IsEnabled(features::kUseDynamicBackingAllocations) &&
+      !(base::FeatureList::IsEnabled(features::kUseDynamicBackingAllocations) &&
         use_separate_gl_texture()));
   if (gl_textures_.empty()) {
     if (!ProduceGLTextureInternal(/*is_passthrough=*/false)) {
@@ -981,9 +977,7 @@ ExternalVkImageBacking::ProduceGLTexturePassthrough(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker) {
   CHECK(
-      !(base::FeatureList::IsEnabled(
-            features::kUseCompoundImageBackingAsDefault) &&
-        base::FeatureList::IsEnabled(features::kUseDynamicBackingAllocations) &&
+      !(base::FeatureList::IsEnabled(features::kUseDynamicBackingAllocations) &&
         use_separate_gl_texture()));
   if (gl_textures_.empty()) {
     if (!ProduceGLTextureInternal(/*is_passthrough=*/true)) {

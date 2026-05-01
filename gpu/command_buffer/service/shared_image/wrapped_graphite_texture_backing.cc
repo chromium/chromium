@@ -320,9 +320,7 @@ bool WrappedGraphiteTextureBacking::ReadbackToMemory(
     // copy. We only apply this fix when dynamic allocation is enabled to
     // maintain parity with the legacy path's raw-copy behavior for now.
     sk_sp<SkColorSpace> src_color_space = nullptr;
-    if (base::FeatureList::IsEnabled(
-            features::kUseCompoundImageBackingAsDefault) &&
-        base::FeatureList::IsEnabled(features::kUseDynamicBackingAllocations)) {
+    if (base::FeatureList::IsEnabled(features::kUseDynamicBackingAllocations)) {
       src_color_space = color_space().ToSkColorSpace();
     }
 
@@ -365,9 +363,7 @@ bool WrappedGraphiteTextureBacking::CheckSupportForAccessStream(
     SharedImageAccessStream stream,
     viz::SharedImageFormat format,
     const AccessParams& params) {
-  if (base::FeatureList::IsEnabled(
-          features::kUseCompoundImageBackingAsDefault) &&
-      base::FeatureList::IsEnabled(features::kUseDynamicBackingAllocations)) {
+  if (base::FeatureList::IsEnabled(features::kUseDynamicBackingAllocations)) {
     // When kUseDynamicBackingAllocations is enabled, we don't support GL access
     // directly in this backing. Instead, we want CompoundImageBacking to
     // allocate a GLTextureImageBacking which provides native GL support.
@@ -438,10 +434,7 @@ WrappedGraphiteTextureBacking::ProduceSkiaGanesh(
   // When kUseDynamicBackingAllocations is enabled, this method should not be
   // called. CompoundImageBacking will instead allocate a
   // GLTextureImageBacking.
-  CHECK(
-      !(base::FeatureList::IsEnabled(
-            features::kUseCompoundImageBackingAsDefault) &&
-        base::FeatureList::IsEnabled(features::kUseDynamicBackingAllocations)));
+  CHECK(!base::FeatureList::IsEnabled(features::kUseDynamicBackingAllocations));
 
   // Used with Graphite-Vulkan-Swiftshader backend for testing, but the context
   // passed in is GLContext for passthrough command decoder. See
@@ -465,10 +458,7 @@ WrappedGraphiteTextureBacking::ProduceGLTexturePassthrough(
   // When kUseDynamicBackingAllocations is enabled, this method should not be
   // called. CompoundImageBacking will instead allocate a
   // GLTextureImageBacking.
-  CHECK(
-      !(base::FeatureList::IsEnabled(
-            features::kUseCompoundImageBackingAsDefault) &&
-        base::FeatureList::IsEnabled(features::kUseDynamicBackingAllocations)));
+  CHECK(!base::FeatureList::IsEnabled(features::kUseDynamicBackingAllocations));
 
   CHECK(context_state_->IsGraphiteDawnVulkan());
   if (context_state_->context_lost()) {

@@ -396,10 +396,8 @@ bool SharedImageFactory::CreateSharedImage(
       si_info.debug_label, IsSharedBetweenThreads(usage));
 
   std::unique_ptr<SharedImageBacking> backing =
-      base::FeatureList::IsEnabled(features::kUseCompoundImageBackingAsDefault)
-          ? CompoundImageBacking::WrapExternalBacking(this, copy_manager(),
-                                                      std::move(temp_backing))
-          : std::move(temp_backing);
+      CompoundImageBacking::WrapExternalBacking(this, copy_manager(),
+                                                std::move(temp_backing));
 
   DVLOG_IF(1, !!backing) << "CreateSharedImage[" << backing->GetName()
                          << "] size=" << size.ToString()
@@ -503,8 +501,6 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
   auto native_buffer_supported =
       IsNativeBufferSupported(format, buffer_usage, gpu_extra_info_);
   std::unique_ptr<SharedImageBacking> backing;
-  const bool force_compound_backing =
-      base::FeatureList::IsEnabled(features::kUseCompoundImageBackingAsDefault);
 
   if (native_buffer_supported) {
     auto* factory = GetFactoryByUsage(usage, format, size,
@@ -522,10 +518,8 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
         si_info.surface_origin, si_info.alpha_type, SharedImageUsageSet(usage),
         debug_label, IsSharedBetweenThreads(usage), buffer_usage);
 
-    backing = force_compound_backing
-                  ? CompoundImageBacking::WrapExternalBacking(
-                        this, copy_manager(), std::move(temp_backing))
-                  : std::move(temp_backing);
+    backing = CompoundImageBacking::WrapExternalBacking(
+        this, copy_manager(), std::move(temp_backing));
 
     DVLOG_IF(1, !!backing) << "CreateSharedImageBackedByBuffer["
                            << backing->GetName() << "] size=" << size.ToString()
@@ -567,10 +561,8 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
               si_info.surface_origin, si_info.alpha_type,
               SharedImageUsageSet(usage), debug_label,
               IsSharedBetweenThreads(usage), buffer_usage);
-          backing = force_compound_backing
-                        ? CompoundImageBacking::WrapExternalBacking(
-                              this, copy_manager(), std::move(temp_backing))
-                        : std::move(temp_backing);
+          backing = CompoundImageBacking::WrapExternalBacking(
+              this, copy_manager(), std::move(temp_backing));
           DVLOG_IF(1, !!backing)
               << "CreateSharedImageBackedByBuffer[" << backing->GetName()
               << "] size=" << size.ToString()
@@ -614,10 +606,8 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
       IsSharedBetweenThreads(usage), data);
 
   std::unique_ptr<SharedImageBacking> backing =
-      base::FeatureList::IsEnabled(features::kUseCompoundImageBackingAsDefault)
-          ? CompoundImageBacking::WrapExternalBacking(this, copy_manager(),
-                                                      std::move(temp_backing))
-          : std::move(temp_backing);
+      CompoundImageBacking::WrapExternalBacking(this, copy_manager(),
+                                                std::move(temp_backing));
 
   DVLOG_IF(1, !!backing) << "CreateSharedImagePixels[" << backing->GetName()
                          << "] with pixels size=" << size.ToString()
@@ -675,11 +665,8 @@ bool SharedImageFactory::CreateSharedImage(
         si_info.alpha_type, usage, debug_label, IsSharedBetweenThreads(usage),
         std::move(buffer_handle));
 
-    backing = base::FeatureList::IsEnabled(
-                  features::kUseCompoundImageBackingAsDefault)
-                  ? CompoundImageBacking::WrapExternalBacking(
-                        this, copy_manager(), std::move(temp_backing))
-                  : std::move(temp_backing);
+    backing = CompoundImageBacking::WrapExternalBacking(
+        this, copy_manager(), std::move(temp_backing));
   }
 
   DVLOG_IF(1, !!backing) << "CreateSharedImageWithBuffer[" << backing->GetName()

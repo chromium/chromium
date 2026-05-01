@@ -132,18 +132,15 @@ BASE_FEATURE(kNvidiaWaylandYuvHardwareConversionWorkaround,
 // Android and Linux.
 BASE_FEATURE(kDefaultEnableGpuRasterization,
 #if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || \
-    BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_LINUX)
+    BUILDFLAG(IS_ANDROID) || BUILDFLAG(USE_WEBGPU_ON_VULKAN_VIA_GL_INTEROP)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
              base::FEATURE_DISABLED_BY_DEFAULT
 #endif
 );
 
-// Use a compound backing for shared images by default.
-BASE_FEATURE(kUseCompoundImageBackingAsDefault,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables the use of MSAA in skia on Ice Lake and later intel architectures.
+
 BASE_FEATURE(kEnableMSAAOnNewIntelGPUs,
 #if BUILDFLAG(IS_ANDROID)
              base::FEATURE_ENABLED_BY_DEFAULT

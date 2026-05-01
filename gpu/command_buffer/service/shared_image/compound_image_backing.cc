@@ -1118,9 +1118,7 @@ void CompoundImageBacking::NotifyEndAccess(SharedImageBacking* backing,
     // Also note that we are copying back to all the backings here, even to
     // those that will never be read. This can be a performance bottleneck when
     // there are multiple backings.
-    if (base::FeatureList::IsEnabled(
-            features::kUseCompoundImageBackingAsDefault) &&
-        base::FeatureList::IsEnabled(features::kUseDynamicBackingAllocations) &&
+    if (base::FeatureList::IsEnabled(features::kUseDynamicBackingAllocations) &&
         is_thread_safe() &&
         (backing->GetType() == SharedImageBackingType::kGLTexture)) {
       for (auto& element : elements_) {
@@ -1624,13 +1622,13 @@ const std::vector<SkPixmap>& CompoundImageBacking::GetSharedMemoryPixmaps() {
   auto* shm_backing = GetShmElement().GetBacking();
   DCHECK(shm_backing);
 
-  // SECURITY: When kUseCompoundImageBackingAsDefault is on, WrapExternalBacking
-  // wraps arbitrary backing types and gives them AccessStreamSet::All()
-  // (including kMemory). GetShmElement() then returns that wrapped backing
-  // here regardless of its actual type. Guard against the resulting type
-  // confusion in the static_cast below. Note marking a backing to support all
-  // access stream is expected behavior wheres ::GetSharedMemoryPixmaps should
-  // only be invoked on SharedImageBackingType::kSharedMemory currently.
+  // SECURITY: WrapExternalBacking wraps arbitrary backing types and gives them
+  // AccessStreamSet::All() (including kMemory). GetShmElement() then returns
+  // that wrapped backing here regardless of its actual type. Guard against the
+  // resulting type confusion in the static_cast below. Note marking a backing
+  // to support all access stream is expected behavior wheres
+  // ::GetSharedMemoryPixmaps should only be invoked on
+  // SharedImageBackingType::kSharedMemory currently.
   CHECK_EQ(shm_backing->GetType(), SharedImageBackingType::kSharedMemory);
 
   return static_cast<SharedMemoryImageBacking*>(shm_backing)->pixmaps();
