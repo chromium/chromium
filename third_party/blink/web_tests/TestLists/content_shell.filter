@@ -370,8 +370,6 @@ external/wpt/css/css-text/letter-spacing/letter-spacing-ligatures-002.html
 external/wpt/css/css-text/line-breaking/line-breaking-atomic-022.html
 external/wpt/css/css-text/tab-size/tab-size.html
 external/wpt/css/css-text/text-autospace/text-autospace-first-line-001.html
-external/wpt/css/css-text/text-transform/text-transform-capitalize-*
-external/wpt/css/css-text/text-transform/text-transform-upperlower-001.html
 external/wpt/css/css-text/white-space/control-chars-*
 external/wpt/css/css-text/white-space/eol-spaces-bidi-003.html
 external/wpt/css/css-text/white-space/pre-float-001.html
