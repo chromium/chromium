@@ -32,6 +32,7 @@ class PipewireAudioInjector : public AudioInjector {
   // AudioInjector implementation.
   bool Start(base::WeakPtr<Delegate> delegate) override;
   void InjectAudioPacket(std::unique_ptr<AudioPacket> packet) override;
+  base::WeakPtr<protocol::AudioStub> GetWeakPtr() override;
 
  private:
   class Core;
@@ -39,6 +40,8 @@ class PipewireAudioInjector : public AudioInjector {
   SEQUENCE_CHECKER(sequence_checker_);
 
   std::unique_ptr<Core> core_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  base::WeakPtrFactory<PipewireAudioInjector> weak_factory_{this};
 };
 
 }  // namespace remoting

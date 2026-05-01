@@ -29,4 +29,8 @@ void IpcAudioInjector::InjectAudioPacket(std::unique_ptr<AudioPacket> packet) {
   desktop_session_proxy_->InjectAudioPacket(std::move(packet));
 }
 
+base::WeakPtr<protocol::AudioStub> IpcAudioInjector::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 }  // namespace remoting

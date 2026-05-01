@@ -304,6 +304,7 @@ void ClientSession::SetCapabilities(
     audio_injector_ = desktop_environment_->CreateAudioInjector();
     if (audio_injector_) {
       audio_injector_->Start(weak_factory_.GetWeakPtr());
+      connection_->set_audio_stub(audio_injector_->GetWeakPtr());
     }
   }
 

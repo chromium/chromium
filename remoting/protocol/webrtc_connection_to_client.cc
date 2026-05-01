@@ -17,6 +17,7 @@
 #include "remoting/codec/webrtc_video_encoder_vpx.h"
 #include "remoting/protocol/audio_source.h"
 #include "remoting/protocol/audio_stream.h"
+#include "remoting/protocol/audio_stub.h"
 #include "remoting/protocol/authenticator.h"
 #include "remoting/protocol/clipboard_stub.h"
 #include "remoting/protocol/desktop_capturer.h"
@@ -26,6 +27,7 @@
 #include "remoting/protocol/input_stub.h"
 #include "remoting/protocol/message_pipe.h"
 #include "remoting/protocol/transport_context.h"
+#include "remoting/protocol/webrtc_audio_sink_adapter.h"
 #include "remoting/protocol/webrtc_audio_stream.h"
 #include "remoting/protocol/webrtc_transport.h"
 #include "remoting/protocol/webrtc_video_encoder_factory.h"
@@ -136,6 +138,17 @@ void WebrtcConnectionToClient::set_host_stub(protocol::HostStub* host_stub) {
 void WebrtcConnectionToClient::set_input_stub(protocol::InputStub* input_stub) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   event_dispatcher_->set_input_stub(input_stub);
+}
+
+void WebrtcConnectionToClient::set_audio_stub(
+    base::WeakPtr<AudioStub> audio_stub) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  audio_stub_ = audio_stub;
+  audio_sink_adapter_.reset();
+  if (audio_stub_ && incoming_audio_stream_) {
+    audio_sink_adapter_ = std::make_unique<WebrtcAudioSinkAdapter>(
+        incoming_audio_stream_, audio_stub_);
+  }
 }
 
 void WebrtcConnectionToClient::ApplySessionOptions(
@@ -263,12 +276,31 @@ void WebrtcConnectionToClient::OnWebrtcTransportIncomingDataChannel(
 void WebrtcConnectionToClient::OnWebrtcTransportMediaStreamAdded(
     webrtc::scoped_refptr<webrtc::MediaStreamInterface> stream) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  LOG(WARNING) << "The client created an unexpected media stream.";
+
+  if (stream->GetAudioTracks().empty()) {
+    LOG(WARNING) << "The client created an unexpected media stream.";
+    return;
+  }
+
+  if (incoming_audio_stream_) {
+    LOG(ERROR) << "Multiple audio streams received. Only one is supported.";
+    return;
+  }
+
+  incoming_audio_stream_ = stream;
+  if (audio_stub_) {
+    audio_sink_adapter_ = std::make_unique<WebrtcAudioSinkAdapter>(
+        incoming_audio_stream_, audio_stub_);
+  }
 }
 
 void WebrtcConnectionToClient::OnWebrtcTransportMediaStreamRemoved(
     webrtc::scoped_refptr<webrtc::MediaStreamInterface> stream) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  if (incoming_audio_stream_ == stream) {
+    audio_sink_adapter_.reset();
+    incoming_audio_stream_ = nullptr;
+  }
 }
 
 void WebrtcConnectionToClient::OnWebrtcTransportRouteChanged(

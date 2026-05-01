@@ -341,4 +341,9 @@ void PipewireAudioInjector::InjectAudioPacket(
   core_->InjectAudioPacket(std::move(packet));
 }
 
+base::WeakPtr<protocol::AudioStub> PipewireAudioInjector::GetWeakPtr() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return weak_factory_.GetWeakPtr();
+}
+
 }  // namespace remoting

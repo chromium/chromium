@@ -9,6 +9,7 @@
 
 #include <string>
 
+#include "base/memory/weak_ptr.h"
 #include "remoting/base/session_options.h"
 #include "remoting/base/session_policies.h"
 #include "remoting/base/source_location.h"
@@ -25,6 +26,7 @@ namespace remoting::protocol {
 
 class AudioSource;
 class AudioStream;
+class AudioStub;
 class ClientStub;
 class ClipboardStub;
 class HostStub;
@@ -115,6 +117,7 @@ class ConnectionToClient {
   virtual void set_clipboard_stub(ClipboardStub* clipboard_stub) = 0;
   virtual void set_host_stub(HostStub* host_stub) = 0;
   virtual void set_input_stub(InputStub* input_stub) = 0;
+  virtual void set_audio_stub(base::WeakPtr<AudioStub> audio_stub) = 0;
 
   // Applies the |options| to current session. SessionOptions usually controls
   // experimental behaviors, implementations can ignore this function if no

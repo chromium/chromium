@@ -8,13 +8,14 @@
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
+#include "remoting/protocol/audio_stub.h"
 
 namespace remoting {
 
 class AudioPacket;
 
 // A class for injecting audio packets into a virtual audio input device.
-class AudioInjector {
+class AudioInjector : public protocol::AudioStub {
  public:
   // Returns true if the current platform supports audio injection.
   // Note: For multi-process host, returning true only means that the platform
@@ -33,7 +34,11 @@ class AudioInjector {
     virtual void OnAudioInjectorConsumersChanged(bool has_consumers) = 0;
   };
 
-  virtual ~AudioInjector() = default;
+  ~AudioInjector() override;
+
+  // protocol::AudioStub implementation.
+  void ProcessAudioPacket(std::unique_ptr<AudioPacket> packet,
+                          base::OnceClosure done) override;
 
   // Starts a virtual audio input device for injecting audio packets.
   virtual bool Start(base::WeakPtr<Delegate> delegate) = 0;
@@ -41,6 +46,11 @@ class AudioInjector {
   // Injects an audio packet into the virtual audio input device. Must be called
   // after Start().
   virtual void InjectAudioPacket(std::unique_ptr<AudioPacket> packet) = 0;
+
+  virtual base::WeakPtr<protocol::AudioStub> GetWeakPtr() = 0;
+
+ protected:
+  AudioInjector();
 };
 
 }  // namespace remoting
