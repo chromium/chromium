@@ -323,7 +323,7 @@ void GlicInstanceCoordinatorImpl::GetExperimentalTriggeringUpdates(
     mojo::PendingRemote<mojom::ExperimentalTriggeringUpdatesHandler> handler,
     base::OnceCallback<void(bool)> success_status_callback) {
   if (active_instance_) {
-    active_instance_->host().getExperimentalTriggeringUpdates(
+    active_instance_->host().GetExperimentalTriggeringUpdates(
         std::move(handler), std::move(success_status_callback));
   } else {
     std::move(success_status_callback).Run(false);

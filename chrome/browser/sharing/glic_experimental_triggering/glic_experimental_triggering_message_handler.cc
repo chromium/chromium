@@ -279,8 +279,8 @@ void GlicExperimentalTriggeringMessageHandler::OnClientConnectedForUpdates(
   mojo::PendingRemote<glic::mojom::ExperimentalTriggeringUpdatesHandler> remote;
   auto listener_receiver = remote.InitWithNewPipeAndPassReceiver();
 
-  instance->host().getExperimentalTriggeringUpdates(std::move(remote),
-                                                    base::DoNothing());
+  instance->GetExperimentalTriggeringUpdates(std::move(remote),
+                                             base::DoNothing());
 
   listeners_.Add(std::make_unique<UpdatesListener>(message_sender_,
                                                    std::move(server_channel),

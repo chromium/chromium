@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/glic/public/glic_instance.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -56,6 +57,11 @@ class MockGlicInstance : public GlicInstance {
               (override));
   MOCK_METHOD(void, CancelTask, (), (override));
   MOCK_METHOD(void, BindTabForTesting, (tabs::TabInterface*), (override));
+  MOCK_METHOD(void,
+              GetExperimentalTriggeringUpdates,
+              (mojo::PendingRemote<mojom::ExperimentalTriggeringUpdatesHandler>,
+               base::OnceCallback<void(bool)>),
+              (override));
   MOCK_METHOD(Host&, host, (), (override));
 
   base::WeakPtr<MockGlicInstance> GetWeakPtr() {

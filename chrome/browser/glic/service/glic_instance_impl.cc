@@ -69,6 +69,7 @@
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -879,6 +880,13 @@ void GlicInstanceImpl::UnbindEmbedder(EmbedderKey key) {
 
 Host& GlicInstanceImpl::host() {
   return host_;
+}
+
+void GlicInstanceImpl::GetExperimentalTriggeringUpdates(
+    mojo::PendingRemote<mojom::ExperimentalTriggeringUpdatesHandler> handler,
+    base::OnceCallback<void(bool)> success_status_callback) {
+  host_.GetExperimentalTriggeringUpdates(std::move(handler),
+                                         std::move(success_status_callback));
 }
 
 const InstanceId& GlicInstanceImpl::id() const {

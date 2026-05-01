@@ -439,7 +439,7 @@ class Host : public GlicSharingManagerProvider {
 
   // Register a handler to observe experimental triggering related updates.
   // The callback informs if the registration operations was successful or not.
-  virtual void getExperimentalTriggeringUpdates(
+  virtual void GetExperimentalTriggeringUpdates(
       mojo::PendingRemote<mojom::ExperimentalTriggeringUpdatesHandler> handler,
       base::OnceCallback<void(bool)> success_status_callback);
 

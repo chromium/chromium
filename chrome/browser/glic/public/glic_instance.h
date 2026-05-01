@@ -13,6 +13,7 @@
 #include "base/scoped_observation_traits.h"
 #include "base/types/strong_alias.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 
 class BrowserWindowInterface;
 namespace views {
@@ -88,6 +89,12 @@ class GlicInstance {
   // Get this instance's Host which manages the chrome://glic WebContents.
   // DEPRECATED - Use specific GlicInstance methods instead.
   virtual Host& host() = 0;
+
+  // Register a handler to observe experimental triggering related updates.
+  // The callback informs if the registration operations was successful or not.
+  virtual void GetExperimentalTriggeringUpdates(
+      mojo::PendingRemote<mojom::ExperimentalTriggeringUpdatesHandler> handler,
+      base::OnceCallback<void(bool)> success_status_callback) = 0;
 
   // Gets the window size of the active embedder.
   virtual gfx::Size GetPanelSize() = 0;

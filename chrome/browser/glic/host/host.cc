@@ -149,7 +149,7 @@ void Host::NotifyContextualSkillsChanged(
   }
 }
 
-void Host::getExperimentalTriggeringUpdates(
+void Host::GetExperimentalTriggeringUpdates(
     mojo::PendingRemote<mojom::ExperimentalTriggeringUpdatesHandler> handler,
     base::OnceCallback<void(bool)> success_status_callback) {
   if (auto* client = GetPrimaryWebClient()) {

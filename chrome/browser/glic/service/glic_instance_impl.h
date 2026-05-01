@@ -35,6 +35,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "components/autofill/core/browser/integrators/actor/actor_form_filling_types.h"
 #include "components/tabs/public/tab_interface.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/glic/host/context/glic_sharing_manager_impl.h"
@@ -175,6 +176,9 @@ class GlicInstanceImpl : public GlicInstance,
 
   // GlicInstance:
   Host& host() override;
+  void GetExperimentalTriggeringUpdates(
+      mojo::PendingRemote<mojom::ExperimentalTriggeringUpdatesHandler> handler,
+      base::OnceCallback<void(bool)> success_status_callback) override;
   const InstanceId& id() const override;
   void SetIdForRestoration(InstanceId id);
   std::optional<std::string> conversation_id() const override;
