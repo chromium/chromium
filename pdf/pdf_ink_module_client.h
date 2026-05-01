@@ -66,8 +66,9 @@ class PdfInkModuleClient {
   virtual void ClearSelection() {}
 
   // Notifies the client to draw `text_info` with `attributes` into the page
-  // at `page_index`.
+  // at `page_index`, identified as `id`.
   virtual void DrawText(int page_index,
+                        InkTextId id,
                         base::span<const InkTextInfo> text_info,
                         double pdf_zoom,
                         const InkTextBoxAttributes& attributes) {}

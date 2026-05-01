@@ -318,6 +318,7 @@ class FakeClient : public PdfInkModuleClient {
   MOCK_METHOD(void,
               DrawText,
               (int page_index,
+               InkTextId id,
                base::span<const InkTextInfo> text_info,
                double pdf_zoom,
                const InkTextBoxAttributes& attributes),
@@ -1025,10 +1026,13 @@ class PdfInkModuleTextTest : public testing::Test {
 };
 
 TEST_F(PdfInkModuleTextTest, HandleFinishTextAnnotationMessage) {
+  static constexpr int kFrontendId = 5;
   static constexpr int kPageIndex = 3;
   static constexpr FontId kFontId(123);
+  static constexpr double kPdfZoom = 2.0;
   static constexpr auto kTypefaceBlob =
       std::to_array<const uint8_t>({1, 2, 3, 4});
+  static constexpr InkTextId kTextId(0);
 
   base::DictValue typeface;
   typeface.Set("uniqueId", kFontId.value());
@@ -1039,21 +1043,24 @@ TEST_F(PdfInkModuleTextTest, HandleFinishTextAnnotationMessage) {
   typefaces.Append(std::move(typeface));
   data.Set("newTypefaces", std::move(typefaces));
 
-  data.Set("pageIndex", kPageIndex);
-  data.Set("pdfZoom", 2.0f);
-  data.Set("textAttributes", SampleTextAttributesDict());
-  data.Set("textOrientation", 1);
-  data.Set("textBoxRect", SampleTextBoxRectDict());
+  data.Set("id", kFrontendId);
+  data.Set("isEdited", false);
   data.Set("mojoTextInfo", SampleInkTextInfoBlob(kFontId));
+  data.Set("pageIndex", kPageIndex);
+  data.Set("pdfZoom", kPdfZoom);
+  data.Set("textAttributes", SampleTextAttributesDict());
+  data.Set("textBoxRect", SampleTextBoxRectDict());
+  data.Set("textOrientation", 1);
 
   base::DictValue message = base::DictValue()
                                 .Set("type", "finishTextAnnotation")
                                 .Set("data", std::move(data));
 
   EXPECT_CALL(client(), AddFont(kFontId, ElementsAreArray(kTypefaceBlob)));
-  EXPECT_CALL(client(), DrawText(kPageIndex,
-                                 ElementsAre(SampleInkTextInfoMatcher(kFontId)),
-                                 2.0f, SampleInkTextBoxAttributesMatcher()));
+  EXPECT_CALL(client(),
+              DrawText(kPageIndex, kTextId,
+                       ElementsAre(SampleInkTextInfoMatcher(kFontId)), kPdfZoom,
+                       SampleInkTextBoxAttributesMatcher()));
 
   EXPECT_TRUE(ink_module().OnMessage(message));
 }

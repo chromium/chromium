@@ -5115,6 +5115,7 @@ FPDF_FONT PDFiumEngine::GetAddedFont(FontId font_id) {
 }
 
 void PDFiumEngine::DrawText(int page_index,
+                            InkTextId id,
                             base::span<const InkTextInfo> text_info,
                             double pdf_zoom,
                             const InkTextBoxAttributes& attributes) {

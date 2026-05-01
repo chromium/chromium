@@ -3074,7 +3074,7 @@ TEST_P(PDFiumEngineInkDrawTextTest, DrawText) {
 
   // Draw some text.
   engine->DrawText(
-      kPageIndex,
+      kPageIndex, InkTextId(0),
       {InkTextInfo(
           font_id, glyphs,
           /*glyph_positions=*/std::vector<gfx::Vector2dF>(glyphs.size()),
@@ -3117,7 +3117,7 @@ TEST_P(PDFiumEngineInkDrawTextTest, DrawOrangeText) {
 
   // Draw some orange text.
   engine->DrawText(
-      kPageIndex,
+      kPageIndex, InkTextId(0),
       {InkTextInfo(
           font_id, glyphs,
           /*glyph_positions=*/std::vector<gfx::Vector2dF>(glyphs.size()),
@@ -3160,7 +3160,7 @@ TEST_P(PDFiumEngineInkDrawTextTest, DrawTextSavesMetadata) {
   ASSERT_FALSE(glyphs2.empty());
 
   // Draw some text with two runs to force multiple text objects.
-  engine->DrawText(kPageIndex,
+  engine->DrawText(kPageIndex, InkTextId(1),
                    {InkTextInfo(font_id, glyphs1,
                                 std::vector<gfx::Vector2dF>(glyphs1.size()),
                                 gfx::RectF(0.0f, 0.0f, 80.0f, 20.0f), true),

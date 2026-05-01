@@ -1614,7 +1614,8 @@ void PdfInkModule::HandleFinishTextAnnotationMessage(
   // to avoid any potential sync race issues between the frontend and backend.
   double pdf_zoom = data.FindDouble("pdfZoom").value();
 
-  client_->DrawText(page_index, ink_info, pdf_zoom,
+  InkTextId new_id = id_generator_.GetTextIdAndAdvance();
+  client_->DrawText(page_index, new_id, ink_info, pdf_zoom,
                     GetTextBoxAttributesFromDict(data));
 }
 
