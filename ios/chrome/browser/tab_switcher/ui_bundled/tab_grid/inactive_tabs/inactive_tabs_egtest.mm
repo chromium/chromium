@@ -6,9 +6,11 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/app_bar/ui/app_bar_constants.h"
 #import "ios/chrome/browser/reading_list/ui_bundled/reading_list_app_interface.h"
 #import "ios/chrome/browser/settings/ui_bundled/tabs/tabs_settings_constants.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/inactive_tabs/inactive_tabs_constants.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_constants.h"
@@ -911,6 +913,42 @@ id<GREYMatcher> GetMatcherForUserEducationSettingsButton() {
 
   // Check that Inactive Tabs Settings are open.
   [[EarlGrey selectElementWithMatcher:GetMatcherForInactiveTabsSettings()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Checks that the bottom bar is positioned above the App Bar in portrait mode
+// when ChromeNextIA is enabled.
+- (void)testBottomBarLayoutWithChromeNextIA {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Test not applicable for iPad.");
+  }
+
+  // Create tabs before relaunching with test mode.
+  [ChromeEarlGrey openNewTab];
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
+
+  AppLaunchConfiguration config;
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  config.additional_args.push_back("-InactiveTabsTestMode");
+  config.additional_args.push_back("true");
+  config.features_enabled.push_back(kChromeNextIa);
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+
+  // Open the Tab Grid.
+  [ChromeEarlGreyUI openTabGrid];
+
+  // Enter the Inactive Tabs grid.
+  [[EarlGrey selectElementWithMatcher:TabGridInactiveTabsButton()]
+      performAction:grey_tap()];
+
+  // Verify that the Close All Inactive button is visible.
+  [[EarlGrey selectElementWithMatcher:GetMatcherForCloseAllInactiveButton()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Verify that the App Bar is also visible (e.g. the Tab Grid button).
+  id<GREYMatcher> appBarTabGridButton =
+      grey_accessibilityID(kAppBarTabGridButtonIdentifier);
+  [[EarlGrey selectElementWithMatcher:appBarTabGridButton]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 

@@ -1,0 +1,5 @@
+include_rules = [
+  # keep-sorted start
+  "+ios/chrome/browser/app_bar/ui/app_bar_constants.h",
+  # keep-sorted end
+]

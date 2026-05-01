@@ -4,8 +4,13 @@
 
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/inactive_tabs/inactive_tabs_view_controller.h"
 
+#import "ios/chrome/browser/app_bar/ui/app_bar_constants.h"
+#import "ios/chrome/browser/app_bar/ui/app_bar_utils.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/inactive_tabs/inactive_tabs_grid_view_controller.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_constants.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/toolbars/tab_grid_toolbar_background_view.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -23,7 +28,13 @@
 
 @end
 
-@implementation InactiveTabsViewController
+@implementation InactiveTabsViewController {
+  // The bottom constraint for the bottom bar.
+  NSLayoutConstraint* _bottomBarBottomConstraint;
+
+  // The gradient background view.
+  TabGridToolbarBackgroundView* _gradientBackgroundView;
+}
 
 - (instancetype)initWithNibName:(NSString*)nibNameOrNil
                          bundle:(NSBundle*)nibBundleOrNil {
@@ -81,9 +92,29 @@
     [_bottomBar.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor],
     [_bottomBar.trailingAnchor
         constraintEqualToAnchor:self.view.trailingAnchor],
-    [_bottomBar.bottomAnchor
-        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.bottomAnchor],
   ]];
+
+  if (IsChromeNextIaEnabled()) {
+    _gradientBackgroundView = [[TabGridToolbarBackgroundView alloc]
+        initWithPosition:TabGridToolbarBackgroundPosition::kBottom];
+    _gradientBackgroundView.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.view insertSubview:_gradientBackgroundView belowSubview:_bottomBar];
+
+    [NSLayoutConstraint activateConstraints:@[
+      [_gradientBackgroundView.leadingAnchor
+          constraintEqualToAnchor:self.view.leadingAnchor],
+      [_gradientBackgroundView.trailingAnchor
+          constraintEqualToAnchor:self.view.trailingAnchor],
+      [_gradientBackgroundView.bottomAnchor
+          constraintEqualToAnchor:self.view.bottomAnchor],
+      [_gradientBackgroundView.topAnchor
+          constraintEqualToAnchor:_bottomBar.bottomAnchor],
+    ]];
+
+    _bottomBarBottomConstraint = [_bottomBar.bottomAnchor
+        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.bottomAnchor];
+    _bottomBarBottomConstraint.active = YES;
+  }
 
   // Let the bottom bar lay itself out before setting the items, as otherwise it
   // spits out AutoLayout constraints conflicts.
@@ -120,6 +151,9 @@
 
   _gridViewController.contentInsets =
       UIEdgeInsetsMake(topInset, leftInset, bottomInset, rightInset);
+  if (IsChromeNextIaEnabled()) {
+    [self updateBottomBarConstraints];
+  }
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -156,6 +190,14 @@
 - (void)didTapCloseAllInactive {
   [self.delegate inactiveTabsViewController:self
         didTapCloseAllInactiveBarButtonItem:self.closeAllInactiveButton];
+}
+
+// Updates the bottom bar constraints based on the App Bar position.
+- (void)updateBottomBarConstraints {
+  _bottomBarBottomConstraint.constant =
+      AppBarPositionForView(self.view) == AppBarPosition::kBottom
+          ? -kAppBarHeight
+          : 0;
 }
 
 @end
