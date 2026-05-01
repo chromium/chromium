@@ -8,19 +8,19 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
-import 'chrome://resources/cr_elements/cr_shared_style.css.js';
-import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
+import 'chrome://resources/cr_elements/cr_lazy_list/cr_lazy_list.js';
 
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {BookmarksTreeNode} from './bookmarks.mojom-webui.js';
-import {getTemplate} from './power_bookmarks_edit_dialog.html.js';
+import {getCss} from './power_bookmarks_edit_dialog.css.js';
+import {getHtml} from './power_bookmarks_edit_dialog.html.js';
 import {getFolderDescendants} from './power_bookmarks_service.js';
 
 export const TEMP_FOLDER_ID_PREFIX = 'tmp_new_folder_';
@@ -30,63 +30,66 @@ export interface PowerBookmarksEditDialogElement {
     dialog: CrDialogElement,
     nameInput: CrInputElement,
     urlInput: CrInputElement,
+    folderSelector: HTMLElement,
   };
 }
 
-export class PowerBookmarksEditDialogElement extends PolymerElement {
+export class PowerBookmarksEditDialogElement extends CrLitElement {
   static get is() {
     return 'power-bookmarks-edit-dialog';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      topLevelBookmarks_: {
-        type: Array,
-        value: () => [],
-      },
-
-      selectedBookmarks_: {
-        type: Array,
-        value: () => [],
-      },
-
-      selectedFolder_: {
-        type: Object,
-        value: null,
-      },
-
-      activeFolderPath_: {
-        type: Array,
-        value: () => [],
-      },
-
-      newFolders_: {
-        type: Array,
-        value: () => [],
-      },
-
-      moveOnly_: {
-        type: Boolean,
-        value: false,
-      },
-
-      newFolderName_: String,
-      showNewFolderInput_: Boolean,
+      topLevelBookmarks_: {type: Array},
+      selectedBookmarks_: {type: Array},
+      selectedFolder_: {type: Object},
+      activeFolderPath_: {type: Array},
+      newFolders_: {type: Array},
+      moveOnly_: {type: Boolean},
+      newFolderName_: {type: String},
+      showNewFolderInput_: {type: Boolean},
+      shownFolders_: {type: Array},
+      listScrollTarget_: {type: Object},
     };
   }
 
-  declare private topLevelBookmarks_: BookmarksTreeNode[];
-  declare private selectedBookmarks_: BookmarksTreeNode[];
-  declare private selectedFolder_: BookmarksTreeNode|undefined;
-  declare private activeFolderPath_: BookmarksTreeNode[];
-  declare private newFolders_: BookmarksTreeNode[];
-  declare private moveOnly_: boolean;
-  declare private newFolderName_: string;
-  declare private showNewFolderInput_: boolean;
+  protected accessor topLevelBookmarks_: BookmarksTreeNode[] = [];
+  protected accessor selectedBookmarks_: BookmarksTreeNode[] = [];
+  protected accessor selectedFolder_: BookmarksTreeNode|undefined = undefined;
+  protected accessor activeFolderPath_: BookmarksTreeNode[] = [];
+  protected accessor newFolders_: BookmarksTreeNode[] = [];
+  protected accessor moveOnly_: boolean = false;
+  protected accessor newFolderName_: string = '';
+  protected accessor showNewFolderInput_: boolean = false;
+  protected accessor shownFolders_: BookmarksTreeNode[] = [];
+  protected accessor listScrollTarget_: HTMLElement = this;
+
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+    if (changedPrivateProperties.has('activeFolderPath_') ||
+        changedPrivateProperties.has('topLevelBookmarks_') ||
+        changedPrivateProperties.has('selectedBookmarks_') ||
+        changedPrivateProperties.has('newFolders_')) {
+      this.shownFolders_ = this.computeShownFolders_();
+    }
+  }
+
+  override firstUpdated(changedProperties: PropertyValues<this>) {
+    super.firstUpdated(changedProperties);
+    this.listScrollTarget_ = this.$.folderSelector;
+  }
 
   showDialog(
       activeFolderPath: BookmarksTreeNode[],
@@ -116,7 +119,7 @@ export class PowerBookmarksEditDialogElement extends PolymerElement {
     return true;
   }
 
-  private getDialogTitle_(): string {
+  protected getDialogTitle_(): string {
     if (this.moveOnly_) {
       return loadTimeData.getString('editMoveFolderTo');
     } else {
@@ -124,14 +127,14 @@ export class PowerBookmarksEditDialogElement extends PolymerElement {
     }
   }
 
-  private getBookmarkName_(): string {
+  protected getBookmarkName_(): string {
     if (this.selectedBookmarks_.length === 1) {
       return this.selectedBookmarks_[0].title;
     }
     return '';
   }
 
-  private getBookmarkUrl_(): string {
+  protected getBookmarkUrl_(): string {
     if (this.selectedBookmarks_.length === 1) {
       return this.selectedBookmarks_[0].url!;
     }
@@ -145,7 +148,7 @@ export class PowerBookmarksEditDialogElement extends PolymerElement {
     return undefined;
   }
 
-  private getActiveFolderTitle_(): string {
+  protected getActiveFolderTitle_(): string {
     return this.getFolderTitle_(this.getActiveFolder_());
   }
 
@@ -158,7 +161,7 @@ export class PowerBookmarksEditDialogElement extends PolymerElement {
     }
   }
 
-  private getShownFolders_(): BookmarksTreeNode[] {
+  private computeShownFolders_(): BookmarksTreeNode[] {
     const activeFolder = this.getActiveFolder_();
     if (activeFolder && activeFolder.children) {
       return activeFolder.children.filter(this.isAvailableFolder_, this);
@@ -168,7 +171,7 @@ export class PowerBookmarksEditDialogElement extends PolymerElement {
     assertNotReached('No bookmarks to display in edit menu');
   }
 
-  private getBackButtonLabel_(): string {
+  protected getBackButtonLabel_(): string {
     let activeFolderParent: BookmarksTreeNode|undefined;
     if (this.activeFolderPath_.length > 1) {
       activeFolderParent =
@@ -178,17 +181,17 @@ export class PowerBookmarksEditDialogElement extends PolymerElement {
         'backButtonLabel', this.getFolderTitle_(activeFolderParent));
   }
 
-  private getForwardButtonTooltip_(folder: BookmarksTreeNode): string {
+  protected getForwardButtonTooltip_(folder: BookmarksTreeNode): string {
     return loadTimeData.getStringF(
         'openBookmarkLabel', this.getFolderTitle_(folder));
   }
 
-  private getForwardButtonLabel_(folder: BookmarksTreeNode): string {
+  protected getForwardButtonLabel_(folder: BookmarksTreeNode): string {
     return loadTimeData.getStringF(
         'forwardButtonLabel', this.getFolderTitle_(folder));
   }
 
-  private hasAvailableChildFolders_(folder: BookmarksTreeNode): boolean {
+  protected hasAvailableChildFolders_(folder: BookmarksTreeNode): boolean {
     return folder.children!.filter(this.isAvailableFolder_, this).length > 0;
   }
 
@@ -210,46 +213,57 @@ export class PowerBookmarksEditDialogElement extends PolymerElement {
     return false;
   }
 
-  private isSelected_(folder: BookmarksTreeNode): boolean {
+  protected isSelected_(folder: BookmarksTreeNode): boolean {
     return folder === this.selectedFolder_;
   }
 
-  private onBack_() {
-    this.selectedFolder_ = undefined;
-    this.pop('activeFolderPath_');
+  private getShownFolder_(event: Event): BookmarksTreeNode {
+    const target = event.currentTarget as HTMLElement;
+    const index = Number(target.dataset['index']);
+    return this.shownFolders_[index];
   }
 
-  private onForward_(event: DomRepeatEvent<BookmarksTreeNode>) {
+  protected onBackButtonClick_() {
     this.selectedFolder_ = undefined;
-    this.push('activeFolderPath_', event.model.item);
+    this.activeFolderPath_.pop();
+    this.requestUpdate();
   }
 
-  private onFolderSelected_(event: DomRepeatEvent<BookmarksTreeNode>) {
-    if (this.selectedFolder_ === event.model.item) {
+  protected onForwardClick_(event: MouseEvent) {
+    this.selectedFolder_ = undefined;
+    const folder = this.getShownFolder_(event);
+    this.activeFolderPath_.push(folder);
+    this.requestUpdate();
+  }
+
+  protected onFolderClick_(event: MouseEvent) {
+    const folder = this.getShownFolder_(event);
+    if (this.selectedFolder_ === folder) {
       this.selectedFolder_ = undefined;
     } else {
-      this.selectedFolder_ = event.model.item;
+      this.selectedFolder_ = folder;
     }
   }
 
-  private onNewFolderClick_() {
+  protected onNewFolderClick_() {
     this.showNewFolderInput_ = true;
   }
 
-  private onNewFolderInputDomChange_() {
+  protected onNewFolderInputDomChange_() {
     const input =
-        this.shadowRoot!.querySelector<CrInputElement>('#newFolderInput');
+        this.shadowRoot.querySelector<CrInputElement>('#newFolderInput');
     if (!input) {
       return;
     }
     input.select();
   }
 
-  private onInput_(event: CustomEvent<{value: string}>): void {
+  protected onNewFolderNameValueChanged_(event: CustomEvent<{value: string}>):
+      void {
     this.newFolderName_ = event.detail.value;
   }
 
-  private onKeyDown_(event: KeyboardEvent): void {
+  protected onNewFolderInputKeydown_(event: KeyboardEvent): void {
     /**
      * This key down listener overrides the existing behaviour where the
      * parent dialog would close on 'Enter'.
@@ -260,14 +274,14 @@ export class PowerBookmarksEditDialogElement extends PolymerElement {
       this.saveNewFolder_();
 
       const saveButton =
-          this.shadowRoot!.querySelector<CrButtonElement>('#saveFolderButton');
+          this.shadowRoot.querySelector<CrButtonElement>('#saveFolderButton');
 
       assert(!!saveButton);
       saveButton.focus();
     }
   }
 
-  private onBlur_(event: KeyboardEvent): void {
+  protected onBlur_(event: KeyboardEvent): void {
     /**
      * This prevents the blur event from being called when the save button is
      * focused when the enter key is pressed.
@@ -303,20 +317,21 @@ export class PowerBookmarksEditDialogElement extends PolymerElement {
     } else {
       this.topLevelBookmarks_.unshift(newFolder);
     }
-    this.push('newFolders_', newFolder);
+    this.newFolders_.push(newFolder);
     if (parent !== this.getActiveFolder_()) {
-      this.push('activeFolderPath_', parent);
+      this.activeFolderPath_.push(parent!);
     }
+    this.requestUpdate();
     this.selectedFolder_ = newFolder;
 
     this.newFolderName_ = loadTimeData.getString('newFolderTitle');
   }
 
-  private onCancel_() {
+  protected onCancelClick_() {
     this.close_();
   }
 
-  private onSave_() {
+  protected onSaveClick_() {
     if (!this.moveOnly_ && !this.validateUrl_()) {
       return;
     }
@@ -329,17 +344,13 @@ export class PowerBookmarksEditDialogElement extends PolymerElement {
     } else {
       folderId = loadTimeData.getString('otherBookmarksId');
     }
-    this.dispatchEvent(new CustomEvent('save', {
-      bubbles: true,
-      composed: true,
-      detail: {
-        bookmarks: this.selectedBookmarks_,
-        name: this.moveOnly_ ? undefined : this.$.nameInput.inputElement.value,
-        url: this.moveOnly_ ? undefined : this.$.urlInput.inputElement.value,
-        folderId: folderId,
-        newFolders: this.newFolders_,
-      },
-    }));
+    this.fire('save', {
+      bookmarks: this.selectedBookmarks_,
+      name: this.moveOnly_ ? undefined : this.$.nameInput.inputElement.value,
+      url: this.moveOnly_ ? undefined : this.$.urlInput.inputElement.value,
+      folderId: folderId,
+      newFolders: this.newFolders_,
+    });
     this.close_();
   }
 

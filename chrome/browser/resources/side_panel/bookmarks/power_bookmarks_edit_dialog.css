@@ -1,0 +1,115 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #scheme=relative
+ * #import=//resources/cr_elements/cr_icons_lit.css.js
+ * #import=//resources/cr_elements/cr_shared_style_lit.css.js
+ * #import=//bookmarks-side-panel.top-chrome/shared/sp_shared_style_lit.css.js
+ * #include=cr-icons-lit cr-shared-style-lit sp-shared-style-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  --cr-dialog-body-padding-horizontal: 16px;
+  --cr-dialog-title-slot-padding-start: 16px;
+  --cr-dialog-width: 300px;
+  --cr-icon-button-margin-start: 0;
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+}
+
+.button-row {
+  font-size: 12px;
+  justify-content: space-between;
+}
+
+.folder-row {
+  box-sizing: border-box;
+  align-items: center;
+  display: flex;
+  gap: 8px;
+  padding-inline-end: 8px;
+  width: 100%;
+}
+
+.folder-row:hover {
+  background-color: var(--cr-hover-background-color);
+}
+
+.folder-row:focus-visible {
+  outline-color: var(--cr-focus-outline-color);
+}
+
+.folder-row[selected] {
+  background-color: var(
+      --color-side-panel-bookmarks-selected-folder-background);
+}
+
+.folder-row[selected] > .cr-icon {
+  background-color: var(--color-side-panel-bookmarks-selected-folder-icon);
+}
+
+.folder-row[selected] > .folder-title {
+  color: var(--color-side-panel-bookmarks-selected-folder-foreground);
+}
+
+.folder-row[selected] > .subpage-arrow {
+  --cr-icon-button-fill-color: var(
+      --color-side-panel-bookmarks-selected-folder-icon);
+}
+
+.folder-row:has(.new-folder-input) {
+  margin-block-start: 8px;
+}
+
+.folder-selector {
+  border: 1px solid var(--color-side-panel-dialog-divider);
+  border-radius: 2px;
+  height: 160px;
+  margin-top: 8px;
+  overflow: auto;
+}
+
+.folder-title {
+  width: 100%;
+}
+
+.input-label {
+  align-items: center;
+  display: flex;
+  height: 27px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px;
+  color: var(--cr-primary-text-color);
+}
+
+.input-row {
+  align-items: baseline;
+  display: grid;
+  gap: 4px;
+  grid-template-columns: 52px auto;
+}
+
+.input-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.name-input {
+  --cr-icon-color: var(--cr-secondary-text-color);
+  --cr-input-error-display: none;
+}
+
+.new-folder-input {
+  --cr-input-error-display: none;
+  width: 100%;
+}

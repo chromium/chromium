@@ -11,8 +11,7 @@ import {PowerBookmarksService} from 'chrome://bookmarks-side-panel.top-chrome/po
 import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestBookmarksApiProxy} from './test_bookmarks_api_proxy.js';
 import {TestPowerBookmarksDelegate} from './test_power_bookmarks_delegate.js';
@@ -115,7 +114,7 @@ suite('SidePanelPowerBookmarksEditDialogTest', () => {
     await delegate.whenCalled('onBookmarksLoaded');
   });
 
-  test('ShowsCorrectRowCount', () => {
+  test('ShowsCorrectRowCount', async () => {
     const topLevelBookmarks = service.getTopLevelBookmarks();
     powerBookmarksEditDialog.showDialog(
         [],
@@ -123,15 +122,17 @@ suite('SidePanelPowerBookmarksEditDialogTest', () => {
         [topLevelBookmarks[0]!],
         false,
     );
+    await microtasksFinished();
 
-    const ironList =
-        powerBookmarksEditDialog.shadowRoot!.querySelector('iron-list');
-    const rows = ironList!.items!;
+    const folderList =
+        powerBookmarksEditDialog.shadowRoot.querySelector('cr-lazy-list');
+    assertTrue(!!folderList);
+    const rows = folderList.items;
     // Shows folders apart from itself/descendants
     assertEquals(rows.length, 1);
   });
 
-  test('ShowsActiveFolderName', () => {
+  test('ShowsActiveFolderName', async () => {
     const topLevelBookmarks = service.getTopLevelBookmarks();
     powerBookmarksEditDialog.showDialog(
         [],
@@ -139,9 +140,10 @@ suite('SidePanelPowerBookmarksEditDialogTest', () => {
         [topLevelBookmarks[0]!],
         false,
     );
+    await microtasksFinished();
 
     const titleElement =
-        powerBookmarksEditDialog.shadowRoot!.querySelector('h2');
+        powerBookmarksEditDialog.shadowRoot.querySelector('h2');
     assertTrue(
         titleElement!.textContent.includes(
             loadTimeData.getString('allBookmarks')));
@@ -169,22 +171,23 @@ suite('SidePanelPowerBookmarksEditDialogTest', () => {
         [topLevelBookmarks[3]!],
         false,
     );
+    await microtasksFinished();
 
     const newFolderButton: HTMLElement =
-        powerBookmarksEditDialog.shadowRoot!.querySelector('#newFolderButton')!;
+        powerBookmarksEditDialog.shadowRoot.querySelector('#newFolderButton')!;
     newFolderButton.click();
 
-    await flushTasks();
+    await microtasksFinished();
 
     const newFolderInput: CrInputElement =
-        powerBookmarksEditDialog.shadowRoot!.querySelector('#newFolderInput')!;
+        powerBookmarksEditDialog.shadowRoot.querySelector('#newFolderInput')!;
 
     newFolderInput.dispatchEvent(new KeyboardEvent('keydown', {key: 'Enter'}));
 
-    await flushTasks();
+    await microtasksFinished();
 
     const nameInput: CrInputElement =
-        powerBookmarksEditDialog.shadowRoot!.querySelector('#nameInput')!;
+        powerBookmarksEditDialog.shadowRoot.querySelector('#nameInput')!;
 
     nameInput.inputElement.value = 'Modified value';
     nameInput.inputElement.dispatchEvent(
@@ -192,10 +195,10 @@ suite('SidePanelPowerBookmarksEditDialogTest', () => {
     await eventToPromise('value-changed', nameInput);
 
     const saveButton: HTMLElement =
-        powerBookmarksEditDialog.shadowRoot!.querySelector('.action-button')!;
+        powerBookmarksEditDialog.shadowRoot.querySelector('.action-button')!;
     saveButton.click();
 
-    await flushTasks();
+    await microtasksFinished();
 
     assertEquals(saveCount, 1);
     assertEquals(savedName, 'Modified value');
@@ -218,20 +221,21 @@ suite('SidePanelPowerBookmarksEditDialogTest', () => {
         [topLevelBookmarks[3]!],
         false,
     );
+    await microtasksFinished();
 
     const newFolderButton: HTMLElement =
-        powerBookmarksEditDialog.shadowRoot!.querySelector('#newFolderButton')!;
+        powerBookmarksEditDialog.shadowRoot.querySelector('#newFolderButton')!;
     newFolderButton.click();
 
     const urlInput: CrInputElement =
-        powerBookmarksEditDialog.shadowRoot!.querySelector('#urlInput')!;
+        powerBookmarksEditDialog.shadowRoot.querySelector('#urlInput')!;
     urlInput.inputElement.value = 'notavalidurl.2';
     urlInput.inputElement.dispatchEvent(
         new CustomEvent('input', {composed: true, bubbles: true}));
     await eventToPromise('value-changed', urlInput);
 
     const saveButton: HTMLElement =
-        powerBookmarksEditDialog.shadowRoot!.querySelector('.action-button')!;
+        powerBookmarksEditDialog.shadowRoot.querySelector('.action-button')!;
     saveButton.click();
 
     // Wait for the urlInput to update for validation, and wait one more cycle
@@ -250,15 +254,16 @@ suite('SidePanelPowerBookmarksEditDialogTest', () => {
         [topLevelBookmarks[0]!],
         false,
     );
+    await microtasksFinished();
 
     const newFolderButton: HTMLElement =
-        powerBookmarksEditDialog.shadowRoot!.querySelector('#newFolderButton')!;
+        powerBookmarksEditDialog.shadowRoot.querySelector('#newFolderButton')!;
     newFolderButton.click();
 
-    await flushTasks();
+    await microtasksFinished();
 
     const newFolderInput: CrInputElement =
-        powerBookmarksEditDialog.shadowRoot!.querySelector('#newFolderInput')!;
+        powerBookmarksEditDialog.shadowRoot.querySelector('#newFolderInput')!;
 
     assertTrue(!!newFolderInput);
   });
@@ -283,25 +288,26 @@ suite('SidePanelPowerBookmarksEditDialogTest', () => {
         [topLevelBookmarks[3]!],
         false,
     );
+    await microtasksFinished();
 
     const newFolderButton: HTMLElement =
-        powerBookmarksEditDialog.shadowRoot!.querySelector('#newFolderButton')!;
+        powerBookmarksEditDialog.shadowRoot.querySelector('#newFolderButton')!;
     newFolderButton.click();
 
-    await flushTasks();
+    await microtasksFinished();
 
     const newFolderInput: CrInputElement =
-        powerBookmarksEditDialog.shadowRoot!.querySelector('#newFolderInput')!;
+        powerBookmarksEditDialog.shadowRoot.querySelector('#newFolderInput')!;
 
     newFolderInput.dispatchEvent(new Event('blur'));
 
-    await flushTasks();
+    await microtasksFinished();
 
     const saveButton: HTMLElement =
-        powerBookmarksEditDialog.shadowRoot!.querySelector('.action-button')!;
+        powerBookmarksEditDialog.shadowRoot.querySelector('.action-button')!;
     saveButton.click();
 
-    await flushTasks();
+    await microtasksFinished();
 
     assertEquals(saveCount, 1);
     assertEquals(savedUrl, 'http://child/bookmark/1/');
@@ -332,15 +338,16 @@ suite('SidePanelPowerBookmarksEditDialogTest', () => {
         [topLevelBookmarks[3]!],
         false,
     );
+    await microtasksFinished();
 
     const newFolderButton: HTMLElement =
-        powerBookmarksEditDialog.shadowRoot!.querySelector('#newFolderButton')!;
+        powerBookmarksEditDialog.shadowRoot.querySelector('#newFolderButton')!;
     newFolderButton.click();
 
-    await flushTasks();
+    await microtasksFinished();
 
     const newFolderInput: CrInputElement =
-        powerBookmarksEditDialog.shadowRoot!.querySelector('#newFolderInput')!;
+        powerBookmarksEditDialog.shadowRoot.querySelector('#newFolderInput')!;
 
     newFolderInput.inputElement.value = 'Custom folder name';
     newFolderInput.inputElement.dispatchEvent(
@@ -349,13 +356,13 @@ suite('SidePanelPowerBookmarksEditDialogTest', () => {
 
     newFolderInput.dispatchEvent(new Event('blur'));
 
-    await flushTasks();
+    await microtasksFinished();
 
     const saveButton: HTMLElement =
-        powerBookmarksEditDialog.shadowRoot!.querySelector('.action-button')!;
+        powerBookmarksEditDialog.shadowRoot.querySelector('.action-button')!;
     saveButton.click();
 
-    await flushTasks();
+    await microtasksFinished();
 
     assertEquals(saveCount, 1);
     assertEquals(savedUrl, 'http://child/bookmark/1/');
