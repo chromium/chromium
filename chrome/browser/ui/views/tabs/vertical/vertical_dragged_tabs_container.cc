@@ -155,13 +155,27 @@ VerticalDraggedTabsContainer::RegisterWillDestroyCallback(
 
 void VerticalDraggedTabsContainer::OnViewBoundsChanged(
     views::View* observed_view) {
-  CHECK_EQ(observed_view, base::to_address(host_view_));
+  if (observed_view != base::to_address(host_view_)) {
+    return;
+  }
   // The transformation coordinates are relative to the host view's coordinates,
   // so they must be updated as the bounds change to ensure the dragged tabs
   // remain at the same point in the screen.
   if (IsHandlingDrag()) {
     UpdateDraggingViewTransforms(views::View::ConvertPointFromScreen(
         base::to_address(host_view_), last_drag_point_in_screen_));
+  }
+}
+
+void VerticalDraggedTabsContainer::OnViewIsDeleting(
+    views::View* observed_view) {
+  if (observed_view == base::to_address(host_view_)) {
+    return;
+  }
+
+  if (dragging_views_.contains(observed_view)) {
+    dragging_views_.erase(observed_view);
+    dragged_view_observations_.RemoveObservation(observed_view);
   }
 }
 
@@ -319,6 +333,7 @@ void VerticalDraggedTabsContainer::AddViewToVerticalDragLayout(
   bounds.set_y(dragging_views_bounds_.height());
   dragging_views_.insert(
       {dragging_view, {.offset = bounds.OffsetFromOrigin()}});
+  dragged_view_observations_.AddObservation(dragging_view);
 
   static constexpr int kDraggedViewVerticalPadding = 2;
   dragging_views_bounds_.set_height(dragging_views_bounds_.height() +
@@ -344,6 +359,7 @@ void VerticalDraggedTabsContainer::AddViewToSquashedDragLayout(
   dragging_views_.insert(
       {dragging_view,
        {.offset = gfx::Vector2d(), .should_hide = !is_source_dragged_view}});
+  dragged_view_observations_.AddObservation(dragging_view);
 }
 
 void VerticalDraggedTabsContainer::ResetDragState() {
@@ -362,6 +378,7 @@ void VerticalDraggedTabsContainer::ResetDragState() {
   // the actual position, without animating.
   UpdateTargetLayoutForDrag(GetDraggingViews());
   dragging_views_.clear();
+  dragged_view_observations_.RemoveAllObservations();
   animating_views_start_offsets_.clear();
   drag_start_animation_.Reset(0.0);
   dragging_views_bounds_ = gfx::Rect();

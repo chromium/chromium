@@ -8,6 +8,7 @@
 #include "base/callback_list.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ref.h"
+#include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/views/tabs/dragging/tab_drag_target.h"
 #include "chrome/browser/ui/views/tabs/vertical/tab_drag_scroll_handler.h"
@@ -73,6 +74,7 @@ class VerticalDraggedTabsContainer : public TabDragTarget,
 
   // ViewObserver
   void OnViewBoundsChanged(views::View* observed_view) override;
+  void OnViewIsDeleting(views::View* observed_view) override;
 
   // AnimationDelegate
   void AnimationProgressed(const gfx::Animation* animation) override;
@@ -242,6 +244,9 @@ class VerticalDraggedTabsContainer : public TabDragTarget,
 
   base::ScopedObservation<views::View, views::ViewObserver>
       host_view_observation_{this};
+
+  base::ScopedMultiSourceObservation<views::View, views::ViewObserver>
+      dragged_view_observations_{this};
 
   TabDragScrollHandler scroll_handler_;
 
