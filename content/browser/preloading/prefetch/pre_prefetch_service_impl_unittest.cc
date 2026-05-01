@@ -51,6 +51,11 @@ class PrePrefetchServiceImplTest : public testing::Test {
 
   void TearDown() override {
     PrePrefetchServiceImpl::SetURLLoaderFactoryForTesting(nullptr);
+    // For some tests calling `URLLoaderFactory` refresh, reset the service and
+    // drain tasks (both on UI and Core sequences) to ensure all resources
+    // associated with the `BrowserContext` accessed during `URLLoaderFactory`
+    // refresh are fully released before `TestBrowserContext` is destroyed.
+    RunUntilIdle();
   }
 
   network::TestURLLoaderFactory* test_url_loader_factory() {
@@ -181,9 +186,12 @@ TEST_F(PrePrefetchServiceImplTest,
 }
 
 // Test that `PrePrefetchServiceImpl` fails if we do not have a connected
-// `URLLoaderFactory`.
+// `URLLoaderFactory` and refresh is ongoing.
 TEST_F(PrePrefetchServiceImplTest,
        StartPrePrefetchRequestFailsWithoutConnectedURLLoaderFactory) {
+  PrePrefetchServiceImpl::SetShouldProhibitURLLoaderFactoryRefreshForTesting(
+      true);
+
   auto local_factory = std::make_unique<network::TestURLLoaderFactory>();
   auto shared_factory =
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
@@ -203,13 +211,13 @@ TEST_F(PrePrefetchServiceImplTest,
   local_factory.reset();
 
   // Wait for the mojo disconnection to be propagated to `core_` on its
-  // `SequencedTaskRunner.
+  // `SequencedTaskRunner`.
   RunUntilIdle();
 
   base::test::TestFuture<std::unique_ptr<PrePrefetchHandle>> handle_future;
 
   // Start PrePrefetch from non UI thread, this will match the cache, but
-  // the URLLoaderFactory will disconnect.
+  // the URLLoaderFactory is disconnected.
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
       base::BindOnce(
@@ -230,13 +238,80 @@ TEST_F(PrePrefetchServiceImplTest,
       handle_future.GetCallback());
 
   std::unique_ptr<PrePrefetchHandle> handle = handle_future.Take();
-
   // PrePrefetch fails.
   EXPECT_EQ(handle, nullptr);
 
   histogram_tester().ExpectUniqueSample(
       "Preloading.Prefetch.PrePrefetch.StartResult",
       PrePrefetchStartResult::kFailedURLLoaderFactoryDisconnected, 1);
+
+  PrePrefetchServiceImpl::SetShouldProhibitURLLoaderFactoryRefreshForTesting(
+      false);
+}
+
+// Test that `PrePrefetchServiceImpl` refreshes URLLoaderFactory automatically
+// on disconnection.
+TEST_F(PrePrefetchServiceImplTest,
+       StartPrePrefetchRequestRefreshesURLLoaderFactoryOnDisconnection) {
+  auto local_factory1 = std::make_unique<network::TestURLLoaderFactory>();
+  auto shared_factory1 =
+      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+          local_factory1.get());
+  PrePrefetchServiceImpl::SetURLLoaderFactoryForTesting(shared_factory1.get());
+
+  const GURL prefetch_url("https://example.com/prefetch");
+  auto service = PrePrefetchService::Create(
+      browser_context(),
+      /*embedder_non_ui_thread_update_headers_callbacks=*/{},
+      url::Origin::Create(prefetch_url),
+      /*initial_javascript_enabled_hint=*/true,
+      /*initial_should_append_variations_header_hint=*/false);
+  ASSERT_NE(service, nullptr);
+
+  // Setup to refresh a new factory **on the main thread**
+  // (`g_url_loader_factory_for_testing`) that will be picked up during
+  // `CreateURLLoaderFactoryOnUI()`.
+  // The pending factory on `PrePrefetchServiceCore` is not updated and thus
+  // still disconnected.
+  auto local_factory2 = std::make_unique<network::TestURLLoaderFactory>();
+  auto shared_factory2 =
+      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+          local_factory2.get());
+  PrePrefetchServiceImpl::SetURLLoaderFactoryForTesting(shared_factory2.get());
+
+  // Destroy the first factory to close the pipe.
+  local_factory1.reset();
+
+  // Wait for the mojo disconnection to be propagated to `core_` on its
+  // `SequencedTaskRunner`.
+  RunUntilIdle();
+
+  base::test::TestFuture<std::unique_ptr<PrePrefetchHandle>> handle_future;
+
+  // Start PrePrefetch. It should succeed because the `URLLoaderFactory` refresh
+  // is completed.
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(
+          [](PrePrefetchService* service_ptr, const GURL& url) {
+            base::ScopedAllowBaseSyncPrimitivesForTesting allow_blocking;
+            return service_ptr->StartPrePrefetchRequest(
+                url, test::kPreloadingEmbedderHistogramSuffixForTesting,
+                /*javascript_enabled=*/true,
+                /*no_vary_search_hint=*/std::nullopt,
+                /*priority=*/content::PrefetchPriority::kHighest,
+                /*additional_headers=*/{},
+                /*request_status_listener=*/nullptr, base::TimeDelta(),
+                /*should_append_variations_header=*/false,
+                /*should_disable_block_until_head_timeout=*/false,
+                /*should_bypass_http_cache=*/false);
+          },
+          service.get(), prefetch_url),
+      handle_future.GetCallback());
+  std::unique_ptr<PrePrefetchHandle> handle = handle_future.Take();
+
+  // PrePrefetch succeeds.
+  EXPECT_NE(handle, nullptr);
 }
 
 }  // namespace content

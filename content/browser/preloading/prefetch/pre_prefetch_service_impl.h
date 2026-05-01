@@ -111,6 +111,10 @@ class CONTENT_EXPORT PrePrefetchServiceImpl : public PrePrefetchService {
   static void SetURLLoaderFactoryForTesting(
       network::SharedURLLoaderFactory* url_loader_factory);
 
+  // Prohibits `URLLoaderFactory` refresh for testing.
+  static void SetShouldProhibitURLLoaderFactoryRefreshForTesting(
+      bool should_prohibit);
+
  private:
   [[nodiscard]] std::unique_ptr<PrePrefetchHandle>
   StartPrePrefetchRequestInternal(
