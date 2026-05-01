@@ -555,7 +555,7 @@ IN_PROC_BROWSER_TEST_P(ActorGeneralPageStabilityTest,
   // Start waiting for the monitor. Sleep to ensure the monitor is waiting on
   // the navigation to complete/fail.
   TestFuture<void> result;
-  monitor->NotifyWhenStable(/*observation_delay=*/base::TimeDelta(),
+  monitor->NotifyWhenStable(/*observation_delay=*/base::Seconds(2),
                             result.GetCallback());
   Sleep(base::Seconds(1));
   EXPECT_FALSE(result.IsReady());
