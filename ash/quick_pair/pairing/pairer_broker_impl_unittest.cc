@@ -26,7 +26,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
@@ -570,7 +569,6 @@ TEST_F(PairerBrokerImplTest, AlreadyPairingDevice_Retroactive) {
   EXPECT_TRUE(pairer_broker_->IsPairing());
 
   fast_pair_pairer_factory_->fake_fast_pair_pairer()->TriggerPairedCallback();
-  base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(pairer_broker_->IsPairing());
   EXPECT_EQ(device_paired_count_, 1);
