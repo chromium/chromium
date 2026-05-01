@@ -762,6 +762,18 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="FINISHED">AsyncTask is done.</int>
 </enum>
 
+<!-- LINT.IfChange(AwPrefetchApiCallResult) -->
+
+<enum name="AwPrefetchApiCallResult">
+  <int value="0" label="UI_THREAD_SUCCESS"/>
+  <int value="1" label="UI_THREAD_FAILURE"/>
+  <int value="2" label="WORKER_THREAD_PRE_PREFETCH_SUCCESS"/>
+  <int value="3" label="WORKER_THREAD_PREFETCH_SUCCESS"/>
+  <int value="4" label="WORKER_THREAD_PREFETCH_FAILURE"/>
+</enum>
+
+<!-- LINT.ThenChange(/android_webview/java/src/org/chromium/android_webview/AwPrefetchManager.java:ApiCallResult) -->
+
 <enum name="BackgroundTaskId">
   <int value="-1" label="Not found"/>
   <int value="0" label="Test task (should not appear)"/>

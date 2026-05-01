@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.os.SystemClock;
 
 import androidx.annotation.AnyThread;
+import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
@@ -27,6 +28,8 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executor;
@@ -39,6 +42,53 @@ public class AwPrefetchManager {
 
     private static final String QUEUED_PREFETCH_EXECUTION_DELAY_HISTOGRAM_NAME =
             "Android.WebView.Profile.Prefetch.QueuedPrefetchExecutionDelay";
+    private static final String API_CALL_RESULT_HISTOGRAM_NAME =
+            "Android.WebView.Profile.Prefetch.ApiCallResult";
+
+    // These values are persisted to logs. Entries should not be renumbered and
+    // numeric values should never be reused.
+    //
+    // LINT.IfChange(AwPrefetchApiCallResult)
+    @IntDef({
+        ApiCallResult.UI_THREAD_SUCCESS,
+        ApiCallResult.UI_THREAD_FAILURE,
+        ApiCallResult.WORKER_THREAD_PRE_PREFETCH_SUCCESS,
+        ApiCallResult.WORKER_THREAD_PREFETCH_SUCCESS,
+        ApiCallResult.WORKER_THREAD_PREFETCH_FAILURE
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface ApiCallResult {
+        /** Called on UI thread and successfully created a prefetch request. */
+        int UI_THREAD_SUCCESS = 0;
+
+        /** Called on UI thread but failed to create a prefetch request (e.g. validation fail). */
+        int UI_THREAD_FAILURE = 1;
+
+        /** Called on worker thread, feature enabled, and successfully started pre-prefetch. */
+        int WORKER_THREAD_PRE_PREFETCH_SUCCESS = 2;
+
+        /**
+         * Called on worker thread, fell back to UI thread (feature disabled or pre-prefetch
+         * failed), and successfully started normal prefetch.
+         */
+        int WORKER_THREAD_PREFETCH_SUCCESS = 3;
+
+        /**
+         * Called on worker thread, failed to start prefetch. Covers validation failure on worker
+         * thread and failure of fallback request on UI thread.
+         */
+        int WORKER_THREAD_PREFETCH_FAILURE = 4;
+
+        int COUNT = 5;
+    }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:AwPrefetchApiCallResult)
+
+    private static void recordApiCallResult(@ApiCallResult int result) {
+        RecordHistogram.recordEnumeratedHistogram(
+                API_CALL_RESULT_HISTOGRAM_NAME, result, ApiCallResult.COUNT);
+    }
+
     private final long mNativePrefetchManager;
 
     private final Queue<Runnable> mQueuedPrefetchRequests = new ConcurrentLinkedQueue<>();
@@ -108,6 +158,22 @@ public class AwPrefetchManager {
             @Nullable AwPrefetchParameters prefetchParameters,
             @NonNull AwPrefetchCallback callback,
             @NonNull Executor callbackExecutor) {
+        int prefetchKey =
+                startPrefetchRequestInternal(url, prefetchParameters, callback, callbackExecutor);
+        if (prefetchKey != AwPrefetchManagerJni.get().getNoPrefetchKey()) {
+            recordApiCallResult(ApiCallResult.UI_THREAD_SUCCESS);
+        } else {
+            recordApiCallResult(ApiCallResult.UI_THREAD_FAILURE);
+        }
+        return prefetchKey;
+    }
+
+    @UiThread
+    private int startPrefetchRequestInternal(
+            @NonNull String url,
+            @Nullable AwPrefetchParameters prefetchParameters,
+            @NonNull AwPrefetchCallback callback,
+            @NonNull Executor callbackExecutor) {
         assert ThreadUtils.runningOnUiThread();
         Exception error = getStartPrefetchErrorOrNull(url, prefetchParameters);
         if (error != null) {
@@ -159,6 +225,8 @@ public class AwPrefetchManager {
             if (error != null) {
                 callbackExecutor.execute(() -> callback.onError(error));
                 prefetchKeyListener.accept(AwPrefetchManagerJni.get().getNoPrefetchKey());
+                // Fails immediately without attempting fallback.
+                recordApiCallResult(ApiCallResult.WORKER_THREAD_PREFETCH_FAILURE);
                 return;
             }
 
@@ -173,6 +241,7 @@ public class AwPrefetchManager {
 
             if (prePrefetchKey != AwPrefetchManagerJni.get().getNoPrefetchKey()) {
                 prefetchKeyListener.accept(prePrefetchKey);
+                recordApiCallResult(ApiCallResult.WORKER_THREAD_PRE_PREFETCH_SUCCESS);
 
                 Runnable startPrefetchRunnable =
                         () -> {
@@ -195,14 +264,17 @@ public class AwPrefetchManager {
                 () -> {
                     long startDelayMs = SystemClock.uptimeMillis() - prefetchApiCallTriggerTimeMs;
                     int prefetchKey =
-                            startPrefetchRequest(
+                            startPrefetchRequestInternal(
                                     url, prefetchParameters, callback, callbackExecutor);
                     prefetchKeyListener.accept(prefetchKey);
 
-                    // Log the delay only if the prefetch was actually sent.
                     if (prefetchKey != AwPrefetchManagerJni.get().getNoPrefetchKey()) {
+                        recordApiCallResult(ApiCallResult.WORKER_THREAD_PREFETCH_SUCCESS);
+                        // Log the delay only if the prefetch was actually sent.
                         RecordHistogram.recordTimesHistogram(
                                 QUEUED_PREFETCH_EXECUTION_DELAY_HISTOGRAM_NAME, startDelayMs);
+                    } else {
+                        recordApiCallResult(ApiCallResult.WORKER_THREAD_PREFETCH_FAILURE);
                     }
                 };
         mQueuedPrefetchRequests.offer(startPrefetchRunnable);

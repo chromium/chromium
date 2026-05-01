@@ -8264,6 +8264,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.Profile.Prefetch.ApiCallResult"
+    enum="AwPrefetchApiCallResult" expires_after="2026-12-31">
+  <owner>taiyo@chromium.org</owner>
+  <owner>wbjacksonjr@chromium.org</owner>
+  <owner>webview-team@google.com</owner>
+  <summary>
+    Records the result of prefetch API calls, distinguishing between UI thread
+    and worker thread calls, and success/failure states.
+
+    Recorded when a prefetch request is initiated (or fails validation).
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.Profile.Prefetch.QueuedPrefetchExecutionDelay"
     units="ms" expires_after="2026-05-21">
   <owner>wbjacksonjr@chromium.org</owner>
