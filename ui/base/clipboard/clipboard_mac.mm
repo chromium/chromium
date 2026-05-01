@@ -2,11 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/callback_list.h"
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
+#include "ui/base/clipboard/clipboard_mac.h"
 
 #import <Cocoa/Cocoa.h>
 #include <stdint.h>
@@ -17,7 +13,9 @@
 
 #include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
+#include "base/callback_list.h"
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/mac/mac_util.h"
@@ -39,7 +37,6 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
-#include "ui/base/clipboard/clipboard_mac.h"
 #include "ui/base/clipboard/clipboard_metrics.h"
 #include "ui/base/clipboard/clipboard_monitor.h"
 #include "ui/base/clipboard/clipboard_util_mac.h"
@@ -111,8 +108,7 @@ std::vector<uint8_t> EncodeGfxImageToPng(gfx::Image image) {
   }
 
   scoped_refptr<base::RefCountedMemory> mem = image.As1xPNGBytes();
-  std::vector<uint8_t> image_data(mem->data(), mem->data() + mem->size());
-  return image_data;
+  return base::ToVector(*mem);
 }
 
 }  // namespace
