@@ -114,12 +114,13 @@ dependencies {
 
     // ChromeXR dependencies should be left at a fixed version
     // to prevent breakages.
-    String xrRuntimeVersion = '1.0.0-alpha10'
-    String xrScenecoreVersion = '1.0.0-alpha11'
+    String xrRuntimeVersion = '1.0.0-alpha12'
+    String xrScenecoreVersion = '1.0.0-alpha13'
     compile "androidx.xr.arcore:arcore:${xrRuntimeVersion}"
     compile "androidx.xr.arcore:arcore-openxr:${xrRuntimeVersion}"
     compile "androidx.xr.runtime:runtime:${xrRuntimeVersion}"
     compile "androidx.xr.scenecore:scenecore-runtime:${xrScenecoreVersion}"
+    compile "androidx.xr.runtime:runtime-openxr:${xrRuntimeVersion}"
     compile("androidx.xr.scenecore:scenecore:${xrScenecoreVersion}") {
         // The target 'androidx_xr_scenecore_spatial_core_java' was
         // generating a dep on':androidx_test_rules_java' which causes
