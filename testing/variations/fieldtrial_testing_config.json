@@ -1618,6 +1618,111 @@
             ]
         }
     ],
+    "AndroidWindowOcclusion": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "FlexibleOcclusionMediumRateLimit",
+                    "params": {
+                        "calculate_occlusion_rate_limit_ms": "100",
+                        "minimum_visibility_size_threshold": "10",
+                        "occlusion_optimizations": "true",
+                        "tracking_mode": "self_occlusion"
+                    },
+                    "enable_features": [
+                        "AndroidWindowOcclusion"
+                    ]
+                },
+                {
+                    "name": "MetricsOnly",
+                    "params": {
+                        "calculate_occlusion_rate_limit_ms": "500",
+                        "minimum_visibility_size_threshold": "0",
+                        "occlusion_optimizations": "false",
+                        "tracking_mode": "self_occlusion"
+                    },
+                    "enable_features": [
+                        "AndroidWindowOcclusion"
+                    ]
+                },
+                {
+                    "name": "ExactOcclusionNoRateLimit",
+                    "params": {
+                        "calculate_occlusion_rate_limit_ms": "0",
+                        "minimum_visibility_size_threshold": "0",
+                        "occlusion_optimizations": "true",
+                        "tracking_mode": "self_occlusion"
+                    },
+                    "enable_features": [
+                        "AndroidWindowOcclusion"
+                    ]
+                },
+                {
+                    "name": "ExactOcclusionMediumRateLimit",
+                    "params": {
+                        "calculate_occlusion_rate_limit_ms": "100",
+                        "minimum_visibility_size_threshold": "0",
+                        "occlusion_optimizations": "true",
+                        "tracking_mode": "self_occlusion"
+                    },
+                    "enable_features": [
+                        "AndroidWindowOcclusion"
+                    ]
+                },
+                {
+                    "name": "ExactOcclusionSlowRateLimit",
+                    "params": {
+                        "calculate_occlusion_rate_limit_ms": "500",
+                        "minimum_visibility_size_threshold": "0",
+                        "occlusion_optimizations": "true",
+                        "tracking_mode": "self_occlusion"
+                    },
+                    "enable_features": [
+                        "AndroidWindowOcclusion"
+                    ]
+                },
+                {
+                    "name": "FlexibleOcclusionNoRateLimit",
+                    "params": {
+                        "calculate_occlusion_rate_limit_ms": "0",
+                        "minimum_visibility_size_threshold": "10",
+                        "occlusion_optimizations": "true",
+                        "tracking_mode": "self_occlusion"
+                    },
+                    "enable_features": [
+                        "AndroidWindowOcclusion"
+                    ]
+                },
+                {
+                    "name": "VeryFlexibleOcclusionNoRateLimit",
+                    "params": {
+                        "calculate_occlusion_rate_limit_ms": "0",
+                        "minimum_visibility_size_threshold": "50",
+                        "occlusion_optimizations": "true",
+                        "tracking_mode": "self_occlusion"
+                    },
+                    "enable_features": [
+                        "AndroidWindowOcclusion"
+                    ]
+                },
+                {
+                    "name": "VeryFlexibleOcclusionMediumRateLimit",
+                    "params": {
+                        "calculate_occlusion_rate_limit_ms": "100",
+                        "minimum_visibility_size_threshold": "50",
+                        "occlusion_optimizations": "true",
+                        "tracking_mode": "self_occlusion"
+                    },
+                    "enable_features": [
+                        "AndroidWindowOcclusion"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidWindowPopupLargeScreen": [
         {
             "platforms": [

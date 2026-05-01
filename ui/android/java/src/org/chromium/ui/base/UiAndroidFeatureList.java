@@ -47,7 +47,7 @@ public class UiAndroidFeatureList {
             newCachedFlag(
                     UiAndroidFeatures.ANDROID_WINDOW_OCCLUSION,
                     /* defaultValue= */ false,
-                    /* defaultValueInTests= */ false);
+                    /* defaultValueInTests= */ true);
 
     // Whether to apply optimizations to the window when it is occluded. When false, occlusion
     // metrics will still be collected, but the actual behavior of the window remains unchanged.

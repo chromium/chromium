@@ -154,6 +154,15 @@ public class WindowAndroid
         ThreadUtils.postOnUiThreadDelayed(PERIODIC_METRICS_TASK, PERIODIC_METRIC_DELAY_MS);
     }
 
+    public static void resetPeriodicMetricsForTesting() {
+        sOccludedCount = 0;
+        sTotalOccludedPixels = 0;
+        sAccumulatedPixelMilliseconds = 0;
+        sLastPixelUpdateTimeMs = 0;
+        sPeriodicMetricsRunning = false;
+        ThreadUtils.getUiThreadHandler().removeCallbacks(PERIODIC_METRICS_TASK);
+    }
+
     // Constants that must be consistent with ui_controls::KeyEventType in C++.
     private static final int KEY_EVENT_TYPE_KEY_PRESS = 1;
     private static final int KEY_EVENT_TYPE_KEY_RELEASE = 2;

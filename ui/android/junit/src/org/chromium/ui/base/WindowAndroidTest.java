@@ -55,7 +55,10 @@ import java.util.List;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(sdk = BaseRobolectricTestRunner.MAX_SDK)
-@EnableFeatures({UiAndroidFeatures.ANDROID_USE_CORRECT_WINDOW_BOUNDS})
+@EnableFeatures({
+    UiAndroidFeatures.ANDROID_USE_CORRECT_WINDOW_BOUNDS,
+    UiAndroidFeatures.ANDROID_WINDOW_OCCLUSION
+})
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 public class WindowAndroidTest {
 
@@ -99,7 +102,6 @@ public class WindowAndroidTest {
         WindowAndroidJni.setInstanceForTesting(mWindowAndroidNativeInterface);
         mWindowAndroid = new WindowAndroid(mContext, false, null, mInsetObserver, true);
         mWindowAndroid.setNativePointerForTesting(MOCK_NATIVE_POINTER);
-        WindowAndroid.postPeriodicMetricRunner();
     }
 
     @After
@@ -107,6 +109,7 @@ public class WindowAndroidTest {
         if (!mWindowAndroid.isDestroyed()) {
             mWindowAndroid.destroy();
         }
+        WindowAndroid.resetPeriodicMetricsForTesting();
     }
 
     @Test
