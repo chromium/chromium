@@ -27,10 +27,12 @@ suite('ChromeHistogramsTest', () => {
     chrome.histograms.recordUserAction('Test.ComputedAction');
     chrome.histograms.recordBoolean('Test.Boolean', true);
     chrome.histograms.recordPercentage('Test.Percentage', 50);
+    chrome.histograms.recordPercentage('Test.PercentageFloat', 50.6);
     chrome.histograms.recordSmallCount('Test.Counts100', 10);
     chrome.histograms.recordMediumCount('Test.Counts10000', 100);
     chrome.histograms.recordCount('Test.Counts1M', 1000);
     chrome.histograms.recordTime('Test.Times', 100);
+    chrome.histograms.recordTime('Test.TimesFloat', 100.2);
     chrome.histograms.recordMediumTime('Test.MediumTimes', 1000);
     chrome.histograms.recordLongTime('Test.LongTimes', 10000);
 

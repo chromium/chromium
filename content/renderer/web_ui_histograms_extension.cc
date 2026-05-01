@@ -7,6 +7,7 @@
 #include <limits.h>
 
 #include <algorithm>
+#include <cmath>
 #include <string>
 
 #include "base/functional/bind.h"
@@ -125,49 +126,53 @@ void InstallWebUIHistogramsExtension(v8::Isolate* isolate,
     base::UmaHistogramBoolean(name, value);
   });
 
-  bind("recordPercentage", [](const std::string& name, int value) {
-    base::UmaHistogramPercentage(name, value);
+  bind("recordPercentage", [](const std::string& name, double value) {
+    base::UmaHistogramPercentage(name, static_cast<int>(std::round(value)));
   });
 
-  bind("recordSmallCount", [](const std::string& name, int value) {
-    base::UmaHistogramCounts100(name, value);
+  bind("recordSmallCount", [](const std::string& name, double value) {
+    base::UmaHistogramCounts100(name, static_cast<int>(std::round(value)));
   });
 
-  bind("recordMediumCount", [](const std::string& name, int value) {
-    base::UmaHistogramCounts10000(name, value);
+  bind("recordMediumCount", [](const std::string& name, double value) {
+    base::UmaHistogramCounts10000(name, static_cast<int>(std::round(value)));
   });
 
-  bind("recordCount", [](const std::string& name, int value) {
-    base::UmaHistogramCounts1M(name, value);
+  bind("recordCount", [](const std::string& name, double value) {
+    base::UmaHistogramCounts1M(name, static_cast<int>(std::round(value)));
   });
 
-  bind("recordTime", [](const std::string& name, int value) {
-    base::UmaHistogramTimes(name, base::Milliseconds(value));
+  bind("recordTime", [](const std::string& name, double value) {
+    base::UmaHistogramTimes(
+        name, base::Milliseconds(static_cast<int64_t>(std::round(value))));
   });
 
-  bind("recordMediumTime", [](const std::string& name, int value) {
-    base::UmaHistogramMediumTimes(name, base::Milliseconds(value));
+  bind("recordMediumTime", [](const std::string& name, double value) {
+    base::UmaHistogramMediumTimes(
+        name, base::Milliseconds(static_cast<int64_t>(std::round(value))));
   });
 
-  bind("recordLongTime", [](const std::string& name, int value) {
-    base::UmaHistogramLongTimes(name, base::Milliseconds(value));
+  bind("recordLongTime", [](const std::string& name, double value) {
+    base::UmaHistogramLongTimes(
+        name, base::Milliseconds(static_cast<int64_t>(std::round(value))));
   });
 
-  bind("recordValue", [](const MetricType& metric, int value) {
+  bind("recordValue", [](const MetricType& metric, double value) {
     base::HistogramType histogram_type(metric.type == "histogram-linear"
                                            ? base::LINEAR_HISTOGRAM
                                            : base::HISTOGRAM);
     RecordValue(metric.metric_name, histogram_type, metric.min, metric.max,
-                metric.buckets, value);
+                metric.buckets, static_cast<int>(std::round(value)));
   });
 
   bind("recordEnumerationValue",
-       [](const std::string& name, int sample, int enum_size) {
-         base::UmaHistogramExactLinear(name, sample, enum_size);
+       [](const std::string& name, double sample, int enum_size) {
+         base::UmaHistogramExactLinear(
+             name, static_cast<int>(std::round(sample)), enum_size);
        });
 
-  bind("recordSparseValue", [](const std::string& name, int value) {
-    base::UmaHistogramSparse(name, value);
+  bind("recordSparseValue", [](const std::string& name, double value) {
+    base::UmaHistogramSparse(name, static_cast<int>(std::round(value)));
   });
 }
 
