@@ -45,14 +45,9 @@ feedwire::FeedQuery::RequestReason GetRequestReason(
   switch (load_type) {
     case LoadType::kInitialLoad:
     case LoadType::kManualRefresh:
-      return stream_type.IsForYou() ? feedwire::FeedQuery::MANUAL_REFRESH
-                                    : feedwire::FeedQuery::INTERACTIVE_WEB_FEED;
+      return feedwire::FeedQuery::MANUAL_REFRESH;
     case LoadType::kBackgroundRefresh:
-      return stream_type.IsForYou()
-                 ? feedwire::FeedQuery::SCHEDULED_REFRESH
-                 // TODO(b/185848601): Switch back to PREFETCHED_WEB_FEED when
-                 // the server supports it.
-                 : feedwire::FeedQuery::INTERACTIVE_WEB_FEED;
+      return feedwire::FeedQuery::SCHEDULED_REFRESH;
     case LoadType::kFeedCloseBackgroundRefresh:
       return feedwire::FeedQuery::APP_CLOSE_REFRESH;
     case LoadType::kLoadMore:
@@ -299,8 +294,6 @@ void LoadStreamTask::SendFeedQueryRequest() {
       doc_view_counts_);
 
   const AccountInfo account_info = stream_->GetAccountInfo();
-  stream_->GetMetricsReporter().NetworkRefreshRequestStarted(
-      options_.stream_type, request_metadata.content_order);
 
   FeedNetwork& network = stream_->GetNetwork();
   const bool force_feed_query = GetFeedConfig().use_feed_query_requests;

@@ -70,13 +70,14 @@ static int64_t JNI_FeedServiceBridge_GetReliabilityLoggingId(JNIEnv* env) {
   return FeedServiceBridge::GetReliabilityLoggingId();
 }
 
+// TODO(crbug.com/407797637): remove unread content observer
 static int64_t JNI_FeedServiceBridge_AddUnreadContentObserver(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& j_observer,
     int32_t stream_kind) {
   FeedApi* api = GetFeedApi();
   if (!api)
-    return static_cast<int32_t>(ContentOrder::kUnspecified);
+    return 0;
   JavaUnreadContentObserver* observer = new JavaUnreadContentObserver(
       base::android::ScopedJavaGlobalRef<jobject>(j_observer));
   api->AddUnreadContentObserver(

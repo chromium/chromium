@@ -75,11 +75,12 @@ int EstimateFeedQueryRequestSize(const network::ResourceRequest& request) {
   return total_size;
 }
 
+// TODO(crbug.com/407797637): remove PREFETCHED_WEB_FEED and PREFETCHED_WEB_FEED
+// from feed_query.proto.
 GURL GetFeedQueryURL(feedwire::FeedQuery::RequestReason reason) {
   // Add URLs for Bling when it is supported.
   switch (reason) {
     case feedwire::FeedQuery::SCHEDULED_REFRESH:
-    case feedwire::FeedQuery::PREFETCHED_WEB_FEED:
     case feedwire::FeedQuery::APP_CLOSE_REFRESH:
       return GURL(
           "https://www.google.com/httpservice/noretry/TrellisClankService/"
@@ -89,11 +90,12 @@ GURL GetFeedQueryURL(feedwire::FeedQuery::RequestReason reason) {
           "https://www.google.com/httpservice/retry/TrellisClankService/"
           "NextPageQuery");
     case feedwire::FeedQuery::MANUAL_REFRESH:
-    case feedwire::FeedQuery::INTERACTIVE_WEB_FEED:
       return GURL(
           "https://www.google.com/httpservice/retry/TrellisClankService/"
           "FeedQuery");
     case feedwire::FeedQuery::UNKNOWN_REQUEST_REASON:
+    case feedwire::FeedQuery::PREFETCHED_WEB_FEED:
+    case feedwire::FeedQuery::INTERACTIVE_WEB_FEED:
       return GURL();
   }
 }

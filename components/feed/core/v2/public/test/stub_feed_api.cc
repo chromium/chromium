@@ -64,13 +64,4 @@ std::vector<std::string> StubFeedApi::GetFeedUrls(SurfaceId surface_id) {
   return {};
 }
 
-ContentOrder StubFeedApi::GetContentOrder(const StreamType& stream_type) const {
-  return ContentOrder::kUnspecified;
-}
-
-ContentOrder StubFeedApi::GetContentOrderFromPrefs(
-    const StreamType& stream_type) {
-  return ContentOrder::kUnspecified;
-}
-
 }  // namespace feed

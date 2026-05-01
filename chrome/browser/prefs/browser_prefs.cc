@@ -1005,6 +1005,11 @@ inline constexpr char kFirstPlusAddressCreationTime[] =
 inline constexpr char kLastPlusAddressFillingTime[] =
     "plus_addresses.last.filling.time";
 
+#if BUILDFLAG(IS_ANDROID)
+// Deprecated 05/2026.
+constexpr char kWebFeedContentOrder[] = "webfeed.content_order";
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1383,6 +1388,11 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterIntegerPref(kPreallocatedAddressesNext, 0);
   registry->RegisterTimePref(kFirstPlusAddressCreationTime, base::Time());
   registry->RegisterTimePref(kLastPlusAddressFillingTime, base::Time());
+
+#if BUILDFLAG(IS_ANDROID)
+  // Deprecated 05/2026.
+  registry->RegisterIntegerPref(kWebFeedContentOrder, 0);
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 }  // namespace
@@ -2704,6 +2714,11 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   profile_prefs->ClearPref(kPreallocatedAddressesNext);
   profile_prefs->ClearPref(kFirstPlusAddressCreationTime);
   profile_prefs->ClearPref(kLastPlusAddressFillingTime);
+
+#if BUILDFLAG(IS_ANDROID)
+  // Added 05/2026.
+  profile_prefs->ClearPref(kWebFeedContentOrder);
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

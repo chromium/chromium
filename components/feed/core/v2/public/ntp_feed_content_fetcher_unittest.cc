@@ -31,29 +31,7 @@
 namespace feed::test {
 namespace {
 
-const char* kExampleUrl = "http://example.com/";
 const char* kEmail = "user@example.com";
-
-feedwire::Response MakeFeedResponse(int count) {
-  feedwire::Response response;
-  response.set_response_version(feedwire::Response::FEED_RESPONSE);
-  feedwire::FeedResponse* feed_response = response.mutable_feed_response();
-  for (int i = 0; i < count; ++i) {
-    feedwire::DataOperation* op = feed_response->add_data_operation();
-    op->set_operation(feedwire::DataOperation::UPDATE_OR_APPEND);
-    feedwire::PrefetchMetadata* metadata =
-        op->mutable_feature()->mutable_content()->add_prefetch_metadata();
-    std::string number = base::NumberToString(i);
-    metadata->set_uri(base::StrCat({kExampleUrl, number}));
-    metadata->set_title(base::StrCat({"Article ", number}));
-    metadata->set_favicon_url(
-        base::StrCat({kExampleUrl, number, "/favicon.ico"}));
-    metadata->set_image_url(
-        base::StrCat({kExampleUrl, number, "/thumbnail.jpg"}));
-    metadata->set_publisher(base::StrCat({"Publisher ", number}));
-  }
-  return response;
-}
 
 }  // namespace
 
@@ -99,42 +77,5 @@ class NtpFeedContentFetcherTest : public testing::Test {
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
   TestingPrefServiceSimple profile_prefs_;
 };
-
-TEST_F(NtpFeedContentFetcherTest, FetchFollowingFeedArticles) {
-  std::vector<NtpFeedContentFetcher::Article> actual_articles;
-  base::MockOnceCallback<void(std::vector<NtpFeedContentFetcher::Article>)>
-      callback;
-
-  EXPECT_CALL(callback, Run(testing::_))
-      .Times(1)
-      .WillOnce([&](std::vector<NtpFeedContentFetcher::Article> articles) {
-        actual_articles = std::move(articles);
-      });
-
-  // Inject a response of 5 articles. We should only get 3.
-  feed_network_->InjectApiResponse<WebFeedListContentsDiscoverApi>(
-      MakeFeedResponse(5));
-  ntp_feed_content_fetcher_->FetchFollowingFeedArticles(callback.Get());
-
-  EXPECT_EQ(kEmail, feed_network_->last_account_info.email);
-  std::optional<feedwire::Request> sent_request =
-      feed_network_->GetApiRequestSent<WebFeedListContentsDiscoverApi>();
-  ASSERT_TRUE(sent_request.has_value());
-  // TODO(crbug.com/40842320): Add a Chrome Desktop client type.
-  EXPECT_EQ(feedwire::ClientInfo::ANDROID_ID,
-            sent_request->feed_request().client_info().platform_type());
-  EXPECT_EQ(feedwire::ClientInfo::CHROME_ANDROID,
-            sent_request->feed_request().client_info().app_type());
-
-  base::RunLoop().RunUntilIdle();
-
-  ASSERT_EQ(3ul, actual_articles.size());
-  auto& article = actual_articles.front();
-  EXPECT_EQ("http://example.com/0", article.url);
-  EXPECT_EQ("Article 0", article.title);
-  EXPECT_EQ("Publisher 0", article.publisher);
-  EXPECT_EQ("http://example.com/0/favicon.ico", article.favicon_url);
-  EXPECT_EQ("http://example.com/0/thumbnail.jpg", article.thumbnail_url);
-}
 
 }  // namespace feed::test

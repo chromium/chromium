@@ -124,12 +124,6 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
-<enum name="FeedContentOrder">
-  <int value="0" label="Unspecified"/>
-  <int value="1" label="Grouped"/>
-  <int value="2" label="Reverse Chronological"/>
-</enum>
-
 <!-- LINT.IfChange(FeedEngagementType) -->
 
 <enum name="FeedEngagementType">

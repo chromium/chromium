@@ -198,11 +198,6 @@ class FeedStream : public FeedApi,
       base::TimeDelta elapsed) override;
   base::Time GetLastFetchTime(SurfaceId surface_id) override;
   std::vector<std::string> GetFeedUrls(SurfaceId surface_id) override;
-  void SetContentOrder(const StreamType& stream_type,
-                       ContentOrder content_order) override;
-  ContentOrder GetContentOrder(const StreamType& stream_type) const override;
-  ContentOrder GetContentOrderFromPrefs(const StreamType& stream_type) override;
-  void IncrementFollowedFromWebPageMenuCount() override;
 
   // offline_pages::TaskQueue::Delegate.
   void OnTaskQueueIsIdle() override;
@@ -356,11 +351,6 @@ class FeedStream : public FeedApi,
 
   bool GetStreamPresentForTest(StreamType stream_type) {
     return FindStream(stream_type) != nullptr;
-  }
-
-  // Used by tests to control the chained refresh of the web-feed.
-  void SetChainedWebFeedRefreshEnabledForTesting(bool enabled) {
-    chained_web_feed_refresh_enabled_ = enabled;
   }
 
  private:
@@ -519,8 +509,6 @@ class FeedStream : public FeedApi,
   UserActionsCollector user_actions_collector_;
 
   base::TimeTicks last_refresh_scheduled_on_interaction_time_{};
-
-  bool chained_web_feed_refresh_enabled_ = true;
 
   // True if the stream with any stream type has been loaded at least once since
   // the start.

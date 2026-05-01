@@ -21,7 +21,6 @@ class WaitForStoreInitializeTask : public offline_pages::Task {
  public:
   struct Result {
     FeedStore::StartupData startup_data;
-    FeedStore::WebFeedStartupData web_feed_startup_data;
   };
 
   explicit WaitForStoreInitializeTask(
@@ -43,14 +42,12 @@ class WaitForStoreInitializeTask : public offline_pages::Task {
   void MaybeUpgradeStreamSchema();
   void UpgradeDone(feedstore::Metadata metadata);
   void ReadStartupDataDone(FeedStore::StartupData startup_data);
-  void WebFeedStartupDataDone(FeedStore::WebFeedStartupData data);
   void Done();
 
   const raw_ref<FeedStore> store_;
   const raw_ref<FeedStream> stream_;
   base::OnceCallback<void(Result)> callback_;
   Result result_;
-  int done_count_ = 0;
 
   base::WeakPtrFactory<WaitForStoreInitializeTask> weak_ptr_factory_{this};
 };

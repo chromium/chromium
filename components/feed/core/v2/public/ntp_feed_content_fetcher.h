@@ -41,14 +41,6 @@ class NtpFeedContentFetcher {
     ~Article();
   };
 
-  /**
-   * Fetch following feed articles, build a vector of Articles based
-   * on their PrefetchMetadata, and pass them along to the callback.
-   * @param callback Callback that is called with the fetch result.
-   */
-  virtual void FetchFollowingFeedArticles(
-      base::OnceCallback<void(std::vector<Article>)>);
-
   void SetFeedNetworkForTesting(std::unique_ptr<FeedNetwork> feed_network);
 
  private:

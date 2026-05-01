@@ -74,14 +74,11 @@ using feed::StreamKind;
 using feed::StreamType;
 TEST(feedstore_util_test, StreamTypeFromId) {
   StreamType for_you = StreamType(StreamKind::kForYou);
-  StreamType following = StreamType(StreamKind::kFollowing);
   StreamType unknown = StreamType();
 
   EXPECT_EQ(StreamKey(for_you), kForYouStreamKey);
-  EXPECT_EQ(StreamKey(following), kFollowStreamKey);
   EXPECT_NOTREACHED_DEATH(StreamKey(unknown));
 
-  EXPECT_TRUE(StreamTypeFromKey(StreamKey(following)).IsWebFeed());
   EXPECT_TRUE(StreamTypeFromKey(StreamKey(for_you)).IsForYou());
   EXPECT_EQ(StreamTypeFromKey("z"), StreamType());
 }

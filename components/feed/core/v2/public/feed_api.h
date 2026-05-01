@@ -76,19 +76,6 @@ class FeedApi {
   // events).
   virtual std::string GetSessionId() const = 0;
 
-  // Sets the requested content order of the feed, and triggers a refresh if
-  // necessary. Note that currently, only Web Feed can change the content order.
-  virtual void SetContentOrder(const StreamType& stream_type,
-                               ContentOrder content_order) = 0;
-
-  // Returns the current `ContentOrder` for `stream_type`.
-  virtual ContentOrder GetContentOrder(const StreamType& stream_type) const = 0;
-
-  // Gets the "raw" content order value stored in prefs. Returns `kUnspecified`
-  // if the user has not selected one yet.
-  virtual ContentOrder GetContentOrderFromPrefs(
-      const StreamType& stream_type) = 0;
-
   // Invoked by RefreshTaskScheduler's scheduled task.
   virtual void ExecuteRefreshTask(RefreshTaskId task_id) = 0;
 
@@ -253,9 +240,6 @@ class FeedApi {
       const feedui::StreamUpdate& stream_update) = 0;
   // Returns the time of the last successful content fetch.
   virtual base::Time GetLastFetchTime(SurfaceId surface_id) = 0;
-  // Increase the count of the number of times the user has followed from the
-  // web page menu.
-  virtual void IncrementFollowedFromWebPageMenuCount() = 0;
 };
 
 }  // namespace feed

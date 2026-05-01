@@ -34,18 +34,11 @@ namespace {
 // s/<stream-key>/<content-id>      -> shared_state
 // a/<action-id>                    -> action
 // m                                -> metadata
-// subs                             -> subscribed_web_feeds
-// recommendedIndex                 -> recommended_web_feed_index
-// R/<web_feed_id>                  -> recommended_web_feed
 // W/<operation-id>                 -> pending_web_feed_operation
 // v/<docid>/<timestamp>            -> docview
 constexpr char kLocalActionPrefix[] = "a/";
 constexpr char kMetadataKey[] = "m";
-constexpr char kSubscribedFeedsKey[] = "subs";
-constexpr char kRecommendedIndexKey[] = "recommendedIndex";
-constexpr char kPendingWebFeedOperationPrefix[] = "W/";
 constexpr char kStreamDataPrefix[] = "S/";
-constexpr char kkSingleWebFeedStreamDataPrefix[] = "S/c";
 
 leveldb::ReadOptions CreateReadOptions() {
   leveldb::ReadOptions opts;
@@ -161,6 +154,8 @@ bool IsLocalActionKey(const std::string& key) {
   return base::StartsWith(key, kLocalActionPrefix);
 }
 
+// TODO(crbug.com/407797637): remove kSubscribedWebFeeds, kRecommendedWebFeed,
+// kRecommendedWebFeedIndex and kPendingWebFeedOperation from store.proto
 std::string KeyForRecord(const feedstore::Record& record) {
   switch (record.data_case()) {
     case feedstore::Record::kStreamData: {
@@ -182,19 +177,13 @@ std::string KeyForRecord(const feedstore::Record& record) {
                             record.shared_state().content_id());
     case feedstore::Record::kMetadata:
       return kMetadataKey;
-    case feedstore::Record::kSubscribedWebFeeds:
-      return kSubscribedFeedsKey;
-    case feedstore::Record::kRecommendedWebFeed:
-      return base::StrCat({"R/", record.recommended_web_feed().web_feed_id()});
-    case feedstore::Record::kRecommendedWebFeedIndex:
-      return kRecommendedIndexKey;
-    case feedstore::Record::kPendingWebFeedOperation:
-      return base::StrCat(
-          {"W/",
-           base::NumberToString(record.pending_web_feed_operation().id())});
     case feedstore::Record::kDocView:
       return DocViewKey(record.doc_view());
     case feedstore::Record::DATA_NOT_SET:
+    case feedstore::Record::kSubscribedWebFeeds:
+    case feedstore::Record::kRecommendedWebFeed:
+    case feedstore::Record::kRecommendedWebFeedIndex:
+    case feedstore::Record::kPendingWebFeedOperation:
       break;
   }
   NOTREACHED() << "Invalid record case " << record.data_case();
@@ -239,31 +228,6 @@ feedstore::Record MakeRecord(feedstore::StoredAction action) {
 feedstore::Record MakeRecord(feedstore::Metadata metadata) {
   feedstore::Record record;
   *record.mutable_metadata() = std::move(metadata);
-  return record;
-}
-
-feedstore::Record MakeRecord(feedstore::RecommendedWebFeedIndex index) {
-  feedstore::Record record;
-  *record.mutable_recommended_web_feed_index() = std::move(index);
-  return record;
-}
-
-feedstore::Record MakeRecord(
-    feedstore::SubscribedWebFeeds subscribed_web_feeds) {
-  feedstore::Record record;
-  *record.mutable_subscribed_web_feeds() = std::move(subscribed_web_feeds);
-  return record;
-}
-
-feedstore::Record MakeRecord(feedstore::WebFeedInfo web_feed_info) {
-  feedstore::Record record;
-  *record.mutable_recommended_web_feed() = std::move(web_feed_info);
-  return record;
-}
-
-feedstore::Record MakeRecord(feedstore::PendingWebFeedOperation operation) {
-  feedstore::Record record;
-  *record.mutable_pending_web_feed_operation() = std::move(operation);
   return record;
 }
 
@@ -337,13 +301,6 @@ FeedStore::StartupData::StartupData(StartupData&&) = default;
 FeedStore::StartupData::~StartupData() = default;
 FeedStore::StartupData& FeedStore::StartupData::operator=(StartupData&&) =
     default;
-
-FeedStore::WebFeedStartupData::WebFeedStartupData() = default;
-FeedStore::WebFeedStartupData::WebFeedStartupData(WebFeedStartupData&&) =
-    default;
-FeedStore::WebFeedStartupData::~WebFeedStartupData() = default;
-FeedStore::WebFeedStartupData& FeedStore::WebFeedStartupData::operator=(
-    WebFeedStartupData&&) = default;
 
 FeedStore::FeedStore(
     std::unique_ptr<leveldb_proto::ProtoDatabase<feedstore::Record>> database)
@@ -728,45 +685,6 @@ void FeedStore::ReadMetadata(
                                           GetWeakPtr(), std::move(callback)));
 }
 
-void FeedStore::ReadWebFeedStartupData(
-    base::OnceCallback<void(WebFeedStartupData)> callback) {
-  auto is_startup_data_filter = [](const std::string& key) {
-    return key == kSubscribedFeedsKey || key == kRecommendedIndexKey ||
-           base::StartsWith(key, kPendingWebFeedOperationPrefix);
-  };
-
-  database_->LoadEntriesWithFilter(
-      base::BindRepeating(is_startup_data_filter),
-      base::BindOnce(&FeedStore::OnReadWebFeedStartupDataFinished, GetWeakPtr(),
-                     std::move(callback)));
-}
-
-void FeedStore::OnReadWebFeedStartupDataFinished(
-    base::OnceCallback<void(WebFeedStartupData)> callback,
-    bool read_ok,
-    std::unique_ptr<std::vector<feedstore::Record>> records) {
-  WebFeedStartupData result;
-  if (records) {
-    for (feedstore::Record& r : *records) {
-      if (r.has_recommended_web_feed_index()) {
-        result.recommended_feed_index =
-            std::move(*r.mutable_recommended_web_feed_index());
-      } else if (r.has_subscribed_web_feeds()) {
-        result.subscribed_web_feeds =
-            std::move(*r.mutable_subscribed_web_feeds());
-      } else if (r.has_pending_web_feed_operation()) {
-        result.pending_operations.push_back(
-            std::move(*r.mutable_pending_web_feed_operation()));
-      } else {
-        DLOG(ERROR) << "OnReadWebFeedStartupDataFinished: Got record with no "
-                       "useful data. data_case="
-                    << static_cast<int>(r.data_case());
-      }
-    }
-  }
-  std::move(callback).Run(std::move(result));
-}
-
 void FeedStore::ReadStartupData(
     base::OnceCallback<void(StartupData)> callback) {
   if (!IsInitialized()) {
@@ -774,13 +692,11 @@ void FeedStore::ReadStartupData(
     return;
   }
   const base::flat_set<std::string>& key_set = {
-      StreamDataKey(StreamType(StreamKind::kFollowing)),
       StreamDataKey(StreamType(StreamKind::kForYou)), kMetadataKey};
 
   auto is_startup_data_filter = [](const base::flat_set<std::string>& key_set,
                                    const std::string& key) {
-    return key_set.contains(key) ||
-           base::StartsWith(key, kkSingleWebFeedStreamDataPrefix);
+    return key_set.contains(key);
   };
 
   database_->LoadEntriesWithFilter(
@@ -808,30 +724,6 @@ void FeedStore::OnReadStartupDataFinished(
     }
   }
   std::move(callback).Run(std::move(result));
-}
-
-void FeedStore::WriteRecommendedFeeds(
-    feedstore::RecommendedWebFeedIndex index,
-    std::vector<feedstore::WebFeedInfo> web_feed_info,
-    base::OnceClosure callback) {
-  auto entries_to_save = std::make_unique<
-      leveldb_proto::ProtoDatabase<feedstore::Record>::KeyEntryVector>();
-  entries_to_save->push_back(MakeKeyAndRecord(std::move(index)));
-  for (auto& info : web_feed_info) {
-    entries_to_save->push_back(MakeKeyAndRecord(std::move(info)));
-  }
-
-  auto remove_record = [](const std::string& key) {
-    return key.size() > 1 && key[1] == '/' && key[0] == 'R';
-  };
-  database_->UpdateEntriesWithRemoveFilter(std::move(entries_to_save),
-                                           base::BindRepeating(remove_record),
-                                           DropBoolParam(std::move(callback)));
-}
-
-void FeedStore::WriteSubscribedFeeds(feedstore::SubscribedWebFeeds index,
-                                     base::OnceClosure callback) {
-  Write({MakeRecord(index)}, DropBoolParam(std::move(callback)));
 }
 
 void FeedStore::OnReadMetadataFinished(
@@ -866,44 +758,6 @@ void FeedStore::UpgradeFromStreamSchemaV0(
   database_->UpdateEntriesWithRemoveFilter(
       std::move(updates), base::BindRepeating(&IsAnyStreamRecordKey),
       DropBoolParam(base::BindOnce(std::move(callback), std::move(metadata))));
-}
-
-void FeedStore::ReadRecommendedWebFeedInfo(
-    const std::string& web_feed_id,
-    base::OnceCallback<void(std::unique_ptr<feedstore::WebFeedInfo>)>
-        callback) {
-  ReadSingle("R/" + web_feed_id,
-             base::BindOnce(&FeedStore::ReadRecommendedWebFeedInfoFinished,
-                            GetWeakPtr(), std::move(callback)));
-}
-
-void FeedStore::ReadRecommendedWebFeedInfoFinished(
-    base::OnceCallback<void(std::unique_ptr<feedstore::WebFeedInfo>)> callback,
-    bool read_ok,
-    std::unique_ptr<feedstore::Record> record) {
-  if (!record || !read_ok) {
-    std::move(callback).Run(nullptr);
-    return;
-  }
-
-  std::move(callback).Run(
-      base::WrapUnique(record->release_recommended_web_feed()));
-}
-
-void FeedStore::WritePendingWebFeedOperation(
-    feedstore::PendingWebFeedOperation operation) {
-  Write({MakeRecord(std::move(operation))}, base::DoNothing());
-}
-
-void FeedStore::RemovePendingWebFeedOperation(int64_t operation_id) {
-  auto keys_to_remove = std::make_unique<std::vector<std::string>>();
-  keys_to_remove->push_back(base::StrCat(
-      {kPendingWebFeedOperationPrefix, base::NumberToString(operation_id)}));
-
-  database_->UpdateEntries(
-      /*entries_to_save=*/std::make_unique<
-          std::vector<std::pair<std::string, feedstore::Record>>>(),
-      std::move(keys_to_remove), base::DoNothing());
 }
 
 void FeedStore::WriteDocView(feedstore::DocView doc_view) {

@@ -51,16 +51,6 @@ class FeedStore {
     std::unique_ptr<feedstore::Metadata> metadata;
     std::vector<feedstore::StreamData> stream_data;
   };
-  struct WebFeedStartupData {
-    WebFeedStartupData();
-    WebFeedStartupData(WebFeedStartupData&&);
-    ~WebFeedStartupData();
-    WebFeedStartupData& operator=(WebFeedStartupData&&);
-
-    feedstore::SubscribedWebFeeds subscribed_web_feeds;
-    feedstore::RecommendedWebFeedIndex recommended_feed_index;
-    std::vector<feedstore::PendingWebFeedOperation> pending_operations;
-  };
 
   explicit FeedStore(
       std::unique_ptr<leveldb_proto::ProtoDatabase<feedstore::Record>>
@@ -132,14 +122,7 @@ class FeedStore {
   void UpgradeFromStreamSchemaV0(
       feedstore::Metadata old_metadata,
       base::OnceCallback<void(feedstore::Metadata)> callback);
-  void ReadWebFeedStartupData(
-      base::OnceCallback<void(WebFeedStartupData)> callback);
   void ReadStartupData(base::OnceCallback<void(StartupData)> callback);
-  void WriteRecommendedFeeds(feedstore::RecommendedWebFeedIndex index,
-                             std::vector<feedstore::WebFeedInfo> web_feed_info,
-                             base::OnceClosure callback);
-  void WriteSubscribedFeeds(feedstore::SubscribedWebFeeds index,
-                            base::OnceClosure callback);
   void ReadRecommendedWebFeedInfo(
       const std::string& web_feed_id,
       base::OnceCallback<void(std::unique_ptr<feedstore::WebFeedInfo>)>
@@ -147,9 +130,6 @@ class FeedStore {
   void ReadAllPendingWebFeedOperations(
       base::OnceCallback<
           void(std::vector<feedstore::PendingWebFeedOperation>)>);
-  void RemovePendingWebFeedOperation(int64_t operation_id);
-  void WritePendingWebFeedOperation(
-      feedstore::PendingWebFeedOperation operation);
 
   void WriteDocView(feedstore::DocView doc_view);
   void RemoveDocViews(std::vector<feedstore::DocView> doc_ids);
@@ -209,19 +189,10 @@ class FeedStore {
       base::OnceCallback<void(std::unique_ptr<feedstore::Metadata>)> callback,
       bool read_ok,
       std::unique_ptr<feedstore::Record> record);
-  void OnReadWebFeedStartupDataFinished(
-      base::OnceCallback<void(WebFeedStartupData)> callback,
-      bool read_ok,
-      std::unique_ptr<std::vector<feedstore::Record>> records);
   void OnReadStartupDataFinished(
       base::OnceCallback<void(StartupData)> callback,
       bool read_ok,
       std::unique_ptr<std::vector<feedstore::Record>> records);
-  void ReadRecommendedWebFeedInfoFinished(
-      base::OnceCallback<void(std::unique_ptr<feedstore::WebFeedInfo>)>
-          callback,
-      bool read_ok,
-      std::unique_ptr<feedstore::Record> record);
 
   base::OnceClosure initialize_callback_;
   leveldb_proto::Enums::InitStatus database_status_;

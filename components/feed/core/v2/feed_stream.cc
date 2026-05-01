@@ -100,16 +100,6 @@ void PopulateDebugStreamData(
   ::feed::prefs::SetDebugStreamData(debug_data, profile_prefs);
 }
 
-// Will check all sources of ordering setting and always return a valid result.
-ContentOrder GetValidWebFeedContentOrder(const PrefService& pref_service) {
-  // First priority is the prefs stored order choice.
-  ContentOrder pref_order = prefs::GetWebFeedContentOrder(pref_service);
-  if (pref_order != ContentOrder::kUnspecified)
-    return pref_order;
-  // Defaults to grouped, encompassing finch_order == "grouped".
-  return ContentOrder::kGrouped;
-}
-
 LoadType RequestScheduleTypeToLoadType(RequestSchedule::Type type) {
   switch (type) {
     case RequestSchedule::Type::kFeedCloseRefresh:
@@ -361,7 +351,6 @@ void FeedStream::StreamLoadComplete(LoadStreamTask::Result result) {
   result_summary.loaded_new_content_from_network =
       result.loaded_new_content_from_network;
   result_summary.stored_content_age = result.stored_content_age;
-  result_summary.content_order = GetContentOrder(result.stream_type);
   result_summary.stream_metadata = stream_metadata;
 
   metrics_reporter_->OnLoadStream(stream.type, result_summary, content_stats,
@@ -372,28 +361,6 @@ void FeedStream::StreamLoadComplete(LoadStreamTask::Result result) {
       stream.model != nullptr, result.final_status, result.launch_result);
 
   LoadTaskComplete(result);
-
-  // When done loading the for-you feed, try to refresh the web-feed if there's
-  // no unread content.
-  if (IsWebFeedEnabled() && IsSignedIn() &&
-      result.load_type != LoadType::kManualRefresh &&
-      result.stream_type.IsForYou() && chained_web_feed_refresh_enabled_) {
-    // Checking for users without follows.
-    // TODO(b/229143375) - We should rate limit fetches if the server side is
-    // turned off for this locale, and continually fails.
-    StreamType following_type = StreamType(StreamKind::kFollowing);
-    if (!HasUnreadContent(following_type)) {
-      LoadStreamTask::Options options;
-      options.load_type = LoadType::kBackgroundRefresh;
-      options.stream_type = following_type;
-      options.abort_if_unread_content = true;
-      task_queue_.AddTask(
-          FROM_HERE, std::make_unique<LoadStreamTask>(
-                         options, this,
-                         base::BindOnce(&FeedStream::BackgroundRefreshComplete,
-                                        base::Unretained(this))));
-    }
-  }
 
   if (result.load_type == LoadType::kManualRefresh) {
     std::vector<base::OnceCallback<void(bool)>> moved_callbacks =
@@ -912,8 +879,6 @@ std::string FeedStream::DumpStateForDebugging() {
   };
   ss << "For You: ";
   print_refresh_schedule(RefreshTaskId::kRefreshForYouFeed);
-  ss << "WebFeeds: ";
-  print_refresh_schedule(RefreshTaskId::kRefreshWebFeed);
   return ss.str();
 }
 
@@ -1107,7 +1072,9 @@ LaunchResult FeedStream::ShouldMakeFeedQueryRequest(
                          : NetworkRequestType::kNextPage;
       break;
     case StreamKind::kFollowing:
-      request_type = NetworkRequestType::kWebFeedListContents;
+      // TODO(crbug.com/407797637): remove kFollowing from
+      // components/feed/core/v2/public/types.h
+      request_type = NetworkRequestType::kFeedQuery;
       break;
   }
 
@@ -1197,8 +1164,6 @@ RequestMetadata FeedStream::GetRequestMetadata(const StreamType& stream_type,
     result = GetCommonRequestMetadata(IsSignedIn(),
                                       /*allow_expired_session_id =*/false);
   }
-
-  result.content_order = GetContentOrder(stream_type);
 
   const feedstore::Metadata::StreamMetadata* stream_metadata =
       FindMetadataForStream(GetMetadata(), stream_type);
@@ -1352,13 +1317,6 @@ bool FeedStream::HasUnreadContent(const StreamType& stream_type) {
     return false;
   }
   return true;
-}
-
-void FeedStream::IncrementFollowedFromWebPageMenuCount() {
-  feedstore::Metadata metadata = GetMetadata();
-  metadata.set_followed_from_web_page_menu_count(
-      metadata.followed_from_web_page_menu_count() + 1);
-  SetMetadata(std::move(metadata));
 }
 
 void FeedStream::ClearAll() {
@@ -1664,51 +1622,6 @@ void FeedStream::ReportContentSliceVisibleTimeForGoodVisits(
     base::TimeDelta elapsed) {
   metrics_reporter_->ReportStableContentSliceVisibilityTimeForGoodVisits(
       elapsed);
-}
-
-void FeedStream::SetContentOrder(const StreamType& stream_type,
-                                 ContentOrder content_order) {
-  if (!stream_type.IsWebFeed()) {
-    DLOG(ERROR) << "SetContentOrder is not supported for this stream_type "
-                << stream_type;
-    return;
-  }
-
-  ContentOrder current_order = GetValidWebFeedContentOrder(*profile_prefs_);
-  prefs::SetWebFeedContentOrder(*profile_prefs_, content_order);
-  if (current_order == content_order)
-    return;
-
-  // Note that ForceRefreshTask clears stored content and forces a network
-  // refresh. It is possible to instead cache each ordering of the Feed
-  // separately, so that users who switch back and forth can do so more quickly
-  // and efficiently. However, there are some reasons to avoid this
-  // optimization:
-  // * we want content to be fresh, so this optimization would have limited
-  //   effect.
-  // * interactions with the feed can modify content; in these cases we would
-  //   want a full refresh.
-  // * it will add quite a bit of complexity to do it right
-  task_queue_.AddTask(
-      FROM_HERE,
-      std::make_unique<offline_pages::ClosureTask>(base::BindOnce(
-          &FeedStream::ForceRefreshTask, base::Unretained(this), stream_type)));
-}
-
-ContentOrder FeedStream::GetContentOrder(const StreamType& stream_type) const {
-  if (!stream_type.IsWebFeed())
-    return ContentOrder::kUnspecified;
-  return GetValidWebFeedContentOrder(*profile_prefs_);
-}
-
-ContentOrder FeedStream::GetContentOrderFromPrefs(
-    const StreamType& stream_type) {
-  if (!stream_type.IsWebFeed()) {
-    NOTREACHED()
-        << "GetContentOrderFromPrefs is not supported for this stream_type "
-        << stream_type;
-  }
-  return prefs::GetWebFeedContentOrder(*profile_prefs_);
 }
 
 void FeedStream::ScheduleFeedCloseRefresh(const StreamType& type) {

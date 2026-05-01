@@ -48,7 +48,6 @@ MetricsReporter::LoadStreamResultSummary NetworkLoadResults() {
   summary.is_initial_load = true;
   summary.loaded_new_content_from_network = true;
   summary.stored_content_age = base::Days(5);
-  summary.content_order = ContentOrder::kGrouped;
   return summary;
 }
 
@@ -60,7 +59,6 @@ MetricsReporter::LoadStreamResultSummary LoadFailureResults(
   summary.is_initial_load = true;
   summary.loaded_new_content_from_network = false;
   summary.stored_content_age = base::Days(5);
-  summary.content_order = ContentOrder::kGrouped;
   return summary;
 }
 
@@ -74,8 +72,6 @@ class MetricsReporterTest : public testing::Test, MetricsReporter::Delegate {
     task_environment_.AdvanceClock(
         (base::Time::Now().LocalMidnight() + base::Days(1)) -
         base::Time::Now() + base::Seconds(1));
-
-    test_content_order_ = ContentOrder::kGrouped;
 
     RecreateMetricsReporter();
   }
@@ -111,10 +107,6 @@ class MetricsReporterTest : public testing::Test, MetricsReporter::Delegate {
     register_feed_user_settings_field_trial_calls_.push_back(
         static_cast<std::string>(group));
   }
-  ContentOrder GetContentOrder(const StreamType& stream_type) const override {
-    return test_content_order_;
-  }
-
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   TestingPrefServiceSimple profile_prefs_;
@@ -123,7 +115,6 @@ class MetricsReporterTest : public testing::Test, MetricsReporter::Delegate {
   base::UserActionTester user_actions_;
   std::vector<std::string> register_feed_user_settings_field_trial_calls_;
   base::test::ScopedFeatureList feature_list_;
-  ContentOrder test_content_order_;
 };
 
 TEST_F(MetricsReporterTest, SliceViewedReportsSuggestionShown) {
@@ -355,33 +346,11 @@ TEST_F(MetricsReporterTest, WebFeed_ReportsLoadStreamStatus) {
       "ContentSuggestions.Feed.WebFeed.LoadedCardCount",
       kContentStats.card_count, 1);
   histogram_.ExpectUniqueSample(
-      "ContentSuggestions.Feed.WebFeed.LoadedCardCount.Grouped",
-      kContentStats.card_count, 1);
-  histogram_.ExpectTotalCount(
-      "ContentSuggestions.Feed.WebFeed.LoadedCardCount.ReverseChron", 0);
-  histogram_.ExpectUniqueSample(
       "ContentSuggestions.Feed.WebFeed.StreamContentSizeKB",
       kContentStats.total_content_frame_size_bytes / 1024, 1);
   histogram_.ExpectUniqueSample(
       "ContentSuggestions.Feed.WebFeed.SharedStateSizeKB",
       kContentStats.shared_state_size / 1024, 1);
-}
-
-TEST_F(MetricsReporterTest, WebFeed_ReportsLoadStreamStatus_ReverseChron) {
-  feedstore::Metadata::StreamMetadata stream_metadata;
-  MetricsReporter::LoadStreamResultSummary result_summary =
-      NetworkLoadResults();
-  result_summary.content_order = ContentOrder::kReverseChron;
-  reporter_->OnLoadStream(StreamType(StreamKind::kFollowing), result_summary,
-                          kContentStats, std::make_unique<LoadLatencyTimes>());
-  histogram_.ExpectUniqueSample(
-      "ContentSuggestions.Feed.WebFeed.LoadedCardCount",
-      kContentStats.card_count, 1);
-  histogram_.ExpectUniqueSample(
-      "ContentSuggestions.Feed.WebFeed.LoadedCardCount.ReverseChron",
-      kContentStats.card_count, 1);
-  histogram_.ExpectTotalCount(
-      "ContentSuggestions.Feed.WebFeed.LoadedCardCount.Grouped", 0);
 }
 
 TEST_F(MetricsReporterTest, OnLoadStreamDoesNotReportLoadedCardCountOnFailure) {

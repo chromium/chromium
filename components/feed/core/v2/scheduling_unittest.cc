@@ -215,20 +215,6 @@ TEST_F(ContentLifetimeTest, ShouldWaitForNewContent_ServerThreshold_Valid) {
       /*is_web_feed_subscriber=*/true));
 }
 
-TEST_F(ContentLifetimeTest, ShouldWaitForNewContent_WithNoSubscriptions) {
-  // Enable WebFeed and WebFeedOnboarding flags.
-  base::test::ScopedFeatureList features;
-  std::vector<base::test::FeatureRef> enabled_features = {kWebFeedOnboarding},
-                                      disabled_features = {};
-  features.InitWithFeatures(enabled_features, disabled_features);
-  EXPECT_FALSE(ShouldWaitForNewContent(
-      metadata_, StreamType(StreamKind::kFollowing), base::Days(6),
-      /*is_web_feed_subscriber=*/false));
-  EXPECT_TRUE(ShouldWaitForNewContent(
-      metadata_, StreamType(StreamKind::kFollowing), base::Days(8),
-      /*is_web_feed_subscriber=*/false));
-}
-
 TEST_F(ContentLifetimeTest, ShouldWaitForNewContent_ServerThreshold_Invalid) {
   // We ignore stale ages greater than the default.
   EXPECT_TRUE(ShouldWaitForNewContent(
@@ -314,29 +300,6 @@ TEST_F(ContentLifetimeTest, ContentInvalidFromAge_ServerThreshold_Invalid) {
   EXPECT_TRUE(ContentInvalidFromAge(metadata_, StreamType(StreamKind::kForYou),
                                     WithEpsilon(kDefaultContentExpiration),
                                     /*is_web_feed_subscriber=*/true));
-}
-
-TEST_F(ContentLifetimeTest, ContentInvalidFromAge_SubscriptionlessThreshold) {
-  // Enable WebFeed and WebFeedOnboarding flags.
-  base::test::ScopedFeatureList features;
-  std::vector<base::test::FeatureRef> enabled_features = {kWebFeedOnboarding},
-                                      disabled_features = {};
-  features.InitWithFeatures(enabled_features, disabled_features);
-  EXPECT_FALSE(ContentInvalidFromAge(metadata_,
-                                     StreamType(StreamKind::kFollowing),
-                                     kDefaultSubscriptionlessContentExpiration,
-                                     /*is_web_feed_subscriber=*/false));
-  EXPECT_TRUE(ContentInvalidFromAge(
-      metadata_, StreamType(StreamKind::kFollowing),
-      kDefaultSubscriptionlessContentExpiration + base::Milliseconds(1),
-      /*is_web_feed_subscriber=*/false));
-
-  EXPECT_FALSE(ContentInvalidFromAge(
-      metadata_, StreamType(StreamKind::kFollowing), base::Days(13),
-      /*is_web_feed_subscriber=*/false));
-  EXPECT_TRUE(ContentInvalidFromAge(
-      metadata_, StreamType(StreamKind::kFollowing), base::Days(15),
-      /*is_web_feed_subscriber=*/false));
 }
 
 }  // namespace

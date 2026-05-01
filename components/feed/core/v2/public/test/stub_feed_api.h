@@ -119,11 +119,6 @@ class StubFeedApi : public FeedApi {
       const feedui::StreamUpdate& stream_update) override {}
   base::Time GetLastFetchTime(SurfaceId surface_id) override;
   std::vector<std::string> GetFeedUrls(SurfaceId surface_id) override;
-  void SetContentOrder(const StreamType& stream_type,
-                       ContentOrder content_order) override {}
-  ContentOrder GetContentOrder(const StreamType& stream_type) const override;
-  ContentOrder GetContentOrderFromPrefs(const StreamType& stream_type) override;
-  void IncrementFollowedFromWebPageMenuCount() override {}
 
  private:
   StubPersistentKeyValueStore persistent_key_value_store_;

@@ -46,10 +46,6 @@ void SetPersistentMetricsData(const PersistentMetricsData& data,
 std::string GetClientInstanceId(PrefService& pref_service);
 void ClearClientInstanceId(PrefService& pref_service);
 
-void SetWebFeedContentOrder(PrefService& pref_service,
-                            ContentOrder content_order);
-ContentOrder GetWebFeedContentOrder(const PrefService& pref_service);
-
 }  // namespace prefs
 }  // namespace feed
 

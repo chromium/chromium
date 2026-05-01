@@ -32,9 +32,6 @@ void WaitForStoreInitializeTask::OnStoreInitialized() {
   store_->ReadStartupData(
       base::BindOnce(&WaitForStoreInitializeTask::ReadStartupDataDone,
                      weak_ptr_factory_.GetWeakPtr()));
-  store_->ReadWebFeedStartupData(
-      base::BindOnce(&WaitForStoreInitializeTask::WebFeedStartupDataDone,
-                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void WaitForStoreInitializeTask::ReadStartupDataDone(
@@ -80,17 +77,9 @@ void WaitForStoreInitializeTask::UpgradeDone(feedstore::Metadata metadata) {
   Done();
 }
 
-void WaitForStoreInitializeTask::WebFeedStartupDataDone(
-    FeedStore::WebFeedStartupData data) {
-  result_.web_feed_startup_data = std::move(data);
-  Done();
-}
-
 void WaitForStoreInitializeTask::Done() {
-  if (++done_count_ == 2) {
     std::move(callback_).Run(std::move(result_));
     TaskComplete();
-  }
 }
 
 }  // namespace feed

@@ -1626,34 +1626,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="ContentSuggestions.Feed.WebFeed.LoadedCardCount.{ContentOrder}"
-    units="index" expires_after="2023-07-23">
-  <owner>harringtond@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Android: Reports the total number of {ContentOrder} cards in the Following
-    feed when data is successfully loaded to be presented to the user. Reported
-    after an initial load. Only one of 'Grouped' or 'ReverseChron' is reported
-    for each stream load.
-  </summary>
-  <token key="ContentOrder">
-    <variant name="Grouped" summary="Grouped"/>
-    <variant name="ReverseChron" summary="ReverseChron"/>
-  </token>
-</histogram>
-
-<histogram name="ContentSuggestions.Feed.WebFeed.RefreshContentOrder"
-    enum="FeedContentOrder" expires_after="2023-07-23">
-  <owner>harringtond@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    The content order requested when refreshing content on the Following feed.
-    Reported before sending a refresh request to the server. Not reported for
-    NextPage requests.
-  </summary>
-</histogram>
-
 <histogram name="ContentSuggestions.Feed.{PlayType}Video.InitializationError"
     enum="FeedVideoInitializationError" expires_after="2023-07-23">
   <owner>jianli@chromium.org</owner>

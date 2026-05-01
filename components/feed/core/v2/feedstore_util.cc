@@ -25,8 +25,6 @@ using feed::StreamType;
 std::string StreamKey(const StreamType& stream_type) {
   if (stream_type.IsForYou())
     return kForYouStreamKey;
-  if (stream_type.IsWebFeed())
-    return kFollowStreamKey;
   NOTREACHED();
 }
 
@@ -34,8 +32,9 @@ std::string_view StreamPrefix(feed::StreamKind stream_kind) {
   switch (stream_kind) {
     case feed::StreamKind::kForYou:
       return kForYouStreamKey;
+    // TODO(crbug.com/407797637): remove kFollowing from
+    // components/feed/core/v2/public/types.h
     case feed::StreamKind::kFollowing:
-      return kFollowStreamKey;
     case feed::StreamKind::kUnknown:
       NOTREACHED();
   }
@@ -44,8 +43,6 @@ std::string_view StreamPrefix(feed::StreamKind stream_kind) {
 StreamType StreamTypeFromKey(std::string_view id) {
   if (id == kForYouStreamKey)
     return StreamType(feed::StreamKind::kForYou);
-  if (id == kFollowStreamKey)
-    return StreamType(feed::StreamKind::kFollowing);
   return {};
 }
 

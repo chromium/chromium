@@ -137,17 +137,6 @@ std::string LoadLatencyStepName(LoadLatencyTimes::StepKind kind) {
   }
 }
 
-std::string_view ContentOrderToString(ContentOrder content_order) {
-  switch (content_order) {
-    case ContentOrder::kUnspecified:
-      NOTREACHED();
-    case ContentOrder::kGrouped:
-      return "Grouped";
-    case ContentOrder::kReverseChron:
-      return "ReverseChron";
-  }
-}
-
 void ReportLoadLatencies(std::unique_ptr<LoadLatencyTimes> latencies) {
   for (const LoadLatencyTimes::Step& step : latencies->steps()) {
     // TODO(crbug.com/40158714): Add a WebFeed-specific histogram for this.
@@ -820,15 +809,6 @@ void MetricsReporter::ReportCardOpenEndIfNeeded(bool success) {
   pending_open_ = {};
 }
 
-void MetricsReporter::NetworkRefreshRequestStarted(
-    const StreamType& stream_type,
-    ContentOrder content_order) {
-  if (stream_type.IsWebFeed()) {
-    base::UmaHistogramEnumeration(
-        "ContentSuggestions.Feed.WebFeed.RefreshContentOrder", content_order);
-  }
-}
-
 void MetricsReporter::NetworkRequestComplete(
     NetworkRequestType type,
     const NetworkResponseInfo& response_info) {
@@ -867,7 +847,6 @@ void MetricsReporter::OnLoadStream(
   base::TimeDelta stored_content_age = result_summary.stored_content_age;
   std::optional<feedstore::Metadata::StreamMetadata> stream_metadata =
       result_summary.stream_metadata;
-  ContentOrder content_order = result_summary.content_order;
   VVLOG << "OnLoadStream load_from_store_status=" << load_from_store_status
         << " final_status=" << final_status;
   load_latencies_ = std::move(load_latencies);
@@ -923,12 +902,6 @@ void MetricsReporter::OnLoadStream(
         base::StrCat({"ContentSuggestions.", HistogramReplacement(stream_type),
                       "LoadedCardCount"}),
         content_stats.card_count);
-    if (stream_type.IsWebFeed()) {
-      base::UmaHistogramSparse(
-          base::StrCat({"ContentSuggestions.Feed.WebFeed.LoadedCardCount.",
-                        ContentOrderToString(content_order)}),
-          content_stats.card_count);
-    }
   }
   LogContentStats(stream_type, content_stats);
 }

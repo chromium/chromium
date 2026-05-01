@@ -189,18 +189,6 @@ feedwire::Request CreateFeedQueryRequest(
   *feed_request.mutable_client_info() = CreateClientInfo(request_metadata);
   feedwire::FeedQuery& query = *feed_request.mutable_feed_query();
   query.set_reason(request_reason);
-  switch (request_metadata.content_order) {
-    case ContentOrder::kReverseChron:
-      query.set_order_by(
-          feedwire::FeedQuery::ContentOrder::FeedQuery_ContentOrder_RECENT);
-      break;
-    case ContentOrder::kGrouped:
-      query.set_order_by(
-          feedwire::FeedQuery::ContentOrder::FeedQuery_ContentOrder_GROUPED);
-      break;
-    case ContentOrder::kUnspecified:
-      break;
-  }
 
   // Set the feed entry point based on the stream type.
   feedwire::FeedEntryPointData& entry_point =

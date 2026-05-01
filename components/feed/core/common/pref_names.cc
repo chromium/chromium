@@ -43,7 +43,6 @@ const char kEnableWebFeedFollowIntroDebug[] =
     "webfeed_follow_intro_debug.enable";
 const char kReliabilityLoggingIdSalt[] = "feedv2.reliability_logging_id_salt";
 const char kHasStoredData[] = "feedv2.has_stored_data";
-const char kWebFeedContentOrder[] = "webfeed.content_order";
 const char kLastSeenFeedType[] = "feedv2.last_seen_feed_type";
 const char kFeedOnDeviceUserActionsCollector[] = "feed.user_actions_collection";
 const char kInfoCardStates[] = "feed.info_card_states";
@@ -86,7 +85,6 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
                                 false);
   registry->RegisterUint64Pref(feed::prefs::kReliabilityLoggingIdSalt, 0);
   registry->RegisterBooleanPref(feed::prefs::kHasStoredData, false);
-  registry->RegisterIntegerPref(feed::prefs::kWebFeedContentOrder, 0);
   registry->RegisterIntegerPref(feed::prefs::kLastSeenFeedType, 0);
   registry->RegisterListPref(feed::prefs::kFeedOnDeviceUserActionsCollector,
                              PrefRegistry::LOSSY_PREF);
