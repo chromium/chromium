@@ -8,7 +8,6 @@ source_set("indigo") {
   sources = [
     "api_client.h",
     "indigo_agent_host.h",
-    "indigo_alpha_rpc.h",
     "indigo_extension_utils.h",
     "indigo_image_replacement.h",
     "indigo_image_replacement_manager.h",
@@ -41,7 +40,6 @@ source_set("impl") {
   sources = [
     "api_client.cc",
     "indigo_agent_host.cc",
-    "indigo_alpha_rpc.cc",
     "indigo_extension_utils.cc",
     "indigo_image_replacement.cc",
     "indigo_image_replacement_manager.cc",
@@ -102,7 +100,6 @@ source_set("unit_tests") {
   sources = [
     "api_client_unittest.cc",
     "indigo_agent_host_unittest.cc",
-    "indigo_alpha_rpc_unittest.cc",
     "indigo_page_action_controller_unittest.cc",
     "indigo_service_unittest.cc",
   ]

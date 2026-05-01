@@ -830,10 +830,6 @@ BASE_DECLARE_FEATURE(kHttpsFirstModeIncognito);
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kIndigo);
 COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::FeatureParam<std::string> kIndigoAlphaGenerateUrl;
-COMPONENT_EXPORT(CHROME_FEATURES)
-
-COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<base::TimeDelta>
     kIndigoAnchoredMessageResetDuration;
 COMPONENT_EXPORT(CHROME_FEATURES)

@@ -13,7 +13,6 @@
 #include "base/metrics/user_metrics_action.h"
 #include "base/notimplemented.h"
 #include "chrome/browser/indigo/indigo_agent_host.h"
-#include "chrome/browser/indigo/indigo_alpha_rpc.h"
 #include "chrome/browser/indigo/indigo_service.h"
 #include "chrome/browser/indigo/indigo_service_factory.h"
 #include "chrome/browser/indigo/onboarding/indigo_onboarding_dialog.h"
@@ -132,34 +131,6 @@ void IndigoPageActionController::InvokeAction() {
     return;
   }
 
-  // TODO: b/482792874 - Analyze the page and act on it, instead of just opening
-  // a tab based on a fixed input.
-  LOG(WARNING) << "IndigoAgentHost doesn't expect to be able to load. "
-               << "Directly invoking generate RPC (for prototyping).";
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  if (!profile) {
-    return;
-  }
-
-  scoped_refptr<network::SharedURLLoaderFactory> loader_factory =
-      profile->GetDefaultStoragePartition()
-          ->GetURLLoaderFactoryForBrowserProcess();
-  ExecuteAlphaGenerateRpc(
-      loader_factory.get(),
-      base::BindOnce(
-          [](base::WeakPtr<BrowserWindowInterface> window,
-             base::expected<GURL, AlphaGenerateError> result) {
-            if (window && result.has_value()) {
-              window->OpenGURL(result.value(),
-                               WindowOpenDisposition::NEW_FOREGROUND_TAB);
-            } else if (!result.has_value()) {
-              LOG(ERROR) << "Indigo alpha generate error "
-                         << result.error().error_type << ": "
-                         << result.error().error_message;
-            }
-          },
-          tab().GetBrowserWindowInterface()->GetWeakPtr()));
 }
 
 void IndigoPageActionController::ShowToolbarInside(const gfx::Rect& rect) {
