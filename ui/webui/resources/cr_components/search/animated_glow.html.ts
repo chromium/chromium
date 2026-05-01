@@ -5,6 +5,7 @@
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {SearchAnimatedGlowElement} from './animated_glow.js';
+import {GlowAnimationState} from './constants.js';
 
 export function getHtml(this: SearchAnimatedGlowElement) {
   /*
@@ -32,30 +33,42 @@ export function getHtml(this: SearchAnimatedGlowElement) {
 
   // clang-format off
   return html`<!--_html_template_start_-->
-    <div id="dragDropPlaceholder">${this.dragDropPlaceholder}</div>
-    <div class="gradient gradient-outer-glow"></div>
-    <div class="double-gradient"></div>
-    <div class="double-gradient-mask"></div>
-    <div class="gradient"></div>
-    <div class="background"
-        part="composebox-background">
-      ${(this.voiceSearchCoherenceSearchboxEnabled_ ||
-          this.voiceSearchCoherenceComposeboxesEnabled_)
-              && this.inVoiceSearchMode && this.requiresVoice ?
-          html`<recording-wave id="recordingWave"
-              .isListening="${this.inVoiceSearchMode}">
-          </recording-wave>`
-      : ''}
-    </div>
+    ${this.energyEffectAnimationEnabled && this.animationState === GlowAnimationState.DRAGGING ? html`
+      <div class="gradient-blur-wrapper">
+        <div class="gradient"></div>
+      </div>
+      <div class="gradient-sharp-wrapper">
+        <div class="double-gradient"></div>
+      </div>
+      <div class="double-gradient-mask"></div>
+      <div class="background" part="composebox-background"></div>
+      <div id="dragDropPlaceholder">${this.dragDropPlaceholder}</div>
+    ` : html`
+      <div id="dragDropPlaceholder">${this.dragDropPlaceholder}</div>
+      <div class="gradient gradient-outer-glow"></div>
+      <div class="double-gradient"></div>
+      <div class="double-gradient-mask"></div>
+      <div class="gradient"></div>
+      <div class="background"
+          part="composebox-background">
+        ${(this.voiceSearchCoherenceSearchboxEnabled_ ||
+           this.voiceSearchCoherenceComposeboxesEnabled_)
+           && this.inVoiceSearchMode && this.requiresVoice ?
+           html`<recording-wave id='recordingWave'
+                .isListening="${this.inVoiceSearchMode}">
+                </recording-wave>`
+           : ''}
+      </div>
+    `}
     ${!(this.voiceSearchCoherenceSearchboxEnabled_ ||
-          this.voiceSearchCoherenceComposeboxesEnabled_)
-              && this.inVoiceSearchMode && this.requiresVoice ?
-        html`<audio-wave
+       this.voiceSearchCoherenceComposeboxesEnabled_)
+       && this.inVoiceSearchMode && this.requiresVoice ?
+       html`<audio-wave
             ?is-listening="${this.inVoiceSearchMode}"
             .transcript="${this.transcript}"
             .receivedSpeech="${this.receivedSpeech}">
-        </audio-wave>`
-    : ''}
+            </audio-wave>`
+       : ''}
   <!--_html_template_end_-->`;
   // clang-format on
 }

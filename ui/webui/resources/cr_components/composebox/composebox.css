@@ -137,14 +137,15 @@
   padding-bottom: 10px;
 }
 
-:host([is-dragging-file_]) #composebox * {
-  pointer-events: none;
-}
-
 search-animated-glow {
   pointer-events: none;
   inset: -2px;
   z-index: 1;
+}
+
+:host([is-dragging-file][energy-effect-animation-enabled]) search-animated-glow {
+  position: absolute;
+  z-index: auto;
 }
 
 :host([is-collapsible]) #composebox {
