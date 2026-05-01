@@ -67,10 +67,10 @@ struct AX_BASE_EXPORT AXTreeUpdate {
   bool has_tree_data = false;
   AXTreeData tree_data;
 
-  // The id of a node to clear, before applying any updates,
-  // or 0 if no nodes should be cleared. Clearing a node means deleting
-  // all of its children and their descendants, but leaving that node in
-  // the tree. It's an error to clear a node but not subsequently update it
+  // The id of a node to clear, before applying any updates, or
+  // `kInvalidAXNodeID` if no nodes should be cleared. Clearing a node means
+  // deleting all of its children and their descendants, but leaving that node
+  // in the tree. It's an error to clear a node but not subsequently update it
   // as part of the tree update.
   AXNodeID node_id_to_clear = kInvalidAXNodeID;
 

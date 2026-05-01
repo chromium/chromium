@@ -976,6 +976,11 @@ void ReadAnythingUntrustedPageHandler::OnLinkClicked(
             << " which is not currently being observed";
     return;
   }
+  if (!ui::IsValidAXNodeIDFromRenderer(target_node_id)) {
+    VLOG(1) << "Received link click request with invalid target_node_id "
+            << target_node_id;
+    return;
+  }
   ui::AXActionData action_data;
   action_data.target_tree_id = target_tree_id;
   action_data.action = ax::mojom::Action::kDoDefault;
@@ -992,6 +997,11 @@ void ReadAnythingUntrustedPageHandler::OnImageDataRequested(
   if (!is_observing_tree) {
     VLOG(1) << "Received image data request for tree_id " << target_tree_id
             << " which is not currently being observed";
+    return;
+  }
+  if (!ui::IsValidAXNodeIDFromRenderer(target_node_id)) {
+    VLOG(1) << "Received image data request with invalid target_node_id "
+            << target_node_id;
     return;
   }
   main_observer_->web_contents()->DownloadImageFromAxNode(
@@ -1012,6 +1022,12 @@ void ReadAnythingUntrustedPageHandler::OnImageDataDownloaded(
     const std::vector<SkBitmap>& bitmaps,
     const std::vector<gfx::Size>& sizes) {
   CHECK(IsObservingTree(target_tree_id));
+  if (!ui::IsValidAXNodeIDFromRenderer(node_id)) {
+    VLOG(1) << "Received image data download notification with invalid node_id "
+            << node_id;
+    return;
+  }
+
   bool download_was_successful =
       network::IsSuccessfulStatus(http_status_code) || http_status_code == 0;
 
@@ -1036,6 +1052,11 @@ void ReadAnythingUntrustedPageHandler::ScrollToTargetNode(
   if (!is_observing_tree) {
     VLOG(1) << "Received scroll request for tree_id " << target_tree_id
             << " which is not currently being observed";
+    return;
+  }
+  if (!ui::IsValidAXNodeIDFromRenderer(target_node_id)) {
+    VLOG(1) << "Received scroll request with invalid target_node_id "
+            << target_node_id;
     return;
   }
   ui::AXActionData action_data;
@@ -1125,6 +1146,16 @@ void ReadAnythingUntrustedPageHandler::OnSelectionChange(
   if (!is_observing_tree) {
     VLOG(1) << "Received selection request for tree_id " << target_tree_id
             << " which is not currently being observed";
+    return;
+  }
+  if (!ui::IsValidAXNodeIDFromRenderer(anchor_node_id)) {
+    VLOG(1) << "Received selection request with invalid anchor_node_id "
+            << anchor_node_id;
+    return;
+  }
+  if (!ui::IsValidAXNodeIDFromRenderer(focus_node_id)) {
+    VLOG(1) << "Received selection request with invalid focus_node_id "
+            << focus_node_id;
     return;
   }
   ui::AXActionData action_data;
