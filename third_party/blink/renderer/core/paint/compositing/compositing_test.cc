@@ -1049,6 +1049,22 @@ TEST_P(CompositingTest, MergeFixedLayers) {
                                  1);
 }
 
+TEST_P(CompositingTest, DontMergeFixedLayersIfLosingSolidColor) {
+  SetViewSize(gfx::Size(1000, 500));
+  InitializeWithHTML(*WebView()->MainFrameImpl()->GetFrame(), R"HTML(
+    <style>
+      body { margin: 0; height: 10000px; }
+      .fixed { position: fixed; width: 100px; height: 100px; }
+    </style>
+    <div id="a" class="fixed" style="top: 100px; left: 0; background: blue">
+    </div>
+    <div id="b" class="fixed" style="top: 150px; left: 80px; background: red">
+    </div>
+  )HTML");
+  EXPECT_TRUE(CcLayerByDOMElementId("a"));
+  EXPECT_TRUE(CcLayerByDOMElementId("b"));
+}
+
 TEST_P(CompositingTest, MergeStickyLayers) {
   base::MetricsSubSampler::ScopedAlwaysSampleForTesting always_sample;
   base::HistogramTester histograms;

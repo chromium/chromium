@@ -322,6 +322,7 @@ bool PendingLayer::CanMerge(
         return false;
       }
     }
+
     if (IsSolidColor() && new_home_bounds.IsTight() && !guest.draws_content_ &&
         new_home_bounds.Rect() == merged_bounds) {
       // Home's solid color fills the merged layer, and is the only drawing.
@@ -333,6 +334,21 @@ bool PendingLayer::CanMerge(
       // obscures all home's drawing.
       merged_solid_color_chunk_index =
           chunks_.size() + guest.solid_color_chunk_index_;
+    }
+
+    if (property_tree_state_.Transform().NearestDirectlyCompositedAncestor() !=
+        guest.property_tree_state_.Transform()
+            .NearestDirectlyCompositedAncestor()) {
+      CHECK(RuntimeEnabledFeatures::MergeFixedLayersEnabled() ||
+            RuntimeEnabledFeatures::MergeStickyLayersEnabled());
+      if ((IsSolidColor() || guest.IsSolidColor()) &&
+          merged_solid_color_chunk_index == kNotFound) {
+        // Don't merge if that would cause a layer to lose its solid color,
+        // to prevent extra raster cost.
+        // TODO(crbug.com/507502290): This might benefit in other cases,
+        // perhaps with more sophisticated heuristics.
+        return false;
+      }
     }
   }
 
