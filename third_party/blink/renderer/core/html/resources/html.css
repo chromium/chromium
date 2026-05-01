@@ -1553,19 +1553,15 @@ button[interestfor] {
 }
 
 [interestfor]::interest-button {
-  content: "?";
+  content: '\24D8' / '';
   display: inline-block;
-  box-sizing: border-box;
-  border: 1px solid currentColor;
-  border-radius: 0.5em;
   color: inherit;
   background-color: transparent;
-  padding-block: 0.25em;
-  padding-inline: 0.5em;
+  box-sizing: border-box;
+  margin-inline-start: 0.25em;
   min-block-size: max(24px, 1lh);
   min-inline-size: 24px;
   text-align: center;
-  margin-inline-start: 0.5em;
   user-select: none;
   cursor: help;
 }
