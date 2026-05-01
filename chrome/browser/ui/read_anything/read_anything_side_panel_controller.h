@@ -156,6 +156,9 @@ class ReadAnythingSidePanelController
   // Holds the most recently created WebView for the side panel, if one exists.
   base::WeakPtr<ReadAnythingSidePanelWebView> web_view_;
 
+  // Flag to indicate that the cached view should be cleared when hidden.
+  bool should_clear_cached_view_on_hidden_ = false;
+
   // Must be the last member.
   base::WeakPtrFactory<ReadAnythingSidePanelController> weak_factory_{this};
 };

@@ -230,13 +230,29 @@ void ReadAnythingSidePanelController::OnEntryHidden(SidePanelEntry* entry) {
     observers_.Notify(&Observer::Activate, false,
                       std::optional<ReadAnythingOpenTrigger>());
   }
+
+  // When the reading mode side panel is replaced with another side panel,
+  // ownership of its WebContents is transferred back to the
+  // ReadAnythingController in OnEntryWillHide(). If the reading mode side
+  // panel is later reopened, it would attempt to use the previously cached
+  // view, which now lacks a valid WebContents, causing a crash. Clearing the
+  // cached view prevents this.
+  if (should_clear_cached_view_on_hidden_) {
+    entry->ClearCachedView();
+    should_clear_cached_view_on_hidden_ = false;
+  }
 }
 
 void ReadAnythingSidePanelController::OnEntryWillHide(
     SidePanelEntry* entry,
     SidePanelEntryHideReason reason) {
-  if (reason == SidePanelEntryHideReason::kSidePanelClosed) {
+  if (reason == SidePanelEntryHideReason::kSidePanelClosed ||
+      reason == SidePanelEntryHideReason::kReplaced) {
     ReturnWebUIToController();
+  }
+  if (features::IsImmersiveReadAnythingEnabled() &&
+      reason == SidePanelEntryHideReason::kReplaced) {
+    should_clear_cached_view_on_hidden_ = true;
   }
 
   if (!features::IsImmersiveReadAnythingEnabled()) {
