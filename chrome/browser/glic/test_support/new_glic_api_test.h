@@ -75,9 +75,9 @@ class WebUIStateListener : public Host::Observer {
 };
 
 template <typename T>
-class GlicApiBrowserTestMixin : public GlicBrowserTestMixin<T> {
+class GlicApiBrowserTestMixin : public T {
  private:
-  using Base = GlicBrowserTestMixin<T>;
+  using Base = T;
 
  public:
   template <typename... Args>
@@ -318,8 +318,7 @@ class GlicApiBrowserTestMixin : public GlicBrowserTestMixin<T> {
   std::optional<base::Value> step_data_;
 };
 
-using GlicApiBrowserTest = GlicApiBrowserTestMixin<PlatformBrowserTest>;
-
+using GlicApiBrowserTest = GlicApiBrowserTestMixin<GlicBrowserTest>;
 }  // namespace glic
 
 #endif  // CHROME_BROWSER_GLIC_TEST_SUPPORT_NEW_GLIC_API_TEST_H_
