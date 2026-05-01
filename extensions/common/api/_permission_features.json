@@ -620,37 +620,18 @@
       ]
     }
   ],
-  "system.cpu": [
-    {
-      "channel": "stable",
-      "extension_types": ["extension", "legacy_packaged_app", "platform_app"]
-    },
-    {
-      "channel": "stable",
-      "extension_types": ["hosted_app"],
-      "allowlist": ["B44D08FD98F1523ED5837D78D0A606EA9D6206E5"]  // Web Store
-    }
-  ],
-  "system.memory": [
-    {
-      "channel": "stable",
-      "extension_types": ["extension", "legacy_packaged_app", "platform_app"]
-    },
-    {
-      "channel": "stable",
-      "extension_types": ["hosted_app"],
-      "allowlist": ["B44D08FD98F1523ED5837D78D0A606EA9D6206E5"]  // Web Store
-    }
-  ],
+  "system.cpu": {
+    "channel": "stable",
+    "extension_types": ["extension", "legacy_packaged_app", "platform_app"]
+  },
+  "system.memory": {
+    "channel": "stable",
+    "extension_types": ["extension", "legacy_packaged_app", "platform_app"]
+  },
   "system.network": [
     {
       "channel": "stable",
       "extension_types": ["platform_app"]
-    },
-    {
-      "channel": "stable",
-      "extension_types": ["hosted_app"],
-      "allowlist": ["B44D08FD98F1523ED5837D78D0A606EA9D6206E5"]  // Web Store
     },
     {
       "channel": "stable",
@@ -666,32 +647,16 @@
       "extension_types": ["extension"]
     }
   ],
-  "system.storage": [
-    {
-      "channel": "stable",
-      "extension_types": ["extension", "legacy_packaged_app", "platform_app"],
-      // "desktop_android" is not supported.
-      "platforms": ["chromeos", "linux", "mac", "win"]
-    },
-    {
-      "channel": "stable",
-      "extension_types": ["hosted_app"],
-      // "desktop_android" is not supported.
-      "platforms": ["chromeos", "linux", "mac", "win"],
-      "allowlist": ["B44D08FD98F1523ED5837D78D0A606EA9D6206E5"]  // Web Store
-    }
-  ],
-  "system.display": [
-    {
-      "channel": "stable",
-      "extension_types": ["extension", "legacy_packaged_app", "platform_app"]
-    },
-    {
-      "channel": "stable",
-      "extension_types": ["hosted_app"],
-      "allowlist": ["B44D08FD98F1523ED5837D78D0A606EA9D6206E5"]  // Web Store
-    }
-  ],
+  "system.storage": {
+    "channel": "stable",
+    "extension_types": ["extension", "legacy_packaged_app", "platform_app"],
+    // "desktop_android" is not supported.
+    "platforms": ["chromeos", "linux", "mac", "win"]
+  },
+  "system.display": {
+    "channel": "stable",
+    "extension_types": ["extension", "legacy_packaged_app", "platform_app"]
+  },
   "u2fDevices": {
     "channel": "stable",
     "extension_types": ["extension", "platform_app"],
