@@ -28,6 +28,11 @@
 #include "ui/accessibility/ax_mode.h"
 #include "ui/base/cocoa/accessibility_focus_overrider.h"
 
+// When enabled, causes sendEvent: to manually forward KeyUp events that have
+// the command modifier to the application's key window instead of to |super|.
+// Used as a killswitch if this has unintended consequences.
+BASE_FEATURE(kForwardCmdKeyUpEventsToWindow, base::FEATURE_ENABLED_BY_DEFAULT);
+
 namespace chrome_browser_application_mac {
 
 void RegisterBrowserCrApp() {
@@ -428,11 +433,25 @@ std::string DescriptionForNSEvent(NSEvent* event) {
     base::mac::ScopedSendingEvent sendingEventScoper;
     content::ScopedNotifyNativeEventProcessorObserver scopedObserverNotifier(
         &self->_observers, event);
-    // Mac Eisu and Kana keydown events are by default swallowed by sendEvent
-    // and sent directly to IME, which prevents ui keydown events from firing.
-    // These events need to be sent to [NSApp keyWindow] for handling.
+
+    BOOL sendEventToKeyWindow = NO;
     if (event.type == NSEventTypeKeyDown &&
         (event.keyCode == kVK_JIS_Eisu || event.keyCode == kVK_JIS_Kana)) {
+      // Mac Eisu and Kana keydown events are by default swallowed by sendEvent
+      // and sent directly to IME, which prevents ui keydown events from firing.
+      // These events need to be sent to [NSApp keyWindow] for handling.
+      sendEventToKeyWindow = YES;
+    } else if (event.type == NSEventTypeKeyUp &&
+               event.modifierFlags & NSEventModifierFlagCommand &&
+               base::FeatureList::IsEnabled(kForwardCmdKeyUpEventsToWindow)) {
+      // The base NSApplication implementation of sendEvent: swallows keyUp
+      // events if the command modifier is present. We work around this by
+      // forwarding them to [NSApp keyWindow] to ensure all keyUp events are
+      // reported and handled (crbug.com/407598429, crbug.com/438807261).
+      sendEventToKeyWindow = YES;
+    }
+
+    if (sendEventToKeyWindow) {
       [NSApp.keyWindow sendEvent:event];
     } else {
       [super sendEvent:event];

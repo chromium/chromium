@@ -501,7 +501,6 @@ IN_PROC_BROWSER_TEST_F(BrowserKeyEventsTest, CtrlKeyEvents) {
   EXPECT_NO_FATAL_FAILURE(TestKeyEvent(tab_index, kTestCtrlEnter));
 }
 #elif BUILDFLAG(IS_MAC)
-// http://crbug.com/40564036
 IN_PROC_BROWSER_TEST_F(BrowserKeyEventsTest, CommandKeyEvents) {
   static const KeyEventTestData kTestCmdF = {
     ui::VKEY_F, false, false, false, true,
@@ -510,14 +509,23 @@ IN_PROC_BROWSER_TEST_F(BrowserKeyEventsTest, CommandKeyEvents) {
       "D 70 0 false false false true" }
   };
 
-  // On Mac we don't send key up events when command modifier is down.
   static const KeyEventTestData kTestCmdFSuppressKeyDown = {
-    ui::VKEY_F, false, false, false, true,
-    true, false, false, false, 3,
-    { "D 91 0 false false false true",
-      "D 70 0 false false false true",
-      "U 91 0 false false false true" }
-  };
+      ui::VKEY_F,
+      false,
+      false,
+      false,
+      true,
+      true,
+      false,
+      false,
+      false,
+      3,
+      {
+          "D 91 0 false false false true",
+          "D 70 0 false false false true",
+          "U 70 0 false false false true",
+          "U 91 0 false false false true",
+      }};
 
   ASSERT_TRUE(embedded_test_server()->Start());
 
