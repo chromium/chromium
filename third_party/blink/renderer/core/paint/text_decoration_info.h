@@ -30,7 +30,6 @@ namespace blink {
 class ComputedStyle;
 class DecoratingBox;
 class InlinePaintContext;
-class SimpleFontData;
 class TextDecorationOffset;
 
 enum class ResolvedUnderlinePosition {
@@ -52,7 +51,7 @@ struct ResolvedDecoration {
   // ResolveDecorationAt() must fill `applied_text_decoration`, so it never be
   // nullptr.
   const AppliedTextDecoration* applied_text_decoration = nullptr;
-  const SimpleFontData* font_data = nullptr;
+  UsedFont used_font;
   TextDecorationLine lines = TextDecorationLine::kNone;
   float ascent = 0.f;
   float computed_font_size = 0.f;
@@ -66,6 +65,10 @@ struct ResolvedDecoration {
   bool has_underline = false;
   bool has_overline = false;
   bool is_flipped_underline_and_overline = false;
+
+  // ResolvedDecoration should be initialized with a UsedFont because
+  // UsedFont has no default constructor.
+  explicit ResolvedDecoration(const UsedFont& font) : used_font(font) {}
 
   bool HasUnderline() const { return has_underline; }
   bool HasOverline() const { return has_overline; }
@@ -81,6 +84,7 @@ struct ResolvedDecoration {
   bool HasSpellingOrGrammarError() const {
     return HasSpellingError() || HasGrammarError();
   }
+  bool HasFontData() const { return used_font.PrimaryFont(); }
 };
 
 // Container for computing and storing information for text decoration

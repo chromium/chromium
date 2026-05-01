@@ -177,7 +177,7 @@ const ResolvedDecoration TextDecorationInfo::ResolveDecorationAt(
     wtf_size_t decoration_index) {
   DCHECK_LT(decoration_index, AppliedDecorationCount());
 
-  ResolvedDecoration decoration;
+  ResolvedDecoration decoration(target_used_font_);
   decoration.applied_text_decoration = &AppliedDecoration(decoration_index);
   decoration.lines = decoration.applied_text_decoration->Lines();
   decoration.has_underline =
@@ -237,13 +237,15 @@ const ResolvedDecoration TextDecorationInfo::ResolveDecorationAt(
   }
   decoration.is_flipped_underline_and_overline = flip_underline_and_overline_;
 
+  if (!is_svg_text_ && decorating_box) {
+    decoration.used_font = decorating_box->GetUsedFont();
+  } else {
+    // `target_used_font_` was already copied to decoration.used_font.
+  }
   // Compute the |Font| and its properties.
-  const Font* font = (is_svg_text_ || !decorating_box)
-                         ? &target_used_font_.GetFont()
-                         : decorating_box_style_->GetFont();
+  const Font* font = &decoration.used_font.GetFont();
   DCHECK(font);
   const SimpleFontData* font_data = font->PrimaryFont();
-  decoration.font_data = font_data;
   decoration.computed_font_size = font->GetFontDescription().ComputedSize();
   decoration.ascent =
       font_data ? font_data->GetFontMetrics().FloatAscent() : 0.f;
@@ -353,7 +355,8 @@ DecorationGeometry TextDecorationInfo::ComputeUnderlineLineData(
   }
   float paint_underline_offset = decoration_offset.ComputeUnderlineOffset(
       decoration.underline_position, decoration.computed_font_size,
-      decoration.font_data, line_offset, decoration.resolved_thickness);
+      decoration.used_font.PrimaryFont(), line_offset,
+      decoration.resolved_thickness);
   // The offset is for the decorating box. Convert it for the target text/box.
   paint_underline_offset += decoration.offset_from_decorating_box;
   return ComputeLineData(decoration, TextDecorationLine::kUnderline,
@@ -376,8 +379,9 @@ DecorationGeometry TextDecorationInfo::ComputeOverlineLineData(
   }
   const int paint_overline_offset =
       decoration_offset.ComputeUnderlineOffsetForUnder(
-          line_offset, TargetStyle().ComputedFontSize(), decoration.font_data,
-          decoration.resolved_thickness, position);
+          line_offset, TargetStyle().ComputedFontSize(),
+          decoration.used_font.PrimaryFont(), decoration.resolved_thickness,
+          position);
   return ComputeLineData(decoration, TextDecorationLine::kOverline,
                          paint_overline_offset);
 }
@@ -403,7 +407,8 @@ DecorationGeometry TextDecorationInfo::ComputeSpellingOrGrammarErrorLineData(
   DCHECK(!decoration.HasLineThrough());
   const int paint_underline_offset = decoration_offset.ComputeUnderlineOffset(
       decoration.underline_position, TargetStyle().ComputedFontSize(),
-      decoration.font_data, Length(), decoration.resolved_thickness);
+      decoration.used_font.PrimaryFont(), Length(),
+      decoration.resolved_thickness);
   return ComputeLineData(decoration,
                          decoration.HasSpellingError()
                              ? TextDecorationLine::kSpellingError
@@ -454,7 +459,7 @@ float TextDecorationInfo::ComputeThickness(
   }
   const float thickness = ComputeDecorationThickness(
       decoration.applied_text_decoration->Thickness(),
-      decoration.computed_font_size, decoration.font_data);
+      decoration.computed_font_size, decoration.used_font.PrimaryFont());
   return std::max(is_svg_text_ ? 0.0f : 1.0f, thickness);
 }
 

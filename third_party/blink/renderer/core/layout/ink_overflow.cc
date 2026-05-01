@@ -679,7 +679,7 @@ LogicalRect InkOverflow::ComputeAppliedDecorationOverflow(
   for (wtf_size_t i = 0; i < decoration_info.AppliedDecorationCount(); i++) {
     const ResolvedDecoration decoration =
         decoration_info.ResolveDecorationAt(i);
-    if (!decoration.font_data) {
+    if (!decoration.HasFontData()) {
       continue;
     }
     if (decoration.HasUnderline()) {
