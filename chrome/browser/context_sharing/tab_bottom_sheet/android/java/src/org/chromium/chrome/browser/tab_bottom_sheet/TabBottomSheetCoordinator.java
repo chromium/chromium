@@ -445,16 +445,7 @@ public class TabBottomSheetCoordinator {
     private void setToFixedHeightOrFallback() {
         if (mWindowAndroid.getWindow() == null) return;
         @Px int fixedHeight = (int) (getVisibleViewportHeight() * getDefaultHeightRatio());
-
-        // The bottom sheet controller max offset calculations may not be correct without the
-        // sheet content being set to a fixed height first.
         mMediator.setToFixedHeight(fixedHeight);
-
-        int newFixedHeight = Math.min(fixedHeight, mBottomSheetController.getMaxOffset());
-        if (newFixedHeight != fixedHeight) {
-            fixedHeight = newFixedHeight;
-            mMediator.setToFixedHeight(fixedHeight);
-        }
 
         // In the case the bottom sheet is unable to set to our desired fixed height, fallback to
         // use of flexible heights.
