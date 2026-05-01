@@ -8,7 +8,14 @@
 
 namespace blink {
 
-XRGraphicsBinding::XRGraphicsBinding(XRSession* session) : session_(session) {}
+XRGraphicsBinding::XRGraphicsBinding(XRSession* session) : session_(session) {
+  session_->AddGraphicsBinding(this);
+}
+
+void XRGraphicsBinding::PreFinalize() {
+  DLOG(ERROR) << __func__;
+  session_->RemoveGraphicsBinding(this);
+}
 
 double XRGraphicsBinding::nativeProjectionScaleFactor() const {
   return session_->NativeFramebufferScale();

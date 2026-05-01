@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_xr_texture_type.h"
 #include "third_party/blink/renderer/modules/webgl/webgl2_rendering_context.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_rendering_context.h"
+#include "third_party/blink/renderer/modules/xr/xr_camera_update_helper.h"
 #include "third_party/blink/renderer/modules/xr/xr_graphics_binding.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/xr_webgl_frame_transport_delegate.h"
@@ -88,6 +89,8 @@ class XRWebGLBinding final : public ScriptWrappable, public XRGraphicsBinding {
   gfx::Rect GetViewportForView(XRProjectionLayer* layer,
                                XRViewData* view) override;
 
+  void OnFrameEnd() override;
+
   WebGLRenderingContextBase* context() const { return webgl_context_.Get(); }
 
   XRFrameTransportDelegate* GetTransportDelegate() override;
@@ -125,6 +128,8 @@ class XRWebGLBinding final : public ScriptWrappable, public XRGraphicsBinding {
 
   Member<WebGLRenderingContextBase> webgl_context_;
   bool webgl2_;
+
+  Member<XRCameraUpdateHelper> camera_helper_;
 
   Member<XRWebGLFrameTransportDelegate> transport_delegate_;
 };

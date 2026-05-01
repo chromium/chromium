@@ -105,6 +105,8 @@ XRWebGLBinding::XRWebGLBinding(XRSession* session,
     : XRGraphicsBinding(session),
       webgl_context_(webgl_context),
       webgl2_(webgl2),
+      camera_helper_(
+          MakeGarbageCollected<XRCameraUpdateHelper>(session, webgl_context_)),
       transport_delegate_(MakeGarbageCollected<XRWebGLFrameTransportDelegate>(
           MakeGarbageCollected<XRWebGLFrameTransportContextImpl>(
               webgl_context_))) {}
@@ -119,6 +121,8 @@ XRWebGLSwapChain* XRWebGLBinding::CreateColorSwapchain(
     V8XRTextureType texture_type,
     V8XRLayerLayout::Enum final_layout,
     bool clear_on_access) {
+  DLOG(ERROR) << __func__ << " clear_on_access=" << clear_on_access
+              << " texture_type=" << std::to_underlying(texture_type.AsEnum());
   XRWebGLSwapChain::Descriptor color_desc = {};
   color_desc.format = FormatForLayerFormat(layer_format);
   color_desc.internal_format = InternalFormatForLayerFormat(layer_format);
@@ -138,9 +142,11 @@ XRWebGLSwapChain* XRWebGLBinding::CreateColorSwapchain(
 
   XRWebGLSwapChain* color_swap_chain;
   if (session()->xr()->frameProvider()->DrawingIntoSharedBuffer()) {
+    DLOG(ERROR) << __func__ << " Shared Image swapchain";
     color_swap_chain = MakeGarbageCollected<XRWebGLSharedImageSwapChain>(
         webgl_context_, color_desc, webgl2_);
   } else {
+    DLOG(ERROR) << __func__ << " Drawing buffer swapchain";
     color_swap_chain = MakeGarbageCollected<XRWebGLDrawingBufferSwapChain>(
         webgl_context_, color_desc, webgl2_);
   }
@@ -223,6 +229,7 @@ XRProjectionLayer* XRWebGLBinding::createProjectionLayer(
   XRWebGLSwapChain* color_swap_chain = CreateColorSwapchain(
       init->colorFormat(), texture_size, init->textureType(), final_layout,
       init->clearOnAccess());
+  DLOG(ERROR) << __func__ << " clearOnAccess=" << init->clearOnAccess();
 
   CHECK_EQ(color_swap_chain->descriptor().is_texture_array, is_texture_array);
   CHECK_EQ(color_swap_chain->descriptor().layers, layers);
@@ -707,8 +714,8 @@ WebGLTexture* XRWebGLBinding::getCameraImage(XRCamera* camera,
     return nullptr;
   }
 
-  // This resource is owned by the XRWebGLLayer, and is freed in OnFrameEnd();
-  return frame_session->renderState()->GetCameraTexture();
+  // This resource is freed in OnFrameEnd.
+  return camera_helper_->GetCameraTexture();
 }
 
 XRWebGLDepthInformation* XRWebGLBinding::getDepthInformation(
@@ -767,6 +774,10 @@ gfx::Rect XRWebGLBinding::GetViewportForView(XRProjectionLayer* layer,
   return gfx::Rect(viewport_offset, 0,
                    viewport_width * view->CurrentViewportScale(),
                    layer->textureHeight() * view->CurrentViewportScale());
+}
+
+void XRWebGLBinding::OnFrameEnd() {
+  camera_helper_->OnFrameEnd();
 }
 
 XRFrameTransportDelegate* XRWebGLBinding::GetTransportDelegate() {
@@ -1046,6 +1057,7 @@ bool XRWebGLBinding::ValidateTextureSize(const XRLayerInit* init,
 
 void XRWebGLBinding::Trace(Visitor* visitor) const {
   visitor->Trace(webgl_context_);
+  visitor->Trace(camera_helper_);
   visitor->Trace(transport_delegate_);
   XRGraphicsBinding::Trace(visitor);
   ScriptWrappable::Trace(visitor);

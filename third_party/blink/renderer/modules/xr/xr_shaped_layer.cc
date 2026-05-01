@@ -18,8 +18,7 @@ XRShapedLayer::XRShapedLayer(const XRLayerInit* init,
       xr_space_(init->space()),
       texture_width_(init->viewPixelWidth()),
       texture_height_(init->viewPixelHeight()),
-      is_static_(init->isStatic()),
-      clear_on_access_(init->clearOnAccess()) {
+      is_static_(init->isStatic()) {
   SetLayout(final_layout);
   SetMipLevels(init->mipLevels());
 }

@@ -67,18 +67,6 @@ class XRWebGLLayer final : public XRLayer, public XrLayerClient {
 
   HTMLCanvasElement* output_canvas() const;
 
-  // Returns WebGLTexture (actually a WebGLUnownedTexture instance)
-  // corresponding to the camera image.
-  // The texture is owned by the XRWebGLLayer and will be freed in OnFrameEnd().
-  // When the texture is deleted by the layer, the returned object will have its
-  // texture name set to 0 to avoid using stale texture names in case the user
-  // code still holds references to this object.
-  // The consumers should not attempt to delete the texture themselves.
-  WebGLTexture* GetCameraTexture();
-
-  void OnFrameStartForCamera();
-  void OnFrameEndForCamera();
-
   void OnFrameStart() override;
   void OnFrameEnd() override;
   void OnResize() override;
@@ -96,12 +84,6 @@ class XRWebGLLayer final : public XRLayer, public XrLayerClient {
       const override;
 
  private:
-  const XRSharedImageData& CameraSharedImage() const;
-
-  void CreateAndBindCameraBufferTexture(
-      const scoped_refptr<gpu::ClientSharedImage>& buffer_shared_image,
-      const gpu::SyncToken& buffer_sync_token);
-
   Member<XRViewport> left_viewport_;
   Member<XRViewport> right_viewport_;
 

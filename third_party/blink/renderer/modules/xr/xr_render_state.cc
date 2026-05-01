@@ -26,112 +26,6 @@ constexpr double kMaxFieldOfView = 3.13;
 constexpr double kDefaultFieldOfView = M_PI * 0.5;
 }  // namespace
 
-XRRenderState::XRCameraUpdateHelper::XRCameraUpdateHelper(
-    WebGLRenderingContextBase* webgl_context)
-    : webgl_context_(webgl_context) {}
-
-WebGLTexture* XRRenderState::XRCameraUpdateHelper::GetCameraTexture() {
-  DVLOG(1) << __func__;
-
-  // We already have a WebGL texture for the camera image - return it:
-  if (camera_image_texture_) {
-    return camera_image_texture_.Get();
-  }
-
-  // We don't have a WebGL texture, and we cannot create it - return null:
-  if (!camera_image_shared_image_texture_) {
-    return nullptr;
-  }
-
-  // We don't have a WebGL texture, but we can create it, so create, store and
-  // return it:
-  camera_image_texture_ = MakeGarbageCollected<WebGLUnownedTexture>(
-      webgl_context_, camera_image_shared_image_texture_->id(), GL_TEXTURE_2D);
-
-  return camera_image_texture_.Get();
-}
-
-void XRRenderState::XRCameraUpdateHelper::OnFrameStart(XRSession* session) {
-  const XRSharedImageData& camera_image_data =
-      session->LayerSharedImageManager().CameraSharedImage();
-
-  if (camera_image_data.shared_image) {
-    DVLOG(3) << __func__ << ": camera_image_data.shared_image->mailbox()"
-             << camera_image_data.shared_image->mailbox().ToDebugString();
-    scoped_refptr<gpu::ClientSharedImage> buffer_shared_image =
-        camera_image_data.shared_image;
-    gpu::SyncToken buffer_sync_token = camera_image_data.sync_token;
-    gpu::gles2::GLES2Interface* gl =
-        webgl_context_->GetDrawingBuffer()->ContextGL();
-
-    DVLOG(3) << __func__
-             << ": buffer_sync_token=" << buffer_sync_token.ToDebugString();
-    camera_image_shared_image_texture_ =
-        buffer_shared_image->CreateGLTexture(gl);
-    DVLOG(3) << __func__ << ": camera_image_shared_image_texture_->id()="
-             << camera_image_shared_image_texture_->id();
-    if (buffer_shared_image) {
-      uint32_t texture_target = buffer_shared_image->GetTextureTarget();
-      camera_image_texture_scoped_access_ =
-          camera_image_shared_image_texture_->BeginAccess(buffer_sync_token,
-                                                          /*readonly=*/true);
-      gl->BindTexture(texture_target,
-                      camera_image_texture_scoped_access_->texture_id());
-    }
-  }
-}
-
-void XRRenderState::XRCameraUpdateHelper::OnFrameEnd(XRSession* session) {
-  // The session might have ended in the middle of the frame. Only perform the
-  // main work of OnFrameEnd if it's still valid. Otherwise, simply ensure the
-  // shared image access is properly ended.
-  if (session->ended()) {
-    if (camera_image_texture_scoped_access_) {
-      gpu::SharedImageTexture::ScopedAccess::EndAccess(
-          std::move(camera_image_texture_scoped_access_));
-      camera_image_shared_image_texture_.reset();
-    }
-    return;
-  }
-
-  if (session->immersive()) {
-    // Need to stop accessing the camera image texture before calling
-    // `SubmitLayer` so that we stop using it before the sync token
-    // that `SubmitLayer` will generate.
-    if (camera_image_shared_image_texture_) {
-      const XRSharedImageData& camera_image_data =
-          session->LayerSharedImageManager().CameraSharedImage();
-
-      // We shouldn't ever have a camera texture if the holder wasn't present:
-      CHECK(camera_image_data.shared_image);
-
-      DVLOG(3) << __func__
-               << ": deleting camera image texture, "
-                  "camera_image_shared_image_texture_->id()="
-               << camera_image_shared_image_texture_->id();
-
-      gpu::SharedImageTexture::ScopedAccess::EndAccess(
-          std::move(camera_image_texture_scoped_access_));
-      camera_image_shared_image_texture_.reset();
-
-      // Notify our WebGLUnownedTexture (created from
-      // camera_image_shared_image_texture_) that we have deleted it. Also,
-      // release the reference since we no longer need it (note that it could
-      // still be kept alive by the JS application, but should be a defunct
-      // object).
-      if (camera_image_texture_) {
-        camera_image_texture_->OnGLDeleteTextures();
-        camera_image_texture_ = nullptr;
-      }
-    }
-  }
-}
-
-void XRRenderState::XRCameraUpdateHelper::Trace(Visitor* visitor) const {
-  visitor->Trace(webgl_context_);
-  visitor->Trace(camera_image_texture_);
-}
-
 XRRenderState::XRRenderState(bool immersive) : immersive_(immersive) {
   if (!immersive_) {
     inline_vertical_fov_ = kDefaultFieldOfView;
@@ -145,15 +39,10 @@ void XRRenderState::Update(const XRRenderStateInit* init) {
   if (init->hasDepthFar()) {
     depth_far_ = std::max(0.0, init->depthFar());
   }
-  camera_helper_ = nullptr;
   if (init->hasBaseLayer()) {
     needs_layers_update_ |= base_layer_ != init->baseLayer();
     base_layer_ = init->baseLayer();
     UpdateLayersState(MakeGarbageCollected<FrozenArray<XRLayer>>());
-    if (base_layer_ && base_layer_->framebuffer()) {
-      camera_helper_ = MakeGarbageCollected<XRCameraUpdateHelper>(
-          base_layer_->GetWebGLContext());
-    }
   }
   if (init->hasLayers()) {
     if (!init->layers() || init->layers()->size() != layers_->size() ||
@@ -207,18 +96,6 @@ XRLayer* XRRenderState::GetFirstLayer() const {
   return nullptr;
 }
 
-WebGLTexture* XRRenderState::GetCameraTexture() {
-  // TODO(https://crbug.com/507508099): This is a temporary patch for a renderer
-  // crash when using an XRProjectionLayer with camera access enabled but the
-  // full suite of layers disabled. Sites using this configuration won't get the
-  // camera image, until this is fixed, but at least they won't crash either.
-  if (!camera_helper_) {
-    return nullptr;
-  }
-
-  return camera_helper_->GetCameraTexture();
-}
-
 HTMLCanvasElement* XRRenderState::output_canvas() const {
   if (base_layer_) {
     return base_layer_->output_canvas();
@@ -251,10 +128,6 @@ bool XRRenderState::HasLayer(XRLayer* layer) const {
 }
 
 void XRRenderState::OnFrameStart() {
-  if (camera_helper_) {
-    camera_helper_->OnFrameStart(base_layer_->session());
-  }
-
   if (base_layer_) {
     base_layer_->OnFrameStart();
   }
@@ -267,10 +140,6 @@ void XRRenderState::OnFrameStart() {
 }
 
 void XRRenderState::OnFrameEnd() {
-  if (camera_helper_) {
-    camera_helper_->OnFrameEnd(base_layer_->session());
-  }
-
   if (base_layer_) {
     base_layer_->OnFrameEnd();
   }
@@ -360,7 +229,6 @@ void XRRenderState::OnTransferComplete(
 void XRRenderState::Trace(Visitor* visitor) const {
   visitor->Trace(base_layer_);
   visitor->Trace(layers_);
-  visitor->Trace(camera_helper_);
   ScriptWrappable::Trace(visitor);
 }
 

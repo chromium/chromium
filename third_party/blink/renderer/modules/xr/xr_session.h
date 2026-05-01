@@ -199,6 +199,9 @@ class XRSession final : public EventTarget,
   void updateRenderState(XRRenderStateInit* render_state_init,
                          ExceptionState& exception_state);
 
+  void AddGraphicsBinding(XRGraphicsBinding* binding);
+  void RemoveGraphicsBinding(XRGraphicsBinding* binding);
+
   std::optional<V8XRDepthUsage> depthUsage(ExceptionState& exception_state);
   std::optional<V8XRDepthDataFormat> depthDataFormat(
       ExceptionState& exception_state);
@@ -649,6 +652,7 @@ class XRSession final : public EventTarget,
   // requestHitTestSourceForTransientInput that are still in-flight.
   HeapHashSet<Member<ScriptPromiseResolverBase>>
       request_hit_test_source_promises_;
+  HeapHashSet<WeakMember<XRGraphicsBinding>> graphics_bindings_;
   HeapVector<Member<XRReferenceSpace>> reference_spaces_;
 
   uint32_t stage_parameters_id_ = 0;

@@ -20,6 +20,8 @@ blink_modules_sources("xr") {
     "xr_bounded_reference_space.h",
     "xr_camera.cc",
     "xr_camera.h",
+    "xr_camera_update_helper.cc",
+    "xr_camera_update_helper.h",
     "xr_canvas_input_provider.cc",
     "xr_canvas_input_provider.h",
     "xr_composition_layer.cc",

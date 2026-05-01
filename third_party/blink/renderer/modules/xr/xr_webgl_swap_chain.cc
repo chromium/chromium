@@ -21,6 +21,8 @@ XRWebGLSwapChain::XRWebGLSwapChain(
 }
 
 void XRWebGLSwapChain::OnTextureQueried() {
+  DLOG(ERROR) << __func__
+              << " clear_on_access=" << descriptor().clear_on_access;
   if (descriptor().clear_on_access) {
     ClearCurrentTexture();
   }
@@ -29,13 +31,16 @@ void XRWebGLSwapChain::OnTextureQueried() {
 // Clears the contents of the current texture to transparent black or 0 (for
 // depth/stencil textures).
 void XRWebGLSwapChain::ClearCurrentTexture() {
+  DLOG(ERROR) << __func__;
   WebGLUnownedTexture* texture = current_texture();
   if (!texture) {
+    DLOG(ERROR) << __func__ << " No texture";
     return;
   }
 
   gpu::gles2::GLES2Interface* gl = context()->ContextGL();
   if (!gl) {
+    DLOG(ERROR) << __func__ << " NO Gl";
     return;
   }
 
@@ -44,28 +49,35 @@ void XRWebGLSwapChain::ClearCurrentTexture() {
 
   GLbitfield clear_bits = 0;
   if (attachment == GL_COLOR_ATTACHMENT0) {
+    DLOG(ERROR) << __func__ << " Performing color clear";
     clear_bits |= GL_COLOR_BUFFER_BIT;
     gl->ColorMask(true, true, true, true);
     gl->ClearColor(0, 0, 0, 0);
   } else if (attachment == GL_DEPTH_ATTACHMENT) {
+    DLOG(ERROR) << __func__ << " Performing depth clear";
     clear_bits |= GL_DEPTH_BUFFER_BIT;
     gl->DepthMask(true);
     gl->ClearDepthf(1.0f);
   } else if (attachment == GL_STENCIL_ATTACHMENT) {
+    DLOG(ERROR) << __func__ << " Performing stencil clear";
     clear_bits |= GL_STENCIL_BUFFER_BIT;
     gl->StencilMaskSeparate(GL_FRONT, true);
     gl->ClearStencil(0);
+  } else {
+    DLOG(ERROR) << __func__ << " Unknown Attachment, not setting clear bits";
   }
 
   gl->Disable(GL_SCISSOR_TEST);
 
   if (descriptor_.is_texture_array) {
+    DLOG(ERROR) << __func__ << " Performing texture array clear";
     for (uint32_t i = 0; i < descriptor_.layers; ++i) {
       gl->FramebufferTextureLayer(GL_FRAMEBUFFER, attachment, texture->Object(),
                                   0, i);
       gl->Clear(clear_bits);
     }
   } else if (IsCube()) {
+    DLOG(ERROR) << __func__ << " Performing cube clear";
     for (uint32_t i = 0; i < 6; ++i) {
       gl->FramebufferTexture2D(GL_FRAMEBUFFER, attachment,
                                GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
@@ -73,10 +85,12 @@ void XRWebGLSwapChain::ClearCurrentTexture() {
       gl->Clear(clear_bits);
     }
   } else {
+    DLOG(ERROR) << __func__ << " Performing default clear";
     gl->FramebufferTexture2D(GL_FRAMEBUFFER, attachment, GL_TEXTURE_2D,
                              texture->Object(), 0);
     gl->Clear(clear_bits);
   }
+  gl->Flush();
 
   // WebGLRenderingContextBase inherits from DrawingBuffer::Client, but makes
   // all the methods private. Downcasting allows us to access them.

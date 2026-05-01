@@ -584,6 +584,14 @@ void XRSession::updateRenderState(XRRenderStateInit* init,
   MaybeRequestFrame();
 }
 
+void XRSession::AddGraphicsBinding(XRGraphicsBinding* binding) {
+  graphics_bindings_.insert(binding);
+}
+
+void XRSession::RemoveGraphicsBinding(XRGraphicsBinding* binding) {
+  graphics_bindings_.erase(binding);
+}
+
 std::optional<V8XRDepthUsage> XRSession::depthUsage(
     ExceptionState& exception_state) {
   if (!device_config_->depth_configuration) {
@@ -2318,6 +2326,11 @@ void XRSession::OnFrame(double timestamp,
     // Calling OnFrameEnd() on the render state will trigger each layer to
     // submit its drawing data to be cached by the frame provider.
     render_state_->OnFrameEnd();
+
+    for (auto& binding : graphics_bindings_) {
+      binding->OnFrameEnd();
+    }
+
     // Submit frame with cached layers data.
     xr_->frameProvider()->SubmitFrame(transport_delegate);
 
@@ -2737,6 +2750,7 @@ void XRSession::Trace(Visitor* visitor) const {
   visitor->Trace(callback_collection_);
   visitor->Trace(create_anchor_promises_);
   visitor->Trace(request_hit_test_source_promises_);
+  visitor->Trace(graphics_bindings_);
   visitor->Trace(reference_spaces_);
   visitor->Trace(mesh_manager_);
   visitor->Trace(plane_manager_);

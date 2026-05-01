@@ -326,10 +326,6 @@ void XRWebGLLayer::DoneWithSharedBuffer() {
   }
 }
 
-const XRSharedImageData& XRWebGLLayer::CameraSharedImage() const {
-  return session()->LayerSharedImageManager().CameraSharedImage();
-}
-
 void XRWebGLLayer::OnFrameStart() {
   if (framebuffer_) {
     framebuffer_->MarkOpaqueBufferComplete(true);
