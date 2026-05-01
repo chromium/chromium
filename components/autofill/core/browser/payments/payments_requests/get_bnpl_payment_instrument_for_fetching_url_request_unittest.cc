@@ -202,6 +202,18 @@ TEST_F(GetBnplPaymentInstrumentForFetchingUrlRequestTest,
   EXPECT_FALSE(request_->IsResponseComplete());
 }
 
+TEST_F(GetBnplPaymentInstrumentForFetchingUrlRequestTest,
+       IsResponseComplete_ParseResponseCalled_NonHttpRedirectUrl) {
+  Dict response = GetFullResponse();
+  response.SetByDottedPath(
+      "buy_now_pay_later_info.get_redirect_url_response_"
+      "info.redirect_url",
+      "chrome://version/");
+  request_->ParseResponse(response);
+
+  EXPECT_FALSE(request_->IsResponseComplete());
+}
+
 TEST_F(GetBnplPaymentInstrumentForFetchingUrlRequestTest, RespondToDelegate) {
   Dict response_dict = Dict().Set(
       "buy_now_pay_later_info",
