@@ -31,22 +31,36 @@ crbug.com/446717936 external/wpt/ai/proofreader/proofreader-abort.tentative.http
 crbug.com/446717936 external/wpt/ai/proofreader/proofreader-proofread.tentative.https.window.html [ Skip ]
 
 # These tests fail audio input availability preconditions on mac-x64.
-crbug.com/460555196 [ mac x86_64 ] external/wpt/ai/language-model/language-model-availability-available-multimodal.tentative.https.window.html [ Failure ]
-crbug.com/460555196 [ mac x86_64 ] external/wpt/ai/language-model/language-model-create-multimodal.tentative.https.window.html [ Failure Pass ]
-crbug.com/460555196 [ mac x86_64 ] external/wpt/ai/language-model/language-model-prompt-multimodal-audio.tentative.https.window.html [ Failure Pass ]
+crbug.com/460555196 [ mac x86_64 ] external/wpt/ai/language-model/prompt/multimodal/availability.tentative.https.window.html [ Failure ]
+crbug.com/460555196 [ mac x86_64 ] external/wpt/ai/language-model/prompt/multimodal/create.tentative.https.window.html [ Failure Pass ]
+crbug.com/460555196 [ mac x86_64 ] external/wpt/ai/language-model/prompt/multimodal/audio-input.tentative.https.window.html [ Failure Pass ]
 
 # These tests frequently time out or fail flakily on mac-x64 and mac-arm64.
-crbug.com/459864801 [ mac ] external/wpt/ai/language-model/language-model-prompt-multimodal-image.tentative.https.window.html [ Timeout Pass Failure ]
-crbug.com/459864801 [ mac ] external/wpt/ai/language-model/language-model-prompt-streaming.tentative.https.window.html [ Timeout Pass ]
-crbug.com/459864801 [ mac ] external/wpt/ai/language-model/language-model-prompt.tentative.https.window.html [ Timeout Pass ]
+crbug.com/459864801 [ mac ] external/wpt/ai/language-model/prompt/multimodal/image/initial-prompt.tentative.https.window.html [ Timeout Pass Failure ]
+crbug.com/459864801 [ mac ] external/wpt/ai/language-model/prompt/streaming/prompt-streaming.tentative.https.window.html [ Timeout Pass ]
+crbug.com/459864801 [ mac ] external/wpt/ai/language-model/prompt/prompt.tentative.https.window.html [ Timeout Pass ]
+
+# The overflow test times out because filling the context window takes too long on CPU fallback.
+external/wpt/ai/language-model/prompt/context/overflow.tentative.https.window.html [ Timeout ]
 
 # These tests frequently time out on mac-x64.
-crbug.com/460799715 [ mac x86_64 ] external/wpt/ai/language-model/language-model-clone.tentative.https.window.html [ Timeout Pass ]
-crbug.com/460799715 [ mac x86_64 ] external/wpt/ai/language-model/language-model-prompt-empty-input.tentative.https.window.html [ Timeout Pass ]
-crbug.com/460799715 [ mac x86_64 ] external/wpt/ai/language-model/language-model-prompt-multimodal-video.tentative.https.window.html [ Timeout Pass ]
-crbug.com/460799715 [ mac x86_64 ] external/wpt/ai/language-model/language-model-prompt-multimodal.tentative.https.window.html [ Timeout Pass ]
-crbug.com/460799715 [ mac x86_64 ] external/wpt/ai/language-model/language-model-quota-exceeded.tentative.https.window.html [ Timeout Pass ]
-crbug.com/460799715 [ mac x86_64 ] external/wpt/ai/language-model/language-model-call-response-json-schema.tentative.https.window.html [ Timeout Pass ]
+crbug.com/460799715 [ mac x86_64 ] external/wpt/ai/language-model/prompt/empty-inputs/empty-array-input.tentative.https.window.html [ Timeout Pass ]
+crbug.com/460799715 [ mac x86_64 ] external/wpt/ai/language-model/prompt/empty-inputs/empty-object-input.tentative.https.window.html [ Timeout Pass ]
+crbug.com/460799715 [ mac x86_64 ] external/wpt/ai/language-model/prompt/empty-inputs/empty-sequence-input.tentative.https.window.html [ Timeout Pass ]
+crbug.com/460799715 [ mac x86_64 ] external/wpt/ai/language-model/prompt/empty-inputs/empty-string-input.tentative.https.window.html [ Timeout Pass ]
+crbug.com/460799715 [ mac x86_64 ] external/wpt/ai/language-model/prompt/empty-inputs/null-input.tentative.https.window.html [ Timeout Pass ]
+crbug.com/460799715 [ mac x86_64 ] external/wpt/ai/language-model/prompt/empty-inputs/sequence-with-empty-string-input.tentative.https.window.html [ Timeout Pass ]
+crbug.com/460799715 [ mac x86_64 ] external/wpt/ai/language-model/prompt/empty-inputs/undefined-input.tentative.https.window.html [ Timeout Pass ]
+
+crbug.com/460799715 [ mac x86_64 ] external/wpt/ai/language-model/response-constraint/json-schema/circular-references-rejection.tentative.https.window.html [ Timeout Pass ]
+crbug.com/460799715 [ mac x86_64 ] external/wpt/ai/language-model/response-constraint/json-schema/invalid-type-rejection.tentative.https.window.html [ Timeout Pass ]
+crbug.com/460799715 [ mac x86_64 ] external/wpt/ai/language-model/response-constraint/json-schema/prefix-deviation-rejection.tentative.https.window.html [ Timeout Pass ]
+crbug.com/460799715 [ mac x86_64 ] external/wpt/ai/language-model/response-constraint/json-schema/response-schema-omitted-from-input.tentative.https.window.html [ Timeout Pass ]
+crbug.com/460799715 [ mac x86_64 ] external/wpt/ai/language-model/response-constraint/json-schema/valid-schema-success.tentative.https.window.html [ Timeout Pass ]
+crbug.com/460799715 [ mac x86_64 ] external/wpt/ai/language-model/response-constraint/json-schema/valid-schema-with-prefix-success.tentative.https.window.html [ Timeout Pass ]
+
+crbug.com/460799715 [ mac x86_64 ] external/wpt/ai/language-model/prompt/multimodal/video/html-video-element.tentative.https.window.html [ Timeout Pass ]
+crbug.com/460799715 [ mac x86_64 ] external/wpt/ai/language-model/prompt/multimodal/prompt-multimodal.tentative.https.window.html [ Timeout Pass ]
 crbug.com/460799715 [ mac x86_64 ] external/wpt/ai/rewriter/rewriter-abort.tentative.https.window.html [ Timeout Pass ]
 crbug.com/460799715 [ mac x86_64 ] external/wpt/ai/summarizer/summarizer-abort.tentative.https.window.html [ Timeout Pass ]
 crbug.com/460799715 [ mac x86_64 ] external/wpt/ai/summarizer/summarizer-create-available.tentative.https.window.html [ Timeout Pass ]

@@ -1312,7 +1312,12 @@ crbug.com/379233932 [ Win11-arm64 ] external/wpt/ai/translator/* [ Skip Timeout 
 crbug.com/479913865 external/wpt/ai/translator/translator-locale.https.window.html [ Skip Timeout ]
 
 # Built-In AI echo backends do not support response constraints or prefixes
-crbug.com/461860505 external/wpt/ai/language-model/language-model-response-json-schema.tentative.https.window.html [ Failure ]
+crbug.com/461860505 external/wpt/ai/language-model/response-constraint/json-schema/valid-schema-success.tentative.https.window.html [ Failure ]
+crbug.com/461860505 external/wpt/ai/language-model/response-constraint/json-schema/valid-schema-with-prefix-success.tentative.https.window.html [ Failure ]
+crbug.com/461860505 external/wpt/ai/language-model/response-constraint/json-schema/circular-references-rejection.tentative.https.window.html [ Failure ]
+crbug.com/461860505 external/wpt/ai/language-model/response-constraint/json-schema/invalid-type-rejection.tentative.https.window.html [ Failure ]
+crbug.com/461860505 external/wpt/ai/language-model/response-constraint/json-schema/prefix-deviation-rejection.tentative.https.window.html [ Failure ]
+crbug.com/461860505 external/wpt/ai/language-model/response-constraint/json-schema/response-schema-omitted-from-input.tentative.https.window.html [ Failure ]
 
 # Disabled due to misconfigured PHP on win11-arm64 bots.
 crbug.com/433756870 [ Win11-arm64 ] http/tests/inspector-protocol/fetch/compressed-response-body.js [ Failure ]

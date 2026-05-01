@@ -1,6 +1,6 @@
 // META: title=Language Model Prompt Context Destroyed
 // META: script=/resources/testdriver.js
-// META: script=../resources/util.js
+// META: script=../../../resources/util.js
 // META: timeout=long
 
 'use strict';
