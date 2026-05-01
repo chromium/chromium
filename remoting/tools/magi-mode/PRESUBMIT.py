@@ -9,6 +9,7 @@ markdown documentation and persona cheat sheets.
 """
 
 import collections
+import os
 import re
 
 # Regex for tokens exempt from the 80-character line limit.
@@ -54,7 +55,7 @@ def CheckMarkdownFiles(input_api, output_api):
 
     # 2. Identify all markdown files in the directory for reachability.
     all_markdown_files = set()
-    for root, _, files in input_api.os.walk(magi_dir):
+    for root, _, files in os.walk(magi_dir):
         for file in files:
             if file.endswith('.md'):
                 abs_path = input_api.os_path.normpath(
