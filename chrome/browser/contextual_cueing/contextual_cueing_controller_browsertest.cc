@@ -39,7 +39,11 @@
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar.h"
+#include "components/optimization_guide/core/feature_registry/feature_registration.h"
+#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
+#include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/optimization_guide/proto/features/contextual_cueing.pb.h"
+#include "components/prefs/pref_service.h"
 #include "components/sync/test/test_sync_service.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/test/browser_test.h"
@@ -714,6 +718,54 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
   histogram_tester.ExpectUniqueSample("ContextualCueing.V2.Decision",
                                       ContextualCueingDecision::kInfobarVisible,
                                       1);
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest, UserOptedOut) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("https://www.activetab.com/abc"),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
+  PrefService* prefs = browser()->profile()->GetPrefs();
+  prefs->SetInteger(
+      optimization_guide::prefs::GetSettingEnabledPrefName(
+          optimization_guide::UserVisibleFeatureKey::kContextualCueing),
+      static_cast<int>(
+          optimization_guide::prefs::FeatureOptInState::kDisabled));
+
+  base::HistogramTester histogram_tester;
+  SeedExecutionResult(MakeCompleteResponse());
+  SimulateFilterPassed();
+
+  optimization_guide::RetryForHistogramUntilCountReached(
+      &histogram_tester, "ContextualCueing.V2.Decision", 1);
+  histogram_tester.ExpectUniqueSample("ContextualCueing.V2.Decision",
+                                      ContextualCueingDecision::kUserOptedOut,
+                                      1);
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
+                       DisabledByEnterprisePolicy) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("https://www.activetab.com/abc"),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
+  PrefService* prefs = browser()->profile()->GetPrefs();
+  prefs->SetInteger(
+      optimization_guide::prefs::kContextualCueingEnterprisePolicyAllowed,
+      static_cast<int>(optimization_guide::model_execution::prefs::
+                           ModelExecutionEnterprisePolicyValue::kDisable));
+
+  base::HistogramTester histogram_tester;
+  SeedExecutionResult(MakeCompleteResponse());
+  SimulateFilterPassed();
+
+  optimization_guide::RetryForHistogramUntilCountReached(
+      &histogram_tester, "ContextualCueing.V2.Decision", 1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualCueing.V2.Decision",
+      ContextualCueingDecision::kDisabledByEnterprisePolicy, 1);
 }
 
 // TODO(crbug.com/503910711): Add a test for hiding on navigation

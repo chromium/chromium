@@ -64,7 +64,11 @@ enum class ContextualCueingDecision {
   kNoEligibleCueSurfaces = 23,
   // The cue couldn't be shown because an infobar is visible.
   kInfobarVisible = 24,
-  kMaxValue = kInfobarVisible,
+  // The cue couldn't be shown because the user has opted out.
+  kUserOptedOut = 25,
+  // The cue couldn't be shown because it is disabled by enterprise policy.
+  kDisabledByEnterprisePolicy = 26,
+  kMaxValue = kDisabledByEnterprisePolicy,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/contextual_cueing/enums.xml:ContextualCueingDecision)
 

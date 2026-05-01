@@ -12,6 +12,7 @@
 #include "chrome/browser/contextual_cueing/contextual_cueing_service_factory.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
@@ -78,12 +79,8 @@ void ContextualCueingMenuModel::ExecuteCommand(int command_id,
     case kContextualCueingOpenSettingsCommand: {
       RecordContextualCueingInteraction(
           ContextualCueingInteraction::kCueSuggestionsSettings);
-#if !BUILDFLAG(IS_ANDROID)
-      chrome::ScopedTabbedBrowserDisplayer browser_displayer(profile_);
-      // TODO: b/502761784 - Navigate this to exact settings page once
-      // implemented.
-      chrome::ShowSettings(browser_displayer.browser());
-#endif
+      chrome::ShowSettingsSubPageForProfile(profile_,
+                                            chrome::kSuggestionsSubPage);
       break;
     }
     default:

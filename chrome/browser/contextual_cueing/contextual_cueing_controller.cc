@@ -39,6 +39,7 @@
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "components/google/core/common/google_util.h"
 #include "components/infobars/content/content_infobar_manager.h"
+#include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/optimization_guide/core/optimization_guide_common.mojom.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/features/contextual_cueing.pb.h"
@@ -414,6 +415,28 @@ bool ContextualCueingController::IsAllowedToShowCue() {
           syncer::UserSelectableType::kHistory)) {
     // If history sync is off, we cannot proceed to generate or show the cue.
     RecordContextualCueingDecision(ContextualCueingDecision::kHistorySyncOff);
+    return false;
+  }
+
+  // Check if the user has opted out of contextual cues.
+  PrefService* pref_service =
+      browser_window_interface_->GetProfile()->GetPrefs();
+  optimization_guide::prefs::FeatureOptInState opt_in_state = static_cast<
+      optimization_guide::prefs::FeatureOptInState>(pref_service->GetInteger(
+      optimization_guide::prefs::GetSettingEnabledPrefName(
+          optimization_guide::UserVisibleFeatureKey::kContextualCueing)));
+  if (opt_in_state == optimization_guide::prefs::FeatureOptInState::kDisabled) {
+    RecordContextualCueingDecision(ContextualCueingDecision::kUserOptedOut);
+    return false;
+  }
+
+  // Check enterprise policy.
+  if (pref_service->GetInteger(optimization_guide::prefs::
+                                   kContextualCueingEnterprisePolicyAllowed) ==
+      static_cast<int>(optimization_guide::model_execution::prefs::
+                           ModelExecutionEnterprisePolicyValue::kDisable)) {
+    RecordContextualCueingDecision(
+        ContextualCueingDecision::kDisabledByEnterprisePolicy);
     return false;
   }
 
