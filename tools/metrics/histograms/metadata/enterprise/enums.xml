@@ -2421,7 +2421,7 @@ chromium-metrics-reviews@google.com.
   <int value="1440" label="MetricsReportingLevel"/>
   <int value="1441" label="DeviceMetricsReportingLevel"/>
   <int value="1442" label="CpuPerformanceTierOverride"/>
-  <int value="1443" label="ForceForegroundPriorityForOrigins"/>
+  <int value="1443" label="ForceForegroundPriorityForUrls"/>
   <int value="1444" label="DataUrlInWebWorkerOpaqueOriginEnabled"/>
   <int value="1445" label="KioskPinchToZoomAllowed"/>
   <int value="1446" label="SecuritySignalsClientCertificatesSelectors"/>

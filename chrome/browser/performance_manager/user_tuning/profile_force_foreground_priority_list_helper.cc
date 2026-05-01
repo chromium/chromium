@@ -6,7 +6,7 @@
 
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/performance_manager/execution_context_priority/force_foreground_voter_for_origins.h"
+#include "components/performance_manager/execution_context_priority/force_foreground_voter_for_urls.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/prefs/pref_service.h"
@@ -22,19 +22,19 @@ class ProfileForceForegroundPriorityListHelperDelegateImpl
 
   void SetPatterns(const std::string& browser_context_id,
                    const base::ListValue& patterns) override {
-    auto* voter_for_origins =
-        execution_context_priority::ForceForegroundVoterForOrigins::
-            GetFromGraph(PerformanceManager::GetGraph());
-    CHECK(voter_for_origins);
-    voter_for_origins->SetPatternsForProfile(browser_context_id, patterns);
+    auto* voter_for_urls =
+        execution_context_priority::ForceForegroundVoterForUrls::GetFromGraph(
+            PerformanceManager::GetGraph());
+    CHECK(voter_for_urls);
+    voter_for_urls->SetPatternsForProfile(browser_context_id, patterns);
   }
 
   void ClearPatterns(const std::string& browser_context_id) override {
-    auto* voter_for_origins =
-        execution_context_priority::ForceForegroundVoterForOrigins::
-            GetFromGraph(PerformanceManager::GetGraph());
-    CHECK(voter_for_origins);
-    voter_for_origins->ClearPatternsForProfile(browser_context_id);
+    auto* voter_for_urls =
+        execution_context_priority::ForceForegroundVoterForUrls::GetFromGraph(
+            PerformanceManager::GetGraph());
+    CHECK(voter_for_urls);
+    voter_for_urls->ClearPatternsForProfile(browser_context_id);
   }
 };
 
@@ -50,8 +50,7 @@ ProfileForceForegroundPriorityListHelper::
   pref_change_registrar_.Init(pref_service);
 
   pref_change_registrar_.Add(
-      performance_manager::user_tuning::prefs::
-          kForceForegroundPriorityForOrigins,
+      performance_manager::user_tuning::prefs::kForceForegroundPriorityForUrls,
       base::BindRepeating(
           &ProfileForceForegroundPriorityListHelper::
               ProfileForceForegroundPriorityTracker::OnPrefChanged,
@@ -68,17 +67,15 @@ ProfileForceForegroundPriorityListHelper::
 
 void ProfileForceForegroundPriorityListHelper::
     ProfileForceForegroundPriorityTracker::OnPrefChanged() {
-  const base::ListValue& origins_value =
-      pref_change_registrar_.prefs()->GetList(
-          performance_manager::user_tuning::prefs::
-              kForceForegroundPriorityForOrigins);
+  const base::ListValue& urls_value = pref_change_registrar_.prefs()->GetList(
+      performance_manager::user_tuning::prefs::kForceForegroundPriorityForUrls);
 
-  if (last_origins_value_ == origins_value) {
+  if (last_urls_value_ == urls_value) {
     return;
   }
-  last_origins_value_ = origins_value.Clone();
+  last_urls_value_ = urls_value.Clone();
 
-  delegate_->SetPatterns(browser_context_id_, origins_value);
+  delegate_->SetPatterns(browser_context_id_, urls_value);
 }
 
 ProfileForceForegroundPriorityListHelper::

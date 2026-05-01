@@ -7,12 +7,12 @@
       "chromeos"
     ],
     "simple_policy_pref_mapping_test": {
-      "pref_name": "performance_tuning.force_foreground_priority_for_origins",
+      "pref_name": "performance_tuning.force_foreground_priority_for_urls",
       "pref_location": "user_profile",
       "default_value": [],
       "values_to_test": [
         [
-          "https://www.example.com",
+          "https://www.example.com/path?query=val",
           "[*.]example.edu"
         ],
         []

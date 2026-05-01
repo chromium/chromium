@@ -1441,7 +1441,7 @@ policies:
   1440: MetricsReportingLevel
   1441: DeviceMetricsReportingLevel
   1442: CpuPerformanceTierOverride
-  1443: ForceForegroundPriorityForOrigins
+  1443: ForceForegroundPriorityForUrls
   1444: DataUrlInWebWorkerOpaqueOriginEnabled
   1445: KioskPinchToZoomAllowed
   1446: SecuritySignalsClientCertificatesSelectors

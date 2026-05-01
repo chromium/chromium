@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/performance_manager/execution_context_priority/force_foreground_voter_for_origins.h"
+#include "components/performance_manager/execution_context_priority/force_foreground_voter_for_urls.h"
 
 #include <memory>
 #include <string>
@@ -32,21 +32,21 @@ namespace {
 
 const char kBrowserContextId[] = "browser_context_id";
 
-class ForceForegroundVoterForOriginsTest : public GraphTestHarness {
+class ForceForegroundVoterForUrlsTest : public GraphTestHarness {
  public:
   using Super = GraphTestHarness;
 
-  ForceForegroundVoterForOriginsTest() = default;
-  ~ForceForegroundVoterForOriginsTest() override = default;
+  ForceForegroundVoterForUrlsTest() = default;
+  ~ForceForegroundVoterForUrlsTest() override = default;
 
-  ForceForegroundVoterForOriginsTest(
-      const ForceForegroundVoterForOriginsTest&) = delete;
-  ForceForegroundVoterForOriginsTest& operator=(
-      const ForceForegroundVoterForOriginsTest&) = delete;
+  ForceForegroundVoterForUrlsTest(const ForceForegroundVoterForUrlsTest&) =
+      delete;
+  ForceForegroundVoterForUrlsTest& operator=(
+      const ForceForegroundVoterForUrlsTest&) = delete;
 
   void SetUp() override {
     Super::SetUp();
-    voter_ = std::make_unique<ForceForegroundVoterForOrigins>();
+    voter_ = std::make_unique<ForceForegroundVoterForUrls>();
     voter_->InitializeOnGraph(graph(), observer_.BuildVotingChannel());
   }
 
@@ -69,12 +69,12 @@ class ForceForegroundVoterForOriginsTest : public GraphTestHarness {
   VoterId voter_id() const { return voter_->voter_id(); }
 
   DummyVoteObserver observer_;
-  std::unique_ptr<ForceForegroundVoterForOrigins> voter_;
+  std::unique_ptr<ForceForegroundVoterForUrls> voter_;
 };
 
 }  // namespace
 
-TEST_F(ForceForegroundVoterForOriginsTest, MatchingUrl) {
+TEST_F(ForceForegroundVoterForUrlsTest, MatchingUrl) {
   SetPatterns(kBrowserContextId, {"example.com"});
 
   auto process = CreateNode<ProcessNodeImpl>();
@@ -93,7 +93,7 @@ TEST_F(ForceForegroundVoterForOriginsTest, MatchingUrl) {
   EXPECT_TRUE(observer_.HasVote(
       voter_id(), execution_context::ExecutionContext::From(frame.get()),
       base::Process::Priority::kUserBlocking,
-      ForceForegroundVoterForOrigins::kForceForegroundReason));
+      ForceForegroundVoterForUrls::kForceForegroundReason));
 
   // URL no longer matches.
   frame->OnNavigationCommitted(GURL("https://other.com/"),
@@ -103,7 +103,7 @@ TEST_F(ForceForegroundVoterForOriginsTest, MatchingUrl) {
   EXPECT_EQ(observer_.GetVoteCount(), 0u);
 }
 
-TEST_F(ForceForegroundVoterForOriginsTest, InitialUrlMatch) {
+TEST_F(ForceForegroundVoterForUrlsTest, InitialUrlMatch) {
   SetPatterns(kBrowserContextId, {"example.com"});
 
   auto process = CreateNode<ProcessNodeImpl>();
@@ -121,10 +121,10 @@ TEST_F(ForceForegroundVoterForOriginsTest, InitialUrlMatch) {
   EXPECT_TRUE(observer_.HasVote(
       voter_id(), execution_context::ExecutionContext::From(frame.get()),
       base::Process::Priority::kUserBlocking,
-      ForceForegroundVoterForOrigins::kForceForegroundReason));
+      ForceForegroundVoterForUrls::kForceForegroundReason));
 }
 
-TEST_F(ForceForegroundVoterForOriginsTest, WorkerMatchingUrl) {
+TEST_F(ForceForegroundVoterForUrlsTest, WorkerMatchingUrl) {
   SetPatterns(kBrowserContextId, {"example.com"});
 
   auto process = CreateNode<ProcessNodeImpl>();
@@ -140,10 +140,10 @@ TEST_F(ForceForegroundVoterForOriginsTest, WorkerMatchingUrl) {
   EXPECT_TRUE(observer_.HasVote(
       voter_id(), execution_context::ExecutionContext::From(worker.get()),
       base::Process::Priority::kUserBlocking,
-      ForceForegroundVoterForOrigins::kForceForegroundReason));
+      ForceForegroundVoterForUrls::kForceForegroundReason));
 }
 
-TEST_F(ForceForegroundVoterForOriginsTest, MultipleProfiles) {
+TEST_F(ForceForegroundVoterForUrlsTest, MultipleProfiles) {
   const char kProfile1[] = "profile1";
   const char kProfile2[] = "profile2";
 
@@ -172,13 +172,13 @@ TEST_F(ForceForegroundVoterForOriginsTest, MultipleProfiles) {
   EXPECT_TRUE(observer_.HasVote(
       voter_id(), execution_context::ExecutionContext::From(frame1.get()),
       base::Process::Priority::kUserBlocking,
-      ForceForegroundVoterForOrigins::kForceForegroundReason));
+      ForceForegroundVoterForUrls::kForceForegroundReason));
 
   // frame2 matches its profile patterns.
   EXPECT_TRUE(observer_.HasVote(
       voter_id(), execution_context::ExecutionContext::From(frame2.get()),
       base::Process::Priority::kUserBlocking,
-      ForceForegroundVoterForOrigins::kForceForegroundReason));
+      ForceForegroundVoterForUrls::kForceForegroundReason));
 
   // Swap URLs: frame1 should no longer match (it's in profile1, but URL matches
   // profile2 patterns).
@@ -190,10 +190,10 @@ TEST_F(ForceForegroundVoterForOriginsTest, MultipleProfiles) {
   EXPECT_FALSE(observer_.HasVote(
       voter_id(), execution_context::ExecutionContext::From(frame1.get()),
       base::Process::Priority::kUserBlocking,
-      ForceForegroundVoterForOrigins::kForceForegroundReason));
+      ForceForegroundVoterForUrls::kForceForegroundReason));
 }
 
-TEST_F(ForceForegroundVoterForOriginsTest, OriginOnlyMatching) {
+TEST_F(ForceForegroundVoterForUrlsTest, FullUrlMatching) {
   // Pattern with a path.
   SetPatterns(kBrowserContextId, {"example.com/path"});
 
@@ -201,8 +201,16 @@ TEST_F(ForceForegroundVoterForOriginsTest, OriginOnlyMatching) {
   auto page = CreateNode<PageNodeImpl>(nullptr, kBrowserContextId);
   auto frame = CreateFrameNodeAutoId(process.get(), page.get());
 
-  // Should match even with a different path.
+  // Should NOT match with a different path.
   frame->OnNavigationCommitted(GURL("https://example.com/other"),
+                               url::Origin::Create(GURL("https://example.com")),
+                               /*same_document=*/false,
+                               /*is_served_from_back_forward_cache=*/false);
+
+  EXPECT_EQ(observer_.GetVoteCount(), 0u);
+
+  // Should match when path matches.
+  frame->OnNavigationCommitted(GURL("https://example.com/path"),
                                url::Origin::Create(GURL("https://example.com")),
                                /*same_document=*/false,
                                /*is_served_from_back_forward_cache=*/false);

@@ -15,7 +15,7 @@
 #include "components/performance_manager/execution_context_priority/closing_page_voter.h"
 #include "components/performance_manager/execution_context_priority/extension_service_worker_voter.h"
 #include "components/performance_manager/execution_context_priority/force_foreground_voter.h"
-#include "components/performance_manager/execution_context_priority/force_foreground_voter_for_origins.h"
+#include "components/performance_manager/execution_context_priority/force_foreground_voter_for_urls.h"
 #include "components/performance_manager/execution_context_priority/frame_audible_voter.h"
 #include "components/performance_manager/execution_context_priority/frame_capturing_media_stream_voter.h"
 #include "components/performance_manager/execution_context_priority/frame_visibility_voter.h"
@@ -61,7 +61,7 @@ void AddForceForegroundVoter(
         ->AddPriorityVoter<execution_context_priority::ForceForegroundVoter>();
   } else {
     priority_voting_system->AddPriorityVoter<
-        execution_context_priority::ForceForegroundVoterForOrigins>();
+        execution_context_priority::ForceForegroundVoterForUrls>();
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 }

@@ -2677,9 +2677,9 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
   handlers->AddHandler(
       std::make_unique<performance_manager::MemorySaverPolicyHandler>());
   handlers->AddHandler(std::make_unique<URLSchemeListPolicyHandler>(
-      key::kForceForegroundPriorityForOrigins,
+      key::kForceForegroundPriorityForUrls,
       performance_manager::user_tuning::prefs::
-          kForceForegroundPriorityForOrigins));
+          kForceForegroundPriorityForUrls));
   // Note: This needs to be created after `DefaultSearchPolicyHandler`.
 
   handlers->AddHandler(

@@ -40,7 +40,7 @@ class ProfileForceForegroundPriorityListHelperTest : public ::testing::Test {
   void RegisterPrefs(TestingPrefServiceSimple* prefs) {
     prefs->registry()->RegisterListPref(
         performance_manager::user_tuning::prefs::
-            kForceForegroundPriorityForOrigins);
+            kForceForegroundPriorityForUrls);
   }
 
  protected:
@@ -65,7 +65,7 @@ TEST_F(ProfileForceForegroundPriorityListHelperTest, OriginsPref) {
   EXPECT_CALL(*delegate_,
               SetPatterns("", ::testing::Property(&base::ListValue::size, 1)));
   prefs.SetList(performance_manager::user_tuning::prefs::
-                    kForceForegroundPriorityForOrigins,
+                    kForceForegroundPriorityForUrls,
                 patterns.Clone());
 
   // Removing profile should clear patterns.

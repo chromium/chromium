@@ -20,7 +20,7 @@ class PrefService;
 namespace performance_manager::user_tuning {
 
 // This class observes changes to each Profile's Force Foreground Priority
-// preferences, and updates the ForceForegroundVoterForOrigins accordingly.
+// preferences, and updates the ForceForegroundVoterForUrls accordingly.
 class ProfileForceForegroundPriorityListHelper {
  public:
   class Delegate {
@@ -64,7 +64,7 @@ class ProfileForceForegroundPriorityListHelper {
     // The last value of the preference. This is used to deduplicate updates. It
     // is an optional so that the first update is always sent to the delegate,
     // even if the preference is currently an empty list.
-    std::optional<base::ListValue> last_origins_value_;
+    std::optional<base::ListValue> last_urls_value_;
   };
 
   std::unique_ptr<Delegate> delegate_;

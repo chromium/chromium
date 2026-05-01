@@ -85,9 +85,9 @@ inline constexpr char kManagedTabDiscardingExceptions[] =
 inline constexpr char kForceForegroundPriorityForAllTabs[] =
     "performance_tuning.force_foreground_priority_for_all_tabs";
 
-// The list of origins that should be forced to foreground priority.
-inline constexpr char kForceForegroundPriorityForOrigins[] =
-    "performance_tuning.force_foreground_priority_for_origins";
+// The list of URLs that should be forced to foreground priority.
+inline constexpr char kForceForegroundPriorityForUrls[] =
+    "performance_tuning.force_foreground_priority_for_urls";
 
 // The pref storing whether the discard ring treatment should appear around
 // favicons on tabs.

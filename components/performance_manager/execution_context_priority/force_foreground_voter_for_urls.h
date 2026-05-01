@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PERFORMANCE_MANAGER_EXECUTION_CONTEXT_PRIORITY_FORCE_FOREGROUND_VOTER_FOR_ORIGINS_H_
-#define COMPONENTS_PERFORMANCE_MANAGER_EXECUTION_CONTEXT_PRIORITY_FORCE_FOREGROUND_VOTER_FOR_ORIGINS_H_
+#ifndef COMPONENTS_PERFORMANCE_MANAGER_EXECUTION_CONTEXT_PRIORITY_FORCE_FOREGROUND_VOTER_FOR_URLS_H_
+#define COMPONENTS_PERFORMANCE_MANAGER_EXECUTION_CONTEXT_PRIORITY_FORCE_FOREGROUND_VOTER_FOR_URLS_H_
 
 #include <memory>
 #include <string>
@@ -22,21 +22,20 @@ namespace performance_manager::execution_context_priority {
 
 // This voter boosts the priority of all frames and workers that match a given
 // list of URL patterns.
-class ForceForegroundVoterForOrigins
+class ForceForegroundVoterForUrls
     : public PriorityVoter,
       public FrameNodeObserver,
       public WorkerNodeObserver,
-      public GraphRegisteredImpl<ForceForegroundVoterForOrigins> {
+      public GraphRegisteredImpl<ForceForegroundVoterForUrls> {
  public:
   static const char kForceForegroundReason[];
 
-  ForceForegroundVoterForOrigins();
-  ~ForceForegroundVoterForOrigins() override;
+  ForceForegroundVoterForUrls();
+  ~ForceForegroundVoterForUrls() override;
 
-  ForceForegroundVoterForOrigins(const ForceForegroundVoterForOrigins&) =
+  ForceForegroundVoterForUrls(const ForceForegroundVoterForUrls&) = delete;
+  ForceForegroundVoterForUrls& operator=(const ForceForegroundVoterForUrls&) =
       delete;
-  ForceForegroundVoterForOrigins& operator=(
-      const ForceForegroundVoterForOrigins&) = delete;
 
   // Sets the URL patterns for a given browser context. Any frame or worker
   // associated with this browser context that matches one of these patterns
@@ -98,4 +97,4 @@ class ForceForegroundVoterForOrigins
 };
 }  // namespace performance_manager::execution_context_priority
 
-#endif  // COMPONENTS_PERFORMANCE_MANAGER_EXECUTION_CONTEXT_PRIORITY_FORCE_FOREGROUND_VOTER_FOR_ORIGINS_H_
+#endif  // COMPONENTS_PERFORMANCE_MANAGER_EXECUTION_CONTEXT_PRIORITY_FORCE_FOREGROUND_VOTER_FOR_URLS_H_
