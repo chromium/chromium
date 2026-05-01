@@ -20,10 +20,12 @@ import android.view.View;
 import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
 import android.view.ViewOutlineProvider;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
 import androidx.appcompat.content.res.AppCompatResources;
 
+import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
@@ -83,6 +85,10 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
     private final int mModernToolbarBackgroundVerticalOffset;
     private final float mModernToolbarBackgroundCornerRadius;
     private final float mModernToolbarBackgroundInnerCornerRadius;
+    // The holder view dictates our height and width but is otherwise logic-less. It exists to allow
+    // us to reparent the LocationBar without needing to explicitly reposition other elements of the
+    // toolbar.
+    private View mHolder;
 
     /** Constructor used to inflate from XML. */
     public LocationBarTablet(Context context, AttributeSet attrs) {
@@ -157,6 +163,11 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
 
         mTargets = new View[] {mUrlBar, mDeleteButton};
         mScreenWidthDp = getResources().getConfiguration().screenWidthDp;
+    }
+
+    @Initializer
+    public void setHolder(ViewGroup holder) {
+        mHolder = holder;
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -457,6 +468,11 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
     }
 
     @Override
+    /* package */ View getAlignmentView() {
+        return mHolder;
+    }
+
+    @Override
     void onSuggestionsChanged(boolean hasSuggestions) {
         mHasSuggestions = hasSuggestions;
         if (getBackground() != mFocusedPopupDrawable) {
@@ -490,18 +506,19 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
     public void onFuseboxStateChanged(@FuseboxState int state) {
         super.onFuseboxStateChanged(state);
         adjustVerticalTranslationForFuseboxState(state);
-        LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) getLayoutParams();
+        FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) getLayoutParams();
         mFuseboxState = state;
         Resources resources = getResources();
+        LinearLayout.LayoutParams parentParams =
+                (LinearLayout.LayoutParams) mHolder.getLayoutParams();
         if (state == FuseboxState.COMPACT || state == FuseboxState.EXPANDED) {
-            layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+            parentParams.height = ViewGroup.LayoutParams.WRAP_CONTENT;
             int expansionPx =
                     resources.getDimensionPixelSize(
                             R.dimen.location_bar_tablet_fusebox_popup_inset);
-            layoutParams.topMargin = -expansionPx;
-            setMarginsForWindowWidth(layoutParams, expansionPx);
-            layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT;
-            layoutParams.gravity = Gravity.TOP;
+            parentParams.topMargin = -expansionPx;
+            setMarginsForWindowWidth(parentParams, expansionPx);
+            parentParams.gravity = Gravity.TOP;
             setPadding(expansionPx, expansionPx, expansionPx, getPaddingBottom());
             setTranslationZ(OVERLAY_Z_TRANSLATION);
             // Call super to avoid overwriting our locally saved reference to our OutlineProvider.
@@ -512,12 +529,12 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
             ViewUtils.setAncestorsShouldClipChildren(this, false, View.NO_ID);
             setBackground(mFocusedPopupDrawable);
         } else {
-            layoutParams.leftMargin = 0;
-            layoutParams.rightMargin = 0;
-            layoutParams.topMargin = 0;
-            layoutParams.height =
+            parentParams.leftMargin = 0;
+            parentParams.rightMargin = 0;
+            parentParams.topMargin = 0;
+            parentParams.height =
                     resources.getDimensionPixelSize(R.dimen.modern_toolbar_tablet_background_size);
-            layoutParams.gravity = Gravity.CENTER_VERTICAL;
+            parentParams.gravity = Gravity.CENTER_VERTICAL;
             setPadding(0, 0, 0, getPaddingBottom());
             setTranslationZ(NEUTRAL_Z_TRANSLATION);
             super.setOutlineProvider(mOutlineProvider);
@@ -533,6 +550,7 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
         }
         adjustBackgroundForSuggestions();
         setLayoutParams(layoutParams);
+        mHolder.setLayoutParams(parentParams);
     }
 
     private void adjustVerticalTranslationForFuseboxState(@FuseboxState int state) {
@@ -573,7 +591,7 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
     }
 
     private void setMarginsForWindowWidth(
-            LinearLayout.LayoutParams layoutParams, int minHorizontalExpansionPx) {
+            MarginLayoutParams layoutParams, int minHorizontalExpansionPx) {
         Resources resources = getResources();
         int screenWidthDp = resources.getConfiguration().screenWidthDp;
         int windowWidthPx = DisplayUtil.dpToPx(mWindowAndroid.getDisplay(), screenWidthDp);
@@ -615,7 +633,7 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
     }
 
     private void adjustBackgroundForSuggestions() {
-        LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) getLayoutParams();
+        FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) getLayoutParams();
         GradientDrawable outerRect =
                 (GradientDrawable)
                         mFocusedPopupDrawable.findDrawableByLayerId(R.id.focused_popup_bg);

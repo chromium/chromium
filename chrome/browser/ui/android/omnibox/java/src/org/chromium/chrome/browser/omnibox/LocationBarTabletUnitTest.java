@@ -19,6 +19,7 @@ import android.view.View.MeasureSpec;
 import android.view.ViewGroup.LayoutParams;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.view.ViewOutlineProvider;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
 import androidx.annotation.ColorInt;
@@ -71,23 +72,28 @@ public class LocationBarTabletUnitTest {
 
     private Activity mActivity;
     private LocationBarTablet mLocationBarTablet;
+    private FrameLayout mHolderView;
 
     @Before
     public void doBeforeEachTest() {
         mActivity = Robolectric.buildActivity(Activity.class).get();
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
         LinearLayout contentView = new LinearLayout(mActivity);
+        mHolderView = new FrameLayout(mActivity);
         mLocationBarTablet = new LocationBarTablet(mActivity, null);
         mLocationBarTablet.setBackgroundResource(
                 R.drawable.modern_toolbar_tablet_text_box_background);
         LayoutParams params =
                 new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-        contentView.addView(mLocationBarTablet, params);
+        mHolderView.addView(mLocationBarTablet, params);
         mLocationBarTablet.onFinishInflate();
-        params = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-        mActivity.setContentView(contentView, params);
+        LinearLayout.LayoutParams parentParams =
+                new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+        contentView.addView(mHolderView, parentParams);
+        mActivity.setContentView(contentView, parentParams);
         doReturn(mDisplay).when(mWindowAndroid).getDisplay();
         doReturn(DIP_SCALE).when(mDisplay).getDipScale();
+        mLocationBarTablet.setHolder(mHolderView);
         mLocationBarTablet.initialize(
                 mAutocompleteCoordinator,
                 mUrlBarCoordinator,
@@ -120,7 +126,7 @@ public class LocationBarTabletUnitTest {
                         .getResources()
                         .getDimensionPixelSize(R.dimen.fusebox_min_tablet_width);
         LinearLayout.LayoutParams layoutParams =
-                (LinearLayout.LayoutParams) mLocationBarTablet.getLayoutParams();
+                (LinearLayout.LayoutParams) mHolderView.getLayoutParams();
         assertEquals(LayoutParams.WRAP_CONTENT, layoutParams.height);
         int expectedMargin = -((minWidthPx - prefocusWidth) / 2);
         assertEquals(expectedMargin, layoutParams.leftMargin);
@@ -133,7 +139,7 @@ public class LocationBarTabletUnitTest {
         assertEquals(1.0f, mLocationBarTablet.getTranslationZ(), MathUtils.EPSILON);
         assertNull(mLocationBarTablet.getOutlineProvider());
         mLocationBarTablet.onFuseboxStateChanged(FuseboxState.DISABLED);
-        layoutParams = (LinearLayout.LayoutParams) mLocationBarTablet.getLayoutParams();
+        layoutParams = (LinearLayout.LayoutParams) mHolderView.getLayoutParams();
         assertEquals(
                 mLocationBarTablet
                         .getResources()
@@ -165,7 +171,7 @@ public class LocationBarTabletUnitTest {
                         .getResources()
                         .getDimensionPixelSize(R.dimen.fusebox_min_tablet_width);
         LinearLayout.LayoutParams layoutParams =
-                (LinearLayout.LayoutParams) mLocationBarTablet.getLayoutParams();
+                (LinearLayout.LayoutParams) mHolderView.getLayoutParams();
         int expectedMargin = -((minWidthPx - prefocusWidth) / 2);
         assertEquals(expectedMargin, layoutParams.leftMargin);
         assertEquals(expectedMargin, layoutParams.rightMargin);
@@ -182,7 +188,7 @@ public class LocationBarTabletUnitTest {
                         .getResources()
                         .getDimensionPixelSize(R.dimen.location_bar_tablet_fusebox_popup_inset);
         mLocationBarTablet.onFuseboxStateChanged(FuseboxState.EXPANDED);
-        layoutParams = (LinearLayout.LayoutParams) mLocationBarTablet.getLayoutParams();
+        layoutParams = (LinearLayout.LayoutParams) mHolderView.getLayoutParams();
         expectedMargin = -expansionPx;
         assertEquals(expectedMargin, layoutParams.leftMargin);
         assertEquals(expectedMargin, layoutParams.rightMargin);
@@ -229,8 +235,8 @@ public class LocationBarTabletUnitTest {
                 mLocationBarTablet
                         .getResources()
                         .getDimensionPixelSize(R.dimen.location_bar_tablet_fusebox_popup_inset);
-        LinearLayout.LayoutParams layoutParams =
-                (LinearLayout.LayoutParams) mLocationBarTablet.getLayoutParams();
+        FrameLayout.LayoutParams layoutParams =
+                (FrameLayout.LayoutParams) mLocationBarTablet.getLayoutParams();
         assertEquals(-expansionPx, layoutParams.bottomMargin);
         LayerDrawable background = (LayerDrawable) mLocationBarTablet.getBackground();
         GradientDrawable outerRect = (GradientDrawable) background.getDrawable(0);
@@ -274,8 +280,8 @@ public class LocationBarTabletUnitTest {
                         .getDimensionPixelSize(R.dimen.location_bar_tablet_fusebox_popup_inset);
         mLocationBarTablet.onSuggestionsListScrollOffsetChanged(expansionPx + 1);
 
-        LinearLayout.LayoutParams layoutParams =
-                (LinearLayout.LayoutParams) mLocationBarTablet.getLayoutParams();
+        FrameLayout.LayoutParams layoutParams =
+                (FrameLayout.LayoutParams) mLocationBarTablet.getLayoutParams();
         assertEquals(-expansionPx, layoutParams.bottomMargin);
         LayerDrawable background = (LayerDrawable) mLocationBarTablet.getBackground();
         GradientDrawable outerRect = (GradientDrawable) background.getDrawable(0);
@@ -364,7 +370,7 @@ public class LocationBarTabletUnitTest {
                         .getResources()
                         .getDimensionPixelSize(R.dimen.fusebox_min_tablet_width);
         LinearLayout.LayoutParams layoutParams =
-                (LinearLayout.LayoutParams) mLocationBarTablet.getLayoutParams();
+                (LinearLayout.LayoutParams) mHolderView.getLayoutParams();
         int expectedMargin = -((minWidthPx - prefocusWidth) / 2);
         assertEquals(expectedMargin, layoutParams.leftMargin);
         assertEquals(expectedMargin, layoutParams.rightMargin);
@@ -379,7 +385,7 @@ public class LocationBarTabletUnitTest {
                 mLocationBarTablet.getMeasuredWidth(),
                 mLocationBarTablet.getMeasuredHeight());
         ShadowLooper.idleMainLooper();
-        layoutParams = (LinearLayout.LayoutParams) mLocationBarTablet.getLayoutParams();
+        layoutParams = (LinearLayout.LayoutParams) mHolderView.getLayoutParams();
         assertEquals(expectedMargin, layoutParams.leftMargin);
         assertEquals(
                 expectedMargin - (599 * DIP_SCALE - mLocationBarTablet.getMeasuredWidth()),

@@ -70,17 +70,24 @@ found in the LICENSE file.
             app:tint="@color/default_icon_color_tint_list"
             style="@style/ToolbarHoverableButton.AdaptiveDensity" />
 
-        <org.chromium.chrome.browser.omnibox.LocationBarTablet
-            android:id="@+id/location_bar"
-            android:layout_width="0dp"
-            android:layout_height="@dimen/modern_toolbar_tablet_background_size"
-            android:layout_weight="1"
-            android:layout_gravity="center_vertical"
-            android:background="@drawable/modern_toolbar_tablet_text_box_background"
-            android:paddingEnd="@dimen/location_bar_end_padding"
-            android:clipToPadding="false" />
+    <FrameLayout
+        android:id="@+id/location_bar_holder"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/modern_toolbar_tablet_background_size"
+        android:layout_weight="1"
+        android:layout_gravity="center_vertical"
+        >
+      <org.chromium.chrome.browser.omnibox.LocationBarTablet
+          android:id="@+id/location_bar"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:background="@drawable/modern_toolbar_tablet_text_box_background"
+          android:paddingEnd="@dimen/location_bar_end_padding"
+          android:clipToPadding="false"
+          />
+    </FrameLayout>
 
-        <!-- TODO(crbug.com/433976037): Reset horizontal margins when optional button expands to action chip. -->
+    <!-- TODO(crbug.com/433976037): Reset horizontal margins when optional button expands to action chip. -->
         <ViewStub
             android:id="@+id/optional_button_stub"
             android:inflatedId="@+id/optional_toolbar_button"

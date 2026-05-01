@@ -22,6 +22,7 @@ import android.view.ActionMode;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
+import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.view.WindowInsets;
 
@@ -313,11 +314,16 @@ public class LocationBarCoordinator
             fuseboxStateSupplier = ObservableSuppliers.createNonNull(FuseboxState.DISABLED);
         }
 
+        if (mLocationBarLayout instanceof LocationBarTablet tabletLayout) {
+            tabletLayout.setHolder((ViewGroup) tabletLayout.getParent());
+        }
+
+        View alignmentView = mLocationBarLayout.getAlignmentView();
         mOmniboxDropdownEmbedderImpl =
                 new OmniboxSuggestionsDropdownEmbedderImpl(
                         mWindowAndroid,
                         autocompleteAnchorView,
-                        mLocationBarLayout,
+                        alignmentView,
                         uiOverrides.isForcedPhoneStyleOmnibox(),
                         baseChromeLayout,
                         () ->

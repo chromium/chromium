@@ -496,6 +496,14 @@ public class LocationBarLayout extends ConstraintLayout {
     /* package */ void onFuseboxStateChanged(@FuseboxState int state) {}
 
     /**
+     * Returns the view to which the omnibox suggestions list should be aligned to horizontally and
+     * vertically.
+     */
+    /* package */ View getAlignmentView() {
+        return this;
+    }
+
+    /**
      * This should be called when the autocomplete request type for the active omnibox session
      * changes to/from specialized (e.g. aim)/conventional (e.g. plain old search). It is not
      * assumed that this will be called when the session ends.
