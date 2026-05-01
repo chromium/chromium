@@ -366,14 +366,12 @@ external/wpt/css/css-text/i18n/unknown-lang/css-text-line-break-in-loose.html
 external/wpt/css/css-text/i18n/zh/css-text-line-break-zh-in-loose.html
 external/wpt/css/css-text/i18n/zh/css-text-line-break-zh-pr-normal.html
 external/wpt/css/css-text/i18n/zh/css-text-line-break-zh-pr-strict.html
-external/wpt/css/css-text/letter-spacing/letter-spacing-ligatures-002.html
 external/wpt/css/css-text/line-breaking/line-breaking-atomic-022.html
 external/wpt/css/css-text/tab-size/tab-size.html
 external/wpt/css/css-text/text-autospace/text-autospace-first-line-001.html
 external/wpt/css/css-text/white-space/control-chars-*
 external/wpt/css/css-text/white-space/eol-spaces-bidi-003.html
 external/wpt/css/css-text/white-space/pre-float-001.html
-external/wpt/css/css-text/white-space/pre-wrap-018.html
 external/wpt/css/css-text/white-space/seg-break-transformation-004.tentative.html
 external/wpt/css/css-text/white-space/tab-stop-threshold-001.html
 external/wpt/css/css-text/white-space/tab-stop-threshold-003.html
