@@ -32,6 +32,7 @@ import org.json.JSONObject;
 import org.chromium.base.Log;
 import org.chromium.base.PackageUtils;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.pdf.PdfUtils.PdfLoadResult;
@@ -216,7 +217,11 @@ public class PdfCoordinator implements PdfActionsDelegate, PdfToolbarActionsDele
                                 SparseArray pageLocations,
                                 float zoomLevel) {
                             if (capturedView.getPdfDocument() != null) {
-                                capturedView.removeOnViewportChangedListener(this);
+                                // Post to the UI thread to avoid removing the listener while
+                                // androidx.pdf.view.PdfView is notifying its listeners, which can
+                                // throw an IndexOutOfBoundsException error.
+                                ThreadUtils.postOnUiThread(
+                                        () -> capturedView.removeOnViewportChangedListener(this));
                                 delegate.onDocumentLoaded(
                                         capturedView.getPdfDocument().getPageCount());
                             }
