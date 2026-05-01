@@ -107,6 +107,8 @@ export declare interface InvokeOptions {
   autoSubmit: boolean;
   /** Feature mode to switch to. */
   featureMode: FeatureMode;
+  /** Target for actuation. */
+  actuationTarget?: ActuationTarget;
   /** Whether to suppress Zero State Suggestions. */
   disableZeroStateSuggestions: boolean;
   /** Skill ID to trigger. */

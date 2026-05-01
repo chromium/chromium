@@ -692,6 +692,7 @@ export function invokeOptionsToClient(
         undefined,
     autoSubmit: options.autoSubmit,
     featureMode: enumToClient(options.featureMode),
+    actuationTarget: enumToClient(options.actuationTarget),
     disableZeroStateSuggestions: options.disableZeroStateSuggestions,
     skillId: options.skillId || undefined,
     zssConfig: options.zssConfig ? zssConfigToClient(options.zssConfig) :
