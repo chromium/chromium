@@ -1778,7 +1778,7 @@ TEST_F(ContextualTasksServiceImplTest, OnThreadAddedOrUpdatedRemotely_NoTask) {
       OnTaskAdded(testing::_, ContextualTasksService::TriggerSource::kRemote))
       .WillOnce([&](const ContextualTask& task,
                     ContextualTasksService::TriggerSource source) {
-        EXPECT_EQ(task.GetTaskId(), task.GetTaskId());
+        EXPECT_TRUE(task.GetTaskId().is_valid());
         ASSERT_TRUE(task.GetThread().has_value());
         EXPECT_EQ("Title", task.GetThread()->title);
         EXPECT_EQ("turn_id", task.GetThread()->conversation_turn_id);
