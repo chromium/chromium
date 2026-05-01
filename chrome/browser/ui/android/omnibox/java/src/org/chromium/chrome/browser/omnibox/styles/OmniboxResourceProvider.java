@@ -818,6 +818,14 @@ public class OmniboxResourceProvider {
         return IncognitoColors.getTextMediumPrimary(isIncognito);
     }
 
+    /** Resolves the text appearance for attachment buttons in the popup. */
+    public static @StyleRes int getAttachmentButtonTextRes(
+            @BrandedColorScheme int brandedColorScheme) {
+        boolean isIncognito =
+                convertBrandedColorSchemeToIncognitoOrDayNightAdaptive(brandedColorScheme);
+        return IncognitoColors.getTextSmallSecondary(isIncognito);
+    }
+
     /** Resolves the text appearance for header visibility text in the popup. */
     public static @StyleRes int getPopupHeaderVisibilityTextRes(
             @BrandedColorScheme int brandedColorScheme) {

@@ -51,6 +51,7 @@ class FuseboxPopup {
     /* package */ final List<View> mButtons;
     /* package */ final List<View> mDividers;
     /* package */ final List<TextView> mHeaders;
+    /* package */ final List<View> mAttachmentButtons;
 
     private final DynamicRectProvider mDynamicRectProvider;
 
@@ -145,6 +146,14 @@ class FuseboxPopup {
                                 mCreateImageButton,
                                 mDeepSearchButton,
                                 mCanvasButton));
+        mAttachmentButtons =
+                List.of(
+                        mAddCurrentTab,
+                        mClipboardButton,
+                        mTabButton,
+                        mCameraButton,
+                        mGalleryButton,
+                        mFileButton);
         mDividers = List.of(mToolsDivider, mModelsDivider);
         mHeaders = List.of(mToolsHeader, mModelsHeader);
     }

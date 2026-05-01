@@ -658,13 +658,20 @@ class FuseboxViewBinder {
         @BrandedColorScheme int brandedColorScheme = model.get(FuseboxProperties.COLOR_SCHEME);
         Context context = view.parentView.getContext();
 
-        @StyleRes
-        int textAppearance = OmniboxResourceProvider.getPopupButtonTextRes(brandedColorScheme);
         ColorStateList iconTint =
                 OmniboxResourceProvider.getPrimaryIconTintList(context, brandedColorScheme);
         ColorStateList iconBackgroundTint =
                 OmniboxResourceProvider.getPrimaryIconBackgroundColor(context, brandedColorScheme);
         for (View button : view.popup.mButtons) {
+            @StyleRes int textAppearance;
+            if (Integer.valueOf(FuseboxProperties.PopupState.BOTTOM)
+                            .equals(model.get(FuseboxProperties.POPUP_STATE))
+                    && view.popup.mAttachmentButtons.contains(button)) {
+                textAppearance =
+                        OmniboxResourceProvider.getAttachmentButtonTextRes(brandedColorScheme);
+            } else {
+                textAppearance = OmniboxResourceProvider.getPopupButtonTextRes(brandedColorScheme);
+            }
             themeButton(button, textAppearance, iconTint, iconBackgroundTint);
         }
 
