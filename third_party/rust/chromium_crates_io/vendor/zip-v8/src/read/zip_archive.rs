@@ -20,7 +20,7 @@ use std::sync::Arc;
 /// Immutable metadata about a `ZipArchive`.
 #[derive(Debug)]
 pub struct ZipArchiveMetadata {
-    pub(crate) files: IndexMap<Box<str>, ZipFileData>,
+    pub(crate) files: IndexMap<Box<[u8]>, ZipFileData>,
     pub(crate) offset: u64,
     pub(crate) dir_start: u64,
     // This isn't yet used anywhere, but it is here for use cases in the future.
@@ -48,7 +48,7 @@ impl SharedBuilder {
     ) -> ZipArchiveMetadata {
         let mut index_map = IndexMap::with_capacity(self.files.len());
         self.files.into_iter().for_each(|file| {
-            index_map.insert(file.file_name.clone(), file);
+            index_map.insert(file.file_name_raw.clone(), file);
         });
         ZipArchiveMetadata {
             files: index_map,
@@ -67,10 +67,9 @@ impl SharedBuilder {
 /// reader it uses. However, this is not guaranteed by this crate and it may
 /// change in the future.
 ///
-/// ```no_run
+/// ```
 /// use std::io::{Read, Seek};
 /// fn list_zip_contents(reader: impl Read + Seek) -> zip::result::ZipResult<()> {
-///     use zip::HasZipMetadata;
 ///     let mut zip = zip::ZipArchive::new(reader)?;
 ///
 ///     for i in 0..zip.len() {
@@ -90,7 +89,7 @@ pub struct ZipArchive<R> {
 
 impl<R> ZipArchive<R> {
     pub(crate) fn from_finalized_writer(
-        files: IndexMap<Box<str>, ZipFileData>,
+        files: IndexMap<Box<[u8]>, ZipFileData>,
         comment: Box<[u8]>,
         zip64_extensible_data_sector: Option<Box<[u8]>>,
         reader: R,
@@ -364,7 +363,7 @@ impl<R: Read + Seek> ZipArchive<R> {
 
     /// Returns an iterator over all the file and directory names in this archive.
     pub fn file_names(&self) -> impl Iterator<Item = &str> {
-        self.shared.files.keys().map(std::convert::AsRef::as_ref)
+        self.shared.files.values().map(|f| f.file_name.as_ref())
     }
 
     /// Returns Ok(true) if any compressed data in this archive belongs to more than one file. This
@@ -414,7 +413,7 @@ impl<R: Read + Seek> ZipArchive<R> {
     /// Get the index of a file entry by name, if it's present.
     #[inline]
     pub fn index_for_name(&self, name: &str) -> Option<usize> {
-        self.shared.files.get_index_of(name)
+        self.shared.files.get_index_of(name.as_bytes())
     }
 
     /// Search for a file entry by path, decrypt with given password
@@ -462,7 +461,7 @@ impl<R: Read + Seek> ZipArchive<R> {
         self.shared
             .files
             .get_index(index)
-            .map(|(name, _)| name.as_ref())
+            .map(|(_, file)| file.file_name.as_ref())
     }
 
     /// Search for a file entry by name and return a seekable object.
@@ -500,7 +499,7 @@ impl<R: Read + Seek> ZipArchive<R> {
         name: &str,
         password: Option<&[u8]>,
     ) -> ZipResult<ZipFile<'a, R>> {
-        let Some(index) = self.shared.files.get_index_of(name) else {
+        let Some(index) = self.shared.files.get_index_of(name.as_bytes()) else {
             return Err(ZipError::FileNotFound);
         };
         self.by_index_with_options(index, ZipReadOptions::new().password(password))

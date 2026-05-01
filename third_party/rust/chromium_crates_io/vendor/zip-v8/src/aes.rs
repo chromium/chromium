@@ -10,7 +10,7 @@ use crate::result::ZipResult;
 use crate::types::{AesMode, AesVendorVersion};
 use crate::{aes_ctr, result::ZipError};
 use constant_time_eq::constant_time_eq;
-use hmac::{Hmac, Mac};
+use hmac::{KeyInit, Mac, SimpleHmacReset};
 use sha1::Sha1;
 use std::io::{self, Error, ErrorKind, Read, Write};
 use zeroize::{Zeroize, Zeroizing};
@@ -208,7 +208,7 @@ impl<R: Read> AesReader<R> {
         let mut derived_key: Box<[u8]> = vec![0; derived_key_len].into_boxed_slice();
 
         // use PBKDF2 with HMAC-Sha1 to derive the key
-        pbkdf2::pbkdf2::<Hmac<Sha1>>(password, &salt, ITERATION_COUNT, &mut derived_key)
+        pbkdf2::pbkdf2::<SimpleHmacReset<Sha1>>(password, &salt, ITERATION_COUNT, &mut derived_key)
             .map_err(|e| Error::new(ErrorKind::InvalidInput, e))?;
         let decrypt_key = &derived_key[0..key_length];
         let hmac_key = &derived_key[key_length..key_length * 2];
@@ -221,7 +221,7 @@ impl<R: Read> AesReader<R> {
         }
 
         let cipher = Cipher::from_mode(self.aes_mode, decrypt_key)?;
-        let hmac = Hmac::<Sha1>::new_from_slice(hmac_key).map_err(|e| {
+        let hmac = SimpleHmacReset::<Sha1>::new_from_slice(hmac_key).map_err(|e| {
             ZipError::Io(std::io::Error::other(format!(
                 "Cannot create hmac with key: {e}"
             )))
@@ -266,7 +266,7 @@ pub struct AesReaderValid<R: Read> {
     reader: R,
     data_remaining: u64,
     cipher: Cipher,
-    hmac: Hmac<Sha1>,
+    hmac: SimpleHmacReset<Sha1>,
     finalized: bool,
 }
 
@@ -334,7 +334,7 @@ impl<R: Read> AesReaderValid<R> {
 pub struct AesWriter<W> {
     writer: W,
     cipher: Cipher,
-    hmac: Hmac<Sha1>,
+    hmac: SimpleHmacReset<Sha1>,
     buffer: Zeroizing<Vec<u8>>,
     encrypted_file_header: Option<Vec<u8>>,
 }
@@ -368,7 +368,7 @@ impl<W: Write> AesWriter<W> {
         let mut derived_key: Zeroizing<Vec<u8>> = Zeroizing::new(vec![0; derived_key_len]);
 
         // Use PBKDF2 with HMAC-Sha1 to derive the key.
-        pbkdf2::pbkdf2::<Hmac<Sha1>>(password, &salt, ITERATION_COUNT, &mut derived_key)
+        pbkdf2::pbkdf2::<SimpleHmacReset<Sha1>>(password, &salt, ITERATION_COUNT, &mut derived_key)
             .map_err(|e| Error::new(ErrorKind::InvalidInput, e))?;
         let encryption_key = &derived_key[0..key_length];
         let hmac_key = &derived_key[key_length..key_length * 2];
@@ -377,7 +377,7 @@ impl<W: Write> AesWriter<W> {
         encrypted_file_header.write_all(&pwd_verify)?;
 
         let cipher = Cipher::from_mode(aes_mode, encryption_key)?;
-        let hmac = Hmac::<Sha1>::new_from_slice(hmac_key)
+        let hmac = SimpleHmacReset::<Sha1>::new_from_slice(hmac_key)
             .map_err(|e| std::io::Error::other(format!("Cannot create hmac with key: {e}")))?;
 
         Ok(Self {

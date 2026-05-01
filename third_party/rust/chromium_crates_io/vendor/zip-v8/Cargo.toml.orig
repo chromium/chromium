@@ -1,6 +1,6 @@
 [package]
 name = "zip"
-version = "8.5.1"
+version = "8.6.0"
 authors = [
     "Mathijs van de Nes <git@mathijs.vd-nes.nl>",
     "Marli Frost <marli@frost.red>",
@@ -24,20 +24,20 @@ rustdoc-args = ["--cfg", "docsrs"]
 
 [dependencies]
 arbitrary = { version = "1.4", features = ["derive"], optional = true }
-aes = { version = "0.8", optional = true }
+aes = { version = "0.9", optional = true }
 bzip2 = { version = "0.6", default-features = false, optional = true }
 chrono = { version = "^0.4.27", optional = true, default-features = false, features = ["std"] }
 constant_time_eq = { version = "0.4", optional = true }
 crc32fast = "1.5"
 flate2 = { version = "1.1", default-features = false, optional = true }
-hmac = { version = "0.12", optional = true, features = ["reset"] }
+hmac = { version = "0.13", optional = true, features = ["zeroize"] }
 indexmap = "2"
 jiff = { version = "^0.2.4", optional = true }
 memchr = "2.7"
 nt-time = { version = "0.13", default-features = false, optional = true }
 ppmd-rust = { version = "1.4", optional = true }
-pbkdf2 = { version = "0.12", optional = true }
-sha1 = { version = "0.10", optional = true }
+pbkdf2 = { version = "0.13", optional = true }
+sha1 = { version = "0.11", optional = true }
 zeroize = { version = "1.8", optional = true }
 zstd = { version = "^0.13.3", optional = true, default-features = false }
 zopfli = { version = "^0.8.3", optional = true }

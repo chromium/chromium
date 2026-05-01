@@ -6,9 +6,7 @@ use crate::read::{
     ZipFile, ZipFileData, ZipResult, central_header_to_zip_file_inner, make_symlink,
 };
 use crate::result::ZipError;
-use crate::spec::Magic;
-use crate::spec::Pod;
-use crate::spec::{FixedSizeBlock, ZipCentralEntryBlock, ZipLocalEntryBlock};
+use crate::spec::{FixedSizeBlock, Magic, Pod, ZipCentralEntryBlock, ZipLocalEntryBlock, is_dir};
 use indexmap::IndexMap;
 use std::borrow::Cow;
 use std::io::{self, Read};
@@ -63,10 +61,10 @@ impl<R: Read> ZipStreamReader<R> {
     /// Extraction is not atomic; If an error is encountered, some of the files
     /// may be left on disk.
     pub fn extract<P: AsRef<Path>>(self, directory: P) -> ZipResult<()> {
-        struct Extractor(PathBuf, IndexMap<Box<str>, ()>);
+        struct Extractor(PathBuf, IndexMap<Box<[u8]>, ()>);
         impl ZipStreamVisitor for Extractor {
             fn visit_file<R: Read>(&mut self, file: &mut ZipFile<'_, R>) -> ZipResult<()> {
-                self.1.insert(file.name().into(), ());
+                self.1.insert(file.name_raw().into(), ());
                 let mut outpath = self.0.clone();
                 file.safe_prepare_path(&self.0, &mut outpath, None::<&(_, fn(&Path) -> bool)>)?;
 
@@ -191,10 +189,7 @@ impl ZipStreamFileMetadata {
 
     /// Returns whether the file is actually a directory
     pub fn is_dir(&self) -> bool {
-        self.name()
-            .chars()
-            .next_back()
-            .is_some_and(|c| c == '/' || c == '\\')
+        is_dir(self.name())
     }
 
     /// Returns whether the file is a regular file

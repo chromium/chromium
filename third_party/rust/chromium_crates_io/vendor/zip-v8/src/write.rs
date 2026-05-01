@@ -172,7 +172,7 @@ pub(crate) mod zip_writer {
     /// ```
     pub struct ZipWriter<W: Write + Seek> {
         pub(super) inner: GenericZipWriter<W>,
-        pub(super) files: IndexMap<Box<str>, ZipFileData>,
+        pub(super) files: IndexMap<Box<[u8]>, ZipFileData>,
         pub(super) stats: ZipWriterStats,
         pub(super) writing_to_file: bool,
         pub(super) writing_raw: bool,
@@ -835,7 +835,6 @@ impl<A: Read + Write + Seek> ZipWriter<A> {
     pub fn new_append_with_config(config: Config, mut readwriter: A) -> ZipResult<ZipWriter<A>> {
         readwriter.seek(SeekFrom::Start(0))?;
         let shared = ZipArchive::get_metadata(config, &mut readwriter)?;
-
         Ok(ZipWriter {
             inner: GenericZipWriter::Storer(MaybeEncrypted::Unencrypted(readwriter)),
             files: shared.files,
@@ -873,11 +872,11 @@ impl<A: Read + Write + Seek> ZipWriter<A> {
     /// widely-compatible archive compared to [`Self::shallow_copy_file`]. Does not copy alignment.
     pub fn deep_copy_file(&mut self, src_name: &str, dest_name: &str) -> ZipResult<()> {
         self.finish_file()?;
-        if src_name == dest_name || self.files.contains_key(dest_name) {
+        if src_name == dest_name || self.files.contains_key(dest_name.as_bytes()) {
             return Err(invalid!("That file already exists"));
         }
         let write_position = self.inner.try_inner_mut()?.stream_position()?;
-        let src_index = self.index_by_name(src_name)?;
+        let src_index = self.index_by_name(src_name.as_bytes())?;
         let src_data = &mut self.files[src_index];
         let src_data_start = src_data.data_start(self.inner.try_inner_mut()?)?;
         debug_assert!(src_data_start <= write_position);
@@ -894,9 +893,8 @@ impl<A: Read + Write + Seek> ZipWriter<A> {
             .try_inner_mut()?
             .seek(SeekFrom::Start(write_position))?;
         let mut new_data = src_data.clone();
-        let dest_name_raw = dest_name.as_bytes();
+        new_data.file_name_raw = dest_name.as_bytes().into();
         new_data.file_name = dest_name.into();
-        new_data.file_name_raw = dest_name_raw.into();
         new_data.header_start = write_position;
         let extra_data_start = write_position
             + (size_of::<Magic>() + size_of::<ZipLocalEntryBlock>()) as u64
@@ -989,7 +987,6 @@ impl<A: Read + Write + Seek> ZipWriter<A> {
         let comment = mem::take(&mut self.comment);
         let zip64_extensible_data_sector = mem::take(&mut self.zip64_extensible_data_sector);
         let files = mem::take(&mut self.files);
-
         Ok(ZipArchive::from_finalized_writer(
             files,
             comment,
@@ -1381,10 +1378,10 @@ impl<W: Write + Seek> ZipWriter<W> {
     }
 
     fn insert_file_data(&mut self, file: ZipFileData) -> ZipResult<usize> {
-        if self.files.contains_key(&file.file_name) {
+        if self.files.contains_key(&file.file_name_raw) {
             return Err(invalid!("Duplicate filename: {}", file.file_name));
         }
-        let (index, _) = self.files.insert_full(file.file_name.clone(), file);
+        let (index, _) = self.files.insert_full(file.file_name_raw.clone(), file);
         Ok(index)
     }
 
@@ -1962,7 +1959,7 @@ impl<W: Write + Seek> ZipWriter<W> {
         Ok(central_start)
     }
 
-    fn index_by_name(&self, name: &str) -> ZipResult<usize> {
+    fn index_by_name(&self, name: &[u8]) -> ZipResult<usize> {
         self.files.get_index_of(name).ok_or(ZipError::FileNotFound)
     }
 
@@ -1976,7 +1973,7 @@ impl<W: Write + Seek> ZipWriter<W> {
         if src_name == dest_name {
             return Err(invalid!("Trying to copy a file to itself"));
         }
-        let src_index = self.index_by_name(src_name)?;
+        let src_index = self.index_by_name(src_name.as_bytes())?;
         let mut dest_data = self.files[src_index].clone();
         dest_data.file_name = dest_name.into();
         dest_data.file_name_raw = dest_name.as_bytes().into();
@@ -2623,6 +2620,7 @@ impl<W: Write> Seek for StreamWriter<W> {
 mod tests {
     use super::{ExtendedFileOptions, FileOptions, FullFileOptions, ZipWriter};
     use crate::CompressionMethod::Stored;
+    use crate::ZipArchive;
     use crate::compression::CompressionMethod;
     use crate::datetime::DateTime;
     use crate::result::ZipResult;
@@ -2630,7 +2628,6 @@ mod tests {
     use crate::write::EncryptWith::ZipCrypto;
     use crate::write::SimpleFileOptions;
     use crate::zipcrypto::ZipCryptoKeys;
-    use crate::{HasZipMetadata, ZipArchive};
     #[cfg(feature = "deflate-flate2")]
     use std::io::Read;
     use std::io::{Cursor, Write};
@@ -4505,6 +4502,7 @@ mod tests {
 
     #[test]
     fn test_explicit_system_roundtrip() -> ZipResult<()> {
+        use crate::read::HasZipMetadata;
         // Test round-trip: write with various systems, read back and verify
         let systems = vec![System::Unix, System::Dos, System::WindowsNTFS];
 
@@ -4536,6 +4534,7 @@ mod tests {
 
     #[test]
     fn test_system_default_behavior() -> ZipResult<()> {
+        use crate::read::HasZipMetadata;
         // Test that when system is not set, default behavior is preserved
         let mut writer = ZipWriter::new(Cursor::new(Vec::new()));
         let options = SimpleFileOptions::default().compression_method(Stored);

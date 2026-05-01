@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [8.6.0](https://github.com/zip-rs/zip2/compare/v8.5.1...v8.6.0) - 2026-04-25
+
+### <!-- 0 -->🚀 Features
+
+- add `compression not supported` as enum error ([#774](https://github.com/zip-rs/zip2/pull/774))
+
+### <!-- 1 -->🐛 Bug Fixes
+
+- allow for `[u8]` as filename ([#775](https://github.com/zip-rs/zip2/pull/775))
+
+### <!-- 2 -->🚜 Refactor
+
+- mark `ZipFlags` as non-exhaustive and add test for `HasZipMetadata` ([#777](https://github.com/zip-rs/zip2/pull/777))
+- use and simplify is_dir ([#776](https://github.com/zip-rs/zip2/pull/776))
+
 ## [8.5.1](https://github.com/zip-rs/zip2/compare/v8.5.0...v8.5.1) - 2026-04-06
 
 ### <!-- 2 -->🚜 Refactor

@@ -5,7 +5,7 @@
 //! See [`AesCtrZipKeyStream`] for more information.
 
 use crate::result::{ZipError, ZipResult};
-use aes::cipher::{BlockEncrypt, KeyInit};
+use aes::cipher::{BlockCipherEncrypt, KeyInit};
 use core::{any, fmt};
 
 /// Internal block size of an AES cipher.
@@ -99,7 +99,7 @@ where
 impl<C> AesCipher for AesCtrZipKeyStream<C>
 where
     C: AesKind,
-    C::Cipher: BlockEncrypt,
+    C::Cipher: BlockCipherEncrypt,
 {
     /// Decrypt or encrypt `target`.
     #[inline]
@@ -107,7 +107,11 @@ where
         while !target.is_empty() {
             if self.pos == AES_BLOCK_SIZE {
                 self.buffer = self.counter.to_le_bytes();
-                self.cipher.encrypt_block(self.buffer.as_mut().into());
+                #[allow(deprecated)]
+                self.cipher
+                    .encrypt_block(aes::cipher::Block::<C::Cipher>::from_mut_slice(
+                        &mut self.buffer,
+                    ));
                 self.counter += 1;
                 self.pos = 0;
             }
@@ -146,14 +150,14 @@ fn xor(dest: &mut [u8], src: &[u8]) {
 #[cfg(test)]
 mod tests {
     use super::{Aes128, Aes192, Aes256, AesCipher, AesCtrZipKeyStream, AesKind};
-    use aes::cipher::{BlockEncrypt, KeyInit};
+    use aes::cipher::{BlockCipherEncrypt, KeyInit};
 
     /// Checks whether `crypt_in_place` produces the correct plaintext after one use and yields the
     /// ciphertext again after applying it again.
     fn roundtrip<Aes>(key: &[u8], ciphertext: &[u8], expected_plaintext: &[u8])
     where
         Aes: AesKind,
-        Aes::Cipher: KeyInit + BlockEncrypt,
+        Aes::Cipher: KeyInit + BlockCipherEncrypt,
     {
         let mut key_stream = AesCtrZipKeyStream::<Aes>::new(key).unwrap();
 

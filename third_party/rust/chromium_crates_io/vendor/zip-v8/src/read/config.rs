@@ -1,3 +1,5 @@
+//! Read Config
+
 /// Configuration for reading ZIP archives.
 #[repr(transparent)]
 #[derive(Debug, Default, Clone, Copy)]

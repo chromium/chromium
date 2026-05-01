@@ -59,6 +59,7 @@ impl Magic {
 #[rustfmt::skip]
 #[repr(u16)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
+#[non_exhaustive]
 pub(crate) enum ZipFlags {
     /// If set, indicates that the file is encrypted.
     Encrypted                   = 0b0000_0000_0000_0001,
@@ -995,11 +996,9 @@ pub(crate) fn find_central_directory<R: Read + Seek + ?Sized>(
     Err(parsing_error.unwrap_or(invalid!("Could not find EOCD")))
 }
 
+#[inline]
 pub(crate) fn is_dir(filename: &str) -> bool {
-    filename
-        .chars()
-        .next_back()
-        .is_some_and(|c| c == '/' || c == '\\')
+    matches!(filename.as_bytes().last(), Some(b'/') | Some(b'\\'))
 }
 
 #[cfg(test)]

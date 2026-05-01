@@ -13,7 +13,7 @@
 edition = "2024"
 rust-version = "1.88"
 name = "zip"
-version = "8.5.1"
+version = "8.6.0"
 authors = [
     "Mathijs van de Nes <git@mathijs.vd-nes.nl>",
     "Marli Frost <marli@frost.red>",
@@ -135,7 +135,7 @@ name = "zip"
 path = "src/lib.rs"
 
 [dependencies.aes]
-version = "0.8"
+version = "0.9"
 optional = true
 
 [dependencies.arbitrary]
@@ -175,8 +175,8 @@ optional = true
 default-features = false
 
 [dependencies.hmac]
-version = "0.12"
-features = ["reset"]
+version = "0.13"
+features = ["zeroize"]
 optional = true
 
 [dependencies.indexmap]
@@ -206,7 +206,7 @@ optional = true
 default-features = false
 
 [dependencies.pbkdf2]
-version = "0.12"
+version = "0.13"
 optional = true
 
 [dependencies.ppmd-rust]
@@ -214,7 +214,7 @@ version = "1.4"
 optional = true
 
 [dependencies.sha1]
-version = "0.10"
+version = "0.11"
 optional = true
 
 [dependencies.typed-path]

@@ -153,6 +153,29 @@ impl CompressionMethod {
     pub const DEFAULT: Self = CompressionMethod::Stored;
 }
 impl CompressionMethod {
+    /// Convert the compression method (as `u16`) to a name
+    #[must_use]
+    pub const fn name_from_u16(val: u16) -> &'static str {
+        match val {
+            0 => "Stored",
+            1 => "Shrink",
+            2 => "Reduce(1)",
+            3 => "Reduce(2)",
+            4 => "Reduce(3)",
+            5 => "Reduce(4)",
+            6 => "Implode",
+            8 => "Deflated",
+            9 => "Deflate64",
+            12 => "Bzip2",
+            14 => "Lzma",
+            95 => "Xz",
+            93 => "Zstd",
+            98 => "Ppmd",
+            99 => "Aes",
+            _ => "Unknown",
+        }
+    }
+
     pub(crate) const fn parse_from_u16(val: u16) -> Self {
         match val {
             0 => CompressionMethod::Stored,
@@ -258,7 +281,9 @@ impl Default for CompressionMethod {
 impl fmt::Display for CompressionMethod {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         // Just duplicate what the Debug format looks like, i.e, the enum key:
-        write!(f, "{self:?}")
+        let method_u16 = self.serialize_to_u16();
+        let name = Self::name_from_u16(method_u16);
+        write!(f, "{name}")
     }
 }
 
@@ -512,9 +537,10 @@ impl<R: io::BufRead> Decompressor<R> {
             CompressionMethod::Implode => Decompressor::Implode(
                 crate::legacy::implode::ImplodeDecoder::new(reader, uncompressed_size, flags),
             ),
-            _ => {
-                return Err(crate::result::ZipError::UnsupportedArchive(
-                    "Compression method not supported",
+            method => {
+                let method = method.serialize_to_u16();
+                return Err(crate::result::ZipError::CompressionMethodNotSupported(
+                    method,
                 ));
             }
         })

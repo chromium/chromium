@@ -228,10 +228,8 @@ pub(crate) fn make_crypto_reader<'a, R: Read + ?Sized>(
 ) -> ZipResult<CryptoReader<'a, R>> {
     #[allow(deprecated)]
     {
-        if let CompressionMethod::Unsupported(_) = data.compression_method {
-            return Err(ZipError::UnsupportedArchive(
-                "Compression method not supported",
-            ));
+        if let CompressionMethod::Unsupported(id) = data.compression_method {
+            return Err(ZipError::CompressionMethodNotSupported(id));
         }
     }
 
