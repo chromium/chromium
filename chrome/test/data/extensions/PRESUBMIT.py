@@ -21,9 +21,6 @@ def CheckChange(input_api, output_api):
         # modify their contents.
         'profiles',
         'good',
-
-        # Formatting for this dir Coming Soon to a Repo Near You.
-        'api_test'
       )
   ]
 
