@@ -248,20 +248,6 @@ TEST_F(SiteFamiliarityProcessSelectionDeferringConditionTest,
   CheckSiteFamiliar(navigation_handle);
 }
 
-// Test that chrome-extension:// URLs are considered familiar.
-TEST_F(SiteFamiliarityProcessSelectionDeferringConditionTest,
-       FamiliarityHeuristic_ChromeExtensionUrl) {
-  GURL kChromeExtensionUrl("chrome-extension://123/popup.html");
-  content::MockNavigationHandle navigation_handle(kChromeExtensionUrl,
-                                                  main_rfh());
-  SiteFamiliarityProcessSelectionDeferringCondition condition(
-      navigation_handle);
-
-  EXPECT_EQ(condition.OnWillSelectFinalProcess(base::OnceClosure()),
-            content::ProcessSelectionDeferringCondition::Result::kProceed);
-  CheckSiteFamiliar(navigation_handle);
-}
-
 // Test that SiteFamiliarityProcessSelectionDeferringCondition does not check
 // history or the safe-browsing-high-confidence-allowlist for web-safe non-http,
 // non-https URLs. Most non-http,non-https web-safe schemes are not recorded in
@@ -454,6 +440,26 @@ class SiteFamiliarityProcessSelectionDeferringConditionMockHistoryTest
 };
 
 }  // anonymous namespace
+
+// Test that chrome-extension:// URLs are considered familiar.
+TEST_F(SiteFamiliarityProcessSelectionDeferringConditionMockHistoryTest,
+       FamiliarityHeuristic_ChromeExtensionUrl) {
+  GURL kChromeExtensionUrl("chrome-extension://123/popup.html");
+  content::MockNavigationHandle navigation_handle(kChromeExtensionUrl,
+                                                  main_rfh());
+  SiteFamiliarityProcessSelectionDeferringCondition condition(
+      navigation_handle);
+
+  EXPECT_EQ(condition.OnWillSelectFinalProcess(base::OnceClosure()),
+            content::ProcessSelectionDeferringCondition::Result::kProceed);
+  CheckSiteFamiliar(navigation_handle);
+
+  // chrome-extension:// URLs are known to be familiar, so we want to ensure
+  // that no unnecessary history queries are made.
+  raw_ptr<ManualCallbackEmptyHistoryService> mock_history_service =
+      static_cast<ManualCallbackEmptyHistoryService*>(history_service());
+  EXPECT_EQ(0u, mock_history_service->GetNumQueuedCallbacks());
+}
 
 // Test that
 // SiteFamiliarityProcessSelectionDeferringCondition::OnWillSelectFinalProcess()

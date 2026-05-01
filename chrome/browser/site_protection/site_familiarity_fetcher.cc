@@ -76,6 +76,7 @@ void SiteFamiliarityFetcher::Start(const GURL& url,
     // installed via enterprise policy, consider chrome://extension URLs to be
     // familiar.
     OnComputedVerdictWithoutFetches(/*is_site_familiar=*/true);
+    return;
   }
 
   if (!fetch_url_.SchemeIsHTTPOrHTTPS()) {
