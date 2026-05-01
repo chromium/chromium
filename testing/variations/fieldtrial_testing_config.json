@@ -24013,6 +24013,21 @@
             ]
         }
     ],
+    "UseAppTaskForCustomTabActivation": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "UseAppTaskForCustomTabActivation"
+                    ]
+                }
+            ]
+        }
+    ],
     "UseCompositorClockVSyncInterval": [
         {
             "platforms": [
