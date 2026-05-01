@@ -179,7 +179,6 @@ public class FuseboxMediatorUnitTest {
                         R.style.Theme_BrowserUI_DayNight);
         mResources = mContext.getResources();
         mModel = new PropertyModel(FuseboxProperties.ALL_KEYS);
-
         mModel.set(FuseboxProperties.POPUP_STATE, PopupState.HIDDEN);
 
         mViewHolder = new FuseboxViewHolder(viewGroup, mPopup);
@@ -404,7 +403,6 @@ public class FuseboxMediatorUnitTest {
         assertNotNull(runnable);
 
         // Show popup.
-        mModel.set(FuseboxProperties.POPUP_STATE, PopupState.HIDDEN);
         runnable.run();
         assertEquals(PopupState.FLOATING, (int) mModel.get(FuseboxProperties.POPUP_STATE));
 
@@ -415,7 +413,6 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void onPlusButtonClicked_recordsMetrics() {
-        mModel.set(FuseboxProperties.POPUP_STATE, PopupState.HIDDEN);
         var histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Omnibox.MobileFusebox.AttachmentsPopupToggled", true);
@@ -439,7 +436,6 @@ public class FuseboxMediatorUnitTest {
         assertNotNull(runnable);
 
         // Show popup.
-        mModel.set(FuseboxProperties.POPUP_STATE, PopupState.HIDDEN);
         runnable.run();
         verify(mScrimManager).showScrim(any());
 
@@ -456,7 +452,6 @@ public class FuseboxMediatorUnitTest {
         assertNotNull(runnable);
 
         // Show popup.
-        mModel.set(FuseboxProperties.POPUP_STATE, PopupState.HIDDEN);
         runnable.run();
         verify(mScrimManager, never()).showScrim(any());
     }
