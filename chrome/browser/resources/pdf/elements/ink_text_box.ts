@@ -453,8 +453,8 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
       return;
     }
 
-    // Delete key not in the textbox deletes the annotation.
-    if (e.key === 'Delete') {
+    // Backspace/Delete key not in the textbox deletes the annotation.
+    if (e.key === 'Backspace' || e.key === 'Delete') {
       this.textValue_ = '';
       this.commitTextAnnotation();
       return;
