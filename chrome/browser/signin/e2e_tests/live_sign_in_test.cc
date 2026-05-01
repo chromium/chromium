@@ -12,6 +12,7 @@
 #include "base/test/with_feature_override.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/chrome_signin_client.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
@@ -50,19 +51,25 @@
 #include "components/sync/base/features.h"
 #include "components/sync/service/sync_service.h"
 #include "components/unexportable_keys/features.h"
+#include "content/public/browser/browsing_data_filter_builder.h"
+#include "content/public/browser/browsing_data_remover.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/browsing_data_remover_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/base/features.h"
 #include "net/base/schemeful_site.h"
+#include "net/cookies/canonical_cookie.h"
+#include "net/cookies/cookie_options.h"
 #include "net/device_bound_sessions/session_event.h"
 #include "net/device_bound_sessions/session_key.h"
 #include "net/dns/mock_host_resolver.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/device_bound_sessions.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -81,7 +88,10 @@ namespace {
 
 using ::testing::AllOf;
 using ::testing::Contains;
+using ::testing::ExplainMatchResult;
 using ::testing::Field;
+using ::testing::HasSubstr;
+using ::testing::Not;
 
 // Live tests for SignIn.
 // These tests can be run with:
@@ -786,6 +796,16 @@ IN_PROC_BROWSER_TEST_P(LiveSignInGaiaIntegrationTest,
   EXPECT_FALSE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
 }
 
+MATCHER_P2(HasBoundSession, session_id, site_url, "") {
+  return ExplainMatchResult(
+      Contains(
+          AllOf(Field(&net::device_bound_sessions::SessionKey::id,
+                      net::device_bound_sessions::SessionKey::Id(session_id)),
+                Field(&net::device_bound_sessions::SessionKey::site,
+                      net::SchemefulSite(site_url)))),
+      arg, result_listener);
+}
+
 class TestDeviceBoundSessionObserver
     : public network::mojom::DeviceBoundSessionEventObserver {
  public:
@@ -797,16 +817,40 @@ class TestDeviceBoundSessionObserver
   }
   ~TestDeviceBoundSessionObserver() override = default;
 
-  void WaitForRegistration() { run_loop_.Run(); }
+  void WaitForRegistration() {
+    registration_run_loop_->Run();
+    registration_run_loop_.emplace();
+  }
+
+  void WaitForTermination() {
+    termination_run_loop_->Run();
+    termination_run_loop_.emplace();
+  }
+
+  void WaitForRefresh() {
+    refresh_run_loop_->Run();
+    refresh_run_loop_.emplace();
+  }
 
   // network::mojom::DeviceBoundSessionEventObserver:
   void OnDeviceBoundSessionEventReceived(
       const net::device_bound_sessions::SessionEvent& event) override {
+    if (event.session_id != target_session_id_) {
+      return;
+    }
+
     if (std::holds_alternative<
             net::device_bound_sessions::CreationEventDetails>(
-            event.event_type_details) &&
-        event.session_id == target_session_id_) {
-      run_loop_.Quit();
+            event.event_type_details)) {
+      registration_run_loop_->Quit();
+    } else if (std::holds_alternative<
+                   net::device_bound_sessions::TerminationEventDetails>(
+                   event.event_type_details)) {
+      termination_run_loop_->Quit();
+    } else if (std::holds_alternative<
+                   net::device_bound_sessions::RefreshEventDetails>(
+                   event.event_type_details)) {
+      refresh_run_loop_->Quit();
     }
   }
 
@@ -815,10 +859,13 @@ class TestDeviceBoundSessionObserver
           session_displays) override {}
 
  private:
+  const std::string target_session_id_;
   mojo::Receiver<network::mojom::DeviceBoundSessionEventObserver> receiver_{
       this};
-  base::RunLoop run_loop_;
-  std::string target_session_id_;
+
+  std::optional<base::RunLoop> registration_run_loop_{std::in_place};
+  std::optional<base::RunLoop> termination_run_loop_{std::in_place};
+  std::optional<base::RunLoop> refresh_run_loop_{std::in_place};
 };
 
 class DeviceBoundSessionsLiveSignInTest : public LiveSignInTestBase {
@@ -844,49 +891,165 @@ class DeviceBoundSessionsLiveSignInTest : public LiveSignInTestBase {
     host_resolver()->AllowDirectLookup("google.com");
   }
 
+  void SetUpOnMainThread() override {
+    LiveSignInTestBase::SetUpOnMainThread();
+    session_manager_ =
+        ChromeSigninClientFactory::GetForProfile(browser()->profile())
+            ->GetDeviceBoundSessionManager();
+    ASSERT_TRUE(session_manager_);
+    observer_.emplace(session_manager_, "sidts_session");
+  }
+
+  void TearDownOnMainThread() override {
+    observer_.reset();
+    session_manager_ = nullptr;
+    LiveSignInTestBase::TearDownOnMainThread();
+  }
+
+  network::mojom::DeviceBoundSessionManager* session_manager() {
+    return session_manager_;
+  }
+
+  TestDeviceBoundSessionObserver& observer() { return *observer_; }
+
+  std::string GetCookies(const GURL& url) {
+    network::mojom::CookieManager* cookie_manager =
+        browser()
+            ->profile()
+            ->GetDefaultStoragePartition()
+            ->GetCookieManagerForBrowserProcess();
+    net::CookieOptions options;
+    options.set_include_httponly();
+    options.set_same_site_cookie_context(
+        net::CookieOptions::SameSiteCookieContext::MakeInclusive());
+    base::test::TestFuture<const net::CookieAccessResultList&,
+                           const net::CookieAccessResultList&>
+        future;
+    cookie_manager->GetCookieList(
+        url, options, net::CookiePartitionKeyCollection::ContainsAll(),
+        future.GetCallback());
+    return net::CanonicalCookie::BuildCookieLine(std::get<0>(future.Get()));
+  }
+
+  void DeleteCookie(const std::string& cookie_name, const std::string& domain) {
+    network::mojom::CookieManager* cookie_manager =
+        browser()
+            ->profile()
+            ->GetDefaultStoragePartition()
+            ->GetCookieManagerForBrowserProcess();
+
+    auto filter = network::mojom::CookieDeletionFilter::New();
+    filter->cookie_name = cookie_name;
+    filter->including_domains = std::vector<std::string>{domain};
+
+    base::test::TestFuture<uint32_t> delete_future;
+    cookie_manager->DeleteCookies(std::move(filter),
+                                  delete_future.GetCallback());
+    EXPECT_GT(delete_future.Get(), 0u);
+  }
+
+  std::vector<net::device_bound_sessions::SessionKey> GetAllSessions() {
+    base::test::TestFuture<
+        const std::vector<net::device_bound_sessions::SessionKey>&>
+        sessions_future;
+    session_manager()->GetAllSessions(sessions_future.GetCallback());
+    return sessions_future.Get();
+  }
+
+  testing::AssertionResult SignInAndVerifyBoundSession() {
+    std::optional<TestAccountSigninCredentials> test_account =
+        GetTestAccounts()->GetAccount("TEST_ACCOUNT_1");
+    CHECK(test_account.has_value());
+
+    SignInTestObserver token_observer(identity_manager(), account_reconcilor(),
+                                      ConsentLevel::kSignin);
+
+    sign_in_functions.SignInFromSettings(*test_account, 0);
+
+    // Wait for the bound session to be created.
+    observer().WaitForRegistration();
+    // Verify the bound session exists.
+    EXPECT_THAT(GetAllSessions(),
+                HasBoundSession("sidts_session", GURL("https://google.com")));
+
+    // Wait for the refresh token to be updated.
+    token_observer.WaitForAccountChanges(1, PrimaryAccountWait::kWaitForAdded);
+    CoreAccountId account_id =
+        identity_manager()->GetPrimaryAccountId(ConsentLevel::kSignin);
+    EXPECT_TRUE(
+        identity_manager()->HasAccountWithBoundRefreshToken(account_id));
+
+    if (HasFailure()) {
+      return testing::AssertionFailure()
+             << "SignInAndVerifyBoundSession failed";
+    }
+    return testing::AssertionSuccess();
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
+  raw_ptr<network::mojom::DeviceBoundSessionManager> session_manager_ = nullptr;
+  std::optional<TestDeviceBoundSessionObserver> observer_;
 };
 
 // Signs in an account and checks that both the refresh token and cookies are
 // bound to device.
 IN_PROC_BROWSER_TEST_F(DeviceBoundSessionsLiveSignInTest,
                        MANUAL_SessionsAreBoundAfterSignIn) {
-  std::optional<TestAccountSigninCredentials> test_account =
-      GetTestAccounts()->GetAccount("TEST_ACCOUNT_1");
-  CHECK(test_account.has_value());
+  ASSERT_TRUE(SignInAndVerifyBoundSession());
 
-  network::mojom::DeviceBoundSessionManager* session_manager =
-      ChromeSigninClientFactory::GetForProfile(browser()->profile())
-          ->GetDeviceBoundSessionManager();
-  ASSERT_TRUE(session_manager);
-  TestDeviceBoundSessionObserver observer(session_manager, "sidts_session");
+  // Delete the bound __Secure-1PSIDRTS cookie.
+  DeleteCookie("__Secure-1PSIDRTS", "google.com");
 
-  SignInTestObserver token_observer(identity_manager(), account_reconcilor(),
-                                    ConsentLevel::kSignin);
+  std::string cookies_after_delete = GetCookies(GURL("https://google.com"));
+  EXPECT_THAT(cookies_after_delete, Not(HasSubstr("__Secure-1PSIDRTS")));
 
-  sign_in_functions.SignInFromSettings(*test_account, 0);
+  // Navigate to google.com to trigger cookie refresh.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("https://google.com")));
 
-  // Wait for the bound session to be created.
-  observer.WaitForRegistration();
-  // Verify the bound session exists.
-  base::test::TestFuture<
-      const std::vector<net::device_bound_sessions::SessionKey>&>
-      sessions_future;
-  session_manager->GetAllSessions(sessions_future.GetCallback());
+  // Wait for the bound session to be refreshed.
+  observer().WaitForRefresh();
+
+  std::string cookies_after_refresh = GetCookies(GURL("https://google.com"));
+  EXPECT_THAT(cookies_after_refresh, HasSubstr("__Secure-1PSIDRTS"));
+}
+
+// Checks that OAuthMultilogin rebuilds bound session after site data deletion.
+IN_PROC_BROWSER_TEST_F(DeviceBoundSessionsLiveSignInTest,
+                       MANUAL_OAuthMultiloginRebuildsBoundSession) {
+  ASSERT_TRUE(SignInAndVerifyBoundSession());
+
+  // Delete all browsing data on google.com.
+  content::BrowsingDataRemover* remover =
+      browser()->profile()->GetBrowsingDataRemover();
+  content::BrowsingDataRemoverCompletionObserver completion_observer(remover);
+
+  auto filter_builder = content::BrowsingDataFilterBuilder::Create(
+      content::BrowsingDataFilterBuilder::Mode::kDelete);
+  filter_builder->AddRegisterableDomain("google.com");
+
+  remover->RemoveWithFilterAndReply(
+      base::Time(), base::Time::Max(),
+      chrome_browsing_data_remover::DATA_TYPE_SITE_DATA,
+      content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB,
+      std::move(filter_builder), &completion_observer);
+  completion_observer.BlockUntilCompletion();
+
+  // Wait for the bound session to be deleted.
+  observer().WaitForTermination();
+
+  // Verify that bound session is gone.
   EXPECT_THAT(
-      sessions_future.Get(),
-      Contains(AllOf(
-          Field(&net::device_bound_sessions::SessionKey::id,
-                net::device_bound_sessions::SessionKey::Id("sidts_session")),
-          Field(&net::device_bound_sessions::SessionKey::site,
-                net::SchemefulSite(GURL("https://google.com"))))));
+      GetAllSessions(),
+      Not(HasBoundSession("sidts_session", GURL("https://google.com"))));
 
-  // Wait for the refresh token to be updated.
-  token_observer.WaitForAccountChanges(1, PrimaryAccountWait::kWaitForAdded);
-  CoreAccountId account_id =
-      identity_manager()->GetPrimaryAccountId(ConsentLevel::kSignin);
-  EXPECT_TRUE(identity_manager()->HasAccountWithBoundRefreshToken(account_id));
+  // Wait until the new cookies are created via OAML.
+  observer().WaitForRegistration();
+
+  // Verify that a new bound session is created.
+  EXPECT_THAT(GetAllSessions(),
+              HasBoundSession("sidts_session", GURL("https://google.com")));
 }
 
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
