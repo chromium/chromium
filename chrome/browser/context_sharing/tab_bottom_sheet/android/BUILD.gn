@@ -162,6 +162,7 @@ android_library("javatests") {
   sources = [ "java/src/org/chromium/chrome/browser/tab_bottom_sheet/TabBottomSheetManagerTest.java" ]
   deps = [
     ":java",
+    ":java_resources",
     ":manager_public_java",
     "//base:base_java",
     "//base:base_java_test_support",

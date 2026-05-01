@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.tab_bottom_sheet;
 
 import android.app.Activity;
+import android.view.LayoutInflater;
+import android.view.View;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.VisibleForTesting;
@@ -93,6 +95,8 @@ public class CoBrowseViewFactory {
             @Nullable WebContents webContents,
             @ColorInt int backgroundColor,
             @TabBottomSheetClientType int clientType) {
+        View containerView =
+                LayoutInflater.from(mActivity).inflate(R.layout.tab_bottom_sheet, null);
         TabBottomSheetWebUi webUi =
                 new TabBottomSheetWebUi(
                         mActivity,
@@ -124,7 +128,7 @@ public class CoBrowseViewFactory {
 
         webUi.setWebContents(webContents);
 
-        return new CoBrowseViews(mActivity, clientType, webUi, fusebox, backgroundColor);
+        return new CoBrowseViews(containerView, clientType, webUi, fusebox, backgroundColor);
     }
 
     @CalledByNative

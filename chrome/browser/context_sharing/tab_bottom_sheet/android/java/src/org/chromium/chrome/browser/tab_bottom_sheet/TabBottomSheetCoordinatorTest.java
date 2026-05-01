@@ -27,6 +27,7 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Rect;
 import android.view.GestureDetector;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
@@ -114,8 +115,9 @@ public class TabBottomSheetCoordinatorTest {
     @Before
     public void setUp() {
         mContext = spy(ApplicationProvider.getApplicationContext());
+        View containerView = LayoutInflater.from(mContext).inflate(R.layout.tab_bottom_sheet, null);
         mCoBrowseViews =
-                new CoBrowseViews(mContext, TabBottomSheetClientType.UNKNOWN, null, null, 0);
+                new CoBrowseViews(containerView, TabBottomSheetClientType.UNKNOWN, null, null, 0);
         mView = mCoBrowseViews.getView();
         assertNotNull(
                 "actor_control_container should be found in CoBrowseViews",

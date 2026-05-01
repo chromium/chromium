@@ -13,6 +13,7 @@ import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -55,9 +56,10 @@ public class CoBrowseViewsTest {
         when(mWebUi.getWebUiView()).thenReturn(mWebUiView);
         when(mFusebox.getFuseboxView()).thenReturn(mFuseboxView);
 
+        View rootView = LayoutInflater.from(mContext).inflate(R.layout.tab_bottom_sheet, null);
         mCoBrowseViews =
                 new CoBrowseViews(
-                        mContext,
+                        rootView,
                         TabBottomSheetClientType.CONTEXTUAL_TASKS,
                         mWebUi,
                         mFusebox,

@@ -6,8 +6,6 @@ package org.chromium.chrome.browser.tab_bottom_sheet;
 
 import static org.chromium.build.NullUtil.assertNonNull;
 
-import android.content.Context;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -34,21 +32,21 @@ public class CoBrowseViews {
     private final @Nullable TabBottomSheetWebUi mWebUi;
     private final @Nullable ContextualTasksFusebox mFusebox;
     private final @ColorInt int mBackgroundColor;
-    private final View mView;
+    private final View mContainerView;
     private final @TabBottomSheetClientType int mClientType;
     private @Nullable View mPeekView;
 
     /**
      * Constructor for CoBrowseViews.
      *
-     * @param context The context for the view.
+     * @param containerView The root view for the co-browse content.
      * @param clientType The client using the bottom sheet.
      * @param webUi The web UI for the view.
      * @param fusebox The fusebox for the view.
      * @param backgroundColor The background color for the view.
      */
     public CoBrowseViews(
-            Context context,
+            View containerView,
             @TabBottomSheetClientType int clientType,
             @Nullable TabBottomSheetWebUi webUi,
             @Nullable ContextualTasksFusebox fusebox,
@@ -57,16 +55,17 @@ public class CoBrowseViews {
         mWebUi = webUi;
         mFusebox = fusebox;
         mBackgroundColor = backgroundColor;
-        mView = buildView(context);
+        mContainerView = containerView;
+        populateViewHierarchy();
     }
 
     /** Destroys the co-browse view and its components. */
     @CalledByNative
     @VisibleForTesting
     void destroy() {
-        ViewGroup webUiContainer = mView.findViewById(R.id.web_ui_container);
-        ViewGroup fuseboxContainer = mView.findViewById(R.id.fusebox_container);
-        ViewGroup peekContainer = mView.findViewById(R.id.actor_control_container);
+        ViewGroup webUiContainer = mContainerView.findViewById(R.id.web_ui_container);
+        ViewGroup fuseboxContainer = mContainerView.findViewById(R.id.fusebox_container);
+        ViewGroup peekContainer = mContainerView.findViewById(R.id.actor_control_container);
         if (mWebUi != null) {
             webUiContainer.removeAllViews();
             mWebUi.destroy();
@@ -89,14 +88,14 @@ public class CoBrowseViews {
     /** Sets the touch handler for the Web UI container. */
     public void setWebUiTouchHandler(TabBottomSheetWebUiContainer.TouchHandler touchHandler) {
         TabBottomSheetWebUiContainer webUiContainer =
-                assertNonNull(mView.findViewById(R.id.web_ui_container));
+                assertNonNull(mContainerView.findViewById(R.id.web_ui_container));
         webUiContainer.setTouchHandler(touchHandler);
     }
 
     /** Returns the view for the co-browse content. */
     @CalledByNative
     public View getView() {
-        return mView;
+        return mContainerView;
     }
 
     public boolean hasPeekView() {
@@ -109,7 +108,7 @@ public class CoBrowseViews {
      * @param peekView The peek view to attach.
      */
     public void attachPeekView(View peekView) {
-        ViewGroup peekContainer = mView.findViewById(R.id.actor_control_container);
+        ViewGroup peekContainer = mContainerView.findViewById(R.id.actor_control_container);
         detachFromParent(peekView);
         assert peekContainer.getChildCount() == 0;
         mPeekView = peekView;
@@ -123,7 +122,7 @@ public class CoBrowseViews {
      */
     public void removePeekView(View peekView) {
         if (mPeekView == peekView) {
-            ViewGroup peekContainer = mView.findViewById(R.id.actor_control_container);
+            ViewGroup peekContainer = mContainerView.findViewById(R.id.actor_control_container);
             peekContainer.removeView(mPeekView);
             mPeekView = null;
         }
@@ -138,7 +137,7 @@ public class CoBrowseViews {
             mWebUi.setWebContents(webContents);
             View newView = mWebUi.getWebUiView();
             if (oldView != newView) {
-                ViewGroup webUiContainer = mView.findViewById(R.id.web_ui_container);
+                ViewGroup webUiContainer = mContainerView.findViewById(R.id.web_ui_container);
                 webUiContainer.removeAllViews();
                 detachFromParent(newView);
                 webUiContainer.addView(newView);
@@ -156,7 +155,7 @@ public class CoBrowseViews {
     /** Sets the resizing state of the sheet. */
     public void setResizingState(ResizingState resizingState) {
         @Px int height = resizingState.webUiContainerHeight;
-        ViewGroup sheetContent = mView.findViewById(R.id.expanded_content_group);
+        ViewGroup sheetContent = mContainerView.findViewById(R.id.expanded_content_group);
         ViewGroup.LayoutParams sheetContentParams = sheetContent.getLayoutParams();
 
         if (!resizingState.atFixedHeight
@@ -178,11 +177,10 @@ public class CoBrowseViews {
         return mWebUi != null ? mWebUi.getWebContents() : null;
     }
 
-    private View buildView(Context context) {
-        View view = LayoutInflater.from(context).inflate(R.layout.tab_bottom_sheet, null);
-        ViewGroup webUiContainer = view.findViewById(R.id.web_ui_container);
-        ViewGroup fuseboxContainer = view.findViewById(R.id.fusebox_container);
-        ViewGroup peekContainer = view.findViewById(R.id.actor_control_container);
+    private void populateViewHierarchy() {
+        ViewGroup webUiContainer = mContainerView.findViewById(R.id.web_ui_container);
+        ViewGroup fuseboxContainer = mContainerView.findViewById(R.id.fusebox_container);
+        ViewGroup peekContainer = mContainerView.findViewById(R.id.actor_control_container);
 
         if (mWebUi != null) {
             View webUiView = mWebUi.getWebUiView();
@@ -198,8 +196,6 @@ public class CoBrowseViews {
             detachFromParent(mPeekView);
             peekContainer.addView(mPeekView);
         }
-
-        return view;
     }
 
     private void detachFromParent(View view) {

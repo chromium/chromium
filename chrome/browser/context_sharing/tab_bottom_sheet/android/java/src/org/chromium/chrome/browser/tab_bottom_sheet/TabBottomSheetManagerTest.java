@@ -15,6 +15,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.graphics.Color;
+import android.view.LayoutInflater;
 import android.view.View;
 
 import androidx.test.filters.SmallTest;
@@ -37,6 +38,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.content.WebContentsFactory;
+import org.chromium.chrome.browser.context_sharing.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -107,9 +109,11 @@ public class TabBottomSheetManagerTest {
                             (TabbedRootUiCoordinator) mActivity.getRootUiCoordinatorForTesting();
                     mBottomSheetController = tabbedRootUiCoordinator.getBottomSheetController();
                     var compositorViewHolder = mActivity.getCompositorViewHolderSupplier().get();
+                    View rootView =
+                            LayoutInflater.from(mActivity).inflate(R.layout.tab_bottom_sheet, null);
                     mCoBrowseViews =
                             new CoBrowseViews(
-                                    mActivity,
+                                    rootView,
                                     TabBottomSheetClientType.UNKNOWN,
                                     null,
                                     null,
@@ -562,7 +566,8 @@ public class TabBottomSheetManagerTest {
                 ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 new CoBrowseViews(
-                                        mActivity,
+                                        LayoutInflater.from(mActivity)
+                                                .inflate(R.layout.tab_bottom_sheet, null),
                                         TabBottomSheetClientType.UNKNOWN,
                                         null,
                                         null,
