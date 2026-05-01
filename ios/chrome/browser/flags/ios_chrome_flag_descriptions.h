@@ -589,6 +589,9 @@ extern const char kIOSOneTapMiniMapRestrictionsDescription[];
 extern const char kIOSOneTimeDefaultBrowserNotificationName[];
 extern const char kIOSOneTimeDefaultBrowserNotificationDescription[];
 
+extern const char kIOSPasswordAutoSubmissionName[];
+extern const char kIOSPasswordAutoSubmissionDescription[];
+
 extern const char kIOSProactivePasswordGenerationBottomSheetName[];
 extern const char kIOSProactivePasswordGenerationBottomSheetDescription[];
 

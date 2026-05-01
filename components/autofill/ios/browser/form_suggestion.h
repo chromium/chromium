@@ -11,7 +11,9 @@
 #import "components/autofill/core/browser/field_types.h"
 #import "components/autofill/core/browser/suggestions/suggestion.h"
 #import "components/autofill/core/browser/suggestions/suggestion_type.h"
+#import "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
+#include "components/password_manager/core/browser/password_ui_utils.h"
 
 @protocol FormSuggestionProvider;
 
@@ -23,6 +25,14 @@ struct FormSuggestionMetadata {
   // True if the field that triggered the suggestion was (1) obfuscated and (2)
   // determined to be likely a real password field based on a best guess.
   bool likely_from_real_password_field = false;
+  // Indicates if the form is safe to be automatically submitted after filling.
+  bool should_trigger_submission = false;
+  // Indicates the reason why auto-submission might not be triggered.
+  password_manager::SubmissionReadinessState submission_readiness =
+      password_manager::SubmissionReadinessState::kNoInformation;
+  // Indicates if the UI surface that uses the suggestion explicitly accepts
+  // auto-submission.
+  bool accepts_auto_submit = false;
 };
 
 // Enum class used to determine the feature for in-product help for the
@@ -156,6 +166,10 @@ enum class SuggestionIconType {
 + (FormSuggestion*)copy:(FormSuggestion*)formSuggestionToCopy
            andSetParams:(std::optional<autofill::FormActivityParams>)params
                provider:(id<FormSuggestionProvider>)provider;
+
+// Copies the contents of `formSuggestionToCopy` and overrides the metadata.
++ (FormSuggestion*)copy:(FormSuggestion*)formSuggestionToCopy
+           withMetadata:(FormSuggestionMetadata)metadata;
 
 @end
 

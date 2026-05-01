@@ -173,4 +173,26 @@
                suggestionIconType:formSuggestionToCopy.suggestionIconType];
 }
 
++ (FormSuggestion*)copy:(FormSuggestion*)formSuggestionToCopy
+           withMetadata:(FormSuggestionMetadata)metadata {
+  return [[FormSuggestion alloc]
+                    initWithValue:formSuggestionToCopy.value
+                       minorValue:formSuggestionToCopy.minorValue
+               displayDescription:formSuggestionToCopy.displayDescription
+                             icon:formSuggestionToCopy.icon
+            hasCustomCardArtImage:formSuggestionToCopy.hasCustomCardArtImage
+                             type:formSuggestionToCopy.type
+                          payload:formSuggestionToCopy.payload
+      fieldByFieldFillingTypeUsed:formSuggestionToCopy
+                                      .fieldByFieldFillingTypeUsed
+                   requiresReauth:formSuggestionToCopy.requiresReauth
+       acceptanceA11yAnnouncement:formSuggestionToCopy
+                                      .acceptanceA11yAnnouncement
+                         metadata:metadata
+                           params:formSuggestionToCopy.params
+                         provider:formSuggestionToCopy.provider
+                    featureForIPH:formSuggestionToCopy.featureForIPH
+               suggestionIconType:formSuggestionToCopy.suggestionIconType];
+}
+
 @end

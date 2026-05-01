@@ -929,6 +929,11 @@ const char kIOSOneTimeDefaultBrowserNotificationDescription[] =
     "Enables a one-time notification to prompt the user to set the app as the "
     "default browser.";
 
+const char kIOSPasswordAutoSubmissionName[] =
+    "Auto Submission for Password Autofill";
+const char kIOSPasswordAutoSubmissionDescription[] =
+    "Enables automatic submission of password forms when filling credentials.";
+
 const char kIOSProactivePasswordGenerationBottomSheetName[] =
     "IOS Proactive Password Generation Bottom Sheet";
 const char kIOSProactivePasswordGenerationBottomSheetDescription[] =

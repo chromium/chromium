@@ -59,6 +59,7 @@
 #import "components/page_content_annotations/core/page_content_annotations_features.h"
 #import "components/password_manager/core/browser/features/password_features.h"
 #import "components/password_manager/core/common/password_manager_features.h"
+#import "components/password_manager/ios/features.h"
 #import "components/payments/core/features.h"
 #import "components/policy/core/common/policy_loader_ios_constants.h"
 #import "components/policy/policy_constants.h"
@@ -1396,6 +1397,40 @@ const FeatureEntry::FeatureVariation kAssistantContainerVariations[] = {
     {"with debug enabled", kAssistantContainerParamDebugMode, nullptr},
     {"30% medium detent", kAssistantContainer30, nullptr},
     {"60% medium detent", kAssistantContainer60, nullptr}};
+
+const FeatureEntry::FeatureParam kAutoSubmissionDismissThenSubmit[] = {
+    {"auto-submission-type", "DismissThenSubmit"},
+};
+const FeatureEntry::FeatureParam kAutoSubmissionSubmitThenDismiss[] = {
+    {"auto-submission-type", "SubmitThenDismiss"},
+};
+const FeatureEntry::FeatureParam kAutoSubmissionDismissThenBlockThenSubmit[] = {
+    {"auto-submission-type", "DismissThenBlockThenSubmit"},
+};
+const FeatureEntry::FeatureParam
+    kAutoSubmissionDismissThenBlockThenSubmitWithWait[] = {
+        {"auto-submission-type", "DismissThenBlockThenSubmit"},
+        {"auto-submission-use-wait-period", "true"},
+};
+const FeatureEntry::FeatureParam kAutoSubmissionDismissThenSubmitWithWait[] = {
+    {"auto-submission-type", "DismissThenSubmit"},
+    {"auto-submission-use-wait-period", "true"},
+};
+const FeatureEntry::FeatureParam kAutoSubmissionScriptSubmit[] = {
+    {"auto-submission-type", "ScriptSubmit"},
+};
+
+const FeatureEntry::FeatureVariation kAutoSubmissionVariations[] = {
+    {"Dismiss then Submit", kAutoSubmissionDismissThenSubmit, nullptr},
+    {"Submit then Dismiss", kAutoSubmissionSubmitThenDismiss, nullptr},
+    {"Dismiss then Block then Submit",
+     kAutoSubmissionDismissThenBlockThenSubmit, nullptr},
+    {"Dismiss then Block then Submit (Wait)",
+     kAutoSubmissionDismissThenBlockThenSubmitWithWait, nullptr},
+    {"Dismiss then Submit (Wait)", kAutoSubmissionDismissThenSubmitWithWait,
+     nullptr},
+    {"Script Submit", kAutoSubmissionScriptSubmit, nullptr},
+};
 
 // To add a new entry, add to the end of kFeatureEntries. There are four
 // distinct types of entries:
@@ -2885,6 +2920,13 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kUseUIGraphicsImageRendererForFallbackIconsDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kUseUIGraphicsImageRendererForFallbackIcons)},
+    {"password-auto-submission-ios",
+     flag_descriptions::kIOSPasswordAutoSubmissionName,
+     flag_descriptions::kIOSPasswordAutoSubmissionDescription,
+     flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         password_manager::features::kIOSPasswordAutoSubmission,
+         kAutoSubmissionVariations, "PasswordAutofillAutoSubmission")},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

@@ -44,6 +44,7 @@ source_set("flags") {
     "//components/page_image_service",
     "//components/password_manager/core/browser/features:password_features",
     "//components/password_manager/core/common:features",
+    "//components/password_manager/ios:features",
     "//components/payments/core",
     "//components/policy:generated",
     "//components/policy/core/common:common_constants",
