@@ -93,6 +93,9 @@
     [_bottomBar.trailingAnchor
         constraintEqualToAnchor:self.view.trailingAnchor],
   ]];
+  _bottomBarBottomConstraint = [_bottomBar.bottomAnchor
+      constraintEqualToAnchor:self.view.safeAreaLayoutGuide.bottomAnchor];
+  _bottomBarBottomConstraint.active = YES;
 
   if (IsChromeNextIaEnabled()) {
     _gradientBackgroundView = [[TabGridToolbarBackgroundView alloc]
