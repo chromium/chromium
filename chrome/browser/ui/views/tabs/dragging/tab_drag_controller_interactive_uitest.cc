@@ -2828,10 +2828,9 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                        DetachToOwnWindowFromMaximizedWindow) {
 #if BUILDFLAG(IS_LINUX)
-  if (ui::OzonePlatform::RunningOnWaylandForTest() &&
-      base::FeatureList::IsEnabled(features::kInitialWebUI)) {
-    GTEST_SKIP() << "Test crashes on Wayland with InitialWebUI enabled. "
-                    "See b/471235790.";
+  if (base::FeatureList::IsEnabled(features::kInitialWebUI)) {
+    GTEST_SKIP() << "Test crashes on Linux with InitialWebUI enabled. "
+                    "See crbug.com/477426026.";
   }
 #endif
   // InitialWebUI defers window visibility. If we Maximize() before the window
