@@ -52,6 +52,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
                                   kDefaultReportFrequency);
   registry->RegisterBooleanPref(kUserSecuritySignalsReporting, false);
   registry->RegisterBooleanPref(kUserSecurityAuthenticatedReporting, false);
+  registry->RegisterListPref(kSecuritySignalsClientCertificatesSelectors);
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   registry->RegisterBooleanPref(
       enterprise_reporting::kCloudExtensionRequestEnabled, false);

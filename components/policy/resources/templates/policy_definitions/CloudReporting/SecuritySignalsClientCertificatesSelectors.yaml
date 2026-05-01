@@ -1,0 +1,58 @@
+caption: Automatically select client certificates matching filters for <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> security signal reports.
+desc: |-
+  Configures filters to select which client certificates are included in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> security signal reports. These reports send browser and device posture information to <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME">Google Workspace</ph>, which administrators can use to configure <ph name="GOOGLE_CONTEXT_AWARE_ACCESS">Context-Aware Access (CAA)</ph> rules.
+
+  This policy allows you to define filters based on client certificate attributes, such as the ISSUER and/or SUBJECT distinguished names. <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will only include certificates in the signal reports if they match at least one of the filters specified.
+
+       Examples for the usage of the <ph name="SELECTOR_PLACEHOLDER">$SELECTOR</ph> section:
+
+        * When <ph name="SELECTOR_PLACEHOLDER">$SELECTOR</ph> is set to <ph name="SECURITY_SIGNALS_CLIENT_CERTIFICATE_SELECTORS_FILTER_EXAMPLE">{ "ISSUER": { "CN": "$ISSUER_CN" } }</ph>, only client certificates issued by a certificate with the CommonName <ph name="ISSUER_CN_PLACEHOLDER">$ISSUER_CN</ph> are selected.
+
+        * When <ph name="SELECTOR_PLACEHOLDER">$SELECTOR</ph> contains both the <ph name="ISSUER_STRING_VALUE">"ISSUER"</ph> and the <ph name="SUBJECT_STRING_VALUE">"SUBJECT"</ph> sections, only client certificates that satisfy both conditions are selected.
+
+        * When <ph name="SELECTOR_PLACEHOLDER">$SELECTOR</ph> contains a <ph name="SUBJECT_STRING_VALUE">"SUBJECT"</ph> section with the <ph name="FILTER_STRING_ORGANIZATION">"O"</ph> value, a certificate needs at least one organization matching the specified value to be selected.
+
+        * When <ph name="SELECTOR_PLACEHOLDER">$SELECTOR</ph> contains a <ph name="SUBJECT_STRING_VALUE">"SUBJECT"</ph> section with a <ph name="FILTER_STRING_ORGANIZATIONAL_UNIT">"OU"</ph> value, a certificate needs at least one organizational unit matching the specified value to be selected.
+
+        * When <ph name="SELECTOR_PLACEHOLDER">$SELECTOR</ph> is set to <ph name="EMPTY_DICTIONARY">{}</ph>, empty details are ignored for this policy.
+
+        Leaving the policy unset means there's no selection of client certificates during signal reporting.
+
+  *Important:* This policy only takes effect if the <ph name="USER_SECURITY_SIGNALS_REPORTING_POLICY_NAME">UserSecuritySignalsReporting</ph> policy is enabled, which controls the overall feature for sending security signals from Chrome.
+example_value:
+- ISSUER:
+    CN: "certificate issuer name"
+    L: "certificate issuer location"
+    O: "certificate issuer org"
+    OU: "certificate issuer org unit"
+  SUBJECT:
+    CN: "certificate subject name"
+    L: "certificate subject location"
+    O: "certificate subject org"
+    OU: "certificate subject org unit"
+- ISSUER:
+    CN: "another issuer name"
+features:
+  cloud_only: true
+  dynamic_refresh: true
+  per_profile: true
+  user_only: true
+
+future_on:
+- chrome.*
+owners:
+- hmare@google.com
+- file://components/enterprise/browser/reporting/OWNERS
+schema:
+  items:
+    properties:
+      ISSUER:
+        $ref: CertPrincipalFields
+      SUBJECT:
+        $ref: CertPrincipalFields
+    type: object
+  type: array
+tags:
+- admin-sharing
+- google-sharing
+type: dict

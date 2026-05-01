@@ -48,6 +48,10 @@ const char kUserSecuritySignalsReporting[] =
 const char kUserSecurityAuthenticatedReporting[] =
     "enterprise_reporting.user_security_signals.authenticated";
 
+// Filters to be used to select certificates during signal reports.
+const char kSecuritySignalsClientCertificatesSelectors[] =
+    "enterprise_reporting.security_signals_client_certificates_selectors";
+
 // Initially false, and flips to true when we fetch policies WITH the
 // &profileid= query param.
 //

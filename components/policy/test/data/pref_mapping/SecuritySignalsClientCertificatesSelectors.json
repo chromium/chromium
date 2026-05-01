@@ -1,0 +1,110 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Policy applies at user scope.",
+        "policies": {
+          "SecuritySignalsClientCertificatesSelectors": [
+            {
+              "ISSUER": {
+                "CN": "issuer name"
+              }
+            }
+          ]
+        },
+        "policies_settings": {
+          "SecuritySignalsClientCertificatesSelectors": {
+            "scope": "user",
+            "source": "cloud"
+          }
+        },
+        "prefs": {
+          "enterprise_reporting.security_signals_client_certificates_selectors": {
+            "location": "user_profile",
+            "value": [
+              {
+                "ISSUER": {
+                  "CN": "issuer name"
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "note": "Policy applies at user scope with complex filters.",
+        "policies": {
+          "SecuritySignalsClientCertificatesSelectors": [
+            {
+              "ISSUER": {
+                "CN": "issuer name",
+                "L": "issuer location",
+                "O": "issuer org",
+                "OU": "issuer org unit"
+              },
+              "SUBJECT": {
+                "CN": "subject name",
+                "O": "subject org"
+              }
+            }
+          ]
+        },
+        "policies_settings": {
+          "SecuritySignalsClientCertificatesSelectors": {
+            "scope": "user",
+            "source": "cloud"
+          }
+        },
+        "prefs": {
+          "enterprise_reporting.security_signals_client_certificates_selectors": {
+            "location": "user_profile",
+            "value": [
+              {
+                "ISSUER": {
+                  "CN": "issuer name",
+                  "L": "issuer location",
+                  "O": "issuer org",
+                  "OU": "issuer org unit"
+                },
+                "SUBJECT": {
+                  "CN": "subject name",
+                  "O": "subject org"
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+
+        "note": "Policy is ignored at machine scope.",
+        "policies": {
+          "SecuritySignalsClientCertificatesSelectors": [
+            {
+              "ISSUER": {
+                "CN": "issuer name"
+              }
+            }
+          ]
+        },
+        "policies_settings": {
+          "SecuritySignalsClientCertificatesSelectors": {
+            "scope": "machine",
+            "source": "cloud"
+          }
+        },
+        "prefs": {
+          "enterprise_reporting.security_signals_client_certificates_selectors": {
+            "default_value": [],
+            "location": "user_profile"
+          }
+        }
+      }
+    ]
+  }
+]

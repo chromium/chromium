@@ -40,6 +40,8 @@ extern const char kSaasUsageReport[];
 
 extern const char kSaasUsageReportLastTriggerTime[];
 
+extern const char kSecuritySignalsClientCertificatesSelectors[];
+
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 extern const char kCloudExtensionRequestEnabled[];
 

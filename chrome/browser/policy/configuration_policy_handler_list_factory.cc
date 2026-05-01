@@ -3052,9 +3052,15 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
           key::kUserSecurityAuthenticatedReporting,
           enterprise_reporting::kUserSecurityAuthenticatedReporting,
           base::Value::Type::BOOLEAN)));
-
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) ||
         // BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  handlers->AddHandler(std::make_unique<CloudUserOnlyPolicyChecker>(
+      std::make_unique<SimplePolicyHandler>(
+          key::kSecuritySignalsClientCertificatesSelectors,
+          enterprise_reporting::kSecuritySignalsClientCertificatesSelectors,
+          base::Value::Type::LIST)));
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   signin_legacy_policies.push_back(std::make_unique<SimplePolicyHandler>(
       key::kSigninAllowed,
 #if BUILDFLAG(IS_ANDROID)
