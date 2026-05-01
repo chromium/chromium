@@ -97,6 +97,7 @@ struct SameSizeAsShadowRoot : public DocumentFragment,
                               public TreeScope,
                               public ElementRareDataField {
   Member<void*> member[2];
+  AtomicString string_member;
   unsigned flags[1];
 };
 
@@ -472,6 +473,7 @@ void ShadowRoot::ProcessAdoptedStylesheetAttribute(
     AtomicString value) {
   CHECK(RuntimeEnabledFeatures::ShadowRootAdoptedStyleSheetEnabled(
       GetDocument().GetExecutionContext()));
+  adopted_stylesheets_attr_value_ = value;
   if (!value.empty()) {
     UseCounter::Count(GetDocument(), WebFeature::kShadowRootAdoptedStyleSheets);
     AppendAdoptedStyleSheets(ResolveAdoptedStyleSheets(value));

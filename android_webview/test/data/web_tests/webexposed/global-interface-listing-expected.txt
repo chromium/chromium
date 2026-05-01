@@ -5154,6 +5154,7 @@ interface HTMLTemplateElement : HTMLElement
     attribute @@toStringTag
     getter content
     getter htmlFor
+    getter shadowRootAdoptedStyleSheets
     getter shadowRootClonable
     getter shadowRootCustomElementRegistry
     getter shadowRootDelegatesFocus
@@ -5161,6 +5162,7 @@ interface HTMLTemplateElement : HTMLElement
     getter shadowRootSerializable
     method constructor
     setter htmlFor
+    setter shadowRootAdoptedStyleSheets
     setter shadowRootClonable
     setter shadowRootCustomElementRegistry
     setter shadowRootDelegatesFocus

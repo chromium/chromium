@@ -1193,6 +1193,7 @@ html element td
 html element template
     property content
     property htmlFor
+    property shadowRootAdoptedStyleSheets
     property shadowRootClonable
     property shadowRootCustomElementRegistry
     property shadowRootDelegatesFocus

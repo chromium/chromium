@@ -45,6 +45,7 @@
     [CEReactions,Reflect] attribute boolean shadowRootDelegatesFocus;
     [CEReactions,Reflect] attribute boolean shadowRootClonable;
     [Reflect] attribute boolean shadowRootSerializable;
+    [CEReactions, Reflect, RuntimeEnabled=ShadowRootAdoptedStyleSheet] attribute DOMString shadowRootAdoptedStyleSheets;
 
     // Used by Scoped Element Registries
     [CEReactions, Reflect, RuntimeEnabled=ScopedCustomElementRegistry] attribute DOMString shadowRootCustomElementRegistry;

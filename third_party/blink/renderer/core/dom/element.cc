@@ -1175,6 +1175,9 @@ Node* Element::Clone(Document& factory,
       cloned_shadow_root.SetKeepCustomElementRegistryNull(
           shadow_root->ShouldKeepCustomElementRegistryNull());
 
+      // TODO(crbug.com/448174611): Re-process the shadowrootadoptedstylesheets
+      // attribute value on the cloned shadow root.
+
       // 6.6 If the clone children flag is set, then for each child child of
       // node’s shadow root, in tree order: append the result of cloning child
       // with document and the clone children flag set, to copy’s shadow root.

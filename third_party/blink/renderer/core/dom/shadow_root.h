@@ -96,6 +96,10 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment,
 
   void ProcessAdoptedStylesheetAttribute(AtomicString value);
 
+  const AtomicString& AdoptedStylesheetsAttributeValue() const {
+    return adopted_stylesheets_attr_value_;
+  }
+
   InsertionNotificationRequest InsertedInto(ContainerNode&) override;
   void RemovedFrom(ContainerNode&) override;
 
@@ -242,6 +246,7 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment,
 
   Member<SlotAssignment> slot_assignment_;
   Member<ReferenceTargetIdObserver> reference_target_id_observer_;
+  AtomicString adopted_stylesheets_attr_value_;
   unsigned child_shadow_root_count_ : 16;
   unsigned mode_ : 2;
   unsigned registered_with_parent_shadow_root_ : 1;
