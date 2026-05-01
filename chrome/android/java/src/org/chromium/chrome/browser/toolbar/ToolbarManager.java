@@ -1393,6 +1393,7 @@ public class ToolbarManager
                         onBackPressStateChanged();
                         onBackForwardTransitionAnimationChange();
                         applyIncognitoNtpAccessibilityOrder(tab);
+                        if (mBackPressHandler != null) mBackPressHandler.handleOnBackCancelled();
                         mBackGestureInProgress = false;
                         if (tab == null) {
                             mLocationBarModel.notifyUrlChanged(false);
