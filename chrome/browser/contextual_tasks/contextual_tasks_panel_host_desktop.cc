@@ -191,7 +191,6 @@ void ContextualTasksPanelHostDesktop::CreateAndRegisterEntry() {
       base::BindRepeating([]() { return kSidePanelPreferredDefaultWidth; }));
   entry->set_should_show_ephemerally_in_toolbar(false);
   entry->set_should_show_header(false);
-  entry->set_should_show_outline(false);
   global_registry->Register(std::move(entry));
 
   // Observe the side panel entry.

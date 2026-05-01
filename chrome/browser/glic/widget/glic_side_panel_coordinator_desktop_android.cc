@@ -67,7 +67,6 @@ void GlicSidePanelCoordinatorDesktopAndroid::CreateAndRegisterEntry() {
           &GlicSidePanelCoordinatorDesktopAndroid::GetPreferredWidth,
           base::Unretained(this)));
   entry->set_should_show_header(false);
-  entry->set_should_show_outline(false);
   entry->set_should_show_ephemerally_in_toolbar(false);
   entry->AddObserver(this);
   entry_ = entry->GetWeakPtr();
