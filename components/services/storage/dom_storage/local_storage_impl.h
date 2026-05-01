@@ -178,10 +178,6 @@ class LocalStorageImpl : public base::trace_event::MemoryDumpProvider,
 
   std::vector<base::OnceClosure> on_database_opened_callbacks_;
 
-  // Maps between a StorageKey and its view of the map's key/value pairs in the
-  // database.
-  std::map<blink::StorageKey, std::unique_ptr<StorageAreaHolder>> areas_;
-
   // Counts consecutive commit errors. If this number reaches a threshold, the
   // whole database is thrown away.
   int commit_error_count_ = 0;
@@ -203,6 +199,12 @@ class LocalStorageImpl : public base::trace_event::MemoryDumpProvider,
   // restore has taken place, otherwise we might fail to record current usage.
   // See crbug.com/40281870 for more info.
   base::TimeDelta delete_stale_storage_areas_delay_{base::Minutes(1)};
+
+  // Maps between a StorageKey and its view of the map's key/value pairs in the
+  // database.  Declared near the bottom of this class so it destructs
+  // before its dependencies accessed by `StorageAreaHolder::context_` in
+  // `~StorageAreaHolder()`.
+  std::map<blink::StorageKey, std::unique_ptr<StorageAreaHolder>> areas_;
 
   base::WeakPtrFactory<LocalStorageImpl> weak_ptr_factory_{this};
 };

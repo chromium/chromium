@@ -137,13 +137,6 @@ class SessionStorageNamespaceImpl final
       SessionStorageMetadata::NamespaceEntry namespace_metadata,
       const StorageKeyAreas& areas_to_clone);
 
-  // Resets to a pre-populated and pre-bound state. Used when the owner needs to
-  // delete & recreate the database. This call should happen on every namespace
-  // at once, and the logic relies on that.
-  // TODO(dmurph): It's unclear if we need this or not - we might just want to
-  // destruct the object instead of having this method.
-  void Reset();
-
   const std::string& namespace_id() const { return namespace_id_; }
 
   bool IsPopulated() const { return state_ == State::kPopulated; }
