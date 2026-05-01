@@ -14,6 +14,10 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/mac_util.h"
+#endif
+
 namespace {
 class OneTimePermissionsTrackerObserverForTesting
     : public OneTimePermissionsTrackerObserver {
@@ -153,6 +157,13 @@ TEST_F(OneTimePermissionsTrackerTest, ShortTimerResetOnUnbackgrounded) {
 }
 
 TEST_F(OneTimePermissionsTrackerTest, NotifyAfterLongTimeout) {
+#if BUILDFLAG(IS_MAC)
+  // TODO(crbug.com/434660312): Re-enable on macOS 26 once issues with
+  // unexpected test timeout failures are resolved.
+  if (base::mac::MacOSMajorVersion() == 26) {
+    GTEST_SKIP() << "Disabled on macOS Tahoe.";
+  }
+#endif
   const url::Origin origin = url::Origin::Create(GURL("https://example.com"));
   OneTimePermissionsTrackerObserverForTesting observer;
   tracker()->AddObserver(&observer);
@@ -169,6 +180,13 @@ TEST_F(OneTimePermissionsTrackerTest, NotifyAfterLongTimeout) {
 }
 
 TEST_F(OneTimePermissionsTrackerTest, DoNotNotifyBeforeLongTimeout) {
+#if BUILDFLAG(IS_MAC)
+  // TODO(crbug.com/434660312): Re-enable on macOS 26 once issues with
+  // unexpected test timeout failures are resolved.
+  if (base::mac::MacOSMajorVersion() == 26) {
+    GTEST_SKIP() << "Disabled on macOS Tahoe.";
+  }
+#endif
   const url::Origin origin = url::Origin::Create(GURL("https://example.com"));
   OneTimePermissionsTrackerObserverForTesting observer;
   tracker()->AddObserver(&observer);
@@ -184,6 +202,13 @@ TEST_F(OneTimePermissionsTrackerTest, DoNotNotifyBeforeLongTimeout) {
 }
 
 TEST_F(OneTimePermissionsTrackerTest, LongTimerResetOnUnbackgrounded) {
+#if BUILDFLAG(IS_MAC)
+  // TODO(crbug.com/434660312): Re-enable on macOS 26 once issues with
+  // unexpected test timeout failures are resolved.
+  if (base::mac::MacOSMajorVersion() == 26) {
+    GTEST_SKIP() << "Disabled on macOS Tahoe.";
+  }
+#endif
   const url::Origin origin = url::Origin::Create(GURL("https://example.com"));
   OneTimePermissionsTrackerObserverForTesting observer;
   tracker()->AddObserver(&observer);
