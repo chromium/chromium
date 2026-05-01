@@ -27,6 +27,7 @@ import androidx.preference.PreferenceScreen;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
@@ -130,6 +131,7 @@ public class AutofillCardBenefitsFragment extends ChromeBaseSettingsFragment
     @VisibleForTesting
     static void setObserverForTest(Callback<Fragment> observerForTest) {
         sObserverForTest = observerForTest;
+        ResettersForTesting.register(() -> sObserverForTest = null);
     }
 
     private void createCardBenefitSwitch() {

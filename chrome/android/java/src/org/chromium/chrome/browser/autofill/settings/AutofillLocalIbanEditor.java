@@ -26,6 +26,7 @@ import androidx.fragment.app.Fragment;
 import com.google.android.material.textfield.TextInputLayout;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -232,6 +233,7 @@ public class AutofillLocalIbanEditor extends AutofillEditorBase implements Profi
     @VisibleForTesting
     public static void setObserverForTest(Callback<Fragment> observerForTest) {
         sObserverForTest = observerForTest;
+        ResettersForTesting.register(() -> sObserverForTest = null);
     }
 
     private void addIbanDataToEditFields() {
