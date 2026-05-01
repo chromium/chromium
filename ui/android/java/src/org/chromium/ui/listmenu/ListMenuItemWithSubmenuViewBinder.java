@@ -54,7 +54,7 @@ class ListMenuItemWithSubmenuViewBinder {
         } else if (propertyKey == TOOLTIP) {
             view.setTooltipText(model.get(TOOLTIP));
         } else if (propertyKey == START_ICON_BITMAP) {
-            ImageView icon = view.findViewById(org.chromium.ui.R.id.menu_item_icon);
+            ImageView icon = view.findViewById(R.id.menu_item_icon);
             Bitmap bitmap = model.get(ListMenuItemProperties.START_ICON_BITMAP);
             if (bitmap == null) {
                 icon.setVisibility(GONE);

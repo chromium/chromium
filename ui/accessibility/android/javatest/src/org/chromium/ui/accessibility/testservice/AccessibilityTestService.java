@@ -5,6 +5,7 @@
 package org.chromium.ui.accessibility.testservice;
 
 import android.accessibilityservice.AccessibilityService;
+import android.content.Intent;
 import android.text.TextUtils;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
@@ -296,7 +297,7 @@ public class AccessibilityTestService extends AccessibilityService {
     }
 
     @Override
-    public boolean onUnbind(android.content.Intent intent) {
+    public boolean onUnbind(Intent intent) {
         Log.d(TAG, "onUnbind");
         sInstance = null;
         synchronized (sLock) {

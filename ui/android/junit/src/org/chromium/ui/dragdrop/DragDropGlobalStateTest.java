@@ -26,10 +26,11 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.shadows.ShadowSystemClock;
 
 import org.chromium.base.Token;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 
 import java.util.concurrent.TimeUnit;
 
-@RunWith(org.chromium.base.test.BaseRobolectricTestRunner.class)
+@RunWith(BaseRobolectricTestRunner.class)
 public final class DragDropGlobalStateTest {
     private static final int INSTANCE_ID = 1;
     private static final int INVALID_INSTANCE_ID = -1;

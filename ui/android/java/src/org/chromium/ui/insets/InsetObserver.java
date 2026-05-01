@@ -129,7 +129,7 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
      * enable custom behavior, e.g. you want to shield a specific view from inset changes by
      * consuming them elsewhere.
      */
-    public interface WindowInsetsConsumer extends androidx.core.view.OnApplyWindowInsetsListener {
+    public interface WindowInsetsConsumer extends OnApplyWindowInsetsListener {
 
         // Consumers will be given the opportunity to process applied insets based on the priority
         // defined here. A lower value of the consumer source means that insets will be forwarded to

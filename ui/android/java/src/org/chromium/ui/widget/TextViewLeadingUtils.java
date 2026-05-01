@@ -15,6 +15,7 @@ import androidx.annotation.StyleableRes;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.ui.R;
 import org.chromium.ui.base.UiAndroidFeatureList;
 
 /**
@@ -51,11 +52,9 @@ public class TextViewLeadingUtils {
         final Float result;
 
         TypedArray selfTypedArray =
-                context.obtainStyledAttributes(
-                        attrs, org.chromium.ui.R.styleable.TextViewWithLeading, 0, 0);
-        @StyleableRes int leadingIndex = org.chromium.ui.R.styleable.TextViewWithLeading_leading;
-        @StyleableRes
-        int textAppIndex = org.chromium.ui.R.styleable.TextViewWithLeading_android_textAppearance;
+                context.obtainStyledAttributes(attrs, R.styleable.TextViewWithLeading, 0, 0);
+        @StyleableRes int leadingIndex = R.styleable.TextViewWithLeading_leading;
+        @StyleableRes int textAppIndex = R.styleable.TextViewWithLeading_android_textAppearance;
 
         if (selfTypedArray.hasValue(leadingIndex)) {
             // Found the attr directly inside the layout or style. This has a higher priority.
@@ -70,8 +69,7 @@ public class TextViewLeadingUtils {
                 // Using R.styleable.TextViewWithLeading to specify the list of desired attributes,
                 // as this is what getLeadingFromTextAppearance will use.
                 TypedArray textAppTypedArray =
-                        context.obtainStyledAttributes(
-                                textAppRes, org.chromium.ui.R.styleable.TextViewWithLeading);
+                        context.obtainStyledAttributes(textAppRes, R.styleable.TextViewWithLeading);
                 result = getLeadingFromTextAppearance(textAppTypedArray);
                 textAppTypedArray.recycle();
             }
@@ -84,9 +82,8 @@ public class TextViewLeadingUtils {
     }
 
     static @Nullable Float getLeadingFromTextAppearance(TypedArray textAppTypedArray) {
-        if (textAppTypedArray.hasValue(org.chromium.ui.R.styleable.TextViewWithLeading_leading)) {
-            return textAppTypedArray.getDimension(
-                    org.chromium.ui.R.styleable.TextViewWithLeading_leading, 0);
+        if (textAppTypedArray.hasValue(R.styleable.TextViewWithLeading_leading)) {
+            return textAppTypedArray.getDimension(R.styleable.TextViewWithLeading_leading, 0);
         } else {
             return null;
         }

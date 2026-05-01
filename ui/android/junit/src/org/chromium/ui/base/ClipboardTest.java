@@ -20,6 +20,7 @@ import android.content.ClipboardManager;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.AssetFileDescriptor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.PersistableBundle;
@@ -38,6 +39,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
+import org.robolectric.fakes.BaseCursor;
 import org.robolectric.shadows.ShadowContentResolver;
 import org.robolectric.shadows.ShadowToast;
 
@@ -351,8 +353,7 @@ public class ClipboardTest {
         when(clipboardManager.getPrimaryClip()).thenReturn(clipData);
 
         when(cr.getStreamTypes(uri, "text/html")).thenReturn(new String[] {"text/html"});
-        android.content.res.AssetFileDescriptor assetFileDescriptor =
-                Mockito.mock(android.content.res.AssetFileDescriptor.class);
+        AssetFileDescriptor assetFileDescriptor = Mockito.mock(AssetFileDescriptor.class);
         when(cr.openTypedAssetFileDescriptor(uri, "text/html", null))
                 .thenReturn(assetFileDescriptor);
 
@@ -371,8 +372,7 @@ public class ClipboardTest {
         ContentResolver cr = ContextUtils.getApplicationContext().getContentResolver();
         ShadowContentResolver shadowContentResolver = Shadows.shadowOf(cr);
 
-        org.robolectric.fakes.BaseCursor mockCursor =
-                Mockito.mock(org.robolectric.fakes.BaseCursor.class);
+        BaseCursor mockCursor = Mockito.mock(BaseCursor.class);
         when(mockCursor.moveToFirst()).thenReturn(true);
         when(mockCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)).thenReturn(0);
         when(mockCursor.getColumnIndex(OpenableColumns.SIZE)).thenReturn(1);

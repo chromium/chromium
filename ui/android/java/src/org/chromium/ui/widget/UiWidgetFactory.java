@@ -8,6 +8,7 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.widget.PopupWindow;
+import android.widget.Toast;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -65,8 +66,8 @@ public class UiWidgetFactory {
      * @return a new android.widget.Toast.
      */
     @SuppressLint("ShowToast")
-    public android.widget.Toast createToast(Context context) {
-        return new android.widget.Toast(context);
+    public Toast createToast(Context context) {
+        return new Toast(context);
     }
 
     /**
@@ -76,7 +77,7 @@ public class UiWidgetFactory {
      * @return a new android.widget.Toast.
      */
     @SuppressLint("ShowToast")
-    public android.widget.Toast makeToast(Context context, CharSequence text, int duration) {
-        return android.widget.Toast.makeText(context, text, duration);
+    public Toast makeToast(Context context, CharSequence text, int duration) {
+        return Toast.makeText(context, text, duration);
     }
 }

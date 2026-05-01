@@ -387,7 +387,7 @@ public class UiUtils {
      * @param lightNavigationBar Whether the navigation bar has a light appearance with dark icons.
      */
     public static void setNavigationBarIconColor(View rootView, boolean lightNavigationBar) {
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             WindowInsetsController controller = rootView.getWindowInsetsController();
             if (controller != null) {
                 controller.setSystemBarsAppearance(
@@ -431,7 +431,7 @@ public class UiUtils {
      * @param lightStatusBar Whether the status bar has a light appearance with dark icons.
      */
     public static void setStatusBarIconColor(View rootView, boolean lightStatusBar) {
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             WindowInsetsController controller = rootView.getWindowInsetsController();
             if (controller != null) {
                 controller.setSystemBarsAppearance(
