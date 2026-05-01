@@ -165,7 +165,8 @@ public class ContextualTasksFuseboxManagerImpl implements ContextualTasksFusebox
 
     @VisibleForTesting
     FuseboxSessionState createSessionState(WebContents webContents) {
-        return new FuseboxSessionState(webContents);
+        // TODO(crbug.com/508315490): call `activate()` and pass web contents.
+        return new FuseboxSessionState();
     }
 
     @Override

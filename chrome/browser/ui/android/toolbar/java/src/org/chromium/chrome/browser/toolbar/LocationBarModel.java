@@ -264,8 +264,9 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
     /**
      * @return The currently active WebContents being used by the Toolbar.
      */
+    @Override
     @CalledByNative
-    private @Nullable WebContents getActiveWebContents() {
+    public @Nullable WebContents getActiveWebContents() {
         if (!hasTab()) return null;
         return mTab.getWebContents();
     }
@@ -331,7 +332,7 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
         var userDataHost = tab.getUserDataHost();
         FuseboxSessionState state = userDataHost.getUserData(FuseboxSessionState.class);
         if (state == null) {
-            state = new FuseboxSessionState(tab.getWebContents());
+            state = new FuseboxSessionState();
             userDataHost.setUserData(FuseboxSessionState.class, state);
         }
         return state;

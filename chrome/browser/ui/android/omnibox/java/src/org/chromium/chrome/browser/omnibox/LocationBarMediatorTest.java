@@ -227,8 +227,7 @@ public class LocationBarMediatorTest {
     private final SettableNonNullObservableSupplier<@FuseboxState Integer> mFuseboxStateSupplier =
             ObservableSuppliers.createNonNull(FuseboxState.EXPANDED);
     private final UserDataHost mTabUserDataHost = new UserDataHost();
-    private final FuseboxSessionState mSessionState =
-            new FuseboxSessionState(/* contextualTasksWebContents= */ null);
+    private final FuseboxSessionState mSessionState = new FuseboxSessionState();
 
     // Members capturing final state of the LocationBarLayout elements.
     private boolean mNavigateButtonIsVisible;
@@ -1911,8 +1910,7 @@ public class LocationBarMediatorTest {
         ShadowLooper.runUiThreadTasks();
 
         // Set up and switch to a different tab (we technically only need fusebox session state).
-        FuseboxSessionState previousTabSessionState =
-                new FuseboxSessionState(/* contextualTasksWebContents= */ null);
+        FuseboxSessionState previousTabSessionState = new FuseboxSessionState();
         doReturn(previousTabSessionState).when(mLocationBarDataProvider).getFuseboxSessionState();
         mTabletMediator.onTabChanged(null);
 
@@ -1955,10 +1953,9 @@ public class LocationBarMediatorTest {
         var newState = mSessionState;
         newState.getAutocompleteInput().setUserText(newText);
         newState.getAutocompleteInput().setSelection(newSelectionStart, newSelectionEnd);
-        newState.activate(mContext, mProfileSupplier, null);
+        newState.activate(mContext, null, mProfileSupplier, null);
 
-        FuseboxSessionState previousState =
-                new FuseboxSessionState(/* contextualTasksWebContents= */ null);
+        FuseboxSessionState previousState = new FuseboxSessionState();
         doReturn(previousState).when(mLocationBarDataProvider).getFuseboxSessionState();
 
         // Emulate a state where the omnibox is focused and user has typed a text.

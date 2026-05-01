@@ -36,7 +36,6 @@ import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.ToolModeProto.ToolMode;
-import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 
 /** Unit tests for {@link FuseboxSessionState}. */
@@ -54,9 +53,7 @@ public class FuseboxSessionStateUnitTest {
     @Before
     public void setUp() {
         mProfileSupplier = ObservableSuppliers.createMonotonic(mProfile);
-        doReturn(new FuseboxSessionState(/* contextualTasksWebContents= */ null))
-                .when(mLocationBarDataProvider)
-                .getFuseboxSessionState();
+        doReturn(new FuseboxSessionState()).when(mLocationBarDataProvider).getFuseboxSessionState();
         ComposeboxQueryControllerBridge.setInstanceForTesting(mComposeboxQueryControllerBridge);
         AutocompleteController.setInstanceForTesting(mAutocompleteController);
     }
@@ -64,8 +61,7 @@ public class FuseboxSessionStateUnitTest {
     @Test
     public void testSetActiveTool() {
         OmniboxFeatures.sShowModelPicker.setForTesting(true);
-        FuseboxSessionState session =
-                new FuseboxSessionState(/* contextualTasksWebContents= */ null);
+        FuseboxSessionState session = new FuseboxSessionState();
         Runnable onFullyActivated =
                 () -> {
                     AutocompleteInput input = session.getAutocompleteInput();
@@ -78,15 +74,15 @@ public class FuseboxSessionStateUnitTest {
                     verify(mComposeboxQueryControllerBridge, never()).setActiveTool(anyInt());
                 };
 
-        session.activate(ContextUtils.getApplicationContext(), mProfileSupplier, onFullyActivated);
+        session.activate(
+                ContextUtils.getApplicationContext(), null, mProfileSupplier, onFullyActivated);
         RobolectricUtil.runAllBackgroundAndUi();
     }
 
     @Test
     public void testSetActiveTool_disabledShowModelPicker() {
         OmniboxFeatures.sShowModelPicker.setForTesting(false);
-        FuseboxSessionState session =
-                new FuseboxSessionState(/* contextualTasksWebContents= */ null);
+        FuseboxSessionState session = new FuseboxSessionState();
         Runnable onFullyActivated =
                 () -> {
                     AutocompleteInput input = session.getAutocompleteInput();
@@ -95,15 +91,15 @@ public class FuseboxSessionStateUnitTest {
                             .setActiveTool(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE);
                 };
 
-        session.activate(ContextUtils.getApplicationContext(), mProfileSupplier, onFullyActivated);
+        session.activate(
+                ContextUtils.getApplicationContext(), null, mProfileSupplier, onFullyActivated);
         RobolectricUtil.runAllBackgroundAndUi();
     }
 
     @Test
     public void testRequestTypeObserver() {
         OmniboxFeatures.sShowModelPicker.setForTesting(true);
-        FuseboxSessionState session =
-                new FuseboxSessionState(/* contextualTasksWebContents= */ null);
+        FuseboxSessionState session = new FuseboxSessionState();
         assertTrue(session.getAutocompleteInput().getRequestTypeSupplier().hasObservers());
         session.destroy();
         assertFalse(session.getAutocompleteInput().getRequestTypeSupplier().hasObservers());
@@ -112,8 +108,7 @@ public class FuseboxSessionStateUnitTest {
     @Test
     public void testRequestTypeObserver_disabledShowModelPicker() {
         OmniboxFeatures.sShowModelPicker.setForTesting(false);
-        FuseboxSessionState session =
-                new FuseboxSessionState(/* contextualTasksWebContents= */ null);
+        FuseboxSessionState session = new FuseboxSessionState();
         assertFalse(session.getAutocompleteInput().getRequestTypeSupplier().hasObservers());
     }
 
@@ -140,7 +135,8 @@ public class FuseboxSessionStateUnitTest {
         assertNull(session.getProfile());
 
         Runnable onFullyActivated = mock(Runnable.class);
-        session.activate(ContextUtils.getApplicationContext(), mProfileSupplier, onFullyActivated);
+        session.activate(
+                ContextUtils.getApplicationContext(), null, mProfileSupplier, onFullyActivated);
 
         assertTrue(session.isSessionActive());
         RobolectricUtil.runAllBackgroundAndUi();
@@ -156,7 +152,8 @@ public class FuseboxSessionStateUnitTest {
 
         // Simulate re-activation
         clearInvocations(mAutocompleteController);
-        session.activate(ContextUtils.getApplicationContext(), mProfileSupplier, onFullyActivated);
+        session.activate(
+                ContextUtils.getApplicationContext(), null, mProfileSupplier, onFullyActivated);
         verify(mAutocompleteController)
                 .setComposeboxQueryControllerBridge(mComposeboxQueryControllerBridge);
     }
@@ -169,7 +166,8 @@ public class FuseboxSessionStateUnitTest {
         assertNull(session.getProfile());
 
         Runnable onFullyActivated = mock(Runnable.class);
-        session.activate(ContextUtils.getApplicationContext(), mProfileSupplier, onFullyActivated);
+        session.activate(
+                ContextUtils.getApplicationContext(), null, mProfileSupplier, onFullyActivated);
 
         assertTrue(session.isSessionActive());
         RobolectricUtil.runAllBackgroundAndUi();
@@ -184,14 +182,15 @@ public class FuseboxSessionStateUnitTest {
 
         // Simulate re-activation
         clearInvocations(mAutocompleteController);
-        session.activate(ContextUtils.getApplicationContext(), mProfileSupplier, onFullyActivated);
+        session.activate(
+                ContextUtils.getApplicationContext(), null, mProfileSupplier, onFullyActivated);
         verify(mAutocompleteController).setComposeboxQueryControllerBridge(null);
     }
 
     @Test
     public void testDeactivate() {
         FuseboxSessionState session = FuseboxSessionState.from(mLocationBarDataProvider);
-        session.activate(ContextUtils.getApplicationContext(), mProfileSupplier, null);
+        session.activate(ContextUtils.getApplicationContext(), null, mProfileSupplier, null);
         RobolectricUtil.runAllBackgroundAndUi();
         assertTrue(session.isSessionActive());
 
@@ -202,45 +201,14 @@ public class FuseboxSessionStateUnitTest {
         assertNull(session.getComposeboxQueryControllerBridge());
         assertNull(session.getFuseboxAttachmentModelList());
         verify(mAutocompleteController).setComposeboxQueryControllerBridge(null);
-        verify(mComposeboxQueryControllerBridge).destroy();
-    }
-
-    @Test
-    public void testDeactivate_taskScoped() {
-        WebContents webContents = mock(WebContents.class);
-        FuseboxSessionState session = new FuseboxSessionState(webContents);
-        session.activate(ContextUtils.getApplicationContext(), mProfileSupplier, null);
-        RobolectricUtil.runAllBackgroundAndUi();
-        assertTrue(session.isSessionActive());
-        ComposeboxQueryControllerBridge bridge = session.getComposeboxQueryControllerBridge();
-        assertNotNull(bridge);
-        var attachmentModelList = session.getFuseboxAttachmentModelList();
-        assertNotNull(attachmentModelList);
-
-        session.deactivate();
-        assertFalse(session.isSessionActive());
-        assertNull(session.getProfile());
-        assertNull(session.getAutocompleteController());
-
-        // These should persist for task-scoped sessions.
-        assertEquals(bridge, session.getComposeboxQueryControllerBridge());
-        assertEquals(attachmentModelList, session.getFuseboxAttachmentModelList());
-        verify(mAutocompleteController).setComposeboxQueryControllerBridge(null);
-        verify(mComposeboxQueryControllerBridge, never()).destroy();
-
-        // Now destroy should clear them.
-        session.destroy();
-        assertNull(session.getComposeboxQueryControllerBridge());
-        assertNull(session.getFuseboxAttachmentModelList());
         verify(mComposeboxQueryControllerBridge).destroy();
     }
 
     @Test
     public void testDestroy() {
         OmniboxFeatures.sShowModelPicker.setForTesting(true);
-        FuseboxSessionState session =
-                new FuseboxSessionState(/* contextualTasksWebContents= */ null);
-        session.activate(ContextUtils.getApplicationContext(), mProfileSupplier, null);
+        FuseboxSessionState session = new FuseboxSessionState();
+        session.activate(ContextUtils.getApplicationContext(), null, mProfileSupplier, null);
         RobolectricUtil.runAllBackgroundAndUi();
 
         assertTrue(session.getAutocompleteInput().getRequestTypeSupplier().hasObservers());

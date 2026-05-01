@@ -73,10 +73,8 @@ public class FuseboxSessionState implements UserData {
     private @Nullable AutocompleteController mAutocomplete;
     private @Nullable FuseboxAttachmentModelList mFuseboxAttachmentModelList;
     private @Nullable OneShotCallback<Profile> mPendingProfileCallback;
+    private @Nullable WebContents mWebContents;
     private boolean mIsActive;
-
-    /** The WebContents of the contextual tasks WebUI containing the embedded AI page. */
-    private final @Nullable WebContents mContextualTasksWebContents;
 
     /**
      * Retrieve the session state for the supplied Tab, or an ephemeral session state if no tab
@@ -99,14 +97,8 @@ public class FuseboxSessionState implements UserData {
         return state;
     }
 
-    /**
-     * Constructs a new, empty FuseboxSessionState with the given contextual tasks WebUI
-     * WebContents.
-     *
-     * @param contextualTasksWebContents The WebContents of the contextual tasks WebUI.
-     */
-    public FuseboxSessionState(@Nullable WebContents contextualTasksWebContents) {
-        mContextualTasksWebContents = contextualTasksWebContents;
+    /** Constructs a new, empty FuseboxSessionState. */
+    public FuseboxSessionState() {
         if (OmniboxFeatures.sShowModelPicker.getValue()) {
             mAutocompleteInput.getRequestTypeSupplier().addSyncObserver(mOnRequestTypeChanged);
         }
@@ -114,7 +106,7 @@ public class FuseboxSessionState implements UserData {
 
     /** Returns the WebContents of the contextual tasks WebUI associated with the fusebox. */
     public @Nullable WebContents getContextualTasksWebContents() {
-        return mContextualTasksWebContents;
+        return mWebContents;
     }
 
     /** Returns the current {@link Profile} for this session. */
@@ -130,13 +122,16 @@ public class FuseboxSessionState implements UserData {
      * Runnable} to be notified when the session is fully set up.
      *
      * @param context The context appropriate for the current Activity window.
+     * @param webContents The WebContents of the contextual tasks WebUI.
      * @param profileSupplier The supplier for the {@link Profile} object.
      * @param onFullyActivated Optional runnable to be invoked when the session is fully activated.
      */
     public void activate(
             Context context,
+            @Nullable WebContents webContents,
             MonotonicObservableSupplier<Profile> profileSupplier,
             @Nullable Runnable onFullyActivated) {
+        mWebContents = webContents;
         if (mIsActive) {
             // This session is being re-activated. It has already been fully initialized so simply
             // emit the event.
@@ -188,7 +183,8 @@ public class FuseboxSessionState implements UserData {
         if (!mIsActive) return;
 
         mAutocompleteInput.reset();
-        tearDownSessionControllers(/* destroyTaskScopedObjects= */ false);
+        tearDownSessionControllers();
+        mWebContents = null;
         mIsActive = false;
     }
 
@@ -217,7 +213,7 @@ public class FuseboxSessionState implements UserData {
 
         if (mComposeBoxQueryControllerBridge == null) {
             mComposeBoxQueryControllerBridge =
-                    ComposeboxQueryControllerBridge.create(mProfile, mContextualTasksWebContents);
+                    ComposeboxQueryControllerBridge.create(mProfile, mWebContents);
         }
 
         if (mComposeBoxQueryControllerBridge != null && mFuseboxAttachmentModelList == null) {
@@ -240,37 +236,30 @@ public class FuseboxSessionState implements UserData {
         if (mIsActive) {
             deactivate();
         }
-        tearDownSessionControllers(/* destroyTaskScopedObjects= */ true);
+        tearDownSessionControllers();
         if (OmniboxFeatures.sShowModelPicker.getValue()) {
             mAutocompleteInput.getRequestTypeSupplier().removeObserver(mOnRequestTypeChanged);
         }
     }
 
-    /**
-     * Tear down session controllers.
-     *
-     * @param destroyTaskScopedObjects Whether task-scoped objects should be destroyed.
-     */
-    private void tearDownSessionControllers(boolean destroyTaskScopedObjects) {
+    /** Unlinks and destroys session controllers. */
+    protected void tearDownSessionControllers() {
         unlinkSessionControllers();
 
-        destroyTaskScopedObjects = destroyTaskScopedObjects || !isTaskScoped();
-        if (destroyTaskScopedObjects) {
-            if (mFuseboxAttachmentModelList != null) {
-                mFuseboxAttachmentModelList.removeAttachmentChangeListener(
-                        mFuseboxAttachmentChangeListener);
-                mFuseboxAttachmentModelList.destroy();
-                mFuseboxAttachmentModelList = null;
-            }
-
-            if (mComposeBoxQueryControllerBridge != null) {
-                mComposeBoxQueryControllerBridge.destroy();
-                mComposeBoxQueryControllerBridge = null;
-            }
+        if (mFuseboxAttachmentModelList != null) {
+            mFuseboxAttachmentModelList.removeAttachmentChangeListener(
+                    mFuseboxAttachmentChangeListener);
+            mFuseboxAttachmentModelList.destroy();
+            mFuseboxAttachmentModelList = null;
         }
 
-        mMetrics = null;
+        if (mComposeBoxQueryControllerBridge != null) {
+            mComposeBoxQueryControllerBridge.destroy();
+            mComposeBoxQueryControllerBridge = null;
+        }
+
         mAutocomplete = null;
+        mMetrics = null;
         mProfile = null;
     }
 
@@ -302,10 +291,6 @@ public class FuseboxSessionState implements UserData {
                             requestType, /* hasAttachments= */ false);
             mComposeBoxQueryControllerBridge.setActiveTool(toolMode);
         }
-    }
-
-    private boolean isTaskScoped() {
-        return mContextualTasksWebContents != null;
     }
 
     /** Returns whether the Fusebox session is active. */
