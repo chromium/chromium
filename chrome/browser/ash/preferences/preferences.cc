@@ -1126,9 +1126,6 @@ void Preferences::ApplyPreferences(ApplyReason reason,
     if (user_is_active) {
       touchpad_settings.SetHapticClickSensitivity(sensitivity_int);
     }
-    ReportSensitivityPrefApplication(
-        reason, "Touchpad.HapticClickSensitivity.Changed",
-        "Touchpad.HapticClickSensitivity.Started", sensitivity_int);
   }
   if (reason != REASON_PREF_CHANGED ||
       pref_name == ::prefs::kDownloadDefaultDirectory) {

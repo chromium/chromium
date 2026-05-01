@@ -1537,14 +1537,6 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="1" label="Group Child"/>
 </enum>
 
-<enum name="HapticClickSensitivity">
-  <int value="1" label="1"/>
-  <int value="2" label="2"/>
-  <int value="3" label="3"/>
-  <int value="4" label="4"/>
-  <int value="5" label="5"/>
-</enum>
-
 <enum name="KcerPkcs12MigrationEvent">
   <int value="0" label="MigrationStarted"/>
   <int value="1" label="NothingToMigrate"/>
