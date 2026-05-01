@@ -14,7 +14,6 @@ source_set("indigo") {
     "indigo_image_replacement_manager.h",
     "indigo_page_action_controller.h",
     "indigo_prefs.h",
-    "indigo_script_loader.h",
     "indigo_service.h",
     "indigo_service_factory.h",
   ]
@@ -48,7 +47,6 @@ source_set("impl") {
     "indigo_image_replacement_manager.cc",
     "indigo_page_action_controller.cc",
     "indigo_prefs.cc",
-    "indigo_script_loader.cc",
     "indigo_service.cc",
     "indigo_service_factory.cc",
   ]
@@ -106,7 +104,6 @@ source_set("unit_tests") {
     "indigo_agent_host_unittest.cc",
     "indigo_alpha_rpc_unittest.cc",
     "indigo_page_action_controller_unittest.cc",
-    "indigo_script_loader_unittest.cc",
     "indigo_service_unittest.cc",
   ]
   deps = [

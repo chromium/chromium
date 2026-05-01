@@ -20,8 +20,6 @@ class GURL;
 
 namespace indigo {
 
-class IndigoScriptLoader;
-
 // Browser-side host for the IndigoAgent in the renderer. This class is
 // page-scoped, meaning it is correctly managed and cleaned up when a navigation
 // occurs.
@@ -59,7 +57,6 @@ class IndigoAgentHost : public content::PageUserData<IndigoAgentHost>,
 
   mojo::AssociatedReceiver<chrome::mojom::IndigoAgentHost> receiver_{this};
   mojo::AssociatedRemote<chrome::mojom::IndigoAgent> agent_;
-  std::unique_ptr<IndigoScriptLoader> script_loader_;
   InjectionState injection_state_ = InjectionState::kNotInjected;
 
   // Number of times Invoke() was called while injection was in progress.
