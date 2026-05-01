@@ -21,6 +21,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -217,6 +218,7 @@ public class TabGroupListBottomSheetTest {
         DeviceRestriction.RESTRICTION_TYPE_NON_FOLDABLE
     })
     @EnableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
+    @DisabledTest(message = "https://crbug.com/508370471")
     public void testNewGroup_IncognitoWebPageStation_Tablet() {
         WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
         Pair<WebPageStation, WebPageStation> pageStations =
