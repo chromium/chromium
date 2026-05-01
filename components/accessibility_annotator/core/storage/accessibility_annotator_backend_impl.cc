@@ -271,8 +271,6 @@ void AccessibilityAnnotatorBackendImpl::OnURLVisited(
 void AccessibilityAnnotatorBackendImpl::OnHistoryDeletions(
     history::HistoryService* history_service,
     const history::DeletionInfo& deletion_info) {
-  // TODO(crbug.com/502666530): Handle in-flight deletions and multipage
-  // annotations deletions.
   if (deletion_info.IsAllHistory()) {
     ClearAllContentAnnotations(base::DoNothing());
     return;
@@ -304,11 +302,12 @@ AccessibilityAnnotatorBackendImpl::GetContentAnnotationsCacheData(
 void AccessibilityAnnotatorBackendImpl::SetContentAnnotationsCacheData(
     history::VisitID visit_id,
     ContentAnnotationsData data) {
-  bool is_confirmed = data.content_annotation.status() ==
-                   optimization_guide::proto::ContentAnnotation::CONFIRMED;
-
-  if (is_confirmed && data.tab_id) {
-    ProcessConfirmedStatusLookback(data);
+  if (features::kContentAnnotatorEnableMultiTabAnnotations.Get()) {
+    bool is_confirmed = data.content_annotation.status() ==
+                        optimization_guide::proto::ContentAnnotation::CONFIRMED;
+    if (is_confirmed && data.tab_id) {
+      ProcessConfirmedStatusLookback(data);
+    }
   }
 
   // This automatically handles eviction of the oldest entries if full.

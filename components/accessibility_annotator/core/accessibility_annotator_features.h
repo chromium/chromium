@@ -30,6 +30,7 @@ BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
 BASE_DECLARE_FEATURE_PARAM(std::string,
                            kContentAnnotatorClassifierSemanticMatchRules);
 BASE_DECLARE_FEATURE_PARAM(double, kContentAnnotatorSemanticMatchThreshold);
+BASE_DECLARE_FEATURE_PARAM(bool, kContentAnnotatorEnableMultiTabAnnotations);
 
 BASE_DECLARE_FEATURE(kAccessibilityAnnotator);
 BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kAccessibilityAnnotationTTL);

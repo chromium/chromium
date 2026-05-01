@@ -72,6 +72,11 @@ BASE_FEATURE_PARAM(double,
                    &kContentAnnotator,
                    "content_annotator_semantic_match_threshold",
                    0.8);
+BASE_FEATURE_PARAM(bool,
+                   kContentAnnotatorEnableMultiTabAnnotations,
+                   &kContentAnnotator,
+                   "content_annotator_enable_multi_tab_annotations",
+                   false);
 
 BASE_FEATURE(kAccessibilityAnnotator, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(base::TimeDelta,

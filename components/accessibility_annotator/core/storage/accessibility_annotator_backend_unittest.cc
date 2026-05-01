@@ -94,10 +94,28 @@ CreateContentAnnotationsData(std::string_view page_title) {
   return data;
 }
 
-class AccessibilityAnnotatorBackendTest : public testing::Test {
+class AccessibilityAnnotatorBackendTestBase : public testing::Test {
+ public:
+  void SetUp() override { ASSERT_TRUE(temp_dir_.CreateUniqueTempDir()); }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::TaskEnvironment task_environment_;
+  base::ScopedTempDir temp_dir_;
+  std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
+  std::unique_ptr<AccessibilityAnnotatorBackendImpl> backend_;
+};
+
+class AccessibilityAnnotatorBackendTest
+    : public AccessibilityAnnotatorBackendTestBase {
  public:
   void SetUp() override {
-    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+    AccessibilityAnnotatorBackendTestBase::SetUp();
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kContentAnnotator,
+          {{"content_annotator_enable_multi_tab_annotations", "true"}}},
+         {features::kAccessibilityAnnotatorDatabaseStorage, {}}},
+        {});
     os_crypt_async_ = os_crypt_async::GetTestOSCryptAsyncForTesting(
         /*is_sync_for_unittests=*/true);
     backend_ = std::make_unique<AccessibilityAnnotatorBackendImpl>(
@@ -105,25 +123,28 @@ class AccessibilityAnnotatorBackendTest : public testing::Test {
         syncer::DataTypeStoreTestUtil::FactoryForInMemoryStoreForTest(),
         temp_dir_.GetPath().AppendASCII("TestDB"));
   }
-
- protected:
-  base::test::TaskEnvironment task_environment_;
-  base::test::ScopedFeatureList scoped_feature_list_{
-      features::kAccessibilityAnnotatorDatabaseStorage};
-  base::ScopedTempDir temp_dir_;
-  std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
-  std::unique_ptr<AccessibilityAnnotatorBackendImpl> backend_;
 };
 
-class AccessibilityAnnotatorBackendNoInitTest : public testing::Test {
+class AccessibilityAnnotatorBackendDbDisabledTest
+    : public AccessibilityAnnotatorBackendTestBase {
  public:
-  void SetUp() override { ASSERT_TRUE(temp_dir_.CreateUniqueTempDir()); }
+  void SetUp() override {
+    AccessibilityAnnotatorBackendTestBase::SetUp();
+    backend_ = std::make_unique<AccessibilityAnnotatorBackendImpl>(
+        /*history_service=*/nullptr, /*os_crypt_async=*/nullptr,
+        syncer::DataTypeStoreTestUtil::FactoryForInMemoryStoreForTest(),
+        temp_dir_.GetPath().AppendASCII("TestDB"));
+  }
+};
 
- protected:
-  base::test::TaskEnvironment task_environment_;
-  base::test::ScopedFeatureList scoped_feature_list_{
-      features::kAccessibilityAnnotatorDatabaseStorage};
-  base::ScopedTempDir temp_dir_;
+class AccessibilityAnnotatorBackendNoInitTest
+    : public AccessibilityAnnotatorBackendTestBase {
+ public:
+  void SetUp() override {
+    AccessibilityAnnotatorBackendTestBase::SetUp();
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kAccessibilityAnnotatorDatabaseStorage);
+  }
 };
 
 TEST_F(AccessibilityAnnotatorBackendTest, GetContentAnnotationsCacheData) {
@@ -148,10 +169,6 @@ TEST_F(AccessibilityAnnotatorBackendTest, GetContentAnnotationsCacheData) {
 }
 
 TEST_F(AccessibilityAnnotatorBackendTest, GetAnnotationsForDebugUIEmpty) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      features::kAccessibilityAnnotatorDatabaseStorage);
-
   base::test::TestFuture<base::Value> future;
   backend_->GetAnnotationsForDebugUI(future.GetCallback());
   base::Value result = future.Take();
@@ -160,11 +177,8 @@ TEST_F(AccessibilityAnnotatorBackendTest, GetAnnotationsForDebugUIEmpty) {
   EXPECT_TRUE(result.GetList().empty());
 }
 
-TEST_F(AccessibilityAnnotatorBackendTest, GetAnnotationsForDebugUIFromCache) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      features::kAccessibilityAnnotatorDatabaseStorage);
-
+TEST_F(AccessibilityAnnotatorBackendDbDisabledTest,
+       GetAnnotationsForDebugUIFromCache) {
   base::test::ScopedRestoreICUDefaultLocale locale("en_US");
   base::test::ScopedRestoreDefaultTimezone timezone("UTC");
   history::VisitID visit_id(123);
@@ -393,6 +407,47 @@ TEST_F(AccessibilityAnnotatorBackendTest,
   ASSERT_EQ(merged.size(), 2u);
   EXPECT_EQ(merged[0].description(), "Older");
   EXPECT_EQ(merged[1].description(), "Newer");
+}
+
+TEST_F(AccessibilityAnnotatorBackendNoInitTest,
+       ProcessConfirmedStatusLookback_FlagGuardedDoesNotMerge) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      {{features::kContentAnnotator,
+        {{"content_annotator_enable_multi_tab_annotations", "false"}}}},
+      {features::kAccessibilityAnnotatorDatabaseStorage});
+
+  GURL url1("https://example.com/1");
+  GURL url2("https://example.com/2");
+
+  AccessibilityAnnotatorBackend::ContentAnnotationsData data1 =
+      CreateContentAnnotationsData("Page 1");
+  data1.tab_id = 123;
+  data1.navigation_timestamp = base::Time::Now() - base::Minutes(10);
+  data1.url = url1;
+  data1.content_annotation.set_status(
+      optimization_guide::proto::ContentAnnotation::CONFIRMED);
+
+  AccessibilityAnnotatorBackend::ContentAnnotationsData data2 =
+      CreateContentAnnotationsData("Page 2");
+  data2.tab_id = 123;
+  data2.navigation_timestamp = base::Time::Now();
+  data2.url = url2;
+  data2.content_annotation.set_status(
+      optimization_guide::proto::ContentAnnotation::CONFIRMED);
+
+  backend_ = std::make_unique<AccessibilityAnnotatorBackendImpl>(
+      /*history_service=*/nullptr, /*os_crypt_async=*/nullptr,
+      syncer::DataTypeStoreTestUtil::FactoryForInMemoryStoreForTest(),
+      temp_dir_.GetPath().AppendASCII("Case1DB"));
+
+  backend_->SetContentAnnotationsCacheData(static_cast<history::VisitID>(1),
+                                           std::move(data1));
+  backend_->SetContentAnnotationsCacheData(static_cast<history::VisitID>(2),
+                                           std::move(data2));
+
+  const auto& merged = backend_->GetMergedMultipageAnnotationsForTesting();
+  EXPECT_TRUE(merged.empty());
 }
 
 TEST_F(AccessibilityAnnotatorBackendTest,
@@ -919,12 +974,8 @@ TEST_F(AccessibilityAnnotatorBackendTest, AddAndGetContentAnnotationFromDb) {
   EXPECT_THAT(get_future.Get(), Optional(EqualsAnnotations(std::ref(data))));
 }
 
-TEST_F(AccessibilityAnnotatorBackendTest,
+TEST_F(AccessibilityAnnotatorBackendDbDisabledTest,
        AddAndGetContentAnnotationFromCacheWhenDbDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      features::kAccessibilityAnnotatorDatabaseStorage);
-
   history::VisitID visit_id(123);
   AccessibilityAnnotatorBackend::ContentAnnotationsData data =
       CreateContentAnnotationsData("Test Page Title");
@@ -1224,13 +1275,10 @@ TEST_F(AccessibilityAnnotatorBackendTest, ContentAnnotationOperationsQueued) {
       std::optional<AccessibilityAnnotatorBackend::ContentAnnotationsData>>
       get_future;
 
-  base::ScopedTempDir local_temp_dir;
-  ASSERT_TRUE(local_temp_dir.CreateUniqueTempDir());
-
   auto local_backend = std::make_unique<AccessibilityAnnotatorBackendImpl>(
       /*history_service=*/nullptr, os_crypt_async_.get(),
       syncer::DataTypeStoreTestUtil::FactoryForInMemoryStoreForTest(),
-      local_temp_dir.GetPath().AppendASCII("LocalTestDB"));
+      temp_dir_.GetPath().AppendASCII("LocalTestDB"));
 
   // Queue first operation.
   local_backend->AddContentAnnotation(visit_id1, data1.Clone(),
