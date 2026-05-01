@@ -6,7 +6,9 @@ package org.chromium.components.minidump_uploader;
 
 import static org.junit.Assert.assertEquals;
 
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,7 +37,24 @@ public class MinidumpUploadJobImplTest {
 
     private static final String BOUNDARY = "TESTBOUNDARY";
 
-    /** Test to ensure the minidump uploading mechanism allows the expected number of upload retries. */
+    private static final String CRASH_URL = "https://clients2.google.com/cr/report";
+
+    private String mOriginalCrashUrl;
+
+    @Before
+    public void setUp() {
+        mOriginalCrashUrl = MinidumpUploader.sCrashUrlString;
+        MinidumpUploader.setCrashUrlStringForTesting(CRASH_URL);
+    }
+
+    @After
+    public void tearDown() {
+        MinidumpUploader.setCrashUrlStringForTesting(mOriginalCrashUrl);
+    }
+
+    /**
+     * Test to ensure the minidump uploading mechanism allows the expected number of upload retries.
+     */
     @Test
     public void testRetryCountRespected() throws IOException {
         final CrashReportingPermissionManager permManager =
@@ -117,22 +136,20 @@ public class MinidumpUploadJobImplTest {
                 new MinidumpUploadCallableCreator() {
                     @Override
                     public MinidumpUploadCallable createCallable(File minidumpFile, File logfile) {
+                        MinidumpUploader uploader =
+                                new MinidumpUploader(new FailingHttpUrlConnectionFactory());
                         return new MinidumpUploadCallable(
-                                minidumpFile,
-                                logfile,
-                                new MinidumpUploader(new FailingHttpUrlConnectionFactory()),
-                                permManager);
+                                minidumpFile, logfile, uploader, permManager);
                     }
                 });
         callables.add(
                 new MinidumpUploadCallableCreator() {
                     @Override
                     public MinidumpUploadCallable createCallable(File minidumpFile, File logfile) {
+                        MinidumpUploader uploader =
+                                new MinidumpUploader(new TestHttpURLConnectionFactory());
                         return new MinidumpUploadCallable(
-                                minidumpFile,
-                                logfile,
-                                new MinidumpUploader(new TestHttpURLConnectionFactory()),
-                                permManager);
+                                minidumpFile, logfile, uploader, permManager);
                     }
                 });
         MinidumpUploadJob minidumpUploadJob =
@@ -321,10 +338,12 @@ public class MinidumpUploadJobImplTest {
                             mCancelReturnValue = cancelUploads();
                         }
                     };
+            MinidumpUploader uploader =
+                    new MinidumpUploader(new FakeHttpUrlConnectionFactory(mSuccessfulUpload, hook));
             return new MinidumpUploadCallable(
                     minidumpFile,
                     logfile,
-                    new MinidumpUploader(new FakeHttpUrlConnectionFactory(mSuccessfulUpload, hook)),
+                    uploader,
                     mDelegate.createCrashReportingPermissionManager());
         }
     }

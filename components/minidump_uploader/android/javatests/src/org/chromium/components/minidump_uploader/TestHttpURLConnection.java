@@ -35,7 +35,7 @@ public class TestHttpURLConnection extends HttpURLConnection {
     public TestHttpURLConnection(URL url, String contentType) {
         super(url);
         mExpectedContentType = contentType;
-        Assert.assertEquals(MinidumpUploader.CRASH_URL_STRING, url.toString());
+        Assert.assertEquals(MinidumpUploader.sCrashUrlString, url.toString());
     }
 
     @Override

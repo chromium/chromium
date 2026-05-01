@@ -11,6 +11,7 @@ import android.os.ParcelFileDescriptor;
 
 import androidx.test.filters.MediumTest;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -36,6 +37,7 @@ import org.chromium.components.minidump_uploader.CrashTestRule;
 import org.chromium.components.minidump_uploader.CrashTestRule.MockCrashReportingPermissionManager;
 import org.chromium.components.minidump_uploader.MinidumpUploadJob;
 import org.chromium.components.minidump_uploader.MinidumpUploadJobImpl;
+import org.chromium.components.minidump_uploader.MinidumpUploader;
 import org.chromium.components.minidump_uploader.MinidumpUploaderDelegate;
 import org.chromium.components.minidump_uploader.MinidumpUploaderTestConstants;
 import org.chromium.components.minidump_uploader.TestMinidumpUploadJobImpl;
@@ -62,6 +64,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @OnlyRunIn(EITHER_PROCESS) // These tests don't use the renderer process
 @DoNotBatch(reason = "These tests load the native library so batching might leak state")
 public class MinidumpUploadJobTest {
+    private String mOriginalCrashUrl;
+
     @Rule
     public CrashTestRule mTestRule =
             new CrashTestRule() {
@@ -114,6 +118,14 @@ public class MinidumpUploadJobTest {
     public void setUp() {
         LibraryLoader.getInstance().setLibraryProcessType(LibraryProcessType.PROCESS_WEBVIEW);
         LibraryLoader.getInstance().ensureInitialized();
+        mOriginalCrashUrl =
+                MinidumpUploader.setCrashUrlStringForTesting(
+                        "https://clients2.google.com/cr/report");
+    }
+
+    @After
+    public void tearDown() {
+        MinidumpUploader.setCrashUrlStringForTesting(mOriginalCrashUrl);
     }
 
     // randomSampl < CRASH_DUMP_PERCENTAGE_FOR_STABLE to always sample-in crashes.

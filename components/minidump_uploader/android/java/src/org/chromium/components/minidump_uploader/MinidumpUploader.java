@@ -4,6 +4,7 @@
 
 package org.chromium.components.minidump_uploader;
 
+import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.minidump_uploader.util.HttpURLConnectionFactory;
@@ -23,13 +24,20 @@ import java.util.zip.GZIPOutputStream;
 /**
  * This class tries to upload a minidump to the crash server.
  *
- * Minidumps are stored in multipart MIME format ready to form the body of a POST request. The
+ * <p>Minidumps are stored in multipart MIME format ready to form the body of a POST request. The
  * MIME boundary forms the first line of the file.
  */
 @NullMarked
 public class MinidumpUploader {
-    /* package */
-    static final String CRASH_URL_STRING = "https://clients2.google.com/cr/report";
+    /* package */ static @Nullable String sCrashUrlString =
+            BuildConfig.IS_CHROME_BRANDED ? "https://clients2.google.com/cr/report" : null;
+
+    public static @Nullable String setCrashUrlStringForTesting(@Nullable String url) {
+        @Nullable String oldUrl = sCrashUrlString;
+        sCrashUrlString = url;
+        return oldUrl;
+    }
+
     /* package */
     static final String CONTENT_TYPE_TMPL = "multipart/form-data; boundary=%s";
 
@@ -123,8 +131,11 @@ public class MinidumpUploader {
             if (fileToUpload == null || !fileToUpload.exists()) {
                 return Result.failure("Crash report does not exist");
             }
+            if (sCrashUrlString == null || sCrashUrlString.isEmpty()) {
+                return Result.failure("Crash upload URL is not configured");
+            }
             HttpURLConnection connection =
-                    mHttpURLConnectionFactory.createHttpURLConnection(CRASH_URL_STRING);
+                    mHttpURLConnectionFactory.createHttpURLConnection(sCrashUrlString);
             if (connection == null) {
                 return Result.failure("Failed to create connection");
             }
