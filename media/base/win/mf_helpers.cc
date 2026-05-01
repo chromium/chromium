@@ -48,14 +48,15 @@ namespace media {
 SharedImageReadLock::SharedImageReadLock(
     std::unique_ptr<gpu::VideoImageRepresentation> representation,
     std::unique_ptr<gpu::VideoImageRepresentation::ScopedReadAccess>
-        scoped_read_access)
+        scoped_read_access,
+    scoped_refptr<VideoFrame> frame)
     : representation_(representation.release(),
                       base::OnTaskRunnerDeleter(
                           base::SequencedTaskRunner::GetCurrentDefault())),
       scoped_read_access_(scoped_read_access.release(),
                           base::OnTaskRunnerDeleter(
-                              base::SequencedTaskRunner::GetCurrentDefault())) {
-}
+                              base::SequencedTaskRunner::GetCurrentDefault())),
+      frame_(std::move(frame)) {}
 
 SharedImageReadLock::~SharedImageReadLock() = default;
 
@@ -1103,7 +1104,8 @@ void GenerateResourceOnSyncTokenReleased(
   }
   ComPtr<SharedImageReadLock> si_lock =
       Microsoft::WRL::Make<SharedImageReadLock>(std::move(image_representation),
-                                                std::move(scoped_read_access));
+                                                std::move(scoped_read_access),
+                                                frame);
   if (!si_lock) {
     RETURN_ON_FAILURE_WITH_CALLBACK(E_OUTOFMEMORY,
                                     "Failed to create SharedImageReadLock");

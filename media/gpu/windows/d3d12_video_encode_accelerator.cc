@@ -169,8 +169,8 @@ void GenerateResourceOnSynTokenReleased(
     RETURN_ON_FAILURE_WITH_CALLBACK(E_FAIL, "Failed to begin read access");
   }
   Microsoft::WRL::ComPtr<SharedImageReadLock> si_lock =
-      Microsoft::WRL::Make<SharedImageReadLock>(std::move(representation),
-                                                std::move(scoped_read_access));
+      Microsoft::WRL::Make<SharedImageReadLock>(
+          std::move(representation), std::move(scoped_read_access), frame);
   if (!si_lock) {
     RETURN_ON_FAILURE_WITH_CALLBACK(E_OUTOFMEMORY,
                                     "Failed to create SharedImageReadLock");

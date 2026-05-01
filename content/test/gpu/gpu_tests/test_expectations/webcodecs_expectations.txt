@@ -284,11 +284,6 @@ crbug.com/476389233 [ mac intel-0x3e9b asan angle-opengl graphite-disabled ] Web
 # EncodingError: Decoding error.
 crbug.com/487768758 [ amd-0x7480 linux ] WebCodecs_cropEncode_hw_decoder_prefer-software [ Failure ]
 
-# Synchronization issue while Decoding
-crbug.com/508178492 [ win nvidia ] WebCodecs_FrameSizeChange_avc1.42001E_hw_decoder [ RetryOnFailure ]
-crbug.com/508178492 [ win nvidia ] WebCodecs_FrameSizeChange_hvc1.1.6.L123.00_hw_decoder [ RetryOnFailure ]
-crbug.com/508178492 [ win nvidia ] WebCodecs_FrameSizeChange_av01.0.04M.08_hw_decoder [ RetryOnFailure ]
-
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################

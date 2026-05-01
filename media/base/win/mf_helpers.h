@@ -255,7 +255,8 @@ class MEDIA_EXPORT SharedImageReadLock
   SharedImageReadLock(
       std::unique_ptr<gpu::VideoImageRepresentation> representation,
       std::unique_ptr<gpu::VideoImageRepresentation::ScopedReadAccess>
-          scoped_read_access);
+          scoped_read_access,
+      scoped_refptr<VideoFrame> frame);
 
   gpu::VideoImageRepresentation::ScopedReadAccess* access() const {
     return scoped_read_access_.get();
@@ -269,6 +270,7 @@ class MEDIA_EXPORT SharedImageReadLock
   std::unique_ptr<gpu::VideoImageRepresentation::ScopedReadAccess,
                   base::OnTaskRunnerDeleter>
       scoped_read_access_;
+  scoped_refptr<VideoFrame> frame_;
 };
 
 // Parameters:
