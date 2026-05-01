@@ -226,9 +226,7 @@ class CORE_EXPORT OutOfFlowLayoutPart {
     // re-used or replaced in the final layout pass.
     Member<const LayoutResult> initial_layout_result;
 
-    // The `block_estimate` and `container_content_size` is wrt. the
-    // candidate's writing mode.
-    std::optional<LayoutUnit> block_estimate;
+    // `container_content_size` is wrt. the candidate's writing mode.
     LogicalSize container_content_size;
 
     LogicalOofDimensions node_dimensions;
