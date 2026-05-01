@@ -48,14 +48,20 @@ export class ContentAnnotatorInternalsAppElement extends CrLitElement {
 
   override connectedCallback() {
     super.connectedCallback();
-    this.browserProxy_.callbackRouter.onContentAnnotationsAdded.addListener(
-        (content: Value) => this.updateLogContent_(content));
+    this.browserProxy_.callbackRouter.onContentAnnotationsChanged.addListener(
+        (content: Value) => {
+          this.updateLogContent_(content);
+        });
+    this.browserProxy_.callbackRouter.onContentAnnotationsCleared.addListener(
+        () => {
+          this.selectedVisitIds_.clear();
+          this.logContent_ = [];
+        });
     this.loadLogContent_();
   }
 
   private async loadLogContent_() {
     this.errorMessage_ = '';
-    this.selectedVisitIds_.clear();
     try {
       const {content} = await this.browserProxy_.handler.getAnnotatedContent();
       this.updateLogContent_(content);
@@ -66,22 +72,21 @@ export class ContentAnnotatorInternalsAppElement extends CrLitElement {
   }
 
   private updateLogContent_(content: Value) {
+    this.selectedVisitIds_.clear();
     this.logContent_ =
         (this.flattenValue_(content) as AnnotationEntry[] | null) || [];
   }
 
-  protected async onClearCacheClick_() {
+  protected async onClearClick_() {
     this.errorMessage_ = '';
     try {
       const {success} =
           await this.browserProxy_.handler.clearAnnotatedContent();
-      if (success) {
-        this.loadLogContent_();
-      } else {
-        this.errorMessage_ = 'Error: could not clear content annotations cache.';
+      if (!success) {
+        this.errorMessage_ = 'Error: could not clear content annotations.';
       }
     } catch (e) {
-      this.errorMessage_ = 'Error: could not clear content annotations cache.';
+      this.errorMessage_ = 'Error: could not clear content annotations.';
     }
   }
 
@@ -102,9 +107,7 @@ export class ContentAnnotatorInternalsAppElement extends CrLitElement {
     try {
       const {success} = await this.browserProxy_.handler.deleteAnnotatedContent(
           visitIdsToDelete);
-      if (success) {
-        this.loadLogContent_();
-      } else {
+      if (!success) {
         this.errorMessage_ = 'Error: could not delete selected annotations.';
       }
     } catch (e) {

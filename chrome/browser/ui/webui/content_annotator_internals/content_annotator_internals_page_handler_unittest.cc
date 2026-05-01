@@ -49,9 +49,11 @@ class MockPage : public accessibility_annotator_internals::mojom::Page {
   }
 
   MOCK_METHOD(void,
-              OnContentAnnotationsAdded,
+              OnContentAnnotationsChanged,
               (base::Value content),
               (override));
+
+  MOCK_METHOD(void, OnContentAnnotationsCleared, (), (override));
 
  private:
   mojo::Receiver<accessibility_annotator_internals::mojom::Page> receiver_{
@@ -307,27 +309,121 @@ TEST_P(ContentAnnotatorInternalsPageHandlerTest, DeleteAnnotatedContent) {
 }
 
 TEST_P(ContentAnnotatorInternalsPageHandlerTest,
-       OnContentAnnotationsAddedPushesToUI) {
+       OnContentAnnotationsChangedPushesToUI) {
   base::test::ScopedRestoreICUDefaultLocale locale("en_US");
   base::test::ScopedRestoreDefaultTimezone timezone("UTC");
 
-  base::RunLoop run_loop;
-  EXPECT_CALL(mock_page(), OnContentAnnotationsAdded(Property(
-                               &base::Value::GetList,
-                               ElementsAre(DictionaryHasValues(
-                                   base::DictValue()
-                                       .Set("url", "https://example.com/")
-                                       .Set("title", "Title")
-                                       .Set("visit_id", "123"))))))
-      .WillOnce([&](const base::Value& content) { run_loop.Quit(); });
+  // Add first annotation and verify the UI is notified.
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(mock_page(), OnContentAnnotationsChanged(Property(
+                                 &base::Value::GetList,
+                                 ElementsAre(DictionaryHasValues(
+                                     base::DictValue()
+                                         .Set("url", "https://example.com/1")
+                                         .Set("title", "Title 1")
+                                         .Set("visit_id", "123"))))))
+        .WillOnce([&](const base::Value& content) { run_loop.Quit(); });
 
+    accessibility_annotator::AccessibilityAnnotatorBackend::
+        ContentAnnotationsData data;
+    data.page_title = "Title 1";
+    data.url = GURL("https://example.com/1");
+    SetContentAnnotationsData(static_cast<history::VisitID>(123),
+                              std::move(data));
+    run_loop.Run();
+  }
+
+  // Add second annotation and verify the UI is notified with both.
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(
+        mock_page(),
+        OnContentAnnotationsChanged(Property(
+            &base::Value::GetList,
+            UnorderedElementsAre(
+                DictionaryHasValues(base::DictValue()
+                                        .Set("visit_id", "123")
+                                        .Set("url", "https://example.com/1")
+                                        .Set("title", "Title 1")),
+                DictionaryHasValues(base::DictValue()
+                                        .Set("visit_id", "456")
+                                        .Set("url", "https://example.com/2")
+                                        .Set("title", "Title 2"))))))
+        .WillOnce([&](const base::Value& content) { run_loop.Quit(); });
+
+    accessibility_annotator::AccessibilityAnnotatorBackend::
+        ContentAnnotationsData data;
+    data.page_title = "Title 2";
+    data.url = GURL("https://example.com/2");
+    SetContentAnnotationsData(static_cast<history::VisitID>(456),
+                              std::move(data));
+    run_loop.Run();
+  }
+
+  // Delete one annotation and verify that the UI is notified with the
+  // remaining one.
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(mock_page(), OnContentAnnotationsChanged(Property(
+                                 &base::Value::GetList,
+                                 ElementsAre(DictionaryHasValues(
+                                     base::DictValue()
+                                         .Set("url", "https://example.com/2")
+                                         .Set("title", "Title 2")
+                                         .Set("visit_id", "456"))))))
+        .WillOnce([&](const base::Value& content) { run_loop.Quit(); });
+
+    base::test::TestFuture<bool> delete_future;
+    handler()->DeleteAnnotatedContent({123}, delete_future.GetCallback());
+    ASSERT_TRUE(delete_future.Get());
+    run_loop.Run();
+  }
+
+  // Delete the last annotation and verify that the UI is notified with an
+  // empty list.
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(mock_page(), OnContentAnnotationsChanged(Property(
+                                 &base::Value::GetList, testing::IsEmpty())))
+        .WillOnce([&](const base::Value& content) { run_loop.Quit(); });
+
+    base::test::TestFuture<bool> delete_future;
+    handler()->DeleteAnnotatedContent({456}, delete_future.GetCallback());
+    ASSERT_TRUE(delete_future.Get());
+    run_loop.Run();
+  }
+}
+
+TEST_P(ContentAnnotatorInternalsPageHandlerTest,
+       OnContentAnnotationsClearedPushesToUI) {
   accessibility_annotator::AccessibilityAnnotatorBackend::ContentAnnotationsData
       data;
   data.page_title = "Title";
   data.url = GURL("https://example.com");
-  SetContentAnnotationsData(static_cast<history::VisitID>(123),
-                            std::move(data));
-  run_loop.Run();
+
+  // Add data and verify that the UI is notified.
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(mock_page(), OnContentAnnotationsChanged(testing::_))
+        .WillOnce([&](const base::Value& content) { run_loop.Quit(); });
+    SetContentAnnotationsData(static_cast<history::VisitID>(456),
+                              std::move(data));
+    run_loop.Run();
+  }
+
+  // Expectation for clearing.
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(mock_page(), OnContentAnnotationsCleared()).WillOnce([&]() {
+      run_loop.Quit();
+    });
+
+    base::test::TestFuture<bool> clear_future;
+    handler()->ClearAnnotatedContent(clear_future.GetCallback());
+    ASSERT_TRUE(clear_future.Get());
+    run_loop.Run();
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

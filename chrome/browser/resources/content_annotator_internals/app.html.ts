@@ -14,18 +14,18 @@ export function getHtml(this: ContentAnnotatorInternalsAppElement) {
       <p class="error">${this.errorMessage_}</p>
     ` : ''}
     ${this.logContent_.length === 0 ? html`
-      <pre>The content annotations cache is currently empty.</pre>
+      <pre>The content annotations datastore is currently empty.</pre>
     ` :
         html`
       <div class="header-container">
-          <h2>Cached Annotations</h2>
+          <h2>Content Annotations</h2>
           <div class="button-group">
             <button id="delete-selected" @click="${this.onDeleteSelectedClick_}"
                 ?disabled="${this.selectedVisitIds_.size === 0}">
               Delete Selected
             </button>
-            <button id="clear-cache" @click="${this.onClearCacheClick_}">
-              Clear Cache
+            <button id="clear-content-annotations" @click="${this.onClearClick_}">
+              Clear Annotations
             </button>
           </div>
         </div>

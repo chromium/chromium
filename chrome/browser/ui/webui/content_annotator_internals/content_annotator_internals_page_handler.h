@@ -51,6 +51,9 @@ class ContentAnnotatorInternalsPageHandler
   void OnContentAnnotationsCleared() override;
 
  private:
+  // Notifies the UI with the current annotated content.
+  void NotifyPageWithAnnotations();
+
   mojo::Receiver<accessibility_annotator_internals::mojom::PageHandler>
       receiver_;
   mojo::Remote<accessibility_annotator_internals::mojom::Page> page_;
