@@ -26,6 +26,7 @@ DEBUG = 0
 class GrdIDExtractor(xml.sax.handler.ContentHandler):
   """Extracts the IDs from messages in GRIT files"""
   def __init__(self):
+    super().__init__()
     self.id_set_ = set()
 
   def startElement(self, name, attrs):
@@ -103,7 +104,7 @@ def CheckForUnusedGrdIDsInSources(grd_files, src_dirs):
   # Anything left?
   if len(ids_left) > 0:
     print('The following ids are in GRD files, but *appear* to be unused:')
-    for file_path, file_ids in file_id_map.iteritems():
+    for file_path, file_ids in file_id_map.items():
       missing = ids_left.intersection(file_ids)
       if len(missing) > 0:
         print('  %s:' % file_path)
