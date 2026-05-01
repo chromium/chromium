@@ -332,6 +332,23 @@ TEST_F(AnnotatePageContentRequestTest, ResetOnNewNavigation) {
   EXPECT_EQ(extraction_service().extraction_count(), 2);
 }
 
+TEST_F(AnnotatePageContentRequestTest, SameDocumentNavigation) {
+  SetTriggeringMode("on_load");
+
+  SimulatePageLoad();
+  WaitForExtraction();
+
+  EXPECT_EQ(extraction_service().extraction_count(), 1);
+
+  // Simulate a same-document navigation by navigating to a fragment.
+  SimulateNavigation(GURL("https://example.com/#fragment"));
+
+  // Same-document navigations don't wait for load or FCP.
+  WaitForExtraction();
+
+  EXPECT_EQ(extraction_service().extraction_count(), 2);
+}
+
 TEST_F(AnnotatePageContentRequestTest, ExcludeAdRelatedFlag_FeatureDisabled) {
   SetTriggeringMode("on_load");
 

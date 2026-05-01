@@ -178,7 +178,7 @@ AnnotatedPageContentRequest::CreateForTesting(  // IN-TEST
 }
 
 void AnnotatedPageContentRequest::PrimaryPageChanged(content::Page& page) {
-  ResetForNewNavigation();
+  ResetForNewNavigation(/*is_same_document=*/false);
 }
 
 void AnnotatedPageContentRequest::DidFinishNavigation(
@@ -219,12 +219,7 @@ void AnnotatedPageContentRequest::DidFinishNavigation(
     }
   }
 
-  ResetForNewNavigation();
-
-  // We don't have reliable load and FCP signals for same-document navigations.
-  // So we assume the content is ready as soon as the navigation commits.
-  waiting_for_fcp_ = false;
-  waiting_for_load_ = false;
+  ResetForNewNavigation(/*is_same_document=*/true);
   MaybeScheduleExtraction();
 }
 
@@ -266,10 +261,13 @@ void AnnotatedPageContentRequest::OnFirstContentfulPaintInPrimaryMainFrame() {
   MaybeScheduleExtraction();
 }
 
-void AnnotatedPageContentRequest::ResetForNewNavigation() {
+void AnnotatedPageContentRequest::ResetForNewNavigation(bool is_same_document) {
   lifecycle_ = Lifecycle::kNavigated;
-  waiting_for_fcp_ = true;
-  waiting_for_load_ = true;
+
+  // We don't have reliable load and FCP signals for same-document navigations.
+  // So we assume the content is ready as soon as the navigation commits.
+  waiting_for_fcp_ = !is_same_document;
+  waiting_for_load_ = !is_same_document;
 
   cached_content_ = std::nullopt;
 

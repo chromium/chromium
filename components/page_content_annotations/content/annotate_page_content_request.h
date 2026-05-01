@@ -140,7 +140,7 @@ class AnnotatedPageContentRequest
   // complete, or false if it should return immediately (with cached content or
   // nullopt).
   bool ShouldAsyncWaitForExtraction() const;
-  void ResetForNewNavigation();
+  void ResetForNewNavigation(bool is_same_document);
 
   // `on_hide` should be true iff this extraction is being triggered
   // specifically by the tab transitioning to hidden (as opposed to, say,
