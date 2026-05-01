@@ -112,13 +112,11 @@ void RenderThreadManager::PostParentDrawDataToChildCompositorOnRT(
     const ParentCompositorDrawConstraints& parent_draw_constraints,
     const viz::FrameSinkId& frame_sink_id,
     viz::FrameTimingDetailsMap timing_details,
-    uint32_t frame_token,
     base::TimeDelta preferred_frame_interval) {
   {
     base::AutoLock lock(lock_);
     parent_draw_constraints_ = parent_draw_constraints;
     timing_details_.insert(timing_details.begin(), timing_details.end());
-    presented_frame_token_ = frame_token;
     frame_sink_id_for_presentation_feedbacks_ = frame_sink_id;
     preferred_frame_interval_ = preferred_frame_interval;
   }
@@ -133,7 +131,6 @@ void RenderThreadManager::TakeParentDrawDataOnUI(
     ParentCompositorDrawConstraints* constraints,
     viz::FrameSinkId* frame_sink_id,
     viz::FrameTimingDetailsMap* timing_details,
-    uint32_t* frame_token,
     base::TimeDelta* preferred_frame_interval) {
   DCHECK(ui_loop_->BelongsToCurrentThread());
   DCHECK(timing_details->empty());
@@ -142,7 +139,6 @@ void RenderThreadManager::TakeParentDrawDataOnUI(
   *constraints = parent_draw_constraints_;
   *frame_sink_id = frame_sink_id_for_presentation_feedbacks_;
   timing_details_.swap(*timing_details);
-  *frame_token = presented_frame_token_;
   *preferred_frame_interval = preferred_frame_interval_;
 }
 

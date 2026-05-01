@@ -223,10 +223,9 @@ class TestAnimateInAndOutOfScreen : public RenderingTest {
     ParentCompositorDrawConstraints constraints;
     viz::FrameSinkId frame_sink_id;
     viz::FrameTimingDetailsMap timing_details;
-    uint32_t frame_token = 0u;
     base::TimeDelta preferred_frame_interval;
     GetCompositorFrameConsumer()->TakeParentDrawDataOnUI(
-        &constraints, &frame_sink_id, &timing_details, &frame_token,
+        &constraints, &frame_sink_id, &timing_details,
         &preferred_frame_interval);
     switch (on_draw_count_) {
       case 0u:

@@ -41,8 +41,8 @@ class CONTENT_EXPORT TestSynchronousCompositor : public SynchronousCompositor {
   void OnCompositorFrameTransitionDirectiveProcessed(
       uint32_t layer_tree_frame_sink_id,
       uint32_t sequence_id) override {}
-  void DidPresentCompositorFrames(viz::FrameTimingDetailsMap timing_details,
-                                  uint32_t frame_token) override {}
+  void DidPresentCompositorFrames(
+      viz::FrameTimingDetailsMap timing_details) override {}
   bool DemandDrawSw(SkCanvas* canvas, bool software_canvas) override;
   void SetMemoryPolicy(size_t bytes_limit) override {}
   float GetVelocityInPixelsPerSecond() override;

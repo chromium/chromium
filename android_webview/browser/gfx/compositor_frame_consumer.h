@@ -41,7 +41,6 @@ class CompositorFrameConsumer {
       ParentCompositorDrawConstraints* constraints,
       viz::FrameSinkId* frame_sink_id,
       viz::FrameTimingDetailsMap* timing_details,
-      uint32_t* frame_token,
       base::TimeDelta* preferred_frame_interval) = 0;
   virtual ChildFrameQueue PassUncommittedFrameOnUI() = 0;
 

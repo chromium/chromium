@@ -647,7 +647,7 @@ HardwareRenderer::~HardwareRenderer() {
   if (child_frame_) {
     render_thread_manager_->PostParentDrawDataToChildCompositorOnRT(
         ParentCompositorDrawConstraints(), child_frame_->frame_sink_id,
-        viz::FrameTimingDetailsMap(), 0u, preferred_frame_interval_);
+        viz::FrameTimingDetailsMap(), preferred_frame_interval_);
   }
   for (auto& child_frame : child_frame_queue_) {
     child_frame->WaitOnFutureIfNeeded();
@@ -715,7 +715,7 @@ void HardwareRenderer::DrawAndSwap(
       // TODO(vasilyt): Move frame timing details delivery over to
       // RootFrameSink.
       render_thread_manager_->PostParentDrawDataToChildCompositorOnRT(
-          draw_constraints, viz::FrameSinkId(), viz::FrameTimingDetailsMap(), 0,
+          draw_constraints, viz::FrameSinkId(), viz::FrameTimingDetailsMap(),
           preferred_frame_interval_);
     }
     return;
@@ -791,7 +791,7 @@ void HardwareRenderer::DrawAndSwap(
     // here.
     render_thread_manager_->PostParentDrawDataToChildCompositorOnRT(
         draw_constraints, child_frame_->frame_sink_id,
-        std::move(timing_details), 0, preferred_frame_interval_);
+        std::move(timing_details), preferred_frame_interval_);
   }
 
   // If using ANGLE we have not reset Skia's state at the beginning of the draw,

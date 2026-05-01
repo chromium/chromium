@@ -109,8 +109,7 @@ class CONTENT_EXPORT SynchronousCompositor {
       uint32_t sequence_id) = 0;
 
   virtual void DidPresentCompositorFrames(
-      viz::FrameTimingDetailsMap timing_details,
-      uint32_t frame_token) = 0;
+      viz::FrameTimingDetailsMap timing_details) = 0;
 
   // "On demand" SW draw, into the supplied canvas (observing the transform
   // and clip set there-in).
