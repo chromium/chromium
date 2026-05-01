@@ -253,8 +253,7 @@ public class ClipboardTest {
         assertEquals(PLAIN_TEXT, clipData.getItemAt(0).getText().toString());
         assertEquals(HTML_TEXT, clipData.getItemAt(0).getHtmlText());
 
-        assertEquals(2, clipData.getItemCount());
-        assertEquals("", clipData.getItemAt(1).getText().toString());
+        assertEquals(1, clipData.getItemCount());
         assertNotNull(extras);
         assertEquals(customDataValue, extras.getString(customDataMimeType));
 

@@ -433,64 +433,42 @@ public class ClipboardImpl extends Clipboard
     @Override
     protected void setClipboardText(
             @JniType("std::map<std::string, std::string>") Map<String, String> textData) {
-        ArrayList<ClipData> clipDataList = new ArrayList<>();
         String html = textData.get(ClipDescription.MIMETYPE_TEXT_HTML);
         String text = textData.get(ClipDescription.MIMETYPE_TEXT_PLAIN);
         String webCustomData = textData.get(CHROME_WEB_CUSTOM_DATA_MIME_TYPE);
-        // Add standard MIME types to the list first, ensuring correct order.
+
+        ArrayList<String> mimeTypes = new ArrayList<>();
+        ClipData.Item item = null;
+
         if (html != null && text != null) {
-            clipDataList.add(ClipData.newHtmlText("html", text, html));
+            mimeTypes.add(ClipDescription.MIMETYPE_TEXT_HTML);
+            mimeTypes.add(ClipDescription.MIMETYPE_TEXT_PLAIN);
+            item = new ClipData.Item(text, html);
         } else if (text != null) {
-            clipDataList.add(ClipData.newPlainText("text", text));
+            mimeTypes.add(ClipDescription.MIMETYPE_TEXT_PLAIN);
+            item = new ClipData.Item(text);
         }
-        // Add custom MIME types to the list.
         if (webCustomData != null) {
-            setCustomClipData(clipDataList, CHROME_WEB_CUSTOM_DATA_MIME_TYPE, webCustomData);
+            mimeTypes.add(CHROME_WEB_CUSTOM_DATA_MIME_TYPE);
+            if (item == null) {
+                item = new ClipData.Item("");
+            }
         }
-        setClipboardData(clipDataList);
-    }
 
-    private void setCustomClipData(List<ClipData> list, String mimeType, String data) {
-        var customData = new PersistableBundle();
-        customData.putString(mimeType, data);
-        ClipDescription customDescription = new ClipDescription("data", new String[] {mimeType});
-        customDescription.setExtras(customData);
-        ClipData customClip = new ClipData(customDescription, new ClipData.Item(""));
-        list.add(customClip);
-    }
-
-    private void setClipboardData(List<ClipData> data) {
-        if (data == null || data.isEmpty()) {
+        if (item == null) {
             clear();
             return;
         }
-        ArrayList<String> mergedMimeTypes = new ArrayList<>();
-        ArrayList<ClipData.Item> mergedItems = new ArrayList<>();
-        PersistableBundle mergedExtras = new PersistableBundle();
-        for (ClipData clip : data) {
-            ClipDescription desc = clip.getDescription();
-            if (desc.getExtras() != null) {
-                mergedExtras.putAll(desc.getExtras());
-            }
-            for (int i = 0; i < desc.getMimeTypeCount(); i++) {
-                mergedMimeTypes.add(desc.getMimeType(i));
-            }
-            for (int i = 0; i < clip.getItemCount(); i++) {
-                mergedItems.add(clip.getItemAt(i));
-            }
-        }
-        // Reconstruct the single unified ClipData to push to Clipboard.
-        ClipDescription finalDesc =
-                new ClipDescription("data", mergedMimeTypes.toArray(new String[0]));
-        if (!mergedExtras.isEmpty()) {
-            finalDesc.setExtras(mergedExtras);
-        }
-        ClipData finalClip = new ClipData(finalDesc, mergedItems.get(0));
-        for (int i = 1; i < mergedItems.size(); i++) {
-            finalClip.addItem(mergedItems.get(i));
+
+        ClipDescription description = new ClipDescription("data", mimeTypes.toArray(new String[0]));
+        if (webCustomData != null) {
+            PersistableBundle extras = new PersistableBundle();
+            extras.putString(CHROME_WEB_CUSTOM_DATA_MIME_TYPE, webCustomData);
+            description.setExtras(extras);
         }
 
-        setPrimaryClipNoException(finalClip);
+        ClipData clip = new ClipData(description, item);
+        setPrimaryClipNoException(clip);
     }
 
     @Override
