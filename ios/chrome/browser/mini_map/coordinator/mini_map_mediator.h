@@ -46,6 +46,9 @@ enum class MiniMapQueryType {
 // User pressed the disable address detection from One tapMiniMap screen.
 - (void)userDisabledOneTapSettingFromMiniMap;
 
+// User pressed the disable native preview from maps links screen.
+- (void)userDisabledURLSettingFromMiniMap;
+
 // User pressed the done button in disable confirmation snackbar.
 - (void)userOpenedSettingsFromDisableConfirmation;
 

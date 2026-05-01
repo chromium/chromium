@@ -24,6 +24,8 @@
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/providers/mini_map/test_mini_map.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "ios/web/common/features.h"
@@ -34,6 +36,7 @@
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
+#import "ui/base/l10n/l10n_util.h"
 
 typedef void (^BlockWithViewController)(UIViewController*);
 
@@ -411,6 +414,11 @@ TEST_F(MiniMapCoordinatorTest, TestPresentNativePreview) {
   OCMExpect(
       [mini_map_controller configureCompletionWithSearchQuery:[OCMArg any]]);
   OCMExpect([mini_map_controller configureFailureCompletion:[OCMArg any]]);
+  OCMExpect([mini_map_controller configureFooterWithTitle:[OCMArg any]
+                                       leadingButtonTitle:[OCMArg any]
+                                      trailingButtonTitle:[OCMArg any]
+                                      leadingButtonAction:[OCMArg any]
+                                     trailingButtonAction:[OCMArg any]]);
 
   OCMExpect([mini_map_controller
       presentMapsNativePreviewWithPresentingViewController:[OCMArg any]]);
@@ -418,4 +426,66 @@ TEST_F(MiniMapCoordinatorTest, TestPresentNativePreview) {
   [coordinator_ start];
 
   EXPECT_OCMOCK_VERIFY(mini_map_controller);
+}
+
+// Tests the footer buttons for Native Preview (URL flow).
+TEST_F(MiniMapCoordinatorTest, TestNativePreviewFooterButtons) {
+  id mini_map_controller = OCMStrictProtocolMock(@protocol(MiniMapController));
+  factory_.controller = mini_map_controller;
+
+  __block BlockWithViewController left_button_block;
+  __block BlockWithViewController right_button_block;
+
+  NSURL* url = [NSURL URLWithString:@"https://maps.google.com/maps/foo"];
+
+  coordinator_ = [[MiniMapCoordinator alloc]
+      initWithBaseViewController:root_view_controller_
+                         browser:browser_.get()
+                            text:nil
+                             URL:url
+                         withIPH:NO
+                            mode:MiniMapMode::kMapNativePreviewURL];
+
+  OCMExpect([mini_map_controller configureURL:url]);
+  OCMExpect([mini_map_controller configureCompletion:[OCMArg any]]);
+  OCMExpect(
+      [mini_map_controller configureCompletionWithSearchQuery:[OCMArg any]]);
+  OCMExpect([mini_map_controller configureFailureCompletion:[OCMArg any]]);
+
+  // Verify that the NEW strings are passed for the URL flow
+  OCMExpect([mini_map_controller
+      configureFooterWithTitle:l10n_util::GetNSString(
+                                   IDS_IOS_MINI_MAP_URL_FOOTER_STRING)
+            leadingButtonTitle:l10n_util::GetNSString(
+                                   IDS_IOS_MINI_MAP_DISABLE_PREVIEW_STRING)
+           trailingButtonTitle:l10n_util::GetNSString(
+                                   IDS_IOS_OPTIONS_REPORT_AN_ISSUE)
+           leadingButtonAction:AssignValueToVariable(left_button_block)
+          trailingButtonAction:AssignValueToVariable(right_button_block)]);
+
+  OCMExpect([mini_map_controller
+      presentMapsNativePreviewWithPresentingViewController:[OCMArg any]]);
+
+  [coordinator_ start];
+
+  EXPECT_OCMOCK_VERIFY(mini_map_controller);
+
+  // Verify that the left button action shows the snackbar
+  OCMExpect([mock_snackbar_command_handler_
+      showSnackbarWithMessage:
+          l10n_util::GetNSString(
+              IDS_IOS_MINI_MAP_DISABLE_PREVIEW_CONFIRMATION_STRING)
+                   buttonText:[OCMArg any]
+                messageAction:[OCMArg any]
+             completionAction:[OCMArg any]]);
+
+  // Set preference to true initially
+  profile_->GetPrefs()->SetBoolean(prefs::kIosMiniMapShowNativeMap, true);
+
+  // Trigger the block
+  left_button_block(nil);
+
+  // Verify that the correct preference was disabled!
+  EXPECT_FALSE(
+      profile_->GetPrefs()->GetBoolean(prefs::kIosMiniMapShowNativeMap));
 }
