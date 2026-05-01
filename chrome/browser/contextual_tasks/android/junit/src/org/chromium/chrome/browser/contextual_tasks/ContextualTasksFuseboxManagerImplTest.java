@@ -99,7 +99,7 @@ public class ContextualTasksFuseboxManagerImplTest {
 
         verify(mManager).createSessionState();
         assertEquals(mSessionState, mManager.getFuseboxDataProvider().getFuseboxSessionState());
-        assertEquals(mWebContents, mManager.getFuseboxDataProvider().getActiveWebContents());
+        assertEquals(mWebContents, mManager.getFuseboxDataProvider().getWebContents());
     }
 
     @Test
@@ -134,7 +134,7 @@ public class ContextualTasksFuseboxManagerImplTest {
         verify(mBridge).onWebUIDestroyed();
         verify(mSessionState).destroy();
         assertNull(mManager.getFuseboxDataProvider().getFuseboxSessionState());
-        assertNull(mManager.getFuseboxDataProvider().getActiveWebContents());
+        assertNull(mManager.getFuseboxDataProvider().getWebContents());
     }
 
     @Test

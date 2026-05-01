@@ -129,7 +129,7 @@ public interface LocationBarDataProvider {
     boolean hasTab();
 
     /** Returns the active WebContents. */
-    default @Nullable WebContents getActiveWebContents() {
+    default @Nullable WebContents getWebContents() {
         return null;
     }
 

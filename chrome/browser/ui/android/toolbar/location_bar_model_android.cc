@@ -60,7 +60,7 @@ int32_t LocationBarModelAndroid::GetPageClassification(JNIEnv* env,
 content::WebContents* LocationBarModelAndroid::GetActiveWebContents() const {
   JNIEnv* env = base::android::AttachCurrentThread();
   ScopedJavaLocalRef<jobject> jweb_contents =
-      Java_LocationBarModel_getActiveWebContents(env, java_object_);
+      Java_LocationBarModel_getWebContents(env, java_object_);
   return content::WebContents::FromJavaWebContents(jweb_contents);
 }
 

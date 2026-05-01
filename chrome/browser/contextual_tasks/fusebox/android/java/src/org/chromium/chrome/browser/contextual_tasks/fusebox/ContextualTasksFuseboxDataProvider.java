@@ -50,7 +50,7 @@ public class ContextualTasksFuseboxDataProvider implements LocationBarDataProvid
     }
 
     /** Set the active {@link WebContents} associated with this fusebox data provider. */
-    public void setActiveWebContents(@Nullable WebContents webContents) {
+    public void setWebContents(@Nullable WebContents webContents) {
         mWebContents = webContents;
     }
 
@@ -110,7 +110,7 @@ public class ContextualTasksFuseboxDataProvider implements LocationBarDataProvid
     }
 
     @Override
-    public @Nullable WebContents getActiveWebContents() {
+    public @Nullable WebContents getWebContents() {
         return mWebContents;
     }
 

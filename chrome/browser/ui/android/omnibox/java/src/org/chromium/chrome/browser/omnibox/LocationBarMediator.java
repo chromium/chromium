@@ -1184,7 +1184,7 @@ class LocationBarMediator
 
         session.activate(
                 mContext,
-                mLocationBarDataProvider.getActiveWebContents(),
+                mLocationBarDataProvider.getWebContents(),
                 mProfileSupplier,
                 () -> {
                     if (mAutocompleteCoordinator == null || mCurrentInput == null) return;
