@@ -11,7 +11,7 @@
 import("//buildtools/deps_revisions.gni")
 
 assert(
-    libcxx_revision == "99457fa555797f8c5ac3c076ca288d8481d3b23a",
+    libcxx_revision == "be1c391acca009d8d80535ce924e3d285451cdfa",
     "libcxx_headers.gni and third_party/libc++ are out of sync.$0x0A$0x0AIf you were messing around with the libc++ repository, run:$0x0A`buildtools/third_party/libc++/generate_libcxx_headers.py`$0x0A$0x0AIf the script doesn't resolve the error, file a bug to msta@ with reproduction details.$0x0A")
 
 libcxx_headers = [
@@ -560,9 +560,12 @@ libcxx_headers = [
   "//third_party/libc++/src/include/__locale_dir/support/freebsd.h",
   "//third_party/libc++/src/include/__locale_dir/support/fuchsia.h",
   "//third_party/libc++/src/include/__locale_dir/support/linux.h",
+  "//third_party/libc++/src/include/__locale_dir/support/llvm_libc.h",
   "//third_party/libc++/src/include/__locale_dir/support/netbsd.h",
   "//third_party/libc++/src/include/__locale_dir/support/newlib.h",
   "//third_party/libc++/src/include/__locale_dir/support/no_locale/characters.h",
+  "//third_party/libc++/src/include/__locale_dir/support/no_locale/conversions.h",
+  "//third_party/libc++/src/include/__locale_dir/support/no_locale/formatting.h",
   "//third_party/libc++/src/include/__locale_dir/support/no_locale/strtonum.h",
   "//third_party/libc++/src/include/__locale_dir/support/windows.h",
   "//third_party/libc++/src/include/__locale_dir/time.h",
