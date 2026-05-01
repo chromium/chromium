@@ -4,6 +4,8 @@
 
 #include "ash/system/brightness/unified_brightness_view.h"
 
+#include <optional>
+
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/brightness/unified_brightness_slider_controller.h"
 #include "ash/system/unified/unified_system_tray.h"
@@ -14,7 +16,9 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/test/display_manager_test_api.h"
@@ -29,6 +33,30 @@ namespace ash {
 namespace {
 
 constexpr float kMinBrightnessLevel = 0.05;
+
+class ScreenBrightnessChangedWaiter
+    : public chromeos::PowerManagerClient::Observer {
+ public:
+  ScreenBrightnessChangedWaiter() {
+    chromeos::PowerManagerClient::Get()->AddObserver(this);
+  }
+  ScreenBrightnessChangedWaiter(const ScreenBrightnessChangedWaiter&) = delete;
+  ScreenBrightnessChangedWaiter& operator=(
+      const ScreenBrightnessChangedWaiter&) = delete;
+  ~ScreenBrightnessChangedWaiter() override {
+    chromeos::PowerManagerClient::Get()->RemoveObserver(this);
+  }
+
+  void Wait() { run_loop_.Run(); }
+
+ private:
+  void ScreenBrightnessChanged(
+      const power_manager::BacklightBrightnessChange& change) override {
+    run_loop_.Quit();
+  }
+
+  base::RunLoop run_loop_;
+};
 
 }  // namespace
 
@@ -67,9 +95,10 @@ class UnifiedBrightnessViewTest : public AshTestBase {
     GetPrimaryUnifiedSystemTray()->CloseBubble();
   }
 
-  void WaitUntilUpdated() {
-    task_environment()->FastForwardBy(base::Milliseconds(100));
-    base::RunLoop().RunUntilIdle();
+  void WaitUntilUpdated(ScreenBrightnessChangedWaiter& waiter,
+                        float expected_level) {
+    waiter.Wait();
+    EXPECT_FLOAT_EQ(expected_level, slider()->GetValue());
   }
 
   UnifiedBrightnessSliderController* brightness_slider_controller() {
@@ -182,7 +211,17 @@ TEST_F(UnifiedBrightnessViewTest, SliderComponent) {
 TEST_F(UnifiedBrightnessViewTest, SliderIcon) {
   const float levels[] = {0.0, 0.04, 0.2, 0.25, 0.49, 0.5, 0.7, 0.75, 0.9, 1};
 
+  float previous_level = 1.0f;
   for (auto level : levels) {
+    // `SliderValueChanged()` skips power-manager updates while both levels are
+    // below the enforced minimum brightness.
+    const bool brightness_update_expected =
+        level >= kMinBrightnessLevel || previous_level >= kMinBrightnessLevel;
+    std::optional<ScreenBrightnessChangedWaiter> waiter;
+    if (brightness_update_expected) {
+      waiter.emplace();
+    }
+
     // Sets the slider value. `SetValue()` will pass in
     // `SliderChangeReason::kByApi` as the slider change reason and will not
     // trigger UI updates, so we should call `SliderValueChanged()` afterwards
@@ -192,11 +231,15 @@ TEST_F(UnifiedBrightnessViewTest, SliderIcon) {
         slider(), level, slider()->GetValue(),
         views::SliderChangeReason::kByUser);
 
-    WaitUntilUpdated();
+    const float expected_level = std::max(level, kMinBrightnessLevel);
+    if (brightness_update_expected) {
+      WaitUntilUpdated(*waiter, expected_level);
+    }
+    previous_level = level;
 
     // The minimum level for brightness is 0.05, since `SliderValueChanged()`
     // will adjust the brightness level and set the icon accordingly.
-    const gfx::VectorIcon& icon = GetIcon(std::max(level, kMinBrightnessLevel));
+    const gfx::VectorIcon& icon = GetIcon(expected_level);
 
     if (level <= 0.0) {
       EXPECT_EQ(icon.name,
