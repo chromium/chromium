@@ -45,7 +45,7 @@ void GtkUiPlatformWayland::SetGtkWidgetTransientFor(
     gfx::AcceleratedWidget parent) {
   ui::LinuxUiDelegate::GetInstance()->ExportWindowHandle(
       parent, base::BindOnce(&GtkUiPlatformWayland::OnHandleSetTransient,
-                             weak_factory_.GetWeakPtr(), widget));
+                             weak_factory_.GetWeakPtr(), WrapGObject(widget)));
 }
 
 void GtkUiPlatformWayland::ClearTransientFor(gfx::AcceleratedWidget parent) {
@@ -58,8 +58,10 @@ void GtkUiPlatformWayland::ShowGtkWindow(GtkWindow* window) {
   gtk_window_present(window);
 }
 
-void GtkUiPlatformWayland::OnHandleSetTransient(GtkWidget* widget,
-                                                std::string handle) {
+void GtkUiPlatformWayland::OnHandleSetTransient(
+    ScopedGObject<GtkWidget> widget_ref,
+    std::string handle) {
+  GtkWidget* widget = widget_ref.get();
   auto handle_no_prefix = base::RemovePrefix(handle, "wayland:");
   if (!handle_no_prefix || handle_no_prefix->empty()) {
     return;
