@@ -138,7 +138,7 @@ public class NtpThemeColorUtils {
         if (primaryColorIndex == RecyclerView.NO_POSITION
                 && hasPrimaryColor
                 && primaryColorInfo instanceof NtpThemeColorFromHexInfo info
-                && info.backgroundColor != NtpThemeColorInfo.COLOR_NOT_SET) {
+                && info.backgroundColorLight != NtpThemeColorInfo.COLOR_NOT_SET) {
             chromeColorsList.add(primaryColorInfo);
             return chromeColorsList.size() - 1;
         }
@@ -184,17 +184,17 @@ public class NtpThemeColorUtils {
 
         if (primaryColorInfo instanceof NtpThemeColorFromHexInfo primaryColorFromHexInfo) {
             if (ntpThemeColorInfo instanceof NtpThemeColorFromHexInfo ntpThemeColorFromHexInfo) {
-                return primaryColorFromHexInfo.primaryColor
-                        == ntpThemeColorFromHexInfo.primaryColor;
+                return primaryColorFromHexInfo.primaryColorLight
+                        == ntpThemeColorFromHexInfo.primaryColorLight;
             }
 
-            return primaryColorFromHexInfo.primaryColor
+            return primaryColorFromHexInfo.primaryColorLight
                     == context.getColor(ntpThemeColorInfo.primaryColorResId);
         }
 
         if (ntpThemeColorInfo instanceof NtpThemeColorFromHexInfo ntpThemeColorFromHexInfo) {
             return context.getColor(primaryColorInfo.primaryColorResId)
-                    == ntpThemeColorFromHexInfo.primaryColor;
+                    == ntpThemeColorFromHexInfo.primaryColorLight;
         }
 
         return ntpThemeColorInfo.primaryColorResId == primaryColorInfo.primaryColorResId;
@@ -212,7 +212,7 @@ public class NtpThemeColorUtils {
         if (colorInfo == null) return getDefaultBackgroundColor(context);
 
         if (colorInfo instanceof NtpThemeColorFromHexInfo) {
-            return ((NtpThemeColorFromHexInfo) colorInfo).backgroundColor;
+            return ((NtpThemeColorFromHexInfo) colorInfo).backgroundColorLight;
         }
 
         // Use ?attr/colorSurfaceContainerHigh for NTP's background color for color theme.
@@ -238,7 +238,7 @@ public class NtpThemeColorUtils {
     public static @ColorInt int getPrimaryColorFromColorInfo(
             Context context, NtpThemeColorInfo colorInfo) {
         if (colorInfo instanceof NtpThemeColorFromHexInfo ntpThemeColorFromHexInfo) {
-            return ntpThemeColorFromHexInfo.primaryColor;
+            return ntpThemeColorFromHexInfo.primaryColorLight;
         }
 
         return context.getColor(colorInfo.primaryColorResId);

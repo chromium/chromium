@@ -367,9 +367,9 @@ public class NtpCustomizationConfigManager {
 
         if (colorInfo instanceof NtpThemeColorFromHexInfo colorFromHexInfo) {
             NtpCustomizationUtils.setBackgroundColorToSharedPreference(
-                    colorFromHexInfo.backgroundColor);
+                    colorFromHexInfo.backgroundColorLight);
             NtpCustomizationUtils.setCustomizedPrimaryColorToSharedPreference(
-                    colorFromHexInfo.primaryColor);
+                    colorFromHexInfo.primaryColorLight);
         }
     }
 

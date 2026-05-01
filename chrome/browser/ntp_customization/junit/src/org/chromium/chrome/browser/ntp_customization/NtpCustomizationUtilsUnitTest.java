@@ -616,8 +616,8 @@ public class NtpCustomizationUtilsUnitTest {
         // Verifies that both the primary color and background color from the loaded results match.
         NtpThemeColorInfo info = NtpCustomizationUtils.loadColorInfoFromSharedPreference(mContext);
         assertTrue(info instanceof NtpThemeColorFromHexInfo);
-        assertEquals(primaryColor, ((NtpThemeColorFromHexInfo) info).primaryColor);
-        assertEquals(backgroundColor, ((NtpThemeColorFromHexInfo) info).backgroundColor);
+        assertEquals(primaryColor, ((NtpThemeColorFromHexInfo) info).primaryColorLight);
+        assertEquals(backgroundColor, ((NtpThemeColorFromHexInfo) info).backgroundColorLight);
     }
 
     @Test
@@ -634,9 +634,10 @@ public class NtpCustomizationUtilsUnitTest {
         // Verifies that the primary color from the loaded results matches.
         NtpThemeColorInfo info = NtpCustomizationUtils.loadColorInfoFromSharedPreference(mContext);
         assertTrue(info instanceof NtpThemeColorFromHexInfo);
-        assertEquals(primaryColor, ((NtpThemeColorFromHexInfo) info).primaryColor);
+        assertEquals(primaryColor, ((NtpThemeColorFromHexInfo) info).primaryColorLight);
         assertEquals(
-                NtpThemeColorInfo.COLOR_NOT_SET, ((NtpThemeColorFromHexInfo) info).backgroundColor);
+                NtpThemeColorInfo.COLOR_NOT_SET,
+                ((NtpThemeColorFromHexInfo) info).backgroundColorLight);
     }
 
     @Test

@@ -63,15 +63,30 @@ public class NtpBackgroundDataUtilsUnitTest {
         customColorJson.put(NtpBackgroundDataBase.PLATFORM_TYPE_KEY, PlatformType.ANDROID_LOCAL);
         customColorJson.put(
                 NtpBackgroundDataBase.BACKGROUND_TYPE_KEY, NtpBackgroundType.COLOR_FROM_HEX);
-        customColorJson.put(NtpBackgroundDataCustomizedColor.LIGHT_MODE_COLOR_KEY, Color.GREEN);
-        customColorJson.put(NtpBackgroundDataCustomizedColor.DARK_MODE_COLOR_KEY, Color.BLUE);
+        customColorJson.put(
+                NtpBackgroundDataCustomizedColor.PRIMARY_COLOR_LIGHT_MODE_KEY, Color.GREEN);
+        customColorJson.put(
+                NtpBackgroundDataCustomizedColor.PRIMARY_COLOR_DARK_MODE_KEY, Color.BLUE);
+        customColorJson.put(
+                NtpBackgroundDataCustomizedColor.NTP_BACKGROUND_COLOR_LIGHT_MODE_KEY, Color.YELLOW);
+        customColorJson.put(
+                NtpBackgroundDataCustomizedColor.NTP_BACKGROUND_COLOR_DARK_MODE_KEY, Color.BLACK);
 
         NtpBackgroundDataBase customColorData =
                 NtpBackgroundDataUtils.fromJson(mContext, customColorJson);
         assertTrue(customColorData instanceof NtpBackgroundDataCustomizedColor);
         assertEquals(
                 Color.GREEN,
-                ((NtpBackgroundDataCustomizedColor) customColorData).getLightModeColor());
+                ((NtpBackgroundDataCustomizedColor) customColorData).getPrimaryColorLight());
+        assertEquals(
+                Color.BLUE,
+                ((NtpBackgroundDataCustomizedColor) customColorData).getPrimaryColorDark());
+        assertEquals(
+                Color.YELLOW,
+                ((NtpBackgroundDataCustomizedColor) customColorData).getNtpBackgroundColorLight());
+        assertEquals(
+                Color.BLACK,
+                ((NtpBackgroundDataCustomizedColor) customColorData).getNtpBackgroundColorDark());
     }
 
     @Test

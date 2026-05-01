@@ -31,7 +31,7 @@ public class NtpBackgroundDataUtils {
             case NtpCustomizationUtils.NtpBackgroundType.CHROME_COLOR:
                 return NtpBackgroundDataColor.fromJson(context, jsonObject);
             case NtpCustomizationUtils.NtpBackgroundType.COLOR_FROM_HEX:
-                return NtpBackgroundDataCustomizedColor.fromJson(jsonObject);
+                return NtpBackgroundDataCustomizedColor.fromJson(context, jsonObject);
             case NtpCustomizationUtils.NtpBackgroundType.IMAGE_FROM_DISK:
                 return NtpBackgroundDataUploadImage.fromJson(jsonObject);
             case NtpCustomizationUtils.NtpBackgroundType.THEME_COLLECTION:
