@@ -94,13 +94,22 @@
 }
 
 #stopButton {
-  --cr-icon-button-fill-color: var(--color-sys-on-surface);
+  /* Colors are hardcoded here as fallback because Contextual Tasks does not have access to these color-sys variables */
+  --cr-icon-button-fill-color: var(--color-sys-on-surface,#1F1F1F);
   --cr-icon-button-icon-size: 12px;
   --cr-icon-button-size: 36px;
-  background-color: var(--color-sys-neutral-container);
+  background-color: var(--color-sys-neutral-container, #E1E3E1);
   border-radius: 50%;
   margin: 0;
   transition: var(--submit-enabled-transition, 255ms);
+}
+
+@media (prefers-color-scheme: dark) {
+/* Colors are hardcoded as fallback because Contextual Tasks does not have access to these color-sys variables. */
+  #stopButton {
+    --cr-icon-button-fill-color: var(--color-sys-on-surface, #E3E3E3);
+    background-color: var(--color-sys-neutral-container, #444746);
+  }
 }
 
 #submitButton::part(submit) {
