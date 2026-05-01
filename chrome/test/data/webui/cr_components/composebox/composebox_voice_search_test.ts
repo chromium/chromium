@@ -475,6 +475,65 @@ suite('ComposeboxVoiceSearch', () => {
         await microtasksFinished();
       });
 
+  test('Emits clean transcript without duplicates on stop click', async () => {
+    // Enable flag and recreate component.
+    loadTimeData.overrideValues({
+      voiceSearchCoherenceComposeboxesEnabled: true,
+    });
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    composeboxElement = document.createElement('cr-composebox');
+    document.body.appendChild(composeboxElement);
+    await microtasksFinished();
+
+    // Open the voice search UI.
+    const voiceSearchButton = getVoiceSearchButton(composeboxElement);
+    assertTrue(!!voiceSearchButton);
+    voiceSearchButton.click();
+    await microtasksFinished();
+
+    const voiceSearchElement = getVoiceSearchElement(composeboxElement);
+    const mockVoiceSearch =
+        voiceSearchElement as unknown as MockComposeboxVoiceSearch;
+
+    // Simulate first speech recognition event.
+    const firstResult = createResults(1);
+    Object.assign(
+        firstResult.results[0]![0]!, {confidence: 1, transcript: 'hello'});
+    mockVoiceSearch.voiceRecognition_.onresult!(firstResult);
+    await microtasksFinished();
+
+    // Simulate second speech recognition event (interim).
+    const secondResult = createResults(2);
+    Object.assign(
+        secondResult.results[0]![0]!, {confidence: 1, transcript: 'hello'});
+    Object.assign(
+        secondResult.results[1]![0]!, {confidence: 0, transcript: ' world'});
+    mockVoiceSearch.voiceRecognition_.onresult!(secondResult);
+    await microtasksFinished();
+
+    // Listen for the emitted transcript.
+    let firedTranscript = '';
+    voiceSearchElement.addEventListener('recording-stopped', (e: Event) => {
+      firedTranscript = (e as CustomEvent<string>).detail;
+    });
+
+    // Click stop button.
+    const stopButton =
+        voiceSearchElement.shadowRoot.querySelector<HTMLElement>(
+            '#stopButton');
+    assertTrue(isVisible(stopButton), 'Stop button should be visible');
+    stopButton!.click();
+    await microtasksFinished();
+
+    // Verify transcript has no duplicate text (e.g. 'hellohello world').
+    assertEquals('hello world', firedTranscript);
+
+    // Cleanup.
+    mockVoiceSearch.state_ = -1;
+    mockVoiceSearch.voiceRecognition_.abort();
+    await microtasksFinished();
+  });
+
   test(
       'clicking voice search starts speech recognition and hides the composebox',
       async () => {
