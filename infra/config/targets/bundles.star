@@ -6234,6 +6234,13 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "perfetto_diff_tests_bundle",
+    targets = [
+        "perfetto_diff_tests",
+    ],
+)
+
+targets.bundle(
     name = "perfetto_gtests",
     targets = [
         "base_unittests",

@@ -25,29 +25,6 @@ _STDLIB_PATHS = (
   r"^base/tracing/protos/"
 )
 
-def CheckPerfettoTestsTag(input_api, output_api):
-  """Checks that commits to the trace processor chrome stdlib or the
-  Perfetto diff tests contain a PERFETTO_TESTS tag in their commit
-  message."""
-  def FileFilter(affected_file):
-    return input_api.FilterSourceFile(affected_file,
-                                      files_to_check=_STDLIB_PATHS)
-
-  # Only consider changes to chrome stdlib or tests paths
-  if not any (input_api.AffectedFiles(file_filter=FileFilter)):
-    return []
-
-  if input_api.change.PERFETTO_TESTS:
-    return []
-
-  message = (
-    'Must provide PERFETTO_TESTS='
-    '`autoninja -C out/Default perfetto_diff_tests && '
-    'out/Default/bin/run_perfetto_diff_tests` line in CL description.'
-    '\nPlease ensure the Perfetto diff tests pass before submitting.'
-  )
-  return [output_api.PresubmitNotifyResult(message)]
-
 def CheckTestDataCheckedIn(input_api, output_api):
   """Checks that the test data files in base/tracing/test/data_sha256 are
   checked in.

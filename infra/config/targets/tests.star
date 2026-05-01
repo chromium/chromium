@@ -2068,6 +2068,10 @@ targets.tests.gtest_test(
     name = "pdf_unittests",
 )
 
+targets.tests.isolated_script_test(
+    name = "perfetto_diff_tests",
+)
+
 targets.tests.gtest_test(
     name = "perfetto_unittests",
 )

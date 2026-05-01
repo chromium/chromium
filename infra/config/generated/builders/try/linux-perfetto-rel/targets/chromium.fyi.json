@@ -88,6 +88,23 @@
         "test": "services_unittests",
         "test_id_prefix": "ninja://services:services_unittests/"
       }
+    ],
+    "isolated_scripts": [
+      {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "module_name": "//base/tracing:perfetto_diff_tests",
+        "name": "perfetto_diff_tests",
+        "swarming": {
+          "dimensions": {
+            "os": "Ubuntu-22.04"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "perfetto_diff_tests",
+        "test_id_prefix": "ninja://base/tracing:perfetto_diff_tests/"
+      }
     ]
   }
 }

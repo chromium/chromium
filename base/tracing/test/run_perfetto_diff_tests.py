@@ -6,6 +6,7 @@
 # A wrapper script for //third_party/perfetto/diff_test_trace_processor.py.
 
 import argparse
+import json
 import subprocess
 import sys
 import os
@@ -33,6 +34,7 @@ def main():
       '--trace-processor-shell', type=str, required=True)
   parser.add_argument("--name-filter", default="", type=str, required=False)
   parser.add_argument("--script", type=str, required=True)
+  parser.add_argument('--isolated-script-test-output', type=str, required=False)
   args, _ = parser.parse_known_args()
 
   cmd = [
@@ -60,6 +62,28 @@ def main():
 
   sys.stderr.buffer.write(completed_process.stderr)
   sys.stdout.buffer.write(completed_process.stdout)
+
+  if args.isolated_script_test_output:
+    failure_type = 'PASS' if completed_process.returncode == 0 else 'FAIL'
+    results_json = {
+        'version': 3,
+        'interrupted': False,
+        'num_failures_by_type': {
+            failure_type: 1
+        },
+        'path_delimiter': '/',
+        'seconds_since_epoch': int(test_start_time),
+        'tests': {
+            'perfetto_diff_tests': {
+                'expected': 'PASS',
+                'actual': failure_type,
+                'time': time.time() - test_start_time,
+            },
+        },
+    }
+    with open(args.isolated_script_test_output, 'w') as fp:
+      json.dump(results_json, fp)
+
   return completed_process.returncode
 
 if __name__ == '__main__':

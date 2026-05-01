@@ -681,6 +681,7 @@ ci.builder(
     ),
     targets = targets.bundle(
         targets = [
+            "perfetto_diff_tests_bundle",
             "perfetto_gtests",
         ],
         additional_compile_targets = [
