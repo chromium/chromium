@@ -7,6 +7,28 @@ if (is_android) {
   import("//build/config/android/rules.gni")
   import("//chrome/browser/buildflags.gni")
 
+  source_set("lens") {
+    public = [ "android/lens_prefs.h" ]
+  }
+
+  source_set("impl") {
+    sources = [
+      "android/lens_policy_utils.cc",
+      "android/lens_prefs.cc",
+    ]
+
+    public_deps = [
+      ":lens",
+      "//chrome/browser:browser_public_dependencies",
+    ]
+
+    deps = [
+      "//chrome/android:jni_headers",
+      "//components/policy/core/common:common_constants",
+      "//components/prefs",
+    ]
+  }
+
   android_library("java") {
     sources =
         [ "java/src/org/chromium/chrome/browser/lens/LensController.java" ]

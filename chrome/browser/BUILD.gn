@@ -2055,9 +2055,6 @@ static_library("browser") {
       "download/android/string_utils.cc",
       "icon_loader_android.cc",
       "incognito/android/incognito_utils_android.cc",
-      "lens/android/lens_policy_utils.cc",
-      "lens/android/lens_prefs.cc",
-      "lens/android/lens_prefs.h",
       "memory_details_android.cc",
       "platform_util_android.cc",
       "prefetch/android/preload_pages_settings_bridge.cc",
@@ -2127,6 +2124,8 @@ static_library("browser") {
       "//chrome/browser/keyboard_accessory/android",
       "//chrome/browser/keyboard_accessory/android:impl",
       "//chrome/browser/language/android:jni_headers",
+      "//chrome/browser/lens",
+      "//chrome/browser/lens:impl",
       "//chrome/browser/lifetime/android:jni_headers",
       "//chrome/browser/long_screenshots",
       "//chrome/browser/mandatory_reauth/android:mandatory_reauth",
@@ -2426,6 +2425,10 @@ static_library("browser") {
       # c/b/net/stub_resolver_config_reader.h
       # c/b/net/system_network_context_manager.h
       "//chrome/browser/privacy:secure_dns_bridge",
+
+      # //chrome/browser/lens:impl includes chrome/browser/browser_process.h
+      # which is part of the //chrome/browser monolith.
+      "//chrome/browser/lens:impl",
     ]
 
     deps -= [ "//components/storage_monitor" ]

@@ -339,6 +339,7 @@ source_set("impl") {
     deps += [
       "//chrome/browser/accessibility/accessibility_prefs",
       "//chrome/browser/auxiliary_search",
+      "//chrome/browser/lens",
       "//chrome/browser/notifications",
       "//chrome/browser/notifications:notifications_java_enum_srcjar",
       "//chrome/browser/partnerbookmarks:android",
