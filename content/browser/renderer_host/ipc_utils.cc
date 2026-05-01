@@ -481,13 +481,13 @@ bool VerifyNavigationHeaders(RenderProcessHost* process,
         header.name() != net::HttpRequestHeaders::kUserAgent &&
         header.name() != net::HttpRequestHeaders::kSecPurpose &&
         header.name() != net::HttpRequestHeaders::kDNT) {
-      // TODO(https://crbug.com/40093290): Once we have enough data, this should
-      // be a `bad_message::ReceivedBadMessage` and return `false`.
-      SCOPED_CRASH_KEY_STRING64("Bug487795397", "invalid_header",
-                                header.name());
       if (base::FeatureList::IsEnabled(
-              features::kDumpOnInvalidNavigationHeaders)) {
-        base::debug::DumpWithoutCrashing();
+              features::kKillOnInvalidNavigationHeaders)) {
+        SCOPED_CRASH_KEY_STRING64("Bug487795397", "invalid_header",
+                                  header.name());
+        bad_message::ReceivedBadMessage(
+            process, bad_message::RFH_INVALID_NAVIGATION_HEADERS);
+        return false;
       }
     }
   }

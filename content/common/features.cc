@@ -202,10 +202,6 @@ BASE_FEATURE(kDocumentIsolationPolicyWithoutSiteIsolation,
 BASE_FEATURE(kDocumentPolicyNegotiation, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When enabled, DumpWithoutCrashing() is called if a renderer process provides
-// invalid (non-allowlisted) headers in a navigation request.
-BASE_FEATURE(kDumpOnInvalidNavigationHeaders, base::FEATURE_ENABLED_BY_DEFAULT);
-
-// When enabled, DumpWithoutCrashing() is called if a renderer process provides
 // an Origin header on a navigation request that doesn't match the expected
 // origin.
 BASE_FEATURE(kDumpOnOriginHeaderMismatch, base::FEATURE_ENABLED_BY_DEFAULT);
@@ -415,6 +411,10 @@ BASE_FEATURE(kIOSurfaceCapturer, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, child process will not terminate itself when IPC is reset.
 BASE_FEATURE(kKeepChildProcessAfterIPCReset, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, the renderer process will be killed if it provides
+// invalid (non-allowlisted) headers in a navigation request.
+BASE_FEATURE(kKillOnInvalidNavigationHeaders, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables Local Network Access checks for all types of web workers.
 //
