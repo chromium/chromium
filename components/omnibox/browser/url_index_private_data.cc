@@ -20,13 +20,11 @@
 #include "base/check_op.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/stack.h"
-#include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/not_fatal_until.h"
-#include "base/stl_util.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -390,13 +388,23 @@ scoped_refptr<URLIndexPrivateData> URLIndexPrivateData::RebuildFromHistory(
   // machines in general (Desktop or Mobile).
   const int max_urls_indexed =
       OmniboxFieldTrial::MaxNumHQPUrlsIndexedAtStartup();
+
+  // Batch-fetch all recent visits in a single SQL query instead of issuing N
+  // separate `GetMostRecentVisitsForURL()` queries (one per `URL`). This
+  // eliminates thousands of individual SQL round-trips and avoids the expensive
+  // LEFT OUTER JOIN with `context_annotations` that the per-URL `kExclude404s`
+  // path uses.
+  history::HistoryDatabase::RecentVisitsMap batch_visits =
+      history_db->GetBatchRecentVisitsForSignificantURLs(
+          kMaxVisitsToStoreInCache);
+
   int num_urls_indexed = 0;
   for (history::URLRow row; history_enum.GetNextURL(&row);) {
     CHECK(row.url().is_valid());
+    bool indexed = rebuilt_data->IndexRowWithPreFetchedVisits(
+        row, scheme_allowlist, batch_visits);
     // Do not use >= to account for case of -1 for unlimited urls.
-    if (rebuilt_data->IndexRow(history_db, nullptr, row, scheme_allowlist,
-                               nullptr) &&
-        num_urls_indexed++ == max_urls_indexed) {
+    if (indexed && num_urls_indexed++ == max_urls_indexed) {
       break;
     }
   }
@@ -748,11 +756,18 @@ bool URLIndexPrivateData::IndexRow(
     return false;
 
   const history::URLID row_id = row.id();
-  // Strip out username and password before saving and indexing.
-  const GURL new_url = ClearUsernameAndPassword(gurl);
+  // Strip out username and password before saving and indexing, only if
+  // credentials are present. Most URLs have no credentials, so this avoids
+  // an expensive GURL::ReplaceComponents() call.
+  const bool has_credentials = gurl.has_username() || gurl.has_password();
+  GURL sanitized_url;
+  if (has_credentials) {
+    sanitized_url = ClearUsernameAndPassword(gurl);
+  }
+  const GURL& new_url = has_credentials ? sanitized_url : gurl;
 
   HistoryID history_id = static_cast<HistoryID>(row_id);
-  DCHECK_LT(history_id, std::numeric_limits<HistoryID>::max());
+  CHECK_LT(history_id, std::numeric_limits<HistoryID>::max());
 
   // Add the row for quick lookup in the history info store.
   history::URLRow new_row(new_url, row_id);
@@ -764,7 +779,7 @@ bool URLIndexPrivateData::IndexRow(
   // Index the words contained in the URL and title of the row.
   RowWordStarts word_starts;
   AddRowWordsToIndex(new_row, &word_starts);
-  word_starts_map_[history_id] = std::move(word_starts);
+  word_starts_map_.insert_or_assign(history_id, std::move(word_starts));
 
   history_info_map_[history_id].url_row = std::move(new_row);
 
@@ -788,51 +803,118 @@ bool URLIndexPrivateData::IndexRow(
   return true;
 }
 
+bool URLIndexPrivateData::IndexRowWithPreFetchedVisits(
+    const history::URLRow& row,
+    const std::set<std::string>& scheme_allowlist,
+    const history::HistoryDatabase::RecentVisitsMap& batch_visits) {
+  const GURL& gurl(row.url());
+
+  if (!URLSchemeIsAllowlisted(gurl, scheme_allowlist)) {
+    return false;
+  }
+
+  const history::URLID row_id = row.id();
+  const bool has_credentials = gurl.has_username() || gurl.has_password();
+  GURL sanitized_url;
+  if (has_credentials) {
+    sanitized_url = ClearUsernameAndPassword(gurl);
+  }
+  const GURL& new_url = has_credentials ? sanitized_url : gurl;
+
+  HistoryID history_id = static_cast<HistoryID>(row_id);
+  CHECK_LT(history_id, std::numeric_limits<HistoryID>::max());
+
+  history::URLRow new_row(new_url, row_id);
+  new_row.set_visit_count(row.visit_count());
+  new_row.set_typed_count(row.typed_count());
+  new_row.set_last_visit(row.last_visit());
+  new_row.set_title(row.title());
+
+  RowWordStarts word_starts;
+  AddRowWordsToIndex(new_row, &word_starts);
+  word_starts_map_.insert_or_assign(history_id, std::move(word_starts));
+
+  history_info_map_[history_id].url_row = std::move(new_row);
+
+  // Look up pre-fetched visits from the batch map instead of issuing a
+  // per-URL SQL query.
+  auto visits_it = batch_visits.find(row_id);
+  if (visits_it != batch_visits.end()) {
+    VisitInfoVector* visits = &history_info_map_[history_id].visits;
+    const auto& fetched = visits_it->second;
+    const size_t size = std::min(fetched.size(), kMaxVisitsToStoreInCache);
+    visits->reserve(size);
+    for (size_t i = 0; i < size; i++) {
+      visits->push_back(fetched[i]);
+    }
+  }
+
+  return true;
+}
+
 void URLIndexPrivateData::AddRowWordsToIndex(const history::URLRow& row,
                                              RowWordStarts* word_starts) {
   CHECK(sequence_checker_.CalledOnValidSequence(), base::NotFatalUntil::M149);
   HistoryID history_id = static_cast<HistoryID>(row.id());
-  // Split URL into individual, unique words then add in the title words.
+  // Split `URL` into individual words then add in the title words.
   const GURL& gurl(row.url());
   CHECK(gurl.is_valid());
+
+  // `CleanUpUrlForMatching()` and `CleanUpTitleForMatching()` already return
+  // lowercased strings, so we use `String16VectorFromString16()` directly
+  // instead of `String16SetFromString16()` (which redundantly lowercases each
+  // word and builds a sorted `flat_set` for deduplication). `AddWordToIndex()`
+  // handles duplicate words via `try_emplace()`, making the set union and dedup
+  // unnecessary. Words are truncated to match the `kMaxSignificantChars` limit
+  // that `String16SetFromString16()` applies.
+  constexpr size_t kMaxSignificantChars = 200;
   const std::u16string& url = omnibox::CleanUpUrlForMatching(gurl, nullptr);
-  String16Set url_words = String16SetFromString16(
+  String16Vector url_words = String16VectorFromString16(
       url, word_starts ? &word_starts->url_word_starts_ : nullptr);
   const std::u16string& title = omnibox::CleanUpTitleForMatching(row.title());
-  String16Set title_words = String16SetFromString16(
+  String16Vector title_words = String16VectorFromString16(
       title, word_starts ? &word_starts->title_word_starts_ : nullptr);
-  for (const auto& word :
-       base::STLSetUnion<String16Set>(url_words, title_words)) {
-    CHECK(!word.empty());
-    // Confirm no corruption after `CleanUpTitleForMatching()` above, which
-    // limits to `kCleanedUpTitleMaxLength` (1024).
-    CHECK_LT(word.length(), 1024u);
-    // Some crash keys if the fix doesn't work.
-    SCOPED_CRASH_KEY_STRING256("Bug348617573", "url", gurl.spec());
-    SCOPED_CRASH_KEY_STRING32("Bug348617573", "word", base::UTF16ToUTF8(word));
-    AddWordToIndex(word, history_id);
+
+  for (const auto& word : url_words) {
+    if (!word.empty()) {
+      AddWordToIndex(word.substr(0, kMaxSignificantChars), history_id);
+    }
+  }
+  for (const auto& word : title_words) {
+    if (!word.empty()) {
+      AddWordToIndex(word.substr(0, kMaxSignificantChars), history_id);
+    }
   }
 
-  search_term_cache_.clear();  // Invalidate the term cache.
+  // Only invalidate the cache if there are active search terms. During bulk
+  // rebuild from RebuildFromHistory, the cache is always empty so clearing it
+  // thousands of times is wasted work.
+  if (!search_term_cache_.empty()) {
+    search_term_cache_.clear();
+  }
 }
 
 void URLIndexPrivateData::AddWordToIndex(const std::u16string& term,
                                          HistoryID history_id) {
   CHECK(sequence_checker_.CalledOnValidSequence(), base::NotFatalUntil::M149);
-  auto [word_pos, is_new] = word_map_.insert(std::make_pair(term, WordID()));
+  auto [word_pos, is_new] = word_map_.try_emplace(term);
 
-  // Adding a new word (i.e. a word that is not already in the word index).
   if (is_new) {
     word_pos->second = AddNewWordToWordList(term);
 
-    // For each character in the newly added word add the word to the character
-    // index.
-    for (char16_t uni_char : Char16SetFromString16(term))
-      char_word_map_[uni_char].insert(word_pos->second);
+    // For each character in the word, add the word to the character index.
+    // Iterating raw chars is cheaper than constructing a Char16Set (which
+    // allocates, sorts, and deduplicates). Duplicate chars are handled by
+    // flat_set::insert being a no-op for existing elements.
+    const WordID word_id = word_pos->second;
+    for (char16_t uni_char : term) {
+      char_word_map_[uni_char].insert(word_id);
+    }
   }
 
-  word_id_history_map_[word_pos->second].insert(history_id);
-  history_id_word_map_[history_id].insert(word_pos->second);
+  const WordID word_id = word_pos->second;
+  word_id_history_map_[word_id].insert(history_id);
+  history_id_word_map_[history_id].insert(word_id);
 }
 
 WordID URLIndexPrivateData::AddNewWordToWordList(const std::u16string& term) {

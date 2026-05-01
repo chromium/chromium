@@ -886,6 +886,7 @@ source_set("unit_tests") {
     "tailored_word_break_iterator_unittest.cc",
     "titled_url_match_utils_unittest.cc",
     "unscoped_extension_provider_unittest.cc",
+    "url_index_private_data_unittest.cc",
     "url_prefix_unittest.cc",
     "url_scoring_signals_annotator_unittest.cc",
     "voice_suggest_provider_unittest.cc",

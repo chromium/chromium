@@ -20,6 +20,7 @@
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
+#include "components/history/core/browser/history_database.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/omnibox/browser/in_memory_url_index_types.h"
 #include "components/omnibox/browser/scored_history_match.h"
@@ -27,6 +28,7 @@
 class HistoryQuickProviderTest;
 class OmniboxTriggeredFeatureService;
 class TemplateURLService;
+class URLIndexPrivateDataTest;
 
 namespace bookmarks {
 class BookmarkModel;
@@ -149,6 +151,7 @@ class URLIndexPrivateData
 
   friend class ::HistoryQuickProviderTest;
   friend class InMemoryURLIndexTest;
+  friend class URLIndexPrivateDataTest;
   FRIEND_TEST_ALL_PREFIXES(InMemoryURLIndexTest, CalculateWordStartsOffsets);
   FRIEND_TEST_ALL_PREFIXES(InMemoryURLIndexTest,
                            CalculateWordStartsOffsetsUnderscore);
@@ -260,6 +263,14 @@ class URLIndexPrivateData
                 const history::URLRow& row,
                 const std::set<std::string>& scheme_allowlist,
                 base::CancelableTaskTracker* tracker);
+
+  // Like IndexRow, but uses pre-fetched visit data from |batch_visits| instead
+  // of issuing a per-URL SQL query. Used during RebuildFromHistory to avoid
+  // N+1 query patterns.
+  bool IndexRowWithPreFetchedVisits(
+      const history::URLRow& row,
+      const std::set<std::string>& scheme_allowlist,
+      const history::HistoryDatabase::RecentVisitsMap& batch_visits);
 
   // Parses and indexes the words in the URL and page title of |row| and
   // calculate the word starts in each, saving the starts in |word_starts|.
