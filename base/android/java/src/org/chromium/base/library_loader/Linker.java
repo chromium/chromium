@@ -692,7 +692,7 @@ class Linker {
             if (mRelroFd >= 0) {
                 try {
                     info.fd = ParcelFileDescriptor.fromFd(mRelroFd);
-                } catch (java.io.IOException e) {
+                } catch (IOException e) {
                     Log.e(TAG, "Can't write LibInfo file descriptor to aidl parcelable", e);
                 }
             }

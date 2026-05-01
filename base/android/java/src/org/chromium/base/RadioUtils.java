@@ -119,7 +119,7 @@ public class RadioUtils {
                 if (signalStrength != null) {
                     level = signalStrength.getLevel();
                 }
-            } catch (java.lang.SecurityException e) {
+            } catch (SecurityException e) {
                 // Sometimes SignalStrength.getLevel() requires extra permissions
                 // that Chrome doesn't have. See crbug.com/1150536.
             }
@@ -143,7 +143,7 @@ public class RadioUtils {
                                     .getSystemService(Context.TELEPHONY_SERVICE);
             try {
                 return telephonyManager.getDataActivity();
-            } catch (java.lang.SecurityException e) {
+            } catch (SecurityException e) {
                 // Just in case getDataActivity() requires extra permissions.
                 return -1;
             }

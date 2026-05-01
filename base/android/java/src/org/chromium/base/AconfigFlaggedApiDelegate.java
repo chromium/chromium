@@ -19,6 +19,7 @@ import android.os.ParcelFileDescriptor;
 import android.util.Pair;
 import android.util.SparseArray;
 import android.view.Display;
+import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.inputmethod.EditorInfo;
@@ -244,7 +245,7 @@ public interface AconfigFlaggedApiDelegate {
      */
     default void setSelection(
             AccessibilityNodeInfoCompat info,
-            android.view.View view,
+            View view,
             int startVirtualDescendantId,
             int startOffset,
             int endVirtualDescendantId,

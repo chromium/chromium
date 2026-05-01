@@ -12,6 +12,7 @@ import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.os.Binder;
 import android.os.Build;
+import android.os.Debug;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
@@ -323,7 +324,7 @@ public class ChildProcessService {
             }
 
             if (CommandLine.getInstance().hasSwitch(BaseSwitches.RENDERER_WAIT_FOR_JAVA_DEBUGGER)) {
-                android.os.Debug.waitForDebugger();
+                Debug.waitForDebugger();
             }
 
             EarlyTraceEvent.onCommandLineAvailableInChildProcess();

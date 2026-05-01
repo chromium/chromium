@@ -7,6 +7,7 @@ package org.chromium.base.memory;
 import android.app.ActivityManager;
 import android.content.ComponentCallbacks2;
 import android.content.res.Configuration;
+import android.os.Build;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -133,9 +134,8 @@ public class MemoryPressureMonitor {
                                 // See |PreFreezeBackgroundMemoryTrimmer| for
                                 // more details.
                                 if (level == ComponentCallbacks2.TRIM_MEMORY_BACKGROUND
-                                        && android.os.Build.VERSION.SDK_INT
-                                                >= android.os.Build.VERSION_CODES
-                                                        .UPSIDE_DOWN_CAKE) {
+                                        && Build.VERSION.SDK_INT
+                                                >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
                                     MemoryPressureListener.onPreFreeze();
                                 }
                             }

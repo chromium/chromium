@@ -24,6 +24,7 @@ import androidx.test.runner.AndroidJUnitRunner;
 
 import dalvik.system.DexFile;
 
+import org.junit.Test;
 import org.junit.runner.Request;
 import org.junit.runner.RunWith;
 
@@ -464,7 +465,7 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
                 return true;
             }
             for (Method testMethod : loadedClass.getMethods()) {
-                if (testMethod.isAnnotationPresent(org.junit.Test.class)) {
+                if (testMethod.isAnnotationPresent(Test.class)) {
                     return true;
                 }
             }
