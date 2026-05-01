@@ -227,6 +227,11 @@ SavePackage::SavePackage(PageImpl& page,
          saved_main_file_path_.value().length() <= kMaxFilePathLength);
   DCHECK(!saved_main_directory_path_.empty() &&
          saved_main_directory_path_.value().length() < kMaxFilePathLength);
+
+  // Ensure that the main path has a reasonable and useful extension.
+  net::GenerateSafeFileName(GetMimeTypeForSaveType(save_type),
+                            /*ignore_extension=*/true, &saved_main_file_path_);
+
   InternalInit();
 }
 
