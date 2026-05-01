@@ -26,6 +26,8 @@ namespace ukm::builders {
 class AccessibilityAnnotator_ContentAnnotator_ClassifierResults;
 }  // namespace ukm::builders
 
+class PrefService;
+
 namespace passage_embeddings {
 class Embedder;
 }  // namespace passage_embeddings
@@ -61,8 +63,8 @@ class ContentClassifier {
   // if an embedder is available.
   // Returns nullptr if unparsable rules are provided for all sub-classifiers.
   static std::unique_ptr<ContentClassifier> Create(
-      passage_embeddings::Embedder* embedder);
-
+      passage_embeddings::Embedder* embedder,
+      PrefService* pref_service);
   explicit ContentClassifier(
       PassKey pass_key,
       passage_embeddings::Embedder* embedder,
@@ -72,8 +74,8 @@ class ContentClassifier {
           url_match_classifier,
       base::flat_map<std::string, ContentClassifierRelevance>
           classifier_relevance_values,
-      base::flat_set<std::string> supported_languages);
-
+      base::flat_set<std::string> supported_languages,
+      PrefService* pref_service);
   ContentClassifier(const ContentClassifier&) = delete;
   ContentClassifier& operator=(const ContentClassifier&) = delete;
   virtual ~ContentClassifier();
@@ -139,7 +141,8 @@ class ContentClassifier {
       classifier_relevance_values_;
   // Set of supported language codes (e.g. "en", "en-US").
   base::flat_set<std::string> supported_languages_;
-
+  // PrefService for storing the UKM logging user secret. This is non-owning.
+  raw_ptr<PrefService> pref_service_;
   base::WeakPtrFactory<ContentClassifier> weak_ptr_factory_{this};
 };
 

@@ -11,7 +11,9 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/accessibility_annotator/core/accessibility_annotator_features.h"
+#include "components/accessibility_annotator/core/prefs.h"
 #include "components/passage_embeddings/core/passage_embeddings_test_util.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "components/variations/hashing.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -138,7 +140,9 @@ class ContentClassifierTest : public testing::Test {
     feature_list_.InitAndEnableFeatureWithParameters(
         features::kContentAnnotator, params);
 
-    return ContentClassifier::Create(&test_embedder_);
+    ::accessibility_annotator::prefs::RegisterProfilePrefs(
+        test_pref_service_.registry());
+    return ContentClassifier::Create(&test_embedder_, &test_pref_service_);
   }
 
   static ContentClassificationInput CreateDefaultInput() {
@@ -195,6 +199,7 @@ class ContentClassifierTest : public testing::Test {
   base::test::ScopedFeatureList feature_list_;
   base::test::TaskEnvironment task_environment_;
   passage_embeddings::TestEmbedder test_embedder_;
+  TestingPrefServiceSimple test_pref_service_;
 };
 
 TEST_F(ContentClassifierTest, Classify_AllClassifiersMatch) {

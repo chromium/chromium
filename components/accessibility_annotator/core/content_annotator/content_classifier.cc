@@ -4,6 +4,8 @@
 
 #include "components/accessibility_annotator/core/content_annotator/content_classifier.h"
 
+#include <optional>
+#include <string>
 #include <string_view>
 
 #include "base/containers/map_util.h"
@@ -16,7 +18,9 @@
 #include "components/accessibility_annotator/core/content_annotator/content_annotator_rule_based_classifier.h"
 #include "components/accessibility_annotator/core/content_annotator/content_annotator_semantic_match_classifier.h"
 #include "components/accessibility_annotator/core/content_annotator/content_annotator_url_matcher_classifier.h"
+#include "components/accessibility_annotator/core/content_annotator/content_classifier_metrics.h"
 #include "components/accessibility_annotator/core/content_annotator/content_classifier_types.h"
+#include "components/prefs/pref_service.h"
 #include "components/variations/hashing.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
@@ -25,7 +29,8 @@ namespace accessibility_annotator {
 
 // static
 std::unique_ptr<ContentClassifier> ContentClassifier::Create(
-    passage_embeddings::Embedder* embedder) {
+    passage_embeddings::Embedder* embedder,
+    PrefService* pref_service) {
   std::unique_ptr<ContentAnnotatorRuleBasedClassifier> title_keyword_classifier;
   const std::string& title_keyword_rules =
       features::kContentAnnotatorClassifierTitleKeywordRules.Get();
@@ -69,7 +74,7 @@ std::unique_ptr<ContentClassifier> ContentClassifier::Create(
   return std::make_unique<ContentClassifier>(
       PassKey(), embedder, std::move(title_keyword_classifier),
       std::move(url_match_classifier), std::move(classifier_relevance_values),
-      std::move(supported_languages));
+      std::move(supported_languages), pref_service);
 }
 
 ContentClassifier::ContentClassifier(
@@ -80,12 +85,14 @@ ContentClassifier::ContentClassifier(
     std::unique_ptr<ContentAnnotatorUrlMatcherClassifier> url_match_classifier,
     base::flat_map<std::string, ContentClassifierRelevance>
         classifier_relevance_values,
-    base::flat_set<std::string> supported_languages)
+    base::flat_set<std::string> supported_languages,
+    PrefService* pref_service)
     : embedder_(embedder),
       title_keyword_classifier_(std::move(title_keyword_classifier)),
       url_match_classifier_(std::move(url_match_classifier)),
       classifier_relevance_values_(std::move(classifier_relevance_values)),
-      supported_languages_(std::move(supported_languages)) {
+      supported_languages_(std::move(supported_languages)),
+      pref_service_(pref_service) {
   OnEmbedderModelChanged();
 }
 
@@ -256,7 +263,10 @@ void ContentClassifier::RunSemanticMatchClassifier(
         classification_result->score >=
             features::kContentAnnotatorSemanticMatchThreshold.Get()) {
       semantic_result.category = classification_result->category;
-      // TODO(crbug.com/478246547): Log the value to UKM.
+      LogSemanticClassificationValueScore(
+          classification_result->score,
+          GetOrCreateUkmLoggingUserSecret(pref_service_), input.url,
+          ukm_builder);
     }
     result.semantic_match_result = semantic_result;
 

@@ -107,7 +107,7 @@ class ContentAnnotatorTabHelperTest : public ChromeRenderViewHostTestHarness {
     ASSERT_TRUE(accessibility_annotator_backend);
 
     std::unique_ptr<ContentClassifier> content_classifier_ =
-        ContentClassifier::Create(mock_embedder_.get());
+        ContentClassifier::Create(mock_embedder_.get(), profile()->GetPrefs());
     ASSERT_TRUE(content_classifier_);
 
     mock_service_ =

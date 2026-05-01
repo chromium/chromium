@@ -24,6 +24,8 @@
 #include "components/passage_embeddings/core/passage_embeddings_types.h"
 #include "url/gurl.h"
 
+class PrefService;
+
 namespace optimization_guide {
 class ModelQualityLogEntry;
 class RemoteModelExecutor;
@@ -56,7 +58,8 @@ class ContentAnnotatorService
       page_content_annotations::PageEmbeddingsService& page_embeddings_service,
       AccessibilityAnnotatorBackend& accessibility_annotator_backend,
       passage_embeddings::Embedder* embedder,
-      passage_embeddings::EmbedderMetadataProvider* embedder_metadata_provider);
+      passage_embeddings::EmbedderMetadataProvider* embedder_metadata_provider,
+      PrefService* pref_service);
 
   ~ContentAnnotatorService() override;
 

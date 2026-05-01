@@ -12,6 +12,12 @@ namespace accessibility_annotator::prefs {
 inline constexpr char kShouldShowRemoteAnnotatorFirstRunInfo[] =
     "accessibility_annotator.should_show_remote_annotator_first_run_info";
 
+inline constexpr char kUkmLoggingUserSecret[] =
+    "accessibility_annotator.ukm_logging_user_secret";
+
+inline constexpr char kUkmLoggingUserSecretCreationTime[] =
+    "accessibility_annotator.ukm_logging_user_secret_creation_time";
+
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
 }  // namespace accessibility_annotator::prefs

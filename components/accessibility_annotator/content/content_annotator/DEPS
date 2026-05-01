@@ -7,6 +7,7 @@ include_rules = [
   "+components/page_content_annotations/content",
   "+components/page_content_annotations/core",
   "+components/passage_embeddings",
+  "+components/prefs",
   "+components/sessions",
   "+components/sync",
   "+components/translate/core",

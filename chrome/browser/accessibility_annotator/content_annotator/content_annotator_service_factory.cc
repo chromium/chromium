@@ -100,7 +100,7 @@ ContentAnnotatorServiceFactory::BuildServiceInstanceForBrowserContext(
       *optimization_guide_service, *page_embeddings_service,
       *accessibility_annotator_backend,
       passage_embeddings_service_controller->GetEmbedder(),
-      passage_embeddings_service_controller);
+      passage_embeddings_service_controller, profile->GetPrefs());
 }
 
 bool ContentAnnotatorServiceFactory::ServiceIsCreatedWithBrowserContext()

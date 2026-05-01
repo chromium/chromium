@@ -29,6 +29,7 @@
 #include "components/optimization_guide/proto/string_value.pb.h"
 #include "components/page_content_annotations/content/page_embeddings_service.h"
 #include "components/page_content_annotations/core/page_content_annotation_type.h"
+#include "components/prefs/pref_service.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/session_id.h"
 #include "components/translate/core/common/language_detection_details.h"
@@ -80,9 +81,10 @@ std::unique_ptr<ContentAnnotatorService> ContentAnnotatorService::Create(
     page_content_annotations::PageEmbeddingsService& page_embeddings_service,
     AccessibilityAnnotatorBackend& accessibility_annotator_backend,
     passage_embeddings::Embedder* embedder,
-    passage_embeddings::EmbedderMetadataProvider* embedder_metadata_provider) {
+    passage_embeddings::EmbedderMetadataProvider* embedder_metadata_provider,
+    PrefService* pref_service) {
   std::unique_ptr<ContentClassifier> content_classifier =
-      ContentClassifier::Create(embedder);
+      ContentClassifier::Create(embedder, pref_service);
   if (!content_classifier) {
     return nullptr;
   }

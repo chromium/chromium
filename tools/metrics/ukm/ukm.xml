@@ -621,6 +621,29 @@ be describing additional metrics about the same event.
       Records whether the page is in one of the target language(s).
     </summary>
   </metric>
+  <metric name="SemanticClassificationResult"
+      enum="ContentClassifierRelevanceValue">
+    <summary>
+      Indicates the level of confidence that the web page content is relevant to
+      the accessibility annotator based on the results of the semantic value
+      classifier.
+    </summary>
+  </metric>
+  <metric name="SemanticClassificationValueScore">
+    <summary>
+      Records a low entropy representation of the cosine similarity score output
+      by the semantic classification classifier. The low entropy value is
+      calculated using a RAPPOR-style calculation to enable analysis only on
+      aggregated results. The raw score is between 0 and 1. The score is then
+      placed into one of 16 linearly spaced buckets by dividing the score by the
+      bucket size and taking the floor. The resulting bucket value has noise
+      added with a probability of .5 where the noise is applied to each
+      individual bit. The noise is generated deterministically based on a
+      rotating user secret and the URL's host and path, ensuring the same URL
+      reports the same noisy value for a given user within the 28-day secret
+      rotation window.
+    </summary>
+  </metric>
   <metric name="TitleKeywordResult" enum="ContentClassifierRelevanceValue">
     <summary>
       Records the level of interest in the web page content based on the results
