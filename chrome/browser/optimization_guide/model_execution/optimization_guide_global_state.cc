@@ -161,10 +161,17 @@ ChromePredictionManager::~ChromePredictionManager() = default;
 OptimizationGuideGlobalState::OptimizationGuideGlobalState(
     LaunchServiceCallback launch_service_callback) {
   if (base::FeatureList::IsEnabled(kOptimizationGuideManifestBroker)) {
-    on_device_capability_ = std::make_unique<ManifestBrokerState>(
+    auto manifest_broker_state = std::make_unique<ManifestBrokerState>(
         *g_browser_process->local_state(), CreateManifestDelegate(),
         launch_service_callback);
-    // TODO(b/489510258): ScheduleEvaluation and record metrics / trials
+
+    manifest_broker_state->performance_classifier()
+        .ListenForPerformanceClassAvailable(
+            base::BindOnce(&ChromeOnDeviceModelServiceController::
+                               RegisterPerformanceClassSyntheticTrial));
+    manifest_broker_state->performance_classifier().ScheduleEvaluation();
+
+    on_device_capability_ = std::move(manifest_broker_state);
     return;
   }
 

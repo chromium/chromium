@@ -65,6 +65,10 @@ class ManifestBrokerState final : public OnDeviceCapability,
                            bool requested) override;
   void UninstallModels() override;
 
+  PerformanceClassifier& performance_classifier() {
+    return performance_classifier_;
+  }
+
  private:
   // Ensure any delayed initialization tasks are complete, then call `callback`.
   void EnsureInitialization(ModelBrokerImpl::InitCallback callback);
