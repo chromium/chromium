@@ -37,7 +37,7 @@
   width: var(--cr-icon-button-width);
 }
 
-:host(:hover) {
+:host(:hover:not([disabled])) {
   background-color: var(--cr-icon-button-hover-background-color,
       var(--cr-hover-background-color));
 }
