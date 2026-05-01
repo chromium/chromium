@@ -386,6 +386,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "android-system-contacts-picker",
+    "owners": [ "mattreynolds@google.com", "deviceapi-team@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "android-tab-group-colors",
     "owners": [
       "hitarthkothari@google.com",

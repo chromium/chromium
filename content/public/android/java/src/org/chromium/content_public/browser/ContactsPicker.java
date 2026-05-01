@@ -81,7 +81,7 @@ public final class ContactsPicker {
             boolean includeAddresses,
             boolean includeIcons,
             String formattedOrigin,
-            ContactsFetcher contactsFetcher) {
+            @Nullable ContactsFetcher contactsFetcher) {
         if (sContactsPickerDelegate == null) return false;
         assert sPicker == null;
 

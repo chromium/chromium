@@ -91,8 +91,9 @@ public class TopView extends RelativeLayout
         super.onFinishInflate();
 
         mCheckboxContainer = findViewById(R.id.content);
-        if (ContactsPickerFeatureMap.isEnabled(
-                ContactsPickerFeatureList.CONTACTS_PICKER_SELECT_ALL)) {
+        if (!ContactsPickerFeatureMap.shouldShowSystemContactsPicker()
+                && ContactsPickerFeatureMap.isEnabled(
+                        ContactsPickerFeatureList.CONTACTS_PICKER_SELECT_ALL)) {
             mCheckboxContainer.setVisibility(View.VISIBLE);
         }
         mSelectAllBox = findViewById(R.id.checkbox);

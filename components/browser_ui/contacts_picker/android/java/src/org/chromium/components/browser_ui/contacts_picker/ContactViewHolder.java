@@ -35,7 +35,7 @@ public class ContactViewHolder extends ViewHolder implements ContactsFetcher.Ico
     private final int mIconSize;
 
     // An instance of {@link ContactsFetcher} to query data.
-    private final ContactsFetcher mContactsFetcher;
+    private final @Nullable ContactsFetcher mContactsFetcher;
 
     /**
      * The PickerBitmapViewHolder.
@@ -49,7 +49,7 @@ public class ContactViewHolder extends ViewHolder implements ContactsFetcher.Ico
             ContactView itemView,
             PickerCategoryView categoryView,
             int iconSize,
-            ContactsFetcher contactsFetcher) {
+            @Nullable ContactsFetcher contactsFetcher) {
         super(itemView);
         mCategoryView = categoryView;
         mItemView = itemView;
@@ -74,7 +74,10 @@ public class ContactViewHolder extends ViewHolder implements ContactsFetcher.Ico
             mItemView.initialize(contact, bitmap);
         } else {
             Bitmap icon = mCategoryView.getIconCache().getBitmap(mContact.getId());
-            if (icon == null && !contact.getId().equals(ContactDetails.SELF_CONTACT_ID)) {
+            if (icon == null
+                    && mContactsFetcher != null
+                    && !contact.getId().equals(ContactDetails.SELF_CONTACT_ID)
+                    && !ContactsPickerFeatureMap.shouldShowSystemContactsPicker()) {
                 mWorkerTask = mContactsFetcher.fetchIcon(mContact.getId(), mIconSize, this);
             }
             mItemView.initialize(contact, icon);

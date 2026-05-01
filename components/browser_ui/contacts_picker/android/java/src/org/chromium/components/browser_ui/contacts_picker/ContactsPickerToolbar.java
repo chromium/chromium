@@ -88,9 +88,10 @@ public class ContactsPickerToolbar extends SelectableListToolbar<ContactDetails>
      * Update the UI elements of the toolbar, based on whether contacts & filter chips are selected.
      */
     private void updateToolbarUi() {
+        boolean isSystemPickerEnabled = ContactsPickerFeatureMap.shouldShowSystemContactsPicker();
         boolean contactsSelected = !mSelectionDelegate.getSelectedItems().isEmpty();
 
-        boolean doneEnabled = contactsSelected && mFilterChipsSelected;
+        boolean doneEnabled = (contactsSelected || isSystemPickerEnabled) && mFilterChipsSelected;
         ButtonCompat done = findViewById(R.id.done);
         done.setEnabled(doneEnabled);
 
@@ -98,11 +99,12 @@ public class ContactsPickerToolbar extends SelectableListToolbar<ContactDetails>
             done.setTextAppearance(R.style.TextAppearance_TextMedium_Secondary);
         } else {
             done.setTextAppearance(R.style.TextAppearance_TextMedium_Disabled);
-            if (contactsSelected) {
-                setNavigationButton(NavigationButton.SELECTION_BACK);
-            } else {
-                showBackArrow();
-            }
+        }
+
+        if (isSystemPickerEnabled || !contactsSelected) {
+            showBackArrow();
+        } else {
+            setNavigationButton(NavigationButton.SELECTION_BACK);
         }
     }
 }

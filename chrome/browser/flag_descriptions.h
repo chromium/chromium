@@ -193,6 +193,12 @@ inline constexpr char kAndroidMediaPickerName[] = "Android Media Picker";
 inline constexpr char kAndroidMediaPickerDescription[] =
     "Enables the Android media picker for media capture.";
 
+inline constexpr char kAndroidSystemContactsPickerName[] =
+    "Android System Contacts Picker";
+inline constexpr char kAndroidSystemContactsPickerDescription[] =
+    "Enables the new Android System Contacts Picker (ACTION_PICK_CONTACTS) "
+    "on supported Android versions.";
+
 inline constexpr char kAndroidOpenIncognitoAsWindowName[] =
     "Open incognito tabs in new window";
 inline constexpr char kAndroidOpenIncognitoAsWindowDescription[] =

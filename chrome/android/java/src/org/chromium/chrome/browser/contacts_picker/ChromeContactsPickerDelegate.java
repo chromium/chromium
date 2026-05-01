@@ -9,9 +9,11 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.content.Context;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.contacts_picker.ContactsPickerDialog;
+import org.chromium.components.browser_ui.contacts_picker.ContactsPickerFeatureMap;
 import org.chromium.content_public.browser.ContactsFetcher;
 import org.chromium.content_public.browser.ContactsPickerDelegate;
 import org.chromium.content_public.browser.ContactsPickerListener;
@@ -33,7 +35,7 @@ public class ChromeContactsPickerDelegate implements ContactsPickerDelegate {
             boolean includeAddresses,
             boolean includeIcons,
             String formattedOrigin,
-            ContactsFetcher contactsFetcher) {
+            @Nullable ContactsFetcher contactsFetcher) {
         WindowAndroid windowAndroid = webContents.getTopLevelNativeWindow();
         assumeNonNull(windowAndroid);
         boolean shouldDialogPadForContent =
@@ -56,7 +58,9 @@ public class ChromeContactsPickerDelegate implements ContactsPickerDelegate {
                         contactsFetcher);
         assumeNonNull(dialog.getWindow()).getAttributes().windowAnimations =
                 R.style.PickerDialogAnimation;
-        dialog.show();
+        if (!ContactsPickerFeatureMap.shouldShowSystemContactsPicker()) {
+            dialog.show();
+        }
         return dialog;
     }
 

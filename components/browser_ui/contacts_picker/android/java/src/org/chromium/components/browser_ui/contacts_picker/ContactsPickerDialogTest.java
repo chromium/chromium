@@ -36,8 +36,10 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.blink.mojom.ContactIconBlob;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.RecyclerViewTestUtils;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate.SelectionObserver;
@@ -67,6 +69,7 @@ import java.util.List;
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 @EnableFeatures(ContactsPickerFeatureList.CONTACTS_PICKER_SELECT_ALL)
+@DisableFeatures(ContactsPickerFeatureList.ANDROID_SYSTEM_CONTACTS_PICKER)
 public class ContactsPickerDialogTest
         implements ContactsPickerListener, SelectionObserver<ContactDetails> {
     @ClassRule
@@ -247,7 +250,7 @@ public class ContactsPickerDialogTest
                                         boolean addresses,
                                         boolean icons,
                                         String formattedOrigin,
-                                        ContactsFetcher contactsFetcher) {
+                                        @Nullable ContactsFetcher contactsFetcher) {
                                     mDialog =
                                             new ContactsPickerDialog(
                                                     webContents.getTopLevelNativeWindow(),

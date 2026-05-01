@@ -10,5 +10,6 @@
 namespace browser_ui {
 
 BASE_FEATURE(kContactsPickerSelectAll, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAndroidSystemContactsPicker, base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace browser_ui

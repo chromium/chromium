@@ -40,6 +40,7 @@ android_library("java") {
   deps = [
     ":java_resources",
     "//base:base_java",
+    "//base:flagged_apis_java",
     "//build/android:build_java",
     "//components/browser_ui/util/android:java",
     "//components/browser_ui/widget/android:java",
@@ -91,21 +92,26 @@ android_library("unit_device_javatests") {
   testonly = true
 
   sources = [
+    "java/src/org/chromium/components/browser_ui/contacts_picker/AndroidContactsPermissionProviderTest.java",
     "java/src/org/chromium/components/browser_ui/contacts_picker/ContactDetailsTest.java",
     "java/src/org/chromium/components/browser_ui/contacts_picker/ContactsFetcherTestImpl.java",
     "java/src/org/chromium/components/browser_ui/contacts_picker/ContactsPickerDialogTest.java",
+    "java/src/org/chromium/components/browser_ui/contacts_picker/FakeAconfigFlaggedApiDelegate.java",
+    "java/src/org/chromium/components/browser_ui/contacts_picker/SystemContactsPickerTest.java",
   ]
   deps = [
     ":java",
     ":java_resources",
     "//base:base_java",
     "//base:base_java_test_support",
+    "//base:flagged_apis_java",
     "//chrome/test/android:chrome_java_unit_test_support",
     "//components/browser_ui/widget/android:java",
     "//components/browser_ui/widget/android:test_support_java",
     "//components/payments/mojom:mojom_java",
     "//content/public/android:content_java",
     "//content/public/test/android:content_java_test_support",
+    "//third_party/android_sdk:android_test_mock_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
     "//third_party/androidx:androidx_core_core_java",

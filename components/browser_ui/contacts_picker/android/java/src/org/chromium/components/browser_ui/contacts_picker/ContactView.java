@@ -100,7 +100,7 @@ public class ContactView extends SelectableItemView<ContactDetails> {
                 || id == R.id.email_overflow_count
                 || id == R.id.telephone_number_overflow_count) {
             onLongClick(this);
-        } else {
+        } else if (!ContactsPickerFeatureMap.shouldShowSystemContactsPicker()) {
             super.onClick(view);
         }
     }

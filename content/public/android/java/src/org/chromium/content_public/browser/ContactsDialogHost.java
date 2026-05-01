@@ -79,7 +79,7 @@ public class ContactsDialogHost implements ContactsPickerListener {
                     mWebContents,
                     new ContactsPermissionProvider.Callback() {
                         @Override
-                        public void onAllowed(ContactsFetcher contactsFetcher) {
+                        public void onAllowed(@Nullable ContactsFetcher contactsFetcher) {
                             if (isDestroyed()) {
                                 return;
                             }

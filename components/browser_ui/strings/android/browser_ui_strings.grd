@@ -837,8 +837,14 @@
       <message name="IDS_CONTACTS_PICKER_SELECT_CONTACTS" desc="The label at the top of the dialog that allows users to select contacts from their device and share the details with a web page.">
         Select contacts
       </message>
+      <message name="IDS_CONTACTS_PICKER_SHARE_CONTACTS" desc="The label at the top of the dialog that allows users to review the contacts and details to be shared with a web page.">
+        Share contacts
+      </message>
       <message name="IDS_CONTACTS_PICKER_SELECT_CONTACT" desc="The label at the top of the dialog that allows users to select a single contact from their device and share the details with a web page.">
         Select a contact
+      </message>
+      <message name="IDS_CONTACTS_PICKER_SHARE_CONTACT" desc="The label at the top of the dialog that allows users to review a single contact and details to be shared with a web page.">
+        Share a contact
       </message>
       <message name="IDS_CONTACTS_PICKER_ALL_CONTACTS" desc="The label associated with the select all checkbox, indicating that all the contacts will be selected.">
         All contacts

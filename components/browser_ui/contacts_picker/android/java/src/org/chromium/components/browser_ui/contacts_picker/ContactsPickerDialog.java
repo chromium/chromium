@@ -7,6 +7,7 @@ package org.chromium.components.browser_ui.contacts_picker;
 import static org.chromium.build.NullUtil.assertNonNull;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.FullscreenAlertDialog;
 import org.chromium.content_public.browser.ContactsFetcher;
 import org.chromium.content_public.browser.ContactsPickerListener;
@@ -50,7 +51,7 @@ public class ContactsPickerDialog extends FullscreenAlertDialog
             boolean includeIcons,
             String formattedOrigin,
             boolean shouldPadForContent,
-            ContactsFetcher contactsFetcher) {
+            @Nullable ContactsFetcher contactsFetcher) {
         super(assertNonNull(windowAndroid.getActivity().get()), shouldPadForContent);
 
         // Initialize the main content view.

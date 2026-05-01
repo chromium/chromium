@@ -507,4 +507,24 @@ public interface AconfigFlaggedApiDelegate {
     default boolean isNativeWebViewZygoteEnabled(WebViewDelegate delegate) {
         return false;
     }
+
+    /** Checks if the system contacts picker is enabled. */
+    default boolean isSystemContactsPickerEnabled() {
+        return false;
+    }
+
+    /** Returns the ACTION_PICK_CONTACTS intent action string if supported. */
+    default @Nullable String getSystemContactsPickerAction() {
+        return null;
+    }
+
+    /** Returns the EXTRA_PICK_CONTACTS_REQUESTED_DATA_FIELDS intent extra string if supported. */
+    default @Nullable String getSystemContactsPickerExtraRequestedDataFields() {
+        return null;
+    }
+
+    /** Returns the Contacts Picker session provider authority string if supported. */
+    default @Nullable String getSystemContactsPickerAuthority() {
+        return null;
+    }
 }

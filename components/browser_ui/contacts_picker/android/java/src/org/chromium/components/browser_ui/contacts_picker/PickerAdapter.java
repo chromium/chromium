@@ -99,7 +99,7 @@ public abstract class PickerAdapter extends Adapter<RecyclerView.ViewHolder>
     private String mFormattedOrigin;
 
     // An instance of {@link ContactsFetcher} to query data.
-    private ContactsFetcher mContactsFetcher;
+    private @Nullable ContactsFetcher mContactsFetcher;
 
     // The full list of all registered contacts on the device.
     private @Nullable ArrayList<ContactDetails> mContactDetails;
@@ -145,7 +145,7 @@ public abstract class PickerAdapter extends Adapter<RecyclerView.ViewHolder>
             PickerCategoryView categoryView,
             Context context,
             String formattedOrigin,
-            ContactsFetcher contactsFetcher) {
+            @Nullable ContactsFetcher contactsFetcher) {
         mContext = context;
         mCategoryView = categoryView;
         mFormattedOrigin = formattedOrigin;
@@ -156,7 +156,9 @@ public abstract class PickerAdapter extends Adapter<RecyclerView.ViewHolder>
         sIncludeTelephones = true;
         sIncludeIcons = true;
 
-        if (getAllContacts() == null) {
+        if (getAllContacts() == null
+                && mContactsFetcher != null
+                && !ContactsPickerFeatureMap.shouldShowSystemContactsPicker()) {
             mContactsFetcher.fetchContacts(
                     mCategoryView.siteWantsNames(),
                     mCategoryView.siteWantsEmails(),
@@ -164,6 +166,17 @@ public abstract class PickerAdapter extends Adapter<RecyclerView.ViewHolder>
                     mCategoryView.siteWantsAddresses(),
                     this);
         }
+    }
+
+    /**
+     * Updates the contact details list.
+     *
+     * @param contacts The list of contacts to show.
+     */
+    @SuppressWarnings("NotifyDataSetChanged")
+    public void updateContacts(List<ContactDetails> contacts) {
+        mContactDetails = new ArrayList<>(contacts);
+        notifyDataSetChanged();
     }
 
     /**
@@ -189,14 +202,14 @@ public abstract class PickerAdapter extends Adapter<RecyclerView.ViewHolder>
         } else {
             mSearchResults = new ArrayList<>();
             Integer count = 0;
-            String query_lower = query.toLowerCase(Locale.getDefault());
+            String queryLower = query.toLowerCase(Locale.getDefault());
             assumeNonNull(mContactDetails);
             for (ContactDetails contact : mContactDetails) {
-                if (contact.getDisplayName().toLowerCase(Locale.getDefault()).contains(query_lower)
+                if (contact.getDisplayName().toLowerCase(Locale.getDefault()).contains(queryLower)
                         || contact.getContactDetailsAsString(
                                         includesAddresses(), includesEmails(), includesTelephones())
                                 .toLowerCase(Locale.getDefault())
-                                .contains(query_lower)) {
+                                .contains(queryLower)) {
                     mSearchResults.add(count);
                 }
                 count++;
@@ -288,7 +301,10 @@ public abstract class PickerAdapter extends Adapter<RecyclerView.ViewHolder>
                 mTopView.setSiteString(mFormattedOrigin);
                 mTopView.registerSelectAllCallback(mCategoryView);
                 mTopView.registerChipToggledCallback(this);
-                mTopView.updateCheckboxVisibility(mCategoryView.multiSelectionAllowed());
+                boolean checkboxVisible =
+                        mCategoryView.multiSelectionAllowed()
+                                && !ContactsPickerFeatureMap.shouldShowSystemContactsPicker();
+                mTopView.updateCheckboxVisibility(checkboxVisible);
                 mTopView.updateChipVisibility(
                         mCategoryView.siteWantsNames(),
                         mCategoryView.siteWantsAddresses(),
@@ -346,7 +362,9 @@ public abstract class PickerAdapter extends Adapter<RecyclerView.ViewHolder>
     // instead.
     public int getItemCount() {
         if (mSearchResults != null) return mSearchResults.size();
-        if (mContactDetails == null || mContactDetails.size() == 0) return 0;
+        if (mContactDetails == null || mContactDetails.size() == 0) {
+            return ContactsPickerFeatureMap.shouldShowSystemContactsPicker() ? 1 : 0;
+        }
         // Add one entry to account for the Select All checkbox, when not searching.
         return mContactDetails.size() + (mSearchMode ? 0 : 1);
     }

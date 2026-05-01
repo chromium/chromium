@@ -27,15 +27,21 @@ public class AndroidContactsPermissionProviderImpl implements ContactsPermission
     public void run(WebContents webContents, Callback callback) {
         WindowAndroid windowAndroid = webContents.getTopLevelNativeWindow();
         assert windowAndroid != null;
-        Context context = windowAndroid.getContext().get();
-        assumeNonNull(context);
-        ContentResolver contentResolver = context.getContentResolver();
-        ContactsFetcher contactsFetcher = new AndroidContactsFetcherImpl(contentResolver);
 
         if (windowAndroid.getActivity().get() == null) {
             callback.onDenied();
             return;
         }
+
+        if (ContactsPickerFeatureMap.shouldShowSystemContactsPicker()) {
+            callback.onAllowed(null);
+            return;
+        }
+
+        Context context = windowAndroid.getContext().get();
+        assumeNonNull(context);
+        ContentResolver contentResolver = context.getContentResolver();
+        ContactsFetcher contactsFetcher = new AndroidContactsFetcherImpl(contentResolver);
 
         if (windowAndroid.hasPermission(Manifest.permission.READ_CONTACTS)) {
             callback.onAllowed(contactsFetcher);

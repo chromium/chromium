@@ -5,6 +5,7 @@
 package org.chromium.content_public.browser;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /** An interface to perform permission check for the contact picker. */
 @NullMarked
@@ -16,7 +17,7 @@ public interface ContactsPermissionProvider {
          *
          * @param contactsFetcher The source of contact information.
          */
-        void onAllowed(ContactsFetcher contactsFetcher);
+        void onAllowed(@Nullable ContactsFetcher contactsFetcher);
 
         /** Called when permission is denied. */
         void onDenied();

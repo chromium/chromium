@@ -15,4 +15,5 @@ import org.chromium.build.annotations.NullMarked;
 @NullMarked
 public abstract class ContactsPickerFeatureList {
     public static final String CONTACTS_PICKER_SELECT_ALL = "ContactsPickerSelectAll";
+    public static final String ANDROID_SYSTEM_CONTACTS_PICKER = "AndroidSystemContactsPicker";
 }
