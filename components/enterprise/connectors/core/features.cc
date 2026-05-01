@@ -22,7 +22,7 @@ BASE_FEATURE_PARAM(size_t,
                    kMaxContentAnalysisFileSizeMB,
                    &kEnableNewUploadSizeLimit,
                    "max_file_size_mb",
-                   /*default_value=*/250);
+                   /*default_value=*/2048);
 
 // Controls the new upload count limit for content analysis.
 BASE_FEATURE(kEnableNewUploadCountLimit, base::FEATURE_DISABLED_BY_DEFAULT);
