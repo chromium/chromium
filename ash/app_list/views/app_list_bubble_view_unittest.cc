@@ -40,10 +40,10 @@
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
-#include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -749,8 +749,8 @@ TEST_F(AppListBubbleViewTest, CanSelectSearchResults) {
 
   // Search results becoming available allows keyboard selection.
   AddSearchResult("id", u"title");
-  base::RunLoop().RunUntilIdle();  // Update search model observers.
-  EXPECT_TRUE(view->CanSelectSearchResults());
+  ASSERT_TRUE(
+      base::test::RunUntil([&] { return view->CanSelectSearchResults(); }));
 }
 
 TEST_F(AppListBubbleViewTest, DownArrowMovesFocusToApps) {
