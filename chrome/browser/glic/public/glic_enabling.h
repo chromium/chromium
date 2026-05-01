@@ -30,7 +30,7 @@ namespace glic {
 namespace prefs {
 enum class SettingsPolicyState;
 enum class FreStatus;
-}
+}  // namespace prefs
 namespace mojom {
 // TODO(crbug.com/406500707): This forward declaration is needed because we use
 // allow_circular_includes_from. Our build rules should be refactored to avoid
@@ -80,7 +80,7 @@ class GlicGlobalEnabling {
   };
   explicit GlicGlobalEnabling(Delegate& delegate);
   ~GlicGlobalEnabling();
-  bool IsEnabledByFlags();
+  bool IsEnabledByGlobalCriteria();
   bool IsSystemRequirementMet() const;
   bool IsLocaleEnabled() const { return locale_enablement_.value_or(true); }
   bool IsCountryEnabled() const { return country_enablement_.value_or(true); }
@@ -95,10 +95,12 @@ class GlicGlobalEnabling {
 // such as based on user preferences or system settings.
 //
 // There are multiple notions of "enabled". The highest level is
-// IsEnabledByFlags which controls whether any global-Glic infrastructure is
-// created. If flags are off, nothing Glic-related should be created.
+// IsEnabledByGlobalCriteria which controls whether any global-Glic
+// infrastructure is created. It checks the feature flag, country, locale, and
+// system requirements. If these criteria are not met, nothing Glic-related
+// should be created.
 //
-// If flags are enabled, various global objects are created as well as a
+// If the above checks pass, various global objects are created as well as a
 // GlicKeyedService for each "eligible" profile. Eligible profiles exclude
 // incognito, guest mode, system profile, etc. i.e. include only real user
 // profiles. An eligible profile will create various Glic decorations and views
@@ -116,7 +118,7 @@ class GlicEnabling : public signin::IdentityManager::Observer,
  public:
   // Returns whether the global Glic feature is enabled for Chrome. This status
   // will not change at runtime.
-  static bool IsEnabledByFlags();
+  static bool IsEnabledByGlobalCriteria();
 
   // Returns true if a profile is eligible for Glic. Some profiles - such as
   // incognito, guest, system profile, etc. - are never eligible. An eligible
@@ -127,7 +129,7 @@ class GlicEnabling : public signin::IdentityManager::Observer,
   // controls whether Glic infrastructure (e.g., `GlicKeyedService`, UI
   // controllers) is created for the profile.
   //
-  // Always returns false if `IsEnabledByFlags()` is off.
+  // Always returns false if `IsEnabledByGlobalCriteria()` is off.
   static bool IsProfileEligible(const Profile* profile);
 
   // This is a convenience method for code outside of //chrome/browser/glic.
@@ -138,9 +140,9 @@ class GlicEnabling : public signin::IdentityManager::Observer,
   static bool HasConsentedForProfile(Profile* profile);
 
   // Returns true if the given profile has Glic enabled and has completed the
-  // FRE. True implies that IsEnabledByFlags(), IsProfileEligible(profile), and
-  // IsEnabledForProfile(profile) are also true. This value can change at
-  // runtime.
+  // FRE. True implies that IsEnabledByGlobalCriteria(),
+  // IsProfileEligible(profile), and IsEnabledForProfile(profile) are also true.
+  // This value can change at runtime.
   static bool IsEnabledAndConsentForProfile(Profile* profile);
 
   // Returns true if the given profile was shown the FRE but did not complete

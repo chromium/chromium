@@ -344,7 +344,7 @@ GlicEnabling::ProfileEnablement GlicEnabling::EnablementForProfile(
   GlicGlobalEnabling& global_enabling =
       g_browser_process->GetFeatures()->glic_global_enabling();
 
-  if (!global_enabling.IsEnabledByFlags()) {
+  if (!global_enabling.IsEnabledByGlobalCriteria()) {
     result.feature_disabled = true;
 
     result.feature_flag_disabled =
@@ -495,7 +495,7 @@ bool GlicGlobalEnabling::IsSystemRequirementMet() const {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
-bool GlicGlobalEnabling::IsEnabledByFlags() {
+bool GlicGlobalEnabling::IsEnabledByGlobalCriteria() {
   if (g_bypass_enablement_checks_for_testing) {
     return true;
   }
@@ -508,10 +508,10 @@ bool GlicGlobalEnabling::IsEnabledByFlags() {
   return is_enabled && IsSystemRequirementMet();
 }
 
-bool GlicEnabling::IsEnabledByFlags() {
+bool GlicEnabling::IsEnabledByGlobalCriteria() {
   return g_browser_process->GetFeatures()
       ->glic_global_enabling()
-      .IsEnabledByFlags();
+      .IsEnabledByGlobalCriteria();
 }
 
 bool GlicEnabling::IsProfileEligible(const Profile* profile) {
@@ -527,7 +527,7 @@ bool GlicEnabling::IsProfileEligible(const Profile* profile) {
 
   // Glic is supported only in regular profiles, i.e. disable in incognito,
   // guest, system profile, etc.
-  return IsEnabledByFlags() && profile && profile->IsRegularProfile();
+  return IsEnabledByGlobalCriteria() && profile && profile->IsRegularProfile();
 }
 
 void GlicEnabling::RecordProfileIneligibilityMetricsAtStartup(
@@ -544,7 +544,7 @@ void GlicEnabling::RecordProfileIneligibilityMetricsAtStartup(
   base::UmaHistogramBoolean("Glic.ProfileEnablement.IsEnabled.Startup", false);
 
   // Log specific causes of ineligibility.
-  if (!IsEnabledByFlags()) {
+  if (!IsEnabledByGlobalCriteria()) {
     base::UmaHistogramEnumeration(
         "Glic.ProfileEnablement.DisabledReason.Startup",
         ProfileEnablement::Reason::kFeatureDisabled);

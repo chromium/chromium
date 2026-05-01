@@ -7,7 +7,7 @@
 #include "chrome/browser/profiles/profile.h"
 namespace glic {
 bool JNI_GlicEnabling_IsEnabledByFlags(JNIEnv* env) {
-  return GlicEnabling::IsEnabledByFlags();
+  return GlicEnabling::IsEnabledByGlobalCriteria();
 }
 bool JNI_GlicEnabling_IsProfileEligible(JNIEnv* env, Profile* profile) {
   return GlicEnabling::IsProfileEligible(profile);

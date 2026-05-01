@@ -41,7 +41,7 @@ GlicIphController::GlicIphController(BrowserWindowInterface* browser_window,
           feature_engagement::kIPHGlicTryItFeature)),
       window_(*browser_window),
       glic_service_(glic_service) {
-  if (GlicEnabling::IsEnabledByFlags()) {
+  if (GlicEnabling::IsEnabledByGlobalCriteria()) {
     show_timer_.Start(FROM_HERE, GetPromoCheckInterval(),
                       base::BindRepeating(&GlicIphController::MaybeShowPromo,
                                           weak_ptr_factory_.GetWeakPtr()));

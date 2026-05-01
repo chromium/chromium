@@ -37,7 +37,7 @@ bool IsContextualCueingEnabled() {
     return base::FeatureList::IsEnabled(kContextualCueing);
   }
 
-  return glic::GlicEnabling::IsEnabledByFlags();
+  return glic::GlicEnabling::IsEnabledByGlobalCriteria();
 }
 
 bool IsZeroStateSuggestionsEnabled() {
@@ -53,7 +53,7 @@ bool IsZeroStateSuggestionsEnabled() {
     return base::FeatureList::IsEnabled(kGlicZeroStateSuggestions);
   }
 
-  return glic::GlicEnabling::IsEnabledByFlags();
+  return glic::GlicEnabling::IsEnabledByGlobalCriteria();
 }
 
 const base::FeatureParam<base::TimeDelta> kBackoffTime(&kContextualCueing,
