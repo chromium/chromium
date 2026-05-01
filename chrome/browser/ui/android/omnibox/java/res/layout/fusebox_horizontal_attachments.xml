@@ -13,8 +13,8 @@ found in the LICENSE file.
     android:divider="@drawable/fusebox_attachment_divider"
     android:showDividers="middle"
     android:paddingHorizontal="@dimen/fusebox_carousel_padding_horizontal"
-    android:paddingTop="@dimen/fusebox_carousel_padding_vertical"
-    android:paddingBottom="@dimen/fusebox_carousel_padding_vertical">
+    android:paddingTop="@dimen/fusebox_carousel_padding_top"
+    android:paddingBottom="@dimen/fusebox_carousel_padding_bottom">
 
     <include
         layout="@layout/fusebox_horizontal_attachment_item"

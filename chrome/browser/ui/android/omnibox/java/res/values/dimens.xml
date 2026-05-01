@@ -176,8 +176,10 @@ found in the LICENSE file.
     <dimen name="fusebox_attachment_thumbnail_padding">8dp</dimen>
     <dimen name="fusebox_carousel_item_icon_bg_padding">16dp</dimen>
     <dimen name="fusebox_carousel_item_text_margin_top">4dp</dimen>
-    <dimen name="fusebox_carousel_padding_horizontal">16dp</dimen>
-    <dimen name="fusebox_carousel_padding_vertical">4dp</dimen>
+    <!-- Combined with parent's 8dp padding to make exactly 16dp total edge spacing -->
+    <dimen name="fusebox_carousel_padding_horizontal">8dp</dimen>
+    <dimen name="fusebox_carousel_padding_top">24dp</dimen>
+    <dimen name="fusebox_carousel_padding_bottom">16dp</dimen>
     <!-- The remove view is 48x48dp, visible elements should be 18x18dp. (48-18)/2=15 -->
     <dimen name="fusebox_attachment_close_padding">15dp</dimen>
     <dimen name="fusebox_attachment_close_overhang">7dp</dimen>
