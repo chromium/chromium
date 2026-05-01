@@ -2094,17 +2094,6 @@ Unknown properties are collapsed to zero. -->
 
 <!-- LINT.ThenChange(//chrome/services/speech/soda/soda_client.h:LoadSodaResult) -->
 
-<!-- LINT.IfChange(MainContentExtractionClientType) -->
-
-<enum name="MainContentExtractionClientType">
-  <int value="0" label="Tests"/>
-  <int value="1" label="Reading Mode"/>
-  <int value="2" label="MainNode"/>
-  <int value="3" label="ChromeOS Mahi"/>
-</enum>
-
-<!-- LINT.ThenChange(//services/screen_ai/screen_ai_service_impl.cc:MainContentExtractionClientType) -->
-
 <!-- LINT.IfChange(MainNodeAnnotationResult) -->
 
 <enum name="MainNodeAnnotationResult">
@@ -2242,18 +2231,6 @@ Unknown properties are collapsed to zero. -->
 </enum>
 
 <!-- LINT.ThenChange(//chrome/common/read_anything/read_anything_util.cc:ReadAnythingFont) -->
-
-<!-- LINT.IfChange(ReadAnythingHeuristics) -->
-
-<enum name="ReadAnythingHeuristics">
-  <int value="0" label="None"/>
-  <int value="1" label="NodeNotFound"/>
-  <int value="2" label="InvisibleOrIgnored"/>
-  <int value="3" label="NotExpanded"/>
-  <int value="4" label="NoDeepsetLastDecendent"/>
-</enum>
-
-<!-- LINT.ThenChange(//chrome/renderer/accessibility/read_anything/read_anything_app_model.cc:ReadAnythingHeuristics) -->
 
 <!-- LINT.IfChange(ReadAnythingHighlightGranularity) -->
 

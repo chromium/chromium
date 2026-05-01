@@ -175,8 +175,6 @@ IN_PROC_BROWSER_TEST_F(MainContentExtractionTest, EmptyInput) {
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
 
-  histograms.ExpectTotalCount(
-      "Accessibility.ScreenAI.MainContentExtraction.Error.ResultNull", 1);
   histograms.ExpectUniqueSample(
       "Accessibility.ScreenAI.MainContentExtraction.Successful2", false, 1);
   histograms.ExpectTotalCount(

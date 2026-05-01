@@ -261,23 +261,6 @@ void AXTreeDistiller::ProcessScreen2xResult(
     }
   }
 
-  // Record metrics on how often screen2x merge was helpful.
-  if (content_node_ids_screen2x.empty()) {
-    base::UmaHistogramBoolean(
-        "Accessibility.ReadAnything.Algorithm.HadWhenScreen2xEmpty",
-        !content_node_ids_algorithm.empty());
-  } else {
-    bool added = false;
-    for (ui::AXNodeID node_id : content_node_ids_algorithm) {
-      if (!std::ranges::contains(content_node_ids_screen2x, node_id)) {
-        added = true;
-        break;
-      }
-    }
-    base::UmaHistogramBoolean(
-        "Accessibility.ReadAnything.Algorithm.AddedToScreen2x", added);
-  }
-
   RecordMergedMetrics(ukm_source_id, base::TimeTicks::Now() - merged_start_time,
                       !content_node_ids_algorithm.empty());
   VLOG(1) << "Screen 2x extracted content, running callback with ID: "

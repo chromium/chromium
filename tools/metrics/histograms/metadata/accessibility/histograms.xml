@@ -3032,28 +3032,6 @@ even if they fit the naming pattern. -->
   </token>
 </histogram>
 
-<histogram name="Accessibility.ReadAnything.Algorithm.AddedToScreen2x"
-    enum="BooleanYesNo" expires_after="2027-06-01">
-  <owner>rhalavati@chromium.org</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    Records if main content extraction algorithm had any nodes to add to
-    Screen2x results. This metric is recorded only when Screen2x has some
-    results.
-  </summary>
-</histogram>
-
-<histogram name="Accessibility.ReadAnything.Algorithm.HadWhenScreen2xEmpty"
-    enum="BooleanYesNo" expires_after="2026-10-04">
-  <owner>rhalavati@chromium.org</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    Records if main content extraction algorithm had any nodes when Screen2x
-    results was empty. This metric is recorded only when Screen2x has no
-    results.
-  </summary>
-</histogram>
-
 <histogram name="Accessibility.ReadAnything.AudioStartTime.{Result}" units="ms"
     expires_after="2026-10-04">
   <owner>kristislee@google.com</owner>
@@ -3136,18 +3114,6 @@ even if they fit the naming pattern. -->
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     Records the user-chosen font scale for the Read Anything panel.
-  </summary>
-</histogram>
-
-<histogram name="Accessibility.ReadAnything.Heuristics"
-    enum="ReadAnythingHeuristics" expires_after="2026-10-04">
-  <owner>rhalavati@chromium.org</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    For each node returned by main content extractor, records if the node is
-    pruned by one of the heuristics, or value none if it was not puned. This
-    metric would be used to find out which heuristics are needed and can be
-    passed to Screen2x pre/post processing.
   </summary>
 </histogram>
 
@@ -3694,25 +3660,6 @@ even if they fit the naming pattern. -->
     Records a Screen AI library load result on Windows. The result is recorded
     after initialization of Screen AI service and loading chrome_screen_ai.dll.
   </summary>
-</histogram>
-
-<histogram
-    name="Accessibility.ScreenAI.MainContentExtraction.Error.{error_type}"
-    enum="MainContentExtractionClientType" expires_after="2027-06-01">
-  <owner>rhalavati@chromium.org</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    Records if main content extraction failed because {error_type}.
-  </summary>
-  <token key="error_type">
-    <variant name="ResultEmpty" summary="Screen2x returned empty"/>
-    <variant name="ResultNull" summary="Screen2x returned null"/>
-    <variant name="SnapshotEmpty" summary="input snapshot was empty"/>
-    <variant name="SnapshotProto"
-        summary="input snapshot failed to convert to proto"/>
-    <variant name="SnapshotUnserialize"
-        summary="input snapshot could not be unserialized"/>
-  </token>
 </histogram>
 
 <histogram name="Accessibility.ScreenAI.MainContentExtraction.Latency.{result}"
