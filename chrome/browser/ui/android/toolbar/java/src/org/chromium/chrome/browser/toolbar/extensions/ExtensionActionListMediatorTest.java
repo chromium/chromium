@@ -188,7 +188,6 @@ public class ExtensionActionListMediatorTest {
                                     action.getId(),
                                     action.getTitle(),
                                     action.getTitle(),
-                                    action.getTitle(),
                                     action.getHoverCardState());
                         });
 
@@ -536,7 +535,6 @@ public class ExtensionActionListMediatorTest {
         ListItem item = mModels.get(index);
         assertEquals(ListItemType.EXTENSION_ACTION, item.type);
         assertEquals(id, item.model.get(ExtensionActionButtonProperties.ID));
-        assertEquals(title, item.model.get(ExtensionActionButtonProperties.TOOLTIP));
         assertEquals(title, item.model.get(ExtensionActionButtonProperties.ACCESSIBLE_NAME));
         assertTrue(icon.sameAs(item.model.get(ExtensionActionButtonProperties.ICON)));
     }

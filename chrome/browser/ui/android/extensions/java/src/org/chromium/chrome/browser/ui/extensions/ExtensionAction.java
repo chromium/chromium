@@ -27,7 +27,6 @@ import java.util.Objects;
 public class ExtensionAction {
     private final String mId;
     private final String mName;
-    private final String mTooltip;
     private final String mAccessibleName;
     private final HoverCardState mHoverCardState;
 
@@ -79,12 +78,10 @@ public class ExtensionAction {
     public ExtensionAction(
             @JniType("std::string") String id,
             @JniType("std::string") String name,
-            @JniType("std::string") String tooltip,
             @JniType("std::string") String accessibleName,
             HoverCardState hoverCardState) {
         mId = id;
         mName = name;
-        mTooltip = tooltip;
         mAccessibleName = accessibleName;
         mHoverCardState = hoverCardState;
     }
@@ -95,10 +92,6 @@ public class ExtensionAction {
 
     public String getId() {
         return mId;
-    }
-
-    public String getTooltip() {
-        return mTooltip;
     }
 
     public String getAccessibleName() {
@@ -114,7 +107,6 @@ public class ExtensionAction {
         if (o instanceof ExtensionAction other) {
             return mId.equals(other.mId)
                     && mName.equals(other.mName)
-                    && mTooltip.equals(other.mTooltip)
                     && mAccessibleName.equals(other.mAccessibleName);
         }
         return false;
@@ -122,6 +114,6 @@ public class ExtensionAction {
 
     @Override
     public int hashCode() {
-        return Objects.hash(mId, mName, mTooltip, mAccessibleName);
+        return Objects.hash(mId, mName, mAccessibleName);
     }
 }

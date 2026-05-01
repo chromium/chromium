@@ -365,7 +365,6 @@ class ExtensionActionListMediator implements Destroyable {
                                     requestShowContextMenu(actionId);
                                     return true;
                                 })
-                        .with(ExtensionActionButtonProperties.TOOLTIP, action.getTooltip())
                         .build());
     }
 
@@ -410,7 +409,6 @@ class ExtensionActionListMediator implements Destroyable {
                 ExtensionActionButtonProperties.IS_DRAGGABLE,
                 mExtensionsToolbarBridge.isActionDraggable(actionId));
         model.set(ExtensionActionButtonProperties.ACCESSIBLE_NAME, action.getAccessibleName());
-        model.set(ExtensionActionButtonProperties.TOOLTIP, action.getTooltip());
     }
 
     private void updateActionPropertiesForAll(WebContents webContents) {
