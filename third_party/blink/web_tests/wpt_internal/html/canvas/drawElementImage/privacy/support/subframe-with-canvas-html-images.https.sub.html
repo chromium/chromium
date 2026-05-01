@@ -35,6 +35,7 @@
       promise_test(async function(t) {
         await new Promise(requestAnimationFrame);
         await new Promise(setTimeout);
+        assert_not_equals(window.innerWidth, 0, "Window should have a non-zero width");
         const context = canvas.getContext("2d");
         context.drawElementImage(child, 0, 0);
 
