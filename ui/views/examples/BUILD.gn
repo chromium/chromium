@@ -549,3 +549,19 @@ executable("vector_icon_viewer") {
     "//ui/views/examples:views_examples_proc",
   ]
 }
+
+executable("lottie_viewer") {
+  testonly = true
+  sources = [ "lottie_viewer.cc" ]
+  deps = [
+    ":views_examples_lib",
+    ":views_examples_proc",
+    "//base",
+    "//base/test:test_support",
+    "//skia",
+    "//ui/base",
+    "//ui/gfx",
+    "//ui/gfx/geometry",
+    "//ui/views",
+  ]
+}
