@@ -11,15 +11,21 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/safe_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/autofill/actor/actor_filling_observer.h"
 #include "chrome/browser/autofill/actor/actor_form_filling_service.h"
 #include "chrome/browser/autofill/actor/actor_form_section_splitter.h"
 #include "chrome/browser/autofill/actor/actor_key_metrics_recorder.h"
+#include "chrome/common/actor/task_id.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 namespace tabs {
 class TabInterface;
+}
+
+namespace actor {
+class AggregatedJournal;
 }
 
 namespace autofill {
@@ -29,7 +35,8 @@ namespace autofill {
 // so that subsequent filling can refer to it by ID.
 class ActorFormFillingServiceImpl : public ActorFormFillingService {
  public:
-  ActorFormFillingServiceImpl();
+  ActorFormFillingServiceImpl(base::SafeRef<::actor::AggregatedJournal> journal,
+                              ::actor::TaskId task_id);
   ActorFormFillingServiceImpl(const ActorFormFillingServiceImpl&) = delete;
   ActorFormFillingServiceImpl& operator=(const ActorFormFillingServiceImpl&) =
       delete;
@@ -116,6 +123,12 @@ class ActorFormFillingServiceImpl : public ActorFormFillingService {
   // TODO(crbug.com/448398227): Consider dropping the ordering and instead
   // identify a `FormFillingRequest` by a `FormFillingRequestId`.
   std::vector<FieldGlobalId> suggestion_trigger_field_id_;
+
+  // The actor journal for writing debug entries to.
+  base::SafeRef<::actor::AggregatedJournal> journal_;
+
+  // The task id for the corresponding task that is set on journal entries.
+  ::actor::TaskId task_id_;
 
   base::WeakPtrFactory<ActorFormFillingServiceImpl> weak_ptr_factory_{this};
 };

@@ -16,6 +16,7 @@ static_library("actor") {
   ]
 
   deps = [
+    "//chrome/browser/actor",
     "//chrome/browser/profiles",
     "//chrome/browser/ui/autofill",
     "//chrome/common:chrome_features",
@@ -64,7 +65,10 @@ static_library("test_support") {
     "mock_actor_form_filling_service.cc",
     "mock_actor_form_filling_service.h",
   ]
-  deps = [ "//testing/gmock" ]
+  deps = [
+    "//chrome/browser/actor",
+    "//testing/gmock",
+  ]
   public_deps = [
     ":actor",
     "//base",

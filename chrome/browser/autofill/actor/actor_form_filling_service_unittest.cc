@@ -4,6 +4,7 @@
 
 #include "chrome/browser/autofill/actor/actor_form_filling_service.h"
 
+#include <string_view>
 #include <vector>
 
 #include "base/check_deref.h"
@@ -12,6 +13,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
+#include "chrome/browser/actor/aggregated_journal.h"
 #include "chrome/browser/autofill/actor/actor_filling_observer.h"
 #include "chrome/browser/autofill/actor/actor_form_filling_service_impl.h"
 #include "chrome/browser/autofill/actor/actor_form_filling_service_impl_test_api.h"
@@ -149,6 +151,23 @@ void ExpectGetSuggestionsOutcome(ActorFormFillingError error,
   histogram_tester.ExpectTotalCount("Autofill.Actor.GetSuggestions.Latency", 1,
                                     location);
 }
+
+class MockJournalObserver : public ::actor::AggregatedJournal::Observer {
+ public:
+  explicit MockJournalObserver(::actor::AggregatedJournal& journal)
+      : journal_(journal.GetSafeRef()) {
+    journal.AddObserver(this);
+  }
+  ~MockJournalObserver() override { journal_->RemoveObserver(this); }
+
+  MOCK_METHOD(void,
+              WillAddJournalEntry,
+              (const ::actor::AggregatedJournal::Entry& entry),
+              (override));
+
+ private:
+  base::SafeRef<::actor::AggregatedJournal> journal_;
+};
 
 class ActorFormFillingServiceTest : public ActorTestBase {
  public:
@@ -858,7 +877,8 @@ TEST(ActorFormFillingServiceWithoutAutofillTest, NoWebContents) {
   ON_CALL(mock_tab, GetContents()).WillByDefault(Return(nullptr));
 
   GetSuggestionsFuture future;
-  ActorFormFillingServiceImpl service;
+  ::actor::AggregatedJournal journal;
+  ActorFormFillingServiceImpl service(journal.GetSafeRef(), ::actor::TaskId(1));
   service.GetSuggestions(mock_tab, {UnfindableFillRequest()},
                          future.GetCallback());
   EXPECT_THAT(future.Get(),
@@ -882,7 +902,8 @@ TEST(ActorFormFillingServiceWithoutAutofillTest, NoAutofillClient) {
   ASSERT_FALSE(ContentAutofillClient::FromWebContents(web_contents));
 
   GetSuggestionsFuture future;
-  ActorFormFillingServiceImpl service;
+  ::actor::AggregatedJournal journal;
+  ActorFormFillingServiceImpl service(journal.GetSafeRef(), ::actor::TaskId(1));
   service.GetSuggestions(mock_tab, {UnfindableFillRequest()},
                          future.GetCallback());
   EXPECT_THAT(future.Get(),
@@ -938,6 +959,42 @@ TEST_F(ActorFormFillingServiceTest, ScrollToForm) {
 
   service().ScrollToForm(tab(), /*form_index=*/0);
   service().ScrollToForm(tab(), /*form_index=*/1);
+}
+
+auto JournalEntryWithError(std::string_view expected_message) {
+  return testing::Field(
+      &::actor::AggregatedJournal::Entry::data,
+      testing::Pointee(testing::Field(
+          &::actor::mojom::JournalEntry::details,
+          testing::Contains(testing::Pointee(testing::AllOf(
+              testing::Field(&::actor::mojom::JournalDetails::key, "error"),
+              testing::Field(&::actor::mojom::JournalDetails::value,
+                             testing::HasSubstr(expected_message))))))));
+}
+
+TEST(ActorFormFillingServiceJournalTest,
+     FillWithInvalidSuggestionId_LogsToJournal) {
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile profile;
+  content::TestWebContentsFactory test_web_contents_factory;
+  content::WebContents* web_contents =
+      test_web_contents_factory.CreateWebContents(&profile);
+
+  tabs::MockTabInterface mock_tab;
+  ON_CALL(mock_tab, GetContents()).WillByDefault(testing::Return(web_contents));
+
+  ::actor::AggregatedJournal journal;
+  MockJournalObserver observer(journal);
+
+  EXPECT_CALL(observer, WillAddJournalEntry(JournalEntryWithError(
+                            "Autofill manager not available")));
+
+  autofill::ActorFormFillingServiceImpl service(journal.GetSafeRef(),
+                                                ::actor::TaskId(1));
+
+  service.FillForm(
+      mock_tab, /*form_index=*/0,
+      autofill::ActorFormFillingSelection(autofill::ActorSuggestionId(123)));
 }
 
 }  // namespace

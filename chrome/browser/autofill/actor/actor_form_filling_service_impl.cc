@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <functional>
+#include <string_view>
 #include <utility>
 #include <variant>
 #include <vector>
@@ -25,11 +26,13 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/types/zip.h"
+#include "chrome/browser/actor/aggregated_journal.h"
 #include "chrome/browser/autofill/actor/actor_filling_observer.h"
 #include "chrome/browser/autofill/actor/actor_key_metrics_recorder.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/autofill/autofill_client_provider.h"
 #include "chrome/browser/ui/autofill/autofill_client_provider_factory.h"
+#include "chrome/common/actor/journal_details_builder.h"
 #include "chrome/common/chrome_features.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
@@ -466,7 +469,10 @@ bool ActorFormFillingServiceImpl::FillData::HasPaymentsPayload() const {
   return std::holds_alternative<CreditCard>(filling_payload);
 }
 
-ActorFormFillingServiceImpl::ActorFormFillingServiceImpl() = default;
+ActorFormFillingServiceImpl::ActorFormFillingServiceImpl(
+    base::SafeRef<::actor::AggregatedJournal> journal,
+    ::actor::TaskId task_id)
+    : journal_(journal), task_id_(task_id) {}
 
 ActorFormFillingServiceImpl::~ActorFormFillingServiceImpl() = default;
 
@@ -478,6 +484,13 @@ void ActorFormFillingServiceImpl::GetSuggestions(
   auto callback_with_metrics =
       base::BindOnce(&RecordGetSuggestionsMetrics, base::TimeTicks::Now())
           .Then(std::move(callback));
+
+  auto log_actor_error = [&](std::string_view error_message) {
+    journal_->Log(
+        tab.GetContents()->GetLastCommittedURL(), task_id_,
+        "ActorFormFillingServiceImpl::GetSuggestions",
+        ::actor::JournalDetailsBuilder().AddError(error_message).Build());
+  };
 
   using enum ActorFormFillingError;
   base::expected<std::reference_wrapper<BrowserAutofillManager>,
@@ -496,6 +509,7 @@ void ActorFormFillingServiceImpl::GetSuggestions(
   if (fill_requests.empty()) {
     LOG_AF(log_manager) << LoggingScope::kAutofillActor
                         << "Fill requests are empty.";
+    log_actor_error("Fill requests are empty.");
     std::move(callback_with_metrics).Run(base::unexpected(kOther));
     return;
   }
@@ -529,6 +543,7 @@ void ActorFormFillingServiceImpl::GetSuggestions(
                 ::features::kActorFormFillingServiceEnableAddress)) {
           LOG_AF(log_manager) << LoggingScope::kAutofillActor
                               << "Actor is disabled for address autofill.";
+          log_actor_error("Actor is disabled for address autofill.");
           std::move(callback_with_metrics)
               .Run(base::unexpected(kAutofillNotAvailable));
           return;
@@ -557,6 +572,7 @@ void ActorFormFillingServiceImpl::GetSuggestions(
                 ::features::kActorFormFillingServiceEnableCreditCard)) {
           LOG_AF(log_manager) << LoggingScope::kAutofillActor
                               << "Actor is disabled for credit card autofill.";
+          log_actor_error("Actor is disabled for credit card autofill.");
           std::move(callback_with_metrics)
               .Run(base::unexpected(kAutofillNotAvailable));
           return;
@@ -568,6 +584,7 @@ void ActorFormFillingServiceImpl::GetSuggestions(
       default: {
         LOG_AF(log_manager)
             << LoggingScope::kAutofillActor << "The request type is invalid.";
+        log_actor_error("The request type is invalid.");
         std::move(callback_with_metrics).Run(base::unexpected(kOther));
         return;
       }
@@ -595,6 +612,7 @@ void ActorFormFillingServiceImpl::GetSuggestions(
         default:
           LOG_AF(log_manager)
               << LoggingScope::kAutofillActor << "The request type is invalid.";
+          log_actor_error("The request type is invalid.");
           std::move(callback_with_metrics).Run(base::unexpected(kOther));
           return;
       }
@@ -604,6 +622,7 @@ void ActorFormFillingServiceImpl::GetSuggestions(
       if (suggestion_data.suggestions_with_fill_data.empty()) {
         LOG_AF(log_manager)
             << LoggingScope::kAutofillActor << "No suggestions were generated.";
+        log_actor_error("No suggestions were generated.");
         std::move(callback_with_metrics).Run(base::unexpected(kNoSuggestions));
         return;
       }
@@ -740,10 +759,25 @@ ActorFormFillingServiceImpl::FillOrPreviewFormImpl(
     mojom::ActionPersistence action_persistence) {
   // TODO(crbug.com/448398227): Consider changing some of these early returns
   // into CHECKs.
+
+  // Local helper for journal logging to reduce repetition
+  auto log_actor_error = [&](std::string_view error_message) {
+    std::string_view action_str =
+        (action_persistence == mojom::ActionPersistence::kFill) ? "Fill"
+                                                                : "Preview";
+    journal_->Log(
+        tab.GetContents()->GetLastCommittedURL(), task_id_,
+        "ActorFormFillingServiceImpl::FillOrPreviewFormImpl",
+        ::actor::JournalDetailsBuilder()
+            .AddError(base::StrCat({action_str, " failed: ", error_message}))
+            .Build());
+  };
+
   base::expected<std::reference_wrapper<BrowserAutofillManager>,
                  ActorFormFillingError>
       maybe_manager = GetAutofillManager(tab);
   if (!maybe_manager.has_value()) {
+    log_actor_error("Autofill manager not available.");
     return ActorFormFillingError::kAutofillNotAvailable;
   }
   BrowserAutofillManager& autofill_manager = maybe_manager.value();
@@ -755,6 +789,8 @@ ActorFormFillingServiceImpl::FillOrPreviewFormImpl(
     LOG_AF(log_manager) << LoggingScope::kAutofillActor
                         << "Fill/Preview aborted: Could not find the "
                            "`FillData` with the given `ActorSuggestionId`.";
+    log_actor_error(
+        "Could not find the FillData with the given ActorSuggestionId.");
     return ActorFormFillingError::kOther;
   }
 
@@ -762,6 +798,7 @@ ActorFormFillingServiceImpl::FillOrPreviewFormImpl(
     LOG_AF(log_manager) << LoggingScope::kAutofillActor
                         << "Fill/Preview aborted: The corresponding `FillData` "
                            "had no associated fields.";
+    log_actor_error("The corresponding FillData had no associated fields.");
     return ActorFormFillingError::kOther;
   }
 
@@ -805,9 +842,12 @@ ActorFormFillingServiceImpl::FillOrPreviewFormImpl(
                            << LoggingScope::kAutofillActor
                            << "Fill/Preview aborted: Could not fill/preview "
                               "because the suggestion had empty payload.";
+                       log_actor_error("The suggestion had empty payload.");
                        return;
                      }},
                  fill_data->filling_payload);
+    } else {
+      log_actor_error("Form not found in cache.");
     }
   }
   return std::nullopt;

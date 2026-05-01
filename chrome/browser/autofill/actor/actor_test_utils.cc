@@ -117,7 +117,9 @@ TestActorChromeAutofillClient::GetActorKeyMetricsRecorder() {
 ActorTestBase::ActorTestBase()
     : ChromeRenderViewHostTestHarness(
           base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-      service_(std::make_unique<ActorFormFillingServiceImpl>()) {}
+      service_(
+          std::make_unique<ActorFormFillingServiceImpl>(journal_.GetSafeRef(),
+                                                        ::actor::TaskId(1))) {}
 
 ActorTestBase::~ActorTestBase() = default;
 

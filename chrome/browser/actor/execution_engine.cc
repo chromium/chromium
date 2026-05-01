@@ -172,7 +172,8 @@ ExecutionEngine::ExecutionEngine(
       actor_login_service_(
           std::make_unique<actor_login::ActorLoginServiceImpl>()),
       actor_form_filling_service_(
-          std::make_unique<autofill::ActorFormFillingServiceImpl>()),
+          std::make_unique<autofill::ActorFormFillingServiceImpl>(journal_,
+                                                                  task_->id())),
       ui_event_dispatcher_(std::move(ui_event_dispatcher)) {
   TRACE_EVENT0("actor", "ExecutionEngine::ExecutionEngine");
 }
