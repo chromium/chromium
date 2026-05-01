@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webui/new_tab_page/stub_searchbox_handler.h"
 
+#include "components/omnibox/common/input_state.h"
+
 #if BUILDFLAG(IS_ANDROID)
 
 #include "base/strings/utf_string_conversions.h"
@@ -98,7 +100,12 @@ void StubSearchboxHandler::GetTabPreview(int32_t tab_id,
   std::move(callback).Run({});
 }
 void StubSearchboxHandler::GetInputState(GetInputStateCallback callback) {
-  std::move(callback).Run({});
+  omnibox::InputState state;
+  state.allowed_input_types.push_back(
+      omnibox::InputType::INPUT_TYPE_LENS_IMAGE);
+  state.allowed_input_types.push_back(omnibox::InputType::INPUT_TYPE_LENS_FILE);
+  state.allowed_tools.push_back(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
+  std::move(callback).Run(std::move(state));
 }
 void StubSearchboxHandler::NotifySessionStarted() {}
 void StubSearchboxHandler::NotifySessionAbandoned() {}

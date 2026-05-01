@@ -356,6 +356,7 @@ class NewTabPageUI
       most_visited_page_factory_receiver_;
   mojo::Receiver<composebox::mojom::PageHandlerFactory>
       composebox_page_factory_receiver_;
+  std::unique_ptr<ComposeboxHandler> composebox_handler_;
 #if BUILDFLAG(IS_ANDROID)
   mojo::PendingRemote<composebox::mojom::Page> android_stub_composebox_page_;
   std::unique_ptr<composebox::mojom::PageHandler>
@@ -366,7 +367,6 @@ class NewTabPageUI
   mojo::PendingRemote<searchbox::mojom::Page> android_stub_realbox_page_;
   std::unique_ptr<searchbox::mojom::PageHandler> android_stub_realbox_handler_;
 #else
-  std::unique_ptr<ComposeboxHandler> composebox_handler_;
   std::unique_ptr<user_education::HelpBubbleHandler> help_bubble_handler_;
   std::unique_ptr<NtpPromoHandler> ntp_promo_handler_;
   mojo::Receiver<ntp_promo::mojom::NtpPromoHandlerFactory>

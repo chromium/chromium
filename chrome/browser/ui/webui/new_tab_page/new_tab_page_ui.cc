@@ -58,6 +58,7 @@
 #include "chrome/browser/ui/views/side_panel/customize_chrome/customize_chrome_utils.h"
 #include "chrome/browser/ui/views/side_panel/customize_chrome/side_panel_controller_views.h"
 #include "chrome/browser/ui/webui/browser_command/browser_command_handler.h"
+#include "chrome/browser/ui/webui/cr_components/composebox/composebox_handler.h"
 #include "chrome/browser/ui/webui/cr_components/most_visited/most_visited_handler.h"
 #include "chrome/browser/ui/webui/cr_components/searchbox/searchbox_handler.h"
 #include "chrome/browser/ui/webui/customize_buttons/customize_buttons_handler.h"
@@ -136,7 +137,6 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
-#include "chrome/browser/ui/webui/cr_components/composebox/composebox_handler.h"
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips_generator.h"
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips_handler.h"
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips_metrics.h"
@@ -1410,8 +1410,6 @@ void NewTabPageUI::CreatePageHandler(
     mojo::PendingRemote<searchbox::mojom::Page> pending_searchbox_page,
     mojo::PendingReceiver<searchbox::mojom::PageHandler>
         pending_searchbox_handler) {
-// TODO(b/502297163): Implement for Android.
-#if !BUILDFLAG(IS_ANDROID)
   DCHECK(pending_page.is_valid());
 
   composebox_handler_ = std::make_unique<ComposeboxHandler>(
@@ -1422,13 +1420,6 @@ void NewTabPageUI::CreatePageHandler(
                           base::Unretained(this)),
       base::BindRepeating(&NewTabPageUI::ClearContextualSessionHandle,
                           base::Unretained(this)));
-#else
-  android_stub_composebox_page_ = std::move(pending_page);
-  android_stub_composebox_handler_ =
-      std::make_unique<StubComposeboxHandler>(std::move(pending_page_handler));
-  android_stub_searchbox_handler_ = std::make_unique<StubSearchboxHandler>(
-      std::move(pending_searchbox_handler), std::move(pending_searchbox_page));
-#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 void NewTabPageUI::CreateHelpBubbleHandler(
@@ -1499,10 +1490,6 @@ void NewTabPageUI::OnCustomBackgroundImageUpdated() {
 
 contextual_search::ContextualSearchSessionHandle*
 NewTabPageUI::GetOrCreateContextualSessionHandle() {
-// TODO(b/502297163): Implement for Android.
-#if BUILDFLAG(IS_ANDROID)
-  return nullptr;
-#else
   if (!shared_session_handle_) {
     auto* contextual_search_service =
         ContextualSearchServiceFactory::GetForProfile(profile_);
@@ -1518,7 +1505,6 @@ NewTabPageUI::GetOrCreateContextualSessionHandle() {
     }
   }
   return shared_session_handle_.get();
-#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 void NewTabPageUI::ClearContextualSessionHandle() {
