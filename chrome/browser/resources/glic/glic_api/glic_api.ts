@@ -3159,6 +3159,8 @@ export enum HostCapability {
   AUTO_LOGIN_SIGN_IN_WITH_GOOGLE = 10,
   // Indicates that the host supports sharing images via the invoke mechanism.
   SHARE_IMAGE_VIA_INVOKE = 11,
+  // Indicates that the host supports image drag and drop from the web
+  IMG_WEB_DRAG_DROP = 12,
 }
 
 ///////////////////////////////////////////////

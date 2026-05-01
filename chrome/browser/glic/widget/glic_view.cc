@@ -8,6 +8,7 @@
 #include "base/metrics/user_metrics.h"
 #include "chrome/browser/file_select_helper.h"
 #include "chrome/browser/glic/fre/glic_fre_controller.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
@@ -97,7 +98,8 @@ bool GlicView::CanDragEnter(content::WebContents* source,
   bool has_files = !data.filenames.empty() || !data.file_system_files.empty();
   bool has_url = !data.url_infos.empty();
 
-  return has_files || has_url;
+  return has_files || (has_url && base::FeatureList::IsEnabled(
+                                      features::kGlicWebDragAndDropFileUpload));
 }
 
 void GlicView::SetWebContents(content::WebContents* web_contents) {

@@ -2254,6 +2254,8 @@ enum HostCapability {
   kAutoLoginSignInWithGoogle = 10,
   // Indicates that the host supports sharing images via the invoke mechanism.
   kShareImageViaInvoke = 11,
+  // Indicates that the host supports image drag and drop from the web
+  kImgWebDragDrop = 12,
 };
 
 // @generate glic_api

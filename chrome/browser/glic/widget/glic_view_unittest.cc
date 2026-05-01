@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
@@ -28,7 +29,9 @@ class GlicViewTest : public ChromeViewsTestBase {
 
 TEST_F(GlicViewTest, CanDragEnter) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kGlicDragAndDropFileUpload);
+  feature_list.InitWithFeatures({features::kGlicDragAndDropFileUpload,
+                                 features::kGlicWebDragAndDropFileUpload},
+                                {});
 
   auto glic_view =
       std::make_unique<GlicView>(profile(), gfx::Size(800, 600), nullptr);
