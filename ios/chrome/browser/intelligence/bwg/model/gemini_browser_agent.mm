@@ -606,26 +606,6 @@ void GeminiBrowserAgent::PresentFloaty(UIViewController* base_view_controller,
 
 void GeminiBrowserAgent::PresentFloatyWithPendingContext(
     UIViewController* base_view_controller,
-    std::unique_ptr<optimization_guide::proto::PageContext> page_context,
-    GeminiStartupState* startup_state) {
-  web::WebState* active_web_state =
-      browser_->GetWebStateList()->GetActiveWebState();
-  ios::provider::GeminiPageContextComputationState computation_state =
-      ios::provider::GeminiPageContextComputationState::kPending;
-
-  if (active_web_state && !CanExtractPageContextForWebState(active_web_state)) {
-    computation_state =
-        IsGeminiFloatyAllPagesEnabled()
-            ? ios::provider::GeminiPageContextComputationState::kBlocked
-            : ios::provider::GeminiPageContextComputationState::kError;
-  }
-
-  PresentFloatyWithState(base_view_controller, std::move(page_context),
-                         computation_state, startup_state);
-}
-
-void GeminiBrowserAgent::PresentFloatyWithPendingContext(
-    UIViewController* base_view_controller,
     GeminiStartupState* startup_state) {
   web::WebState* active_web_state =
       browser_->GetWebStateList()->GetActiveWebState();

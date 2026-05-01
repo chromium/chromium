@@ -59,8 +59,7 @@ class GeminiBrowserAgentTest : public PlatformTest {
       : web_client_(std::make_unique<web::FakeWebClient>()),
         task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     feature_list_.InitWithFeatures(
-        {kPageActionMenu, kPageContextExtractorRefactored, kGeminiRefactoredFRE,
-         kGeminiCopresence},
+        {kPageActionMenu, kPageContextExtractorRefactored, kGeminiCopresence},
         {});
     static_cast<web::FakeWebClient*>(web_client_.Get())
         ->SetJavaScriptFeatures(
@@ -264,18 +263,6 @@ TEST_F(GeminiBrowserAgentTest, TestGeminiBrowserAgentStartGeminiFlow) {
       base::test::RunUntil([delegate_called]() { return *delegate_called; }));
 
   [mock_delegate verify];
-}
-
-TEST_F(GeminiBrowserAgentTest,
-       TestGeminiBrowserAgentPresentFloatyWithPendingContext) {
-  UIViewController* base_view_controller = [[UIViewController alloc] init];
-  std::unique_ptr<optimization_guide::proto::PageContext> page_context =
-      std::make_unique<optimization_guide::proto::PageContext>();
-
-  gemini_browser_agent_->PresentFloatyWithPendingContext(
-      base_view_controller, std::move(page_context),
-      [[GeminiStartupState alloc]
-          initWithEntryPoint:gemini::EntryPoint::Promo]);
 }
 
 // Tests that switching active web states handles observations correctly.

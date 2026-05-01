@@ -5089,16 +5089,6 @@
     "expiry_milestone": 160
   },
   {
-    "name": "gemini-refactored-fre",
-    "owners": [
-      "adamta@google.com",
-      "joemerramos@google.com",
-      "tarekmakkouk@google.com",
-      "bling-alchemy-eng@google.com"
-    ],
-    "expiry_milestone": 160
-  },
-  {
     "name": "gemini-response-view-dynamic-resizing",
     "owners": [
       "joemerramos@google.com",

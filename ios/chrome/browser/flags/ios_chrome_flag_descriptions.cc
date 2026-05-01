@@ -776,10 +776,6 @@ const char kGeminiPreciseLocationName[] = "BWG Precise Location";
 const char kGeminiPreciseLocationDescription[] =
     "When enabled, the precise location row is shown in BWG settings.";
 
-const char kGeminiRefactoredFREName[] = "Gemini Refactored FRE";
-const char kGeminiRefactoredFREDescription[] =
-    "Enables the refactored Gemini First Run Experience (FRE).";
-
 const char kGeminiResponseViewDynamicResizingName[] =
     "Gemini Response View Dynamic Resizing";
 const char kGeminiResponseViewDynamicResizingDescription[] =

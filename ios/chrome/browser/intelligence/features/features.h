@@ -231,12 +231,6 @@ BASE_DECLARE_FEATURE(kPageContextExtractorRefactored);
 // Returns true if the refactored page context extractor is enabled.
 bool IsPageContextExtractorRefactoredEnabled();
 
-// Feature flag to enable the refactored FRE flow (Gemini architecture).
-BASE_DECLARE_FEATURE(kGeminiRefactoredFRE);
-
-// Returns true if the Gemini refactored FRE is enabled.
-bool IsGeminiRefactoredFREEnabled();
-
 // Feature flag to enable the updated eligibility checks for Gemini.
 BASE_DECLARE_FEATURE(kGeminiUpdatedEligibility);
 

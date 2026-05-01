@@ -96,15 +96,6 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   void StartGeminiFlow(UIViewController* base_view_controller,
                        GeminiStartupState* startup_state);
 
-  // Presents the floaty on a given view controller in a pending state
-  // with a partial PageContext.
-  // TODO(crbug.com/465535924): Deprecated, new callers should use
-  // `StartGeminiFlow` instead.
-  void PresentFloatyWithPendingContext(
-      UIViewController* base_view_controller,
-      std::unique_ptr<optimization_guide::proto::PageContext> page_context,
-      GeminiStartupState* startup_state);
-
   // Updates the page context for the floaty.
   // TODO(crbug.com/465535924): Deprecated, new callers should use
   // `StartGeminiFlow` instead (and let this be handled internally within the

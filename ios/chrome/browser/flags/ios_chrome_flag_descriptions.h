@@ -493,9 +493,6 @@ extern const char kGeminiNavigationPromoDescription[];
 extern const char kGeminiPreciseLocationName[];
 extern const char kGeminiPreciseLocationDescription[];
 
-extern const char kGeminiRefactoredFREName[];
-extern const char kGeminiRefactoredFREDescription[];
-
 extern const char kGeminiResponseViewDynamicResizingName[];
 extern const char kGeminiResponseViewDynamicResizingDescription[];
 

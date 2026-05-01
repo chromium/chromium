@@ -2526,9 +2526,6 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kIOSWebContextMenuNewTitleName,
      flag_descriptions::kIOSWebContextMenuNewTitleDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kIOSWebContextMenuNewTitle)},
-    {"gemini-refactored-fre", flag_descriptions::kGeminiRefactoredFREName,
-     flag_descriptions::kGeminiRefactoredFREDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kGeminiRefactoredFRE)},
     {"composebox-fetch-contextual-suggestions-for-multiple-attachments",
      flag_descriptions::
          kComposeboxFetchContextualSuggestionsForMultipleAttachmentsName,

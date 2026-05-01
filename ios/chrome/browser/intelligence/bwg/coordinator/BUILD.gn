@@ -4,11 +4,6 @@
 
 source_set("coordinator") {
   sources = [
-    "bwg_coordinator.h",
-    "bwg_coordinator.mm",
-    "bwg_mediator.h",
-    "bwg_mediator.mm",
-    "bwg_mediator_delegate.h",
     "gemini_first_run_coordinator.h",
     "gemini_first_run_coordinator.mm",
     "gemini_first_run_mediator.h",
@@ -52,10 +47,7 @@ source_set("coordinator") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "gemini_coordinator_unittest.mm",
-    "gemini_first_run_coordinator_unittest.mm",
-  ]
+  sources = [ "gemini_first_run_coordinator_unittest.mm" ]
 
   deps = [
     ":coordinator",

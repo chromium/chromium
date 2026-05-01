@@ -143,7 +143,6 @@
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
-#import "ios/chrome/browser/intelligence/bwg/coordinator/bwg_coordinator.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_first_run_coordinator.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_browser_agent.h"
@@ -804,7 +803,6 @@ const char kChromeAppStoreUrl[] =
   TabGroupConfirmationCoordinator* _lastTabClosingAlert;
 
   // The coordinators for Gemini related logic.
-  BWGCoordinator* _BWGCoordinator;
   GeminiFirstRunCoordinator* _geminiFirstRunCoordinator;
 
   // The coordinator for the Search What You See promo.
@@ -1862,9 +1860,6 @@ const char kChromeAppStoreUrl[] =
 
   [_lastTabClosingAlert stop];
   _lastTabClosingAlert = nil;
-
-  [_BWGCoordinator stop];
-  _BWGCoordinator = nil;
 
   [_enterpriseDialogCoordinator stop];
   _enterpriseDialogCoordinator = nil;
@@ -3643,48 +3638,27 @@ const char kChromeAppStoreUrl[] =
     return;
   }
 
-  if (IsGeminiRefactoredFREEnabled() ||
-      startupState.entryPoint == gemini::EntryPoint::ImageContextMenu) {
-    geminiBrowserAgent->StartGeminiFlow(self.viewController, startupState);
-    return;
-  }
-
-  _BWGCoordinator = [[BWGCoordinator alloc]
-      initWithBaseViewController:self.viewController
-                         browser:self.browser
-                  fromEntryPoint:startupState.entryPoint];
-  [_BWGCoordinator start];
+  geminiBrowserAgent->StartGeminiFlow(self.viewController, startupState);
 }
 
 - (void)dismissGeminiFlowWithCompletion:(ProceduralBlock)completion {
-  if (IsGeminiRefactoredFREEnabled()) {
-    // If the user is still in the FRE, dismiss it.
-    if (_geminiFirstRunCoordinator) {
-      [_geminiFirstRunCoordinator stopWithCompletion:completion];
-      _geminiFirstRunCoordinator = nil;
-      return;
-    }
-
-    GeminiBrowserAgent* geminiBrowserAgent =
-        GeminiBrowserAgent::FromBrowser(self.browser);
-    if (geminiBrowserAgent) {
-      geminiBrowserAgent->DismissFloaty();
-    } else {
-      CHECK(geminiBrowserAgent, base::NotFatalUntil::M152);
-    }
-    if (completion) {
-      completion();
-    }
+  // If the user is still in the FRE, dismiss it.
+  if (_geminiFirstRunCoordinator) {
+    [_geminiFirstRunCoordinator stopWithCompletion:completion];
+    _geminiFirstRunCoordinator = nil;
     return;
   }
 
-  if (!_BWGCoordinator && completion) {
+  GeminiBrowserAgent* geminiBrowserAgent =
+      GeminiBrowserAgent::FromBrowser(self.browser);
+  if (geminiBrowserAgent) {
+    geminiBrowserAgent->DismissFloaty();
+  } else {
+    CHECK(geminiBrowserAgent, base::NotFatalUntil::M152);
+  }
+  if (completion) {
     completion();
-    return;
   }
-
-  [_BWGCoordinator stopWithCompletion:completion];
-  _BWGCoordinator = nil;
 }
 
 - (void)updateFloatyWithTraitCollection:(UITraitCollection*)traitCollection {
@@ -3712,8 +3686,6 @@ const char kChromeAppStoreUrl[] =
 
 - (void)startGeminiFREWithCompletion:(void (^)(BOOL success))completion
                       fromEntryPoint:(gemini::EntryPoint)entryPoint {
-  CHECK(IsGeminiRefactoredFREEnabled());
-
   __weak BrowserCoordinator* weakSelf = self;
   ProceduralBlock startCoordinatorBlock = ^{
     [weakSelf startGeminiFirstRunCoordinatorWithCompletion:completion
