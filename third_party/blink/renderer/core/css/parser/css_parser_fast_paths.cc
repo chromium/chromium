@@ -1620,8 +1620,6 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
              value_id == CSSValueID::kStart ||
              value_id == CSSValueID::kCenter ||
              value_id == CSSValueID::kSpaceBetween;
-    case CSSPropertyID::kRubyOverhang:
-      return value_id == CSSValueID::kAuto || value_id == CSSValueID::kNone;
     case CSSPropertyID::kWebkitRubyPosition:
       return value_id == CSSValueID::kBefore || value_id == CSSValueID::kAfter;
     case CSSPropertyID::kRubyPosition:
@@ -1809,7 +1807,6 @@ CSSBitset CSSParserFastPaths::handled_by_keyword_fast_paths_properties_{{
     CSSPropertyID::kOverscrollBehaviorX,
     CSSPropertyID::kOverscrollBehaviorY,
     CSSPropertyID::kRubyAlign,
-    CSSPropertyID::kRubyOverhang,
     CSSPropertyID::kShapeRendering,
     CSSPropertyID::kSpeak,
     CSSPropertyID::kStrokeLinecap,

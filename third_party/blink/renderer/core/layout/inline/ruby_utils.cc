@@ -157,7 +157,8 @@ AnnotationOverhang GetOverhang(
   AnnotationOverhang overhang;
   const ComputedStyle& base_line_style = base_line.LineStyle();
 
-  if (base_line_style.RubyOverhang() == ERubyOverhang::kNone) {
+  if (base_line_style.RubyOverhang() == ERubyOverhang::kSpaces) {
+    // TODO(crbug.com/499042741): Support for 'ruby-overhang: spaces'
     return overhang;
   }
 

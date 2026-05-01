@@ -11390,6 +11390,25 @@ const CSSValue* RubyAlign::CSSValueFromComputedStyleInternal(
   return CSSIdentifierValue::Create(style.RubyAlign());
 }
 
+const CSSValue* RubyOverhang::ParseSingleValue(
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context,
+    CSSParserLocalContext& local_context) const {
+  CSSValueID value_id = stream.Peek().Id();
+  // https://drafts.csswg.org/css-ruby-1/#ruby-overhang
+  // For compatibility reasons, user agents must support an additional value of
+  // none for the ruby-overhang property, as a legacy value alias of spaces.
+  if (css_parsing_utils::IdentMatches<CSSValueID::kNone, CSSValueID::kSpaces>(
+          value_id)) {
+    stream.ConsumeIncludingWhitespace();
+    return CSSIdentifierValue::Create(CSSValueID::kSpaces);
+  }
+  if (css_parsing_utils::IdentMatches<CSSValueID::kAuto>(value_id)) {
+    return css_parsing_utils::ConsumeIdent(stream);
+  }
+  return nullptr;
+}
+
 const CSSValue* RubyOverhang::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,

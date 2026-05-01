@@ -2139,5 +2139,9 @@
     "origin-when-cross-origin",
     "strict-origin-when-cross-origin",
     "unsafe-url",
+
+    // ruby-overhang
+    // "auto",
+    "spaces",
   ],
 }
