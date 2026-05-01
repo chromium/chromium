@@ -434,6 +434,7 @@ test("accessibility_unittests") {
         "platform/browser_accessibility_manager_win_unittest.cc",
         "platform/browser_accessibility_win_unittest.cc",
         "platform/iaccessible2/scoped_co_mem_array_unittest.cc",
+        "platform/uia_client_info_source_win_unittest.cc",
       ]
 
       deps += [
