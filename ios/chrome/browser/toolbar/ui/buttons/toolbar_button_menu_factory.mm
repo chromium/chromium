@@ -193,8 +193,8 @@
           : [_actionFactory actionToShowQRScanner];
 
   NSMutableArray* staticActions = [NSMutableArray arrayWithArray:@[
-    newSearchAction, newIncognitoSearchAction, voiceSearchAction,
-    cameraSearchAction
+    cameraSearchAction, voiceSearchAction, newIncognitoSearchAction,
+    newSearchAction
   ]];
 
   if (IsAIMCobrowseDebugEntrypointEnabled()) {
@@ -214,7 +214,7 @@
                                     identifier:nil
                                        options:UIMenuOptionsDisplayInline
                                       children:staticActions];
-    return [UIMenu menuWithChildren:@[ staticMenu, clipboardAction ]];
+    return [UIMenu menuWithChildren:@[ clipboardAction, staticMenu ]];
   }
 
   return [UIMenu menuWithTitle:@""
@@ -232,15 +232,15 @@
 
   NSMutableArray* staticActions = [[NSMutableArray alloc] init];
 
-  UIAction* closeCurrentTabAction = [_actionFactory actionToCloseCurrentTab];
-  [staticActions addObject:closeCurrentTabAction];
-
   // From an incognito tab, the `openNewTabAction` should open a non-incognito
   // tab. From a non-incognito tab, it should open an incognito tab.
   UIAction* openNewTabAction =
       _incognito ? [_actionFactory actionToOpenNewTab]
                  : [_actionFactory actionToOpenNewIncognitoTab];
   [staticActions addObject:openNewTabAction];
+
+  UIAction* closeCurrentTabAction = [_actionFactory actionToCloseCurrentTab];
+  [staticActions addObject:closeCurrentTabAction];
 
   return [UIMenu menuWithTitle:@""
                          image:nil
