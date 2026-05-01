@@ -1644,6 +1644,8 @@ pub const PR_SET_MDWE: c_int = 65;
 pub const PR_GET_MDWE: c_int = 66;
 pub const PR_MDWE_REFUSE_EXEC_GAIN: c_uint = 1 << 0;
 pub const PR_MDWE_NO_INHERIT: c_uint = 1 << 1;
+pub const PR_SET_MEMORY_MERGE: c_int = 67;
+pub const PR_GET_MEMORY_MERGE: c_int = 68;
 
 pub const GRND_NONBLOCK: c_uint = 0x0001;
 pub const GRND_RANDOM: c_uint = 0x0002;

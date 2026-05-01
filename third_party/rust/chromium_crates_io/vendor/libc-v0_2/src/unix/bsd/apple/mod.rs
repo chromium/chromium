@@ -3185,6 +3185,10 @@ pub const EV_ERROR: u16 = 0x4000;
 pub const EV_EOF: u16 = 0x8000;
 pub const EV_SYSFLAGS: u16 = 0xf000;
 
+pub const KEVENT_FLAG_NONE: c_uint = 0x000000;
+pub const KEVENT_FLAG_IMMEDIATE: c_uint = 0x000001;
+pub const KEVENT_FLAG_ERROR_EVENTS: c_uint = 0x000002;
+
 pub const NOTE_TRIGGER: u32 = 0x01000000;
 pub const NOTE_FFNOP: u32 = 0x00000000;
 pub const NOTE_FFAND: u32 = 0x40000000;
