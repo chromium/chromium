@@ -20,9 +20,15 @@ export function getHtml(this: ComposeboxToolChipElement) {
   <div class="icon-container" slot="prefix-icon">
     <cr-icon class="tool-icon" .icon="${this.getIcon_()}"></cr-icon>
     ${this.isCanvasActive_() ? '' :
-        html`<cr-icon class="close-icon" icon="cr:close"></cr-icon>`}
+        html`<cr-icon class="close-icon" id="leftCloseIcon" icon="cr:close">
+             </cr-icon>`}
   </div>
-  <div part="tool-chip-label">${this.getToolChipLabel_()}</div>
+  <div part="tool-chip-label" class="tool-label">
+    ${this.getToolChipLabel_()}
+  </div>
+  ${this.isCanvasActive_() ? '' :
+        html`<cr-icon class="close-icon" id="rightCloseIcon"
+                icon="aim:closeSmall" slot="suffix-icon"></cr-icon>`}
 </cr-button>`;
   // clang-format on
 }
