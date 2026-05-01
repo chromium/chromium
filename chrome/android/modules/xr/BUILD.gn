@@ -43,3 +43,35 @@ android_library("java") {
     "//ui/android:ui_java",
   ]
 }
+
+robolectric_binary("xr_junit_tests") {
+  # Needed by androidx.test.core.app.ActivityScenario
+  android_manifest = "//chrome/android/junit/AndroidManifest.xml"
+  package_name = "org.chromium.chrome"
+
+  sources = [
+    "internal/junit/src/org/chromium/chrome/browser/xr/scenecore/XrEntityHolderFactoryTest.java",
+    "internal/junit/src/org/chromium/chrome/browser/xr/scenecore/XrMovableComponentImplTest.java",
+    "internal/junit/src/org/chromium/chrome/browser/xr/scenecore/XrPanelEntityHolderImplTest.java",
+    "internal/junit/src/org/chromium/chrome/browser/xr/scenecore/XrResizableComponentImplTest.java",
+    "internal/junit/src/org/chromium/chrome/browser/xr/scenecore/XrSceneCoreSessionInitializerImplTest.java",
+    "internal/junit/src/org/chromium/chrome/browser/xr/scenecore/XrSceneCoreSessionManagerImplTest.java",
+    "internal/junit/src/org/chromium/chrome/browser/xr/scenecore/XrSurfaceEntityHolderImplTest.java",
+  ]
+  deps = [
+    ":java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//chrome/android:chrome_app_java_resources",
+    "//chrome/android:chrome_java",
+    "//chrome/browser/android/lifecycle:java",
+    "//third_party/androidx:androidx_activity_activity_java",
+    "//third_party/androidx:androidx_xr_runtime_runtime_java",
+    "//third_party/androidx:androidx_xr_scenecore_scenecore_java",
+    "//third_party/androidx:androidx_xr_scenecore_scenecore_runtime_java",
+    "//third_party/androidx:androidx_xr_scenecore_scenecore_testing_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_no_recycler_view_java",
+  ]
+}

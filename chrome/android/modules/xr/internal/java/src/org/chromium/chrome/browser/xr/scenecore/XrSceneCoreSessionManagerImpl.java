@@ -11,6 +11,7 @@ import android.view.View;
 
 import androidx.annotation.MainThread;
 import androidx.annotation.RequiresApi;
+import androidx.annotation.VisibleForTesting;
 import androidx.xr.runtime.Session;
 import androidx.xr.runtime.SessionCreateResult;
 import androidx.xr.runtime.SessionCreateSuccess;
@@ -40,8 +41,6 @@ import java.util.function.Consumer;
 /**
  * The class wraps usage of {@link androidx.xr.runtime.Session} and implements {@link
  * XrSceneCoreSessionManager}.
- *
- * <p>TODO(crbug.com/495766632): Add test coverage for this implementation.
  */
 @SuppressLint("RestrictedApi")
 @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
@@ -49,6 +48,10 @@ import java.util.function.Consumer;
 public class XrSceneCoreSessionManagerImpl implements XrSceneCoreSessionManager {
     private static final String TAG = "XrSceneCore";
     private static final String MODULE_NAME = "xr";
+    // List of native libraries to load for the XR module.
+    private static final String[] NATIVE_LIBS = {
+        "impress_api_jni", "arcore_sdk_c", "arcore_sdk_jni", "androidx.xr.runtime.openxr"
+    };
     private static final Object sLock = new Object();
     private static boolean sLibrariesLoaded;
     private Session mXrSession;
@@ -62,20 +65,27 @@ public class XrSceneCoreSessionManagerImpl implements XrSceneCoreSessionManager 
     private final Consumer<FloatSize3d> mBoundsChangedListener = this::boundsChangeCallback;
 
     public XrSceneCoreSessionManagerImpl(Activity activity) {
-        assert DeviceInfo.isXr();
-        ensureNativeLibrariesLoaded();
+        this(activity, createSession(activity));
+    }
+
+    @VisibleForTesting
+    public XrSceneCoreSessionManagerImpl(Activity activity, Session session) {
         mActivity = activity;
-
-        SessionCreateResult result = Session.create(mActivity);
-        assert result instanceof SessionCreateSuccess : "Session creation failed.";
-        mXrSession = ((SessionCreateSuccess) result).getSession();
-
+        mXrSession = session;
         mActivitySpace = getScene().getActivitySpace();
         mActivitySpace.addOnBoundsChangedListener(mBoundsChangedListener);
 
         boolean isXrFullSpaceMode =
                 mActivitySpace.getBounds().getWidth() == Float.POSITIVE_INFINITY;
         mIsFullSpaceModeNowSupplier = ObservableSuppliers.createNonNull(isXrFullSpaceMode);
+    }
+
+    private static Session createSession(Activity activity) {
+        assert DeviceInfo.isXr();
+        ensureNativeLibrariesLoaded();
+        SessionCreateResult result = Session.create(activity);
+        assert result instanceof SessionCreateSuccess : "Session creation failed.";
+        return ((SessionCreateSuccess) result).getSession();
     }
 
     @SuppressLint("UnsafeDynamicallyLoadedCode")
@@ -85,12 +95,9 @@ public class XrSceneCoreSessionManagerImpl implements XrSceneCoreSessionManager 
                 return;
             }
             try {
-                System.load(BundleUtils.getNativeLibraryPath("impress_api_jni", MODULE_NAME));
-                System.load(BundleUtils.getNativeLibraryPath("arcore_sdk_c", MODULE_NAME));
-                System.load(BundleUtils.getNativeLibraryPath("arcore_sdk_jni", MODULE_NAME));
-                System.load(
-                        BundleUtils.getNativeLibraryPath(
-                                "androidx.xr.runtime.openxr", MODULE_NAME));
+                for (String lib : NATIVE_LIBS) {
+                    System.load(BundleUtils.getNativeLibraryPath(lib, MODULE_NAME));
+                }
                 sLibrariesLoaded = true;
             } catch (UnsatisfiedLinkError e) {
                 Log.e(TAG, "Error loading native libraries", e);

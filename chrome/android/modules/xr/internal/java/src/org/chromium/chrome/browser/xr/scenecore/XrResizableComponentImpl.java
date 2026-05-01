@@ -10,6 +10,7 @@ import androidx.xr.scenecore.BaseEntity;
 import androidx.xr.scenecore.ResizableComponent;
 import androidx.xr.scenecore.ResizeEvent;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.xr.scenecore.XrResizableComponent;
@@ -18,11 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
-/**
- * Implementation of {@link XrResizableComponent}.
- *
- * <p>TODO(crbug.com/495766632): Add test coverage for this implementation.
- */
+/** Implementation of {@link XrResizableComponent}. */
 @NullMarked
 public class XrResizableComponentImpl<EntityType extends BaseEntity>
         implements XrResizableComponent {
@@ -35,8 +32,8 @@ public class XrResizableComponentImpl<EntityType extends BaseEntity>
     private final EntityType mEntity;
 
     public XrResizableComponentImpl(Session xrSession, EntityType entity) {
-        this.mXrSession = xrSession;
-        this.mEntity = entity;
+        mXrSession = xrSession;
+        mEntity = entity;
     }
 
     @Override
@@ -65,7 +62,7 @@ public class XrResizableComponentImpl<EntityType extends BaseEntity>
                             mXrSession,
                             mMinEntitySize,
                             mMaxEntitySize,
-                            mXrSession.getActivity().getMainExecutor(),
+                            /* executor= */ ThreadUtils.getUiThreadHandler()::post,
                             /* resizeEventListener= */ (event) -> {});
             mResizableComponent.setFixedAspectRatioEnabled(maintainAspectRatio);
             for (Consumer<ResizeEvent> listener : mResizeListenersMap.values()) {
@@ -108,6 +105,10 @@ public class XrResizableComponentImpl<EntityType extends BaseEntity>
             mResizableComponent.removeResizeEventListener(mResizeListenersMap.get(listener));
             mResizeListenersMap.remove(listener);
         }
+    }
+
+    public boolean hasResizeListenerForTesting(OnResizeListener listener) {
+        return mResizeListenersMap.containsKey(listener);
     }
 
     private void detachFromEntity() {

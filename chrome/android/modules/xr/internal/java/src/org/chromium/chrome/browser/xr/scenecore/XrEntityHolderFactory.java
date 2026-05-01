@@ -23,14 +23,17 @@ import org.chromium.ui.xr.scenecore.XrQuadSurfaceEntityHolder;
 import org.chromium.ui.xr.scenecore.XrSurfaceEntityHolder;
 import org.chromium.ui.xr.scenecore.XrSurfaceEntityShape;
 
-/**
- * Factory for creating XR entity holders.
- *
- * <p>TODO(crbug.com/495766632): Add test coverage for this implementation.
- */
+/** Factory for creating XR entity holders. */
 @NullMarked
 public class XrEntityHolderFactory {
 
+    /**
+     * Creates an XR surface entity holder with the given shape.
+     *
+     * @param xrSession The XR session to use.
+     * @param shape The shape of the surface entity.
+     * @return An XR surface entity holder.
+     */
     public static XrSurfaceEntityHolder createSurfaceEntityHolder(
             Session xrSession, @XrSurfaceEntityShape int shape) {
         switch (shape) {
@@ -45,6 +48,12 @@ public class XrEntityHolderFactory {
         }
     }
 
+    /**
+     * Creates an XR quad surface entity holder.
+     *
+     * @param xrSession The XR session to use.
+     * @return An XR quad surface entity holder.
+     */
     public static XrQuadSurfaceEntityHolder createQuadSurfaceEntityHolder(Session xrSession) {
         return XrSurfaceEntityHolderImpl.create(
                 xrSession,
@@ -57,6 +66,12 @@ public class XrEntityHolderFactory {
                         SurfaceProtection.NONE));
     }
 
+    /**
+     * Creates an XR sphere surface entity holder.
+     *
+     * @param xrSession The XR session to use.
+     * @return An XR sphere surface entity holder.
+     */
     public static XrCurvedSurfaceEntityHolder createSphereSurfaceEntityHolder(Session xrSession) {
         return XrSurfaceEntityHolderImpl.create(
                 xrSession,
@@ -69,6 +84,12 @@ public class XrEntityHolderFactory {
                         SurfaceProtection.NONE));
     }
 
+    /**
+     * Creates an XR hemisphere surface entity holder.
+     *
+     * @param xrSession The XR session to use.
+     * @return An XR hemisphere surface entity holder.
+     */
     public static XrCurvedSurfaceEntityHolder createHemisphereSurfaceEntityHolder(
             Session xrSession) {
         return XrSurfaceEntityHolderImpl.create(
@@ -82,6 +103,14 @@ public class XrEntityHolderFactory {
                         SurfaceProtection.NONE));
     }
 
+    /**
+     * Creates an XR panel entity holder.
+     *
+     * @param xrSession The XR session to use.
+     * @param view The view to use.
+     * @param name The name of the panel.
+     * @return An XR panel entity holder.
+     */
     public static XrPanelEntityHolder createPanelEntityHolder(
             Session xrSession, View view, String name) {
         return XrPanelEntityHolderImpl.create(

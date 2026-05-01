@@ -17,11 +17,7 @@ import org.chromium.ui.xr.scenecore.XrMovableComponent;
 import org.chromium.ui.xr.scenecore.XrPanelEntityHolder;
 import org.chromium.ui.xr.scenecore.XrResizableComponent;
 
-/**
- * Implementation of {@link XrPanelEntityHolder}.
- *
- * <p>TODO(crbug.com/495766632): Add test coverage for this implementation.
- */
+/** Implementation of {@link XrPanelEntityHolder}. */
 @NullMarked
 public class XrPanelEntityHolderImpl extends XrEntityHolderImpl<PanelEntity>
         implements XrPanelEntityHolder<PanelEntity> {
@@ -36,8 +32,8 @@ public class XrPanelEntityHolderImpl extends XrEntityHolderImpl<PanelEntity>
 
     private XrPanelEntityHolderImpl(Session xrSession, PanelEntity panelEntity) {
         super(xrSession, panelEntity);
-        mMovableComponent = new XrMovableComponentImpl<PanelEntity>(xrSession, panelEntity);
-        mResizableComponent = new XrResizableComponentImpl<PanelEntity>(xrSession, panelEntity);
+        mMovableComponent = new XrMovableComponentImpl<>(xrSession, panelEntity);
+        mResizableComponent = new XrResizableComponentImpl<>(xrSession, panelEntity);
         mResizableComponent.addResizeListener(
                 new XrResizableComponent.OnResizeListener() {
                     @Override

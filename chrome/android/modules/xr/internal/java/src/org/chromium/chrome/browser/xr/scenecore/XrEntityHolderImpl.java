@@ -14,11 +14,7 @@ import androidx.xr.scenecore.Space;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.xr.scenecore.XrEntityHolder;
 
-/**
- * Base class for {@link XrEntityHolder} implementations.
- *
- * <p>TODO(crbug.com/495766632): Add test coverage for this implementation.
- */
+/** Base class for {@link XrEntityHolder} implementations. */
 @NullMarked
 public abstract class XrEntityHolderImpl<EntityType extends BaseEntity>
         implements XrEntityHolder<EntityType> {
@@ -29,8 +25,8 @@ public abstract class XrEntityHolderImpl<EntityType extends BaseEntity>
     protected boolean mIsDisposed;
 
     protected XrEntityHolderImpl(Session xrSession, EntityType entity) {
-        this.mXrSession = xrSession;
-        this.mEntity = entity;
+        mXrSession = xrSession;
+        mEntity = entity;
     }
 
     @Override

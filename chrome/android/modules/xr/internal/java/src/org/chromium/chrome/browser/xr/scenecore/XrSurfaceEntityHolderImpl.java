@@ -28,11 +28,7 @@ import org.chromium.ui.xr.scenecore.XrSurfaceEntityStereoMode;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-/**
- * Implementation of {@link XrQuadSurfaceEntityHolder} and {@link XrCurvedSurfaceEntityHolder}.
- *
- * <p>TODO(crbug.com/495766632): Add test coverage for this implementation.
- */
+/** Implementation of {@link XrQuadSurfaceEntityHolder} and {@link XrCurvedSurfaceEntityHolder}. */
 @NullMarked
 public class XrSurfaceEntityHolderImpl extends XrEntityHolderImpl<SurfaceEntity>
         implements XrQuadSurfaceEntityHolder<SurfaceEntity>,
@@ -59,8 +55,8 @@ public class XrSurfaceEntityHolderImpl extends XrEntityHolderImpl<SurfaceEntity>
 
     protected XrSurfaceEntityHolderImpl(Session xrSession, SurfaceEntity surfaceEntity) {
         super(xrSession, surfaceEntity);
-        mMovableComponent = new XrMovableComponentImpl<SurfaceEntity>(xrSession, surfaceEntity);
-        mResizableComponent = new XrResizableComponentImpl<SurfaceEntity>(xrSession, surfaceEntity);
+        mMovableComponent = new XrMovableComponentImpl<>(xrSession, surfaceEntity);
+        mResizableComponent = new XrResizableComponentImpl<>(xrSession, surfaceEntity);
         mResizableComponent.addResizeListener(
                 new XrResizableComponent.OnResizeListener() {
                     @Override
@@ -112,6 +108,10 @@ public class XrSurfaceEntityHolderImpl extends XrEntityHolderImpl<SurfaceEntity>
     @Override
     public void removeCallback(Callback callback) {
         mCallbacks.remove(callback);
+    }
+
+    public boolean hasCallbackForTesting(Callback callback) {
+        return mCallbacks.contains(callback);
     }
 
     @Override

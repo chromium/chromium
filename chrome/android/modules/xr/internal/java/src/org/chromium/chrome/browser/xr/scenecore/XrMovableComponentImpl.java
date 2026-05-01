@@ -21,11 +21,7 @@ import org.chromium.ui.xr.scenecore.XrMovableComponent;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Implementation of {@link XrMovableComponent}.
- *
- * <p>TODO(crbug.com/495766632): Add test coverage for this implementation.
- */
+/** Implementation of {@link XrMovableComponent}. */
 @NullMarked
 public class XrMovableComponentImpl<EntityType extends BaseEntity> implements XrMovableComponent {
     private final Map<OnMoveListener, EntityMoveListener> mMoveListenersMap = new HashMap<>();
@@ -34,8 +30,8 @@ public class XrMovableComponentImpl<EntityType extends BaseEntity> implements Xr
     private @Nullable MovableComponent mMovableComponent;
 
     public XrMovableComponentImpl(Session xrSession, EntityType entity) {
-        this.mXrSession = xrSession;
-        this.mEntity = entity;
+        mXrSession = xrSession;
+        mEntity = entity;
     }
 
     @Override
@@ -134,6 +130,10 @@ public class XrMovableComponentImpl<EntityType extends BaseEntity> implements Xr
             mMovableComponent.removeMoveListener(mMoveListenersMap.get(listener));
             mMoveListenersMap.remove(listener);
         }
+    }
+
+    public boolean hasMoveListenerForTesting(OnMoveListener listener) {
+        return mMoveListenersMap.containsKey(listener);
     }
 
     private void detachFromEntity() {

@@ -59,8 +59,8 @@ public class XrSceneCoreSessionInitializerImpl
         // Activity#onConfigurationChanged while being in a non-default mode.
         if (!inDesiredXrSpaceMode()) {
             assert mXrSceneCoreSessionManager != null : "XrSceneCoreSessionManager is null.";
-            if (!mXrSceneCoreSessionManager.requestSpaceModeChange(false)) {
-                // If unable to switch back to the Home Space mode due to the focus issue -
+            if (!mXrSceneCoreSessionManager.requestSpaceModeChange(isFullSpaceMode)) {
+                // If unable to switch to the desired space mode due to the focus issue -
                 // add a focus listener and try again when the app window receives focus.
                 mLifecycleDispatcher.register(this);
             }
@@ -72,7 +72,8 @@ public class XrSceneCoreSessionInitializerImpl
         if (hasFocus) {
             assert mXrSceneCoreSessionManager != null : "XrSceneCoreSessionManager is null.";
             if (!inDesiredXrSpaceMode()) {
-                assumeNonNull(mXrSceneCoreSessionManager).requestSpaceModeChange(false);
+                assumeNonNull(mXrSceneCoreSessionManager)
+                        .requestSpaceModeChange(assumeNonNull(mInitialFullSpaceMode));
             }
             assumeNonNull(mLifecycleDispatcher).unregister(this);
         }
