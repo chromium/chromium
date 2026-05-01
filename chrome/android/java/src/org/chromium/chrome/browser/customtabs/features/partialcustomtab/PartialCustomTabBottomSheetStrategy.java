@@ -378,7 +378,7 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
             View coordinatorView,
             CustomTabToolbar toolbar,
             @Px int toolbarCornerRadius,
-            CustomTabToolbarButtonsCoordinator toolbarButtonsCoordinator) {
+            @Nullable CustomTabToolbarButtonsCoordinator toolbarButtonsCoordinator) {
         super.onToolbarInitialized(
                 coordinatorView, toolbar, toolbarCornerRadius, toolbarButtonsCoordinator);
 
@@ -386,6 +386,7 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
                 new PartialCustomTabHandleStrategy(
                         mActivity, this::isFullHeight, () -> mStatus, this);
         toolbar.setHandleStrategy(mHandleStrategy);
+        assumeNonNull(toolbarButtonsCoordinator);
         toolbarButtonsCoordinator.setMinimizeButtonEnabled(false);
         CustomTabDragBar dragBar = mActivity.findViewById(R.id.drag_bar);
         dragBar.setHandleStrategy(mHandleStrategy);

@@ -26,10 +26,10 @@ public class CustomTabAppMenuHelper {
 
     /** Returns {@link CustomTabHistoryIphController} if history menu is enabled on CCT. */
     public static @Nullable CustomTabHistoryIphController maybeCreateHistoryIphController(
-            AppMenuCoordinator appMenuCoordinator,
+            @Nullable AppMenuCoordinator appMenuCoordinator,
             Activity activity,
             ActivityTabProvider activityTabProvider,
-            Supplier<Profile> profileSupplier,
+            Supplier<@Nullable Profile> profileSupplier,
             BrowserServicesIntentDataProvider intentDataProvider) {
         if (appMenuCoordinator == null) return null;
 

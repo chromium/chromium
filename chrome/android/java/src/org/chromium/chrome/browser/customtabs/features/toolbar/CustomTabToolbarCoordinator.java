@@ -182,13 +182,15 @@ public class CustomTabToolbarCoordinator {
      * be initialized yet.
      */
     public void onToolbarInitialized(
-            ToolbarManager manager, CustomTabToolbarButtonsCoordinator toolbarButtonsCoordinator) {
+            ToolbarManager manager,
+            @Nullable CustomTabToolbarButtonsCoordinator toolbarButtonsCoordinator) {
         assert manager != null : "Toolbar manager not initialized";
         mToolbarManager = manager;
         mToolbarColorController.onToolbarInitialized(manager);
         mToolbarButtonsCoordinator = toolbarButtonsCoordinator;
 
         if (ChromeFeatureList.sCctToolbarRefactor.isEnabled()) {
+            assumeNonNull(mToolbarButtonsCoordinator);
             mToolbarButtonsCoordinator.setCloseButtonClickHandler(v -> onCloseButtonClick());
         } else {
             mCloseButtonVisibilityManager.setVisibility(mIntentDataProvider.isCloseButtonEnabled());

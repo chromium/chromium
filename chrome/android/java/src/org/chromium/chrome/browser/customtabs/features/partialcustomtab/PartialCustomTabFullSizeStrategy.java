@@ -8,6 +8,8 @@ import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
 import static androidx.browser.customtabs.CustomTabsCallback.ACTIVITY_LAYOUT_STATE_FULL_SCREEN;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.animation.ValueAnimator.AnimatorUpdateListener;
 import android.app.Activity;
 import android.graphics.drawable.GradientDrawable;
@@ -21,6 +23,7 @@ import androidx.annotation.StringRes;
 import androidx.browser.customtabs.CustomTabsCallback;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
@@ -70,9 +73,10 @@ public class PartialCustomTabFullSizeStrategy extends PartialCustomTabBaseStrate
             View coordinatorView,
             CustomTabToolbar toolbar,
             @Px int toolbarCornerRadius,
-            CustomTabToolbarButtonsCoordinator toolbarButtonsCoordinator) {
+            @Nullable CustomTabToolbarButtonsCoordinator toolbarButtonsCoordinator) {
         super.onToolbarInitialized(
                 coordinatorView, toolbar, toolbarCornerRadius, toolbarButtonsCoordinator);
+        assumeNonNull(toolbarButtonsCoordinator);
         toolbarButtonsCoordinator.setMinimizeButtonEnabled(true);
         updateDragBarVisibility(/* dragHandlebarVisibility= */ View.GONE);
     }

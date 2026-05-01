@@ -105,7 +105,7 @@ public class CustomTabHeightStrategy implements FindToolbarObserver {
             View coordinatorView,
             CustomTabToolbar toolbar,
             @Px int toolbarCornerRadius,
-            CustomTabToolbarButtonsCoordinator toolbarButtonsCoordinator) {}
+            @Nullable CustomTabToolbarButtonsCoordinator toolbarButtonsCoordinator) {}
 
     /**
      * @see {@link BaseCustomTabRootUiCoordinator#handleCloseAnimation()}

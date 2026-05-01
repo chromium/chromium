@@ -252,7 +252,7 @@ public abstract class PartialCustomTabBaseStrategy extends CustomTabHeightStrate
             View coordinatorView,
             CustomTabToolbar toolbar,
             @Px int toolbarCornerRadius,
-            CustomTabToolbarButtonsCoordinator toolbarButtonsCoordinator) {
+            @Nullable CustomTabToolbarButtonsCoordinator toolbarButtonsCoordinator) {
         // The radius should not be bigger than the handle view default height of 16dp.
         mToolbarCornerRadius = Math.min(toolbarCornerRadius, mCachedHandleHeight);
         setToolbar(coordinatorView, toolbar);

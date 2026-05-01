@@ -32,7 +32,6 @@ import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams;
 import org.chromium.chrome.browser.customtabs.features.CustomTabDimensionUtils;
 import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.CustomTabMinimizeDelegate;
 import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabSideSheetStrategy.MaximizeButtonCallback;
-import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar.OmniboxParams;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.CloseButtonData;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.MinimizeButtonData;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.SideSheetMaximizeButtonData;
@@ -69,8 +68,8 @@ public class CustomTabToolbarButtonsCoordinator
             BrowserServicesIntentDataProvider intentDataProvider,
             Callback<CustomButtonParams> customButtonClickCallback,
             CustomTabMinimizeDelegate minimizeDelegate,
-            Supplier<AppMenuHandler> appMenuHandler,
-            @Nullable OmniboxParams omniboxParams,
+            Supplier<@Nullable AppMenuHandler> appMenuHandler,
+            CustomTabToolbar.@Nullable OmniboxParams omniboxParams,
             ActivityLifecycleDispatcher lifecycleDispatcher,
             ActivityTabProvider tabProvider) {
         var customActionButtons =

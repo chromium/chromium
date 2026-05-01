@@ -36,7 +36,7 @@ public class CloseButtonVisibilityManager {
 
     public void onToolbarInitialized(
             ToolbarManager toolbarManager,
-            CustomTabToolbarButtonsCoordinator toolbarButtonsCoordinator) {
+            @Nullable CustomTabToolbarButtonsCoordinator toolbarButtonsCoordinator) {
         mToolbarManager = toolbarManager;
         mToolbarButtonsCoordinator = toolbarButtonsCoordinator;
         updateCloseButtonVisibility();

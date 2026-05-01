@@ -85,7 +85,7 @@ public class SearchActivityClientImpl implements SearchActivityClient {
         }
 
         @Override
-        public IntentBuilder setReferrer(String referrer) {
+        public IntentBuilder setReferrer(@Nullable String referrer) {
             if (referrer != null
                     && !referrer.matches(SearchActivityExtras.REFERRER_VALIDATION_REGEX)) {
                 Log.e(

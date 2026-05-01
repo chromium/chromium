@@ -98,7 +98,7 @@ class BrandingChecker extends AsyncTask<BrandingInfo> {
         void putMimData(MismatchNotificationData data);
     }
 
-    private final String mAppId;
+    private final @Nullable String mAppId;
     private final long mBrandingCadence;
     private final Callback<BrandingInfo> mBrandingCheckCallback;
     @BrandingDecision private final int mDefaultBrandingDecision;
@@ -116,7 +116,7 @@ class BrandingChecker extends AsyncTask<BrandingInfo> {
      * @param defaultBrandingDecision Default branding decision when task is canceled.
      */
     BrandingChecker(
-            String appId,
+            @Nullable String appId,
             BrandingLaunchTimeStorage storage,
             Callback<BrandingInfo> brandingCheckCallback,
             long brandingCadence,
@@ -163,7 +163,7 @@ class BrandingChecker extends AsyncTask<BrandingInfo> {
     }
 
     @VisibleForTesting
-    static @BrandingAppIdType int getAppIdType(String appId) {
+    static @BrandingAppIdType int getAppIdType(@Nullable String appId) {
         if (TextUtils.isEmpty(appId)) return BrandingAppIdType.INVALID;
         if (PackageUtils.isPackageInstalled(appId)) return BrandingAppIdType.PACKAGE_NAME;
         return BrandingAppIdType.REFERRER;

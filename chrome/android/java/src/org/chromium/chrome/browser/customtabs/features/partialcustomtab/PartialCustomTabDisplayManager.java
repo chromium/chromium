@@ -75,7 +75,7 @@ public class PartialCustomTabDisplayManager extends CustomTabHeightStrategy
     private View mToolbarCoordinatorView;
     private CustomTabToolbar mCustomTabToolbar;
     private int mToolbarCornerRadius;
-    private CustomTabToolbarButtonsCoordinator mToolbarButtonsCoordinator;
+    private @Nullable CustomTabToolbarButtonsCoordinator mToolbarButtonsCoordinator;
     private PartialCustomTabHandleStrategyFactory mHandleStrategyFactory;
     private SizeStrategyCreator mSizeStrategyCreator = this::createSizeStrategy;
     private final Supplier<@Nullable TouchEventProvider> mTouchEventProvider;
@@ -193,7 +193,7 @@ public class PartialCustomTabDisplayManager extends CustomTabHeightStrategy
             View coordinatorView,
             CustomTabToolbar toolbar,
             @Px int toolbarCornerRadius,
-            CustomTabToolbarButtonsCoordinator toolbarButtonsCoordinator) {
+            @Nullable CustomTabToolbarButtonsCoordinator toolbarButtonsCoordinator) {
         mToolbarCoordinatorView = coordinatorView;
         mCustomTabToolbar = toolbar;
         mToolbarCornerRadius = toolbarCornerRadius;

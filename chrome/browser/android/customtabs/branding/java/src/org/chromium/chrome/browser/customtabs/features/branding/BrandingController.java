@@ -52,7 +52,7 @@ public class BrandingController {
     private final OneshotSupplierImpl<BrandingInfo> mBrandingInfo = new OneshotSupplierImpl<>();
     private final BrandingChecker mBrandingChecker;
     private final Context mContext;
-    private final String mAppId;
+    private final @Nullable String mAppId;
     private final String mBrowserName;
     private final int mToastTemplateId;
     private final @Nullable PureJavaExceptionReporter mExceptionReporter;
@@ -74,7 +74,7 @@ public class BrandingController {
          * @return A mismatch notification checker, or null if the notification is suppressed or not
          *     applicable to the current session (e.g. Incognito profile, or ineligible app).
          */
-        @Nullable MismatchNotificationChecker create(String appId);
+        @Nullable MismatchNotificationChecker create(@Nullable String appId);
     }
 
     /**
@@ -89,7 +89,7 @@ public class BrandingController {
      */
     public BrandingController(
             Context context,
-            String appId,
+            @Nullable String appId,
             String browserName,
             @StringRes int toastTemplateId,
             MismatchNotificationCheckerFactory mismatchNotificationCheckerFactory,
@@ -162,6 +162,7 @@ public class BrandingController {
         }
         if (mMismatchNotificationChecker != null) {
             var storage = SharedPreferencesBrandingTimeStorage.getInstance();
+            assert mAppId != null;
             if (mMismatchNotificationChecker.maybeShow(
                     mAppId, info.lastShowTime, info.mimData, storage::putMimData)) {
                 brandingDecision = BrandingDecision.MIM;

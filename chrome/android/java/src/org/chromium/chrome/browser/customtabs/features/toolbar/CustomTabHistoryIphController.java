@@ -36,7 +36,7 @@ import java.util.function.Supplier;
 public class CustomTabHistoryIphController {
     private final Activity mActivity;
     private final ActivityTabProvider mTabProvider;
-    private final Supplier<Profile> mProfileSupplier;
+    private final Supplier<@Nullable Profile> mProfileSupplier;
     private final AppMenuHandler mAppMenuHandler;
     private @Nullable ActivityTabTabObserver mTabObserver;
     private @Nullable UserEducationHelper mUserEducationHelper;
@@ -52,7 +52,7 @@ public class CustomTabHistoryIphController {
     public CustomTabHistoryIphController(
             Activity activity,
             ActivityTabProvider activityTabProvider,
-            Supplier<Profile> profileSupplier,
+            Supplier<@Nullable Profile> profileSupplier,
             AppMenuHandler appMenuHandler) {
         mActivity = activity;
         mTabProvider = activityTabProvider;
@@ -88,9 +88,7 @@ public class CustomTabHistoryIphController {
         if (mUserEducationHelper == null) {
             mUserEducationHelper =
                     new UserEducationHelper(
-                            mActivity,
-                            (Supplier<@Nullable Profile>) mProfileSupplier,
-                            new Handler(Looper.getMainLooper()));
+                            mActivity, mProfileSupplier, new Handler(Looper.getMainLooper()));
         }
 
         View ctOverflowMenu = mActivity.findViewById(R.id.menu_button_wrapper);

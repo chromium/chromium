@@ -40,7 +40,8 @@ context:
 The choice between `assumeNonNull` and Java `assert` depends on how the value is
 used:
 
-- **Dereferenced right away (For Migrations)**: Use `NullUtil.assumeNonNull(x)`.
+- **Dereferencing `@Nullable` values immediately**: Use
+  `NullUtil.assumeNonNull(x)`.
   - Example:
     ```java
     var value = mSupplier.get();
@@ -55,17 +56,43 @@ used:
   - **Note**: This rule is primarily for **migrations** to avoid functional
     changes. For **new code**, rely on correct annotations and avoid
     `assumeNonNull()`.
-- **Returned, passed, or stored**: Use Java `assert x != null;` before the
-  operation.
-  - Example:
+- **Passing `@Nullable` values to non-null parameters**: First, **look into the
+  call tree of the receiver class** and see if that parameter should be
+  annotated as `@Nullable` or not. If it can natively handle null, update the
+  method signature instead of adding an assertion. If it strictly requires a
+  non-null value, THEN you MUST use a Java `assert x != null;` on a preceding
+  line before passing or storing it.
+  > [!CAUTION] **NEVER** use `assumeNonNull(x)` to pass a `@Nullable` value to a
+  > non-null parameter or to return it from a non-nullable method. This is
+  > **STRICTLY FORBIDDEN**. You **MUST** use a Java `assert` on a preceding line
+  > to add a runtime check.
+  - **Bad Example**:
     ```java
-    var value = mSupplier.get();
-    assert value != null;
-    return value;
+    mReceiver.setSomething(assumeNonNull(nullableValue));
     ```
-  - *Why*: This adds a runtime check (active in tests/debug) which is an
-    acceptable functional change. We rely on instrumentation tests to validate
-    these changes.
+  - **Good Example**:
+    ```java
+    assert nullableValue != null;
+    mReceiver.setSomething(nullableValue);
+    ```
+- **Returning `@Nullable` values from non-nullable methods**: First, consider if
+  the method's return type can be safely updated to `@Nullable`. If it cannot
+  (e.g., because it implements an interface or strictly enforces a non-null
+  contract), you MUST use a Java `assert x != null;` on a preceding line before
+  returning the value. Using `assumeNonNull(x)` inline within a return statement
+  is strictly forbidden.
+  - **Bad Example**:
+    ```java
+    return assumeNonNull(nullableValue);
+    ```
+  - **Good Example**:
+    ```java
+    assert nullableValue != null;
+    return nullableValue;
+    ```
+- *Why*: Asserts add a runtime check (active in tests/debug) which is an
+  acceptable functional change. We rely on instrumentation tests to validate
+  these changes.
   - **Deep Investigation Rule**: Before asserting or assuming non-null for a
     passed value, investigate the call tree. If the method being called can be
     updated to consider the parameter `@Nullable`, prefer updating the method
@@ -98,13 +125,17 @@ used:
 - **Good Fix**: Alter the receiver class to accept `Supplier<@Nullable T>`.
   - Then, handle the nullability inside the receiver class using the rules above
     (`assumeNonNull` or `assert`).
-- **Lazy Suppliers and Assertions**: When passing a `Supplier` which might, at
-  the time of passing, be supplying null (e.g., it is resolved later), do NOT
-  introduce a new lambda just to wrap the call with an assertion (like
-  `() -> { var x = getter(); assert x != null; return x; }`). Instead, change
-  the receiver's parameter type to `Supplier<@Nullable T>` since it is actually
-  supplying a nullable value at construction time. Handle the nullity inside the
-  receiver class when the supplier is eventually invoked.
+- **Supplier Wrappers (Anti-Pattern)**: Do NOT introduce a new lambda just to
+  wrap a supplier call with an assertion. For example, do not do this:
+  `() -> assumeNonNull(supplier.get())` or this:
+  `() -> { var x = getter(); assert x != null; return x; }`. These are
+  anti-patterns.
+  - **If using `ObservableSupplier`**: Pass `supplier.asNonNull()` directly.
+    This returns a `NonNullObservableSupplier` which satisfies
+    `Supplier<@NonNull T>`.
+  - **Otherwise**: Change the receiver's parameter type to
+    `Supplier<@Nullable T>` and handle the nullity inside the receiver class. Do
+    not force non-nullability at the call site with hacks.
 - **Supplier Argument Types**: Consider changing Supplier arguments to
   `Supplier<@Nullable T>` or `MonotonicObservableSupplier<T>` in method
   signatures to avoid forcing non-nullability on callers.
@@ -125,9 +156,13 @@ used:
 - **`@SuppressWarnings("NullAway")`**:
   - Use as a last resort.
   - **Do NOT add to constructors**. Fix the warnings in the constructor instead.
-  - It is acceptable to add to `destroy` or `onDestroy` methods if circular
-    references or cleanup order make it hard to satisfy the analyzer without
-    functional changes.
+  - **Highly Recommended for `destroy()` or `onDestroy()`**: If fields are
+    nulled out during teardown to prevent memory leaks, do NOT mark the fields
+    as `@Nullable` just to satisfy this one assignment. Instead, mark the fields
+    as `@MonotonicNonNull` (if late-initialized) or `@NonNull` (if initialized
+    in constructor), and add `@SuppressWarnings("NullAway")` to the `destroy()`
+    or `onDestroy()` method. This prevents having to null-check the fields
+    everywhere else in the class.
 
 ### 6. Constructor Parameters for Nullable Fields
 

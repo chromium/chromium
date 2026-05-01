@@ -50,7 +50,7 @@ public interface SearchActivityClient {
          * @param referrer The referrer string.
          * @return The IntentBuilder instance for method chaining.
          */
-        IntentBuilder setReferrer(String referrer);
+        IntentBuilder setReferrer(@Nullable String referrer);
 
         /**
          * Sets whether the SearchActivity should be opened in incognito mode. The default value is
