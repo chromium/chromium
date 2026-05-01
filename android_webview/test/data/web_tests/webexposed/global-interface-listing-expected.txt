@@ -6402,10 +6402,12 @@ interface MimeTypeArray
     method constructor
     method item
     method namedItem
-interface ModelContext
+interface ModelContext : EventTarget
     attribute @@toStringTag
+    getter ontoolchange
     method constructor
     method registerTool
+    setter ontoolchange
 interface Mojo
     static method bindInterface
     static method createDataPipe

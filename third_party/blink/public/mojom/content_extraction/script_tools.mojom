@@ -4,6 +4,8 @@
 
 module blink.mojom;
 
+import "url/mojom/origin.mojom";
+
 // See ToolAnnotations in model_context_tool.idl for details of this
 // data structure.
 struct ScriptToolAnnotations {
@@ -19,6 +21,8 @@ struct ScriptTool {
   string description;
   string? input_schema;
   ScriptToolAnnotations? annotations;
+  // See the documentation in `model_context.idl` for more about this member.
+  array<url.mojom.Origin> exposed_origins;
 };
 
 // Interface for the renderer to request actions from the browser related to
@@ -26,4 +30,30 @@ struct ScriptTool {
 interface ScriptToolHost {
   // Pauses the execution of the agent.
   PauseExecution();
+};
+
+// Interface implemented by `content::ModelContextUserData` (1:1 with Document),
+// for the renderer to request actions from the browser related to WebMCP. See
+// https://github.com/webmachinelearning/webmcp.
+interface ModelContextHost {
+  // Binds the receiver for the browser to notify the renderer about changes in
+  // tools.
+  BindModelContext(pending_remote<ModelContext> model_context);
+
+  // Registers a WebMCP script tool hosted in the caller document. The
+  // registration goes to the browser process, so it can alert other relevant
+  // frames in the tree about the new tool.
+  RegisterScriptTool(ScriptTool tool);
+
+  // Unregisters a previously-declared tool. When this is called, `name` is
+  // guaranteed to match an existing tool; if this invariant is not upheld, the
+  // renderer process is killed.
+  UnregisterScriptTool(string name);
+};
+
+// Interface implemented by `blink::ModelContext` for the browser to notify the
+// renderer about changes in tools.
+interface ModelContext {
+  // Fires the `toolchange` event against the `blink::ModelContext` object.
+  NotifyToolChange();
 };

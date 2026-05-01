@@ -6,12 +6,26 @@
 
 dictionary ModelContextRegisterToolOptions {
   AbortSignal signal;
+
+  // A list of origins, controlling which document in the frame tree can
+  // see/invoke this tool. See
+  // https://docs.google.com/document/d/1ycdzuXA-VE8lRDFSArh0Um3PChHV0Hq6Om1MSMG8qPE/edit
+  // for more details.
+  //
+  // In short:
+  //   1. When this array is empty or omitted, the tool is only exposed to
+  //      documents that are same-origin with the one that registered the tool.
+  //   2. When it is provided and non-empty, the tool is exposed to all
+  //      documents whose origin matches the one in the list. Additionally, it
+  //      is exposed to all same-origin documents, like (1) above.
+  sequence<USVString> exposedTo;
 };
 
 [
     Exposed=Window,
     SecureContext,
     RuntimeEnabled=WebMCP
-] interface ModelContext {
+] interface ModelContext : EventTarget {
   [CallWith=ScriptState, RaisesException, MeasureAs=ModelContextRegisterTool] undefined registerTool(ModelContextTool tool, optional ModelContextRegisterToolOptions options = {});
+  attribute EventHandler ontoolchange;
 };

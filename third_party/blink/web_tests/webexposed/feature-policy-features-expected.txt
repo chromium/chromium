@@ -89,6 +89,7 @@ speaker-selection
 storage-access
 summarizer
 sync-xhr
+tools
 translator
 unload
 usb

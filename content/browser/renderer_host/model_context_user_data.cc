@@ -1,0 +1,150 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "content/browser/renderer_host/model_context_user_data.h"
+
+#include "content/browser/bad_message.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/public/browser/browser_thread.h"
+#include "third_party/blink/public/common/features.h"
+#include "url/origin.h"
+
+namespace content {
+
+namespace {
+
+bool IsScriptToolVisibleToOrigin(
+    const url::Origin& tool_owner_origin,
+    const std::vector<url::Origin>& exposed_origins,
+    const url::Origin& target_origin) {
+  if (target_origin.IsSameOriginWith(tool_owner_origin)) {
+    return true;
+  }
+  for (const auto& allowed_origin : exposed_origins) {
+    if (target_origin.IsSameOriginWith(allowed_origin)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+}  // namespace
+
+DOCUMENT_USER_DATA_KEY_IMPL(ModelContextUserData);
+
+ModelContextUserData::ModelContextUserData(RenderFrameHost* rfh)
+    : DocumentUserData<ModelContextUserData>(rfh) {}
+
+// TODO(https://crbug.com/508285989): In the destructor, implement the implicit
+// unregistering of all `script_tools_` and invoking `NotifyToolChange()` on any
+// relevant documents.
+ModelContextUserData::~ModelContextUserData() = default;
+
+// static
+void ModelContextUserData::Bind(
+    RenderFrameHost* rfh,
+    mojo::PendingReceiver<blink::mojom::ModelContextHost> receiver) {
+  auto* user_data = ModelContextUserData::GetForCurrentDocument(rfh);
+  if (user_data) {
+    bad_message::ReceivedBadMessage(rfh->GetProcess(),
+                                    bad_message::RFHI_WEBMCP_DUPLICATE_BIND);
+    return;
+  }
+  user_data = ModelContextUserData::GetOrCreateForCurrentDocument(rfh);
+  user_data->receiver_.Bind(std::move(receiver));
+}
+
+void ModelContextUserData::BindModelContext(
+    mojo::PendingRemote<blink::mojom::ModelContext> model_context) {
+  if (model_context_remote_.is_bound()) {
+    bad_message::ReceivedBadMessage(
+        render_frame_host().GetProcess(),
+        bad_message::RFHI_WEBMCP_DUPLICATE_SET_RECEIVER);
+    return;
+  }
+  model_context_remote_.Bind(std::move(model_context));
+}
+
+void ModelContextUserData::RegisterScriptTool(
+    blink::mojom::ScriptToolPtr tool) {
+  if (!base::FeatureList::IsEnabled(blink::features::kWebMCP) ||
+      !render_frame_host().IsFeatureEnabled(
+          network::mojom::PermissionsPolicyFeature::kTools)) {
+    bad_message::ReceivedBadMessage(render_frame_host().GetProcess(),
+                                    bad_message::RFHI_WEBMCP_NOT_ENABLED);
+    return;
+  }
+
+  // Kill the renderer if it tries to register a duplicate tool name, because
+  // the renderer should prevent this.
+  auto it = std::find_if(script_tools_.begin(), script_tools_.end(),
+                         [&](const blink::mojom::ScriptToolPtr& t) {
+                           return t->name == tool->name;
+                         });
+  if (it != script_tools_.end()) {
+    bad_message::ReceivedBadMessage(
+        render_frame_host().GetProcess(),
+        bad_message::RFHI_WEBMCP_REGISTER_DUPLICATE_TOOL_NAME);
+    return;
+  }
+
+  for (const auto& origin : tool->exposed_origins) {
+    if (origin.scheme() != url::kHttpsScheme) {
+      bad_message::ReceivedBadMessage(
+          render_frame_host().GetProcess(),
+          bad_message::RFHI_WEBMCP_EXPOSED_NON_HTTPS_ORIGIN);
+      return;
+    }
+  }
+
+  std::vector<url::Origin> exposed_origins = tool->exposed_origins;
+  script_tools_.push_back(std::move(tool));
+  NotifyToolChange(exposed_origins);
+}
+
+void ModelContextUserData::UnregisterScriptTool(const std::string& name) {
+  if (!base::FeatureList::IsEnabled(blink::features::kWebMCP) ||
+      !render_frame_host().IsFeatureEnabled(
+          network::mojom::PermissionsPolicyFeature::kTools)) {
+    bad_message::ReceivedBadMessage(render_frame_host().GetProcess(),
+                                    bad_message::RFHI_WEBMCP_NOT_ENABLED);
+    return;
+  }
+
+  auto it = std::find_if(
+      script_tools_.begin(), script_tools_.end(),
+      [&](const blink::mojom::ScriptToolPtr& t) { return t->name == name; });
+  if (it == script_tools_.end()) {
+    bad_message::ReceivedBadMessage(render_frame_host().GetProcess(),
+                                    bad_message::RFHI_WEBMCP_UNKNOWN_TOOL_NAME);
+    return;
+  }
+
+  std::vector<url::Origin> exposed_origins = (*it)->exposed_origins;
+
+  script_tools_.erase(it);
+
+  NotifyToolChange(exposed_origins);
+}
+
+void ModelContextUserData::NotifyToolChange(
+    const std::vector<url::Origin>& exposed_origins) {
+  RenderFrameHost& rfh = render_frame_host();
+  url::Origin tool_owner_origin = rfh.GetLastCommittedOrigin();
+
+  rfh.GetMainFrame()->ForEachRenderFrameHost([&](RenderFrameHost* frame) {
+    if (IsScriptToolVisibleToOrigin(tool_owner_origin, exposed_origins,
+                                    frame->GetLastCommittedOrigin())) {
+      auto* data = ModelContextUserData::GetForCurrentDocument(frame);
+      // If `data` is null, it means the document has not interacted with its
+      // `blink::ModelContext` object yet, including adding event listeners to
+      // it. In that case, we can safely skip it.
+      if (data && data->model_context_remote_.is_bound()) {
+        data->model_context_remote_->NotifyToolChange();
+      }
+    }
+  });
+}
+
+}  // namespace content

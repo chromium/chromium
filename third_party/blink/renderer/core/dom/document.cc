@@ -7930,7 +7930,7 @@ void Document::FinishedParsing() {
   if (RuntimeEnabledFeatures::WebMCPEnabled(GetExecutionContext())) {
     auto* navigator = domWindow() ? domWindow()->navigator() : nullptr;
     auto* model_context =
-        navigator ? ModelContextSupplement::modelContext(*navigator) : nullptr;
+        navigator ? ModelContextSupplement::GetIfExists(*navigator) : nullptr;
     if (model_context) {
       model_context->DidFinishParsing();
     }

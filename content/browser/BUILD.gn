@@ -1973,6 +1973,8 @@ source_set("browser") {
     "renderer_host/mixed_content_checker.h",
     "renderer_host/mixed_content_navigation_throttle.cc",
     "renderer_host/mixed_content_navigation_throttle.h",
+    "renderer_host/model_context_user_data.cc",
+    "renderer_host/model_context_user_data.h",
     "renderer_host/mojo_render_input_router_delegate_impl.cc",
     "renderer_host/mojo_render_input_router_delegate_impl.h",
     "renderer_host/navigation_api_commit_deferring_condition.cc",

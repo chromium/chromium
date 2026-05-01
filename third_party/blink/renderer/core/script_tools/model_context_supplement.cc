@@ -31,7 +31,7 @@ ModelContext* ModelContextSupplement::GetIfExists(Navigator& navigator) {
   }
   ModelContextSupplement* supplement =
       Supplement<Document>::From<ModelContextSupplement>(*window->document());
-  return supplement ? supplement->modelContext() : nullptr;
+  return supplement ? supplement->model_context_.Get() : nullptr;
 }
 
 // static

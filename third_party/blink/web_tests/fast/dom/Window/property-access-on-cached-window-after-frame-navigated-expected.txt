@@ -65,6 +65,7 @@ PASS oldChildWindow.navigator.maxTouchPoints is newChildWindow.navigator.maxTouc
 PASS oldChildWindow.navigator.mediaDevices.ondevicechange is newChildWindow.navigator.mediaDevices.ondevicechange
 PASS oldChildWindow.navigator.mediaSession.metadata is newChildWindow.navigator.mediaSession.metadata
 PASS oldChildWindow.navigator.mediaSession.playbackState is newChildWindow.navigator.mediaSession.playbackState
+PASS oldChildWindow.navigator.modelContext.ontoolchange is newChildWindow.navigator.modelContext.ontoolchange
 PASS oldChildWindow.navigator.modelContextTesting.ontoolchange is newChildWindow.navigator.modelContextTesting.ontoolchange
 PASS oldChildWindow.navigator.onLine is newChildWindow.navigator.onLine
 PASS oldChildWindow.navigator.pdfViewerEnabled is newChildWindow.navigator.pdfViewerEnabled

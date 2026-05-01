@@ -635,6 +635,12 @@
       depends_on: ["WebAppInstallation"],
     },
     {
+      name: "Tools",
+      permissions_policy_name: "tools",
+      depends_on: ["WebMCP"],
+      feature_default: "EnableForSelf",
+    },
+    {
       name: "WebPrinting",
       permissions_policy_name: "web-printing",
       depends_on: ["WebPrinting"],

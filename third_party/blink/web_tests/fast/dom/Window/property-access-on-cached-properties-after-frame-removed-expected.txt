@@ -63,6 +63,7 @@ PASS window.cached_navigator_managed.onmanagedconfigurationchange is null
 PASS window.cached_navigator_mediaDevices.ondevicechange is null
 PASS window.cached_navigator_mediaSession.metadata is null
 PASS window.cached_navigator_mediaSession.playbackState is 'none'
+PASS window.cached_navigator_modelContext.ontoolchange is null
 PASS window.cached_navigator_modelContextTesting.ontoolchange is null
 PASS window.cached_navigator_preferences_colorScheme.onchange is null
 PASS window.cached_navigator_preferences_colorScheme.override is null

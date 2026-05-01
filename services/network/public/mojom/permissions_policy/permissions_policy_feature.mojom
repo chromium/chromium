@@ -354,6 +354,10 @@ enum PermissionsPolicyFeature {
   kLocalNetwork= 144,
   kLoopbackNetwork = 145,
 
+  // Controls whether WebMCP tools can be registered by the site, and exposed to
+  // the built-in agent and other origins.
+  kTools = 146,
+
   // Don't change assigned numbers of any item, and don't reuse removed slots.
   // Add new features at the end of the enum.
   // Run tools/metrics/histograms/update_permissions_policy_enum.py to update

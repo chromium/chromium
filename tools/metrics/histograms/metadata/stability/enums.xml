@@ -509,6 +509,12 @@ Called by update_bad_message_reasons.py.-->
   <int value="340" label="RWH_POINTER_LOCK_FROM_SANDBOXED_FRAME"/>
   <int value="341" label="SWSI_CROSS_ORIGIN_SCRIPT_URL"/>
   <int value="342" label="RFH_INVALID_NAVIGATION_HEADERS"/>
+  <int value="343" label="RFHI_WEBMCP_NOT_ENABLED"/>
+  <int value="344" label="RFHI_WEBMCP_UNKNOWN_TOOL_NAME"/>
+  <int value="345" label="RFHI_WEBMCP_REGISTER_DUPLICATE_TOOL_NAME"/>
+  <int value="346" label="RFHI_WEBMCP_DUPLICATE_BIND"/>
+  <int value="347" label="RFHI_WEBMCP_DUPLICATE_SET_RECEIVER"/>
+  <int value="348" label="RFHI_WEBMCP_EXPOSED_NON_HTTPS_ORIGIN"/>
 </enum>
 
 <enum name="BadMessageReasonExtensions">

@@ -6620,6 +6620,7 @@
     {
       name: "WebMCP",
       origin_trial_feature_name: "WebMCP",
+      public: true,
       // Note that `depends_on` isn't supported by origin trials.
       implied_by: [
         "WebMCPDeclarativeFileInput",
