@@ -9,7 +9,7 @@
 #import "components/content_settings/core/browser/content_settings_utils.h"
 #import "components/enterprise/data_protection/data_protection_url_lookup_service.h"
 #import "components/enterprise/data_protection/utils.h"
-#import "components/safe_browsing/core/browser/realtime/url_lookup_service.h"
+#import "components/safe_browsing/core/browser/realtime/chrome_enterprise_url_lookup_service.h"
 #import "components/safe_browsing/core/browser/realtime/url_lookup_service_base.h"
 #import "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
 #import "ios/chrome/browser/enterprise/connectors/connectors_service.h"
@@ -18,7 +18,7 @@
 #import "ios/chrome/browser/enterprise/data_controls/model/ios_rules_service_factory.h"
 #import "ios/chrome/browser/enterprise/data_protection/model/data_protection_tab_helper_observer.h"
 #import "ios/chrome/browser/enterprise/data_protection/model/data_protection_url_lookup_service_factory.h"
-#import "ios/chrome/browser/safe_browsing/model/real_time_url_lookup_service_factory.h"
+#import "ios/chrome/browser/safe_browsing/model/chrome_enterprise_url_lookup_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/web/public/navigation/navigation_context.h"
@@ -299,5 +299,6 @@ DataProtectionTabHelper::GetLookupService() const {
 
 safe_browsing::RealTimeUrlLookupServiceBase*
 DataProtectionTabHelper::GetRealTimeLookupService() const {
-  return RealTimeUrlLookupServiceFactory::GetForProfile(GetProfile());
+  return safe_browsing::ChromeEnterpriseRealTimeUrlLookupServiceFactory::
+      GetForProfile(GetProfile());
 }

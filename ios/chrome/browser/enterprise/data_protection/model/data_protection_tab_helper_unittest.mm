@@ -19,6 +19,7 @@
 #import "components/enterprise/data_protection/data_protection_url_lookup_service.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/testing_pref_service.h"
+#import "components/safe_browsing/core/browser/realtime/chrome_enterprise_url_lookup_service.h"
 #import "components/safe_browsing/core/browser/realtime/fake_url_lookup_service.h"
 #import "components/safe_browsing/core/browser/realtime/url_lookup_service.h"
 #import "components/safe_browsing/core/browser/realtime/url_lookup_service_base.h"
@@ -27,7 +28,7 @@
 #import "ios/chrome/browser/enterprise/data_controls/model/ios_rules_service_factory.h"
 #import "ios/chrome/browser/enterprise/data_protection/model/data_protection_tab_helper_observer.h"
 #import "ios/chrome/browser/enterprise/data_protection/model/data_protection_url_lookup_service_factory.h"
-#import "ios/chrome/browser/safe_browsing/model/real_time_url_lookup_service_factory.h"
+#import "ios/chrome/browser/safe_browsing/model/chrome_enterprise_url_lookup_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -38,6 +39,7 @@
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 
+using safe_browsing::ChromeEnterpriseRealTimeUrlLookupServiceFactory;
 using ::testing::_;
 
 namespace {
@@ -146,7 +148,7 @@ class DataProtectionTabHelperTest : public PlatformTest {
 
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
-        RealTimeUrlLookupServiceFactory::GetInstance(),
+        ChromeEnterpriseRealTimeUrlLookupServiceFactory::GetInstance(),
         base::BindRepeating(
             &DataProtectionTabHelperTest::CreateFakeRealTimeUrlLookupService,
             base::Unretained(this)));
@@ -176,7 +178,8 @@ class DataProtectionTabHelperTest : public PlatformTest {
 
     fake_rt_lookup_service_ = static_cast<FakeRealTimeUrlLookupService*>(
         static_cast<safe_browsing::RealTimeUrlLookupServiceBase*>(
-            RealTimeUrlLookupServiceFactory::GetForProfile(profile_.get())));
+            ChromeEnterpriseRealTimeUrlLookupServiceFactory::GetForProfile(
+                profile_.get())));
   }
 
   ~DataProtectionTabHelperTest() override {
@@ -430,7 +433,8 @@ TEST_F(DataProtectionTabHelperTest, IncognitoSkipsRealTimeLookup) {
                                             context.get());
 
   EXPECT_TRUE(incognito_tab_helper->IsScreenshotProtectionEnabled());
-  EXPECT_EQ(RealTimeUrlLookupServiceFactory::GetForProfile(incognito_profile),
+  EXPECT_EQ(ChromeEnterpriseRealTimeUrlLookupServiceFactory::GetForProfile(
+                incognito_profile),
             nullptr);
 }
 
