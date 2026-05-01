@@ -39,18 +39,26 @@ code or summarize state itself. It delegates to four auxiliary personas:
 
 **MANDATE:** Every sub-agent invoked in the MAGI protocol MUST call the
 `update_topic` tool as its first action to identify its role in the UI (e.g.,
-`title="MAGI Persona: Recruiter"`).
+`title="MAGI Persona: Engineering Manager"`).
 
 ## Workflow
 
-### 1. Preparation & Persona Selection (The Recruiter)
+### 1. Preparation & Persona Selection (The Engineering Manager)
 - Identify the target file(s) and the core problem.
-- **The Recruiter:** The Orchestrator MUST invoke a sub-agent acting as the
-  "Recruiter". The Recruiter reads `src/remoting/tools/magi-mode/PERSONAS.md`
-  (the routing catalog) to select the most appropriate experts. It returns the
-  absolute file paths of their definition files to the Orchestrator.
-- **Transparency:** The Orchestrator MUST output the Recruiter's persona
-  selection logic to the human. Ensure the workspace is clean.
+- **The Engineering Manager:** The Orchestrator MUST act as or invoke a
+  sub-agent acting as the "Engineering Manager". The Engineering Manager reads
+  `src/remoting/tools/magi-mode/PERSONAS.md` (the routing catalog) to assess
+  and select the most appropriate experts. It returns the absolute file paths
+  of their definition files to the Orchestrator.
+- **The Recruiter (Talent Acquisition):** If the Engineering Manager determines
+  that a required expertise is lacking in the current catalog, they MUST invoke
+  a "Recruiter" sub-agent. The Recruiter is responsible for dynamically
+  generating the missing persona markdown file in
+  `src/remoting/tools/magi-mode/personas/`, updating the `PERSONAS.md` catalog,
+  and committing these changes as a separate prerequisite Git/Jujutsu commit
+  before the main architectural work begins.
+- **Transparency:** The Orchestrator MUST output the Engineering Manager's
+  persona selection logic to the human. Ensure the workspace is clean.
 - **Opaque Passing:** The Orchestrator passes the *file paths* of the selected
   personas to the sub-agents. The sub-agents use `read_file` to load their
   mandate, keeping the Orchestrator's context window lean.
