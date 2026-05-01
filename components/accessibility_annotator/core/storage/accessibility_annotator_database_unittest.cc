@@ -194,8 +194,8 @@ TEST_F(AccessibilityAnnotatorDatabaseTest, GetAndClearAllContentAnnotations) {
   std::vector<std::pair<history::VisitID, ContentAnnotationsData>>
       all_annotations = db_->GetAllContentAnnotations();
   ASSERT_EQ(all_annotations.size(), 2u);
-  EXPECT_EQ(all_annotations[0].first, visit_id_1);
-  EXPECT_EQ(all_annotations[1].first, visit_id_2);
+  EXPECT_EQ(all_annotations[0].first, visit_id_2);
+  EXPECT_EQ(all_annotations[1].first, visit_id_1);
 
   // Clear all content annotations from the database successfully.
   EXPECT_TRUE(db_->ClearAllContentAnnotations());

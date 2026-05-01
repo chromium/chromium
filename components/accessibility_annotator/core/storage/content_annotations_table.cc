@@ -167,7 +167,7 @@ ContentAnnotationsTable::GetAllContentAnnotations() {
       "visit_id, url, navigation_timestamp, proto_data, "
       "tab_id, page_title, classifier_results "
       "FROM content_annotations "
-      "ORDER BY visit_id"));
+      "ORDER BY visit_id DESC"));
 
   while (statement.Step()) {
     history::VisitID visit_id = statement.ColumnInt64(0);
