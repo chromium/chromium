@@ -168,5 +168,5 @@ options, contact the fuzzing team at chrome-fuzzing-core@google.com.
 [fuzzer builders]: https://ci.chromium.org/p/chromium/g/chromium.fuzz/console
 [FuzzTest]: https://github.com/google/fuzztest
 [Getting Started with libFuzzer]: getting_started_with_libfuzzer.md
-[go/chrome-fuzzing-dashboard]: (https://analysis.chromium.org/coverage/p/chromium?platform=fuzz).
+[go/chrome-fuzzing-dashboard]: https://analysis.chromium.org/coverage/p/chromium?platform=fuzz
 [`test` template]: https://source.chromium.org/chromium/chromium/src/+/main:testing/test.gni?q=test.gni
