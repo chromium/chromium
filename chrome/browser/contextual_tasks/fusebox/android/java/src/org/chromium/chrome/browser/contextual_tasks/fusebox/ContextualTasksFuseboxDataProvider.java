@@ -27,6 +27,7 @@ import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.security_state.ConnectionMaliciousContentStatus;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 
 /** Implementing {@link LocationBarDataProvider} to provide state to the fusebox. */
@@ -35,6 +36,7 @@ public class ContextualTasksFuseboxDataProvider implements LocationBarDataProvid
     private final NonNullObservableSupplier<@ControlsPosition Integer> mToolbarPosition =
             ObservableSuppliers.createNonNull(ControlsPosition.TOP);
     private @Nullable FuseboxSessionState mFuseboxSessionState;
+    private @Nullable WebContents mWebContents;
     private final @ColorInt int mPrimaryColor;
     private final boolean mIsIncognito;
 
@@ -45,6 +47,11 @@ public class ContextualTasksFuseboxDataProvider implements LocationBarDataProvid
     public ContextualTasksFuseboxDataProvider(Context context, boolean isIncognito) {
         mPrimaryColor = ChromeColors.getPrimaryBackgroundColor(context, isIncognito);
         mIsIncognito = isIncognito;
+    }
+
+    /** Set the active {@link WebContents} associated with this fusebox data provider. */
+    public void setActiveWebContents(@Nullable WebContents webContents) {
+        mWebContents = webContents;
     }
 
     /**
@@ -100,6 +107,11 @@ public class ContextualTasksFuseboxDataProvider implements LocationBarDataProvid
     @Override
     public @Nullable Tab getTab() {
         return null;
+    }
+
+    @Override
+    public @Nullable WebContents getActiveWebContents() {
+        return mWebContents;
     }
 
     @Override

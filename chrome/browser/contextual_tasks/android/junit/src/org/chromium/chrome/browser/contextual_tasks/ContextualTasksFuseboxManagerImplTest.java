@@ -88,7 +88,7 @@ public class ContextualTasksFuseboxManagerImplTest {
                                 mLifecycleDispatcher,
                                 mProfileSupplier,
                                 mSnackbarManagerSupplier));
-        doReturn(mSessionState).when(mManager).createSessionState(any());
+        doReturn(mSessionState).when(mManager).createSessionState();
         // For testing visibility logic.
         when(mMockJni.isContextualTasksUrl(any())).thenReturn(true);
     }
@@ -97,8 +97,9 @@ public class ContextualTasksFuseboxManagerImplTest {
     public void testOnWebUIReady_CreatesNewSession() {
         mManager.onWebUIReady(TASK_ID_1, mWebContents);
 
-        verify(mManager).createSessionState(mWebContents);
+        verify(mManager).createSessionState();
         assertEquals(mSessionState, mManager.getFuseboxDataProvider().getFuseboxSessionState());
+        assertEquals(mWebContents, mManager.getFuseboxDataProvider().getActiveWebContents());
     }
 
     @Test
@@ -107,7 +108,7 @@ public class ContextualTasksFuseboxManagerImplTest {
         mManager.onWebUIReady(TASK_ID_1, mWebContents);
 
         // Should only be called once.
-        verify(mManager).createSessionState(mWebContents);
+        verify(mManager).createSessionState();
     }
 
     @Test
@@ -133,6 +134,7 @@ public class ContextualTasksFuseboxManagerImplTest {
         verify(mBridge).onWebUIDestroyed();
         verify(mSessionState).destroy();
         assertNull(mManager.getFuseboxDataProvider().getFuseboxSessionState());
+        assertNull(mManager.getFuseboxDataProvider().getActiveWebContents());
     }
 
     @Test
@@ -160,6 +162,6 @@ public class ContextualTasksFuseboxManagerImplTest {
         // Since updateFuseboxVisibility is private, we rely on existing paths.
         // For now, let's verify ensureFuseboxSessionState which is called by visibility logic.
         mManager.ensureFuseboxSessionState(TASK_ID_1, mWebContents);
-        verify(mManager).createSessionState(mWebContents);
+        verify(mManager).createSessionState();
     }
 }
