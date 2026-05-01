@@ -22,6 +22,108 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<!-- LINT.IfChange(ApiRequestType) -->
+
+<variants name="ApiRequestType">
+  <variant name="ActivateTab"/>
+  <variant name="AttachPanel"/>
+  <variant name="AutofillSuggestionDialogOnFormConfirmed"/>
+  <variant name="AutofillSuggestionDialogOnFormPresented"/>
+  <variant name="AutofillSuggestionDialogOnFormPreviewChanged"/>
+  <variant name="CancelActions"/>
+  <variant name="CaptureScreenshot"/>
+  <variant name="ClosePanel"/>
+  <variant name="ClosePanelAndShutdown"/>
+  <variant name="CreateActorTab"/>
+  <variant name="CreateSkill"/>
+  <variant name="CreateTab"/>
+  <variant name="CreateTask"/>
+  <variant name="DeleteCapturedRegion"/>
+  <variant name="DetachPanel"/>
+  <variant name="DropScrollToHighlight"/>
+  <variant name="EnableDragResize"/>
+  <variant name="GetContextForActorFromTab"/>
+  <variant name="GetContextFromFocusedTab"/>
+  <variant name="GetContextFromTab"/>
+  <variant name="GetModelQualityClientId"/>
+  <variant name="GetOsMicrophonePermissionStatus"/>
+  <variant name="GetSkill"/>
+  <variant name="GetUserProfileInfo"/>
+  <variant name="GetZeroStateSuggestionsAndSubscribe"/>
+  <variant name="GetZeroStateSuggestionsForFocusedTab"/>
+  <variant name="InterruptActorTask"/>
+  <variant name="JournalClear"/>
+  <variant name="JournalRecordFeedback"/>
+  <variant name="JournalSnapshot"/>
+  <variant name="JournalStart"/>
+  <variant name="JournalStop"/>
+  <variant name="LogBeginAsyncEvent"/>
+  <variant name="LogEndAsyncEvent"/>
+  <variant name="LogInstantEvent"/>
+  <variant name="MaybeRefreshUserStatus"/>
+  <variant name="OnActionSubmitted"/>
+  <variant name="OnClosedCaptionsShown"/>
+  <variant name="OnContextUploadCompleted"/>
+  <variant name="OnContextUploadStarted"/>
+  <variant name="OnExperimentalTriggeringUpdate"/>
+  <variant name="OnMicrophoneStatusChange"/>
+  <variant name="OnModeChange"/>
+  <variant name="OnReaction"/>
+  <variant name="OnRecordUseCounter"/>
+  <variant name="OnResponseRated"/>
+  <variant name="OnResponseStarted"/>
+  <variant name="OnResponseStopped"/>
+  <variant name="OnSessionTerminated"/>
+  <variant name="OnTurnCompleted"/>
+  <variant name="OnUserInputSubmitted"/>
+  <variant name="OpenGlicSettingsPage"/>
+  <variant name="OpenOsPermissionSettingsMenu"/>
+  <variant name="OpenPasswordManagerSettingsPage"/>
+  <variant name="PauseActorTask"/>
+  <variant name="PerformActions"/>
+  <variant name="PinTabs"/>
+  <variant name="RecordSkillsWebClientEvent"/>
+  <variant name="RefreshSignInCookies"/>
+  <variant name="RegisterConversation"/>
+  <variant name="ResizeWindow"/>
+  <variant name="ResumeActorTask"/>
+  <variant name="ScrollTo"/>
+  <variant name="SetActuationOnWebSetting"/>
+  <variant name="SetAudioDucking"/>
+  <variant name="SetClosedCaptioningState"/>
+  <variant name="SetContextAccessIndicator"/>
+  <variant name="SetLocationPermissionState"/>
+  <variant name="SetMaximumNumberOfPinnedTabs"/>
+  <variant name="SetMicrophonePermissionState"/>
+  <variant name="SetMinimumWidgetSize"/>
+  <variant name="SetOnboardingCompleted"/>
+  <variant name="SetSyntheticExperimentState"/>
+  <variant name="SetTabContextPermissionState"/>
+  <variant name="SetWindowDraggableAreas"/>
+  <variant name="ShowBrowseSkillsUi"/>
+  <variant name="ShowManageSkillsUi"/>
+  <variant name="ShowProfilePicker"/>
+  <variant name="StopActorTask"/>
+  <variant name="SubscribeToCaptureRegion"/>
+  <variant name="SubscribeToPageMetadata"/>
+  <variant name="SubscribeToPinCandidates"/>
+  <variant name="SubscribeToTabData"/>
+  <variant name="SubscribeToTabFavicon"/>
+  <variant name="SubscribeToZoomLevel"/>
+  <variant name="SwitchConversation"/>
+  <variant name="UninterruptActorTask"/>
+  <variant name="UnpinAllTabs"/>
+  <variant name="UnpinTabs"/>
+  <variant name="UnsubscribeFromCaptureRegion"/>
+  <variant name="UnsubscribeFromPinCandidates"/>
+  <variant name="UnsubscribeFromZoomLevel"/>
+  <variant name="UpdateSkill"/>
+  <variant name="WebClientCreated"/>
+  <variant name="WebClientInitialized"/>
+</variants>
+
+<!-- LINT.ThenChange(//chrome/browser/resources/glic/glic_api_impl/request_types.ts:ApiRequestType) -->
+
 <variants name="AttachedTabCount">
   <variant name="0" summary="0 tabs attached"/>
   <variant name="1" summary="1 tab attached"/>
@@ -182,106 +284,21 @@ chromium-metrics-reviews@google.com.
     Recorded whenever a glic API request event has occurred. See
     GlicRequestEvent.
   </summary>
-<!-- LINT.IfChange(ApiRequestType) -->
+  <token key="ApiRequestType" variants="ApiRequestType"/>
+</histogram>
 
-  <token key="ApiRequestType">
-    <variant name="ActivateTab"/>
-    <variant name="AttachPanel"/>
-    <variant name="AutofillSuggestionDialogOnFormConfirmed"/>
-    <variant name="AutofillSuggestionDialogOnFormPresented"/>
-    <variant name="AutofillSuggestionDialogOnFormPreviewChanged"/>
-    <variant name="CancelActions"/>
-    <variant name="CaptureScreenshot"/>
-    <variant name="ClosePanel"/>
-    <variant name="ClosePanelAndShutdown"/>
-    <variant name="CreateActorTab"/>
-    <variant name="CreateSkill"/>
-    <variant name="CreateTab"/>
-    <variant name="CreateTask"/>
-    <variant name="DeleteCapturedRegion"/>
-    <variant name="DetachPanel"/>
-    <variant name="DropScrollToHighlight"/>
-    <variant name="EnableDragResize"/>
-    <variant name="GetContextForActorFromTab"/>
-    <variant name="GetContextFromFocusedTab"/>
-    <variant name="GetContextFromTab"/>
-    <variant name="GetModelQualityClientId"/>
-    <variant name="GetOsMicrophonePermissionStatus"/>
-    <variant name="GetSkill"/>
-    <variant name="GetUserProfileInfo"/>
-    <variant name="GetZeroStateSuggestionsAndSubscribe"/>
-    <variant name="GetZeroStateSuggestionsForFocusedTab"/>
-    <variant name="InterruptActorTask"/>
-    <variant name="JournalClear"/>
-    <variant name="JournalRecordFeedback"/>
-    <variant name="JournalSnapshot"/>
-    <variant name="JournalStart"/>
-    <variant name="JournalStop"/>
-    <variant name="LogBeginAsyncEvent"/>
-    <variant name="LogEndAsyncEvent"/>
-    <variant name="LogInstantEvent"/>
-    <variant name="MaybeRefreshUserStatus"/>
-    <variant name="OnActionSubmitted"/>
-    <variant name="OnClosedCaptionsShown"/>
-    <variant name="OnContextUploadCompleted"/>
-    <variant name="OnContextUploadStarted"/>
-    <variant name="OnExperimentalTriggeringUpdate"/>
-    <variant name="OnMicrophoneStatusChange"/>
-    <variant name="OnModeChange"/>
-    <variant name="OnReaction"/>
-    <variant name="OnResponseRated"/>
-    <variant name="OnResponseStarted"/>
-    <variant name="OnResponseStopped"/>
-    <variant name="OnSessionTerminated"/>
-    <variant name="OnTurnCompleted"/>
-    <variant name="OnUserInputSubmitted"/>
-    <variant name="OpenGlicSettingsPage"/>
-    <variant name="OpenOsPermissionSettingsMenu"/>
-    <variant name="OpenPasswordManagerSettingsPage"/>
-    <variant name="PauseActorTask"/>
-    <variant name="PerformActions"/>
-    <variant name="PinTabs"/>
-    <variant name="RecordSkillsWebClientEvent"/>
-    <variant name="RefreshSignInCookies"/>
-    <variant name="RegisterConversation"/>
-    <variant name="ResizeWindow"/>
-    <variant name="ResumeActorTask"/>
-    <variant name="ScrollTo"/>
-    <variant name="SetActuationOnWebSetting"/>
-    <variant name="SetAudioDucking"/>
-    <variant name="SetClosedCaptioningState"/>
-    <variant name="SetContextAccessIndicator"/>
-    <variant name="SetLocationPermissionState"/>
-    <variant name="SetMaximumNumberOfPinnedTabs"/>
-    <variant name="SetMicrophonePermissionState"/>
-    <variant name="SetMinimumWidgetSize"/>
-    <variant name="SetOnboardingCompleted"/>
-    <variant name="SetSyntheticExperimentState"/>
-    <variant name="SetTabContextPermissionState"/>
-    <variant name="SetWindowDraggableAreas"/>
-    <variant name="ShowBrowseSkillsUi"/>
-    <variant name="ShowManageSkillsUi"/>
-    <variant name="ShowProfilePicker"/>
-    <variant name="StopActorTask"/>
-    <variant name="SubscribeToCaptureRegion"/>
-    <variant name="SubscribeToPageMetadata"/>
-    <variant name="SubscribeToPinCandidates"/>
-    <variant name="SubscribeToTabData"/>
-    <variant name="SubscribeToTabFavicon"/>
-    <variant name="SubscribeToZoomLevel"/>
-    <variant name="SwitchConversation"/>
-    <variant name="UninterruptActorTask"/>
-    <variant name="UnpinAllTabs"/>
-    <variant name="UnpinTabs"/>
-    <variant name="UnsubscribeFromCaptureRegion"/>
-    <variant name="UnsubscribeFromPinCandidates"/>
-    <variant name="UnsubscribeFromZoomLevel"/>
-    <variant name="UpdateSkill"/>
-    <variant name="WebClientCreated"/>
-    <variant name="WebClientInitialized"/>
-  </token>
-<!-- LINT.ThenChange(//chrome/browser/resources/glic/glic_api_impl/request_types.ts:ApiRequestType) -->
-
+<histogram name="Glic.Api.RequestHostLatency.{ApiRequestType}" units="ms"
+    expires_after="2026-09-27">
+  <owner>carlosk@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <summary>
+    Records the host-serving latency of glic API requests of type
+    {ApiRequestType} (but only if that request returns a response). It tracks
+    the time between the request being received by the host WebUI and the
+    response being sent back to the web client, covering the entire time taken
+    for the browser to process the request.
+  </summary>
+  <token key="ApiRequestType" variants="ApiRequestType"/>
 </histogram>
 
 <histogram name="Glic.Api.StatusCounts.Error" enum="GlicHostApiRequestType"

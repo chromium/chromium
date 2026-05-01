@@ -1250,6 +1250,11 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testOpenGlicSettingsPage) {
       InstrumentTab(kSettingsTab),
       WaitForWebContentsReady(
           kSettingsTab, chrome::GetSettingsUrl(chrome::kGlicSettingsSubpage)));
+
+  // Confirm that this no-response request does not get latency metrics
+  // recorded.
+  histogram_tester->ExpectTotalCount(
+      "Glic.Api.RequestHostLatency.OpenGlicSettingsPage", 0);
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
@@ -2177,6 +2182,10 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testClosedCaptioning) {
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testGetUserProfileInfo) {
   ExecuteJsTest();
+
+  // Confirm that this response-receiving request gets latency metrics recorded.
+  histogram_tester->ExpectTotalCount(
+      "Glic.Api.RequestHostLatency.GetUserProfileInfo", 1);
 }
 
 class GlicApiTestWithOneTabAndCachedUserProfile : public GlicApiTestWithOneTab {
@@ -2735,6 +2744,10 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testCallingApiWhileHiddenRecordsMetrics) {
   histogram_tester.ExpectBucketCount(
       "Glic.Api.RequestCounts.CreateTab",
       GlicRequestEvent::kRequestReceivedWhileInactive, 1);
+
+  // Confirm that this request that is response-receiving but not allowed while
+  // hidden (aka "gated"), does not get latency metrics recorded.
+  histogram_tester.ExpectTotalCount("Glic.Api.RequestHostLatency.CreateTab", 0);
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testPinTabs) {
