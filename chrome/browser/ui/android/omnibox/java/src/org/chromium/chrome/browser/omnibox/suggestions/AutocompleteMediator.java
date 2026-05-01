@@ -1209,21 +1209,7 @@ class AutocompleteMediator
             // Pass full text, C++ handles the splitting and lookup
             templateUrl = mAutocomplete.getTemplateUrlForText(text);
 
-        } else if (source == SiteSearchActivationSource.TAB) {
-            AutocompleteResult result = mAutocompleteResult;
-            if (result == null || result.getSuggestionsList().isEmpty()) {
-                return false;
-            }
-
-            AutocompleteMatch match = result.getSuggestionsList().get(0);
-            String keyword = match.getAssociatedKeyword();
-            if (keyword == null) return false;
-
-            // Pass the specific keyword from the suggestion
-            templateUrl = mAutocomplete.getTemplateUrlForText(keyword);
-        }
-
-        if (templateUrl != null) {
+            if (templateUrl == null) return false;
             SiteSearchData data =
                     new SiteSearchData(templateUrl.getKeyword(), templateUrl.getShortName());
             onKeywordModeEntered(data);

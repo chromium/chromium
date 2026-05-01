@@ -6,12 +6,8 @@ package org.chromium.chrome.browser.omnibox.suggestions;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.lenient;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
 
 import android.content.Context;
 import android.view.ContextThemeWrapper;
@@ -36,7 +32,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.omnibox.DeferredIMEWindowInsetApplicationCallback;
-import org.chromium.chrome.browser.omnibox.FuseboxSessionState;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
@@ -44,21 +39,14 @@ import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
 import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionDelegateImpl;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.BasicSuggestionProcessor;
-import org.chromium.chrome.browser.preloading.PreloadingFeatureMap;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
-import org.chromium.components.omnibox.AutocompleteInput;
-import org.chromium.components.omnibox.AutocompleteMatchBuilder;
-import org.chromium.components.omnibox.AutocompleteResult;
-import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
-import java.util.Collections;
 import java.util.function.Supplier;
 
 /** Unit tests for {@link AutocompleteCoordinator}. */
@@ -91,11 +79,6 @@ public class AutocompleteCoordinatorUnitTest {
     @Mock private OmniboxSuggestionsContainer mSuggestionsContainer;
     @Mock private ViewGroup mParentView;
     @Mock private TemplateUrlService mTemplateUrlService;
-    @Mock private TemplateUrl mTemplateUrl;
-    @Mock private PreloadingFeatureMap mPreloadingFeatureMap;
-    @Mock private FuseboxSessionState mFuseboxSessionState;
-    @Mock private Profile mProfile;
-    @Mock private AutocompleteController mAutocompleteController;
 
     @Before
     public void setUp() {
@@ -189,52 +172,5 @@ public class AutocompleteCoordinatorUnitTest {
                                 KeyEvent.KEYCODE_TAB,
                                 0,
                                 KeyEvent.META_ALT_ON)));
-    }
-
-    @Test
-    public void testHandleKeyEvent_TabTriggersSiteSearch_WhenMatching() {
-        doReturn(true).when(mSuggestionsContainer).isShown();
-
-        var match =
-                new AutocompleteMatchBuilder()
-                        .setDisplayText("test query")
-                        .setFillIntoEdit("test query")
-                        .setAssociatedKeyword("bing")
-                        .build();
-        doReturn("bing").when(mUrlBarEditingTextProvider).getTextWithoutAutocomplete();
-        doReturn(true).when(mTemplateUrlService).isLoaded();
-        doReturn("bing").when(mTemplateUrl).getKeyword();
-        doReturn("Bing").when(mTemplateUrl).getShortName();
-        doReturn(mTemplateUrl).when(mAutocompleteController).getTemplateUrlForText("bing");
-
-        // Mock PreloadingFeatureMap to prevent crash during onSuggestionsReceived.
-        PreloadingFeatureMap.setInstanceForTesting(mPreloadingFeatureMap);
-        doReturn(false).when(mPreloadingFeatureMap).shouldPrewarmOnAutocomplete();
-
-        // Create an input session to make the coordinator active and accept suggestions.
-        AutocompleteInput mockInput = new AutocompleteInput();
-        mockInput.setPageClassification(PageClassification.BLANK_VALUE);
-        doReturn(mockInput).when(mFuseboxSessionState).getAutocompleteInput();
-        doReturn(mProfile).when(mFuseboxSessionState).getProfile();
-        doReturn(mAutocompleteController).when(mFuseboxSessionState).getAutocompleteController();
-
-        mAutocompleteCoordinator.beginInput(mFuseboxSessionState);
-
-        // Inject the suggestions result.
-        mAutocompleteCoordinator
-                .getSuggestionsReceivedListenerForTest()
-                .onSuggestionsReceived(
-                        AutocompleteResult.fromCache(Collections.singletonList(match), null),
-                        false);
-
-        // Action: Simulate TAB key press.
-        assertTrue(
-                mAutocompleteCoordinator.handleKeyEvent(
-                        KeyEvent.KEYCODE_TAB,
-                        new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_TAB)));
-
-        // Verification: Verify it intercepts the event and doesn't fall through to default
-        // navigation (which would call onKeyDown on the container).
-        verify(mSuggestionsContainer, never()).onKeyDown(eq(KeyEvent.KEYCODE_TAB), any());
     }
 }

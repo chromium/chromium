@@ -110,7 +110,6 @@ import org.chromium.url.JUnitTestGURLs;
 
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -379,30 +378,6 @@ public class AutocompleteMediatorUnitTest {
         verify(mAutocompleteDelegate).setOmniboxEditingText("");
     }
 
-    @Test
-    @SmallTest
-    public void triggerSiteSearchTabSuccess() {
-        // Setup: Start session and mock suggestions.
-        var session = createEmptySession();
-        mMediator.beginInput(session);
-
-        var mockMatch = mock(AutocompleteMatch.class);
-        doReturn("bing").when(mockMatch).getAssociatedKeyword();
-
-        mMediator.onSuggestionsReceived(
-                AutocompleteResult.fromCache(Collections.singletonList(mockMatch), null),
-                /* isFinal= */ true);
-
-        doReturn(true).when(mTemplateUrlService).isLoaded();
-        var mockTemplateUrl = mock(TemplateUrl.class);
-        doReturn("bing").when(mockTemplateUrl).getKeyword();
-        doReturn("Bing").when(mockTemplateUrl).getShortName();
-        doReturn(mockTemplateUrl).when(mAutocompleteController).getTemplateUrlForText("bing");
-
-        assertTrue(mMediator.triggerSiteSearch(SiteSearchActivationSource.TAB));
-        verify(mAutocompleteDelegate).setOmniboxEditingText("");
-    }
-
     /** Verifies that triggerSiteSearch fails (returns false) if the Omnibox text is empty. */
     @Test
     @SmallTest
@@ -410,7 +385,7 @@ public class AutocompleteMediatorUnitTest {
         mMediator.beginInput(createEmptySession());
         doReturn("").when(mTextStateProvider).getTextWithoutAutocomplete();
 
-        assertFalse(mMediator.triggerSiteSearch(SiteSearchActivationSource.TAB));
+        assertFalse(mMediator.triggerSiteSearch(SiteSearchActivationSource.SPACE));
     }
 
     @Test
@@ -431,7 +406,7 @@ public class AutocompleteMediatorUnitTest {
         doReturn("Bing").when(mockTemplateUrl).getShortName();
         doReturn(mockTemplateUrl).when(mAutocompleteController).getTemplateUrlForText("bing");
 
-        assertFalse(mMediator.triggerSiteSearch(SiteSearchActivationSource.TAB));
+        assertFalse(mMediator.triggerSiteSearch(SiteSearchActivationSource.SPACE));
     }
 
     @Test

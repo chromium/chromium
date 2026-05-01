@@ -17,5 +17,9 @@ import java.lang.annotation.RetentionPolicy;
 @Retention(RetentionPolicy.SOURCE)
 public @interface SiteSearchActivationSource {
     int SPACE = 0;
-    int TAB = 1;
+
+    /**
+     * @deprecated TAB should be handled by suggestion list traversal.
+     */
+    @Deprecated int TAB = 1;
 }
