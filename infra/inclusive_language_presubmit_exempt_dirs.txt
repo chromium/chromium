@@ -55,10 +55,8 @@ chrome/browser/mac
 chrome/browser/metrics
 chrome/browser/new_tab_page/modules
 chrome/browser/password_manager
-chrome/browser/predictors
 chrome/browser/prefs
 chrome/browser/privacy
-chrome/browser/renderer_context_menu
 chrome/browser/resources/chromeos/network_ui/third_party
 chrome/browser/resources/settings/site_settings
 chrome/browser/speech/extension_api
@@ -172,7 +170,6 @@ content/browser/tracing
 content/child
 content/common
 content/public/android/junit/src/org/chromium/content/browser/input
-content/public/browser
 content/public/common
 content/renderer
 content/test/gpu
@@ -314,7 +311,6 @@ third_party/blink/public/common/storage_key
 third_party/blink/public/devtools_protocol
 third_party/blink/public/devtools_protocol/domains
 third_party/blink/public/mojom/fenced_frame
-third_party/blink/public/mojom/frame
 third_party/blink/public/mojom/input
 third_party/blink/public/mojom/printing
 third_party/blink/public/mojom/service_worker
@@ -723,8 +719,6 @@ third_party/rust/chromium_crates_io/vendor/num-integer-v0_1
 third_party/rust/chromium_crates_io/vendor/num-rational-v0_4
 third_party/rust/chromium_crates_io/vendor/num-traits-v0_2
 third_party/rust/chromium_crates_io/vendor/once_cell-v1/.github/workflows
-third_party/rust/chromium_crates_io/vendor/opusic-sys-v0_6
-third_party/rust/chromium_crates_io/vendor/opusic-sys-v0_6/.github/workflows
 third_party/rust/chromium_crates_io/vendor/parking_lot-v0_12/.github/workflows
 third_party/rust/chromium_crates_io/vendor/png-v0_18/src/filter
 third_party/rust/chromium_crates_io/vendor/proc-macro2-v1
