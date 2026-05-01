@@ -42,8 +42,11 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
@@ -145,19 +148,51 @@ public class MostVisitedTilesLayoutTest {
     @MediumTest
     @Feature({"NewTabPage", "RenderTest"})
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
-    public void testTilesLayoutAppearance(boolean nightModeEnabled) throws Exception {
-        List<SiteSuggestion> siteSuggestions =
-                makeAndSetUpFakeSuggestions(FAKE_MOST_VISITED_URLS.length);
-
-        MvtsFacility mvts = mActivityTestRule.startOnNtp().focusOnMvts(siteSuggestions);
-        mRenderTestRule.render(
-                mvts.tilesLayoutElement.value(), "ntp_tile_layout_with_add_new_button");
+    @DisableFeatures({ChromeFeatureList.MOST_VISITED_TILES_CUSTOMIZATION})
+    public void testTilesLayoutAppearance_DisableMvtCustomization(boolean nightModeEnabled)
+            throws Exception {
+        doTilesLayoutAppearanceTest(nightModeEnabled, "");
     }
 
     @Test
     @MediumTest
     @Feature({"NewTabPage", "RenderTest"})
-    public void testModernTilesLayoutAppearance_Full() throws IOException, InterruptedException {
+    @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
+    @EnableFeatures({ChromeFeatureList.MOST_VISITED_TILES_CUSTOMIZATION})
+    public void testTilesLayoutAppearance_EnableMvtCustomization(boolean nightModeEnabled)
+            throws Exception {
+        doTilesLayoutAppearanceTest(nightModeEnabled, "_with_add_new_button");
+    }
+
+    private void doTilesLayoutAppearanceTest(boolean nightModeEnabled, String suffix)
+            throws Exception {
+        List<SiteSuggestion> siteSuggestions =
+                makeAndSetUpFakeSuggestions(FAKE_MOST_VISITED_URLS.length);
+
+        MvtsFacility mvts = mActivityTestRule.startOnNtp().focusOnMvts(siteSuggestions);
+        mRenderTestRule.render(mvts.tilesLayoutElement.value(), "ntp_tile_layout" + suffix);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"NewTabPage", "RenderTest"})
+    @DisableFeatures({ChromeFeatureList.MOST_VISITED_TILES_CUSTOMIZATION})
+    public void testModernTilesLayoutAppearance_Full_DisableMvtCustomization()
+            throws IOException, InterruptedException {
+        doModernTilesLayoutAppearanceTest_Full("");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"NewTabPage", "RenderTest"})
+    @EnableFeatures({ChromeFeatureList.MOST_VISITED_TILES_CUSTOMIZATION})
+    public void testModernTilesLayoutAppearance_Full_EnableMvtCustomization()
+            throws IOException, InterruptedException {
+        doModernTilesLayoutAppearanceTest_Full("_with_add_new_button");
+    }
+
+    private void doModernTilesLayoutAppearanceTest_Full(String suffix)
+            throws IOException, InterruptedException {
         makeAndSetUpFakeSuggestions(FAKE_MOST_VISITED_URLS.length);
         View tilesLayout = renderTiles();
 
@@ -169,8 +204,7 @@ public class MostVisitedTilesLayoutTest {
                             activity.getResources().getConfiguration().orientation,
                             is(ORIENTATION_PORTRAIT));
                 });
-        mRenderTestRule.render(
-                tilesLayout, "modern_tiles_layout_full_portrait_with_add_new_button");
+        mRenderTestRule.render(tilesLayout, "modern_tiles_layout_full_portrait" + suffix);
 
         activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         CriteriaHelper.pollUiThread(
@@ -179,8 +213,7 @@ public class MostVisitedTilesLayoutTest {
                             activity.getResources().getConfiguration().orientation,
                             is(ORIENTATION_LANDSCAPE));
                 });
-        mRenderTestRule.render(
-                tilesLayout, "modern_tiles_layout_full_landscape_with_add_new_button");
+        mRenderTestRule.render(tilesLayout, "modern_tiles_layout_full_landscape" + suffix);
 
         // Reset device orientation.
         ActivityTestUtils.clearActivityOrientation(activity);

@@ -33,7 +33,9 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.native_page.ContextMenuManager.ContextMenuItemId;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
@@ -291,6 +293,7 @@ public class TileInteractionDelegateTest {
     }
 
     @Test
+    @EnableFeatures({ChromeFeatureList.MOST_VISITED_TILES_CUSTOMIZATION})
     public void testIsItemSupported_MoveUp_FirstTile() {
         setupForCustomTileTests();
         when(mTileDragDelegate.isFirstDraggableTile(mTileView)).thenReturn(true);
@@ -298,6 +301,7 @@ public class TileInteractionDelegateTest {
     }
 
     @Test
+    @EnableFeatures({ChromeFeatureList.MOST_VISITED_TILES_CUSTOMIZATION})
     public void testIsItemSupported_MoveUp_NotFirstTile() {
         setupForCustomTileTests();
         when(mTileDragDelegate.isFirstDraggableTile(mTileView)).thenReturn(false);
@@ -305,6 +309,7 @@ public class TileInteractionDelegateTest {
     }
 
     @Test
+    @EnableFeatures({ChromeFeatureList.MOST_VISITED_TILES_CUSTOMIZATION})
     public void testIsItemSupported_MoveDown_LastTile() {
         setupForCustomTileTests();
         when(mTileDragDelegate.isLastDraggableTile(mTileView)).thenReturn(true);
@@ -312,6 +317,7 @@ public class TileInteractionDelegateTest {
     }
 
     @Test
+    @EnableFeatures({ChromeFeatureList.MOST_VISITED_TILES_CUSTOMIZATION})
     public void testIsItemSupported_MoveDown_NotLastTile() {
         setupForCustomTileTests();
         when(mTileDragDelegate.isLastDraggableTile(mTileView)).thenReturn(false);
@@ -319,6 +325,7 @@ public class TileInteractionDelegateTest {
     }
 
     @Test
+    @EnableFeatures({ChromeFeatureList.MOST_VISITED_TILES_CUSTOMIZATION})
     public void testMoveItemUp() {
         setupForCustomTileTests();
         mDelegate.moveItemUp();
@@ -326,6 +333,7 @@ public class TileInteractionDelegateTest {
     }
 
     @Test
+    @EnableFeatures({ChromeFeatureList.MOST_VISITED_TILES_CUSTOMIZATION})
     public void testMoveItemDown() {
         setupForCustomTileTests();
         mDelegate.moveItemDown();

@@ -43,7 +43,10 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
@@ -146,6 +149,7 @@ public class MostVisitedMediatorUnitTest {
 
     /** Verifies the container visibility should only depend on the toggle state. */
     @Test
+    @Features.EnableFeatures(ChromeFeatureList.MOST_VISITED_TILES_CUSTOMIZATION)
     public void testOnMvtToggleChanged() {
         createMediator();
         verify(mNtpCustomizationConfigManager)
@@ -322,6 +326,7 @@ public class MostVisitedMediatorUnitTest {
      * tiles should have no effect.
      */
     @Test
+    @EnableFeatures(ChromeFeatureList.MOST_VISITED_TILES_CUSTOMIZATION)
     public void testMvtContainerOnTileCountChanged() {
         createMediator();
         verifyMvtSectionVisibility(
@@ -331,14 +336,14 @@ public class MostVisitedMediatorUnitTest {
                 /* expectedVisibility= */ true);
         verifyMvtSectionVisibility(
                 /* listener= */ null,
-                /* toggleIsOn= */ true,
-                /* hasTiles= */ false,
-                /* expectedVisibility= */ true);
-        verifyMvtSectionVisibility(
-                /* listener= */ null,
                 /* toggleIsOn= */ false,
                 /* hasTiles= */ true,
                 /* expectedVisibility= */ false);
+        verifyMvtSectionVisibility(
+                /* listener= */ null,
+                /* toggleIsOn= */ true,
+                /* hasTiles= */ false,
+                /* expectedVisibility= */ true);
         verifyMvtSectionVisibility(
                 /* listener= */ null,
                 /* toggleIsOn= */ false,
