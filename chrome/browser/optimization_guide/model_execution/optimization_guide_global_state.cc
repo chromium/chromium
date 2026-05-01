@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -20,7 +21,9 @@
 #include "chrome/common/chrome_paths.h"
 #include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/delivery/prediction_manager.h"
+#include "components/optimization_guide/core/model_execution/manifest_broker/manifest_asset_manager.h"
 #include "components/optimization_guide/core/model_execution/manifest_broker/manifest_broker_state.h"
+#include "components/optimization_guide/core/model_execution/manifest_broker/override_manifest_asset_manager_delegate.h"
 #include "components/optimization_guide/core/model_execution/model_broker_state.h"
 #include "components/optimization_guide/core/model_execution/on_device_asset_manager.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_access_controller.h"
@@ -58,6 +61,17 @@ void LogFreeDiskSpace(std::optional<base::ByteCount> bytes) {
     base::UmaHistogramCounts10M("OptimizationGuide.OnDeviceModel.FreeDiskSpace",
                                 bytes->InMiB());
   }
+}
+
+std::unique_ptr<ManifestAssetManager::Delegate> CreateManifestDelegate() {
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch("optimization-guide-manifest-override")) {
+    base::FilePath override_path = command_line->GetSwitchValuePath(
+        "optimization-guide-manifest-override");
+    return std::make_unique<OverrideManifestAssetManagerDelegate>(
+        override_path);
+  }
+  return component_updater::CreateManifestAssetManagerDelegate();
 }
 
 #endif  // BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
@@ -148,8 +162,7 @@ OptimizationGuideGlobalState::OptimizationGuideGlobalState(
     LaunchServiceCallback launch_service_callback) {
   if (base::FeatureList::IsEnabled(kOptimizationGuideManifestBroker)) {
     on_device_capability_ = std::make_unique<ManifestBrokerState>(
-        *g_browser_process->local_state(),
-        component_updater::CreateManifestAssetManagerDelegate(),
+        *g_browser_process->local_state(), CreateManifestDelegate(),
         launch_service_callback);
     // TODO(b/489510258): ScheduleEvaluation and record metrics / trials
     return;

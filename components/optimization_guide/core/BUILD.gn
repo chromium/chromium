@@ -394,6 +394,8 @@ if (build_with_model_execution) {
       "model_execution/manifest_broker/manifest_solution_factory.h",
       "model_execution/manifest_broker/manifest_validation.cc",
       "model_execution/manifest_broker/manifest_validation.h",
+      "model_execution/manifest_broker/override_manifest_asset_manager_delegate.cc",
+      "model_execution/manifest_broker/override_manifest_asset_manager_delegate.h",
     ]
     deps = [
       ":features",
@@ -816,6 +818,7 @@ source_set("model_execution_unit_tests") {
       "model_execution/manifest_broker/manifest_solution_factory_unittest.cc",
       "model_execution/manifest_broker/manifest_unittest.cc",
       "model_execution/manifest_broker/manifest_validation_unittest.cc",
+      "model_execution/manifest_broker/override_manifest_asset_manager_delegate_unittest.cc",
       "model_execution/model_broker_client_unittest.cc",
       "model_execution/model_execution_features_controller_unittest.cc",
       "model_execution/model_execution_features_unittest.cc",
