@@ -138,6 +138,7 @@
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 #include "url/url_features.h"
 
 namespace blink {
@@ -227,7 +228,8 @@ FrameLoader::FrameLoader(LocalFrame* frame)
               WebScopedVirtualTimePauser::VirtualTaskDuration::kInstant)) {
   DCHECK(frame_);
 
-  TRACE_EVENT_OBJECT_CREATED_WITH_ID("loading", "FrameLoader", this);
+  TRACE_EVENT_INSTANT("loading", "FrameLoader:created",
+                      perfetto::Flow::FromPointer(this, "FrameLoader"));
   TakeObjectSnapshot();
 }
 
@@ -1564,7 +1566,9 @@ void FrameLoader::Detach() {
     progress_tracker_.Clear();
   }
 
-  TRACE_EVENT_OBJECT_DELETED_WITH_ID("loading", "FrameLoader", this);
+  TRACE_EVENT_INSTANT(
+      "loading", "FrameLoader:deleted",
+      perfetto::TerminatingFlow::FromPointer(this, "FrameLoader"));
   state_ = State::kDetached;
   virtual_time_pauser_.UnpauseVirtualTime();
 }
@@ -1897,7 +1901,9 @@ inline void FrameLoader::TakeObjectSnapshot() const {
     // We already logged TRACE_EVENT_OBJECT_DELETED_WITH_ID in detach().
     return;
   }
-  TRACE_EVENT_OBJECT_SNAPSHOT_WITH_ID("loading", "FrameLoader", this, this);
+  TRACE_EVENT_INSTANT("loading", "FrameLoader:state_snapshot",
+                      perfetto::Flow::FromPointer(this, "FrameLoader"),
+                      "snapshot", *this);
 }
 
 mojo::PendingRemote<mojom::blink::CodeCacheHost>

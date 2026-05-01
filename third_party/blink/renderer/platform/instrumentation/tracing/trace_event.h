@@ -15,8 +15,6 @@
 namespace blink {
 namespace trace_event {
 
-using base::trace_event::TraceScopedTrackableObject;
-
 inline base::TimeTicks ToTraceTimestamp(double seconds) {
   return base::TimeTicks() + base::Seconds(seconds);
 }

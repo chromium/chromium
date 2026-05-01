@@ -189,6 +189,7 @@
 #include "third_party/blink/renderer/platform/widget/frame_widget.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-blink.h"
@@ -719,9 +720,11 @@ void LocalFrameView::PerformLayout() {
     }
   }
 
-  TRACE_EVENT_OBJECT_SNAPSHOT_WITH_ID(
-      TRACE_DISABLED_BY_DEFAULT("blink.debug.layout.trees"), "LayoutTree", this,
-      TracedLayoutObject::Create(*GetLayoutView(), false));
+  TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("blink.debug.layout.trees"),
+                      "LayoutTree:layout_snapshot",
+                      perfetto::Flow::FromPointer(this, "LocalFrameView"),
+                      "snapshot",
+                      TracedLayoutObject::Create(*GetLayoutView(), false));
 
   gfx::Size old_size(Size());
 
@@ -1848,9 +1851,11 @@ void LocalFrameView::PerformPostLayoutTasks(bool visual_viewport_size_changed) {
   DCHECK(!IsInPerformLayout());
   TRACE_EVENT0("blink,benchmark", "LocalFrameView::performPostLayoutTasks");
 
-  TRACE_EVENT_OBJECT_SNAPSHOT_WITH_ID(
-      TRACE_DISABLED_BY_DEFAULT("blink.debug.layout.trees"), "LayoutTree", this,
-      TracedLayoutObject::Create(*GetLayoutView(), true));
+  TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("blink.debug.layout.trees"),
+                      "LayoutTree:post_layout_snapshot",
+                      perfetto::Flow::FromPointer(this, "LocalFrameView"),
+                      "snapshot",
+                      TracedLayoutObject::Create(*GetLayoutView(), true));
   layout_count_for_testing_++;
   Document* document = GetFrame().GetDocument();
   DCHECK(document);

@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/platform/scheduler/worker/non_main_thread_scheduler_helper.h"
 #include "third_party/blink/renderer/platform/scheduler/worker/worker_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/worker/worker_scheduler_proxy.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 
 namespace blink {
 namespace scheduler {
@@ -108,13 +109,15 @@ WorkerThreadScheduler::WorkerThreadScheduler(
 
   GetHelper().SetObserver(this);
 
-  TRACE_EVENT_OBJECT_CREATED_WITH_ID(
-      TRACE_DISABLED_BY_DEFAULT("worker.scheduler"), "WorkerScheduler", this);
+  TRACE_EVENT_INSTANT(
+      TRACE_DISABLED_BY_DEFAULT("worker.scheduler"), "WorkerScheduler:created",
+      perfetto::Flow::FromPointer(this, "WorkerThreadScheduler"));
 }
 
 WorkerThreadScheduler::~WorkerThreadScheduler() {
-  TRACE_EVENT_OBJECT_DELETED_WITH_ID(
-      TRACE_DISABLED_BY_DEFAULT("worker.scheduler"), "WorkerScheduler", this);
+  TRACE_EVENT_INSTANT(
+      TRACE_DISABLED_BY_DEFAULT("worker.scheduler"), "WorkerScheduler:deleted",
+      perfetto::TerminatingFlow::FromPointer(this, "WorkerThreadScheduler"));
 
   DCHECK(worker_schedulers_.empty());
 }
