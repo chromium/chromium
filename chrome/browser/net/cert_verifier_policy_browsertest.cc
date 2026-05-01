@@ -18,6 +18,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/base/features.h"
+#include "net/base/ip_address.h"
 #include "net/cert/x509_util.h"
 #include "net/net_buildflags.h"
 #include "net/test/cert_test_util.h"
@@ -138,6 +139,65 @@ IN_PROC_BROWSER_TEST_P(CertVerifierServiceCACertificatesPolicyTest,
 
 INSTANTIATE_TEST_SUITE_P(All,
                          CertVerifierServiceCACertificatesPolicyTest,
+                         ::testing::Bool());
+
+class CertVerifierServiceCACertificatesPolicyMldsaTest
+    : public CertVerifierServicePolicyTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  void SetUpInProcessBrowserTestFixture() override {
+    policy::PolicyTest::SetUpInProcessBrowserTestFixture();
+
+    net::TestRootCerts::GetInstance()->Clear();
+
+    // Create a test cert chain using ML-DSA signatures. The leaf has a SAN of
+    // 127.0.0.1 to match the default hostname used by
+    // EmbeddedTestServer::GetURL.
+    auto [leaf, root] = net::CertBuilder::CreateSimpleChain2();
+    root->GenerateMldsa44Key();
+    leaf->GenerateMldsa44Key();
+    leaf->SetSubjectAltNames({}, {net::IPAddress::IPv4Localhost()});
+    scoped_refptr<net::X509Certificate> root_cert = root->GetX509Certificate();
+    ASSERT_TRUE(root_cert);
+
+    // Start the server using the test cert.
+    net::EmbeddedTestServer::ServerCertificateConfig cert_config;
+    cert_config.cert_and_key = net::EmbeddedTestServer::CertAndKey(
+        leaf->DupCertBuffer(), bssl::UpRef(leaf->GetKey()));
+    https_test_server_.SetSSLConfig(cert_config);
+    https_test_server_.ServeFilesFromSourceDirectory("chrome/test/data");
+    ASSERT_TRUE(https_test_server_.Start());
+
+    // Use the CACertificates policy to trust the test root cert.
+    if (add_cert_to_policy()) {
+      std::string b64_cert = base::Base64Encode(root_cert->cert_span());
+      base::Value certs_value(base::Value::Type::LIST);
+      certs_value.GetList().Append(b64_cert);
+      policy::PolicyMap policies;
+      SetPolicy(&policies, policy::key::kCACertificates,
+                std::make_optional(std::move(certs_value)));
+      UpdateProviderPolicy(policies);
+    }
+  }
+
+  bool add_cert_to_policy() const { return GetParam(); }
+
+  net::EmbeddedTestServer https_test_server_{
+      net::EmbeddedTestServer::TYPE_HTTPS};
+  base::test::ScopedFeatureList feature_list_{
+      net::features::kTlsMldsaSignatures};
+};
+
+IN_PROC_BROWSER_TEST_P(CertVerifierServiceCACertificatesPolicyMldsaTest,
+                       TestMldsaCertTrusted) {
+  ASSERT_TRUE(NavigateToUrl(https_test_server_.GetURL("/simple.html"), this));
+  EXPECT_NE(add_cert_to_policy(),
+            chrome_browser_interstitials::IsShowingInterstitial(
+                chrome_test_utils::GetActiveWebContents(this)));
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         CertVerifierServiceCACertificatesPolicyMldsaTest,
                          ::testing::Bool());
 
 // Test update of CACertificates policy after verifier is already
