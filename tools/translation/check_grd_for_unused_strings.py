@@ -1,191 +1,204 @@
-#!/usr/bin/env python
+#!/usr/bin/env vpython3
 # Copyright 2012 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-"""Without any args, this simply loads the IDs out of a bunch of the Chrome GRD
-files, and then checks the subset of the code that loads the strings to try
-and figure out what isn't in use any more.
-You can give paths to GRD files and source directories to control what is
-check instead.
+"""Detect strings in `.grd(p)` files that are likely unused.
+
+If unused strings are found, write their IDs to stdout (one per line) and exit
+with code 1. Otherwise, exit successfully.
 """
 
-from __future__ import print_function
-
-import os
+import argparse
+from collections.abc import Iterator, Mapping, MutableSet
+from concurrent.futures import ProcessPoolExecutor
+import dataclasses
+import itertools
+import pathlib
 import re
+import subprocess
 import sys
 import xml.sax
 
-# Extra messages along the way
-# 1 - Print ids that are found in sources but not in the found id set
-# 2 - Files that aren't processes (don't match the source name regex)
-DEBUG = 0
+_ANDROID_MANIFEST_PATTERN = re.compile('[\'"]@string/(?P<name>\\w*)[\'"]')
+_CPP_ID_PATTERN = re.compile(r'\bIDS_\w*\b')
+_JAVA_ID_PATTERN = re.compile(
+    r'\bR\s*\.\s*(string|plurals)\s*\.\s*(?P<name>\w*)\b')
+
+_GRD_SKIP_LIST = {
+    # These have special generated usage that static analysis can't detect, so
+    # just skip them.
+    pathlib.Path('components', 'printing_component_strings.grdp'),
+    pathlib.Path('components', 'privacy_sandbox_chrome_strings.grdp'),
+    pathlib.Path('third_party', 'blink', 'public', 'strings',
+                 'permission_element_strings.grd'),
+    pathlib.Path('third_party', 'libaddressinput', 'chromium',
+                 'address_input_strings.grdp'),
+    # These strings should naturally age out.
+    pathlib.Path('ios', 'chrome', 'browser', 'whats_new', 'ui', 'strings'),
+    # This example is not shipped.
+    pathlib.Path('ui', 'views', 'examples', 'views_examples_resources.grd'),
+}
 
 
-class GrdIDExtractor(xml.sax.handler.ContentHandler):
-  """Extracts the IDs from messages in GRIT files"""
+def _should_analyze(path: pathlib.Path) -> bool:
+  if set(path.parts) & {'testdata', 'web_tests'}:
+    return False
+  return not any(path.is_relative_to(skip_path) for skip_path in _GRD_SKIP_LIST)
+
+
+def _list_paths(include_paths: list[pathlib.Path]) -> Iterator[pathlib.Path]:
+  repo_root = subprocess.check_output(['git', 'rev-parse', '--show-toplevel'],
+                                      text=True)
+  repo_root = pathlib.Path(repo_root.strip())
+  with subprocess.Popen(
+      ['git', 'ls-files', '--', *include_paths],
+      stdout=subprocess.PIPE,
+      cwd=repo_root,
+      text=True,
+  ) as ls_proc:
+    for line in ls_proc.stdout:
+      path_from_root = pathlib.Path(line.strip())
+      if _should_analyze(path_from_root):
+        yield repo_root / path_from_root
+
+
+@dataclasses.dataclass
+class GrdParseResult:
+  """The result of parsing a `.grd(p)` file.
+
+  Attributes:
+    ids: A set of `IDS_...` message IDs.
+    parts: Relative paths to `.grdp` files to include.
+    generates_runtime_strings: True iff this `.grdp` generates a non-`.pak`
+        format that might be consumed at runtime. In that case, it's difficult
+        to detect statically whether a string is unused, so skip such `.grd`s
+        and their constituent parts.
+  """
+  ids: MutableSet[str] = dataclasses.field(default_factory=set)
+  parts: MutableSet[str] = dataclasses.field(default_factory=set)
+  generates_runtime_strings: bool = False
+
+
+class _GrdParser(xml.sax.handler.ContentHandler):
+
   def __init__(self):
     super().__init__()
-    self.id_set_ = set()
+    self.result = GrdParseResult()
 
   def startElement(self, name, attrs):
-    if name == 'message':
-      self.id_set_.add(attrs['name'])
-
-  def allIDs(self):
-    """Return all the IDs found"""
-    return self.id_set_.copy()
-
-
-def CheckForUnusedGrdIDsInSources(grd_files, src_dirs):
-  """Will collect the message ids out of the given GRD files and then scan
-  the source directories to try and figure out what ids are not currently
-  being used by any source.
-
-  grd_files:
-    A list of GRD files to collect the ids from.
-  src_dirs:
-    A list of directories to walk looking for source files.
-  """
-  # Collect all the ids into a large map
-  all_ids = set()
-  file_id_map = {}
-  for y in grd_files:
-    handler = GrdIDExtractor()
-    xml.sax.parse(y, handler)
-    files_ids = handler.allIDs()
-    file_id_map[y] = files_ids
-    all_ids |= files_ids
+    # Some `<message>`s don't start with the conventional `IDS_`. Checking
+    # whether such strings are orphaned could be inefficient because we would
+    # either need to store all constants used or make additional passes through
+    # C++/Java files. Just skip them and accept some false negatives.
+    if name == 'message' and (msg_id := attrs['name']).startswith('IDS_'):
+      self.result.ids.add(msg_id)
+    elif name == 'output' and attrs['type'] in {
+        'chrome_messages_json',
+        'chrome_messages_json_gzip',
+    }:
+      self.result.generates_runtime_strings = True
+    elif name == 'part':
+      self.result.parts.add(attrs['file'])
 
 
-  # The regex that will be used to check sources
-  id_regex = re.compile('IDS_[A-Z0-9_]+')
-
-  # Make sure the regex matches every id found.
-  got_err = False
-  for x in all_ids:
-    match = id_regex.search(x)
-    if match is None:
-      print('ERROR: "%s" did not match our regex' % x)
-      got_err = True
-    if not match.group(0) is x:
-      print('ERROR: "%s" did not fully match our regex' % x)
-      got_err = True
-  if got_err:
-    return 1
-
-  # The regex for deciding what is a source file
-  src_regex = re.compile('\.(([chm])|(mm)|(cc)|(cp)|(cpp)|(xib)|(py))$')
-
-  ids_left = all_ids.copy()
-
-  # Scanning time.
-  for src_dir in src_dirs:
-    for root, dirs, files in os.walk(src_dir):
-      # Remove svn directories from recursion
-      if '.svn' in dirs:
-        dirs.remove('.svn')
-      for file in files:
-        if src_regex.search(file.lower()):
-          full_path = os.path.join(root, file)
-          src_file_contents = open(full_path).read()
-          for match in sorted(set(id_regex.findall(src_file_contents))):
-            if match in ids_left:
-              ids_left.remove(match)
-            if DEBUG:
-              if not match in all_ids:
-                print('%s had "%s", which was not in the found IDs' % \
-                  (full_path, match))
-        elif DEBUG > 1:
-          full_path = os.path.join(root, file)
-          print('Skipping %s.' % full_path)
-
-  # Anything left?
-  if len(ids_left) > 0:
-    print('The following ids are in GRD files, but *appear* to be unused:')
-    for file_path, file_ids in file_id_map.items():
-      missing = ids_left.intersection(file_ids)
-      if len(missing) > 0:
-        print('  %s:' % file_path)
-        print('\n'.join('    %s' % (x) for x in sorted(missing)))
-
-  return 0
+# Mapping of `.grd(p)` paths (relative to the repo root) to parsed results.
+GrdResultsByPath = Mapping[pathlib.Path, GrdParseResult]
 
 
-def main():
-  # script lives in src/tools
-  tools_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
-  src_dir = os.path.dirname(tools_dir)
+def parse_grd(path: pathlib.Path) -> GrdParseResult:
+  parser = _GrdParser()
+  with path.open() as stream:
+    xml.sax.parse(stream, parser)
+    return parser.result
 
-  # Collect the args into the right buckets
-  src_dirs = []
-  grd_files = []
-  for arg in sys.argv[1:]:
-    if arg.lower().endswith('.grd') or arg.lower().endswith('.grdp'):
-      grd_files.append(arg)
+
+def filter_grds(results_by_path: GrdResultsByPath) -> GrdResultsByPath:
+  filtered_results_by_path = dict(results_by_path)
+  for path, result in results_by_path.items():
+    if not result.generates_runtime_strings:
+      continue
+    # `.grdp` files can include other `.grdp`, so do DFS.
+    paths = [path]
+    while paths:
+      path = paths.pop()
+      if result := filtered_results_by_path.pop(path, None):
+        for part in result.parts:
+          paths.append(path.parent / part)
+  return filtered_results_by_path
+
+
+def parse_used_ids(path: pathlib.Path) -> set[str]:
+  if path.suffix in {'.h', '.cc', '.mm', '.swift', '.plist', '.py'}:
+    # Special cases:
+    # * `.py` build scripts and XML `.plist` entries can generate string
+    #   references.
+    # * Ignore binary `.plist` files.
+    errors = 'ignore' if path.suffix == '.plist' else 'strict'
+    with path.open(errors=errors) as stream:
+      content = stream.read()
+      used_ids = set(_CPP_ID_PATTERN.findall(content))
+      # For embedded RC files on Windows, a `<message name="IDS_FOO">` generates
+      # `IDS_FOO_BASE` [0]. However, because there's no way to distinguish this
+      # case from a regular ID ending in `_BASE`, just say that both IDs are
+      # possibly used.
+      #
+      # [0]: https://chromium.googlesource.com/chromium/src/+/main/base/win/embedded_i18n/create_string_rc.py
+      return used_ids | {used_id.removesuffix('_BASE') for used_id in used_ids}
+  elif path.suffix in {'.java', '.xml'}:
+    if path.suffix == '.java':
+      pattern = _JAVA_ID_PATTERN
     else:
-      src_dirs.append(arg)
+      pattern = _ANDROID_MANIFEST_PATTERN
+    with path.open() as stream:
+      content = stream.read()
+      names = {match['name'] for match in pattern.finditer(content)}
+      return {f'IDS_{name.upper()}' for name in names}
+  else:
+    return set()
 
-  # If no GRD files were given, default them:
-  if len(grd_files) == 0:
-    ash_base_dir = os.path.join(src_dir, 'ash')
-    chrome_dir = os.path.join(src_dir, 'chrome')
-    chrome_app_dir = os.path.join(chrome_dir, 'app')
-    chrome_app_res_dir = os.path.join(chrome_app_dir, 'resources')
-    device_base_dir = os.path.join(src_dir, 'device')
-    services_dir = os.path.join(src_dir, 'services')
-    ui_dir = os.path.join(src_dir, 'ui')
-    ui_strings_dir = os.path.join(ui_dir, 'strings')
-    ui_chromeos_dir = os.path.join(ui_dir, 'chromeos')
-    grd_files = [
-        os.path.join(ash_base_dir, 'ash_strings.grd'),
-        os.path.join(chrome_app_dir, 'chromium_strings.grd'),
-        os.path.join(chrome_app_dir, 'generated_resources.grd'),
-        os.path.join(chrome_app_dir, 'google_chrome_strings.grd'),
-        os.path.join(chrome_app_res_dir, 'locale_settings.grd'),
-        os.path.join(chrome_app_res_dir, 'locale_settings_chromiumos.grd'),
-        os.path.join(chrome_app_res_dir, 'locale_settings_google_chromeos.grd'),
-        os.path.join(chrome_app_res_dir, 'locale_settings_linux.grd'),
-        os.path.join(chrome_app_res_dir, 'locale_settings_mac.grd'),
-        os.path.join(chrome_app_res_dir, 'locale_settings_win.grd'),
-        os.path.join(chrome_app_dir, 'theme', 'theme_resources.grd'),
-        os.path.join(chrome_dir, 'browser', 'browser_resources.grd'),
-        os.path.join(chrome_dir, 'common', 'common_resources.grd'),
-        os.path.join(chrome_dir, 'renderer', 'resources',
-                     'renderer_resources.grd'),
-        os.path.join(device_base_dir, 'bluetooth', 'bluetooth_strings.grd'),
-        os.path.join(device_base_dir, 'fido', 'fido_strings.grd'),
-        os.path.join(services_dir, 'services_strings.grd'),
-        os.path.join(src_dir, 'chromeos', 'chromeos_strings.grd'),
-        os.path.join(src_dir, 'extensions', 'strings',
-                     'extensions_strings.grd'),
-        os.path.join(src_dir, 'ui', 'resources', 'ui_resources.grd'),
-        os.path.join(src_dir, 'ui', 'webui', 'resources',
-                     'webui_resources.grd'),
-        os.path.join(ui_strings_dir, 'app_locale_settings.grd'),
-        os.path.join(ui_strings_dir, 'ax_strings.grd'),
-        os.path.join(ui_strings_dir, 'ui_strings.grd'),
-        os.path.join(ui_chromeos_dir, 'ui_chromeos_strings.grd'),
-    ]
 
-  # If no source directories were given, default them:
-  if len(src_dirs) == 0:
-    src_dirs = [
-      os.path.join(src_dir, 'app'),
-      os.path.join(src_dir, 'ash'),
-      os.path.join(src_dir, 'chrome'),
-      os.path.join(src_dir, 'components'),
-      os.path.join(src_dir, 'content'),
-      os.path.join(src_dir, 'device'),
-      os.path.join(src_dir, 'extensions'),
-      os.path.join(src_dir, 'ui'),
-      # nsNSSCertHelper.cpp has a bunch of ids
-      os.path.join(src_dir, 'third_party', 'mozilla_security_manager'),
-      os.path.join(chrome_dir, 'installer'),
-    ]
+def main() -> int:
+  parser = argparse.ArgumentParser(description=__doc__)
+  parser.add_argument('--max-workers',
+                      type=int,
+                      default=8,
+                      help='Maximum number of workers to use.')
+  parser.add_argument(
+      'include_paths',
+      nargs='*',
+      help=('Paths relative to the repo root to analyze. If no paths are '
+            'given, analyze all source files.'))
+  args = parser.parse_args()
 
-  return CheckForUnusedGrdIDsInSources(grd_files, src_dirs)
+  include_paths = list(map(pathlib.Path, args.include_paths))
+  grd_paths, source_paths = [], []
+  for path in _list_paths(include_paths):
+    if path.suffix in {'.grd', '.grdp'}:
+      grd_paths.append(path)
+    else:
+      source_paths.append(path)
+
+  # Parsing each file's contents is compute-bound. Parallelize work among
+  # processes, not threads, so that the critical path isn't bottlenecked by
+  # Python's Global Interpreter Lock (GIL).
+  with ProcessPoolExecutor(max_workers=args.max_workers) as pool:
+    grd_results_by_path = dict(
+        zip(grd_paths, pool.map(parse_grd, grd_paths, chunksize=200)))
+    grd_results_by_path = filter_grds(grd_results_by_path)
+
+    used_ids = set()
+    for file_ids in pool.map(parse_used_ids, source_paths, chunksize=200):
+      used_ids.update(file_ids)
+
+    declared_ids = set(
+        itertools.chain.from_iterable(
+            result.ids for result in grd_results_by_path.values()))
+    orphaned_ids = declared_ids - used_ids
+    for orphan in sorted(orphaned_ids):
+      print(orphan)
+
+  return 1 if orphaned_ids else 0
 
 
 if __name__ == '__main__':
