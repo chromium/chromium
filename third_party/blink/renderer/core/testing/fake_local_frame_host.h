@@ -197,8 +197,6 @@ class FakeLocalFrameHost : public mojom::blink::LocalFrameHost {
           remote_frame_interfaces,
       const RemoteFrameToken& frame_token,
       const base::UnguessableToken& devtools_frame_token) override;
-  void ForwardFencedFrameEventAndUserActivationToEmbedder(
-      const String& event_type) override;
   void OnViewTransitionOptInChanged(
       mojom::blink::ViewTransitionSameOriginOptIn) override {}
   void StartDragging(const blink::WebDragData& drag_data,

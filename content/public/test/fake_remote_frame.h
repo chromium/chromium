@@ -105,8 +105,6 @@ class FakeRemoteFrame : public blink::mojom::RemoteFrame {
       std::vector<blink::mojom::CreateRemoteChildParamsPtr> params,
       const std::optional<base::UnguessableToken>& navigation_metrics_token)
       override;
-  void ForwardFencedFrameEventToEmbedder(
-      const std::string& event_type) override;
 
  private:
   mojo::AssociatedReceiver<blink::mojom::RemoteFrame> receiver_{this};

@@ -385,10 +385,7 @@ if (!is_android && !is_chromeos_device) {
   source_set("interactive_ui_tests") {
     testonly = true
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-    sources = [
-      "browsing_topics_settings_interactive_uitest.cc",
-      "fenced_frame_viewport_observer_interactive_uitest.cc",
-    ]
+    sources = [ "browsing_topics_settings_interactive_uitest.cc" ]
     deps = [
       ":headers",
       "//base",

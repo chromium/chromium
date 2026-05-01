@@ -131,15 +131,6 @@ double ComputeSizeLossFunction(const PhysicalSize& requested_size,
   return wasted_area_fraction + resolution_penalty;
 }
 
-std::optional<AtomicString> ConvertEventTypeToFencedEventType(
-    const String& event_type) {
-  if (!CanNotifyEventTypeAcrossFence(event_type.Ascii())) {
-    return std::nullopt;
-  }
-
-  return event_type_names::kFencedtreeclick;
-}
-
 }  // namespace
 
 HTMLFencedFrameElement::HTMLFencedFrameElement(Document& document)
@@ -808,15 +799,6 @@ void HTMLFencedFrameElement::OnResize(const PhysicalRect& content_rect) {
     DCHECK(!frozen_frame_size_);
     FreezeFrameSize(content_rect_->size, /*should_coerce_size=*/true);
   }
-}
-
-void HTMLFencedFrameElement::DispatchFencedEvent(const String& event_type) {
-  std::optional<AtomicString> fenced_event_type =
-      ConvertEventTypeToFencedEventType(event_type);
-  CHECK(fenced_event_type.has_value());
-  // Note: This method sets isTrusted = true on the event object, to indicate
-  // that the event was dispatched by the browser.
-  DispatchEvent(*Event::CreateFenced(*fenced_event_type));
 }
 
 // START HTMLFencedFrameElement::FencedFrameDelegate

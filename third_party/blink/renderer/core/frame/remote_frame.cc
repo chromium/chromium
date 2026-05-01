@@ -1172,11 +1172,4 @@ void RemoteFrame::CreateRemoteChildren(
   // Add any new code above the AddCreateRemoteChildrenEvent call.
 }
 
-void RemoteFrame::ForwardFencedFrameEventToEmbedder(const String& event_type) {
-  // This will also CHECK if the conversion to HTMLFrameOwnerElement fails.
-  CHECK(To<HTMLFrameOwnerElement>(Owner())->IsHTMLFencedFrameElement());
-  static_cast<HTMLFencedFrameElement*>(Owner())->DispatchFencedEvent(
-      event_type);
-}
-
 }  // namespace blink

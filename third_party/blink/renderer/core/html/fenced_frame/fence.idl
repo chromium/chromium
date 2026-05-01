@@ -11,5 +11,4 @@ interface Fence {
     [RaisesException] void reportEvent(ReportEventType event);
     [RaisesException] void setReportEventDataForAutomaticBeacons(FenceEvent event);
     [RaisesException] sequence<FencedFrameConfig> getNestedConfigs();
-    [RaisesException, RuntimeEnabled=FencedFramesLocalUnpartitionedDataAccess, MeasureAs=FencedFrameNotifyEvent] void notifyEvent(Event triggering_event);
 };

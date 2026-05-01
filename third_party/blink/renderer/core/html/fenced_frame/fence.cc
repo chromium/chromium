@@ -375,52 +375,6 @@ void Fence::reportPrivateAggregationEvent(const String& event,
       .SendPrivateAggregationRequestsForFencedFrameEvent(event);
 }
 
-void Fence::notifyEvent(const Event* triggering_event,
-                        ExceptionState& exception_state) {
-  if (!DomWindow()) {
-    RecordNotifyEventOutcome(NotifyEventOutcome::kNotActive);
-    exception_state.ThrowSecurityError(
-        "May not use a Fence object associated with a Document that is not "
-        "fully active.");
-    return;
-  }
-
-  LocalFrame* frame = DomWindow()->GetFrame();
-  CHECK(frame);
-  if (!frame->IsFencedFrameRoot()) {
-    RecordNotifyEventOutcome(NotifyEventOutcome::kNotFencedFrameRoot);
-    exception_state.ThrowSecurityError(
-        "notifyEvent is only available in fenced frame "
-        "roots.");
-    return;
-  }
-
-  if (!triggering_event || !triggering_event->isTrusted() ||
-      !triggering_event->IsBeingDispatched()) {
-    RecordNotifyEventOutcome(NotifyEventOutcome::kInvalidEvent);
-    exception_state.ThrowSecurityError(
-        "The triggering_event object is in an invalid "
-        "state.");
-    return;
-  }
-
-  if (!CanNotifyEventTypeAcrossFence(triggering_event->type().Ascii())) {
-    RecordNotifyEventOutcome(NotifyEventOutcome::kUnsupportedEventType);
-    exception_state.ThrowSecurityError(
-        "notifyEvent called with an unsupported event type.");
-    return;
-  }
-
-  frame->GetLocalFrameHostRemote()
-      .ForwardFencedFrameEventAndUserActivationToEmbedder(
-          triggering_event->type());
-
-  // The browser process checks and consumes user activation as part of the
-  // above IPC, so this just needs to update the renderer's state.
-  LocalFrame::ConsumeTransientUserActivation(
-      frame, UserActivationUpdateSource::kBrowser);
-}
-
 void Fence::AddConsoleMessage(const String& message,
                               mojom::blink::ConsoleMessageLevel level) {
   DCHECK(DomWindow());

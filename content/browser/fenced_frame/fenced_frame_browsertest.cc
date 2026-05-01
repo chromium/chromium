@@ -5450,56 +5450,6 @@ IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
       post_navigation_site_instance));
 }
 
-// Android builds have issues with processing mouse input events, so we only
-// test this on desktop platforms.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_NotifyEventHistogram DISABLED_NotifyEventHistogram
-#else
-#define MAYBE_NotifyEventHistogram NotifyEventHistogram
-#endif
-IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
-                       MAYBE_NotifyEventHistogram) {
-  // Navigate to a page that contains a fenced frame.
-  const GURL main_url = https_server()->GetURL(
-      "a.test", "/cross_site_iframe_factory.html?a.test(a.test{fenced})");
-  EXPECT_TRUE(NavigateToURL(shell(), main_url));
-
-  // Get the fenced render frame host.
-  RenderFrameHostImpl* fenced_frame_rfh =
-      primary_main_frame_host()->GetFencedFrames().at(0)->GetInnerRoot();
-
-  EXPECT_TRUE(ExecJs(fenced_frame_rfh, R"(
-    document.addEventListener('click', (e) => {
-      window.fence.notifyEvent(e);
-    });
-  )"));
-  WaitForHitTestData(fenced_frame_rfh);
-
-  // Clicking in the fenced frame will cause a notifyEvent() signal to be sent.
-  int x = content::EvalJs(primary_main_frame_host(),
-                          "var bounds = document.querySelector('fencedframe')"
-                          ".getBoundingClientRect();"
-                          "Math.floor(bounds.left + bounds.width / 2);")
-              .ExtractInt();
-  int y = content::EvalJs(primary_main_frame_host(),
-                          "var bounds = document.querySelector('fencedframe')"
-                          ".getBoundingClientRect();"
-                          "Math.floor(bounds.top + bounds.height / 2);")
-              .ExtractInt();
-  gfx::Point fenced_frame_point(x, y);
-  SimulateMouseClickAt(web_contents(), 0, blink::WebMouseEvent::Button::kLeft,
-                       fenced_frame_point);
-  RunUntilInputProcessed(fenced_frame_rfh->GetRenderWidgetHost());
-
-  // The histograms are logged on the renderer side. We call
-  // FetchHistogramsFromChildProcesses() so that the browser is made aware of
-  // them.
-  content::FetchHistogramsFromChildProcesses();
-  histogram_tester_.ExpectTotalCount(blink::kNotifyEventOutcome, 1);
-  histogram_tester_.ExpectBucketCount(blink::kNotifyEventOutcome,
-                                      blink::NotifyEventOutcome::kSuccess, 1);
-}
-
 // Tests that a fenced frame root can navigate via NavigationController::
 // NavigateFrameToErrorPage.
 IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,

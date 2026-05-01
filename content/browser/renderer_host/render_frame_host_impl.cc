@@ -5928,22 +5928,6 @@ void RenderFrameHostImpl::ResetChildren() {
   TRACE_EVENT("navigation", "RenderFrameHostImpl::ResetChildren",
               ChromeTrackEvent::kRenderFrameHost, this);
   base::ScopedUmaHistogramTimer histogram_timer("Navigation.ResetChildren");
-
-  // If the outermost main frame is tearing down its FrameTree state, then we
-  // need to monitor how many of its child fenced frames were in the viewport
-  // right before they all unload. This may have already occurred prior to a
-  // navigation commit, in which case this block is a no-op. However, for
-  // non-navigation cases that close the primary page, like frames detaching,
-  // tabs closing, or renderer processes disappearing, we still need to monitor
-  // the correct metrics.
-  if (IsOutermostMainFrame()) {
-    auto* monitor =
-        PageUserData<FencedFrameViewportMonitor>::GetOrCreateForPage(GetPage());
-    if (monitor) {
-      monitor->ComputeSameSiteFencedFrameMaximumBeforePrimaryPageChange();
-    }
-  }
-
   // Remove child nodes from the tree, then delete them. This destruction
   // operation will notify observers. See https://crbug.com/612450 for
   // explanation why we don't just call the std::vector::clear method.
@@ -10588,67 +10572,6 @@ void RenderFrameHostImpl::CreateFencedFrame(
   // Fenced frames (after their first navigation) do not have opaque origins,
   // and this default-constructed FRS does not impact that.
   CHECK(initial_replicated_state.origin.opaque());
-}
-
-void RenderFrameHostImpl::ForwardFencedFrameEventAndUserActivationToEmbedder(
-    const std::string& event_type) {
-  if (!blink::features::IsFencedFramesEnabled()) {
-    mojo::ReportBadMessage(
-        "notifyEvent can only be called if fenced frames are enabled.");
-    return;
-  }
-
-  if (!IsFencedFrameRoot()) {
-    mojo::ReportBadMessage(
-        "notifyEvent is only available in fenced frame roots.");
-    return;
-  }
-
-  if (!blink::CanNotifyEventTypeAcrossFence(event_type)) {
-    mojo::ReportBadMessage(
-        "notifyEvent called with an unsupported event type.");
-    return;
-  }
-
-  if (!IsActive()) {
-    RecordNotifyEventOutcome(blink::NotifyEventOutcome::kNotActive);
-    return;
-  }
-
-  if (!HasTransientUserActivation()) {
-    RecordNotifyEventOutcome(
-        blink::NotifyEventOutcome::kNoTransientUserActivation);
-    return;
-  }
-
-  // The `window.fence.notifyEvent()` API allows a fenced frame to "transfer"
-  // transient activation to its embedder. To transfer, the fenced frame
-  // consumes transient activation on itself, and then applies transient
-  // activation to its outer document afterwards. This ensures that the
-  // embedder can use an activation-gated API in response to an event occurring
-  // in the fenced frame, but that only one of those APIs can be used per event.
-  // First, consume transient activation in the fenced frame document (this
-  // RenderFrameHostImpl).
-  CHECK(owner_);
-  owner_->UpdateUserActivationState(
-      blink::mojom::UserActivationUpdateType::kConsumeTransientActivation,
-      blink::mojom::UserActivationNotificationType::kNone);
-
-  // Then, apply transient activation to the outer document.
-  RenderFrameHostImpl* outer_document = GetParentOrOuterDocument();
-  outer_document->UpdateUserActivationState(
-      blink::mojom::UserActivationUpdateType::kNotifyActivation,
-      blink::mojom::UserActivationNotificationType::kInteraction);
-
-  // But the above won't apply activation to the outer document's *renderer*,
-  // so let's do that too.
-  outer_document->NotifyUserActivation(
-      blink::mojom::UserActivationNotificationType::kInteraction);
-
-  GetProxyToOuterDelegate()
-      ->GetAssociatedRemoteFrame()
-      ->ForwardFencedFrameEventToEmbedder(event_type);
-  RecordNotifyEventOutcome(blink::NotifyEventOutcome::kSuccess);
 }
 
 // TODO(crbug.com/40250533): Move SendFencedFrameReportingBeacon into a separate

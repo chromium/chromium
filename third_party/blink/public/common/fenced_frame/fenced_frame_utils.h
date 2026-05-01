@@ -60,15 +60,6 @@ inline constexpr char kSameSiteAdComponentsMaxCountForWinningBidHistogram[] =
 inline constexpr char kAdComponentsCountForWinningBidHistogram[] =
     "Ads.InterestGroup.Auction.AdComponentsCountForWinningBid";
 
-inline constexpr char kNotifyEventOutcome[] =
-    "Blink.FencedFrame.NotifyEventOutcome";
-
-inline constexpr char kMaxSameSiteFencedFramesInViewportPerPageLoad[] =
-    "Blink.FencedFrame.MaxSameSiteFencedFramesInViewportPerPageLoad";
-
-inline constexpr char kMaxSameSiteFencedFramesInViewportAtUnload[] =
-    "Blink.FencedFrame.MaxSameSiteFencedFramesInViewportAtUnload";
-
 // Corresponds to the "FencedFrameCreationOutcome" histogram enumeration type in
 // tools/metrics/histograms/metadata/blink/enums.xml.
 //
@@ -85,23 +76,6 @@ enum class FencedFrameCreationOutcome {
                                 // is not opted-in with 'fenced-frame'
   kMaxValue = kResponseHeaderNotOptIn
 };
-
-// Corresponds to the "FencedFrameNotifyEventOutcome" histogram enumeration type
-// in tools/metrics/histograms/metadata/blink/enums.xml.
-//
-// PLEASE DO NOT REORDER, REMOVE, OR CHANGE THE MEANING OF THESE VALUES.
-//
-// LINT.IfChange(NotifyEventOutcome)
-enum class NotifyEventOutcome {
-  kSuccess = 0,
-  kNotActive = 1,
-  kNotFencedFrameRoot = 2,
-  kInvalidEvent = 3,
-  kUnsupportedEventType = 4,
-  kNoTransientUserActivation = 5,
-  kMaxValue = kNoTransientUserActivation
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:FencedFrameNotifyEventOutcome)
 
 // Corresponds to the "AutomaticBeaconOutcome" histogram enumeration type in
 // tools/metrics/histograms/metadata/navigation/histograms.xml.
@@ -158,13 +132,6 @@ BLINK_COMMON_EXPORT void RecordFencedFrameUnsandboxedFlags(
     network::mojom::WebSandboxFlags flags);
 BLINK_COMMON_EXPORT void RecordFencedFrameFailedSandboxLoadInTopLevelFrame(
     bool is_main_frame);
-BLINK_COMMON_EXPORT void RecordNotifyEventOutcome(
-    const NotifyEventOutcome outcome);
-
-// Returns true if the DOM event type name `event_type` is allowed to be
-// propagated from a fenced frame to its embedder. Returns false otherwise.
-BLINK_COMMON_EXPORT bool CanNotifyEventTypeAcrossFence(
-    const std::string& event_type);
 
 // Automatic beacon type definitions
 inline constexpr char kDeprecatedFencedFrameTopNavigationBeaconType[] =

@@ -125,12 +125,6 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
   // `NavigatorAuction::canLoadAdAuctionFencedFrame` instead.
   static bool canLoadOpaqueURL(ScriptState*);
 
-  // Fires an event named `event_type` at `this`. This path is only invoked for
-  // events that were originally fired *inside* of the fenced frame content, and
-  // that have been intentionally propagated outwards to `this`, the frame
-  // owner, for reception by the embedder script.
-  void DispatchFencedEvent(const String& event_type);
-
  private:
   // This method will only navigate the underlying frame if the element
   // `isConnected()`. It will be deferred if the page is currently prerendering.
