@@ -47,3 +47,20 @@ To add a new process type:
     accessible from other user processes.
 3.  Implement the interface in the appropriate `remoting/host/` implementation
     file.
+
+## Unit Testing Traits
+
+When adding or modifying `StructTraits`, `EnumTraits`, or `UnionTraits` in
+`remoting_mojom_traits.h`, you MUST add or update the corresponding tests in
+`remoting_mojom_traits_unittest.cc`. These tests ensure that the mapping between
+C++ types and Mojom types is correct and remains stable.
+
+Example test pattern:
+```cpp
+TEST(RemotingMojomTraitsTest, MyType) {
+  MyType input = ...;
+  MyType output;
+  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::MyType>(input, output));
+  EXPECT_EQ(input, output);
+}
+```
