@@ -113,3 +113,7 @@
 :host-context([in-voice-search-mode]) #submitButton::part(submit) {
   opacity: 1;
 }
+
+#bottomActions[hidden] {
+  display: none;
+}

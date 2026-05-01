@@ -193,6 +193,33 @@ suite('ComposeboxVoiceSearch', () => {
     return voiceSearchElement;
   }
 
+  test('hides stop and submit buttons when error scrim is shown', async () => {
+    loadTimeData.overrideValues({
+      voiceSearchCoherenceComposeboxesEnabled: true,
+    });
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    composeboxElement = document.createElement('cr-composebox');
+    document.body.appendChild(composeboxElement);
+    await microtasksFinished();
+
+    const voiceSearchElement = await openVoiceSearchUI();
+
+    mockSpeechRecognition.onerror!
+        ({error: 'network'} as SpeechRecognitionErrorEvent);
+    await microtasksFinished();
+    await voiceSearchElement.updateComplete;
+
+    const errorContainer = $$(voiceSearchElement, '#error-container');
+    const bottomActions =
+        voiceSearchElement.shadowRoot.querySelector<HTMLElement>(
+            '#bottomActions');
+
+    assertTrue(!!errorContainer, 'Error container should exist');
+    assertFalse(errorContainer.hidden, 'Error container should be visible');
+    assertTrue(!!bottomActions, 'Bottom actions container should exist');
+    assertFalse(isVisible(bottomActions), 'Bottom actions should be hidden');
+  });
+
   test(
       'NO_MATCH error auto-closes immediately when hasErrorTimer is false',
       async () => {
