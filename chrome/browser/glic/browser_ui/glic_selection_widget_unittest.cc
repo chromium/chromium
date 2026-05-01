@@ -25,6 +25,8 @@ TEST_F(GlicSelectionWidgetTest, ButtonsTriggerCallbacks) {
   bool ask_gemini_called = false;
   bool copy_called = false;
   bool copy_link_called = false;
+  bool pin_toggled_called = false;
+  bool pin_toggled_val = false;
 
   gfx::Rect anchor_rect(10, 10, 100, 100);
   std::u16string selected_text = u"selected text";
@@ -32,10 +34,14 @@ TEST_F(GlicSelectionWidgetTest, ButtonsTriggerCallbacks) {
   bool dismiss_called = false;
 
   GlicSelectionWidgetDelegate* delegate = new GlicSelectionWidgetDelegate(
-      anchor_rect, gfx::Rect(), selected_text,
+      anchor_rect, gfx::Rect(), selected_text, /*is_pinned=*/false,
       base::BindLambdaForTesting([&]() { ask_gemini_called = true; }),
       base::BindLambdaForTesting([&]() { copy_called = true; }),
       base::BindLambdaForTesting([&]() { copy_link_called = true; }),
+      base::BindLambdaForTesting([&](bool val) {
+        pin_toggled_called = true;
+        pin_toggled_val = val;
+      }),
       base::BindLambdaForTesting([&]() { dismiss_called = true; }));
 
   views::View* contents_view = delegate->GetContentsView();

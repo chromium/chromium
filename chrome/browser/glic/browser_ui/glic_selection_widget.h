@@ -28,19 +28,27 @@ class GlicSelectionWidgetDelegate : public views::BubbleDialogDelegate {
   static views::Widget* Show(content::WebContents* web_contents,
                              const gfx::Rect& anchor_rect,
                              const std::u16string& selected_text,
+                             bool is_pinned,
                              base::RepeatingClosure on_ask_gemini,
                              base::RepeatingClosure on_copy,
                              base::RepeatingClosure on_copy_link,
+                             base::RepeatingCallback<void(bool)> on_pin_toggled,
                              base::RepeatingClosure on_dismiss);
 
-  GlicSelectionWidgetDelegate(const gfx::Rect& anchor_rect,
-                              const gfx::Rect& window_bounds,
-                              const std::u16string& selected_text,
-                              base::RepeatingClosure on_ask_gemini,
-                              base::RepeatingClosure on_copy,
-                              base::RepeatingClosure on_copy_link,
-                              base::RepeatingClosure on_dismiss);
+  GlicSelectionWidgetDelegate(
+      const gfx::Rect& anchor_rect,
+      const gfx::Rect& window_bounds,
+      const std::u16string& selected_text,
+      bool is_pinned,
+      base::RepeatingClosure on_ask_gemini,
+      base::RepeatingClosure on_copy,
+      base::RepeatingClosure on_copy_link,
+      base::RepeatingCallback<void(bool)> on_pin_toggled,
+      base::RepeatingClosure on_dismiss);
   ~GlicSelectionWidgetDelegate() override;
+
+  void TogglePinState();
+  void UpdatePosition();
 
   views::ClientView* CreateClientView(views::Widget* widget) override;
 
@@ -48,6 +56,12 @@ class GlicSelectionWidgetDelegate : public views::BubbleDialogDelegate {
                                 views::Widget* widget) const override;
 
   void UpdateCopyLinkButton(bool enabled);
+
+ private:
+  gfx::Rect original_anchor_rect_;
+  gfx::Rect window_bounds_;
+  bool is_pinned_;
+  base::RepeatingCallback<void(bool)> on_pin_toggled_callback_;
 };
 
 }  // namespace glic

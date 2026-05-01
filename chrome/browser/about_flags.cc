@@ -3838,7 +3838,9 @@ const FeatureEntry::Choice kGlicSelectionPromptChoices[] = {
     {"Enabled with TopCue", switches::kEnableFeatures,
      "GlicSelectionPrompt:use_widget/false"},
     {"Enabled with InlineCue", switches::kEnableFeatures,
-     "GlicSelectionPrompt:use_widget/true"}};
+     "GlicSelectionPrompt:use_widget/true"},
+    {"Enabled with InlineCue and Pinning", switches::kEnableFeatures,
+     "GlicSelectionPrompt:use_widget/true,enable_pinning/true"}};
 
 const FeatureEntry::FeatureParam kAutofillShowTypePredictionsAsTitle[] = {
     {"as-title", "true"}};

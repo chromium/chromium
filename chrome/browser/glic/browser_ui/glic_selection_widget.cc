@@ -6,6 +6,7 @@
 
 #include "base/strings/strcat.h"
 #include "chrome/browser/glic/browser_ui/glic_vector_icon_manager.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
@@ -22,6 +23,7 @@
 #include "ui/color/color_id.h"
 #include "ui/color/color_variant.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/gfx/text_utils.h"
@@ -55,9 +57,11 @@ class GlicSelectionContentsView : public views::View {
 
  public:
   GlicSelectionContentsView(const std::u16string& selected_text,
+                            bool initial_pinned_state,
                             base::RepeatingClosure on_ask_gemini,
                             base::RepeatingClosure on_copy,
                             base::RepeatingClosure on_copy_link,
+                            base::RepeatingClosure on_toggle_pin,
                             base::RepeatingClosure on_dismiss) {
     SetNotifyEnterExitOnChild(true);
 
@@ -204,23 +208,38 @@ class GlicSelectionContentsView : public views::View {
         std::make_unique<views::BubbleBackground>(border2.get()));
     dismiss_pill_->SetBorder(std::move(border2));
 
-    // Dismiss Button
-    auto dismiss_tooltip = l10n_util::GetStringUTF16(IDS_APP_CLOSE);
-    dismiss_btn_ =
-        dismiss_pill_->AddChildView(views::ImageButton::CreateIconButton(
-            std::move(on_dismiss), vector_icons::kCloseIcon, dismiss_tooltip));
-    dismiss_btn_->SetTooltipText(dismiss_tooltip);
-    dismiss_btn_->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
-    dismiss_btn_->SetBorder(
-        views::CreateEmptyBorder(views::LayoutProvider::Get()->GetInsetsMetric(
-            views::INSETS_VECTOR_IMAGE_BUTTON)));
-    views::SetImageFromVectorIconWithColor(
-        dismiss_btn_, vector_icons::kCloseIcon, kIconSize,
-        views::IconColors(ui::kColorSysOnSurfaceSubtle,
-                          ui::kColorLabelForegroundDisabled,
-                          ui::kColorSysOnSurface));
-    CreateToolbarInkdropCallbacks(dismiss_btn_, kColorToolbarInkDropHover,
-                                  kColorToolbarInkDropRipple);
+    // Pin/Unpin Toggle Button or Dismiss Button
+    if (features::kGlicSelectionPromptEnablePinning.Get()) {
+      pin_btn_ =
+          dismiss_pill_->AddChildView(views::ImageButton::CreateIconButton(
+              std::move(on_toggle_pin), vector_icons::kCaretUpIcon,
+              std::u16string()));
+      pin_btn_->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
+      pin_btn_->SetBorder(views::CreateEmptyBorder(
+          views::LayoutProvider::Get()->GetInsetsMetric(
+              views::INSETS_VECTOR_IMAGE_BUTTON)));
+      CreateToolbarInkdropCallbacks(pin_btn_, kColorToolbarInkDropHover,
+                                    kColorToolbarInkDropRipple);
+      SetPinned(initial_pinned_state);
+    } else {
+      auto dismiss_tooltip = l10n_util::GetStringUTF16(IDS_APP_CLOSE);
+      dismiss_btn_ =
+          dismiss_pill_->AddChildView(views::ImageButton::CreateIconButton(
+              std::move(on_dismiss), vector_icons::kCloseIcon,
+              dismiss_tooltip));
+      dismiss_btn_->SetTooltipText(dismiss_tooltip);
+      dismiss_btn_->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
+      dismiss_btn_->SetBorder(views::CreateEmptyBorder(
+          views::LayoutProvider::Get()->GetInsetsMetric(
+              views::INSETS_VECTOR_IMAGE_BUTTON)));
+      views::SetImageFromVectorIconWithColor(
+          dismiss_btn_, vector_icons::kCloseIcon, kIconSize,
+          views::IconColors(ui::kColorSysOnSurfaceSubtle,
+                            ui::kColorLabelForegroundDisabled,
+                            ui::kColorSysOnSurface));
+      CreateToolbarInkdropCallbacks(dismiss_btn_, kColorToolbarInkDropHover,
+                                    kColorToolbarInkDropRipple);
+    }
 
     dismiss_pill_->SetPaintToLayer();
     dismiss_pill_->layer()->SetFillsBoundsOpaquely(false);
@@ -245,6 +264,21 @@ class GlicSelectionContentsView : public views::View {
     }
   }
 
+  void SetPinned(bool is_pinned) {
+    if (pin_btn_) {
+      const gfx::VectorIcon& icon =
+          is_pinned ? vector_icons::kCaretDownIcon : vector_icons::kCaretUpIcon;
+      views::SetImageFromVectorIconWithColor(
+          pin_btn_, icon, kIconSize,
+          views::IconColors(ui::kColorSysOnSurfaceSubtle,
+                            ui::kColorLabelForegroundDisabled,
+                            ui::kColorSysOnSurface));
+      pin_btn_->SetTooltipText(l10n_util::GetStringUTF16(
+          is_pinned ? IDS_TAB_SEARCH_BUTTON_CXMENU_UNPIN
+                    : IDS_TAB_SEARCH_BUTTON_CXMENU_PIN));
+    }
+  }
+
   void OnThemeChanged() override {
     views::View::OnThemeChanged();
     if (GetWidget() && GetWidget()->widget_delegate()) {
@@ -260,6 +294,7 @@ class GlicSelectionContentsView : public views::View {
 
  private:
   raw_ptr<views::ImageButton> copy_link_btn_ = nullptr;
+  raw_ptr<views::ImageButton> pin_btn_ = nullptr;
   raw_ptr<views::ImageButton> dismiss_btn_ = nullptr;
   raw_ptr<views::BoxLayoutView> dismiss_pill_ = nullptr;
 };
@@ -274,9 +309,11 @@ views::Widget* GlicSelectionWidgetDelegate::Show(
     content::WebContents* web_contents,
     const gfx::Rect& anchor_rect,
     const std::u16string& selected_text,
+    bool is_pinned,
     base::RepeatingClosure on_ask_gemini,
     base::RepeatingClosure on_copy,
     base::RepeatingClosure on_copy_link,
+    base::RepeatingCallback<void(bool)> on_pin_toggled,
     base::RepeatingClosure on_dismiss) {
   // Both `GetContainerBounds` and `GetTextSelectionBounds` (from which
   // `anchor_rect` originates) return global screen coordinates in DIPs, so
@@ -284,8 +321,9 @@ views::Widget* GlicSelectionWidgetDelegate::Show(
   gfx::Rect window_bounds =
       web_contents ? web_contents->GetContainerBounds() : gfx::Rect();
   auto delegate = std::make_unique<GlicSelectionWidgetDelegate>(
-      anchor_rect, window_bounds, selected_text, std::move(on_ask_gemini),
-      std::move(on_copy), std::move(on_copy_link), std::move(on_dismiss));
+      anchor_rect, window_bounds, selected_text, is_pinned,
+      std::move(on_ask_gemini), std::move(on_copy), std::move(on_copy_link),
+      std::move(on_pin_toggled), std::move(on_dismiss));
   if (web_contents) {
     delegate->set_parent_window(platform_util::GetViewForWindow(
         web_contents->GetTopLevelNativeWindow()));
@@ -301,14 +339,20 @@ GlicSelectionWidgetDelegate::GlicSelectionWidgetDelegate(
     const gfx::Rect& anchor_rect,
     const gfx::Rect& window_bounds,
     const std::u16string& selected_text,
+    bool is_pinned,
     base::RepeatingClosure on_ask_gemini,
     base::RepeatingClosure on_copy,
     base::RepeatingClosure on_copy_link,
+    base::RepeatingCallback<void(bool)> on_pin_toggled,
     base::RepeatingClosure on_dismiss)
     : BubbleDialogDelegate(nullptr,
                            views::BubbleBorder::TOP_LEFT,
                            views::BubbleBorder::STANDARD_SHADOW,
-                           /*autosize=*/true) {
+                           /*autosize=*/true),
+      original_anchor_rect_(anchor_rect),
+      window_bounds_(window_bounds),
+      is_pinned_(is_pinned),
+      on_pin_toggled_callback_(std::move(on_pin_toggled)) {
   auto button_click = [](base::RepeatingClosure original_click,
                          views::BubbleDialogDelegate* delegate) {
     if (delegate->GetWidget()) {
@@ -321,48 +365,20 @@ GlicSelectionWidgetDelegate::GlicSelectionWidgetDelegate(
   };
 
   auto contents_view = std::make_unique<GlicSelectionContentsView>(
-      selected_text,
+      selected_text, is_pinned_,
       base::BindRepeating(button_click, std::move(on_ask_gemini),
                           base::Unretained(this)),
       base::BindRepeating(button_click, std::move(on_copy),
                           base::Unretained(this)),
       base::BindRepeating(button_click, std::move(on_copy_link),
                           base::Unretained(this)),
+      base::BindRepeating(&GlicSelectionWidgetDelegate::TogglePinState,
+                          base::Unretained(this)),
       base::BindRepeating(button_click, std::move(on_dismiss),
                           base::Unretained(this)));
 
-  int ask_gemini_width = 120;  // fallback width if we can't measure
-  if (!contents_view->children().empty()) {
-    auto* ask_pill = contents_view->children()[0].get();
-    if (!ask_pill->children().empty()) {
-      ask_gemini_width = ask_pill->children()[0]->GetPreferredSize().width();
-    }
-  }
-  int total_width = contents_view->GetPreferredSize().width();
   SetContentsView(std::move(contents_view));
 
-  gfx::Rect adjusted_anchor = anchor_rect;
-  // Align the left edge of the bubble near the right edge of the selection,
-  // overlapping slightly so the center of the ask gemini button sits under the
-  // end of the text. The layout has 4px left inset.
-  int overlap = 4 + ask_gemini_width / 2;
-  int target_x = std::max(anchor_rect.x(), anchor_rect.right() - overlap);
-
-  // TODO(crbug.com/507481568): Handle cases where the widget spills off the
-  // bottom of the window, and use RTL code (see ui/gfx/text_utils.h) to flip
-  // the layout when needed.
-  if (!window_bounds.IsEmpty()) {
-    constexpr int kWindowEdgePadding = 16;
-    target_x = std::max(target_x, window_bounds.x() + kWindowEdgePadding);
-    if (target_x + total_width > window_bounds.right() - kWindowEdgePadding) {
-      target_x = window_bounds.right() - total_width - kWindowEdgePadding;
-    }
-  }
-
-  adjusted_anchor.set_x(target_x);
-  adjusted_anchor.set_width(0);
-  adjusted_anchor.Inset(gfx::Insets::TLBR(0, 0, -8, 0));
-  SetAnchorRect(adjusted_anchor);
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   SetShowCloseButton(false);
   // Remove default dialog margins so the custom button fills the entire bubble.
@@ -371,9 +387,91 @@ GlicSelectionWidgetDelegate::GlicSelectionWidgetDelegate(
   SetBackgroundColor(ui::ColorVariant(SK_ColorTRANSPARENT));
   set_shadow(views::BubbleBorder::NO_SHADOW);
   SetCanActivate(false);
+
+  UpdatePosition();
 }
 
 GlicSelectionWidgetDelegate::~GlicSelectionWidgetDelegate() = default;
+
+void GlicSelectionWidgetDelegate::TogglePinState() {
+  is_pinned_ = !is_pinned_;
+  if (on_pin_toggled_callback_) {
+    on_pin_toggled_callback_.Run(is_pinned_);
+  }
+  if (auto* contents_view =
+          views::AsViewClass<GlicSelectionContentsView>(GetContentsView())) {
+    contents_view->SetPinned(is_pinned_);
+  }
+
+  if (GetWidget() && GetWidget()->GetLayer()) {
+    ui::ScopedLayerAnimationSettings settings(
+        GetWidget()->GetLayer()->GetAnimator());
+    settings.SetTransitionDuration(base::Milliseconds(250));
+    settings.SetTweenType(gfx::Tween::EASE_OUT_2);
+    UpdatePosition();
+    SizeToContents();
+  } else {
+    UpdatePosition();
+    SizeToContents();
+  }
+}
+
+void GlicSelectionWidgetDelegate::UpdatePosition() {
+  int total_width = GetContentsView()->GetPreferredSize().width();
+  if (is_pinned_) {
+    // The pill has a BubbleBorder with a STANDARD_SHADOW. This shadow adds
+    // a large invisible inset (typically ~24px). We must subtract this inset
+    // so the visual top of the pill aligns with our target. We also subtract
+    // the default 4px arrow gap added by BubbleDialogDelegate for TOP_LEFT.
+    int top_inset = 0;
+    if (auto* contents_view = GetContentsView()) {
+      if (!contents_view->children().empty()) {
+        top_inset = contents_view->children()[0]->GetInsets().top();
+      }
+    }
+
+    // Pinned to the top right area, overlapping toolbar.
+    // window_bounds_ is in global screen coords.
+    constexpr int kWindowEdgePadding = 16;
+    int pinned_x = window_bounds_.right() - total_width - kWindowEdgePadding;
+
+    int pinned_y = window_bounds_.y() - 8 - top_inset - 4;
+    SetAnchorRect(gfx::Rect(pinned_x, pinned_y, 0, 0));
+  } else {
+    // Unpinned: anchored inline near selection.
+    int ask_gemini_width = 120;
+    if (auto* contents_view = GetContentsView()) {
+      if (!contents_view->children().empty()) {
+        auto* ask_pill = contents_view->children()[0].get();
+        if (!ask_pill->children().empty()) {
+          ask_gemini_width =
+              ask_pill->children()[0]->GetPreferredSize().width();
+        }
+      }
+    }
+    gfx::Rect adjusted_anchor = original_anchor_rect_;
+    int overlap = 4 + ask_gemini_width / 2;
+    int target_x = std::max(original_anchor_rect_.x(),
+                            original_anchor_rect_.right() - overlap);
+
+    // TODO(crbug.com/507481568): Handle cases where the widget spills off the
+    // bottom of the window, and use RTL code (see ui/gfx/text_utils.h) to flip
+    // the layout when needed.
+    if (!window_bounds_.IsEmpty()) {
+      constexpr int kWindowEdgePadding = 16;
+      target_x = std::max(target_x, window_bounds_.x() + kWindowEdgePadding);
+      if (target_x + total_width >
+          window_bounds_.right() - kWindowEdgePadding) {
+        target_x = window_bounds_.right() - total_width - kWindowEdgePadding;
+      }
+    }
+
+    adjusted_anchor.set_x(target_x);
+    adjusted_anchor.set_width(0);
+    adjusted_anchor.Inset(gfx::Insets::TLBR(0, 0, -8, 0));
+    SetAnchorRect(adjusted_anchor);
+  }
+}
 
 views::ClientView* GlicSelectionWidgetDelegate::CreateClientView(
     views::Widget* widget) {

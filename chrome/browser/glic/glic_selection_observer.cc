@@ -617,6 +617,7 @@ void GlicSelectionObserver::ShowSelectionAffordance(
         selection_widget_ =
             GlicSelectionWidgetDelegate::Show(
                 web_contents(), *bounds, std::u16string(selected_text),
+                is_widget_pinned_,
                 base::BindRepeating(
                     [](base::RepeatingCallback<void()> invoke_glic_cb) {
                       invoke_glic_cb.Run();
@@ -627,6 +628,8 @@ void GlicSelectionObserver::ShowSelectionAffordance(
                 base::BindRepeating(&GlicSelectionObserver::CopyLinkToHighlight,
                                     weak_ptr_factory_.GetWeakPtr(),
                                     selected_frame->GetWeakDocumentPtr()),
+                base::BindRepeating(&GlicSelectionObserver::OnWidgetPinToggled,
+                                    weak_ptr_factory_.GetWeakPtr()),
                 base::BindRepeating(&GlicSelectionObserver::OnWidgetDismissed,
                                     weak_ptr_factory_.GetWeakPtr()))
                 ->GetWeakPtr();
@@ -678,6 +681,10 @@ void GlicSelectionObserver::OnWidgetDismissed() {
   prefs->SetInteger(
       prefs::kGlicSelectionWidgetDismissCount,
       prefs->GetInteger(prefs::kGlicSelectionWidgetDismissCount) + 1);
+}
+
+void GlicSelectionObserver::OnWidgetPinToggled(bool is_pinned) {
+  is_widget_pinned_ = is_pinned;
 }
 
 void GlicSelectionObserver::RequestLinkGeneration(
