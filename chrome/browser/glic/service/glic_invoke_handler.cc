@@ -216,7 +216,7 @@ void GlicInvokeHandler::Invoke() {
   tasks.push_back(std::make_unique<SendToClientTask>(
       &*instance_, CreateMojoOptions(), auto_submit_passkey_));
 
-  if (options_.feature_mode == mojom::FeatureMode::kActuation) {
+  if (IsActuatingFeatureMode()) {
     auto on_actuation_started = base::BindOnce(
         [](base::WeakPtr<GlicInvokeHandler> handler) {
           if (handler) {
@@ -287,6 +287,20 @@ void GlicInvokeHandler::OnError(GlicInvokeError error) {
 
   // The completion callback deletes `this`.
   std::move(completion_callback_).Run(&*instance_, this);
+}
+
+bool GlicInvokeHandler::IsActuatingFeatureMode() const {
+  if (!options_.feature_mode.has_value()) {
+    return false;
+  }
+  switch (*options_.feature_mode) {
+    case mojom::FeatureMode::kActuation:
+    case mojom::FeatureMode::kExperimentalTriggering:
+    case mojom::FeatureMode::kUniversalCart:
+      return true;
+    default:
+      return false;
+  }
 }
 
 mojom::InvokeOptionsPtr GlicInvokeHandler::CreateMojoOptions() {

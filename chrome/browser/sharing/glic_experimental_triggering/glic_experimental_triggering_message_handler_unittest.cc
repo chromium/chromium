@@ -343,11 +343,17 @@ TEST_F(GlicExperimentalTriggeringMessageHandlerTest, RelaysUpdatesToServer) {
   glic::GlicInvokeOptions captured_options(
       glic::mojom::InvocationSource::kExperimentalTriggering);
   EXPECT_CALL(*mock_glic_service_, InvokeWithAutoSubmit(_, _))
-      .WillOnce(testing::WithArg<1>(
-          [&captured_options](glic::GlicInvokeOptions options) {
-            captured_options = std::move(options);
-            return base::WeakPtr<glic::GlicInstance>();
-          }));
+      .WillOnce(testing::WithArg<1>([&captured_options](
+                                        glic::GlicInvokeOptions options) {
+        EXPECT_EQ(options.feature_mode,
+                  glic::mojom::FeatureMode::kExperimentalTriggering);
+        EXPECT_TRUE(
+            std::holds_alternative<glic::NewTab>(options.target.surface));
+        const auto& new_tab = std::get<glic::NewTab>(options.target.surface);
+        EXPECT_FALSE(new_tab.open_in_foreground);
+        captured_options = std::move(options);
+        return base::WeakPtr<glic::GlicInstance>();
+      }));
 
   glic::MockGlicInstance mock_instance;
 

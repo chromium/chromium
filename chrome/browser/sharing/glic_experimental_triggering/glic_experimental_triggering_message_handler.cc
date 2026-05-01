@@ -37,7 +37,13 @@ glic::GlicInvokeOptions CreateInvokeOptions(
     tabs::TabInterface* tab) {
   glic::GlicInvokeOptions options{
       glic::mojom::InvocationSource::kExperimentalTriggering};
-  options.target.surface = tab;
+
+  glic::NewTab new_tab;
+  new_tab.window = tab->GetBrowserWindowInterface();
+  new_tab.open_in_foreground = false;
+  options.target.surface = new_tab;
+
+  options.feature_mode = glic::mojom::FeatureMode::kExperimentalTriggering;
 
   if (request.has_request() &&
       request.request().has_trigger_actuation_request() &&

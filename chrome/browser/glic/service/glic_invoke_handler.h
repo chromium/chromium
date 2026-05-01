@@ -67,6 +67,7 @@ class GlicInvokeHandler {
 
  private:
   mojom::InvokeOptionsPtr CreateMojoOptions();
+  bool IsActuatingFeatureMode() const;
 
   // Deletes `this`. Exactly one of these methods will be called.
   void OnSuccess();
