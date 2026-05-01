@@ -9,17 +9,17 @@
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/profiles/profile.h"
 #include "extensions/browser/blocklist_extension_prefs.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/test/extension_state_tester.h"
 
-namespace extensions {
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
+namespace extensions {
 namespace {
 
 // Extension ids used during testing.
 constexpr char kTestExtensionId[] = "behllobkkfkfnphdnhnkndlbkcpglgmj";
 constexpr char kUninstalledExtensionId[] = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
-
-}  // namespace
 
 // Test suite to test Extension Telemetry service verdict handler.
 class ExtensionTelemetryServiceVerdictHandlerTest
@@ -30,6 +30,13 @@ class ExtensionTelemetryServiceVerdictHandlerTest
     // extension error controller on the first run.
     ExtensionPrefs::SetRunAlertsInFirstRunForTest();
   }
+
+  ExtensionTelemetryServiceVerdictHandlerTest(
+      const ExtensionTelemetryServiceVerdictHandlerTest&) = delete;
+  ExtensionTelemetryServiceVerdictHandlerTest& operator=(
+      const ExtensionTelemetryServiceVerdictHandlerTest&) = delete;
+
+  ~ExtensionTelemetryServiceVerdictHandlerTest() override = default;
 };
 
 TEST_F(ExtensionTelemetryServiceVerdictHandlerTest, HandlesMalwareExtension) {
@@ -186,4 +193,5 @@ TEST_F(ExtensionTelemetryServiceVerdictHandlerTest,
   service()->PerformActionBasedOnExtensionTelemetryServiceVerdicts(state_map);
 }
 
+}  // namespace
 }  // namespace extensions
