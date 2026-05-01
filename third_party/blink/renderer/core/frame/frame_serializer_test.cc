@@ -49,6 +49,7 @@
 #include "third_party/blink/renderer/core/exported/web_view_impl.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_error.h"
 #include "third_party/blink/renderer/platform/mhtml/serialized_resource.h"
@@ -210,7 +211,11 @@ class FrameSerializerTest
 
   test::TaskEnvironment task_environment_;
   ScopedTestingPlatformSupport<TestingPlatformSupport> platform_;
+
+ protected:
   frame_test_helpers::WebViewHelper helper_;
+
+ private:
   std::string folder_;
   KURL base_url_;
   Deque<SerializedResource> resources_;
@@ -583,6 +588,72 @@ TEST_F(FrameSerializerTest, EventHandlersStripped) {
   String data = GetSerializedData("svg_onload.html", "text/html");
   EXPECT_FALSE(data.contains("onload"));
   EXPECT_FALSE(data.contains("onclick"));
+}
+
+// Regression test for crbug.com/503865896
+TEST_F(FrameSerializerTest, MixedCaseScriptingAttributesStripped) {
+  SetBaseFolder("frameserializer/elements/");
+
+  RegisterURL("empty.html", "empty.txt", "text/html");
+  Serialize("empty.html");
+
+  // Inject mixed-case scripting attributes.
+  Element* body = helper_.LocalMainFrame()->GetFrame()->GetDocument()->body();
+  body->setAttributeNS(g_null_atom, AtomicString("ONLOAD"),
+                       AtomicString("alert(1)"), IGNORE_EXCEPTION_FOR_TESTING);
+  body->setAttributeNS(g_null_atom, AtomicString("oNCLICK"),
+                       AtomicString("alert(2)"), IGNORE_EXCEPTION_FOR_TESTING);
+
+  Element* anchor =
+      helper_.LocalMainFrame()->GetFrame()->GetDocument()->CreateRawElement(
+          html_names::kATag);
+  anchor->setAttributeNS(g_null_atom, AtomicString("HREF"),
+                         AtomicString("javascript:alert(3)"),
+                         IGNORE_EXCEPTION_FOR_TESTING);
+  body->AppendChild(anchor);
+
+  Element* iframe =
+      helper_.LocalMainFrame()->GetFrame()->GetDocument()->CreateRawElement(
+          html_names::kIFrameTag);
+  iframe->setAttributeNS(g_null_atom, AtomicString("SRCDOC"),
+                         AtomicString("<html></html>"),
+                         IGNORE_EXCEPTION_FOR_TESTING);
+  body->AppendChild(iframe);
+
+  // Inject a mixed-case attribute with a non-null namespace.
+  // This should also be stripped because the HTML parser (which is
+  // namespace-unaware) will lowercase it and activate it as an event handler
+  // upon reload. See crbug.com/503865896.
+  body->setAttributeNS(AtomicString("http://example.com"),
+                       AtomicString("ONLOAD"), AtomicString("alert(4)"),
+                       IGNORE_EXCEPTION_FOR_TESTING);
+
+  // Re-serialize the same frame.
+  GetResources().clear();
+  base::RunLoop run_loop;
+  FrameSerializer::SerializeFrame(
+      *this, *helper_.LocalMainFrame()->GetFrame(),
+      base::BindLambdaForTesting([&](Deque<SerializedResource> resources) {
+        for (auto& res : resources) {
+          GetResources().push_back(res);
+        }
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+
+  String data = GetSerializedData("empty.html", "text/html");
+  EXPECT_EQ(data.FindIgnoringAsciiCase("onload"), kNotFound);
+  EXPECT_EQ(data.FindIgnoringAsciiCase("onclick"), kNotFound);
+  EXPECT_EQ(data.FindIgnoringAsciiCase("href"), kNotFound);
+  EXPECT_EQ(data.FindIgnoringAsciiCase("srcdoc"), kNotFound);
+
+  // Even the attribute with a non-null namespace should be stripped if its
+  // lowercased name matches a scripting attribute, because the HTML parser
+  // will activate it.
+  EXPECT_EQ(data.FindIgnoringAsciiCase("alert(4)"), kNotFound);
+
+  // Ensure that *something* was returned.
+  EXPECT_NE(data.FindIgnoringAsciiCase("<a"), kNotFound);
 }
 
 TEST_F(FrameSerializerTest, DontIncludeErrorImage) {

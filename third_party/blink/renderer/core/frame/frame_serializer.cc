@@ -532,6 +532,8 @@ class SerializerMarkupAccumulator : public MarkupAccumulator {
     // The special attribute in a template element to denote the shadow DOM
     // should only be generated from MHTML serialization. If it is found in the
     // original page, it should be ignored.
+    // TODO(crbug.com/503865896): These checks are case-sensitive and might be
+    // bypassed by mixed-case attributes created via setAttributeNS.
     if (IsA<HTMLTemplateElement>(element) &&
         (attribute.LocalName() == kShadowModeAttributeName ||
          attribute.LocalName() == kShadowDelegatesFocusAttributeName) &&
@@ -542,6 +544,8 @@ class SerializerMarkupAccumulator : public MarkupAccumulator {
     // If srcdoc attribute for frame elements will be rewritten as src attribute
     // containing link instead of html contents, don't ignore the attribute.
     // Bail out now to avoid the check in Element::isScriptingAttribute.
+    // TODO(crbug.com/503865896): This check is case-sensitive and might be
+    // bypassed by mixed-case attributes created via setAttributeNS.
     bool is_src_doc_attribute = IsA<HTMLFrameElementBase>(element) &&
                                 attribute.GetName() == html_names::kSrcdocAttr;
     String new_link_for_the_element;
@@ -551,6 +555,8 @@ class SerializerMarkupAccumulator : public MarkupAccumulator {
     }
 
     //  Drop integrity attribute for those links with subresource loaded.
+    // TODO(crbug.com/503865896): This check is case-sensitive and might be
+    // bypassed by mixed-case attributes created via setAttributeNS.
     auto* html_link_element = DynamicTo<HTMLLinkElement>(element);
     if (attribute.LocalName() == html_names::kIntegrityAttr &&
         html_link_element && html_link_element->sheet()) {
@@ -562,6 +568,35 @@ class SerializerMarkupAccumulator : public MarkupAccumulator {
     if (element.IsScriptingAttribute(attribute)) {
       return EmitAttributeChoice::kIgnore;
     }
+
+    // Check if the attribute is a scripting attribute in a case-insensitive
+    // way. While attributes are usually lowercased by the HTML parser, they
+    // can be created with mixed-case via DOM APIs like setAttributeNS.
+    // When saved to MHTML and later reopened, the HTML parser will lowercase
+    // them, potentially activating an event handler that was bypassed during
+    // serialization.
+    //
+    // We perform this check for all attributes, regardless of namespace,
+    // because the HTML parser is namespace-unaware and will lowercase any
+    // attribute name it encounters. Attributes with non-null namespaces
+    // (that aren't well-known to the HTML serializer) are emitted as regular
+    // attributes that the parser will then treat as potential event handlers.
+    // See crbug.com/503865896.
+    AtomicString lower_name = attribute.LocalName().ToAsciiLower();
+    if (lower_name != attribute.LocalName()) {
+      // We use g_null_atom for the prefix and namespace to simulate how the
+      // attribute will be treated by a namespace-unaware HTML parser upon
+      // re-parsing. This ensures that IsScriptingAttribute correctly identifies
+      // event handlers (which must be in the null namespace) and URL
+      // attributes (which are compared against null-namespaced QualifiedNames).
+      Attribute lower_attribute(
+          QualifiedName(g_null_atom, lower_name, g_null_atom),
+          attribute.Value());
+      if (element.IsScriptingAttribute(lower_attribute)) {
+        return EmitAttributeChoice::kIgnore;
+      }
+    }
+
     return EmitAttributeChoice::kEmit;
   }
 
