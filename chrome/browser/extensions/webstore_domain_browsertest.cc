@@ -97,16 +97,18 @@ IN_PROC_BROWSER_TEST_P(WebstoreDomainBrowserTest, ExpectedAvailability) {
   EXPECT_EQ(web_contents->GetPrimaryMainFrame()->GetLastCommittedURL(),
             webstore_url);
 
-  // The webstorePrivate API is only available on the new webstore domain. The
-  // old site gained access to it via the hosted app, which is no longer
-  // allowed to access webstorePrivate (since the hosted app isn't used).
-  bool expect_webstore_private = GetParam() == GURL(kNewWebstoreURL) ||
-                                 GetParam() == GURL(kWebstoreOverrideURL);
+  // The webstorePrivate and management APIs are only available on the new
+  // webstore domain. The old site gained access to them via the hosted app,
+  // which is no longer allowed to access webstorePrivate or management (since
+  // the hosted app isn't used).
+  // The runtime API is still available since it's always available to all
+  // items, but it doesn't really have any capabilities (and the hosted app is
+  // still safe; just unused).
+  bool expect_fun_apis = GetParam() == GURL(kNewWebstoreURL) ||
+                         GetParam() == GURL(kWebstoreOverrideURL);
 
-  EXPECT_EQ(expect_webstore_private, is_api_available("webstorePrivate"));
-  // TODO(https://crbug.com/328494022): We should also remove access to the
-  // management API (and the entire hosted app).
-  EXPECT_TRUE(is_api_available("management"));
+  EXPECT_EQ(expect_fun_apis, is_api_available("webstorePrivate"));
+  EXPECT_EQ(expect_fun_apis, is_api_available("management"));
   EXPECT_TRUE(is_api_available("runtime"));
 
   ASSERT_TRUE(NavigateToURL(web_contents, not_webstore_url));
@@ -119,7 +121,7 @@ IN_PROC_BROWSER_TEST_P(WebstoreDomainBrowserTest, ExpectedAvailability) {
 
 // Test that the webstore can register and receive management events. Normally
 // we have a check that the receiver of an extension event can never be a
-// webpage context. The old webstore gets around this by appearing as a hosted
+// webpage context. The old webstore got around this by appearing as a hosted
 // app extension context, but the new webstore has the APIs exposed directly to
 // the webpage context it uses. Regression test for crbug.com/40064270.
 IN_PROC_BROWSER_TEST_P(WebstoreDomainBrowserTest, CanReceiveEvents) {
@@ -131,27 +133,43 @@ IN_PROC_BROWSER_TEST_P(WebstoreDomainBrowserTest, CanReceiveEvents) {
   EXPECT_EQ(web_contents->GetPrimaryMainFrame()->GetLastCommittedURL(),
             webstore_url);
   constexpr char kAddListener[] = R"(
-    chrome.management.onInstalled.addListener(() => {
-      domAutomationController.send('received event');
-    });
-    'listener added';
+    try {
+      chrome.management.onInstalled.addListener(() => {
+        domAutomationController.send('received event');
+      });
+      'listener added';
+    } catch(e) {
+      'Error registering';
+    }
   )";
-  ASSERT_EQ("listener added", content::EvalJs(web_contents, kAddListener));
 
-  content::DOMMessageQueue message_queue(web_contents);
-  // Directly broadcast the management.onInstalled event from the EventRouter
-  // and verify it arrived to the page without causing a crash.
-  EventRouter* event_router = EventRouter::Get(profile());
-  api::management::ExtensionInfo info;
-  info.install_type = api::management::ExtensionInstallType::kNormal;
-  info.type = api::management::ExtensionType::kExtension;
-  event_router->BroadcastEvent(std::make_unique<Event>(
-      events::FOR_TEST, api::management::OnInstalled::kEventName,
-      api::management::OnInstalled::Create(info)));
+  // The webstore hosted app no longer has access to the management API.
+  bool expect_management = GetParam() == GURL(kNewWebstoreURL) ||
+                           GetParam() == GURL(kWebstoreOverrideURL);
 
-  std::string message;
-  EXPECT_TRUE(message_queue.WaitForMessage(&message));
-  EXPECT_EQ("\"received event\"", message);
+  std::string js_result =
+      content::EvalJs(web_contents, kAddListener).ExtractString();
+
+  if (expect_management) {
+    ASSERT_EQ("listener added", js_result);
+
+    content::DOMMessageQueue message_queue(web_contents);
+    // Directly broadcast the management.onInstalled event from the EventRouter
+    // and verify it arrived to the page without causing a crash.
+    EventRouter* event_router = EventRouter::Get(profile());
+    api::management::ExtensionInfo info;
+    info.install_type = api::management::ExtensionInstallType::kNormal;
+    info.type = api::management::ExtensionType::kExtension;
+    event_router->BroadcastEvent(std::make_unique<Event>(
+        events::FOR_TEST, api::management::OnInstalled::kEventName,
+        api::management::OnInstalled::Create(info)));
+
+    std::string message;
+    EXPECT_TRUE(message_queue.WaitForMessage(&message));
+    EXPECT_EQ("\"received event\"", message);
+  } else {
+    ASSERT_EQ("Error registering", js_result);
+  }
 }
 
 // Tests that a webstore page with misconfigured or missing X-Frame-Options

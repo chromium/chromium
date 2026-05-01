@@ -717,13 +717,6 @@
         "82F30B65397BC3E4ADE627BBD857AB8A58210648",  // http://crbug.com/40565964
         "C74B2AF138F9EDECD04D0965AB36CA66C8290466"   // http://crbug.com/40625183
       ]
-    },
-    {
-      "channel": "stable",
-      "extension_types": ["hosted_app"],
-      "allowlist": [
-        "B44D08FD98F1523ED5837D78D0A606EA9D6206E5"  // Web Store
-      ]
     }, {
       "channel": "stable",
       "extension_types": ["platform_app"],
