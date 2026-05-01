@@ -13,6 +13,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.RippleDrawable;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 
 import androidx.core.graphics.ColorUtils;
 
@@ -128,7 +129,7 @@ public class ContainmentViewStyler {
             ViewGroup viewGroup = (ViewGroup) view;
             for (int i = 0; i < viewGroup.getChildCount(); i++) {
                 View child = viewGroup.getChildAt(i);
-                if (child instanceof android.widget.RelativeLayout) {
+                if (child instanceof RelativeLayout) {
                     View titleView = child.findViewById(android.R.id.title);
                     if (titleView != null) {
                         child.setPadding(0, 0, 0, 0);

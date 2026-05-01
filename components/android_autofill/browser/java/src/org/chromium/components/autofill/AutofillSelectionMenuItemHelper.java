@@ -8,7 +8,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.content.R;
 import org.chromium.content_public.browser.SelectionMenuItem;
 
 import java.util.ArrayList;
@@ -32,9 +31,7 @@ public class AutofillSelectionMenuItemHelper {
         List<SelectionMenuItem> autofillItems = new ArrayList<>();
         if (mAutofillProvider.shouldOfferPasskeyEntry()) {
             autofillItems.add(
-                    new SelectionMenuItem.Builder(
-                                    org.chromium.components.autofill.R.string
-                                            .autofill_long_press_passkey_option)
+                    new SelectionMenuItem.Builder(R.string.autofill_long_press_passkey_option)
                             .setId(R.id.select_action_menu_passkey_entry)
                             .setGroupId(R.id.select_action_menu_delegate_items)
                             .setOrderAndCategory(

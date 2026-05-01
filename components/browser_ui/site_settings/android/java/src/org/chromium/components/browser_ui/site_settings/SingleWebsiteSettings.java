@@ -522,8 +522,7 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
                 for (var exception : exceptionList) {
                     boolean matchesOrigin =
                             other.getEmbedder() != null
-                                    && org.chromium.components.browser_ui.site_settings
-                                            .WebsitePreferenceBridgeJni.get()
+                                    && WebsitePreferenceBridgeJni.get()
                                             .urlMatchesContentSettingsPattern(
                                                     origin,
                                                     assumeNonNull(exception.getSecondaryPattern()));
@@ -1014,7 +1013,7 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
             // for changes each time Chrome becomes active.
             if (assumeNonNull(mPreviousNotificationPermission) == ContentSetting.ALLOW
                     && newPermission != ContentSetting.ALLOW) {
-                org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni.get()
+                WebsitePreferenceBridgeJni.get()
                         .reportNotificationRevokedForOrigin(
                                 getBrowserContextHandle(),
                                 mSite.getAddress().getOrigin(),

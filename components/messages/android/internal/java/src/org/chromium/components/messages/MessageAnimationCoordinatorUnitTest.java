@@ -108,7 +108,7 @@ public class MessageAnimationCoordinatorUnitTest {
     // [m1, m2] -> [m1, m2]
     @Test
     @SmallTest
-    public void testDoNothing() throws java.util.concurrent.TimeoutException {
+    public void testDoNothing() throws TimeoutException {
         MessageState m1 = buildMessageState();
         MessageState m2 = buildMessageState();
         // Initial setup

@@ -31,6 +31,7 @@ import org.chromium.build.annotations.Nullable;
 
 import java.io.ByteArrayInputStream;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
@@ -269,7 +270,7 @@ public class CertificateViewer implements OnItemSelectedListener {
             MessageDigest md = MessageDigest.getInstance(algorithm);
             md.update(bytes);
             return md.digest();
-        } catch (java.security.NoSuchAlgorithmException e) {
+        } catch (NoSuchAlgorithmException e) {
             throw JavaUtils.throwUnchecked(e);
         }
     }

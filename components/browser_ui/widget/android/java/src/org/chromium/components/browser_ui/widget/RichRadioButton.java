@@ -194,8 +194,8 @@ public class RichRadioButton extends ConstraintLayout implements Checkable {
 
             if (isVertical) {
                 mVerticalConstraints.applyTo(mRootItemLayout);
-                mItemTitle.setGravity(android.view.Gravity.CENTER_HORIZONTAL);
-                mItemDescription.setGravity(android.view.Gravity.CENTER_HORIZONTAL);
+                mItemTitle.setGravity(Gravity.CENTER_HORIZONTAL);
+                mItemDescription.setGravity(Gravity.CENTER_HORIZONTAL);
                 mItemDescription.setMaxLines(1);
             } else {
                 mHorizontalConstraints.applyTo(mRootItemLayout);

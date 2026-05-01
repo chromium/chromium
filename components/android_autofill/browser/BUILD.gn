@@ -16,6 +16,8 @@ android_aidl("autofill_aidl") {
 }
 
 android_library("java") {
+  resources_package = "org.chromium.components.autofill"
+
   srcjar_deps = [
     ":autofill_aidl",
     ":jni_headers",
@@ -27,8 +29,10 @@ android_library("java") {
     "//base/version_info/android:version_constants_java",
     "//build/android:build_java",
     "//components/autofill/android:autofill_java",
+    "//components/autofill/android:autofill_java_resources",
     "//components/autofill/core/common/mojom:mojo_types_java",
     "//content/public/android:content_java",
+    "//content/public/android:content_java_resources",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_no_recycler_view_java",

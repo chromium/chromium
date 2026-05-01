@@ -4,6 +4,7 @@
 
 package org.chromium.components.browser_ui.share;
 
+import android.content.ActivityNotFoundException;
 import android.content.ClipData;
 import android.content.Intent;
 import android.net.Uri;
@@ -57,7 +58,7 @@ public abstract class IntentHelper {
             // we start this activity outside the main activity.
             chooser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             ContextUtils.getApplicationContext().startActivity(chooser);
-        } catch (android.content.ActivityNotFoundException ex) {
+        } catch (ActivityNotFoundException ex) {
             // If no app handles it, do nothing.
         }
     }

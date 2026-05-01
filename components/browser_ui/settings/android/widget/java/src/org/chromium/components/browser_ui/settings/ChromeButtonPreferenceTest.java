@@ -30,6 +30,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.DisableIf;
@@ -134,8 +135,7 @@ public class ChromeButtonPreferenceTest {
         // flaky if
         // the view hierarchy is actively being drawn, but for this setup it's often okay.
         // However, to be safe and correct:
-        org.chromium.base.ThreadUtils.runOnUiThreadBlocking(
-                () -> preference.setButtonEnabled(true));
+        ThreadUtils.runOnUiThreadBlocking(() -> preference.setButtonEnabled(true));
         getButtonWidget().check(matches(isEnabled()));
     }
 

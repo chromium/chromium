@@ -41,6 +41,7 @@ import org.chromium.blink.mojom.UvmEntry;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.mojo.bindings.DeserializationException;
 import org.chromium.mojo_base.mojom.TimeDelta;
 
 import java.nio.ByteBuffer;
@@ -985,7 +986,7 @@ public final class Fido2Api {
                     response =
                             MakeCredentialAuthenticatorResponse.deserialize(
                                     ByteBuffer.wrap(responseSerialized));
-                } catch (org.chromium.mojo.bindings.DeserializationException e) {
+                } catch (DeserializationException e) {
                     throw new IllegalArgumentException(e);
                 }
 
@@ -1027,7 +1028,7 @@ public final class Fido2Api {
                     response =
                             GetAssertionAuthenticatorResponse.deserialize(
                                     ByteBuffer.wrap(responseSerialized));
-                } catch (org.chromium.mojo.bindings.DeserializationException e) {
+                } catch (DeserializationException e) {
                     throw new IllegalArgumentException(e);
                 }
 

@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.robolectric.Robolectric.buildActivity;
 
 import android.app.Activity;
+import android.graphics.Rect;
 import android.util.DisplayMetrics;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
@@ -293,7 +294,7 @@ public class ModalDialogViewUnitTest {
     @Test
     public void testBottomSpacerVisibility_WithLargePadding() {
         // Create model with no buttons but large bottom padding.
-        mModelBuilder.with(ModalDialogProperties.PADDING, new android.graphics.Rect(0, 0, 0, 20));
+        mModelBuilder.with(ModalDialogProperties.PADDING, new Rect(0, 0, 0, 20));
         createModel(mModelBuilder, MIN_DIALOG_WIDTH, MIN_DIALOG_HEIGHT);
 
         android.view.View spacer = mDialogView.findViewById(R.id.dialog_bottom_spacer);

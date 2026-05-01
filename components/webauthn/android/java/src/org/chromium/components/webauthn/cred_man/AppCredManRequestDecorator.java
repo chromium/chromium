@@ -5,6 +5,8 @@
 package org.chromium.components.webauthn.cred_man;
 
 import android.credentials.CreateCredentialRequest.Builder;
+import android.credentials.CredentialOption;
+import android.credentials.GetCredentialRequest;
 import android.os.Bundle;
 
 import org.chromium.build.annotations.NullMarked;
@@ -35,8 +37,7 @@ public class AppCredManRequestDecorator implements CredManRequestDecorator {
 
     @Override
     public void updateGetCredentialRequestBuilder(
-            android.credentials.GetCredentialRequest.Builder builder,
-            CredManGetCredentialRequestHelper helper) {}
+            GetCredentialRequest.Builder builder, CredManGetCredentialRequestHelper helper) {}
 
     @Override
     public void updatePublicKeyCredentialOptionBundle(
@@ -44,8 +45,7 @@ public class AppCredManRequestDecorator implements CredManRequestDecorator {
 
     @Override
     public void updatePublicKeyCredentialOptionBuilder(
-            android.credentials.CredentialOption.Builder builder,
-            CredManGetCredentialRequestHelper helper) {}
+            CredentialOption.Builder builder, CredManGetCredentialRequestHelper helper) {}
 
     @Override
     public void updatePasswordCredentialOptionBundle(
@@ -53,8 +53,7 @@ public class AppCredManRequestDecorator implements CredManRequestDecorator {
 
     @Override
     public void updatePasswordCredentialOptionBuilder(
-            android.credentials.CredentialOption.Builder builder,
-            CredManGetCredentialRequestHelper helper) {}
+            CredentialOption.Builder builder, CredManGetCredentialRequestHelper helper) {}
 
     private AppCredManRequestDecorator() {}
 }

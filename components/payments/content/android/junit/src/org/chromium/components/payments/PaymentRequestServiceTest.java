@@ -40,6 +40,7 @@ import org.chromium.payments.mojom.PaymentMethodData;
 import org.chromium.payments.mojom.PaymentOptions;
 import org.chromium.payments.mojom.PaymentRequestClient;
 import org.chromium.payments.mojom.PaymentResponse;
+import org.chromium.url.internal.mojom.Origin;
 import org.chromium.url.mojom.Url;
 
 import java.util.ArrayList;
@@ -810,8 +811,7 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
     @Test
     @Feature({"Payments"})
     public void testSpcCanOnlyBeRequestedAlone_failedForHttpPayeeOrigin() {
-        org.chromium.url.internal.mojom.Origin payeeOrigin =
-                new org.chromium.url.internal.mojom.Origin();
+        Origin payeeOrigin = new Origin();
         payeeOrigin.scheme = "http";
         payeeOrigin.host = "www.example.test";
         payeeOrigin.port = 443;

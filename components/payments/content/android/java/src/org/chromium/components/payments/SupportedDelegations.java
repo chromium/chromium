@@ -7,6 +7,7 @@ package org.chromium.components.payments;
 import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.payments.mojom.PaymentOptions;
 
 /** This class represents the supported delegations of a service worker based payment app. */
 @NullMarked
@@ -32,7 +33,7 @@ public class SupportedDelegations {
         mPayerEmail = false;
     }
 
-    public boolean providesAll(org.chromium.payments.mojom.PaymentOptions options) {
+    public boolean providesAll(PaymentOptions options) {
         if (options == null) return true;
         if (options.requestShipping && !mShippingAddress) return false;
         if (options.requestPayerName && !mPayerName) return false;

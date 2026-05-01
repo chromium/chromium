@@ -43,6 +43,7 @@ import org.chromium.content.browser.ClientDataJsonImpl;
 import org.chromium.content.browser.ClientDataJsonImplJni;
 import org.chromium.mojo_base.mojom.TimeDelta;
 import org.chromium.payments.mojom.PaymentCurrencyAmount;
+import org.chromium.url.internal.mojom.Origin;
 import org.chromium.url.mojom.Url;
 
 import java.io.IOException;
@@ -739,7 +740,7 @@ public class Fido2ApiTestHelper {
         options.instrument.icon = new Url();
         options.instrument.icon.url = "https://www.google.com/icon.png";
         options.instrument.details = "instrument details";
-        options.payeeOrigin = new org.chromium.url.internal.mojom.Origin();
+        options.payeeOrigin = new Origin();
         options.payeeOrigin.scheme = "https";
         options.payeeOrigin.host = "test.example";
         options.payeeOrigin.port = 443;

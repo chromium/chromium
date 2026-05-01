@@ -7,6 +7,7 @@ package org.chromium.components.browser_ui.widget.async_image;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Animatable2;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.DrawableWrapper;
 import android.graphics.drawable.InsetDrawable;
 import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.RotateDrawable;
@@ -111,11 +112,11 @@ public class AutoAnimatorDrawable extends DrawableWrapperCompat {
             AutoAnimatorDrawable.animatedDrawableHelper(drawable.getCurrent(), consumer);
         }
 
-        if (drawable instanceof android.graphics.drawable.DrawableWrapper) {
+        if (drawable instanceof DrawableWrapper) {
             // Support all modern versions of drawables that wrap other ones.  This won't cover old
             // versions of Android (see below for other if/else blocks).
             AutoAnimatorDrawable.animatedDrawableHelper(
-                    ((android.graphics.drawable.DrawableWrapper) drawable).getDrawable(), consumer);
+                    ((DrawableWrapper) drawable).getDrawable(), consumer);
         } else if (drawable instanceof DrawableWrapperCompat) {
             // Support the AppCompat DrawableWrapperCompat.
             AutoAnimatorDrawable.animatedDrawableHelper(

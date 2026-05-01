@@ -56,6 +56,7 @@ import org.chromium.components.webauthn.cred_man.CredManMetricsHelper.CredManCre
 import org.chromium.components.webauthn.cred_man.CredManMetricsHelper.CredManGetRequestEnum;
 import org.chromium.components.webauthn.cred_man.CredManMetricsHelper.CredManPrepareRequestEnum;
 import org.chromium.content_public.browser.RenderFrameHost;
+import org.chromium.mojo.bindings.DeserializationException;
 
 import java.nio.ByteBuffer;
 
@@ -614,7 +615,7 @@ public class CredManHelper {
                             response =
                                     GetAssertionAuthenticatorResponse.deserialize(
                                             ByteBuffer.wrap(responseSerialized));
-                        } catch (org.chromium.mojo.bindings.DeserializationException e) {
+                        } catch (DeserializationException e) {
                             logDeserializationException(e);
                             mMetricsHelper.reportGetCredentialMetrics(
                                     CredManGetRequestEnum.FAILURE, mCancellableUiState);
@@ -833,7 +834,7 @@ public class CredManHelper {
         try {
             return MakeCredentialAuthenticatorResponse.deserialize(
                     ByteBuffer.wrap(responseSerialized));
-        } catch (org.chromium.mojo.bindings.DeserializationException e) {
+        } catch (DeserializationException e) {
             logDeserializationException(e);
             return null;
         }
