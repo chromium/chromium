@@ -102,15 +102,21 @@ bool ServiceWorkerResourceLoader::IsValidStaticRouterResponse(
     // response's URL list for the CORP check instead of the request URL to
     // prevent a same-origin alias URL from bypassing the check.
     // This matches the behavior in CrossOriginResourcePolicyChecker::IsBlocked.
-    if (!response->url_list.empty() &&
-        network::CrossOriginResourcePolicy::IsBlockedByHeaderValue(
-            response->url_list.back(), response->url_list.front(),
-            resource_request.request_initiator, corp_header_value,
-            resource_request.mode, resource_request.destination,
-            response->request_include_credentials, cross_origin_embedder_policy,
-            is_enabled ? cross_origin_embedder_policy_reporter : nullptr,
-            document_isolation_policy,
-            is_enabled ? document_isolation_policy_reporter : nullptr)) {
+    if (response->url_list.empty()) {
+      // Synthesized responses must not be opaque.
+      CHECK_NE(response->response_type,
+               network::mojom::FetchResponseType::kOpaque);
+      CHECK_NE(response->response_type,
+               network::mojom::FetchResponseType::kOpaqueRedirect);
+    } else if (network::CrossOriginResourcePolicy::IsBlockedByHeaderValue(
+                   response->url_list.back(), response->url_list.front(),
+                   resource_request.request_initiator, corp_header_value,
+                   resource_request.mode, resource_request.destination,
+                   response->request_include_credentials,
+                   cross_origin_embedder_policy,
+                   is_enabled ? cross_origin_embedder_policy_reporter : nullptr,
+                   document_isolation_policy,
+                   is_enabled ? document_isolation_policy_reporter : nullptr)) {
       if (is_enabled) {
         is_valid = false;
         result = CORPCheckResult::kBlocked;
