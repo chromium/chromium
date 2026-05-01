@@ -427,7 +427,7 @@ void GlicInstanceImpl::Show(const ShowOptions& options) {
   } else {
     DeactivateCurrentEmbedder();
     // Ensure that there is a WebContents for the embedder to use.
-    host_.CreateContents(/*initially_hidden=*/false);
+    host_.CreateContents();
     embedder_to_show = CreateActiveEmbedder(options);
     CHECK(embedder_to_show);
     host_.SetDelegate(embedder_to_show->GetHostEmbedderDelegate());
@@ -1332,7 +1332,7 @@ void GlicInstanceImpl::MaybeInitializeHiddenClient(
     mojom::FreOverride fre_override) {
   if (!host_.webui_contents()) {
     host_.SetDelegate(&empty_embedder_delegate_);
-    host_.CreateContents(/*initially_hidden=*/false);
+    host_.CreateContents();
   }
 
   NotifyPanelWillOpen(invocation_source, std::nullopt, /*auto_send=*/false,

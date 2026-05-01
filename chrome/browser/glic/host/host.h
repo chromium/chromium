@@ -246,10 +246,7 @@ class Host : public GlicSharingManagerProvider {
   void OnWebContentsNavigated();
 
   // Creates the web contents that will own the Glic WebUI.
-  // `initially_hidden` value is only relevant when
-  // `kGlicGuestContentsVisibilityState` flag is enabled, otherwise the default
-  // value is used (i.e. false).
-  void CreateContents(bool initially_hidden);
+  void CreateContents();
 
   // Signals the glic WebUI that the glic window will be shown soon.
   void NotifyWindowIntentToShow();
