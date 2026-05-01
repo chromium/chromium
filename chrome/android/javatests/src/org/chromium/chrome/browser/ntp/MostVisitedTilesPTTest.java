@@ -75,29 +75,13 @@ public class MostVisitedTilesPTTest {
 
     @Test
     @MediumTest
-    @DisableFeatures({ChromeFeatureList.MOST_VISITED_TILES_CUSTOMIZATION})
-    public void testClickFirstMVT_DisableMvtCustomization() {
+    public void testClickFirstMVT() {
         doClickMVTTest(0);
     }
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.MOST_VISITED_TILES_CUSTOMIZATION})
-    public void testClickFirstMVT_EnableMvtCustomization() {
-        doClickMVTTest(0);
-    }
-
-    @Test
-    @MediumTest
-    @DisableFeatures({ChromeFeatureList.MOST_VISITED_TILES_CUSTOMIZATION})
-    public void testClickLastMVT_DisableMvtCustomization() {
-        doClickMVTTest(7);
-    }
-
-    @Test
-    @MediumTest
-    @EnableFeatures({ChromeFeatureList.MOST_VISITED_TILES_CUSTOMIZATION})
-    public void testClickLastMVT_EnableMvtCustomization() {
+    public void testClickLastMVT() {
         doClickMVTTest(7);
     }
 

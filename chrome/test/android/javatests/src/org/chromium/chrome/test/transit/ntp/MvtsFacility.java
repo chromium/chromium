@@ -17,7 +17,6 @@ import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.transit.ViewSpec;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesLayout;
 import org.chromium.chrome.browser.suggestions.tile.SuggestionsTileView;
@@ -47,14 +46,10 @@ public class MvtsFacility extends ScrollableFacility<RegularNewTabPageStation> {
 
         mNonTileIndices = new HashSet<>(separatorIndices);
         int childCount = siteSuggestions.size() + separatorIndices.size();
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.MOST_VISITED_TILES_CUSTOMIZATION)) {
-            // Populate with the "Add new" button at the end.
-            mAddNewButtonIndex = childCount;
-            mNonTileIndices.add(mAddNewButtonIndex);
-            childCount++;
-        } else {
-            mAddNewButtonIndex = null;
-        }
+        // Populate with the "Add new" button at the end.
+        mAddNewButtonIndex = childCount;
+        mNonTileIndices.add(mAddNewButtonIndex);
+        childCount++;
 
         // 1% visibility is enough because this layout is clipped by being inside scroll view in
         // tablets.

@@ -21,8 +21,6 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.suggestions.tile.tile_edit_dialog.CustomTileEditCoordinator.CustomLinksDuplicateChecker;
 import org.chromium.chrome.browser.suggestions.tile.tile_edit_dialog.CustomTileEditCoordinator.TileValueChangeHandler;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -35,7 +33,6 @@ import org.chromium.url.JUnitTestGURLs;
 /** Unit tests for {@link CustomTileEditCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@EnableFeatures({ChromeFeatureList.MOST_VISITED_TILES_CUSTOMIZATION})
 public class CustomTileEditCoordinatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
