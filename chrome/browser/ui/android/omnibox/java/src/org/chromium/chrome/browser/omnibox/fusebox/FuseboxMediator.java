@@ -175,11 +175,9 @@ import java.util.function.Supplier;
         mModel.set(FuseboxProperties.POPUP_ATTACH_CAMERA_CLICKED, this::onCameraClicked);
         mModel.set(FuseboxProperties.POPUP_ATTACH_GALLERY_CLICKED, this::onImagePickerClicked);
         mModel.set(FuseboxProperties.POPUP_ATTACH_FILE_CLICKED, this::onFilePickerClicked);
+        mModel.set(FuseboxProperties.POPUP_TOOL_AI_MODE_CLICKED, this::onToolAiModeClicked);
         mModel.set(
-                FuseboxProperties.POPUP_TOOL_AI_MODE_CLICKED,
-                () -> activateAiMode(AiModeActivationSource.TOOL_MENU));
-        mModel.set(
-                FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_CLICKED, this::activateImageGeneration);
+                FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_CLICKED, this::onToolCreateImageClicked);
         mModel.set(FuseboxProperties.POPUP_TOOL_DEEP_SEARCH_CLICKED, this::onToolDeepSearchClicked);
         mModel.set(FuseboxProperties.POPUP_TOOL_CANVAS_CLICKED, this::onToolCanvasClicked);
         mModel.set(FuseboxProperties.POPUP_MODEL_BUTTON_DATA_LIST, List.of());
@@ -325,7 +323,7 @@ import java.util.function.Supplier;
             // TODO(crbug.com/481365131): there must be a better way to do that.
             if (mInput.getRequestType() == AutocompleteRequestType.AI_MODE
                     && mInput.getFocusReason() == OmniboxFocusReason.NTP_AI_MODE) {
-                activateAiMode(AiModeActivationSource.NTP_BUTTON);
+                FuseboxMetrics.notifyAiModeActivated(AiModeActivationSource.NTP_BUTTON);
             } else if (mInput.getFocusReason() == OmniboxFocusReason.FAKE_BOX_PLUS_BUTTON_TAP) {
                 showPopup();
             }
@@ -361,7 +359,8 @@ import java.util.function.Supplier;
         if (ToolModeUtils.isAimRequest(mInput.getRequestType())) {
             activateSearchMode();
         } else {
-            activateAiMode(AiModeActivationSource.DEDICATED_BUTTON);
+            activateAiMode(
+                    AutocompleteRequestType.AI_MODE, AiModeActivationSource.DEDICATED_BUTTON);
         }
     }
 
@@ -385,33 +384,41 @@ import java.util.function.Supplier;
 
         hidePopup();
         if (mInput.getRequestType() != AutocompleteRequestType.SEARCH) return;
-        activateAiMode(activationReason);
+
+        activateAiMode(AutocompleteRequestType.AI_MODE, activationReason);
     }
 
-    private void activateAiMode(@AiModeActivationSource int activationReason) {
-        if (activationReason == AiModeActivationSource.TOOL_MENU) {
-            FuseboxMetrics.notifyToolButtonSelected(ToolMode.TOOL_MODE_UNSPECIFIED_VALUE);
-        }
-        if (trySetRequestType(AutocompleteRequestType.AI_MODE)) {
+    private void activateAiMode(
+            @AutocompleteRequestType int requestType,
+            @AiModeActivationSource int activationReason) {
+        assert ToolModeUtils.isAimRequest(requestType);
+        if (!isInInputSession()) return;
+        boolean wasConventional = ToolModeUtils.isConventionalRequest(mInput.getRequestType());
+        if (trySetRequestType(requestType) && wasConventional) {
             FuseboxMetrics.notifyAiModeActivated(activationReason);
         }
     }
 
-    private void activateImageGeneration() {
+    private void onToolAiModeClicked() {
+        FuseboxMetrics.notifyToolButtonSelected(ToolMode.TOOL_MODE_UNSPECIFIED_VALUE);
+        activateAiMode(AutocompleteRequestType.AI_MODE, AiModeActivationSource.TOOL_MENU);
+    }
+
+    private void onToolCreateImageClicked() {
         FuseboxMetrics.notifyToolButtonSelected(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE);
-        trySetRequestType(AutocompleteRequestType.IMAGE_GENERATION);
+        activateAiMode(AutocompleteRequestType.IMAGE_GENERATION, AiModeActivationSource.TOOL_MENU);
     }
 
     private void onToolDeepSearchClicked() {
         assert OmniboxFeatures.sShowModelPicker.getValue();
         FuseboxMetrics.notifyToolButtonSelected(ToolMode.TOOL_MODE_DEEP_SEARCH_VALUE);
-        trySetRequestType(AutocompleteRequestType.DEEP_SEARCH);
+        activateAiMode(AutocompleteRequestType.DEEP_SEARCH, AiModeActivationSource.TOOL_MENU);
     }
 
     private void onToolCanvasClicked() {
         assert OmniboxFeatures.sShowModelPicker.getValue();
         FuseboxMetrics.notifyToolButtonSelected(ToolMode.TOOL_MODE_CANVAS_VALUE);
-        trySetRequestType(AutocompleteRequestType.CANVAS);
+        activateAiMode(AutocompleteRequestType.CANVAS, AiModeActivationSource.TOOL_MENU);
     }
 
     /* package */ void setIsTextWrapping(boolean isTextWrapping) {
@@ -1097,9 +1104,7 @@ import java.util.function.Supplier;
 
         hidePopup();
 
-        if (ToolModeUtils.isConventionalRequest(mInput.getRequestType())) {
-            mInput.setRequestType(AutocompleteRequestType.AI_MODE);
-        }
+        maybeActivateAiMode(AiModeActivationSource.IMPLICIT);
 
         mInput.setModelMode(modelMode);
         // TODO(https://crbug.com/476434460): Consider replacing with wiring in session state.

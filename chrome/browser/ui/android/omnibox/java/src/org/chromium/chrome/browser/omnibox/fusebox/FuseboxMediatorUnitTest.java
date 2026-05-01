@@ -632,7 +632,7 @@ public class FuseboxMediatorUnitTest {
     }
 
     @Test
-    public void activateImageGeneration_startsSession() {
+    public void onToolCreateImageClicked_startsSession() {
         var histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Omnibox.MobileFusebox.ToolButtonSelected",
@@ -646,7 +646,7 @@ public class FuseboxMediatorUnitTest {
     }
 
     @Test
-    public void activateImageGeneration_disablesNonImageInput() {
+    public void onToolCreateImageGeneration_disablesNonImageInput() {
         doReturn(true).when(mComposeboxQueryControllerBridge).isPdfUploadEligible();
         doReturn(mTab1).when(mTabModelSelector).getCurrentTab();
         doReturn("Title1").when(mTab1).getTitle();
@@ -989,6 +989,102 @@ public class FuseboxMediatorUnitTest {
         mInput.setRequestType(AutocompleteRequestType.CANVAS);
         mModel.get(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE_CLICKED).run();
         assertEquals(AutocompleteRequestType.SEARCH, mInput.getRequestType());
+    }
+
+    @Test
+    public void beginInput_fromNtp_recordsAiModeActivationSource() {
+        mInput.setRequestType(AutocompleteRequestType.AI_MODE);
+        mInput.setFocusReason(OmniboxFocusReason.NTP_AI_MODE);
+
+        try (var ignored =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Omnibox.MobileFusebox.AiModeActivationSource",
+                        FuseboxMetrics.AiModeActivationSource.NTP_BUTTON)) {
+            recreateMediator();
+        }
+    }
+
+    @Test
+    public void onToolCreateImageClicked_fromConventional_recordsAiModeActivationSource() {
+        try (var ignored =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Omnibox.MobileFusebox.AiModeActivationSource",
+                        FuseboxMetrics.AiModeActivationSource.TOOL_MENU)) {
+            mModel.get(FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_CLICKED).run();
+        }
+    }
+
+    @Test
+    public void onToolCreateImageClicked_fromAiMode_doesNotRecordAiModeActivationSource() {
+        mModel.get(FuseboxProperties.POPUP_TOOL_AI_MODE_CLICKED).run();
+
+        try (var ignored =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Omnibox.MobileFusebox.AiModeActivationSource")
+                        .build()) {
+            mModel.get(FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_CLICKED).run();
+        }
+    }
+
+    @Test
+    public void onToolDeepSearchClicked_fromConventional_recordsAiModeActivationSource() {
+        OmniboxFeatures.sShowModelPicker.setForTesting(true);
+
+        try (var ignored =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Omnibox.MobileFusebox.AiModeActivationSource",
+                        FuseboxMetrics.AiModeActivationSource.TOOL_MENU)) {
+            mModel.get(FuseboxProperties.POPUP_TOOL_DEEP_SEARCH_CLICKED).run();
+        }
+    }
+
+    @Test
+    public void onToolCanvasClicked_fromConventional_recordsAiModeActivationSource() {
+        OmniboxFeatures.sShowModelPicker.setForTesting(true);
+
+        try (var ignored =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Omnibox.MobileFusebox.AiModeActivationSource",
+                        FuseboxMetrics.AiModeActivationSource.TOOL_MENU)) {
+            mModel.get(FuseboxProperties.POPUP_TOOL_CANVAS_CLICKED).run();
+        }
+    }
+
+    @Test
+    public void onModelSelected_fromConventional_recordsAiModeActivationSource() {
+        OmniboxFeatures.sShowModelPicker.setForTesting(true);
+        recreateMediator();
+
+        ModelConfig config1 =
+                ModelConfig.newBuilder()
+                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE)
+                        .setMenuLabel("Auto")
+                        .build();
+        ModelConfig config2 =
+                ModelConfig.newBuilder()
+                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
+                        .setMenuLabel("Flash")
+                        .build();
+        InputState state =
+                new InputState.Builder()
+                        .withActiveModel(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE)
+                        .withAllowedModels(
+                                ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE,
+                                ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
+                        .withModelConfigs(
+                                new byte[][] {config1.toByteArray(), config2.toByteArray()})
+                        .build();
+        mInputStateSupplier.set(state);
+
+        List<PopupButtonData> models = mModel.get(FuseboxProperties.POPUP_MODEL_BUTTON_DATA_LIST);
+        assertFalse(models.isEmpty());
+
+        try (var ignored =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Omnibox.MobileFusebox.AiModeActivationSource",
+                        FuseboxMetrics.AiModeActivationSource.IMPLICIT)) {
+            models.get(0).onClicked.run();
+        }
     }
 
     @Test
