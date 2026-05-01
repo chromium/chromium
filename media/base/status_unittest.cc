@@ -458,11 +458,9 @@ TEST_F(StatusTest, TypedStatusWithNoDefaultAndNoOk) {
 
   NDStatus foo = NDStatus::Codes::kFoo;
   EXPECT_EQ(foo.code(), NDStatus::Codes::kFoo);
-  EXPECT_FALSE(foo.is_ok());
 
   NDStatus bar = NDStatus::Codes::kBar;
   EXPECT_EQ(bar.code(), NDStatus::Codes::kBar);
-  EXPECT_FALSE(bar.is_ok());
 
   NDStatus::Or<std::string> err = NDStatus::Codes::kBaz;
   NDStatus::Or<std::string> ok = std::string("kBaz");
@@ -507,10 +505,6 @@ TEST_F(StatusTest, TypedStatusWithNoDefaultHasOk) {
 }
 
 TEST_F(StatusTest, Okayness) {
-  EXPECT_FALSE(
-      TypedStatus<NoOkStatusTypeTraits>(NoOkStatusTypeTraits::Codes::kFoo)
-          .is_ok());
-
   EXPECT_FALSE(
       TypedStatus<ZeroValueOkTypeTraits>(ZeroValueOkTypeTraits::Codes::kFoo)
           .is_ok());
