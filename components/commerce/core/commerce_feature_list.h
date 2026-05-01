@@ -158,7 +158,6 @@ inline constexpr base::FeatureParam<std::string> kShopCardPosition{
 
 extern const char kShopCardArm1[];
 extern const char kShopCardArm3[];
-extern const char kShopCardArm4[];
 extern const char kShopCardArm5[];
 extern const char kShopCardFrontPosition[];
 extern const char kShopCardMaxImpressions[];

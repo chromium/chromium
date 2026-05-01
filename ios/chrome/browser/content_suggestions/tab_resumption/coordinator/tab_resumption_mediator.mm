@@ -179,28 +179,6 @@ bool HasPriceDropDataForTabResumption(
          price_tracking_data->buyable_product().has_title();
 }
 
-bool HasCurrentPriceDataForTabResumption(
-    const std::optional<const commerce::PriceTrackingData>&
-        price_tracking_data) {
-  return price_tracking_data.has_value() &&
-         price_tracking_data->has_buyable_product() &&
-         price_tracking_data->buyable_product().has_current_price() &&
-         price_tracking_data->buyable_product()
-             .current_price()
-             .has_currency_code() &&
-         price_tracking_data->buyable_product()
-             .current_price()
-             .has_amount_micros();
-}
-
-// A Product Detail Page is price trackable if it has a cluster ID.
-bool IsPriceTrackable(const std::optional<const commerce::PriceTrackingData>&
-                          price_tracking_data) {
-  return price_tracking_data.has_value() &&
-         price_tracking_data->has_buyable_product() &&
-         price_tracking_data->buyable_product().has_product_cluster_id();
-}
-
 std::u16string GetHostnameFromGURL(const GURL& url) {
   return url_formatter::
       FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(url);
@@ -258,38 +236,7 @@ void ConfigureTabResumptionItemForShopCard(
         GetHostnameFromGURL(url));
   }
 
-  // A URL is price trackable if it has a cluster ID.
-  if (commerce::kShopCardVariation.Get() == commerce::kShopCardArm4 &&
-      IsPriceTrackable(price_tracking_data)) {
-    config.shopCardData = [[ShopCardData alloc] init];
-    config.shopCardData.shopCardItemType =
-        ShopCardItemType::kPriceTrackableProductOnTab;
 
-    std::unique_ptr<commerce::ProductInfo> info =
-        commerce::OptGuideResultToProductInfo(decisionWithMetadata.metadata);
-    if (info) {
-      config.shopCardData.productInfo = std::move(*info);
-    }
-
-    if (HasCurrentPriceDataForTabResumption(price_tracking_data)) {
-      std::unique_ptr<payments::CurrencyFormatter> formatter =
-          std::make_unique<payments::CurrencyFormatter>(
-              price_tracking_data->buyable_product()
-                  .current_price()
-                  .currency_code(),
-              GetApplicationContext()->GetApplicationLocaleStorage()->Get());
-      config.shopCardData.currentPrice = GetFormattedPrice(
-          formatter.get(), price_tracking_data->buyable_product()
-                               .current_price()
-                               .amount_micros());
-    }
-    config.shopCardData.accessibilityString = l10n_util::GetNSStringF(
-        IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_TRACK_PRICE_ACCESSIBILITY_LABEL,
-        base::SysNSStringToUTF16(config.tabTitle),
-        base::SysNSStringToUTF16(config.shopCardData.currentPrice),
-        GetHostnameFromGURL(url));
-    AddProductImageIfApplicable(price_tracking_data.value(), config);
-  }
 }
 
 
@@ -840,8 +787,7 @@ class TabResumptionMediatorProxy {
 
 - (void)fetchShopCardDataForItemIfApplicable:(TabResumptionConfig*)item
                                          url:(const GURL&)resumptionURL {
-  if (commerce::kShopCardVariation.Get().contains(commerce::kShopCardArm3) ||
-      commerce::kShopCardVariation.Get() == commerce::kShopCardArm4) {
+  if (commerce::kShopCardVariation.Get().contains(commerce::kShopCardArm3)) {
     GURL url = resumptionURL;
     __weak __typeof(self) weakSelf = self;
     _shoppingService->GetAllPriceTrackedBookmarks(base::BindOnce(
@@ -1110,9 +1056,7 @@ class TabResumptionMediatorProxy {
   config.commandHandler = self;
   config.delegate = self;
   config.shouldShowSeeMore = YES;
-  if (commerce::kShopCardVariation.Get() == commerce::kShopCardArm4) {
-    config.shouldShowSeeMore = NO;
-  }
+
   [self fetchShopCardDataForItemIfApplicable:config url:tab->virtual_url];
 }
 
@@ -1128,9 +1072,7 @@ class TabResumptionMediatorProxy {
   config.commandHandler = self;
   config.delegate = self;
   config.shouldShowSeeMore = YES;
-  if (commerce::kShopCardVariation.Get() == commerce::kShopCardArm4) {
-    config.shouldShowSeeMore = NO;
-  }
+
   [self fetchShopCardDataForItemIfApplicable:config
                                          url:webState->GetLastCommittedURL()];
 }

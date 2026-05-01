@@ -107,7 +107,6 @@ BOOL PromoteShopCardToFrontOfStack() {
 BOOL PromoteTabResumptionShopCardToFrontOfStack() {
   return (commerce::kShopCardVariation.Get().contains(
               commerce::kShopCardArm3) ||
-          commerce::kShopCardVariation.Get() == commerce::kShopCardArm4 ||
           commerce::kShopCardVariation.Get() == commerce::kShopCardArm5) &&
          commerce::kShopCardPosition.Get() == commerce::kShopCardFrontPosition;
 }

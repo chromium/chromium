@@ -576,9 +576,7 @@ const FeatureEntry::FeatureParam kPriceTrackingPromoForceHideArm[] = {
 const FeatureEntry::FeatureParam kPriceDropOnTabArm[] = {
     {"ShopCardVariant", "arm_3"},
 };
-const FeatureEntry::FeatureParam kPriceTrackableProductOnTabArm[] = {
-    {"ShopCardVariant", "arm_4"},
-};
+
 const FeatureEntry::FeatureParam kTabResumptionWithImpressionLimitsArm[] = {
     {"ShopCardVariant", "arm_5"},
 };
@@ -586,10 +584,7 @@ const FeatureEntry::FeatureParam kPriceDropOnTabFront[] = {
     {"ShopCardVariant", "arm_3"},
     {"ShopCardPosition", "shop_card_front"},
 };
-const FeatureEntry::FeatureParam kPriceTrackableProductOnTabFront[] = {
-    {"ShopCardVariant", "arm_4"},
-    {"ShopCardPosition", "shop_card_front"},
-};
+
 const FeatureEntry::FeatureParam kTabResumptionWithImpressionLimitsFront[] = {
     {"ShopCardVariant", "arm_5"},
     {"ShopCardPosition", "shop_card_front"},
@@ -706,14 +701,12 @@ const FeatureEntry::FeatureParam kDefaultBrowserPromoForceHideArm[] = {
 // ShopCard experiment arms
 const FeatureEntry::FeatureVariation kShopCardOverrideOptions[] = {
     {"Card 3 Price Drop on Tab Resumption", kPriceDropOnTabArm, nullptr},
-    {"Card 4 Price Trackable on Tab Resumption", kPriceTrackableProductOnTabArm,
-     nullptr},
+
     {"Card 5 Tab Resumption with Impression Limits",
      kTabResumptionWithImpressionLimitsArm, nullptr},
     {"Card 3 Price Drop on Tab Resumption at front of magic stack",
      kPriceDropOnTabFront, nullptr},
-    {"Card 4 Price Trackable on Tab Resumption at front of magic stack",
-     kPriceTrackableProductOnTabFront, nullptr},
+
     {"Card 5 Tab Resumption with Impression Limits at front of magic stack",
      kTabResumptionWithImpressionLimitsFront, nullptr},
     {"Card 6 Price Drop on Tab Resumption with delayed data acquisition",

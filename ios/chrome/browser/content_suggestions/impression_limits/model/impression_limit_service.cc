@@ -67,10 +67,7 @@ ImpressionLimitService::ImpressionLimitService(
     pref_service_->ClearPref(
         tab_resumption_prefs::kTabResumptionWithPriceDropUrlImpressions);
   }
-  if (commerce::kShopCardVariation.Get() != commerce::kShopCardArm4) {
-    pref_service_->ClearPref(
-        tab_resumption_prefs::kTabResumptionWithPriceTrackableUrlImpressions);
-  }
+
   if (commerce::kShopCardVariation.Get() != commerce::kShopCardArm5) {
     pref_service_->ClearPref(
         tab_resumption_prefs::kTabResumptionRegularUrlImpressions);

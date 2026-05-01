@@ -2190,9 +2190,6 @@
       <message name="IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_REVIEWS_TITLE" desc="Title for Reviews ShopCard in Magic Stack">
           Product reviews for you
       </message>
-      <message name="IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_TRACK_PRICE_ACCESSIBILITY_LABEL" desc="Accessibility label for Track Price Shop Card">
-          Track price on <ph name="PRODUCT_NAME">$1<ex>Pixel Phone</ex></ph>, <ph name="PRICE">$2<ex>$699</ex></ph>, <ph name="DOMAIN">$3<ex>store.google.com</ex></ph>
-      </message>
       <message name="IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_TRACK_PRICE_ALT_TITLE_1" desc="First alternate title for Track Price ShopCard in Magic Stack">
           Products based on your interests
       </message>
@@ -2201,9 +2198,6 @@
       </message>
       <message name="IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_TRACK_PRICE_BUTTON" desc="Text for 'Track' Button in Track Price ShopCard in Magic Stack">
           Track
-      </message>
-      <message name="IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_TRACK_PRICE_CONTEXT_MENU_TITLE" desc="Customize cards title for Price Drops on Tab Resumption">
-          This card shows products you’ve recently viewed and may be interested in tracking to get price drop alerts
       </message>
       <message name="IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_TRACK_PRICE_CUSTOMIZE_CARDS" desc="Text for Track Price ShopCard in Customize Cards in Magic Stack">
           Price tracking
@@ -2219,9 +2213,6 @@
       </message>
       <message name="IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_TRACK_PRICE_HIDE_ACCESSIBILITY_LABEL" desc="Accessibility label to hide track price ShopCard">
           Hide track price card
-      </message>
-      <message name="IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_TRACK_PRICE_HIDE_ALT" desc="Alternative button text indicating Track Price ShopCard module can be removed from Magic Stack">
-          Hide "Track prices from your tabs"
       </message>
       <message name="IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_TRACK_PRICE_NO_PUSH_PERMISSION_SNACKBAR" desc="Text for Snackbar if user taps 'Track' on Track price ShopCard in Magic Stack but notification permissions are not granted.">
           Product added to your list of tracked products.
