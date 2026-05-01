@@ -556,7 +556,8 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
                        /*deprecated_auto_send=*/false,
                        /*deprecated_conversation_id=*/std::nullopt);
   ASSERT_OK_AND_ASSIGN(auto side_panel_instance, WaitForGlicOpen(tab2));
-  ASSERT_TRUE(side_panel_instance->IsAttached());
+  ASSERT_EQ(side_panel_instance->GetPanelState().kind,
+            mojom::PanelStateKind::kAttached);
 
   // Manually activate the side panel
   side_panel_instance->OnEmbedderWindowActivationChanged(true);

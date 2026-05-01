@@ -140,7 +140,6 @@ class GlicInstanceImpl : public GlicInstance,
 
   // GlicInstance implementation.
   bool IsShowing() const override;
-  bool IsAttached() override;
   gfx::Size GetPanelSize() override;
   bool IsActive() override;
 

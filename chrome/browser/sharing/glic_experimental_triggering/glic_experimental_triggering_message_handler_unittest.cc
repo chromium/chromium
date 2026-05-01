@@ -48,7 +48,6 @@ class FakeGlicInstance : public glic::GlicInstance {
 
   bool IsShowing() const override { return false; }
   bool IsActive() override { return false; }
-  bool IsAttached() override { return false; }
   void AddStateObserver(glic::PanelStateObserver* observer) override {}
   void RemoveStateObserver(glic::PanelStateObserver* observer) override {}
   glic::mojom::PanelState GetPanelState() override { return {}; }

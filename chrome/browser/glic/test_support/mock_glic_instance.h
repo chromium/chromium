@@ -22,7 +22,6 @@ class MockGlicInstance : public GlicInstance {
   ~MockGlicInstance() override;
 
   MOCK_METHOD(bool, IsActive, (), (override));
-  MOCK_METHOD(bool, IsAttached, (), (override));
   MOCK_METHOD(void,
               AddStateObserver,
               (PanelStateObserver * observer),

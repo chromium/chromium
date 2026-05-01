@@ -66,11 +66,7 @@ class GlicInstance {
   virtual ~GlicInstance();
 
   virtual bool IsShowing() const = 0;
-
   virtual bool IsActive() = 0;
-
-  // Whether the instance's active embedder is attached to a chrome window.
-  virtual bool IsAttached() = 0;
 
   virtual void AddStateObserver(PanelStateObserver* observer) = 0;
   virtual void RemoveStateObserver(PanelStateObserver* observer) = 0;

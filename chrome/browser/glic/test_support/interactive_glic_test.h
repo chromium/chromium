@@ -701,8 +701,10 @@ class InteractiveGlicTestMixin : public T {
           if (!GetGlicInstance()) {
             return GlicWindowMode::kAttached;
           }
-          return GetGlicInstance()->IsAttached() ? GlicWindowMode::kAttached
-                                                 : GlicWindowMode::kDetached;
+          return GetGlicInstance()->GetPanelState().kind ==
+                         mojom::PanelStateKind::kAttached
+                     ? GlicWindowMode::kAttached
+                     : GlicWindowMode::kDetached;
         },
         mode, "CheckControllerWidgetMode");
   }

@@ -365,10 +365,6 @@ bool GlicInstanceImpl::HasActiveEmbedder() const {
   return active_embedder_key_.has_value();
 }
 
-bool GlicInstanceImpl::IsAttached() {
-  return GetPanelState().kind == mojom::PanelStateKind::kAttached;
-}
-
 bool GlicInstanceImpl::IsDetached() {
   return GetPanelState().kind == mojom::PanelStateKind::kDetached;
 }
