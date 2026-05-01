@@ -144,7 +144,8 @@ bool GenerateInfoSpec(content::BrowserContext* browser_context,
 
 // Tests adding and removing listeners from the event router.
 TEST_F(ExtensionWebRequestTest, AddAndRemoveListeners) {
-  std::string ext_id("abcdefghijklmnopabcdefghijklmnop");
+  std::string kExtensionId("abcdefghijklmnopabcdefghijklmnop");
+  const std::string kExtensionName("Test Extension");
   const std::string kEventName(web_request::OnBeforeRequest::kEventName);
   const std::string kSubEventName1 = kEventName + "/1";
   const std::string kSubEventName2 = kEventName + "/2";
@@ -155,12 +156,12 @@ TEST_F(ExtensionWebRequestTest, AddAndRemoveListeners) {
 
   // Add two listeners.
   event_router->AddEventListener(
-      &profile_, ext_id, ext_id, kEventName, kSubEventName1,
+      &profile_, kExtensionId, kExtensionName, kEventName, kSubEventName1,
       WebRequestEventRouter::RequestFilter(), 0, 1 /* render_process_id */, 0,
       extensions::kMainThreadId, blink::mojom::kInvalidServiceWorkerVersionId,
       /*is_lazy=*/false);
   event_router->AddEventListener(
-      &profile_, ext_id, ext_id, kEventName, kSubEventName2,
+      &profile_, kExtensionId, kExtensionName, kEventName, kSubEventName2,
       WebRequestEventRouter::RequestFilter(), 0, 1 /* render_process_id */, 0,
       extensions::kMainThreadId, blink::mojom::kInvalidServiceWorkerVersionId,
       /*is_lazy=*/false);
@@ -170,15 +171,15 @@ TEST_F(ExtensionWebRequestTest, AddAndRemoveListeners) {
   // Now remove the listeners one at a time, verifying the counts after each
   // removal.
   event_router->UpdateActiveListenerForTesting(
-      &profile_, WebRequestEventRouter::ListenerUpdateType::kRemove, ext_id,
-      kSubEventName1, extensions::kMainThreadId,
+      &profile_, WebRequestEventRouter::ListenerUpdateType::kRemove,
+      kExtensionId, kSubEventName1, extensions::kMainThreadId,
       blink::mojom::kInvalidServiceWorkerVersionId);
   EXPECT_EQ(1u,
             event_router->GetListenerCountForTesting(&profile_, kEventName));
 
   event_router->UpdateActiveListenerForTesting(
-      &profile_, WebRequestEventRouter::ListenerUpdateType::kRemove, ext_id,
-      kSubEventName2, extensions::kMainThreadId,
+      &profile_, WebRequestEventRouter::ListenerUpdateType::kRemove,
+      kExtensionId, kSubEventName2, extensions::kMainThreadId,
       blink::mojom::kInvalidServiceWorkerVersionId);
   EXPECT_EQ(0u,
             event_router->GetListenerCountForTesting(&profile_, kEventName));
@@ -188,6 +189,7 @@ TEST_F(ExtensionWebRequestTest, AddAndRemoveListeners) {
 // render process ID, even if extension ID and sub-event name match.
 TEST_F(ExtensionWebRequestTest, RemoveActiveListenerMatchesRenderProcessId) {
   std::string kExtensionId("abcdefghijklmnopabcdefghijklmnop");
+  const std::string kExtensionName("Test Extension");
   const std::string kEventName(web_request::OnBeforeRequest::kEventName);
   const std::string kSubEventName = kEventName + "/s1";
   WebRequestEventRouter* const event_router =
@@ -196,12 +198,12 @@ TEST_F(ExtensionWebRequestTest, RemoveActiveListenerMatchesRenderProcessId) {
   // Register two identical listeners that differ ONLY by their
   // render_process_id (process 1 and process 2).
   event_router->AddEventListener(
-      &profile_, kExtensionId, kExtensionId, kEventName, kSubEventName,
+      &profile_, kExtensionId, kExtensionName, kEventName, kSubEventName,
       WebRequestEventRouter::RequestFilter(), 0, /*render_process_id=*/1, 0,
       extensions::kMainThreadId, blink::mojom::kInvalidServiceWorkerVersionId,
       /*is_lazy=*/false);
   event_router->AddEventListener(
-      &profile_, kExtensionId, kExtensionId, kEventName, kSubEventName,
+      &profile_, kExtensionId, kExtensionName, kEventName, kSubEventName,
       WebRequestEventRouter::RequestFilter(), 0, /*render_process_id=*/2, 0,
       extensions::kMainThreadId, blink::mojom::kInvalidServiceWorkerVersionId,
       /*is_lazy=*/false);
@@ -246,7 +248,8 @@ TEST_F(ExtensionWebRequestTest, BrowserContextShutdown) {
       WebRequestEventRouter::Get(&profile_);
   ASSERT_TRUE(event_router);
 
-  std::string ext_id("abcdefghijklmnopabcdefghijklmnop");
+  std::string kExtensionId("abcdefghijklmnopabcdefghijklmnop");
+  const std::string kExtensionName("Test Extension");
   const std::string kEventName(web_request::OnBeforeRequest::kEventName);
   const std::string kSubEventName = kEventName + "/1";
   EXPECT_EQ(0u,
@@ -255,12 +258,12 @@ TEST_F(ExtensionWebRequestTest, BrowserContextShutdown) {
 
   // Add two listeners for the main profile.
   event_router->AddEventListener(
-      &profile_, ext_id, ext_id, kEventName, kSubEventName,
+      &profile_, kExtensionId, kExtensionName, kEventName, kSubEventName,
       WebRequestEventRouter::RequestFilter(), 0, 1 /* render_process_id */, 0,
       extensions::kMainThreadId, blink::mojom::kInvalidServiceWorkerVersionId,
       /*is_lazy=*/false);
   event_router->AddEventListener(
-      &profile_, ext_id, ext_id, kEventName, kSubEventName,
+      &profile_, kExtensionId, kExtensionName, kEventName, kSubEventName,
       WebRequestEventRouter::RequestFilter(), 0, 2 /* render_process_id */, 0,
       extensions::kMainThreadId, blink::mojom::kInvalidServiceWorkerVersionId,
       /*is_lazy=*/false);
@@ -287,12 +290,12 @@ TEST_F(ExtensionWebRequestTest, BrowserContextShutdown) {
 
   // Add two listeners for the otr profile.
   event_router->AddEventListener(
-      otr_profile, ext_id, ext_id, kEventName, kSubEventName,
+      otr_profile, kExtensionId, kExtensionName, kEventName, kSubEventName,
       WebRequestEventRouter::RequestFilter(), 0, 1 /* render_process_id */, 0,
       extensions::kMainThreadId, blink::mojom::kInvalidServiceWorkerVersionId,
       /*is_lazy=*/false);
   event_router->AddEventListener(
-      otr_profile, ext_id, ext_id, kEventName, kSubEventName,
+      otr_profile, kExtensionId, kExtensionName, kEventName, kSubEventName,
       WebRequestEventRouter::RequestFilter(), 0, 2 /* render_process_id */, 0,
       extensions::kMainThreadId, blink::mojom::kInvalidServiceWorkerVersionId,
       /*is_lazy=*/false);
@@ -326,6 +329,7 @@ TEST_F(ExtensionWebRequestTest, BrowserContextShutdown) {
 // Regression test for crbug.com/502402731.
 TEST_F(ExtensionWebRequestTest, PollutedPrefsActivationConverges) {
   const std::string kExtensionId("abcdefghijklmnopabcdefghijklmnop");
+  const std::string kExtensionName("Test Extension");
   const std::string kEventName(web_request::OnBeforeRequest::kEventName);
   const std::string kSubEventName = kEventName + "/s1";
   WebRequestEventRouter* const event_router =
@@ -335,12 +339,12 @@ TEST_F(ExtensionWebRequestTest, PollutedPrefsActivationConverges) {
   // Simulate `LoadFilteredLazyListeners` loading two lazy listeners under
   // the same `sub_event_name` from prefs that accumulated duplicate filters.
   EXPECT_TRUE(event_router->AddEventListener(
-      &profile_, kExtensionId, kExtensionId, kEventName, kSubEventName,
+      &profile_, kExtensionId, kExtensionName, kEventName, kSubEventName,
       WebRequestEventRouter::RequestFilter(), 0, /*render_process_id=*/0,
       /*web_view_instance_id=*/0, extensions::kMainThreadId,
       blink::mojom::kInvalidServiceWorkerVersionId, /*is_lazy=*/true));
   EXPECT_TRUE(event_router->AddEventListener(
-      &profile_, kExtensionId, kExtensionId, kEventName, kSubEventName,
+      &profile_, kExtensionId, kExtensionName, kEventName, kSubEventName,
       WebRequestEventRouter::RequestFilter(), 0, /*render_process_id=*/0,
       /*web_view_instance_id=*/0, extensions::kMainThreadId,
       blink::mojom::kInvalidServiceWorkerVersionId, /*is_lazy=*/true));
@@ -353,7 +357,7 @@ TEST_F(ExtensionWebRequestTest, PollutedPrefsActivationConverges) {
   // Activate the listener (as it happens when the service worker spins up).
   // `DCHECK_LE(erased, 1u)` holds and activation should succeed.
   EXPECT_TRUE(event_router->AddEventListener(
-      &profile_, kExtensionId, kExtensionId, kEventName, kSubEventName,
+      &profile_, kExtensionId, kExtensionName, kEventName, kSubEventName,
       WebRequestEventRouter::RequestFilter(), 0, /*render_process_id=*/1,
       /*web_view_instance_id=*/0, /*worker_thread_id=*/100,
       /*service_worker_version_id=*/10, /*is_lazy=*/false));
