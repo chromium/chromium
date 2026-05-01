@@ -1366,7 +1366,7 @@ CreatePopupNavigationDelegate(NavigateParams params) {
 ChromeContentBrowserClient::PopupNavigationDelegateFactory
     g_popup_navigation_delegate_factory = &CreatePopupNavigationDelegate;
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(CHROME_FOR_TESTING)
+#if BUILDFLAG(ENABLE_DEVTOOLS_FRONTEND) && !BUILDFLAG(CHROME_FOR_TESTING)
 bool DetermineIfDevToolsUserForProcessPerSite() {
   bool is_devtools_user = false;
   // Only count uses of DevTools from within the last week.
@@ -1994,7 +1994,7 @@ bool ChromeContentBrowserClient::
 
 bool ChromeContentBrowserClient::ShouldAllowProcessPerSiteForMultipleMainFrames(
     content::BrowserContext* browser_context) {
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_DEVTOOLS_FRONTEND)
 #if BUILDFLAG(CHROME_FOR_TESTING)
   static bool is_devtools_user = true;
 #else
