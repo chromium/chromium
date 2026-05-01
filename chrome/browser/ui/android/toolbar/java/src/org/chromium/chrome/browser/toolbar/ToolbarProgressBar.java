@@ -150,6 +150,13 @@ public class ToolbarProgressBar extends ClipDrawableProgressBar
                 }
             };
 
+    private final Runnable mHideProgressBarRunnableWithoutFade =
+            () -> {
+                if (isAttachedToWindow()) {
+                    hideProgressBar(false);
+                }
+            };
+
     private final TimeAnimator mSmoothProgressAnimator = new TimeAnimator();
     TimeListener mSmoothProgressAnimatorListener =
             new TimeListener() {
@@ -411,8 +418,10 @@ public class ToolbarProgressBar extends ClipDrawableProgressBar
         // to the end immediately. Afterwards, we check fadeOut and the feature param to fade.
         boolean apbJumpToCompletionWithFade =
                 ChromeFeatureList.sAndroidApbJumpToCompletionWithFade.getValue();
+        boolean apbJumpToCompletionNoFade =
+                ChromeFeatureList.sAndroidApbJumpToCompletionNoFade.getValue();
         if (!MathUtils.areFloatsEqual(getProgress(), 1.0f)) {
-            if (apbJumpToCompletionWithFade) {
+            if (apbJumpToCompletionWithFade || apbJumpToCompletionNoFade) {
                 super.setProgress(1.0f);
             } else {
                 setProgress(1.0f);
@@ -455,11 +464,15 @@ public class ToolbarProgressBar extends ClipDrawableProgressBar
         }
 
         if (fadeOut) {
-            removeCallbacks(mHideProgressBarRunnable);
-            if (apbJumpToCompletionWithFade) {
-                postDelayed(mHideProgressBarRunnable, HIDE_DELAY_MS_WITH_JUMP_TO_END);
+            if (apbJumpToCompletionNoFade) {
+                postDelayed(mHideProgressBarRunnableWithoutFade, HIDE_DELAY_MS_WITH_JUMP_TO_END);
             } else {
-                postDelayed(mHideProgressBarRunnable, HIDE_DELAY_MS);
+                long hideDelay = HIDE_DELAY_MS;
+                if (apbJumpToCompletionWithFade) {
+                    hideDelay = HIDE_DELAY_MS_WITH_JUMP_TO_END;
+                }
+                removeCallbacks(mHideProgressBarRunnable);
+                postDelayed(mHideProgressBarRunnable, hideDelay);
             }
         } else {
             hideProgressBar(false);

@@ -1508,6 +1508,9 @@ public abstract class ChromeFeatureList {
                     ANDROID_ANIMATED_PROGRESS_BAR_IN_BROWSER,
                     "jump_to_completion_with_fade",
                     false);
+    public static final BooleanCachedFeatureParam sAndroidApbJumpToCompletionNoFade =
+            newBooleanCachedFeatureParam(
+                    ANDROID_ANIMATED_PROGRESS_BAR_IN_BROWSER, "jump_to_completion_no_fade", false);
     public static final BooleanCachedFeatureParam sAndroidThemeModuleForceDependencies =
             newBooleanCachedFeatureParam(
                     ANDROID_THEME_MODULE, "force_theme_module_dependencies", false);
@@ -1878,6 +1881,7 @@ public abstract class ChromeFeatureList {
             List.of(
                     // keep-sorted start
                     sAndroidAnimatedProgressBarFpsCap,
+                    sAndroidApbJumpToCompletionNoFade,
                     sAndroidApbJumpToCompletionWithFade,
                     sAndroidAppIntegrationModuleForceCardShow,
                     sAndroidAppIntegrationModuleShowThirdPartyCard,
