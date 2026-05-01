@@ -249,10 +249,6 @@ void AppListSearchView::OnSearchResultContainerResultsChanged() {
     if (aggregate_animation_info.use_short_animations) {
       search_result_fast_update_time_ = base::TimeTicks::Now();
     }
-
-    // Records metrics on whether shortened search animations were used.
-    base::UmaHistogramBoolean("Ash.SearchResultUpdateAnimationShortened",
-                              aggregate_animation_info.use_short_animations);
   }
   DeprecatedLayoutImmediately();
 

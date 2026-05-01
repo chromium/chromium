@@ -7925,19 +7925,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.SearchResultUpdateAnimationShortened" enum="Boolean"
-    expires_after="2023-11-01">
-  <owner>yulunwu@google.com</owner>
-  <owner>tbarzic@google.com</owner>
-  <owner>tby@google.com</owner>
-  <summary>
-    Records whether search result animation times were shorted for recent search
-    result update animation preemptions. Recorded when productivity launcher
-    search containers' results change while result containers are still
-    animating.
-  </summary>
-</histogram>
-
 <histogram
     name="Ash.ServerBasedSpeechRecognition.AudioLengthLeftWhenAudioCaptureEnd"
     units="ms" expires_after="2026-09-27">
