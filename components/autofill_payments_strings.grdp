@@ -1612,7 +1612,7 @@
       Payment plans are subject to eligibility.&#10;To hide pay later options, go to <ph name="BEGIN_LINK">&lt;link&gt;</ph>payment settings<ph name="END_LINK">&lt;/link&gt;</ph>
     </message>
     <message name="IDS_AUTOFILL_BNPL_ISSUER_BOTTOM_SHEET_AI_TERMS_LABEL" desc="Combined label for the BNPL issuer terms, the AI data sharing notice, and instructions on how to hide the pay later options. Appears in the BNPL select provider bottom sheet." formatter_data="android_java">
-      <ph name="BEGIN_BOLD">&lt;bold&gt;</ph>Content from the checkout page is shared with Google to offer these options.<ph name="END_BOLD">&lt;/bold&gt;</ph> Payment plans are subject to eligibility. To hide pay later options, go to <ph name="BEGIN_LINK">&lt;link&gt;</ph>payment settings<ph name="END_LINK">&lt;/link&gt;</ph>
+      <ph name="BEGIN_BOLD">&lt;bold&gt;</ph>Content from the checkout page is shared with Google to offer these options.<ph name="END_BOLD">&lt;/bold&gt;</ph> Payment plans are subject to eligibility. To hide pay later options, go to <ph name="BEGIN_LINK">&lt;link&gt;</ph>payment settings<ph name="END_LINK">&lt;/link&gt;</ph>.
     </message>
   </if>
 

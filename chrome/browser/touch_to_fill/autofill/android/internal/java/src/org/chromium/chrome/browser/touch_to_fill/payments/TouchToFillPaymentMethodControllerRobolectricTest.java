@@ -545,7 +545,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
     private static final String BNPL_AI_TERMS =
             "Content from the checkout page is shared with Google to offer these options."
                     + " Payment plans are subject to eligibility. To hide pay later options, go to"
-                    + " payment settings";
+                    + " payment settings.";
     private static final String BNPL_AI_TERMS_BOLDED_TEXT =
             "Content from the checkout page is shared with Google to offer these options.";
 

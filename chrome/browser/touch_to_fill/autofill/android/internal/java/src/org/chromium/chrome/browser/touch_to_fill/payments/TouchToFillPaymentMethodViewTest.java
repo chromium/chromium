@@ -450,7 +450,7 @@ public class TouchToFillPaymentMethodViewTest {
     private static final String BNPL_AI_TERMS =
             "Content from the checkout page is shared with Google to offer these options. Payment"
                     + " plans are subject to eligibility. To hide pay later options, go to payment"
-                    + " settings";
+                    + " settings.";
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
