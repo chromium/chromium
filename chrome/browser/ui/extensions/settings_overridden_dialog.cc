@@ -151,6 +151,7 @@ void BuildExplicitChoiceDialog(
       extensions_features::kSearchEngineExplicitChoiceDialog));
   dialog_builder.SetElementIdentifier(kSettingsOverriddenDialogId)
       .SetTitle(show_params.dialog_title)
+      .SetIsAlertDialog()
       .OverrideDefaultButton(ui::mojom::DialogButton::kNone)
       .AddOkButton(
           base::BindOnce(
