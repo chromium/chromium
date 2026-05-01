@@ -315,9 +315,13 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
 
         mLayoutScrollListener = suggestionLayoutScrollListener;
         setLayoutManager(mLayoutScrollListener);
-        mSelectionController =
-                new RecyclerViewSelectionController(
-                        mLayoutScrollListener, SelectionController.Mode.WRAPPING_WITH_SENTINEL);
+
+        @SelectionController.Mode
+        int mode =
+                OmniboxFeatures.hasDesktopExperience(context)
+                        ? SelectionController.Mode.WRAPPING
+                        : SelectionController.Mode.WRAPPING_WITH_SENTINEL;
+        mSelectionController = new RecyclerViewSelectionController(mLayoutScrollListener, mode);
         addOnChildAttachStateChangeListener(mSelectionController);
 
         final Resources resources = context.getResources();
@@ -449,8 +453,15 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
         if (!isShown()) return false;
 
         View selectedView = mSelectionController.getSelectedView();
-        if (selectedView != null && selectedView.onKeyDown(keyCode, event)) {
-            return true;
+        boolean hasAdditionalModifiers = event.isAltPressed() || event.isShiftPressed();
+        if (selectedView != null) {
+            boolean isModifiedEnter = KeyNavigationUtil.isEnter(event) && hasAdditionalModifiers;
+            if (isModifiedEnter) {
+                // Fall through for modified Enter keys so that AutocompleteCoordinator can handle
+                // them!
+            } else if (selectedView.onKeyDown(keyCode, event)) {
+                return true;
+            }
         }
 
         if (KeyNavigationUtil.isTabNavigation(event)) {
@@ -472,7 +483,9 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
             mSelectionController.selectPreviousItem();
             return true;
         } else if (KeyNavigationUtil.isEnter(event)) {
-            if (selectedView != null) return selectedView.performClick();
+            if (selectedView != null && !hasAdditionalModifiers) {
+                return selectedView.performClick();
+            }
         }
         return super.onKeyDown(keyCode, event);
     }
