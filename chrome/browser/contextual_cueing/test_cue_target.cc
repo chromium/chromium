@@ -23,10 +23,6 @@ void TestCueTarget::OnClick(CueActionData data) {
   click_data = std::move(data);
 }
 
-void TestCueTarget::OnEditPrompt(CueActionData data) {
-  edit_prompt_data = std::move(data);
-}
-
 ui::ImageModel TestCueTarget::GetAnchoredMessageIcon() const {
   return {};
 }

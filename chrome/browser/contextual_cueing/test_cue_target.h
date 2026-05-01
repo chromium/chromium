@@ -13,7 +13,6 @@ class TestCueTarget : public CueTarget {
  public:
   bool eligible = true;
   CueActionData click_data = std::monostate();
-  CueActionData edit_prompt_data = std::monostate();
 
   TestCueTarget();
   ~TestCueTarget() override;
@@ -23,7 +22,6 @@ class TestCueTarget : public CueTarget {
   // CueTarget:
   bool IsEligible() const override;
   void OnClick(CueActionData data) override;
-  void OnEditPrompt(CueActionData data) override;
   ui::ImageModel GetAnchoredMessageIcon() const override;
   ui::ImageModel GetOmniboxChipIcon() const override;
   CueActionData CueActionDataFromResponse(

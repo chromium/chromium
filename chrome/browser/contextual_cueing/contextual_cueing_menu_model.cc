@@ -74,9 +74,7 @@ void ContextualCueingMenuModel::ExecuteCommand(int command_id,
     case kContextualCueingEditPromptCommand:
       RecordContextualCueingInteraction(
           ContextualCueingInteraction::kCueEditPrompt);
-      if (CueTarget* target = controller_->GetTarget(cue_type_)) {
-        target->OnEditPrompt(std::move(data_));
-      }
+      // TODO: b/497228854 - Implement edit prompt behavior based on cue type.
       break;
     case kContextualCueingOpenSettingsCommand: {
       RecordContextualCueingInteraction(

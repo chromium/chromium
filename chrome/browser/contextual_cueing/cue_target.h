@@ -48,9 +48,6 @@ class CueTarget {
   // Called when the user clicks the cue's action button.
   virtual void OnClick(CueActionData data) = 0;
 
-  // Called when the user clicks the "edit prompt" menu item.
-  virtual void OnEditPrompt(CueActionData data) = 0;
-
   // Icon to be shown in the anchored message.
   virtual ui::ImageModel GetAnchoredMessageIcon() const = 0;
 
