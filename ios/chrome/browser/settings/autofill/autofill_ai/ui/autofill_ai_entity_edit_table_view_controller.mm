@@ -469,6 +469,16 @@ typedef NS_ENUM(NSInteger, ItemType) {
   return !textField.inputView;
 }
 
+- (UIMenu*)textField:(UITextField*)textField
+    editMenuForCharactersInRange:(NSRange)range
+                suggestedActions:(NSArray<UIMenuElement*>*)suggestedActions {
+  // If the text field has a custom input view, prevent menu actions such as
+  // "paste", "autofill" or "contacts" from showing up and writing data into the
+  // text field.
+  return [UIMenu menuWithTitle:@""
+                      children:textField.inputView ? @[] : suggestedActions];
+}
+
 #pragma mark - TableViewLinkHeaderFooterItemDelegate
 
 - (void)view:(TableViewLinkHeaderFooterView*)view didTapLinkURL:(CrURL*)URL {
