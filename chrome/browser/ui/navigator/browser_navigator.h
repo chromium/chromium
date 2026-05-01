@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_BROWSER_NAVIGATOR_H_
-#define CHROME_BROWSER_UI_BROWSER_NAVIGATOR_H_
+#ifndef CHROME_BROWSER_UI_NAVIGATOR_BROWSER_NAVIGATOR_H_
+#define CHROME_BROWSER_UI_NAVIGATOR_BROWSER_NAVIGATOR_H_
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
@@ -32,4 +32,4 @@ void Navigate(NavigateParams* params,
               base::OnceCallback<void(base::WeakPtr<content::NavigationHandle>)>
                   callback);
 
-#endif  // CHROME_BROWSER_UI_BROWSER_NAVIGATOR_H_
+#endif  // CHROME_BROWSER_UI_NAVIGATOR_BROWSER_NAVIGATOR_H_

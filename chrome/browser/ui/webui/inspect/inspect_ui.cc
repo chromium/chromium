@@ -26,7 +26,7 @@
 #include "chrome/browser/devtools/features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/common/chrome_paths.h"

@@ -16,7 +16,7 @@
 #include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/chrome_enterprise_url_lookup_service_factory.h"
-#include "chrome/browser/ui/browser_navigator.h"
+#include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"

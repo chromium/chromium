@@ -6,7 +6,7 @@
 
 #include "chrome/browser/loader/from_gws_navigation_and_keep_alive_request_tracker.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/page_load_metrics/browser/features.h"
 #include "content/public/browser/browser_context.h"

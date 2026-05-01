@@ -62,7 +62,7 @@
 #include "chrome/browser/sharing_hub/sharing_hub_features.h"
 #include "chrome/browser/site_isolation/about_flags.h"
 #include "chrome/browser/task_manager/common/task_manager_features.h"
-#include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/tabs/tab_group_home/constants.h"
 #include "chrome/browser/ui/toasts/toast_features.h"

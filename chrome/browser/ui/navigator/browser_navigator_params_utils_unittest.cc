@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/browser_navigator_params_utils.h"
+#include "chrome/browser/ui/navigator/browser_navigator_params_utils.h"
 
 #include <memory>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/tab_list/mock_tab_list_interface.h"
-#include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "content/public/browser/web_contents.h"

@@ -35,8 +35,8 @@
 #include "content/public/browser/page_navigator.h"
 #include "content/public/common/referrer.h"
 #else
-#include "chrome/browser/ui/browser_navigator.h"
-#include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/navigator/browser_navigator.h"
+#include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #endif
 
 using offline_items_collection::ContentId;

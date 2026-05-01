@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_SINGLETON_TABS_H_
 #define CHROME_BROWSER_UI_SINGLETON_TABS_H_
 
-#include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/navigator/browser_navigator_params.h"
 
 class BrowserWindowInterface;
 class GURL;

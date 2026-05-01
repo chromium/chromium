@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_SEARCH_SESSION_FINDER_H_
 
 #include "base/uuid.h"
-#include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/navigator/browser_navigator_params.h"
 
 class BrowserWindowInterface;
 

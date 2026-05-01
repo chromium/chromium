@@ -7,8 +7,8 @@
 
 #include <optional>
 
-#include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"

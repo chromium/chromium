@@ -4,9 +4,9 @@
 
 #include "chrome/browser/chromeos/network/network_portal_signin_window.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_navigator.h"
-#include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/navigator/browser_navigator.h"
+#include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/captive_portal/content/captive_portal_tab_helper.h"
 #include "components/captive_portal/core/captive_portal_detector.h"

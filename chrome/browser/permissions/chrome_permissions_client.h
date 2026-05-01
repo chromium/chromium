@@ -10,7 +10,7 @@
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_request_enums.h"

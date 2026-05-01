@@ -24,8 +24,8 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/notifications/platform_notification_service_factory.h"
 #include "chrome/browser/notifications/platform_notification_service_impl.h"
-#include "chrome/browser/ui/browser_navigator.h"
-#include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/navigator/browser_navigator.h"
+#include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "ui/base/page_transition_types.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 

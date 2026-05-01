@@ -21,7 +21,7 @@
 #include "chrome/browser/chromeos/extensions/telemetry/api/routines/diagnostic_routine.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/routines/fake_diagnostic_routines_service.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/routines/fake_diagnostic_routines_service_factory.h"
-#include "chrome/browser/ui/browser_navigator.h"
+#include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chromeos/ash/components/telemetry_extension/routines/telemetry_diagnostic_routine_service_ash.h"

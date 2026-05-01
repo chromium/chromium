@@ -23,7 +23,7 @@
 #include "chrome/browser/ssl/https_upgrades_util.h"
 #include "chrome/browser/ssl/insecure_form/insecure_form_controller_client.h"
 #include "chrome/browser/ssl/ssl_error_controller_client.h"
-#include "chrome/browser/ui/browser_navigator.h"
+#include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
 #include "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"

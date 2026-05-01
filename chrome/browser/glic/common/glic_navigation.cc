@@ -11,8 +11,8 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
-#include "chrome/browser/ui/browser_navigator.h"
-#include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/navigator/browser_navigator.h"
+#include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "content/public/browser/navigation_handle.h"
 
 #if BUILDFLAG(IS_ANDROID)

@@ -13,7 +13,7 @@ include_rules = [
   # this list.
   "+chrome/browser/chromeos/extensions/telemetry/api/common",
   "+chrome/browser/profiles/profile.h",
-  "+chrome/browser/ui/browser_navigator.h",
+  "+chrome/browser/ui/navigator/browser_navigator.h",
   "+chrome/browser/ui/tabs/tab_enums.h",
   "+chrome/common",
   "+chrome/test",

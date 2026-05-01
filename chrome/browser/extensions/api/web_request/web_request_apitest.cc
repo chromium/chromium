@@ -160,8 +160,8 @@
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_navigator_params.h"  // nogncheck
-#include "chrome/browser/ui/login/login_handler.h"       // nogncheck
+#include "chrome/browser/ui/login/login_handler.h"                 // nogncheck
+#include "chrome/browser/ui/navigator/browser_navigator_params.h"  // nogncheck
 #include "chrome/browser/ui/search/ntp_test_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/ui_test_utils.h"

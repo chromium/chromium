@@ -15,7 +15,7 @@
 #include "chrome/browser/history_clusters/history_clusters_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_navigator.h"
+#include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/webui/history/history_ui.h"
 #include "chrome/browser/ui/webui/history_clusters/history_clusters_handler.h"
 #include "chrome/common/webui_url_constants.h"

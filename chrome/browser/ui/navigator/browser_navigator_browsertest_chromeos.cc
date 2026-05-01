@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/browser_navigator_browsertest.h"
+#include "chrome/browser/ui/navigator/browser_navigator_browsertest.h"
 
 #include "ash/constants/ash_switches.h"
 #include "ash/multi_user/multi_user_window_manager.h"
@@ -20,11 +20,11 @@
 #include "chrome/browser/ui/ash/session/session_controller_client_impl.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
+#include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/webui_url_constants.h"

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_BROWSER_NAVIGATOR_PARAMS_UTILS_H_
-#define CHROME_BROWSER_UI_BROWSER_NAVIGATOR_PARAMS_UTILS_H_
+#ifndef CHROME_BROWSER_UI_NAVIGATOR_BROWSER_NAVIGATOR_PARAMS_UTILS_H_
+#define CHROME_BROWSER_UI_NAVIGATOR_BROWSER_NAVIGATOR_PARAMS_UTILS_H_
 
 #include <utility>
 
@@ -44,4 +44,4 @@ std::pair<BrowserWindowInterface*, int> GetIndexAndBrowserOfMatchingTab(
     Profile* profile,
     const NavigateParams& params);
 
-#endif  // CHROME_BROWSER_UI_BROWSER_NAVIGATOR_PARAMS_UTILS_H_
+#endif  // CHROME_BROWSER_UI_NAVIGATOR_BROWSER_NAVIGATOR_PARAMS_UTILS_H_

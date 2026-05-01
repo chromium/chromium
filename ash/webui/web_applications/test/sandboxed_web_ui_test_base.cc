@@ -20,7 +20,7 @@
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_navigator.h"
+#include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/test/base/ash/js_test_api.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/test/browser_test_utils.h"

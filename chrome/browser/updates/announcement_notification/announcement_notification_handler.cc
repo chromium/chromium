@@ -8,8 +8,8 @@
 #include "chrome/browser/notifications/notification_display_service.h"  // nogncheck
 #include "chrome/browser/notifications/notification_display_service_factory.h"  // nogncheck
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_navigator.h"
-#include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/navigator/browser_navigator.h"
+#include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/updates/announcement_notification/announcement_notification_delegate.h"
 
 namespace {

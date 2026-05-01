@@ -7,7 +7,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_bounds_cache.h"
-#include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "content/public/browser/document_picture_in_picture_window_controller.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/picture_in_picture_window_controller.h"

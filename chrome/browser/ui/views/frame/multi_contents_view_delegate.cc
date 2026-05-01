@@ -8,7 +8,7 @@
 #include "chrome/browser/sessions/session_service.h"
 #include "chrome/browser/sessions/session_service_factory.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_navigator.h"
+#include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/browser_navigator.h"
+#include "chrome/browser/ui/navigator/browser_navigator.h"
 
 #include <algorithm>
 #include <memory>
@@ -28,13 +28,13 @@
 #include "chrome/browser/renderer_host/chrome_navigation_ui_data.h"
 #include "chrome/browser/tab_contents/tab_util.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_navigator_params.h"
-#include "chrome/browser/ui/browser_navigator_params_utils.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/incognito_allowed_url.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
+#include "chrome/browser/ui/navigator/browser_navigator_params.h"
+#include "chrome/browser/ui/navigator/browser_navigator_params_utils.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/status_bubble.h"
 #include "chrome/browser/ui/tab_helpers.h"

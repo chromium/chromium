@@ -16,11 +16,11 @@ include_rules = [
   "+chrome/browser/profiles",
   "+chrome/browser/ui/browser_finder.h",
   "+chrome/browser/ui/browser.h",
-  "+chrome/browser/ui/browser_navigator.h",
-  "+chrome/browser/ui/browser_navigator_params.h",
   "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
   "+chrome/browser/ui/browser_window/public/global_browser_collection.h",
   "+chrome/browser/ui/dialogs/browser_dialogs.h",
+  "+chrome/browser/ui/navigator/browser_navigator.h",
+  "+chrome/browser/ui/navigator/browser_navigator_params.h",
   "+chrome/common",
   "+chrome/test",
 ]

@@ -11,7 +11,7 @@
 #include "chrome/browser/task_manager/providers/web_contents/web_contents_tag.h"
 #include "chrome/browser/task_manager/providers/web_contents/web_contents_tags_manager.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"

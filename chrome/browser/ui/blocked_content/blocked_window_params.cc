@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/blocked_content/blocked_window_params.h"
 
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"

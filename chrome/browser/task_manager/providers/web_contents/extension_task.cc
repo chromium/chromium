@@ -20,11 +20,11 @@
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/browser/extensions/browser_window_util.h"
 #include "chrome/browser/extensions/extension_util.h"
-#include "chrome/browser/ui/browser_navigator.h"
-#include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/navigator/browser_navigator.h"
+#include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #endif
 
 namespace task_manager {

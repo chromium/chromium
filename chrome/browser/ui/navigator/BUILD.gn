@@ -6,12 +6,12 @@ import("//build/config/ui.gni")
 
 source_set("navigator") {
   public = [
-    "../browser_navigator_params.h",
-    "../browser_navigator_params_utils.h",
+    "browser_navigator_params.h",
+    "browser_navigator_params_utils.h",
   ]
 
   if (!is_android) {
-    public += [ "../browser_navigator.h" ]
+    public += [ "browser_navigator.h" ]
   }
 
   public_deps = [
@@ -35,8 +35,8 @@ source_set("navigator") {
 
 source_set("impl") {
   sources = [
-    "../browser_navigator_params.cc",
-    "../browser_navigator_params_utils.cc",
+    "browser_navigator_params.cc",
+    "browser_navigator_params_utils.cc",
   ]
 
   deps = [
@@ -75,7 +75,7 @@ source_set("impl") {
   }
 
   if (!is_android) {
-    sources += [ "../browser_navigator.cc" ]
+    sources += [ "browser_navigator.cc" ]
 
     deps += [
       "//chrome/browser/apps/app_service",
@@ -90,7 +90,7 @@ source_set("impl") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "../browser_navigator_params_utils_unittest.cc" ]
+  sources = [ "browser_navigator_params_utils_unittest.cc" ]
 
   deps = [
     ":impl",
@@ -113,12 +113,12 @@ if (!is_android) {
     testonly = true
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
     sources = [
-      "../browser_navigator_browsertest.cc",
-      "../browser_navigator_browsertest.h",
+      "browser_navigator_browsertest.cc",
+      "browser_navigator_browsertest.h",
     ]
 
     if (is_chromeos) {
-      sources += [ "../browser_navigator_browsertest_chromeos.cc" ]
+      sources += [ "browser_navigator_browsertest_chromeos.cc" ]
     }
 
     deps = [

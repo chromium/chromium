@@ -8,7 +8,7 @@
 #include "base/test/bind.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/crash/core/app/client_upload_info.h"
 #include "content/public/test/browser_test.h"

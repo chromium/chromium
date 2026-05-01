@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/browser_navigator_browsertest.h"
+#include "chrome/browser/ui/navigator/browser_navigator_browsertest.h"
 
 #include <memory>
 
@@ -20,14 +20,14 @@
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_navigator.h"
-#include "chrome/browser/ui/browser_navigator_params.h"
-#include "chrome/browser/ui/browser_navigator_params_utils.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
+#include "chrome/browser/ui/navigator/browser_navigator.h"
+#include "chrome/browser/ui/navigator/browser_navigator_params.h"
+#include "chrome/browser/ui/navigator/browser_navigator_params_utils.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
@@ -2069,7 +2069,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
   params.contents_to_insert = WebContents::Create(web_contents_params);
   Navigate(&params);
 
-  // Should not re-use the browser.
+  // Should not reuse the browser.
   EXPECT_NE(browser(), params.browser);
   EXPECT_TRUE(params.browser->GetBrowserForMigrationOnly()
                   ->is_type_picture_in_picture());

@@ -7,7 +7,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/chrome_content_settings_utils.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/ui/browser_navigator.h"
+#include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "components/blocked_content/popup_navigation_delegate.h"
 #include "content/public/browser/web_contents.h"

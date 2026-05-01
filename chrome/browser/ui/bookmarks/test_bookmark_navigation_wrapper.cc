@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/bookmarks/test_bookmark_navigation_wrapper.h"
 
-#include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/navigator/browser_navigator_params.h"
 
 TestingBookmarkNavigationWrapper::TestingBookmarkNavigationWrapper() = default;
 TestingBookmarkNavigationWrapper::~TestingBookmarkNavigationWrapper() = default;

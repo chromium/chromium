@@ -13,7 +13,7 @@
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/tools/tools_test_util.h"
-#include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/task_id.h"
 #include "chrome/common/chrome_features.h"

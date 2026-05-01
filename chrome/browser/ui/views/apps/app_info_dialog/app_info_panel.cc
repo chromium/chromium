@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ui/views/apps/app_info_dialog/app_info_panel.h"
 
-#include "chrome/browser/ui/browser_navigator.h"
-#include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/navigator/browser_navigator.h"
+#include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/views/apps/app_info_dialog/app_info_label.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "extensions/common/extension.h"

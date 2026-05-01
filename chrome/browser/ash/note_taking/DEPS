@@ -27,7 +27,7 @@ include_rules = [
   "+chrome/browser/prefs/browser_prefs.h",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/browser.h",
-  "+chrome/browser/ui/browser_navigator_params.h",
+  "+chrome/browser/ui/navigator/browser_navigator_params.h",
   "+chrome/browser/ui/tabs/tab_strip_model.h",
   "+chrome/browser/ui/web_applications/app_browser_controller.h",
   "+chrome/browser/web_applications/mojom/user_display_mode.mojom.h",

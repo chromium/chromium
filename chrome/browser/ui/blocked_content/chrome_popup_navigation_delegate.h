@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_BLOCKED_CONTENT_CHROME_POPUP_NAVIGATION_DELEGATE_H_
 #define CHROME_BROWSER_UI_BLOCKED_CONTENT_CHROME_POPUP_NAVIGATION_DELEGATE_H_
 
-#include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "components/blocked_content/popup_navigation_delegate.h"
 
 class ChromePopupNavigationDelegate

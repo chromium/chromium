@@ -11,7 +11,7 @@
 #include "chrome/browser/sync/test/integration/bookmarks_helper.h"
 #include "chrome/browser/sync/test/integration/history_helper.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
-#include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/bookmarks/browser/bookmark_model.h"

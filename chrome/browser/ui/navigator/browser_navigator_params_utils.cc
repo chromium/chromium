@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/browser_navigator_params_utils.h"
+#include "chrome/browser/ui/navigator/browser_navigator_params_utils.h"
 
 #include <algorithm>
 
@@ -10,9 +10,9 @@
 #include "chrome/browser/renderer_host/chrome_navigation_ui_data.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
-#include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "components/captive_portal/core/buildflags.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/search_engines/template_url_service.h"

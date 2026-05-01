@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/browser_navigator.h"
+#include "chrome/browser/ui/navigator/browser_navigator.h"
 
 #include "base/base_switches.h"
 #include "base/strings/string_util.h"
@@ -12,11 +12,11 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/tab_list/tab_list_interface_observer.h"
-#include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/browser_window/test/android/browser_window_android_browsertest_base.h"
+#include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/android/android_browser_test.h"
 #include "components/feed/feed_feature_list.h"

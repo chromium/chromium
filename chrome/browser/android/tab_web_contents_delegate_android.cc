@@ -43,7 +43,7 @@
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/browser/ui/blocked_content/chrome_popup_navigation_delegate.h"
-#include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/prefs/prefs_tab_helper.h"
 #include "chrome/browser/ui/tab_helpers.h"
 #include "chrome/browser/vr/vr_tab_helper.h"

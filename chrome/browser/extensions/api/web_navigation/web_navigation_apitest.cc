@@ -80,8 +80,8 @@
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/test/base/ui_test_utils.h"
 #endif
 

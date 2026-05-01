@@ -47,7 +47,7 @@
 #include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_navigator.h"
+#include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/select_file_policy/chrome_select_file_policy.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/window_sizer/window_sizer.h"

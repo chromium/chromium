@@ -28,10 +28,10 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
-#include "chrome/browser/ui/browser_navigator.h"
-#include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/navigator/browser_navigator.h"
+#include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/tab_contents/tab_contents_iterator.h"
 #include "chrome/browser/ui/tabs/tab_muted_utils.h"
 #include "chrome/common/webui_url_constants.h"
@@ -73,7 +73,7 @@
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
 #include "chrome/browser/ui/browser.h"                             // nogncheck
 #include "chrome/browser/ui/browser_finder.h"                      // nogncheck
-#include "chrome/browser/ui/browser_navigator_params.h"            // nogncheck
+#include "chrome/browser/ui/navigator/browser_navigator_params.h"  // nogncheck
 #include "chrome/browser/ui/recently_audible_helper.h"             // nogncheck
 #include "chrome/browser/ui/tabs/tab_enums.h"                      // nogncheck
 #include "chrome/browser/ui/tabs/tab_group_model.h"                // nogncheck

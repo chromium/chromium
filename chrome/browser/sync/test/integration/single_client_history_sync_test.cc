@@ -13,7 +13,7 @@
 #include "chrome/browser/sync/test/integration/history_helper.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
-#include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/webui_url_constants.h"

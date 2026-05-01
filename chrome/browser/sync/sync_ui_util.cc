@@ -35,8 +35,8 @@
 #include "chrome/browser/search_engines/ui_thread_search_terms_data.h"
 #include "chrome/browser/trusted_vault/trusted_vault_encryption_keys_tab_helper.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "content/public/browser/navigation_handle.h"
 #endif

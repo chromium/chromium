@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "components/services/app_service/public/cpp/intent.h"
 
 class Browser;

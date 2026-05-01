@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_BROWSER_NAVIGATOR_BROWSERTEST_H_
-#define CHROME_BROWSER_UI_BROWSER_NAVIGATOR_BROWSERTEST_H_
+#ifndef CHROME_BROWSER_UI_NAVIGATOR_BROWSER_NAVIGATOR_BROWSERTEST_H_
+#define CHROME_BROWSER_UI_NAVIGATOR_BROWSER_NAVIGATOR_BROWSERTEST_H_
 
 #include <stddef.h>
 
@@ -11,7 +11,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/test/base/in_process_browser_test.h"
 
 class Profile;
@@ -70,4 +70,4 @@ class BrowserNavigatorTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-#endif  // CHROME_BROWSER_UI_BROWSER_NAVIGATOR_BROWSERTEST_H_
+#endif  // CHROME_BROWSER_UI_NAVIGATOR_BROWSER_NAVIGATOR_BROWSERTEST_H_

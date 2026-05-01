@@ -18,8 +18,8 @@ include_rules = [
   "+chrome/browser/extensions/window_controller.h",
   "+chrome/browser/profiles/profile.h",
   "+chrome/browser/ui/browser.h",
-  "+chrome/browser/ui/browser_navigator.h",
-  "+chrome/browser/ui/browser_navigator_params.h",
+  "+chrome/browser/ui/navigator/browser_navigator.h",
+  "+chrome/browser/ui/navigator/browser_navigator_params.h",
   "+chrome/browser/ui/tabs/tab_strip_model.h",
   "+chrome/common",
 ]
