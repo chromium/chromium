@@ -68,6 +68,7 @@ source_set("configs") {
     "//printing/buildflags",
     "//skia",
     "//third_party/abseil-cpp:absl",
+    "//ui/webui:buildflags",
   ]
 
   if (is_win || is_chromeos) {

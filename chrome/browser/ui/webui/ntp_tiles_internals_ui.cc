@@ -40,7 +40,7 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/new_tab_page/new_tab_page_util.h"
-#include "chrome/browser/ui/webui/new_tab_page/ntp_pref_names.h"
+#include "chrome/browser/new_tab_page/ntp_pref_names.h"
 #include "components/prefs/pref_service.h"
 #endif
 

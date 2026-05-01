@@ -14,6 +14,7 @@ android_library("java") {
   ]
   deps = [
     "//base:base_shared_preferences_java",
+    "//base:command_line_java",
     "//base:features_java",
     "//base:resetters_java",
     "//chrome/browser/flags:java",

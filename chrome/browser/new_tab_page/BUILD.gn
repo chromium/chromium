@@ -11,7 +11,6 @@ source_set("new_tab_page") {
   public = [
     "chrome_colors/chrome_colors_factory.h",
     "chrome_colors/chrome_colors_service.h",
-    "feature_promo_helper/new_tab_page_feature_promo_helper.h",
     "microsoft_auth/microsoft_auth_service.h",
     "microsoft_auth/microsoft_auth_service_factory.h",
     "microsoft_auth/microsoft_auth_service_observer.h",
@@ -29,8 +28,8 @@ source_set("new_tab_page") {
     "modules/v2/calendar/outlook_calendar_page_handler.h",
     "modules/v2/most_relevant_tab_resumption/most_relevant_tab_resumption_page_handler.h",
     "modules/v2/most_relevant_tab_resumption/url_visit_types_mojom_traits.h",
-    "modules/v2/tab_groups/tab_groups_page_handler.h",
     "new_tab_page_util.h",
+    "ntp_pref_names.h",
     "one_google_bar/one_google_bar_data.h",
     "one_google_bar/one_google_bar_loader.h",
     "one_google_bar/one_google_bar_loader_impl.h",
@@ -42,14 +41,13 @@ source_set("new_tab_page") {
     "promos/promo_service_factory.h",
     "promos/promo_service_observer.h",
   ]
-
   public_deps = [
     "//chrome/browser/new_tab_page/modules/file_suggestion:mojo_bindings",
     "//chrome/browser/new_tab_page/modules/v2/authentication:mojo_bindings",
     "//chrome/browser/new_tab_page/modules/v2/calendar:mojo_bindings",
     "//chrome/browser/new_tab_page/modules/v2/most_relevant_tab_resumption:mojo_bindings",
     "//chrome/browser/new_tab_page/modules/v2/tab_groups:mojo_bindings",
-    "//chrome/browser/themes",
+    "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/webui/ntp_microsoft_auth:untrusted",
     "//chrome/common:constants",
     "//components/ntp_tiles",
@@ -63,6 +61,14 @@ source_set("new_tab_page") {
     "//services/data_decoder/public/cpp",
     "//skia",
   ]
+
+  if (!is_android) {
+    public += [
+      "feature_promo_helper/new_tab_page_feature_promo_helper.h",
+      "modules/v2/tab_groups/tab_groups_page_handler.h",
+    ]
+    public_deps += [ "//chrome/browser/themes" ]
+  }
 }
 
 # The implementation target.
@@ -70,7 +76,6 @@ source_set("impl") {
   sources = [
     "chrome_colors/chrome_colors_factory.cc",
     "chrome_colors/chrome_colors_service.cc",
-    "feature_promo_helper/new_tab_page_feature_promo_helper.cc",
     "microsoft_auth/microsoft_auth_service.cc",
     "microsoft_auth/microsoft_auth_service_factory.cc",
     "modules/file_suggestion/drive_service.cc",
@@ -85,7 +90,6 @@ source_set("impl") {
     "modules/v2/calendar/google_calendar_page_handler.cc",
     "modules/v2/calendar/outlook_calendar_page_handler.cc",
     "modules/v2/most_relevant_tab_resumption/most_relevant_tab_resumption_page_handler.cc",
-    "modules/v2/tab_groups/tab_groups_page_handler.cc",
     "new_tab_page_util.cc",
     "one_google_bar/one_google_bar_data.cc",
     "one_google_bar/one_google_bar_loader_impl.cc",
@@ -95,13 +99,13 @@ source_set("impl") {
     "promos/promo_service.cc",
     "promos/promo_service_factory.cc",
   ]
-
   public_deps = [
     ":new_tab_page",
     "//chrome/browser:browser_public_dependencies",
   ]
 
   deps = [
+    "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/new_tab_page/chrome_colors:generate_chrome_colors_info",
     "//chrome/browser/new_tab_page/chrome_colors:selected_colors_info",
     "//chrome/browser/profiles",
@@ -112,15 +116,11 @@ source_set("impl") {
     "//chrome/browser/signin",
     "//chrome/browser/sync",
     "//chrome/browser/ui/actions:actions_headers",
+    "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/side_panel",
     "//chrome/browser/ui/side_panel:side_panel_views_dependent",
-    "//chrome/browser/ui/signin",
-    "//chrome/browser/ui/tabs:tab_strip",
-    "//chrome/browser/ui/tabs/saved_tab_groups",
-    "//chrome/browser/ui/user_education",
     "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/cr_components/theme_color_picker",
-    "//chrome/browser/user_education",
     "//chrome/browser/visited_url_ranking",
     "//components/content_settings/core/browser:cookie_settings",
     "//components/feature_engagement/public",
@@ -128,13 +128,29 @@ source_set("impl") {
     "//components/history_clusters/core",
     "//components/keyed_service/core",
     "//components/ntp_tiles:pref_names",
+    "//components/page_content_annotations/core:features",
     "//components/prefs",
     "//components/search",
     "//components/signin/core/browser",
     "//components/variations/service",
     "//content/public/browser",
     "//ui/base",
+    "//ui/webui/resources/js/browser_command:mojo_bindings",
   ]
+
+  if (!is_android) {
+    sources += [
+      "feature_promo_helper/new_tab_page_feature_promo_helper.cc",
+      "modules/v2/tab_groups/tab_groups_page_handler.cc",
+    ]
+    deps += [
+      "//chrome/browser/ui/signin",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/ui/tabs/saved_tab_groups",
+      "//chrome/browser/ui/user_education",
+      "//chrome/browser/user_education",
+    ]
+  }
 }
 
 source_set("test_support") {
@@ -162,8 +178,6 @@ source_set("unit_tests") {
     "modules/v2/authentication/microsoft_auth_page_handler_unittest.cc",
     "modules/v2/calendar/google_calendar_page_handler_unittest.cc",
     "modules/v2/calendar/outlook_calendar_page_handler_unittest.cc",
-    "modules/v2/most_relevant_tab_resumption/most_relevant_tab_resumption_page_handler_unittest.cc",
-    "modules/v2/tab_groups/tab_groups_page_handler_unittest.cc",
     "one_google_bar/one_google_bar_loader_impl_unittest.cc",
     "one_google_bar/one_google_bar_service_unittest.cc",
     "promos/promo_service_unittest.cc",
@@ -175,24 +189,35 @@ source_set("unit_tests") {
     "//chrome/browser",
     "//chrome/browser/sync",
     "//chrome/browser/tab_group_sync:factories",
-    "//chrome/browser/ui/tabs:test_support",
     "//chrome/browser/ui/views/user_education",
     "//chrome/browser/ui/webui:webui_util",
-    "//chrome/browser/user_education",
     "//chrome/browser/visited_url_ranking",
     "//chrome/test:test_support",
+    "//components/feature_engagement/public",
     "//components/feature_engagement/test:test_support",
     "//components/prefs:test_support",
     "//components/search",
     "//components/segmentation_platform/public:test_support",
+    "//components/signin/core/browser",
     "//components/signin/public/identity_manager:test_support",
     "//components/sync:test_support",
     "//components/visited_url_ranking/public:test_support",
     "//content/test:test_support",
+    "//google_apis/common:test_support",
     "//services/network:test_support",
     "//testing/gmock",
     "//testing/gtest",
   ]
+  if (!is_android) {
+    sources += [
+      "modules/v2/most_relevant_tab_resumption/most_relevant_tab_resumption_page_handler_unittest.cc",
+      "modules/v2/tab_groups/tab_groups_page_handler_unittest.cc",
+    ]
+    deps += [
+      "//chrome/browser/ui/tabs:test_support",
+      "//chrome/browser/user_education",
+    ]
+  }
 }
 
 # TODO(b/502297163): Enable tests.
@@ -211,6 +236,7 @@ if (!is_android) {
       "//chrome/browser",
       "//chrome/browser/new_tab_page/chrome_colors",
       "//chrome/browser/new_tab_page/chrome_colors:generate_chrome_colors_info",
+      "//chrome/browser/optimization_guide",
       "//chrome/browser/sync",
       "//chrome/browser/ui/views/user_education",
       "//chrome/browser/ui/webui/cr_components/theme_color_picker",

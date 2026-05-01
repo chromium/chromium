@@ -211,16 +211,11 @@ source_set("ui") {
         [ "//chrome/browser/context_sharing/tab_bottom_sheet/android" ]
   }
 
-  if (!is_android) {
+  if (!is_android || enable_webui_ntp) {
     public_deps += [
       "//chrome/browser/autocomplete:aim_eligibility_service",
       "//chrome/browser/contextual_search",
       "//chrome/browser/ui/browser_window",
-      "//chrome/browser/ui/side_panel",
-      "//chrome/browser/ui/side_panel:side_panel_views_dependent",
-      "//chrome/browser/ui/tabs:glic",
-      "//chrome/browser/ui/tabs:tab_strip",
-      "//chrome/browser/ui/views/side_panel",
       "//chrome/browser/ui/webui/cr_components/composebox",
       "//chrome/browser/ui/webui/searchbox",
       "//components/contextual_tasks/public:feature_list",
@@ -231,6 +226,15 @@ source_set("ui") {
       "//ui/webui/resources/cr_components/composebox:mojo_bindings",
       "//url",
     ]
+    if (!is_android) {
+      public_deps += [
+        "//chrome/browser/ui/side_panel",
+        "//chrome/browser/ui/side_panel:side_panel_views_dependent",
+        "//chrome/browser/ui/tabs:glic",
+        "//chrome/browser/ui/tabs:tab_strip",
+        "//chrome/browser/ui/views/side_panel",
+      ]
+    }
   }
 
   if (enable_guest_view && !enable_extensions_core) {
@@ -334,8 +338,6 @@ source_set("ui_impl") {
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/views/interaction",
       "//chrome/browser/ui/webui",
-      "//chrome/browser/ui/webui/cr_components/searchbox",
-      "//chrome/browser/ui/webui/sanitized_image:sanitized_image_source",
       "//components/contextual_tasks/public:feature_list",
       "//components/embedder_support:user_agent",
       "//components/zoom",
@@ -346,6 +348,13 @@ source_set("ui_impl") {
       "//third_party/lens_server_proto:lens_overlay_proto",
       "//third_party/protobuf:protobuf_lite",
       "//url",
+    ]
+  }
+  if ((!is_ios && !is_android) || enable_webui_ntp) {
+    deps += [
+      "//chrome/browser/ui/webui/cr_components/searchbox",
+      "//chrome/browser/ui/webui/new_tab_page/composebox/variations",
+      "//chrome/browser/ui/webui/sanitized_image:sanitized_image_source",
     ]
   }
 

@@ -13,10 +13,10 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/new_tab_page/modules/modules_constants.h"
 #include "chrome/browser/new_tab_page/modules/modules_switches.h"
+#include "chrome/browser/new_tab_page/ntp_pref_names.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
-#include "chrome/browser/ui/webui/new_tab_page/ntp_pref_names.h"
 #include "chrome/common/pref_names.h"
 #include "components/ntp_tiles/features.h"
 #include "components/ntp_tiles/pref_names.h"
@@ -283,28 +283,41 @@ bool IsCustomLinksEnabled(Profile* profile) {
   return profile->GetPrefs()->GetBoolean(ntp_prefs::kNtpCustomLinksVisible);
 }
 
+// TODO(b/502297163): Implement for Android.
+#if !BUILDFLAG(IS_ANDROID)
 bool IsEnterpriseShortcutsEmpty(Profile* profile) {
   return profile->GetPrefs()
       ->GetList(ntp_tiles::prefs::kEnterpriseShortcutsPolicyList)
       .empty();
 }
+#endif
 
 bool IsEnterpriseShortcutsEnabled(Profile* profile) {
   // Enable enterprise shortcuts if the enterprise shortcuts policy is set, and
   // user has enabled visibility.
+// TODO(b/502297163): Implement for Android.
+#if !BUILDFLAG(IS_ANDROID)
   return !IsEnterpriseShortcutsEmpty(profile) &&
          profile->GetPrefs()->GetBoolean(
              ntp_prefs::kNtpEnterpriseShortcutsVisible);
+#else
+  return false;
+#endif
 }
 
 bool IsPersonalShortcutsVisible(Profile* profile) {
   // Always return true if no enterprise shortcuts are set by policy. Rely on
   // `IsTopSitesEnabled()` and `IsCustomLinksEnabled()` only.
+// TODO(b/502297163): Implement for Android.
+#if !BUILDFLAG(IS_ANDROID)
   if (IsEnterpriseShortcutsEmpty(profile)) {
     return true;
   }
   return profile->GetPrefs()->GetBoolean(
       ntp_prefs::kNtpPersonalShortcutsVisible);
+#else
+  return true;
+#endif
 }
 
 std::set<ntp_tiles::TileType> GetEnabledTileTypes(Profile* profile) {

@@ -454,6 +454,8 @@ class JArrayView<T> : public JArrayViewBase<T> {
 #pragma clang unsafe_buffer_usage end
   }
 
+  T operator[](size_t index) const { return Get(static_cast<int32_t>(index)); }
+
   const T* data() const noexcept [[clang::lifetimebound]] { return data_; }
 
   const T* begin() const noexcept [[clang::lifetimebound]] { return data_; }

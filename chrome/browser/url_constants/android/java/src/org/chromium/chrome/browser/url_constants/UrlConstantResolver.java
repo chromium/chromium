@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.url_constants;
 
+import org.chromium.base.CommandLine;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -100,6 +101,9 @@ public class UrlConstantResolver {
 
     /** Returns the native URL for the New Tab Page, ignoring any overrides. */
     public static String getOriginalNativeNtpUrl() {
+        if (CommandLine.getInstance().hasSwitch("use-webui-ntp")) {
+            return UrlConstants.NEW_TAB_PAGE_URL_LEGACY;
+        }
         return UrlConstants.NTP_URL;
     }
 

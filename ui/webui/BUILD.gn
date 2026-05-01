@@ -6,74 +6,81 @@ import("//build/buildflag_header.gni")
 import("//components/signin/features.gni")
 import("//ui/webui/webui_features.gni")
 
-static_library("webui") {
-  sources = [
-    "mojo_web_ui_controller.cc",
-    "mojo_web_ui_controller.h",
-    "untrusted_web_ui_controller.cc",
-    "untrusted_web_ui_controller.h",
-    "untrusted_web_ui_controller_factory.cc",
-    "untrusted_web_ui_controller_factory.h",
-    "webui_allowlist.cc",
-    "webui_allowlist.h",
-    "webui_allowlist_provider.cc",
-    "webui_allowlist_provider.h",
-    "webui_util.cc",
-    "webui_util.h",
-  ]
-
-  deps = [
-    "//base",
-    "//components/content_settings/core/browser",
-    "//content/public/browser",
-    "//services/service_manager/public/cpp",
-    "//ui/webui/resources:resources_grit",
-  ]
-
-  public_deps = [
-    "//ui/base",
-    "//ui/webui/resources/js/browser_command:mojo_bindings",
-    "//ui/webui/resources/js/metrics_reporter:mojo_bindings",
-  ]
-
-  if (!is_android && !is_ios) {
-    public_deps += [
-      "//ui/webui/resources/cr_components/color_change_listener:mojom",
-      "//ui/webui/resources/cr_components/customize_color_scheme_mode:mojom",
-      "//ui/webui/resources/cr_components/history_clusters:mojo_bindings",
-      "//ui/webui/resources/cr_components/most_visited:mojom",
-      "//ui/webui/resources/cr_components/theme_color_picker:mojom",
+if (!is_ios) {
+  static_library("webui") {
+    sources = [
+      "mojo_web_ui_controller.cc",
+      "mojo_web_ui_controller.h",
+      "untrusted_web_ui_controller.cc",
+      "untrusted_web_ui_controller.h",
+      "untrusted_web_ui_controller_factory.cc",
+      "untrusted_web_ui_controller_factory.h",
+      "webui_allowlist.cc",
+      "webui_allowlist.h",
+      "webui_allowlist_provider.cc",
+      "webui_allowlist_provider.h",
+      "webui_util.cc",
+      "webui_util.h",
     ]
-    sources += [
-      "color_change_listener/color_change_handler.cc",
-      "color_change_listener/color_change_handler.h",
+
+    deps = [
+      "//base",
+      "//components/content_settings/core/browser",
+      "//content/public/browser",
+      "//services/service_manager/public/cpp",
+      "//ui/webui/resources:resources_grit",
+    ]
+
+    public_deps = [
+      "//ui/base",
+      "//ui/webui/resources/js/browser_command:mojo_bindings",
+      "//ui/webui/resources/js/metrics_reporter:mojo_bindings",
+    ]
+
+    if (enable_webui_ntp) {
+      public_deps +=
+          [ "//ui/webui/resources/cr_components/color_change_listener:mojom" ]
+      sources += [
+        "color_change_listener/color_change_handler.cc",
+        "color_change_listener/color_change_handler.h",
+      ]
+    }
+
+    if (!is_android && !is_ios) {
+      public_deps += [
+        "//ui/webui/resources/cr_components/customize_color_scheme_mode:mojom",
+        "//ui/webui/resources/cr_components/history_clusters:mojo_bindings",
+        "//ui/webui/resources/cr_components/most_visited:mojom",
+        "//ui/webui/resources/cr_components/theme_color_picker:mojom",
+      ]
+    }
+
+    if (enable_dice_support) {
+      public_deps +=
+          [ "//ui/webui/resources/js/batch_upload_promo:mojo_bindings" ]
+    }
+  }
+  source_set("test_support") {
+    testonly = true
+
+    sources = [
+      "untrusted_web_ui_browsertest_util.cc",
+      "untrusted_web_ui_browsertest_util.h",
+    ]
+
+    deps = [
+      ":webui",
+      "//base",
+      "//content/public/browser",
+      "//content/test:test_support",
     ]
   }
-
-  if (enable_dice_support) {
-    public_deps +=
-        [ "//ui/webui/resources/js/batch_upload_promo:mojo_bindings" ]
-  }
-}
+}  # !is_ios
 
 buildflag_header("buildflags") {
   header = "buildflags.h"
-  flags =
-      [ "ENABLE_WEBUI_GENERATE_CODE_CACHE=$enable_webui_generate_code_cache" ]
-}
-
-source_set("test_support") {
-  testonly = true
-
-  sources = [
-    "untrusted_web_ui_browsertest_util.cc",
-    "untrusted_web_ui_browsertest_util.h",
-  ]
-
-  deps = [
-    ":webui",
-    "//base",
-    "//content/public/browser",
-    "//content/test:test_support",
+  flags = [
+    "ENABLE_WEBUI_GENERATE_CODE_CACHE=$enable_webui_generate_code_cache",
+    "ENABLE_WEBUI_NTP=$enable_webui_ntp",
   ]
 }

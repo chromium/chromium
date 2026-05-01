@@ -6,9 +6,12 @@
 
 #include <string>
 
+#include "base/command_line.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/common/url_constants.h"
+#include "chrome/common/webui_url_constants.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/url_constants.h"
 #include "url/gurl.h"
@@ -39,7 +42,12 @@ bool HandleAndroidNativePageURL(GURL* url,
 
   if (url->SchemeIs(content::kChromeUIScheme)) {
     if (url->GetHost() == chrome::kChromeUINewTabHost) {
-      *url = GURL(chrome::kChromeUINativeNewTabURL);
+      if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+              switches::kUseWebUiNtp)) {
+        *url = GURL(chrome::kChromeUINewTabPageURL);
+      } else {
+        *url = GURL(chrome::kChromeUINativeNewTabURL);
+      }
       return true;
     }
   }

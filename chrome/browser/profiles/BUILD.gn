@@ -761,6 +761,7 @@ source_set("profiles_extra_parts_impl") {
     "//components/sync/base:features",
     "//media",
     "//services/network/public/cpp",
+    "//ui/webui:buildflags",
   ]
 
   public_deps = [
@@ -776,6 +777,9 @@ source_set("profiles_extra_parts_impl") {
       "//chrome/browser/tab",
       "//components/commerce/core:merchant_signal_db_proto",
     ]
+    if (enable_webui_ntp) {
+      deps += [ "//chrome/browser/new_tab_page" ]
+    }
   } else {
     deps += [
       "//chrome/browser/accessibility/phrase_segmentation",

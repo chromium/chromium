@@ -3,9 +3,8 @@
 # found in the LICENSE file.
 
 import("//components/signin/features.gni")
+import("//ui/webui/webui_features.gni")
 import("../tools/build_webui.gni")
-
-include_polymer = !is_android && !is_ios
 
 build_webui("build") {
   grd_prefix = "webui_js"
@@ -56,10 +55,6 @@ build_webui("build") {
     ts_files += [ "util_deprecated.js" ]
   }
 
-  if (include_polymer) {
-    ts_files += [ "browser_command/browser_command_proxy.ts" ]
-  }
-
   if (enable_dice_support) {
     ts_files += [ "batch_upload_promo/batch_upload_promo_proxy.ts" ]
   }
@@ -67,7 +62,8 @@ build_webui("build") {
   mojo_files_deps = [ "./metrics_reporter:mojo_bindings_ts__generator" ]
   mojo_files = [ "$root_gen_dir/ui/webui/resources/js/metrics_reporter/metrics_reporter.mojom-webui.ts" ]
 
-  if (include_polymer) {
+  if ((!is_android && !is_ios) || enable_webui_ntp) {
+    ts_files += [ "browser_command/browser_command_proxy.ts" ]
     mojo_files_deps += [ "./browser_command:mojo_bindings_ts__generator" ]
     mojo_files += [ "$root_gen_dir/ui/webui/resources/js/browser_command/browser_command.mojom-webui.ts" ]
   }

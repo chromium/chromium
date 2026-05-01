@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//ui/webui/resources/tools/generate_grd.gni")
+import("//ui/webui/webui_features.gni")
 
 generate_grd("build_grdp") {
   grd_prefix = "webui_images"
@@ -59,7 +60,7 @@ generate_grd("build_grdp") {
     ]
   }
 
-  if (!is_android && !is_ios) {
+  if ((!is_android && !is_ios) || enable_webui_ntp) {
     input_files += [
       "arrow_right.svg",
       "business.svg",

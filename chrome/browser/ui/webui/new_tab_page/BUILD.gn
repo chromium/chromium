@@ -3,8 +3,10 @@
 # found in the LICENSE file.
 
 import("//mojo/public/tools/bindings/mojom.gni")
+import("//third_party/jni_zero/jni_zero.gni")
+import("//ui/webui/webui_features.gni")
 
-assert(!is_android)
+assert(enable_webui_ntp)
 
 mojom("mojo_bindings") {
   sources = [ "new_tab_page.mojom" ]
@@ -12,14 +14,16 @@ mojom("mojo_bindings") {
 
   public_deps = [
     "//chrome/browser/ui/webui/new_tab_page/action_chips:mojo_bindings",
-    "//chrome/browser/ui/webui/new_tab_page/ntp_promo:mojo_bindings",
     "//chrome/browser/ui/webui/ntp_microsoft_auth:shared",
     "//components/ntp_tiles:mojo_bindings",
     "//components/omnibox/browser:mojo_bindings",
     "//skia/public/mojom",
     "//ui/webui/resources/cr_components/color_change_listener:mojom",
-    "//ui/webui/resources/cr_components/composebox:mojo_bindings",
     "//ui/webui/resources/cr_components/most_visited:mojom",
     "//url/mojom:url_mojom_gurl",
   ]
+  if (!is_android) {
+    public_deps +=
+        [ "//chrome/browser/ui/webui/new_tab_page/ntp_promo:mojo_bindings" ]
+  }
 }

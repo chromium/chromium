@@ -23,10 +23,6 @@
 #include "chrome/browser/new_tab_page/modules/v2/tab_groups/tab_groups.mojom.h"
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips.mojom.h"
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips_handler.h"
-#include "chrome/browser/ui/webui/new_tab_page/ntp_promo/ntp_promo.mojom.h"
-#include "chrome/browser/ui/webui/new_tab_page/ntp_promo/ntp_promo_handler.h"
-#include "components/user_education/common/ntp_promo/ntp_promo_controller.h"
-#include "components/user_education/webui/help_bubble_handler.h"
 #include "ui/webui/resources/cr_components/help_bubble/help_bubble.mojom.h"
 #include "ui/webui/resources/js/browser_command/browser_command.mojom.h"
 #if !defined(OFFICIAL_BUILD)
@@ -49,12 +45,20 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/resource/resource_scale_factor.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/native_theme/native_theme_observer.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 #include "ui/webui/resources/cr_components/composebox/composebox.mojom.h"
 #include "ui/webui/resources/cr_components/most_visited/most_visited.mojom.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/webui/new_tab_page/ntp_promo/ntp_promo.mojom.h"  // nogncheck
+#include "chrome/browser/ui/webui/new_tab_page/ntp_promo/ntp_promo_handler.h"  // nogncheck
+#include "components/user_education/common/ntp_promo/ntp_promo_controller.h"
+#include "components/user_education/webui/help_bubble_handler.h"
+#endif
 
 namespace base {
 class RefCountedMemory;
@@ -96,18 +100,6 @@ class RealboxHandler;
 class TabGroupsPageHandler;
 class NewTabPageUI;
 
-class NewTabPageUIConfig : public content::DefaultWebUIConfig<NewTabPageUI> {
- public:
-  NewTabPageUIConfig()
-      : DefaultWebUIConfig(content::kChromeUIScheme,
-                           chrome::kChromeUINewTabPageHost) {}
-  // content::WebUIConfig:
-  std::unique_ptr<content::WebUIController> CreateWebUIController(
-      content::WebUI* web_ui,
-      const GURL& url) override;
-  bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
-};
-
 class NewTabPageUI
     : public ui::MojoWebUIController,
       public new_tab_page::mojom::PageHandlerFactory,
@@ -116,9 +108,11 @@ class NewTabPageUI
       public composebox::mojom::PageHandlerFactory,
       public browser_command::mojom::CommandHandlerFactory,
       public help_bubble::mojom::HelpBubbleHandlerFactory,
+#if !BUILDFLAG(IS_ANDROID)
       public ntp_promo::mojom::NtpPromoHandlerFactory,
-      public NtpCustomBackgroundServiceObserver,
       public action_chips::mojom::ActionChipsHandlerFactory,
+#endif
+      public NtpCustomBackgroundServiceObserver,
       public searchbox::mojom::PageHandlerFactory,
       content::WebContentsObserver {
  public:
@@ -207,7 +201,7 @@ class NewTabPageUI
           pending_receiver);
 
   // Instantiates the implementor of the composebox::mojom::PageHandlerFactory
-  // mojo interface passing the pending receiver that will be internally bound.
+  // mojo interface inside the new tab page.
   void BindInterface(
       mojo::PendingReceiver<composebox::mojom::PageHandlerFactory>
           pending_receiver);
@@ -234,13 +228,14 @@ class NewTabPageUI
       mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandlerFactory>
           pending_receiver);
 
+#if !BUILDFLAG(IS_ANDROID)
   void BindInterface(
       mojo::PendingReceiver<ntp_promo::mojom::NtpPromoHandlerFactory>
           pending_receiver);
-
   void BindInterface(
       mojo::PendingReceiver<action_chips::mojom::ActionChipsHandlerFactory>
           pending_receiver);
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   void ConnectToParentDocument(
       mojo::PendingRemote<new_tab_page::mojom::MicrosoftAuthUntrustedDocument>
@@ -302,16 +297,17 @@ class NewTabPageUI
       mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandler> handler)
       override;
 
+#if !BUILDFLAG(IS_ANDROID)
   // ntp_promo::mojom::NtpPromoHandlerFactory:
   void CreateNtpPromoHandler(
       mojo::PendingRemote<ntp_promo::mojom::NtpPromoClient> client,
       mojo::PendingReceiver<ntp_promo::mojom::NtpPromoHandler> handler)
       override;
-
   // action_chips::mojom::ActionChipsHandlerFactory:
   void CreateActionChipsHandler(
       mojo::PendingReceiver<action_chips::mojom::ActionChipsHandler> handler,
       mojo::PendingRemote<action_chips::mojom::Page> page) override;
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   // NtpCustomBackgroundServiceObserver:
   void OnCustomBackgroundImageUpdated() override;
@@ -358,24 +354,35 @@ class NewTabPageUI
   std::unique_ptr<MostVisitedHandler> most_visited_page_handler_;
   mojo::Receiver<most_visited::mojom::MostVisitedPageHandlerFactory>
       most_visited_page_factory_receiver_;
-  std::unique_ptr<ComposeboxHandler> composebox_handler_;
   mojo::Receiver<composebox::mojom::PageHandlerFactory>
       composebox_page_factory_receiver_;
+#if BUILDFLAG(IS_ANDROID)
+  mojo::PendingRemote<composebox::mojom::Page> android_stub_composebox_page_;
+  std::unique_ptr<composebox::mojom::PageHandler>
+      android_stub_composebox_handler_;
+  mojo::PendingRemote<searchbox::mojom::Page> android_stub_searchbox_page_;
+  std::unique_ptr<searchbox::mojom::PageHandler>
+      android_stub_searchbox_handler_;
+  mojo::PendingRemote<searchbox::mojom::Page> android_stub_realbox_page_;
+  std::unique_ptr<searchbox::mojom::PageHandler> android_stub_realbox_handler_;
+#else
+  std::unique_ptr<ComposeboxHandler> composebox_handler_;
+  std::unique_ptr<user_education::HelpBubbleHandler> help_bubble_handler_;
+  std::unique_ptr<NtpPromoHandler> ntp_promo_handler_;
+  mojo::Receiver<ntp_promo::mojom::NtpPromoHandlerFactory>
+      ntp_promo_handler_factory_receiver_;
+  std::unique_ptr<ActionChipsHandler> action_chips_handler_;
+  mojo::Receiver<action_chips::mojom::ActionChipsHandlerFactory>
+      action_chips_handler_factory_receiver_;
+#endif  // BUILDFLAG(IS_ANDROID)
   std::unique_ptr<BrowserCommandHandler> promo_browser_command_handler_;
   mojo::Receiver<browser_command::mojom::CommandHandlerFactory>
       browser_command_factory_receiver_;
   std::unique_ptr<RealboxHandler> realbox_handler_;
   mojo::Receiver<searchbox::mojom::PageHandlerFactory>
-      searchbox_page_factory_receiver_{this};
-  std::unique_ptr<user_education::HelpBubbleHandler> help_bubble_handler_;
+      searchbox_page_factory_receiver_;
   mojo::Receiver<help_bubble::mojom::HelpBubbleHandlerFactory>
-      help_bubble_handler_factory_receiver_{this};
-  std::unique_ptr<NtpPromoHandler> ntp_promo_handler_;
-  mojo::Receiver<ntp_promo::mojom::NtpPromoHandlerFactory>
-      ntp_promo_handler_factory_receiver_{this};
-  std::unique_ptr<ActionChipsHandler> action_chips_handler_;
-  mojo::Receiver<action_chips::mojom::ActionChipsHandlerFactory>
-      action_chips_handler_factory_receiver_{this};
+      help_bubble_handler_factory_receiver_;
 #if !defined(OFFICIAL_BUILD)
   std::unique_ptr<FooHandler> foo_handler_;
 #endif
@@ -388,7 +395,7 @@ class NewTabPageUI
   raw_ptr<NtpCustomBackgroundService> ntp_custom_background_service_;
   base::ScopedObservation<NtpCustomBackgroundService,
                           NtpCustomBackgroundServiceObserver>
-      ntp_custom_background_service_observation_{this};
+      ntp_custom_background_service_observation_;
   // Time the NTP started loading. Used for logging the WebUI NTP's load
   // performance.
   base::Time navigation_start_time_;
@@ -406,6 +413,18 @@ class NewTabPageUI
   base::WeakPtrFactory<NewTabPageUI> weak_ptr_factory_{this};
 
   WEB_UI_CONTROLLER_TYPE_DECL();
+};
+
+class NewTabPageUIConfig : public content::DefaultWebUIConfig<NewTabPageUI> {
+ public:
+  NewTabPageUIConfig()
+      : DefaultWebUIConfig(content::kChromeUIScheme,
+                           chrome::kChromeUINewTabPageHost) {}
+  // content::WebUIConfig:
+  std::unique_ptr<content::WebUIController> CreateWebUIController(
+      content::WebUI* web_ui,
+      const GURL& url) override;
+  bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_NEW_TAB_PAGE_NEW_TAB_PAGE_UI_H_

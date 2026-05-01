@@ -126,6 +126,10 @@ omnibox::NTPComposeboxConfig GetNTPComposeboxConfig() {
 }  // namespace
 
 bool IsNtpComposeboxEnabled(Profile* profile) {
+// TODO(b/502297163): Implement for Android.
+#if BUILDFLAG(IS_ANDROID)
+  return true;
+#else
   if (!profile) {
     return false;
   }
@@ -152,6 +156,7 @@ bool IsNtpComposeboxEnabled(Profile* profile) {
   return base::FeatureList::IsEnabled(kNtpComposebox) &&
          aim_eligibility_service->IsAimEligible() &&
          aim_eligibility_service->IsFuseboxEligible();
+#endif
 }
 
 bool IsDeepSearchEnabled(Profile* profile) {
@@ -261,6 +266,10 @@ FeatureConfig::~FeatureConfig() = default;
 namespace ntp_realbox {
 
 bool IsNtpRealboxNextEnabled(Profile* profile) {
+// TODO(b/502297163): Implement for Android.
+#if BUILDFLAG(IS_ANDROID)
+  return true;
+#else
   if (!profile) {
     return false;
   }
@@ -291,6 +300,7 @@ bool IsNtpRealboxNextEnabled(Profile* profile) {
   return base::FeatureList::IsEnabled(kNtpRealboxNext) &&
          aim_eligibility_service->IsAimEligible() &&
          aim_eligibility_service->IsFuseboxEligible();
+#endif
 }
 
 BASE_FEATURE(kNtpRealboxNext, base::FEATURE_DISABLED_BY_DEFAULT);

@@ -968,11 +968,26 @@ static_library("ui") {
   if (!is_android) {
     deps += [
       "//chrome/browser/accessibility/phrase_segmentation",
-      "//chrome/browser/new_tab_page",
-      "//chrome/browser/new_tab_page:impl",
       "//chrome/browser/profile_resetter",
       "//chrome/browser/ui/web_modal:browser_window_modal_dialog_delegate",
       "//chrome/browser/ui/zoom:browser_window_zoom_observer",
+    ]
+  }
+
+  if (!is_android || enable_webui_ntp) {
+    sources += [
+      "webui/theme_source.cc",
+      "webui/theme_source.h",
+    ]
+    deps += [
+      "//chrome/browser/contextual_search",
+      "//chrome/browser/desktop_to_mobile_promos:utils",
+      "//chrome/browser/preloading/new_tab_page_preload",
+      "//chrome/browser/search/background",
+      "//chrome/browser/ui/color:mixers",
+      "//chrome/browser/ui/webui:webui_util",
+      "//chrome/browser/ui/webui/sanitized_image:sanitized_image_source",
+      "//components/themes",
     ]
   }
 
@@ -1137,6 +1152,7 @@ static_library("ui") {
       "//chrome/browser/ui/plus_addresses:impl",
       "//chrome/browser/ui/webui/notifications_internals",
       "//chrome/browser/ui/webui/notifications_internals:impl",
+      "//chrome/browser/web_applications/proto",
       "//components/android_autofill/browser:android",
       "//components/autofill/android:payments_autofill_cc",
       "//components/autofill/android:payments_jni_headers",
@@ -1336,8 +1352,6 @@ static_library("ui") {
       "webui/cr_components/history_clusters/history_clusters_util.h",
       "webui/cr_components/history_embeddings/history_embeddings_handler.cc",
       "webui/cr_components/history_embeddings/history_embeddings_handler.h",
-      "webui/cr_components/most_visited/most_visited_handler.cc",
-      "webui/cr_components/most_visited/most_visited_handler.h",
       "webui/cr_components/theme_color_picker/theme_color_picker_handler.cc",
       "webui/cr_components/theme_color_picker/theme_color_picker_handler.h",
       "webui/data_sharing/data_sharing_page_handler.cc",
@@ -1383,14 +1397,6 @@ static_library("ui") {
       "webui/media_router/web_contents_display_observer.h",
       "webui/new_tab_page/action_chips/action_chips_handler.cc",
       "webui/new_tab_page/action_chips/action_chips_handler.h",
-      "webui/new_tab_page/new_tab_page_handler.cc",
-      "webui/new_tab_page/new_tab_page_handler.h",
-      "webui/new_tab_page/new_tab_page_ui.cc",
-      "webui/new_tab_page/new_tab_page_ui.h",
-      "webui/new_tab_page/ntp_pref_names.cc",
-      "webui/new_tab_page/ntp_pref_names.h",
-      "webui/new_tab_page/untrusted_source.cc",
-      "webui/new_tab_page/untrusted_source.h",
       "webui/new_tab_page_third_party/new_tab_page_third_party_handler.cc",
       "webui/new_tab_page_third_party/new_tab_page_third_party_handler.h",
       "webui/new_tab_page_third_party/new_tab_page_third_party_ui.cc",
@@ -1572,8 +1578,6 @@ static_library("ui") {
       "webui/theme_colors_source_manager_factory.h",
       "webui/theme_handler.cc",
       "webui/theme_handler.h",
-      "webui/theme_source.cc",
-      "webui/theme_source.h",
       "webui/user_education_internals/user_education_internals_page_handler_impl.cc",
       "webui/user_education_internals/user_education_internals_page_handler_impl.h",
       "webui/user_education_internals/user_education_internals_ui.cc",
@@ -1641,7 +1645,6 @@ static_library("ui") {
       "//chrome/browser/background/glic",
       "//chrome/browser/bluetooth",
       "//chrome/browser/browsing_data:constants",
-      "//chrome/browser/contextual_search",
       "//chrome/browser/custom_handlers",
       "//chrome/browser/device_api",
       "//chrome/browser/first_party_sets",
@@ -1707,7 +1710,6 @@ static_library("ui") {
       "//chrome/browser/ui/webui/data_sharing",
       "//chrome/browser/ui/webui/feedback/report_unsafe_site:mojo_bindings",
       "//chrome/browser/ui/webui/omnibox_popup/mojom",
-      "//chrome/browser/ui/webui/sanitized_image:sanitized_image_source",
       "//chrome/browser/ui/webui/util:impl",
       "//chrome/browser/usb",
       "//chrome/browser/webauthn:local_credential_management",
@@ -1749,7 +1751,6 @@ static_library("ui") {
       "//chrome/browser/ui/bookmarks:impl",
       "//chrome/browser/ui/call_to_action",
       "//chrome/browser/ui/color:color_headers",
-      "//chrome/browser/ui/color:mixers",
       "//chrome/browser/ui/commerce",
       "//chrome/browser/ui/content_settings",
       "//chrome/browser/ui/content_settings:impl",
@@ -1805,14 +1806,11 @@ static_library("ui") {
       "//chrome/browser/ui/views/toolbar",
       "//chrome/browser/ui/views/toolbar:impl",
       "//chrome/browser/ui/views/zoom",
-      "//chrome/browser/ui/webui:webui_util",
       "//chrome/browser/ui/webui/actor_internals",
       "//chrome/browser/ui/webui/app_management",
       "//chrome/browser/ui/webui/color_pipeline_internals",
       "//chrome/browser/ui/webui/commerce",
       "//chrome/browser/ui/webui/commerce:impl",
-      "//chrome/browser/ui/webui/cr_components/composebox",
-      "//chrome/browser/ui/webui/cr_components/searchbox:searchbox_impl",
       "//chrome/browser/ui/webui/cr_components/theme_color_picker",
       "//chrome/browser/ui/webui/customize_buttons",
       "//chrome/browser/ui/webui/customize_buttons:impl",
@@ -1822,12 +1820,10 @@ static_library("ui") {
       "//chrome/browser/ui/webui/new_tab_footer",
       "//chrome/browser/ui/webui/new_tab_footer:impl",
       "//chrome/browser/ui/webui/new_tab_page/action_chips",
-      "//chrome/browser/ui/webui/new_tab_page/composebox/variations",
       "//chrome/browser/ui/webui/new_tab_page/ntp_promo",
       "//chrome/browser/ui/webui/password_manager:mojo_bindings",
       "//chrome/browser/ui/webui/password_manager:password_manager_ui_handler",
       "//chrome/browser/ui/webui/privacy_sandbox:mojo_bindings",
-      "//chrome/browser/ui/webui/searchbox",
       "//chrome/browser/ui/webui/settings",
       "//chrome/browser/ui/webui/settings:impl",
       "//chrome/browser/ui/webui/signin",
@@ -1896,7 +1892,6 @@ static_library("ui") {
       "//components/search_provider_logos",
       "//components/services/app_service",
       "//components/supervised_user/core/common",
-      "//components/themes",
       "//components/ui_metrics",
       "//components/url_formatter",
       "//components/user_education/common",
@@ -2177,6 +2172,41 @@ static_library("ui") {
     }
   }
 
+  if (enable_webui_ntp) {
+    sources += [
+      "webui/cr_components/most_visited/most_visited_handler.cc",
+      "webui/cr_components/most_visited/most_visited_handler.h",
+      "webui/new_tab_page/new_tab_page_handler.cc",
+      "webui/new_tab_page/new_tab_page_handler.h",
+      "webui/new_tab_page/new_tab_page_ui.cc",
+      "webui/new_tab_page/new_tab_page_ui.h",
+      "webui/new_tab_page/untrusted_source.cc",
+      "webui/new_tab_page/untrusted_source.h",
+    ]
+    deps += [
+      "//chrome/browser/new_tab_page:impl",
+      "//chrome/browser/ui/webui/cr_components/composebox",
+      "//chrome/browser/ui/webui/cr_components/searchbox",
+      "//chrome/browser/ui/webui/cr_components/searchbox:searchbox_impl",
+      "//chrome/browser/ui/webui/new_tab_page:mojo_bindings",
+      "//chrome/browser/ui/webui/new_tab_page/composebox/variations",
+      "//chrome/browser/ui/webui/ntp_microsoft_auth:untrusted",
+      "//chrome/browser/ui/webui/searchbox",
+    ]
+    if (is_android) {
+      sources += [
+        "webui/new_tab_page/stub_searchbox_handler.cc",
+        "webui/new_tab_page/stub_searchbox_handler.h",
+      ]
+      deps += [
+        "//chrome/browser/ui/webui/customize_buttons:mojo_bindings",
+        "//chrome/browser/ui/webui/new_tab_page/action_chips:mojo_bindings",
+        "//chrome/browser/ui/webui/new_tab_page/foo:mojo_bindings",
+        "//ui/webui/resources/cr_components/composebox:mojo_bindings",
+        "//ui/webui/resources/cr_components/help_bubble:mojo_bindings",
+      ]
+    }
+  }
   if (enable_devtools_frontend) {
     sources += [
       "webui/devtools/devtools_ui.cc",
@@ -3144,7 +3174,6 @@ static_library("ui") {
     ]
     deps += [
       "//chrome/browser/lifetime:termination_notification",
-      "//chrome/browser/search/background",
       "//chrome/browser/themes",
       "//chrome/browser/ui/autofill/payments",
       "//chrome/browser/ui/context_highlight",
@@ -5363,6 +5392,15 @@ static_library("ui") {
     ]
   }
 
+  if (enable_extensions_core || enable_webui_ntp) {
+    sources += [
+      "webui/favicon_source.cc",
+      "webui/favicon_source.h",
+      "webui/plural_string_handler.cc",
+      "webui/plural_string_handler.h",
+    ]
+  }
+
   if (enable_extensions_core) {
     sources += [
       "webui/extensions/extension_basic_info.cc",
@@ -5373,14 +5411,10 @@ static_library("ui") {
       "webui/extensions/extensions_internals_source.h",
       "webui/extensions/extensions_ui.cc",
       "webui/extensions/extensions_ui.h",
-      "webui/favicon_source.cc",
-      "webui/favicon_source.h",
       "webui/managed_ui_handler.cc",
       "webui/managed_ui_handler.h",
       "webui/page_not_available_for_guest/page_not_available_for_guest_ui.cc",
       "webui/page_not_available_for_guest/page_not_available_for_guest_ui.h",
-      "webui/plural_string_handler.cc",
-      "webui/plural_string_handler.h",
     ]
     deps += [
       "//chrome/browser/extensions",

@@ -179,6 +179,7 @@ component("mixers") {
     "//ui/color/dynamic_color",
     "//ui/gfx:color_utils",
     "//ui/native_theme/features",
+    "//ui/webui:buildflags",
   ]
 
   public_deps = [ "//base" ]

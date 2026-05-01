@@ -15,13 +15,11 @@
 #include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
 #include "ui/color/color_metrics.h"
+#include "ui/color/color_mixers.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/color_provider_key.h"
 #include "ui/color/color_provider_utils.h"
-
-#if !BUILDFLAG(IS_ANDROID)
-#include "ui/color/color_mixers.h"
-#endif
+#include "ui/webui/buildflags.h"
 
 namespace ui {
 
@@ -57,10 +55,10 @@ ColorProviderManager& ColorProviderManager::Get() {
   std::optional<GlobalManager>& manager = GetGlobalManager();
   if (!manager.has_value()) {
     manager.emplace();
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_WEBUI_NTP)
     manager.value().AppendColorProviderInitializer(
         base::BindRepeating(AddColorMixers));
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(ENABLE_WEBUI_NTP)
   }
 
   return manager.value();

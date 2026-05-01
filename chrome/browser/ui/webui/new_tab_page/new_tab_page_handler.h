@@ -25,7 +25,6 @@
 #include "chrome/browser/search/background/ntp_custom_background_service_observer.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_observer.h"
-#include "chrome/browser/ui/search/ntp_user_data_logger.h"
 #include "chrome/browser/ui/views/new_tab_footer/footer_controller_observer.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page.mojom.h"
 #include "chrome/common/search/ntp_logging_events.h"
@@ -44,6 +43,10 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/native_theme/native_theme_observer.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/search/ntp_user_data_logger.h"
+#endif
 
 class GURL;
 class OptimizationGuideKeyedService;
@@ -202,6 +205,7 @@ class NewTabPageHandler
   void OnBrowserWindowInterfaceChanged();
 
   void LogEvent(NTPLoggingEventType event);
+  void LogEvent(NTPLoggingEventType event, base::TimeDelta delta);
 
   typedef base::OnceCallback<void(bool success,
                                   std::optional<std::string> body)>
@@ -244,12 +248,29 @@ class NewTabPageHandler
   void SetStaleModulesDisabled(const std::vector<std::string>& module_ids,
                                bool disabled);
 
+// TODO(b/502297163): Implement for Android.
+#if !BUILDFLAG(IS_ANDROID)
   void TryShowRealboxContextualMenuIPH(ui::TrackedElement* element);
+#endif
 
   // Synchronizes Microsoft module enablement with their current authentication
   // state. The return value indicates whether the modules should be considered
   // loadable.
   bool SyncMicrosoftModulesWithAuth();
+
+// TODO(b/502297163): Implement for Android.
+#if !BUILDFLAG(IS_ANDROID)
+  NTPUserDataLogger logger_;
+  base::ScopedObservation<ThemeService, ThemeServiceObserver>
+      theme_service_observation_{this};
+  base::ScopedObservation<PromoService, PromoServiceObserver>
+      promo_service_observation_{this};
+  base::ScopedObservation<MicrosoftAuthService, MicrosoftAuthServiceObserver>
+      microsoft_auth_service_observation_{this};
+  base::ScopedObservation<new_tab_footer::NewTabFooterController,
+                          new_tab_footer::NewTabFooterControllerObserver>
+      footer_controller_observation_{this};
+#endif
 
   raw_ptr<NtpCustomBackgroundService> const ntp_custom_background_service_;
   raw_ptr<search_provider_logos::LogoService> const logo_service_;
@@ -265,7 +286,6 @@ class NewTabPageHandler
   std::unique_ptr<NewTabPageFeaturePromoHelper> feature_promo_helper_;
   base::Time ntp_navigation_start_time_;
   raw_ptr<const std::vector<ntp::ModuleIdDetail>> const module_id_details_;
-  NTPUserDataLogger logger_;
   std::unordered_map<const network::SimpleURLLoader*,
                      std::unique_ptr<network::SimpleURLLoader>>
       loader_map_;
@@ -277,18 +297,9 @@ class NewTabPageHandler
       nullptr;
   base::ScopedObservation<ui::NativeTheme, ui::NativeThemeObserver>
       native_theme_observation_{this};
-  base::ScopedObservation<ThemeService, ThemeServiceObserver>
-      theme_service_observation_{this};
   base::ScopedObservation<NtpCustomBackgroundService,
                           NtpCustomBackgroundServiceObserver>
       ntp_custom_background_service_observation_{this};
-  base::ScopedObservation<PromoService, PromoServiceObserver>
-      promo_service_observation_{this};
-  base::ScopedObservation<MicrosoftAuthService, MicrosoftAuthServiceObserver>
-      microsoft_auth_service_observation_{this};
-  base::ScopedObservation<new_tab_footer::NewTabFooterController,
-                          new_tab_footer::NewTabFooterControllerObserver>
-      footer_controller_observation_{this};
   std::optional<base::TimeTicks> promo_load_start_time_;
   base::DictValue interaction_module_id_trigger_dict_;
   // Notifies this when the browser window context changes.

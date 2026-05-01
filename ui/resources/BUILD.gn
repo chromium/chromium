@@ -4,6 +4,7 @@
 
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/repack.gni")
+import("//ui/webui/webui_features.gni")
 
 group("resources") {
   public_deps = [
@@ -15,6 +16,7 @@ group("resources") {
 
 grit("ui_resources_grd") {
   source = "ui_resources.grd"
+  defines = [ "enable_webui_ntp=$enable_webui_ntp" ]
   outputs = [
     "grit/ui_resources.h",
     "grit/ui_resources_map.cc",

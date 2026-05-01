@@ -35,7 +35,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/signin/chrome_signin_helper.h"
+#include "chrome/browser/signin/chrome_signin_helper.h"  // nogncheck crbug.com/40147906
 #include "components/signin/core/browser/chrome_connected_header_helper.h"
 #include "components/signin/core/browser/signin_header_helper.h"
 #endif

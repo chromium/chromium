@@ -11,6 +11,7 @@ import("//build/config/ui.gni")
 import("//chrome/common/features.gni")
 import("//crypto/features.gni")
 import("//tools/grit/grit_rule.gni")
+import("//ui/webui/webui_features.gni")
 
 assert(!is_fuchsia, "Fuchsia shouldn't use anything in //chrome")
 
@@ -82,7 +83,10 @@ if (is_win) {
 grit_strings("generated_resources") {
   source = "generated_resources.grd"
   gritdeps = "generated_resources.grd.gritdeps"
-  defines = chrome_grit_defines + [ "is_cfm=${is_cfm}" ]
+  defines = chrome_grit_defines + [
+              "is_cfm=${is_cfm}",
+              "enable_webui_ntp=$enable_webui_ntp",
+            ]
   output_dir = "$root_gen_dir/chrome"
   outputs = [ "grit/generated_resources.h" ]
 

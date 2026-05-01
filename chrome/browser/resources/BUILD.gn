@@ -26,6 +26,16 @@ group("resources") {
     "//components/enterprise/connectors/resources",
   ]
 
+  if (enable_webui_ntp) {
+    public_deps += [
+      "new_tab_page:resources",
+      "new_tab_page/untrusted:resources",
+      "new_tab_page_instant:resources",
+      "new_tab_page_third_party:resources",
+      "new_tab_shared:resources",
+    ]
+  }
+
   if (enable_extensions_core) {
     public_deps += [ ":component_extension_resources" ]
   }
@@ -55,11 +65,6 @@ group("resources") {
       "lens/overlay:resources",
       "lens/shared:resources",
       "new_tab_footer:resources",
-      "new_tab_page:resources",
-      "new_tab_page/untrusted:resources",
-      "new_tab_page_instant:resources",
-      "new_tab_page_third_party:resources",
-      "new_tab_shared:resources",
       "omnibox_popup:resources",
       "password_manager:resources",
       "privacy_sandbox/internals:resources",

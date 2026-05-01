@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
 
-#include "chrome/browser/ui/webui/new_tab_page/ntp_pref_names.h"
+#include "chrome/browser/new_tab_page/ntp_pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/ntp_tiles/tile_type.h"
 #include "components/prefs/pref_registry_simple.h"

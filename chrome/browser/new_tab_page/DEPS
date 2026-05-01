@@ -7,7 +7,6 @@ include_rules = [
   "+chrome/browser/signin/identity_manager_factory.h",
   "+chrome/browser/sync/sync_service_factory.h",
   "+chrome/browser/themes/theme_service.h",
-  "+chrome/browser/ui/webui/new_tab_page/ntp_pref_names.h",
   "+chrome/browser/ui/webui/ntp_microsoft_auth/ntp_microsoft_auth_untrusted_ui.mojom.h",
   "+chrome/browser/search_engines/template_url_service_factory.h",
   "+chrome/browser/themes/theme_service_factory.h",

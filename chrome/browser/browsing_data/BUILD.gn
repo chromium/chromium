@@ -4,6 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//extensions/buildflags/buildflags.gni")
+import("//ui/webui/webui_features.gni")
 
 source_set("constants") {
   sources = [ "chrome_browsing_data_remover_constants.h" ]
@@ -198,9 +199,11 @@ source_set("impl") {
     ]
   }
 
+  if (enable_webui_ntp) {
+    deps += [ "//chrome/browser/new_tab_page" ]
+  }
   if (!is_android) {
     deps += [
-      "//chrome/browser/new_tab_page",
       "//chrome/browser/profiles/keep_alive",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/tabs:tab_strip",
@@ -296,9 +299,6 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
 
-  if (!is_android) {
-    sources += [ "chrome_browsing_data_lifetime_manager_unittest.cc" ]
-  }
   if (enable_extensions) {
     sources += [ "counters/hosted_apps_counter_unittest.cc" ]
   }
@@ -307,11 +307,8 @@ source_set("unit_tests") {
     deps += [ "//chromeos/ash/components/dbus/attestation" ]
   }
 
-  if (!is_android) {
-    deps += [
-      "//chrome/browser/new_tab_page",
-      "//chrome/browser/web_applications:web_applications_test_support",
-    ]
+  if (enable_webui_ntp) {
+    deps += [ "//chrome/browser/new_tab_page" ]
   }
 
   if (enable_extensions) {
@@ -319,9 +316,11 @@ source_set("unit_tests") {
   }
 
   if (!is_android) {
+    sources += [ "chrome_browsing_data_lifetime_manager_unittest.cc" ]
     deps += [
       "//chrome/browser/performance_manager/public/user_tuning",
       "//chrome/browser/user_education",
+      "//chrome/browser/web_applications:web_applications_test_support",
     ]
   }
 

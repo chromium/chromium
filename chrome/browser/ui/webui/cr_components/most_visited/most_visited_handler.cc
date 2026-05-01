@@ -14,6 +14,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/new_tab_page/new_tab_page_util.h"
+#include "chrome/browser/new_tab_page/ntp_pref_names.h"
 #include "chrome/browser/ntp_tiles/chrome_most_visited_sites_factory.h"
 #include "chrome/browser/predictors/loading_predictor.h"
 #include "chrome/browser/predictors/loading_predictor_config.h"
@@ -23,13 +24,11 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
-#include "chrome/browser/ui/webui/new_tab_page/ntp_pref_names.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
-#include "chrome/browser/web_applications/preinstalled_web_app_manager.h"
-#include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/history/core/browser/features.h"
 #include "components/ntp_tiles/constants.h"
 #include "components/ntp_tiles/most_visited_sites.h"
+#include "components/ntp_tiles/ntp_tile_impression.h"
 #include "components/ntp_tiles/tile_type.h"
 #include "components/page_load_metrics/browser/navigation_handle_user_data.h"
 #include "components/prefs/pref_service.h"
@@ -38,6 +37,11 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/window_open_disposition_utils.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/web_applications/preinstalled_web_app_manager.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
+#endif
 
 namespace {
 
@@ -50,7 +54,7 @@ ntp_tiles::NTPTileImpression MakeNTPTileImpression(
       /*title_source=*/
       static_cast<ntp_tiles::TileTitleSource>(tile.title_source),
       /*visual_type=*/
-      ntp_tiles::TileVisualType::ICON_REAL /* unused on desktop */,
+      ntp_tiles::ICON_REAL /* unused on desktop */,
       /*icon_type=*/favicon_base::IconType::kInvalid /* unused on desktop */,
       /*url_for_rappor=*/GURL() /* unused */);
 }
@@ -80,12 +84,15 @@ MostVisitedHandler::MostVisitedHandler(
   most_visited_sites_->AddMostVisitedURLsObserver(
       this, ntp_tiles::kMaxNumMostVisited);
 
+// TODO(b/502297163): Implement for Android.
+#if !BUILDFLAG(IS_ANDROID)
   web_app::WebAppProvider* web_app_provider_ =
       web_app::WebAppProvider::GetForWebApps(profile);
   if (web_app_provider_) {
     preinstalled_web_app_observer_.Observe(
         &web_app_provider_->preinstalled_web_app_manager());
   }
+#endif
 }
 
 MostVisitedHandler::~MostVisitedHandler() = default;
@@ -423,7 +430,12 @@ void MostVisitedHandler::OnURLsAvailable(
   result->custom_links_enabled = most_visited_sites_->IsCustomLinksEnabled();
   result->enterprise_shortcuts_enabled =
       most_visited_sites_->IsEnterpriseShortcutsEnabled();
+#if BUILDFLAG(IS_ANDROID)
+  // TODO(b/502297163): Implement for Android.
+  result->visible = true;
+#else
   result->visible = most_visited_sites_->IsShortcutsVisible();
+#endif
   page_->SetMostVisitedInfo(std::move(result));
 }
 
@@ -482,6 +494,8 @@ bool MostVisitedHandler::MaybeRemoveStaleShortcuts() {
   return true;
 }
 
+// TODO(b/502297163): Implement for Android.
+#if !BUILDFLAG(IS_ANDROID)
 void MostVisitedHandler::OnMigrationRun() {
   most_visited_sites_->RefreshTiles();
 }
@@ -491,3 +505,4 @@ void MostVisitedHandler::OnDestroyed() {
     preinstalled_web_app_observer_.Reset();
   }
 }
+#endif

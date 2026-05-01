@@ -28,7 +28,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/pref_names.h"
@@ -66,6 +65,10 @@
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/webui/resources/cr_components/composebox/composebox.mojom.h"
 #include "url/gurl.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace searchbox_internal {
 
@@ -462,8 +465,13 @@ base::DictValue SearchboxHandler::GetWebUIDataSourceDict(
   dict.Set("searchboxVoiceSearch", options.enable_voice_search);
   dict.Set("searchboxLensSearch", options.enable_lens_search);
   dict.Set("searchboxLensVariations", GetBase64UrlVariations(profile));
+// TODO(b/502297163): Implement for Android.
+#if BUILDFLAG(IS_ANDROID)
+  dict.Set("searchboxCr23Theming", true);
+#else
   dict.Set("searchboxCr23Theming",
            base::FeatureList::IsEnabled(ntp_features::kRealboxCr23Theming));
+#endif
   dict.Set("searchboxCr23SteadyStateShadow",
            ntp_features::kNtpRealboxCr23SteadyStateShadow.Get());
 
@@ -502,7 +510,6 @@ base::DictValue SearchboxHandler::GetWebUIDataSourceDict(
            options.session_allows_drag_and_drop);
   dict.Set("composeboxShowVoiceSearch", options.enable_voice_search);
 
-  // TODO(b/481663895): Remove "ConfigParam" from Next studies.
   auto composebox_config = ntp_composebox::FeatureConfig::Get().config;
   dict.Set("searchboxShowComposeAnimation",
            profile->GetPrefs()->GetInteger(
@@ -690,8 +697,13 @@ SearchboxHandler::CreateSuggestionGroupsMap(
     const omnibox::GroupConfigMap& suggestion_groups_map) const {
   base::flat_map<int32_t, searchbox::mojom::SuggestionGroupPtr> result_map;
   for (const auto& pair : suggestion_groups_map) {
-    std::u16string header =
-        edit_model->GetSuggestionGroupHeaderText(pair.first);
+    std::u16string header;
+// TODO(b/502297163): Implement for Android.
+#if !BUILDFLAG(IS_ANDROID)
+    header = edit_model->GetSuggestionGroupHeaderText(pair.first);
+#else
+    header = result.GetHeaderForSuggestionGroup(pair.first);
+#endif
 
     if (!header.empty()) {
       searchbox::mojom::SuggestionGroupPtr suggestion_group =
@@ -867,8 +879,18 @@ SearchboxHandler::CreateAutocompleteMatch(
         base::UTF16ToUTF8(label_strings.suggestion_contents), icon_path,
         base::UTF16ToUTF8(label_strings.accessibility_hint)));
   }
-  std::u16string header_text =
+  std::u16string header_text;
+// TODO(b/502297163): Implement for Android.
+#if !BUILDFLAG(IS_ANDROID)
+  header_text =
       edit_model->GetSuggestionGroupHeaderText(match.suggestion_group_id);
+#else
+  if (match.suggestion_group_id.has_value()) {
+    header_text =
+        autocomplete_controller()->result().GetHeaderForSuggestionGroup(
+            match.suggestion_group_id.value());
+  }
+#endif
   mojom_match->a11y_label = AutocompleteMatchType::ToAccessibilityLabel(
       match, header_text, match.contents, line, 0,
       GetAdditionalA11yMessage(match,
@@ -937,12 +959,15 @@ void SearchboxHandler::OnContextualInputStatusChanged(
 }
 
 void SearchboxHandler::OnFocusChanged(bool focused) {
+// TODO(b/502297163): Implement for Android.
+#if !BUILDFLAG(IS_ANDROID)
   if (focused) {
     edit_model()->OnSetFocus(false);
   } else {
     edit_model()->OnWillKillFocus();
     edit_model()->OnKillFocus();
   }
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 void SearchboxHandler::QueryAutocomplete(const std::u16string& input,
@@ -958,7 +983,10 @@ void SearchboxHandler::QueryAutocomplete(const std::u16string& input,
 
   // This will SetInputInProgress and consequently mark the input timer so that
   // Omnibox.TypingDuration will be logged correctly.
+// TODO(b/502297163): Implement for Android.
+#if !BUILDFLAG(IS_ANDROID)
   edit_model()->SetUserText(input);
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   // RealboxOmniboxClient::GetPageClassification() ignores the arguments.
   const auto page_classification =
@@ -998,8 +1026,13 @@ void SearchboxHandler::QueryAutocomplete(const std::u16string& input,
 
   autocomplete_input.set_input_state(GetInputState());
 
+// TODO(b/502297163): Implement for Android.
+#if !BUILDFLAG(IS_ANDROID)
   edit_model()->SetAutocompleteInput(autocomplete_input);
   omnibox_controller()->StartAutocomplete(autocomplete_input);
+#else
+  autocomplete_controller()->Start(autocomplete_input);
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 void SearchboxHandler::StopAutocomplete(bool clear_result) {
@@ -1020,12 +1053,22 @@ void SearchboxHandler::OpenAutocompleteMatch(uint8_t line,
     // the web UI is referencing a stale match.
     return;
   }
+// TODO(b/502297163): Implement for Android.
+#if !BUILDFLAG(IS_ANDROID)
   const base::TimeTicks timestamp = base::TimeTicks::Now();
+#endif
   const WindowOpenDisposition disposition = ui::DispositionFromClick(
       /*middle_button=*/mouse_button == 1, alt_key, ctrl_key, meta_key,
       shift_key);
+// TODO(b/502297163): Implement for Android.
+#if !BUILDFLAG(IS_ANDROID)
   edit_model()->OpenSelection(OmniboxPopupSelection(line), timestamp,
                               disposition);
+#else
+  content::OpenURLParams params(url, content::Referrer(), disposition,
+                                ui::PAGE_TRANSITION_LINK, false);
+  web_contents_->OpenURL(params, /*navigation_handle_callback=*/{});
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 OmniboxPopupSelection ConvertSelection(
@@ -1072,8 +1115,11 @@ OmniboxPopupSelection ConvertSelection(
 
 void SearchboxHandler::SetPopupSelection(
     searchbox::mojom::OmniboxPopupSelectionPtr selection) {
+// TODO(b/502297163): Implement for Android.
+#if !BUILDFLAG(IS_ANDROID)
   edit_model()->SetPopupSelection(ConvertSelection(std::move(selection)), false,
                                   false, false);
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 void SearchboxHandler::OpenPopupSelection(
@@ -1085,9 +1131,14 @@ void SearchboxHandler::OpenPopupSelection(
   // OmniboxEditModel does not properly select the AIM button in all cases,
   // for example when there are no matches in the list. The webui popup
   // selection control fixes this bug, so AIM button selection is excepted.
+// TODO(b/502297163): Implement for Android.
+#if !BUILDFLAG(IS_ANDROID)
   const bool selection_matched =
       popup_selection == edit_model()->GetPopupSelection() ||
       popup_selection.state == OmniboxPopupSelection::FOCUSED_BUTTON_AIM;
+#else
+  const bool selection_matched = true;
+#endif  // !BUILDFLAG(IS_ANDROID)
   const bool sequence_id_matched =
       result_sequence_id == autocomplete_controller()->result().sequence_id();
 
@@ -1101,7 +1152,18 @@ void SearchboxHandler::OpenPopupSelection(
     return;
   }
 
+// TODO(b/502297163): Implement for Android.
+#if !BUILDFLAG(IS_ANDROID)
   edit_model()->OpenSelection(popup_selection);
+#else
+  if (popup_selection.line < autocomplete_controller()->result().size()) {
+    const AutocompleteMatch& match =
+        autocomplete_controller()->result().match_at(popup_selection.line);
+    content::OpenURLParams params(match.destination_url, content::Referrer(),
+                                  disposition, ui::PAGE_TRANSITION_LINK, false);
+    web_contents_->OpenURL(params, /*navigation_handle_callback=*/{});
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 void SearchboxHandler::OnNavigationLikely(
@@ -1170,11 +1232,39 @@ void SearchboxHandler::ExecuteAction(uint8_t line,
   const WindowOpenDisposition disposition = ui::DispositionFromClick(
       /*middle_button=*/mouse_button == 1, alt_key, ctrl_key, meta_key,
       shift_key);
-  OmniboxPopupSelection selection(
-      line, OmniboxPopupSelection::LineState::FOCUSED_BUTTON_ACTION,
-      action_index);
-  edit_model()->OpenSelection(selection, match_selection_timestamp,
-                              disposition);
+// TODO(b/502297163): Implement for Android.
+#if !BUILDFLAG(IS_ANDROID)
+  edit_model()->OpenSelection(
+      OmniboxPopupSelection(line, OmniboxPopupSelection::FOCUSED_BUTTON_ACTION,
+                            action_index),
+      match_selection_timestamp, disposition);
+#else
+  if (action_index < match->actions.size()) {
+    auto* action = match->actions[action_index].get();
+    auto callback = base::BindOnce(
+        [](base::WeakPtr<content::WebContents> web_contents,
+           const GURL& destination_url,
+           TemplateURLRef::PostContent* post_content,
+           WindowOpenDisposition disposition, ui::PageTransition transition,
+           AutocompleteMatchType::Type match_type,
+           base::TimeTicks match_selection_timestamp,
+           bool destination_url_entered_without_scheme,
+           bool destination_url_entered_with_http_scheme,
+           const std::u16string& text, const AutocompleteMatch& match,
+           const AutocompleteMatch& alternative_nav_match) {
+          if (web_contents) {
+            content::OpenURLParams params(destination_url, content::Referrer(),
+                                          disposition, transition, false);
+            web_contents->OpenURL(params, /*navigation_handle_callback=*/{});
+          }
+        },
+        web_contents_->GetWeakPtr());
+    OmniboxAction::ExecutionContext context(
+        *(autocomplete_controller()->autocomplete_provider_client()),
+        std::move(callback), match_selection_timestamp, disposition);
+    action->Execute(context);
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 void SearchboxHandler::GetPlaceholderConfig(

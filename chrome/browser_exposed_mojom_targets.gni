@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 #
 
+import("//ui/webui/webui_features.gni")
+
 # This file represents global knowledge about all the mojom targets building
 # browser-to-renderer exposed mojom interfaces. Developers are responsible for
 # maintaining this file to match addition and removal of newly exposed targets.
@@ -44,11 +46,6 @@ browser_exposed_mojom_targets = [
   "//chrome/browser/ui/webui/user_education_internals:mojo_bindings",
   "//chrome/browser/ui/webui/location_internals:mojo_bindings",
   "//chrome/browser/ui/webui/new_tab_footer:mojo_bindings",
-  "//chrome/browser/ui/webui/new_tab_page_third_party:mojo_bindings",
-  "//chrome/browser/ui/webui/new_tab_page:mojo_bindings",
-  "//chrome/browser/ui/webui/new_tab_page/action_chips:mojo_bindings",
-  "//chrome/browser/ui/webui/new_tab_page/ntp_promo:mojo_bindings",
-  "//chrome/browser/ui/webui/new_tab_page/foo:mojo_bindings",
   "//chrome/browser/ui/webui/omnibox:mojo_bindings",
   "//chrome/browser/ui/webui/omnibox/aim_eligibility:mojo_bindings",
   "//chrome/browser/ui/webui/omnibox/logging:mojo_bindings",
@@ -363,4 +360,14 @@ browser_exposed_mojom_targets = [
 if (!is_android) {
   browser_exposed_mojom_targets +=
       [ "//chrome/browser/ui/webui/feedback/report_unsafe_site:mojo_bindings" ]
+}
+
+if (enable_webui_ntp) {
+  browser_exposed_mojom_targets += [
+    "//chrome/browser/ui/webui/new_tab_page_third_party:mojo_bindings",
+    "//chrome/browser/ui/webui/new_tab_page:mojo_bindings",
+    "//chrome/browser/ui/webui/new_tab_page/action_chips:mojo_bindings",
+    "//chrome/browser/ui/webui/new_tab_page/ntp_promo:mojo_bindings",
+    "//chrome/browser/ui/webui/new_tab_page/foo:mojo_bindings",
+  ]
 }

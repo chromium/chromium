@@ -24,6 +24,7 @@ MockSearchboxPage::BindAndGetRemote() {
   return receiver_.BindNewPipeAndPassRemote();
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 MockOmniboxPopupPage::MockOmniboxPopupPage() = default;
 MockOmniboxPopupPage::~MockOmniboxPopupPage() = default;
 
@@ -32,6 +33,7 @@ MockOmniboxPopupPage::BindAndGetRemote() {
   DCHECK(!receiver_.is_bound());
   return receiver_.BindNewPipeAndPassRemote();
 }
+#endif
 
 MockAutocompleteController::MockAutocompleteController(
     std::unique_ptr<AutocompleteProviderClient> provider_client,

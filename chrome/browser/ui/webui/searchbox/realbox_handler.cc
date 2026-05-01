@@ -9,15 +9,12 @@
 
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/bookmarks/bookmark_stats.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_pedal_implementations.h"
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
-#include "chrome/browser/ui/search/omnibox_utils.h"
 #include "chrome/browser/ui/webui/cr_components/searchbox/contextual_searchbox_handler.h"
-#include "chrome/grit/new_tab_page_resources.h"
 #include "components/lens/lens_features.h"
 #include "components/navigation_metrics/navigation_metrics.h"
 #include "components/omnibox/browser/autocomplete_classifier.h"
@@ -40,6 +37,10 @@
 #include "third_party/omnibox_proto/types.pb.h"
 #include "ui/base/webui/resource_path.h"
 #include "ui/base/window_open_disposition_utils.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/bookmarks/bookmark_stats.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace {
 
@@ -66,8 +67,10 @@ RealboxOmniboxClient::GetPageClassification(bool is_prefetch) const {
 }
 
 void RealboxOmniboxClient::OnBookmarkLaunched() {
+#if !BUILDFLAG(IS_ANDROID)
   RecordBookmarkLaunch(BookmarkLaunchLocation::kOmnibox,
                        profile_metrics::GetBrowserProfileType(profile_));
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 }  // namespace

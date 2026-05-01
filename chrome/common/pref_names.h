@@ -1716,6 +1716,10 @@ inline constexpr char kNtpCustomBackgroundLocalToDeviceId[] =
 inline constexpr char kNtpCustomBackgroundInspiration[] =
     "ntp.custom_background_inspiration";
 
+// Name of preference to count of times compose button was shown.
+inline const char kNtpComposeButtonShownCountPrefName[] =
+    "ntp.compose_button.shown_count";
+
 #if BUILDFLAG(IS_ANDROID)
 // Keeps track of recently closed tabs collapsed state in the Other Devices
 // menu.
@@ -1728,10 +1732,8 @@ inline constexpr char kNtpCollapsedSnapshotDocument[] =
 
 // Keeps track of sync promo collapsed state in the Other Devices menu.
 inline constexpr char kNtpCollapsedSyncPromo[] = "ntp.collapsed_sync_promo";
-#else
-// Name of preference to count of times compose button was shown.
-inline const char kNtpComposeButtonShownCountPrefName[] =
-    "ntp.compose_button.shown_count";
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // Holds info for New Tab Page custom background
 // Use `kNtpCustomBackgroundDict` only.
 inline constexpr char kDeprecatedNtpCustomBackgroundDictDoNotUse[] =
@@ -1811,7 +1813,6 @@ inline constexpr char kSeedColorChangeCount[] =
     "colorpicker.SeedColorChangeCount";
 // Whether the NTP footer is visible.
 inline constexpr char kNtpFooterVisible[] = "NewTabPage.FooterVisible";
-#endif  // BUILDFLAG(IS_ANDROID)
 
 // A private RSA key for ADB handshake.
 inline constexpr char kDevToolsAdbKey[] = "devtools.adb_key";
