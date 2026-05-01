@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/shared/coordinator/scene/state/incognito_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/tab_grid_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser_observer_bridge.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -61,7 +62,8 @@ bool AreEnterpriseLookupsEnabled(const ProfileIOS& profile) {
 
 }  // namespace
 
-@interface DataProtectionSceneAgent () <DataProtectionTabHelperObserving,
+@interface DataProtectionSceneAgent () <BrowserObserving,
+                                        DataProtectionTabHelperObserving,
                                         IncognitoStateObserver,
                                         PrefObserverDelegate,
                                         ProfileStateObserver,
@@ -87,6 +89,9 @@ bool AreEnterpriseLookupsEnabled(const ProfileIOS& profile) {
 
   // The last protection state that was applied.
   ProtectionState _currentProtectionState;
+
+  // Bridge to observe browser destruction.
+  std::unique_ptr<BrowserObserverBridge> _browserObserverBridge;
 
   // Observes active WebState changes in the current Browser.
   std::unique_ptr<TabsDependencyInstallerBridge> _tabDependencyInstallerBridge;
@@ -226,6 +231,12 @@ bool AreEnterpriseLookupsEnabled(const ProfileIOS& profile) {
   }
 }
 
+#pragma mark - BrowserObserving
+
+- (void)browserDestroyed:(Browser*)browser {
+  [self teardownBrowserObservers];
+}
+
 #pragma mark - Private
 
 - (Browser*)currentBrowser {
@@ -277,14 +288,19 @@ bool AreEnterpriseLookupsEnabled(const ProfileIOS& profile) {
   CHECK(self.sceneState.UIEnabled);
   [self teardownBrowserObservers];
 
+  Browser* browser = [self currentBrowser];
+  _browserObserverBridge =
+      std::make_unique<BrowserObserverBridge>(browser, self);
+
   _tabDependencyInstallerBridge =
       std::make_unique<TabsDependencyInstallerBridge>();
-  _tabDependencyInstallerBridge->StartObserving(self, [self currentBrowser]);
+  _tabDependencyInstallerBridge->StartObserving(self, browser);
 }
 
 // Cleans up Browser and WebState layer observers.
 - (void)teardownBrowserObservers {
   _tabHelperObserverBridge.reset();
+  _browserObserverBridge.reset();
   if (_tabDependencyInstallerBridge) {
     _tabDependencyInstallerBridge->StopObserving();
     _tabDependencyInstallerBridge.reset();

@@ -710,3 +710,33 @@ TEST_F(DataProtectionSceneAgentTransitionTest, SingleTab_SwitchBrowser) {
 
   EXPECT_OCMOCK_VERIFY(mock_agent_);
 }
+
+// Tests that no UAF occurs when the currently observed browser is destroyed.
+TEST_F(DataProtectionSceneAgentTransitionTest,
+       TabGrid_IncognitoBrowserDestroyed_NoUAF) {
+  ASSERT_TRUE(scene_state_.UIEnabled);
+  ASSERT_TRUE(scene_state_.activationLevel >=
+              SceneActivationLevelForegroundInactive);
+  ASSERT_TRUE(scene_state_.profileState.initStage >=
+              ProfileInitStage::kProfileLoaded);
+
+  scene_state_.tabGridState.tabGridVisible = YES;
+
+  // Switch to Incognito Tab Grid.
+  scene_state_.browserProviderInterface.currentBrowserProvider =
+      scene_state_.browserProviderInterface.incognitoBrowserProvider;
+  scene_state_.incognitoState.incognitoContentVisible = YES;
+
+  // Destroy the incognito browser.
+  incognito_browser_.reset();
+
+  // Switch back to Regular Tab Grid. This will cause the scene state
+  // to update its observers, which could lead to a UAF if the destroyed
+  // browser wasn't properly unobserved.
+  scene_state_.browserProviderInterface.currentBrowserProvider =
+      scene_state_.browserProviderInterface.mainBrowserProvider;
+  scene_state_.incognitoState.incognitoContentVisible = NO;
+
+  // Expect no protection. No crash means success.
+  ExpectNoCallsToApplyScreenshotProtection();
+}
