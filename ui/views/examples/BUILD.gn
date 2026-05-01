@@ -536,3 +536,16 @@ test("views_examples_unittests") {
 
   data = [ "$root_out_dir/views_examples_resources.pak" ]
 }
+
+executable("vector_icon_viewer") {
+  testonly = true
+  sources = [ "vector_icon_viewer.cc" ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//ui/gfx",
+    "//ui/views",
+    "//ui/views/examples:views_examples_lib",
+    "//ui/views/examples:views_examples_proc",
+  ]
+}
