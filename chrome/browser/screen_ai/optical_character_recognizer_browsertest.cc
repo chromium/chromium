@@ -760,8 +760,15 @@ IN_PROC_BROWSER_TEST_F(OpticalCharacterRecognizerResultsTest,
       "Accessibility.ScreenAI.OCR.Downsampled.ClientType", 1);
 }
 
+// TODO(crbug.com/470431038): Tests time out flakily on Linux and Mac
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+#define MAYBE_PerformOCRMultipleFilesOneByOne \
+  DISABLED_PerformOCRMultipleFilesOneByOne
+#else
+#define MAYBE_PerformOCRMultipleFilesOneByOne PerformOCRMultipleFilesOneByOne
+#endif
 IN_PROC_BROWSER_TEST_F(OpticalCharacterRecognizerResultsTest,
-                       PerformOCRMultipleFilesOneByOne) {
+                       MAYBE_PerformOCRMultipleFilesOneByOne) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   ASSERT_TRUE(CreateAndInitOCR());
 
@@ -778,8 +785,16 @@ IN_PROC_BROWSER_TEST_F(OpticalCharacterRecognizerResultsTest,
   }
 }
 
+// TODO(crbug.com/470431038): Tests time out flakily on Linux and Mac
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+#define MAYBE_PerformOCRMultipleFilesNoWaitBetween \
+  DISABLED_PerformOCRMultipleFilesNoWaitBetween
+#else
+#define MAYBE_PerformOCRMultipleFilesNoWaitBetween \
+  PerformOCRMultipleFilesNoWaitBetween
+#endif
 IN_PROC_BROWSER_TEST_F(OpticalCharacterRecognizerResultsTest,
-                       PerformOCRMultipleFilesNoWaitBetween) {
+                       MAYBE_PerformOCRMultipleFilesNoWaitBetween) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   ASSERT_TRUE(CreateAndInitOCR());
 
