@@ -147,6 +147,8 @@ OmniboxPopupUI::OmniboxPopupUI(content::WebUI* web_ui)
   source->AddBoolean("composeboxShowZps", omnibox::kShowComposeboxZps.Get());
   source->AddBoolean("composeboxSmartComposeEnabled",
                      omnibox::kShowSmartCompose.Get());
+  source->AddBoolean("contextButtonHasBackground",
+                     omnibox::kContextButtonHasBackground.Get());
   source->AddBoolean("hideClassicContextButton",
                      omnibox::kHideClassicContextButton.Get());
   source->AddBoolean("composeboxForkEnabled",

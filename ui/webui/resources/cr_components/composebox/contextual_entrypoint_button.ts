@@ -50,6 +50,7 @@ export class ContextualEntrypointButtonElement extends
       glifAnimationState: {type: String, reflect: true},
       uploadButtonDisabled: {type: Boolean},
       hasPopupFocus: {type: Boolean, reflect: true},
+      applyContextButtonBackground: {type: Boolean, reflect: true},
       windowWidthBelowThreshold_: {type: Boolean},
       isOblongShape_: {type: Boolean, reflect: true},
     };
@@ -61,10 +62,13 @@ export class ContextualEntrypointButtonElement extends
       GlifAnimationState.INELIGIBLE;
   accessor uploadButtonDisabled: boolean = false;
   accessor hasPopupFocus: boolean = false;
+  accessor applyContextButtonBackground: boolean = false;
   protected accessor windowWidthBelowThreshold_: boolean = false;
   protected accessor isOblongShape_: boolean =
       getLoadTimeBoolean('contextButtonShapeIsOblong', false);
 
+  private contextButtonHasBackground_: boolean =
+      getLoadTimeBoolean('contextButtonHasBackground', false);
   private showContextMenuDescriptionEnabled_: boolean =
       loadTimeData.getBoolean('composeboxShowContextMenuDescription');
   private metricsSource_: string = loadTimeData.getString('composeboxSource');
@@ -93,6 +97,10 @@ export class ContextualEntrypointButtonElement extends
 
     if (changedProperties.has('inputState') && this.inputState) {
       const inToolMode = this.inputState.activeTool !== ToolMode.kUnspecified;
+
+      this.applyContextButtonBackground =
+          this.contextButtonHasBackground_ && !inToolMode;
+
       if (this.showContextMenuDescriptionEnabled_) {
         this.showContextMenuDescription = !inToolMode;
       }
