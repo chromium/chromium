@@ -182,12 +182,15 @@ TEST(ElfReaderTestWithCurrentElfImage, ReadElfBuildId) {
   ASSERT_NE(build_id_size, 0u);
 
 #if defined(OFFICIAL_BUILD)
-  constexpr size_t kExpectedBuildIdStringLength = 40;  // SHA1 hash in hex.
+  EXPECT_EQ(40, build_id_size);  // SHA1 hash in hex.
 #else
-  constexpr size_t kExpectedBuildIdStringLength = 16;  // 64-bit int in hex.
+  // Allow any common BuildId hash, since it depends on linker settings.
+  if (build_id_size != 16 && build_id_size != 40 && build_id_size != 64) {
+    // LLD's "fast", or sha1, or sha256.
+    EXPECT_EQ(16, build_id_size);
+  }
 #endif
 
-  EXPECT_EQ(kExpectedBuildIdStringLength, build_id_size);
   for (size_t i = 0; i < build_id_size; ++i) {
     char c = UNSAFE_TODO(build_id[i]);
     EXPECT_TRUE(IsHexDigit(c));
