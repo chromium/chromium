@@ -1,3 +1,5 @@
+// NOTE: If you edit this file, you MUST also update
+// `internal/extensions/glic/manifest_internal.json` to match.
 {
   "name": "Gemini in Chrome",
   "version": "1.1",
