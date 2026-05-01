@@ -537,4 +537,36 @@ public class BottomSheetUnitTest {
         // Verify that state is NOT restored to HALF, but stays FULL.
         assertEquals(SheetState.FULL, mBottomSheet.getSheetState());
     }
+
+    @Test
+    public void testRecreateStateOnKeyboardShowingWithHeightChange() {
+        BottomSheet.setSmallScreenForTesting(false);
+        doReturn((float) HeightMode.RESIZE_CONTENT).when(mSheetContent).getFullHeightRatio();
+        doReturn(0.5f).when(mSheetContent).getHalfHeightRatio();
+        doReturn(HeightMode.DEFAULT).when(mSheetContent).getPeekHeight();
+        doReturn(android.R.string.ok).when(mSheetContent).getSheetHalfHeightAccessibilityStringId();
+        doReturn(android.R.string.ok).when(mSheetContent).getSheetFullHeightAccessibilityStringId();
+
+        mBottomSheet.showContent(mSheetContent);
+        mBottomSheet.setSheetState(SheetState.HALF, false);
+
+        View decorView = mActivity.getWindow().getDecorView();
+        decorView.layout(0, 0, 1080, 1920);
+        mSheetContainer.layout(0, 0, SHEET_CONTAINER_WIDTH, SHEET_CONTAINER_HEIGHT);
+
+        verify(mInsetObserver).addObserver(mInsetObserverCaptor.capture());
+        InsetObserver.WindowInsetObserver observer = mInsetObserverCaptor.getValue();
+        mKeyboardInsetSupplier.set(100);
+        observer.onInsetChanged();
+
+        // Simulate layout change while keyboard is showing.
+        mSheetContainer.layout(0, 0, SHEET_CONTAINER_WIDTH, SHEET_CONTAINER_HEIGHT - 10);
+
+        // Simulate screen height change.
+        decorView.layout(0, 0, 1080, 1820);
+        mSheetContainer.layout(0, 0, SHEET_CONTAINER_WIDTH, SHEET_CONTAINER_HEIGHT);
+
+        mKeyboardInsetSupplier.set(150);
+        observer.onInsetChanged();
+    }
 }

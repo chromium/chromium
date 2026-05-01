@@ -568,7 +568,7 @@ class BottomSheet extends FrameLayout
         // If the screen height has changed, reset the cached state since it may no longer valid.
         @Px int decorHeight = mWindow.getDecorView().getHeight();
         if (mPreviousScreenHeight != decorHeight) {
-            mStateBeforeKeyboardShown = SheetState.NONE;
+            resetCachedKeyboardState();
         }
 
         boolean keyboardVisible = isKeyboardShowing();
@@ -579,10 +579,8 @@ class BottomSheet extends FrameLayout
             assert mKeyboardTokenHolder.hasTokens();
             setInternalCurrentState(SheetState.NONE, StateChangeReason.NONE);
             setSheetState(mStateBeforeKeyboardShown, /* animate= */ false);
-            mStateBeforeKeyboardShown = SheetState.NONE;
 
-            mKeyboardTokenHolder.releaseToken(mKeyboardToken);
-            mKeyboardToken = TokenHolder.INVALID_TOKEN;
+            resetCachedKeyboardState();
         }
 
 
@@ -1786,6 +1784,14 @@ class BottomSheet extends FrameLayout
         // Set the pane title for the container. The bottom sheet view is not always accessible
         // e.g. when sheet is dismissed.
         ViewCompat.setAccessibilityPaneTitle(mSheetContainer, msg);
+    }
+
+    private void resetCachedKeyboardState() {
+        mStateBeforeKeyboardShown = SheetState.NONE;
+        if (mKeyboardToken != TokenHolder.INVALID_TOKEN) {
+            mKeyboardTokenHolder.releaseToken(mKeyboardToken);
+            mKeyboardToken = TokenHolder.INVALID_TOKEN;
+        }
     }
 
     /**
