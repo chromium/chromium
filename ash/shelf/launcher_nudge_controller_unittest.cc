@@ -125,13 +125,15 @@ class LauncherNudgeControllerTest : public AshTestBase {
     AshTestBase::TearDown();
   }
 
-  // Advances the mock clock in the task environment and wait until it is idle.
+  // Advances the mock clock in the task environment and runs ready work.
   // Note that AdvanceClock is used here instead of FastForwardBy because
   // `delay` used in test cases are too long for FastForwardBy to process and
   // will cause timeout running the tests.
   void AdvanceClock(base::TimeDelta delay) {
     task_environment()->AdvanceClock(delay);
-    task_environment()->RunUntilIdle();
+    // Run timers that became due at the advanced mock time without moving past
+    // the long nudge intervals used by callers.
+    task_environment()->FastForwardBy(base::TimeDelta());
   }
 
   int GetNudgeShownCount() {
