@@ -10053,6 +10053,7 @@ from previous Chrome versions.
   <int value="-1359250244" label="AutomaticUsbDetach:disabled"/>
   <int value="-1358669137" label="enable-supervised-user-blacklist"/>
   <int value="-1357655121" label="enable-iframe-based-signin"/>
+  <int value="-1357154773" label="HideAimEntrypointForUrlSuggestions:disabled"/>
   <int value="-1357008397" label="ContextualSuggestionsCarousel:disabled"/>
   <int value="-1356379431" label="GlobalMediaControlsOverlayControls:enabled"/>
   <int value="-1355886577" label="ReleaseNotesNotificationAllChannels:enabled"/>
@@ -14409,6 +14410,7 @@ from previous Chrome versions.
   <int value="92466801" label="UploadOfficeToCloud:disabled"/>
   <int value="93832899" label="NtpCustomizationMenuV2:enabled"/>
   <int value="94576028" label="LensEnableRegionSearchOnPdfViewer:disabled"/>
+  <int value="94950485" label="HideAimEntrypointForUrlSuggestions:enabled"/>
   <int value="95043207" label="NtpOneGoogleBarAsyncBarParts:disabled"/>
   <int value="95820546" label="RubyShortHeuristics:disabled"/>
   <int value="96148142" label="SyncAndroidPromosWithAlternativeTitle:enabled"/>

@@ -3524,6 +3524,11 @@ inline constexpr char kWebUIOmniboxAimPopupDisableAnimationDescription[] =
     "If enabled, there will no longer be animation in the WebUI Omnibox AIM "
     "popup.";
 
+inline constexpr char kWebUIOmniboxHideAimUrlName[] =
+    "WebUI Omnibox Hide AIM URL";
+inline constexpr char kWebUIOmniboxHideAimUrlDescription[] =
+    "If enabled, hides the AIM button when the default suggestion is a URL.";
+
 inline constexpr char kWebUIOmniboxFullPopupName[] = "WebUI Omnibox Full Popup";
 inline constexpr char kWebUIOmniboxFullPopupDescription[] =
     "If enabled, shows the omnibox suggestions and the search input in the "

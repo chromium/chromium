@@ -9411,6 +9411,11 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop,
      FEATURE_VALUE_TYPE(omnibox::kWebUIOmniboxAimPopupDisableAnimation)},
 
+    {"webui-omnibox-hide-aim-url",
+     flag_descriptions::kWebUIOmniboxHideAimUrlName,
+     flag_descriptions::kWebUIOmniboxHideAimUrlDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(omnibox::kHideAimEntrypointForUrlSuggestions)},
+
     {"webui-omnibox-full-popup", flag_descriptions::kWebUIOmniboxFullPopupName,
      flag_descriptions::kWebUIOmniboxFullPopupDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(omnibox::kWebUIOmniboxFullPopup)},
