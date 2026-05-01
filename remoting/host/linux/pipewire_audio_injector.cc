@@ -7,11 +7,14 @@
 #include <pipewire/pipewire.h>
 #include <pipewire/proxy.h>
 
+#include <algorithm>
+#include <deque>
 #include <map>
 #include <set>
 #include <string_view>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -32,6 +35,7 @@ namespace {
 // pw_stream_update_params().
 constexpr uint32_t kAudioRate = 48000;
 constexpr uint32_t kAudioChannels = 1;
+constexpr size_t kBytesPerFrame = kAudioChannels * sizeof(int16_t);
 }  // namespace
 
 // The core object is started and destroyed on the caller's sequence. `delegate`
@@ -94,6 +98,12 @@ class PipewireAudioInjector::Core {
   // Maps link ID to its output node ID. Used to track links discovered before
   // `stream_node_id_` is known. Cleared once `stream_node_id_` is known.
   std::map<uint32_t, uint32_t> pending_links_;
+
+  // Use a deque of string to prevent unnecessary copying. The data is
+  // std::move'd from the AudioPacket.
+  std::deque<std::string> audio_buffers_;
+  size_t total_audio_bytes_ = 0;
+  size_t read_offset_ = 0;
 };
 
 PipewireAudioInjector::Core::Core() {
@@ -191,7 +201,50 @@ bool PipewireAudioInjector::Core::Start(base::WeakPtr<Delegate> delegate) {
 
 void PipewireAudioInjector::Core::InjectAudioPacket(
     std::unique_ptr<AudioPacket> packet) {
-  NOTIMPLEMENTED_LOG_ONCE();
+  if (packet->encoding() != AudioPacket::ENCODING_RAW) {
+    NOTIMPLEMENTED_LOG_ONCE()
+        << "Unsupported audio encoding: " << packet->encoding();
+    return;
+  }
+
+  // TODO: crbug.com/502327751 - see what to do if these don't match.
+  CHECK_EQ(static_cast<uint32_t>(packet->sampling_rate()), kAudioRate);
+  CHECK_EQ(static_cast<uint32_t>(packet->channels()), kAudioChannels);
+
+  ScopedThreadLoopLock lock(pw_main_loop_.get());
+  for (std::string& data : *packet->mutable_data()) {
+    if (data.size() % kBytesPerFrame != 0) {
+      LOG(ERROR) << "Dropped misaligned audio data packet.";
+      continue;
+    }
+    total_audio_bytes_ += data.size();
+    audio_buffers_.push_back(std::move(data));
+  }
+
+  // Limit the buffer size to ~1 second of audio to avoid memory bloat if
+  // PipeWire is not consuming data fast enough.
+  constexpr size_t kMaxBufferSize = kAudioRate * kBytesPerFrame;
+  if (total_audio_bytes_ > kMaxBufferSize) {
+    size_t stride = kBytesPerFrame;
+    size_t excess_bytes = total_audio_bytes_ - kMaxBufferSize;
+    size_t bytes_to_drop = excess_bytes;
+    DCHECK_EQ(bytes_to_drop % stride, 0u);
+
+    while (bytes_to_drop > 0 && !audio_buffers_.empty()) {
+      std::string& front = audio_buffers_.front();
+      size_t available = front.size() - read_offset_;
+      if (available <= bytes_to_drop) {
+        total_audio_bytes_ -= available;
+        bytes_to_drop -= available;
+        audio_buffers_.pop_front();
+        read_offset_ = 0;
+      } else {
+        total_audio_bytes_ -= bytes_to_drop;
+        read_offset_ += bytes_to_drop;
+        bytes_to_drop = 0;
+      }
+    }
+  }
 }
 
 // static
@@ -241,7 +294,64 @@ void PipewireAudioInjector::Core::OnStreamProcess(void* data) {
 
 DISABLE_CFI_DLSYM
 void PipewireAudioInjector::Core::HandleStreamProcess() {
-  NOTIMPLEMENTED_LOG_ONCE();
+  struct pw_buffer* b = pw_->pw_stream_dequeue_buffer(pw_stream_.get());
+  if (!b) {
+    return;
+  }
+
+  struct spa_buffer* buf = b->buffer;
+  if (!buf->datas[0].data) {
+    pw_->pw_stream_queue_buffer(pw_stream_.get(), b);
+    return;
+  }
+
+  uint32_t stride = kBytesPerFrame;
+  uint32_t n_frames = buf->datas[0].maxsize / stride;
+  if (b->requested > 0) {
+    n_frames = std::min(n_frames, static_cast<uint32_t>(b->requested));
+  }
+
+  uint32_t frames_to_write =
+      std::min(static_cast<uint32_t>(total_audio_bytes_ / stride), n_frames);
+  uint32_t bytes_to_write = frames_to_write * stride;
+
+  // SAFETY: `buf->datas[0].data` is guaranteed by PipeWire to point to a buffer
+  // of at least `buf->datas[0].maxsize` bytes.
+  auto dst_span = UNSAFE_BUFFERS(base::span<uint8_t>(
+      static_cast<uint8_t*>(buf->datas[0].data), buf->datas[0].maxsize));
+
+  uint32_t bytes_written = 0;
+  while (bytes_written < bytes_to_write && !audio_buffers_.empty()) {
+    std::string& front = audio_buffers_.front();
+    size_t available = front.size() - read_offset_;
+    size_t to_copy = std::min(
+        available, static_cast<size_t>(bytes_to_write - bytes_written));
+
+    dst_span.subspan(bytes_written, to_copy)
+        .copy_from(base::as_byte_span(front).subspan(read_offset_, to_copy));
+
+    bytes_written += to_copy;
+    read_offset_ += to_copy;
+    total_audio_bytes_ -= to_copy;
+
+    if (read_offset_ >= front.size()) {
+      audio_buffers_.pop_front();
+      read_offset_ = 0;
+    }
+  }
+
+  uint32_t target_bytes = b->requested > 0 ? n_frames * stride : bytes_written;
+
+  if (bytes_written < target_bytes) {
+    std::ranges::fill(
+        dst_span.subspan(bytes_written, target_bytes - bytes_written), 0);
+  }
+
+  buf->datas[0].chunk->offset = 0;
+  buf->datas[0].chunk->stride = stride;
+  buf->datas[0].chunk->size = target_bytes;
+
+  pw_->pw_stream_queue_buffer(pw_stream_.get(), b);
 }
 
 // static
