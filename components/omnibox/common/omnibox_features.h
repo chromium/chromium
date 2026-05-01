@@ -185,6 +185,12 @@ BASE_DECLARE_FEATURE(kOmniboxDebugLogs);
 // Thinking Pro model when multiple Pro models are available.
 BASE_DECLARE_FEATURE(kThinkingModelIconUpdate);
 
+BASE_DECLARE_FEATURE(kVoiceSearchCoherenceComposeboxes);
+BASE_DECLARE_FEATURE(kVoiceSearchCoherenceSearchbox);
+
+extern const base::FeatureParam<bool>
+    kVoiceSearchCoherenceSearchboxWithLiveTranscription;
+
 #if BUILDFLAG(IS_ANDROID)
 BASE_DECLARE_FEATURE(kDiagnostics);
 BASE_DECLARE_FEATURE(kJumpStartOmnibox);

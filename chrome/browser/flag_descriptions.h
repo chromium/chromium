@@ -3461,6 +3461,13 @@ inline constexpr char kEmbeddedPermissionEnabledDescription[] =
     "and contextual "
     "tasks' permission requests.";
 
+inline constexpr char kVoiceSearchCoherenceName[] =
+    "NTP Searchbox (Realbox) Voice Search Coherence";
+inline constexpr char kVoiceSearchCoherenceDescription[] =
+    "Enables the voice search coherence experiment (new recording animation, "
+    "new metrics, added stop/submit button) for the New Tab Page "
+    "searchbox, with option for live transcription.";
+
 inline constexpr char kOmniboxFocusTriggersWebAndSRPZeroSuggestName[] =
     "Omnibox on-focus suggestions on web and SRP";
 inline constexpr char kOmniboxFocusTriggersWebAndSRPZeroSuggestDescription[] =

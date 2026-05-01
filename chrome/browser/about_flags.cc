@@ -1305,6 +1305,22 @@ const FeatureEntry::FeatureVariation
          nullptr},
 };
 
+const FeatureEntry::FeatureParam kVoiceSearchCoherenceSearchboxParams[] = {
+    {"VoiceSearchCoherenceSearchboxNoLiveTranscription", "true"},
+};
+
+const FeatureEntry::FeatureParam
+    kVoiceSearchCoherenceLiveTranscriptionParams[] = {
+        {"VoiceSearchCoherenceSearchboxNoLiveTranscription", "true"},
+        {"VoiceSearchCoherenceSearchboxWithLiveTranscription", "true"}};
+
+// Normal 'Enabled' option is just 'No Live Transcription'. 'Disabled' option
+// disables live transcription and the experiment.
+const FeatureEntry::FeatureVariation kVoiceSearchCoherenceVariations[] = {
+    {"(No Live Transcription)", kVoiceSearchCoherenceSearchboxParams, nullptr},
+    {"(With Live Transcription)", kVoiceSearchCoherenceLiveTranscriptionParams,
+     nullptr}};
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN)
 
@@ -6713,6 +6729,13 @@ const FeatureEntry kFeatureEntries[] = {
     {"memlog-stack-mode", flag_descriptions::kMemlogStackModeName,
      flag_descriptions::kMemlogStackModeDescription, kOsAll,
      MULTI_VALUE_TYPE(kMemlogStackModeChoices)},
+
+    {"ntp-searchbox-voice-search-coherence",
+     flag_descriptions::kVoiceSearchCoherenceName,
+     flag_descriptions::kVoiceSearchCoherenceDescription, kOsDesktop,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kVoiceSearchCoherenceSearchbox,
+                                    kVoiceSearchCoherenceVariations,
+                                    "VoiceSearchCoherenceVariations")},
 
     {"omnibox-max-zero-suggest-matches",
      flag_descriptions::kOmniboxMaxZeroSuggestMatchesName,

@@ -6924,6 +6924,11 @@
     "expiry_milestone": 155
   },
   {
+    "name": "ntp-searchbox-voice-search-coherence",
+    "owners": [ "jamesleung@google.com", "chrome-desktop-search@google.com"],
+    "expiry_milestone": 160
+  },
+  {
     "name": "ntp-sharepoint-module",
     "owners": [ "rtatum@google.com", "tiborg@chromium.org", "ftirelo@chromium.org" ],
     "expiry_milestone": 150

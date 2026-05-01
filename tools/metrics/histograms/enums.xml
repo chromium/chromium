@@ -14338,6 +14338,7 @@ from previous Chrome versions.
   <int value="67343657"
       label="LensOverlayTextSelectionContextMenuEntrypoint:disabled"/>
   <int value="67639499" label="stop-loading-in-background:disabled"/>
+  <int value="67852091" label="VoiceSearchCoherenceSearchbox:disabled"/>
   <int value="68263546" label="EnableExtensionsForCorpDesktopAndroid:disabled"/>
   <int value="68506319" label="TabStripGroupCollapseAndroid:disabled"/>
   <int value="69571279" label="ExperimentalRgbKeyboardPatterns:disabled"/>
@@ -17994,6 +17995,8 @@ from previous Chrome versions.
   <int value="1285169797" label="ClipboardHistoryNudgeSessionReset:disabled"/>
   <int value="1285582572"
       label="ForceBrowserControlsUponExitingFullscreen:disabled"/>
+  <int value="1285763586"
+      label="VoiceSearchNewAnimationNoLiveTranscription:disabled"/>
   <int value="1285905715" label="WebXRHitTest:enabled"/>
   <int value="1286195560" label="enable-download-warning-improvements"/>
   <int value="1286692760" label="NtpMiddleSlotPromoDismissal:enabled"/>
@@ -18118,6 +18121,7 @@ from previous Chrome versions.
   <int value="1316142697" label="canvas-2d-layers"/>
   <int value="1316607485" label="MultiProfileAccountConsistency:enabled"/>
   <int value="1316844889" label="ScreenshotsForAndroidV2:disabled"/>
+  <int value="1317207024" label="VoiceSearchCoherenceSearchbox:enabled"/>
   <int value="1317562265" label="SeccompSandboxAndroid:disabled"/>
   <int value="1318073661" label="MaterialDesignExtensions:enabled"/>
   <int value="1319024729" label="ServiceWorkerServicification:disabled"/>
@@ -19007,6 +19011,8 @@ from previous Chrome versions.
   <int value="1616938915"
       label="OmniboxUIExperimentWhiteBackgroundOnBlur:disabled"/>
   <int value="1617187093" label="enable-improved-a2hs"/>
+  <int value="1617744449"
+      label="VoiceSearchNewAnimationNoLiveTranscription:enabled"/>
   <int value="1618337673" label="IdbSqliteBackingStore:disabled"/>
   <int value="1618538021" label="FallbackToSWIfGLES3NotSupported:disabled"/>
   <int value="1618633341" label="MashOopViz:enabled"/>

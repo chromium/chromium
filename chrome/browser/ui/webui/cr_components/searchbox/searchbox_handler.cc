@@ -304,46 +304,6 @@ BASE_FEATURE(kDropMismatchedSelections, base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace
 
 // static
-// Kill switch - Enables voice search coherence across composeboxes in NTP,
-// cobrowsing, omnibox:
-//  - Submit and stop buttons in voice search mode.
-//  - New voice recording animation.
-//  - New metrics for voice search across composeboxes.
-//  - No live transcription below the new recording animation.
-BASE_FEATURE(SearchboxHandler::kVoiceSearchCoherenceComposeboxes,
-             "VoiceSearchCoherenceComposeboxes",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// static
-// Enables voice search live experiment for NTP searchbox, (arm 1):
-//  - Submit and stop buttons in voice search mode.
-//  - New voice recording animation.
-//  - New metrics for voice search across searchbox.
-//  - NO live transcription below the new recording animation.
-BASE_FEATURE(SearchboxHandler::kVoiceSearchCoherenceSearchbox,
-             "VoiceSearchNewAnimationNoLiveTranscription",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// static
-// Enables voice search live experiment for NTP searchbox, (arm 2):
-//  - Submit and stop buttons in voice search mode.
-//  - New voice recording animation.
-//  - New metrics for voice search for NTP searchbox.
-//  - DIFF: adds live transcription below the new recording animation.
-const base::FeatureParam<bool>
-    SearchboxHandler::kVoiceSearchCoherenceSearchboxWithLiveTranscription(
-        &SearchboxHandler::kVoiceSearchCoherenceSearchbox,
-        "VoiceSearchCoherenceSearchboxWithLiveTranscription",
-        false);
-
-// static
-bool SearchboxHandler::IsVoiceSearchCoherenceSearchboxEnabled() {
-  return base::FeatureList::IsEnabled(
-      SearchboxHandler::kVoiceSearchCoherenceSearchbox) ||
-      SearchboxHandler::kVoiceSearchCoherenceSearchboxWithLiveTranscription.Get();
-}
-
-// static
 base::DictValue SearchboxHandler::GetWebUIDataSourceDict(Profile* profile) {
   return GetWebUIDataSourceDict(profile, WebUIDataSourceOptions{});
 }
@@ -368,9 +328,30 @@ base::DictValue SearchboxHandler::GetWebUIDataSourceDict(
   dict.Set("forceHideEllipsis", false);
   dict.Set("enableThumbnailSizingTweaks", false);
   dict.Set("enableCsbMotionTweaks", false);
-  dict.Set("voiceSearchCoherenceComposeboxesEnabled",
-           base::FeatureList::IsEnabled(
-               SearchboxHandler::kVoiceSearchCoherenceComposeboxes));
+
+  // Returns if composeboxes voice coherence is not gated. Includes new metrics,
+  // new animation, new submit/stop buttons, no live transcription.
+  dict.Set(
+      "voiceSearchCoherenceComposeboxesEnabled",
+      base::FeatureList::IsEnabled(omnibox::kVoiceSearchCoherenceComposeboxes));
+
+  // Enables if voice search ntp searchbox live experiment is on. Includes new
+  // metrics, new animation, new submit/stop buttons, no live transcription.
+  dict.Set(
+      "voiceSearchCoherenceSearchboxNoLiveTranscriptionEnabled",
+      base::FeatureList::IsEnabled(omnibox::kVoiceSearchCoherenceSearchbox));
+
+  // Enables if voice search ntp searchbox live experiment is on. Includes new
+  // metrics, new animation, new submit/stop buttons, live transcription.
+  dict.Set("voiceSearchCoherenceSearchboxWithLiveTranscriptionEnabled",
+           omnibox::kVoiceSearchCoherenceSearchboxWithLiveTranscription.Get());
+
+  // Enables if either arm of the voice search ntp searchbox live experiment
+  // is on.
+  dict.Set(
+      "voiceSearchCoherenceAnySearchboxExperimentEnabled",
+      base::FeatureList::IsEnabled(omnibox::kVoiceSearchCoherenceSearchbox) ||
+          omnibox::kVoiceSearchCoherenceSearchboxWithLiveTranscription.Get());
 
   static constexpr webui::LocalizedString kStrings[] = {
       {"lensSearchButtonLabel", IDS_TOOLTIP_LENS_SEARCH},

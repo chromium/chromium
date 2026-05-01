@@ -379,6 +379,32 @@ BASE_FEATURE(kOmniboxDebugLogs, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kThinkingModelIconUpdate, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Kill switch - Enables voice search coherence across composeboxes in NTP,
+// cobrowsing, omnibox:
+//  - Submit and stop buttons in voice search mode.
+//  - New voice recording animation.
+//  - New metrics for voice search across composeboxes.
+//  - No live transcription below the new recording animation.
+BASE_FEATURE(kVoiceSearchCoherenceComposeboxes,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables voice search live experiment for NTP searchbox, (arm 1):
+//  - Submit and stop buttons in voice search mode.
+//  - New voice recording animation.
+//  - New metrics for voice search across searchbox.
+//  - NO live transcription below the new recording animation.
+BASE_FEATURE(kVoiceSearchCoherenceSearchbox, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables voice search live experiment for NTP searchbox, (arm 2):
+//  - Submit and stop buttons in voice search mode.
+//  - New voice recording animation.
+//  - New metrics for voice search for NTP searchbox.
+//  - DIFF: adds live transcription below the new recording animation.
+const base::FeatureParam<bool>
+    kVoiceSearchCoherenceSearchboxWithLiveTranscription{
+        &kVoiceSearchCoherenceSearchbox,
+        "VoiceSearchCoherenceSearchboxWithLiveTranscription", false};
+
 #if BUILDFLAG(IS_ANDROID)
 // Accelerates time from cold start to focused Omnibox on low-end devices,
 // prioritizing Omnibox focus and background initialization.
