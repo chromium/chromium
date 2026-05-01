@@ -16,6 +16,7 @@ import android.text.TextUtils;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.StreamUtil;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
@@ -98,21 +99,13 @@ public class PdfContentProvider extends ContentProvider {
             return;
         }
 
-        try {
-            Uri contentUri = Uri.parse(uri);
-            synchronized (LOCK) {
-                PdfFileInfo info = sPdfUriMap.remove(contentUri);
-                if (info != null) {
-                    try {
-                        info.pfd.close();
-                    } catch (IOException ex) {
-                        Log.e(TAG, "Unable to close file.", ex);
-                    }
-                }
-            }
-        } catch (Exception ex) {
-            Log.e(TAG, "Cannot parse uri.", ex);
-            return;
+        Uri contentUri = Uri.parse(uri);
+        PdfFileInfo info;
+        synchronized (LOCK) {
+            info = sPdfUriMap.remove(contentUri);
+        }
+        if (info != null) {
+            StreamUtil.closeQuietly(info.pfd);
         }
     }
 
