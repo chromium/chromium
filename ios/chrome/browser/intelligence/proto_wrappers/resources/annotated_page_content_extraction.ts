@@ -221,6 +221,7 @@ const ATTR_POSITION_FIXED = 'fixed';
 const ATTR_POSITION_STATIC = 'static';
 const ATTR_POSITION_STICKY = 'sticky';
 const ATTR_DISPLAY_NONE = 'none';
+const ATTR_DISPLAY_INLINE = 'inline';
 const ATTR_VISIBILITY_HIDDEN = 'hidden';
 const ATTR_VISIBILITY_VISIBLE = 'visible';
 const ATTR_TRANSFORM_UPPERCASE = 'uppercase';
@@ -2370,23 +2371,27 @@ function addNodeGeometry(
     }
 
     // Handle fragmentation (e.g., text wrapping across multiple lines).
-    const clientRects = element.getClientRects();
-    if (clientRects.length > 1) {
-      const fragmentVisibleBoundingBoxes: Rect[] = [];
+    // We only need to check for inline as inline-block, inline-flex,
+    // inline-grid are not fragmented: they return 1 client rect.
+    if (style?.display === ATTR_DISPLAY_INLINE) {
+      const clientRects = element.getClientRects();
+      if (clientRects.length > 1) {
+        const fragmentVisibleBoundingBoxes: Rect[] = [];
 
-      for (let i = 0; i < clientRects.length; i++) {
-        const rect = clientRects[i]!;
-        const fragmentRect =
-            createRect(rect.x, rect.y, rect.width, rect.height);
-        const visibleFragmentRect = intersection(fragmentRect, clipToUse);
-        if (visibleFragmentRect.width > 0 && visibleFragmentRect.height > 0) {
-          fragmentVisibleBoundingBoxes.push(
-              toEnclosingRect(visibleFragmentRect));
+        for (let i = 0; i < clientRects.length; i++) {
+          const rect = clientRects[i]!;
+          const fragmentRect =
+              createRect(rect.x, rect.y, rect.width, rect.height);
+          const visibleFragmentRect = intersection(fragmentRect, clipToUse);
+          if (visibleFragmentRect.width > 0 && visibleFragmentRect.height > 0) {
+            fragmentVisibleBoundingBoxes.push(
+                toEnclosingRect(visibleFragmentRect));
+          }
         }
-      }
 
-      if (fragmentVisibleBoundingBoxes.length > 0) {
-        geometry.fragmentVisibleBoundingBoxes = fragmentVisibleBoundingBoxes;
+        if (fragmentVisibleBoundingBoxes.length > 0) {
+          geometry.fragmentVisibleBoundingBoxes = fragmentVisibleBoundingBoxes;
+        }
       }
     }
   }

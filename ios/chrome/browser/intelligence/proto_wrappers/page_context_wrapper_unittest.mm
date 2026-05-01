@@ -5750,6 +5750,217 @@ TEST_P(PageContextWrapperTest,
   }
 }
 
+// Tests extraction of geometry for inline-block, inline-grid and inline-flex
+// elements that have no fragment.
+TEST_P(PageContextWrapperTest,
+       PopulatePageContext_ApcV2_Geometry_Fragmentation_InlineTypes) {
+  if (!IsRefactored()) {
+    GTEST_SKIP() << "ApcV2 not supported for the non-refactored APC wrapper";
+  }
+
+  auto page_structure = HtmlPage(
+      "Single Fragment Test",
+      RawHtml("<div role='button' style='display: inline-block; width: 50px; "
+              "word-break: break-all;' id='ib'>LONG TEXT THAT WRAPS</div>"
+              "<div role='button' style='display: inline-grid; width: 50px; "
+              "word-break: break-all;' id='ig'>LONG TEXT THAT WRAPS</div>"
+              "<div role='button' style='display: inline-flex; width: 50px; "
+              "word-break: break-all;' id='if'>LONG TEXT THAT WRAPS</div>"));
+
+  std::string main_html = page_helper_->Build(page_structure);
+  web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  PageContextWrapperConfig config =
+      PageContextWrapperConfigBuilder()
+          .SetUseRichExtraction(true)
+          .SetUseRichExtractionWithActionable(true)
+          .Build();
+
+  PageContextWrapperCallbackResponse response = RunPageContextWrapperWithConfig(
+      web_state(), config, ^(PageContextWrapper* wrapper) {
+        wrapper.shouldGetAnnotatedPageContent = YES;
+      });
+  ASSERT_TRUE(response.has_value());
+
+  std::unique_ptr<optimization_guide::proto::PageContext> page_context =
+      std::move(response.value());
+  ASSERT_TRUE(page_context);
+
+  const auto& actual_apc = page_context->annotated_page_content();
+  const auto& root = actual_apc.root_node();
+
+  ASSERT_GE(root.children_nodes_size(), 3);
+
+  const auto& ib_node = root.children_nodes(0);
+  EXPECT_TRUE(VerifyGeometry(ib_node));
+  EXPECT_EQ(ib_node.content_attributes()
+                .geometry()
+                .fragment_visible_bounding_boxes_size(),
+            0);
+
+  const auto& ig_node = root.children_nodes(1);
+  EXPECT_TRUE(VerifyGeometry(ig_node));
+  EXPECT_EQ(ig_node.content_attributes()
+                .geometry()
+                .fragment_visible_bounding_boxes_size(),
+            0);
+
+  const auto& if_node = root.children_nodes(2);
+  EXPECT_TRUE(VerifyGeometry(if_node));
+  EXPECT_EQ(if_node.content_attributes()
+                .geometry()
+                .fragment_visible_bounding_boxes_size(),
+            0);
+}
+
+// Checks that zero-width or zero-height fragments are filtered out.
+TEST_P(PageContextWrapperTest,
+       PopulatePageContext_ApcV2_Geometry_Fragmentation_ZeroSizeFilter) {
+  if (!IsRefactored()) {
+    GTEST_SKIP() << "ApcV2 not supported for the non-refactored APC wrapper";
+  }
+
+  auto page_structure =
+      HtmlPage("Zero Size Filter Test",
+               RawHtml("<span role='button' id='target'>Target Text</span>"));
+
+  std::string main_html = page_helper_->Build(page_structure);
+  web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  // Override `getClientRects()` with deterministic values to test
+  // `addNodeGeometry` fragmentation filtering logic: only the non zero-width
+  // and non-zero-height rects should be accepted.
+  CallJavascript(R"(
+    (function() {
+      const span = document.getElementById('target');
+      span.getClientRects = function() {
+        return [
+          { x: 10, y: 10, width: 100, height: 20 }, // Valid
+          { x: 10, y: 30, width: 0, height: 20 },   // Zero width
+          { x: 10, y: 50, width: 100, height: 0 },   // Zero height
+          { x: 10, y: 70, width: 50, height: 20 }   // Valid
+        ];
+      };
+    })()
+  )");
+
+  PageContextWrapperConfig config =
+      PageContextWrapperConfigBuilder()
+          .SetUseRichExtraction(true)
+          .SetUseRichExtractionWithActionable(true)
+          .Build();
+
+  PageContextWrapperCallbackResponse response = RunPageContextWrapperWithConfig(
+      web_state(), config, ^(PageContextWrapper* wrapper) {
+        wrapper.shouldGetAnnotatedPageContent = YES;
+      });
+  ASSERT_TRUE(response.has_value());
+
+  std::unique_ptr<optimization_guide::proto::PageContext> page_context =
+      std::move(response.value());
+  ASSERT_TRUE(page_context);
+
+  const auto& actual_apc = page_context->annotated_page_content();
+  const auto& root = actual_apc.root_node();
+
+  ASSERT_GE(root.children_nodes_size(), 1);
+  const auto& node = root.children_nodes(0);
+
+  // The zero-width and zero-height rects are filtered out.
+  EXPECT_EQ(node.content_attributes()
+                .geometry()
+                .fragment_visible_bounding_boxes_size(),
+            2);
+
+  const auto& rect0 =
+      node.content_attributes().geometry().fragment_visible_bounding_boxes(0);
+  EXPECT_EQ(rect0.width(), 100);
+  EXPECT_EQ(rect0.height(), 20);
+
+  const auto& rect1 =
+      node.content_attributes().geometry().fragment_visible_bounding_boxes(1);
+  EXPECT_EQ(rect1.width(), 50);
+  EXPECT_EQ(rect1.height(), 20);
+}
+
+// Tests that only fragments that are visible in the clip rect are added.
+TEST_P(PageContextWrapperTest,
+       PopulatePageContext_ApcV2_Geometry_Fragmentation_ClipFilter) {
+  if (!IsRefactored()) {
+    GTEST_SKIP() << "ApcV2 not supported for the non-refactored APC wrapper";
+  }
+
+  // Create a container with overflow: hidden and target span inside.
+  auto page_structure = HtmlPage(
+      "Clip Filter Test",
+      RawHtml("<div style='width: 100px; height: 50px; overflow: hidden; "
+              "position: relative;' id='clipper'>"
+              "  <span role='button' style='display: inline;' "
+              "id='target'>Target</span>"
+              "</div>"));
+
+  std::string main_html = page_helper_->Build(page_structure);
+  web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  // Override `getClientRects()` with deterministic values to test
+  // `addNodeGeometry` fragmentation filtering logic: with the div's height
+  // defined earlier, the third row should be clipped.
+  CallJavascript(R"(
+    (function() {
+      const span = document.getElementById('target');
+      span.getClientRects = function() {
+        return [
+          { x: 10, y: 10, width: 50, height: 20 }, // Visible (within Y 0-50)
+          { x: 10, y: 30, width: 50, height: 20 }, // Visible (within Y 0-50)
+          { x: 10, y: 60, width: 50, height: 20 }  // Clipped (outside Y 0-50)
+        ];
+      };
+    })()
+  )");
+
+  PageContextWrapperConfig config =
+      PageContextWrapperConfigBuilder()
+          .SetUseRichExtraction(true)
+          .SetUseRichExtractionWithActionable(true)
+          .Build();
+
+  PageContextWrapperCallbackResponse response = RunPageContextWrapperWithConfig(
+      web_state(), config, ^(PageContextWrapper* wrapper) {
+        wrapper.shouldGetAnnotatedPageContent = YES;
+      });
+  ASSERT_TRUE(response.has_value());
+
+  std::unique_ptr<optimization_guide::proto::PageContext> page_context =
+      std::move(response.value());
+  ASSERT_TRUE(page_context);
+
+  const auto& actual_apc = page_context->annotated_page_content();
+  const auto& root = actual_apc.root_node();
+
+  ASSERT_GE(root.children_nodes_size(), 1);
+  const auto& clipper_node = root.children_nodes(0);
+  ASSERT_GE(clipper_node.children_nodes_size(), 1);
+  const auto& node = clipper_node.children_nodes(0);
+
+  // We expect exactly 2 fragments (the visible ones). The clipped one should be
+  // filtered out.
+  EXPECT_EQ(node.content_attributes()
+                .geometry()
+                .fragment_visible_bounding_boxes_size(),
+            2);
+
+  const auto& rect0_clip =
+      node.content_attributes().geometry().fragment_visible_bounding_boxes(0);
+  EXPECT_EQ(rect0_clip.y(), 10);
+
+  const auto& rect1_clip =
+      node.content_attributes().geometry().fragment_visible_bounding_boxes(1);
+  EXPECT_EQ(rect1_clip.y(), 30);
+}
+
 // Tests extraction of geometry with complex clipping (scrollable containers).
 TEST_P(PageContextWrapperTest, PopulatePageContext_ApcV2_Geometry_Clipping) {
   if (!IsRefactored()) {
