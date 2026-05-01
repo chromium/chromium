@@ -50,6 +50,10 @@ IN_PROC_BROWSER_TEST_F(SkillsBrowserTest, SkillCard) {
   RunTest("skills/card_test.js", "mocha.run();");
 }
 
+IN_PROC_BROWSER_TEST_F(SkillsBrowserTest, SkillsCarousel) {
+  RunTest("skills/carousel_test.js", "mocha.run();");
+}
+
 IN_PROC_BROWSER_TEST_F(SkillsBrowserTest, SkillsEmojiPicker) {
   RunTest("skills/skills_emoji_picker_test.js", "mocha.run();");
 }

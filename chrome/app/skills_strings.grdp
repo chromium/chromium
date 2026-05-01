@@ -54,9 +54,6 @@
   <message name="IDS_SKILL_PAGE_BROWSE_SKILLS_TITLE" desc="Text for the title of the chrome://skills/browse-skills page.">
     Browse skills
   </message>
-  <message name="IDS_SKILL_PAGE_BROWSE_SKILLS_TOP_PICKS_TITLE" desc="Title for the top skill picks in the chrome://skills/browse-skills page.">
-    Our top picks
-  </message>
   <message name="IDS_SKILL_PAGE_FIRST_PARTY_ADD_SKILL_ERROR_TOAST" desc="Text on the toast if a skill no longer exists in the 1p catalog in the chrome://skills/browse-skills page.">
     Unable to add skill
   </message>

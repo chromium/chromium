@@ -49,13 +49,15 @@ cr-page-selector {
   flex-direction: column;
 
   /* The width is calculated using the width of 3 skill cards plus padding. */
-  max-width: calc(3 * var(--skills-card-width) + 2 * var(--skills-card-gap) + var(--page-right-padding));
+  max-width: calc(3 * var(--skills-card-width) + 2 * var(--skills-card-gap) +
+    2 * var(--page-padding));
   /* Align the left edge of the page selector with the left edge of
    * the search bar contained within cr-toolbar. If the window is too narrow
    * the searchbar disappears, max(16px,...) ensures the content is not being
    * pushed off screen. */
   margin-inline-start: max(16px, calc(50vw -
-    var(--cr-toolbar-field-width) / 2 - var(--sidebar-width)));
+    var(--cr-toolbar-field-width) / 2 - var(--sidebar-width) -
+    var(--page-padding)));
   margin-inline-end: 20px;
   padding-top: 16px;
 }

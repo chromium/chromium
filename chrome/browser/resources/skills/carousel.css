@@ -1,0 +1,109 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=//resources/cr_elements/cr_shared_style_lit.css.js
+ * #import=./shared_style.css.js
+ * #import=./shared_vars.css.js
+ * #scheme=relative
+ * #include=cr-shared-style-lit shared-style
+ * #css_wrapper_metadata_end */
+
+:host {
+  display: block;
+}
+
+#carouselWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: 0;
+}
+
+#carouselContainer {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: var(--skills-card-gap);
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: var(--skills-card-gap) 0;
+  flex: 1;
+  scrollbar-width: none;
+  scroll-snap-type: x mandatory;
+  overscroll-behavior-x: contain;
+  touch-action: pan-x;
+
+  anchor-name: --carousel-container_;
+  container-type: scroll-state;
+}
+
+#prevButton,
+#nextButton {
+  background: var(--color-sys-on-secondary);
+  border-radius: 50%;
+  z-index: 1;
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
+  --cr-icon-button-size: 40px;
+  box-shadow: var(--cr-elevation-1);
+  /* override cr-icon-button default margin */
+  margin: 0;
+
+  position: fixed;
+  position-anchor: --carousel-container_;
+  top: anchor(50%);
+}
+
+#carouselWrapper:hover #prevButton,
+#carouselWrapper:hover #nextButton {
+  opacity: 1;
+}
+
+#prevButton {
+  left: anchor(left);
+  transform: translate(-50%, -50%);
+}
+
+:host-context([dir='rtl']) #prevButton {
+  left: auto;
+  right: anchor(right);
+  transform: translate(50%, -50%);
+}
+
+#nextButton {
+  right: anchor(right);
+  transform: translate(50%, -50%);
+}
+
+:host-context([dir='rtl']) #nextButton {
+  right: auto;
+  left: anchor(left);
+  transform: translate(-50%, -50%);
+}
+
+@container not scroll-state(scrollable: left) {
+  :host-context([dir='ltr']) #prevButton {
+    display: none;
+  }
+  :host-context([dir='rtl']) #nextButton {
+    display: none;
+  }
+}
+
+@container not scroll-state(scrollable: right) {
+  :host-context([dir='ltr']) #nextButton {
+    display: none;
+  }
+  :host-context([dir='rtl']) #prevButton {
+    display: none;
+  }
+}
+
+::slotted([slot='items']) {
+  flex-shrink: 0;
+  width: var(--skills-card-width);
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}

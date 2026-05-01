@@ -53,7 +53,7 @@ export function getHtml(this: SkillCardElement) {
     `}
   </div>
   <cr-tooltip for="cardHeader" position="bottom" offset="0"
-      fit-to-visible-bounds>
+      fit-to-visible-bounds ?manual-mode="${this.hideTooltip}">
     ${this.skill.name}
   </cr-tooltip>
   <div id="${this.cardType}Body" class="card-body">${this.getCardBodyText_()}

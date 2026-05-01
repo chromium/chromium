@@ -394,7 +394,7 @@ IN_PROC_BROWSER_TEST_P(SkillsPageScreenshotInteractiveUITest,
   skills::proto::Skill* skill2 = skills_list.add_skills();
   skill2->set_id("345");
   skill2->set_name("Find frog photos");
-  skill2->set_category("Top Pick");
+  skill2->set_category("Learning");
   skill2->set_description("Find a cute frog photo");
   skill2->set_icon("🐸");
   skill2->set_prompt("Find a cute frog photo");
@@ -428,4 +428,61 @@ IN_PROC_BROWSER_TEST_P(SkillsPageScreenshotInteractiveUITest,
   histogram_tester_.ExpectBucketCount(
       "Skills.Management.BrowseSkills.Action",
       skills::mojom::SkillsManagementAction::kPageOpened, 1);
+}
+
+IN_PROC_BROWSER_TEST_P(SkillsPageScreenshotInteractiveUITest,
+                       BrowseSkillsPageSubHeaders) {
+  skills::proto::SkillsList skills_list;
+  skills::proto::Skill* skill = skills_list.add_skills();
+  skill->set_id("123");
+  skill->set_name("Look for socks");
+  skill->set_category("Partnerships");
+  skill->set_description("Look for some socks");
+  skill->set_icon("🧦");
+  skill->set_prompt("Look for some socks");
+  skill->set_image_url("https://example.com/image.png");
+
+  skills::proto::Skill* skill2 = skills_list.add_skills();
+  skill2->set_id("345");
+  skill2->set_name("Find frog photos");
+  skill2->set_category("Top Pick");
+  skill2->set_description("Find a cute frog photo");
+  skill2->set_icon("🐸");
+  skill2->set_prompt("Find a cute frog photo");
+
+  // Add topics.
+  skills::proto::TopicInfo* topic1 = skills_list.add_topics_info_list();
+  topic1->set_category_name("Partnerships");
+  topic1->set_display_name("Partner Spotlight");
+
+  skills::proto::TopicInfo* topic2 = skills_list.add_topics_info_list();
+  topic2->set_category_name("Top Pick");
+  topic2->set_display_name("Selected By Chrome");
+
+  std::string response_data;
+  ASSERT_TRUE(skills_list.SerializeToString(&response_data));
+
+  GURL expected_url(skills::kSkillsDownloaderGstaticUrl);
+  test_url_loader_factory_.AddResponse(expected_url.spec(), response_data,
+                                       net::HTTP_OK);
+
+  const InteractiveBrowserWindowTestApi::DeepQuery kSkillCardQuery{
+      "skills-app", "discover-skills-page", "skill-card"};
+
+  std::string screenshot_name =
+      IsDarkMode() ? "browse_skills_dark" : "browse_skills_light";
+  SignIn("testskills@gmail.com");
+  glic::GlicEnabling::SetBypassEnablementChecksForTesting(true);
+  RunTestSequence(
+      SetOnIncompatibleAction(
+          OnIncompatibleAction::kIgnoreAndContinue,
+          "Screenshots not supported in all testing environments."),
+      OpenSkillsPage(GURL(chrome::kChromeUISkillsURL)
+                         .Resolve(chrome::kChromeUISkillsBrowsePath)),
+      WaitForElementEvent(
+          kSkillsPageElementId, kSkillCardQuery,
+          WebContentsInteractionTestUtil::StateChange::Type::kExists),
+      Screenshot(kSkillsPageElementId,
+                 /*screenshot_name=*/screenshot_name,
+                 /*baseline_cl=*/kScreenshotBaselineCL));
 }

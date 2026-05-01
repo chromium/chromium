@@ -5,6 +5,7 @@ build_webui_tests("build") {
 
   files = [
     "card_test.ts",
+    "carousel_test.ts",
     "discover_skills_page_test.ts",
     "skills_dialog_test.ts",
     "skills_emoji_picker_test.ts",
