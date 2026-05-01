@@ -524,15 +524,11 @@ void FrameSequenceMetrics::TraceData::Advance(base::TimeTicks start_timestamp,
   if (!enabled)
     return;
   if (!trace_track) {
-    // The underlying usage of TRACE_ID_LOCAL is mapping the raw uint64_t from
-    // the point into either `trace_event_internal::TraceID::LocalId` or
-    // `perfetto::internal::LegacyTraceId`. However the trace macros don't
-    // support just providing that object directly. Here we do the cast
-    // ourselves ahead, and save the resulting value. This value will be used to
-    // nest other traces, as well as close the async trace at a later time. The
-    // value can also be merged into future sequences. This avoids holding
-    // dangling ptrs.
-    trace_track.emplace(perfetto::Track::FromPointer(this));
+    // Create a NamedTrack that will be used to nest other events, as well as
+    // close the async trace at a later time. The track can also be merged into
+    // future sequences. This avoids holding dangling ptrs.
+    trace_track.emplace(perfetto::NamedTrack::FromPointer(
+        perfetto::StaticString(histogram_name), this));
     TRACE_EVENT_BEGIN(
         "cc,benchmark", perfetto::StaticString(histogram_name), *trace_track,
         start_timestamp, "name",
