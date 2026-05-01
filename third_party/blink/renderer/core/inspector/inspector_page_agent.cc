@@ -68,7 +68,6 @@
 #include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
 #include "third_party/blink/renderer/core/inspector/inspected_frames.h"
 #include "third_party/blink/renderer/core/inspector/inspector_css_agent.h"
-#include "third_party/blink/renderer/core/inspector/inspector_injected_script_manager.h"
 #include "third_party/blink/renderer/core/inspector/inspector_resource_content_loader.h"
 #include "third_party/blink/renderer/core/inspector/protocol/page.h"
 #include "third_party/blink/renderer/core/inspector/v8_inspector_string.h"
@@ -506,15 +505,17 @@ InspectorPageAgent::InspectorPageAgent(
       screencast_enabled_(&agent_state_, /*default_value=*/false),
       lifecycle_events_enabled_(&agent_state_, /*default_value=*/false),
       bypass_csp_enabled_(&agent_state_, /*default_value=*/false),
+      scripts_to_evaluate_on_load_(&agent_state_,
+                                   /*default_value=*/String()),
+      worlds_to_evaluate_on_load_(&agent_state_,
+                                  /*default_value=*/String()),
+      include_command_line_api_for_scripts_to_evaluate_on_load_(
+          &agent_state_,
+          /*default_value=*/false),
       standard_font_size_(&agent_state_, /*default_value=*/0),
       fixed_font_size_(&agent_state_, /*default_value=*/0),
       script_font_families_cbor_(&agent_state_, std::vector<uint8_t>()),
-      pending_script_injection_on_load_(script_to_evaluate_on_load),
-      injected_script_manager_(
-          MakeGarbageCollected<InspectorInjectedScriptManager>(&agent_state_,
-                                                               inspected_frames,
-                                                               v8_session,
-                                                               client)) {}
+      pending_script_injection_on_load_(script_to_evaluate_on_load) {}
 
 void InspectorPageAgent::Restore() {
   if (enabled_.Get()) {
@@ -579,35 +580,62 @@ protocol::Response InspectorPageAgent::addScriptToEvaluateOnNewDocument(
     std::optional<bool> include_command_line_api,
     std::optional<bool> runImmediately,
     String* identifier) {
-  *identifier = injected_script_manager_->AddScriptToEvaluateOnNewDocument(
-      source, world_name, include_command_line_api, runImmediately);
+  {
+    const auto& keys = scripts_to_evaluate_on_load_.Keys();
+    auto result = std::max_element(
+        keys.begin(), keys.end(), [](const String& a, const String& b) {
+          return Decimal::FromString(a) < Decimal::FromString(b);
+        });
+    if (result == keys.end()) {
+      *identifier = String::Number(1);
+    } else {
+      *identifier = String::Number(Decimal::FromString(*result).ToDouble() + 1);
+    }
+  }
+
+  scripts_to_evaluate_on_load_.Set(*identifier, source);
+  worlds_to_evaluate_on_load_.Set(*identifier, world_name.value_or(""));
+  include_command_line_api_for_scripts_to_evaluate_on_load_.Set(
+      *identifier, include_command_line_api.value_or(false));
+
+  if (client_->IsPausedForNewWindow() || runImmediately.value_or(false)) {
+    // client_->IsPausedForNewWindow(): When opening a new popup,
+    // Page.addScriptToEvaluateOnNewDocument could be called after
+    // Runtime.enable that forces main context creation. In this case, we would
+    // not normally evaluate the script, but we should.
+    for (LocalFrame* frame : *inspected_frames_) {
+      // Don't evaluate scripts on provisional frames:
+      // https://crbug.com/390710982
+      if (!frame->IsProvisional()) {
+        EvaluateScriptOnNewDocument(*frame, *identifier);
+      }
+    }
+  }
+
   return protocol::Response::Success();
 }
 
 protocol::Response InspectorPageAgent::removeScriptToEvaluateOnNewDocument(
     const String& identifier) {
-  if (!injected_script_manager_->RemoveScriptToEvaluateOnNewDocument(
-          identifier)) {
+  if (scripts_to_evaluate_on_load_.Get(identifier).IsNull()) {
     return protocol::Response::ServerError("Script not found");
   }
+  scripts_to_evaluate_on_load_.Clear(identifier);
+  worlds_to_evaluate_on_load_.Clear(identifier);
+  include_command_line_api_for_scripts_to_evaluate_on_load_.Clear(identifier);
   return protocol::Response::Success();
 }
 
 protocol::Response InspectorPageAgent::addScriptToEvaluateOnLoad(
     const String& source,
     String* identifier) {
-  *identifier = injected_script_manager_->AddScriptToEvaluateOnNewDocument(
-      source, std::optional<String>(""), false, false);
-  return protocol::Response::Success();
+  return addScriptToEvaluateOnNewDocument(source, std::optional<String>(""),
+                                          false, false, identifier);
 }
 
 protocol::Response InspectorPageAgent::removeScriptToEvaluateOnLoad(
     const String& identifier) {
-  if (!injected_script_manager_->RemoveScriptToEvaluateOnNewDocument(
-          identifier)) {
-    return protocol::Response::ServerError("Script not found");
-  }
-  return protocol::Response::Success();
+  return removeScriptToEvaluateOnNewDocument(identifier);
 }
 
 protocol::Response InspectorPageAgent::setLifecycleEventsEnabled(bool enabled) {
@@ -1017,9 +1045,14 @@ void InspectorPageAgent::DidCreateMainWorldContext(LocalFrame* frame) {
                             request.grant_universal_access,
                             std::move(request.callback));
   }
-  CHECK(injected_script_manager_);  // It would only be null after Dispose(),
-                                    // which we tested for first thing.
-  injected_script_manager_->InjectScripts(frame);
+  Vector<String> keys(scripts_to_evaluate_on_load_.Keys());
+  std::sort(keys.begin(), keys.end(), [](const String& a, const String& b) {
+    return Decimal::FromString(a) < Decimal::FromString(b);
+  });
+
+  for (const String& key : keys) {
+    EvaluateScriptOnNewDocument(*frame, key);
+  }
 
   if (script_injection_on_load_once_.empty()) {
     return;
@@ -1032,6 +1065,35 @@ void InspectorPageAgent::DidCreateMainWorldContext(LocalFrame* frame) {
 
   v8_session_->evaluate(script_state->GetContext(),
                         ToV8InspectorStringView(script));
+}
+
+void InspectorPageAgent::EvaluateScriptOnNewDocument(
+    LocalFrame& frame,
+    const String& script_identifier) {
+  auto* window = frame.DomWindow();
+  v8::HandleScope handle_scope(window->GetIsolate());
+
+  ScriptState* script_state = nullptr;
+  const String world_name = worlds_to_evaluate_on_load_.Get(script_identifier);
+  if (world_name.empty()) {
+    script_state = ToScriptStateForMainWorld(window->GetFrame());
+  } else if (DOMWrapperWorld* world = EnsureDOMWrapperWorld(
+                 &frame, world_name, true /* grant_universal_access */)) {
+    script_state =
+        ToScriptState(window->GetFrame(),
+                      *DOMWrapperWorld::EnsureIsolatedWorld(
+                          ToIsolate(window->GetFrame()), world->GetWorldId()));
+  }
+  if (!script_state || !v8_session_) {
+    return;
+  }
+
+  v8_session_->evaluate(
+      script_state->GetContext(),
+      ToV8InspectorStringView(
+          scripts_to_evaluate_on_load_.Get(script_identifier)),
+      include_command_line_api_for_scripts_to_evaluate_on_load_.Get(
+          script_identifier));
 }
 
 void InspectorPageAgent::DomContentLoadedEventFired(LocalFrame* frame) {
@@ -1970,13 +2032,11 @@ void InspectorPageAgent::Trace(Visitor* visitor) const {
   visitor->Trace(inspected_frames_);
   visitor->Trace(pending_isolated_worlds_);
   visitor->Trace(inspector_resource_content_loader_);
-  visitor->Trace(injected_script_manager_);
   InspectorBaseAgent::Trace(visitor);
 }
 
 void InspectorPageAgent::Dispose() {
   InspectorBaseAgent::Dispose();
-  injected_script_manager_ = nullptr;
   v8_session_ = nullptr;
 }
 

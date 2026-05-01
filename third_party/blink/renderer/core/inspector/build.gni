@@ -92,8 +92,6 @@ blink_core_sources_inspector = [
   "inspector_overlay_agent.h",
   "inspector_overlay_host.cc",
   "inspector_overlay_host.h",
-  "inspector_injected_script_manager.cc",
-  "inspector_injected_script_manager.h",
   "inspector_page_agent.cc",
   "inspector_page_agent.h",
   "inspector_performance_agent.cc",
