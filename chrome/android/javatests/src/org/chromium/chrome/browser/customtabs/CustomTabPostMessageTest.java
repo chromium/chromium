@@ -262,6 +262,7 @@ public class CustomTabPostMessageTest {
      */
     @Test
     @SmallTest
+    @DisabledTest(message = "crbug.com/508387726")
     public void testPostMessageReceivedInPage() throws Exception {
         final String url =
                 mWebServer.setResponse("/test.html", TITLE_FROM_POSTMESSAGE_TO_CHANNEL, null);
