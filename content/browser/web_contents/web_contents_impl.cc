@@ -6432,7 +6432,9 @@ void WebContentsImpl::MoveCaret(const gfx::Point& extent) {
 
 base::UnguessableToken WebContentsImpl::GetCompositorFrameSinkGroupingId()
     const {
-  return compositor_frame_sink_grouping_id_;
+  const WebContentsImpl* root =
+      const_cast<WebContentsImpl*>(this)->GetOutermostWebContents();
+  return root->compositor_frame_sink_grouping_id_;
 }
 
 void WebContentsImpl::AdjustSelectionByCharacterOffset(
