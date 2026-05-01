@@ -73,6 +73,8 @@ TEST(HEVCAnalyzeAnnexBTest, InvalidAnnexBConstructs) {
       // keyframe.
       {"I EOB EOS", true},  // EOS must come before EOB.
       {"I SPS", true},      // SPS must come before first VCL.
+      {"FD PREFIX_SEI I",
+       true},  // FD before VCL is non-conformant but keyframe is detected.
 
       // For this case, P slice is first VCL and is detected before conformance
       // failure, so the non-conformant frame is reported as a non-keyframe.

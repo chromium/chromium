@@ -423,6 +423,8 @@ BitstreamConverter::AnalysisResult HEVC::AnalyzeAnnexB(
   BitstreamConverter::AnalysisResult result;
   result.is_conformant = false;  // Will change if needed before return.
 
+  bool had_unexpected_nalu = false;
+
   if (buffer.empty()) {
     result.is_conformant = true;
     return result;
@@ -532,7 +534,7 @@ BitstreamConverter::AnalysisResult HEVC::AnalyzeAnnexB(
         if (order_state < kAfterFirstVCL) {
           DVLOG(1) << "Unexpected NALU type " << nalu.nal_unit_type
                    << " in order_state " << order_state;
-          return result;
+          had_unexpected_nalu = true;
         }
         break;
 
@@ -621,7 +623,7 @@ BitstreamConverter::AnalysisResult HEVC::AnalyzeAnnexB(
   if (order_state < kAfterFirstVCL)
     return result;
 
-  result.is_conformant = true;
+  result.is_conformant = !had_unexpected_nalu;
   DCHECK(result.is_keyframe.has_value());
   return result;
 }

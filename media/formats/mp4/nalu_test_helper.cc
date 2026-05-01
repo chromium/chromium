@@ -107,6 +107,10 @@ H265NALU::Type H265StringToNALUType(const std::string& name) {
   if (name == "I")
     return H265NALU::IDR_W_RADL;
 
+  if (name == "PREFIX_SEI") {
+    return H265NALU::PREFIX_SEI_NUT;
+  }
+
   NOTREACHED() << "Unexpected name: " << name;
 }
 
