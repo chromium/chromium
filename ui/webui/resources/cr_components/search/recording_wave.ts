@@ -171,14 +171,14 @@ const SHADOW_SIDE_BLUR_RATIO = 0.5;
 
 // Linear interpolation.
 const lerp = (start: number, end: number, t: number) =>
-    Math.round(start + (end - start) * t);
+    start + (end - start) * t;
 
 // Right to left colors in red green blue:
 // First 60% is perwinkle blue. The last 40% should become more lavender.
 const lerpColor = (color1: Rgb, color2: Rgb, t: number) => ({
-  r: lerp(color1.r, color2.r, t),
-  g: lerp(color1.g, color2.g, t),
-  b: lerp(color1.b, color2.b, t),
+  r: Math.round(lerp(color1.r, color2.r, t)),
+  g: Math.round(lerp(color1.g, color2.g, t)),
+  b: Math.round(lerp(color1.b, color2.b, t)),
 });
 
 export class RecordingWaveElement extends CrLitElement {
