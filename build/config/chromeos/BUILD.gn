@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
+import("//build/config/compiler_cpu_abi.gn")
 
 assert(is_chromeos)
 
@@ -23,27 +24,9 @@ config("compiler_cpu_abi") {
   # the cmake flags that clang was built with. Passing them redundantly
   # is harmless and prepares for using Chromium's toolchain.
   if (is_chromeos_device) {
-    if (current_cpu == "x64") {
-      asmflags = [ "--target=x86_64-cros-linux-gnu" ]
-      cflags = [
-        "--target=x86_64-cros-linux-gnu",
-        "-mno-movbe",
-      ]
-      ldflags = [
-        "--target=x86_64-cros-linux-gnu",
-        "-mno-movbe",
-      ]
-    } else if (current_cpu == "arm") {
-      asmflags = [ "--target=armv7a-cros-linux-gnueabihf" ]
-      cflags = [ "--target=armv7a-cros-linux-gnueabihf" ]
-      ldflags = [ "--target=armv7a-cros-linux-gnueabihf" ]
-    } else if (current_cpu == "arm64") {
-      asmflags = [ "--target=aarch64-cros-linux-gnu" ]
-      cflags = [ "--target=aarch64-cros-linux-gnu" ]
-      ldflags = [ "--target=aarch64-cros-linux-gnu" ]
-    } else {
-      assert(false, "add support for $current_cpu here")
-    }
+    asmflags = cros_cpu_abi_asmflags
+    cflags = cros_cpu_abi_cflags
+    ldflags = cros_cpu_abi_ldflags
   }
 }
 

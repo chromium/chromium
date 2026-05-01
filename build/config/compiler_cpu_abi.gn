@@ -1,0 +1,375 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/args.gni")
+import("//build/toolchain/toolchain.gni")
+
+if (current_cpu == "arm" || current_cpu == "arm64") {
+  import("//build/config/arm.gni")
+}
+if (current_cpu == "mipsel" || current_cpu == "mips64el" ||
+    current_cpu == "mips" || current_cpu == "mips64") {
+  import("//build/config/mips.gni")
+}
+
+if (target_os == "chromeos") {
+  declare_args() {
+    # Setting this value selects a specific CPU type among the broader
+    # class selected by target_cpu. For example, a build with
+    # target_cpu="arm64" may set cros_target_cpu_arch="armv8-a+crc+crypto").
+    cros_target_cpu_arch = ""
+  }
+}
+
+cpu_abi_cflags = []
+cpu_abi_ldflags = []
+cpu_abi_defines = []
+
+cros_cpu_abi_cflags = []
+cros_cpu_abi_ldflags = []
+cros_cpu_abi_asmflags = []
+
+if (is_chromeos_device) {
+  if (current_cpu == "x64") {
+    cros_cpu_abi_asmflags = [ "--target=x86_64-cros-linux-gnu" ]
+    cros_cpu_abi_cflags = [
+      "--target=x86_64-cros-linux-gnu",
+      "-mno-movbe",
+    ]
+    cros_cpu_abi_ldflags = [
+      "--target=x86_64-cros-linux-gnu",
+      "-mno-movbe",
+    ]
+  } else if (current_cpu == "arm") {
+    cros_cpu_abi_asmflags = [ "--target=armv7a-cros-linux-gnueabihf" ]
+    cros_cpu_abi_cflags = [ "--target=armv7a-cros-linux-gnueabihf" ]
+    cros_cpu_abi_ldflags = [ "--target=armv7a-cros-linux-gnueabihf" ]
+  } else if (current_cpu == "arm64") {
+    cros_cpu_abi_asmflags = [ "--target=aarch64-cros-linux-gnu" ]
+    cros_cpu_abi_cflags = [ "--target=aarch64-cros-linux-gnu" ]
+    cros_cpu_abi_ldflags = [ "--target=aarch64-cros-linux-gnu" ]
+  } else {
+    assert(false, "add support for $current_cpu here")
+  }
+}
+
+if ((is_posix && !is_apple) || is_fuchsia) {
+  # simplicity we always explicitly set the architecture.
+  if (current_cpu == "x64") {
+    if (is_clang && !is_android && !is_fuchsia && !is_chromeos_device) {
+      cpu_abi_cflags += [ "--target=x86_64-unknown-linux-gnu" ]
+      cpu_abi_ldflags += [ "--target=x86_64-unknown-linux-gnu" ]
+    } else {
+      cpu_abi_cflags += [ "-m64" ]
+      cpu_abi_ldflags += [ "-m64" ]
+    }
+    cpu_abi_cflags += [ "-msse3" ]
+    if (target_os == "chromeos" && cros_target_cpu_arch != "" &&
+        is_a_target_toolchain) {
+      cpu_abi_cflags += [ "-march=$cros_target_cpu_arch" ]
+      cpu_abi_ldflags += [ "-march=$cros_target_cpu_arch" ]
+    }
+  } else if (current_cpu == "x86") {
+    if (is_clang && !is_android && !is_chromeos_device) {
+      cpu_abi_cflags += [ "--target=i386-unknown-linux-gnu" ]
+      cpu_abi_ldflags += [ "--target=i386-unknown-linux-gnu" ]
+    } else {
+      cpu_abi_cflags += [ "-m32" ]
+      cpu_abi_ldflags += [ "-m32" ]
+    }
+    cpu_abi_cflags += [
+      "-mfpmath=sse",
+      "-msse3",
+    ]
+  } else if (current_cpu == "arm") {
+    if (is_clang && !is_android && !is_chromeos_device) {
+      cpu_abi_cflags += [ "--target=arm-linux-gnueabihf" ]
+      cpu_abi_ldflags += [ "--target=arm-linux-gnueabihf" ]
+    }
+    cpu_abi_cflags += [
+      "-march=$arm_arch",
+      "-mfloat-abi=$arm_float_abi",
+    ]
+  } else if (current_cpu == "arm64") {
+    if (is_clang && !is_android && !is_fuchsia && !is_chromeos_device) {
+      cpu_abi_cflags += [ "--target=aarch64-linux-gnu" ]
+      cpu_abi_ldflags += [ "--target=aarch64-linux-gnu" ]
+    }
+    if (target_os == "chromeos" && cros_target_cpu_arch != "" &&
+        is_a_target_toolchain) {
+      cpu_abi_cflags += [ "-march=$cros_target_cpu_arch" ]
+      cpu_abi_ldflags += [ "-march=$cros_target_cpu_arch" ]
+    }
+  } else if (current_cpu == "mipsel") {
+    cpu_abi_ldflags += [ "-Wl,--hash-style=sysv" ]
+    if (custom_toolchain == "") {
+      if (is_clang) {
+        if (is_android) {
+          cpu_abi_cflags += [ "--target=mipsel-linux-android" ]
+          cpu_abi_ldflags += [ "--target=mipsel-linux-android" ]
+        } else {
+          cpu_abi_cflags += [ "--target=mipsel-linux-gnu" ]
+          cpu_abi_ldflags += [ "--target=mipsel-linux-gnu" ]
+        }
+      } else {
+        cpu_abi_cflags += [ "-EL" ]
+        cpu_abi_ldflags += [ "-EL" ]
+      }
+    }
+
+    if (mips_arch_variant == "r6") {
+      cpu_abi_cflags += [ "-mno-odd-spreg" ]
+      cpu_abi_ldflags += [ "-mips32r6" ]
+      if (is_clang) {
+        cpu_abi_cflags += [
+          "-march=mipsel",
+          "-mcpu=mips32r6",
+        ]
+      } else {
+        cpu_abi_cflags += [
+          "-mips32r6",
+          "-Wa,-mips32r6",
+        ]
+        if (is_android) {
+          cpu_abi_ldflags += [ "-Wl,-melf32ltsmip" ]
+        }
+      }
+      if (mips_use_msa == true) {
+        cpu_abi_cflags += [
+          "-mmsa",
+          "-mfp64",
+        ]
+      }
+    } else if (mips_arch_variant == "r2") {
+      cpu_abi_ldflags += [ "-mips32r2" ]
+      if (is_clang) {
+        cpu_abi_cflags += [
+          "-march=mipsel",
+          "-mcpu=mips32r2",
+        ]
+      } else {
+        cpu_abi_cflags += [
+          "-mips32r2",
+          "-Wa,-mips32r2",
+        ]
+        if (mips_float_abi == "hard" && mips_fpu_mode != "") {
+          cpu_abi_cflags += [ "-m$mips_fpu_mode" ]
+        }
+      }
+    } else if (mips_arch_variant == "r1") {
+      cpu_abi_ldflags += [ "-mips32" ]
+      if (is_clang) {
+        cpu_abi_cflags += [
+          "-march=mipsel",
+          "-mcpu=mips32",
+        ]
+      } else {
+        cpu_abi_cflags += [
+          "-mips32",
+          "-Wa,-mips32",
+        ]
+      }
+    } else if (mips_arch_variant == "loongson3") {
+      cpu_abi_defines += [ "_MIPS_ARCH_LOONGSON" ]
+      cpu_abi_cflags += [
+        "-march=loongson3a",
+        "-mno-branch-likely",
+        "-Wa,-march=loongson3a",
+      ]
+    }
+
+    if (mips_dsp_rev == 1) {
+      cpu_abi_cflags += [ "-mdsp" ]
+    } else if (mips_dsp_rev == 2) {
+      cpu_abi_cflags += [ "-mdspr2" ]
+    }
+
+    cpu_abi_cflags += [ "-m${mips_float_abi}-float" ]
+  } else if (current_cpu == "mips") {
+    cpu_abi_ldflags += [ "-Wl,--hash-style=sysv" ]
+    if (custom_toolchain == "") {
+      if (is_clang) {
+        cpu_abi_cflags += [ "--target=mips-linux-gnu" ]
+        cpu_abi_ldflags += [ "--target=mips-linux-gnu" ]
+      } else {
+        cpu_abi_cflags += [ "-EB" ]
+        cpu_abi_ldflags += [ "-EB" ]
+      }
+    }
+
+    if (mips_arch_variant == "r6") {
+      cpu_abi_cflags += [
+        "-mips32r6",
+        "-Wa,-mips32r6",
+      ]
+      if (mips_use_msa == true) {
+        cpu_abi_cflags += [
+          "-mmsa",
+          "-mfp64",
+        ]
+      }
+    } else if (mips_arch_variant == "r2") {
+      cpu_abi_cflags += [
+        "-mips32r2",
+        "-Wa,-mips32r2",
+      ]
+      if (mips_float_abi == "hard" && mips_fpu_mode != "") {
+        cpu_abi_cflags += [ "-m$mips_fpu_mode" ]
+      }
+    } else if (mips_arch_variant == "r1") {
+      cpu_abi_cflags += [
+        "-mips32",
+        "-Wa,-mips32",
+      ]
+    }
+
+    if (mips_dsp_rev == 1) {
+      cpu_abi_cflags += [ "-mdsp" ]
+    } else if (mips_dsp_rev == 2) {
+      cpu_abi_cflags += [ "-mdspr2" ]
+    }
+
+    cpu_abi_cflags += [ "-m${mips_float_abi}-float" ]
+  } else if (current_cpu == "mips64el") {
+    cpu_abi_cflags += [ "-D__SANE_USERSPACE_TYPES__" ]
+    cpu_abi_ldflags += [ "-Wl,--hash-style=sysv" ]
+    if (custom_toolchain == "") {
+      if (is_clang) {
+        if (is_android) {
+          cpu_abi_cflags += [ "--target=mips64el-linux-android" ]
+          cpu_abi_ldflags += [ "--target=mips64el-linux-android" ]
+        } else {
+          cpu_abi_cflags += [ "--target=mips64el-linux-gnuabi64" ]
+          cpu_abi_ldflags += [ "--target=mips64el-linux-gnuabi64" ]
+        }
+      } else {
+        cpu_abi_cflags += [
+          "-EL",
+          "-mabi=64",
+        ]
+        cpu_abi_ldflags += [
+          "-EL",
+          "-mabi=64",
+        ]
+      }
+    }
+
+    if (mips_arch_variant == "r6") {
+      if (is_clang) {
+        cpu_abi_cflags += [
+          "-march=mips64el",
+          "-mcpu=mips64r6",
+        ]
+      } else {
+        cpu_abi_cflags += [
+          "-mips64r6",
+          "-Wa,-mips64r6",
+        ]
+        cpu_abi_ldflags += [ "-mips64r6" ]
+      }
+      if (mips_use_msa == true) {
+        cpu_abi_cflags += [
+          "-mmsa",
+          "-mfp64",
+        ]
+      }
+    } else if (mips_arch_variant == "r2") {
+      cpu_abi_ldflags += [ "-mips64r2" ]
+      if (is_clang) {
+        cpu_abi_cflags += [
+          "-march=mips64el",
+          "-mcpu=mips64r2",
+        ]
+      } else {
+        cpu_abi_cflags += [
+          "-mips64r2",
+          "-Wa,-mips64r2",
+        ]
+      }
+    } else if (mips_arch_variant == "loongson3") {
+      cpu_abi_defines += [ "_MIPS_ARCH_LOONGSON" ]
+      cpu_abi_cflags += [
+        "-march=loongson3a",
+        "-mno-branch-likely",
+        "-Wa,-march=loongson3a",
+      ]
+    }
+  } else if (current_cpu == "mips64") {
+    cpu_abi_ldflags += [ "-Wl,--hash-style=sysv" ]
+    if (custom_toolchain == "") {
+      if (is_clang) {
+        cpu_abi_cflags += [ "--target=mips64-linux-gnuabi64" ]
+        cpu_abi_ldflags += [ "--target=mips64-linux-gnuabi64" ]
+      } else {
+        cpu_abi_cflags += [
+          "-EB",
+          "-mabi=64",
+        ]
+        cpu_abi_ldflags += [
+          "-EB",
+          "-mabi=64",
+        ]
+      }
+    }
+
+    if (mips_arch_variant == "r6") {
+      cpu_abi_cflags += [
+        "-mips64r6",
+        "-Wa,-mips64r6",
+      ]
+      cpu_abi_ldflags += [ "-mips64r6" ]
+
+      if (mips_use_msa == true) {
+        cpu_abi_cflags += [
+          "-mmsa",
+          "-mfp64",
+        ]
+      }
+    } else if (mips_arch_variant == "r2") {
+      cpu_abi_cflags += [
+        "-mips64r2",
+        "-Wa,-mips64r2",
+      ]
+      cpu_abi_ldflags += [ "-mips64r2" ]
+    }
+  } else if (current_cpu == "ppc64") {
+    if (current_os == "aix") {
+      if (is_clang) {
+        cpu_abi_cflags += [ "--target=powerpc64-ibm-aix" ]
+        cpu_abi_ldflags += [ "--target=powerpc64-ibm-aix" ]
+      } else {
+        cpu_abi_cflags += [ "-maix64" ]
+        cpu_abi_ldflags += [ "-maix64" ]
+      }
+    } else if (is_clang) {
+      cpu_abi_cflags += [ "--target=powerpc64le-unknown-linux-gnu" ]
+      cpu_abi_ldflags += [ "--target=powerpc64le-unknown-linux-gnu" ]
+    } else {
+      cpu_abi_cflags += [ "-m64" ]
+      cpu_abi_ldflags += [ "-m64" ]
+    }
+  } else if (current_cpu == "riscv64") {
+    if (is_clang && !is_android) {
+      cpu_abi_cflags += [ "--target=riscv64-linux-gnu" ]
+      cpu_abi_ldflags += [ "--target=riscv64-linux-gnu" ]
+    }
+    cpu_abi_cflags += [ "-mabi=lp64d" ]
+  } else if (current_cpu == "loong64") {
+    if (is_clang) {
+      cpu_abi_cflags += [ "--target=loongarch64-linux-gnu" ]
+      cpu_abi_ldflags += [ "--target=loongarch64-linux-gnu" ]
+    }
+    cpu_abi_cflags += [
+      "-mabi=lp64d",
+      "-mcmodel=medium",
+    ]
+  } else if (current_cpu == "s390x") {
+    if (is_clang && current_os != "zos") {
+      cpu_abi_cflags += [ "--target=s390x-unknown-linux-gnu" ]
+      cpu_abi_ldflags += [ "--target=s390x-unknown-linux-gnu" ]
+    }
+    cpu_abi_cflags += [ "-m64" ]
+    cpu_abi_ldflags += [ "-m64" ]
+  }
+}
