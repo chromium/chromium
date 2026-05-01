@@ -90,8 +90,8 @@ bool IsSuggestionRefreshAllowed() {
   // enabled.
   return base::FeatureList::IsEnabled(
              kThrottleFormInputAccessorySuggestionRefresh)
-             ? UIApplication.sharedApplication.applicationState ==
-                   UIApplicationStateActive
+             ? UIApplication.sharedApplication.applicationState !=
+                   UIApplicationStateBackground
              : true;
 }
 
