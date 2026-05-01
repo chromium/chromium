@@ -1,0 +1,12 @@
+include_rules = [
+  "+base",
+  "+components/accessibility_annotator/core",
+  "+components/optimization_guide/proto",
+  "+components/page_content_annotations/content",
+  "+components/page_content_annotations/core",
+  "+components/passage_embeddings/core",
+  "+content/public/browser",
+  "+content/public/test",
+  "+testing/gmock",
+  "+testing/gtest",
+]

@@ -43,6 +43,11 @@ BASE_DECLARE_FEATURE(kAccessibilityAnnotatorLiveTabContext);
 BASE_DECLARE_FEATURE_PARAM(
     int,
     kAccessibilityAnnotatorLiveTabContextMaxSearchResults);
+BASE_DECLARE_FEATURE_PARAM(
+    int,
+    kAccessibilityAnnotatorLiveTabContextPassagesPerPage);
+BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
+                           kAccessibilityAnnotatorLiveTabContextRequestTimeout);
 
 BASE_DECLARE_FEATURE(kAccessibilityAnnotationReducerOnePResolver);
 BASE_DECLARE_FEATURE_PARAM(std::string, kAccessibilityAnnotatorOnePServiceUrl);

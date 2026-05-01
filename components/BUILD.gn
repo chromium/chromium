@@ -779,6 +779,7 @@ test("components_unittests") {
   if (!is_android && !is_ios && !is_fuchsia && !is_castos) {
     deps += [
       "//components/accessibility_annotator/content/content_annotator:unit_tests",
+      "//components/accessibility_annotator/content/live_tab_context:unit_tests",
       "//components/accessibility_annotator/core/live_tab_context:unit_tests",
       "//components/private_ai:unit_tests",
     ]
