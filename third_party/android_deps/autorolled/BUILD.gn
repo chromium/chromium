@@ -680,6 +680,24 @@ template("define_autorolled_targets") {
     }
 
     # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    java_prebuilt("com_google_truth_truth_java") {
+      jar_path = "autorolled/cipd/libs/com_google_truth_truth/truth.jar"
+      output_name = "com_google_truth_truth"
+      supports_android = true
+      requires_android = true
+      enable_bytecode_checks = false
+      testonly = true
+      deps = [
+        "//third_party/android_deps:com_google_auto_value_auto_value_annotations_java",
+        "//third_party/android_deps:com_google_errorprone_error_prone_annotations_java",
+        "//third_party/android_deps:guava_java",
+        "//third_party/android_deps:org_jspecify_jspecify_java",
+        "//third_party/android_deps:org_ow2_asm_asm_java",
+        "//third_party/junit",
+      ]
+    }
+
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
     android_aar_prebuilt("com_squareup_leakcanary_leakcanary_android_java") {
       aar_path = "autorolled/cipd/libs/com_squareup_leakcanary_leakcanary_android/leakcanary-android.aar"
       info_path = "autorolled/committed/libs/com_squareup_leakcanary_leakcanary_android/com_squareup_leakcanary_leakcanary_android.info"

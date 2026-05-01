@@ -59,6 +59,7 @@
     "committed/libs/com_google_mlkit_genai_prompt",
     "committed/libs/com_google_protobuf_protobuf_javalite",
     "committed/libs/com_google_testparameterinjector_test_parameter_injector",
+    "committed/libs/com_google_truth_truth",
     "committed/libs/com_squareup_curtains_curtains",
     "committed/libs/com_squareup_leakcanary_leakcanary_android",
     "committed/libs/com_squareup_leakcanary_leakcanary_android_core",

@@ -1,0 +1,16 @@
+Name: Truth Core
+Short Name: truth
+URL: https://repo.maven.apache.org/maven2/com/google/truth/truth/1.4.5/truth-1.4.5.jar
+Version: 1.4.5
+Update Mechanism: Autoroll
+License: Apache-2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: no
+Shipped: no
+
+Description:
+Truth truth pulled in via gradle.
+
+Local Modifications:
+No modifications.

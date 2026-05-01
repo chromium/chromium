@@ -1657,7 +1657,7 @@
     {
         "name": "truth",
         "group": "com.google.truth",
-        "version": "1.4.2"
+        "version": "1.4.5"
     },
     {
         "name": "diffutils",
