@@ -1370,11 +1370,13 @@ void TabDragController::AttachToNewContext(
       const WebContents* web_contents = tab->get()->tab->GetContents();
       // If it's a tab - we add it to the tabstrip.
       int add_types = AddTabTypes::ADD_NONE;
-      TabDragData& tab_data = *std::find_if(
-          drag_data_.tab_drag_data_.begin(), drag_data_.tab_drag_data_.end(),
-          [web_contents](TabDragData& tab_data) {
-            return web_contents == tab_data.contents;
-          });
+      auto it = std::find_if(drag_data_.tab_drag_data_.begin(),
+                             drag_data_.tab_drag_data_.end(),
+                             [web_contents](TabDragData& tab_data) {
+                               return web_contents == tab_data.contents;
+                             });
+      CHECK(it != drag_data_.tab_drag_data_.end());
+      TabDragData& tab_data = *it;
       if (tab_data.pinned) {
         add_types |= AddTabTypes::ADD_PINNED;
       }
@@ -1488,13 +1490,15 @@ TabDragController::Detach(ReleaseCapture release_capture) {
   }
 
   std::vector<int> dragged_indices;
-
-  // TODO(crbug.com/435178910) Remove this usage of ListSelectionModel.
-  for (int dragged_index : attached_model->selection_model()
-                               .GetListSelectionModel()
-                               .selected_indices()) {
-    dragged_indices.push_back(dragged_index);
+  for (const auto& data : drag_data_.tab_drag_data_) {
+    if (data.contents) {
+      const int index = attached_model->GetIndexOfWebContents(data.contents);
+      if (index != TabStripModel::kNoTab) {
+        dragged_indices.push_back(index);
+      }
+    }
   }
+  std::ranges::sort(dragged_indices);
   const std::vector<tab_groups::TabGroupId> groups_to_move =
       attached_model->GetGroupsDestroyedFromRemovingIndices(dragged_indices);
 

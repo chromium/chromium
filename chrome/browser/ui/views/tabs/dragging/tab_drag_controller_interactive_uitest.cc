@@ -6267,6 +6267,72 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   ASSERT_TRUE(ReleaseInput());
 }
 
+// Regression test for http://crbug.com/505371980.
+// Verifies that the correct tab is detached even if the selection changes
+// mid-drag.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_SelectTabDuringDragAndDetach SelectTabDuringDragAndDetach
+#else
+#define MAYBE_SelectTabDuringDragAndDetach DISABLED_SelectTabDuringDragAndDetach
+#endif
+IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
+                       MAYBE_SelectTabDuringDragAndDetach) {
+  TabStripModel* model = browser()->tab_strip_model();
+  TabStrip* tab_strip = GetTabStripForBrowser(browser());
+
+  AddTabsAndResetBrowser(browser(), 1);
+  ASSERT_EQ(2, model->count());
+  // The second tab (index 1) is active.
+  ASSERT_EQ(1, model->active_index());
+
+  // Save the contents of the tabs to verify later.
+  content::WebContents* tab0_contents = model->GetWebContentsAt(0);
+  content::WebContents* tab1_contents = model->GetWebContentsAt(1);
+
+  // Use QuitDraggingObserver to wait for the drag to end safely.
+  test::QuitDraggingObserver observer(tab_strip);
+
+  // Start dragging tab 0.
+  ASSERT_TRUE(PressInputAtCenter(tab_strip->tab_at(0)));
+
+  // Drag slightly to start the drag, then change selection and detach.
+  // DragInputToCenterNotifyWhenDone is more robust as it handles the potential
+  // transition into a nested move loop.
+  ASSERT_TRUE(DragInputToCenterNotifyWhenDone(
+      tab_strip->tab_at(0), base::BindLambdaForTesting([&]() {
+        // 1. Change selection mid-drag.
+        ui::ListSelectionModel new_selection;
+        new_selection.SetSelectedIndex(1);
+        model->SetSelectionFromModel(std::move(new_selection));
+
+        // 2. Trigger detach with a larger offset to ensure it crosses the
+        // threshold on all bots.
+        DragInputToCenterAsync(tab_strip->tab_at(0),
+                               gfx::Vector2d(0, GetDetachY(tab_strip) + 20));
+
+        // 3. Use async release to avoid hanging in the move loop.
+        ReleaseInput(0, true);
+      }),
+      gfx::Vector2d(0, 5)));
+
+  // Wait for the drag to end.
+  observer.Wait();
+
+  // Verify that a new browser was created and it contains tab 0.
+  ASSERT_EQ(2u, GetAllBrowserWindowInterfaces().size());
+  BrowserWindowInterface* new_browser =
+      ui_test_utils::GetBrowserNotInSet({browser()});
+  ASSERT_TRUE(new_browser);
+
+  EXPECT_EQ(1, new_browser->GetTabStripModel()->count());
+  EXPECT_EQ(tab0_contents,
+            new_browser->GetTabStripModel()->GetWebContentsAt(0));
+
+  // Verify that the original browser still contains tab 1.
+  EXPECT_EQ(1, model->count());
+  EXPECT_EQ(tab1_contents, model->GetWebContentsAt(0));
+}
+
 #if BUILDFLAG(IS_CHROMEOS)
 // Runs tests with a tabbed system web app that is locked for OnTask. This is
 // not related to normal web browsers.
