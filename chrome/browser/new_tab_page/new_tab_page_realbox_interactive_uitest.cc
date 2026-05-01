@@ -31,6 +31,7 @@
 #include "components/contextual_tasks/public/features.h"
 #include "components/omnibox/browser/aim_eligibility_service_features.h"
 #include "components/omnibox/browser/mock_aim_eligibility_service.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
 #include "components/user_education/common/user_education_features.h"
@@ -1027,7 +1028,8 @@ class NtpRealboxDefaultExperienceInteractiveTest : public NtpRealboxUiTestBase {
     }
     disabled_features.push_back(ntp_features::kNtpNextFeatures);
 
-    feature_list_.InitWithFeaturesAndParameters({}, disabled_features);
+    feature_list_.InitWithFeaturesAndParameters(
+        {{omnibox::kOmniboxAppendInvocationSource, {}}}, disabled_features);
   }
 
  protected:

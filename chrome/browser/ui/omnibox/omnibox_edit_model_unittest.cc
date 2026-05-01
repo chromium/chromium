@@ -1673,6 +1673,9 @@ TEST_F(OmniboxEditModelTest, OpenTabMatch) {
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(OmniboxEditModelTest, OpenMatchInvocationSource) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(omnibox::kOmniboxAppendInvocationSource);
+
   AutocompleteMatch match(
       controller()->autocomplete_controller()->search_provider(), 0, false,
       AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED);

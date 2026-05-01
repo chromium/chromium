@@ -38,6 +38,7 @@
 #include "components/search_engines/search_engines_test_util.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -302,8 +303,10 @@ class SettingsOverriddenExplicitChoiceDialogInteractiveUiTest
     : public SettingsOverriddenDialogInteractiveUiTest {
  protected:
   SettingsOverriddenExplicitChoiceDialogInteractiveUiTest() {
-    feature_list_.InitAndEnableFeature(
-        extensions_features::kSearchEngineExplicitChoiceDialog);
+    feature_list_.InitWithFeatures(
+        {extensions_features::kSearchEngineExplicitChoiceDialog,
+         omnibox::kOmniboxAppendInvocationSource},
+        {});
   }
 
  private:

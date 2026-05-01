@@ -280,7 +280,7 @@ BASE_FEATURE(kAblateSearchProviderWarmup, DISABLED);
 BASE_FEATURE(kReportApplicationLanguageInSearchRequest, ENABLED);
 
 // When enabled, appends the invocation source parameter to search URLs.
-BASE_FEATURE(kOmniboxAppendInvocationSource, ENABLED);
+BASE_FEATURE(kOmniboxAppendInvocationSource, DISABLED);
 
 // Enable asynchronous Omnibox/Suggest view inflation.
 BASE_FEATURE(kOmniboxAsyncViewInflation, DISABLED);

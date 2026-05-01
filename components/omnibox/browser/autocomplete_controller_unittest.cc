@@ -3277,6 +3277,10 @@ TEST_F(AutocompleteControllerTest, SmartComposeClearedWithNewResults) {
 
 TEST_F(AutocompleteControllerTest,
        UpdateMatchDestinationURLWithInvocationSource) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      omnibox::kOmniboxAppendInvocationSource);
+
   controller_.input_ =
       AutocompleteInput(u"a", 1u, metrics::OmniboxEventProto::NTP_REALBOX,
                         TestSchemeClassifier());
