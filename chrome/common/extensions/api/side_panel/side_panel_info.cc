@@ -21,7 +21,7 @@ using SidePanelManifestKeys = api::side_panel::ManifestKeys;
 namespace {
 
 const SidePanelInfo* GetResourcesInfo(const Extension* extension) {
-  return static_cast<SidePanelInfo*>(
+  return static_cast<const SidePanelInfo*>(
       extension->GetManifestData(SidePanelManifestKeys::kSidePanel));
 }
 

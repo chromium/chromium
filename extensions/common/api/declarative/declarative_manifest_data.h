@@ -28,7 +28,7 @@ class DeclarativeManifestData : public Extension::ManifestData {
 
   // Gets the DeclarativeManifestData for `extension`, or NULL if none was
   // specified.
-  static DeclarativeManifestData* Get(const Extension* extension);
+  static const DeclarativeManifestData* Get(const Extension* extension);
 
   // Tries to construct the info based on `value`, as it would have appeared in
   // the manifest. Sets `error` and returns an empty scoped_ptr on failure.
@@ -36,7 +36,7 @@ class DeclarativeManifestData : public Extension::ManifestData {
       const base::Value& value,
       std::u16string* error);
 
-  std::vector<Rule> RulesForEvent(const std::string& event);
+  std::vector<Rule> RulesForEvent(const std::string& event) const;
 
  private:
   std::map<std::string, std::vector<Rule>> event_rules_map_;

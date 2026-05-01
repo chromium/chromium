@@ -66,7 +66,7 @@ UrlHandlers::~UrlHandlers() = default;
 // static
 const std::vector<UrlHandlerInfo>* UrlHandlers::GetUrlHandlers(
     const Extension* extension) {
-  UrlHandlers* info = static_cast<UrlHandlers*>(
+  const UrlHandlers* info = static_cast<const UrlHandlers*>(
       extension->GetManifestData(mkeys::kUrlHandlers));
   return info ? &info->handlers : nullptr;
 }

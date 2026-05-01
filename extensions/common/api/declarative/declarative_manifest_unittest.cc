@@ -15,7 +15,7 @@ using DeclarativeManifestTest = ManifestTest;
 
 TEST_F(DeclarativeManifestTest, Valid) {
   scoped_refptr<Extension> extension = LoadAndExpectSuccess("event_rules.json");
-  DeclarativeManifestData* manifest_data =
+  const DeclarativeManifestData* manifest_data =
       DeclarativeManifestData::Get(extension.get());
   ASSERT_TRUE(manifest_data);
   std::vector<DeclarativeManifestData::Rule> rules =

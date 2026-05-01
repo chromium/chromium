@@ -101,7 +101,8 @@ TEST_F(MimeTypesHandlerTest, LoadLegacy) {
       LoadAndExpectSuccess(ManifestData::FromJSON(kManifest));
   ASSERT_TRUE(extension);
 
-  MimeTypesHandler* handler = MimeTypesHandler::GetHandler(extension.get());
+  const MimeTypesHandler* handler =
+      MimeTypesHandler::GetHandler(extension.get());
   ASSERT_TRUE(handler);
   EXPECT_THAT(handler->GetSupportedMimeTypes(),
               ElementsAre("application/octet-stream", "text/plain"));
@@ -144,7 +145,8 @@ TEST_F(MimeTypesHandlerTest, DictFormatParsing) {
       LoadAndExpectSuccess(ManifestData::FromJSON(kManifest));
   ASSERT_TRUE(extension);
 
-  MimeTypesHandler* handler = MimeTypesHandler::GetHandler(extension.get());
+  const MimeTypesHandler* handler =
+      MimeTypesHandler::GetHandler(extension.get());
   ASSERT_TRUE(handler);
 
   EXPECT_EQ(extension->GetResourceURL("pdf_viewer.html"),

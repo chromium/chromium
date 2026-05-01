@@ -235,7 +235,8 @@ bool LoadTabGroupColorPalette(
 }
 
 const ThemeInfo* GetInfo(const Extension* extension) {
-  return static_cast<ThemeInfo*>(extension->GetManifestData(keys::kTheme));
+  return static_cast<const ThemeInfo*>(
+      extension->GetManifestData(keys::kTheme));
 }
 
 }  // namespace

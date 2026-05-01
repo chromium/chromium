@@ -126,7 +126,7 @@ SettingsOverrides::~SettingsOverrides() = default;
 // static
 const SettingsOverrides* SettingsOverrides::Get(
     const Extension* extension) {
-  return static_cast<SettingsOverrides*>(
+  return static_cast<const SettingsOverrides*>(
       extension->GetManifestData(manifest_keys::kSettingsOverride));
 }
 

@@ -68,7 +68,7 @@ void SendExecuteMimeTypeHandlerEvent(
     return;
   }
 
-  MimeTypesHandler* handler = MimeTypesHandler::GetHandler(extension);
+  const MimeTypesHandler* handler = MimeTypesHandler::GetHandler(extension);
   if (!handler) {
     return;
   }

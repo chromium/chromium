@@ -290,7 +290,7 @@ void RulesRegistry::OnExtensionLoaded(const Extension* extension) {
   std::vector<const api::events::Rule*> rules;
   GetAllRules(extension->id(), &rules);
 
-  DeclarativeManifestData* declarative_data =
+  const DeclarativeManifestData* declarative_data =
       DeclarativeManifestData::Get(extension);
   if (declarative_data) {
     std::vector<api::events::Rule> manifest_rules =

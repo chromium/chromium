@@ -45,7 +45,7 @@ FileSystemProviderCapabilitiesHandler::
 // static
 const FileSystemProviderCapabilities* FileSystemProviderCapabilities::Get(
     const Extension* extension) {
-  return static_cast<FileSystemProviderCapabilities*>(
+  return static_cast<const FileSystemProviderCapabilities*>(
       extension->GetManifestData(
           manifest_keys::kFileSystemProviderCapabilities));
 }

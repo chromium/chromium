@@ -170,8 +170,8 @@ CSPInfo::~CSPInfo() = default;
 
 // static
 const std::string& CSPInfo::GetExtensionPagesCSP(const Extension* extension) {
-  CSPInfo* csp_info = static_cast<CSPInfo*>(
-          extension->GetManifestData(keys::kContentSecurityPolicy));
+  const CSPInfo* csp_info = static_cast<const CSPInfo*>(
+      extension->GetManifestData(keys::kContentSecurityPolicy));
   return csp_info ? csp_info->extension_pages_csp : base::EmptyString();
 }
 
@@ -242,7 +242,7 @@ std::optional<std::string> CSPInfo::GetIsolatedWorldCSP(
 // static
 const std::string& CSPInfo::GetSandboxContentSecurityPolicy(
     const Extension* extension) {
-  CSPInfo* csp_info = static_cast<CSPInfo*>(
+  const CSPInfo* csp_info = static_cast<const CSPInfo*>(
       extension->GetManifestData(keys::kContentSecurityPolicy));
   return csp_info ? csp_info->sandbox_csp : base::EmptyString();
 }

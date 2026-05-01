@@ -22,18 +22,7 @@ namespace extensions {
 
 namespace errors = externally_connectable_errors;
 
-class ExternallyConnectableTest : public ManifestTest {
- public:
-  ExternallyConnectableTest() = default;
-  ~ExternallyConnectableTest() override = default;
-
- protected:
-  ExternallyConnectableInfo* GetExternallyConnectableInfo(
-      scoped_refptr<Extension> extension) {
-    return static_cast<ExternallyConnectableInfo*>(
-        extension->GetManifestData(manifest_keys::kExternallyConnectable));
-  }
-};
+using ExternallyConnectableTest = ManifestTest;
 
 TEST_F(ExternallyConnectableTest, IDsAndMatches) {
   scoped_refptr<Extension> extension =
@@ -244,7 +233,7 @@ TEST_F(ExternallyConnectableTest, AllURLs) {
   scoped_refptr<Extension> extension =
       LoadAndExpectSuccess("externally_connectable_all_urls.json");
   const ExternallyConnectableInfo* info =
-      GetExternallyConnectableInfo(extension);
+      ExternallyConnectableInfo::Get(extension.get());
   EXPECT_TRUE(info->matches.MatchesAllURLs());
 
   // Sanity check with a pattern and a few URLs.
@@ -258,7 +247,7 @@ TEST_F(ExternallyConnectableTest, WildcardHost) {
   scoped_refptr<Extension> extension =
       LoadAndExpectSuccess("externally_connectable_wildcard_host.json");
   const ExternallyConnectableInfo* info =
-      GetExternallyConnectableInfo(extension);
+      ExternallyConnectableInfo::Get(extension.get());
   EXPECT_TRUE(info->matches.ContainsPattern(
       URLPattern(URLPattern::SCHEME_ALL, "http://*/*")));
   EXPECT_TRUE(info->matches.MatchesURL(GURL("http://example.com")));
@@ -269,7 +258,7 @@ TEST_F(ExternallyConnectableTest, TLD) {
   scoped_refptr<Extension> extension =
       LoadAndExpectSuccess("externally_connectable_tld.json");
   const ExternallyConnectableInfo* info =
-      GetExternallyConnectableInfo(extension);
+      ExternallyConnectableInfo::Get(extension.get());
   EXPECT_TRUE(info->matches.ContainsPattern(
       URLPattern(URLPattern::SCHEME_ALL, "http://*.co.uk/*")));
   EXPECT_FALSE(info->matches.MatchesURL(GURL("http://example.com")));

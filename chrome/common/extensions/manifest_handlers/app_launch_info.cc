@@ -54,7 +54,7 @@ static base::LazyInstance<AppLaunchInfo>::DestructorAtExit
     g_empty_app_launch_info = LAZY_INSTANCE_INITIALIZER;
 
 const AppLaunchInfo& GetAppLaunchInfo(const Extension* extension) {
-  AppLaunchInfo* info = static_cast<AppLaunchInfo*>(
+  const AppLaunchInfo* info = static_cast<const AppLaunchInfo*>(
       extension->GetManifestData(keys::kLaunch));
   return info ? *info : g_empty_app_launch_info.Get();
 }

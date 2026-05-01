@@ -111,9 +111,9 @@ TEST_F(FileBrowserHandlerManifestTest, ValidFileBrowserHandler) {
           .Build();
 
   ASSERT_TRUE(extension.get());
-  FileBrowserHandler::List* handlers =
+  const FileBrowserHandler::List* handlers =
       FileBrowserHandler::GetHandlers(extension.get());
-  ASSERT_TRUE(handlers != nullptr);
+  ASSERT_TRUE(handlers);
   ASSERT_EQ(1U, handlers->size());
   const FileBrowserHandler* action = handlers->at(0).get();
 
@@ -156,9 +156,9 @@ TEST_F(FileBrowserHandlerManifestTest, ValidFileBrowserHandlerMIMETypes) {
           .Build();
 
   ASSERT_TRUE(extension.get());
-  FileBrowserHandler::List* handlers =
+  const FileBrowserHandler::List* handlers =
       FileBrowserHandler::GetHandlers(extension.get());
-  ASSERT_TRUE(handlers != nullptr);
+  ASSERT_TRUE(handlers);
   ASSERT_EQ(1U, handlers->size());
   const FileBrowserHandler* action = handlers->at(0).get();
 
@@ -195,9 +195,9 @@ TEST_F(FileBrowserHandlerManifestTest, ValidFileBrowserHandlerWithCreate) {
           .Build();
 
   ASSERT_TRUE(extension.get());
-  FileBrowserHandler::List* handlers =
+  const FileBrowserHandler::List* handlers =
       FileBrowserHandler::GetHandlers(extension.get());
-  ASSERT_TRUE(handlers != nullptr);
+  ASSERT_TRUE(handlers);
   ASSERT_EQ(1U, handlers->size());
   const FileBrowserHandler* action = handlers->at(0).get();
   const URLPatternSet& patterns = action->file_url_patterns();

@@ -27,7 +27,7 @@ class BluetoothManifestData : public Extension::ManifestData {
 
   // Gets the BluetoothManifestData for `extension`, or NULL if none was
   // specified.
-  static BluetoothManifestData* Get(const Extension* extension);
+  static const BluetoothManifestData* Get(const Extension* extension);
 
   static bool CheckRequest(const Extension* extension,
                            const BluetoothPermissionRequest& request);

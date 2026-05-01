@@ -24,7 +24,7 @@ using ManifestKeys = api::omnibox::ManifestKeys;
 
 // static
 const std::string& OmniboxInfo::GetKeyword(const Extension* extension) {
-  OmniboxInfo* info = static_cast<OmniboxInfo*>(
+  const OmniboxInfo* info = static_cast<const OmniboxInfo*>(
       extension->GetManifestData(ManifestKeys::kOmnibox));
   return info ? info->keyword : base::EmptyString();
 }
