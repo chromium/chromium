@@ -121,6 +121,10 @@
   position: absolute;
 }
 
+#postSelectionRenderer {
+  z-index: 3;
+}
+
 #regionSelectionLayer[is-selecting] {
   z-index: 2;
 }
