@@ -375,6 +375,9 @@ void CookieControlsController::UpdatePageReloadStatus(
   }
   SetStateChangedViaBypass(false);
   recent_reloads_count_ = recent_reloads_count;
+  if (base::FeatureList::IsEnabled(features::kUserBypassUxSimplification)) {
+    return;
+  }
 
   if (recent_reloads_count_ >= features::kUserBypassUIReloadCount.Get()) {
     for (auto& observer : observers_) {
@@ -398,6 +401,9 @@ void CookieControlsController::OnPageFinishedLoading() {
   // Ensure the bubble is closed before subsequent calls are made to update the
   // UI.
   OnBubbleCloseTriggered();
+  if (base::FeatureList::IsEnabled(features::kUserBypassUxSimplification)) {
+    return;
+  }
   for (auto& observer : observers_) {
     observer.OnFinishedPageReloadWithChangedSettings();
   }

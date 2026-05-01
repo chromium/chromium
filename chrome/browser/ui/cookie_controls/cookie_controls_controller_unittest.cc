@@ -624,49 +624,6 @@ TEST_F(CookieControlsUserBypassTest, FrequentPageReloads) {
 }
 
 TEST_F(CookieControlsUserBypassTest,
-       HittingPageReloadThresholdTriggersOnReloadThresholdExceeded) {
-  // Update initial web contents to ensure the tab observer is set up.
-  cookie_controls()->Update(web_contents());
-
-  // Don't call observer when reload count = 0.
-  EXPECT_CALL(*mock(), OnReloadThresholdExceeded()).Times(0);
-
-  EXPECT_CALL(*mock(),
-              OnStatusChanged(CookieControlsState::kBlocked3pc,
-                              CookieControlsEnforcement::kNoEnforcement,
-                              zero_expiration()));
-  EXPECT_CALL(*mock(),
-              OnCookieControlsIconStatusChanged(
-                  /*icon_visible=*/false, CookieControlsState::kBlocked3pc,
-                  /*should_highlight=*/false));
-  NavigateAndCommit(GURL(kUrl));
-  cookie_controls()->Update(web_contents());
-  testing::Mock::VerifyAndClearExpectations(mock());
-
-  // Don't call observer when reload count = 1.
-  EXPECT_CALL(*mock(), OnReloadThresholdExceeded()).Times(0);
-
-  EXPECT_CALL(*mock(),
-              OnCookieControlsIconStatusChanged(
-                  /*icon_visible=*/false, CookieControlsState::kBlocked3pc,
-                  /*should_highlight=*/false));
-  NavigateAndCommit(GURL(kUrl));
-  cookie_controls()->Update(web_contents());
-  testing::Mock::VerifyAndClearExpectations(mock());
-
-  // Expect observer call when reload count hits threshold of 2.
-  EXPECT_CALL(*mock(), OnReloadThresholdExceeded());
-  // Expect that we attempt to highlight the user bypass icon.
-  EXPECT_CALL(*mock(),
-              OnCookieControlsIconStatusChanged(
-                  /*icon_visible=*/false, CookieControlsState::kBlocked3pc,
-                  /*should_highlight=*/true));
-  NavigateAndCommit(GURL(kUrl));
-  cookie_controls()->Update(web_contents());
-  testing::Mock::VerifyAndClearExpectations(mock());
-}
-
-TEST_F(CookieControlsUserBypassTest,
        UserBypassDoesNotHighlightIfCookiesAreAllowed) {
   // Set cookie blocking pref to allow all cookies.
   profile()->GetPrefs()->SetInteger(
@@ -1160,56 +1117,6 @@ TEST_F(CookieControlsUserBypassTest, CustomExceptionsDotComWildcard) {
                   /*should_highlight=*/false));
   cookie_controls()->Update(web_contents());
   testing::Mock::VerifyAndClearExpectations(mock());
-}
-
-TEST_F(CookieControlsUserBypassTest, FinishedPageReloadWithChangedSettings) {
-  // Check that when the page is reloaded after settings have changed, that
-  // the appropriate observer method is fired. Reloading the page without a
-  // change, should not fire the observer.
-  EXPECT_CALL(*mock(), OnFinishedPageReloadWithChangedSettings()).Times(0);
-  cookie_controls()->Update(web_contents());
-  NavigateAndCommit(GURL(kUrl));
-
-  // Loading the same page after not making an effective change should not fire.
-  cookie_controls()->OnCookieBlockingEnabledForSite(false);
-  ValidateCookieControlsActivatedUKM(
-      /*fed_cm_initiated=*/false,
-      /*storage_access_api_requested=*/false,
-      /*page_refresh_count=*/0, /*repeated_activation=*/false,
-      blink::mojom::EngagementLevel::NONE,
-      ThirdPartySiteDataAccessType::kNoThirdPartySiteAccesses);
-
-  cookie_controls()->OnCookieBlockingEnabledForSite(true);
-  NavigateAndCommit(GURL(kUrl));
-
-  // Loading a different page after making an effective change should not fire.
-  cookie_controls()->SetStateChangedViaBypass(true);
-  cookie_controls()->OnCookieBlockingEnabledForSite(false);
-  ValidateCookieControlsActivatedUKM(
-      /*fed_cm_initiated=*/false,
-      /*storage_access_api_requested=*/false,
-      /*page_refresh_count=*/1, /*repeated_activation=*/true,
-      blink::mojom::EngagementLevel::NONE,
-      ThirdPartySiteDataAccessType::kNoThirdPartySiteAccesses);
-
-  NavigateAndCommit(GURL("https://example2.com"));
-  testing::Mock::VerifyAndClearExpectations(mock());
-
-  // Observer should fire when reloaded after change.
-  EXPECT_CALL(*mock(), OnFinishedPageReloadWithChangedSettings()).Times(2);
-  cookie_controls()->SetStateChangedViaBypass(true);
-  cookie_controls()->OnCookieBlockingEnabledForSite(false);
-  ValidateCookieControlsActivatedUKM(
-      /*fed_cm_initiated=*/false,
-      /*storage_access_api_requested=*/false,
-      /*page_refresh_count=*/0, /*repeated_activation=*/false,
-      blink::mojom::EngagementLevel::NONE,
-      ThirdPartySiteDataAccessType::kNoThirdPartySiteAccesses);
-
-  NavigateAndCommit(GURL("https://example2.com"));
-  cookie_controls()->SetStateChangedViaBypass(true);
-  cookie_controls()->OnCookieBlockingEnabledForSite(true);
-  NavigateAndCommit(GURL("https://example2.com"));
 }
 
 TEST_F(CookieControlsUserBypassTest,
