@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_GLIC_TEST_SUPPORT_MOCK_GLIC_KEYED_SERVICE_H_
 #define CHROME_BROWSER_GLIC_TEST_SUPPORT_MOCK_GLIC_KEYED_SERVICE_H_
 
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
@@ -24,7 +25,10 @@ class MockGlicKeyedService : public GlicKeyedService {
                        actor::ActorKeyedService* actor_keyed_service);
   ~MockGlicKeyedService() override;
 
-  MOCK_METHOD(void, Invoke, (GlicInvokeOptions), (override));
+  MOCK_METHOD(base::WeakPtr<GlicInstance>,
+              Invoke,
+              (GlicInvokeOptions),
+              (override));
   MOCK_METHOD(void, CloseFloatingPanel, (), (override));
   MOCK_METHOD(void,
               OpenFreDialogInNewTab,
@@ -49,11 +53,11 @@ class MockGlicKeyedService : public GlicKeyedService {
               IsPanelShowingForBrowser,
               (const BrowserWindowInterface&),
               (const, override));
-  MOCK_METHOD(void,
+  MOCK_METHOD(base::WeakPtr<GlicInstance>,
               InvokeWithAutoSubmit,
               (InvokeWithAutoSubmitPasskey, GlicInvokeOptions),
               (override));
-  MOCK_METHOD(void,
+  MOCK_METHOD(base::WeakPtr<GlicInstance>,
               InvokeWithAutoSubmit,
               (InvokeWithAutoSubmitPasskey,
                GlicInvokeOptions,

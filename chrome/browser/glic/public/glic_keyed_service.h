@@ -13,6 +13,7 @@
 #include "base/callback_list.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/glic/common/local_hotkey_manager.h"
 #include "chrome/browser/glic/glic_metrics.h"
@@ -112,16 +113,16 @@ class GlicKeyedService : public KeyedService, public base::SupportsUserData {
   // Invokes Glic with the given options and automatically submits the prompt.
   // Access is restricted to authorized callers via InvokeWithAutoSubmitPasskey.
   // Virtual for testing.
-  virtual void InvokeWithAutoSubmit(
+  virtual base::WeakPtr<GlicInstance> InvokeWithAutoSubmit(
       InvokeWithAutoSubmitPasskey auto_submit_passkey,
       GlicInvokeOptions options);
 
-  virtual void InvokeWithAutoSubmit(
+  virtual base::WeakPtr<GlicInstance> InvokeWithAutoSubmit(
       InvokeWithAutoSubmitPasskey auto_submit_passkey,
       GlicInvokeOptions options,
       GlicInvokeWithAutoSubmitOptions auto_submit_options);
 
-  virtual void Invoke(GlicInvokeOptions options);
+  virtual base::WeakPtr<GlicInstance> Invoke(GlicInvokeOptions options);
 
   virtual void OpenFreDialogInNewTab(BrowserWindowInterface* bwi,
                                      mojom::InvocationSource source);

@@ -185,7 +185,7 @@ class MockGlicKeyedService : public glic::GlicKeyedService {
                                nullptr) {}
   ~MockGlicKeyedService() override = default;
 
-  MOCK_METHOD(void,
+  MOCK_METHOD(base::WeakPtr<glic::GlicInstance>,
               InvokeWithAutoSubmit,
               (glic::InvokeWithAutoSubmitPasskey, glic::GlicInvokeOptions),
               (override));
@@ -335,6 +335,7 @@ TEST_F(GlicExperimentalTriggeringMessageHandlerTest, RelaysUpdatesToServer) {
       .WillOnce(testing::WithArg<1>(
           [&captured_options](glic::GlicInvokeOptions options) {
             captured_options = std::move(options);
+            return base::WeakPtr<glic::GlicInstance>();
           }));
 
   glic::MockGlicInstance mock_instance;
@@ -440,6 +441,7 @@ TEST_F(GlicExperimentalTriggeringMessageHandlerTest,
       .WillOnce(testing::WithArg<1>(
           [&captured_options](glic::GlicInvokeOptions options) {
             captured_options = std::move(options);
+            return base::WeakPtr<glic::GlicInstance>();
           }));
 
   // Expect GetExperimentalTriggeringUpdates to be called on host
@@ -559,6 +561,7 @@ TEST_F(GlicExperimentalTriggeringMessageHandlerTest,
       .WillOnce(testing::WithArg<1>(
           [&captured_options](glic::GlicInvokeOptions options) {
             captured_options = std::move(options);
+            return base::WeakPtr<glic::GlicInstance>();
           }));
 
   mojo::PendingRemote<glic::mojom::ExperimentalTriggeringUpdatesHandler>

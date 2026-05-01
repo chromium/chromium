@@ -176,7 +176,8 @@ TEST_F(GlicCueTargetTest, OnClick_AutoSubmitEnabled) {
   contextual_cueing::CueActionData data = glic_data;
 
   EXPECT_CALL(*mock_glic_keyed_service_, InvokeWithAutoSubmit(_, _))
-      .WillOnce([](InvokeWithAutoSubmitPasskey, GlicInvokeOptions options) {
+      .WillOnce([](InvokeWithAutoSubmitPasskey, GlicInvokeOptions options)
+                    -> base::WeakPtr<glic::GlicInstance> {
         EXPECT_TRUE(std::holds_alternative<raw_ptr<tabs::TabInterface>>(
             options.target.surface));
         EXPECT_EQ(1u, options.prompts.size());
@@ -186,11 +187,12 @@ TEST_F(GlicCueTargetTest, OnClick_AutoSubmitEnabled) {
         EXPECT_TRUE(std::holds_alternative<glic::NewConversation>(
             options.target.conversation));
         // Two tabs plus the active tab.
-        ASSERT_EQ(3ul, options.tab_sharing.tabs_to_pin.size());
+        EXPECT_EQ(3ul, options.tab_sharing.tabs_to_pin.size());
         EXPECT_EQ(123, options.tab_sharing.tabs_to_pin[0].raw_value());
         EXPECT_EQ(456, options.tab_sharing.tabs_to_pin[1].raw_value());
         EXPECT_EQ(GlicPinTrigger::kContextualCue,
                   options.tab_sharing.pin_trigger);
+        return base::WeakPtr<glic::GlicInstance>();
       });
 
   target.OnClick(data);
@@ -212,7 +214,8 @@ TEST_F(GlicCueTargetTest, OnClick_AutoSubmitDisabled) {
   contextual_cueing::CueActionData data = glic_data;
 
   EXPECT_CALL(*mock_glic_keyed_service_, Invoke(_))
-      .WillOnce([](GlicInvokeOptions options) {
+      .WillOnce([](GlicInvokeOptions options)
+                    -> base::WeakPtr<glic::GlicInstance> {
         EXPECT_TRUE(std::holds_alternative<raw_ptr<tabs::TabInterface>>(
             options.target.surface));
         EXPECT_EQ(1u, options.prompts.size());
@@ -222,11 +225,12 @@ TEST_F(GlicCueTargetTest, OnClick_AutoSubmitDisabled) {
         EXPECT_TRUE(std::holds_alternative<glic::NewConversation>(
             options.target.conversation));
         // Two tabs plus the active tab.
-        ASSERT_EQ(3ul, options.tab_sharing.tabs_to_pin.size());
+        EXPECT_EQ(3ul, options.tab_sharing.tabs_to_pin.size());
         EXPECT_EQ(123, options.tab_sharing.tabs_to_pin[0].raw_value());
         EXPECT_EQ(456, options.tab_sharing.tabs_to_pin[1].raw_value());
         EXPECT_EQ(GlicPinTrigger::kContextualCue,
                   options.tab_sharing.pin_trigger);
+        return base::WeakPtr<glic::GlicInstance>();
       });
 
   target.OnClick(data);

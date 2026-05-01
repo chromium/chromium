@@ -141,10 +141,11 @@ class GlicInstanceCoordinatorImpl
   // coordinator.
   void Shutdown() override;
   void Close(const CloseOptions& options) override;
-  void Invoke(GlicInvokeOptions options);
-  void InvokeWithAutoSubmit(InvokeWithAutoSubmitPasskey auto_submit_passkey,
-                            GlicInvokeOptions options);
-  void InvokeWithAutoSubmit(
+  base::WeakPtr<GlicInstance> Invoke(GlicInvokeOptions options);
+  base::WeakPtr<GlicInstance> InvokeWithAutoSubmit(
+      InvokeWithAutoSubmitPasskey auto_submit_passkey,
+      GlicInvokeOptions options);
+  base::WeakPtr<GlicInstance> InvokeWithAutoSubmit(
       InvokeWithAutoSubmitPasskey auto_submit_passkey,
       GlicInvokeOptions options,
       GlicInvokeWithAutoSubmitOptions auto_submit_options);
@@ -187,7 +188,7 @@ class GlicInstanceCoordinatorImpl
 
  private:
   void RemoveAllInstances();
-  void InvokeInternal(
+  base::WeakPtr<GlicInstance> InvokeInternal(
       std::optional<InvokeWithAutoSubmitPasskey> auto_submit_passkey,
       GlicInvokeOptions options,
       GlicInvokeWithAutoSubmitOptions auto_submit_options);

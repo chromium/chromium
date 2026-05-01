@@ -298,24 +298,25 @@ void GlicInstanceCoordinatorImpl::RemoveAllInstances() {
   }
 }
 
-void GlicInstanceCoordinatorImpl::Invoke(GlicInvokeOptions options) {
-  InvokeInternal(std::nullopt, std::move(options),
-                 GlicInvokeWithAutoSubmitOptions());
+base::WeakPtr<GlicInstance> GlicInstanceCoordinatorImpl::Invoke(
+    GlicInvokeOptions options) {
+  return InvokeInternal(std::nullopt, std::move(options),
+                        GlicInvokeWithAutoSubmitOptions());
 }
 
-void GlicInstanceCoordinatorImpl::InvokeWithAutoSubmit(
+base::WeakPtr<GlicInstance> GlicInstanceCoordinatorImpl::InvokeWithAutoSubmit(
     InvokeWithAutoSubmitPasskey auto_submit_passkey,
     GlicInvokeOptions options) {
-  InvokeInternal(auto_submit_passkey, std::move(options),
-                 GlicInvokeWithAutoSubmitOptions());
+  return InvokeInternal(auto_submit_passkey, std::move(options),
+                        GlicInvokeWithAutoSubmitOptions());
 }
 
-void GlicInstanceCoordinatorImpl::InvokeWithAutoSubmit(
+base::WeakPtr<GlicInstance> GlicInstanceCoordinatorImpl::InvokeWithAutoSubmit(
     InvokeWithAutoSubmitPasskey auto_submit_passkey,
     GlicInvokeOptions options,
     GlicInvokeWithAutoSubmitOptions auto_submit_options) {
-  InvokeInternal(auto_submit_passkey, std::move(options),
-                 std::move(auto_submit_options));
+  return InvokeInternal(auto_submit_passkey, std::move(options),
+                        std::move(auto_submit_options));
 }
 
 void GlicInstanceCoordinatorImpl::GetExperimentalTriggeringUpdates(
@@ -329,7 +330,7 @@ void GlicInstanceCoordinatorImpl::GetExperimentalTriggeringUpdates(
   }
 }
 
-void GlicInstanceCoordinatorImpl::InvokeInternal(
+base::WeakPtr<GlicInstance> GlicInstanceCoordinatorImpl::InvokeInternal(
     std::optional<InvokeWithAutoSubmitPasskey> auto_submit_passkey,
     GlicInvokeOptions options,
     GlicInvokeWithAutoSubmitOptions auto_submit_options) {
@@ -343,7 +344,7 @@ void GlicInstanceCoordinatorImpl::InvokeInternal(
       std::move(options.on_error).Run(GlicInvokeError::kInvalidTab);
     }
     // TODO(crbug.com/483387751): Show default toast here once implemented.
-    return;
+    return nullptr;
   }
 
   GlicInstanceImpl* instance = nullptr;
@@ -369,7 +370,7 @@ void GlicInstanceCoordinatorImpl::InvokeInternal(
       options.target.conversation);
 
   if (!instance) {
-    return;
+    return nullptr;
   }
 
   if (invoke_handlers_.contains(instance)) {
@@ -377,7 +378,7 @@ void GlicInstanceCoordinatorImpl::InvokeInternal(
       std::move(options.on_error).Run(GlicInvokeError::kInvokeInProgress);
     }
     // TODO(crbug.com/483387751): Show default toast here once implemented.
-    return;
+    return nullptr;
   }
 
   invoke_handlers_[instance] = std::make_unique<GlicInvokeHandler>(
@@ -386,6 +387,8 @@ void GlicInstanceCoordinatorImpl::InvokeInternal(
       base::BindOnce(&GlicInstanceCoordinatorImpl::OnInvokeHandlerComplete,
                      base::Unretained(this)));
   invoke_handlers_[instance]->Invoke();
+
+  return instance->GetWeakPtr();
 }
 
 void GlicInstanceCoordinatorImpl::OnInvokeHandlerComplete(
