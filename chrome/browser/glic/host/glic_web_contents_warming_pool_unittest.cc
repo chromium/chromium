@@ -14,6 +14,10 @@
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/mac_util.h"
+#endif
+
 namespace glic {
 
 class FakeWebUIContentsContainer : public WebUIContentsContainer {
@@ -53,8 +57,7 @@ class TestGlicWebContentsWarmingPool : public GlicWebContentsWarmingPool {
 class GlicWebContentsWarmingPoolTest : public testing::Test {
  public:
   GlicWebContentsWarmingPoolTest()
-      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-  }
+      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
  protected:
   using WarmingPoolStatus = GlicWebContentsWarmingPool::WarmingPoolStatus;
@@ -120,6 +123,13 @@ TEST_F(GlicWebContentsWarmingPoolTest, TakeContainerTriggersDelayedWarming) {
 }
 
 TEST_F(GlicWebContentsWarmingPoolTest, TakeContainerRecordsExpiredStatus) {
+#if BUILDFLAG(IS_MAC)
+  // TODO(crbug.com/434660312): Re-enable on macOS 26 once issues with
+  // unexpected test timeout failures are resolved.
+  if (base::mac::MacOSMajorVersion() == 26) {
+    GTEST_SKIP() << "Disabled on macOS Tahoe.";
+  }
+#endif
   base::test::ScopedFeatureList local_feature_list;
   local_feature_list.InitAndDisableFeature(kGlicReloadWebContentsAfterExpiry);
 
@@ -143,6 +153,13 @@ TEST_F(GlicWebContentsWarmingPoolTest, TakeContainerRecordsExpiredStatus) {
 }
 
 TEST_F(GlicWebContentsWarmingPoolTest, TakeContainerReloadsAfterExpiry) {
+#if BUILDFLAG(IS_MAC)
+  // TODO(crbug.com/434660312): Re-enable on macOS 26 once issues with
+  // unexpected test timeout failures are resolved.
+  if (base::mac::MacOSMajorVersion() == 26) {
+    GTEST_SKIP() << "Disabled on macOS Tahoe.";
+  }
+#endif
   base::HistogramTester histogram_tester;
   TestGlicWebContentsWarmingPool warming_pool(&profile_,
                                               &web_contents_factory_);
@@ -168,6 +185,13 @@ TEST_F(GlicWebContentsWarmingPoolTest, TakeContainerReloadsAfterExpiry) {
 }
 
 TEST_F(GlicWebContentsWarmingPoolTest, TakeContainerLimitsReloadCount) {
+#if BUILDFLAG(IS_MAC)
+  // TODO(crbug.com/434660312): Re-enable on macOS 26 once issues with
+  // unexpected test timeout failures are resolved.
+  if (base::mac::MacOSMajorVersion() == 26) {
+    GTEST_SKIP() << "Disabled on macOS Tahoe.";
+  }
+#endif
   base::HistogramTester histogram_tester;
   TestGlicWebContentsWarmingPool warming_pool(&profile_,
                                               &web_contents_factory_);
