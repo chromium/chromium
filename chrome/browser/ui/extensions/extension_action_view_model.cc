@@ -645,9 +645,7 @@ bool ExtensionActionViewModel::GetExtensionCommand(
 ToolbarActionViewModel::HoverCardState
 ExtensionActionViewModel::GetHoverCardState(
     content::WebContents* web_contents) const {
-  DCHECK(web_contents);
-
-  if (!ExtensionIsValid()) {
+  if (!web_contents || !ExtensionIsValid()) {
     HoverCardState state;
     state.site_access = HoverCardState::SiteAccess::kExtensionDoesNotWantAccess;
     state.policy = HoverCardState::AdminPolicy::kNone;

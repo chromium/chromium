@@ -67,6 +67,7 @@ class ToolbarActionViewModel {
 
   // State for the toolbar action view's hover card.
   struct HoverCardState {
+    // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.ui.toolbar
     enum class SiteAccess {
       // All extensions are allowed on the current site by the user.
       kAllExtensionsAllowed,
@@ -84,8 +85,10 @@ class ToolbarActionViewModel {
       kExtensionDoesNotWantAccess,
     };
 
+    // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.ui.toolbar
     enum class AdminPolicy {
       kNone,
+
       // Extension is force pinned by administrator.
       kPinnedByAdmin,
 

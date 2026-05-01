@@ -195,10 +195,38 @@ base::android::ScopedJavaLocalRef<jobject> ExtensionsToolbarAndroid::GetAction(
     content::WebContents* web_contents) {
   ToolbarActionViewModel* action =
       toolbar_view_model_->GetActionModelForId(action_id);
+
+  auto hover_card_state = action->GetHoverCardState(web_contents);
+  ExtensionActionViewModel::HoverCardUiState ui_state =
+      action->GetHoverCardUiState(hover_card_state, web_contents);
+
+  std::optional<std::string> site_access_title;
+  if (ui_state.site_access_title.has_value()) {
+    site_access_title = base::UTF16ToUTF8(ui_state.site_access_title.value());
+  }
+
+  std::optional<std::string> site_access_description;
+  if (ui_state.site_access_description.has_value()) {
+    site_access_description =
+        base::UTF16ToUTF8(ui_state.site_access_description.value());
+  }
+
+  std::optional<std::string> policy_text;
+  if (ui_state.policy_text.has_value()) {
+    policy_text = base::UTF16ToUTF8(ui_state.policy_text.value());
+  }
+
+  base::android::ScopedJavaLocalRef<jobject> java_hover_card_state =
+      Java_HoverCardState_Constructor(
+          env, static_cast<int>(hover_card_state.site_access),
+          site_access_title, site_access_description,
+          static_cast<int>(hover_card_state.policy), policy_text);
+
   return Java_ExtensionAction_Constructor(
       env, action_id, base::UTF16ToUTF8(action->GetActionName()),
       base::UTF16ToUTF8(action->GetTooltip(web_contents)),
-      base::UTF16ToUTF8(action->GetAccessibleName(web_contents)));
+      base::UTF16ToUTF8(action->GetAccessibleName(web_contents)),
+      java_hover_card_state);
 }
 
 base::android::ScopedJavaLocalRef<jobject> ExtensionsToolbarAndroid::GetIcon(
