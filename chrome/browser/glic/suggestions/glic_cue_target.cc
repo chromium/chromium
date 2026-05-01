@@ -12,6 +12,7 @@
 #include "chrome/browser/contextual_cueing/cueing_log.h"
 #include "chrome/browser/glic/browser_ui/glic_vector_icon_manager.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
@@ -97,8 +98,15 @@ void GlicCueTarget::OnClick(contextual_cueing::CueActionData data) {
   options.tab_sharing = TabSharingOptions(std::move(glic_data.tabs_to_share),
                                           GlicPinTrigger::kContextualCue);
 
-  glic_keyed_service_->InvokeWithAutoSubmit(
-      InvokeWithAutoSubmitPasskeyProvider::GetPassKey(), std::move(options));
+  if (base::FeatureList::IsEnabled(
+          features::kGlicContextualCueingV2AutoSubmit)) {
+    glic_keyed_service_->InvokeWithAutoSubmit(
+        InvokeWithAutoSubmitPasskeyProvider::GetPassKey(), std::move(options));
+  } else {
+    // If autosubmit is disabled, invoke with a prefilled prompt but don't
+    // submit.
+    glic_keyed_service_->Invoke(std::move(options));
+  }
 #endif
 }
 

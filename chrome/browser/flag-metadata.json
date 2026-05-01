@@ -5290,6 +5290,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "glic-contextual-cueing-v2-auto-submit",
+    "owners": [ "iwells@chromium.org", "sophiechang@chromium.org" ],
+    "expiry_milestone": 152
+  },
+  {
     "name": "glic-daisy-chain-new-tabs",
     "owners": [ "bryantchandler@chromium.org", "//chrome/browser/glic/OWNERS" ],
     "expiry_milestone": 150

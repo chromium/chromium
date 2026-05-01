@@ -15268,6 +15268,7 @@ from previous Chrome versions.
   <int value="371496127" label="HoldingSpaceWallpaperNudge:enabled"/>
   <int value="372251880" label="BirchWeather:enabled"/>
   <int value="372460068" label="QuickUnlockFingerprint:disabled"/>
+  <int value="372577682" label="GlicContextualCueingV2AutoSubmit:enabled"/>
   <int value="373177941" label="DockedMagnifier:enabled"/>
   <int value="373193557" label="LongPressBackNewDesign:enabled"/>
   <int value="373275338" label="AndroidPartnerCustomizationPhenotype:disabled"/>
@@ -19104,6 +19105,7 @@ from previous Chrome versions.
   <int value="1648440723" label="HorizontalTabStripComboButton:enabled"/>
   <int value="1649121568" label="DynamicTcmallocTuning:disabled"/>
   <int value="1649168777" label="EdgeToEdgeSafeAreaConstraint:disabled"/>
+  <int value="1649270298" label="GlicContextualCueingV2AutoSubmit:disabled"/>
   <int value="1649457280" label="SyncWalletFlightReservations:enabled"/>
   <int value="1649624189" label="PhoneHubFeatureSetupErrorHandling:disabled"/>
   <int value="1649986740" label="PrintManagementJelly:disabled"/>

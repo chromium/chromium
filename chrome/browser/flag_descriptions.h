@@ -1578,6 +1578,12 @@ inline constexpr char kGlicToolbarButtonLocationName[] =
 inline constexpr char kGlicToolbarButtonLocationDescription[] =
     "Specifies the location of the toolbar Gemini button.";
 
+inline constexpr char kGlicContextualCueingV2AutoSubmitName[] =
+    "Glic Contextual Cueing v2 Auto Submit";
+inline constexpr char kGlicContextualCueingV2AutoSubmitDescription[] =
+    "Enable automatically submitting a suggested prompt when the v2 contextual "
+    "cue UI for Glic is clicked.";
+
 inline constexpr char kSkillsEnabledName[] = "Skills";
 inline constexpr char kSkillsEnabledDescription[] =
     "Enables Skills in Gemini in Chrome";

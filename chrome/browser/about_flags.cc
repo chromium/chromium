@@ -10744,6 +10744,12 @@ const FeatureEntry kFeatureEntries[] = {
                                     kGlicToolbarButtonLocationVariations,
                                     "GlicToolbarButtonLocation")},
 
+    {"glic-contextual-cueing-v2-auto-submit",
+     flag_descriptions::kGlicContextualCueingV2AutoSubmitName,
+     flag_descriptions::kGlicContextualCueingV2AutoSubmitDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kGlicContextualCueingV2AutoSubmit)},
+
 #if !BUILDFLAG(IS_ANDROID)
     {"skills", flag_descriptions::kSkillsEnabledName,
      flag_descriptions::kSkillsEnabledDescription, kOsDesktop,

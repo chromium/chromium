@@ -86,6 +86,8 @@ extern const base::FeatureParam<int> kGlicMinLoadingTimeMs;
 extern const base::FeatureParam<int> kGlicMaxLoadingTimeMs;
 extern const base::FeatureParam<int> kGlicReloadMaxLoadingTimeMs;
 
+BASE_DECLARE_FEATURE(kGlicContextualCueingV2AutoSubmit);
+
 }  // namespace features
 
 #endif  // CHROME_BROWSER_GLIC_PUBLIC_FEATURES_H_

@@ -4,9 +4,11 @@
 
 #include "chrome/browser/glic/suggestions/glic_cue_target.h"
 
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/actor/actor_keyed_service_fake.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
@@ -158,7 +160,10 @@ TEST_F(GlicCueTargetTest, IsEligible) {
   EXPECT_TRUE(target.IsEligible());
 }
 
-TEST_F(GlicCueTargetTest, OnClick) {
+TEST_F(GlicCueTargetTest, OnClick_AutoSubmitEnabled) {
+  base::test::ScopedFeatureList features(
+      features::kGlicContextualCueingV2AutoSubmit);
+
   GlicCueTarget target(*mock_glic_keyed_service_,
                        /*optimization_guide_keyed_service=*/nullptr,
                        *mock_browser_window_interface_);
@@ -172,6 +177,42 @@ TEST_F(GlicCueTargetTest, OnClick) {
 
   EXPECT_CALL(*mock_glic_keyed_service_, InvokeWithAutoSubmit(_, _))
       .WillOnce([](InvokeWithAutoSubmitPasskey, GlicInvokeOptions options) {
+        EXPECT_TRUE(std::holds_alternative<raw_ptr<tabs::TabInterface>>(
+            options.target.surface));
+        EXPECT_EQ(1u, options.prompts.size());
+        EXPECT_EQ("test prompt", options.prompts[0]);
+        EXPECT_EQ(glic::mojom::InvocationSource::kAutoOpenedByContextualCue,
+                  options.invocation_source);
+        EXPECT_TRUE(std::holds_alternative<glic::NewConversation>(
+            options.target.conversation));
+        // Two tabs plus the active tab.
+        ASSERT_EQ(3ul, options.tab_sharing.tabs_to_pin.size());
+        EXPECT_EQ(123, options.tab_sharing.tabs_to_pin[0].raw_value());
+        EXPECT_EQ(456, options.tab_sharing.tabs_to_pin[1].raw_value());
+        EXPECT_EQ(GlicPinTrigger::kContextualCue,
+                  options.tab_sharing.pin_trigger);
+      });
+
+  target.OnClick(data);
+}
+
+TEST_F(GlicCueTargetTest, OnClick_AutoSubmitDisabled) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(features::kGlicContextualCueingV2AutoSubmit);
+
+  GlicCueTarget target(*mock_glic_keyed_service_,
+                       /*optimization_guide_keyed_service=*/nullptr,
+                       *mock_browser_window_interface_);
+
+  contextual_cueing::GlicCueActionData glic_data;
+  glic_data.prompt = "test prompt";
+  glic_data.tabs_to_share.emplace_back(123);
+  glic_data.tabs_to_share.emplace_back(456);
+
+  contextual_cueing::CueActionData data = glic_data;
+
+  EXPECT_CALL(*mock_glic_keyed_service_, Invoke(_))
+      .WillOnce([](GlicInvokeOptions options) {
         EXPECT_TRUE(std::holds_alternative<raw_ptr<tabs::TabInterface>>(
             options.target.surface));
         EXPECT_EQ(1u, options.prompts.size());
