@@ -11,6 +11,8 @@ import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.glic.GlicEnabling;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
@@ -41,6 +43,8 @@ public class BottomBarMediator implements ThemeColorProvider.TintObserver {
     private final Callback<@Nullable Tab> mTabSupplierObserver = this::onTabChanged;
     private final Callback<Boolean> mHomepageEnabledObserver = this::onHomepageEnabledChanged;
     private final boolean mShouldIncludeHomeButton;
+    private final NullableObservableSupplier<Profile> mProfileSupplier;
+    private final Callback<@Nullable Profile> mProfileObserver = this::updateGlicVisibility;
 
     private @Nullable Tab mCurrentTab;
     private @Nullable Boolean mIsVisible;
@@ -57,14 +61,17 @@ public class BottomBarMediator implements ThemeColorProvider.TintObserver {
             NullableObservableSupplier<Tab> tabSupplier,
             NonNullObservableSupplier<Boolean> homepageEnabledSupplier,
             VisibilityDelegate visibilityDelegate,
-            boolean shouldIncludeHomeButton) {
+            boolean shouldIncludeHomeButton,
+            NullableObservableSupplier<Profile> profileSupplier) {
         mModel = model;
         mThemeColorProvider = themeColorProvider;
         mTabSupplier = tabSupplier;
         mHomepageEnabledSupplier = homepageEnabledSupplier;
         mVisibilityDelegate = visibilityDelegate;
         mShouldIncludeHomeButton = shouldIncludeHomeButton;
+        mProfileSupplier = profileSupplier;
 
+        mProfileSupplier.addSyncObserver(mProfileObserver);
         mTabObserver =
                 new EmptyTabObserver() {
                     @Override
@@ -98,7 +105,7 @@ public class BottomBarMediator implements ThemeColorProvider.TintObserver {
         boolean currentTabIsRegularNtp =
                 mCurrentTab != null
                         && UrlUtilities.isNtpUrl(mCurrentTab.getUrl())
-                        && !mCurrentTab.isIncognito();
+                        && !mCurrentTab.isOffTheRecord();
         boolean isVisible = !(BottomBarConfigUtils.shouldDisableOnNtp() && currentTabIsRegularNtp);
 
         if (mIsVisible != null && mIsVisible == isVisible) return;
@@ -106,6 +113,11 @@ public class BottomBarMediator implements ThemeColorProvider.TintObserver {
 
         mModel.set(BottomBarProperties.IS_VISIBLE, isVisible);
         mVisibilityDelegate.onVisibilityChanged(isVisible);
+    }
+
+    private void updateGlicVisibility(@Nullable Profile profile) {
+        boolean isGlicVisible = profile != null && GlicEnabling.isEnabledForProfile(profile);
+        mModel.set(BottomBarProperties.IS_GLIC_BUTTON_VISIBLE, isGlicVisible);
     }
 
     private void onHomepageEnabledChanged(boolean isEnabled) {
@@ -132,6 +144,7 @@ public class BottomBarMediator implements ThemeColorProvider.TintObserver {
         if (mShouldIncludeHomeButton) {
             mHomepageEnabledSupplier.removeObserver(mHomepageEnabledObserver);
         }
+        mProfileSupplier.removeObserver(mProfileObserver);
     }
 
     @Override

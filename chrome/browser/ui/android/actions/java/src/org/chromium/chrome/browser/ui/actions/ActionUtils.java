@@ -13,6 +13,7 @@ import androidx.annotation.StringRes;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.actions.button.ButtonState;
+import org.chromium.chrome.browser.ui.actions.glic.GlicActionProperties;
 import org.chromium.chrome.browser.ui.actions.tabswitcher.TabSwitcherActionProperties;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -62,14 +63,6 @@ public class ActionUtils {
      * @param registry The {@link ActionRegistry} to register actions to.
      */
     public static void registerBottomBarActions(ActionRegistry registry) {
-        // Register new tab.
-        registerAction(
-                registry,
-                ActionId.NEW_TAB,
-                ActionProperties.BASE_KEYS,
-                org.chromium.chrome.browser.ui.android.bars_common.R.drawable.new_tab_icon,
-                org.chromium.chrome.browser.ui.android.bars_common.R.string.button_new_tab,
-                org.chromium.chrome.browser.ui.android.bars_common.R.string.new_tab_title);
 
         // Register home button.
         registerAction(
@@ -81,6 +74,24 @@ public class ActionUtils {
                         .accessibility_toolbar_btn_home,
                 org.chromium.chrome.browser.ui.android.bars_common.R.string
                         .accessibility_toolbar_btn_home);
+
+        // Register glic button.
+        registerAction(
+                registry,
+                ActionId.GLIC,
+                GlicActionProperties.ALL_KEYS,
+                R.drawable.ic_spark_24dp,
+                R.string.glic_button_entrypoint_ask_gemini_label,
+                R.string.glic_button_entrypoint_ask_gemini_label);
+
+        // Register new tab button.
+        registerAction(
+                registry,
+                ActionId.NEW_TAB,
+                ActionProperties.BASE_KEYS,
+                org.chromium.chrome.browser.ui.android.bars_common.R.drawable.new_tab_icon,
+                org.chromium.chrome.browser.ui.android.bars_common.R.string.button_new_tab,
+                org.chromium.chrome.browser.ui.android.bars_common.R.string.new_tab_title);
 
         // Register app menu.
         registerAction(

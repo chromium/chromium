@@ -34,6 +34,7 @@ import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerScrollBehavior;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator.BottomControlsVisibilityController;
@@ -61,10 +62,13 @@ public class BottomBarContainerCoordinatorUnitTest {
     @Mock private Callback<Object> mOnModelTokenChange;
     @Mock private ThemeColorProvider mThemeColorProvider;
     @Mock private ActionRegistry mActionRegistry;
+    @Mock private Profile mProfile;
 
     private final SettableNullableObservableSupplier<Tab> mTabSupplier =
             ObservableSuppliers.createNullable();
     private final SettableNullableObservableSupplier<PropertyModel> mActionSupplier =
+            ObservableSuppliers.createNullable();
+    private final SettableNullableObservableSupplier<Profile> mProfileSupplier =
             ObservableSuppliers.createNullable();
 
     private Activity mActivity;
@@ -83,6 +87,7 @@ public class BottomBarContainerCoordinatorUnitTest {
                             mActivity = activity;
                             mBottomBarContainer = new FrameLayout(mActivity);
                             mHomepageEnabledSupplier = ObservableSuppliers.createNonNull(true);
+                            mProfileSupplier.set(mProfile);
                             mCoordinator =
                                     new BottomBarContainerCoordinator(
                                             mBottomBarContainer,
@@ -90,7 +95,8 @@ public class BottomBarContainerCoordinatorUnitTest {
                                             mActionRegistry,
                                             mTabSupplier,
                                             mThemeColorProvider,
-                                            mHomepageEnabledSupplier);
+                                            mHomepageEnabledSupplier,
+                                            mProfileSupplier);
                         });
     }
 

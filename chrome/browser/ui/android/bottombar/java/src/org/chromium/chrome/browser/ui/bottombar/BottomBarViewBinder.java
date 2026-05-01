@@ -27,6 +27,14 @@ public class BottomBarViewBinder {
         } else if (BottomBarProperties.IS_NEW_TAB_BACKGROUND_VISIBLE == propertyKey) {
             view.setNewTabBackgroundVisible(
                     model.get(BottomBarProperties.IS_NEW_TAB_BACKGROUND_VISIBLE));
+        } else if (BottomBarProperties.IS_GLIC_BUTTON_VISIBLE == propertyKey) {
+            View extraContainer = view.findViewById(R.id.extra_button_container);
+            if (extraContainer != null) {
+                extraContainer.setVisibility(
+                        model.get(BottomBarProperties.IS_GLIC_BUTTON_VISIBLE)
+                                ? View.VISIBLE
+                                : View.GONE);
+            }
         }
     }
 }

@@ -15,6 +15,7 @@ import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerScrollBehavior;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsContentDelegate;
@@ -53,7 +54,8 @@ public class BottomBarContainerCoordinator
             ActionRegistry actionRegistry,
             NullableObservableSupplier<Tab> tabSupplier,
             ThemeColorProvider themeColorProvider,
-            NonNullObservableSupplier<Boolean> homepageEnabledSupplier) {
+            NonNullObservableSupplier<Boolean> homepageEnabledSupplier,
+            NullableObservableSupplier<Profile> profileSupplier) {
         mBottomBarContainer = bottomBarContainer;
         mRequestLayerUpdateCallback = requestLayerUpdateCallback;
 
@@ -64,7 +66,8 @@ public class BottomBarContainerCoordinator
                         themeColorProvider,
                         tabSupplier,
                         homepageEnabledSupplier,
-                        this);
+                        this,
+                        profileSupplier);
     }
 
     @Override

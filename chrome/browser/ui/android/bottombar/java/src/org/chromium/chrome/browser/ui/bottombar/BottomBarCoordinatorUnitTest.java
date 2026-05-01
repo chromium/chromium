@@ -36,6 +36,7 @@ import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.ui.actions.ActionId;
@@ -49,6 +50,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Unit tests for {@link BottomBarCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@EnableFeatures(ChromeFeatureList.GLIC)
 public class BottomBarCoordinatorUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -59,6 +61,7 @@ public class BottomBarCoordinatorUnitTest {
     @Mock private ActionRegistry mActionRegistry;
     @Mock private ThemeColorProvider mThemeColorProvider;
     @Mock private BottomBarMediator.VisibilityDelegate mVisibilityDelegate;
+    @Mock private Profile mProfile;
 
     private final SettableNullableObservableSupplier<Tab> mTabSupplier =
             ObservableSuppliers.createNullable();
@@ -69,6 +72,10 @@ public class BottomBarCoordinatorUnitTest {
     private final SettableNullableObservableSupplier<PropertyModel> mMenuActionSupplier =
             ObservableSuppliers.createNullable();
     private final SettableNullableObservableSupplier<PropertyModel> mTabSwitcherActionSupplier =
+            ObservableSuppliers.createNullable();
+    private final SettableNullableObservableSupplier<PropertyModel> mGlicActionSupplier =
+            ObservableSuppliers.createNullable();
+    private final SettableNullableObservableSupplier<Profile> mProfileSupplier =
             ObservableSuppliers.createNullable();
 
     private Activity mActivity;
@@ -82,6 +89,7 @@ public class BottomBarCoordinatorUnitTest {
         when(mActionRegistry.get(ActionId.HOME_BUTTON)).thenReturn(mHomeActionSupplier);
         when(mActionRegistry.get(ActionId.APP_MENU)).thenReturn(mMenuActionSupplier);
         when(mActionRegistry.get(ActionId.TAB_SWITCHER)).thenReturn(mTabSwitcherActionSupplier);
+        when(mActionRegistry.get(ActionId.GLIC)).thenReturn(mGlicActionSupplier);
 
         mActivityScenarioRule.getScenario().onActivity(this::onActivity);
     }
@@ -90,6 +98,7 @@ public class BottomBarCoordinatorUnitTest {
         mActivity = activity;
         mParent = new FrameLayout(mActivity);
         mHomepageEnabledSupplier = ObservableSuppliers.createNonNull(true);
+        mProfileSupplier.set(mProfile);
         mCoordinator =
                 new BottomBarCoordinator(
                         mParent,
@@ -97,7 +106,8 @@ public class BottomBarCoordinatorUnitTest {
                         mThemeColorProvider,
                         mTabSupplier,
                         mHomepageEnabledSupplier,
-                        mVisibilityDelegate);
+                        mVisibilityDelegate,
+                        mProfileSupplier);
     }
 
     @Test
@@ -194,7 +204,8 @@ public class BottomBarCoordinatorUnitTest {
                         mThemeColorProvider,
                         mTabSupplier,
                         mHomepageEnabledSupplier,
-                        mVisibilityDelegate);
+                        mVisibilityDelegate,
+                        mProfileSupplier);
 
         ColorStateList expectedTint =
                 BottomBarUtils.getIconColorStateList(mActivity, BrandedColorScheme.APP_DEFAULT);

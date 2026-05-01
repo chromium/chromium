@@ -2428,7 +2428,8 @@ public class ToolbarManager
                         assumeNonNull(mActionRegistry),
                         mCurrentTabSupplier,
                         mAppThemeColorProvider,
-                        mHomepageEnabledSupplier);
+                        mHomepageEnabledSupplier,
+                        mProfileSupplier);
         bottomBarContainerOneshotSupplier.set(bottomBarContainerCoordinator);
 
         if (mBottomBarHostManager != null) {

@@ -14,14 +14,17 @@ import androidx.annotation.ColorInt;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
+import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
 import org.chromium.chrome.browser.ui.actions.ActionId;
 import org.chromium.chrome.browser.ui.actions.ActionProperties;
 import org.chromium.chrome.browser.ui.actions.ActionRegistry;
 import org.chromium.chrome.browser.ui.actions.ActionViewBinding;
 import org.chromium.chrome.browser.ui.actions.AppMenuActionButtonBinder;
 import org.chromium.chrome.browser.ui.actions.HomeActionButtonBinder;
+import org.chromium.chrome.browser.ui.actions.glic.GlicActionButtonBinder;
 import org.chromium.chrome.browser.ui.actions.tabswitcher.TabSwitcherActionButtonBinder;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarHostManager.Host;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
@@ -57,7 +60,8 @@ public class BottomBarCoordinator implements BottomBar {
             ThemeColorProvider themeColorProvider,
             NullableObservableSupplier<Tab> tabSupplier,
             NonNullObservableSupplier<Boolean> homepageEnabledSupplier,
-            BottomBarMediator.VisibilityDelegate visibilityDelegate) {
+            BottomBarMediator.VisibilityDelegate visibilityDelegate,
+            NullableObservableSupplier<Profile> profileSupplier) {
         mActionRegistry = actionRegistry;
         mView =
                 (BottomBarView)
@@ -74,7 +78,8 @@ public class BottomBarCoordinator implements BottomBar {
                         tabSupplier,
                         homepageEnabledSupplier,
                         visibilityDelegate,
-                        shouldIncludeHomeButton);
+                        shouldIncludeHomeButton,
+                        profileSupplier);
 
         mMcp = PropertyModelChangeProcessor.create(mModel, mView, BottomBarViewBinder::bind);
 
@@ -88,6 +93,18 @@ public class BottomBarCoordinator implements BottomBar {
                         actionRegistry.get(ActionId.TAB_SWITCHER),
                         mView.findViewById(R.id.tab_switcher_button),
                         TabSwitcherActionButtonBinder::bind));
+
+        if (AdaptiveToolbarFeatures.isGlicActionEnabled()) {
+            BottomBarButtonContainer extraContainer =
+                    mView.findViewById(R.id.extra_button_container);
+            extraContainer.inflateStub();
+            mRegisteredActionIds.add(ActionId.GLIC);
+            mBindings.add(
+                    new ActionViewBinding(
+                            actionRegistry.get(ActionId.GLIC),
+                            extraContainer.getTargetView(),
+                            GlicActionButtonBinder::bind));
+        }
 
         if (shouldIncludeHomeButton) {
             BottomBarButtonContainer homeContainer = mView.findViewById(R.id.home_button_container);

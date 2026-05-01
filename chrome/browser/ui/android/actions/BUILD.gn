@@ -28,6 +28,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ui/actions/button/ResourceButtonData.java",
     "java/src/org/chromium/chrome/browser/ui/actions/button/TabSwitcherDrawableButtonData.java",
     "java/src/org/chromium/chrome/browser/ui/actions/glic/GlicActionButtonBinder.java",
+    "java/src/org/chromium/chrome/browser/ui/actions/glic/GlicActionCoordinator.java",
     "java/src/org/chromium/chrome/browser/ui/actions/glic/GlicActionProperties.java",
     "java/src/org/chromium/chrome/browser/ui/actions/tabswitcher/TabSwitcherActionButtonBinder.java",
     "java/src/org/chromium/chrome/browser/ui/actions/tabswitcher/TabSwitcherActionProperties.java",
@@ -35,7 +36,11 @@ android_library("java") {
 
   deps = [
     "//base:base_java",
+    "//chrome/android:chrome_app_java_resources",
+    "//chrome/app:java_strings_grd",
     "//chrome/browser/flags:java",
+    "//chrome/browser/glic:public_java",
+    "//chrome/browser/tab:java",
     "//chrome/browser/ui/android/bars_common:java",
     "//chrome/browser/ui/android/bars_common:java_resources",
     "//chrome/browser/ui/android/strings:ui_strings_grd",
@@ -43,11 +48,13 @@ android_library("java") {
     "//components/browser_ui/styles/android:java_resources",
     "//components/browser_ui/util/android:java",
     "//components/browser_ui/widget/android:java",
+    "//components/embedder_support/android:util_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
     "//third_party/androidx:androidx_core_core_java",
     "//ui/android:ui_no_recycler_view_java",
+    "//url:url_java",
   ]
 }
 
@@ -90,6 +97,7 @@ robolectric_library("junit") {
     "junit/src/org/chromium/chrome/browser/ui/actions/button/DelegateButtonDataUnitTest.java",
     "junit/src/org/chromium/chrome/browser/ui/actions/button/DrawableButtonDataUnitTest.java",
     "junit/src/org/chromium/chrome/browser/ui/actions/button/ResourceButtonDataUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/ui/actions/glic/GlicActionCoordinatorUnitTest.java",
     "junit/src/org/chromium/chrome/browser/ui/actions/tabswitcher/TabSwitcherActionButtonBinderUnitTest.java",
     "junit/src/org/chromium/chrome/browser/ui/actions/tabswitcher/TabSwitcherActionPropertiesUnitTest.java",
     "junit/src/org/chromium/chrome/browser/ui/actions/tabswitcher/TabSwitcherActionProviderUnitTest.java",
@@ -104,6 +112,7 @@ robolectric_library("junit") {
     "//chrome/browser/flags:java",
     "//chrome/browser/incognito:incognito_utils_java",
     "//chrome/browser/profiles/android:java",
+    "//chrome/browser/tab:java",
     "//chrome/browser/tab_group_sync:factory_java",
     "//chrome/browser/tab_ui/android:java",
     "//chrome/browser/tabmodel:java",
@@ -126,5 +135,7 @@ robolectric_library("junit") {
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_no_recycler_view_java",
+    "//url:gurl_junit_test_support",
+    "//url:url_java",
   ]
 }

@@ -566,6 +566,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.appearance") {
 
   deps = [
     ":chrome_test_java_helper",
+    "//chrome/browser/ui/android/toolbar:adaptive_features_java",
     "//chrome/browser/ui/android/toolbar:optional_button_java",
   ]
 }
@@ -739,6 +740,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.customtabs") {
   deps = [
     ":chrome_test_java_helper",
     "//chrome/browser/android/customtabs/branding:branding_common_java",
+    "//chrome/browser/ui/android/toolbar:adaptive_features_java",
     "//chrome/browser/ui/android/toolbar:optional_button_java",
   ]
 }
@@ -1008,6 +1010,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.omnibox") {
 
   deps = [
     ":chrome_test_java_helper",
+    "//chrome/browser/ui/android/toolbar:adaptive_features_java",
     "//chrome/browser/ui/android/toolbar:optional_button_java",
   ]
 }
@@ -1272,6 +1275,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.share") {
 
   deps = [
     ":chrome_test_java_helper",
+    "//chrome/browser/ui/android/toolbar:adaptive_features_java",
     "//chrome/browser/ui/android/toolbar:optional_button_java",
     "//components/paint_preview/common/mojom:mojom_java",
   ]
@@ -1564,6 +1568,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.toolbar") {
   deps = [
     ":chrome_test_java_helper",
     "//chrome/browser/ui/android/bars_common:java",
+    "//chrome/browser/ui/android/toolbar:adaptive_features_java",
     "//chrome/browser/ui/android/toolbar:optional_button_java",
     "//chrome/browser/user_education:java",
   ]
@@ -1716,6 +1721,7 @@ android_library("chrome_test_java_various") {
     "//chrome/browser/educational_tip:java",
     "//chrome/browser/ntp_customization:java",
     "//chrome/browser/ui/android/logo:utils_java",
+    "//chrome/browser/ui/android/toolbar:adaptive_features_java",
     "//chrome/browser/ui/android/toolbar:optional_button_java",
     "//components/browser_ui/http_auth/android:java",
     "//third_party/androidx:androidx_test_ext_junit_java",

@@ -23,6 +23,27 @@ generate_jni("adaptive_jni_headers") {
   sources = [ "java/src/org/chromium/chrome/browser/toolbar/adaptive/AdaptiveToolbarBridge.java" ]
 }
 
+android_library("adaptive_features_java") {
+  sources = [ "java/src/org/chromium/chrome/browser/toolbar/adaptive/AdaptiveToolbarFeatures.java" ]
+  deps = [
+    "//base:base_java",
+    "//chrome/browser/actor/android:java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/glic:public_java",
+    "//chrome/browser/preferences:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/readaloud/android:features_java",
+    "//chrome/browser/ui/android/bottombar:config_java",
+    "//chrome/browser/ui/side_panel/android:java",
+    "//components/prefs/android:java",
+    "//components/user_prefs/android:java",
+    "//content/public/android:content_full_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//ui/android:ui_no_recycler_view_java",
+  ]
+  srcjar_deps = [ "//chrome/browser/ui:adaptive_toolbar_enums_java" ]
+}
+
 android_library("optional_button_java") {
   sources = [
     "java/src/org/chromium/chrome/browser/toolbar/MenuBuilderHelper.java",
@@ -30,7 +51,6 @@ android_library("optional_button_java") {
     "java/src/org/chromium/chrome/browser/toolbar/adaptive/AdaptiveToolbarBehavior.java",
     "java/src/org/chromium/chrome/browser/toolbar/adaptive/AdaptiveToolbarBridge.java",
     "java/src/org/chromium/chrome/browser/toolbar/adaptive/AdaptiveToolbarButtonController.java",
-    "java/src/org/chromium/chrome/browser/toolbar/adaptive/AdaptiveToolbarFeatures.java",
     "java/src/org/chromium/chrome/browser/toolbar/adaptive/AdaptiveToolbarPrefs.java",
     "java/src/org/chromium/chrome/browser/toolbar/adaptive/AdaptiveToolbarStatePredictor.java",
     "java/src/org/chromium/chrome/browser/toolbar/adaptive/AdaptiveToolbarStats.java",
@@ -53,6 +73,7 @@ android_library("optional_button_java") {
     "java/src/org/chromium/chrome/browser/toolbar/optional_button/ShrinkTransition.java",
   ]
   deps = [
+    ":adaptive_features_java",
     ":java_resources",
     "//base:base_java",
     "//build/android:build_java",
@@ -97,10 +118,7 @@ android_library("optional_button_java") {
     "//ui/android:ui_no_recycler_view_java",
     "//url:url_java",
   ]
-  srcjar_deps = [
-    ":adaptive_jni_headers",
-    "//chrome/browser/ui:adaptive_toolbar_enums_java",
-  ]
+  srcjar_deps = [ ":adaptive_jni_headers" ]
   resources_package = "org.chromium.chrome.browser.toolbar"
 }
 
@@ -207,6 +225,7 @@ android_library("core_java") {
   ]
 
   deps = [
+    ":adaptive_features_java",
     ":java_resources",
     ":optional_button_java",
     ":variation_utils_java",
@@ -469,6 +488,7 @@ robolectric_library("junit") {
   ]
 
   deps = [
+    ":adaptive_features_java",
     ":java",
     ":java_resources",
     ":optional_button_java",
