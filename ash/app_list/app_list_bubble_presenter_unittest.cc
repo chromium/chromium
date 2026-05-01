@@ -25,10 +25,10 @@
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
 #include "base/memory/raw_ptr.h"
-#include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/icu_test_util.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/compositor/layer.h"
@@ -403,8 +403,9 @@ TEST_F(AppListBubblePresenterTest, DismissWhileWaitingForZeroStateSearch) {
   EXPECT_FALSE(presenter->bubble_widget_for_test());
 
   // Wait for the zero-state search callback to run. Widget is not created.
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(1, GetTestAppListClient()->zero_state_search_done_count());
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return GetTestAppListClient()->zero_state_search_done_count() == 1;
+  }));
   EXPECT_FALSE(presenter->IsShowing());
   EXPECT_FALSE(presenter->bubble_widget_for_test());
 
