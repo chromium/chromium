@@ -413,6 +413,7 @@ IN_PROC_BROWSER_TEST_F(WebAppWebDXManifestBrowserTest, UsageMeasured) {
 
   const webapps::AppId app_id = test::InstallPwaForCurrentUrl(browser());
 
+  content::FetchHistogramsFromChildProcesses();
   histogram_tester.ExpectBucketCount("Blink.UseCounter.WebDXFeatures",
                                      blink::mojom::WebDXFeature::kManifest, 1);
 }
@@ -425,6 +426,7 @@ IN_PROC_BROWSER_TEST_F(WebAppWebDXManifestBrowserTest, DefaultNotMeasured) {
 
   const webapps::AppId app_id = test::InstallPwaForCurrentUrl(browser());
 
+  content::FetchHistogramsFromChildProcesses();
   histogram_tester.ExpectBucketCount("Blink.UseCounter.WebDXFeatures",
                                      blink::mojom::WebDXFeature::kManifest, 0);
 }
@@ -437,6 +439,7 @@ IN_PROC_BROWSER_TEST_F(WebAppWebDXManifestBrowserTest, InvalidNotMeasured) {
 
   const webapps::AppId app_id = test::InstallPwaForCurrentUrl(browser());
 
+  content::FetchHistogramsFromChildProcesses();
   histogram_tester.ExpectBucketCount("Blink.UseCounter.WebDXFeatures",
                                      blink::mojom::WebDXFeature::kManifest, 0);
 }
@@ -2489,6 +2492,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ManifestShareTarget) {
 
   const webapps::AppId app_id = test::InstallPwaForCurrentUrl(browser());
 
+  content::FetchHistogramsFromChildProcesses();
   histogram_tester.ExpectBucketCount(
       "Blink.UseCounter.WebDXFeatures",
       blink::mojom::WebDXFeature::kAppShareTargets, 1);
@@ -2503,6 +2507,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ManifestShortcut) {
 
   const webapps::AppId app_id = test::InstallPwaForCurrentUrl(browser());
 
+  content::FetchHistogramsFromChildProcesses();
   histogram_tester.ExpectBucketCount("Blink.UseCounter.WebDXFeatures",
                                      blink::mojom::WebDXFeature::kAppShortcuts,
                                      1);
@@ -2519,6 +2524,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ManifestWithUseCounterFields) {
 
   const webapps::AppId app_id = test::InstallPwaForCurrentUrl(browser());
 
+  content::FetchHistogramsFromChildProcesses();
   histogram_tester.ExpectBucketCount(
       kUseCounterHistogram, blink::mojom::WebFeature::kWebAppManifestStartUrl,
       1);
@@ -2568,6 +2574,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ManifestWithNoUseCounterFields) {
 
   const webapps::AppId app_id = test::InstallPwaForCurrentUrl(browser());
 
+  content::FetchHistogramsFromChildProcesses();
   histogram_tester.ExpectBucketCount(
       "Blink.UseCounter.Features",
       blink::mojom::WebFeature::kWebAppManifestStartUrl, 0);
