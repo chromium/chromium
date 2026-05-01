@@ -456,6 +456,7 @@ class GlicInstanceImpl : public GlicInstance,
   base::TimeTicks last_deactivation_timestamp_;
 
   base::OneShotTimer remove_blank_instance_timer_;
+  base::OneShotTimer maybe_activate_foreground_embedder_timer_;
 
   // True during the synchronous execution of `CreateTab()`, which is called
   // when the user clicks a link inside the Glic panel.

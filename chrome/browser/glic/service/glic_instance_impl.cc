@@ -951,8 +951,8 @@ void GlicInstanceImpl::OnZeroStateSuggestionsFetched(
 std::optional<std::string> GlicInstanceImpl::conversation_id() const {
   if (!conversation_info_->conversation_id.empty()) {
     return conversation_info_->conversation_id;
-}
-return std::nullopt;
+  }
+  return std::nullopt;
 }
 
 std::string GlicInstanceImpl::conversation_title() const {
@@ -1071,6 +1071,7 @@ void GlicInstanceImpl::ShowInactiveSidePanelEmbedderFor(
 
 void GlicInstanceImpl::SetActiveEmbedderAndNotifyStateChange(
     std::optional<EmbedderKey> new_key) {
+  maybe_activate_foreground_embedder_timer_.Stop();
   active_embedder_key_ = new_key;
   sharing_manager_coordinator_.UpdateState(GetPanelState().kind,
                                            interaction_mode_);
@@ -1212,19 +1213,17 @@ void GlicInstanceImpl::MaybeDeactivateEmbedder(EmbedderKey key) {
     // TODO: Figure out what else should go into host_.PanelWasClosed() and
     // maybe call it here.
     DeactivateCurrentEmbedder();
-    // Post a delayed task to maybe activate another embedder. This is to avoid
+    // Start a timer to maybe activate another embedder. This is to avoid
     // a race condition where the deactivation of an old embedder (e.g. during a
     // tab/window switch) tries to show the new embedder before the browser's
-    // own tab activation logic has had a chance to run. By posting, we allow
-    // the synchronous activation logic to complete, and then this task will run
-    // and activate a foreground embedder only if one isn't already active.
+    // own tab activation logic has had a chance to run. We allow the
+    // synchronous activation logic to complete, and then this timer will fire.
+    // The timer is canceled if an embedder becomes active before it fires.
     // TODO(crbug.com/451667367): Find another way to do this that doesn't
-    // require a delayed task. Spoiler alert, it might not be possible.
-    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&GlicInstanceImpl::MaybeActivateForegroundEmbedder,
-                       weak_ptr_factory_.GetWeakPtr()),
-        base::Milliseconds(30));
+    // require a timer. Spoiler alert, it might not be possible.
+    maybe_activate_foreground_embedder_timer_.Start(
+        FROM_HERE, base::Milliseconds(30), this,
+        &GlicInstanceImpl::MaybeActivateForegroundEmbedder);
   }
 }
 
