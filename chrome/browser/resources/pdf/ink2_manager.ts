@@ -243,6 +243,7 @@ export class Ink2Manager extends EventTarget {
     this.pageIndex_ = page;
     const annotation: TextAnnotation = existing ? existing : {
       id: this.nextAnnotationId_,
+      isEdited: false,
       mojoTextInfo: new ArrayBuffer(0),
       newTypefaces: [],
       pageIndex: page,
@@ -524,7 +525,7 @@ export class Ink2Manager extends EventTarget {
    * Updates the stored annotation and notifies the plugin of the new or
    * modified annotation.
    */
-  commitTextAnnotation(annotation: TextAnnotation, edited: boolean) {
+  commitTextAnnotation(annotation: TextAnnotation) {
     annotation.textBoxRect = this.screenToPageCoordinates_(
         annotation.pageIndex, annotation.textBoxRect);
 
@@ -550,7 +551,8 @@ export class Ink2Manager extends EventTarget {
     // event for normal Ink strokes and this way clients only need to listen
     // on one instance.
     this.pluginController_.getEventTarget().dispatchEvent(new CustomEvent(
-        PluginControllerEventType.FINISH_INK_STROKE, {detail: edited}));
+        PluginControllerEventType.FINISH_INK_STROKE,
+        {detail: annotation.isEdited}));
   }
 
   textBoxFocused(textBoxRect: TextBoxRect) {

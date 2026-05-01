@@ -22,6 +22,7 @@ document.body.appendChild(textbox);
 function getTestAnnotation(textBoxRect: TextBoxRect): TextAnnotation {
   return {
     id: 0,
+    isEdited: false,
     mojoTextInfo: new ArrayBuffer(0),
     newTypefaces: [],
     pageIndex: 0,

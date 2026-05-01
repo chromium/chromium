@@ -330,24 +330,23 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
               }
 
               // Notify the backend.
-              Ink2Manager.getInstance().commitTextAnnotation(
-                  {
-                    id: this.id_,
-                    mojoTextInfo: result.mojoTextInfo,
-                    newTypefaces: result.typefaces,
-                    pageIndex: this.pageIndex_,
-                    pdfZoom: this.zoom_,
-                    text: this.textValue_,
-                    textAttributes: this.attributes_,
-                    textBoxRect: {
-                      height: this.height_,
-                      locationX: this.locationX_,
-                      locationY: this.locationY_,
-                      width: this.width_,
-                    },
-                    textOrientation: this.textOrientation_,
-                  },
-                  isEdited);
+              Ink2Manager.getInstance().commitTextAnnotation({
+                id: this.id_,
+                isEdited: isEdited,
+                mojoTextInfo: result.mojoTextInfo,
+                newTypefaces: result.typefaces,
+                pageIndex: this.pageIndex_,
+                pdfZoom: this.zoom_,
+                text: this.textValue_,
+                textAttributes: this.attributes_,
+                textBoxRect: {
+                  height: this.height_,
+                  locationX: this.locationX_,
+                  locationY: this.locationY_,
+                  width: this.width_,
+                },
+                textOrientation: this.textOrientation_,
+              });
             })
             .catch(e => {
               console.error('Error committing text annotation:', e);

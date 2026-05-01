@@ -15,6 +15,7 @@ const manager = Ink2Manager.getInstance();
 function getTestAnnotation(id: number): TextAnnotation {
   return {
     id: id,
+    isEdited: false,
     mojoTextInfo: new ArrayBuffer(0),
     newTypefaces: [],
     pageIndex: 0,
@@ -253,7 +254,8 @@ chrome.test.runTests([
 
     // Simulate committing the annotation when the init event is received.
     // This is what ink-text-box does in production.
-    testManager.commitTextAnnotation(testAnnotation1ScreenCoords, true);
+    testAnnotation1ScreenCoords.isEdited = true;
+    testManager.commitTextAnnotation(testAnnotation1ScreenCoords);
 
     // Confirm that the finish annotation message is sent with the correct
     // parameters.
@@ -264,6 +266,7 @@ chrome.test.runTests([
     chrome.test.assertEq(
         'finishTextAnnotation', finishTextAnnotationMessage.type);
     testAnnotation1.textAttributes.color = blue;
+    testAnnotation1.isEdited = true;
     assertDeepEquals(testAnnotation1, finishTextAnnotationMessage.data);
 
     // Confirm annotation 2 is initialized with the correct parameters.
@@ -633,16 +636,22 @@ chrome.test.runTests([
       // Committing with edited = true should fire a modified event.
       // Use structuredClone since the manager edits the object in place,
       // and we want to reuse this below.
-      manager.commitTextAnnotation(
-          structuredClone(annotationScreenCoords), true);
+      // Similarly update `annotationPageCoords`.
+      annotationPageCoords.isEdited = true;
+      const editedAnnot = structuredClone(annotationScreenCoords);
+      editedAnnot.isEdited = true;
+      manager.commitTextAnnotation(editedAnnot);
       chrome.test.assertEq(1, finishInkStrokeModifiedEvents);
       chrome.test.assertEq(0, finishInkStrokeUnmodifiedEvents);
       verifyFinishTextAnnotationMessage(annotationPageCoords);
       mockPlugin.clearMessages();
 
       // Committing with edited = false should fire an unmodified event.
-      manager.commitTextAnnotation(
-          structuredClone(annotationScreenCoords), false);
+      // Similarly update `annotationPageCoords`.
+      annotationPageCoords.isEdited = false;
+      const uneditedAnnot = structuredClone(annotationScreenCoords);
+      uneditedAnnot.isEdited = false;
+      manager.commitTextAnnotation(uneditedAnnot);
       chrome.test.assertEq(1, finishInkStrokeModifiedEvents);
       chrome.test.assertEq(1, finishInkStrokeUnmodifiedEvents);
       verifyFinishTextAnnotationMessage(annotationPageCoords);
@@ -667,7 +676,8 @@ chrome.test.runTests([
     testCommitAnnotation(annotationScreenCoords, annotationPageCoords);
     // Delete to clear state.
     annotationScreenCoords.text = '';
-    manager.commitTextAnnotation(annotationScreenCoords, true);
+    annotationScreenCoords.isEdited = true;
+    manager.commitTextAnnotation(annotationScreenCoords);
     mockPlugin.clearMessages();
 
     // 180 degrees
@@ -684,7 +694,8 @@ chrome.test.runTests([
     testCommitAnnotation(annotationScreenCoords, annotationPageCoords);
     // Delete to clear state.
     annotationScreenCoords.text = '';
-    manager.commitTextAnnotation(annotationScreenCoords, true);
+    annotationScreenCoords.isEdited = true;
+    manager.commitTextAnnotation(annotationScreenCoords);
     mockPlugin.clearMessages();
 
     // 90 degrees CW
@@ -701,7 +712,8 @@ chrome.test.runTests([
     testCommitAnnotation(annotationScreenCoords, annotationPageCoords);
     // Delete to clear state.
     annotationScreenCoords.text = '';
-    manager.commitTextAnnotation(annotationScreenCoords, true);
+    annotationScreenCoords.isEdited = true;
+    manager.commitTextAnnotation(annotationScreenCoords);
     mockPlugin.clearMessages();
 
     // Normal orientation (0 degrees).
