@@ -109,6 +109,11 @@ std::optional<FrameBounds> GetFrameBounds(
 
 }  // namespace
 
+ScrollJankV4FrameTimelineCalculator::ScrollJankV4FrameTimelineCalculator() =
+    default;
+ScrollJankV4FrameTimelineCalculator::~ScrollJankV4FrameTimelineCalculator() =
+    default;
+
 ScrollJankV4Frame::Timeline
 ScrollJankV4FrameTimelineCalculator::CalculateTimeline(
     EventMetrics::List& events_metrics,
@@ -139,7 +144,7 @@ ScrollJankV4FrameTimelineCalculator::CalculateTimeline(
         ScrollJankV4Frame::BeginFrameArgsForScrollJank::From(
             frame_bounds->some_args, result_id),
         ScrollJankV4Frame::NonDamagingFrame{},
-        stage_calculator_.CalculateStages(events_metrics, result_id));
+        stage_calculator_->CalculateStages(events_metrics, result_id));
     return result;
   }
 
@@ -152,7 +157,7 @@ ScrollJankV4FrameTimelineCalculator::CalculateTimeline(
         ScrollJankV4Frame::BeginFrameArgsForScrollJank::From(presented_args,
                                                              result_id),
         ScrollJankV4Frame::DamagingFrame{.presentation_ts = presentation_ts},
-        stage_calculator_.CalculateStages(events_metrics, result_id));
+        stage_calculator_->CalculateStages(events_metrics, result_id));
     return result;
   }
 
@@ -213,8 +218,8 @@ ScrollJankV4FrameTimelineCalculator::CalculateTimeline(
                   ScrollJankV4Frame::NonDamagingFrame{}};
     result.emplace_back(
         args_and_events.args, damage,
-        stage_calculator_.CalculateStages(args_and_events.events,
-                                          args_and_events.args.result_id));
+        stage_calculator_->CalculateStages(args_and_events.events,
+                                           args_and_events.args.result_id));
   }
   return result;
 }

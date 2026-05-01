@@ -43,12 +43,13 @@ class ScrollJankV4FrameStageCalculatorTest : public testing::Test {
   }
 
   EventMetricsTestCreator metrics_creator_;
-  ScrollJankV4FrameStageCalculator calculator_;
+  std::unique_ptr<ScrollJankV4FrameStageCalculator> calculator_ =
+      ScrollJankV4FrameStageCalculator::Create();
 };
 
 TEST_F(ScrollJankV4FrameStageCalculatorTest, EmptyEventMetricsList) {
   EventMetrics::List events_metrics;
-  auto stages = calculator_.CalculateStages(events_metrics, kResultId);
+  auto stages = calculator_->CalculateStages(events_metrics, kResultId);
   EXPECT_THAT(stages, IsEmpty());
 }
 
@@ -60,7 +61,7 @@ TEST_F(ScrollJankV4FrameStageCalculatorTest, FirstGestureScrollUpdate) {
                                .SetIsSynthetic(false)
                                .SetTraceId(TraceId(42))
                                .Build());
-  auto stages = calculator_.CalculateStages(events_metrics, kResultId);
+  auto stages = calculator_->CalculateStages(events_metrics, kResultId);
   EXPECT_THAT(
       stages,
       ElementsAre(ScrollJankV4Frame::Stage{ScrollStart{}},
@@ -89,7 +90,7 @@ TEST_F(ScrollJankV4FrameStageCalculatorTest,
                                .SetDispatchArgs(DispatchBeginFrameArgs{
                                    .frame_time = MillisecondsTicks(24)})
                                .Build());
-  auto stages = calculator_.CalculateStages(events_metrics, kResultId);
+  auto stages = calculator_->CalculateStages(events_metrics, kResultId);
   EXPECT_THAT(
       stages,
       ElementsAre(ScrollJankV4Frame::Stage{ScrollStart{}},
@@ -112,7 +113,7 @@ TEST_F(ScrollJankV4FrameStageCalculatorTest, GestureScrollUpdate) {
                                .SetIsSynthetic(false)
                                .SetTraceId(TraceId(42))
                                .Build());
-  auto stages = calculator_.CalculateStages(events_metrics, kResultId);
+  auto stages = calculator_->CalculateStages(events_metrics, kResultId);
   EXPECT_THAT(stages,
               ElementsAre(ScrollJankV4Frame::Stage{ScrollUpdates(
                   Real{.first_input_generation_ts = MillisecondsTicks(16),
@@ -136,7 +137,7 @@ TEST_F(ScrollJankV4FrameStageCalculatorTest, SyntheticGestureScrollUpdate) {
                                .SetDispatchArgs(DispatchBeginFrameArgs{
                                    .frame_time = MillisecondsTicks(24)})
                                .Build());
-  auto stages = calculator_.CalculateStages(events_metrics, kResultId);
+  auto stages = calculator_->CalculateStages(events_metrics, kResultId);
   EXPECT_THAT(stages,
               ElementsAre(ScrollJankV4Frame::Stage{ScrollUpdates(
                   /* real= */ std::nullopt,
@@ -160,7 +161,7 @@ TEST_F(ScrollJankV4FrameStageCalculatorTest,
                                .SetDispatchArgs(DispatchBeginFrameArgs{
                                    .frame_time = MillisecondsTicks(24)})
                                .Build());
-  auto stages = calculator_.CalculateStages(events_metrics, kResultId);
+  auto stages = calculator_->CalculateStages(events_metrics, kResultId);
   EXPECT_THAT(stages,
               ElementsAre(ScrollJankV4Frame::Stage{ScrollUpdates(
                   /* real= */ std::nullopt,
@@ -181,7 +182,7 @@ TEST_F(ScrollJankV4FrameStageCalculatorTest, InertialGestureScrollUpdate) {
                                .SetIsSynthetic(false)
                                .SetTraceId(TraceId(42))
                                .Build());
-  auto stages = calculator_.CalculateStages(events_metrics, kResultId);
+  auto stages = calculator_->CalculateStages(events_metrics, kResultId);
   EXPECT_THAT(stages,
               ElementsAre(ScrollJankV4Frame::Stage{ScrollUpdates(
                   Real{
@@ -202,7 +203,7 @@ TEST_F(ScrollJankV4FrameStageCalculatorTest, GestureScrollEnd) {
   events_metrics.push_back(metrics_creator_.GestureScrollEndBuilder()
                                .SetTimestamp(MillisecondsTicks(16))
                                .Build());
-  auto stages = calculator_.CalculateStages(events_metrics, kResultId);
+  auto stages = calculator_->CalculateStages(events_metrics, kResultId);
   EXPECT_THAT(stages, ElementsAre(ScrollJankV4Frame::Stage{ScrollEnd{}}));
   EXPECT_EQ(events_metrics[0]->AsScroll()->scroll_jank_v4_result_id(),
             kResultId);
@@ -213,7 +214,7 @@ TEST_F(ScrollJankV4FrameStageCalculatorTest, InertialGestureScrollEnd) {
   events_metrics.push_back(metrics_creator_.InertialGestureScrollEndBuilder()
                                .SetTimestamp(MillisecondsTicks(16))
                                .Build());
-  auto stages = calculator_.CalculateStages(events_metrics, kResultId);
+  auto stages = calculator_->CalculateStages(events_metrics, kResultId);
   EXPECT_THAT(stages, ElementsAre(ScrollJankV4Frame::Stage{ScrollEnd{}}));
   EXPECT_EQ(events_metrics[0]->AsScroll()->scroll_jank_v4_result_id(),
             kResultId);
@@ -225,7 +226,7 @@ TEST_F(ScrollJankV4FrameStageCalculatorTest, NonScrollEventType) {
       metrics_creator_.CreateEventBuilder(ui::EventType::kMouseMoved)
           .SetTimestamp(MillisecondsTicks(16))
           .Build());
-  auto stages = calculator_.CalculateStages(events_metrics, kResultId);
+  auto stages = calculator_->CalculateStages(events_metrics, kResultId);
   EXPECT_THAT(stages, IsEmpty());
 }
 
@@ -282,7 +283,7 @@ TEST_F(ScrollJankV4FrameStageCalculatorTest, MultipleScrollUpdates) {
                                .SetTraceId(TraceId(88))
                                .Build());
 
-  auto stages = calculator_.CalculateStages(events_metrics, kResultId);
+  auto stages = calculator_->CalculateStages(events_metrics, kResultId);
   EXPECT_THAT(
       stages,
       ElementsAre(ScrollJankV4Frame::Stage{ScrollStart{}},
@@ -361,7 +362,7 @@ TEST_F(ScrollJankV4FrameStageCalculatorTest,
                                .SetTraceId(TraceId(88))
                                .Build());
 
-  auto stages = calculator_.CalculateStages(events_metrics, kResultId);
+  auto stages = calculator_->CalculateStages(events_metrics, kResultId);
   EXPECT_THAT(
       stages,
       ElementsAre(ScrollJankV4Frame::Stage{ScrollStart{}},
@@ -402,7 +403,7 @@ TEST_F(ScrollJankV4FrameStageCalculatorTest,
                                .SetIsSynthetic(false)
                                .SetTraceId(TraceId(22))
                                .Build());
-  auto stages = calculator_.CalculateStages(events_metrics, kResultId);
+  auto stages = calculator_->CalculateStages(events_metrics, kResultId);
   EXPECT_THAT(
       stages,
       ElementsAre(ScrollJankV4Frame::Stage{ScrollEnd{}},
@@ -440,7 +441,7 @@ TEST_F(ScrollJankV4FrameStageCalculatorTest,
                                .SetIsSynthetic(false)
                                .SetTraceId(TraceId(22))
                                .Build());
-  auto stages = calculator_.CalculateStages(events_metrics, kResultId);
+  auto stages = calculator_->CalculateStages(events_metrics, kResultId);
   EXPECT_THAT(
       stages,
       ElementsAre(ScrollJankV4Frame::Stage{ScrollUpdates(
@@ -459,7 +460,7 @@ TEST_F(ScrollJankV4FrameStageCalculatorTest,
   }
 }
 
-// Verifies that `calculator_.CalculateStages` orders scroll events
+// Verifies that `calculator_->CalculateStages` orders scroll events
 // based on the timestamps of their arrival in the renderer compositor.
 //
 // Timestamp                1      2      3      4
@@ -485,7 +486,7 @@ TEST_F(ScrollJankV4FrameStageCalculatorTest,
           .SetTimestamp(MillisecondsTicks(1))
           .SetArrivedInRendererCompositorTimestamp(MillisecondsTicks(4))
           .Build());
-  auto stages = calculator_.CalculateStages(events_metrics, kResultId);
+  auto stages = calculator_->CalculateStages(events_metrics, kResultId);
   EXPECT_THAT(
       stages,
       ElementsAre(ScrollJankV4Frame::Stage{ScrollUpdates(

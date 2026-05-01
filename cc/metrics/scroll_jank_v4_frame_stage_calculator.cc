@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <memory>
 #include <optional>
 #include <utility>
 #include <variant>
@@ -263,18 +264,29 @@ ScrollJankV4Frame::StageList CalculateStagesImpl(
   return stages;
 }
 
+class DefaultCalculator final : public ScrollJankV4FrameStageCalculator {
+ public:
+  ~DefaultCalculator() override = default;
+
+  ScrollJankV4Frame::StageList CalculateStages(
+      EventMetrics::List& events_metrics,
+      uint64_t result_id) override {
+    return CalculateStagesImpl(events_metrics, result_id);
+  }
+
+  ScrollJankV4Frame::StageList CalculateStages(
+      std::vector<ScrollEventMetrics*>& events_metrics,
+      uint64_t result_id) override {
+    return CalculateStagesImpl(events_metrics, result_id);
+  }
+};
+
 }  // namespace
 
-ScrollJankV4Frame::StageList ScrollJankV4FrameStageCalculator::CalculateStages(
-    EventMetrics::List& events_metrics,
-    uint64_t result_id) {
-  return CalculateStagesImpl(events_metrics, result_id);
-}
-
-ScrollJankV4Frame::StageList ScrollJankV4FrameStageCalculator::CalculateStages(
-    std::vector<ScrollEventMetrics*>& events_metrics,
-    uint64_t result_id) {
-  return CalculateStagesImpl(events_metrics, result_id);
+// static
+std::unique_ptr<ScrollJankV4FrameStageCalculator>
+ScrollJankV4FrameStageCalculator::Create() {
+  return std::make_unique<DefaultCalculator>();
 }
 
 }  // namespace cc
