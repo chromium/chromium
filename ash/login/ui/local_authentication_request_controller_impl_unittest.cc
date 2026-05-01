@@ -193,7 +193,9 @@ class LocalAuthenticationRequestControllerImplTest : public LoginTestBase {
       PressAndReleaseKey(ui::KeyboardCode::VKEY_A);
     }
     PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
-    base::RunLoop().RunUntilIdle();
+    // Run input and fake DBus zero-delay callbacks that are already due at
+    // the current mock time.
+    task_environment()->FastForwardBy(base::TimeDelta());
   }
 
   base::test::ScopedFeatureList scoped_features_;
