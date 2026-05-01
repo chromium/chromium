@@ -7,6 +7,8 @@
 
 #include <memory>
 #include <optional>
+#include <string_view>
+#include <variant>
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -50,6 +52,32 @@ class CONTENT_EXPORT TextInputClientMac {
  public:
   using RequestToken = base::TokenType<struct RequestTokenTag>;
 
+  // Generic wrappers for params and result types of either
+  // GetCharacterIndexAtPoint or GetFirstRectForRange.
+
+  using RequestParams = std::variant<
+      // CharacterIndexAtPoint param.
+      gfx::Point,
+      // FirstRectForRange param.
+      gfx::Range>;
+
+  // Tag class indicating no result was received yet. If this is returned from
+  // SyncRequest(), the request timed out.
+  struct NoResultYetTag {};
+
+  // Tag class used to indicate a request will never get a result (eg. if
+  // there's no focused frame to query).
+  struct FailedRequestTag {};
+
+  using ResultValue = std::variant<
+      // States with no result.
+      NoResultYetTag,
+      FailedRequestTag,
+      // CharacterIndexAtPoint result.
+      uint32_t,
+      // FirstRectForRange result.
+      gfx::Rect>;
+
   // Used by the blocking Get*() methods below to start async requests. Can be
   // overridden for testing.
   class AsyncRequestDelegate {
@@ -62,6 +90,11 @@ class CONTENT_EXPORT TextInputClientMac {
     virtual void GetFirstRectForRange(RenderFrameHost* rfh,
                                       const RequestToken& request_token,
                                       const gfx::Range& range) = 0;
+
+    // Helper to call the correct getter function for `params`.
+    void SendRequest(RenderFrameHost* rfh,
+                     const RequestToken& request_token,
+                     const RequestParams& params);
   };
 
   static TextInputClientMac* GetInstance();
@@ -146,30 +179,22 @@ class CONTENT_EXPORT TextInputClientMac {
   TextInputClientMac();
   ~TextInputClientMac();
 
-  // Implementations of the public sync methods that take a WeakPtr, in case the
-  // the RenderFrameHost is deleted while waiting for the response.
-  uint32_t GetCharacterIndexAtPoint(base::WeakPtr<RenderFrameHostImpl> rfhi,
-                                    const gfx::Point& point);
-  gfx::Rect GetFirstRectForRange(base::WeakPtr<RenderFrameHostImpl> rfhi,
-                                 const gfx::Range& range);
+  // Shared implementation of the public sync methods. `rfhi` is the currently
+  // focused frame, which is a WeakPtr in case the RenderFrameHost is deleted
+  // while waiting for the response.
+  ResultValue SyncRequest(base::WeakPtr<RenderFrameHostImpl> rfhi,
+                          const RequestParams& params,
+                          std::string_view metrics_suffix)
+      VALID_CONTEXT_REQUIRED(thread_checker_) LOCKS_EXCLUDED(lock_);
 
-  // The critical sections that the Condition guards are in Get*() methods.
-  // These methods lock the internal condition for use before the asynchronous
-  // message is sent to the renderer to lookup the required information. These
-  // are only used on the UI thread.
-  void BeforeRequest() VALID_CONTEXT_REQUIRED(thread_checker_)
-      EXCLUSIVE_LOCK_FUNCTION(lock_);
-
-  // Called at the end of a critical section. This will release the lock and
-  // condition.
-  void AfterRequest() VALID_CONTEXT_REQUIRED(thread_checker_)
-      UNLOCK_FUNCTION(lock_);
+  // Shared implementation of the Set*AndSignal() methods.
+  void SetResultAndSignal(const RequestToken& request_token, ResultValue result)
+      LOCKS_EXCLUDED(lock_);
 
   THREAD_CHECKER(thread_checker_);
 
-  std::optional<uint32_t> character_index_ GUARDED_BY(lock_);
-  std::optional<gfx::Rect> first_rect_ GUARDED_BY(lock_);
   std::optional<RequestToken> current_request_ GUARDED_BY(lock_);
+  ResultValue current_result_ GUARDED_BY(lock_);
 
   base::Lock lock_;
   base::ConditionVariable condition_;

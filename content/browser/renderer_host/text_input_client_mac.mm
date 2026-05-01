@@ -4,13 +4,18 @@
 
 #import "content/browser/renderer_host/text_input_client_mac.h"
 
+#include <string_view>
 #include <utility>
+#include <variant>
 
+#include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "content/browser/renderer_host/frame_tree.h"
@@ -19,6 +24,7 @@
 #include "content/browser/renderer_host/render_widget_host_delegate.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/common/features.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "ui/base/mojom/attributed_string.mojom.h"
 
 namespace content {
@@ -112,122 +118,117 @@ void TextInputClientMac::GetStringFromRange(RenderWidgetHost* rwh,
 
 uint32_t TextInputClientMac::GetCharacterIndexAtPoint(RenderWidgetHost* rwh,
                                                       const gfx::Point& point) {
-  return GetCharacterIndexAtPoint(GetWeakFocusedRenderFrameHostImpl(rwh),
-                                  point);
-}
-
-uint32_t TextInputClientMac::GetCharacterIndexAtPoint(
-    base::WeakPtr<RenderFrameHostImpl> rfhi,
-    const gfx::Point& point) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  // If it doesn't have a focused frame, it calls SetCharacterIndexAndSignal()
-  // with index 0.
-  if (!rfhi) {
-    return 0;
-  }
-
-  base::UmaHistogramBoolean("TextInputClient.InSyncRequest.CharacterIndex",
-                            in_sync_request_);
-  if (in_sync_request_) {
-    return 0;
-  }
-
-  base::LiveTicks start = base::LiveTicks::Now();
-  base::TimeDelta wait_timeout = features::kTextInputClientIPCTimeout.Get();
-
-  BeforeRequest();
-  async_request_delegate_->GetCharacterIndexAtPoint(
-      rfhi.get(), current_request_.value(), point);
-
-  base::TimeDelta remaining_timeout = wait_timeout;
-  while (!character_index_ && remaining_timeout.is_positive()) {
-    base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_wait;
-    condition_.TimedWait(remaining_timeout);
-    remaining_timeout = start + wait_timeout - base::LiveTicks::Now();
-  }
-  base::UmaHistogramBoolean("TextInputClient.CharacterIndex.TimedOut",
-                            !character_index_.has_value());
-
-  // Return a sentinel if no response was received.
-  uint32_t index = character_index_.value_or(UINT32_MAX);
-  AfterRequest();
-
-  base::UmaHistogramLongTimes("TextInputClient.CharacterIndex2",
-                              base::LiveTicks::Now() - start);
-
-  return index;
+  auto result = SyncRequest(GetWeakFocusedRenderFrameHostImpl(rwh), point,
+                            "CharacterIndex");
+  // Return index 0 on failure, or a sentinel on timeout.
+  return std::visit(absl::Overload{
+                        [](NoResultYetTag) { return UINT32_MAX; },
+                        [](FailedRequestTag) { return 0u; },
+                        [](uint32_t index) { return index; },
+                        [](const gfx::Rect&) -> uint32_t { NOTREACHED(); },
+                    },
+                    result);
 }
 
 gfx::Rect TextInputClientMac::GetFirstRectForRange(RenderWidgetHost* rwh,
                                                    const gfx::Range& range) {
-  return GetFirstRectForRange(GetWeakFocusedRenderFrameHostImpl(rwh), range);
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  base::WeakPtr<RenderFrameHostImpl> rfhi =
+      GetWeakFocusedRenderFrameHostImpl(rwh);
+  auto result = SyncRequest(rfhi, range, "FirstRect");
+  return std::visit(
+      absl::Overload{
+          [](NoResultYetTag) { return gfx::Rect(); },
+          [](FailedRequestTag) { return gfx::Rect(); },
+          [](uint32_t index) -> gfx::Rect { NOTREACHED(); },
+          [&rfhi](const gfx::Rect& rect) {
+            // `rect` is in (child) frame coordinate and needs to be transformed
+            // to the root frame coordinate. If `rfhi` has been deleted, it's
+            // too late to do the transform but the result is moot anyway.
+            return rfhi ? gfx::Rect(
+                              rfhi->GetView()->TransformPointToRootCoordSpace(
+                                  rect.origin()),
+                              rect.size())
+                        : gfx::Rect();
+          },
+      },
+      result);
 }
 
-gfx::Rect TextInputClientMac::GetFirstRectForRange(
+TextInputClientMac::ResultValue TextInputClientMac::SyncRequest(
     base::WeakPtr<RenderFrameHostImpl> rfhi,
-    const gfx::Range& range) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+    const RequestParams& params,
+    std::string_view metrics_suffix) {
   if (!rfhi) {
-    return gfx::Rect();
+    // No focused frame.
+    return FailedRequestTag{};
   }
 
-  base::UmaHistogramBoolean("TextInputClient.InSyncRequest.FirstRect",
-                            in_sync_request_);
+  base::UmaHistogramBoolean(
+      base::StrCat({"TextInputClient.InSyncRequest.", metrics_suffix}),
+      in_sync_request_);
   if (in_sync_request_) {
-    return gfx::Rect();
+    return FailedRequestTag{};
+  }
+  base::AutoReset in_sync_request(&in_sync_request_, true);
+
+  const base::TimeDelta wait_timeout =
+      features::kTextInputClientIPCTimeout.Get();
+
+  ResultValue result;
+  const base::LiveTicks start = base::LiveTicks::Now();
+  {
+    base::AutoLock lock(lock_);
+    base::UmaHistogramLongTimes("TextInputClient.LockWait2",
+                                base::LiveTicks::Now() - start);
+
+    CHECK(!current_request_.has_value());
+    CHECK(std::holds_alternative<NoResultYetTag>(current_result_));
+    base::AutoReset current_request(&current_request_, RequestToken{});
+
+    async_request_delegate_->SendRequest(rfhi.get(), current_request_.value(),
+                                         params);
+
+    base::TimeDelta remaining_timeout = wait_timeout;
+    while (std::holds_alternative<NoResultYetTag>(current_result_) &&
+           remaining_timeout.is_positive()) {
+      base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_wait;
+      condition_.TimedWait(remaining_timeout);
+      remaining_timeout = start + wait_timeout - base::LiveTicks::Now();
+    }
+
+    // Only this function should be setting FailedRequestTag.
+    CHECK(!std::holds_alternative<FailedRequestTag>(current_result_));
+    base::UmaHistogramBoolean(
+        base::StrCat({"TextInputClient.", metrics_suffix, ".TimedOut"}),
+        std::holds_alternative<NoResultYetTag>(current_result_));
+
+    // Take the result before releasing the lock.
+    std::swap(result, current_result_);
   }
 
-  base::LiveTicks start = base::LiveTicks::Now();
-  base::TimeDelta wait_timeout = features::kTextInputClientIPCTimeout.Get();
+  base::UmaHistogramLongTimes(
+      base::StrCat({"TextInputClient.", metrics_suffix, "2"}),
+      base::LiveTicks::Now() - start);
 
-  BeforeRequest();
-  async_request_delegate_->GetFirstRectForRange(
-      rfhi.get(), current_request_.value(), range);
-
-  base::TimeDelta remaining_timeout = wait_timeout;
-  while (!first_rect_ && remaining_timeout.is_positive()) {
-    base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_wait;
-    condition_.TimedWait(remaining_timeout);
-    remaining_timeout = start + wait_timeout - base::LiveTicks::Now();
-  }
-  base::UmaHistogramBoolean("TextInputClient.FirstRect.TimedOut",
-                            !first_rect_.has_value());
-
-  // `first_rect_` is in (child) frame coordinate and needs to be transformed to
-  // the root frame coordinate. If `rfhi` has been deleted, it's too late to do
-  // the transform but the result is moot anyway.
-  gfx::Rect rect =
-      first_rect_ && rfhi
-          ? gfx::Rect(rfhi->GetView()->TransformPointToRootCoordSpace(
-                          first_rect_->origin()),
-                      first_rect_->size())
-          : gfx::Rect();
-  AfterRequest();
-
-  base::UmaHistogramLongTimes("TextInputClient.FirstRect2",
-                              base::LiveTicks::Now() - start);
-
-  return rect;
+  return result;
 }
 
 void TextInputClientMac::SetCharacterIndexAndSignal(
     const RequestToken& request_token,
     uint32_t index) {
-  {
-    base::AutoLock lock(lock_);
-    if (!current_request_.has_value() ||
-        current_request_.value() != request_token) {
-      // Stale request.
-      return;
-    }
-    character_index_ = index;
-  }
-  condition_.Signal();
+  SetResultAndSignal(request_token, ResultValue(index));
 }
 
 void TextInputClientMac::SetFirstRectAndSignal(
     const RequestToken& request_token,
     const gfx::Rect& first_rect) {
+  SetResultAndSignal(request_token, ResultValue(first_rect));
+}
+
+void TextInputClientMac::SetResultAndSignal(const RequestToken& request_token,
+                                            ResultValue result) {
   {
     base::AutoLock lock(lock_);
     if (!current_request_.has_value() ||
@@ -235,7 +236,8 @@ void TextInputClientMac::SetFirstRectAndSignal(
       // Stale request.
       return;
     }
-    first_rect_ = first_rect;
+    CHECK(std::holds_alternative<NoResultYetTag>(current_result_));
+    current_result_ = result;
   }
   condition_.Signal();
 }
@@ -272,30 +274,19 @@ void TextInputClientMac::SetFirstRectWhileLockedForTesting(
   SetFirstRectAndSignal(request_token, first_rect);
 }
 
-void TextInputClientMac::BeforeRequest() {
-  CHECK(!in_sync_request_);
-  in_sync_request_ = true;
-
-  base::LiveTicks start = base::LiveTicks::Now();
-
-  lock_.Acquire();
-
-  base::UmaHistogramLongTimes("TextInputClient.LockWait2",
-                              base::LiveTicks::Now() - start);
-
-  CHECK(!current_request_.has_value());
-  current_request_ = RequestToken();
-  character_index_.reset();
-  first_rect_.reset();
-}
-
-void TextInputClientMac::AfterRequest() {
-  CHECK(current_request_.has_value());
-  current_request_.reset();
-  lock_.Release();
-
-  CHECK(in_sync_request_);
-  in_sync_request_ = false;
+void TextInputClientMac::AsyncRequestDelegate::SendRequest(
+    RenderFrameHost* rfh,
+    const RequestToken& request_token,
+    const RequestParams& params) {
+  std::visit(absl::Overload{
+                 [&](const gfx::Point& point) {
+                   GetCharacterIndexAtPoint(rfh, request_token, point);
+                 },
+                 [&](const gfx::Range& range) {
+                   GetFirstRectForRange(rfh, request_token, range);
+                 },
+             },
+             params);
 }
 
 }  // namespace content
