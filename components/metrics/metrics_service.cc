@@ -481,6 +481,11 @@ int MetricsService::GetLowEntropySource() {
   return state_manager_->GetLowEntropySource();
 }
 
+void MetricsService::Purge() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  reporting_service_.metrics_log_store()->Purge();
+}
+
 int MetricsService::GetOldLowEntropySource() {
   return state_manager_->GetOldLowEntropySource();
 }
@@ -1617,7 +1622,7 @@ void MetricsService::OnClonedInstallDetected() {
   // since the cloned install detector works asynchronously, it is possible that
   // this is called after logs were already sent. However, practically speaking,
   // this should not happen, since logs are only sent late into the session.
-  reporting_service_.metrics_log_store()->Purge();
+  Purge();
 }
 
 // static

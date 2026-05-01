@@ -139,6 +139,9 @@ class MetricsService {
   int GetOldLowEntropySource();
   int GetPseudoLowEntropySource();
 
+  // Deletes all UMA data, in memory and on disk.
+  void Purge();
+
   // Returns the date at which the current metrics client ID was created as
   // an int64_t containing seconds since the epoch.
   int64_t GetMetricsReportingEnabledDate();

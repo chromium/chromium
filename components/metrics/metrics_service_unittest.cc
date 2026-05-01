@@ -425,6 +425,41 @@ base::HistogramBase::Count32 GetHistogramDeltaTotalCount(
 
 }  // namespace
 
+TEST_F(MetricsServiceTest, Purge) {
+  EnableMetricsReporting();
+  TestMetricsServiceClient client;
+  TestMetricsService service(GetMetricsStateManager(), &client,
+                             GetLocalState());
+  service.InitializeMetricsRecordingState();
+
+  // Populate the log store with various types of logs.
+  MetricsLogStore* test_log_store = service.LogStoreForTest();
+  test_log_store->StoreLog("dummy ongoing log", MetricsLog::ONGOING_LOG,
+                           LogMetadata(),
+                           MetricsLogsEventManager::CreateReason::kUnknown);
+  test_log_store->StageNextLog();
+  test_log_store->StoreLog("more ongoing log", MetricsLog::ONGOING_LOG,
+                           LogMetadata(),
+                           MetricsLogsEventManager::CreateReason::kUnknown);
+  test_log_store->StoreLog("stability log", MetricsLog::INITIAL_STABILITY_LOG,
+                           LogMetadata(),
+                           MetricsLogsEventManager::CreateReason::kUnknown);
+  test_log_store->SetAlternateOngoingLogStore(InitializeTestLogStoreAndGet());
+  test_log_store->StoreLog("alternate log", MetricsLog::ONGOING_LOG,
+                           LogMetadata(),
+                           MetricsLogsEventManager::CreateReason::kUnknown);
+
+  EXPECT_TRUE(test_log_store->has_staged_log());
+  EXPECT_TRUE(test_log_store->has_unsent_logs());
+
+  // Purge data.
+  service.Purge();
+
+  // Verify log store is empty.
+  EXPECT_FALSE(test_log_store->has_staged_log());
+  EXPECT_FALSE(test_log_store->has_unsent_logs());
+}
+
 TEST_F(MetricsServiceTest, RecordId) {
   EnableMetricsReporting();
   GetMetricsStateManager(user_data_dir_path())->ForceClientIdCreation();
