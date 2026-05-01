@@ -145,6 +145,16 @@
   --toolbar-menu-background-color: rgb(255, 255, 255);
   --toolbar-text-color: rgb(31, 31, 31);
 
+  /* Animations */
+  --composebox-zero-state-animation: zero-state-intro 600ms ease forwards;
+  --composebox-header-wrapper-zero-state-animation: zero-state-intro 600ms
+      ease forwards;
+
+  /* Energy Effect Motion Curves */
+  --emphasized-curve-energy-effect-enabled: cubic-bezier(0.2, 0, 0, 1);
+  --emphasized-decelerate-curve: cubic-bezier(0.05, 0.7, 0.1, 1);
+  --emphasized-accelerate-curve: cubic-bezier(0.3, 0, 0.8, 0.15);
+
   background-color: var(--search-background-color);
   display: grid;
   grid-template-columns: 100%;
@@ -159,6 +169,10 @@
   --color-composebox-context-entrypoint-background:
       var(--color-sds-comp-input-aim-action-neutral);
   --cr-composebox-background-color: var(--color-sds-comp-input-aim-container);
+  --composebox-zero-state-animation: zero-state-intro 500ms
+      var(--emphasized-decelerate-curve) both;
+  --composebox-header-wrapper-zero-state-animation: zero-state-header-text 600ms
+      var(--emphasized-decelerate-curve) both 100ms;
 }
 
 
@@ -440,8 +454,7 @@ error-page {
 }
 
 :host([is-zero-state_]:not([in-nlm_])) #composebox {
-  animation: zero-state-intro 600ms ease
-      forwards;
+  animation: var(--composebox-zero-state-animation);
   opacity: 0;
 }
 
@@ -714,8 +727,19 @@ error-page {
 
 :host([is-zero-state_]) #composeboxHeaderWrapper {
   display: flex;
-  animation: zero-state-intro 600ms ease forwards;
+  animation: var(--composebox-header-wrapper-zero-state-animation);
   opacity: 0;
+}
+
+@keyframes zero-state-header-text {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 :host([is-zero-state_]:not([is-shown-in-tab_])) #composeboxHeaderWrapper {
@@ -782,6 +806,10 @@ error-page {
   position: relative;
   animation: textShimmerAnimation 1s cubic-bezier(0.3, 0, 1, 1) both;
   padding-inline-end: 2px;
+}
+
+:host([energy-effect-enabled_]) .name-shimmer {
+  animation-delay: 100ms;
 }
 
 :host([is-load-error_]) #composeboxHeaderWrapper,

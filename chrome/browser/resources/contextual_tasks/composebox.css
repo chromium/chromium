@@ -124,6 +124,21 @@
   pointer-events: none;
 }
 
+:host([is-zero-state][energy-effect-enabled_]) #composebox::part(composebox) {
+  will-change: opacity;
+  animation: zero-state-composebox-fade-in 50ms
+      var(--emphasized-accelerate-curve) both;
+}
+
+@keyframes zero-state-composebox-fade-in {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
 :host(:not([input-enabled])) #composebox::part(input) {
   caret-color: transparent;
 }
@@ -273,6 +288,24 @@
 
 #composebox[show-file-carousel][expanding_]::part(input-container) {
   padding-top: var(--carousel-height, 60px);
+}
+
+:host([is-zero-state][energy-effect-enabled_]) #composebox::part(input-container) {
+  animation: zero-state-input-plate-ease-in 900ms
+    var(--emphasized-curve-energy-effect-enabled);
+  height: 100%;
+}
+
+@keyframes zero-state-input-plate-ease-in {
+  0% {
+    opacity: 0;
+  }
+  17% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
 :host([energy-effect-enabled_]) #composebox[show-file-carousel][expanding_]::part(input-container) {
