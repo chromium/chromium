@@ -16,6 +16,7 @@
 #include "base/dcheck_is_on.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "components/account_id/account_id.h"
@@ -144,16 +145,20 @@ class ParentAccessControllerImplTest : public LoginTestBase {
   // accepted.
   void SimulateValidation(ParentCodeValidationResult result) {
     login_client_->set_validate_parent_access_code_result(result);
+    base::RunLoop validation_run_loop;
     EXPECT_CALL(*login_client_, ValidateParentAccessCode_(account_id_, "012345",
                                                           validation_time_))
-        .Times(1);
+        .WillOnce([&](const AccountId&, const std::string&, base::Time) {
+          validation_run_loop.Quit();
+          return result;
+        });
 
     ui::test::EventGenerator* generator = GetEventGenerator();
     for (int i = 0; i < 6; ++i) {
       generator->PressKey(ui::KeyboardCode(ui::KeyboardCode::VKEY_0 + i),
                           ui::EF_NONE);
-      base::RunLoop().RunUntilIdle();
     }
+    validation_run_loop.Run();
   }
 
   const AccountId account_id_;
