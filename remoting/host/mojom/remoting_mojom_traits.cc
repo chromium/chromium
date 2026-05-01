@@ -590,4 +590,13 @@ bool mojo::StructTraits<remoting::mojom::FractionalCoordinateDataView,
   return true;
 }
 
+// static
+bool mojo::StructTraits<remoting::mojom::MicrophoneControlDataView,
+                        ::remoting::protocol::MicrophoneControl>::
+    Read(remoting::mojom::MicrophoneControlDataView data_view,
+         ::remoting::protocol::MicrophoneControl* out_control) {
+  out_control->set_enable(data_view.enable());
+  return true;
+}
+
 }  // namespace mojo

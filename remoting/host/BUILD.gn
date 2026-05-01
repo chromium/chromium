@@ -475,6 +475,8 @@ static_library("common") {
     "ipc_action_executor.h",
     "ipc_audio_capturer.cc",
     "ipc_audio_capturer.h",
+    "ipc_audio_injector.cc",
+    "ipc_audio_injector.h",
     "ipc_desktop_environment.cc",
     "ipc_desktop_environment.h",
     "ipc_host_event_logger.cc",

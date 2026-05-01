@@ -24,12 +24,14 @@
 #include "build/build_config.h"
 #include "ipc/ipc_channel_proxy.h"
 #include "remoting/base/capabilities.h"
+#include "remoting/host/audio_injector.h"
 #include "remoting/host/client_session.h"
 #include "remoting/host/client_session_control.h"
 #include "remoting/host/crash_process.h"
 #include "remoting/host/desktop_session_connector.h"
 #include "remoting/host/ipc_action_executor.h"
 #include "remoting/host/ipc_audio_capturer.h"
+#include "remoting/host/ipc_audio_injector.h"
 #include "remoting/host/ipc_input_injector.h"
 #include "remoting/host/ipc_keyboard_layout_monitor.h"
 #include "remoting/host/ipc_mouse_cursor_monitor.h"
@@ -208,6 +210,11 @@ std::string DesktopSessionProxy::GetCapabilities() const {
   result += protocol::kClientControlledLayoutCapability;
 #endif
 
+  if (AudioInjector::IsSupported()) {
+    result += " ";
+    result += protocol::kMicrophoneRemotingCapability;
+  }
+
   return result;
 }
 
@@ -358,6 +365,10 @@ void DesktopSessionProxy::OnDesktopSessionAgentStarted(
 
   if (host_cursor_rendered_by_client_) {
     desktop_session_control_->SetHostCursorRenderedByClient();
+  }
+
+  if (should_start_audio_injector_) {
+    desktop_session_control_->StartAudioInjector();
   }
 
   if (client_session_events_) {
@@ -548,6 +559,24 @@ void DesktopSessionProxy::ExecuteAction(
       break;
     default:
       LOG(WARNING) << "Unknown action requested: " << request.action();
+  }
+}
+
+void DesktopSessionProxy::StartAudioInjector() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  should_start_audio_injector_ = true;
+  if (desktop_session_control_) {
+    desktop_session_control_->StartAudioInjector();
+  }
+}
+
+void DesktopSessionProxy::InjectAudioPacket(
+    std::unique_ptr<AudioPacket> packet) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (desktop_session_control_) {
+    desktop_session_control_->InjectAudioPacket(std::move(packet));
   }
 }
 
@@ -784,6 +813,15 @@ void DesktopSessionProxy::OnSecurityKeyConnection(
 
   if (client_session_events_) {
     client_session_events_->OnSecurityKeyConnection(std::move(receiver));
+  }
+}
+
+void DesktopSessionProxy::OnMicrophoneControl(
+    const protocol::MicrophoneControl& control) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (client_session_control_) {
+    client_session_control_->OnMicrophoneControl(control);
   }
 }
 

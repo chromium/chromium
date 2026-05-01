@@ -39,6 +39,8 @@
 #include "remoting/host/desktop_session_proxy.h"
 #include "remoting/host/file_transfer/file_operations.h"
 #include "remoting/host/input_injector.h"
+#include "remoting/host/ipc_audio_injector.h"
+#include "remoting/host/ipc_keyboard_layout_monitor.h"
 #include "remoting/host/keyboard_layout_monitor.h"
 #include "remoting/host/mojom/desktop_session.mojom.h"
 #include "remoting/host/mojom/remoting_host.mojom.h"
@@ -136,7 +138,7 @@ IpcDesktopEnvironment::CreateRemoteWebAuthnStateChangeNotifier() {
 }
 
 std::unique_ptr<AudioInjector> IpcDesktopEnvironment::CreateAudioInjector() {
-  return nullptr;
+  return std::make_unique<IpcAudioInjector>(desktop_session_proxy_);
 }
 
 IpcDesktopEnvironmentFactory::DesktopConnection::DesktopConnection(

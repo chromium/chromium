@@ -193,6 +193,13 @@ struct FractionalCoordinate {
   int64 screen_id;
 };
 
+// Represents a microphone control message.
+// This struct mirrors the remoting::protocol::MicrophoneControl protobuf.
+struct MicrophoneControl {
+  // Enables the microphone channel if true or disables if false.
+  bool enable;
+};
+
 // The state of the URL forwarder setup.
 enum UrlForwarderState {
   kUnknown = 0,
@@ -485,6 +492,12 @@ interface DesktopSessionControl {
   // TODO: crbug.com/455622961 - Remove this once the clientRenderedHostCursor
   // experiment is fully rolled out, where this function is always called.
   SetHostCursorRenderedByClient();
+
+  // Starts the audio injector device.
+  StartAudioInjector();
+
+  // Injects an audio packet into the audio injector device.
+  InjectAudioPacket(AudioPacket packet);
 };
 
 struct CreateVideoCapturerResult {
@@ -645,6 +658,9 @@ interface DesktopSessionEventHandler {
   // Notifies the network process that a new security key connection has been
   // established and passes the SecurityKeyForwarder receiver to it.
   OnSecurityKeyConnection(pending_receiver<SecurityKeyForwarder> receiver);
+
+  // Notifies the network process that the audio injector state has changed.
+  OnMicrophoneControl(MicrophoneControl control);
 };
 
 // This enum mirrors the remoting::protocol::ErrorCode enum.

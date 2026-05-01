@@ -223,6 +223,18 @@ void DesktopSessionAgent::OnDesktopDisplayChanged(
 void DesktopSessionAgent::OnMicrophoneControl(
     const protocol::MicrophoneControl& control) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
+
+  if (desktop_session_event_handler_) {
+    desktop_session_event_handler_->OnMicrophoneControl(control);
+  }
+}
+
+void DesktopSessionAgent::OnAudioInjectorConsumersChanged(bool has_consumers) {
+  DCHECK(caller_task_runner_->BelongsToCurrentThread());
+
+  protocol::MicrophoneControl control;
+  control.set_enable(has_consumers);
+  OnMicrophoneControl(control);
 }
 
 void DesktopSessionAgent::Start(
@@ -395,6 +407,7 @@ void DesktopSessionAgent::Stop() {
     input_injector_.reset();
     screen_controls_.reset();
     keyboard_layout_monitor_.reset();
+    audio_injector_.reset();
     security_key_auth_handler_ = {};
     security_key_remotes_.clear();
 
@@ -579,6 +592,30 @@ void DesktopSessionAgent::SetHostCursorRenderedByClient() {
   video_capturers_.SetComposeEnabled(false);
   if (mouse_shape_pump_) {
     mouse_shape_pump_->SetSendCursorPositionToClient(true);
+  }
+}
+
+void DesktopSessionAgent::StartAudioInjector() {
+  DCHECK(caller_task_runner_->BelongsToCurrentThread());
+
+  if (audio_injector_) {
+    return;
+  }
+
+  audio_injector_ = desktop_environment_->CreateAudioInjector();
+  if (!audio_injector_) {
+    LOG(ERROR) << "Cannot start audio injector because it is not supported.";
+    return;
+  }
+  audio_injector_->Start(weak_factory_.GetWeakPtr());
+}
+
+void DesktopSessionAgent::InjectAudioPacket(
+    std::unique_ptr<AudioPacket> packet) {
+  DCHECK(caller_task_runner_->BelongsToCurrentThread());
+
+  if (audio_injector_) {
+    audio_injector_->InjectAudioPacket(std::move(packet));
   }
 }
 

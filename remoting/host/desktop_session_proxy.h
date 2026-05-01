@@ -166,6 +166,10 @@ class DesktopSessionProxy
                            std::optional<webrtc::ScreenId> screen_id);
   void SetVideoLayout(const protocol::VideoLayout& layout);
 
+  // APIs used to implement the AudioInjector interface.
+  void StartAudioInjector();
+  void InjectAudioPacket(std::unique_ptr<AudioPacket> packet);
+
   // API used to implement the ActionExecutor interface.
   void ExecuteAction(const protocol::ActionRequest& request);
 
@@ -190,6 +194,7 @@ class DesktopSessionProxy
   void OnLocalKeyboardInputDetected(int32_t usb_keycode) override;
   void OnSecurityKeyConnection(
       mojo::PendingReceiver<mojom::SecurityKeyForwarder> receiver) override;
+  void OnMicrophoneControl(const protocol::MicrophoneControl& control) override;
 
   // mojom::DesktopSessionStateHandler implementation.
   void DisconnectSession(protocol::ErrorCode error,
@@ -339,6 +344,12 @@ class DesktopSessionProxy
   // TODO: crbug.com/455622961 - Remove this once the clientRenderedHostCursor
   // experiment is fully rolled out, where this is always set to true.
   bool host_cursor_rendered_by_client_ GUARDED_BY_CONTEXT(sequence_checker_) =
+      false;
+
+  // Boolean to ensure desktop_session_control_->StartAudioInjector() is
+  // called when StartAudioInjector() is called before
+  // `desktop_session_control_` is bound.
+  bool should_start_audio_injector_ GUARDED_BY_CONTEXT(sequence_checker_) =
       false;
 
   SEQUENCE_CHECKER(sequence_checker_);

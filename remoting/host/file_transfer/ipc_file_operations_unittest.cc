@@ -155,6 +155,8 @@ class FakeDesktopSessionAgent : public mojom::DesktopSessionControl {
   void BeginFileWrite(const base::FilePath& file_path,
                       BeginFileWriteCallback callback) override;
   void SetHostCursorRenderedByClient() override;
+  void StartAudioInjector() override {}
+  void InjectAudioPacket(std::unique_ptr<AudioPacket> packet) override {}
 
   // Binds the pending DesktopSessionControl receiver to |receiver_|.
   void Bind(

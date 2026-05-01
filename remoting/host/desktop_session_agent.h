@@ -23,6 +23,7 @@
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "remoting/base/errors.h"
+#include "remoting/host/audio_injector.h"
 #include "remoting/host/base/desktop_environment_options.h"
 #include "remoting/host/client_session_control.h"
 #include "remoting/host/desktop_display_info.h"
@@ -75,6 +76,7 @@ class DesktopSessionAgent
       public IPC::Listener,
       public protocol::MouseCursorMonitor::Callback,
       public ClientSessionControl,
+      public AudioInjector::Delegate,
       public mojom::DesktopSessionAgent,
       public mojom::DesktopSessionControl {
  public:
@@ -149,6 +151,9 @@ class DesktopSessionAgent
   void BeginFileWrite(const base::FilePath& file_path,
                       BeginFileWriteCallback callback) override;
   void SetHostCursorRenderedByClient() override;
+  void StartAudioInjector() override;
+  void InjectAudioPacket(
+      std::unique_ptr<remoting::AudioPacket> packet) override;
 
   // Creates desktop integration components and a connected IPC channel to be
   // used to access them. The client end of the channel is returned.
@@ -175,6 +180,9 @@ class DesktopSessionAgent
   void OnDesktopDisplayChanged(
       std::unique_ptr<protocol::VideoLayout> layout) override;
   void OnMicrophoneControl(const protocol::MicrophoneControl& control) override;
+
+  // AudioInjector::Delegate interface.
+  void OnAudioInjectorConsumersChanged(bool has_consumers) override;
 
   // Handles keyboard layout changes.
   void OnKeyboardLayoutChange(const protocol::KeyboardLayout& layout);
@@ -231,6 +239,9 @@ class DesktopSessionAgent
 
   // Filter used to disable remote inputs during local input activity.
   std::unique_ptr<RemoteInputFilter> remote_input_filter_;
+
+  // Injects microphone input.
+  std::unique_ptr<AudioInjector> audio_injector_;
 
   // Used to apply client-requested changes in screen resolution.
   std::unique_ptr<ScreenControls> screen_controls_;

@@ -1577,6 +1577,18 @@ class StructTraits<remoting::mojom::FractionalCoordinateDataView,
                    ::remoting::protocol::FractionalCoordinate* out_coordinate);
 };
 
+template <>
+class StructTraits<remoting::mojom::MicrophoneControlDataView,
+                   ::remoting::protocol::MicrophoneControl> {
+ public:
+  static bool enable(const ::remoting::protocol::MicrophoneControl& control) {
+    return control.enable();
+  }
+
+  static bool Read(remoting::mojom::MicrophoneControlDataView data_view,
+                   ::remoting::protocol::MicrophoneControl* out_control);
+};
+
 }  // namespace mojo
 
 #endif  // REMOTING_HOST_MOJOM_REMOTING_MOJOM_TRAITS_H_

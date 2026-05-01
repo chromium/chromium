@@ -27,6 +27,7 @@
 #include "remoting/base/errors.h"
 #include "remoting/base/local_session_policies_provider.h"
 #include "remoting/base/session_policies.h"
+#include "remoting/host/audio_injector.h"
 #include "remoting/host/base/desktop_environment_options.h"
 #include "remoting/host/client_session_control.h"
 #include "remoting/host/client_session_details.h"
@@ -90,6 +91,7 @@ class ClientSession : public protocol::HostStub,
                       public ClientSessionDetails,
                       public ClientSessionEvents,
                       public CursorVisibilityNotifier::EventHandler,
+                      public AudioInjector::Delegate,
                       public protocol::MouseCursorMonitor::Callback,
                       public mojom::ChromotingSessionServices {
  public:
@@ -264,6 +266,9 @@ class ClientSession : public protocol::HostStub,
                           const webrtc::DesktopSize& size,
                           const webrtc::DesktopVector& dpi) override;
 
+  // AudioInjector::Delegate interface.
+  void OnAudioInjectorConsumersChanged(bool has_consumers) override;
+
   void CreateActionMessageHandler(
       std::vector<protocol::ActionRequest::Action> capabilities,
       const std::string& channel_name,
@@ -363,6 +368,9 @@ class ClientSession : public protocol::HostStub,
 
   // Filters used to manage enabling & disabling of input.
   protocol::InputFilter disable_input_filter_;
+
+  // Injects microphone input received from the client.
+  std::unique_ptr<AudioInjector> audio_injector_;
 
   // Used to enable/disable clipboard sync and to restrict payload size.
   protocol::ClipboardFilter host_clipboard_filter_;

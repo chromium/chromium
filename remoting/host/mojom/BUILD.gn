@@ -111,6 +111,10 @@ mojom("mojom") {
           cpp = "::remoting::protocol::LayoutKeyFunction"
         },
         {
+          mojom = "remoting.mojom.MicrophoneControl"
+          cpp = "::remoting::protocol::MicrophoneControl"
+        },
+        {
           mojom = "remoting.mojom.MouseButton"
           cpp = "::remoting::protocol::MouseEvent::MouseButton"
         },

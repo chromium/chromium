@@ -300,6 +300,13 @@ void ClientSession::SetCapabilities(
   extension_manager_->OnNegotiatedCapabilities(connection_->client_stub(),
                                                capabilities_);
 
+  if (HasCapability(capabilities_, protocol::kMicrophoneRemotingCapability)) {
+    audio_injector_ = desktop_environment_->CreateAudioInjector();
+    if (audio_injector_) {
+      audio_injector_->Start(weak_factory_.GetWeakPtr());
+    }
+  }
+
   if (HasCapability(capabilities_, protocol::kFileTransferCapability)) {
     data_channel_manager_.RegisterCreateHandlerCallback(
         kFileTransferDataChannelPrefix,
@@ -748,6 +755,7 @@ void ClientSession::OnConnectionClosed(protocol::ErrorCode error) {
   // Stop components access the client, audio or video stubs, which are no
   // longer valid once ConnectionToClient calls OnConnectionClosed().
   audio_stream_.reset();
+  audio_injector_.reset();
   mouse_shape_pump_.reset();
   video_streams_.clear();
   keyboard_layout_monitor_.reset();
@@ -1282,10 +1290,24 @@ void ClientSession::OnDesktopDisplayChanged(
   CreatePerMonitorVideoStreams();
 }
 
+// This method is used by multi-process hosts, and single-process hosts via
+// OnAudioInjectorConsumersChanged.
 void ClientSession::OnMicrophoneControl(
     const protocol::MicrophoneControl& control) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  NOTIMPLEMENTED();
+
+  if (channels_connected_) {
+    connection_->client_stub()->ControlMicrophone(control);
+  }
+}
+
+// This method is used by single-process hosts.
+void ClientSession::OnAudioInjectorConsumersChanged(bool has_consumers) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  protocol::MicrophoneControl control;
+  control.set_enable(has_consumers);
+  OnMicrophoneControl(control);
 }
 
 void ClientSession::OnDesktopAttached() {
