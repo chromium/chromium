@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/types/expected.h"
 #include "components/content_extraction/content/browser/inner_text.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
@@ -50,6 +51,30 @@ class AnnotatedPageContentRequest
     : public content::WebContentsObserver,
       public content::WebContentsUserData<AnnotatedPageContentRequest> {
  public:
+  // LINT.IfChange(TriggerSource)
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class TriggerSource {
+    kOnLoad = 0,
+    kOnHidden = 1,
+    kOnDemand = 2,
+    kMaxValue = kOnDemand,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/optimization/enums.xml:OptimizationGuidePageContentExtractionTriggerSource)
+
+  static std::unique_ptr<AnnotatedPageContentRequest> Create(
+      content::WebContents* web_contents,
+      PageContentExtractionService& page_content_extraction_service,
+      FetchPageContextCallback fetch_page_context_callback,
+      GetTabIdCallback get_tab_id_callback);
+
+  AnnotatedPageContentRequest(
+      content::WebContents* web_contents,
+      PageContentExtractionService& page_content_extraction_service,
+      blink::mojom::AIPageContentOptionsPtr request,
+      FetchPageContextCallback fetch_page_context_callback,
+      GetTabIdCallback get_tab_id_callback);
+
   AnnotatedPageContentRequest(const AnnotatedPageContentRequest&) = delete;
   AnnotatedPageContentRequest& operator=(const AnnotatedPageContentRequest&) =
       delete;
@@ -64,7 +89,8 @@ class AnnotatedPageContentRequest
   // Returns the cached APC for `page` and whether it is eligible for
   // server upload. Will return nullopt if not available or not supported (e.g.
   // for PDFs).
-  std::optional<ExtractedPageContentResult> GetCachedContentAndEligibility();
+  std::optional<ExtractedPageContentResult> GetCachedContentAndEligibility(
+      bool log_metrics = true);
 
   // Returns whether the cached APC for `page` is eligible for server upload.
   // Will return nullopt if not available.
@@ -120,13 +146,18 @@ class AnnotatedPageContentRequest
   // specifically by the tab transitioning to hidden (as opposed to, say,
   // completing a page load).
   void MaybeScheduleExtraction(bool on_hide = false);
-  bool ShouldScheduleExtraction(bool on_hide) const;
 
-  void OnExtractionTimerFired();
-  void StartExtraction();
-  void RequestAnnotatedPageContentSync();
+  // Returns the trigger source for an extraction, or nullopt if an extraction
+  // should not be scheduled.
+  [[nodiscard]] std::optional<TriggerSource> ShouldScheduleExtraction(
+      bool on_hide) const;
 
-  void OnPageContextFetched(FetchPageContextResultCallbackArg result);
+  void OnExtractionTimerFired(TriggerSource trigger_source);
+  void StartExtraction(TriggerSource trigger_source);
+  void RequestAnnotatedPageContentSync(TriggerSource trigger_source);
+
+  void OnPageContextFetched(TriggerSource trigger_source,
+                            FetchPageContextResultCallbackArg result);
 
   void OnInnerTextReceived(
       base::TimeTicks start_time,
@@ -178,6 +209,12 @@ class AnnotatedPageContentRequest
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/optimization/enums.xml:OptimizationGuideOnDemandExtractionState2)
   Lifecycle lifecycle_ = Lifecycle::kInitial;
+
+  // We don't record latency metrics for same-document navigations as we don't
+  // get reliable load signals. So, these are only set for cross-document
+  // navigations.
+  std::optional<base::ElapsedTimer> stop_loading_timer_;
+  std::optional<base::ElapsedTimer> extraction_timer_;
 
   bool waiting_for_load_ = false;
   bool waiting_for_fcp_ = false;

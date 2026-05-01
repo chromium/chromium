@@ -2144,6 +2144,53 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="OptimizationGuide.PageContentExtraction.AutomaticOnLoad.ExtractionLatency"
+    units="ms" expires_after="2026-09-16">
+  <owner>alexmt@chromium.org</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
+  <summary>
+    Records the duration of the actual content extraction. Recorded once per
+    automatic on-load extraction attempt. This metric is only recorded for
+    cross-document navigations.
+  </summary>
+</histogram>
+
+<histogram
+    name="OptimizationGuide.PageContentExtraction.AutomaticOnLoad.OverallLatency"
+    units="ms" expires_after="2026-09-16">
+  <owner>alexmt@chromium.org</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
+  <summary>
+    Records the total duration from document load complete until the extraction
+    completes. Recorded once per automatic on-load extraction attempt. This
+    metric is only recorded for cross-document navigations.
+  </summary>
+</histogram>
+
+<histogram
+    name="OptimizationGuide.PageContentExtraction.AutomaticOnLoad.StabilityLatency"
+    units="ms" expires_after="2026-09-16">
+  <owner>alexmt@chromium.org</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
+  <summary>
+    Records the duration from document load complete until the page is
+    considered stable and extraction is triggered. Recorded once per automatic
+    on-load extraction attempt. This metric is only recorded for cross-document
+    navigations.
+  </summary>
+</histogram>
+
+<histogram name="OptimizationGuide.PageContentExtraction.IsCacheHit"
+    enum="BooleanCacheHit" expires_after="2026-09-16">
+  <owner>alexmt@chromium.org</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
+  <summary>
+    Records whether the requested page content was found in the cache. Recorded
+    once for every request to get extracted page content for a page.
+  </summary>
+</histogram>
+
 <histogram name="OptimizationGuide.PageContentExtraction.OnDemand.IsPDF"
     enum="Boolean" expires_after="2026-09-16">
   <owner>alexmt@chromium.org</owner>
@@ -2199,6 +2246,17 @@ chromium-metrics-reviews@google.com.
     Records whether an on-demand page content extraction request successfully
     returned a valid ExtractedPageContentResult. Recorded once per on-demand
     request, excluding PDFs.
+  </summary>
+</histogram>
+
+<histogram name="OptimizationGuide.PageContentExtraction.TriggerSource"
+    enum="OptimizationGuidePageContentExtractionTriggerSource"
+    expires_after="2026-09-16">
+  <owner>alexmt@chromium.org</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
+  <summary>
+    Records the trigger source for page content extraction. Recorded once per
+    extraction attempt.
   </summary>
 </histogram>
 

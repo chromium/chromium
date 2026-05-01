@@ -14,6 +14,7 @@
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -243,7 +244,7 @@ void PageContentExtractionService::OnVisibilityChanged(
   }
 
   std::optional<ExtractedPageContentResult> extracted_result =
-      request->GetCachedContentAndEligibility();
+      request->GetCachedContentAndEligibility(/*log_metrics=*/false);
   if (extracted_result) {
     page_content_cache_handler_->OnVisibilityChanged(
         tab_id, ToWebStateWrapper(web_contents),

@@ -249,6 +249,14 @@ void AnnotatedPageContentRequest::DidStopLoading() {
     waiting_for_fcp_ = false;
   }
 
+  // TODO(b/490161242): Investigate if we should return early here if we are not
+  // waiting for load to avoid duplicate extractions for same-document
+  // navigations.
+  if (waiting_for_load_) {
+    // Only set the timer for cross-document navigations.
+    stop_loading_timer_ = base::ElapsedTimer();
+  }
+
   waiting_for_load_ = false;
   MaybeScheduleExtraction();
 }
@@ -270,12 +278,17 @@ void AnnotatedPageContentRequest::ResetForNewNavigation() {
   // Drop pending extraction request for the previous page, if any.
   weak_factory_.InvalidateWeakPtrs();
 
+  stop_loading_timer_ = std::nullopt;
+  extraction_timer_ = std::nullopt;
+
   page_content_extraction_service_->OnNewNavigation(
       get_tab_id_callback_.Run(web_contents()), web_contents());
 }
 
 void AnnotatedPageContentRequest::MaybeScheduleExtraction(bool on_hide) {
-  if (!ShouldScheduleExtraction(on_hide)) {
+  std::optional<TriggerSource> trigger_source =
+      ShouldScheduleExtraction(on_hide);
+  if (!trigger_source) {
     return;
   }
 
@@ -284,32 +297,48 @@ void AnnotatedPageContentRequest::MaybeScheduleExtraction(bool on_hide) {
   content::GetUIThreadTaskRunner()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&AnnotatedPageContentRequest::OnExtractionTimerFired,
-                     weak_factory_.GetWeakPtr()),
+                     weak_factory_.GetWeakPtr(), *trigger_source),
       features::GetAnnotatedPageContentCaptureDelay());
 }
 
-void AnnotatedPageContentRequest::OnExtractionTimerFired() {
+void AnnotatedPageContentRequest::OnExtractionTimerFired(
+    TriggerSource trigger_source) {
   // If there was a navigation in between the delay, skip extraction.
   if (lifecycle_ != Lifecycle::kScheduled) {
     return;
   }
 
-  StartExtraction();
+  StartExtraction(trigger_source);
 }
 
-void AnnotatedPageContentRequest::StartExtraction() {
+void AnnotatedPageContentRequest::StartExtraction(
+    TriggerSource trigger_source) {
   lifecycle_ = Lifecycle::kRunning;
+
+  // We don't record metrics for same-document navigations.
+  if (stop_loading_timer_) {
+    extraction_timer_ = base::ElapsedTimer();
+
+    if (trigger_source == TriggerSource::kOnLoad) {
+      base::UmaHistogramTimes(
+          "OptimizationGuide.PageContentExtraction.AutomaticOnLoad."
+          "StabilityLatency",
+          stop_loading_timer_->Elapsed());
+    }
+  }
+
   if (IsPdf()) {
 #if BUILDFLAG(ENABLE_PDF)
     // TODO(b/487632737): Implement PDF text extraction.
     RequestPdfPageCount();
 #endif  // BUILDFLAG(ENABLE_PDF)
   } else {
-    RequestAnnotatedPageContentSync();
+    RequestAnnotatedPageContentSync(trigger_source);
   }
 }
 
-void AnnotatedPageContentRequest::RequestAnnotatedPageContentSync() {
+void AnnotatedPageContentRequest::RequestAnnotatedPageContentSync(
+    TriggerSource trigger_source) {
   TRACE_EVENT0("browser",
                "AnnotatedPageContentRequest::RequestAnnotatedPageContentSync");
 
@@ -328,7 +357,7 @@ void AnnotatedPageContentRequest::RequestAnnotatedPageContentSync() {
   fetch_page_context_callback_.Run(
       *web_contents(), options, /*progress_listener=*/nullptr,
       base::BindOnce(&AnnotatedPageContentRequest::OnPageContextFetched,
-                     weak_factory_.GetWeakPtr()));
+                     weak_factory_.GetWeakPtr(), trigger_source));
 
   if (include_inner_text_) {
     content_extraction::GetInnerText(
@@ -338,14 +367,15 @@ void AnnotatedPageContentRequest::RequestAnnotatedPageContentSync() {
   }
 }
 
-bool AnnotatedPageContentRequest::ShouldScheduleExtraction(bool on_hide) const {
+std::optional<AnnotatedPageContentRequest::TriggerSource>
+AnnotatedPageContentRequest::ShouldScheduleExtraction(bool on_hide) const {
   if (!page_content_extraction_service_->ShouldEnablePageContentExtraction()) {
-    return false;
+    return std::nullopt;
   }
 
   // If the page is not loaded, the extraction would not work.
   if (waiting_for_fcp_ || waiting_for_load_) {
-    return false;
+    return std::nullopt;
   }
 
   if (lifecycle_ == Lifecycle::kInitial ||
@@ -354,7 +384,7 @@ bool AnnotatedPageContentRequest::ShouldScheduleExtraction(bool on_hide) const {
     // Until the initial navigation completes, extraction is disallowed.
     // Otherwise, an extraction is already scheduled or running, no need to
     // duplicate.
-    return false;
+    return std::nullopt;
   }
 
   auto triggering_mode = features::GetPageContentExtractionTriggeringMode();
@@ -371,12 +401,12 @@ bool AnnotatedPageContentRequest::ShouldScheduleExtraction(bool on_hide) const {
         on_hide || (lifecycle_ == Lifecycle::kNavigated && is_hidden_);
     if (newly_hidden) {
       CHECK(is_hidden_);
-      return true;
+      return TriggerSource::kOnHidden;
     }
   }
 
   if (lifecycle_ != Lifecycle::kNavigated) {
-    return false;
+    return std::nullopt;
   }
 
   bool trigger_on_load =
@@ -386,15 +416,35 @@ bool AnnotatedPageContentRequest::ShouldScheduleExtraction(bool on_hide) const {
           features::PageContentExtractionTriggeringMode::kOnLoadAndHidden;
 
   if (trigger_on_load || !on_demand_callbacks_.empty()) {
-    return true;
+    CHECK(!on_hide);
+    if (!on_demand_callbacks_.empty()) {
+      return TriggerSource::kOnDemand;
+    }
+    return TriggerSource::kOnLoad;
   }
 
-  return false;
+  return std::nullopt;
 }
 
 void AnnotatedPageContentRequest::OnPageContextFetched(
+    TriggerSource trigger_source,
     FetchPageContextResultCallbackArg result) {
   lifecycle_ = Lifecycle::kExtracted;
+
+  base::UmaHistogramEnumeration(
+      "OptimizationGuide.PageContentExtraction.TriggerSource", trigger_source);
+
+  CHECK_EQ(stop_loading_timer_.has_value(), extraction_timer_.has_value());
+  if (trigger_source == TriggerSource::kOnLoad && extraction_timer_) {
+    base::UmaHistogramTimes(
+        "OptimizationGuide.PageContentExtraction.AutomaticOnLoad."
+        "ExtractionLatency",
+        extraction_timer_->Elapsed());
+    base::UmaHistogramTimes(
+        "OptimizationGuide.PageContentExtraction.AutomaticOnLoad."
+        "OverallLatency",
+        stop_loading_timer_->Elapsed());
+  }
 
   // The page context result is null.
   if (!result.has_value() || !result.value()) {
@@ -518,7 +568,12 @@ void AnnotatedPageContentRequest::OnPageContextEligibilityAPILoaded(
 }
 
 std::optional<ExtractedPageContentResult>
-AnnotatedPageContentRequest::GetCachedContentAndEligibility() {
+AnnotatedPageContentRequest::GetCachedContentAndEligibility(bool log_metrics) {
+  if (log_metrics) {
+    base::UmaHistogramBoolean(
+        "OptimizationGuide.PageContentExtraction.IsCacheHit",
+        cached_content_.has_value());
+  }
   return cached_content_;
 }
 
@@ -569,6 +624,8 @@ bool AnnotatedPageContentRequest::ShouldAsyncWaitForExtraction() const {
 void AnnotatedPageContentRequest::GetCachedContentAndEligibilityAsync(
     GetExtractedPageContentAndEligibilityCallback callback) {
   if (ShouldAsyncWaitForExtraction()) {
+    base::UmaHistogramBoolean(
+        "OptimizationGuide.PageContentExtraction.IsCacheHit", false);
     pending_content_callbacks_.push_back(std::move(callback));
     return;
   }
@@ -632,7 +689,7 @@ void AnnotatedPageContentRequest::
         break;
       case Lifecycle::kExtracted:
         // The previous extraction is complete. Start a new one immediately.
-        StartExtraction();
+        StartExtraction(TriggerSource::kOnDemand);
         break;
     }
   }
