@@ -2135,6 +2135,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     }
 
     private void initializeSideUi() {
+        ViewGroup anchorContainerParent = mActivity.findViewById(R.id.constrained_views_container);
         ViewStub sideUiStartAnchorContainerStub =
                 mActivity.findViewById(R.id.side_ui_start_anchor_container_stub);
         ViewStub sideUiEndAnchorContainerStub =
@@ -2150,6 +2151,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
         mSideUiCoordinator =
                 SideUiCoordinatorFactory.create(
+                        anchorContainerParent,
                         sideUiStartAnchorContainerStub,
                         sideUiEndAnchorContainerStub,
                         stripBottomPxSupplier);

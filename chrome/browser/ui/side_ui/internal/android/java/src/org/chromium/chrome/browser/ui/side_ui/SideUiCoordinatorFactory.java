@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ui.side_ui;
 
+import android.view.ViewGroup;
 import android.view.ViewStub;
 
 import org.chromium.base.supplier.NonNullObservableSupplier;
@@ -20,6 +21,8 @@ public final class SideUiCoordinatorFactory {
     /**
      * Creates a {@link SideUiCoordinator}.
      *
+     * @param anchorContainerParent The {@link ViewGroup} that is the parent for the side UI
+     *     containers.
      * @param startAnchorContainerStub The {@link ViewStub} for the start-anchored container.
      * @param endAnchorContainerStub The {@link ViewStub} for the end-anchored container.
      * @param topMarginSupplier The supplier for the Side UI's top margin.
@@ -27,6 +30,7 @@ public final class SideUiCoordinatorFactory {
      */
     @Nullable
     public static SideUiCoordinator create(
+            @Nullable ViewGroup anchorContainerParent,
             @Nullable ViewStub startAnchorContainerStub,
             @Nullable ViewStub endAnchorContainerStub,
             @Nullable NonNullObservableSupplier<Integer> topMarginSupplier) {
@@ -34,6 +38,7 @@ public final class SideUiCoordinatorFactory {
             return null;
         }
 
+        assert anchorContainerParent != null;
         assert startAnchorContainerStub != null;
         assert endAnchorContainerStub != null;
 
@@ -42,6 +47,9 @@ public final class SideUiCoordinatorFactory {
         }
 
         return new SideUiCoordinatorImpl(
-                startAnchorContainerStub, endAnchorContainerStub, topMarginSupplier);
+                anchorContainerParent,
+                startAnchorContainerStub,
+                endAnchorContainerStub,
+                topMarginSupplier);
     }
 }

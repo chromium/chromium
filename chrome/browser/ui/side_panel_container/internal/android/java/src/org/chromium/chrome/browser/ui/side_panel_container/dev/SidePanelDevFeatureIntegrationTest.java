@@ -64,6 +64,7 @@ public class SidePanelDevFeatureIntegrationTest {
 
     @Test
     @MediumTest
+    @EnableFeatures(ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL + ":disable_animations/true")
     public void toggle_toggleDevContent() {
         // Arrange.
         var sidePanelDevFeature = getSidePanelDevFeature();

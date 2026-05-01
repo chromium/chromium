@@ -287,7 +287,7 @@ public final class ViewUtils {
      *
      * @param view The view to measure and layout.
      */
-    public static void triggerSynchronousRemeasure(View view) {
+    public static void triggerSynchronousMeasureAndLayout(View view) {
         view.measure(
                 makeMeasureSpec(view.getMeasuredWidth(), EXACTLY),
                 makeMeasureSpec(view.getMeasuredHeight(), EXACTLY));

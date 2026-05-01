@@ -20,9 +20,12 @@ android_library("java") {
     "//base:supplier_java",
     "//base:tasks_java",
     "//build/android:build_java",
+    "//chrome/browser/flags:java",
     "//chrome/browser/ui/side_panel/android:java",
     "//chrome/browser/ui/side_ui/public:java",
+    "//components/cached_flags:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//ui/android:ui_no_recycler_view_java",
   ]
 }
 

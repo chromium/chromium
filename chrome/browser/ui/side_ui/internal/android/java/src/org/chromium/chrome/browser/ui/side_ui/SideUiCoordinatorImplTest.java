@@ -98,7 +98,10 @@ public class SideUiCoordinatorImplTest {
         // Initialize the SideUiCoordinator under test.
         mCoordinator =
                 new SideUiCoordinatorImpl(
-                        mStartAnchorContainerStub, mEndAnchorContainerStub, mTopMarginSupplier);
+                        mSideUiParent,
+                        mStartAnchorContainerStub,
+                        mEndAnchorContainerStub,
+                        mTopMarginSupplier);
     }
 
     @Test
