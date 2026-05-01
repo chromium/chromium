@@ -20,6 +20,7 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/check_is_test.h"
+#include "base/no_destructor.h"
 #include "base/notimplemented.h"
 #include "base/trace_event/trace_event.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -532,7 +533,6 @@ PrefService* AwPrefetchManager::GetPrefService() {
       base::FeatureList::IsEnabled(features::kWebViewPrefetchOffTheMainThread));
 
   if (g_pref_service_for_testing) {
-    CHECK_IS_TEST();
     return g_pref_service_for_testing;
   }
   auto* aw_browser_context =
