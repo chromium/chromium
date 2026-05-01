@@ -41,7 +41,6 @@ import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.features.CustomTabDimensionUtils;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsCoordinator;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.base.LocalizationUtils;
@@ -165,18 +164,10 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
 
         mToolbarButtonsCoordinator = toolbarButtonsCoordinator;
         if (mShowMaximizeButton) {
-            if (ChromeFeatureList.sCctToolbarRefactor.isEnabled()) {
-                mToolbarButtonsCoordinator.showSideSheetMaximizeButton(
-                        mIsMaximized, () -> toggleMaximize(true));
-            } else {
-                toolbar.initSideSheetMaximizeButton(mIsMaximized, () -> toggleMaximize(true));
-            }
+            mToolbarButtonsCoordinator.showSideSheetMaximizeButton(
+                    mIsMaximized, () -> toggleMaximize(true));
         }
-        if (ChromeFeatureList.sCctToolbarRefactor.isEnabled()) {
-            mToolbarButtonsCoordinator.setMinimizeButtonEnabled(false);
-        } else {
-            toolbar.setMinimizeButtonEnabled(false);
-        }
+        mToolbarButtonsCoordinator.setMinimizeButtonEnabled(false);
         updateDragBarVisibility(/* dragHandlebarVisibility= */ View.GONE);
     }
 
@@ -502,11 +493,7 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
     public void destroy() {
         super.destroy();
         if (mShowMaximizeButton) {
-            if (ChromeFeatureList.sCctToolbarRefactor.isEnabled()) {
-                mToolbarButtonsCoordinator.removeSideSheetMaximizeButton();
-            } else {
-                mToolbarView.removeSideSheetMaximizeButton();
-            }
+            mToolbarButtonsCoordinator.removeSideSheetMaximizeButton();
         }
     }
 

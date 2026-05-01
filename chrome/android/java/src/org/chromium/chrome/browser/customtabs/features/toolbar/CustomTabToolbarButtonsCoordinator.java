@@ -36,7 +36,6 @@ import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar.
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.CloseButtonData;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.MinimizeButtonData;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.SideSheetMaximizeButtonData;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.CustomTabProfileType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
@@ -168,20 +167,17 @@ public class CustomTabToolbarButtonsCoordinator
      */
     public void showSideSheetMaximizeButton(
             boolean isMaximized, MaximizeButtonCallback toggleMaximize) {
-        assert ChromeFeatureList.sCctToolbarRefactor.isEnabled();
         var buttonData =
                 new SideSheetMaximizeButtonData(/* visible= */ true, isMaximized, toggleMaximize);
         mModel.set(SIDE_SHEET_MAXIMIZE_BUTTON, buttonData);
     }
 
     public void removeSideSheetMaximizeButton() {
-        assert ChromeFeatureList.sCctToolbarRefactor.isEnabled();
         var buttonData = new SideSheetMaximizeButtonData();
         mModel.set(SIDE_SHEET_MAXIMIZE_BUTTON, buttonData);
     }
 
     public void setMinimizeButtonEnabled(boolean enabled) {
-        assert ChromeFeatureList.sCctToolbarRefactor.isEnabled();
         mMediator.setMinimizeButtonEnabled(enabled);
     }
 

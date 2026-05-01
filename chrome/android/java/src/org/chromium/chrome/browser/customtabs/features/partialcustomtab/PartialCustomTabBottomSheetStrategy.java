@@ -386,11 +386,7 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
                 new PartialCustomTabHandleStrategy(
                         mActivity, this::isFullHeight, () -> mStatus, this);
         toolbar.setHandleStrategy(mHandleStrategy);
-        if (ChromeFeatureList.sCctToolbarRefactor.isEnabled()) {
-            toolbarButtonsCoordinator.setMinimizeButtonEnabled(false);
-        } else {
-            toolbar.setMinimizeButtonEnabled(false);
-        }
+        toolbarButtonsCoordinator.setMinimizeButtonEnabled(false);
         CustomTabDragBar dragBar = mActivity.findViewById(R.id.drag_bar);
         dragBar.setHandleStrategy(mHandleStrategy);
         View dragHandle = mActivity.findViewById(R.id.drag_handle);
