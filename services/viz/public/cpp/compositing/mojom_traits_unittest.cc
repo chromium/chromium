@@ -1762,6 +1762,83 @@ FUZZ_TEST(StructTraitsTest, SurfaceRangeFuzz)
         fuzztest::Filter([](const SurfaceRange& r) { return r.IsValid(); },
                          AnySurfaceRange()));
 
+auto AnyPoint() {
+  return fuzztest::ConstructorOf<gfx::Point>(fuzztest::Arbitrary<int>(),
+                                             fuzztest::Arbitrary<int>());
+}
+
+auto AnyRect() {
+  return fuzztest::ConstructorOf<gfx::Rect>(
+      fuzztest::Arbitrary<int>(), fuzztest::Arbitrary<int>(),
+      fuzztest::Arbitrary<int>(), fuzztest::Arbitrary<int>());
+}
+
+auto AnySkColor4f() {
+  return fuzztest::Map(
+      [](float r, float g, float b, float a) { return SkColor4f{r, g, b, a}; },
+      fuzztest::Arbitrary<float>(), fuzztest::Arbitrary<float>(),
+      fuzztest::Arbitrary<float>(), fuzztest::Arbitrary<float>());
+}
+
+auto AnyFilterOperation() {
+  return fuzztest::OneOf(
+      fuzztest::Map(cc::FilterOperation::CreateGrayscaleFilter,
+                    fuzztest::Arbitrary<float>()),
+      fuzztest::Map(cc::FilterOperation::CreateSepiaFilter,
+                    fuzztest::Arbitrary<float>()),
+      fuzztest::Map(cc::FilterOperation::CreateSaturateFilter,
+                    fuzztest::Arbitrary<float>()),
+      fuzztest::Map(cc::FilterOperation::CreateHueRotateFilter,
+                    fuzztest::Arbitrary<float>()),
+      fuzztest::Map(cc::FilterOperation::CreateInvertFilter,
+                    fuzztest::Arbitrary<float>()),
+      fuzztest::Map(cc::FilterOperation::CreateBrightnessFilter,
+                    fuzztest::Arbitrary<float>()),
+      fuzztest::Map(cc::FilterOperation::CreateContrastFilter,
+                    fuzztest::Arbitrary<float>()),
+      fuzztest::Map(cc::FilterOperation::CreateOpacityFilter,
+                    fuzztest::Arbitrary<float>()),
+      fuzztest::Map(
+          cc::FilterOperation::CreateBlurFilter, fuzztest::Arbitrary<float>(),
+          fuzztest::ElementOf({SkTileMode::kClamp, SkTileMode::kRepeat,
+                               SkTileMode::kMirror, SkTileMode::kDecal})),
+      fuzztest::Map(cc::FilterOperation::CreateDropShadowFilter, AnyPoint(),
+                    fuzztest::Arbitrary<float>(), AnySkColor4f()),
+      fuzztest::Map(cc::FilterOperation::CreateColorMatrixFilter,
+                    fuzztest::Arbitrary<cc::FilterOperation::Matrix>()),
+      fuzztest::Map(cc::FilterOperation::CreateZoomFilter,
+                    fuzztest::Arbitrary<float>(), fuzztest::Arbitrary<int>()),
+      fuzztest::Map(cc::FilterOperation::CreateReferenceFilter,
+                    fuzztest::Just<sk_sp<cc::PaintFilter>>(nullptr)),
+      fuzztest::Map(cc::FilterOperation::CreateSaturatingBrightnessFilter,
+                    fuzztest::Arbitrary<float>()),
+      fuzztest::Map(cc::FilterOperation::CreateAlphaThresholdFilter,
+                    fuzztest::VectorOf(AnyRect())),
+      fuzztest::Map(cc::FilterOperation::CreateOffsetFilter, AnyPoint()));
+}
+
+auto AnyFilterOperations() {
+  return fuzztest::Map(
+      [](std::vector<cc::FilterOperation> operations) {
+        return cc::FilterOperations(std::move(operations));
+      },
+      fuzztest::VectorOf(AnyFilterOperation()));
+}
+
+void FilterOperationFuzz(const cc::FilterOperation& input) {
+  cc::FilterOperation output;
+  mojo::test::SerializeAndDeserialize<mojom::FilterOperation>(input, output);
+}
+FUZZ_TEST(StructTraitsTest, FilterOperationFuzz)
+    .WithDomains(AnyFilterOperation());
+
+void FilterOperationsFuzz(const cc::FilterOperations& input) {
+  cc::FilterOperations output;
+  mojo::test::SerializeAndDeserialize<mojom::FilterOperations>(input, output);
+}
+FUZZ_TEST(StructTraitsTest, FilterOperationsFuzz)
+    .WithDomains(AnyFilterOperations());
+
 auto AnyPointF() {
   return fuzztest::ConstructorOf<gfx::PointF>(fuzztest::Arbitrary<float>(),
                                               fuzztest::Arbitrary<float>());

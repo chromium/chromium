@@ -47,6 +47,8 @@ test("services_unittests") {
     "StructTraitsTest.BeginFrameAckFuzz",
     "StructTraitsTest.BeginFrameAckAsValueFuzz",
     "StructTraitsTest.SurfaceIdFuzz",
+    "StructTraitsTest.FilterOperationFuzz",
+    "StructTraitsTest.FilterOperationsFuzz",
     "StructTraitsTest.FrameSinkIdFuzz",
     "StructTraitsTest.LocalSurfaceIdFuzz",
     "StructTraitsTest.SurfaceRangeFuzz",
