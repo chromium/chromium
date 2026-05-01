@@ -71,8 +71,8 @@ class FakeSpeechRecognitionManager : public SpeechRecognitionManager,
   void StartSession(int session_id) override;
   void AbortSession(int session_id) override;
   void StopAudioCaptureForSession(int session_id) override;
-  void AbortAllSessionsForRenderFrame(int render_process_id,
-                                      int render_frame_id) override;
+  void AbortAllSessionsForRenderFrame(
+      GlobalRenderFrameHostId global_id) override;
   void UpdateRecognitionContextForSession(
       int session_id,
       const media::SpeechRecognitionRecognitionContext& recognition_context)

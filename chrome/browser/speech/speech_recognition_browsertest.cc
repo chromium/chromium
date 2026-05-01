@@ -15,6 +15,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/child_process_id.h"
 #include "content/public/test/browser_test.h"
@@ -45,12 +46,9 @@ class ChromeSpeechRecognitionTest : public InProcessBrowserTest {
 
   static void CheckRenderFrameType(
       base::OnceCallback<void(bool ask_user, bool is_allowed)> callback,
-      content::ChildProcessId render_process_id,
-      int render_frame_id) {
-    // TODO(crbug.com/379869738) Remove GetUnsafeValue.
+      content::GlobalRenderFrameHostId global_id) {
     ChromeSpeechRecognitionManagerDelegate::CheckRenderFrameType(
-        std::move(callback), render_process_id.GetUnsafeValue(),
-        render_frame_id);
+        std::move(callback), global_id);
   }
 
   void SetUp() override {
@@ -179,7 +177,7 @@ IN_PROC_BROWSER_TEST_F(ChromeSpeechRecognitionTest, TOCTOUPermissionBypass) {
   CheckRenderFrameType(
       base::BindPostTask(content::GetUIThreadTaskRunner({}),
                          future.GetCallback()),
-      process_id, -1);
+      content::GlobalRenderFrameHostId(process_id, IPC::mojom::kRoutingIdNone));
 
   // Wait for the callback and validate the safe logic.
   // Get<0>() is ask_user, Get<1>() is is_allowed.
@@ -206,9 +204,10 @@ IN_PROC_BROWSER_TEST_F(ChromeSpeechRecognitionTest,
 
   // Call CheckRenderFrameType with a missing frame, which is typical for
   // extension background pages or service workers.
-  CheckRenderFrameType(base::BindPostTask(content::GetUIThreadTaskRunner({}),
-                                          future.GetCallback()),
-                       process_id, -1);
+  CheckRenderFrameType(
+      base::BindPostTask(content::GetUIThreadTaskRunner({}),
+                         future.GetCallback()),
+      content::GlobalRenderFrameHostId(process_id, IPC::mojom::kRoutingIdNone));
 
   // For extensions, ask_user should be false (manifest checks apply instead)
   // and is_allowed should be true.

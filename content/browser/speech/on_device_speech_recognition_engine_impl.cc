@@ -12,6 +12,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/speech_recognition_session_config.h"
 #include "content/public/common/content_client.h"
@@ -44,8 +45,7 @@ OnDeviceSpeechRecognitionEngine::OnDeviceSpeechRecognitionEngine(
       FROM_HERE,
       base::BindOnce(&OnDeviceSpeechRecognitionEngine::CreateModelClientOnUI,
                      weak_factory_.GetWeakPtr(),
-                     config_.initial_context.render_process_id,
-                     config_.initial_context.render_frame_id));
+                     config_.initial_context.global_id));
 }
 
 OnDeviceSpeechRecognitionEngine::~OnDeviceSpeechRecognitionEngine() = default;
@@ -128,11 +128,9 @@ int OnDeviceSpeechRecognitionEngine::GetDesiredAudioChunkDurationMs() const {
 }
 
 void OnDeviceSpeechRecognitionEngine::CreateModelClientOnUI(
-    int render_process_id,
-    int render_frame_id) {
+    GlobalRenderFrameHostId global_id) {
   RenderFrameHost* rfh =
-      RenderFrameHost::FromID(config_.initial_context.render_process_id,
-                              config_.initial_context.render_frame_id);
+      RenderFrameHost::FromID(config_.initial_context.global_id);
   if (!rfh) {
     return;
   }

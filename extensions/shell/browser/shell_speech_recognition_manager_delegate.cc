@@ -8,6 +8,7 @@
 #include "base/logging.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/speech_recognition_manager.h"
 #include "content/public/browser/speech_recognition_session_context.h"
@@ -77,12 +78,11 @@ void ShellSpeechRecognitionManagerDelegate::CheckRecognitionIsAllowed(
 
   // Make sure that initiators (extensions/web pages) properly set the
   // |render_process_id| field, which is needed later to retrieve the profile.
-  DCHECK_NE(context.render_process_id, 0);
+  DCHECK(context.global_id.child_id);
 
   content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&CheckRenderFrameType, std::move(callback),
-                     context.render_process_id, context.render_frame_id));
+      FROM_HERE, base::BindOnce(&CheckRenderFrameType, std::move(callback),
+                                context.global_id));
 }
 
 content::SpeechRecognitionEventListener*
@@ -93,12 +93,11 @@ ShellSpeechRecognitionManagerDelegate::GetEventListener() {
 // static
 void ShellSpeechRecognitionManagerDelegate::CheckRenderFrameType(
     base::OnceCallback<void(bool ask_user, bool is_allowed)> callback,
-    int render_process_id,
-    int render_frame_id) {
+    content::GlobalRenderFrameHostId global_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   content::RenderFrameHost* render_frame_host =
-      content::RenderFrameHost::FromID(render_process_id, render_frame_id);
+      content::RenderFrameHost::FromID(global_id);
   bool allowed = false;
   bool check_permission = false;
 

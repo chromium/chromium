@@ -17,6 +17,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/speech_recognition_audio_forwarder_config.h"
 #include "content/public/browser/speech_recognition_manager_delegate.h"
@@ -214,10 +215,13 @@ void SpeechRecognitionDispatcherHost::StartSessionOnIO(
 
   SpeechRecognitionSessionContext context;
   context.security_origin = origin;
-  context.render_process_id = render_process_id_;
-  context.render_frame_id = render_frame_id_;
-  context.embedder_render_process_id = embedder_render_process_id;
-  context.embedder_render_frame_id = embedder_render_frame_id;
+  // TODO(crbug.com/379869738) Remove FromUnsafeValue.
+  context.global_id = GlobalRenderFrameHostId(
+      ChildProcessId::FromUnsafeValue(render_process_id_), render_frame_id_);
+  // TODO(crbug.com/379869738) Remove FromUnsafeValue.
+  context.embedder_global_id = GlobalRenderFrameHostId(
+      ChildProcessId::FromUnsafeValue(embedder_render_process_id),
+      embedder_render_frame_id);
 
   SpeechRecognitionSessionConfig config;
   config.language = language;

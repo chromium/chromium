@@ -15,6 +15,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_host.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/speech_recognition_event_listener.h"
 #include "content/public/browser/speech_recognition_manager.h"
@@ -146,10 +147,9 @@ void NetworkSpeechRecognizer::EventListener::StartOnIOThread(
   }
   config.shared_url_loader_factory = shared_url_loader_factory_;
   config.event_listener = weak_factory_.GetWeakPtr();
-  // kInvalidUniqueID is not a valid render process, so the speech permission
-  // check allows the request through.
-  config.initial_context.render_process_id =
-      content::ChildProcessHost::kInvalidUniqueID;
+  // This creates an invalid render process, so the speech permission check
+  // allows the request through.
+  config.initial_context.global_id = content::GlobalRenderFrameHostId();
   config.auth_scope = auth_scope;
   config.auth_token = auth_token;
   config.preamble = preamble;

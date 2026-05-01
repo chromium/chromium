@@ -10,6 +10,10 @@
 #include "content/public/browser/speech_recognition_manager_delegate.h"
 #include "content/public/browser/speech_recognition_session_config.h"
 
+namespace content {
+struct GlobalRenderFrameHostId;
+}  // namespace content
+
 namespace android_webview {
 
 // Android WebView implementation of the SpeechRecognitionManagerDelgate
@@ -58,8 +62,7 @@ class AwSpeechRecognitionManagerDelegate
   // back the result in the IO thread through |callback|.
   static void CheckRenderFrameType(
       base::OnceCallback<void(bool ask_user, bool is_allowed)> callback,
-      int render_process_id,
-      int render_frame_id);
+      content::GlobalRenderFrameHostId global_id);
 };
 
 }  // namespace android_webview

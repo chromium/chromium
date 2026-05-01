@@ -11,6 +11,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/speech_recognition_event_listener.h"
 #include "content/public/browser/speech_recognition_manager_delegate.h"
 #include "content/public/test/test_utils.h"
@@ -175,12 +176,10 @@ void FakeSpeechRecognitionManager::StopAudioCaptureForSession(int session_id) {
 }
 
 void FakeSpeechRecognitionManager::AbortAllSessionsForRenderFrame(
-    int render_process_id,
-    int render_frame_id) {
+    GlobalRenderFrameHostId global_id) {
   VLOG(1) << "CancelAllRequestsWithDelegate invoked.";
   EXPECT_TRUE(should_send_fake_response_ ||
-              (session_ctx_.render_process_id == render_process_id &&
-               session_ctx_.render_frame_id == render_frame_id));
+              session_ctx_.global_id == global_id);
   did_cancel_all_ = true;
 }
 

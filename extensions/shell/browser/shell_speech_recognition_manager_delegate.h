@@ -8,8 +8,11 @@
 #include "content/public/browser/speech_recognition_event_listener.h"
 #include "content/public/browser/speech_recognition_manager_delegate.h"
 
-namespace extensions {
-namespace speech {
+namespace content {
+struct GlobalRenderFrameHostId;
+}  // namespace content
+
+namespace extensions::speech {
 
 class ShellSpeechRecognitionManagerDelegate
     : public content::SpeechRecognitionManagerDelegate,
@@ -59,11 +62,9 @@ class ShellSpeechRecognitionManagerDelegate
 
   static void CheckRenderFrameType(
       base::OnceCallback<void(bool ask_user, bool is_allowed)> callback,
-      int render_process_id,
-      int render_frame_id);
+      content::GlobalRenderFrameHostId global_id);
 };
 
-}  // namespace speech
-}  // namespace extensions
+}  // namespace extensions::speech
 
 #endif  // EXTENSIONS_SHELL_BROWSER_SHELL_SPEECH_RECOGNITION_MANAGER_DELEGATE_H_

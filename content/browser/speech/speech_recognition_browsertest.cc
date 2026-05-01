@@ -27,6 +27,7 @@
 #include "content/browser/speech/speech_recognizer_impl.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/google_streaming_api.pb.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -412,8 +413,7 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
   RenderFrameHost* rfh = shell()->web_contents()->GetPrimaryMainFrame();
-  int render_process_id = rfh->GetProcess()->GetID().GetUnsafeValue();
-  int render_frame_id = rfh->GetRoutingID();
+  content::GlobalRenderFrameHostId global_id = rfh->GetGlobalId();
 
   const char kTriggerLeakScript[] = R"(
     new Promise(resolve => {
@@ -434,7 +434,7 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionBrowserTest,
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(0, SpeechRecognitionManagerImpl::GetSessionTrackerCountForTesting(
-                   render_process_id, render_frame_id));
+                   global_id));
 }
 
 #if !BUILDFLAG(IS_FUCHSIA)

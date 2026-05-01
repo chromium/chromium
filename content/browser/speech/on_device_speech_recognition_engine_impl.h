@@ -27,6 +27,7 @@ class ModelBrokerClient;
 
 namespace content {
 class BrowserContext;
+struct GlobalRenderFrameHostId;
 
 class CONTENT_EXPORT OnDeviceSpeechRecognitionEngine
     : public SpeechRecognitionEngine,
@@ -73,7 +74,7 @@ class CONTENT_EXPORT OnDeviceSpeechRecognitionEngine
  private:
   FRIEND_TEST(OnDeviceSpeechRecognitionEngine, ConvertAccumulatedAudioData);
 
-  void CreateModelClientOnUI(int render_process_id, int render_frame_id);
+  void CreateModelClientOnUI(GlobalRenderFrameHostId global_id);
   void OnModelClientAvailable(
       base::WeakPtr<optimization_guide::ModelClient> client);
   void CreateSessionOnUI();

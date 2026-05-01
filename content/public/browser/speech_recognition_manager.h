@@ -14,6 +14,7 @@
 
 namespace content {
 
+struct GlobalRenderFrameHostId;
 struct SpeechRecognitionAudioForwarderConfig;
 struct SpeechRecognitionSessionConfig;
 struct SpeechRecognitionSessionContext;
@@ -65,8 +66,8 @@ class SpeechRecognitionManager {
   virtual void AbortSession(int session_id) = 0;
 
   // Aborts all sessions for a given RenderFrame, without providing any result.
-  virtual void AbortAllSessionsForRenderFrame(int render_process_id,
-                                              int render_frame_id) = 0;
+  virtual void AbortAllSessionsForRenderFrame(
+      GlobalRenderFrameHostId global_id) = 0;
 
   // Stops audio capture for an existing session. The audio captured before the
   // call will be processed, possibly ending up with a result.

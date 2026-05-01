@@ -12,6 +12,7 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/speech_recognition_manager.h"
@@ -64,22 +65,20 @@ void AwSpeechRecognitionManagerDelegate::CheckRecognitionIsAllowed(
 
   // Make sure that initiators (extensions/web pages) properly set the
   // |render_process_id| field, which is needed later to retrieve the profile.
-  DCHECK_NE(context.render_process_id, 0);
+  DCHECK(context.global_id.child_id);
 
-  int render_process_id = context.render_process_id;
-  int render_frame_id = context.render_frame_id;
-  if (context.embedder_render_process_id) {
+  content::GlobalRenderFrameHostId global_id = context.global_id;
+  if (context.embedder_global_id.child_id) {
     // If this is a request originated from a guest, we need to re-route the
     // permission check through the embedder (app).
-    render_process_id = context.embedder_render_process_id;
-    render_frame_id = context.embedder_render_frame_id;
+    global_id = context.embedder_global_id;
   }
 
   // Check that the render frame type is appropriate, and whether or not we
   // need to request permission from the user.
   content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&CheckRenderFrameType, std::move(callback),
-                                render_process_id, render_frame_id));
+      FROM_HERE,
+      base::BindOnce(&CheckRenderFrameType, std::move(callback), global_id));
 }
 
 content::SpeechRecognitionEventListener*
@@ -90,8 +89,7 @@ AwSpeechRecognitionManagerDelegate::GetEventListener() {
 // static.
 void AwSpeechRecognitionManagerDelegate::CheckRenderFrameType(
     base::OnceCallback<void(bool ask_user, bool is_allowed)> callback,
-    int render_process_id,
-    int render_frame_id) {
+    content::GlobalRenderFrameHostId global_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // Regular tab contents.

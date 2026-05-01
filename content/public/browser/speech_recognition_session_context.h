@@ -8,6 +8,7 @@
 #include <string>
 
 #include "content/common/content_export.h"
+#include "content/public/browser/global_routing_id.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "url/origin.h"
 
@@ -24,15 +25,12 @@ struct CONTENT_EXPORT SpeechRecognitionSessionContext {
   SpeechRecognitionSessionContext(const SpeechRecognitionSessionContext& other);
   ~SpeechRecognitionSessionContext();
 
-  int render_process_id;
-  int render_frame_id;
+  GlobalRenderFrameHostId global_id;
 
-  // The pair (|embedder_render_process_id|, |embedder_render_frame_id|)
-  // represents a Browser plugin guest's embedder. This is filled in if the
-  // session is from a guest Web Speech API. We use these to check if the
-  // embedder (app) is permitted to use audio.
-  int embedder_render_process_id;
-  int embedder_render_frame_id;
+  // The `embedder_global_id` represents a Browser plugin guest's embedder. This
+  // is filled in if the session is from a guest Web Speech API. We use these to
+  // check if the embedder (app) is permitted to use audio.
+  GlobalRenderFrameHostId embedder_global_id;
 
   // Origin that is requesting recognition, for prompting security notifications
   // to the user.
