@@ -40,6 +40,15 @@
   <script>
     window.onload = () => {
       promise_test(async function(t) {
+        // Wait for both background-images to load.
+        const img1 = new Image();
+        const loadPromise1 = new Promise(resolve => img1.onload = resolve);
+        img1.src = "https://{{hosts[alt][www]}}:{{ports[h2][0]}}/wpt_internal/html/canvas/drawElementImage/resources/red-100x100.png";
+        const img2 = new Image();
+        const loadPromise2 = new Promise(resolve => img2.onload = resolve);
+        img2.src = "https://{{location[host]}}/wpt_internal/html/canvas/drawElementImage/resources/red-100x100.png";
+        await Promise.all([loadPromise1, loadPromise2]);
+
         await new Promise(requestAnimationFrame);
         await new Promise(setTimeout);
         const context = canvas.getContext("2d");
