@@ -183,6 +183,7 @@
     _shoppingDataForShopCardFound = true;
 
     GURL productImageUrl = GURL(meta->lead_image().url());
+    GURL bookmarkUrl = bookmark->url();
     __weak ShopCardMediator* weakSelf = self;
     _imageFetcher->FetchImageData(
         productImageUrl,
@@ -192,9 +193,9 @@
           if (!strongSelf || !strongSelf.delegate) {
             return;
           }
-          [strongSelf populateShopCardConfig:specifics url:bookmark->url()];
+          [strongSelf populateShopCardConfig:specifics url:bookmarkUrl];
           [strongSelf onProductImageFetchedResult:imageData
-                                       productUrl:GURL(bookmark->url())];
+                                       productUrl:bookmarkUrl];
         }),
         NO_TRAFFIC_ANNOTATION_YET);
 
