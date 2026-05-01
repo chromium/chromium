@@ -62,6 +62,9 @@ const char kExceptionMessageInvalidTopK[] =
     "The topK value provided is invalid.";
 const char kExceptionMessageInvalidTemperature[] =
     "The temperature value provided is invalid.";
+const char kExceptionMessageSamplingModeAndParamsConflict[] =
+    "Cannot provide both 'samplingMode' and raw sampling parameters "
+    "('temperature' or 'topK').";
 const char kExceptionMessageUnableToCreateSession[] =
     "The device is unable to create a session to run the model. "
     "Please check the result of availability() first.";

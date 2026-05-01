@@ -141,6 +141,9 @@ interface LanguageModel : EventTarget {
   ]
   readonly attribute float temperature;
 
+  [RuntimeEnabled=AIPromptAPIParams]
+  readonly attribute LanguageModelSamplingMode? samplingMode;
+
   // **DEPRECATED**: This legacy alias for oncontextoverflow will be removed.
   [
     RuntimeEnabled=AIPromptAPILegacyIdentifiers,

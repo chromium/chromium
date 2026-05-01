@@ -847,7 +847,7 @@ AILanguageModel::GetLanguageModelInstanceInfo() {
       blink::mojom::AILanguageModelSamplingParams::New(
           session_params_->top_k, session_params_->temperature),
       std::move(input_types).extract(), audio_sample_rate_hz,
-      audio_channel_count);
+      audio_channel_count, /*sampling_mode=*/std::nullopt);
 }
 
 mojo::PendingRemote<blink::mojom::AILanguageModel>

@@ -77,12 +77,22 @@ using Role = ::blink::mojom::AILanguageModelPromptRole;
 constexpr uint32_t kTestMaxContextToken = 10u;
 constexpr uint32_t kTestDefaultTopK = 1u;
 constexpr float kTestDefaultTemperature = 0.0f;
-constexpr uint32_t kTestMaxTopK = 5u;
+constexpr uint32_t kTestMaxTopK = 50u;
 constexpr float kTestMaxTemperature = 1.5;
 constexpr uint32_t kTestMaxTokens = 100u;
 constexpr uint32_t kTestConfiguredMaxOutputTokens = 10u;
 static_assert(kTestDefaultTopK <= kTestMaxTopK);
 static_assert(kTestDefaultTemperature <= kTestMaxTemperature);
+
+MATCHER_P2(IsPromptWithParams, expected_top_k, expected_temp, "") {
+  int top_k;
+  double temp;
+  static const base::NoDestructor<re2::RE2> re("TopK: (\\d+), Temp: ([\\d.]+)");
+  if (re2::RE2::FullMatch(arg, *re, &top_k, &temp)) {
+    return top_k == expected_top_k && std::abs(temp - expected_temp) < 0.001;
+  }
+  return false;
+}
 
 struct Result {
   mojo::PendingRemote<blink::mojom::AILanguageModel> language_model;
@@ -500,6 +510,63 @@ TEST_F(AILanguageModelTest, SamplingParams) {
               ElementsAre("UbarEM", "TopK: 2, Temp: 1"));
 }
 
+TEST_F(AILanguageModelTest, SamplingModeMappings) {
+  // Test most-predictable (uses default values). Default values are omitted
+  // from the output by the fake API in
+  // services/on_device_model/fake/fake_chrome_ml_api.cc
+  {
+    auto options = blink::mojom::AILanguageModelCreateOptions::New();
+    options->sampling_mode =
+        blink::mojom::AILanguageModelSamplingMode::kMostPredictable;
+    auto session = CreateSession(std::move(options));
+    EXPECT_THAT(Prompt(*session, MakeInput("foo")), ElementsAre("UfooEM"));
+  }
+  // Test predictable
+  {
+    auto options = blink::mojom::AILanguageModelCreateOptions::New();
+    options->sampling_mode =
+        blink::mojom::AILanguageModelSamplingMode::kPredictable;
+    auto session = CreateSession(std::move(options));
+    EXPECT_THAT(Prompt(*session, MakeInput("foo")),
+                ElementsAre("UfooEM", IsPromptWithParams(2, 0.2)));
+  }
+  // Test balanced
+  {
+    auto options = blink::mojom::AILanguageModelCreateOptions::New();
+    options->sampling_mode =
+        blink::mojom::AILanguageModelSamplingMode::kBalanced;
+    auto session = CreateSession(std::move(options));
+    EXPECT_THAT(Prompt(*session, MakeInput("foo")),
+                ElementsAre("UfooEM", IsPromptWithParams(3, 1.0)));
+  }
+  // Test creative
+  {
+    auto options = blink::mojom::AILanguageModelCreateOptions::New();
+    options->sampling_mode =
+        blink::mojom::AILanguageModelSamplingMode::kCreative;
+    auto session = CreateSession(std::move(options));
+    EXPECT_THAT(Prompt(*session, MakeInput("foo")),
+                ElementsAre("UfooEM", IsPromptWithParams(10, 1.1)));
+  }
+  // Test most-creative
+  {
+    auto options = blink::mojom::AILanguageModelCreateOptions::New();
+    options->sampling_mode =
+        blink::mojom::AILanguageModelSamplingMode::kMostCreative;
+    auto session = CreateSession(std::move(options));
+    EXPECT_THAT(Prompt(*session, MakeInput("foo")),
+                ElementsAre("UfooEM", IsPromptWithParams(25, 1.2)));
+  }
+}
+
+TEST_F(AILanguageModelTest, SamplingModeDefault) {
+  // Fallback to default values. Default values are omitted
+  // from the output by the fake API in
+  // services/on_device_model/fake/fake_chrome_ml_api.cc
+  auto session = CreateSession();
+  EXPECT_THAT(Prompt(*session, MakeInput("foo")), ElementsAre("UfooEM"));
+}
+
 TEST_F(AILanguageModelTest, SamplingParamsTopKOutOfRange) {
   auto sampling_params = blink::mojom::AILanguageModelSamplingParams::New();
   sampling_params->top_k = 0;
@@ -536,7 +603,7 @@ TEST_F(AILanguageModelTest, MaxSamplingParams) {
   auto session = CreateSession(std::move(options));
 
   EXPECT_THAT(Prompt(*session, MakeInput("foo")),
-              ElementsAre("UfooEM", "TopK: 5, Temp: 1.5"));
+              ElementsAre("UfooEM", "TopK: 50, Temp: 1.5"));
 }
 
 TEST_F(AILanguageModelTest, InitialPrompts) {

@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_expected.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_sampling_mode.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_proofreader_create_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rewriter_create_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_summarizer_create_options.h"
@@ -41,6 +42,14 @@ static constexpr uint64_t kNormalizedDownloadProgressMax = 0x10000;
 // V8ValueConverter returns Type::NONE for circular references and unsupported
 // types embedded within dictionaries/lists.
 MODULES_EXPORT bool ContainsNoneType(const base::Value& value);
+
+// Converts IDL sampling mode to Mojo enum.
+MODULES_EXPORT mojom::blink::AILanguageModelSamplingMode
+ConvertSamplingModeToMojo(V8LanguageModelSamplingMode sampling_mode);
+
+MODULES_EXPORT std::optional<V8LanguageModelSamplingMode>
+ConvertSamplingModeToV8(
+    std::optional<mojom::blink::AILanguageModelSamplingMode> sampling_mode);
 
 // Converts string language codes to AILanguageCode mojo struct.
 Vector<mojom::blink::AILanguageCodePtr> ToMojoLanguageCodes(

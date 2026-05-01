@@ -232,6 +232,48 @@ mojom::blink::AILanguageModelPromptType ToMojoInputType(
 
 }  // namespace
 
+mojom::blink::AILanguageModelSamplingMode ConvertSamplingModeToMojo(
+    V8LanguageModelSamplingMode sampling_mode) {
+  switch (sampling_mode.AsEnum()) {
+    case V8LanguageModelSamplingMode::Enum::kMostPredictable:
+      return mojom::blink::AILanguageModelSamplingMode::kMostPredictable;
+    case V8LanguageModelSamplingMode::Enum::kPredictable:
+      return mojom::blink::AILanguageModelSamplingMode::kPredictable;
+    case V8LanguageModelSamplingMode::Enum::kBalanced:
+      return mojom::blink::AILanguageModelSamplingMode::kBalanced;
+    case V8LanguageModelSamplingMode::Enum::kCreative:
+      return mojom::blink::AILanguageModelSamplingMode::kCreative;
+    case V8LanguageModelSamplingMode::Enum::kMostCreative:
+      return mojom::blink::AILanguageModelSamplingMode::kMostCreative;
+  }
+  NOTREACHED();
+}
+
+std::optional<V8LanguageModelSamplingMode> ConvertSamplingModeToV8(
+    std::optional<mojom::blink::AILanguageModelSamplingMode> sampling_mode) {
+  if (!sampling_mode.has_value()) {
+    return std::nullopt;
+  }
+  switch (sampling_mode.value()) {
+    case mojom::blink::AILanguageModelSamplingMode::kMostPredictable:
+      return V8LanguageModelSamplingMode(
+          V8LanguageModelSamplingMode::Enum::kMostPredictable);
+    case mojom::blink::AILanguageModelSamplingMode::kPredictable:
+      return V8LanguageModelSamplingMode(
+          V8LanguageModelSamplingMode::Enum::kPredictable);
+    case mojom::blink::AILanguageModelSamplingMode::kBalanced:
+      return V8LanguageModelSamplingMode(
+          V8LanguageModelSamplingMode::Enum::kBalanced);
+    case mojom::blink::AILanguageModelSamplingMode::kCreative:
+      return V8LanguageModelSamplingMode(
+          V8LanguageModelSamplingMode::Enum::kCreative);
+    case mojom::blink::AILanguageModelSamplingMode::kMostCreative:
+      return V8LanguageModelSamplingMode(
+          V8LanguageModelSamplingMode::Enum::kMostCreative);
+  }
+  NOTREACHED();
+}
+
 Vector<mojom::blink::AILanguageCodePtr> ToMojoLanguageCodes(
     const Vector<String>& language_codes) {
   Vector<mojom::blink::AILanguageCodePtr> result;

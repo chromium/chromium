@@ -50,6 +50,15 @@ class AIMetrics {
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/ai/enums.xml:LanguageModelInputRole)
 
+  // LINT.IfChange(LanguageModelCreateOptionsType)
+  enum class LanguageModelCreateOptionsType {
+    kNoParams = 0,
+    kRawParams = 1,
+    kSamplingMode = 2,
+    kMaxValue = kSamplingMode,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/ai/enums.xml:LanguageModelCreateOptionsType)
+
   static std::string GetAIAPIUsageMetricName(AISessionType session_type);
   static std::string GetAvailabilityMetricName(AISessionType session_type);
   static std::string GetAISessionRequestSizeMetricName(

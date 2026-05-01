@@ -117,6 +117,36 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="AI.LanguageModel.APIUsage.{LanguageModelFunctionName}.OptionsType"
+    enum="LanguageModelCreateOptionsType" expires_after="2027-03-16">
+  <owner>iahouma@google.com</owner>
+  <owner>ohjerry@google.com</owner>
+  <owner>chrome-chia-dev@google.com</owner>
+  <owner>src/chrome/browser/ai/OWNERS</owner>
+  <summary>
+    This is recorded each time when the LanguageModel `create` or `availability`
+    function is invoked. It can be used to measure whether no parameters, raw
+    parameters, or categorical presets were used.
+  </summary>
+  <token key="LanguageModelFunctionName" variants="LanguageModelFunctionName"/>
+</histogram>
+
+<histogram
+    name="AI.LanguageModel.APIUsage.{LanguageModelFunctionName}.SamplingMode"
+    enum="AILanguageModelSamplingMode" expires_after="2027-03-16">
+  <owner>iahouma@google.com</owner>
+  <owner>ohjerry@google.com</owner>
+  <owner>chrome-chia-dev@google.com</owner>
+  <owner>src/chrome/browser/ai/OWNERS</owner>
+  <summary>
+    This is recorded each time when the LanguageModel `create` or `availability`
+    function is invoked with a categorical preset. It can be used to measure the
+    usage of specific sampling modes.
+  </summary>
+  <token key="LanguageModelFunctionName" variants="LanguageModelFunctionName"/>
+</histogram>
+
+<histogram
     name="AI.LanguageModel.APIUsage.{LanguageModelFunctionName}.TemperatureX1000"
     units="tempX1000" expires_after="2027-03-16">
   <owner>iahouma@google.com</owner>

@@ -6031,6 +6031,7 @@ interface LanguageModel : EventTarget
     getter contextUsage
     getter contextWindow
     getter oncontextoverflow
+    getter samplingMode
     getter temperature
     getter topK
     method append

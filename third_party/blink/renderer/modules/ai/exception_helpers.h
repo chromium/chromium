@@ -21,6 +21,7 @@ extern const char kExceptionMessageSessionDestroyed[];
 extern const char kExceptionMessageInvalidTemperatureAndTopKFormat[];
 extern const char kExceptionMessageInvalidTopK[];
 extern const char kExceptionMessageInvalidTemperature[];
+extern const char kExceptionMessageSamplingModeAndParamsConflict[];
 extern const char kExceptionMessageUnableToCreateSession[];
 extern const char kExceptionMessageUnableToCloneSession[];
 extern const char kExceptionMessageUnableToCalculateUsage[];

@@ -26,6 +26,18 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<!-- LINT.IfChange(AILanguageModelSamplingMode) -->
+
+<enum name="AILanguageModelSamplingMode">
+  <int value="0" label="MostPredictable"/>
+  <int value="1" label="Predictable"/>
+  <int value="2" label="Balanced"/>
+  <int value="3" label="Creative"/>
+  <int value="4" label="MostCreative"/>
+</enum>
+
+<!-- LINT.ThenChange(//third_party/blink/public/mojom/ai/ai_language_model.mojom:AILanguageModelSamplingMode) -->
+
 <!-- LINT.IfChange(AIModelStreamingResponseStatus) -->
 
 <enum name="AIModelStreamingResponseStatus">
@@ -99,6 +111,16 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/renderer/modules/ai/availability.h:Availability) -->
+
+<!-- LINT.IfChange(LanguageModelCreateOptionsType) -->
+
+<enum name="LanguageModelCreateOptionsType">
+  <int value="0" label="NoParams"/>
+  <int value="1" label="RawParams"/>
+  <int value="2" label="SamplingMode"/>
+</enum>
+
+<!-- LINT.ThenChange(//third_party/blink/renderer/modules/ai/ai_metrics.h:LanguageModelCreateOptionsType) -->
 
 <!-- LINT.IfChange(LanguageModelInputRole) -->
 

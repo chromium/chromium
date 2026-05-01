@@ -37,6 +37,8 @@ enum LanguageModelMessageRole { "system", "user", "assistant" };
 enum LanguageModelMessageType { "text", "image", "audio", "tool-call", "tool-response" };
 // LINT.ThenChange(//third_party/blink/renderer/modules/ai/ai_metrics.h:LanguageModelInputType)
 
+enum LanguageModelSamplingMode { "most-predictable", "predictable", "balanced", "creative", "most-creative" };
+
 typedef (
   ImageBitmapSource
   or AudioBuffer
@@ -138,6 +140,8 @@ dictionary LanguageModelCreateCoreOptions {
   // They are unrestricted double so as to allow +Infinity without failing.
   [RuntimeEnabled=AIPromptAPILegacyParams] unrestricted double topK;
   [RuntimeEnabled=AIPromptAPILegacyParams] unrestricted double temperature;
+
+  [RuntimeEnabled=AIPromptAPIParams] LanguageModelSamplingMode samplingMode;
 
   // The expected types and languages for the session.
   sequence<LanguageModelExpected> expectedInputs;

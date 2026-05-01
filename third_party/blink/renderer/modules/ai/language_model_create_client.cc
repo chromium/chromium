@@ -218,7 +218,8 @@ ValidationResult ValidateAndConvertToolDeclarations(
 LanguageModelCreateClient::LanguageModelCreateClient(
     ScriptPromiseResolver<LanguageModel>* resolver,
     LanguageModelCreateOptions* options,
-    mojom::blink::AILanguageModelSamplingParamsPtr resolved_sampling_params)
+    mojom::blink::AILanguageModelSamplingParamsPtr resolved_sampling_params,
+    std::optional<mojom::blink::AILanguageModelSamplingMode> sampling_mode)
     : ExecutionContextClient(
           ExecutionContext::From(resolver->GetScriptState())),
       AIContextObserver(resolver->GetScriptState(),
@@ -228,6 +229,7 @@ LanguageModelCreateClient::LanguageModelCreateClient(
       receiver_(this, GetExecutionContext()),
       options_(options),
       resolved_sampling_params_(std::move(resolved_sampling_params)),
+      sampling_mode_(sampling_mode),
       task_runner_(
           GetExecutionContext()->GetTaskRunner(TaskType::kInternalDefault)) {
   HeapMojoRemote<mojom::blink::AIManager>& ai_manager_remote =
@@ -292,6 +294,7 @@ void LanguageModelCreateClient::Create(
   // TODO(crbug.com/476192657): Process initialPrompts after getting real info.
   auto info = blink::mojom::blink::AILanguageModelInstanceInfo::New();
   info->input_types = {mojom::blink::AILanguageModelPromptType::kText};
+  info->sampling_mode = sampling_mode_;
   Vector<mojom::blink::AILanguageModelExpectedPtr> expected_in, expected_out;
   if (options_->hasExpectedInputs()) {
     expected_in = ToMojoExpectations(options_->expectedInputs());
@@ -457,6 +460,7 @@ void LanguageModelCreateClient::OnResult(
 
   CHECK(info);
   if (GetExecutionContext() && pending_remote) {
+    info->sampling_mode = sampling_mode_;
     GetResolver()->Resolve(MakeGarbageCollected<LanguageModel>(
         GetExecutionContext(), std::move(pending_remote), task_runner_,
         std::move(info)));
@@ -539,7 +543,7 @@ void LanguageModelCreateClient::OnInitialPromptsResolved(
       mojom::blink::AILanguageModelCreateOptions::New(
           resolved_sampling_params_.Clone(), std::move(initial_prompts),
           std::move(expected_inputs), std::move(expected_outputs),
-          std::move(converted_tools_)));
+          std::move(converted_tools_), sampling_mode_));
 }
 
 void LanguageModelCreateClient::OnInitialPromptsRejected(

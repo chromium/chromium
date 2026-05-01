@@ -19,12 +19,14 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_create_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_message_role.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_prompt_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_sampling_mode.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_languagemodelmessagecontentsequence_string.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
+#include "third_party/blink/renderer/modules/ai/ai_utils.h"
 #include "third_party/blink/renderer/modules/ai/language_model_params.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -100,6 +102,9 @@ class MODULES_EXPORT LanguageModel final : public EventTarget,
   double inputUsage() const { return info_->input_usage; }
   uint32_t topK() const { return info_->sampling_params->top_k; }
   float temperature() const { return info_->sampling_params->temperature; }
+  std::optional<V8LanguageModelSamplingMode> samplingMode() const {
+    return ConvertSamplingModeToV8(info_->sampling_mode);
+  }
 
   ScriptPromise<LanguageModel> clone(ScriptState* script_state,
                                      const LanguageModelCloneOptions* options,

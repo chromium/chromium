@@ -79,6 +79,21 @@ constexpr float kDefaultMaxTemperature = 2.0f;
 constexpr uint32_t kMinTopK = 1;
 constexpr float kMinTemperature = 0.0f;
 
+constexpr float kMostPredictableTemperature = 0.0f;
+constexpr uint32_t kMostPredictableTopK = 1;
+
+constexpr float kPredictableTemperature = 0.2f;
+constexpr uint32_t kPredictableTopK = 2;
+
+constexpr float kBalancedTemperature = 1.0f;
+constexpr uint32_t kBalancedTopK = 3;
+
+constexpr float kCreativeTemperature = 1.1f;
+constexpr uint32_t kCreativeTopK = 10;
+
+constexpr float kMostCreativeTemperature = 1.2f;
+constexpr uint32_t kMostCreativeTopK = 25;
+
 const char kUnsupportedLanguageError[] =
     "Unsupported %s API languages were specified, and the request was aborted. "
     "API calls must only specify supported languages to ensure successful "
@@ -600,17 +615,46 @@ void AIManager::CreateLanguageModelInternal(
   blink::mojom::AILanguageModelSamplingParamsPtr sampling_params =
       std::move(options->sampling_params);
   auto params = on_device_model::mojom::SessionParams::New();
-  if (sampling_params) {
-    params->top_k = std::min(std::max(kMinTopK, sampling_params->top_k),
-                             language_model_params->max_sampling_params->top_k);
-    params->temperature =
-        std::min(std::max(kMinTemperature, sampling_params->temperature),
-                 language_model_params->max_sampling_params->temperature);
+
+  // TODO(crbug.com/502214118): Get values from model-specific configs.
+  if (options->sampling_mode.has_value()) {
+    switch (options->sampling_mode.value()) {
+      case blink::mojom::AILanguageModelSamplingMode::kMostPredictable:
+        params->temperature = kMostPredictableTemperature;
+        params->top_k = kMostPredictableTopK;
+        break;
+      case blink::mojom::AILanguageModelSamplingMode::kPredictable:
+        params->temperature = kPredictableTemperature;
+        params->top_k = kPredictableTopK;
+        break;
+      case blink::mojom::AILanguageModelSamplingMode::kBalanced:
+        params->temperature = kBalancedTemperature;
+        params->top_k = kBalancedTopK;
+        break;
+      case blink::mojom::AILanguageModelSamplingMode::kCreative:
+        params->temperature = kCreativeTemperature;
+        params->top_k = kCreativeTopK;
+        break;
+      case blink::mojom::AILanguageModelSamplingMode::kMostCreative:
+        params->temperature = kMostCreativeTemperature;
+        params->top_k = kMostCreativeTopK;
+        break;
+    }
+  } else if (sampling_params) {
+    params->temperature = sampling_params->temperature;
+    params->top_k = sampling_params->top_k;
   } else {
-    params->top_k = language_model_params->default_sampling_params->top_k;
     params->temperature =
         language_model_params->default_sampling_params->temperature;
+    params->top_k = language_model_params->default_sampling_params->top_k;
   }
+
+  // Clamp the values against the model's actual capabilities
+  params->top_k = std::min(std::max(kMinTopK, params->top_k),
+                           language_model_params->max_sampling_params->top_k);
+  params->temperature =
+      std::min(std::max(kMinTemperature, params->temperature),
+               language_model_params->max_sampling_params->temperature);
 
   auto* service = OptimizationGuideKeyedServiceFactory::GetForProfile(
       Profile::FromBrowserContext(browser_context_));

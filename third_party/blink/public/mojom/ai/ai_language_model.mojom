@@ -52,6 +52,9 @@ struct AILanguageModelInstanceInfo {
   // Multimodal input format parameters for preprocessing.
   int32? audio_sample_rate_hz;
   int32? audio_channel_count;
+
+  // The sampling mode provided by the caller when creating the instance.
+  AILanguageModelSamplingMode? sampling_mode;
 };
 
 // The role for a given prompt. See LanguageModelPromptRole in IDL.
@@ -68,6 +71,16 @@ enum AILanguageModelPromptType {
   kAudio = 2,
   kToolCall = 3,
   kToolResponse = 4,
+};
+
+// Categorical sampling modes for ongoing parameter control explorations.
+// See LanguageModelSamplingMode in IDL.
+enum AILanguageModelSamplingMode {
+  kMostPredictable = 0,
+  kPredictable = 1,
+  kBalanced = 2,
+  kCreative = 3,
+  kMostCreative = 4,
 };
 
 // The expected data type and languages specified with session creation.
@@ -126,6 +139,7 @@ struct AILanguageModelCreateOptions {
   array<AILanguageModelExpected>? expected_inputs;
   array<AILanguageModelExpected>? expected_outputs;
   array<AILanguageModelToolDeclaration>? tools;
+  AILanguageModelSamplingMode? sampling_mode;
 };
 
 // The client interface that receives an AILanguageModel or errors from an
