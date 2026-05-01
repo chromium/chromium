@@ -187,6 +187,7 @@ class VIEWS_EXPORT EditableCombobox : public View,
 
   // Overridden from ViewObserver:
   void OnViewBlurred(View* observed_view) override;
+  void OnViewPreferredSizeChanged(View* observed_view) override;
 
   // Overridden from views::AnimatingLayoutManager::Observer:
   void OnLayoutIsAnimatingChanged(views::AnimatingLayoutManager* source,
@@ -232,6 +233,8 @@ class VIEWS_EXPORT EditableCombobox : public View,
   bool dropdown_blocked_for_animation_ = false;
 
   base::ScopedObservation<View, ViewObserver> observation_{this};
+  base::ScopedObservation<View, ViewObserver>
+      control_elements_container_observation_{this};
 };
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, EditableCombobox, View)

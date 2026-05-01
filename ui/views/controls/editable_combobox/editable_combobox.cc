@@ -136,6 +136,24 @@ class Arrow : public Button {
 BEGIN_METADATA(Arrow)
 END_METADATA
 
+class ControlElementsContainer final : public BoxLayoutView {
+  METADATA_HEADER(ControlElementsContainer, BoxLayoutView)
+
+ public:
+  ControlElementsContainer() = default;
+  ControlElementsContainer(ControlElementsContainer&) = delete;
+  ControlElementsContainer& operator=(ControlElementsContainer&) = delete;
+  ~ControlElementsContainer() override = default;
+
+ protected:
+  void ChildPreferredSizeChanged(View* child) override {
+    PreferredSizeChanged();
+  }
+};
+
+BEGIN_METADATA(ControlElementsContainer)
+END_METADATA
+
 }  // namespace
 
 std::u16string EditableCombobox::MenuDecorationStrategy::DecorateItemText(
@@ -386,13 +404,15 @@ EditableCombobox::EditableCombobox(
   textfield_->SetFontList(GetFontList());
   views::FocusRing::Get(textfield_)->SetOutsetFocusRingDisabled(true);
 
-  control_elements_container_ = AddChildView(std::make_unique<BoxLayoutView>());
+  control_elements_container_ =
+      AddChildView(std::make_unique<ControlElementsContainer>());
   control_elements_container_->SetInsideBorderInsets(
       gfx::Insets::TLBR(kEditableComboboxControlsContainerInsets, 0,
                         kEditableComboboxControlsContainerInsets,
                         kEditableComboboxControlsContainerInsets));
   control_elements_container_->SetBetweenChildSpacing(
       kComboboxArrowPaddingWidth);
+  control_elements_container_observation_.Observe(control_elements_container_);
   if (display_arrow) {
     arrow_ = AddControlElement(std::make_unique<Arrow>(base::BindRepeating(
         &EditableCombobox::ArrowButtonPressed, base::Unretained(this))));
@@ -504,6 +524,15 @@ bool EditableCombobox::HandleKeyEvent(Textfield* sender,
 
 void EditableCombobox::OnViewBlurred(View* observed_view) {
   CloseMenu();
+}
+
+void EditableCombobox::OnViewPreferredSizeChanged(View* observed_view) {
+  // TODO(crbug.com/498077504): Watch for potential layout loops. Calling
+  // UpdateTextfieldInsets() during preferred size changes may trigger
+  // re-entrant or unnecessary second layouts.
+  if (observed_view == control_elements_container_) {
+    UpdateTextfieldInsets();
+  }
 }
 
 void EditableCombobox::OnLayoutIsAnimatingChanged(

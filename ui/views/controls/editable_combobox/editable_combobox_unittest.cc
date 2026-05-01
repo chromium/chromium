@@ -109,6 +109,15 @@ class EditableComboboxTest : public ViewsTestBase {
       bool filter_on_edit,
       bool show_on_empty = true);
 
+  template <typename T>
+  T* AddControlElement(std::unique_ptr<T> view) {
+    return combobox_->AddControlElement(std::move(view));
+  }
+
+  Textfield& GetTextfield();
+
+  BoxLayoutView* GetControlElementsContainer();
+
   // Initializes the widget where the combobox and the dummy control live.
   void InitWidget();
 
@@ -256,6 +265,14 @@ void EditableComboboxTest::InitWidget() {
   event_generator_ =
       std::make_unique<ui::test::EventGenerator>(GetRootWindow(widget_.get()));
   event_generator_->set_target(ui::test::EventGenerator::Target::WINDOW);
+}
+
+Textfield& EditableComboboxTest::GetTextfield() {
+  return combobox_->GetTextfield();
+}
+
+BoxLayoutView* EditableComboboxTest::GetControlElementsContainer() {
+  return combobox_->control_elements_container_.get();
 }
 
 // static
@@ -957,6 +974,30 @@ TEST_F(EditableComboboxTest, AccessibleArrowDefaultActionVerb) {
   data = ui::AXNodeData();
   arrow_button->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.GetDefaultActionVerb(), ax::mojom::DefaultActionVerb::kOpen);
+}
+
+TEST_F(EditableComboboxTest, TextfieldInsets) {
+  InitEditableCombobox();
+  gfx::Insets insets = GetTextfield().GetInsets();
+
+  auto expect_textfiled_insets_width = [&]() -> int {
+    const int textfiled_border_insets_width_no_extra_insets =
+        LayoutProvider::Get()->GetDistanceMetric(
+            DISTANCE_TEXTFIELD_HORIZONTAL_TEXT_PADDING) *
+        2;
+    return textfiled_border_insets_width_no_extra_insets +
+           GetControlElementsContainer()->GetPreferredSize({}).width() - 4;
+  };
+  EXPECT_EQ(insets.width(), expect_textfiled_insets_width());
+
+  auto* view = AddControlElement(std::make_unique<View>());
+  view->SetPreferredSize(gfx::Size(100, 0));
+
+  gfx::Insets insets_after = GetTextfield().GetInsets();
+  // view  [ kComboboxArrowPaddingWidth(4) ] Arrow
+  EXPECT_EQ(insets_after.width() - 4,
+            insets.width() + view->GetPreferredSize({}).width());
+  EXPECT_EQ(insets_after.width(), expect_textfiled_insets_width());
 }
 
 using EditableComboboxDefaultTest = ViewsTestBase;
