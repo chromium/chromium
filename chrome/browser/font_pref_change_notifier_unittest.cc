@@ -79,10 +79,11 @@ TEST(FontPrefChangeNotifier, Registrars) {
   // Only Registrar 0 should see changes now.
   service->SetString(font3, "3");
   EXPECT_EQ(3u, fonts0.size());
-  EXPECT_EQ(font3, fonts0.back());
   EXPECT_EQ(2u, fonts1.size());
   EXPECT_EQ(1u, fonts2.size());
   EXPECT_EQ(font3, fonts0.back());
+  EXPECT_EQ(font2, fonts1.back());
+  EXPECT_EQ(font1, fonts2.back());
 
   notifier.reset();
 
