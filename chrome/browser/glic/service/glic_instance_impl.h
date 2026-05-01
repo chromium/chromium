@@ -184,6 +184,7 @@ class GlicInstanceImpl : public GlicInstance,
   base::CallbackListSubscription AddConversationInfoChangedCallback(
       base::RepeatingCallback<void(const mojom::ConversationInfo&)> callback);
   void BindTabForTesting(tabs::TabInterface* tab) override;
+  void CancelTask() override;
 
   // Called exactly once, right before the instance is destroyed.
   using DestructionCallback = base::OnceCallback<void(GlicInstance*)>;

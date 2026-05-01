@@ -896,6 +896,12 @@ void GlicInstanceImpl::BindTabForTesting(tabs::TabInterface* tab) {
   BindTab(tab, GlicPinTrigger::kContextMenu, true);
 }
 
+void GlicInstanceImpl::CancelTask() {
+  if (actor_task_manager_) {
+    actor_task_manager_->CancelTask();
+  }
+}
+
 void GlicInstanceImpl::FetchZeroStateSuggestions(
     bool is_first_run,
     std::optional<std::vector<std::string>> supported_tools,

@@ -54,6 +54,7 @@ class MockGlicInstance : public GlicInstance {
               OnPolylinePointsChanged,
               (const std::vector<int>&),
               (override));
+  MOCK_METHOD(void, CancelTask, (), (override));
   MOCK_METHOD(void, BindTabForTesting, (tabs::TabInterface*), (override));
   MOCK_METHOD(Host&, host, (), (override));
 

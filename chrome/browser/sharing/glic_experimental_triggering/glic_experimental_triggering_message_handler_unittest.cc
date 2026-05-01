@@ -71,6 +71,7 @@ class FakeGlicInstance : public glic::GlicInstance {
   void OnSelectionAreasChanged(int count) override {}
   void OnPolylinePointsChanged(const std::vector<int>& counts) override {}
   void BindTabForTesting(tabs::TabInterface* tab) override {}
+  void CancelTask() override {}
 
   glic::InstanceId id_{"test-id"};
   raw_ptr<glic::Host> host_ = nullptr;

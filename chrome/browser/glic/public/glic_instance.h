@@ -115,6 +115,9 @@ class GlicInstance {
   virtual void OnSelectionAreasChanged(int count) = 0;
   virtual void OnPolylinePointsChanged(const std::vector<int>& counts) = 0;
 
+  // Cancels ongoing actuation task if one exists.
+  virtual void CancelTask() = 0;
+
   virtual void BindTabForTesting(tabs::TabInterface* tab) = 0;
 };
 
