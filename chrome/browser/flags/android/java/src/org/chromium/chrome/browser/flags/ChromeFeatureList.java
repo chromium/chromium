@@ -1562,8 +1562,6 @@ public abstract class ChromeFeatureList {
             newBooleanCachedFeatureParam(ANDROID_BOTTOM_BAR, "keep_app_menu_in_toolbar", false);
     public static final BooleanCachedFeatureParam sAndroidBottomBarKeepHomeButtonInToolbar =
             newBooleanCachedFeatureParam(ANDROID_BOTTOM_BAR, "keep_home_button_in_toolbar", false);
-    public static final BooleanCachedFeatureParam sAndroidBottomBarRemoveHomeButton =
-            newBooleanCachedFeatureParam(ANDROID_BOTTOM_BAR, "remove_home_button", false);
     public static final BooleanCachedFeatureParam sAndroidBottomBarShowBottomBarOnGts =
             newBooleanCachedFeatureParam(ANDROID_BOTTOM_BAR, "show_bottom_bar_on_gts", false);
 
@@ -1892,7 +1890,6 @@ public abstract class ChromeFeatureList {
                     sAndroidBottomBarDisableOnNtp,
                     sAndroidBottomBarKeepAppMenuInToolbar,
                     sAndroidBottomBarKeepHomeButtonInToolbar,
-                    sAndroidBottomBarRemoveHomeButton,
                     sAndroidBottomBarShowBottomBarOnGts,
                     sAndroidBottomToolbarV2ForceBottomForFocusedOmnibox,
                     sAndroidBottomToolbarV2ReverseOrderSuggestionsList,

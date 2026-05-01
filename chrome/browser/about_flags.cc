@@ -4053,29 +4053,29 @@ const FeatureEntry::FeatureVariation kAndroidHubSearchTabGroupsVariations[] = {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
-const FeatureEntry::FeatureParam kAndroidBottomBarShowBottomBarOnGtsParam[] = {
-    {"show_bottom_bar_on_gts", "true"}};
+const FeatureEntry::FeatureParam kAndroidBottomBarDisableOnNtpParam[] = {
+    {"disable_on_ntp", "false"}};
 const FeatureEntry::FeatureParam kAndroidBottomBarKeepAppMenuInToolbarParam[] =
     {{"keep_app_menu_in_toolbar", "true"}};
 const FeatureEntry::FeatureParam
-    kAndroidBottomBarKeepAppMenuInToolbarWithGtsParam[] = {
+    kAndroidBottomBarKeepAppMenuInToolbarWithNtpParam[] = {
         {"keep_app_menu_in_toolbar", "true"},
-        {"show_bottom_bar_on_gts", "true"}};
+        {"disable_on_ntp", "false"}};
 const FeatureEntry::FeatureParam kAndroidBottomBarKeepBothInToolbarParam[] = {
     {"keep_app_menu_in_toolbar", "true"},
     {"keep_home_button_in_toolbar", "true"}};
 const FeatureEntry::FeatureParam
-    kAndroidBottomBarKeepBothInToolbarWithGtsParam[] = {
+    kAndroidBottomBarKeepBothInToolbarWithNtpParam[] = {
         {"keep_app_menu_in_toolbar", "true"},
         {"keep_home_button_in_toolbar", "true"},
-        {"show_bottom_bar_on_gts", "true"}};
+        {"disable_on_ntp", "false"}};
 const FeatureEntry::FeatureVariation kAndroidBottomBarVariations[] = {
-    {"- 1A with GTS", kAndroidBottomBarShowBottomBarOnGtsParam, nullptr},
+    {"- 1A with NTP", kAndroidBottomBarDisableOnNtpParam, nullptr},
     {"- 1B", kAndroidBottomBarKeepAppMenuInToolbarParam, nullptr},
-    {"- 1B with GTS", kAndroidBottomBarKeepAppMenuInToolbarWithGtsParam,
+    {"- 1B with NTP", kAndroidBottomBarKeepAppMenuInToolbarWithNtpParam,
      nullptr},
     {"- 1C", kAndroidBottomBarKeepBothInToolbarParam, nullptr},
-    {"- 1C with GTS", kAndroidBottomBarKeepBothInToolbarWithGtsParam, nullptr}};
+    {"- 1C with NTP", kAndroidBottomBarKeepBothInToolbarWithNtpParam, nullptr}};
 
 const FeatureEntry::FeatureParam kAndroidTipsNotificationsTrustAndSafety[] = {
     {"trust_and_safety", "true"}};

@@ -32,7 +32,6 @@ public final class ToolbarVariationUtils {
 
     /** Whether the home button should be at the start of the toolbar. */
     public static boolean shouldHomeButtonBeAtStartOfToolbar() {
-        if (ChromeFeatureList.sAndroidBottomBarRemoveHomeButton.getValue()) return false;
         // Arm 1C has home button at start of toolbar.
         return ChromeFeatureList.sAndroidBottomBarKeepHomeButtonInToolbar.getValue();
     }

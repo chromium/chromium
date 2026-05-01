@@ -64,15 +64,6 @@ public class BottomBarConfigUtilsUnitTest {
     }
 
     @Test
-    @EnableFeatures({
-        ChromeFeatureList.ANDROID_BOTTOM_BAR + ":keep_home_button_in_toolbar/false",
-        ChromeFeatureList.ANDROID_BOTTOM_BAR + ":remove_home_button/true"
-    })
-    public void testShouldIncludeHomeButtonIfEnabled_RemoveHomeButtonTrue() {
-        assertFalse(BottomBarConfigUtils.shouldIncludeHomeButtonIfEnabled());
-    }
-
-    @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":keep_app_menu_in_toolbar/false")
     public void testShouldIncludeAppMenuButton_FalseParam() {
         assertTrue(BottomBarConfigUtils.shouldIncludeAppMenuButton());
