@@ -387,6 +387,39 @@ bool WebFrameImpl::ExecuteJavaScriptInContentWorld(
   return true;
 }
 
+bool WebFrameImpl::ExecuteAsyncJavaScript(
+    const std::u16string& script,
+    const base::DictValue& parameters,
+    ExecuteJavaScriptCallbackWithError callback) {
+  JavaScriptContentWorld* content_world =
+      JavaScriptFeatureManager::GetContentWorldForBrowserState(
+          content_world_, GetBrowserState());
+
+  return ExecuteAsyncJavaScriptInContentWorld(script, parameters, content_world,
+                                              std::move(callback));
+}
+
+bool WebFrameImpl::ExecuteAsyncJavaScriptInContentWorld(
+    const std::u16string& script,
+    const base::DictValue& parameters,
+    JavaScriptContentWorld* content_world,
+    ExecuteJavaScriptCallbackWithError callback) {
+  DCHECK(frame_info_);
+
+  NSString* ns_script = base::SysUTF16ToNSString(script);
+
+  id ns_dict = web::NSDictionaryFromValue(parameters);
+
+  auto completion = base::BindOnce(
+      &OnJavaScriptExecutedInContentWorld, web_state_->GetWeakPtr(), ns_script,
+      security_origin_, is_main_frame_, std::move(callback));
+
+  web::ExecuteAsyncJavaScript(
+      frame_info_.webView, content_world->GetWKContentWorld(), frame_info_,
+      ns_script, ns_dict, base::CallbackToBlock(std::move(completion)));
+  return true;
+}
+
 ExecuteJavaScriptCallbackWithError
 WebFrameImpl::ExecuteJavaScriptCallbackAdapter(
     base::OnceCallback<void(const base::Value*)> callback) {

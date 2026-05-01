@@ -91,6 +91,16 @@ class WebFrame : public base::SupportsUserData {
       const std::u16string& script,
       ExecuteJavaScriptCallbackWithError callback) = 0;
 
+  // Executes the given async `script` with `parameters` and returns whether
+  // the script was run. `parameters` is a dictionary of arguments to pass
+  // to the function. The keys become the parameter names in the function.
+  // For more information about WebKit API we call internally, see:
+  // https://developer.apple.com/documentation/webkit/wkwebview/callasyncjavascript(_:arguments:in:in:completionhandler:)
+  virtual bool ExecuteAsyncJavaScript(
+      const std::u16string& script,
+      const base::DictValue& parameters,
+      ExecuteJavaScriptCallbackWithError callback) = 0;
+
   // Returns the WebFrameInternal instance for this object.
   virtual WebFrameInternal* GetWebFrameInternal() = 0;
 

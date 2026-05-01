@@ -51,6 +51,14 @@ class WebFrameInternal {
       const std::u16string& script,
       JavaScriptContentWorld* content_world,
       ExecuteJavaScriptCallbackWithError callback) = 0;
+
+  // Executes the given async `script` in `content_world` with `parameters`
+  // and returns whether the script was run.
+  virtual bool ExecuteAsyncJavaScriptInContentWorld(
+      const std::u16string& script,
+      const base::DictValue& parameters,
+      JavaScriptContentWorld* content_world,
+      ExecuteJavaScriptCallbackWithError callback) = 0;
 };
 
 }  // namespace web

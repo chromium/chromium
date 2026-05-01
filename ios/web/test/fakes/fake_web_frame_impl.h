@@ -46,6 +46,10 @@ class FakeWebFrameImpl : public FakeWebFrame, public WebFrameInternal {
   bool ExecuteJavaScript(
       const std::u16string& script,
       base::OnceCallback<void(const base::Value*, NSError*)> callback) override;
+  bool ExecuteAsyncJavaScript(
+      const std::u16string& script,
+      const base::DictValue& parameters,
+      ExecuteJavaScriptCallbackWithError callback) override;
   base::WeakPtr<WebFrame> AsWeakPtr() override;
 
   // FakeWebFrame:
@@ -85,6 +89,12 @@ class FakeWebFrameImpl : public FakeWebFrame, public WebFrameInternal {
   // AddResultForExecutedJs() or null if no such result has been added.
   bool ExecuteJavaScriptInContentWorld(
       const std::u16string& script,
+      JavaScriptContentWorld* content_world,
+      ExecuteJavaScriptCallbackWithError callback) override;
+
+  bool ExecuteAsyncJavaScriptInContentWorld(
+      const std::u16string& script,
+      const base::DictValue& parameters,
       JavaScriptContentWorld* content_world,
       ExecuteJavaScriptCallbackWithError callback) override;
 

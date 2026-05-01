@@ -195,4 +195,86 @@ TEST_F(WebFrameImplTest, ExecuteJavaScriptWithCallback) {
                                    })));
 }
 
+// Tests that the WebFrame can execute asynchronous JavaScript.
+TEST_F(WebFrameImplTest, ExecuteAsyncJavaScript) {
+  __block NSString* received_script = nil;
+  __block NSDictionary* received_arguments = nil;
+  __block WKContentWorld* received_world = nil;
+
+  OCMStub([mock_web_view_
+      callAsyncJavaScript:AssignValueToVariable(received_script)
+                arguments:AssignValueToVariable(received_arguments)
+                  inFrame:OCMOCK_ANY
+           inContentWorld:AssignValueToVariable(received_world)
+        completionHandler:OCMOCK_ANY]);
+
+  base::DictValue parameters;
+  parameters.Set("value", "10");
+
+  NSString* script = @"return Promise.resolve('10');";
+
+  WebFrameImpl web_frame(mock_frame_info_, kFrameId,
+                         /*is_main_frame=*/true, security_origin_,
+                         &fake_web_state_, ContentWorld::kPageContentWorld);
+  EXPECT_TRUE(web_frame.ExecuteAsyncJavaScriptInContentWorld(
+      base::SysNSStringToUTF16(script), parameters,
+      JavaScriptFeatureManager::GetContentWorldForBrowserState(
+          ContentWorld::kPageContentWorld, GetBrowserState()),
+      base::BindOnce(^(const base::Value* value, NSError* error){
+      })));
+
+  EXPECT_NSEQ(script, received_script);
+  EXPECT_NSEQ(WKContentWorld.pageWorld, received_world);
+  ASSERT_TRUE(received_arguments);
+  EXPECT_NSEQ(@"10", received_arguments[@"value"]);
+}
+
+// Tests that a rejected Promise in JavaScript results in an NSError in the
+// callback.
+TEST_F(WebFrameImplTest, ExecuteAsyncJavaScriptHandlesRejection) {
+  __block bool called = false;
+  __block NSError* received_error = nil;
+
+  OCMStub([mock_web_view_ callAsyncJavaScript:OCMOCK_ANY
+                                    arguments:OCMOCK_ANY
+                                      inFrame:OCMOCK_ANY
+                               inContentWorld:OCMOCK_ANY
+                            completionHandler:OCMOCK_ANY])
+      .andDo(^(NSInvocation* invocation) {
+        void (^completionHandler)(id, NSError*);
+        [invocation getArgument:&completionHandler atIndex:6];
+        NSError* error =
+            [NSError errorWithDomain:WKErrorDomain
+                                code:WKErrorJavaScriptExceptionOccurred
+                            userInfo:@{
+                              @"WKJavaScriptExceptionMessage" : @"Async Failure"
+                            }];
+        completionHandler(nil, error);
+      });
+
+  NSString* script = @"return Promise.reject(new Error('Async Failure'));";
+
+  WebFrameImpl web_frame(mock_frame_info_, kFrameId,
+                         /*is_main_frame=*/true, security_origin_,
+                         &fake_web_state_, ContentWorld::kPageContentWorld);
+
+  base::DictValue empty_params;
+  EXPECT_TRUE(web_frame.ExecuteAsyncJavaScriptInContentWorld(
+      base::SysNSStringToUTF16(script), empty_params,
+      JavaScriptFeatureManager::GetContentWorldForBrowserState(
+          ContentWorld::kPageContentWorld, GetBrowserState()),
+      base::BindOnce(^(const base::Value* value, NSError* error) {
+        called = true;
+        received_error = error;
+      })));
+
+  EXPECT_TRUE(called);
+  EXPECT_TRUE(received_error);
+  EXPECT_NSEQ(received_error.domain, WKErrorDomain);
+  EXPECT_EQ(received_error.code, WKErrorJavaScriptExceptionOccurred);
+  NSString* exception_message =
+      received_error.userInfo[@"WKJavaScriptExceptionMessage"];
+  EXPECT_TRUE([exception_message containsString:@"Async Failure"]);
+}
+
 }  // namespace web

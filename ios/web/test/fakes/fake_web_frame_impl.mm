@@ -264,6 +264,35 @@ bool FakeWebFrameImpl::ExecuteJavaScriptInContentWorld(
   return ExecuteJavaScript(script, std::move(callback));
 }
 
+bool FakeWebFrameImpl::ExecuteAsyncJavaScript(
+    const std::u16string& script,
+    const base::DictValue& parameters,
+    ExecuteJavaScriptCallbackWithError callback) {
+  return ExecuteAsyncJavaScriptInContentWorld(script, parameters, nullptr,
+                                              std::move(callback));
+}
+
+bool FakeWebFrameImpl::ExecuteAsyncJavaScriptInContentWorld(
+    const std::u16string& script,
+    const base::DictValue& parameters,
+    JavaScriptContentWorld* content_world,
+    ExecuteJavaScriptCallbackWithError callback) {
+  java_script_calls_.push_back(script);
+
+  const base::Value* result = executed_js_result_map_[script];
+  NSError* error = nil;
+  if (!result) {
+    error = [[NSError alloc] initWithDomain:@"" code:0 userInfo:nil];
+  }
+
+  if (!callback.is_null()) {
+    GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), result, error));
+  }
+
+  return !error;
+}
+
 void FakeWebFrameImpl::AddJsResultForFunctionCall(
     base::Value* js_result,
     const std::string& function_name) {

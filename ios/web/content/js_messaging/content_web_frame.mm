@@ -165,4 +165,21 @@ void ContentWebFrame::WebStateDestroyed(web::WebState* web_state) {
   DetachFromWebState();
 }
 
+bool ContentWebFrame::ExecuteAsyncJavaScript(
+    const std::u16string& script,
+    const base::DictValue& parameters,
+    ExecuteJavaScriptCallbackWithError callback) {
+  // TODO(crbug.com/507056709): Implement async JavaScript execution.
+  return false;
+}
+
+bool ContentWebFrame::ExecuteAsyncJavaScriptInContentWorld(
+    const std::u16string& script,
+    const base::DictValue& parameters,
+    JavaScriptContentWorld* content_world,
+    ExecuteJavaScriptCallbackWithError callback) {
+  // TODO(crbug.com/507056709): Implement async JavaScript execution.
+  return false;
+}
+
 }  // namespace web

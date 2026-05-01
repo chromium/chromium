@@ -262,6 +262,62 @@ TEST_P(WebFrameImplContentWorldIntTest,
   }));
 }
 
+// Tests that the expected result is received from executing an async script via
+// `ExecuteAsyncJavaScript` on the main frame in each content world.
+TEST_P(WebFrameImplContentWorldIntTest, ExecuteAsyncJavaScriptMainFrame) {
+  ASSERT_TRUE(LoadHtml("<p>"));
+
+  web::WebFrameImpl* main_frame_impl = main_frame();
+  ASSERT_TRUE(main_frame_impl);
+
+  __block bool called = false;
+  auto block = ^(const base::Value* value, NSError* error) {
+    ASSERT_FALSE(error);
+    ASSERT_TRUE(value->is_string());
+    EXPECT_EQ(value->GetString(), "resolved_value");
+    called = true;
+  };
+
+  std::u16string script = u"return new Promise(resolve => {"
+                          u"  setTimeout(() => resolve('resolved_value'), 100);"
+                          u"});";
+
+  base::DictValue empty_params;
+  EXPECT_TRUE(main_frame_impl->ExecuteAsyncJavaScript(script, empty_params,
+                                                      base::BindOnce(block)));
+
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
+    return called;
+  }));
+}
+
+// Tests that parameters are correctly passed to `ExecuteAsyncJavaScript`.
+TEST_P(WebFrameImplContentWorldIntTest, ExecuteAsyncJavaScriptWithParameters) {
+  ASSERT_TRUE(LoadHtml("<p>"));
+
+  web::WebFrameImpl* main_frame_impl = main_frame();
+  ASSERT_TRUE(main_frame_impl);
+
+  __block bool called = false;
+  auto block = ^(const base::Value* value, NSError* error) {
+    ASSERT_FALSE(error);
+    ASSERT_TRUE(value->is_string());
+    EXPECT_EQ(value->GetString(), "parameter_value");
+    called = true;
+  };
+
+  std::u16string script = u"return test_param;";
+  base::DictValue parameters;
+  parameters.Set("test_param", "parameter_value");
+
+  EXPECT_TRUE(main_frame_impl->ExecuteAsyncJavaScript(script, parameters,
+                                                      base::BindOnce(block)));
+
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
+    return called;
+  }));
+}
+
 INSTANTIATE_TEST_SUITE_P(/*no prefix*/,
                          WebFrameImplContentWorldIntTest,
                          ::testing::Values(ContentWorld::kIsolatedWorld,
