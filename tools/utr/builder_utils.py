@@ -48,6 +48,12 @@ def guess_builder(build_dir):
   else:
     target_os = gn_args.get('target_os')
     target_cpu = gn_args.get('target_cpu')
+    if not target_os or not target_cpu:
+      # If an args.gn file is present but does not explicitly specify target_os
+      # or target_cpu, default to the host machine's dimensions.
+      fallback_os, fallback_cpu = get_host_fallback_args()
+      target_os = target_os or fallback_os
+      target_cpu = target_cpu or fallback_cpu
 
   mapping = {
       ('linux', 'x64'): ('ci', 'Linux Tests'),
