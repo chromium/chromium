@@ -20,11 +20,16 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "content/public/test/browser_task_environment.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
+namespace {
 
 using content::BrowserThread;
 using extensions::Extension;
@@ -41,11 +46,12 @@ class ExtensionSpecialStoragePolicyTest : public testing::Test {
  protected:
   class PolicyChangeObserver : public SpecialStoragePolicy::Observer {
    public:
-    PolicyChangeObserver()
-        : expected_type_(NOTIFICATION_TYPE_NONE), expected_change_flags_(0) {}
+    PolicyChangeObserver() = default;
 
     PolicyChangeObserver(const PolicyChangeObserver&) = delete;
     PolicyChangeObserver& operator=(const PolicyChangeObserver&) = delete;
+
+    ~PolicyChangeObserver() override = default;
 
     void OnGranted(const url::Origin& origin, int change_flags) override {
       EXPECT_EQ(expected_type_, NOTIFICATION_TYPE_GRANT);
@@ -88,10 +94,10 @@ class ExtensionSpecialStoragePolicyTest : public testing::Test {
       NOTIFICATION_TYPE_GRANT,
       NOTIFICATION_TYPE_REVOKE,
       NOTIFICATION_TYPE_CLEAR,
-    } expected_type_;
+    } expected_type_ = NOTIFICATION_TYPE_NONE;
 
     GURL expected_origin_;
-    int expected_change_flags_;
+    int expected_change_flags_ = 0;
   };
 
   void SetUp() override {
@@ -430,3 +436,5 @@ TEST_F(ExtensionSpecialStoragePolicyTest, NotificationTest) {
 
   policy_->RemoveObserver(&observer);
 }
+
+}  // namespace
