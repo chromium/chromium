@@ -131,7 +131,6 @@ chrome::cros::reporting::proto::UnscannedFileEvent GetUnscannedFileEvent(
     const std::string& profile_identifier,
     const std::string& profile_username,
     const int64_t content_size,
-    const ReferrerChain& referrer_chain,
     EventResult event_result);
 
 chrome::cros::reporting::proto::DlpSensitiveDataEvent GetDlpSensitiveDataEvent(

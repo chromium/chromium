@@ -112,7 +112,6 @@ class ReportingEventRouter : public KeyedService {
                             const std::string& reason,
                             const std::string& content_transfer_method,
                             const int64_t content_size,
-                            const ReferrerChain& referrer_chain,
                             EventResult event_result);
 
   struct SensitiveDataEvent {
