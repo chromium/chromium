@@ -17332,6 +17332,21 @@
             ]
         }
     ],
+    "OpenDownloadInFilesAppIfNoHandlerFound": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "OpenDownloadInFilesAppIfNoHandlerFound"
+                    ]
+                }
+            ]
+        }
+    ],
     "OptGuideBatchSRPTuning": [
         {
             "platforms": [
