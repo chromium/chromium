@@ -35,13 +35,7 @@ void ToolbarGlicActorTaskIcon::AddedToWidget() {
   split_rounded_edge_radius_ = GetRoundedCornerRadius();
   SetLeftRightCornerRadii(kSplitLeftEdgeRadius, GetSplitRoundedEdgeRadius());
 
-  bool show_before_avatar =
-      base::FeatureList::IsEnabled(features::kGlicToolbarButtonLocation) &&
-      features::kGlicToolbarButtonLocationParam.Get() ==
-          features::GlicToolbarButtonLocation::kLeftOfProfileChip;
-  SetDefaultBackgroundColorId(show_before_avatar
-                                  ? kColorToolbar
-                                  : kColorToolbarGlicButtonBackgroundDefault);
+  SetDefaultBackgroundColorId(kColorToolbarGlicButtonBackgroundDefault);
   UpdateIconsWithStandardColors(
       glic::GlicVectorIconManager::GetVectorIcon(IDR_ACTOR_AUTO_BROWSE_ICON));
   GlicActorTaskIcon<ToolbarButton>::AddedToWidget();
@@ -89,9 +83,16 @@ void ToolbarGlicActorTaskIcon::SetLeftRightCornerRadii(int left, int right) {
 
 float ToolbarGlicActorTaskIcon::GetCornerRadiusFor(
     ToolbarButton::Edge edge) const {
-  return edge == ToolbarButton::Edge::kLeft
-             ? left_corner_radius_.value_or(GetRoundedCornerRadius())
-             : GetRoundedCornerRadius();
+  switch (edge) {
+    case ToolbarButton::Edge::kLeft:
+    case ToolbarButton::Edge::kTopLeft:
+    case ToolbarButton::Edge::kBottomLeft:
+      return left_corner_radius_.value_or(GetRoundedCornerRadius());
+    case ToolbarButton::Edge::kRight:
+    case ToolbarButton::Edge::kTopRight:
+    case ToolbarButton::Edge::kBottomRight:
+      return GetRoundedCornerRadius();
+  }
 }
 
 int ToolbarGlicActorTaskIcon::GetSplitRoundedEdgeRadius() {

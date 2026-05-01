@@ -109,9 +109,16 @@ void ToolbarGlicButton::SetLeftRightCornerRadii(int left, int right) {
 }
 
 float ToolbarGlicButton::GetCornerRadiusFor(ToolbarButton::Edge edge) const {
-  return edge == ToolbarButton::Edge::kLeft
-             ? left_corner_radius_.value_or(GetRoundedCornerRadius())
-             : right_corner_radius_.value_or(GetRoundedCornerRadius());
+  switch (edge) {
+    case ToolbarButton::Edge::kLeft:
+    case ToolbarButton::Edge::kTopLeft:
+    case ToolbarButton::Edge::kBottomLeft:
+      return left_corner_radius_.value_or(GetRoundedCornerRadius());
+    case ToolbarButton::Edge::kRight:
+    case ToolbarButton::Edge::kTopRight:
+    case ToolbarButton::Edge::kBottomRight:
+      return right_corner_radius_.value_or(GetRoundedCornerRadius());
+  }
 }
 
 int ToolbarGlicButton::GetSplitRoundedEdgeRadius() {
