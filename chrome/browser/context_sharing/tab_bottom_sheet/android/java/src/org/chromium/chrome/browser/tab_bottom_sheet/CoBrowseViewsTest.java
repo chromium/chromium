@@ -136,12 +136,4 @@ public class CoBrowseViewsTest {
         assertEquals(1, webUiContainer.getChildCount());
         assertEquals(newWebUiView, webUiContainer.getChildAt(0));
     }
-
-    @Test
-    public void testSetIsResizing() {
-        mCoBrowseViews.setIsResizing(true);
-        verify(mWebUi).setIsResizing(true);
-    }
-
-
 }

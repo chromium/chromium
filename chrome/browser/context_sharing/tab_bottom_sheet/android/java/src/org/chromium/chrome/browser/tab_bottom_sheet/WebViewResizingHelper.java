@@ -26,6 +26,12 @@ import org.chromium.ui.animation.AnimationHandler;
 /** Helper class for showing placeholders while resizing the Web View in the Tab Bottom Sheet. */
 @NullMarked
 public class WebViewResizingHelper {
+    /** Token to unlock/release a requested resize. */
+    @FunctionalInterface
+    public interface ResizeLock {
+        void unlock();
+    }
+
     private static final int RESIZING_ANIMATION_DURATION_MS = 150;
 
     private final AnimationHandler mAnimationHandler = new AnimationHandler();
@@ -82,18 +88,12 @@ public class WebViewResizingHelper {
         return mResizingContainer;
     }
 
-    /**
-     * Sets whether the web view is resizing. If true, the placeholder will be shown. If false, the
-     * placeholder will be hidden.
-     */
-    public void setIsResizing(boolean isResizing) {
-        if (mThinWebView == null) return;
+    /** Requests resizing mode and shows the placeholder. */
+    public @Nullable ResizeLock requestResize() {
+        if (mThinWebView == null) return null;
 
-        if (isResizing) {
-            enableResizingMode();
-        } else {
-            disableResizingMode();
-        }
+        enableResizingMode();
+        return this::disableResizingMode;
     }
 
     /** Sets the sheet to flexible height. */

@@ -109,10 +109,6 @@ public class TabBottomSheetWebUi {
         }
     }
 
-    void setIsResizing(boolean isResizing) {
-        mWebViewResizingHelper.setIsResizing(isResizing);
-    }
-
     @Nullable WebContents getWebContents() {
         return mWebContents;
     }

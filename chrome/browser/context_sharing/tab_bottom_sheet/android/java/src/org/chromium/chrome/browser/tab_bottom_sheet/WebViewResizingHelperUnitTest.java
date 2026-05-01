@@ -86,18 +86,18 @@ public class WebViewResizingHelperUnitTest {
     }
 
     @Test
-    public void testSetIsResizing() {
+    public void testRequestResize() {
         mHelper.setThinWebView(mMockThinWebView);
         mView.layout(0, 0, 100, 200);
         FrameLayout container = (FrameLayout) mHelper.getResizingContainer();
         View placeholder = container.getChildAt(0);
 
-        mHelper.setIsResizing(true);
+        WebViewResizingHelper.ResizeLock lock = mHelper.requestResize();
         FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) mView.getLayoutParams();
         assertEquals(200, layoutParams.height);
         assertEquals(View.VISIBLE, placeholder.getVisibility());
 
-        mHelper.setIsResizing(false);
+        lock.unlock();
         assertEquals(ViewGroup.LayoutParams.MATCH_PARENT, layoutParams.height);
         assertEquals(View.VISIBLE, mView.getVisibility());
     }

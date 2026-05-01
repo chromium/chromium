@@ -10,7 +10,9 @@ import android.view.MotionEvent;
 import androidx.annotation.Px;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetWebUiContainer.TouchHandler;
+import org.chromium.chrome.browser.tab_bottom_sheet.WebViewResizingHelper.ResizeLock;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.widget.R;
 import org.chromium.content_public.browser.GestureStateListener;
@@ -31,6 +33,7 @@ public class TabBottomSheetMediator extends GestureStateListener {
 
     private @SheetState int mCurrentSheetState = SheetState.HIDDEN;
     private int mPeekHeight;
+    private @Nullable ResizeLock mResizeLock;
 
     public TabBottomSheetMediator(
             Context context,
@@ -150,8 +153,13 @@ public class TabBottomSheetMediator extends GestureStateListener {
     public void onSheetResizingStatusChanged(boolean isResizing) {
         WebViewResizingHelper helper =
                 mModel.get(TabBottomSheetProperties.WEB_VIEW_RESIZING_HELPER);
-        if (helper != null) {
-            helper.setIsResizing(isResizing);
+        if (helper != null && isResizing) {
+            if (mResizeLock == null) {
+                mResizeLock = helper.requestResize();
+            }
+        } else if (mResizeLock != null) {
+            mResizeLock.unlock();
+            mResizeLock = null;
         }
     }
 

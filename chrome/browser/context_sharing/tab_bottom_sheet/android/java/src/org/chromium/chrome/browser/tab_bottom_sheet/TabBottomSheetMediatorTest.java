@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tab_bottom_sheet;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -29,6 +30,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.context_sharing.R;
+import org.chromium.chrome.browser.tab_bottom_sheet.WebViewResizingHelper.ResizeLock;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.ui.display.DisplayAndroid;
@@ -52,6 +54,7 @@ public class TabBottomSheetMediatorTest {
     @Mock private TabBottomSheetWebUiContainer mView;
     @Mock private ViewParent mParent;
     @Mock private WebViewResizingHelper mWebViewResizingHelper;
+    @Mock private ResizeLock mResizeLock;
 
     @Before
     public void setUp() {
@@ -61,6 +64,7 @@ public class TabBottomSheetMediatorTest {
         when(mView.getContext()).thenReturn(mContext);
         when(mView.getParent()).thenReturn(mParent);
         when(mCoBrowseViews.getWebViewResizingHelper()).thenReturn(mWebViewResizingHelper);
+        when(mWebViewResizingHelper.requestResize()).thenReturn(mResizeLock);
 
         mModel = TabBottomSheetProperties.createDefaultModel(mCoBrowseViews);
         mMediator = new TabBottomSheetMediator(mContext, mModel, mCoBrowseViews, 0.7f, 0.9f);
@@ -278,9 +282,14 @@ public class TabBottomSheetMediatorTest {
     @SmallTest
     public void testOnSheetResizingStatusChanged() {
         mMediator.onSheetResizingStatusChanged(true);
-        verify(mWebViewResizingHelper).setIsResizing(true);
+        verify(mWebViewResizingHelper).requestResize();
+        verify(mResizeLock, never()).unlock();
+
+        mMediator.onSheetResizingStatusChanged(true);
+        verify(mWebViewResizingHelper).requestResize();
+        verify(mResizeLock, never()).unlock();
 
         mMediator.onSheetResizingStatusChanged(false);
-        verify(mWebViewResizingHelper).setIsResizing(false);
+        verify(mResizeLock).unlock();
     }
 }

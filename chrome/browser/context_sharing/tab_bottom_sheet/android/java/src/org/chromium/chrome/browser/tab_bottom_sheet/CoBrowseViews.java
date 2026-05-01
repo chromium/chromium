@@ -143,13 +143,6 @@ public class CoBrowseViews {
         }
     }
 
-    /** Sets whether the sheet is resizing. */
-    public void setIsResizing(boolean isResizing) {
-        if (mWebUi != null) {
-            mWebUi.setIsResizing(isResizing);
-        }
-    }
-
     @TabBottomSheetClientType
     int getClientType() {
         return mClientType;
