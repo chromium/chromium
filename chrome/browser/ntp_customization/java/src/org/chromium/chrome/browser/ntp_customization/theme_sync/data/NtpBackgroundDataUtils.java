@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ntp_customization.theme_sync.data;
 
 import static org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataBase.BACKGROUND_TYPE_KEY;
 
+import android.content.Context;
 import android.graphics.Matrix;
 
 import org.json.JSONArray;
@@ -23,12 +24,12 @@ public class NtpBackgroundDataUtils {
      * Returns the NtpBackgroundDataBase object from the given JSON representation. Null if the type
      * is invalid.
      */
-    public static @Nullable NtpBackgroundDataBase fromJson(JSONObject jsonObject)
+    public static @Nullable NtpBackgroundDataBase fromJson(Context context, JSONObject jsonObject)
             throws JSONException {
         int backgroundType = jsonObject.getInt(BACKGROUND_TYPE_KEY);
         switch (backgroundType) {
             case NtpCustomizationUtils.NtpBackgroundType.CHROME_COLOR:
-                return NtpBackgroundDataColor.fromJson(jsonObject);
+                return NtpBackgroundDataColor.fromJson(context, jsonObject);
             case NtpCustomizationUtils.NtpBackgroundType.COLOR_FROM_HEX:
                 return NtpBackgroundDataCustomizedColor.fromJson(jsonObject);
             case NtpCustomizationUtils.NtpBackgroundType.IMAGE_FROM_DISK:

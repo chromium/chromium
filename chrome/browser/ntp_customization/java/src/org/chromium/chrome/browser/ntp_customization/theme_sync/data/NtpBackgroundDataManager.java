@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.ntp_customization.theme_sync.data;
 
-import androidx.annotation.VisibleForTesting;
+import android.content.Context;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -25,7 +25,14 @@ public class NtpBackgroundDataManager {
     private static final int MAXIMUM_LOCAL_HISTORY = 3;
     private static final int MAXIMUM_REMOTE_HISTORY = 2;
 
-    public NtpBackgroundDataManager() {}
+    private final Context mContext;
+
+    /**
+     * @param context The application context.
+     */
+    public NtpBackgroundDataManager(Context context) {
+        mContext = context;
+    }
 
     /**
      * Saves the NTP's background types from cross device sync to the shared preference.
@@ -128,7 +135,6 @@ public class NtpBackgroundDataManager {
      * @return The background data for the given platform type.
      * @throws JSONException If the background data is not a valid JSON array.
      */
-    @VisibleForTesting
     @Nullable List<NtpBackgroundDataBase> getBackgroundDataListFromSharedPreference(
             @PlatformType int platformType) throws JSONException {
         JSONArray historyDataArray = getJsonArrayFromSharedPreferenceImpl(platformType);
@@ -137,7 +143,7 @@ public class NtpBackgroundDataManager {
         List<NtpBackgroundDataBase> backgroundDataList = new ArrayList<>(historyDataArray.length());
         for (int i = 0; i < historyDataArray.length(); i++) {
             NtpBackgroundDataBase data =
-                    NtpBackgroundDataUtils.fromJson(historyDataArray.getJSONObject(i));
+                    NtpBackgroundDataUtils.fromJson(mContext, historyDataArray.getJSONObject(i));
             if (data != null) {
                 backgroundDataList.add(data);
             }
