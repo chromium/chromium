@@ -261,6 +261,12 @@ public class ExtensionsMenuBridge implements Destroyable {
         mObserver.onHostAccessRequestsCleared();
     }
 
+    @CalledByNative
+    private void onShowHostAccessRequestsInToolbarChanged(
+            @JniType("std::string") String extensionId) {
+        mObserver.onShowHostAccessRequestsInToolbarChanged(extensionId);
+    }
+
     public interface Observer {
         /** Called when an extension icon has been updated on actionIndex. */
         void onActionIconUpdated(int actionIndex);
@@ -298,6 +304,9 @@ public class ExtensionsMenuBridge implements Destroyable {
 
         /** Called when all host access requests have been cleared. */
         void onHostAccessRequestsCleared();
+
+        /** Called when the show requests toggle for an extension changed. */
+        void onShowHostAccessRequestsInToolbarChanged(String extensionId);
     }
 
     @NativeMethods

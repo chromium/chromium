@@ -774,6 +774,59 @@ public class ExtensionsMenuMediatorTest {
     }
 
     @Test
+    public void testOnShowHostAccessRequestsInToolbarChanged_SitePermissionsPage() {
+        // Mock being on the site permissions page for "id_a".
+        when(mMenuPropertyModel.get(ExtensionsMenuProperties.CURRENT_PAGE))
+                .thenReturn(ExtensionsMenuProperties.Page.SITE_PERMISSIONS);
+        when(mSitePermissionsPropertyModel.get(SitePermissionsPageProperties.EXTENSION_ID))
+                .thenReturn("id1");
+
+        // Mock the site permissions state returned by bridge.
+        ExtensionsMenuTypes.ExtensionSitePermissionsState sitePermissionsState =
+                ExtensionTestUtils.createExtensionSitePermissionsState("Extension A", null);
+        when(mExtensionsMenuBridgeJniMock.getExtensionSitePermissionsState(anyLong(), eq("id1")))
+                .thenReturn(sitePermissionsState);
+
+        // Call the method.
+        mMenuMediator.onShowHostAccessRequestsInToolbarChanged("id1");
+
+        // Verify that updateSitePermissionsPage was called (by verifying side effects, e.g. setting
+        // name).
+        verify(mSitePermissionsPropertyModel)
+                .set(SitePermissionsPageProperties.EXTENSION_NAME, "Extension A");
+    }
+
+    @Test
+    public void testOnShowHostAccessRequestsInToolbarChanged_WrongPage() {
+        // Mock being on the main page.
+        when(mMenuPropertyModel.get(ExtensionsMenuProperties.CURRENT_PAGE))
+                .thenReturn(ExtensionsMenuProperties.Page.MAIN);
+
+        // Call the method.
+        mMenuMediator.onShowHostAccessRequestsInToolbarChanged("id1");
+
+        // Verify that getExtensionSitePermissionsState was never called.
+        verify(mExtensionsMenuBridgeJniMock, never())
+                .getExtensionSitePermissionsState(anyLong(), any());
+    }
+
+    @Test
+    public void testOnShowHostAccessRequestsInToolbarChanged_WrongExtension() {
+        // Mock being on the site permissions page for "id2".
+        when(mMenuPropertyModel.get(ExtensionsMenuProperties.CURRENT_PAGE))
+                .thenReturn(ExtensionsMenuProperties.Page.SITE_PERMISSIONS);
+        when(mSitePermissionsPropertyModel.get(SitePermissionsPageProperties.EXTENSION_ID))
+                .thenReturn("id2");
+
+        // Call the method.
+        mMenuMediator.onShowHostAccessRequestsInToolbarChanged("id1");
+
+        // Verify that getExtensionSitePermissionsState was never called for "id1".
+        verify(mExtensionsMenuBridgeJniMock, never())
+                .getExtensionSitePermissionsState(anyLong(), eq("id1"));
+    }
+
+    @Test
     public void testOnReloadPageButtonClicked() {
         mMenuMediator.onReloadPageButtonClicked();
         verify(mExtensionsMenuBridgeJniMock)

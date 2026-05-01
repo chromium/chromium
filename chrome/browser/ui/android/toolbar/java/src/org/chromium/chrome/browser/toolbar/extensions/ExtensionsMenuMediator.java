@@ -348,6 +348,20 @@ class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observ
         updateHostAccessRequests();
     }
 
+    /** Called when the show requests toggle for an extension changed. */
+    @Override
+    public void onShowHostAccessRequestsInToolbarChanged(String extensionId) {
+        if (getCurrentPage() != ExtensionsMenuProperties.Page.SITE_PERMISSIONS) {
+            return;
+        }
+
+        String currentExtensionId =
+                mSitePermissionsPageModel.get(SitePermissionsPageProperties.EXTENSION_ID);
+        if (extensionId.equals(currentExtensionId)) {
+            updateSitePermissionsPage(extensionId);
+        }
+    }
+
     /**
      * Called when the native side is ready with the menu data, which can happen on mediator
      * construction or by an observer called originated from the native side. Populates the action
