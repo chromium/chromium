@@ -44,6 +44,8 @@ inline constexpr char kAllowUntrustedPathForTesting[] =
     "elevator-allow-untrusted-path-for-testing";
 inline constexpr char kAllowUntrustedSwitchesForTesting[] =
     "elevator-allow-untrusted-switches-for-testing";
+inline constexpr char kAllowUntrustedRecoveryHashForTesting[] =
+    "elevator-allow-untrusted-recovery-hash-for-testing";
 }  // namespace switches
 
 namespace internal {

@@ -25,6 +25,7 @@
 #include "base/version.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_process_information.h"
+#include "chrome/elevation_service/elevator.h"
 #include "chrome/install_static/install_modes.h"
 #include "chrome/install_static/install_util.h"
 #include "chrome/installer/util/util_constants.h"
@@ -56,6 +57,13 @@ constexpr base::FilePath::CharType kRecoveryExeName[] =
 // The hard-coded SHA256 of the SubjectPublicKeyInfo used to sign the Recovery
 // CRX which contains ChromeRecovery.exe.
 std::vector<uint8_t> GetRecoveryCRXHash() {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kAllowUntrustedRecoveryHashForTesting)) {
+    return std::vector<uint8_t>{0x69, 0xfc, 0x41, 0xf6, 0x17, 0x20, 0xc6, 0x36,
+                                0x92, 0xcd, 0x95, 0x76, 0x69, 0xf6, 0x28, 0xcc,
+                                0xbe, 0x98, 0x4b, 0x93, 0x17, 0xd6, 0x9c, 0xb3,
+                                0x64, 0x0c, 0x0d, 0x25, 0x61, 0xc5, 0x80, 0x1d};
+  }
   return std::vector<uint8_t>{0x5f, 0x94, 0xe0, 0x3c, 0x64, 0x30, 0x9f, 0xbc,
                               0xfe, 0x00, 0x9a, 0x27, 0x3e, 0x52, 0xbf, 0xa5,
                               0x84, 0xb9, 0xb3, 0x75, 0x07, 0x29, 0xde, 0xfa,
@@ -355,8 +363,14 @@ HRESULT RunChromeRecoveryCRX(const base::FilePath& crx_path,
   if (FAILED(hr))
     return hr;
 
-  return RunCRX(crx_path, args, browser_version_parsed,
-                crx_file::VerifierFormat::CRX3_WITH_PUBLISHER_PROOF,
+  crx_file::VerifierFormat format =
+      crx_file::VerifierFormat::CRX3_WITH_PUBLISHER_PROOF;
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kAllowUntrustedRecoveryHashForTesting)) {
+    format = crx_file::VerifierFormat::CRX3;
+  }
+
+  return RunCRX(crx_path, args, browser_version_parsed, format,
                 GetRecoveryCRXHash(), unpack_dir,
                 base::FilePath(kRecoveryExeName), caller_proc_id, proc_handle);
 }
