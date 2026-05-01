@@ -938,8 +938,7 @@ void PopulateBinderMapWithContext(
 
   map->Add<media::mojom::SpeechRecognizer>(
       base::BindRepeating(&SpeechRecognitionDispatcherHost::Create,
-                          host->GetProcess()->GetDeprecatedID(),
-                          host->GetRoutingID()),
+                          host->GetGlobalId()),
       GetIOThreadTaskRunner({}));
 
   map->Add<blink::mojom::SpeechSynthesis>(

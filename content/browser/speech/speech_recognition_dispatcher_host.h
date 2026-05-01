@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/speech_recognition_event_listener.h"
 #include "media/mojo/mojom/speech_recognizer.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -35,7 +36,7 @@ struct SpeechRecognitionAudioForwarderConfig;
 // in the browser process, by communicating with SpeechRecognitionManager.
 class SpeechRecognitionDispatcherHost : public media::mojom::SpeechRecognizer {
  public:
-  SpeechRecognitionDispatcherHost(int render_process_id, int render_frame_id);
+  explicit SpeechRecognitionDispatcherHost(GlobalRenderFrameHostId global_id);
 
   SpeechRecognitionDispatcherHost(const SpeechRecognitionDispatcherHost&) =
       delete;
@@ -44,8 +45,7 @@ class SpeechRecognitionDispatcherHost : public media::mojom::SpeechRecognizer {
 
   ~SpeechRecognitionDispatcherHost() override;
   static void Create(
-      int render_process_id,
-      int render_frame_id,
+      GlobalRenderFrameHostId global_id,
       mojo::PendingReceiver<media::mojom::SpeechRecognizer> receiver);
   base::WeakPtr<SpeechRecognitionDispatcherHost> AsWeakPtr();
 
@@ -62,13 +62,11 @@ class SpeechRecognitionDispatcherHost : public media::mojom::SpeechRecognizer {
   static void StartRequestOnUI(
       base::WeakPtr<SpeechRecognitionDispatcherHost>
           speech_recognition_dispatcher_host,
-      int render_process_id,
-      int render_frame_id,
+      GlobalRenderFrameHostId global_id,
       media::mojom::StartSpeechRecognitionRequestParamsPtr params);
   void StartSessionOnIO(
       media::mojom::StartSpeechRecognitionRequestParamsPtr params,
-      int embedder_render_process_id,
-      int embedder_render_frame_id,
+      GlobalRenderFrameHostId embedder_global_id,
       const url::Origin& origin,
       std::unique_ptr<network::PendingSharedURLLoaderFactory>
           pending_shared_url_loader_factory,
@@ -86,8 +84,7 @@ class SpeechRecognitionDispatcherHost : public media::mojom::SpeechRecognizer {
           audio_forwarder_config,
       bool can_render_frame_use_on_device);
 
-  const int render_process_id_;
-  const int render_frame_id_;
+  const GlobalRenderFrameHostId global_id_;
 
   // Used for posting asynchronous tasks (on the IO thread) without worrying
   // about this class being destroyed in the meanwhile (due to browser shutdown)
