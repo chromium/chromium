@@ -262,6 +262,12 @@ class CONTENT_EXPORT FilePathWatcher {
   base::Lock& GetWatchThreadLockForTest();
 #endif
 
+#if BUILDFLAG(IS_MAC)
+  // Creates a watcher with a test hook for FSEvents.
+  static std::unique_ptr<FilePathWatcher> CreateWithFSEventsHookForTesting(
+      base::RepeatingClosure hook);
+#endif  // BUILDFLAG(IS_MAC)
+
   static base::AutoReset<size_t> SetQuotaLimitForTesting(
       size_t quota_limit_override) {
     return base::AutoReset<size_t>(&quota_limit_override_for_testing_,
