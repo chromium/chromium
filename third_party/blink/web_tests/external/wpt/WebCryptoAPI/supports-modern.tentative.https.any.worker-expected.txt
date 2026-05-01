@@ -1,0 +1,178 @@
+This is a testharness.js-based test.
+Found 87 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] SubtleCrypto.supports method exists
+  assert_true: SubtleCrypto.supports should be a function expected true got false
+[FAIL] supports(generateKey, ML-DSA-44)
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
+[FAIL] supports(importKey, ML-DSA-44)
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
+[FAIL] supports(sign, ML-DSA-44)
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
+[FAIL] supports(verify, ML-DSA-44)
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
+[FAIL] supports(encrypt, ML-DSA-44)
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
+[FAIL] supports(decrypt, ML-DSA-44)
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
+[FAIL] supports(deriveBits, ML-DSA-44)
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
+[FAIL] supports(digest, ML-DSA-44)
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
+[FAIL] supports(encapsulateKey, ML-DSA-44)
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
+[FAIL] supports(encapsulateBits, ML-DSA-44)
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
+[FAIL] supports(decapsulateKey, ML-DSA-44)
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
+[FAIL] supports(decapsulateBits, ML-DSA-44)
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
+[FAIL] supports(generateKey, ML-DSA-65)
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
+[FAIL] supports(importKey, ML-DSA-65)
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
+[FAIL] supports(sign, ML-DSA-65)
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
+[FAIL] supports(verify, ML-DSA-65)
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
+[FAIL] supports(encrypt, ML-DSA-65)
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
+[FAIL] supports(decrypt, ML-DSA-65)
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
+[FAIL] supports(deriveBits, ML-DSA-65)
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
+[FAIL] supports(digest, ML-DSA-65)
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
+[FAIL] supports(encapsulateKey, ML-DSA-65)
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
+[FAIL] supports(encapsulateBits, ML-DSA-65)
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
+[FAIL] supports(decapsulateKey, ML-DSA-65)
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
+[FAIL] supports(decapsulateBits, ML-DSA-65)
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
+[FAIL] supports(generateKey, ML-DSA-87)
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
+[FAIL] supports(importKey, ML-DSA-87)
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
+[FAIL] supports(sign, ML-DSA-87)
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
+[FAIL] supports(verify, ML-DSA-87)
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
+[FAIL] supports(encrypt, ML-DSA-87)
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
+[FAIL] supports(decrypt, ML-DSA-87)
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
+[FAIL] supports(deriveBits, ML-DSA-87)
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
+[FAIL] supports(digest, ML-DSA-87)
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
+[FAIL] supports(encapsulateKey, ML-DSA-87)
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
+[FAIL] supports(encapsulateBits, ML-DSA-87)
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
+[FAIL] supports(decapsulateKey, ML-DSA-87)
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
+[FAIL] supports(decapsulateBits, ML-DSA-87)
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
+[FAIL] supports(generateKey, ML-KEM-512)
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
+[FAIL] supports(importKey, ML-KEM-512)
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
+[FAIL] supports(sign, ML-KEM-512)
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
+[FAIL] supports(verify, ML-KEM-512)
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
+[FAIL] supports(encrypt, ML-KEM-512)
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
+[FAIL] supports(decrypt, ML-KEM-512)
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
+[FAIL] supports(deriveBits, ML-KEM-512)
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
+[FAIL] supports(digest, ML-KEM-512)
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
+[FAIL] supports(encapsulateKey, ML-KEM-512)
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
+[FAIL] supports(encapsulateBits, ML-KEM-512)
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
+[FAIL] supports(decapsulateKey, ML-KEM-512)
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
+[FAIL] supports(decapsulateBits, ML-KEM-512)
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
+[FAIL] supports(generateKey, ML-KEM-768)
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
+[FAIL] supports(importKey, ML-KEM-768)
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
+[FAIL] supports(sign, ML-KEM-768)
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
+[FAIL] supports(verify, ML-KEM-768)
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
+[FAIL] supports(encrypt, ML-KEM-768)
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
+[FAIL] supports(decrypt, ML-KEM-768)
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
+[FAIL] supports(deriveBits, ML-KEM-768)
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
+[FAIL] supports(digest, ML-KEM-768)
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
+[FAIL] supports(encapsulateKey, ML-KEM-768)
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
+[FAIL] supports(encapsulateBits, ML-KEM-768)
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
+[FAIL] supports(decapsulateKey, ML-KEM-768)
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
+[FAIL] supports(decapsulateBits, ML-KEM-768)
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
+[FAIL] supports(generateKey, ML-KEM-1024)
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
+[FAIL] supports(importKey, ML-KEM-1024)
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
+[FAIL] supports(sign, ML-KEM-1024)
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
+[FAIL] supports(verify, ML-KEM-1024)
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
+[FAIL] supports(encrypt, ML-KEM-1024)
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
+[FAIL] supports(decrypt, ML-KEM-1024)
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
+[FAIL] supports(deriveBits, ML-KEM-1024)
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
+[FAIL] supports(digest, ML-KEM-1024)
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
+[FAIL] supports(encapsulateKey, ML-KEM-1024)
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
+[FAIL] supports(encapsulateBits, ML-KEM-1024)
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
+[FAIL] supports(decapsulateKey, ML-KEM-1024)
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
+[FAIL] supports(decapsulateBits, ML-KEM-1024)
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
+[FAIL] supports(generateKey, ChaCha20-Poly1305)
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
+[FAIL] supports(importKey, ChaCha20-Poly1305)
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
+[FAIL] supports(sign, ChaCha20-Poly1305)
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
+[FAIL] supports(verify, ChaCha20-Poly1305)
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
+[FAIL] supports(encrypt, ChaCha20-Poly1305)
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
+[FAIL] supports(decrypt, ChaCha20-Poly1305)
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
+[FAIL] supports(deriveBits, ChaCha20-Poly1305)
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
+[FAIL] supports(digest, ChaCha20-Poly1305)
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
+[FAIL] supports(encapsulateKey, ChaCha20-Poly1305)
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
+[FAIL] supports(encapsulateBits, ChaCha20-Poly1305)
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
+[FAIL] supports(decapsulateKey, ChaCha20-Poly1305)
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
+[FAIL] supports(decapsulateBits, ChaCha20-Poly1305)
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
+[FAIL] supports returns true for algorithm objects with valid parameters
+  SubtleCrypto.supports is not a function
+[FAIL] supports returns false for algorithm objects with invalid parameters
+  SubtleCrypto.supports is not a function
+Harness: the test ran to completion.
+

@@ -153,6 +153,13 @@ bool DeserializeKeyForClone(const blink::WebCryptoKeyAlgorithm& algorithm,
                             base::span<const uint8_t> key_data,
                             blink::WebCryptoKey* key);
 
+bool Supports(blink::WebCryptoOperation op,
+              const blink::WebCryptoAlgorithm& algorithm,
+              std::optional<unsigned int> length_bits);
+
+Status GetKeyLength(const blink::WebCryptoAlgorithm& key_length_algorithm,
+                    std::optional<unsigned int>* length_bits);
+
 }  // namespace webcrypto
 
 #endif  // COMPONENTS_WEBCRYPTO_ALGORITHM_DISPATCH_H_

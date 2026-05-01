@@ -31,6 +31,13 @@ const EVP_AEAD* GetAesGcmAlgorithmFromKeySize(size_t key_size_bytes) {
   }
 }
 
+bool TagLengthValid(unsigned int tag_length_bits) {
+  return tag_length_bits == 32 || tag_length_bits == 64 ||
+         tag_length_bits == 96 || tag_length_bits == 104 ||
+         tag_length_bits == 112 || tag_length_bits == 120 ||
+         tag_length_bits == 128;
+}
+
 Status AesGcmEncryptDecrypt(EncryptOrDecrypt mode,
                             const blink::WebCryptoAlgorithm& algorithm,
                             const blink::WebCryptoKey& key,
@@ -44,10 +51,7 @@ Status AesGcmEncryptDecrypt(EncryptOrDecrypt mode,
   unsigned int tag_length_bits = 128;
   if (params->HasTagLengthBits()) {
     tag_length_bits = params->OptionalTagLengthBits();
-    if (tag_length_bits != 32 && tag_length_bits != 64 &&
-        tag_length_bits != 96 && tag_length_bits != 104 &&
-        tag_length_bits != 112 && tag_length_bits != 120 &&
-        tag_length_bits != 128) {
+    if (!TagLengthValid(tag_length_bits)) {
       return Status::ErrorInvalidAesGcmTagLength();
     }
   }
@@ -74,6 +78,22 @@ class AesGcmImplementation : public AesAlgorithm {
                  base::span<const uint8_t> data,
                  std::vector<uint8_t>* buffer) const override {
     return AesGcmEncryptDecrypt(DECRYPT, algorithm, key, data, buffer);
+  }
+
+  bool Supports(blink::WebCryptoOperation op,
+                const blink::WebCryptoAlgorithm& algorithm,
+                std::optional<unsigned int> length_bits) const override {
+    if (op == blink::kWebCryptoOperationEncrypt ||
+        op == blink::kWebCryptoOperationDecrypt) {
+      const blink::WebCryptoAeadParams* params = algorithm.AeadParams();
+      unsigned int tag_length_bits = 128;
+      if (params->HasTagLengthBits()) {
+        tag_length_bits = params->OptionalTagLengthBits();
+      }
+      return TagLengthValid(tag_length_bits);
+    } else {
+      return AesAlgorithm::Supports(op, algorithm, length_bits);
+    }
   }
 };
 

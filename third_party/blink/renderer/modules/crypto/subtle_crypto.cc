@@ -53,6 +53,7 @@
 #include "third_party/blink/renderer/modules/crypto/crypto_result_impl.h"
 #include "third_party/blink/renderer/modules/crypto/crypto_utilities.h"
 #include "third_party/blink/renderer/modules/crypto/normalize_algorithm.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
 
 namespace blink {
@@ -119,6 +120,110 @@ bool ParseJsonWebKey(const JsonWebKey& key, std::vector<uint8_t>& json_utf8) {
   std::string json = json_object->ToJSONString().Utf8();
   json_utf8 = base::ToVector(base::as_byte_span(json));
   return true;
+}
+
+std::optional<WebCryptoOperation> StringToWebCryptoOperation(const String& op) {
+  if (op == "encrypt") {
+    return kWebCryptoOperationEncrypt;
+  }
+  if (op == "decrypt") {
+    return kWebCryptoOperationDecrypt;
+  }
+  if (op == "sign") {
+    return kWebCryptoOperationSign;
+  }
+  if (op == "verify") {
+    return kWebCryptoOperationVerify;
+  }
+  if (op == "digest") {
+    return kWebCryptoOperationDigest;
+  }
+  if (op == "generateKey") {
+    return kWebCryptoOperationGenerateKey;
+  }
+  if (op == "importKey") {
+    return kWebCryptoOperationImportKey;
+  }
+  if (op == "deriveKey" || op == "deriveBits") {
+    return kWebCryptoOperationDeriveBits;
+  }
+  if (op == "wrapKey") {
+    return kWebCryptoOperationWrapKey;
+  }
+  if (op == "unwrapKey") {
+    return kWebCryptoOperationUnwrapKey;
+  }
+  if (op == "encapsulateKey" || op == "encapsulateBits") {
+    return kWebCryptoOperationEncapsulate;
+  }
+  if (op == "decapsulateKey" || op == "decapsulateBits") {
+    return kWebCryptoOperationDecapsulate;
+  }
+  return std::nullopt;
+}
+
+// Implements
+// https://wicg.github.io/webcrypto-modern-algos/#partial-subtlecrypto-interface-checking-support-for-algorithm,
+// though for many of the operations we will just return true without calling
+// into the algorithm implementation if we do not need to.
+bool supportsInternal(ScriptState* script_state,
+                      WebCryptoOperation op,
+                      const V8AlgorithmIdentifier* algorithm,
+                      std::optional<unsigned int> length_bits) {
+  WebCryptoAlgorithm normalized_algorithm;
+  // 3.3.4.4  Let normalizedAlgorithm be the result of normalizing an algorithm,
+  //          with alg set to alg and op set to op.
+  if (!NormalizeAlgorithm(script_state->GetIsolate(), algorithm, op,
+                          normalized_algorithm, IGNORE_EXCEPTION)) {
+    // 3.3.4.5  If an error occurred:
+    //
+    //          If op is "wrapKey", return the result of checking support for an
+    //          algorithm with op set to "encrypt" and alg set to alg.
+    //
+    //          If op is "unwrapKey", return the result of checking support for
+    //          an algorithm with op set to "decrypt" and alg set to alg.
+    //
+    //           Otherwise, return false.
+    if (op == kWebCryptoOperationWrapKey) {
+      return supportsInternal(script_state, kWebCryptoOperationEncrypt,
+                              algorithm, length_bits);
+    } else if (op == kWebCryptoOperationUnwrapKey) {
+      return supportsInternal(script_state, kWebCryptoOperationDecrypt,
+                              algorithm, length_bits);
+    }
+    return false;
+  }
+
+  // NormalizeAlgorithm already ensures that
+  //    (a) we support the algorithm
+  //    (b) we support the op on that specific algorithm
+  //
+  // so we only need to do additional checks there are parameters as part of the
+  // algorithm for that operation, or if we have to check the length_bits
+  // parameter for deriveBits/deriveKey.
+  switch (op) {
+    case kWebCryptoOperationEncrypt:
+    case kWebCryptoOperationDecrypt:
+    case kWebCryptoOperationSign:
+    case kWebCryptoOperationVerify:
+    case kWebCryptoOperationDigest:
+    case kWebCryptoOperationImportKey:
+    case kWebCryptoOperationGetKeyLength:
+    case kWebCryptoOperationWrapKey:
+    case kWebCryptoOperationUnwrapKey:
+    case kWebCryptoOperationEncapsulate:
+    case kWebCryptoOperationDecapsulate:
+    case kWebCryptoOperationGenerateKey:
+      if (normalized_algorithm.ParamsType() ==
+          kWebCryptoAlgorithmParamsTypeNone) {
+        return true;
+      }
+      break;
+    case kWebCryptoOperationDeriveBits:
+      break;
+  }
+  return Platform::Current()->Crypto()->Supports(op, normalized_algorithm,
+                                                 length_bits);
 }
 
 }  // namespace
@@ -1081,6 +1186,86 @@ ScriptPromise<DOMArrayBuffer> SubtleCrypto::decapsulateBits(
       std::move(ciphertext), result->Result(), std::move(task_runner));
 
   return promise;
+}
+
+// Defined by
+// https://wicg.github.io/webcrypto-modern-algos/#SubtleCrypto-method-supports,
+// 3.2.6 and for the supports(operation, algorithm, length) section.
+bool SubtleCrypto::supports(ScriptState* script_state,
+                            const String& operation,
+                            const V8AlgorithmIdentifier* algorithm,
+                            std::optional<unsigned> length) {
+  // No support for "getPublicKey"; we return false if that's the operation.
+  std::optional<WebCryptoOperation> op = StringToWebCryptoOperation(operation);
+  if (!op) {
+    return false;
+  }
+
+  return supportsInternal(script_state, *op, algorithm, length);
+}
+
+// Defined by
+// https://wicg.github.io/webcrypto-modern-algos/#SubtleCrypto-method-supports,
+// 3.2.6 and for the supports(operation, algorithm, additionalAlgorithm)
+// section.
+bool SubtleCrypto::supports(ScriptState* script_state,
+                            const String& operation,
+                            const V8AlgorithmIdentifier* algorithm,
+                            const V8AlgorithmIdentifier* additional_algorithm) {
+  // No support for "getPublicKey"; we return false if that's the operation.
+  std::optional<WebCryptoOperation> op = StringToWebCryptoOperation(operation);
+  if (!op) {
+    return false;
+  }
+
+  std::optional<unsigned> length_bits = std::nullopt;
+
+  // 3.2.6.2  If operation is "deriveKey", "unwrapKey", "encapsulateKey" or
+  //          "decapsulateKey": If the result of checking support for an
+  //          algorithm with op set to "importKey" and alg set to
+  //          additionalAlgorithm is false, return false.
+  //
+  // If operation is "wrapKey": If the result of checking support for
+  //           an algorithm with op set to "exportKey" and alg set to
+  //           additionalAlgorithm is false, return false.
+  //
+  // importKey and exportKey are always supported, so we skip these checks.
+
+  if (operation == "deriveKey") {
+    // 3.2.6.4.1 If the result of checking support for an algorithm with op set
+    //           to "get key length" and alg set to additionalAlgorithm is
+    //           false, return false.
+    if (!supportsInternal(script_state, kWebCryptoOperationGetKeyLength,
+                          additional_algorithm, length_bits)) {
+      return false;
+    }
+
+    // 3.2.6.4.2 Let normalizedAdditionalAlgorithm be the result of normalizing
+    //           an algorithm, with alg set to additionalAlgorithm and op set to
+    //           "get key length".
+    WebCryptoAlgorithm normalized_additional_algorithm;
+    if (!NormalizeAlgorithm(script_state->GetIsolate(), additional_algorithm,
+                            kWebCryptoOperationGetKeyLength,
+                            normalized_additional_algorithm,
+                            IGNORE_EXCEPTION)) {
+      return false;
+    }
+
+    // 3.2.6.4.3 Let length be the result of performing the get key length
+    //           algorithm specified by additionalAlgorithm using
+    //           normalizedAdditionalAlgorithm.
+    if (!Platform::Current()->Crypto()->GetKeyLength(
+            normalized_additional_algorithm, &length_bits)) {
+      return false;
+    }
+
+    // 3.2.6.4.4 Set operation to "deriveBits".
+    //
+    // op should already be deriveBits
+    CHECK(op == kWebCryptoOperationDeriveBits);
+  }
+
+  return supportsInternal(script_state, *op, algorithm, length_bits);
 }
 
 }  // namespace blink

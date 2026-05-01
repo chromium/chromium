@@ -190,6 +190,22 @@ Status AesAlgorithm::ExportKeyJwk(const blink::WebCryptoKey& key,
   return Status::Success();
 }
 
+bool AesAlgorithm::Supports(blink::WebCryptoOperation op,
+                            const blink::WebCryptoAlgorithm& algorithm,
+                            std::optional<unsigned int> length_bits) const {
+  if (op == blink::kWebCryptoOperationGenerateKey ||
+      op == blink::kWebCryptoOperationGetKeyLength) {
+    uint16_t keylen_bits;
+    if (op == blink::kWebCryptoOperationGenerateKey) {
+      keylen_bits = algorithm.AesKeyGenParams()->LengthBits();
+    } else {
+      keylen_bits = algorithm.AesDerivedKeyParams()->LengthBits();
+    }
+    return keylen_bits == 128 || keylen_bits == 256;
+  }
+  return true;
+}
+
 Status AesAlgorithm::DeserializeKeyForClone(
     const blink::WebCryptoKeyAlgorithm& algorithm,
     blink::WebCryptoKeyType type,

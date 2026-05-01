@@ -237,6 +237,20 @@ class AesCtrImplementation : public AesAlgorithm {
                  std::vector<uint8_t>* buffer) const override {
     return AesCtrEncryptDecrypt(algorithm, key, data, buffer);
   }
+
+  bool Supports(blink::WebCryptoOperation op,
+                const blink::WebCryptoAlgorithm& algorithm,
+                std::optional<unsigned int> length_bits) const override {
+    if (op == blink::kWebCryptoOperationEncrypt ||
+        op == blink::kWebCryptoOperationDecrypt) {
+      const blink::WebCryptoAesCtrParams* params = algorithm.AesCtrParams();
+      unsigned int counter_length_bits = params->LengthBits();
+      return (params->Counter().size() == AES_BLOCK_SIZE) &&
+             (counter_length_bits >= 1 && counter_length_bits <= 128);
+    } else {
+      return AesAlgorithm::Supports(op, algorithm, length_bits);
+    }
+  }
 };
 
 }  // namespace

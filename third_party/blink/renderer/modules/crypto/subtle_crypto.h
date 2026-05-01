@@ -158,6 +158,16 @@ class SubtleCrypto final : public ScriptWrappable {
       CryptoKey* decapsulation_key,
       const V8BufferSource* ciphertext,
       ExceptionState&);
+
+  // Length is in bits
+  static bool supports(ScriptState*,
+                       const String& operation,
+                       const V8AlgorithmIdentifier* algorithm,
+                       std::optional<unsigned> length);
+  static bool supports(ScriptState*,
+                       const String& operation,
+                       const V8AlgorithmIdentifier* algorithm,
+                       const V8AlgorithmIdentifier* additional_algorithm);
 };
 
 }  // namespace blink

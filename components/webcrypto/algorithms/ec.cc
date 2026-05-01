@@ -646,6 +646,14 @@ Status EcAlgorithm::ExportKeyJwk(const blink::WebCryptoKey& key,
   return Status::Success();
 }
 
+bool EcAlgorithm::Supports(blink::WebCryptoOperation op,
+                           const blink::WebCryptoAlgorithm& algorithm,
+                           std::optional<unsigned int> length_bits) const {
+  // For all operations with parameters, only parameter to check is the
+  // namedCurve and that is checked at algorithm parse time.
+  return true;
+}
+
 // TODO(eroman): Defer import to the crypto thread. http://crbug.com/430763
 Status EcAlgorithm::DeserializeKeyForClone(
     const blink::WebCryptoKeyAlgorithm& algorithm,

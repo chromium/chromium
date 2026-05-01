@@ -51,6 +51,10 @@ class ChaCha20Poly1305Implementation : public AlgorithmImplementation {
   Status GetKeyLength(const blink::WebCryptoAlgorithm& key_length_algorithm,
                       std::optional<unsigned int>* length_bits) const override;
 
+  bool Supports(blink::WebCryptoOperation op,
+                const blink::WebCryptoAlgorithm& algorithm,
+                std::optional<unsigned int> length_bits) const override;
+
  private:
   Status ImportKeyRaw(base::span<const uint8_t> key_data,
                       const blink::WebCryptoAlgorithm& algorithm,

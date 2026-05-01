@@ -340,6 +340,27 @@ class WebCrypto {
     result.CompleteWithError(kWebCryptoErrorTypeNotSupported, "");
   }
 
+  // Synchronously returns true if the given operation and algorithm are
+  // supported.
+  // This is used by SubtleCrypto.supports().
+  virtual bool Supports(WebCryptoOperation op,
+                        const WebCryptoAlgorithm& algorithm,
+                        std::optional<unsigned int> length_bits) {
+    return false;
+  }
+
+  // This is run whenever the spec says:
+  //    "Let length be the result of executing the get key length algorithm"
+  //
+  // In the Web Crypto spec the operation returns either "null" or an
+  // "Integer". In this code "null" is represented with |std::nullopt|.
+  //
+  // Returns false if there was an error getting the key length.
+  virtual bool GetKeyLength(const WebCryptoAlgorithm& key_length_algorithm,
+                            std::optional<unsigned int>* length_bits) {
+    return false;
+  }
+
   // -----------------------
   // Structured clone
   // -----------------------

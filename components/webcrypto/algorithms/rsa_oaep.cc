@@ -141,6 +141,15 @@ class RsaOaepImplementation : public RsaHashedAlgorithm {
     return CommonEncryptDecrypt(EVP_PKEY_decrypt_init, EVP_PKEY_decrypt,
                                 algorithm, key, data, buffer);
   }
+
+  bool Supports(blink::WebCryptoOperation op,
+                const blink::WebCryptoAlgorithm& algorithm,
+                std::optional<unsigned int> length_bits) const override {
+    // Hash algorithm already checked earlier when algorithm is parsed.
+    return (op == blink::kWebCryptoOperationEncrypt) ||
+           (op == blink::kWebCryptoOperationDecrypt) ||
+           RsaHashedAlgorithm::Supports(op, algorithm, length_bits);
+  }
 };
 
 }  // namespace

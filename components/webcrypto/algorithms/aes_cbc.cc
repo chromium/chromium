@@ -103,6 +103,18 @@ class AesCbcImplementation : public AesAlgorithm {
                  std::vector<uint8_t>* buffer) const override {
     return AesCbcEncryptDecrypt(DECRYPT, algorithm, key, data, buffer);
   }
+
+  bool Supports(blink::WebCryptoOperation op,
+                const blink::WebCryptoAlgorithm& algorithm,
+                std::optional<unsigned int> length_bits) const override {
+    if (op == blink::kWebCryptoOperationEncrypt ||
+        op == blink::kWebCryptoOperationDecrypt) {
+      const blink::WebCryptoAesCbcParams* params = algorithm.AesCbcParams();
+      return params->Iv().size() == 16;
+    } else {
+      return AesAlgorithm::Supports(op, algorithm, length_bits);
+    }
+  }
 };
 
 }  // namespace

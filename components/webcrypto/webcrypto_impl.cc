@@ -790,6 +790,12 @@ void WebCryptoImpl::DecapsulateBits(
   }
 }
 
+bool WebCryptoImpl::Supports(blink::WebCryptoOperation op,
+                             const blink::WebCryptoAlgorithm& algorithm,
+                             std::optional<unsigned int> length_bits) {
+  return webcrypto::Supports(op, algorithm, length_bits);
+}
+
 bool WebCryptoImpl::DeserializeKeyForClone(
     const blink::WebCryptoKeyAlgorithm& algorithm,
     blink::WebCryptoKeyType type,
@@ -804,6 +810,14 @@ bool WebCryptoImpl::DeserializeKeyForClone(
 bool WebCryptoImpl::SerializeKeyForClone(const blink::WebCryptoKey& key,
                                          std::vector<unsigned char>& key_data) {
   return webcrypto::SerializeKeyForClone(key, &key_data);
+}
+
+bool WebCryptoImpl::GetKeyLength(
+    const blink::WebCryptoAlgorithm& key_length_algorithm,
+    std::optional<unsigned int>* length_bits) {
+  webcrypto::Status status =
+      webcrypto::GetKeyLength(key_length_algorithm, length_bits);
+  return !status.IsError();
 }
 
 }  // namespace webcrypto

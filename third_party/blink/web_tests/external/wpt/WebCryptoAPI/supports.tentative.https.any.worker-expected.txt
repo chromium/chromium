@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 151 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 153 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] SubtleCrypto.supports method exists
   assert_true: SubtleCrypto.supports should be a function expected true got false
 [FAIL] supports returns false for invalid operations
@@ -302,5 +302,9 @@ Found 151 FAIL, 0 TIMEOUT, 0 NOTRUN.
   SubtleCrypto.supports is not a function
 [FAIL] Invalid algorithm and operation combinations fail
   SubtleCrypto.supports is not a function
+[FAIL] deriveKey tests
+  SubtleCrypto.supports is not a function
+[FAIL] deriveKey promise tests
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
 Harness: the test ran to completion.
 

@@ -41,6 +41,10 @@ class MlDsaImplementation : public AlgorithmImplementation {
                 base::span<const uint8_t> message,
                 bool* signature_match) const override;
 
+  bool Supports(blink::WebCryptoOperation op,
+                const blink::WebCryptoAlgorithm& algorithm,
+                std::optional<unsigned int> length_bits) const override;
+
   Status DeserializeKeyForClone(const blink::WebCryptoKeyAlgorithm& algorithm,
                                 blink::WebCryptoKeyType type,
                                 bool extractable,

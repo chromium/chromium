@@ -108,6 +108,13 @@ Status AlgorithmImplementation::Decapsulate(
   return Status::ErrorUnsupported();
 }
 
+bool AlgorithmImplementation::Supports(
+    blink::WebCryptoOperation op,
+    const blink::WebCryptoAlgorithm& algorithm,
+    std::optional<unsigned int> length_bits) const {
+  return false;
+}
+
 Status AlgorithmImplementation::SerializeKeyForClone(
     const blink::WebCryptoKey& key,
     std::vector<uint8_t>* key_data) const {

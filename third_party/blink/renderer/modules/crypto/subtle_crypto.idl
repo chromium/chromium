@@ -139,4 +139,17 @@ typedef (object or DOMString) AlgorithmIdentifier;
         AlgorithmIdentifier decapsulationAlgorithm,
         CryptoKey decapsulationKey,
         BufferSource ciphertext);
+
+    [CallWith=ScriptState, RuntimeEnabled=WebCryptoPQC]
+    static boolean supports(
+        DOMString operation,
+        AlgorithmIdentifier algorithm,
+        optional unsigned long? length = null);
+
+    [CallWith=ScriptState, RuntimeEnabled=WebCryptoPQC]
+    static boolean supports(
+        DOMString operation,
+        AlgorithmIdentifier algorithm,
+        AlgorithmIdentifier additionalAlgorithm);
 };
+

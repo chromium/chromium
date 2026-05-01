@@ -144,6 +144,16 @@ class AlgorithmImplementation {
                              base::span<const uint8_t> ciphertext,
                              std::vector<uint8_t>* out_shared_secret) const;
 
+  // Returns true if the operation and algorithm are supported.
+  //
+  // This function need only check for the specific operations where parameters
+  // applied to the algorithm may impact whether the operation is supported or
+  // not, or if deriveKey/deriveBits is supported and the length_bits needs to
+  // be validated.
+  virtual bool Supports(blink::WebCryptoOperation op,
+                        const blink::WebCryptoAlgorithm& algorithm,
+                        std::optional<unsigned int> length_bits) const;
+
   // -----------------------------------------------
   // Structured clone
   // -----------------------------------------------

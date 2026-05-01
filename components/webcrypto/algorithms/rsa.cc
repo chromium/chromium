@@ -246,6 +246,27 @@ blink::WebCryptoAlgorithm SynthesizeImportAlgorithmForClone(
                           algorithm.RsaHashedParams()->GetHash()));
 }
 
+bool isValidModulus(unsigned int modulus_length_bits) {
+  // Limit the RSA key sizes to:
+  //   * Multiple of 8 bits
+  //   * 256 bits to 8K bits
+  //
+  // These correspond with limitations at the time there was an NSS WebCrypto
+  // implementation. However in practice the upper bound is also helpful
+  // because generating large RSA keys is very slow. In particular, generating
+  // keys > 8192 bits takes multiple minutes of compute time without providing
+  // any increase in realistic security level.
+  return modulus_length_bits >= 256 && modulus_length_bits <= 8192 &&
+         (modulus_length_bits % 8) == 0;
+}
+
+bool isValidPublicExponent(uint32_t public_exponent) {
+  // The canonical RSA exponent is 65537, but 3 is also common. Use an allowlist
+  // because RSA key generation is a probabilistic process and may hang on
+  // invalid exponents.
+  return public_exponent == 3 || public_exponent == 65537;
+}
+
 }  // namespace
 
 Status RsaHashedAlgorithm::GenerateKey(
@@ -266,30 +287,11 @@ Status RsaHashedAlgorithm::GenerateKey(
       algorithm.RsaHashedKeyGenParams();
 
   unsigned int modulus_length_bits = params->ModulusLengthBits();
-
-  // Limit the RSA key sizes to:
-  //   * Multiple of 8 bits
-  //   * 256 bits to 8K bits
-  //
-  // These correspond with limitations at the time there was an NSS WebCrypto
-  // implementation. However in practice the upper bound is also helpful
-  // because generating large RSA keys is very slow. In particular, generating
-  // keys > 8192 bits takes multiple minutes of compute time without providing
-  // any increase in realistic security level.
-  if (modulus_length_bits < 256 || modulus_length_bits > 8192 ||
-      (modulus_length_bits % 8) != 0) {
+  if (!isValidModulus(modulus_length_bits)) {
     return Status::ErrorGenerateRsaUnsupportedModulus();
   }
-
   std::optional<uint32_t> public_exponent = params->PublicExponentAsU32();
-  if (!public_exponent) {
-    return Status::ErrorGenerateKeyPublicExponent();
-  }
-
-  // The canonical RSA exponent is 65537, but 3 is also common. Use an allowlist
-  // because RSA key generation is a probabilistic process and may hang on
-  // invalid exponents.
-  if (*public_exponent != 3 && *public_exponent != 65537) {
+  if (!public_exponent || !isValidPublicExponent(*public_exponent)) {
     return Status::ErrorGenerateKeyPublicExponent();
   }
 
@@ -523,6 +525,23 @@ Status RsaHashedAlgorithm::ExportKeyJwk(const blink::WebCryptoKey& key,
     default:
       return Status::ErrorUnexpected();
   }
+}
+
+bool RsaHashedAlgorithm::Supports(
+    blink::WebCryptoOperation op,
+    const blink::WebCryptoAlgorithm& algorithm,
+    std::optional<unsigned int> length_bits) const {
+  if (op == blink::kWebCryptoOperationGenerateKey) {
+    const blink::WebCryptoRsaHashedKeyGenParams* params =
+        algorithm.RsaHashedKeyGenParams();
+    std::optional<uint32_t> public_exponent = params->PublicExponentAsU32();
+    return isValidModulus(params->ModulusLengthBits()) &&
+           (public_exponent && isValidPublicExponent(*public_exponent));
+  }
+
+  // ImportKey params don't need to be checked here because hash algorithm is
+  // checked earlier.
+  return true;
 }
 
 // TODO(eroman): Defer import to the crypto thread. http://crbug.com/430763

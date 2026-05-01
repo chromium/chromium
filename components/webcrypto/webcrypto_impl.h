@@ -143,6 +143,10 @@ class WebCryptoImpl : public blink::WebCrypto {
       blink::WebCryptoResult result,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner) override;
 
+  bool Supports(blink::WebCryptoOperation op,
+                const blink::WebCryptoAlgorithm& algorithm,
+                std::optional<unsigned int> length_bits) override;
+
   bool DeserializeKeyForClone(const blink::WebCryptoKeyAlgorithm& algorithm,
                               blink::WebCryptoKeyType type,
                               bool extractable,
@@ -152,6 +156,10 @@ class WebCryptoImpl : public blink::WebCrypto {
 
   bool SerializeKeyForClone(const blink::WebCryptoKey& key,
                             std::vector<unsigned char>& key_data) override;
+
+  // Returns false if there was an error getting the key length.
+  bool GetKeyLength(const blink::WebCryptoAlgorithm& key_length_algorithm,
+                    std::optional<unsigned int>* length_bits) override;
 };
 
 }  // namespace webcrypto

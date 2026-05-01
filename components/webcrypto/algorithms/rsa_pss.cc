@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/numerics/safe_math.h"
 #include "components/webcrypto/algorithms/rsa.h"
 #include "components/webcrypto/algorithms/rsa_sign.h"
 #include "components/webcrypto/status.h"
@@ -52,6 +53,20 @@ class RsaPssImplementation : public RsaHashedAlgorithm {
                 bool* signature_match) const override {
     return RsaVerify(key, algorithm.RsaPssParams()->SaltLengthBytes(),
                      signature, data, signature_match);
+  }
+
+  bool Supports(blink::WebCryptoOperation op,
+                const blink::WebCryptoAlgorithm& algorithm,
+                std::optional<unsigned int> length_bits) const override {
+    if ((op == blink::kWebCryptoOperationSign) ||
+        (op == blink::kWebCryptoOperationVerify)) {
+      // There are salt restrictions, but realistically they need to be
+      // calculated against the size of the key, which isn't part of the
+      // algorithm.
+      return true;
+    } else {
+      return RsaHashedAlgorithm::Supports(op, algorithm, length_bits);
+    }
   }
 };
 

@@ -500,4 +500,27 @@ bool DeserializeKeyForClone(const blink::WebCryptoKeyAlgorithm& algorithm,
   return status.IsSuccess();
 }
 
+bool Supports(blink::WebCryptoOperation op,
+              const blink::WebCryptoAlgorithm& algorithm,
+              std::optional<unsigned int> length_bits) {
+  const AlgorithmImplementation* impl = nullptr;
+  Status status = GetAlgorithmImplementation(algorithm.Id(), &impl);
+  if (status.IsError()) {
+    return false;
+  }
+
+  return impl->Supports(op, algorithm, length_bits);
+}
+
+Status GetKeyLength(const blink::WebCryptoAlgorithm& key_length_algorithm,
+                    std::optional<unsigned int>* length_bits) {
+  const AlgorithmImplementation* impl = nullptr;
+  Status status = GetAlgorithmImplementation(key_length_algorithm.Id(), &impl);
+  if (status.IsError()) {
+    return status;
+  }
+
+  return impl->GetKeyLength(key_length_algorithm, length_bits);
+}
+
 }  // namespace webcrypto

@@ -499,6 +499,19 @@ Status MlDsaImplementation::ExportKeyJwk(const blink::WebCryptoKey& key,
   return Status::Success();
 }
 
+bool MlDsaImplementation::Supports(
+    blink::WebCryptoOperation op,
+    const blink::WebCryptoAlgorithm& algorithm,
+    std::optional<unsigned int> length_bits) const {
+  // Boring limits the context to at most 255 bytes
+  const blink::WebCryptoContextParams* params = algorithm.ContextParams();
+  if (params && params->Context()) {
+    return params->Context()->size() < 256;
+  }
+  // None of the algorithm params have hard constraints.
+  return true;
+}
+
 Status MlDsaImplementation::DeserializeKeyForClone(
     const blink::WebCryptoKeyAlgorithm& algorithm,
     blink::WebCryptoKeyType type,

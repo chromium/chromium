@@ -476,6 +476,21 @@ Status X25519Implementation::ExportKeyJwk(const blink::WebCryptoKey& key,
   return Status::Success();
 }
 
+bool X25519Implementation::Supports(
+    blink::WebCryptoOperation op,
+    const blink::WebCryptoAlgorithm& algorithm,
+    std::optional<unsigned int> length_bits) const {
+  if (op == blink::kWebCryptoOperationDeriveBits) {
+    if (length_bits) {
+      // Max of 32 bytes.
+      return *length_bits <= (32 * 8);
+    } else {
+      return true;
+    }
+  }
+  return true;
+}
+
 Status X25519Implementation::DeserializeKeyForClone(
     const blink::WebCryptoKeyAlgorithm& algorithm,
     blink::WebCryptoKeyType type,

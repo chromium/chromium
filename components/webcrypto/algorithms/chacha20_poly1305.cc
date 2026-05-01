@@ -223,6 +223,22 @@ Status ChaCha20Poly1305Implementation::GetKeyLength(
   return Status::Success();
 }
 
+bool ChaCha20Poly1305Implementation::Supports(
+    blink::WebCryptoOperation op,
+    const blink::WebCryptoAlgorithm& algorithm,
+    std::optional<unsigned int> length_bits) const {
+  if (op == blink::kWebCryptoOperationEncrypt ||
+      op == blink::kWebCryptoOperationDecrypt) {
+    const blink::WebCryptoAeadParams* params = algorithm.AeadParams();
+    unsigned int tag_length_bits = 128;
+    if (params->HasTagLengthBits()) {
+      tag_length_bits = params->OptionalTagLengthBits();
+    }
+    return (params->Iv().size() == 12) && (tag_length_bits == 128);
+  }
+  return true;
+}
+
 std::unique_ptr<AlgorithmImplementation>
 CreateChaCha20Poly1305Implementation() {
   return std::make_unique<ChaCha20Poly1305Implementation>();

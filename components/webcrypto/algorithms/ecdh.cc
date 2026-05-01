@@ -121,6 +121,18 @@ class EcdhImplementation : public EcAlgorithm {
                ? Status::SuccessDeriveBitsTruncation()
                : Status::Success();
   }
+
+  bool Supports(blink::WebCryptoOperation op,
+                const blink::WebCryptoAlgorithm& algorithm,
+                std::optional<unsigned int> length_bits) const override {
+    if (op == blink::kWebCryptoOperationDeriveBits) {
+      // Length here would be checked against the private key, which we don't
+      // have to check against, so always return true.
+      return true;
+    } else {
+      return EcAlgorithm::Supports(op, algorithm, length_bits);
+    }
+  }
 };
 
 }  // namespace

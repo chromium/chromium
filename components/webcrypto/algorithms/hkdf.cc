@@ -103,6 +103,16 @@ class HkdfImplementation : public AlgorithmImplementation {
     return Status::Success();
   }
 
+  bool Supports(blink::WebCryptoOperation op,
+                const blink::WebCryptoAlgorithm& algorithm,
+                std::optional<unsigned int> length_bits) const override {
+    if (op == blink::kWebCryptoOperationDeriveBits) {
+      return length_bits.has_value() && (length_bits.value() % 8 == 0);
+    } else {
+      return true;
+    }
+  }
+
   Status DeserializeKeyForClone(const blink::WebCryptoKeyAlgorithm& algorithm,
                                 blink::WebCryptoKeyType type,
                                 bool extractable,

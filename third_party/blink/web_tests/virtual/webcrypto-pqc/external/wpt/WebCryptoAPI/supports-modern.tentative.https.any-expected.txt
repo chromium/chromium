@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+Found 5 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] supports(generateKey, ML-KEM-512)
+  assert_true: ML-KEM-512 should support generateKey expected true got false
+[FAIL] supports(importKey, ML-KEM-512)
+  assert_true: ML-KEM-512 should support importKey expected true got false
+[FAIL] supports(encapsulateKey, ML-KEM-512)
+  assert_true: ML-KEM-512 should support encapsulateKey expected true got false
+[FAIL] supports(encapsulateBits, ML-KEM-512)
+  assert_true: ML-KEM-512 should support encapsulateBits expected true got false
+[FAIL] supports(decapsulateBits, ML-KEM-512)
+  assert_true: ML-KEM-512 should support decapsulateBits expected true got false
+Harness: the test ran to completion.
