@@ -6,13 +6,13 @@
 # by `tools/crates/run_gnrt.py vendor`. Do not edit!
 #
 # This is an empty placeholder that has replaced the
-# `winnow-1.0.0` crate.
+# `winnow-1.0.2` crate.
 #
 # See `//tools/crates/gnrt/removed_crate.md` to learn more.
 
 [package]
 name = "winnow"
-version = "1.0.0"
+version = "1.0.2"
 
 [package.metadata.gnrt]
 is_placeholder = true
