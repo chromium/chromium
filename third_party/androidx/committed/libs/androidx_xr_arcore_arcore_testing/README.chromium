@@ -1,0 +1,20 @@
+Name: XR ARCore Testing
+Short Name: arcore-testing
+URL: https://dl.google.com/dl/android/maven2/androidx/xr/arcore/arcore-testing/1.0.0-alpha10/arcore-testing-1.0.0-alpha10.aar
+Version: 1.0.0-alpha10
+Update Mechanism: Autoroll
+License: Apache-2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: no
+Shipped: no
+License Android Compatible: yes
+
+Description:
+Provides Fake implementations of ARCore classes for unit testing.
+
+See also: https://developer.android.com/jetpack/androidx/releases/xr-arcore#1.0.0-alpha10
+
+
+Local Modifications:
+No modifications.

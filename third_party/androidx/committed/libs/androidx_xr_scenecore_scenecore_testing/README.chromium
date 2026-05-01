@@ -1,0 +1,20 @@
+Name: XR SceneCore Testing
+Short Name: scenecore-testing
+URL: https://dl.google.com/dl/android/maven2/androidx/xr/scenecore/scenecore-testing/1.0.0-alpha11/scenecore-testing-1.0.0-alpha11.aar
+Version: 1.0.0-alpha11
+Update Mechanism: Autoroll
+License: Apache-2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: no
+Shipped: no
+License Android Compatible: yes
+
+Description:
+Libraries to aid in unit testing SceneCore clients.
+
+See also: https://developer.android.com/jetpack/androidx/releases/xr-scenecore#1.0.0-alpha11
+
+
+Local Modifications:
+No modifications.
