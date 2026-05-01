@@ -30,9 +30,7 @@
 
 #include "third_party/blink/renderer/core/loader/navigation_policy.h"
 
-#include "base/feature_list.h"
 #include "build/build_config.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/web/web_navigation_policy.h"
@@ -43,8 +41,8 @@
 #include "third_party/blink/renderer/core/events/mouse_event.h"
 #include "third_party/blink/renderer/core/events/ui_event_with_key_state.h"
 #include "third_party/blink/renderer/platform/keyboard_codes.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
-#include "ui/base/ui_base_features.h"
 
 namespace blink {
 
@@ -61,7 +59,7 @@ NavigationPolicy NavigationPolicyFromEventModifiers(int16_t button,
   const bool new_tab_modifier = (button == 1) || ctrl;
 #endif
   if (new_tab_modifier && alt && !shift &&
-      base::FeatureList::IsEnabled(::features::kSplitViewLinkOpen)) {
+      RuntimeEnabledFeatures::SplitViewLinkOpenEnabled()) {
     return kNavigationPolicySplitView;
   }
   if (!new_tab_modifier && !shift && !alt) {
