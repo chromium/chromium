@@ -65,6 +65,34 @@
           {
             "builder_id": {
               "bucket": "ci",
+              "builder": "mac-no-initial-webui-rel",
+              "project": "chromium"
+            },
+            "builder_spec": {
+              "builder_group": "chromium.mac",
+              "execution_mode": "TEST",
+              "legacy_chromium_config": {
+                "apply_configs": [
+                  "mb"
+                ],
+                "build_config": "Release",
+                "config": "chromium",
+                "target_bits": 64,
+                "target_platform": "mac"
+              },
+              "legacy_gclient_config": {
+                "config": "chromium"
+              },
+              "parent": {
+                "bucket": "ci",
+                "builder": "mac-arm64-rel",
+                "project": "chromium"
+              }
+            }
+          },
+          {
+            "builder_id": {
+              "bucket": "ci",
               "builder": "mac-skia-alt-arm64-rel-tests",
               "project": "chromium"
             },
@@ -224,6 +252,11 @@
         },
         {
           "bucket": "ci",
+          "builder": "mac-no-initial-webui-rel",
+          "project": "chromium"
+        },
+        {
+          "bucket": "ci",
           "builder": "mac-skia-alt-arm64-rel-tests",
           "project": "chromium"
         },
@@ -255,6 +288,10 @@
         },
         {
           "builder": "mac-fieldtrial-tester",
+          "group": "tryserver.chromium.mac"
+        },
+        {
+          "builder": "mac-no-initial-webui-rel",
           "group": "tryserver.chromium.mac"
         },
         {

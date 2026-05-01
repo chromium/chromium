@@ -1,4 +1,6 @@
 ci/linux-webium-product-rel
+ci/mac-no-initial-webui-rel
 ci/win-webium-product-rel
 try/linux-webium-product-rel
+try/mac-no-initial-webui-rel
 try/win-webium-product-rel

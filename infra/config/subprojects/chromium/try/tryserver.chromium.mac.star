@@ -478,6 +478,24 @@ try_.builder(
 )
 
 try_.builder(
+    name = "mac-no-initial-webui-rel",
+    description_html = "Mirror of Mac No Initial WebUI CI builder",
+    mirrors = [
+        "ci/mac-arm64-rel",
+        "ci/mac-no-initial-webui-rel",
+    ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/mac-arm64-rel",
+            "release_try_builder",
+            "remoteexec",
+        ],
+    ),
+    cpu = cpu.ARM64,
+    contact_team_email = "chrome-webium-product-eng@google.com",
+)
+
+try_.builder(
     name = "mac_chromium_asan_rel_ng",
     mirrors = [
         "ci/Mac ASan 64 Builder",

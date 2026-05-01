@@ -687,6 +687,7 @@ try/mac-enterprise-companion-try-builder-rel
 try/mac-fieldtrial-tester
 try/mac-gpu-rel
 try/mac-libfuzzer-asan-rel
+try/mac-no-initial-webui-rel
 try/mac-official
 try/mac-rel
 try/mac-rel-cft

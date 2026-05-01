@@ -11553,6 +11553,27 @@
           }
         ]
       },
+      "mac-no-initial-webui-rel": {
+        "contact_team_email": "chrome-webium-product-eng@google.com",
+        "problem_specs": [
+          {
+            "name": "Unhealthy",
+            "period_days": 7,
+            "score": 5,
+            "thresholds": {
+              "_default": "_default"
+            }
+          },
+          {
+            "name": "Low Value",
+            "period_days": 90,
+            "score": 1,
+            "thresholds": {
+              "_default": "_default"
+            }
+          }
+        ]
+      },
       "mac-official": {
         "contact_team_email": "bling-engprod@google.com",
         "problem_specs": [
