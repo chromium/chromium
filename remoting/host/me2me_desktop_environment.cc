@@ -17,6 +17,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "remoting/host/action_executor.h"
+#include "remoting/host/audio_injector.h"
 #include "remoting/host/base/desktop_environment_options.h"
 #include "remoting/host/base/screen_controls.h"
 #include "remoting/host/basic_desktop_environment.h"
@@ -27,7 +28,6 @@
 #include "remoting/host/host_window.h"
 #include "remoting/host/host_window_proxy.h"
 #include "remoting/host/input_monitor/local_input_monitor.h"
-#include "remoting/host/remote_audio_input.h"
 #include "remoting/host/resizing_host_observer.h"
 #include "remoting/protocol/capability_names.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_options.h"
@@ -120,7 +120,7 @@ std::string Me2MeDesktopEnvironment::GetCapabilities() const {
     capabilities += protocol::kRemoteWebAuthnCapability;
   }
 
-  if (RemoteAudioInput::IsSupported()) {
+  if (AudioInjector::IsSupported()) {
     capabilities += " ";
     capabilities += protocol::kMicrophoneRemotingCapability;
   }

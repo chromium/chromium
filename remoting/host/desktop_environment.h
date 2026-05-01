@@ -27,7 +27,7 @@ class DesktopDisplayInfoMonitor;
 class FileOperations;
 class InputInjector;
 class KeyboardLayoutMonitor;
-class RemoteAudioInput;
+class AudioInjector;
 class RemoteWebAuthnStateChangeNotifier;
 class ScreenControls;
 class UrlForwarderConfigurator;
@@ -68,7 +68,7 @@ class DesktopEnvironment {
   CreateUrlForwarderConfigurator() = 0;
   virtual std::unique_ptr<RemoteWebAuthnStateChangeNotifier>
   CreateRemoteWebAuthnStateChangeNotifier() = 0;
-  virtual std::unique_ptr<RemoteAudioInput> CreateRemoteAudioInput() = 0;
+  virtual std::unique_ptr<AudioInjector> CreateAudioInjector() = 0;
 
   // Returns the set of all capabilities supported by |this|.
   virtual std::string GetCapabilities() const = 0;

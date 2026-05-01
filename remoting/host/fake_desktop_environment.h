@@ -128,7 +128,7 @@ class FakeDesktopEnvironment : public DesktopEnvironment {
   void SetCapabilities(const std::string& capabilities) override;
   std::unique_ptr<RemoteWebAuthnStateChangeNotifier>
   CreateRemoteWebAuthnStateChangeNotifier() override;
-  std::unique_ptr<RemoteAudioInput> CreateRemoteAudioInput() override;
+  std::unique_ptr<AudioInjector> CreateAudioInjector() override;
 
   base::WeakPtr<FakeInputInjector> last_input_injector() {
     return last_input_injector_;

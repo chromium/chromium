@@ -82,7 +82,7 @@ class IpcDesktopEnvironment : public DesktopEnvironment {
   void SetCapabilities(const std::string& capabilities) override;
   std::unique_ptr<RemoteWebAuthnStateChangeNotifier>
   CreateRemoteWebAuthnStateChangeNotifier() override;
-  std::unique_ptr<RemoteAudioInput> CreateRemoteAudioInput() override;
+  std::unique_ptr<AudioInjector> CreateAudioInjector() override;
 
  private:
   scoped_refptr<DesktopSessionProxy> desktop_session_proxy_;

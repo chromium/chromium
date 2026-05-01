@@ -22,6 +22,7 @@
 #include "remoting/host/action_executor.h"
 #include "remoting/host/active_display_monitor.h"
 #include "remoting/host/audio_capturer.h"
+#include "remoting/host/audio_injector.h"
 #include "remoting/host/base/desktop_environment_options.h"
 #include "remoting/host/base/screen_controls.h"
 #include "remoting/host/client_session_control.h"
@@ -32,7 +33,6 @@
 #include "remoting/host/input_injector.h"
 #include "remoting/host/keyboard_layout_monitor.h"
 #include "remoting/host/mouse_cursor_monitor_proxy.h"
-#include "remoting/host/remote_audio_input.h"
 #include "remoting/host/remote_open_url/url_forwarder_configurator.h"
 #include "remoting/host/resizing_host_observer.h"
 #include "remoting/host/webauthn/remote_webauthn_extension_notifier.h"
@@ -151,11 +151,10 @@ BasicDesktopEnvironment::CreateRemoteWebAuthnStateChangeNotifier() {
   return std::make_unique<RemoteWebAuthnExtensionNotifier>();
 }
 
-std::unique_ptr<RemoteAudioInput>
-BasicDesktopEnvironment::CreateRemoteAudioInput() {
+std::unique_ptr<AudioInjector> BasicDesktopEnvironment::CreateAudioInjector() {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
-  return interaction_strategy_->CreateRemoteAudioInput();
+  return interaction_strategy_->CreateAudioInjector();
 }
 
 std::unique_ptr<DesktopCapturer> BasicDesktopEnvironment::CreateVideoCapturer(

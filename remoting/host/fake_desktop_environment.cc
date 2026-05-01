@@ -169,8 +169,7 @@ FakeDesktopEnvironment::CreateRemoteWebAuthnStateChangeNotifier() {
   return nullptr;
 }
 
-std::unique_ptr<RemoteAudioInput>
-FakeDesktopEnvironment::CreateRemoteAudioInput() {
+std::unique_ptr<AudioInjector> FakeDesktopEnvironment::CreateAudioInjector() {
   return nullptr;
 }
 

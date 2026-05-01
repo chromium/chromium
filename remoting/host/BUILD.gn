@@ -112,6 +112,7 @@ source_set("host_main_headers") {
 source_set("common_headers") {
   visibility = [ "//remoting/host/*" ]
   sources = [
+    "audio_injector.h",
     "audio_silence_detector.h",
     "audio_volume_filter.h",
     "basic_desktop_environment.h",
@@ -131,7 +132,6 @@ source_set("common_headers") {
     "pam_utils.h",
     "persistent_display_layout_manager.h",
     "polling_desktop_display_info_monitor.h",
-    "remote_audio_input.h",
     "sas_injector.h",
     "usage_stats_consent.h",
     "worker_process_ipc_delegate.h",
@@ -397,6 +397,7 @@ static_library("common") {
     "action_message_handler.h",
     "active_display_monitor.cc",
     "audio_capturer.cc",
+    "audio_injector.cc",
     "audio_silence_detector.cc",
     "audio_volume_filter.cc",
     "backoff_timer.cc",
@@ -516,7 +517,6 @@ static_library("common") {
     "register_support_host_request.h",
     "register_support_host_request_base.cc",
     "register_support_host_request_base.h",
-    "remote_audio_input.cc",
     "remote_input_filter.cc",
     "remote_input_filter.h",
     "remoting_register_support_host_request.cc",

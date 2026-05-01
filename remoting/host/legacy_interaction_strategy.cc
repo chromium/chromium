@@ -194,8 +194,8 @@ LegacyInteractionStrategy::CreateActiveDisplayMonitor(
   return ActiveDisplayMonitor::Create(ui_task_runner_, std::move(callback));
 }
 
-std::unique_ptr<RemoteAudioInput>
-LegacyInteractionStrategy::CreateRemoteAudioInput() {
+std::unique_ptr<AudioInjector>
+LegacyInteractionStrategy::CreateAudioInjector() {
   return nullptr;
 }
 

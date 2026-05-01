@@ -26,10 +26,10 @@
 #include "remoting/host/linux/ei_keyboard_layout_monitor.h"
 #include "remoting/host/linux/gnome_action_executor.h"
 #include "remoting/host/linux/gnome_desktop_display_info_monitor.h"
+#include "remoting/host/linux/pipewire_audio_injector.h"
 #include "remoting/host/linux/pipewire_desktop_capturer.h"
 #include "remoting/host/linux/pipewire_local_input_monitor.h"
 #include "remoting/host/linux/pipewire_mouse_cursor_monitor.h"
-#include "remoting/host/linux/pipewire_remote_audio_input.h"
 #include "remoting/protocol/desktop_capturer_proxy.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 
@@ -143,9 +143,8 @@ GnomeInteractionStrategy::CreateActiveDisplayMonitor(
   return nullptr;
 }
 
-std::unique_ptr<RemoteAudioInput>
-GnomeInteractionStrategy::CreateRemoteAudioInput() {
-  return PipewireRemoteAudioInput::Create();
+std::unique_ptr<AudioInjector> GnomeInteractionStrategy::CreateAudioInjector() {
+  return PipewireAudioInjector::Create();
 }
 
 std::unique_ptr<DesktopDisplayInfoMonitor>

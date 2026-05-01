@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "remoting/host/linux/pipewire_remote_audio_input.h"
+#include "remoting/host/linux/pipewire_audio_injector.h"
 
 #include <pipewire/pipewire.h>
 #include <pipewire/proxy.h>
@@ -38,7 +38,7 @@ constexpr uint32_t kAudioChannels = 1;
 // is called on the caller's sequence. Handle*() methods are called on the
 // PipeWire thread. ScopedThreadLoopLock is used whenever the caller's sequence
 // needs to access PipeWire resources to ensure thread safety.
-class PipewireRemoteAudioInput::Core {
+class PipewireAudioInjector::Core {
  public:
   Core();
   Core(const Core&) = delete;
@@ -46,7 +46,7 @@ class PipewireRemoteAudioInput::Core {
   ~Core();
 
   bool Start(base::WeakPtr<Delegate> delegate);
-  void OnAudioPacket(std::unique_ptr<AudioPacket> packet);
+  void InjectAudioPacket(std::unique_ptr<AudioPacket> packet);
 
  private:
   static void OnStreamStateChanged(void* data,
@@ -76,7 +76,7 @@ class PipewireRemoteAudioInput::Core {
   void HandleRegistryGlobalRemove(uint32_t id);
 
   const raw_ref<RemotingPipewireLoader> pw_{GetPipewireLoader()};
-  base::RepeatingCallback<void(bool)> on_active_consumers_changed_cb_;
+  base::RepeatingCallback<void(bool)> on_audio_injector_consumers_changed_cb_;
 
   ScopedPipewireMainLoop pw_main_loop_;
   ScopedPipewireContext pw_context_;
@@ -96,12 +96,12 @@ class PipewireRemoteAudioInput::Core {
   std::map<uint32_t, uint32_t> pending_links_;
 };
 
-PipewireRemoteAudioInput::Core::Core() {
+PipewireAudioInjector::Core::Core() {
   CHECK(EnsurePipewireInitialized()) << "PipeWire library is not initialized.";
 }
 
 DISABLE_CFI_DLSYM
-PipewireRemoteAudioInput::Core::~Core() {
+PipewireAudioInjector::Core::~Core() {
   if (!pw_main_loop_) {
     return;
   }
@@ -117,12 +117,12 @@ PipewireRemoteAudioInput::Core::~Core() {
 }
 
 DISABLE_CFI_DLSYM
-bool PipewireRemoteAudioInput::Core::Start(base::WeakPtr<Delegate> delegate) {
-  on_active_consumers_changed_cb_ = base::BindPostTask(
+bool PipewireAudioInjector::Core::Start(base::WeakPtr<Delegate> delegate) {
+  on_audio_injector_consumers_changed_cb_ = base::BindPostTask(
       base::SequencedTaskRunner::GetCurrentDefault(),
-      base::BindRepeating(&Delegate::OnActiveConsumersChanged, delegate));
-  pw_main_loop_.reset(
-      pw_->pw_thread_loop_new("crd-remote-audio-input", nullptr));
+      base::BindRepeating(&Delegate::OnAudioInjectorConsumersChanged,
+                          delegate));
+  pw_main_loop_.reset(pw_->pw_thread_loop_new("crd-audio-injector", nullptr));
   if (!pw_main_loop_) {
     LOG(ERROR) << "Failed to create PipeWire thread loop.";
     return false;
@@ -157,8 +157,8 @@ bool PipewireRemoteAudioInput::Core::Start(base::WeakPtr<Delegate> delegate) {
 
   static const struct pw_registry_events kRegistryEvents = {
       .version = PW_VERSION_REGISTRY_EVENTS,
-      .global = &PipewireRemoteAudioInput::Core::OnRegistryGlobal,
-      .global_remove = &PipewireRemoteAudioInput::Core::OnRegistryGlobalRemove,
+      .global = &PipewireAudioInjector::Core::OnRegistryGlobal,
+      .global_remove = &PipewireAudioInjector::Core::OnRegistryGlobalRemove,
   };
 
   pw_->pw_proxy_add_object_listener(pw_registry_.get(), &spa_registry_listener_,
@@ -176,8 +176,8 @@ bool PipewireRemoteAudioInput::Core::Start(base::WeakPtr<Delegate> delegate) {
 
   static const struct pw_stream_events kStreamEvents = {
       .version = PW_VERSION_STREAM_EVENTS,
-      .state_changed = &PipewireRemoteAudioInput::Core::OnStreamStateChanged,
-      .process = &PipewireRemoteAudioInput::Core::OnStreamProcess,
+      .state_changed = &PipewireAudioInjector::Core::OnStreamStateChanged,
+      .process = &PipewireAudioInjector::Core::OnStreamProcess,
   };
 
   pw_stream_ = CreatePipewireStream(pw_core_, props, &kStreamEvents, this,
@@ -189,13 +189,13 @@ bool PipewireRemoteAudioInput::Core::Start(base::WeakPtr<Delegate> delegate) {
   return true;
 }
 
-void PipewireRemoteAudioInput::Core::OnAudioPacket(
+void PipewireAudioInjector::Core::InjectAudioPacket(
     std::unique_ptr<AudioPacket> packet) {
   NOTIMPLEMENTED_LOG_ONCE();
 }
 
 // static
-void PipewireRemoteAudioInput::Core::OnStreamStateChanged(
+void PipewireAudioInjector::Core::OnStreamStateChanged(
     void* data,
     enum pw_stream_state old_state,
     enum pw_stream_state state,
@@ -204,7 +204,7 @@ void PipewireRemoteAudioInput::Core::OnStreamStateChanged(
 }
 
 DISABLE_CFI_DLSYM
-void PipewireRemoteAudioInput::Core::HandleStreamStateChanged(
+void PipewireAudioInjector::Core::HandleStreamStateChanged(
     enum pw_stream_state old_state,
     enum pw_stream_state state,
     const char* error) {
@@ -229,23 +229,23 @@ void PipewireRemoteAudioInput::Core::HandleStreamStateChanged(
     pending_links_.clear();
 
     if (was_empty && !active_links_.empty()) {
-      on_active_consumers_changed_cb_.Run(true);
+      on_audio_injector_consumers_changed_cb_.Run(true);
     }
   }
 }
 
 // static
-void PipewireRemoteAudioInput::Core::OnStreamProcess(void* data) {
+void PipewireAudioInjector::Core::OnStreamProcess(void* data) {
   static_cast<Core*>(data)->HandleStreamProcess();
 }
 
 DISABLE_CFI_DLSYM
-void PipewireRemoteAudioInput::Core::HandleStreamProcess() {
+void PipewireAudioInjector::Core::HandleStreamProcess() {
   NOTIMPLEMENTED_LOG_ONCE();
 }
 
 // static
-void PipewireRemoteAudioInput::Core::OnRegistryGlobal(
+void PipewireAudioInjector::Core::OnRegistryGlobal(
     void* data,
     uint32_t id,
     uint32_t permissions,
@@ -257,7 +257,7 @@ void PipewireRemoteAudioInput::Core::OnRegistryGlobal(
 }
 
 DISABLE_CFI_DLSYM
-void PipewireRemoteAudioInput::Core::HandleRegistryGlobal(
+void PipewireAudioInjector::Core::HandleRegistryGlobal(
     uint32_t id,
     uint32_t permissions,
     const char* type,
@@ -283,46 +283,46 @@ void PipewireRemoteAudioInput::Core::HandleRegistryGlobal(
     return;
   }
   if (active_links_.empty()) {
-    on_active_consumers_changed_cb_.Run(true);
+    on_audio_injector_consumers_changed_cb_.Run(true);
   }
   active_links_.insert(id);
 }
 
 // static
-void PipewireRemoteAudioInput::Core::OnRegistryGlobalRemove(void* data,
-                                                            uint32_t id) {
+void PipewireAudioInjector::Core::OnRegistryGlobalRemove(void* data,
+                                                         uint32_t id) {
   static_cast<Core*>(data)->HandleRegistryGlobalRemove(id);
 }
 
-void PipewireRemoteAudioInput::Core::HandleRegistryGlobalRemove(uint32_t id) {
+void PipewireAudioInjector::Core::HandleRegistryGlobalRemove(uint32_t id) {
   pending_links_.erase(id);
   if (active_links_.erase(id) > 0 && active_links_.empty()) {
-    on_active_consumers_changed_cb_.Run(false);
+    on_audio_injector_consumers_changed_cb_.Run(false);
   }
 }
 
-PipewireRemoteAudioInput::PipewireRemoteAudioInput() {
+PipewireAudioInjector::PipewireAudioInjector() {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
-PipewireRemoteAudioInput::~PipewireRemoteAudioInput() {
+PipewireAudioInjector::~PipewireAudioInjector() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
 // static
-bool PipewireRemoteAudioInput::IsSupported() {
+bool PipewireAudioInjector::IsSupported() {
   return EnsurePipewireInitialized();
 }
 
 // static
-std::unique_ptr<PipewireRemoteAudioInput> PipewireRemoteAudioInput::Create() {
+std::unique_ptr<PipewireAudioInjector> PipewireAudioInjector::Create() {
   if (!IsSupported()) {
     return nullptr;
   }
-  return std::make_unique<PipewireRemoteAudioInput>();
+  return std::make_unique<PipewireAudioInjector>();
 }
 
-bool PipewireRemoteAudioInput::Start(base::WeakPtr<Delegate> delegate) {
+bool PipewireAudioInjector::Start(base::WeakPtr<Delegate> delegate) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   core_ = std::make_unique<Core>();
@@ -333,12 +333,12 @@ bool PipewireRemoteAudioInput::Start(base::WeakPtr<Delegate> delegate) {
   return true;
 }
 
-void PipewireRemoteAudioInput::OnAudioPacket(
+void PipewireAudioInjector::InjectAudioPacket(
     std::unique_ptr<AudioPacket> packet) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(core_) << "Start() has not been called.";
 
-  core_->OnAudioPacket(std::move(packet));
+  core_->InjectAudioPacket(std::move(packet));
 }
 
 }  // namespace remoting

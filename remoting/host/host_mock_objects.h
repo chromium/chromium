@@ -20,6 +20,7 @@
 #include "remoting/host/action_executor.h"
 #include "remoting/host/active_display_monitor.h"
 #include "remoting/host/audio_capturer.h"
+#include "remoting/host/audio_injector.h"
 #include "remoting/host/base/desktop_environment_options.h"
 #include "remoting/host/base/screen_controls.h"
 #include "remoting/host/chromoting_host_services_provider.h"
@@ -36,7 +37,6 @@
 #include "remoting/host/mojom/chromoting_host_services.mojom.h"
 #include "remoting/host/mojom/remote_url_opener.mojom.h"
 #include "remoting/host/mojom/webauthn_proxy.mojom.h"
-#include "remoting/host/remote_audio_input.h"
 #include "remoting/host/remote_open_url/url_forwarder_configurator.h"
 #include "remoting/host/security_key/security_key_auth_handler.h"
 #include "remoting/host/webauthn/remote_webauthn_state_change_notifier.h"
@@ -107,8 +107,8 @@ class MockDesktopEnvironment : public DesktopEnvironment {
               CreateRemoteWebAuthnStateChangeNotifier,
               (),
               (override));
-  MOCK_METHOD(std::unique_ptr<RemoteAudioInput>,
-              CreateRemoteAudioInput,
+  MOCK_METHOD(std::unique_ptr<AudioInjector>,
+              CreateAudioInjector,
               (),
               (override));
   MOCK_METHOD(std::string, GetCapabilities, (), (const, override));
