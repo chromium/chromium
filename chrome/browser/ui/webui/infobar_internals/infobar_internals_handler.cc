@@ -5,13 +5,15 @@
 #include "chrome/browser/ui/webui/infobar_internals/infobar_internals_handler.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
-#include <string>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
+#include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/devtools/devtools_infobar_delegate.h"
@@ -22,15 +24,19 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_ui.h"
 #include "extensions/buildflags/buildflags.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/api/debugger/extension_dev_tools_infobar_delegate.h"
+#include "chrome/browser/extensions/api/messaging/incognito_connectability.h"
+#include "chrome/browser/extensions/api/messaging/incognito_connectability_infobar_delegate.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
 #endif
@@ -97,6 +103,16 @@ void InfoBarInternalsHandler::GetInfoBars(GetInfoBarsCallback callback) {
       "The Extension DevTools infobar is used to globally warn users "
       "that an extension is debugging the browser. This trigger shows "
       "the infobar."));
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  infobar_list.emplace_back(InfoBarEntry::New(
+      /*type=*/InfoBarType::kIncognitoConnectability,
+      /*name=*/"Incognito Connectability",
+      /*description=*/
+      "The Incognito Connectability infobar is used to ask the user if they "
+      "want to allow an extension to communicate with a website in "
+      "incognito mode. This trigger shows the infobar."));
+#endif
 
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   infobar_list.emplace_back(InfoBarEntry::New(
@@ -197,6 +213,52 @@ bool InfoBarInternalsHandler::TriggerInfoBarInternal(InfoBarType type) {
       subscriptions_.push_back(
           extensions::ExtensionDevToolsInfoBarDelegate::Create(
               extension_id, extension_name, /*callback=*/base::DoNothing()));
+      return true;
+#else
+      return false;
+#endif
+    }
+    case InfoBarType::kIncognitoConnectability: {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+      BrowserWindowInterface* const bwi =
+          GetLastActiveBrowserWindowInterfaceWithAnyProfile();
+      Profile* profile = bwi->GetProfile();
+      if (!profile || !bwi->GetActiveTabInterface()) {
+        return false;
+      }
+
+      content::WebContents* web_contents =
+          bwi->GetActiveTabInterface()->GetContents();
+
+      extensions::ExtensionRegistry* registry =
+          extensions::ExtensionRegistry::Get(profile);
+      const extensions::ExtensionSet& extensions =
+          registry->enabled_extensions();
+
+      const extensions::Extension* extension = nullptr;
+      if (!extensions.empty()) {
+        extension = extensions.begin()->get();
+      }
+
+      if (profile->IsOffTheRecord() && extension) {
+        extensions::IncognitoConnectability::Get(profile)->Query(
+            extension, web_contents,
+            GURL("https://infobar-internals.google.com"), base::DoNothing());
+        return true;
+      }
+
+      // Fallback: If not in incognito or no extension, show a visually
+      // accurate infobar using the delegate.
+      infobars::ContentInfoBarManager* infobar_manager =
+          infobars::ContentInfoBarManager::FromWebContents(web_contents);
+      std::u16string extension_name =
+          extension ? base::UTF8ToUTF16(extension->name()) : u"Dummy Extension";
+      std::u16string message = l10n_util::GetStringFUTF16(
+          IDS_EXTENSION_PROMPT_EXTENSION_CONNECT_FROM_INCOGNITO,
+          u"Infobar Internals", extension_name);
+
+      extensions::IncognitoConnectabilityInfoBarDelegate::Create(
+          infobar_manager, message, base::DoNothing());
       return true;
 #else
       return false;

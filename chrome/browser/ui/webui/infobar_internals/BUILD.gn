@@ -11,8 +11,12 @@ mojom("mojo_bindings") {
 
   public_deps = [ "//mojo/public/mojom/base" ]
 
+  enabled_features = []
+  if (enable_extensions) {
+    enabled_features += [ "enable_extensions" ]
+  }
   if (is_win && is_chrome_branded) {
-    enabled_features = [ "is_win_and_chrome_branded" ]
+    enabled_features += [ "is_win_and_chrome_branded" ]
   }
 }
 
@@ -49,6 +53,7 @@ source_set("impl") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/infobar_internals:resources",
     "//chrome/browser/ui/browser_window",
+    "//components/infobars/content:content",
     "//content/public/browser",
   ]
 
@@ -75,6 +80,7 @@ source_set("impl") {
   if (enable_extensions) {
     deps += [
       "//chrome/browser/extensions/api/debugger",
+      "//chrome/browser/extensions/api/messaging",
       "//extensions/browser",
       "//extensions/common",
     ]

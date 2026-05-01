@@ -18,6 +18,10 @@ enum InfoBarType {
   // Extension DevTools infobar.
   kExtensionDevTools,
 
+  // Incognito connectability infobar.
+  [EnableIf=enable_extensions]
+  kIncognitoConnectability,
+
   // Installer downloader infobar. Can only be triggered on Windows.
   [EnableIf=is_win_and_chrome_branded]
   kInstallerDownloader,
