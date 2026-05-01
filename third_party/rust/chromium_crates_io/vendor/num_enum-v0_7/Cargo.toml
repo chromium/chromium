@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.70.0"
 name = "num_enum"
-version = "0.7.5"
+version = "0.7.6"
 authors = [
     "Daniel Wagner-Hall <dawagner@gmail.com>",
     "Daniel Henry-Mantilla <daniel.henry.mantilla@gmail.com>",
@@ -83,7 +83,7 @@ name = "unsafe_from_primitive"
 path = "tests/unsafe_from_primitive.rs"
 
 [dependencies.num_enum_derive]
-version = "=0.7.5"
+version = "=0.7.6"
 default-features = false
 
 [dependencies.rustversion]

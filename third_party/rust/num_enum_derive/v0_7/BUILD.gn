@@ -28,7 +28,7 @@ cargo_crate("lib") {
   cargo_pkg_name = "num_enum_derive"
   cargo_pkg_description = "Internal implementation details for ::num_enum (Procedural macros to make inter-operation between primitives and enums easier)"
   cargo_pkg_repository = "https://github.com/illicitonion/num_enum"
-  cargo_pkg_version = "0.7.5"
+  cargo_pkg_version = "0.7.6"
 
   allow_unsafe = false
 

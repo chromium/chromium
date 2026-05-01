@@ -161,6 +161,8 @@ fn discriminant_expressions() {
         Four = 4u8,
         Five,
         Six = ONE + ONE + 2u8 + 2,
+        Seven = b'\x07',
+        Eight = b'\x07' + ONE,
     }
 
     let zero: Result<Enum, _> = 0u8.try_into();
@@ -186,6 +188,12 @@ fn discriminant_expressions() {
 
     let six: Result<Enum, _> = 6u8.try_into();
     assert_eq!(six, Ok(Enum::Six));
+
+    let seven: Result<Enum, _> = 7u8.try_into();
+    assert_eq!(seven, Ok(Enum::Seven));
+
+    let eight: Result<Enum, _> = 8u8.try_into();
+    assert_eq!(eight, Ok(Enum::Eight));
 }
 
 #[cfg(feature = "complex-expressions")]
@@ -393,7 +401,7 @@ fn alternative_values() {
     #[repr(i8)]
     enum Enum {
         Zero = 0,
-        #[num_enum(alternatives = [-1, 2, 3])]
+        #[num_enum(alternatives = [-1, 2, b'\x03'])]
         OneTwoThreeOrMinusOne = 1,
     }
 

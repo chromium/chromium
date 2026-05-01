@@ -1,6 +1,6 @@
 [package]
 name = "num_enum_derive"
-version = "0.7.5"  # Keep in sync with num_enum.
+version = "0.7.6" # Keep in sync with num_enum.
 rust-version = "1.70.0"
 authors = [
   "Daniel Wagner-Hall <dawagner@gmail.com>",
@@ -26,7 +26,7 @@ std = ["proc-macro-crate"]
 complex-expressions = ["syn/full"]
 external_doc = []
 
-default = ["std"]  # disable to use in a `no_std` environment
+default = ["std"] # disable to use in a `no_std` environment
 
 [package.metadata.docs.rs]
 features = ["external_doc"]

@@ -1,6 +1,6 @@
 [package]
 name = "num_enum"
-version = "0.7.5"  # Keep in sync with num_enum_derive, the the dependency on it below.
+version = "0.7.6"  # Keep in sync with num_enum_derive, the the dependency on it below.
 rust-version = "1.70.0"
 authors = [
   "Daniel Wagner-Hall <dawagner@gmail.com>",
@@ -30,7 +30,7 @@ maintenance = { status = "passively-maintained" }
 
 [dependencies]
 rustversion = "1.0.4"
-num_enum_derive = { version = "=0.7.5", path = "../num_enum_derive", default-features = false }
+num_enum_derive = { version = "=0.7.6", path = "../num_enum_derive", default-features = false }
 
 [dev-dependencies]
 anyhow = "1.0.14"

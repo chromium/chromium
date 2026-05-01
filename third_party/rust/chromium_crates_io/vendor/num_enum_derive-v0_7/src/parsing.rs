@@ -429,16 +429,20 @@ fn parse_discriminant(val_exp: &Expr) -> Result<DiscriminantValue> {
         unsigned_expr = expr;
         sign = -1;
     }
-    if let Expr::Lit(ExprLit {
-        lit: Lit::Int(ref lit_int),
-        ..
-    }) = unsigned_expr
-    {
-        Ok(DiscriminantValue::Literal(
+    match unsigned_expr {
+        Expr::Lit(ExprLit {
+            lit: Lit::Int(lit_int),
+            ..
+        }) => Ok(DiscriminantValue::Literal(
             sign * lit_int.base10_parse::<i128>()?,
-        ))
-    } else {
-        Ok(DiscriminantValue::Expr(val_exp.clone()))
+        )),
+        Expr::Lit(ExprLit {
+            lit: Lit::Byte(lit_byte),
+            ..
+        }) => Ok(DiscriminantValue::Literal(
+            sign * i128::from(lit_byte.value()),
+        )),
+        _ => Ok(DiscriminantValue::Expr(val_exp.clone())),
     }
 }
 
