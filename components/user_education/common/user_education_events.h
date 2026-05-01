@@ -12,10 +12,6 @@ namespace user_education {
 
 DECLARE_EXPORTED_CUSTOM_ELEMENT_EVENT_TYPE(
     COMPONENT_EXPORT(USER_EDUCATION_COMMON_EVENTS),
-    kHelpBubbleAnchorBoundsChangedEvent);
-
-DECLARE_EXPORTED_CUSTOM_ELEMENT_EVENT_TYPE(
-    COMPONENT_EXPORT(USER_EDUCATION_COMMON_EVENTS),
     kHelpBubbleNextButtonClickedEvent);
 
 }  // namespace user_education

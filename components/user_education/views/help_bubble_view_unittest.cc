@@ -14,7 +14,6 @@
 #include "components/user_education/common/feature_promo/feature_promo_specification.h"
 #include "components/user_education/common/help_bubble/help_bubble.h"
 #include "components/user_education/common/help_bubble/help_bubble_params.h"
-#include "components/user_education/common/user_education_events.h"
 #include "components/user_education/views/help_bubble_delegate.h"
 #include "components/user_education/views/help_bubble_factory_views.h"
 #include "components/user_education/views/help_bubble_view_info.h"
@@ -32,6 +31,7 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
+#include "ui/views/interaction/view_subregion_anchor.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/metadata/view_factory.h"
@@ -398,7 +398,8 @@ TEST_F(HelpBubbleViewsTest, AnchorRectUpdated) {
   new_bounds.Offset(kAnchorOffset);
   test_element_->SetScreenBounds(new_bounds);
   ui::ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(
-      test_element_.get(), kHelpBubbleAnchorBoundsChangedEvent);
+      test_element_.get(),
+      views::ViewSubregionAnchor::kAnchorBoundsChangedEvent);
 
   // Verify that the help bubble has moved by a similar amount.
   gfx::Rect expected = old_bounds;
@@ -417,7 +418,8 @@ TEST_F(HelpBubbleViewsTest, AnchorRectOverlapsEdge) {
   new_bounds.Offset(-100, -100);
   test_element_->SetScreenBounds(new_bounds);
   ui::ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(
-      test_element_.get(), kHelpBubbleAnchorBoundsChangedEvent);
+      test_element_.get(),
+      views::ViewSubregionAnchor::kAnchorBoundsChangedEvent);
 
   // Verify that the help bubble has moved.
   constexpr gfx::Rect kNewAnchorBounds{kWidgetBounds.x(), kWidgetBounds.y(), 50,
@@ -457,7 +459,8 @@ TEST_F(HelpBubbleViewsTest, AnchorOutsideBoundsHorizontal) {
   new_bounds.Offset(200, 0);
   test_element_->SetScreenBounds(new_bounds);
   ui::ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(
-      test_element_.get(), kHelpBubbleAnchorBoundsChangedEvent);
+      test_element_.get(),
+      views::ViewSubregionAnchor::kAnchorBoundsChangedEvent);
 
   // Verify that the help bubble has moved. It might be mirrored, however.
   constexpr gfx::Rect kNewAnchorBounds{kWidgetBounds.right() - 1,
@@ -480,7 +483,8 @@ TEST_F(HelpBubbleViewsTest, AnchorOutsideBoundsVertical) {
   new_bounds.Offset(0, 200);
   test_element_->SetScreenBounds(new_bounds);
   ui::ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(
-      test_element_.get(), kHelpBubbleAnchorBoundsChangedEvent);
+      test_element_.get(),
+      views::ViewSubregionAnchor::kAnchorBoundsChangedEvent);
 
   // Verify that the help bubble has moved. It might be mirrored, however.
   constexpr gfx::Rect kNewAnchorBounds{kWidgetBounds.x() + 50,

@@ -15,13 +15,13 @@
 #include "components/user_education/views/help_bubble_view.h"
 #include "components/user_education/views/help_bubble_views.h"
 #include "components/user_education/views/help_bubble_views_test_util.h"
-#include "components/user_education/views/view_subregion_anchor.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
 #include "ui/base/interaction/interaction_sequence_test_util.h"
 #include "ui/base/interaction/interaction_test_util.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
+#include "ui/views/interaction/view_subregion_anchor.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/test/widget_test.h"
@@ -126,8 +126,8 @@ class HelpBubbleFactoryViewsSubregionAnchorTest
 
   void SetUp() override {
     HelpBubbleFactoryViewsTest::SetUp();
-    anchor_ =
-        std::make_unique<ViewSubregionAnchor>(kTestAnchorId, *anchor_view_);
+    anchor_ = std::make_unique<views::ViewSubregionAnchor>(kTestAnchorId,
+                                                           *anchor_view_);
   }
 
   void TearDown() override {
@@ -168,7 +168,7 @@ class HelpBubbleFactoryViewsSubregionAnchorTest
     return factory_.CreateBubble(anchor_.get(), std::move(params));
   }
 
-  std::unique_ptr<ViewSubregionAnchor> anchor_;
+  std::unique_ptr<views::ViewSubregionAnchor> anchor_;
 };
 
 TEST_F(HelpBubbleFactoryViewsSubregionAnchorTest,

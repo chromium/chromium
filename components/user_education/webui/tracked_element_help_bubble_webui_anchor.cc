@@ -13,6 +13,7 @@
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/framework_specific_implementation.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/views/interaction/view_subregion_anchor.h"
 
 namespace user_education {
 
@@ -53,7 +54,7 @@ void TrackedElementHelpBubbleWebUIAnchor::SetVisible(bool visible,
       last_known_bounds_ = bounds;
       // This event signals that the bounds of the element have been updated.
       ui::ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(
-          this, kHelpBubbleAnchorBoundsChangedEvent);
+          this, views::ViewSubregionAnchor::kAnchorBoundsChangedEvent);
     }
     return;
   }

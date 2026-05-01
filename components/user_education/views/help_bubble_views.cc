@@ -16,6 +16,7 @@
 #include "ui/views/accessible_pane_view.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/interaction/element_tracker_views.h"
+#include "ui/views/interaction/view_subregion_anchor.h"
 
 namespace user_education {
 
@@ -60,7 +61,8 @@ HelpBubbleViews::HelpBubbleViews(HelpBubbleViewInfo info,
                               base::Unretained(this)));
   anchor_bounds_changed_subscription_ =
       ui::ElementTracker::GetElementTracker()->AddCustomEventCallback(
-          kHelpBubbleAnchorBoundsChangedEvent, anchor_element->context(),
+          views::ViewSubregionAnchor::kAnchorBoundsChangedEvent,
+          anchor_element->context(),
           base::BindRepeating(&HelpBubbleViews::OnElementBoundsChanged,
                               base::Unretained(this)));
 }

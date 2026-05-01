@@ -64,7 +64,6 @@
 #include "components/account_id/account_id.h"
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
 #include "components/services/app_service/public/cpp/app_types.h"
-#include "components/user_education/common/user_education_events.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/aura/window.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
@@ -97,6 +96,7 @@
 #include "ui/views/controls/separator.h"
 #include "ui/views/focus/focus_search.h"
 #include "ui/views/interaction/element_tracker_views.h"
+#include "ui/views/interaction/view_subregion_anchor.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_model.h"
 #include "ui/views/view_model_utils.h"
@@ -1455,7 +1455,7 @@ void ShelfView::LayoutToIdealBounds() {
   // Notify user education features that anchor bounds have changed.
   if (features::IsUserEducationEnabled()) {
     views::ElementTrackerViews::GetInstance()->NotifyCustomEvent(
-        user_education::kHelpBubbleAnchorBoundsChangedEvent, this);
+        views::ViewSubregionAnchor::kAnchorBoundsChangedEvent, this);
   }
 }
 
@@ -2631,7 +2631,7 @@ void ShelfView::OnBoundsAnimatorProgressed(views::BoundsAnimator* animator) {
   // Notify user education features that anchor bounds have changed.
   if (features::IsUserEducationEnabled()) {
     views::ElementTrackerViews::GetInstance()->NotifyCustomEvent(
-        user_education::kHelpBubbleAnchorBoundsChangedEvent, this);
+        views::ViewSubregionAnchor::kAnchorBoundsChangedEvent, this);
   }
 
   // Do not call PreferredSizeChanged() so that container does not re-layout

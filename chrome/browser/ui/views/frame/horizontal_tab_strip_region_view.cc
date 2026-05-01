@@ -46,7 +46,6 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/commerce/core/commerce_feature_list.h"
-#include "components/user_education/views/view_subregion_anchor.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/clipboard/clipboard_constants.h"
@@ -66,6 +65,7 @@
 #include "ui/views/border.h"
 #include "ui/views/cascading_property.h"
 #include "ui/views/controls/button/image_button.h"
+#include "ui/views/interaction/view_subregion_anchor.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/style/typography.h"
@@ -97,7 +97,7 @@ class FrameGrabHandle : public views::View {
   }
 
   void AddedToWidget() override {
-    dialog_anchor_ = std::make_unique<user_education::ViewSubregionAnchor>(
+    dialog_anchor_ = std::make_unique<views::ViewSubregionAnchor>(
         kTabStripFrameDialogAnchorId, *this);
   }
 
@@ -114,7 +114,7 @@ class FrameGrabHandle : public views::View {
  private:
   // Anchor point for help bubbles and other dialogs that lies in an empty
   // region of the tabstrip.
-  std::unique_ptr<user_education::ViewSubregionAnchor> dialog_anchor_;
+  std::unique_ptr<views::ViewSubregionAnchor> dialog_anchor_;
 };
 
 BEGIN_METADATA(FrameGrabHandle)

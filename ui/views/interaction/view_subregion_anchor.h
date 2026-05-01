@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_USER_EDUCATION_VIEWS_VIEW_SUBREGION_ANCHOR_H_
-#define COMPONENTS_USER_EDUCATION_VIEWS_VIEW_SUBREGION_ANCHOR_H_
+#ifndef UI_VIEWS_INTERACTION_VIEW_SUBREGION_ANCHOR_H_
+#define UI_VIEWS_INTERACTION_VIEW_SUBREGION_ANCHOR_H_
+
+#include <string>
 
 #include "base/callback_list.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -11,12 +13,14 @@
 #include "ui/base/interaction/framework_specific_implementation.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/view.h"
+#include "ui/views/views_export.h"
 
-namespace user_education {
+namespace views {
 
 // Creates a synthetic anchor element which tracks a subregion of a view.
-class ViewSubregionAnchor : public ui::TrackedElement {
+class VIEWS_EXPORT ViewSubregionAnchor : public ui::TrackedElement {
  public:
+  DECLARE_CLASS_CUSTOM_ELEMENT_EVENT_TYPE(kAnchorBoundsChangedEvent);
   DECLARE_FRAMEWORK_SPECIFIC_METADATA()
 
   // Creates a synthetic help bubble anchor with identifier `id` that tracks the
@@ -58,6 +62,6 @@ class ViewSubregionAnchor : public ui::TrackedElement {
   base::CallbackListSubscription anchor_view_hidden_subscription_;
 };
 
-}  // namespace user_education
+}  // namespace views
 
-#endif  // COMPONENTS_USER_EDUCATION_VIEWS_VIEW_SUBREGION_ANCHOR_H_
+#endif  // UI_VIEWS_INTERACTION_VIEW_SUBREGION_ANCHOR_H_

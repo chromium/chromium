@@ -2,18 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/user_education/views/view_subregion_anchor.h"
+#include "ui/views/interaction/view_subregion_anchor.h"
 
 #include <algorithm>
 
-#include "components/user_education/common/user_education_events.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
-namespace user_education {
+namespace views {
+
+DEFINE_CLASS_CUSTOM_ELEMENT_EVENT_TYPE(ViewSubregionAnchor,
+                                       kAnchorBoundsChangedEvent);
 
 DEFINE_FRAMEWORK_SPECIFIC_METADATA(ViewSubregionAnchor)
 
@@ -58,7 +60,7 @@ void ViewSubregionAnchor::MaybeUpdateAnchor(gfx::Rect local_anchor_region) {
   last_anchor_region_ = local_anchor_region;
   if (visible_) {
     ui::ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(
-        this, kHelpBubbleAnchorBoundsChangedEvent);
+        this, kAnchorBoundsChangedEvent);
   }
 }
 
@@ -123,4 +125,4 @@ void ViewSubregionAnchor::UpdateVisibility() {
   }
 }
 
-}  // namespace user_education
+}  // namespace views
