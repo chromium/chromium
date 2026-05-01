@@ -1363,6 +1363,10 @@ BASE_FEATURE(kOobePersonalizedOnboarding, base::FEATURE_ENABLED_BY_DEFAULT);
 // If enabled, Pre-consent metrics functionality is enabled during OOBE.
 BASE_FEATURE(kOobePreConsentMetrics, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// If enabled, skips ARC apps on 4GiB devices in OOBE personalized recommend
+// apps screen.
+BASE_FEATURE(kOobeSkipArcAppsOn4GbDevices, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, Consumer Software Screen will be shown during OOBE.
 BASE_FEATURE(kOobeSoftwareUpdate, base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -2992,6 +2996,10 @@ bool IsOobePersonalizedOnboardingEnabled() {
 
 bool IsOobePreConsentMetricsEnabled() {
   return base::FeatureList::IsEnabled(kOobePreConsentMetrics);
+}
+
+bool IsOobeSkipArcAppsOn4GbDevicesEnabled() {
+  return base::FeatureList::IsEnabled(kOobeSkipArcAppsOn4GbDevices);
 }
 
 bool IsOobeSoftwareUpdateEnabled() {

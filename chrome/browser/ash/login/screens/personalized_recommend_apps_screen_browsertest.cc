@@ -7,6 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
+#include "base/test/scoped_amount_of_physical_memory_override.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/oobe_apps_service/oobe_apps_discovery_service.h"
@@ -39,10 +40,12 @@ const test::UIPath kDialogPath = {kPersonalizedRecommendId,
 const test::UIPath kNextButton = {kPersonalizedRecommendId, "nextButton"};
 const test::UIPath kSkipButton = {kPersonalizedRecommendId, "skipButton"};
 
-const test::UIPath kApps1Checkbox = {
+const test::UIPath kArcApp1Checkbox = {
     kPersonalizedRecommendId, "categoriesAppsList", "cr-checkbox-uuid_1"};
-const test::UIPath kApps2Checkbox = {
+const test::UIPath kArcApp2Checkbox = {
     kPersonalizedRecommendId, "categoriesAppsList", "cr-checkbox-uuid_2"};
+const test::UIPath kWebApp1Checkbox = {
+    kPersonalizedRecommendId, "categoriesAppsList", "cr-checkbox-uuid_3"};
 
 oobe::proto::OOBEListResponse GenerateAppsList() {
   oobe::proto::OOBEListResponse response;
@@ -72,21 +75,21 @@ oobe::proto::OOBEListResponse GenerateAppsList() {
   auto* app_1 = response.add_apps();
   app_1->set_app_group_uuid("uuid_1");
   app_1->set_package_id("android:package_1");
-  app_1->set_name("app_1");
+  app_1->set_name("arc_app_1");
   app_1->add_tags("oobe_none");
   app_1->set_order(1);
 
   auto* app_2 = response.add_apps();
   app_2->set_app_group_uuid("uuid_2");
   app_2->set_package_id("android:package_2");
-  app_2->set_name("app_2");
+  app_2->set_name("arc_app_2");
   app_2->add_tags("oobe_none");
   app_2->set_order(2);
 
   auto* app_3 = response.add_apps();
   app_3->set_app_group_uuid("uuid_3");
   app_3->set_package_id("web:package_3");
-  app_3->set_name("app_3");
+  app_3->set_name("web_app_1");
   app_3->add_tags("oobe_none");
   app_3->set_order(3);
 
@@ -197,6 +200,21 @@ class PersonalizedRecommendAppsScreenTest : public OobeBaseTest {
   PersonalizedRecommendAppsScreen::ScreenExitCallback original_callback_;
 };
 
+// Fixture for testing behavior on 4GiB devices.
+class PersonalizedRecommendAppsScreenLowMemoryTest
+    : public PersonalizedRecommendAppsScreenTest {
+ public:
+  PersonalizedRecommendAppsScreenLowMemoryTest() {
+    memory_feature_list_.InitAndEnableFeature(
+        ash::features::kOobeSkipArcAppsOn4GbDevices);
+  }
+
+ private:
+  base::test::ScopedFeatureList memory_feature_list_;
+  base::test::ScopedAmountOfPhysicalMemoryOverride memory_override_{
+      base::GiBU(4)};
+};
+
 IN_PROC_BROWSER_TEST_F(PersonalizedRecommendAppsScreenTest, WithOldUser) {
   PerformLogin();
 
@@ -253,8 +271,8 @@ IN_PROC_BROWSER_TEST_F(PersonalizedRecommendAppsScreenTest, Next) {
 
   test::OobeJS().CreateVisibilityWaiter(true, kDialogPath)->Wait();
 
-  test::OobeJS().TapOnPath(kApps1Checkbox);
-  test::OobeJS().TapOnPath(kApps2Checkbox);
+  test::OobeJS().TapOnPath(kArcApp1Checkbox);
+  test::OobeJS().TapOnPath(kArcApp2Checkbox);
 
   test::OobeJS().TapOnPath(kNextButton);
 
@@ -262,6 +280,30 @@ IN_PROC_BROWSER_TEST_F(PersonalizedRecommendAppsScreenTest, Next) {
 
   EXPECT_EQ(result, PersonalizedRecommendAppsScreen::Result::kNext);
   // TODO(b/342623828): Add testing the apps install logic
+}
+
+IN_PROC_BROWSER_TEST_F(PersonalizedRecommendAppsScreenLowMemoryTest, Next) {
+  PerformLogin();
+  PrefService* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
+  prefs->SetBoolean(prefs::kOobeMarketingOptInScreenFinished, false);
+
+  ShowRecommendAppsScreenWithAlmanacSuccess();
+
+  OobeScreenWaiter(PersonalizedRecommendAppsScreenView::kScreenId).Wait();
+
+  test::OobeJS().CreateVisibilityWaiter(true, kDialogPath)->Wait();
+
+  // Ensure ARC app checkboxes are not rendered.
+  test::OobeJS().ExpectFalse(test::GetOobeElementPath(kArcApp1Checkbox));
+  test::OobeJS().ExpectFalse(test::GetOobeElementPath(kArcApp2Checkbox));
+
+  test::OobeJS().TapOnPath(kWebApp1Checkbox);
+
+  test::OobeJS().TapOnPath(kNextButton);
+
+  PersonalizedRecommendAppsScreen::Result result = WaitForScreenExitResult();
+
+  EXPECT_EQ(result, PersonalizedRecommendAppsScreen::Result::kNext);
 }
 
 class PersonalizedRecommendAppsScreenManagedTest

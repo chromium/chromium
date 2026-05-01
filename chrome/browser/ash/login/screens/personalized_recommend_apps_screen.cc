@@ -13,6 +13,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/system/sys_info.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/apps/app_service/app_install/app_install_service.h"
@@ -293,7 +294,16 @@ void PersonalizedRecommendAppsScreen::OnResponseReceived(
 
   app_package_id_to_order_.clear();
 
+  const bool is_4gb_device = base::SysInfo::Is4GbDevice();
+  const bool skip_arc_apps_on_4gb =
+      is_4gb_device && ash::features::IsOobeSkipArcAppsOn4GbDevicesEnabled();
+
   for (const auto& app : app_infos) {
+    // Skip ARC apps on 4GiB devices if enabled by feature flag.
+    if (skip_arc_apps_on_4gb && app.GetPlatform() == apps::PackageType::kArc) {
+      continue;
+    }
+
     if (app.GetPackageId() != std::nullopt) {
       app_package_id_to_order_[app.GetPackageId()->ToString()] = app.GetOrder();
     }
