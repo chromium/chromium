@@ -382,6 +382,7 @@ void ImeAdapterAndroid::ReplaceText(
     const base::android::JavaRef<jobject>& obj,
     int start,
     int end,
+    const base::android::JavaRef<jobject>& text,
     const base::android::JavaRef<jstring>& text_str,
     int relative_cursor_pos) {
   RenderWidgetHostImpl* rwhi = GetFocusedWidget();
@@ -392,7 +393,7 @@ void ImeAdapterAndroid::ReplaceText(
   std::u16string text16 = ConvertJavaStringToUTF16(env, text_str);
 
   std::vector<ui::ImeTextSpan> ime_text_spans =
-      GetImeTextSpansFromJava(env, obj, text_str, text16);
+      GetImeTextSpansFromJava(env, obj, text, text16);
 
   // relative_cursor_pos is as described in the Android API for
   // InputConnection#commitText, whereas the parameters for

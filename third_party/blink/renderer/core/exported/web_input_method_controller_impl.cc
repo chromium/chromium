@@ -171,8 +171,9 @@ bool WebInputMethodControllerImpl::CommitText(
 
   if (!replacement_range.IsNull()) {
     return GetInputMethodController().ReplaceTextAndKeepSelection(
-        text, PlainTextRange(replacement_range.StartOffset(),
-                             replacement_range.EndOffset()));
+        text, ImeTextSpanVectorBuilder::Build(ime_text_spans),
+        PlainTextRange(replacement_range.StartOffset(),
+                       replacement_range.EndOffset()));
   }
 
   return GetInputMethodController().CommitText(

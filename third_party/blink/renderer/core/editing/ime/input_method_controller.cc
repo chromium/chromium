@@ -721,8 +721,10 @@ bool InputMethodController::CommitText(
   return result;
 }
 
-bool InputMethodController::ReplaceTextAndKeepSelection(const String& text,
-                                                        PlainTextRange range) {
+bool InputMethodController::ReplaceTextAndKeepSelection(
+    const String& text,
+    const Vector<ImeTextSpan>& ime_text_spans,
+    PlainTextRange range) {
   EventQueueScope scope;
   const PlainTextRange old_selection(GetSelectionOffsets());
   if (!SetSelectionOffsets(range)) {
@@ -735,6 +737,13 @@ bool InputMethodController::ReplaceTextAndKeepSelection(const String& text,
   // TODO(editing-dev): The use of UpdateStyleAndLayout
   // needs to be audited.  see http://crbug.com/590369 for more details.
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
+  Element* root_editable_element = GetFrame()
+                                       .Selection()
+                                       .ComputeVisibleSelectionInDOMTree()
+                                       .RootEditableElement();
+  if (root_editable_element) {
+    AddImeTextSpans(ime_text_spans, root_editable_element, range.Start());
+  }
 
   wtf_size_t selection_delta = text.length() - range.length();
   wtf_size_t start = old_selection.Start();

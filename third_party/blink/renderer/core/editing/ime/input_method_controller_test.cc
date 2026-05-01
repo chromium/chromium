@@ -1167,7 +1167,7 @@ TEST_F(InputMethodControllerTest, ReplaceTextAndDoNotChangeSelection) {
   // Select "world!".
   Controller().SetEditableSelectionOffsets(PlainTextRange(6, 12));
   // Replace "Hello" with "Hi".
-  Controller().ReplaceTextAndKeepSelection("Hi", PlainTextRange(0, 5));
+  Controller().ReplaceTextAndKeepSelection("Hi", {}, PlainTextRange(0, 5));
   EXPECT_EQ("Hi world!", input->Value());
   // The selection is still "world!".
   EXPECT_EQ(3u, Controller().GetSelectionOffsets().Start());
@@ -1180,7 +1180,7 @@ TEST_F(InputMethodControllerTest, ReplaceTextAndDoNotChangeSelection) {
   // Select "Hello".
   Controller().SetEditableSelectionOffsets(PlainTextRange(0, 5));
   // Replace "Hello" with "Hi".
-  Controller().ReplaceTextAndKeepSelection("Hi", PlainTextRange(0, 5));
+  Controller().ReplaceTextAndKeepSelection("Hi", {}, PlainTextRange(0, 5));
   EXPECT_EQ("Hi world!", input->Value());
 
   // The new selection is "Hi".
@@ -1194,11 +1194,40 @@ TEST_F(InputMethodControllerTest, ReplaceTextAndDoNotChangeSelection) {
   // Select "Hello".
   Controller().SetEditableSelectionOffsets(PlainTextRange(0, 5));
   // Replace "He" with "Hi".
-  Controller().ReplaceTextAndKeepSelection("Hi", PlainTextRange(0, 2));
+  Controller().ReplaceTextAndKeepSelection("Hi", {}, PlainTextRange(0, 2));
   EXPECT_EQ("Hillo world!", input->Value());
   // The selection is still "Hillo".
   EXPECT_EQ(0u, Controller().GetSelectionOffsets().Start());
   EXPECT_EQ(5u, Controller().GetSelectionOffsets().End());
+}
+
+TEST_F(InputMethodControllerTest,
+       ReplaceTextAndKeepSelectionWithIme_Text_Span) {
+  auto* input =
+      To<HTMLInputElement>(InsertHTMLElement("<input id='sample'>", "sample"));
+
+  input->SetValue("Wow, hello world!");
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  EXPECT_EQ("Wow, hello world!", input->Value());
+
+  // Replace "hello" with "hi", and add an IME span for "hi".
+  Vector<ImeTextSpan> ime_text_spans;
+  ime_text_spans.push_back(
+      ImeTextSpan(ImeTextSpan::Type::kComposition, 0, 2, Color::kBlack,
+                  ui::mojom::ImeTextSpanThickness::kThin,
+                  ui::mojom::ImeTextSpanUnderlineStyle::kSolid,
+                  Color::kTransparent, Color::kTransparent));
+
+  Controller().ReplaceTextAndKeepSelection("hi", ime_text_spans,
+                                           PlainTextRange(5, 10));
+  EXPECT_EQ("Wow, hi world!", input->Value());
+
+  // Verify that the IME span was added at the correct position (0, 2).
+  ASSERT_EQ(1u, GetDocument().Markers().Markers().size());
+  EXPECT_EQ(5u, GetDocument().Markers().Markers()[0]->StartOffset());
+  EXPECT_EQ(7u, GetDocument().Markers().Markers()[0]->EndOffset());
+  EXPECT_EQ(DocumentMarker::kComposition,
+            GetDocument().Markers().Markers()[0]->GetType());
 }
 
 TEST_F(InputMethodControllerTest, ReplaceTextAndMoveCaret) {

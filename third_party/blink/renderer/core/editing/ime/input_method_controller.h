@@ -93,7 +93,9 @@ class CORE_EXPORT InputMethodController final
                   int relative_caret_position);
 
   // Replaces the text in the specified range and keep the current selection.
-  bool ReplaceTextAndKeepSelection(const String& text, PlainTextRange range);
+  bool ReplaceTextAndKeepSelection(const String& text,
+                                   const Vector<ImeTextSpan>& ime_text_spans,
+                                   PlainTextRange range);
 
   // Replaces the text in the specified range and move the caret position. The
   // relative_caret_position is relative to the end of the text being replaced.

@@ -1473,6 +1473,7 @@ public class ImeAdapterImpl
                         ImeAdapterImpl.this,
                         start,
                         end,
+                        text,
                         text.toString(),
                         newCursorPosition);
         return true;
@@ -2112,7 +2113,8 @@ public class ImeAdapterImpl
                 ImeAdapterImpl self,
                 int start,
                 int end,
-                String text,
+                CharSequence text,
+                String textStr,
                 int newCursorPosition);
 
         boolean insertMediaFromBytes(long nativeImeAdapterAndroid, byte[] bytes, String extension);
