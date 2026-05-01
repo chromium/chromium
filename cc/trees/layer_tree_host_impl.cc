@@ -569,8 +569,9 @@ LayerTreeHostImpl::LayerTreeHostImpl(
 
   viewport_ = Viewport::Create(this);
 
-  TRACE_EVENT_OBJECT_CREATED_WITH_ID(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
-                                     "cc::LayerTreeHostImpl", id_);
+  TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
+                      "LayerTreeHostImpl:created",
+                      perfetto::Flow::ProcessScoped(id_, "LayerTreeHostImpl"));
 
   browser_controls_offset_manager_ = BrowserControlsOffsetManager::Create(
       this, settings.top_controls_show_threshold,
@@ -603,8 +604,9 @@ LayerTreeHostImpl::LayerTreeHostImpl(
 LayerTreeHostImpl::~LayerTreeHostImpl() {
   DCHECK(task_runner_provider_->IsImplThread());
   TRACE_EVENT0("cc", "LayerTreeHostImpl::~LayerTreeHostImpl()");
-  TRACE_EVENT_OBJECT_DELETED_WITH_ID(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
-                                     "cc::LayerTreeHostImpl", id_);
+  TRACE_EVENT_INSTANT(
+      TRACE_DISABLED_BY_DEFAULT("cc.debug"), "LayerTreeHostImpl:deleted",
+      perfetto::TerminatingFlow::ProcessScoped(id_, "LayerTreeHostImpl"));
 
   // The frame sink is released before shutdown, which takes down
   // all the resource and raster structures.
@@ -2887,10 +2889,9 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
   }
 
   {
-    TRACE_EVENT0("cc", "DrawLayers.FrameViewerTracing");
-    TRACE_EVENT_OBJECT_SNAPSHOT_WITH_ID(
-        frame_viewer_instrumentation::CategoryLayerTree(),
-        "cc::LayerTreeHostImpl", id_, AsValueWithFrame(frame));
+    TRACE_EVENT("cc", "DrawLayers.FrameViewerTracing",
+                perfetto::Flow::ProcessScoped(id_, "LayerTreeHostImpl"),
+                "snapshot", AsValueWithFrame(frame));
   }
 
   const DrawMode draw_mode = GetDrawMode();

@@ -15,6 +15,7 @@
 #include "cc/base/math_util.h"
 #include "cc/tiles/tile_manager.h"
 #include "components/viz/common/traced_value.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 
 namespace cc {
 
@@ -39,9 +40,8 @@ Tile::Tile(TileManager* tile_manager,
 }
 
 Tile::~Tile() {
-  TRACE_EVENT_OBJECT_DELETED_WITH_ID(
-      TRACE_DISABLED_BY_DEFAULT("cc.debug"),
-      "cc::Tile", this);
+  TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("cc.debug"), "cc::Tile:deleted",
+                      perfetto::TerminatingFlow::FromPointer(this, "Tile"));
   deleted_ = true;
   tile_manager_->Release(this);
 }

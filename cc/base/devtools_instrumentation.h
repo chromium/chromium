@@ -16,6 +16,7 @@
 #include "base/trace_event/traced_value.h"
 #include "base/trace_event/typed_macros.h"
 #include "cc/base/base_export.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 
 namespace cc {
 namespace devtools_instrumentation {
@@ -168,16 +169,24 @@ struct CC_BASE_EXPORT ScopedCommitTrace {
   ScopedCommitTrace& operator=(const ScopedCommitTrace&) = delete;
 };
 
-struct CC_BASE_EXPORT ScopedLayerObjectTracker
-    : public base::trace_event::
-          TraceScopedTrackableObject<int, internal::CategoryName::kTimeline> {
-  explicit ScopedLayerObjectTracker(int layer_id)
-      : base::trace_event::
-            TraceScopedTrackableObject<int, internal::CategoryName::kTimeline>(
-                internal::kLayerId,
-                layer_id) {}
+class CC_BASE_EXPORT ScopedLayerObjectTracker {
+ public:
+  explicit ScopedLayerObjectTracker(int layer_id) : layer_id_(layer_id) {
+    TRACE_EVENT_INSTANT(internal::CategoryName::kTimeline, "Layer:created",
+                        perfetto::Flow::ProcessScoped(
+                            static_cast<uint64_t>(layer_id_), "Layer"));
+  }
   ScopedLayerObjectTracker(const ScopedLayerObjectTracker&) = delete;
+  ~ScopedLayerObjectTracker() {
+    TRACE_EVENT_INSTANT(internal::CategoryName::kTimeline, "Layer:deleted",
+                        perfetto::TerminatingFlow::ProcessScoped(
+                            static_cast<uint64_t>(layer_id_), "Layer"));
+  }
+
   ScopedLayerObjectTracker& operator=(const ScopedLayerObjectTracker&) = delete;
+
+ private:
+  int layer_id_;
 };
 
 inline void CC_BASE_EXPORT DidActivateLayerTree(int layer_tree_host_id,
