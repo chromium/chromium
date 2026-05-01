@@ -2103,6 +2103,11 @@
       name: "Database",
     },
     {
+      // https://crbug.com/473454959
+      name: "DateTimeInputTypeEarlyAdvanceFix",
+      status: "stable",
+    },
+    {
       // crbug.com/40153320
       name: "DateTimeLocalArabicCommaWorkaround",
       status: "stable",

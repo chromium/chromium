@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/layout/text_utils.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
 #include "third_party/blink/renderer/platform/text/text_run.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
@@ -146,8 +147,12 @@ void DateTimeNumericFieldElement::HandleKeyboardEvent(
     UpdateVisibleValue(kDispatchEvent);
   }
 
+  int limit =
+    RuntimeEnabledFeatures::DateTimeInputTypeEarlyAdvanceFixEnabled()
+        ? hard_limits_.maximum
+        : range_.maximum;
   if (type_ahead_buffer_.length() >= maximum_length ||
-      new_value * 10 > range_.maximum)
+      new_value * 10 > limit)
     FocusOnNextField();
 
   keyboard_event.SetDefaultHandled();
