@@ -8,5 +8,6 @@ import type {DrivePickerHostUntrustedAppElement} from './app.js';
 
 export function getHtml(this: DrivePickerHostUntrustedAppElement) {
   return html`<!--_html_template_start_-->
+<div id="picker-container"></div>
 <!--_html_template_end_-->`;
 }

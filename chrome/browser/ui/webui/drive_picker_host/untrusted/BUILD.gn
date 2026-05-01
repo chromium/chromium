@@ -9,6 +9,7 @@ assert(!is_android)
 mojom("mojo_bindings") {
   sources = [ "drive_picker_host_untrusted.mojom" ]
   webui_module_path = "/"
+  public_deps = [ "//chrome/browser/ui/views/drive_picker_host:mojo_bindings" ]
 }
 
 source_set("untrusted") {
@@ -41,6 +42,7 @@ source_set("unit_tests") {
     "//chrome/test:test_support",
     "//components/omnibox/common",
     "//content/test:test_support",
+    "//testing/gmock",
     "//testing/gtest",
   ]
 }

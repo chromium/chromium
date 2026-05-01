@@ -14,6 +14,7 @@ build_webui("build") {
     "app.html.ts",
   ]
   css_files = [ "app.css" ]
+  ts_composite = true
 
   mojo_files_deps = [
     "//chrome/browser/ui/webui/drive_picker_host:mojo_bindings_ts__generator",

@@ -8,6 +8,7 @@ assert(!is_android)
 
 mojom("mojo_bindings") {
   sources = [ "drive_picker_result_handler.mojom" ]
+  webui_module_path = "/"
 }
 
 source_set("drive_picker_host") {
