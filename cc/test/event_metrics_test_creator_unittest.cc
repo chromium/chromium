@@ -36,13 +36,13 @@ TEST_F(EventMetricsTestCreatorEventTest, NoParams) {
   EXPECT_EQ(event, nullptr);
 }
 
-TEST_F(EventMetricsTestCreatorEventTest, TypeParam) {
+TEST_F(EventMetricsTestCreatorEventTest, SetType) {
   std::unique_ptr<EventMetrics> event =
       metrics_creator_.CreateEventBuilder(ui::EventType::kTouchMoved).Build();
   EXPECT_EQ(event->type(), EventMetrics::EventType::kTouchMoved);
 }
 
-TEST_F(EventMetricsTestCreatorEventTest, TimestampParam) {
+TEST_F(EventMetricsTestCreatorEventTest, SetTimestamp) {
   std::unique_ptr<EventMetrics> event =
       metrics_creator_.CreateEventBuilder(ui::EventType::kTouchMoved)
           .SetTimestamp(MillisecondsTicks(12))
@@ -54,7 +54,7 @@ TEST_F(EventMetricsTestCreatorEventTest, TimestampParam) {
 }
 
 TEST_F(EventMetricsTestCreatorEventTest,
-       ArrivedInRendererCompositorTimestampParam) {
+       SetArrivedInRendererCompositorTimestamp) {
   std::unique_ptr<EventMetrics> event =
       metrics_creator_.CreateEventBuilder(ui::EventType::kTouchMoved)
           .SetArrivedInRendererCompositorTimestamp(MillisecondsTicks(4321))
@@ -65,7 +65,7 @@ TEST_F(EventMetricsTestCreatorEventTest,
             MillisecondsTicks(4321));
 }
 
-TEST_F(EventMetricsTestCreatorEventTest, CausedFrameUpdateParam) {
+TEST_F(EventMetricsTestCreatorEventTest, SetCausedFrameUpdate) {
   std::unique_ptr<EventMetrics> event1 =
       metrics_creator_.CreateEventBuilder(ui::EventType::kTouchMoved)
           .SetCausedFrameUpdate(false)
@@ -153,7 +153,7 @@ TEST_P(EventMetricsTestCreatorScrollEventTest, NoParams) {
   EXPECT_EQ(event->type(), GetParam().expected_type);
 }
 
-TEST_P(EventMetricsTestCreatorScrollEventTest, TimestampParam) {
+TEST_P(EventMetricsTestCreatorScrollEventTest, SetTimestamp) {
   std::unique_ptr<ScrollEventMetrics> event =
       CreateEventBuilder().SetTimestamp(MillisecondsTicks(12)).Build();
   EXPECT_EQ(event->type(), GetParam().expected_type);
@@ -163,7 +163,7 @@ TEST_P(EventMetricsTestCreatorScrollEventTest, TimestampParam) {
 }
 
 TEST_P(EventMetricsTestCreatorScrollEventTest,
-       ArrivedInRendererCompositorTimestampParam) {
+       SetArrivedInRendererCompositorTimestamp) {
   std::unique_ptr<ScrollEventMetrics> event =
       CreateEventBuilder()
           .SetArrivedInRendererCompositorTimestamp(MillisecondsTicks(5432))
@@ -174,7 +174,7 @@ TEST_P(EventMetricsTestCreatorScrollEventTest,
             MillisecondsTicks(5432));
 }
 
-TEST_P(EventMetricsTestCreatorScrollEventTest, CausedFrameUpdateParam) {
+TEST_P(EventMetricsTestCreatorScrollEventTest, SetCausedFrameUpdate) {
   std::unique_ptr<ScrollEventMetrics> event1 =
       CreateEventBuilder().SetCausedFrameUpdate(false).Build();
   EXPECT_EQ(event1->type(), GetParam().expected_type);
@@ -185,7 +185,7 @@ TEST_P(EventMetricsTestCreatorScrollEventTest, CausedFrameUpdateParam) {
   EXPECT_TRUE(event2->caused_frame_update());
 }
 
-TEST_P(EventMetricsTestCreatorScrollEventTest, DispatchArgsParam) {
+TEST_P(EventMetricsTestCreatorScrollEventTest, SetDispatchArgs) {
   ScrollEventMetrics::DispatchBeginFrameArgs args = {
       .frame_time = MillisecondsTicks(24),
       .interval = base::Milliseconds(16),
@@ -195,6 +195,22 @@ TEST_P(EventMetricsTestCreatorScrollEventTest, DispatchArgsParam) {
       CreateEventBuilder().SetDispatchArgs(args).Build();
   EXPECT_EQ(event->type(), GetParam().expected_type);
   EXPECT_EQ(event->dispatch_args(), args);
+}
+
+TEST_P(EventMetricsTestCreatorScrollEventTest, SetScrollBeginArrivalTimestamp) {
+  std::unique_ptr<ScrollEventMetrics> event =
+      CreateEventBuilder()
+          .SetScrollBeginArrivalTimestamp(MillisecondsTicks(314))
+          .Build();
+  EXPECT_EQ(event->type(), GetParam().expected_type);
+  if (GetParam().expected_type ==
+      EventMetrics::EventType::kGestureScrollBegin) {
+    EXPECT_EQ(event->scroll_begin_arrival_timestamp(),
+              event->GetDispatchStageTimestamp(
+                  EventMetrics::DispatchStage::kArrivedInRendererCompositor));
+  } else {
+    EXPECT_EQ(event->scroll_begin_arrival_timestamp(), MillisecondsTicks(314));
+  }
 }
 
 TEST_P(EventMetricsTestCreatorScrollEventTest, AllParams) {
@@ -209,6 +225,7 @@ TEST_P(EventMetricsTestCreatorScrollEventTest, AllParams) {
           .SetArrivedInRendererCompositorTimestamp(MillisecondsTicks(101))
           .SetCausedFrameUpdate(false)
           .SetDispatchArgs(args)
+          .SetScrollBeginArrivalTimestamp(MillisecondsTicks(15))
           .Build();
   EXPECT_EQ(event->type(), GetParam().expected_type);
   EXPECT_EQ(
@@ -219,6 +236,12 @@ TEST_P(EventMetricsTestCreatorScrollEventTest, AllParams) {
             MillisecondsTicks(101));
   EXPECT_FALSE(event->caused_frame_update());
   EXPECT_EQ(event->dispatch_args(), args);
+  if (GetParam().expected_type ==
+      EventMetrics::EventType::kGestureScrollBegin) {
+    EXPECT_EQ(event->scroll_begin_arrival_timestamp(), MillisecondsTicks(101));
+  } else {
+    EXPECT_EQ(event->scroll_begin_arrival_timestamp(), MillisecondsTicks(15));
+  }
 }
 
 // Tests for `EventMetricsTestCreator::CreateFirstGestureScrollUpdate()`,
@@ -261,7 +284,7 @@ TEST_P(EventMetricsTestCreatorScrollUpdateEventTest, NoParams) {
   EXPECT_EQ(event->type(), GetParam().expected_type);
 }
 
-TEST_P(EventMetricsTestCreatorScrollUpdateEventTest, TimestampParam) {
+TEST_P(EventMetricsTestCreatorScrollUpdateEventTest, SetTimestamp) {
   std::unique_ptr<ScrollUpdateEventMetrics> event =
       CreateEventBuilder().SetTimestamp(MillisecondsTicks(12)).Build();
   EXPECT_EQ(event->type(), GetParam().expected_type);
@@ -271,7 +294,7 @@ TEST_P(EventMetricsTestCreatorScrollUpdateEventTest, TimestampParam) {
 }
 
 TEST_P(EventMetricsTestCreatorScrollUpdateEventTest,
-       ArrivedInRendererCompositorTimestampParam) {
+       SetArrivedInRendererCompositorTimestamp) {
   std::unique_ptr<ScrollUpdateEventMetrics> event =
       CreateEventBuilder()
           .SetArrivedInRendererCompositorTimestamp(MillisecondsTicks(6543))
@@ -282,21 +305,21 @@ TEST_P(EventMetricsTestCreatorScrollUpdateEventTest,
             MillisecondsTicks(6543));
 }
 
-TEST_P(EventMetricsTestCreatorScrollUpdateEventTest, DeltaParam) {
+TEST_P(EventMetricsTestCreatorScrollUpdateEventTest, SetDelta) {
   std::unique_ptr<ScrollUpdateEventMetrics> event =
       CreateEventBuilder().SetDelta(-273.15f).Build();
   EXPECT_EQ(event->type(), GetParam().expected_type);
   EXPECT_EQ(event->delta(), -273.15f);
 }
 
-TEST_P(EventMetricsTestCreatorScrollUpdateEventTest, PredictedDeltaParam) {
+TEST_P(EventMetricsTestCreatorScrollUpdateEventTest, SetPredictedDelta) {
   std::unique_ptr<ScrollUpdateEventMetrics> event =
       CreateEventBuilder().SetPredictedDelta(3.14159f).Build();
   EXPECT_EQ(event->type(), GetParam().expected_type);
   EXPECT_EQ(event->predicted_delta(), 3.14159f);
 }
 
-TEST_P(EventMetricsTestCreatorScrollUpdateEventTest, DidScrollParam) {
+TEST_P(EventMetricsTestCreatorScrollUpdateEventTest, SetDidScroll) {
   std::unique_ptr<ScrollUpdateEventMetrics> event1 =
       CreateEventBuilder().SetDidScroll(false).Build();
   EXPECT_EQ(event1->type(), GetParam().expected_type);
@@ -307,7 +330,7 @@ TEST_P(EventMetricsTestCreatorScrollUpdateEventTest, DidScrollParam) {
   EXPECT_TRUE(event2->did_scroll());
 }
 
-TEST_P(EventMetricsTestCreatorScrollUpdateEventTest, CausedFrameUpdateParam) {
+TEST_P(EventMetricsTestCreatorScrollUpdateEventTest, SetCausedFrameUpdate) {
   std::unique_ptr<ScrollUpdateEventMetrics> event1 =
       CreateEventBuilder().SetCausedFrameUpdate(false).Build();
   EXPECT_EQ(event1->type(), GetParam().expected_type);
@@ -318,7 +341,7 @@ TEST_P(EventMetricsTestCreatorScrollUpdateEventTest, CausedFrameUpdateParam) {
   EXPECT_TRUE(event2->caused_frame_update());
 }
 
-TEST_P(EventMetricsTestCreatorScrollUpdateEventTest, IsSyntheticParam) {
+TEST_P(EventMetricsTestCreatorScrollUpdateEventTest, SetIsSynthetic) {
   std::unique_ptr<ScrollUpdateEventMetrics> event1 =
       CreateEventBuilder().SetIsSynthetic(false).Build();
   EXPECT_EQ(event1->type(), GetParam().expected_type);
@@ -329,14 +352,14 @@ TEST_P(EventMetricsTestCreatorScrollUpdateEventTest, IsSyntheticParam) {
   EXPECT_TRUE(event2->is_synthetic());
 }
 
-TEST_P(EventMetricsTestCreatorScrollUpdateEventTest, TraceIdParam) {
+TEST_P(EventMetricsTestCreatorScrollUpdateEventTest, SetTraceId) {
   std::unique_ptr<ScrollUpdateEventMetrics> event =
       CreateEventBuilder().SetTraceId(EventMetrics::TraceId(123)).Build();
   EXPECT_EQ(event->type(), GetParam().expected_type);
   EXPECT_EQ(event->trace_id()->value(), 123);
 }
 
-TEST_P(EventMetricsTestCreatorScrollUpdateEventTest, DispatchArgsParam) {
+TEST_P(EventMetricsTestCreatorScrollUpdateEventTest, SetDispatchArgs) {
   ScrollEventMetrics::DispatchBeginFrameArgs args = {
       .frame_time = MillisecondsTicks(24),
       .interval = base::Milliseconds(16),
@@ -346,6 +369,16 @@ TEST_P(EventMetricsTestCreatorScrollUpdateEventTest, DispatchArgsParam) {
       CreateEventBuilder().SetDispatchArgs(args).Build();
   EXPECT_EQ(event->type(), GetParam().expected_type);
   EXPECT_EQ(event->dispatch_args(), args);
+}
+
+TEST_P(EventMetricsTestCreatorScrollUpdateEventTest,
+       SetScrollBeginArrivalTimestamp) {
+  std::unique_ptr<ScrollUpdateEventMetrics> event =
+      CreateEventBuilder()
+          .SetScrollBeginArrivalTimestamp(MillisecondsTicks(271))
+          .Build();
+  EXPECT_EQ(event->type(), GetParam().expected_type);
+  EXPECT_EQ(event->scroll_begin_arrival_timestamp(), MillisecondsTicks(271));
 }
 
 TEST_P(EventMetricsTestCreatorScrollUpdateEventTest, AllParams) {
@@ -365,6 +398,7 @@ TEST_P(EventMetricsTestCreatorScrollUpdateEventTest, AllParams) {
           .SetIsSynthetic(true)
           .SetTraceId(EventMetrics::TraceId(456))
           .SetDispatchArgs(args)
+          .SetScrollBeginArrivalTimestamp(MillisecondsTicks(81))
           .Build();
   EXPECT_EQ(event->type(), GetParam().expected_type);
   EXPECT_EQ(
@@ -380,6 +414,7 @@ TEST_P(EventMetricsTestCreatorScrollUpdateEventTest, AllParams) {
   EXPECT_TRUE(event->is_synthetic());
   EXPECT_EQ(event->trace_id()->value(), 456);
   EXPECT_EQ(event->dispatch_args(), args);
+  EXPECT_EQ(event->scroll_begin_arrival_timestamp(), MillisecondsTicks(81));
 }
 
 }  // namespace cc

@@ -89,6 +89,8 @@ class EventMetricsTestCreator {
    public:
     Derived& SetDispatchArgs(
         ScrollEventMetrics::DispatchBeginFrameArgs dispatch_args);
+    Derived& SetScrollBeginArrivalTimestamp(
+        base::TimeTicks scroll_begin_arrival_timestamp);
 
    protected:
     ScrollEventBuilderBase(base::SimpleTestTickClock& clock,
@@ -97,6 +99,7 @@ class EventMetricsTestCreator {
 
     bool is_inertial_;
     std::optional<ScrollEventMetrics::DispatchBeginFrameArgs> dispatch_args_;
+    std::optional<base::TimeTicks> scroll_begin_arrival_timestamp_;
   };
 
   template <typename Derived>

@@ -86,6 +86,14 @@ EventMetricsTestCreator::ScrollEventBuilderBase<Derived>::SetDispatchArgs(
 }
 
 template <typename Derived>
+Derived& EventMetricsTestCreator::ScrollEventBuilderBase<Derived>::
+    SetScrollBeginArrivalTimestamp(
+        base::TimeTicks scroll_begin_arrival_timestamp) {
+  scroll_begin_arrival_timestamp_ = scroll_begin_arrival_timestamp;
+  return static_cast<Derived&>(*this);
+}
+
+template <typename Derived>
 EventMetricsTestCreator::ScrollUpdateEventBuilderBase<Derived>::
     ScrollUpdateEventBuilderBase(
         base::SimpleTestTickClock& clock,
@@ -152,12 +160,12 @@ std::unique_ptr<EventMetrics> EventMetricsTestCreator::EventBuilder::Build() {
   // `EventMetrics::DispatchStage::kArrivedInBrowserMain` <
   // `EventMetrics::DispatchStage::kArrivedInRendererCompositor`).
   clock_->SetNowTicks(arrived_in_renderer_compositor_timestamp_.value_or(
-      timestamp_ + base::Nanoseconds(2)));
+      timestamp_ + base::Microseconds(2)));
 
   auto event = EventMetrics::CreateForTesting(
       type_, timestamp_,
       /* arrived_in_browser_main_timestamp= */ timestamp_ +
-          base::Nanoseconds(1),
+          base::Microseconds(1),
       &*clock_, /* trace_id= */ std::nullopt);
   if (event == nullptr) {
     return event;
@@ -187,13 +195,15 @@ EventMetricsTestCreator::ScrollEventBuilder::Build() {
            EventMetricsType::kScrollEventMetrics);
   // See `EventMetricsTestCreator::CreateEventMetrics()` for why we do this.
   clock_->SetNowTicks(arrived_in_renderer_compositor_timestamp_.value_or(
-      timestamp_ + base::Nanoseconds(2)));
+      timestamp_ + base::Microseconds(2)));
   auto event = ScrollEventMetrics::CreateForTesting(
       type_, ui::ScrollInputType::kTouchscreen, is_inertial_, timestamp_,
       /* arrived_in_browser_main_timestamp= */ timestamp_ +
-          base::Nanoseconds(1),
+          base::Microseconds(1),
       &*clock_,
-      /* scroll_begin_arrival_timestamp= */ timestamp_ - base::Nanoseconds(1));
+      /* scroll_begin_arrival_timestamp= */
+      scroll_begin_arrival_timestamp_.value_or(timestamp_ -
+                                               base::Microseconds(1)));
   if (caused_frame_update_.has_value()) {
     event->set_caused_frame_update(*caused_frame_update_);
   }
@@ -239,14 +249,16 @@ EventMetricsTestCreator::ScrollUpdateEventBuilder::Build() {
            EventMetricsType::kScrollUpdateEventMetrics);
   // See `EventMetricsTestCreator::CreateEventMetrics()` for why we do this.
   clock_->SetNowTicks(arrived_in_renderer_compositor_timestamp_.value_or(
-      timestamp_ + base::Nanoseconds(2)));
+      timestamp_ + base::Microseconds(2)));
   auto event = ScrollUpdateEventMetrics::CreateForTesting(
       ui::EventType::kGestureScrollUpdate, ui::ScrollInputType::kTouchscreen,
       is_inertial_, scroll_update_type_, delta_, timestamp_,
       /* arrived_in_browser_main_timestamp= */ timestamp_ +
-          base::Nanoseconds(1),
+          base::Microseconds(1),
       &*clock_, trace_id_,
-      /* scroll_begin_arrival_timestamp= */ timestamp_ - base::Nanoseconds(1));
+      /* scroll_begin_arrival_timestamp= */
+      scroll_begin_arrival_timestamp_.value_or(timestamp_ -
+                                               base::Microseconds(1)));
   if (predicted_delta_.has_value()) {
     event->set_predicted_delta(*predicted_delta_);
   }
