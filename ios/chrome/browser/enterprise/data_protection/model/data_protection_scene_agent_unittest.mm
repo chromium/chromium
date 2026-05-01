@@ -704,9 +704,9 @@ TEST_F(DataProtectionSceneAgentTransitionTest, SingleTab_SwitchBrowser) {
   // Switch to incognito browser, which has an unprotected tab.
   ExpectApplyScreenshotProtection(NO);
 
+  scene_state_.incognitoState.incognitoContentVisible = YES;
   scene_state_.browserProviderInterface.currentBrowserProvider =
       scene_state_.browserProviderInterface.incognitoBrowserProvider;
-  scene_state_.incognitoState.incognitoContentVisible = YES;
 
   EXPECT_OCMOCK_VERIFY(mock_agent_);
 }

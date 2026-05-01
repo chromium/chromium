@@ -241,10 +241,15 @@ bool AreEnterpriseLookupsEnabled(const ProfileIOS& profile) {
 
 - (Browser*)currentBrowser {
   CHECK(self.sceneState.UIEnabled);
-  id<BrowserProvider> currentBrowserProvider =
-      self.sceneState.browserProviderInterface.currentBrowserProvider;
+  id<BrowserProviderInterface> browserProviderInterface =
+      self.sceneState.browserProviderInterface;
 
-  return currentBrowserProvider.browser;
+  id<BrowserProvider> browserProvider =
+      self.sceneState.incognitoState.incognitoContentVisible
+          ? browserProviderInterface.incognitoBrowserProvider
+          : browserProviderInterface.mainBrowserProvider;
+
+  return browserProvider.browser;
 }
 
 // Whether the scene can be protected.
