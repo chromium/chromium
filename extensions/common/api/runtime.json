@@ -104,6 +104,7 @@
       },
       {
         "id": "PlatformNaclArch",
+        "deprecated": "This enum is deprecated following complete removal of Native Client.",
         "description": "The native client architecture. This may be different from arch on some platforms.",
         "type": "string",
         "enum": [
@@ -129,6 +130,7 @@
           },
           "nacl_arch" : {
             "optional": true,
+            "deprecated": "This attribute is deprecated following complete removal of Native Client.",
             "description": "The native client architecture. This may be different from arch on some platforms.",
             "$ref": "PlatformNaclArch"
           }
