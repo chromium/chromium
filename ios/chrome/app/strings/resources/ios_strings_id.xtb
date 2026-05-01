@@ -1576,6 +1576,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="6476800141292307438">Menerjemahkan halaman ke dalam bahasa <ph name="LANGUAGE" />. Opsi tersedia di dekat bagian bawah layar.</translation>
 <translation id="647867789226964031">Ubah sandi Anda</translation>
 <translation id="6480363549849064919">Autentikasi Klien</translation>
+<translation id="6489174933860678546">Buka tab Samaran untuk menjelajahi web secara lebih pribadi.</translation>
 <translation id="6494931198667773526">Berakhir</translation>
 <translation id="6503077044568424649">Sering dibuka</translation>
 <translation id="6503763061813913607">Notifikasi Pemeriksaan Keamanan</translation>
@@ -2112,7 +2113,6 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="8319282042900445670">Pengingat disetel untuk <ph name="TIME" />, <ph name="DATE" /></translation>
 <translation id="8320212361750431956">Aktivitas Terbaru</translation>
 <translation id="8325455175867928593">Sembunyikan "Ulasan berdasarkan minat Anda"</translation>
-<translation id="8328777765163860529">Tutup Semua</translation>
 <translation id="833647236762414178">Buat, simpan, dan kelola sandi &amp; kunci sandi Anda untuk login dengan mudah ke situs dan aplikasi. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Cadangkan data Anda dan gunakan di perangkat mana pun.</translation>
 <translation id="8348530355586151720">Ketuk menu tiga titik</translation>
@@ -2296,6 +2296,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="8915916167043355778">Tutup semua</translation>
 <translation id="892185197271200809">Semua orang akan langsung kehilangan akses ke grup tab “<ph name="GROUP_NAME" />", dan grup tersebut akan dihapus dari semua perangkat</translation>
 <translation id="8923178205567790913">Sandi</translation>
+<translation id="8926498511977337209">Menjelajah dalam mode Samaran</translation>
 <translation id="892776311701544612">Pelajari lebih lanjut…</translation>
 <translation id="8928133177108699615">Desktop</translation>
 <translation id="8928426232677696166"><ph name="EMAIL" />, dikelola oleh organisasi Anda, saat ini dipilih. Pilih akun.</translation>

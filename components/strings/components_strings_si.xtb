@@ -629,6 +629,7 @@
 <translation id="1979156660928743046">මාධ්‍ය තොරතුරු</translation>
 <translation id="1987486584747170374">ඔබේ සෙවීම්, හොඳම ගැළපීම් සහ ඒවායේ පිටු අන්තර්ගතය Google වෙත යවනු ලැබේ. AI වැඩි දියුණු කිරීම සඳහා මානව සමාලෝචකයින් විසින් එය භාවිතා නොකරනු ඇත. ඔබේ සංවිධානය ඕනෑම අවස්ථාවක දී මෙම සැකසීම් වෙනස් කළ හැක.</translation>
 <translation id="1988881251331415125">අක්ෂර වින්‍යාසය නිවැරදි නම්, <ph name="BEGIN_LINK" />සබැඳුම් හැකියා දෝෂ නිර්ණ ධාවනය කිරීම උත්සාහ කරන්න<ph name="END_LINK" />.</translation>
+<translation id="1991370806334788445">තෙවන-පාර්ශ්ව කුකි වලට ඉඩ දීමට උත්සාහ කරන්න, එයින් අදහස් කරන්නේ බ්‍රවුස් කිරීමේ ආරක්ෂාව අඩු නමුත් වෙබ් අඩවි විශේෂාංග අපේක්ෂා කළ පරිදි ක්‍රියා කිරීමට වැඩි ඉඩක් ඇති බවයි.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567"><ph name="URL" /> හට විශාල දත්ත ඔබේ ස්ථානීය පරිගණකයේ ස්ථිරව ගබඩා කිරීමට අවශ්‍යයි</translation>
 <translation id="1997774360448418989">කඩදාසි (සැහැල්ලු)</translation>
@@ -2132,7 +2133,6 @@
 <translation id="4282280603030594840">වාහන ගැනීම</translation>
 <translation id="4282346679996504092">මෙම නිෂ්පාදනය සඳහා ඇඟවීම් අක්‍රිය කර ඇති අතර පිටුසන ඉවත් කර ඇත</translation>
 <translation id="4284885181066817063"><ph name="DOMAIN" /> විසින් අවහිර කරන ලදි</translation>
-<translation id="4285498937028063278">ගලවන්න</translation>
 <translation id="4288101205645068104">වාහනය මකන්න</translation>
 <translation id="4290920330097335010">කිසිවිටෙකත් ඉඩ නොදෙන්න</translation>
 <translation id="4297502707443874121"><ph name="THUMBNAIL_PAGE" /> පිටුව සඳහා සිඟිති රුව</translation>
@@ -2606,7 +2606,6 @@
 <translation id="5056587122125565772">රූපයක් සාදන්න</translation>
 <translation id="505757197798929356">විවෘත කිරීමට හේතුව සපයන්න (අවශ්‍යයි)</translation>
 <translation id="5058282932481719070">සැකසීම් තුළ ඉහළ නැංවූ ස්වයං පිරවුම පිළිබඳ තව දැන ගන්න</translation>
-<translation id="5060419232449737386">සිරස්තල සැකසීම්</translation>
 <translation id="5061227663725596739">ඔබ අදහස් කළේ <ph name="LOOKALIKE_DOMAIN" /> ද?</translation>
 <translation id="5066056036849835175">මුද්‍රණ ඉතිහාසය</translation>
 <translation id="5068524481479508725">A10</translation>
@@ -3567,7 +3566,6 @@
 <translation id="6518133107902771759">තහවුරු කරන්න</translation>
 <translation id="6519885440226079262">ඔබේ දෑත් නිරීක්ෂණය කිරීමට විමසිය හැක</translation>
 <translation id="6520026037299163656">වෙබ් යෙදුම් සහ සබැඳි මෙවලම්</translation>
-<translation id="65203098586853226"><ph name="TARGET" /> <ph name="SOURCE" /> වෙත පරිවර්තන කෙරේ</translation>
 <translation id="6520509611422418552"><ph name="MEMBER_FIRST_NAME" /> "<ph name="GROUP_NAME" />" පටිති සමූහයට එකතු විය</translation>
 <translation id="6521745193039995384">ක්‍රියාත්මක නැත</translation>
 <translation id="6522682797352430154">සම්භාව්‍ය සංගීතය</translation>
@@ -4167,7 +4165,6 @@
 <translation id="7455452752247248289">ව්‍යාපාර තාක්ෂණය</translation>
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">භාණ්ඩ ට්‍රක් රථ සහ ට්‍රේලර</translation>
-<translation id="7461924472993315131">පින්</translation>
 <translation id="7463068149674892185">මෙම ක්‍රියාව නිර්දේශ නොකරයි</translation>
 <translation id="746329643760972486">MacOS</translation>
 <translation id="746412105358554870">JavaScript ප්‍රශස්තිකරණය සහ ආරක්ෂාව</translation>
@@ -4673,7 +4670,6 @@
 <translation id="8246482227229072868">මුදු</translation>
 <translation id="8248406213705193919">කාඩ්පත සුරක්ෂිතව සුරකින්න ද?</translation>
 <translation id="8249296373107784235">අහෝසි කරන්න</translation>
-<translation id="824968735947741546"><ph name="TARGET" /> වෙත <ph name="SOURCE" /> (ස්වයංව-අනාවරණය විය) පරිවර්තනය කිරීම</translation>
 <translation id="8250094606476360498">මෙම ලිපිනය දැනට මෙම උපාංගයට සුරැකෙයි. එය Google නිෂ්පාදන පුරා භාවිතා කිරීමට, එය ඔබේ Google ගිණුම, <ph name="ACCOUNT" /> තුළ සුරකින්න.</translation>
 <translation id="8250533425540303610"><ph name="LANGUAGE" /> ස්ථාපනය කරමින්...</translation>
 <translation id="8251493595871259082">අඩු ටයිප් කිරීමකින් ඔබේ ලිපිනය පුරවන්න</translation>

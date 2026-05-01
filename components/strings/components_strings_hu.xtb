@@ -2130,7 +2130,6 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="4282280603030594840">Járművásárlás</translation>
 <translation id="4282346679996504092">Megtörtént a termékhez tartozó értesítések kikapcsolása és a könyvjelző eltávolítása</translation>
 <translation id="4284885181066817063">A(z) <ph name="DOMAIN" /> által letiltva</translation>
-<translation id="4285498937028063278">Rögzítés megszüntetése</translation>
 <translation id="4288101205645068104">Jármű törlése</translation>
 <translation id="4290920330097335010">Soha nem engedélyezem</translation>
 <translation id="4297502707443874121">A(z) <ph name="THUMBNAIL_PAGE" /> oldal indexképe</translation>
@@ -2604,7 +2603,6 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="5056587122125565772">Kép létrehozása</translation>
 <translation id="505757197798929356">Adja meg a megnyitás okát (kötelező)</translation>
 <translation id="5058282932481719070">További információ a továbbfejlesztett automatikus kitöltésről a beállításokban</translation>
-<translation id="5060419232449737386">Feliratbeállítások</translation>
 <translation id="5061227663725596739">Erre gondolt: <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">Nyomtatási előzmények</translation>
 <translation id="5068524481479508725">A10</translation>
@@ -2973,6 +2971,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="5600044805561809264">Böngészés közben egyszerűen tehet fel kérdéseket az Ön által megosztott lapokról.</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> vagy <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">A kezelés nem támogatott</translation>
+<translation id="5604254791550001355">Utasítás szerkesztése</translation>
 <translation id="560431066250575003">{HOURS,plural, =1{1 órája volt aktív}other{# órája volt aktív}}</translation>
 <translation id="5605249000617390290">További információ az árkövetésről</translation>
 <translation id="5605670050355397069">Ledger</translation>
@@ -3404,6 +3403,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
 <translation id="629730747756840877">Fiók</translation>
+<translation id="6299098428775578517">Javaslatbeállítások</translation>
 <translation id="6300452962057769623">{0,plural, =0{Eszköze most újraindul}=1{Eszköze 1 másodperc múlva újraindul}other{Eszköze # másodperc múlva újraindul}}</translation>
 <translation id="6301104306974789820">Árkövetési értesítések fogadása</translation>
 <translation id="6302546952464230349">A(z) <ph name="PERMISSION_NAME" /> engedély részleteinek mutatása</translation>
@@ -3565,7 +3565,6 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="6518133107902771759">Ellenőrzés</translation>
 <translation id="6519885440226079262">Engedélyt kérhet az Ön kézmozgásának követésére</translation>
 <translation id="6520026037299163656">Internetes alkalmazások és online eszközök</translation>
-<translation id="65203098586853226">Fordítás <ph name="SOURCE" /> nyelvről <ph name="TARGET" /> nyelvre</translation>
 <translation id="6520509611422418552"><ph name="MEMBER_FIRST_NAME" /> csatlakozott a(z) „<ph name="GROUP_NAME" />” lapcsoporthoz</translation>
 <translation id="6521745193039995384">Nem aktív</translation>
 <translation id="6522682797352430154">Komolyzene</translation>
@@ -4166,7 +4165,6 @@ További részletek:
 <translation id="7455452752247248289">Vállalati technológia</translation>
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">Áruszállító teherautók és kamionok</translation>
-<translation id="7461924472993315131">Rögzítés</translation>
 <translation id="7463068149674892185">Ez a művelet nem ajánlott</translation>
 <translation id="746329643760972486">macOS</translation>
 <translation id="746412105358554870">JavaScript-optimalizálás és -biztonság</translation>
@@ -4672,7 +4670,6 @@ További részletek:
 <translation id="8246482227229072868">Körök</translation>
 <translation id="8248406213705193919">Szeretné biztonságosan elmenteni a kártyát?</translation>
 <translation id="8249296373107784235">Megszakítás</translation>
-<translation id="824968735947741546">A(z) <ph name="SOURCE" /> nyelv automatikus fordítása <ph name="TARGET" /> nyelvre</translation>
 <translation id="8250094606476360498">A cím jelenleg mentve van erre az eszközre. Ha szeretné más Google-termékekben is használni, mentse saját Google-fiókjába (<ph name="ACCOUNT" />).</translation>
 <translation id="8250533425540303610">A(z) <ph name="LANGUAGE" /> nyelv telepítése…</translation>
 <translation id="8251493595871259082">A cím kitöltése kevesebb gépeléssel</translation>

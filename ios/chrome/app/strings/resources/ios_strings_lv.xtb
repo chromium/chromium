@@ -1576,6 +1576,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="6476800141292307438">Lapa tiek tulkota <ph name="LANGUAGE" /> valodā. Pieejamās opcijas redzamas ekrāna apakšdaļā.</translation>
 <translation id="647867789226964031">Paroļu nomaiņa</translation>
 <translation id="6480363549849064919">Klienta autentifikācija</translation>
+<translation id="6489174933860678546">Atveriet inkognito cilnes, lai pārlūkotu tīmekli ar augstāku konfidencialitātes līmeni.</translation>
 <translation id="6494931198667773526">Beigas</translation>
 <translation id="6503077044568424649">Visapmeklētākais</translation>
 <translation id="6503763061813913607">Drošības pārbaudes paziņojumi</translation>
@@ -2112,7 +2113,6 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="8319282042900445670">Atgādinājums iestatīts: <ph name="TIME" />, <ph name="DATE" /></translation>
 <translation id="8320212361750431956">Pēdējās darbības</translation>
 <translation id="8325455175867928593">Paslēpt sadaļu “Atsauksmes, kuru pamatā ir jūsu intereses”</translation>
-<translation id="8328777765163860529">Aizvērt visu</translation>
 <translation id="833647236762414178">Izveidojiet, saglabājiet un pārvaldiet paroles un piekļuves atslēgas, lai varētu ērti pierakstīties vietnēs un lietotnēs. <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
 <translation id="8343993175958086504">Varat dublēt savus datus un izmantot tos jebkurā ierīcē.</translation>
 <translation id="8348530355586151720">Pieskarieties trīs punktu izvēlnei.</translation>
@@ -2296,6 +2296,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="8915916167043355778">Aizvērt visu</translation>
 <translation id="892185197271200809">Visi uzreiz zaudēs piekļuvi ciļņu grupai “<ph name="GROUP_NAME" />”, un tā tiks izdzēsta no visām ierīcēm.</translation>
 <translation id="8923178205567790913">Paroles</translation>
+<translation id="8926498511977337209">Pārlūkošana inkognito režīmā</translation>
 <translation id="892776311701544612">Uzzināt vairāk…</translation>
 <translation id="8928133177108699615">Vietne datoriem</translation>
 <translation id="8928426232677696166">Pašlaik ir atlasīts konts <ph name="EMAIL" /> (pārvalda jūsu organizācija). Izvēlieties kontu.</translation>

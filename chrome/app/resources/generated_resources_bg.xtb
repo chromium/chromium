@@ -4474,7 +4474,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4036778507053569103">Изтегленото от сървъра правило е невалидно.</translation>
 <translation id="4037084878352560732">Кон</translation>
 <translation id="403725336528835653">Изпробване</translation>
-<translation id="4039835815168788100">Разширението „<ph name="EXTENSION_NAME" />“ опита да промени търсещата ви машина на <ph name="SEARCH_PROVIDER" />. Потвърдете предпочитанието си по-долу</translation>
 <translation id="4039966970282098406">Управлявайте поверителността си, като контролирате достъпа до микрофона, камерата и др.</translation>
 <translation id="4040041015953651705">Изходен език</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Изход от страницата}other{Изход от страниците}}</translation>
@@ -6132,7 +6131,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5208988882104884956">С половин ширина</translation>
 <translation id="5209320130288484488">Няма намерени устройства</translation>
 <translation id="5209513429611499188">HID устройство с предназначение от страница <ph name="USAGE_PAGE" /> с предназначения</translation>
-<translation id="5210365745912300556">Затваряне на раздела</translation>
 <translation id="5211174138048232917">Експортиране на файловете с историята</translation>
 <translation id="5213114823401215820">Повторно отваряне на затворената група</translation>
 <translation id="5213481667492808996">Услугата ви за данни „<ph name="NAME" />“ е готова за използване</translation>
@@ -6766,7 +6764,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5659593005791499971">Имейл</translation>
 <translation id="5659964844710667266">Създаване на парола за това устройство <ph name="DEVICE_TYPE" /></translation>
 <translation id="5662513737565158057">Променете начина на работа на приложенията за Linux.</translation>
-<translation id="5663317829633858516">Наскоро променено от <ph name="EXTENSION_NAME" /></translation>
 <translation id="5663459693447872156">Автоматично да се превключва към половин ширина</translation>
 <translation id="5663653125349867535">&amp;Списък за четене</translation>
 <translation id="5663918299073387939">Сайтовете обикновено искат да контролират и препрограмират MIDI устройствата с цел създаване или редактиране на музика или актуализиране на фърмуера на устройствата</translation>
@@ -9320,7 +9317,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="746329643760972486">macOS</translation>
 <translation id="7463985990119325874">Организацията ви управлява начина, по който може да се използват данните, събрани от тези функции.</translation>
 <translation id="7464645554245611385">Най-новата актуализация на този раздел</translation>
-<translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{# отворен раздел – натиснете за превключване на лентата с раздели}other{# отворени раздела – натиснете за превключване на лентата с раздели}}</translation>
 <translation id="7465635034594602553">Нещо се обърка. Изчакайте няколко минути и стартирайте <ph name="APP_NAME" /> отново.</translation>
 <translation id="7465777686629334728">Премахване на управляваната среда на програмиране (<ph name="SPECIFIC_NAME" />)</translation>
 <translation id="7465778193084373987">URL адрес за анулиране на сертификат на Netscape</translation>
@@ -10392,7 +10388,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8195854162863398249">Деактивиране на „<ph name="FEATURE_NAME" />“</translation>
 <translation id="8195920051450756553">Забавяне преди повторно активиране на същия клавиш</translation>
 <translation id="8197673340773315084">Добавете име или етикет, като например „Служебен“ или „Личен“</translation>
-<translation id="8198043456018523011">Потвърдете основната си търсеща машина</translation>
 <translation id="8198181050118789419">Тема: <ph name="THEME_NAME" /></translation>
 <translation id="8198456017687137612">Разделът се предава</translation>
 <translation id="8199300056570174101">Свойства на мрежата (услугата) и устройството</translation>

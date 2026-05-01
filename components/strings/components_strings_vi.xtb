@@ -629,6 +629,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="1979156660928743046">Thông tin về nội dung nghe nhìn</translation>
 <translation id="1987486584747170374">Nội dung bạn tìm, kết quả phù hợp nhất và nội dung trang sẽ được gửi cho Google. Nhân viên đánh giá sẽ không sử dụng nội dung này để cải thiện AI. Tổ chức của bạn có thể thay đổi các chế độ cài đặt này bất cứ lúc nào.</translation>
 <translation id="1988881251331415125">Nếu đúng chính tả, hãy <ph name="BEGIN_LINK" />thử chạy Chẩn đoán kết nối<ph name="END_LINK" />.</translation>
+<translation id="1991370806334788445">Hãy thử cho phép cookie của bên thứ ba. Điều này làm giảm khả năng bảo vệ khi duyệt web nhưng sẽ giúp các tính năng của trang web hoạt động đúng như mong đợi.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567"><ph name="URL" /> muốn lưu trữ vĩnh viễn một lượng lớn dữ liệu trên máy tính cục bộ của bạn</translation>
 <translation id="1997774360448418989">Giấy (nhẹ)</translation>
@@ -2132,7 +2133,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4282280603030594840">Mua sắm xe cộ</translation>
 <translation id="4282346679996504092">Thông báo về sản phẩm này đã bị tắt và dấu trang đã bị xoá</translation>
 <translation id="4284885181066817063">Bị <ph name="DOMAIN" /> chặn</translation>
-<translation id="4285498937028063278">Bỏ ghim</translation>
 <translation id="4288101205645068104">Xoá xe</translation>
 <translation id="4290920330097335010">Không bao giờ cho phép</translation>
 <translation id="4297502707443874121">Hình thu nhỏ của trang <ph name="THUMBNAIL_PAGE" /></translation>
@@ -2606,7 +2606,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5056587122125565772">Tạo hình ảnh</translation>
 <translation id="505757197798929356">Cung cấp lý do mở tệp (bắt buộc)</translation>
 <translation id="5058282932481719070">tìm hiểu thêm về tính năng tự động điền nâng cao trong phần cài đặt</translation>
-<translation id="5060419232449737386">Cài đặt phụ đề</translation>
 <translation id="5061227663725596739">Ý của bạn là <ph name="LOOKALIKE_DOMAIN" /> phải không?</translation>
 <translation id="5066056036849835175">Danh sách tài liệu đã in</translation>
 <translation id="5068524481479508725">A10</translation>
@@ -3567,7 +3566,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6518133107902771759">Xác minh</translation>
 <translation id="6519885440226079262">Có thể yêu cầu theo dõi cử chỉ tay của bạn</translation>
 <translation id="6520026037299163656">Ứng dụng web và công cụ trực tuyến</translation>
-<translation id="65203098586853226">Đang dịch từ <ph name="SOURCE" /> sang <ph name="TARGET" /></translation>
 <translation id="6520509611422418552"><ph name="MEMBER_FIRST_NAME" /> đã tham gia nhóm thẻ "<ph name="GROUP_NAME" />"</translation>
 <translation id="6521745193039995384">Không hoạt động</translation>
 <translation id="6522682797352430154">Nhạc cổ điển</translation>
@@ -4168,7 +4166,6 @@ Thông tin chi tiết bổ sung:
 <translation id="7455452752247248289">Công nghệ cho doanh nghiệp</translation>
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">Xe tải và moóc chở hàng</translation>
-<translation id="7461924472993315131">Ghim</translation>
 <translation id="7463068149674892185">Không nên thực hiện hành động này</translation>
 <translation id="746329643760972486">MacOS</translation>
 <translation id="746412105358554870">Tối ưu hoá và bảo mật JavaScript</translation>
@@ -4674,7 +4671,6 @@ Thông tin chi tiết bổ sung:
 <translation id="8246482227229072868">Nhẫn</translation>
 <translation id="8248406213705193919">Bạn muốn lưu thẻ một cách an toàn?</translation>
 <translation id="8249296373107784235">Hủy bỏ</translation>
-<translation id="824968735947741546">Đang dịch <ph name="SOURCE" /> (được tự động phát hiện) sang <ph name="TARGET" /></translation>
 <translation id="8250094606476360498">Địa chỉ này hiện được lưu vào thiết bị này. Để sử dụng địa chỉ này trên các sản phẩm của Google, hãy lưu địa chỉ vào Tài khoản Google <ph name="ACCOUNT" /> của bạn.</translation>
 <translation id="8250533425540303610">Đang cài đặt <ph name="LANGUAGE" />...</translation>
 <translation id="8251493595871259082">Điền địa chỉ của bạn mà không cần nhập nhiều</translation>

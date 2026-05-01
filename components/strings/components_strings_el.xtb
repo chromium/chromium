@@ -2134,7 +2134,6 @@
 <translation id="4282280603030594840">Αγορά οχήματος</translation>
 <translation id="4282346679996504092">Οι ειδοποιήσεις για αυτό το προϊόν έχουν απενεργοποιηθεί και ο σελιδοδείκτης καταργήθηκε.</translation>
 <translation id="4284885181066817063">Αποκλείστηκε από το <ph name="DOMAIN" /></translation>
-<translation id="4285498937028063278">Ξεκαρφίτσωμα</translation>
 <translation id="4288101205645068104">Διαγραφή οχήματος</translation>
 <translation id="4290920330097335010">Να μην επιτρέπεται ποτέ</translation>
 <translation id="4297502707443874121">Μικρογραφία για τη σελίδα <ph name="THUMBNAIL_PAGE" /></translation>
@@ -2608,7 +2607,6 @@
 <translation id="5056587122125565772">Δημιουργία εικόνας</translation>
 <translation id="505757197798929356">Καταχωρίστε τον λόγο για το άνοιγμα (απαιτείται)</translation>
 <translation id="5058282932481719070">μάθετε περισσότερα σχετικά με τη βελτιωμένη αυτόματη συμπλήρωση στις ρυθμίσεις</translation>
-<translation id="5060419232449737386">Ρυθμίσεις υποτίτλων</translation>
 <translation id="5061227663725596739">Μήπως εννοούσατε <ph name="LOOKALIKE_DOMAIN" />;</translation>
 <translation id="5066056036849835175">Ιστορικό εκτύπωσης</translation>
 <translation id="5068524481479508725">A10</translation>
@@ -2977,6 +2975,7 @@
 <translation id="5600044805561809264">Μπορείτε εύκολα να κάνετε ερωτήσεις σχετικά με τις καρτέλες που μοιράζεστε κατά την περιήγηση.</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> ή <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">Η διαχείριση δεν υποστηρίζεται</translation>
+<translation id="5604254791550001355">Επεξεργασία προτροπής</translation>
 <translation id="560431066250575003">{HOURS,plural, =1{Ενεργό πριν από 1 ώρα}other{Ενεργό πριν από # ώρες}}</translation>
 <translation id="5605249000617390290">Μάθετε περισσότερα σχετικά με την παρακολούθηση τιμής</translation>
 <translation id="5605670050355397069">Ledger</translation>
@@ -3408,6 +3407,7 @@
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
 <translation id="629730747756840877">Λογαριασμός</translation>
+<translation id="6299098428775578517">Ρυθμίσεις προτάσεων</translation>
 <translation id="6300452962057769623">{0,plural, =0{Η επανεκκίνηση της συσκευής σας θα γίνει τώρα}=1{Η επανεκκίνηση της συσκευής σας θα γίνει σε 1 δευτερόλεπτο}other{Η επανεκκίνηση της συσκευής σας θα γίνει σε # δευτερόλεπτα}}</translation>
 <translation id="6301104306974789820">Λάβετε ειδοποιήσεις παρακολούθησης τιμών</translation>
 <translation id="6302546952464230349">Εμφάνιση λεπτομερειών άδειας <ph name="PERMISSION_NAME" /></translation>
@@ -3570,7 +3570,6 @@
 <translation id="6518133107902771759">Επαλήθευση</translation>
 <translation id="6519885440226079262">Μπορεί να ζητήσει να παρακολουθεί τις κινήσεις των χεριών σας</translation>
 <translation id="6520026037299163656">Εφαρμογές ιστού και εργαλεία στο διαδίκτυο</translation>
-<translation id="65203098586853226">Μετάφραση <ph name="SOURCE" /> προς <ph name="TARGET" /></translation>
 <translation id="6520509611422418552">Ο χρήστης <ph name="MEMBER_FIRST_NAME" /> έγινε μέλος της ομάδας καρτελών <ph name="GROUP_NAME" /></translation>
 <translation id="6521745193039995384">Ανενεργή</translation>
 <translation id="6522682797352430154">Κλασική μουσική</translation>
@@ -4171,7 +4170,6 @@
 <translation id="7455452752247248289">Τεχνολογία επιχειρήσεων</translation>
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">Φορτηγά και τρέιλερ</translation>
-<translation id="7461924472993315131">Καρφίτσωμα</translation>
 <translation id="7463068149674892185">Αυτή η ενέργεια δεν συνιστάται</translation>
 <translation id="746329643760972486">MacOS</translation>
 <translation id="746412105358554870">Βελτιστοποίηση και ασφάλεια JavaScript</translation>
@@ -4677,7 +4675,6 @@
 <translation id="8246482227229072868">Δαχτυλίδια</translation>
 <translation id="8248406213705193919">Ασφαλής αποθήκευση κάρτας;</translation>
 <translation id="8249296373107784235">Ματαίωση</translation>
-<translation id="824968735947741546">Μετάφραση <ph name="SOURCE" /> (εντοπίστηκε αυτόματα) σε <ph name="TARGET" /></translation>
 <translation id="8250094606476360498">Αυτή η διεύθυνση είναι αποθηκευμένη σε αυτήν τη συσκευή. Για να τη χρησιμοποιήσετε σε όλα τα προϊόντα Google, αποθηκεύστε τη στον Λογαριασμό σας Google, <ph name="ACCOUNT" />.</translation>
 <translation id="8250533425540303610">Εγκατάσταση <ph name="LANGUAGE" />…</translation>
 <translation id="8251493595871259082">Συμπληρώστε τη διεύθυνσή σας πληκτρολογώντας λιγότερο</translation>

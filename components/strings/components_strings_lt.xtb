@@ -629,6 +629,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1979156660928743046">Medijos informacija</translation>
 <translation id="1987486584747170374">Jūsų paieškos, geriausios atitiktys ir jų puslapių turinys siunčiami „Google“. Tikrinantys žmonės šių duomenų nenaudos DI tobulinti. Organizacija gali bet kada pakeisti šiuos nustatymus.</translation>
 <translation id="1988881251331415125">Jei parašyta tinkamai, <ph name="BEGIN_LINK" />pabandykite paleisti ryšio diagnostiką<ph name="END_LINK" />.</translation>
+<translation id="1991370806334788445">Pabandykite leisti trečiųjų šalių slapukus: tai reiškia, kad naršydami būsite mažiau apsaugoti, bet labiau tikėtina, kad svetainės funkcijos tinkamai veiks.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567"><ph name="URL" /> prašo leidimo nuolat saugoti daug duomenų vietiniame kompiuteryje</translation>
 <translation id="1997774360448418989">Popierius (lengvas)</translation>
@@ -2133,7 +2134,6 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="4282280603030594840">Transporto priemonių pirkimas</translation>
 <translation id="4282346679996504092">Šio produkto įspėjimai išjungti ir žymė pašalinta</translation>
 <translation id="4284885181066817063">Užblokavo: <ph name="DOMAIN" /></translation>
-<translation id="4285498937028063278">Atsegti</translation>
 <translation id="4288101205645068104">Ištrinti transporto priemonę</translation>
 <translation id="4290920330097335010">Niekada neleisti</translation>
 <translation id="4297502707443874121"><ph name="THUMBNAIL_PAGE" /> puslapio miniatiūra</translation>
@@ -2607,7 +2607,6 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="5056587122125565772">Sukurti vaizdą</translation>
 <translation id="505757197798929356">Nurodykite atidarymo priežastį (būtina)</translation>
 <translation id="5058282932481719070">sužinokite daugiau apie patobulintą automatinį pildymą nustatymų puslapyje</translation>
-<translation id="5060419232449737386">Subtitrų nustatymai</translation>
 <translation id="5061227663725596739">Turėjote omenyje <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">Spausdinimo istorija</translation>
 <translation id="5068524481479508725">A10</translation>
@@ -3568,7 +3567,6 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="6518133107902771759">Patvirtinti</translation>
 <translation id="6519885440226079262">Gali paprašyti stebėti jūsų rankas</translation>
 <translation id="6520026037299163656">Žiniatinklio programos ir internetiniai įrankiai</translation>
-<translation id="65203098586853226">Verčiama iš <ph name="SOURCE" /> į <ph name="TARGET" /></translation>
 <translation id="6520509611422418552"><ph name="MEMBER_FIRST_NAME" /> prisijungė prie skirtukų grupės „<ph name="GROUP_NAME" />“</translation>
 <translation id="6521745193039995384">Neaktyvi</translation>
 <translation id="6522682797352430154">Klasikinė muzika</translation>
@@ -4169,7 +4167,6 @@ Papildoma išsami informacija:
 <translation id="7455452752247248289">Verslo technologija</translation>
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">Krovininiai sunkvežimiai ir priekabos</translation>
-<translation id="7461924472993315131">Prisegti</translation>
 <translation id="7463068149674892185">Šis veiksmas nerekomenduojamas</translation>
 <translation id="746329643760972486">MacOS</translation>
 <translation id="746412105358554870">„JavaScript“ optimizavimas ir sauga</translation>
@@ -4675,7 +4672,6 @@ Papildoma išsami informacija:
 <translation id="8246482227229072868">Žiedai</translation>
 <translation id="8248406213705193919">Patikimai išsaugoti kortelę?</translation>
 <translation id="8249296373107784235">Nutraukti</translation>
-<translation id="824968735947741546">Verčiama iš <ph name="SOURCE" /> (automatiškai aptinkama) į <ph name="TARGET" /></translation>
 <translation id="8250094606476360498">Šis adresas šiuo metu išsaugotas šiame įrenginyje. Jei norite jį naudoti „Google“ produktuose, išsaugokite „Google“ paskyroje (<ph name="ACCOUNT" />).</translation>
 <translation id="8250533425540303610">Diegiama <ph name="LANGUAGE" />...</translation>
 <translation id="8251493595871259082">Užpildykite adresą vesdami mažiau teksto</translation>

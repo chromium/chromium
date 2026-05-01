@@ -629,6 +629,7 @@
 <translation id="1979156660928743046">Інформація про медіаконтент</translation>
 <translation id="1987486584747170374">Ваші пошукові запити, найкращі результати й вміст відповідних сторінок надсилаються в Google. Спеціалісти Google не використовуватимуть ці дані для покращення ШІ. Адміністратор вашої організації може будь-коли змінити ці налаштування.</translation>
 <translation id="1988881251331415125">Якщо помилок немає, <ph name="BEGIN_LINK" />проведіть діагностику з'єднання<ph name="END_LINK" />.</translation>
+<translation id="1991370806334788445">Спробуйте дозволити сторонні файли cookie. Це зменшить рівень захисту під час перегляду, але функції сайту з більшою імовірністю працюватимуть належним чином.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567">Сайт <ph name="URL" /> хоче постійно зберігати великий обсяг даних на вашому локальному комп’ютері</translation>
 <translation id="1997774360448418989">Папір (нещільний)</translation>
@@ -2132,7 +2133,6 @@
 <translation id="4282280603030594840">Купівля транспортних засобів</translation>
 <translation id="4282346679996504092">Сповіщення для цього товару вимкнено, а закладку вилучено</translation>
 <translation id="4284885181066817063">Заблоковано адміністратором домену <ph name="DOMAIN" /></translation>
-<translation id="4285498937028063278">Відкріпити</translation>
 <translation id="4288101205645068104">Видалити транспортний засіб</translation>
 <translation id="4290920330097335010">Ніколи не дозволяти</translation>
 <translation id="4297502707443874121">Ескіз для сторінки <ph name="THUMBNAIL_PAGE" /></translation>
@@ -2606,7 +2606,6 @@
 <translation id="5056587122125565772">Створення зображень</translation>
 <translation id="505757197798929356">Укажіть причину відкриття (обов’язково)</translation>
 <translation id="5058282932481719070">дізнатися більше про функцію "Розширене автозаповнення" в налаштуваннях</translation>
-<translation id="5060419232449737386">Налаштування субтитрів</translation>
 <translation id="5061227663725596739">Можливо, ви мали на увазі <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">Історія друку</translation>
 <translation id="5068524481479508725">A10</translation>
@@ -2975,6 +2974,7 @@
 <translation id="5600044805561809264">Ви можете легко ставити запитання про вкладки, якими ділитеся, під час вебперегляду.</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> або <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">Керування не підтримується</translation>
+<translation id="5604254791550001355">Редагувати запит</translation>
 <translation id="560431066250575003">{HOURS,plural, =1{Остання активність 1 годину тому}one{Остання активність # годину тому}few{Остання активність # години тому}many{Остання активність # годин тому}other{Остання активність # години тому}}</translation>
 <translation id="5605249000617390290">Докладніше про відстеження цін</translation>
 <translation id="5605670050355397069">Ledger</translation>
@@ -3406,6 +3406,7 @@
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
 <translation id="629730747756840877">Обліковий запис</translation>
+<translation id="6299098428775578517">Налаштування пропозицій</translation>
 <translation id="6300452962057769623">{0,plural, =0{Ваш пристрій зараз перезапуститься}=1{Ваш пристрій перезапуститься через 1 секунду}one{Ваш пристрій перезапуститься через # секунду}few{Ваш пристрій перезапуститься через # секунди}many{Ваш пристрій перезапуститься через # секунд}other{Ваш пристрій перезапуститься через # секунди}}</translation>
 <translation id="6301104306974789820">Отримувати сповіщення про змінення ціни</translation>
 <translation id="6302546952464230349">Показати інформацію про дозвіл "<ph name="PERMISSION_NAME" />"</translation>
@@ -3567,7 +3568,6 @@
 <translation id="6518133107902771759">Підтвердити</translation>
 <translation id="6519885440226079262">Може просити дозвіл відстежувати руки</translation>
 <translation id="6520026037299163656">Вебдодатки й онлайн-інструменти</translation>
-<translation id="65203098586853226">Мова оригіналу: <ph name="SOURCE" />. Мова перекладу: <ph name="TARGET" />.</translation>
 <translation id="6520509611422418552"><ph name="MEMBER_FIRST_NAME" /> приєднується до групи вкладок "<ph name="GROUP_NAME" />"</translation>
 <translation id="6521745193039995384">Неактивне</translation>
 <translation id="6522682797352430154">Класична музика</translation>
@@ -4168,7 +4168,6 @@
 <translation id="7455452752247248289">Корпоративні технології</translation>
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">Вантажні автомобілі й причепи</translation>
-<translation id="7461924472993315131">Закріпити</translation>
 <translation id="7463068149674892185">Адміністратор не рекомендує виконувати цю дію</translation>
 <translation id="746329643760972486">macOS</translation>
 <translation id="746412105358554870">Оптимізація і захист JavaScript</translation>
@@ -4674,7 +4673,6 @@
 <translation id="8246482227229072868">Каблучки</translation>
 <translation id="8248406213705193919">Безпечно зберегти картку?</translation>
 <translation id="8249296373107784235">Скасувати</translation>
-<translation id="824968735947741546">Виконується переклад. Мова оригіналу: <ph name="SOURCE" /> (визначено автоматично). Мова перекладу: <ph name="TARGET" />.</translation>
 <translation id="8250094606476360498">Ця адреса зараз зберігається на поточному пристрої. Збережіть її у своєму обліковому записі Google (<ph name="ACCOUNT" />), щоб використовувати в усіх продуктах Google.</translation>
 <translation id="8250533425540303610">Встановлення мовного пакета "<ph name="LANGUAGE" />"…</translation>
 <translation id="8251493595871259082">Вводьте свою адресу швидше</translation>

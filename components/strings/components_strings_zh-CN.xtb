@@ -629,6 +629,7 @@
 <translation id="1979156660928743046">媒体信息</translation>
 <translation id="1987486584747170374">您的搜索内容、最佳匹配结果和相应网页内容将发送给 Google。人工审核员不会使用这些内容改进 AI 技术。您的组织可能会随时更改这些设置。</translation>
 <translation id="1988881251331415125">如果拼写无误，请<ph name="BEGIN_LINK" />尝试运行连接诊断工具<ph name="END_LINK" />。</translation>
+<translation id="1991370806334788445">请尝试允许使用第三方 Cookie。虽然这会降低浏览保护力度，但更有助于确保网站功能按预期正常运行。</translation>
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567"><ph name="URL" /> 想在您的本地计算机上永久存储大量数据</translation>
 <translation id="1997774360448418989">纸（轻质纸）</translation>
@@ -2128,7 +2129,6 @@
 <translation id="4282280603030594840">购车</translation>
 <translation id="4282346679996504092">针对此商品的提醒已被关闭，相应书签已被移除</translation>
 <translation id="4284885181066817063">已被 <ph name="DOMAIN" /> 阻止</translation>
-<translation id="4285498937028063278">取消固定</translation>
 <translation id="4288101205645068104">删除车辆</translation>
 <translation id="4290920330097335010">一律不允许</translation>
 <translation id="4297502707443874121">第 <ph name="THUMBNAIL_PAGE" /> 页的缩略图</translation>
@@ -2602,7 +2602,6 @@
 <translation id="5056587122125565772">创建图片</translation>
 <translation id="505757197798929356">请提供打开原因（必填）</translation>
 <translation id="5058282932481719070">在设置中详细了解增强型自动填充功能</translation>
-<translation id="5060419232449737386">字幕设置</translation>
 <translation id="5061227663725596739">您是不是要前往 <ph name="LOOKALIKE_DOMAIN" />？</translation>
 <translation id="5066056036849835175">打印记录</translation>
 <translation id="5068524481479508725">A10</translation>
@@ -3562,7 +3561,6 @@
 <translation id="6518133107902771759">验证</translation>
 <translation id="6519885440226079262">可以请求跟踪您的手部动作</translation>
 <translation id="6520026037299163656">Web 应用与在线工具</translation>
-<translation id="65203098586853226">目前是将<ph name="SOURCE" />翻译为<ph name="TARGET" /></translation>
 <translation id="6520509611422418552"><ph name="MEMBER_FIRST_NAME" />加入了“<ph name="GROUP_NAME" />”标签页分组</translation>
 <translation id="6521745193039995384">无效</translation>
 <translation id="6522682797352430154">古典音乐</translation>
@@ -4163,7 +4161,6 @@
 <translation id="7455452752247248289">企业技术</translation>
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">货车与拖车</translation>
-<translation id="7461924472993315131">固定</translation>
 <translation id="7463068149674892185">不建议执行此操作</translation>
 <translation id="746329643760972486">MacOS</translation>
 <translation id="746412105358554870">JavaScript 优化和安全性</translation>
@@ -4669,7 +4666,6 @@
 <translation id="8246482227229072868">戒指</translation>
 <translation id="8248406213705193919">要安全保存卡信息吗？</translation>
 <translation id="8249296373107784235">取消</translation>
-<translation id="824968735947741546">正在将（自动检测到的）<ph name="SOURCE" />翻译成<ph name="TARGET" /></translation>
 <translation id="8250094606476360498">此地址目前已保存到该设备上。如需在所有 Google 产品中使用此地址，请将它保存到您的 Google 账号 (<ph name="ACCOUNT" />) 中。</translation>
 <translation id="8250533425540303610">正在安装“<ph name="LANGUAGE" />”语言包…</translation>
 <translation id="8251493595871259082">减少输入操作，轻松填写地址</translation>

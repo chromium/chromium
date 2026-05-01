@@ -1576,6 +1576,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="6476800141292307438">Traduction de la page en <ph name="LANGUAGE" />. Options disponibles au bas de l'écran.</translation>
 <translation id="647867789226964031">Modifier vos mots de passe</translation>
 <translation id="6480363549849064919">Authentification du client</translation>
+<translation id="6489174933860678546">Ouvrez des onglets de navigation privée pour naviguer sur le Web de façon plus confidentielle.</translation>
 <translation id="6494931198667773526">Fin</translation>
 <translation id="6503077044568424649">Les + visités</translation>
 <translation id="6503763061813913607">Notifications du contrôle de sécurité</translation>
@@ -2112,7 +2113,6 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="8319282042900445670">Rappel défini pour <ph name="TIME" /> le <ph name="DATE" /></translation>
 <translation id="8320212361750431956">Activité récente</translation>
 <translation id="8325455175867928593">Masquer "Avis basés sur vos centres d'intérêt"</translation>
-<translation id="8328777765163860529">Tout fermer</translation>
 <translation id="833647236762414178">Créez, enregistrez et gérez vos mots de passe et clés d'accès pour vous connecter facilement à des sites et applis. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Sauvegardez vos données et utilisez-les sur n'importe quel appareil.</translation>
 <translation id="8348530355586151720">Appuyez sur l'icône du menu à trois points</translation>
@@ -2296,6 +2296,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="8915916167043355778">Tout fermer</translation>
 <translation id="892185197271200809">Tout le monde perdra immédiatement l'accès au groupe d'onglets "<ph name="GROUP_NAME" />", qui sera supprimé de tous les appareils</translation>
 <translation id="8923178205567790913">Mots de passe</translation>
+<translation id="8926498511977337209">Utiliser le mode navigation privée</translation>
 <translation id="892776311701544612">En savoir plus…</translation>
 <translation id="8928133177108699615">Bureau</translation>
 <translation id="8928426232677696166">Actuellement sélectionné : <ph name="EMAIL" />, géré par votre organisation. Sélectionnez un compte.</translation>

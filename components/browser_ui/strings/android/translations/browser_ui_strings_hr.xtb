@@ -99,6 +99,7 @@
 <translation id="1985247341569771101">Kad je ta postavka uključena, web-lokacije mogu upotrebljavati senzore kretanja uređaja. Kad je ta postavka isključena, web-lokacije ne mogu upotrebljavati senzore kretanja.</translation>
 <translation id="1985716030964443178">Time će se sve web-lokacije na vašem popisu vratiti na zadano zumiranje</translation>
 <translation id="1989112275319619282">Pregledaj</translation>
+<translation id="1991370806334788445">Pokušajte dopustiti kolačiće trećih strana, što znači da će biti manje zaštite pregledavanja, ali će značajke web-lokacije vjerojatnije funkcionirati prema očekivanjima.</translation>
 <translation id="1994173015038366702">URL web-lokacije</translation>
 <translation id="1994558116414798016">Font Lexend</translation>
 <translation id="2004697686368036666">Značajke na nekim web-lokacijama možda neće funkcionirati</translation>
@@ -164,6 +165,7 @@
 <translation id="257931822824936280">Prošireno – kliknite za sažimanje.</translation>
 <translation id="2586657967955657006">Međuspremnik</translation>
 <translation id="2588271083332682494">Organizirajte se pomoću grupa kartica</translation>
+<translation id="2592917252160773942">Web-lokacije mogu zatražiti vašu kameru</translation>
 <translation id="2597457036804169544">Ne primjenjuj tamnu temu na web-lokacije</translation>
 <translation id="2606760465469169465">Automatska potvrda</translation>
 <translation id="2621115761605608342">Dopuštanje JavaScripta za određenu web-lokaciju.</translation>
@@ -360,6 +362,7 @@
 <translation id="4635969503923889910">Nemojte dopustiti web-lokacijama upotrebu NFC uređaja</translation>
 <translation id="4644713492825682049">Izbriši i poništi</translation>
 <translation id="4645575059429386691">Upravlja tvoj roditelj</translation>
+<translation id="4651224148644053314">Više boja i opcija</translation>
 <translation id="4652266463001779298">Nije dopušteno</translation>
 <translation id="4655846733459137112">Dodirnite Da da biste jednostavno upotrijebili tu zaporku sljedeći put kad se prijavite</translation>
 <translation id="4663373278480897665">Kamera je dopuštena</translation>

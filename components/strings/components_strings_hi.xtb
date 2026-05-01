@@ -2133,7 +2133,6 @@
 <translation id="4282280603030594840">वाहन की खरीदारी</translation>
 <translation id="4282346679996504092">इस प्रॉडक्ट के लिए, सूचनाएं पाने की सुविधा बंद कर दी गई है और बुकमार्क को हटा दिया गया है</translation>
 <translation id="4284885181066817063"><ph name="DOMAIN" /> ने ब्लॉक किया</translation>
-<translation id="4285498937028063278">अनपिन करें</translation>
 <translation id="4288101205645068104">वाहन की जानकारी मिटाएं</translation>
 <translation id="4290920330097335010">कभी भी अनुमति न दें</translation>
 <translation id="4297502707443874121">पेज <ph name="THUMBNAIL_PAGE" /> का थंबनेल</translation>
@@ -2607,7 +2606,6 @@
 <translation id="5056587122125565772">इमेज जनरेट करें</translation>
 <translation id="505757197798929356">खोलने की वजह बताएं (ज़रूरी है)</translation>
 <translation id="5058282932481719070">सेटिंग में, ऑटोमैटिक तरीके से भरने की बेहतर सुविधा के बारे में ज़्यादा जानें</translation>
-<translation id="5060419232449737386">कैप्शन सेटिंग</translation>
 <translation id="5061227663725596739">क्या आपका मतलब <ph name="LOOKALIKE_DOMAIN" /> से है?</translation>
 <translation id="5066056036849835175">प्रिंट करने का इतिहास</translation>
 <translation id="5068524481479508725">ए10</translation>
@@ -2976,6 +2974,7 @@
 <translation id="5600044805561809264">आपके पास ब्राउज़ करते समय, शेयर किए जा रहे टैब के बारे में आसानी से सवाल पूछने का विकल्प होता है.</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> या <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">प्रबंधन समर्थित नहीं</translation>
+<translation id="5604254791550001355">प्रॉम्प्ट में बदलाव करें</translation>
 <translation id="560431066250575003">{HOURS,plural, =1{1 घंटे पहले चालू था}one{# घंटे पहले चालू था}other{# घंटे पहले चालू था}}</translation>
 <translation id="5605249000617390290">कीमत ट्रैक करने के बारे में ज़्यादा जानें</translation>
 <translation id="5605670050355397069">लेजर</translation>
@@ -3407,6 +3406,7 @@
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
 <translation id="629730747756840877">खाता</translation>
+<translation id="6299098428775578517">सुझावों से जुड़ी सेटिंग</translation>
 <translation id="6300452962057769623">{0,plural, =0{आपका डिवाइस अभी रीस्टार्ट होगा}=1{आपका डिवाइस 1 सेकंड में रीस्टार्ट होगा}one{आपका डिवाइस # सेकंड में रीस्टार्ट होगा}other{आपका डिवाइस # सेकंड में रीस्टार्ट होगा}}</translation>
 <translation id="6301104306974789820">प्रॉडक्ट की कीमत ट्रैक करने से जुड़ी सूचनाएं पाएं</translation>
 <translation id="6302546952464230349"><ph name="PERMISSION_NAME" /> की अनुमति की जानकारी दिखाएं</translation>
@@ -3568,7 +3568,6 @@
 <translation id="6518133107902771759">पुष्टि करें</translation>
 <translation id="6519885440226079262">यह सेटिंग चालू होने पर, साइट आपके हाथों को ट्रैक करने की अनुमति मांग सकती है</translation>
 <translation id="6520026037299163656">वेब ऐप्लिकेशन और ऑनलाइन टूल</translation>
-<translation id="65203098586853226"><ph name="SOURCE" /> का <ph name="TARGET" /> में अनुवाद किया जा रहा है</translation>
 <translation id="6520509611422418552"><ph name="MEMBER_FIRST_NAME" />, अब "<ph name="GROUP_NAME" />" टैब ग्रुप का हिस्सा हैं</translation>
 <translation id="6521745193039995384">चालू नहीं</translation>
 <translation id="6522682797352430154">क्लासिकल म्यूज़िक</translation>
@@ -4169,7 +4168,6 @@
 <translation id="7455452752247248289">एंटरप्राइज़ टेक्नोलॉजी</translation>
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">कार्गो ट्रक और ट्रेलर</translation>
-<translation id="7461924472993315131">पिन करें</translation>
 <translation id="7463068149674892185">यह कार्रवाई करने का सुझाव नहीं दिया जाता</translation>
 <translation id="746329643760972486">MacOS</translation>
 <translation id="746412105358554870">JavaScript ऑप्टिमाइज़ेशन और सुरक्षा</translation>
@@ -4675,7 +4673,6 @@
 <translation id="8246482227229072868">अंगूठी</translation>
 <translation id="8248406213705193919">क्या आपको कार्ड की जानकारी सुरक्षित तरीके से सेव करनी है?</translation>
 <translation id="8249296373107784235">रद्द करें</translation>
-<translation id="824968735947741546"><ph name="SOURCE" /> (अपने-आप पता लगाई गई) का अनुवाद <ph name="TARGET" /> में किया जा रहा है</translation>
 <translation id="8250094606476360498">फ़िलहाल, यह पता इस डिवाइस पर सेव है. Google के सभी प्रॉडक्ट पर इस्तेमाल करने के लिए, इसे अपने Google खाते, <ph name="ACCOUNT" /> में सेव करें.</translation>
 <translation id="8250533425540303610"><ph name="LANGUAGE" /> इंस्टॉल किया जा रहा है...</translation>
 <translation id="8251493595871259082">कम टाइप करके अपने पते की जानकारी भरें</translation>

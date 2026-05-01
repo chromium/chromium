@@ -1576,6 +1576,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="6476800141292307438">ገጹን ወደ <ph name="LANGUAGE" /> በመተርጎም ላይ። አማራጮች ከማያ ገጹ ግርጌ አጠገብ ይገኛሉ።</translation>
 <translation id="647867789226964031">የይለፍ ቃላትዎን ይለውጡ</translation>
 <translation id="6480363549849064919">የደንበኛ ማረጋገጫ</translation>
+<translation id="6489174933860678546">ድሩን ይበልጥ በግል ለማሰስ ማንነት የማያሳውቁ ትሮችን ይክፈቱ።</translation>
 <translation id="6494931198667773526">ያበቃል</translation>
 <translation id="6503077044568424649">በይበልጥ የተጎበኙ</translation>
 <translation id="6503763061813913607">የደህንነት ፍተሻ ማሳወቂያዎች</translation>
@@ -2112,7 +2113,6 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="8319282042900445670">አስታዋሽ ለ<ph name="TIME" />፣ <ph name="DATE" /> ተቀናብሯል</translation>
 <translation id="8320212361750431956">የቅርብ ጊዜ እንቅስቃሴ</translation>
 <translation id="8325455175867928593">«በዝንባሌዎችዎ ላይ የተመሠረቱ ግምገማዎች» የሚለውን ደብቅ</translation>
-<translation id="8328777765163860529">ሁሉንም ዝጋ</translation>
 <translation id="833647236762414178">በቀላሉ ወደ ጣቢያዎች እና መተግበሪያዎች በመለያ ለመግባት የእርስዎን የይለፍ ቃሎች እና የይለፍ ቁልፎች ይፍጠሩ፣ ያስቀምጡ እና ያስተዳድሩ። <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">የእርስዎን ነገሮች ምትኬ ያስቀምጡ እና በማንኛውም መሣሪያ ላይ ይጠቀሙበት።</translation>
 <translation id="8348530355586151720">ባለ ሦስት ነጥብ ምናሌውን መታ ያድርጉ</translation>
@@ -2296,6 +2296,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="8915916167043355778">ሁሉንም ዝጋ</translation>
 <translation id="892185197271200809">ሁሉም ሰው ወዲያውኑ ለ«<ph name="GROUP_NAME" />» የትር ቡድን መዳረሻ ያጣል እና ከሁሉም መሣሪያዎች ይሰረዛል</translation>
 <translation id="8923178205567790913">የይለፍ ቃላት</translation>
+<translation id="8926498511977337209">ማንነት የማያሳውቅ ውስጥ ያስሱ</translation>
 <translation id="892776311701544612">ተጨማሪ ለመረዳት…</translation>
 <translation id="8928133177108699615">ዴስክቶፕ</translation>
 <translation id="8928426232677696166"><ph name="EMAIL" />፣ በድርጅትዎ የሚተዳደር፣ በአሁኑ ጊዜ የተመረጠ። መለያ ይምረጡ።</translation>

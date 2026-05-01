@@ -1576,6 +1576,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="6476800141292307438">Tłumaczę stronę na <ph name="LANGUAGE" />. Opcje znajdują się na dole ekranu.</translation>
 <translation id="647867789226964031">Zmień hasła</translation>
 <translation id="6480363549849064919">Uwierzytelnianie klienta</translation>
+<translation id="6489174933860678546">Używaj kart incognito, aby przeglądać internet bardziej prywatnie.</translation>
 <translation id="6494931198667773526">Zakończenie</translation>
 <translation id="6503077044568424649">Najczęstsze</translation>
 <translation id="6503763061813913607">Powiadomienia o kontroli zabezpieczeń</translation>
@@ -2112,7 +2113,6 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="8319282042900445670">Przypomnienie ustawione na <ph name="TIME" />, <ph name="DATE" /></translation>
 <translation id="8320212361750431956">Ostatnia aktywność</translation>
 <translation id="8325455175867928593">Ukryj „Opinie na podstawie Twoich zainteresowań”</translation>
-<translation id="8328777765163860529">Zamknij wszystkie</translation>
 <translation id="833647236762414178">Twórz i zapisuj hasła oraz klucze dostępu i zarządzaj nimi, aby łatwo logować się na stronach i w aplikacjach. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Twórz kopie zapasowe swoich danych i używaj ich na dowolnym urządzeniu.</translation>
 <translation id="8348530355586151720">Dotknij menu z 3 kropkami</translation>
@@ -2296,6 +2296,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="8915916167043355778">Zamknij wszystko</translation>
 <translation id="892185197271200809">Wszyscy natychmiast utracą dostęp do grupy kart „<ph name="GROUP_NAME" />” i zostanie ona usunięta ze wszystkich urządzeń</translation>
 <translation id="8923178205567790913">Hasła</translation>
+<translation id="8926498511977337209">Przeglądanie w trybie incognito</translation>
 <translation id="892776311701544612">Więcej informacji…</translation>
 <translation id="8928133177108699615">Komputerowy</translation>
 <translation id="8928426232677696166"><ph name="EMAIL" />, konto zarządzane przez Twoją organizację, obecnie wybrane. Wybierz konto.</translation>

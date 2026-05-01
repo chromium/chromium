@@ -1576,6 +1576,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="6476800141292307438">Səhifə <ph name="LANGUAGE" /> dilinə tərcümə edilir. Seçimlər ekranın aşağı hissəsində əlçatandır.</translation>
 <translation id="647867789226964031">Parolları dəyişin</translation>
 <translation id="6480363549849064919">Müştərinin doğrulanması</translation>
+<translation id="6489174933860678546">Vebdə daha məxfi şəkildə axtarış etmək üçün Anonim tablar açın.</translation>
 <translation id="6494931198667773526">Bitir</translation>
 <translation id="6503077044568424649">Ən çox ziyarət edilən</translation>
 <translation id="6503763061813913607">Təhlükəsizlik yoxlanışı bildirişləri</translation>
@@ -2112,7 +2113,6 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="8319282042900445670">Xatırladıcı ayarlandı: <ph name="TIME" />, <ph name="DATE" /></translation>
 <translation id="8320212361750431956">Son fəaliyyət</translation>
 <translation id="8325455175867928593">"Maraqlarınıza əsasən rəylər" seçimini gizlədin</translation>
-<translation id="8328777765163860529">Hamısını Bağlayın</translation>
 <translation id="833647236762414178">Sayt və tətbiqlərə asanlıqla daxil olmaq üçün parol və giriş açarları yaradın, yadda saxlayın və idarə edin. <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Elementləri yedəkləyin və istənilən cihazda istifadə edin.</translation>
 <translation id="8348530355586151720">Üç nöqtə menyusuna toxunun</translation>
@@ -2296,6 +2296,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="8915916167043355778">Hamısını bağlayın</translation>
 <translation id="892185197271200809">Hər kəs "<ph name="GROUP_NAME" />" tab qrupuna girişi dərhal itirəcək və o, bütün cihazlardan silinəcək</translation>
 <translation id="8923178205567790913">Parollar</translation>
+<translation id="8926498511977337209">Anonim rejimdə axtarın</translation>
 <translation id="892776311701544612">Ətraflı məlumat…</translation>
 <translation id="8928133177108699615">Masaüstü</translation>
 <translation id="8928426232677696166"><ph name="EMAIL" />, hazırda seçilmiş təşkilatınız tərəfindən idarə olunur. Hesab seçin.</translation>

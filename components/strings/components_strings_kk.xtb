@@ -629,6 +629,7 @@
 <translation id="1979156660928743046">Meдиа туралы ақпарат</translation>
 <translation id="1987486584747170374">Іздеу сұрауларыңыз, ең қолайлы сәйкестіктер және олардың бет контенттері Google-ға жіберіледі. Оларды тексерушілер осы функцияны жақсарту үшін пайдаланбайды. Ұйымыңыз бұл параметрлерді кез келген уақытта өзгерте алады.</translation>
 <translation id="1988881251331415125">Дұрыс жазылған болса, <ph name="BEGIN_LINK" />Connectivity Diagnostics құралын іске қосып көріңіз<ph name="END_LINK" />.</translation>
+<translation id="1991370806334788445">Үшінші тарап cookie файлдарына рұқсат беріп көріңіз. Бұл жағдайда қорғаныс дәрежесі төмен болады, бірақ сайт функцияларының ойдағыдай істеу ықтималдығы артады.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567"><ph name="URL" /> үлкен көлемді деректерді жергілікті компьютеріңізде біржола сақтағысы келеді</translation>
 <translation id="1997774360448418989">Қағаз (жеңіл)</translation>
@@ -2131,7 +2132,6 @@
 <translation id="4282280603030594840">Көлік сатып алу</translation>
 <translation id="4282346679996504092">Осы өнімге қатысты хабарландырулар өшіріліп, бетбелгі жойылды.</translation>
 <translation id="4284885181066817063"><ph name="DOMAIN" /> блоктады.</translation>
-<translation id="4285498937028063278">Босату</translation>
 <translation id="4288101205645068104">Көлікті жою</translation>
 <translation id="4290920330097335010">Ешқашан рұқсат бермеу</translation>
 <translation id="4297502707443874121"><ph name="THUMBNAIL_PAGE" /> бетіне арналған нобай</translation>
@@ -2605,7 +2605,6 @@
 <translation id="5056587122125565772">Сурет жасау</translation>
 <translation id="505757197798929356">Ашу себебін көрсетіңіз (міндетті)</translation>
 <translation id="5058282932481719070">параметрлердегі дұрысталған автотолтыру функциясы туралы толық ақпарат</translation>
-<translation id="5060419232449737386">Жазу параметрлері</translation>
 <translation id="5061227663725596739"><ph name="LOOKALIKE_DOMAIN" /> деп жазғыңыз келді ме?</translation>
 <translation id="5066056036849835175">Басып шығару тарихы</translation>
 <translation id="5068524481479508725">A10</translation>
@@ -2974,6 +2973,7 @@
 <translation id="5600044805561809264">Шолған кезде, бөлісіп жатқан қойындылар туралы сұрақ қойған оңай.</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> немесе <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">Басқаруға қолдау көрсетілмеген</translation>
+<translation id="5604254791550001355">Нұсқауды өзгерту</translation>
 <translation id="560431066250575003">{HOURS,plural, =1{1 сағат бұрын белсенді болды.}other{# сағат бұрын белсенді болды.}}</translation>
 <translation id="5605249000617390290">Бағаларды бақылау туралы толық ақпарат</translation>
 <translation id="5605670050355397069">Ledger</translation>
@@ -3405,6 +3405,7 @@
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
 <translation id="629730747756840877">Аккаунт</translation>
+<translation id="6299098428775578517">Ұсыныс параметрлері</translation>
 <translation id="6300452962057769623">{0,plural, =0{Құрылғыңыз қазір қайта қосылады}=1{Құрылғыңыз 1 секундтан кейін қайта қосылады}other{Құрылғыңыз # секундтан кейін қайта қосылады}}</translation>
 <translation id="6301104306974789820">Бағаны бақылау туралы хабарландырулар алу</translation>
 <translation id="6302546952464230349"><ph name="PERMISSION_NAME" /> рұқсатының мәліметтерін көрсету</translation>
@@ -3566,7 +3567,6 @@
 <translation id="6518133107902771759">Растау</translation>
 <translation id="6519885440226079262">Қолыңызды бақылауға рұқсат сұрай алады.</translation>
 <translation id="6520026037299163656">Веб-қолданбалар мен онлайн құралдар</translation>
-<translation id="65203098586853226"><ph name="SOURCE" /> тілінен <ph name="TARGET" /> тіліне аударылуда</translation>
 <translation id="6520509611422418552"><ph name="MEMBER_FIRST_NAME" /> "<ph name="GROUP_NAME" />" қойындылар тобына қосылды.</translation>
 <translation id="6521745193039995384">Қосылмаған</translation>
 <translation id="6522682797352430154">Классикалық музыка</translation>
@@ -4166,7 +4166,6 @@
 <translation id="7455452752247248289">Кәсіпорын технологиясы</translation>
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">Жүк көліктері мен трейлерлер</translation>
-<translation id="7461924472993315131">Бекіту</translation>
 <translation id="7463068149674892185">Бұл әрекетті орындамаған жөн</translation>
 <translation id="746329643760972486">MacOS</translation>
 <translation id="746412105358554870">JavaScript оңтайландыру мүмкіндігі және қауіпсіздігі</translation>
@@ -4672,7 +4671,6 @@
 <translation id="8246482227229072868">Сақиналар</translation>
 <translation id="8248406213705193919">Картаны қауіпсіз сақтау қажет пе?</translation>
 <translation id="8249296373107784235">Доғару</translation>
-<translation id="824968735947741546"><ph name="SOURCE" /> (автоматты анықталған) тілінен <ph name="TARGET" /> тіліне аударылуда</translation>
 <translation id="8250094606476360498">Қазіргі уақытта бұл мекенжай осы құрылғыда сақталған. Оны Google өнімдерінде пайдалану үшін оны Google аккаунтыңызда (<ph name="ACCOUNT" />) сақтаңыз.</translation>
 <translation id="8250533425540303610"><ph name="LANGUAGE" /> орнатылып жатыр…</translation>
 <translation id="8251493595871259082">Мекенжайды аз теріп толтырыңыз</translation>

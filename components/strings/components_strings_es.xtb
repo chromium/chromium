@@ -629,6 +629,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1979156660928743046">Información sobre el contenido multimedia</translation>
 <translation id="1987486584747170374">Tus búsquedas, las mejores coincidencias y el contenido de las páginas se envían a Google. No lo usarán revisores humanos para mejorar la IA. Tu organización puede cambiar esta configuración en cualquier momento.</translation>
 <translation id="1988881251331415125">Si está escrito correctamente, <ph name="BEGIN_LINK" />prueba a ejecutar el diagnóstico de conexión<ph name="END_LINK" />.</translation>
+<translation id="1991370806334788445">Prueba a permitir las cookies de terceros, lo que disminuirá la protección al navegar, pero aumentará la probabilidad de que las opciones de los sitios funcionen como se espera.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567"><ph name="URL" /> quiere almacenar datos de gran tamaño de forma permanente en tu ordenador local</translation>
 <translation id="1997774360448418989">Papel (fino)</translation>
@@ -2132,7 +2133,6 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="4282280603030594840">Compra de vehículos</translation>
 <translation id="4282346679996504092">Las alertas de este producto se han desactivado y se ha quitado el marcador</translation>
 <translation id="4284885181066817063">Bloqueado por <ph name="DOMAIN" /></translation>
-<translation id="4285498937028063278">Desfijar</translation>
 <translation id="4288101205645068104">Eliminar vehículo</translation>
 <translation id="4290920330097335010">No permitir nunca</translation>
 <translation id="4297502707443874121">Miniatura de la página <ph name="THUMBNAIL_PAGE" /></translation>
@@ -2606,7 +2606,6 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="5056587122125565772">Crear imagen</translation>
 <translation id="505757197798929356">Indica el motivo por el que lo abres (obligatorio)</translation>
 <translation id="5058282932481719070">Consulta más información sobre la función Autocompletar mejorada en los ajustes</translation>
-<translation id="5060419232449737386">Ajustes de subtítulos</translation>
 <translation id="5061227663725596739">¿Querías decir <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">Historial de impresión</translation>
 <translation id="5068524481479508725">A10</translation>
@@ -3567,7 +3566,6 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="6518133107902771759">Verificar</translation>
 <translation id="6519885440226079262">Puede solicitar permiso para el seguimiento de manos</translation>
 <translation id="6520026037299163656">Aplicaciones web y herramientas online</translation>
-<translation id="65203098586853226">Traduciendo <ph name="SOURCE" /> a <ph name="TARGET" /></translation>
 <translation id="6520509611422418552"><ph name="MEMBER_FIRST_NAME" /> se ha unido al grupo de pestañas <ph name="GROUP_NAME" /></translation>
 <translation id="6521745193039995384">Inactiva</translation>
 <translation id="6522682797352430154">Música clásica</translation>
@@ -4168,7 +4166,6 @@ Más información:
 <translation id="7455452752247248289">Tecnología empresarial</translation>
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">Camiones de carga y remolques</translation>
-<translation id="7461924472993315131">Fijar</translation>
 <translation id="7463068149674892185">No se recomienda esta acción</translation>
 <translation id="746329643760972486">macOS</translation>
 <translation id="746412105358554870">Optimización y seguridad de JavaScript</translation>
@@ -4674,7 +4671,6 @@ Más información:
 <translation id="8246482227229072868">Anillos</translation>
 <translation id="8248406213705193919">¿Guardar tarjeta de forma segura?</translation>
 <translation id="8249296373107784235">Anular</translation>
-<translation id="824968735947741546">Traduciendo <ph name="SOURCE" /> (autodetectado) al <ph name="TARGET" /></translation>
 <translation id="8250094606476360498">Actualmente, esta dirección está guardada en este dispositivo. Para usarla en los productos de Google, guárdala en tu cuenta de Google <ph name="ACCOUNT" />.</translation>
 <translation id="8250533425540303610">Instalando <ph name="LANGUAGE" />...</translation>
 <translation id="8251493595871259082">Introduce tu dirección sin tener que escribir tanto</translation>

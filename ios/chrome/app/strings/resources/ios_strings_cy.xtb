@@ -1576,6 +1576,7 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="6476800141292307438">Wrthi'n cyfieithu'r dudalen i <ph name="LANGUAGE" />. Mae'r opsiynau sydd ar gael yn agos at waelod y sgrîn.</translation>
 <translation id="647867789226964031">Newid eich cyfrineiriau</translation>
 <translation id="6480363549849064919">Dilysu Cleient</translation>
+<translation id="6489174933860678546">Agorwch dabiau Anhysbys i bori'r we yn fwy preifat.</translation>
 <translation id="6494931198667773526">Yn gorffen</translation>
 <translation id="6503077044568424649">Yr ymwelwyd â nhw y mwyaf</translation>
 <translation id="6503763061813913607">Hysbysiadau Gwiriad Diogelwch</translation>
@@ -2112,7 +2113,6 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="8319282042900445670">Wedi gosod atgoffwr am <ph name="TIME" />, <ph name="DATE" /></translation>
 <translation id="8320212361750431956">Gweithgarwch diweddar:</translation>
 <translation id="8325455175867928593">Cuddio "Adolygiadau yn seiliedig ar eich diddordebau"</translation>
-<translation id="8328777765163860529">Cau Pob Un</translation>
 <translation id="833647236762414178">Creu, cadw a rheoli'ch cyfrineiriau a'ch codau pas i fewngofnodi'n hawdd i wefannau ac apiau. <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Gwneud copïau wrth gefn o'ch pethau a'u defnyddio ar unrhyw ddyfais.</translation>
 <translation id="8348530355586151720">Tapiwch y ddewislen tri dot</translation>
@@ -2296,6 +2296,7 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="8915916167043355778">Cau'r cyfan</translation>
 <translation id="892185197271200809">Bydd pawb yn colli mynediad at y grŵp tabiau "<ph name="GROUP_NAME" />" ar unwaith, a bydd yn cael ei ddileu o bob dyfais</translation>
 <translation id="8923178205567790913">Cyfrineiriau</translation>
+<translation id="8926498511977337209">Pori yn y modd Anhysbys</translation>
 <translation id="892776311701544612">Dysgu rhagor…</translation>
 <translation id="8928133177108699615">Bwrdd gwaith</translation>
 <translation id="8928426232677696166"><ph name="EMAIL" />, rheolir gan eich sefydliad, wedi'i ddewis ar hyn o bryd. Dewis cyfrif.</translation>

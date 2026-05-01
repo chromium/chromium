@@ -4467,7 +4467,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="4036778507053569103">Serverdan yaroqsiz siyosat yuklab olindi.</translation>
 <translation id="4037084878352560732">Toychoq</translation>
 <translation id="403725336528835653">Birinchi boʻlib sinang</translation>
-<translation id="4039835815168788100">“<ph name="EXTENSION_NAME" />” kengaytmasi qidiruv tizimini <ph name="SEARCH_PROVIDER" />ga oʻzgartirishga urindi. Quyida afzalliklaringizni tasdiqlang</translation>
 <translation id="4039966970282098406">Qurilmaning mikrofon, kamera va boshqa parametrlariga ruxsatlar bilan maxfiylikni boshqaring</translation>
 <translation id="4040041015953651705">Tarjima qilinishi kerak til</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Sahifani yopish}other{Sahifalarni yopish}}</translation>
@@ -6125,7 +6124,6 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5208988882104884956">Yarim qalinlik</translation>
 <translation id="5209320130288484488">Qurilmalar topilmadi</translation>
 <translation id="5209513429611499188"><ph name="USAGE_PAGE" /> foydalanish sahifasidan ishlatilgan HID qurilmalar</translation>
-<translation id="5210365745912300556">Varaqni yopish</translation>
 <translation id="5211174138048232917">Tarix fayllarini eksport qilish</translation>
 <translation id="5213114823401215820">Yopilgan guruhni qayta ochish</translation>
 <translation id="5213481667492808996">“<ph name="NAME" />” internet paketingiz faollashtirildi</translation>
@@ -6758,7 +6756,6 @@ Bu amal uchun bir nechta kalit tugma belgilash mumkin.</translation>
 <translation id="5659593005791499971">Email</translation>
 <translation id="5659964844710667266"><ph name="DEVICE_TYPE" /> uchun parol yaratish</translation>
 <translation id="5662513737565158057">Linux ilovalari qanday ishlashini sozlash.</translation>
-<translation id="5663317829633858516">Yaqinda <ph name="EXTENSION_NAME" /> oʻzgartirgan</translation>
 <translation id="5663459693447872156">Avtomatik ravishda halfwidth usuliga o'tish</translation>
 <translation id="5663653125349867535">&amp;Saqlangan sahifalar</translation>
 <translation id="5663918299073387939">Saytlar odatda musiqa yaratish, musiqani tahrirlash yoki qurilma mikrodasturini yangilash uchun MIDI qurilmalarini boshqarish va qayta dasturlashni soʻraydi</translation>
@@ -9313,7 +9310,6 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="746329643760972486">MacOS</translation>
 <translation id="7463985990119325874">Tashkilotingiz bu funksiyalar orqali jamlangan axborotlar qanday ishlatilishini boshqaradi.</translation>
 <translation id="7464645554245611385">Bu varaqqa oid oxirgi xabar</translation>
-<translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{# ta ochiq varaq, darchalar panelini yoqish uchun bosing}other{# ta ochiq varaq, darchalar panelini yoqish uchun bosing}}</translation>
 <translation id="7465635034594602553">Xatolik yuz berdi. Bir necha daqiqadan keyin <ph name="APP_NAME" /> ilovasini qaytadan ishga tushiring.</translation>
 <translation id="7465777686629334728">Boshqaruvdagi ishlab chiqish muhitini olib tashlash (<ph name="SPECIFIC_NAME" />)</translation>
 <translation id="7465778193084373987">Netscape sertifikatini bekor qilish URL manzili</translation>
@@ -10385,7 +10381,6 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8195854162863398249"><ph name="FEATURE_NAME" /> funksiyasini oʻchirish</translation>
 <translation id="8195920051450756553">Tugmani takror faollashtirilish kechikishi</translation>
 <translation id="8197673340773315084">Ish va shaxsiy kabi nom yoki yorliq qoʻshing</translation>
-<translation id="8198043456018523011">Birlamchi qidiruv tizimini tasdiqlang</translation>
 <translation id="8198181050118789419">Mavzu: <ph name="THEME_NAME" /></translation>
 <translation id="8198456017687137612">Translatsiya varagʻi</translation>
 <translation id="8199300056570174101">Tarmoq (xizmat) va qurilma parametrlari</translation>

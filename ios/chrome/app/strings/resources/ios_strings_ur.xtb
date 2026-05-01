@@ -1576,6 +1576,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6476800141292307438">صفحہ کا <ph name="LANGUAGE" /> میں ترجمہ کیا جا رہا ہے۔ اسکرین کے نچلے حصے کے قریب اختیارات دستیاب ہیں۔</translation>
 <translation id="647867789226964031">اپنے پاس ورڈز تبدیل کریں</translation>
 <translation id="6480363549849064919">کلائنٹ کی تصدیق</translation>
+<translation id="6489174933860678546">ویب کو مزید نجی طور پر براؤز کرنے کے لیے پوشیدگی ٹیبز کھولیں۔</translation>
 <translation id="6494931198667773526">وقت اختتام</translation>
 <translation id="6503077044568424649">سب سے زیادہ ملاحظہ کردہ</translation>
 <translation id="6503763061813913607">سیفٹی چیک کی اطلاعات</translation>
@@ -2112,7 +2113,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8319282042900445670">‫<ph name="TIME" />، <ph name="DATE" /> کے لیے یاد دہانی سیٹ کر دی گئی</translation>
 <translation id="8320212361750431956">حالیہ سرگرمی</translation>
 <translation id="8325455175867928593">"آپ کی دلچسپیوں پر مبنی جائزے" کو چھپائیں</translation>
-<translation id="8328777765163860529">تمام بند کریں</translation>
 <translation id="833647236762414178">سائٹس اور ایپس میں آسانی سے سائن ان کرنے کے لیے اپنے پاس ورڈز اور پاس کیز بنائیں، محفوظ کریں اور ان کا نظم کریں۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">اپنے ڈیٹا کا بیک اپ لیں اور اسے کسی بھی آلے پر استعمال کریں۔</translation>
 <translation id="8348530355586151720">تین نقطے والے مینیو پر تھپتھپائیں</translation>
@@ -2296,6 +2296,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8915916167043355778">تمام بند کریں</translation>
 <translation id="892185197271200809">ہر کوئی فوری طور پر "<ph name="GROUP_NAME" />" ٹیب گروپ تک رسائی سے محروم ہو جائے گا اور اسے تمام آلات سے حذف کر دیا جائے گا</translation>
 <translation id="8923178205567790913">پاس ورڈز</translation>
+<translation id="8926498511977337209">پوشیدگی میں براؤز کریں</translation>
 <translation id="892776311701544612">مزید جانیں…</translation>
 <translation id="8928133177108699615">ڈیسک ٹاپ</translation>
 <translation id="8928426232677696166">آپ کی تنظیم کے زیر انتظام <ph name="EMAIL" /> فی الوقت منتخب ہے۔ ایک اکاؤنٹ منتخب کریں۔</translation>

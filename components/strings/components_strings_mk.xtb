@@ -2133,7 +2133,6 @@
 <translation id="4282280603030594840">Купување возила</translation>
 <translation id="4282346679996504092">Известувањата за овој производ се исклучени, а обележувачот е отстранет</translation>
 <translation id="4284885181066817063">Блокирано од <ph name="DOMAIN" /></translation>
-<translation id="4285498937028063278">Откачи</translation>
 <translation id="4288101205645068104">Избришете возило</translation>
 <translation id="4290920330097335010">Никогаш не дозволувај</translation>
 <translation id="4297502707443874121">Сликичка за страницата <ph name="THUMBNAIL_PAGE" /></translation>
@@ -2607,7 +2606,6 @@
 <translation id="5056587122125565772">Создавање слика</translation>
 <translation id="505757197798929356">Наведете причина за отворањето (задолжително)</translation>
 <translation id="5058282932481719070">дознајте повеќе за „Подобрено автоматско пополнување“ во поставките</translation>
-<translation id="5060419232449737386">Поставки за титлови</translation>
 <translation id="5061227663725596739">Дали мислевте на <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">Историја на печатење</translation>
 <translation id="5068524481479508725">A10</translation>
@@ -3568,7 +3566,6 @@
 <translation id="6518133107902771759">Потврди</translation>
 <translation id="6519885440226079262">Сајтот може да бара да ги следи вашите раце</translation>
 <translation id="6520026037299163656">Апликации за прелистувач и онлајн алатки</translation>
-<translation id="65203098586853226">Се преведува од <ph name="SOURCE" /> на <ph name="TARGET" /></translation>
 <translation id="6520509611422418552"><ph name="MEMBER_FIRST_NAME" /> се придружи во групата картички „<ph name="GROUP_NAME" />“</translation>
 <translation id="6521745193039995384">Неактивна</translation>
 <translation id="6522682797352430154">Класична музика</translation>
@@ -4168,7 +4165,6 @@
 <translation id="7455452752247248289">Технологија за претпријатија</translation>
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">Товарни камиони и приколки</translation>
-<translation id="7461924472993315131">Закачи</translation>
 <translation id="7463068149674892185">Дејствово не се препорачува</translation>
 <translation id="746329643760972486">MacOS</translation>
 <translation id="746412105358554870">Оптимизација и безбедност на JavaScript</translation>
@@ -4674,7 +4670,6 @@
 <translation id="8246482227229072868">Прстени</translation>
 <translation id="8248406213705193919">Да се зачува картичката безбедно?</translation>
 <translation id="8249296373107784235">Прекини</translation>
-<translation id="824968735947741546">Се преведува од <ph name="SOURCE" /> (автоматски откриен) на <ph name="TARGET" /></translation>
 <translation id="8250094606476360498">Во моментов, адресава е зачувана на овој уред. За да ја користите на производите на Google, зачувајте ја во вашата сметка на Google, <ph name="ACCOUNT" />.</translation>
 <translation id="8250533425540303610">Се инсталира <ph name="LANGUAGE" />…</translation>
 <translation id="8251493595871259082">Пополнете ја вашата адреса со помалку пишување</translation>

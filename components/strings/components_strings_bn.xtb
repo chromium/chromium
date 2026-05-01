@@ -2134,7 +2134,6 @@
 <translation id="4282280603030594840">যানবাহন কেনাকেটা</translation>
 <translation id="4282346679996504092">এই প্রোডাক্টের জন্য বিজ্ঞপ্তি বন্ধ করে বুকমার্ক সরানো হয়েছে</translation>
 <translation id="4284885181066817063"><ph name="DOMAIN" /> ব্লক করেছে</translation>
-<translation id="4285498937028063278">আনপিন</translation>
 <translation id="4288101205645068104">গাড়ির নাম মুছে দিন</translation>
 <translation id="4290920330097335010">কখনও অনুমতি দেবেন না</translation>
 <translation id="4297502707443874121"><ph name="THUMBNAIL_PAGE" /> পৃষ্ঠার থাম্বনেল</translation>
@@ -2608,7 +2607,6 @@
 <translation id="5056587122125565772">ছবি তৈরি করুন</translation>
 <translation id="505757197798929356">খোলার কারণ লিখুন (খালি রাখা যাবে না)</translation>
 <translation id="5058282932481719070">সেটিংস থেকে উন্নত অটোফিল করার সুবিধা সম্পর্কে আরও জানুন</translation>
-<translation id="5060419232449737386">ক্যাপশন সেটিংস</translation>
 <translation id="5061227663725596739">আপনি কি <ph name="LOOKALIKE_DOMAIN" /> ডোমেনের কথা বলছেন?</translation>
 <translation id="5066056036849835175">প্রিন্ট করার ইতিহাস</translation>
 <translation id="5068524481479508725">A10</translation>
@@ -2977,6 +2975,7 @@
 <translation id="5600044805561809264">আপনি ব্রাউজ করার সময় সহজেই নিজের শেয়ার করা ট্যাব সম্পর্কে প্রশ্ন জিজ্ঞাসা করতে পারেন।</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> বা <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">পরিচালনা সমর্থিত নয়</translation>
+<translation id="5604254791550001355">প্রম্পট এডিট করুন</translation>
 <translation id="560431066250575003">{HOURS,plural, =1{১ ঘণ্টা আগে অ্যাক্টিভ ছিল}one{# ঘণ্টা আগে অ্যাক্টিভ ছিল}other{# ঘণ্টা আগে অ্যাক্টিভ ছিল}}</translation>
 <translation id="5605249000617390290">দাম ট্র্যাক করা সম্পর্কে আরও জানুন</translation>
 <translation id="5605670050355397069">Ledger</translation>
@@ -3407,6 +3406,7 @@
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
 <translation id="629730747756840877">অ্যাকাউন্ট</translation>
+<translation id="6299098428775578517">সাজেশন সংক্রান্ত সেটিংস</translation>
 <translation id="6300452962057769623">{0,plural, =0{আপনার ডিভাইস এখনই রিস্টার্ট হবে}=1{১ সেকেন্ড পরেই আপনার ডিভাইস রিস্টার্ট হবে}one{# সেকেন্ড পরেই আপনার ডিভাইস রিস্টার্ট হবে}other{# সেকেন্ড পরেই আপনার ডিভাইস রিস্টার্ট হবে}}</translation>
 <translation id="6301104306974789820">দাম ট্র্যাক করা সংক্রান্ত বিজ্ঞপ্তি পান</translation>
 <translation id="6302546952464230349"><ph name="PERMISSION_NAME" /> অনুমতি সংক্রান্ত বিবরণ দেখুন</translation>
@@ -3568,7 +3568,6 @@
 <translation id="6518133107902771759">যাচাই করুন</translation>
 <translation id="6519885440226079262">আপনার হ্যান্ড ট্র্যাক করার জন্য জিজ্ঞাসা করতে পারে</translation>
 <translation id="6520026037299163656">ওয়েব অ্যাপ্লিকেশন ও অনলাইন টুল</translation>
-<translation id="65203098586853226"><ph name="TARGET" />-এ <ph name="SOURCE" /> অনুবাদ করা হচ্ছে</translation>
 <translation id="6520509611422418552"><ph name="MEMBER_FIRST_NAME" />, "<ph name="GROUP_NAME" />" ট্যাব গ্রুপে যোগ দিয়েছেন</translation>
 <translation id="6521745193039995384">অ্যাক্টিভ নয়</translation>
 <translation id="6522682797352430154">শাস্ত্রীয় সংগীত</translation>
@@ -4169,7 +4168,6 @@
 <translation id="7455452752247248289">এন্টারপ্রাইজ প্রযুক্তি</translation>
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">কার্গো ট্রাক ও ট্রেলার</translation>
-<translation id="7461924472993315131">পিন</translation>
 <translation id="7463068149674892185">এই অ্যাকশনের সাজেশন দেওয়া হয় না</translation>
 <translation id="746329643760972486">MacOS</translation>
 <translation id="746412105358554870">জাভাস্ক্রিপ্ট অপ্টিমাইজেশন ও সুরক্ষা</translation>
@@ -4675,7 +4673,6 @@
 <translation id="8246482227229072868">রিং</translation>
 <translation id="8248406213705193919">নিরাপদে কার্ড সেভ করতে চান?</translation>
 <translation id="8249296373107784235">বাতিল</translation>
-<translation id="824968735947741546"><ph name="SOURCE" /> (অটোমেটিক শনাক্ত করা হয়েছে) থেকে <ph name="TARGET" /> ভাষায় অনুবাদ করা হচ্ছে</translation>
 <translation id="8250094606476360498">এই ঠিকানাটি বর্তমানে এই ডিভাইসে সেভ করা আছে। সব Google প্রোডাক্ট জুড়ে এটি ব্যবহার করতে, আপনার Google অ্যাকাউন্টে এটি সেভ করুন, <ph name="ACCOUNT" />।</translation>
 <translation id="8250533425540303610"><ph name="LANGUAGE" /> ইনস্টল করা হচ্ছে...</translation>
 <translation id="8251493595871259082">কম টাইপ করে নিজে ঠিকানা পূরণ করুন</translation>

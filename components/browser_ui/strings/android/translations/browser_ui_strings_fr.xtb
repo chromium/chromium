@@ -99,6 +99,7 @@
 <translation id="1985247341569771101">Lorsque cette option est activée, les sites peuvent utiliser les capteurs de mouvement de votre appareil. Lorsqu'elle est désactivée, les sites ne peuvent pas utiliser les capteurs de mouvement.</translation>
 <translation id="1985716030964443178">Tous les sites de la liste repasseront au zoom par défaut</translation>
 <translation id="1989112275319619282">Parcourir</translation>
+<translation id="1991370806334788445">Essayez d'autoriser les cookies tiers. Vous réduirez ainsi la protection de la navigation, mais les fonctionnalités du site auront plus de chances de fonctionner comme prévu.</translation>
 <translation id="1994173015038366702">URL du site</translation>
 <translation id="1994558116414798016">Police Lexend</translation>
 <translation id="2004697686368036666">Il est possible que les fonctionnalités de certains sites ne fonctionnent pas</translation>
@@ -164,6 +165,7 @@
 <translation id="257931822824936280">Développé – Cliquer pour réduire</translation>
 <translation id="2586657967955657006">Presse-papiers</translation>
 <translation id="2588271083332682494">Rangez vos onglets en groupes</translation>
+<translation id="2592917252160773942">Les sites peuvent demander à utiliser votre caméra</translation>
 <translation id="2597457036804169544">Le thème sombre n'est pas appliqué aux sites</translation>
 <translation id="2606760465469169465">Validation automatique</translation>
 <translation id="2621115761605608342">Autorisez le langage JavaScript pour un site spécifique.</translation>
@@ -360,6 +362,7 @@
 <translation id="4635969503923889910">Ne pas autoriser les sites à utiliser des appareils NFC</translation>
 <translation id="4644713492825682049">Supprimer et réinitialiser</translation>
 <translation id="4645575059429386691">Géré par ton parent</translation>
+<translation id="4651224148644053314">Plus de couleurs et d'options</translation>
 <translation id="4652266463001779298">Non autorisé</translation>
 <translation id="4655846733459137112">Appuyez sur "Oui" pour utiliser facilement ce mot de passe à votre prochaine connexion</translation>
 <translation id="4663373278480897665">Caméra autorisée</translation>

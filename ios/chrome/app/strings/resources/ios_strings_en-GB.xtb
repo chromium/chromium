@@ -721,6 +721,7 @@
 <translation id="3565012355885596568">Couldn't load images</translation>
 <translation id="3565930036634619844">Tab. <ph name="TAB_INDEX" /> of <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">Save another way</translation>
+<translation id="3571703298474554279">A faster way to use the app</translation>
 <translation id="3572503683475187385">The current tab is shared with Gemini when you start a new chat. When you share a tab with Gemini, their contents and URL are sent to Google. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">In your Google Account</translation>
 <translation id="3575234738189584619">Search with Lens</translation>
@@ -1701,6 +1702,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6871397658902960384">Start browsing</translation>
 <translation id="6874328931822449112">{COUNT,plural, =1{Save password in account}other{Save passwords in account}}</translation>
 <translation id="6875166646976836138">You can also view and manage these items in your bookmarks, reading list or password manager.</translation>
+<translation id="6878052248816456143">Access files in your Google Drive at any time.</translation>
 <translation id="6882836635272038266">Standard protection against websites, downloads and extensions that are known to be dangerous.</translation>
 <translation id="6884135917113737984">{COUNT,plural, =1{Save {COUNT} password in your Google Account}other{Save {COUNT} passwords in your Google Account}}</translation>
 <translation id="6888009575607455378">Are you sure that you want to discard your changes?</translation>
@@ -1814,6 +1816,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="7345061034321640811">Import not allowed</translation>
 <translation id="7347998088283246662">Import passwords, history, bookmarks and more</translation>
 <translation id="7352651011704765696">Something went wrong</translation>
+<translation id="7363497636543208734">Getting around in the app is easier now.</translation>
 <translation id="7364796246159120393">Choose file</translation>
 <translation id="736564850024123010">Switch the position of your address bar for a customised experience.</translation>
 <translation id="7366909168761621528">Browsing data</translation>
@@ -2113,7 +2116,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="8319282042900445670">Reminder set for <ph name="TIME" />, <ph name="DATE" /></translation>
 <translation id="8320212361750431956">Recent activity</translation>
 <translation id="8325455175867928593">Hide 'Reviews based on your interests'</translation>
-<translation id="8328777765163860529">Close All</translation>
 <translation id="833647236762414178">Create, save and manage your passwords and passkeys to easily sign in to sites and apps. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Back up your stuff and use it on any device.</translation>
 <translation id="8348530355586151720">Tap the three-dot menu</translation>

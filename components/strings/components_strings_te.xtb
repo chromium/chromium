@@ -2128,7 +2128,6 @@
 <translation id="4282280603030594840">వాహనల షాపింగ్</translation>
 <translation id="4282346679996504092">ఈ ప్రోడక్ట్‌కి సంబంధించిన హెచ్చరికలు ఆఫ్ చేయబడ్డాయి, బుక్‌మార్క్ తీసివేయబడింది</translation>
 <translation id="4284885181066817063"><ph name="DOMAIN" /> బ్లాక్ చేసింది</translation>
-<translation id="4285498937028063278">అన్‌పిన్ చేయి</translation>
 <translation id="4288101205645068104">వెహిక‌ల్‌ను తొల‌గించండి</translation>
 <translation id="4290920330097335010">ఎప్పటికీ అనుమతించవద్దు</translation>
 <translation id="4297502707443874121"><ph name="THUMBNAIL_PAGE" /> పేజీ కోసం థంబ్‌నెయిల్</translation>
@@ -2602,7 +2601,6 @@
 <translation id="5056587122125565772">ఇమేజ్‌ను క్రియేట్ చేయండి</translation>
 <translation id="505757197798929356">తెరవడానికి కారణాన్ని అందించండి (అవసరం)</translation>
 <translation id="5058282932481719070">మెరుగైన ఆటోఫిల్ గురించి సెట్టింగ్‌ల్లో మరింత తెలుసుకోండి</translation>
-<translation id="5060419232449737386">క్యాప్షన్ సెట్టింగ్‌లు</translation>
 <translation id="5061227663725596739">మీరు <ph name="LOOKALIKE_DOMAIN" /> గురించి అడిగారా?</translation>
 <translation id="5066056036849835175">ప్రింటింగ్ హిస్టరీ</translation>
 <translation id="5068524481479508725">A10</translation>
@@ -3563,7 +3561,6 @@
 <translation id="6518133107902771759">ధృవీకరించు</translation>
 <translation id="6519885440226079262">మీ చేతి కదలికలను ట్రాక్ చేయడానికి అడగవచ్చు</translation>
 <translation id="6520026037299163656">వెబ్ యాప్‌లు &amp; ఆన్‌లైన్ టూల్స్</translation>
-<translation id="65203098586853226"><ph name="SOURCE" /> నుండి <ph name="TARGET" />లోకి అనువదించడం</translation>
 <translation id="6520509611422418552"><ph name="MEMBER_FIRST_NAME" /> "<ph name="GROUP_NAME" />" ట్యాబ్ గ్రూప్‌లో చేరారు</translation>
 <translation id="6521745193039995384">యాక్టివ్‌గా లేదు</translation>
 <translation id="6522682797352430154">క్లాసికల్ మ్యూజిక్</translation>
@@ -4164,7 +4161,6 @@
 <translation id="7455452752247248289">ఎంటర్‌ప్రైజ్ టెక్నాలజీ</translation>
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">కార్గో ట్రక్కులు &amp; ట్రయిలర్‌లు</translation>
-<translation id="7461924472993315131">పిన్ చేయండి</translation>
 <translation id="7463068149674892185">ఈ చర్య సరైనది కాదు</translation>
 <translation id="746329643760972486">MacOS</translation>
 <translation id="746412105358554870">JavaScript ఆప్టిమైజేషన్ &amp; సెక్యూరిటీ</translation>
@@ -4670,7 +4666,6 @@
 <translation id="8246482227229072868">రింగ్‌లు</translation>
 <translation id="8248406213705193919">కార్డ్‌ను సురక్షితంగా సేవ్ చేయాలా?</translation>
 <translation id="8249296373107784235">రద్దుచేయి</translation>
-<translation id="824968735947741546"><ph name="SOURCE" /> (ఆటోమేటిక్-గుర్తింపు)ని <ph name="TARGET" />లోకి అనువదించడం</translation>
 <translation id="8250094606476360498">ఈ అడ్రస్ ప్రస్తుతం ఈ పరికరంలో సేవ్ అవుతుంది. దీనిని Google ప్రోడక్ట్‌లన్నింటిలో ఉపయోగించాలంటే, మీ Google ఖాతా, <ph name="ACCOUNT" />‌లో దానిని సేవ్ చేయండి.</translation>
 <translation id="8250533425540303610"><ph name="LANGUAGE" /> ఇన్‌స్టాల్ అవుతోంది...</translation>
 <translation id="8251493595871259082">ఎక్కువ టైపింగ్ చేసే అవసరం లేకుండా మీ అడ్రస్‌ను పూరించండి</translation>

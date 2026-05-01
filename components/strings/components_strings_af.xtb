@@ -629,6 +629,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="1979156660928743046">Media-inligting</translation>
 <translation id="1987486584747170374">Jou soektogte, beste passings en hul bladsyinhoud word na Google toe gestuur. Dit sal nie gebruik word deur mense wat kontrolering uitvoer om KI te verbeter nie. Jou organisasie kan enige tyd hierdie instellings verander.</translation>
 <translation id="1988881251331415125">As die spelling korrek is, kan jy <ph name="BEGIN_LINK" />Konnektiwiteitdiagnostiek probeer gebruik<ph name="END_LINK" />.</translation>
+<translation id="1991370806334788445">Probeer om derdepartywebkoekies tydelik toe te laat, wat minder blaaibeskerming beteken, maar werfkenmerke is meer geneig om te werk soos verwag word.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567"><ph name="URL" /> wil groot data permanent op jou plaaslike rekenaar berg</translation>
 <translation id="1997774360448418989">Papier (lig)</translation>
@@ -2132,7 +2133,6 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="4282280603030594840">Voertuiginkopies</translation>
 <translation id="4282346679996504092">Opletberigte vir hierdie produk is afgeskakel en die boekmerk is verwyder</translation>
 <translation id="4284885181066817063">Geblokkeer deur <ph name="DOMAIN" /></translation>
-<translation id="4285498937028063278">Ontspeld</translation>
 <translation id="4288101205645068104">Vee voertuig uit</translation>
 <translation id="4290920330097335010">Moet nooit toelaat nie</translation>
 <translation id="4297502707443874121">Miniprent vir bladsy <ph name="THUMBNAIL_PAGE" /></translation>
@@ -2606,7 +2606,6 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="5056587122125565772">Skep prent</translation>
 <translation id="505757197798929356">Verskaf rede vir die oopmaak (vereis)</translation>
 <translation id="5058282932481719070">Vind meer uit oor verbeterde outovul in instellings</translation>
-<translation id="5060419232449737386">Onderskrifinstellings</translation>
 <translation id="5061227663725596739">Het jy bedoel <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">Drukgeskiedenis</translation>
 <translation id="5068524481479508725">A10</translation>
@@ -3567,7 +3566,6 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="6518133107902771759">Verifieer</translation>
 <translation id="6519885440226079262">Kan vra om jou hande na te spoor</translation>
 <translation id="6520026037299163656">Webapps en aanlyn nutsgoed</translation>
-<translation id="65203098586853226">Vertaal uit <ph name="SOURCE" /> in <ph name="TARGET" /></translation>
 <translation id="6520509611422418552"><ph name="MEMBER_FIRST_NAME" /> het by die “<ph name="GROUP_NAME" />”-oortjiegroep aangesluit</translation>
 <translation id="6521745193039995384">Onaktief</translation>
 <translation id="6522682797352430154">Klassieke musiek</translation>
@@ -4167,7 +4165,6 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="7455452752247248289">Ondernemingstegnologie</translation>
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">Vragtrokke en -sleepwaens</translation>
-<translation id="7461924472993315131">Pin</translation>
 <translation id="7463068149674892185">Hierdie handeling word nie aanbeveel nie</translation>
 <translation id="746329643760972486">MacOS</translation>
 <translation id="746412105358554870">JavaScript-optimering en -sekuriteit</translation>
@@ -4673,7 +4670,6 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="8246482227229072868">Ringe</translation>
 <translation id="8248406213705193919">Stoor kaart veilig?</translation>
 <translation id="8249296373107784235">Staak</translation>
-<translation id="824968735947741546">Vertaal tans <ph name="SOURCE" /> (outobespeur) in <ph name="TARGET" /></translation>
 <translation id="8250094606476360498">Hierdie adres is tans op hierdie toestel gestoor. Stoor dit in jou Google-rekening, <ph name="ACCOUNT" />, om dit in alle Google-produkte te gebruik.</translation>
 <translation id="8250533425540303610">Installeer tans <ph name="LANGUAGE" /> …</translation>
 <translation id="8251493595871259082">Vul jou adres in met minder tikwerk</translation>

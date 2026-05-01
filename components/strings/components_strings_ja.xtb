@@ -629,6 +629,7 @@
 <translation id="1979156660928743046">メディア情報</translation>
 <translation id="1987486584747170374">検索語句、最も一致した結果とそのページの内容が Google に送信されます。AI を改善するために、送信された情報が人間のレビュアーによって使用されることはありません。組織はこれらの設定をいつでも変更できます。</translation>
 <translation id="1988881251331415125">タイプミスでない場合は、<ph name="BEGIN_LINK" />接続診断をお試しください<ph name="END_LINK" />。</translation>
+<translation id="1991370806334788445">サードパーティ Cookie を許可してみてください。ブラウジング保護の強度は低下しますが、サイトの機能が想定どおりに動作する可能性が高くなります。</translation>
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567"><ph name="URL" /> から、ローカルのパソコンに大きなデータを永続的に保存する許可を求められています</translation>
 <translation id="1997774360448418989">紙（軽量）</translation>
@@ -2132,7 +2133,6 @@
 <translation id="4282280603030594840">自動車販売</translation>
 <translation id="4282346679996504092">この商品のアラートをオフにし、ブックマークを削除しました</translation>
 <translation id="4284885181066817063"><ph name="DOMAIN" /> によりブロックされています</translation>
-<translation id="4285498937028063278">固定を解除</translation>
 <translation id="4288101205645068104">車両情報の削除</translation>
 <translation id="4290920330097335010">許可しない</translation>
 <translation id="4297502707443874121"><ph name="THUMBNAIL_PAGE" /> ページのサムネイル</translation>
@@ -2606,7 +2606,6 @@
 <translation id="5056587122125565772">画像を作成</translation>
 <translation id="505757197798929356">開く理由をお知らせください（必須）</translation>
 <translation id="5058282932481719070">高精度の自動入力の設定で詳細をご確認ください</translation>
-<translation id="5060419232449737386">字幕設定</translation>
 <translation id="5061227663725596739">もしかして: <ph name="LOOKALIKE_DOMAIN" /></translation>
 <translation id="5066056036849835175">印刷履歴</translation>
 <translation id="5068524481479508725">A10</translation>
@@ -2975,6 +2974,7 @@
 <translation id="5600044805561809264">ブラウジング中に、共有しているタブについて簡単に質問できます。</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> または <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">管理はサポートされていません</translation>
+<translation id="5604254791550001355">プロンプトを編集</translation>
 <translation id="560431066250575003">{HOURS,plural, =1{アクティブ: 1 時間前}other{アクティブ: # 時間前}}</translation>
 <translation id="5605249000617390290">価格トラッキングの詳細</translation>
 <translation id="5605670050355397069">Ledger</translation>
@@ -3406,6 +3406,7 @@
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
 <translation id="629730747756840877">アカウント</translation>
+<translation id="6299098428775578517">提案の設定</translation>
 <translation id="6300452962057769623">{0,plural, =0{デバイスは今すぐ再起動されます}=1{デバイスは 1 秒後に再起動されます}other{デバイスは # 秒後に再起動されます}}</translation>
 <translation id="6301104306974789820">価格トラッキングの通知を受け取る</translation>
 <translation id="6302546952464230349"><ph name="PERMISSION_NAME" /> の権限の詳細を表示</translation>
@@ -3567,7 +3568,6 @@
 <translation id="6518133107902771759">確認</translation>
 <translation id="6519885440226079262">ハンド トラッキングを要求できる</translation>
 <translation id="6520026037299163656">ウェブアプリ、オンライン ツール</translation>
-<translation id="65203098586853226"><ph name="SOURCE" />を<ph name="TARGET" />に翻訳しています</translation>
 <translation id="6520509611422418552"><ph name="MEMBER_FIRST_NAME" /> さんが「<ph name="GROUP_NAME" />」タブグループに参加しました</translation>
 <translation id="6521745193039995384">無効</translation>
 <translation id="6522682797352430154">クラシック音楽</translation>
@@ -4168,7 +4168,6 @@
 <translation id="7455452752247248289">企業向けテクノロジー</translation>
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">貨物トラック、トレーラー</translation>
-<translation id="7461924472993315131">固定</translation>
 <translation id="7463068149674892185">この操作は推奨されていません</translation>
 <translation id="746329643760972486">MacOS</translation>
 <translation id="746412105358554870">JavaScript の最適化とセキュリティ</translation>
@@ -4674,7 +4673,6 @@
 <translation id="8246482227229072868">指輪</translation>
 <translation id="8248406213705193919">カードを安全に保存しますか？</translation>
 <translation id="8249296373107784235">中止</translation>
-<translation id="824968735947741546"><ph name="SOURCE" />（自動検出）を <ph name="TARGET" /> に翻訳しています</translation>
 <translation id="8250094606476360498">この住所は現在、このデバイスに保存されています。Google サービス全体で使用するには、Google アカウント（<ph name="ACCOUNT" />）に保存してください。</translation>
 <translation id="8250533425540303610"><ph name="LANGUAGE" /> をインストールしています...</translation>
 <translation id="8251493595871259082">住所を自動入力</translation>

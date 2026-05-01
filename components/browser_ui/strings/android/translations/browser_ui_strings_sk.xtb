@@ -99,6 +99,7 @@
 <translation id="1985247341569771101">Keď je táto možnosť zapnutá, weby môžu používať senzory pohybu vášho zariadenia. Keď je táto možnosť vypnutá, weby nemôžu používať senzory pohybu.</translation>
 <translation id="1985716030964443178">Týmto resetujete všetky weby v zozname na predvolenú úroveň lupy</translation>
 <translation id="1989112275319619282">Prehliadať</translation>
+<translation id="1991370806334788445">Vyskúšajte povoliť súbory cookie tretích strán, čo znamená nižšiu ochranu pri prehliadaní, ale funkcie webu budú s väčšou pravdepodobnosťou fungovať podľa očakávaní.</translation>
 <translation id="1994173015038366702">Webová adresa</translation>
 <translation id="1994558116414798016">Písmo Lexend</translation>
 <translation id="2004697686368036666">Funkcie na niektorých weboch nemusia fungovať</translation>
@@ -164,6 +165,7 @@
 <translation id="257931822824936280">Rozbalená (zbalíte ju kliknutím)</translation>
 <translation id="2586657967955657006">Schránka</translation>
 <translation id="2588271083332682494">Usporiadajte si karty pomocou skupín</translation>
+<translation id="2592917252160773942">Weby môžu žiadať o povolenie používať vašu kameru</translation>
 <translation id="2597457036804169544">Nepoužívať tmavý motív na weboch</translation>
 <translation id="2606760465469169465">Automatické overenie</translation>
 <translation id="2621115761605608342">Povoliť JavaScript na konkrétnom webe.</translation>
@@ -360,6 +362,7 @@
 <translation id="4635969503923889910">Nepovoliť webom používať zariadenia s technológiou NFC</translation>
 <translation id="4644713492825682049">Odstrániť a resetovať</translation>
 <translation id="4645575059429386691">Spravované vaším rodičom</translation>
+<translation id="4651224148644053314">Ďalšie farby a možnosti</translation>
 <translation id="4652266463001779298">Nepovolené</translation>
 <translation id="4655846733459137112">Klepnite na Áno, aby sa toto heslo mohlo jednoducho použiť pri ďalšom prihlasovaní</translation>
 <translation id="4663373278480897665">Kamera je povolená</translation>

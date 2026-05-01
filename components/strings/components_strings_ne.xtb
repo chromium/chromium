@@ -629,6 +629,7 @@
 <translation id="1979156660928743046">मिडियासम्बन्धी जानकारी</translation>
 <translation id="1987486584747170374">तपाईंले खोज्ने कुरा, ती कुरासँग सबैभन्दा मिल्दाजुल्दा परिणाम र तिनको पेजमा भएका सामग्री Google मा पठाइन्छन्। समीक्षकहरू AI को गुणस्तर सुधार गर्ने प्रयोजनका लागि ती सामग्री प्रयोग गर्ने छैनन्। तपाईंको सङ्गठनले जुनसुकै बेला यी सेटिङ परिवर्तन गर्न सक्छ।</translation>
 <translation id="1988881251331415125">हिज्जे सही छ भने <ph name="BEGIN_LINK" />'कनेक्टिभिटीका निदानहरू' चलाएर हेर्नुहोस्<ph name="END_LINK" />।</translation>
+<translation id="1991370806334788445">तेस्रो पक्षीय कुकीहरू प्रयोग गर्ने अनुमति दिई हेर्नुहोस्। यसको अर्थ ब्राउजिङको सुरक्षाको स्तर कम हुन्छ तर साइटका सुविधाहरूले अपेक्षा गरिएअनुसार काम गर्ने सम्भावना बढी हुन्छ।</translation>
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567"><ph name="URL" /> तपाईंको स्थानीय कम्प्युटरमा स्थायी रूपमा ठुलो परिमाणको डेटा भण्डारण गर्न चाहन्छ</translation>
 <translation id="1997774360448418989">पेपर (लाइटवेट)</translation>
@@ -2130,7 +2131,6 @@
 <translation id="4282280603030594840">सवारी साधन खरिद</translation>
 <translation id="4282346679996504092">यो उत्पादनका हकमा अलर्ट पठाउने सुविधा अफ गरिएको छ र बुकमार्क हटाइएको छ</translation>
 <translation id="4284885181066817063"><ph name="DOMAIN" /> ले ब्लक गरेको छ</translation>
-<translation id="4285498937028063278">अनपिन गर्नुहोस्</translation>
 <translation id="4288101205645068104">सवारी साधनको जानकारी मेटाउनुहोस्</translation>
 <translation id="4290920330097335010">कहिल्यै पनि अनुमति नदिनुहोस्</translation>
 <translation id="4297502707443874121">पृष्ठ <ph name="THUMBNAIL_PAGE" /> को थम्बनेल</translation>
@@ -2604,7 +2604,6 @@
 <translation id="5056587122125565772">फोटो बनाउनुहोस्</translation>
 <translation id="505757197798929356">खोल्नुको कारण उल्लेख गर्नुहोस् (अनिवार्य)</translation>
 <translation id="5058282932481719070">सेटिङमा गई अटोफिल गर्ने परिष्कृत सुविधाका बारेमा थप जान्नुहोस्</translation>
-<translation id="5060419232449737386">क्याप्सनसम्बन्धी सेटिङ</translation>
 <translation id="5061227663725596739">तपाईंले <ph name="LOOKALIKE_DOMAIN" /> भन्न चाहनुभएको हो?</translation>
 <translation id="5066056036849835175">विगतमा प्रिन्ट गरिएका कुराहरू</translation>
 <translation id="5068524481479508725">A10</translation>
@@ -3565,7 +3564,6 @@
 <translation id="6518133107902771759">रुजू गर्नुहोस्</translation>
 <translation id="6519885440226079262">यो सेटिङ अन गरियो भने साइटले तपाईंका हातहरू ट्र्याक गर्ने अनुमति माग्न सक्छ</translation>
 <translation id="6520026037299163656">वेब एप तथा अनलाइन टुलहरू</translation>
-<translation id="65203098586853226"><ph name="SOURCE" /> भाषाबाट <ph name="TARGET" /> भाषामा अनुवाद गरिँदै छ</translation>
 <translation id="6520509611422418552"><ph name="MEMBER_FIRST_NAME" /> "<ph name="GROUP_NAME" />" ट्याब समूहमा सामेल हुनुभयो</translation>
 <translation id="6521745193039995384">सक्रिय छैन</translation>
 <translation id="6522682797352430154">शास्त्रीय सङ्गीत</translation>
@@ -4165,7 +4163,6 @@
 <translation id="7455452752247248289">इन्टरप्राइज टेक्नोलोजी</translation>
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">कार्गो ट्रक तथा ट्रेलरहरू</translation>
-<translation id="7461924472993315131">पिन</translation>
 <translation id="7463068149674892185">यो कारबाही गर्न सिफारिस गरिँदैन</translation>
 <translation id="746329643760972486">MacOS</translation>
 <translation id="746412105358554870">JavaScript अप्टिमाइजेसन तथा सुरक्षा</translation>
@@ -4671,7 +4668,6 @@
 <translation id="8246482227229072868">औँठीहरू</translation>
 <translation id="8248406213705193919">कार्डसम्बन्धी जानकारी सुरक्षित रूपमा सेभ गर्ने हो?</translation>
 <translation id="8249296373107784235">रद्द गर्नुहोस्</translation>
-<translation id="824968735947741546"><ph name="SOURCE" /> भाषाबाट (स्वतः पत्ता लगाइएको) <ph name="TARGET" /> भाषामा अनुवाद गरिँदै छ</translation>
 <translation id="8250094606476360498">यो ठेगाना हाल यस डिभाइसमा सेभ गरिएको छ। तपाईं यो ठेगाना Google का विभिन्न उत्पादनहरूमा प्रयोग गर्न चाहनुहुन्छ भने यसलाई आफ्नो Google खाता (<ph name="ACCOUNT" />) मा सेभ गर्नुहोस्।</translation>
 <translation id="8250533425540303610"><ph name="LANGUAGE" /> इन्स्टल गरिँदै छ...</translation>
 <translation id="8251493595871259082">कम टाइप गरेकै भरमा आफ्नो ठेगाना भर्नुहोस्</translation>

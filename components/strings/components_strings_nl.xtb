@@ -2127,7 +2127,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="4282280603030594840">Voertuigen kopen</translation>
 <translation id="4282346679996504092">Meldingen voor dit product zijn uitgezet en de bookmark is verwijderd</translation>
 <translation id="4284885181066817063">Geblokkeerd door <ph name="DOMAIN" /></translation>
-<translation id="4285498937028063278">Losmaken</translation>
 <translation id="4288101205645068104">Voertuig verwijderen</translation>
 <translation id="4290920330097335010">Nooit toestaan</translation>
 <translation id="4297502707443874121">Miniatuur voor pagina <ph name="THUMBNAIL_PAGE" /></translation>
@@ -2601,7 +2600,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5056587122125565772">Afbeelding maken</translation>
 <translation id="505757197798929356">Waarom wil je dit openen? (vereist)</translation>
 <translation id="5058282932481719070">meer informatie over verbeterd automatisch invullen in instellingen</translation>
-<translation id="5060419232449737386">Ondertitelingsinstellingen</translation>
 <translation id="5061227663725596739">Bedoelde je <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">Afdrukgeschiedenis</translation>
 <translation id="5068524481479508725">A10</translation>
@@ -2970,6 +2968,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5600044805561809264">Je kunt makkelijk vragen stellen over de tabbladen die je deelt terwijl je browst.</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> of <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">Beheer wordt niet ondersteund</translation>
+<translation id="5604254791550001355">Prompt bewerken</translation>
 <translation id="560431066250575003">{HOURS,plural, =1{1 uur geleden actief}other{# uur geleden actief}}</translation>
 <translation id="5605249000617390290">Meer informatie over het volgen van prijzen</translation>
 <translation id="5605670050355397069">Ledger</translation>
@@ -3400,6 +3399,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
 <translation id="629730747756840877">Account</translation>
+<translation id="6299098428775578517">Instellingen voor suggesties</translation>
 <translation id="6300452962057769623">{0,plural, =0{Je apparaat wordt nu opnieuw opgestart}=1{Je apparaat wordt over 1 seconde opnieuw opgestart}other{Je apparaat wordt over # seconden opnieuw opgestart}}</translation>
 <translation id="6301104306974789820">Meldingen voor volgen van prijzen krijgen</translation>
 <translation id="6302546952464230349">Informatie over het recht <ph name="PERMISSION_NAME" /> tonen</translation>
@@ -3561,7 +3561,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6518133107902771759">Controleren</translation>
 <translation id="6519885440226079262">Kan vragen om je handen te volgen</translation>
 <translation id="6520026037299163656">Web-apps en online tools</translation>
-<translation id="65203098586853226">Vertalen van het <ph name="SOURCE" /> naar het <ph name="TARGET" /></translation>
 <translation id="6520509611422418552"><ph name="MEMBER_FIRST_NAME" /> is lid geworden van de tabbladgroep <ph name="GROUP_NAME" /></translation>
 <translation id="6521745193039995384">Niet actief</translation>
 <translation id="6522682797352430154">Klassieke muziek</translation>
@@ -4162,7 +4161,6 @@ Aanvullende informatie:
 <translation id="7455452752247248289">Bedrijfstechnologie</translation>
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">Vrachtwagens en opleggers</translation>
-<translation id="7461924472993315131">Vastzetten</translation>
 <translation id="7463068149674892185">Deze actie wordt niet aanbevolen</translation>
 <translation id="746329643760972486">macOS</translation>
 <translation id="746412105358554870">JavaScript-optimalisatie en -beveiliging</translation>
@@ -4668,7 +4666,6 @@ Aanvullende informatie:
 <translation id="8246482227229072868">Ringen</translation>
 <translation id="8248406213705193919">Kaart beveiligd opslaan?</translation>
 <translation id="8249296373107784235">Annuleren</translation>
-<translation id="824968735947741546"><ph name="SOURCE" /> (automatisch gedetecteerd) vertalen naar het <ph name="TARGET" /></translation>
 <translation id="8250094606476360498">Dit adres is momenteel opgeslagen op dit apparaat. Als je het wilt gebruiken in andere Google-producten, sla je het op in je Google-account (<ph name="ACCOUNT" />).</translation>
 <translation id="8250533425540303610"><ph name="LANGUAGE" /> installeren...</translation>
 <translation id="8251493595871259082">Vul je adres in met minder typen</translation>

@@ -721,6 +721,7 @@
 <translation id="3565012355885596568">画像を読み込めませんでした</translation>
 <translation id="3565930036634619844">タブ <ph name="TAB_INDEX" />/<ph name="NUMBER_OF_TABS" />。</translation>
 <translation id="3567168891086460374">別の方法で保存</translation>
+<translation id="3571703298474554279">便利になったアプリ操作</translation>
 <translation id="3572503683475187385">新しいチャットを開始すると、現在のタブが Gemini と共有されます。タブを Gemini と共有すると、そのタブのコンテンツと URL が Google に送信されます。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">Google アカウント</translation>
 <translation id="3575234738189584619">レンズで検索</translation>
@@ -1701,6 +1702,7 @@
 <translation id="6871397658902960384">ブラウジングを開始</translation>
 <translation id="6874328931822449112">{COUNT,plural, =1{アカウントにパスワードを保存}other{アカウントにパスワードを保存}}</translation>
 <translation id="6875166646976836138">これらのアイテムは、ブックマーク、リーディング リスト、またはパスワード マネージャーで表示、管理することもできます。</translation>
+<translation id="6878052248816456143">Google ドライブのファイルにいつでもアクセスできます。</translation>
 <translation id="6882836635272038266">危険だと認識されているウェブサイト、ダウンロード、拡張機能から標準的な方法で保護します。</translation>
 <translation id="6884135917113737984">{COUNT,plural, =1{Google アカウントに {COUNT} 件のパスワードを保存します}other{Google アカウントに {COUNT} 件のパスワードを保存します}}</translation>
 <translation id="6888009575607455378">変更を破棄してもよろしいですか？</translation>
@@ -1814,6 +1816,7 @@
 <translation id="7345061034321640811">インポートは許可されていません</translation>
 <translation id="7347998088283246662">パスワード、履歴、ブックマークなどをインポートできます</translation>
 <translation id="7352651011704765696">問題が発生しました</translation>
+<translation id="7363497636543208734">アプリ内での移動が簡単になりました。</translation>
 <translation id="7364796246159120393">ファイルを選択</translation>
 <translation id="736564850024123010">アドレスバーの位置を変更して使用環境をカスタマイズできます。</translation>
 <translation id="7366909168761621528">閲覧履歴データ</translation>
@@ -2113,7 +2116,6 @@
 <translation id="8319282042900445670"><ph name="DATE" /> <ph name="TIME" /> にリマインダーを設定しました</translation>
 <translation id="8320212361750431956">最近のアクティビティ</translation>
 <translation id="8325455175867928593">[興味 / 関心に基づくレビュー] を非表示にする</translation>
-<translation id="8328777765163860529">すべて閉じる</translation>
 <translation id="833647236762414178">パスワードとパスキーを作成、保存、管理して、サイトやアプリに簡単にログインできるようにします。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">データをバックアップして、他のデバイスで使用できるようにします。</translation>
 <translation id="8348530355586151720">その他メニューをタップ</translation>

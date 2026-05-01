@@ -721,6 +721,7 @@
 <translation id="3565012355885596568">לא הצלחנו לטעון את התמונות</translation>
 <translation id="3565930036634619844">‏מקש Tab. ‫<ph name="TAB_INDEX" /> מתוך <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">שמירה בדרך אחרת</translation>
+<translation id="3571703298474554279">רוצה דרך מהירה יותר להשתמש באפליקציה?</translation>
 <translation id="3572503683475187385">‏הכרטיסייה הנוכחית תשותף עם Gemini כששיחה חדשה תתחיל. כשמשתפים כרטיסייה עם Gemini, התוכן וכתובת ה-URL שלה נשלחים אל Google. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">‏בחשבון Google שלך</translation>
 <translation id="3575234738189584619">‏חיפוש באמצעות Lens</translation>
@@ -1576,6 +1577,7 @@
 <translation id="6476800141292307438">מתבצע תרגום של הדף ל<ph name="LANGUAGE" />. האפשרויות מוצגות בחלק התחתון של המסך.</translation>
 <translation id="647867789226964031">שינוי הסיסמאות</translation>
 <translation id="6480363549849064919">אימות לקוח</translation>
+<translation id="6489174933860678546">רוצה לגלוש באינטרנט במצב פרטי? אפשר לפתוח כרטיסיות פרטיות.</translation>
 <translation id="6494931198667773526">מסתיים</translation>
 <translation id="6503077044568424649">הכי פופולריים</translation>
 <translation id="6503763061813913607">התראות של הטיימר לדיווח על מצב מסוכן</translation>
@@ -1700,6 +1702,7 @@
 <translation id="6871397658902960384">לגלישה</translation>
 <translation id="6874328931822449112">{COUNT,plural, =1{שמירת הסיסמה בחשבון}one{שמירת הסיסמאות בחשבון}two{שמירת הסיסמאות בחשבון}other{שמירת הסיסמאות בחשבון}}</translation>
 <translation id="6875166646976836138">אפשר גם לראות ולנהל את הפריטים האלה בסימניות, ברשימת הקריאה או במנהל הסיסמאות.</translation>
+<translation id="6878052248816456143">‏רוצה לגשת לקבצים שלך ב-Google Drive בכל שלב?</translation>
 <translation id="6882836635272038266">הגנה רגילה מפני אתרים, הורדות ותוספים שידועים כמסוכנים.</translation>
 <translation id="6884135917113737984">{COUNT,plural, =1{‏שמירת סיסמה אחת ({COUNT}) בחשבון Google}one{‏שמירה של {COUNT} סיסמאות בחשבון Google}two{‏שמירה של {COUNT} סיסמאות בחשבון Google}other{‏שמירה של {COUNT} סיסמאות בחשבון Google}}</translation>
 <translation id="6888009575607455378">השינויים יימחקו. להמשיך?</translation>
@@ -1813,6 +1816,7 @@
 <translation id="7345061034321640811">הייבוא אסור</translation>
 <translation id="7347998088283246662">אפשר לייבא סיסמאות, היסטוריה, סימניות ועוד</translation>
 <translation id="7352651011704765696">משהו השתבש</translation>
+<translation id="7363497636543208734">עכשיו הרבה יותר קל להתמצא בה.</translation>
 <translation id="7364796246159120393">בחירת קובץ</translation>
 <translation id="736564850024123010">כדי להתאים אישית את חוויית השימוש, אפשר לשנות את המיקום של סרגל הכתובות.</translation>
 <translation id="7366909168761621528">נתוני גלישה</translation>
@@ -2112,7 +2116,6 @@
 <translation id="8319282042900445670">הוגדרה תזכורת לשעה <ph name="TIME" />, בתאריך <ph name="DATE" /></translation>
 <translation id="8320212361750431956">פעילות אחרונה</translation>
 <translation id="8325455175867928593">הסתרת האפשרות "ביקורות על סמך תחומי העניין שלך"</translation>
-<translation id="8328777765163860529">סגירת הכול</translation>
 <translation id="833647236762414178">אפשר ליצור, לשמור ולנהל סיסמאות ומפתחות גישה כדי להיכנס בקלות לאתרים ולאפליקציות. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">כדאי לגבות את הנתונים כדי להשתמש בהם בכל מכשיר.</translation>
 <translation id="8348530355586151720">לוחצים על סמל האפשרויות הנוספות (3 נקודות)</translation>
@@ -2296,6 +2299,7 @@
 <translation id="8915916167043355778">סגירת הכול</translation>
 <translation id="892185197271200809">כולם יאבדו באופן מיידי את הגישה לקבוצת הכרטיסיות "<ph name="GROUP_NAME" />", והיא תימחק מכל המכשירים</translation>
 <translation id="8923178205567790913">סיסמאות</translation>
+<translation id="8926498511977337209">גלישה במצב פרטי</translation>
 <translation id="892776311701544612">למידע נוסף…</translation>
 <translation id="8928133177108699615">מחשב</translation>
 <translation id="8928426232677696166">החשבון <ph name="EMAIL" /> מנוהל על ידי הארגון שלך. צריך לבחור חשבון.</translation>

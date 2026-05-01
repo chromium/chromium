@@ -2128,7 +2128,6 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="4282280603030594840">Avtomobil xaridi</translation>
 <translation id="4282346679996504092">Ushbu mahsulot uchun ogohlantirishlar oʻchirildi va bukmark olib tashlandi</translation>
 <translation id="4284885181066817063"><ph name="DOMAIN" /> tomonidan bloklangan</translation>
-<translation id="4285498937028063278">Olib tashlash</translation>
 <translation id="4288101205645068104">Transport vositasini oʻchirish</translation>
 <translation id="4290920330097335010">Ruxsat berilmasin</translation>
 <translation id="4297502707443874121">Sahifa eskizi: <ph name="THUMBNAIL_PAGE" /></translation>
@@ -2602,7 +2601,6 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="5056587122125565772">Rasm yaratish</translation>
 <translation id="505757197798929356">Ochish sababini yozing (majburiy)</translation>
 <translation id="5058282932481719070">sozlamalarda yaxshilangan avtomatik kiritish haqida batafsil</translation>
-<translation id="5060419232449737386">Izoh sozlamalari</translation>
 <translation id="5061227663725596739">Buni nazarda tutdingizmi: <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">Chop etish tarixi</translation>
 <translation id="5068524481479508725">A10</translation>
@@ -3564,7 +3562,6 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="6518133107902771759">Tasdiqlash</translation>
 <translation id="6519885440226079262">Qoʻllaringiz holatini kuzatishga ruxsat soʻrashi mumkin</translation>
 <translation id="6520026037299163656">Veb-ilovalar va onlayn vositalar</translation>
-<translation id="65203098586853226">Tarjima: <ph name="SOURCE" /> – <ph name="TARGET" /></translation>
 <translation id="6520509611422418552"><ph name="MEMBER_FIRST_NAME" /> “<ph name="GROUP_NAME" />” varaqlar guruhiga qoʻshildi</translation>
 <translation id="6521745193039995384">Faol emas</translation>
 <translation id="6522682797352430154">Mumtoz musiqa</translation>
@@ -4164,7 +4161,6 @@ Batafsil axborot:
 <translation id="7455452752247248289">Korporativ texnologiya</translation>
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">Yuk mashinalari va treylerlar</translation>
-<translation id="7461924472993315131">Qadab qo‘yish</translation>
 <translation id="7463068149674892185">Bu amalni bajarish tavsiya etilmaydi</translation>
 <translation id="746329643760972486">MacOS</translation>
 <translation id="746412105358554870">JavaScript optimizatsiyasi va xavfsizlik</translation>
@@ -4670,7 +4666,6 @@ Batafsil axborot:
 <translation id="8246482227229072868">Uzuklar</translation>
 <translation id="8248406213705193919">Karta xavfsiz saqlansinmi?</translation>
 <translation id="8249296373107784235">Bekor qilish</translation>
-<translation id="824968735947741546"><ph name="SOURCE" /> tilidan (avtomatik aniqlangan) <ph name="TARGET" /> tiliga tarjima qilinmoqda</translation>
 <translation id="8250094606476360498">Hozir bu manzil mazkur qurilmada saqlangan. Boshqa Google xizmatlarida ishlatish uchun manzilni Google hisobiga (<ph name="ACCOUNT" />) saqlang.</translation>
 <translation id="8250533425540303610"><ph name="LANGUAGE" /> oʻrnatilmoqda...</translation>
 <translation id="8251493595871259082">Manzilni toʻldirishda vaqtni tejang</translation>

@@ -721,6 +721,7 @@
 <translation id="3565012355885596568">Ekki tókst að hlaða myndum</translation>
 <translation id="3565930036634619844">Flipi. <ph name="TAB_INDEX" /> af <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">Vista á annan hátt</translation>
+<translation id="3571703298474554279">Fljótlegri leið til að nota forritið</translation>
 <translation id="3572503683475187385">Núverandi flipa er deilt með Gemini þegar þú byrjar nýtt spjall. Þegar þú deilir flipa með Gemini er efni hans og vefslóð send til Google. <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">Á Google-reikningnum þínum</translation>
 <translation id="3575234738189584619">Leita með Linsu</translation>
@@ -1576,6 +1577,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="6476800141292307438">Þýðir síðuna á <ph name="LANGUAGE" />. Valkostir eru í boði neðarlega á skjánum.</translation>
 <translation id="647867789226964031">Breyttu aðgangsorðunum þínum</translation>
 <translation id="6480363549849064919">Auðkenning biðlara</translation>
+<translation id="6489174933860678546">Opnaðu huliðsflipa til að vafra á vefnum í meira næði.</translation>
 <translation id="6494931198667773526">Lýkur</translation>
 <translation id="6503077044568424649">Oftast heimsótt</translation>
 <translation id="6503763061813913607">Tilkynningar fyrir öryggisathugun</translation>
@@ -1700,6 +1702,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="6871397658902960384">Byrja að skoða</translation>
 <translation id="6874328931822449112">{COUNT,plural, =1{Vista aðgangsorð á reikningi}one{Vista aðgangsorð á reikningi}other{Vista aðgangsorð á reikningi}}</translation>
 <translation id="6875166646976836138">Þú getur einnig skoðað og stjórnað þessum atriðum í bókamerkjum, á leslista eða í Aðgangsorðastjórnun</translation>
+<translation id="6878052248816456143">Fáðu aðgang að skrám á Google Drive hvenær sem er.</translation>
 <translation id="6882836635272038266">Hefðbundin vörn gegn vefsvæðum, niðurhali og viðbótum sem vitað er að eru hættuleg.</translation>
 <translation id="6884135917113737984">{COUNT,plural, =1{Vista {COUNT} aðgangsorð á Google-reikningnum þínum}one{Vista {COUNT} aðgangsorð á Google-reikningnum þínum}other{Vista {COUNT} aðgangsorð á Google-reikningnum þínum}}</translation>
 <translation id="6888009575607455378">Ertu viss um að þú viljir fleygja breytingunum?</translation>
@@ -1813,6 +1816,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="7345061034321640811">Innflutningur ekki leyfður</translation>
 <translation id="7347998088283246662">Flyttu inn aðgangsorð, feril, bókamerki og fleira</translation>
 <translation id="7352651011704765696">Eitthvað fór úrskeiðis</translation>
+<translation id="7363497636543208734">Nú er auðveldara að fara á milli staða í forritinu.</translation>
 <translation id="7364796246159120393">Veldu skrá</translation>
 <translation id="736564850024123010">Sérstilltu upplifun þína með því að breyta staðsetningu veffangastikunnar.</translation>
 <translation id="7366909168761621528">Vefskoðunargögn</translation>
@@ -2112,7 +2116,6 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="8319282042900445670">Áminning er stillt fyrir <ph name="TIME" />, <ph name="DATE" /></translation>
 <translation id="8320212361750431956">Nýlegar aðgerðir</translation>
 <translation id="8325455175867928593">Fela „Umsagnir sem byggjast á áhugasviðunum mínum“</translation>
-<translation id="8328777765163860529">Loka öllu</translation>
 <translation id="833647236762414178">Búðu til, vistaðu og stjórnaðu aðgangsorðum og aðgangslyklum til að skrá þig inn á vefsvæði og forrit á einfaldan hátt. <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Afritaðu efnið þitt og notaðu það í hvaða tæki sem er.</translation>
 <translation id="8348530355586151720">Ýttu á þriggja punkta valmyndina</translation>
@@ -2296,6 +2299,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="8915916167043355778">Loka öllu</translation>
 <translation id="892185197271200809">Allir notendur munu umsvifalaust missa aðgang að flipahópnum „<ph name="GROUP_NAME" />“ og honum verður eytt úr öllum tækjum</translation>
 <translation id="8923178205567790913">Aðgangsorð</translation>
+<translation id="8926498511977337209">Skoðaðu netið í huliðsstillingu</translation>
 <translation id="892776311701544612">Nánar…</translation>
 <translation id="8928133177108699615">Tölvuútgáfa</translation>
 <translation id="8928426232677696166"><ph name="EMAIL" /> er valinn (stjórnað af fyrirtækinu þínu). Veldu reikning.</translation>

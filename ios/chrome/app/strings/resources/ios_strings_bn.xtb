@@ -721,6 +721,7 @@
 <translation id="3565012355885596568">ছবি লোড করা যায়নি</translation>
 <translation id="3565930036634619844">ট্যাব। <ph name="NUMBER_OF_TABS" />টির মধ্যে <ph name="TAB_INDEX" /> নম্বর।</translation>
 <translation id="3567168891086460374">অন্যভাবে সেভ করুন</translation>
+<translation id="3571703298474554279">অ্যাপ ব্যবহার করার আরও দ্রুত উপায়</translation>
 <translation id="3572503683475187385">আপনি নতুন চ্যাট শুরু করলে, বর্তমান ট্যাবটি Gemini-র সাথে শেয়ার করা হয়। আপনি Gemini-র সাথে কোনও ট্যাব শেয়ার করলে, সেটির কন্টেন্ট ও URL Google-কে পাঠানো হয়। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">আপনার Google অ্যাকাউন্টে</translation>
 <translation id="3575234738189584619">Lens-এর মাধ্যমে সার্চ করুন</translation>
@@ -1702,6 +1703,7 @@
 <translation id="6871397658902960384">ব্রাউজ করা শুরু করুন</translation>
 <translation id="6874328931822449112">{COUNT,plural, =1{অ্যাকাউন্টে পাসওয়ার্ড সেভ করুন}one{অ্যাকাউন্টে পাসওয়ার্ড সেভ করুন}other{অ্যাকাউন্টে পাসওয়ার্ড সেভ করুন}}</translation>
 <translation id="6875166646976836138">এছাড়াও, আপনি এইসব আইটেম আপনার বুকমার্ক, পড়ার তালিকা বা Password Manager-এ দেখতে এবং ম্যানেজ করতে পারবেন।</translation>
+<translation id="6878052248816456143">যেকোনও সময় আপনার Google Drive-এ থাকা ফাইল অ্যাক্সেস করুন।</translation>
 <translation id="6882836635272038266">ঝুঁকিপূর্ণ হিসেবে চিহ্নিত ওয়েবসাইট, ডাউনলোড এবং এক্সটেনশনের জন্য স্ট্যান্ডার্ড নিরাপত্তা।</translation>
 <translation id="6884135917113737984">{COUNT,plural, =1{আপনার Google অ্যাকাউন্টে {COUNT}টি পাসওয়ার্ড সেভ করুন}one{আপনার Google অ্যাকাউন্টে {COUNT}টি পাসওয়ার্ড সেভ করুন}other{আপনার Google অ্যাকাউন্টে {COUNT}টি পাসওয়ার্ড সেভ করুন}}</translation>
 <translation id="6888009575607455378">আপনি কি সত্যিই আপনার করা পরিবর্তন বাতিল করতে চান?</translation>
@@ -1815,6 +1817,7 @@
 <translation id="7345061034321640811">ইমপোর্ট করার অনুমতি নেই</translation>
 <translation id="7347998088283246662">পাসওয়ার্ড, ইতিহাস, বুকমার্ক ও আরও অনেক কিছু ইমপোর্ট করুন</translation>
 <translation id="7352651011704765696">কিছু সমস্যা হয়েছে</translation>
+<translation id="7363497636543208734">অ্যাপে নেভিগেট করা এখন আরও সহজ।</translation>
 <translation id="7364796246159120393">ফাইল বেছে নিন</translation>
 <translation id="736564850024123010">কাস্টমাইজ করা অভিজ্ঞতার জন্য আপনার অ্যাড্রেস বারের অবস্থান পরিবর্তন করুন।</translation>
 <translation id="7366909168761621528">ব্রাউজিং ডেটা</translation>
@@ -2114,7 +2117,6 @@
 <translation id="8319282042900445670"><ph name="TIME" />, <ph name="DATE" />-এর রিমাইন্ডার সেট করা হয়েছে</translation>
 <translation id="8320212361750431956">সাম্প্রতিক অ্যাক্টিভিটি</translation>
 <translation id="8325455175867928593">"আপনার আগ্রহের উপর ভিত্তি করে রিভিউ" বিকল্প আড়াল করুন</translation>
-<translation id="8328777765163860529">সমস্ত বন্ধ করুন</translation>
 <translation id="833647236762414178">সাইট এবং অ্যাপে সহজে সাইন-ইন করতে আপনার পাসওয়ার্ড ও পাসকী তৈরি, সেভ ও ম্যানেজ করুন। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">আপনার ডেটার ব্যাক-আপ নিন এবং যেকোনও ডিভাইসে তা ব্যবহার করুন।</translation>
 <translation id="8348530355586151720">তিন ডট মেনুতে ট্যাপ করুন</translation>

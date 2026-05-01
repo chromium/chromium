@@ -629,6 +629,7 @@
 <translation id="1979156660928743046">Мультымедыйныя даныя</translation>
 <translation id="1987486584747170374">Пошукавыя запыты, найлепшыя супадзенні і змесціва іх старонак адпраўляюцца ў Google. Спецыялісты не будуць выкарыстоўваць гэтыя даныя для паляпшэння штучнага інтэлекту. Ваша арганізацыя можа змяніць гэтыя налады ў любы час.</translation>
 <translation id="1988881251331415125">Калі напісанне правільнае, <ph name="BEGIN_LINK" />паспрабуйце запусціць дыягностыку падключэнняў<ph name="END_LINK" />.</translation>
+<translation id="1991370806334788445">Паспрабуйце дазволіць староннія файлы cookie – гэта знізіць вашу абароненасць падчас прагляду вэб-сайтаў, але павысіць імавернасць таго, што функцыі сайта будуць працаваць карэктна.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567">Сайт <ph name="URL" /> запытвае дазволу захоўваць вялікі аб’ём даных на лакальным камп’ютары</translation>
 <translation id="1997774360448418989">Лёгкая папера</translation>
@@ -2132,7 +2133,6 @@
 <translation id="4282280603030594840">Купля аўтамабіля</translation>
 <translation id="4282346679996504092">Абвесткі пра гэты прадукт выключаны, а закладка выдалена</translation>
 <translation id="4284885181066817063">Заблакіравана даменам <ph name="DOMAIN" /></translation>
-<translation id="4285498937028063278">Адмацаваць</translation>
 <translation id="4288101205645068104">Выдаленне аўтамабіля</translation>
 <translation id="4290920330097335010">Нiколi не дазваляць</translation>
 <translation id="4297502707443874121">Мініяцюра старонкі <ph name="THUMBNAIL_PAGE" /></translation>
@@ -2606,7 +2606,6 @@
 <translation id="5056587122125565772">Стварыць відарыс</translation>
 <translation id="505757197798929356">Укажыце, па якой прычыне вы хочаце адкрыць файл (абавязкова)</translation>
 <translation id="5058282932481719070">даведацца больш пра палепшанае аўтазапаўненне ў наладах</translation>
-<translation id="5060419232449737386">Налады субцітраў</translation>
 <translation id="5061227663725596739">Вы мелі на ўвазе "<ph name="LOOKALIKE_DOMAIN" />"?</translation>
 <translation id="5066056036849835175">Гісторыя друку</translation>
 <translation id="5068524481479508725">A10</translation>
@@ -2974,6 +2973,7 @@
 <translation id="5600044805561809264">Вы можаце задаваць пытанні пра ўкладкі, якія абагульваеце, падчас прагляду.</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> ці <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">Кіраванне не падтрымліваецца</translation>
+<translation id="5604254791550001355">Змяніць запыт</translation>
 <translation id="560431066250575003">{HOURS,plural, =1{Прылада была актыўная 1 гадзіну таму}one{Прылада была актыўная # гадзіну таму}few{Прылада была актыўная # гадзіны таму}many{Прылада была актыўная # гадзін таму}other{Прылада была актыўная # гадзіны таму}}</translation>
 <translation id="5605249000617390290">Даведацца больш пра сачэнне за цаной</translation>
 <translation id="5605670050355397069">Ledger</translation>
@@ -3405,6 +3405,7 @@
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
 <translation id="629730747756840877">Уліковы запіс</translation>
+<translation id="6299098428775578517">Налады прапаноў</translation>
 <translation id="6300452962057769623">{0,plural, =0{Прылада будзе перазапушчана зараз}=1{Прылада будзе перазапушчана праз 1 секунду}one{Прылада будзе перазапушчана праз # секунду}few{Прылада будзе перазапушчана праз # секунды}many{Прылада будзе перазапушчана праз # секунд}other{Прылада будзе перазапушчана праз # секунды}}</translation>
 <translation id="6301104306974789820">Атрымліваць апавяшчэнні аб змяненні цаны</translation>
 <translation id="6302546952464230349">Паказаць падрабязныя звесткі пра дазвол "<ph name="PERMISSION_NAME" />"</translation>
@@ -3566,7 +3567,6 @@
 <translation id="6518133107902771759">Спраўдзіць</translation>
 <translation id="6519885440226079262">Можа запытаць дазвол на адсочванне рухаў рук</translation>
 <translation id="6520026037299163656">Вэб-праграмы і анлайн-інструменты</translation>
-<translation id="65203098586853226">Ідзе пераклад (<ph name="SOURCE" /> – <ph name="TARGET" />)</translation>
 <translation id="6520509611422418552">Карыстальнік (<ph name="MEMBER_FIRST_NAME" />) далучыўся да групы ўкладак "<ph name="GROUP_NAME" />"</translation>
 <translation id="6521745193039995384">Неактыўная</translation>
 <translation id="6522682797352430154">Класічная музыка</translation>
@@ -4167,7 +4167,6 @@
 <translation id="7455452752247248289">Карпаратыўныя тэхналогіі</translation>
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">Грузавыя аўтамабілі і прычэпы</translation>
-<translation id="7461924472993315131">Замацаваць</translation>
 <translation id="7463068149674892185">Не рэкамендуецца выконваць гэта дзеянне</translation>
 <translation id="746329643760972486">MacOS</translation>
 <translation id="746412105358554870">Аптымізацыя і бяспека JavaScript</translation>
@@ -4673,7 +4672,6 @@
 <translation id="8246482227229072868">Пярсцёнкі</translation>
 <translation id="8248406213705193919">Захаваць рэквізіты карткі ў бяспецы?</translation>
 <translation id="8249296373107784235">Скасаваць</translation>
-<translation id="824968735947741546">Выконваецца пераклад з мовы "<ph name="SOURCE" />" (распазнана аўтаматычна) на мову "<ph name="TARGET" />"</translation>
 <translation id="8250094606476360498">Адрас зараз захаваны на гэтай прыладзе. Каб выкарыстоўваць яго ў іншых прадуктах Google, захавайце гэты адрас у сваім Уліковым запісе Google (<ph name="ACCOUNT" />).</translation>
 <translation id="8250533425540303610">Ідзе ўсталяванне мовы (<ph name="LANGUAGE" />)…</translation>
 <translation id="8251493595871259082">Уводзьце адрас значна хутчэй</translation>

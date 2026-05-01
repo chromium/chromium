@@ -629,6 +629,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="1979156660928743046">Informacije o medijima</translation>
 <translation id="1987486584747170374">Pretrage, najbolja podudaranja i sadržaj stranica sa njima šalju se Google-u. Osobe koje pregledaju neće to koristiti za poboljšanje veštačke inteligencije. Organizacija može da promeni ova podešavanja u svakom trenutku.</translation>
 <translation id="1988881251331415125">Ako nema grešaka, <ph name="BEGIN_LINK" />pokrenite dijagnostiku povezivanja<ph name="END_LINK" />.</translation>
+<translation id="1991370806334788445">Probajte da dozvolite kolačiće treće strane, što znači slabiju zaštitu pregledanja, ali veću verovatnoću da će funkcije sajta raditi na očekivani način.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567"><ph name="URL" /> želi da trajno skladišti veliku količinu podataka na vašem lokalnom računaru</translation>
 <translation id="1997774360448418989">Papir (lagan)</translation>
@@ -2132,7 +2133,6 @@ Da biste sakrili opcije za kasnije plaćanje, idite u <ph name="BEGIN_LINK" />p
 <translation id="4282280603030594840">Kupovina vozila</translation>
 <translation id="4282346679996504092">Obaveštenja za ovaj proizvod su isključena, a obeleživač je uklonjen</translation>
 <translation id="4284885181066817063">Blokirao <ph name="DOMAIN" /></translation>
-<translation id="4285498937028063278">Otkači</translation>
 <translation id="4288101205645068104">Izbrišite vozilo</translation>
 <translation id="4290920330097335010">Nikada ne dozvoli</translation>
 <translation id="4297502707443874121">Sličica za <ph name="THUMBNAIL_PAGE" />. stranicu</translation>
@@ -2606,7 +2606,6 @@ Da biste sakrili opcije za kasnije plaćanje, idite u <ph name="BEGIN_LINK" />p
 <translation id="5056587122125565772">Napravi sliku</translation>
 <translation id="505757197798929356">Navedite razlog za otvaranje (obavezno)</translation>
 <translation id="5058282932481719070">saznajte više o poboljšanom automatskom popunjavanju u podešavanjima</translation>
-<translation id="5060419232449737386">Podešavanja titla</translation>
 <translation id="5061227663725596739">Da li ste mislili <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">Istorija štampanja</translation>
 <translation id="5068524481479508725">A10</translation>
@@ -3566,7 +3565,6 @@ Da biste sakrili opcije za kasnije plaćanje, idite u <ph name="BEGIN_LINK" />p
 <translation id="6518133107902771759">Verifikuj</translation>
 <translation id="6519885440226079262">Može da traži da prati vaše ruke</translation>
 <translation id="6520026037299163656">Veb-aplikacije i onlajn alatke</translation>
-<translation id="65203098586853226">Prevodi se sa jezika <ph name="SOURCE" /> na <ph name="TARGET" /></translation>
 <translation id="6520509611422418552">Korisnik <ph name="MEMBER_FIRST_NAME" /> se pridružio grupi kartica <ph name="GROUP_NAME" /></translation>
 <translation id="6521745193039995384">Nisu aktivne</translation>
 <translation id="6522682797352430154">Klasična muzika</translation>
@@ -4167,7 +4165,6 @@ Dodatni detalji:
 <translation id="7455452752247248289">Tehnologija poslovanja</translation>
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">Teretni kamioni i prikolice</translation>
-<translation id="7461924472993315131">Zakači</translation>
 <translation id="7463068149674892185">Ova radnja se ne preporučuje</translation>
 <translation id="746329643760972486">MacOS</translation>
 <translation id="746412105358554870">Optimizacija i bezbednost JavaScript-a</translation>
@@ -4673,7 +4670,6 @@ Dodatni detalji:
 <translation id="8246482227229072868">Prstenje</translation>
 <translation id="8248406213705193919">Želite bezbedno da sačuvate karticu?</translation>
 <translation id="8249296373107784235">Otkaži</translation>
-<translation id="824968735947741546">Prevodi se <ph name="SOURCE" /> (automatski otkriveno) na <ph name="TARGET" /></translation>
 <translation id="8250094606476360498">Ova adresa je trenutno sačuvana na ovom uređaju. Da biste je koristili u svim Google proizvodima, sačuvajte je na Google nalogu, <ph name="ACCOUNT" />.</translation>
 <translation id="8250533425540303610">Instalira se <ph name="LANGUAGE" />…</translation>
 <translation id="8251493595871259082">Unesite adresu uz manje kucanja</translation>

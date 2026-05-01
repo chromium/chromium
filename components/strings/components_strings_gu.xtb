@@ -2133,7 +2133,6 @@
 <translation id="4282280603030594840">વાહનની ખરીદી</translation>
 <translation id="4282346679996504092">આ પ્રોડક્ટ માટેના અલર્ટ બંધ કરવામાં આવ્યા છે અને બુકમાર્ક કાઢી નાખવામાં આવી છે</translation>
 <translation id="4284885181066817063"><ph name="DOMAIN" /> દ્વારા બ્લૉક કરેલી</translation>
-<translation id="4285498937028063278">અનપિન કરો</translation>
 <translation id="4288101205645068104">વાહન ડિલીટ કરો</translation>
 <translation id="4290920330097335010">ક્યારેય મંજૂરી આપશો નહીં</translation>
 <translation id="4297502707443874121">પેજ <ph name="THUMBNAIL_PAGE" /> માટે થંબનેલ</translation>
@@ -2607,7 +2606,6 @@
 <translation id="5056587122125565772">છબી બનાવો</translation>
 <translation id="505757197798929356">ખોલવાનું કારણ આપો (આવશ્યક છે)</translation>
 <translation id="5058282932481719070">સેટિંગમાં વધુ સારી બનાવેલી ઑટોમૅટિક રીતે ભરવાની સુવિધા વિશે વધુ જાણો</translation>
-<translation id="5060419232449737386">કૅપ્શન સેટિંગ</translation>
 <translation id="5061227663725596739">શું તમારો અર્થ <ph name="LOOKALIKE_DOMAIN" /> હતો?</translation>
 <translation id="5066056036849835175">પ્રિન્ટનો ઇતિહાસ</translation>
 <translation id="5068524481479508725">A10</translation>
@@ -2976,6 +2974,7 @@
 <translation id="5600044805561809264">બ્રાઉઝ કરતી વખતે તમે જે ટૅબ શેર કરી રહ્યા હો, તેના વિશે સરળતાથી પ્રશ્નો પૂછી શકો છો.</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> અથવા <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">સંચાલન સમર્થિત નથી</translation>
+<translation id="5604254791550001355">પ્રૉમ્પ્ટમાં ફેરફાર કરો</translation>
 <translation id="560431066250575003">{HOURS,plural, =1{1 કલાક પહેલાં સક્રિય}one{# કલાક પહેલાં સક્રિય}other{# કલાક પહેલાં સક્રિય}}</translation>
 <translation id="5605249000617390290">કિંમત ટ્રૅક કરવાની સુવિધા વિશે વધુ જાણો</translation>
 <translation id="5605670050355397069">લેજર</translation>
@@ -3407,6 +3406,7 @@
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
 <translation id="629730747756840877">એકાઉન્ટ</translation>
+<translation id="6299098428775578517">સૂચનના સેટિંગ</translation>
 <translation id="6300452962057769623">{0,plural, =0{તમારું ડિવાઇસ હમણાં જ ફરી શરૂ થશે}=1{તમારું ડિવાઇસ 1 સેકન્ડમાં ફરી શરૂ થશે}one{તમારું ડિવાઇસ # સેકન્ડમાં ફરી શરૂ થશે}other{તમારું ડિવાઇસ # સેકન્ડમાં ફરી શરૂ થશે}}</translation>
 <translation id="6301104306974789820">કિંમત ટ્રૅક કરવા વિશે નોટિફિકેશન મેળવો</translation>
 <translation id="6302546952464230349"><ph name="PERMISSION_NAME" />ની પરવાનગીની વિગતો બતાવો</translation>
@@ -3568,7 +3568,6 @@
 <translation id="6518133107902771759">પ્રમાણિત કરો</translation>
 <translation id="6519885440226079262">તમારા હાથને ટ્રૅક કરવા માટે કહી શકો છો</translation>
 <translation id="6520026037299163656">વેબ ઍપ અને ઑનલાઇન ટૂલ</translation>
-<translation id="65203098586853226"><ph name="SOURCE" />નો <ph name="TARGET" />માં અનુવાદ કરી રહ્યાં છીએ</translation>
 <translation id="6520509611422418552"><ph name="MEMBER_FIRST_NAME" />, ટૅબના ગ્રૂપ "<ph name="GROUP_NAME" />"માં જોડાયા</translation>
 <translation id="6521745193039995384">સક્રિય નથી</translation>
 <translation id="6522682797352430154">શાસ્ત્રીય સંગીત</translation>
@@ -4169,7 +4168,6 @@
 <translation id="7455452752247248289">એન્ટરપ્રાઇઝ ટેકનોલોજી</translation>
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">કાર્ગો ટ્રક અને ટ્રેલર</translation>
-<translation id="7461924472993315131">પિન કરો</translation>
 <translation id="7463068149674892185">આ ઍક્શનનો સુઝાવ આપવામાં આવતો નથી</translation>
 <translation id="746329643760972486">MacOS</translation>
 <translation id="746412105358554870">JavaScript ઑપ્ટિમાઇઝેશન અને સુરક્ષા</translation>
@@ -4675,7 +4673,6 @@
 <translation id="8246482227229072868">રિંગ</translation>
 <translation id="8248406213705193919">કાર્ડને સુરક્ષિત રીતે સાચવીએ?</translation>
 <translation id="8249296373107784235">છોડો</translation>
-<translation id="824968735947741546">(ઑટોમૅટિક રીતે ભાળ મેળવેલી) <ph name="SOURCE" />નો <ph name="TARGET" />માં અનુવાદ કરી રહ્યાં છીએ</translation>
 <translation id="8250094606476360498">આ સરનામું હાલમાં આ ડિવાઇસમાં સાચવેલું છે. Googleની સમગ્ર પ્રોડક્ટ પર તેનો ઉપયોગ કરવા માટે, તેને તમારા Google એકાઉન્ટ <ph name="ACCOUNT" />માં સાચવો.</translation>
 <translation id="8250533425540303610"><ph name="LANGUAGE" /> ઇન્સ્ટૉલ કરી રહ્યાં છીએ...</translation>
 <translation id="8251493595871259082">ઓછું ટાઇપ કરવાની સુવિધા વડે તમારું સરનામું ભરો</translation>

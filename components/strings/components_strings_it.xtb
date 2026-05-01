@@ -629,6 +629,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1979156660928743046">Informazioni sui contenuti multimediali</translation>
 <translation id="1987486584747170374">Le tue ricerche, i risultati più pertinenti e i contenuti delle pagine corrispondenti vengono inviati a Google. Questi dati non verranno utilizzati da revisori per migliorare l'AI. La tua organizzazione può modificare queste impostazioni in qualsiasi momento.</translation>
 <translation id="1988881251331415125">Se l'ortografia è corretta, <ph name="BEGIN_LINK" />prova a eseguire lo strumento Diagnostica della connettività<ph name="END_LINK" />.</translation>
+<translation id="1991370806334788445">Prova a consentire i cookie di terze parti. In questo modo avrai meno protezione durante la navigazione, ma è più probabile che le funzionalità del sito operino come previsto.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567"><ph name="URL" /> vuole memorizzare in modo definitivo grandi quantità di dati sul computer locale</translation>
 <translation id="1997774360448418989">Carta (Leggera)</translation>
@@ -2129,7 +2130,6 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="4282280603030594840">Acquisto veicoli</translation>
 <translation id="4282346679996504092">Gli avvisi per questo prodotto sono stati disattivati e il preferito è stato rimosso</translation>
 <translation id="4284885181066817063">Bloccata da: <ph name="DOMAIN" /></translation>
-<translation id="4285498937028063278">Stacca</translation>
 <translation id="4288101205645068104">Elimina il veicolo</translation>
 <translation id="4290920330097335010">Non consentire mai</translation>
 <translation id="4297502707443874121">Miniatura della pagina <ph name="THUMBNAIL_PAGE" /></translation>
@@ -2603,7 +2603,6 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="5056587122125565772">Crea immagine</translation>
 <translation id="505757197798929356">Specifica il motivo dell'apertura (obbligatorio)</translation>
 <translation id="5058282932481719070">Scopri di più sulla compilazione automatica avanzata nelle impostazioni</translation>
-<translation id="5060419232449737386">Impostazioni sottotitoli codificati</translation>
 <translation id="5061227663725596739">Forse cercavi: <ph name="LOOKALIKE_DOMAIN" /></translation>
 <translation id="5066056036849835175">Cronologia di stampa</translation>
 <translation id="5068524481479508725">A10</translation>
@@ -2972,6 +2971,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="5600044805561809264">Puoi fare domande sulle schede che condividi mentre navighi, in tutta semplicità.</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> o <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">Gestione non supportata</translation>
+<translation id="5604254791550001355">Modifica prompt</translation>
 <translation id="560431066250575003">{HOURS,plural, =1{Attivo 1 ora fa}other{Attivo # ore fa}}</translation>
 <translation id="5605249000617390290">Scopri di più sul monitoraggio dei prezzi</translation>
 <translation id="5605670050355397069">Ledger</translation>
@@ -3402,6 +3402,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
 <translation id="629730747756840877">Account</translation>
+<translation id="6299098428775578517">Impostazioni dei suggerimenti</translation>
 <translation id="6300452962057769623">{0,plural, =0{Il tuo dispositivo verrà riavviato adesso}=1{Il tuo dispositivo verrà riavviato tra 1 secondo}other{Il tuo dispositivo verrà riavviato tra # secondi}}</translation>
 <translation id="6301104306974789820">Ricevi notifiche per il monitoraggio del prezzo</translation>
 <translation id="6302546952464230349">Mostra i dettagli dell'autorizzazione <ph name="PERMISSION_NAME" /></translation>
@@ -3563,7 +3564,6 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="6518133107902771759">Verifica</translation>
 <translation id="6519885440226079262">Può chiedere di monitorare le tue mani</translation>
 <translation id="6520026037299163656">App web e strumenti online</translation>
-<translation id="65203098586853226">Traduzione da <ph name="SOURCE" /> a <ph name="TARGET" /></translation>
 <translation id="6520509611422418552"><ph name="MEMBER_FIRST_NAME" /> è ora parte del gruppo di schede "<ph name="GROUP_NAME" />"</translation>
 <translation id="6521745193039995384">Non attivo</translation>
 <translation id="6522682797352430154">Musica classica</translation>
@@ -4164,7 +4164,6 @@ Ulteriori dettagli:
 <translation id="7455452752247248289">Tecnologia aziendale</translation>
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">Autocarri e rimorchi da carico</translation>
-<translation id="7461924472993315131">Fissa</translation>
 <translation id="7463068149674892185">Questa azione non è consigliata</translation>
 <translation id="746329643760972486">MacOS</translation>
 <translation id="746412105358554870">Sicurezza e ottimizzazione di JavaScript</translation>
@@ -4670,7 +4669,6 @@ Ulteriori dettagli:
 <translation id="8246482227229072868">Anelli</translation>
 <translation id="8248406213705193919">Salvare la carta in modo sicuro?</translation>
 <translation id="8249296373107784235">Interrompi</translation>
-<translation id="824968735947741546">Traduzione della lingua <ph name="SOURCE" /> (rilevata automaticamente) nella lingua <ph name="TARGET" /></translation>
 <translation id="8250094606476360498">Al momento questo indirizzo è salvato su questo dispositivo. Per usarlo su tutti i prodotti Google, salvalo nel tuo Account Google <ph name="ACCOUNT" />.</translation>
 <translation id="8250533425540303610">Installazione di <ph name="LANGUAGE" /> in corso…</translation>
 <translation id="8251493595871259082">Inserisci il tuo indirizzo digitando meno parole</translation>

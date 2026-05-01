@@ -1576,6 +1576,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6476800141292307438">Siden oversættes til <ph name="LANGUAGE" />. Valgmulighederne findes nederst på skærmen.</translation>
 <translation id="647867789226964031">Skift dine adgangskoder</translation>
 <translation id="6480363549849064919">Klientgodkendelse</translation>
+<translation id="6489174933860678546">Åbn inkognitofaner for at browse mere privat på nettet.</translation>
 <translation id="6494931198667773526">Slutter</translation>
 <translation id="6503077044568424649">Mest besøgte</translation>
 <translation id="6503763061813913607">Notifikationer om Sikkerhedstjek</translation>
@@ -2112,7 +2113,6 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="8319282042900445670">Påmindelsen er indstillet til <ph name="TIME" />, <ph name="DATE" /></translation>
 <translation id="8320212361750431956">Seneste aktivitet</translation>
 <translation id="8325455175867928593">Skjul "Anmeldelser baseret på dine interesser"</translation>
-<translation id="8328777765163860529">Luk alt</translation>
 <translation id="833647236762414178">Opret, gem og administrer dine adgangskoder og adgangsnøgler, så du nemt kan logge ind på websites og i apps. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Sikkerhedskopiér dit indhold, og få adgang til det på enhver enhed.</translation>
 <translation id="8348530355586151720">Tryk på prikmenuen</translation>
@@ -2296,6 +2296,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="8915916167043355778">Luk alle</translation>
 <translation id="892185197271200809">Alle mister øjeblikkeligt adgangen til fanegruppen "<ph name="GROUP_NAME" />", og den slettes fra alle enheder</translation>
 <translation id="8923178205567790913">Adgangskoder</translation>
+<translation id="8926498511977337209">Brug nettet i inkognitotilstand</translation>
 <translation id="892776311701544612">Få flere oplysninger…</translation>
 <translation id="8928133177108699615">Computer</translation>
 <translation id="8928426232677696166"><ph name="EMAIL" />, som administreres af din organisation, er valgt i øjeblikket. Vælg en konto.</translation>

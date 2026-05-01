@@ -629,6 +629,7 @@
 <translation id="1979156660928743046">Informații despre conținutul media</translation>
 <translation id="1987486584747170374">Căutările tale, cele mai bune potriviri și conținutul paginilor acestora sunt trimise la Google. Ele nu vor fi folosite de evaluatori umani pentru a îmbunătăți AI. Organizația poate să modifice oricând aceste setări.</translation>
 <translation id="1988881251331415125">Dacă scrierea este corectă, <ph name="BEGIN_LINK" />încearcă să rulezi Diagnosticarea de conectivitate<ph name="END_LINK" />.</translation>
+<translation id="1991370806334788445">Încearcă să permiți cookie-urile terță parte, ceea ce înseamnă mai puțină protecție pentru navigare, dar există șanse mai mari ca funcțiile site-urilor să funcționeze conform așteptărilor.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567"><ph name="URL" /> dorește să stocheze permanent cantități mari de date pe computer</translation>
 <translation id="1997774360448418989">Hârtie (ușoară)</translation>
@@ -2132,7 +2133,6 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="4282280603030594840">Achiziționări de autovehicule</translation>
 <translation id="4282346679996504092">Alertele pentru acest produs au fost dezactivate și marcajul a fost eliminat</translation>
 <translation id="4284885181066817063">Blocată de <ph name="DOMAIN" /></translation>
-<translation id="4285498937028063278">Anulați fixarea</translation>
 <translation id="4288101205645068104">Șterge vehiculul</translation>
 <translation id="4290920330097335010">Nu permite niciodată</translation>
 <translation id="4297502707443874121">Miniatură pentru pagina <ph name="THUMBNAIL_PAGE" /></translation>
@@ -2606,7 +2606,6 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="5056587122125565772">Creează o imagine</translation>
 <translation id="505757197798929356">Specifică motivul deschiderii (obligatoriu)</translation>
 <translation id="5058282932481719070">află mai multe despre completarea automată îmbunătățită în setări</translation>
-<translation id="5060419232449737386">Setări pentru subtitrări</translation>
 <translation id="5061227663725596739">Ai vrut să scrii <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">Istoricul de printare</translation>
 <translation id="5068524481479508725">A10</translation>
@@ -3567,7 +3566,6 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="6518133107902771759">Confirmați</translation>
 <translation id="6519885440226079262">Poate solicita permisiunea de a-ți urmări mâinile</translation>
 <translation id="6520026037299163656">Aplicații web și instrumente online</translation>
-<translation id="65203098586853226">Se face traducerea din <ph name="SOURCE" /> în <ph name="TARGET" /></translation>
 <translation id="6520509611422418552"><ph name="MEMBER_FIRST_NAME" /> s-a alăturat grupului de file <ph name="GROUP_NAME" /></translation>
 <translation id="6521745193039995384">Inactivă</translation>
 <translation id="6522682797352430154">Muzică clasică</translation>
@@ -4168,7 +4166,6 @@ Detalii suplimentare:
 <translation id="7455452752247248289">Tehnologie pentru întreprinderi</translation>
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">Autocamioane și remorci</translation>
-<translation id="7461924472993315131">Fixează</translation>
 <translation id="7463068149674892185">Această acțiune nu este recomandată</translation>
 <translation id="746329643760972486">macOS</translation>
 <translation id="746412105358554870">Optimizare și securitate JavaScript</translation>
@@ -4674,7 +4671,6 @@ Detalii suplimentare:
 <translation id="8246482227229072868">Inele</translation>
 <translation id="8248406213705193919">Salvezi cardul în siguranță?</translation>
 <translation id="8249296373107784235">Abandonați</translation>
-<translation id="824968735947741546">Se traduce din <ph name="SOURCE" /> (detectată automat) în <ph name="TARGET" /></translation>
 <translation id="8250094606476360498">Adresa se salvează momentan pe acest dispozitiv. Pentru a o folosi în toate produsele Google, salveaz-o în Contul Google, <ph name="ACCOUNT" />.</translation>
 <translation id="8250533425540303610">Se instalează <ph name="LANGUAGE" />...</translation>
 <translation id="8251493595871259082">Completează adresa introducând mai puțin text</translation>

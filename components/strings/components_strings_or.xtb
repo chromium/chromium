@@ -2130,7 +2130,6 @@
 <translation id="4282280603030594840">ଗାଡ଼ି ସପିଂ</translation>
 <translation id="4282346679996504092">ଏହି ପ୍ରଡକ୍ଟ ପାଇଁ ଆଲର୍ଟଗୁଡ଼ିକୁ ବନ୍ଦ କରିଦିଆଯାଇଛି ଏବଂ ବୁକମାର୍କକୁ କାଢ଼ି ଦିଆଯାଇଛି</translation>
 <translation id="4284885181066817063"><ph name="DOMAIN" /> ଦ୍ୱାରା ବ୍ଲକ କରାଯାଇଛି</translation>
-<translation id="4285498937028063278">ଅନ୍‌ପିନ୍ କରନ୍ତୁ</translation>
 <translation id="4288101205645068104">ଗାଡ଼ି ଡିଲିଟ କରନ୍ତୁ</translation>
 <translation id="4290920330097335010">କେବେ ବି ଅନୁମତି ଦିଅନ୍ତୁ ନାହିଁ</translation>
 <translation id="4297502707443874121"><ph name="THUMBNAIL_PAGE" /> ପୃଷ୍ଠା ପାଇଁ ଥମ୍ବନେଲ୍</translation>
@@ -2604,7 +2603,6 @@
 <translation id="5056587122125565772">ଇମେଜ ତିଆରି କରନ୍ତୁ</translation>
 <translation id="505757197798929356">ଖୋଲିବାର କାରଣ ପ୍ରଦାନ କରନ୍ତୁ (ଆବଶ୍ୟକ)</translation>
 <translation id="5058282932481719070">ସେଟିଂସରେ ଉନ୍ନତ ଅଟୋଫିଲ ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ</translation>
-<translation id="5060419232449737386">କେପସନ ସେଟିଂସ</translation>
 <translation id="5061227663725596739">ଆପଣ କ’ଣ <ph name="LOOKALIKE_DOMAIN" /> ବିଷୟରେ କହିବାକୁ ଚାହୁଁଛନ୍ତି?</translation>
 <translation id="5066056036849835175">ପ୍ରିଣ୍ଟିଂ ଇତିହାସ</translation>
 <translation id="5068524481479508725">A10</translation>
@@ -2973,6 +2971,7 @@
 <translation id="5600044805561809264">ଆପଣ ବ୍ରାଉଜ କରିବା ସମୟରେ ସେୟାର କରୁଥିବା ଟାବଗୁଡ଼ିକ ବିଷୟରେ ସହଜରେ ପ୍ରଶ୍ନଗୁଡ଼ିକ ପଚାରିପାରିବେ।</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> କିମ୍ବା <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">ପରିଚାଳନା ସମର୍ଥିତ ନୁହେଁ</translation>
+<translation id="5604254791550001355">ପ୍ରମ୍ପ୍ଟକୁ ଏଡିଟ କରନ୍ତୁ</translation>
 <translation id="560431066250575003">{HOURS,plural, =1{1 ଘଣ୍ଟା ପୂର୍ବେ ସକ୍ରିୟ ଥିଲା}other{# ଘଣ୍ଟା ପୂର୍ବେ ସକ୍ରିୟ ଥିଲା}}</translation>
 <translation id="5605249000617390290">ମୂଲ୍ୟ ଟ୍ରାକିଂ ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ</translation>
 <translation id="5605670050355397069">ଲେଜର୍</translation>
@@ -3403,6 +3402,7 @@
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
 <translation id="629730747756840877">ଆକାଉଣ୍ଟ</translation>
+<translation id="6299098428775578517">ପରାମର୍ଶ ସେଟିଂସ</translation>
 <translation id="6300452962057769623">{0,plural, =0{ଆପଣଙ୍କ ଡିଭାଇସ ବର୍ତ୍ତମାନ ରିଷ୍ଟାର୍ଟ ହେବ}=1{ଆପଣଙ୍କ ଡିଭାଇସ 1 ସେକେଣ୍ଡରେ ରିଷ୍ଟାର୍ଟ ହେବ}other{ଆପଣଙ୍କ ଡିଭାଇସ # ସେକେଣ୍ଡରେ ରିଷ୍ଟାର୍ଟ ହେବ}}</translation>
 <translation id="6301104306974789820">ମୂଲ୍ୟ ଟ୍ରାକିଂ ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକ ପାଆନ୍ତୁ</translation>
 <translation id="6302546952464230349"><ph name="PERMISSION_NAME" /> ଅନୁମତି ବିବରଣୀ ଦେଖାନ୍ତୁ</translation>
@@ -3564,7 +3564,6 @@
 <translation id="6518133107902771759">ଯାଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="6519885440226079262">ଆପଣଙ୍କ ହାତକୁ ଟ୍ରାକ କରିବାକୁ କହିପାରିବ</translation>
 <translation id="6520026037299163656">ୱେବ ଆପ୍ସ ଏବଂ ଅନଲାଇନ ଟୁଲଗୁଡ଼ିକ</translation>
-<translation id="65203098586853226"><ph name="SOURCE" />କୁ <ph name="TARGET" />ରେ ଅନୁବାଦ କରାଯାଉଛି</translation>
 <translation id="6520509611422418552"><ph name="MEMBER_FIRST_NAME" /> "<ph name="GROUP_NAME" />" ଟାବ ଗ୍ରୁପରେ ଯୋଗ ଦେଇଛନ୍ତି</translation>
 <translation id="6521745193039995384">ସକ୍ରିୟ ନୁହେଁ</translation>
 <translation id="6522682797352430154">କ୍ଲାସିକାଲ ମ୍ୟୁଜିକ</translation>
@@ -4164,7 +4163,6 @@
 <translation id="7455452752247248289">ଏଣ୍ଟରପ୍ରାଇଜ ଟେକ୍ନୋଲୋଜି</translation>
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">ମାଲବାହୀ ଟ୍ରକ ଏବଂ ଟ୍ରେଲରଗୁଡ଼ିକ</translation>
-<translation id="7461924472993315131">ପିନ୍‍</translation>
 <translation id="7463068149674892185">ଏହି କାର୍ଯ୍ୟକୁ ସୁପାରିଶ କରାଯାଇନାହିଁ</translation>
 <translation id="746329643760972486">MacOS</translation>
 <translation id="746412105358554870">JavaScript ଅପ୍ଟିମାଇଜେସନ ଏବଂ ସୁରକ୍ଷା</translation>
@@ -4670,7 +4668,6 @@
 <translation id="8246482227229072868">ରିଙ୍ଗ</translation>
 <translation id="8248406213705193919">ସୁରକ୍ଷିତ ଭାବେ କାର୍ଡକୁ ସେଭ କରିବେ?</translation>
 <translation id="8249296373107784235">ବନ୍ଦ କରନ୍ତୁ</translation>
-<translation id="824968735947741546"><ph name="SOURCE" />କୁ (ସ୍ୱତଃ-ଚିହ୍ନଟ କରାଯାଇଛି) <ph name="TARGET" />ରେ ଅନୁବାଦ କରାଯାଉଛି</translation>
 <translation id="8250094606476360498">ଏହି ଠିକଣାକୁ ବର୍ତ୍ତମାନ ଏହି ଡିଭାଇସରେ ସେଭ କରାଯାଇଛି। ଏହାକୁ ସମଗ୍ର Google ପ୍ରଡକ୍ଟରେ ବ୍ୟବହାର କରିବା ପାଇଁ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟ, <ph name="ACCOUNT" />ରେ ସେଭ କରନ୍ତୁ।</translation>
 <translation id="8250533425540303610"><ph name="LANGUAGE" />କୁ ଇନଷ୍ଟଲ କରାଯାଉଛି...</translation>
 <translation id="8251493595871259082">କମ ଟାଇପିଂ କରି ଆପଣଙ୍କ ଠିକଣାକୁ ପୂରଣ କରନ୍ତୁ</translation>

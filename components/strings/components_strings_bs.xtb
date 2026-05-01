@@ -629,6 +629,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="1979156660928743046">Informacije o medijima</translation>
 <translation id="1987486584747170374">Vaša pretraživanja, najbolja podudaranja i sadržaji s tih stranica se šalju Googleu. Osobe koje vrše pregled ih neće koristiti za poboljšanje AI-ja. Vaša organizacija može promijeniti ove postavke bilo kada.</translation>
 <translation id="1988881251331415125">Ako nema greške u pravopisu, <ph name="BEGIN_LINK" />pokušajte pokrenuti Dijagnostiku povezivosti<ph name="END_LINK" />.</translation>
+<translation id="1991370806334788445">Pokušajte dozvoliti kolačiće treće strane, što podrazumijeva manju zaštitu prilikom pregledanja, ali i veću vjerovatnoću da će funkcije web lokacije funkcionirati prema očekivanjima.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567"><ph name="URL" /> želi trajno pohraniti veliku količinu podataka na vaš lokalni računar</translation>
 <translation id="1997774360448418989">Papir (lagani)</translation>
@@ -2132,7 +2133,6 @@ Da sakrijete opcije kasnijeg plaćanja, idite u <ph name="BEGIN_LINK" />postavke
 <translation id="4282280603030594840">Kupovina vozila</translation>
 <translation id="4282346679996504092">Obavještenja za ovaj proizvod su isključena, a oznaka uklonjena</translation>
 <translation id="4284885181066817063">Blokirano je putem <ph name="DOMAIN" /></translation>
-<translation id="4285498937028063278">Otkači</translation>
 <translation id="4288101205645068104">Izbrišite vozilo</translation>
 <translation id="4290920330097335010">Nikada ne dozvoli</translation>
 <translation id="4297502707443874121">Sličica za stranicu <ph name="THUMBNAIL_PAGE" /></translation>
@@ -2606,7 +2606,6 @@ Da sakrijete opcije kasnijeg plaćanja, idite u <ph name="BEGIN_LINK" />postavke
 <translation id="5056587122125565772">Kreiraj sliku</translation>
 <translation id="505757197798929356">Navedite razlog za otvaranje (obavezno)</translation>
 <translation id="5058282932481719070">saznajte više o poboljšanom automatskom popunjavanju u postavkama</translation>
-<translation id="5060419232449737386">Postavke titlova</translation>
 <translation id="5061227663725596739">Jeste li mislili <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">Historija štampanja</translation>
 <translation id="5068524481479508725">A10</translation>
@@ -2975,6 +2974,7 @@ Da sakrijete opcije kasnijeg plaćanja, idite u <ph name="BEGIN_LINK" />postavke
 <translation id="5600044805561809264">Možete lako postavljati pitanja o karticama koje dijelite dok pregledate.</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> ili <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">Upravljanje nije podržano</translation>
+<translation id="5604254791550001355">Uredi upit</translation>
 <translation id="560431066250575003">{HOURS,plural, =1{Uređaj je bio aktivan prije 1 sat}one{Uređaj je bio aktivan prije # sat}few{Uređaj je bio aktivan prije # sata}other{Uređaj je bio aktivan prije # sati}}</translation>
 <translation id="5605249000617390290">Saznajte više o praćenju cijena</translation>
 <translation id="5605670050355397069">Ledger</translation>
@@ -3406,6 +3406,7 @@ Da sakrijete opcije kasnijeg plaćanja, idite u <ph name="BEGIN_LINK" />postavke
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
 <translation id="629730747756840877">Račun</translation>
+<translation id="6299098428775578517">Postavke prijedloga</translation>
 <translation id="6300452962057769623">{0,plural, =0{Uređaj će se sada ponovo pokrenuti}=1{Uređaj će se ponovo pokrenuti za 1 s}one{Uređaj će se ponovo pokrenuti za # s}few{Uređaj će se ponovo pokrenuti za # s}other{Uređaj će se ponovo pokrenuti za # s}}</translation>
 <translation id="6301104306974789820">Primajte obavještenja o praćenju cijene</translation>
 <translation id="6302546952464230349">Prikaz detalja o odobrenju "<ph name="PERMISSION_NAME" />"</translation>
@@ -3567,7 +3568,6 @@ Da sakrijete opcije kasnijeg plaćanja, idite u <ph name="BEGIN_LINK" />postavke
 <translation id="6518133107902771759">Potvrdi</translation>
 <translation id="6519885440226079262">Može zatražiti da prati vaše ruke</translation>
 <translation id="6520026037299163656">Web aplikacije i online alati</translation>
-<translation id="65203098586853226">Prevođenje s jezika <ph name="SOURCE" /> na jezik <ph name="TARGET" /></translation>
 <translation id="6520509611422418552"><ph name="MEMBER_FIRST_NAME" /> se pridružio/la grupi kartica "<ph name="GROUP_NAME" />"</translation>
 <translation id="6521745193039995384">Nije aktivno</translation>
 <translation id="6522682797352430154">Klasična muzika</translation>
@@ -4168,7 +4168,6 @@ Dodatni detalji:
 <translation id="7455452752247248289">Tehnologija za preduzeća</translation>
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">Teretni kamioni i prikolice</translation>
-<translation id="7461924472993315131">PIN</translation>
 <translation id="7463068149674892185">Ta radnja se ne preporučuje</translation>
 <translation id="746329643760972486">MacOS</translation>
 <translation id="746412105358554870">Optimizacija i sigurnost JavaScripta</translation>
@@ -4674,7 +4673,6 @@ Dodatni detalji:
 <translation id="8246482227229072868">Prstenje</translation>
 <translation id="8248406213705193919">Sigurno sačuvati karticu?</translation>
 <translation id="8249296373107784235">Prekini</translation>
-<translation id="824968735947741546">Prevođenje s jezika <ph name="SOURCE" /> (automatski prepoznato) na jezik <ph name="TARGET" /></translation>
 <translation id="8250094606476360498">Adresa je trenutno sačuvana na ovom uređaju. Da je koristite na Googleovim proizvodima, sačuvajte je na Google računu <ph name="ACCOUNT" />.</translation>
 <translation id="8250533425540303610">Instaliranje jezika <ph name="LANGUAGE" />…</translation>
 <translation id="8251493595871259082">Unesite adresu uz manje pisanja</translation>

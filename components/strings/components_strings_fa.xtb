@@ -629,6 +629,7 @@
 <translation id="1979156660928743046">اطلاعات رسانه</translation>
 <translation id="1987486584747170374">‏جستجوهای شما، منطبق‌ترین نتایج، و محتوای صفحه آن‌ها به Google ارسال می‌شود. افراد بازبین از این اطلاعات برای بهبود هوش مصنوعی استفاده نخواهند کرد. سازمان شما هرزمان بخواهد می‌تواند این تنظیمات را تغییر دهد.</translation>
 <translation id="1988881251331415125">اگر املا صحیح است، <ph name="BEGIN_LINK" />«عیب‌یابی اتصال» را اجرا کنید<ph name="END_LINK" />.</translation>
+<translation id="1991370806334788445">به کوکی‌های طرف سوم اجازه دهید. این کار به‌معنی محافظت کمتر هنگام مرور است اما ویژگی‌های سایت با احتمال بیشتری طبق انتظار کار خواهند کرد.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567"><ph name="URL" /> می‌خواهد داده‌های بزرگ را برای همیشه در رایانه محلی‌تان ذخیره کند</translation>
 <translation id="1997774360448418989">کاغذ (سبک)</translation>
@@ -2133,7 +2134,6 @@
 <translation id="4282280603030594840">خرید خودرو</translation>
 <translation id="4282346679996504092">هشدارهای این محصول خاموش شد و نشانک آن حذف شد</translation>
 <translation id="4284885181066817063">مسدودشده توسط <ph name="DOMAIN" /></translation>
-<translation id="4285498937028063278">برداشتن سنجاق</translation>
 <translation id="4288101205645068104">حذف خودرو</translation>
 <translation id="4290920330097335010">هرگز اجازه ندادن</translation>
 <translation id="4297502707443874121">ریزعکس صفحه <ph name="THUMBNAIL_PAGE" /></translation>
@@ -2607,7 +2607,6 @@
 <translation id="5056587122125565772">ساختن تصویر</translation>
 <translation id="505757197798929356">دلیلی برای باز کردن ارائه دهید (الزامی)</translation>
 <translation id="5058282932481719070">در تنظیمات، اطلاعات بیشتری درباره «تکمیل خودکار بهبودیافته» کسب کنید</translation>
-<translation id="5060419232449737386">تنظیمات زیرنویس ناشنوایان</translation>
 <translation id="5061227663725596739">منظورتان <ph name="LOOKALIKE_DOMAIN" /> بود؟</translation>
 <translation id="5066056036849835175">سابقه چاپ</translation>
 <translation id="5068524481479508725">A10</translation>
@@ -3124,7 +3123,7 @@
 <translation id="5866257070973731571">افزودن شماره تلفن</translation>
 <translation id="5866327164731551901">از <ph name="TYPE_1" />‏ <ph name="TYPE_2" /></translation>
 <translation id="5866898949289125849">درحال مشاهده یک صفحه ابزار برنامه‌نویس هستید</translation>
-<translation id="5869405914158311789">دسترسی به این سایت امکان‌پذیر نیست</translation>
+<translation id="5869405914158311789">نمی‌توان به این سایت دست یافت</translation>
 <translation id="5869522115854928033">گذرواژه‌های ذخیره‌شده</translation>
 <translation id="5872215789867188990">گروه زبانه «<ph name="GROUP_TITLE" />» دیگر دردسترس نیست</translation>
 <translation id="5872692522325383488">‏IBAN ذخیره شد</translation>
@@ -3568,7 +3567,6 @@
 <translation id="6518133107902771759">درستی‌سنجی</translation>
 <translation id="6519885440226079262">می‌تواند برای ردیابی دست‌هایتان درخواست دهد</translation>
 <translation id="6520026037299163656">برنامه وب و ابزار آنلاین</translation>
-<translation id="65203098586853226">ترجمه <ph name="SOURCE" /> به <ph name="TARGET" /></translation>
 <translation id="6520509611422418552">‫<ph name="MEMBER_FIRST_NAME" /> به گروه زبانه «<ph name="GROUP_NAME" />» پیوست</translation>
 <translation id="6521745193039995384">غیرفعال</translation>
 <translation id="6522682797352430154">موسیقی کلاسیک</translation>
@@ -4169,7 +4167,6 @@
 <translation id="7455452752247248289">فناوری سازمانی</translation>
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">کامیون باری و تریلر</translation>
-<translation id="7461924472993315131">پین</translation>
 <translation id="7463068149674892185">این کنش توصیه نمی‌شود</translation>
 <translation id="746329643760972486">MacOS</translation>
 <translation id="746412105358554870">بهینه‌سازی و امنیت جاوا اسکریپت</translation>
@@ -4675,7 +4672,6 @@
 <translation id="8246482227229072868">حلقه</translation>
 <translation id="8248406213705193919">کارت به‌طور ایمن ذخیره شود؟</translation>
 <translation id="8249296373107784235">لغو</translation>
-<translation id="824968735947741546">درحال ترجمه از <ph name="SOURCE" /> (به‌طور خودکار شناسایی شده) به <ph name="TARGET" /></translation>
 <translation id="8250094606476360498">‏این نشانی درحال‌حاضر در این دستگاه ذخیره شده است. برای استفاده از این نشانی در محصولات Google، آن را در «حساب Google» خود (<ph name="ACCOUNT" />) ذخیره کنید.</translation>
 <translation id="8250533425540303610">درحال نصب <ph name="LANGUAGE" />…</translation>
 <translation id="8251493595871259082">نوشتن نشانی با تایپ کمتر</translation>

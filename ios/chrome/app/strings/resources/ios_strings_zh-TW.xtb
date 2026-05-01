@@ -1576,6 +1576,7 @@
 <translation id="6476800141292307438">將網頁翻譯成<ph name="LANGUAGE" />。翻譯選項位於靠近畫面底部的位置。</translation>
 <translation id="647867789226964031">請變更密碼</translation>
 <translation id="6480363549849064919">用戶端驗證</translation>
+<translation id="6489174933860678546">開啟無痕分頁，進一步保護上網隱私</translation>
 <translation id="6494931198667773526">結束時間</translation>
 <translation id="6503077044568424649">最常造訪</translation>
 <translation id="6503763061813913607">安全檢查通知</translation>
@@ -2112,7 +2113,6 @@
 <translation id="8319282042900445670">提醒時間已設為 <ph name="DATE" /><ph name="TIME" /></translation>
 <translation id="8320212361750431956">近期活動</translation>
 <translation id="8325455175867928593">隱藏「依興趣喜好顯示的評論」</translation>
-<translation id="8328777765163860529">關閉全部</translation>
 <translation id="833647236762414178">你可以設定、儲存及管理密碼和密碼金鑰，輕鬆登入網站和應用程式。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">備份資料即可在任何裝置上使用。</translation>
 <translation id="8348530355586151720">輕觸三點圖示選單</translation>
@@ -2296,6 +2296,7 @@
 <translation id="8915916167043355778">全部關閉</translation>
 <translation id="892185197271200809">所有使用者都會立即失去「<ph name="GROUP_NAME" />」分頁群組的存取權，且該群組將從所有裝置中刪除</translation>
 <translation id="8923178205567790913">密碼</translation>
+<translation id="8926498511977337209">使用無痕模式瀏覽</translation>
 <translation id="892776311701544612">瞭解詳情…</translation>
 <translation id="8928133177108699615">電腦模式</translation>
 <translation id="8928426232677696166">目前選取 <ph name="EMAIL" />，該帳戶由貴機構管理。請選擇帳戶。</translation>

@@ -1576,6 +1576,7 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="6476800141292307438">Stranica se prevodi na: <ph name="LANGUAGE" />. Opcije su dostupne u dnu ekrana.</translation>
 <translation id="647867789226964031">Promenite lozinke</translation>
 <translation id="6480363549849064919">Potvrda identiteta klijenta</translation>
+<translation id="6489174933860678546">Otvorite kartice bez arhiviranja da biste privatnije pregledali veb.</translation>
 <translation id="6494931198667773526">Završava se</translation>
 <translation id="6503077044568424649">Najposećeniji</translation>
 <translation id="6503763061813913607">Obaveštenja Provere bezbednosti</translation>
@@ -2112,7 +2113,6 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="8319282042900445670">Podsetnik je podešen za <ph name="TIME" />, <ph name="DATE" /></translation>
 <translation id="8320212361750431956">Nedavna aktivnost</translation>
 <translation id="8325455175867928593">Sakrij Recenzije na osnovu interesovanja</translation>
-<translation id="8328777765163860529">Zatvori sve</translation>
 <translation id="833647236762414178">Pravite i čuvajte lozinke i pristupne ključeve i upravljajte njima da biste se lako prijavljivali na sajtove i u aplikacije. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Pravite rezervne kopije sadržaja i koristite ga na bilo kom uređaju.</translation>
 <translation id="8348530355586151720">Dodirnite meni sa tri tačke</translation>
@@ -2296,6 +2296,7 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="8915916167043355778">Zatvorite sve</translation>
 <translation id="892185197271200809">Svi će odmah izgubiti pristup grupi kartica <ph name="GROUP_NAME" /> i ona će biti izbrisana sa svih uređaja</translation>
 <translation id="8923178205567790913">Lozinke</translation>
+<translation id="8926498511977337209">Pregledajte u režimu bez arhiviranja</translation>
 <translation id="892776311701544612">Saznajte više…</translation>
 <translation id="8928133177108699615">Računar</translation>
 <translation id="8928426232677696166">Trenutno je izabran nalog <ph name="EMAIL" />, kojim upravlja organizacija. Odaberite nalog.</translation>

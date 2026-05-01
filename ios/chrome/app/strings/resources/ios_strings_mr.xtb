@@ -721,6 +721,7 @@
 <translation id="3565012355885596568">इमेज लोड करता आल्या नाहीत</translation>
 <translation id="3565930036634619844">टॅब. <ph name="NUMBER_OF_TABS" /> पैकी <ph name="TAB_INDEX" /> क्रमांकाचा टॅब.</translation>
 <translation id="3567168891086460374">दुसऱ्या पद्धतीने सेव्ह करा</translation>
+<translation id="3571703298474554279">अ‍ॅप वापरण्याचा आणखी जलद मार्ग</translation>
 <translation id="3572503683475187385">तुम्ही नवीन चॅट सुरू करता, तेव्हा सद्य टॅब Gemini सोबत शेअर केला जातो. तुम्ही Gemini सोबत टॅब शेअर करता, तेव्हा त्यांमधील आशय आणि URL या गोष्टी Google ला पाठवल्या जातात. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">तुमच्या Google खाते मध्ये</translation>
 <translation id="3575234738189584619">Lens वापरून शोधा</translation>
@@ -1702,6 +1703,7 @@
 <translation id="6871397658902960384">ब्राउझिंग सुरू करा</translation>
 <translation id="6874328931822449112">{COUNT,plural, =1{पासवर्ड खात्यामध्ये सेव्ह करा}other{पासवर्ड खात्यामध्ये सेव्ह करा}}</translation>
 <translation id="6875166646976836138">तुम्ही हे आयटम तुमचे बुकमार्क, वाचन सूची किंवा Password Manager यामध्येदेखील पाहू आणि व्यवस्थापित करू शकता.</translation>
+<translation id="6878052248816456143">तुमच्या Google Drive मधील फाइल कधीही अ‍ॅक्सेस करा.</translation>
 <translation id="6882836635272038266">धोकादायक म्हणून ओळखल्या जाणार्‍या वेबसाइट, डाउनलोड आणि एक्स्टेंशनपासून साधारण संरक्षण.</translation>
 <translation id="6884135917113737984">{COUNT,plural, =1{तुमच्या Google खाते मध्ये {COUNT} पासवर्ड सेव्ह करा}other{तुमच्या Google खाते मध्ये {COUNT} पासवर्ड सेव्ह करा}}</translation>
 <translation id="6888009575607455378">तुम्हाला तुमचे बदल नक्की काढून टाकायचे आहेत का?</translation>
@@ -1815,6 +1817,7 @@
 <translation id="7345061034321640811">इंपोर्ट करण्याची अनुमती नाही</translation>
 <translation id="7347998088283246662">पासवर्ड, इतिहास, बुकमार्क आणि आणखी बऱ्याच गोष्टी इंपोर्ट करा</translation>
 <translation id="7352651011704765696">काहीतरी चूक झाली</translation>
+<translation id="7363497636543208734">आता ॲप वापरणे आणखी सोपे झाले आहे.</translation>
 <translation id="7364796246159120393">फाइल निवडा</translation>
 <translation id="736564850024123010">कस्टमाइझ केलेल्या अनुभवासाठी तुमच्या अ‍ॅड्रेस बारचे स्थान स्विच करा.</translation>
 <translation id="7366909168761621528">ब्राउझिंग डेटा</translation>
@@ -2114,7 +2117,6 @@
 <translation id="8319282042900445670"><ph name="TIME" />, <ph name="DATE" /> साठी रिमाइंडर सेट करा</translation>
 <translation id="8320212361750431956">अलीकडील अ‍ॅक्टिव्हिटी</translation>
 <translation id="8325455175867928593">"तुमच्या स्वारस्यांवर आधारित परीक्षणे" लपवा</translation>
-<translation id="8328777765163860529">सर्व बंद करा</translation>
 <translation id="833647236762414178">साइट आणि ॲप्समध्ये सहजपणे साइन इन करण्यासाठी तुमचे पासवर्ड आणि पासकी तयार करा, सेव्ह करा आणि व्यवस्थापित करा. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">तुमच्या आशयाचा बॅकअप घ्या आणि तो कोणत्याही डिव्हाइसवर वापरा.</translation>
 <translation id="8348530355586151720">थ्री डॉट मेनूवर टॅप करा</translation>

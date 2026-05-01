@@ -721,6 +721,7 @@
 <translation id="3565012355885596568">Učitavanje slika nije uspjelo</translation>
 <translation id="3565930036634619844">Kartica. <ph name="TAB_INDEX" /> od <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">Sačuvajte na drugi način</translation>
+<translation id="3571703298474554279">Brži način upotrebe aplikacije</translation>
 <translation id="3572503683475187385">Trenutna kartica se dijeli s Geminijem kada pokrenete novi chat. Kada podijelite karticu s Geminijem, njeni sadržaji i URL se šalju Googleu. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">Na vašem Google računu</translation>
 <translation id="3575234738189584619">Pretraživanje pomoću Objektiva</translation>
@@ -1576,6 +1577,7 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="6476800141292307438">Prevođenje stranice na <ph name="LANGUAGE" /> jezik. Opcije su dostupne pri dnu ekrana.</translation>
 <translation id="647867789226964031">Promijenite lozinke</translation>
 <translation id="6480363549849064919">Autentifikacija klijenta</translation>
+<translation id="6489174933860678546">Otvorite anonimne kartice da pregledate web uz veću privatnost.</translation>
 <translation id="6494931198667773526">Završava se</translation>
 <translation id="6503077044568424649">Najposjećenija</translation>
 <translation id="6503763061813913607">Obavještenja o sigurnosnoj provjeri</translation>
@@ -1700,6 +1702,7 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="6871397658902960384">Počnite preglédati</translation>
 <translation id="6874328931822449112">{COUNT,plural, =1{Sačuvaj lozinku na račun}one{Sačuvaj lozinke na račun}few{Sačuvaj lozinke na račun}other{Sačuvaj lozinke na račun}}</translation>
 <translation id="6875166646976836138">Također možete pregledati te stavke i upravljati njima u oznakama, na listi za čitanje ili upravitelju lozinki.</translation>
+<translation id="6878052248816456143">Pristupite datotekama na Google disku kad god želite.</translation>
 <translation id="6882836635272038266">Standardna zaštita od web lokacija, preuzimanja i ekstenzija za koje se zna da su opasne.</translation>
 <translation id="6884135917113737984">{COUNT,plural, =1{Sačuvajte {COUNT} lozinku na Google račun}one{Sačuvajte {COUNT} lozinku na Google račun}few{Sačuvajte {COUNT} lozinke na Google račun}other{Sačuvajte {COUNT} lozinki na Google račun}}</translation>
 <translation id="6888009575607455378">Jeste li sigurni da želite odbaciti promjene?</translation>
@@ -1813,6 +1816,7 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="7345061034321640811">Uvoz nije dozvoljen</translation>
 <translation id="7347998088283246662">Uvezite lozinke, historiju, oznake i drugo</translation>
 <translation id="7352651011704765696">Nešto nije uredu</translation>
+<translation id="7363497636543208734">Kretanje aplikacijom sada je jednostavnije.</translation>
 <translation id="7364796246159120393">Odabir fajla</translation>
 <translation id="736564850024123010">Promijenite položaj trake za adresu radi prilagođenog iskustva.</translation>
 <translation id="7366909168761621528">Podaci pregledanja</translation>
@@ -2112,7 +2116,6 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="8319282042900445670">Podsjetnik je postavljen za <ph name="TIME" />, <ph name="DATE" /></translation>
 <translation id="8320212361750431956">Nedavna aktivnost</translation>
 <translation id="8325455175867928593">Sakrij "Recenzije koje se zasnivaju na vašim interesovanjima"</translation>
-<translation id="8328777765163860529">Zatvori sve</translation>
 <translation id="833647236762414178">Kreirajte i sačuvajte lozinke i pristupne ključeve te upravljajte njima da se lako prijavljujete na web lokacije i u aplikacije. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Napravite sigurnosnu kopiju svojih stvari i koristite ih na bilo kojem uređaju.</translation>
 <translation id="8348530355586151720">Dodirnite meni s tri tačke.</translation>
@@ -2296,6 +2299,7 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="8915916167043355778">Zatvori sve</translation>
 <translation id="892185197271200809">Svako će odmah izgubiti pristup grupi kartica "<ph name="GROUP_NAME" />", a ona će se izbrisati sa svih uređaja</translation>
 <translation id="8923178205567790913">Lozinke</translation>
+<translation id="8926498511977337209">Pregledajte u anonimnom načinu rada</translation>
 <translation id="892776311701544612">Više informacija…</translation>
 <translation id="8928133177108699615">Računar</translation>
 <translation id="8928426232677696166"><ph name="EMAIL" />. Ovim upravlja organizacija koju ste trenutno odabrali. Odabir računa.</translation>

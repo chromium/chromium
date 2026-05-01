@@ -1576,6 +1576,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="6476800141292307438">Sayfa <ph name="LANGUAGE" /> diline çevriliyor. Seçenekler ekranın alt kısmına yakın bir yerde bulunur.</translation>
 <translation id="647867789226964031">Şifrelerinizi değiştirin</translation>
 <translation id="6480363549849064919">İstemci Kimlik Doğrulaması</translation>
+<translation id="6489174933860678546">Web'e daha gizli bir şekilde göz atmak için gizli sekmeler açın.</translation>
 <translation id="6494931198667773526">Bitiş zamanı</translation>
 <translation id="6503077044568424649">En çok ziyaret edilenler</translation>
 <translation id="6503763061813913607">Güvenlik Kontrolü Bildirimleri</translation>
@@ -2112,7 +2113,6 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="8319282042900445670"><ph name="TIME" />, <ph name="DATE" /> için hatırlatıcı ayarlandı</translation>
 <translation id="8320212361750431956">Son Etkinlik</translation>
 <translation id="8325455175867928593">"İlgi alanlarınıza uygun yorumlar" seçeneğini gizle</translation>
-<translation id="8328777765163860529">Tümünü Kapat</translation>
 <translation id="833647236762414178">Sitelerde ve uygulamalarda kolayca oturum açabilmek için şifreler ve geçiş anahtarları oluşturun, kaydedin, yönetin. <ph name="BEGIN_LINK" />Daha fazla bilgi edinin<ph name="END_LINK" />.</translation>
 <translation id="8343993175958086504">Verilerinizi yedekleyin ve istediğiniz cihazda kullanın.</translation>
 <translation id="8348530355586151720">Üç nokta menü simgesine dokunun.</translation>
@@ -2296,6 +2296,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="8915916167043355778">Tümünü kapat</translation>
 <translation id="892185197271200809">Herkes "<ph name="GROUP_NAME" />" sekme grubuna erişimi anında kaybeder ve grup tüm cihazlardan silinir</translation>
 <translation id="8923178205567790913">Şifreler</translation>
+<translation id="8926498511977337209">Gizli modda göz atın</translation>
 <translation id="892776311701544612">Daha fazla bilgi edinin…</translation>
 <translation id="8928133177108699615">Masaüstü</translation>
 <translation id="8928426232677696166">Kuruluşunuz tarafından yönetilen <ph name="EMAIL" /> şu anda seçili. Bir hesap seçin.</translation>

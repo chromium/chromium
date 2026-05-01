@@ -629,6 +629,7 @@
 <translation id="1979156660928743046">미디어 정보</translation>
 <translation id="1987486584747170374">검색어, 가장 일치하는 결과, 페이지 콘텐츠가 Google로 전송됩니다. 이러한 데이터는 인적 검토자가 AI를 개선하는 데 사용되지 않습니다. 조직에서 언제든지 이 설정을 변경할 수 있습니다.</translation>
 <translation id="1988881251331415125">철자가 올바르다면 <ph name="BEGIN_LINK" />연결 진단을 실행<ph name="END_LINK" />해 보세요.</translation>
+<translation id="1991370806334788445">서드 파티 쿠키를 허용해 보세요. 브라우징 보호 수준은 낮아지지만, 사이트 기능이 예상대로 작동할 가능성은 높아집니다.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567"><ph name="URL" />에서 로컬 컴퓨터에 대용량 데이터를 영구 저장하려고 합니다</translation>
 <translation id="1997774360448418989">용지(경량)</translation>
@@ -2132,7 +2133,6 @@
 <translation id="4282280603030594840">자동차 쇼핑</translation>
 <translation id="4282346679996504092">제품 관련 알림이 사용 중지되었으며 북마크가 삭제되었습니다.</translation>
 <translation id="4284885181066817063"><ph name="DOMAIN" />에 의해 차단됨</translation>
-<translation id="4285498937028063278">고정 해제</translation>
 <translation id="4288101205645068104">차량 삭제</translation>
 <translation id="4290920330097335010">허용 안함</translation>
 <translation id="4297502707443874121"><ph name="THUMBNAIL_PAGE" /> 페이지 미리보기 이미지</translation>
@@ -2606,7 +2606,6 @@
 <translation id="5056587122125565772">이미지 만들기</translation>
 <translation id="505757197798929356">열려는 이유 입력(필수)</translation>
 <translation id="5058282932481719070">설정에서 향상된 자동 완성에 관해 자세히 알아보기</translation>
-<translation id="5060419232449737386">자막 설정</translation>
 <translation id="5061227663725596739"><ph name="LOOKALIKE_DOMAIN" />을(를) 찾으셨나요?</translation>
 <translation id="5066056036849835175">인쇄 기록</translation>
 <translation id="5068524481479508725">A10</translation>
@@ -3567,7 +3566,6 @@
 <translation id="6518133107902771759">확인</translation>
 <translation id="6519885440226079262">손 추적을 요청할 수 있음</translation>
 <translation id="6520026037299163656">웹 앱 및 온라인 도구</translation>
-<translation id="65203098586853226"><ph name="SOURCE" />을 <ph name="TARGET" />로 번역 중</translation>
 <translation id="6520509611422418552"><ph name="MEMBER_FIRST_NAME" />님이 "<ph name="GROUP_NAME" />" 탭 그룹에 참여했습니다.</translation>
 <translation id="6521745193039995384">활성화되지 않음</translation>
 <translation id="6522682797352430154">클래식 음악</translation>
@@ -4167,7 +4165,6 @@
 <translation id="7455452752247248289">엔터프라이즈 기술</translation>
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">화물 트럭 및 트레일러</translation>
-<translation id="7461924472993315131">고정</translation>
 <translation id="7463068149674892185">이 작업은 권장되지 않습니다</translation>
 <translation id="746329643760972486">MacOS</translation>
 <translation id="746412105358554870">JavaScript 최적화 및 보안</translation>
@@ -4673,7 +4670,6 @@
 <translation id="8246482227229072868">고리</translation>
 <translation id="8248406213705193919">카드 안전하게 저장하기</translation>
 <translation id="8249296373107784235">중단</translation>
-<translation id="824968735947741546"><ph name="SOURCE" />(자동 감지)를 <ph name="TARGET" />로 번역 중</translation>
 <translation id="8250094606476360498">이 주소는 현재 이 기기에 저장되어 있습니다. Google 제품에서 사용하려면 Google 계정(<ph name="ACCOUNT" />)에 저장하세요.</translation>
 <translation id="8250533425540303610"><ph name="LANGUAGE" /> 설치 중...</translation>
 <translation id="8251493595871259082">간단하게 주소 입력</translation>

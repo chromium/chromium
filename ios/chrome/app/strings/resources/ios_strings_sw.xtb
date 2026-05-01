@@ -1576,6 +1576,7 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="6476800141292307438">Inatafsiri ukurasa katika <ph name="LANGUAGE" />. Chaguo zinapatikana karibu na sehemu ya chini ya skrini.</translation>
 <translation id="647867789226964031">Badilisha manenosiri yako</translation>
 <translation id="6480363549849064919">Uthibitishaji wa Kiteja</translation>
+<translation id="6489174933860678546">Fungua vichupo vya faragha ili uvinjari wavuti kwa faragha zaidi.</translation>
 <translation id="6494931198667773526">Utaisha</translation>
 <translation id="6503077044568424649">Zinazotembelewa zaidi</translation>
 <translation id="6503763061813913607">Arifa za Kipengele cha Ukaguzi wa Usalama</translation>
@@ -2112,7 +2113,6 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="8319282042900445670">Umeweka kikumbusho cha <ph name="TIME" />, <ph name="DATE" /></translation>
 <translation id="8320212361750431956">Shughuli za Hivi Majuzi</translation>
 <translation id="8325455175867928593">Ficha "Maoni yanayolingana na bidhaa zinazokuvutia"</translation>
-<translation id="8328777765163860529">Funga Vyote</translation>
 <translation id="833647236762414178">Buni, hifadhi na udhibiti manenosiri na funguo za siri ili uingie kwa urahisi katika akaunti za tovuti na programu. <ph name="BEGIN_LINK" />Pata maelezo zaidi<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Hifadhi nakala ya maudhui yako ili uyatumie kwenye kifaa chochote.</translation>
 <translation id="8348530355586151720">Gusa menyu ya nukta tatu</translation>
@@ -2296,6 +2296,7 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="8915916167043355778">Funga vyote</translation>
 <translation id="892185197271200809">Kila mtu atapoteza papo hapo uwezo wa kufikia kikundi cha vichupo cha “<ph name="GROUP_NAME" />” na kitafutwa kwenye vifaa vyote</translation>
 <translation id="8923178205567790913">Manenosiri</translation>
+<translation id="8926498511977337209">Kuvinjari Faraghani</translation>
 <translation id="892776311701544612">Pata maelezo zaidi…</translation>
 <translation id="8928133177108699615">Kompyuta ya mezani</translation>
 <translation id="8928426232677696166"><ph name="EMAIL" />, inadhibitiwa na shirika lako lililochaguliwa kwa sasa. Chagua akaunti.</translation>

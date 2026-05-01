@@ -629,6 +629,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1979156660928743046">Informacionet e medias</translation>
 <translation id="1987486584747170374">Kërkimet e tua, përputhjet më të mira dhe përmbajtjet e faqeve të tyre dërgohen te Google. Ato nuk do të përdoren nga shqyrtues njerëzorë për të përmirësuar IA-në. Organizata jote mund t'i ndryshojë këto cilësime në çdo kohë.</translation>
 <translation id="1988881251331415125">Nëse nuk ka ndonjë gabim drejtshkrimor, <ph name="BEGIN_LINK" />provo të ekzekutosh "Diagnostikimin e lidhshmërisë"<ph name="END_LINK" />.</translation>
+<translation id="1991370806334788445">Provo të lejosh kukit e palëve të treta, që do të thotë se ka më pak mbrojtje gjatë shfletimit, por veçoritë e sajteve ka më shumë gjasa të funksionojnë siç pritet.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567"><ph name="URL" /> kërkon të ruajë të dhëna të mëdha në mënyrë të përhershme në kompjuterin tënd lokal</translation>
 <translation id="1997774360448418989">Letër (e lehtë)</translation>
@@ -2132,7 +2133,6 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="4282280603030594840">Blerje automjetesh</translation>
 <translation id="4282346679996504092">Sinjalizimet për këtë produkt janë çaktivizuar dhe faqeshënuesi është hequr</translation>
 <translation id="4284885181066817063">Bllokuar nga <ph name="DOMAIN" /></translation>
-<translation id="4285498937028063278">Zhgozhdo</translation>
 <translation id="4288101205645068104">Fshi automjetin</translation>
 <translation id="4290920330097335010">Mos lejo asnjëherë</translation>
 <translation id="4297502707443874121">Miniatura për faqen <ph name="THUMBNAIL_PAGE" /></translation>
@@ -2606,7 +2606,6 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="5056587122125565772">Krijo një imazh</translation>
 <translation id="505757197798929356">Jep arsyen për hapjen (e detyrueshme)</translation>
 <translation id="5058282932481719070">mëso më shumë rreth plotësimit automatik të përmirësuar te cilësimet</translation>
-<translation id="5060419232449737386">Cilësimet e titrave</translation>
 <translation id="5061227663725596739">Mos dëshiron të thuash <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">Historiku i printimeve</translation>
 <translation id="5068524481479508725">A10</translation>
@@ -3566,7 +3565,6 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="6518133107902771759">Verifiko</translation>
 <translation id="6519885440226079262">Mund të kërkojë të të gjurmojë duart</translation>
 <translation id="6520026037299163656">Aplikacionet e uebit dhe veglat online</translation>
-<translation id="65203098586853226">Po përkthen nga <ph name="SOURCE" /> në <ph name="TARGET" /></translation>
 <translation id="6520509611422418552"><ph name="MEMBER_FIRST_NAME" /> u bashkua në grupin e skedave "<ph name="GROUP_NAME" />"</translation>
 <translation id="6521745193039995384">Jo aktiv</translation>
 <translation id="6522682797352430154">Muzikë klasike</translation>
@@ -4166,7 +4164,6 @@ Detaje shtesë:
 <translation id="7455452752247248289">Teknologji për ndërmarrjet</translation>
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">Kamionë mallrash dhe rimorkio</translation>
-<translation id="7461924472993315131">Gozhdoje</translation>
 <translation id="7463068149674892185">Ky veprim nuk rekomandohet</translation>
 <translation id="746329643760972486">MacOS</translation>
 <translation id="746412105358554870">Optimizimi dhe siguria e JavaScript</translation>
@@ -4672,7 +4669,6 @@ Detaje shtesë:
 <translation id="8246482227229072868">Unaza</translation>
 <translation id="8248406213705193919">Të ruhet karta në mënyrë të sigurt?</translation>
 <translation id="8249296373107784235">Ndërprite</translation>
-<translation id="824968735947741546">Po përkthen nga <ph name="SOURCE" /> (zbuluar automatikisht) në <ph name="TARGET" /></translation>
 <translation id="8250094606476360498">Kjo adresë është ruajtur aktualisht në këtë pajisje. Për ta përdorur atë nëpër produktet e Google, ruaje atë në "Llogarinë tënde të Google", <ph name="ACCOUNT" />.</translation>
 <translation id="8250533425540303610"><ph name="LANGUAGE" /> po instalohet...</translation>
 <translation id="8251493595871259082">Plotëso adresën tënde duke shkruar më pak</translation>

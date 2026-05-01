@@ -629,6 +629,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="1979156660928743046">Multimedia-informazioa</translation>
 <translation id="1987486584747170374">Zure bilaketak, bat-etortzerik onenak eta haien orrien edukiak Google-ra bidaltzen dira. Gizakiak diren berrikusleek ez dituzte erabiliko AA hobetzeko. Ezarpen horiek edonoiz alda ditzake erakundeak.</translation>
 <translation id="1988881251331415125">Behar bezala idatzita badago, <ph name="BEGIN_LINK" />exekutatu konexio-diagnostikoak<ph name="END_LINK" />.</translation>
+<translation id="1991370806334788445">Eman hirugarrenen cookieak erabiltzeko baimena. Babes txikiagoa izango duzu arakatzean, baina webgunearen eginbideek espero bezala funtzionatzeko probabilitate handiagoa izango dute.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567"><ph name="URL" /> webguneak datu asko gorde nahi ditu ordenagailuan modu iraunkorrean</translation>
 <translation id="1997774360448418989">Papera (arina)</translation>
@@ -2128,7 +2129,6 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="4282280603030594840">Ibilgailuen erosketa</translation>
 <translation id="4282346679996504092">Desaktibatu dira produktuari buruzko alertak, eta kendu da haren laster-marka</translation>
 <translation id="4284885181066817063"><ph name="DOMAIN" /> domeinuak blokeatu du</translation>
-<translation id="4285498937028063278">Desainguratu</translation>
 <translation id="4288101205645068104">Ezabatu ibilgailua</translation>
 <translation id="4290920330097335010">Ukatu beti</translation>
 <translation id="4297502707443874121"><ph name="THUMBNAIL_PAGE" /> orriaren irudi txikia</translation>
@@ -2602,7 +2602,6 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="5056587122125565772">Sortu irudi bat</translation>
 <translation id="505757197798929356">Irekitzeko arrazoia (beharrezkoa)</translation>
 <translation id="5058282932481719070">lortu betetze automatiko hobetuari buruzko informazio gehiago ezarpenetan</translation>
-<translation id="5060419232449737386">Azpitituluen ezarpenak</translation>
 <translation id="5061227663725596739"><ph name="LOOKALIKE_DOMAIN" /> esan nahi al zenuen?</translation>
 <translation id="5066056036849835175">Inprimaketa-historia</translation>
 <translation id="5068524481479508725">A10</translation>
@@ -3562,7 +3561,6 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="6518133107902771759">Egiaztatu</translation>
 <translation id="6519885440226079262">Zure eskuen jarraipena egiteko baimena eska dezake</translation>
 <translation id="6520026037299163656">Sareko aplikazioak eta tresnak</translation>
-<translation id="65203098586853226"><ph name="SOURCE" /> hizkuntzatik <ph name="TARGET" /> hizkuntzara itzultzen</translation>
 <translation id="6520509611422418552"><ph name="MEMBER_FIRST_NAME" /> "<ph name="GROUP_NAME" />" fitxa taldean sartu da</translation>
 <translation id="6521745193039995384">Ez dago aktibo</translation>
 <translation id="6522682797352430154">Musika klasikoa</translation>
@@ -4162,7 +4160,6 @@ Xehetasun gehiago:
 <translation id="7455452752247248289">Enpresa-teknologia</translation>
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">Zama-kamioiak eta trailerrak</translation>
-<translation id="7461924472993315131">Ainguratu</translation>
 <translation id="7463068149674892185">Ez da gomendagarria ekintza hau</translation>
 <translation id="746329643760972486">MacOS</translation>
 <translation id="746412105358554870">JavaScript-en optimizazioa eta segurtasuna</translation>
@@ -4668,7 +4665,6 @@ Xehetasun gehiago:
 <translation id="8246482227229072868">Eraztunak</translation>
 <translation id="8248406213705193919">Txartela modu seguruan gorde nahi duzu?</translation>
 <translation id="8249296373107784235">Utzi bertan behera</translation>
-<translation id="824968735947741546"><ph name="SOURCE" /> (automatikoki hauteman da) hizkuntzatik <ph name="TARGET" /> hizkuntzara itzultzen</translation>
 <translation id="8250094606476360498">Helbidea gailu honetan gordeta dago une honetan. Google-ren beste produktuetan ere erabiltzeko, gorde ezazu Google-ko kontuan (<ph name="ACCOUNT" />).</translation>
 <translation id="8250533425540303610"><ph name="LANGUAGE" /> instalatzen…</translation>
 <translation id="8251493595871259082">Bete helbidea gutxiago idatzita</translation>

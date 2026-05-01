@@ -2129,7 +2129,6 @@
 <translation id="4282280603030594840">বাহনৰ শ্বপিং</translation>
 <translation id="4282346679996504092">এই প্ৰ’ডাক্টটোৰ বাবে সতৰ্কবাৰ্তা অফ কৰা হৈছে আৰু বুকমাৰ্কটো আঁতৰোৱা হৈছে</translation>
 <translation id="4284885181066817063"><ph name="DOMAIN" />এ অৱৰোধ কৰিছে</translation>
-<translation id="4285498937028063278">আনপিন কৰক</translation>
 <translation id="4288101205645068104">বাহন মচক</translation>
 <translation id="4290920330097335010">কেতিয়াও অনুমতি নিদিব</translation>
 <translation id="4297502707443874121">পৃষ্ঠা <ph name="THUMBNAIL_PAGE" />ৰ বাবে থাম্বনেইল</translation>
@@ -2603,7 +2602,6 @@
 <translation id="5056587122125565772">প্ৰতিচ্ছবি সৃষ্টি কৰক</translation>
 <translation id="505757197798929356">খোলাৰ কাৰণ দিয়ক (আৱশ্যকীয়)</translation>
 <translation id="5058282932481719070">ছেটিঙত স্বয়ংক্রিয়ভাৱে পূৰ হোৱা বৰ্ধিত সুবিধাৰ বিষয়ে অধিক জানক</translation>
-<translation id="5060419232449737386">কেপশ্বনৰ ছেটিং</translation>
 <translation id="5061227663725596739">আপুনি <ph name="LOOKALIKE_DOMAIN" />ৰ কথা বুজাব বিচাৰিছিল নেকি?</translation>
 <translation id="5066056036849835175">প্ৰিণ্ট কৰাৰ ইতিহাস</translation>
 <translation id="5068524481479508725">A10</translation>
@@ -2972,6 +2970,7 @@
 <translation id="5600044805561809264">আপুনি ব্ৰাউজ কৰোঁতে আপুনি শ্বেয়াৰ কৰি থকা টেবসমূহৰ বিষয়ে সহজে প্ৰশ্ন সুধিব পাৰে।</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> বা <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">পৰিচালক প্ৰযোজ্য নহয়</translation>
+<translation id="5604254791550001355">প্ৰ’ম্পট্‌ সম্পাদনা কৰক</translation>
 <translation id="560431066250575003">{HOURS,plural, =1{১ ঘণ্টা পূৰ্বে সক্ৰিয় হৈ আছিল}one{# ঘণ্টাৰ পূৰ্বে সক্ৰিয় হৈ আছিল}other{# ঘণ্টাৰ পূৰ্বে সক্ৰিয় হৈ আছিল}}</translation>
 <translation id="5605249000617390290">মূল্য ট্ৰেক কৰাৰ বিষয়ে অধিক জানক</translation>
 <translation id="5605670050355397069">লেজাৰ</translation>
@@ -3402,6 +3401,7 @@
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">চিভিচি:</translation>
 <translation id="629730747756840877">একাউণ্ট</translation>
+<translation id="6299098428775578517">পৰামৰ্শৰ ছেটিং</translation>
 <translation id="6300452962057769623">{0,plural, =0{আপোনাৰ ডিভাইচটো এতিয়াই ৰিষ্টাৰ্ট হ'ব}=1{আপোনাৰ ডিভাইচটো ১ ছেকেণ্ডত ৰিষ্টাৰ্ট হ'ব}one{আপোনাৰ ডিভাইচটো # ছেকেণ্ডত ৰিষ্টাৰ্ট হ'ব}other{আপোনাৰ ডিভাইচটো # ছেকেণ্ডত ৰিষ্টাৰ্ট হ'ব}}</translation>
 <translation id="6301104306974789820">মূল্য ট্ৰেকিঙৰ জাননী পাওক</translation>
 <translation id="6302546952464230349"><ph name="PERMISSION_NAME" /> অনুমতিৰ সবিশেষ দেখুৱাওক</translation>
@@ -3563,7 +3563,6 @@
 <translation id="6518133107902771759">সত্যাপন কৰক</translation>
 <translation id="6519885440226079262">আপোনাৰ হাত ট্ৰেক কৰিবলৈ অনুমতি বিচাৰিব পাৰে</translation>
 <translation id="6520026037299163656">ৱেব এপ্‌ আৰু অনলাইন সঁজুলি</translation>
-<translation id="65203098586853226"><ph name="SOURCE" />ৰ পৰা <ph name="TARGET" />লৈ অনুবাদ কৰি থকা হৈছে</translation>
 <translation id="6520509611422418552"><ph name="MEMBER_FIRST_NAME" />এ "<ph name="GROUP_NAME" />" টেবৰ গোটত যোগদান কৰিছে</translation>
 <translation id="6521745193039995384">সক্ৰিয় নহয়</translation>
 <translation id="6522682797352430154">শাস্ত্ৰীয় সংগীত</translation>
@@ -4163,7 +4162,6 @@
 <translation id="7455452752247248289">এণ্টাৰপ্ৰাইজৰ প্ৰযুক্তিবিদ্যা</translation>
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">কাৰ্গ’ ট্ৰাক আৰু ট্ৰেইলাৰ</translation>
-<translation id="7461924472993315131">পিন</translation>
 <translation id="7463068149674892185">এই কাৰ্যটোৰ চুপাৰিছ কৰা নহয়</translation>
 <translation id="746329643760972486">MacOS</translation>
 <translation id="746412105358554870">JavaScript অপ্টিমাইজেশ্বন আৰু সুৰক্ষা</translation>
@@ -4669,7 +4667,6 @@
 <translation id="8246482227229072868">আঙুঠি</translation>
 <translation id="8248406213705193919">কাৰ্ড সুৰক্ষিতভাৱে ছেভ কৰিবনে?</translation>
 <translation id="8249296373107784235">নিষ্ফল কৰক</translation>
-<translation id="824968735947741546"><ph name="SOURCE" /> (স্বয়ংক্ৰিয়ভাৱে চিনাক্ত কৰা) <ph name="TARGET" />লৈ অনুবাদ কৰি থকা হৈছে</translation>
 <translation id="8250094606476360498">এই ঠিকনাটো বৰ্তমান এই ডিভাইচটোত ছেভ কৰা হয়। এইটো সমগ্ৰ Google প্ৰ’ডাক্টসমূহত ব্যৱহাৰ কৰিবলৈ, ইয়াক আপোনাৰ Google একাউণ্ট <ph name="ACCOUNT" />ত ছেভ কৰক।</translation>
 <translation id="8250533425540303610"><ph name="LANGUAGE" /> ইনষ্টল কৰি থকা হৈছে...</translation>
 <translation id="8251493595871259082">কমকৈ টাইপ কৰি আপোনাৰ ঠিকনা পূৰ কৰক</translation>

@@ -2133,7 +2133,6 @@
 <translation id="4282280603030594840">Закупуване на превозно средство</translation>
 <translation id="4282346679996504092">Сигналите за този продукт са изключени и отметката е премахната</translation>
 <translation id="4284885181066817063">Блокирано от <ph name="DOMAIN" /></translation>
-<translation id="4285498937028063278">Освобождаване</translation>
 <translation id="4288101205645068104">Изтриване на превозното средство</translation>
 <translation id="4290920330097335010">Никога да не се разрешава</translation>
 <translation id="4297502707443874121">Миниизображение на страницата <ph name="THUMBNAIL_PAGE" /></translation>
@@ -2607,7 +2606,6 @@
 <translation id="5056587122125565772">Създаване на изображение</translation>
 <translation id="505757197798929356">Посочете причина за отварянето (задължително)</translation>
 <translation id="5058282932481719070">научете повече за подобреното автоматично попълване в настройките</translation>
-<translation id="5060419232449737386">Настройки за надписите</translation>
 <translation id="5061227663725596739">Може би имахте предвид <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">История на отпечатаното</translation>
 <translation id="5068524481479508725">A10</translation>
@@ -3568,7 +3566,6 @@
 <translation id="6518133107902771759">Потвърждаване</translation>
 <translation id="6519885440226079262">Може да извежда запитвания за проследяване на ръцете ви</translation>
 <translation id="6520026037299163656">Уеб приложения и онлайн инструменти</translation>
-<translation id="65203098586853226">Превежда се от <ph name="SOURCE" /> на <ph name="TARGET" /></translation>
 <translation id="6520509611422418552"><ph name="MEMBER_FIRST_NAME" /> се присъедини към групата раздели „<ph name="GROUP_NAME" />“</translation>
 <translation id="6521745193039995384">Не е активно</translation>
 <translation id="6522682797352430154">Класическа музика</translation>
@@ -4169,7 +4166,6 @@
 <translation id="7455452752247248289">Корпоративни технологии</translation>
 <translation id="745640750744109667">A0 x 3</translation>
 <translation id="7457071735008326060">Камиони и ремаркета</translation>
-<translation id="7461924472993315131">Фиксиране</translation>
 <translation id="7463068149674892185">Това действие не се препоръчва</translation>
 <translation id="746329643760972486">macOS</translation>
 <translation id="746412105358554870">Оптимизиране и защита на JavaScript</translation>
@@ -4675,7 +4671,6 @@
 <translation id="8246482227229072868">Пръстени</translation>
 <translation id="8248406213705193919">Да се запази ли картата по сигурен начин?</translation>
 <translation id="8249296373107784235">Прекратяване</translation>
-<translation id="824968735947741546">Превежда се от <ph name="SOURCE" /> (автоматично установено) на <ph name="TARGET" /></translation>
 <translation id="8250094606476360498">Понастоящем адресът е запазен на това устройство. За да го използвате в продуктите ни, запазете го в профила си в Google (<ph name="ACCOUNT" />).</translation>
 <translation id="8250533425540303610"><ph name="LANGUAGE" /> се инсталира...</translation>
 <translation id="8251493595871259082">Попълнете адреса си с по-малко писане</translation>

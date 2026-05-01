@@ -99,6 +99,7 @@
 <translation id="1985247341569771101">如果啟用，網站就可以使用裝置的動作感應器。如果停用，網站將無法使用動作感應器。</translation>
 <translation id="1985716030964443178">這項操作會將清單中的所有網站重設為預設縮放比例</translation>
 <translation id="1989112275319619282">瀏覽</translation>
+<translation id="1991370806334788445">建議允許使用第三方 Cookie。雖然瀏覽防護程度會因此降低，但可增加網站功能正常運作的機率。</translation>
 <translation id="1994173015038366702">網站網址</translation>
 <translation id="1994558116414798016">字型：Lexend</translation>
 <translation id="2004697686368036666">某些網站的功能可能無法運作</translation>
@@ -164,6 +165,7 @@
 <translation id="257931822824936280">已展開 - 按一下即可收合。</translation>
 <translation id="2586657967955657006">剪貼簿</translation>
 <translation id="2588271083332682494">使用分頁群組，分頁有條不紊</translation>
+<translation id="2592917252160773942">網站可以要求使用攝影機</translation>
 <translation id="2597457036804169544">不要對網站套用深色主題</translation>
 <translation id="2606760465469169465">自動驗證</translation>
 <translation id="2621115761605608342">允許特定網站執行 JavaScript。</translation>
@@ -360,6 +362,7 @@
 <translation id="4635969503923889910">不允許網站使用 NFC 裝置</translation>
 <translation id="4644713492825682049">刪除並重設</translation>
 <translation id="4645575059429386691">這個瀏覽器是由家長管理</translation>
+<translation id="4651224148644053314">更多顏色和選項</translation>
 <translation id="4652266463001779298">不允許</translation>
 <translation id="4655846733459137112">輕觸「是」，下次登入時就能輕鬆使用這組密碼</translation>
 <translation id="4663373278480897665">可使用攝影機</translation>

@@ -2132,7 +2132,6 @@
 <translation id="4282280603030594840">Унаа сатып алуу</translation>
 <translation id="4282346679996504092">Бул товар боюнча эскертүүлөр өчүрүлүп, кыстарма бошотулду</translation>
 <translation id="4284885181066817063"><ph name="DOMAIN" /> администратору бөгөттөп койду</translation>
-<translation id="4285498937028063278">Бошотуу</translation>
 <translation id="4288101205645068104">Унааны өчүрүү</translation>
 <translation id="4290920330097335010">Эч качан уруксат берилбесин</translation>
 <translation id="4297502707443874121"><ph name="THUMBNAIL_PAGE" /> барагынын эскизи</translation>
@@ -2606,7 +2605,6 @@
 <translation id="5056587122125565772">Сүрөт түзүү</translation>
 <translation id="505757197798929356">Ачуунун себебин көрсөтүңүз (милдеттүү)</translation>
 <translation id="5058282932481719070">параметрлерде жакшыртылган автотолтуруу жөнүндө кеңири маалымат алыңыз</translation>
-<translation id="5060419232449737386">Коштомо жазуулардын параметрлери</translation>
 <translation id="5061227663725596739"><ph name="LOOKALIKE_DOMAIN" /> эмес беле?</translation>
 <translation id="5066056036849835175">Басып чыгаруу таржымалы</translation>
 <translation id="5068524481479508725">A10</translation>
@@ -3567,7 +3565,6 @@
 <translation id="6518133107902771759">Текшерүү</translation>
 <translation id="6519885440226079262">Колдоруңузга көз салууга уруксат сурай алат</translation>
 <translation id="6520026037299163656">Веб колдонмолор жана онлайн куралдар</translation>
-<translation id="65203098586853226"><ph name="SOURCE" /> тилинен <ph name="TARGET" /> тилине которулууда</translation>
 <translation id="6520509611422418552"><ph name="MEMBER_FIRST_NAME" /> "<ph name="GROUP_NAME" />" өтмөктөр тобуна кошулду</translation>
 <translation id="6521745193039995384">Жигердүү эмес</translation>
 <translation id="6522682797352430154">Классикалык музыка</translation>
@@ -4167,7 +4164,6 @@
 <translation id="7455452752247248289">Ишкана технологиялары</translation>
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">Жүк ташуучу унаалар</translation>
-<translation id="7461924472993315131">Кадап коюу</translation>
 <translation id="7463068149674892185">Бул аракет сунушталбайт</translation>
 <translation id="746329643760972486">MacOS</translation>
 <translation id="746412105358554870">JavaScript'ти оптималдаштыруу жана коргоо</translation>
@@ -4673,7 +4669,6 @@
 <translation id="8246482227229072868">Шакекчелер</translation>
 <translation id="8248406213705193919">Карта коопсуз сакталсынбы?</translation>
 <translation id="8249296373107784235">Токтотуу</translation>
-<translation id="824968735947741546"><ph name="SOURCE" /> тили (автоматтык түрдө аныкталды) <ph name="TARGET" /> тилине которулууда</translation>
 <translation id="8250094606476360498">Учурда бул дарек ушул түзмөктө сакталды. Аны Google кызматтарында колдонуу үчүн Google аккаунтуңузга (<ph name="ACCOUNT" />) сактаңыз.</translation>
 <translation id="8250533425540303610"><ph name="LANGUAGE" /> орнотулууда…</translation>
 <translation id="8251493595871259082">Дарегиңизди азыраак терүү менен толтуруңуз</translation>

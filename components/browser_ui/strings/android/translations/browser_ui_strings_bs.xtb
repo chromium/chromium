@@ -99,6 +99,7 @@
 <translation id="1985247341569771101">Kada je postavka uključena, web lokacije mogu koristiti senzore kretanja uređaja. Kada je postavka isključena, web lokacije ne mogu koristiti senzore kretanja.</translation>
 <translation id="1985716030964443178">Ovo će vratiti sve web lokacije s liste na zadano zumiranje</translation>
 <translation id="1989112275319619282">Pregledaj</translation>
+<translation id="1991370806334788445">Pokušajte dozvoliti kolačiće treće strane, što podrazumijeva manju zaštitu prilikom pregledanja, ali i veću vjerovatnoću da će funkcije web lokacije funkcionirati prema očekivanjima.</translation>
 <translation id="1994173015038366702">URL web lokacije</translation>
 <translation id="1994558116414798016">Font Lexend</translation>
 <translation id="2004697686368036666">Moguće je da funkcije neće raditi na nekim web lokacijama</translation>
@@ -164,6 +165,7 @@
 <translation id="257931822824936280">Prošireno – kliknite da suzite.</translation>
 <translation id="2586657967955657006">Međumemorija</translation>
 <translation id="2588271083332682494">Organizirajte se pomoću grupa kartica</translation>
+<translation id="2592917252160773942">Web lokacije mogu zatražiti pristup kameri</translation>
 <translation id="2597457036804169544">Tamna tema se neće primjenjivati na web lokacije</translation>
 <translation id="2606760465469169465">Automatska potvrda</translation>
 <translation id="2621115761605608342">Dozvolite JavaScript za posebnu web lokaciju.</translation>
@@ -360,6 +362,7 @@
 <translation id="4635969503923889910">Nemoj dozvoliti web lokacijama da koriste NFC uređaje</translation>
 <translation id="4644713492825682049">Izbriši i poništi</translation>
 <translation id="4645575059429386691">Upravlja roditelj</translation>
+<translation id="4651224148644053314">Više boja i opcija</translation>
 <translation id="4652266463001779298">Nije dozvoljeno</translation>
 <translation id="4655846733459137112">Dodirnite Da da lako upotrijebite ovu lozinku prilikom sljedeće prijave</translation>
 <translation id="4663373278480897665">Kamera je dozvoljena</translation>

@@ -2139,7 +2139,6 @@
 <translation id="4282280603030594840">Ավտոմեքենայի գնում</translation>
 <translation id="4282346679996504092">Այս ապրանքի մասին ծանուցումներն անջատված են, իսկ էջանիշը հեռացվել է</translation>
 <translation id="4284885181066817063">Արգելափակված է <ph name="DOMAIN" /> տիրույթի կողմից</translation>
-<translation id="4285498937028063278">Ապամրացնել</translation>
 <translation id="4288101205645068104">Ջնջել մեքենան</translation>
 <translation id="4290920330097335010">Երբեք չթույլատրել</translation>
 <translation id="4297502707443874121">Էջ <ph name="THUMBNAIL_PAGE" />-ի մանրապատկեր</translation>
@@ -2614,7 +2613,6 @@
 <translation id="5056587122125565772">Ստեղծել պատկեր</translation>
 <translation id="505757197798929356">Նշեք բացման պատճառը (պարտադիր է)</translation>
 <translation id="5058282932481719070">իմանալ ավելին ընդլայնված ինքնալրացման մասին կարգավորումներում</translation>
-<translation id="5060419232449737386">Ենթագրերի կարգավորումներ</translation>
 <translation id="5061227663725596739">Արդյո՞ք նկատի ունեիք «<ph name="LOOKALIKE_DOMAIN" />»</translation>
 <translation id="5066056036849835175">Տպման պատմություն</translation>
 <translation id="5068524481479508725">A10</translation>
@@ -3577,7 +3575,6 @@
 <translation id="6518133107902771759">Ստուգել</translation>
 <translation id="6519885440226079262">Կարող է հայցել ձեր ձեռքերի շարժումների հետագծման թույլտվություն</translation>
 <translation id="6520026037299163656">Վեբ հավելվածներ և առցանց գործիքներ</translation>
-<translation id="65203098586853226">Թարգմանվում է <ph name="SOURCE" /> լեզվից <ph name="TARGET" /></translation>
 <translation id="6520509611422418552"><ph name="MEMBER_FIRST_NAME" /> օգտատերը միացել է ներդիրների «<ph name="GROUP_NAME" />» խմբին</translation>
 <translation id="6521745193039995384">Ակտիվ չէ</translation>
 <translation id="6522682797352430154">Դասական երաժշտություն</translation>
@@ -4177,7 +4174,6 @@
 <translation id="7455452752247248289">Կորպորատիվ տեխնոլոգիաներ</translation>
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">Բեռնատարներ և կցասայլեր</translation>
-<translation id="7461924472993315131">Ամրացնել</translation>
 <translation id="7463068149674892185">Այս գործողությունը խորհուրդ չի տրվում անել</translation>
 <translation id="746329643760972486">MacOS</translation>
 <translation id="746412105358554870">JavaScript-ի օպտիմալացում և անվտանգություն</translation>
@@ -4683,7 +4679,6 @@
 <translation id="8246482227229072868">Մատանիներ</translation>
 <translation id="8248406213705193919">Ապահով պահե՞լ քարտի տվյալները</translation>
 <translation id="8249296373107784235">Ընդհատել</translation>
-<translation id="824968735947741546">Թարգմանվում է <ph name="SOURCE" /> լեզվից (ավտոմատ որոշված) <ph name="TARGET" /> լեզվի</translation>
 <translation id="8250094606476360498">Այս հասցեն ներկայումս պահված է այս սարքում։ Պահեք հասցեն ձեր Google հաշվում (<ph name="ACCOUNT" />), որպեսզի այն օգտագործեք Google-ի տարբեր արտադրանքներում։</translation>
 <translation id="8250533425540303610"><ph name="LANGUAGE" /> լեզվի փաթեթը տեղադրվում է…</translation>
 <translation id="8251493595871259082">Մուտքագրեք ձեր հասցեն ավելի արագ</translation>

@@ -629,6 +629,7 @@
 <translation id="1979156660928743046">የሚዲያ መረጃ</translation>
 <translation id="1987486584747170374">የእርስዎ ፍለጋዎች፣ የተሻለ ተዛማጆች እና የገፅ ይዘታቸው ወደ Google ይላካሉ። AI ለማሻሻል በሰው ገምጋሚዎች ጥቅም ላይ አይውልም። ድርጅትዎ በማንኛውም ጊዜ እነዚህን ቅንብሮች ሊለውጥ ይችላል።</translation>
 <translation id="1988881251331415125">የፊደል አጻጻፉ ትክክል ከሆነ <ph name="BEGIN_LINK" />የተገናኝነት ምርመራን ለማስኬድ ይሞክሩ<ph name="END_LINK" />።</translation>
+<translation id="1991370806334788445">የሦስተኛ ወገን ኩኪዎችን ለመፍቀድ ይሞክሩ፣ ይህ ማለት ያነሰ የአሰሳ ጥበቃ ነው ነገር ግን የጣቢያ ባህሪያት እንደተጠበቀው የመሥራት ዕድላቸው ከፍተኛ ነው።</translation>
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567"><ph name="URL" /> ትልቅ ውሂብ በአካባቢያዊ ኮምፒውተርዎ ላይ እስከመጨረሻው ማከማቸት ይፈልጋል</translation>
 <translation id="1997774360448418989">ወረቀት (ቀላል ክብደት)</translation>
@@ -2131,7 +2132,6 @@
 <translation id="4282280603030594840">የተሽከርካሪ ግዢ</translation>
 <translation id="4282346679996504092">የዚህ ምርት ማንቂያዎች ጠፍተዋል እና ዕልባቱ ተወግዷል</translation>
 <translation id="4284885181066817063">በ<ph name="DOMAIN" /> ታግዷል</translation>
-<translation id="4285498937028063278">ይንቀሉ</translation>
 <translation id="4288101205645068104">ተሽከርካሪን ይሰርዙ</translation>
 <translation id="4290920330097335010">መቼም አትፍቀድ</translation>
 <translation id="4297502707443874121">የገጽ <ph name="THUMBNAIL_PAGE" /> ድንክዬ</translation>
@@ -2605,7 +2605,6 @@
 <translation id="5056587122125565772">ምስል ፍጠር</translation>
 <translation id="505757197798929356">የመክፈቻ ምክንያት ያቅርቡ (አስፈላጊ)</translation>
 <translation id="5058282932481719070">ቅንብሮች ውስጥ ስለ የተሻሻለ ራስ-ሙላ የበለጠ ይወቁ</translation>
-<translation id="5060419232449737386">የመግለጫ ጽሁፍ ቅንብሮች</translation>
 <translation id="5061227663725596739"><ph name="LOOKALIKE_DOMAIN" /> ለማለት ፈልገው ነው?</translation>
 <translation id="5066056036849835175">የማተም ታሪክ</translation>
 <translation id="5068524481479508725">A10</translation>
@@ -3566,7 +3565,6 @@
 <translation id="6518133107902771759">አረጋግጥ</translation>
 <translation id="6519885440226079262">እጆችዎን ለመከታተል ሊጠይቅ ይችላል</translation>
 <translation id="6520026037299163656">የድር መተግበሪያዎች እና የመስመር ላይ መሣሪያዎች</translation>
-<translation id="65203098586853226">ከ<ph name="SOURCE" /> ወደ <ph name="TARGET" /> በመተርጎም ላይ</translation>
 <translation id="6520509611422418552"><ph name="MEMBER_FIRST_NAME" /> የትር ቡድን «<ph name="GROUP_NAME" />» ተቀላቅለዋል</translation>
 <translation id="6521745193039995384">ገባሪ አይደለም</translation>
 <translation id="6522682797352430154">ክላሲካል ሙዚቃ</translation>
@@ -4167,7 +4165,6 @@
 <translation id="7455452752247248289">የድርጅት ቴክኖሎጂ</translation>
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">የጭነት መኪናዎች እና ተጎታቾች</translation>
-<translation id="7461924472993315131">ሰካ</translation>
 <translation id="7463068149674892185">ይህ እርምጃ አይመከርም</translation>
 <translation id="746329643760972486">MacOS</translation>
 <translation id="746412105358554870">ጃቫስክሪፕት ማመቻቸት እና ደህንነት</translation>
@@ -4673,7 +4670,6 @@
 <translation id="8246482227229072868">ቀለበቶች</translation>
 <translation id="8248406213705193919">ካርድ ደህንነቱ በተጠበቀ ሁኔታ ይቀመጥ?</translation>
 <translation id="8249296373107784235">አጨንግፍ</translation>
-<translation id="824968735947741546"><ph name="SOURCE" />ን (በራስ-ሰር ሰርዝ) ወደ <ph name="TARGET" /> በመተርጎም ላይ</translation>
 <translation id="8250094606476360498">ይህ አድራሻ በአሁኑ ጊዜ በዚህ መሣሪያ ላይ ተቀምጧል። በመላው የGoogle ምርቶች ላይ እሱን ለመጠቀም በGoogle መለያዎ፣ <ph name="ACCOUNT" /> ውስጥ ያስቀምጡት።</translation>
 <translation id="8250533425540303610"><ph name="LANGUAGE" />ን በመጫን ላይ...</translation>
 <translation id="8251493595871259082">ባነሰ ትየባ አድራሻዎን ይሙሉ</translation>

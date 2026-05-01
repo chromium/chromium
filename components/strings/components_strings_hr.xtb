@@ -629,6 +629,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="1979156660928743046">Informacije o medijima</translation>
 <translation id="1987486584747170374">Vaša pretraživanja, najbolji rezultati za vaše upite i sadržaj na tim stranicama šalju se Googleu. Pregledavatelji ih neće upotrebljavati za poboljšanje AI-ja. Vaša organizacija uvijek može promijeniti te postavke.</translation>
 <translation id="1988881251331415125">Ako nema pravopisnih pogrešaka, <ph name="BEGIN_LINK" />pokušajte pokrenuti Dijagnostiku veze<ph name="END_LINK" />.</translation>
+<translation id="1991370806334788445">Pokušajte dopustiti kolačiće trećih strana, što znači da će biti manje zaštite pregledavanja, ali će značajke web-lokacije vjerojatnije funkcionirati prema očekivanjima.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567"><ph name="URL" /> želi trajno pohraniti veliku količinu podataka na vaše lokalno računalo</translation>
 <translation id="1997774360448418989">Papir (lagano)</translation>
@@ -2131,7 +2132,6 @@ Da biste sakrili opcije plaćanja kasnije, otvorite <ph name="BEGIN_LINK" />post
 <translation id="4282280603030594840">Kupnja vozila</translation>
 <translation id="4282346679996504092">Upozorenja za ovaj proizvod isključena su, a oznaka je uklonjena</translation>
 <translation id="4284885181066817063">Blokirano putem domene <ph name="DOMAIN" /></translation>
-<translation id="4285498937028063278">Otkvači</translation>
 <translation id="4288101205645068104">Izbriši vozilo</translation>
 <translation id="4290920330097335010">Ne dopuštaj nikada</translation>
 <translation id="4297502707443874121">Minijatura za stranicu <ph name="THUMBNAIL_PAGE" /></translation>
@@ -2605,7 +2605,6 @@ Da biste sakrili opcije plaćanja kasnije, otvorite <ph name="BEGIN_LINK" />post
 <translation id="5056587122125565772">Izradi sliku</translation>
 <translation id="505757197798929356">Navedite razlog otvaranja (obavezno)</translation>
 <translation id="5058282932481719070">saznajte više o poboljšanom automatskom popunjavanju u postavkama</translation>
-<translation id="5060419232449737386">Postavke titlova</translation>
 <translation id="5061227663725596739">Jeste li mislili <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">Povijest ispisa</translation>
 <translation id="5068524481479508725">A10</translation>
@@ -2974,6 +2973,7 @@ Da biste sakrili opcije plaćanja kasnije, otvorite <ph name="BEGIN_LINK" />post
 <translation id="5600044805561809264">Dok pregledavate, možete jednostavno postaviti pitanja o karticama koje dijelite.</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> ili <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">Upravljanje nije podržano</translation>
+<translation id="5604254791550001355">Uredi upit</translation>
 <translation id="560431066250575003">{HOURS,plural, =1{Posljednja aktivnost prije 1 h}one{Posljednja aktivnost prije # h}few{Posljednja aktivnost prije # h}other{Posljednja aktivnost prije # h}}</translation>
 <translation id="5605249000617390290">Saznajte više o praćenju cijena</translation>
 <translation id="5605670050355397069">Ledger</translation>
@@ -3405,6 +3405,7 @@ Da biste sakrili opcije plaćanja kasnije, otvorite <ph name="BEGIN_LINK" />post
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
 <translation id="629730747756840877">Račun</translation>
+<translation id="6299098428775578517">Postavke prijedloga</translation>
 <translation id="6300452962057769623">{0,plural, =0{Vaš će se uređaj sada ponovno pokrenuti}=1{Vaš će se uređaj ponovno pokrenuti za 1 sekundu}one{Vaš će se uređaj ponovno pokrenuti za # sekundu}few{Vaš će se uređaj ponovno pokrenuti za # sekunde}other{Vaš će se uređaj ponovno pokrenuti za # sekundi}}</translation>
 <translation id="6301104306974789820">Primajte obavijesti o praćenju cijena</translation>
 <translation id="6302546952464230349">Prikaži pojedinosti o dopuštenju <ph name="PERMISSION_NAME" /></translation>
@@ -3566,7 +3567,6 @@ Da biste sakrili opcije plaćanja kasnije, otvorite <ph name="BEGIN_LINK" />post
 <translation id="6518133107902771759">Potvrdi</translation>
 <translation id="6519885440226079262">Može tražiti dopuštenje za praćenje pokreta vaših ruku</translation>
 <translation id="6520026037299163656">Web-aplikacije i online alati</translation>
-<translation id="65203098586853226"><ph name="SOURCE" /> se prevodi na <ph name="TARGET" /></translation>
 <translation id="6520509611422418552">Korisnik <ph name="MEMBER_FIRST_NAME" /> pridružio se grupi kartica <ph name="GROUP_NAME" /></translation>
 <translation id="6521745193039995384">Nije aktivno</translation>
 <translation id="6522682797352430154">Klasična glazba</translation>
@@ -4167,7 +4167,6 @@ Dodatne pojedinosti:
 <translation id="7455452752247248289">Poduzetnička tehnologija</translation>
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">Teretni kamioni i prikolice</translation>
-<translation id="7461924472993315131">Prikvači</translation>
 <translation id="7463068149674892185">Ta radnja se ne preporučuje</translation>
 <translation id="746329643760972486">MacOS</translation>
 <translation id="746412105358554870">Optimizacija i sigurnost JavaScripta</translation>
@@ -4673,7 +4672,6 @@ Dodatne pojedinosti:
 <translation id="8246482227229072868">Prstenovi</translation>
 <translation id="8248406213705193919">Sigurno spremiti karticu?</translation>
 <translation id="8249296373107784235">Prekini</translation>
-<translation id="824968735947741546">Prevodi se <ph name="SOURCE" /> (automatski otkriveno) na <ph name="TARGET" /></translation>
 <translation id="8250094606476360498">Ta je adresa trenutačno spremljena na ovom uređaju. Da biste je upotrebljavali na Googleovim proizvodima, spremite je na svoj Google račun, <ph name="ACCOUNT" />.</translation>
 <translation id="8250533425540303610">Instalira se <ph name="LANGUAGE" />...</translation>
 <translation id="8251493595871259082">Unesite adresu uz manje pisanja</translation>

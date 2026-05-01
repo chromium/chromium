@@ -721,6 +721,7 @@
 <translation id="3565012355885596568">Tidak dapat memuatkan imej</translation>
 <translation id="3565930036634619844">Tab. <ph name="TAB_INDEX" /> daripada <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">Simpan cara lain</translation>
+<translation id="3571703298474554279">Cara yang lebih pantas untuk menggunakan apl</translation>
 <translation id="3572503683475187385">Tab semasa dikongsi dengan Gemini apabila anda memulakan sembang baharu. Apabila anda berkongsi tab dengan Gemini, kandungan dan URL tab tersebut akan dihantar kepada Google. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">Dalam Google Account anda</translation>
 <translation id="3575234738189584619">Cari dengan Lens</translation>
@@ -1701,6 +1702,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="6871397658902960384">Mula menyemak imbas</translation>
 <translation id="6874328931822449112">{COUNT,plural, =1{Simpan kata laluan dalam akaun}other{Simpan kata laluan dalam akaun}}</translation>
 <translation id="6875166646976836138">Anda juga boleh melihat dan mengurus item ini dalam penanda halaman, senarai bacaan atau Password Manager anda.</translation>
+<translation id="6878052248816456143">Akses fail dalam Google Drive anda pada bila-bila masa.</translation>
 <translation id="6882836635272038266">Perlindungan standard daripada laman web, muat turun dan sambungan yang diketahui berbahaya.</translation>
 <translation id="6884135917113737984">{COUNT,plural, =1{Simpan {COUNT} kata laluan dalam Google Account anda}other{Simpan {COUNT} kata laluan dalam Google Account anda}}</translation>
 <translation id="6888009575607455378">Adakah anda pasti anda mahu membuang perubahan anda?</translation>
@@ -1814,6 +1816,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="7345061034321640811">Import tidak dibenarkan</translation>
 <translation id="7347998088283246662">Import kata laluan, sejarah, penanda halaman dan pelbagai lagi</translation>
 <translation id="7352651011704765696">Kesilapan telah berlaku</translation>
+<translation id="7363497636543208734">Kini anda boleh menggunakan apl dengan lebih mudah.</translation>
 <translation id="7364796246159120393">Pilih Fail</translation>
 <translation id="736564850024123010">Tukar kedudukan bar alamat anda untuk mendapatkan pengalaman yang disesuaikan.</translation>
 <translation id="7366909168761621528">Data penyemakan imbas</translation>
@@ -2113,7 +2116,6 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="8319282042900445670">Peringatan ditetapkan pada <ph name="TIME" />, <ph name="DATE" /></translation>
 <translation id="8320212361750431956">Aktiviti Baru-baru Ini</translation>
 <translation id="8325455175867928593">Sembunyikan "Ulasan berdasarkan minat anda"</translation>
-<translation id="8328777765163860529">Tutup Semua</translation>
 <translation id="833647236762414178">Buat, simpan dan urus kata laluan &amp; kunci laluan anda supaya anda dapat log masuk ke laman dan apl dengan mudah. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Sandarkan bahan anda dan gunakan bahan itu pada mana-mana peranti.</translation>
 <translation id="8348530355586151720">Ketik menu tiga titik</translation>

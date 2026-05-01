@@ -391,6 +391,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1595731774593926493">Excluir número de reparação</translation>
 <translation id="1597307423671074806">Vídeo WebM</translation>
 <translation id="159800670740560023">Link da dica do Chrome, pressione Enter para <ph name="IPH_LINK_FOCUSED_LINK_TEXT" /></translation>
+<translation id="1599079390582151174">Enviada. Abra o Chrome no outro dispositivo.</translation>
 <translation id="1599199147673445968">Novo cartão? <ph name="BEGIN_LINK" />Insira os detalhes dele<ph name="END_LINK" /></translation>
 <translation id="1601786938618212857">Zip</translation>
 <translation id="1604192142734009334">Beleza e fitness</translation>
@@ -1781,6 +1782,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="3752543821772132562">Ignorada porque a política <ph name="POLICY_NAME" /> não está definida.</translation>
 <translation id="3754210790023674521">Sair do modo picture-in-picture</translation>
 <translation id="3754664361823138853">&amp;Abrir página de histórico</translation>
+<translation id="3757511311058373406">Filtros da navegação automática</translation>
 <translation id="3759461132968374835">Você não relatou falhas recentemente. As falhas que ocorreram quando o relatório de erros estava desativado não aparecerão aqui.</translation>
 <translation id="3760561303380396507">Usar o Windows Hello em vez do CVC?</translation>
 <translation id="3761171036307311438">Nome no cartão de crédito:</translation>
@@ -2133,7 +2135,6 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="4282280603030594840">Compras de automóveis</translation>
 <translation id="4282346679996504092">Os alertas para este produto foram desativados e o favorito foi removido</translation>
 <translation id="4284885181066817063">Bloqueado por <ph name="DOMAIN" /></translation>
-<translation id="4285498937028063278">Liberar guia</translation>
 <translation id="4288101205645068104">Excluir veículo</translation>
 <translation id="4290920330097335010">Nunca permitir</translation>
 <translation id="4297502707443874121">Miniatura da página <ph name="THUMBNAIL_PAGE" /></translation>
@@ -2607,7 +2608,6 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="5056587122125565772">Criar imagem</translation>
 <translation id="505757197798929356">Informe o motivo da abertura (obrigatório)</translation>
 <translation id="5058282932481719070">Saiba mais sobre o preenchimento automático aprimorado nas configurações</translation>
-<translation id="5060419232449737386">Configurações de legenda</translation>
 <translation id="5061227663725596739">Você quis dizer "<ph name="LOOKALIKE_DOMAIN" />"?</translation>
 <translation id="5066056036849835175">Histórico de impressão</translation>
 <translation id="5068524481479508725">A10</translation>
@@ -3570,7 +3570,6 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="6518133107902771759">Confirmar</translation>
 <translation id="6519885440226079262">Pode pedir para rastrear suas mãos</translation>
 <translation id="6520026037299163656">Apps da Web e ferramentas on-line</translation>
-<translation id="65203098586853226">Traduzindo do <ph name="SOURCE" /> para o <ph name="TARGET" /></translation>
 <translation id="6520509611422418552"><ph name="MEMBER_FIRST_NAME" /> entrou no grupo de guias "<ph name="GROUP_NAME" />"</translation>
 <translation id="6521745193039995384">não ativa</translation>
 <translation id="6522682797352430154">Música clássica</translation>
@@ -4171,7 +4170,6 @@ Mais detalhes:
 <translation id="7455452752247248289">Tecnologia empresarial</translation>
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">Caminhões de carga e reboques</translation>
-<translation id="7461924472993315131">Fixar</translation>
 <translation id="7463068149674892185">Esta ação não é recomendada</translation>
 <translation id="746329643760972486">MacOS</translation>
 <translation id="746412105358554870">Otimização e segurança de JavaScript</translation>
@@ -4677,7 +4675,6 @@ Mais detalhes:
 <translation id="8246482227229072868">Anéis</translation>
 <translation id="8248406213705193919">Salvar cartão com segurança?</translation>
 <translation id="8249296373107784235">Cancelar</translation>
-<translation id="824968735947741546">Traduzindo do <ph name="SOURCE" /> (detectado automaticamente) para <ph name="TARGET" /></translation>
 <translation id="8250094606476360498">O endereço está salvo neste dispositivo. Para usá-lo nos produtos do Google, salve-o na sua conta, <ph name="ACCOUNT" />.</translation>
 <translation id="8250533425540303610">Instalando <ph name="LANGUAGE" />…</translation>
 <translation id="8251493595871259082">Digite menos para preencher o endereço</translation>

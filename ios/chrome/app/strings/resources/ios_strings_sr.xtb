@@ -1576,6 +1576,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="6476800141292307438">Страница се преводи на: <ph name="LANGUAGE" />. Опције су доступне у дну екрана.</translation>
 <translation id="647867789226964031">Промените лозинке</translation>
 <translation id="6480363549849064919">Потврда идентитета клијента</translation>
+<translation id="6489174933860678546">Отворите картице без архивирања да бисте приватније прегледали веб.</translation>
 <translation id="6494931198667773526">Завршава се</translation>
 <translation id="6503077044568424649">Најпосећенији</translation>
 <translation id="6503763061813913607">Обавештења Провере безбедности</translation>
@@ -2112,7 +2113,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8319282042900445670">Подсетник је подешен за <ph name="TIME" />, <ph name="DATE" /></translation>
 <translation id="8320212361750431956">Недавна активност</translation>
 <translation id="8325455175867928593">Сакриј Рецензије на основу интересовања</translation>
-<translation id="8328777765163860529">Затвори све</translation>
 <translation id="833647236762414178">Правите и чувајте лозинке и приступне кључеве и управљајте њима да бисте се лако пријављивали на сајтове и у апликације. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Правите резервне копије садржаја и користите га на било ком уређају.</translation>
 <translation id="8348530355586151720">Додирните мени са три тачке</translation>
@@ -2296,6 +2296,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8915916167043355778">Затворите све</translation>
 <translation id="892185197271200809">Сви ће одмах изгубити приступ групи картица <ph name="GROUP_NAME" /> и она ће бити избрисана са свих уређаја</translation>
 <translation id="8923178205567790913">Лозинке</translation>
+<translation id="8926498511977337209">Прегледајте у режиму без архивирања</translation>
 <translation id="892776311701544612">Сазнајте више…</translation>
 <translation id="8928133177108699615">Рачунар</translation>
 <translation id="8928426232677696166">Тренутно је изабран налог <ph name="EMAIL" />, којим управља организација. Одаберите налог.</translation>

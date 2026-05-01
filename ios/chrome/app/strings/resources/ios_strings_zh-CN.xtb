@@ -1576,6 +1576,7 @@
 <translation id="6476800141292307438">将页面翻译成<ph name="LANGUAGE" />。选项位于屏幕底部附近。</translation>
 <translation id="647867789226964031">建议更改密码</translation>
 <translation id="6480363549849064919">客户端身份验证</translation>
+<translation id="6489174933860678546">打开无痕式标签页，即可以更私密的方式浏览网页。</translation>
 <translation id="6494931198667773526">结束日期</translation>
 <translation id="6503077044568424649">常去网站</translation>
 <translation id="6503763061813913607">安全检查通知</translation>
@@ -2112,7 +2113,6 @@
 <translation id="8319282042900445670">已设为在 <ph name="DATE" /><ph name="TIME" />发出提醒</translation>
 <translation id="8320212361750431956">近期活动</translation>
 <translation id="8325455175867928593">隐藏“根据您的兴趣推荐的评价”</translation>
-<translation id="8328777765163860529">全部关闭</translation>
 <translation id="833647236762414178">您可以创建、保存和管理密码和通行密钥，以便轻松登录网站和应用。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">备份您的资料，在任何设备上使用</translation>
 <translation id="8348530355586151720">点按三点状菜单</translation>
@@ -2296,6 +2296,7 @@
 <translation id="8915916167043355778">全部关闭</translation>
 <translation id="892185197271200809">所有人将立即失去对标签页分组“<ph name="GROUP_NAME" />”的访问权限，并且该分组将从所有设备中删除</translation>
 <translation id="8923178205567790913">密码</translation>
+<translation id="8926498511977337209">以无痕模式浏览</translation>
 <translation id="892776311701544612">了解详情…</translation>
 <translation id="8928133177108699615">桌面版</translation>
 <translation id="8928426232677696166">目前选择的是 <ph name="EMAIL" />，该账号由组织管理。请选择一个账号。</translation>

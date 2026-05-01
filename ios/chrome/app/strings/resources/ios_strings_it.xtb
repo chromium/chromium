@@ -721,6 +721,7 @@
 <translation id="3565012355885596568">Impossibile caricare le immagini</translation>
 <translation id="3565930036634619844">Scheda. <ph name="TAB_INDEX" /> di <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">Salva in altro modo</translation>
+<translation id="3571703298474554279">Un modo più veloce per usare l'app</translation>
 <translation id="3572503683475187385">La scheda corrente viene condivisa con Gemini quando avvii una nuova chat. Quando condividi una scheda con Gemini, i relativi contenuti e l'URL vengono inviati a Google. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">Nel tuo Account Google</translation>
 <translation id="3575234738189584619">Cerca con Lens</translation>
@@ -1576,6 +1577,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="6476800141292307438">Traduzione della pagina in <ph name="LANGUAGE" />. Opzioni disponibili nella parte inferiore dello schermo.</translation>
 <translation id="647867789226964031">Cambia le password</translation>
 <translation id="6480363549849064919">Autenticazione client</translation>
+<translation id="6489174933860678546">Apri le schede Incognito per navigare sul web in modo più privato.</translation>
 <translation id="6494931198667773526">Fine</translation>
 <translation id="6503077044568424649">Più visitati</translation>
 <translation id="6503763061813913607">Notifiche del controllo di sicurezza</translation>
@@ -1700,6 +1702,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="6871397658902960384">Inizia a navigare</translation>
 <translation id="6874328931822449112">{COUNT,plural, =1{Salva password nell'account}other{Salva le password nell'account}}</translation>
 <translation id="6875166646976836138">Puoi visualizzare e gestire questi elementi anche nei preferiti, nell'elenco di lettura o in Gestore delle password.</translation>
+<translation id="6878052248816456143">Accedi ai file su Google Drive in qualsiasi momento.</translation>
 <translation id="6882836635272038266">Sistemi di protezione standard da estensioni, siti web e download che sono noti per essere pericolosi.</translation>
 <translation id="6884135917113737984">{COUNT,plural, =1{Salva {COUNT} password nel tuo Account Google}other{Salva {COUNT} password nel tuo Account Google}}</translation>
 <translation id="6888009575607455378">Vuoi annullare le modifiche apportate?</translation>
@@ -1813,6 +1816,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="7345061034321640811">Importazione non consentita</translation>
 <translation id="7347998088283246662">Importa password, cronologia, preferiti e altro</translation>
 <translation id="7352651011704765696">Si è verificato un problema</translation>
+<translation id="7363497636543208734">Ora è più facile spostarsi nell'app.</translation>
 <translation id="7364796246159120393">Scegli file</translation>
 <translation id="736564850024123010">Cambia la posizione della barra degli indirizzi per un'esperienza personalizzata.</translation>
 <translation id="7366909168761621528">Dati di navigazione</translation>
@@ -2112,7 +2116,6 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="8319282042900445670">Promemoria impostato per le ore <ph name="TIME" /> del giorno <ph name="DATE" /></translation>
 <translation id="8320212361750431956">Attività recente</translation>
 <translation id="8325455175867928593">Nascondi "Recensioni basate sui tuoi interessi"</translation>
-<translation id="8328777765163860529">Chiudi tutte</translation>
 <translation id="833647236762414178">Crea, salva e gestisci le tue password e passkey in modo da poter accedere facilmente ai siti e alle app. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Esegui il backup dei tuoi dati e usali su qualsiasi dispositivo.</translation>
 <translation id="8348530355586151720">Tocca il menu con tre puntini</translation>
@@ -2296,6 +2299,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="8915916167043355778">Chiudi tutte</translation>
 <translation id="892185197271200809">Tutte le persone perderanno immediatamente l'accesso al gruppo di schede "<ph name="GROUP_NAME" />", che verrà eliminato da tutti i dispositivi</translation>
 <translation id="8923178205567790913">Password</translation>
+<translation id="8926498511977337209">Naviga in incognito</translation>
 <translation id="892776311701544612">Scopri di più…</translation>
 <translation id="8928133177108699615">Desktop</translation>
 <translation id="8928426232677696166"><ph name="EMAIL" />, gestito dalla tua organizzazione, attualmente selezionato. Scegli un account.</translation>

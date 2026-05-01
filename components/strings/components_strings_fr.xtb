@@ -629,6 +629,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="1979156660928743046">Informations sur le contenu multimédia</translation>
 <translation id="1987486584747170374">Vos recherches, les meilleurs résultats et le contenu des pages correspondantes sont envoyés à Google. Ils ne seront pas utilisés par des réviseurs humains pour améliorer l'IA. Votre organisation peut modifier ces paramètres à tout moment.</translation>
 <translation id="1988881251331415125">S'il n'y a pas d'erreur, essayez de <ph name="BEGIN_LINK" />faire un diagnostic sur la connectivité<ph name="END_LINK" />.</translation>
+<translation id="1991370806334788445">Essayez d'autoriser les cookies tiers. Vous réduirez ainsi la protection de la navigation, mais les fonctionnalités du site auront plus de chances de fonctionner comme prévu.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567"><ph name="URL" /> souhaite stocker de façon permanente des données volumineuses sur votre ordinateur local</translation>
 <translation id="1997774360448418989">Papier (léger)</translation>
@@ -2132,7 +2133,6 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="4282280603030594840">Achat de véhicules</translation>
 <translation id="4282346679996504092">Les alertes pour ce produit ont été désactivées et le favori supprimé</translation>
 <translation id="4284885181066817063">Bloquée par <ph name="DOMAIN" /></translation>
-<translation id="4285498937028063278">Retirer</translation>
 <translation id="4288101205645068104">Supprimer le véhicule</translation>
 <translation id="4290920330097335010">Ne jamais autoriser</translation>
 <translation id="4297502707443874121">Vignette de la page <ph name="THUMBNAIL_PAGE" /></translation>
@@ -2606,7 +2606,6 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="5056587122125565772">Créer une image</translation>
 <translation id="505757197798929356">Indiquez le motif de l'ouverture (obligatoire)</translation>
 <translation id="5058282932481719070">en savoir plus sur la saisie automatique améliorée dans les paramètres</translation>
-<translation id="5060419232449737386">Paramètres des sous-titres</translation>
 <translation id="5061227663725596739">Vous vouliez dire <ph name="LOOKALIKE_DOMAIN" /> ?</translation>
 <translation id="5066056036849835175">Historique d'impression</translation>
 <translation id="5068524481479508725">A10</translation>
@@ -3567,7 +3566,6 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="6518133107902771759">Valider</translation>
 <translation id="6519885440226079262">Peut demander à suivre vos mains</translation>
 <translation id="6520026037299163656">Applis Web et outils en ligne</translation>
-<translation id="65203098586853226">Traduction <ph name="SOURCE" /> – <ph name="TARGET" /></translation>
 <translation id="6520509611422418552"><ph name="MEMBER_FIRST_NAME" /> a rejoint le groupe d'onglets "<ph name="GROUP_NAME" />"</translation>
 <translation id="6521745193039995384">Inactive</translation>
 <translation id="6522682797352430154">Musique classique</translation>
@@ -4169,7 +4167,6 @@ Informations supplémentaires :
 <translation id="7455452752247248289">Technologies d'entreprise</translation>
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">Camions et remorques de fret</translation>
-<translation id="7461924472993315131">Épingler</translation>
 <translation id="7463068149674892185">Cette action n'est pas recommandée</translation>
 <translation id="746329643760972486">macOS</translation>
 <translation id="746412105358554870">Optimisation et sécurité JavaScript</translation>
@@ -4675,7 +4672,6 @@ Informations supplémentaires :
 <translation id="8246482227229072868">Anneaux</translation>
 <translation id="8248406213705193919">Enregistrer la carte de manière sécurisée ?</translation>
 <translation id="8249296373107784235">Annuler</translation>
-<translation id="824968735947741546">Traduction : <ph name="SOURCE" /> (détecté automatiquement) vers <ph name="TARGET" /></translation>
 <translation id="8250094606476360498">Cette adresse est actuellement enregistrée sur cet appareil. Pour l'utiliser avec d'autres produits Google, enregistrez-la dans votre compte Google (<ph name="ACCOUNT" />).</translation>
 <translation id="8250533425540303610">Installation de : <ph name="LANGUAGE" />...</translation>
 <translation id="8251493595871259082">Saisissez votre adresse plus rapidement</translation>

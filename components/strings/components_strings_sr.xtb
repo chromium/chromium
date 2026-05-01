@@ -629,6 +629,7 @@
 <translation id="1979156660928743046">Информације о медијима</translation>
 <translation id="1987486584747170374">Претраге, најбоља подударања и садржај страница са њима шаљу се Google-у. Особе које прегледају неће то користити за побољшање вештачке интелигенције. Организација може да промени ова подешавања у сваком тренутку.</translation>
 <translation id="1988881251331415125">Ако нема грешака, <ph name="BEGIN_LINK" />покрените дијагностику повезивања<ph name="END_LINK" />.</translation>
+<translation id="1991370806334788445">Пробајте да дозволите колачиће треће стране, што значи слабију заштиту прегледања, али већу вероватноћу да ће функције сајта радити на очекивани начин.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567"><ph name="URL" /> жели да трајно складишти велику количину података на вашем локалном рачунару</translation>
 <translation id="1997774360448418989">Папир (лаган)</translation>
@@ -2132,7 +2133,6 @@
 <translation id="4282280603030594840">Куповина возила</translation>
 <translation id="4282346679996504092">Обавештења за овај производ су искључена, а обележивач је уклоњен</translation>
 <translation id="4284885181066817063">Блокирао <ph name="DOMAIN" /></translation>
-<translation id="4285498937028063278">Откачи</translation>
 <translation id="4288101205645068104">Избришите возило</translation>
 <translation id="4290920330097335010">Никада не дозволи</translation>
 <translation id="4297502707443874121">Сличица за <ph name="THUMBNAIL_PAGE" />. страницу</translation>
@@ -2606,7 +2606,6 @@
 <translation id="5056587122125565772">Направи слику</translation>
 <translation id="505757197798929356">Наведите разлог за отварање (обавезно)</translation>
 <translation id="5058282932481719070">сазнајте више о побољшаном аутоматском попуњавању у подешавањима</translation>
-<translation id="5060419232449737386">Подешавања титла</translation>
 <translation id="5061227663725596739">Да ли сте мислили <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">Историја штампања</translation>
 <translation id="5068524481479508725">A10</translation>
@@ -3566,7 +3565,6 @@
 <translation id="6518133107902771759">Верификуј</translation>
 <translation id="6519885440226079262">Може да тражи да прати ваше руке</translation>
 <translation id="6520026037299163656">Веб-апликације и онлајн алатке</translation>
-<translation id="65203098586853226">Преводи се са језика <ph name="SOURCE" /> на <ph name="TARGET" /></translation>
 <translation id="6520509611422418552">Корисник <ph name="MEMBER_FIRST_NAME" /> се придружио групи картица <ph name="GROUP_NAME" /></translation>
 <translation id="6521745193039995384">Нису активне</translation>
 <translation id="6522682797352430154">Класична музика</translation>
@@ -4167,7 +4165,6 @@
 <translation id="7455452752247248289">Технологија пословања</translation>
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">Теретни камиони и приколице</translation>
-<translation id="7461924472993315131">Закачи</translation>
 <translation id="7463068149674892185">Ова радња се не препоручује</translation>
 <translation id="746329643760972486">MacOS</translation>
 <translation id="746412105358554870">Оптимизација и безбедност JavaScript-а</translation>
@@ -4673,7 +4670,6 @@
 <translation id="8246482227229072868">Прстење</translation>
 <translation id="8248406213705193919">Желите безбедно да сачувате картицу?</translation>
 <translation id="8249296373107784235">Откажи</translation>
-<translation id="824968735947741546">Преводи се <ph name="SOURCE" /> (аутоматски откривено) на <ph name="TARGET" /></translation>
 <translation id="8250094606476360498">Ова адреса је тренутно сачувана на овом уређају. Да бисте је користили у свим Google производима, сачувајте је на Google налогу, <ph name="ACCOUNT" />.</translation>
 <translation id="8250533425540303610">Инсталира се <ph name="LANGUAGE" />…</translation>
 <translation id="8251493595871259082">Унесите адресу уз мање куцања</translation>

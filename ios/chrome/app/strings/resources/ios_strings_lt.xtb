@@ -1576,6 +1576,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="6476800141292307438">Puslapis verčiamas į <ph name="LANGUAGE" />. Parinktys pasiekiamos netoli ekrano apačios.</translation>
 <translation id="647867789226964031">Slaptažodžių keitimas</translation>
 <translation id="6480363549849064919">Kliento tapatybės nustatymas</translation>
+<translation id="6489174933860678546">Atidarykite inkognito skirtukus, kad galėtumėte naršyti žiniatinklį privačiau.</translation>
 <translation id="6494931198667773526">Baigiasi</translation>
 <translation id="6503077044568424649">Dažniausiai lankomi</translation>
 <translation id="6503763061813913607">Saugos patikros pranešimai</translation>
@@ -2112,7 +2113,6 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="8319282042900445670">Nustatytas priminimas <ph name="TIME" />, <ph name="DATE" /></translation>
 <translation id="8320212361750431956">Naujausia veikla</translation>
 <translation id="8325455175867928593">Slėpti parinktį „Atsiliepimai pagal jūsų pomėgius“</translation>
-<translation id="8328777765163860529">Uždaryti viską</translation>
 <translation id="833647236762414178">Kurkite, saugokite ir tvarkykite slaptažodžius bei prieigos raktus, kad galėtumėte lengvai prisijungti prie svetainių ir programų. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Sukurkite atsarginę turinio kopiją ir naudokite ją bet kuriame įrenginyje.</translation>
 <translation id="8348530355586151720">Palieskite trijų taškų meniu</translation>
@@ -2296,6 +2296,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="8915916167043355778">Uždaryti viską</translation>
 <translation id="892185197271200809">Visi iš karto neteks prieigos prie skirtukų grupės „<ph name="GROUP_NAME" />“, o ji bus ištrinta iš visų įrenginių</translation>
 <translation id="8923178205567790913">Slaptažodžiai</translation>
+<translation id="8926498511977337209">Naršykite inkognito režimu</translation>
 <translation id="892776311701544612">Sužinokite daugiau…</translation>
 <translation id="8928133177108699615">Stalinio kompiuterio</translation>
 <translation id="8928426232677696166">Šiuo metu pasirinktas <ph name="EMAIL" />, kurį valdo jūsų organizacija. Pasirinkite paskyrą.</translation>

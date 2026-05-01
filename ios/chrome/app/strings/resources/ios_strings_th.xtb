@@ -721,6 +721,7 @@
 <translation id="3565012355885596568">โหลดรูปภาพไม่ได้</translation>
 <translation id="3565930036634619844">แท็บ <ph name="TAB_INDEX" /> จาก <ph name="NUMBER_OF_TABS" /></translation>
 <translation id="3567168891086460374">บันทึกด้วยวิธีอื่น</translation>
+<translation id="3571703298474554279">วิธีที่รวดเร็วขึ้นในการใช้แอป</translation>
 <translation id="3572503683475187385">ระบบจะแชร์แท็บปัจจุบันกับ Gemini เมื่อคุณเริ่มแชทใหม่ เมื่อคุณแชร์แท็บกับ Gemini ระบบจะส่งเนื้อหาและ URL ของแท็บไปยัง Google <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">ในบัญชี Google</translation>
 <translation id="3575234738189584619">ค้นหาด้วย Lens</translation>
@@ -1576,6 +1577,7 @@
 <translation id="6476800141292307438">กำลังแปลหน้าเว็บเป็นภาษา<ph name="LANGUAGE" /> ตัวเลือกจะอยู่ทางด้านล่างของหน้าจอ</translation>
 <translation id="647867789226964031">เปลี่ยนรหัสผ่าน</translation>
 <translation id="6480363549849064919">การตรวจสอบสิทธิ์ไคลเอ็นต์</translation>
+<translation id="6489174933860678546">เปิดแท็บที่ไม่ระบุตัวตนเพื่อท่องเว็บอย่างเป็นส่วนตัวมากขึ้น</translation>
 <translation id="6494931198667773526">สิ้นสุด</translation>
 <translation id="6503077044568424649">เข้าชมบ่อยสุด</translation>
 <translation id="6503763061813913607">การแจ้งเตือนการตรวจสอบความปลอดภัย</translation>
@@ -1700,6 +1702,7 @@
 <translation id="6871397658902960384">เริ่มท่องเว็บ</translation>
 <translation id="6874328931822449112">{COUNT,plural, =1{บันทึกรหัสผ่านในบัญชี}other{บันทึกรหัสผ่านในบัญชี}}</translation>
 <translation id="6875166646976836138">นอกจากนี้ คุณยังดูและจัดการรายการเหล่านี้ในบุ๊กมาร์ก เรื่องรออ่าน หรือเครื่องมือจัดการรหัสผ่านได้</translation>
+<translation id="6878052248816456143">เข้าถึงไฟล์ใน Google ไดรฟ์ได้ทุกเมื่อ</translation>
 <translation id="6882836635272038266">การปกป้องแบบมาตรฐานจากเว็บไซต์ การดาวน์โหลด และส่วนขยายที่ทราบแล้วว่าเป็นอันตราย</translation>
 <translation id="6884135917113737984">{COUNT,plural, =1{บันทึกรหัสผ่าน {COUNT} รายการในบัญชี Google}other{บันทึกรหัสผ่าน {COUNT} รายการในบัญชี Google}}</translation>
 <translation id="6888009575607455378">คุณแน่ใจไหมว่าต้องการทิ้งการเปลี่ยนแปลง</translation>
@@ -1813,6 +1816,7 @@
 <translation id="7345061034321640811">ไม่อนุญาตให้นำเข้า</translation>
 <translation id="7347998088283246662">นำเข้ารหัสผ่าน ประวัติการเข้าชม บุ๊กมาร์ก และอื่นๆ</translation>
 <translation id="7352651011704765696">มีข้อผิดพลาดเกิดขึ้น</translation>
+<translation id="7363497636543208734">ตอนนี้การไปยังส่วนต่างๆ ในแอปทำได้ง่ายขึ้นแล้ว</translation>
 <translation id="7364796246159120393">เลือกไฟล์</translation>
 <translation id="736564850024123010">สลับตำแหน่งแถบที่อยู่เพื่อประสบการณ์ใช้งานที่เหมาะกับคุณ</translation>
 <translation id="7366909168761621528">ข้อมูลการท่องเว็บ</translation>
@@ -2112,7 +2116,6 @@
 <translation id="8319282042900445670">ตั้งการช่วยเตือนเป็น <ph name="TIME" />, <ph name="DATE" /> แล้ว</translation>
 <translation id="8320212361750431956">กิจกรรมล่าสุด</translation>
 <translation id="8325455175867928593">ซ่อน "รีวิวที่อิงตามความสนใจของคุณ"</translation>
-<translation id="8328777765163860529">ปิดทั้งหมด</translation>
 <translation id="833647236762414178">สร้าง บันทึก และจัดการรหัสผ่านและพาสคีย์เพื่อให้ลงชื่อเข้าใช้เว็บไซต์และแอปได้โดยง่าย <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">สำรองข้อมูลและใช้ในอุปกรณ์เครื่องใดก็ได้</translation>
 <translation id="8348530355586151720">แตะเมนู 3 จุด</translation>
@@ -2296,6 +2299,7 @@
 <translation id="8915916167043355778">ปิดทั้งหมด</translation>
 <translation id="892185197271200809">ทุกคนจะเสียสิทธิ์เข้าถึงกลุ่มแท็บ "<ph name="GROUP_NAME" />" ทันที และระบบจะลบกลุ่มนี้ออกจากอุปกรณ์ทุกเครื่อง</translation>
 <translation id="8923178205567790913">รหัสผ่าน</translation>
+<translation id="8926498511977337209">ท่องเว็บในโหมดไม่ระบุตัวตน</translation>
 <translation id="892776311701544612">ดูข้อมูลเพิ่มเติม…</translation>
 <translation id="8928133177108699615">เดสก์ท็อป</translation>
 <translation id="8928426232677696166">เลือก <ph name="EMAIL" /> ปัจจุบันที่จัดการโดยองค์กรของคุณ เลือกบัญชี</translation>

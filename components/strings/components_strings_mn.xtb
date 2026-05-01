@@ -629,6 +629,7 @@
 <translation id="1979156660928743046">Медиагийн мэдээлэл</translation>
 <translation id="1987486584747170374">Таны хайлт, хамгийн сайн таарах илэрц, хуудасных нь агуулгыг Google-д илгээдэг. Үүнийг ХОУ-ыг сайжруулахын тулд хянагч хүн ашиглахгүй. Танай байгууллага хүссэн үедээ эдгээр тохиргоог өөрчилж болзошгүй.</translation>
 <translation id="1988881251331415125">Хэрэв алдаагүй, зөв бичсэн бол <ph name="BEGIN_LINK" />Холболтын оношилгоог ажиллуулж үзнэ үү<ph name="END_LINK" />.</translation>
+<translation id="1991370806334788445">Гуравдагч талын күүкинүүдийг зөвшөөрч үзнэ үү. Ингэснээр үзэх үеийн хамгаалалт багасах ч сайтын онцлогууд хэвийн ажиллах магадлал нэмэгдэнэ.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567"><ph name="URL" /> таны дотоод компьютерт том хэмжээний өгөгдлийг бүрмөсөн хадгалах хүсэлтэй байна</translation>
 <translation id="1997774360448418989">Цаас (хөнгөн)</translation>
@@ -2133,7 +2134,6 @@
 <translation id="4282280603030594840">Тээврийн хэрэгслийн худалдаа</translation>
 <translation id="4282346679996504092">Энэ бүтээгдэхүүний сэрэмжлүүлгийг унтраасан бөгөөд хавчуургыг хассан</translation>
 <translation id="4284885181066817063"><ph name="DOMAIN" />-с блоклосон</translation>
-<translation id="4285498937028063278">Сонголтоос гаргах</translation>
 <translation id="4288101205645068104">Тээврийн хэрэгслийг устгах</translation>
 <translation id="4290920330097335010">Хэзээ ч бүү зөвшөөр</translation>
 <translation id="4297502707443874121"><ph name="THUMBNAIL_PAGE" /> хуудасны өнгөц зураг</translation>
@@ -2607,7 +2607,6 @@
 <translation id="5056587122125565772">Зураг үүсгэх</translation>
 <translation id="505757197798929356">Нээж буй шалтгаанаар хангана уу (шаардлагатай)</translation>
 <translation id="5058282932481719070">тохиргооноос сайжруулсан автоматаар бөглөх хэсгийн талаар нэмэлт мэдээлэл авах</translation>
-<translation id="5060419232449737386">Тайлбарын тохиргоо</translation>
 <translation id="5061227663725596739">Та <ph name="LOOKALIKE_DOMAIN" />-г хайсан уу?</translation>
 <translation id="5066056036849835175">Хэвлэлийн түүх</translation>
 <translation id="5068524481479508725">A10</translation>
@@ -3567,7 +3566,6 @@
 <translation id="6518133107902771759">Баталгаажуул</translation>
 <translation id="6519885440226079262">Таны гарыг хянахыг хүсэх боломжтой</translation>
 <translation id="6520026037299163656">Веб апп, онлайн хэрэгслүүд</translation>
-<translation id="65203098586853226"><ph name="SOURCE" />-с <ph name="TARGET" /> руу орчуулж байна</translation>
 <translation id="6520509611422418552"><ph name="MEMBER_FIRST_NAME" /> "<ph name="GROUP_NAME" />" табын бүлэгт нэгдсэн</translation>
 <translation id="6521745193039995384">Идэвхгүй</translation>
 <translation id="6522682797352430154">Сонгодог хөгжим</translation>
@@ -4167,7 +4165,6 @@
 <translation id="7455452752247248289">Байгууллагын технологи</translation>
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">Ачааны машин, чиргүүлүүд</translation>
-<translation id="7461924472993315131">Pin</translation>
 <translation id="7463068149674892185">Энэ үйлдлийг хийхийг зөвлөдөггүй</translation>
 <translation id="746329643760972486">MacOS</translation>
 <translation id="746412105358554870">JavaScript-н оновчлол, аюулгүй байдал</translation>
@@ -4673,7 +4670,6 @@
 <translation id="8246482227229072868">Бөгжнүүд</translation>
 <translation id="8248406213705193919">Картыг аюулгүй хадгалах уу?</translation>
 <translation id="8249296373107784235">Цуцлах</translation>
-<translation id="824968735947741546"><ph name="SOURCE" />-с (автоматаар илрүүлсэн) <ph name="TARGET" /> руу орчуулж байна</translation>
 <translation id="8250094606476360498">Энэ хаягийг одоогоор энэ төхөөрөмжид хадгалсан. Үүнийг Google-н бүтээгдэхүүнүүдэд ашиглахын тулд <ph name="ACCOUNT" /> Google Бүртгэлдээ хадгална уу.</translation>
 <translation id="8250533425540303610"><ph name="LANGUAGE" />-г суулгаж байна...</translation>
 <translation id="8251493595871259082">Хаягаа бага бичиж бөглөөрэй</translation>

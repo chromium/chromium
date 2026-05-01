@@ -2133,7 +2133,6 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="4282280603030594840">Pamimili ng Sasakyan</translation>
 <translation id="4282346679996504092">Na-off ang mga alerto para sa produktong ito at inalis ang bookmark</translation>
 <translation id="4284885181066817063">Na-block ng <ph name="DOMAIN" /></translation>
-<translation id="4285498937028063278">I-unpin</translation>
 <translation id="4288101205645068104">I-delete ang sasakyan</translation>
 <translation id="4290920330097335010">Huwag kailanman payagan</translation>
 <translation id="4297502707443874121">Thumbnail para sa page <ph name="THUMBNAIL_PAGE" /></translation>
@@ -2607,7 +2606,6 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="5056587122125565772">Gumawa ng larawan</translation>
 <translation id="505757197798929356">Magbigay ng dahilan para sa pagbubukas (nire-require)</translation>
 <translation id="5058282932481719070">matuto pa tungkol sa pinahusay na autofill sa mga setting</translation>
-<translation id="5060419232449737386">Mga setting ng caption</translation>
 <translation id="5061227663725596739">Ang ibig mo bang sabihin ay <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">History ng pag-print</translation>
 <translation id="5068524481479508725">A10</translation>
@@ -2976,6 +2974,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="5600044805561809264">Madali kang makakapagtanong tungkol sa mga tab na sine-share mo habang nagba-browse ka.</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> o <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">Hindi sinusuportahan ang pamamahala</translation>
+<translation id="5604254791550001355">I-edit ang prompt</translation>
 <translation id="560431066250575003">{HOURS,plural, =1{Aktibo 1 oras ang nakalipas}one{Aktibo # oras ang nakalipas}other{Aktibo # na oras ang nakalipas}}</translation>
 <translation id="5605249000617390290">Matuto pa tungkol sa pagsubaybay sa presyo</translation>
 <translation id="5605670050355397069">Ledger</translation>
@@ -3407,6 +3406,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
 <translation id="629730747756840877">Account</translation>
+<translation id="6299098428775578517">Mga setting ng suhestyon</translation>
 <translation id="6300452962057769623">{0,plural, =0{Magre-restart na ngayon ang iyong device}=1{Magre-restart ang iyong device pagkalipas ng 1 segundo}one{Magre-restart ang iyong device pagkalipas ng # segundo}other{Magre-restart ang iyong device pagkalipas ng # na segundo}}</translation>
 <translation id="6301104306974789820">Makakuha ng mga notification sa pagsubaybay sa presyo</translation>
 <translation id="6302546952464230349">Ipakita ang mga detalye ng pahintulot na <ph name="PERMISSION_NAME" /></translation>
@@ -3568,7 +3568,6 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="6518133107902771759">I-verify</translation>
 <translation id="6519885440226079262">Puwedeng hilinging i-track ang iyong mga kamay</translation>
 <translation id="6520026037299163656">Mga Web App at Online na Tool</translation>
-<translation id="65203098586853226">Pagsasalin ng <ph name="SOURCE" /> sa <ph name="TARGET" /></translation>
 <translation id="6520509611422418552">Sumali si <ph name="MEMBER_FIRST_NAME" /> sa grupo ng tab na "<ph name="GROUP_NAME" />"</translation>
 <translation id="6521745193039995384">Hindi aktibo</translation>
 <translation id="6522682797352430154">Classical Music</translation>
@@ -4169,7 +4168,6 @@ Mga karagdagang detalye:
 <translation id="7455452752247248289">Teknolohiyang Pangnegosyo</translation>
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">Mga Cargo Truck at Trailer</translation>
-<translation id="7461924472993315131">I-pin</translation>
 <translation id="7463068149674892185">Hindi inirerekomenda ang aksyong ito</translation>
 <translation id="746329643760972486">MacOS</translation>
 <translation id="746412105358554870">Pag-optimize at seguridad ng JavaScript</translation>
@@ -4675,7 +4673,6 @@ Mga karagdagang detalye:
 <translation id="8246482227229072868">Mga Singsing</translation>
 <translation id="8248406213705193919">Secure na i-save ang card?</translation>
 <translation id="8249296373107784235">I-abort</translation>
-<translation id="824968735947741546">Isinasalin ang <ph name="SOURCE" /> (awtomatikong na-detect) sa <ph name="TARGET" /></translation>
 <translation id="8250094606476360498">Kasalukuyang naka-save ang address na ito sa device na ito. Para gamitin ito sa mga produkto ng Google, i-save ito sa iyong Google Account na <ph name="ACCOUNT" />.</translation>
 <translation id="8250533425540303610">Ini-install ang <ph name="LANGUAGE" />...</translation>
 <translation id="8251493595871259082">Punan ang iyong address nang hindi gaanong nagta-type</translation>

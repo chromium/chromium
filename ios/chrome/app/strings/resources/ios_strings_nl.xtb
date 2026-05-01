@@ -721,6 +721,7 @@
 <translation id="3565012355885596568">Kan afbeeldingen niet laden</translation>
 <translation id="3565930036634619844">Tabblad. <ph name="TAB_INDEX" /> van <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">Op een andere manier opslaan</translation>
+<translation id="3571703298474554279">Een snellere manier om de app te gebruiken</translation>
 <translation id="3572503683475187385">Het huidige tabblad wordt gedeeld met Gemini als je een nieuwe chat start. Als je een tabblad deelt met Gemini, worden de bijbehorende content en URL naar Google gestuurd. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">In je Google-account</translation>
 <translation id="3575234738189584619">Zoeken met Lens</translation>
@@ -1576,6 +1577,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="6476800141292307438">De pagina vertalen naar het <ph name="LANGUAGE" />. Opties beschikbaar onderaan het scherm.</translation>
 <translation id="647867789226964031">Je wachtwoorden wijzigen</translation>
 <translation id="6480363549849064919">Clientverificatie</translation>
+<translation id="6489174933860678546">Open incognitotabbladen om privé op internet te browsen.</translation>
 <translation id="6494931198667773526">Eindigt</translation>
 <translation id="6503077044568424649">Meest bezocht</translation>
 <translation id="6503763061813913607">Meldingen van Veiligheidscheck</translation>
@@ -1700,6 +1702,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="6871397658902960384">Browsen</translation>
 <translation id="6874328931822449112">{COUNT,plural, =1{Wachtwoord opslaan in account}other{Wachtwoorden opslaan in account}}</translation>
 <translation id="6875166646976836138">Je kunt deze items ook bekijken en beheren in je bookmarks, leeslijst of wachtwoordmanager.</translation>
+<translation id="6878052248816456143">Open bestanden in je Google Drive wanneer je maar wilt.</translation>
 <translation id="6882836635272038266">Standaardbeveiliging tegen websites, downloads en extensies die als gevaarlijk zijn bestempeld.</translation>
 <translation id="6884135917113737984">{COUNT,plural, =1{{COUNT} wachtwoord opslaan in je Google-account}other{{COUNT} wachtwoorden opslaan in je Google-account}}</translation>
 <translation id="6888009575607455378">Weet je zeker dat je de wijzigingen niet wilt opslaan?</translation>
@@ -1813,6 +1816,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="7345061034321640811">Importeren niet toegestaan</translation>
 <translation id="7347998088283246662">Importeer onder andere wachtwoorden, geschiedenis en bookmarks</translation>
 <translation id="7352651011704765696">Er is iets misgegaan</translation>
+<translation id="7363497636543208734">Je kunt nu makkelijker navigeren in de app.</translation>
 <translation id="7364796246159120393">Bestand kiezen</translation>
 <translation id="736564850024123010">Wijzig de positie van de adresbalk voor een aangepaste functionaliteit.</translation>
 <translation id="7366909168761621528">Browsegegevens</translation>
@@ -2112,7 +2116,6 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="8319282042900445670">Herinnering ingesteld voor <ph name="TIME" />, <ph name="DATE" /></translation>
 <translation id="8320212361750431956">Recente activiteit</translation>
 <translation id="8325455175867928593">Reviews op basis van je interesses verbergen</translation>
-<translation id="8328777765163860529">Alles sluiten</translation>
 <translation id="833647236762414178">Maak, bewaar en beheer je wachtwoorden en toegangssleutels om makkelijk in te loggen bij sites en apps. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Maak een back-up van je gegevens en gebruik deze op elk apparaat.</translation>
 <translation id="8348530355586151720">Tik op het menu met 3 stippen</translation>
@@ -2296,6 +2299,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="8915916167043355778">Alles sluiten</translation>
 <translation id="892185197271200809">Iedereen raakt meteen de toegang tot de tabbladgroep <ph name="GROUP_NAME" /> kwijt en de groep wordt verwijderd van alle apparaten</translation>
 <translation id="8923178205567790913">Wachtwoorden</translation>
+<translation id="8926498511977337209">Incognito browsen</translation>
 <translation id="892776311701544612">Meer informatie…</translation>
 <translation id="8928133177108699615">Desktop</translation>
 <translation id="8928426232677696166"><ph name="EMAIL" />, beheerd door je organisatie, is op dit moment geselecteerd. Kies een account.</translation>

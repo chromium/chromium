@@ -1576,6 +1576,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="6476800141292307438">Stránka sa prekladá do jazyka <ph name="LANGUAGE" />. Možnosti nájdete v dolnej časti obrazovky.</translation>
 <translation id="647867789226964031">Zmeňte si heslá</translation>
 <translation id="6480363549849064919">Overenie klienta</translation>
+<translation id="6489174933860678546">Otvorte karty inkognito a prehliadajte internet vo väčšom súkromí.</translation>
 <translation id="6494931198667773526">Končí sa</translation>
 <translation id="6503077044568424649">Najnavštevovanejšie</translation>
 <translation id="6503763061813913607">Upozornenia kontroly bezpečnosti</translation>
@@ -2112,7 +2113,6 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="8319282042900445670">Bolo nastavené pripomenutie na <ph name="TIME" />, <ph name="DATE" /></translation>
 <translation id="8320212361750431956">Nedávna aktivita</translation>
 <translation id="8325455175867928593">Skryť „Recenzie na základe vašich záujmov“</translation>
-<translation id="8328777765163860529">Zavrieť všetky</translation>
 <translation id="833647236762414178">Vytvárajte, ukladajte a spravujte svoje heslá a prístupové kľúče, aby ste sa mohli ľahko prihlasovať na weboch a v aplikáciách. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Zálohujte svoj obsah a používajte ho v ľubovoľnom zariadení.</translation>
 <translation id="8348530355586151720">Klepnite na trojbodkovú ponuku</translation>
@@ -2296,6 +2296,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="8915916167043355778">Zavrieť všetko</translation>
 <translation id="892185197271200809">Všetci okamžite stratia prístup ku skupine kariet <ph name="GROUP_NAME" />, ktorá bude odstránená zo všetkých zariadení</translation>
 <translation id="8923178205567790913">Heslá</translation>
+<translation id="8926498511977337209">Prehliadanie v režime inkognito</translation>
 <translation id="892776311701544612">Ďalšie informácie…</translation>
 <translation id="8928133177108699615">Počítač</translation>
 <translation id="8928426232677696166">Momentálne je vybraný účet <ph name="EMAIL" /> spravovaný vašou organizáciou. Vyberte účet.</translation>

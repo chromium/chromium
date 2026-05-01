@@ -2133,7 +2133,6 @@
 <translation id="4282280603030594840">شراء مركبات</translation>
 <translation id="4282346679996504092">تم إيقاف التنبيهات لهذا المنتج وتمت إزالة الإشارة المرجعية من الصفحة.</translation>
 <translation id="4284885181066817063">لقد منع <ph name="DOMAIN" /> هذا الإجراء</translation>
-<translation id="4285498937028063278">إزالة التثبيت</translation>
 <translation id="4288101205645068104">حذف بيانات المركبة</translation>
 <translation id="4290920330097335010">عدم السماح مطلقًا</translation>
 <translation id="4297502707443874121">صورة مصغّرة لصفحة <ph name="THUMBNAIL_PAGE" /></translation>
@@ -2607,7 +2606,6 @@
 <translation id="5056587122125565772">إنشاء صورة</translation>
 <translation id="505757197798929356">أدخِل سببًا للفتح (مطلوب).</translation>
 <translation id="5058282932481719070">مزيد من المعلومات عن ميزة "الملء التلقائي المحسّن" في الإعدادات</translation>
-<translation id="5060419232449737386">إعدادات الترجمة والشرح</translation>
 <translation id="5061227663725596739">هل كنت تقصد <ph name="LOOKALIKE_DOMAIN" />؟</translation>
 <translation id="5066056036849835175">سجلّ الطباعة</translation>
 <translation id="5068524481479508725">A10</translation>
@@ -2976,6 +2974,7 @@
 <translation id="5600044805561809264">يمكنك بسهولة طرح أسئلة حول علامات التبويب التي تتم مشاركتها أثناء التصفّح.</translation>
 <translation id="5603469469737324249">‫"<ph name="ISSUER_1_NAME" />" أو "<ph name="ISSUER_2_NAME" />"</translation>
 <translation id="560412284261940334">الإدارة غير متوفرة</translation>
+<translation id="5604254791550001355">تعديل الطلب</translation>
 <translation id="560431066250575003">{HOURS,plural, =1{نشط قبل ساعة واحدة}zero{نشط قبل # ساعة}two{نشط قبل ساعتين}few{نشط قبل # ساعات}many{نشط قبل # ساعة}other{نشط قبل # ساعة}}</translation>
 <translation id="5605249000617390290">مزيد من المعلومات حول ميزة "تتبُّع الأسعار"</translation>
 <translation id="5605670050355397069">Ledger</translation>
@@ -3407,6 +3406,7 @@
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
 <translation id="629730747756840877">الحساب</translation>
+<translation id="6299098428775578517">إعدادات الاقتراحات</translation>
 <translation id="6300452962057769623">{0,plural, =0{ستتم إعادة تشغيل جهازك الآن}=1{ستتم إعادة تشغيل جهازك بعد ثانية واحدة}two{ستتم إعادة تشغيل جهازك بعد ثانيتين}few{ستتم إعادة تشغيل جهازك بعد # ثوانٍ}many{ستتم إعادة تشغيل جهازك بعد # ثانية}other{ستتم إعادة تشغيل جهازك بعد # ثانية}}</translation>
 <translation id="6301104306974789820">الحصول على الإشعارات الخاصة بتتبُّع أسعار المنتجات</translation>
 <translation id="6302546952464230349">إظهار تفاصيل إذن <ph name="PERMISSION_NAME" /></translation>
@@ -3568,7 +3568,6 @@
 <translation id="6518133107902771759">تحقق</translation>
 <translation id="6519885440226079262">يمكن للموقع الإلكتروني طلب تتبُّع يديك</translation>
 <translation id="6520026037299163656">تطبيقات ويب وأدوات على الإنترنت</translation>
-<translation id="65203098586853226">الترجمة من <ph name="SOURCE" /> إلى <ph name="TARGET" /></translation>
 <translation id="6520509611422418552">تم الانضمام إلى مجموعة علامات التبويب "<ph name="GROUP_NAME" />" من قِبل "<ph name="MEMBER_FIRST_NAME" />"</translation>
 <translation id="6521745193039995384">غير مفعلة</translation>
 <translation id="6522682797352430154">موسيقى كلاسيكية</translation>
@@ -4169,7 +4168,6 @@
 <translation id="7455452752247248289">تكنولوجيا شركات</translation>
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">شاحنات نقل ومقطورات</translation>
-<translation id="7461924472993315131">تثبيت</translation>
 <translation id="7463068149674892185">لا يُنصح بتنفيذ هذا الإجراء</translation>
 <translation id="746329643760972486">MacOS</translation>
 <translation id="746412105358554870">‏تحسين محرك JavaScript وتأمينه</translation>
@@ -4676,7 +4674,6 @@
 <translation id="8246482227229072868">خواتم</translation>
 <translation id="8248406213705193919">هل تريد حفظ بيانات البطاقة بشكل آمن؟</translation>
 <translation id="8249296373107784235">إلغاء</translation>
-<translation id="824968735947741546">جارٍ ترجمة اللغة <ph name="SOURCE" /> (التي تم رصدها تلقائيًا) إلى اللغة <ph name="TARGET" /></translation>
 <translation id="8250094606476360498">‏تم حفظ هذا العنوان حاليًا على هذا الجهاز. لاستخدامه في جميع منتجات Google، عليك حفظه في حسابك على Google، <ph name="ACCOUNT" />.</translation>
 <translation id="8250533425540303610">جارٍ تثبيت <ph name="LANGUAGE" />…</translation>
 <translation id="8251493595871259082">ملء بيانات عنوانك بدون كتابتها يدويًا</translation>

@@ -629,6 +629,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1979156660928743046">Medieninformationen</translation>
 <translation id="1987486584747170374">Deine Suchanfragen, die besten Ergebnisse und die zugehörigen Seiteninhalte werden an Google gesendet. Sie werden nicht von Prüfern verwendet, um die KI zu verbessern. Diese Einstellungen können jederzeit von deiner Organisation geändert werden.</translation>
 <translation id="1988881251331415125">Wenn die URL keinen Tippfehler enthält, <ph name="BEGIN_LINK" />kannst du die Verbindungsdiagnose durchführen<ph name="END_LINK" />.</translation>
+<translation id="1991370806334788445">Versuche, Drittanbieter-Cookies zuzulassen. Das bedeutet zwar weniger Schutz beim Surfen, aber dadurch erhöht sich die Wahrscheinlichkeit, dass Websites wie erwartet funktionieren.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567"><ph name="URL" /> möchte umfangreiche Daten dauerhaft auf deinem lokalen Computer speichern</translation>
 <translation id="1997774360448418989">Papier (leicht)</translation>
@@ -2130,7 +2131,6 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="4282280603030594840">Fahrzeugkauf</translation>
 <translation id="4282346679996504092">Benachrichtigungen zu diesem Produkt wurden deaktiviert und das Lesezeichen wurde entfernt</translation>
 <translation id="4284885181066817063">Blockiert durch <ph name="DOMAIN" /></translation>
-<translation id="4285498937028063278">Loslösen</translation>
 <translation id="4288101205645068104">Fahrzeug löschen</translation>
 <translation id="4290920330097335010">Nie erlauben</translation>
 <translation id="4297502707443874121">Miniaturansicht für Seite <ph name="THUMBNAIL_PAGE" /></translation>
@@ -2604,7 +2604,6 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="5056587122125565772">Bild erstellen</translation>
 <translation id="505757197798929356">Gib den Grund für das Öffnen an (erforderlich)</translation>
 <translation id="5058282932481719070">weitere Informationen zu erweitertem Autofill in den Einstellungen erhalten</translation>
-<translation id="5060419232449737386">Untertiteleinstellungen</translation>
 <translation id="5061227663725596739">Meintest du <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">Druckverlauf</translation>
 <translation id="5068524481479508725">A10</translation>
@@ -3565,7 +3564,6 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="6518133107902771759">Bestätigen</translation>
 <translation id="6519885440226079262">Darf nachfragen, ob deine Hände getrackt werden dürfen</translation>
 <translation id="6520026037299163656">Web-Apps und Onlinetools</translation>
-<translation id="65203098586853226"><ph name="SOURCE" /> wird auf <ph name="TARGET" /> übersetzt</translation>
 <translation id="6520509611422418552"><ph name="MEMBER_FIRST_NAME" /> ist der Tabgruppe „<ph name="GROUP_NAME" />“ beigetreten</translation>
 <translation id="6521745193039995384">Nicht aktiv</translation>
 <translation id="6522682797352430154">Klassische Musik</translation>
@@ -4166,7 +4164,6 @@ Weitere Details:
 <translation id="7455452752247248289">Unternehmenstechnologie</translation>
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">LKWs und Anhänger</translation>
-<translation id="7461924472993315131">Anpinnen</translation>
 <translation id="7463068149674892185">Diese Aktion wird nicht empfohlen</translation>
 <translation id="746329643760972486">MacOS</translation>
 <translation id="746412105358554870">JavaScript-Optimierung und -Sicherheit</translation>
@@ -4672,7 +4669,6 @@ Weitere Details:
 <translation id="8246482227229072868">Ringe</translation>
 <translation id="8248406213705193919">Karte sicher speichern?</translation>
 <translation id="8249296373107784235">Abbrechen</translation>
-<translation id="824968735947741546">„<ph name="SOURCE" />“ (automatisch erkannt) wird in die Sprache „<ph name="TARGET" />“ übersetzt</translation>
 <translation id="8250094606476360498">Diese Adresse ist momentan auf diesem Gerät gespeichert. Wenn du sie in allen Google-Produkten verwenden möchtest, speichere sie in deinem Google-Konto (<ph name="ACCOUNT" />).</translation>
 <translation id="8250533425540303610">„<ph name="LANGUAGE" />“ wird installiert…</translation>
 <translation id="8251493595871259082">Adresse mit weniger Eingaben ausfüllen</translation>

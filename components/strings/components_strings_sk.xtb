@@ -629,6 +629,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="1979156660928743046">Informácie z médií</translation>
 <translation id="1987486584747170374">Vaše vyhľadávania, najlepšie zhody a obsah ich stránok sa odosielajú Googlu. Kontrolóri nebudú pomocou týchto informácií zlepšovať umelú inteligenciu. Vaša organizácia môže tieto nastavenia kedykoľvek zmeniť.</translation>
 <translation id="1988881251331415125">Ak je pravopis správny, <ph name="BEGIN_LINK" />skúste spustiť nástroj Connectivity Diagnostics<ph name="END_LINK" />.</translation>
+<translation id="1991370806334788445">Vyskúšajte povoliť súbory cookie tretích strán, čo znamená nižšiu ochranu pri prehliadaní, ale funkcie webu budú s väčšou pravdepodobnosťou fungovať podľa očakávaní.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567"><ph name="URL" /> chce natrvalo ukladať veľké množstvo dát vo vašom počítači</translation>
 <translation id="1997774360448418989">Papier (nízka gramáž)</translation>
@@ -2128,7 +2129,6 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="4282280603030594840">Nákup vozidiel</translation>
 <translation id="4282346679996504092">Upozornenia na tento výrobok boli vypnuté a záložka bola odstránená</translation>
 <translation id="4284885181066817063">Blokované doménou <ph name="DOMAIN" /></translation>
-<translation id="4285498937028063278">Odopnúť</translation>
 <translation id="4288101205645068104">Odstránenie vozidla</translation>
 <translation id="4290920330097335010">Nikdy nepovoliť</translation>
 <translation id="4297502707443874121">Miniatúra stránky <ph name="THUMBNAIL_PAGE" /></translation>
@@ -2602,7 +2602,6 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="5056587122125565772">Vytvoriť obrázok</translation>
 <translation id="505757197798929356">Poskytnite dôvod otvorenia (povinné)</translation>
 <translation id="5058282932481719070">ďalšie informácie o vylepšenom automatickom dopĺňaní v nastaveniach</translation>
-<translation id="5060419232449737386">Nastavenia titulkov</translation>
 <translation id="5061227663725596739">Mysleli ste <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">História tlače</translation>
 <translation id="5068524481479508725">A10</translation>
@@ -3562,7 +3561,6 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="6518133107902771759">Overiť</translation>
 <translation id="6519885440226079262">Môže požiadať o povolenie sledovať vaše ruky</translation>
 <translation id="6520026037299163656">Webové aplikácie a online nástroje</translation>
-<translation id="65203098586853226">Prekladá sa z jazyka <ph name="SOURCE" /> do jazyka <ph name="TARGET" /></translation>
 <translation id="6520509611422418552">Používateľ <ph name="MEMBER_FIRST_NAME" /> sa pripojil ku skupine kariet <ph name="GROUP_NAME" /></translation>
 <translation id="6521745193039995384">Neaktívne</translation>
 <translation id="6522682797352430154">Klasická hudba</translation>
@@ -4163,7 +4161,6 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="7455452752247248289">Technológia pre podniky</translation>
 <translation id="745640750744109667">A0×3</translation>
 <translation id="7457071735008326060">Nákladné vozidlá a prívesy</translation>
-<translation id="7461924472993315131">Pripnúť</translation>
 <translation id="7463068149674892185">Táto akcia sa neodporúča</translation>
 <translation id="746329643760972486">macOS</translation>
 <translation id="746412105358554870">Optimalizácia a zabezpečenie JavaScriptu</translation>
@@ -4669,7 +4666,6 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="8246482227229072868">Prstene</translation>
 <translation id="8248406213705193919">Chcete kartu bezpečne uložiť?</translation>
 <translation id="8249296373107784235">Prerušiť</translation>
-<translation id="824968735947741546">Jazyk <ph name="SOURCE" /> (rozpoznáva sa automaticky) sa prekladá do jazyka <ph name="TARGET" /></translation>
 <translation id="8250094606476360498">Táto adresa je momentálne uložená v tomto zariadení. Ak ju chcete používať v službách Googlu, uložte si ju do účtu Google <ph name="ACCOUNT" />.</translation>
 <translation id="8250533425540303610">Inštaluje sa <ph name="LANGUAGE" />…</translation>
 <translation id="8251493595871259082">Vyplňte adresu bez prílišného písania</translation>

@@ -2132,7 +2132,6 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="4282280603030594840">Compra de vehicles</translation>
 <translation id="4282346679996504092">Les alertes d'aquest producte s'han desactivat i l'adreça d'interès s'ha suprimit</translation>
 <translation id="4284885181066817063">Bloquejat per <ph name="DOMAIN" /></translation>
-<translation id="4285498937028063278">No fixis</translation>
 <translation id="4288101205645068104">Suprimeix el vehicle</translation>
 <translation id="4290920330097335010">No permetis mai</translation>
 <translation id="4297502707443874121">Miniatura de la pàgina <ph name="THUMBNAIL_PAGE" /></translation>
@@ -2606,7 +2605,6 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="5056587122125565772">Crea una imatge</translation>
 <translation id="505757197798929356">Indica el motiu pel qual el vols obrir (obligatori)</translation>
 <translation id="5058282932481719070">Més informació sobre l'emplenament automàtic millorat a Configuració</translation>
-<translation id="5060419232449737386">Configuració dels subtítols</translation>
 <translation id="5061227663725596739">Volies dir <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">Historial d'impressions</translation>
 <translation id="5068524481479508725">A10</translation>
@@ -3567,7 +3565,6 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="6518133107902771759">Verifica</translation>
 <translation id="6519885440226079262">Pot demanar permís per fer un seguiment de mans</translation>
 <translation id="6520026037299163656">Eines en línia i aplicacions web</translation>
-<translation id="65203098586853226">S'està traduint <ph name="SOURCE" /> a <ph name="TARGET" /></translation>
 <translation id="6520509611422418552"><ph name="MEMBER_FIRST_NAME" /> s'ha unit al grup de pestanyes "<ph name="GROUP_NAME" />"</translation>
 <translation id="6521745193039995384">No activa</translation>
 <translation id="6522682797352430154">Música clàssica</translation>
@@ -4168,7 +4165,6 @@ Detalls addicionals:
 <translation id="7455452752247248289">Tecnologia d’empresa</translation>
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">Tràilers i camions de càrrega</translation>
-<translation id="7461924472993315131">Fixa</translation>
 <translation id="7463068149674892185">No es recomana aquesta acció</translation>
 <translation id="746329643760972486">macOS</translation>
 <translation id="746412105358554870">Seguretat i optimització de JavaScript</translation>
@@ -4674,7 +4670,6 @@ Detalls addicionals:
 <translation id="8246482227229072868">Anells</translation>
 <translation id="8248406213705193919">Vols desar la targeta de manera segura?</translation>
 <translation id="8249296373107784235">Cancel·la</translation>
-<translation id="824968735947741546">S'està traduint <ph name="SOURCE" /> (detectat automàticament) a <ph name="TARGET" /></translation>
 <translation id="8250094606476360498">Actualment aquesta adreça està desada en aquest dispositiu. Per utilitzar-la en tots els productes de Google, desa-la al teu Compte de Google, <ph name="ACCOUNT" />.</translation>
 <translation id="8250533425540303610">S'està instal·lant <ph name="LANGUAGE" />...</translation>
 <translation id="8251493595871259082">Emplena l'adreça sense haver d'escriure tant</translation>

@@ -721,6 +721,7 @@
 <translation id="3565012355885596568">প্ৰতিচ্ছবি ল’ড কৰিব পৰা নগ’ল</translation>
 <translation id="3565930036634619844">টেব। <ph name="NUMBER_OF_TABS" /> টাৰ ভিতৰত <ph name="TAB_INDEX" /> নম্বৰটো।</translation>
 <translation id="3567168891086460374">অন্য ধৰণে ছেভ কৰক</translation>
+<translation id="3571703298474554279">এপ্‌টো ব্যৱহাৰ কৰাৰ এক দ্ৰুত উপায়</translation>
 <translation id="3572503683475187385">আপুনি এটা নতুন চাট আৰম্ভ কৰিলে Geminiৰ সৈতে বৰ্তমানৰ টেবটো শ্বেয়াৰ কৰা হয়। আপুনি Geminiৰ সৈতে কোনো টেব শ্বেয়াৰ কৰিলে, সেইসমূহৰ সমল আৰু URLসমূহ Googleলৈ পঠিওৱা হয়। <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">আপোনাৰ Google একাউণ্টত</translation>
 <translation id="3575234738189584619">Lensৰ জৰিয়তে সন্ধান কৰক</translation>
@@ -1701,6 +1702,7 @@
 <translation id="6871397658902960384">ব্ৰাউজ কৰিবলৈ আৰম্ভ কৰক</translation>
 <translation id="6874328931822449112">{COUNT,plural, =1{পাছৱৰ্ডটো একাউণ্টত ছেভ কৰক}one{পাছৱৰ্ডসমূহ একাউণ্টত ছেভ কৰক}other{পাছৱৰ্ডসমূহ একাউণ্টত ছেভ কৰক}}</translation>
 <translation id="6875166646976836138">এই বস্তুবোৰ আপুনি আপোনাৰ বুকমাৰ্ক, পঢ়াৰ সূচী আৰু Password Managerতো চাব আৰু পৰিচালনা কৰিব পাৰে।</translation>
+<translation id="6878052248816456143">যিকোনো সময়তে আপোনাৰ Google Driveত ফাইল এক্সেছ কৰক।</translation>
 <translation id="6882836635272038266">ক্ষতিকাৰক হিচাপে জনাজাত ৱেবছাইট, ডাউনল'ড আৰু এক্সটেনশ্বনসমূহৰ পৰা উন্নত সুৰক্ষা।</translation>
 <translation id="6884135917113737984">{COUNT,plural, =1{আপোনাৰ Google একাউণ্টত {COUNT} টা পাছৱৰ্ড ছেভ কৰক}one{আপোনাৰ Google একাউণ্টত {COUNT} টা পাছৱৰ্ড ছেভ কৰক}other{আপোনাৰ Google একাউণ্টত {COUNT} টা পাছৱৰ্ড ছেভ কৰক}}</translation>
 <translation id="6888009575607455378">আপুনি আপোনাৰ সালসলনিসমূহ বাতিল কৰিব বিচৰাটো নিশ্চিতনে?</translation>
@@ -1814,6 +1816,7 @@
 <translation id="7345061034321640811">আমদানি কৰাৰ অনুমতি নাই</translation>
 <translation id="7347998088283246662">পাছৱৰ্ড, ইতিহাস, বুকমাৰ্ক আৰু আন বহুতো বস্তু আমদানি কৰক</translation>
 <translation id="7352651011704765696">কিবা সমস্যা হৈছে</translation>
+<translation id="7363497636543208734">এপ্‌টো ব্যৱহাৰ কৰা এতিয়া সহজ।</translation>
 <translation id="7364796246159120393">ফাইল বাছনি কৰক</translation>
 <translation id="736564850024123010">এটা কাষ্টমাইজ কৰা অভিজ্ঞতাৰ বাবে আপোনাৰ ঠিকনাৰ বাৰৰ স্থান সলনি কৰক।</translation>
 <translation id="7366909168761621528">ব্ৰাউজিং ডেটা</translation>
@@ -2119,7 +2122,6 @@
 <translation id="8319282042900445670"><ph name="TIME" />, <ph name="DATE" />ৰ বাবে ৰিমাইণ্ডাৰ ছেট কৰা হৈছে</translation>
 <translation id="8320212361750431956">শেহতীয়া কাৰ্যকলাপ</translation>
 <translation id="8325455175867928593">"আপোনাৰ আগ্ৰহৰ ওপৰত আধাৰিত পৰ্যালোচনা" লুকুৱাওক</translation>
-<translation id="8328777765163860529">সকলো বন্ধ কৰক</translation>
 <translation id="833647236762414178">ছাইট আৰু এপ্‌সমূহত সহজতে ছাইন ইন কৰিবলৈ আপোনাৰ পাছৱৰ্ড সৃষ্টি, ছেভ আৰু পৰিচালনা কৰক। <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">আপোনাৰ বস্তুবোৰৰ বেক আপ লওক আৰু সেইবোৰ যিকোনো ডিভাইচত ব্যৱহাৰ কৰক।</translation>
 <translation id="8348530355586151720">তিনিটা বিন্দুৰ মেনুখনত টিপক</translation>

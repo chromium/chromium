@@ -629,6 +629,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1979156660928743046">Medieoplysninger</translation>
 <translation id="1987486584747170374">Dine søgninger, bedste match og deres sideindhold sendes til Google. Det bruges ikke af menneskelige kontrollanter til at forbedre AI. Din organisation kan til enhver tid ændre disse indstillinger.</translation>
 <translation id="1988881251331415125">Hvis stavningen er korrekt, kan du <ph name="BEGIN_LINK" />prøve at køre Diagnosticering af forbindelse<ph name="END_LINK" />.</translation>
+<translation id="1991370806334788445">Prøv at tillade tredjepartscookies, hvilket vil betyde mindre browserbeskyttelse, men større sandsynlighed for, at websitefunktionerne fungerer som forventet.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567"><ph name="URL" /> anmoder om at gemme store mængder data permanent på din lokale computer</translation>
 <translation id="1997774360448418989">Papir (let)</translation>
@@ -2132,7 +2133,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="4282280603030594840">Indkøb af køretøj</translation>
 <translation id="4282346679996504092">Underretninger for dette produkt er deaktiveret, og bogmærket er fjernet</translation>
 <translation id="4284885181066817063">Blokeret af <ph name="DOMAIN" /></translation>
-<translation id="4285498937028063278">Frigør</translation>
 <translation id="4288101205645068104">Slet køretøj</translation>
 <translation id="4290920330097335010">Tillad aldrig</translation>
 <translation id="4297502707443874121">Miniature for siden <ph name="THUMBNAIL_PAGE" /></translation>
@@ -2606,7 +2606,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="5056587122125565772">Opret billede</translation>
 <translation id="505757197798929356">Angiv årsag til åbning (påkrævet)</translation>
 <translation id="5058282932481719070">få flere oplysninger om forbedret autofyld i indstillingerne</translation>
-<translation id="5060419232449737386">Indstillinger for undertekster</translation>
 <translation id="5061227663725596739">Mente du <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">Udskrivningshistorik</translation>
 <translation id="5068524481479508725">A10</translation>
@@ -3567,7 +3566,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="6518133107902771759">Verificer</translation>
 <translation id="6519885440226079262">Kan anmode om at registrere dine hænder</translation>
 <translation id="6520026037299163656">Webapps og onlineværktøjer</translation>
-<translation id="65203098586853226">Oversætter fra <ph name="SOURCE" /> til <ph name="TARGET" /></translation>
 <translation id="6520509611422418552"><ph name="MEMBER_FIRST_NAME" /> deltager i fanegruppen "<ph name="GROUP_NAME" />"</translation>
 <translation id="6521745193039995384">Ikke aktiv</translation>
 <translation id="6522682797352430154">Klassisk musik</translation>
@@ -4168,7 +4166,6 @@ Yderligere oplysninger:
 <translation id="7455452752247248289">Virksomhedsteknologi</translation>
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">Lastbiler og anhængere</translation>
-<translation id="7461924472993315131">Fastgør</translation>
 <translation id="7463068149674892185">Denne handling anbefales ikke</translation>
 <translation id="746329643760972486">MacOS</translation>
 <translation id="746412105358554870">JavaScript-optimering og -sikkerhed</translation>
@@ -4674,7 +4671,6 @@ Yderligere oplysninger:
 <translation id="8246482227229072868">Ringe</translation>
 <translation id="8248406213705193919">Vil du gemme kortet på en sikker måde?</translation>
 <translation id="8249296373107784235">Annuller</translation>
-<translation id="824968735947741546">Oversætter <ph name="SOURCE" /> (automatisk registreret) til <ph name="TARGET" /></translation>
 <translation id="8250094606476360498">Adressen gemmes i øjeblikket på denne enhed. Hvis du vil bruge den i Google-produkter, skal du gemme den på din Google-konto, <ph name="ACCOUNT" />.</translation>
 <translation id="8250533425540303610">Installerer <ph name="LANGUAGE" />…</translation>
 <translation id="8251493595871259082">Få udfyldt din adresse med mindre indtastning</translation>

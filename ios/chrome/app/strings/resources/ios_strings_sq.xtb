@@ -1576,6 +1576,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="6476800141292307438">Po përkthen faqen në <ph name="LANGUAGE" />. Opsionet që ofrohen janë pranë fundit të ekranit.</translation>
 <translation id="647867789226964031">Ndrysho fjalëkalimet e tua</translation>
 <translation id="6480363549849064919">Vërtetim klienti</translation>
+<translation id="6489174933860678546">Hap skedat "e fshehta" për të shfletuar në ueb në mënyrë më private.</translation>
 <translation id="6494931198667773526">Mbaron</translation>
 <translation id="6503077044568424649">Më të vizituara</translation>
 <translation id="6503763061813913607">Njoftimet e "Kontrollit të sigurisë"</translation>
@@ -2112,7 +2113,6 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="8319282042900445670">Alarmi rikujtues u caktua për në <ph name="TIME" /> më <ph name="DATE" /></translation>
 <translation id="8320212361750431956">Aktiviteti i fundit</translation>
 <translation id="8325455175867928593">Fshih "Komentet bazohen në interesat e tu"</translation>
-<translation id="8328777765163860529">Mbylli të gjitha</translation>
 <translation id="833647236762414178">Krijo, ruaj dhe menaxho fjalëkalimet dhe çelësat e kalimit për t'u identifikuar me lehtësi në sajte dhe aplikacione. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Rezervo gjërat e tua dhe përdori në çdo pajisje.</translation>
 <translation id="8348530355586151720">Trokit te menyja me tri pika</translation>
@@ -2296,6 +2296,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="8915916167043355778">Mbylli të gjitha</translation>
 <translation id="892185197271200809">Të gjithë do të humbasin menjëherë qasjen te grupi i skedave "<ph name="GROUP_NAME" />" dhe ai do të fshihet nga të gjitha pajisjet</translation>
 <translation id="8923178205567790913">Fjalëkalimet</translation>
+<translation id="8926498511977337209">Shfleto në modalitetin "I fshehtë"</translation>
 <translation id="892776311701544612">Mëso më shumë…</translation>
 <translation id="8928133177108699615">Desktop</translation>
 <translation id="8928426232677696166"><ph name="EMAIL" />, menaxhohet nga organizata jote, zgjedhur aktualisht. Zgjidh një llogari.</translation>

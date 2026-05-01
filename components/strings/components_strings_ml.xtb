@@ -2132,7 +2132,6 @@
 <translation id="4282280603030594840">വാഹന ഷോപ്പിംഗ്</translation>
 <translation id="4282346679996504092">ഈ ഉൽപ്പന്നത്തിനായുള്ള അറിയിപ്പുകൾ ഓഫാക്കി, ബുക്ക്‌മാർക്ക് നീക്കം ചെയ്തു</translation>
 <translation id="4284885181066817063"><ph name="DOMAIN" /> ബ്ലോക്ക് ചെയ്‌തു</translation>
-<translation id="4285498937028063278">പിൻചെയ്യൽ മാറ്റുക</translation>
 <translation id="4288101205645068104">വാഹനം ഇല്ലാതാക്കുക</translation>
 <translation id="4290920330097335010">ഒരിക്കലും അനുവദിക്കരുത്</translation>
 <translation id="4297502707443874121"><ph name="THUMBNAIL_PAGE" />-ാം പേജിനുള്ള ലഘുചിത്രം</translation>
@@ -2606,7 +2605,6 @@
 <translation id="5056587122125565772">ചിത്രം സൃഷ്ടിക്കുക</translation>
 <translation id="505757197798929356">തുറക്കാനുള്ള കാരണം നൽകുക (ആവശ്യമാണ്)</translation>
 <translation id="5058282932481719070">ക്രമീകരണത്തിൽ 'മെച്ചപ്പെടുത്തിയ സ്വയമേവ പൂരിപ്പിക്കലിനെ' കുറിച്ച് കൂടുതലറിയുക</translation>
-<translation id="5060419232449737386">അടിക്കുറിപ്പ് ക്രമീകരണം</translation>
 <translation id="5061227663725596739"><ph name="LOOKALIKE_DOMAIN" /> ആണോ നിങ്ങൾ ഉദ്ദേശിച്ചത്?</translation>
 <translation id="5066056036849835175">പ്രിന്റിംഗ് ചരിത്രം</translation>
 <translation id="5068524481479508725">A10</translation>
@@ -2975,6 +2973,7 @@
 <translation id="5600044805561809264">ബ്രൗസ് ചെയ്യുമ്പോൾ, നിങ്ങൾ പങ്കിടുന്ന ടാബുകളെ കുറിച്ച് എളുപ്പത്തിൽ ചോദ്യങ്ങൾ ചോദിക്കാം.</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> അല്ലെങ്കിൽ <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">മാനേജുമെന്റ് പിന്തുണയ്‌ക്കുന്നില്ല</translation>
+<translation id="5604254791550001355">പ്രോംപ്റ്റ് എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="560431066250575003">{HOURS,plural, =1{ഒരു മണിക്കൂർ മുമ്പ് സജീവമായിരുന്നു}other{# മണിക്കൂർ മുമ്പ് സജീവമായിരുന്നു}}</translation>
 <translation id="5605249000617390290">നിരക്ക് ട്രാക്ക് ചെയ്യുന്നത് സംബന്ധിച്ച് കൂടുതലറിയുക</translation>
 <translation id="5605670050355397069">ലെഡ്‌ജർ</translation>
@@ -3406,6 +3405,7 @@
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
 <translation id="629730747756840877">അക്കൗണ്ട്</translation>
+<translation id="6299098428775578517">നിർദ്ദേശ ക്രമീകരണം</translation>
 <translation id="6300452962057769623">{0,plural, =0{നിങ്ങളുടെ ഉപകരണം ഇപ്പോൾ റീസ്റ്റാർട്ട് ചെയ്യും}=1{നിങ്ങളുടെ ഉപകരണം 1 സെക്കൻഡിൽ റീസ്റ്റാർട്ട് ചെയ്യും}other{നിങ്ങളുടെ ഉപകരണം # സെക്കൻഡിൽ റീസ്റ്റാർട്ട് ചെയ്യും}}</translation>
 <translation id="6301104306974789820">നിരക്ക് ട്രാക്ക് ചെയ്യലുമായി ബന്ധപ്പെട്ട അറിയിപ്പുകൾ നേടുക</translation>
 <translation id="6302546952464230349"><ph name="PERMISSION_NAME" /> അനുമതി സംബന്ധിച്ച വിശദാംശങ്ങൾ കാണിക്കുക</translation>
@@ -3567,7 +3567,6 @@
 <translation id="6518133107902771759">സ്ഥിരീകരിക്കുക</translation>
 <translation id="6519885440226079262">നിങ്ങളുടെ കൈകൾ ട്രാക്ക് ചെയ്യാൻ ആവശ്യപ്പെടാം</translation>
 <translation id="6520026037299163656">വെബ് ആപ്പുകളും ഓൺലൈൻ ടൂളുകളും</translation>
-<translation id="65203098586853226"><ph name="SOURCE" /> ഭാഷയിൽ നിന്ന് <ph name="TARGET" /> ഭാഷയിലേക്ക് വിവർത്തനം ചെയ്യുക</translation>
 <translation id="6520509611422418552"><ph name="MEMBER_FIRST_NAME" />, "<ph name="GROUP_NAME" />" ടാബ് ഗ്രൂപ്പിൽ ചേർന്നു</translation>
 <translation id="6521745193039995384">സജീവമല്ല</translation>
 <translation id="6522682797352430154">ശാസ്‌ത്രീയ സംഗീതം</translation>
@@ -4166,7 +4165,6 @@
 <translation id="7455452752247248289">എന്റർപ്രൈസ് സാങ്കേതികവിദ്യ</translation>
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">കാർഗോ ട്രക്കുകളും ട്രെയ്‌ലറുകളും</translation>
-<translation id="7461924472993315131">പിൻ ചെയ്യുക</translation>
 <translation id="7463068149674892185">ഈ പ്രവർത്തനം നിർദ്ദേശിക്കുന്നില്ല</translation>
 <translation id="746329643760972486">MacOS</translation>
 <translation id="746412105358554870">Javascript ഒപ്റ്റിമൈസേഷനും സുരക്ഷയും</translation>
@@ -4672,7 +4670,6 @@
 <translation id="8246482227229072868">മോതിരങ്ങൾ</translation>
 <translation id="8248406213705193919">കാർഡ് സുരക്ഷിതമായി സംരക്ഷിക്കണോ?</translation>
 <translation id="8249296373107784235">ഉപേക്ഷിക്കുക</translation>
-<translation id="824968735947741546"><ph name="SOURCE" /> ഭാഷ (സ്വയം-കണ്ടെത്തി) <ph name="TARGET" /> എന്നതിലേക്ക് വിവർത്തനം ചെയ്യുന്നു</translation>
 <translation id="8250094606476360498">ഈ വിലാസം നിലവിൽ ഈ ഉപകരണത്തിൽ സംരക്ഷിച്ചിരിക്കുന്നു. Google ഉൽപ്പന്നങ്ങളിലുടനീളം ഉപയോഗിക്കാൻ, ഇത് നിങ്ങളുടെ <ph name="ACCOUNT" /> എന്ന Google Account-ൽ സംരക്ഷിക്കുക.</translation>
 <translation id="8250533425540303610"><ph name="LANGUAGE" /> ഇൻസ്റ്റാൾ ചെയ്യുന്നു...</translation>
 <translation id="8251493595871259082">കുറച്ച് ടൈപ്പ് ചെയ്ത്, നിങ്ങളുടെ വിലാസം പൂരിപ്പിക്കുക</translation>

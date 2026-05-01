@@ -630,6 +630,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="1979156660928743046">Informasi Media</translation>
 <translation id="1987486584747170374">Penelusuran Anda, kecocokan terbaik, dan konten halamannya dikirim ke Google. Informasi ini tidak akan digunakan oleh petugas peninjau untuk meningkatkan kualitas AI. Organisasi Anda mungkin mengubah setelan ini kapan saja.</translation>
 <translation id="1988881251331415125">Jika ejaan sudah benar, <ph name="BEGIN_LINK" />coba jalankan Diagnostik Konektivitas<ph name="END_LINK" />.</translation>
+<translation id="1991370806334788445">Coba izinkan cookie pihak ketiga. Jika diizinkan, Anda akan mendapatkan lebih sedikit perlindungan terhadap penjelajahan, tetapi fitur situs cenderung berfungsi seperti yang diharapkan.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567"><ph name="URL" /> ingin menyimpan data berukuran besar di komputer lokal Anda secara permanen</translation>
 <translation id="1997774360448418989">Kertas (Ringan)</translation>
@@ -2132,7 +2133,6 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="4282280603030594840">Belanja Kendaraan</translation>
 <translation id="4282346679996504092">Notifikasi untuk produk ini telah dinonaktifkan dan bookmark dihapus</translation>
 <translation id="4284885181066817063">Diblokir oleh <ph name="DOMAIN" /></translation>
-<translation id="4285498937028063278">Lepaskan</translation>
 <translation id="4288101205645068104">Hapus kendaraan</translation>
 <translation id="4290920330097335010">Jangan pernah izinkan</translation>
 <translation id="4297502707443874121">Thumbnail untuk halaman <ph name="THUMBNAIL_PAGE" /></translation>
@@ -2606,7 +2606,6 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="5056587122125565772">Buat gambar</translation>
 <translation id="505757197798929356">Berikan alasan membuka (wajib)</translation>
 <translation id="5058282932481719070">pelajari lebih lanjut isi otomatis yang ditingkatkan di setelan</translation>
-<translation id="5060419232449737386">Setelan teks</translation>
 <translation id="5061227663725596739">Mungkin maksud Anda <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">Histori pencetakan</translation>
 <translation id="5068524481479508725">A10</translation>
@@ -3567,7 +3566,6 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="6518133107902771759">Verifikasi</translation>
 <translation id="6519885440226079262">Dapat meminta untuk melacak tangan Anda</translation>
 <translation id="6520026037299163656">Aplikasi Web &amp; Alat Online</translation>
-<translation id="65203098586853226">Menerjemahkan <ph name="SOURCE" /> ke <ph name="TARGET" /></translation>
 <translation id="6520509611422418552"><ph name="MEMBER_FIRST_NAME" /> bergabung ke grup tab "<ph name="GROUP_NAME" />"</translation>
 <translation id="6521745193039995384">Tidak aktif</translation>
 <translation id="6522682797352430154">Musik Klasik</translation>
@@ -4166,7 +4164,6 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="7455452752247248289">Teknologi Perusahaan</translation>
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">Truk &amp; Trailer Kargo</translation>
-<translation id="7461924472993315131">Sematkan</translation>
 <translation id="7463068149674892185">Tindakan ini tidak direkomendasikan</translation>
 <translation id="746329643760972486">MacOS</translation>
 <translation id="746412105358554870">Pengoptimalan &amp; keamanan JavaScript</translation>
@@ -4672,7 +4669,6 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="8246482227229072868">Cincin</translation>
 <translation id="8248406213705193919">Simpan kartu dengan aman?</translation>
 <translation id="8249296373107784235">Batalkan</translation>
-<translation id="824968735947741546">Menerjemahkan <ph name="SOURCE" /> (terdeteksi otomatis) ke <ph name="TARGET" /></translation>
 <translation id="8250094606476360498">Alamat ini disimpan ke perangkat ini untuk saat ini. Untuk menggunakannya di seluruh produk Google, simpan di Akun Google Anda, <ph name="ACCOUNT" />.</translation>
 <translation id="8250533425540303610">Menginstal <ph name="LANGUAGE" />...</translation>
 <translation id="8251493595871259082">Isi alamat Anda tanpa banyak mengetik</translation>

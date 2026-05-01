@@ -629,6 +629,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1979156660928743046">Informações de multimédia</translation>
 <translation id="1987486584747170374">As suas pesquisas, as melhores correspondências e os respetivos conteúdos das páginas são enviados para a Google. Estes dados não vão ser usados por revisores humanos para melhorar a IA. A sua organização pode alterar estas definições em qualquer altura.</translation>
 <translation id="1988881251331415125">Se a ortografia estiver correta, <ph name="BEGIN_LINK" />experimente executar o Diagnóstico de conetividade<ph name="END_LINK" />.</translation>
+<translation id="1991370806334788445">Experimente permitir os cookies de terceiros, o que significa uma menor proteção da navegação, mas é mais provável que as funcionalidades do site funcionem conforme esperado.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567"><ph name="URL" /> quer armazenar permanentemente dados de grandes dimensões no seu computador local.</translation>
 <translation id="1997774360448418989">Papel (leve)</translation>
@@ -2132,7 +2133,6 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="4282280603030594840">Compra de veículos</translation>
 <translation id="4282346679996504092">Os alertas para este produto foram desativados e o marcador foi removido</translation>
 <translation id="4284885181066817063">Ação bloqueada por <ph name="DOMAIN" /></translation>
-<translation id="4285498937028063278">Desafixar</translation>
 <translation id="4288101205645068104">Elimine o veículo</translation>
 <translation id="4290920330097335010">Nunca permitir</translation>
 <translation id="4297502707443874121">Miniatura da página <ph name="THUMBNAIL_PAGE" /></translation>
@@ -2606,7 +2606,6 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="5056587122125565772">Criar imagem</translation>
 <translation id="505757197798929356">Indique o motivo para a abertura (obrigatório)</translation>
 <translation id="5058282932481719070">saiba mais sobre o preenchimento automático melhorado nas definições</translation>
-<translation id="5060419232449737386">Definições das legendas</translation>
 <translation id="5061227663725596739">Será que quis dizer <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">Histórico de impressão</translation>
 <translation id="5068524481479508725">A10</translation>
@@ -2975,6 +2974,7 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="5600044805561809264">Pode simplesmente fazer perguntas sobre os separadores que está a partilhar enquanto navega.</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> ou <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">Gestão não suportada</translation>
+<translation id="5604254791550001355">Editar comando</translation>
 <translation id="560431066250575003">{HOURS,plural, =1{Ativo há 1 hora}other{Ativo há # horas}}</translation>
 <translation id="5605249000617390290">Saiba mais sobre o acompanhamento de preços</translation>
 <translation id="5605670050355397069">Ledger</translation>
@@ -3406,6 +3406,7 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">Código de segurança:</translation>
 <translation id="629730747756840877">Conta</translation>
+<translation id="6299098428775578517">Definições das sugestões</translation>
 <translation id="6300452962057769623">{0,plural, =0{O seu dispositivo será reiniciado agora}=1{O seu dispositivo será reiniciado dentro de 1 segundo}other{O seu dispositivo será reiniciado dentro de # segundos}}</translation>
 <translation id="6301104306974789820">Receba notificações de acompanhamento de preço</translation>
 <translation id="6302546952464230349">Mostrar detalhes da autorização <ph name="PERMISSION_NAME" /></translation>
@@ -3567,7 +3568,6 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="6518133107902771759">Rever</translation>
 <translation id="6519885440226079262">Pode pedir para monitorizar as suas mãos</translation>
 <translation id="6520026037299163656">Apps Web e ferramentas online</translation>
-<translation id="65203098586853226">A traduzir de <ph name="SOURCE" /> para <ph name="TARGET" /></translation>
 <translation id="6520509611422418552"><ph name="MEMBER_FIRST_NAME" /> aderiu ao grupo de separadores "<ph name="GROUP_NAME" />"</translation>
 <translation id="6521745193039995384">Não ativa</translation>
 <translation id="6522682797352430154">Música clássica</translation>
@@ -4167,7 +4167,6 @@ Detalhes adicionais:
 <translation id="7455452752247248289">Tecnologia empresarial</translation>
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">Camiões e reboques para carga</translation>
-<translation id="7461924472993315131">Fixar</translation>
 <translation id="7463068149674892185">Esta ação não é recomendada</translation>
 <translation id="746329643760972486">MacOS</translation>
 <translation id="746412105358554870">Otimização e segurança de JavaScript</translation>
@@ -4673,7 +4672,6 @@ Detalhes adicionais:
 <translation id="8246482227229072868">Anéis</translation>
 <translation id="8248406213705193919">Guardar o cartão de forma segura?</translation>
 <translation id="8249296373107784235">Abortar</translation>
-<translation id="824968735947741546">A traduzir <ph name="SOURCE" /> (detetado automaticamente) para <ph name="TARGET" /></translation>
 <translation id="8250094606476360498">Este morada está atualmente guardada neste dispositivo. Para a usar nos produtos da rede Google, guarde-a na sua Conta Google <ph name="ACCOUNT" />.</translation>
 <translation id="8250533425540303610">A instalar o idioma <ph name="LANGUAGE" />…</translation>
 <translation id="8251493595871259082">Preencha a sua morada com menos escrita</translation>

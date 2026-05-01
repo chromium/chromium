@@ -628,6 +628,7 @@
 <translation id="1979156660928743046">媒體資訊</translation>
 <translation id="1987486584747170374">你的搜尋字詞、最相符的搜尋結果和網頁內容會傳送給 Google。人工審查員不會將這些資料用於提升 AI 技術。貴機構隨時可以變更這些設定。</translation>
 <translation id="1988881251331415125">如果拼字正確，<ph name="BEGIN_LINK" />請嘗試執行連線診斷<ph name="END_LINK" />。</translation>
+<translation id="1991370806334788445">建議允許使用第三方 Cookie。雖然瀏覽防護程度會因此降低，但可增加網站功能正常運作的機率。</translation>
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567"><ph name="URL" /> 要求在你的本機電腦上永久儲存大量資料</translation>
 <translation id="1997774360448418989">紙 (輕磅)</translation>
@@ -2130,7 +2131,6 @@
 <translation id="4282280603030594840">購車</translation>
 <translation id="4282346679996504092">這項產品的快訊已關閉，這個網頁也已從書籤中移除</translation>
 <translation id="4284885181066817063"><ph name="DOMAIN" /> 禁止這項操作</translation>
-<translation id="4285498937028063278">取消固定</translation>
 <translation id="4288101205645068104">刪除車輛</translation>
 <translation id="4290920330097335010">一律不允許</translation>
 <translation id="4297502707443874121">第 <ph name="THUMBNAIL_PAGE" /> 頁的縮圖</translation>
@@ -2604,7 +2604,6 @@
 <translation id="5056587122125565772">生成圖像</translation>
 <translation id="505757197798929356">請提供要開啟的原因 (必填)</translation>
 <translation id="5058282932481719070">前往設定進一步瞭解強化版自動填入功能</translation>
-<translation id="5060419232449737386">字幕設定</translation>
 <translation id="5061227663725596739">你是不是要前往 <ph name="LOOKALIKE_DOMAIN" />？</translation>
 <translation id="5066056036849835175">列印記錄</translation>
 <translation id="5068524481479508725">A10</translation>
@@ -3565,7 +3564,6 @@
 <translation id="6518133107902771759">驗證</translation>
 <translation id="6519885440226079262">可要求追蹤你的手勢</translation>
 <translation id="6520026037299163656">網頁應用程式與線上工具</translation>
-<translation id="65203098586853226">正在將<ph name="SOURCE" />翻譯成<ph name="TARGET" /></translation>
 <translation id="6520509611422418552"><ph name="MEMBER_FIRST_NAME" />已加入「<ph name="GROUP_NAME" />」分頁群組</translation>
 <translation id="6521745193039995384">未啟用</translation>
 <translation id="6522682797352430154">古典音樂</translation>
@@ -4166,7 +4164,6 @@
 <translation id="7455452752247248289">企業技術</translation>
 <translation id="745640750744109667">A0 x 3</translation>
 <translation id="7457071735008326060">貨櫃卡車與拖車</translation>
-<translation id="7461924472993315131">固定</translation>
 <translation id="7463068149674892185">不建議執行這項操作</translation>
 <translation id="746329643760972486">MacOS</translation>
 <translation id="746412105358554870">JavaScript 最佳化與安全性</translation>
@@ -4672,7 +4669,6 @@
 <translation id="8246482227229072868">戒指</translation>
 <translation id="8248406213705193919">要在安全機制下儲存卡片嗎？</translation>
 <translation id="8249296373107784235">取消</translation>
-<translation id="824968735947741546">正在將<ph name="SOURCE" /> (自動偵測) 的內容翻譯成<ph name="TARGET" /></translation>
 <translation id="8250094606476360498">這個地址目前儲存在這部裝置上。如要在各項 Google 產品中使用這項資訊，請儲存到你的 Google 帳戶 (<ph name="ACCOUNT" />)。</translation>
 <translation id="8250533425540303610">正在安裝<ph name="LANGUAGE" />套件...</translation>
 <translation id="8251493595871259082">系統會自動填入地址，節省你打字的時間</translation>

@@ -2136,7 +2136,6 @@
 <translation id="4282280603030594840">ការទិញ​យាន​ជំនិះ</translation>
 <translation id="4282346679996504092">ការជូនដំណឹង​សម្រាប់​ផលិតផល​នេះ​ត្រូវបាន​បិទ ហើយ​ចំណាំ​ត្រូវបានដកចេញ</translation>
 <translation id="4284885181066817063">បានទប់ស្កាត់​ដោយ <ph name="DOMAIN" /></translation>
-<translation id="4285498937028063278">ដកការដៅ</translation>
 <translation id="4288101205645068104">លុប​យានជំនិះ</translation>
 <translation id="4290920330097335010">កុំ​អនុញ្ញាត</translation>
 <translation id="4297502707443874121">រូបភាព​តូចៗសម្រាប់ទំព័រ <ph name="THUMBNAIL_PAGE" /></translation>
@@ -2611,7 +2610,6 @@
 <translation id="5056587122125565772">បង្កើត​រូបភាព</translation>
 <translation id="505757197798929356">ផ្ដល់​មូលហេតុ​នៃការបើក (តម្រូវ)</translation>
 <translation id="5058282932481719070">ស្វែងយល់​បន្ថែម​អំពី​ការបំពេញ​ស្វ័យប្រវត្តិ​ដែលបាន​ធ្វើឱ្យ​ប្រសើរឡើង​នៅក្នុង​ការកំណត់</translation>
-<translation id="5060419232449737386">ការកំណត់​អក្សររត់</translation>
 <translation id="5061227663725596739">តើ​អ្នក​ចង់​មានន័យ​ថា <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">ប្រវត្តិ​បោះពុម្ព</translation>
 <translation id="5068524481479508725">A10</translation>
@@ -3572,7 +3570,6 @@
 <translation id="6518133107902771759">ផ្ទៀងផ្ទាត់</translation>
 <translation id="6519885440226079262">អាចសុំតាមដានដៃរបស់អ្នក</translation>
 <translation id="6520026037299163656">កម្មវិធីវេប និងឧបករណ៍លើអ៊ីនធឺណិត</translation>
-<translation id="65203098586853226">កំពុង​បកប្រែពី​ភាសា<ph name="SOURCE" />ទៅជាភាសា<ph name="TARGET" /></translation>
 <translation id="6520509611422418552"><ph name="MEMBER_FIRST_NAME" /> បាន​ចូលរួម​ក្រុមផ្ទាំង "<ph name="GROUP_NAME" />"</translation>
 <translation id="6521745193039995384">មិន​សកម្ម</translation>
 <translation id="6522682797352430154">តន្ត្រី​បុរាណ</translation>
@@ -4172,7 +4169,6 @@
 <translation id="7455452752247248289">បច្ចេកវិទ្យា​សម្រាប់​អាជីវកម្ម</translation>
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">រថយន្ត​ដឹក​ទំនិញ និង​រថយន្ត​សណ្ដោង</translation>
-<translation id="7461924472993315131">លេខសម្គាល់</translation>
 <translation id="7463068149674892185">មិនណែនាំ​ឱ្យធ្វើ​សកម្មភាព​នេះទេ</translation>
 <translation id="746329643760972486">MacOS</translation>
 <translation id="746412105358554870">សុវត្ថិភាព និង​ការបង្កើន​ប្រសិទ្ធភាព JavaScript</translation>
@@ -4680,7 +4676,6 @@
 <translation id="8246482227229072868">ចិញ្ចៀន</translation>
 <translation id="8248406213705193919">រក្សាទុកកាត​ដោយ​សុវត្ថិភាព​ទេ?</translation>
 <translation id="8249296373107784235">បោះបង់</translation>
-<translation id="824968735947741546">កំពុងបកប្រែភាសា<ph name="SOURCE" /> (ចាប់ដឹងដោយស្វ័យប្រវត្តិ) ជាភាសា<ph name="TARGET" /></translation>
 <translation id="8250094606476360498">បច្ចុប្បន្ន អាសយដ្ឋាននេះ​ត្រូវបាន​រក្សាទុក​ទៅក្នុង​ឧបករណ៍នេះ។ ដើម្បីប្រើវា​នៅលើ​ផលិតផល Google នានា សូមរក្សាទុកវា​នៅក្នុង​គណនី Google របស់អ្នក <ph name="ACCOUNT" />។</translation>
 <translation id="8250533425540303610">កំពុង​ដំឡើង <ph name="LANGUAGE" />...</translation>
 <translation id="8251493595871259082">បំពេញអាសយដ្ឋានរបស់អ្នកដោយវាយបញ្ចូលកាន់តែតិច</translation>

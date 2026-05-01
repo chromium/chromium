@@ -99,6 +99,7 @@
 <translation id="1985247341569771101">כשהאפשרות מופעלת, אתרים יכולים להשתמש בחיישני התנועה של המכשיר. כשהאפשרות מושבתת, אתרים לא יכולים להשתמש בחיישני התנועה.</translation>
 <translation id="1985716030964443178">הפעולה הזו תאפס את כל האתרים ברשימה לרמת הזום שמוגדרת כברירת מחדל</translation>
 <translation id="1989112275319619282">עיון</translation>
+<translation id="1991370806334788445">‏אפשר לאשר קובצי cookie של צד שלישי. במצב כזה יש פחות הגנה במהלך הגלישה, אבל יש סיכוי גבוה יותר שהתכונות באתר יפעלו כצפוי.</translation>
 <translation id="1994173015038366702">כתובת אתר</translation>
 <translation id="1994558116414798016">‏גופן Lexend</translation>
 <translation id="2004697686368036666">ייתכן שתכונות באתרים מסוימים לא יפעלו</translation>
@@ -164,6 +165,7 @@
 <translation id="257931822824936280">מורחב - יש ללחוץ כדי לכווץ.</translation>
 <translation id="2586657967955657006">לוח</translation>
 <translation id="2588271083332682494">קבוצות של כרטיסיות עוזרות לשמור על סדר</translation>
+<translation id="2592917252160773942">אתרים יכולים לבקש הרשאה להשתמש במצלמה</translation>
 <translation id="2597457036804169544">אין להחיל עיצוב כהה על אתרים</translation>
 <translation id="2606760465469169465">אימות אוטומטי</translation>
 <translation id="2621115761605608342">‏אישור JavaScript לאתר ספציפי.</translation>
@@ -361,6 +363,7 @@
 <translation id="4635969503923889910">‏אתרים לא יכולים להשתמש במכשירי NFC</translation>
 <translation id="4644713492825682049">מחיקה ואיפוס</translation>
 <translation id="4645575059429386691">מנוהל על-ידי ההורה שלך</translation>
+<translation id="4651224148644053314">עוד צבעים ואפשרויות</translation>
 <translation id="4652266463001779298">אין הרשאה</translation>
 <translation id="4655846733459137112">כדי להשתמש בסיסמה הזו בקלות בכניסה הבאה לחשבון, צריך ללחוץ על "כן"</translation>
 <translation id="4663373278480897665">ניתן להשתמש במצלמה בדף זה</translation>

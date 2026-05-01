@@ -2168,6 +2168,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2460826998961521840">Para usar as chaves de acesso salvas na sua Conta do Google</translation>
 <translation id="2461550163693930491">Não permitir que os sites rolem a tela e apliquem zoom em guias compartilhadas</translation>
 <translation id="2461593638794842577">É possível desativar essa configuração para salvar suas senhas apenas neste dispositivo</translation>
+<translation id="2462550463312552298">Resuma este documento</translation>
 <translation id="2462724976360937186">ID da chave da autoridade de certificação</translation>
 <translation id="2462752602710430187"><ph name="PRINTER_NAME" /> adicionada</translation>
 <translation id="2464075479326723132">Você está vendo arquivos sugeridos para que possa voltar de forma simples à sua atividade mais recente no Microsoft SharePoint e OneDrive.
@@ -4324,6 +4325,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3924788966103416622">Um app externo quer ter controle total desta sessão do Chrome para depurá-la. Isso inclui acesso aos seus dados salvos, a cookies e a informações do site, além da capacidade de navegar para qualquer URL.</translation>
 <translation id="3925573269917483990">Câmera:</translation>
 <translation id="3925926055063465902">Outros usuários deste dispositivo também podem usar esta rede</translation>
+<translation id="3925934852713265455">Pergunte sobre suas guias</translation>
 <translation id="3926002189479431949">Smartphone com Smart Lock alterado</translation>
 <translation id="3926410220776569451">O acesso à câmera está bloqueado</translation>
 <translation id="3927932062596804919">Negar</translation>
@@ -4481,7 +4483,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4036778507053569103">A política transferida do servidor por meio de download é inválida.</translation>
 <translation id="4037084878352560732">Cavalo</translation>
 <translation id="403725336528835653">Testar primeiro</translation>
-<translation id="4039835815168788100">A extensão <ph name="EXTENSION_NAME" /> tentou definir o mecanismo de pesquisa <ph name="SEARCH_PROVIDER" /> como padrão. Confirme sua preferência abaixo</translation>
 <translation id="4039966970282098406">Gerencie sua privacidade controlando o acesso ao microfone, à câmera e muito mais</translation>
 <translation id="4040041015953651705">Idioma a ser traduzido</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Sair da página}one{Sair da página}other{Sair das páginas}}</translation>
@@ -6140,7 +6141,6 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="5208988882104884956">Extensão parcial</translation>
 <translation id="5209320130288484488">Nenhum dispositivo foi encontrado</translation>
 <translation id="5209513429611499188">Dispositivos HID com usos da página de uso <ph name="USAGE_PAGE" /></translation>
-<translation id="5210365745912300556">Fechar guia</translation>
 <translation id="5211174138048232917">Exportar arquivos do histórico</translation>
 <translation id="5213114823401215820">Reabrir grupo fechado</translation>
 <translation id="5213481667492808996">Seu serviço de dados "<ph name="NAME" />" está pronto para ser usado</translation>
@@ -6774,7 +6774,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5659593005791499971">E-mail</translation>
 <translation id="5659964844710667266">Criar senha para este <ph name="DEVICE_TYPE" /></translation>
 <translation id="5662513737565158057">Mude o funcionamento dos apps Linux.</translation>
-<translation id="5663317829633858516">Definido recentemente como padrão por <ph name="EXTENSION_NAME" /></translation>
 <translation id="5663459693447872156">Alternar automaticamente para modo parcial</translation>
 <translation id="5663653125349867535">Lista de leitura</translation>
 <translation id="5663918299073387939">Os sites geralmente pedem para controlar e reprogramar dispositivos MIDI para criar e editar músicas ou atualizar o firmware do dispositivo</translation>
@@ -9332,7 +9331,6 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="746329643760972486">MacOS</translation>
 <translation id="7463985990119325874">Sua organização gerencia como os dados coletados por esses recursos podem ser usados.</translation>
 <translation id="7464645554245611385">Última atualização desta guia</translation>
-<translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{# guia aberta, pressione para alternar a barra de guias}one{# guia aberta, pressione para alternar a barra de guias}other{# guias abertas, pressione para alternar a barra de guias}}</translation>
 <translation id="7465635034594602553">Algo deu errado. Espere alguns minutos e abra o app <ph name="APP_NAME" /> novamente.</translation>
 <translation id="7465777686629334728">Remover ambiente de desenvolvimento gerenciado (<ph name="SPECIFIC_NAME" />)</translation>
 <translation id="7465778193084373987">URL da revogação do certificado do Netscape</translation>
@@ -10404,7 +10402,6 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8195854162863398249">Desativar <ph name="FEATURE_NAME" /></translation>
 <translation id="8195920051450756553">Atraso antes de ativar a mesma tecla novamente</translation>
 <translation id="8197673340773315084">Adicione um nome ou marcador, como "Trabalho"</translation>
-<translation id="8198043456018523011">Confirme o mecanismo de pesquisa padrão</translation>
 <translation id="8198181050118789419">Tema: <ph name="THEME_NAME" /></translation>
 <translation id="8198456017687137612">Transmitindo guia</translation>
 <translation id="8199300056570174101">Propriedades da rede (serviço) e do dispositivo</translation>

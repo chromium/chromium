@@ -2129,7 +2129,6 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="4282280603030594840">Avtomobil Alqı-satqısı</translation>
 <translation id="4282346679996504092">Bu məhsul üçün xəbərdarlıqlar deaktiv edilib və əlfəcin silinib</translation>
 <translation id="4284885181066817063"><ph name="DOMAIN" /> tərəfindən bloklanıb</translation>
-<translation id="4285498937028063278">Çıxarın</translation>
 <translation id="4288101205645068104">Nəqliyyat vasitəsini silin</translation>
 <translation id="4290920330097335010">Heç vaxt icazə verməyin</translation>
 <translation id="4297502707443874121"><ph name="THUMBNAIL_PAGE" /> səhifəsi üçün miniatür</translation>
@@ -2603,7 +2602,6 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="5056587122125565772">Şəkil yaradın</translation>
 <translation id="505757197798929356">Açma səbəbini bildirin (tələb edilir)</translation>
 <translation id="5058282932481719070">ayarlarda təkmilləşdirilmiş avto-doldurma haqqında ətraflı məlumat</translation>
-<translation id="5060419232449737386">Altyazı ayarları</translation>
 <translation id="5061227663725596739"><ph name="LOOKALIKE_DOMAIN" /> nəzərdə tuturdunuz?</translation>
 <translation id="5066056036849835175">Çap tarixçəsi</translation>
 <translation id="5068524481479508725">A10</translation>
@@ -3564,7 +3562,6 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="6518133107902771759">Doğrulayın</translation>
 <translation id="6519885440226079262">Əllərinizi izləmək istəyə bilər</translation>
 <translation id="6520026037299163656">Veb Tətbiqləri və Onlayn Alətlər</translation>
-<translation id="65203098586853226">Tərcümə edilir: <ph name="SOURCE" /> &gt; <ph name="TARGET" /></translation>
 <translation id="6520509611422418552"><ph name="MEMBER_FIRST_NAME" /> "<ph name="GROUP_NAME" />" adlı tab qrupuna qoşuldu</translation>
 <translation id="6521745193039995384">Aktiv deyil</translation>
 <translation id="6522682797352430154">Klassik Musiqi</translation>
@@ -4164,7 +4161,6 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="7455452752247248289">Müəssisə texnologiyası</translation>
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">Karqo Maşınları və Treylerlər</translation>
-<translation id="7461924472993315131">Pin</translation>
 <translation id="7463068149674892185">Bu əməliyyat tövsiyə edilmir</translation>
 <translation id="746329643760972486">MacOS</translation>
 <translation id="746412105358554870">JavaScript optimallaşdırılması və təhlükəsizliyi</translation>
@@ -4670,7 +4666,6 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="8246482227229072868">Üzüklər</translation>
 <translation id="8248406213705193919">Kartı etibarlı şəkildə saxlayırsınız?</translation>
 <translation id="8249296373107784235">Dayandırın</translation>
-<translation id="824968735947741546"><ph name="SOURCE" /> dilindən (avtomatik aşkarlanıb) <ph name="TARGET" /> dilinə tərcümə edilir</translation>
 <translation id="8250094606476360498">Bu ünvan hazırda bu cihazda yadda saxlanır. Google məhsullarında istifadə etmək üçün Google Hesabında (<ph name="ACCOUNT" />) yadda saxlayın.</translation>
 <translation id="8250533425540303610"><ph name="LANGUAGE" /> quraşdırılır...</translation>
 <translation id="8251493595871259082">Ünvanı avtomatik doldurun</translation>

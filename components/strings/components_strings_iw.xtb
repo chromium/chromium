@@ -629,6 +629,7 @@
 <translation id="1979156660928743046">פרטי מדיה</translation>
 <translation id="1987486584747170374">‏החיפושים שלך, ההתאמות הכי טובות ותוכן הדפים שלהם נשלחים אל Google. בודקים אנושיים לא ישתמשו בתוכן שלך כדי לשפר את ה-AI. הארגון שלך יכול לשנות את ההגדרות האלה בכל שלב.</translation>
 <translation id="1988881251331415125">אם האיות תקין, <ph name="BEGIN_LINK" />יש לנסות להפעיל אבחון קישוריות<ph name="END_LINK" />.</translation>
+<translation id="1991370806334788445">‏אפשר לאשר קובצי cookie של צד שלישי. במצב כזה יש פחות הגנה במהלך הגלישה, אבל יש סיכוי גבוה יותר שהתכונות באתר יפעלו כצפוי.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567"><ph name="URL" /> רוצה לאחסן כמות גדולה של נתונים במחשב המקומי שלך באופן קבוע</translation>
 <translation id="1997774360448418989">Paper (Lightweight)</translation>
@@ -2132,7 +2133,6 @@
 <translation id="4282280603030594840">קניית רכב</translation>
 <translation id="4282346679996504092">ההתראות לגבי המוצר הזה הושבתו והסימנייה הוסרה</translation>
 <translation id="4284885181066817063">נחסמה על ידי <ph name="DOMAIN" /></translation>
-<translation id="4285498937028063278">ביטול ההצמדה</translation>
 <translation id="4288101205645068104">מחיקת הרכב</translation>
 <translation id="4290920330097335010">אף פעם לא לאפשר</translation>
 <translation id="4297502707443874121">תמונה ממוזערת של הדף <ph name="THUMBNAIL_PAGE" /></translation>
@@ -2610,7 +2610,6 @@ Del</translation>
 <translation id="5056587122125565772">יצירת תמונה</translation>
 <translation id="505757197798929356">יש לציין את הסיבה לפתיחה (חובה)</translation>
 <translation id="5058282932481719070">מידע נוסף על התכונה "מילוי אוטומטי משופר" בהגדרות</translation>
-<translation id="5060419232449737386">הגדרות לכתוביות</translation>
 <translation id="5061227663725596739">האם התכוונת ל-<ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">היסטוריית הדפסות</translation>
 <translation id="5068524481479508725">A10</translation>
@@ -2980,6 +2979,7 @@ Del</translation>
 <translation id="5600044805561809264">במהלך הגלישה, יש לך אפשרות לשאול בקלות שאלות על הכרטיסיות ששיתפת.</translation>
 <translation id="5603469469737324249">‫<ph name="ISSUER_1_NAME" /> או <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">ניהול אינו נתמך</translation>
+<translation id="5604254791550001355">עריכת ההנחיה</translation>
 <translation id="560431066250575003">{HOURS,plural, =1{פעילות אחרונה: לפני שעה}one{פעילות אחרונה: לפני # שעות}two{פעילות אחרונה: לפני שעתיים}other{פעילות אחרונה: לפני # שעות}}</translation>
 <translation id="5605249000617390290">מידע נוסף על המעקב אחר מחירים</translation>
 <translation id="5605670050355397069">Ledger</translation>
@@ -3411,6 +3411,7 @@ Del</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
 <translation id="629730747756840877">חשבון</translation>
+<translation id="6299098428775578517">הצעות להגדרות</translation>
 <translation id="6300452962057769623">{0,plural, =0{המכשיר יופעל מחדש עכשיו}=1{המכשיר יופעל מחדש בתוך שנייה}one{המכשיר יופעל מחדש בתוך # שניות}two{המכשיר יופעל מחדש בתוך # שניות}other{המכשיר יופעל מחדש בתוך # שניות}}</translation>
 <translation id="6301104306974789820">קבלת התראות לגבי מעקב אחר מחירים</translation>
 <translation id="6302546952464230349">הצגת פרטי ההרשאה <ph name="PERMISSION_NAME" /></translation>
@@ -3572,7 +3573,6 @@ Del</translation>
 <translation id="6518133107902771759">אימות</translation>
 <translation id="6519885440226079262">אתרים יכולים לבקש הרשאה לעקוב אחר תנועות הידיים שלך</translation>
 <translation id="6520026037299163656">אפליקציות אינטרנט וכלי אינטרנט</translation>
-<translation id="65203098586853226">מתבצע תרגום מ<ph name="SOURCE" /> אל <ph name="TARGET" /></translation>
 <translation id="6520509611422418552">‫<ph name="MEMBER_FIRST_NAME" /> הצטרפ/ה לקבוצת הכרטיסיות "<ph name="GROUP_NAME" />"</translation>
 <translation id="6521745193039995384">לא פעילה</translation>
 <translation id="6522682797352430154">מוזיקה קלאסית</translation>
@@ -4173,7 +4173,6 @@ Del</translation>
 <translation id="7455452752247248289">טכנולוגיה לארגונים</translation>
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">משאיות ונגררים</translation>
-<translation id="7461924472993315131">הצמדה</translation>
 <translation id="7463068149674892185">לא מומלץ לבצע את הפעולה הזו</translation>
 <translation id="746329643760972486">MacOS</translation>
 <translation id="746412105358554870">‏אופטימיזציה ואבטחה של JavaScript</translation>
@@ -4679,7 +4678,6 @@ Del</translation>
 <translation id="8246482227229072868">טבעות</translation>
 <translation id="8248406213705193919">לשמור את הכרטיס באופן מאובטח?</translation>
 <translation id="8249296373107784235">ביטול</translation>
-<translation id="824968735947741546">מתבצע תרגום של <ph name="SOURCE" /> (לפי הזיהוי האוטומטי) ל<ph name="TARGET" /></translation>
 <translation id="8250094606476360498">‏הכתובת הזו שמורה במכשיר הזה. כדי להשתמש בה בכל מוצרי Google, צריך לשמור אותה בחשבון Google שלך, <ph name="ACCOUNT" />.</translation>
 <translation id="8250533425540303610">בתהליך התקנה של <ph name="LANGUAGE" />...</translation>
 <translation id="8251493595871259082">ממלאים את הכתובת ומקלידים פחות</translation>

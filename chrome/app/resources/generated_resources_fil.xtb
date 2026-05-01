@@ -3067,6 +3067,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3053273573829329829">I-enable ang pin ng user</translation>
 <translation id="3053274730492362225">Huwag kukurap</translation>
 <translation id="3057938290530993634">I-tap at i-hold para i-pin ang mga website na pinakamadalas mong bisitahin para sa madaling pag-access sa susunod</translation>
+<translation id="3058002721610176427">Palitan ang iyong PIN at password</translation>
 <translation id="3058498974290601450">Maaari mong i-on ang pag-sync anumang oras sa mga setting.</translation>
 <translation id="3060694926634506594">Mga Skill</translation>
 <translation id="3060952009917586498">Palitan ang wika ng device. Ang kasalukuyang wika ay <ph name="LANGUAGE" />.</translation>
@@ -3318,6 +3319,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3254506277019076812">Magdagdag ng skill</translation>
 <translation id="3254516606912442756">Na-disable ang awtomatikong pag-detect ng time zone</translation>
 <translation id="3255747772218936245">I-install ang update</translation>
+<translation id="3256274561709196882">Palitan ang iyong PIN</translation>
 <translation id="3257733480216378006">Payagan ang <ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" />?</translation>
 <translation id="325797067711573598">Na-block ang kahina-hinalang pag-download</translation>
 <translation id="3259723213051400722">Pakisubukang muli.</translation>
@@ -4433,6 +4435,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3995963973192100066">I-play ang animation</translation>
 <translation id="3997572437374206064">{NUM_SITES,plural, =1{Para maprotektahan ang iyong data, inalis ang mga pahintulot sa isang site na hindi mo binisita kamakailan}one{Para maprotektahan ang iyong data, inalis ang mga pahintulot sa mga site na hindi mo binisita kamakailan}other{Para maprotektahan ang iyong data, inalis ang mga pahintulot sa mga site na hindi mo binisita kamakailan}}</translation>
 <translation id="399788104667917863">I-pin sa toolbar</translation>
+<translation id="3998431043924115701">Magtanong habang nagba-browse ka</translation>
 <translation id="3998780825367526465">Ipakita ang mga preview na larawan ng tab</translation>
 <translation id="3998976413398910035">Pamahalaan ang mga printer</translation>
 <translation id="4000360130639414007">Hindi mo magagamit ang mga Android app o ang Google Play Store</translation>
@@ -4478,7 +4481,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4036778507053569103">Invalid ang patakarang na-download mula sa server.</translation>
 <translation id="4037084878352560732">Kabayo</translation>
 <translation id="403725336528835653">Subukan muna ito</translation>
-<translation id="4039835815168788100">Sinubukan ng extension na "<ph name="EXTENSION_NAME" />" na baguhin ang iyong search engine at gawing <ph name="SEARCH_PROVIDER" />. Kumpirmahin ang iyong preference sa ibaba</translation>
 <translation id="4039966970282098406">Pamahalaan ang iyong privacy sa pamamagitan ng pagkontrol ng access sa mikropono, camera, at higit pa</translation>
 <translation id="4040041015953651705">Wikang pagmumulan ng pagsalin</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Umalis sa Page}one{Umalis sa Mga Page}other{Umalis sa Mga Page}}</translation>
@@ -5563,6 +5565,7 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{Na-delete ang 1 bookmark}one{Na-delete ang {COUNT} bookmark}other{Na-delete ang {COUNT} na bookmark}}</translation>
 <translation id="481689174647911539">Posibleng virus o malware ang file na ito.<ph name="LINE_BREAK" />Puwede mo itong ipadala sa Ligtas na Pag-browse sa Google para masuri kung hindi ito ligtas. Kadalasang tumatagal nang ilang segundo ang mga pag-scan.</translation>
 <translation id="4816900689218414104">Gumawa ng passkey sa telepono o tablet</translation>
+<translation id="4818449958253566215">Idinaragdag sa Start Menu</translation>
 <translation id="481852950686014162">Magpatuloy kung saan ka huminto sa Gemini at AI Mode</translation>
 <translation id="4819323978093861656">{0,plural, =0{Isasara na ngayon.}=1{Isasara na sa: 1 segundo}one{Isasara na sa: # segundo}other{Isasara na sa: # na segundo}}</translation>
 <translation id="4819818293886748542">Kumuha ng link sa Tool sa Suporta</translation>
@@ -6136,7 +6139,6 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="5208988882104884956">Halfwidth</translation>
 <translation id="5209320130288484488">Walang nahanap na mga device</translation>
 <translation id="5209513429611499188">Mga HID device na may mga paggamit mula sa page ng paggamit na <ph name="USAGE_PAGE" /></translation>
-<translation id="5210365745912300556">Isara ang tab</translation>
 <translation id="5211174138048232917">I-export ang Mga File ng History</translation>
 <translation id="5213114823401215820">Buksan ulit ang nakasarang grupo</translation>
 <translation id="5213481667492808996">Magagamit na ang iyong serbisyo ng data ng '<ph name="NAME" />'</translation>
@@ -6769,7 +6771,6 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="5659593005791499971">Email</translation>
 <translation id="5659964844710667266">Gumawa ng password para sa <ph name="DEVICE_TYPE" /> na ito</translation>
 <translation id="5662513737565158057">Baguhin kung paano gagana ang mga Linux app.</translation>
-<translation id="5663317829633858516">Kamakailang binago ng <ph name="EXTENSION_NAME" /></translation>
 <translation id="5663459693447872156">Awtomatikong lumipat sa kalahating lapad</translation>
 <translation id="5663653125349867535">&amp;Listahan ng babasahin</translation>
 <translation id="5663918299073387939">Karaniwang hinihiling ng mga site na kontrolin at i-reprogram ang mga MIDI device para gumawa at mag-edit ng musika, o mag-update ng firmware ng device</translation>
@@ -6812,6 +6813,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="5697664819730124632">Magdagdag ng larawan at i-reimagine ito</translation>
 <translation id="5697832193891326782">Picker ng Emoji</translation>
 <translation id="5698136107297470317">Ide-delete mo ang iyong data sa <ph name="BRAND" /></translation>
+<translation id="5698815246352480266">Puwede kang patuloy na makipag-chat sa AI Mode nang hindi lumilipat ng tab. Para magsimula, i-verify na ikaw ito. Makukuha mo rin ang iyong mga password at higit pa sa lahat ng device mo.</translation>
 <translation id="5698878456427040674">Tingnan kung sinusuportahan ang napiling account.</translation>
 <translation id="5698900765010620315">Madilim na may mababang contrast</translation>
 <translation id="5699227710146832453">Mula sa iyong</translation>
@@ -7069,6 +7071,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="5870155679953074650">Mga hard fault</translation>
 <translation id="587234395549708302">Mag-clean Up ng Mga Bookmark?</translation>
 <translation id="5875534259258494936">Nagtapos na ang pagbabahagi ng screen</translation>
+<translation id="5876691914815078365">Chrome Apps &gt; <ph name="APP_NAME" /></translation>
 <translation id="5876851302954717356">Bagong Tab sa Kanan</translation>
 <translation id="5877064549588274448">Binago ang channel. I-restart ang iyong device upang ilapat ang mga pagbabago.</translation>
 <translation id="5877584842898320529">Hindi available o hindi naka-install nang tama ang napiling printer. <ph name="BR" /> Suriin ang iyong printer o subukang pumili ng ibang printer.</translation>
@@ -9325,7 +9328,6 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="746329643760972486">MacOS</translation>
 <translation id="7463985990119325874">Pinapamahalaan ng iyong organisasyon kung paano puwedeng gamitin ang data na kinokolekta ng mga feature na ito.</translation>
 <translation id="7464645554245611385">Huling update sa tab na ito</translation>
-<translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{# bukas na tab, pindutin para i-toggle ang tab strip}one{# bukas na tab, pindutin para i-toggle ang tab strip}other{# na bukas na tab, pindutin para i-toggle ang tab strip}}</translation>
 <translation id="7465635034594602553">Nagkaproblema. Maghintay ng ilang minuto at patakbuhin ulit ang <ph name="APP_NAME" />.</translation>
 <translation id="7465777686629334728">Alisin ang Pinapamahalaang Environment sa Pag-develop (<ph name="SPECIFIC_NAME" />)</translation>
 <translation id="7465778193084373987">URL ng Pagpapawalang-bisa ng Netscape Certificate</translation>
@@ -10397,7 +10399,6 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8195854162863398249">I-disable ang <ph name="FEATURE_NAME" /></translation>
 <translation id="8195920051450756553">Pagkaantala bago ma-activate ulit ang parehong key</translation>
 <translation id="8197673340773315084">Magdagdag ng pangalan o label, tulad ng Trabaho o Personal</translation>
-<translation id="8198043456018523011">Kumpirmahin ang iyong default na search engine</translation>
 <translation id="8198181050118789419">Tema: <ph name="THEME_NAME" /></translation>
 <translation id="8198456017687137612">Ikina-cast ang tab</translation>
 <translation id="8199300056570174101">Mga property ng Network (Serbisyo) at Device</translation>
@@ -11088,6 +11089,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8673026256276578048">Hanapan ang Web...</translation>
 <translation id="867329473311423817">Pinapayagang pamahalaan ang mga window sa lahat ng iyong display</translation>
 <translation id="8673383193459449849">Problema sa server</translation>
+<translation id="8673530374848624865">Na-update ng iyong administrator ang mga requirement sa seguridad para sa device mo</translation>
 <translation id="8674903726754070732">Sa kasamaang-palad, na-configure ang iyong computer gamit ang isang hardware ID na mali ang pagkakabuo. Pinipigilan nito ang ChromeOS na mag-update sa mga pinakabagong pag-aayos sa seguridad at <ph name="BEGIN_BOLD" />posibleng maging mahina sa mga nakakapinsalang pag-atake<ph name="END_BOLD" /> ang iyong computer.</translation>
 <translation id="8675657007450883866">Ginagamit ng mga site ang feature na ito para awtomatikong mag-full screen. Karaniwang nire-require ang interaction ng user sa pag-full screen.</translation>
 <translation id="8675704450909805533">Hindi makakita ang installer ng valid na destinasyon para i-install ang <ph name="DEVICE_OS" />.</translation>

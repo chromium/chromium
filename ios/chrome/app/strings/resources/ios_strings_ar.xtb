@@ -721,6 +721,7 @@
 <translation id="3565012355885596568">تعذَّر تحميل الصور</translation>
 <translation id="3565930036634619844">علامة التبويب رقم <ph name="TAB_INDEX" /> من <ph name="NUMBER_OF_TABS" /></translation>
 <translation id="3567168891086460374">الحفظ بطريقة أخرى</translation>
+<translation id="3571703298474554279">طريقة أسرع لاستخدام التطبيق</translation>
 <translation id="3572503683475187385">‏ستتم مشاركة علامة التبويب الحالية مع Gemini عند بدء محادثة جديدة، وإرسال محتواها وعنوان URL إلى Google. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">‏في حسابك على Google</translation>
 <translation id="3575234738189584619">‏البحث باستخدام "عدسة Google"</translation>
@@ -1699,6 +1700,7 @@
 <translation id="6871397658902960384">بدء التصفُّح</translation>
 <translation id="6874328931822449112">{COUNT,plural, =1{حفظ كلمة المرور في الحساب}zero{حفظ كلمات المرور في الحساب}two{حفظ كلمتَي المرور في الحساب}few{حفظ كلمات المرور في الحساب}many{حفظ كلمات المرور في الحساب}other{حفظ كلمات المرور في الحساب}}</translation>
 <translation id="6875166646976836138">يمكنك أيضًا الاطّلاع على هذه العناصر وإدارتها في الإشارات المرجعية أو "قائمة القراءة" أو "مدير كلمات المرور".</translation>
+<translation id="6878052248816456143">‏يمكنك الوصول إلى الملفات في Google Drive في أي وقت.</translation>
 <translation id="6882836635272038266">يوفّر لك حماية عادية من الإضافات وعمليات التنزيل والمواقع الإلكترونية الضارة.</translation>
 <translation id="6884135917113737984">{COUNT,plural, =1{‏حفظ كلمة مرور واحدة ({COUNT}) في حسابك على Google}zero{‏حفظ {COUNT} كلمة مرور في حسابك على Google}two{‏حفظ كلمتَي مرور ({COUNT}) في حسابك على Google}few{‏حفظ {COUNT} كلمات مرور في حسابك على Google}many{‏حفظ {COUNT} كلمة مرور في حسابك على Google}other{‏حفظ {COUNT} كلمة مرور في حسابك على Google}}</translation>
 <translation id="6888009575607455378">هل تريد فعلاً تجاهل التغييرات؟</translation>
@@ -1812,6 +1814,7 @@
 <translation id="7345061034321640811">غير مسموح بالاستيراد</translation>
 <translation id="7347998088283246662">يمكنك استيراد كلمات المرور والسجلّ والإشارات المرجعية وغيرها</translation>
 <translation id="7352651011704765696">حدث خطأ</translation>
+<translation id="7363497636543208734">أصبح التنقّل في التطبيق أسهل الآن.</translation>
 <translation id="7364796246159120393">اختيار ملفّ</translation>
 <translation id="736564850024123010">يمكنك تبديل مكان شريط العناوين للحصول على تجربة استخدام مخصصة.</translation>
 <translation id="7366909168761621528">بيانات التصفح</translation>
@@ -2112,7 +2115,6 @@
 <translation id="8319282042900445670">‏تم ضبط التذكير على <ph name="TIME" />، ‎<ph name="DATE" /></translation>
 <translation id="8320212361750431956">الأنشطة الحديثة</translation>
 <translation id="8325455175867928593">إخفاء "مراجعات مقترَحة بناءً على اهتماماتك"</translation>
-<translation id="8328777765163860529">إغلاق الكل</translation>
 <translation id="833647236762414178">يمكنك إنشاء كلمات المرور ومفاتيح المرور وحفظها وإدارتها لتسجيل الدخول بسهولة إلى المواقع الإلكترونية والتطبيقات. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">يمكنك الاحتفاظ بنسخة احتياطية من بياناتك واستخدامها على أي جهاز.</translation>
 <translation id="8348530355586151720">انقر على قائمة الخيارات الإضافية</translation>

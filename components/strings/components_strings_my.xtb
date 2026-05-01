@@ -2134,7 +2134,6 @@
 <translation id="4282280603030594840">ယာဉ်ဝယ်ယူခြင်း</translation>
 <translation id="4282346679996504092">ဤထုတ်ကုန်အတွက် သတိပေးချက်များကို ပိတ်ထားပြီး လိပ်စာကို ဖယ်ရှားထားသည်</translation>
 <translation id="4284885181066817063"><ph name="DOMAIN" /> က ပိတ်ထားသည်</translation>
-<translation id="4285498937028063278">ပင်ဖြုတ်ရန်</translation>
 <translation id="4288101205645068104">ယာဉ်ကို ဖယ်ရှားခြင်း</translation>
 <translation id="4290920330097335010">ဘယ်တော့မှ ခွင့်မပြုရန်</translation>
 <translation id="4297502707443874121">စာမျက်နှာ <ph name="THUMBNAIL_PAGE" /> အတွက် ပုံသေး</translation>
@@ -2608,7 +2607,6 @@
 <translation id="5056587122125565772">ပုံပြုလုပ်ရန်</translation>
 <translation id="505757197798929356">ဖွင့်ရန်အတွက် အကြောင်းရင်းပေးရန် (လိုအပ်သည်)</translation>
 <translation id="5058282932481719070">အဆင့်မြင့် အော်တိုဖြည့်အကြောင်း ဆက်တင်များတွင် ပိုလေ့လာရန်</translation>
-<translation id="5060419232449737386">ခေါင်းစီး ဆက်တင်များ</translation>
 <translation id="5061227663725596739"><ph name="LOOKALIKE_DOMAIN" /> ကို ဆိုလိုခြင်းဖြစ်ပါသလား။</translation>
 <translation id="5066056036849835175">ပုံနှိပ်ထုတ်ယူမှု မှတ်တမ်း</translation>
 <translation id="5068524481479508725">A10</translation>
@@ -3568,7 +3566,6 @@
 <translation id="6518133107902771759">စိစစ်ရန်</translation>
 <translation id="6519885440226079262">သင့်လက်များကို စောင့်ကြည့်ရန် တောင်းဆိုနိုင်သည်</translation>
 <translation id="6520026037299163656">ဝဘ်အက်ပ်၊ အွန်လိုင်းတူးလ်</translation>
-<translation id="65203098586853226"><ph name="SOURCE" /> မှ <ph name="TARGET" /> သို့ ပြန်ဆိုနေသည်</translation>
 <translation id="6520509611422418552"><ph name="MEMBER_FIRST_NAME" /> က “<ph name="GROUP_NAME" />” တဘ်အုပ်စုတွင် ပါဝင်လိုက်သည်</translation>
 <translation id="6521745193039995384">ဆောင်ရွက်မှုမရှိပါ</translation>
 <translation id="6522682797352430154">ဂန္ထဝင် ဂီတ</translation>
@@ -4169,7 +4166,6 @@
 <translation id="7455452752247248289">လုပ်ငန်းသုံး နည်းပညာ</translation>
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">ကုန်တင်ယာဉ်၊ နောက်တွဲယာဉ်</translation>
-<translation id="7461924472993315131">ပင်နံပါတ်</translation>
 <translation id="7463068149674892185">ဤလုပ်ဆောင်ချက်ကို အကြံမပြုပါ</translation>
 <translation id="746329643760972486">MacOS</translation>
 <translation id="746412105358554870">JavaScript အကောင်းဆုံးချိန်ညှိမှုနှင့် လုံခြုံရေး</translation>
@@ -4676,7 +4672,6 @@
 <translation id="8246482227229072868">လက်စွပ်</translation>
 <translation id="8248406213705193919">ကတ်ကို လုံခြုံစွာသိမ်းမလား။</translation>
 <translation id="8249296373107784235">မလုပ်တော့ပါ</translation>
-<translation id="824968735947741546"><ph name="SOURCE" /> (အလိုအလျောက် တွေ့ရှိထား) မှ <ph name="TARGET" /> သို့ ဘာသာပြန်နေသည်</translation>
 <translation id="8250094606476360498">ဤလိပ်စာကို ဤစက်တွင် လောလောဆယ် သိမ်းထားသည်။ Google ထုတ်ကုန်များတွင် ၎င်းကိုသုံးရန် သင်၏ Google Account ဖြစ်သော <ph name="ACCOUNT" /> တွင်သိမ်းပါ။</translation>
 <translation id="8250533425540303610"><ph name="LANGUAGE" /> ထည့်သွင်းနေသည်...</translation>
 <translation id="8251493595871259082">စာသိပ်မရိုက်ဘဲ သင့်လိပ်စာကို ဖြည့်ပါ</translation>

@@ -99,6 +99,7 @@
 <translation id="1985247341569771101">Kui see on sisse lülitatud, saavad saidid kasutada teie seadme liikumisandureid. Kui see on välja lülitatud, ei saa saidid liikumisandureid kasutada.</translation>
 <translation id="1985716030964443178">See lähtestab kõik teie loendis olevaid saidid vaikesuumitasemele.</translation>
 <translation id="1989112275319619282">Sirvi</translation>
+<translation id="1991370806334788445">Proovige kolmanda osapoole küpsisefailid lubada. See vähendab sirvimiskaitset, kuid saidi funktsiooni töötavad suurema tõenäosusega ootuspäraselt.</translation>
 <translation id="1994173015038366702">Saidi URL</translation>
 <translation id="1994558116414798016">Font Lexend</translation>
 <translation id="2004697686368036666">Funktsioonid ei pruugi mõnel saidil toimida</translation>
@@ -164,6 +165,7 @@
 <translation id="257931822824936280">Laiendatud – ahendamiseks klõpsake.</translation>
 <translation id="2586657967955657006">Lõikelaud</translation>
 <translation id="2588271083332682494">Korrastatum ilme vahelehegruppide abil</translation>
+<translation id="2592917252160773942">Saidid saavad küsida luba teie kaamera kasutamiseks</translation>
 <translation id="2597457036804169544">Saitidele ei rakendata tumedat teemat</translation>
 <translation id="2606760465469169465">Automaatne kinnitamine</translation>
 <translation id="2621115761605608342">Lubage JavaScript konkreetse saidi jaoks.</translation>
@@ -360,6 +362,7 @@
 <translation id="4635969503923889910">Ärge lubage saitidel kasutada NFC-seadmeid</translation>
 <translation id="4644713492825682049">Kustuta ja lähtesta</translation>
 <translation id="4645575059429386691">Vanema hallatud</translation>
+<translation id="4651224148644053314">Rohkem värve ja valikuid</translation>
 <translation id="4652266463001779298">Pole lubatud</translation>
 <translation id="4655846733459137112">Puudutage valikut Jah, et järgmisel sisselogimisel seda parooli hõlpsasti kasutada.</translation>
 <translation id="4663373278480897665">Kaamera on lubatud</translation>

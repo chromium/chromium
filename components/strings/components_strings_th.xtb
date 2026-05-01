@@ -629,6 +629,7 @@
 <translation id="1979156660928743046">ข้อมูลสื่อ</translation>
 <translation id="1987486584747170374">ระบบจะส่งการค้นหาของคุณ ผลลัพธ์ที่ตรงที่สุด และเนื้อหาในหน้าไปยัง Google เจ้าหน้าที่ตรวจสอบจะไม่ใช้ข้อมูลดังกล่าวเพื่อปรับปรุง AI องค์กรของคุณอาจเปลี่ยนการตั้งค่าเหล่านี้ได้ทุกเมื่อ</translation>
 <translation id="1988881251331415125">หากการสะกดถูกต้อง ให้<ph name="BEGIN_LINK" />ลองเรียกใช้การวินิจฉัยการเชื่อมต่อ<ph name="END_LINK" /></translation>
+<translation id="1991370806334788445">ลองอนุญาตคุกกี้ของบุคคลที่สาม ซึ่งหมายความว่าการปกป้องขณะท่องเว็บจะลดลง แต่ฟีเจอร์ของเว็บไซต์มีแนวโน้มที่จะทำงานตามที่คาดไว้ได้มากขึ้น</translation>
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567"><ph name="URL" /> ต้องการจัดเก็บข้อมูลขนาดใหญ่อย่างถาวรในเครื่องคอมพิวเตอร์ของคุณ</translation>
 <translation id="1997774360448418989">กระดาษ (น้ำหนักเบา)</translation>
@@ -2131,7 +2132,6 @@
 <translation id="4282280603030594840">การซื้อยานพาหนะ</translation>
 <translation id="4282346679996504092">ปิดการแจ้งเตือนสำหรับผลิตภัณฑ์นี้และนำบุ๊กมาร์กออกแล้ว</translation>
 <translation id="4284885181066817063">บล็อกโดย <ph name="DOMAIN" /></translation>
-<translation id="4285498937028063278">เลิกปักหมุด</translation>
 <translation id="4288101205645068104">ลบยานพาหนะ</translation>
 <translation id="4290920330097335010">ไม่อนุญาต</translation>
 <translation id="4297502707443874121">ภาพขนาดย่อของหน้า <ph name="THUMBNAIL_PAGE" /></translation>
@@ -2605,7 +2605,6 @@
 <translation id="5056587122125565772">สร้างรูปภาพ</translation>
 <translation id="505757197798929356">ระบุเหตุผลในการเปิด (ต้องระบุ)</translation>
 <translation id="5058282932481719070">ดูข้อมูลเพิ่มเติมเกี่ยวกับฟีเจอร์การป้อนข้อความอัตโนมัติที่ดียิ่งขึ้นในการตั้งค่า</translation>
-<translation id="5060419232449737386">การตั้งค่าคำบรรยาย</translation>
 <translation id="5061227663725596739">หรือคุณหมายถึง <ph name="LOOKALIKE_DOMAIN" /></translation>
 <translation id="5066056036849835175">ประวัติการพิมพ์</translation>
 <translation id="5068524481479508725">A10</translation>
@@ -2974,6 +2973,7 @@
 <translation id="5600044805561809264">คุณสามารถถามคำถามเกี่ยวกับแท็บที่กำลังแชร์ได้อย่างง่ายดายขณะท่องเว็บ</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> หรือ <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">ไม่สนับสนุนการจัดการ</translation>
+<translation id="5604254791550001355">แก้ไขพรอมต์</translation>
 <translation id="560431066250575003">{HOURS,plural, =1{ใช้งานเมื่อ 1 ชั่วโมงที่ผ่านมา}other{ใช้งานเมื่อ # ชั่วโมงที่ผ่านมา}}</translation>
 <translation id="5605249000617390290">ดูข้อมูลเพิ่มเติมเกี่ยวกับการติดตามราคา</translation>
 <translation id="5605670050355397069">Ledger</translation>
@@ -3405,6 +3405,7 @@
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
 <translation id="629730747756840877">บัญชี</translation>
+<translation id="6299098428775578517">การตั้งค่าคําแนะนํา</translation>
 <translation id="6300452962057769623">{0,plural, =0{อุปกรณ์จะรีสตาร์ทตอนนี้}=1{อุปกรณ์จะรีสตาร์ทใน 1 วินาที}other{อุปกรณ์จะรีสตาร์ทใน # วินาที}}</translation>
 <translation id="6301104306974789820">รับการแจ้งเตือนการติดตามราคา</translation>
 <translation id="6302546952464230349">แสดงรายละเอียดของสิทธิ์<ph name="PERMISSION_NAME" /></translation>
@@ -3566,7 +3567,6 @@
 <translation id="6518133107902771759">ยืนยัน</translation>
 <translation id="6519885440226079262">สามารถขอติดตามการเคลื่อนไหวของมือคุณได้</translation>
 <translation id="6520026037299163656">เว็บแอปและเครื่องมือออนไลน์</translation>
-<translation id="65203098586853226">กำลังแปลภาษา<ph name="SOURCE" />เป็นภาษา<ph name="TARGET" /></translation>
 <translation id="6520509611422418552"><ph name="MEMBER_FIRST_NAME" /> เข้าร่วมกลุ่มแท็บ "<ph name="GROUP_NAME" />" แล้ว</translation>
 <translation id="6521745193039995384">ไม่ได้ใช้งานอยู่</translation>
 <translation id="6522682797352430154">เพลงคลาสสิก</translation>
@@ -4167,7 +4167,6 @@
 <translation id="7455452752247248289">เทคโนโลยีขององค์กร</translation>
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">รถบรรทุกและรถพ่วง</translation>
-<translation id="7461924472993315131">ปักหมุด</translation>
 <translation id="7463068149674892185">ไม่แนะนำให้ดำเนินการนี้</translation>
 <translation id="746329643760972486">MacOS</translation>
 <translation id="746412105358554870">การเพิ่มประสิทธิภาพและความปลอดภัยของ JavaScript</translation>
@@ -4673,7 +4672,6 @@
 <translation id="8246482227229072868">แหวน</translation>
 <translation id="8248406213705193919">บันทึกบัตรไว้อย่างปลอดภัยไหม</translation>
 <translation id="8249296373107784235">ล้มเลิก</translation>
-<translation id="824968735947741546">กำลังแปลจาก <ph name="SOURCE" /> (ตรวจพบอัตโนมัติ) เป็น <ph name="TARGET" /></translation>
 <translation id="8250094606476360498">บันทึกที่อยู่นี้ไว้ในอุปกรณ์นี้แล้ว หากต้องการใช้ในผลิตภัณฑ์ต่างๆ ของ Google ให้บันทึกไว้ในบัญชี Google ของคุณ <ph name="ACCOUNT" /></translation>
 <translation id="8250533425540303610">กำลังติดตั้ง <ph name="LANGUAGE" />...</translation>
 <translation id="8251493595871259082">กรอกที่อยู่โดยพิมพ์น้อยลง</translation>

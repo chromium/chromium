@@ -2133,7 +2133,6 @@
 <translation id="4282280603030594840">ავტომობილების ყიდვა</translation>
 <translation id="4282346679996504092">ამ პროდუქტთან დაკავშირებული გაფრთხილებები გამოირთო, ხოლო სანიშნე ამოიშალა</translation>
 <translation id="4284885181066817063">დაბლოკილია <ph name="DOMAIN" />-ის მიერ</translation>
-<translation id="4285498937028063278">ჩამაგრების მოხსნა</translation>
 <translation id="4288101205645068104">სატრანსპორტო საშუალების წაშლა</translation>
 <translation id="4290920330097335010">არასოდეს დაშვება</translation>
 <translation id="4297502707443874121">ესკიზი გვერდისთვის <ph name="THUMBNAIL_PAGE" /></translation>
@@ -2607,7 +2606,6 @@
 <translation id="5056587122125565772">სურათის შექმნა</translation>
 <translation id="505757197798929356">მიუთითეთ გახსნის მიზეზი (სავალდებულო)</translation>
 <translation id="5058282932481719070">შეიტყვეთ მეტი გაძლიერებული ავტომატური შევსების შესახებ პარამეტრებში</translation>
-<translation id="5060419232449737386">სუბტიტრების პარამეტრები</translation>
 <translation id="5061227663725596739"><ph name="LOOKALIKE_DOMAIN" /> ხომ არ იგულისხმეთ?</translation>
 <translation id="5066056036849835175">ბეჭდვის ისტორია</translation>
 <translation id="5068524481479508725">A10</translation>
@@ -3570,7 +3568,6 @@
 <translation id="6518133107902771759">გადამოწმება</translation>
 <translation id="6519885440226079262">შეიძლება გთხოვოთ თქვენი ხელების მოძრაობაზე თვალის დევნება</translation>
 <translation id="6520026037299163656">ვებაპები და ონლაინხელსაწყოები</translation>
-<translation id="65203098586853226"><ph name="SOURCE" /> ითარგმნება შემდეგ ენაზე: <ph name="TARGET" /></translation>
 <translation id="6520509611422418552"><ph name="MEMBER_FIRST_NAME" /> გაწევრიანდა ჩანართების ჯგუფში „<ph name="GROUP_NAME" />“</translation>
 <translation id="6521745193039995384">არ არის აქტიური</translation>
 <translation id="6522682797352430154">კლასიკური მუსიკა</translation>
@@ -4170,7 +4167,6 @@
 <translation id="7455452752247248289">საწარმო ტექნოლოგიები</translation>
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">სატვირთო ავტომობილები და ტრაილერები</translation>
-<translation id="7461924472993315131">პინი</translation>
 <translation id="7463068149674892185">ეს მოქმედება არ არის რეკომენდებული</translation>
 <translation id="746329643760972486">MacOS</translation>
 <translation id="746412105358554870">JavaScript ოპტიმიზაცია და უსაფრთხოება</translation>
@@ -4676,7 +4672,6 @@
 <translation id="8246482227229072868">ბეჭდები</translation>
 <translation id="8248406213705193919">უსაფრთხოდ შეინახეთ ბარათი?</translation>
 <translation id="8249296373107784235">შეწყვეტა</translation>
-<translation id="824968735947741546">ითარგმნება <ph name="SOURCE" /> (ავტომატურად დადგენილი) შემდეგ ენაზე: <ph name="TARGET" /></translation>
 <translation id="8250094606476360498">ეს მისამართი ამჟამად შენახულია ამ მოწყობილობაზე. სხვადასხვა Google პროდუქტში მის გამოსაყენებლად შეინახეთ ის თქვენს Google ანგარიშში (<ph name="ACCOUNT" />).</translation>
 <translation id="8250533425540303610">ინსტალირდება <ph name="LANGUAGE" />...</translation>
 <translation id="8251493595871259082">შეავსეთ თქვენი მისამართი ტექსტის ზედმეტად აკრეფის საჭიროების გარეშე</translation>

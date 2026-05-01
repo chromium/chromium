@@ -1576,6 +1576,7 @@ I-Handoff futhi kufanele inikwe amandla esigabeni sokuvamile zezilungiselelo, fu
 <translation id="6476800141292307438">Ukuhumushela ikhasi kusi-<ph name="LANGUAGE" />. Izinketho ziyatholakala eduzane naphansi kwesikrini.</translation>
 <translation id="647867789226964031">Shintsha amaphasiwedi akho</translation>
 <translation id="6480363549849064919">Ukufakazela Ubuqiniso Beklayenti</translation>
+<translation id="6489174933860678546">Vula amathebhu e-Incognito ukuze ubhrawuze iwebhu ngokuyimfihlo.</translation>
 <translation id="6494931198667773526">Iphela</translation>
 <translation id="6503077044568424649">Okuvakashelwe kakhulu</translation>
 <translation id="6503763061813913607">Izaziso Zokuhlolwa Kokuphepha</translation>
@@ -2112,7 +2113,6 @@ I-Handoff futhi kufanele inikwe amandla esigabeni sokuvamile zezilungiselelo, fu
 <translation id="8319282042900445670">Isikhumbuzi sisethelwe u-<ph name="TIME" />, <ph name="DATE" /></translation>
 <translation id="8320212361750431956">Umsebenzi Wakamuva</translation>
 <translation id="8325455175867928593">Fihla okuthi "Izibuyekezo ezisekelwe kongaba nentshisekelo kukho"</translation>
-<translation id="8328777765163860529">Vala konke</translation>
 <translation id="833647236762414178">Sungula, ulondoloze, futhi ulawule amaphasiwedi nezikhiye zakho zokudlula ukuze ukwazi ukungena ngemvume kalula kumasayithi nakuma-app. <ph name="BEGIN_LINK" />Funda kabanzi<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Yenza isipele izinto zakho futhi uzisebenzise kunoma iyiphi idivayisi.</translation>
 <translation id="8348530355586151720">Thepha imenyu yamachashazi amathathu</translation>
@@ -2296,6 +2296,7 @@ I-Handoff futhi kufanele inikwe amandla esigabeni sokuvamile zezilungiselelo, fu
 <translation id="8915916167043355778">Vala konke</translation>
 <translation id="892185197271200809">Ngokushesha wonke umuntu uzolahlekelwa ukufinyelela eqenjini lethebhu ethi "<ph name="GROUP_NAME" />" futhi lizosulwa kuwo wonke amadivayisi wakho</translation>
 <translation id="8923178205567790913">Amaphasiwedi</translation>
+<translation id="8926498511977337209">Bhrawuza ku-Incognito</translation>
 <translation id="892776311701544612">Funda kabanzi…</translation>
 <translation id="8928133177108699615">Ideskithophu</translation>
 <translation id="8928426232677696166"><ph name="EMAIL" />, ilawulwa yinhlangano yakho, njengamanje kukhethwe yona. Khetha i-akhawunti.</translation>

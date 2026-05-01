@@ -2133,7 +2133,6 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="4282280603030594840">Siopau Cerbydau</translation>
 <translation id="4282346679996504092">Mae hysbysiadau ar gyfer y cynnyrch hwn wedi'u diffodd a'r nod tudalen wedi'i ddileu</translation>
 <translation id="4284885181066817063">Rhwystrwyd gan <ph name="DOMAIN" /></translation>
-<translation id="4285498937028063278">Dad-binio</translation>
 <translation id="4288101205645068104">Dileu cerbyd</translation>
 <translation id="4290920330097335010">Peidio byth â chaniatáu</translation>
 <translation id="4297502707443874121">Mân-lun ar gyfer tudalen <ph name="THUMBNAIL_PAGE" /></translation>
@@ -2607,7 +2606,6 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="5056587122125565772">Creu llun</translation>
 <translation id="505757197798929356">Rhowch reswm dros agor (gofynnol)</translation>
 <translation id="5058282932481719070">dysgu rhagor am awtolenwi gwell yn y gosodiadau</translation>
-<translation id="5060419232449737386">Gosodiadau capsiynau</translation>
 <translation id="5061227663725596739">A oeddech chi'n golygu <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">Hanes argraffu</translation>
 <translation id="5068524481479508725">A10</translation>
@@ -3568,7 +3566,6 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="6518133107902771759">Dilysu</translation>
 <translation id="6519885440226079262">Yn gallu gofyn i olrhain eich dwylo</translation>
 <translation id="6520026037299163656">Apiau Gwe ac Offer Ar-lein</translation>
-<translation id="65203098586853226">Wrthi'n cyfieithu <ph name="SOURCE" /> i <ph name="TARGET" /></translation>
 <translation id="6520509611422418552">Mae <ph name="MEMBER_FIRST_NAME" /> wedi ymuno â'r grŵp tabiau "<ph name="GROUP_NAME" />"</translation>
 <translation id="6521745193039995384">Nid yw'n weithredol</translation>
 <translation id="6522682797352430154">Cerddoriaeth Glasurol</translation>
@@ -4168,7 +4165,6 @@ Manylion ychwanegol:
 <translation id="7455452752247248289">Technoleg Menter</translation>
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">Tryciau Cargo ac Ôl-gerbydau</translation>
-<translation id="7461924472993315131">Pinio</translation>
 <translation id="7463068149674892185">Ni argymhellir y weithred hon</translation>
 <translation id="746329643760972486">MacOS</translation>
 <translation id="746412105358554870">Optimeiddio a diogelwch JavaScript</translation>
@@ -4674,7 +4670,6 @@ Manylion ychwanegol:
 <translation id="8246482227229072868">Cylchoedd</translation>
 <translation id="8248406213705193919">Cadw cerdyn yn ddiogel?</translation>
 <translation id="8249296373107784235">Terfynu</translation>
-<translation id="824968735947741546">Wrthi'n cyfieithu <ph name="SOURCE" /> (awto-ganfod) i <ph name="TARGET" /></translation>
 <translation id="8250094606476360498">Mae'r cyfeiriad hwn wedi'i gadw i'r ddyfais hon ar hyn o bryd. Er mwyn ei ddefnyddio ar draws cynhyrchion Google, cadwch ef yn eich Cyfrif Google, <ph name="ACCOUNT" />.</translation>
 <translation id="8250533425540303610">Wrthi'n gosod <ph name="LANGUAGE" />...</translation>
 <translation id="8251493595871259082">Llenwch eich cyfeiriad gyda llai o deipio</translation>

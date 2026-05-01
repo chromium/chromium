@@ -1576,6 +1576,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="6476800141292307438">Leht tõlgitakse <ph name="LANGUAGE" /> keelde. Valikud leiate ekraanikuva allosast.</translation>
 <translation id="647867789226964031">Muutke oma paroole</translation>
 <translation id="6480363549849064919">Kliendi autentimine</translation>
+<translation id="6489174933860678546">Avage inkognito vahelehed, et veebis privaatsemalt sirvida.</translation>
 <translation id="6494931198667773526">Lõpp</translation>
 <translation id="6503077044568424649">Populaarsed</translation>
 <translation id="6503763061813913607">Ohutuskontrolli märguanded</translation>
@@ -2112,7 +2113,6 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="8319282042900445670">Meeldetuletus on seatud ajale <ph name="TIME" /> <ph name="DATE" /></translation>
 <translation id="8320212361750431956">Hiljutised toimingud</translation>
 <translation id="8325455175867928593">Valiku „Teie huvidel põhinevad arvustused” peitmine</translation>
-<translation id="8328777765163860529">Sule kõik</translation>
 <translation id="833647236762414178">Looge, salvestage ja hallake oma paroole ning pääsuvõtmeid, et saaksite hõlpsalt saitidele ja rakendustesse sisse logida. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Varundage oma sisu ja kasutage seda mis tahes seadmes.</translation>
 <translation id="8348530355586151720">Puudutage kolme punktiga menüüd</translation>
@@ -2296,6 +2296,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="8915916167043355778">Sule kõik</translation>
 <translation id="892185197271200809">Kõik kaotavad kohe juurdepääsu vahelehegrupile „<ph name="GROUP_NAME" />“ ja see kustutatakse kõigist seadmetest</translation>
 <translation id="8923178205567790913">Paroolid</translation>
+<translation id="8926498511977337209">Inkognito režiimis sirvimine</translation>
 <translation id="892776311701544612">Lisateave …</translation>
 <translation id="8928133177108699615">Lauaarvuti</translation>
 <translation id="8928426232677696166"><ph name="EMAIL" />, haldab teie organisatsioon, praegu valitud. Valige konto.</translation>

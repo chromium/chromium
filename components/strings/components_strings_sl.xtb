@@ -2133,7 +2133,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4282280603030594840">Nakup vozil</translation>
 <translation id="4282346679996504092">Opozorila za ta izdelek so bila izklopljena in zaznamek je bil odstranjen.</translation>
 <translation id="4284885181066817063">Blokiral: <ph name="DOMAIN" /></translation>
-<translation id="4285498937028063278">Odpni</translation>
 <translation id="4288101205645068104">Brisanje vozila</translation>
 <translation id="4290920330097335010">Nikoli ne dovoli</translation>
 <translation id="4297502707443874121">Sličica za stran <ph name="THUMBNAIL_PAGE" /></translation>
@@ -2607,7 +2606,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5056587122125565772">Ustvari sliko</translation>
 <translation id="505757197798929356">Navedite razlog za odpiranje (obvezno)</translation>
 <translation id="5058282932481719070">preberite več o izboljšanem samodejnem izpolnjevanju v nastavitvah</translation>
-<translation id="5060419232449737386">Nastavitve za podnapise</translation>
 <translation id="5061227663725596739">Ali ste mislili <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">Zgodovina tiskanja</translation>
 <translation id="5068524481479508725">A10</translation>
@@ -2976,6 +2974,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5600044805561809264">Med brskanjem lahko preprosto zastavljate vprašanja o zavihkih, ki jih delite.</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> ali <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">Upravljanje ni podprto</translation>
+<translation id="5604254791550001355">Uredi poziv</translation>
 <translation id="560431066250575003">{HOURS,plural, =1{Naprava aktivna pred 1 uro}one{Naprava aktivna pred # uro}two{Naprava aktivna pred # urama}few{Naprava aktivna pred # urami}other{Naprava aktivna pred # urami}}</translation>
 <translation id="5605249000617390290">Preberite več o spremljanju cen</translation>
 <translation id="5605670050355397069">Ledger</translation>
@@ -3407,6 +3406,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
 <translation id="629730747756840877">Račun</translation>
+<translation id="6299098428775578517">Nastavitve predlogov</translation>
 <translation id="6300452962057769623">{0,plural, =0{Naprava se bo zdaj znova zagnala}=1{Naprava se bo znova zagnala čez 1 sekundo}one{Naprava se bo znova zagnala čez # sekundo}two{Naprava se bo znova zagnala čez # sekundi}few{Naprava se bo znova zagnala čez # sekunde}other{Naprava se bo znova zagnala čez # sekund}}</translation>
 <translation id="6301104306974789820">Prejemanje obvestil o spremljanju cen</translation>
 <translation id="6302546952464230349">Prikaz podrobnosti o dovoljenju »<ph name="PERMISSION_NAME" />«</translation>
@@ -3568,7 +3568,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6518133107902771759">Preveri</translation>
 <translation id="6519885440226079262">Lahko zahteva sledenje potezam dlani</translation>
 <translation id="6520026037299163656">Spletne aplikacije in spletna orodja</translation>
-<translation id="65203098586853226">Prevod jezika <ph name="SOURCE" /> v jezik <ph name="TARGET" /></translation>
 <translation id="6520509611422418552">Oseba <ph name="MEMBER_FIRST_NAME" /> se je pridružila skupini zavihkov »<ph name="GROUP_NAME" />«</translation>
 <translation id="6521745193039995384">Nedejavno</translation>
 <translation id="6522682797352430154">Klasična glasba</translation>
@@ -4169,7 +4168,6 @@ Dodatne podrobnosti:
 <translation id="7455452752247248289">Tehnologija podjetij</translation>
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">Tovornjaki in priklopniki</translation>
-<translation id="7461924472993315131">Pripni</translation>
 <translation id="7463068149674892185">To dejanje ni priporočljivo</translation>
 <translation id="746329643760972486">macOS</translation>
 <translation id="746412105358554870">Optimizacija in varnost za JavaScript</translation>
@@ -4675,7 +4673,6 @@ Dodatne podrobnosti:
 <translation id="8246482227229072868">Obroči</translation>
 <translation id="8248406213705193919">Želite varno shraniti kartico?</translation>
 <translation id="8249296373107784235">Prekini</translation>
-<translation id="824968735947741546">Prevajanje iz (samodejno zaznanega) jezika <ph name="SOURCE" /> v jezik <ph name="TARGET" /></translation>
 <translation id="8250094606476360498">Ta naslov je trenutno shranjen v tej napravi. Če ga želite uporabiti v Googlovih izdelkih, ga shranite v računu Google (<ph name="ACCOUNT" />).</translation>
 <translation id="8250533425540303610">Nameščanje jezika <ph name="LANGUAGE" /> …</translation>
 <translation id="8251493595871259082">Izpolnite naslov z manj tipkanja</translation>

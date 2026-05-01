@@ -1576,6 +1576,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="6476800141292307438">Die Seite wird in die Sprache <ph name="LANGUAGE" /> übersetzt. Optionen sind unten auf dem Bildschirm verfügbar.</translation>
 <translation id="647867789226964031">Passwörter ändern</translation>
 <translation id="6480363549849064919">Clientauthentifizierung</translation>
+<translation id="6489174933860678546">Mit Inkognitotabs kannst du privater im Web surfen.</translation>
 <translation id="6494931198667773526">Ende</translation>
 <translation id="6503077044568424649">Meistbesucht</translation>
 <translation id="6503763061813913607">„Sicherheitscheck“-Benachrichtigungen</translation>
@@ -2112,7 +2113,6 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="8319282042900445670">Erinnerung für den <ph name="DATE" /> um <ph name="TIME" /> eingerichtet</translation>
 <translation id="8320212361750431956">Letzte Aktivität</translation>
 <translation id="8325455175867928593">„Rezensionen, die auf deinen Interessen basieren“ ausblenden</translation>
-<translation id="8328777765163860529">Alle schließen</translation>
 <translation id="833647236762414178">Hier kannst du Passwörter und Passkeys erstellen, speichern und verwalten, damit du dich einfacher auf Websites und in Apps anmelden kannst. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Du kannst deine Inhalte sichern und auf jedem Gerät verwenden.</translation>
 <translation id="8348530355586151720">Tippe auf das Dreipunkt-Menü</translation>
@@ -2296,6 +2296,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="8915916167043355778">Alle schließen</translation>
 <translation id="892185197271200809">Alle Nutzer mit Zugriff auf die Tabgruppe „<ph name="GROUP_NAME" />“ verlieren dann sofort den Zugriff auf diese und die Tabgruppe wird von allen Geräten gelöscht</translation>
 <translation id="8923178205567790913">Passwörter</translation>
+<translation id="8926498511977337209">Im Inkognitomodus surfen</translation>
 <translation id="892776311701544612">Weitere Informationen…</translation>
 <translation id="8928133177108699615">Computer</translation>
 <translation id="8928426232677696166">Das Konto „<ph name="EMAIL" />, von deiner Organisation verwaltet“ ist aktuell ausgewählt. Wähle ein Konto aus.</translation>

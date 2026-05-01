@@ -721,6 +721,7 @@
 <translation id="3565012355885596568">Não foi possível carregar as imagens</translation>
 <translation id="3565930036634619844">Separador <ph name="TAB_INDEX" /> de <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">Guardar de outra forma</translation>
+<translation id="3571703298474554279">Uma forma mais rápida de usar a app</translation>
 <translation id="3572503683475187385">O separador atual é partilhado com o Gemini quando inicia um novo chat. Quando partilha um separador com o Gemini, o respetivo conteúdo e URL são enviados para a Google. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">Na sua Conta Google</translation>
 <translation id="3575234738189584619">Pesquisar com o Lens</translation>
@@ -1701,6 +1702,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="6871397658902960384">Começar a explorar</translation>
 <translation id="6874328931822449112">{COUNT,plural, =1{Guardar palavra-passe na conta}other{Guardar palavras-passe na conta}}</translation>
 <translation id="6875166646976836138">Também pode ver e gerir estes itens nos marcadores, na Lista de leitura ou no Gestor de Palavras-passe.</translation>
+<translation id="6878052248816456143">Aceda aos ficheiros no seu Google Drive em qualquer altura.</translation>
 <translation id="6882836635272038266">Proteção padrão contra Websites, transferências e extensões identificados como perigosos.</translation>
 <translation id="6884135917113737984">{COUNT,plural, =1{Guarde {COUNT} palavra-passe na sua Conta Google}other{Guarde {COUNT} palavras-passe na sua Conta Google}}</translation>
 <translation id="6888009575607455378">Tem a certeza de que quer rejeitar as alterações?</translation>
@@ -1814,6 +1816,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="7345061034321640811">Importação não permitida</translation>
 <translation id="7347998088283246662">Importe palavras-passe, histórico, marcadores e muito mais</translation>
 <translation id="7352651011704765696">Algo correu mal</translation>
+<translation id="7363497636543208734">Agora, é mais fácil explorar a app.</translation>
 <translation id="7364796246159120393">Escolher ficheiro</translation>
 <translation id="736564850024123010">Mude a posição da barra de endereço para ter uma experiência personalizada.</translation>
 <translation id="7366909168761621528">Dados de navegação</translation>
@@ -2113,7 +2116,6 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="8319282042900445670">Lembrete definido para a(s) <ph name="TIME" /> de <ph name="DATE" /></translation>
 <translation id="8320212361750431956">Atividade recente</translation>
 <translation id="8325455175867928593">Ocultar "Críticas com base nos seus interesses"</translation>
-<translation id="8328777765163860529">Fechar Tudo</translation>
 <translation id="833647236762414178">Crie, guarde e faça a gestão das suas palavras-passe e chaves de acesso para iniciar sessão facilmente em sites e apps. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Faça uma cópia de segurança dos seus itens e use-os em qualquer dispositivo.</translation>
 <translation id="8348530355586151720">Toque no menu de três pontos</translation>

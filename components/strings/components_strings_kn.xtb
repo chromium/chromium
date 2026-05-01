@@ -2130,7 +2130,6 @@
 <translation id="4282280603030594840">ವಾಹನ ಖರೀದಿ</translation>
 <translation id="4282346679996504092">ಈ ಉತ್ಪನ್ನದ ಕುರಿತ ಅಲರ್ಟ್‌ಗಳನ್ನು ಆಫ್ ಮಾಡಲಾಗಿದೆ ಹಾಗೂ ಬುಕ್‌ಮಾರ್ಕ್ ಅನ್ನು ತೆಗೆದುಹಾಕಲಾಗಿದೆ</translation>
 <translation id="4284885181066817063"><ph name="DOMAIN" /> ಮೂಲಕ ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
-<translation id="4285498937028063278">ಅನ್‌ಪಿನ್</translation>
 <translation id="4288101205645068104">ವಾಹನ ಮಾಹಿತಿಯನ್ನು ಅಳಿಸಿ</translation>
 <translation id="4290920330097335010">ಎಂದಿಗೂ ಅನುಮತಿಸಬೇಡಿ</translation>
 <translation id="4297502707443874121">ಪುಟ <ph name="THUMBNAIL_PAGE" /> ರ ಥಂಬ್‌ನೇಲ್</translation>
@@ -2604,7 +2603,6 @@
 <translation id="5056587122125565772">ಚಿತ್ರವನ್ನು ರಚಿಸಿ</translation>
 <translation id="505757197798929356">ತೆರೆಯಲು ಕಾರಣವನ್ನು ನೀಡಿ (ಅಗತ್ಯವಿದೆ)</translation>
 <translation id="5058282932481719070">ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ವರ್ಧಿತ ಆಟೋಫಿಲ್ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
-<translation id="5060419232449737386">ಶೀರ್ಷಿಕೆ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="5061227663725596739">ನೀವು ಹುಡುಕುತ್ತಿರುವುದು <ph name="LOOKALIKE_DOMAIN" /> ತಾನೇ?</translation>
 <translation id="5066056036849835175">ಪ್ರಿಂಟಿಂಗ್ ಇತಿಹಾಸ</translation>
 <translation id="5068524481479508725">A10</translation>
@@ -2973,6 +2971,7 @@
 <translation id="5600044805561809264">ನೀವು ಬ್ರೌಸ್ ಮಾಡುವಾಗ ನೀವು ಹಂಚಿಕೊಳ್ಳುತ್ತಿರುವ ಟ್ಯಾಬ್‌ಗಳ ಕುರಿತ ಪ್ರಶ್ನೆಗಳನ್ನು ಸುಲಭವಾಗಿ ಕೇಳಬಹುದು.</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> ಅಥವಾ <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">ನಿರ್ವಾಹಕ ಬೆಂಬಲಿಸುವುದಿಲ್ಲ</translation>
+<translation id="5604254791550001355">ಪ್ರಾಂಪ್ಟ್ ಅನ್ನು ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="560431066250575003">{HOURS,plural, =1{1 ಗಂಟೆಯ ಹಿಂದೆ ಸಕ್ರಿಯವಾಗಿತ್ತು}one{# ಗಂಟೆಗಳ ಹಿಂದೆ ಸಕ್ರಿಯವಾಗಿತ್ತು}other{# ಗಂಟೆಗಳ ಹಿಂದೆ ಸಕ್ರಿಯವಾಗಿತ್ತು}}</translation>
 <translation id="5605249000617390290">ಬೆಲೆಯ ಟ್ರ್ಯಾಕಿಂಗ್ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
 <translation id="5605670050355397069">Ledger</translation>
@@ -3403,6 +3402,7 @@
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
 <translation id="629730747756840877">ಖಾತೆ</translation>
+<translation id="6299098428775578517">ಸಲಹೆ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="6300452962057769623">{0,plural, =0{ನಿಮ್ಮ ಸಾಧನವು ಈಗ ಮರುಪ್ರಾರಂಭವಾಗುತ್ತದೆ}=1{ನಿಮ್ಮ ಸಾಧನವು 1 ಸೆಕೆಂಡ್‌ನಲ್ಲಿ ಮರುಪ್ರಾರಂಭವಾಗುತ್ತದೆ}one{ನಿಮ್ಮ ಸಾಧನವು # ಸೆಕೆಂಡ್‌ಗಳಲ್ಲಿ ಮರುಪ್ರಾರಂಭವಾಗುತ್ತದೆ}other{ನಿಮ್ಮ ಸಾಧನವು # ಸೆಕೆಂಡ್‌ಗಳಲ್ಲಿ ಮರುಪ್ರಾರಂಭವಾಗುತ್ತದೆ}}</translation>
 <translation id="6301104306974789820">ಬೆಲೆಯನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡುವ ಅಧಿಸೂಚನೆಗಳನ್ನು ಪಡೆದುಕೊಳ್ಳಿ</translation>
 <translation id="6302546952464230349"><ph name="PERMISSION_NAME" /> ಅನುಮತಿಯ ವಿವರಗಳನ್ನು ತೋರಿಸಿ</translation>
@@ -3564,7 +3564,6 @@
 <translation id="6518133107902771759">ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="6519885440226079262">ನಿಮ್ಮ ಕೈಗಳನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡಲು ಕೇಳಬಹುದು</translation>
 <translation id="6520026037299163656">ವೆಬ್ ಆ್ಯಪ್‌ಗಳು ಮತ್ತು ಆನ್‌ಲೈನ್ ಟೂಲ್‌ಗಳು</translation>
-<translation id="65203098586853226"><ph name="SOURCE" /> ನಿಂದ <ph name="TARGET" /> ಭಾಷೆಗೆ ಅನುವಾದಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="6520509611422418552"><ph name="MEMBER_FIRST_NAME" /> ಅವರು "<ph name="GROUP_NAME" />" ಟ್ಯಾಬ್ ಗುಂಪಿಗೆ ಸೇರಿದ್ದಾರೆ</translation>
 <translation id="6521745193039995384">ಸಕ್ರಿಯವಾಗಿಲ್ಲ</translation>
 <translation id="6522682797352430154">ಶಾಸ್ತ್ರೀಯ ಸಂಗೀತ</translation>
@@ -4165,7 +4164,6 @@
 <translation id="7455452752247248289">ಎಂಟರ್‌ಪ್ರೈಸ್ ಟೆಕ್ನಾಲಜಿ</translation>
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">ಕಾರ್ಗೋ ಟ್ರಕ್‌ಗಳು ಮತ್ತು ಟ್ರೇಲರ್‌ಗಳು</translation>
-<translation id="7461924472993315131">ಪಿನ್</translation>
 <translation id="7463068149674892185">ಈ ಕ್ರಿಯೆಯನ್ನು ಶಿಫಾರಸು ಮಾಡುವುದಿಲ್ಲ</translation>
 <translation id="746329643760972486">MacOS</translation>
 <translation id="746412105358554870">JavaScript ಆಪ್ಟಿಮೈಸೇಷನ್‌ ಮತ್ತು ಭದ್ರತೆ</translation>
@@ -4671,7 +4669,6 @@
 <translation id="8246482227229072868">ರಿಂಗ್‌ಗಳು</translation>
 <translation id="8248406213705193919">ಕಾರ್ಡ್ ಅನ್ನು ಸುರಕ್ಷಿತವಾಗಿ ಸೇವ್ ಮಾಡಬೇಕೆ?</translation>
 <translation id="8249296373107784235">ನಿಷ್ಫಲಗೊಳಿಸು</translation>
-<translation id="824968735947741546"><ph name="SOURCE" /> ಅನ್ನು (ಸ್ವಯಂ-ಪತ್ತೆಹಚ್ಚಲಾಗಿದೆ) <ph name="TARGET" /> ಗೆ ಅನುವಾದಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="8250094606476360498">ಈ ವಿಳಾಸವನ್ನು ಪ್ರಸ್ತುತ ಈ ಸಾಧನದಲ್ಲಿ ಸೇವ್ ಮಾಡಲಾಗಿದೆ. ಇದನ್ನು Google ಉತ್ಪನ್ನಗಳಾದ್ಯಂತ ಬಳಸಲು, ಅದನ್ನು ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಸೇವ್ ಮಾಡಿ, <ph name="ACCOUNT" />.</translation>
 <translation id="8250533425540303610"><ph name="LANGUAGE" /> ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲಾಗುತ್ತಿದೆ…</translation>
 <translation id="8251493595871259082">ಕಡಿಮೆ ಟೈಪಿಂಗ್‌ನೊಂದಿಗೆ ನಿಮ್ಮ ವಿಳಾಸವನ್ನು ಭರ್ತಿ ಮಾಡಿ</translation>

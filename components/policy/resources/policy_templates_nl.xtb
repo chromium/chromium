@@ -3221,6 +3221,7 @@ Als je dit beleid niet toepast, of niet instelt, wordt het zwevende toegankelijk
 <translation id="3127816006382989270">Toegang geven tot een lijst met URL's in de incognitomodus.</translation>
 <translation id="3128072319047570212">Instellingen voor sleutelgenerator</translation>
 <translation id="3131703464330936425">Geen mobiele dataroaming toestaan</translation>
+<translation id="3131928857191083710">Instellingen voor grootte van socketgroep</translation>
 <translation id="3135820765957090754">Als je deze instelling aanzet, mogen gebruikers wifi-netwerkconfiguraties synchroniseren tussen hun <ph name="PRODUCT_OS_NAME" />-apparaten en een verbonden Android-telefoon. Voordat wifi-netwerkconfiguraties kunnen worden gesynchroniseerd, moeten gebruikers deze functie expliciet toestaan door een instelprocedure te doorlopen.
 
 Als je deze instelling uitzet, mogen gebruikers geen wifi-netwerkconfiguraties synchroniseren.

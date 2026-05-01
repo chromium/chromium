@@ -629,6 +629,7 @@
 <translation id="1979156660928743046">ຂໍ້ມູນມີເດຍ</translation>
 <translation id="1987486584747170374">ລະບົບຈະສົ່ງການຊອກຫາຂອງທ່ານ, ຜົນຮັບທີ່ກົງກັນທີ່ສຸດ ແລະ ເນື້ອຫາໃນໜ້າໄປຫາ Google. ທີມງານກວດສອບຈະບໍ່ໃຊ້ຂໍ້ມູນດັ່ງກ່າວເພື່ອປັບປຸງ AI. ອົງກອນຂອງທ່ານອາດປ່ຽນການຕັ້ງຄ່າເຫຼົ່ານີ້ໄດ້ທຸກເວລາ.</translation>
 <translation id="1988881251331415125">ຖ້າການສະກົດຄຳຖືກຕ້ອງ, <ph name="BEGIN_LINK" />ລອງເປີດໃຊ້ Connectivity Diagnostics<ph name="END_LINK" />.</translation>
+<translation id="1991370806334788445">ລອງອະນຸຍາດຄຸກກີ້ພາກສ່ວນທີສາມ, ເຊິ່ງໝາຍຄວາມວ່າການປົກປ້ອງລະຫວ່າງທ່ອງເວັບຈະຫຼຸດລົງ ແຕ່ຄຸນສົມບັດຂອງເວັບໄຊມີແນວໂນ້ມທີ່ຈະເຮັດວຽກຕາມທີ່ຄາດໄດ້ຫຼາຍກວ່າ.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567"><ph name="URL" /> ຕ້ອງການເກັບຂໍ້ມູນຂະຫນາດໃຫຍ່ໄວ້ໃນຄອມພິວເຕີສະເພາະບ່ອນຂອງທ່ານຢ່າງຖາວອນ</translation>
 <translation id="1997774360448418989">ເຈ້ຍ (ນ້ຳໜັກເບົາ)</translation>
@@ -2132,7 +2133,6 @@
 <translation id="4282280603030594840">ການຊື້ຍານພາຫະນະ</translation>
 <translation id="4282346679996504092">ການແຈ້ງເຕືອນສຳລັບສິນຄ້ານີ້ໄດ້ຖືກປິດໄວ້ແລ້ວ ແລະ ລຶບບຸກມາກອອກແລ້ວ</translation>
 <translation id="4284885181066817063">ບລັອກໂດຍ <ph name="DOMAIN" /></translation>
-<translation id="4285498937028063278">ຖອນໝຸດ</translation>
 <translation id="4288101205645068104">ລຶບພາຫະນະ</translation>
 <translation id="4290920330097335010">ບໍ່ອະນຸຍາດ</translation>
 <translation id="4297502707443874121">ຮູບຕົວຢ່າງສຳລັບໜ້າ <ph name="THUMBNAIL_PAGE" /></translation>
@@ -2606,7 +2606,6 @@
 <translation id="5056587122125565772">ສ້າງຮູບ</translation>
 <translation id="505757197798929356">ໃຫ້ເຫດຜົນສໍາລັບການເປີດ (ຈຳເປັນ)</translation>
 <translation id="5058282932481719070">ສຶກສາເພີ່ມເຕີມກ່ຽວກັບຄຸນສົມບັດການຕື່ມຂໍ້ມູນອັດຕະໂນມັດທີ່ປັບປຸງໃຫ້ດີຂຶ້ນໃນການຕັ້ງຄ່າ</translation>
-<translation id="5060419232449737386">ການຕັ້ງຄ່າຄຳບັນຍາຍ</translation>
 <translation id="5061227663725596739">ທ່ານໝາຍເຖິງ <ph name="LOOKALIKE_DOMAIN" /> ບໍ?</translation>
 <translation id="5066056036849835175">ປະຫວັດການພິມ</translation>
 <translation id="5068524481479508725">A10</translation>
@@ -3567,7 +3566,6 @@
 <translation id="6518133107902771759">ກວດສອບ</translation>
 <translation id="6519885440226079262">ສາມາດຂໍຕິດຕາມມືຂອງທ່ານໄດ້</translation>
 <translation id="6520026037299163656">ເວັບແອັບ ແລະ ເຄື່ອງມືອອນລາຍ</translation>
-<translation id="65203098586853226">ກຳລັງແປ <ph name="SOURCE" /> ເປັນ <ph name="TARGET" /></translation>
 <translation id="6520509611422418552"><ph name="MEMBER_FIRST_NAME" /> ໄດ້ເຂົ້າຮ່ວມກຸ່ມແຖບ "<ph name="GROUP_NAME" />" ແລ້ວ</translation>
 <translation id="6521745193039995384">ບໍ່ເຄື່ອນໄຫວ</translation>
 <translation id="6522682797352430154">ດົນຕີຄລາດສິກ</translation>
@@ -4167,7 +4165,6 @@
 <translation id="7455452752247248289">ເທັກໂນໂລຢີວິສາຫະກິດ</translation>
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">ລົດບັນທຸກ ແລະ ລົດພ່ວງ</translation>
-<translation id="7461924472993315131">ປັກໝຸດ</translation>
 <translation id="7463068149674892185">ບໍ່ແນະນຳໃຫ້ດຳເນີນການນີ້</translation>
 <translation id="746329643760972486">MacOS</translation>
 <translation id="746412105358554870">ການເພີ່ມປະສິດທິພາບ ແລະ ຄວາມປອດໄພ JavaScript</translation>
@@ -4673,7 +4670,6 @@
 <translation id="8246482227229072868">ແຫວນ</translation>
 <translation id="8248406213705193919">ບັນທຶກບັດໄວ້ຢ່າງປອດໄພບໍ?</translation>
 <translation id="8249296373107784235">ຍົກເລີກ</translation>
-<translation id="824968735947741546">ກຳລັງແປພາສາ <ph name="SOURCE" /> (ກວດພົບອັດຕະໂນມັດ) ເປັນ <ph name="TARGET" /></translation>
 <translation id="8250094606476360498">ປັດຈຸບັນນີ້ທີ່ຢູ່ນີ້ຖືກບັນທຶກໃສ່ອຸປະກອນນີ້ແລ້ວ. ເພື່ອໃຊ້ມັນທົ່ວຜະລິດຕະພັນ Google, ໃຫ້ບັນທຶກມັນໃສ່ໃນບັນຊີ Google ຂອງທ່ານ, <ph name="ACCOUNT" />.</translation>
 <translation id="8250533425540303610">ກຳລັງຕິດຕັ້ງ <ph name="LANGUAGE" />...</translation>
 <translation id="8251493595871259082">ຕື່ມທີ່ຢູ່ຂອງທ່ານດ້ວຍການພິມໜ້ອຍລົງ</translation>

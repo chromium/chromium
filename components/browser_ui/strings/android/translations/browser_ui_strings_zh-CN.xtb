@@ -99,6 +99,7 @@
 <translation id="1985247341569771101">开启此设置后，网站可以使用设备的移动传感器。关闭此设置后，网站无法使用移动传感器。</translation>
 <translation id="1985716030964443178">这会将列表中所有网站的缩放级别重置为默认值</translation>
 <translation id="1989112275319619282">浏览</translation>
+<translation id="1991370806334788445">请尝试允许使用第三方 Cookie。虽然这会降低浏览保护力度，但更有助于确保网站功能按预期正常运行。</translation>
 <translation id="1994173015038366702">网站网址</translation>
 <translation id="1994558116414798016">字体：Lexend</translation>
 <translation id="2004697686368036666">某些网站上的功能可能无法正常运行</translation>
@@ -164,6 +165,7 @@
 <translation id="257931822824936280">已展开 - 点击此处即可收起。</translation>
 <translation id="2586657967955657006">剪贴板</translation>
 <translation id="2588271083332682494">使用标签页分组整理标签页</translation>
+<translation id="2592917252160773942">网站可以请求使用摄像头</translation>
 <translation id="2597457036804169544">不对网站应用深色主题</translation>
 <translation id="2606760465469169465">自动验证</translation>
 <translation id="2621115761605608342">允许特定网站运行 JavaScript。</translation>
@@ -360,6 +362,7 @@
 <translation id="4635969503923889910">不允许网站使用 NFC 设备</translation>
 <translation id="4644713492825682049">删除并重置</translation>
 <translation id="4645575059429386691">由您父母管理</translation>
+<translation id="4651224148644053314">更多颜色和选项</translation>
 <translation id="4652266463001779298">不允许</translation>
 <translation id="4655846733459137112">点按“是”，即可在下次登录时轻松使用此密码</translation>
 <translation id="4663373278480897665">已允许使用摄像头</translation>

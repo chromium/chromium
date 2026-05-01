@@ -629,6 +629,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1979156660928743046">Medieuppgifter</translation>
 <translation id="1987486584747170374">Dina sökningar, dina bästa matchningar och deras sidinnehåll skickas till Google. Det används inte av mänskliga granskare för att förbättra AI. Din organisation kan ändra dessa inställningar när som helst.</translation>
 <translation id="1988881251331415125">Om stavningen är rätt <ph name="BEGIN_LINK" />testar du att köra anslutningsdiagnostik<ph name="END_LINK" />.</translation>
+<translation id="1991370806334788445">Testa att tillåta tredjepartscookies, vilket innebär mindre skydd när du surfar men gör det mer troligt att webbplatsfunktionerna fungerar som förväntat.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567"><ph name="URL" /> vill lagra stora mängder data permanent på din lokala dator</translation>
 <translation id="1997774360448418989">Papper (lättvikt)</translation>
@@ -2132,7 +2133,6 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="4282280603030594840">Bilhandel</translation>
 <translation id="4282346679996504092">Aviseringar för den här produkten har inaktiverats och bokmärket har tagits bort</translation>
 <translation id="4284885181066817063">Blockeras av <ph name="DOMAIN" /></translation>
-<translation id="4285498937028063278">Lossa</translation>
 <translation id="4288101205645068104">Radera fordon</translation>
 <translation id="4290920330097335010">Tillåt aldrig</translation>
 <translation id="4297502707443874121">Miniatyr för sidan <ph name="THUMBNAIL_PAGE" /></translation>
@@ -2606,7 +2606,6 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="5056587122125565772">Skapa bild</translation>
 <translation id="505757197798929356">Ange anledning till att den öppnas (obligatoriskt)</translation>
 <translation id="5058282932481719070">läs mer om förbättrad autofyll i inställningarna</translation>
-<translation id="5060419232449737386">Textningsinställningar</translation>
 <translation id="5061227663725596739">Menade du <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">Utskriftshistorik</translation>
 <translation id="5068524481479508725">A10</translation>
@@ -2975,6 +2974,7 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="5600044805561809264">Du kan enkelt ställa frågor om flikarna du delar medan du surfar.</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> eller <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">Hantering stöds inte</translation>
+<translation id="5604254791550001355">Redigera prompt</translation>
 <translation id="560431066250575003">{HOURS,plural, =1{Aktiv för 1 timme sedan}other{Aktiv för # timmar sedan}}</translation>
 <translation id="5605249000617390290">Läs mer om prisbevakning</translation>
 <translation id="5605670050355397069">Ledger</translation>
@@ -3406,6 +3406,7 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
 <translation id="629730747756840877">Konto</translation>
+<translation id="6299098428775578517">Föreslagna inställningar</translation>
 <translation id="6300452962057769623">{0,plural, =0{Enheten startas om nu}=1{Om 1 sekund startas enheten om}other{Om # sekunder startas enheten om}}</translation>
 <translation id="6301104306974789820">Få aviseringar om prisbevakning</translation>
 <translation id="6302546952464230349">Via information om <ph name="PERMISSION_NAME" /> behörighet</translation>
@@ -3567,7 +3568,6 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="6518133107902771759">Verifiera</translation>
 <translation id="6519885440226079262">Får begära tillstånd att spåra dina händer</translation>
 <translation id="6520026037299163656">Webbappar och onlineverktyg</translation>
-<translation id="65203098586853226">Översätter <ph name="SOURCE" /> till <ph name="TARGET" /></translation>
 <translation id="6520509611422418552"><ph name="MEMBER_FIRST_NAME" /> har gått med i flikgruppen <ph name="GROUP_NAME" /></translation>
 <translation id="6521745193039995384">Inte aktiv</translation>
 <translation id="6522682797352430154">Klassisk musik</translation>
@@ -4168,7 +4168,6 @@ Mer information.
 <translation id="7455452752247248289">Företagsteknik</translation>
 <translation id="745640750744109667">A0 x 3</translation>
 <translation id="7457071735008326060">Lastbilar och släp</translation>
-<translation id="7461924472993315131">Fäst</translation>
 <translation id="7463068149674892185">Den här åtgärden rekommenderas inte</translation>
 <translation id="746329643760972486">MacOS</translation>
 <translation id="746412105358554870">JavaScript-optimering och säkerhet</translation>
@@ -4674,7 +4673,6 @@ Mer information.
 <translation id="8246482227229072868">Ringar</translation>
 <translation id="8248406213705193919">Vill du spara kortet på ett säkert sätt?</translation>
 <translation id="8249296373107784235">Avbryt</translation>
-<translation id="824968735947741546">Översätter <ph name="SOURCE" /> (identifierades automatiskt) till <ph name="TARGET" /></translation>
 <translation id="8250094606476360498">Den här adressen har sparats på den här enheten. Om du vill använda den i olika produkter från Google sparar du den i Google-kontot, <ph name="ACCOUNT" />.</translation>
 <translation id="8250533425540303610">Installerar <ph name="LANGUAGE" /> …</translation>
 <translation id="8251493595871259082">Fyll i adressen utan att behöva skriva så mycket</translation>

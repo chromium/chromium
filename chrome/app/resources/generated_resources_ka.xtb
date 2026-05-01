@@ -4467,7 +4467,6 @@
 <translation id="4036778507053569103">სერვერიდან ჩამოტვირთული წესები არასწორია.</translation>
 <translation id="4037084878352560732">ცხენი</translation>
 <translation id="403725336528835653">ჯერ ცდა</translation>
-<translation id="4039835815168788100">გაფართოებამ „<ph name="EXTENSION_NAME" />“ სცადა თქვენი საძიებო სისტემის <ph name="SEARCH_PROVIDER" />-ით შეცვლა. დაადასტურეთ თქვენი პრიორიტეტული პარამეტრები ქვემოთ</translation>
 <translation id="4039966970282098406">მართეთ თქვენი კონფიდენციალურობა — აკონტროლეთ მიკროფონზე, კამერაზე და სხვა ტიპის წვდომა</translation>
 <translation id="4040041015953651705">ენა, რომლიდანაც უნდა ითარგმნოს</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{გვერდიდან გასვლა}other{გვერდებიდან გასვლა}}</translation>
@@ -6126,7 +6125,6 @@
 <translation id="5208988882104884956">ნახევარი სიგანე</translation>
 <translation id="5209320130288484488">მოწყობილობა ნაპოვნი არ არის</translation>
 <translation id="5209513429611499188">HID მოწყობილობები გამოყენებებით გამოყენების გვერდიდან <ph name="USAGE_PAGE" /></translation>
-<translation id="5210365745912300556">ჩანართის დახურვა</translation>
 <translation id="5211174138048232917">ისტორიის ფაილების ექსპორტი</translation>
 <translation id="5213114823401215820">დახურული ჯგუფის ხელახლა გახსნა</translation>
 <translation id="5213481667492808996">„<ph name="NAME" />“-ის მონაცემთა გადაცემის სერვისი გამოსაყენებლად მზად არის</translation>
@@ -6759,7 +6757,6 @@
 <translation id="5659593005791499971">ელფოსტა</translation>
 <translation id="5659964844710667266">პაროლის შექმნა ამ <ph name="DEVICE_TYPE" />-ისთვის</translation>
 <translation id="5662513737565158057">შეცვალეთ Linux აპების მუშაობის პრინციპი.</translation>
-<translation id="5663317829633858516">ბოლო ცვლილების ავტორია <ph name="EXTENSION_NAME" /></translation>
 <translation id="5663459693447872156">ავტომატურად გადართეთ ნახევარ სიგანეზე</translation>
 <translation id="5663653125349867535">&amp;საკითხავი სია</translation>
 <translation id="5663918299073387939">საიტებს, როგორც წესი, სჭირდება MIDI-მოწყობილობების მართვისა და გადაპროგრამების ნებართვა მუსიკის შესაქმნელად, მუსიკის დასამონტაჟებლად ან მოწყობილობის ჩაშენებული პროგრამული უზრუნველყოფის განსაახლებლად</translation>
@@ -9313,7 +9310,6 @@
 <translation id="746329643760972486">MacOS</translation>
 <translation id="7463985990119325874">თქვენი ორგანიზაცია მართავს, როგორ გამოიყენება ამ ფუნქციების მიერ შეგროვილი მონაცემები.</translation>
 <translation id="7464645554245611385">ამ ჩანართში ბოლო სიახლე</translation>
-<translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{# გახსნილი ჩანართი, დააჭირეთ ჩანართების ზოლის გადასართველად}other{# გახსნილი ჩანართი, დააჭირეთ ჩანართების ზოლის გადასართველად}}</translation>
 <translation id="7465635034594602553">წარმოიქმნა შეფერხება. ცადეთ <ph name="APP_NAME" />-ის ხელახლა გაშვება რამდენიმე წუთის შემდეგ.</translation>
 <translation id="7465777686629334728">შემუშავების მართული გარემოს (<ph name="SPECIFIC_NAME" />) წაშლა</translation>
 <translation id="7465778193084373987">Netscape სერტიფიკატის გაუქმების URL</translation>
@@ -10385,7 +10381,6 @@
 <translation id="8195854162863398249">გაითიშოს „<ph name="FEATURE_NAME" />“</translation>
 <translation id="8195920051450756553">დაყოვნება იმავე კლავიშის აქტივაციამდე</translation>
 <translation id="8197673340773315084">დაამატეთ სახელი ან ლეიბლი, მაგალითად, „სამსახურის“ ან „პირადი“</translation>
-<translation id="8198043456018523011">დაადასტურეთ თქვენი ნაგულისხმევი საძიებო სისტემა</translation>
 <translation id="8198181050118789419">თემა: <ph name="THEME_NAME" /></translation>
 <translation id="8198456017687137612">მიმდინარეობს ჩანართის ტრანსლირება</translation>
 <translation id="8199300056570174101">ქსელის (სერვისი) და მოწყობილობის მახასიათებლები</translation>

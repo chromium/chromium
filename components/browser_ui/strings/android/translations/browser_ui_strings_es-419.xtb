@@ -99,6 +99,7 @@
 <translation id="1985247341569771101">Cuando esta opción está activada, los sitios pueden usar los sensores de movimiento de tu dispositivo. Cuando está desactivada, los sitios no pueden usar los sensores de movimiento.</translation>
 <translation id="1985716030964443178">Se restablecerá el zoom predeterminado de todos los sitios de tu lista</translation>
 <translation id="1989112275319619282">Navegar</translation>
+<translation id="1991370806334788445">Intenta permitir cookies de terceros, lo que implica menos protección al navegar, pero aumenta las probabilidades de que las funciones del sitio se ejecuten como se espera.</translation>
 <translation id="1994173015038366702">URL del sitio</translation>
 <translation id="1994558116414798016">Fuente Lexend</translation>
 <translation id="2004697686368036666">Es posible que algunas funciones no puedan utilizarse en algunos sitios.</translation>
@@ -164,6 +165,7 @@
 <translation id="257931822824936280">Expandido; haz clic para contraer.</translation>
 <translation id="2586657967955657006">Portapapeles</translation>
 <translation id="2588271083332682494">Organiza con grupos de pestañas</translation>
+<translation id="2592917252160773942">Los sitios pueden solicitar el uso de la cámara</translation>
 <translation id="2597457036804169544">No aplicar el Tema oscuro para los sitios</translation>
 <translation id="2606760465469169465">Verificación automática</translation>
 <translation id="2621115761605608342">Permitir la ejecución de JavaScript para un sitio específico</translation>
@@ -360,6 +362,7 @@
 <translation id="4635969503923889910">No permitir que los sitios usen dispositivos NFC</translation>
 <translation id="4644713492825682049">Borrar y restablecer</translation>
 <translation id="4645575059429386691">Administrado por tus padres</translation>
+<translation id="4651224148644053314">Más colores y opciones</translation>
 <translation id="4652266463001779298">No se permite</translation>
 <translation id="4655846733459137112">Presiona Sí para usar fácilmente esta contraseña la próxima vez que accedas</translation>
 <translation id="4663373278480897665">Cámara permitida</translation>

@@ -629,6 +629,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="1979156660928743046">Mediatiedot</translation>
 <translation id="1987486584747170374">Haut, parhaat osumat ja niiden sivujen sisältö lähetetään Googlelle. Tarkastajat eivät käytä niitä tekoälyn parantamiseen. Organisaatio voi muuttaa asetuksia milloin tahansa.</translation>
 <translation id="1988881251331415125">Jos kirjoitusasu on oikein, <ph name="BEGIN_LINK" />kokeile yhteysdiagnostiikkaa<ph name="END_LINK" />.</translation>
+<translation id="1991370806334788445">Kokeile sallia kolmannen osapuolen evästeet. Selauksen suojaus ei tällöin ole niin vahva, mutta sivuston ominaisuudet toimivat todennäköisemmin oikein.</translation>
 <translation id="1992331125980284532">JIS B3 (364 mm x 515 mm)</translation>
 <translation id="1997484222658892567"><ph name="URL" /> haluaa tallentaa suuria tietomääriä pysyvästi paikalliselle tietokoneellesi.</translation>
 <translation id="1997774360448418989">Paperi (kevyt)</translation>
@@ -2133,7 +2134,6 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="4282280603030594840">Ajoneuvojen myynti</translation>
 <translation id="4282346679996504092">Tämän tuotteen ilmoitukset on laitettu pois päältä ja kirjanmerkki poistettu</translation>
 <translation id="4284885181066817063"><ph name="DOMAIN" /> esti toiminnon</translation>
-<translation id="4285498937028063278">Irrota</translation>
 <translation id="4288101205645068104">Poista ajoneuvo</translation>
 <translation id="4290920330097335010">Älä salli koskaan</translation>
 <translation id="4297502707443874121">Sivun <ph name="THUMBNAIL_PAGE" /> pikkukuva</translation>
@@ -2607,7 +2607,6 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="5056587122125565772">Luo kuva</translation>
 <translation id="505757197798929356">Lisää avaamisen syy (pakollinen)</translation>
 <translation id="5058282932481719070">lue lisää parannetusta automaattisesta täytöstä asetuksista</translation>
-<translation id="5060419232449737386">Tekstitysasetukset</translation>
 <translation id="5061227663725596739">Tarkoititko: <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">Tulostushistoria</translation>
 <translation id="5068524481479508725">A10</translation>
@@ -2976,6 +2975,7 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="5600044805561809264">Voit helposti esittää kysymyksiä jakamistasi välilehdistä selailun aikana.</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> tai <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">Hallintaa ei tueta</translation>
+<translation id="5604254791550001355">Muokkaa kehotetta</translation>
 <translation id="560431066250575003">{HOURS,plural, =1{Aktiivinen 1 tunti sitten}other{Aktiivinen # tuntia sitten}}</translation>
 <translation id="5605249000617390290">Lue lisää hintaseurannasta</translation>
 <translation id="5605670050355397069">Kierrevihko</translation>
@@ -3407,6 +3407,7 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="6293309776179964942">JIS B5 (182 mm x 257 mm)</translation>
 <translation id="6295618774959045776">CVC:</translation>
 <translation id="629730747756840877">Tili</translation>
+<translation id="6299098428775578517">Ehdotusasetukset</translation>
 <translation id="6300452962057769623">{0,plural, =0{Laitteesi käynnistyy uudelleen nyt}=1{Laitteesi käynnistyy uudelleen 1 sekunnin kuluttua}other{Laitteesi käynnistyy uudelleen # sekunnin kuluttua}}</translation>
 <translation id="6301104306974789820">Tilaa hintaseurantailmoitukset</translation>
 <translation id="6302546952464230349">Näytä lupatiedot: <ph name="PERMISSION_NAME" /></translation>
@@ -3568,7 +3569,6 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="6518133107902771759">Vahvista</translation>
 <translation id="6519885440226079262">Saa pyytää lupaa seurata käsiäsi</translation>
 <translation id="6520026037299163656">Verkkosovellukset ja -työkalut</translation>
-<translation id="65203098586853226"><ph name="SOURCE" /> käännetään kielelle <ph name="TARGET" /></translation>
 <translation id="6520509611422418552"><ph name="MEMBER_FIRST_NAME" /> liittyi välilehtiryhmään "<ph name="GROUP_NAME" />"</translation>
 <translation id="6521745193039995384">Ei aktiivinen</translation>
 <translation id="6522682797352430154">Klassinen musiikki</translation>
@@ -4169,7 +4169,6 @@ Lisätietoja:
 <translation id="7455452752247248289">Yritysteknologia</translation>
 <translation id="745640750744109667">A0 x 3</translation>
 <translation id="7457071735008326060">Kuorma-autot ja perävaunut</translation>
-<translation id="7461924472993315131">Kiinnitä</translation>
 <translation id="7463068149674892185">Tätä toimintoa ei suositella</translation>
 <translation id="746329643760972486">MacOS</translation>
 <translation id="746412105358554870">JavaScript-optimointi ja ‑suojaus</translation>
@@ -4675,7 +4674,6 @@ Lisätietoja:
 <translation id="8246482227229072868">Sormukset</translation>
 <translation id="8248406213705193919">Tallennetaanko kortti turvallisesti?</translation>
 <translation id="8249296373107784235">Keskeytä</translation>
-<translation id="824968735947741546">Käännetään <ph name="SOURCE" /> (automaattisesti tunnistettu) kielelle <ph name="TARGET" /></translation>
 <translation id="8250094606476360498">Osoite on tallennettu tälle laitteelle. Jos haluat käyttää sitä Googlen tuotteissa, tallenna se Google-tilillesi (<ph name="ACCOUNT" />).</translation>
 <translation id="8250533425540303610">Asennetaan sovellusta <ph name="LANGUAGE" />…</translation>
 <translation id="8251493595871259082">Täytä osoite vähemmällä kirjoittamisella</translation>

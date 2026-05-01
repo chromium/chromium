@@ -721,6 +721,7 @@
 <translation id="3565012355885596568">Hindi ma-load ang mga larawan</translation>
 <translation id="3565930036634619844">Tab. <ph name="TAB_INDEX" /> sa <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">I-save sa ibang paraan</translation>
+<translation id="3571703298474554279">Mas mabilis na paraan para magamit ang app</translation>
 <translation id="3572503683475187385">Ishe-share ang kasalukuyang tab sa Gemini kapag nagsimula ka ng bagong chat. Kapag nag-share ka ng tab sa Gemini, ipapadala sa Google ang mga content at URL ng mga ito. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">Sa iyong Google Account</translation>
 <translation id="3575234738189584619">Maghanap gamit ang Lens</translation>
@@ -1701,6 +1702,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="6871397658902960384">Magsimulang mag-browse</translation>
 <translation id="6874328931822449112">{COUNT,plural, =1{I-save ang password sa account}one{I-save ang mga password sa account}other{I-save ang mga password sa account}}</translation>
 <translation id="6875166646976836138">Puwede mo ring tingnan at pamahalaan ang mga item na ito sa iyong mga bookmark, listahan ng babasahin, o password manager.</translation>
+<translation id="6878052248816456143">I-access ang mga file sa iyong Google Drive anumang oras.</translation>
 <translation id="6882836635272038266">Karaniwang proteksyon laban sa mga website, download, at extension na kilalang mapanganib.</translation>
 <translation id="6884135917113737984">{COUNT,plural, =1{Mag-save ng {COUNT} password sa iyong Google Account}one{Mag-save ng {COUNT} password sa iyong Google Account}other{Mag-save ng {COUNT} na password sa iyong Google Account}}</translation>
 <translation id="6888009575607455378">Sigurado ka bang gusto mong i-discard ang iyong mga pagbabago?</translation>
@@ -1814,6 +1816,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="7345061034321640811">Hindi pinapayagan ang pag-import</translation>
 <translation id="7347998088283246662">Mag-import ng mga password, history, mga bookmark, at higit pa</translation>
 <translation id="7352651011704765696">Nagkaroon ng problema</translation>
+<translation id="7363497636543208734">Mas madali na ngayong mag-navigate sa app.</translation>
 <translation id="7364796246159120393">Pumili ng File</translation>
 <translation id="736564850024123010">Baguhin ang posisyon ng iyong address bar para sa naka-customize na experience.</translation>
 <translation id="7366909168761621528">Data sa pag-browse</translation>
@@ -2113,7 +2116,6 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="8319282042900445670">Nakatakda ang paalala para sa <ph name="TIME" />, <ph name="DATE" /></translation>
 <translation id="8320212361750431956">Kamakailang Aktibidad</translation>
 <translation id="8325455175867928593">Itago ang "Mga review batay sa iyong mga interes"</translation>
-<translation id="8328777765163860529">Isara Lahat</translation>
 <translation id="833647236762414178">Gawin, i-save, at pamahalaan ang iyong mga password at passkey para madaling makapag-sign in sa mga site at app. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">I-back up ang iyong mga file at gamitin ito sa anumang device.</translation>
 <translation id="8348530355586151720">I-tap ang menu na tatlong tuldok</translation>

@@ -99,6 +99,7 @@
 <translation id="1985247341569771101">사용 설정하면 사이트에서 기기의 움직임 감지 센서를 사용할 수 있습니다. 사용 중지하면 사이트에서 움직임 감지 센서를 사용할 수 없습니다.</translation>
 <translation id="1985716030964443178">목록에 있는 모든 사이트가 기본 확대/축소로 재설정됩니다</translation>
 <translation id="1989112275319619282">찾아보기</translation>
+<translation id="1991370806334788445">서드 파티 쿠키를 허용해 보세요. 브라우징 보호 수준은 낮아지지만, 사이트 기능이 예상대로 작동할 가능성은 높아집니다.</translation>
 <translation id="1994173015038366702">사이트 URL</translation>
 <translation id="1994558116414798016">Lexend 글꼴</translation>
 <translation id="2004697686368036666">일부 사이트에서 기능이 작동하지 않을 수 있음</translation>
@@ -164,6 +165,7 @@
 <translation id="257931822824936280">펼쳐짐 - 접으려면 클릭</translation>
 <translation id="2586657967955657006">클립보드</translation>
 <translation id="2588271083332682494">탭 그룹으로 깔끔하게 정리하기</translation>
+<translation id="2592917252160773942">사이트에서 카메라를 요청할 수 있음</translation>
 <translation id="2597457036804169544">사이트에 어두운 테마를 적용하지 마세요.</translation>
 <translation id="2606760465469169465">자동 인증</translation>
 <translation id="2621115761605608342">특정 사이트에서 자바스크립트를 허용합니다.</translation>
@@ -360,6 +362,7 @@
 <translation id="4635969503923889910">사이트에서 NFC 기기를 사용할 수 없음</translation>
 <translation id="4644713492825682049">삭제 및 재설정</translation>
 <translation id="4645575059429386691">부모님이 관리합니다.</translation>
+<translation id="4651224148644053314">색상 및 옵션 더보기</translation>
 <translation id="4652266463001779298">허용되지 않음</translation>
 <translation id="4655846733459137112">다음에 로그인할 때 이 비밀번호를 쉽게 사용하려면 '예'를 탭합니다.</translation>
 <translation id="4663373278480897665">카메라 허용됨</translation>

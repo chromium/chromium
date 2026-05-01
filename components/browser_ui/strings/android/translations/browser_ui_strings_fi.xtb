@@ -99,6 +99,7 @@
 <translation id="1985247341569771101">Kun tämä on päällä, sivustot voivat käyttää laitteesi liiketunnistimia. Kun tämä on pois päältä, sivustot eivät voi käyttää liiketunnistimia.</translation>
 <translation id="1985716030964443178">Tämä palauttaa kaikki listan sivustot zoomauksen oletusarvoon</translation>
 <translation id="1989112275319619282">Selaa</translation>
+<translation id="1991370806334788445">Kokeile sallia kolmannen osapuolen evästeet. Selauksen suojaus ei tällöin ole niin vahva, mutta sivuston ominaisuudet toimivat todennäköisemmin oikein.</translation>
 <translation id="1994173015038366702">Sivuston URL-osoite</translation>
 <translation id="1994558116414798016">Lexend-fontti</translation>
 <translation id="2004697686368036666">Joidenkin sivustojen ominaisuudet eivät välttämättä toimi</translation>
@@ -164,6 +165,7 @@
 <translation id="257931822824936280">Laajennettu – tiivistä klikkaamalla.</translation>
 <translation id="2586657967955657006">Leikepöytä</translation>
 <translation id="2588271083332682494">Laita asiat järjestykseen välilehtiryhmillä</translation>
+<translation id="2592917252160773942">Sivustot voivat pyytää pääsyä kameraan</translation>
 <translation id="2597457036804169544">Älä käytä tummaa teemaa sivustoilla</translation>
 <translation id="2606760465469169465">Vahvista automaattisesti</translation>
 <translation id="2621115761605608342">Salli JavaScript tietyllä sivustolla.</translation>
@@ -360,6 +362,7 @@
 <translation id="4635969503923889910">Älä salli sivustojen käyttää NFC-laitteita</translation>
 <translation id="4644713492825682049">Poista ja nollaa luvat</translation>
 <translation id="4645575059429386691">Vanhempasi hallinnoima</translation>
+<translation id="4651224148644053314">Lisää värejä ja vaihtoehtoja</translation>
 <translation id="4652266463001779298">Ei sallittu</translation>
 <translation id="4655846733459137112">Valitse Kyllä, niin voit käyttää salasanaa helposti seuraavalla kirjautumiskerralla</translation>
 <translation id="4663373278480897665">Kamera sallittu</translation>

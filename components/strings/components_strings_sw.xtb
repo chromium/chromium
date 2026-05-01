@@ -2133,7 +2133,6 @@ Ili ufiche chaguo za kulipa baadaye, nenda kwenye <ph name="BEGIN_LINK" />mipang
 <translation id="4282280603030594840">Ununuzi wa Magari</translation>
 <translation id="4282346679996504092">Arifa za bidhaa hii zimezimwa na alamisho imeondolewa</translation>
 <translation id="4284885181066817063">Imezuiwa na <ph name="DOMAIN" /></translation>
-<translation id="4285498937028063278">Banua</translation>
 <translation id="4288101205645068104">Futa maelezo ya gari</translation>
 <translation id="4290920330097335010">Usiruhusu kamwe</translation>
 <translation id="4297502707443874121">Kijipicha cha ukurasa wa <ph name="THUMBNAIL_PAGE" /></translation>
@@ -2607,7 +2606,6 @@ Ili ufiche chaguo za kulipa baadaye, nenda kwenye <ph name="BEGIN_LINK" />mipang
 <translation id="5056587122125565772">Buni picha</translation>
 <translation id="505757197798929356">Toa sababu ya kufungua (ni lazima)</translation>
 <translation id="5058282932481719070">pata maelezo zaidi kuhusu kipengele kilichoboreshwa cha kujaza kiotomatiki katika mipangilio</translation>
-<translation id="5060419232449737386">Mipangilio ya manukuu</translation>
 <translation id="5061227663725596739">Je, ulimaanisha <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">Historia ya kuchapisha</translation>
 <translation id="5068524481479508725">A10</translation>
@@ -3568,7 +3566,6 @@ Ili ufiche chaguo za kulipa baadaye, nenda kwenye <ph name="BEGIN_LINK" />mipang
 <translation id="6518133107902771759">Thibitisha</translation>
 <translation id="6519885440226079262">Inaweza kuomba kufuatilia mijongeo ya mikono yako</translation>
 <translation id="6520026037299163656">Programu za Wavuti na Zana za Mtandaoni</translation>
-<translation id="65203098586853226">Inatafsiriwa kutoka <ph name="SOURCE" /> kwenda <ph name="TARGET" /></translation>
 <translation id="6520509611422418552"><ph name="MEMBER_FIRST_NAME" /> amejiunga na kikundi cha vichupo cha "<ph name="GROUP_NAME" />"</translation>
 <translation id="6521745193039995384">Haitumiki</translation>
 <translation id="6522682797352430154">Muziki wa Zamani</translation>
@@ -4167,7 +4164,6 @@ Ili ufiche chaguo za kulipa baadaye, nenda kwenye <ph name="BEGIN_LINK" />mipang
 <translation id="7455452752247248289">Teknolojia ya Biashara</translation>
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">Malori na Matrela ya Mizigo</translation>
-<translation id="7461924472993315131">Bana</translation>
 <translation id="7463068149674892185">Msimamizi hapendekezi kitendo hiki</translation>
 <translation id="746329643760972486">MacOS</translation>
 <translation id="746412105358554870">Uboreshaji na usalama wa JavaScript</translation>
@@ -4673,7 +4669,6 @@ Ili ufiche chaguo za kulipa baadaye, nenda kwenye <ph name="BEGIN_LINK" />mipang
 <translation id="8246482227229072868">Mapete</translation>
 <translation id="8248406213705193919">Ungependa kuhifadhi kadi kwa njia salama?</translation>
 <translation id="8249296373107784235">Ghairi</translation>
-<translation id="824968735947741546">Inatafsiri <ph name="SOURCE" /> (imetambuliwa kiotomatiki) kwenda <ph name="TARGET" /></translation>
 <translation id="8250094606476360498">Anwani hii kwa sasa imehifadhiwa kwenye kifaa hiki. Ili uitumie kwenye bidhaa za Google, ihifadhi kwenye Akaunti yako ya Google, <ph name="ACCOUNT" />.</translation>
 <translation id="8250533425540303610">Inaweka <ph name="LANGUAGE" />...</translation>
 <translation id="8251493595871259082">Kujaza anwani yako kwa kuandika kidogo</translation>

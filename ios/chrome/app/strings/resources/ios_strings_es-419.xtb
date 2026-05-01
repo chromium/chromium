@@ -1279,7 +1279,7 @@
 <translation id="5524590039848017563">Botón principal de la barra de herramientas contraído</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} contraseña poco segura}other{{COUNT} contraseñas poco seguras}}</translation>
 <translation id="5532545557415295622">Diálogo de tiempo de espera de inactividad</translation>
-<translation id="5547868626772433490">Pregúntale a Gemini</translation>
+<translation id="5547868626772433490">Preguntarle a Gemini</translation>
 <translation id="5548760955356983418">Handoff te permite comenzar a navegar en un sitio web en este dispositivo y, luego, continuar fácilmente en tu Mac. El sitio web que está abierto ahora aparecerá en el Dock de tu Mac.
 
 Handoff también debe estar habilitado en la sección General de la configuración, y los dispositivos deben utilizar la misma cuenta de iCloud.</translation>
@@ -1576,6 +1576,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="6476800141292307438">Se está traduciendo la página al <ph name="LANGUAGE" />. Las opciones disponibles se encuentran cerca de la parte inferior de la pantalla.</translation>
 <translation id="647867789226964031">Cambia tus contraseñas</translation>
 <translation id="6480363549849064919">Autenticación de clientes</translation>
+<translation id="6489174933860678546">Abre pestañas de incógnito para navegar por la Web de forma más privada.</translation>
 <translation id="6494931198667773526">Finaliza</translation>
 <translation id="6503077044568424649">Más visitados</translation>
 <translation id="6503763061813913607">Notificaciones de la Verificación de seguridad</translation>
@@ -2112,7 +2113,6 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="8319282042900445670">Se estableció el recordatorio para las <ph name="TIME" />, <ph name="DATE" /></translation>
 <translation id="8320212361750431956">Actividad reciente</translation>
 <translation id="8325455175867928593">Ocultar "Opiniones basadas en tus intereses"</translation>
-<translation id="8328777765163860529">Cerrar todas</translation>
 <translation id="833647236762414178">Crea, guarda y administra tus contraseñas y llaves de acceso para acceder fácilmente a sitios y apps. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Crea una copia de seguridad de tus datos y úsalos en cualquier dispositivo.</translation>
 <translation id="8348530355586151720">Presiona el menú de tres puntos.</translation>
@@ -2296,6 +2296,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="8915916167043355778">Cerrar</translation>
 <translation id="892185197271200809">Todos los usuarios perderán de inmediato el acceso al grupo de pestañas “<ph name="GROUP_NAME" />” y se borrará de todos los dispositivos</translation>
 <translation id="8923178205567790913">Contraseñas</translation>
+<translation id="8926498511977337209">Navega en modo Incógnito</translation>
 <translation id="892776311701544612">Más información…</translation>
 <translation id="8928133177108699615">Escritorio</translation>
 <translation id="8928426232677696166"><ph name="EMAIL" />, administrada por tu organización, está seleccionada actualmente. Elige una cuenta.</translation>

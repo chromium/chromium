@@ -2134,7 +2134,6 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="4282280603030594840">Beli-belah Kenderaan</translation>
 <translation id="4282346679996504092">Makluman untuk produk ini telah dimatikan dan penanda halaman dialih keluar</translation>
 <translation id="4284885181066817063">Disekat oleh <ph name="DOMAIN" /></translation>
-<translation id="4285498937028063278">Menyahpin</translation>
 <translation id="4288101205645068104">Padamkan kenderaan</translation>
 <translation id="4290920330097335010">Jangan sekali-kali benarkan</translation>
 <translation id="4297502707443874121">Lakaran kecil untuk halaman <ph name="THUMBNAIL_PAGE" /></translation>
@@ -2608,7 +2607,6 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="5056587122125565772">Buat imej</translation>
 <translation id="505757197798929356">Berikan sebab untuk membuka fail (diperlukan)</translation>
 <translation id="5058282932481719070">ketahui autolengkap yang dipertingkatkan dengan lebih lanjut dalam tetapan</translation>
-<translation id="5060419232449737386">Tetapan sari kata</translation>
 <translation id="5061227663725596739">Adakah anda maksudkan <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">Sejarah pencetakan</translation>
 <translation id="5068524481479508725">A10</translation>
@@ -2977,6 +2975,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="5600044805561809264">Anda boleh bertanya soalan tentang tab yang anda kongsi dengan mudah semasa anda menyemak imbas.</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> atau <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">Pengurusan tidak disokong</translation>
+<translation id="5604254791550001355">Edit gesaan</translation>
 <translation id="560431066250575003">{HOURS,plural, =1{Aktif 1 jam lalu}other{Aktif # jam lalu}}</translation>
 <translation id="5605249000617390290">Ketahui lebih lanjut tentang penjejakan harga</translation>
 <translation id="5605670050355397069">Lejar</translation>
@@ -3408,6 +3407,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
 <translation id="629730747756840877">Akaun</translation>
+<translation id="6299098428775578517">Tetapan cadangan</translation>
 <translation id="6300452962057769623">{0,plural, =0{Peranti anda akan dimulakan semula sekarang}=1{Peranti anda akan dimulakan semula dalam masa 1 saat}other{Peranti anda akan dimulakan semula dalam masa # saat}}</translation>
 <translation id="6301104306974789820">Dapatkan pemberitahuan penjejakan harga</translation>
 <translation id="6302546952464230349">Paparkan butiran kebenaran <ph name="PERMISSION_NAME" /></translation>
@@ -3569,7 +3569,6 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="6518133107902771759">Sahkan</translation>
 <translation id="6519885440226079262">Boleh meminta untuk menjejaki tangan anda</translation>
 <translation id="6520026037299163656">Apl Web &amp; Alatan Dalam Talian</translation>
-<translation id="65203098586853226">Menterjemahkan <ph name="SOURCE" /> kepada <ph name="TARGET" /></translation>
 <translation id="6520509611422418552"><ph name="MEMBER_FIRST_NAME" /> menyertai kumpulan tab "<ph name="GROUP_NAME" />"</translation>
 <translation id="6521745193039995384">Tidak aktif</translation>
 <translation id="6522682797352430154">Muzik Klasik</translation>
@@ -4170,7 +4169,6 @@ Butiran tambahan:
 <translation id="7455452752247248289">Teknologi Perusahaan</translation>
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">Trak &amp; Treler Kargo</translation>
-<translation id="7461924472993315131">Pin</translation>
 <translation id="7463068149674892185">Tindakan ini tidak disyorkan</translation>
 <translation id="746329643760972486">MacOS</translation>
 <translation id="746412105358554870">Pengoptimuman &amp; keselamatan JavaScript</translation>
@@ -4676,7 +4674,6 @@ Butiran tambahan:
 <translation id="8246482227229072868">Gelung</translation>
 <translation id="8248406213705193919">Simpan kad dengan selamat?</translation>
 <translation id="8249296373107784235">Henti paksa</translation>
-<translation id="824968735947741546">Menterjemahkan <ph name="SOURCE" /> (dikesan secara automatik) kepada <ph name="TARGET" /></translation>
 <translation id="8250094606476360498">Alamat ini disimpan pada peranti ini pada masa ini. Untuk menggunakan alamat ini pada seluruh produk Google, simpan alamat ini dalam Google Account anda, <ph name="ACCOUNT" />.</translation>
 <translation id="8250533425540303610">Memasang <ph name="LANGUAGE" />...</translation>
 <translation id="8251493595871259082">Isi alamat anda dengan kurang menaip</translation>

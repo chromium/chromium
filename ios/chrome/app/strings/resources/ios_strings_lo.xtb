@@ -1576,6 +1576,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="6476800141292307438">ກຳລັງແປໜ້າເວັບເປັນ <ph name="LANGUAGE" />. ມີຕົວເລືອກໃຫ້ນຳໃຊ້ຢູ່ໃກ້ລຸ່ມສຸດຂອງໜ້າຈໍ.</translation>
 <translation id="647867789226964031">ປ່ຽນລະຫັດຜ່ານຂອງທ່ານ</translation>
 <translation id="6480363549849064919">ການພິສູດຢືນຢັນລູກຂ່າຍ</translation>
+<translation id="6489174933860678546">ເປີດແຖບບໍ່ເປີດເຜີຍຕົວຕົນເພື່ອທ່ອງເວັບແບບເປັນສ່ວນຕົວຫຼາຍຂຶ້ນ.</translation>
 <translation id="6494931198667773526">ສິ້ນສຸດ</translation>
 <translation id="6503077044568424649">ເຂົ້າເບິ່ງ​ຫຼາຍ​ທີ່​ສຸດ</translation>
 <translation id="6503763061813913607">ການແຈ້ງເຕືອນການກວດສອບຄວາມປອດໄພ</translation>
@@ -2112,7 +2113,6 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="8319282042900445670">ຕັ້ງການແຈ້ງເຕືອນເປັນ <ph name="TIME" />, <ph name="DATE" /> ແລ້ວ</translation>
 <translation id="8320212361750431956">ການເຄື່ອນໄຫວຫຼ້າສຸດ</translation>
 <translation id="8325455175867928593">ເຊື່ອງ "ຄຳຕິຊົມຕາມຄວາມສົນໃຈຂອງທ່ານ"</translation>
-<translation id="8328777765163860529">ປິດທັງໝົດ</translation>
 <translation id="833647236762414178">ສ້າງ, ບັນທຶກ ແລະ ຈັດການລະຫັດຜ່ານ ແລະ ກະແຈຜ່ານຂອງທ່ານເພື່ອເຂົ້າສູ່ລະບົບເວັບໄຊ ແລະ ແອັບໄດ້ຢ່າງງ່າຍດາຍ. <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">ສຳຮອງຂໍ້ມູນຂອງທ່ານ ແລະ ໃຊ້ມັນຢູ່ອຸປະກອນໃດກໍໄດ້.</translation>
 <translation id="8348530355586151720">ແຕະເມນູສາມຈ້ຳ</translation>
@@ -2296,6 +2296,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="8915916167043355778">ປິດທັງໝົດ</translation>
 <translation id="892185197271200809">ທຸກຄົນຈະສູນເສຍສິດເຂົ້າເຖິງກຸ່ມແຖບ “<ph name="GROUP_NAME" />" ທັນທີ ແລະ ລະບົບຈະລຶບກຸ່ມດັ່ງກ່າວອອກຈາກອຸປະກອນທັງໝົດ</translation>
 <translation id="8923178205567790913">ລະຫັດຜ່ານ</translation>
+<translation id="8926498511977337209">ທ່ອງເວັບໃນໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ</translation>
 <translation id="892776311701544612">ສຶກສາເພີ່ມເຕີມ…</translation>
 <translation id="8928133177108699615">ເດັສທັອບ</translation>
 <translation id="8928426232677696166">ເລືອກ <ph name="EMAIL" /> ປັດຈຸບັນທີ່ຈັດການໂດຍອົງກອນຂອງທ່ານ. ເລືອກບັນຊີ.</translation>

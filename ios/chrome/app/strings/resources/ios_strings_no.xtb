@@ -721,6 +721,7 @@
 <translation id="3565012355885596568">Kunne ikke laste inn bilder</translation>
 <translation id="3565930036634619844">Fane. <ph name="TAB_INDEX" /> av <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">Lagre annerledes</translation>
+<translation id="3571703298474554279">En raskere måte å bruke appen på</translation>
 <translation id="3572503683475187385">Den aktive fanen deles med Gemini når du starter en ny chat. Når du deler en fane med Gemini, sendes innholdet og nettadressen til Google. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">I Google-kontoen din</translation>
 <translation id="3575234738189584619">Søk med Lens</translation>
@@ -1701,6 +1702,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="6871397658902960384">Begynn å surfe</translation>
 <translation id="6874328931822449112">{COUNT,plural, =1{Lagre passordet i kontoen}other{Lagre passordene i kontoen}}</translation>
 <translation id="6875166646976836138">Du kan også se og administrere disse elementene i bokmerkene, på leselisten eller i passordlagringen.</translation>
+<translation id="6878052248816456143">Få tilgang til filer på Google Disk når som helst.</translation>
 <translation id="6882836635272038266">Standardbeskyttelse mot nettsteder, nedlastinger og utvidelser som anses som farlige.</translation>
 <translation id="6884135917113737984">{COUNT,plural, =1{Lagre {COUNT} passord i Google-kontoen din}other{Lagre {COUNT} passord i Google-kontoen din}}</translation>
 <translation id="6888009575607455378">Er du sikker på at du vil forkaste endringene?</translation>
@@ -1814,6 +1816,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="7345061034321640811">Import er ikke tillatt</translation>
 <translation id="7347998088283246662">Importer passord, logg, bokmerker med mer</translation>
 <translation id="7352651011704765696">Noe gikk galt</translation>
+<translation id="7363497636543208734">Nå er det enklere å navigere i appen.</translation>
 <translation id="7364796246159120393">Velg fil</translation>
 <translation id="736564850024123010">Endre adressefeltets plassering for å få en tilpasset opplevelse.</translation>
 <translation id="7366909168761621528">Nettleserdata</translation>
@@ -2113,7 +2116,6 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="8319282042900445670">Påminnelsen er stilt inn til <ph name="TIME" />, <ph name="DATE" /></translation>
 <translation id="8320212361750431956">Nylig aktivitet</translation>
 <translation id="8325455175867928593">Skjul «Anmeldelser basert på interessene dine»</translation>
-<translation id="8328777765163860529">Lukk alle</translation>
 <translation id="833647236762414178">Opprett, lagre og administrer passordene og passnøklene dine for å logge på nettsteder og apper enkelt. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Sikkerhetskopier tingene dine, og bruk dem på alle enheter.</translation>
 <translation id="8348530355586151720">Trykk på menyen med tre prikker</translation>

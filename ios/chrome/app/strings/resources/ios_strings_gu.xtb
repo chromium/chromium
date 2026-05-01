@@ -721,6 +721,7 @@
 <translation id="3565012355885596568">છબીઓ લોડ કરી શકાઈ નથી</translation>
 <translation id="3565930036634619844">ટૅબ. <ph name="NUMBER_OF_TABS" />માંથી <ph name="TAB_INDEX" />.</translation>
 <translation id="3567168891086460374">કોઈ અન્ય રીતે સાચવો</translation>
+<translation id="3571703298474554279">ઍપનો ઉપયોગ કરવાની ઝડપી રીત</translation>
 <translation id="3572503683475187385">જ્યારે તમે નવી ચૅટ શરૂ કરો, ત્યારે વર્તમાન ટૅબ Gemini સાથે શેર કરવામાં આવે છે. જ્યારે તમે Gemini સાથે કોઈ ટૅબ શેર કરો છો, ત્યારે તેનું કન્ટેન્ટ અને URL Googleને મોકલવામાં આવે છે. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">તમારા Google એકાઉન્ટમાં</translation>
 <translation id="3575234738189584619">Lens વડે શોધો</translation>
@@ -1701,6 +1702,7 @@
 <translation id="6871397658902960384">બ્રાઉઝ કરવાનું શરૂ કરો</translation>
 <translation id="6874328931822449112">{COUNT,plural, =1{એકાઉન્ટમાં પાસવર્ડ સાચવો}one{એકાઉન્ટમાં પાસવર્ડ સાચવો}other{એકાઉન્ટમાં પાસવર્ડ સાચવો}}</translation>
 <translation id="6875166646976836138">તમે તમારા બુકમાર્ક, વાંચન સૂચિ કે પાસવર્ડ મેનેજરમાં આ આઇટમને જોઈ તેમજ તેને મેનેજ પણ કરી શકો છો.</translation>
+<translation id="6878052248816456143">તમારી Google Driveમાંની ફાઇલોને કોઈપણ સમયે ઍક્સેસ કરો.</translation>
 <translation id="6882836635272038266">જોખમકારક જણાતી હોય એવી વેબસાઇટ, ડાઉનલોડ અને એક્સ્ટેંશન સામે માનક સંરક્ષણ.</translation>
 <translation id="6884135917113737984">{COUNT,plural, =1{તમારા Google એકાઉન્ટમાં {COUNT} પાસવર્ડ સાચવો}one{તમારા Google એકાઉન્ટમાં {COUNT} પાસવર્ડ સાચવો}other{તમારા Google એકાઉન્ટમાં {COUNT} પાસવર્ડ સાચવો}}</translation>
 <translation id="6888009575607455378">શું તમે ખરેખર તમારા ફેરફારો કાઢી નાખવા ઇચ્છો છો?</translation>
@@ -1814,6 +1816,7 @@
 <translation id="7345061034321640811">આયાત કરવાની મંજૂરી નથી</translation>
 <translation id="7347998088283246662">પાસવર્ડ, ઇતિહાસ, બુકમાર્ક અને બીજું ઘણું આયાત કરો</translation>
 <translation id="7352651011704765696">કંઈક ખોટું થયું હતું</translation>
+<translation id="7363497636543208734">હવે ઍપમાં શોધખોળ કરવાનું વધુ સરળ બન્યું છે.</translation>
 <translation id="7364796246159120393">ફાઇલ પસંદ કરો</translation>
 <translation id="736564850024123010">કસ્ટમાઇઝ કરેલા કોઈ અનુભવ માટે, તમારા ઍડ્રેસ બારની જગ્યા સ્વિચ કરો.</translation>
 <translation id="7366909168761621528">બ્રાઉઝિંગ ડેટા</translation>
@@ -2113,7 +2116,6 @@
 <translation id="8319282042900445670"><ph name="TIME" />, <ph name="DATE" /> માટે રિમાઇન્ડર સેટ કર્યું</translation>
 <translation id="8320212361750431956">તાજેતરની ઍક્ટિવિટી</translation>
 <translation id="8325455175867928593">"તમારી રુચિઓ પર આધારિત રિવ્યૂ" છુપાવો</translation>
-<translation id="8328777765163860529">બધું બંધ કરો</translation>
 <translation id="833647236762414178">સાઇટ અને ઍપમાં સરળતાથી સાઇન ઇન કરવા માટે, તમારા પાસવર્ડ અને પાસકી બનાવો, તેને સાચવો અને મેનેજ કરો. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">તમારી સામગ્રીનું બૅકઅપ લો અને કોઈપણ ડિવાઇસ પર તેનો ઉપયોગ કરો.</translation>
 <translation id="8348530355586151720">ત્રણ ડૉટ મેનૂ પર ટૅપ કરો</translation>

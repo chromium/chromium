@@ -2133,7 +2133,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4282280603030594840">Zakup samochodu</translation>
 <translation id="4282346679996504092">Alerty dotyczące tego produktu zostały wyłączone, a zakładka usunięta</translation>
 <translation id="4284885181066817063">Zablokowane przez <ph name="DOMAIN" /></translation>
-<translation id="4285498937028063278">Odepnij</translation>
 <translation id="4288101205645068104">Usuń pojazd</translation>
 <translation id="4290920330097335010">Nigdy nie zezwalaj</translation>
 <translation id="4297502707443874121">Miniatura strony <ph name="THUMBNAIL_PAGE" /></translation>
@@ -2607,7 +2606,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5056587122125565772">Utwórz obraz</translation>
 <translation id="505757197798929356">Podaj powód otwarcia (wymagane)</translation>
 <translation id="5058282932481719070">Więcej informacji o ulepszonym autouzupełnianiu w ustawieniach</translation>
-<translation id="5060419232449737386">Ustawienia napisów</translation>
 <translation id="5061227663725596739">Czy chodziło Ci o <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">Historia drukowania</translation>
 <translation id="5068524481479508725">A10</translation>
@@ -3568,7 +3566,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6518133107902771759">Zweryfikuj</translation>
 <translation id="6519885440226079262">Może prosić o zgodę na śledzenie rąk</translation>
 <translation id="6520026037299163656">Narzędzia i aplikacje internetowe</translation>
-<translation id="65203098586853226">Tłumaczenie z języka: <ph name="SOURCE" /> na <ph name="TARGET" /></translation>
 <translation id="6520509611422418552"><ph name="MEMBER_FIRST_NAME" /> dołączył(a) do grupy kart „<ph name="GROUP_NAME" />”</translation>
 <translation id="6521745193039995384">Nieaktywna</translation>
 <translation id="6522682797352430154">Muzyka klasyczna</translation>
@@ -4169,7 +4166,6 @@ Dodatkowe informacje:
 <translation id="7455452752247248289">Technologie dla przedsiębiorstw</translation>
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">Samochody ciężarowe i przyczepy</translation>
-<translation id="7461924472993315131">Przypnij</translation>
 <translation id="7463068149674892185">Nie zalecamy tego</translation>
 <translation id="746329643760972486">macOS</translation>
 <translation id="746412105358554870">Optymalizacja i zabezpieczenia JavaScriptu</translation>
@@ -4675,7 +4671,6 @@ Dodatkowe informacje:
 <translation id="8246482227229072868">Obrączki i pierścionki</translation>
 <translation id="8248406213705193919">Zapisać bezpiecznie kartę?</translation>
 <translation id="8249296373107784235">Przerwij</translation>
-<translation id="824968735947741546">Tłumaczę z języka: <ph name="SOURCE" /> (wykrytego automatycznie) na <ph name="TARGET" /></translation>
 <translation id="8250094606476360498">Ten adres jest obecnie zapisany na tym urządzeniu. Aby używać go w różnych usługach Google, zapisz go na swoim koncie Google <ph name="ACCOUNT" />.</translation>
 <translation id="8250533425540303610">Instaluję pakiet językowy <ph name="LANGUAGE" />…</translation>
 <translation id="8251493595871259082">Wypełnij adres, pisząc mniej</translation>
