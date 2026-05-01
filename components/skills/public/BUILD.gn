@@ -103,6 +103,7 @@ source_set("unit_tests") {
   sources = [
     "skill_unittest.cc",
     "skills_metrics_unittest.cc",
+    "skills_mojom_traits_unittest.cc",
   ]
 
   deps = [
