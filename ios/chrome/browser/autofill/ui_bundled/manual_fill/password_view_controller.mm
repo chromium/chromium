@@ -13,6 +13,7 @@
 #import "components/google/core/common/google_util.h"
 #import "components/password_manager/core/browser/password_manager_constants.h"
 #import "components/plus_addresses/core/common/features.h"
+#import "components/webauthn/ios/features.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_action_cell.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_cell_utils.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_constants.h"
@@ -157,8 +158,11 @@ enum ManualFallbackItemType : NSInteger {
         [[TableViewTextHeaderFooterItem alloc]
             initWithType:manual_fill::ManualFallbackItemType::
                              kNoCredentialsMessage];
-    textHeaderFooterItem.text =
-        l10n_util::GetNSString(IDS_IOS_MANUAL_FALLBACK_NO_PASSWORDS_FOR_SITE);
+
+    textHeaderFooterItem.text = l10n_util::GetNSString(
+        IsConditionalPasskeyLoginEnabled()
+            ? IDS_IOS_MANUAL_FALLBACK_NO_PASSWORDS_OR_PASSKEYS_FOR_SITE
+            : IDS_IOS_MANUAL_FALLBACK_NO_PASSWORDS_FOR_SITE);
     self.noRegularDataItemsToShowHeaderItem = textHeaderFooterItem;
   }
 

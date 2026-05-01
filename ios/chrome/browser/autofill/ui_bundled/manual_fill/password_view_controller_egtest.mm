@@ -10,6 +10,7 @@
 #import "components/password_manager/core/browser/features/password_features.h"
 #import "components/password_manager/core/browser/password_ui_utils.h"
 #import "components/strings/grit/components_strings.h"
+#import "components/webauthn/ios/features.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
@@ -302,6 +303,12 @@ void CheckKeyboardIsUpAndNotCovered() {
   // is tested in its own suite in password_suggestion_egtest.mm.
   config.features_disabled.push_back(
       password_manager::features::kIOSProactivePasswordGenerationBottomSheet);
+
+  if ([self isRunningTest:@selector
+            (testNoCredentialsMessageIsVisibleWhenPasskeysEnabled)]) {
+    config.features_enabled.push_back(kIOSPasskeyShim);
+    config.features_enabled.push_back(kIOSPasskeyConditionalLoginWithShim);
+  }
 
   return config;
 }
@@ -880,6 +887,26 @@ void CheckKeyboardIsUpAndNotCovered() {
   id<GREYMatcher> noPasswordsFoundMessage = grey_accessibilityLabel(
       l10n_util::GetNSString(IDS_IOS_MANUAL_FALLBACK_NO_PASSWORDS_FOR_SITE));
   [[EarlGrey selectElementWithMatcher:noPasswordsFoundMessage]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests that the message indicating no credentials were found is visible when
+// no password or passkey suggestions are available for the current website.
+- (void)testNoCredentialsMessageIsVisibleWhenPasskeysEnabled {
+  [AutofillAppInterface clearProfilePasswordStore];
+
+  // Bring up the keyboard.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:TapWebElementWithId(kFormElementUsername)];
+
+  // Open the password manual fill view.
+  OpenPasswordManualFillView(/*has_suggestions=*/false);
+
+  // Assert that the correct empty state message is visible.
+  id<GREYMatcher> noCredentialsMessage =
+      grey_accessibilityLabel(l10n_util::GetNSString(
+          IDS_IOS_MANUAL_FALLBACK_NO_PASSWORDS_OR_PASSKEYS_FOR_SITE));
+  [[EarlGrey selectElementWithMatcher:noCredentialsMessage]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 

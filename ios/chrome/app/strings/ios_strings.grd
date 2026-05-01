@@ -4482,8 +4482,11 @@
       <message name="IDS_IOS_MANUAL_FALLBACK_NO_ADDRESSES" desc="The message displayed in the address manual fallback view when there are no addresses to display. [30em]">
         No addresses found
       </message>
-      <message name="IDS_IOS_MANUAL_FALLBACK_NO_PASSWORDS_FOR_SITE" desc="The title for disabled buttons when a list of credentials for manual fallback is empty. [30em]">
+      <message name="IDS_IOS_MANUAL_FALLBACK_NO_PASSWORDS_FOR_SITE" desc="Text displayed in the manual fallback view when no passwords are found for the current site. [30em]">
         No passwords found for this site
+      </message>
+      <message name="IDS_IOS_MANUAL_FALLBACK_NO_PASSWORDS_OR_PASSKEYS_FOR_SITE" desc="Text displayed in the manual fallback view when no passwords or passkeys are found for the current site. [30em]">
+        No passwords or passkeys found for this site
       </message>
       <message name="IDS_IOS_MANUAL_FALLBACK_NO_PAYMENT_METHODS" desc="The message displayed in the payment method manual fallback view when there are no payment methods to display. [30em]">
         No payment methods found

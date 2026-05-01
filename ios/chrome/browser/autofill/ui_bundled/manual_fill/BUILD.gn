@@ -352,6 +352,7 @@ source_set("eg2_tests") {
     "//components/plus_addresses/core/browser/resources/strings",
     "//components/plus_addresses/core/common:features",
     "//components/strings",
+    "//components/webauthn/ios:features",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/authentication/test:eg_test_support+eg2",
     "//ios/chrome/browser/autofill/ui_bundled:eg_test_support+eg2",
