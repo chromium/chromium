@@ -148,6 +148,9 @@ class TabStripModelDelegate {
   // to perform any preparation neccessary.
   virtual void WillCloseGroup(const tab_groups::TabGroupId& group) = 0;
 
+  // Called before a full split view (both tabs) is closed.
+  virtual void WillCloseSplit(const split_tabs::SplitTabId& split_id) = 0;
+
   // Notifies the tab restore service that the group is no longer closing.
   virtual void GroupCloseStopped(const tab_groups::TabGroupId& group) = 0;
 

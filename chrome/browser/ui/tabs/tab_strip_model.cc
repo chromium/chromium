@@ -2588,6 +2588,13 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
       base::UmaHistogramCounts1000("Tab.ContextMenu.CloseTab.SelectedTabsCount",
                                    selection_model_.size());
       base::RecordAction(UserMetricsAction("TabContextMenu_CloseTab"));
+
+      std::optional<split_tabs::SplitTabId> split_id =
+          GetSplitForTab(context_index);
+      if (split_id.has_value()) {
+        delegate_->WillCloseSplit(split_id.value());
+      }
+
       ExecuteCloseTabs(
           base::BindRepeating(&TabStripModel::GetTabsForCommand,
                               base::Unretained(this), context_index),

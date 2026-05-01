@@ -63,6 +63,7 @@ class TestTabStripModelDelegate : public TabStripModelDelegate {
   void CreateHistoricalGroup(const tab_groups::TabGroupId& group) override;
   void GroupAdded(const tab_groups::TabGroupId& group) override;
   void WillCloseGroup(const tab_groups::TabGroupId& group) override;
+  void WillCloseSplit(const split_tabs::SplitTabId& split_id) override;
   void GroupCloseStopped(const tab_groups::TabGroupId& group) override;
   bool ShouldRunUnloadListenerBeforeClosing(
       content::WebContents* contents) override;

@@ -265,6 +265,12 @@ void BrowserTabStripModelDelegate::WillCloseGroup(
   CreateHistoricalGroup(group);
 }
 
+void BrowserTabStripModelDelegate::WillCloseSplit(
+    const split_tabs::SplitTabId& split_id) {
+  // TODO(crbug.com/508275923): Implement CreateHistoricalSplit here as part of
+  // the TabRestore process.
+}
+
 void BrowserTabStripModelDelegate::GroupCloseStopped(
     const tab_groups::TabGroupId& group) {
   sessions::TabRestoreService* service =
