@@ -30,6 +30,7 @@ import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 
 import androidx.test.core.app.ApplicationProvider;
@@ -241,6 +242,28 @@ public class TabBottomSheetCoordinatorTest {
         TabBottomSheetContent content = mBottomSheetContentArgumentCaptor.getValue();
         assertNotNull(content);
         assertTrue(content.hasCustomLifecycle());
+    }
+
+    @Test
+    public void testTabBottomSheetContentDestroyClearsContainer() {
+        simulateShowSuccessAndGetObserver();
+        verify(mMockBottomSheetController)
+                .requestShowContent(mBottomSheetContentArgumentCaptor.capture(), eq(true));
+        TabBottomSheetContent content = mBottomSheetContentArgumentCaptor.getValue();
+        assertNotNull(content);
+
+        ViewGroup peekContainer = mView.findViewById(R.id.actor_control_container);
+        assertNotNull(peekContainer);
+
+        // Simulate a stale view.
+        View dummyView = new View(mContext);
+        peekContainer.addView(dummyView);
+        assertEquals(1, peekContainer.getChildCount());
+
+        content.destroy();
+
+        // Verify no children are left in the container.
+        assertEquals(0, peekContainer.getChildCount());
     }
 
     @Test
