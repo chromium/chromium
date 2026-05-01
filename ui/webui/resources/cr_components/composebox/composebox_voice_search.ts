@@ -182,6 +182,7 @@ export class ComposeboxVoiceSearchElement extends
       detailedError_: {type: Number},
       hasErrorTimer: {type: Boolean},
       voiceSearchCoherenceComposeboxesEnabled_: {type: Boolean},
+      voiceSearchCoherenceSearchboxEnabled_: {type: Boolean},
       submitButtonIconType: {type: String},
     };
   }
@@ -195,6 +196,9 @@ export class ComposeboxVoiceSearchElement extends
   protected accessor errorMessage_: string = '';
   protected accessor voiceSearchCoherenceComposeboxesEnabled_: boolean =
       loadTimeData.getBoolean('voiceSearchCoherenceComposeboxesEnabled');
+  protected accessor voiceSearchCoherenceSearchboxEnabled_: boolean =
+      loadTimeData.getBoolean(
+          'voiceSearchCoherenceAnySearchboxExperimentEnabled');
   accessor detailedError_: VoiceSearchError|null = null;
   protected accessor detailsUrl_: string =
       `https://support.google.com/chrome/?p=ui_voice_search&hl=${

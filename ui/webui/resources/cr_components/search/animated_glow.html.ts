@@ -19,12 +19,14 @@ export function getHtml(this: SearchAnimatedGlowElement) {
    * - DoubleGradientMask is a stencil that sits on top of DoubleGradient.
    * It has a solid background but is inset from the edge, creating a
    * transparent border that reveals the gradient animation of DoubleGradient,
-   * creating an opaque snake effect.
+   * creating an opaque snake effect. It is to help background cover the
+   * gradient better.
    * - Gradient is the gradient border and inner glow, depending
    * on the Background styling.
    * - Background and its ::before apply a frosted glass effect in drag and
    * drop mode, and act as overlay to help create the gradient border
-   * and background colorin composebox.
+   * and background color in the composebox. It moves to create a shutter
+   * expanding glow effect.
    * - Audio wave provides the voice animation to show browser is listening
    */
 
@@ -37,14 +39,23 @@ export function getHtml(this: SearchAnimatedGlowElement) {
     <div class="gradient"></div>
     <div class="background"
         part="composebox-background">
+      ${(this.voiceSearchCoherenceSearchboxEnabled_ ||
+          this.voiceSearchCoherenceComposeboxesEnabled_)
+              && this.inVoiceSearchMode && this.requiresVoice ?
+          html`<recording-wave id="recordingWave"
+              .isListening="${this.inVoiceSearchMode}">
+          </recording-wave>`
+      : ''}
     </div>
-    ${this.requiresVoice ? html`
-      <audio-wave
-          ?is-listening="${this.inVoiceSearchMode}"
-          .transcript="${this.transcript}"
-          .receivedSpeech="${this.receivedSpeech}">
-      </audio-wave>
-    ` : ''}
+    ${!(this.voiceSearchCoherenceSearchboxEnabled_ ||
+          this.voiceSearchCoherenceComposeboxesEnabled_)
+              && this.inVoiceSearchMode && this.requiresVoice ?
+        html`<audio-wave
+            ?is-listening="${this.inVoiceSearchMode}"
+            .transcript="${this.transcript}"
+            .receivedSpeech="${this.receivedSpeech}">
+        </audio-wave>`
+    : ''}
   <!--_html_template_end_-->`;
   // clang-format on
 }

@@ -14,11 +14,11 @@ export function getHtml(this: ComposeboxElement) {
   ${!this.disableComposeboxAnimation ? html`
     <search-animated-glow
         animation-state="${this.animationState}"
+        .inVoiceSearchMode="${this.inVoiceSearchMode}"
         .entrypointName="${this.entrypointName}"
         .requiresVoice="${this.shouldShowVoiceSearchAnimation()}"
         .transcript="${this.transcript}"
         .receivedSpeech="${this.receivedSpeech}"
-        .inVoiceSearchMode="${this.inVoiceSearchMode}"
         exportparts="composebox-background">
     </search-animated-glow>
   ` : ''}

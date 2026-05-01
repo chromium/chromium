@@ -483,3 +483,7 @@
     border-width: 0;
   }
 }
+
+:host(:not([in-voice-search-mode])) #recordingWave {
+  display: none;
+}

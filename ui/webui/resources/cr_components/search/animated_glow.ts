@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import './audio_wave.js';
+import './recording_wave.js';
 
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
@@ -55,6 +56,8 @@ export class SearchAnimatedGlowElement extends CrLitElement {
         type: Boolean,
         reflect: true,
       },
+      voiceSearchCoherenceComposeboxesEnabled_: {type: Boolean},
+      voiceSearchCoherenceSearchboxEnabled_: {type: Boolean},
     };
   }
 
@@ -69,6 +72,11 @@ export class SearchAnimatedGlowElement extends CrLitElement {
   // Source of truth for voice search (as not every parent has
   // `animationState`).
   accessor inVoiceSearchMode: boolean = false;
+  protected accessor voiceSearchCoherenceComposeboxesEnabled_: boolean =
+      loadTimeData.getBoolean('voiceSearchCoherenceComposeboxesEnabled');
+  protected accessor voiceSearchCoherenceSearchboxEnabled_: boolean =
+      loadTimeData.getBoolean(
+          'voiceSearchCoherenceAnySearchboxExperimentEnabled');
 }
 
 declare global {

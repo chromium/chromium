@@ -12,6 +12,7 @@ import {ComposeboxProxyImpl} from 'chrome://resources/cr_components/composebox/c
 import type {ComposeboxVoiceSearchElement} from 'chrome://resources/cr_components/composebox/composebox_voice_search.js';
 import {VoiceSearchAction, VoiceSearchError} from 'chrome://resources/cr_components/composebox/composebox_voice_search.js';
 import {WindowProxy} from 'chrome://resources/cr_components/composebox/window_proxy.js';
+import type { RecordingWaveElement } from 'chrome://resources/cr_components/search/recording_wave.js';
 import type {AudioWaveElement} from 'chrome://resources/cr_components/search/audio_wave.js';
 import {GlowAnimationState} from 'chrome://resources/cr_components/search/constants.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -165,6 +166,12 @@ suite('ComposeboxVoiceSearch', () => {
     window.webkitSpeechRecognition =
         MockSpeechRecognition as unknown as typeof SpeechRecognition;
   });
+
+  async function createComposeboxElement() {
+    composeboxElement = document.createElement('cr-composebox');
+    document.body.appendChild(composeboxElement);
+    await microtasksFinished();
+  }
 
   function getVoiceSearchButton(composeboxElement: ComposeboxElement):
       HTMLElement|null {
@@ -934,8 +941,12 @@ suite('ComposeboxVoiceSearch', () => {
         VoiceSearchError.ABORTED, voiceSearchElement.detailedError_);
   });
 
-
   test('audio wave is rendered when listening', async () => {
+    loadTimeData.overrideValues({
+          voiceSearchCoherenceComposeboxesEnabled: false,
+    });
+    await createComposeboxElement();
+
     const mockComposeboxElement =
         composeboxElement as unknown as MockComposebox;
     mockComposeboxElement.inVoiceSearchMode = true;
@@ -947,7 +958,11 @@ suite('ComposeboxVoiceSearch', () => {
     await searchAnimatedGlow!.updateComplete;
     const audioWave: AudioWaveElement|null =
         searchAnimatedGlow!.shadowRoot.querySelector('audio-wave');
-    assertTrue(!!audioWave);
+    assertTrue(!!audioWave, 'Audio wave should be shown');
+    const recordingWave: RecordingWaveElement|null =
+        searchAnimatedGlow!.shadowRoot.querySelector('recording-wave');
+    assertFalse(!!recordingWave, 'Recording wave should not be shown');
+
     mockComposeboxElement.transcript = 'foo';
     await composeboxElement.updateComplete;
     await searchAnimatedGlow!.updateComplete;
@@ -957,6 +972,11 @@ suite('ComposeboxVoiceSearch', () => {
   });
 
   test('audio wave is hidden when not listening', async () => {
+    loadTimeData.overrideValues({
+          voiceSearchCoherenceComposeboxesEnabled: false,
+    });
+    await createComposeboxElement();
+
     const mockComposeboxElement =
         composeboxElement as unknown as MockComposebox;
     mockComposeboxElement.inVoiceSearchMode = false;
@@ -968,7 +988,109 @@ suite('ComposeboxVoiceSearch', () => {
     await searchAnimatedGlow!.updateComplete;
     const audioWave: AudioWaveElement|null =
         searchAnimatedGlow!.shadowRoot.querySelector('audio-wave');
-    assertTrue(!!audioWave);
+    assertFalse(!!audioWave, 'Audio wave should not be shown');
+
+    const recordingWave: RecordingWaveElement|null =
+        searchAnimatedGlow!.shadowRoot.querySelector('recording-wave');
+    assertFalse(!!recordingWave, 'Recording wave should not be shown');
+  });
+
+  test('recording wave is rendered when listening for composebox', async () => {
+    loadTimeData.overrideValues({
+          voiceSearchCoherenceComposeboxesEnabled: true,
+    });
+    await createComposeboxElement();
+
+    const mockComposeboxElement =
+        composeboxElement as unknown as MockComposebox;
+    mockComposeboxElement.inVoiceSearchMode = true;
+    await microtasksFinished();
+
+    // SearchAnimatedGlow unconditionally exists
+    const searchAnimatedGlow =
+        composeboxElement.shadowRoot.querySelector('search-animated-glow');
+    await searchAnimatedGlow!.updateComplete;
+    const recordingWave: RecordingWaveElement|null =
+        searchAnimatedGlow!.shadowRoot.querySelector('recording-wave');
+    assertTrue(!!recordingWave, 'Recording wave should be shown');
+
+    const audioWave: AudioWaveElement|null =
+        searchAnimatedGlow!.shadowRoot.querySelector('audio-wave');
+    assertFalse(!!audioWave, 'Audio wave should not be shown');
+  });
+
+  test('recording wave is hidden when not listening for composebox', async () => {
+    loadTimeData.overrideValues({
+          voiceSearchCoherenceComposeboxesEnabled: true,
+    });
+    await createComposeboxElement();
+
+    const mockComposeboxElement =
+        composeboxElement as unknown as MockComposebox;
+    mockComposeboxElement.inVoiceSearchMode = false;
+    await microtasksFinished();
+
+    // SearchAnimatedGlow unconditionally exists
+    const searchAnimatedGlow =
+        composeboxElement.shadowRoot.querySelector('search-animated-glow');
+    await searchAnimatedGlow!.updateComplete;
+
+    const recordingWave: RecordingWaveElement|null =
+        searchAnimatedGlow!.shadowRoot.querySelector('recording-wave');
+    assertFalse(!!recordingWave, 'Recording wave should not be shown');
+
+    const audioWave: AudioWaveElement|null =
+        searchAnimatedGlow!.shadowRoot.querySelector('audio-wave');
+    assertFalse(!!audioWave, 'Audio wave should not be shown');
+  });
+
+  test('recording wave is rendered when listening for searchbox', async () => {
+    loadTimeData.overrideValues({
+          voiceSearchCoherenceSearchboxEnabled: true,
+    });
+    await createComposeboxElement();
+
+    const mockComposeboxElement =
+        composeboxElement as unknown as MockComposebox;
+    mockComposeboxElement.inVoiceSearchMode = true;
+    await microtasksFinished();
+
+    // SearchAnimatedGlow unconditionally exists
+    const searchAnimatedGlow =
+        composeboxElement.shadowRoot.querySelector('search-animated-glow');
+    await searchAnimatedGlow!.updateComplete;
+    const recordingWave: RecordingWaveElement|null =
+        searchAnimatedGlow!.shadowRoot.querySelector('recording-wave');
+    assertTrue(!!recordingWave, 'Recording wave should be shown');
+
+    const audioWave: AudioWaveElement|null =
+        searchAnimatedGlow!.shadowRoot.querySelector('audio-wave');
+    assertFalse(!!audioWave, 'Audio wave should not be shown');
+  });
+
+  test('recording wave is hidden when not listening for searchbox', async () => {
+    loadTimeData.overrideValues({
+          voiceSearchCoherenceSearchboxEnabled: true,
+    });
+    await createComposeboxElement();
+
+    const mockComposeboxElement =
+        composeboxElement as unknown as MockComposebox;
+    mockComposeboxElement.inVoiceSearchMode = false;
+    await microtasksFinished();
+
+    // SearchAnimatedGlow unconditionally exists
+    const searchAnimatedGlow =
+        composeboxElement.shadowRoot.querySelector('search-animated-glow');
+    await searchAnimatedGlow!.updateComplete;
+
+    const recordingWave: RecordingWaveElement|null =
+        searchAnimatedGlow!.shadowRoot.querySelector('recording-wave');
+    assertFalse(!!recordingWave, 'Recording wave should not be shown');
+
+    const audioWave: AudioWaveElement|null =
+        searchAnimatedGlow!.shadowRoot.querySelector('audio-wave');
+    assertFalse(!!audioWave, 'Audio wave should not be shown');
   });
 
   test(
