@@ -1429,8 +1429,10 @@ void AXRelationCache::RemoveOwnedRelation(AXID obj_id) {
       // underlying issue and verified that this dump does not exist in
       // telemetry, we should upgrade this to a NOTREACHED or remove the
       // `Contains(owner_id)` check above.
-      DUMP_WILL_BE_NOTREACHED() << "Inconsistent aria-owns mapping: owner "
-                                << owner_id << " not found";
+      // TODO(crbug.com/500774800): Keep this debug-only because the dump can
+      // hang production users while this issue remains uninvestigated.
+      DCHECK(false) << "Inconsistent aria-owns mapping: owner " << owner_id
+                    << " not found";
     }
     if (AXObject* owner = ObjectFromAXID(owner_id)) {
       // The child is removed, so the owner needs to make sure its maps
