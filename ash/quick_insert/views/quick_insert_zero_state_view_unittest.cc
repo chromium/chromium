@@ -36,6 +36,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/time/time.h"
 #include "build/branding_buildflags.h"
 #include "chromeos/ash/components/editor_menu/public/cpp/preset_text_query.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -335,8 +336,12 @@ TEST_F(QuickInsertZeroStateViewTest,
           kQuickInsertWidth, &asset_fetcher_, &submenu_controller_,
           &preview_controller_));
   widget->Show();
-  task_environment()->AdvanceClock(base::Seconds(1));
-  task_environment()->RunUntilIdle();
+  // The middle-position Caps Lock result is added by a one-shot timer using
+  // QuickInsertZeroStateView's kCapsLockDisplayDelay.
+  task_environment()->FastForwardBy(base::Milliseconds(50));
+  ASSERT_GT(
+      view->primary_section_view_for_testing()->item_views_for_testing().size(),
+      1u);
 
   EXPECT_CALL(mock_delegate,
               SelectZeroStateResult(VariantWith<QuickInsertCapsLockResult>(
