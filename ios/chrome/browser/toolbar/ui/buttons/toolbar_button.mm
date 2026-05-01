@@ -75,9 +75,30 @@ UIColor* NormalTintColor() {
   return self;
 }
 
+#pragma mark - HighlightButton
+
+- (NSArray<UIView*>*)highlightableViews {
+  return @[ self.imageView ];
+}
+
+#pragma mark - UIView
+
 - (void)layoutSubviews {
   [super layoutSubviews];
   [self updateMask];
+}
+
+#pragma mark - UIControl
+
+- (void)setEnabled:(BOOL)enabled {
+  [super setEnabled:enabled];
+  if (enabled) {
+    self.imageView.tintColor = NormalTintColor();
+  } else {
+    self.imageView.tintColor =
+        [NormalTintColor() colorWithAlphaComponent:kDisabledOpacity];
+  }
+  [self updateAppearance];
 }
 
 #pragma mark - Properties
@@ -91,17 +112,6 @@ UIColor* NormalTintColor() {
 
 - (void)setForceHidden:(BOOL)forceHidden {
   _forceHidden = forceHidden;
-  [self updateAppearance];
-}
-
-- (void)setEnabled:(BOOL)enabled {
-  [super setEnabled:enabled];
-  if (enabled) {
-    self.imageView.tintColor = NormalTintColor();
-  } else {
-    self.imageView.tintColor =
-        [NormalTintColor() colorWithAlphaComponent:kDisabledOpacity];
-  }
   [self updateAppearance];
 }
 

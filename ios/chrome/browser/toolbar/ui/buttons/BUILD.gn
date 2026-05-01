@@ -14,6 +14,7 @@ source_set("buttons") {
     "toolbar_buttons_utils.h",
     "toolbar_buttons_utils.mm",
   ]
+  public_deps = [ "//ios/chrome/common/ui/elements" ]
   deps = [
     "//base",
     "//ios/chrome/browser/location_bar/ui_bundled:utils",

@@ -7,12 +7,13 @@
 
 #import <UIKit/UIKit.h>
 
-#include "ios/chrome/browser/toolbar/ui/buttons/toolbar_button_visibility.h"
+#import "ios/chrome/browser/toolbar/ui/buttons/toolbar_button_visibility.h"
+#import "ios/chrome/common/ui/elements/highlight_button.h"
 
 using ToolbarButtonImageLoader = UIImage* (^)(void);
 
 // Button displayed in the toolbar.
-@interface ToolbarButton : UIButton
+@interface ToolbarButton : HighlightButton
 
 // The visibility mask for this button.
 @property(nonatomic, assign) ToolbarButtonVisibility visibilityMask;
