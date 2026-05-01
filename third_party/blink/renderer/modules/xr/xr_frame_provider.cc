@@ -673,6 +673,8 @@ void XRFrameProvider::SubmitLayer(device::LayerId layer_id,
                                   XrLayerClient* client,
                                   bool was_changed) {
   CHECK(client);
+  client->DoneWithSharedBuffer();
+
   CHECK(immersive_session_);
   CHECK(client->session());
   CHECK_EQ(client->session(), immersive_session_);
