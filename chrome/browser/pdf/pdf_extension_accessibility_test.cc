@@ -1468,7 +1468,13 @@ IN_PROC_BROWSER_TEST_P(PdfSearchifyIntegrationTest, EnsureScreenAIInitializes) {
 
 // TODO(crbug.com/360803943): Add a test case with more than one image.
 
-IN_PROC_BROWSER_TEST_P(PdfSearchifyIntegrationTest, HelloWorld) {
+// TODO(crbug.com/501805516): Flaky on Linux and Mac.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+#define MAYBE_HelloWorld DISABLED_HelloWorld
+#else
+#define MAYBE_HelloWorld HelloWorld
+#endif
+IN_PROC_BROWSER_TEST_P(PdfSearchifyIntegrationTest, MAYBE_HelloWorld) {
   base::HistogramTester histograms;
   RunPDFAXTreeDumpTest("hello-world-in-image.pdf", "Page 1");
 
@@ -1488,7 +1494,13 @@ IN_PROC_BROWSER_TEST_P(PdfSearchifyIntegrationTest, HelloWorld) {
       /*sample=*/true, expected_count);
 }
 
-IN_PROC_BROWSER_TEST_P(PdfSearchifyIntegrationTest, ThreePagePDF) {
+// TODO(crbug.com/501805516): Flaky on Linux and Mac.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+#define MAYBE_ThreePagePDF DISABLED_ThreePagePDF
+#else
+#define MAYBE_ThreePagePDF ThreePagePDF
+#endif
+IN_PROC_BROWSER_TEST_P(PdfSearchifyIntegrationTest, MAYBE_ThreePagePDF) {
   base::HistogramTester histograms;
   RunPDFAXTreeDumpTest("inaccessible-text-in-three-page.pdf", "Page 3");
 
@@ -1499,8 +1511,14 @@ IN_PROC_BROWSER_TEST_P(PdfSearchifyIntegrationTest, ThreePagePDF) {
       /*sample=*/true, expected_count);
 }
 
+// TODO(crbug.com/501805516): Flaky on Linux and Mac.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+#define MAYBE_NoOcrResultOnBlankImagePdf DISABLED_NoOcrResultOnBlankImagePdf
+#else
+#define MAYBE_NoOcrResultOnBlankImagePdf NoOcrResultOnBlankImagePdf
+#endif
 IN_PROC_BROWSER_TEST_P(PdfSearchifyIntegrationTest,
-                       NoOcrResultOnBlankImagePdf) {
+                       MAYBE_NoOcrResultOnBlankImagePdf) {
   RunPDFAXTreeDumpTest("blank_image.pdf", "Page 1");
 
 // Notifications are flaky on Linux screen reader (crbug.com/348626870),
