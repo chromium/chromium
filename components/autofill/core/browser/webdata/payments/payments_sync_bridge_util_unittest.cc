@@ -143,6 +143,8 @@ TEST_F(PaymentsSyncBridgeUtilTest, PopulateWalletTypesFromSyncData) {
       ->set_card_info_retrieval_enrollment_state(
           sync_pb::WalletMaskedCreditCard::
               RETRIEVAL_UNENROLLED_AND_NOT_ELIGIBLE);
+  wallet_specifics_card1.mutable_masked_card()->set_card_creation_source(
+      sync_pb::WalletMaskedCreditCard::CREATION_SOURCE_CHROME_PAYMENTS);
   // Add the second card that has nickname.
   std::string nickname("Grocery card");
   sync_pb::AutofillWalletSpecifics wallet_specifics_card2 =
@@ -171,6 +173,8 @@ TEST_F(PaymentsSyncBridgeUtilTest, PopulateWalletTypesFromSyncData) {
           sync_pb::WalletMaskedCreditCard::RETRIEVAL_ENROLLED);
   wallet_specifics_card2.mutable_masked_card()->set_card_benefit_source(
       sync_pb::WalletMaskedCreditCard::SOURCE_AMEX);
+  wallet_specifics_card2.mutable_masked_card()->set_card_creation_source(
+      sync_pb::WalletMaskedCreditCard::CREATION_SOURCE_NON_CHROME_PAYMENTS);
   sync_pb::AutofillWalletSpecifics wallet_specifics_iban =
       CreateAutofillWalletSpecificsForIban(
           /*client_tag=*/iban_id);
@@ -260,6 +264,12 @@ TEST_F(PaymentsSyncBridgeUtilTest, PopulateWalletTypesFromSyncData) {
   // Verify that the benefit source is set correctly.
   EXPECT_EQ(wallet_cards.front().benefit_source(), "");
   EXPECT_EQ(wallet_cards.back().benefit_source(), kAmexCardBenefitSource);
+
+  // Verify that the card creation source is set correctly.
+  EXPECT_EQ(wallet_cards.front().card_creation_source(),
+            CreditCard::CardCreationSource::kCreationSourceChromePayments);
+  EXPECT_EQ(wallet_cards.back().card_creation_source(),
+            CreditCard::CardCreationSource::kCreationSourceNonChromePayments);
 }
 
 class PaymentsSyncBridgeUtilCardBenefitsTest : public testing::Test {

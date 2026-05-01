@@ -381,6 +381,24 @@ CreditCard CardFromSpecifics(const sync_pb::WalletMaskedCreditCard& card) {
   }
   result.set_benefit_source(benefit_source);
 
+  CreditCard::CardCreationSource card_creation_source =
+      CreditCard::CardCreationSource::kCreationSourceUnspecified;
+  switch (card.card_creation_source()) {
+    case sync_pb::WalletMaskedCreditCard::CREATION_SOURCE_CHROME_PAYMENTS:
+      card_creation_source =
+          CreditCard::CardCreationSource::kCreationSourceChromePayments;
+      break;
+    case sync_pb::WalletMaskedCreditCard::CREATION_SOURCE_NON_CHROME_PAYMENTS:
+      card_creation_source =
+          CreditCard::CardCreationSource::kCreationSourceNonChromePayments;
+      break;
+    case sync_pb::WalletMaskedCreditCard::CREATION_SOURCE_UNSPECIFIED:
+      card_creation_source =
+          CreditCard::CardCreationSource::kCreationSourceUnspecified;
+      break;
+  }
+  result.set_card_creation_source(card_creation_source);
+
   return result;
 }
 
@@ -614,6 +632,24 @@ void SetAutofillWalletSpecificsFromServerCard(
     benefit_source = sync_pb::WalletMaskedCreditCard::SOURCE_CURINOS;
   }
   wallet_card->set_card_benefit_source(benefit_source);
+
+  sync_pb::WalletMaskedCreditCard::CardCreationSource card_creation_source =
+      sync_pb::WalletMaskedCreditCard::CREATION_SOURCE_UNSPECIFIED;
+  switch (card.card_creation_source()) {
+    case CreditCard::CardCreationSource::kCreationSourceChromePayments:
+      card_creation_source =
+          sync_pb::WalletMaskedCreditCard::CREATION_SOURCE_CHROME_PAYMENTS;
+      break;
+    case CreditCard::CardCreationSource::kCreationSourceNonChromePayments:
+      card_creation_source =
+          sync_pb::WalletMaskedCreditCard::CREATION_SOURCE_NON_CHROME_PAYMENTS;
+      break;
+    case CreditCard::CardCreationSource::kCreationSourceUnspecified:
+      card_creation_source =
+          sync_pb::WalletMaskedCreditCard::CREATION_SOURCE_UNSPECIFIED;
+      break;
+  }
+  wallet_card->set_card_creation_source(card_creation_source);
 }
 
 void SetAutofillWalletSpecificsFromPaymentsCustomerData(
