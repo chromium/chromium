@@ -21,7 +21,7 @@
 #include "ash/wm/desks/desk_button/desk_switch_button.h"
 #include "ash/wm/desks/desks_test_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/run_loop.h"
+#include "base/test/run_until.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -146,8 +146,7 @@ TEST_F(ShelfTooltipManagerTest, DoNotShowForInvalidView) {
   // Removing the view won't stop the timer, but the tooltip shouldn't be shown.
   model->RemoveItemAt(index);
   EXPECT_TRUE(IsTimerRunning());
-  base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(IsTimerRunning());
+  ASSERT_TRUE(base::test::RunUntil([this] { return !IsTimerRunning(); }));
   EXPECT_FALSE(tooltip_manager_->IsVisible());
 }
 
