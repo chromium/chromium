@@ -203,6 +203,8 @@ import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils.MissingNavbarInsetsReason;
 import org.chromium.chrome.browser.ui.edge_to_edge.TopInsetProvider;
 import org.chromium.chrome.browser.ui.edge_to_edge.TransitiveTopInsetProvider;
+import org.chromium.chrome.browser.ui.lens.LensOverlayCoordinator;
+import org.chromium.chrome.browser.ui.lens.LensOverlayInvocationSource;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
@@ -1691,6 +1693,14 @@ public class RootUiCoordinator
                         .record();
             } else {
                 RecordUserAction.record("MobileShortcutFindInPage");
+            }
+            return true;
+        } else if (id == R.id.lens_overlay_menu_id) {
+            Tab tab = mActivityTabProvider.get();
+            if (tab != null && tab.getWebContents() != null) {
+                new LensOverlayCoordinator(tab.getWebContents())
+                        .start(LensOverlayInvocationSource.APP_MENU);
+                RecordUserAction.record("MobileMenuLensOverlay");
             }
             return true;
         } else if (id == R.id.share_menu_id || id == R.id.direct_share_menu_id) {

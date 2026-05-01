@@ -13,6 +13,8 @@ namespace lens {
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 //
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.ui.lens
+//
 // LINT.IfChange(LensOverlayInvocationSource)
 enum class LensOverlayInvocationSource {
   // The Chrome app ("3-dot") menu entry.

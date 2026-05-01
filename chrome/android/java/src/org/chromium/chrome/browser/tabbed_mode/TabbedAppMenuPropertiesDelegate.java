@@ -383,6 +383,9 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         // Find in page
         if (shouldShowFindInPageItem(currentTab)) modelList.add(buildFindInPageItem(currentTab));
 
+        // Lens Overlay
+        if (shouldShowLensOverlayItem(currentTab)) modelList.add(buildLensOverlayItem(currentTab));
+
         // Translate
         if (shouldShowTranslateMenuItem(currentTab)) {
             modelList.add(buildTranslateMenuItem(currentTab, shouldShowIconBeforeItem()));
@@ -1312,6 +1315,35 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                         R.id.find_in_page_id,
                         R.string.menu_find_in_page,
                         shouldShowIconBeforeItem() ? R.drawable.ic_find_in_page : 0));
+    }
+
+    private boolean shouldShowLensOverlayItem(@Nullable Tab currentTab) {
+        if (currentTab == null
+                || currentTab.getWebContents() == null
+                || !ChromeFeatureList.isEnabled(ChromeFeatureList.LENS_OVERLAY_ANDROID)) {
+            return false;
+        }
+
+        // Disable in Incognito for now since the prototype delegates to an external app.
+        if (currentTab.isIncognito()) {
+            return false;
+        }
+
+        GURL url = currentTab.getUrl();
+        // This also filters out NTPs and internal pages.
+        return url != null && UrlUtilities.isHttpOrHttps(url);
+    }
+
+    private MVCListAdapter.ListItem buildLensOverlayItem(@Nullable Tab currentTab) {
+        assert shouldShowLensOverlayItem(currentTab);
+        return new MVCListAdapter.ListItem(
+                AppMenuHandler.AppMenuItemType.STANDARD,
+                buildModelForStandardMenuItem(
+                        R.id.lens_overlay_menu_id,
+                        R.string.lens_overlay_app_menu,
+                        shouldShowIconBeforeItem()
+                                ? R.drawable.lens_camera_icon
+                                : Resources.ID_NULL));
     }
 
     private boolean shouldShowDefaultBrowserPromo() {

@@ -158,6 +158,7 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @DisableFeatures({
     ChromeFeatureList.FEED_AUDIO_OVERVIEWS,
+    ChromeFeatureList.LENS_OVERLAY_ANDROID,
     ChromeFeatureList.TASK_MANAGER_CLANK,
     ContentFeatureList.ANDROID_DEV_TOOLS_FRONTEND,
     DomDistillerFeatures.READER_MODE_IMPROVEMENTS,
@@ -2920,5 +2921,53 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                         options.isAutoDarkEnabled()
                                 ? ContentSetting.DEFAULT
                                 : ContentSetting.BLOCK);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.LENS_OVERLAY_ANDROID)
+    public void lensOverlayItemEnabled() {
+        setUpMocksForPageMenu();
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
+        when(mTab.isIncognito()).thenReturn(false);
+
+        MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+
+        assertTrue(isMenuVisible(modelList, R.id.lens_overlay_menu_id));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.LENS_OVERLAY_ANDROID)
+    public void lensOverlayItemDisabled_Incognito() {
+        setUpMocksForPageMenu();
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
+        when(mTab.isIncognito()).thenReturn(true);
+
+        MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+
+        assertFalse(isMenuVisible(modelList, R.id.lens_overlay_menu_id));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.LENS_OVERLAY_ANDROID)
+    public void lensOverlayItemDisabled_NotHttp() {
+        setUpMocksForPageMenu();
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.NTP_URL);
+        when(mTab.isIncognito()).thenReturn(false);
+
+        MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+
+        assertFalse(isMenuVisible(modelList, R.id.lens_overlay_menu_id));
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.LENS_OVERLAY_ANDROID)
+    public void lensOverlayItemDisabled_FeatureDisabled() {
+        setUpMocksForPageMenu();
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
+        when(mTab.isIncognito()).thenReturn(false);
+
+        MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+
+        assertFalse(isMenuVisible(modelList, R.id.lens_overlay_menu_id));
     }
 }

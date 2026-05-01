@@ -177,3 +177,11 @@ source_set("enterprise_policy") {
     "//components/unified_consent",
   ]
 }
+
+if (is_android) {
+  import("//build/config/android/rules.gni")
+
+  java_cpp_enum("lens_overlay_invocation_source_enum_javagen") {
+    sources = [ "lens_overlay_invocation_source.h" ]
+  }
+}

@@ -1,0 +1,45 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/config.gni")
+import("//build/config/android/rules.gni")
+import("//third_party/jni_zero/jni_zero.gni")
+
+generate_jni("jni_headers") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/ui/lens/LensOverlayCoordinator.java",
+  ]
+}
+
+source_set("lens") {
+  sources = [
+    "lens_overlay_controller_android.cc",
+    "lens_overlay_controller_android.h",
+  ]
+  deps = [
+    ":jni_headers",
+    "//base",
+    "//components/lens",
+    "//content/public/browser",
+    "//third_party/jni_zero",
+  ]
+}
+
+android_library("java") {
+  srcjar_deps = [
+    ":jni_headers",
+    "//components/lens:lens_overlay_invocation_source_enum_javagen",
+  ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/ui/lens/LensOverlayCoordinator.java",
+  ]
+  deps = [
+    "//base:base_java",
+    "//chrome/browser/flags:java",
+    "//content/public/android:content_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/jni_zero:jni_zero_java",
+    "//ui/android:ui_java",
+  ]
+}

@@ -1673,6 +1673,7 @@ static_library("browser") {
   if (is_android) {
     deps += [
       "//chrome/browser/ntp_customization",
+      "//chrome/browser/ui/android/lens",
       "//chrome/browser/webapps:android",
       "//chrome/browser/webapps:android_impl",
       "//chrome/browser/webapps/installable:android",

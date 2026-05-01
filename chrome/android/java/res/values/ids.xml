@@ -176,6 +176,7 @@ found in the LICENSE file.
     <item type="id" name="ai_web_menu_id" />
     <item type="id" name="ai_pdf_menu_id" />
     <item type="id" name="find_in_page_id" />
+    <item type="id" name="lens_overlay_menu_id" />
     <item type="id" name="translate_id" />
     <item type="id" name="readaloud_menu_id" />
     <item type="id" name="more_tools_menu_id" />
