@@ -4214,9 +4214,6 @@ are declared in tools/grit/grit_args.gni.
       <message name="IDS_JS_OPTIMIZATION_BUBBLE_POLICY_BODY" desc="Body text for the JavaScript optimization bubble when disabled by enterprise policy.">
         JavaScript optimization is off for this site.
       </message>
-      <message name="IDS_JS_OPTIMIZATION_BUBBLE_BODY_NON_POLICY_BODY" desc="Body text for the JavaScript optimization bubble when disabled for other reasons.">
-        JavaScript optimization is off for this site. Enable for better performance.
-      </message>
      <if expr="not use_titlecase">
       <message name="IDS_JS_OPTIMIZATION_BUBBLE_ENABLE_BUTTON" desc="Button text to enable JavaScript optimization for the current site.">
         Allow for this site

@@ -1267,7 +1267,7 @@ IN_PROC_BROWSER_TEST_F(JavascriptOptimizerBrowserTest_DoNotUseSiteFamiliarity,
 
 constexpr char kSkipPixelTestsReason[] = "Should only run in pixel_tests.";
 // Baseline Gerrit CL number of the most recent CL that modified the UI.
-constexpr char kScreenshotBaselineCL[] = "7516391";
+constexpr char kScreenshotBaselineCL[] = "7805312";
 
 class JavascriptOptimizerUiBaseBrowserTest
     : public JavascriptOptimizerBrowserTestMixin<InteractiveBrowserTest> {
