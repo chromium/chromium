@@ -171,7 +171,7 @@ public class WebViewCachedFlags {
                                             DefaultState.DISABLED),
                                     Map.entry(
                                             AwFeatures.WEBVIEW_DEFER_STARTUP_GMS_CALLS,
-                                            DefaultState.DISABLED),
+                                            DefaultState.ENABLED),
                                     Map.entry(
                                             AwFeatures.WEBVIEW_ENABLE_API_CALL_USER_ACTIONS,
                                             DefaultState.DISABLED),
