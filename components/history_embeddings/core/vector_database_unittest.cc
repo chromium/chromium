@@ -13,7 +13,6 @@
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/path_service.h"
-#include "base/rand_util.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "components/history_embeddings/proto/history_embeddings.pb.h"
@@ -27,20 +26,6 @@ namespace history_embeddings {
 using passage_embeddings::Embedding;
 
 namespace {
-
-PassageEmbedding RandomEmbedding() {
-  std::vector<float> random_vector(3, 0.0f);
-  float sum_sq = 0.0f;
-  for (float& v : random_vector) {
-    v = base::RandFloat();
-    sum_sq += v * v;
-  }
-  float magnitude = std::sqrt(sum_sq);
-  for (float& v : random_vector) {
-    v /= magnitude;
-  }
-  return {.embedding = Embedding(std::move(random_vector)), .word_count = 10};
-}
 
 PassageEmbedding DeterministicEmbedding(float value) {
   return {
@@ -289,12 +274,12 @@ TEST(HistoryEmbeddingsVectorDatabaseTest, SearchCanBeHaltedEarly) {
   for (size_t i = 0; i < 3; i++) {
     UrlData url_data(i + 1, i + 1, base::Time::Now());
     for (size_t j = 0; j < 3; j++) {
-      url_data.passages.add_passages("a random passage");
-      url_data.passage_embeddings.push_back(RandomEmbedding());
+      url_data.passages.add_passages("a deterministic passage");
+      url_data.passage_embeddings.push_back(DeterministicEmbedding(i * 3 + j));
     }
     database.AddUrlData(url_data);
   }
-  Embedding query = RandomEmbedding().embedding;
+  Embedding query = DeterministicEmbedding(0).embedding;
   SearchParams search_params;
 
   // An ordinary search with full results:
@@ -331,12 +316,12 @@ TEST(HistoryEmbeddingsVectorDatabaseTest, TimeRangeNarrowsSearchResult) {
   for (size_t i = 0; i < 3; i++) {
     UrlData url_data(i + 1, i + 1, now + base::Minutes(i));
     for (size_t j = 0; j < 3; j++) {
-      url_data.passages.add_passages("some random passage");
-      url_data.passage_embeddings.push_back(RandomEmbedding());
+      url_data.passages.add_passages("some deterministic passage");
+      url_data.passage_embeddings.push_back(DeterministicEmbedding(i * 3 + j));
     }
     database.AddUrlData(url_data);
   }
-  Embedding query = RandomEmbedding().embedding;
+  Embedding query = DeterministicEmbedding(0).embedding;
   SearchParams search_params;
 
   // An ordinary search with full results:
@@ -402,12 +387,12 @@ TEST(HistoryEmbeddingsVectorDatabaseTest, DISABLED_ManyVectorsAreFastEnough) {
     // Times 3 embeddings each, on average.
     for (size_t j = 0; j < 3; j++) {
       url_data.passages.add_passages("one of many passages");
-      url_data.passage_embeddings.push_back(RandomEmbedding());
+      url_data.passage_embeddings.push_back(DeterministicEmbedding(i * 3 + j));
       count++;
     }
     database.AddUrlData(url_data);
   }
-  Embedding query = RandomEmbedding().embedding;
+  Embedding query = DeterministicEmbedding(0).embedding;
   base::ElapsedTimer timer;
 
   // Since inner loop atomic checks can impact performance, simulate that here.
