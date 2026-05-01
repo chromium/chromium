@@ -87,6 +87,9 @@ EXCLUDED_TESTS_WINDOWS = [
 EXCLUDED_TESTS_MAC = [
 ]
 EXCLUDED_TESTS_MAC_ARM64 = [
+    # Temporarily disabled due to https://crbug.com/507812580
+    os.path.join('tests', 'ui', 'allocator',
+                 'regression-abort-on-free-issue-150898.rs'),
 ]
 
 CLANG_SCRIPTS_DIR = os.path.join(CHROMIUM_DIR, 'tools', 'clang', 'scripts')
