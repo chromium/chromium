@@ -46,6 +46,8 @@
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
+#include "components/optimization_guide/proto/common_types.pb.h"
+#include "components/optimization_guide/proto/feature_configs.pb.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom-shared.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -53,6 +55,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/weak_document_ptr.h"
 #include "content/public/common/page_visibility_state.h"
+#include "mojo/public/cpp/base/proto_wrapper.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
@@ -89,6 +92,11 @@ const char kExperimentalLanguageWarning[] =
     "The specified languages are experimental in %s API and output quality "
     "cannot be guaranteed. The supported language codes are: [%s]";
 
+constexpr char kModelVersionParam[] = "model_version";
+// Feature flag for enabling foundational models in the AI API, requires the
+// field param kModelVersionParam to specify the model version. Example:
+// --enable-features=AIApiFoundationalModel:model_version=v4
+BASE_FEATURE(kAIApiFoundationalModel, base::FEATURE_DISABLED_BY_DEFAULT);
 // Eagerly initializes other downloadable APIs when any session type is created.
 BASE_FEATURE(kBuiltInAIEagerInit, base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -264,6 +272,76 @@ void Insert(LanguageSet& set, const std::vector<AILanguageCodePtr>& languages) {
   }
 }
 
+template <typename FeatureConfigProto>
+std::optional<std::string> GetUseCaseFromFeatureConfig(
+    const std::optional<mojo_base::ProtoWrapper>& wrapper) {
+  if (!wrapper.has_value()) {
+    return std::nullopt;
+  }
+  auto any_config = wrapper->As<optimization_guide::proto::Any>();
+  if (!any_config.has_value()) {
+    return std::nullopt;
+  }
+
+  FeatureConfigProto feature_config;
+  if (!feature_config.ParseFromString(any_config->value())) {
+    return std::nullopt;
+  }
+
+  if (base::FeatureList::IsEnabled(kAIApiFoundationalModel)) {
+    std::string model_version = base::GetFieldTrialParamValueByFeature(
+        kAIApiFoundationalModel, kModelVersionParam);
+    auto it = feature_config.experimental_use_cases().find(model_version);
+    if (it != feature_config.experimental_use_cases().end()) {
+      return it->second;
+    }
+    return std::nullopt;
+  }
+
+  return feature_config.default_use_case();
+}
+
+// Create a session for the feature by reading the use case from the
+// FeatureConfigProto config provided by the model broker.
+template <typename FeatureConfigProto>
+void CreateSessionWithConfig(
+    optimization_guide::ModelBrokerClient* broker_client,
+    base::OnceCallback<
+        void(std::unique_ptr<optimization_guide::OnDeviceSession>)> callback,
+    std::optional<mojo_base::ProtoWrapper> wrapper) {
+  std::optional<std::string> use_case =
+      GetUseCaseFromFeatureConfig<FeatureConfigProto>(wrapper);
+
+  if (!use_case.has_value() || use_case->empty()) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
+
+  broker_client->CreateSession(*use_case,
+                               ::optimization_guide::SessionConfigParams{},
+                               std::move(callback));
+}
+
+// Request assets and wait for the model broker client to become
+// available by reading the use case from the use case config provided by the
+// model broker.
+template <typename FeatureConfigProto>
+void RequestAssetsAndWaitForClientWithConfig(
+    optimization_guide::ModelBrokerClient* broker_client,
+    base::OnceCallback<void(base::WeakPtr<optimization_guide::ModelClient>)>
+        callback,
+    std::optional<mojo_base::ProtoWrapper> wrapper) {
+  std::optional<std::string> use_case =
+      GetUseCaseFromFeatureConfig<FeatureConfigProto>(wrapper);
+
+  if (!use_case.has_value() || use_case->empty()) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
+  broker_client->RequestAssetsFor(*use_case);
+  broker_client->GetSubscriber(*use_case).WaitForClient(std::move(callback));
+}
+
 template <typename OptionsPtr>
 LanguageSet GetLanguages(const OptionsPtr& options) {
   LanguageSet languages;
@@ -387,7 +465,6 @@ AIManager::AIManager(content::BrowserContext* browser_context,
 
 AIManager::~AIManager() = default;
 
-
 void AIManager::AddReceiver(
     mojo::PendingReceiver<blink::mojom::AIManager> receiver) {
   receivers_.Add(this, std::move(receiver));
@@ -441,8 +518,16 @@ void AIManager::CanCreateLanguageModel(
     return;
   }
 
-  CanCreateSession(optimization_guide::mojom::OnDeviceFeature::kPromptApi,
-                   input_capabilities, std::move(callback));
+  if (base::FeatureList::IsEnabled(
+          optimization_guide::kOptimizationGuideManifestBroker)) {
+    CanCreateSessionWithConfig<
+        optimization_guide::proto::PromptApiFeatureConfig>(
+        optimization_guide::mojom::OnDeviceFeature::kPromptApi,
+        input_capabilities, std::move(callback));
+  } else {
+    CanCreateSession(optimization_guide::mojom::OnDeviceFeature::kPromptApi,
+                     input_capabilities, std::move(callback));
+  }
 }
 
 void AIManager::CreateLanguageModel(
@@ -474,13 +559,26 @@ void AIManager::CreateLanguageModel(
         blink::mojom::AIManagerCreateClientError::kUnableToCreateSession);
     return;
   }
-  model_broker_client_->RequestAssetsFor(
-      optimization_guide::mojom::OnDeviceFeature::kPromptApi);
-  model_broker_client_
-      ->GetSubscriber(optimization_guide::mojom::OnDeviceFeature::kPromptApi)
-      .WaitForClient(base::BindOnce(&AIManager::CreateLanguageModelInternal,
-                                    weak_factory_.GetWeakPtr(),
-                                    std::move(client), std::move(options)));
+
+  if (base::FeatureList::IsEnabled(
+          optimization_guide::kOptimizationGuideManifestBroker)) {
+    model_broker_client_->GetConfig(
+        optimization_guide::mojom::OnDeviceFeature::kPromptApi,
+        base::BindOnce(&RequestAssetsAndWaitForClientWithConfig<
+                           optimization_guide::proto::PromptApiFeatureConfig>,
+                       model_broker_client_.get(),
+                       base::BindOnce(&AIManager::CreateLanguageModelInternal,
+                                      weak_factory_.GetWeakPtr(),
+                                      std::move(client), std::move(options))));
+  } else {
+    model_broker_client_->RequestAssetsFor(
+        optimization_guide::mojom::OnDeviceFeature::kPromptApi);
+    model_broker_client_
+        ->GetSubscriber(optimization_guide::mojom::OnDeviceFeature::kPromptApi)
+        .WaitForClient(base::BindOnce(&AIManager::CreateLanguageModelInternal,
+                                      weak_factory_.GetWeakPtr(),
+                                      std::move(client), std::move(options)));
+  }
 }
 
 void AIManager::CreateLanguageModelInternal(
@@ -601,8 +699,16 @@ void AIManager::CanCreateSummarizer(
     return;
   }
 
-  CanCreateSession(optimization_guide::mojom::OnDeviceFeature::kSummarize,
-                   on_device_model::Capabilities(), std::move(callback));
+  if (base::FeatureList::IsEnabled(
+          optimization_guide::kOptimizationGuideManifestBroker)) {
+    CanCreateSessionWithConfig<
+        optimization_guide::proto::SummarizerFeatureConfig>(
+        optimization_guide::mojom::OnDeviceFeature::kSummarize,
+        on_device_model::Capabilities(), std::move(callback));
+  } else {
+    CanCreateSession(optimization_guide::mojom::OnDeviceFeature::kSummarize,
+                     on_device_model::Capabilities(), std::move(callback));
+  }
 }
 
 void AIManager::CreateSummarizer(
@@ -664,9 +770,18 @@ void AIManager::CreateSummarizer(
                      weak_factory_.GetWeakPtr(), std::move(options),
                      std::move(initial_request), std::move(client));
   tried_init_.insert(optimization_guide::mojom::OnDeviceFeature::kSummarize);
-  model_broker_client_->CreateSession(
-      optimization_guide::mojom::OnDeviceFeature::kSummarize,
-      ::optimization_guide::SessionConfigParams{}, std::move(callback));
+  if (base::FeatureList::IsEnabled(
+          optimization_guide::kOptimizationGuideManifestBroker)) {
+    model_broker_client_->GetConfig(
+        optimization_guide::mojom::OnDeviceFeature::kSummarize,
+        base::BindOnce(&CreateSessionWithConfig<
+                           optimization_guide::proto::SummarizerFeatureConfig>,
+                       model_broker_client_.get(), std::move(callback)));
+  } else {
+    model_broker_client_->CreateSession(
+        optimization_guide::mojom::OnDeviceFeature::kSummarize,
+        ::optimization_guide::SessionConfigParams{}, std::move(callback));
+  }
 }
 
 void AIManager::CanCreateProofreader(
@@ -807,9 +922,18 @@ void AIManager::CanCreateWriter(blink::mojom::AIWriterCreateOptionsPtr options,
                                 kUnavailableUnsupportedLanguage);
     return;
   }
-  CanCreateSession(
-      optimization_guide::mojom::OnDeviceFeature::kWritingAssistanceApi,
-      on_device_model::Capabilities(), std::move(callback));
+
+  if (base::FeatureList::IsEnabled(
+          optimization_guide::kOptimizationGuideManifestBroker)) {
+    CanCreateSessionWithConfig<
+        optimization_guide::proto::WritingAssistanceApiFeatureConfig>(
+        optimization_guide::mojom::OnDeviceFeature::kWritingAssistanceApi,
+        on_device_model::Capabilities(), std::move(callback));
+  } else {
+    CanCreateSession(
+        optimization_guide::mojom::OnDeviceFeature::kWritingAssistanceApi,
+        on_device_model::Capabilities(), std::move(callback));
+  }
 }
 
 void AIManager::CreateWriter(
@@ -854,9 +978,19 @@ void AIManager::CreateWriter(
       std::move(initial_request), std::move(client));
   tried_init_.insert(
       optimization_guide::mojom::OnDeviceFeature::kWritingAssistanceApi);
-  model_broker_client_->CreateSession(
-      optimization_guide::mojom::OnDeviceFeature::kWritingAssistanceApi,
-      ::optimization_guide::SessionConfigParams{}, std::move(callback));
+  if (base::FeatureList::IsEnabled(
+          optimization_guide::kOptimizationGuideManifestBroker)) {
+    model_broker_client_->GetConfig(
+        optimization_guide::mojom::OnDeviceFeature::kWritingAssistanceApi,
+        base::BindOnce(
+            &CreateSessionWithConfig<
+                optimization_guide::proto::WritingAssistanceApiFeatureConfig>,
+            model_broker_client_.get(), std::move(callback)));
+  } else {
+    model_broker_client_->CreateSession(
+        optimization_guide::mojom::OnDeviceFeature::kWritingAssistanceApi,
+        ::optimization_guide::SessionConfigParams{}, std::move(callback));
+  }
 }
 
 void AIManager::CanCreateRewriter(
@@ -878,9 +1012,17 @@ void AIManager::CanCreateRewriter(
                                 kUnavailableUnsupportedLanguage);
     return;
   }
-  CanCreateSession(
-      optimization_guide::mojom::OnDeviceFeature::kWritingAssistanceApi,
-      on_device_model::Capabilities(), std::move(callback));
+  if (base::FeatureList::IsEnabled(
+          optimization_guide::kOptimizationGuideManifestBroker)) {
+    CanCreateSessionWithConfig<
+        optimization_guide::proto::WritingAssistanceApiFeatureConfig>(
+        optimization_guide::mojom::OnDeviceFeature::kWritingAssistanceApi,
+        on_device_model::Capabilities(), std::move(callback));
+  } else {
+    CanCreateSession(
+        optimization_guide::mojom::OnDeviceFeature::kWritingAssistanceApi,
+        on_device_model::Capabilities(), std::move(callback));
+  }
 }
 
 void AIManager::CreateRewriter(
@@ -925,9 +1067,19 @@ void AIManager::CreateRewriter(
       std::move(initial_request), std::move(client));
   tried_init_.insert(
       optimization_guide::mojom::OnDeviceFeature::kWritingAssistanceApi);
-  model_broker_client_->CreateSession(
-      optimization_guide::mojom::OnDeviceFeature::kWritingAssistanceApi,
-      ::optimization_guide::SessionConfigParams{}, std::move(callback));
+  if (base::FeatureList::IsEnabled(
+          optimization_guide::kOptimizationGuideManifestBroker)) {
+    model_broker_client_->GetConfig(
+        optimization_guide::mojom::OnDeviceFeature::kWritingAssistanceApi,
+        base::BindOnce(
+            &CreateSessionWithConfig<
+                optimization_guide::proto::WritingAssistanceApiFeatureConfig>,
+            model_broker_client_.get(), std::move(callback)));
+  } else {
+    model_broker_client_->CreateSession(
+        optimization_guide::mojom::OnDeviceFeature::kWritingAssistanceApi,
+        ::optimization_guide::SessionConfigParams{}, std::move(callback));
+  }
 }
 
 void AIManager::CanCreateClassifier(
@@ -978,18 +1130,7 @@ void AIManager::CanCreateSession(
     optimization_guide::mojom::OnDeviceFeature capability,
     on_device_model::Capabilities capabilities,
     CanCreateLanguageModelCallback callback) {
-  auto model_path =
-      optimization_guide::switches::GetOnDeviceModelExecutionOverride();
-  if (model_path.has_value()) {
-    // If the model path is provided, we do this additional check and post a
-    // warning message to dev tools if it does not exist.
-    // This needs to be done in a task runner with `MayBlock` trait.
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE, {base::MayBlock()},
-        base::BindOnce(base::PathExists, model_path.value()),
-        base::BindOnce(&AIManager::OnModelPathValidationComplete,
-                       weak_factory_.GetWeakPtr(), model_path.value()));
-  }
+  StartModelPathValidationIfOverrideSet();
 
   if (!model_broker_client_) {
     std::move(callback).Run(blink::mojom::ModelAvailabilityCheckResult::
@@ -1002,6 +1143,44 @@ void AIManager::CanCreateSession(
           capabilities,
           base::BindOnce(&AIManager::FinishCanCreateSession,
                          weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+template <typename FeatureConfigProto>
+void AIManager::FinishCanCreateSessionWithConfig(
+    on_device_model::Capabilities capabilities,
+    CanCreateLanguageModelCallback callback,
+    std::optional<mojo_base::ProtoWrapper> wrapper) {
+  std::optional<std::string> use_case =
+      GetUseCaseFromFeatureConfig<FeatureConfigProto>(wrapper);
+  if (!use_case.has_value() || use_case->empty()) {
+    std::move(callback).Run(blink::mojom::ModelAvailabilityCheckResult::
+                                kUnavailableConfigNotAvailableForFeature);
+    return;
+  }
+  model_broker_client_->GetSubscriber(*use_case).CanCreateSession(
+      capabilities,
+      base::BindOnce(&AIManager::FinishCanCreateSession,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+template <typename FeatureConfigProto>
+void AIManager::CanCreateSessionWithConfig(
+    optimization_guide::mojom::OnDeviceFeature capability,
+    on_device_model::Capabilities capabilities,
+    CanCreateLanguageModelCallback callback) {
+  StartModelPathValidationIfOverrideSet();
+
+  if (!model_broker_client_) {
+    std::move(callback).Run(blink::mojom::ModelAvailabilityCheckResult::
+                                kUnavailableServiceNotRunning);
+    return;
+  }
+
+  model_broker_client_->GetConfig(
+      capability,
+      base::BindOnce(
+          &AIManager::FinishCanCreateSessionWithConfig<FeatureConfigProto>,
+          weak_factory_.GetWeakPtr(), capabilities, std::move(callback)));
 }
 
 void AIManager::FinishCanCreateSession(
@@ -1178,6 +1357,21 @@ void AIManager::OnModelPathValidationComplete(const base::FilePath& model_path,
     VLOG(1) << base::StringPrintf(
         "Unable to create a session because the model path ('%s') is invalid.",
         model_path.AsUTF8Unsafe());
+  }
+}
+
+void AIManager::StartModelPathValidationIfOverrideSet() {
+  auto model_path =
+      optimization_guide::switches::GetOnDeviceModelExecutionOverride();
+  if (model_path.has_value()) {
+    // If the model path is provided, we do this additional check and post a
+    // warning message to dev tools if it does not exist.
+    // This needs to be done in a task runner with `MayBlock` trait.
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock()},
+        base::BindOnce(base::PathExists, model_path.value()),
+        base::BindOnce(&AIManager::OnModelPathValidationComplete,
+                       weak_factory_.GetWeakPtr(), model_path.value()));
   }
 }
 

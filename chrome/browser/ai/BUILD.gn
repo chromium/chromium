@@ -82,9 +82,11 @@ source_set("impl") {
     "//components/history_embeddings/core",
     "//components/language/core/common",
     "//components/optimization_guide/content/browser",
+    "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/site_engagement/content",
     "//pdf:buildflags",
     "//skia",
+    "//third_party/protobuf:protobuf_lite",
   ]
   if (!is_android) {
     deps += [

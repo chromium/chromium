@@ -109,6 +109,14 @@ class AIManager : public base::SupportsUserData::Data,
                         on_device_model::Capabilities capabilities,
                         CanCreateLanguageModelCallback callback);
 
+  // Check whether optimization guide supports the feature matching `capability`
+  // and uses the configuration specified by `FeatureConfigProto`; yields a
+  // result to `callback`.
+  template <typename FeatureConfigProto>
+  void CanCreateSessionWithConfig(
+      optimization_guide::mojom::OnDeviceFeature capability,
+      on_device_model::Capabilities capabilities,
+      CanCreateLanguageModelCallback callback);
 
   // Returns true if `options` uses only `supported` languages, false otherwise.
   // Logs errors and warnings and initializes empty output languages as needed.
@@ -137,6 +145,10 @@ class AIManager : public base::SupportsUserData::Data,
   void OnModelPathValidationComplete(const base::FilePath& model_path,
                                      bool is_valid_path);
 
+  // Validates the overridden on-device model path if one is configured via
+  // switch.
+  void StartModelPathValidationIfOverrideSet();
+
   // Creates an `AILanguageModel`, as a new session. Clones are created
   // internally within the `AILanguageModel` object.
   void CreateLanguageModelInternal(
@@ -160,6 +172,12 @@ class AIManager : public base::SupportsUserData::Data,
       std::optional<optimization_guide::mojom::ModelUnavailableReason> reason,
       std::optional<optimization_guide::mojom::ModelNotSupportedDetailedReason>
           detailed_reason);
+
+  template <typename FeatureConfigProto>
+  void FinishCanCreateSessionWithConfig(
+      on_device_model::Capabilities capabilities,
+      CanCreateLanguageModelCallback callback,
+      std::optional<mojo_base::ProtoWrapper> wrapper);
 
   template <typename ContextBoundObjectType,
             typename ContextBoundObjectReceiverInterface,
