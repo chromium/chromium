@@ -1644,6 +1644,7 @@ TEST_P(RenderFrameHostManagerTest, GuestNavigations) {
   RenderFrameHostManager* manager =
       web_contents->GetPrimaryFrameTree().root()->render_manager();
   RenderFrameHostImpl* initial_host = manager->current_frame_host();
+  auto initial_process_id = initial_host->GetProcess()->GetID();
 
   // 1) First navigation. ------------------------
   // Start the first navigation, but do not commit.
@@ -1673,6 +1674,7 @@ TEST_P(RenderFrameHostManagerTest, GuestNavigations) {
   // https://crbug.com/1072817.
   EXPECT_NE(first_instance, initial_instance);
   EXPECT_NE(host, initial_host);
+  EXPECT_EQ(host->GetProcess()->GetID(), initial_process_id);
   // This test may run without strict site isolation, e.g. on Android.  In
   // that case, the navigation will end up in a default SiteInstance.
   if (AreStrictSiteInstancesEnabled()) {

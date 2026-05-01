@@ -3401,6 +3401,14 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
     }
   }
 
+  // 4) When a GuestView is first created, a SiteInstance is associated with it
+  // without a URL, and a process is allocated to it. This process can be reused
+  // for the first navigation in the GuestView.
+  if (current_instance->GetSiteInfo().IsGuest() &&
+      current_instance->GetSiteInfo().site_url().is_empty()) {
+    process_to_reuse = current_instance->GetProcess();
+  }
+
   if (process_to_reuse) {
     // TODO(https://crbug.com/497761255): CHECK-exclusion: Convert to CHECK once
     // we are sure this isn't hit.

@@ -754,6 +754,40 @@ TEST_F(SiteInstanceTest, GetProcess) {
   DrainMessageLoop();
 }
 
+// Test to ensure GetOrCreateProcess for Guest SiteInstances only locks the
+// process if the guest has a non-empty url.
+TEST_F(SiteInstanceTest, GetOrCreateProcessForGuest) {
+  std::unique_ptr<TestBrowserContext> browser_context(new TestBrowserContext());
+
+  const StoragePartitionConfig kGuestConfig = StoragePartitionConfig::Create(
+      browser_context.get(), "foo", "bar", /*in_memory=*/false);
+
+  auto instance =
+      SiteInstanceImpl::CreateForGuest(browser_context.get(), kGuestConfig);
+
+  auto* host = instance->GetOrCreateProcessForTesting();
+  EXPECT_TRUE(host != nullptr);
+
+  // The guest has an empty site URL, so the process should not be locked yet.
+  EXPECT_TRUE(host->GetProcessLock().AllowsAnySite());
+  EXPECT_TRUE(host->IsUnused());
+
+  // Now create a related SiteInstance with a non-empty URL.
+  // We can't reuse the same SiteInstance because a guest SiteInstance is
+  // created with an empty SiteInfo.
+  auto new_instance = instance->GetRelatedSiteInstance(GURL("http://foo.com"));
+  auto* new_host = new_instance->GetOrCreateProcessForTesting();
+  EXPECT_TRUE(new_host != nullptr);
+
+  if (AreAllSitesIsolatedForTesting()) {
+    // The process should now be locked appropriately.
+    EXPECT_TRUE(new_host->GetProcessLock().IsLockedToSite());
+  }
+  EXPECT_FALSE(new_host->IsUnused());
+
+  DrainMessageLoop();
+}
+
 // Test to ensure SetSite and site() work properly.
 TEST_F(SiteInstanceTest, SetSite) {
   TestBrowserContext context;
