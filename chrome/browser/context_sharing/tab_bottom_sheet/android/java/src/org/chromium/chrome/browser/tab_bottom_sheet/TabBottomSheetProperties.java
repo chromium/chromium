@@ -4,44 +4,28 @@
 
 package org.chromium.chrome.browser.tab_bottom_sheet;
 
-import androidx.annotation.Px;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
-import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableFloatPropertyKey;
-import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /** Properties for the Tab Bottom Sheet. */
 @NullMarked
 public class TabBottomSheetProperties {
-    public static class ResizingState {
-        public final boolean atFixedHeight;
-        public final @Px int webUiContainerHeight;
 
-        /**
-         * @param atFixedHeight Whether the bottom sheet is at a fixed height.
-         * @param webUiContainerHeight The height of the webUi container.
-         */
-        public ResizingState(boolean atFixedHeight, @Px int webUiContainerHeight) {
-            this.atFixedHeight = atFixedHeight;
-            this.webUiContainerHeight = webUiContainerHeight;
-        }
-    }
 
     public static final ReadableObjectPropertyKey<CoBrowseViews> BOTTOM_SHEET_VIEWS =
             new ReadableObjectPropertyKey<>("bottom_sheet_views");
-    public static final WritableObjectPropertyKey<ResizingState> RESIZING_STATE =
-            new WritableObjectPropertyKey<>("resizing_state");
-    public static final WritableBooleanPropertyKey IS_RESIZING =
-            new WritableBooleanPropertyKey("is_resizing");
+    public static final ReadableObjectPropertyKey<WebViewResizingHelper> WEB_VIEW_RESIZING_HELPER =
+            new ReadableObjectPropertyKey<>("web_view_resizing_helper");
+
     public static final WritableFloatPropertyKey PEEK_STATE_ALPHA =
             new WritableFloatPropertyKey("peek_state_alpha");
 
     public static final PropertyKey[] ALL_KEYS = {
-        BOTTOM_SHEET_VIEWS, RESIZING_STATE, IS_RESIZING, PEEK_STATE_ALPHA
+        BOTTOM_SHEET_VIEWS, WEB_VIEW_RESIZING_HELPER, PEEK_STATE_ALPHA
     };
 
     /**
@@ -53,7 +37,7 @@ public class TabBottomSheetProperties {
     public static PropertyModel createDefaultModel(CoBrowseViews coBrowseViews) {
         return new PropertyModel.Builder(ALL_KEYS)
                 .with(BOTTOM_SHEET_VIEWS, coBrowseViews)
-                .with(IS_RESIZING, false)
+                .with(WEB_VIEW_RESIZING_HELPER, coBrowseViews.getWebViewResizingHelper())
                 .build();
     }
 }

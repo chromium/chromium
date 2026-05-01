@@ -10,7 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
@@ -20,7 +19,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.context_sharing.R;
 import org.chromium.chrome.browser.contextual_tasks.fusebox.ContextualTasksFusebox;
-import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetProperties.ResizingState;
 import org.chromium.content_public.browser.WebContents;
 
 /**
@@ -152,22 +150,6 @@ public class CoBrowseViews {
         }
     }
 
-    /** Sets the resizing state of the sheet. */
-    public void setResizingState(ResizingState resizingState) {
-        @Px int height = resizingState.webUiContainerHeight;
-        ViewGroup sheetContent = mContainerView.findViewById(R.id.expanded_content_group);
-        ViewGroup.LayoutParams sheetContentParams = sheetContent.getLayoutParams();
-
-        if (!resizingState.atFixedHeight
-                && sheetContentParams.height != ViewGroup.LayoutParams.MATCH_PARENT) {
-            sheetContentParams.height = ViewGroup.LayoutParams.MATCH_PARENT;
-            sheetContent.setLayoutParams(sheetContentParams);
-        } else if (sheetContentParams.height != height) {
-            sheetContentParams.height = height;
-            sheetContent.setLayoutParams(sheetContentParams);
-        }
-    }
-
     @TabBottomSheetClientType
     int getClientType() {
         return mClientType;
@@ -175,6 +157,10 @@ public class CoBrowseViews {
 
     @Nullable WebContents getWebContents() {
         return mWebUi != null ? mWebUi.getWebContents() : null;
+    }
+
+    @Nullable WebViewResizingHelper getWebViewResizingHelper() {
+        return mWebUi != null ? mWebUi.getWebViewResizingHelper() : null;
     }
 
     private void populateViewHierarchy() {

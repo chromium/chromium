@@ -31,7 +31,6 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.context_sharing.R;
 import org.chromium.chrome.browser.contextual_tasks.fusebox.ContextualTasksFusebox;
-import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetProperties.ResizingState;
 import org.chromium.content_public.browser.WebContents;
 
 /** Unit tests for {@link CoBrowseViews}. */
@@ -144,27 +143,5 @@ public class CoBrowseViewsTest {
         verify(mWebUi).setIsResizing(true);
     }
 
-    @Test
-    public void testSetResizingState_AtFixedHeight() {
-        ResizingState state = new ResizingState(true, 500);
 
-        mCoBrowseViews.setResizingState(state);
-
-        View view = mCoBrowseViews.getView();
-        View expandedContent = view.findViewById(R.id.expanded_content_group);
-        assertEquals(500, expandedContent.getLayoutParams().height);
-    }
-
-    @Test
-    public void testSetResizingState_FlexibleHeight() {
-        // First set to fixed height to make it NOT MATCH_PARENT
-        mCoBrowseViews.setResizingState(new ResizingState(true, 500));
-
-        ResizingState state = new ResizingState(false, 500);
-        mCoBrowseViews.setResizingState(state);
-
-        View view = mCoBrowseViews.getView();
-        View expandedContent = view.findViewById(R.id.expanded_content_group);
-        assertEquals(ViewGroup.LayoutParams.MATCH_PARENT, expandedContent.getLayoutParams().height);
-    }
 }

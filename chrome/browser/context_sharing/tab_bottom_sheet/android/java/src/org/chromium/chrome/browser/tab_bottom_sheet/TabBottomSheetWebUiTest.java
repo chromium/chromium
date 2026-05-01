@@ -15,6 +15,7 @@ import static org.mockito.Mockito.when;
 import android.content.Context;
 import android.graphics.Color;
 import android.view.ContextThemeWrapper;
+import android.view.LayoutInflater;
 import android.view.View;
 
 import androidx.test.core.app.ApplicationProvider;
@@ -59,9 +60,16 @@ public class TabBottomSheetWebUiTest {
                 new ContextThemeWrapper(
                         ApplicationProvider.getApplicationContext(),
                         R.style.Theme_BrowserUI_DayNight);
+        View containerView =
+                LayoutInflater.from(context)
+                        .inflate(
+                                org.chromium.chrome.browser.context_sharing.R.layout
+                                        .tab_bottom_sheet,
+                                null);
         mWebUi =
                 new TabBottomSheetWebUi(
                         context,
+                        containerView,
                         mWindowAndroid,
                         mContextMenuPopulatorFactory,
                         Color.WHITE,

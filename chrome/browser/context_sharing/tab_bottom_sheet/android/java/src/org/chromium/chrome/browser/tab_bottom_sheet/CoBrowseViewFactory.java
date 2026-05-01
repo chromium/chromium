@@ -100,6 +100,7 @@ public class CoBrowseViewFactory {
         TabBottomSheetWebUi webUi =
                 new TabBottomSheetWebUi(
                         mActivity,
+                        containerView,
                         mWindowAndroid,
                         mContextMenuPopulatorFactory,
                         backgroundColor,

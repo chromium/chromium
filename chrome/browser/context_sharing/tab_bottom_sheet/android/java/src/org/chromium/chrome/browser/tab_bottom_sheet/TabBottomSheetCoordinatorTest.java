@@ -25,6 +25,7 @@ import android.content.ComponentCallbacks;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.graphics.Rect;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
@@ -33,7 +34,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 
-import androidx.test.core.app.ApplicationProvider;
+import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import org.junit.After;
 import org.junit.Before;
@@ -52,7 +53,6 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.context_sharing.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetCoordinator.SheetEventsCallback;
-import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetProperties.ResizingState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.HeightMode;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -62,6 +62,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.widget.TouchEventObserver;
 import org.chromium.components.browser_ui.widget.TouchEventProvider;
 import org.chromium.ui.KeyboardVisibilityDelegate;
+import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -87,6 +88,10 @@ public class TabBottomSheetCoordinatorTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
+    @Rule
+    public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
+            new ActivityScenarioRule<>(TestActivity.class);
+
     private final SheetEventsCallback mSheetEventsCallback =
             new SheetEventsCallback() {
                 @Override
@@ -102,6 +107,8 @@ public class TabBottomSheetCoordinatorTest {
     @Mock private TouchEventProvider mMockTouchEventProvider;
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private KeyboardVisibilityDelegate mKeyboardDelegate;
+    @Mock private TabBottomSheetWebUi mMockWebUi;
+
     @Captor private ArgumentCaptor<TabBottomSheetContent> mBottomSheetContentArgumentCaptor;
     @Captor private ArgumentCaptor<BottomSheetObserver> mBottomSheetObserverArgumentCaptor;
     @Captor private ArgumentCaptor<ComponentCallbacks> mComponentCallbacksArgumentCaptor;
@@ -112,13 +119,21 @@ public class TabBottomSheetCoordinatorTest {
     private View mView;
     private TabBottomSheetCoordinator mCoordinator;
     private PropertyModel mCoordinatorModel;
+    private WebViewResizingHelper mWebViewResizingHelper;
 
     @Before
     public void setUp() {
-        mContext = spy(ApplicationProvider.getApplicationContext());
+        mActivityScenarioRule.getScenario().onActivity(activity -> mContext = spy(activity));
         View containerView = LayoutInflater.from(mContext).inflate(R.layout.tab_bottom_sheet, null);
+
+        mWebViewResizingHelper = new WebViewResizingHelper(containerView, Color.WHITE);
+        when(mMockWebUi.getWebViewResizingHelper()).thenReturn(mWebViewResizingHelper);
+        View webUiView = new View(mContext);
+        when(mMockWebUi.getWebUiView()).thenReturn(webUiView);
+
         mCoBrowseViews =
-                new CoBrowseViews(containerView, TabBottomSheetClientType.UNKNOWN, null, null, 0);
+                new CoBrowseViews(
+                        containerView, TabBottomSheetClientType.UNKNOWN, mMockWebUi, null, 0);
         mView = mCoBrowseViews.getView();
         assertNotNull(
                 "actor_control_container should be found in CoBrowseViews",
@@ -459,8 +474,8 @@ public class TabBottomSheetCoordinatorTest {
         // Resizing state is set to flexible height on the second call.
         observer.onContainerSizeChanged(CONTAINER_WIDTH, CONTAINER_HEIGHT);
 
-        ResizingState state = mCoordinatorModel.get(TabBottomSheetProperties.RESIZING_STATE);
-        assertFalse(state.atFixedHeight);
+        View expandedContent = mView.findViewById(R.id.expanded_content_group);
+        assertEquals(ViewGroup.LayoutParams.MATCH_PARENT, expandedContent.getLayoutParams().height);
     }
 
     @Test
@@ -470,8 +485,9 @@ public class TabBottomSheetCoordinatorTest {
 
         observer.onContainerSizeChanged(CONTAINER_WIDTH, CONTAINER_HEIGHT);
 
-        ResizingState state = mCoordinatorModel.get(TabBottomSheetProperties.RESIZING_STATE);
-        assertTrue(state.atFixedHeight);
+        View expandedContent = mView.findViewById(R.id.expanded_content_group);
+        int expectedFixedHeight = (int) (MAX_OFFSET * FULL_HEIGHT_RATIO);
+        assertEquals(expectedFixedHeight, expandedContent.getLayoutParams().height);
     }
 
     @Test
@@ -484,8 +500,9 @@ public class TabBottomSheetCoordinatorTest {
 
         observer.onContainerSizeChanged(CONTAINER_WIDTH, expectedFixedHeight);
 
-        ResizingState state = mCoordinatorModel.get(TabBottomSheetProperties.RESIZING_STATE);
-        assertTrue(state.atFixedHeight);
+        View expandedContent = mView.findViewById(R.id.expanded_content_group);
+
+        assertEquals(expectedFixedHeight, expandedContent.getLayoutParams().height);
     }
 
     @Test
@@ -498,8 +515,8 @@ public class TabBottomSheetCoordinatorTest {
 
         observer.onContainerSizeChanged(CONTAINER_WIDTH, desiredFixedHeight);
 
-        ResizingState state = mCoordinatorModel.get(TabBottomSheetProperties.RESIZING_STATE);
-        assertFalse(state.atFixedHeight);
+        View expandedContent = mView.findViewById(R.id.expanded_content_group);
+        assertEquals(ViewGroup.LayoutParams.MATCH_PARENT, expandedContent.getLayoutParams().height);
     }
 
     @Test
@@ -512,8 +529,8 @@ public class TabBottomSheetCoordinatorTest {
         observer.onContainerSizeChanged(CONTAINER_WIDTH, expectedFixedHeight);
         observer.onContainerSizeChanged(CONTAINER_WIDTH, expectedFixedHeight);
 
-        ResizingState state = mCoordinatorModel.get(TabBottomSheetProperties.RESIZING_STATE);
-        assertFalse(state.atFixedHeight);
+        View expandedContent = mView.findViewById(R.id.expanded_content_group);
+        assertEquals(ViewGroup.LayoutParams.MATCH_PARENT, expandedContent.getLayoutParams().height);
     }
 
     @Test
@@ -533,7 +550,8 @@ public class TabBottomSheetCoordinatorTest {
 
         observer.onContainerSizeChanged(CONTAINER_WIDTH, expectedLandscapeHeight);
 
-        ResizingState state = mCoordinatorModel.get(TabBottomSheetProperties.RESIZING_STATE);
-        assertTrue(state.atFixedHeight);
+        View expandedContent = mView.findViewById(R.id.expanded_content_group);
+
+        assertEquals(expectedLandscapeHeight, expandedContent.getLayoutParams().height);
     }
 }

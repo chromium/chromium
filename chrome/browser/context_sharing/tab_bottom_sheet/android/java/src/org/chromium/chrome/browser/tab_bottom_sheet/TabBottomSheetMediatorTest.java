@@ -28,10 +28,9 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetProperties.ResizingState;
+import org.chromium.chrome.browser.context_sharing.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
-import org.chromium.components.browser_ui.widget.R;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -52,6 +51,7 @@ public class TabBottomSheetMediatorTest {
     @Mock private CoBrowseViews mCoBrowseViews;
     @Mock private TabBottomSheetWebUiContainer mView;
     @Mock private ViewParent mParent;
+    @Mock private WebViewResizingHelper mWebViewResizingHelper;
 
     @Before
     public void setUp() {
@@ -60,6 +60,7 @@ public class TabBottomSheetMediatorTest {
         when(mCoBrowseViews.getView()).thenReturn(mView);
         when(mView.getContext()).thenReturn(mContext);
         when(mView.getParent()).thenReturn(mParent);
+        when(mCoBrowseViews.getWebViewResizingHelper()).thenReturn(mWebViewResizingHelper);
 
         mModel = TabBottomSheetProperties.createDefaultModel(mCoBrowseViews);
         mMediator = new TabBottomSheetMediator(mContext, mModel, mCoBrowseViews, 0.7f, 0.9f);
@@ -263,29 +264,23 @@ public class TabBottomSheetMediatorTest {
     @SmallTest
     public void testSetToFlexibleHeight() {
         mMediator.setToFlexibleHeight();
-
-        ResizingState state = mModel.get(TabBottomSheetProperties.RESIZING_STATE);
-        Assert.assertFalse(state.atFixedHeight);
-        assertEquals(-1, state.webUiContainerHeight);
+        verify(mWebViewResizingHelper).setToFlexibleHeight();
     }
 
     @Test
     @SmallTest
     public void testSetToFixedHeight() {
         mMediator.setToFixedHeight(MAX_OFFSET);
-
-        ResizingState state = mModel.get(TabBottomSheetProperties.RESIZING_STATE);
-        Assert.assertTrue(state.atFixedHeight);
-        assertEquals(MAX_OFFSET, state.webUiContainerHeight);
+        verify(mWebViewResizingHelper).setToFixedHeight(MAX_OFFSET);
     }
 
     @Test
     @SmallTest
     public void testOnSheetResizingStatusChanged() {
         mMediator.onSheetResizingStatusChanged(true);
-        Assert.assertTrue(mModel.get(TabBottomSheetProperties.IS_RESIZING));
+        verify(mWebViewResizingHelper).setIsResizing(true);
 
         mMediator.onSheetResizingStatusChanged(false);
-        Assert.assertFalse(mModel.get(TabBottomSheetProperties.IS_RESIZING));
+        verify(mWebViewResizingHelper).setIsResizing(false);
     }
 }

@@ -9,13 +9,13 @@ import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.view.ContextThemeWrapper;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
-import androidx.test.core.app.ApplicationProvider;
+import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -27,8 +27,9 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.R;
+import org.chromium.chrome.browser.context_sharing.R;
 import org.chromium.components.thinwebview.ThinWebView;
+import org.chromium.ui.base.TestActivity;
 
 /** Unit tests for {@link WebViewResizingHelper}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -36,22 +37,25 @@ import org.chromium.components.thinwebview.ThinWebView;
 public class WebViewResizingHelperUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
+    @Rule
+    public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
+            new ActivityScenarioRule<>(TestActivity.class);
+
     @Mock private ThinWebView mMockThinWebView;
 
     private Context mContext;
     private View mView;
+    private View mContainerView;
     private WebViewResizingHelper mHelper;
 
     @Before
     public void setUp() {
-        mContext =
-                new ContextThemeWrapper(
-                        ApplicationProvider.getApplicationContext(),
-                        R.style.Theme_BrowserUI_DayNight);
+        mActivityScenarioRule.getScenario().onActivity(activity -> mContext = activity);
         mView = new View(mContext);
         when(mMockThinWebView.getView()).thenReturn(mView);
 
-        mHelper = new WebViewResizingHelper(mContext, Color.WHITE);
+        mContainerView = LayoutInflater.from(mContext).inflate(R.layout.tab_bottom_sheet, null);
+        mHelper = new WebViewResizingHelper(mContainerView, Color.WHITE);
     }
 
     @Test
@@ -106,5 +110,22 @@ public class WebViewResizingHelperUnitTest {
         FrameLayout container = (FrameLayout) mHelper.getResizingContainer();
         assertEquals(2, container.getChildCount());
         assertEquals(mView, container.getChildAt(1));
+    }
+
+    @Test
+    public void testSetToFlexibleHeight() {
+        View expandedContent = mContainerView.findViewById(R.id.expanded_content_group);
+        expandedContent.getLayoutParams().height = 500;
+
+        mHelper.setToFlexibleHeight();
+        assertEquals(ViewGroup.LayoutParams.MATCH_PARENT, expandedContent.getLayoutParams().height);
+    }
+
+    @Test
+    public void testSetToFixedHeight() {
+        View expandedContent = mContainerView.findViewById(R.id.expanded_content_group);
+
+        mHelper.setToFixedHeight(500);
+        assertEquals(500, expandedContent.getLayoutParams().height);
     }
 }

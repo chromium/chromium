@@ -10,7 +10,6 @@ import android.view.MotionEvent;
 import androidx.annotation.Px;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetProperties.ResizingState;
 import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetWebUiContainer.TouchHandler;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.widget.R;
@@ -149,14 +148,20 @@ public class TabBottomSheetMediator extends GestureStateListener {
 
     /** Sets whether the sheet is resizing. */
     public void onSheetResizingStatusChanged(boolean isResizing) {
-        mModel.set(TabBottomSheetProperties.IS_RESIZING, isResizing);
+        WebViewResizingHelper helper =
+                mModel.get(TabBottomSheetProperties.WEB_VIEW_RESIZING_HELPER);
+        if (helper != null) {
+            helper.setIsResizing(isResizing);
+        }
     }
 
     /** Updates the state used for resizing the sheet. */
     public void setToFlexibleHeight() {
-        mModel.set(
-                TabBottomSheetProperties.RESIZING_STATE,
-                new ResizingState(/* atFixedHeight= */ false, /* webUiContainerHeight= */ -1));
+        WebViewResizingHelper helper =
+                mModel.get(TabBottomSheetProperties.WEB_VIEW_RESIZING_HELPER);
+        if (helper != null) {
+            helper.setToFlexibleHeight();
+        }
     }
 
     /**
@@ -165,9 +170,11 @@ public class TabBottomSheetMediator extends GestureStateListener {
      * @param maxOffset The maximum offset height for the sheet.
      */
     public void setToFixedHeight(@Px int maxOffset) {
-        mModel.set(
-                TabBottomSheetProperties.RESIZING_STATE,
-                new ResizingState(/* atFixedHeight= */ true, maxOffset));
+        WebViewResizingHelper helper =
+                mModel.get(TabBottomSheetProperties.WEB_VIEW_RESIZING_HELPER);
+        if (helper != null) {
+            helper.setToFixedHeight(maxOffset);
+        }
     }
 
     @SheetState
