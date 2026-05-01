@@ -57,6 +57,7 @@ if (!is_android) {
       ":tab_strip_api",
       "adapters",
       "aggregation:unit_tests",
+      "controllers:unit_tests",
       "events:unit_tests",
       "observation:unit_tests",
       "tab_strip_model_impl:unit_tests",
