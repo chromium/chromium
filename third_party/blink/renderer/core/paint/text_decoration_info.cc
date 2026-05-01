@@ -242,13 +242,6 @@ const ResolvedDecoration TextDecorationInfo::ResolveDecorationAt(
   } else {
     // `target_used_font_` was already copied to decoration.used_font.
   }
-  // Compute the |Font| and its properties.
-  const Font* font = &decoration.used_font.GetFont();
-  DCHECK(font);
-  const SimpleFontData* font_data = font->PrimaryFont();
-  decoration.computed_font_size = font->GetFontDescription().ComputedSize();
-  decoration.ascent =
-      font_data ? font_data->GetFontMetrics().FloatAscent() : 0.f;
 
   decoration.effective_zoom = decorating_box_style_->EffectiveZoom();
   decoration.offset_from_decorating_box =
@@ -354,7 +347,7 @@ DecorationGeometry TextDecorationInfo::ComputeUnderlineLineData(
     line_offset = decoration.applied_text_decoration->UnderlineOffset();
   }
   float paint_underline_offset = decoration_offset.ComputeUnderlineOffset(
-      decoration.underline_position, decoration.computed_font_size,
+      decoration.underline_position, decoration.used_font.ComputedSize(),
       decoration.used_font.PrimaryFont(), line_offset,
       decoration.resolved_thickness);
   // The offset is for the decorating box. Convert it for the target text/box.
@@ -392,8 +385,8 @@ DecorationGeometry TextDecorationInfo::ComputeLineThroughLineData(
   // For increased line thickness, the line-through decoration needs to grow
   // in both directions from its origin, subtract half the thickness to keep
   // it centered at the same origin.
-  const float line_through_offset =
-      2 * decoration.ascent / 3 - decoration.resolved_thickness / 2;
+  const float line_through_offset = 2 * decoration.used_font.FloatAscent() / 3 -
+                                    decoration.resolved_thickness / 2;
   return ComputeLineData(decoration, TextDecorationLine::kLineThrough,
                          line_through_offset);
 }
@@ -459,7 +452,7 @@ float TextDecorationInfo::ComputeThickness(
   }
   const float thickness = ComputeDecorationThickness(
       decoration.applied_text_decoration->Thickness(),
-      decoration.computed_font_size, decoration.used_font.PrimaryFont());
+      decoration.used_font.ComputedSize(), decoration.used_font.PrimaryFont());
   return std::max(is_svg_text_ ? 0.0f : 1.0f, thickness);
 }
 

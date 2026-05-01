@@ -53,8 +53,6 @@ struct ResolvedDecoration {
   const AppliedTextDecoration* applied_text_decoration = nullptr;
   UsedFont used_font;
   TextDecorationLine lines = TextDecorationLine::kNone;
-  float ascent = 0.f;
-  float computed_font_size = 0.f;
   float resolved_thickness = 0.f;
   float effective_zoom = 1.0f;
   // This field is available only if a decorating box is applied and `lines`
