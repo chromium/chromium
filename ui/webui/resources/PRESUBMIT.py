@@ -4,6 +4,19 @@
 
 PRESUBMIT_VERSION = '2.0.0'
 
+def CheckIconNames(input_api, output_api):
+  import sys
+  old_sys_path = sys.path[:]
+  try:
+    sys.path.append(
+        input_api.os_path.join(input_api.PresubmitLocalPath(), '..', '..', '..',
+                               'tools', 'resources', 'icon_checker'))
+    import icon_checker
+    affected_icons = icon_checker.ExtractIconsFromHtml(input_api)
+    return icon_checker.CheckIcons(input_api, output_api, affected_icons)
+  finally:
+    sys.path = old_sys_path
+
 def CheckForTranslations(input_api, output_api):
   shared_keywords = ['i18n(']
   html_keywords = shared_keywords + ['$118n{']
@@ -106,8 +119,10 @@ def CheckNoNewPolymer(input_api, output_api):
   IGNORE_FILES = [
     # These files are needed for testing Polymer specific ESLint rules in
     # ui/webui/resources/tools/webui_eslint_plugin.js.
-    'ui/webui/resources/tools/tests/eslint_ts/with_webui_plugin_polymer_property_class_member_violations.ts',
-    'ui/webui/resources/tools/tests/eslint_ts/with_webui_plugin_polymer_violations.ts',
+    'ui/webui/resources/tools/tests/eslint_ts/'
+    'with_webui_plugin_polymer_property_class_member_violations.ts',
+    'ui/webui/resources/tools/tests/eslint_ts/'
+    'with_webui_plugin_polymer_violations.ts',
   ]
 
   def ignore_filter(affected_file):

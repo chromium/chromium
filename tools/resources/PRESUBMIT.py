@@ -16,8 +16,13 @@ def _CommonChecks(input_api, output_api):
   path = input_api.os_path
   files = [path.basename(f.LocalPath()) for f in input_api.AffectedFiles()]
 
+  tests = []
   if any(f for f in files if f.startswith('svgo_presubmit')):
-    tests = [path.join(cwd, 'svgo_presubmit_test.py')]
+    tests.append(path.join(cwd, 'svgo_presubmit_test.py'))
+  if any(f for f in files if f.startswith('icon_checker')):
+    tests.append(path.join(cwd, 'icon_checker', 'icon_checker_unittest.py'))
+
+  if tests:
     return input_api.canned_checks.RunUnitTests(input_api, output_api, tests)
 
   return []
