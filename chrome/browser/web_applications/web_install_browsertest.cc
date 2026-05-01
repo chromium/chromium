@@ -438,8 +438,16 @@ IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest,
 using WebInstallNotSupportedDialogBrowserTest =
     WebInstallCurrentDocumentBrowserTest;
 
+// TODO(crbug.com/506988874): This test is flaky or fails on several platforms.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_NotSupportedDialogInIncognito_CurrentDocument \
+  NotSupportedDialogInIncognito_CurrentDocument
+#else
+#define MAYBE_NotSupportedDialogInIncognito_CurrentDocument \
+  DISABLED_NotSupportedDialogInIncognito_CurrentDocument
+#endif
 IN_PROC_BROWSER_TEST_F(WebInstallNotSupportedDialogBrowserTest,
-                       NotSupportedDialogInIncognito_CurrentDocument) {
+                       MAYBE_NotSupportedDialogInIncognito_CurrentDocument) {
   // Open incognito window and navigate to a valid URL.
   GURL test_url = embedded_https_test_server().GetURL("/simple.html");
   Browser* incognito_browser =
@@ -494,8 +502,16 @@ IN_PROC_BROWSER_TEST_F(WebInstallNotSupportedDialogBrowserTest,
                                1);
 }
 
+// TODO(crbug.com/506988874): This test is flaky or fails on several platforms.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_NotSupportedDialogInIncognito_BackgroundDocument \
+  NotSupportedDialogInIncognito_BackgroundDocument
+#else
+#define MAYBE_NotSupportedDialogInIncognito_BackgroundDocument \
+  DISABLED_NotSupportedDialogInIncognito_BackgroundDocument
+#endif
 IN_PROC_BROWSER_TEST_F(WebInstallNotSupportedDialogBrowserTest,
-                       NotSupportedDialogInIncognito_BackgroundDocument) {
+                       MAYBE_NotSupportedDialogInIncognito_BackgroundDocument) {
   // Open incognito window and navigate to a valid URL.
   GURL test_url = embedded_https_test_server().GetURL("/simple.html");
   Browser* incognito_browser =
@@ -572,8 +588,16 @@ IN_PROC_BROWSER_TEST_F(WebInstallNotSupportedDialogBrowserTest,
             ukm::SourceIdType::APP_ID);
 }
 
+// TODO(crbug.com/506988874): This test is flaky or fails on several platforms.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_NotSupportedDialogAfterTabSwitching \
+  NotSupportedDialogAfterTabSwitching
+#else
+#define MAYBE_NotSupportedDialogAfterTabSwitching \
+  DISABLED_NotSupportedDialogAfterTabSwitching
+#endif
 IN_PROC_BROWSER_TEST_F(WebInstallNotSupportedDialogBrowserTest,
-                       NotSupportedDialogAfterTabSwitching) {
+                       MAYBE_NotSupportedDialogAfterTabSwitching) {
   // Open incognito window and navigate to a valid URL.
   GURL test_url = embedded_https_test_server().GetURL("/simple.html");
   Browser* incognito_browser =
