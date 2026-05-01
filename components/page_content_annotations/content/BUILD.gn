@@ -79,6 +79,28 @@ source_set("page_embeddings") {
   ]
 }
 
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "mock_page_content_services.cc",
+    "mock_page_content_services.h",
+  ]
+
+  public_deps = [
+    ":content",
+    ":page_embeddings",
+    "//components/page_content_annotations/core",
+    "//testing/gmock",
+  ]
+
+  deps = [
+    "//base",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/passage_embeddings/core:passage_embeddings_types",
+    "//content/public/browser",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [

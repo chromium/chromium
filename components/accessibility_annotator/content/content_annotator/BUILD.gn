@@ -42,6 +42,7 @@ source_set("unit_tests") {
     "//components/optimization_guide/core:test_support",
     "//components/page_content_annotations/content",
     "//components/page_content_annotations/content:page_embeddings",
+    "//components/page_content_annotations/content:test_support",
     "//components/page_content_annotations/core",
     "//components/page_content_annotations/core:test_support",
     "//components/passage_embeddings/core:test_support",

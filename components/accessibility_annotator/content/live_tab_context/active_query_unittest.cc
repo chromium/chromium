@@ -17,6 +17,7 @@
 #include "components/accessibility_annotator/core/accessibility_annotator_features.h"
 #include "components/accessibility_annotator/core/live_tab_context/search.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#include "components/page_content_annotations/content/mock_page_content_services.h"
 #include "components/page_content_annotations/content/page_content_extraction_service.h"
 #include "components/page_content_annotations/content/page_embeddings_service.h"
 #include "components/page_content_annotations/core/page_content_extraction_types.h"
@@ -31,6 +32,10 @@
 
 namespace accessibility_annotator {
 
+using ::page_content_annotations::CreateExtractionResult;
+using ::page_content_annotations::CreatePassageEmbeddings;
+using ::page_content_annotations::MockPageContentExtractionService;
+using ::page_content_annotations::MockPageEmbeddingsService;
 using ::testing::_;
 using ::testing::ElementsAre;
 using ::testing::Field;
@@ -43,63 +48,6 @@ using ::testing::SizeIs;
 using ::testing::UnorderedElementsAre;
 
 namespace {
-
-std::optional<page_content_annotations::ExtractedPageContentResult>
-CreateExtractionResult(std::string text_content, bool eligible) {
-  scoped_refptr<page_content_annotations::RefCountedAnnotatedPageContent>
-      page_content = base::MakeRefCounted<
-          page_content_annotations::RefCountedAnnotatedPageContent>();
-  optimization_guide::proto::ContentNode* root_node =
-      page_content->data.mutable_root_node();
-  optimization_guide::proto::ContentAttributes* attributes =
-      root_node->mutable_content_attributes();
-  attributes->set_attribute_type(
-      optimization_guide::proto::CONTENT_ATTRIBUTE_TEXT);
-  attributes->mutable_text_data()->set_text_content(text_content);
-
-  page_content_annotations::ExtractedPageContentResult result;
-  result.page_content = std::move(page_content);
-  result.is_eligible_for_server_upload = eligible;
-  return result;
-}
-
-std::vector<page_content_annotations::PassageEmbedding> CreatePassageEmbeddings(
-    std::string text) {
-  std::vector<page_content_annotations::PassageEmbedding> embeddings;
-  std::vector<float> data = {1.0f, 0.0f, 0.0f};
-  embeddings.emplace_back(
-      std::make_pair(text, page_content_annotations::kPageContent),
-      passage_embeddings::Embedding(std::move(data)));
-  return embeddings;
-}
-
-class MockPageContentExtractionService
-    : public page_content_annotations::PageContentExtractionService {
- public:
-  MockPageContentExtractionService()
-      : PageContentExtractionService(nullptr, base::FilePath(), nullptr) {}
-  ~MockPageContentExtractionService() override = default;
-
-  MOCK_METHOD(
-      std::optional<page_content_annotations::ExtractedPageContentResult>,
-      GetExtractedPageContentAndEligibilityForPage,
-      (content::Page&),
-      (override));
-};
-
-class MockPageEmbeddingsService
-    : public page_content_annotations::PageEmbeddingsService {
- public:
-  explicit MockPageEmbeddingsService(
-      page_content_annotations::PageContentExtractionService* service)
-      : PageEmbeddingsService(service) {}
-  ~MockPageEmbeddingsService() override = default;
-
-  MOCK_METHOD(std::vector<page_content_annotations::PassageEmbedding>,
-              GetEmbeddings,
-              (content::Page&),
-              (const, override));
-};
 
 class ControllableTestEmbedder : public passage_embeddings::TestEmbedder {
  public:

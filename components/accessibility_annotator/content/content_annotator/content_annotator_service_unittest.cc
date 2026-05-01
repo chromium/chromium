@@ -29,6 +29,7 @@
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/optimization_guide/proto/features/content_annotation.pb.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
+#include "components/page_content_annotations/content/mock_page_content_services.h"
 #include "components/page_content_annotations/content/page_content_extraction_service.h"
 #include "components/page_content_annotations/content/page_embeddings_service.h"
 #include "components/page_content_annotations/core/page_content_annotations_common.h"
@@ -47,6 +48,7 @@
 
 namespace accessibility_annotator {
 
+using ::page_content_annotations::MockPageEmbeddingsService;
 using ::testing::_;
 using ::testing::ElementsAreArray;
 using ::testing::ExplainMatchResult;
@@ -79,21 +81,6 @@ class MockContentClassifier : public ContentClassifier {
   MOCK_METHOD(ContentClassificationResult,
               Classify,
               (const ContentClassificationInput&),
-              (const, override));
-};
-
-class MockPageEmbeddingsService
-    : public page_content_annotations::PageEmbeddingsService {
- public:
-  explicit MockPageEmbeddingsService(
-      page_content_annotations::PageContentExtractionService*
-          page_content_extraction_service)
-      : PageEmbeddingsService(page_content_extraction_service) {}
-  ~MockPageEmbeddingsService() override = default;
-
-  MOCK_METHOD(std::vector<page_content_annotations::PassageEmbedding>,
-              GetEmbeddings,
-              (content::Page&),
               (const, override));
 };
 

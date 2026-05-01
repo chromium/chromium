@@ -15,6 +15,7 @@ include_rules = [
     "+components/optimization_guide/core",
     "+components/optimization_guide/proto",
     "+components/os_crypt/async/browser",
+    "+components/page_content_annotations/core",
     "+components/paint_preview",
     "+components/passage_embeddings/core",
     "+components/performance_manager/scenario_api",
@@ -37,3 +38,10 @@ include_rules = [
     "+third_party/skia",
     "+ui/gfx",
 ]
+
+specific_include_rules = {
+  "mock_page_content_services\\.(cc|h)": [
+    "+testing/gmock",
+    "+testing/gtest",
+  ],
+}
