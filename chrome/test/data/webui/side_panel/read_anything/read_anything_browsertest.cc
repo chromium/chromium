@@ -220,7 +220,8 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, LineSpacing) {
                    "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, Movement) {
+// TODO(crbug.com/501840500): It is flaky on all platforms.
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, DISABLED_Movement) {
   RunSidePanelTest("side_panel/read_anything/movement_test.js", "mocha.run()");
 }
 
