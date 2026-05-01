@@ -546,7 +546,6 @@ class LocationBarMediator
                     ntpSearchBoxScrollFraction,
                     urlFocusChangeFraction,
                     mIsUrlFocusChangeInProgress);
-            mStatusCoordinator.setUrlFocusChangePercent(fraction);
         }
     }
 

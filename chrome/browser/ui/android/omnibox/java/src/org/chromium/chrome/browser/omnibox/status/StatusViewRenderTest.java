@@ -191,7 +191,6 @@ public class StatusViewRenderTest {
     public void testStatusViewWithIcon() throws IOException {
         runOnUiThreadBlocking(
                 () -> {
-                    mStatusModel.set(StatusProperties.STATUS_ICON_ALPHA, 1f);
                     mStatusModel.set(StatusProperties.STATUS_VIEW_BACKGROUND, mBackground);
                     mStatusModel.set(
                             StatusProperties.STATUS_VIEW_TOOLTIP_TEXT,
@@ -237,7 +236,6 @@ public class StatusViewRenderTest {
                     PermissionIconResource statusIcon =
                             new PermissionIconResource(locationIcon, false);
                     statusIcon.setTransitionType(StatusView.IconTransitionType.ROTATE);
-                    mStatusModel.set(StatusProperties.STATUS_ICON_ALPHA, 1f);
                     mStatusModel.set(StatusProperties.STATUS_VIEW_BACKGROUND, mBackground);
                     mStatusModel.set(
                             StatusProperties.STATUS_VIEW_TOOLTIP_TEXT,
@@ -262,7 +260,6 @@ public class StatusViewRenderTest {
                     StatusIconResource statusIcon =
                             new PermissionIconResource(storeIconDrawable, false);
                     statusIcon.setTransitionType(StatusView.IconTransitionType.ROTATE);
-                    mStatusModel.set(StatusProperties.STATUS_ICON_ALPHA, 1f);
                     mStatusModel.set(StatusProperties.STATUS_VIEW_BACKGROUND, mBackground);
                     mStatusModel.set(
                             StatusProperties.STATUS_VIEW_TOOLTIP_TEXT,

@@ -112,7 +112,6 @@ public class StatusMediator
     private @StringRes int mSecurityIconDescriptionRes;
     private @ColorRes int mNavigationIconTintRes;
     private boolean mIsStoreIconShowing;
-    private float mUrlFocusPercent;
     private @Nullable CookieControlsBridge mCookieControlsBridge;
     private @Nullable SearchEngineUtils mSearchEngineUtils;
     private @Nullable StatusIconResource mSearchEngineIcon;
@@ -378,27 +377,6 @@ public class StatusMediator
 
         setShowIconsWhenUrlFocused(true);
         setStatusIconShown(true);
-    }
-
-    /**
-     * Set the url focus change percent.
-     *
-     * @param percent The current focus percent.
-     */
-    void setUrlFocusChangePercent(float percent) {
-        // On tablets, the status icon should always be shown so the following logic doesn't apply.
-        assert !mIsTablet : "This logic shouldn't be called on tablets";
-
-        boolean couldAffectIcon =
-                (mUrlFocusPercent == 0.0f && percent > 0.0f)
-                        || (percent == 0.0f && mUrlFocusPercent > 0.0f);
-        mUrlFocusPercent = percent;
-        updateStatusVisibility();
-        mModel.set(StatusProperties.STATUS_ICON_ALPHA, 1.0f);
-
-        if (couldAffectIcon) {
-            updateLocationBarIcon(IconTransitionType.CROSSFADE);
-        }
     }
 
     /** Specify minimum width of an URL field. */

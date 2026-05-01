@@ -281,9 +281,6 @@ public class StatusProperties {
     static final WritableObjectPropertyKey<View.OnClickListener> STATUS_CLICK_LISTENER =
             new WritableObjectPropertyKey<>();
 
-    /** Alpha of the icon. */
-    static final WritableFloatPropertyKey STATUS_ICON_ALPHA = new WritableFloatPropertyKey();
-
     /** The corner radius of the status icon. */
     static final WritableIntPropertyKey STATUS_ICON_CORNER_RADIUS = new WritableIntPropertyKey();
 
@@ -337,7 +334,6 @@ public class StatusProperties {
                 STATUS_ACCESSIBILITY_DOUBLE_TAP_DESCRIPTION_RES,
                 STATUS_ACCESSIBILITY_TOAST_RES,
                 STATUS_CLICK_LISTENER,
-                STATUS_ICON_ALPHA,
                 STATUS_ICON_CORNER_RADIUS,
                 STATUS_ICON_DESCRIPTION_RES,
                 STATUS_ICON_RESOURCE,

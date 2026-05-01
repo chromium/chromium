@@ -186,15 +186,6 @@ public class StatusCoordinator implements LocationBarDataProvider.Observer {
         mMediator.setShowStatusIconForSecureOrigins(showStatusIconForSecureOrigins);
     }
 
-    /**
-     * Set the url focus change percent.
-     *
-     * @param percent The current focus percent.
-     */
-    public void setUrlFocusChangePercent(float percent) {
-        mMediator.setUrlFocusChangePercent(percent);
-    }
-
     /** Set the x translation of the status view. */
     public void setTranslationX(float translationX) {
         mMediator.setTranslationX(translationX);

@@ -464,12 +464,6 @@ public class StatusView extends LinearLayout {
         animateStatusIcon(transitionType, animationFinishedCallback);
     }
 
-    /** Specify the status icon alpha. */
-    void setStatusIconAlpha(float alpha) {
-        if (mIconView == null) return;
-        mIconView.setAlpha(alpha);
-    }
-
     /** Specify the status icon visibility. */
     public void setStatusIconShown(boolean showIcon) {
         if (mStatusIconView == null) return;

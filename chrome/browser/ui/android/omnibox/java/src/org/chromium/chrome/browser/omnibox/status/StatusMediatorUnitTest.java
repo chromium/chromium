@@ -242,9 +242,6 @@ public final class StatusMediatorUnitTest {
         assertTrue(mModel.get(StatusProperties.SHOW_STATUS_ICON));
         assertTrue(mMediator.shouldDisplaySearchEngineIcon());
 
-        mMediator.setUrlFocusChangePercent(0.5f);
-        assertEquals(1f, mModel.get(StatusProperties.STATUS_ICON_ALPHA), 0f);
-
         doReturn(false).when(mNewTabPageDelegate).isCurrentlyVisible();
 
         mMediator.setUrlHasFocus(true);
@@ -257,7 +254,6 @@ public final class StatusMediatorUnitTest {
     public void searchEngineLogo_isGoogleLogo_noHideIconAfterUnfocusedWhenScrolled() {
         mMediator.setUrlHasFocus(false);
         mMediator.setShowIconsWhenUrlFocused(true);
-        mMediator.setUrlFocusChangePercent(1f);
         mMediator.setUrlHasFocus(true);
         mMediator.setUrlHasFocus(false);
         assertTrue(mModel.get(StatusProperties.SHOW_STATUS_ICON));
@@ -271,7 +267,6 @@ public final class StatusMediatorUnitTest {
 
         mMediator.setUrlHasFocus(false);
         mMediator.setShowIconsWhenUrlFocused(true);
-        mMediator.setUrlFocusChangePercent(1f);
         assertEquals(
                 R.drawable.ic_logo_googleg_20dp,
                 mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getIconRes());
