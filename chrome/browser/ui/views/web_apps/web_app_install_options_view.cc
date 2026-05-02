@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/web_apps/web_app_install_flow_dialog_delegate.h"
 #include "chrome/browser/web_applications/icons/icon_masker.h"
+#include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/url_formatter/elide_url.h"
@@ -47,6 +48,7 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(WebAppInstallOptionsView, kViewId);
 namespace {
 
 constexpr int kIconArrowSize = 24;
+constexpr int kIllustrationCornerRadius = 8;
 
 // A simple implementation of rounded shadows around the icon. The vector
 // dimensions correspond to the x and y offset of the shadow. The shadow will
@@ -80,11 +82,15 @@ views::Builder<views::BoxLayoutView> CreateIconWithLabelView(
     const ui::ImageModel& image_model,
     const std::u16string& label_text,
     const gfx::Size& image_size,
+    int corner_radius = 0,
     raw_ptr<views::ImageView>* icon_view_out = nullptr) {
   auto image_builder = views::Builder<views::ImageView>()
                            .SetImage(image_model)
                            .SetImageSize(image_size)
                            .SetPreferredSize(image_size);
+  if (corner_radius > 0) {
+    image_builder.SetCornerRadius(corner_radius);
+  }
   if (icon_view_out) {
     image_builder.CopyAddressTo(icon_view_out);
   }
@@ -124,6 +130,7 @@ WebAppInstallOptionsView::WebAppInstallOptionsView(
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(10), 10));
   SetProperty(views::kElementIdentifierKey, kViewId);
+  ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
 
   switch (os_type) {
     case InstallOsType::kCros: {
@@ -144,17 +151,19 @@ WebAppInstallOptionsView::WebAppInstallOptionsView(
                       url_formatter::FormatOriginForSecurityDisplay(
                           url::Origin::Create(start_url),
                           url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS),
-                      displayed_image.size(), &icon_view_),
+                      displayed_image.size(),
+                      /*corner_radius=*/0, &icon_view_),
                   views::Builder<views::ImageView>()
                       .SetImage(ui::ImageModel::FromVectorIcon(
                           kArrowForwardIcon, ui::kColorIcon))
                       .SetPreferredSize(
                           gfx::Size(kIconArrowSize, kIconArrowSize)),
-                  views::Builder<views::Label>()
-                      // TODO(crbug.com/496279290): Replace with
-                      // Launcher img.
-                      .SetText(u"[Launcher Icon]")
-                      .SetTooltipText(u"Launcher Icon (Filler)"))
+                  CreateIconWithLabelView(
+                      bundle.GetThemedLottieImageNamed(
+                          IDR_WEB_APP_INTERNALS_CROS_LAUNCHER),
+                      l10n_util::GetStringUTF16(IDS_WEB_APP_INSTALL_LAUNCHER),
+                      gfx::Size(kLargeImageSize, kLargeImageSize),
+                      kIllustrationCornerRadius))
               .Build());
 
       AddChildView(views::Builder<views::Checkbox>()

@@ -3598,6 +3598,9 @@ are declared in tools/grit/grit_args.gni.
       <message name="IDS_WEB_APP_INSTALL_PIN_TO_TASKBAR" desc="Label of the checkbox to pin an installed web app shortcut to taskbar.">
         Pin to Taskbar
       </message>
+      <message name="IDS_WEB_APP_INSTALL_LAUNCHER" desc="Label for the ChromeOS Launcher icon in the install options view.">
+        Launcher
+      </message>
 
       <message name="IDS_BOOKMARK_APP_AX_BUBBLE_NAME_LABEL" desc="Text preceding the name of a bookmark app, read by spoken feedback.">
         Shortcut name
