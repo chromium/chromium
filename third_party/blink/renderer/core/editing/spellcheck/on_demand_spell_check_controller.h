@@ -55,6 +55,8 @@ class CORE_EXPORT OnDemandSpellCheckController final
   void RequestCheckingForRemainingRange();
   bool FullyCheckedCurrentRootEditable() const;
 
+  bool IsSpellCheckingEnabled() const;
+
   const Member<LocalDOMWindow> window_;
   const Member<SpellCheckRequester> spell_check_requester_;
   Member<const ContainerNode> root_editable_;

@@ -12,8 +12,10 @@
 #include "third_party/blink/renderer/core/editing/iterators/text_iterator.h"
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
 #include "third_party/blink/renderer/core/editing/spellcheck/spell_check_requester.h"
+#include "third_party/blink/renderer/core/editing/spellcheck/spell_checker.h"
 #include "third_party/blink/renderer/core/editing/visible_units.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
@@ -54,6 +56,12 @@ void OnDemandSpellCheckController::ElementRemoved(const Element& element) {
 
 void OnDemandSpellCheckController::RequestFullChecking(
     const ContainerNode* container_node) {
+  if (!IsSpellCheckingEnabled() ||
+      !SpellChecker::IsSpellCheckingEnabledAt(Position(container_node, 0))) {
+    ClearProgress();
+    return;
+  }
+
   // Some IMEs' functionalities (e.g. Gboard's Add to Personal Dictionary) rely
   // on PerformFullContentSpellCheck to perform a full-content spell check. In
   // such case, the spell check request cache could have become stale by the
@@ -102,6 +110,13 @@ void OnDemandSpellCheckController::ClearProgress() {
 
 void OnDemandSpellCheckController::ContextDestroyed() {
   ClearProgress();
+}
+
+bool OnDemandSpellCheckController::IsSpellCheckingEnabled() const {
+  if (!GetExecutionContext()) {
+    return false;
+  }
+  return window_->GetSpellChecker().IsSpellCheckingEnabled();
 }
 
 void OnDemandSpellCheckController::RequestCheckingForRemainingRange() {

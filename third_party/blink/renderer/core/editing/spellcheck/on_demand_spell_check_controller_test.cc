@@ -7,10 +7,13 @@
 #include <gtest/gtest.h>
 
 #include "base/strings/strcat.h"
+#include "third_party/blink/public/web/web_text_check_client.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/editing/spellcheck/spell_check_requester.h"
 #include "third_party/blink/renderer/core/editing/spellcheck/spell_check_test_base.h"
 #include "third_party/blink/renderer/core/editing/spellcheck/spell_checker.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
@@ -91,6 +94,45 @@ class OnDemandSpellCheckControllerTest : public SpellCheckTestBase {
  private:
   std::optional<ScopedSpellCheckChunkingForTest> spell_check_chunking_;
 };
+
+TEST_F(OnDemandSpellCheckControllerTest,
+       RequestFullCheckingWhenSpellcheckFalse) {
+  SetBodyContent("<div contenteditable='true' spellcheck='false'>foo</div>");
+  Element* div = QuerySelector("div");
+
+  OnDemandController().RequestFullChecking(div);
+  test::RunPendingTasks();
+
+  EXPECT_EQ(OnDemandSpellCheckController::State::kInactive,
+            OnDemandController().GetState());
+  EXPECT_EQ(0, Requester().LastRequestSequence());
+}
+
+TEST_F(OnDemandSpellCheckControllerTest,
+       RequestFullCheckingWhenGlobalSpellcheckDisabled) {
+  class DisabledTextCheckerClient : public WebTextCheckClient {
+   public:
+    bool IsSpellCheckingEnabled() const override { return false; }
+  };
+  DisabledTextCheckerClient disabled_client;
+  EmptyLocalFrameClient* frame_client =
+      static_cast<EmptyLocalFrameClient*>(GetFrame().Client());
+  frame_client->SetTextCheckerClientForTesting(&disabled_client);
+
+  SetSpellCheckChunkingEnabled(true);
+  SetBodyContent("<div contenteditable='true'>foo</div>");
+  Element* div = QuerySelector("div");
+
+  OnDemandController().RequestFullChecking(div);
+  test::RunPendingTasks();
+
+  EXPECT_EQ(OnDemandSpellCheckController::State::kInactive,
+            OnDemandController().GetState());
+  EXPECT_EQ(0, Requester().LastRequestSequence());
+
+  // Restore the original client
+  frame_client->SetTextCheckerClientForTesting(nullptr);
+}
 
 TEST_F(OnDemandSpellCheckControllerTest, RequestFullCheckingWithoutChunking) {
   SetSpellCheckChunkingEnabled(false);
