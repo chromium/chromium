@@ -50,7 +50,7 @@ public class XrSceneCoreSessionManagerImpl implements XrSceneCoreSessionManager 
     private static final String MODULE_NAME = "xr";
     // List of native libraries to load for the XR module.
     private static final String[] NATIVE_LIBS = {
-        "impress_api_jni", "arcore_sdk_c", "arcore_sdk_jni", "androidx.xr.runtime.openxr"
+        "impress_api_jni", "arcore_sdk_c", "arcore_sdk_jni", "androidx.xr.runtime.openxr", "androidx.xr.arcore.openxr",
     };
     private static final Object sLock = new Object();
     private static boolean sLibrariesLoaded;
