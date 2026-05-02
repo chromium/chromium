@@ -201,7 +201,7 @@ content::EvalJsResult EvalDisplayStateChange(
             reject('window.$1() resolved, but ' +
             '`display-state: $2` not matched.');
           }
-        }).catch(() => reject('window.$1() rejected.'));
+        }).catch((e) => reject('window.$1() rejected: ' + e.message));
       });)";
   return content::EvalJs(
       execution_target,
@@ -2387,6 +2387,27 @@ class WebAppFrameToolbarBrowserTest_AdditionalWindowingControls
   base::ScopedTempDir temp_dir_;
   GURL second_page_url_;
 };
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppFrameToolbarBrowserTest_AdditionalWindowingControls,
+    APIRejectedInBrowserMode) {
+  InstallAndLaunchWebApp();
+  helper()->GrantWindowManagementPermission();
+
+  auto* app_browser = helper()->app_browser();
+
+  // Switch to browser mode
+  ui_test_utils::BrowserDestroyedObserver observer(app_browser);
+  chrome::ExecuteCommand(app_browser, IDC_OPEN_IN_CHROME);
+  observer.Wait();
+
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+
+  EXPECT_THAT(EvalDisplayStateChange(web_contents, "maximize", "maximized"),
+              content::EvalJsResult::ErrorIs(testing::AllOf(
+                  testing::HasSubstr("window.maximize() rejected"),
+                  testing::HasSubstr("API is only supported in web apps."))));
+}
 
 IN_PROC_BROWSER_TEST_F(
     WebAppFrameToolbarBrowserTest_AdditionalWindowingControls,
