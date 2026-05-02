@@ -34,7 +34,8 @@ MiniMapServiceFactory::~MiniMapServiceFactory() = default;
 
 std::unique_ptr<KeyedService> MiniMapServiceFactory::BuildServiceInstanceFor(
     ProfileIOS* profile) const {
-  CHECK(base::FeatureList::IsEnabled(kIOSMiniMapUniversalLink));
+  CHECK(base::FeatureList::IsEnabled(kIOSMiniMapUniversalLink) ||
+        base::FeatureList::IsEnabled(kIOSMiniMapUniversalLinkCounterfactual));
 
   return std::make_unique<MiniMapService>(
       profile->GetPrefs(),

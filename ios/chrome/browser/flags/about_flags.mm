@@ -2915,11 +2915,16 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      FEATURE_VALUE_TYPE(kUseUIGraphicsImageRendererForFallbackIcons)},
     {"password-auto-submission-ios",
      flag_descriptions::kIOSPasswordAutoSubmissionName,
-     flag_descriptions::kIOSPasswordAutoSubmissionDescription,
-     flags_ui::kOsIos,
+     flag_descriptions::kIOSPasswordAutoSubmissionDescription, flags_ui::kOsIos,
      FEATURE_WITH_PARAMS_VALUE_TYPE(
          password_manager::features::kIOSPasswordAutoSubmission,
-         kAutoSubmissionVariations, "PasswordAutofillAutoSubmission")},
+         kAutoSubmissionVariations,
+         "PasswordAutofillAutoSubmission")},
+    {"ios-mini-map-universal-links-counterfactual",
+     flag_descriptions::kIOSMiniMapUniversalLinkCounterfactualName,
+     flag_descriptions::kIOSMiniMapUniversalLinkCounterfactualDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kIOSMiniMapUniversalLinkCounterfactual)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

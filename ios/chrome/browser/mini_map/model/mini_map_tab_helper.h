@@ -9,6 +9,8 @@
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
+#import "ui/base/page_transition_types.h"
+#import "url/gurl.h"
 
 @protocol MiniMapCommands;
 class MiniMapService;
@@ -57,6 +59,12 @@ class MiniMapTabHelper : public web::WebStateUserData<MiniMapTabHelper>,
 
   // Callback to resolve the policy decision for the intercepted request.
   PolicyDecisionCallback policy_callback_;
+
+  // The URL to open if the mini map failed to be shown in the treatment arm.
+  GURL pending_treatment_url_;
+
+  // The transition type for the pending treatment URL.
+  ui::PageTransition pending_transition_type_;
 };
 
 #endif  // IOS_CHROME_BROWSER_MINI_MAP_MODEL_MINI_MAP_TAB_HELPER_H_

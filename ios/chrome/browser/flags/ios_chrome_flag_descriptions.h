@@ -571,6 +571,9 @@ extern const char kIOSKeyboardAccessoryDefaultViewDescription[];
 extern const char kIOSKeyboardAccessoryTwoBubbleName[];
 extern const char kIOSKeyboardAccessoryTwoBubbleDescription[];
 
+extern const char kIOSMiniMapUniversalLinkCounterfactualName[];
+extern const char kIOSMiniMapUniversalLinkCounterfactualDescription[];
+
 extern const char kIOSMiniMapUniversalLinkName[];
 extern const char kIOSMiniMapUniversalLinkDescription[];
 

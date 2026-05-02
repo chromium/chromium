@@ -898,6 +898,14 @@ const char kIOSKeyboardAccessoryTwoBubbleDescription[] =
     "When enabled, the two-bubble design is used for the Keyboard Accessory "
     "view.";
 
+const char kIOSMiniMapUniversalLinkCounterfactualName[] =
+    "Counterfactual for opening Maps Universal links in native view";
+const char kIOSMiniMapUniversalLinkCounterfactualDescription[] =
+    "Enables counterfactual logging for the maps universal link native preview "
+    "experiment. It adds a `utm_campaign` parameter before opening the "
+    "universal link in Maps Lite so that subsequent iGMM installs would be "
+    "logged.";
+
 const char kIOSMiniMapUniversalLinkName[] =
     "Open Maps Universal links in native view.";
 const char kIOSMiniMapUniversalLinkDescription[] =

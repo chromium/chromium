@@ -638,6 +638,9 @@ constexpr base::FeatureParam<double>
 
 BASE_FEATURE(kIOSMiniMapUniversalLink, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kIOSMiniMapUniversalLinkCounterfactual,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool IsNotificationCollisionManagementEnabled() {
   return base::FeatureList::IsEnabled(kNotificationCollisionManagement);
 }

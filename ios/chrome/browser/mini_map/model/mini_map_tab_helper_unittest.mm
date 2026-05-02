@@ -41,6 +41,22 @@ NSString* const kMapsLink = @"https://maps.google.com/maps/foo";
 // A valid query parameter to mark URL valid for
 // MiniMapTabHelperTestMiniMapControllerFactory.
 NSString* const kValidQuery = @"valid=true";
+
+// A webstate that records its last open url.
+class TestFakeWebState : public web::FakeWebState {
+ public:
+  void OpenURL(const web::WebState::OpenURLParams& params) override {
+    last_open_url_params_ =
+        std::make_unique<web::WebState::OpenURLParams>(params);
+  }
+  web::WebState::OpenURLParams* last_open_url_params() {
+    return last_open_url_params_.get();
+  }
+
+ private:
+  std::unique_ptr<web::WebState::OpenURLParams> last_open_url_params_;
+};
+
 }  // namespace
 
 // A Mini map factory that filters out some handled URLs based on their queries.
@@ -168,7 +184,7 @@ class MiniMapTabHelperTest : public PlatformTest {
   MiniMapTabHelperTestMiniMapControllerFactory* factory_;
   std::unique_ptr<TestProfileIOS> profile_;
   id application_;
-  web::FakeWebState web_state_;
+  TestFakeWebState web_state_;
   raw_ptr<web::FakeNavigationManager> navigation_manager_ = nullptr;
   raw_ptr<MiniMapTabHelper> tab_helper_ = nullptr;
   raw_ptr<TemplateURLService> template_url_service_ = nullptr;
@@ -201,8 +217,11 @@ TEST_F(MiniMapTabHelperTest, TestNavigations) {
             ? ui::PageTransition::PAGE_TRANSITION_LINK
             : ui::PageTransition::PAGE_TRANSITION_AUTO_BOOKMARK;
     if (scenario == total - 1) {
+      NSString* expected_url_string =
+          [url stringByAppendingString:@"&utm_campaign=as-npt-bling"];
       OCMExpect([mini_map_commands_handler_
-          presentMiniMapNativePreviewForURL:[NSURL URLWithString:url]]);
+          presentMiniMapNativePreviewForURL:
+              [NSURL URLWithString:expected_url_string]]);
     }
     bool res =
         TestShouldAllowRequest(web_state_url, url, feature_enabled,
@@ -218,9 +237,11 @@ TEST_F(MiniMapTabHelperTest, TestNavigations) {
 TEST_F(MiniMapTabHelperTest, TestGoogleMapsURL) {
   NSString* const kGoogleMapsLink =
       @"https://www.google.com/maps/foo?valid=true";
+  NSString* const kExpectedLink =
+      @"https://www.google.com/maps/foo?valid=true&utm_campaign=as-npt-bling";
 
   OCMExpect([mini_map_commands_handler_
-      presentMiniMapNativePreviewForURL:[NSURL URLWithString:kGoogleMapsLink]]);
+      presentMiniMapNativePreviewForURL:[NSURL URLWithString:kExpectedLink]]);
   bool res = TestShouldAllowRequest(kGoogleSRPPage, kGoogleMapsLink,
                                     /*feature_enabled=*/true,
                                     /*google_maps_installed=*/false,
@@ -235,9 +256,11 @@ TEST_F(MiniMapTabHelperTest, TestGoogleMapsURL) {
 TEST_F(MiniMapTabHelperTest, TestNativePreviewFailure) {
   NSString* const kGoogleMapsLink =
       @"https://www.google.com/maps/foo?valid=true";
+  NSString* const kExpectedLink =
+      @"https://www.google.com/maps/foo?valid=true&utm_campaign=as-npt-bling";
 
   OCMExpect([mini_map_commands_handler_
-      presentMiniMapNativePreviewForURL:[NSURL URLWithString:kGoogleMapsLink]]);
+      presentMiniMapNativePreviewForURL:[NSURL URLWithString:kExpectedLink]]);
 
   // Pass false to simulate failure
   bool res = TestShouldAllowRequest(kGoogleSRPPage, kGoogleMapsLink,
@@ -246,8 +269,16 @@ TEST_F(MiniMapTabHelperTest, TestNativePreviewFailure) {
                                     ui::PageTransition::PAGE_TRANSITION_LINK,
                                     /*simulate_success=*/false);
 
-  // Navigation should be ALLOWED (returns true) because UI failed.
-  EXPECT_TRUE(res);
+  // Navigation should be canceled (returns false) so it can open the modified
+  // URL.
+  EXPECT_FALSE(res);
+
+  web::WebState::OpenURLParams* params = web_state_.last_open_url_params();
+  ASSERT_TRUE(params);
+  EXPECT_EQ(
+      params->url.spec(),
+      "https://www.google.com/maps/foo?valid=true&utm_campaign=as-npt-bling");
+
   EXPECT_OCMOCK_VERIFY(mini_map_commands_handler_);
 }
 
@@ -257,13 +288,15 @@ TEST_F(MiniMapTabHelperTest, TestReentrancy) {
       @"https://www.google.com/maps/foo?valid=true";
   NSString* const kGoogleMapsLink2 =
       @"https://www.google.com/maps/bar?valid=true";
+  NSString* const kExpectedLink1 =
+      @"https://www.google.com/maps/foo?valid=true&utm_campaign=as-npt-bling";
+  NSString* const kExpectedLink2 =
+      @"https://www.google.com/maps/bar?valid=true&utm_campaign=as-npt-bling";
 
   OCMExpect([mini_map_commands_handler_
-      presentMiniMapNativePreviewForURL:[NSURL
-                                            URLWithString:kGoogleMapsLink1]]);
+      presentMiniMapNativePreviewForURL:[NSURL URLWithString:kExpectedLink1]]);
   OCMExpect([mini_map_commands_handler_
-      presentMiniMapNativePreviewForURL:[NSURL
-                                            URLWithString:kGoogleMapsLink2]]);
+      presentMiniMapNativePreviewForURL:[NSURL URLWithString:kExpectedLink2]]);
 
   web_state_.SetCurrentURL(
       net::GURLWithNSURL([NSURL URLWithString:kGoogleSRPPage]));
@@ -319,4 +352,72 @@ TEST_F(MiniMapTabHelperTest, TestReentrancy) {
   EXPECT_FALSE(decision2.ShouldAllowNavigation());
 
   EXPECT_OCMOCK_VERIFY(mini_map_commands_handler_);
+}
+
+// Test that the counterfactual flag causes the URL to be modified and opened.
+TEST_F(MiniMapTabHelperTest, TestCounterfactualLogging) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      kIOSMiniMapUniversalLinkCounterfactual);
+
+  NSString* const kGoogleMapsLink =
+      @"https://www.google.com/maps/foo?valid=true";
+
+  bool res = TestShouldAllowRequest(kGoogleSRPPage, kGoogleMapsLink,
+                                    /*feature_enabled=*/true,
+                                    /*google_maps_installed=*/false,
+                                    ui::PageTransition::PAGE_TRANSITION_LINK);
+
+  // Navigation should be blocked (returns false).
+  EXPECT_FALSE(res);
+
+  // Check that a new URL was opened with the utm_campaign parameter.
+  web::WebState::OpenURLParams* params = web_state_.last_open_url_params();
+  ASSERT_TRUE(params);
+  EXPECT_EQ(
+      params->url.spec(),
+      "https://www.google.com/maps/foo?valid=true&utm_campaign=as-npc-bling");
+
+  // Test that the modified URL is ALLOWED (not intercepted again).
+  NSString* const kModifiedGoogleMapsLink =
+      @"https://www.google.com/maps/foo?valid=true&utm_campaign=as-npc-bling";
+
+  bool res_modified =
+      TestShouldAllowRequest(kGoogleSRPPage, kModifiedGoogleMapsLink,
+                             /*feature_enabled=*/true,
+                             /*google_maps_installed=*/false,
+                             ui::PageTransition::PAGE_TRANSITION_LINK);
+
+  // Navigation should be ALLOWED (returns true).
+  EXPECT_TRUE(res_modified);
+}
+
+// Test that the counterfactual flag causes the URL to be modified and opened
+// even when the transition type includes qualifiers (e.g. redirect).
+TEST_F(MiniMapTabHelperTest, TestCounterfactualLoggingWithRedirect) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      kIOSMiniMapUniversalLinkCounterfactual);
+
+  NSString* const kGoogleMapsLink =
+      @"https://www.google.com/maps/foo?valid=true";
+
+  ui::PageTransition transition_type = static_cast<ui::PageTransition>(
+      ui::PageTransition::PAGE_TRANSITION_LINK |
+      ui::PageTransition::PAGE_TRANSITION_SERVER_REDIRECT);
+
+  bool res =
+      TestShouldAllowRequest(kGoogleSRPPage, kGoogleMapsLink,
+                             /*feature_enabled=*/true,
+                             /*google_maps_installed=*/false, transition_type);
+
+  // Navigation should be blocked (returns false).
+  EXPECT_FALSE(res);
+
+  // Check that a new URL was opened with the utm_campaign parameter.
+  web::WebState::OpenURLParams* params = web_state_.last_open_url_params();
+  ASSERT_TRUE(params);
+  EXPECT_EQ(
+      params->url.spec(),
+      "https://www.google.com/maps/foo?valid=true&utm_campaign=as-npc-bling");
 }

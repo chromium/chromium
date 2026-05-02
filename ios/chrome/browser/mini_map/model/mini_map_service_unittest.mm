@@ -114,3 +114,23 @@ TEST_F(MiniMapServiceTest, TestMiniMapIsMapsInstalled) {
                     object:nil];
   EXPECT_FALSE(mini_map_service_->IsGoogleMapsInstalled());
 }
+
+using MiniMapServiceCounterfactualTest = PlatformTest;
+
+TEST_F(MiniMapServiceCounterfactualTest,
+       TestServiceCreationWithCounterfactualFlag) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({kIOSMiniMapUniversalLinkCounterfactual},
+                                {kIOSMiniMapUniversalLink});
+
+  web::WebTaskEnvironment task_environment;
+  TestProfileIOS::Builder test_profile_builder;
+  test_profile_builder.AddTestingFactory(
+      ios::TemplateURLServiceFactory::GetInstance(),
+      ios::TemplateURLServiceFactory::GetDefaultFactory());
+  std::unique_ptr<TestProfileIOS> profile =
+      std::move(test_profile_builder).Build();
+
+  MiniMapService* service = MiniMapServiceFactory::GetForProfile(profile.get());
+  EXPECT_TRUE(service);
+}

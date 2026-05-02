@@ -589,6 +589,10 @@ extern const base::FeatureParam<double>
 // Feature flag to forward Maps Universal links to native maps.
 BASE_DECLARE_FEATURE(kIOSMiniMapUniversalLink);
 
+// Feature flag for counterfactual logging for the universal link native map
+// experiment.
+BASE_DECLARE_FEATURE(kIOSMiniMapUniversalLinkCounterfactual);
+
 // Returns whether notification collision management is enabled.
 bool IsNotificationCollisionManagementEnabled();
 
