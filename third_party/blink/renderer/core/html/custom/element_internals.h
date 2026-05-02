@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
+#include "ui/accessibility/ax_enums.mojom-blink-forward.h"
 
 namespace blink {
 
@@ -90,6 +91,9 @@ class CORE_EXPORT ElementInternals : public ScriptWrappable,
   T* FindBehavior() const {
     return static_cast<T*>(FindBehaviorByType(T::GetStaticWrapperTypeInfo()));
   }
+  // Returns the default ARIA role from behaviors using last-in-wins conflict
+  // resolution. Returns kUnknown if no behaviors are attached.
+  ax::mojom::blink::Role BehaviorBasedDefaultRole() const;
 
   const FrozenArray<Element>* ariaControlsElements() const;
   void setAriaControlsElements(GCedHeapVector<Member<Element>>* given_elements);

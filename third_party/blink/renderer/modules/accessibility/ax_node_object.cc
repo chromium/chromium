@@ -2807,6 +2807,19 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
   if (IsFieldset())
     return ax::mojom::blink::Role::kGroup;
 
+  // Check for a platform-provided behavior's default role.
+  // See:
+  // https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/PlatformProvidedBehaviors/explainer.md.
+  if (RuntimeEnabledFeatures::ElementInternalsBehaviorsEnabled()) {
+    if (auto* internals =
+            GetElement() ? GetElement()->GetElementInternals() : nullptr) {
+      ax::mojom::blink::Role role = internals->BehaviorBasedDefaultRole();
+      if (role != ax::mojom::blink::Role::kUnknown) {
+        return role;
+      }
+    }
+  }
+
   return RoleFromLayoutObjectOrNode();
 }
 

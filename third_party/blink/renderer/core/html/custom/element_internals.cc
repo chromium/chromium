@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/core/html/forms/validity_state.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "ui/accessibility/ax_enums.mojom-blink.h"
 
 namespace blink {
 
@@ -420,6 +421,16 @@ const FrozenArray<ElementBehavior>& ElementInternals::behaviors() const {
     return *empty;
   }
   return *behaviors_;
+}
+
+ax::mojom::blink::Role ElementInternals::BehaviorBasedDefaultRole() const {
+  if (!behaviors_ || behaviors_->size() == 0) {
+    return ax::mojom::blink::Role::kUnknown;
+  }
+  ax::mojom::blink::Role role =
+      (*behaviors_)[behaviors_->size() - 1]->DefaultAriaRole();
+  CHECK_NE(role, ax::mojom::blink::Role::kUnknown);
+  return role;
 }
 
 void ElementInternals::SetBehaviors(

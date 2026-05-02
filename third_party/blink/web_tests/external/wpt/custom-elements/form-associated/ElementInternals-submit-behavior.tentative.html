@@ -627,4 +627,35 @@ promise_test(async t => {
     'Form should be submitted into the frame specified by behavior formTarget');
 }, 'formTarget on HTMLSubmitButtonBehavior overrides form target');
 
+promise_test(async t => {
+  t.add_cleanup(reset);
+  let submitted = false;
+  form.onsubmit = (e) => { e.preventDefault(); submitted = true; };
+  customSubmit.focus();
+  await test_driver.send_keys(customSubmit, '\uE007');
+  assert_true(submitted,
+    'User pressing Enter on custom submit button should submit form');
+}, 'User-initiated Enter key submits form via HTMLSubmitButtonBehavior');
+
+promise_test(async t => {
+  t.add_cleanup(reset);
+  let submitted = false;
+  form.onsubmit = (e) => { e.preventDefault(); submitted = true; };
+  customSubmit.focus();
+  await test_driver.send_keys(customSubmit, ' ');
+  assert_true(submitted,
+    'User pressing Space on custom submit button should submit form');
+}, 'User-initiated Space key submits form via HTMLSubmitButtonBehavior');
+
+promise_test(async t => {
+  t.add_cleanup(reset);
+  customSubmit.submitBehavior.disabled = true;
+  let submitted = false;
+  form.onsubmit = (e) => { e.preventDefault(); submitted = true; };
+  defaultInput.focus();
+  await test_driver.send_keys(defaultInput, '\uE007');
+  assert_false(submitted,
+    'Implicit submission should not occur when default submit button behavior is disabled');
+}, 'Disabled behavior prevents implicit submission via Enter in input field');
+
 </script>

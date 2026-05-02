@@ -404,6 +404,7 @@ class CORE_EXPORT HTMLElement : public Element {
 
  protected:
   FocusableState SupportsFocus(UpdateBehavior update_behavior) const override;
+  int DefaultTabIndex() const override;
 
   enum AllowPercentage { kDontAllowPercentageValues, kAllowPercentageValues };
   enum AllowZero { kDontAllowZeroValues, kAllowZeroValues };

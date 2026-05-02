@@ -3823,16 +3823,23 @@ FocusgroupFlags HTMLElement::NativeArrowKeyAxes() const {
 }
 
 void HTMLElement::DefaultEventHandler(Event& event) {
+  auto* submit_behavior = SubmitBehavior();
+
   if (event.type() == event_type_names::kDOMActivate) {
     // Delegate to `HTMLSubmitButtonBehavior` if present.
-    if (auto* submit_behavior = SubmitBehavior();
-        submit_behavior && submit_behavior->HandleActivation(event)) {
+    if (submit_behavior && submit_behavior->HandleActivation(event)) {
       return;
     }
 
     if (HandleCommandForActivation()) {
       return;
     }
+  }
+
+  // For custom elements with a submit behavior, handle keyboard activation
+  // by converting key events into a simulated click.
+  if (submit_behavior && HandleKeyboardActivation(event)) {
+    return;
   }
 
   if (auto* keyboard_event = DynamicTo<KeyboardEvent>(event);
@@ -4241,7 +4248,20 @@ FocusableState HTMLElement::SupportsFocus(
   if (IsDisabledFormControl()) {
     return FocusableState::kNotFocusable;
   }
+  // Custom elements with `HTMLSubmitButtonBehavior` should be implicitly
+  // focusable, like native <button> elements.
+  if (auto* behavior = SubmitBehavior()) {
+    return behavior->IsEffectivelyDisabled() ? FocusableState::kNotFocusable
+                                             : FocusableState::kFocusable;
+  }
   return Element::SupportsFocus(update_behavior);
+}
+
+int HTMLElement::DefaultTabIndex() const {
+  // Custom elements with `HTMLSubmitButtonBehavior` should have a default
+  // tabindex of 0, like native <button> elements, so they appear in the
+  // tab order.
+  return SubmitBehavior() ? 0 : -1;
 }
 
 bool HTMLElement::IsDisabledFormControl() const {

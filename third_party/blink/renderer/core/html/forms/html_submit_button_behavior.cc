@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/html/forms/labels_node_list.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "ui/accessibility/ax_enums.mojom-blink.h"
 
 namespace blink {
 
@@ -21,9 +22,8 @@ HTMLSubmitButtonBehavior::HTMLSubmitButtonBehavior() = default;
 
 HTMLSubmitButtonBehavior::~HTMLSubmitButtonBehavior() = default;
 
-const AtomicString& HTMLSubmitButtonBehavior::DefaultAriaRole() const {
-  DEFINE_STATIC_LOCAL(const AtomicString, button_role, ("button"));
-  return button_role;
+ax::mojom::blink::Role HTMLSubmitButtonBehavior::DefaultAriaRole() const {
+  return ax::mojom::blink::Role::kButton;
 }
 
 const char* HTMLSubmitButtonBehavior::BehaviorName() const {
