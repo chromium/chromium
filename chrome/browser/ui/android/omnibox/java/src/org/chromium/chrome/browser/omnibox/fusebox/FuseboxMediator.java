@@ -95,8 +95,6 @@ import java.util.function.Supplier;
     private final FuseboxViewHolder mViewHolder;
     private final MonotonicObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
     private final SettableNonNullObservableSupplier<@FuseboxState Integer> mFuseboxStateSupplier;
-    private final SettableNonNullObservableSupplier<@FuseboxLayoutMode Integer>
-            mFuseboxLayoutModeSupplier;
     private final Clipboard mClipboard;
     private final Callback<@AutocompleteRequestType Integer> mOnAutocompleteRequestTypeChanged =
             this::onAutocompleteRequestTypeChanged;
@@ -149,7 +147,6 @@ import java.util.function.Supplier;
         mViewHolder.popup.addOnDismissListener(this::hidePopup);
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mFuseboxStateSupplier = fuseboxStateSupplier;
-        mFuseboxLayoutModeSupplier = fuseboxLayoutModeSupplier;
         mSnackbarManager = snackbarManager;
         mClipboard = clipboard;
         mScrimManager = scrimManager;
@@ -163,7 +160,7 @@ import java.util.function.Supplier;
                         Snackbar.TYPE_NOTIFICATION,
                         Snackbar.UMA_FUSEBOX_UPLOAD_FAILED);
 
-        mFuseboxLayoutModeSupplier.set(getFuseboxLayoutMode());
+        fuseboxLayoutModeSupplier.set(getFuseboxLayoutMode());
 
         mModel.set(FuseboxProperties.BUTTON_ADD_CLICKED, this::onPlusButtonClicked);
         mModel.set(
