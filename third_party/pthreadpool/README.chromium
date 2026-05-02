@@ -2,7 +2,7 @@ Name: pthreadpool
 Short Name: pthreadpool
 URL: https://github.com/google/pthreadpool
 Version: N/A
-Revision: 65eb1fd3c0b5df9d24873258d7e26b3d15301b6c
+Revision: a56dcd79c699366e7ac6466792c3025883ff7704
 Update Mechanism: Autoroll
 License: BSD-2-Clause
 License File: src/LICENSE
