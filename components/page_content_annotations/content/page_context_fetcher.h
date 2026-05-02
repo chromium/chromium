@@ -15,6 +15,7 @@
 #include "base/feature_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/task/single_thread_task_runner.h"
@@ -314,6 +315,18 @@ class PageContextFetcher : public content::WebContentsObserver {
                   FetchPageContextResultCallback callback);
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(PageContextFetcherTest,
+                           RedactScreenshotOnWorkerThread);
+  FRIEND_TEST_ALL_PREFIXES(PageContextFetcherTest,
+                           RedactScreenshotOnWorkerThreadNoRedaction);
+
+  // Redacts a screenshot by painting over sensitive regions with
+  // `redaction_color`.
+  static base::expected<SkBitmap, std::string> RedactScreenshotOnWorkerThread(
+      const SkBitmap& bitmap,
+      const std::vector<gfx::Rect>& visible_bounding_boxes_for_redaction,
+      SkColor4f redaction_color);
+
 #if BUILDFLAG(ENABLE_PDF)
   void ReceivedPdfBytes(const url::Origin& pdf_origin,
                         uint32_t pdf_size_limit,
