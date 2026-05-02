@@ -14,6 +14,7 @@
 #import "ios/chrome/app/startup/chrome_app_startup_parameters.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/connection_information.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -67,6 +68,10 @@ const char* const kUMAShowDefaultPromoFromAppsHistogram =
   }
 
   MobileSessionCallerApp callerApp = [params callerApp];
+
+  if (prefService && params.postOpeningAction == TRIGGER_GEMINI_PROMO) {
+    prefService->SetBoolean(prefs::kAppStoreGeminiPromoTriggered, YES);
+  }
 
   UMA_HISTOGRAM_ENUMERATION(kUMAMobileSessionStartFromAppsHistogram, callerApp,
                             MOBILE_SESSION_CALLER_APP_COUNT);

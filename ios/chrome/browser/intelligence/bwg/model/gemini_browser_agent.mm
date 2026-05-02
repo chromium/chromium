@@ -62,7 +62,9 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/fullscreen_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
+#import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -71,9 +73,11 @@
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/bwg/bwg_api.h"
 #import "ios/public/provider/chrome/browser/bwg/bwg_gateway_protocol.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
+#import "ui/base/l10n/l10n_util.h"
 #import "ui/gfx/image/image.h"
 
 namespace {
@@ -405,11 +409,33 @@ void GeminiBrowserAgent::FullscreenProgressUpdatedForAnimation() {
   }
 }
 
+void GeminiBrowserAgent::ShowSignInRequiredSnackbar(
+    gemini::EntryPoint entry_point) {
+  RecordSignInRequiredSnackbarShown(entry_point);
+  id<SnackbarCommands> snackbar_handler =
+      HandlerForProtocol(browser_->GetCommandDispatcher(), SnackbarCommands);
+  SnackbarMessage* message = [[SnackbarMessage alloc]
+      initWithTitle:l10n_util::GetNSString(
+                        IDS_IOS_GEMINI_SIGN_IN_REQUIRED_SNACKBAR)];
+  [snackbar_handler showSnackbarMessage:message];
+}
+
 void GeminiBrowserAgent::StartGeminiFlow(UIViewController* base_view_controller,
                                          GeminiStartupState* startup_state) {
   gemini::EntryPoint entry_point = startup_state.entryPoint;
   bool will_show_first_run = !HasCompletedFirstRun();
   RecordGeminiEntryPointClick(entry_point, will_show_first_run);
+
+  // TODO(crbug.com/507509815): Link to Gemini sign in flow.
+  if (IsAppStoreInAppEventsEnabled() &&
+      entry_point == gemini::EntryPoint::ExternalAppStoreEvent) {
+    AuthenticationService* auth_service =
+        AuthenticationServiceFactory::GetForProfile(browser_->GetProfile());
+    if (!auth_service || !auth_service->HasPrimaryIdentity()) {
+      ShowSignInRequiredSnackbar(entry_point);
+      return;
+    }
+  }
 
   // Check if the user has already consented or if the consent flow should be
   // skipped.

@@ -51,6 +51,9 @@ extern const char kGeminiFREStateHistogram[];
 // UMA histogram key for IOS.Gemini.EntryPoint.
 extern const char kEntryPointHistogram[];
 
+// UMA histogram key for IOS.Gemini.SignInRequiredSnackbar.Shown.
+extern const char kSignInRequiredSnackbarShownHistogram[];
+
 // UMA histogram key for IOS.Gemini.EntryPoint.Available.
 extern const char kEntryPointAvailableHistogram[];
 
@@ -411,6 +414,9 @@ void RecordGeminiSessionLengthByType(base::TimeDelta session_duration,
 // Records when user sees the Gemini entry point impression.
 // Can be called once every 10 minutes to avoid spam logging.
 void RecordGeminiEntryPointImpression(gemini::EntryPoint entry_point);
+
+// Records when the sign-in required snackbar is shown.
+void RecordSignInRequiredSnackbarShown(gemini::EntryPoint entry_point);
 
 // Records when the Gemini entry point is available to the user.
 // Only used for entry points that are not available on almost all pages.

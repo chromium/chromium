@@ -193,6 +193,7 @@ source_set("first_run_profile_agent") {
     "//ios/chrome/browser/first_run/coordinator",
     "//ios/chrome/browser/first_run/coordinator:first_run_provider",
     "//ios/chrome/browser/first_run/guided_tour/coordinator",
+    "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/safari_data_import/public",
     "//ios/chrome/browser/scoped_ui_blocker/ui_bundled",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",

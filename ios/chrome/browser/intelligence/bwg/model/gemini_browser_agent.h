@@ -209,6 +209,9 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   // Returns true if the user has completed the FRE.
   bool HasCompletedFirstRun();
 
+  // Shows a snackbar message informing the user that sign-in is required.
+  void ShowSignInRequiredSnackbar(gemini::EntryPoint entry_point);
+
   // Returns the floaty offset based on current fullscreen progress.
   CGFloat GetFloatyOffset();
 

@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/first_run/coordinator/first_run_screen_provider.h"
 #import "ios/chrome/browser/first_run/guided_tour/coordinator/guided_tour_coordinator.h"
 #import "ios/chrome/browser/first_run/guided_tour/coordinator/guided_tour_promo_coordinator.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/safari_data_import/public/safari_data_import_entry_point.h"
 #import "ios/chrome/browser/safari_data_import/public/safari_data_import_ui_handler.h"
 #import "ios/chrome/browser/scoped_ui_blocker/ui_bundled/scoped_ui_blocker.h"
@@ -215,7 +216,8 @@ const char kGuidedTourStepDidFinishHistogram[] = "IOS.GuidedTour.DidFinishStep";
   AppState* appState = profileState.appState;
   if (appState.startupInformation.isFirstRun) {
     _scopedForceOrientation = ForcePortraitOrientationOnIphone(appState);
-    if (IsBestOfAppFREEnabled()) {
+
+    if (IsBestOfAppFREEnabled() || IsAppStoreInAppEventsEnabled()) {
       id<BrowserProvider> presentingInterface =
           _presentingSceneState.browserProviderInterface.currentBrowserProvider;
       Browser* browser = presentingInterface.browser;

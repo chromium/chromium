@@ -75,6 +75,9 @@ const char kEligibilityHistogram[] = "IOS.Gemini.Eligibility";
 
 const char kEntryPointHistogram[] = "IOS.Gemini.EntryPoint";
 
+const char kSignInRequiredSnackbarShownHistogram[] =
+    "IOS.Gemini.SignInRequiredSnackbarShown";
+
 const char kEntryPointImpressionHistogram[] =
     "IOS.Gemini.EntryPoint.Impression";
 
@@ -482,6 +485,11 @@ void RecordGeminiEntryPointClick(gemini::EntryPoint entry_point,
   if (is_fre_flow) {
     base::UmaHistogramEnumeration(kFREEntryPointHistogram, entry_point);
   }
+}
+
+void RecordSignInRequiredSnackbarShown(gemini::EntryPoint entry_point) {
+  base::UmaHistogramEnumeration(kSignInRequiredSnackbarShownHistogram,
+                                entry_point);
 }
 
 void RecordGeminiNewChatButtonTapped() {

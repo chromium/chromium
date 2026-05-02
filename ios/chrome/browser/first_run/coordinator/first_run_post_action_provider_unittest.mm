@@ -5,10 +5,13 @@
 #import "ios/chrome/browser/first_run/coordinator/first_run_post_action_provider.h"
 
 #import "base/test/scoped_feature_list.h"
+#import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/testing_pref_service.h"
 #import "ios/chrome/browser/first_run/public/features.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/safari_data_import/model/features.h"
 #import "ios/chrome/browser/screen/ui_bundled/screen_type.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
@@ -20,11 +23,29 @@ class FirstRunPostActionProviderTest : public PlatformTest {
     pref_service_ = std::make_unique<TestingPrefServiceSimple>();
     // Register prefs needed by ShouldShowSafariDataImportEntryPoint if any.
     // Assuming it uses standard prefs or we can mock it via feature flags.
+    pref_service_->registry()->RegisterBooleanPref(
+        prefs::kAppStoreGeminiPromoTriggered, false);
   }
 
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
   base::test::ScopedFeatureList feature_list_;
 };
+
+// Tests that all post-FRE screens are skipped when the App Store In-App event
+// promo is enabled and the Gemini promo has triggered.
+TEST_F(FirstRunPostActionProviderTest, SkipScreensForGeminiPromo) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({kAppStoreInAppEvents, kPageActionMenu},
+                                       {});
+
+  pref_service_->SetBoolean(prefs::kAppStoreGeminiPromoTriggered, true);
+
+  FirstRunPostActionProvider* provider = [[FirstRunPostActionProvider alloc]
+      initWithPrefService:pref_service_.get()];
+
+  ScreenType type = [provider nextScreenType];
+  EXPECT_EQ(type, kStepsCompleted);
+}
 
 // Tests that Safari Import is skipped if the Guided Tour has started.
 TEST_F(FirstRunPostActionProviderTest, SkipSafariImportIfTourStarted) {

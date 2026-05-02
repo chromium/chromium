@@ -3342,6 +3342,9 @@
       <message name="IDS_IOS_GEMINI_SETTINGS_CAMERA_TITLE" desc="Title for settings within Gemini related to the camera. Used as a page title and a settings row title.">
         Camera
       </message>
+      <message name="IDS_IOS_GEMINI_SIGN_IN_REQUIRED_SNACKBAR" desc="Snackbar message shown when the user tries to use Gemini but is not signed in.">
+        You need to sign in to use Gemini
+      </message>
       <message name="IDS_IOS_GENERIC_PASSKIT_ERROR" desc="Generic error message on failure reading a PassKit object. [Length: 60em] [iOS only]">
         Sorry, your Pass cannot be installed to Passbook at this time.
       </message>

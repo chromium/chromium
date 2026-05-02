@@ -35,7 +35,9 @@ enum class EntryPoint {
   DirectOmniboxBadge = 9,
   // Gemini was opened from the AI Hub after a sign-in flow.
   AIHubSignInSheet = 10,
-  kMaxValue = AIHubSignInSheet,
+  // Gemini was opened via an external App Store event.
+  ExternalAppStoreEvent = 11,
+  kMaxValue = ExternalAppStoreEvent,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:IOSGeminiEntryPoint)
 

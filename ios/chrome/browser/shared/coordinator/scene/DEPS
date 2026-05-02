@@ -22,6 +22,8 @@ include_rules = [
   "+ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_scene_agent.h",
   "+ios/chrome/browser/infobars/model",
   "+ios/chrome/browser/intelligence/bwg/coordinator",
+  "+ios/chrome/browser/intelligence/bwg/model",
+  "+ios/chrome/browser/intelligence/bwg/utils",
   "+ios/chrome/browser/intelligence/features",
   "+ios/chrome/browser/intents/model",
   "+ios/chrome/browser/lens/ui_bundled",

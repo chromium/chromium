@@ -798,6 +798,13 @@ inline constexpr char kLastGeminiInteractionTimestamp[] =
 inline constexpr char kLastGeminiInteractionURL[] =
     "ios.gemini.last_interaction_url";
 
+// A boolean specifying if the promotional event for App Store Gemini promo has
+// triggered. Startup parameters are not visible during first run, so instead,
+// we use a pref to notify first run components of startup events from the
+// external action related to the Gemini app store promo.
+inline constexpr char kAppStoreGeminiPromoTriggered[] =
+    "ios.first_run.app_store_gemini_promo_triggered";
+
 // Timestamp tracking the last time the Gemini contextual chip was displayed.
 inline constexpr char kLastGeminiContextualChipDisplayedTimestamp[] =
     "ios.gemini.last_contextual_chip_displayed";

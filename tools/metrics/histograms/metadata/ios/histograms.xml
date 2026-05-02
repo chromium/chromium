@@ -2920,6 +2920,16 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="IOS.Gemini.SignInRequiredSnackbarShown"
+    enum="IOSGeminiEntryPoint" expires_after="2026-11-01">
+  <owner>joemerramos@chromium.org</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <summary>
+    Records the entry point source from which Gemini was triggered on a page
+    when the sign-in required snackbar is shown.
+  </summary>
+</histogram>
+
 <histogram name="IOS.Gemini.StartupTime.{FirstRunBool}" units="ms"
     expires_after="2026-09-20">
   <owner>nicolasmacbeth@google.com</owner>

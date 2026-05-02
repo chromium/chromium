@@ -70,6 +70,7 @@
 #import "ios/chrome/browser/first_run/model/first_run.h"
 #import "ios/chrome/browser/geolocation/model/geolocation_manager.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_scene_agent.h"
+#import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intents/model/user_activity_browser_agent.h"
 #import "ios/chrome/browser/intents/model/user_activity_compatibility_util.h"
@@ -125,6 +126,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/public/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
+#import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_lens_input_selection_command.h"
@@ -2136,7 +2138,9 @@ bool IsProfileUnmanaged(ProfileIOS* profile) {
       }
     case TRIGGER_GEMINI_PROMO:
       if (IsAppStoreInAppEventsEnabled()) {
-        // TODO(crbug.com/506473258): Implement Gemini FRE on app startup.
+        return ^{
+          [weakSelf triggerGeminiFlowFromAppStoreEvent];
+        };
       }
       return nil;
     default:
@@ -2570,6 +2574,19 @@ bool IsProfileUnmanaged(ProfileIOS* profile) {
 
 #pragma mark - Private methods
 
+// Triggers the Gemini flow when an App Store related event occurs.
+- (void)triggerGeminiFlowFromAppStoreEvent {
+  if (!self.currentInterface.browser) {
+    return;
+  }
+
+  id<BWGCommands> geminiHandler = HandlerForProtocol(
+      self.currentInterface.browser->GetCommandDispatcher(), BWGCommands);
+  GeminiStartupState* startupState = [[GeminiStartupState alloc]
+      initWithEntryPoint:gemini::EntryPoint::ExternalAppStoreEvent];
+  [geminiHandler startGeminiFlowWithStartupState:startupState];
+}
+
 // Triggers the switcher view when the last WebState is closed on a device
 // that uses the switcher.
 - (void)onLastWebStateClosedForWebStateList:(WebStateList*)webStateList {
@@ -2791,8 +2808,7 @@ bool IsProfileUnmanaged(ProfileIOS* profile) {
   if (!windowScene) {
     return;
   }
-  UIUserInterfaceStyle style =
-      windowScene.traitCollection.userInterfaceStyle;
+  UIUserInterfaceStyle style = windowScene.traitCollection.userInterfaceStyle;
   UIViewController* presented =
       window.rootViewController.presentedViewController;
   while (presented) {

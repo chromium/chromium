@@ -30,11 +30,13 @@
 #import "ios/chrome/browser/first_run/public/features.h"
 #import "ios/chrome/browser/first_run/public/first_run_screen_delegate.h"
 #import "ios/chrome/browser/first_run/public/first_run_util.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/screen/ui_bundled/screen_provider.h"
 #import "ios/chrome/browser/screen/ui_bundled/screen_type.h"
 #import "ios/chrome/browser/search_engine_choice/coordinator/search_engine_choice_coordinator.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/new_tab_page_commands.h"
@@ -174,6 +176,16 @@ class FirstRunCoordinatorMetricsHelper final {
       // null checking here should at least prevent some crashes.
       return;
     }
+
+    if (IsAppStoreInAppEventsEnabled() && self.profile &&
+        self.profile->GetPrefs() &&
+        self.profile->GetPrefs()->GetBoolean(
+            prefs::kAppStoreGeminiPromoTriggered)) {
+      // If first run started due to app store external action, do not show
+      // any follow up IPH.
+      return;
+    }
+
     if (IsBestOfAppLensAnimatedPromoEnabled()) {
       // Present the Lens entrypoint IPH.
       [HandlerForProtocol(self.browser->GetCommandDispatcher(),
