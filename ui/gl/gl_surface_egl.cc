@@ -132,6 +132,17 @@ bool ValidateEglConfig(EGLDisplay display,
   return true;
 }
 
+bool IsAndroidEmulator() {
+#if BUILDFLAG(IS_ANDROID)
+  static bool is_emulator =
+      base::SysInfo::GetAndroidHardwareEGL() == "swiftshader" ||
+      base::SysInfo::GetAndroidHardwareEGL() == "emulation";
+  return is_emulator;
+#else
+  return false;
+#endif
+}
+
 EGLConfig ChooseConfig(EGLDisplay display,
                        GLSurfaceFormat format,
                        bool surfaceless,
@@ -169,7 +180,10 @@ EGLConfig ChooseConfig(EGLDisplay display,
         EGL_BLUE_SIZE,    8,           EGL_GREEN_SIZE,      8,
         EGL_RED_SIZE,     8,           EGL_RENDERABLE_TYPE, renderable_type,
         EGL_SURFACE_TYPE, surface_type};
-    if (video_encoder_input) {
+
+    // Android emulator's swiftshader doesn't support recordable, but its media
+    // codec is fine with it.
+    if (video_encoder_input && !IsAndroidEmulator()) {
       config_attribs_8888.push_back(EGL_RECORDABLE_ANDROID);
       config_attribs_8888.push_back(EGL_TRUE);
     }
