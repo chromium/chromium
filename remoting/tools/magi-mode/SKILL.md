@@ -38,6 +38,8 @@ code or summarize state itself. It delegates to several auxiliary personas:
     messages at the end of each cycle and at the conclusion of the loop.
 5.  **The Trainer:** Captures knowledge or systemic gaps discovered during the
     Consensus Loop and upgrades the expert Persona definitions.
+6.  **The Release Engineer:** A terminal agent invoked with a clean context to
+    handle workspace hygiene, formatting, and the final staging/upload of CLs.
 
 **MANDATE:** Every sub-agent invoked in the MAGI protocol MUST call the
 `update_topic` tool as its first action to identify its role in the UI (e.g.,
@@ -157,6 +159,22 @@ uploaded, create a completely separate, independent CL for the MAGI upgrades.
 
 ### 9. Validation
 Run the standard suite (`git cl presubmit`, `gn check`, and unit tests).
+
+### 10. Deployment (The Release Engineer)
+Once Validation passes, the Orchestrator pauses its own actions and delegates
+strictly to the **Release Engineer** sub-agent. The Orchestrator passes only two
+pieces of information: the name of the feature/bug, and the list of MAGI files
+updated by the Trainer/Recruiter.
+
+The Release Engineer's **exclusive mandate** is:
+1. **Workspace Hygiene:** Run `git status` / `jj st`. Detect and revert
+   accidental submodule bumps. Remove any lingering `*.magi` temporary files.
+2. **Formatting:** Enforce `git cl format` or project-specific formatters.
+3. **The Feature CL:** Stage *only* the product source files. Verify the commit
+   message. Upload the main feature CL.
+4. **The MAGI CL:** Create a new branch/bookmark. Stage the `PERSONAS.md` and
+   `personas/*.md` files updated by the Recruiter/Trainer. Upload the secondary
+   CL.
 
 ## When to Invoke
 - When an automated review finds a flaw that is hard to resolve without
