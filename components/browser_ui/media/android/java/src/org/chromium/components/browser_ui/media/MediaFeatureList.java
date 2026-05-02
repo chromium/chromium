@@ -28,7 +28,10 @@ public abstract class MediaFeatureList {
 
     public static final CachedFlag sPauseMediaOnSystemSleepAndroid =
             new CachedFlag(
-                    MediaFeatureMap.getInstance(), PAUSE_MEDIA_ON_SYSTEM_SLEEP_ANDROID, false);
+                    MediaFeatureMap.getInstance(),
+                    PAUSE_MEDIA_ON_SYSTEM_SLEEP_ANDROID,
+                    /* defaultValue= */ false,
+                    /* defaultValueInTests= */ true);
 
     public static final List<CachedFlag> sAllCachedFlags = List.of(sPauseMediaOnSystemSleepAndroid);
 

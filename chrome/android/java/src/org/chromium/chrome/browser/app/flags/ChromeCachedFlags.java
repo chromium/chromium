@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.firstrun.FirstRunUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.components.browser_ui.media.MediaFeatureList;
 import org.chromium.components.browser_ui.modaldialog.ModalDialogFeatureMap;
 import org.chromium.components.cached_flags.CachedFeatureParam;
 import org.chromium.components.cached_flags.CachedFlag;
@@ -47,7 +48,8 @@ public class ChromeCachedFlags {
                     OmniboxFeatures.getFlagsToCache(),
                     ModalDialogFeatureMap.sCachedFlags,
                     UiAndroidFeatureList.sFlagsCachedUiAndroid,
-                    SigninFeatureMap.sCachedFlags);
+                    SigninFeatureMap.sCachedFlags,
+                    MediaFeatureList.getAllCachedFlags());
     static final List<List<CachedFlag>> LISTS_OF_CACHED_FLAGS_MINIMAL_BROWSER =
             List.of(ChromeFeatureList.sFlagsCachedInMinimalBrowser);
 
@@ -59,7 +61,8 @@ public class ChromeCachedFlags {
                     OmniboxFeatures.getFlagsToCache(),
                     ModalDialogFeatureMap.sCachedFlags,
                     ChromeFeatureList.sFlagsCachedInMinimalBrowser,
-                    UiAndroidFeatureList.sFlagsCachedUiAndroid);
+                    UiAndroidFeatureList.sFlagsCachedUiAndroid,
+                    MediaFeatureList.getAllCachedFlags());
 
     static final List<List<CachedFeatureParam<?>>> LISTS_OF_FEATURE_PARAMS_FULL_BROWSER =
             List.of(
