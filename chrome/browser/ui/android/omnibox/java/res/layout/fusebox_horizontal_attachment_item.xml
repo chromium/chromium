@@ -17,7 +17,7 @@ found in the LICENSE file.
         android:id="@+id/start_icon_background"
         android:layout_width="match_parent"
         android:layout_height="@dimen/fusebox_button_size"
-        android:background="@drawable/navattach_item_background"
+        android:background="@drawable/fusebox_horizontal_attachment_background"
         android:foreground="?attr/selectableItemBackground"
         android:duplicateParentState="true"
         android:padding="@dimen/fusebox_carousel_item_icon_bg_padding">
