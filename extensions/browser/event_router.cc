@@ -130,6 +130,11 @@ constexpr char kRemoveEventListenerWithUnauthorizedExtensionID[] =
 constexpr char kRemoveEventListenerWithUnauthorizedListenerURL[] =
     "Tried to remove an event listener for an unauthorized listener URL.";
 
+// A message when mojom::EventRouter::RemoveListenerForServiceWorker() is called
+// with an unauthorized worker scope URL.
+constexpr char kRemoveEventListenerWithUnauthorizedWorkerScopeURL[] =
+    "Tried to remove an event listener for an unauthorized worker scope URL.";
+
 // Sends a notification about an event to the API activity monitor and the
 // ExtensionHost for |extension_id| on the UI thread. Can be called from any
 // thread.
@@ -439,6 +444,20 @@ bool EventRouter::CanProcessAccessOrigin(RenderProcessHost& process,
                                url::Origin::Create(url));
 }
 
+bool EventRouter::ValidateServiceWorkerContext(
+    const mojom::ServiceWorkerContext* service_worker_context,
+    bool is_add) {
+  // The scope_url.is_valid() check is securely deferred to
+  // ValidateServiceWorkerListenerForExtension.
+  if (!service_worker_context) {
+    receivers_.ReportBadMessage(
+        is_add ? kAddEventListenerWithInvalidWorkerScopeURL
+               : kRemoveEventListenerWithInvalidWorkerScopeURL);
+    return false;
+  }
+  return true;
+}
+
 bool EventRouter::ValidateMainThreadListenerOwner(
     const mojom::EventListenerOwner& listener_owner,
     RenderProcessHost& process,
@@ -487,6 +506,50 @@ bool EventRouter::ValidateMainThreadListenerOwner(
   return false;
 }
 
+bool EventRouter::ValidateServiceWorkerListenerForExtension(
+    const ExtensionId& extension_id,
+    const GURL& worker_scope_url,
+    RenderProcessHost& process,
+    bool is_add) {
+  if (!worker_scope_url.is_valid()) {
+    receivers_.ReportBadMessage(
+        is_add ? kAddEventListenerWithInvalidWorkerScopeURL
+               : kRemoveEventListenerWithInvalidWorkerScopeURL);
+    return false;
+  }
+
+  if (ShouldIgnoreListenerMessageForUnloadedExtension(extension_id)) {
+    return false;
+  }
+
+  if (!Extension::CreateOriginFromExtensionId(extension_id)
+           .IsSameOriginWith(worker_scope_url)) {
+    receivers_.ReportBadMessage(
+        is_add ? kAddEventListenerWithUnauthorizedWorkerScopeURL
+               : kRemoveEventListenerWithUnauthorizedWorkerScopeURL);
+    return false;
+  }
+
+  // Service worker listener updates represent extension background-context
+  // state. A process that merely ran an extension content or user script is not
+  // authorized to mutate that state.
+  if (!IsProcessAuthorizedForExtensionProcessListener(extension_id, process)) {
+    receivers_.ReportBadMessage(
+        is_add ? kAddEventListenerWithUnauthorizedExtensionID
+               : kRemoveEventListenerWithUnauthorizedExtensionID);
+    return false;
+  }
+
+  if (!CanProcessAccessOrigin(process, worker_scope_url)) {
+    receivers_.ReportBadMessage(
+        is_add ? kAddEventListenerWithUnauthorizedWorkerScopeURL
+               : kRemoveEventListenerWithUnauthorizedWorkerScopeURL);
+    return false;
+  }
+
+  return true;
+}
+
 void EventRouter::AddListenerForMainThread(
     mojom::EventListenerPtr event_listener) {
   auto* process = GetRenderProcessHostForCurrentReceiver();
@@ -526,32 +589,17 @@ void EventRouter::AddListenerForServiceWorker(
     return;
   }
 
-  const GURL& scope_url = event_listener->service_worker_context->scope_url;
-  if (!scope_url.is_valid()) {
-    receivers_.ReportBadMessage(kAddEventListenerWithInvalidWorkerScopeURL);
+  const mojom::ServiceWorkerContext* service_worker_context =
+      event_listener->service_worker_context.get();
+  if (!ValidateServiceWorkerContext(service_worker_context,
+                                    /*is_add=*/true)) {
     return;
   }
 
   const ExtensionId& extension_id = listener_owner.get_extension_id();
-  if (!extension_id.empty() && !IsExtensionEnabled(extension_id)) {
-    // This can occur due to a race condition where an extension is unloaded
-    // in the browser process before the renderer has fully shut down. We
-    // don't want non-lazy listeners to be added for contexts that are no
-    // longer valid, so we return here.
-    return;
-  }
-
-  if (!ProcessMap::Get(browser_context_)
-           ->Contains(extension_id, process->GetID())) {
-    receivers_.ReportBadMessage(kAddEventListenerWithUnauthorizedExtensionID);
-    return;
-  }
-
-  if (!content::ChildProcessSecurityPolicy::GetInstance()
-           ->CanAccessDataForOrigin(process->GetDeprecatedID(),
-                                    url::Origin::Create(scope_url))) {
-    receivers_.ReportBadMessage(
-        kAddEventListenerWithUnauthorizedWorkerScopeURL);
+  if (!ValidateServiceWorkerListenerForExtension(
+          extension_id, service_worker_context->scope_url, *process,
+          /*is_add=*/true)) {
     return;
   }
 
@@ -588,6 +636,24 @@ void EventRouter::AddLazyListenerForMainThreadImpl(
 }
 
 void EventRouter::AddLazyListenerForServiceWorker(
+    const ExtensionId& extension_id,
+    const GURL& worker_scope_url,
+    const std::string& event_name) {
+  auto* process = GetRenderProcessHostForCurrentReceiver();
+  if (!process) {
+    return;
+  }
+
+  if (!ValidateServiceWorkerListenerForExtension(extension_id, worker_scope_url,
+                                                 *process, /*is_add=*/true)) {
+    return;
+  }
+
+  AddLazyListenerForServiceWorkerImpl(extension_id, worker_scope_url,
+                                      event_name);
+}
+
+void EventRouter::AddLazyListenerForServiceWorkerImpl(
     const ExtensionId& extension_id,
     const GURL& worker_scope_url,
     const std::string& event_name) {
@@ -637,6 +703,12 @@ void EventRouter::AddFilteredListenerForServiceWorker(
     return;
   }
 
+  if (!ValidateServiceWorkerListenerForExtension(
+          extension_id, service_worker_context->scope_url, *process,
+          /*is_add=*/true)) {
+    return;
+  }
+
   AddFilteredEventListener(
       event_name, process,
       mojom::EventListenerOwner::NewExtensionId(extension_id),
@@ -678,12 +750,21 @@ void EventRouter::RemoveListenerForServiceWorker(
   const mojom::EventListenerOwner& listener_owner =
       *event_listener->listener_owner;
   if (!listener_owner.is_extension_id()) {
-    mojo::ReportBadMessage(kRemoveEventListenerWithInvalidExtensionID);
+    receivers_.ReportBadMessage(kRemoveEventListenerWithInvalidExtensionID);
     return;
   }
 
-  if (!event_listener->service_worker_context->scope_url.is_valid()) {
-    mojo::ReportBadMessage(kRemoveEventListenerWithInvalidWorkerScopeURL);
+  const mojom::ServiceWorkerContext* service_worker_context =
+      event_listener->service_worker_context.get();
+  if (!ValidateServiceWorkerContext(service_worker_context,
+                                    /*is_add=*/false)) {
+    return;
+  }
+
+  const ExtensionId& extension_id = listener_owner.get_extension_id();
+  if (!ValidateServiceWorkerListenerForExtension(
+          extension_id, service_worker_context->scope_url, *process,
+          /*is_add=*/false)) {
     return;
   }
 
@@ -725,6 +806,24 @@ void EventRouter::RemoveLazyListenerForServiceWorker(
     const ExtensionId& extension_id,
     const GURL& worker_scope_url,
     const std::string& event_name) {
+  auto* process = GetRenderProcessHostForCurrentReceiver();
+  if (!process) {
+    return;
+  }
+
+  if (!ValidateServiceWorkerListenerForExtension(extension_id, worker_scope_url,
+                                                 *process, /*is_add=*/false)) {
+    return;
+  }
+
+  RemoveLazyListenerForServiceWorkerImpl(extension_id, worker_scope_url,
+                                         event_name);
+}
+
+void EventRouter::RemoveLazyListenerForServiceWorkerImpl(
+    const ExtensionId& extension_id,
+    const GURL& worker_scope_url,
+    const std::string& event_name) {
   // TODO(richardzh): Passing in browser context from the process.
   // Browser context is added to listener object in order to separate lazy
   // listeners for regular and incognito(split) context. The first step adds
@@ -732,8 +831,9 @@ void EventRouter::RemoveLazyListenerForServiceWorker(
   // assign correct browser context and use it to create both lazy
   // listeners.
   std::unique_ptr<EventListener> listener = EventListener::CreateLazyListener(
-      event_name, extension_id, browser_context_, true, worker_scope_url,
-      std::nullopt);
+      event_name, extension_id, browser_context_,
+      /*is_for_service_worker=*/true, worker_scope_url,
+      /*filter=*/std::nullopt);
   RemoveLazyEventListenerImpl(std::move(listener),
                               RegisteredEventType::kServiceWorker);
 }
@@ -767,6 +867,12 @@ void EventRouter::RemoveFilteredListenerForServiceWorker(
     bool remove_lazy_listener) {
   auto* process = GetRenderProcessHostForCurrentReceiver();
   if (!process) {
+    return;
+  }
+
+  if (!ValidateServiceWorkerListenerForExtension(
+          extension_id, service_worker_context->scope_url, *process,
+          /*is_add=*/false)) {
     return;
   }
 
@@ -1176,7 +1282,7 @@ void EventRouter::DispatchEventWithLazyListener(const ExtensionId& extension_id,
   const bool has_listener = ExtensionHasEventListener(extension_id, event_name);
   if (!has_listener) {
     if (is_service_worker_based_background) {
-      AddLazyListenerForServiceWorker(
+      AddLazyListenerForServiceWorkerImpl(
           extension_id, Extension::GetBaseURLFromExtensionId(extension_id),
           event_name);
     } else {
@@ -1188,7 +1294,7 @@ void EventRouter::DispatchEventWithLazyListener(const ExtensionId& extension_id,
 
   if (!has_listener) {
     if (is_service_worker_based_background) {
-      RemoveLazyListenerForServiceWorker(
+      RemoveLazyListenerForServiceWorkerImpl(
           extension_id, Extension::GetBaseURLFromExtensionId(extension_id),
           event_name);
     } else {

@@ -442,6 +442,12 @@ class EventRouter : public KeyedService,
   bool CanProcessAccessOrigin(content::RenderProcessHost& process,
                               const GURL& url) const;
 
+  // Validates that a renderer-originated service worker listener context exists
+  // and supplies a valid worker scope URL.
+  bool ValidateServiceWorkerContext(
+      const mojom::ServiceWorkerContext* service_worker_context,
+      bool is_add);
+
   // Validates a main-thread listener owner from a renderer-originated message.
   // If `require_extension_process` is true, content and user script processes
   // are rejected. Returns true if the listener owner is valid and authorized.
@@ -452,6 +458,14 @@ class EventRouter : public KeyedService,
       const mojom::EventListenerOwner& listener_owner,
       content::RenderProcessHost& process,
       bool require_extension_process,
+      bool is_add);
+
+  // Validates that a renderer-originated service worker listener message is
+  // acting for an extension-owned worker scope that `process` may host.
+  bool ValidateServiceWorkerListenerForExtension(
+      const ExtensionId& extension_id,
+      const GURL& worker_scope_url,
+      content::RenderProcessHost& process,
       bool is_add);
 
   // Adds an extension as an event listener for `event_name`.
@@ -494,8 +508,14 @@ class EventRouter : public KeyedService,
   // not have a current EventRouter Mojo receiver.
   void AddLazyListenerForMainThreadImpl(const ExtensionId& extension_id,
                                         const std::string& event_name);
+  void AddLazyListenerForServiceWorkerImpl(const ExtensionId& extension_id,
+                                           const GURL& worker_scope_url,
+                                           const std::string& event_name);
   void RemoveLazyListenerForMainThreadImpl(const ExtensionId& extension_id,
                                            const std::string& event_name);
+  void RemoveLazyListenerForServiceWorkerImpl(const ExtensionId& extension_id,
+                                              const GURL& worker_scope_url,
+                                              const std::string& event_name);
 
   void AddLazyEventListenerImpl(std::unique_ptr<EventListener> listener,
                                 RegisteredEventType type);

@@ -628,7 +628,7 @@ TEST_F(EventRouterTest, AddLazyListenerForUnloadedExtension) {
   EXPECT_TRUE(registered_events.contains(kEventName1));
 
   // === Service Worker ===
-  router->AddLazyListenerForServiceWorker(
+  router->AddLazyListenerForServiceWorkerImpl(
       kExtensionId, Extension::GetBaseURLFromExtensionId(kExtensionId),
       kEventName2);
   // The listener should not be registered. We don't want to add listeners to
@@ -655,25 +655,25 @@ TEST_F(EventRouterTest, RemovesOrphanedWebRequestEvents) {
   // Manually add orphaned events to prefs.
   router->AddLazyListenerForMainThreadImpl(extension->id(),
                                            "webRequest.onBeforeRequest/s1");
-  router->AddLazyListenerForServiceWorker(
+  router->AddLazyListenerForServiceWorkerImpl(
       extension->id(), Extension::GetBaseURLFromExtensionId(extension->id()),
       "webRequest.onBeforeRequest/s2");
 
   router->AddLazyListenerForMainThreadImpl(extension->id(),
                                            "webViewInternal.onMessage/s1");
-  router->AddLazyListenerForServiceWorker(
+  router->AddLazyListenerForServiceWorkerImpl(
       extension->id(), Extension::GetBaseURLFromExtensionId(extension->id()),
       "webViewInternal.onMessage/s2");
 
   // Add non-orphaned events to ensure they are kept.
   router->AddLazyListenerForMainThreadImpl(extension->id(), "tabs.onCreated");
-  router->AddLazyListenerForServiceWorker(
+  router->AddLazyListenerForServiceWorkerImpl(
       extension->id(), Extension::GetBaseURLFromExtensionId(extension->id()),
       "tabs.onRemoved");
 
   router->AddLazyListenerForMainThreadImpl(extension->id(),
                                            "webRequest.onActionIgnored");
-  router->AddLazyListenerForServiceWorker(
+  router->AddLazyListenerForServiceWorkerImpl(
       extension->id(), Extension::GetBaseURLFromExtensionId(extension->id()),
       "webRequest.onActionIgnored");
 
