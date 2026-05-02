@@ -38,6 +38,7 @@ namespace blink {
 class DocumentMarkerGroup;
 class Element;
 class IdleSpellCheckController;
+class OnDemandSpellCheckController;
 class LocalDOMWindow;
 class LocalFrame;
 class HTMLElement;
@@ -95,6 +96,10 @@ class CORE_EXPORT SpellChecker final : public GarbageCollected<SpellChecker> {
     return *idle_spell_check_controller_;
   }
 
+  OnDemandSpellCheckController& GetOnDemandSpellCheckController() const {
+    return *on_demand_spell_check_controller_;
+  }
+
  private:
   LocalFrame& GetFrame() const;
 
@@ -110,6 +115,7 @@ class CORE_EXPORT SpellChecker final : public GarbageCollected<SpellChecker> {
 
   const Member<SpellCheckRequester> spell_check_requester_;
   const Member<IdleSpellCheckController> idle_spell_check_controller_;
+  const Member<OnDemandSpellCheckController> on_demand_spell_check_controller_;
 };
 
 }  // namespace blink

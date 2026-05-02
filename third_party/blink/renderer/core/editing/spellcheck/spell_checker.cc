@@ -45,6 +45,7 @@
 #include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/editing/spellcheck/cold_mode_spell_check_requester.h"
 #include "third_party/blink/renderer/core/editing/spellcheck/idle_spell_check_controller.h"
+#include "third_party/blink/renderer/core/editing/spellcheck/on_demand_spell_check_controller.h"
 #include "third_party/blink/renderer/core/editing/spellcheck/spell_check_requester.h"
 #include "third_party/blink/renderer/core/editing/spellcheck/spell_check_requester_helper.h"
 #include "third_party/blink/renderer/core/editing/visible_position.h"
@@ -57,6 +58,7 @@
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/text_break_iterator.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -103,6 +105,10 @@ SpellChecker::SpellChecker(LocalDOMWindow& window)
       spell_check_requester_(MakeGarbageCollected<SpellCheckRequester>(window)),
       idle_spell_check_controller_(
           MakeGarbageCollected<IdleSpellCheckController>(
+              window,
+              *spell_check_requester_)),
+      on_demand_spell_check_controller_(
+          MakeGarbageCollected<OnDemandSpellCheckController>(
               window,
               *spell_check_requester_)) {}
 
@@ -491,6 +497,7 @@ void SpellChecker::RespondToChangedEnablement(const HTMLElement& element,
     idle_spell_check_controller_->RespondToChangedEnablement();
   } else {
     RemoveSpellingAndGrammarMarkers(element);
+    on_demand_spell_check_controller_->SetSpellCheckingDisabled(element);
     idle_spell_check_controller_->SetSpellCheckingDisabled(element);
   }
 }
@@ -582,6 +589,7 @@ void SpellChecker::Trace(Visitor* visitor) const {
   visitor->Trace(window_);
   visitor->Trace(spell_check_requester_);
   visitor->Trace(idle_spell_check_controller_);
+  visitor->Trace(on_demand_spell_check_controller_);
 }
 
 Vector<TextCheckingResult> SpellChecker::FindMisspellings(const String& text) {
@@ -726,6 +734,7 @@ std::pair<String, int> SpellChecker::FindFirstMisspelling(const Position& start,
 
 void SpellChecker::ElementRemoved(Element* element) {
   GetIdleSpellCheckController().GetColdModeRequester().ElementRemoved(element);
+  on_demand_spell_check_controller_->ElementRemoved(*element);
 }
 
 // static
