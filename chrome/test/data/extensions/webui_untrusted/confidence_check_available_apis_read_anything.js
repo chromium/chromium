@@ -11,6 +11,7 @@
 //
 // NOTE: Of course, update this list if/when more APIs are made available.
 
+(function() {
 const expected = [
   // Deprecated proprietary Chrome APIs unrelated to Extensions.
   'csi',
@@ -41,3 +42,4 @@ if (!isEqual) {
       'Actual: ' + JSON.stringify(actual));
 }
 return isEqual;
+})();

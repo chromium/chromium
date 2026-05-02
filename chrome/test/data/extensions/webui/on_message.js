@@ -4,6 +4,7 @@
 
 // out/Debug/browser_tests --gtest_filter=ExtensionWebUITest.OnMessage
 
+(function() {
 if (!chrome || !chrome.test || !chrome.test.onMessage) {
   console.error(
       'chrome.test.onMessage is unavailable on ' + document.location.href);
@@ -20,3 +21,4 @@ chrome.test.listenOnce(chrome.test.onMessage, function(args) {
 });
 
 return true;
+})();

@@ -62,7 +62,6 @@ class ExtensionWebUITest : public ExtensionApiTest {
       if (!base::PathExists(path))
         return testing::AssertionFailure() << "Couldn't find " << path.value();
       base::ReadFileToString(path, &script);
-      script = "(function(){'use strict';" + script + "}());";
     }
 
     // Run the test.

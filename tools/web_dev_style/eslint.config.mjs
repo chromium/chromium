@@ -134,16 +134,6 @@ export default [
       '!ash/webui/camera_app_ui',
       '!ash/webui/recorder_app_ui',
 
-      // TODO(https://crbug.com/41446521): Bring these extension test files into
-      // conformance.
-      // Temporarily omitted. These files contain scripts that are wrapped on
-      // the C++ side in functions, and so they currently have "floating"
-      // return statements. This causes eslint to fail in parsing and can't be
-      // manually disabled with an `eslint-disable` comment (because it's a
-      // parsing error, rather than an actual linting issue).
-      'chrome/test/data/extensions/webui/*',
-      'chrome/test/data/extensions/webui_untrusted/*',
-
       // Omitted: These are "raw" dumps from user data dirs. We shouldn't bother
       // formatting / linting them.
       'chrome/test/data/extensions/profiles/*',

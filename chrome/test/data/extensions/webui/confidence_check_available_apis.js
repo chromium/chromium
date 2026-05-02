@@ -12,6 +12,7 @@
 // NOTE2: Apologies to other people putting things on chrome which aren't
 //        related and whose tests fail.
 
+(function() {
 const expected = [
   'activityLogPrivate',
   'csi',
@@ -41,3 +42,4 @@ if (!isEqual) {
       'Actual: ' + JSON.stringify(actual));
 }
 return isEqual;
+})();

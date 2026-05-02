@@ -4,6 +4,7 @@
 
 // out/Debug/browser_tests --gtest_filter=ExtensionWebUITest.RuntimeLastError
 
+(function() {
 let success = true;
 
 if (!chrome.test.checkDeepEq(undefined, chrome.runtime.lastError)) {
@@ -24,3 +25,4 @@ chrome.test.sendMessage('ping', function(reply) {
 });
 
 return true;
+}());

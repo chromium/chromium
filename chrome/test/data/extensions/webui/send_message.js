@@ -4,6 +4,7 @@
 
 // out/Debug/browser_tests --gtest_filter=ExtensionWebUITest.SendMessage
 
+(function() {
 if (!chrome || !chrome.test || !chrome.test.sendMessage) {
   console.error(
       'chrome.test.sendMessage is unavailable on ' + document.location.href);
@@ -20,3 +21,4 @@ chrome.test.sendMessage('ping', function(reply) {
 });
 
 return true;
+})();
