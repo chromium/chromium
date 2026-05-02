@@ -124,6 +124,10 @@ void CustomCornersBackground::Paint(gfx::Canvas* canvas,
     return;
   }
 
+  if (alpha_ < 1.0f) {
+    canvas->SaveLayerAlpha(static_cast<uint8_t>(255 * alpha_));
+  }
+
   if (view->layer()) {
     CHECK(!view->layer()->fills_bounds_opaquely());
   }
@@ -287,6 +291,10 @@ void CustomCornersBackground::Paint(gfx::Canvas* canvas,
     if (!stroke_path.isEmpty()) {
       canvas->DrawPath(stroke_path.detach(), stroke_flags);
     }
+  }
+
+  if (alpha_ < 1.0f) {
+    canvas->Restore();
   }
 }
 

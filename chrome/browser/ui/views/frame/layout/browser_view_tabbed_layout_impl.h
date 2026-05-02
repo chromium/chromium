@@ -106,6 +106,8 @@ class BrowserViewTabbedLayoutImpl : public BrowserViewLayoutImpl {
     double bottom_corner = 0.0;
     // How much of the expand-on-hover is shown.
     double expand_on_hover = 0.0;
+    // How much the tab strip is expanded, not on-hover.
+    double tab_strip_width = 0.0;
   };
   VerticalTabStripAnimation CalculateVerticalTabStripAnimation(
       const BrowserLayoutParams& params,

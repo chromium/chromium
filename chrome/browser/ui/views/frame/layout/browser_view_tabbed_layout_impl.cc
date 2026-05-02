@@ -434,6 +434,12 @@ BrowserViewTabbedLayoutImpl::CalculateVerticalTabStripAnimation(
             ->GetCurrentValue(TabStripAnimations::kVerticalTabStrip,
                               TabStripAnimations::kTabStripHoverWidth)
             .value_or(0.0);
+
+    animation.tab_strip_width =
+        controller
+            ->GetCurrentValue(TabStripAnimations::kVerticalTabStrip,
+                              TabStripAnimations::kTabStripWidth)
+            .value_or(0.0);
   }
 
   if (animation.current_motion == TabStripAnimations::kExpand) {
@@ -1260,6 +1266,17 @@ void BrowserViewTabbedLayoutImpl::DoPostLayoutVisualAdjustments(
     const bool is_expand_on_hover_visible = animation.expand_on_hover > 0.0;
     vertical_tabs_background->SetVisible(!features::IsGlassFrameEnabled() ||
                                          is_expand_on_hover_visible);
+
+    if (features::IsGlassFrameEnabled()) {
+      float background_alpha = 0.0f;
+      if (animation.tab_strip_width != 0.0) {
+        background_alpha = 1.0f - animation.tab_strip_width;
+      } else {
+        background_alpha =
+            delegate().IsVerticalTabStripCollapsed() ? 1.0f : 0.0f;
+      }
+      vertical_tabs_background->SetAlpha(background_alpha);
+    }
 
     // Ensure that corners of the window remain rounded.
     CustomCornersBackground::Corners vertical_tabs_corners;
