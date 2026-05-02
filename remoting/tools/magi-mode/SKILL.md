@@ -26,7 +26,7 @@ Each persona prompt MUST be anchored with the relevant **Platform** and
 ## The Auxiliary Personas (The Consensus Loop)
 
 To prevent context bloat and semantic drift, the Orchestrator MUST NOT write
-code or summarize state itself. It delegates to four auxiliary personas:
+code or summarize state itself. It delegates to several auxiliary personas:
 1.  **The Synthesizing Architect:** Writes the actual C++ code by combining
     initial drafts and adhering to constraints provided by the Continuity Analyst.
 2.  **The Review Analyst:** Condenses raw feedback from multiple reviewers into a
@@ -36,6 +36,8 @@ code or summarize state itself. It delegates to four auxiliary personas:
     the final constraints to the Architect.
 4.  **The Liaison:** Reports progress to the human via `update_topic` or chat
     messages at the end of each cycle and at the conclusion of the loop.
+5.  **The Trainer:** Captures knowledge or systemic gaps discovered during the
+    Consensus Loop and upgrades the expert Persona definitions.
 
 **MANDATE:** Every sub-agent invoked in the MAGI protocol MUST call the
 `update_topic` tool as its first action to identify its role in the UI (e.g.,
@@ -139,7 +141,16 @@ The Synthesizing Architect MUST ensure:
 4.  **Atomic State:** Ensure callback checks (e.g., `if (callback_)`) are
     atomically sound or strictly sequence-enforced to prevent double-runs.
 
-### 8. Validation
+### 8. Continuous Improvement (The Trainer)
+Once consensus is reached, the Orchestrator MUST invoke a "Trainer" sub-agent.
+The Trainer evaluates the final State Block and Review Analyst constraints to
+identify systemic gaps in the Personas' knowledge. If a Persona made a recurring
+mistake or lacked domain context, the Trainer proposes an upgrade to their
+`personas/*.md` file, saving the draft as `[persona].magi.training`. These
+updates should be committed as a separate background or prerequisite commit to
+isolate them from the main CL.
+
+### 9. Validation
 Run the standard suite (`git cl presubmit`, `gn check`, and unit tests).
 
 ## When to Invoke
