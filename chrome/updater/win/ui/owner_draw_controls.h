@@ -284,6 +284,7 @@ class CustomProgressBarCtrl : public CWindowImpl<CustomProgressBarCtrl> {
     MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBkgnd)
     MESSAGE_HANDLER(WM_PAINT, OnPaint)
     MESSAGE_HANDLER(WM_TIMER, OnTimer)
+    MESSAGE_HANDLER(WM_SYSCOLORCHANGE, OnSysColorChange)
     MESSAGE_HANDLER(PBM_SETPOS, OnSetPos)
     MESSAGE_HANDLER(PBM_SETMARQUEE, OnSetMarquee)
     MESSAGE_HANDLER(PBM_SETBARCOLOR, OnSetBarColor)
@@ -308,6 +309,10 @@ class CustomProgressBarCtrl : public CWindowImpl<CustomProgressBarCtrl> {
                   WPARAM wparam,
                   LPARAM lparam,
                   BOOL& handled);  // NOLINT
+  LRESULT OnSysColorChange(UINT msg,
+                           WPARAM wparam,
+                           LPARAM lparam,
+                           BOOL& handled);  // NOLINT
 
   LRESULT OnSetPos(UINT msg,
                    WPARAM wparam,

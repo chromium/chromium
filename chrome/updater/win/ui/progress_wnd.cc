@@ -94,6 +94,12 @@ LRESULT ProgressWnd::OnEraseBkgnd(UINT msg,
   CRect rect;
   GetClientRect(&rect);
 
+  if (IsHighContrastOn()) {
+    ::FillRect(hdc, &rect, ::GetSysColorBrush(COLOR_WINDOW));
+    handled = TRUE;
+    return 1;
+  }
+
   // Fill the entire client area with solid white first to clear any previous
   // artifacts.
   ::FillRect(hdc, &rect, static_cast<HBRUSH>(::GetStockObject(WHITE_BRUSH)));
@@ -190,8 +196,22 @@ LRESULT ProgressWnd::OnEraseBkgnd(UINT msg,
   return 1;
 }
 
+LRESULT ProgressWnd::OnSysColorChange(UINT msg,
+                                      WPARAM wparam,
+                                      LPARAM lparam,
+                                      BOOL& handled) {
+  handled = FALSE;
+  RedrawWindow(nullptr, nullptr,
+               RDW_INVALIDATE | RDW_ERASE | RDW_ALLCHILDREN | RDW_UPDATENOW);
+  return 0;
+}
+
 HBRUSH ProgressWnd::OnCtlColorStatic(WTL::CDCHandle dc,
                                      WTL::CStatic wndStatic) {
+  if (IsHighContrastOn()) {
+    dc.SetTextColor(::GetSysColor(COLOR_WINDOWTEXT));
+    dc.SetBkColor(::GetSysColor(COLOR_WINDOW));
+  }
   dc.SetBkMode(TRANSPARENT);
   return static_cast<HBRUSH>(::GetStockObject(NULL_BRUSH));
 }
