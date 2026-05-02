@@ -8686,38 +8686,6 @@
             ]
         }
     ],
-    "DesktopNtpSimplificationShortcutsRemoval": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_Dev_Canary_Beta",
-                    "params": {
-                        "ShortcutsMinStalenessUpdateTimeInterval": "1d",
-                        "StaleShortcutsCountThreshold": "2"
-                    },
-                    "enable_features": [
-                        "NtpFeatureOptimizationShortcutsRemoval"
-                    ]
-                },
-                {
-                    "name": "Enabled_Stable",
-                    "params": {
-                        "ShortcutsMinStalenessUpdateTimeInterval": "1d",
-                        "StaleShortcutsCountThreshold": "60"
-                    },
-                    "enable_features": [
-                        "NtpFeatureOptimizationShortcutsRemoval"
-                    ]
-                }
-            ]
-        }
-    ],
     "DesktopNtpTabResumption": [
         {
             "platforms": [
