@@ -4366,6 +4366,36 @@ auto GraphBuilderTflite::SerializeConv2d(const mojom::Conv2d& conv2d)
           "internal computation buffer exceeding INT32_MAX elements.");
     }
 
+    auto checked_output_height = base::CheckedNumeric<int32_t>(output_shape[1]);
+    auto checked_output_width = base::CheckedNumeric<int32_t>(output_shape[2]);
+    // Check that the col2im pointer offset `(h_pad * width + w_pad) * depth`
+    // won't overflow int32 arithmetic. h_pad ranges from -pad_top to
+    // (output_height + pad_bottom - filter_height), and w_pad ranges from
+    // -pad_left to (output_width + pad_right - filter_width), so verify the
+    // upper bound ((max|h_pad| * width + max|w_pad|) * depth) fits in int32.
+    auto checked_h_pad =
+        checked_output_height +
+        base::CheckedNumeric<int32_t>(conv2d.padding->ending->height);
+    checked_h_pad -= base::CheckedNumeric<int32_t>(filter_size2d.height);
+    auto checked_max_abs_h_pad = base::CheckMax(
+        base::CheckedNumeric<int32_t>(conv2d.padding->beginning->height),
+        checked_h_pad);
+    auto checked_w_pad =
+        checked_output_width +
+        base::CheckedNumeric<int32_t>(conv2d.padding->ending->width);
+    checked_w_pad -= base::CheckedNumeric<int32_t>(filter_size2d.width);
+    auto checked_max_abs_w_pad = base::CheckMax(
+        base::CheckedNumeric<int32_t>(conv2d.padding->beginning->width),
+        checked_w_pad);
+    auto checked_col2im_offset =
+        checked_max_abs_h_pad * checked_output_width + checked_max_abs_w_pad;
+    checked_col2im_offset *= base::CheckedNumeric<int32_t>(output_channels);
+    if (!checked_col2im_offset.IsValid()) {
+      return base::unexpected(
+          "convTranspose2d doesn't support configurations that the col2im "
+          "pointer offset would overflow int32 arithmetic.");
+    }
+
     // Check indirection buffer size for the XNNPack kernel. The formula
     // depends on whether XNNPack uses the subconv2d path or the igemm path.
     // See third_party/xnnpack/src/src/operators/deconvolution-nhwc.c.
@@ -4377,8 +4407,6 @@ auto GraphBuilderTflite::SerializeConv2d(const mojom::Conv2d& conv2d)
     auto checked_kernel_size =
         base::CheckedNumeric<int32_t>(filter_size2d.height);
     checked_kernel_size *= base::CheckedNumeric<int32_t>(filter_size2d.width);
-    auto checked_output_height = base::CheckedNumeric<int32_t>(output_shape[1]);
-    auto checked_output_width = base::CheckedNumeric<int32_t>(output_shape[2]);
     auto checked_indirection_buffer_size =
         base::CheckedNumeric<int32_t>(sizeof(void*));
     if (std::max(conv2d.strides->height, conv2d.strides->width) > 1 &&
