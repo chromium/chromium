@@ -6549,7 +6549,7 @@ TEST_F(WebNNGraphImplTest, SliceTest) {
         .Test(*this);
   }
   {
-    // Test that going out-of-bounds of the input tensor fails.
+    // Test that the stride being greater than the size to slice will fail.
     SliceTester{
         .input = {.type = OperandDataType::kFloat32, .dimensions = {2, 2}},
         .attributes = {.starts = {1, 0}, .sizes = {1, 1}, .strides = {2, 2}},

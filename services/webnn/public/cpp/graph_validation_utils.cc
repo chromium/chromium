@@ -2800,6 +2800,14 @@ base::expected<OperandDescriptor, std::string> ValidateSliceAndInferOutput(
                              i, input.shape()[i])));
     }
 
+    if (attributes.strides[i] > attributes.sizes[i]) {
+      return base::unexpected(ErrorWithLabel(
+          label,
+          base::StringPrintf("For dimension (%u): the stride (%u) must not be "
+                             "greater than the size to slice (%u).",
+                             i, attributes.strides[i], attributes.sizes[i])));
+    }
+
     uint32_t output_size = attributes.sizes[i] / attributes.strides[i] +
                            (attributes.sizes[i] % attributes.strides[i] != 0);
     output_shape.push_back(output_size);
