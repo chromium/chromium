@@ -39,6 +39,7 @@ android_library("java") {
     "//third_party/androidx:androidx_xr_arcore_arcore_java",
     "//third_party/androidx:androidx_xr_arcore_arcore_openxr_java",
     "//third_party/androidx:androidx_xr_runtime_runtime_java",
+    "//third_party/androidx:androidx_xr_runtime_runtime_openxr_java",
     "//third_party/androidx:androidx_xr_scenecore_scenecore_java",
     "//ui/android:ui_java",
   ]
