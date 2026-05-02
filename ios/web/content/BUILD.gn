@@ -4,8 +4,14 @@
 
 import("//build/config/features.gni")
 import("//ios/web/public/js_messaging/optimize_ts.gni")
+import("//testing/test.gni")
 
 assert(use_blink, "Content is only supported in Blink builds.")
+
+group("all_tests") {
+  testonly = true
+  deps = [ ":ios_web_content_unittests" ]
+}
 
 source_set("content") {
   sources = [
@@ -97,6 +103,39 @@ source_set("ui") {
     "//ios/web/public",
     "//ios/web/public/ui",
   ]
+}
+
+test("ios_web_content_unittests") {
+  deps = [ ":ios_web_content_web_state_unittests" ]
+  bundle_deps = [ "//content/test:content_shell_pak_bundle_data" ]
+}
+
+source_set("run_all_unittests") {
+  testonly = true
+  sources = [ "test/run_all_unittests.cc" ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//content/test:test_support",
+    "//net",
+  ]
+}
+
+source_set("ios_web_content_web_state_unittests") {
+  testonly = true
+  deps = [
+    ":content",
+    ":run_all_unittests",
+    "//base",
+    "//content/test:test_support",
+    "//ios/web/public/test",
+    "//ios/web/public/test:test_fixture",
+    "//ios/web/public/test/fakes",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+
+  sources = [ "web_state/content_web_state_unittest.mm" ]
 }
 
 optimize_ts("send_webkit_message_js") {

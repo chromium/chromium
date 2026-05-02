@@ -39,6 +39,9 @@ group("all") {
       "//third_party/breakpad:dump_syms",
       "//third_party/breakpad:symupload",
     ]
+    if (use_blink) {
+      deps += [ "//ios/web/content:all_tests" ]
+    }
   } else {
     deps = []
   }

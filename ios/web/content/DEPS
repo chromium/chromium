@@ -15,4 +15,11 @@ specific_include_rules = {
     "+third_party/blink/public/mojom/page/page_visibility_state.mojom.h",
     "+skia/ext/skia_utils_ios.h",
   ],
+  "content_web_state_unittest\.mm": [
+    "+content/public/test/browser_task_environment.h",
+  ],
+  "run_all_unittests\.cc": [
+    "+content/public/test/content_test_suite_base.h",
+    "+content/public/test/unittest_test_suite.h",
+  ],
 }
