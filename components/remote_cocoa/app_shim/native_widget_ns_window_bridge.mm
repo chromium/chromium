@@ -652,7 +652,7 @@ void NativeWidgetNSWindowBridge::SetBounds(
   DCHECK(!clamped_content_size.IsEmpty())
       << "Zero-sized windows not supported on Mac";
 
-  if (!window_visible_ && IsWindowModalSheet()) {
+  if (!window_.visible && IsWindowModalSheet()) {
     // Window-Modal dialogs (i.e. sheets) are positioned by Cocoa when shown for
     // the first time. They also have no frame, so just update the content size.
     [window_ setContentSize:NSMakeSize(clamped_content_size.width(),
@@ -944,7 +944,7 @@ void NativeWidgetNSWindowBridge::SetVisibilityState(
     // DCHECK(![window_ attachedSheet]);
 
     [window_ orderOut:nil];
-    DCHECK(!window_visible_);
+    DCHECK(!window_.visible);
     return;
   } else if (new_state == WindowVisibilityState::kMiniaturizeWindow) {
     [window_ miniaturize:nil];
@@ -959,8 +959,9 @@ void NativeWidgetNSWindowBridge::SetVisibilityState(
   // If the parent (or an ancestor) is hidden, return and wait for it to become
   // visible.
   for (auto* ancestor = parent_.get(); ancestor; ancestor = ancestor->parent_) {
-    if (!ancestor->window_visible_)
+    if (!ancestor->window_.visible) {
       return;
+    }
   }
 
   // Don't activate a window during session restore, to avoid switching spaces
@@ -1028,8 +1029,9 @@ void NativeWidgetNSWindowBridge::SetTransitionsToAnimate(
 void NativeWidgetNSWindowBridge::AcquireCapture() {
   if (HasCapture())
     return;
-  if (!window_visible_)
+  if (!window_.visible) {
     return;  // Capture on hidden windows is disallowed.
+  }
 
   mouse_capture_ = std::make_unique<CocoaMouseCapture>(this);
   host_->OnMouseCaptureActiveChanged(true);
@@ -1403,37 +1405,31 @@ void NativeWidgetNSWindowBridge::OnWindowDidEndLiveResize() {
 }
 
 void NativeWidgetNSWindowBridge::OnVisibilityChanged() {
-  const bool window_visible = [window_ isVisible];
-  if (window_visible_ == window_visible)
-    return;
-
-  window_visible_ = window_visible;
-
   // If arriving via SetVisible(), |wants_to_be_visible_| should already be set.
   // If made visible externally (e.g. Cmd+H), just roll with it. Don't try (yet)
   // to distinguish being *hidden* externally from being hidden by a parent
   // window - we might not need that.
-  if (window_visible_) {
+  if (window_.visible) {
     wants_to_be_visible_ = true;
-    if (parent_ && !window_visible_)
-      parent_->OrderChildren();
   } else {
     ReleaseCapture();  // Capture on hidden windows is not permitted.
 
     // When becoming invisible, remove the entry in any parent's childWindow
     // list. Cocoa's childWindow management breaks down when child windows are
     // hidden.
-    if (parent_)
-      [parent_->ns_window() removeChildWindow:window_];
+    if (window_.parentWindow) {
+      [window_.parentWindow removeChildWindow:window_];
+    }
   }
 
   // Showing a translucent window after hiding it should trigger shadow
   // invalidation.
-  if (window_visible && ![window_ isOpaque])
+  if (window_.visible && ![window_ isOpaque]) {
     invalidate_shadow_on_frame_swap_ = true;
+  }
 
   NotifyVisibilityChangeDown();
-  host_->OnVisibilityChanged(window_visible_);
+  host_->OnVisibilityChanged(window_.visible);
 }
 
 void NativeWidgetNSWindowBridge::OnSpaceActivationMayHaveChanged() {
@@ -1699,7 +1695,7 @@ gfx::Rect NativeWidgetNSWindowBridge::FullscreenControllerGetFrame() const {
 // NativeWidgetNSWindowBridge, ui::CATransactionObserver
 
 bool NativeWidgetNSWindowBridge::ShouldWaitInPreCommit() {
-  if (!window_visible_ || !wants_to_be_visible_) {
+  if (!window_.visible || !wants_to_be_visible_) {
     return false;
   }
   if (ca_transaction_sync_suppressed_) {
@@ -1799,8 +1795,9 @@ void NativeWidgetNSWindowBridge::EnterFullscreen(int64_t target_display_id) {
   // instead of relying on AppKit to do it, and not worry that
   // OnVisibilityChanged() won't be called for externally triggered fullscreen
   // requests.
-  if (!window_visible_)
+  if (!window_.visible) {
     SetVisibilityState(WindowVisibilityState::kShowInactive);
+  }
 
   // Enable fullscreen collection behavior because:
   // 1: -[NSWindow toggleFullscreen:] would otherwise be ignored,
@@ -2000,8 +1997,9 @@ void NativeWidgetNSWindowBridge::OrderChildren() {
       continue;
     NSWindow* child_window = child->window_;
     if (child->IsWindowModalSheet()) {
-      if (!child->window_visible_)
+      if (!child->window_.visible) {
         child->ShowAsModalSheet();
+      }
       // Sheets don't need a parentWindow set, and setting one causes graphical
       // glitches (http://crbug.com/605098).
     } else {
@@ -2045,12 +2043,9 @@ void NativeWidgetNSWindowBridge::NotifyVisibilityChangeDown() {
   // changes. That's supported, but only with the asynchronous Widget::Close().
   // Perform a heuristic to detect child removal that would break these loops.
   const size_t child_count = child_windows_.size();
-  if (!window_visible_) {
+  if (!window_.visible) {
     for (NativeWidgetNSWindowBridge* child : child_windows_) {
-      if (child->window_visible_) {
-        [child->ns_window() orderOut:nil];
-      }
-      DCHECK(!child->window_visible_);
+      [child->ns_window() orderOut:nil];
       CHECK_EQ(child_count, child_windows_.size());
     }
     // The orderOut calls above should result in a call to OnVisibilityChanged()

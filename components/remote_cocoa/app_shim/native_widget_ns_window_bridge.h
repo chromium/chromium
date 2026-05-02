@@ -213,7 +213,6 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
   bool target_fullscreen_state() const {
     return fullscreen_controller_.GetTargetFullscreenState();
   }
-  bool window_visible() const { return window_visible_; }
   bool wants_to_be_visible() const { return wants_to_be_visible_; }
   bool in_fullscreen_transition() const {
     return fullscreen_controller_.IsInFullscreenTransition();
@@ -463,10 +462,6 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
 
   // Manager of fullscreen state transitions.
   NativeWidgetNSWindowFullscreenController fullscreen_controller_{this};
-
-  // Stores the value last read from -[NSWindow isVisible], to detect visibility
-  // changes.
-  bool window_visible_ = false;
 
   // If true, the window is either visible, or wants to be visible but is
   // currently hidden due to having a hidden parent.
