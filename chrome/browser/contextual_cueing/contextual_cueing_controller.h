@@ -70,6 +70,10 @@ class ContextualCueingController
   // Hide the cue if it's showing.
   void HideCue();
 
+  // Returns the CueTarget for the given CueTargetType, or nullptr if there is
+  // none.
+  CueTarget* GetTarget(CueTargetType type);
+
  private:
   // Initiates a model execution request to MES for the current window state.
   void InitiateModelExecutionRequest();
@@ -93,8 +97,6 @@ class ContextualCueingController
                     CueActionData data,
                     actions::ActionItem*,
                     actions::ActionInvocationContext);
-
-  CueTarget* GetTarget(CueTargetType type);
 
   // Returns the list of cue surfaces that are currently eligible to show a cue.
   absl::flat_hash_set<optimization_guide::proto::ContextualCueingSurface>
