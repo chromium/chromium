@@ -6406,6 +6406,7 @@ interface ModelContext : EventTarget
     attribute @@toStringTag
     getter ontoolchange
     method constructor
+    method getTools
     method registerTool
     setter ontoolchange
 interface Mojo

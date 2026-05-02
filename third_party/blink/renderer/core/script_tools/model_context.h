@@ -12,6 +12,8 @@
 #include "base/types/pass_key.h"
 #include "base/unguessable_token.h"
 #include "third_party/blink/public/mojom/content_extraction/script_tools.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_model_context.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_tool_execute_callback.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -31,6 +33,7 @@ class SourceLocation;
 class ModelContextOptions;
 class ModelContextRegisterToolOptions;
 class ModelContextTool;
+class RegisteredTool;
 
 class DeclarativeWebMCPTool : public GarbageCollectedMixin {
  public:
@@ -124,6 +127,8 @@ class CORE_EXPORT ModelContext : public EventTarget,
                     ModelContextTool* tool,
                     ModelContextRegisterToolOptions* options,
                     ExceptionState& exception_state);
+  ScriptPromise<IDLSequence<RegisteredTool>> getTools(
+      ScriptState* script_state);
   void UnregisterTool(const String& name);
 
   std::optional<ScriptToolDeclaration> GetScriptToolDeclaration(
@@ -161,6 +166,10 @@ class CORE_EXPORT ModelContext : public EventTarget,
   HeapVector<Member<const ToolData>> ListTools() const;
 
   ExecutionContext* GetExecutionContext() const override;
+
+  void OnGetScriptToolsCompleted(
+      ScriptPromiseResolver<IDLSequence<RegisteredTool>>* resolver,
+      Vector<mojom::blink::ScriptToolPtr> tools);
 
   void Trace(Visitor*) const override;
 

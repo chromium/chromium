@@ -27,5 +27,6 @@ dictionary ModelContextRegisterToolOptions {
     RuntimeEnabled=WebMCP
 ] interface ModelContext : EventTarget {
   [CallWith=ScriptState, RaisesException, MeasureAs=ModelContextRegisterTool] undefined registerTool(ModelContextTool tool, optional ModelContextRegisterToolOptions options = {});
+  [CallWith=ScriptState] Promise<sequence<RegisteredTool>> getTools();
   attribute EventHandler ontoolchange;
 };

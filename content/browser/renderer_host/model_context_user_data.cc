@@ -128,22 +128,77 @@ void ModelContextUserData::UnregisterScriptTool(const std::string& name) {
   NotifyToolChange(exposed_origins);
 }
 
+void ModelContextUserData::GetScriptTools(GetScriptToolsCallback callback) {
+  if (!base::FeatureList::IsEnabled(blink::features::kWebMCP) ||
+      !render_frame_host().IsFeatureEnabled(
+          network::mojom::PermissionsPolicyFeature::kTools)) {
+    bad_message::ReceivedBadMessage(render_frame_host().GetProcess(),
+                                    bad_message::RFHI_WEBMCP_NOT_ENABLED);
+    std::move(callback).Run({});
+    return;
+  }
+
+  const url::Origin& caller_origin =
+      render_frame_host().GetLastCommittedOrigin();
+
+  std::vector<blink::mojom::ScriptToolPtr> all_tools;
+  RenderFrameHost* main_frame = render_frame_host().GetMainFrame();
+  main_frame->ForEachRenderFrameHostWithAction([&](RenderFrameHost* rfh) {
+    if (rfh->GetMainFrame() != main_frame) {
+      return RenderFrameHost::FrameIterationAction::kSkipChildren;
+    }
+
+    if (!rfh->IsFeatureEnabled(
+            network::mojom::PermissionsPolicyFeature::kTools)) {
+      return RenderFrameHost::FrameIterationAction::kContinue;
+    }
+
+    auto* data = ModelContextUserData::GetForCurrentDocument(rfh);
+    if (!data) {
+      return RenderFrameHost::FrameIterationAction::kContinue;
+    }
+
+    const auto& local_tools = data->script_tools();
+    for (const auto& t : local_tools) {
+      if (IsScriptToolVisibleToOrigin(rfh->GetLastCommittedOrigin(),
+                                      t->exposed_origins, caller_origin)) {
+        all_tools.push_back(t.Clone());
+      }
+    }
+    return RenderFrameHost::FrameIterationAction::kContinue;
+  });
+
+  std::move(callback).Run(std::move(all_tools));
+}
+
 void ModelContextUserData::NotifyToolChange(
     const std::vector<url::Origin>& exposed_origins) {
   RenderFrameHost& rfh = render_frame_host();
   url::Origin tool_owner_origin = rfh.GetLastCommittedOrigin();
 
-  rfh.GetMainFrame()->ForEachRenderFrameHost([&](RenderFrameHost* frame) {
+  RenderFrameHost* main_frame = rfh.GetMainFrame();
+  main_frame->ForEachRenderFrameHostWithAction([&](RenderFrameHost* frame) {
+    if (frame->GetMainFrame() != main_frame) {
+      return RenderFrameHost::FrameIterationAction::kSkipChildren;
+    }
+
+    if (!frame->IsFeatureEnabled(
+            network::mojom::PermissionsPolicyFeature::kTools)) {
+      return RenderFrameHost::FrameIterationAction::kContinue;
+    }
+
     if (IsScriptToolVisibleToOrigin(tool_owner_origin, exposed_origins,
                                     frame->GetLastCommittedOrigin())) {
       auto* data = ModelContextUserData::GetForCurrentDocument(frame);
-      // If `data` is null, it means the document has not interacted with its
-      // `blink::ModelContext` object yet, including adding event listeners to
-      // it. In that case, we can safely skip it.
-      if (data && data->model_context_remote_.is_bound()) {
+      if (!data) {
+        return RenderFrameHost::FrameIterationAction::kContinue;
+      }
+
+      if (data->model_context_remote_.is_bound()) {
         data->model_context_remote_->NotifyToolChange();
       }
     }
+    return RenderFrameHost::FrameIterationAction::kContinue;
   });
 }
 

@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_model_context_register_tool_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_model_context_tool.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_registered_tool.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_script_runner.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_tool_annotations.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
@@ -53,6 +54,9 @@ STATIC_ASSERT_ENUM(ScriptToolErrorCode::kToolCancelled,
                    WebScriptToolErrorCode::kToolCancelled);
 
 namespace {
+
+const char kPermissionPolicyNotEnabledError[] =
+    "Access to the feature \"tools\" is disallowed by permissions policy.";
 
 String ValidateAndStringifyObject(ScriptState* script_state,
                                   ExceptionState& exception_state,
@@ -255,9 +259,7 @@ void ModelContext::registerTool(ScriptState* script_state,
   if (!ExecutionContext::From(script_state)
            ->IsFeatureEnabled(
                network::mojom::PermissionsPolicyFeature::kTools)) {
-    exception_state.ThrowSecurityError(
-        "Access to the feature \"tools\" is disallowed by permissions "
-        "policy.");
+    exception_state.ThrowSecurityError(kPermissionPolicyNotEnabledError);
     return;
   }
 
@@ -755,6 +757,54 @@ ExecutionContext* ModelContext::GetExecutionContext() const {
 const AtomicString& ModelContext::InterfaceName() const {
   DEFINE_STATIC_LOCAL(AtomicString, name, ("ModelContext"));
   return name;
+}
+
+ScriptPromise<IDLSequence<RegisteredTool>> ModelContext::getTools(
+    ScriptState* script_state) {
+  if (!document_->IsActive()) {
+    return ScriptPromise<IDLSequence<RegisteredTool>>::RejectWithDOMException(
+        script_state,
+        MakeGarbageCollected<DOMException>(DOMExceptionCode::kInvalidStateError,
+                                           "The document is not active."));
+  }
+
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLSequence<RegisteredTool>>>(
+          script_state);
+  ScriptPromise promise = resolver->Promise();
+
+  if (!ExecutionContext::From(script_state)
+           ->IsFeatureEnabled(
+               network::mojom::PermissionsPolicyFeature::kTools)) {
+    resolver->RejectWithSecurityError(kPermissionPolicyNotEnabledError,
+                                      kPermissionPolicyNotEnabledError);
+    return promise;
+  }
+
+  model_context_host_remote_->GetScriptTools(
+      blink::BindOnce(&ModelContext::OnGetScriptToolsCompleted,
+                      WrapWeakPersistent(this), WrapPersistent(resolver)));
+
+  return promise;
+}
+
+void ModelContext::OnGetScriptToolsCompleted(
+    ScriptPromiseResolver<IDLSequence<RegisteredTool>>* resolver,
+    Vector<mojom::blink::ScriptToolPtr> tools) {
+  HeapVector<Member<RegisteredTool>> registered_tools;
+  registered_tools.ReserveInitialCapacity(tools.size());
+
+  for (const auto& t : tools) {
+    auto* result = RegisteredTool::Create();
+    result->setName(t->name);
+    result->setDescription(t->description);
+    if (!t->input_schema.IsNull()) {
+      result->setInputSchema(t->input_schema);
+    }
+    registered_tools.push_back(result);
+  }
+
+  resolver->Resolve(registered_tools);
 }
 
 void ModelContext::Trace(Visitor* visitor) const {

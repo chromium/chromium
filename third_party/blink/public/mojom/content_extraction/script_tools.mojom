@@ -49,6 +49,9 @@ interface ModelContextHost {
   // guaranteed to match an existing tool; if this invariant is not upheld, the
   // renderer process is killed.
   UnregisterScriptTool(string name);
+
+  // Returns all script tools visible to the caller document.
+  GetScriptTools() => (array<ScriptTool> tools);
 };
 
 // Interface implemented by `blink::ModelContext` for the browser to notify the
