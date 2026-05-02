@@ -5527,9 +5527,6 @@ NavigationRequest::ComputeErrorPageProcess() {
   }
 
   if (state_ < NavigationRequest::CANCELING) {
-    CHECK(browser_initiated_error_navigation_type_ !=
-          BrowserInitiatedErrorNavigationType::kNone);
-
     if (browser_initiated_error_navigation_type_ ==
         BrowserInitiatedErrorNavigationType::kPostCommit) {
       // Post-commit error page normally goes through the "non-error page"
@@ -5537,9 +5534,8 @@ NavigationRequest::ComputeErrorPageProcess() {
       return ErrorPageProcess::kPostCommitErrorPage;
     }
 
-    // Otherwise, this is a normal browser-initiated error navigation, which
-    // should fall out of this block and use existing process selection
-    // behavior.
+    // Otherwise, this is a normal error navigation, which should fall out of
+    // this block and use existing process selection behavior.
   }
 
   // By policy we can isolate all error pages from both the current and
@@ -6525,6 +6521,13 @@ void NavigationRequest::CommitErrorPage(
           previous_origin.GetTupleOrPrecursorTupleIfOpaque();
   if (!is_error_page_with_same_precursor) {
     commit_params_->force_new_document_sequence_number = true;
+  } else {
+    // We only preserve the document sequence number for temporary errors that
+    // could later be reloaded and succeed, which don't stay in the current
+    // process. Fatal errors routed to kCurrentProcess have a pure opaque origin
+    // and will not share the precursor, so they will always force a new
+    // document sequence number.
+    CHECK_NE(ComputeErrorPageProcess(), ErrorPageProcess::kCurrentProcess);
   }
 
   PopulateDocumentTokenForCrossDocumentNavigation();
@@ -11739,10 +11742,16 @@ void NavigationRequest::RecordEarlyRenderFrameHostSwapMetrics() {
 url::Origin NavigationRequest::GetOriginForURLLoaderFactoryUnchecked() {
   if (DidEncounterError()) {
     // Error pages commit in an opaque origin in the renderer process. If this
-    // NavigationRequest resulted in committing an error page, return an
-    // opaque origin that has precursor information consistent with the URL
-    // being requested.  Note: this is intentionally done first; cases like
-    // errors in srcdoc frames need not inherit the parent's origin for errors.
+    // NavigationRequest resulted in committing an error page, return an opaque
+    // origin. We usually derive the precursor for that opaque origin from the
+    // destination URL, with one exception: if the error page commits in the
+    // current process (e.g., for unrecoverable errors in subframes), we leave
+    // the precursor empty. This prevents compromised renderers from gaining
+    // access to opaque origins with precursors that aren't normally allowed in
+    // the process (crbug.com/502348223).
+    if (ComputeErrorPageProcess() == ErrorPageProcess::kCurrentProcess) {
+      return url::Origin();
+    }
     return url::Origin::Create(common_params().url).DeriveNewOpaqueOrigin();
   }
 

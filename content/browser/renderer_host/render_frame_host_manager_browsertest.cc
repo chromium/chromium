@@ -4834,8 +4834,16 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
     EXPECT_EQ(4, nav_controller.GetEntryCount());
     EXPECT_EQ(test_url, child1->current_frame_host()->GetLastCommittedURL());
 
-    // Error pages should commit in an opaque origin.
-    EXPECT_TRUE(IsOriginOpaqueAndCompatibleWithURL(child1, test_url));
+    // Error pages should commit in an opaque origin. This particular error
+    // stays in the current process, so when B2 navigates B1 to C, it stays in
+    // B's process. The origin's precursor should be empty, and more
+    // specifically, it should not be C, to guard against compromised renderers
+    // gaining access to cross-site precursors (crbug.com/502348223).
+    const url::Origin& child1_origin =
+        child1->current_frame_host()->GetLastCommittedOrigin();
+    EXPECT_TRUE(child1_origin.opaque());
+    EXPECT_TRUE(
+        child1_origin.GetTupleOrPrecursorTupleIfOpaque().GetURL().is_empty());
 
     // net::ERR_BLOCKED_BY_CLIENT errors in subframes should commit in the
     // the correct process based on whether isolation is enabled or not.
