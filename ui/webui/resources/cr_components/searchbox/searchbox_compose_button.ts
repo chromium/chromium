@@ -64,8 +64,7 @@ export class SearchboxComposeButtonElement extends
   protected accessor composeIcon_: string =
       '//resources/cr_components/searchbox/icons/search_spark.svg';
 
-  protected accessor showAnimation_: boolean =
-      loadTimeData.getBoolean('searchboxShowComposeAnimation');
+  protected accessor showAnimation_: boolean = false;
 
   override firstUpdated() {
     if (this.$.glowAnimationWrapper) {
