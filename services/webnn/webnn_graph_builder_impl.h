@@ -17,6 +17,7 @@
 #include "base/types/pass_key.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "services/webnn/graph_builder_context.h"
 #include "services/webnn/public/cpp/context_properties.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/cpp/webnn_types.h"
@@ -30,8 +31,6 @@
 namespace webnn {
 
 class WebNNConstantOperand;
-class WebNNContextImpl;
-class WebNNTensorImpl;
 
 // Services-side connection to an `MLGraphBuilder`. Responsible for managing
 // data associated with the graph builder.
@@ -42,7 +41,7 @@ class WebNNTensorImpl;
 class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNGraphBuilderImpl
     : public mojom::WebNNGraphBuilder {
  public:
-  explicit WebNNGraphBuilderImpl(WebNNContextImpl& context);
+  explicit WebNNGraphBuilderImpl(GraphBuilderContext& context);
 
   WebNNGraphBuilderImpl(const WebNNGraphBuilderImpl&) = delete;
   WebNNGraphBuilderImpl& operator=(const WebNNGraphBuilderImpl&) = delete;
@@ -61,16 +60,14 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNGraphBuilderImpl
                               mojom::GraphInfoPtr graph_info,
                               IsValidGraphForTestingCallback callback) override;
 
-  void SetId(mojo::ReceiverId id, base::PassKey<WebNNContextImpl> pass_key);
+  void SetId(mojo::ReceiverId id, base::PassKey<GraphBuilderContext> pass_key);
 
  protected:
   struct ValidateGraphSuccessResult {
     ValidateGraphSuccessResult(
         WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
         base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
-            constant_operands,
-        base::flat_map<OperandId, scoped_refptr<WebNNTensorImpl>>
-            constant_tensor_operands);
+            constant_operands);
     ~ValidateGraphSuccessResult();
 
     ValidateGraphSuccessResult(const ValidateGraphSuccessResult&) = delete;
@@ -87,11 +84,6 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNGraphBuilderImpl
     // `keep_builder_resources_for_testing` is false.
     base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
         constant_operands;
-
-    // Constant tensors associated with this graph, which will be used during
-    // graph construction.
-    base::flat_map<OperandId, scoped_refptr<WebNNTensorImpl>>
-        constant_tensor_operands;
   };
 
   // Transfer ownership of this builder's resources to a returned
@@ -109,22 +101,20 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNGraphBuilderImpl
   void DidTransposePendingPermutations(
       mojom::GraphInfoPtr graph_info,
       WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
-      base::flat_map<OperandId, scoped_refptr<WebNNTensorImpl>>
-          constant_tensor_operands,
       CreateGraphCallback callback,
       base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>&&
           constant_operands);
-  void DidCreateGraph(
-      CreateGraphCallback callback,
-      mojo::PendingAssociatedRemote<mojom::WebNNGraph> remote,
-      base::expected<scoped_refptr<WebNNGraphImpl>, mojom::ErrorPtr> result);
+  void DidCreateGraph(CreateGraphCallback callback,
+                      mojo::PendingAssociatedRemote<mojom::WebNNGraph> remote,
+                      base::expected<GraphBuilderContext::GraphCreationResult,
+                                     mojom::ErrorPtr> result);
 
   void DestroySelf();
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  // The `WebNNContextImpl` which owns and will outlive this object.
-  const raw_ref<WebNNContextImpl> context_;
+  // The `GraphBuilderContext` which owns and will outlive this object.
+  const raw_ref<GraphBuilderContext> context_;
 
   // Set by the owning `context_` so this builder can identify itself when
   // requesting to be destroyed.

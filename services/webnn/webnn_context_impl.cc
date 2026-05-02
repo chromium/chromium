@@ -215,10 +215,37 @@ void WebNNContextImpl::ReportBadGraphBuilderMessage(
   graph_builder_impls_.ReportBadMessage(message);
 }
 
-void WebNNContextImpl::TakeGraph(
-    scoped_refptr<WebNNGraphImpl> graph_impl,
-    base::PassKey<WebNNGraphBuilderImpl> pass_key) {
-  graph_impls_.emplace(std::move(graph_impl));
+void WebNNContextImpl::BuildGraph(
+    mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
+    mojom::GraphInfoPtr graph_info,
+    WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
+    base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
+        constant_operands,
+    base::flat_map<OperandId, scoped_refptr<WebNNTensorImpl>>
+        constant_tensor_operands,
+    BuildGraphCallback callback) {
+  CreateGraphImpl(std::move(receiver), std::move(graph_info),
+                  std::move(compute_resource_info),
+                  std::move(constant_operands),
+                  std::move(constant_tensor_operands),
+                  base::BindOnce(&WebNNContextImpl::OnGraphBuilt, AsWeakPtr(),
+                                 std::move(callback)));
+}
+
+void WebNNContextImpl::OnGraphBuilt(
+    BuildGraphCallback callback,
+    base::expected<scoped_refptr<WebNNGraphImpl>, mojom::ErrorPtr> result) {
+  if (!result.has_value()) {
+    std::move(callback).Run(base::unexpected(std::move(result.error())));
+    return;
+  }
+
+  GraphCreationResult creation_result;
+  creation_result.devices = result.value()->devices();
+
+  graph_impls_.emplace(std::move(result.value()));
+
+  std::move(callback).Run(std::move(creation_result));
 }
 
 void WebNNContextImpl::RemoveGraphBuilder(
@@ -235,7 +262,7 @@ void WebNNContextImpl::CreateGraphBuilder(
   mojo::ReceiverId id =
       graph_builder_impls_.Add(std::move(graph_builder), std::move(receiver));
 
-  graph_builder_ptr->SetId(id, base::PassKey<WebNNContextImpl>());
+  graph_builder_ptr->SetId(id, GraphBuilderContext::GetPassKey());
 }
 
 void WebNNContextImpl::CreateTensor(
@@ -468,6 +495,14 @@ void WebNNContextImpl::RemoveWebNNGraphImpl(
   // Upon calling erase, the handle will no longer refer to a valid
   // `WebNNGraphImpl`.
   graph_impls_.erase(it);
+}
+
+const ContextProperties& WebNNContextImpl::properties() const {
+  return properties_;
+}
+
+const mojom::CreateContextOptions& WebNNContextImpl::options() const {
+  return *options_;
 }
 
 void WebNNContextImpl::OnLost(const std::string& reason) {

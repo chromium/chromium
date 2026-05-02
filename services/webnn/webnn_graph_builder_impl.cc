@@ -21,6 +21,7 @@
 #include "base/types/fixed_array.h"
 #include "base/types/pass_key.h"
 #include "services/webnn/error.h"
+#include "services/webnn/graph_builder_context.h"
 #include "services/webnn/public/cpp/graph_validation_utils.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/cpp/supported_data_types.h"
@@ -28,7 +29,6 @@
 #include "services/webnn/public/cpp/webnn_types.h"
 #include "services/webnn/public/mojom/webnn_error.mojom.h"
 #include "services/webnn/webnn_constant_operand.h"
-#include "services/webnn/webnn_context_impl.h"
 #include "services/webnn/webnn_graph_impl.h"
 #include "services/webnn/webnn_pending_constant_operand.h"
 #include "services/webnn/webnn_tensor_impl.h"
@@ -2849,12 +2849,9 @@ TransposePendingPermutation(
 WebNNGraphBuilderImpl::ValidateGraphSuccessResult::ValidateGraphSuccessResult(
     WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
     base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
-        constant_operands,
-    base::flat_map<OperandId, scoped_refptr<WebNNTensorImpl>>
-        constant_tensor_operands)
+        constant_operands)
     : compute_resource_info(std::move(compute_resource_info)),
-      constant_operands(std::move(constant_operands)),
-      constant_tensor_operands(std::move(constant_tensor_operands)) {}
+      constant_operands(std::move(constant_operands)) {}
 
 WebNNGraphBuilderImpl::ValidateGraphSuccessResult::ValidateGraphSuccessResult(
     ValidateGraphSuccessResult&&) = default;
@@ -2865,7 +2862,7 @@ WebNNGraphBuilderImpl::ValidateGraphSuccessResult::operator=(
 WebNNGraphBuilderImpl::ValidateGraphSuccessResult::
     ~ValidateGraphSuccessResult() = default;
 
-WebNNGraphBuilderImpl::WebNNGraphBuilderImpl(WebNNContextImpl& context)
+WebNNGraphBuilderImpl::WebNNGraphBuilderImpl(GraphBuilderContext& context)
     : context_(context) {}
 
 WebNNGraphBuilderImpl::~WebNNGraphBuilderImpl() = default;
@@ -2943,13 +2940,12 @@ void WebNNGraphBuilderImpl::CreateGraph(mojom::GraphInfoPtr graph_info,
       base::BindOnce(&WebNNGraphBuilderImpl::DidTransposePendingPermutations,
                      weak_factory_.GetWeakPtr(), std::move(graph_info),
                      std::move(validate_graph_result->compute_resource_info),
-                     std::move(validate_graph_result->constant_tensor_operands),
                      std::move(callback)));
 }
 
 void WebNNGraphBuilderImpl::SetId(
     mojo::ReceiverId id,
-    base::PassKey<WebNNContextImpl> /*pass_key*/) {
+    base::PassKey<GraphBuilderContext> /*pass_key*/) {
   id_ = id;
 }
 
@@ -2966,8 +2962,6 @@ void WebNNGraphBuilderImpl::IsValidGraphForTesting(
 void WebNNGraphBuilderImpl::DidTransposePendingPermutations(
     mojom::GraphInfoPtr graph_info,
     WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
-    base::flat_map<OperandId, scoped_refptr<WebNNTensorImpl>>
-        constant_tensor_operands,
     CreateGraphCallback callback,
     base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>&&
         constant_operands) {
@@ -2976,19 +2970,20 @@ void WebNNGraphBuilderImpl::DidTransposePendingPermutations(
   mojo::PendingAssociatedRemote<mojom::WebNNGraph> remote;
   auto receiver = remote.InitWithNewEndpointAndPassReceiver();
 
-  context_->CreateGraphImpl(
-      std::move(receiver), std::move(graph_info),
-      std::move(compute_resource_info), std::move(constant_operands),
-      std::move(constant_tensor_operands),
-      base::BindOnce(&WebNNGraphBuilderImpl::DidCreateGraph,
-                     weak_factory_.GetWeakPtr(), std::move(callback),
-                     std::move(remote)));
+  context_->BuildGraph(std::move(receiver), std::move(graph_info),
+                       std::move(compute_resource_info),
+                       std::move(constant_operands),
+                       /*constant_tensor_operands=*/{},
+                       base::BindOnce(&WebNNGraphBuilderImpl::DidCreateGraph,
+                                      weak_factory_.GetWeakPtr(),
+                                      std::move(callback), std::move(remote)));
 }
 
 void WebNNGraphBuilderImpl::DidCreateGraph(
     CreateGraphCallback callback,
     mojo::PendingAssociatedRemote<mojom::WebNNGraph> remote,
-    base::expected<scoped_refptr<WebNNGraphImpl>, mojom::ErrorPtr> result) {
+    base::expected<GraphBuilderContext::GraphCreationResult, mojom::ErrorPtr>
+        result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Ensure `this` is destroyed.
@@ -3000,12 +2995,9 @@ void WebNNGraphBuilderImpl::DidCreateGraph(
     return;
   }
 
-  auto success = mojom::CreateGraphSuccess::New(std::move(remote),
-                                                result.value()->devices());
+  auto success = mojom::CreateGraphSuccess::New(
+      std::move(remote), std::move(result.value().devices));
   std::move(callback).Run(std::move(success));
-
-  context_->TakeGraph(*std::move(result),
-                      base::PassKey<WebNNGraphBuilderImpl>());
 }
 
 std::optional<WebNNGraphBuilderImpl::ValidateGraphSuccessResult>
@@ -3030,6 +3022,13 @@ WebNNGraphBuilderImpl::ValidateGraphImpl(
     return std::nullopt;
   }
 
+  // TODO(crbug.com/507879537): Constant tensor operands allow graph constants
+  // to be backed by MLTensors. No backend currently supports them, so reject
+  // graphs that use them until support is added.
+  if (!graph_info.id_to_constant_tensor_operand_map.empty()) {
+    return std::nullopt;
+  }
+
   // Keeps track of operands as they are visited in order to assert that they
   // are topologically sorted with inputs pointing to predecessor's outputs or
   // graph inputs.
@@ -3051,11 +3050,6 @@ WebNNGraphBuilderImpl::ValidateGraphImpl(
   std::vector<std::pair<OperandId, std::unique_ptr<WebNNConstantOperand>>>
       graph_constants;
   graph_constants.reserve(graph_info.constant_operand_ids_to_handles.size());
-  std::vector<std::pair<OperandId, scoped_refptr<WebNNTensorImpl>>>
-      graph_constant_tensors;
-  graph_constant_tensors.reserve(
-      graph_info.id_to_constant_tensor_operand_map.size());
-
   for (size_t id = 0; id < graph_info.operands.size(); ++id) {
     const mojom::OperandPtr& operand = graph_info.operands[id];
     const OperandId operand_id(base::checked_cast<uint32_t>(id));
@@ -3111,33 +3105,6 @@ WebNNGraphBuilderImpl::ValidateGraphImpl(
         if (name) {
           // Constant operand should not have a name.
           return std::nullopt;
-        }
-
-        // Constants using tensors for weights.
-        if (auto id_and_handle_it =
-                graph_info.id_to_constant_tensor_operand_map.find(operand_id);
-            id_and_handle_it !=
-            graph_info.id_to_constant_tensor_operand_map.end()) {
-          // `id` must correspond to a handle known by the context...
-          scoped_refptr<WebNNTensorImpl> tensor_impl =
-              context_->GetWebNNTensorImpl(id_and_handle_it->second);
-          if (!tensor_impl) {
-            return std::nullopt;
-          }
-
-          // ...whose tensor must have the correct usage.
-          if (!tensor_impl->usage().Has(MLTensorUsageFlags::kGraphConstant)) {
-            return std::nullopt;
-          }
-
-          // ...whose data must be compatible with what `operand` expects.
-          if (!tensor_impl->IsValidWithDescriptor(operand->descriptor)) {
-            return std::nullopt;
-          }
-
-          graph_constant_tensors.emplace_back(operand_id, tensor_impl);
-          processed_operands.insert(operand_id);
-          break;
         }
 
         // `id` must correspond to a pending constant operand handle...
@@ -3216,11 +3183,6 @@ WebNNGraphBuilderImpl::ValidateGraphImpl(
     return std::nullopt;
   }
 
-  if (graph_constant_tensors.size() !=
-      graph_info.id_to_constant_tensor_operand_map.size()) {
-    return std::nullopt;
-  }
-
   // Validate the operations which are sorted in the topological order.
   std::optional<OperationValidationContext::ValidationResult> result =
       OperationValidationContext::ValidateOperationsAndGetDependencies(
@@ -3256,7 +3218,7 @@ WebNNGraphBuilderImpl::ValidateGraphImpl(
           std::move(result->operand_to_dependent_operations),
           std::move(result->operand_to_producing_operation),
           base::PassKey<WebNNGraphBuilderImpl>()),
-      std::move(graph_constants), std::move(graph_constant_tensors)};
+      std::move(graph_constants)};
 }
 
 void WebNNGraphBuilderImpl::DestroySelf() {

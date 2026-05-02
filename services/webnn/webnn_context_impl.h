@@ -29,6 +29,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/unique_associated_receiver_set.h"
 #include "services/webnn/buildflags.h"
+#include "services/webnn/graph_builder_context.h"
 #include "services/webnn/public/cpp/context_properties.h"
 #include "services/webnn/public/cpp/webnn_types.h"
 #include "services/webnn/public/mojom/webnn_context.mojom.h"
@@ -65,6 +66,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
     : public WebNNObjectBase<mojom::WebNNContext,
                              blink::WebNNContextToken,
                              mojo::Receiver<mojom::WebNNContext>>,
+      public GraphBuilderContext,
       public base::trace_event::MemoryDumpProvider {
  public:
   // These values are persisted to logs. Entries should not be renumbered or
@@ -141,7 +143,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   // receiver which received it.
   void ReportBadGraphBuilderMessage(
       const std::string& message,
-      base::PassKey<WebNNGraphBuilderImpl> pass_key);
+      base::PassKey<WebNNGraphBuilderImpl> pass_key) override;
 
   // This method will be called by `WebNNGraphBuilderImpl::CreateGraph()` after
   // `graph_info` is validated. A backend subclass should implement this method
@@ -159,21 +161,29 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
           constant_tensor_operands,
       CreateGraphImplCallback callback) = 0;
 
-  // Pass ownership of a newly-created `graph_impl` to this context.
-  void TakeGraph(scoped_refptr<WebNNGraphImpl> graph_impl,
-                 base::PassKey<WebNNGraphBuilderImpl> pass_key);
-
   // Called by a graph builder to destroy itself.
-  void RemoveGraphBuilder(mojo::ReceiverId graph_builder_id,
-                          base::PassKey<WebNNGraphBuilderImpl> pass_key);
+  void RemoveGraphBuilder(
+      mojo::ReceiverId graph_builder_id,
+      base::PassKey<WebNNGraphBuilderImpl> pass_key) override;
 
   // Get context properties with op support limits that are intersection
   // between WebNN generic limits and backend specific limits.
   static ContextProperties IntersectWithBaseProperties(
       ContextProperties backend_context_properties);
 
-  const ContextProperties& properties() { return properties_; }
-  const mojom::CreateContextOptions& options() const { return *options_; }
+  const ContextProperties& properties() const override;
+  const mojom::CreateContextOptions& options() const override;
+
+  // GraphBuilderContext:
+  void BuildGraph(
+      mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
+      mojom::GraphInfoPtr graph_info,
+      WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
+      base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
+          constant_operands,
+      base::flat_map<OperandId, scoped_refptr<WebNNTensorImpl>>
+          constant_tensor_operands,
+      BuildGraphCallback callback) override;
 
   // Closes the `receiver_` pipe with the renderer process, then self destructs
   // by removing itself from the ownership of `context_provider_`.
@@ -335,6 +345,12 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   void InitializeContext(ContextBackendUma backend_uma);
 
   void OnDisconnect() override;
+
+  // Callback for BuildGraph. Takes ownership of the graph and
+  // extracts the devices for the builder.
+  void OnGraphBuilt(
+      BuildGraphCallback callback,
+      base::expected<scoped_refptr<WebNNGraphImpl>, mojom::ErrorPtr> result);
 
   bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
                     base::trace_event::ProcessMemoryDump* pmd) override;
