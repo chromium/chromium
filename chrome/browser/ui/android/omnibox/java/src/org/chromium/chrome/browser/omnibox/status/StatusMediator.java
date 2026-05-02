@@ -78,7 +78,6 @@ public class StatusMediator
     private final PropertyModel mModel;
     private final OneshotSupplier<TemplateUrlService> mTemplateUrlServiceSupplier;
     private final MonotonicObservableSupplier<Profile> mProfileSupplier;
-    private final boolean mIsTablet;
     private final Context mContext;
     private final LocationBarDataProvider mLocationBarDataProvider;
     private final PermissionStatusHandler mPermissionStatusHandler;
@@ -100,7 +99,6 @@ public class StatusMediator
     private boolean mVerboseStatusSpaceAvailable;
     private boolean mPageIsPaintPreview;
     private boolean mPageIsOffline;
-    private boolean mShowStatusIconWhenUrlFocused;
     private boolean mIsSecurityViewShown;
     private int mUrlMinWidth;
     private int mSeparatorMinWidth;
@@ -131,7 +129,6 @@ public class StatusMediator
     /**
      * @param model The {@link PropertyModel} for this mediator.
      * @param context The {@link Context} for this Status component.
-     * @param isTablet Whether the current device is a tablet.
      * @param locationBarDataProvider Provides data to the location bar.
      * @param permissionDialogController Controls showing permission dialogs.
      * @param templateUrlServiceSupplier Supplies the {@link TemplateUrlService}.
@@ -146,7 +143,6 @@ public class StatusMediator
     public StatusMediator(
             PropertyModel model,
             Context context,
-            boolean isTablet,
             LocationBarDataProvider locationBarDataProvider,
             PermissionDialogController permissionDialogController,
             OneshotSupplier<TemplateUrlService> templateUrlServiceSupplier,
@@ -173,8 +169,6 @@ public class StatusMediator
         mProfileSupplier = profileSupplier;
         mPageInfoIphController = pageInfoIphController;
 
-        mIsTablet = isTablet;
-        mShowStatusIconWhenUrlFocused = mIsTablet;
         mPageInfoAction = pageInfoAction;
         mModel.set(StatusProperties.INCOGNITO_BADGE_VISIBLE, false);
 
@@ -208,7 +202,6 @@ public class StatusMediator
                 });
 
         updateColorTheme();
-        setStatusIconShown(/* show= */ true);
         updateLocationBarIcon(IconTransitionType.CROSSFADE);
         updateStatusViewMinWidth();
     }
@@ -300,14 +293,6 @@ public class StatusMediator
         mSeparatorMinWidth = width;
     }
 
-    /** Specify whether status icon should be shown when URL is focused. */
-    @VisibleForTesting
-    void setShowIconsWhenUrlFocused(boolean showIconWhenFocused) {
-        if (mShowStatusIconWhenUrlFocused == showIconWhenFocused) return;
-        mShowStatusIconWhenUrlFocused = showIconWhenFocused;
-        updateLocationBarIcon(IconTransitionType.CROSSFADE);
-    }
-
     /** Update unfocused location bar width to determine shape and content of the Status view. */
     void setUnfocusedLocationBarWidth(int width) {
         // This unfocused width is used rather than observing #onMeasure() to avoid showing the
@@ -362,21 +347,12 @@ public class StatusMediator
         mModel.set(StatusProperties.USE_WIDE_STATUS_ICON, mUrlHasFocus || isRegularNtpUrl);
     }
 
-    void setStatusIconShown(boolean show) {
-        applyStatusIconAndTooltipProperties(
-                show, mModel.get(StatusProperties.VERBOSE_STATUS_TEXT_VISIBLE));
-    }
-
     public void setUseSmallWidget(boolean useSmallWidget) {
         mModel.set(StatusProperties.USE_SMALL_WIDGET, useSmallWidget);
     }
 
     void updateStatusVisibility() {
-        // This logic doesn't apply to tablets.
-        if (mIsTablet) return;
-
-        setShowIconsWhenUrlFocused(true);
-        setStatusIconShown(true);
+        updateLocationBarIcon(IconTransitionType.CROSSFADE);
     }
 
     /** Specify minimum width of an URL field. */
@@ -421,8 +397,7 @@ public class StatusMediator
         }
         mModel.set(StatusProperties.VERBOSE_STATUS_TEXT_VISIBLE, newVisibility);
 
-        applyStatusIconAndTooltipProperties(
-                mModel.get(StatusProperties.SHOW_STATUS_ICON), newVisibility);
+        applyStatusIconAndTooltipProperties(newVisibility);
     }
 
     /** Update color theme for all status components. */
@@ -534,24 +509,19 @@ public class StatusMediator
         } else if (isHubSearch()) {
             mPermissionStatusHandler.reset(/* shouldDismissNativePrompt= */ false);
             updateStatusViewVisibility();
-            // Show the status icon primarily for incognito since it is defaulted off there.
-            setStatusIconShown(/* show= */ true);
             iconRes = R.drawable.ic_arrow_back_24dp;
             tintRes = ThemeUtils.getThemedToolbarIconTintRes(mBrandedColorScheme);
             doubleTapDescriptionRes = R.string.accessibility_toolbar_exit_hub_search;
             applyStatusIconAndTooltipProperties(
-                    mModel.get(StatusProperties.SHOW_STATUS_ICON),
                     mModel.get(StatusProperties.VERBOSE_STATUS_TEXT_VISIBLE));
             clickListener = mOnStatusIconNavigateBackButtonPress;
         } else if (mUrlHasFocus) {
             mPermissionStatusHandler.reset(/* shouldDismissNativePrompt= */ true);
-            if (mShowStatusIconWhenUrlFocused) {
-                iconRes =
-                        isUrlBarTextSearch()
-                                ? R.drawable.ic_suggestion_magnifier
-                                : R.drawable.ic_globe_24dp;
-                tintRes = mNavigationIconTintRes;
-            }
+            iconRes =
+                    isUrlBarTextSearch()
+                            ? R.drawable.ic_suggestion_magnifier
+                            : R.drawable.ic_globe_24dp;
+            tintRes = mNavigationIconTintRes;
         } else if (mPermissionStatusHandler.isClapperQuietIconShowing()) {
             return;
         } else if (mSecurityIconRes != Resources.ID_NULL) {
@@ -621,7 +591,7 @@ public class StatusMediator
             return false;
         }
 
-        if (mUrlHasFocus && mShowStatusIconWhenUrlFocused) {
+        if (mUrlHasFocus) {
             return true;
         }
 
@@ -846,13 +816,11 @@ public class StatusMediator
 
     void setTooltipText(@StringRes int tooltipTextResId) {
         applyStatusIconAndTooltipProperties(
-                mModel.get(StatusProperties.SHOW_STATUS_ICON),
                 mModel.get(StatusProperties.VERBOSE_STATUS_TEXT_VISIBLE));
     }
 
     void setBackground() {
         applyStatusIconAndTooltipProperties(
-                mModel.get(StatusProperties.SHOW_STATUS_ICON),
                 mModel.get(StatusProperties.VERBOSE_STATUS_TEXT_VISIBLE));
     }
 
@@ -897,10 +865,8 @@ public class StatusMediator
         mOnStatusIconNavigateBackButtonPress = listener;
     }
 
-    private void applyStatusIconAndTooltipProperties(
-            boolean showIcon, boolean verboseStatusTextVisible) {
-        mModel.set(StatusProperties.SHOW_STATUS_ICON, showIcon);
-        if ((showIcon || verboseStatusTextVisible) && !isHubSearch()) {
+    private void applyStatusIconAndTooltipProperties(boolean verboseStatusTextVisible) {
+        if (!isHubSearch()) {
             Drawable background;
             if (mLocationBarDataProvider.isIncognitoBranded()) {
                 background =

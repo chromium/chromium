@@ -251,7 +251,6 @@ public class PageInfoDiscoverabilityTest {
                             new StatusMediator(
                                     mModel,
                                     mContext,
-                                    /* isTablet= */ false,
                                     mLocationBarDataProvider,
                                     mPermissionDialogController,
                                     mTemplateUrlServiceSupplier,

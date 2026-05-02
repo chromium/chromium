@@ -118,7 +118,6 @@ public class StatusCoordinator implements LocationBarDataProvider.Observer {
                 new StatusMediator(
                         mModel,
                         mStatusView.getContext(),
-                        isTablet,
                         locationBarDataProvider,
                         PermissionDialogController.getInstance(),
                         templateUrlServiceSupplier,

@@ -260,13 +260,7 @@ public class StatusProperties {
     /** The status separator color. */
     static final WritableIntPropertyKey SEPARATOR_COLOR = new WritableIntPropertyKey();
 
-    /** Whether the icon is shown. */
-    static final WritableBooleanPropertyKey SHOW_STATUS_ICON = new WritableBooleanPropertyKey();
-
-    /**
-     * Whether the status view is shown. This is different from SHOW_STATUS_ICON, which is
-     * responsible for whether the icon sub-view is shown or not and is managed independently.
-     */
+    /** Whether the status view is shown. */
     static final WritableBooleanPropertyKey SHOW_STATUS_VIEW = new WritableBooleanPropertyKey();
 
     /** The accessibility description read for double tab upon a click on status view. */
@@ -329,7 +323,6 @@ public class StatusProperties {
                 ANIMATIONS_ENABLED,
                 INCOGNITO_BADGE_VISIBLE,
                 SEPARATOR_COLOR,
-                SHOW_STATUS_ICON,
                 SHOW_STATUS_VIEW,
                 STATUS_ACCESSIBILITY_DOUBLE_TAP_DESCRIPTION_RES,
                 STATUS_ACCESSIBILITY_TOAST_RES,

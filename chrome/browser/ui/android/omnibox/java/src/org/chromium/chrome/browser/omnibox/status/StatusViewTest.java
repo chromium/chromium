@@ -253,28 +253,11 @@ public class StatusViewTest {
     @Test
     @MediumTest
     @Feature({"Omnibox"})
-    public void testStatusViewAnimationStatusResetOnHide() {
-        runOnUiThreadBlocking(
-                () -> {
-                    mStatusModel.set(StatusProperties.SHOW_STATUS_ICON, true);
-                    mStatusModel.set(
-                            StatusProperties.STATUS_ICON_RESOURCE,
-                            new StatusIconResource(R.drawable.ic_logo_googleg_24dp, 0));
-                    assertTrue(mStatusView.isStatusIconAnimating());
-                    mStatusModel.set(StatusProperties.SHOW_STATUS_ICON, false);
-                    assertFalse(mStatusView.isStatusIconAnimating());
-                });
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"Omnibox"})
     public void testStatusView_iconTransparencyShouldBeReset() {
         StatusIconResource statusIconResource =
                 new StatusIconResource(R.drawable.ic_logo_googleg_24dp, 0);
         runOnUiThreadBlocking(
                 () -> {
-                    mStatusModel.set(StatusProperties.SHOW_STATUS_ICON, true);
                     mStatusModel.set(StatusProperties.STATUS_ICON_RESOURCE, statusIconResource);
                 });
 
@@ -301,7 +284,6 @@ public class StatusViewTest {
         runOnUiThreadBlocking(
                 () -> {
                     mStatusView.setIconAnimationDurationForTesting(50);
-                    mStatusModel.set(StatusProperties.SHOW_STATUS_ICON, true);
                     mStatusModel.set(StatusProperties.ANIMATIONS_ENABLED, true);
                     mStatusModel.set(
                             StatusProperties.STATUS_ICON_RESOURCE,
@@ -324,7 +306,6 @@ public class StatusViewTest {
         runOnUiThreadBlocking(
                 () -> {
                     mStatusView.setIconAnimationDurationForTesting(100);
-                    mStatusModel.set(StatusProperties.SHOW_STATUS_ICON, true);
                     mStatusModel.set(StatusProperties.ANIMATIONS_ENABLED, true);
                     mStatusModel.set(
                             StatusProperties.STATUS_ICON_RESOURCE,
@@ -385,7 +366,6 @@ public class StatusViewTest {
                 () -> {
                     mStatusModel.set(StatusProperties.SHOW_STATUS_VIEW, false);
                     assertEquals(View.GONE, mStatusView.getVisibility());
-                    mStatusModel.set(StatusProperties.SHOW_STATUS_ICON, true);
                     assertEquals(View.GONE, mStatusView.getVisibility());
                 });
     }

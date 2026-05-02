@@ -195,7 +195,6 @@ public class StatusViewRenderTest {
                     mStatusModel.set(
                             StatusProperties.STATUS_VIEW_TOOLTIP_TEXT,
                             R.string.accessibility_menu_info);
-                    mStatusModel.set(StatusProperties.SHOW_STATUS_ICON, true);
                     mStatusModel.set(
                             StatusProperties.STATUS_ICON_RESOURCE,
                             new StatusIconResource(R.drawable.ic_search_24dp, 0));
@@ -240,7 +239,6 @@ public class StatusViewRenderTest {
                     mStatusModel.set(
                             StatusProperties.STATUS_VIEW_TOOLTIP_TEXT,
                             R.string.accessibility_menu_info);
-                    mStatusModel.set(StatusProperties.SHOW_STATUS_ICON, true);
                     mStatusModel.set(StatusProperties.STATUS_ICON_RESOURCE, statusIcon);
                 });
         mRenderTestRule.render(mStatusView, "status_view_with_location_permission_icon");
@@ -264,7 +262,6 @@ public class StatusViewRenderTest {
                     mStatusModel.set(
                             StatusProperties.STATUS_VIEW_TOOLTIP_TEXT,
                             R.string.accessibility_menu_info);
-                    mStatusModel.set(StatusProperties.SHOW_STATUS_ICON, true);
                     mStatusModel.set(StatusProperties.STATUS_ICON_RESOURCE, statusIcon);
                 });
         mRenderTestRule.render(mStatusView, "status_view_with_store_icon");

@@ -29,8 +29,6 @@ class StatusViewBinder implements ViewBinder<PropertyModel, StatusView, Property
             view.setIncognitoBadgeVisibility(model.get(StatusProperties.INCOGNITO_BADGE_VISIBLE));
         } else if (StatusProperties.SEPARATOR_COLOR.equals(propertyKey)) {
             view.setSeparatorColor(model.get(StatusProperties.SEPARATOR_COLOR));
-        } else if (StatusProperties.SHOW_STATUS_ICON.equals(propertyKey)) {
-            applyStatusIconAndTooltipProperties(model, view);
         } else if (StatusProperties.SHOW_STATUS_VIEW.equals(propertyKey)) {
             int visibility =
                     model.get(StatusProperties.SHOW_STATUS_VIEW) ? View.VISIBLE : View.GONE;
@@ -98,7 +96,6 @@ class StatusViewBinder implements ViewBinder<PropertyModel, StatusView, Property
     }
 
     static void applyStatusIconAndTooltipProperties(PropertyModel model, StatusView statusView) {
-        statusView.setStatusIconShown(model.get(StatusProperties.SHOW_STATUS_ICON));
         statusView.setTooltipText(model.get(StatusProperties.STATUS_VIEW_TOOLTIP_TEXT));
         statusView.maybeSetBackground(model.get(StatusProperties.STATUS_VIEW_BACKGROUND));
     }
