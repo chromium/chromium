@@ -471,7 +471,7 @@ void GamepadDeviceMac::SetVibration(mojom::GamepadEffectParametersPtr params) {
     return;
   }
 
-  if (ff_device_ref_) {
+  if (ff_effect_ref_) {
     FFCUSTOMFORCE* ff_custom_force =
         static_cast<FFCUSTOMFORCE*>(ff_effect_.lpvTypeSpecificParams);
     DCHECK(ff_custom_force);
