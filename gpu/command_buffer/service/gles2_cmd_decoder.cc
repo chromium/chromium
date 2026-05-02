@@ -13653,6 +13653,9 @@ void GLES2DecoderImpl::DoCopyTexSubImage2D(
   GLint dy = src.y() - y;
   GLint destX = xoffset + dx;
   GLint destY = yoffset + dy;
+
+  LOCAL_COPY_REAL_GL_ERRORS_TO_WRAPPER(func_name);
+
   // It's only legal to skip clearing the level of the target texture
   // if the entire level is being redefined.
   GLsizei level_width = 0;
@@ -13662,10 +13665,15 @@ void GLES2DecoderImpl::DoCopyTexSubImage2D(
       target, level, &level_width, &level_height, &level_depth);
   // Validated above.
   DCHECK(have_level);
+
+  bool set_cleared = false;
+  gfx::Rect cleared_rect_to_set;
+  bool set_cleared_rect = false;
+
   if (destX == 0 && destY == 0 &&
       src.width() == level_width && src.height() == level_height) {
     // Write all pixels in below.
-    texture_manager()->SetLevelCleared(texture_ref, target, level, true);
+    set_cleared = true;
   } else {
     gfx::Rect cleared_rect;
     if (TextureManager::CombineAdjacentRects(
@@ -13674,8 +13682,8 @@ void GLES2DecoderImpl::DoCopyTexSubImage2D(
             &cleared_rect)) {
       DCHECK_GE(cleared_rect.size().GetArea(),
                 texture->GetLevelClearedRect(target, level).size().GetArea());
-      texture_manager()->SetLevelClearedRect(texture_ref, target, level,
-                                             cleared_rect);
+      cleared_rect_to_set = cleared_rect;
+      set_cleared_rect = true;
     } else {
       // Otherwise clear part of texture level that is not already cleared.
       if (!texture_manager()->ClearTextureLevel(this, texture_ref, target,
@@ -13700,6 +13708,15 @@ void GLES2DecoderImpl::DoCopyTexSubImage2D(
   } else {
     api()->glCopyTexSubImage2DFn(target, level, destX, destY, src.x(), src.y(),
                                  src.width(), src.height());
+  }
+
+  if (LOCAL_PEEK_GL_ERROR(func_name) == GL_NO_ERROR) {
+    if (set_cleared) {
+      texture_manager()->SetLevelCleared(texture_ref, target, level, true);
+    } else if (set_cleared_rect) {
+      texture_manager()->SetLevelClearedRect(texture_ref, target, level,
+                                             cleared_rect_to_set);
+    }
   }
 
   // This may be a slow command.  Exit command processing to allow for

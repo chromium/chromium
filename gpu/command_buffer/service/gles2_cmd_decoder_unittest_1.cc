@@ -110,6 +110,10 @@ void GLES2DecoderTestBase::SpecializedSetup<cmds::CopyTexSubImage2D, 0>(
     DoBindTexture(GL_TEXTURE_2D, client_texture_id_, kServiceTextureId);
     DoTexImage2D(GL_TEXTURE_2D, 2, GL_RGBA, 16, 16, 0, GL_RGBA,
                  GL_UNSIGNED_BYTE, shared_memory_id_, kSharedMemoryOffset);
+    EXPECT_CALL(*gl_, GetError())
+        .WillOnce(Return(GL_NO_ERROR))
+        .WillOnce(Return(GL_NO_ERROR))
+        .RetiresOnSaturation();
   }
 }
 
